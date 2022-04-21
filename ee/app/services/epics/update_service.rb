@@ -45,15 +45,21 @@ module Epics
       old_mentioned_users = old_associations.fetch(:mentioned_users, [])
       old_labels = old_associations.fetch(:labels, [])
 
-      if has_changes?(epic, old_labels: old_labels)
-        todo_service.resolve_todos_for_target(epic, current_user)
-      end
+      handle_label_changes(epic, old_labels)
 
       todo_service.update_epic(epic, current_user, old_mentioned_users)
 
       if epic.saved_change_to_attribute?(:confidential)
         handle_confidentiality_change(epic)
       end
+    end
+
+    def handle_label_changes(epic, old_labels)
+      return unless has_label_changes?(epic, old_labels)
+
+      super
+
+      todo_service.resolve_todos_for_target(epic, current_user)
     end
 
     def handle_confidentiality_change(epic)

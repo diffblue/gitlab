@@ -222,4 +222,76 @@ RSpec.describe EE::NamespacesHelper do
       end
     end
   end
+
+  describe '#show_minute_limit_banner?' do
+    let(:project) { create(:project) }
+
+    context 'on dot com' do
+      using RSpec::Parameterized::TableSyntax
+
+      where(:feature_flag_enabled, :free_plan, :user_dismissed_banner, :should_show_banner) do
+        true  | true  | false | true
+        true  | true  | true  | false
+        true  | false | false | false
+        false | true  | false | false
+      end
+
+      with_them do
+        before do
+          allow(Gitlab).to receive(:com?).and_return(true)
+          stub_feature_flags(show_minute_limit_banner: feature_flag_enabled)
+          allow(project.root_ancestor).to receive(:free_plan?).and_return(free_plan)
+          allow(helper).to receive(:user_dismissed?).with('minute_limit_banner').and_return(user_dismissed_banner)
+        end
+
+        it 'shows the banner if required' do
+          expect(helper.show_minute_limit_banner?(project)).to eq(should_show_banner)
+        end
+      end
+    end
+
+    context 'not dot com' do
+      context 'when feature flag is enabled for a free project and user has not dismissed callout' do
+        before do
+          stub_feature_flags(show_minute_limit_banner: true)
+          allow(project.root_ancestor).to receive(:free_plan?).and_return(true)
+          allow(helper).to receive(:user_dismissed?).with('minute_limit_banner').and_return(false)
+        end
+
+        it 'does not show banner' do
+          expect(helper.show_minute_limit_banner?(project)).to eq(false)
+        end
+      end
+    end
+  end
+
+  describe '#pipeline_usage_quota_app_data' do
+    context 'Gitlab SaaS', :saas do
+      before do
+        stub_ee_application_setting(should_check_namespace_plan: true)
+      end
+
+      it 'returns a hash with buy_additional_minutes data' do
+        expect(helper.pipeline_usage_quota_app_data(user_group)).to eql({
+          namespace_actual_plan_name: user_group.actual_plan_name,
+          namespace_path: user_group.full_path,
+          namespace_id: user_group.id,
+          page_size: Kaminari.config.default_per_page,
+          buy_additional_minutes_path: EE::SUBSCRIPTIONS_MORE_MINUTES_URL,
+          buy_additional_minutes_target: '_blank'
+        })
+      end
+    end
+
+    context 'Gitlab Self-Managed' do
+      it 'returns a hash without buy_additional_minutes data' do
+        expect(helper.pipeline_usage_quota_app_data(user_group)).to eql({
+          namespace_actual_plan_name: user_group.actual_plan_name,
+          namespace_path: user_group.full_path,
+          namespace_id: user_group.id,
+          page_size: Kaminari.config.default_per_page
+        })
+      end
+    end
+  end
 end

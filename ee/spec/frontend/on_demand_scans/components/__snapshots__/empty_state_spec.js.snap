@@ -12,7 +12,7 @@ exports[`EmptyState renders properly 1`] = `
     >
       <img
         alt=""
-        class="gl-max-w-full"
+        class="gl-max-w-full gl-dark-invert-keep-hue"
         role="img"
         src="/empty/state/svg/path"
       />
@@ -60,7 +60,7 @@ exports[`EmptyState renders properly 1`] = `
           <span
             class="gl-button-text"
           >
-            New DAST scan
+            New scan
           </span>
         </a>
          

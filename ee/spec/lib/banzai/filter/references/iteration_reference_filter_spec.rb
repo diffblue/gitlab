@@ -320,6 +320,11 @@ RSpec.describe Banzai::Filter::References::IterationReferenceFilter do
       markdown = "#{iteration_reference} #{iteration2_reference} #{iteration3_reference}"
       max_count += 1
 
+      # Feature flag check for iteration_cadences fetches the root ancestor for a group
+      # so we need to add another query here. This should be removed when the feature flag is removed.
+      # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/354878
+      max_count += 1
+
       expect do
         reference_filter(markdown, { project: nil, group: group2 })
       end.not_to exceed_all_query_limit(max_count)

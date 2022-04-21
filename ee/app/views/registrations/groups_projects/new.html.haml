@@ -110,7 +110,7 @@
                   = _('You can always change your URL later')
 
               .js-import-project-buttons
-                = render 'projects/import_project_pane'
+                = render 'projects/import_project_pane', destination_namespace_id: @namespace&.id
             - else
               .nothing-here-block
                 %h4= s_('ProjectsNew|No import options available')

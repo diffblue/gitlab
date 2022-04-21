@@ -1,6 +1,6 @@
 #import "./iteration_cadence.fragment.graphql"
 
-query IterationCadence($fullPath: ID!, $id: ID!) {
+query IterationCadence($fullPath: ID!, $id: IterationsCadenceID) {
   group(fullPath: $fullPath) {
     id
     iterationCadences(id: $id, includeAncestorGroups: true) {

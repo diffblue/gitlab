@@ -42,6 +42,28 @@ module Gitlab
         def default
           self.new
         end
+
+        def connection_settings(uri:, user: nil, password: nil)
+          # Returns a hash that is compatible with elasticsearch-transport client settings.
+          #
+          # See:
+          # https://github.com/elastic/elasticsearch-ruby/blob/v7.3.0/elasticsearch-transport/lib/elasticsearch/transport/client.rb#L196
+          uri = Addressable::URI.parse(uri) if uri.is_a? String
+
+          {
+            scheme:   uri.scheme,
+            user:     user.presence || Addressable::URI.unencode(uri.user),
+            password: password.presence || Addressable::URI.unencode(uri.password),
+            host:     uri.host,
+            path:     uri.path,
+            port:     uri.port
+          }.compact
+        end
+
+        def url_string(url_settings)
+          # Converts the hash from connection_settings into a percent encoded URL string.
+          Addressable::URI.new(url_settings).normalize.to_s
+        end
       end
 
       def default_settings

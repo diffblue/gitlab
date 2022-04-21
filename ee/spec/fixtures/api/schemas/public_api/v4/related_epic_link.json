@@ -3,12 +3,12 @@
   "properties" : {
      "source_epic": {
        "allOf": [
-          { "$ref": "../../../../../../spec/fixtures/api/schemas/public_api/v4/epic.json" }
+          { "$ref": "epic.json" }
         ]
      },
      "target_epic": {
        "allOf": [
-          { "$ref": "../../../../../../spec/fixtures/api/schemas/public_api/v4/epic.json" }
+          { "$ref": "epic.json" }
         ]
      },
      "link_type": {

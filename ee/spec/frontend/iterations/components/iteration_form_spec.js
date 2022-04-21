@@ -1,6 +1,7 @@
 import { mount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
+import { GlFormInput } from '@gitlab/ui';
 import IterationForm from 'ee/iterations/components/iteration_form.vue';
 import readIteration from 'ee/iterations/queries/iteration.query.graphql';
 import createIteration from 'ee/iterations/queries/iteration_create.mutation.graphql';
@@ -15,14 +16,13 @@ import { convertToGraphQLId, getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { dayAfter, formatDate } from '~/lib/utils/datetime_utility';
 import {
   manualIterationCadence as cadence,
-  mockGroupIterations,
-  mockIterationNode as iteration,
+  mockManualIterationNode as iteration,
   createMutationSuccess,
   createMutationFailure,
   updateMutationSuccess,
   emptyGroupIterationsSuccess,
   nonEmptyGroupIterationsSuccess,
-  readCadenceSuccess,
+  readManualCadenceSuccess,
 } from '../mock_data';
 
 const baseUrl = '/cadences/';
@@ -35,6 +35,28 @@ function createMockApolloProvider(requestHandlers) {
   return createMockApollo(requestHandlers);
 }
 
+const mockGroupIterationsFactory = (nodes = [iteration]) => {
+  return {
+    data: {
+      group: {
+        id: 'gid://gitlab/Group/114',
+        iterations: {
+          nodes,
+          pageInfo: {
+            hasNextPage: true,
+            hasPreviousPage: true,
+            startCursor: 'first-item',
+            endCursor: 'last-item',
+            __typename: 'PageInfo',
+          },
+          __typename: 'IterationConnection',
+        },
+        __typename: 'Group',
+      },
+    },
+  };
+};
+
 describe('Iteration Form', () => {
   let wrapper;
   let router;
@@ -44,7 +66,7 @@ describe('Iteration Form', () => {
     mutationQuery = createIteration,
     mutationResult = createMutationSuccess,
     query = readIteration,
-    result = mockGroupIterations,
+    result = mockGroupIterationsFactory(),
     resolverMock = jest.fn().mockResolvedValue(mutationResult),
     groupIterationsSuccess = emptyGroupIterationsSuccess,
   } = {}) {
@@ -52,7 +74,7 @@ describe('Iteration Form', () => {
       [query, jest.fn().mockResolvedValue(result)],
       [mutationQuery, resolverMock],
       [groupIterationsInCadenceQuery, jest.fn().mockResolvedValue(groupIterationsSuccess)],
-      [readCadence, jest.fn().mockResolvedValue(readCadenceSuccess)],
+      [readCadence, jest.fn().mockResolvedValue(readManualCadenceSuccess)],
     ]);
     wrapper = extendedWrapper(
       mount(IterationForm, {
@@ -78,10 +100,12 @@ describe('Iteration Form', () => {
   });
 
   const findPageTitle = () => wrapper.findComponent({ ref: 'pageTitle' });
-  const findTitle = () => wrapper.find('#iteration-title');
-  const findDescription = () => wrapper.find('#iteration-description');
-  const findStartDate = () => wrapper.find('#iteration-start-date');
-  const findDueDate = () => wrapper.find('#iteration-due-date');
+  const findTitle = () => wrapper.findByLabelText('Title');
+  const findDescription = () => wrapper.findByLabelText('Description');
+  const findStartDate = () => wrapper.findByTestId('start-date');
+  const findStartDateInputText = () => findStartDate().find(GlFormInput).element.value;
+  const findDueDate = () => wrapper.findByTestId('due-date');
+  const findDueDateInputText = () => findDueDate().find(GlFormInput).element.value;
   const findSaveButton = () => wrapper.findByTestId('save-iteration');
   const findCancelButton = () => wrapper.findByTestId('cancel-iteration');
   const clickSave = () => findSaveButton().trigger('click');
@@ -112,11 +136,10 @@ describe('Iteration Form', () => {
         const startDate = '2020-05-05';
         const dueDate = '2020-05-25';
 
-        findTitle().vm.$emit('input', title);
+        findTitle().setValue(title);
         findDescription().setValue(description);
-        findStartDate().vm.$emit('input', startDate);
-        findDueDate().vm.$emit('input', dueDate);
-
+        findStartDate().vm.$emit('input', new Date(startDate));
+        findDueDate().vm.$emit('input', new Date(dueDate));
         await clickSave();
 
         expect(resolverMock).toHaveBeenCalledWith({
@@ -172,7 +195,7 @@ describe('Iteration Form', () => {
             'yyyy-mm-dd',
           );
 
-          expect(findStartDate().element.value).toBe(expectedDate);
+          expect(findStartDateInputText()).toBe(expectedDate);
         });
       });
 
@@ -188,17 +211,17 @@ describe('Iteration Form', () => {
         it('uses cadence start date', () => {
           const expectedDate = cadence.startDate;
 
-          expect(findStartDate().element.value).toBe(expectedDate);
+          expect(findStartDateInputText()).toBe(expectedDate);
         });
       });
     });
   });
 
-  describe('Edit iteration', () => {
+  describe('Edit iteration for manual cadence', () => {
     beforeEach(() => {
       router.replace({
         name: 'editIteration',
-        params: { cadenceId: cadence.id, iterationId: iteration.id },
+        params: { cadenceId, iterationId },
       });
     });
 
@@ -212,6 +235,15 @@ describe('Iteration Form', () => {
       expect(findPageTitle().text()).toBe('Edit iteration');
     });
 
+    it('parses dates without adding timezone offsets', async () => {
+      createComponent();
+
+      await waitForPromises();
+
+      expect(findStartDate().props('value').getTimezoneOffset()).toBe(0);
+      expect(findDueDate().props('value').getTimezoneOffset()).toBe(0);
+    });
+
     it('prefills form fields', async () => {
       createComponent();
 
@@ -219,29 +251,31 @@ describe('Iteration Form', () => {
 
       expect(findTitle().element.value).toBe(iteration.title);
       expect(findDescription().element.value).toBe(iteration.description);
-      expect(findStartDate().element.value).toBe(iteration.startDate);
-      expect(findDueDate().element.value).toBe(iteration.dueDate);
+      expect(findStartDateInputText()).toBe(iteration.startDate);
+      expect(findDueDateInputText()).toBe(iteration.dueDate);
     });
 
     it('shows update text on submit button', () => {
       createComponent();
 
-      expect(findSaveButton().text()).toBe('Update iteration');
+      expect(findSaveButton().text()).toBe('Save changes');
     });
 
     it('triggers mutation with form data', async () => {
       const resolverMock = jest.fn().mockResolvedValue(updateMutationSuccess);
       createComponent({ mutationQuery: updateIteration, resolverMock });
 
+      await waitForPromises();
+
       const title = 'Updated title';
       const description = 'Updated description';
       const startDate = '2020-05-06';
       const dueDate = '2020-05-26';
 
-      findTitle().vm.$emit('input', title);
+      findTitle().setValue(title);
       findDescription().setValue(description);
-      findStartDate().vm.$emit('input', startDate);
-      findDueDate().vm.$emit('input', dueDate);
+      findStartDate().vm.$emit('input', new Date(startDate));
+      findDueDate().vm.$emit('input', new Date(dueDate));
 
       clickSave();
       await waitForPromises();
@@ -249,7 +283,7 @@ describe('Iteration Form', () => {
       expect(resolverMock).toHaveBeenCalledWith({
         input: {
           groupPath,
-          id: iteration.id,
+          id: iterationId,
           title,
           description,
           startDate,
@@ -264,6 +298,7 @@ describe('Iteration Form', () => {
         mutationQuery: updateIteration,
         resolverMock,
       });
+      await waitForPromises();
 
       clickSave();
       await nextTick();
@@ -274,11 +309,11 @@ describe('Iteration Form', () => {
       expect(resolverMock).toHaveBeenCalledWith({
         input: {
           groupPath,
-          id: iteration.id,
-          startDate: '',
-          dueDate: '',
-          title: '',
-          description: '',
+          id: iterationId,
+          startDate: iteration.startDate,
+          dueDate: iteration.dueDate,
+          title: iteration.title,
+          description: iteration.description,
         },
       });
     });

@@ -366,12 +366,8 @@ module EE
       !disable_overriding_approvers_per_merge_request
     end
 
-    def ci_minutes_used(namespace_actor)
-      if namespace_actor.new_monthly_ci_minutes_enabled?
-        ci_minutes_usage.amount_used.to_i
-      else
-        shared_runners_seconds.to_i / 60
-      end
+    def ci_minutes_used
+      ci_minutes_usage.amount_used.to_i
     end
 
     def shared_runners_available?
@@ -859,6 +855,21 @@ module EE
 
     def vulnerability_report_rule
       approval_rules.vulnerability_reports.first
+    end
+
+    def all_security_orchestration_policy_configurations
+      all_parent_groups = group&.self_and_ancestor_ids
+      return Array.wrap(security_orchestration_policy_configuration) if all_parent_groups.blank?
+
+      [
+        security_orchestration_policy_configuration,
+        *::Security::OrchestrationPolicyConfiguration.where(namespace_id: all_parent_groups)
+      ].compact
+    end
+
+    override :inactive?
+    def inactive?
+      ::Gitlab.com? && root_namespace.paid? ? false : super
     end
 
     private

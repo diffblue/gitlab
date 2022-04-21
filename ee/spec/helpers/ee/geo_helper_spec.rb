@@ -58,4 +58,23 @@ RSpec.describe EE::GeoHelper do
       expect(data_type_titles).to include(*expected_data_type_titles)
     end
   end
+
+  describe '#geo_filter_nav_options' do
+    let(:replicable_controller) { 'admin/geo/projects' }
+    let(:replicable_name) { 'projects' }
+    let(:expected_nav_options) do
+      [
+        { value: "", text: "All projects", href: "/admin/geo/replication/projects" },
+        { value: "pending", text: "In progress", href: "/admin/geo/replication/projects?sync_status=pending" },
+        { value: "failed", text: "Failed", href: "/admin/geo/replication/projects?sync_status=failed" },
+        { value: "synced", text: "Synced", href: "/admin/geo/replication/projects?sync_status=synced" }
+      ]
+    end
+
+    subject(:geo_filter_nav_options) { helper.geo_filter_nav_options(replicable_controller, replicable_name) }
+
+    it 'returns correct urls' do
+      expect(geo_filter_nav_options).to eq(expected_nav_options)
+    end
+  end
 end

@@ -8,4 +8,8 @@ fragment IterationReport on Iteration {
   state
   title
   webPath
+  iterationCadence {
+    id
+    automatic
+  }
 }

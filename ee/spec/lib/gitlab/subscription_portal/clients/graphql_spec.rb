@@ -455,4 +455,114 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql do
       expect(Gitlab::ErrorTracking).to have_received(:log_exception).with(kind_of(Timeout::Error))
     end
   end
+
+  describe '#send_seat_overage_notification' do
+    context 'when the subscription portal response is successful' do
+      it 'returns successfully' do
+        group = create(:group)
+        owner_1 = create(:user)
+        owner_2 = create(:user)
+
+        group.add_owner(owner_1)
+        group.add_owner(owner_2)
+
+        expected_query_params = {
+          variables: {
+            namespaceId: group.id,
+            maxSeatsUsed: 10,
+            groupOwners: [
+              { id: owner_1.id, email: owner_1.email, fullName: owner_1.name },
+              { id: owner_2.id, email: owner_2.email, fullName: owner_2.name }
+            ]
+          },
+          query: <<~GQL
+            mutation($namespaceId: Int!, $maxSeatsUsed: Int!, $groupOwners: [GitlabEmailsUserInput!]!) {
+              sendSeatOverageNotificationEmail(input: {
+                glNamespaceId: $namespaceId,
+                maxSeatsUsed: $maxSeatsUsed,
+                groupOwners: $groupOwners
+              }) {
+                errors
+              }
+            }
+          GQL
+        }
+
+        portal_response = {
+          success: true,
+          data: {
+            "data" => {
+              "sendSeatOverageNotificationEmail" => {
+                "errors" => []
+              }
+            }
+          }
+        }
+
+        expect(client).to receive(:execute_graphql_query).with(expected_query_params).and_return(portal_response)
+
+        request = client.send_seat_overage_notification(
+          group: group,
+          max_seats_used: 10
+        )
+
+        expect(request).to eq({ success: true })
+      end
+    end
+
+    context 'when the subscription portal response is unsuccessful' do
+      it 'returns an error response' do
+        expected_query_params = {
+          variables: { namespaceId: 1, maxSeatsUsed: nil, groupOwners: [] },
+          query: <<~GQL
+            mutation($namespaceId: Int!, $maxSeatsUsed: Int!, $groupOwners: [GitlabEmailsUserInput!]!) {
+              sendSeatOverageNotificationEmail(input: {
+                glNamespaceId: $namespaceId,
+                maxSeatsUsed: $maxSeatsUsed,
+                groupOwners: $groupOwners
+              }) {
+                errors
+              }
+            }
+          GQL
+        }
+
+        portal_response = {
+          success: true,
+          data: {
+            "errors" => [
+              {
+                "message" => "Argument 'maxSeatsUsed' on InputObject 'SendSeatOverageNotificationEmailInput' has an invalid value (null). Expected type 'Int!'.",
+                "locations" => [{ "line": 2, "column": 43 }],
+                "path" => %w[mutation sendSeatOverageNotificationEmail input maxSeatsUsed],
+                "extensions" => {
+                  "code" => "argumentLiteralsIncompatible",
+                  "typeName" => "InputObject",
+                  "argumentName" => "maxSeatsUsed"
+                }
+              }
+            ]
+          }
+        }
+
+        expect(client).to receive(:execute_graphql_query).with(expected_query_params).and_return(portal_response)
+
+        request = client.send_seat_overage_notification(group: build(:group, id: 1), max_seats_used: nil)
+
+        expect(request[:success]).to be false
+        expect(request[:errors]).not_to be_empty
+      end
+    end
+
+    context 'when there is a network connectivity error' do
+      it 'returns an error response' do
+        allow(client).to receive(:execute_graphql_query).and_raise(HTTParty::Error)
+        expect(Gitlab::ErrorTracking).to receive(:log_exception).with(kind_of(HTTParty::Error))
+
+        request = client.send_seat_overage_notification(group: build(:group), max_seats_used: nil)
+
+        expect(request).to eq({ success: false, errors: "CONNECTIVITY_ERROR" })
+      end
+    end
+  end
 end

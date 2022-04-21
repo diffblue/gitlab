@@ -1,13 +1,16 @@
 <script>
 import { GlLoadingIcon, GlAlert } from '@gitlab/ui';
 import { __ } from '~/locale';
+import Tracking from '~/tracking';
 import { objectToQuery } from '~/lib/utils/url_utility';
 
 const ZUORA_CLIENT_ERROR_HEIGHT = 15;
 const IFRAME_QUERY = Object.freeze({
   enable_submit: false,
   user_id: null,
+  location: null,
 });
+
 const I18N = {
   iframeNotSupported: __('Your browser does not support iFrames'),
 };
@@ -17,6 +20,7 @@ export default {
     GlLoadingIcon,
     GlAlert,
   },
+  mixins: [Tracking.mixin({ category: 'Zuora_cc' })],
   props: {
     iframeUrl: {
       type: String,
@@ -40,7 +44,11 @@ export default {
   },
   computed: {
     iframeSrc() {
-      const query = { ...IFRAME_QUERY, user_id: gon.current_user_id };
+      const query = {
+        ...IFRAME_QUERY,
+        user_id: gon.current_user_id,
+        location: btoa(window.location.href),
+      };
 
       return `${this.iframeUrl}?${objectToQuery(query)}`;
     },
@@ -55,6 +63,7 @@ export default {
   },
   methods: {
     handleFrameLoaded() {
+      this.track('iframe_loaded');
       this.isLoading = false;
       window.addEventListener('message', this.handleFrameMessages, true);
     },
@@ -71,13 +80,16 @@ export default {
       }
 
       if (event.data.success) {
+        this.track('success');
         this.$emit('success');
       } else if (parseInt(event.data.code, 10) < 7) {
         // 0-6 error codes mean client-side validation error after submit,
         // no need to reload the iframe and emit the failure event
         // Add a 15px height to the iframe to accomodate the error message
         this.iframeHeight += ZUORA_CLIENT_ERROR_HEIGHT;
+        this.track('client_error', { property: event.data.msg });
       } else if (parseInt(event.data.code, 10) > 6) {
+        this.track('error', { property: event.data.msg });
         this.error = event.data.msg;
         window.removeEventListener('message', this.handleFrameMessages, true);
         this.$refs.zuora.src = this.iframeSrc;

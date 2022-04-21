@@ -4,10 +4,7 @@ import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
 import ApproversList from 'ee/approvals/components/approvers_list.vue';
 import ApproversSelect from 'ee/approvals/components/approvers_select.vue';
-import RuleForm, {
-  READONLY_NAMES,
-  EXCLUDED_REPORT_TYPE,
-} from 'ee/approvals/components/rule_form.vue';
+import RuleForm, { READONLY_NAMES } from 'ee/approvals/components/rule_form.vue';
 import {
   TYPE_USER,
   TYPE_GROUP,
@@ -18,7 +15,7 @@ import {
 } from 'ee/approvals/constants';
 import { createStoreOptions } from 'ee/approvals/stores';
 import projectSettingsModule from 'ee/approvals/stores/modules/project_settings';
-import { REPORT_TYPES } from 'ee/security_dashboard/store/constants';
+import { REPORT_TYPES_DEFAULT } from 'ee/security_dashboard/store/constants';
 import ProtectedBranchesSelector from 'ee/vue_shared/components/branches_selector/protected_branches_selector.vue';
 import { stubComponent } from 'helpers/stub_component';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
@@ -611,22 +608,6 @@ describe('EE Approvals RuleForm', () => {
     });
 
     describe(`with ${VULNERABILITY_CHECK_NAME}`, () => {
-      describe('and without any scanners selected', () => {
-        beforeEach(() => {
-          createComponent({
-            initRule: {
-              ...TEST_RULE_VULNERABILITY_CHECK,
-              scanners: [],
-            },
-          });
-          findForm().trigger('submit');
-        });
-
-        it('does not dispatch the action on submit', () => {
-          expect(actions.postRule).not.toHaveBeenCalled();
-        });
-      });
-
       describe('and with two scanners selected', () => {
         beforeEach(() => {
           createComponent({
@@ -653,9 +634,13 @@ describe('EE Approvals RuleForm', () => {
           findForm().trigger('submit');
         });
 
-        it(`dispatches the action on submit without including ${EXCLUDED_REPORT_TYPE}`, () => {
-          const reportTypesKeys = Object.keys(REPORT_TYPES);
-          const expectedScanners = reportTypesKeys.filter((item) => item !== EXCLUDED_REPORT_TYPE);
+        it('selects all scanners', () => {
+          const scannerDropdown = findScannersGroup().findComponent(GlDropdown);
+          expect(scannerDropdown.attributes().text).toBe('All scanners');
+        });
+
+        it('dispatches the action on submit with empty array', () => {
+          const expectedScanners = [];
           expect(actions.postRule).toHaveBeenCalledWith(
             expect.anything(),
             expect.objectContaining({ scanners: expectedScanners }),
@@ -695,8 +680,7 @@ describe('EE Approvals RuleForm', () => {
         });
 
         it('contains the supported report types and select all option', () => {
-          const supportedReportsPlusAll =
-            Object.keys(REPORT_TYPES).length - [EXCLUDED_REPORT_TYPE].length + 1;
+          const supportedReportsPlusAll = Object.keys(REPORT_TYPES_DEFAULT).length + 1;
           expect(findScannersGroup().findAllComponents(GlTruncate)).toHaveLength(
             supportedReportsPlusAll,
           );

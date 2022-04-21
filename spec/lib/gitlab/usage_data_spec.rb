@@ -166,7 +166,6 @@ RSpec.describe Gitlab::UsageData, :aggregate_failures do
       expect(described_class.usage_activity_by_stage_create({})).to include(
         deploy_keys: 2,
         keys: 2,
-        merge_requests: 2,
         projects_with_disable_overriding_approvers_per_merge_request: 2,
         projects_without_disable_overriding_approvers_per_merge_request: 6,
         remote_mirrors: 2,
@@ -175,7 +174,6 @@ RSpec.describe Gitlab::UsageData, :aggregate_failures do
       expect(described_class.usage_activity_by_stage_create(described_class.monthly_time_range_db_params)).to include(
         deploy_keys: 1,
         keys: 1,
-        merge_requests: 1,
         projects_with_disable_overriding_approvers_per_merge_request: 1,
         projects_without_disable_overriding_approvers_per_merge_request: 3,
         remote_mirrors: 1,
@@ -507,10 +505,7 @@ RSpec.describe Gitlab::UsageData, :aggregate_failures do
     end
 
     it 'gathers usage counts', :aggregate_failures do
-      stub_feature_flags(merge_service_ping_instrumented_metrics: false)
-
       count_data = subject[:counts]
-      expect(count_data[:boards]).to eq(1)
       expect(count_data[:projects]).to eq(4)
       expect(count_data.keys).to include(*UsageDataHelpers::COUNTS_KEYS)
       expect(UsageDataHelpers::COUNTS_KEYS - count_data.keys).to be_empty
@@ -1472,6 +1467,33 @@ RSpec.describe Gitlab::UsageData, :aggregate_failures do
         }
 
         expect(subject).to eq(expected_data)
+      end
+    end
+  end
+
+  describe ".with_duration" do
+    context 'with feature flag measure_service_ping_metric_collection turned off' do
+      before do
+        stub_feature_flags(measure_service_ping_metric_collection: false)
+      end
+
+      it 'does NOT record duration and return block response' do
+        expect(::Gitlab::Usage::ServicePing::LegacyMetricTimingDecorator).not_to receive(:new)
+
+        expect(described_class.with_duration { 1 + 1 }).to be 2
+      end
+    end
+
+    context 'with feature flag measure_service_ping_metric_collection turned off' do
+      before do
+        stub_feature_flags(measure_service_ping_metric_collection: true)
+      end
+
+      it 'records duration' do
+        expect(::Gitlab::Usage::ServicePing::LegacyMetricTimingDecorator)
+          .to receive(:new).with(2, kind_of(Float))
+
+        described_class.with_duration { 1 + 1 }
       end
     end
   end

@@ -16,8 +16,6 @@ module Gitlab
               @params = params
               @context = context
               @errors = []
-
-              validate!
             end
 
             def matching?
@@ -48,6 +46,30 @@ module Gitlab
               expanded_content_hash
             end
 
+            def validate!
+              context.logger.instrument(:config_file_validation) do
+                validate_execution_time!
+                validate_location!
+                validate_content! if errors.none?
+                validate_hash! if errors.none?
+              end
+            end
+
+            def metadata
+              {
+                context_project: context.project&.full_path,
+                context_sha: context.sha
+              }
+            end
+
+            def eql?(other)
+              other.hash == hash
+            end
+
+            def hash
+              [params, context.project&.full_path, context.sha].hash
+            end
+
             protected
 
             def expanded_content_hash
@@ -66,34 +88,27 @@ module Gitlab
               nil
             end
 
-            def validate!
-              validate_execution_time!
-              validate_location!
-              validate_content! if errors.none?
-              validate_hash! if errors.none?
-            end
-
             def validate_execution_time!
               context.check_execution_time!
             end
 
             def validate_location!
               if invalid_location_type?
-                errors.push("Included file `#{location}` needs to be a string")
+                errors.push("Included file `#{masked_location}` needs to be a string")
               elsif invalid_extension?
-                errors.push("Included file `#{location}` does not have YAML extension!")
+                errors.push("Included file `#{masked_location}` does not have YAML extension!")
               end
             end
 
             def validate_content!
               if content.blank?
-                errors.push("Included file `#{location}` is empty or does not exist!")
+                errors.push("Included file `#{masked_location}` is empty or does not exist!")
               end
             end
 
             def validate_hash!
               if to_hash.blank?
-                errors.push("Included file `#{location}` does not have valid YAML syntax!")
+                errors.push("Included file `#{masked_location}` does not have valid YAML syntax!")
               end
             end
 
@@ -103,6 +118,12 @@ module Gitlab
 
             def expand_context_attrs
               {}
+            end
+
+            def masked_location
+              strong_memoize(:masked_location) do
+                context.mask_variables_from(location)
+              end
             end
           end
         end

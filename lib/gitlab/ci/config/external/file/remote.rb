@@ -18,13 +18,21 @@ module Gitlab
               strong_memoize(:content) { fetch_remote_content }
             end
 
+            def metadata
+              super.merge(
+                type: :remote,
+                location: masked_location,
+                extra: {}
+              )
+            end
+
             private
 
             def validate_location!
               super
 
               unless ::Gitlab::UrlSanitizer.valid?(location)
-                errors.push("Remote file `#{location}` does not have a valid address!")
+                errors.push("Remote file `#{masked_location}` does not have a valid address!")
               end
             end
 
@@ -32,17 +40,17 @@ module Gitlab
               begin
                 response = Gitlab::HTTP.get(location)
               rescue SocketError
-                errors.push("Remote file `#{location}` could not be fetched because of a socket error!")
+                errors.push("Remote file `#{masked_location}` could not be fetched because of a socket error!")
               rescue Timeout::Error
-                errors.push("Remote file `#{location}` could not be fetched because of a timeout error!")
+                errors.push("Remote file `#{masked_location}` could not be fetched because of a timeout error!")
               rescue Gitlab::HTTP::Error
-                errors.push("Remote file `#{location}` could not be fetched because of HTTP error!")
+                errors.push("Remote file `#{masked_location}` could not be fetched because of HTTP error!")
               rescue Gitlab::HTTP::BlockedUrlError => e
                 errors.push("Remote file could not be fetched because #{e}!")
               end
 
               if response&.code.to_i >= 400
-                errors.push("Remote file `#{location}` could not be fetched because of HTTP code `#{response.code}` error!")
+                errors.push("Remote file `#{masked_location}` could not be fetched because of HTTP code `#{response.code}` error!")
               end
 
               response.body if errors.none?

@@ -23,7 +23,7 @@ module QA
           project.visit!
         end
 
-        it 'can load Policies page and view the policies list', :smoke, :reliable, testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347589' do
+        it 'can load Policies page and view the policies list', :smoke, testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347589' do
           Page::Project::Menu.perform(&:click_on_policies)
 
           EE::Page::Project::Policies::Index.perform do |policies_page|
@@ -33,20 +33,20 @@ module QA
           end
         end
 
-        it 'can navigate to Policy Editor page', :smoke, :reliable, testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347611' do
+        it 'can navigate to Policy Editor page', :smoke, testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347611' do
           Page::Project::Menu.perform(&:click_on_policies)
 
           EE::Page::Project::Policies::Index.perform(&:click_new_policy_button)
 
           EE::Page::Project::Policies::PolicyEditor.perform do |policy_editor|
             aggregate_failures do
-              expect(policy_editor).to have_policy_type_form_select
+              expect(policy_editor).to have_policy_selection(:policy_selection_wizard)
             end
           end
         end
       end
 
-      context 'with k8s cluster', :require_admin, :kubernetes, :orchestrated, :runner, quarantine: { issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/335202', type: :broken } do
+      context 'with k8s cluster', :requires_admin, :kubernetes, :orchestrated, :runner, quarantine: { issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/335202', type: :broken } do
         let(:policy_name) { 'l3-rule' }
         let!(:cluster) { Service::KubernetesCluster.new(provider_class: Service::ClusterProvider::K3sCilium).create! }
         let!(:runner) do
@@ -91,11 +91,7 @@ module QA
           end
 
           Page::Project::Menu.perform(&:click_ci_cd_pipelines)
-
-          Page::Project::Pipeline::Index.perform do |index|
-            index.wait_for_latest_pipeline_completed
-          end
-
+          Page::Project::Pipeline::Index.perform(&:wait_for_latest_pipeline)
           cluster.add_sample_policy(project, policy_name: policy_name)
 
           Page::Project::Menu.perform(&:click_on_policies)

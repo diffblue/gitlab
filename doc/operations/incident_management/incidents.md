@@ -169,7 +169,7 @@ Beneath the highlight bar, GitLab displays a summary that includes the following
 - Monitoring tool
 
 Comments are displayed in threads, but can be displayed chronologically
-[in a timeline view](#timeline-view).
+[by toggling on the recent updates view](#recent-updates-view).
 
 ### Metrics **(PREMIUM)**
 
@@ -195,15 +195,15 @@ field populated.
 
 ![Incident alert details](img/incident_alert_details_v13_4.png)
 
-### Timeline view **(PREMIUM)**
+### Recent updates view **(PREMIUM)**
 
 > [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/227836) in GitLab 13.5.
 
 To quickly see the latest updates on an incident, click
-**{comments}** **Turn timeline view on** in the comment bar to display comments
+**{history}** **Turn recent updates view on** in the comment bar to display comments
 un-threaded and ordered chronologically, newest to oldest:
 
-![Timeline view toggle](img/timeline_view_toggle_v13_5.png)
+![Recent updates view toggle](img/timeline_view_toggle_v14_10.png)
 
 ### Service Level Agreement countdown timer **(PREMIUM)**
 
@@ -255,11 +255,12 @@ Add a to-do for incidents that you want to track in your to-do list. Click the
 
 ### Change incident status
 
-> [Introduced](https://gitlab.com/groups/gitlab-org/-/epics/5716) in GitLab 14.9 [with a flag](../../administration/feature_flags.md) named `incident_escalations`. Disabled by default.
+> - [Introduced](https://gitlab.com/groups/gitlab-org/-/epics/5716) in GitLab 14.9 [with a flag](../../administration/feature_flags.md) named `incident_escalations`. Disabled by default.
+> - [Enabled on GitLab.com and self-managed](https://gitlab.com/gitlab-org/gitlab/-/issues/345769) in GitLab 14.10.
 
 FLAG:
-By default this feature is not available. To make it available per project or for your entire
-instance, ask an administrator to [enable the feature flag](../../administration/feature_flags.md)
+This feature is available by default. To disable it per project or for your entire
+instance, ask an administrator to [disable the feature flag](../../administration/feature_flags.md)
 named `incident_escalations`.
 
 For users with the Developer role or higher, select **Edit** in the **Status** section of the
@@ -276,13 +277,14 @@ by changing the status. Setting the status to:
 For [incidents created from alerts](alerts.md#create-an-incident-from-an-alert),
 updating the incident status also updates the alert status.
 
-## Change escalation policy **(PREMIUM)**
+### Change escalation policy **(PREMIUM)**
 
-> [Introduced](https://gitlab.com/groups/gitlab-org/-/epics/5716) in GitLab 14.9 [with a flag](../../administration/feature_flags.md) named `incident_escalations`. Disabled by default.
+> - [Introduced](https://gitlab.com/groups/gitlab-org/-/epics/5716) in GitLab 14.9 [with a flag](../../administration/feature_flags.md) named `incident_escalations`. Disabled by default.
+> - [Enabled on GitLab.com and self-managed](https://gitlab.com/gitlab-org/gitlab/-/issues/345769) in GitLab 14.10.
 
 FLAG:
-By default this feature is not available. To make it available per project or for your entire
-instance, ask an administrator to [enable the feature flag](../../administration/feature_flags.md)
+This feature is available by default. To disable it per project or for your entire
+instance, ask an administrator to [disable the feature flag](../../administration/feature_flags.md)
 named `incident_escalations`.
 
 For users with the Developer role or higher, select **Edit** in the **Escalation policy** section of

@@ -41,7 +41,7 @@ Prerequisites:
 To export a project and its data, follow these steps:
 
 1. On the top bar, select **Menu > Projects** and find your project.
-1. On the left sidebar, select **Settings**.
+1. On the left sidebar, select **Settings > General**.
 1. Expand **Advanced**.
 1. Select **Export project**.
 1. After the export is generated, you should receive an email with a link to download the file.
@@ -72,13 +72,14 @@ The following items are exported:
 
 The following items are **not** exported:
 
+- [Child pipeline history](https://gitlab.com/gitlab-org/gitlab/-/issues/221088)
 - Build traces and artifacts
 - Container registry images
 - CI/CD variables
 - Pipeline triggers
 - Webhooks
 - Any encrypted tokens
-- Merge Request Approvers
+- Merge Request Approvers and [the number of required approvals](https://gitlab.com/gitlab-org/gitlab/-/issues/221088)
 - Repository size limits
 - Deploy keys allowed to push to protected branches
 
@@ -154,9 +155,9 @@ The default is `0` (unlimited).
 
 Imported users can be mapped by their public email addresses on self-managed instances, if an administrator (not an owner) does the import.
 
-- Public email addresses are not set by default. Users must
-[set it in their profiles](../../profile/index.md#set-your-public-email)
-for mapping to work correctly.
+- The project must be exported by a project or group member with the Owner role.
+- Public email addresses are not set by default. Users must [set it in their profiles](../../profile/index.md#set-your-public-email)
+  for mapping to work correctly.
 - For contributions to be mapped correctly, users must be an existing member of the namespace,
   or they can be added as a member of the project. Otherwise, a supplementary comment is left to mention that the original author and the MRs, notes, or issues that are owned by the importer.
 - Imported users are set as [direct members](../members/index.md)
@@ -237,7 +238,7 @@ and the exports between them are compatible.
 
 ### Project fails to import due to mismatch
 
-If the [shared runners enablement](../../../ci/runners/runners_scope.md#enable-shared-runners)
+If the [shared runners enablement](../../../ci/runners/runners_scope.md#enable-shared-runners-for-a-project)
 does not match between the exported project, and the project import, the project fails to import.
 Review [issue 276930](https://gitlab.com/gitlab-org/gitlab/-/issues/276930), and either:
 
@@ -306,7 +307,7 @@ reduce the repository size for another import attempt:
 #### Workaround option 2
 
 NOTE:
-This workaround requires access to the rails console, which isn't available to end-users on GitLab.com.
+This workaround does not account for LFS objects.
 
 Rather than attempting to push all changes at once, this workaround:
 
@@ -383,3 +384,17 @@ s = Gitlab::ImportExport::Saver.new(exportable: p, shared:p.import_export_shared
 s.send(:compress_and_save)
 s.send(:save_upload)
 ```
+
+### Import using the REST API fails when using a group access token
+
+[Group access tokens](../../group/settings/group_access_tokens.md)
+don't work for project or group import operations. When a group access token initiates an import,
+the import fails with this message:
+
+```plaintext
+Error adding importer user to Project members.
+Validation failed: User project bots cannot be added to other groups / projects
+```
+
+To use [Import REST APIs](../../../api/project_import_export.md),
+pass regular user account credentials such as [personal access tokens](../../profile/personal_access_tokens.md).

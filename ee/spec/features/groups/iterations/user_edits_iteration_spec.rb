@@ -8,7 +8,7 @@ RSpec.describe 'User edits iteration' do
   let_it_be(:user) { create(:group_member, :maintainer, user: create(:user), group: group ).user }
   let_it_be(:guest_user) { create(:group_member, :guest, user: create(:user), group: group ).user }
   let_it_be(:cadence) { create(:iterations_cadence, group: group) }
-  let_it_be(:iteration) { create(:iteration, :skip_future_date_validation, group: group, title: 'Correct Iteration', description: 'Iteration description', start_date: now - 1.day, due_date: now, iterations_cadence: cadence) }
+  let_it_be(:iteration) { create(:iteration, :skip_future_date_validation, description: 'Iteration description', start_date: now - 1.day, due_date: now, iterations_cadence: cadence) }
   let_it_be(:new_start_date) { now + 4.days }
   let_it_be(:new_due_date) { now + 5.days }
 
@@ -26,62 +26,10 @@ RSpec.describe 'User edits iteration' do
         sign_in(user)
       end
 
-      let(:start_date_with_cadences_input) do
-        page.find('#iteration-start-date')
-      end
+      shared_examples 'manually managed iteration' do
+        let_it_be(:manual_cadence) { build(:iterations_cadence, group: group, automatic: false).tap { |cadence| cadence.save!(validate: false) } }
+        let_it_be(:iteration) { create(:iteration, :skip_future_date_validation, title: 'Correct Iteration', description: 'Iteration description', start_date: now - 1.day, due_date: now, iterations_cadence: manual_cadence) }
 
-      let(:due_date_with_cadences_input) do
-        page.find('#iteration-due-date')
-      end
-
-      let(:start_date_without_cadences_input) do
-        input = page.first('[data-testid="gl-datepicker-input"]')
-        input.set(now - 1.day)
-        input
-      end
-
-      let(:due_date_without_cadences_input) do
-        input = all('[data-testid="gl-datepicker-input"]').last
-        input.set(now)
-        input
-      end
-
-      let(:updated_start_date_with_cadences) do
-        fill_in('Start date', with: new_start_date.strftime('%Y-%m-%d'))
-        new_start_date.strftime('%b %-d, %Y')
-      end
-
-      let(:updated_due_date_with_cadences) do
-        fill_in('Due date', with: new_due_date.strftime('%Y-%m-%d'))
-        new_due_date.strftime('%b %-d, %Y')
-      end
-
-      let(:updated_start_date_without_cadences) do
-        start_date_without_cadences_input.set(new_start_date)
-        new_start_date.strftime('%b %-d, %Y')
-      end
-
-      let(:updated_due_date_without_cadences) do
-        # TODO: Reported issue with Capybara
-        # Use fill_in instead, update datepicker to have labels
-        due_date_without_cadences_input.set('')
-
-        due_date_without_cadences_input.set(new_due_date)
-        new_due_date.strftime('%b %-d, %Y')
-      end
-
-      let(:iteration_with_cadences_page) { group_iteration_cadence_iteration_path(group, iteration_cadence_id: cadence.id, id: iteration.id) }
-      let(:iteration_without_cadences_page) { group_iteration_path(iteration.group, iteration.id) }
-
-      let(:edit_iteration_with_cadences_page) { edit_group_iteration_cadence_iteration_path(group, iteration_cadence_id: cadence.id, id: iteration.id) }
-      let(:edit_iteration_without_cadences_page) { edit_group_iteration_path(iteration.group, iteration.id) }
-
-      where(:using_cadences, :start_date_input, :due_date_input, :updated_start_date, :updated_due_date, :iteration_page, :edit_iteration_page) do
-        true  | ref(:start_date_with_cadences_input)    | ref(:due_date_with_cadences_input)    | ref(:updated_start_date_with_cadences)    | ref(:updated_due_date_with_cadences)    | ref(:iteration_with_cadences_page)    | ref(:edit_iteration_with_cadences_page)
-        false | ref(:start_date_without_cadences_input) | ref(:due_date_without_cadences_input) | ref(:updated_start_date_without_cadences) | ref(:updated_due_date_without_cadences) | ref(:iteration_without_cadences_page) | ref(:edit_iteration_without_cadences_page)
-      end
-
-      with_them do
         context 'load edit page directly', :js do
           before do
             visit edit_iteration_page
@@ -91,10 +39,10 @@ RSpec.describe 'User edits iteration' do
 
           it 'prefills fields and allows updating all values' do
             aggregate_failures do
-              expect(title_input.value).to eq(iteration.title)
-              expect(description_input.value).to eq(iteration.description)
-              expect(start_date_input.value).to have_content(iteration.start_date)
-              expect(due_date_input.value).to have_content(iteration.due_date)
+              expect(find_field('Title').value).to eq(iteration.title)
+              expect(find_field('Description').value).to eq(iteration.description)
+              expect(start_date_field.value).to have_content(iteration.start_date)
+              expect(due_date_field.value).to have_content(iteration.due_date)
             end
 
             updated_title = 'Updated iteration title'
@@ -102,16 +50,16 @@ RSpec.describe 'User edits iteration' do
 
             fill_in('Title', with: updated_title)
             fill_in('Description', with: updated_desc)
-            start_date = updated_start_date
-            due_date = updated_due_date
+            start_date_input
+            due_date_input
 
-            click_button('Update iteration')
+            click_button('Save changes')
 
             aggregate_failures do
               expect(page).to have_content(updated_title)
               expect(page).to have_content(updated_desc)
-              expect(page).to have_content(start_date)
-              expect(page).to have_content(due_date)
+              expect(page).to have_content(new_start_date.strftime('%b %-d, %Y'))
+              expect(page).to have_content(new_due_date.strftime('%b %-d, %Y'))
               expect(page).to have_current_path(iteration_page)
             end
           end
@@ -127,14 +75,86 @@ RSpec.describe 'User edits iteration' do
             click_link_or_button('Edit')
 
             aggregate_failures do
-              expect(title_input.value).to eq(iteration.title)
-              expect(description_input.value).to eq(iteration.description)
-              expect(start_date_input.value).to have_content(iteration.start_date)
-              expect(due_date_input.value).to have_content(iteration.due_date)
+              expect(find_field('Title').value).to eq(iteration.title)
+              expect(find_field('Description').value).to eq(iteration.description)
+              expect(start_date_field.value).to have_content(iteration.start_date)
+              expect(due_date_field.value).to have_content(iteration.due_date)
               expect(page).to have_current_path(edit_iteration_page)
             end
           end
         end
+      end
+
+      context 'using manual iteration cadences' do
+        let(:iteration_page) { group_iteration_cadence_iteration_path(group, iteration_cadence_id: manual_cadence.id, id: iteration.id) }
+        let(:edit_iteration_page) { edit_group_iteration_cadence_iteration_path(group, iteration_cadence_id: manual_cadence.id, id: iteration.id) }
+        let(:start_date_field) { find_field('Start date') }
+        let(:due_date_field) { find_field('Due date') }
+
+        let(:start_date_input) do
+          fill_in 'Start date', with: new_start_date
+          start_date_field.native.send_keys :enter
+        end
+
+        let(:due_date_input) do
+          fill_in 'Due date', with: new_due_date
+          due_date_field.native.send_keys :enter
+        end
+
+        it_behaves_like 'manually managed iteration'
+      end
+
+      context 'using automatic iteration cadences' do
+        let(:iteration_page) { group_iteration_cadence_iteration_path(group, iteration_cadence_id: cadence.id, id: iteration.id) }
+        let(:edit_iteration_page) { edit_group_iteration_cadence_iteration_path(group, iteration_cadence_id: cadence.id, id: iteration.id) }
+
+        context 'load edit page directly', :js do
+          before do
+            visit edit_iteration_page
+
+            wait_for_requests
+          end
+
+          it 'prefills and allows updating description', :aggregate_failures do
+            expect(find_field("Description").value).to eq(iteration.description)
+
+            updated_desc = 'Updated iteration desc'
+
+            fill_in('Description', with: updated_desc)
+            click_button('Save changes')
+
+            expect(page).to have_content(updated_desc)
+          end
+        end
+
+        context 'load edit page from report', :js do
+          before do
+            visit iteration_page
+          end
+
+          it 'prefills description and updates URL' do
+            find(dropdown_selector).click
+            click_link_or_button('Edit')
+
+            expect(find_field("Description").value).to eq(iteration.description)
+            expect(page).to have_current_path(edit_iteration_page)
+          end
+        end
+      end
+
+      # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/354878
+      # Remove with :iteration_cadences FF rollout
+      context 'using iteration without cadences' do
+        let(:iteration_page) { group_iteration_path(iteration.group, iteration.id) }
+        let(:edit_iteration_page) { edit_group_iteration_path(iteration.group, iteration.id) }
+        let(:new_start_date) { now - 1.day }
+        let(:new_due_date) { now }
+        let(:start_date_field) { page.first('[data-testid="gl-datepicker-input"]') }
+        let(:due_date_field) { all('[data-testid="gl-datepicker-input"]').last }
+        let(:start_date_input) { start_date_field.set(new_start_date) }
+        let(:due_date_input) { due_date_field.set(new_due_date) }
+
+        it_behaves_like 'manually managed iteration'
       end
     end
 
@@ -173,14 +193,6 @@ RSpec.describe 'User edits iteration' do
           expect(page).to have_gitlab_http_status(:not_found)
         end
       end
-    end
-
-    def title_input
-      page.find('#iteration-title')
-    end
-
-    def description_input
-      page.find('#iteration-description')
     end
   end
 end

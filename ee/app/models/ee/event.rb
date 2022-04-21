@@ -13,6 +13,17 @@ module EE
       scope :epics, -> { where(target_type: 'Epic') }
     end
 
+    EPIC_ACTIONS = [:created, :closed, :reopened].freeze
+
+    override :set_last_repository_updated_at
+    def set_last_repository_updated_at
+      super
+
+      return unless ::Feature.enabled?(:touch_project_repository_state_updated_at, default_enabled: :yaml)
+
+      ProjectRepositoryState.where(project_id: project_id).touch_all(:last_repository_updated_at, time: created_at)
+    end
+
     override :capabilities
     def capabilities
       super.merge(read_epic: %i[epic? epic_note?])

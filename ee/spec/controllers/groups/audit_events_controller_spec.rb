@@ -150,6 +150,12 @@ RSpec.describe Groups::AuditEventsController do
           end
         end
       end
+
+      context 'when date range is greater than limit' do
+        subject { get :index, params: { group_id: group.to_param, 'created_before': created_before, 'created_after': created_after } }
+
+        it_behaves_like 'a date range error is returned'
+      end
     end
 
     context 'when authorized owner' do

@@ -431,20 +431,52 @@ RSpec.describe Geo::ProjectRegistry, :geo do
                 end
               end
 
-              context 'where last_repository_successful_sync_at is set' do
-                context 'where the latest repo change has probably not been synced yet' do
-                  it 'returns true' do
-                    create(:geo_project_registry, :synced, project: project, last_repository_successful_sync_at: project.last_repository_updated_at - 1.minute)
+              context 'where last_repository_successful_sync_at is set', :freeze_time do
+                let_it_be(:project_repository_state) { create(:repository_state, project: project) }
 
-                    expect(described_class.repository_out_of_date?(project.id)).to be_truthy
+                context 'with the touch_project_repository_state_updated_at FF enabled' do
+                  where(:project_last_updated, :project_state_last_updated, :project_registry_last_synced, :expected_out_of_date?) do
+                    Time.current - 3.minutes | nil                      | Time.current - 5.minutes | true
+                    Time.current - 3.minutes | nil                      | Time.current - 1.minute  | false
+                    Time.current - 3.minutes | Time.current             | Time.current - 1.minute  | true
+                    Time.current - 3.minutes | Time.current - 2.minutes | Time.current - 1.minute  | false
+                    Time.current - 3.minutes | Time.current             | Time.current - 5.minutes | true
+                  end
+
+                  with_them do
+                    before do
+                      project.update!(last_repository_updated_at: project_last_updated)
+                      project_repository_state.update!(last_repository_updated_at: project_state_last_updated)
+                      create(:geo_project_registry, :synced, project: project, last_repository_successful_sync_at: project_registry_last_synced)
+                    end
+
+                    it 'returns the expected value' do
+                      expect(described_class.repository_out_of_date?(project.id)).to eq(expected_out_of_date?)
+                    end
                   end
                 end
 
-                context 'where the latest repo change has probably been synced' do
-                  it 'returns false' do
-                    create(:geo_project_registry, :synced, project: project, last_repository_successful_sync_at: project.last_repository_updated_at + 1.minute)
+                context 'with the touch_project_repository_state_updated_at FF disabled' do
+                  where(:project_last_updated, :project_state_last_updated, :project_registry_last_synced, :expected_out_of_date?) do
+                    Time.current - 3.minutes | nil                      | Time.current - 5.minutes | true
+                    Time.current - 3.minutes | nil                      | Time.current - 1.minute  | false
+                    Time.current - 3.minutes | Time.current             | Time.current - 1.minute  | false
+                    Time.current - 3.minutes | Time.current - 2.minutes | Time.current - 1.minute  | false
+                    Time.current - 3.minutes | Time.current             | Time.current - 5.minutes | true
+                  end
 
-                    expect(described_class.repository_out_of_date?(project.id)).to be_falsey
+                  with_them do
+                    before do
+                      stub_feature_flags(touch_project_repository_state_updated_at: false)
+
+                      project.update!(last_repository_updated_at: project_last_updated)
+                      project_repository_state.update!(last_repository_updated_at: project_state_last_updated)
+                      create(:geo_project_registry, :synced, project: project, last_repository_successful_sync_at: project_registry_last_synced)
+                    end
+
+                    it 'returns the expected value' do
+                      expect(described_class.repository_out_of_date?(project.id)).to eq(expected_out_of_date?)
+                    end
                   end
                 end
               end

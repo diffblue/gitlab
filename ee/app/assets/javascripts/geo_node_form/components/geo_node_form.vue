@@ -1,6 +1,7 @@
 <script>
 import { GlButton } from '@gitlab/ui';
 import { mapActions, mapGetters, mapState } from 'vuex';
+import { __ } from '~/locale';
 import { visitUrl } from '~/lib/utils/url_utility';
 import GeoNodeFormCapacities from './geo_node_form_capacities.vue';
 import GeoNodeFormCore from './geo_node_form_core.vue';
@@ -8,6 +9,10 @@ import GeoNodeFormSelectiveSync from './geo_node_form_selective_sync.vue';
 
 export default {
   name: 'GeoNodeForm',
+  i18n: {
+    saveChanges: __('Save changes'),
+    cancel: __('Cancel'),
+  },
   components: {
     GlButton,
     GeoNodeFormCore,
@@ -98,9 +103,9 @@ export default {
         variant="info"
         :disabled="formHasError"
         @click="saveGeoNode(nodeData)"
-        >{{ __('Save changes') }}</gl-button
+        >{{ $options.i18n.saveChanges }}</gl-button
       >
-      <gl-button id="node-cancel-button" @click="redirect">{{ __('Cancel') }}</gl-button>
+      <gl-button id="node-cancel-button" @click="redirect">{{ $options.i18n.cancel }}</gl-button>
     </section>
   </form>
 </template>

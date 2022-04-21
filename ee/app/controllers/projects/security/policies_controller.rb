@@ -5,16 +5,17 @@ module Projects
     class PoliciesController < Projects::ApplicationController
       include SecurityAndCompliancePermissions
 
-      before_action :authorize_security_orchestration_policies!
+      before_action :authorize_read_security_orchestration_policies!
       before_action :validate_policy_configuration, only: :edit
 
       before_action do
         push_frontend_feature_flag(:scan_result_policy, project, default_enabled: :yaml)
-        push_frontend_feature_flag(:container_security_policy_selection, project)
+        push_frontend_feature_flag(:container_security_policy_selection, project, default_enabled: :yaml)
       end
 
       feature_category :security_orchestration
-      urgency :medium
+      urgency :default, [:edit]
+      urgency :low, [:index, :new]
 
       def index
         render :index, locals: { project: project }

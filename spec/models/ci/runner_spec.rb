@@ -41,15 +41,25 @@ RSpec.describe Ci::Runner do
 
     context 'when runner is not allowed to pick untagged jobs' do
       context 'when runner does not have tags' do
+        let(:runner) { build(:ci_runner, tag_list: [], run_untagged: false) }
+
         it 'is not valid' do
-          runner = build(:ci_runner, tag_list: [], run_untagged: false)
+          expect(runner).to be_invalid
+        end
+      end
+
+      context 'when runner has too many tags' do
+        let(:runner) { build(:ci_runner, tag_list: (1..::Ci::Runner::TAG_LIST_MAX_LENGTH + 1).map { |i| "tag#{i}" }, run_untagged: false) }
+
+        it 'is not valid' do
           expect(runner).to be_invalid
         end
       end
 
       context 'when runner has tags' do
+        let(:runner) { build(:ci_runner, tag_list: ['tag'], run_untagged: false) }
+
         it 'is valid' do
-          runner = build(:ci_runner, tag_list: ['tag'], run_untagged: false)
           expect(runner).to be_valid
         end
       end
@@ -124,28 +134,28 @@ RSpec.describe Ci::Runner do
     end
 
     context 'cost factors validations' do
-      it 'dissalows :private_projects_minutes_cost_factor being nil' do
+      it 'disallows :private_projects_minutes_cost_factor being nil' do
         runner = build(:ci_runner, private_projects_minutes_cost_factor: nil)
 
         expect(runner).to be_invalid
         expect(runner.errors.full_messages).to include('Private projects minutes cost factor needs to be non-negative')
       end
 
-      it 'dissalows :public_projects_minutes_cost_factor being nil' do
+      it 'disallows :public_projects_minutes_cost_factor being nil' do
         runner = build(:ci_runner, public_projects_minutes_cost_factor: nil)
 
         expect(runner).to be_invalid
         expect(runner.errors.full_messages).to include('Public projects minutes cost factor needs to be non-negative')
       end
 
-      it 'dissalows :private_projects_minutes_cost_factor being negative' do
+      it 'disallows :private_projects_minutes_cost_factor being negative' do
         runner = build(:ci_runner, private_projects_minutes_cost_factor: -1.1)
 
         expect(runner).to be_invalid
         expect(runner.errors.full_messages).to include('Private projects minutes cost factor needs to be non-negative')
       end
 
-      it 'dissalows :public_projects_minutes_cost_factor being negative' do
+      it 'disallows :public_projects_minutes_cost_factor being negative' do
         runner = build(:ci_runner, public_projects_minutes_cost_factor: -2.2)
 
         expect(runner).to be_invalid

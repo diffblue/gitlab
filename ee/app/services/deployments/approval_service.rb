@@ -2,7 +2,15 @@
 
 module Deployments
   class ApprovalService < ::BaseService
+    include Gitlab::Utils::StrongMemoize
+
+    attr_reader :deployment
+
+    delegate :environment, to: :deployment
+
     def execute(deployment, status)
+      @deployment = deployment
+
       error_message = validate(deployment, status)
       return error(error_message) if error_message
 
@@ -22,7 +30,11 @@ module Deployments
 
         approval.tap { |a| a.update(status: status, comment: comment) }
       else
-        deployment.approvals.create(user: current_user, status: status, comment: comment)
+        if environment.has_approval_rules?
+          deployment.approvals.create(user: current_user, status: status, comment: comment, approval_rule: approval_rule)
+        else
+          deployment.approvals.create(user: current_user, status: status, comment: comment)
+        end
       end
     end
 
@@ -31,6 +43,11 @@ module Deployments
 
       if approval.rejected?
         deployment.deployable.drop!(:deployment_rejected)
+      elsif environment.has_approval_rules?
+        # Approvers might not have sufficient permission to execute the deployment job,
+        # so we just unblock the deployment, which stays as manual job.
+        # Executors can later run the manual job at their ideal timing.
+        deployment.unblock! if deployment.approved?
       elsif deployment.pending_approval_count <= 0
         deployment.unblock!
         deployment.deployable.enqueue!
@@ -42,11 +59,25 @@ module Deployments
 
       return _('This environment is not protected.') unless deployment.environment.protected?
 
-      return _("You don't have permission to review this deployment. Contact the project or group owner for help.") unless current_user&.can?(:update_deployment, deployment)
+      if environment.has_approval_rules?
+        unless current_user&.can?(:read_deployment, deployment) && approval_rule
+          return _("You don't have permission to review this deployment. Contact the project or group owner for help.")
+        end
+      else
+        unless current_user&.can?(:update_deployment, deployment)
+          return _("You don't have permission to review this deployment. Contact the project or group owner for help.")
+        end
+      end
 
       return _('This deployment is not waiting for approvals.') unless deployment.blocked?
 
       _('You cannot approve your own deployment.') if deployment.user == current_user && status == 'approved'
+    end
+
+    def approval_rule
+      strong_memoize(:approval_rule) do
+        environment.find_approval_rule_for(current_user, represented_as: params[:represented_as])
+      end
     end
   end
 end

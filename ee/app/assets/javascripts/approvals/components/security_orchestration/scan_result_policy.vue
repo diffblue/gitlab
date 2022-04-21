@@ -1,0 +1,61 @@
+<script>
+import { GlButton, GlIcon } from '@gitlab/ui';
+import { __ } from '~/locale';
+
+export default {
+  i18n: {
+    details: __('View details'),
+    allBranches: __('All branches'),
+  },
+  components: {
+    GlButton,
+    GlIcon,
+  },
+  props: {
+    policy: {
+      type: Object,
+      required: true,
+    },
+  },
+  computed: {
+    policyAction() {
+      return this.policy.actions.find((action) => action.type === 'require_approval');
+    },
+    branches() {
+      const branches = this.policy.rules.flatMap((rule) => rule.branches);
+      return branches.length > 0 ? branches.join(', ') : this.$options.i18n.allBranches;
+    },
+    approvalsRequired() {
+      return this.policyAction.approvals_required;
+    },
+    iconName() {
+      return this.policy.isSelected ? 'chevron-down' : 'chevron-up';
+    },
+  },
+  methods: {
+    updateSelected() {
+      this.$emit('toggle');
+    },
+  },
+};
+</script>
+
+<template>
+  <tr>
+    <td class="gl-text-gray-500">
+      {{ policy.name }}
+    </td>
+    <td class="gl-text-gray-500">
+      {{ branches }}
+    </td>
+    <td class="gl-text-gray-500 gl-text-center">
+      {{ approvalsRequired }}
+    </td>
+    <td>
+      <gl-button category="tertiary" size="small" variant="confirm" @click="updateSelected()">
+        {{ $options.i18n.details }}
+        <gl-icon :name="iconName" />
+      </gl-button>
+    </td>
+  </tr>
+</template>

@@ -19,7 +19,7 @@ namespace :gitlab do
         args[:job_class_name],
         args[:table_name],
         args[:column_name],
-        Gitlab::Json.parse(args[:job_arguments]),
+        args[:job_arguments],
         connection: main_model.connection
       )
     end
@@ -38,7 +38,7 @@ namespace :gitlab do
             args[:job_class_name],
             args[:table_name],
             args[:column_name],
-            Gitlab::Json.parse(args[:job_arguments]),
+            args[:job_arguments],
             connection: model.connection
           )
         end
@@ -80,8 +80,8 @@ namespace :gitlab do
 
     def display_migration_status(database_name, connection)
       Gitlab::Database::SharedModel.using_connection(connection) do
-        statuses = Gitlab::Database::BackgroundMigration::BatchedMigration.statuses
-        max_status_length = statuses.keys.map(&:length).max
+        valid_status = Gitlab::Database::BackgroundMigration::BatchedMigration.valid_status
+        max_status_length = valid_status.map(&:length).max
         format_string = "%-#{max_status_length}s | %s\n"
 
         puts "Database: #{database_name}\n"
@@ -94,7 +94,7 @@ namespace :gitlab do
             migration.job_arguments.to_json
           ].join(',')
 
-          printf(format_string, migration.status, identification_fields)
+          printf(format_string, migration.status_name, identification_fields)
         end
       end
     end

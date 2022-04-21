@@ -104,7 +104,7 @@ Geo secondary sites have a [Geo tracking database](https://gitlab.com/gitlab-org
 - [ ] Run Geo tracking database migrations:
 
   ```shell
-  bin/rake geo:db:migrate
+  bin/rake db:migrate:geo
   ```
 
 - [ ] Be sure to commit the relevant changes in `ee/db/geo/structure.sql`
@@ -193,6 +193,8 @@ That's all of the required database changes.
     include ::Geo::ReplicableModel
     include ::Geo::VerifiableModel
 
+    delegate(*::Geo::VerificationState::VERIFICATION_METHODS, to: :cool_widget_state)
+
     with_replicator Geo::CoolWidgetReplicator
 
     mount_uploader :file, CoolWidgetUploader
@@ -200,16 +202,6 @@ That's all of the required database changes.
     has_one :cool_widget_state, autosave: false, inverse_of: :cool_widget, class_name: 'Geo::CoolWidgetState'
 
     after_save :save_verification_details
-
-    delegate :verification_retry_at, :verification_retry_at=,
-             :verified_at, :verified_at=,
-             :verification_checksum, :verification_checksum=,
-             :verification_failure, :verification_failure=,
-             :verification_retry_count, :verification_retry_count=,
-             :verification_state=, :verification_state,
-             :verification_started_at=, :verification_started_at,
-             to: :cool_widget_state
-    ...
 
     scope :with_verification_state, ->(state) { joins(:cool_widget_state).where(cool_widget_states: { verification_state: verification_state_value(state) }) }
     scope :checksummed, -> { joins(:cool_widget_state).where.not(cool_widget_states: { verification_checksum: nil } ) }
@@ -487,6 +479,7 @@ That's all of the required database changes.
   module Geo
     class CoolWidgetState < ApplicationRecord
       include EachBatch
+      include ::Geo::VerificationStateDefinition
 
       self.primary_key = :cool_widget_id
 
@@ -680,6 +673,41 @@ The GraphQL API is used by `Admin > Geo > Replication Details` views, and is dir
 
 Individual Cool Widget replication and verification data should now be available via the GraphQL API.
 
+#### Step 4. Handle batch destroy
+
+If batch destroy logic is implemented for a replicable, then that logic must be "replicated" by Geo secondaries. The easiest way to do this is use `Geo::BatchEventCreateWorker` to bulk insert a delete event for each replicable.
+
+For example, if `FastDestroyAll` is used, then you may be able to [use `begin_fast_destroy` and `finalize_fast_destroy` hooks, like we did for uploads](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/69763).
+
+Or if a special service is used to batch delete records and their associated data, then you probably need to [hook into that service, like we did for job artifacts](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/79530).
+
+As illustrated by the above two examples, batch destroy logic cannot be handled automatically by Geo secondaries without restricting the way other teams perform batch destroys. It is up to you to produce `Geo::BatchEventCreateWorker` attributes before the records are deleted, and then enqueue `Geo::BatchEventCreateWorker` after the records are deleted.
+
+- [ ] Ensure that any batch destroy of this replicable is replicated to secondary sites
+- [ ] Regardless of implementation details, please verify in specs that when the parent object is removed, the new `Geo::Event` records are created:
+
+```ruby
+  describe '#destroy' do
+    subject { create(:cool_widget) }
+
+    context 'when running in a Geo primary node' do
+      let_it_be(:primary) { create(:geo_node, :primary) }
+      let_it_be(:secondary) { create(:geo_node) }
+
+      it 'logs an event to the Geo event log when bulk removal is used', :sidekiq_inline do
+        stub_current_geo_node(primary)
+
+        expect { subject.project.destroy! }.to change(Geo::Event.where(replicable_name: :cool_widget, event_name: :deleted), :count).by(1)
+
+        payload = Geo::Event.where(replicable_name: :cool_widget, event_name: :deleted).last.payload
+
+        expect(payload['model_record_id']).to eq(subject.id)
+        expect(payload['blob_path']).to eq(subject.relative_path)
+        expect(payload['uploader_class']).to eq('CoolWidgetUploader')
+      end
+    end
+  end
+```
 ### Release Geo support of Cool Widgets
 
 - [ ] In the rollout issue you created when creating the feature flag, modify the Roll Out Steps:

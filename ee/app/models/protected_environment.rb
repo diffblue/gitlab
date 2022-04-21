@@ -6,8 +6,10 @@ class ProtectedEnvironment < ApplicationRecord
   belongs_to :project
   belongs_to :group, inverse_of: :protected_environments
   has_many :deploy_access_levels, inverse_of: :protected_environment
+  has_many :approval_rules, class_name: 'ProtectedEnvironments::ApprovalRule', inverse_of: :protected_environment
 
   accepts_nested_attributes_for :deploy_access_levels, allow_destroy: true
+  accepts_nested_attributes_for :approval_rules, allow_destroy: true
 
   validates :deploy_access_levels, length: { minimum: 1 }
   validates :name, presence: true
@@ -24,16 +26,32 @@ class ProtectedEnvironment < ApplicationRecord
   end
 
   class << self
-    def deploy_access_levels_by_user(user)
-      ProtectedEnvironment::DeployAccessLevel
-        .where(protected_environment_id: select(:id))
-        .where(user: user)
+    def revoke_user(user)
+      transaction do
+        ProtectedEnvironment::DeployAccessLevel
+          .where(protected_environment_id: select(:id))
+          .where(user: user)
+          .delete_all
+
+        ProtectedEnvironments::ApprovalRule
+          .where(protected_environment_id: select(:id))
+          .where(user: user)
+          .delete_all
+      end
     end
 
-    def deploy_access_levels_by_group(group)
-      ProtectedEnvironment::DeployAccessLevel
-        .where(protected_environment_id: select(:id))
-        .where(group: group)
+    def revoke_group(group)
+      transaction do
+        ProtectedEnvironment::DeployAccessLevel
+          .where(protected_environment_id: select(:id))
+          .where(group: group)
+          .delete_all
+
+        ProtectedEnvironments::ApprovalRule
+          .where(protected_environment_id: select(:id))
+          .where(group: group)
+          .delete_all
+      end
     end
 
     def for_environment(environment)
@@ -41,12 +59,21 @@ class ProtectedEnvironment < ApplicationRecord
 
       key = "protected_environment:for_environment:#{environment.id}"
 
-      ::Gitlab::SafeRequestStore.fetch(key) do
-        from_union([
-          where(project: environment.project_id, name: environment.name),
-          where(group: environment.project.ancestors_upto_ids, name: environment.tier)
-        ])
-      end
+      ::Gitlab::SafeRequestStore.fetch(key) { for_environments([environment]) }
+    end
+
+    def for_environments(environments)
+      raise ArgumentError, 'Environments must be in the same project' if environments.map(&:project_id).uniq.size > 1
+
+      project_id = environments.first.project_id
+      group_ids = environments.first.project.ancestors_upto_ids
+      names = environments.map(&:name)
+      tiers = environments.map(&:tier)
+
+      from_union([
+        where(project: project_id, name: names),
+        where(group: group_ids, name: tiers)
+      ])
     end
   end
 
@@ -63,19 +90,19 @@ class ProtectedEnvironment < ApplicationRecord
     end
   end
 
-  private
-
-  def valid_tier_name
-    unless Environment.tiers[name]
-      errors.add(:name, "must be one of environment tiers: #{Environment.tiers.keys.join(', ')}.")
-    end
-  end
-
   def project_level?
     project_id.present?
   end
 
   def group_level?
     group_id.present?
+  end
+
+  private
+
+  def valid_tier_name
+    unless Environment.tiers[name]
+      errors.add(:name, "must be one of environment tiers: #{Environment.tiers.keys.join(', ')}.")
+    end
   end
 end

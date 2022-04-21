@@ -10,7 +10,12 @@ module Mutations
 
       field :id, SiteProfileID,
             null: true,
-            description: 'ID of the site profile.'
+            description: 'ID of the site profile.',
+            deprecated: { reason: 'use `dastSiteProfile.id` field', milestone: '14.10' }
+
+      field :dast_site_profile, ::Types::DastSiteProfileType,
+            null: true,
+            description: 'Site profile object.'
 
       argument :full_path, GraphQL::Types::ID,
                required: false,
@@ -46,7 +51,8 @@ module Mutations
           auth_username_field: auth_params[:username_field],
           auth_password_field: auth_params[:password_field],
           auth_username: auth_params[:username],
-          auth_password: auth_params[:password]
+          auth_password: auth_params[:password],
+          auth_submit_field: auth_params[:submit_field]
         }.compact
 
         if Feature.enabled?(:dast_api_scanner, dast_site_profile.project, default_enabled: :yaml)
@@ -55,7 +61,7 @@ module Mutations
 
         result = ::AppSec::Dast::SiteProfiles::UpdateService.new(dast_site_profile.project, current_user).execute(**dast_site_profile_params)
 
-        { id: result.payload.try(:to_global_id), errors: result.errors }
+        { id: result.payload.try(:to_global_id), dast_site_profile: result.payload, errors: result.errors }
       end
 
       private

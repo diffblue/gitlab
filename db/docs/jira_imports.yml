@@ -1,0 +1,9 @@
+---
+table_name: jira_imports
+classes:
+- JiraImportState
+feature_categories:
+- integrations
+description: Track Jira issue import progress into GitLab issues.
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/28108
+milestone: '12.10'

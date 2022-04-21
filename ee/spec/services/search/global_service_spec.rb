@@ -396,21 +396,9 @@ RSpec.describe Search::GlobalService do
     let_it_be(:project) { create(:project, :public, :repository) }
 
     context 'with notes on issues' do
-      let(:noteable) { create :issue, project: project }
+      let(:noteable) { create(:issue, project: project) }
 
-      it_behaves_like 'search notes shared examples', :note_on_issue
-    end
-
-    context 'with notes on merge requests' do
-      let(:noteable) { create :merge_request, target_project: project, source_project: project }
-
-      it_behaves_like 'search notes shared examples', :note_on_merge_request
-    end
-
-    context 'with notes on commits' do
-      let(:noteable) { create(:commit, project: project) }
-
-      it_behaves_like 'search notes shared examples', :note_on_commit
+      it_behaves_like 'search confidential notes shared examples', :note_on_issue
     end
   end
 end

@@ -88,28 +88,48 @@ node running Rails (Puma, Sidekiq, or Geo Log Cursor) on the Geo **secondary** s
 sudo gitlab-rake geo:status
 ```
 
-Example output:
+The output includes:
+
+- a count of "failed" items if any failures occurred
+- the percentage of "succeeded" items, relative to the "total"
+
+Example:
 
 ```plaintext
 http://secondary.example.com/
 -----------------------------------------------------
-                        GitLab Version: 11.10.4-ee
+                        GitLab Version: 14.9.2-ee
                               Geo Role: Secondary
                          Health Status: Healthy
-                          Repositories: 289/289 (100%)
-                 Verified Repositories: 289/289 (100%)
-                                 Wikis: 289/289 (100%)
-                        Verified Wikis: 289/289 (100%)
-                           LFS Objects: 8/8 (100%)
-                           Attachments: 5/5 (100%)
-                      CI job artifacts: 0/0 (0%)
-                  Repositories Checked: 0/289 (0%)
+                          Repositories: succeeded 12345 / total 12345 (100%)
+                 Verified Repositories: succeeded 12345 / total 12345 (100%)
+                                 Wikis: succeeded 6789 / total 6789 (100%)
+                        Verified Wikis: succeeded 6789 / total 6789 (100%)
+                           Attachments: succeeded 4 / total 4 (100%)
+                      CI job artifacts: succeeded 0 / total 0 (0%)
+                   Design repositories: succeeded 1 / total 1 (100%)
+                           LFS Objects: failed 1 / succeeded 2 / total 3 (67%)
+                   Merge Request Diffs: succeeded 0 / total 0 (0%)
+                         Package Files: failed 1 / succeeded 2 / total 3 (67%)
+              Terraform State Versions: failed 1 / succeeded 2 / total 3 (67%)
+                  Snippet Repositories: failed 1 / succeeded 2 / total 3 (67%)
+               Group Wiki Repositories: succeeded 4 / total 4 (100%)
+                    Pipeline Artifacts: failed 3 / succeeded 0 / total 3 (0%)
+                     Pages Deployments: succeeded 0 / total 0 (0%)
+                  Repositories Checked: failed 5 / succeeded 0 / total 5 (0%)
+                Package Files Verified: succeeded 0 / total 10 (0%)
+     Terraform State Versions Verified: succeeded 0 / total 10 (0%)
+         Snippet Repositories Verified: succeeded 99 / total 100 (99%)
+           Pipeline Artifacts Verified: succeeded 0 / total 10 (0%)
                          Sync Settings: Full
               Database replication lag: 0 seconds
-       Last event ID seen from primary: 10215 (about 2 minutes ago)
-     Last event ID processed by cursor: 10215 (about 2 minutes ago)
-                Last status report was: 2 minutes ago
+       Last event ID seen from primary: 12345 (about 2 minutes ago)
+     Last event ID processed by cursor: 12345 (about 2 minutes ago)
+                Last status report was: 1 minute ago
 ```
+
+To find more details about failed items, check
+[the `gitlab-rails/geo.log` file](../../troubleshooting/log_parsing.md#find-most-common-geo-sync-errors)
 
 ### Check if PostgreSQL replication is working
 
@@ -617,9 +637,9 @@ to start again from scratch, there are a few steps that can help you:
 1. Reset the Tracking Database.
 
    ```shell
-   gitlab-rake geo:db:drop  # on a secondary app node
+   gitlab-rake db:drop:geo  # on a secondary app node
    gitlab-ctl reconfigure   # on the tracking database node
-   gitlab-rake geo:db:setup # on a secondary app node
+   gitlab-rake db:setup:geo # on a secondary app node
    ```
 
 1. Restart previously stopped services.
@@ -1022,7 +1042,7 @@ Make sure you follow the [Geo database replication](../setup/database.md) instru
 If you are using Omnibus GitLab installation, something might have failed during upgrade. You can:
 
 - Run `sudo gitlab-ctl reconfigure`.
-- Manually trigger the database migration by running: `sudo gitlab-rake geo:db:migrate` as root on the **secondary** node.
+- Manually trigger the database migration by running: `sudo gitlab-rake db:migrate:geo` as root on the **secondary** node.
 
 ### GitLab indicates that more than 100% of repositories were synced
 

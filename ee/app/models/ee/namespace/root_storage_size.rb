@@ -40,10 +40,12 @@ module EE
 
     def enforce_limit?
       return false if Date.current < ENFORCEMENT_DATE
+      return false if root_namespace.opensource_plan?
+      return false if gitlab_subscription.start_date < EFFECTIVE_DATE
 
-      return true unless gitlab_subscription&.has_a_paid_hosted_plan?
+      return ::Feature.enabled?(:enforce_storage_limit_for_paid, root_namespace, default_enabled: :yaml) if root_namespace.paid?
 
-      gitlab_subscription.start_date >= EFFECTIVE_DATE
+      ::Feature.enabled?(:enforce_storage_limit_for_free, root_namespace, default_enabled: :yaml)
     end
 
     private

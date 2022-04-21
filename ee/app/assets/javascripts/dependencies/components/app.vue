@@ -137,7 +137,7 @@ export default {
             :href="documentationPath"
             :aria-label="__('Dependencies help page link')"
           >
-            <gl-icon name="question" />
+            <gl-icon name="question-o" />
           </gl-link>
         </h2>
         <p class="mb-0">

@@ -108,7 +108,7 @@ export default {
       return this.subscription.type === subscriptionTypes.ONLINE_CLOUD;
     },
     isLicenseFileType() {
-      return this.subscription.type === subscriptionTypes.LICENSE_FILE;
+      return this.subscription.type === subscriptionTypes.LEGACY_LICENSE;
     },
     shouldShowFooter() {
       return (

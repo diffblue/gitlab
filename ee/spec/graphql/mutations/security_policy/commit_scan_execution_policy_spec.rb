@@ -7,36 +7,84 @@ RSpec.describe Mutations::SecurityPolicy::CommitScanExecutionPolicy do
   describe '#resolve' do
     let_it_be(:user) { create(:user) }
     let_it_be(:project) { create(:project, :repository, namespace: user.namespace) }
-    let_it_be(:policy_management_project) { create(:project, :repository, namespace: user.namespace) }
-    let_it_be(:policy_configuration) { create(:security_orchestration_policy_configuration, security_policy_management_project: policy_management_project, project: project) }
+    let_it_be(:namespace) { create(:group) }
+    let_it_be(:project_policy_management_project) { create(:project, :repository, namespace: user.namespace) }
+    let_it_be(:namespace_policy_management_project) { create(:project, :repository, namespace: namespace) }
     let_it_be(:operation_mode) { Types::MutationOperationModeEnum.enum[:append] }
     let_it_be(:policy_name) { 'Test Policy' }
     let_it_be(:policy_yaml) { build(:scan_execution_policy, name: policy_name).merge(type: 'scan_execution_policy').to_yaml }
 
-    subject { mutation.resolve(project_path: project.full_path, name: policy_name, policy_yaml: policy_yaml, operation_mode: operation_mode) }
+    subject { mutation.resolve(full_path: container.full_path, name: policy_name, policy_yaml: policy_yaml, operation_mode: operation_mode) }
 
-    context 'when permission is set for user' do
-      before do
-        project.add_maintainer(user)
+    shared_context 'commits scan execution policies' do
+      context 'when permission is set for user' do
+        before do
+          container.add_maintainer(user)
 
-        stub_licensed_features(security_orchestration_policies: true)
+          stub_licensed_features(security_orchestration_policies: true)
+        end
+
+        it 'returns branch name' do
+          result = subject
+
+          expect(result[:errors]).to be_empty
+          expect(result[:branch]).not_to be_empty
+        end
       end
 
-      it 'returns branch name' do
-        result = subject
+      context 'when permission is not enabled' do
+        before do
+          stub_licensed_features(security_orchestration_policies: false)
+        end
 
-        expect(result[:errors]).to be_empty
-        expect(result[:branch]).not_to be_empty
+        it 'raises exception' do
+          expect { subject }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
+        end
       end
     end
 
-    context 'when permission is not enabled' do
+    context 'when both fullPath and projectPath are not provided' do
+      subject { mutation.resolve(name: policy_name, policy_yaml: policy_yaml, operation_mode: operation_mode) }
+
       before do
-        stub_licensed_features(security_orchestration_policies: false)
+        stub_licensed_features(security_orchestration_policies: true)
       end
 
       it 'raises exception' do
-        expect { subject }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
+        expect { subject }.to raise_error(Gitlab::Graphql::Errors::ArgumentError)
+      end
+    end
+
+    context 'for project' do
+      let_it_be_with_refind(:policy_configuration) { create(:security_orchestration_policy_configuration, security_policy_management_project: project_policy_management_project, project: project) }
+
+      let(:container) { project }
+
+      it_behaves_like 'commits scan execution policies'
+    end
+
+    context 'for namespace' do
+      let_it_be_with_refind(:policy_configuration) { create(:security_orchestration_policy_configuration, :namespace, security_policy_management_project: namespace_policy_management_project, namespace: namespace) }
+
+      let(:container) { namespace }
+
+      context 'when feature is enabled' do
+        before do
+          stub_feature_flags(group_level_security_policies: namespace)
+        end
+
+        it_behaves_like 'commits scan execution policies'
+      end
+
+      context 'when feature is disabled' do
+        before do
+          stub_licensed_features(security_orchestration_policies: true)
+          stub_feature_flags(group_level_security_policies: false)
+        end
+
+        it 'raises exception' do
+          expect { subject }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
+        end
       end
     end
   end

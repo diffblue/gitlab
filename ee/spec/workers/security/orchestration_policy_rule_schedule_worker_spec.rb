@@ -4,7 +4,8 @@ require 'spec_helper'
 
 RSpec.describe Security::OrchestrationPolicyRuleScheduleWorker do
   describe '#perform' do
-    let_it_be(:schedule) { create(:security_orchestration_policy_rule_schedule) }
+    let_it_be(:security_orchestration_policy_configuration) { create(:security_orchestration_policy_configuration) }
+    let_it_be(:schedule) { create(:security_orchestration_policy_rule_schedule, security_orchestration_policy_configuration: security_orchestration_policy_configuration) }
 
     subject(:worker) { described_class.new }
 
@@ -13,13 +14,35 @@ RSpec.describe Security::OrchestrationPolicyRuleScheduleWorker do
         schedule.update_column(:next_run_at, 1.minute.ago)
       end
 
-      it 'executes the rule schedule service' do
-        expect_next_instance_of(Security::SecurityOrchestrationPolicies::RuleScheduleService,
-                                container: schedule.security_orchestration_policy_configuration.project, current_user: schedule.owner) do |service|
-          expect(service).to receive(:execute)
+      context 'when schedule is created for security orchestration policy configuration in project' do
+        it 'executes the rule schedule service' do
+          expect_next_instance_of(Security::SecurityOrchestrationPolicies::RuleScheduleService,
+                                  container: schedule.security_orchestration_policy_configuration.project, current_user: schedule.owner) do |service|
+            expect(service).to receive(:execute)
+          end
+
+          worker.perform
         end
 
-        worker.perform
+        it 'updates next run at value' do
+          worker.perform
+
+          expect(schedule.reload.next_run_at).to be > Time.zone.now
+        end
+      end
+
+      context 'when schedule is created for security orchestration policy configuration in namespace' do
+        let_it_be(:namespace) { create(:group) }
+
+        before do
+          security_orchestration_policy_configuration.update!(namespace: namespace, project: nil)
+        end
+
+        it 'schedules the OrchestrationPolicyRuleScheduleNamespaceWorker for namespace' do
+          expect(Security::OrchestrationPolicyRuleScheduleNamespaceWorker).to receive(:perform_async).with(schedule.id)
+
+          worker.perform
+        end
       end
     end
 
@@ -28,7 +51,7 @@ RSpec.describe Security::OrchestrationPolicyRuleScheduleWorker do
         schedule.update_column(:next_run_at, 1.minute.from_now)
       end
 
-      it 'executes the rule schedule service' do
+      it 'does not execute the rule schedule service' do
         expect(Security::SecurityOrchestrationPolicies::RuleScheduleService).not_to receive(:new)
 
         worker.perform

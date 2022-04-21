@@ -10,9 +10,9 @@ import { helpPagePath } from '~/helpers/help_page_helper';
 import SeverityBadge from 'ee/vue_shared/security_reports/components/severity_badge.vue';
 import getComplianceViolationsQuery from '../graphql/compliance_violations.query.graphql';
 import { mapViolations } from '../graphql/mappers';
-import { DEFAULT_SORT, GRAPHQL_PAGE_SIZE } from '../constants';
+import { DEFAULT_SORT, GRAPHQL_PAGE_SIZE, DEFAULT_PAGINATION_CURSORS } from '../constants';
 import { parseViolationsQueryFilter } from '../utils';
-import MergeCommitsExportButton from './merge_requests/merge_commits_export_button.vue';
+import MergeCommitsExportButton from './shared/merge_commits_export_button.vue';
 import MergeRequestDrawer from './drawer.vue';
 import ViolationReason from './violations/reason.vue';
 import ViolationFilter from './violations/filter.vue';
@@ -60,15 +60,14 @@ export default {
         list: [],
         pageInfo: {},
       },
-      showDrawer: false,
+      drawerId: null,
       drawerMergeRequest: {},
       drawerProject: {},
       sortBy,
       sortDesc,
       sortParam,
       paginationCursors: {
-        before: null,
-        after: null,
+        ...DEFAULT_PAGINATION_CURSORS,
       },
     };
   },
@@ -80,7 +79,6 @@ export default {
           fullPath: this.groupPath,
           filters: parseViolationsQueryFilter(this.urlQuery),
           sort: this.sortParam,
-          first: GRAPHQL_PAGE_SIZE,
           ...this.paginationCursors,
         };
       },
@@ -108,6 +106,9 @@ export default {
       const { hasPreviousPage, hasNextPage } = this.violations.pageInfo || {};
       return hasPreviousPage || hasNextPage;
     },
+    showDrawer() {
+      return this.drawerId !== null;
+    },
   },
   methods: {
     handleSortChanged(sortState) {
@@ -115,24 +116,21 @@ export default {
       this.updateUrlQuery({ ...this.urlQuery, sort: this.sortParam });
     },
     toggleDrawer(rows) {
-      const { mergeRequest } = rows[0] || {};
+      const { id, mergeRequest } = rows[0] || {};
 
-      if (!mergeRequest || this.isCurrentDrawer(mergeRequest)) {
+      if (!mergeRequest || this.drawerId === id) {
         this.closeDrawer();
       } else {
-        this.openDrawer(mergeRequest);
+        this.openDrawer(id, mergeRequest);
       }
     },
-    isCurrentDrawer(mergeRequest) {
-      return this.showDrawer && mergeRequest.id === this.drawerMergeRequest.id;
-    },
-    openDrawer(mergeRequest) {
-      this.showDrawer = true;
+    openDrawer(id, mergeRequest) {
+      this.drawerId = id;
       this.drawerMergeRequest = mergeRequest;
       this.drawerProject = mergeRequest.project;
     },
     closeDrawer() {
-      this.showDrawer = false;
+      this.drawerId = null;
       // Refs are required by BTable to manipulate the selection
       // issue: https://gitlab.com/gitlab-org/gitlab-ui/-/issues/1531
       this.$refs.table.$children[0].clearSelected();
@@ -149,20 +147,21 @@ export default {
     },
     resetPagination() {
       this.paginationCursors = {
-        before: null,
-        after: null,
+        ...DEFAULT_PAGINATION_CURSORS,
       };
     },
     loadPrevPage(startCursor) {
       this.paginationCursors = {
         before: startCursor,
         after: null,
+        last: GRAPHQL_PAGE_SIZE,
       };
     },
     loadNextPage(endCursor) {
       this.paginationCursors = {
         before: null,
         after: endCursor,
+        first: GRAPHQL_PAGE_SIZE,
       };
     },
   },
@@ -210,9 +209,7 @@ export default {
     next: __('Next'),
     viewDetailsBtn: __('View details'),
   },
-  documentationPath: helpPagePath('user/compliance/compliance_report/index.md', {
-    anchor: 'approval-status-and-separation-of-duties',
-  }),
+  documentationPath: helpPagePath('user/compliance/compliance_report/index.md'),
   DRAWER_Z_INDEX,
 };
 </script>

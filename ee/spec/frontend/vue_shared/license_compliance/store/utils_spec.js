@@ -14,7 +14,7 @@ import { licenseReport } from '../mock_data';
 describe('utils', () => {
   describe('normalizeLicense', () => {
     it('should convert `approval_status` to `approvalStatus`', () => {
-      const src = { name: 'Foo', approval_status: 'approved', id: 3 };
+      const src = { name: 'Foo', approval_status: 'allowed', id: 3 };
       const result = normalizeLicense(src);
 
       expect(result.approvalStatus).toBe(src.approval_status);
@@ -65,11 +65,11 @@ describe('utils', () => {
   });
 
   describe('getIssueStatusFromLicenseStatus', () => {
-    it('returns SUCCESS status for approved license status', () => {
+    it('returns SUCCESS status for allowed license status', () => {
       expect(getIssueStatusFromLicenseStatus(LICENSE_APPROVAL_STATUS.ALLOWED)).toBe(STATUS_SUCCESS);
     });
 
-    it('returns FAILED status for blacklisted licenses', () => {
+    it('returns FAILED status for denied licenses', () => {
       expect(getIssueStatusFromLicenseStatus(LICENSE_APPROVAL_STATUS.DENIED)).toBe(STATUS_FAILED);
     });
 

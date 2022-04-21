@@ -18,9 +18,9 @@ RSpec.describe Resolvers::Admin::CloudLicenses::SubscriptionFutureEntriesResolve
       it 'raises error' do
         unauthorized_user = create(:user)
 
-        expect do
+        expect_graphql_error_to_be_created(Gitlab::Graphql::Errors::ResourceNotAvailable) do
           resolve_entries(current_user: unauthorized_user)
-        end.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
+        end
       end
     end
 
@@ -57,7 +57,7 @@ RSpec.describe Resolvers::Admin::CloudLicenses::SubscriptionFutureEntriesResolve
         expect(result).to match(
           [
             hash_including(
-              'type' => License::CLOUD_LICENSE_TYPE,
+              'type' => License::ONLINE_CLOUD_TYPE,
               'plan' => 'ultimate',
               'name' => 'User Example',
               'email' => 'user@example.com',
@@ -73,8 +73,8 @@ RSpec.describe Resolvers::Admin::CloudLicenses::SubscriptionFutureEntriesResolve
       context 'cloud_license_enabled is false' do
         let(:cloud_license_enabled) { false }
 
-        it 'returns type as license_file' do
-          expect(result.first).to include('type' => License::LICENSE_FILE_TYPE)
+        it 'returns type as legacy_license' do
+          expect(result.first).to include('type' => License::LEGACY_LICENSE_TYPE)
         end
       end
 

@@ -2,7 +2,7 @@
 
 module Types
   module Security
-    class TrainingUrlType < BaseObject # rubocop:disable Graphql/AuthorizeTypes (This can be only accessed through VulnerabilityType)
+    class TrainingUrlType < BaseObject # rubocop:disable Graphql/AuthorizeTypes (Authorization is done in resolver layer)
       graphql_name 'SecurityTrainingUrl'
       description 'Represents a URL related to a security training'
 
@@ -14,6 +14,9 @@ module Types
 
       field :url, GraphQL::Types::String, null: true,
             description: 'URL of the link for security training content.'
+
+      field :identifier, GraphQL::Types::String, null: true,
+            description: 'Name of the vulnerability identifier.'
     end
   end
 end

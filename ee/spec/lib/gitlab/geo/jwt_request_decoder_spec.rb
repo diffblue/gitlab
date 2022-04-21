@@ -60,12 +60,23 @@ RSpec.describe Gitlab::Geo::JwtRequestDecoder do
       travel_to(2.minutes.ago) { expect { subject.decode }.to raise_error(Gitlab::Geo::InvalidSignatureTimeError) }
     end
 
-    it 'raises invalid decryption key error' do
-      allow_next_instance_of(described_class) do |instance|
-        allow(instance).to receive(:decode_auth_header).and_raise(Gitlab::Geo::InvalidDecryptionKeyError)
+    context 'surfaces raised errors' do
+      where(:raised_error, :expected_error) do
+        [
+          [Gitlab::Geo::InvalidDecryptionKeyError, Gitlab::Geo::InvalidDecryptionKeyError],
+          [OpenSSL::Cipher::CipherError, Gitlab::Geo::InvalidDecryptionKeyError]
+        ]
       end
 
-      expect { subject.decode }.to raise_error(Gitlab::Geo::InvalidDecryptionKeyError)
+      with_them do
+        it 'raises expected error' do
+          allow_next_instance_of(Gitlab::Geo::SignedData) do |instance|
+            allow(instance).to receive(:decode_data).and_raise(raised_error)
+          end
+
+          expect { subject.decode }.to raise_error(expected_error)
+        end
+      end
     end
   end
 

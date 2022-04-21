@@ -50,7 +50,7 @@ module QA
           merge_request.has_pipeline_status?('passed')
           merge_request.merge!
         end
-        Flow::Pipeline.wait_for_latest_pipeline(pipeline_condition: 'succeeded')
+        Flow::Pipeline.wait_for_latest_pipeline(status: 'passed')
 
         @label = Resource::ProjectLabel.fabricate_via_api! do |new_label|
           new_label.project = @project

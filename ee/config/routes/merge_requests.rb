@@ -6,6 +6,7 @@ resources :merge_requests, only: [], constraints: { id: /\d+/ } do
     delete '/descriptions/:version_id', action: :delete_description_version, as: :delete_description_version
     get :metrics_reports
     get :license_scanning_reports
+    get :license_scanning_reports_collapsed
     get :container_scanning_reports
     get :dependency_scanning_reports
     get :sast_reports

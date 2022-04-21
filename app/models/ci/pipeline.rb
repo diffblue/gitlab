@@ -198,7 +198,7 @@ module Ci
       # Create a separate worker for each new operation
 
       before_transition [:created, :waiting_for_resource, :preparing, :pending] => :running do |pipeline|
-        pipeline.started_at = Time.current
+        pipeline.started_at ||= Time.current
       end
 
       before_transition any => [:success, :failed, :canceled] do |pipeline|
@@ -824,6 +824,8 @@ module Ci
           variables.append(key: 'CI_OPEN_MERGE_REQUESTS', value: open_merge_requests_refs.join(','))
         end
 
+        variables.append(key: 'CI_GITLAB_FIPS_MODE', value: 'true') if Gitlab::FIPS.enabled?
+
         variables.append(key: 'CI_KUBERNETES_ACTIVE', value: 'true') if has_kubernetes_active?
         variables.append(key: 'CI_DEPLOY_FREEZE', value: 'true') if freeze_period?
 
@@ -836,6 +838,8 @@ module Ci
     def predefined_commit_variables
       strong_memoize(:predefined_commit_variables) do
         Gitlab::Ci::Variables::Collection.new.tap do |variables|
+          next variables unless sha.present?
+
           variables.append(key: 'CI_COMMIT_SHA', value: sha)
           variables.append(key: 'CI_COMMIT_SHORT_SHA', value: short_sha)
           variables.append(key: 'CI_COMMIT_BEFORE_SHA', value: before_sha)
@@ -955,7 +959,7 @@ module Ci
       Ci::Build.latest.where(pipeline: self_and_descendants)
     end
 
-    def environments_in_self_and_descendants
+    def environments_in_self_and_descendants(deployment_status: nil)
       # We limit to 100 unique environments for application safety.
       # See: https://gitlab.com/gitlab-org/gitlab/-/issues/340781#note_699114700
       expanded_environment_names =
@@ -965,7 +969,7 @@ module Ci
                                       .limit(100)
                                       .pluck(:expanded_environment_name)
 
-      Environment.where(project: project, name: expanded_environment_names).with_deployment(sha)
+      Environment.where(project: project, name: expanded_environment_names).with_deployment(sha, status: deployment_status)
     end
 
     # With multi-project and parent-child pipelines
@@ -974,7 +978,7 @@ module Ci
     end
 
     # With multi-project and parent-child pipelines
-    def self_with_upstreams_and_downstreams
+    def all_pipelines_in_hierarchy
       object_hierarchy.all_objects
     end
 
@@ -988,12 +992,19 @@ module Ci
       object_hierarchy(project_condition: :same).base_and_descendants
     end
 
+    # Follow the parent-child relationships and return the top-level parent
     def root_ancestor
       return self unless child?
 
       object_hierarchy(project_condition: :same)
         .base_and_ancestors(hierarchy_order: :desc)
         .first
+    end
+
+    # Follow the upstream pipeline relationships, regardless of multi-project or
+    # parent-child, and return the top-level ancestor.
+    def upstream_root
+      object_hierarchy.base_and_ancestors(hierarchy_order: :desc).first
     end
 
     def bridge_triggered?
@@ -1282,6 +1293,12 @@ module Ci
     def authorized_cluster_agents
       strong_memoize(:authorized_cluster_agents) do
         ::Clusters::AgentAuthorizationsFinder.new(project).execute.map(&:agent)
+      end
+    end
+
+    def has_expired_test_reports?
+      strong_memoize(:artifacts_expired) do
+        !has_reports?(::Ci::JobArtifact.test_reports.not_expired)
       end
     end
 

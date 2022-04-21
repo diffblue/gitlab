@@ -9,7 +9,7 @@ import {
   defaultEpicSort,
   epicIidPattern,
 } from '~/sidebar/constants';
-import updateStatusMutation from '~/sidebar/queries/updateStatus.mutation.graphql';
+import updateStatusMutation from '~/sidebar/queries/update_status.mutation.graphql';
 import epicAncestorsQuery from './queries/epic_ancestors.query.graphql';
 import groupEpicsQuery from './queries/group_epics.query.graphql';
 import groupIterationsQuery from './queries/group_iterations.query.graphql';
@@ -48,7 +48,7 @@ export const iterationSelectTextMap = {
   iterationSelectFail: __('Failed to set iteration on this issue. Please try again.'),
   currentIterationFetchError: __('Failed to fetch the iteration for this issue. Please try again.'),
   iterationsFetchError: __('Failed to fetch the iterations for the group. Please try again.'),
-  noIterationsFound: __('No iterations found'),
+  noIterationsFound: s__('Iterations|No iterations found'),
 };
 
 export const noIteration = null;

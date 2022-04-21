@@ -158,8 +158,9 @@ RSpec.describe Resolvers::EpicsResolver do
             it 'returns an error' do
               error_message = "User must be authenticated to include the `search` argument."
 
-              expect { resolve_epics(search: 'created') }
-                .to raise_error(Gitlab::Graphql::Errors::ArgumentError, error_message)
+              expect_graphql_error_to_be_created(Gitlab::Graphql::Errors::ArgumentError, error_message) do
+                resolve_epics(search: 'created')
+              end
             end
           end
 

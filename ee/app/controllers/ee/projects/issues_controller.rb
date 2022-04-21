@@ -17,9 +17,20 @@ module EE
 
         before_action only: :show do
           push_licensed_feature(:escalation_policies, project)
+
+          if project.licensed_feature_available?(:incident_timeline_events)
+            push_licensed_feature(:incident_timeline_events)
+          end
         end
 
         before_action :redirect_if_test_case, only: [:show]
+
+        before_action do
+          push_force_frontend_feature_flag(
+            :iteration_cadences,
+            project&.group&.iteration_cadences_feature_flag_enabled?
+          )
+        end
 
         feature_category :team_planning, [:delete_description_version, :description_diff]
       end

@@ -5,6 +5,7 @@ import {
 import {
   TYPE_EPIC_BOARD,
   TYPE_ITERATION,
+  TYPE_ITERATIONS_CADENCE,
   TYPE_EPIC,
   TYPE_MILESTONE,
   TYPE_USER,
@@ -66,7 +67,7 @@ function fullIterationCadenceId(id) {
     return null;
   }
 
-  return `gid://gitlab/Iterations::Cadence/${getIdFromGraphQLId(id)}`;
+  return convertToGraphQLId(TYPE_ITERATIONS_CADENCE, getIdFromGraphQLId(id));
 }
 
 export function fullUserId(userId) {
@@ -266,6 +267,7 @@ export const FiltersInfo = {
   },
   iterationCadenceId: {
     negatedSupport: false,
+    transform: (iterationCadenceId) => fullIterationCadenceId(iterationCadenceId),
   },
   weight: {
     negatedSupport: true,

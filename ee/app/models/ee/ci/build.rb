@@ -58,6 +58,19 @@ module EE
         end
       end
 
+      class_methods do
+        extend ::Gitlab::Utils::Override
+
+        override :clone_accessors
+        def clone_accessors
+          (super + extra_accessors).freeze
+        end
+
+        def extra_accessors
+          (super + %i[secrets]).freeze
+        end
+      end
+
       override :variables
       def variables
         strong_memoize(:variables) do
@@ -183,7 +196,11 @@ module EE
       end
 
       def validate_schema?
-        variables[VALIDATE_SCHEMA_VARIABLE_NAME]&.value&.casecmp?('true')
+        if ::Feature.enabled?(:enforce_security_report_validation, project)
+          true
+        else
+          variables[VALIDATE_SCHEMA_VARIABLE_NAME]&.value&.casecmp?('true')
+        end
       end
 
       private

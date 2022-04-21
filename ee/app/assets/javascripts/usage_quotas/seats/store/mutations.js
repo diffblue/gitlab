@@ -12,6 +12,11 @@ export default {
     state.hasError = false;
   },
 
+  [types.REQUEST_GITLAB_SUBSCRIPTION](state) {
+    state.isLoading = true;
+    state.hasError = false;
+  },
+
   [types.RECEIVE_BILLABLE_MEMBERS_SUCCESS](state, payload) {
     const { data, headers } = payload;
     state.members = data;
@@ -23,7 +28,23 @@ export default {
     state.isLoading = false;
   },
 
+  [types.RECEIVE_GITLAB_SUBSCRIPTION_SUCCESS](state, payload) {
+    const { usage } = payload;
+
+    state.seatsInSubscription = usage?.seats_in_subscription ?? 0;
+    state.seatsInUse = usage?.seats_in_use ?? 0;
+    state.maxSeatsUsed = usage?.max_seats_used ?? 0;
+    state.seatsOwed = usage?.seats_owed ?? 0;
+
+    state.isLoading = false;
+  },
+
   [types.RECEIVE_BILLABLE_MEMBERS_ERROR](state) {
+    state.isLoading = false;
+    state.hasError = true;
+  },
+
+  [types.RECEIVE_GITLAB_SUBSCRIPTION_ERROR](state) {
     state.isLoading = false;
     state.hasError = true;
   },

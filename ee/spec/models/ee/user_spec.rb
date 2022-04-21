@@ -1607,51 +1607,6 @@ RSpec.describe User do
     end
   end
 
-  describe '#owns_upgradeable_namespace?', :saas do
-    let_it_be(:user) { create(:user) }
-
-    subject { user.owns_upgradeable_namespace? }
-
-    using RSpec::Parameterized::TableSyntax
-
-    where(:hosted_plan, :result) do
-      :bronze_plan    | true
-      :premium_plan   | true
-      :ultimate_plan  | false
-      :free_plan      | false
-      :default_plan   | false
-    end
-
-    with_them do
-      it 'returns the correct result for each plan on a personal namespace' do
-        plan = create(hosted_plan) # rubocop:disable Rails/SaveBang
-        create(:gitlab_subscription, namespace: user.namespace, hosted_plan: plan)
-
-        expect(subject).to be result
-      end
-
-      it 'returns the correct result for each plan on a group owned by the user' do
-        create(:group_with_plan, plan: hosted_plan).add_owner(user)
-
-        expect(subject).to be result
-      end
-    end
-
-    it 'returns false when there is no subscription for the personal namespace' do
-      expect(subject).to be false
-    end
-
-    it 'returns false when the user has multiple groups and any group has ultimate' do
-      create(:group_with_plan, plan: :bronze_plan).add_owner(user)
-      create(:group_with_plan, plan: :premium_plan).add_owner(user)
-      create(:group_with_plan, plan: :ultimate_plan).add_owner(user)
-
-      user.namespace.plans.reload
-
-      expect(subject).to be false
-    end
-  end
-
   describe '#find_or_init_board_epic_preference' do
     let_it_be(:user) { create(:user) }
     let_it_be(:board) { create(:board) }

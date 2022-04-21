@@ -56,7 +56,7 @@ export default {
 <template>
   <span class="gl-display-inline-flex gl-align-items-center">
     <gl-button :loading="isLoading" @click="openModal(licenseCheckRule)"
-      >{{ s__('LicenseCompliance|License Approvals') }}
+      >{{ s__('LicenseCompliance|Update approvals') }}
     </gl-button>
     <span data-testid="licenseCheckStatus" class="gl-ml-3">
       <gl-skeleton-loading
@@ -66,7 +66,7 @@ export default {
         class="gl-display-inline-flex gl-h-auto gl-align-items-center"
       />
       <span v-else class="gl-m-0 gl-font-weight-normal">
-        <gl-icon name="information" :size="12" class="gl-text-blue-600" />
+        <gl-icon name="information-o" :size="12" class="gl-text-blue-600" />
         <gl-sprintf :message="licenseCheckStatusText">
           <template #docLink="{ content }">
             <gl-link :href="documentationPath" target="_blank">{{ content }}</gl-link>

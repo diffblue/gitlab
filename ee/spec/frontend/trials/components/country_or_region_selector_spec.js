@@ -8,7 +8,7 @@ import {
   STATES,
   COUNTRY_WITH_STATES,
   STATE,
-} from '../../hand_raise_leads/components/mock_data';
+} from 'ee_jest/hand_raise_leads/components/mock_data';
 
 Vue.use(VueApollo);
 

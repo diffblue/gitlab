@@ -24,8 +24,24 @@ module Resolvers
                  default_value: 'SEVERITY_LEVEL_DESC',
                  description: 'List compliance violations by sort order.'
 
+        NON_STABLE_CURSOR_SORTS = %w[MERGE_REQUEST_TITLE_ASC MERGE_REQUEST_TITLE_DESC MERGED_AT_ASC MERGED_AT_DESC].freeze
+
         def resolve(filters: {}, sort: 'SEVERITY_LEVEL_DESC')
-          ::ComplianceManagement::MergeRequests::ComplianceViolationsFinder.new(current_user: current_user, group: group, params: filters.to_h.merge(sort: sort)).execute
+          violations = ::ComplianceManagement::MergeRequests::ComplianceViolationsFinder.new(current_user: current_user, group: group, params: filters.to_h.merge(sort: sort)).execute
+
+          if non_stable_cursor_sort?(sort)
+            # Certain complex sorts are not supported by the stable cursor pagination yet.
+            # In these cases, we use offset pagination, so we return the correct connection.
+            offset_pagination(violations)
+          else
+            violations
+          end
+        end
+
+        private
+
+        def non_stable_cursor_sort?(sort)
+          NON_STABLE_CURSOR_SORTS.include?(sort)
         end
       end
     end

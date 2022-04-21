@@ -26,7 +26,7 @@ export default {
     pipelineText() {
       const { path } = this;
       const body = s__(
-        'Licenses|Displays licenses detected in the project, based on the %{linkStart}latest successful%{linkEnd} scan',
+        "Licenses|Displays licenses detected in the project that are out of compliance with the project's policies, based on the %{linkStart}latest successful%{linkEnd} scan",
       );
 
       const linkStart = path

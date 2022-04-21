@@ -16,7 +16,8 @@ RSpec.describe 'Creating an Epic' do
       due_date_fixed: '2019-09-18',
       start_date_is_fixed: true,
       due_date_is_fixed: true,
-      confidential: true
+      confidential: true,
+      color: ::Gitlab::Color.of('#ff0000')
     }
   end
 
@@ -73,6 +74,35 @@ RSpec.describe 'Creating an Epic' do
         expect(epic_hash['dueDateFixed']).to eq('2019-09-18')
         expect(epic_hash['dueDateIsFixed']).to eq(true)
         expect(epic_hash['confidential']).to eq(true)
+        expect(epic_hash['color']).to be_color(attributes[:color])
+        expect(epic_hash['textColor']).to be_color(attributes[:color].contrast)
+      end
+
+      context 'when using a named color' do
+        before do
+          attributes[:color] = 'red'
+        end
+
+        it 'sets the color correctly' do
+          post_graphql_mutation(mutation, current_user: current_user)
+
+          epic_hash = mutation_response['epic']
+
+          expect(epic_hash['color']).to be_color(Gitlab::Color.of(attributes[:color]))
+          expect(epic_hash['textColor']).to be_color(Gitlab::Color.of(attributes[:color]).contrast)
+        end
+      end
+
+      context 'the color is invalid' do
+        before do
+          attributes[:color] = 'ne pas une couleur'
+        end
+
+        it 'reports a coercion error' do
+          post_graphql_mutation(mutation, current_user: current_user)
+
+          expect_graphql_errors_to_include(/Not a color/)
+        end
       end
 
       context 'when there are ActiveRecord validation errors' do

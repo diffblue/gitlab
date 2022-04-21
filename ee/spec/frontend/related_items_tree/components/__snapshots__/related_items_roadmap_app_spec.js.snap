@@ -1,0 +1,31 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`RelatedItemsTree RelatedItemsRoadmapApp template renders html 1`] = `
+<div
+  class="gl-px-3 gl-py-3 gl-bg-gray-10"
+>
+  <!---->
+   
+  <div
+    class="roadmap-app border gl-rounded-base gl-bg-white"
+    id="roadmap"
+  >
+    <div
+      data-child-epics="true"
+      data-empty-state-illustration=""
+      data-epics-docs-path="/help/user/group/epics/index"
+      data-epics-path="/groups/group1/-/epics.json?parent_id=1"
+      data-epics-state="all"
+      data-full-path="group1"
+      data-group-id="2"
+      data-iid="1"
+      data-inner-height="600"
+      data-list-epics-path="/groups/group1/-/epics"
+      data-new-epic-path="/groups/group1/-/epics/new"
+      data-preset-type="MONTHS"
+      data-sorted-by="start_date_asc"
+      id="js-roadmap"
+    />
+  </div>
+</div>
+`;

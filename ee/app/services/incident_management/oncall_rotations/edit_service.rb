@@ -6,21 +6,20 @@ module IncidentManagement
       include IncidentManagement::OncallRotations::SharedRotationLogic
       # @param rotation [IncidentManagement::OncallRotation]
       # @param user [User]
-      # @param params [Hash<Symbol,Any>]
-      # @param params - name [String] The name of the on-call rotation.
-      # @param params - length [Integer] The length of the rotation.
-      # @param params - length_unit [String] The unit of the rotation length. (One of 'hours', days', 'weeks')
-      # @param params - starts_at [DateTime] The datetime the rotation starts on.
-      # @param params - ends_at [DateTime] The datetime the rotation ends on.
-      # @param params - participants [Array<hash>] An array of hashes defining participants of the on-call rotations.
+      # @param edit_params [Hash<Symbol,Any>]
+      # @param edit_params - name [String] The name of the on-call rotation.
+      # @param edit_params - length [Integer] The length of the rotation.
+      # @param edit_params - length_unit [String] The unit of the rotation length. (One of 'hours', days', 'weeks')
+      # @param edit_params - starts_at [DateTime] The datetime the rotation starts on.
+      # @param edit_params - ends_at [DateTime] The datetime the rotation ends on.
+      # @param edit_params - participants [Array<hash>] An array of hashes defining participants of the on-call rotations.
       # @option opts  - user [User] The user who is part of the rotation
       # @option opts  - color_palette [String] The color palette to assign to the on-call user, for example: "blue".
       # @option opts  - color_weight [String] The color weight to assign to for the on-call user, for example "500". Max 4 chars.
-      def initialize(oncall_rotation, user, params)
+      def initialize(oncall_rotation, user, edit_params)
+        super(project: oncall_rotation.project, current_user: user, params: edit_params)
+
         @oncall_rotation = oncall_rotation
-        @user = user
-        @project = oncall_rotation.project
-        @params = params
         @participants_params = params.delete(:participants)
       end
 
@@ -51,7 +50,7 @@ module IncidentManagement
 
       private
 
-      attr_reader :oncall_rotation, :user, :project, :params, :participants_params
+      attr_reader :oncall_rotation, :participants_params
 
       def save_participants!
         return if participants_params.nil?

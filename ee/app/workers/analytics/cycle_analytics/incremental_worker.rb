@@ -15,7 +15,7 @@ module Analytics
       data_consistency :always
       feature_category :value_stream_management
 
-      MAX_RUNTIME = 5.minutes
+      MAX_RUNTIME = 250.seconds
 
       delegate :monotonic_time, to: :'Gitlab::Metrics::System'
 
@@ -31,7 +31,7 @@ module Analytics
           break if batch.empty?
 
           batch.each do |aggregation|
-            Analytics::CycleAnalytics::AggregatorService.new(aggregation: aggregation).execute
+            Analytics::CycleAnalytics::AggregatorService.new(aggregation: aggregation, mode: :incremental).execute
 
             if monotonic_time - start_time >= MAX_RUNTIME
               over_time = true

@@ -46,6 +46,10 @@ RSpec.describe Mutations::DastScannerProfiles::Create do
         expect(subject[:id]).to eq(dast_scanner_profile.to_global_id)
       end
 
+      it 'returns the complete dast_scanner_profile' do
+        expect(subject[:dast_scanner_profile]).to eq(dast_scanner_profile)
+      end
+
       it 'calls the dast_scanner_profile creation service' do
         service = double(described_class)
         result = double('result', success?: false, errors: [])

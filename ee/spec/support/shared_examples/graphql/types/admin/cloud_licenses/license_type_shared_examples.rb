@@ -54,7 +54,7 @@ RSpec.shared_examples_for 'license type fields' do
       describe 'type' do
         let(:field_name) { :type }
 
-        it { is_expected.to eq(License::CLOUD_LICENSE_TYPE) }
+        it { is_expected.to eq(License::ONLINE_CLOUD_TYPE) }
       end
 
       describe 'plan' do

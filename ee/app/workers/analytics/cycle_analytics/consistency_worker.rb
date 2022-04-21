@@ -15,7 +15,7 @@ module Analytics
       data_consistency :always
       feature_category :value_stream_management
 
-      MAX_RUNTIME = 5.minutes
+      MAX_RUNTIME = 250.seconds
 
       delegate :monotonic_time, to: :'Gitlab::Metrics::System'
 

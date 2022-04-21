@@ -11,9 +11,9 @@ class License < ApplicationRecord
   STARTER_PLAN = 'starter'
   PREMIUM_PLAN = 'premium'
   ULTIMATE_PLAN = 'ultimate'
-  CLOUD_LICENSE_TYPE = 'cloud'
+  ONLINE_CLOUD_TYPE = 'online_cloud'
   OFFLINE_CLOUD_TYPE = 'offline_cloud'
-  LICENSE_FILE_TYPE = 'license_file'
+  LEGACY_LICENSE_TYPE = 'legacy_license'
   ALLOWED_PERCENTAGE_OF_USERS_OVERAGE = (10 / 100.0)
 
   NOTIFICATION_DAYS_BEFORE_TRIAL_EXPIRY = 1.week
@@ -339,9 +339,9 @@ class License < ApplicationRecord
 
   def license_type
     return OFFLINE_CLOUD_TYPE if offline_cloud_license?
-    return CLOUD_LICENSE_TYPE if online_cloud_license?
+    return ONLINE_CLOUD_TYPE if online_cloud_license?
 
-    LICENSE_FILE_TYPE
+    LEGACY_LICENSE_TYPE
   end
 
   def auto_renew
@@ -534,3 +534,5 @@ class License < ApplicationRecord
     (expires_at || Time.current).end_of_day
   end
 end
+
+License.prepend_mod

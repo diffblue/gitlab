@@ -13,11 +13,8 @@ module Dora
     INTERVAL_ALL = 'all'
     INTERVAL_MONTHLY = 'monthly'
     INTERVAL_DAILY = 'daily'
-    METRIC_DEPLOYMENT_FREQUENCY = 'deployment_frequency'
-    METRIC_LEAD_TIME_FOR_CHANGES = 'lead_time_for_changes'
-    METRIC_TIME_TO_RESTORE_SERVICE = 'time_to_restore_service'
-    AVAILABLE_METRICS = [METRIC_DEPLOYMENT_FREQUENCY, METRIC_LEAD_TIME_FOR_CHANGES, METRIC_TIME_TO_RESTORE_SERVICE].freeze
     AVAILABLE_INTERVALS = [INTERVAL_ALL, INTERVAL_MONTHLY, INTERVAL_DAILY].freeze
+    AVAILABLE_METRICS = BaseMetric.all_metric_classes.map { |klass| klass::METRIC_NAME }.freeze
 
     scope :for_environments, -> (environments) do
       where(environment: environments)
@@ -28,50 +25,19 @@ module Dora
     end
 
     class << self
-      def refresh!(environment, date)
-        raise ArgumentError unless environment.is_a?(::Environment) && date.is_a?(Date)
-
-        deployment_frequency = deployment_frequency(environment, date)
-        lead_time_for_changes = lead_time_for_changes(environment, date)
-        time_to_restore_service = time_to_restore_service(environment, date)
-
-        # This query is concurrent safe upsert with the unique index.
-        connection.execute(<<~SQL)
-          INSERT INTO #{table_name} (
-            environment_id,
-            date,
-            deployment_frequency,
-            lead_time_for_changes_in_seconds,
-            time_to_restore_service_in_seconds
-          )
-          VALUES (
-            #{environment.id},
-            #{connection.quote(date.to_s)},
-            (#{deployment_frequency}),
-            (#{lead_time_for_changes}),
-            (#{time_to_restore_service})
-          )
-          ON CONFLICT (environment_id, date)
-          DO UPDATE SET
-            deployment_frequency = (#{deployment_frequency}),
-            lead_time_for_changes_in_seconds = (#{lead_time_for_changes}),
-            time_to_restore_service_in_seconds = (#{time_to_restore_service})
-        SQL
-      end
-
       def aggregate_for!(metric, interval)
-        data_query = data_query_for!(metric)
+        query = "#{BaseMetric.for(metric).calculation_query} as data"
 
         case interval
         when INTERVAL_ALL
-          select(data_query).take.data
+          select(query).take.data
         when INTERVAL_MONTHLY
-          select("DATE_TRUNC('month', date)::date AS month, #{data_query}")
+          select("DATE_TRUNC('month', date)::date AS month, #{query}")
             .group("DATE_TRUNC('month', date)")
             .order('month ASC')
             .map { |row| { 'date' => row.month.to_s, 'value' => row.data } }
         when INTERVAL_DAILY
-          select("date, #{data_query}")
+          select("date, #{query}")
             .group('date')
             .order('date ASC')
             .map { |row| { 'date' => row.date.to_s, 'value' => row.data } }
@@ -80,76 +46,31 @@ module Dora
         end
       end
 
-      private
+      def refresh!(environment, date)
+        raise ArgumentError unless environment.is_a?(::Environment) && date.is_a?(Date)
 
-      def data_query_for!(metric)
-        case metric
-        when METRIC_DEPLOYMENT_FREQUENCY
-          'SUM(deployment_frequency) AS data'
-        when METRIC_LEAD_TIME_FOR_CHANGES
-          # Median
-          '(PERCENTILE_CONT(0.5) WITHIN GROUP(ORDER BY lead_time_for_changes_in_seconds)) AS data'
-        when METRIC_TIME_TO_RESTORE_SERVICE
-          # Median
-          '(PERCENTILE_CONT(0.5) WITHIN GROUP(ORDER BY time_to_restore_service_in_seconds)) AS data'
-        else
-          raise ArgumentError, 'Unknown metric'
+        queries_to_refresh = BaseMetric.all_metric_classes.inject({}) do |queries, klass|
+          queries.merge(klass.new(environment, date).data_queries)
         end
-      end
 
-      # Compose a query to calculate "Deployment Frequency" of the date
-      def deployment_frequency(environment, date)
-        deployments = Deployment.arel_table
+        return unless queries_to_refresh.present?
 
-        deployments
-          .project(deployments[:id].count)
-          .where(eligible_deployments(environment, date))
-          .to_sql
-      end
-
-      # Compose a query to calculate "Lead Time for Changes" of the date
-      def lead_time_for_changes(environment, date)
-        deployments = Deployment.arel_table
-        deployment_merge_requests = DeploymentMergeRequest.arel_table
-        merge_request_metrics = MergeRequest::Metrics.arel_table
-
-        deployments
-          .project(
-            Arel.sql(
-              'PERCENTILE_CONT(0.5) WITHIN GROUP(ORDER BY EXTRACT(EPOCH FROM (deployments.finished_at - merge_request_metrics.merged_at)))'
-            )
+        # This query is concurrent safe upsert with the unique index.
+        connection.execute(<<~SQL)
+          INSERT INTO #{table_name} (
+            environment_id,
+            date,
+            #{queries_to_refresh.keys.join(', ')}
           )
-          .join(deployment_merge_requests).on(
-            deployment_merge_requests[:deployment_id].eq(deployments[:id])
+          VALUES (
+            #{environment.id},
+            #{connection.quote(date.to_s)},
+            #{queries_to_refresh.map { |_column, query| "(#{query})"}.join(', ')}
           )
-          .join(merge_request_metrics).on(
-            merge_request_metrics[:merge_request_id].eq(deployment_merge_requests[:merge_request_id])
-          )
-          .where(eligible_deployments(environment, date))
-          .to_sql
-      end
-
-      def eligible_deployments(environment, date)
-        deployments = Deployment.arel_table
-
-        [deployments[:environment_id].eq(environment.id),
-         deployments[:finished_at].gteq(date.beginning_of_day),
-         deployments[:finished_at].lteq(date.end_of_day),
-         deployments[:status].eq(Deployment.statuses[:success])].reduce(&:and)
-      end
-
-      def time_to_restore_service(environment, date)
-        # Non-production environments are ignored as we assume all Incidents happen on production
-        # See https://gitlab.com/gitlab-org/gitlab/-/issues/299096#note_550275633 for details
-        return Arel.sql('NULL') unless environment.production?
-
-        Issue.incident.closed.select(
-          Arel.sql(
-            'PERCENTILE_CONT(0.5) WITHIN GROUP(ORDER BY EXTRACT(EPOCH FROM (issues.closed_at - issues.created_at)))'
-          )
-        ).where("closed_at >= ? AND closed_at <= ?", date.beginning_of_day, date.end_of_day)
-          .where(project_id: environment.project_id)
-          .to_sql
+          ON CONFLICT (environment_id, date)
+          DO UPDATE SET
+            #{queries_to_refresh.map { |column, query| "#{column} = (#{query})"}.join(', ')}
+        SQL
       end
     end
   end

@@ -77,11 +77,16 @@ module QuickActions
       # want to also handle bare usernames. The ReferenceExtractor also has
       # different behaviour, and will return all group members for groups named
       # using a user-style reference, which is not in scope here.
+      #
+      # nb: underscores may be passed in escaped to protect them from markdown rendering
       args        = params.split(/\s|,/).select(&:present?).uniq - ['and']
+      args.map! { _1.gsub(/\\_/, '_') }
       usernames   = (args - ['me']).map { _1.delete_prefix('@') }
       found       = User.by_username(usernames).to_a.select { can?(:read_user, _1) }
-      found_names = found.map(&:username).to_set
-      missing     = args.reject { |arg| arg == 'me' || found_names.include?(arg.delete_prefix('@')) }.map { "'#{_1}'" }
+      found_names = found.map(&:username).map(&:downcase).to_set
+      missing     = args.reject do |arg|
+        arg == 'me' || found_names.include?(arg.downcase.delete_prefix('@'))
+      end.map { "'#{_1}'" }
 
       failed_parse(format(_("Failed to find users for %{missing}"), missing: missing.to_sentence)) if missing.present?
 
@@ -168,7 +173,7 @@ module QuickActions
         next unless definition
 
         definition.execute(self, arg)
-        usage_ping_tracking(name, arg)
+        usage_ping_tracking(definition.name, arg)
       end
     end
 
@@ -186,7 +191,7 @@ module QuickActions
 
     def usage_ping_tracking(quick_action_name, arg)
       Gitlab::UsageDataCounters::QuickActionActivityUniqueCounter.track_unique_action(
-        quick_action_name,
+        quick_action_name.to_s,
         args: arg&.strip,
         user: current_user
       )

@@ -317,12 +317,8 @@ module EE
     end
 
     def elasticsearch_url_with_credentials
-      return elasticsearch_url if elasticsearch_username.blank?
-
       elasticsearch_url.map do |uri|
-        uri.user = URI.encode_www_form_component(elasticsearch_username)
-        uri.password = URI.encode_www_form_component(elasticsearch_password)
-        uri
+        ::Gitlab::Elastic::Helper.connection_settings(uri: uri, user: elasticsearch_username, password: elasticsearch_password)
       end
     end
 

@@ -31,9 +31,10 @@ RSpec.describe Gitlab::Geo::CronManager, :geo do
     let_it_be(:primary) { create(:geo_node, :primary) }
     let_it_be(:secondary) { create(:geo_node) }
 
-    let(:common_jobs) { [job('geo_metrics_update_worker'), job('repository_check_worker'), job('geo_verification_cron_worker')] }
+    let(:common_geo_jobs) { [job('geo_metrics_update_worker'), job('geo_verification_cron_worker')] }
     let(:ldap_test_job) { job('ldap_test') }
     let(:primary_jobs) { [job('geo_repository_verification_primary_batch_worker')] }
+    let(:repository_check_job) { job('repository_check_worker') }
 
     let(:secondary_jobs) do
       [
@@ -80,12 +81,16 @@ RSpec.describe Gitlab::Geo::CronManager, :geo do
         secondary_jobs.each { |job| expect(job).not_to be_enabled }
       end
 
-      it 'enables common jobs' do
-        expect(common_jobs).to all(be_enabled)
+      it 'enables common Geo jobs' do
+        expect(common_geo_jobs).to all(be_enabled)
       end
 
       it 'enables primary-only jobs' do
         expect(primary_jobs).to all(be_enabled)
+      end
+
+      it 'enables repository check job' do
+        expect(repository_check_job).to be_enabled
       end
 
       it 'enables non-geo jobs' do
@@ -112,8 +117,12 @@ RSpec.describe Gitlab::Geo::CronManager, :geo do
         expect(secondary_jobs).to all(be_enabled)
       end
 
-      it 'enables common jobs' do
-        expect(common_jobs).to all(be_enabled)
+      it 'enables common Geo jobs' do
+        expect(common_geo_jobs).to all(be_enabled)
+      end
+
+      it 'enables repository check job' do
+        expect(repository_check_job).to be_enabled
       end
 
       it 'disables primary-only jobs' do
@@ -140,8 +149,12 @@ RSpec.describe Gitlab::Geo::CronManager, :geo do
         secondary_jobs.each { |job| expect(job).not_to be_enabled }
       end
 
-      it 'disables common jobs' do
-        common_jobs.each { |job| expect(job).not_to be_enabled }
+      it 'disables common Geo jobs' do
+        common_geo_jobs.each { |job| expect(job).not_to be_enabled }
+      end
+
+      it 'enables repository check job' do
+        expect(repository_check_job).to be_enabled
       end
 
       it 'enables non-geo jobs' do

@@ -3,6 +3,7 @@ require 'spec_helper'
 
 RSpec.describe 'Groups > Members > List members' do
   include Spec::Support::Helpers::Features::MembersHelpers
+  include Spec::Support::Helpers::Features::InviteMembersModalHelper
 
   let_it_be(:user1) { create(:user, name: 'John Doe') }
   let_it_be(:user2) { create(:user, name: 'Mary Jane') }
@@ -66,8 +67,8 @@ RSpec.describe 'Groups > Members > List members' do
 
       click_on 'Invite members'
 
-      page.within '[data-testid="invite-modal"]' do
-        field = find('[data-testid="members-token-select-input"]')
+      page.within invite_modal_selector do
+        field = find(member_dropdown_selector)
         field.native.send_keys :tab
         field.click
 
@@ -79,5 +80,19 @@ RSpec.describe 'Groups > Members > List members' do
         expect(page).not_to have_content(user4.name)
       end
     end
+  end
+
+  context 'when over free user limit', :saas do
+    let_it_be(:user) { create(:user) }
+    let_it_be(:group) { create(:group_with_plan, plan: :free_plan) }
+
+    subject(:visit_page) { visit group_group_members_path(group) }
+
+    before do
+      group.add_owner(user)
+      sign_in(user)
+    end
+
+    it_behaves_like 'over the free user limit alert'
   end
 end

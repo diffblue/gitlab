@@ -3,7 +3,7 @@ import createStore from 'ee/vue_shared/license_compliance/store';
 import * as types from 'ee/vue_shared/license_compliance/store/mutation_types';
 
 import { TEST_HOST } from 'spec/test_constants';
-import { approvedLicense } from '../mock_data';
+import { allowedLicense } from '../mock_data';
 
 describe('License store mutations', () => {
   let store;
@@ -14,9 +14,9 @@ describe('License store mutations', () => {
 
   describe('SET_LICENSE_IN_MODAL', () => {
     it('opens modal and sets passed license', () => {
-      store.commit(`licenseManagement/${types.SET_LICENSE_IN_MODAL}`, approvedLicense);
+      store.commit(`licenseManagement/${types.SET_LICENSE_IN_MODAL}`, allowedLicense);
 
-      expect(store.state.licenseManagement.currentLicenseInModal).toBe(approvedLicense);
+      expect(store.state.licenseManagement.currentLicenseInModal).toBe(allowedLicense);
     });
   });
 
@@ -34,7 +34,7 @@ describe('License store mutations', () => {
       store.replaceState({
         ...store.state,
         licenseManagement: {
-          currentLicenseInModal: approvedLicense,
+          currentLicenseInModal: allowedLicense,
         },
       });
 

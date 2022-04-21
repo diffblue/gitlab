@@ -22,6 +22,7 @@ RSpec.describe Mutations::DastSiteProfiles::Create do
       url: "#{target_url}/login",
       username_field: 'session[username]',
       password_field: 'session[password]',
+      submit_field: 'css:button[type="submit"]',
       username: generate(:email),
       password: SecureRandom.hex
     }
@@ -97,6 +98,7 @@ RSpec.describe Mutations::DastSiteProfiles::Create do
             auth_url: auth[:url],
             auth_username_field: auth[:username_field],
             auth_password_field: auth[:password_field],
+            auth_submit_field: auth[:submit_field],
             auth_username: auth[:username],
             dast_site: have_attributes(url: target_url),
             target_type: target_type,
@@ -114,6 +116,10 @@ RSpec.describe Mutations::DastSiteProfiles::Create do
           expect(subject[:id]).to eq(dast_site_profile.to_global_id)
         end
 
+        it 'returns the complete dast_site_profile' do
+          expect(subject[:dast_site_profile]).to eq(dast_site_profile)
+        end
+
         it 'calls the dast_site_profile creation service' do
           service = double(::AppSec::Dast::SiteProfiles::CreateService)
           result = ServiceResponse.error(message: '')
@@ -129,6 +135,7 @@ RSpec.describe Mutations::DastSiteProfiles::Create do
             auth_url: auth[:url],
             auth_username_field: auth[:username_field],
             auth_password_field: auth[:password_field],
+            auth_submit_field: auth[:submit_field],
             auth_username: auth[:username],
             auth_password: auth[:password]
           }

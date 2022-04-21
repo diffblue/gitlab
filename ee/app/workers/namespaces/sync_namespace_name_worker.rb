@@ -6,7 +6,7 @@ module Namespaces
 
     data_consistency :always
 
-    feature_category :license
+    feature_category :provision
 
     deduplicate :until_executing
     idempotent!

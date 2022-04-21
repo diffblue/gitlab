@@ -12,10 +12,11 @@ describe('IssueBoardFilter', () => {
 
   const createComponent = () => {
     wrapper = shallowMount(IssueBoardFilteredSpec, {
-      propsData: { fullPath: 'gitlab-org', boardType: 'group' },
       provide: {
         isSignedIn: true,
         releasesFetchPath: '/releases',
+        fullPath: 'gitlab-org',
+        boardType: 'group',
         epicFeatureAvailable: true,
         iterationFeatureAvailable: true,
       },
@@ -53,6 +54,7 @@ describe('IssueBoardFilter', () => {
         fetchAuthorsSpy,
         wrapper.vm.fetchMilestones,
         wrapper.vm.fetchIterations,
+        wrapper.vm.fetchIterationCadences,
       );
 
       expect(wrapper.findComponent(BoardFilteredSearch).props('tokens')).toEqual(

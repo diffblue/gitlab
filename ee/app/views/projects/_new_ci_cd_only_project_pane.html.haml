@@ -2,7 +2,7 @@
 - track_label = local_assigns.fetch(:track_label, 'cicd_for_external_repo')
 
 #ci-cd-project-pane.tab-pane
-  = form_for @project, html: { class: 'new_project' } do |f|
+  = gitlab_ui_form_for @project, html: { class: 'new_project' } do |f|
     .project-import.row
       .col-lg-12
         %h4

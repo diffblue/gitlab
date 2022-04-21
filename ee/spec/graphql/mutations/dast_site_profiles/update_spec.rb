@@ -21,6 +21,7 @@ RSpec.describe Mutations::DastSiteProfiles::Update do
       url: "#{new_target_url}/login",
       username_field: 'login[username]',
       password_field: 'login[password]',
+      submit_field: 'css:button[type="submit_other"]',
       username: generate(:email),
       password: SecureRandom.hex
     }
@@ -70,6 +71,7 @@ RSpec.describe Mutations::DastSiteProfiles::Update do
             auth_url: new_auth[:url],
             auth_username_field: new_auth[:username_field],
             auth_password_field: new_auth[:password_field],
+            auth_submit_field: new_auth[:submit_field],
             auth_username: new_auth[:username],
             auth_password: new_auth[:password]
           }
@@ -90,6 +92,7 @@ RSpec.describe Mutations::DastSiteProfiles::Update do
             auth_url: new_auth[:url],
             auth_username_field: new_auth[:username_field],
             auth_password_field: new_auth[:password_field],
+            auth_submit_field: new_auth[:submit_field],
             auth_username: new_auth[:username],
             scan_method: new_scan_method,
             dast_site: have_attributes(url: new_target_url)
@@ -97,6 +100,10 @@ RSpec.describe Mutations::DastSiteProfiles::Update do
 
           expect(dast_site_profile.secret_variables.map(&:key)).to include(Dast::SiteProfileSecretVariable::REQUEST_HEADERS)
           expect(dast_site_profile.secret_variables.map(&:key)).to include(Dast::SiteProfileSecretVariable::PASSWORD)
+        end
+
+        it 'returns the complete dast_site_profile' do
+          expect(subject[:dast_site_profile]).to eq(dast_site_profile)
         end
 
         context 'when secret variables already exist' do

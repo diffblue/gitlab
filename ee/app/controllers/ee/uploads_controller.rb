@@ -6,8 +6,7 @@ module EE
     extend ::Gitlab::Utils::Override
 
     EE_MODEL_CLASSES = {
-      'issuable_metric_image' => IssuableMetricImage,
-      'alert_management_metric_image' => ::AlertManagement::MetricImage
+      'issuable_metric_image' => IssuableMetricImage
     }.freeze
 
     class_methods do
@@ -24,8 +23,6 @@ module EE
       case model
       when IssuableMetricImage
         can?(current_user, :read_issuable_metric_image, model)
-      when ::AlertManagement::MetricImage
-        can?(current_user, :read_alert_management_metric_image, model.alert)
       else
         super
       end

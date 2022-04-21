@@ -11,16 +11,16 @@ RSpec.describe API::Members do
 
   let(:project) do
     create(:project, :public, creator_id: maintainer.id, namespace: maintainer.namespace) do |project|
-      project.add_developer(developer)
       project.add_maintainer(maintainer)
+      project.add_developer(developer, current_user: maintainer)
       project.request_access(access_requester)
     end
   end
 
   let!(:group) do
     create(:group, :public) do |group|
-      group.add_developer(developer)
       group.add_owner(maintainer)
+      group.add_developer(developer, maintainer)
       create(:group_member, :minimal_access, source: group, user: user_with_minimal_access)
       group.request_access(access_requester)
     end
@@ -50,6 +50,10 @@ RSpec.describe API::Members do
             expect(json_response).to be_an Array
             expect(json_response.size).to eq(2)
             expect(json_response.map { |u| u['id'] }).to match_array [maintainer.id, developer.id]
+            expect(json_response).to contain_exactly(
+              a_hash_including('created_by' => a_hash_including('id' => maintainer.id)),
+              hash_not_including('created_by')
+            )
           end
         end
       end
@@ -539,7 +543,7 @@ RSpec.describe API::Members do
       end
 
       it 'returns 409 if member does not exist' do
-        put api("/#{source_type.pluralize}/#{source.id}/members/123", maintainer),
+        put api("/#{source_type.pluralize}/#{source.id}/members/#{non_existing_record_id}", maintainer),
             params: { access_level: Member::MAINTAINER }
 
         expect(response).to have_gitlab_http_status(:not_found)
@@ -614,7 +618,7 @@ RSpec.describe API::Members do
       end
 
       it 'returns 404 if member does not exist' do
-        delete api("/#{source_type.pluralize}/#{source.id}/members/123", maintainer)
+        delete api("/#{source_type.pluralize}/#{source.id}/members/#{non_existing_record_id}", maintainer)
 
         expect(response).to have_gitlab_http_status(:not_found)
       end

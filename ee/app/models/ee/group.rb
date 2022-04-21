@@ -357,14 +357,21 @@ module EE
     # converting the array of user_ids to a Set which will have unique user_ids.
     override :billed_user_ids
     def billed_user_ids(requested_hosted_plan = nil)
-      exclude_guests = ([actual_plan_name, requested_hosted_plan] & [::Plan::GOLD, ::Plan::ULTIMATE, ::Plan::ULTIMATE_TRIAL]).any?
+      exclude_guests?(requested_hosted_plan) ? billed_user_ids_excluding_guests : billed_user_ids_including_guests
+    end
 
-      exclude_guests ? billed_user_ids_excluding_guests : billed_user_ids_including_guests
+    def awaiting_user_ids
+      awaiting_members_without_invites_and_requests.pluck(:id).to_set
     end
 
     override :supports_events?
     def supports_events?
       feature_available?(:epics)
+    end
+
+    override :exclude_guests?
+    def exclude_guests?(requested_hosted_plan = nil)
+      ([actual_plan_name, requested_hosted_plan] & [::Plan::GOLD, ::Plan::ULTIMATE, ::Plan::ULTIMATE_TRIAL]).any?
     end
 
     def marked_for_deletion?
@@ -519,7 +526,7 @@ module EE
     end
 
     def iteration_cadences_feature_flag_enabled?
-      ::Feature.enabled?(:iteration_cadences, self, default_enabled: :yaml)
+      feature_flag_enabled_for_self_or_ancestor?(:iteration_cadences)
     end
 
     def user_cap_reached?(use_cache: false)
@@ -705,6 +712,16 @@ module EE
 
     def projects_for_group_and_its_subgroups_without_deleted
       ::Project.for_group_and_its_subgroups(self).non_archived.without_deleted
+    end
+
+    def awaiting_members_without_invites_and_requests
+      groups = self_and_descendants + invited_group_in_groups + invited_groups_in_projects
+      projects = ::Project.where(namespace: self_and_descendants)
+      sources = groups + projects
+
+      members = ::Member.awaiting_without_invites_and_requests.where(source_id: sources)
+
+      users_without_project_bots(members).distinct
     end
 
     override :_safe_read_repository_read_only_column

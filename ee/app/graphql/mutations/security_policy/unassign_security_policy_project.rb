@@ -4,20 +4,25 @@ module Mutations
   module SecurityPolicy
     class UnassignSecurityPolicyProject < BaseMutation
       graphql_name 'SecurityPolicyProjectUnassign'
-      description 'Unassigns the security policy project for the given project(`project_path`).'
+      description 'Unassigns the security policy project for the given project (`full_path`).'
 
-      include FindsProject
+      include FindsProjectOrGroupForSecurityPolicies
 
       authorize :update_security_orchestration_policy_project
 
+      argument :full_path, GraphQL::Types::String,
+               required: false,
+               description: 'Full path of the project.'
+
       argument :project_path, GraphQL::Types::ID,
-               required: true,
+               required: false,
+               deprecated: { reason: 'Use `fullPath`', milestone: '14.10' },
                description: 'Full path of the project.'
 
       def resolve(args)
-        project = authorized_find!(args[:project_path])
+        project_or_group = authorized_find!(**args)
 
-        result = unassign_project(project)
+        result = unassign(project_or_group)
         {
           errors: result.success? ? [] : [result.message]
         }
@@ -25,9 +30,9 @@ module Mutations
 
       private
 
-      def unassign_project(project)
+      def unassign(project_or_group)
         ::Security::Orchestration::UnassignService
-          .new(project, current_user)
+          .new(container: project_or_group, current_user: current_user)
           .execute
       end
     end

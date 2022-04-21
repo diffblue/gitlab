@@ -14,6 +14,10 @@ RSpec.describe 'Pipeline', :js do
   end
 
   describe 'GET /:project/-/pipelines/:id' do
+    before do
+      stub_feature_flags(pipeline_tabs_vue: false)
+    end
+
     let(:pipeline) { create(:ci_pipeline, :with_job, project: project, ref: 'master', sha: project.commit.id, user: user) }
 
     subject { visit project_pipeline_path(project, pipeline) }
@@ -133,6 +137,7 @@ RSpec.describe 'Pipeline', :js do
     let(:pipeline) { create(:ci_pipeline, project: project, ref: 'master', sha: project.commit.id) }
 
     before do
+      stub_feature_flags(pipeline_tabs_vue: false)
       stub_licensed_features(sast: true, security_dashboard: true)
       stub_feature_flags(pipeline_security_dashboard_graphql: false)
     end
@@ -170,6 +175,7 @@ RSpec.describe 'Pipeline', :js do
     let(:pipeline) { create(:ci_pipeline, project: project, ref: 'master', sha: project.commit.id) }
 
     before do
+      stub_feature_flags(pipeline_tabs_vue: false)
       stub_licensed_features(license_scanning: true)
     end
 
@@ -205,6 +211,10 @@ RSpec.describe 'Pipeline', :js do
   end
 
   describe 'GET /:project/-/pipelines/:id/codequality_report', :aggregate_failures do
+    before do
+      stub_feature_flags(pipeline_tabs_vue: false)
+    end
+
     shared_examples_for 'full codequality report' do
       context 'when licensed' do
         before do
@@ -322,6 +332,7 @@ RSpec.describe 'Pipeline', :js do
 
     before do
       allow(Gitlab).to receive(:com?) { true }
+      stub_feature_flags(account_verification_payment_form_refresh: false)
       create(:gitlab_subscription, :active_trial, namespace: namespace, hosted_plan: ultimate_plan)
     end
 
@@ -338,6 +349,14 @@ RSpec.describe 'Pipeline', :js do
       # ensure account validation modal is only opened when redirected from /validate_account
       visit current_path
       expect(page).not_to have_selector("#credit-card-verification-modal")
+    end
+
+    context 'with payment validation via api feature flag' do
+      it 'pushes use_api_for_payment_validation feature flag' do
+        visit project_pipeline_validate_account_path(project, pipeline)
+
+        expect(page).to have_pushed_frontend_feature_flags(useApiForPaymentValidation: true)
+      end
     end
   end
 

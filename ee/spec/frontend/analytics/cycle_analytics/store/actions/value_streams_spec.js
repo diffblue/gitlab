@@ -37,7 +37,9 @@ describe('Value Stream Analytics actions / value streams', () => {
   beforeEach(() => {
     state = {
       stages: [],
-      featureFlags: {},
+      featureFlags: {
+        useVsaAggregatedTables: true,
+      },
       activeStages,
       selectedValueStream,
       ...mockGetters,
@@ -48,6 +50,35 @@ describe('Value Stream Analytics actions / value streams', () => {
   afterEach(() => {
     mock.restore();
     state = { ...state, currentGroup: null };
+  });
+
+  describe('useVsaAggregatedTables = false', () => {
+    beforeEach(() => {
+      state = {
+        ...state,
+        featureFlags: {
+          useVsaAggregatedTables: false,
+        },
+      };
+    });
+
+    describe('receiveCreateValueStreamSuccess', () => {
+      beforeEach(() => {
+        state = { ...state, valueStream: {} };
+      });
+
+      it(`will dispatch the "fetchCycleAnalyticsData" action and commit the ${types.RECEIVE_CREATE_VALUE_STREAM_SUCCESS} mutation`, () => {
+        return testAction({
+          action: actions.receiveCreateValueStreamSuccess,
+          payload: selectedValueStream,
+          state,
+          expectedMutations: [
+            { type: types.RECEIVE_CREATE_VALUE_STREAM_SUCCESS, payload: selectedValueStream },
+          ],
+          expectedActions: [{ type: 'fetchCycleAnalyticsData' }],
+        });
+      });
+    });
   });
 
   describe('setSelectedValueStream', () => {
@@ -141,8 +172,8 @@ describe('Value Stream Analytics actions / value streams', () => {
         state,
         expectedMutations: [
           { type: types.RECEIVE_CREATE_VALUE_STREAM_SUCCESS, payload: selectedValueStream },
+          { type: types.SET_CREATING_AGGREGATION, payload: true },
         ],
-        expectedActions: [{ type: 'fetchCycleAnalyticsData' }],
       });
     });
   });

@@ -1,4 +1,4 @@
-import { REPORT_TYPES } from 'ee/security_dashboard/store/constants';
+import { REPORT_TYPES_ALL } from 'ee/security_dashboard/store/constants';
 import { humanize } from '~/lib/utils/text_utility';
 
 /**
@@ -9,7 +9,7 @@ import { humanize } from '~/lib/utils/text_utility';
 const convertReportType = (reportType) => {
   if (!reportType) return '';
   const lowerCaseType = reportType.toLowerCase();
-  return REPORT_TYPES[lowerCaseType] || humanize(lowerCaseType);
+  return REPORT_TYPES_ALL[lowerCaseType] || humanize(lowerCaseType);
 };
 
 export default convertReportType;

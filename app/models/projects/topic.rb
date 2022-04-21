@@ -9,6 +9,7 @@ module Projects
 
     validates :name, presence: true, length: { maximum: 255 }
     validates :name, uniqueness: { case_sensitive: false }, if: :name_changed?
+    validates :title, presence: true, length: { maximum: 255 }, on: :create
     validates :description, length: { maximum: 1024 }
 
     has_many :project_topics, class_name: 'Projects::ProjectTopic'
@@ -23,6 +24,10 @@ module Projects
     end
 
     class << self
+      def find_by_name_case_insensitive(name)
+        find_by('LOWER(name) = ?', name.downcase)
+      end
+
       def search(query)
         fuzzy_search(query, [:name])
       end

@@ -62,7 +62,7 @@ class Geo::DesignRegistry < Geo::BaseRegistry
   end
 
   def self.find_registries_needs_sync_again(batch_size:, except_ids: [])
-    super.order(Gitlab::Database.nulls_first_order(:last_synced_at))
+    super.order(arel_table[:last_synced_at].asc.nulls_first)
   end
 
   # Search for a list of projects associated with registries,

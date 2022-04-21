@@ -6,7 +6,7 @@ module Projects
 
     before_action :authorize_read_threat_monitoring!
 
-    feature_category :not_owned
+    feature_category :not_owned # rubocop:todo Gitlab/AvoidFeatureCategoryNotOwned
 
     # rubocop: disable CodeReuse/ActiveRecord
     def alert_details

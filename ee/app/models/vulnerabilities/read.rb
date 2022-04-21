@@ -3,6 +3,7 @@
 module Vulnerabilities
   class Read < ApplicationRecord
     self.table_name = "vulnerability_reads"
+    self.primary_key = :vulnerability_id
 
     belongs_to :vulnerability
     belongs_to :project

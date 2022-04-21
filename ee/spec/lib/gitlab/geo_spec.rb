@@ -9,14 +9,14 @@ RSpec.describe Gitlab::Geo, :geo, :request_store do
   let_it_be(:primary_node)   { create(:geo_node, :primary) }
   let_it_be(:secondary_node) { create(:geo_node) }
 
-  shared_examples 'a Geo cached value' do |method, key|
+  shared_examples 'a Geo cached value' do |method, key, expected_l1_expiry: 1.minute, expected_l2_expiry: 2.minutes|
     it 'includes GitLab version and Rails.version in the cache key' do
       expanded_key = "geo:#{key}:#{Gitlab::VERSION}:#{Rails.version}"
 
       expect(Gitlab::ProcessMemoryCache.cache_backend).to receive(:write)
-        .with(expanded_key, an_instance_of(String), expires_in: 1.minute).and_call_original
+        .with(expanded_key, an_instance_of(String), expires_in: expected_l1_expiry).and_call_original
       expect(Rails.cache).to receive(:write)
-        .with(expanded_key, an_instance_of(String), expires_in: 2.minutes)
+        .with(expanded_key, an_instance_of(String), expires_in: expected_l2_expiry)
 
       described_class.public_send(method)
     end
@@ -46,6 +46,63 @@ RSpec.describe Gitlab::Geo, :geo, :request_store do
     end
 
     it_behaves_like 'a Geo cached value', :secondary_nodes, :secondary_nodes
+  end
+
+  describe '.proxy_extra_data' do
+    before do
+      expect(described_class).to receive(:uncached_proxy_extra_data).and_return('proxy extra data')
+    end
+
+    it 'caches the result of .uncached_proxy_extra_data' do
+      expect(described_class.proxy_extra_data).to be('proxy extra data')
+    end
+
+    it_behaves_like 'a Geo cached value',
+                    :proxy_extra_data,
+                    :proxy_extra_data,
+                    expected_l2_expiry: ::Gitlab::Geo::PROXY_JWT_CACHE_EXPIRY
+  end
+
+  describe '.uncached_proxy_extra_data' do
+    subject(:extra_data) { described_class.uncached_proxy_extra_data }
+
+    context 'without a geo node' do
+      it { is_expected.to be_nil }
+    end
+
+    context 'with an existing Geo node' do
+      let(:parsed_access_key) { extra_data.split(':').first }
+      let(:jwt) { JWT.decode(extra_data.split(':').second, secondary_node.secret_access_key) }
+      let(:decoded_extra_data) { Gitlab::Json.parse(jwt.first['data']) }
+
+      before do
+        stub_current_geo_node(secondary_node)
+      end
+
+      it 'generates a valid JWT' do
+        expect(parsed_access_key).to eq(secondary_node.access_key)
+        expect(decoded_extra_data).to eq({})
+      end
+
+      it 'sets the expected expiration time' do
+        freeze_time do
+          expect(jwt.first['exp']).to eq((Time.zone.now + Gitlab::Geo::PROXY_JWT_VALIDITY_PERIOD).to_i)
+        end
+      end
+    end
+
+    context 'when signing the JWT token raises errors' do
+      where(:error) { [Gitlab::Geo::GeoNodeNotFoundError, OpenSSL::Cipher::CipherError] }
+      with_them do
+        before do
+          expect_next_instance_of(Gitlab::Geo::SignedData) do |instance|
+            expect(instance).to receive(:sign_and_encode_data).and_raise(error)
+          end
+        end
+
+        it { is_expected.to be_nil }
+      end
+    end
   end
 
   describe '.primary?' do
@@ -197,9 +254,73 @@ RSpec.describe Gitlab::Geo, :geo, :request_store do
       expect(described_class.proxied_request?({ 'HTTP_GITLAB_WORKHORSE_GEO_PROXY' => '1' })).to be_truthy
     end
 
-    it 'returns false when the header is not present or set o an invalid value' do
+    it 'returns false when the header is not present or set to an invalid value' do
       expect(described_class.proxied_request?({})).to be_falsey
       expect(described_class.proxied_request?({ 'HTTP_GITLAB_WORKHORSE_GEO_PROXY' => 'invalid' })).to be_falsey
+    end
+  end
+
+  describe '.proxied_site' do
+    let(:env) { {} }
+
+    subject { described_class.proxied_site(env) }
+
+    context 'for a non-proxied request' do
+      it { is_expected.to be_nil }
+    end
+
+    context 'without Geo enabled' do
+      it { is_expected.to be_nil }
+    end
+
+    # this should not _really_ get called in a real-life scenario, as
+    # as a secondary should always proxy a primary, so this is nil in
+    # case this somehow happens
+    context 'on a secondary' do
+      before do
+        stub_secondary_node
+      end
+
+      it { is_expected.to be_nil }
+    end
+
+    context 'on a primary' do
+      before do
+        stub_primary_node
+      end
+
+      context 'for a proxied request' do
+        before do
+          stub_proxied_request
+        end
+
+        context 'with an absent proxied site ID header' do
+          it { is_expected.to be_nil }
+        end
+
+        context 'with a proxy extra data header' do
+          context 'for an invalid header' do
+            let(:env) do
+              {
+                ::Gitlab::Geo::GEO_PROXIED_EXTRA_DATA_HEADER => "invalid"
+              }
+            end
+
+            it { is_expected.to be_nil }
+          end
+
+          context 'for an existing site' do
+            let(:signed_data) { Gitlab::Geo::SignedData.new(geo_node: secondary_node).sign_and_encode_data({}) }
+            let(:env) do
+              {
+                ::Gitlab::Geo::GEO_PROXIED_EXTRA_DATA_HEADER => signed_data
+              }
+            end
+
+            it { is_expected.to eq(secondary_node) }
+          end
+        end
+      end
     end
   end
 

@@ -353,12 +353,12 @@ RSpec.describe Issue do
     it { is_expected.to have_one(:status_page_published_incident) }
   end
 
-  describe 'state machine' do
-    context 'daily dora metrics refresh' do
-      let_it_be(:production_env) { create(:environment, :production) }
+  describe 'daily dora metrics refresh' do
+    let_it_be(:production_env) { create(:environment, :production) }
 
+    context 'on issue close' do
       context 'when incident is closed' do
-        let(:issue) { create(:issue, :incident, project: production_env.project) }
+        let!(:issue) { create(:incident, project: production_env.project) }
 
         it 'schedules Dora::DailyMetrics::RefreshWorker' do
           freeze_time do
@@ -371,7 +371,7 @@ RSpec.describe Issue do
       end
 
       context 'when there is no production env' do
-        let(:issue) { create(:issue, :incident) }
+        let!(:issue) { create(:incident) }
 
         it 'does not schedule Dora::DailyMetrics::RefreshWorker' do
           expect(::Dora::DailyMetrics::RefreshWorker).not_to receive(:perform_async)
@@ -381,12 +381,39 @@ RSpec.describe Issue do
       end
 
       context 'when issue is not an incident' do
-        let(:issue) { create(:issue, project: production_env.project) }
+        let!(:issue) { create(:issue, project: production_env.project) }
 
         it 'does not schedule Dora::DailyMetrics::RefreshWorker' do
           expect(::Dora::DailyMetrics::RefreshWorker).not_to receive(:perform_async)
 
           issue.close!
+        end
+      end
+    end
+
+    context 'on incident create' do
+      it 'schedules Dora::DailyMetrics::RefreshWorker' do
+        freeze_time do
+          expect(::Dora::DailyMetrics::RefreshWorker)
+            .to receive(:perform_async).with(production_env.id, Time.current.to_date.to_s)
+
+          create(:incident, project: production_env.project)
+        end
+      end
+
+      context 'when there is no production env' do
+        it 'does not schedule Dora::DailyMetrics::RefreshWorker' do
+          expect(::Dora::DailyMetrics::RefreshWorker).not_to receive(:perform_async)
+
+          create(:incident)
+        end
+      end
+
+      context 'when issue is not an incident' do
+        it 'does not schedule Dora::DailyMetrics::RefreshWorker' do
+          expect(::Dora::DailyMetrics::RefreshWorker).not_to receive(:perform_async)
+
+          create(:issue, project: production_env.project)
         end
       end
     end

@@ -118,11 +118,14 @@ RSpec.shared_examples 'not hitting graphql network errors with the container reg
 end
 
 RSpec.shared_examples 'reconciling migration_state' do
-  shared_examples 'no action' do
-    it 'does nothing' do
-      expect { subject }.not_to change { repository.reload.migration_state }
+  shared_examples 'enforcing states coherence to' do |expected_migration_state|
+    it 'leaves the repository in the expected migration_state' do
+      expect(repository.gitlab_api_client).not_to receive(:pre_import_repository)
+      expect(repository.gitlab_api_client).not_to receive(:import_repository)
 
-      expect(subject).to eq(nil)
+      subject
+
+      expect(repository.reload.migration_state).to eq(expected_migration_state)
     end
   end
 
@@ -145,15 +148,17 @@ RSpec.shared_examples 'reconciling migration_state' do
   context 'native response' do
     let(:status) { 'native' }
 
-    it 'raises an error' do
-      expect { subject }.to raise_error(described_class::NativeImportError)
+    it 'finishes the import' do
+      expect { subject }
+        .to change { repository.reload.migration_state }.to('import_done')
+        .and change { repository.reload.migration_skipped_reason }.to('native_import')
     end
   end
 
   context 'import_in_progress response' do
     let(:status) { 'import_in_progress' }
 
-    it_behaves_like 'no action'
+    it_behaves_like 'enforcing states coherence to', 'importing'
   end
 
   context 'import_complete response' do
@@ -173,7 +178,7 @@ RSpec.shared_examples 'reconciling migration_state' do
   context 'pre_import_in_progress response' do
     let(:status) { 'pre_import_in_progress' }
 
-    it_behaves_like 'no action'
+    it_behaves_like 'enforcing states coherence to', 'pre_importing'
   end
 
   context 'pre_import_complete response' do
@@ -191,5 +196,19 @@ RSpec.shared_examples 'reconciling migration_state' do
     let(:status) { 'pre_import_failed' }
 
     it_behaves_like 'retrying the pre_import'
+  end
+
+  %w[pre_import_canceled import_canceled].each do |canceled_status|
+    context "#{canceled_status} response" do
+      let(:status) { canceled_status }
+
+      it_behaves_like 'enforcing states coherence to', 'import_skipped' do
+        it 'skips with migration_canceled_by_registry' do
+          subject
+
+          expect(repository.reload.migration_skipped_reason).to eq('migration_canceled_by_registry')
+        end
+      end
+    end
   end
 end

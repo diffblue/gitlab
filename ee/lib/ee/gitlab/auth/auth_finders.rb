@@ -8,7 +8,6 @@ module EE
         extend ::Gitlab::Utils::Override
 
         def find_user_from_geo_token
-          return unless ::Feature.enabled?(:geo_token_user_authentication, default_enabled: :yaml)
           return unless geo_api_request?
 
           token = current_request.authorization

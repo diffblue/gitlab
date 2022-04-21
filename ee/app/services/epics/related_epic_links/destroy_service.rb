@@ -3,6 +3,8 @@
 module Epics
   module RelatedEpicLinks
     class DestroyService < ::IssuableLinks::DestroyService
+      include UsageDataHelper
+
       private
 
       def permission_to_remove_relation?
@@ -10,7 +12,7 @@ module Epics
       end
 
       def track_event
-        # No op
+        track_related_epics_event_for(link_type: link.link_type, event_type: :removed)
       end
 
       def not_found_message

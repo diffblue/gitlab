@@ -1158,7 +1158,7 @@ describe('RelatedItemTree', () => {
         it('should dispatch `requestCreateItem` and `receiveCreateItemSuccess` actions on request success', () => {
           mock.onPost(/(.*)/).replyOnce(200, mockEpic1);
 
-          testAction(
+          return testAction(
             actions.createItem,
             { itemTitle: 'Sample child epic' },
             state,
@@ -1188,7 +1188,7 @@ describe('RelatedItemTree', () => {
         it('should dispatch `requestCreateItem` and `receiveCreateItemFailure` actions on request failure', () => {
           mock.onPost(/(.*)/).replyOnce(500, {});
 
-          testAction(
+          return testAction(
             actions.createItem,
             { itemTitle: 'Sample child epic' },
             state,
@@ -1207,7 +1207,7 @@ describe('RelatedItemTree', () => {
 
       describe('receiveReorderItemFailure', () => {
         it('should revert reordered item back to its original position via REORDER_ITEM mutation', () => {
-          testAction(
+          return testAction(
             actions.receiveReorderItemFailure,
             {},
             {},
@@ -1241,7 +1241,7 @@ describe('RelatedItemTree', () => {
             }),
           );
 
-          testAction(
+          return testAction(
             actions.reorderItem,
             {
               treeReorderMutation: mockEpicTreeReorderInput.moved,
@@ -1278,7 +1278,7 @@ describe('RelatedItemTree', () => {
             }),
           );
 
-          testAction(
+          return testAction(
             actions.reorderItem,
             {
               treeReorderMutation: mockEpicTreeReorderInput.moved,
@@ -1316,7 +1316,7 @@ describe('RelatedItemTree', () => {
         it('should perform REORDER_ITEM mutation before request and dispatch `receiveReorderItemFailure` on request failure', () => {
           jest.spyOn(epicUtils.gqClient, 'mutate').mockReturnValue(Promise.reject());
 
-          testAction(
+          return testAction(
             actions.reorderItem,
             {
               treeReorderMutation: mockEpicTreeReorderInput.moved,
@@ -1354,7 +1354,7 @@ describe('RelatedItemTree', () => {
 
       describe('receiveMoveItemFailure', () => {
         it('should revert moved item back to its original position on its original parent via MOVE_ITEM_FAILURE mutation', () => {
-          testAction(
+          return testAction(
             actions.receiveMoveItemFailure,
             {},
             {},
@@ -1392,7 +1392,7 @@ describe('RelatedItemTree', () => {
             }),
           );
 
-          testAction(
+          return testAction(
             actions.moveItem,
             {
               oldParentItem: mockParentItem,
@@ -1428,7 +1428,7 @@ describe('RelatedItemTree', () => {
 
           state.children[mockParentItem2.parentReference] = [{ id: '33' }];
 
-          testAction(
+          return testAction(
             actions.moveItem,
             {
               oldParentItem: mockParentItem,
@@ -1475,7 +1475,7 @@ describe('RelatedItemTree', () => {
             oldIndex: 0,
           };
 
-          testAction(
+          return testAction(
             actions.moveItem,
             payload,
             state,
@@ -1541,7 +1541,7 @@ describe('RelatedItemTree', () => {
 
       describe('receiveCreateIssueSuccess', () => {
         it('should set `state.itemCreateInProgress` & `state.itemsFetchResultEmpty` to false', () => {
-          testAction(
+          return testAction(
             actions.receiveCreateIssueSuccess,
             { insertAt: 0, items: [] },
             {},
@@ -1553,7 +1553,7 @@ describe('RelatedItemTree', () => {
 
       describe('receiveCreateIssueFailure', () => {
         it('should set `state.itemCreateInProgress` to false', () => {
-          testAction(
+          return testAction(
             actions.receiveCreateIssueFailure,
             {},
             {},
@@ -1648,28 +1648,31 @@ describe('RelatedItemTree', () => {
             requestSpy.mockReturnValue([500, '']);
           });
 
-          it('fails and shows flash message', (done) => {
-            return actions
-              .createNewIssue(context, payload)
-              .then(() => done.fail('expected action to throw error!'))
-              .catch(() => {
-                expect(requestSpy).toHaveBeenCalledWith(expectedRequest);
-                expect(context.dispatch).toHaveBeenCalledWith('receiveCreateIssueFailure');
-                done();
-              });
+          it('fails and shows flash message', async () => {
+            await expect(actions.createNewIssue(context, payload)).rejects.toEqual(
+              new Error('Request failed with status code 500'),
+            );
+            expect(requestSpy).toHaveBeenCalledWith(expectedRequest);
+            expect(context.dispatch).toHaveBeenCalledWith('receiveCreateIssueFailure');
           });
         });
       });
 
       describe('requestProjects', () => {
         it('should set `state.projectsFetchInProgress` to true', () => {
-          testAction(actions.requestProjects, {}, {}, [{ type: types.REQUEST_PROJECTS }], []);
+          return testAction(
+            actions.requestProjects,
+            {},
+            {},
+            [{ type: types.REQUEST_PROJECTS }],
+            [],
+          );
         });
       });
 
       describe('receiveProjectsSuccess', () => {
         it('should set `state.projectsFetchInProgress` to false and set provided `projects` param to state', () => {
-          testAction(
+          return testAction(
             actions.receiveProjectsSuccess,
             mockProjects,
             {},
@@ -1681,7 +1684,7 @@ describe('RelatedItemTree', () => {
 
       describe('receiveProjectsFailure', () => {
         it('should set `state.projectsFetchInProgress` to false', () => {
-          testAction(
+          return testAction(
             actions.receiveProjectsFailure,
             {},
             {},
@@ -1723,7 +1726,7 @@ describe('RelatedItemTree', () => {
         it('should dispatch `requestProjects` and `receiveProjectsSuccess` actions on request success', () => {
           mock.onGet(/(.*)/).replyOnce(200, mockProjects);
 
-          testAction(
+          return testAction(
             actions.fetchProjects,
             '',
             state,
@@ -1743,7 +1746,7 @@ describe('RelatedItemTree', () => {
         it('should dispatch `requestProjects` and `receiveProjectsFailure` actions on request failure', () => {
           mock.onGet(/(.*)/).replyOnce(500, {});
 
-          testAction(
+          return testAction(
             actions.fetchProjects,
             '',
             state,

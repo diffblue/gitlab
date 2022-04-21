@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService do
   describe '#execute' do
-    let(:service) { described_class.new(project: project, params: { policy: policy }) }
+    let(:service) { described_class.new(container: container, params: { policy: policy }) }
     let(:enabled) { true }
     let(:policy_type) { 'scan_execution_policy' }
     let(:name) { 'New policy' }
@@ -194,19 +194,26 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService do
       end
     end
 
-    context 'when project is not provided' do
-      let_it_be(:project) { nil }
+    context 'when project or namespace is not provided' do
+      let_it_be(:container) { nil }
 
       it_behaves_like 'checks policy type'
       it_behaves_like 'checks if branches are provided in rule'
     end
 
     context 'when project is provided' do
-      let_it_be(:project) { create(:project, :repository) }
+      let_it_be(:container) { create(:project, :repository) }
 
       it_behaves_like 'checks policy type'
       it_behaves_like 'checks if branches are provided in rule'
       it_behaves_like 'checks if branches are defined in the project'
+    end
+
+    context 'when namespace is provided' do
+      let_it_be(:container) { create(:namespace) }
+
+      it_behaves_like 'checks policy type'
+      it_behaves_like 'checks if branches are provided in rule'
     end
   end
 end

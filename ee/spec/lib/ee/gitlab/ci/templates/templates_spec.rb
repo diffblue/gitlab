@@ -19,7 +19,8 @@ RSpec.describe "CI YML Templates" do
       'Security/DAST.gitlab-ci.yml',        # DAST stage is defined inside AutoDevops yml
       'Security/DAST-API.gitlab-ci.yml',    # no auto-devops
       'Security/API-Fuzzing.gitlab-ci.yml', # no auto-devops
-      'Terraform.gitlab-ci.yml'
+      'Terraform.gitlab-ci.yml',
+      'ThemeKit.gitlab-ci.yml'              # No AutoDevops support
     ]
 
     where(:template_name) do

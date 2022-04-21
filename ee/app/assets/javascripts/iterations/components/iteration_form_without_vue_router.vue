@@ -4,7 +4,7 @@ import createFlash from '~/flash';
 import { visitUrl } from '~/lib/utils/url_utility';
 import { __ } from '~/locale';
 import MarkdownField from '~/vue_shared/components/markdown/field.vue';
-import { formatDate } from '~/lib/utils/datetime_utility';
+import { formatDate, parsePikadayDate } from '~/lib/utils/datetime_utility';
 import createIteration from '../queries/create_iteration.mutation.graphql';
 import updateIteration from '../queries/update_iteration.mutation.graphql';
 
@@ -49,8 +49,8 @@ export default {
       loading: false,
       title: this.iteration.title,
       description: this.iteration.description ?? '',
-      startDate: this.iteration.startDate ? new Date(this.iteration.startDate) : null,
-      dueDate: this.iteration.dueDate ? new Date(this.iteration.dueDate) : null,
+      startDate: this.iteration.startDate ? parsePikadayDate(this.iteration.startDate) : null,
+      dueDate: this.iteration.dueDate ? parsePikadayDate(this.iteration.dueDate) : null,
       showValidation: false,
     };
   },
@@ -268,7 +268,7 @@ export default {
         data-qa-selector="save_iteration_button"
         @click="save"
       >
-        {{ isEditing ? __('Update iteration') : __('Create iteration') }}
+        {{ isEditing ? __('Save changes') : __('Create iteration') }}
       </gl-button>
       <gl-button class="ml-auto" data-testid="cancel-iteration" @click="cancel">
         {{ __('Cancel') }}

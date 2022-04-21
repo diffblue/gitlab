@@ -7,6 +7,7 @@ import { GENERAL_ERROR_MESSAGE } from 'ee/vue_shared/purchase_flow/constants';
 import activateNextStepMutation from 'ee/vue_shared/purchase_flow/graphql/mutations/activate_next_step.mutation.graphql';
 import { useMockLocationHelper } from 'helpers/mock_window_location_helper';
 import testAction from 'helpers/vuex_action_helper';
+import Tracking from '~/tracking';
 import createFlash from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 import * as googleTagManager from '~/google_tag_manager';
@@ -537,57 +538,85 @@ describe('Subscriptions Actions', () => {
   });
 
   describe('confirmOrder', () => {
-    it('calls confirmOrderSuccess with a redirect location on success', async () => {
-      const response = { location: 'x' };
-      mock.onPost(confirmOrderPath).replyOnce(200, response);
+    describe('on success', () => {
+      const payload = { location: 'x' };
 
-      await testAction(
-        actions.confirmOrder,
-        null,
-        {},
-        [{ type: 'UPDATE_IS_CONFIRMING_ORDER', payload: true }],
-        [{ type: 'confirmOrderSuccess', payload: response }],
-      );
+      beforeEach(() => mock.onPost(confirmOrderPath).replyOnce(200, payload));
+
+      it('calls trackTransaction', async () => {
+        const spy = jest.spyOn(googleTagManager, 'trackTransaction');
+
+        await testAction(
+          actions.confirmOrder,
+          null,
+          {},
+          [{ type: 'UPDATE_IS_CONFIRMING_ORDER', payload: true }],
+          [{ type: 'confirmOrderSuccess', payload }],
+        );
+
+        expect(spy).toHaveBeenCalled();
+      });
+
+      it('calls tracking event', async () => {
+        const spy = jest.spyOn(Tracking, 'event');
+
+        await testAction(
+          actions.confirmOrder,
+          null,
+          {},
+          [{ type: 'UPDATE_IS_CONFIRMING_ORDER', payload: true }],
+          [{ type: 'confirmOrderSuccess', payload }],
+        );
+
+        expect(spy).toHaveBeenCalledWith('default', 'click_button', {
+          label: 'confirm_purchase',
+          property: 'Success: subscription',
+        });
+      });
     });
 
-    it('calls trackTransaction on success', async () => {
-      const spy = jest.spyOn(googleTagManager, 'trackTransaction');
-      const response = { location: 'x' };
-      mock.onPost(confirmOrderPath).replyOnce(200, response);
+    describe('on error', () => {
+      const errors = 'errors';
 
-      await testAction(
-        actions.confirmOrder,
-        null,
-        {},
-        [{ type: 'UPDATE_IS_CONFIRMING_ORDER', payload: true }],
-        [{ type: 'confirmOrderSuccess', payload: response }],
-      );
+      beforeEach(() => mock.onPost(confirmOrderPath).replyOnce(200, { errors }));
 
-      expect(spy).toHaveBeenCalled();
+      it('calls tracking event', async () => {
+        const spy = jest.spyOn(Tracking, 'event');
+
+        await testAction(
+          actions.confirmOrder,
+          null,
+          {},
+          [{ type: 'UPDATE_IS_CONFIRMING_ORDER', payload: true }],
+          [{ type: 'confirmOrderError', payload: '"errors"' }],
+        );
+
+        expect(spy).toHaveBeenCalledWith('default', 'click_button', {
+          label: 'confirm_purchase',
+          property: errors,
+        });
+      });
     });
 
-    it('calls confirmOrderError with the errors on error', async () => {
-      mock.onPost(confirmOrderPath).replyOnce(200, { errors: 'errors' });
+    describe('on failure', () => {
+      beforeEach(() => mock.onPost(confirmOrderPath).replyOnce(500));
 
-      await testAction(
-        actions.confirmOrder,
-        null,
-        {},
-        [{ type: 'UPDATE_IS_CONFIRMING_ORDER', payload: true }],
-        [{ type: 'confirmOrderError', payload: '"errors"' }],
-      );
-    });
+      it('calls tracking event', async () => {
+        const spy = jest.spyOn(Tracking, 'event');
 
-    it('calls confirmOrderError on failure', async () => {
-      mock.onPost(confirmOrderPath).replyOnce(500);
+        await testAction(
+          actions.confirmOrder,
+          null,
+          {},
+          [{ type: 'UPDATE_IS_CONFIRMING_ORDER', payload: true }],
+          [{ type: 'confirmOrderError' }],
+        );
 
-      await testAction(
-        actions.confirmOrder,
-        null,
-        {},
-        [{ type: 'UPDATE_IS_CONFIRMING_ORDER', payload: true }],
-        [{ type: 'confirmOrderError' }],
-      );
+        expect(spy).toHaveBeenCalledWith('default', 'click_button', {
+          label: 'confirm_purchase',
+          property: 'Request failed with status code 500',
+        });
+      });
     });
   });
 

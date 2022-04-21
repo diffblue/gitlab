@@ -1,0 +1,8 @@
+---
+name: touch_project_repository_state_updated_at
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/84197
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/358614
+milestone: '15.0'
+type: development
+group: group::geo
+default_enabled: false

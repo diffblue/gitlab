@@ -14,8 +14,8 @@ describe('EE sast report actions', () => {
   });
 
   describe('updateVulnerability', () => {
-    it(`should commit ${types.UPDATE_VULNERABILITY} with the correct response`, (done) => {
-      testAction(
+    it(`should commit ${types.UPDATE_VULNERABILITY} with the correct response`, async () => {
+      await testAction(
         actions.updateVulnerability,
         issue,
         state,
@@ -26,7 +26,6 @@ describe('EE sast report actions', () => {
           },
         ],
         [],
-        done,
       );
     });
   });

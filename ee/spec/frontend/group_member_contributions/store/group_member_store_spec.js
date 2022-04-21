@@ -70,41 +70,29 @@ describe('GroupMemberStore', () => {
       mock.restore();
     });
 
-    it('calls service.getContributedMembers and sets response to the store on success', (done) => {
+    it('calls service.getContributedMembers and sets response to the store on success', async () => {
       mock.onGet(contributionsPath).reply(200, rawMembers);
       jest.spyOn(store, 'setColumns').mockImplementation(() => {});
       jest.spyOn(store, 'setMembers').mockImplementation(() => {});
 
-      store
-        .fetchContributedMembers()
-        .then(() => {
-          expect(store.isLoading).toBe(false);
-          expect(store.setColumns).toHaveBeenCalledWith(expect.any(Object));
-          expect(store.setMembers).toHaveBeenCalledWith(rawMembers);
-          done();
-        })
-        .catch(done.fail);
-
       expect(store.isLoading).toBe(true);
+      await store.fetchContributedMembers();
+
+      expect(store.isLoading).toBe(false);
+      expect(store.setColumns).toHaveBeenCalledWith(expect.any(Object));
+      expect(store.setMembers).toHaveBeenCalledWith(rawMembers);
     });
 
-    it('calls service.getContributedMembers and sets `isLoading` to false and shows flash message if request failed', (done) => {
+    it('calls service.getContributedMembers and sets `isLoading` to false and shows flash message if request failed', async () => {
       mock.onGet(contributionsPath).reply(500, {});
 
-      store
-        .fetchContributedMembers()
-        .then(() => done.fail('Expected error to be thrown!'))
-        .catch((e) => {
-          expect(e.message).toBe('Request failed with status code 500');
-          expect(store.isLoading).toBe(false);
-          expect(createFlash).toHaveBeenCalledWith({
-            message: 'Something went wrong while fetching group member contributions',
-          });
-        })
-        .then(done)
-        .catch(done.fail);
-
-      expect(store.isLoading).toBe(true);
+      await expect(store.fetchContributedMembers()).rejects.toEqual(
+        new Error('Request failed with status code 500'),
+      );
+      expect(store.isLoading).toBe(false);
+      expect(createFlash).toHaveBeenCalledWith({
+        message: 'Something went wrong while fetching group member contributions',
+      });
     });
   });
 });

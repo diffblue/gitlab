@@ -1,0 +1,4 @@
+= render layout: 'shared/billings/billing_plans_layout', locals: { namespace: namespace, current_plan: current_plan } do
+
+  = render 'shared/billings/trial_status', namespace: namespace
+  = render 'shared/billings/trial_buttons', namespace: namespace, glm_content: 'group-billing'

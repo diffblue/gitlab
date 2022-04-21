@@ -4,8 +4,10 @@ import {
   SECURITY_TRAINING_URL_STATUS_COMPLETED,
 } from 'ee/vulnerabilities/constants';
 
+export const testIdentifierName = 'cwe-1';
+
 export const testIdentifiers = [
-  { externalType: SUPPORTED_IDENTIFIER_TYPES.cwe, externalId: 'cwe-1' },
+  { externalType: SUPPORTED_IDENTIFIER_TYPES.cwe, externalId: testIdentifierName },
   { externalType: 'cve', externalId: 'cve-1' },
 ];
 
@@ -49,12 +51,14 @@ const createSecurityTrainingUrls = ({ urlOverrides = {}, urls } = {}) =>
       name: testProviderName[0],
       url: testTrainingUrls[0],
       status: SECURITY_TRAINING_URL_STATUS_COMPLETED,
+      identifier: testIdentifierName,
       ...urlOverrides.first,
     },
     {
       name: testProviderName[1],
       url: testTrainingUrls[1],
       status: SECURITY_TRAINING_URL_STATUS_COMPLETED,
+      identifier: testIdentifierName,
       ...urlOverrides.second,
     },
   ];

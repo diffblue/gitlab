@@ -1,6 +1,7 @@
 /* https://github.com/MozMorris/tomorrow-pygments */
 
 @import '../common';
+@import '../hljs';
 
 /*
 * Dark syntax colors
@@ -88,6 +89,41 @@ $dark-vg: #c66;
 $dark-vi: #c66;
 $dark-il: #de935f;
 
+:root {
+  --color-hljs-comment: #{$dark-c};
+  --color-hljs-variable: #{$dark-k};
+  --color-hljs-link: #{$dark-l};
+  --color-hljs-meta: #{$dark-cp};
+  --color-hljs-keyword: #{$dark-kd};
+  --color-hljs-type: #{$dark-kt};
+  --color-hljs-attr: #{$dark-na};
+  --color-hljs-builtin: #{$dark-nb};
+  --color-hljs-title: #{$dark-n};
+  --color-hljs-class: #{$dark-nc};
+  --color-hljs-function: #{$dark-nf};
+  --color-hljs-tag: #{$dark-nt};
+  --color-hljs-number: #{$dark-mi};
+  --color-hljs-subst: #{$dark-sc};
+  --color-hljs-string: #{$dark-s1};
+  --color-hljs-symbol: #{$dark-ss};
+  --color-hljs-variable: #{$dark-vi};
+  --color-hljs-operator: #{$dark-o};
+  --color-hljs-punctuation: #{$dark-p};
+  --color-hljs-regexp: #{$dark-sr};
+  --color-hljs-constant: #{$dark-nx};
+  --color-hljs-literal: #{$dark-kc};
+  --color-hljs-language: #{$dark-nx};
+  --color-hljs-params: #{$dark-nx};
+  --color-hljs-selector-doctag: #{$dark-cm};
+  --color-hljs-selector-tag: #{$dark-nt};
+  --color-hljs-selector-class: #{$dark-nc};
+  --color-hljs-selector-id: #{$dark-nn};
+  --color-hljs-selector-attr: #{$dark-nt};
+  --color-hljs-selector-pseudo: #{$dark-nd};
+  --default-diff-color-deletion: #ff3333;
+  --default-diff-color-addition: #288f2a;
+}
+
 .code.dark {
   // Line numbers
   .file-line-num {
@@ -118,8 +154,12 @@ $dark-il: #de935f;
     color: $dark-line-color;
   }
 
-  .line_expansion {
-    @include diff-expansion($dark-main-bg, $dark-border, $dark-na);
+  .old-line_expansion {
+    @include old-diff-expansion($dark-main-bg, $dark-border, $dark-na);
+  }
+
+  .diff-line-expand-button {
+    @include diff-expansion($gray-600, $gray-200, $gray-300, $white);
   }
 
   // Diff line
@@ -128,6 +168,10 @@ $dark-il: #de935f;
     &.old-nonewline .line_content,
     &.new-nonewline .line_content {
       @include dark-diff-match-line;
+    }
+
+    &.diff-grid-row {
+      @include dark-diff-expansion-line;
     }
 
     .diff-td.diff-line-num.hll:not(.empty-cell),

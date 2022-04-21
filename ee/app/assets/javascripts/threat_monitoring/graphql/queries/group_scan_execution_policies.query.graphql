@@ -1,0 +1,13 @@
+query groupScanExecutionPolicies($fullPath: ID!) {
+  group(fullPath: $fullPath) @client {
+    id
+    scanExecutionPolicies {
+      nodes {
+        name
+        yaml
+        enabled
+        updatedAt
+      }
+    }
+  }
+}

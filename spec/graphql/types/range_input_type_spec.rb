@@ -24,11 +24,11 @@ RSpec.describe ::Types::RangeInputType do
 
   it 'follows expected subtyping relationships for instances' do
     context = GraphQL::Query::Context.new(
-      query: double('query', schema: nil),
+      query: GraphQL::Query.new(GitlabSchema),
       values: {},
       object: nil
     )
-    instance = described_class[of_integer].new(context: context, defaults_used: [], ruby_kwargs: {})
+    instance = described_class[of_integer].new({}, context: context, defaults_used: [], ruby_kwargs: {})
 
     expect(instance).to be_a_kind_of(described_class)
     expect(instance).to be_a_kind_of(described_class[of_integer])

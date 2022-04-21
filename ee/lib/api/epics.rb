@@ -91,7 +91,7 @@ module API
       params do
         requires :title, type: String, desc: 'The title of an epic'
         optional :description, type: String, desc: 'The description of an epic'
-        optional :color, type: String, desc: 'The color of an epic'
+        optional :color, type: ::Gitlab::Color, desc: 'The color of an epic', coerce_with: ->(value) { ::Gitlab::Color.of(value) unless value.nil? }
         optional :confidential, type: Boolean, desc: 'Indicates if the epic is confidential'
         optional :created_at, type: DateTime, desc: 'Date time when the epic was created. Available only for admins and project owners.'
         optional :start_date, as: :start_date_fixed, type: String, desc: 'The start date of an epic'
@@ -122,7 +122,7 @@ module API
       params do
         requires :epic_iid, type: Integer, desc: 'The internal ID of an epic'
         optional :title, type: String, desc: 'The title of an epic'
-        optional :color, type: String, desc: 'The color of an epic'
+        optional :color, type: ::Gitlab::Color, desc: 'The color of an epic', coerce_with: ->(value) { ::Gitlab::Color.of(value) unless value.nil? }
         optional :description, type: String, desc: 'The description of an epic'
         optional :confidential, type: Boolean, desc: 'Indicates if the epic is confidential'
         optional :updated_at, type: DateTime, desc: 'Date time when the epic was updated. Available only for admins and project owners.'

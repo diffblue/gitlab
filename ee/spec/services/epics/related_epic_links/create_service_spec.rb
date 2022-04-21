@@ -52,5 +52,41 @@ RSpec.describe Epics::RelatedEpicLinks::CreateService do
         expect(issuable_link_class.find_by!(target: issuable3)).to have_attributes(source: issuable, link_type: 'relates_to')
       end
     end
+
+    context 'event tracking' do
+      shared_examples 'a recorded event' do
+        it 'records event for each link created' do
+          params = {
+            link_type: link_type,
+            issuable_references: [issuable_a, issuable3].map { |epic| epic.to_reference(issuable.group, full: true) }
+          }
+
+          expect(Gitlab::UsageDataCounters::EpicActivityUniqueCounter).to receive(tracking_method_name).with(author: user).twice
+
+          described_class.new(issuable, user, params).execute
+        end
+      end
+
+      context 'for relates_to link type' do
+        let(:link_type) { IssuableLink::TYPE_RELATES_TO }
+        let(:tracking_method_name) { :track_linked_epic_with_type_relates_to_added }
+
+        it_behaves_like 'a recorded event'
+      end
+
+      context 'for blocks link_type' do
+        let(:link_type) { IssuableLink::TYPE_BLOCKS }
+        let(:tracking_method_name) { :track_linked_epic_with_type_blocks_added }
+
+        it_behaves_like 'a recorded event'
+      end
+
+      context 'for is_blocked_by link_type' do
+        let(:link_type) { IssuableLink::TYPE_IS_BLOCKED_BY }
+        let(:tracking_method_name) { :track_linked_epic_with_type_is_blocked_by_added }
+
+        it_behaves_like 'a recorded event'
+      end
+    end
   end
 end

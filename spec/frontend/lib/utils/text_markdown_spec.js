@@ -1,5 +1,10 @@
 import $ from 'jquery';
-import { insertMarkdownText, keypressNoteText } from '~/lib/utils/text_markdown';
+import {
+  insertMarkdownText,
+  keypressNoteText,
+  compositionStartNoteText,
+  compositionEndNoteText,
+} from '~/lib/utils/text_markdown';
 import '~/lib/utils/jquery_at_who';
 
 describe('init markdown', () => {
@@ -9,6 +14,9 @@ describe('init markdown', () => {
     textArea = document.createElement('textarea');
     document.querySelector('body').appendChild(textArea);
     textArea.focus();
+
+    // needed for the underlying insertText to work
+    document.execCommand = jest.fn(() => false);
   });
 
   afterAll(() => {
@@ -172,18 +180,31 @@ describe('init markdown', () => {
         const enterEvent = new KeyboardEvent('keydown', { key: 'Enter' });
 
         beforeEach(() => {
-          gon.features = { markdownContinueLists: true };
+          textArea.addEventListener('keydown', keypressNoteText);
+          textArea.addEventListener('compositionstart', compositionStartNoteText);
+          textArea.addEventListener('compositionend', compositionEndNoteText);
         });
 
         it.each`
           text                           | expected
           ${'- item'}                    | ${'- item\n- '}
+          ${'* item'}                    | ${'* item\n* '}
+          ${'+ item'}                    | ${'+ item\n+ '}
           ${'- [ ] item'}                | ${'- [ ] item\n- [ ] '}
-          ${'- [x] item'}                | ${'- [x] item\n- [x] '}
+          ${'- [x] item'}                | ${'- [x] item\n- [ ] '}
+          ${'- [X] item'}                | ${'- [X] item\n- [ ] '}
+          ${'- [ ] nbsp (U+00A0)'}       | ${'- [ ] nbsp (U+00A0)\n- [ ] '}
           ${'- item\n  - second'}        | ${'- item\n  - second\n  - '}
+          ${'- - -'}                     | ${'- - -'}
+          ${'- --'}                      | ${'- --'}
+          ${'* **'}                      | ${'* **'}
+          ${' **  * ** * ** * **'}       | ${' **  * ** * ** * **'}
+          ${'- - -x'}                    | ${'- - -x\n- '}
+          ${'+ ++'}                      | ${'+ ++\n+ '}
           ${'1. item'}                   | ${'1. item\n2. '}
           ${'1. [ ] item'}               | ${'1. [ ] item\n2. [ ] '}
-          ${'1. [x] item'}               | ${'1. [x] item\n2. [x] '}
+          ${'1. [x] item'}               | ${'1. [x] item\n2. [ ] '}
+          ${'1. [X] item'}               | ${'1. [X] item\n2. [ ] '}
           ${'108. item'}                 | ${'108. item\n109. '}
           ${'108. item\n     - second'}  | ${'108. item\n     - second\n     - '}
           ${'108. item\n     1. second'} | ${'108. item\n     1. second\n     2. '}
@@ -192,7 +213,6 @@ describe('init markdown', () => {
           textArea.value = text;
           textArea.setSelectionRange(text.length, text.length);
 
-          textArea.addEventListener('keydown', keypressNoteText);
           textArea.dispatchEvent(enterEvent);
 
           expect(textArea.value).toEqual(expected);
@@ -207,10 +227,12 @@ describe('init markdown', () => {
           ${'- item\n- '}                          | ${'- item\n'}
           ${'- [ ] item\n- [ ] '}                  | ${'- [ ] item\n'}
           ${'- [x] item\n- [x] '}                  | ${'- [x] item\n'}
+          ${'- [X] item\n- [X] '}                  | ${'- [X] item\n'}
           ${'- item\n  - second\n  - '}            | ${'- item\n  - second\n'}
           ${'1. item\n2. '}                        | ${'1. item\n'}
           ${'1. [ ] item\n2. [ ] '}                | ${'1. [ ] item\n'}
           ${'1. [x] item\n2. [x] '}                | ${'1. [x] item\n'}
+          ${'1. [X] item\n2. [X] '}                | ${'1. [X] item\n'}
           ${'108. item\n109. '}                    | ${'108. item\n'}
           ${'108. item\n     - second\n     - '}   | ${'108. item\n     - second\n'}
           ${'108. item\n     1. second\n     1. '} | ${'108. item\n     1. second\n'}
@@ -218,7 +240,6 @@ describe('init markdown', () => {
           textArea.value = text;
           textArea.setSelectionRange(text.length, text.length);
 
-          textArea.addEventListener('keydown', keypressNoteText);
           textArea.dispatchEvent(enterEvent);
 
           expect(textArea.value.substr(0, textArea.selectionStart)).toEqual(expected);
@@ -238,7 +259,6 @@ describe('init markdown', () => {
           textArea.value = text;
           textArea.setSelectionRange(text.length, text.length);
 
-          textArea.addEventListener('keydown', keypressNoteText);
           textArea.dispatchEvent(enterEvent);
 
           expect(textArea.value).toEqual(expected);
@@ -254,23 +274,25 @@ describe('init markdown', () => {
             textArea.value = text;
             textArea.setSelectionRange(add_at, add_at);
 
-            textArea.addEventListener('keydown', keypressNoteText);
             textArea.dispatchEvent(enterEvent);
 
             expect(textArea.value).toEqual(expected);
           },
         );
 
-        it('does nothing if feature flag disabled', () => {
-          gon.features = { markdownContinueLists: false };
+        it('does not duplicate a line item for IME characters', () => {
+          const text = '- 日本語';
+          const expected = '- 日本語\n- ';
 
-          const text = '- item';
-          const expected = '- item';
-
+          textArea.dispatchEvent(new CompositionEvent('compositionstart'));
           textArea.value = text;
+
+          // Press enter to end composition
+          textArea.dispatchEvent(enterEvent);
+          textArea.dispatchEvent(new CompositionEvent('compositionend'));
           textArea.setSelectionRange(text.length, text.length);
 
-          textArea.addEventListener('keydown', keypressNoteText);
+          // Press enter to make new line
           textArea.dispatchEvent(enterEvent);
 
           expect(textArea.value).toEqual(expected);

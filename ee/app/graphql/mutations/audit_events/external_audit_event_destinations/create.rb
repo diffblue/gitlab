@@ -32,7 +32,7 @@ module Mutations
         private
 
         def find_object(group_path)
-          ::GroupFinder.new(current_user).execute(path: group_path)
+          ::Group.find_by_full_path(group_path)
         end
       end
     end

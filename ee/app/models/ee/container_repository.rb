@@ -26,18 +26,17 @@ module EE
         # self-managed instances are singlular plans, so they do not need
         # these filters
         return all unless ::Gitlab.com?
+        return all if ::ContainerRegistry::Migration.all_plans?
 
         if ::ContainerRegistry::Migration.limit_gitlab_org?
-          joins(project: [:namespace]).where(namespaces: { path: GITLAB_ORG_NAMESPACE })
+          gitlab_org_namespace = ::Namespace.top_most.by_path(GITLAB_ORG_NAMESPACE)
+          return none unless gitlab_org_namespace
+
+          project_scope = ::Project.for_group_and_its_subgroups(gitlab_org_namespace)
+                            .select(:id)
+          where(project_id: project_scope)
         else
-          joins(
-            %{
-              INNER JOIN "projects" on "projects"."id" = "container_repositories"."project_id"
-              INNER JOIN "namespaces" on "namespaces"."id" = "projects"."namespace_id"
-              INNER JOIN "gitlab_subscriptions" on "gitlab_subscriptions"."namespace_id" = "namespaces"."traversal_ids"[1]
-              INNER JOIN "plans" on "plans"."id" = "gitlab_subscriptions"."hosted_plan_id"
-            }
-          ).where(plans: { id: ::ContainerRegistry::Migration.target_plan.id })
+          where(migration_plan: ::ContainerRegistry::Migration.target_plans)
         end
       end
     end

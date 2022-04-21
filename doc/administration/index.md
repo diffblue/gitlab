@@ -32,7 +32,7 @@ Learn how to install, configure, update, and maintain your GitLab instance.
 
 - [Install](../install/index.md): Requirements, directory structures, and installation methods.
 - [Reference architectures](reference_architectures/index.md): Add additional resources to support more users.
-  - [Installing GitLab on Amazon Web Services (AWS)](../install/aws/index.md): Set up GitLab on Amazon AWS.
+- [Installing GitLab on Amazon Web Services (AWS)](../install/aws/index.md): Set up GitLab on Amazon AWS.
 - [Geo](geo/index.md): Replicate your GitLab instance to other geographic locations as a read-only fully operational version.
 - [Disaster Recovery](geo/disaster_recovery/index.md): Quickly fail-over to a different site with minimal effort in a disaster situation.
 - [Add License](../user/admin_area/license.md): Add a license at install time to unlock features that are in paid tiers of GitLab.
@@ -126,7 +126,7 @@ Learn how to install, configure, update, and maintain your GitLab instance.
   - [Sync LDAP](auth/ldap/index.md)
   - [Kerberos authentication](../integration/kerberos.md)
   - See also other [authentication](../topics/authentication/index.md#gitlab-administrators) topics (for example, enforcing 2FA).
-- [Email users](../tools/email.md): Email GitLab users from GitLab.
+- [Email users](../user/admin_area/email_from_gitlab.md): Email GitLab users from GitLab.
 - [User Cohorts](../user/admin_area/user_cohorts.md): Display the monthly cohorts of new users and their activities over time.
 - [Audit events](audit_events.md): View the changes made on the GitLab server for:
   - Groups and projects.
@@ -218,6 +218,7 @@ Learn how to install, configure, update, and maintain your GitLab instance.
 - [Troubleshooting Elasticsearch](troubleshooting/elasticsearch.md)
 - [Navigating GitLab via Rails console](troubleshooting/navigating_gitlab_via_rails_console.md)
 - [GitLab application limits](instance_limits.md)
+- [Responding to security incidents](../security/responding_to_security_incidents.md)
 
 ### Support Team Docs
 

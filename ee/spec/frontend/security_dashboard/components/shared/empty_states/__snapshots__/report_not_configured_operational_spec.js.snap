@@ -3,6 +3,7 @@
 exports[`Operational report not configured component matches the snapshot for groups 1`] = `
 <gl-empty-state-stub
   description="Manage and track vulnerabilities identified in your Kubernetes clusters. Vulnerabilities appear here after you create a scan execution policy in any project in this group."
+  invertindarkmode="true"
   primarybuttonlink="/operational-configuration"
   primarybuttontext=""
   secondarybuttonlink="/operational-help"
@@ -15,6 +16,7 @@ exports[`Operational report not configured component matches the snapshot for gr
 exports[`Operational report not configured component matches the snapshot for instances 1`] = `
 <gl-empty-state-stub
   description="Manage and track vulnerabilities identified in your Kubernetes clusters. Vulnerabilities appear here after you create a scan execution policy in any project in this instance."
+  invertindarkmode="true"
   primarybuttonlink="/operational-configuration"
   primarybuttontext=""
   secondarybuttonlink="/operational-help"
@@ -27,6 +29,7 @@ exports[`Operational report not configured component matches the snapshot for in
 exports[`Operational report not configured component matches the snapshot for projects 1`] = `
 <gl-empty-state-stub
   description="Manage and track vulnerabilities identified in your Kubernetes clusters. Vulnerabilities appear here after you create a scan execution policy in this project."
+  invertindarkmode="true"
   primarybuttonlink="/operational-configuration"
   primarybuttontext="Create policy"
   secondarybuttonlink="/operational-help"

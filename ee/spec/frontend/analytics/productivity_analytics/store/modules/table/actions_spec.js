@@ -104,7 +104,7 @@ describe('Productivity analytics table actions', () => {
         });
       });
 
-      it('dispatches success with received data', (done) =>
+      it('dispatches success with received data', async () =>
         testAction(
           actions.fetchMergeRequests,
           null,
@@ -117,7 +117,6 @@ describe('Productivity analytics table actions', () => {
               payload: { data: mockMergeRequests, headers },
             },
           ],
-          done,
         ));
     });
 
@@ -126,8 +125,8 @@ describe('Productivity analytics table actions', () => {
         mock.onGet(mockedState.endpoint).replyOnce(500);
       });
 
-      it('dispatches error', (done) => {
-        testAction(
+      it('dispatches error', async () => {
+        await testAction(
           actions.fetchMergeRequests,
           null,
           mockedState,
@@ -139,26 +138,24 @@ describe('Productivity analytics table actions', () => {
               payload: new Error('Request failed with status code 500'),
             },
           ],
-          done,
         );
       });
     });
   });
 
   describe('requestMergeRequests', () => {
-    it('should commit the request mutation', (done) =>
+    it('should commit the request mutation', async () =>
       testAction(
         actions.requestMergeRequests,
         null,
         mockedContext.state,
         [{ type: types.REQUEST_MERGE_REQUESTS }],
         [],
-        done,
       ));
   });
 
   describe('receiveMergeRequestsSuccess', () => {
-    it('should commit received data', (done) =>
+    it('should commit received data', async () =>
       testAction(
         actions.receiveMergeRequestsSuccess,
         { headers, data: mockMergeRequests },
@@ -170,24 +167,22 @@ describe('Productivity analytics table actions', () => {
           },
         ],
         [],
-        done,
       ));
   });
 
   describe('receiveMergeRequestsError', () => {
-    it('should commit error', (done) =>
+    it('should commit error', async () =>
       testAction(
         actions.receiveMergeRequestsError,
         { response: { status: 500 } },
         mockedContext.state,
         [{ type: types.RECEIVE_MERGE_REQUESTS_ERROR, payload: 500 }],
         [],
-        done,
       ));
   });
 
   describe('setSortField', () => {
-    it('should commit setSortField', (done) =>
+    it('should commit setSortField', async () =>
       testAction(
         actions.setSortField,
         'time_to_last_commit',
@@ -197,53 +192,48 @@ describe('Productivity analytics table actions', () => {
           { type: 'setColumnMetric', payload: 'time_to_last_commit' },
           { type: 'fetchMergeRequests' },
         ],
-        done,
       ));
 
-    it('should not dispatch setColumnMetric when metric is "days_to_merge"', (done) =>
+    it('should not dispatch setColumnMetric when metric is "days_to_merge"', async () =>
       testAction(
         actions.setSortField,
         'days_to_merge',
         mockedContext.state,
         [{ type: types.SET_SORT_FIELD, payload: 'days_to_merge' }],
         [{ type: 'fetchMergeRequests' }],
-        done,
       ));
   });
 
   describe('toggleSortOrder', () => {
-    it('should commit toggleSortOrder', (done) =>
+    it('should commit toggleSortOrder', async () =>
       testAction(
         actions.toggleSortOrder,
         null,
         mockedContext.state,
         [{ type: types.TOGGLE_SORT_ORDER }],
         [{ type: 'fetchMergeRequests' }],
-        done,
       ));
   });
 
   describe('setColumnMetric', () => {
-    it('should commit setColumnMetric', (done) =>
+    it('should commit setColumnMetric', async () =>
       testAction(
         actions.setColumnMetric,
         'time_to_first_comment',
         mockedContext.state,
         [{ type: types.SET_COLUMN_METRIC, payload: 'time_to_first_comment' }],
         [],
-        done,
       ));
   });
 
   describe('setPage', () => {
-    it('should commit setPage', (done) =>
+    it('should commit setPage', async () =>
       testAction(
         actions.setPage,
         2,
         mockedContext.state,
         [{ type: types.SET_PAGE, payload: 2 }],
         [{ type: 'fetchMergeRequests' }],
-        done,
       ));
   });
 });

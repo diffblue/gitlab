@@ -11,7 +11,7 @@ RSpec.describe Ci::Pipeline, :mailer, factory_default: :keep do
   let_it_be(:namespace) { create_default(:namespace).freeze }
   let_it_be(:project) { create_default(:project, :repository).freeze }
 
-  it 'paginates 15 pipeleines per page' do
+  it 'paginates 15 pipelines per page' do
     expect(described_class.default_per_page).to eq(15)
   end
 
@@ -552,7 +552,7 @@ RSpec.describe Ci::Pipeline, :mailer, factory_default: :keep do
       it { is_expected.to be_truthy }
     end
 
-    context 'when both sha and source_sha do not matche' do
+    context 'when both sha and source_sha do not match' do
       let(:pipeline) { build(:ci_pipeline, sha: 'test', source_sha: 'test') }
 
       it { is_expected.to be_falsy }
@@ -1146,6 +1146,50 @@ RSpec.describe Ci::Pipeline, :mailer, factory_default: :keep do
         end
       end
     end
+
+    describe 'variable CI_GITLAB_FIPS_MODE' do
+      context 'when FIPS flag is enabled' do
+        before do
+          allow(Gitlab::FIPS).to receive(:enabled?).and_return(true)
+        end
+
+        it "is included with value 'true'" do
+          expect(subject.to_hash).to include('CI_GITLAB_FIPS_MODE' => 'true')
+        end
+      end
+
+      context 'when FIPS flag is disabled' do
+        before do
+          allow(Gitlab::FIPS).to receive(:enabled?).and_return(false)
+        end
+
+        it 'is not included' do
+          expect(subject.to_hash).not_to have_key('CI_GITLAB_FIPS_MODE')
+        end
+      end
+    end
+
+    context 'without a commit' do
+      let(:pipeline) { build(:ci_empty_pipeline, :created, sha: nil) }
+
+      it 'does not expose commit variables' do
+        expect(subject.to_hash.keys)
+          .not_to include(
+            'CI_COMMIT_SHA',
+            'CI_COMMIT_SHORT_SHA',
+            'CI_COMMIT_BEFORE_SHA',
+            'CI_COMMIT_REF_NAME',
+            'CI_COMMIT_REF_SLUG',
+            'CI_COMMIT_BRANCH',
+            'CI_COMMIT_TAG',
+            'CI_COMMIT_MESSAGE',
+            'CI_COMMIT_TITLE',
+            'CI_COMMIT_DESCRIPTION',
+            'CI_COMMIT_REF_PROTECTED',
+            'CI_COMMIT_TIMESTAMP',
+            'CI_COMMIT_AUTHOR')
+      end
+    end
   end
 
   describe '#protected_ref?' do
@@ -1490,6 +1534,21 @@ RSpec.describe Ci::Pipeline, :mailer, factory_default: :keep do
           expect(pipeline.started_at).to be_nil
         end
       end
+
+      context 'from success' do
+        let(:started_at) { 2.days.ago }
+        let(:from_status) { :success }
+
+        before do
+          pipeline.update!(started_at: started_at)
+        end
+
+        it 'does not update on transitioning to running' do
+          pipeline.run
+
+          expect(pipeline.started_at).to eq started_at
+        end
+      end
     end
 
     describe '#finished_at' do
@@ -1663,7 +1722,7 @@ RSpec.describe Ci::Pipeline, :mailer, factory_default: :keep do
               expect(upstream_pipeline.reload).to be_failed
 
               Sidekiq::Testing.inline! do
-                new_job = Ci::Build.retry(job, project.users.first)
+                new_job = Ci::RetryJobService.new(project, project.users.first).execute(job)[:job]
 
                 expect(downstream_pipeline.reload).to be_running
                 expect(upstream_pipeline.reload).to be_running
@@ -1684,7 +1743,7 @@ RSpec.describe Ci::Pipeline, :mailer, factory_default: :keep do
               expect(upstream_pipeline.reload).to be_success
 
               Sidekiq::Testing.inline! do
-                new_job = Ci::Build.retry(job, project.users.first)
+                new_job = Ci::RetryJobService.new(project, project.users.first).execute(job)[:job]
 
                 expect(downstream_pipeline.reload).to be_running
                 expect(upstream_pipeline.reload).to be_running
@@ -1715,7 +1774,7 @@ RSpec.describe Ci::Pipeline, :mailer, factory_default: :keep do
                 expect(upstream_of_upstream_pipeline.reload).to be_failed
 
                 Sidekiq::Testing.inline! do
-                  new_job = Ci::Build.retry(job, project.users.first)
+                  new_job = Ci::RetryJobService.new(project, project.users.first).execute(job)[:job]
 
                   expect(downstream_pipeline.reload).to be_running
                   expect(upstream_pipeline.reload).to be_running
@@ -2583,8 +2642,7 @@ RSpec.describe Ci::Pipeline, :mailer, factory_default: :keep do
 
         build.drop
         project.add_developer(user)
-
-        Ci::Build.retry(build, user)
+        ::Ci::RetryJobService.new(project, user).execute(build)[:job]
       end
 
       # We are changing a state: created > failed > running
@@ -3381,6 +3439,46 @@ RSpec.describe Ci::Pipeline, :mailer, factory_default: :keep do
 
       it 'ignores cross project ancestors' do
         expect(subject).to eq(pipeline)
+      end
+    end
+  end
+
+  describe '#upstream_root' do
+    subject { pipeline.upstream_root }
+
+    let_it_be(:pipeline) { create(:ci_pipeline) }
+
+    context 'when pipeline is child of child pipeline' do
+      let!(:root_ancestor) { create(:ci_pipeline) }
+      let!(:parent_pipeline) { create(:ci_pipeline, child_of: root_ancestor) }
+      let!(:pipeline) { create(:ci_pipeline, child_of: parent_pipeline) }
+
+      it 'returns the root ancestor' do
+        expect(subject).to eq(root_ancestor)
+      end
+    end
+
+    context 'when pipeline is root ancestor' do
+      let!(:child_pipeline) { create(:ci_pipeline, child_of: pipeline) }
+
+      it 'returns itself' do
+        expect(subject).to eq(pipeline)
+      end
+    end
+
+    context 'when pipeline is standalone' do
+      it 'returns itself' do
+        expect(subject).to eq(pipeline)
+      end
+    end
+
+    context 'when pipeline is multi-project downstream pipeline' do
+      let!(:upstream_pipeline) do
+        create(:ci_pipeline, project: create(:project), upstream_of: pipeline)
+      end
+
+      it 'returns the upstream pipeline' do
+        expect(subject).to eq(upstream_pipeline)
       end
     end
   end
@@ -4688,7 +4786,7 @@ RSpec.describe Ci::Pipeline, :mailer, factory_default: :keep do
         project.add_developer(user)
 
         retried_build.cancel!
-        ::Ci::Build.retry(retried_build, user)
+        Ci::RetryJobService.new(project, user).execute(retried_build)[:job]
       end
 
       it 'does not include retried builds' do
@@ -4711,6 +4809,24 @@ RSpec.describe Ci::Pipeline, :mailer, factory_default: :keep do
 
       expect(pipeline.authorized_cluster_agents).to contain_exactly(agent)
       expect(pipeline.authorized_cluster_agents).to contain_exactly(agent) # cached
+    end
+  end
+
+  describe '#has_expired_test_reports?' do
+    subject { pipeline_with_test_report.has_expired_test_reports? }
+
+    let(:pipeline_with_test_report) { create(:ci_pipeline, :with_test_reports) }
+
+    context 'when artifacts are not expired' do
+      it { is_expected.to be_falsey }
+    end
+
+    context 'when artifacts are expired' do
+      before do
+        pipeline_with_test_report.job_artifacts.first.update!(expire_at: Date.yesterday)
+      end
+
+      it { is_expected.to be_truthy }
     end
   end
 

@@ -14,7 +14,7 @@ import epicChildren from '../queries/epic_children.query.graphql';
 
 import { ChildType, ChildState, idProp, relativePositions, trackingAddedIssue } from '../constants';
 
-import epicChildReorder from '../queries/epicChildReorder.mutation.graphql';
+import epicChildReorder from '../queries/epic_child_reorder.mutation.graphql';
 import { processQueryResponse, formatChildItem, gqClient } from '../utils/epic_utils';
 
 import * as types from './mutation_types';

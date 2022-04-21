@@ -23,8 +23,8 @@ module EE
 
       scope :order_blocking_issues_asc, -> { reorder(blocking_issues_count: :asc) }
       scope :order_blocking_issues_desc, -> { reorder(blocking_issues_count: :desc) }
-      scope :order_weight_desc, -> { reorder ::Gitlab::Database.nulls_last_order('weight', 'DESC') }
-      scope :order_weight_asc, -> { reorder ::Gitlab::Database.nulls_last_order('weight') }
+      scope :order_weight_desc, -> { reorder(arel_table[:weight].desc.nulls_last) }
+      scope :order_weight_asc, -> { reorder(arel_table[:weight].asc.nulls_last) }
       scope :order_status_page_published_first, -> { includes(:status_page_published_incident).order('status_page_published_incidents.id ASC NULLS LAST') }
       scope :order_status_page_published_last, -> { includes(:status_page_published_incident).order('status_page_published_incidents.id ASC NULLS FIRST') }
       scope :order_sla_due_at_asc, -> { includes(:issuable_sla).order('issuable_slas.due_at ASC NULLS LAST') }
@@ -94,6 +94,16 @@ module EE
             ::Dora::DailyMetrics::RefreshWorker.perform_async(related_production_env.id, issue.closed_at.to_date.to_s)
           end
         end
+      end
+
+      after_commit on: :create do |issue|
+        next unless issue.incident?
+
+        related_production_env = issue.project.environments.production.first
+
+        next unless related_production_env
+
+        ::Dora::DailyMetrics::RefreshWorker.perform_async(related_production_env.id, issue.created_at.to_date.to_s)
       end
     end
 
@@ -220,7 +230,7 @@ module EE
       end
 
       def weight_options
-        [WEIGHT_NONE] + WEIGHT_RANGE.to_a
+        [WEIGHT_NONE, WEIGHT_ANY] + WEIGHT_RANGE.to_a
       end
     end
 

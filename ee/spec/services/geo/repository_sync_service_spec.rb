@@ -11,8 +11,10 @@ RSpec.describe Geo::RepositorySyncService, :geo do
   let_it_be(:project) { create(:project_empty_repo) }
 
   let(:repository) { project.repository }
+  let(:temp_repo) { subject.send(:temp_repo) }
   let(:lease_key) { "geo_sync_service:repository:#{project.id}" }
   let(:lease_uuid) { 'uuid'}
+  let(:url_to_repo) { "#{primary.url}#{project.full_path}.git" }
 
   subject { described_class.new(project) }
 
@@ -25,14 +27,17 @@ RSpec.describe Geo::RepositorySyncService, :geo do
   it_behaves_like 'reschedules sync due to race condition instead of waiting for backfill'
 
   describe '#execute' do
-    let(:url_to_repo) { "#{primary.url}#{project.full_path}.git" }
-
     before do
       stub_exclusive_lease(lease_key, lease_uuid)
       stub_exclusive_lease("geo_project_housekeeping:#{project.id}")
 
-      allow_any_instance_of(Repository).to receive(:fetch_as_mirror)
-        .and_return(true)
+      allow(repository).to receive(:fetch_as_mirror).and_return(true)
+      allow(repository).to receive(:clone_as_mirror).and_return(true)
+
+      # Simulates a successful clone, by making sure a repository is created
+      allow(temp_repo).to receive(:clone_as_mirror) do
+        temp_repo.create_repository
+      end
 
       allow(repository)
         .to receive(:find_remote_root_ref)
@@ -289,95 +294,93 @@ RSpec.describe Geo::RepositorySyncService, :geo do
     end
 
     context 'retries' do
-      it 'tries to fetch repo' do
-        create(:geo_project_registry, project: project, repository_retry_count: Geo::ProjectRegistry::RETRIES_BEFORE_REDOWNLOAD - 1)
+      context 'with repository previously synced' do
+        it 'tries to fetch repo' do
+          create(:geo_project_registry, project: project, repository_retry_count: Geo::ProjectRegistry::RETRIES_BEFORE_REDOWNLOAD - 1)
 
-        expect(subject).to receive(:sync_repository)
+          expect(subject).to receive(:sync_repository)
 
-        subject.execute
-      end
-
-      it 'sets the redownload flag to false after success' do
-        registry = create(:geo_project_registry, project: project, repository_retry_count: Geo::ProjectRegistry::RETRIES_BEFORE_REDOWNLOAD + 1, force_to_redownload_repository: true)
-
-        subject.execute
-
-        expect(registry.reload.force_to_redownload_repository).to be false
-      end
-
-      it 'tries to redownload repo' do
-        create(:geo_project_registry, project: project, repository_retry_count: Geo::ProjectRegistry::RETRIES_BEFORE_REDOWNLOAD + 1)
-
-        expect(subject).to receive(:sync_repository).and_call_original
-        expect(subject.gitlab_shell).to receive(:mv_repository).twice.and_call_original
-
-        expect(subject.gitlab_shell).to receive(:remove_repository).twice.and_call_original
-
-        subject.execute
-
-        repo_path = Gitlab::GitalyClient::StorageSettings.allow_disk_access do
-          project.repository.path
+          subject.execute
         end
 
-        expect(File.directory?(repo_path)).to be true
-      end
+        it 'sets the redownload flag to false after success' do
+          registry = create(:geo_project_registry, project: project, repository_retry_count: Geo::ProjectRegistry::RETRIES_BEFORE_REDOWNLOAD + 1, force_to_redownload_repository: true)
 
-      it 'tries to redownload repo when force_redownload flag is set' do
-        create(
-          :geo_project_registry,
-          project: project,
-          repository_retry_count: Geo::ProjectRegistry::RETRIES_BEFORE_REDOWNLOAD - 1,
-          force_to_redownload_repository: true
-        )
+          subject.execute
 
-        expect(subject).to receive(:sync_repository)
+          expect(registry.reload.force_to_redownload_repository).to be false
+        end
 
-        subject.execute
-      end
+        it 'tries to redownload repo' do
+          create(:geo_project_registry, project: project, repository_retry_count: Geo::ProjectRegistry::RETRIES_BEFORE_REDOWNLOAD + 1)
 
-      it 'cleans temporary repo after redownload' do
-        create(
-          :geo_project_registry,
-          project: project,
-          repository_retry_count: Geo::ProjectRegistry::RETRIES_BEFORE_REDOWNLOAD - 1,
-          force_to_redownload_repository: true
-        )
+          expect(subject).to receive(:sync_repository).and_call_original
+          expect(subject.gitlab_shell).to receive(:mv_repository).twice.and_call_original
 
-        expect(subject).to receive(:fetch_geo_mirror)
-        expect(subject).to receive(:clean_up_temporary_repository).twice.and_call_original
-        expect(subject.gitlab_shell).to receive(:repository_exists?).twice.with(project.repository_storage, /.git$/)
+          expect(subject.gitlab_shell).to receive(:remove_repository).twice.and_call_original
 
-        subject.execute
-      end
+          subject.execute
 
-      it 'successfully redownloads the repository even if the retry time exceeds max value' do
-        timestamp = Time.current.utc
-        registry = create(
-          :geo_project_registry,
-          project: project,
-          repository_retry_count: Geo::ProjectRegistry::RETRIES_BEFORE_REDOWNLOAD + 2000,
-          repository_retry_at: timestamp,
-          force_to_redownload_repository: true
-        )
+          repo_path = Gitlab::GitalyClient::StorageSettings.allow_disk_access do
+            project.repository.path
+          end
 
-        subject.execute
+          expect(File.directory?(repo_path)).to be true
+        end
 
-        # The repository should be redownloaded and cleared without errors. If
-        # the timestamp were not capped, we would have seen a "timestamp out
-        # of range" in the first update to the project registry.
-        registry.reload
-        expect(registry.repository_retry_at).to be_nil
+        it 'tries to redownload repo when force_redownload flag is set' do
+          create(
+            :geo_project_registry,
+            project: project,
+            repository_retry_count: Geo::ProjectRegistry::RETRIES_BEFORE_REDOWNLOAD - 1,
+            force_to_redownload_repository: true
+          )
+
+          expect(subject).to receive(:sync_repository)
+
+          subject.execute
+        end
+
+        it 'cleans temporary repo after redownload' do
+          create(
+            :geo_project_registry,
+            project: project,
+            repository_retry_count: Geo::ProjectRegistry::RETRIES_BEFORE_REDOWNLOAD - 1,
+            force_to_redownload_repository: true
+          )
+
+          expect(subject).to receive(:clone_geo_mirror).with(target_repository: temp_repo)
+          expect(subject).to receive(:clean_up_temporary_repository).twice.and_call_original
+          expect(subject.gitlab_shell).to receive(:repository_exists?).twice.with(project.repository_storage, /.git$/)
+
+          subject.execute
+        end
+
+        it 'successfully redownloads the repository even if the retry time exceeds max value' do
+          timestamp = Time.current.utc
+          registry = create(
+            :geo_project_registry,
+            project: project,
+            repository_retry_count: Geo::ProjectRegistry::RETRIES_BEFORE_REDOWNLOAD + 2000,
+            repository_retry_at: timestamp,
+            force_to_redownload_repository: true
+          )
+
+          subject.execute
+
+          # The repository should be redownloaded and cleared without errors. If
+          # the timestamp were not capped, we would have seen a "timestamp out
+          # of range" in the first update to the project registry.
+          registry.reload
+          expect(registry.repository_retry_at).to be_nil
+        end
       end
 
       context 'no repository' do
         let(:project) { create(:project) }
 
         it 'does not raise an error' do
-          create(
-            :geo_project_registry,
-            project: project,
-            force_to_redownload_repository: true
-          )
+          create(:geo_project_registry, project: project, force_to_redownload_repository: true)
 
           expect(project.repository).to receive(:expire_exists_cache).exactly(3).times.and_call_original
           expect(subject).not_to receive(:fail_registry_sync!)
@@ -412,22 +415,59 @@ RSpec.describe Geo::RepositorySyncService, :geo do
   end
 
   context 'when the repository is redownloaded' do
-    before do
-      allow(subject).to receive(:redownload?).and_return(true)
-      allow(subject).to receive(:redownload_repository).and_return(nil)
+    context 'with geo_use_clone_on_first_sync flag disabled' do
+      before do
+        stub_feature_flags(geo_use_clone_on_first_sync: false)
+        allow(subject).to receive(:redownload?).and_return(true)
+      end
+
+      it 'creates a new repository and fetches with JWT credentials' do
+        expect(temp_repo).to receive(:create_repository)
+        expect(temp_repo).to receive(:fetch_as_mirror)
+                               .with(url_to_repo, forced: true, http_authorization_header: anything)
+                               .once
+        expect(subject).to receive(:set_temp_repository_as_main)
+
+        subject.execute
+      end
+
+      it 'cleans temporary repo after redownload' do
+        expect(subject).to receive(:fetch_geo_mirror).with(target_repository: temp_repo)
+        expect(subject).to receive(:clean_up_temporary_repository).twice.and_call_original
+
+        subject.execute
+      end
+
+      it "indicates the repository is not new even with errors" do
+        allow(subject).to receive(:redownload_repository).and_raise(Gitlab::Shell::Error)
+        expect(Geo::ProjectHousekeepingService).to receive(:new).with(project, new_repository: false).and_call_original
+
+        subject.execute
+      end
     end
 
-    it "indicates the repository is new" do
-      expect(Geo::ProjectHousekeepingService).to receive(:new).with(project, new_repository: true).and_call_original
+    context 'with geo_use_clone_on_first_sync flag enabled' do
+      before do
+        stub_feature_flags(geo_use_clone_on_first_sync: true)
+        allow(subject).to receive(:redownload?).and_return(true)
+      end
 
-      subject.execute
-    end
+      it 'clones a new repository with JWT credentials' do
+        expect(temp_repo).to receive(:clone_as_mirror)
+                               .with(url_to_repo, http_authorization_header: anything)
+                               .once
+        expect(subject).to receive(:set_temp_repository_as_main)
+        expect(Geo::ProjectHousekeepingService).to receive(:new).with(project, new_repository: true).and_call_original
 
-    it "indicates the repository is not new even with errors" do
-      allow(subject).to receive(:redownload_repository).and_raise(Gitlab::Shell::Error)
-      expect(Geo::ProjectHousekeepingService).to receive(:new).with(project, new_repository: false).and_call_original
+        subject.execute
+      end
 
-      subject.execute
+      it 'cleans temporary repo after redownload' do
+        expect(subject).to receive(:clone_geo_mirror).with(target_repository: temp_repo)
+        expect(subject).to receive(:clean_up_temporary_repository).twice.and_call_original
+
+        subject.execute
+      end
     end
   end
 
@@ -435,19 +475,47 @@ RSpec.describe Geo::RepositorySyncService, :geo do
     before do
       allow(repository).to receive(:exists?).and_return(false)
       allow(subject).to receive(:fetch_geo_mirror).and_return(nil)
+      allow(subject).to receive(:clone_geo_mirror).and_return(nil)
     end
 
-    it "indicates the repository is new" do
-      expect(Geo::ProjectHousekeepingService).to receive(:new).with(project, new_repository: true).and_call_original
+    context 'with geo_use_clone_on_first_sync flag enabled' do
+      before do
+        stub_feature_flags(geo_use_clone_on_first_sync: true)
+      end
 
-      subject.execute
+      it "dont indicates the repository is new when there were errors" do
+        allow(subject).to receive(:clone_geo_mirror).and_raise(Gitlab::Shell::Error)
+
+        expect(Geo::ProjectHousekeepingService).to receive(:new).with(project, new_repository: false).and_call_original
+
+        subject.execute
+      end
+
+      it "indicates the repository is new if successful" do
+        expect(Geo::ProjectHousekeepingService).to receive(:new).with(project, new_repository: true).and_call_original
+
+        subject.execute
+      end
     end
 
-    it "indicates the repository is new when there were errors" do
-      allow(subject).to receive(:fetch_geo_mirror).and_raise(Gitlab::Shell::Error)
-      expect(Geo::ProjectHousekeepingService).to receive(:new).with(project, new_repository: true).and_call_original
+    context 'with geo_use_clone_on_first_sync flag disabled' do
+      before do
+        stub_feature_flags(geo_use_clone_on_first_sync: false)
+      end
 
-      subject.execute
+      it "indicates the repository is new when there were errors" do
+        allow(subject).to receive(:fetch_geo_mirror).and_raise(Gitlab::Shell::Error)
+
+        expect(Geo::ProjectHousekeepingService).to receive(:new).with(project, new_repository: true).and_call_original
+
+        subject.execute
+      end
+
+      it "indicates the repository is new if successful" do
+        expect(Geo::ProjectHousekeepingService).to receive(:new).with(project, new_repository: true).and_call_original
+
+        subject.execute
+      end
     end
   end
 

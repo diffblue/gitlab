@@ -14,7 +14,7 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import * as dateTimeUtility from '~/lib/utils/datetime/date_calculation_utility';
-import { getOncallSchedulesQueryResponse } from './mocks/apollo_mock';
+import { getOncallSchedulesQueryResponseWithRotations } from './mocks/apollo_mock';
 
 Vue.use(VueApollo);
 
@@ -46,7 +46,7 @@ describe('On-call schedule', () => {
     scheduleIndex = 0,
     getShiftsForRotationsQueryHandler = jest
       .fn()
-      .mockResolvedValue(getOncallSchedulesQueryResponse),
+      .mockResolvedValue(getOncallSchedulesQueryResponseWithRotations),
     props = {},
     provide = {},
   } = {}) => {
@@ -282,8 +282,8 @@ describe('On-call schedule', () => {
       expect(findRotationsList().props('rotations')).toHaveLength(4);
 
       expect(findRotationsList().props('rotations')).toEqual(
-        getOncallSchedulesQueryResponse.data.project.incidentManagementOncallSchedules.nodes[0]
-          .rotations.nodes,
+        getOncallSchedulesQueryResponseWithRotations.data.project.incidentManagementOncallSchedules
+          .nodes[0].rotations.nodes,
       );
     });
 

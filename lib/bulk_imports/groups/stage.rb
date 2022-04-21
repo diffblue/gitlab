@@ -11,8 +11,16 @@ module BulkImports
             pipeline: BulkImports::Groups::Pipelines::GroupPipeline,
             stage: 0
           },
+          group_attributes: {
+            pipeline: BulkImports::Groups::Pipelines::GroupAttributesPipeline,
+            stage: 1
+          },
           subgroups: {
             pipeline: BulkImports::Groups::Pipelines::SubgroupEntitiesPipeline,
+            stage: 1
+          },
+          namespace_settings: {
+            pipeline: BulkImports::Groups::Pipelines::NamespaceSettingsPipeline,
             stage: 1
           },
           members: {
@@ -47,7 +55,7 @@ module BulkImports
       end
 
       def project_entities_pipeline
-        if project_pipeline_available? && ::Feature.enabled?(:bulk_import_projects, default_enabled: :yaml)
+        if project_pipeline_available? && feature_flag_enabled?
           {
             project_entities: {
               pipeline: BulkImports::Groups::Pipelines::ProjectEntitiesPipeline,
@@ -61,6 +69,18 @@ module BulkImports
 
       def project_pipeline_available?
         @bulk_import.source_version_info >= BulkImport.min_gl_version_for_project_migration
+      end
+
+      def feature_flag_enabled?
+        destination_namespace = @bulk_import_entity.destination_namespace
+
+        if destination_namespace.present?
+          root_ancestor = Namespace.find_by_full_path(destination_namespace)&.root_ancestor
+
+          ::Feature.enabled?(:bulk_import_projects, root_ancestor, default_enabled: :yaml)
+        else
+          ::Feature.enabled?(:bulk_import_projects, default_enabled: :yaml)
+        end
       end
     end
   end

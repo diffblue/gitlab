@@ -256,4 +256,23 @@ RSpec.shared_examples 'a blob replicator' do
       it { is_expected.to be_falsey }
     end
   end
+
+  describe '.bulk_create_delete_events_async' do
+    let(:uploads) { create_list(:upload, 2) }
+    let(:upload_deleted_details) { uploads.map { |upload| upload.replicator.deleted_params} }
+    let(:inherited_replicator_class) { ::Geo::UploadReplicator }
+
+    it 'creates events' do
+      expect { inherited_replicator_class.bulk_create_delete_events_async(upload_deleted_details) }
+        .to change { ::Geo::Event.count }.from(0).to(2)
+
+      expect(::Geo::EventLog.last.event).to be_present
+    end
+
+    it 'raises error when model_record_id is nil' do
+      expect do
+        inherited_replicator_class.bulk_create_delete_events_async([{}])
+      end.to raise_error(RuntimeError, /model_record_id can not be nil/)
+    end
+  end
 end

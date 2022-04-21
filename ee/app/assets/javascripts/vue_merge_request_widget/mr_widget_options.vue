@@ -13,6 +13,7 @@ import loadPerformanceExtension from './extensions/load_performance';
 import browserPerformanceExtension from './extensions/browser_performance';
 import statusChecksExtension from './extensions/status_checks';
 import metricsExtension from './extensions/metrics';
+import licenseComplianceExtension from './extensions/license_compliance';
 
 export default {
   components: {
@@ -53,7 +54,7 @@ export default {
   },
   computed: {
     shouldRenderLicenseReport() {
-      return this.mr.enabledReports?.licenseScanning;
+      return this.mr?.enabledReports?.licenseScanning;
     },
     hasBrowserPerformanceMetrics() {
       return (
@@ -211,8 +212,18 @@ export default {
         this.registerMetrics();
       }
     },
+    shouldRenderLicenseReport(newVal) {
+      if (newVal) {
+        this.registerLicenseCompliance();
+      }
+    },
   },
   methods: {
+    registerLicenseCompliance() {
+      if (this.shouldShowExtension) {
+        registerExtension(licenseComplianceExtension);
+      }
+    },
     registerLoadPerformance() {
       if (this.shouldShowExtension) {
         registerExtension(loadPerformanceExtension);
@@ -464,7 +475,7 @@ export default {
       </mr-widget-enable-feature-prompt>
 
       <mr-widget-licenses
-        v-if="shouldRenderLicenseReport"
+        v-if="shouldRenderLicenseReport && !shouldShowExtension"
         :api-url="mr.licenseScanning.managed_licenses_path"
         :approvals-api-path="mr.apiApprovalsPath"
         :licenses-api-path="licensesApiPath"
@@ -477,7 +488,7 @@ export default {
       />
 
       <grouped-test-reports-app
-        v-if="mr.testResultsPath"
+        v-if="shouldRenderTestReport && !shouldRenderRefactoredTestReport"
         class="js-reports-container"
         :endpoint="mr.testResultsPath"
         :head-blob-path="mr.headBlobPath"

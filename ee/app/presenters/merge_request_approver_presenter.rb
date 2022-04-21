@@ -15,8 +15,8 @@ class MergeRequestApproverPresenter < Gitlab::View::Presenter::Simple
 
   attr_reader :skip_user
 
-  def initialize(subject, **attributes)
-    @skip_user = subject.author || attributes.delete(:skip_user)
+  def initialize(merge_request, **attributes)
+    @skip_user = merge_request.author || attributes.delete(:skip_user)
     super
   end
 

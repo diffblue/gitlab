@@ -8,6 +8,7 @@ import ConfigurationForm from 'ee/security_configuration/sast/components/configu
 import sastCiConfigurationQuery from 'ee/security_configuration/sast/graphql/sast_ci_configuration.query.graphql';
 import { stripTypenames } from 'helpers/graphql_helpers';
 import createMockApollo from 'helpers/mock_apollo_helper';
+import waitForPromises from 'helpers/wait_for_promises';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { sastCiConfigurationQueryResponse } from '../mock_data';
 
@@ -118,6 +119,7 @@ describe('SAST Configuration App', () => {
       createComponent({
         apolloProvider: createMockApolloProvider(failureHandler),
       });
+      return waitForPromises();
     });
 
     it('does not display a loading spinner', () => {

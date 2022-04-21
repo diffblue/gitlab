@@ -16,10 +16,19 @@ module EE
           configurable_scans[type] if can_configure_scan_in_ui?
         end
 
+        override :meta_info_path
+        def meta_info_path
+          scans_with_meta_info[type] if can_access_security_on_demand_scans? && can_configure_scan_in_ui?
+        end
+
         private
 
         def can_configure_scan_in_ui?
           project.licensed_feature_available?(:security_configuration_in_ui)
+        end
+
+        def can_access_security_on_demand_scans?
+          project.licensed_feature_available?(:security_on_demand_scans)
         end
 
         def configurable_scans
@@ -32,6 +41,12 @@ module EE
               corpus_management: project_security_configuration_corpus_management_path(project)
             }
           end
+        end
+
+        def scans_with_meta_info
+          {
+            dast: project_on_demand_scans_path(project)
+          }
         end
 
         override :scans_configurable_in_merge_request

@@ -15,7 +15,7 @@ RSpec.describe 'Creating an iteration cadence' do
       start_date: start_date,
       duration_in_weeks: 1,
       iterations_in_advance: 1,
-      automatic: false,
+      automatic: true,
       active: false,
       roll_over: true,
       description: 'Iteration cadence description'
@@ -79,13 +79,10 @@ RSpec.describe 'Creating an iteration cadence' do
       end
 
       context 'when creating a manual iteration cadence' do
-        context 'when start date is not provided' do
-          let(:attributes) { { title: 'automatic cadence', duration_in_weeks: 1, active: true, automatic: false } }
+        let(:attributes) { { title: 'automatic cadence', duration_in_weeks: 1, active: true, automatic: false } }
 
-          it 'creates an iteration cadence' do
-            expect { post_graphql_mutation(mutation, current_user: current_user) }.to change(Iterations::Cadence, :count).by(1)
-          end
-        end
+        it_behaves_like 'a mutation that returns errors in the response',
+                        errors: [_('Manual iteration cadences are deprecated. Only automatic iteration cadences are allowed.')]
       end
 
       context 'when iteration_cadences feature flag is disabled' do

@@ -44,7 +44,7 @@ describe('GeoSettingsApp', () => {
     });
 
     it('header text', () => {
-      expect(findGeoSettingsContainer().text()).toContain('Geo Settings');
+      expect(findGeoSettingsContainer().text()).toContain(GeoSettingsApp.i18n.geoSettingsTitle);
     });
 
     describe('when not loading', () => {

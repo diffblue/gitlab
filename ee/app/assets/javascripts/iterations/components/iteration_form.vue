@@ -1,9 +1,8 @@
 <script>
-import { GlAlert, GlButton, GlForm, GlFormInput } from '@gitlab/ui';
-import initDatePicker from '~/behaviors/date_picker';
+import { GlAlert, GlButton, GlDatepicker, GlForm, GlFormGroup, GlFormInput } from '@gitlab/ui';
 import createFlash from '~/flash';
-import { dayAfter, formatDate } from '~/lib/utils/datetime_utility';
-import { TYPE_ITERATIONS_CADENCE } from '~/graphql_shared/constants';
+import { dayAfter, formatDate, parsePikadayDate } from '~/lib/utils/datetime_utility';
+import { TYPE_ITERATION, TYPE_ITERATIONS_CADENCE } from '~/graphql_shared/constants';
 import { convertToGraphQLId, getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { __, s__ } from '~/locale';
 import MarkdownField from '~/vue_shared/components/markdown/field.vue';
@@ -14,14 +13,33 @@ import updateIteration from '../queries/update_iteration.mutation.graphql';
 import iterationsInCadence from '../queries/group_iterations_in_cadence.query.graphql';
 
 export default {
+  i18n: {
+    title: {
+      edit: s__('Iterations|Edit iteration'),
+      new: s__('Iterations|New iteration'),
+    },
+    form: {
+      title: s__('Iterations|Title'),
+      startDate: s__('Iterations|Start date'),
+      dueDate: s__('Iterations|Due date'),
+      description: s__('Iterations|Description'),
+    },
+    submitButton: {
+      save: s__('Iterations|Save changes'),
+      create: s__('Iterations|Create iteration'),
+    },
+    cancelButton: s__('Iterations|Cancel'),
+  },
   cadencesList: {
     name: 'index',
   },
   components: {
     GlAlert,
+    GlDatepicker,
     GlButton,
     GlForm,
     GlFormInput,
+    GlFormGroup,
     MarkdownField,
   },
   apollo: {
@@ -30,15 +48,13 @@ export default {
       skip() {
         return !this.iterationId;
       },
-      /* eslint-disable @gitlab/require-i18n-strings */
       variables() {
         return {
           fullPath: this.fullPath,
-          id: convertToGraphQLId('Iteration', this.iterationId),
+          id: convertToGraphQLId(TYPE_ITERATION, this.iterationId),
           isGroup: true,
         };
       },
-      /* eslint-enable @gitlab/require-i18n-strings */
       result({ data }) {
         const iteration = data.group.iterations?.nodes[0];
 
@@ -49,8 +65,9 @@ export default {
 
         this.title = iteration.title;
         this.description = iteration.description;
-        this.startDate = iteration.startDate;
-        this.dueDate = iteration.dueDate;
+        this.startDate = parsePikadayDate(iteration.startDate);
+        this.dueDate = parsePikadayDate(iteration.dueDate);
+        this.automatic = iteration.iterationCadence.automatic;
 
         return iteration;
       },
@@ -68,8 +85,9 @@ export default {
       cadence: {},
       title: '',
       description: '',
-      startDate: '',
-      dueDate: '',
+      startDate: null,
+      dueDate: null,
+      automatic: null,
     };
   },
   computed: {
@@ -82,20 +100,42 @@ export default {
     isEditing() {
       return Boolean(this.iterationId);
     },
-    variables() {
+    isAutoModeEdit() {
+      return this.isEditing && this.automatic;
+    },
+    formattedStartDate() {
+      return formatDate(this.startDate, 'yyyy-mm-dd');
+    },
+    formattedDueDate() {
+      return formatDate(this.dueDate, 'yyyy-mm-dd');
+    },
+    formattedDates() {
+      return {
+        startDate: this.formattedStartDate,
+        dueDate: this.formattedDueDate,
+      };
+    },
+    createVariables() {
       return {
         groupPath: this.fullPath,
         title: this.title,
         description: this.description,
-        startDate: this.startDate,
-        dueDate: this.dueDate,
+        ...this.formattedDates,
       };
+    },
+    updateVariables() {
+      const baseVariables = {
+        id: this.iterationId,
+        groupPath: this.fullPath,
+        description: this.description,
+      };
+
+      return this.automatic
+        ? baseVariables
+        : { ...baseVariables, title: this.title, ...this.formattedDates };
     },
   },
   async mounted() {
-    // TODO: utilize GlDatepicker instead of relying on this jQuery behavior
-    initDatePicker();
-
     // prefill start date for the New cadence form
     // if there's iterations in the cadence, use last end_date + 1
     // else use cadence startDate
@@ -112,16 +152,13 @@ export default {
       const iteration = data.workspace.iterations?.nodes[0];
 
       if (iteration) {
-        this.startDate = formatDate(
-          dayAfter(new Date(iteration.dueDate), { utc: true }),
-          'yyyy-mm-dd',
-        );
+        this.startDate = dayAfter(new Date(iteration.dueDate), { utc: true });
       } else {
         const { data: cadenceData } = await this.$apollo.query({
           query: readCadence,
           variables: {
             fullPath: this.fullPath,
-            id: this.cadenceId,
+            id: convertToGraphQLId(TYPE_ITERATIONS_CADENCE, this.cadenceId),
           },
         });
 
@@ -133,7 +170,7 @@ export default {
             return;
           }
 
-          this.startDate = cadence.startDate;
+          this.startDate = cadence.startDate ? new Date(cadence.startDate) : null;
         }
       }
     }
@@ -149,8 +186,8 @@ export default {
           mutation: createIteration,
           variables: {
             input: {
-              ...this.variables,
-              iterationsCadenceId: convertToGraphQLId('Iterations::Cadence', this.cadenceId),
+              ...this.createVariables,
+              iterationsCadenceId: convertToGraphQLId(TYPE_ITERATIONS_CADENCE, this.cadenceId),
             },
           },
         })
@@ -185,10 +222,7 @@ export default {
         .mutate({
           mutation: updateIteration,
           variables: {
-            input: {
-              ...this.variables,
-              id: this.iterationId,
-            },
+            input: this.updateVariables,
           },
         })
         .then(({ data }) => {
@@ -231,7 +265,7 @@ export default {
   <div>
     <div class="gl-display-flex">
       <h3 ref="pageTitle" class="page-title">
-        {{ isEditing ? s__('Iterations|Edit iteration') : s__('Iterations|New iteration') }}
+        {{ isEditing ? $options.i18n.title.edit : $options.i18n.title.new }}
       </h3>
     </div>
     <hr class="gl-mt-0" />
@@ -239,96 +273,79 @@ export default {
     <gl-alert v-if="error" class="gl-mb-5" variant="danger" @dismiss="error = ''">{{
       error
     }}</gl-alert>
-    <gl-form class="row common-note-form">
-      <div class="col-md-6">
-        <div class="form-group row">
-          <div class="col-form-label col-sm-2">
-            <label for="iteration-title">{{ __('Title') }}</label>
-          </div>
-          <div class="col-sm-10">
-            <gl-form-input
-              id="iteration-title"
-              v-model="title"
-              autocomplete="off"
-              data-qa-selector="iteration_title_field"
-            />
-          </div>
-        </div>
-
-        <div class="form-group row">
-          <div class="col-form-label col-sm-2">
-            <label for="iteration-description">{{ __('Description') }}</label>
-          </div>
-          <div class="col-sm-10">
-            <markdown-field
-              :markdown-preview-path="previewMarkdownPath"
-              :can-attach-file="false"
-              :enable-autocomplete="true"
-              label="Description"
-              :textarea-value="description"
-              markdown-docs-path="/help/user/markdown"
-              :add-spacing-classes="false"
-              class="md-area"
+    <gl-form class="common-note-form">
+      <p v-if="isAutoModeEdit && title">
+        <span class="gl-font-weight-bold gl-display-block gl-pb-3">{{
+          $options.i18n.form.title
+        }}</span>
+        <span>{{ title }}</span>
+      </p>
+      <gl-form-group
+        v-else-if="!automatic || !isEditing"
+        :label="$options.i18n.form.title"
+        label-for="iteration-title"
+      >
+        <gl-form-input
+          id="iteration-title"
+          v-model="title"
+          autocomplete="off"
+          data-qa-selector="iteration_title_field"
+        />
+      </gl-form-group>
+      <gl-form-group :label="$options.i18n.form.startDate" label-for="iteration-start-date">
+        <span v-if="isAutoModeEdit">{{ formattedStartDate }}</span>
+        <gl-datepicker
+          v-else
+          input-id="iteration-start-date"
+          data-testid="start-date"
+          :value="startDate"
+          show-clear-button
+          autocomplete="off"
+          data-qa-selector="iteration_start_date_field"
+          @input="updateStartDate"
+          @clear="updateStartDate(null)"
+        />
+      </gl-form-group>
+      <gl-form-group :label="$options.i18n.form.dueDate" label-for="iteration-due-date">
+        <span v-if="isAutoModeEdit">{{ formattedDueDate }}</span>
+        <gl-datepicker
+          v-else
+          input-id="iteration-due-date"
+          data-testid="due-date"
+          :value="dueDate"
+          show-clear-button
+          autocomplete="off"
+          data-qa-selector="iteration_due_date_field"
+          @input="updateDueDate"
+          @clear="updateDueDate(null)"
+        />
+      </gl-form-group>
+      <gl-form-group :label="$options.i18n.form.description" label-for="iteration-description">
+        <markdown-field
+          :markdown-preview-path="previewMarkdownPath"
+          :can-attach-file="false"
+          :enable-autocomplete="true"
+          label="Description"
+          :textarea-value="description"
+          markdown-docs-path="/help/user/markdown"
+          :add-spacing-classes="false"
+          class="md-area"
+        >
+          <template #textarea>
+            <textarea
+              id="iteration-description"
+              v-model="description"
+              class="note-textarea js-gfm-input js-autosize markdown-area"
+              dir="auto"
+              data-supports-quick-actions="false"
+              :aria-label="$options.i18n.form.description"
+              data-qa-selector="iteration_description_field"
             >
-              <template #textarea>
-                <textarea
-                  id="iteration-description"
-                  v-model="description"
-                  class="note-textarea js-gfm-input js-autosize markdown-area"
-                  dir="auto"
-                  data-supports-quick-actions="false"
-                  :aria-label="__('Description')"
-                  data-qa-selector="iteration_description_field"
-                >
-                </textarea>
-              </template>
-            </markdown-field>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md-6">
-        <div class="form-group row">
-          <div class="col-form-label col-sm-2">
-            <label for="iteration-start-date">{{ __('Start date') }}</label>
-          </div>
-          <div class="col-sm-10">
-            <gl-form-input
-              id="iteration-start-date"
-              v-model="startDate"
-              class="datepicker form-control"
-              :placeholder="__('Select start date')"
-              autocomplete="off"
-              data-qa-selector="iteration_start_date_field"
-              @change="updateStartDate"
-            />
-            <a class="inline float-right gl-mt-2 js-clear-start-date" href="#">{{
-              __('Clear start date')
-            }}</a>
-          </div>
-        </div>
-        <div class="form-group row">
-          <div class="col-form-label col-sm-2">
-            <label for="iteration-due-date">{{ __('Due date') }}</label>
-          </div>
-          <div class="col-sm-10">
-            <gl-form-input
-              id="iteration-due-date"
-              v-model="dueDate"
-              class="datepicker form-control"
-              :placeholder="__('Select due date')"
-              autocomplete="off"
-              data-qa-selector="iteration_due_date_field"
-              @change="updateDueDate"
-            />
-            <a class="inline float-right gl-mt-2 js-clear-due-date" href="#">{{
-              __('Clear due date')
-            }}</a>
-          </div>
-        </div>
-      </div>
+            </textarea>
+          </template>
+        </markdown-field>
+      </gl-form-group>
     </gl-form>
-
     <div class="form-actions d-flex">
       <gl-button
         :loading="loading"
@@ -337,10 +354,10 @@ export default {
         data-qa-selector="save_iteration_button"
         @click="save"
       >
-        {{ isEditing ? __('Update iteration') : __('Create iteration') }}
+        {{ isEditing ? $options.i18n.submitButton.save : $options.i18n.submitButton.create }}
       </gl-button>
       <gl-button class="gl-ml-3" data-testid="cancel-iteration" :to="$options.cadencesList">
-        {{ __('Cancel') }}
+        {{ $options.i18n.cancelButton }}
       </gl-button>
     </div>
   </div>

@@ -25,12 +25,30 @@ RSpec.describe Ci::JobArtifact do
       stub_current_geo_node(primary)
     end
 
-    it 'creates a JobArtifactDeletedEvent' do
-      stub_feature_flags(geo_job_artifact_replication: false)
+    context 'when geo_job_artifact_replication is disabled' do
+      it 'creates a JobArtifactDeletedEvent' do
+        stub_feature_flags(geo_job_artifact_replication: false)
 
-      job_artifact = create(:ee_ci_job_artifact, :archive)
+        job_artifact = create(:ee_ci_job_artifact, :archive)
 
-      expect { job_artifact.destroy! }.to change { Geo::JobArtifactDeletedEvent.count }.by(1)
+        expect { job_artifact.destroy! }.to change { Geo::JobArtifactDeletedEvent.count }.by(1)
+      end
+    end
+
+    context 'when pipeline is destroyed' do
+      it 'creates a Geo Event', :sidekiq_inline do
+        job_artifact = create(:ee_ci_job_artifact, :archive)
+
+        expect do
+          job_artifact.job.pipeline.destroy!
+        end.to change(Geo::Event.where(replicable_name: :job_artifact, event_name: :deleted), :count).by(1)
+
+        payload = Geo::Event.where(replicable_name: :job_artifact, event_name: :deleted).last.payload
+
+        expect(payload['model_record_id']).to eq(job_artifact.id)
+        expect(payload['blob_path']).to eq(job_artifact.file.relative_path.to_s)
+        expect(payload['uploader_class']).to eq('JobArtifactUploader')
+      end
     end
 
     context 'JobArtifact destroy fails' do

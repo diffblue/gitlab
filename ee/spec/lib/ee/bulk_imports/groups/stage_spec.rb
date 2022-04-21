@@ -6,7 +6,9 @@ RSpec.describe BulkImports::Groups::Stage do
   let(:pipelines) do
     [
       [0, BulkImports::Groups::Pipelines::GroupPipeline],
+      [1, BulkImports::Groups::Pipelines::GroupAttributesPipeline],
       [1, BulkImports::Groups::Pipelines::SubgroupEntitiesPipeline],
+      [1, BulkImports::Groups::Pipelines::NamespaceSettingsPipeline],
       [1, BulkImports::Common::Pipelines::MembersPipeline],
       [1, BulkImports::Common::Pipelines::LabelsPipeline],
       [1, BulkImports::Common::Pipelines::MilestonesPipeline],
@@ -22,9 +24,9 @@ RSpec.describe BulkImports::Groups::Stage do
   end
 
   subject do
-    bulk_import = build(:bulk_import)
+    entity = build(:bulk_import_entity)
 
-    described_class.new(bulk_import)
+    described_class.new(entity)
   end
 
   describe '#each' do

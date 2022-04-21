@@ -17,6 +17,7 @@ module EE
 
       before_action do
         push_frontend_feature_flag(:saas_user_caps_auto_approve_pending_users_on_cap_increase, @group, default_enabled: :yaml)
+        push_force_frontend_feature_flag(:iteration_cadences, @group&.iteration_cadences_feature_flag_enabled?)
       end
 
       feature_category :subgroups, [:restore]
@@ -124,6 +125,14 @@ module EE
       super
 
       invite_members(group, invite_source: 'group-creation-page')
+    end
+
+    override :group_feature_attributes
+    def group_feature_attributes
+      return super unless current_group&.licensed_feature_available?(:group_wikis)
+      return super if ::Feature.disabled?(:group_wiki_settings_toggle, current_group, default_enabled: :yaml)
+
+      super + [:wiki_access_level]
     end
   end
 end

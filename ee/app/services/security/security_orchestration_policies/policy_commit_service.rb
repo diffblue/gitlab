@@ -2,9 +2,9 @@
 
 module Security
   module SecurityOrchestrationPolicies
-    class PolicyCommitService < ::BaseProjectService
+    class PolicyCommitService < ::BaseContainerService
       def execute
-        @policy_configuration = project.security_orchestration_policy_configuration
+        @policy_configuration = container.security_orchestration_policy_configuration
 
         return error('Security Policy Project does not exist') unless policy_configuration.present?
 
@@ -26,7 +26,7 @@ module Security
 
       def validate_policy_yaml
         Security::SecurityOrchestrationPolicies::ValidatePolicyService
-          .new(project: project, params: { policy: policy })
+          .new(container: container, params: { policy: policy })
           .execute
       end
 
@@ -82,7 +82,7 @@ module Security
         @policy ||= Gitlab::Config::Loader::Yaml.new(params[:policy_yaml]).load!
       end
 
-      attr_reader :project, :policy_configuration
+      attr_reader :policy_configuration
     end
   end
 end

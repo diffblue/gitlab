@@ -237,11 +237,6 @@ RSpec.describe Iteration do
               end
             end
 
-            it 'is not valid even if forced' do
-              subject.validate # to generate iid/etc
-              expect { subject.save!(validate: false) }.to raise_exception(ActiveRecord::StatementInvalid, /#{constraint_name}/)
-            end
-
             it 'is not valid' do
               expect(subject).not_to be_valid
               expect(subject.errors[:base]).to include('Dates cannot overlap with other existing Iterations within this iterations cadence')
@@ -434,6 +429,59 @@ RSpec.describe Iteration do
           expect do
             new_iteration.update!(sequence: 1)
           end.to raise_error(ActiveRecord::RecordNotUnique)
+        end
+      end
+    end
+
+    context 'deferrable exclusion constraint on start_date, due_date and iterations_cadence_id', :delete do
+      let!(:iterations_cadence) { create(:iterations_cadence, group: create(:group)) }
+      let!(:iteration1) { create(:iteration, iterations_cadence: iterations_cadence, start_date: 4.days.from_now, due_date: 1.week.from_now) }
+
+      context 'with invalid dates' do
+        subject { build(:iteration, iterations_cadence: iterations_cadence, start_date: start_date, due_date: due_date) }
+
+        shared_examples 'invalid dates raise PG exclusion error' do
+          it 'prevents invalid dates with a PG exclusion constraint at the end of a transaction' do
+            subject.validate # to generate iid/etc
+            expect { subject.save!(validate: false) }.to raise_exception(ActiveRecord::StatementInvalid, /PG::ExclusionViolation/)
+          end
+        end
+
+        context 'when start_date overlaps' do
+          let(:start_date) { 5.days.from_now }
+          let(:due_date) { 3.weeks.from_now }
+
+          it_behaves_like 'invalid dates raise PG exclusion error'
+        end
+
+        context 'when due_date overlaps' do
+          let(:start_date) { Date.today }
+          let(:due_date) { 6.days.from_now }
+
+          it_behaves_like 'invalid dates raise PG exclusion error'
+        end
+
+        context 'when both overlap' do
+          let(:start_date) { 5.days.from_now }
+          let(:due_date) { 6.days.from_now }
+
+          it_behaves_like 'invalid dates raise PG exclusion error'
+        end
+      end
+
+      context 'with valid dates' do
+        let!(:iteration2) { create(:iteration, :with_due_date, iterations_cadence: iterations_cadence, start_date: iteration1.due_date + 1.day) }
+
+        it 'can be updated in bulk without triggering the exclusion violation' do
+          dates1 = { start_date: iteration1.start_date, due_date: iteration1.due_date }
+          dates2 = { start_date: iteration2.start_date, due_date: iteration2.due_date }
+
+          expect do
+            iterations_cadence.transaction do
+              iteration1.update_columns(dates2)
+              iteration2.update_columns(dates1)
+            end
+          end.not_to raise_exception(ActiveRecord::StatementInvalid, /PG::ExclusionViolation/)
         end
       end
     end

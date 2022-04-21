@@ -36,109 +36,89 @@ RSpec.describe 'Compliance Dashboard', :js do
     stub_licensed_features(group_level_compliance_dashboard: true)
     group.add_owner(user)
     sign_in(user)
+    visit group_security_compliance_dashboard_path(group)
   end
 
-  context 'when compliance_violations_report feature is disabled' do
-    before do
-      stub_feature_flags(compliance_violations_report: false)
-      visit group_security_compliance_dashboard_path(group)
-    end
-
-    context 'when there are no merge requests' do
-      it 'shows an empty state' do
-        expect(page).to have_selector('.empty-state')
-      end
-    end
-
-    context 'when there are merge requests' do
-      let_it_be(:merge_request) { create(:merge_request, source_project: project, state: :merged, merge_commit_sha: 'b71a6483b96dc303b66fdcaa212d9db6b10591ce') }
-      let_it_be(:merge_request_2) { create(:merge_request, source_project: project_2, state: :merged, merge_commit_sha: '24327319d067f4101cd3edd36d023ab5e49a8579') }
-
-      before_all do
-        create(:event, :merged, project: project, target: merge_request, author: user, created_at: 10.minutes.ago)
-        create(:event, :merged, project: project_2, target: merge_request_2, author: user, created_at: 15.minutes.ago)
-      end
-
-      it 'shows merge requests with details' do
-        expect(page).to have_link(merge_request.title)
-        expect(page).to have_content('merged 10 minutes ago')
-        expect(page).to have_content('no approvers')
-      end
-
-      context 'chain of custody report' do
-        it_behaves_like 'exports a merge commit-specific CSV'
-      end
+  it 'shows the violations report table', :aggregate_failures do
+    page.within('table') do
+      expect(page).to have_content 'Severity'
+      expect(page).to have_content 'Violation'
+      expect(page).to have_content 'Merge request'
+      expect(page).to have_content 'Date merged'
     end
   end
 
-  context 'when compliance_violations_report feature is enabled' do
-    before do
-      stub_feature_flags(compliance_violations_report: true)
-      visit group_security_compliance_dashboard_path(group)
+  context 'when there are no compliance violations' do
+    it 'shows an empty state' do
+      expect(page).to have_content('No violations found')
+    end
+  end
+
+  context 'when there are merge requests' do
+    let_it_be(:user_2) { create(:user) }
+    let_it_be(:merge_request) { create(:merge_request, source_project: project, state: :merged, author: user, merge_commit_sha: 'b71a6483b96dc303b66fdcaa212d9db6b10591ce') }
+    let_it_be(:merge_request_2) { create(:merge_request, source_project: project_2, state: :merged, author: user_2, merge_commit_sha: '24327319d067f4101cd3edd36d023ab5e49a8579') }
+
+    context 'chain of custody report' do
+      it_behaves_like 'exports a merge commit-specific CSV'
     end
 
-    it 'shows the violations report table', :aggregate_failures do
-      page.within('table') do
-        expect(page).to have_content 'Severity'
-        expect(page).to have_content 'Violation'
-        expect(page).to have_content 'Merge request'
-        expect(page).to have_content 'Date merged'
-      end
-    end
+    context 'and there is a compliance violation' do
+      let_it_be(:violation) { create(:compliance_violation, :approved_by_committer, severity_level: :high, merge_request: merge_request, violating_user: user) }
+      let_it_be(:violation_2) { create(:compliance_violation, :approved_by_merge_request_author, severity_level: :medium, merge_request: merge_request_2, violating_user: user) }
 
-    context 'when there are no compliance violations' do
-      it 'shows an empty state' do
-        expect(page).to have_content('No violations found')
-      end
-    end
-
-    context 'when there are merge requests' do
-      let_it_be(:merge_request) { create(:merge_request, source_project: project, state: :merged, merge_commit_sha: 'b71a6483b96dc303b66fdcaa212d9db6b10591ce') }
-      let_it_be(:merge_request_2) { create(:merge_request, source_project: project_2, state: :merged, merge_commit_sha: '24327319d067f4101cd3edd36d023ab5e49a8579') }
-
-      context 'chain of custody report' do
-        it_behaves_like 'exports a merge commit-specific CSV'
+      before do
+        merge_request.metrics.update!(merged_at: 1.day.ago)
+        merge_request_2.metrics.update!(merged_at: 7.days.ago)
+        wait_for_requests
       end
 
-      context 'and there is a compliance violation' do
-        let_it_be(:violation) { create(:compliance_violation, :approved_by_committer, severity_level: :high, merge_request: merge_request, violating_user: user) }
-        let_it_be(:violation_2) { create(:compliance_violation, :approved_by_merge_request_author, severity_level: :medium, merge_request: merge_request_2, violating_user: user) }
+      it 'shows the compliance violations with details', :aggregate_failures do
+        expect(all('tbody > tr').count).to eq(2)
 
-        before do
-          merge_request.metrics.update!(merged_at: 1.day.ago)
-          merge_request_2.metrics.update!(merged_at: 7.days.ago)
-          wait_for_requests
+        expect(first_row).to have_content('High')
+        expect(first_row).to have_content('Approved by committer')
+        expect(first_row).to have_content(merge_request.title)
+        expect(first_row).to have_content('1 day ago')
+      end
+
+      it 'can sort the violations by clicking on a column header' do
+        click_column_header 'Severity'
+
+        expect(first_row).to have_content(merge_request_2.title)
+      end
+
+      it 'shows the correct user avatar popover content when the drawer is switched', :aggregate_failures do
+        first_row.click
+        drawer_user_avatar.hover
+
+        within '.popover' do
+          expect(page).to have_content(user.name)
+          expect(page).to have_content(user.username)
         end
 
-        it 'shows the compliance violations with details', :aggregate_failures do
-          expect(all('tbody > tr').count).to eq(2)
+        second_row.click
+        drawer_user_avatar.hover
 
-          expect(first_row).to have_content('High')
-          expect(first_row).to have_content('Approved by committer')
-          expect(first_row).to have_content(merge_request.title)
-          expect(first_row).to have_content('1 day ago')
+        within '.popover' do
+          expect(page).to have_content(user_2.name)
+          expect(page).to have_content(user_2.username)
+        end
+      end
+
+      context 'violations filter' do
+        it 'can filter by date range' do
+          set_date_range(7.days.ago.to_date, 6.days.ago.to_date)
+
+          expect(page).to have_content(merge_request_2.title)
+          expect(page).not_to have_content(merge_request.title)
         end
 
-        it 'can sort the violations by clicking on a column header' do
-          click_column_header 'Severity'
+        it 'can filter by project id' do
+          filter_by_project(merge_request_2.project)
 
-          expect(first_row).to have_content(merge_request_2.title)
-        end
-
-        context 'violations filter' do
-          it 'can filter by date range' do
-            set_date_range(7.days.ago.to_date, 6.days.ago.to_date)
-
-            expect(page).to have_content(merge_request_2.title)
-            expect(page).not_to have_content(merge_request.title)
-          end
-
-          it 'can filter by project id' do
-            filter_by_project(merge_request_2.project)
-
-            expect(page).to have_content(merge_request_2.title)
-            expect(page).not_to have_content(merge_request.title)
-          end
+          expect(page).to have_content(merge_request_2.title)
+          expect(page).not_to have_content(merge_request.title)
         end
       end
     end
@@ -146,6 +126,16 @@ RSpec.describe 'Compliance Dashboard', :js do
 
   def first_row
     find('tbody tr', match: :first)
+  end
+
+  def second_row
+    all('tbody tr')[1]
+  end
+
+  def drawer_user_avatar
+    page.within('.gl-drawer') do
+      first('.js-user-link')
+    end
   end
 
   def set_date_range(start_date, end_date)

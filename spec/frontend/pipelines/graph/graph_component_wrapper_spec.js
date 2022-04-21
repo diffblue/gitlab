@@ -16,7 +16,7 @@ import {
 } from '~/performance/constants';
 import * as perfUtils from '~/performance/utils';
 import {
-  IID_FAILURE,
+  ACTION_FAILURE,
   LAYER_VIEW,
   STAGE_VIEW,
   VIEW_TYPE_KEY,
@@ -30,6 +30,7 @@ import LinksLayer from '~/pipelines/components/graph_shared/links_layer.vue';
 import * as parsingUtils from '~/pipelines/components/parsing_utils';
 import getPipelineHeaderData from '~/pipelines/graphql/queries/get_pipeline_header_data.query.graphql';
 import * as sentryUtils from '~/pipelines/utils';
+import LocalStorageSync from '~/vue_shared/components/local_storage_sync.vue';
 import { mockRunningPipelineHeaderData } from '../mock_data';
 import { mapCallouts, mockCalloutsResponse, mockPipelineResponse } from './mock_data';
 
@@ -55,6 +56,7 @@ describe('Pipeline graph wrapper', () => {
     wrapper.find(StageColumnComponent).findAll('[data-testid="stage-column-group"]');
   const getViewSelector = () => wrapper.find(GraphViewSelector);
   const getViewSelectorTrip = () => getViewSelector().findComponent(GlAlert);
+  const getLocalStorageSync = () => wrapper.findComponent(LocalStorageSync);
 
   const createComponent = ({
     apolloProvider,
@@ -186,11 +188,34 @@ describe('Pipeline graph wrapper', () => {
 
     it('displays the no iid alert', () => {
       expect(getAlert().exists()).toBe(true);
-      expect(getAlert().text()).toBe(wrapper.vm.$options.errorTexts[IID_FAILURE]);
+      expect(getAlert().text()).toBe(
+        'The data in this pipeline is too old to be rendered as a graph. Please check the Jobs tab to access historical data.',
+      );
     });
 
     it('does not display the graph', () => {
       expect(getGraph().exists()).toBe(false);
+    });
+  });
+
+  describe('when there is an error with an action in the graph', () => {
+    beforeEach(async () => {
+      createComponentWithApollo();
+      await waitForPromises();
+      await getGraph().vm.$emit('error', { type: ACTION_FAILURE });
+    });
+
+    it('does not display the loading icon', () => {
+      expect(getLoadingIcon().exists()).toBe(false);
+    });
+
+    it('displays the action error alert', () => {
+      expect(getAlert().exists()).toBe(true);
+      expect(getAlert().text()).toBe('An error occurred while performing this action.');
+    });
+
+    it('displays the graph', () => {
+      expect(getGraph().exists()).toBe(true);
     });
   });
 
@@ -374,6 +399,10 @@ describe('Pipeline graph wrapper', () => {
 
       afterEach(() => {
         localStorage.clear();
+      });
+
+      it('sets the asString prop on the LocalStorageSync component', () => {
+        expect(getLocalStorageSync().props('asString')).toBe(true);
       });
 
       it('reads the view type from localStorage when available', () => {

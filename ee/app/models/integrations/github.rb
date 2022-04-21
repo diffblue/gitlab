@@ -15,7 +15,9 @@ module Integrations
     default_value_for :pipeline_events, true
 
     def initialize_properties
-      self.properties ||= { static_context: true }
+      return if properties.present?
+
+      self.static_context = true
     end
 
     def title

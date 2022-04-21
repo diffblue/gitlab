@@ -138,7 +138,7 @@ module QA
         it 'rejects unverified emails', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347791' do
           expect_no_error_on_push(file: standard_file)
           expect_error_on_push(file: standard_file, user: @root,
-            error: 'You can only push commits that were committed with one of your own verified emails')
+            error: 'You can only push commits if the committer email is one of your own verified emails')
         end
       end
 

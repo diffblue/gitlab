@@ -257,12 +257,6 @@ module EE
       end
     end
 
-    def new_monthly_ci_minutes_enabled?
-      strong_memoize(:new_monthly_ci_minutes_enabled) do
-        ::Feature.enabled?(:ci_use_new_monthly_minutes, self, default_enabled: :yaml)
-      end
-    end
-
     # The same method name is used also at project level
     def shared_runners_minutes_limit_enabled?
       any_project_with_shared_runners_enabled? && ci_minutes_quota.enabled?
@@ -464,28 +458,12 @@ module EE
       ::Feature.enabled?(:saas_user_caps, root_ancestor, default_enabled: :yaml)
     end
 
-    def apply_free_user_cap?
-      return false unless ::Gitlab.com?
-      return false unless has_free_or_no_subscription?
-
-      ::Feature.enabled?(:free_user_cap, root_ancestor, default_enabled: :yaml)
-    end
-
     def apply_user_cap?
-      user_cap_available? || apply_free_user_cap?
-    end
-
-    def free_user_cap_reached?
-      return false unless apply_free_user_cap?
-
-      members_count = root_ancestor.free_plan_members_count
-      return false unless members_count
-
-      ::Plan::FREE_USER_LIMIT <= members_count
+      user_cap_available? || free_user_cap.enforce_cap?
     end
 
     def user_limit_reached?(use_cache: false)
-      free_user_cap_reached?
+      free_user_cap.reached_limit?
     end
 
     def free_plan_user_ids
@@ -494,7 +472,15 @@ module EE
       end
     end
 
+    def exclude_guests?
+      false
+    end
+
     private
+
+    def free_user_cap
+      @free_user_cap ||= ::Namespaces::FreeUserCap.new(self)
+    end
 
     # Members belonging directly to Projects within user/project namespaces
     def billed_users

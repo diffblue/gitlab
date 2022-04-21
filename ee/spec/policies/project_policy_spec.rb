@@ -768,7 +768,7 @@ RSpec.describe ProjectPolicy do
     end
   end
 
-  describe 'security complience policy' do
+  describe 'security orchestration policies' do
     before do
       stub_licensed_features(security_orchestration_policies: true)
     end
@@ -779,7 +779,7 @@ RSpec.describe ProjectPolicy do
       with_them do
         let(:current_user) { public_send(role) }
 
-        it { is_expected.to be_allowed(:security_orchestration_policies) }
+        it { is_expected.to be_allowed(:read_security_orchestration_policies) }
         it { is_expected.to be_disallowed(:update_security_orchestration_policy_project) }
       end
     end
@@ -790,7 +790,7 @@ RSpec.describe ProjectPolicy do
       with_them do
         let(:current_user) { public_send(role) }
 
-        it { is_expected.to be_allowed(:security_orchestration_policies) }
+        it { is_expected.to be_allowed(:read_security_orchestration_policies) }
         it { is_expected.to be_allowed(:update_security_orchestration_policy_project) }
       end
     end
@@ -1729,7 +1729,7 @@ RSpec.describe ProjectPolicy do
     let(:current_user) { owner }
     let(:abilities) do
       described_class.readonly_features.flat_map { |feature| described_class.create_update_admin(feature) } +
-        described_class.readonly_abilities
+        described_class.readonly_abilities + %i[create_package]
     end
 
     before do

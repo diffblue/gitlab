@@ -21,8 +21,9 @@ module EE
       include Todoable
       include SortableTitle
 
-      DEFAULT_COLOR = '#1068bf'
+      DEFAULT_COLOR = ::Gitlab::Color.of('#1068bf')
 
+      attribute :color, ::Gitlab::Database::Type::Color.new
       default_value_for :color, allows_nil: false, value: DEFAULT_COLOR
 
       enum state_id: {
@@ -30,9 +31,7 @@ module EE
         closed: ::Epic.available_states[:closed]
       }
 
-      validates :color, color: true, allow_blank: false
-
-      before_validation :strip_whitespace_from_color
+      validates :color, color: true, presence: true
 
       alias_attribute :state, :state_id
 
@@ -139,7 +138,7 @@ module EE
       end
 
       scope :order_relative_position_on_board, ->(board_id) do
-        reorder(::Gitlab::Database.nulls_last_order('boards_epic_board_positions.relative_position', 'ASC'), 'epics.id DESC')
+        reorder(::Boards::EpicBoardPosition.arel_table[:relative_position].asc.nulls_last, 'epics.id DESC')
       end
 
       scope :without_board_position, ->(board_id) do
@@ -219,20 +218,6 @@ module EE
 
       def usage_ping_record_epic_creation
         ::Gitlab::UsageDataCounters::EpicActivityUniqueCounter.track_epic_created_action(author: author)
-      end
-
-      def light_color?(color)
-        if color.length == 4
-          r, g, b = color[1, 4].scan(/./).map { |v| (v * 2).hex }
-        else
-          r, g, b = color[1, 7].scan(/.{2}/).map(&:hex)
-        end
-
-        (r + g + b) > 500
-      end
-
-      def strip_whitespace_from_color
-        color.strip!
       end
     end
 
@@ -359,14 +344,15 @@ module EE
       end
 
       def keyset_pagination_for(column_name:, direction: 'ASC')
-        reverse_direction = direction == 'ASC' ? 'DESC' : 'ASC'
+        column_expression = ::Epic.arel_table[column_name]
+        column_expression_with_direction = direction == 'ASC' ? column_expression.asc : column_expression.desc
 
         ::Gitlab::Pagination::Keyset::Order.build([
           ::Gitlab::Pagination::Keyset::ColumnOrderDefinition.new(
             attribute_name: column_name.to_s,
-            column_expression: ::Epic.arel_table[column_name],
-            order_expression: ::Gitlab::Database.nulls_last_order(column_name, direction),
-            reversed_order_expression: ::Gitlab::Database.nulls_last_order(column_name, reverse_direction),
+            column_expression: column_expression,
+            order_expression: column_expression_with_direction.nulls_last,
+            reversed_order_expression: column_expression_with_direction.reverse.nulls_last,
             order_direction: direction,
             distinct: false,
             nullable: :nulls_last
@@ -386,11 +372,7 @@ module EE
     end
 
     def text_color
-      if light_color?(color)
-        '#333333'
-      else
-        '#FFFFFF'
-      end
+      color.contrast
     end
 
     def resource_parent
@@ -588,7 +570,7 @@ module EE
       end
     end
 
-    def related_epics(current_user, preload: nil)
+    def unauthorized_related_epics
       select_for_related_epics =
         ::Epic.select(['epics.*', 'related_epic_links.id AS related_epic_link_id',
                        'related_epic_links.link_type as related_epic_link_type_value',
@@ -604,10 +586,12 @@ module EE
         .joins("INNER JOIN related_epic_links ON related_epic_links.source_id = epics.id")
         .where(related_epic_links: { target_id: id })
 
-      related_epics = ::Epic.from_union([target_epics, source_epics])
-        .preload(preload)
+      ::Epic.from_union([target_epics, source_epics])
         .reorder('related_epic_link_id')
+    end
 
+    def related_epics(current_user, preload: nil)
+      related_epics = unauthorized_related_epics.preload(preload)
       related_epics = yield related_epics if block_given?
 
       self.class.epics_readable_by_user(related_epics, current_user)

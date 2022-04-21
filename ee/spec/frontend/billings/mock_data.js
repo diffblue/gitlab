@@ -5,6 +5,7 @@ export const mockDataSubscription = {
       code: 'gold',
       trial: false,
       upgradable: false,
+      exclude_guests: true,
     },
     usage: {
       seats_in_subscription: 100,
@@ -25,6 +26,7 @@ export const mockDataSubscription = {
       code: null,
       trial: null,
       upgradable: null,
+      exclude_guests: null,
     },
     usage: {
       seats_in_subscription: 0,
@@ -44,12 +46,14 @@ export const mockDataSubscription = {
       code: 'gold',
       trial: true,
       upgradable: false,
+      exclude_guests: false,
     },
     usage: {
       seats_in_subscription: 100,
       seats_in_use: 1,
       max_seats_used: 0,
       seats_owed: 0,
+      exclude_guests: false,
     },
     billing: {
       subscription_start_date: '2018-12-13',

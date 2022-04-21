@@ -1,13 +1,13 @@
 import { shallowMount } from '@vue/test-utils';
 import ViolationReason from 'ee/compliance_dashboard/components/violations/reason.vue';
-import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import UserAvatar from 'ee/compliance_dashboard/components/shared/user_avatar.vue';
 import { MERGE_REQUEST_VIOLATION_MESSAGES } from 'ee/compliance_dashboard/constants';
-import { createUser } from '../../mock_data';
+import { mapViolations } from 'ee/compliance_dashboard/graphql/mappers';
+import { createComplianceViolation } from '../../mock_data';
 
 describe('ViolationReason component', () => {
   let wrapper;
-  const user = convertObjectPropsToCamelCase(createUser(1));
+  const { violatingUser: user } = mapViolations([createComplianceViolation()])[0];
   const reasons = Object.keys(MERGE_REQUEST_VIOLATION_MESSAGES);
 
   const findAvatar = () => wrapper.findComponent(UserAvatar);

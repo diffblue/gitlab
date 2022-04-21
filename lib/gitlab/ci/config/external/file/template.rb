@@ -20,13 +20,21 @@ module Gitlab
               strong_memoize(:content) { fetch_template_content }
             end
 
+            def metadata
+              super.merge(
+                type: :template,
+                location: masked_location,
+                extra: {}
+              )
+            end
+
             private
 
             def validate_location!
               super
 
               unless template_name_valid?
-                errors.push("Template file `#{location}` is not a valid location!")
+                errors.push("Template file `#{masked_location}` is not a valid location!")
               end
             end
 

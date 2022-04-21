@@ -652,5 +652,44 @@ RSpec.describe GroupsController do
         end
       end
     end
+
+    context 'when group feature setting `wiki_access_level` is specified' do
+      before do
+        stub_licensed_features(group_wikis: true)
+        group.add_owner(user)
+
+        sign_in(user)
+      end
+
+      it 'updates the attribute' do
+        [Featurable::PRIVATE, Featurable::DISABLED, Featurable::ENABLED].each do |visibility_level|
+          request(visibility_level)
+
+          expect(group.reload.group_feature.wiki_access_level).to eq(visibility_level)
+        end
+      end
+
+      context 'when group wiki licensed feature is not enabled for the group' do
+        it 'does not update the attribute' do
+          stub_licensed_features(group_wikis: false)
+
+          expect { request(Featurable::PRIVATE) }.not_to change { group.reload.group_feature.wiki_access_level }
+        end
+      end
+
+      context 'when feature flag :group_wiki_settings_toggle is disabled' do
+        before do
+          stub_feature_flags(group_wiki_settings_toggle: false)
+        end
+
+        it 'does not update the attribute' do
+          expect { request(Featurable::PRIVATE) }.not_to change { group.reload.group_feature.wiki_access_level }
+        end
+      end
+
+      def request(visibility_level)
+        put :update, params: { id: group.to_param, group: { group_feature_attributes: { wiki_access_level: visibility_level } } }
+      end
+    end
   end
 end

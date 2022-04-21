@@ -45,10 +45,10 @@ describe('EE projectSelector actions', () => {
   });
 
   describe('toggleSelectedProject', () => {
-    it('adds a project to selectedProjects if it does not already exist in the list', (done) => {
+    it('adds a project to selectedProjects if it does not already exist in the list', async () => {
       const payload = getMockProjects(1);
 
-      testAction(
+      await testAction(
         actions.toggleSelectedProject,
         payload,
         state,
@@ -59,15 +59,14 @@ describe('EE projectSelector actions', () => {
           },
         ],
         [],
-        done,
       );
     });
 
-    it('removes a project from selectedProjects if it already exist in the list', () => {
+    it('removes a project from selectedProjects if it already exist in the list', async () => {
       const payload = getMockProjects(1)[0];
       state.selectedProjects = getMockProjects(1);
 
-      return testAction(
+      await testAction(
         actions.toggleSelectedProject,
         payload,
         state,
@@ -102,12 +101,12 @@ describe('EE projectSelector actions', () => {
       });
     });
 
-    it('dispatches the correct actions when the request is successful', () => {
+    it('dispatches the correct actions when the request is successful', async () => {
       state.projectEndpoints.add = mockAddEndpoint;
 
       mockAxios.onPost(mockAddEndpoint).replyOnce(200, mockResponse);
 
-      return testAction(
+      await testAction(
         actions.addProjects,
         null,
         state,

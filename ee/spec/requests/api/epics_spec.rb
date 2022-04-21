@@ -711,6 +711,52 @@ RSpec.describe API::Epics do
           expect(epic.parent).to eq(parent_epic)
           expect(epic.relative_position).not_to be_nil
           expect(epic.confidential).to be_truthy
+          expect(epic.color).to be_color(::EE::Epic::DEFAULT_COLOR)
+          expect(epic.text_color).to be_color(::EE::Epic::DEFAULT_COLOR.contrast)
+        end
+
+        context 'when we specify a color by hex code' do
+          let(:params) do
+            {
+              title: 'new epic',
+              description: 'epic description',
+              labels: 'label1',
+              due_date_fixed: '2018-07-17',
+              due_date_is_fixed: true,
+              parent_id: parent_epic.id,
+              confidential: true,
+              color: '#fefefe'
+            }
+          end
+
+          it 'sets the color correctly' do
+            epic = Epic.last
+
+            expect(epic.color).to be_color(::Gitlab::Color.of(params[:color]))
+            expect(epic.text_color).to be_color(::Gitlab::Color.of(params[:color]).contrast)
+          end
+        end
+
+        context 'when we specify a color by name' do
+          let(:params) do
+            {
+              title: 'new epic',
+              description: 'epic description',
+              labels: 'label1',
+              due_date_fixed: '2018-07-17',
+              due_date_is_fixed: true,
+              parent_id: parent_epic.id,
+              confidential: true,
+              color: 'red'
+            }
+          end
+
+          it 'sets the color correctly' do
+            epic = Epic.last
+
+            expect(epic.color).to be_color(::Gitlab::Color.of(params[:color]))
+            expect(epic.text_color).to be_color(::Gitlab::Color.of(params[:color]).contrast)
+          end
         end
 
         context 'when deprecated start_date and end_date params are present' do

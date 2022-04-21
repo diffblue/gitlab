@@ -33,9 +33,11 @@ module Ci
 
         destroy_related_records(@job_artifacts)
 
-        Ci::DeletedObject.transaction do
-          Ci::DeletedObject.bulk_import(@job_artifacts, @pick_up_at)
-          Ci::JobArtifact.id_in(@job_artifacts.map(&:id)).delete_all
+        destroy_around_hook(@job_artifacts) do
+          Ci::DeletedObject.transaction do
+            Ci::DeletedObject.bulk_import(@job_artifacts, @pick_up_at)
+            Ci::JobArtifact.id_in(@job_artifacts.map(&:id)).delete_all
+          end
         end
 
         after_batch_destroy_hook(@job_artifacts)
@@ -50,6 +52,13 @@ module Ci
       # rubocop: enable CodeReuse/ActiveRecord
 
       private
+
+      # Overriden in EE
+      # :nocov:
+      def destroy_around_hook(artifacts)
+        yield
+      end
+      # :nocov:
 
       # Overriden in EE
       def destroy_related_records(artifacts); end
@@ -117,7 +126,7 @@ module Ci
 
         wrongly_expired_artifacts, @job_artifacts = @job_artifacts.partition { |artifact| wrongly_expired?(artifact) }
 
-        remove_expire_at(wrongly_expired_artifacts)
+        remove_expire_at(wrongly_expired_artifacts) if wrongly_expired_artifacts.any?
       end
 
       def fix_expire_at?
@@ -127,7 +136,9 @@ module Ci
       def wrongly_expired?(artifact)
         return false unless artifact.expire_at.present?
 
-        match_date?(artifact.expire_at) && match_time?(artifact.expire_at)
+        # Although traces should never have expiration dates that don't match time & date here.
+        # we can explicitly exclude them by type since they should never be destroyed.
+        artifact.trace? || (match_date?(artifact.expire_at) && match_time?(artifact.expire_at))
       end
 
       def match_date?(expire_at)

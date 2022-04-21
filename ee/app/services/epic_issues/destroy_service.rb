@@ -18,10 +18,9 @@ module EpicIssues
       super
 
       Epics::UpdateDatesService.new([link.epic]).execute
-      track_usage_ping_event
     end
 
-    def track_usage_ping_event
+    def track_event
       ::Gitlab::UsageDataCounters::EpicActivityUniqueCounter.track_epic_issue_removed(author: current_user)
     end
 

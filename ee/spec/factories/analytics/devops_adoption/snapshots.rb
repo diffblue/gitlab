@@ -12,6 +12,5 @@ FactoryBot.define do
     runner_configured { true }
     pipeline_succeeded { false }
     deploy_succeeded { true }
-    security_scan_succeeded { false }
   end
 end

@@ -1,9 +1,12 @@
 import { shallowMount } from '@vue/test-utils';
 import { nextTick } from 'vue';
-import { GlModal } from '@gitlab/ui';
+import { GlButton, GlDrawer, GlModal } from '@gitlab/ui';
+import { extendedWrapper } from 'helpers/vue_test_utils_helper';
+import CiEditorHeader from '~/pipeline_editor/components/editor/ci_editor_header.vue';
 import CommitSection from '~/pipeline_editor/components/commit/commit_section.vue';
 import PipelineEditorDrawer from '~/pipeline_editor/components/drawer/pipeline_editor_drawer.vue';
 import PipelineEditorFileNav from '~/pipeline_editor/components/file_nav/pipeline_editor_file_nav.vue';
+import PipelineEditorFileTree from '~/pipeline_editor/components/file_tree/container.vue';
 import BranchSwitcher from '~/pipeline_editor/components/file_nav/branch_switcher.vue';
 import PipelineEditorHeader from '~/pipeline_editor/components/header/pipeline_editor_header.vue';
 import PipelineEditorTabs from '~/pipeline_editor/components/pipeline_editor_tabs.vue';
@@ -18,24 +21,26 @@ describe('Pipeline editor home wrapper', () => {
   let wrapper;
 
   const createComponent = ({ props = {}, glFeatures = {}, data = {}, stubs = {} } = {}) => {
-    wrapper = shallowMount(PipelineEditorHome, {
-      data: () => data,
-      propsData: {
-        ciConfigData: mockLintResponse,
-        ciFileContent: mockCiYml,
-        isCiConfigDataLoading: false,
-        isNewCiConfigFile: false,
-        ...props,
-      },
-      provide: {
-        projectFullPath: '',
-        totalBranches: 19,
-        glFeatures: {
-          ...glFeatures,
+    wrapper = extendedWrapper(
+      shallowMount(PipelineEditorHome, {
+        data: () => data,
+        propsData: {
+          ciConfigData: mockLintResponse,
+          ciFileContent: mockCiYml,
+          isCiConfigDataLoading: false,
+          isNewCiConfigFile: false,
+          ...props,
         },
-      },
-      stubs,
-    });
+        provide: {
+          projectFullPath: '',
+          totalBranches: 19,
+          glFeatures: {
+            ...glFeatures,
+          },
+        },
+        stubs,
+      }),
+    );
   };
 
   const findBranchSwitcher = () => wrapper.findComponent(BranchSwitcher);
@@ -43,8 +48,11 @@ describe('Pipeline editor home wrapper', () => {
   const findFileNav = () => wrapper.findComponent(PipelineEditorFileNav);
   const findModal = () => wrapper.findComponent(GlModal);
   const findPipelineEditorDrawer = () => wrapper.findComponent(PipelineEditorDrawer);
+  const findPipelineEditorFileTree = () => wrapper.findComponent(PipelineEditorFileTree);
   const findPipelineEditorHeader = () => wrapper.findComponent(PipelineEditorHeader);
   const findPipelineEditorTabs = () => wrapper.findComponent(PipelineEditorTabs);
+  const findFileTreeBtn = () => wrapper.findByTestId('file-tree-toggle');
+  const findHelpBtn = () => wrapper.findByTestId('drawer-toggle');
 
   afterEach(() => {
     wrapper.destroy();
@@ -69,10 +77,6 @@ describe('Pipeline editor home wrapper', () => {
 
     it('shows the commit section by default', () => {
       expect(findCommitSection().exists()).toBe(true);
-    });
-
-    it('show the pipeline drawer', () => {
-      expect(findPipelineEditorDrawer().exists()).toBe(true);
     });
   });
 
@@ -172,6 +176,110 @@ describe('Pipeline editor home wrapper', () => {
         expect(findCommitSection().props('scrollToCommitForm')).toBe(true);
         await findCommitSection().vm.$emit('scrolled-to-commit-form');
         expect(findCommitSection().props('scrollToCommitForm')).toBe(false);
+      });
+    });
+  });
+
+  describe('help drawer', () => {
+    const clickHelpBtn = async () => {
+      findHelpBtn().vm.$emit('click');
+      await nextTick();
+    };
+
+    it('hides the drawer by default', () => {
+      createComponent();
+
+      expect(findPipelineEditorDrawer().props('isVisible')).toBe(false);
+    });
+
+    it('toggles the drawer on button click', async () => {
+      createComponent({
+        stubs: {
+          CiEditorHeader,
+          GlButton,
+          GlDrawer,
+          PipelineEditorTabs,
+          PipelineEditorDrawer,
+        },
+      });
+
+      await clickHelpBtn();
+
+      expect(findPipelineEditorDrawer().props('isVisible')).toBe(true);
+
+      await clickHelpBtn();
+
+      expect(findPipelineEditorDrawer().props('isVisible')).toBe(false);
+    });
+
+    it("closes the drawer through the drawer's close button", async () => {
+      createComponent({
+        stubs: {
+          CiEditorHeader,
+          GlButton,
+          GlDrawer,
+          PipelineEditorTabs,
+          PipelineEditorDrawer,
+        },
+      });
+
+      await clickHelpBtn();
+
+      expect(findPipelineEditorDrawer().props('isVisible')).toBe(true);
+
+      findPipelineEditorDrawer().find(GlDrawer).vm.$emit('close');
+      await nextTick();
+
+      expect(findPipelineEditorDrawer().props('isVisible')).toBe(false);
+    });
+  });
+
+  describe('file tree', () => {
+    const toggleFileTree = async () => {
+      findFileTreeBtn().vm.$emit('click');
+      await nextTick();
+    };
+
+    describe('with pipelineEditorFileTree feature flag OFF', () => {
+      beforeEach(() => {
+        createComponent();
+      });
+
+      it('hides the file tree', () => {
+        expect(findFileTreeBtn().exists()).toBe(false);
+        expect(findPipelineEditorFileTree().exists()).toBe(false);
+      });
+    });
+
+    describe('with pipelineEditorFileTree feature flag ON', () => {
+      beforeEach(() => {
+        createComponent({
+          glFeatures: {
+            pipelineEditorFileTree: true,
+          },
+          stubs: {
+            GlButton,
+            PipelineEditorFileNav,
+          },
+        });
+      });
+
+      it('shows button toggle', () => {
+        expect(findFileTreeBtn().exists()).toBe(true);
+      });
+
+      it('hides the file tree by default', () => {
+        expect(findPipelineEditorFileTree().exists()).toBe(false);
+      });
+
+      it('toggles the drawer on button click', async () => {
+        await toggleFileTree();
+
+        expect(findPipelineEditorFileTree().exists()).toBe(true);
+
+        await toggleFileTree();
+
+        expect(findPipelineEditorFileTree().exists()).toBe(false);
       });
     });
   });

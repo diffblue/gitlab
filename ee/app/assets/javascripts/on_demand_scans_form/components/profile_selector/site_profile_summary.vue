@@ -5,12 +5,12 @@ import {
 } from 'ee/security_configuration/dast_profiles/dast_site_profiles/constants';
 import { DAST_SITE_VALIDATION_STATUS } from 'ee/security_configuration/dast_site_validation/constants';
 import { s__ } from '~/locale';
-import ProfileSelectorSummaryCell from './summary_cell.vue';
+import SummaryCell from './summary_cell.vue';
 
 export default {
   name: 'DastSiteProfileSummary',
   components: {
-    ProfileSelectorSummaryCell,
+    SummaryCell,
   },
   props: {
     profile: {
@@ -39,6 +39,7 @@ export default {
           ? s__('DastProfiles|Excluded paths')
           : s__('DastProfiles|Excluded URLs'),
         requestHeaders: s__('DastProfiles|Request headers'),
+        validationStatus: s__('DastProfiles|Validation status'),
       };
     },
     hasExcludedUrls() {
@@ -66,47 +67,25 @@ export default {
 </script>
 
 <template>
-  <div>
-    <div class="row">
-      <profile-selector-summary-cell
-        :class="{ 'gl-text-red-500': hasConflict }"
-        :label="i18n.targetUrl"
-        :value="profile.targetUrl"
-      />
-      <profile-selector-summary-cell :label="i18n.targetType" :value="targetTypeValue" />
-    </div>
+  <div class="row">
+    <summary-cell
+      :class="{ 'gl-text-red-500': hasConflict }"
+      :label="i18n.targetUrl"
+      :value="profile.targetUrl"
+    />
+    <summary-cell :label="i18n.targetType" :value="targetTypeValue" />
     <template v-if="profile.auth.enabled">
-      <div class="row">
-        <profile-selector-summary-cell :label="i18n.authUrl" :value="profile.auth.url" />
-      </div>
-      <div class="row">
-        <profile-selector-summary-cell :label="i18n.username" :value="profile.auth.username" />
-        <profile-selector-summary-cell :label="i18n.password" value="••••••••" />
-      </div>
-      <div class="row">
-        <profile-selector-summary-cell
-          :label="i18n.usernameField"
-          :value="profile.auth.usernameField"
-        />
-        <profile-selector-summary-cell
-          :label="i18n.passwordField"
-          :value="profile.auth.passwordField"
-        />
-      </div>
+      <summary-cell :label="i18n.authUrl" :value="profile.auth.url" />
+      <summary-cell :label="i18n.username" :value="profile.auth.username" />
+      <summary-cell :label="i18n.password" value="••••••••" />
+      <summary-cell :label="i18n.usernameField" :value="profile.auth.usernameField" />
+      <summary-cell :label="i18n.passwordField" :value="profile.auth.passwordField" />
     </template>
-    <div class="row">
-      <profile-selector-summary-cell :label="i18n.excludedUrls" :value="displayExcludedUrls" />
-      <profile-selector-summary-cell
-        :label="i18n.requestHeaders"
-        :value="profile.requestHeaders ? __('[Redacted]') : undefined"
-      />
-    </div>
-
-    <div class="row">
-      <profile-selector-summary-cell
-        :label="s__('DastProfiles|Validation status')"
-        :value="isProfileValidated"
-      />
-    </div>
+    <summary-cell :label="i18n.excludedUrls" :value="displayExcludedUrls" />
+    <summary-cell
+      :label="i18n.requestHeaders"
+      :value="profile.requestHeaders ? __('[Redacted]') : undefined"
+    />
+    <summary-cell :label="i18n.validationStatus" :value="isProfileValidated" />
   </div>
 </template>

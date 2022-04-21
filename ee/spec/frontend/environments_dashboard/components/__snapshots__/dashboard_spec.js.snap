@@ -10,7 +10,6 @@ exports[`dashboard should match the snapshot 1`] = `
     modalid="add-projects-modal"
     ok-disabled="true"
     ok-title="Add projects"
-    ok-variant="success"
     size="md"
     title="Add projects"
     titletag="h4"
@@ -55,7 +54,7 @@ exports[`dashboard should match the snapshot 1`] = `
       role="button"
       size="medium"
       tabindex="0"
-      variant="success"
+      variant="confirm"
     >
       
       Add projects
@@ -82,6 +81,7 @@ exports[`dashboard should match the snapshot 1`] = `
     class="gl-mt-3"
   >
     <gl-empty-state-stub
+      invertindarkmode="true"
       svgpath="/assets/illustrations/operations-dashboard_empty.svg"
       title="Add a project to the dashboard"
     />

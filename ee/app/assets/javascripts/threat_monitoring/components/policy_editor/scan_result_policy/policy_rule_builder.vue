@@ -1,10 +1,7 @@
 <script>
 import { GlSprintf, GlForm, GlButton, GlFormGroup, GlFormInput } from '@gitlab/ui';
 import { s__ } from '~/locale';
-import {
-  REPORT_TYPES_NO_CLUSTER_IMAGE,
-  SEVERITY_LEVELS,
-} from 'ee/security_dashboard/store/constants';
+import { REPORT_TYPES_DEFAULT, SEVERITY_LEVELS } from 'ee/security_dashboard/store/constants';
 import ProtectedBranchesSelector from 'ee/vue_shared/components/branches_selector/protected_branches_selector.vue';
 import PolicyRuleMultiSelect from 'ee/threat_monitoring/components/policy_rule_multi_select.vue';
 import { APPROVAL_VULNERABILITY_STATES } from 'ee/approvals/constants';
@@ -31,7 +28,7 @@ export default {
   },
   data() {
     return {
-      reportTypesKeys: Object.keys(REPORT_TYPES_NO_CLUSTER_IMAGE),
+      reportTypesKeys: Object.keys(REPORT_TYPES_DEFAULT),
     };
   },
   computed: {
@@ -54,10 +51,12 @@ export default {
     },
     scannersToAdd: {
       get() {
-        return this.initRule.scanners;
+        return this.initRule.scanners.length === 0 ? this.reportTypesKeys : this.initRule.scanners;
       },
       set(values) {
-        this.triggerChanged({ scanners: values });
+        this.triggerChanged({
+          scanners: values.length === this.reportTypesKeys.length ? [] : values,
+        });
       },
     },
     vulnerabilityStates: {
@@ -82,7 +81,7 @@ export default {
       this.$emit('changed', { ...this.initRule, ...value });
     },
   },
-  REPORT_TYPES_NO_CLUSTER_IMAGE,
+  REPORT_TYPES_DEFAULT,
   SEVERITY_LEVELS,
   APPROVAL_VULNERABILITY_STATES,
   i18n: {
@@ -108,8 +107,9 @@ export default {
             v-model="scannersToAdd"
             class="gl-mr-3"
             :item-type-name="$options.i18n.scanners"
-            :items="$options.REPORT_TYPES_NO_CLUSTER_IMAGE"
+            :items="$options.REPORT_TYPES_DEFAULT"
             data-testid="scanners-select"
+            :include-select-all="false"
           />
         </template>
 

@@ -1,20 +1,21 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 
-import initFilteredSearch from 'ee/boards/epic_filtered_search';
 import { fullEpicBoardId } from 'ee_component/boards/boards_util';
-import toggleLabels from 'ee_component/boards/toggle_labels';
 
-import BoardAddNewColumnTrigger from '~/boards/components/board_add_new_column_trigger.vue';
 import BoardApp from '~/boards/components/board_app.vue';
-import boardConfigToggle from '~/boards/config_toggle';
 import { issuableTypes } from '~/boards/constants';
-import mountMultipleBoardsSwitcher from '~/boards/mount_multiple_boards_switcher';
 import store from '~/boards/stores';
 import createDefaultClient from '~/lib/graphql';
 
 import '~/boards/filters/due_date_filters';
-import { NavigationType, parseBoolean } from '~/lib/utils/common_utils';
+import {
+  NavigationType,
+  isLoggedIn,
+  parseBoolean,
+  convertObjectPropsToCamelCase,
+} from '~/lib/utils/common_utils';
+import { queryToObject } from '~/lib/utils/url_utility';
 
 Vue.use(VueApollo);
 
@@ -24,6 +25,12 @@ const apolloProvider = new VueApollo({
 
 function mountBoardApp(el) {
   const { boardId, groupId, fullPath, rootPath } = el.dataset;
+
+  const rawFilterParams = queryToObject(window.location.search, { gatherArrays: true });
+
+  const initialFilterParams = {
+    ...convertObjectPropsToCamelCase(rawFilterParams),
+  };
 
   store.dispatch('setInitialBoardData', {
     allowSubEpics: parseBoolean(el.dataset.subEpicsFeatureAvailable),
@@ -46,27 +53,42 @@ function mountBoardApp(el) {
       boardId,
       groupId: parseInt(groupId, 10),
       rootPath,
+      fullPath,
+      initialFilterParams,
+      boardBaseUrl: el.dataset.boardBaseUrl,
+      boardType: el.dataset.parent,
       currentUserId: gon.current_user_id || null,
-      canUpdate: parseBoolean(el.dataset.canUpdate),
-      canAdminList: parseBoolean(el.dataset.canAdminList),
       labelsFetchPath: el.dataset.labelsFetchPath,
       labelsManagePath: el.dataset.labelsManagePath,
       labelsFilterBasePath: el.dataset.labelsFilterBasePath,
       timeTrackingLimitToHours: parseBoolean(el.dataset.timeTrackingLimitToHours),
+      boardWeight: el.dataset.boardWeight ? parseInt(el.dataset.boardWeight, 10) : null,
+      issuableType: issuableTypes.epic,
+      emailsDisabled: parseBoolean(el.dataset.emailsDisabled),
+      hasMissingBoards: parseBoolean(el.dataset.hasMissingBoards),
+      hasScope: parseBoolean(el.dataset.hasScope),
+      weights: JSON.parse(el.dataset.weights),
+      // Permissions
+      canUpdate: parseBoolean(el.dataset.canUpdate),
+      canAdminList: parseBoolean(el.dataset.canAdminList),
+      canAdminBoard: parseBoolean(el.dataset.canAdminBoard),
+      canCreateEpic: parseBoolean(el.dataset.canCreateEpic),
+      allowLabelCreate: parseBoolean(el.dataset.canUpdate),
+      allowLabelEdit: parseBoolean(el.dataset.canUpdate),
+      allowScopedLabels: parseBoolean(el.dataset.scopedLabels),
+      isSignedIn: isLoggedIn(),
+      // Features
       multipleAssigneesFeatureAvailable: parseBoolean(el.dataset.multipleAssigneesFeatureAvailable),
       epicFeatureAvailable: parseBoolean(el.dataset.epicFeatureAvailable),
       iterationFeatureAvailable: parseBoolean(el.dataset.iterationFeatureAvailable),
       weightFeatureAvailable: parseBoolean(el.dataset.weightFeatureAvailable),
-      boardWeight: el.dataset.boardWeight ? parseInt(el.dataset.boardWeight, 10) : null,
       scopedLabelsAvailable: parseBoolean(el.dataset.scopedLabels),
       milestoneListsAvailable: false,
       assigneeListsAvailable: false,
       iterationListsAvailable: false,
-      issuableType: issuableTypes.epic,
-      emailsDisabled: parseBoolean(el.dataset.emailsDisabled),
-      allowLabelCreate: parseBoolean(el.dataset.canUpdate),
-      allowLabelEdit: parseBoolean(el.dataset.canUpdate),
-      allowScopedLabels: parseBoolean(el.dataset.scopedLabels),
+      swimlanesFeatureAvailable: false,
+      multipleIssueBoardsAvailable: true,
+      scopedIssueBoardFeatureEnabled: true,
     },
     render: (createComponent) => createComponent(BoardApp),
   });
@@ -85,31 +107,5 @@ export default () => {
     }
   });
 
-  initFilteredSearch(apolloProvider);
-
   mountBoardApp($boardApp);
-
-  const createColumnTriggerEl = document.querySelector('.js-create-column-trigger');
-  if (createColumnTriggerEl) {
-    // eslint-disable-next-line no-new
-    new Vue({
-      el: createColumnTriggerEl,
-      name: 'BoardAddNewColumnTriggerRoot',
-      components: {
-        BoardAddNewColumnTrigger,
-      },
-      store,
-      render(createElement) {
-        return createElement(BoardAddNewColumnTrigger);
-      },
-    });
-  }
-
-  toggleLabels();
-  boardConfigToggle();
-
-  mountMultipleBoardsSwitcher({
-    fullPath: $boardApp.dataset.fullPath,
-    rootPath: $boardApp.dataset.boardsEndpoint,
-  });
 };

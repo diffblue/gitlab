@@ -1,6 +1,8 @@
+import Vuex from 'vuex';
 import { shallowMount } from '@vue/test-utils';
 import { GlEmptyState, GlAlert, GlFormInput, GlFormTextarea, GlToggle } from '@gitlab/ui';
-import { nextTick } from 'vue';
+import Vue from 'vue';
+import MockAdapter from 'axios-mock-adapter';
 import waitForPromises from 'helpers/wait_for_promises';
 import PolicyEditorLayout from 'ee/threat_monitoring/components/policy_editor/policy_editor_layout.vue';
 import {
@@ -24,6 +26,9 @@ import {
 import DimDisableContainer from 'ee/threat_monitoring/components/policy_editor/dim_disable_container.vue';
 import PolicyActionBuilder from 'ee/threat_monitoring/components/policy_editor/scan_result_policy/policy_action_builder.vue';
 import PolicyRuleBuilder from 'ee/threat_monitoring/components/policy_editor/scan_result_policy/policy_rule_builder.vue';
+import ScanResultPoliciesStore from 'ee/threat_monitoring/store/modules/scan_result_policies';
+import axios from '~/lib/utils/axios_utils';
+import httpStatus from '~/lib/utils/http_status';
 
 jest.mock('~/lib/utils/url_utility', () => ({
   joinPaths: jest.requireActual('~/lib/utils/url_utility').joinPaths,
@@ -43,7 +48,10 @@ jest.mock('ee/threat_monitoring/components/policy_editor/utils', () => ({
   modifyPolicy: jest.fn().mockResolvedValue({ id: '2' }),
 }));
 
+Vue.use(Vuex);
+
 describe('ScanResultPolicyEditor', () => {
+  let mock;
   let wrapper;
   const defaultProjectPath = 'path/to/project';
   const policyEditorEmptyStateSvgPath = 'path/to/svg';
@@ -55,7 +63,14 @@ describe('ScanResultPolicyEditor', () => {
   const scanResultPolicyApprovers = [{ id: 1, username: 'the.one', state: 'active' }];
 
   const factory = ({ propsData = {}, provide = {} } = {}) => {
+    const store = new Vuex.Store({
+      modules: {
+        scanResultPolicies: ScanResultPoliciesStore(),
+      },
+    });
+
     wrapper = shallowMount(ScanResultPolicyEditor, {
+      store,
       propsData: {
         assignedPolicyProject: DEFAULT_ASSIGNED_POLICY_PROJECT,
         ...propsData,
@@ -70,14 +85,14 @@ describe('ScanResultPolicyEditor', () => {
         ...provide,
       },
     });
-    nextTick();
+    Vue.nextTick();
   };
 
-  const factoryWithExistingPolicy = () => {
+  const factoryWithExistingPolicy = (policy = {}) => {
     return factory({
       propsData: {
         assignedPolicyProject,
-        existingPolicy: mockScanResultObject,
+        existingPolicy: { ...mockScanResultObject, ...policy },
         isEditing: true,
       },
     });
@@ -96,7 +111,12 @@ describe('ScanResultPolicyEditor', () => {
   const findYamlPreview = () => wrapper.find('[data-testid="yaml-preview"]');
   const findAllRuleBuilders = () => wrapper.findAllComponents(PolicyRuleBuilder);
 
+  beforeEach(() => {
+    mock = new MockAdapter(axios);
+  });
+
   afterEach(() => {
+    mock.restore();
     wrapper.destroy();
   });
 
@@ -110,7 +130,7 @@ describe('ScanResultPolicyEditor', () => {
       );
 
       findPolicyEditorLayout().vm.$emit('update-yaml', newManifest);
-      await nextTick();
+      await Vue.nextTick();
 
       expect(findPolicyEditorLayout().attributes('yamleditorvalue')).toBe(newManifest);
     });
@@ -128,7 +148,7 @@ describe('ScanResultPolicyEditor', () => {
       expect(findAlert().exists()).toBe(false);
 
       findPolicyEditorLayout().vm.$emit('update-yaml', 'invalid manifest');
-      await nextTick();
+      await Vue.nextTick();
 
       expect(findAlert().exists()).toBe(true);
     });
@@ -137,7 +157,7 @@ describe('ScanResultPolicyEditor', () => {
       await factory();
 
       findPolicyEditorLayout().vm.$emit('update-yaml', 'invalid manifest');
-      await nextTick();
+      await Vue.nextTick();
 
       expect(findNameInput().attributes('disabled')).toBe('true');
       expect(findDescriptionTextArea().attributes('disabled')).toBe('true');
@@ -177,7 +197,7 @@ describe('ScanResultPolicyEditor', () => {
 
         currentComponent().vm.$emit(event, newValue);
         findPolicyEditorLayout().vm.$emit('update-editor-mode', EDITOR_MODE_YAML);
-        await nextTick();
+        await Vue.nextTick();
 
         expect(findPolicyEditorLayout().attributes('yamleditorvalue')).toMatch(newValue.toString());
       });
@@ -186,7 +206,7 @@ describe('ScanResultPolicyEditor', () => {
         await factory();
 
         currentComponent().vm.$emit(event, newValue);
-        await nextTick();
+        await Vue.nextTick();
 
         expect(findYamlPreview().html()).toMatch(newValue.toString());
       });
@@ -225,25 +245,21 @@ describe('ScanResultPolicyEditor', () => {
     it('adds a new rule', async () => {
       const rulesCount = 1;
       factory();
-      await nextTick();
+      await Vue.nextTick();
 
       expect(findAllRuleBuilders().length).toBe(rulesCount);
 
       findAddRuleButton().vm.$emit('click');
-      await nextTick();
+      await Vue.nextTick();
 
       expect(findAllRuleBuilders()).toHaveLength(rulesCount + 1);
     });
 
     it('hides add button when the limit of five rules has been reached', async () => {
       const limit = 5;
-      factory();
-      await nextTick();
-      findAddRuleButton().vm.$emit('click');
-      findAddRuleButton().vm.$emit('click');
-      findAddRuleButton().vm.$emit('click');
-      findAddRuleButton().vm.$emit('click');
-      await nextTick();
+      const rule = mockScanResultObject.rules[0];
+      factoryWithExistingPolicy({ rules: [rule, rule, rule, rule, rule] });
+      await Vue.nextTick();
 
       expect(findAllRuleBuilders()).toHaveLength(limit);
       expect(findAddRuleButton().exists()).toBe(false);
@@ -259,9 +275,9 @@ describe('ScanResultPolicyEditor', () => {
         vulnerability_states: [],
       };
       factory();
-      await nextTick();
+      await Vue.nextTick();
       findAllRuleBuilders().at(0).vm.$emit('changed', newValue);
-      await nextTick();
+      await Vue.nextTick();
 
       expect(wrapper.vm.policy.rules[0]).toEqual(newValue);
       expect(findYamlPreview().html()).toMatch('vulnerabilities_allowed: 1');
@@ -270,12 +286,12 @@ describe('ScanResultPolicyEditor', () => {
     it('deletes the initial rule', async () => {
       const initialRuleCount = 1;
       factory();
-      await nextTick();
+      await Vue.nextTick();
 
       expect(findAllRuleBuilders()).toHaveLength(initialRuleCount);
 
       findAllRuleBuilders().at(0).vm.$emit('remove', 0);
-      await nextTick();
+      await Vue.nextTick();
 
       expect(findAllRuleBuilders()).toHaveLength(initialRuleCount - 1);
     });
@@ -297,7 +313,7 @@ describe('ScanResultPolicyEditor', () => {
     it('renders a single policy action builder', async () => {
       factory();
 
-      await nextTick();
+      await Vue.nextTick();
 
       expect(findAllPolicyActionBuilders()).toHaveLength(1);
       expect(findPolicyActionBuilder().props('existingApprovers')).toEqual(
@@ -309,9 +325,9 @@ describe('ScanResultPolicyEditor', () => {
       const UPDATED_ACTION = { type: 'required_approval', group_approvers_ids: [1] };
       factory();
 
-      await nextTick();
+      await Vue.nextTick();
       findPolicyActionBuilder().vm.$emit('changed', UPDATED_ACTION);
-      await nextTick();
+      await Vue.nextTick();
 
       expect(findPolicyActionBuilder().props('initAction')).toEqual(UPDATED_ACTION);
     });
@@ -336,5 +352,36 @@ describe('ScanResultPolicyEditor', () => {
       expect(findAlert().exists()).toBe(true);
       expect(findAlert().isVisible()).toBe(true);
     });
+
+    it('shows alert when policy scanners are invalid', async () => {
+      factoryWithExistingPolicy({ rules: [{ scanners: ['cluster_image_scanning'] }] });
+
+      expect(findAlert().exists()).toBe(false);
+
+      await findPolicyEditorLayout().vm.$emit('update-editor-mode', EDITOR_MODE_RULE);
+
+      expect(findAlert().exists()).toBe(true);
+    });
   });
+
+  it.each`
+    status                  | errorMessage
+    ${httpStatus.OK}        | ${''}
+    ${httpStatus.NOT_FOUND} | ${'The following branches do not exist on this development project: main. Please review all branches to ensure the values are accurate before updating this policy.'}
+  `(
+    'triggers error event with content: "$errorMessage" when http status is $status',
+    async ({ status, errorMessage }) => {
+      const rule = { ...mockScanResultObject.rules[0], branches: ['main'] };
+
+      mock.onGet('/api/undefined/projects/1/protected_branches/main').replyOnce(status, {});
+
+      factoryWithExistingPolicy({ rules: [rule] });
+
+      await findPolicyEditorLayout().vm.$emit('update-editor-mode', EDITOR_MODE_RULE);
+      await waitForPromises();
+      const errors = wrapper.emitted('error');
+
+      expect(errors[errors.length - 1]).toEqual([errorMessage]);
+    },
+  );
 });

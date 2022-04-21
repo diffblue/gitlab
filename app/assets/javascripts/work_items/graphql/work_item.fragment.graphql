@@ -1,0 +1,9 @@
+fragment WorkItem on WorkItem {
+  id
+  title
+  state
+  workItemType {
+    id
+    name
+  }
+}

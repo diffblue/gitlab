@@ -24,6 +24,34 @@ module Geo
       def data_type_title
         _('File')
       end
+
+      def bulk_create_delete_events_async(deleted_records)
+        return unless deleted_records.any?
+        raise 'This method can only be called for a child class of Gitlab::Geo::Replicator' if replicable_name.nil?
+
+        deleted_record_details = []
+
+        events = deleted_records.map do |record|
+          deleted_record_details << [replicable_name, record[:model_record_id], record[:blob_path]]
+
+          raise 'model_record_id can not be nil' if record[:model_record_id].nil?
+
+          {
+            replicable_name: replicable_name,
+            event_name: 'deleted',
+            payload: {
+              model_record_id: record[:model_record_id],
+              blob_path: record[:blob_path],
+              uploader_class: record[:uploader_class]
+            },
+            created_at: Time.current
+          }
+        end
+
+        log_info('Bulk delete of: ', details: deleted_record_details)
+
+        ::Geo::BatchEventCreateWorker.perform_async(events)
+      end
     end
 
     def handle_after_create_commit
@@ -100,7 +128,7 @@ module Geo
 
     def deleted_params
       {
-        model_record_id: model_record.id,
+        model_record_id: model_record_id,
         uploader_class: carrierwave_uploader.class.to_s,
         blob_path: carrierwave_uploader.relative_path
       }

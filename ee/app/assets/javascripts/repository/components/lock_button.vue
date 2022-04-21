@@ -96,7 +96,10 @@ export default {
       modal-id="lock-file-modal"
       :visible="isModalVisible"
       :title="$options.i18n.modalTitle"
-      :action-primary="{ text: $options.i18n.actionPrimary }"
+      :action-primary="{
+        text: $options.i18n.actionPrimary,
+        attributes: { variant: 'confirm', 'data-qa-selector': 'confirm_ok_button' },
+      }"
       :action-cancel="{ text: $options.i18n.actionCancel }"
       @primary="handleModalPrimary"
       @hide="hideModal"

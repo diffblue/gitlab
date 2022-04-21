@@ -47,19 +47,39 @@ RSpec.describe Security::Findings::CleanupService do
   end
 
   describe '#execute' do
-    let(:security_scan) { create(:security_scan) }
-    let(:relation) { Security::Scan.where(id: security_scan.id) }
+    let(:security_scans) { create_list(:security_scan, 2) }
+    let(:relation) { Security::Scan.where(id: security_scans.map(&:id)) }
     let(:service_object) { described_class.new(relation) }
 
     subject(:cleanup_findings) { service_object.execute }
 
     before do
-      create_list(:security_finding, 2, scan: security_scan)
+      expect(relation).to receive(:unscope).with(where: :build_id).and_call_original
+      create_list(:security_finding, 2, scan: security_scans.first)
+      create_list(:security_finding, 2, scan: security_scans.last)
     end
 
     it 'deletes the findings of the given security scan object and marks the scan as purged' do
-      expect { cleanup_findings }.to change { security_scan.findings.count }.from(2).to(0)
-                                 .and change { security_scan.reload.status }.to('purged')
+      expect { cleanup_findings }.to change { security_scans.map(&:reload).sum(&:findings).count }.from(4).to(0)
+                                 .and change { Security::Scan.purged.count }.from(0).to(2)
+    end
+
+    context 'when iterating through security findings' do
+      let(:finding_scope) { instance_double(ActiveRecord::Relation) }
+
+      before do
+        allow(Security::Finding).to receive(:by_scan).and_return(finding_scope)
+        allow(finding_scope).to receive(:limit).with(100).and_return(finding_scope)
+        allow(finding_scope).to receive(:delete_all).and_return(2, 0)
+
+        cleanup_findings
+      end
+
+      it 'deletes findings in batches of 100' do
+        expect(Security::Finding).to have_received(:by_scan).with(relation.map(&:id))
+        expect(finding_scope).to have_received(:limit).with(100)
+        expect(finding_scope).to have_received(:delete_all)
+      end
     end
   end
 end

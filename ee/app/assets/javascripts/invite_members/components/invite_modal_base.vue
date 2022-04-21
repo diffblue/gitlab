@@ -1,5 +1,6 @@
 <script>
-import { GlLink, GlButton } from '@gitlab/ui';
+import { GlLink } from '@gitlab/ui';
+import { partition, isString } from 'lodash';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import InviteModalBase from '~/invite_members/components/invite_modal_base.vue';
 import {
@@ -11,6 +12,9 @@ import {
   overageModalInfoText,
   overageModalInfoWarning,
 } from '../constants';
+import { checkOverage } from '../check_overage';
+import { fetchSubscription } from '../get_subscription_data';
+import { fetchUserIdsFromGroup } from '../utils';
 
 const OVERAGE_CONTENT_SLOT = 'overage-content';
 const EXTRA_SLOTS = [
@@ -26,7 +30,6 @@ const EXTRA_SLOTS = [
 export default {
   components: {
     GlLink,
-    GlButton,
     InviteModalBase,
   },
   mixins: [glFeatureFlagsMixin()],
@@ -40,16 +43,33 @@ export default {
       type: String,
       required: true,
     },
-    subscriptionSeats: {
+    rootGroupId: {
+      type: String,
+      required: false,
+      default: '',
+    },
+    newUsersToInvite: {
+      type: Array,
+      required: false,
+      default: () => [],
+    },
+    newGroupToInvite: {
       type: Number,
       required: false,
-      default: 10, // TODO: pass data from backend https://gitlab.com/gitlab-org/gitlab/-/merge_requests/78287
+      default: null,
+    },
+    submitDisabled: {
+      type: Boolean,
+      required: false,
+      default: false,
     },
   },
   data() {
     return {
       hasOverage: false,
       totalUserCount: null,
+      subscriptionSeats: 0,
+      namespaceId: parseInt(this.rootGroupId, 10),
     };
   },
   computed: {
@@ -63,6 +83,14 @@ export default {
     },
     showOverageModal() {
       return this.hasOverage && this.enabledOverageCheck;
+    },
+    submitDisabledEE() {
+      if (this.showOverageModal) {
+        return false;
+      }
+
+      // Use CE default
+      return this.submitDisabled;
     },
     enabledOverageCheck() {
       return this.glFeatures.overageMembersModal;
@@ -79,13 +107,16 @@ export default {
     modalTitleOverride() {
       return this.showOverageModal ? OVERAGE_MODAL_TITLE : this.modalTitle;
     },
-    submitButtonText() {
+    overageModalButtons() {
       if (this.showOverageModal) {
-        return OVERAGE_MODAL_CONTINUE_BUTTON;
+        return {
+          submit: OVERAGE_MODAL_CONTINUE_BUTTON,
+          cancel: OVERAGE_MODAL_BACK_BUTTON,
+        };
       }
 
       // Use CE default
-      return undefined;
+      return {};
     },
   },
   methods: {
@@ -96,25 +127,64 @@ export default {
 
       return listeners;
     },
-    onReset(...args) {
+    onReset() {
       // don't reopen the overage modal
       this.hasOverage = false;
 
-      this.$emit('reset', ...args);
+      this.$emit('reset');
     },
-    onSubmit(...args) {
+    onSubmit(args) {
       if (this.enabledOverageCheck && !this.hasOverage) {
-        this.totalUserCount = 1;
-        this.hasOverage = true;
+        this.checkAndSubmit(args);
       } else {
-        this.$emit('submit', ...args);
+        this.$emit('submit', { accessLevel: args.accessLevel, expiresAt: args.expiresAt });
       }
     },
-    handleBack() {
-      this.hasOverage = false;
+    async checkAndSubmit(args) {
+      let usersToAddById = [];
+      let usersToInviteByEmail = [];
+      this.isLoading = true;
+
+      const subscriptionData = await fetchSubscription(this.namespaceId);
+      this.subscriptionSeats = subscriptionData.subscriptionSeats;
+
+      if (this.newGroupToInvite) {
+        usersToAddById = await fetchUserIdsFromGroup(this.newGroupToInvite);
+      } else {
+        [usersToInviteByEmail, usersToAddById] = this.partitionNewUsersToInvite();
+      }
+
+      const isGuestRole = args.accessLevel === this.$attrs['access-levels'].Guest;
+
+      const { hasOverage, usersOverage } = checkOverage(subscriptionData, {
+        isGuestRole,
+        usersToAddById,
+        usersToInviteByEmail,
+      });
+      this.isLoading = false;
+      this.hasOverage = hasOverage;
+
+      if (hasOverage) {
+        this.totalUserCount = usersOverage;
+      } else {
+        this.$emit('submit', { accessLevel: args.accessLevel, expiresAt: args.expiresAt });
+      }
     },
     passthroughSlotNames() {
       return Object.keys(this.$scopedSlots || {});
+    },
+    partitionNewUsersToInvite() {
+      const [usersToInviteByEmail, usersToAddById] = partition(
+        this.newUsersToInvite,
+        ({ id }) => isString(id) && id.includes('user-defined-token'),
+      );
+
+      return [usersToInviteByEmail.map(({ name }) => name), usersToAddById.map(({ id }) => id)];
+    },
+    onCancel() {
+      if (this.showOverageModal) {
+        this.hasOverage = false;
+      }
     },
   },
   i18n: {
@@ -133,12 +203,16 @@ export default {
   <invite-modal-base
     v-bind="$attrs"
     :name="name"
-    :submit-button-text="submitButtonText"
+    :submit-button-text="overageModalButtons.submit"
+    :cancel-button-text="overageModalButtons.cancel"
     :modal-title="modalTitleOverride"
     :current-slot="currentSlot"
     :extra-slots="$options.EXTRA_SLOTS"
+    :submit-disabled="submitDisabledEE"
+    :prevent-cancel-default="showOverageModal"
     @reset="onReset"
     @submit="onSubmit"
+    @cancel="onCancel"
     v-on="getPassthroughListeners()"
   >
     <template #[$options.OVERAGE_CONTENT_SLOT]>
@@ -146,11 +220,6 @@ export default {
       <gl-link :href="$options.i18n.OVERAGE_MODAL_LINK" target="_blank">{{
         $options.i18n.OVERAGE_MODAL_LINK_TEXT
       }}</gl-link>
-    </template>
-    <template v-if="enabledOverageCheck && hasOverage" #cancel-button>
-      <gl-button data-testid="overage-back-button" @click="handleBack">
-        {{ $options.i18n.OVERAGE_MODAL_BACK_BUTTON }}
-      </gl-button>
     </template>
     <template v-for="(_, slot) of $scopedSlots" #[slot]="scope">
       <slot :name="slot" v-bind="scope"></slot>

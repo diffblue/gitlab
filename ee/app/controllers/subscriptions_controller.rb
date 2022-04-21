@@ -36,8 +36,10 @@ class SubscriptionsController < ApplicationController
 
   def new
     if current_user
+      @namespace = current_user.namespace
+
       experiment(:cart_abandonment_modal,
-        namespace: current_user.namespace,
+        namespace: @namespace,
         user: current_user,
         sticky_to: current_user
       ).run
@@ -82,6 +84,11 @@ class SubscriptionsController < ApplicationController
   def payment_method
     response = client.payment_method(params[:id])
     render json: response[:data]
+  end
+
+  def validate_payment_method
+    response = client.validate_payment_method(params[:id], validate_payment_method_params)
+    render json: response
   end
 
   def create
@@ -146,6 +153,10 @@ class SubscriptionsController < ApplicationController
 
   def subscription_params
     params.require(:subscription).permit(:plan_id, :is_addon, :payment_method_id, :quantity, :source).merge(params.permit(:active_subscription))
+  end
+
+  def validate_payment_method_params
+    { gitlab_user_id: params[:gitlab_user_id] }
   end
 
   def find_group(plan_id:)

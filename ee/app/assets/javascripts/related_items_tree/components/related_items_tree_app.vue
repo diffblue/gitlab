@@ -6,11 +6,13 @@ import { __, sprintf } from '~/locale';
 import AddItemForm from '~/related_issues/components/add_issuable_form.vue';
 import SlotSwitch from '~/vue_shared/components/slot_switch.vue';
 import { issuableTypesMap } from '~/related_issues/constants';
-import { OVERFLOW_AFTER } from '../constants';
+import { ITEM_TABS, OVERFLOW_AFTER } from '../constants';
 import CreateEpicForm from './create_epic_form.vue';
 import CreateIssueForm from './create_issue_form.vue';
 import RelatedItemsTreeBody from './related_items_tree_body.vue';
 import RelatedItemsTreeHeader from './related_items_tree_header.vue';
+import RelatedItemsTreeActions from './related_items_tree_actions.vue';
+import RelatedItemsRoadmapApp from './related_items_roadmap_app.vue';
 import TreeItemRemoveModal from './tree_item_remove_modal.vue';
 
 const FORM_SLOTS = {
@@ -22,11 +24,14 @@ const FORM_SLOTS = {
 export default {
   OVERFLOW_AFTER,
   FORM_SLOTS,
+  ITEM_TABS,
   components: {
     GlLoadingIcon,
     GlIcon,
     RelatedItemsTreeHeader,
     RelatedItemsTreeBody,
+    RelatedItemsTreeActions,
+    RelatedItemsRoadmapApp,
     AddItemForm,
     CreateEpicForm,
     TreeItemRemoveModal,
@@ -35,6 +40,11 @@ export default {
   },
   directives: {
     GlTooltip: GlTooltipDirective,
+  },
+  data() {
+    return {
+      activeTab: ITEM_TABS.TREE,
+    };
   },
   computed: {
     ...mapState([
@@ -157,24 +167,28 @@ export default {
       this.toggleCreateEpicForm({ toggleState: false });
       this.setItemInputValue('');
     },
+    handleTabChange(value) {
+      this.activeTab = value;
+    },
   },
 };
 </script>
 
 <template>
-  <div class="related-items-tree-container">
+  <div class="related-items-tree-container gl-mt-5">
     <div v-if="itemsFetchInProgress" class="mt-2">
-      <gl-loading-icon size="md" />
+      <gl-loading-icon size="lg" />
     </div>
     <div
       v-else
-      class="related-items-tree card card-slim border-top-0"
+      class="related-items-tree card card-slim"
       :class="{
         'disabled-content': disableContents,
         'overflow-auto': directChildren.length > $options.OVERFLOW_AFTER,
       }"
     >
       <related-items-tree-header :class="{ 'border-bottom-0': itemsFetchResultEmpty }" />
+
       <slot-switch
         v-if="visibleForm && parentItem.confidential"
         :active-slot-names="[visibleForm]"
@@ -240,11 +254,19 @@ export default {
           />
         </template>
       </slot-switch>
-      <related-items-tree-body
+
+      <related-items-tree-actions
         v-if="!itemsFetchResultEmpty"
+        :active-tab="activeTab"
+        @tab-change="handleTabChange"
+      />
+
+      <related-items-tree-body
+        v-if="!itemsFetchResultEmpty && activeTab === $options.ITEM_TABS.TREE"
         :parent-item="parentItem"
         :children="directChildren"
       />
+      <related-items-roadmap-app v-if="activeTab === $options.ITEM_TABS.ROADMAP" />
       <tree-item-remove-modal />
     </div>
   </div>

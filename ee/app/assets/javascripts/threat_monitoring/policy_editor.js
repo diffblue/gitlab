@@ -13,8 +13,7 @@ const apolloProvider = new VueApollo({
   defaultClient: gqClient,
 });
 
-export default () => {
-  const el = document.querySelector('#js-policy-builder-app');
+export default (el, namespaceType) => {
   const {
     assignedPolicyProject,
     defaultEnvironmentId,
@@ -75,6 +74,7 @@ export default () => {
     provide: {
       createAgentHelpPath,
       disableScanPolicyUpdate: parseBoolean(disableScanPolicyUpdate),
+      namespaceType,
       networkDocumentationPath,
       policyEditorEmptyStateSvgPath,
       policyType,

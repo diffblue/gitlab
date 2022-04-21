@@ -8,6 +8,7 @@ import {
   GlFormTextarea,
   GlAlert,
 } from '@gitlab/ui';
+import { mapActions, mapState } from 'vuex';
 import { joinPaths, visitUrl, setUrlFragment } from '~/lib/utils/url_utility';
 import { __, s__ } from '~/locale';
 import {
@@ -22,7 +23,15 @@ import { assignSecurityPolicyProject, modifyPolicy } from '../utils';
 import DimDisableContainer from '../dim_disable_container.vue';
 import PolicyActionBuilder from './policy_action_builder.vue';
 import PolicyRuleBuilder from './policy_rule_builder.vue';
-import { DEFAULT_SCAN_RESULT_POLICY, fromYaml, toYaml, buildRule, approversOutOfSync } from './lib';
+import {
+  DEFAULT_SCAN_RESULT_POLICY,
+  fromYaml,
+  toYaml,
+  buildRule,
+  approversOutOfSync,
+  invalidScanners,
+  humanizeInvalidBranchesError,
+} from './lib';
 
 export default {
   SECURITY_POLICY_ACTIONS,
@@ -104,6 +113,7 @@ export default {
     };
   },
   computed: {
+    ...mapState('scanResultPolicies', ['invalidBranches']),
     originalName() {
       return this.existingPolicy?.name;
     },
@@ -122,7 +132,17 @@ export default {
       return this.policy.rules.length < 5;
     },
   },
+  watch: {
+    invalidBranches(branches) {
+      if (branches.length > 0) {
+        this.handleError(new Error(humanizeInvalidBranchesError([...branches])));
+      } else {
+        this.$emit('error', '');
+      }
+    },
+  },
   methods: {
+    ...mapActions('scanResultPolicies', ['fetchBranches']),
     updateAction(actionIndex, values) {
       this.policy.actions.splice(actionIndex, 1, values);
     },
@@ -209,13 +229,24 @@ export default {
       if (mode === EDITOR_MODE_YAML && !this.hasParsingError) {
         this.yamlEditorValue = toYaml(this.policy);
       } else if (mode === EDITOR_MODE_RULE && !this.hasParsingError) {
-        if (approversOutOfSync(this.policy.actions[0], this.existingApprovers)) {
+        if (this.invalidForRuleMode()) {
           this.yamlEditorError = new Error();
+        } else {
+          this.fetchBranches({ branches: this.allBranches(), projectId: this.projectId });
         }
       }
     },
     updatePolicyApprovers(values) {
       this.existingApprovers = values;
+    },
+    invalidForRuleMode() {
+      return (
+        approversOutOfSync(this.policy.actions[0], this.existingApprovers) ||
+        invalidScanners(this.policy.rules)
+      );
+    },
+    allBranches() {
+      return this.policy.rules.flatMap((rule) => rule.branches);
     },
   },
 };

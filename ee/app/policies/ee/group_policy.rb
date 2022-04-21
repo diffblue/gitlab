@@ -140,6 +140,10 @@ module EE
         @subject.feature_available?(:evaluate_group_level_compliance_pipeline)
       end
 
+      condition(:security_orchestration_policies_enabled) do
+        @subject.feature_available?(:security_orchestration_policies)
+      end
+
       rule { public_group | logged_in_viewable }.policy do
         enable :read_wiki
         enable :download_wiki_code
@@ -165,6 +169,14 @@ module EE
         enable :maintainer_access
         enable :admin_wiki
         enable :admin_protected_environment
+      end
+
+      rule { auditor }.policy do
+        enable :view_productivity_analytics
+        enable :view_group_devops_adoption
+        enable :read_group_repository_analytics
+        enable :read_group_contribution_analytics
+        enable :read_group_cycle_analytics
       end
 
       rule { owner | admin }.policy do
@@ -302,6 +314,10 @@ module EE
         enable :read_group_audit_events
       end
 
+      rule { security_orchestration_policies_enabled & can?(:developer_access) }.policy do
+        enable :read_security_orchestration_policies
+      end
+
       rule { security_dashboard_enabled & developer }.policy do
         enable :read_group_security_dashboard
         enable :admin_vulnerability
@@ -341,7 +357,9 @@ module EE
       end
 
       desc "Group has wiki disabled"
-      condition(:wiki_disabled, score: 32) { !@subject.feature_available?(:group_wikis) }
+      condition(:wiki_disabled, score: 32) do
+        !@subject.licensed_feature_available?(:group_wikis) || !@subject.feature_available?(:wiki, @user)
+      end
 
       rule { wiki_disabled }.policy do
         prevent(*create_read_update_admin_destroy(:wiki))
@@ -389,6 +407,7 @@ module EE
         prevent :admin_group_member
         prevent :create_deploy_token
         prevent :create_subgroup
+        prevent :create_package
       end
 
       rule { can?(:owner_access) & group_membership_export_available }.enable :export_group_memberships
@@ -396,6 +415,10 @@ module EE
       rule { can?(:owner_access) & group_level_compliance_pipeline_available }.enable :admin_compliance_pipeline_configuration
       rule { can?(:owner_access) & external_audit_events_available }.policy do
         enable :admin_external_audit_events
+      end
+
+      rule { security_orchestration_policies_enabled & can?(:owner_access) }.policy do
+        enable :update_security_orchestration_policy_project
       end
     end
 

@@ -73,7 +73,10 @@ module EE
         vulnerability_check_help_page_path: help_page_path('user/application_security/index', anchor: 'security-approvals-in-merge-requests'),
         license_check_help_page_path: help_page_path('user/application_security/index', anchor: 'enabling-license-approvals-within-a-project'),
         coverage_check_help_page_path: help_page_path('ci/pipelines/settings', anchor: 'coverage-check-approval-rule'),
-        group_name: project.root_ancestor.name
+        group_name: project.root_ancestor.name,
+        full_path: project.full_path,
+        security_policies_path: expose_path(project_security_policies_path(project)),
+        new_policy_path: expose_path(new_project_security_policy_path(project))
       }
     end
 
@@ -179,8 +182,11 @@ module EE
           survey_request_svg_path: image_path('illustrations/security-dashboard_empty.svg'),
           security_dashboard_help_path: help_page_path('user/application_security/security_dashboard/index'),
           no_vulnerabilities_svg_path: image_path('illustrations/issues.svg'),
+          dashboard_documentation: help_page_path('user/application_security/security_dashboard/index'),
           project_full_path: project.full_path,
-          security_configuration_path: project_security_configuration_path(@project)
+          security_configuration_path: project_security_configuration_path(@project),
+          can_admin_vulnerability: can?(current_user, :admin_vulnerability, project).to_s,
+          new_vulnerability_path: new_project_security_vulnerability_path(@project)
         }.merge!(security_dashboard_pipeline_data(project))
       else
         {
@@ -213,10 +219,6 @@ module EE
 
     def can_view_false_positive?
       project.licensed_feature_available?(:sast_fp_reduction).to_s
-    end
-
-    def can_update_security_orchestration_policy_project?(project)
-      can?(current_user, :update_security_orchestration_policy_project, project)
     end
 
     def can_create_feedback?(project, feedback_type)

@@ -35,6 +35,11 @@ module Gitlab
       EPIC_TASK_CHECKED = 'project_management_users_checking_epic_task'
       EPIC_TASK_UNCHECKED = 'project_management_users_unchecking_epic_task'
       EPIC_CROSS_REFERENCED = 'g_project_management_epic_cross_referenced'
+      EPIC_RELATED_ADDED = 'g_project_management_epic_related_added'
+      EPIC_RELATED_REMOVED = 'g_project_management_epic_related_removed'
+      EPIC_BLOCKING_ADDED = 'g_project_management_epic_blocking_added'
+      EPIC_BLOCKING_REMOVED = 'g_project_management_epic_blocking_removed'
+      EPIC_BLOCKED_ADDED = 'g_project_management_epic_blocked_added'
 
       class << self
         def track_epic_created_action(author:)
@@ -147,6 +152,26 @@ module Gitlab
 
         def track_epic_cross_referenced(author:)
           track_unique_action(EPIC_CROSS_REFERENCED, author)
+        end
+
+        def track_linked_epic_with_type_relates_to_added(author:)
+          track_unique_action(EPIC_RELATED_ADDED, author)
+        end
+
+        def track_linked_epic_with_type_relates_to_removed(author:)
+          track_unique_action(EPIC_RELATED_REMOVED, author)
+        end
+
+        def track_linked_epic_with_type_blocks_added(author:)
+          track_unique_action(EPIC_BLOCKING_ADDED, author)
+        end
+
+        def track_linked_epic_with_type_blocks_removed(author:)
+          track_unique_action(EPIC_BLOCKING_REMOVED, author)
+        end
+
+        def track_linked_epic_with_type_is_blocked_by_added(author:)
+          track_unique_action(EPIC_BLOCKED_ADDED, author)
         end
 
         private

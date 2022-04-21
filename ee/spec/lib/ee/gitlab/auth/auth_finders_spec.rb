@@ -65,7 +65,7 @@ RSpec.describe EE::Gitlab::Auth::AuthFinders do
 
       it 'does not authenticate with invalid decryption key error' do
         allow_next_instance_of(::Gitlab::Geo::JwtRequestDecoder) do |instance|
-          expect(instance).to receive(:decode_auth_header).and_raise(Gitlab::Geo::InvalidDecryptionKeyError)
+          expect(instance).to receive(:decode).and_raise(Gitlab::Geo::InvalidDecryptionKeyError)
         end
 
         expect { subject }.to raise_error(::Gitlab::Auth::UnauthorizedError)
@@ -103,18 +103,6 @@ RSpec.describe EE::Gitlab::Auth::AuthFinders do
         user.delete
 
         expect { subject }.to raise_error(::Gitlab::Auth::UnauthorizedError)
-      end
-    end
-
-    context 'when the geo_token_user_authentication feature flag is disabled' do
-      before do
-        stub_feature_flags(geo_token_user_authentication: false)
-      end
-
-      it 'returns immediately' do
-        expect(::Gitlab::Geo::JwtRequestDecoder).not_to receive(:geo_auth_attempt?)
-        expect(::Gitlab::Geo::JwtRequestDecoder).not_to receive(:new)
-        expect(subject).to be_nil
       end
     end
   end

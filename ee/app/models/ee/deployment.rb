@@ -25,7 +25,7 @@ module EE
             ::Dora::DailyMetrics::RefreshWorker
               .perform_in(5.minutes,
                           deployment.environment_id,
-                          Time.current.to_date.to_s)
+                          deployment.finished_at.to_date.to_s)
           end
         end
       end
@@ -35,6 +35,16 @@ module EE
       return 0 unless blocked?
 
       environment.required_approval_count - approvals.length
+    end
+
+    def approval_summary
+      strong_memoize(:approval_summary) do
+        ::ProtectedEnvironments::ApprovalSummary.new(deployment: self)
+      end
+    end
+
+    def approved?
+      approval_summary.all_rules_approved?
     end
   end
 end

@@ -56,13 +56,8 @@ RSpec.describe 'User sees Security Configuration table', :js do
 
         within_sast_iac_card do
           expect(page).to have_text('Infrastructure as Code (IaC) Scanning')
-          expect(page).to have_text('Not enabled')
-          expect(page).to have_button('Configure with a merge request')
-
-          click_button 'Configure with a merge request'
-          wait_for_requests
-
-          expect(page).to have_current_path(project_new_merge_request_path(project), ignore_query: true)
+          expect(page).not_to have_text('Not enabled')
+          expect(page).not_to have_button('Configure with a merge request')
         end
       end
     end
@@ -75,7 +70,7 @@ RSpec.describe 'User sees Security Configuration table', :js do
           expect(page).to have_text('DAST')
           expect(page).to have_text('Not enabled')
           expect(page).to have_link('Enable DAST')
-          expect(page).to have_link('Manage scans')
+          expect(page).to have_link('Manage profiles')
         end
       end
     end
@@ -92,7 +87,7 @@ RSpec.describe 'User sees Security Configuration table', :js do
           expect(page).to have_text('DAST')
           expect(page).to have_text('Enabled')
           expect(page).to have_link('Configure DAST')
-          expect(page).to have_link('Manage scans')
+          expect(page).to have_link('Manage profiles')
         end
       end
     end

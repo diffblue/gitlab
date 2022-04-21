@@ -1168,6 +1168,95 @@ RSpec.describe Group do
     end
   end
 
+  describe '#awaiting_user_ids' do
+    let_it_be(:group, refind: true) { create(:group) }
+    let_it_be(:awaiting_user) { create(:user) }
+    let_it_be(:project_bot) { create(:user, :project_bot) }
+    let_it_be(:project) { create(:project, group: group) }
+    let_it_be(:shared_group, refind: true) { create(:group) }
+    let_it_be(:sub_group) { create(:group, parent: group) }
+
+    subject(:awaiting_user_ids) { group.awaiting_user_ids }
+
+    context 'when awaiting user is member of the group' do
+      before do
+        create(:group_member, :awaiting, user: awaiting_user, source: group)
+        create(:group_member, :awaiting, user: project_bot, source: group)
+      end
+
+      it { is_expected.to match_array([awaiting_user.id]) }
+    end
+
+    context 'when awaiting user is member of a sub-group within the group' do
+      before do
+        create(:group_member, :awaiting, user: awaiting_user, source: sub_group)
+      end
+
+      it { is_expected.to match_array([awaiting_user.id]) }
+    end
+
+    context 'when awaiting user is member of a project in the group' do
+      before do
+        create(:project_member, :awaiting, user: awaiting_user, source: project)
+        create(:project_member, :awaiting, user: project_bot, source: project)
+      end
+
+      it { is_expected.to match_array([awaiting_user.id]) }
+    end
+
+    context 'when other group with awaiting users is member of the group' do
+      let_it_be(:invited_group) { create(:group) }
+
+      before_all do
+        create(:group_member, :awaiting, user: awaiting_user, source: invited_group)
+        create(:group_member, :awaiting, user: project_bot, source: invited_group)
+
+        create(:project_group_link, project: project, group: invited_group)
+      end
+
+      it { is_expected.to match_array([awaiting_user.id]) }
+    end
+
+    context 'when other group with awaiting users is member of a project in the group' do
+      before_all do
+        create(:group_member, :awaiting, user: awaiting_user, source: shared_group)
+        create(:group_member, :awaiting, user: project_bot, source: shared_group)
+        create(:group_group_link, { shared_with_group: shared_group,
+                                    shared_group: group })
+      end
+
+      it { is_expected.to match_array([awaiting_user.id]) }
+    end
+
+    context 'when a user is member multiple times' do
+      before do
+        create(:group_member, :awaiting, :developer, user: awaiting_user, source: group)
+        create(:project_member, :awaiting, :maintainer, user: awaiting_user, source: project)
+        create(:group_member, :awaiting, user: awaiting_user, source: shared_group)
+        create(:group_group_link, { shared_with_group: shared_group,
+                                    shared_group: group })
+      end
+
+      it { is_expected.to match_array([awaiting_user.id]) }
+    end
+
+    context 'when there are multiple awaiting users' do
+      let_it_be(:shared_group_awaiting_user) { create(:user) }
+      let_it_be(:project_awaiting_user) { create(:user) }
+
+      before do
+        create(:group_member, :awaiting, user: awaiting_user, source: group)
+        create(:group_member, :awaiting, user: shared_group_awaiting_user, source: shared_group)
+        create(:project_member, :awaiting, user: project_awaiting_user, source: project)
+
+        create(:group_group_link, { shared_with_group: shared_group,
+                                    shared_group: group })
+      end
+
+      it { is_expected.to match_array([awaiting_user.id, shared_group_awaiting_user.id, project_awaiting_user.id]) }
+    end
+  end
+
   describe '#billable_members_count', :saas do
     let_it_be(:bronze_plan) { create(:bronze_plan) }
     let_it_be(:premium_plan) { create(:premium_plan) }
@@ -1320,20 +1409,29 @@ RSpec.describe Group do
     end
   end
 
-  describe '#free_user_cap_reached?' do
-    subject(:free_user_cap_reached_for_group?) { group.free_user_cap_reached? }
+  describe '#exclude_guests?', :saas do
+    using RSpec::Parameterized::TableSyntax
 
-    context 'when this group has no root ancestor' do
-      it_behaves_like 'returning the right value for free_user_cap_reached?' do
-        let_it_be(:group) { create(:group) }
-        let(:root_group) { group }
-      end
+    let_it_be(:group, refind: true) { create(:group) }
+
+    where(:actual_plan_name, :requested_plan_name, :result) do
+      :free           | nil        | false
+      :premium        | nil        | false
+      :ultimate       | nil        | true
+      :ultimate_trial | nil        | true
+      :gold           | nil        | true
+
+      :free           | 'premium'  | false
+      :free           | 'ultimate' | true
+      :premium        | 'ultimate' | true
+      :ultimate       | 'ultimate' | true
     end
 
-    context 'when this group has a root ancestor' do
-      it_behaves_like 'returning the right value for free_user_cap_reached?' do
-        let_it_be(:group) { create(:group) }
-        let_it_be(:root_group) { create(:group, children: [group]) }
+    with_them do
+      let!(:subscription) { build(:gitlab_subscription, actual_plan_name, namespace: group) }
+
+      it 'returns the expected result' do
+        expect(group.exclude_guests?(requested_plan_name)).to eq(result)
       end
     end
   end
@@ -2069,6 +2167,13 @@ RSpec.describe Group do
     end
   end
 
+  describe '#iteration_cadences_feature_flag_enabled?' do
+    it_behaves_like 'checks self and root ancestor feature flag' do
+      let(:feature_flag) { :iteration_cadences }
+      let(:feature_flag_method) { :iteration_cadences_feature_flag_enabled? }
+    end
+  end
+
   describe '#user_cap_reached?' do
     subject(:user_cap_reached_for_group?) { group.user_cap_reached? }
 
@@ -2162,7 +2267,7 @@ RSpec.describe Group do
   end
 
   describe '#user_limit_reached?' do
-    where(:user_cap_reached, :free_user_cap_reached, :result) do
+    where(:user_cap_reached, :reached_free_limit, :result) do
       false | false | false
       false | true  | true
       true  | false | true
@@ -2174,7 +2279,8 @@ RSpec.describe Group do
     with_them do
       before do
         allow(group).to receive(:user_cap_reached?).and_return(user_cap_reached)
-        allow(group).to receive(:free_user_cap_reached?).and_return(free_user_cap_reached)
+        free_user_cap = instance_double(Namespaces::FreeUserCap, reached_limit?: reached_free_limit)
+        allow(group).to receive(:free_user_cap).and_return(free_user_cap)
       end
 
       it { is_expected.to eq(result) }

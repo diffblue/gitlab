@@ -15,9 +15,9 @@ module Resolvers
             subscription['type'] = if subscription['offline_cloud_licensing'] && subscription['cloud_license_enabled']
                                      License::OFFLINE_CLOUD_TYPE
                                    elsif subscription['cloud_license_enabled'] && !subscription['offline_cloud_licensing']
-                                     License::CLOUD_LICENSE_TYPE
+                                     License::ONLINE_CLOUD_TYPE
                                    else
-                                     License::LICENSE_FILE_TYPE
+                                     License::LEGACY_LICENSE_TYPE
                                    end
           end
         end

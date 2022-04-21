@@ -7,7 +7,7 @@ import { EMPTY_STATUS_CHECK } from 'ee/status_checks/constants';
 import { stubComponent } from 'helpers/stub_component';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import { TEST_PROTECTED_BRANCHES } from '../../vue_shared/components/branches_selector/mock_data';
+import { TEST_PROTECTED_BRANCHES } from 'ee_jest/vue_shared/components/branches_selector/mock_data';
 
 Vue.use(Vuex);
 

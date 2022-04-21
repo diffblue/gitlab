@@ -41,6 +41,10 @@ FactoryBot.modify do
         create(:ci_namespace_monthly_usage, namespace: namespace, amount_used: 1000)
       end
     end
+
+    trait :with_security_orchestration_policy_configuration do
+      association :security_orchestration_policy_configuration, factory: [:security_orchestration_policy_configuration, :namespace]
+    end
   end
 end
 

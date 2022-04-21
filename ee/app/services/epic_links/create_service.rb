@@ -25,7 +25,7 @@ module EpicLinks
 
       if linkable_epic?(child_epic) && set_child_epic(child_epic)
         create_notes(child_epic)
-        success
+        success(created_references: [child_epic])
       else
         error(child_epic.errors.values.flatten.to_sentence, 409)
       end

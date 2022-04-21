@@ -17,25 +17,31 @@ module EE
           push_frontend_feature_flag(:anonymous_visual_review_feedback)
           push_frontend_feature_flag(:missing_mr_security_scan_types, @project)
           push_frontend_feature_flag(:refactor_mr_widgets_extensions, @project, default_enabled: :yaml)
+          push_frontend_feature_flag(:refactor_mr_widget_test_summary, @project, default_enabled: :yaml)
           push_frontend_feature_flag(:refactor_mr_widgets_extensions_user, current_user, default_enabled: :yaml)
           push_frontend_feature_flag(:status_checks_add_status_field, default_enabled: :yaml)
+          push_frontend_feature_flag(:lc_remove_legacy_approval_status, @project, default_enabled: :yaml)
         end
 
         before_action :authorize_read_pipeline!, only: [:container_scanning_reports, :dependency_scanning_reports,
                                                         :sast_reports, :secret_detection_reports,
                                                         :dast_reports, :coverage_fuzzing_reports, :api_fuzzing_reports,
                                                         :metrics_reports]
-        before_action :authorize_read_licenses!, only: [:license_scanning_reports]
+        before_action :authorize_read_licenses!, only: [:license_scanning_reports, :license_scanning_reports_collapsed]
 
         feature_category :vulnerability_management, [:container_scanning_reports, :dependency_scanning_reports,
                                                      :sast_reports, :secret_detection_reports,
                                                      :dast_reports, :coverage_fuzzing_reports, :api_fuzzing_reports]
         feature_category :metrics, [:metrics_reports]
-        feature_category :license_compliance, [:license_scanning_reports]
+        feature_category :license_compliance, [:license_scanning_reports, :license_scanning_reports_collapsed]
         feature_category :code_review, [:delete_description_version, :description_diff]
 
         urgency :high, [:delete_description_version]
         urgency :low, [:description_diff]
+        urgency :low, [
+          :sast_reports,
+          :secret_detection_reports
+        ]
       end
 
       def can_run_sast_experiments_on?(project)
@@ -45,6 +51,10 @@ module EE
 
       def license_scanning_reports
         reports_response(merge_request.compare_license_scanning_reports(current_user))
+      end
+
+      def license_scanning_reports_collapsed
+        reports_response(merge_request.compare_license_scanning_reports_collapsed(current_user))
       end
 
       def container_scanning_reports

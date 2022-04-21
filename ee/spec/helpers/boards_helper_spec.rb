@@ -8,17 +8,6 @@ RSpec.describe BoardsHelper do
   let_it_be_with_refind(:project) { create(:project) }
   let_it_be(:project_board) { create(:board, project: project) }
 
-  describe '#board_list_data' do
-    let(:results) { helper.board_list_data }
-
-    it 'contains an endpoint to get users list' do
-      assign(:board, project_board)
-      assign(:project, project)
-
-      expect(results).to include(list_assignees_path: "/-/boards/#{project_board.id}/users.json")
-    end
-  end
-
   describe '#current_board_json' do
     let(:board_json) { helper.current_board_json }
     let(:label1) { create(:label, name: "feijoa") }
@@ -74,6 +63,7 @@ RSpec.describe BoardsHelper do
         allow(helper).to receive(:can?).with(user, :create_non_backlog_issues, project_board).and_return(true)
         allow(helper).to receive(:can?).with(user, :admin_issue, project_board).and_return(true)
         allow(helper).to receive(:can?).with(user, :admin_issue_board_list, project).and_return(false)
+        allow(helper).to receive(:can?).with(user, :admin_issue_board, project).and_return(false)
       end
 
       shared_examples 'serializes the availability of a licensed feature' do |feature_name, feature_key|
@@ -123,7 +113,8 @@ RSpec.describe BoardsHelper do
          [:issue_weights, :weight_feature_available],
          [:board_milestone_lists, :milestone_lists_available],
          [:board_assignee_lists, :assignee_lists_available],
-         [:scoped_labels, :scoped_labels]].each do |feature_name, feature_key|
+         [:scoped_labels, :scoped_labels],
+         [:scoped_issue_board, :scoped_issue_board_feature_enabled]].each do |feature_name, feature_key|
           include_examples "serializes the availability of a licensed feature", feature_name, feature_key
         end
       end
@@ -146,11 +137,18 @@ RSpec.describe BoardsHelper do
         assign(:group, group)
 
         allow(helper).to receive(:can?).with(user, :create_non_backlog_issues, epic_board).and_return(false)
+        allow(helper).to receive(:can?).with(user, :create_epic, group).and_return(true)
         allow(helper).to receive(:can?).with(user, :admin_epic, epic_board).and_return(true)
         allow(helper).to receive(:can?).with(user, :admin_epic_board_list, group).and_return(true)
+        allow(helper).to receive(:can?).with(user, :admin_epic_board, group).and_return(true)
 
         allow(helper).to receive(:can?).with(user, :admin_issue, group).and_return(false)
         allow(helper).to receive(:can?).with(user, :admin_issue_board_list, group).and_return(false)
+        allow(helper).to receive(:can?).with(user, :admin_issue_board, group).and_return(false)
+      end
+
+      it 'returns the correct permission for creating an epic from board' do
+        expect(board_data[:can_create_epic]).to eq "true"
       end
 
       it 'returns the correct permission for updating the board' do
@@ -159,6 +157,10 @@ RSpec.describe BoardsHelper do
 
       it 'returns the correct permission for administering the boards lists' do
         expect(board_data[:can_admin_list]).to eq "true"
+      end
+
+      it 'returns the correct permission for administering the boards' do
+        expect(board_data[:can_admin_board]).to eq "true"
       end
     end
   end

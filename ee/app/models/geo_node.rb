@@ -53,6 +53,7 @@ class GeoNode < ApplicationRecord
   scope :secondary_nodes, -> { where(primary: false) }
   scope :name_in, -> (names) { where(name: names) }
   scope :ordered, -> { order(:id) }
+  scope :enabled, -> { where(enabled: true) }
 
   attr_encrypted :secret_access_key,
                  key: Settings.attr_encrypted_db_key_base_32,
@@ -173,6 +174,10 @@ class GeoNode < ApplicationRecord
 
   def internal_uri
     @internal_uri ||= URI.parse(internal_url) if internal_url.present?
+  end
+
+  def omniauth_host_url
+    read_without_ending_slash(:url)
   end
 
   # Geo API endpoint for retrieving a replicable item
@@ -420,6 +425,12 @@ class GeoNode < ApplicationRecord
     add_ending_slash(value)
   end
 
+  def read_without_ending_slash(attribute)
+    value = read_attribute(attribute)
+
+    remove_ending_slash(value)
+  end
+
   def write_with_ending_slash(attribute, value)
     value = add_ending_slash(value)
 
@@ -431,6 +442,12 @@ class GeoNode < ApplicationRecord
     return value if value.end_with?('/')
 
     "#{value}/"
+  end
+
+  def remove_ending_slash(value)
+    return value if value.blank?
+
+    value.sub(%r{/$}, '')
   end
 
   def projects_for_selected_namespaces

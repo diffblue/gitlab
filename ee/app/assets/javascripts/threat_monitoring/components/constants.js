@@ -52,6 +52,10 @@ export const POLICY_TYPE_COMPONENT_OPTIONS = {
 };
 
 export const POLICY_TYPE_OPTIONS = {
+  ALL: {
+    value: '',
+    text: s__('SecurityOrchestration|All policies'),
+  },
   POLICY_TYPE_NETWORK: {
     value: 'POLICY_TYPE_NETWORK',
     text: s__('SecurityOrchestration|Network'),
@@ -63,10 +67,6 @@ export const POLICY_TYPE_OPTIONS = {
   POLICY_TYPE_SCAN_RESULT: {
     value: 'POLICY_TYPE_SCAN_RESULT',
     text: s__('SecurityOrchestration|Scan result'),
-  },
-  ALL: {
-    value: '',
-    text: s__('SecurityOrchestration|All policies'),
   },
 };
 

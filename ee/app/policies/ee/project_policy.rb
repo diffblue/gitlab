@@ -199,7 +199,7 @@ module EE
       rule { can?(:read_project) & iterations_available }.enable :read_iteration
 
       rule { security_orchestration_policies_enabled & can?(:developer_access) }.policy do
-        enable :security_orchestration_policies
+        enable :read_security_orchestration_policies
       end
 
       rule { security_orchestration_policies_enabled & can?(:owner_access) }.policy do
@@ -397,6 +397,7 @@ module EE
         readonly_features.each do |feature|
           prevent(*create_update_admin(feature))
         end
+        prevent :create_package
       end
 
       rule { auditor | can?(:developer_access) }.enable :add_project_to_instance_security_dashboard

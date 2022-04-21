@@ -197,3 +197,5 @@ module Sidebars
     end
   end
 end
+
+Sidebars::Groups::Menus::AnalyticsMenu.prepend_mod

@@ -50,6 +50,7 @@ describe('Board List Header Component', () => {
     withLocalStorage = true,
     isSwimlanesHeader = false,
     weightFeatureAvailable = false,
+    canCreateEpic = true,
     listQueryHandler = jest.fn().mockResolvedValue(boardListQueryResponse()),
     currentUserId = 1,
     state = { activeId: inactiveId },
@@ -93,6 +94,7 @@ describe('Board List Header Component', () => {
         boardId,
         weightFeatureAvailable,
         currentUserId,
+        canCreateEpic,
       },
     });
   };
@@ -126,6 +128,19 @@ describe('Board List Header Component', () => {
         title: 'New epic',
         'aria-label': 'New epic',
       });
+    });
+
+    it('does not render New epic button when canCreateEpic is false', () => {
+      createComponent({
+        canCreateEpic: false,
+        getters: {
+          isIssueBoard: () => false,
+          isEpicBoard: () => true,
+          isGroupBoard: () => true,
+        },
+      });
+
+      expect(wrapper.findComponent(GlButtonGroup).exists()).toBe(false);
     });
 
     it('emits `toggle-epic-form` event on Sidebar eventHub when clicked', async () => {

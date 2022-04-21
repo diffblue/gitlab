@@ -56,6 +56,38 @@ RSpec.describe EE::TrialHelper do
     end
   end
 
+  describe '#create_company_form_data' do
+    let(:extra_params) do
+      {
+        role: '_params_role_',
+        jtbd: '_params_jtbd_',
+        comment: '_params_comment_'
+      }
+    end
+
+    let(:params) do
+      ActionController::Parameters.new(extra_params)
+    end
+
+    before do
+      allow(helper).to receive(:params).and_return(params)
+    end
+
+    it 'provides expected form data' do
+      keys = [:submit_path]
+
+      expect(helper.create_company_form_data.keys.map(&:to_sym)).to match_array(keys)
+    end
+
+    it 'allows overriding data with params' do
+      submit_path = {
+        submit_path: '/users/sign_up/company?comment=_params_comment_&jtbd=_params_jtbd_&role=_params_role_'
+      }
+
+      expect(helper.create_company_form_data).to match(submit_path)
+    end
+  end
+
   describe '#should_ask_company_question?' do
     before do
       allow(helper).to receive(:glm_params).and_return(glm_source ? { glm_source: glm_source } : {})
@@ -187,50 +219,6 @@ RSpec.describe EE::TrialHelper do
       let_it_be(:have_group_namespace) { true }
 
       it { is_expected.to eq(true) }
-    end
-  end
-
-  describe '#show_trial_errors?' do
-    shared_examples 'shows errors based on trial generation result' do
-      where(:trial_result, :expected_result) do
-        nil                | nil
-        { success: true }  | false
-        { success: false } | true
-      end
-
-      with_them do
-        it 'show errors when trial generation was unsuccessful' do
-          expect(helper.show_trial_errors?(namespace, trial_result)).to eq(expected_result)
-        end
-      end
-    end
-
-    context 'when namespace is nil' do
-      let(:namespace) { nil }
-
-      it_behaves_like 'shows errors based on trial generation result'
-    end
-
-    context 'when namespace is valid' do
-      let(:namespace) { build(:namespace) }
-
-      it_behaves_like 'shows errors based on trial generation result'
-    end
-
-    context 'when namespace is invalid' do
-      let(:namespace) { build(:namespace, name: 'admin') }
-
-      where(:trial_result, :expected_result) do
-        nil                | true
-        { success: true }  | true
-        { success: false } | true
-      end
-
-      with_them do
-        it 'show errors regardless of trial generation result' do
-          expect(helper.show_trial_errors?(namespace, trial_result)).to eq(expected_result)
-        end
-      end
     end
   end
 

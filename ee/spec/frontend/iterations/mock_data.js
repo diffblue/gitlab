@@ -10,12 +10,22 @@ export const mockIterationNode = {
   state: iterationStates.upcoming,
   title: 'top-level-iteration',
   webPath: '/groups/top-level-group/-/iterations/4',
+  scopedPath: '/groups/top-level-group/-/iterations/4',
+  iterationCadence: {
+    __typename: 'IterationCadence',
+    id: 'gid://gitlab/Iterations::Cadence/72',
+    automatic: true,
+  },
   __typename: 'Iteration',
 };
 
-export const mockPastIterationNode = {
+export const mockManualIterationNode = {
   ...mockIterationNode,
-  state: iterationStates.closed,
+  iterationCadence: {
+    __typename: 'IterationCadence',
+    id: 'gid://gitlab/Iterations::Cadence/72',
+    automatic: false,
+  },
 };
 
 export const mockIterationNodeWithoutTitle = {
@@ -29,6 +39,33 @@ export const mockGroupIterations = {
       id: 'gid://gitlab/Group/114',
       iterations: {
         nodes: [mockIterationNode],
+        pageInfo: {
+          hasNextPage: true,
+          hasPreviousPage: true,
+          startCursor: 'first-item',
+          endCursor: 'last-item',
+          __typename: 'PageInfo',
+        },
+        __typename: 'IterationConnection',
+      },
+      __typename: 'Group',
+    },
+  },
+};
+
+export const mockGroupIterationsEmpty = {
+  data: {
+    group: {
+      id: 'gid://gitlab/Group/114',
+      iterations: {
+        nodes: [],
+        pageInfo: {
+          hasNextPage: false,
+          hasPreviousPage: false,
+          startCursor: '',
+          endCursor: '',
+          __typename: 'PageInfo',
+        },
         __typename: 'IterationConnection',
       },
       __typename: 'Group',
@@ -68,7 +105,20 @@ export const manualIterationCadence = {
   __typename: 'IterationCadence',
   active: true,
   id: `gid://gitlab/Iterations::Cadence/72`,
-  title: 'A manual iteration cadence',
+  title: 'A manually-scheduled iteration cadence',
+  automatic: false,
+  rollOver: false,
+  durationInWeeks: 2,
+  description: null,
+  startDate: '2020-06-28',
+  iterationsInAdvance: 0,
+};
+
+export const automaticIterationCadence = {
+  __typename: 'IterationCadence',
+  active: true,
+  id: `gid://gitlab/Iterations::Cadence/72`,
+  title: 'An automatically-scheduled iteration cadence',
   automatic: true,
   rollOver: false,
   durationInWeeks: 3,
@@ -130,7 +180,18 @@ export const nonEmptyGroupIterationsSuccess = {
   },
 };
 
-export const readCadenceSuccess = {
+export const readAutomaticCadenceSuccess = {
+  data: {
+    group: {
+      id: 'gid://gitlab/Group/114',
+      iterationCadences: {
+        nodes: [automaticIterationCadence],
+      },
+    },
+  },
+};
+
+export const readManualCadenceSuccess = {
   data: {
     group: {
       id: 'gid://gitlab/Group/114',
@@ -163,6 +224,7 @@ export const mockIterationsWithCadences = [
     startDate: '2021-11-23T12:34:56',
     dueDate: '2021-11-30T12:34:56',
     iterationCadence: {
+      id: 1,
       title: 'cadence 1',
     },
   },
@@ -172,6 +234,7 @@ export const mockIterationsWithCadences = [
     startDate: '2021-11-23T12:34:56',
     dueDate: '2021-11-30T12:34:56',
     iterationCadence: {
+      id: 2,
       title: 'cadence 2',
     },
   },
@@ -181,6 +244,7 @@ export const mockIterationsWithCadences = [
     startDate: '2021-11-23T12:34:56',
     dueDate: '2021-11-30T12:34:56',
     iterationCadence: {
+      id: 2,
       title: 'cadence 2',
     },
   },
@@ -190,6 +254,7 @@ export const mockIterationsWithCadences = [
     startDate: '2021-11-23T12:34:56',
     dueDate: '2021-11-30T12:34:56',
     iterationCadence: {
+      id: 1,
       title: 'cadence 1',
     },
   },

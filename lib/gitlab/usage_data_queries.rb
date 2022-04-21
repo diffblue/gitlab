@@ -5,6 +5,10 @@ module Gitlab
   # See https://gitlab.com/gitlab-org/gitlab/-/merge_requests/41091
   class UsageDataQueries < UsageData
     class << self
+      def with_duration
+        yield
+      end
+
       def add_metric(metric, time_frame: 'none', options: {})
         metric_class = "Gitlab::Usage::Metrics::Instrumentations::#{metric}".constantize
 
@@ -50,7 +54,7 @@ module Gitlab
 
       def alt_usage_data(value = nil, fallback: FALLBACK, &block)
         if block_given?
-          { alt_usage_data_block: block.to_s }
+          { alt_usage_data_block: "non-SQL usage data block" }
         else
           { alt_usage_data_value: value }
         end
@@ -58,9 +62,9 @@ module Gitlab
 
       def redis_usage_data(counter = nil, &block)
         if block_given?
-          { redis_usage_data_block: block.to_s }
+          { redis_usage_data_block: "non-SQL usage data block" }
         elsif counter.present?
-          { redis_usage_data_counter: counter }
+          { redis_usage_data_counter: counter.to_s }
         end
       end
 
@@ -73,6 +77,13 @@ module Gitlab
 
       def epics_deepest_relationship_level
         { epics_deepest_relationship_level: 0 }
+      end
+
+      def topology_usage_data
+        {
+          duration_s: 0,
+          failures: []
+        }
       end
     end
   end

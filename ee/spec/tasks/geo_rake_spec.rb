@@ -16,40 +16,6 @@ RSpec.describe 'geo rake tasks', :geo, :silence_stdout do
     stub_licensed_features(geo: true)
   end
 
-  context 'custom geo:db:* rake tasks' do
-    using RSpec::Parameterized::TableSyntax
-
-    where(:deprecated_task, :task_to_invoke) do
-      'geo:db:create'         | 'db:create:geo'
-      'geo:db:drop'           | 'db:drop:geo'
-      'geo:db:migrate'        | 'db:migrate:geo'
-      'geo:db:migrate:down'   | 'db:migrate:down:geo'
-      'geo:db:migrate:redo'   | 'db:migrate:redo:geo'
-      'geo:db:migrate:status' | 'db:migrate:status:geo'
-      'geo:db:migrate:up'     | 'db:migrate:up:geo'
-      'geo:db:reset'          | 'db:reset:geo'
-      'geo:db:rollback'       | 'db:rollback:geo'
-      'geo:db:schema:dump'    | 'db:schema:dump:geo'
-      'geo:db:schema:load'    | 'db:schema:load:geo'
-      'geo:db:seed'           | 'db:seed:geo'
-      'geo:db:setup'          | 'db:setup:geo'
-      'geo:db:test:load'      | 'db:test:load:geo'
-      'geo:db:test:prepare'   | 'db:test:prepare:geo'
-      'geo:db:test:purge'     | 'db:test:purge:geo'
-      'geo:db:version'        | 'db:version:geo'
-    end
-
-    with_them do
-      it "logs a deprecated message and invokes the Rails built-in task" do
-        expect(Rake::Task[task_to_invoke]).to receive(:invoke).and_return(true)
-
-        expect { run_rake_task(deprecated_task) }
-          .to output("DEPRECATION WARNING: Using `bin/rails #{deprecated_task}` is deprecated and will be removed in Gitlab 15.0. Please run `bin/rails #{task_to_invoke}` instead.\n")
-          .to_stdout
-      end
-    end
-  end
-
   describe 'geo:set_primary_node' do
     before do
       stub_config_setting(url: 'https://example.com:1234/relative_part')

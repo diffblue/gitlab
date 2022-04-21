@@ -34,21 +34,14 @@ describe('Codequality report actions', () => {
   });
 
   describe('setPage', () => {
-    it('sets the page number', (done) => {
-      return testAction(
-        actions.setPage,
-        12,
-        state,
-        [{ type: types.SET_PAGE, payload: 12 }],
-        [],
-        done,
-      );
+    it('sets the page number', async () => {
+      await testAction(actions.setPage, 12, state, [{ type: types.SET_PAGE, payload: 12 }], []);
     });
   });
 
   describe('requestReport', () => {
-    it('sets the loading flag', (done) => {
-      testAction(actions.requestReport, null, state, [{ type: types.REQUEST_REPORT }], [], done);
+    it('sets the loading flag', async () => {
+      await testAction(actions.requestReport, null, state, [{ type: types.REQUEST_REPORT }], []);
     });
 
     it('tracks a service ping event', () => {
@@ -59,27 +52,25 @@ describe('Codequality report actions', () => {
   });
 
   describe('receiveReportSuccess', () => {
-    it('parses the list of issues from the report', (done) => {
-      return testAction(
+    it('parses the list of issues from the report', async () => {
+      await testAction(
         actions.receiveReportSuccess,
         unparsedIssues,
         { blobPath: '/root/test-codequality/blob/feature-branch', ...state },
         [{ type: types.RECEIVE_REPORT_SUCCESS, payload: parsedIssues }],
         [],
-        done,
       );
     });
   });
 
   describe('receiveReportError', () => {
-    it('accepts a report error', (done) => {
-      testAction(
+    it('accepts a report error', async () => {
+      await testAction(
         actions.receiveReportError,
         'error',
         state,
         [{ type: types.RECEIVE_REPORT_ERROR, payload: 'error' }],
         [],
-        done,
       );
     });
   });
@@ -89,47 +80,40 @@ describe('Codequality report actions', () => {
       mock.onGet(endpoint).replyOnce(200, unparsedIssues);
     });
 
-    it('fetches the report', (done) => {
-      return testAction(
+    it('fetches the report', async () => {
+      await testAction(
         actions.fetchReport,
         null,
         { blobPath: 'blah', ...state },
         [],
         [{ type: 'requestReport' }, { type: 'receiveReportSuccess', payload: unparsedIssues }],
-        done,
       );
     });
 
-    it('shows a flash message when there is an error', (done) => {
-      testAction(
+    it('shows a flash message when there is an error', async () => {
+      await testAction(
         actions.fetchReport,
         'error',
         state,
         [],
         [{ type: 'requestReport' }, { type: 'receiveReportError', payload: expect.any(Error) }],
-        () => {
-          expect(createFlash).toHaveBeenCalledWith({
-            message: 'There was an error fetching the codequality report.',
-          });
-          done();
-        },
       );
+      expect(createFlash).toHaveBeenCalledWith({
+        message: 'There was an error fetching the codequality report.',
+      });
     });
 
-    it('shows an error when blob path is missing', (done) => {
-      testAction(
+    it('shows an error when blob path is missing', async () => {
+      await testAction(
         actions.fetchReport,
         null,
         state,
         [],
         [{ type: 'requestReport' }, { type: 'receiveReportError', payload: expect.any(Error) }],
-        () => {
-          expect(createFlash).toHaveBeenCalledWith({
-            message: 'There was an error fetching the codequality report.',
-          });
-          done();
-        },
       );
+      expect(createFlash).toHaveBeenCalledWith({
+        message: 'There was an error fetching the codequality report.',
+      });
     });
   });
 });

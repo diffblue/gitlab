@@ -43,8 +43,8 @@ describe('projects actions', () => {
         });
       });
 
-      it('should dispatch the request and success actions', (done) => {
-        testAction(
+      it('should dispatch the request and success actions', async () => {
+        await testAction(
           actions.fetchProjects,
           {},
           state,
@@ -56,7 +56,6 @@ describe('projects actions', () => {
               payload: { projects: data },
             },
           ],
-          done,
         );
       });
     });
@@ -70,8 +69,8 @@ describe('projects actions', () => {
         mock.onGet(state.projectsEndpoint, { page: '2' }).replyOnce(200, [2]);
       });
 
-      it('should dispatch the request and success actions', (done) => {
-        testAction(
+      it('should dispatch the request and success actions', async () => {
+        await testAction(
           actions.fetchProjects,
           {},
           state,
@@ -83,7 +82,6 @@ describe('projects actions', () => {
               payload: { projects: [1, 2] },
             },
           ],
-          done,
         );
       });
     });
@@ -93,14 +91,13 @@ describe('projects actions', () => {
         mock.onGet(state.projectsEndpoint).replyOnce(404, {});
       });
 
-      it('should dispatch the request and error actions', (done) => {
-        testAction(
+      it('should dispatch the request and error actions', async () => {
+        await testAction(
           actions.fetchProjects,
           {},
           state,
           [],
           [{ type: 'requestProjects' }, { type: 'receiveProjectsError' }],
-          done,
         );
       });
     });
@@ -110,17 +107,17 @@ describe('projects actions', () => {
         state.projectsEndpoint = '';
       });
 
-      it('should not do anything', (done) => {
-        testAction(actions.fetchProjects, {}, state, [], [], done);
+      it('should not do anything', async () => {
+        await testAction(actions.fetchProjects, {}, state, [], []);
       });
     });
   });
 
   describe('receiveProjectsSuccess', () => {
-    it('should commit the success mutation', (done) => {
+    it('should commit the success mutation', async () => {
       const state = createState();
 
-      testAction(
+      await testAction(
         actions.receiveProjectsSuccess,
         { projects: data },
         state,
@@ -131,39 +128,37 @@ describe('projects actions', () => {
           },
         ],
         [],
-        done,
       );
     });
   });
 
   describe('receiveProjectsError', () => {
-    it('should commit the error mutation', (done) => {
+    it('should commit the error mutation', async () => {
       const state = createState();
 
-      testAction(
+      await testAction(
         actions.receiveProjectsError,
         {},
         state,
         [{ type: types.RECEIVE_PROJECTS_ERROR }],
         [],
-        done,
       );
     });
   });
 
   describe('requestProjects', () => {
-    it('should commit the request mutation', (done) => {
+    it('should commit the request mutation', async () => {
       const state = createState();
 
-      testAction(actions.requestProjects, {}, state, [{ type: types.REQUEST_PROJECTS }], [], done);
+      await testAction(actions.requestProjects, {}, state, [{ type: types.REQUEST_PROJECTS }], []);
     });
   });
 
   describe('setProjectsEndpoint', () => {
-    it('should commit the correct mutuation', (done) => {
+    it('should commit the correct mutuation', async () => {
       const state = createState();
 
-      testAction(
+      await testAction(
         actions.setProjectsEndpoint,
         endpoint,
         state,
@@ -174,7 +169,6 @@ describe('projects actions', () => {
           },
         ],
         [],
-        done,
       );
     });
   });

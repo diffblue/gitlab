@@ -13,7 +13,7 @@ import {
 } from '~/diffs/constants';
 import * as utils from '~/diffs/store/utils';
 import { MERGE_REQUEST_NOTEABLE_TYPE } from '~/notes/constants';
-import { noteableDataMock } from '../../notes/mock_data';
+import { noteableDataMock } from 'jest/notes/mock_data';
 import diffFileMockData from '../mock_data/diff_file';
 import { diffMetadata } from '../mock_data/diff_metadata';
 
@@ -51,21 +51,19 @@ describe('DiffsStoreUtils', () => {
   });
 
   describe('getPreviousLineIndex', () => {
-    describe(`with diffViewType (inline) in split diffs`, () => {
-      let diffFile;
+    let diffFile;
 
-      beforeEach(() => {
-        diffFile = { ...clone(diffFileMockData) };
-      });
+    beforeEach(() => {
+      diffFile = { ...clone(diffFileMockData) };
+    });
 
-      it('should return the correct previous line number', () => {
-        expect(
-          utils.getPreviousLineIndex(INLINE_DIFF_VIEW_TYPE, diffFile, {
-            oldLineNumber: 3,
-            newLineNumber: 5,
-          }),
-        ).toBe(4);
-      });
+    it('should return the correct previous line number', () => {
+      expect(
+        utils.getPreviousLineIndex(diffFile, {
+          oldLineNumber: 3,
+          newLineNumber: 5,
+        }),
+      ).toBe(4);
     });
   });
 

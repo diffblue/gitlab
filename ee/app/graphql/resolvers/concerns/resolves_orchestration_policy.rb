@@ -14,7 +14,7 @@ module ResolvesOrchestrationPolicy
 
     def authorize!
       Ability.allowed?(
-        context[:current_user], :security_orchestration_policies, policy_configuration.security_policy_management_project
+        context[:current_user], :read_security_orchestration_policies, policy_configuration.security_policy_management_project
       ) || raise_resource_not_available_error!
     end
 

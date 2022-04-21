@@ -1,11 +1,16 @@
 import MockAdapter from 'axios-mock-adapter';
 import * as GroupsApi from 'ee/api/groups_api';
+import Api from 'ee/api';
 import * as actions from 'ee/usage_quotas/seats/store/actions';
 import * as types from 'ee/usage_quotas/seats/store/mutation_types';
 import State from 'ee/usage_quotas/seats/store/state';
-import { mockDataSeats, mockMemberDetails } from 'ee_jest/usage_quotas/seats/mock_data';
+import {
+  mockDataSeats,
+  mockMemberDetails,
+  mockUserSubscription,
+} from 'ee_jest/usage_quotas/seats/mock_data';
 import testAction from 'helpers/vuex_action_helper';
-import createFlash, { FLASH_TYPES } from '~/flash';
+import { createAlert, VARIANT_SUCCESS } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 import httpStatusCodes from '~/lib/utils/http_status';
 
@@ -105,7 +110,91 @@ describe('seats actions', () => {
         expectedMutations: [{ type: types.RECEIVE_BILLABLE_MEMBERS_ERROR }],
       });
 
-      expect(createFlash).toHaveBeenCalled();
+      expect(createAlert).toHaveBeenCalled();
+    });
+  });
+
+  describe('fetchGitlabSubscription', () => {
+    beforeEach(() => {
+      gon.api_version = 'v4';
+      state.namespaceId = 1;
+    });
+
+    it('passes correct arguments to Api call', () => {
+      const spy = jest.spyOn(Api, 'userSubscription');
+
+      testAction({
+        action: actions.fetchGitlabSubscription,
+        state,
+        expectedMutations: expect.anything(),
+        expectedActions: expect.anything(),
+      });
+
+      expect(spy).toBeCalledWith(state.namespaceId);
+    });
+
+    describe('on success', () => {
+      beforeEach(() => {
+        mock
+          .onGet('/api/v4/namespaces/1/gitlab_subscription')
+          .replyOnce(httpStatusCodes.OK, mockUserSubscription);
+      });
+
+      it('should dispatch the request and success actions', () => {
+        testAction({
+          action: actions.fetchGitlabSubscription,
+          state,
+          expectedActions: [
+            {
+              type: 'receiveGitlabSubscriptionSuccess',
+              payload: mockUserSubscription,
+            },
+          ],
+          expectedMutations: [{ type: types.REQUEST_GITLAB_SUBSCRIPTION }],
+        });
+      });
+    });
+
+    describe('on error', () => {
+      beforeEach(() => {
+        mock
+          .onGet('/api/v4/namespaces/1/gitlab_subscription')
+          .replyOnce(httpStatusCodes.NOT_FOUND, {});
+      });
+
+      it('should dispatch the request and error actions', () => {
+        testAction({
+          action: actions.fetchGitlabSubscription,
+          state,
+          expectedActions: [{ type: 'receiveGitlabSubscriptionError' }],
+          expectedMutations: [{ type: types.REQUEST_GITLAB_SUBSCRIPTION }],
+        });
+      });
+    });
+  });
+
+  describe('receiveGitlabSubscriptionSuccess', () => {
+    it('should commit the success mutation', () => {
+      testAction({
+        action: actions.receiveGitlabSubscriptionSuccess,
+        payload: mockDataSeats,
+        state,
+        expectedMutations: [
+          { type: types.RECEIVE_GITLAB_SUBSCRIPTION_SUCCESS, payload: mockDataSeats },
+        ],
+      });
+    });
+  });
+
+  describe('receiveGitlabSubscriptionError', () => {
+    it('should commit the error mutation', async () => {
+      await testAction({
+        action: actions.receiveGitlabSubscriptionError,
+        state,
+        expectedMutations: [{ type: types.RECEIVE_GITLAB_SUBSCRIPTION_ERROR }],
+      });
+
+      expect(createAlert).toHaveBeenCalled();
     });
   });
 
@@ -187,9 +276,9 @@ describe('seats actions', () => {
         expectedMutations: [{ type: types.REMOVE_BILLABLE_MEMBER_SUCCESS }],
       });
 
-      expect(createFlash).toHaveBeenCalledWith({
+      expect(createAlert).toHaveBeenCalledWith({
         message: 'User was successfully removed',
-        type: FLASH_TYPES.SUCCESS,
+        variant: VARIANT_SUCCESS,
       });
     });
   });
@@ -202,8 +291,8 @@ describe('seats actions', () => {
         expectedMutations: [{ type: types.REMOVE_BILLABLE_MEMBER_ERROR }],
       });
 
-      expect(createFlash).toHaveBeenCalledWith({
-        message: 'An error occurred while removing a billable member',
+      expect(createAlert).toHaveBeenCalledWith({
+        message: 'An error occurred while removing a billable member.',
       });
     });
   });
@@ -304,15 +393,15 @@ describe('seats actions', () => {
       });
     });
 
-    it('calls createFlash', async () => {
+    it('calls createAlert', async () => {
       await testAction({
         action: actions.fetchBillableMemberDetailsError,
         state,
         expectedMutations: [{ type: types.FETCH_BILLABLE_MEMBER_DETAILS_ERROR }],
       });
 
-      expect(createFlash).toHaveBeenCalledWith({
-        message: 'An error occurred while getting a billable member details',
+      expect(createAlert).toHaveBeenCalledWith({
+        message: 'An error occurred while getting a billable member details.',
       });
     });
   });

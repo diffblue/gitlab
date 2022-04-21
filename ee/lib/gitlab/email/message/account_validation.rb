@@ -70,25 +70,7 @@ module Gitlab
         end
 
         def unsubscribe
-          parts = [
-            s_('AccountValidation|If you no longer wish to receive marketing emails from us,'),
-            s_('AccountValidation|you may %{unsubscribe_link} at any time.') % { unsubscribe_link: mailgun_unsubscribe_link }
-          ]
-
-          case format
-          when :html
-            parts.join(' ')
-          else
-            parts.join("\n" + ' ' * 16)
-          end
-        end
-
-        private
-
-        def mailgun_unsubscribe_link
-          mailgun_unsubscribe_url = '%tag_unsubscribe_url%'
-
-          link(s_('AccountValidation|unsubscribe'), mailgun_unsubscribe_url)
+          unsubscribe_message
         end
       end
     end

@@ -1,9 +1,5 @@
 import { s__ } from '~/locale';
 
-export const PRESENTABLE_APPROVERS_LIMIT = 2;
-
-export const COMPLIANCE_TAB_COOKIE_KEY = 'compliance_dashboard_tabs';
-
 export const INPUT_DEBOUNCE = 500;
 
 export const CUSTODY_REPORT_PARAMETER = 'commit_sha';
@@ -27,3 +23,9 @@ export const MERGE_REQUEST_VIOLATION_MESSAGES = {
 };
 
 export const DEFAULT_SORT = 'SEVERITY_LEVEL_DESC';
+
+export const DEFAULT_PAGINATION_CURSORS = {
+  before: null,
+  after: null,
+  first: GRAPHQL_PAGE_SIZE,
+};

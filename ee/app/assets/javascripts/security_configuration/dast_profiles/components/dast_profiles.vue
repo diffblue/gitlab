@@ -197,7 +197,7 @@ export default {
   },
   profilesPerPage: 10,
   i18n: {
-    heading: s__('DastProfiles|Manage DAST scans'),
+    heading: s__('DastProfiles|DAST profile library'),
     newProfileDropdownLabel: __('New'),
     subHeading: s__(
       'DastProfiles|Save commonly used configurations for target sites and scan specifications as profiles. Use these with an on-demand scan.',

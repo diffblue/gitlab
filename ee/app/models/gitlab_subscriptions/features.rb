@@ -72,7 +72,6 @@ module GitlabSubscriptions
     PREMIUM_FEATURES = %i[
       adjourned_deletion_for_projects_and_groups
       admin_audit_log
-      alert_metric_upload
       auditor_user
       blocking_merge_requests
       board_assignee_lists
@@ -141,7 +140,6 @@ module GitlabSubscriptions
       project_aliases
       protected_environments
       reject_unsigned_commits
-      required_ci_templates
       scoped_labels
       smartcard_auth
       swimlanes
@@ -154,6 +152,7 @@ module GitlabSubscriptions
       escalation_policies
       export_user_permissions
       zentao_issues_integration
+      coverage_check_approval_rule
     ].freeze
 
     ULTIMATE_FEATURES = %i[
@@ -196,6 +195,7 @@ module GitlabSubscriptions
       related_epics
       release_evidence_test_artifacts
       report_approver_rules
+      required_ci_templates
       requirements
       sast
       sast_iac
@@ -299,3 +299,5 @@ module GitlabSubscriptions
     end
   end
 end
+
+GitlabSubscriptions::Features.prepend_mod

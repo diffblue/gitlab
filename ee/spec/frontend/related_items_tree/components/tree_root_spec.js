@@ -104,7 +104,7 @@ describe('RelatedItemsTree', () => {
           });
 
           describe('treeRootOptions', () => {
-            it('should return object containing Vue.Draggable config extended from `defaultSortableConfig` when userSignedIn prop is true', () => {
+            it('should return object containing Vue.Draggable config extended from `defaultSortableOptions` when userSignedIn prop is true', () => {
               expect(wrapper.vm.treeRootOptions).toEqual(
                 expect.objectContaining({
                   animation: 200,

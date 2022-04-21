@@ -21,7 +21,7 @@ RSpec.describe API::Notes do
       stub_licensed_features(epics: true)
     end
 
-    it_behaves_like "noteable API", 'groups', 'epics', 'id' do
+    it_behaves_like "noteable API with confidential notes", 'groups', 'epics', 'id' do
       let(:parent) { group }
       let(:noteable) { epic }
       let(:note) { epic_note }

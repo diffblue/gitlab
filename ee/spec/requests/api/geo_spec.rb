@@ -679,11 +679,18 @@ RSpec.describe API::Geo do
         end
 
         context 'when a primary exists' do
-          it 'returns the primary internal URL' do
+          it 'returns the primary internal URL and extra proxy data' do
             subject
 
             expect(response).to have_gitlab_http_status(:ok)
             expect(json_response['geo_proxy_url']).to match(primary_node.internal_url)
+
+            proxy_extra_data = json_response['geo_proxy_extra_data']
+            jwt = JWT.decode(proxy_extra_data.split(':').second, unified_url_secondary_node.secret_access_key)
+            extra_data = Gitlab::Json.parse(jwt.first['data'])
+
+            expect(proxy_extra_data.split(':').first).to match(unified_url_secondary_node.access_key)
+            expect(extra_data).to eq({})
           end
         end
 
@@ -729,11 +736,18 @@ RSpec.describe API::Geo do
         end
 
         context 'when geo_secondary_proxy_separate_urls feature flag is enabled' do
-          it 'returns the primary internal URL' do
+          it 'returns the primary internal URL and extra proxy data' do
             subject
 
             expect(response).to have_gitlab_http_status(:ok)
             expect(json_response['geo_proxy_url']).to match(primary_node.internal_url)
+
+            proxy_extra_data = json_response['geo_proxy_extra_data']
+            jwt = JWT.decode(proxy_extra_data.split(':').second, secondary_node.secret_access_key)
+            extra_data = Gitlab::Json.parse(jwt.first['data'])
+
+            expect(proxy_extra_data.split(':').first).to match(secondary_node.access_key)
+            expect(extra_data).to eq({})
           end
         end
       end

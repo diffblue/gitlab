@@ -45,7 +45,7 @@ class Geo::ProjectRegistry < Geo::BaseRegistry
   end
 
   def self.find_registries_needs_sync_again(batch_size:, except_ids: [])
-    super.order(Gitlab::Database.nulls_first_order(:last_repository_synced_at))
+    super.order(arel_table[:last_repository_synced_at].asc.nulls_first)
   end
 
   def self.delete_worker_class
@@ -250,7 +250,14 @@ class Geo::ProjectRegistry < Geo::BaseRegistry
     # - We assume last_repository_updated_at is a timestamp of the latest change
     # - last_repository_updated_at is also touched when a project wiki is updated
     # - last_repository_updated_at touches are throttled within Event::REPOSITORY_UPDATED_AT_INTERVAL minutes
-    registry.last_repository_successful_sync_at <= registry.project.last_repository_updated_at
+    last_updated_at = if Feature.enabled?(:touch_project_repository_state_updated_at, default_enabled: :yaml)
+                        registry.project.repository_state&.last_repository_updated_at
+                      end
+
+    last_updated_at ||= registry.project.last_repository_updated_at
+    last_successful_sync = registry.last_repository_successful_sync_at
+
+    last_successful_sync <= last_updated_at
   end
 
   # Must be run before fetching the repository to avoid a race condition

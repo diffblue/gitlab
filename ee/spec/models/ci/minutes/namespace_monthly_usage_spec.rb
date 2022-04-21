@@ -85,14 +85,6 @@ RSpec.describe Ci::Minutes::NamespaceMonthlyUsage do
             end
           end
 
-          context 'when ci_use_new_monthly_minutes feature flag is disabled' do
-            before do
-              stub_feature_flags(ci_use_new_monthly_minutes: false)
-            end
-
-            it_behaves_like 'does not update the additional minutes'
-          end
-
           context 'when limit is disabled' do
             before do
               namespace.update!(

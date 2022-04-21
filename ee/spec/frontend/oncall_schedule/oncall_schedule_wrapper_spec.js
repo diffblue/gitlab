@@ -101,7 +101,7 @@ describe('On-call schedule wrapper', () => {
     const emptyState = findEmptyState();
 
     expect(emptyState.exists()).toBe(true);
-    expect(emptyState.attributes()).toEqual({
+    expect(emptyState.attributes()).toMatchObject({
       title: i18n.emptyState.title,
       svgpath: emptyOncallSchedulesSvgPath,
       description: i18n.emptyState.description,

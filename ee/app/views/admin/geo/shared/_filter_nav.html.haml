@@ -1,27 +1,11 @@
 - action_buttons = local_assigns[:action_buttons] ? action_buttons : []
-- params[:sync_status] ||= []
+- filter_by = params[:sync_status] || []
 
 %nav.bg-secondary.border-bottom.border-secondary-100.p-3
   .row.d-flex.flex-column.flex-sm-row
     .col
       .gl-sm-display-flex.gl-mx-n1
-        .dropdown.gl-px-2.gl-my-2.my-sm-0.gl-w-full
-          %a.gl-button.btn.gl-sm-display-flex.gl-align-items-center.gl-justify-content-space-between.gl-w-full{ href: '#', data: { toggle: 'dropdown' }, 'aria-haspopup' => 'true', 'aria-expanded' => 'false' }
-            = s_('Geo|Filter by status')
-            = sprite_icon("chevron-down")
-          %ul.dropdown-menu
-            = nav_link(html_options: { class: ('bg-secondary-100' if !params[:sync_status].present?) }) do
-              = link_to controller: replicable_controller do
-                = sprintf(s_('Geo|All %{replicable_name}'), { replicable_name: replicable_name })
-            = nav_link(html_options: { class: ('bg-secondary-100' if params[:sync_status] == 'pending') }) do
-              = link_to controller: replicable_controller, sync_status: 'pending' do
-                = s_('Geo|In progress')
-            = nav_link(html_options: { class: ('bg-secondary-100' if params[:sync_status] == 'failed') }) do
-              = link_to controller: replicable_controller, sync_status: 'failed' do
-                = s_('Geo|Failed')
-            = nav_link(html_options: { class: ('bg-secondary-100' if params[:sync_status] == 'synced') }) do
-              = link_to controller: replicable_controller, sync_status: 'synced' do
-                = s_('Geo|Synced')
+        = gl_redirect_listbox_tag geo_filter_nav_options(replicable_controller, replicable_name), filter_by, class: 'gl-px-2 gl-my-2 my-sm-0 gl-w-full'
         .replicable-search.px-1.my-1.my-sm-0.w-100
           = render 'shared/projects/search_form', autofocus: true, search_form_placeholder: _("Filter by name"), icon: true
     .col.col-sm-5.d-flex.justify-content-end.my-1.my-sm-0.w-100

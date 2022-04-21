@@ -3,16 +3,37 @@
 require 'spec_helper'
 
 RSpec.describe API::Deployments do
+  let_it_be_with_refind(:organization) { create(:group) }
+  let_it_be_with_refind(:project) { create(:project, :repository, group: organization) }
+
   let(:user) { create(:user) }
-  let!(:project) { create(:project, :repository) }
   let!(:environment) { create(:environment, project: project) }
 
   before do
     stub_licensed_features(protected_environments: true)
   end
 
+  shared_context 'group-level protected environments with multiple approval rules' do
+    let!(:security_group) { create(:group, name: 'security-group', parent: organization) }
+    let!(:security_user) { create(:user) }
+
+    before do
+      security_group.add_developer(security_user)
+      organization.add_reporter(security_user)
+    end
+
+    let!(:group_protected_environment) do
+      create(:protected_environment, :group_level, group: organization, name: environment.tier)
+    end
+
+    let!(:approval_rule) do
+      create(:protected_environment_approval_rule, group: security_group,
+        protected_environment: group_protected_environment, required_approvals: 2)
+    end
+  end
+
   describe 'GET /projects/:id/deployments/:id' do
-    let(:deployment) { create(:deployment, :blocked, project: project) }
+    let(:deployment) { create(:deployment, :blocked, project: project, environment: environment) }
 
     before do
       create(:deployment_approval, :approved, deployment: deployment)
@@ -24,6 +45,26 @@ RSpec.describe API::Deployments do
 
       expect(response).to have_gitlab_http_status(:success)
       expect(response).to match_response_schema('public_api/v4/deployment_extended', dir: 'ee')
+    end
+
+    context 'with multiple approval rules' do
+      include_context 'group-level protected environments with multiple approval rules'
+
+      let!(:deployment_approval) do
+        create(:deployment_approval, :approved, user: security_user, approval_rule: approval_rule,
+          deployment: deployment)
+      end
+
+      it 'has approval summary' do
+        get api("/projects/#{project.id}/deployments/#{deployment.id}", user)
+
+        expect(response).to have_gitlab_http_status(:success)
+        expect(json_response['approval_summary']['rules'].count).to eq(1)
+        expect(json_response['approval_summary']['rules'].first['required_approvals']).to eq(2)
+        expect(json_response['approval_summary']['rules'].first['deployment_approvals'].count).to eq(1)
+        expect(json_response['approval_summary']['rules'].first['deployment_approvals'].first["user"]["id"])
+          .to eq(security_user.id)
+      end
     end
   end
 
@@ -280,6 +321,35 @@ RSpec.describe API::Deployments do
 
             expect(response).to have_gitlab_http_status(:success)
             expect(json_response['comment']).to eq('LGTM!')
+          end
+        end
+
+        context 'with multiple approval rules' do
+          include_context 'group-level protected environments with multiple approval rules'
+
+          it 'creates an approval' do
+            expect { post(api(path, security_user), params: { status: 'approved' }) }
+              .to change { Deployments::Approval.count }.by(1)
+
+            expect(response).to have_gitlab_http_status(:success)
+            expect(json_response['status']).to eq('approved')
+          end
+
+          it 'creates an approval when the user represents the group' do
+            expect { post(api(path, security_user), params: { status: 'approved', represented_as: 'security' }) }
+              .to change { Deployments::Approval.count }.by(1)
+
+            expect(response).to have_gitlab_http_status(:success)
+            expect(json_response['status']).to eq('approved')
+          end
+
+          it 'does not create an approval when the user does not represent the group' do
+            expect { post(api(path, security_user), params: { status: 'approved', represented_as: 'qa' }) }
+              .not_to change { Deployments::Approval.count }
+
+            expect(response).to have_gitlab_http_status(:bad_request)
+            expect(response.body).to include("You don't have permission to review this deployment. " \
+                                             "Contact the project or group owner for help.")
           end
         end
 

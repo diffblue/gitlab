@@ -373,18 +373,36 @@ RSpec.describe Projects::CreateService, '#execute' do
   end
 
   context 'security policy configuration' do
-    let_it_be(:security_policy_target_project) { create(:project) }
+    context 'with security_policy_target_project_id' do
+      let_it_be(:security_policy_target_project) { create(:project) }
 
-    before do
-      opts[:security_policy_target_project_id] = security_policy_target_project.id
+      before do
+        opts[:security_policy_target_project_id] = security_policy_target_project.id
 
-      stub_licensed_features(security_orchestration_policies: true)
+        stub_licensed_features(security_orchestration_policies: true)
+      end
+
+      it 'creates security policy configuration for the project' do
+        expect(::Security::Orchestration::AssignService).to receive_message_chain(:new, :execute)
+
+        create_project(user, opts)
+      end
     end
 
-    it 'creates security policy configuration for the project' do
-      expect(::Security::Orchestration::AssignService).to receive_message_chain(:new, :execute)
+    context 'with security_policy_target_namespace_id' do
+      let_it_be(:security_policy_target_namespace) { create(:namespace) }
 
-      create_project(user, opts)
+      before do
+        opts[:security_policy_target_namespace_id] = security_policy_target_namespace.id
+
+        stub_licensed_features(security_orchestration_policies: true)
+      end
+
+      it 'creates security policy configuration for the project' do
+        expect(::Security::Orchestration::AssignService).to receive_message_chain(:new, :execute)
+
+        create_project(user, opts)
+      end
     end
   end
 

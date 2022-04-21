@@ -19,47 +19,8 @@ must be documented. For context, see the
 
 When you document feature flags, you must:
 
-- [Add a note at the start of the topic](#use-a-note-to-describe-the-state-of-the-feature-flag).
 - [Add version history text](#add-version-history-text).
-
-## Use a note to describe the state of the feature flag
-
-Information about feature flags should be in a **Note** at the start of the topic (just below the version history).
-
-The note has three parts, and follows this structure:
-
-```markdown
-FLAG:
-<Self-managed GitLab availability information.> <GitLab.com availability information.>
-<This feature is not ready for production use.>
-```
-
-### Self-managed GitLab availability information
-
-| If the feature is...     | Use this text |
-|--------------------------|---------------|
-| Available                | `On self-managed GitLab, by default this feature is available. To hide the feature, ask an administrator to [disable the feature flag](<path to>/administration/feature_flags.md) named <flag name>.` |
-| Unavailable              | `On self-managed GitLab, by default this feature is not available. To make it available, ask an administrator to [enable the feature flag](<path to>/administration/feature_flags.md) named <flag name>.` |
-| Available, per-group     | `On self-managed GitLab, by default this feature is available. To hide the feature per group, ask an administrator to [disable the feature flag](<path to>/administration/feature_flags.md) named <flag name>.` |
-| Unavailable, per-group   | `On self-managed GitLab, by default this feature is not available. To make it available per group, ask an administrator to [enable the feature flag](<path to>/administration/feature_flags.md) named <flag name>.` |
-| Available, per-project   | `On self-managed GitLab, by default this feature is available. To hide the feature per project or for your entire instance, ask an administrator to [disable the feature flag](<path to>/administration/feature_flags.md) named <flag name>.` |
-| Unavailable, per-project | `On self-managed GitLab, by default this feature is not available. To make it available per project or for your entire instance, ask an administrator to [enable the feature flag](<path to>/administration/feature_flags.md) named <flag name>.` |
-| Available, per-user      | `On self-managed GitLab, by default this feature is available. To hide the feature per user, ask an administrator to [disable the feature flag](<path to>/administration/feature_flags.md) named <flag name>.` |
-| Unavailable, per-user    | `On self-managed GitLab, by default this feature is not available. To make it available per user, ask an administrator to [enable the feature flag](<path to>/administration/feature_flags.md) named <flag name>.` |
-
-### GitLab.com availability information
-
-| If the feature is...                | Use this text |
-|-------------------------------------|---------------|
-| Available                           | `On GitLab.com, this feature is available.` |
-| Available to GitLab.com admins only | `On GitLab.com, this feature is available but can be configured by GitLab.com administrators only.`
-| Unavailable                         | `On GitLab.com, this feature is not available.`|
-
-### Optional information
-
-If needed, you can add this sentence:
-
-`The feature is not ready for production use.`
+- [Add a note at the start of the topic](#use-a-note-to-describe-the-state-of-the-feature-flag).
 
 ## Add version history text
 
@@ -81,6 +42,47 @@ You can combine entries if they happened in the same release:
 > - Introduced in GitLab 14.2 [with a flag](../../administration/feature_flags.md) named `ci_include_rules`. Disabled by default.
 > - [Enabled on GitLab.com and self-managed](https://gitlab.com/gitlab-org/gitlab/-/issues/337507) in GitLab 14.3.
 ```
+
+## Use a note to describe the state of the feature flag
+
+Information about feature flags should be in a `FLAG` note at the start of the topic (just below the version history).
+
+The note has three parts, and follows this structure:
+
+```markdown
+FLAG:
+<Self-managed GitLab availability information.>
+<GitLab.com availability information.>
+<This feature is not ready for production use.>
+```
+
+### Self-managed GitLab availability information
+
+| If the feature is...     | Use this text |
+|--------------------------|---------------|
+| Available                | `On self-managed GitLab, by default this feature is available. To hide the feature, ask an administrator to [disable the feature flag](<path to>/administration/feature_flags.md) named <flag name>.` |
+| Unavailable              | `On self-managed GitLab, by default this feature is not available. To make it available, ask an administrator to [enable the feature flag](<path to>/administration/feature_flags.md) named <flag name>.` |
+| Available to some users  | `On self-managed GitLab, by default this feature is available to a subset of users. To show or hide the feature for all, ask an administrator to [change the status of the feature flag](<path to>/administration/feature_flags.md) named <flag name>.` |
+| Available, per-group     | `On self-managed GitLab, by default this feature is available. To hide the feature per group, ask an administrator to [disable the feature flag](<path to>/administration/feature_flags.md) named <flag name>.` |
+| Unavailable, per-group   | `On self-managed GitLab, by default this feature is not available. To make it available per group, ask an administrator to [enable the feature flag](<path to>/administration/feature_flags.md) named <flag name>.` |
+| Available, per-project   | `On self-managed GitLab, by default this feature is available. To hide the feature per project or for your entire instance, ask an administrator to [disable the feature flag](<path to>/administration/feature_flags.md) named <flag name>.` |
+| Unavailable, per-project | `On self-managed GitLab, by default this feature is not available. To make it available per project or for your entire instance, ask an administrator to [enable the feature flag](<path to>/administration/feature_flags.md) named <flag name>.` |
+| Available, per-user      | `On self-managed GitLab, by default this feature is available. To hide the feature per user, ask an administrator to [disable the feature flag](<path to>/administration/feature_flags.md) named <flag name>.` |
+| Unavailable, per-user    | `On self-managed GitLab, by default this feature is not available. To make it available per user, ask an administrator to [enable the feature flag](<path to>/administration/feature_flags.md) named <flag name>.` |
+
+### GitLab.com availability information
+
+| If the feature is...                | Use this text |
+|-------------------------------------|---------------|
+| Available                           | `On GitLab.com, this feature is available.` |
+| Available to GitLab.com admins only | `On GitLab.com, this feature is available but can be configured by GitLab.com administrators only.`
+| Unavailable                         | `On GitLab.com, this feature is not available.`|
+
+### Optional information
+
+If needed, you can add this sentence:
+
+`The feature is not ready for production use.`
 
 ## Feature flag documentation examples
 

@@ -5,8 +5,8 @@ require 'spec_helper'
 RSpec.describe API::MergeRequestApprovalRules do
   let_it_be(:user) { create(:user) }
   let_it_be(:other_user) { create(:user) }
-  let_it_be(:project) { create(:project, :public, :repository, creator: user, namespace: user.namespace) }
 
+  let(:project) { create(:project, :public, :repository, creator: user, namespace: user.namespace) }
   let(:merge_request) { create(:merge_request, author: user, source_project: project, target_project: project) }
 
   shared_examples_for 'a protected API endpoint for merge request approval rule action' do
@@ -49,10 +49,26 @@ RSpec.describe API::MergeRequestApprovalRules do
     end
   end
 
-  describe 'GET /projects/:id/merge_requests/:merge_request_iid/approval_rules' do
+  shared_context 'getting approval rule' do
+    let(:approver) { create(:user) }
+    let(:group) { create(:group) }
+    let(:source_rule) { nil }
+    let(:users) { [approver] }
+    let(:groups) { [group] }
     let(:current_user) { other_user }
-    let(:url) { "/projects/#{project.id}/merge_requests/#{merge_request.iid}/approval_rules" }
 
+    let!(:mr_approval_rule) do
+      create(
+        :approval_merge_request_rule,
+        merge_request: merge_request,
+        approval_project_rule: source_rule,
+        users: users,
+        groups: groups
+      )
+    end
+  end
+
+  shared_examples_for 'getting approval rule/s' do
     context 'user cannot read merge request' do
       before do
         project.project_feature.update!(merge_requests_access_level: ProjectFeature::PRIVATE)
@@ -66,22 +82,6 @@ RSpec.describe API::MergeRequestApprovalRules do
     end
 
     context 'use can read merge request' do
-      let(:approver) { create(:user) }
-      let(:group) { create(:group) }
-      let(:source_rule) { nil }
-      let(:users) { [approver] }
-      let(:groups) { [group] }
-
-      let!(:mr_approval_rule) do
-        create(
-          :approval_merge_request_rule,
-          merge_request: merge_request,
-          approval_project_rule: source_rule,
-          users: users,
-          groups: groups
-        )
-      end
-
       before do
         group.add_developer(approver)
         merge_request.approvals.create!(user: approver)
@@ -91,20 +91,19 @@ RSpec.describe API::MergeRequestApprovalRules do
 
       it 'matches the response schema' do
         expect(response).to have_gitlab_http_status(:ok)
-        expect(response).to match_response_schema('public_api/v4/merge_request_approval_rules', dir: 'ee')
+        expect(response).to match_response_schema(schema_path, dir: 'ee')
 
-        rules = json_response
+        rule = get_rule.call(json_response)
 
-        expect(rules.size).to eq(1)
-        expect(rules.first['name']).to eq(mr_approval_rule.name)
-        expect(rules.first['approvals_required']).to eq(mr_approval_rule.approvals_required)
-        expect(rules.first['rule_type']).to eq(mr_approval_rule.rule_type)
-        expect(rules.first['section']).to be_nil
-        expect(rules.first['contains_hidden_groups']).to eq(false)
-        expect(rules.first['source_rule']).to be_nil
-        expect(rules.first['eligible_approvers']).to match([hash_including('id' => approver.id)])
-        expect(rules.first['users']).to match([hash_including('id' => approver.id)])
-        expect(rules.first['groups']).to match([hash_including('id' => group.id)])
+        expect(rule['name']).to eq(mr_approval_rule.name)
+        expect(rule['approvals_required']).to eq(mr_approval_rule.approvals_required)
+        expect(rule['rule_type']).to eq(mr_approval_rule.rule_type)
+        expect(rule['section']).to be_nil
+        expect(rule['contains_hidden_groups']).to eq(false)
+        expect(rule['source_rule']).to be_nil
+        expect(rule['eligible_approvers']).to match_array([hash_including('id' => approver.id)])
+        expect(rule['users']).to match_array([hash_including('id' => approver.id)])
+        expect(rule['groups']).to match_array([hash_including('id' => group.id)])
       end
 
       context 'groups contain private groups' do
@@ -112,10 +111,10 @@ RSpec.describe API::MergeRequestApprovalRules do
 
         context 'current_user cannot see private group' do
           it 'hides private group' do
-            rules = json_response
+            rule = get_rule.call(json_response)
 
-            expect(rules.first['contains_hidden_groups']).to eq(true)
-            expect(rules.first['groups']).to be_empty
+            expect(rule['contains_hidden_groups']).to eq(true)
+            expect(rule['groups']).to be_empty
           end
         end
 
@@ -123,10 +122,10 @@ RSpec.describe API::MergeRequestApprovalRules do
           let(:current_user) { approver }
 
           it 'shows private group' do
-            rules = json_response
+            rule = get_rule.call(json_response)
 
-            expect(rules.first['contains_hidden_groups']).to eq(false)
-            expect(rules.first['groups']).to match([hash_including('id' => group.id)])
+            expect(rule['contains_hidden_groups']).to eq(false)
+            expect(rule['groups']).to match_array([hash_including('id' => group.id)])
           end
         end
       end
@@ -135,8 +134,45 @@ RSpec.describe API::MergeRequestApprovalRules do
         let(:source_rule) { create(:approval_project_rule, project: project) }
 
         it 'includes source_rule' do
-          expect(json_response.first['source_rule']['approvals_required']).to eq(source_rule.approvals_required)
+          rule = get_rule.call(json_response)
+
+          expect(rule['source_rule']['approvals_required']).to eq(source_rule.approvals_required)
         end
+      end
+    end
+  end
+
+  describe 'GET /projects/:id/merge_requests/:merge_request_iid/approval_rules/:approval_rule_id' do
+    include_context "getting approval rule"
+
+    let(:url) { "/projects/#{project.id}/merge_requests/#{merge_request.iid}/approval_rules/#{mr_approval_rule.id}" }
+    let(:schema_path) { 'public_api/v4/merge_request_approval_rule' }
+    let(:get_rule) { -> (response) { response } }
+
+    it_behaves_like 'getting approval rule/s'
+  end
+
+  describe 'GET /projects/:id/merge_requests/:merge_request_iid/approval_rules' do
+    include_context "getting approval rule"
+
+    let(:url) { "/projects/#{project.id}/merge_requests/#{merge_request.iid}/approval_rules" }
+    let(:schema_path) { 'public_api/v4/merge_request_approval_rules' }
+    let(:get_rule) { -> (response) { response.first } }
+
+    it_behaves_like 'getting approval rule/s'
+
+    context 'use can read merge request' do
+      before do
+        group.add_developer(approver)
+        merge_request.approvals.create!(user: approver)
+
+        get api(url, current_user)
+      end
+
+      it 'returns the correct amount of rules' do
+        rules = json_response
+
+        expect(rules.size).to eq(1)
       end
     end
   end

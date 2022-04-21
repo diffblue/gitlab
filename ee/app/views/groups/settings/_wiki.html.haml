@@ -1,0 +1,17 @@
+%h5= _('Wiki')
+
+- group_feature = group.group_feature
+
+= f.fields_for :group_feature_attributes, group_feature do |group_feature_form|
+  .form-group.gl-mb-3
+    = group_feature_form.gitlab_ui_radio_component :wiki_access_level, Featurable::ENABLED,
+            s_('Enabled'),
+            help_text: s_('Allow access to everyone')
+
+    = group_feature_form.gitlab_ui_radio_component :wiki_access_level, Featurable::PRIVATE,
+            s_('Private'),
+            help_text: s_('Allow access only to members of this group')
+
+    = group_feature_form.gitlab_ui_radio_component :wiki_access_level, Featurable::DISABLED,
+            s_('Disabled'),
+            help_text: s_('Disable the group-level wiki')

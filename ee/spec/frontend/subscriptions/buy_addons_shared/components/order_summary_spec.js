@@ -1,4 +1,4 @@
-import Vue, { nextTick } from 'vue';
+import Vue from 'vue';
 import { merge } from 'lodash';
 import VueApollo from 'vue-apollo';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
@@ -154,18 +154,15 @@ describe('Order Summary', () => {
           orderPreviewQueryMock,
         );
         createComponent(apolloProvider, { purchaseHasExpiration: true });
+        return waitForPromises();
       });
 
       it('does not render amount', () => {
         expect(findAmount().text()).toBe('-');
       });
 
-      it('should emit `alertError` event', async () => {
-        jest.spyOn(wrapper.vm, '$emit');
-
-        await nextTick();
-
-        expect(wrapper.vm.$emit).toHaveBeenCalledWith('alertError', I18N_API_ERROR);
+      it('should emit `alertError` event', () => {
+        expect(wrapper.emitted('alertError')).toEqual([[I18N_API_ERROR]]);
       });
     });
 

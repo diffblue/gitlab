@@ -423,6 +423,12 @@ RSpec.describe Geo::VerificationState do
           expect(subject.verification_checksum).to be_nil
         end
       end
+
+      describe '#verification_started!' do
+        it 'flips the state to started state' do
+          expect { subject.verification_started! }.to change { subject.verification_state }.from(0).to(1)
+        end
+      end
     end
 
     context 'when verification state is stored in a separate table' do
@@ -451,17 +457,34 @@ RSpec.describe Geo::VerificationState do
           expect(subject.reload.verification_failed?).to be_truthy
         end
       end
+
+      describe '#verification_started!' do
+        it 'flips the state to started state without reseting/reloading the original object (only state record)' do
+          subject.verification_failure = 'draft changes'
+
+          expect { subject.verification_started! }.to change { subject.verification_state }.from(0).to(1)
+          expect(subject.verification_failure).to eq('draft changes')
+        end
+      end
     end
   end
 
   context 'for registry classes' do
     describe '.fail_verification_timeouts' do
       it 'sets verification state to failed' do
-        state = create(:geo_package_file_registry, :synced, verification_started_at: (described_class::VERIFICATION_TIMEOUT + 1.minute).ago, verification_state: 1)
+        registry = create(:geo_package_file_registry, :synced, verification_started_at: (described_class::VERIFICATION_TIMEOUT + 1.minute).ago, verification_state: 1)
 
-        state.class.fail_verification_timeouts
+        registry.class.fail_verification_timeouts
 
-        expect(state.reload.verification_failed?).to be_truthy
+        expect(registry.reload.verification_failed?).to be_truthy
+      end
+    end
+
+    describe '#verification_started!' do
+      it 'flips the state to started state' do
+        registry = create(:geo_package_file_registry)
+
+        expect { registry.verification_started! }.to change { registry.verification_state }.from(0).to(1)
       end
     end
   end

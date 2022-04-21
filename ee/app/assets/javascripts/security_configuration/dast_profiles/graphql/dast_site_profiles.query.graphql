@@ -1,4 +1,5 @@
-#import "~/graphql_shared/fragments/pageInfo.fragment.graphql"
+#import "~/graphql_shared/fragments/page_info.fragment.graphql"
+#import "ee/security_configuration/dast_profiles/dast_site_profiles/graphql/dast_site_profile.fragment.graphql"
 
 query DastSiteProfiles($fullPath: ID!, $after: String, $before: String, $first: Int, $last: Int) {
   project(fullPath: $fullPath) {
@@ -11,24 +12,7 @@ query DastSiteProfiles($fullPath: ID!, $after: String, $before: String, $first: 
         ...PageInfo
       }
       nodes {
-        __typename
-        id
-        profileName
-        normalizedTargetUrl
-        targetUrl
-        targetType
-        editPath
-        validationStatus
-        referencedInSecurityPolicies
-        auth {
-          enabled
-          url
-          usernameField
-          passwordField
-          username
-        }
-        excludedUrls
-        requestHeaders
+        ...DastSiteProfileFragment
       }
     }
   }

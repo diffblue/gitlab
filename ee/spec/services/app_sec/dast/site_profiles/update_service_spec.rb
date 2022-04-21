@@ -30,6 +30,7 @@ RSpec.describe AppSec::Dast::SiteProfiles::UpdateService do
       auth_url: new_auth_url,
       auth_username_field: 'login[username]',
       auth_password_field: 'login[password]',
+      auth_submit_field: 'css:button[type="submit_other"]',
       auth_username: new_auth_username,
       auth_password: new_auth_password
     }
@@ -87,7 +88,7 @@ RSpec.describe AppSec::Dast::SiteProfiles::UpdateService do
         audit_events = AuditEvent.where(author_id: user.id)
 
         aggregate_failures do
-          expect(audit_events.count).to be(9)
+          expect(audit_events.count).to be(10)
 
           audit_events.each do |event|
             expect(event.author).to eq(user)
@@ -98,12 +99,14 @@ RSpec.describe AppSec::Dast::SiteProfiles::UpdateService do
           end
 
           custom_messages = audit_events.map(&:details).pluck(:custom_message)
+
           expected_custom_messages = [
             "Changed DAST site profile name from #{dast_profile.name} to #{new_profile_name}",
             "Changed DAST site profile target_url from #{dast_profile.dast_site.url} to #{new_target_url}",
             'Changed DAST site profile excluded_urls (long value omitted)',
             "Changed DAST site profile auth_url from #{dast_profile.auth_url} to #{new_auth_url}",
             "Changed DAST site profile auth_username_field from #{dast_profile.auth_username_field} to login[username]",
+            "Changed DAST site profile auth_submit_field from #{dast_profile.auth_submit_field} to css:button[type=\"submit_other\"]",
             "Changed DAST site profile auth_password_field from #{dast_profile.auth_password_field} to login[password]",
             "Changed DAST site profile auth_username from #{dast_profile.auth_username} to #{new_auth_username}",
             "Changed DAST site profile auth_password (secret value omitted)",

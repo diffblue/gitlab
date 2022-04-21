@@ -1,5 +1,5 @@
 import { sprintf, s__, n__ } from '~/locale';
-import { NO_RULE_MESSAGE } from '../../constants';
+import { NO_RULE_MESSAGE, INVALID_BRANCHES } from '../../constants';
 import { convertScannersToTitleCase } from '../../utils';
 
 /**
@@ -53,9 +53,7 @@ const humanizeItems = ({
     finalSentence.push(items.join(','));
   } else {
     const lastItem = items.pop();
-    finalSentence.push(items.join(', '));
-    finalSentence.push(s__('SecurityOrchestration| or '));
-    finalSentence.push(lastItem);
+    finalSentence.push(items.join(', '), s__('SecurityOrchestration| or '), lastItem);
   }
 
   if (!hasTextBeforeItems && noun) {
@@ -82,6 +80,27 @@ const humanizeBranches = (branches) => {
       items: branches,
       singular: s__('SecurityOrchestration|branch'),
       plural: s__('SecurityOrchestration|branches'),
+    }),
+  });
+};
+
+/**
+ * Create a human-readable version of the scanners
+ * @param {Array} scanners
+ * @returns {String}
+ */
+const humanizeScanners = (scanners) => {
+  const hasEmptyScanners = scanners.length === 0;
+
+  if (hasEmptyScanners) {
+    return s__('SecurityOrchestration|Any scanner finds');
+  }
+
+  return sprintf(s__('SecurityOrchestration|%{scanners}'), {
+    scanners: humanizeItems({
+      items: scanners,
+      singular: s__('SecurityOrchestration|scanner finds'),
+      plural: s__('SecurityOrchestration|scanners find'),
     }),
   });
 };
@@ -168,14 +187,10 @@ export const humanizeAction = (action) => {
 const humanizeRule = (rule) => {
   return sprintf(
     s__(
-      'SecurityOrchestration|The %{scanners} %{severities} in an open merge request targeting %{branches}.',
+      'SecurityOrchestration|%{scanners} %{severities} in an open merge request targeting %{branches}.',
     ),
     {
-      scanners: humanizeItems({
-        items: convertScannersToTitleCase(rule.scanners),
-        singular: s__('SecurityOrchestration|scanner finds'),
-        plural: s__('SecurityOrchestration|scanners find'),
-      }),
+      scanners: humanizeScanners(convertScannersToTitleCase(rule.scanners)),
       severities: humanizeItems({
         items: rule.severity_levels,
         singular: s__('SecurityOrchestration|vulnerability'),
@@ -197,4 +212,15 @@ export const humanizeRules = (rules) => {
     return [...acc, humanizeRule(curr)];
   }, []);
   return humanizedRules.length ? humanizedRules : [NO_RULE_MESSAGE];
+};
+
+export const humanizeInvalidBranchesError = (branches) => {
+  const sentence = [];
+  if (branches.length > 1) {
+    const lastBranch = branches.pop();
+    sentence.push(branches.join(', '), s__('SecurityOrchestration| and '), lastBranch);
+  } else {
+    sentence.push(branches.join());
+  }
+  return sprintf(INVALID_BRANCHES, { branches: sentence.join('') });
 };

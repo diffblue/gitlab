@@ -13,6 +13,7 @@ import {
 import { TYPE_ITERATIONS_CADENCE } from '~/graphql_shared/constants';
 import { convertToGraphQLId, getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { s__, __ } from '~/locale';
+import { helpPagePath } from '~/helpers/help_page_helper';
 import createCadence from '../queries/cadence_create.mutation.graphql';
 import updateCadence from '../queries/cadence_update.mutation.graphql';
 import readCadence from '../queries/iteration_cadence.query.graphql';
@@ -21,10 +22,6 @@ const i18n = Object.freeze({
   title: {
     label: s__('Iterations|Title'),
     placeholder: s__('Iterations|Cadence name'),
-  },
-  automatedScheduling: {
-    label: s__('Iterations|Automated scheduling'),
-    description: s__('Iterations|Iteration scheduling will be handled automatically'),
   },
   startDate: {
     label: s__('Iterations|Start date'),
@@ -50,18 +47,27 @@ const i18n = Object.freeze({
   },
   edit: {
     title: s__('Iterations|Edit iteration cadence'),
-    save: s__('Iterations|Save cadence'),
+    save: s__('Iterations|Save changes'),
   },
   new: {
     title: s__('Iterations|New iteration cadence'),
     save: s__('Iterations|Create cadence'),
   },
-  createAndStartIteration: s__('Iterations|Create cadence and start iteration'),
   cancel: __('Cancel'),
   requiredField: __('This field is required.'),
+  deprecationAlert: {
+    title: s__('Iterations|This cadence requires an update'),
+    message: s__(
+      'Iterations|Add a duration, and number of future iterations in order to convert this cadence to automatic scheduling.',
+    ),
+    primaryButtonText: s__('Iterations|Learn more about automatic scheduling'),
+  },
 });
 
 export default {
+  iterationCadencesHelpPagePath: helpPagePath('user/group/iterations/index.md', {
+    anchor: 'iteration-cadences',
+  }),
   availableDurations: [{ value: 0, text: i18n.duration.placeholder }, 1, 2, 3, 4, 5, 6],
   availableFutureIterations: [
     { value: 0, text: i18n.futureIterations.placeholder },
@@ -123,9 +129,6 @@ export default {
     page() {
       return this.isEdit ? 'edit' : 'new';
     },
-    showStartIteration() {
-      return !this.isEdit && !this.automatic;
-    },
     mutation() {
       return this.isEdit ? updateCadence : createCadence;
     },
@@ -143,7 +146,7 @@ export default {
           groupPath,
           id,
           title: this.title,
-          automatic: this.automatic,
+          automatic: true,
           rollOver: this.rollOver,
           startDate: this.startDate,
           durationInWeeks: this.durationInWeeks,
@@ -165,7 +168,7 @@ export default {
       variables() {
         return {
           fullPath: this.fullPath,
-          id: this.cadenceId,
+          id: convertToGraphQLId(TYPE_ITERATIONS_CADENCE, this.cadenceId),
         };
       },
       result({ data: { group, errors }, error }) {
@@ -191,6 +194,10 @@ export default {
         this.rollOver = cadence.rollOver;
         this.iterationsInAdvance = cadence.iterationsInAdvance;
         this.description = cadence.description;
+
+        if (!cadence.automatic) {
+          this.validateAllFields();
+        }
       },
       error(error) {
         this.errorMessage = error;
@@ -202,43 +209,14 @@ export default {
       this.validationState[field] = Boolean(this[field]);
     },
     validateAllFields() {
-      Object.keys(this.validationState)
-        .filter((field) => {
-          if (this.automatic) {
-            return true;
-          }
-          const requiredFieldsForAutomatedScheduling = [
-            'iterationsInAdvance',
-            'durationInWeeks',
-            'startDate',
-          ];
-          return !requiredFieldsForAutomatedScheduling.includes(field);
-        })
-        .forEach((field) => {
-          this.validate(field);
-        });
+      Object.keys(this.validationState).forEach((field) => {
+        this.validate(field);
+      });
     },
     clearValidation() {
       this.validationState.startDate = null;
       this.validationState.durationInWeeks = null;
       this.validationState.iterationsInAdvance = null;
-    },
-    updateAutomatic(value) {
-      this.clearValidation();
-      if (!value) {
-        this.startDate = null;
-        this.iterationsInAdvance = 0;
-        this.durationInWeeks = 0;
-      }
-    },
-    saveAndCreateIteration() {
-      return this.save()
-        .then((cadenceId) => {
-          this.$router.push({ name: 'newIteration', params: { cadenceId } });
-        })
-        .catch((error) => {
-          this.errorMessage = error ?? s__('Iterations|Unable to save cadence. Please try again.');
-        });
     },
     saveAndViewList() {
       return this.save()
@@ -301,6 +279,16 @@ export default {
       </h3>
     </div>
     <gl-form>
+      <gl-alert
+        v-if="isEdit && !automatic"
+        :dismissible="false"
+        class="gl-mb-5"
+        variant="danger"
+        :title="i18n.deprecationAlert.title"
+        :primary-button-text="i18n.deprecationAlert.primaryButtonText"
+        :primary-button-link="$options.iterationCadencesHelpPagePath"
+        >{{ i18n.deprecationAlert.message }}</gl-alert
+      >
       <gl-alert v-if="errorMessage" class="gl-mb-5" variant="danger" @dismiss="errorMessage = ''">{{
         errorMessage
       }}</gl-alert>
@@ -327,23 +315,6 @@ export default {
       </gl-form-group>
 
       <gl-form-group
-        :label-cols-md="2"
-        label-class="gl-font-weight-bold text-right-md gl-pt-3!"
-        label-for="cadence-automated-scheduling"
-        :description="i18n.automatedScheduling.description"
-      >
-        <gl-form-checkbox
-          id="cadence-automated-scheduling"
-          v-model="automatic"
-          data-qa-selector="iteration_cadence_automated_scheduling_checkbox"
-          :disabled="loadingCadence"
-          @change="updateAutomatic"
-        >
-          <span class="gl-font-weight-bold">{{ i18n.automatedScheduling.label }}</span>
-        </gl-form-checkbox>
-      </gl-form-group>
-
-      <gl-form-group
         :label="i18n.startDate.label"
         :label-cols-md="2"
         label-class="text-right-md gl-pt-3!"
@@ -360,8 +331,7 @@ export default {
             class="datepicker gl-datepicker-input"
             autocomplete="off"
             inputmode="none"
-            :required="automatic"
-            :disabled="loadingCadence || !automatic"
+            :disabled="loadingCadence"
             :state="validationState.startDate"
             data-qa-selector="iteration_cadence_start_date_field"
             @blur="validate('startDate')"
@@ -383,8 +353,7 @@ export default {
           v-model.number="durationInWeeks"
           :options="$options.availableDurations"
           class="gl-form-input-md"
-          :required="automatic"
-          :disabled="loadingCadence || !automatic"
+          :disabled="loadingCadence"
           data-qa-selector="iteration_cadence_duration_field"
           @change="validate('durationInWeeks')"
         />
@@ -403,9 +372,8 @@ export default {
         <gl-form-select
           id="cadence-schedule-future-iterations"
           v-model.number="iterationsInAdvance"
-          :disabled="!automatic || loadingCadence"
+          :disabled="loadingCadence"
           :options="$options.availableFutureIterations"
-          :required="automatic"
           class="gl-form-input-md"
           data-qa-selector="iteration_cadence_future_iterations_field"
           @change="validate('iterationsInAdvance')"
@@ -444,21 +412,10 @@ export default {
           data-testid="save-cadence"
           variant="confirm"
           data-qa-selector="save_iteration_cadence_button"
+          :disabled="!valid"
           @click="saveAndViewList"
         >
           {{ i18n[page].save }}
-        </gl-button>
-        <gl-button
-          v-if="showStartIteration"
-          :loading="loading"
-          class="gl-ml-3"
-          data-testid="save-cadence-create-iteration"
-          variant="confirm"
-          category="secondary"
-          data-qa-selector="save_cadence_start_iteration_button"
-          @click="saveAndCreateIteration"
-        >
-          {{ i18n.createAndStartIteration }}
         </gl-button>
         <gl-button class="gl-ml-3" data-testid="cancel-create-cadence" @click="cancel">
           {{ i18n.cancel }}

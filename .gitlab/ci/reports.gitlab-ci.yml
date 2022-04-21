@@ -2,8 +2,8 @@ include:
   - template: Jobs/Code-Quality.gitlab-ci.yml
   - template: Jobs/SAST.gitlab-ci.yml
   - template: Jobs/Secret-Detection.gitlab-ci.yml
-  - template: Security/Dependency-Scanning.gitlab-ci.yml
-  - template: Security/License-Scanning.gitlab-ci.yml
+  - template: Jobs/Dependency-Scanning.gitlab-ci.yml
+  - template: Jobs/License-Scanning.gitlab-ci.yml
 
 code_quality:
   extends:
@@ -87,12 +87,6 @@ gemnasium-dependency_scanning:
     - apk add git-lfs
   rules: !reference [".reports:rules:gemnasium-dependency_scanning", rules]
 
-bundler-audit-dependency_scanning:
-  rules: !reference [".reports:rules:bundler-audit-dependency_scanning", rules]
-
-retire-js-dependency_scanning:
-  rules: !reference [".reports:rules:retire-js-dependency_scanning", rules]
-
 gemnasium-python-dependency_scanning:
   rules: !reference [".reports:rules:gemnasium-python-dependency_scanning", rules]
 
@@ -109,7 +103,7 @@ yarn-audit-dependency_scanning:
   extends: .default-retry
   stage: test
   image:
-    name: registry.gitlab.com/gitlab-com/gl-security/security-research/package-hunter-cli:1.1.0
+    name: registry.gitlab.com/gitlab-org/security-products/package-hunter-cli:v1.3.1@sha256:582b70bdb002075e33d63758e4c55af376b9f50278f826b4366acce922a9e357
     entrypoint: [""]
   variables:
     HTR_user: '$PACKAGE_HUNTER_USER'

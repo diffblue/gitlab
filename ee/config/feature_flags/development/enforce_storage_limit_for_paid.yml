@@ -1,0 +1,8 @@
+---
+name: enforce_storage_limit_for_paid
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/82704
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/356768
+milestone: '14.10'
+type: development
+group: group::utilization
+default_enabled: false

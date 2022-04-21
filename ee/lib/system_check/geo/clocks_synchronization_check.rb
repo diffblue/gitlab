@@ -6,7 +6,7 @@ module SystemCheck
       set_name 'Machine clock is synchronized'
 
       def check?
-        Net::NTP.get.offset.abs < Gitlab::Geo::JwtRequestDecoder::IAT_LEEWAY
+        Net::NTP.get.offset.abs < Gitlab::Geo::SignedData::IAT_LEEWAY
       end
 
       def show_error

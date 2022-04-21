@@ -3,8 +3,14 @@ import Api from 'ee/api';
 import createFlash from '~/flash';
 import { convertObjectPropsToSnakeCase } from '~/lib/utils/common_utils';
 import { visitUrl } from '~/lib/utils/url_utility';
-import { __ } from '~/locale';
+import { s__ } from '~/locale';
 import * as types from './mutation_types';
+
+const i18n = {
+  errors: s__('Geo|Errors:'),
+  errorFetchingGroups: s__("Geo|There was an error fetching the Sites's Groups"),
+  errorFetchingSite: s__('Geo|There was an error saving this Geo Site'),
+};
 
 const getSaveErrorMessageParts = (messages) => {
   return flatten(
@@ -14,7 +20,7 @@ const getSaveErrorMessageParts = (messages) => {
 
 const getSaveErrorMessage = (messages) => {
   const parts = getSaveErrorMessageParts(messages);
-  return `${__('Errors:')} ${parts.join(', ')}`;
+  return `${i18n.errors} ${parts.join(', ')}`;
 };
 
 export const requestSyncNamespaces = ({ commit }) => commit(types.REQUEST_SYNC_NAMESPACES);
@@ -22,7 +28,7 @@ export const receiveSyncNamespacesSuccess = ({ commit }, data) =>
   commit(types.RECEIVE_SYNC_NAMESPACES_SUCCESS, data);
 export const receiveSyncNamespacesError = ({ commit }) => {
   createFlash({
-    message: __("There was an error fetching the Sites's Groups"),
+    message: i18n.errorFetchingGroups,
   });
   commit(types.RECEIVE_SYNC_NAMESPACES_ERROR);
 };
@@ -45,7 +51,7 @@ export const receiveSaveGeoNodeSuccess = ({ commit, state }) => {
   visitUrl(state.nodesPath);
 };
 export const receiveSaveGeoNodeError = ({ commit }, data) => {
-  let errorMessage = __('There was an error saving this Geo Site');
+  let errorMessage = i18n.errorFetchingSite;
 
   if (data?.message) {
     errorMessage += ` ${getSaveErrorMessage(data.message)}`;

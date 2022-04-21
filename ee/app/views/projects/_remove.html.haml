@@ -15,7 +15,7 @@
     - else
       %p= permanent_delete_message(project)
 
-    - if project.feature_available?(:adjourned_deletion_for_projects_and_groups)
+    - if adjourned_deletion && project.feature_available?(:adjourned_deletion_for_projects_and_groups)
       #js-project-adjourned-delete-button{ data: { restore_help_path: restore_help_path, adjourned_removal_date: adjourned_date, form_path: project_path(project), confirm_phrase: delete_confirm_phrase(project), is_fork: project.forked?.to_s, issues_count: number_with_delimiter(issues_count), merge_requests_count: number_with_delimiter(merge_requests_count), forks_count: number_with_delimiter(forks_count), stars_count: number_with_delimiter(project.star_count) } }
     - else
       #js-project-delete-button{ data: { form_path: project_path(project), confirm_phrase: delete_confirm_phrase(project), is_fork: project.forked?.to_s, issues_count: number_with_delimiter(issues_count), merge_requests_count: number_with_delimiter(merge_requests_count), forks_count: number_with_delimiter(forks_count), stars_count: number_with_delimiter(project.star_count) } }

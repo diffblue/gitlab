@@ -8,6 +8,7 @@ module EE
       prepended do
         include ::Geo::ReplicableModel
         include ::Geo::VerifiableModel
+        include ::Geo::VerificationStateDefinition
 
         with_replicator ::Geo::PipelineArtifactReplicator
       end

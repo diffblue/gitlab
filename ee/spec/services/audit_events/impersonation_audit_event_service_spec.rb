@@ -7,7 +7,7 @@ RSpec.describe AuditEvents::ImpersonationAuditEventService do
   let(:ip_address) { '127.0.0.1' }
   let(:message) { 'Impersonation Started' }
   let(:logger) { instance_double(Gitlab::AuditJsonLogger) }
-  let(:service) { described_class.new(impersonator, ip_address, message) }
+  let(:service) { described_class.new(impersonator, ip_address, message, 3.weeks.ago) }
 
   describe '#security_event' do
     before do
@@ -22,7 +22,8 @@ RSpec.describe AuditEvents::ImpersonationAuditEventService do
                                             entity_type: "User",
                                             action: :custom,
                                             ip_address: ip_address,
-                                            custom_message: message)
+                                            custom_message: message,
+                                            created_at: anything)
 
       expect { service.security_event }.to change(AuditEvent, :count).by(1)
       security_event = AuditEvent.last

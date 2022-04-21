@@ -103,5 +103,10 @@ module EE
     def banzai_context_params
       { group: noteable.group, label_url_method: :group_epics_url }
     end
+
+    override :noteable_can_have_confidential_note?
+    def noteable_can_have_confidential_note?
+      for_epic? || super
+    end
   end
 end

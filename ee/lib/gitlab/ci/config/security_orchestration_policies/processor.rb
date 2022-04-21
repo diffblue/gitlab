@@ -5,6 +5,13 @@ module Gitlab
     class Config
       module SecurityOrchestrationPolicies
         class Processor
+          DEFAULT_ON_DEMAND_STAGE = 'dast'
+          DEFAULT_SECURITY_JOB_STAGE = 'test'
+
+          DEFAULT_BUILD_STAGE = 'build'
+          DEFAULT_SCAN_POLICY_STAGE = 'scan-policies'
+          DEFAULT_STAGES = Gitlab::Ci::Config::Entry::Stages.default
+
           def initialize(config, project, ref, source)
             @config = config
             @project = project
@@ -15,12 +22,11 @@ module Gitlab
 
           def perform
             return @config unless project&.feature_available?(:security_orchestration_policies)
-            return @config unless security_orchestration_policy_configuration&.policy_configuration_valid?
+            return @config if valid_security_orchestration_policy_configurations.blank?
             return @config unless extend_configuration?
 
-            merged_config = @config
-                              .deep_merge(on_demand_scans_template)
-                              .deep_merge(pipeline_scan_template)
+            merged_config = @config.deep_merge(merge_policies_with_stages(@config))
+
             observe_processing_duration(Time.current - @start)
 
             merged_config
@@ -30,17 +36,88 @@ module Gitlab
 
           attr_reader :project
 
-          delegate :security_orchestration_policy_configuration, to: :project, allow_nil: true
+          delegate :all_security_orchestration_policy_configurations, to: :project, allow_nil: true
 
-          def on_demand_scans_template
-            ::Security::SecurityOrchestrationPolicies::OnDemandScanPipelineConfigurationService
-              .new(project)
-              .execute(security_orchestration_policy_configuration.on_demand_scan_actions(@ref))
+          def valid_security_orchestration_policy_configurations
+            @valid_security_orchestration_policy_configurations ||=
+              all_security_orchestration_policy_configurations&.select(&:policy_configuration_valid?)
           end
 
-          def pipeline_scan_template
+          def prepare_on_demand_scans_template
+            ::Security::SecurityOrchestrationPolicies::OnDemandScanPipelineConfigurationService
+              .new(project)
+              .execute(on_demand_scan_actions)
+          end
+
+          def prepare_pipeline_scans_template
             ::Security::SecurityOrchestrationPolicies::ScanPipelineService
-              .new.execute(security_orchestration_policy_configuration.pipeline_scan_actions(@ref))
+              .new.execute(pipeline_scan_actions)
+          end
+
+          ## Add `dast` to the end of stages if `dast` is not in stages already
+          ## For other scan types, add `scan-policies` stage after `build` stage if `test` stage is not defined
+          def merge_policies_with_stages(config)
+            merged_config = config
+            defined_stages = config[:stages].presence || DEFAULT_STAGES
+
+            merge_on_demand_scan_template(merged_config, defined_stages)
+            merge_pipeline_scan_template(merged_config, defined_stages)
+
+            merged_config[:stages] = defined_stages.uniq if (defined_stages - DEFAULT_STAGES).present?
+
+            merged_config
+          end
+
+          def merge_on_demand_scan_template(merged_config, defined_stages)
+            on_demand_scan_template = prepare_on_demand_scans_template
+            if on_demand_scan_template.present?
+              defined_stages << DEFAULT_ON_DEMAND_STAGE
+              merged_config.deep_merge!(on_demand_scan_template)
+            end
+          end
+
+          def merge_pipeline_scan_template(merged_config, defined_stages)
+            pipeline_scan_template = prepare_pipeline_scans_template
+            if pipeline_scan_template.present?
+              unless defined_stages.include?(DEFAULT_SECURITY_JOB_STAGE)
+                insert_scan_policy_stage_after_build_stage_or_first(defined_stages)
+                pipeline_scan_template = pipeline_scan_template.transform_values { |job_config| job_config.merge(stage: DEFAULT_SCAN_POLICY_STAGE) }
+              end
+
+              merged_config.deep_merge!(pipeline_scan_template)
+            end
+          end
+
+          def insert_scan_policy_stage_after_build_stage_or_first(defined_stages)
+            build_stage_index = defined_stages.index(DEFAULT_BUILD_STAGE)
+            if build_stage_index.nil?
+              defined_stages.unshift(DEFAULT_SCAN_POLICY_STAGE)
+            else
+              defined_stages.insert(build_stage_index + 1, DEFAULT_SCAN_POLICY_STAGE)
+            end
+
+            defined_stages
+          end
+
+          def on_demand_scan_actions
+            scan_actions do |security_orchestration_policy_configuration|
+              security_orchestration_policy_configuration.on_demand_scan_actions(@ref)
+            end
+          end
+
+          def pipeline_scan_actions
+            scan_actions do |security_orchestration_policy_configuration|
+              security_orchestration_policy_configuration.pipeline_scan_actions(@ref)
+            end
+          end
+
+          def scan_actions
+            return [] if valid_security_orchestration_policy_configurations.blank?
+
+            valid_security_orchestration_policy_configurations
+              .flat_map { |security_orchestration_policy_configuration| yield(security_orchestration_policy_configuration) }
+              .compact
+              .uniq
           end
 
           def observe_processing_duration(duration)

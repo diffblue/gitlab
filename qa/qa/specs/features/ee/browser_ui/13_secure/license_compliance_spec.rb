@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Secure', :runner do
+  # Leaving :global scope out of feature_flag metadata
+  # This will allow test to still run in staging since we are only checking if the feature is enabled
+  RSpec.describe 'Secure', :runner, feature_flag: { name: 'lc_remove_legacy_approval_status' } do
     describe 'License Compliance' do
       before(:all) do
         @project = Resource::Project.fabricate_via_api! do |project|
@@ -52,16 +54,18 @@ module QA
                                        .join('../../../../../ee/fixtures/secure_premade_reports/gl-license-scanning-report.json')) }]
             project_push.commit_message = 'Create Secure compatible application to serve premade reports'
           end
-
+          remove_legacy_ff_enabled = Runtime::Feature.enabled?(:lc_remove_legacy_approval_status)
           Flow::Login.sign_in_unless_signed_in
           @project.visit!
-          Flow::Pipeline.wait_for_latest_pipeline(pipeline_condition: 'succeeded')
+          Flow::Pipeline.wait_for_latest_pipeline(status: 'passed')
           @project.visit!
           Page::Project::Menu.perform(&:click_on_license_compliance)
           EE::Page::Project::Secure::LicenseCompliance.perform do |license_compliance|
             license_compliance.open_tab
-            license_compliance.approve_license(approved_license_name)
-            license_compliance.deny_license(denied_license_name)
+            selector = remove_legacy_ff_enabled ? :allowed_license_radio : :approved_license_radio
+            license_compliance.approve_license(approved_license_name, selector)
+            selector = remove_legacy_ff_enabled ? :denied_license_radio : :blacklisted_license_radio
+            license_compliance.deny_license(denied_license_name, selector)
           end
         end
 

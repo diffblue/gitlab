@@ -56,19 +56,7 @@ module EE
     end
 
     def registration_objective_options
-      options = localized_jobs_to_be_done_choices.dup
-
-      experiment(:bypass_registration, user: current_user) do |e|
-        e.control do
-          options.merge(
-            joining_team: _('I’m joining my team who’s already on GitLab')
-          )
-        end
-        e.candidate do
-          options
-        end
-        e.run
-      end
+      localized_jobs_to_be_done_choices.dup
     end
   end
 end

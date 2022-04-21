@@ -220,9 +220,18 @@ export const pipelineSecurityReportSummary = {
   },
 };
 
-export const scansWithErrors = [{ errors: ['error description'], warnings: [], name: 'scan-name' }];
+const purgedScan = {
+  errors: ['error description'],
+  warnings: [],
+  name: 'scan-name',
+  status: 'PURGED',
+};
+
+export const scansWithErrors = [
+  { errors: ['error description'], warnings: [], name: 'scan-name', status: 'SUCCEEDED' },
+];
 export const scansWithWarnings = [
-  { errors: [], warnings: ['warning description'], name: 'scan-name' },
+  { errors: [], warnings: ['warning description'], name: 'scan-name', status: 'SUCCEEDED' },
 ];
 
 const getSecurityReportsSummaryMock = (nodes) => ({
@@ -243,6 +252,18 @@ const getSecurityReportsSummaryMock = (nodes) => ({
     },
   },
 });
+
+export const purgedPipelineSecurityReportSummaryWithErrors = merge(
+  {},
+  pipelineSecurityReportSummary,
+  getSecurityReportsSummaryMock(scansWithErrors.concat(purgedScan)),
+);
+
+export const purgedPipelineSecurityReportSummaryWithWarnings = merge(
+  {},
+  pipelineSecurityReportSummary,
+  getSecurityReportsSummaryMock(scansWithWarnings.concat(purgedScan)),
+);
 
 export const pipelineSecurityReportSummaryWithErrors = merge(
   {},

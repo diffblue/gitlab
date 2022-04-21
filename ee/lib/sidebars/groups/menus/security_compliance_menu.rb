@@ -10,6 +10,7 @@ module Sidebars
           add_item(vulnerability_report_menu_item)
           add_item(compliance_menu_item)
           add_item(credentials_menu_item)
+          add_item(scan_policies_menu_item)
           add_item(audit_events_menu_item)
 
           true
@@ -107,6 +108,24 @@ module Sidebars
           context.group.licensed_feature_available?(:credentials_inventory) &&
             can?(context.current_user, :read_group_credentials_inventory, context.group) &&
             context.group.enforced_group_managed_accounts?
+        end
+
+        def scan_policies_menu_item
+          unless group_level_security_policies_available?
+            return ::Sidebars::NilMenuItem.new(item_id: :scan_policies)
+          end
+
+          ::Sidebars::MenuItem.new(
+            title: _('Policies'),
+            link: group_security_policies_path(context.group),
+            active_routes: { controller: ['groups/security/policies'] },
+            item_id: :scan_policies
+          )
+        end
+
+        def group_level_security_policies_available?
+          Feature.enabled?(:group_level_security_policies, context.group, default_enabled: :yaml) &&
+                    can?(context.current_user, :read_security_orchestration_policies, context.group)
         end
 
         def audit_events_menu_item

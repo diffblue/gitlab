@@ -193,6 +193,12 @@ module Gitlab
         false
       end
 
+      # :nocov:
+      def self.bulk_create_delete_events_async(deleted_records)
+        raise NotImplementedError
+      end
+      # :nocov:
+
       def self.bulk_create_events(events)
         ::Geo::EventLog.transaction do
           results = ::Geo::Event.insert_all!(events)

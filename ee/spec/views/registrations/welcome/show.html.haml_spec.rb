@@ -53,16 +53,7 @@ RSpec.describe 'registrations/welcome/show' do
       end
 
       it { is_expected_to_have_progress_bar(status: show_progress_bar) }
-
-      context 'bypass_registration experiment' do
-        it { is_expected.not_to have_selector('#joining_project_true') }
-
-        context 'when in the candidate variant' do
-          let(:experiments) { { bypass_registration: :candidate } }
-
-          it { is_expected_to_show_joining_question(show_joining_question) }
-        end
-      end
+      it { is_expected_to_show_joining_question(show_joining_question) }
 
       context 'feature flag other_role_details is enabled' do
         let_it_be(:user_other_role_details_enabled) { true }

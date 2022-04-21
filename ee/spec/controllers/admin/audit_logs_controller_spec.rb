@@ -63,6 +63,12 @@ RSpec.describe Admin::AuditLogsController do
           end
         end
       end
+
+      context 'when date range is greater than limit' do
+        subject { get :index, params: { 'created_before': created_before, 'created_after': created_after } }
+
+        it_behaves_like 'a date range error is returned'
+      end
     end
 
     context 'by user' do

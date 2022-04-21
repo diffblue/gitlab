@@ -69,4 +69,12 @@ RSpec.describe 'projects/project_members/index', :aggregate_failures do
       end
     end
   end
+
+  context 'when free plan limit alert is present' do
+    it 'renders the alert partial' do
+      render
+
+      expect(rendered).to render_template('shared/_user_over_limit_free_plan_alert')
+    end
+  end
 end

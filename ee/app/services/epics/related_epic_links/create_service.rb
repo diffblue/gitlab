@@ -2,6 +2,8 @@
 
 module Epics::RelatedEpicLinks
   class CreateService < IssuableLinks::CreateService
+    include UsageDataHelper
+
     def linkable_issuables(epics)
       @linkable_issuables ||= begin
         epics.select { |epic| can?(current_user, :admin_epic, epic) }
@@ -13,6 +15,10 @@ module Epics::RelatedEpicLinks
     end
 
     private
+
+    def after_create_for(link)
+      track_related_epics_event_for(link_type: params[:link_type], event_type: :added)
+    end
 
     def references(extractor)
       extractor.epics

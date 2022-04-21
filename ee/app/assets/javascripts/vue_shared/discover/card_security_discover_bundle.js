@@ -1,4 +1,5 @@
 import Vue from 'vue';
+import { s__ } from '~/locale';
 import SecurityDiscoverApp from 'ee/vue_shared/discover/card_security_discover_app.vue';
 import apolloProvider from 'ee/subscriptions/buy_addons_shared/graphql';
 
@@ -48,6 +49,11 @@ export default () => {
         lastName,
         companyName,
         glmContent,
+      },
+      ctaTracking: {
+        action: 'click_button',
+        label: s__('PQL|Contact sales'),
+        experiment: 'pql_three_cta_test',
       },
     },
     render(createElement) {

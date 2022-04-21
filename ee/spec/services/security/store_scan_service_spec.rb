@@ -158,6 +158,20 @@ RSpec.describe Security::StoreScanService do
         expect(Security::StoreFindingsMetadataService).to have_received(:execute)
       end
 
+      context 'when the report has no warnings' do
+        before do
+          artifact.security_report.warnings = []
+        end
+
+        let(:security_scan) { Security::Scan.last }
+
+        it 'does not store an empty array' do
+          store_scan
+
+          expect(security_scan.info).to eq({})
+        end
+      end
+
       context 'when the report has some warnings' do
         before do
           artifact.security_report.warnings << { 'type' => 'foo', 'message' => 'bar' }

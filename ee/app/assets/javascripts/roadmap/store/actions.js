@@ -2,9 +2,9 @@ import createFlash from '~/flash';
 import { s__ } from '~/locale';
 
 import { ROADMAP_PAGE_SIZE } from '../constants';
-import epicChildEpics from '../queries/epicChildEpics.query.graphql';
-import groupEpics from '../queries/groupEpics.query.graphql';
-import groupMilestones from '../queries/groupMilestones.query.graphql';
+import epicChildEpics from '../queries/epic_child_epics.query.graphql';
+import groupEpics from '../queries/group_epics.query.graphql';
+import groupMilestones from '../queries/group_milestones.query.graphql';
 import * as epicUtils from '../utils/epic_utils';
 import * as roadmapItemUtils from '../utils/roadmap_item_utils';
 import { getEpicsTimeframeRange, sortEpics } from '../utils/roadmap_utils';
@@ -29,7 +29,7 @@ const fetchGroupEpics = (
     }),
   };
 
-  const transformedFilterParams = roadmapItemUtils.transformFetchEpicFilterParams(filterParams);
+  const transformedFilterParams = epicUtils.transformFetchEpicFilterParams(filterParams);
 
   // When epicIid is present,
   // Roadmap is being accessed from within an Epic,

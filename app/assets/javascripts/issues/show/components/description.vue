@@ -2,21 +2,26 @@
 import {
   GlSafeHtmlDirective as SafeHtml,
   GlModal,
+  GlToast,
+  GlTooltip,
   GlModalDirective,
-  GlPopover,
-  GlButton,
 } from '@gitlab/ui';
 import $ from 'jquery';
+import Vue from 'vue';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { TYPE_WORK_ITEM } from '~/graphql_shared/constants';
 import createFlash from '~/flash';
-import { __, sprintf } from '~/locale';
+import { isPositiveInteger } from '~/lib/utils/number_utils';
+import { getParameterByName, setUrlParams, updateHistory } from '~/lib/utils/url_utility';
+import { __, s__, sprintf } from '~/locale';
 import TaskList from '~/task_list';
 import Tracking from '~/tracking';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import WorkItemDetailModal from '~/work_items/components/work_item_detail_modal.vue';
 import CreateWorkItem from '~/work_items/pages/create_work_item.vue';
 import animateMixin from '../mixins/animate';
+
+Vue.use(GlToast);
 
 export default {
   directives: {
@@ -25,9 +30,8 @@ export default {
   },
   components: {
     GlModal,
-    GlPopover,
     CreateWorkItem,
-    GlButton,
+    GlTooltip,
     WorkItemDetailModal,
   },
   mixins: [animateMixin, glFeatureFlagMixin(), Tracking.mixin()],
@@ -72,13 +76,17 @@ export default {
     },
   },
   data() {
+    const workItemId = getParameterByName('work_item_id');
+
     return {
       preAnimation: false,
       pulseAnimation: false,
       initialUpdate: true,
       taskButtons: [],
       activeTask: {},
-      workItemId: null,
+      workItemId: isPositiveInteger(workItemId)
+        ? convertToGraphQLId(TYPE_WORK_ITEM, workItemId)
+        : undefined,
     };
   },
   computed: {
@@ -191,6 +199,7 @@ export default {
           taskLink.addEventListener('click', (e) => {
             e.preventDefault();
             this.workItemId = convertToGraphQLId(TYPE_WORK_ITEM, issue);
+            this.updateWorkItemIdUrlQuery(issue);
             this.track('viewed_work_item_from_modal', {
               category: 'workItems:show',
               label: 'work_item_view',
@@ -216,9 +225,11 @@ export default {
         this.taskButtons.push(button.id);
         button.innerHTML = `
           <svg data-testid="ellipsis_v-icon" role="img" aria-hidden="true" class="dropdown-icon gl-icon s14">
-            <use href="${gon.sprite_icons}#ellipsis_v"></use>
+            <use href="${gon.sprite_icons}#doc-new"></use>
           </svg>
         `;
+        button.setAttribute('aria-label', s__('WorkItem|Convert to work item'));
+        button.addEventListener('click', () => this.openCreateTaskModal(button.id));
         item.prepend(button);
       });
     },
@@ -237,17 +248,21 @@ export default {
       this.$refs.modal.hide();
     },
     closeWorkItemDetailModal() {
-      this.workItemId = null;
-    },
-    handleWorkItemDetailModalError(message) {
-      createFlash({ message });
+      this.workItemId = undefined;
+      this.updateWorkItemIdUrlQuery(undefined);
     },
     handleCreateTask(description) {
       this.$emit('updateDescription', description);
       this.closeCreateTaskModal();
     },
-    focusButton() {
-      this.$refs.convertButton[0].$el.focus();
+    handleDeleteTask() {
+      this.$toast.show(s__('WorkItem|Work item deleted'));
+    },
+    updateWorkItemIdUrlQuery(workItemId) {
+      updateHistory({
+        url: setUrlParams({ work_item_id: workItemId }),
+        replace: true,
+      });
     },
   },
   safeHtmlConfig: { ADD_TAGS: ['gl-emoji', 'copy-code'] },
@@ -273,17 +288,17 @@ export default {
       }"
       class="md"
     ></div>
-    <!-- eslint-disable vue/no-mutating-props -->
+
     <textarea
       v-if="descriptionText"
-      v-model="descriptionText"
+      :value="descriptionText"
       :data-update-url="updateUrl"
       class="hidden js-task-list-field"
       dir="auto"
       data-testid="textarea"
     >
     </textarea>
-    <!-- eslint-enable vue/no-mutating-props -->
+
     <gl-modal
       ref="modal"
       modal-id="create-task-modal"
@@ -292,7 +307,7 @@ export default {
       body-class="gl-p-0!"
     >
       <create-work-item
-        :is-modal="true"
+        is-modal
         :initial-title="activeTask.title"
         :issue-gid="issueGid"
         :lock-version="lockVersion"
@@ -303,29 +318,16 @@ export default {
       />
     </gl-modal>
     <work-item-detail-modal
+      :can-update="canUpdate"
       :visible="showWorkItemDetailModal"
       :work-item-id="workItemId"
+      @workItemDeleted="handleDeleteTask"
       @close="closeWorkItemDetailModal"
-      @error="handleWorkItemDetailModalError"
     />
     <template v-if="workItemsEnabled">
-      <gl-popover
-        v-for="item in taskButtons"
-        :key="item"
-        :target="item"
-        placement="top"
-        triggers="focus"
-        @shown="focusButton"
-      >
-        <gl-button
-          ref="convertButton"
-          variant="link"
-          data-testid="convert-to-task"
-          class="gl-text-gray-900! gl-text-decoration-none! gl-outline-0!"
-          @click="openCreateTaskModal(item)"
-          >{{ s__('WorkItem|Convert to work item') }}</gl-button
-        >
-      </gl-popover>
+      <gl-tooltip v-for="item in taskButtons" :key="item" :target="item">
+        {{ s__('WorkItem|Convert to work item') }}
+      </gl-tooltip>
     </template>
   </div>
 </template>

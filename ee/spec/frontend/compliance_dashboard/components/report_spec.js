@@ -6,7 +6,7 @@ import * as Sentry from '@sentry/browser';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import ComplianceReport from 'ee/compliance_dashboard/components/report.vue';
 import MergeRequestDrawer from 'ee/compliance_dashboard/components/drawer.vue';
-import MergeCommitsExportButton from 'ee/compliance_dashboard/components/merge_requests/merge_commits_export_button.vue';
+import MergeCommitsExportButton from 'ee/compliance_dashboard/components/shared/merge_commits_export_button.vue';
 import ViolationReason from 'ee/compliance_dashboard/components/violations/reason.vue';
 import ViolationFilter from 'ee/compliance_dashboard/components/violations/filter.vue';
 import getComplianceViolationsQuery from 'ee/compliance_dashboard/graphql/compliance_violations.query.graphql';
@@ -20,7 +20,11 @@ import UrlSync from '~/vue_shared/components/url_sync.vue';
 import { stubComponent } from 'helpers/stub_component';
 import { sortObjectToString } from '~/lib/utils/table_utility';
 import { parseViolationsQueryFilter } from 'ee/compliance_dashboard/utils';
-import { DEFAULT_SORT, GRAPHQL_PAGE_SIZE } from 'ee/compliance_dashboard/constants';
+import {
+  DEFAULT_SORT,
+  GRAPHQL_PAGE_SIZE,
+  DEFAULT_PAGINATION_CURSORS,
+} from 'ee/compliance_dashboard/constants';
 import { createComplianceViolationsResponse } from '../mock_data';
 
 Vue.use(VueApollo);
@@ -121,9 +125,7 @@ describe('ComplianceReport component', () => {
         'The compliance report shows the merge request violations merged in protected environments.',
       );
       expect(helpLink.text()).toBe('Learn more.');
-      expect(helpLink.attributes('href')).toBe(
-        '/help/user/compliance/compliance_report/index.md#approval-status-and-separation-of-duties',
-      );
+      expect(helpLink.attributes('href')).toBe('/help/user/compliance/compliance_report/index.md');
     });
 
     it('renders the merge commit export button', () => {
@@ -158,9 +160,7 @@ describe('ComplianceReport component', () => {
         fullPath: groupPath,
         filters: parseViolationsQueryFilter(defaultFilterParams),
         sort: DEFAULT_SORT,
-        first: GRAPHQL_PAGE_SIZE,
-        after: null,
-        before: null,
+        ...DEFAULT_PAGINATION_CURSORS,
       });
     });
   });
@@ -182,9 +182,7 @@ describe('ComplianceReport component', () => {
         fullPath: groupPath,
         filters: parseViolationsQueryFilter(defaultFilterParams),
         sort,
-        first: GRAPHQL_PAGE_SIZE,
-        after: null,
-        before: null,
+        ...DEFAULT_PAGINATION_CURSORS,
       });
     });
   });
@@ -237,7 +235,7 @@ describe('ComplianceReport component', () => {
       expect(rowTexts).toEqual([
         'High',
         'Approved by committer',
-        `Merge request ${idx}`,
+        violations[idx].mergeRequest.title,
         'in 1 year',
         'View details',
       ]);
@@ -250,7 +248,7 @@ describe('ComplianceReport component', () => {
     });
 
     it('renders the violation reason', () => {
-      const { violatingUser, reason } = violations[0];
+      const { violatingUser, reason } = mapViolations(violations)[0];
 
       expect(findViolationReason().props()).toMatchObject({
         reason,
@@ -306,7 +304,7 @@ describe('ComplianceReport component', () => {
           expect(findMergeRequestDrawer().props('project')).toStrictEqual({});
         });
 
-        it(`swaps the drawer when another ${eventDescription}`, async () => {
+        it(`keeps the drawer open when another violation's ${eventDescription}`, async () => {
           const drawerData = mapViolations(violations)[1];
 
           await rowAction(0);
@@ -354,9 +352,7 @@ describe('ComplianceReport component', () => {
           fullPath: groupPath,
           filters: parseViolationsQueryFilter(query),
           sort: DEFAULT_SORT,
-          first: GRAPHQL_PAGE_SIZE,
-          after: null,
-          before: null,
+          ...DEFAULT_PAGINATION_CURSORS,
         });
       });
     });
@@ -384,9 +380,7 @@ describe('ComplianceReport component', () => {
           fullPath: groupPath,
           filters: parseViolationsQueryFilter(defaultFilterParams),
           sort: sortObjectToString(sortState),
-          first: GRAPHQL_PAGE_SIZE,
-          after: null,
-          before: null,
+          ...DEFAULT_PAGINATION_CURSORS,
         });
       });
     });
@@ -404,12 +398,12 @@ describe('ComplianceReport component', () => {
       });
 
       it.each`
-        event     | after    | before
-        ${'next'} | ${'foo'} | ${null}
-        ${'prev'} | ${null}  | ${'foo'}
+        event     | after    | before   | first                | last
+        ${'next'} | ${'foo'} | ${null}  | ${GRAPHQL_PAGE_SIZE} | ${undefined}
+        ${'prev'} | ${null}  | ${'foo'} | ${undefined}         | ${GRAPHQL_PAGE_SIZE}
       `(
         'fetches the $event page when the pagination emits "$event"',
-        async ({ event, after, before }) => {
+        async ({ event, after, before, first, last }) => {
           await findPagination().vm.$emit(event, after ?? before);
           await waitForPromises();
 
@@ -417,10 +411,11 @@ describe('ComplianceReport component', () => {
           expect(mockGraphQlSuccess).toHaveBeenNthCalledWith(2, {
             fullPath: groupPath,
             filters: parseViolationsQueryFilter(defaultFilterParams),
-            first: GRAPHQL_PAGE_SIZE,
             sort: DEFAULT_SORT,
             after,
             before,
+            first,
+            last,
           });
         },
       );
@@ -459,10 +454,8 @@ describe('ComplianceReport component', () => {
           expect(mockGraphQlSuccess).toHaveBeenNthCalledWith(3, {
             fullPath: groupPath,
             filters: parseViolationsQueryFilter(query),
-            first: GRAPHQL_PAGE_SIZE,
             sort: DEFAULT_SORT,
-            after: null,
-            before: null,
+            ...DEFAULT_PAGINATION_CURSORS,
           });
         });
       });

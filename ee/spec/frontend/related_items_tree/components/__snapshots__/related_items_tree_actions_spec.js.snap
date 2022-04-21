@@ -1,0 +1,51 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`RelatedItemsTree RelatedItemsTreeActions template renders button group, tree view and roadmap view buttons 1`] = `
+<div
+  class="card-header d-flex gl-px-5 gl-pt-4 gl-pt-3 flex-column flex-sm-row border-bottom-0"
+>
+  <div>
+    <gl-button-group-stub
+      class="gl-flex-grow-1 gl-display-flex"
+      data-testid="buttons"
+    >
+      <gl-button-stub
+        buttontextclasses=""
+        category="primary"
+        class="js-epic-tree-tab"
+        data-testid="tree-view-button"
+        icon=""
+        selected="true"
+        size="medium"
+        variant="default"
+      >
+        
+        Tree view
+      
+      </gl-button-stub>
+       
+      <gl-button-stub
+        buttontextclasses=""
+        category="primary"
+        class="js-epic-roadmap-tab"
+        data-testid="roadmap-view-button"
+        icon=""
+        size="medium"
+        variant="default"
+      >
+        
+        Roadmap view
+      
+      </gl-button-stub>
+    </gl-button-group-stub>
+  </div>
+   
+  <div
+    class="gl-sm-display-inline-flex gl-display-flex gl-mt-3 gl-sm-mt-0 gl-sm-ml-auto"
+  >
+    <toggle-labels-stub
+      class="gl-sm-ml-3! gl-ml-0!"
+    />
+  </div>
+</div>
+`;

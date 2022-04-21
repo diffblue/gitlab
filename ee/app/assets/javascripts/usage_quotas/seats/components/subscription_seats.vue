@@ -13,6 +13,7 @@ import {
   GlTooltipDirective,
 } from '@gitlab/ui';
 import { mapActions, mapState, mapGetters } from 'vuex';
+import { helpPagePath } from '~/helpers/help_page_helper';
 import { visitUrl } from '~/lib/utils/url_utility';
 import {
   FIELDS,
@@ -25,6 +26,8 @@ import {
 } from 'ee/usage_quotas/seats/constants';
 import { s__, __, sprintf, n__ } from '~/locale';
 import FilterSortContainerRoot from '~/vue_shared/components/filtered_search_bar/filtered_search_bar_root.vue';
+import StatisticsCard from 'ee/usage_quotas/components/statistics_card.vue';
+import StatisticsSeatsCard from 'ee/usage_quotas/components/statistics_seats_card.vue';
 import RemoveBillableMemberModal from './remove_billable_member_modal.vue';
 import SubscriptionSeatDetails from './subscription_seat_details.vue';
 
@@ -46,6 +49,8 @@ export default {
     RemoveBillableMemberModal,
     SubscriptionSeatDetails,
     FilterSortContainerRoot,
+    StatisticsCard,
+    StatisticsSeatsCard,
   },
   computed: {
     ...mapState([
@@ -61,6 +66,12 @@ export default {
       'billableMemberToRemove',
       'search',
       'sort',
+      'seatsInSubscription',
+      'seatsInUse',
+      'maxSeatsUsed',
+      'seatsOwed',
+      'addSeatsHref',
+      'hasNoSubscription',
     ]),
     ...mapGetters(['tableItems']),
     currentPage: {
@@ -92,13 +103,24 @@ export default {
     shouldShowPendingMembersAlert() {
       return this.pendingMembersCount > 0 && this.pendingMembersPagePath;
     },
+    seatsInUsePercentage() {
+      return Math.round((this.seatsInUse * 100) / this.seatsInSubscription);
+    },
+    totalSeatsInSubscription() {
+      return this.hasNoSubscription ? '-' : String(this.seatsInSubscription);
+    },
+    totalSeatsInUse() {
+      return this.hasNoSubscription ? String(this.total) : String(this.seatsInUse);
+    },
   },
   created() {
     this.fetchBillableMembersList();
+    this.fetchGitlabSubscription();
   },
   methods: {
     ...mapActions([
       'fetchBillableMembersList',
+      'fetchGitlabSubscription',
       'resetBillableMembers',
       'setBillableMemberToRemove',
       'setSearchQuery',
@@ -141,6 +163,10 @@ export default {
     ),
     filterUsersPlaceholder: __('Filter users'),
     pendingMembersAlertButtonText: s__('Billing|View pending approvals'),
+    seatsInUseText: s__('Billings|Seats in use / Seats in subscription'),
+    seatsInUseLink: helpPagePath('subscription/gitlab_com/index', {
+      anchor: 'how-seat-usage-is-determined',
+    }),
   },
   avatarSize: AVATAR_SIZE,
   fields: FIELDS,
@@ -164,35 +190,43 @@ export default {
     >
       {{ pendingMembersAlertMessage }}
     </gl-alert>
-    <div
-      class="gl-bg-gray-10 gl-p-6 gl-md-display-flex gl-justify-content-space-between gl-align-items-center"
-    >
-      <div data-testid="heading-info">
-        <h4
-          data-testid="heading-info-text"
-          class="gl-font-base gl-display-inline-block gl-font-weight-normal"
-        >
-          {{ s__('Billing|Users occupying seats in') }}
-          <span class="gl-font-weight-bold">{{ namespaceName }} {{ s__('Billing|Group') }}</span>
-        </h4>
-        <gl-badge>{{ total }}</gl-badge>
-      </div>
+    <div class="gl-bg-gray-10 gl-display-flex gl-sm-flex-direction-column gl-p-5">
+      <statistics-card
+        :help-link="$options.i18n.seatsInUseLink"
+        :description="$options.i18n.seatsInUseText"
+        :percentage="seatsInUsePercentage"
+        :usage-value="totalSeatsInUse"
+        :total-value="totalSeatsInSubscription"
+        class="gl-w-full gl-md-w-half gl-md-mr-5"
+      />
 
-      <gl-button v-if="seatUsageExportPath" data-testid="export-button" :href="seatUsageExportPath">
-        {{ s__('Billing|Export list') }}
-      </gl-button>
+      <statistics-seats-card
+        :seats-used="maxSeatsUsed"
+        :seats-owed="seatsOwed"
+        :purchase-button-link="addSeatsHref"
+        class="gl-w-full gl-md-w-half gl-md-mt-0 gl-mt-5"
+      />
     </div>
 
-    <div class="gl-bg-gray-10 gl-p-3">
+    <div class="gl-bg-gray-10 gl-p-5 gl-display-flex">
       <filter-sort-container-root
         :namespace="namespaceId"
         :tokens="[]"
         :search-input-placeholder="$options.i18n.filterUsersPlaceholder"
         :sort-options="$options.sortOptions"
         initial-sort-by="last_activity_on_desc"
+        class="gl-flex-grow-1"
         @onFilter="applyFilter"
         @onSort="setSortOption"
       />
+      <gl-button
+        v-if="seatUsageExportPath"
+        data-testid="export-button"
+        :href="seatUsageExportPath"
+        class="gl-ml-3"
+      >
+        {{ s__('Billing|Export list') }}
+      </gl-button>
     </div>
 
     <gl-table

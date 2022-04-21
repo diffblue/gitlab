@@ -70,6 +70,20 @@ module Gitlab
             }
           end
 
+          def mask_variables_from(string)
+            variables.reduce(string.dup) do |str, variable|
+              if variable[:masked]
+                Gitlab::Ci::MaskSecret.mask!(str, variable[:value])
+              else
+                str
+              end
+            end
+          end
+
+          def includes
+            expandset.map(&:metadata)
+          end
+
           protected
 
           attr_writer :expandset, :execution_deadline, :logger

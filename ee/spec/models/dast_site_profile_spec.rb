@@ -23,6 +23,7 @@ RSpec.describe DastSiteProfile, type: :model do
     it { is_expected.to validate_length_of(:auth_url).is_at_most(1024).allow_nil }
     it { is_expected.to validate_length_of(:auth_username).is_at_most(255) }
     it { is_expected.to validate_length_of(:auth_username_field).is_at_most(255) }
+    it { is_expected.to validate_length_of(:auth_submit_field).is_at_most(255) }
     it { is_expected.to validate_length_of(:name).is_at_most(255) }
     it { is_expected.to validate_presence_of(:dast_site_id) }
     it { is_expected.to validate_presence_of(:name) }
@@ -226,17 +227,37 @@ RSpec.describe DastSiteProfile, type: :model do
       let(:keys) { subject.ci_variables.map { |variable| variable[:key] } }
       let(:excluded_urls) { subject.excluded_urls.join(',') }
 
-      it 'returns a collection of variables' do
-        expected_variables = [
-          { key: 'DAST_WEBSITE', value: subject.dast_site.url, public: true, masked: false },
-          { key: 'DAST_EXCLUDE_URLS', value: excluded_urls, public: true, masked: false },
-          { key: 'DAST_AUTH_URL', value: subject.auth_url, public: true, masked: false },
-          { key: 'DAST_USERNAME', value: subject.auth_username, public: true, masked: false },
-          { key: 'DAST_USERNAME_FIELD', value: subject.auth_username_field, public: true, masked: false },
-          { key: 'DAST_PASSWORD_FIELD', value: subject.auth_password_field, public: true, masked: false }
-        ]
+      context 'without_dast_submit_field' do
+        it 'returns a collection of variables' do
+          expected_variables = [
+            { key: 'DAST_WEBSITE', value: subject.dast_site.url, public: true, masked: false },
+            { key: 'DAST_EXCLUDE_URLS', value: excluded_urls, public: true, masked: false },
+            { key: 'DAST_AUTH_URL', value: subject.auth_url, public: true, masked: false },
+            { key: 'DAST_USERNAME', value: subject.auth_username, public: true, masked: false },
+            { key: 'DAST_USERNAME_FIELD', value: subject.auth_username_field, public: true, masked: false },
+            { key: 'DAST_PASSWORD_FIELD', value: subject.auth_password_field, public: true, masked: false }
+          ]
 
-        expect(collection.to_runner_variables).to eq(expected_variables)
+          expect(collection.to_runner_variables).to eq(expected_variables)
+        end
+      end
+
+      context 'with_dast_submit_field' do
+        subject { create(:dast_site_profile, :with_dast_site_validation, :with_dast_submit_field, project: project) }
+
+        it 'returns a collection of variables' do
+          expected_variables = [
+            { key: 'DAST_WEBSITE', value: subject.dast_site.url, public: true, masked: false },
+            { key: 'DAST_EXCLUDE_URLS', value: excluded_urls, public: true, masked: false },
+            { key: 'DAST_AUTH_URL', value: subject.auth_url, public: true, masked: false },
+            { key: 'DAST_USERNAME', value: subject.auth_username, public: true, masked: false },
+            { key: 'DAST_USERNAME_FIELD', value: subject.auth_username_field, public: true, masked: false },
+            { key: 'DAST_PASSWORD_FIELD', value: subject.auth_password_field, public: true, masked: false },
+            { key: 'DAST_SUBMIT_FIELD', value: subject.auth_submit_field, public: true, masked: false }
+          ]
+
+          expect(collection.to_runner_variables).to eq(expected_variables)
+        end
       end
 
       context 'when target_type=api' do
@@ -254,7 +275,7 @@ RSpec.describe DastSiteProfile, type: :model do
         subject { build(:dast_site_profile, auth_enabled: false) }
 
         it 'returns a collection of variables excluding any auth variables', :aggregate_failures do
-          expect(keys).not_to include('DAST_AUTH_URL', 'DAST_USERNAME', 'DAST_USERNAME_FIELD', 'DAST_PASSWORD_FIELD')
+          expect(keys).not_to include('DAST_AUTH_URL', 'DAST_USERNAME', 'DAST_USERNAME_FIELD', 'DAST_PASSWORD_FIELD', 'DAST_SUBMIT_FIELD')
         end
       end
 

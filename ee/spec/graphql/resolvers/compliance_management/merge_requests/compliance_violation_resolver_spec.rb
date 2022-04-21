@@ -73,16 +73,16 @@ RSpec.describe Resolvers::ComplianceManagement::MergeRequests::ComplianceViolati
       end
 
       context 'sorting the results' do
-        where(:direction, :result) do
-          'SEVERITY_LEVEL_ASC' | lazy { [compliance_violation, compliance_violation2] }
-          'SEVERITY_LEVEL_DESC' | lazy { [compliance_violation2, compliance_violation] }
-          'VIOLATION_REASON_ASC' | lazy { [compliance_violation, compliance_violation2] }
-          'VIOLATION_REASON_DESC' | lazy { [compliance_violation2, compliance_violation] }
-          'MERGE_REQUEST_TITLE_ASC' | lazy { [compliance_violation, compliance_violation2] }
-          'MERGE_REQUEST_TITLE_DESC' | lazy { [compliance_violation2, compliance_violation] }
-          'MERGED_AT_ASC' | lazy { [compliance_violation, compliance_violation2] }
-          'MERGED_AT_DESC' | lazy { [compliance_violation2, compliance_violation] }
-          'UNKNOWN_SORT' | lazy { [compliance_violation, compliance_violation2] }
+        where(:direction, :pagination_type, :result) do
+          'SEVERITY_LEVEL_ASC' | :keyset | lazy { [compliance_violation, compliance_violation2] }
+          'SEVERITY_LEVEL_DESC' | :keyset | lazy { [compliance_violation2, compliance_violation] }
+          'VIOLATION_REASON_ASC' | :keyset | lazy { [compliance_violation, compliance_violation2] }
+          'VIOLATION_REASON_DESC' | :keyset | lazy { [compliance_violation2, compliance_violation] }
+          'MERGE_REQUEST_TITLE_ASC' | :offset | lazy { [compliance_violation, compliance_violation2] }
+          'MERGE_REQUEST_TITLE_DESC' | :offset | lazy { [compliance_violation2, compliance_violation] }
+          'MERGED_AT_ASC' | :offset |  lazy { [compliance_violation, compliance_violation2] }
+          'MERGED_AT_DESC' | :offset | lazy { [compliance_violation2, compliance_violation] }
+          'UNKNOWN_SORT' | :keyset | lazy { [compliance_violation, compliance_violation2] }
         end
 
         with_them do
@@ -90,6 +90,16 @@ RSpec.describe Resolvers::ComplianceManagement::MergeRequests::ComplianceViolati
 
           it 'finds the filtered compliance violations' do
             expect(subject).to match_array(result)
+          end
+
+          if params[:pagination_type] == :keyset
+            it "uses keyset pagination" do
+              expect(subject).to be_a(::Gitlab::Graphql::Pagination::Keyset::Connection)
+            end
+          else
+            it "uses offset pagination" do
+              expect(subject).to be_a(::Gitlab::Graphql::Pagination::OffsetActiveRecordRelationConnection)
+            end
           end
         end
       end

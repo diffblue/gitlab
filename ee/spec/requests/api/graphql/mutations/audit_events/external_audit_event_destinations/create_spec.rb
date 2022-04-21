@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe 'Create an external audit event destination' do
   include GraphqlHelpers
 
-  let_it_be(:group) { create(:group) }
+  let_it_be(:group) { create(:group, :nested) }
   let_it_be(:owner) { create(:user) }
 
   let(:current_user) { owner }
@@ -48,6 +48,12 @@ RSpec.describe 'Create an external audit event destination' do
     context 'when current user is a group owner' do
       before do
         group.add_owner(owner)
+      end
+
+      it 'resolves group by full path' do
+        expect(::Group).to receive(:find_by_full_path).with(group.full_path)
+
+        subject
       end
 
       it 'creates the destination' do

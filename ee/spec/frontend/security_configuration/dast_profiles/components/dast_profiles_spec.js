@@ -90,7 +90,7 @@ describe('EE - DastProfiles', () => {
     it('shows a heading that describes the purpose of the page', () => {
       createFullComponent();
 
-      const heading = withinComponent().getByRole('heading', { name: /manage dast scans/i });
+      const heading = withinComponent().getByRole('heading', { name: /DAST profile library/i });
 
       expect(heading).not.toBe(null);
     });

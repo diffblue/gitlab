@@ -24,6 +24,10 @@ class Explore::ProjectsController < Explore::ApplicationController
   rescue_from PageOutOfBoundsError, with: :page_out_of_bounds
 
   feature_category :projects
+  # TODO: Set higher urgency after addressing https://gitlab.com/gitlab-org/gitlab/-/issues/357913
+  # and https://gitlab.com/gitlab-org/gitlab/-/issues/358945
+  urgency :low, [:index, :trending]
+  urgency :low, [:index]
 
   def index
     show_alert_if_search_is_disabled
@@ -110,7 +114,7 @@ class Explore::ProjectsController < Explore::ApplicationController
   end
 
   def load_topic
-    @topic = Projects::Topic.find_by_name(params[:topic_name])
+    @topic = Projects::Topic.find_by_name_case_insensitive(params[:topic_name])
   end
 
   # rubocop: disable CodeReuse/ActiveRecord

@@ -1,0 +1,13 @@
+.billing-plan-header.content-block.gl-text-center
+  .billing-plan-logo
+    - if namespace.avatar_url.present?
+      = group_icon(namespace, class: 'border rounded gl-mb-5 gl-mt-2', width: 96, height: 96, alt: namespace.name)
+    - else
+      .avatar-container.rect-avatar.s96.home-panel-avatar.gl-mr-3.float-none.gl-mb-6.gl-mt-2.rounded.border{ class: 'gl-mx-auto!' }
+        = group_icon(namespace, class: 'avatar avatar-tile s96', width: 96, height: 96, alt: namespace.name)
+
+  %h4
+    = s_("BillingPlans|%{group_name} is currently using the %{plan_name}.").html_safe % { group_name: namespace.full_name,
+      plan_name: current_plan.name }
+
+  = yield

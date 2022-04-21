@@ -14,7 +14,7 @@ import { TYPE_ITERATION } from '~/graphql_shared/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { formatDate } from '~/lib/utils/datetime_utility';
 import { s__ } from '~/locale';
-import { Namespace, iterationStates } from '../constants';
+import { Namespace } from '../constants';
 import deleteIteration from '../queries/destroy_iteration.mutation.graphql';
 import query from '../queries/iteration.query.graphql';
 import { getIterationPeriod } from '../utils';
@@ -95,7 +95,8 @@ export default {
       return getIterationPeriod(this.iteration);
     },
     showDelete() {
-      return this.iteration.state !== iterationStates.closed;
+      // We only support deleting iterations for manual cadences.
+      return !this.iteration.iterationCadence.automatic;
     },
   },
   methods: {

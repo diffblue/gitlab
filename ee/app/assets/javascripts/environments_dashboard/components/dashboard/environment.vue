@@ -1,5 +1,5 @@
 <script>
-import { GlTooltipDirective, GlLink, GlBadge, GlIcon } from '@gitlab/ui';
+import { GlTooltipDirective, GlLink, GlBadge, GlIcon, GlAvatarLink, GlAvatar } from '@gitlab/ui';
 import { escape, isEmpty } from 'lodash';
 import Alerts from 'ee/vue_shared/dashboards/components/alerts.vue';
 import ProjectPipeline from 'ee/vue_shared/dashboards/components/project_pipeline.vue';
@@ -7,14 +7,12 @@ import TimeAgo from 'ee/vue_shared/dashboards/components/time_ago.vue';
 import { STATUS_FAILED } from 'ee/vue_shared/dashboards/constants';
 import { s__, __, sprintf } from '~/locale';
 import Commit from '~/vue_shared/components/commit.vue';
-import UserAvatarLink from '~/vue_shared/components/user_avatar/user_avatar_link.vue';
 import timeagoMixin from '~/vue_shared/mixins/timeago';
 import EnvironmentHeader from './environment_header.vue';
 
 export default {
   components: {
     EnvironmentHeader,
-    UserAvatarLink,
     GlLink,
     GlBadge,
     Commit,
@@ -22,6 +20,8 @@ export default {
     ProjectPipeline,
     TimeAgo,
     GlIcon,
+    GlAvatarLink,
+    GlAvatar,
   },
   directives: {
     'gl-tooltip': GlTooltipDirective,
@@ -127,13 +127,14 @@ export default {
     <div :class="cardClasses" class="dashboard-card-body card-body">
       <div v-if="lastDeployment" class="row">
         <div class="col-1 align-self-center px-3">
-          <user-avatar-link
-            v-if="user"
-            :link-href="user.path"
-            :img-src="user.avatar_url"
-            :tooltip-text="user.name"
-            :img-size="32"
-          />
+          <gl-avatar-link v-if="user" :href="user.path">
+            <gl-avatar
+              :src="user.avatar_url"
+              :entity-name="user.username"
+              :title="user.name"
+              :size="32"
+            />
+          </gl-avatar-link>
         </div>
 
         <div class="col-10 col-sm-7 pr-0 pl-5 align-self-center align-middle ci-table">

@@ -5,8 +5,9 @@ require 'spec_helper'
 RSpec.describe Environment, :use_clean_rails_memory_store_caching do
   include ReactiveCachingHelpers
 
-  let(:project) { create(:project, :repository) }
-  let(:environment) { create(:environment, project: project) }
+  let_it_be_with_refind(:group) { create(:group) }
+  let_it_be_with_refind(:project) { create(:project, :repository, group: group) }
+  let_it_be_with_refind(:environment) { create(:environment, project: project) }
 
   it { is_expected.to have_many(:dora_daily_metrics) }
 
@@ -252,19 +253,40 @@ RSpec.describe Environment, :use_clean_rails_memory_store_caching do
     context 'when Protected Environments feature is available' do
       before do
         stub_licensed_features(protected_environments: true)
-        create(:protected_environment, name: environment.name, project: project, required_approval_count: required_approval_count)
       end
 
-      context 'with some approvals required' do
-        let(:required_approval_count) { 1 }
+      context 'with unified access level' do
+        before do
+          create(:protected_environment, name: environment.name, project: project, required_approval_count: required_approval_count)
+        end
 
-        it { is_expected.to be_truthy }
+        context 'with some approvals required' do
+          let(:required_approval_count) { 1 }
+
+          it { is_expected.to be_truthy }
+        end
+
+        context 'with no approvals required' do
+          let(:required_approval_count) { 0 }
+
+          it { is_expected.to be_falsey }
+        end
       end
 
-      context 'with no approvals required' do
-        let(:required_approval_count) { 0 }
+      context 'with multi access levels' do
+        let!(:protected_environment) { create(:protected_environment, name: environment.name, project: project) }
 
-        it { is_expected.to be_falsey }
+        context 'with some approvals required' do
+          let!(:approval_rule) do
+            create(:protected_environment_approval_rule, :maintainer_access, protected_environment: protected_environment)
+          end
+
+          it { is_expected.to be_truthy }
+        end
+
+        context 'with no approvals required' do
+          it { is_expected.to be_falsey }
+        end
       end
     end
 
@@ -279,8 +301,6 @@ RSpec.describe Environment, :use_clean_rails_memory_store_caching do
 
   describe '#required_approval_count' do
     subject { environment.required_approval_count }
-
-    let_it_be(:project) { create(:project, group: create(:group)) }
 
     context 'when Protected Environments feature is not available' do
       before do
@@ -317,6 +337,88 @@ RSpec.describe Environment, :use_clean_rails_memory_store_caching do
 
         it 'returns the highest required_approval_count of the protected environments' do
           expect(subject).to eq(5)
+        end
+      end
+    end
+  end
+
+  describe '#has_approval_rules?' do
+    subject { environment.has_approval_rules? }
+
+    let_it_be(:protected_environment) { create(:protected_environment, name: environment.name, project: project) }
+
+    it { is_expected.to eq(false) }
+
+    context 'with approval rules' do
+      let!(:approval_rule) { create(:protected_environment_approval_rule, :maintainer_access, protected_environment: protected_environment) }
+
+      it { is_expected.to eq(true) }
+
+      context 'when deployment_approval_rules feature flag is disabled' do
+        before do
+          stub_feature_flags(deployment_approval_rules: false)
+        end
+
+        it { is_expected.to eq(false) }
+      end
+    end
+  end
+
+  describe '#find_approval_rule_for' do
+    subject { environment.find_approval_rule_for(user, represented_as: represented_as) }
+
+    let_it_be(:qa_group) { create(:group, name: 'QA') }
+    let_it_be(:security_group) { create(:group, name: 'Security') }
+    let_it_be(:qa_user) { create(:user) }
+    let_it_be(:security_user) { create(:user) }
+    let_it_be(:super_user) { create(:user) }
+    let_it_be(:protected_environment) { create(:protected_environment, name: environment.name, project: project) }
+
+    let(:user) { qa_user }
+    let(:represented_as) { }
+
+    before_all do
+      qa_group.add_developer(qa_user)
+      qa_group.add_developer(super_user)
+      security_group.add_developer(security_user)
+      security_group.add_developer(super_user)
+    end
+
+    it { is_expected.to be_nil }
+
+    context 'with approval rules' do
+      let!(:approval_rule_for_qa) { create(:protected_environment_approval_rule, group: qa_group, protected_environment: protected_environment) }
+      let!(:approval_rule_for_security) { create(:protected_environment_approval_rule, group: security_group, protected_environment: protected_environment) }
+
+      context 'when user belongs to QA group' do
+        let(:user) { qa_user }
+
+        it { is_expected.to eq(approval_rule_for_qa) }
+      end
+
+      context 'when user belongs to Security group' do
+        let(:user) { security_user }
+
+        it { is_expected.to eq(approval_rule_for_security) }
+      end
+
+      context 'when user belongs to both groups' do
+        let(:user) { super_user }
+
+        it 'returns one of the rules' do
+          expect([approval_rule_for_qa, approval_rule_for_security]).to include(subject)
+        end
+
+        context 'when represented as QA group' do
+          let(:represented_as) { 'QA' }
+
+          it { is_expected.to eq(approval_rule_for_qa) }
+        end
+
+        context 'when represented as Security group' do
+          let(:represented_as) { 'Security' }
+
+          it { is_expected.to eq(approval_rule_for_security) }
         end
       end
     end

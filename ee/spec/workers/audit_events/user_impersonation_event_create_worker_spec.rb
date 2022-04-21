@@ -12,14 +12,17 @@ RSpec.describe AuditEvents::UserImpersonationEventCreateWorker do
     subject(:worker) { described_class.new }
 
     it 'invokes the UserImpersonationGroupAuditEventService' do
-      expect(::AuditEvents::UserImpersonationGroupAuditEventService).to receive(:new).with(
-        impersonator: impersonator,
-        user: user,
-        remote_ip: '111.112.11.2',
-        action: action
-      ).and_call_original
+      freeze_time do
+        expect(::AuditEvents::UserImpersonationGroupAuditEventService).to receive(:new).with(
+          impersonator: impersonator,
+          user: user,
+          remote_ip: '111.112.11.2',
+          action: action,
+          created_at: 2.weeks.ago
+        ).and_call_original
 
-      subject.perform(impersonator.id, user.id, '111.112.11.2', action)
+        subject.perform(impersonator.id, user.id, '111.112.11.2', action, 2.weeks.ago)
+      end
     end
   end
 end

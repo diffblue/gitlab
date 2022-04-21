@@ -5,9 +5,9 @@ import VueApollo from 'vue-apollo';
 import { POLICY_TYPE_OPTIONS } from 'ee/threat_monitoring/components/constants';
 import PoliciesList from 'ee/threat_monitoring/components/policies/policies_list.vue';
 import PolicyDrawer from 'ee/threat_monitoring/components/policy_drawer/policy_drawer.vue';
-import { PREDEFINED_NETWORK_POLICIES } from 'ee/threat_monitoring/constants';
+import { NAMESPACE_TYPES, PREDEFINED_NETWORK_POLICIES } from 'ee/threat_monitoring/constants';
 import networkPoliciesQuery from 'ee/threat_monitoring/graphql/queries/network_policies.query.graphql';
-import scanExecutionPoliciesQuery from 'ee/threat_monitoring/graphql/queries/scan_execution_policies.query.graphql';
+import projectScanExecutionPoliciesQuery from 'ee/threat_monitoring/graphql/queries/project_scan_execution_policies.query.graphql';
 import scanResultPoliciesQuery from 'ee/threat_monitoring/graphql/queries/scan_result_policies.query.graphql';
 import createStore from 'ee/threat_monitoring/store';
 import createMockApollo from 'helpers/mock_apollo_helper';
@@ -16,7 +16,7 @@ import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_help
 import waitForPromises from 'helpers/wait_for_promises';
 import {
   networkPolicies,
-  scanExecutionPolicies,
+  projectScanExecutionPolicies,
   scanResultPolicies,
 } from '../../mocks/mock_apollo';
 import {
@@ -27,7 +27,8 @@ import {
 
 Vue.use(VueApollo);
 
-const fullPath = 'project/path';
+const projectFullPath = 'project/path';
+const groupFullPath = 'group/path';
 const environments = [
   {
     id: 2,
@@ -39,11 +40,13 @@ const environments = [
   },
 ];
 const networkPoliciesSpy = networkPolicies(mockNetworkPoliciesResponse);
-const scanExecutionPoliciesSpy = scanExecutionPolicies(mockScanExecutionPoliciesResponse);
+const projectScanExecutionPoliciesSpy = projectScanExecutionPolicies(
+  mockScanExecutionPoliciesResponse,
+);
 const scanResultPoliciesSpy = scanResultPolicies(mockScanResultPoliciesResponse);
 const defaultRequestHandlers = {
   networkPolicies: networkPoliciesSpy,
-  scanExecutionPolicies: scanExecutionPoliciesSpy,
+  projectScanExecutionPolicies: projectScanExecutionPoliciesSpy,
   scanResultPolicies: scanResultPoliciesSpy,
 };
 const pendingHandler = jest.fn(() => new Promise(() => {}));
@@ -86,13 +89,15 @@ describe('PoliciesList component', () => {
           store,
           provide: {
             documentationPath: 'path/to/docs',
+            namespaceType: NAMESPACE_TYPES.PROJECT,
             newPolicyPath: 'path/to/policy',
-            projectPath: fullPath,
+            groupPath: undefined,
+            projectPath: projectFullPath,
             glFeatures: { scanResultPolicy: true },
           },
           apolloProvider: createMockApollo([
             [networkPoliciesQuery, requestHandlers.networkPolicies],
-            [scanExecutionPoliciesQuery, requestHandlers.scanExecutionPolicies],
+            [projectScanExecutionPoliciesQuery, requestHandlers.projectScanExecutionPolicies],
             [scanResultPoliciesQuery, requestHandlers.scanResultPolicies],
           ]),
           stubs: {
@@ -149,10 +154,13 @@ describe('PoliciesList component', () => {
     it('fetches policies', () => {
       expect(requestHandlers.networkPolicies).toHaveBeenCalledWith({
         environmentId: environments[0].global_id,
-        fullPath,
+        fullPath: projectFullPath,
       });
-      expect(requestHandlers.scanExecutionPolicies).toHaveBeenCalledWith({
-        fullPath,
+      expect(requestHandlers.projectScanExecutionPolicies).toHaveBeenCalledWith({
+        fullPath: projectFullPath,
+      });
+      expect(requestHandlers.scanResultPolicies).toHaveBeenCalledWith({
+        fullPath: projectFullPath,
       });
     });
 
@@ -234,12 +242,12 @@ describe('PoliciesList component', () => {
     });
 
     it('does emit `update-policy-list` and refetch scan execution policies on `shouldUpdatePolicyList` change to `false`', async () => {
-      expect(scanExecutionPoliciesSpy).toHaveBeenCalledTimes(1);
+      expect(projectScanExecutionPoliciesSpy).toHaveBeenCalledTimes(1);
       expect(wrapper.emitted('update-policy-list')).toBeUndefined();
       wrapper.setProps({ shouldUpdatePolicyList: true });
       await nextTick();
       expect(wrapper.emitted('update-policy-list')).toStrictEqual([[false]]);
-      expect(scanExecutionPoliciesSpy).toHaveBeenCalledTimes(2);
+      expect(projectScanExecutionPoliciesSpy).toHaveBeenCalledTimes(2);
     });
 
     it('does not emit `update-policy-list` or refetch scan execution policies on `shouldUpdatePolicyList` change to `false`', async () => {
@@ -248,7 +256,26 @@ describe('PoliciesList component', () => {
       wrapper.setProps({ shouldUpdatePolicyList: false });
       await nextTick();
       expect(wrapper.emitted('update-policy-list')).toStrictEqual([[false]]);
-      expect(scanExecutionPoliciesSpy).toHaveBeenCalledTimes(2);
+      expect(projectScanExecutionPoliciesSpy).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  describe('group-level policies', () => {
+    beforeEach(async () => {
+      mountShallowWrapper({
+        provide: {
+          groupPath: groupFullPath,
+          projectPath: undefined,
+          namespaceType: NAMESPACE_TYPES.GROUP,
+        },
+      });
+      await waitForPromises();
+    });
+
+    it('does not fetch policies', () => {
+      expect(requestHandlers.networkPolicies).not.toHaveBeenCalled();
+      expect(requestHandlers.projectScanExecutionPolicies).not.toHaveBeenCalled();
+      expect(requestHandlers.scanResultPolicies).not.toHaveBeenCalled();
     });
   });
 

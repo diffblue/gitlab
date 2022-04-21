@@ -6,7 +6,12 @@ import GeoNodes from 'ee/geo_nodes/components/geo_nodes.vue';
 import GeoNodesEmptyState from 'ee/geo_nodes/components/geo_nodes_empty_state.vue';
 import { GEO_INFO_URL } from 'ee/geo_nodes/constants';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import { MOCK_NODES, MOCK_NEW_NODE_URL, MOCK_EMPTY_STATE_SVG } from '../mock_data';
+import {
+  MOCK_NODES,
+  MOCK_NEW_NODE_URL,
+  MOCK_NOT_CONFIGURED_EMPTY_STATE,
+  MOCK_NO_RESULTS_EMPTY_STATE,
+} from '../mock_data';
 
 Vue.use(Vuex);
 
@@ -21,7 +26,6 @@ describe('GeoNodesApp', () => {
 
   const defaultProps = {
     newNodeUrl: MOCK_NEW_NODE_URL,
-    geoNodesEmptyStateSvg: MOCK_EMPTY_STATE_SVG,
   };
 
   const createComponent = (initialState, props, getters) => {
@@ -147,6 +151,28 @@ describe('GeoNodesApp', () => {
 
         it(`should ${secondaryTitle ? '' : 'not '}render the Secondary Site Title`, () => {
           expect(findSecondarySiteTitle().exists()).toBe(secondaryTitle);
+        });
+      });
+    });
+
+    describe('Empty state', () => {
+      describe.each`
+        description                                                      | nodes         | filteredNodes      | renderEmptyState | emptyStateProps
+        ${'with no nodes configured'}                                    | ${[]}         | ${[]}              | ${true}          | ${MOCK_NOT_CONFIGURED_EMPTY_STATE}
+        ${'with nodes configured and no user filter'}                    | ${MOCK_NODES} | ${MOCK_NODES}      | ${false}         | ${null}
+        ${'with nodes configured and user filters returning results'}    | ${MOCK_NODES} | ${[MOCK_NODES[0]]} | ${false}         | ${null}
+        ${'with nodes configured and user filters returning no results'} | ${MOCK_NODES} | ${[]}              | ${true}          | ${MOCK_NO_RESULTS_EMPTY_STATE}
+      `('$description', ({ nodes, filteredNodes, renderEmptyState, emptyStateProps }) => {
+        beforeEach(() => {
+          createComponent({ nodes }, null, { filteredNodes: () => filteredNodes });
+        });
+
+        it(`should ${renderEmptyState ? '' : 'not '}render the Geo Empty State`, () => {
+          expect(findGeoEmptyState().exists()).toBe(renderEmptyState);
+
+          if (renderEmptyState) {
+            expect(findGeoEmptyState().props()).toStrictEqual(emptyStateProps);
+          }
         });
       });
     });

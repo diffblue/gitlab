@@ -29,7 +29,8 @@ RSpec.describe AuditEvents::RunnerCustomAuditEventService do
                                             custom_message: custom_message,
                                             target_details: target_details,
                                             target_id: target_id,
-                                            target_type: target_type)
+                                            target_type: target_type,
+                                            created_at: anything)
 
       expect { service.security_event }.to change(AuditEvent, :count).by(1)
 

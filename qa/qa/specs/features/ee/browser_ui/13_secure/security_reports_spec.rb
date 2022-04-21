@@ -24,10 +24,6 @@ module QA
         @project.visit!
       end
 
-      after(:context) do
-        @project&.remove_via_api! if @project
-      end
-
       it 'dependency list has empty state', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348004' do
         Page::Project::Menu.perform(&:click_on_dependency_list)
 
@@ -56,7 +52,7 @@ module QA
             project_push.commit_message = 'Create Secure compatible application to serve premade reports'
           end.project.visit!
 
-          Flow::Pipeline.wait_for_latest_pipeline(pipeline_condition: 'succeeded')
+          Flow::Pipeline.wait_for_latest_pipeline(status: 'passed')
         end
 
         after(:context) do
@@ -146,7 +142,11 @@ module QA
           end
         end
 
-        it 'displays false positives for the vulnerabilities', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/350412' do
+        it 'displays false positives for the vulnerabilities', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/350412',
+           quarantine: {
+              type: :flaky,
+              issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/351183'
+           } do
           Page::Project::Menu.perform(&:click_project)
           Page::Project::Menu.perform(&:click_on_vulnerability_report)
 
@@ -157,7 +157,9 @@ module QA
           end
 
           EE::Page::Project::Secure::SecurityDashboard.perform do |security_dashboard|
-            security_dashboard.click_vulnerability(description: sast_scan_fp_example_vuln)
+            Support::Retrier.retry_on_exception(max_attempts: 2, reload_page: page, message: 'False positive vuln retry') do
+              security_dashboard.click_vulnerability(description: sast_scan_fp_example_vuln)
+            end
           end
 
           EE::Page::Project::Secure::VulnerabilityDetails.perform do |vulnerability_details|

@@ -3,7 +3,7 @@
 class SitemapController < ApplicationController
   skip_before_action :authenticate_user!
 
-  feature_category :not_owned
+  feature_category :not_owned # rubocop:todo Gitlab/AvoidFeatureCategoryNotOwned
 
   def show
     return render_404 unless Gitlab.com?

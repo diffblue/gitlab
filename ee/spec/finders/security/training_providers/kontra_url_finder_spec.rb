@@ -43,5 +43,13 @@ RSpec.describe Security::TrainingProviders::KontraUrlFinder do
     it 'returns full url path' do
       expect(described_class.new(identifier.project, provider, identifier.external_id).full_url).to eq('example.com/?cwe=2')
     end
+
+    context "when identifier contains CWE-{number} format" do
+      let_it_be(:identifier) { create(:vulnerabilities_identifier, external_type: 'cwe', external_id: "CWE-2") }
+
+      it 'returns full url path with proper mapping key' do
+        expect(described_class.new(identifier.project, provider, identifier.external_id).full_url).to eq('example.com/?cwe=2')
+      end
+    end
   end
 end

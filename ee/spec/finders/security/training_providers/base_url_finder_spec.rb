@@ -10,7 +10,7 @@ RSpec.describe Security::TrainingProviders::BaseUrlFinder do
 
   describe '#execute' do
     it 'raises an error if full_url is not implemented' do
-      expect { described_class.new(nil, nil, nil).execute }.to raise_error(
+      expect { described_class.new(identifier.project, provider, identifier.external_type).execute }.to raise_error(
         NotImplementedError,
         'full_url must be overwritten to return training url'
       )
@@ -40,7 +40,7 @@ RSpec.describe Security::TrainingProviders::BaseUrlFinder do
       end
 
       it 'returns a url with status completed' do
-        expect(described_class.new(identifier.project, provider, identifier.external_id).execute).to eq({ name: provider.name, url: dummy_url, status: 'completed' })
+        expect(described_class.new(identifier.project, provider, identifier.external_id).execute).to eq({ name: provider.name, url: dummy_url, status: 'completed', identifier: identifier.external_id })
       end
     end
 

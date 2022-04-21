@@ -11,7 +11,7 @@ import {
   pendingChecks,
   approvedAndPendingChecks,
   pendingAndFailedChecks,
-} from '../../../reports/status_checks_report/mock_data';
+} from 'ee_jest/reports/status_checks_report/mock_data';
 
 describe('Status checks extension', () => {
   let wrapper;

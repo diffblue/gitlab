@@ -215,7 +215,7 @@ export default {
       @click="deselectAllOptions"
     />
 
-    <gl-loading-icon v-if="isLoadingProjects" size="md" class="gl-mt-4 gl-mb-3" />
+    <gl-loading-icon v-if="isLoadingProjects" size="lg" class="gl-mt-4 gl-mb-3" />
     <gl-dropdown-text v-else-if="isMaxProjectsSelected">
       {{ $options.i18n.maxProjectsSelected }}
     </gl-dropdown-text>

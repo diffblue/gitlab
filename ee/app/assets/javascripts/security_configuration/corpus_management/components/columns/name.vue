@@ -18,7 +18,9 @@ export default {
   },
   computed: {
     fileSize() {
-      return decimalBytes(this.corpus.package.packageFiles.nodes[0].size);
+      return decimalBytes(this.corpus.package.packageFiles.nodes[0].size, 0, {
+        unitSeparator: ' ',
+      });
     },
     jobUrl() {
       return this.corpus.package.pipelines.nodes[0]?.path;

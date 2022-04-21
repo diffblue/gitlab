@@ -1298,40 +1298,20 @@ RSpec.describe Project do
   end
 
   describe '#ci_minutes_used' do
-    subject { project.ci_minutes_used(project.namespace) }
+    subject { project.ci_minutes_used }
 
     context 'when CI minutes have not been used' do
       it { is_expected.to be_zero }
-
-      context 'when ci_use_new_monthly_minutes feature flag is disabled' do
-        before do
-          stub_feature_flags(ci_use_new_monthly_minutes: false)
-        end
-
-        it { is_expected.to be_zero }
-      end
     end
 
     context 'when CI minutes have been used' do
       let(:minutes_used) { 70.3 }
-      # this difference in minutes is purely to test that the value
-      # comes from the expected table
-      let(:legacy_minutes_used) { 60.3 }
 
       before do
-        create(:project_statistics, project: project, shared_runners_seconds: legacy_minutes_used.minutes)
         create(:ci_project_monthly_usage, project: project, amount_used: minutes_used )
       end
 
       it { is_expected.to eq(70) }
-
-      context 'when ci_use_new_monthly_minutes feature flag is disabled' do
-        before do
-          stub_feature_flags(ci_use_new_monthly_minutes: false)
-        end
-
-        it { is_expected.to eq(60) }
-      end
     end
   end
 
@@ -3319,5 +3299,74 @@ RSpec.describe Project do
     subject { project.visible_approval_rules }
 
     it { is_expected.not_to include(scan_finding_rule) }
+  end
+
+  describe '#all_security_orchestration_policy_configurations' do
+    subject { project.all_security_orchestration_policy_configurations }
+
+    context 'when security orchestration policy is configured for project only' do
+      let!(:project_security_orchestration_policy_configuration) do
+        create(:security_orchestration_policy_configuration, project: project)
+      end
+
+      it { is_expected.to match_array([project_security_orchestration_policy_configuration]) }
+    end
+
+    context 'when security orchestration policy is configured for namespaces and project' do
+      let!(:parent_group) { create(:group) }
+      let!(:child_group) { create(:group, parent: parent_group) }
+      let!(:child_group_2) { create(:group, parent: child_group) }
+      let!(:project) { create(:project, group: child_group_2) }
+
+      let!(:parent_security_orchestration_policy_configuration) { create(:security_orchestration_policy_configuration, :namespace, namespace: parent_group) }
+      let!(:child_security_orchestration_policy_configuration) { create(:security_orchestration_policy_configuration, :namespace, namespace: child_group) }
+      let!(:child_security_orchestration_policy_configuration_2) { create(:security_orchestration_policy_configuration, :namespace, namespace: child_group_2) }
+
+      let!(:project_security_orchestration_policy_configuration) do
+        create(:security_orchestration_policy_configuration, project: project)
+      end
+
+      it 'returns security policy configurations for all parent groups and project' do
+        expect(subject).to match_array(
+          [
+            parent_security_orchestration_policy_configuration,
+            child_security_orchestration_policy_configuration,
+            child_security_orchestration_policy_configuration_2,
+            project_security_orchestration_policy_configuration
+          ]
+        )
+      end
+    end
+  end
+
+  describe '#inactive?' do
+    context 'when Gitlab.com', :saas do
+      context 'when project belongs to paid namespace' do
+        before do
+          stub_application_setting(inactive_projects_min_size_mb: 5)
+          stub_application_setting(inactive_projects_send_warning_email_after_months: 24)
+        end
+
+        it 'returns false' do
+          ultimate_group = create(:group_with_plan, plan: :ultimate_plan)
+          ultimate_project = create(:project, last_activity_at: 3.years.ago, namespace: ultimate_group)
+
+          expect(ultimate_project.inactive?).to eq(false)
+        end
+      end
+
+      context 'when project belongs to free namespace' do
+        let_it_be(:no_plan_group) { create(:group_with_plan, plan: nil) }
+        let_it_be_with_reload(:project) { create(:project, namespace: no_plan_group) }
+
+        it_behaves_like 'returns true if project is inactive'
+      end
+    end
+
+    context 'when not Gitlab.com' do
+      let_it_be_with_reload(:project) { create(:project, name: 'test-project') }
+
+      it_behaves_like 'returns true if project is inactive'
+    end
   end
 end

@@ -119,14 +119,25 @@ describe('HandRaiseLeadButton', () => {
       });
     });
 
-    describe('small button', () => {
-      it('has small confirm button and the "Contact sales" text on the button', () => {
-        wrapper = createComponent({ small: true });
+    describe('sets button attributes', () => {
+      it('has all the set properties on the button', () => {
+        const provide = {
+          buttonAttributes: {
+            href: '#',
+            size: 'small',
+            variant: 'confirm',
+            buttonTextClasses: 'gl-font-sm',
+          },
+          buttonText: '_button_text_',
+        };
+        wrapper = createComponent(provide);
         const button = findButton();
 
-        expect(button.props('variant')).toBe('confirm');
-        expect(button.props('size')).toBe('small');
-        expect(button.text()).toBe(PQL_BUTTON_TEXT);
+        expect(button.props('variant')).toBe(provide.buttonAttributes.variant);
+        expect(button.props('size')).toBe(provide.buttonAttributes.size);
+        expect(button.props('buttonTextClasses')).toBe(provide.buttonAttributes.buttonTextClasses);
+        expect(button.attributes('href')).toBe(provide.buttonAttributes.href);
+        expect(button.text()).toBe(provide.buttonText);
       });
     });
   });

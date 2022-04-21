@@ -92,4 +92,22 @@ module NavbarStructureHelper
       new_sub_nav_item_name: _('Google Cloud')
     )
   end
+
+  def project_analytics_sub_nav_item
+    [
+      _('Value stream'),
+      _('CI/CD'),
+      (_('Code review') if Gitlab.ee?),
+      (_('Merge request') if Gitlab.ee?),
+      _('Repository')
+    ]
+  end
+
+  def group_analytics_sub_nav_item
+    [
+      _('Contribution')
+    ]
+  end
 end
+
+NavbarStructureHelper.prepend_mod

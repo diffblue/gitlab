@@ -1,4 +1,4 @@
-#import "../fragments/uploadState.fragment.graphql"
+#import "../fragments/upload_state.fragment.graphql"
 
 query getUploadState {
   uploadState @client {

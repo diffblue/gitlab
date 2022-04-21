@@ -11,6 +11,20 @@ import {
   OVERAGE_MODAL_BACK_BUTTON,
 } from 'ee/invite_members/constants';
 import { propsData } from 'jest/invite_members/mock_data/modal_base';
+import { fetchUserIdsFromGroup } from 'ee/invite_members/utils';
+import { noFreePlacesSubscription as mockSubscription } from '../mock_data';
+
+jest.mock('ee/invite_members/check_overage', () => ({
+  checkOverage: jest.fn().mockImplementation(() => ({ hasOverage: true, usersOverage: 2 })),
+}));
+
+jest.mock('ee/invite_members/get_subscription_data', () => ({
+  fetchSubscription: jest.fn().mockImplementation(() => mockSubscription),
+}));
+
+jest.mock('ee/invite_members/utils', () => ({
+  fetchUserIdsFromGroup: jest.fn().mockImplementation(() => [123, 256]),
+}));
 
 describe('EEInviteModalBase', () => {
   let wrapper;
@@ -24,6 +38,9 @@ describe('EEInviteModalBase', () => {
       },
       provide: {
         ...glFeatures,
+      },
+      attrs: {
+        'access-levels': propsData.accessLevels,
       },
       stubs: {
         GlSprintf,
@@ -52,14 +69,15 @@ describe('EEInviteModalBase', () => {
   });
 
   const findCEBase = () => wrapper.findComponent(CEInviteModalBase);
-  const findInviteButton = () => wrapper.findByTestId('invite-button');
-  const findBackButton = () => wrapper.findByTestId('overage-back-button');
+  const findModal = () => wrapper.findComponent(GlModal);
   const findInitialModalContent = () => wrapper.findByTestId('invite-modal-initial-content');
   const findOverageModalContent = () => wrapper.findByTestId('invite-modal-overage-content');
-  const findModalTitle = () => wrapper.findComponent(GlModal).props('title');
+  const findModalTitle = () => findModal().props('title');
 
-  const clickInviteButton = () => findInviteButton().vm.$emit('click');
-  const clickBackButton = () => findBackButton().vm.$emit('click');
+  const emitEventFromModal = (eventName) => () =>
+    findModal().vm.$emit(eventName, { preventDefault: jest.fn() });
+  const clickInviteButton = emitEventFromModal('primary');
+  const clickBackButton = emitEventFromModal('cancel');
 
   describe('default', () => {
     beforeEach(() => {
@@ -96,10 +114,6 @@ describe('EEInviteModalBase', () => {
         expect(findModalTitle()).toBe(propsData.modalTitle);
       });
 
-      it('does not show back button', () => {
-        expect(findBackButton().exists()).toBe(false);
-      });
-
       it('shows initial modal content', () => {
         expect(findInitialModalContent().isVisible()).toBe(true);
       });
@@ -107,6 +121,19 @@ describe('EEInviteModalBase', () => {
       it('emits submit', () => {
         expect(wrapper.emitted('submit')).toEqual([[{ accessLevel: 10, expiresAt: undefined }]]);
       });
+    });
+  });
+
+  describe('with overageMembersModal feature flag and a group to invite, and invite is clicked', () => {
+    beforeEach(async () => {
+      createComponent({ newGroupToInvite: 123 }, { glFeatures: { overageMembersModal: true } });
+      clickInviteButton();
+      await nextTick();
+    });
+
+    it('calls fetchUserIdsFromGroup and passes correct parameter', () => {
+      expect(fetchUserIdsFromGroup).toHaveBeenCalledTimes(1);
+      expect(fetchUserIdsFromGroup).toHaveBeenCalledWith(123);
     });
   });
 
@@ -126,16 +153,26 @@ describe('EEInviteModalBase', () => {
     });
 
     it('renders the Back button text correctly', () => {
-      expect(findBackButton().text()).toBe(OVERAGE_MODAL_BACK_BUTTON);
+      expect(findModal().props('actionPrimary')).toMatchObject({
+        text: OVERAGE_MODAL_CONTINUE_BUTTON,
+        attributes: {
+          variant: 'confirm',
+          disabled: false,
+          loading: false,
+          'data-qa-selector': 'invite_button',
+        },
+      });
     });
 
     it('renders the Continue button text correctly', () => {
-      expect(findInviteButton().text()).toBe(OVERAGE_MODAL_CONTINUE_BUTTON);
+      expect(findModal().props('actionCancel')).toMatchObject({
+        text: OVERAGE_MODAL_BACK_BUTTON,
+      });
     });
 
     it('shows the info text', () => {
-      expect(wrapper.findComponent(GlModal).text()).toContain(
-        'If you continue, the _name_ group will have 1 seat in use and will be billed for the overage.',
+      expect(findModal().text()).toContain(
+        'If you continue, the _name_ group will have 2 seats in use and will be billed for the overage.',
       );
     });
 
@@ -147,7 +184,7 @@ describe('EEInviteModalBase', () => {
       beforeEach(() => clickBackButton());
 
       it('shows the initial modal', () => {
-        expect(wrapper.findComponent(GlModal).props('title')).toBe(propsData.modalTitle);
+        expect(findModal().props('title')).toBe(propsData.modalTitle);
         expect(findInitialModalContent().isVisible()).toBe(true);
       });
 

@@ -34,22 +34,23 @@ RSpec.describe Emails::NamespaceStorageUsageMailer do
 
   describe '#notify_limit_warning' do
     it 'creates an email message for a group' do
-      mail = described_class.notify_limit_warning(group, recipients, 25)
+      mail = described_class.notify_limit_warning(group, recipients, 25, 1.25.gigabytes)
 
-      expect(mail).to have_subject "Action required: Less than 25% of namespace storage remains for #{group.name}"
+      expect(mail).to have_subject "Action required: Approximately 25% of namespace storage remains for #{group.name}"
       expect(mail).to bcc_to recipients
       expect(mail).to have_body_text "#{usage_quotas_url(group, anchor: 'storage-quota-tab')}"
-      expect(mail).to have_body_text "has 25% or less namespace storage space remaining"
+      expect(mail).to have_body_text "has approximately 25% (1.25 GB) namespace storage space remaining"
       expect(mail).to have_body_text "#{buy_storage_subscriptions_url(selected_group: group.id)}"
     end
 
     it 'creates an email message for a namespace' do
-      mail = described_class.notify_limit_warning(namespace, recipients, 30)
+      mail = described_class.notify_limit_warning(namespace, recipients, 30, 500.megabytes)
 
-      expect(mail).to have_subject "Action required: Less than 30% of namespace storage remains for #{namespace.name}"
+      expect(mail)
+        .to have_subject "Action required: Approximately 30% of namespace storage remains for #{namespace.name}"
       expect(mail).to bcc_to recipients
       expect(mail).to have_body_text "#{usage_quotas_url(namespace, anchor: 'storage-quota-tab')}"
-      expect(mail).to have_body_text "has 30% or less namespace storage space remaining"
+      expect(mail).to have_body_text "has approximately 30% (500 MB) namespace storage space remaining"
       expect(mail).to have_body_text EE::SUBSCRIPTIONS_MORE_STORAGE_URL
     end
   end

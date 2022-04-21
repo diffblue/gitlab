@@ -1,8 +1,8 @@
 <script>
 import { GlDrawer } from '@gitlab/ui';
 import { DRAWER_Z_INDEX } from '~/lib/utils/constants';
+import { getContentWrapperHeight } from 'ee/threat_monitoring/utils';
 import { COMPLIANCE_DRAWER_CONTAINER_CLASS } from '../constants';
-import { getContentWrapperHeight } from '../../threat_monitoring/utils';
 import BranchPath from './drawer_sections/branch_path.vue';
 import Committers from './drawer_sections/committers.vue';
 import MergedBy from './drawer_sections/merged_by.vue';
@@ -63,7 +63,7 @@ export default {
         :name="project.name"
         :url="project.webUrl"
       />
-      <reference :path="mergeRequest.webUrl" :reference="mergeRequest.reference" />
+      <reference :path="mergeRequest.webUrl" :reference="mergeRequest.ref" />
       <branch-path
         v-if="hasBranchDetails"
         :source-branch="mergeRequest.sourceBranch"
@@ -76,7 +76,7 @@ export default {
         :approvers="mergeRequest.approvedByUsers"
         :commenters="mergeRequest.participants"
       />
-      <merged-by :merged-by="mergeRequest.mergedBy" />
+      <merged-by :merged-by="mergeRequest.mergeUser" />
     </template>
   </gl-drawer>
 </template>

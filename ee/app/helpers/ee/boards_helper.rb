@@ -4,12 +4,6 @@ module EE
   module BoardsHelper
     extend ::Gitlab::Utils::Override
 
-    override :board_list_data
-    def board_list_data
-      super.merge(list_milestone_path: board_milestones_path(board, :json),
-                  list_assignees_path: board_users_path(board, :json))
-    end
-
     # rubocop:disable Metrics/AbcSize
     override :board_data
     def board_data
@@ -27,10 +21,9 @@ module EE
         labels: board.labels.to_json(only: [:id, :title, :color, :text_color] ),
         board_weight: board.weight,
         show_promotion: show_feature_promotion,
-        can_update: can_update?.to_s,
-        can_admin_list: can_admin_list?.to_s,
-        disabled: board.disabled_for?(current_user).to_s,
-        emails_disabled: current_board_parent.emails_disabled?.to_s
+        emails_disabled: current_board_parent.emails_disabled?.to_s,
+        weights: ::Issue.weight_options,
+        can_create_epic: can_create_epic?
       }
 
       super.merge(data).merge(licensed_features).merge(group_level_features)
@@ -43,7 +36,8 @@ module EE
         weight_feature_available: current_board_parent.feature_available?(:issue_weights).to_s,
         milestone_lists_available: current_board_parent.feature_available?(:board_milestone_lists).to_s,
         assignee_lists_available: current_board_parent.feature_available?(:board_assignee_lists).to_s,
-        scoped_labels: current_board_parent.feature_available?(:scoped_labels)&.to_s
+        scoped_labels: current_board_parent.feature_available?(:scoped_labels)&.to_s,
+        scoped_issue_board_feature_enabled: current_board_parent.feature_available?(:scoped_issue_board).to_s
       }
     end
 
@@ -57,6 +51,10 @@ module EE
     end
     # rubocop:enable Metrics/AbcSize
 
+    def can_create_epic?
+      return can?(current_user, :create_epic, current_board_namespace).to_s if board.is_a?(::Boards::EpicBoard)
+    end
+
     override :can_update?
     def can_update?
       return can?(current_user, :admin_epic, board) if board.is_a?(::Boards::EpicBoard)
@@ -67,6 +65,13 @@ module EE
     override :can_admin_list?
     def can_admin_list?
       return can?(current_user, :admin_epic_board_list, current_board_parent) if board.is_a?(::Boards::EpicBoard)
+
+      super
+    end
+
+    override :can_admin_board?
+    def can_admin_board?
+      return can?(current_user, :admin_epic_board, current_board_parent) if board.is_a?(::Boards::EpicBoard)
 
       super
     end

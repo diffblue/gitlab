@@ -59,8 +59,7 @@ module EE
       accepts_nested_attributes_for :approval_rules, allow_destroy: true
 
       scope :order_review_time_desc, -> do
-        joins(:metrics)
-          .reorder(::Gitlab::Database.nulls_last_order(::MergeRequest::Metrics.review_time_field))
+        joins(:metrics).reorder(::MergeRequest::Metrics.review_time_field.asc.nulls_last)
       end
 
       scope :with_code_review_api_entity_associations, -> do
@@ -245,6 +244,12 @@ module EE
       return missing_report_error("license scanning") unless actual_head_pipeline&.license_scan_completed?
 
       compare_reports(::Ci::CompareLicenseScanningReportsService, current_user)
+    end
+
+    def compare_license_scanning_reports_collapsed(current_user)
+      return missing_report_error("license scanning") unless actual_head_pipeline&.license_scan_completed?
+
+      compare_reports(::Ci::CompareLicenseScanningReportsCollapsedService, current_user)
     end
 
     def has_metrics_reports?

@@ -349,17 +349,15 @@ Follow these guidelines for punctuation:
 
 <!-- vale gitlab.Repetition = NO -->
 
-| Rule                                                             | Example                                                |
-|------------------------------------------------------------------|--------------------------------------------------------|
-| Avoid semicolons. Use two sentences instead.                     | That's the way that the world goes 'round. You're up one day and the next you're down.
-| Always end full sentences with a period.                         | For a complete overview, read through this document. |
-| Always add a space after a period when beginning a new sentence. | For a complete overview, check this doc. For other references, check out this guide. |
-| Do not use double spaces. (Tested in [`SentenceSpacing.yml`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/doc/.vale/gitlab/SentenceSpacing.yml).) | --- |
-| Do not use tabs for indentation. Use spaces instead. You can configure your code editor to output spaces instead of tabs when pressing the tab key. | --- |
-| Use serial commas (Oxford commas) before the final **and** or **or** in a list of three or more items. (Tested in [`OxfordComma.yml`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/doc/.vale/gitlab/OxfordComma.yml).) | You can create new issues, merge requests, and milestones. |
-| Always add a space before and after dashes when using it in a sentence (for replacing a comma, for example). | You should try this - or not. |
-| When a colon is part of a sentence, always use lowercase after the colon. | Linked issues: a way to create a relationship between issues. |
-| Do not use typographer's quotes. Use straight quotes instead. (Tested in [`NonStandardQuotes.yml`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/doc/.vale/gitlab/NonStandardQuotes.yml).) | "It's the questions we can't answer that teach us the most"---Patrick Rothfuss |
+- End full sentences with a period.
+- Use one space between sentences.
+- Do not use semicolons. Use two sentences instead.
+- Do not use double spaces. (Tested in [`SentenceSpacing.yml`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/doc/.vale/gitlab/SentenceSpacing.yml).)
+- Do not use non-breaking spaces. Use standard spaces instead. (Tested in [`lint-doc.sh`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/scripts/lint-doc.sh).)
+- Do not use tabs for indentation. Use spaces instead. You can configure your code editor to output spaces instead of tabs when pressing the tab key.
+- Use serial (Oxford) commas before the final **and** or **or** in a list of three or more items. (Tested in [`OxfordComma.yml`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/doc/.vale/gitlab/OxfordComma.yml).)
+- Avoid dashes. Use separate sentences, or commas, instead.
+- Do not use typographer's ("curly") quotes. Use straight quotes instead. (Tested in [`NonStandardQuotes.yml`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/doc/.vale/gitlab/NonStandardQuotes.yml).)
 
 <!-- vale gitlab.Repetition = YES -->
 
@@ -403,16 +401,38 @@ Backticks are more precise than quotes. For example, in this string:
 
 It's not clear whether the user should include the period in the string.
 
-### Spaces between words
+### Inline code
 
-Use only standard spaces between words. The search engine for the documentation
-website doesn't split words separated with
-[non-breaking spaces](https://en.wikipedia.org/wiki/Non-breaking_space) when
-indexing, and fails to create expected individual search terms. Tests that search
-for certain words separated by regular spaces can't find words separated by
-non-breaking spaces.
+Inline code style is applied inline with regular text. Use inline code style:
 
-Tested in [`lint-doc.sh`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/scripts/lint-doc.sh).
+- For filenames or fragments of configuration files. For example, `.gitlab-ci.yml`, `CODEOWNERS`, and `only: [main]`.
+- For HTTP methods (`HTTP POST`) and HTTP status codes, both full (`404 File Not Found`) and abbreviated (`404`).
+  For example: Send a `DELETE` request to delete the runner. Send a `POST` request to create one.
+
+To apply inline code style, wrap the text in a single backtick (`` ` ``). For example, `this is inline code style`.
+
+### Code blocks
+
+Code block style separates code text from regular text. Use code block style for commands run in the command-line
+interface. Code block style is easier to copy and paste in a user's terminal window.
+
+To apply code block style, wrap the text in triple backticks (three `` ` ``) and add a syntax highlighting hint. For
+example:
+
+````plaintext
+```plaintext
+This is codeblock style
+```
+````
+
+When using code block style:
+
+- Use quadruple backticks (four `` ` ``) to apply code block style when the code block you are styling has triple
+  backticks in it. For example, when illustrating code block style.
+- Add a blank line above and below code blocks.
+- Syntax highlight hints are required for code blocks. See the
+  [list of supported languages and lexers](https://github.com/rouge-ruby/rouge/wiki/List-of-supported-languages-and-lexers)
+  for available syntax highlighters. Use `plaintext` if no better hint is available.
 
 ## Lists
 
@@ -421,29 +441,29 @@ Tested in [`lint-doc.sh`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/scr
 - Always leave a blank line before and after a list.
 - Begin a line with spaces (not tabs) to denote a [nested sub-item](#nesting-inside-a-list-item).
 
-### Ordered vs. unordered lists
+### Choose between an ordered or unordered list
 
-Only use ordered lists when their items describe a sequence of steps to follow.
-
-Do:
+Use ordered lists for a sequence of steps. For example:
 
 ```markdown
-These are the steps to do something:
+Follow these steps to do something.
 
 1. First, do the first step.
 1. Then, do the next step.
 1. Finally, do the last step.
 ```
 
-Don't:
+Use an unordered lists when the steps do not need to be completed in order. For example:
 
 ```markdown
-This is a list of available features:
+These things are imported:
 
-1. Feature 1
-1. Feature 2
-1. Feature 3
+- Thing 1
+- Thing 2
+- Thing 3
 ```
+
+You can choose to introduce either list with a colon, but you do not have to.
 
 ### Markup
 
@@ -454,12 +474,8 @@ This is a list of available features:
 ### Punctuation
 
 - Don't add commas (`,`) or semicolons (`;`) to the ends of list items.
-- Only add periods to the end of a list item if the item consists of a complete
-  sentence (with a subject and a verb).
-- Be consistent throughout the list: if the majority of the items do not end in
-  a period, do not end any of the items in a period, even if they consist of a
-  complete sentence. The opposite is also valid: if the majority of the items
-  end with a period, end all with a period.
+- If a list item is a complete sentence (with a subject and a verb), add a period at the end.
+- Majority rules. If the majority of items do not end in a period, do not end any of the items in a period.
 - Separate list items from explanatory text with a colon (`:`). For example:
 
   ```markdown
@@ -468,32 +484,6 @@ This is a list of available features:
   - First item: this explains the first item.
   - Second item: this explains the second item.
   ```
-
-**Examples:**
-
-Do:
-
-- First list item
-- Second list item
-- Third list item
-
-Don't:
-
-- First list item
-- Second list item
-- Third list item.
-
-Do:
-
-- Let's say this is a complete sentence.
-- Let's say this is also a complete sentence.
-- Not a complete sentence.
-
-Don't (vary use of periods; majority rules):
-
-- Let's say this is a complete sentence.
-- Let's say this is also a complete sentence.
-- Not a complete sentence
 
 ### Nesting inside a list item
 
@@ -686,7 +676,7 @@ For the heading text, **do not**:
 - Use words that might change in the future. Changing
   a heading changes its anchor URL, which affects other linked pages.
 - Repeat text from earlier headings. For example, instead of `Troubleshooting merge requests`,
-  use `Troubleshooting`. 
+  use `Troubleshooting`.
 - Use links.
 
 ### Anchor links
@@ -746,7 +736,7 @@ We include guidance for links in these categories:
 - Use inline link Markdown markup `[Text](https://example.com)`.
   It's easier to read, review, and maintain. Do not use `[Text][identifier]` reference-style links.
 
-- Use [meaningful anchor text](https://www.futurehosting.com/blog/links-should-have-meaningful-anchor-text-heres-why/).
+- Use meaningful anchor text.
   For example, instead of writing something like `Read more about merge requests [here](LINK)`,
   write `Read more about [merge requests](LINK)`.
 
@@ -1209,80 +1199,6 @@ different mobile devices.
 `/help`, because the GitLab Markdown processor doesn't support iframes. It's
 hidden on the documentation site, but is displayed by `/help`.
 
-## Code blocks
-
-- Always wrap code added to a sentence in inline code blocks (`` ` ``).
-  For example, `.gitlab-ci.yml`, `git add .`, `CODEOWNERS`, or `only: [main]`.
-  File names, commands, entries, and anything that refers to code should be
-  added to code blocks. To make things easier for the user, always add a full
-  code block for things that can be useful to copy and paste, as they can do it
-  with the button on code blocks.
-- HTTP methods (`HTTP POST`) and HTTP status codes, both full (`404 File Not Found`)
-  and abbreviated (`404`), should be wrapped in inline code blocks when used in sentences.
-  For example: Send a `DELETE` request to delete the runner. Send a `POST` request to create one.
-- Add a blank line above and below code blocks.
-- When providing a shell command and its output, prefix the shell command with `$`
-  and leave a blank line between the command and the output.
-- When providing a command without output, don't prefix the shell command with `$`.
-- If you need to include triple backticks inside a code block, use four backticks
-  for the code block fences instead of three.
-- For regular fenced code blocks, always use a highlighting class corresponding to
-  the language for better readability. Examples:
-
-  ````markdown
-  ```ruby
-  Ruby code
-  ```
-
-  ```javascript
-  JavaScript code
-  ```
-
-  ```markdown
-  [Markdown code example](example.md)
-  ```
-
-  ```plaintext
-  Code or text for which no specific highlighting class is available.
-  ```
-  ````
-
-Syntax highlighting is required for fenced code blocks added to the GitLab
-documentation. Refer to this table for the most common language classes,
-or check the [complete list](https://github.com/rouge-ruby/rouge/wiki/List-of-supported-languages-and-lexers)
-of available language classes:
-
-| Preferred language tags | Language aliases and notes                                                   |
-|-------------------------|------------------------------------------------------------------------------|
-| `asciidoc`              |                                                                              |
-| `dockerfile`            | Alias: `docker`.                                                             |
-| `elixir`                |                                                                              |
-| `erb`                   |                                                                              |
-| `golang`                | Alias: `go`.                                                                 |
-| `graphql`               |                                                                              |
-| `haml`                  |                                                                              |
-| `html`                  |                                                                              |
-| `ini`                   | For some simple configuration files that are not in TOML format.             |
-| `javascript`            | Alias `js`.                                                                  |
-| `json`                  |                                                                              |
-| `markdown`              | Alias: `md`.                                                                 |
-| `mermaid`               |                                                                              |
-| `nginx`                 |                                                                              |
-| `perl`                  |                                                                              |
-| `php`                   |                                                                              |
-| `plaintext`             | Examples with no defined language, such as output from shell commands or API calls. If a code block has no language, it defaults to `plaintext`. Alias: `text`.|
-| `prometheus`            | Prometheus configuration examples.                                           |
-| `python`                |                                                                              |
-| `ruby`                  | Alias: `rb`.                                                                 |
-| `shell`                 | Aliases: `bash` or `sh`.                                                     |
-| `sql`                   |                                                                              |
-| `toml`                  | Runner configuration examples, and other TOML-formatted configuration files. |
-| `typescript`            | Alias: `ts`.                                                                 |
-| `xml`                   |                                                                              |
-| `yaml`                  | Alias: `yml`.                                                                |
-
-For a complete reference on code blocks, see the [Kramdown guide](https://about.gitlab.com/handbook/markdown-guide/#code-blocks).
-
 ## GitLab SVG icons
 
 > [Introduced](https://gitlab.com/gitlab-org/gitlab-docs/-/issues/384) in GitLab 12.7.
@@ -1561,6 +1477,47 @@ The voting strategy in GitLab 13.4 and later requires the primary and secondary
 voters to agree.
 ```
 
+#### Deprecated features
+
+When a feature is deprecated, add `(DEPRECATED)` to the page title or to
+the heading of the section documenting the feature, immediately before
+the tier badge:
+
+```markdown
+<!-- Page title example: -->
+# Feature A (DEPRECATED) **(ALL TIERS)**
+
+<!-- Doc section example: -->
+## Feature B (DEPRECATED) **(PREMIUM SELF)**
+```
+
+Add the deprecation to the version history note (you can include a link
+to a replacement when available):
+
+```markdown
+> - [Deprecated](<link-to-issue>) in GitLab 11.3. Replaced by [meaningful text](<link-to-appropriate-documentation>).
+```
+
+You can also describe the replacement in surrounding text, if available. If the
+deprecation isn't obvious in existing text, you may want to include a warning:
+
+```markdown
+WARNING:
+This feature was [deprecated](link-to-issue) in GitLab 12.3 and replaced by
+[Feature name](link-to-feature-documentation).
+```
+
+If you add `(DEPRECATED)` to the page's title and the document is linked from the docs
+navigation, either remove the page from the nav or update the nav item to include the
+same text before the feature name:
+
+```yaml
+ - doc_title: (DEPRECATED) Feature A
+```
+
+In the first major GitLab version after the feature was deprecated, be sure to
+remove information about that deprecated feature.
+
 #### End-of-life for features or products
 
 When a feature or product enters its end-of-life, indicate its status by
@@ -1572,7 +1529,7 @@ For example:
 ```markdown
 WARNING:
 This feature is in its end-of-life process. It is [deprecated](link-to-issue)
-for use in GitLab X.X, and is planned for [removal](link-to-issue) in GitLab X.X.
+in GitLab X.X, and is planned for [removal](link-to-issue) in GitLab X.X.
 ```
 
 After the feature or product is officially deprecated and removed, remove
@@ -1647,47 +1604,6 @@ To view historical information about a feature, review GitLab
 [release posts](https://about.gitlab.com/releases/), or search for the issue or
 merge request where the work was done.
 
-### Deprecated features
-
-When a feature is deprecated, add `(DEPRECATED)` to the page title or to
-the heading of the section documenting the feature, immediately before
-the tier badge:
-
-```markdown
-<!-- Page title example: -->
-# Feature A (DEPRECATED) **(ALL TIERS)**
-
-<!-- Doc section example: -->
-## Feature B (DEPRECATED) **(PREMIUM SELF)**
-```
-
-Add the deprecation to the version history note (you can include a link
-to a replacement when available):
-
-```markdown
-> - [Deprecated](<link-to-issue>) in GitLab 11.3. Replaced by [meaningful text](<link-to-appropriate-documentation>).
-```
-
-You can also describe the replacement in surrounding text, if available. If the
-deprecation isn't obvious in existing text, you may want to include a warning:
-
-```markdown
-WARNING:
-This feature was [deprecated](link-to-issue) in GitLab 12.3 and replaced by
-[Feature name](link-to-feature-documentation).
-```
-
-If you add `(DEPRECATED)` to the page's title and the document is linked from the docs
-navigation, either remove the page from the nav or update the nav item to include the
-same text before the feature name:
-
-```yaml
- - doc_title: (DEPRECATED) Feature A
-```
-
-In the first major GitLab version after the feature was deprecated, be sure to
-remove information about that deprecated feature.
-
 ## Products and features
 
 Refer to the information in this section when describing products and features
@@ -1707,7 +1623,7 @@ pricing page. For example:
 
 You must assign a tier badge:
 
-- To all H1 topic headings.
+- To all H1 topic headings, except the pages under `doc/development/*`.
 - To topic headings that don't apply to the same tier as the H1.
 
 To add a tier badge to a heading, add the relevant tier badge

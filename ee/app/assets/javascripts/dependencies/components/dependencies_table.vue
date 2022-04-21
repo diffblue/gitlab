@@ -14,21 +14,13 @@ import DependencyLicenseLinks from './dependency_license_links.vue';
 import DependencyLocation from './dependency_location.vue';
 import DependencyVulnerabilities from './dependency_vulnerabilities.vue';
 
-const tdClass = (value, key, item) => {
-  const classes = [];
+const tdClass = (defaultClasses = []) => (value, key, item) => {
+  const classes = [...defaultClasses];
 
   // Don't draw a border between a row and its `row-details` slot
   // eslint-disable-next-line no-underscore-dangle
   if (item._showDetails) {
     classes.push('border-bottom-0');
-  }
-
-  if (key === 'isVulnerable') {
-    classes.push('text-right');
-  }
-
-  if (key === 'location') {
-    classes.push('gl-md-max-w-15p');
   }
 
   return classes;
@@ -88,11 +80,11 @@ export default {
     },
   },
   fields: [
-    { key: 'component', label: s__('Dependencies|Component'), tdClass },
-    { key: 'packager', label: s__('Dependencies|Packager'), tdClass },
-    { key: 'location', label: s__('Dependencies|Location'), tdClass },
-    { key: 'license', label: s__('Dependencies|License'), tdClass },
-    { key: 'isVulnerable', label: '', tdClass },
+    { key: 'component', label: s__('Dependencies|Component'), tdClass: tdClass() },
+    { key: 'packager', label: s__('Dependencies|Packager'), tdClass: tdClass() },
+    { key: 'location', label: s__('Dependencies|Location'), tdClass: tdClass(['gl-md-max-w-26']) },
+    { key: 'license', label: s__('Dependencies|License'), tdClass: tdClass() },
+    { key: 'isVulnerable', label: '', tdClass: tdClass(['gl-text-right']) },
   ],
   DEPENDENCIES_PER_PAGE: 20,
   DEPENDENCY_PATH_LINK:
@@ -117,7 +109,7 @@ export default {
   >
     <template #head(location)="data">
       {{ data.label }}
-      <gl-icon id="location-info" name="information" class="gl-text-blue-600" />
+      <gl-icon id="location-info" name="information-o" class="gl-text-blue-600" />
       <gl-popover
         target="location-info"
         placement="top"

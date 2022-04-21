@@ -51,22 +51,24 @@ describe('Iteration cadences list', () => {
 
   const startCursor = 'MQ';
   const endCursor = 'MjA';
-  const querySuccessResponse = {
-    data: {
-      workspace: {
-        id: 'id',
-        iterationCadences: {
-          nodes: cadences,
-          pageInfo: {
-            __typename: 'PageInfo',
-            hasNextPage: true,
-            hasPreviousPage: false,
-            startCursor,
-            endCursor,
+  const querySuccessResponse = (nodes = cadences) => {
+    return {
+      data: {
+        workspace: {
+          id: 'id',
+          iterationCadences: {
+            nodes,
+            pageInfo: {
+              __typename: 'PageInfo',
+              hasNextPage: true,
+              hasPreviousPage: false,
+              startCursor,
+              endCursor,
+            },
           },
         },
       },
-    },
+    };
   };
 
   const queryEmptyResponse = {
@@ -95,7 +97,7 @@ describe('Iteration cadences list', () => {
     canEditCadence,
     namespaceType = Namespace.Group,
     query = cadencesListQuery,
-    resolverMock = jest.fn().mockResolvedValue(querySuccessResponse),
+    resolverMock = jest.fn().mockResolvedValue(querySuccessResponse()),
     destroyMutationMock = jest
       .fn()
       .mockResolvedValue({ data: { iterationCadenceDestroy: { errors: [] } } }),
@@ -127,6 +129,7 @@ describe('Iteration cadences list', () => {
   const findPrevPageButton = () => wrapper.findByRole('button', { name: 'Prev' });
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const findPagination = () => wrapper.findComponent(GlKeysetPagination);
+  const findCadenceItems = () => wrapper.findAll(IterationCadenceListItem);
 
   afterEach(() => {
     wrapper.destroy();
@@ -178,6 +181,49 @@ describe('Iteration cadences list', () => {
       });
     });
 
+    it('does not display deprecation alert when only automatic cadences are shown', async () => {
+      await createComponent();
+
+      await waitForPromises();
+
+      expect(wrapper.text()).not.toContain('Some of your cadences need to be updated');
+    });
+
+    describe('when manual cadence exists', () => {
+      beforeEach(async () => {
+        const mixedCadences = [
+          ...cadences,
+          {
+            id: 'gid://gitlab/Iterations::Cadence/100',
+            title: 'Manual cadence',
+            durationInWeeks: 0,
+            automatic: false,
+          },
+          {
+            id: 'gid://gitlab/Iterations::Cadence/101',
+            title: 'Deprecated cadence',
+            durationInWeeks: 0,
+            automatic: false,
+          },
+        ];
+
+        await createComponent({
+          resolverMock: jest.fn().mockResolvedValue(querySuccessResponse(mixedCadences)),
+        });
+
+        await waitForPromises();
+      });
+
+      it('displays deprecation alert when manual cadence exists', async () => {
+        expect(wrapper.text()).toContain('Some of your cadences need to be updated');
+      });
+
+      it('groups manual cadences (deprecated) and displays them first', async () => {
+        expect(findCadenceItems().at(0).text()).toContain('Manual cadence');
+        expect(findCadenceItems().at(1).text()).toContain('Deprecated cadence');
+      });
+    });
+
     it('loads project iterations for Project namespaceType', async () => {
       await createComponent({
         namespaceType: Namespace.Project,
@@ -206,7 +252,7 @@ describe('Iteration cadences list', () => {
       let resolverMock;
 
       beforeEach(async () => {
-        resolverMock = jest.fn().mockResolvedValue(querySuccessResponse);
+        resolverMock = jest.fn().mockResolvedValue(querySuccessResponse());
         await createComponent({ resolverMock });
         await waitForPromises();
 

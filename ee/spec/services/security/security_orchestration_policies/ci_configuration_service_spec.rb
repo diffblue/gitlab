@@ -32,7 +32,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService d
           expected_configuration = {
             rules: [{ if: '$SECRET_DETECTION_DISABLED', when: 'never' }, { if: '$CI_COMMIT_BRANCH' }],
             stage: 'test',
-            image: '$SECURE_ANALYZERS_PREFIX/secrets:$SECRETS_ANALYZER_VERSION',
+            image: '$SECURE_ANALYZERS_PREFIX/secrets:$SECRETS_ANALYZER_VERSION$SECRET_DETECTION_IMAGE_SUFFIX',
             services: [],
             allow_failure: true,
             artifacts: {
@@ -44,6 +44,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService d
               GIT_DEPTH: '50',
               SECURE_ANALYZERS_PREFIX: secure_analyzers_prefix,
               SECRETS_ANALYZER_VERSION: '3',
+              SECRET_DETECTION_IMAGE_SUFFIX: '',
               SECRET_DETECTION_EXCLUDED_PATHS: '',
               SECRET_DETECTION_HISTORIC_SCAN: 'false'
             }
@@ -89,7 +90,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService d
 
         it 'returns prepared CI configuration for Container Scanning' do
           expected_configuration = {
-            image: '$CS_ANALYZER_IMAGE',
+            image: '$CS_ANALYZER_IMAGE$CS_IMAGE_SUFFIX',
             stage: 'test',
             allow_failure: true,
             artifacts: {
@@ -104,7 +105,16 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService d
             variables: {
               CS_ANALYZER_IMAGE: "#{Gitlab::Saas.registry_prefix}/security-products/container-scanning:4",
               GIT_STRATEGY: 'none'
-            }
+            },
+            rules: [
+              {
+                if: '$CI_GITLAB_FIPS_MODE == "true" && $CS_ANALYZER_IMAGE !~ /-(fips|ubi)\z/',
+                variables: { CS_IMAGE_SUFFIX: '-fips' }
+              },
+              {
+                when: 'always'
+              }
+            ]
           }
 
           expect(subject.deep_symbolize_keys).to eq(expected_configuration)

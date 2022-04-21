@@ -3,27 +3,24 @@
 - wiki_syntax_link_url = 'https://github.com/google/re2/wiki/Syntax'
 - wiki_syntax_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: wiki_syntax_link_url }
 
-.form-check
-  = f.check_box :deny_delete_tag, class: "form-check-input", data: { qa_selector: 'deny_delete_tag_checkbox' }
-  = f.label :deny_delete_tag, class: "label-bold form-check-label" do
-    = s_("PushRules|Do not allow users to remove Git tags with %{code_block_start}git push%{code_block_end}").html_safe % { code_block_start: '<code>'.html_safe, code_block_end: '</code>'.html_safe }
+- secret_files_link_url = help_page_path('user/project/repository/push_rules', anchor: 'prevent-pushing-secrets-to-the-repository')
+- secret_files_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: secret_files_link_url }
 
-  %p.text-muted
-    = s_('PushRules|Users can still delete tags through the GitLab UI.')
 
-.form-check
-  = f.check_box :member_check, class: "form-check-input", data: { qa_selector: 'restrict_author_checkbox' }
-  = f.label :member_check, "Check whether the commit author is a GitLab user", class: "label-bold form-check-label"
-  %p.text-muted
-    = s_('PushRules|Restrict commits to existing GitLab users.')
+= f.gitlab_ui_checkbox_component :deny_delete_tag,
+    s_("PushRules|Do not allow users to remove Git tags with %{code_block_start}git push%{code_block_end}").html_safe % { code_block_start: '<code>'.html_safe, code_block_end: '</code>'.html_safe },
+    checkbox_options: { data: { qa_selector: 'deny_delete_tag_checkbox' } },
+    help_text: s_('PushRules|Users can still delete tags through the GitLab UI.')
 
-.form-check
-  = f.check_box :prevent_secrets, class: "form-check-input", data: { qa_selector: 'prevent_secrets_checkbox' }
-  = f.label :prevent_secrets, "Prevent pushing secret files", class: "label-bold form-check-label"
-  %p.text-muted
-    - secret_files_link_url = help_page_path('user/project/repository/push_rules', anchor: 'prevent-pushing-secrets-to-the-repository')
-    - secret_files_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: secret_files_link_url }
-    = s_("PushRules|Reject any files likely to contain secrets. %{secret_files_link_start}What secret files are rejected?%{secret_files_link_end}").html_safe % { secret_files_link_start: secret_files_link_start, secret_files_link_end: '</a>'.html_safe }
+= f.gitlab_ui_checkbox_component :member_check,
+    "Check whether the commit author is a GitLab user",
+    checkbox_options: { data: { qa_selector: 'restrict_author_checkbox' } },
+    help_text: s_('PushRules|Restrict commits to existing GitLab users.')
+
+= f.gitlab_ui_checkbox_component :prevent_secrets,
+    "Prevent pushing secret files",
+    checkbox_options: { data: { qa_selector: 'prevent_secrets_checkbox' } },
+    help_text: s_("PushRules|Reject any files likely to contain secrets. %{secret_files_link_start}What secret files are rejected?%{secret_files_link_end}").html_safe % { secret_files_link_start: secret_files_link_start, secret_files_link_end: '</a>'.html_safe }
 
 .form-group
   = f.label :commit_message_regex, "Require expression in commit messages", class: "label-bold"
@@ -61,4 +58,4 @@
   .form-text.text-muted
     = s_('PushRules|Reject file sizes equal to or greater than this size. If set to 0, files of any size are allowed. This rule does not apply to files tracked by Git LFS.')
 
-= f.submit s_("PushRules|Save push rules"), class: "btn gl-button btn-success", data: { qa_selector: 'submit_settings_button' }
+= f.submit s_("PushRules|Save push rules"), class: "btn gl-button btn-confirm", data: { qa_selector: 'submit_settings_button' }

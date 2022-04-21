@@ -62,4 +62,33 @@ RSpec.describe 'Project show page', :feature do
       end
     end
   end
+
+  context 'when over free user limit', :saas do
+    let_it_be(:group) { create(:group_with_plan, plan: :free_plan) }
+
+    subject(:visit_page) { visit project_path(project) }
+
+    before do
+      group.add_owner(user)
+      sign_in(user)
+    end
+
+    context 'with repository' do
+      let_it_be(:project) { create(:project, :repository, group: group) }
+
+      it_behaves_like 'over the free user limit alert'
+    end
+
+    context 'with empty repository' do
+      let_it_be(:project) { create(:project, :empty_repo, group: group) }
+
+      it_behaves_like 'over the free user limit alert'
+    end
+
+    context 'without repository' do
+      let_it_be(:project) { create(:project, group: group) }
+
+      it_behaves_like 'over the free user limit alert'
+    end
+  end
 end

@@ -2,9 +2,9 @@
 - return unless License.feature_available?(:repository_mirrors)
 
 .form-group
-  = f.label :mirror, class: 'label-bold' do
-    = f.check_box :mirror, disabled: true
-    %strong= _('Mirror repository')
+  = f.gitlab_ui_checkbox_component :mirror,
+      _('Mirror repository'),
+      checkbox_options: { disabled: true }
   .form-text.text-muted
     = _("Automatically update this project's branches and tags from the upstream repository every hour.")
   - if Gitlab::CurrentSettings.should_check_namespace_plan?

@@ -20,24 +20,6 @@ RSpec.describe ProjectsHelper do
     end
   end
 
-  describe '#can_update_security_orchestration_policy_project?' do
-    let(:owner) { project.first_owner }
-
-    before do
-      allow(helper).to receive(:current_user) { owner }
-    end
-
-    it 'returns false when user cannot update security orchestration policy project' do
-      allow(helper).to receive(:can?).with(owner, :update_security_orchestration_policy_project, project) { false }
-      expect(helper.can_update_security_orchestration_policy_project?(project)).to eq false
-    end
-
-    it 'returns true when user can update security orchestration policy project' do
-      allow(helper).to receive(:can?).with(owner, :update_security_orchestration_policy_project, project) { true }
-      expect(helper.can_update_security_orchestration_policy_project?(project)).to eq true
-    end
-  end
-
   describe '#can_admin_project_member?' do
     let_it_be(:user) { create(:user) }
     let_it_be(:group) { create(:group) }
@@ -196,7 +178,10 @@ RSpec.describe ProjectsHelper do
           security_dashboard_help_path: '/help/user/application_security/security_dashboard/index',
           project_full_path: project.full_path,
           no_vulnerabilities_svg_path: start_with('/assets/illustrations/issues-'),
-          security_configuration_path: end_with('/configuration')
+          dashboard_documentation: '/help/user/application_security/security_dashboard/index',
+          security_configuration_path: end_with('/configuration'),
+          can_admin_vulnerability: 'true',
+          new_vulnerability_path: end_with('/security/vulnerabilities/new')
         }
       end
 
@@ -446,7 +431,10 @@ RSpec.describe ProjectsHelper do
         vulnerability_check_help_page_path: help_page_path('user/application_security/index', anchor: 'security-approvals-in-merge-requests'),
         license_check_help_page_path: help_page_path('user/application_security/index', anchor: 'enabling-license-approvals-within-a-project'),
         coverage_check_help_page_path: help_page_path('ci/pipelines/settings', anchor: 'coverage-check-approval-rule'),
-        group_name: project.root_ancestor.name
+        group_name: project.root_ancestor.name,
+        full_path: project.full_path,
+        security_policies_path: expose_path(project_security_policies_path(project)),
+        new_policy_path: expose_path(new_project_security_policy_path(project))
       )
     end
   end

@@ -1,4 +1,4 @@
-import { GlDropdown, GlInfiniteScroll, GlModal, GlSkeletonLoader } from '@gitlab/ui';
+import { GlBadge, GlDropdown, GlInfiniteScroll, GlModal, GlSkeletonLoader } from '@gitlab/ui';
 import { RouterLinkStub } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 
@@ -13,6 +13,7 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import { mountExtended as mount } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
+import { automaticIterationCadence } from '../mock_data';
 
 const { i18n } = IterationCadenceListItem;
 const push = jest.fn();
@@ -53,12 +54,6 @@ describe('Iteration cadence list item', () => {
       __typename: 'Iteration',
     },
   ];
-
-  const cadence = {
-    id: 'gid://gitlab/Iterations::Cadence/561',
-    title: 'Weekly cadence',
-    durationInWeeks: 3,
-  };
 
   const startCursor = 'MQ';
   const endCursor = 'MjA';
@@ -101,6 +96,7 @@ describe('Iteration cadence list item', () => {
     canCreateIteration,
     canEditCadence,
     currentRoute,
+    cadence = automaticIterationCadence,
     namespaceType = Namespace.Group,
     query = groupIterationsInCadenceQuery,
     resolverMock = jest.fn().mockResolvedValue(querySuccessResponse),
@@ -127,6 +123,7 @@ describe('Iteration cadence list item', () => {
       propsData: {
         title: cadence.title,
         cadenceId: cadence.id,
+        automatic: true,
         iterationState: 'opened',
         ...props,
       },
@@ -136,10 +133,12 @@ describe('Iteration cadence list item', () => {
   }
 
   const findLoader = () => wrapper.findComponent(GlSkeletonLoader);
-  const findCreateIterationButton = () =>
-    wrapper.findByRole('link', { text: i18n.createIteration });
+  const findAddIterationButton = () => wrapper.findByRole('menuitem', { name: i18n.addIteration });
   const findIterationItemText = (i) => wrapper.findAllByTestId('iteration-item').at(i).text();
-  const expand = () => wrapper.findByRole('button', { text: cadence.title }).trigger('click');
+  const findDurationBadge = () => wrapper.find('[data-testid="duration-badge"]');
+  const findDeprecationBadge = () => wrapper.findComponent(GlBadge);
+  const expand = (cadence = automaticIterationCadence) =>
+    wrapper.findByRole('button', { text: cadence.title }).trigger('click');
 
   afterEach(() => {
     wrapper.destroy();
@@ -175,20 +174,89 @@ describe('Iteration cadence list item', () => {
     },
   );
 
-  it.each([
-    ['hides', false],
-    ['shows', true],
-  ])('%s Create iteration button when canCreateIteration is %s', async (_, canCreateIteration) => {
+  it('hides Add iteration button for automatic cadence', async () => {
     await createComponent({
-      canCreateIteration,
-      resolverMock: jest.fn().mockResolvedValue(queryEmptyResponse),
+      canCreateIteration: true,
+      canEditCadence: true,
     });
 
     expand();
 
     await waitForPromises();
 
-    expect(findCreateIterationButton().exists()).toBe(canCreateIteration);
+    expect(findAddIterationButton().exists()).toBe(false);
+  });
+
+  it.each([
+    ['hides', false],
+    ['shows', true],
+  ])(
+    '%s Add iteration button when canCreateIteration is %s for manual cadence',
+    async (_, canCreateIteration) => {
+      await createComponent({
+        props: {
+          automatic: false,
+        },
+        canCreateIteration,
+        canEditCadence: true,
+        resolverMock: jest.fn().mockResolvedValue(queryEmptyResponse),
+      });
+
+      expand();
+
+      await waitForPromises();
+
+      expect(findAddIterationButton().exists()).toBe(canCreateIteration);
+    },
+  );
+
+  describe('deprecation badge', () => {
+    it('does not show deprecation badge for automatic cadence', async () => {
+      await createComponent({
+        props: {
+          automatic: true,
+        },
+        canEditCadence: true,
+      });
+
+      expect(findDeprecationBadge().exists()).toBe(false);
+    });
+
+    it('shows deprecation badge for manual cadence', async () => {
+      await createComponent({
+        props: {
+          automatic: false,
+        },
+        canEditCadence: true,
+      });
+
+      expect(findDeprecationBadge().exists()).toBe(true);
+      expect(findDeprecationBadge().text()).toBe('Requires update');
+    });
+  });
+
+  describe('duration badge', () => {
+    it('does not show duration badge for manual cadence', async () => {
+      await createComponent({
+        props: {
+          automatic: false,
+          durationInWeeks: 2,
+        },
+      });
+
+      expect(findDurationBadge().exists()).toBe(false);
+    });
+
+    it('shows duration badge for automatic cadence', async () => {
+      await createComponent({
+        props: {
+          automatic: true,
+          durationInWeeks: 2,
+        },
+      });
+
+      expect(findDurationBadge().exists()).toBe(true);
+    });
   });
 
   const expectIterationItemToHavePeriod = () => {
@@ -211,7 +279,9 @@ describe('Iteration cadence list item', () => {
 
   it('automatically expands for newly created cadence', async () => {
     await createComponent({
-      currentRoute: { query: { createdCadenceId: getIdFromGraphQLId(cadence.id) } },
+      currentRoute: {
+        query: { createdCadenceId: getIdFromGraphQLId(automaticIterationCadence.id) },
+      },
     });
 
     await waitForPromises();
@@ -300,7 +370,7 @@ describe('Iteration cadence list item', () => {
       it('emits delete-cadence event with cadence ID', () => {
         wrapper.findComponent(GlModal).vm.$emit('ok');
 
-        expect(wrapper.emitted('delete-cadence')).toEqual([[cadence.id]]);
+        expect(wrapper.emitted('delete-cadence')).toEqual([[automaticIterationCadence.id]]);
       });
     });
   });

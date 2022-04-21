@@ -1,10 +1,9 @@
 - return unless merge_pipelines_available?
 
 .form-check.builds-feature
-  = form.check_box :merge_pipelines_enabled, class: 'form-check-input js-merge-options-merge-pipelines', data: { qa_selector: 'merged_results_pipeline_checkbox' }
-  = form.label :merge_pipelines_enabled, class: 'form-check-label' do
-    = s_('ProjectSettings|Enable merged results pipelines')
-    .text-secondary.mb-2
-      - configuring_pipelines_for_merge_requests_help_link_url = help_page_path('ci/pipelines/merge_request_pipelines.md', anchor: 'prerequisites')
-      - configuring_pipelines_for_merge_requests_help_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: configuring_pipelines_for_merge_requests_help_link_url }
-      = s_('ProjectSettings|When merge request pipelines are enabled in the CI/CD configuration file, pipelines validate the combined results of the source and target branches. %{link_start}How to configure merge request pipelines?%{link_end}').html_safe % { link_start: configuring_pipelines_for_merge_requests_help_link_start, link_end: '</a>'.html_safe }
+  - configuring_pipelines_for_merge_requests_help_link_url = help_page_path('ci/pipelines/merge_request_pipelines.md', anchor: 'prerequisites')
+  - configuring_pipelines_for_merge_requests_help_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: configuring_pipelines_for_merge_requests_help_link_url }
+  = form.gitlab_ui_checkbox_component :merge_pipelines_enabled,
+    s_('ProjectSettings|Enable merged results pipelines'),
+    checkbox_options: { data: { qa_selector: 'merged_results_pipeline_checkbox' }, class: 'js-merge-options-merge-pipelines' },
+    help_text: s_('ProjectSettings|When merge request pipelines are enabled in the CI/CD configuration file, pipelines validate the combined results of the source and target branches. %{link_start}How to configure merge request pipelines?%{link_end}').html_safe % { link_start: configuring_pipelines_for_merge_requests_help_link_start, link_end: '</a>'.html_safe }

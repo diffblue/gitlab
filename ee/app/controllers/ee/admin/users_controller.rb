@@ -44,7 +44,7 @@ module EE
       end
 
       def log_audit_event
-        ::AuditEvents::UserImpersonationEventCreateWorker.perform_async(current_user.id, user.id, request.remote_ip, 'started')
+        ::AuditEvents::UserImpersonationEventCreateWorker.perform_async(current_user.id, user.id, request.remote_ip, 'started', DateTime.current)
       end
 
       def allowed_user_params

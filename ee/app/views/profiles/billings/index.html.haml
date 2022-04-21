@@ -3,6 +3,12 @@
 - current_plan = subscription_plan_info(@plans_data, namespace.actual_plan_name)
 - data_attributes = subscription_plan_data_attributes(namespace, current_plan).merge(extend_reactivate_trial_button_data(namespace))
 
-= render 'shared/billings/billing_plans', plans_data: @plans_data, namespace: current_user.namespace, current_plan: current_plan
+= content_for :flash_message do
+  = render 'shared/billings/eoa_bronze_plan_banner', namespace: namespace, eoa_bronze_plan_end_date: eoa_bronze_plan_end_date
+
+- if current_plan
+  = render 'billing_plan_header', namespace: namespace, current_plan: current_plan
+
+= render 'shared/billings/billing_plans', plans_data: @plans_data, namespace: namespace, current_plan: current_plan
 
 #js-billing-plans{ data: data_attributes }

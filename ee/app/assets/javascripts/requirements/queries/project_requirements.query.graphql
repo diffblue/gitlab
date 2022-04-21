@@ -1,0 +1,37 @@
+#import "~/graphql_shared/fragments/page_info.fragment.graphql"
+#import "./requirement.fragment.graphql"
+
+query projectRequirementsEE(
+  $projectPath: ID!
+  $state: RequirementState
+  $firstPageSize: Int
+  $lastPageSize: Int
+  $prevPageCursor: String = ""
+  $nextPageCursor: String = ""
+  $authorUsernames: [String!] = []
+  $status: RequirementStatusFilter
+  $search: String = ""
+  $sortBy: Sort = CREATED_DESC
+) {
+  project(fullPath: $projectPath) {
+    id
+    requirements(
+      first: $firstPageSize
+      last: $lastPageSize
+      after: $nextPageCursor
+      before: $prevPageCursor
+      state: $state
+      authorUsername: $authorUsernames
+      lastTestReportState: $status
+      search: $search
+      sort: $sortBy
+    ) {
+      nodes {
+        ...Requirement
+      }
+      pageInfo {
+        ...PageInfo
+      }
+    }
+  }
+}

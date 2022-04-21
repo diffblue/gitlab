@@ -23,6 +23,8 @@ module Iterations
     validates :automatic, inclusion: [true, false]
     validates :description, length: { maximum: 5000 }
 
+    validate :cadence_is_automatic
+
     after_commit :ensure_iterations_in_advance, on: [:create, :update], if: :changed_iterations_automation_fields?
 
     scope :with_groups, -> (group_ids) { where(group_id: group_ids) }
@@ -83,6 +85,16 @@ module Iterations
         ) as t
         WHERE t.id=sprints.id AND (sprints.sequence IS DISTINCT FROM t.row_number)
       SQL
+    end
+
+    private
+
+    def cadence_is_automatic
+      return unless changes.key?(:automatic)
+
+      unless automatic?
+        errors.add(:base, _('Manual iteration cadences are deprecated. Only automatic iteration cadences are allowed.'))
+      end
     end
   end
 end

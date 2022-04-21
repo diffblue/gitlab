@@ -8,7 +8,7 @@ import {
   GlLoadingIcon,
   GlTable,
   GlLink,
-  GlSkeletonLoading,
+  GlDeprecatedSkeletonLoading as GlSkeletonLoading,
   GlSprintf,
   GlTooltipDirective,
 } from '@gitlab/ui';
@@ -316,7 +316,7 @@ export default {
       class="text-center"
       @appear="fetchNextPage"
     >
-      <gl-loading-icon v-if="isLoadingAlerts" size="md" />
+      <gl-loading-icon v-if="isLoadingAlerts" size="lg" />
       <span v-else>&nbsp;</span>
     </gl-intersection-observer>
     <alert-drawer

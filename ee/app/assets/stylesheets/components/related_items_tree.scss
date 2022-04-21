@@ -1,7 +1,4 @@
 .related-items-tree {
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
-
   .add-item-form-container {
     border-bottom: 1px solid $border-color;
 
@@ -65,6 +62,9 @@
 }
 
 .related-items-tree-body {
+  border-bottom-left-radius: $gl-border-radius-base;
+  border-bottom-right-radius: $gl-border-radius-base;
+
   > .tree-root {
     padding-top: $gl-vert-padding;
     padding-bottom: 0;
@@ -79,5 +79,26 @@
   > .list-item-body > .card-slim,
   .tree-item:last-child .card-slim {
     margin-bottom: $gl-vert-padding;
+  }
+}
+
+.related-items-tree-container {
+  .roadmap-app-container {
+    .js-roadmap-shell {
+      border-radius: $gl-border-radius-base;
+    }
+
+    .epics-list-item-empty {
+      display: none;
+    }
+
+    // This is a hacky CSS to remove the border-bottom from the
+    // last list in the roadmap.
+    .epic-item-container:nth-last-child(4) {
+      .epic-details-cell,
+      .epic-timeline-cell {
+        border-bottom: 0;
+      }
+    }
   }
 }

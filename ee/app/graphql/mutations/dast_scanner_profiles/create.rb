@@ -9,7 +9,12 @@ module Mutations
 
       field :id, ::Types::GlobalIDType[::DastScannerProfile],
             null: true,
-            description: 'ID of the scanner profile.'
+            description: 'ID of the scanner profile.',
+            deprecated: { reason: 'use `dastScannerProfile` field', milestone: '14.10' }
+
+      field :dast_scanner_profile, ::Types::DastScannerProfileType,
+            null: true,
+            description: 'Created scanner profile.'
 
       argument :full_path, GraphQL::Types::ID,
                required: true,
@@ -61,7 +66,7 @@ module Mutations
         )
 
         if result.success?
-          { id: result.payload.to_global_id, global_id: result.payload.to_global_id, errors: [] }
+          { id: result.payload.to_global_id, dast_scanner_profile: result.payload, errors: [] }
         else
           { errors: result.errors }
         end

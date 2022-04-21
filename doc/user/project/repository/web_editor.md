@@ -117,11 +117,18 @@ There are multiple ways to create a branch from the GitLab web interface.
 
 ### Create a new branch from an issue
 
+> The **Create merge request** button [changed](https://gitlab.com/gitlab-org/gitlab/-/issues/349566) to open the merge request creation form in GitLab 14.8.
+
 If your development workflow requires an issue for every merge
 request, you can create a branch directly from the issue to speed the process up.
 The new branch, and later its merge request, are marked as related to this issue.
 Once merged, the merge request closes the issue.
 You can see a **Create merge request** dropdown below the issue description.
+
+NOTE:
+In GitLab 14.8 and later, selecting **Create merge request**
+[redirects to the merge request creation form](https://gitlab.com/gitlab-org/gitlab/-/issues/349566)
+instead of immediately creating the merge request.
 
 The **Create merge request** button doesn't display if:
 
@@ -152,7 +159,7 @@ repository project, GitLab performs these actions:
 - Creates a default branch.
 - Commits a blank `README.md` file to it.
 - Creates and redirects you to a new branch based on the issue title.
-- _If your project is [configured with a deployment service](../integrations/overview.md) like Kubernetes,_
+- _If your project is [configured with a deployment service](../integrations/index.md) like Kubernetes,_
   GitLab prompts you to set up [auto deploy](../../../topics/autodevops/stages.md#auto-deploy)
   by helping you create a `.gitlab-ci.yml` file.
 

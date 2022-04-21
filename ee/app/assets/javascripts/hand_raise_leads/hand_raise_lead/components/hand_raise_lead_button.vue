@@ -56,7 +56,23 @@ export default {
     GlModal: GlModalDirective,
   },
   mixins: [Tracking.mixin()],
-  inject: ['user', 'small', 'ctaTracking'],
+  inject: {
+    user: {
+      default: {},
+    },
+    buttonAttributes: {
+      default: {},
+    },
+    buttonText: {
+      default: PQL_BUTTON_TEXT,
+    },
+    ctaTracking: {
+      default: {
+        action: 'click_button',
+        label: PQL_BUTTON_TEXT,
+      },
+    },
+  },
   data() {
     return {
       isLoading: false,
@@ -201,7 +217,6 @@ export default {
     stateLabel: PQL_STATE_LABEL,
     stateSelectPrompt: PQL_STATE_PROMPT,
     commentLabel: PQL_COMMENT_LABEL,
-    buttonText: PQL_BUTTON_TEXT,
     modalTitle: PQL_MODAL_TITLE,
     modalPrimary: PQL_MODAL_PRIMARY,
     modalCancel: PQL_MODAL_CANCEL,
@@ -217,18 +232,15 @@ export default {
   <div>
     <gl-button
       v-gl-modal.hand-raise-lead
+      v-bind="buttonAttributes"
       :loading="isLoading"
-      :href="small ? '#' : ''"
-      :variant="small ? 'confirm' : 'default'"
-      :size="small ? 'small' : 'medium'"
-      :class="{ 'gl-mb-3 gl-w-full': small }"
       :data-track-action="ctaTracking.action"
       :data-track-label="ctaTracking.label"
       :data-track-property="ctaTracking.property"
       :data-track-value="ctaTracking.value"
       :data-track-experiment="ctaTracking.experiment"
     >
-      <span :class="{ 'gl-font-sm': small }">{{ $options.i18n.buttonText }}</span>
+      {{ buttonText }}
     </gl-button>
 
     <gl-modal

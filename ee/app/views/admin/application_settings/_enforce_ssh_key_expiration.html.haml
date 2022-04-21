@@ -3,7 +3,4 @@
 - form = local_assigns.fetch(:form)
 
 .form-group
-  .form-check
-    = form.check_box :enforce_ssh_key_expiration, class: 'form-check-input'
-    = form.label :enforce_ssh_key_expiration, class: 'form-check-label' do
-      = _('Enforce SSH key expiration')
+  = form.gitlab_ui_checkbox_component :enforce_ssh_key_expiration, _('Enforce SSH key expiration')

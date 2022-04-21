@@ -128,7 +128,8 @@ RSpec.describe Vulnerabilities::ManuallyCreateService do
       end
 
       context 'when Identifier already exists' do
-        let!(:identifier) { create(:vulnerabilities_identifier, name: identifier_attributes[:name]) }
+        let(:attributes) { identifier_attributes.merge(project: project, external_type: "other", external_id: identifier_attributes[:name]) }
+        let!(:identifier) { create(:vulnerabilities_identifier, attributes) }
 
         it 'does not create a new Identifier' do
           expect { subject }.not_to change(Vulnerabilities::Identifier, :count)

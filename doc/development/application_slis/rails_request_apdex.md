@@ -9,7 +9,7 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 > [Introduced](https://gitlab.com/groups/gitlab-com/gl-infra/-/epics/525) in GitLab 14.4
 
 NOTE:
-This SLI is used for service monitoring. But not for [error budgets for stage groups](../stage_group_dashboards.md#error-budget)
+This SLI is used for service monitoring. But not for [error budgets for stage groups](../stage_group_observability/index.md#error-budget)
 by default. You can [opt in](#error-budget-attribution-and-ownership).
 
 The request Apdex SLI (Service Level Indicator) is [an SLI defined in the application](index.md).
@@ -136,8 +136,19 @@ information in the logs to check:
 
 1. The table loads information for the busiest endpoints by
    default. To speed the response, add both:
-   - A filter for `json.caller_id.keyword`.
-   - The identifier you're interested in, such as `Projects::RawController#show`.
+
+   - A filter for `json.meta.caller_id.keyword`.
+   - The identifier you're interested in, for example:
+
+     ```ruby
+     Projects::RawController#show
+     ```
+
+     or:
+
+     ```plaintext
+     GET /api/:version/projects/:id/snippets/:snippet_id/raw
+     ```
 
 1. Check the [appropriate percentile duration](#request-apdex-slo) for
    the service handling the endpoint. The overall duration should
@@ -221,7 +232,7 @@ end
 
 This SLI is used for service level monitoring. It feeds into the
 [error budget for stage
-groups](../stage_group_dashboards.md#error-budget). For this
+groups](../stage_group_observability/index.md#error-budget). For this
 particular SLI, we have opted everyone out by default to give time to
 set the correct urgencies on endpoints before it affects a group's
 error budget.

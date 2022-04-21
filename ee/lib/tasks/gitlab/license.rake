@@ -22,9 +22,10 @@ namespace :gitlab do
       license_file = ENV.fetch(flag, default_license_file)
 
       if File.file?(license_file)
-        if ::License.create(data: File.read(license_file))
+        begin
+          ::License.create!(data: File.read(license_file))
           puts "License Added:\n\nFilePath: #{license_file}".color(:green)
-        else
+        rescue Gitlab::License::Error, ActiveRecord::RecordInvalid
           puts "License Invalid:\n\nFilePath: #{license_file}".color(:red)
           raise "License Invalid"
         end

@@ -56,7 +56,6 @@ describe('ee/roadmap/components/epics_list_empty.vue', () => {
 
   afterEach(() => {
     wrapper.destroy();
-    wrapper = null;
   });
 
   const findTitle = () => wrapper.findByTestId('title');

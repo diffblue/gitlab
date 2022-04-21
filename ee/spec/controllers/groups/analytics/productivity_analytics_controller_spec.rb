@@ -74,6 +74,16 @@ RSpec.describe Groups::Analytics::ProductivityAnalyticsController do
         let(:target_id) { 'g_analytics_productivity' }
       end
     end
+
+    context 'when user is an auditor' do
+      let(:current_user) { create(:user, :auditor) }
+
+      it 'allows access' do
+        subject
+
+        expect(response).to have_gitlab_http_status(:success)
+      end
+    end
   end
 
   describe 'GET show.json' do
@@ -154,7 +164,7 @@ RSpec.describe Groups::Analytics::ProductivityAnalyticsController do
       end
 
       context 'for list of MRs' do
-        let!(:merge_request ) { create :merge_request, :merged}
+        let!(:merge_request ) { create :merge_request, :merged }
 
         let(:serializer_mock) { instance_double('BaseSerializer') }
 
@@ -181,6 +191,23 @@ RSpec.describe Groups::Analytics::ProductivityAnalyticsController do
           expect(response.headers['X-Prev-Page']).to eq ''
           expect(response.headers['X-Total']).to eq '1'
           expect(response.headers['X-Total-Pages']).to eq '1'
+        end
+
+        context 'when project from a sub-group is requested' do
+          let(:subgroup) { create(:group, parent: group) }
+          let(:project) { create(:project, group: subgroup) }
+
+          let(:params) { { group_id: group, project_id: project.full_path } }
+
+          before do
+            group.add_owner(current_user)
+          end
+
+          it 'succeeds' do
+            subject
+
+            expect(response).to have_gitlab_http_status(:ok)
+          end
         end
       end
 

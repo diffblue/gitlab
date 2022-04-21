@@ -160,7 +160,17 @@ module API
 
     def find_group!(id)
       group = find_group(id)
+      check_group_access(group)
+    end
 
+    # rubocop: disable CodeReuse/ActiveRecord
+    def find_group_by_full_path!(full_path)
+      group = Group.find_by_full_path(full_path)
+      check_group_access(group)
+    end
+    # rubocop: enable CodeReuse/ActiveRecord
+
+    def check_group_access(group)
       return group if can?(current_user, :read_group, group)
       return unauthorized! if authenticate_non_public?
 
@@ -705,8 +715,16 @@ module API
       body ''
     end
 
+    # Deprecated. Use `send_artifacts_entry` instead.
+    def legacy_send_artifacts_entry(file, entry)
+      header(*Gitlab::Workhorse.send_artifacts_entry(file, entry))
+
+      body ''
+    end
+
     def send_artifacts_entry(file, entry)
       header(*Gitlab::Workhorse.send_artifacts_entry(file, entry))
+      header(*Gitlab::Workhorse.detect_content_type)
 
       body ''
     end

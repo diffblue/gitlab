@@ -31,11 +31,11 @@ module QA
               end
             end
 
-            def approve_license(license)
+            def approve_license(license, selector = :approved_license_radio)
               click_element(:license_add_button)
               expand_select_list
               search_and_select_exact(license)
-              choose_element(:approved_license_radio, true)
+              choose_element(selector, true)
               click_element(:add_license_submit_button)
 
               has_approved_license?(license)
@@ -48,11 +48,11 @@ module QA
               end
             end
 
-            def deny_license(license)
+            def deny_license(license, selector = :blacklisted_license_radio)
               click_element(:license_add_button)
               expand_select_list
               search_and_select_exact(license)
-              choose_element(:blacklisted_license_radio, true)
+              choose_element(selector, true)
               click_element(:add_license_submit_button)
 
               has_denied_license?(license)

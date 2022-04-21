@@ -144,7 +144,7 @@ export default {
           <gl-button
             v-if="!hasFiltersApplied"
             :href="newEpicPath"
-            variant="success"
+            variant="confirm"
             class="gl-mt-3 gl-sm-mt-0! gl-w-full gl-sm-w-auto!"
             data-testid="new-epic-button"
           >

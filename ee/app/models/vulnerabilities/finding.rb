@@ -410,3 +410,5 @@ module Vulnerabilities
     end
   end
 end
+
+Vulnerabilities::Finding.prepend_mod

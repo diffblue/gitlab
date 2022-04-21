@@ -285,6 +285,11 @@ RSpec.describe Member, type: :model do
       group.add_developer(create(:user))
     end
 
+    before do
+      allow(group).to receive(:user_cap_available?).and_return(false)
+      stub_ee_application_setting(should_check_namespace_plan: true)
+    end
+
     context 'when the :free_user_cap feature flag is disabled' do
       before do
         stub_feature_flags(free_user_cap: false)
@@ -341,7 +346,7 @@ RSpec.describe Member, type: :model do
 
       context 'when the free user cap has been reached' do
         before do
-          stub_const('::Plan::FREE_USER_LIMIT', 1)
+          stub_const('::Namespaces::FreeUserCap::FREE_USER_LIMIT', 1)
         end
 
         it 'sets the group member to awaiting' do
@@ -364,7 +369,7 @@ RSpec.describe Member, type: :model do
 
         context 'when multiple members are added' do
           before do
-            stub_const('::Plan::FREE_USER_LIMIT', 2)
+            stub_const('::Namespaces::FreeUserCap::FREE_USER_LIMIT', 2)
           end
 
           it 'sets members to the correct status' do
@@ -418,7 +423,7 @@ RSpec.describe Member, type: :model do
           end
 
           before do
-            stub_const('::Plan::FREE_USER_LIMIT', 2)
+            stub_const('::Namespaces::FreeUserCap::FREE_USER_LIMIT', 2)
           end
 
           it 'adds multiple members and correctly shows the state' do
@@ -486,5 +491,32 @@ RSpec.describe Member, type: :model do
         awaiting_previously_invited_member.invite_email
       )
     end
+  end
+
+  describe '.awaiting_without_invites_and_requests' do
+    let_it_be(:awaiting_group_member) { create(:group_member, :awaiting, group: group) }
+    let_it_be(:awaiting_project_member) { create(:project_member, :awaiting, project: project) }
+    let_it_be(:active_group_member) { create(:group_member, group: group) }
+    let_it_be(:invited_member) { create(:group_member, :invited, group: group) }
+    let_it_be(:invited_awaiting_member) { create(:group_member, :invited, :awaiting, group: group) }
+    let_it_be(:accepted_invite_member) { create(:group_member, :invited, group: group).accept_request }
+    let_it_be(:requested_member) { create(:group_member, :access_request, group: group) }
+    let_it_be(:requested_awaiting_member) { create(:group_member, :awaiting, :access_request, group: group) }
+    let_it_be(:accepted_request_member) { create(:group_member, :access_request, group: group).accept_request }
+    let_it_be(:blocked_member) { create(:group_member, :blocked, group: group) }
+
+    subject(:results) { described_class.awaiting_without_invites_and_requests }
+
+    it { is_expected.to include awaiting_group_member }
+    it { is_expected.to include awaiting_project_member }
+
+    it { is_expected.not_to include active_group_member }
+    it { is_expected.not_to include invited_member }
+    it { is_expected.not_to include invited_awaiting_member }
+    it { is_expected.not_to include accepted_invite_member }
+    it { is_expected.not_to include requested_member }
+    it { is_expected.not_to include requested_awaiting_member }
+    it { is_expected.not_to include accepted_request_member }
+    it { is_expected.not_to include blocked_member }
   end
 end

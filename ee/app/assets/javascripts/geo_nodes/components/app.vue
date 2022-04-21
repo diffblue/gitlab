@@ -21,6 +21,12 @@ export default {
     ),
     primarySite: s__('Geo|Primary site'),
     secondarySite: s__('Geo|Secondary site'),
+    notConfiguredTitle: s__('Geo|Discover GitLab Geo'),
+    notConfiguredDescription: s__(
+      'Geo|Make everyone on your team more productive regardless of their location. GitLab Geo creates read-only mirrors of your GitLab instance so you can reduce the time it takes to clone and fetch large repos.',
+    ),
+    noResultsTitle: s__('Geo|No Geo site found'),
+    noResultsDescription: s__('Geo|Edit your search and try again.'),
   },
   components: {
     GlLink,
@@ -37,22 +43,41 @@ export default {
       type: String,
       required: true,
     },
-    geoNodesEmptyStateSvg: {
-      type: String,
-      required: true,
-    },
   },
   computed: {
     ...mapState(['nodes', 'isLoading']),
     ...mapGetters(['filteredNodes']),
-    noNodes() {
-      return !this.nodes || this.nodes.length === 0;
+    hasNodes() {
+      return this.nodes && this.nodes.length > 0;
+    },
+    hasEmptyState() {
+      return Object.keys(this.emptyState).length;
     },
     primaryNodes() {
       return this.filteredNodes.filter((n) => n.primary);
     },
     secondaryNodes() {
       return this.filteredNodes.filter((n) => !n.primary);
+    },
+    emptyState() {
+      // Geo isn't configured
+      if (!this.hasNodes) {
+        return {
+          title: this.$options.i18n.notConfiguredTitle,
+          description: this.$options.i18n.notConfiguredDescription,
+          showLearnMoreButton: true,
+        };
+        // User has searched and returned nothing
+      } else if (this.filteredNodes.length === 0) {
+        return {
+          title: this.$options.i18n.noResultsTitle,
+          description: this.$options.i18n.noResultsDescription,
+          showLearnMoreButton: false,
+        };
+      }
+
+      // Don't show empty state
+      return {};
     },
   },
   created() {
@@ -91,7 +116,7 @@ export default {
         </gl-sprintf>
       </div>
       <gl-button
-        v-if="!noNodes"
+        v-if="hasNodes"
         class="gl-w-full gl-md-w-auto gl-ml-auto gl-mr-5 gl-mt-5 gl-md-mt-0"
         variant="confirm"
         :href="newNodeUrl"
@@ -102,7 +127,7 @@ export default {
     </div>
     <gl-loading-icon v-if="isLoading" size="xl" class="gl-mt-5" />
     <template v-if="!isLoading">
-      <div v-if="!noNodes">
+      <div v-if="hasNodes">
         <geo-nodes-filters :total-nodes="nodes.length" />
         <h4 v-if="primaryNodes.length" class="gl-font-lg gl-my-5">
           {{ $options.i18n.primarySite }}
@@ -123,7 +148,12 @@ export default {
           data-testid="secondary-nodes"
         />
       </div>
-      <geo-nodes-empty-state v-else :svg-path="geoNodesEmptyStateSvg" />
+      <geo-nodes-empty-state
+        v-if="hasEmptyState"
+        :title="emptyState.title"
+        :description="emptyState.description"
+        :show-learn-more-button="emptyState.showLearnMoreButton"
+      />
     </template>
     <gl-modal
       :modal-id="$options.REMOVE_NODE_MODAL_ID"

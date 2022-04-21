@@ -84,16 +84,38 @@ namespace :gitlab do
 
     desc 'GitLab | DB | Configures the database by running migrate, or by loading the schema and seeding if needed'
     task configure: :environment do
-      # Check if we have existing db tables
-      # The schema_migrations table will still exist if drop_tables was called
-      if ActiveRecord::Base.connection.tables.count > 1
-        Rake::Task['db:migrate'].invoke
+      databases_with_tasks = ActiveRecord::Base.configurations.configs_for(env_name: Rails.env)
+
+      databases_loaded = []
+
+      if databases_with_tasks.size == 1
+        next unless databases_with_tasks.first.name == 'main'
+
+        connection = Gitlab::Database.database_base_models['main'].connection
+        databases_loaded << configure_database(connection)
       else
-        # Add post-migrate paths to ensure we mark all migrations as up
-        Gitlab::Database.add_post_migrate_path_to_rails(force: true)
-        Rake::Task['db:structure:load'].invoke
-        Rake::Task['db:seed_fu'].invoke
+        Gitlab::Database.database_base_models.each do |name, model|
+          next unless databases_with_tasks.any? { |db_with_tasks| db_with_tasks.name == name }
+
+          databases_loaded << configure_database(model.connection, database_name: name)
+        end
       end
+
+      Rake::Task['db:seed_fu'].invoke if databases_loaded.present? && databases_loaded.all?
+    end
+
+    def configure_database(connection, database_name: nil)
+      database_name = ":#{database_name}" if database_name
+      load_database = connection.tables.count <= 1
+
+      if load_database
+        Gitlab::Database.add_post_migrate_path_to_rails(force: true)
+        Rake::Task["db:schema:load#{database_name}"].invoke
+      else
+        Rake::Task["db:migrate#{database_name}"].invoke
+      end
+
+      load_database
     end
 
     desc 'GitLab | DB | Run database migrations and print `unattended_migrations_completed` if action taken'
@@ -211,14 +233,6 @@ namespace :gitlab do
       # :nocov:
     end
 
-    desc "Clear all connections"
-    task :clear_all_connections do
-      ActiveRecord::Base.clear_all_connections!
-    end
-
-    Rake::Task['db:test:purge'].enhance(['gitlab:db:clear_all_connections'])
-    Rake::Task['db:drop'].enhance(['gitlab:db:clear_all_connections'])
-
     # During testing, db:test:load restores the database schema from scratch
     # which does not include dynamic partitions. We cannot rely on application
     # initializers here as the application can continue to run while
@@ -307,13 +321,22 @@ namespace :gitlab do
       task down: :environment do
         Gitlab::Database::Migrations::Runner.down.run
       end
+
+      desc 'Sample traditional background migrations with instrumentation'
+      task :sample_background_migrations, [:duration_s] => [:environment] do |_t, args|
+        duration = args[:duration_s]&.to_i&.seconds || 30.minutes # Default of 30 minutes
+
+        Gitlab::Database::Migrations::Runner.background_migrations.run_jobs(for_duration: duration)
+      end
     end
 
     desc 'Run all pending batched migrations'
     task execute_batched_migrations: :environment do
-      Gitlab::Database::BackgroundMigration::BatchedMigration.active.queue_order.each do |migration|
-        Gitlab::AppLogger.info("Executing batched migration #{migration.id} inline")
-        Gitlab::Database::BackgroundMigration::BatchedMigrationRunner.new.run_entire_migration(migration)
+      Gitlab::Database::EachDatabase.each_database_connection do |connection, name|
+        Gitlab::Database::BackgroundMigration::BatchedMigration.with_status(:active).queue_order.each do |migration|
+          Gitlab::AppLogger.info("Executing batched migration #{migration.id} on database #{name} inline")
+          Gitlab::Database::BackgroundMigration::BatchedMigrationRunner.new(connection: connection).run_entire_migration(migration)
+        end
       end
     end
 

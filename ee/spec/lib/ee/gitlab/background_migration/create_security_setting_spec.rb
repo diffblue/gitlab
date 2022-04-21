@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::BackgroundMigration::CreateSecuritySetting do
+RSpec.describe Gitlab::BackgroundMigration::CreateSecuritySetting, :migration, schema: 20220326161803 do
   let(:projects) { table(:projects) }
   let(:settings) { table(:project_security_settings) }
   let(:namespaces) { table(:namespaces) }

@@ -6,12 +6,12 @@ module QA
       module Project
         module Policies
           class PolicyEditor < QA::Page::Base
-            view 'ee/app/assets/javascripts/threat_monitoring/components/policy_editor/policy_editor.vue' do
-              element :policy_type_form_select
+            view 'ee/app/assets/javascripts/threat_monitoring/components/policy_editor/policy_selection.vue' do
+              element :policy_selection_wizard
             end
 
-            def has_policy_type_form_select?
-              has_element?(:policy_type_form_select)
+            def has_policy_selection?(selector)
+              has_element?(selector)
             end
           end
         end

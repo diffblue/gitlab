@@ -6,8 +6,14 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 
 # Embedding metric charts within GitLab Flavored Markdown **(FREE)**
 
+> [Deprecated](https://gitlab.com/gitlab-org/gitlab/-/issues/346541) in GitLab 14.7.
+
+WARNING:
+This feature is in its end-of-life process. It is [deprecated](https://gitlab.com/gitlab-org/gitlab/-/issues/346541)
+for use in GitLab 14.7, and is planned for removal in GitLab 16.0.
+
 You can display metrics charts within
-[GitLab Flavored Markdown](../../user/markdown.md#gitlab-flavored-markdown)
+[GitLab Flavored Markdown (GLFM)](../../user/markdown.md)
 fields such as issue or merge request descriptions. The maximum number of embedded
 charts allowed in a GitLab Flavored Markdown field is 100.
 Embedding charts is useful when sharing an application incident or performance
@@ -26,7 +32,7 @@ are still supported, and can be used to embed metric charts.
 
 To display metric charts, include a link of the form
 `https://<root_url>/<project>/-/metrics?environment=<environment_id>` in a field
-that supports GitLab-flavored Markdown:
+that supports GitLab Flavored Markdown:
 
 ```markdown
 ### Summary
@@ -100,11 +106,11 @@ a chart corresponding to the query can be included if these requirements are met
 > - [Moved](https://gitlab.com/gitlab-org/gitlab/-/issues/208224) from GitLab Ultimate to GitLab Free in 13.2.
 
 [Cluster Health Metrics](../../user/infrastructure/clusters/manage/clusters_health.md)
-can also be embedded in [GitLab-flavored Markdown](../../user/markdown.md).
+can also be embedded in [GitLab Flavored Markdown](../../user/markdown.md).
 
 To embed a metric chart, include a link to that chart in the form
 `https://<root_url>/<project>/-/cluster/<cluster_id>?<query_params>` anywhere that
-GitLab-flavored Markdown is supported. To generate and copy a link to the chart,
+GitLab Flavored Markdown is supported. To generate and copy a link to the chart,
 follow the instructions in the
 [Cluster Health Metric documentation](../../user/infrastructure/clusters/manage/clusters_health.md).
 

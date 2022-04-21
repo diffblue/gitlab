@@ -5,6 +5,8 @@ module Mutations
     class Update < BaseMutation
       graphql_name 'UpdateIteration'
 
+      ITERATION_DEPRECATION_MESSAGE = 'Manual iteration updates are deprecated, only `description` updates will be allowed in the future'
+
       include Mutations::ResolvesGroup
       include ResolvesProject
 
@@ -29,7 +31,8 @@ module Mutations
       argument :title,
                GraphQL::Types::String,
                required: false,
-               description: 'Title of the iteration.'
+               description: 'Title of the iteration.',
+               deprecated: { reason: ITERATION_DEPRECATION_MESSAGE, milestone: '14.10' }
 
       argument :description,
                GraphQL::Types::String,
@@ -39,12 +42,14 @@ module Mutations
       argument :start_date,
                GraphQL::Types::String,
                required: false,
-               description: 'Start date of the iteration.'
+               description: 'Start date of the iteration.',
+               deprecated: { reason: ITERATION_DEPRECATION_MESSAGE, milestone: '14.10' }
 
       argument :due_date,
                GraphQL::Types::String,
                required: false,
-               description: 'End date of the iteration.'
+               description: 'End date of the iteration.',
+               deprecated: { reason: ITERATION_DEPRECATION_MESSAGE, milestone: '14.10' }
 
       def resolve(args)
         validate_arguments!(args)
@@ -53,6 +58,8 @@ module Mutations
         parent = resolve_group(full_path: args[:group_path]).try(:sync)
         validate_title_argument!(parent, args)
         iteration = authorized_find!(parent: parent, id: args[:id])
+
+        validate_allowed_attributes_if_automatic!(iteration, args)
 
         response = ::Iterations::UpdateService.new(parent, current_user, args).execute(iteration)
 
@@ -66,6 +73,17 @@ module Mutations
       end
 
       private
+
+      # Raising an error only if automatic as that would mean the cadence was created with the
+      # iteration_cadences feature flag enabled
+      def validate_allowed_attributes_if_automatic!(iteration, args)
+        return unless iteration.iterations_cadence.automatic?
+
+        deprecated_arguments = [:title, :start_date, :due_date]
+        return if (deprecated_arguments & args.keys).empty?
+
+        raise Gitlab::Graphql::Errors::ArgumentError, ITERATION_DEPRECATION_MESSAGE
+      end
 
       def find_object(parent:, id:)
         params = { parent: parent, id: id }

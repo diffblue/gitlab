@@ -54,7 +54,7 @@ RSpec.describe 'Activate a subscription' do
     expect(mutation_response['license']).to eq(
       {
         'id' => "gid://gitlab/License/#{created_license.id}",
-        'type' => License::LICENSE_FILE_TYPE,
+        'type' => License::LEGACY_LICENSE_TYPE,
         'plan' => created_license.plan,
         'name' => created_license.licensee_name,
         'email' => created_license.licensee_email,

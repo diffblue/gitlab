@@ -8,7 +8,8 @@ describe('GeoNodesEmptyState', () => {
   let wrapper;
 
   const defaultProps = {
-    svgPath: MOCK_EMPTY_STATE_SVG,
+    title: 'test title',
+    description: 'test description',
   };
 
   const createComponent = (props) => {
@@ -16,6 +17,9 @@ describe('GeoNodesEmptyState', () => {
       propsData: {
         ...defaultProps,
         ...props,
+      },
+      provide: {
+        geoNodesEmptyStateSvg: MOCK_EMPTY_STATE_SVG,
       },
     });
   };
@@ -27,21 +31,47 @@ describe('GeoNodesEmptyState', () => {
   const findGeoEmptyState = () => wrapper.findComponent(GlEmptyState);
 
   describe('template', () => {
-    beforeEach(() => {
-      createComponent();
+    describe('always', () => {
+      beforeEach(() => {
+        createComponent();
+      });
+
+      it('renders the Geo Empty State', () => {
+        expect(findGeoEmptyState().exists()).toBe(true);
+      });
+
+      it('adds the correct SVG', () => {
+        expect(findGeoEmptyState().props('svgPath')).toBe(MOCK_EMPTY_STATE_SVG);
+      });
+
+      it('sets the title and description', () => {
+        expect(findGeoEmptyState().props('title')).toBe(defaultProps.title);
+        expect(findGeoEmptyState().props('description')).toBe(defaultProps.description);
+      });
     });
 
-    it('renders the Geo Empty State always', () => {
-      expect(findGeoEmptyState().exists()).toBe(true);
+    describe('when showLearnMoreButton is true', () => {
+      beforeEach(() => {
+        createComponent({ showLearnMoreButton: true });
+      });
+
+      it('renders the learn more button with the correct link', () => {
+        expect(findGeoEmptyState().props('primaryButtonText')).toBe(
+          GeoNodesEmptyState.i18n.learnMoreButtonText,
+        );
+        expect(findGeoEmptyState().props('primaryButtonLink')).toBe(GEO_FEATURE_URL);
+      });
     });
 
-    it('adds the correct SVG', () => {
-      expect(findGeoEmptyState().attributes('svgpath')).toBe(MOCK_EMPTY_STATE_SVG);
-    });
+    describe('when showLearnMoreButton is false', () => {
+      beforeEach(() => {
+        createComponent({ showLearnMoreButton: false });
+      });
 
-    it('links the correct help link', () => {
-      expect(findGeoEmptyState().attributes('primarybuttontext')).toBe('Learn more about Geo');
-      expect(findGeoEmptyState().attributes('primarybuttonlink')).toBe(GEO_FEATURE_URL);
+      it('does not render the learn more button', () => {
+        expect(findGeoEmptyState().props('primaryButtonText')).toBe('');
+        expect(findGeoEmptyState().props('primaryButtonLink')).toBe('');
+      });
     });
   });
 });

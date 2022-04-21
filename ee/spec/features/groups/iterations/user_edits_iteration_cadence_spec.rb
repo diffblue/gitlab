@@ -34,7 +34,7 @@ RSpec.describe 'User edits iteration cadence', :js do
         updated_title = 'Updated cadence title'
 
         fill_in('Title', with: updated_title)
-        click_button('Save cadence')
+        click_button('Save changes')
 
         expect(page).to have_content(updated_title)
       end

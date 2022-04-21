@@ -161,7 +161,6 @@ export default {
           :entity-name="activeItemName"
           :entity-id="activeItem.id"
           :alt="getAvatarString(activeItem.name)"
-          shape="circle"
           class="gl-mr-2"
           data-testid="audit-filter-item-avatar"
         />
@@ -186,7 +185,6 @@ export default {
               :entity-id="item.id"
               :entity-name="item.name"
               :alt="getAvatarString(item.name)"
-              shape="circle"
             />
             <div>
               <slot name="suggestion" :item="item"></slot>

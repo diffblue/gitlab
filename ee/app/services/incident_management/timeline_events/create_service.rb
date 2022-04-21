@@ -29,6 +29,8 @@ module IncidentManagement
         timeline_event = IncidentManagement::TimelineEvent.new(timeline_event_params)
 
         if timeline_event.save
+          add_system_note(timeline_event)
+
           success(timeline_event)
         else
           error_in_save(timeline_event)
@@ -38,6 +40,12 @@ module IncidentManagement
       private
 
       attr_reader :project, :user, :incident, :params
+
+      def add_system_note(timeline_event)
+        return unless Feature.enabled?(:incident_timeline, project, default_enabled: :yaml)
+
+        SystemNoteService.add_timeline_event(timeline_event)
+      end
     end
   end
 end

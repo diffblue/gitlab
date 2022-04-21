@@ -67,19 +67,19 @@ export default {
     <span>
       <component
         :is="locationComponent"
+        class="gl-md-white-space-nowrap"
         data-testid="dependency-path"
-        class="gl-display-inline-block gl-lg-display-block!"
         :href="location.blob_path"
       >
         <gl-icon v-if="isContainerImageDependency" name="container-image" />
         <gl-icon v-else name="doc-text" />
         <gl-truncate
-          class="gl-lg-max-w-80p gl-display-none gl-lg-display-inline-flex"
+          class="gl-display-none gl-md-display-inline-flex"
           position="start"
           :text="locationPath"
           with-tooltip
         />
-        <span class="gl-lg-display-none">{{ locationPath }}</span>
+        <span class="gl-md-display-none">{{ locationPath }}</span>
       </component>
       <span v-if="isTopLevelDependency">{{ s__('Dependencies|(top level)') }}</span>
     </span>

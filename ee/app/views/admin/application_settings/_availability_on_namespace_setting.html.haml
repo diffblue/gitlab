@@ -4,9 +4,6 @@
 
 .form-group
   = form.label :check_namespace_plan, _('Check feature availability on namespace plan'), class: 'label-bold'
-  .form-check
-    = form.check_box :check_namespace_plan, class: 'form-check-input'
-    = form.label :check_namespace_plan, class: 'form-check-label' do
-      = _("Allow use of licensed EE features")
-      .help-block
-        = _("Licensed Enterprise Edition features can be used if the project namespace's plan includes the feature, or if the project is public.")
+  = form.gitlab_ui_checkbox_component :check_namespace_plan,
+    _("Allow use of licensed EE features"),
+    help_text: _("Licensed Enterprise Edition features can be used if the project namespace's plan includes the feature, or if the project is public.")

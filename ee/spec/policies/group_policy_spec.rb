@@ -182,6 +182,14 @@ RSpec.describe GroupPolicy do
 
         it { is_expected.not_to be_allowed(:read_group_contribution_analytics) }
       end
+
+      context 'when user has an auditor role' do
+        before do
+          allow(current_user).to receive(:auditor?).and_return(true)
+        end
+
+        it { is_expected.to be_allowed(:read_group_contribution_analytics) }
+      end
     end
   end
 
@@ -309,6 +317,12 @@ RSpec.describe GroupPolicy do
 
       it { is_expected.to be_allowed(:read_group_repository_analytics) }
     end
+
+    context 'for auditor' do
+      let(:current_user) { auditor }
+
+      it { is_expected.to be_allowed(:read_group_repository_analytics) }
+    end
   end
 
   context 'when group repository analytics is not available' do
@@ -319,6 +333,40 @@ RSpec.describe GroupPolicy do
     end
 
     it { is_expected.not_to be_allowed(:read_group_repository_analytics) }
+  end
+
+  context 'when group cycle analytics is available' do
+    before do
+      stub_licensed_features(cycle_analytics_for_groups: true)
+    end
+
+    context 'for guests' do
+      let(:current_user) { guest }
+
+      it { is_expected.not_to be_allowed(:read_group_cycle_analytics) }
+    end
+
+    context 'for reporter+' do
+      let(:current_user) { reporter }
+
+      it { is_expected.to be_allowed(:read_group_cycle_analytics) }
+    end
+
+    context 'for auditor' do
+      let(:current_user) { auditor }
+
+      it { is_expected.to be_allowed(:read_group_cycle_analytics) }
+    end
+  end
+
+  context 'when group cycle analytics is not available' do
+    let(:current_user) { maintainer }
+
+    before do
+      stub_licensed_features(cycle_analytics_for_groups: false)
+    end
+
+    it { is_expected.not_to be_allowed(:read_group_cycle_analytics) }
   end
 
   context 'when group coverage reports is available' do
@@ -911,6 +959,32 @@ RSpec.describe GroupPolicy do
     end
   end
 
+  describe 'security orchestration policies' do
+    before do
+      stub_licensed_features(security_orchestration_policies: true)
+    end
+
+    context 'with developer or maintainer role' do
+      where(role: %w[maintainer developer])
+
+      with_them do
+        let(:current_user) { public_send(role) }
+
+        it { is_expected.to be_allowed(:read_security_orchestration_policies) }
+      end
+    end
+
+    context 'with owner role' do
+      where(role: %w[owner])
+
+      with_them do
+        let(:current_user) { public_send(role) }
+
+        it { is_expected.to be_allowed(:read_security_orchestration_policies) }
+      end
+    end
+  end
+
   describe 'admin_vulnerability' do
     before do
       stub_licensed_features(security_dashboard: true)
@@ -1404,7 +1478,7 @@ RSpec.describe GroupPolicy do
     let(:policies) do
       %i[create_projects create_epic update_epic admin_milestone upload_file admin_label
          admin_issue_board_list admin_issue admin_pipeline admin_group_runners register_group_runners add_cluster
-         create_cluster update_cluster admin_cluster admin_group_member create_deploy_token create_subgroup]
+         create_cluster update_cluster admin_cluster admin_group_member create_deploy_token create_subgroup create_package]
     end
 
     before do
@@ -1438,17 +1512,8 @@ RSpec.describe GroupPolicy do
         enable_namespace_license_check!
       end
 
-      # We don't have feature toggles on groups yet, so we currently simulate
-      # this by stubbing the license check instead.
       def set_access_level(access_level)
-        case access_level
-        when ProjectFeature::ENABLED
-          stub_licensed_features(group_wikis: true)
-        when ProjectFeature::DISABLED
-          stub_licensed_features(group_wikis: false)
-        when ProjectFeature::PRIVATE
-          skip('Access level private is not supported yet for group wikis, see https://gitlab.com/gitlab-org/gitlab/-/issues/208412')
-        end
+        container.group_feature.update_attribute(:wiki_access_level, access_level)
       end
 
       context 'when the feature is not licensed on this group' do
@@ -1705,6 +1770,7 @@ RSpec.describe GroupPolicy do
         :reporter         | true
         :guest            | false
         :non_group_member | false
+        :auditor          | true
       end
 
       before do
@@ -1906,6 +1972,64 @@ RSpec.describe GroupPolicy do
       expect_disallowed(*developer_permissions)
       expect_disallowed(*maintainer_permissions)
       expect_disallowed(*owner_permissions)
+    end
+  end
+
+  describe 'security complience policy' do
+    context 'when licensed feature is available' do
+      before do
+        stub_licensed_features(security_orchestration_policies: false)
+      end
+
+      context 'with developer or maintainer role' do
+        where(role: %w[maintainer developer])
+
+        with_them do
+          let(:current_user) { public_send(role) }
+
+          it { is_expected.to be_disallowed(:read_security_orchestration_policies) }
+          it { is_expected.to be_disallowed(:update_security_orchestration_policy_project) }
+        end
+      end
+
+      context 'with owner role' do
+        where(role: %w[owner])
+
+        with_them do
+          let(:current_user) { public_send(role) }
+
+          it { is_expected.to be_disallowed(:read_security_orchestration_policies) }
+          it { is_expected.to be_disallowed(:update_security_orchestration_policy_project) }
+        end
+      end
+    end
+
+    context 'when licensed feature is available' do
+      before do
+        stub_licensed_features(security_orchestration_policies: true)
+      end
+
+      context 'with developer or maintainer role' do
+        where(role: %w[maintainer developer])
+
+        with_them do
+          let(:current_user) { public_send(role) }
+
+          it { is_expected.to be_allowed(:read_security_orchestration_policies) }
+          it { is_expected.to be_disallowed(:update_security_orchestration_policy_project) }
+        end
+      end
+
+      context 'with owner role' do
+        where(role: %w[owner])
+
+        with_them do
+          let(:current_user) { public_send(role) }
+
+          it { is_expected.to be_allowed(:read_security_orchestration_policies) }
+          it { is_expected.to be_allowed(:update_security_orchestration_policy_project) }
+        end
+      end
     end
   end
 end

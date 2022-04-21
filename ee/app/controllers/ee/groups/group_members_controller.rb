@@ -29,7 +29,7 @@ module EE
       # rubocop:disable Gitlab/ModuleWithInstanceVariables
       # rubocop: disable CodeReuse/ActiveRecord
       def override
-        member = membershipable_members.find_by!(id: params[:id])
+        member = membershipable_members.find(params[:id])
 
         result = ::Members::UpdateService.new(current_user, override_params).execute(member, permission: :override)
 

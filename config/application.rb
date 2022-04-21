@@ -69,18 +69,19 @@ module Gitlab
     require_dependency Rails.root.join('lib/gitlab/middleware/handle_malformed_strings')
     require_dependency Rails.root.join('lib/gitlab/middleware/rack_multipart_tempfile_factory')
     require_dependency Rails.root.join('lib/gitlab/runtime')
-    require_dependency Rails.root.join('lib/gitlab/patch/legacy_database_config')
+    require_dependency Rails.root.join('lib/gitlab/patch/database_config')
     require_dependency Rails.root.join('lib/gitlab/exceptions_app')
 
     config.exceptions_app = Gitlab::ExceptionsApp.new(Rails.public_path)
 
-    # To be removed in 15.0
-    # This preload is needed to convert legacy `database.yml`
-    # from `production: adapter: postgresql`
-    # into a `production: main: adapter: postgresql`
-    unless Gitlab::Utils.to_boolean(ENV['SKIP_DATABASE_CONFIG_VALIDATION'], default: false)
-      config.class.prepend(::Gitlab::Patch::LegacyDatabaseConfig)
-    end
+    # This preload is required to:
+    #
+    # 1. Convert legacy `database.yml`;
+    # 2. Include Geo post-deployment migrations settings;
+    #
+    # TODO: In 15.0, this preload can be wrapped in a Gitlab.ee block
+    #       since we don't need to convert legacy `database.yml` anymore.
+    config.class.prepend(::Gitlab::Patch::DatabaseConfig)
 
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
@@ -271,6 +272,7 @@ module Gitlab
     config.assets.precompile << "page_bundles/import.css"
     config.assets.precompile << "page_bundles/incident_management_list.css"
     config.assets.precompile << "page_bundles/issues_list.css"
+    config.assets.precompile << "page_bundles/issues_show.css"
     config.assets.precompile << "page_bundles/jira_connect.css"
     config.assets.precompile << "page_bundles/jira_connect_users.css"
     config.assets.precompile << "page_bundles/learn_gitlab.css"
@@ -285,6 +287,7 @@ module Gitlab
     config.assets.precompile << "page_bundles/pipeline.css"
     config.assets.precompile << "page_bundles/pipeline_schedules.css"
     config.assets.precompile << "page_bundles/pipelines.css"
+    config.assets.precompile << "page_bundles/pipeline_editor.css"
     config.assets.precompile << "page_bundles/productivity_analytics.css"
     config.assets.precompile << "page_bundles/profile_two_factor_auth.css"
     config.assets.precompile << "page_bundles/project.css"
@@ -313,6 +316,8 @@ module Gitlab
     config.assets.precompile << "themes/*.css"
 
     config.assets.precompile << "highlight/themes/*.css"
+    config.assets.precompile << "highlight/diff_custom_colors_addition.css"
+    config.assets.precompile << "highlight/diff_custom_colors_deletion.css"
 
     # Import gitlab-svgs directly from vendored directory
     config.assets.paths << "#{config.root}/node_modules/@gitlab/svgs/dist"
@@ -483,6 +488,19 @@ module Gitlab
       end
     end
 
+    # We know Rails closes database connections in the
+    # active_record.clear_active_connections initializer, so only log database
+    # connections opened after that.
+    initializer :start_logging_new_postgresql_connections, after: :finisher_hook do
+      ActiveRecord::ConnectionAdapters::PostgreSQLAdapter.warn_on_new_connection = true
+    end
+
+    # It is legitimate to open database connections after initializers so stop
+    # logging
+    initializer :stop_logging_new_postgresql_connections, after: :set_routes_reloader_hook do
+      ActiveRecord::ConnectionAdapters::PostgreSQLAdapter.warn_on_new_connection = false
+    end
+
     # Load JH initializers under JH. Load ordering is:
     # 1. prepend_helpers_path
     # 2. before_zeitwerk
@@ -512,6 +530,14 @@ module Gitlab
           app.config.assets.paths.unshift("#{config.root}/#{extension}/app/assets/#{path}")
         end
       end
+    end
+
+    # We run the contents of active_record.clear_active_connections again
+    # because we connect to database from routes
+    # https://github.com/rails/rails/blob/fdf840f69a2e33d78a9d40b91d9b7fddb76711e9/activerecord/lib/active_record/railtie.rb#L308
+    initializer :clear_active_connections_again, after: :set_routes_reloader_hook do
+      ActiveRecord::Base.clear_active_connections!
+      ActiveRecord::Base.flush_idle_connections!
     end
 
     # DO NOT PLACE ANY INITIALIZERS AFTER THIS.

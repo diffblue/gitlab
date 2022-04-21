@@ -4,15 +4,18 @@ require 'spec_helper'
 
 RSpec.describe Security::SecurityOrchestrationPolicies::ProjectCreateService do
   describe '#execute' do
-    let_it_be(:project) { create(:project) }
-    let_it_be(:current_user) { project.first_owner }
+    let_it_be_with_refind(:project) { create(:project) }
 
-    subject(:service) { described_class.new(project: project, current_user: current_user) }
+    let_it_be(:owner) { create(:user) }
+    let_it_be(:maintainer) { create(:user) }
+    let_it_be(:developer) { create(:user) }
+
+    let(:current_user) { container.first_owner }
+    let(:container) { project }
+
+    subject(:service) { described_class.new(container: container, current_user: current_user) }
 
     context 'when security_orchestration_policies_configuration does not exist for project' do
-      let_it_be(:maintainer) { create(:user) }
-      let_it_be(:developer) { create(:user) }
-
       before do
         project.add_maintainer(maintainer)
         project.add_developer(developer)
@@ -31,10 +34,32 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProjectCreateService do
       end
     end
 
+    context 'when security_orchestration_policies_configuration does not exist for namespace' do
+      let(:group) { create(:group) }
+      let(:container) { group }
+
+      before do
+        group.add_owner(owner)
+        group.add_maintainer(maintainer)
+        group.add_developer(developer)
+      end
+
+      it 'creates policy project with maintainers and developers from target group as developers', :aggregate_failures do
+        response = service.execute
+
+        policy_project = response[:policy_project]
+        expect(group.reload.security_orchestration_policy_configuration.security_policy_management_project).to eq(policy_project)
+        expect(policy_project.namespace).to eq(group)
+        expect(policy_project.owner).to eq(group)
+        expect(MembersFinder.new(policy_project, nil).execute.map(&:user)).to contain_exactly(owner, maintainer, developer)
+        expect(policy_project.container_registry_access_level).to eq(ProjectFeature::DISABLED)
+        expect(policy_project.repository.readme.data).to include('# Security Policy Project for')
+        expect(policy_project.repository.readme.data).to include('## Default branch protection settings')
+      end
+    end
+
     context 'when adding users to security policy project fails' do
-      let_it_be(:project) { create(:project) }
-      let_it_be(:current_user) { project.first_owner }
-      let_it_be(:maintainer) { create(:user) }
+      let(:current_user) { project.first_owner }
 
       before do
         project.add_maintainer(maintainer)
@@ -54,8 +79,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProjectCreateService do
     end
 
     context 'when project creation fails' do
-      let_it_be(:project) { create(:project) }
-      let_it_be(:current_user) { create(:user) }
+      let(:current_user) { create(:user) }
 
       it 'returns error' do
         response = service.execute

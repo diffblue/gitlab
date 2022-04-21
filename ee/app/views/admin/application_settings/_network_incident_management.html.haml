@@ -1,14 +1,9 @@
-= form_for @application_setting, url: network_admin_application_settings_path(anchor: 'js-incident-management-settings'), html: { class: 'fieldset-form' } do |f|
+= gitlab_ui_form_for @application_setting, url: network_admin_application_settings_path(anchor: 'js-incident-management-settings'), html: { class: 'fieldset-form' } do |f|
   = form_errors(@application_setting)
 
   %fieldset
     .form-group
-      .form-check
-        = f.check_box :throttle_incident_management_notification_enabled, class: 'form-check-input', data: { qa_selector: 'throttle_unauthenticated_checkbox' }
-        = f.label :throttle_incident_management_notification_enabled, class: 'form-check-label' do
-          = _('Enable incident management inbound alert limit')
-        %span.form-text.gl-text-gray-600
-          = _('Reduce incident management alert volume (for example, if too many issues are being created).')
+      = f.gitlab_ui_checkbox_component :throttle_incident_management_notification_enabled, _('Enable incident management inbound alert limit'), help_text: _('Reduce incident management alert volume (for example, if too many issues are being created).')
     .form-group
       = f.label :throttle_incident_management_notification_period_in_seconds, 'Maximum requests per project per rate limit period', class: 'gl-font-weight-bold'
       = f.number_field :throttle_incident_management_notification_period_in_seconds, class: 'form-control gl-form-input'

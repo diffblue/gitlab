@@ -1,46 +1,20 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Corpus Upload component renders header 1`] = `
+exports[`Corpus Upload component renders total size 1`] = `
 <div
   class="gl-h-11 gl-bg-gray-10 gl-display-flex gl-justify-content-space-between gl-align-items-center"
 >
   <div
     class="gl-ml-5"
   >
-    <gl-sprintf-stub
-      message="Total Size: %{totalSize}"
-    />
+    Total Size: 
+    <span
+      class="gl-font-weight-bold"
+      data-testid="total-size"
+    >
+      400 MB
+    </span>
   </div>
    
-  <gl-button-stub
-    buttontextclasses=""
-    category="primary"
-    class="gl-mr-5 gl-ml-auto"
-    data-testid="new-corpus"
-    icon=""
-    role="button"
-    size="medium"
-    tabindex="0"
-    variant="confirm"
-  >
-    
-    New corpus
-  
-  </gl-button-stub>
-   
-  <gl-modal-stub
-    actioncancel="[object Object]"
-    actionprimary="[object Object]"
-    dismisslabel="Close"
-    modalclass=""
-    modalid="corpus-upload-modal"
-    size="sm"
-    title="New corpus"
-    titletag="h4"
-  >
-    <corpus-upload-form-stub
-      states="[object Object]"
-    />
-  </gl-modal-stub>
 </div>
 `;

@@ -25,6 +25,8 @@ RSpec.describe Projects::Topic do
     it { is_expected.to validate_uniqueness_of(:name).case_insensitive }
     it { is_expected.to validate_length_of(:name).is_at_most(255) }
     it { is_expected.to validate_length_of(:description).is_at_most(1024) }
+    it { expect(Projects::Topic.new).to validate_presence_of(:title) }
+    it { expect(Projects::Topic.new).to validate_length_of(:title).is_at_most(255) }
   end
 
   describe 'scopes' do
@@ -52,6 +54,14 @@ RSpec.describe Projects::Topic do
         topics = described_class.reorder_by_similarity('topic')
 
         expect(topics.map(&:name)).to eq(%w[topic my-topic topic2 other])
+      end
+    end
+  end
+
+  describe '#find_by_name_case_insensitive' do
+    it 'returns topic with case insensitive name' do
+      %w(topic TOPIC Topic).each do |name|
+        expect(described_class.find_by_name_case_insensitive(name)).to eq(topic)
       end
     end
   end

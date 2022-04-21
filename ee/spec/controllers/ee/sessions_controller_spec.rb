@@ -6,8 +6,11 @@ RSpec.describe SessionsController, :geo do
   include DeviseHelpers
   include EE::GeoHelpers
 
+  let(:arkose_labs_public_api_key) { 'foo' }
+
   before do
     set_devise_mapping(context: @request)
+    stub_application_setting(arkose_labs_public_api_key: arkose_labs_public_api_key)
   end
 
   describe '#new' do
@@ -138,6 +141,51 @@ RSpec.describe SessionsController, :geo do
 
         expect(@request.env['warden']).not_to be_authenticated
         expect(flash[:alert]).to include('You are not allowed to log in using password')
+      end
+    end
+
+    context 'with Arkose reCAPTCHA' do
+      before do
+        stub_feature_flags(arkose_labs_login_challenge: true)
+      end
+
+      let(:user) { create(:user) }
+      let(:session_token) { '22612c147bb418c8.2570749403' }
+      let(:user_params) { { login: user.username, password: user.password } }
+      let(:params) { { arkose_labs_token: session_token, user: user_params } }
+
+      context 'when the user was verified by Arkose' do
+        it 'successfully logs in a user when reCAPTCHA is solved' do
+          allow_next_instance_of(Arkose::UserVerificationService) do |instance|
+            allow(instance).to receive(:execute).and_return(true)
+          end
+          post(:create, params: params, session: {})
+
+          expect(subject.current_user).to eq user
+        end
+      end
+
+      context 'when the user was not verified by Arkose' do
+        it 'prevents the user from logging in' do
+          allow_next_instance_of(Arkose::UserVerificationService) do |instance|
+            allow(instance).to receive(:execute).and_return(false)
+          end
+          post(:create, params: params, session: {})
+
+          expect(response).to redirect_to new_user_session_path
+          expect(flash[:alert]).to include 'Login failed. Please retry from your primary device and network'
+          expect(subject.current_user).to be_nil
+        end
+      end
+
+      context 'when the user should be verified by Arkose but the request does not contain the arkose token' do
+        it 'prevents the user from logging in' do
+          post(:create, params: params.except!(:arkose_labs_token), session: {})
+
+          expect(response).to redirect_to new_user_session_path
+          expect(flash[:alert]).to include 'Login failed. Please retry from your primary device and network'
+          expect(subject.current_user).to be_nil
+        end
       end
     end
   end

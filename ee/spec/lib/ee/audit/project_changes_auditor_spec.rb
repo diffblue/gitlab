@@ -3,6 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe EE::Audit::ProjectChangesAuditor do
+  using RSpec::Parameterized::TableSyntax
   describe '.audit_changes' do
     let_it_be(:user) { create(:user) }
 
@@ -34,65 +35,6 @@ RSpec.describe EE::Audit::ProjectChangesAuditor do
         project.update!(description: 'new description')
 
         expect { foo_instance.execute }.not_to change { AuditEvent.count }
-      end
-    end
-
-    describe 'auditing compliance framework changes' do
-      context 'when a project has no compliance framework' do
-        context 'when the framework is changed' do
-          let_it_be(:framework) { create(:compliance_framework) }
-
-          before do
-            project.update!(compliance_management_framework: framework)
-          end
-
-          it 'adds an audit event' do
-            expect { foo_instance.execute }.to change { AuditEvent.count }.by(1)
-            expect(AuditEvent.last.details).to include({
-              change: 'compliance framework',
-              from: 'None',
-              to: 'GDPR'
-            })
-          end
-
-          context 'when the framework is removed' do
-            before do
-              project.update!(compliance_management_framework: nil)
-            end
-
-            it 'adds an audit event' do
-              expect { foo_instance.execute }.to change { AuditEvent.count }.by(1)
-              expect(AuditEvent.last.details).to include({
-                custom_message: "Unassigned project compliance framework"
-              })
-            end
-          end
-
-          context 'when the framework is changed again' do
-            before do
-              project.update!(compliance_management_framework: create(:compliance_framework, namespace: project.namespace, name: 'SOX'))
-            end
-
-            it 'adds an audit event' do
-              expect { foo_instance.execute }.to change { AuditEvent.count }.by(1)
-              expect(AuditEvent.last.details).to include({
-                change: 'compliance framework',
-                from: 'GDPR',
-                to: 'SOX'
-              })
-            end
-          end
-        end
-
-        context 'when the framework is not changed' do
-          before do
-            project.update!(description: 'This is a description of a project')
-          end
-
-          it 'does not add an audit event' do
-            expect { foo_instance.execute }.not_to change { AuditEvent.count }
-          end
-        end
       end
     end
 
@@ -203,6 +145,100 @@ RSpec.describe EE::Audit::ProjectChangesAuditor do
             from: false,
             to: true
           )
+        end
+      end
+
+      context 'when auditable boolean column is changed' do
+        columns = %w[resolve_outdated_diff_discussions printing_merge_request_link_enabled
+                     remove_source_branch_after_merge only_allow_merge_if_pipeline_succeeds
+                     only_allow_merge_if_all_discussions_are_resolved]
+        columns.each do |column|
+          where(:prev_value, :new_value) do
+            true  | false
+            false | true
+          end
+
+          before do
+            project.update_attribute(column, prev_value)
+          end
+
+          with_them do
+            it 'creates an audit event' do
+              project.update_attribute(column, new_value)
+
+              expect { foo_instance.execute }.to change { AuditEvent.count }.by(1)
+              expect(AuditEvent.last.details).to include({
+                                                           change: column,
+                                                           from: prev_value,
+                                                           to: new_value
+                                                         })
+            end
+          end
+        end
+      end
+
+      it 'creates an event when suggestion_commit_message change' do
+        previous_value = project.suggestion_commit_message
+        new_value = "I'm a suggested commit message"
+        project.update!(suggestion_commit_message: new_value)
+
+        expect { foo_instance.execute }.to change { AuditEvent.count }.by(1)
+        expect(AuditEvent.last.details).to include({
+                                                     change: 'suggestion_commit_message',
+                                                     from: previous_value,
+                                                     to: new_value
+                                                   })
+      end
+
+      it 'does not create an event when suggestion_commit_message change from nil to empty string' do
+        project.update!(suggestion_commit_message: "")
+
+        expect { foo_instance.execute }.not_to change { AuditEvent.count }
+      end
+
+      context 'when merge method is changed from Merge' do
+        where(:ff, :rebase, :method) do
+          true  | true  | 'Fast-forward'
+          true  | false | 'Fast-forward'
+          false | true  | 'Rebase merge'
+        end
+
+        before do
+          project.update!(merge_requests_ff_only_enabled: false, merge_requests_rebase_enabled: false)
+        end
+
+        with_them do
+          it 'creates an audit event' do
+            project.update!(merge_requests_ff_only_enabled: ff, merge_requests_rebase_enabled: rebase)
+
+            expect { foo_instance.execute }.to change { AuditEvent.count }.by(1)
+            expect(AuditEvent.last.details).to include({
+                                                         custom_message: "Changed merge method to #{method}"
+                                                       })
+          end
+        end
+      end
+
+      context 'when merge method is changed to Merge' do
+        where(:ff, :rebase) do
+          true  | true
+          true  | false
+          false | true
+        end
+
+        with_them do
+          before do
+            project.update!(merge_requests_ff_only_enabled: ff, merge_requests_rebase_enabled: rebase)
+          end
+
+          it 'creates an Merge method audit event' do
+            project.update!(merge_requests_ff_only_enabled: false, merge_requests_rebase_enabled: false)
+
+            expect { foo_instance.execute }.to change { AuditEvent.count }.by(1)
+            expect(AuditEvent.last.details).to include({
+                                                         custom_message: "Changed merge method to Merge"
+                                                       })
+          end
         end
       end
     end

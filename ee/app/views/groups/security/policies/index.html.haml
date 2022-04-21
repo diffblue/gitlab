@@ -1,0 +1,10 @@
+- breadcrumb_title _("Policies")
+- @content_wrapper_class = 'js-security-policies-container-wrapper'
+
+#js-group-security-policies-list{ data: { group_path: group.full_path,
+  assigned_policy_project: 'null',
+  disable_security_policy_project: false.to_s,
+  new_policy_path: new_group_security_policy_path(group),
+  empty_filter_svg_path: image_path('illustrations/issues.svg'),
+  empty_list_svg_path: image_path('illustrations/security-dashboard_empty.svg'),
+  documentation_path: help_page_path('user/application_security/policies/index.md') } }

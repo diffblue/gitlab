@@ -1,9 +1,11 @@
 <script>
 import { GlModal } from '@gitlab/ui';
 import { __ } from '~/locale';
+import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import CommitSection from './components/commit/commit_section.vue';
 import PipelineEditorDrawer from './components/drawer/pipeline_editor_drawer.vue';
 import PipelineEditorFileNav from './components/file_nav/pipeline_editor_file_nav.vue';
+import PipelineEditorFileTree from './components/file_tree/container.vue';
 import PipelineEditorHeader from './components/header/pipeline_editor_header.vue';
 import PipelineEditorTabs from './components/pipeline_editor_tabs.vue';
 import { CREATE_TAB } from './constants';
@@ -28,9 +30,11 @@ export default {
     GlModal,
     PipelineEditorDrawer,
     PipelineEditorFileNav,
+    PipelineEditorFileTree,
     PipelineEditorHeader,
     PipelineEditorTabs,
   },
+  mixins: [glFeatureFlagMixin()],
   props: {
     ciConfigData: {
       type: Object,
@@ -60,6 +64,8 @@ export default {
       currentTab: CREATE_TAB,
       scrollToCommitForm: false,
       shouldLoadNewBranch: false,
+      showDrawer: false,
+      showFileTree: false,
       showSwitchBranchModal: false,
     };
   },
@@ -67,13 +73,25 @@ export default {
     showCommitForm() {
       return this.currentTab === CREATE_TAB;
     },
+    isFileTreeVisible() {
+      return this.showFileTree && this.glFeatures.pipelineEditorFileTree;
+    },
   },
   methods: {
     closeBranchModal() {
       this.showSwitchBranchModal = false;
     },
+    closeDrawer() {
+      this.showDrawer = false;
+    },
     handleConfirmSwitchBranch() {
       this.showSwitchBranchModal = true;
+    },
+    openDrawer() {
+      this.showDrawer = true;
+    },
+    toggleFileTree() {
+      this.showFileTree = !this.showFileTree;
     },
     switchBranch() {
       this.showSwitchBranchModal = false;
@@ -107,25 +125,35 @@ export default {
     </gl-modal>
     <pipeline-editor-file-nav
       :has-unsaved-changes="hasUnsavedChanges"
+      :is-new-ci-config-file="isNewCiConfigFile"
       :should-load-new-branch="shouldLoadNewBranch"
       @select-branch="handleConfirmSwitchBranch"
+      @toggle-file-tree="toggleFileTree"
       v-on="$listeners"
     />
-    <pipeline-editor-header
-      :ci-config-data="ciConfigData"
-      :commit-sha="commitSha"
-      :is-new-ci-config-file="isNewCiConfigFile"
-      v-on="$listeners"
-    />
-    <pipeline-editor-tabs
-      :ci-config-data="ciConfigData"
-      :ci-file-content="ciFileContent"
-      :commit-sha="commitSha"
-      :is-new-ci-config-file="isNewCiConfigFile"
-      v-on="$listeners"
-      @set-current-tab="setCurrentTab"
-      @walkthrough-popover-cta-clicked="setScrollToCommitForm"
-    />
+    <div class="gl-display-flex gl-w-full gl-sm-flex-direction-column">
+      <pipeline-editor-file-tree v-if="isFileTreeVisible" class="gl-flex-shrink-0" />
+      <div class="gl-flex-grow-1 gl-min-w-0">
+        <pipeline-editor-header
+          :ci-config-data="ciConfigData"
+          :commit-sha="commitSha"
+          :is-new-ci-config-file="isNewCiConfigFile"
+          v-on="$listeners"
+        />
+        <pipeline-editor-tabs
+          :ci-config-data="ciConfigData"
+          :ci-file-content="ciFileContent"
+          :commit-sha="commitSha"
+          :is-new-ci-config-file="isNewCiConfigFile"
+          :show-drawer="showDrawer"
+          v-on="$listeners"
+          @open-drawer="openDrawer"
+          @close-drawer="closeDrawer"
+          @set-current-tab="setCurrentTab"
+          @walkthrough-popover-cta-clicked="setScrollToCommitForm"
+        />
+      </div>
+    </div>
     <commit-section
       v-if="showCommitForm"
       :ref="$options.commitSectionRef"
@@ -137,6 +165,10 @@ export default {
       @scrolled-to-commit-form="setScrollToCommitForm(false)"
       v-on="$listeners"
     />
-    <pipeline-editor-drawer />
+    <pipeline-editor-drawer
+      :is-visible="showDrawer"
+      v-on="$listeners"
+      @close-drawer="closeDrawer"
+    />
   </div>
 </template>

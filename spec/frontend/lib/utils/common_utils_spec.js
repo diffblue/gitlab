@@ -266,16 +266,88 @@ describe('common_utils', () => {
   });
 
   describe('debounceByAnimationFrame', () => {
-    it('debounces a function to allow a maximum of one call per animation frame', (done) => {
+    it('debounces a function to allow a maximum of one call per animation frame', () => {
       const spy = jest.fn();
       const debouncedSpy = commonUtils.debounceByAnimationFrame(spy);
-      window.requestAnimationFrame(() => {
-        debouncedSpy();
-        debouncedSpy();
+
+      return new Promise((resolve) => {
         window.requestAnimationFrame(() => {
-          expect(spy).toHaveBeenCalledTimes(1);
-          done();
+          debouncedSpy();
+          debouncedSpy();
+          window.requestAnimationFrame(() => {
+            expect(spy).toHaveBeenCalledTimes(1);
+            resolve();
+          });
         });
+      });
+    });
+  });
+
+  describe('insertText', () => {
+    let textArea;
+
+    beforeAll(() => {
+      textArea = document.createElement('textarea');
+      document.querySelector('body').appendChild(textArea);
+      textArea.value = 'two';
+      textArea.setSelectionRange(0, 0);
+      textArea.focus();
+    });
+
+    afterAll(() => {
+      textArea.parentNode.removeChild(textArea);
+    });
+
+    describe('using execCommand', () => {
+      beforeAll(() => {
+        document.execCommand = jest.fn(() => true);
+      });
+
+      it('inserts the text', () => {
+        commonUtils.insertText(textArea, 'one');
+
+        expect(document.execCommand).toHaveBeenCalledWith('insertText', false, 'one');
+      });
+
+      it('removes selected text', () => {
+        textArea.setSelectionRange(0, textArea.value.length);
+
+        commonUtils.insertText(textArea, '');
+
+        expect(document.execCommand).toHaveBeenCalledWith('delete');
+      });
+    });
+
+    describe('using fallback', () => {
+      beforeEach(() => {
+        document.execCommand = jest.fn(() => false);
+        jest.spyOn(textArea, 'dispatchEvent');
+        textArea.value = 'two';
+        textArea.setSelectionRange(0, 0);
+      });
+
+      it('inserts the text', () => {
+        commonUtils.insertText(textArea, 'one');
+
+        expect(textArea.value).toBe('onetwo');
+        expect(textArea.dispatchEvent).toHaveBeenCalled();
+      });
+
+      it('replaces the selection', () => {
+        textArea.setSelectionRange(0, textArea.value.length);
+
+        commonUtils.insertText(textArea, 'one');
+
+        expect(textArea.value).toBe('one');
+        expect(textArea.selectionStart).toBe(textArea.value.length);
+      });
+
+      it('removes selected text', () => {
+        textArea.setSelectionRange(0, textArea.value.length);
+
+        commonUtils.insertText(textArea, '');
+
+        expect(textArea.value).toBe('');
       });
     });
   });
@@ -372,28 +444,24 @@ describe('common_utils', () => {
       jest.spyOn(window, 'setTimeout');
     });
 
-    it('solves the promise from the callback', (done) => {
+    it('solves the promise from the callback', () => {
       const expectedResponseValue = 'Success!';
-      commonUtils
+      return commonUtils
         .backOff((next, stop) =>
           new Promise((resolve) => {
             resolve(expectedResponseValue);
-          })
-            .then((resp) => {
-              stop(resp);
-            })
-            .catch(done.fail),
+          }).then((resp) => {
+            stop(resp);
+          }),
         )
         .then((respBackoff) => {
           expect(respBackoff).toBe(expectedResponseValue);
-          done();
-        })
-        .catch(done.fail);
+        });
     });
 
-    it('catches the rejected promise from the callback ', (done) => {
+    it('catches the rejected promise from the callback ', () => {
       const errorMessage = 'Mistakes were made!';
-      commonUtils
+      return commonUtils
         .backOff((next, stop) => {
           new Promise((resolve, reject) => {
             reject(new Error(errorMessage));
@@ -406,39 +474,34 @@ describe('common_utils', () => {
         .catch((errBackoffResp) => {
           expect(errBackoffResp instanceof Error).toBe(true);
           expect(errBackoffResp.message).toBe(errorMessage);
-          done();
         });
     });
 
-    it('solves the promise correctly after retrying a third time', (done) => {
+    it('solves the promise correctly after retrying a third time', () => {
       let numberOfCalls = 1;
       const expectedResponseValue = 'Success!';
-      commonUtils
+      return commonUtils
         .backOff((next, stop) =>
-          Promise.resolve(expectedResponseValue)
-            .then((resp) => {
-              if (numberOfCalls < 3) {
-                numberOfCalls += 1;
-                next();
-                jest.runOnlyPendingTimers();
-              } else {
-                stop(resp);
-              }
-            })
-            .catch(done.fail),
+          Promise.resolve(expectedResponseValue).then((resp) => {
+            if (numberOfCalls < 3) {
+              numberOfCalls += 1;
+              next();
+              jest.runOnlyPendingTimers();
+            } else {
+              stop(resp);
+            }
+          }),
         )
         .then((respBackoff) => {
           const timeouts = window.setTimeout.mock.calls.map(([, timeout]) => timeout);
 
           expect(timeouts).toEqual([2000, 4000]);
           expect(respBackoff).toBe(expectedResponseValue);
-          done();
-        })
-        .catch(done.fail);
+        });
     });
 
-    it('rejects the backOff promise after timing out', (done) => {
-      commonUtils
+    it('rejects the backOff promise after timing out', () => {
+      return commonUtils
         .backOff((next) => {
           next();
           jest.runOnlyPendingTimers();
@@ -449,7 +512,6 @@ describe('common_utils', () => {
           expect(timeouts).toEqual([2000, 4000, 8000, 16000, 32000, 32000]);
           expect(errBackoffResp instanceof Error).toBe(true);
           expect(errBackoffResp.message).toBe('BACKOFF_TIMEOUT');
-          done();
         });
     });
   });

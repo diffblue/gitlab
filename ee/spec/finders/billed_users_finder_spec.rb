@@ -7,90 +7,138 @@ RSpec.describe BilledUsersFinder do
 
   let(:search_term) { nil }
   let(:order_by) { nil }
+  let(:include_awaiting_members) { false }
+
+  subject(:execute) { described_class.new(group, search_term: search_term, order_by: order_by, include_awaiting_members: include_awaiting_members).execute }
 
   describe '#execute' do
-    let_it_be(:maria) { create(:group_member, group: group, user: create(:user, name: 'Maria Gomez')) }
-    let_it_be(:john_smith) { create(:group_member, group: group, user: create(:user, name: 'John Smith')) }
-    let_it_be(:john_doe) { create(:group_member, group: group, user: create(:user, name: 'John Doe')) }
-    let_it_be(:sophie) { create(:group_member, group: group, user: create(:user, name: 'Sophie Dupont')) }
+    context 'without members' do
+      let(:include_awaiting_members) { true }
 
-    subject { described_class.new(group, search_term: search_term, order_by: order_by) }
-
-    context 'when a group does not have any billed users' do
       it 'returns an empty object' do
-        allow(group).to receive(:billed_user_ids).and_return({ user_ids: [] })
-
-        expect(subject.execute).to eq({})
+        expect(execute).to eq({})
       end
     end
 
-    context 'when a search parameter is provided' do
-      let(:search_term) { 'John' }
+    context 'with members' do
+      let_it_be(:maria) { create(:group_member, group: group, user: create(:user, name: 'Maria Gomez')) }
+      let_it_be(:john_smith) { create(:group_member, group: group, user: create(:user, name: 'John Smith')) }
+      let_it_be(:john_doe) { create(:group_member, group: group, user: create(:user, name: 'John Doe')) }
+      let_it_be(:sophie) { create(:group_member, group: group, user: create(:user, name: 'Sophie Dupont')) }
+      let_it_be(:alice_awaiting) { create(:group_member, :awaiting, :developer, group: group, user: create(:user, name: 'Alice Waiting'))}
 
-      context 'when a sorting parameter is provided (eg name descending)' do
-        let(:order_by) { 'name_desc' }
+      shared_examples 'with awaiting members' do
+        context 'when awaiting users are included' do
+          let(:include_awaiting_members) { true }
 
-        it 'sorts results accordingly' do
-          expect(subject.execute[:users]).to eq([john_smith, john_doe].map(&:user))
+          it 'includes awaiting users' do
+            expect(execute[:users]).to include(alice_awaiting.user)
+          end
+        end
+
+        context 'when awaiting users are excluded' do
+          let(:include_awaiting_members) { false }
+
+          it 'excludes awaiting users' do
+            expect(execute[:users]).not_to include(alice_awaiting.user)
+          end
         end
       end
 
-      context 'when a sorting parameter is not provided' do
-        subject { described_class.new(group, search_term: search_term) }
+      context 'when user is awaiting and active member' do
+        let_it_be(:project) { create(:project, group: group) }
 
-        it 'sorts expected results in name_asc order' do
-          expect(subject.execute[:users]).to eq([john_doe, john_smith].map(&:user))
+        let(:include_awaiting_members) { true }
+
+        before do
+          create(:project_member, :maintainer, user: alice_awaiting.user, source: project)
+        end
+
+        it 'is only included once' do
+          expect(execute[:users]).to include(alice_awaiting.user).once
         end
       end
-    end
 
-    context 'when a search parameter is not present' do
-      subject { described_class.new(group) }
+      it_behaves_like 'with awaiting members'
 
-      it 'returns expected users in name asc order when a sorting is not provided either' do
-        allow(group).to receive(:billed_user_members).and_return([john_doe, john_smith, sophie, maria])
+      context 'when a search parameter is provided' do
+        let(:search_term) { 'John' }
 
-        expect(subject.execute[:users]).to eq([john_doe, john_smith, maria, sophie].map(&:user))
-      end
+        context 'when a sorting parameter is provided (eg name descending)' do
+          let(:order_by) { 'name_desc' }
 
-      context 'and when a sorting parameter is provided (eg name descending)' do
-        let(:order_by) { 'name_desc' }
+          it 'sorts results accordingly' do
+            expect(execute[:users]).to eq([john_smith, john_doe].map(&:user))
+          end
+        end
 
-        subject { described_class.new(group, search_term: search_term, order_by: order_by) }
+        context 'when a sorting parameter is not provided' do
+          subject(:execute) { described_class.new(group, search_term: search_term).execute }
 
-        it 'sorts results accordingly' do
-          expect(subject.execute[:users]).to eq([sophie, maria, john_smith, john_doe].map(&:user))
+          it 'sorts expected results in name_asc order' do
+            expect(execute[:users]).to eq([john_doe, john_smith].map(&:user))
+          end
+        end
+
+        context 'when searching for an awaiting user' do
+          let(:search_term) { 'Alice' }
+
+          it_behaves_like 'with awaiting members'
         end
       end
-    end
 
-    context 'with billable group members including shared members' do
-      let_it_be(:shared_with_group_member) { create(:group_member, user: create(:user, name: 'Shared Group User')) }
-      let_it_be(:shared_with_project_member) { create(:group_member, user: create(:user, name: 'Shared Project User')) }
-      let_it_be(:project) { create(:project, group: group) }
+      context 'when a search parameter is not present' do
+        subject(:execute) { described_class.new(group, include_awaiting_members: include_awaiting_members).execute }
 
-      before do
-        create(:group_group_link, shared_group: group, shared_with_group: shared_with_group_member.group)
-        create(:project_group_link, group: shared_with_project_member.group, project: project)
+        it 'returns expected users in name asc order when a sorting is not provided either' do
+          expect(execute[:users]).to eq([john_doe, john_smith, maria, sophie].map(&:user))
+        end
+
+        it_behaves_like 'with awaiting members'
+
+        context 'and when a sorting parameter is provided (eg name descending)' do
+          let(:order_by) { 'name_desc' }
+
+          subject(:execute) { described_class.new(group, search_term: search_term, order_by: order_by, include_awaiting_members: include_awaiting_members).execute }
+
+          it 'sorts results accordingly' do
+            expect(execute[:users]).to eq([sophie, maria, john_smith, john_doe].map(&:user))
+          end
+
+          context 'when awaiting users are included' do
+            let(:include_awaiting_members) { true }
+
+            it 'sorts results accordingly' do
+              expect(execute[:users]).to eq([sophie, maria, john_smith, john_doe, alice_awaiting].map(&:user))
+            end
+          end
+        end
       end
 
-      it 'returns a hash of users and user ids' do
-        expect(subject.execute.keys).to eq([
-          :users,
-          :group_member_user_ids,
-          :project_member_user_ids,
-          :shared_group_user_ids,
-          :shared_project_user_ids
-        ])
-      end
+      context 'with billable group members including shared members' do
+        let_it_be(:shared_with_group_member) { create(:group_member, user: create(:user, name: 'Shared Group User')) }
+        let_it_be(:shared_with_project_member) { create(:group_member, user: create(:user, name: 'Shared Project User')) }
+        let_it_be(:project) { create(:project, group: group) }
 
-      it 'returns the correct user ids' do
-        result = subject.execute
+        before do
+          create(:group_group_link, shared_group: group, shared_with_group: shared_with_group_member.group)
+          create(:project_group_link, group: shared_with_project_member.group, project: project)
+        end
 
-        aggregate_failures do
-          expect(result[:group_member_user_ids]).to contain_exactly(*[maria, john_smith, john_doe, sophie].map(&:user_id))
-          expect(result[:shared_group_user_ids]).to contain_exactly(shared_with_group_member.user_id)
-          expect(result[:shared_project_user_ids]).to contain_exactly(shared_with_project_member.user_id)
+        it 'returns a hash of users and user ids' do
+          expect(execute.keys).to eq([
+            :users,
+            :group_member_user_ids,
+            :project_member_user_ids,
+            :shared_group_user_ids,
+            :shared_project_user_ids
+          ])
+        end
+
+        it 'returns the correct user ids', :aggregate_failures do
+          expect(execute[:group_member_user_ids]).to contain_exactly(*[maria, john_smith, john_doe, sophie].map(&:user_id))
+          expect(execute[:shared_group_user_ids]).to contain_exactly(shared_with_group_member.user_id)
+          expect(execute[:shared_project_user_ids]).to contain_exactly(shared_with_project_member.user_id)
         end
       end
     end

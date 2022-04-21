@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 Gitlab::Seeder.quiet do
-  groups = Group.take(5)
+  groups = Group.not_mass_generated.take(5)
 
   next if groups.empty?
 
@@ -34,7 +34,6 @@ Gitlab::Seeder.quiet do
           runner_configured: booleans.sample,
           pipeline_succeeded: booleans.sample,
           deploy_succeeded: booleans.sample,
-          security_scan_succeeded: booleans.sample,
           code_owners_used_count: rand(10),
           sast_enabled_count: rand(10),
           dast_enabled_count: rand(10),

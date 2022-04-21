@@ -3,11 +3,18 @@
 
   .form-group
     = f.label :name do
-      = _("Topic name")
-    = f.text_field :name, placeholder: _('My topic'), class: 'form-control input-lg', data: { qa_selector: 'topic_name_field' },
+      = _("Topic slug (name)")
+    = f.text_field :name, placeholder: _('my-topic'), class: 'form-control input-lg', data: { qa_selector: 'topic_name_field' },
       required: true,
       title: _('Please fill in a name for your topic.'),
       autofocus: true
+
+  .form-group
+    = f.label :title do
+      = _("Topic title")
+    = f.text_field :title, placeholder: _('My topic'), class: 'form-control input-lg', data: { qa_selector: 'topic_title_field' },
+      required: true,
+      title: _('Please fill in a title for your topic.')
 
   .form-group
     = f.label :description, _("Description")
@@ -27,7 +34,7 @@
         = topic_icon(@topic, alt: _('Topic avatar'), class: 'avatar topic-avatar s90')
     = render 'shared/choose_avatar_button', f: f
     - if @topic.avatar?
-      .js-remove-topic-avatar{ data: { path: admin_topic_avatar_path(@topic) } }
+      .js-remove-topic-avatar{ data: { path: admin_topic_avatar_path(@topic), name: @topic.name } }
 
   - if @topic.new_record?
     .form-actions

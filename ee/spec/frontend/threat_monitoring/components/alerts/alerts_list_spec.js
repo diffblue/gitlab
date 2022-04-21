@@ -1,4 +1,7 @@
-import { GlIntersectionObserver, GlSkeletonLoading } from '@gitlab/ui';
+import {
+  GlIntersectionObserver,
+  GlDeprecatedSkeletonLoading as GlSkeletonLoading,
+} from '@gitlab/ui';
 import { createLocalVue } from '@vue/test-utils';
 import VueApollo from 'vue-apollo';
 import { nextTick } from 'vue';

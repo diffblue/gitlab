@@ -263,25 +263,13 @@ RSpec.describe Registrations::WelcomeController do
             let(:joining_project) { 'true' }
 
             it { is_expected.to redirect_to dashboard_projects_path }
-
-            it 'creates a "joining_project" experiment track event' do
-              expect(experiment(:bypass_registration)).to track(:joining_project, user: user).on_next_instance
-
-              subject
-            end
-          end
-
-          context 'when joining_project is "false"', :experiment do
-            it 'creates a "creating_project" experiment track event' do
-              expect(experiment(:bypass_registration)).to track(:creating_project, user: user).on_next_instance
-
-              subject
-            end
           end
 
           context 'when joining_project is "false"' do
             context 'when combined_registration is candidate variant' do
               before do
+                stub_feature_flags(about_your_company_registration_flow: false)
+
                 allow(controller).to receive(:experiment).and_call_original
                 stub_experiments(combined_registration: :candidate)
               end
@@ -290,7 +278,17 @@ RSpec.describe Registrations::WelcomeController do
             end
           end
 
-          it { is_expected.to redirect_to new_users_sign_up_group_path }
+          context 'when setup_for_company is "true"' do
+            let(:setup_for_company) { 'true' }
+
+            it { is_expected.to redirect_to new_users_sign_up_company_path }
+          end
+
+          context 'when setup_for_company is "false"' do
+            let(:setup_for_company) { 'false' }
+
+            it { is_expected.to redirect_to new_users_sign_up_group_path }
+          end
 
           context 'when in subscription flow' do
             before do

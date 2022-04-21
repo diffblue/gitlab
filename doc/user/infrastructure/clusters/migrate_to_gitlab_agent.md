@@ -14,11 +14,13 @@ To connect your Kubernetes cluster with GitLab, you can use:
 
 The certificate-based integration is
 [**deprecated**](https://about.gitlab.com/blog/2021/11/15/deprecating-the-cert-based-kubernetes-integration/)
-in GitLab 14.5. It is expected to be
-[turned off by default in 15.0](../../../update/deprecations.md#certificate-based-integration-with-kubernetes)
-and removed in GitLab 15.6.
+in GitLab 14.5. The removal dates are:
 
-If you are using the certificate-based integration, you should move to another workflow as soon as possible. 
+- [GitLab.com customers](../../../update/deprecations.md#saas-certificate-based-integration-with-kubernetes): GitLab 15.0.
+- [Self-managed customers](../../../update/deprecations.md#self-managed-certificate-based-integration-with-kubernetes):
+  Placed behind a disabled feature flag in GitLab 15.0, and removed entirely in GitLab 15.6.
+
+If you are using the certificate-based integration, you should move to another workflow as soon as possible.
 
 As a general rule, to migrate clusters that rely on GitLab CI/CD,
 you can use the [CI/CD workflow](../../clusters/agent/ci_cd_tunnel.md).
@@ -48,19 +50,43 @@ strategies to deploy to your cluster with restricted account access. To do so:
 
 ### Migrate from Auto DevOps
 
-To configure your Auto DevOps project to use the GitLab agent:
+In your Auto DevOps project, you can use the GitLab agent to connect with your Kubernetes cluster.
 
-1. Follow the steps to [install an agent](../../clusters/agent/install/index.md) in your cluster.
-1. Go to the project where you use Auto DevOps.
-1. On the left sidebar, select **Settings > CI/CD** and expand **Variables**.
-1. Select **Add new variable**.
-1. Add `KUBE_CONTEXT` as the key, `path/to/agent/project:agent-name` as the value, and select the environment scope of your choice.
+1. [Install an agent](../../clusters/agent/install/index.md) in your cluster.
+1. In GitLab, go to the project where you use Auto DevOps.
+1. Add three variables. On the left sidebar, select **Settings > CI/CD** and expand **Variables**.
+   - Add a key called `KUBE_INGRESS_BASE_DOMAIN` with the application deployment domain as the value.
+   - Add a key called `KUBE_CONTEXT` with a value like `path/to/agent/project:agent-name`.
+     Select the environment scope of your choice.
+     If you are not sure what your agent’s context is, edit your `.gitlab-ci.yml` file and add a job to see the available contexts:
+
+     ```yaml
+      deploy:
+       image:
+         name: bitnami/kubectl:latest
+         entrypoint: [""]
+       script:
+       - kubectl config get-contexts
+      ```
+
+   - Add a key called `KUBE_NAMESPACE` with a value of the Kubernetes namespace for your deployments to target. Set the same environment scope.
 1. Select **Add variable**.
-1. Repeat the process to add another variable, `KUBE_NAMESPACE`, setting the value for the Kubernetes namespace you want your deployments to target, and set the same environment scope from the previous step.
 1. On the left sidebar, select **Infrastructure > Kubernetes clusters**.
 1. From the certificate-based clusters section, open the cluster that serves the same environment scope.
 1. Select the **Details** tab and disable the cluster.
-1. To activate the changes, on the left sidebar, select **CI/CD > Variables > Run pipeline**.
+1. Edit your `.gitlab-ci.yml` file and ensure it's using the Auto DevOps template. For example:
+
+   ```yaml
+   include:
+     template: Auto-DevOps.gitlab-ci.yml
+
+   variables:
+     KUBE_INGRESS_BASE_DOMAIN: 74.220.23.215.nip.io
+     KUBE_CONTEXT: "gitlab-examples/ops/gitops-demo/k8s-agents:demo-agent"
+     KUBE_NAMESPACE: "demo-agent"
+   ```
+
+1. To test your pipeline, on the left sidebar, select **CI/CD > Pipelines** and then **Run pipeline**.
 
 For an example, [view this project](https://gitlab.com/gitlab-examples/ops/gitops-demo/hello-world-service).
 
@@ -70,7 +96,11 @@ Follow the process for the [CI/CD workflow](../../clusters/agent/ci_cd_tunnel.md
 
 ## Migrate from GitLab Managed applications
 
-Follow the process to [migrate from GitLab Managed Apps to the cluster management project](../../clusters/migrating_from_gma_to_project_template.md).
+[GitLab Managed Apps (GMA)](../../clusters/applications.md#gitlab-managed-apps-deprecated) were deprecated in GitLab 14.0, and
+the agent for Kubernetes does not support them. To migrate from GMA to the agent, go through the following steps:
+
+1. [Migrate from GitLab Managed Apps to a cluster management project](../../clusters/migrating_from_gma_to_project_template.md).
+1. [Migrate the cluster management project to use the agent](../../clusters/management_project_template.md).
 
 ## Migrate a cluster management project
 

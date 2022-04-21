@@ -184,4 +184,14 @@ describe('Policy Rule Multi Select', () => {
     expect(dropdownItemsWithDone.filter((element) => element.props('isChecked'))).toHaveLength(0);
     expect(wrapper.emitted().input).toEqual([[[]]]);
   });
+
+  describe('with includeSelectAll set to false', () => {
+    beforeEach(() => {
+      createComponent({ includeSelectAll: false });
+    });
+
+    it('does not show select all option', () => {
+      expect(findAllSelectedItem().exists()).toBe(false);
+    });
+  });
 });

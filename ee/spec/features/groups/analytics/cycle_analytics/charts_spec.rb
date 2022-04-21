@@ -12,6 +12,16 @@ RSpec.describe 'Value stream analytics charts', :js do
   let_it_be(:group_label2) { create(:group_label, group: group) }
   let_it_be(:label) { create(:group_label, group: group2) }
 
+  let_it_be(:custom_value_stream_name) { "New created value stream" }
+
+  let_it_be(:value_stream) do
+    create(:cycle_analytics_group_value_stream, group: group, name: custom_value_stream_name, stages: [
+      create(:cycle_analytics_group_stage, group: group, name: "Issue", relative_position: 1, start_event_identifier: :issue_created, end_event_identifier: :issue_closed),
+      create(:cycle_analytics_group_stage, group: group, name: "Code", relative_position: 2, start_event_identifier: :merge_request_created, end_event_identifier: :merge_request_merged),
+      create(:cycle_analytics_group_stage, group: group, name: "Milestone Plan", relative_position: 3, start_event_identifier: :issue_first_associated_with_milestone, end_event_identifier: :issue_first_added_to_board)
+    ])
+  end
+
   3.times do |i|
     let_it_be("issue_#{i}".to_sym) { create(:issue, title: "New Issue #{i}", project: project, created_at: 2.days.ago) }
   end
@@ -33,12 +43,8 @@ RSpec.describe 'Value stream analytics charts', :js do
   end
 
   context 'Duration chart' do
-    let(:custom_value_stream_name) { "New created value stream" }
-
     before do
-      select_group(group)
-
-      create_custom_value_stream(custom_value_stream_name)
+      select_group_and_custom_value_stream(group, custom_value_stream_name)
     end
 
     it 'displays data for all stages on the overview' do
@@ -80,7 +86,7 @@ RSpec.describe 'Value stream analytics charts', :js do
             create(:labeled_issue, created_at: i.days.ago, project: create(:project, group: group), labels: [group_label2])
           end
 
-          select_group(group)
+          select_group_and_custom_value_stream(group, custom_value_stream_name)
         end
 
         it 'displays the chart' do
@@ -117,7 +123,7 @@ RSpec.describe 'Value stream analytics charts', :js do
 
       context 'no data available' do
         before do
-          select_group(group)
+          select_group_and_custom_value_stream(group, custom_value_stream_name)
         end
 
         it 'shows the no data available message' do

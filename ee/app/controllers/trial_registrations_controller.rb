@@ -42,13 +42,19 @@ class TrialRegistrationsController < RegistrationsController
 
   def sign_up_params
     if params[:user]
-      params.require(:user).permit(:first_name, :last_name, :username, :email, :password, :skip_confirmation, :email_opted_in)
+      params.require(:user).permit(*sign_up_params_attributes)
     else
       {}
     end
+  end
+
+  def sign_up_params_attributes
+    [:first_name, :last_name, :username, :email, :password, :skip_confirmation, :email_opted_in]
   end
 
   def resource
     @resource ||= Users::AuthorizedBuildService.new(current_user, sign_up_params).execute
   end
 end
+
+TrialRegistrationsController.prepend_mod

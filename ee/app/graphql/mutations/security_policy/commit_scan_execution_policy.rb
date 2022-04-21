@@ -4,14 +4,19 @@ module Mutations
   module SecurityPolicy
     class CommitScanExecutionPolicy < BaseMutation
       graphql_name 'ScanExecutionPolicyCommit'
-      description 'Commits the `policy_yaml` content to the assigned security policy project for the given project(`project_path`)'
+      description 'Commits the `policy_yaml` content to the assigned security policy project for the given project (`full_path`)'
 
-      include FindsProject
+      include FindsProjectOrGroupForSecurityPolicies
 
-      authorize :security_orchestration_policies
+      authorize :read_security_orchestration_policies
+
+      argument :full_path, GraphQL::Types::String,
+               required: false,
+               description: 'Full path of the project.'
 
       argument :project_path, GraphQL::Types::ID,
-               required: true,
+               required: false,
+               deprecated: { reason: 'Use `fullPath`', milestone: '14.10' },
                description: 'Full path of the project.'
 
       argument :policy_yaml, GraphQL::Types::String,
@@ -33,9 +38,9 @@ module Mutations
             description: 'Name of the branch to which the policy changes are committed.'
 
       def resolve(args)
-        project = authorized_find!(args[:project_path])
+        project_or_group = authorized_find!(**args)
 
-        result = commit_policy(project, args)
+        result = commit_policy(project_or_group, args)
         error_message = result[:status] == :error ? result[:message] : nil
         error_details = result[:status] == :error ? result[:details] : nil
 
@@ -47,9 +52,9 @@ module Mutations
 
       private
 
-      def commit_policy(project, args)
+      def commit_policy(project_or_group, args)
         ::Security::SecurityOrchestrationPolicies::PolicyCommitService
-          .new(project: project, current_user: current_user, params: {
+          .new(container: project_or_group, current_user: current_user, params: {
             name: args[:name],
             policy_yaml: args[:policy_yaml],
             operation: Types::MutationOperationModeEnum.enum.key(args[:operation_mode]).to_sym

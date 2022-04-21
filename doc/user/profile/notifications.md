@@ -11,7 +11,7 @@ Stay informed about what's happening in GitLab with email notifications.
 You can receive updates about activity in issues, merge requests, epics, and designs.
 
 For the tool that GitLab administrators can use to send messages to users, read
-[Email from GitLab](../../tools/email.md).
+[Email from GitLab](../admin_area/email_from_gitlab.md).
 
 ## Who receives notifications
 
@@ -21,10 +21,13 @@ that happen there.
 You might receive notifications for one of the following reasons:
 
 - You participate in an issue, merge request, epic, or design. You become a participant when you comment
-  or edit, or someone mentions you.
+  or edit, or someone mentions <sup>1</sup> you.
 - You've [enabled notifications in an issue, merge request, or epic](#notifications-on-issues-merge-requests-and-epics).
 - You've configured notifications for the [project](#change-level-of-project-notifications) or [group](#group-notifications).
-- You're subscribed to group or project pipeline notifications via the pipeline emails [integration](../project/integrations/overview.md).
+- You're subscribed to group or project pipeline notifications via the pipeline emails [integration](../project/integrations/index.md).
+
+1. GitLab doesn't send a notification when
+   [a comment is edited to include a user mention](../discussions/index.md#editing-a-comment-to-add-a-mention).
 
 NOTE:
 Administrators can block notifications, preventing them from being sent.
@@ -242,26 +245,26 @@ epics:
 
 | Event                  | Sent to |
 |------------------------|---------|
-| Change milestone issue | Subscribers, participants mentioned, and Custom notification level with this event selected. |
-| Change milestone merge request | Subscribers, participants mentioned, and Custom notification level with this event selected. |
+| Change milestone issue | Subscribers and participants mentioned. |
+| Change milestone merge request | Subscribers and participants mentioned. |
 | Close epic             |         |
 | Close issue            |         |
 | Close merge request    |         |
-| Due issue              | Participants and Custom notification level with this event selected. |
 | Failed pipeline        | The author of the pipeline. |
 | Fixed pipeline         | The author of the pipeline. Enabled by default. _[Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/24309) in GitLab 13.1._ |
+| Issue due              | Participants and Custom notification level with this event selected. |
 | Merge merge request    |         |
 | Merge when pipeline succeeds | Author, Participants, Watchers, Subscribers, and Custom notification level with this event selected. Custom notification level is ignored for Author, Watchers and Subscribers. _[Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/211961) in GitLab 13.4._ |
 | Merge request [marked as ready](../project/merge_requests/drafts.md) | Watchers and participants. _[Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/15332) in GitLab 13.10._ |
-| New comment            | Participants, Watchers, Subscribers, and Custom notification level with this event selected. Also anyone mentioned by username in the comment, with notification level "Mention" or higher. |
 | New epic               |         |
 | New issue              |         |
 | New merge request      |         |
+| New note               | Participants, Watchers, Subscribers, and Custom notification level with this event selected. Also anyone mentioned by username in the comment, with notification level "Mention" or higher. |
 | Push to merge request  | Participants and Custom notification level with this event selected. |
 | Reassign issue         | Participants, Watchers, Subscribers, Custom notification level with this event selected, and the old assignee. |
 | Reassign merge request | Participants, Watchers, Subscribers, Custom notification level with this event selected, and the old assignee. |
-| Remove milestone issue | Subscribers, participants mentioned, and Custom notification level with this event selected. |
-| Remove milestone merge request | Subscribers, participants mentioned, and Custom notification level with this event selected. |
+| Remove milestone issue | Subscribers and participants mentioned. |
+| Remove milestone merge request | Subscribers and participants mentioned. |
 | Reopen epic            |         |
 | Reopen issue           |         |
 | Reopen merge request   |         |
@@ -305,7 +308,7 @@ If you no longer wish to receive any email notifications:
    **Disabled**.
 
 On self-managed installations, even after doing this, your instance administrator
-[can still email you](../../tools/email.md).
+[can still email you](../admin_area/email_from_gitlab.md).
 To unsubscribe, select the unsubscribe link in one of these emails.
 
 ## Email headers you can use to filter email

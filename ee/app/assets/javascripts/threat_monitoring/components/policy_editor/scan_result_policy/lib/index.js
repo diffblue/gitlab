@@ -1,6 +1,6 @@
 export { fromYaml } from './from_yaml';
 export { toYaml } from './to_yaml';
-export { buildRule } from './rules';
+export { buildRule, invalidScanners } from './rules';
 export { approversOutOfSync } from './actions';
 export * from './humanize';
 
@@ -10,8 +10,7 @@ description: ''
 enabled: false
 rules:
   - type: scan_finding
-    branches:
-      - main
+    branches: []
     scanners:
       - container_scanning
     vulnerabilities_allowed: 0

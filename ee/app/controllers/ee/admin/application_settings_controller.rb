@@ -11,7 +11,7 @@ module EE
         before_action :elasticsearch_index_settings, only: [:advanced_search]
         before_action :elasticsearch_warn_if_not_using_aliases, only: [:advanced_search]
 
-        feature_category :license, [:seat_link_payload]
+        feature_category :provision, [:seat_link_payload]
         feature_category :source_code_management, [:templates]
         feature_category :global_search, [:advanced_search]
 

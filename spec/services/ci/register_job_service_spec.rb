@@ -103,6 +103,20 @@ module Ci
             pending_job.create_queuing_entry!
           end
 
+          context 'when build owner has been blocked' do
+            let(:user) { create(:user, :blocked) }
+
+            before do
+              pending_job.update!(user: user)
+            end
+
+            it 'does not pick the build and drops the build' do
+              expect(execute(shared_runner)).to be_falsey
+
+              expect(pending_job.reload).to be_user_blocked
+            end
+          end
+
           context 'for multiple builds' do
             let!(:project2) { create :project, shared_runners_enabled: true }
             let!(:pipeline2) { create :ci_pipeline, project: project2 }
@@ -770,6 +784,25 @@ module Ci
           end
 
           include_examples 'handles runner assignment'
+        end
+
+        context 'when a conflicting data is stored in denormalized table' do
+          let!(:specific_runner) { create(:ci_runner, :project, projects: [project], tag_list: %w[conflict]) }
+          let!(:pending_job) { create(:ci_build, :pending, :queued, pipeline: pipeline, tag_list: %w[conflict]) }
+
+          before do
+            pending_job.update_column(:status, :running)
+          end
+
+          it 'removes queuing entry upon build assignment attempt' do
+            expect(pending_job.reload).to be_running
+            expect(pending_job.queuing_entry).to be_present
+
+            result = described_class.new(specific_runner).execute
+
+            expect(result).not_to be_valid
+            expect(pending_job.reload.queuing_entry).not_to be_present
+          end
         end
       end
 

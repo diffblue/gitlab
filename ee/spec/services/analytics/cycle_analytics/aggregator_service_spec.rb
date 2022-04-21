@@ -15,13 +15,19 @@ RSpec.describe Analytics::CycleAnalytics::AggregatorService do
     let(:mode) { :other_mode }
 
     it 'raises error' do
-      expect { run_service }.to raise_error /Only :incremental mode is supported/
+      expect { run_service }.to raise_error /Only :incremental and :full modes are supported/
     end
   end
 
   context 'when the group is not licensed' do
     it 'sets the aggregation record disabled' do
       expect { run_service }.to change { aggregation.reload.enabled }.from(true).to(false)
+    end
+
+    it 'calls the DataLoaderService only once' do
+      expect(Analytics::CycleAnalytics::DataLoaderService).to receive(:new).once.and_call_original
+
+      run_service
     end
   end
 
@@ -109,6 +115,54 @@ RSpec.describe Analytics::CycleAnalytics::AggregatorService do
           last_incremental_issues_updated_at: be_within(5.seconds).of(issue2.updated_at),
           last_incremental_issues_id: issue2.id
         )
+      end
+    end
+
+    context 'when running a full aggregation' do
+      let(:mode) { :full }
+
+      let(:project) { create(:project, group: group) }
+      let!(:merge_request_1) { create(:merge_request, :with_merged_metrics, :unique_branches, project: project) }
+      let!(:merge_request_2) { create(:merge_request, :with_merged_metrics, :unique_branches, project: project) }
+
+      before do
+        create(:cycle_analytics_group_stage,
+               group: group,
+               start_event_identifier: :merge_request_created,
+               end_event_identifier: :merge_request_merged
+              )
+
+        stub_const('Analytics::CycleAnalytics::DataLoaderService::MAX_UPSERT_COUNT', 1)
+        stub_const('Analytics::CycleAnalytics::DataLoaderService::UPSERT_LIMIT', 1)
+        stub_const('Analytics::CycleAnalytics::DataLoaderService::BATCH_LIMIT', 1)
+      end
+
+      context 'when aggregation is not finished' do
+        it 'persists the cursor attributes' do
+          run_service
+
+          expect(aggregation.reload).to have_attributes(
+            full_processed_records: [1],
+            last_full_merge_requests_updated_at: be_within(5.seconds).of(merge_request_1.updated_at),
+            last_full_merge_requests_id: merge_request_1.id,
+            last_full_issues_updated_at: nil,
+            last_full_issues_id: nil
+          )
+        end
+      end
+
+      context 'when aggregation is finished during the second run' do
+        it 'resets the cursor attributes so the aggregation starts from the beginning' do
+          3.times { run_service }
+
+          expect(aggregation.reload).to have_attributes(
+            full_processed_records: [1, 1, 0],
+            last_full_merge_requests_updated_at: nil,
+            last_full_merge_requests_id: nil,
+            last_full_issues_updated_at: nil,
+            last_full_issues_id: nil
+          )
+        end
       end
     end
   end

@@ -827,7 +827,7 @@ export const mockMilestoneTokenConfig = {
   token: MilestoneToken,
   operators: OPERATOR_IS_ONLY,
   fetchMilestones: expect.any(Function),
-  defaultMilestones: expect.any(Array),
+  defaultMilestones: [],
 };
 
 export const mockConfidentialTokenConfig = {

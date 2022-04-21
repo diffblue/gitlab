@@ -3,9 +3,10 @@
 require 'spec_helper'
 
 RSpec.describe MergeRequests::SyncReportApproverApprovalRules do
-  subject(:service) { described_class.new(merge_request) }
+  subject(:service) { described_class.new(merge_request, current_user) }
 
   let(:merge_request) { create(:merge_request) }
+  let(:current_user) { create(:user) }
 
   describe '#execute' do
     using RSpec::Parameterized::TableSyntax
@@ -109,9 +110,37 @@ RSpec.describe MergeRequests::SyncReportApproverApprovalRules do
     end
 
     context 'when report_approver_rules are disabled' do
+      before do
+        stub_licensed_features(report_approver_rules: false)
+      end
+
       it 'copies nothing' do
         expect { service.execute }
           .not_to change { merge_request.approval_rules.count }
+      end
+    end
+
+    context 'when coverage_check_approval_rule is disabled' do
+      before do
+        stub_licensed_features(coverage_check_approval_rule: false)
+      end
+
+      it 'copies nothing' do
+        expect { service.execute }
+          .not_to change { merge_request.approval_rules.count }
+      end
+    end
+
+    context 'when coverage_check_approval_rule is enabled' do
+      let!(:coverage_project_rule) { create(:approval_project_rule, :code_coverage, project: merge_request.target_project) }
+
+      before do
+        stub_licensed_features(coverage_check_approval_rule: true)
+      end
+
+      it 'synchronize coverage check approval rule' do
+        expect { service.execute }
+          .to change { merge_request.approval_rules.count }.from(0).to(1)
       end
     end
   end

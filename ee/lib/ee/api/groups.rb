@@ -86,7 +86,7 @@ module EE
 
         resource :groups, requirements: ::API::API::NAMESPACE_OR_PROJECT_REQUIREMENTS do
           desc 'Sync a group with LDAP.'
-          post ":id/ldap_sync" do
+          post ":id/ldap_sync", feature_category: :subgroups do
             not_found! unless ::Gitlab::Auth::Ldap::Config.group_sync_enabled?
 
             group = find_group!(params[:id])
@@ -115,7 +115,7 @@ module EE
 
               use :pagination
             end
-            get '/' do
+            get '/', feature_category: :audit_events, urgency: :low do
               level = ::Gitlab::Audit::Levels::Group.new(group: user_group)
               audit_events = AuditLogFinder.new(
                 level: level,
@@ -131,20 +131,20 @@ module EE
             params do
               requires :audit_event_id, type: Integer, desc: 'The ID of the audit event'
             end
-            get '/:audit_event_id' do
+            get '/:audit_event_id', feature_category: :audit_events do
               level = ::Gitlab::Audit::Levels::Group.new(group: user_group)
-              # rubocop: disable CodeReuse/ActiveRecord
+              # rubocop: disable CodeReuse/ActiveRecord, Rails/FindById
               # This is not `find_by!` from ActiveRecord
               audit_event = AuditLogFinder.new(level: level, params: audit_log_finder_params)
                 .find_by!(id: params[:audit_event_id])
-              # rubocop: enable CodeReuse/ActiveRecord
+              # rubocop: enable CodeReuse/ActiveRecord, Rails/FindById
 
               present audit_event, with: EE::API::Entities::AuditEvent
             end
           end
 
           desc 'Restore a group.'
-          post ':id/restore' do
+          post ':id/restore', feature_category: :subgroups do
             authorize! :admin_group, user_group
             break not_found! unless user_group.licensed_feature_available?(:adjourned_deletion_for_projects_and_groups)
 
@@ -172,7 +172,7 @@ module EE
             use :pagination
           end
           # rubocop: disable CodeReuse/ActiveRecord
-          get ':id/provisioned_users' do
+          get ':id/provisioned_users', feature_category: :subgroups do
             authorize! :maintainer_access, user_group
 
             finder = ::Auth::ProvisionedUsersFinder.new(

@@ -8,7 +8,7 @@ module Gitlab
       include ActionView::Helpers::DateHelper
       include ActionView::Helpers::NumberHelper
 
-      GEO_STATUS_COLUMN_WIDTH = 40
+      GEO_STATUS_COLUMN_WIDTH = 35
 
       attr_reader :current_node_status, :geo_node
 
@@ -205,81 +205,104 @@ module Gitlab
       end
 
       def print_repositories_status
-        print 'Repositories: '.rjust(GEO_STATUS_COLUMN_WIDTH)
-
-        show_failed_value(current_node_status.repositories_failed_count)
-
-        print "#{current_node_status.repositories_synced_count}/#{current_node_status.projects_count} "
-        puts using_percentage(current_node_status.repositories_synced_in_percentage)
+        print_counts_row(
+          description: 'Repositories',
+          failed: current_node_status.repositories_failed_count,
+          succeeded: current_node_status.repositories_synced_count,
+          total: current_node_status.projects_count,
+          percentage: current_node_status.repositories_synced_in_percentage
+        )
       end
 
       def print_replicators_status
         Gitlab::Geo.enabled_replicator_classes.each do |replicator_class|
-          print "#{replicator_class.replicable_title_plural}: ".rjust(GEO_STATUS_COLUMN_WIDTH)
-
-          show_failed_value(replicator_class.failed_count)
-          print "#{replicator_class.synced_count}/#{replicator_class.registry_count} "
-
-          puts using_percentage(current_node_status.synced_in_percentage_for(replicator_class))
+          print_counts_row(
+            description: replicator_class.replicable_title_plural.to_s,
+            failed: replicator_class.failed_count,
+            succeeded: replicator_class.synced_count,
+            total: replicator_class.registry_count,
+            percentage: current_node_status.synced_in_percentage_for(replicator_class)
+          )
         end
       end
 
       def print_verified_repositories
         if Gitlab::Geo.repository_verification_enabled?
-          print 'Verified Repositories: '.rjust(GEO_STATUS_COLUMN_WIDTH)
-          show_failed_value(current_node_status.repositories_verification_failed_count)
-          print "#{current_node_status.repositories_verified_count}/#{current_node_status.projects_count} "
-          puts using_percentage(current_node_status.repositories_verified_in_percentage)
+          print_counts_row(
+            description: 'Verified Repositories',
+            failed: current_node_status.repositories_verification_failed_count,
+            succeeded: current_node_status.repositories_verified_count,
+            total: current_node_status.projects_count,
+            percentage: current_node_status.repositories_verified_in_percentage
+          )
         end
       end
 
       def print_wikis_status
-        print 'Wikis: '.rjust(GEO_STATUS_COLUMN_WIDTH)
-        show_failed_value(current_node_status.wikis_failed_count)
-        print "#{current_node_status.wikis_synced_count}/#{current_node_status.projects_count} "
-        puts using_percentage(current_node_status.wikis_synced_in_percentage)
+        print_counts_row(
+          description: 'Wikis',
+          failed: current_node_status.wikis_failed_count,
+          succeeded: current_node_status.wikis_synced_count,
+          total: current_node_status.projects_count,
+          percentage: current_node_status.wikis_synced_in_percentage
+        )
       end
 
       def print_verified_wikis
         if Gitlab::Geo.repository_verification_enabled?
-          print 'Verified Wikis: '.rjust(GEO_STATUS_COLUMN_WIDTH)
-          show_failed_value(current_node_status.wikis_verification_failed_count)
-          print "#{current_node_status.wikis_verified_count}/#{current_node_status.projects_count} "
-          puts using_percentage(current_node_status.wikis_verified_in_percentage)
+          print_counts_row(
+            description: 'Verified Wikis',
+            failed: current_node_status.wikis_verification_failed_count,
+            succeeded: current_node_status.wikis_verified_count,
+            total: current_node_status.projects_count,
+            percentage: current_node_status.wikis_verified_in_percentage
+          )
         end
       end
 
       def print_ci_job_artifacts_status
         return if ::Geo::JobArtifactReplicator.enabled?
 
-        print 'CI job artifacts: '.rjust(GEO_STATUS_COLUMN_WIDTH)
-        show_failed_value(current_node_status.job_artifacts_failed_count)
-        print "#{current_node_status.job_artifacts_synced_count}/#{current_node_status.job_artifacts_count} "
-        puts using_percentage(current_node_status.job_artifacts_synced_in_percentage)
+        print_counts_row(
+          description: 'CI job artifacts',
+          failed: current_node_status.job_artifacts_failed_count,
+          succeeded: current_node_status.job_artifacts_synced_count,
+          total: current_node_status.job_artifacts_count,
+          percentage: current_node_status.job_artifacts_synced_in_percentage
+        )
       end
 
       def print_container_repositories_status
         if ::Geo::ContainerRepositoryRegistry.replication_enabled?
-          print 'Container repositories: '.rjust(GEO_STATUS_COLUMN_WIDTH)
-          show_failed_value(current_node_status.container_repositories_failed_count)
-          print "#{current_node_status.container_repositories_synced_count || 0}/#{current_node_status.container_repositories_count || 0} "
-          puts using_percentage(current_node_status.container_repositories_synced_in_percentage)
+          print_counts_row(
+            description: 'Container repositories',
+            failed: current_node_status.container_repositories_failed_count,
+            succeeded: current_node_status.container_repositories_synced_count,
+            total: current_node_status.container_repositories_count,
+            percentage: current_node_status.container_repositories_synced_in_percentage
+          )
         end
       end
 
       def print_design_repositories_status
-        print 'Design repositories: '.rjust(GEO_STATUS_COLUMN_WIDTH)
-        show_failed_value(current_node_status.design_repositories_failed_count)
-        print "#{current_node_status.design_repositories_synced_count || 0}/#{current_node_status.design_repositories_count || 0} "
-        puts using_percentage(current_node_status.design_repositories_synced_in_percentage)
+        print_counts_row(
+          description: 'Design repositories',
+          failed: current_node_status.design_repositories_failed_count,
+          succeeded: current_node_status.design_repositories_synced_count,
+          total: current_node_status.design_repositories_count,
+          percentage: current_node_status.design_repositories_synced_in_percentage
+        )
       end
 
       def print_repositories_checked_status
         if Gitlab::CurrentSettings.repository_checks_enabled
-          print 'Repositories Checked: '.rjust(GEO_STATUS_COLUMN_WIDTH)
-          show_failed_value(current_node_status.repositories_checked_failed_count)
-          print "#{current_node_status.repositories_checked_count}/#{current_node_status.projects_count} "
-          puts using_percentage(current_node_status.repositories_checked_in_percentage)
+          print_counts_row(
+            description: 'Repositories Checked',
+            failed: current_node_status.repositories_checked_failed_count,
+            succeeded: current_node_status.repositories_checked_count,
+            total: current_node_status.projects_count,
+            percentage: current_node_status.repositories_checked_in_percentage
+          )
         end
       end
 
@@ -287,15 +310,21 @@ module Gitlab
         verifiable_replicator_classes = Gitlab::Geo.verification_enabled_replicator_classes
 
         verifiable_replicator_classes.each do |replicator_class|
-          print "#{replicator_class.replicable_title_plural} Verified: ".rjust(GEO_STATUS_COLUMN_WIDTH)
-          show_failed_value(replicator_class.verification_failed_count)
-          print "#{replicator_class.verified_count}/#{replicator_class.registry_count} "
-          puts using_percentage(current_node_status.verified_in_percentage_for(replicator_class))
+          print_counts_row(
+            description: "#{replicator_class.replicable_title_plural} Verified",
+            failed: replicator_class.verification_failed_count,
+            succeeded: replicator_class.verified_count,
+            total: replicator_class.registry_count,
+            percentage: current_node_status.verified_in_percentage_for(replicator_class)
+          )
         end
       end
 
-      def show_failed_value(value)
-        print "#{value}".color(:red) + '/' if value > 0
+      def print_counts_row(description:, failed:, succeeded:, total:, percentage:)
+        print "#{description}: ".rjust(GEO_STATUS_COLUMN_WIDTH)
+        print "failed #{failed}".color(:red), ' / ' if failed.present? && failed > 0
+        print "succeeded #{succeeded || 0} / total #{total || 0} "
+        puts  using_percentage(percentage)
       end
 
       def using_percentage(value)

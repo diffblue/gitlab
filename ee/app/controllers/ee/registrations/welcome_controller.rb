@@ -48,6 +48,11 @@ module EE
 
       private
 
+      def show_company_form?
+        update_params[:setup_for_company] == 'true' &&
+          ::Feature.enabled?(:about_your_company_registration_flow)
+      end
+
       override :update_params
       def update_params
         clean_params = super.merge(params.require(:user).permit(:email_opted_in, :registration_objective))
@@ -95,16 +100,14 @@ module EE
       override :update_success_path
       def update_success_path
         if params[:joining_project] == 'true'
-          bypass_registration_event(:joining_project)
           path_for_signed_in_user(current_user)
         else
-          bypass_registration_event(:creating_project)
-          experiment(:combined_registration, user: current_user).redirect_path
+          if show_company_form?
+            new_users_sign_up_company_path
+          else
+            experiment(:combined_registration, user: current_user).redirect_path
+          end
         end
-      end
-
-      def bypass_registration_event(event_name)
-        experiment(:bypass_registration, user: current_user).track(event_name, user: current_user)
       end
     end
   end

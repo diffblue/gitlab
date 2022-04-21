@@ -14,9 +14,8 @@ describe('Description field component', () => {
       propsData: {
         markdownPreviewPath: '/',
         markdownDocsPath: '/',
-        formState: {
-          description,
-        },
+        quickActionsDocsPath: '/',
+        value: description,
       },
       stubs: {
         MarkdownField,
@@ -25,7 +24,6 @@ describe('Description field component', () => {
 
   beforeEach(() => {
     jest.spyOn(eventHub, '$emit');
-    gon.features = { markdownContinueLists: true };
   });
 
   afterEach(() => {

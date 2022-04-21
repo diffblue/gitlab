@@ -26,6 +26,7 @@ import RefSelector from '~/ref/components/ref_selector.vue';
 import { REF_TYPE_BRANCHES } from '~/ref/constants';
 import LocalStorageSync from '~/vue_shared/components/local_storage_sync.vue';
 import validation from '~/vue_shared/directives/validation';
+import { HELP_PAGE_PATH } from 'ee/on_demand_scans/constants';
 import dastProfileCreateMutation from '../graphql/dast_profile_create.mutation.graphql';
 import dastProfileUpdateMutation from '../graphql/dast_profile_update.mutation.graphql';
 import {
@@ -36,7 +37,6 @@ import {
   SCANNER_PROFILES_QUERY,
   SITE_PROFILES_QUERY,
 } from '../settings';
-import { HELP_PAGE_PATH } from '../../on_demand_scans/constants';
 import ProfileConflictAlert from './profile_selector/profile_conflict_alert.vue';
 import ScannerProfileSelector from './profile_selector/scanner_profile_selector.vue';
 import SiteProfileSelector from './profile_selector/site_profile_selector.vue';
@@ -324,7 +324,6 @@ export default {
   <gl-form novalidate @submit.prevent="onSubmit()">
     <local-storage-sync
       v-if="!isEdit"
-      as-json
       :storage-key="storageKey"
       :clear="clearStorage"
       :value="formFieldValues"

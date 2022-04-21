@@ -73,7 +73,7 @@ describe('utils', () => {
     const typeLabels = {
       OFFLINE_CLOUD: offlineCloudLicenseText,
       ONLINE_CLOUD: onlineCloudLicenseText,
-      LICENSE_FILE: licenseFileText,
+      LEGACY_LICENSE: licenseFileText,
     };
 
     it.each(Object.keys(subscriptionTypes))('should return correct label for type', (key) => {

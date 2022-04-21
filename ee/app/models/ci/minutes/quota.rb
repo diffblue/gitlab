@@ -11,12 +11,9 @@ module Ci
 
       attr_reader :namespace, :limit
 
-      def initialize(namespace, tracking_strategy: nil)
+      def initialize(namespace)
         @namespace = namespace
         @limit = ::Ci::Minutes::Limit.new(namespace)
-        # TODO: remove `tracking_strategy` after `ci_use_new_monthly_minutes` feature flag
-        # https://gitlab.com/gitlab-org/gitlab/-/issues/341730
-        @tracking_strategy = tracking_strategy
       end
 
       def enabled?
@@ -38,21 +35,11 @@ module Ci
       end
 
       def total_minutes_used
-        strong_memoize(:total_minutes_used) do
-          conditional_value(
-            when_new_strategy:    -> { current_usage.amount_used.to_i },
-            when_legacy_strategy: -> { namespace.namespace_statistics&.shared_runners_seconds.to_i / 60 }
-          )
-        end
+        current_usage.amount_used.to_i
       end
 
       def reset_date
-        strong_memoize(:reset_date) do
-          conditional_value(
-            when_new_strategy:    -> { current_usage.date },
-            when_legacy_strategy: -> { namespace.namespace_statistics&.shared_runners_seconds_last_reset }
-          )
-        end
+        current_usage.date
       end
 
       # === private to view ===
@@ -90,18 +77,6 @@ module Ci
 
       def total_minutes_remaining
         [current_balance, 0].max
-      end
-
-      def conditional_value(when_new_strategy:, when_legacy_strategy:)
-        if @tracking_strategy == :new
-          when_new_strategy.call
-        elsif @tracking_strategy == :legacy
-          when_legacy_strategy.call
-        elsif namespace.new_monthly_ci_minutes_enabled?
-          when_new_strategy.call
-        else
-          when_legacy_strategy.call
-        end
       end
     end
   end

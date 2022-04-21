@@ -22,14 +22,17 @@ module Gitlab
 
             dashboard_link =
               if @stage.parent.is_a?(::Group)
-                helpers.group_analytics_ci_cd_analytics_path(@stage.parent, tab: 'lead-time')
+                helpers.group_issues_analytics_path(@stage.parent)
               else
-                helpers.charts_project_pipelines_path(@stage.parent, chart: 'lead-time')
+                helpers.project_analytics_issues_analytics_path(@stage.parent)
               end
 
             [
               { "name" => _('Lead Time'), "url" => dashboard_link, "label" => s_('ValueStreamAnalytics|Dashboard') },
-              { "name" => _('Lead Time'), "url" => helpers.help_page_path('user/analytics/index', anchor: 'definitions'), "docs_link" => true, "label" => s_('ValueStreamAnalytics|Go to docs') }
+              { "name" => _('Lead Time'),
+                "url" => helpers.help_page_path('user/analytics/index', anchor: 'definitions'),
+                "docs_link" => true,
+                "label" => s_('ValueStreamAnalytics|Go to docs') }
             ]
           end
         end

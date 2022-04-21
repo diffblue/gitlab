@@ -198,10 +198,6 @@ RSpec.describe 'Epic Issues', :js do
             visit group_epic_path(group, last_child)
 
             wait_for_requests
-
-            find('.js-epic-tree-tab').click
-
-            wait_for_requests
           end
 
           it 'user cannot add new epic when hierarchy level limit has been reached' do

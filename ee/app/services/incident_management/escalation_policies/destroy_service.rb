@@ -4,11 +4,11 @@ module IncidentManagement
   module EscalationPolicies
     class DestroyService < EscalationPolicies::BaseService
       # @param escalation_policy [IncidentManagement::EscalationPolicy]
-      # @param user [User]
-      def initialize(escalation_policy, user)
+      # @param current_user [User]
+      def initialize(escalation_policy, current_user)
+        super(project: escalation_policy.project, current_user: current_user)
+
         @escalation_policy = escalation_policy
-        @user = user
-        @project = escalation_policy.project
       end
 
       def execute
@@ -23,7 +23,7 @@ module IncidentManagement
 
       private
 
-      attr_reader :escalation_policy, :user, :project
+      attr_reader :escalation_policy
     end
   end
 end

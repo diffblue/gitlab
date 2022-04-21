@@ -14,7 +14,7 @@
   :tags: []
 - :name: cronjob:active_user_count_threshold
   :worker_name: ActiveUserCountThresholdWorker
-  :feature_category: :license
+  :feature_category: :provision
   :has_external_dependencies:
   :urgency: :low
   :resource_boundary: :unknown
@@ -50,6 +50,15 @@
   :tags: []
 - :name: cronjob:analytics_cycle_analytics_incremental
   :worker_name: Analytics::CycleAnalytics::IncrementalWorker
+  :feature_category: :value_stream_management
+  :has_external_dependencies:
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
+- :name: cronjob:analytics_cycle_analytics_reaggregation
+  :worker_name: Analytics::CycleAnalytics::ReaggregationWorker
   :feature_category: :value_stream_management
   :has_external_dependencies:
   :urgency: :low
@@ -419,7 +428,7 @@
   :tags: []
 - :name: cronjob:sync_seat_link
   :worker_name: SyncSeatLinkWorker
-  :feature_category: :license
+  :feature_category: :provision
   :has_external_dependencies:
   :urgency: :low
   :resource_boundary: :unknown
@@ -1229,7 +1238,7 @@
   :tags: []
 - :name: namespaces_sync_namespace_name
   :worker_name: Namespaces::SyncNamespaceNameWorker
-  :feature_category: :license
+  :feature_category: :provision
   :has_external_dependencies: true
   :urgency: :low
   :resource_boundary: :unknown
@@ -1326,6 +1335,15 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: security_orchestration_policy_rule_schedule_namespace
+  :worker_name: Security::OrchestrationPolicyRuleScheduleNamespaceWorker
+  :feature_category: :security_orchestration
+  :has_external_dependencies:
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: set_user_status_based_on_user_cap_setting
   :worker_name: SetUserStatusBasedOnUserCapSettingWorker
   :feature_category: :users
@@ -1346,7 +1364,7 @@
   :tags: []
 - :name: sync_seat_link_request
   :worker_name: SyncSeatLinkRequestWorker
-  :feature_category: :license
+  :feature_category: :provision
   :has_external_dependencies: true
   :urgency: :low
   :resource_boundary: :unknown

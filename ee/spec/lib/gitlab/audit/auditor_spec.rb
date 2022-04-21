@@ -52,15 +52,18 @@ RSpec.describe Gitlab::Audit::Auditor do
       end
 
       it 'logs audit events to database', :aggregate_failures do
-        audit!
+        freeze_time do
+          audit!
 
-        audit_event = AuditEvent.last
+          audit_event = AuditEvent.last
 
-        expect(audit_event.author_id).to eq(author.id)
-        expect(audit_event.entity_id).to eq(scope.id)
-        expect(audit_event.entity_type).to eq(scope.class.name)
-        expect(audit_event.details[:target_id]).to eq(target.id)
-        expect(audit_event.details[:target_type]).to eq(target.class.name)
+          expect(audit_event.author_id).to eq(author.id)
+          expect(audit_event.entity_id).to eq(scope.id)
+          expect(audit_event.entity_type).to eq(scope.class.name)
+          expect(audit_event.created_at).to eq(Time.zone.now)
+          expect(audit_event.details[:target_id]).to eq(target.id)
+          expect(audit_event.details[:target_type]).to eq(target.class.name)
+        end
       end
 
       it 'logs audit events to file' do
@@ -77,6 +80,44 @@ RSpec.describe Gitlab::Audit::Auditor do
             'details' => kind_of(Hash)
           )
         )
+      end
+
+      context 'when overriding the create datetime' do
+        let(:context) { { name: name, author: author, scope: scope, target: target, created_at: 3.weeks.ago } }
+
+        it 'logs audit events to database', :aggregate_failures do
+          freeze_time do
+            audit!
+
+            audit_event = AuditEvent.last
+
+            expect(audit_event.author_id).to eq(author.id)
+            expect(audit_event.entity_id).to eq(scope.id)
+            expect(audit_event.entity_type).to eq(scope.class.name)
+            expect(audit_event.created_at).to eq(3.weeks.ago)
+            expect(audit_event.details[:target_id]).to eq(target.id)
+            expect(audit_event.details[:target_type]).to eq(target.class.name)
+          end
+        end
+
+        it 'logs audit events to file' do
+          freeze_time do
+            expect(::Gitlab::AuditJsonLogger).to receive(:build).and_return(logger)
+
+            audit!
+
+            expect(logger).to have_received(:info).exactly(2).times.with(
+              hash_including(
+                'author_id' => author.id,
+                'author_name' => author.name,
+                'entity_id' => scope.id,
+                'entity_type' => scope.class.name,
+                'details' => kind_of(Hash),
+                'created_at' => 3.weeks.ago.iso8601(3)
+              )
+            )
+          end
+        end
       end
     end
 

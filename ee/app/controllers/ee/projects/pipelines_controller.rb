@@ -13,11 +13,14 @@ module EE
           push_frontend_feature_flag(:graphql_code_quality_full_report, project, type: :development, default_enabled: :yaml)
           push_frontend_feature_flag(:secure_vulnerability_training, project, default_enabled: :yaml)
           push_frontend_feature_flag(:vulnerability_report_pagination, current_user, default_enabled: :yaml)
+          push_frontend_feature_flag(:use_api_for_payment_validation, project, default_enabled: :yaml)
         end
 
         feature_category :license_compliance, [:licenses]
         feature_category :vulnerability_management, [:security]
         feature_category :code_quality, [:codequality_report]
+
+        urgency :low, [:codequality_report]
       end
 
       def security

@@ -6,66 +6,49 @@ RSpec.describe Backup::Repositories do
   let(:progress) { spy(:stdout) }
   let(:strategy) { spy(:strategy) }
   let(:destination) { 'repositories' }
+  let(:backup_id) { 'backup_id' }
 
-  subject { described_class.new(progress, max_concurrency: 1, max_storage_concurrency: 1, strategy: strategy) }
+  subject { described_class.new(progress, strategy: strategy) }
 
   describe '#dump' do
-    context 'hashed storage' do
-      let_it_be(:project) { create(:project, :repository) }
-      let_it_be(:group) { create(:group, :wiki_repo) }
+    let_it_be(:project) { create(:project, :repository) }
+    let_it_be(:groups) { create_list(:group, 5, :wiki_repo) }
 
-      it 'calls enqueue for each repository type', :aggregate_failures do
-        create(:wiki_page, container: group)
+    it 'calls enqueue for each repository type', :aggregate_failures do
+      subject.dump(destination, backup_id)
 
-        subject.dump(destination)
-
-        expect(strategy).to have_received(:start).with(:create, destination)
-        expect(strategy).to have_received(:enqueue).with(project, Gitlab::GlRepository::PROJECT)
+      expect(strategy).to have_received(:start).with(:create, destination, backup_id: backup_id)
+      expect(strategy).to have_received(:enqueue).with(project, Gitlab::GlRepository::PROJECT)
+      groups.each do |group|
         expect(strategy).to have_received(:enqueue).with(group, Gitlab::GlRepository::WIKI)
-        expect(strategy).to have_received(:finish!)
+      end
+      expect(strategy).to have_received(:finish!)
+    end
+
+    describe 'command failure' do
+      it 'enqueue_group raises an error' do
+        allow(strategy).to receive(:enqueue).with(anything, Gitlab::GlRepository::WIKI).and_raise(IOError)
+
+        expect { subject.dump(destination, backup_id) }.to raise_error(IOError)
+      end
+
+      it 'group query raises an error' do
+        allow(Group).to receive_message_chain(:includes, :find_each).and_raise(ActiveRecord::StatementTimeout)
+
+        expect { subject.dump(destination, backup_id) }.to raise_error(ActiveRecord::StatementTimeout)
       end
     end
 
-    context 'no concurrency' do
-      let_it_be(:groups) { create_list(:group, 5, :wiki_repo) }
+    it 'avoids N+1 database queries' do
+      control_count = ActiveRecord::QueryRecorder.new do
+        subject.dump(destination, backup_id)
+      end.count
 
-      it 'creates the expected number of threads' do
-        expect(Thread).not_to receive(:new)
+      create_list(:group, 2, :wiki_repo)
 
-        expect(strategy).to receive(:start).with(:create, destination)
-        groups.each do |group|
-          expect(strategy).to receive(:enqueue).with(group, Gitlab::GlRepository::WIKI)
-        end
-        expect(strategy).to receive(:finish!)
-
-        subject.dump(destination)
-      end
-
-      describe 'command failure' do
-        it 'enqueue_group raises an error' do
-          allow(strategy).to receive(:enqueue).with(anything, Gitlab::GlRepository::WIKI).and_raise(IOError)
-
-          expect { subject.dump(destination) }.to raise_error(IOError)
-        end
-
-        it 'group query raises an error' do
-          allow(Group).to receive_message_chain(:includes, :find_each).and_raise(ActiveRecord::StatementTimeout)
-
-          expect { subject.dump(destination) }.to raise_error(ActiveRecord::StatementTimeout)
-        end
-      end
-
-      it 'avoids N+1 database queries' do
-        control_count = ActiveRecord::QueryRecorder.new do
-          subject.dump(destination)
-        end.count
-
-        create_list(:group, 2, :wiki_repo)
-
-        expect do
-          subject.dump(destination)
-        end.not_to exceed_query_limit(control_count)
-      end
+      expect do
+        subject.dump(destination, backup_id)
+      end.not_to exceed_query_limit(control_count)
     end
   end
 
