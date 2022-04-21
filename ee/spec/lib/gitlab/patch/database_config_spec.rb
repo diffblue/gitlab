@@ -38,50 +38,10 @@ RSpec.describe Gitlab::Patch::DatabaseConfig do
           .and_return(instance_double('Pathname', read: database_geo_yml))
       end
 
-      context 'when config/database_geo.yml use a new syntax' do
-        let(:database_geo_yml) do
-          <<-EOS
-            production:
-              geo:
-                adapter: postgresql
-                encoding: unicode
-                database: gitlabhq_geo_production
-                username: git
-                password: "secure password"
-                host: localhost
-
-            development:
-              geo:
-                adapter: postgresql
-                encoding: unicode
-                database: gitlabhq_geo_development
-                username: postgres
-                password: "secure password"
-                host: localhost
-                variables:
-                  statement_timeout: 15s
-
-            test: &test
-              geo:
-                adapter: postgresql
-                encoding: unicode
-                database: gitlabhq_geo_test
-                username: postgres
-                password:
-                host: localhost
-                prepared_statements: false
-                variables:
-                  statement_timeout: 15s
-          EOS
-        end
-
-        include_examples 'hash containing geo: connection name'
-      end
-
-      context 'when config/database_geo.yml use a legacy syntax' do
-        let(:database_geo_yml) do
-          <<-EOS
-            production:
+      let(:database_geo_yml) do
+        <<-EOS
+          production:
+            geo:
               adapter: postgresql
               encoding: unicode
               database: gitlabhq_geo_production
@@ -89,7 +49,8 @@ RSpec.describe Gitlab::Patch::DatabaseConfig do
               password: "secure password"
               host: localhost
 
-            development:
+          development:
+            geo:
               adapter: postgresql
               encoding: unicode
               database: gitlabhq_geo_development
@@ -99,7 +60,8 @@ RSpec.describe Gitlab::Patch::DatabaseConfig do
               variables:
                 statement_timeout: 15s
 
-            test: &test
+          test: &test
+            geo:
               adapter: postgresql
               encoding: unicode
               database: gitlabhq_geo_test
@@ -109,11 +71,10 @@ RSpec.describe Gitlab::Patch::DatabaseConfig do
               prepared_statements: false
               variables:
                 statement_timeout: 15s
-          EOS
-        end
-
-        include_examples 'hash containing geo: connection name'
+        EOS
       end
+
+      include_examples 'hash containing geo: connection name'
     end
   end
 
@@ -175,10 +136,9 @@ RSpec.describe Gitlab::Patch::DatabaseConfig do
         allow(File).to receive(:exist?).with(Rails.root.join("config/database_geo.yml")).and_return(false)
       end
 
-      context 'when config/database.yml use a new syntax' do
-        context 'and does not contain Geo settings' do
-          let(:database_yml) do
-            <<-EOS
+      context 'and does not contain Geo settings' do
+        let(:database_yml) do
+          <<-EOS
               production:
                 main:
                   adapter: postgresql
@@ -210,15 +170,15 @@ RSpec.describe Gitlab::Patch::DatabaseConfig do
                   prepared_statements: false
                   variables:
                     statement_timeout: 15s
-            EOS
-          end
-
-          include_examples 'hash containing main: connection name'
+          EOS
         end
 
-        context 'contains Geo settings' do
-          let(:database_yml) do
-            <<-EOS
+        include_examples 'hash containing main: connection name'
+      end
+
+      context 'contains Geo settings' do
+        let(:database_yml) do
+          <<-EOS
               production:
                 main:
                   adapter: postgresql
@@ -276,54 +236,10 @@ RSpec.describe Gitlab::Patch::DatabaseConfig do
                   prepared_statements: false
                   variables:
                     statement_timeout: 15s
-            EOS
-          end
-
-          include_examples 'hash containing both main: and geo: connection names'
-        end
-      end
-
-      context 'when config/database.yml use a legacy syntax' do
-        let(:database_yml) do
-          <<-EOS
-            production:
-              adapter: postgresql
-              encoding: unicode
-              database: gitlabhq_production
-              username: git
-              password: "secure password"
-              host: localhost
-
-            development:
-              adapter: postgresql
-              encoding: unicode
-              database: gitlabhq_development
-              username: postgres
-              password: "secure password"
-              host: localhost
-              variables:
-                statement_timeout: 15s
-
-            test: &test
-              adapter: postgresql
-              encoding: unicode
-              database: gitlabhq_test
-              username: postgres
-              password:
-              host: localhost
-              prepared_statements: false
-              variables:
-                statement_timeout: 15s
           EOS
         end
 
-        include_examples 'hash containing main: connection name'
-
-        it 'configuration is legacy' do
-          configuration.database_configuration
-
-          expect(configuration.uses_legacy_database_config).to eq(true)
-        end
+        include_examples 'hash containing both main: and geo: connection names'
       end
     end
 
@@ -373,10 +289,9 @@ RSpec.describe Gitlab::Patch::DatabaseConfig do
         # rubocop:enable RSpec/AnyInstanceOf
       end
 
-      context 'when config/database.yml use a new syntax' do
-        context 'and does not contain Geo setting' do
-          let(:database_yml) do
-            <<-EOS
+      context 'and does not contain Geo setting' do
+        let(:database_yml) do
+          <<-EOS
               production:
                 main:
                   adapter: postgresql
@@ -408,15 +323,15 @@ RSpec.describe Gitlab::Patch::DatabaseConfig do
                   prepared_statements: false
                   variables:
                     statement_timeout: 15s
-            EOS
-          end
-
-          include_examples 'hash containing both main: and geo: connection names'
+          EOS
         end
 
-        context 'contains Geo setting' do
-          let(:database_yml) do
-            <<-EOS
+        include_examples 'hash containing both main: and geo: connection names'
+      end
+
+      context 'contains Geo setting' do
+        let(:database_yml) do
+          <<-EOS
               production:
                 main:
                   adapter: postgresql
@@ -474,44 +389,6 @@ RSpec.describe Gitlab::Patch::DatabaseConfig do
                   prepared_statements: false
                   variables:
                     statement_timeout: 15s
-            EOS
-          end
-
-          include_examples 'hash containing both main: and geo: connection names'
-        end
-      end
-
-      context 'when config/database.yml use a legacy syntax' do
-        let(:database_yml) do
-          <<-EOS
-            production:
-              adapter: postgresql
-              encoding: unicode
-              database: gitlabhq_production
-              username: git
-              password: "secure password"
-              host: localhost
-
-            development:
-              adapter: postgresql
-              encoding: unicode
-              database: gitlabhq_development
-              username: postgres
-              password: "secure password"
-              host: localhost
-              variables:
-                statement_timeout: 15s
-
-            test: &test
-              adapter: postgresql
-              encoding: unicode
-              database: gitlabhq_test
-              username: postgres
-              password:
-              host: localhost
-              prepared_statements: false
-              variables:
-                statement_timeout: 15s
           EOS
         end
 
