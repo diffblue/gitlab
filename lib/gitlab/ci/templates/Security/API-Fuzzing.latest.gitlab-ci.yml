@@ -28,7 +28,7 @@ variables:
     #
     FUZZAPI_VERSION: "2"
     FUZZAPI_IMAGE_SUFFIX: ""
-    FUZZAPI_IMAGE: api-fuzzing
+    FUZZAPI_IMAGE: api-security
 
 apifuzzer_fuzz:
     stage: fuzz

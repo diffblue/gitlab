@@ -28,7 +28,7 @@ variables:
   #
   DAST_API_VERSION: "2"
   DAST_API_IMAGE_SUFFIX: ""
-  DAST_API_IMAGE: api-fuzzing
+  DAST_API_IMAGE: api-security
 
 dast_api:
   stage: dast
