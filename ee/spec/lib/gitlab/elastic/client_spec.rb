@@ -103,10 +103,10 @@ RSpec.describe Gitlab::Elastic::Client do
           stub_request(:get, 'http://example-elastic:9200/foo/_all/1')
             .with(
               headers: {
-                'Authorization'        => 'AWS4-HMAC-SHA256 Credential=0/20170303/us-east-1/es/aws4_request, SignedHeaders=content-type;host;user-agent;x-amz-content-sha256;x-amz-date;x-opaque-id, Signature=33a12f5ce6863009a29c856204935d454c32202fc9f321131e31fdd3ae5748c6',
+                'Authorization'        => 'AWS4-HMAC-SHA256 Credential=0/20170303/us-east-1/es/aws4_request, SignedHeaders=content-type;host;user-agent;x-amz-content-sha256;x-amz-date;x-opaque-id, Signature=f5a6cbb46102801ae0dc44fb52a68420a6aa7c92bf7f8245c777348682c93505',
                 'Content-Type'         => 'application/json',
                 # User-Agent is a part of SignedHeaders; if this changes, the signature will change
-                'User-Agent'           => 'Faraday v1.4.2',
+                'User-Agent'           => 'Faraday v1.10.0',
                 'X-Amz-Content-Sha256' => 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
                 'X-Amz-Date'           => '20170303T133952Z'
               })
