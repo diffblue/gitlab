@@ -1,6 +1,7 @@
 <script>
 import { GlFormGroup, GlFormInput, GlButton } from '@gitlab/ui';
 import { mapState, mapActions, mapGetters } from 'vuex';
+import { s__, __ } from '~/locale';
 import { visitUrl } from '~/lib/utils/url_utility';
 import { mapComputed } from '~/vuex_shared/bindings';
 import { FORM_VALIDATION_FIELDS } from '../constants';
@@ -8,6 +9,14 @@ import { validateTimeout, validateAllowedIp } from '../validations';
 
 export default {
   name: 'GeoSettingsForm',
+  i18n: {
+    timeoutFieldLabel: s__('Geo|Connection timeout'),
+    timeoutFieldDescription: s__('Geo|Time in seconds'),
+    allowedIpFieldLabel: s__('Geo|Allowed Geo IP'),
+    allowedIpFieldDescription: s__("Geo|Comma-separated, e.g. '1.1.1.1, 2.2.2.0/24'"),
+    saveChanges: __('Save changes'),
+    cancel: __('Cancel'),
+  },
   components: {
     GlFormGroup,
     GlFormInput,
@@ -45,9 +54,9 @@ export default {
 <template>
   <form>
     <gl-form-group
-      :label="__('Connection timeout')"
+      :label="$options.i18n.timeoutFieldLabel"
       label-for="settings-timeout-field"
-      :description="__('Time in seconds')"
+      :description="$options.i18n.timeoutFieldDescription"
       :state="Boolean(formErrors.timeout)"
       :invalid-feedback="formErrors.timeout"
     >
@@ -62,9 +71,9 @@ export default {
       />
     </gl-form-group>
     <gl-form-group
-      :label="__('Allowed Geo IP')"
+      :label="$options.i18n.allowedIpFieldLabel"
       label-for="settings-allowed-ip-field"
-      :description="__('Comma-separated, e.g. \'1.1.1.1, 2.2.2.0/24\'')"
+      :description="$options.i18n.allowedIpFieldDescription"
       :state="Boolean(formErrors.allowedIp)"
       :invalid-feedback="formErrors.allowedIp"
     >
@@ -87,9 +96,11 @@ export default {
         variant="info"
         :disabled="formHasError"
         @click="updateGeoSettings"
-        >{{ __('Save changes') }}</gl-button
+        >{{ $options.i18n.saveChanges }}</gl-button
       >
-      <gl-button data-testid="settingsCancelButton" @click="redirect">{{ __('Cancel') }}</gl-button>
+      <gl-button data-testid="settingsCancelButton" @click="redirect">{{
+        $options.i18n.cancel
+      }}</gl-button>
     </section>
   </form>
 </template>

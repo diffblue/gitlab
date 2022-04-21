@@ -1,6 +1,15 @@
 import validateIpAddress from 'ee/validators/ip_address';
 import { s__ } from '~/locale';
 
+const i18n = {
+  timeoutBlankError: s__("Geo|Connection timeout can't be blank"),
+  timeoutNanError: s__('Geo|Connection timeout must be a number'),
+  timeoutLengthError: s__('Geo|Connection timeout should be between 1-120'),
+  allowedIpBlankError: s__("Geo|Allowed Geo IP can't be blank"),
+  allowedIpLengthError: s__('Geo|Allowed Geo IP should be between 1 and 255 characters'),
+  allowedIpFormatError: s__('Geo|Allowed Geo IP should contain valid IP addresses'),
+};
+
 const validateIP = (data) => {
   let addresses = data.replace(/\s/g, '').split(',');
 
@@ -11,11 +20,11 @@ const validateIP = (data) => {
 
 export const validateTimeout = (data) => {
   if (!data && data !== 0) {
-    return s__("Geo|Connection timeout can't be blank");
+    return i18n.timeoutBlankError;
   } else if (data && Number.isNaN(Number(data))) {
-    return s__('Geo|Connection timeout must be a number');
+    return i18n.timeoutNanError;
   } else if (data < 1 || data > 120) {
-    return s__('Geo|Connection timeout should be between 1-120');
+    return i18n.timeoutLengthError;
   }
 
   return '';
@@ -23,11 +32,11 @@ export const validateTimeout = (data) => {
 
 export const validateAllowedIp = (data) => {
   if (!data) {
-    return s__("Geo|Allowed Geo IP can't be blank");
+    return i18n.allowedIpBlankError;
   } else if (data.length > 255) {
-    return s__('Geo|Allowed Geo IP should be between 1 and 255 characters');
+    return i18n.allowedIpLengthError;
   } else if (!validateIP(data)) {
-    return s__('Geo|Allowed Geo IP should contain valid IP addresses');
+    return i18n.allowedIpFormatError;
   }
 
   return '';
