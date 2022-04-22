@@ -3,7 +3,7 @@ table_name: chat_teams
 classes:
 - ChatTeam
 feature_categories:
-- users
+- integrations
 description: TODO
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/commit/297dc70158f905fef4557d1ee6510bcf459a08a9
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab-foss/-/merge_requests/8746
 milestone: '9.0'

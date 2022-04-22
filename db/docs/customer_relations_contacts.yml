@@ -3,7 +3,7 @@ table_name: customer_relations_contacts
 classes:
 - CustomerRelations::Contact
 feature_categories:
-- users
+- service_desk
 description: TODO
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/67985
 milestone: '14.3'
