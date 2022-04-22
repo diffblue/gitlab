@@ -261,8 +261,15 @@ module Gitlab
 
       def get_mapping(index_name: nil)
         index = target_index_name(target: index_name)
-        mappings = client.indices.get_mapping(index: index)
-        mappings.dig(index, 'mappings', 'properties')
+        mappings = client.indices.get_mapping({ index: index })
+
+        # The check for version 6 (and the spec testing this code) should be removed when support for
+        # Elasticsearch v6.8 is removed
+        if Gitlab::VersionInfo.parse(client.info['version']['number']).major == 6
+          mappings.dig(index, 'mappings', 'doc', 'properties')
+        else
+          mappings.dig(index, 'mappings', 'properties')
+        end
       end
 
       def update_settings(index_name: nil, settings:)
@@ -270,7 +277,12 @@ module Gitlab
       end
 
       def update_mapping(index_name: nil, mappings:)
-        client.indices.put_mapping(index: index_name || target_index_name, body: mappings)
+        options = {
+          index: index_name || target_index_name,
+          body: mappings
+        }
+        options[:type] = 'doc' if Gitlab::VersionInfo.parse(client.info['version']['number']).major == 6
+        client.indices.put_mapping(options)
       end
 
       def get_meta(index_name: nil)

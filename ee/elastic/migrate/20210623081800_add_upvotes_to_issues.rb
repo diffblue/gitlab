@@ -46,11 +46,7 @@ class AddUpvotesToIssues < Elastic::Migration
   private
 
   def update_mappings!
-    client.indices.put_mapping index: index_name, body: {
-      properties: {
-        upvotes: { type: 'integer' }
-      }
-    }
+    helper.update_mapping(index_name: index_name, mappings: { properties: { upvotes: { type: 'integer' } } })
   end
 
   def process_batch!

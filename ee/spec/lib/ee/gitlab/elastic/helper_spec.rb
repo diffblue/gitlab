@@ -520,4 +520,34 @@ RSpec.describe Gitlab::Elastic::Helper, :request_store do
       end
     end
   end
+
+  describe '#get_mapping' do
+    let(:index_name) { Issue.__elasticsearch__.index_name }
+
+    subject { helper.get_mapping(index_name: index_name) }
+
+    it 'reads mappings from client', :elastic do
+      is_expected.not_to be_nil
+    end
+
+    context 'when using elasticsearch version 6.8' do
+      before do
+        info = {
+          'version' => {
+            'number' => '6.8.1',
+            'build_type' => 'docker',
+            'lucene_version' => '8.6.2'
+          }
+        }
+        mapping = { "#{index_name}": { mappings: { doc: { properties: { test: 1 } } } } }.with_indifferent_access
+
+        allow(Gitlab::Elastic::Helper.default.client).to receive(:info).and_return(info)
+        allow(helper.client.indices).to receive(:get_mapping).and_return(mapping)
+      end
+
+      it 'reads mappings from client' do
+        is_expected.not_to be_nil
+      end
+    end
+  end
 end
