@@ -85,7 +85,7 @@ module Types
           by_version.each do |v, designs|
             actions = ::DesignManagement::Action.most_recent.up_to_version(v).by_design(designs).preload(:version)
             actions.each do |action|
-              action.design = designs_by_id[action.design_id]
+              action.design = designs_by_id[action.design_id] # eliminate duplicate load
               loader.call([v, action.design], action)
             end
           end
