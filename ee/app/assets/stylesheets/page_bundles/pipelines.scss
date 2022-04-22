@@ -1,30 +1,16 @@
 @import '../../../../../app/assets/stylesheets/page_bundles/pipelines';
 
 .linked-pipeline-mini-list {
-  &.is-downstream {
-    margin-left: -4px;
-    margin-right: 4px;
-  }
-
   .arrow-icon {
     display: inline-block;
     vertical-align: middle;
-    fill: $border-color;
-  }
-
-  &:hover {
-    .linked-pipeline-mini-item {
-      margin-left: 0;
-    }
+    fill: $gray-400;
   }
 
   .linked-pipeline-mini-item {
     @include mini-pipeline-item();
     display: inline-block;
-    transition: margin 0.2s linear;
-    margin-top: 2px;
-    margin-right: 7px;
-    margin-left: -14px;
+    margin-right: 6px;
 
     svg {
       height: $ci-action-icon-size;
@@ -68,23 +54,25 @@
   }
 
   .linked-pipelines-counter {
-    position: relative;
-    font-size: 12px;
-    vertical-align: middle;
-    line-height: 20px;
-    height: 22px;
-    width: 22px;
-    padding-left: 1px;
-    margin-left: -15px;
+    @include gl-border-none;
+
+    align-items: center;
+    background: $gray-50;
     border-radius: 2em;
-    background: $gray-darkest;
-    color: $white;
-    z-index: 96;
+    color: $gray-400;
+    display: inline-flex;
+    font-size: 12px;
+    height: 1.5rem;
+    justify-content: center;
+    line-height: 20px;
+    margin-left: -2px;
+    position: relative;
     text-decoration: none;
+    width: 1.875rem;
+    z-index: 96;
 
     &:hover {
-      width: 22px;
-      background: darken($gray-darkest, 10%);
+      background: $gray-100;
     }
   }
 }
