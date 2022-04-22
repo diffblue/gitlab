@@ -13,14 +13,6 @@ RSpec.describe Approvals::ScanFindingWrappedRuleSet do
   subject { described_class.wrap(merge_request, approval_rules_list, report_type).wrapped_rules }
 
   describe '#wrapped_rules' do
-    context 'with feature flag disabled' do
-      before do
-        stub_feature_flags(scan_result_policy: false)
-      end
-
-      it {is_expected.to be_empty }
-    end
-
     it 'returns only one rule' do
       expect(subject.count).to be 1
     end

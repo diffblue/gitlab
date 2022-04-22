@@ -14,7 +14,6 @@ import createFlash from '~/flash';
 import { getTimeago } from '~/lib/utils/datetime_utility';
 import { setUrlFragment, mergeUrlParams } from '~/lib/utils/url_utility';
 import { __, s__ } from '~/locale';
-import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import networkPoliciesQuery from '../../graphql/queries/network_policies.query.graphql';
 import projectScanExecutionPoliciesQuery from '../../graphql/queries/project_scan_execution_policies.query.graphql';
 import groupScanExecutionPoliciesQuery from '../../graphql/queries/group_scan_execution_policies.query.graphql';
@@ -65,7 +64,6 @@ export default {
   directives: {
     GlTooltip: GlTooltipDirective,
   },
-  mixins: [glFeatureFlagMixin()],
   inject: ['documentationPath', 'groupPath', 'projectPath', 'namespaceType', 'newPolicyPath'],
   props: {
     shouldUpdatePolicyList: {
@@ -144,14 +142,11 @@ export default {
     ...mapState('threatMonitoring', ['allEnvironments', 'currentEnvironmentId', 'hasEnvironment']),
     ...mapGetters('threatMonitoring', ['currentEnvironmentGid']),
     allPolicyTypes() {
-      const allTypes = {
+      return {
         [POLICY_TYPE_OPTIONS.POLICY_TYPE_NETWORK.value]: this.networkPolicies,
         [POLICY_TYPE_OPTIONS.POLICY_TYPE_SCAN_EXECUTION.value]: this.scanExecutionPolicies,
+        [POLICY_TYPE_OPTIONS.POLICY_TYPE_SCAN_RESULT.value]: this.scanResultPolicies,
       };
-      if (this.isScanResultPolicyEnabled) {
-        allTypes[POLICY_TYPE_OPTIONS.POLICY_TYPE_SCAN_RESULT.value] = this.scanResultPolicies;
-      }
-      return allTypes;
     },
     documentationFullPath() {
       return setUrlFragment(this.documentationPath, 'container-network-policy');
@@ -242,9 +237,6 @@ export default {
       if (this.allEnvironments) fields.splice(2, 0, environments);
 
       return fields;
-    },
-    isScanResultPolicyEnabled() {
-      return this.glFeatures.scanResultPolicy;
     },
   },
   watch: {
