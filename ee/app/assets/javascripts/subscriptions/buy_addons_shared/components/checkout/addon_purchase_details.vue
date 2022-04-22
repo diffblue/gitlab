@@ -1,10 +1,10 @@
 <script>
 import { GlAlert, GlFormInput } from '@gitlab/ui';
+import { logError } from '~/lib/logger';
 import { STEPS } from 'ee/subscriptions/constants';
 import updateState from 'ee/subscriptions/graphql/mutations/update_state.mutation.graphql';
 import Step from 'ee/vue_shared/purchase_flow/components/step.vue';
 import { GENERAL_ERROR_MESSAGE } from 'ee/vue_shared/purchase_flow/constants';
-import createFlash from '~/flash';
 import autofocusonshow from '~/vue_shared/directives/autofocusonshow';
 import {
   I18N_DETAILS_STEP_TITLE,
@@ -64,8 +64,12 @@ export default {
           },
         })
         .catch((error) => {
-          createFlash({ message: GENERAL_ERROR_MESSAGE, error, captureError: true });
+          this.emitError(error);
         });
+    },
+    emitError(error) {
+      this.$emit('alertError', GENERAL_ERROR_MESSAGE);
+      logError(error);
     },
   },
   i18n: {
