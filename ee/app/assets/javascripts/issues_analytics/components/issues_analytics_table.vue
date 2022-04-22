@@ -155,7 +155,7 @@ export default {
 };
 </script>
 <template>
-  <gl-loading-icon v-if="isLoading" size="md" />
+  <gl-loading-icon v-if="isLoading" size="lg" />
   <gl-table-lite
     v-else-if="shouldDisplayTable"
     :fields="$options.tableHeaderFields"

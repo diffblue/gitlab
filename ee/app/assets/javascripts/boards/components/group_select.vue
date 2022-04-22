@@ -133,7 +133,7 @@ export default {
         <span class="gl-text-gray-500">{{ $options.i18n.emptySearchResult }}</span>
       </gl-dropdown-text>
       <gl-intersection-observer v-if="hasNextPage" @appear="loadMoreGroups">
-        <gl-loading-icon v-if="subGroupsFlags.isLoadingMore" size="md" />
+        <gl-loading-icon v-if="subGroupsFlags.isLoadingMore" size="lg" />
       </gl-intersection-observer>
     </gl-dropdown>
   </div>

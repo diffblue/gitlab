@@ -75,7 +75,7 @@ export default {
 </script>
 
 <template>
-  <gl-loading-icon v-if="!initialized" size="md" class="mt-4" />
+  <gl-loading-icon v-if="!initialized" size="lg" class="mt-4" />
 
   <gl-empty-state
     v-else-if="hasEmptyState"

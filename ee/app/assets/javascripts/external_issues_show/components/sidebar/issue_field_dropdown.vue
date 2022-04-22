@@ -54,7 +54,7 @@ export default {
 <template>
   <gl-dropdown ref="dropdown" :text="text" :header-text="title" block lazy>
     <div v-if="loading" class="gl-h-13">
-      <gl-loading-icon size="md" />
+      <gl-loading-icon size="lg" />
     </div>
     <div v-else>
       <gl-dropdown-text v-if="noItems">{{ emptyText }}</gl-dropdown-text>

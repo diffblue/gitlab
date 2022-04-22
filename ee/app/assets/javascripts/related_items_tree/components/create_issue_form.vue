@@ -235,7 +235,7 @@ export default {
           <gl-loading-icon
             v-show="projectsFetchInProgress"
             class="projects-fetch-loading gl-align-items-center gl-p-3"
-            size="md"
+            size="lg"
           />
         </gl-dropdown>
       </div>
