@@ -14,6 +14,7 @@ module EE
     def remove_group_message(group)
       return super unless group.licensed_feature_available?(:adjourned_deletion_for_projects_and_groups)
       return super if group.marked_for_deletion?
+      return super unless group.adjourned_deletion?
 
       date = permanent_deletion_date(Time.now.utc)
 

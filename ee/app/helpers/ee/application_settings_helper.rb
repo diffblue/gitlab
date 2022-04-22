@@ -117,6 +117,7 @@ module EE
         group_owners_can_manage_default_branch_protection
         default_project_deletion_protection
         delayed_project_deletion
+        delayed_group_deletion
         deletion_adjourned_period
         updating_name_disabled_for_users
         npm_package_requests_forwarding

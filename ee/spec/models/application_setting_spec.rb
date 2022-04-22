@@ -876,4 +876,30 @@ RSpec.describe ApplicationSetting do
       end
     end
   end
+
+  describe "#callbacks" do
+    context 'when adjourned period is updated to 0' do
+      before do
+        setting.update!(deletion_adjourned_period: 1)
+      end
+
+      it 'disables delayed_group_deletion' do
+        setting.update_attribute(:deletion_adjourned_period, 0)
+
+        expect(setting.delayed_group_deletion).to be false
+      end
+    end
+
+    context 'when adjourned period is updated to 1' do
+      before do
+        setting.update!(deletion_adjourned_period: 0)
+      end
+
+      it 'enables delayed_group_deletion' do
+        setting.update_attribute(:deletion_adjourned_period, 1)
+
+        expect(setting.delayed_group_deletion).to be true
+      end
+    end
+  end
 end

@@ -1940,7 +1940,21 @@ RSpec.describe Group do
           stub_application_setting(deletion_adjourned_period: 1)
         end
 
-        it_behaves_like 'returns true'
+        context 'when delayed group deletion is enabled' do
+          before do
+            stub_application_setting(delayed_group_deletion: true)
+          end
+
+          it_behaves_like 'returns true'
+        end
+
+        context 'when delayed group deletion is disabled' do
+          before do
+            stub_application_setting(delayed_group_deletion: false)
+          end
+
+          it_behaves_like 'returns false'
+        end
       end
 
       context 'when delayed deletion period is set to 0' do
