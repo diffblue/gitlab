@@ -1344,5 +1344,14 @@ RSpec.describe ApplicationSetting do
     it { is_expected.to validate_numericality_of(:inactive_projects_delete_after_months).is_greater_than(0) }
 
     it { is_expected.to validate_numericality_of(:inactive_projects_min_size_mb).is_greater_than_or_equal_to(0) }
+
+    it "deletes the redis key used for tracking inactive projects deletion warning emails when setting is updated",
+       :clean_gitlab_redis_shared_state do
+      Gitlab::Redis::SharedState.with do |redis|
+        expect(redis).to receive(:del).with("inactive_projects_deletion_warning_email_notified")
+      end
+
+      setting.update!(inactive_projects_delete_after_months: 6)
+    end
   end
 end

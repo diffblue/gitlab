@@ -24,4 +24,11 @@ module ProjectHelpers
 
     project.update!(params)
   end
+
+  def create_project_with_statistics(namespace = nil, with_data: false, size_multiplier: 1)
+    project = namespace.present? ? create(:project, namespace: namespace) : create(:project)
+    project.tap do |p|
+      create(:project_statistics, project: p, with_data: with_data, size_multiplier: size_multiplier)
+    end
+  end
 end

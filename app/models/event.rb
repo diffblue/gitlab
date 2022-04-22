@@ -357,6 +357,10 @@ class Event < ApplicationRecord
     Project.unscoped.where(id: project_id)
       .where('last_activity_at <= ?', RESET_PROJECT_ACTIVITY_INTERVAL.ago)
       .touch_all(:last_activity_at, time: created_at) # rubocop: disable Rails/SkipsModelValidations
+
+    Gitlab::Redis::SharedState.with do |redis|
+      redis.hdel('inactive_projects_deletion_warning_email_notified', "project:#{project.id}")
+    end
   end
 
   def authored_by?(user)

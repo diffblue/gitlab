@@ -645,6 +645,7 @@ class ApplicationSetting < ApplicationRecord
     reset_memoized_terms
   end
   after_commit :expire_performance_bar_allowed_user_ids_cache, if: -> { previous_changes.key?('performance_bar_allowed_group_id') }
+  after_commit :reset_deletion_warning_redis_key, if: :saved_change_to_inactive_projects_delete_after_months?
 
   def validate_grafana_url
     validate_url(parsed_grafana_url, :grafana_url, GRAFANA_URL_ERROR_MESSAGE)
@@ -773,6 +774,12 @@ class ApplicationSetting < ApplicationRecord
         name,
         "must be a valid relative or absolute URL. #{error_message}"
       )
+    end
+  end
+
+  def reset_deletion_warning_redis_key
+    Gitlab::Redis::SharedState.with do |redis|
+      redis.del('inactive_projects_deletion_warning_email_notified')
     end
   end
 end

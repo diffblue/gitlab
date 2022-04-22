@@ -8,6 +8,7 @@ RSpec.describe Project, factory_default: :keep do
   include ExternalAuthorizationServiceHelpers
   include ReloadHelpers
   include StubGitlabCalls
+  include ProjectHelpers
   using RSpec::Parameterized::TableSyntax
 
   let_it_be(:namespace) { create_default(:namespace).freeze }
@@ -8264,7 +8265,47 @@ RSpec.describe Project, factory_default: :keep do
   describe '#inactive?' do
     let_it_be_with_reload(:project) { create(:project, name: 'test-project') }
 
-    it_behaves_like 'returns true if project is inactive'
+    context 'when feature flag is enabled' do
+      before do
+        stub_feature_flags(inactive_projects_deletion: true)
+      end
+
+      it_behaves_like 'returns true if project is inactive'
+    end
+
+    context 'when feature flag is disabled' do
+      before do
+        stub_feature_flags(inactive_projects_deletion: false)
+      end
+
+      it 'returns false' do
+        expect(project.inactive?).to eq(false)
+      end
+    end
+  end
+
+  describe '.inactive' do
+    before do
+      stub_application_setting(inactive_projects_min_size_mb: 5)
+      stub_application_setting(inactive_projects_send_warning_email_after_months: 12)
+    end
+
+    it 'returns projects that are inactive' do
+      new_blank_project = create_project_with_statistics.tap do |project|
+        project.update!(last_activity_at: Time.current)
+      end
+      inactive_blank_project = create_project_with_statistics.tap do |project|
+        project.update!(last_activity_at: 13.months.ago)
+      end
+      inactive_large_project = create_project_with_statistics(with_data: true, size_multiplier: 2.gigabytes)
+                                 .tap { |project| project.update!(last_activity_at: 2.years.ago) }
+      active_large_project = create_project_with_statistics(with_data: true, size_multiplier: 2.gigabytes)
+                               .tap { |project| project.update!(last_activity_at: 1.month.ago) }
+
+      expect(described_class.inactive).to contain_exactly(inactive_large_project)
+      expect(described_class.inactive)
+        .not_to include(new_blank_project, inactive_blank_project, active_large_project)
+    end
   end
 
   private

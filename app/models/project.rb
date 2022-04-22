@@ -745,6 +745,16 @@ class Project < ApplicationRecord
     Project.with(cte.to_arel).from(cte.alias_to(Project.arel_table))
   end
 
+  def self.inactive
+    project_statistics = ::ProjectStatistics.arel_table
+    minimum_size_mb = ::Gitlab::CurrentSettings.inactive_projects_min_size_mb.megabytes
+    last_activity_cutoff = ::Gitlab::CurrentSettings.inactive_projects_send_warning_email_after_months.months.ago
+
+    joins(:statistics)
+      .where((project_statistics[:storage_size]).gt(minimum_size_mb))
+      .where('last_activity_at < ?', last_activity_cutoff)
+  end
+
   scope :active, -> { joins(:issues, :notes, :merge_requests).order('issues.created_at, notes.created_at, merge_requests.created_at DESC') }
   scope :abandoned, -> { where('projects.last_activity_at < ?', 6.months.ago) }
 
@@ -2886,6 +2896,8 @@ class Project < ApplicationRecord
   end
 
   def inactive?
+    return false unless Feature.enabled?(:inactive_projects_deletion, root_namespace, default_enabled: :yaml)
+
     (statistics || build_statistics).storage_size > ::Gitlab::CurrentSettings.inactive_projects_min_size_mb.megabytes &&
       last_activity_at < ::Gitlab::CurrentSettings.inactive_projects_send_warning_email_after_months.months.ago
   end
