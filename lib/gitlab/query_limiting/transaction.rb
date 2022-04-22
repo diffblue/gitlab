@@ -61,11 +61,14 @@ module Gitlab
         @count += 1 if enabled? && !ignorable?(sql)
       end
 
+      GEO_NODES_LOAD = 'SELECT 1 AS one FROM "geo_nodes" LIMIT 1'
+      LICENSES_LOAD = 'SELECT "licenses".* FROM "licenses" ORDER BY "licenses"."id"'
+
       # queries can be safely ignored if they are amoritized in regular usage
       # (i.e. only requested occasionally and otherwise cached).
       def ignorable?(sql)
-        return true if sql&.include?('SELECT 1 AS one FROM "geo_nodes" LIMIT 1')
-        return true if sql&.include?('SELECT "licenses".* FROM "licenses" ORDER BY "licenses"."id"')
+        return true if sql&.include?(GEO_NODES_LOAD)
+        return true if sql&.include?(LICENSES_LOAD)
 
         false
       end
