@@ -100,6 +100,7 @@ export default {
     :get-active-token-value="getActiveEpic"
     :default-suggestions="defaultEpics"
     search-by="title"
+    v-bind="$attrs"
     @fetch-suggestions="fetchEpicsBySearchTerm"
     v-on="$listeners"
   >

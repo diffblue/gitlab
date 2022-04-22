@@ -24,6 +24,7 @@ describe('IterationToken', () => {
         active,
         config,
         value,
+        cursorPosition: 'start',
       },
       provide: {
         portalName: 'fake target',

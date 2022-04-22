@@ -30,6 +30,7 @@ describe('UserToken', () => {
         value,
         config,
         active: false,
+        cursorPosition: 'start',
       },
       stubs: { AuditFilterToken },
     });
