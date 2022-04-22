@@ -3,6 +3,9 @@
 require 'spec_helper'
 
 RSpec.describe EE::Namespace::RootStorageSize, :saas do
+  include NamespaceStorageHelpers
+  using RSpec::Parameterized::TableSyntax
+
   let(:namespace) { create(:namespace) }
   let(:current_size) { 50.megabytes }
   let(:model) { described_class.new(namespace) }
@@ -145,6 +148,60 @@ RSpec.describe EE::Namespace::RootStorageSize, :saas do
         subject
 
         expect(Rails.cache.read(['namespaces', namespace.id, key])).to eq(104_000.megabytes)
+      end
+    end
+  end
+
+  describe '#remaining_storage_percentage' do
+    where(:limit, :used, :expected_percentage) do
+      0    | 0    | 100
+      0    | 100  | 100
+      100  | 0    | 100
+      100  | 200  | 0
+      1    | 0    | 100
+      100  | 10   | 90
+      100  | 77   | 23
+      100  | 95   | 5
+      100  | 99   | 1
+      100  | 100  | 0
+      1000 | 971  | 2
+      8192 | 6144 | 25
+      5120 | 3840 | 25
+      5120 | 5118 | 0
+    end
+
+    with_them do
+      it 'returns the percentage of remaining storage rounding down to the nearest integer' do
+        set_storage_size_limit(namespace, megabytes: limit)
+        set_used_storage(namespace, megabytes: used)
+
+        expect(model.remaining_storage_percentage).to eq(expected_percentage)
+      end
+    end
+  end
+
+  describe '#remaining_storage_size' do
+    where(:limit, :used, :expected_size) do
+      0    | 0    | 0
+      0    | 100  | 0
+      100  | 0    | 100.megabytes
+      100  | 200  | 0
+      100  | 70   | 30.megabytes
+      100  | 85   | 15.megabytes
+      100  | 99   | 1.megabyte
+      100  | 100  | 0
+      1000 | 971  | 29.megabytes
+      8192 | 6144 | 2048.megabytes
+      5120 | 3840 | 1280.megabytes
+      5120 | 5118 | 2.megabytes
+    end
+
+    with_them do
+      it 'returns the remaining storage size in bytes' do
+        set_storage_size_limit(namespace, megabytes: limit)
+        set_used_storage(namespace, megabytes: used)
+
+        expect(model.remaining_storage_size).to eq(expected_size)
       end
     end
   end

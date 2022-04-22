@@ -3,6 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Namespaces::Storage::EmailNotificationService do
+  include NamespaceStorageHelpers
   using RSpec::Parameterized::TableSyntax
 
   describe 'execute' do
@@ -222,14 +223,6 @@ RSpec.describe Namespaces::Storage::EmailNotificationService do
         expect(group.root_storage_statistics.reload.notification_level).to eq('storage_remaining')
       end
     end
-  end
-
-  def set_storage_size_limit(group, megabytes:)
-    group.gitlab_subscription.hosted_plan.actual_limits.update!(storage_size_limit: megabytes)
-  end
-
-  def set_used_storage(group, megabytes:)
-    group.root_storage_statistics.update!(storage_size: megabytes.megabytes)
   end
 
   def set_notification_level(level)

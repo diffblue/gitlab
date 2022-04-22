@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Namespaces::RootStatisticsWorker, '#perform', :saas do
+  include NamespaceStorageHelpers
+
   let_it_be(:group, refind: true) { create(:group_with_plan, :with_aggregation_schedule, plan: :ultimate_plan) }
   let_it_be(:project, refind: true) { create(:project, namespace: group) }
   let_it_be(:owner) { create(:user) }
@@ -86,9 +88,5 @@ RSpec.describe Namespaces::RootStatisticsWorker, '#perform', :saas do
         worker.perform(group.id)
       end
     end
-  end
-
-  def set_storage_size_limit(group, megabytes:)
-    group.gitlab_subscription.hosted_plan.actual_limits.update!(storage_size_limit: megabytes)
   end
 end

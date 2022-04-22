@@ -42,22 +42,14 @@ module Namespaces
         if level == :exceeded
           mailer.notify_out_of_storage(namespace, owner_emails)
         else
-          percentage = remaining_storage_percentage(root_storage_size)
-          size = remaining_storage_size(root_storage_size)
+          percentage = root_storage_size.remaining_storage_percentage
+          size = root_storage_size.remaining_storage_size
           mailer.notify_limit_warning(namespace, owner_emails, percentage, size)
         end
       end
 
       def update_notification_level(level, namespace)
         namespace.root_storage_statistics.update!(notification_level: level)
-      end
-
-      def remaining_storage_percentage(root_storage_size)
-        (100 - root_storage_size.usage_ratio * 100).floor
-      end
-
-      def remaining_storage_size(root_storage_size)
-        root_storage_size.limit - root_storage_size.current_size
       end
     end
   end
