@@ -17,7 +17,15 @@ module EE
                 deprecated: { milestone: '14.10', reason: :alpha }
 
           def upgrade_status
-            ::Gitlab::Ci::RunnerUpgradeCheck.instance.check_runner_upgrade_status(object.version)
+            return :not_available unless upgrade_status_available?
+
+            ::Gitlab::Ci::RunnerUpgradeCheck.instance.check_runner_upgrade_status(runner.version)
+          end
+
+          private
+
+          def upgrade_status_available?
+            current_user.has_paid_namespace?
           end
         end
       end

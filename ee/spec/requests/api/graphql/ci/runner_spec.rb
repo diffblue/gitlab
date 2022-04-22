@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe 'Query.runner(id)' do
   include GraphqlHelpers
 
-  let_it_be(:user) { create(:user, :admin) }
+  let_it_be(:admin) { create(:user, :admin) }
 
   shared_examples 'runner details fetch operation returning expected upgradeStatus' do
     let(:query) do
@@ -19,7 +19,7 @@ RSpec.describe 'Query.runner(id)' do
     end
 
     it 'retrieves expected fields' do
-      post_graphql(query, current_user: user)
+      post_graphql(query, current_user: current_user)
 
       runner_data = graphql_data_at(:runner)
       expect(runner_data).not_to be_nil
@@ -31,34 +31,54 @@ RSpec.describe 'Query.runner(id)' do
     end
   end
 
-  describe 'upgradeStatus' do
+  describe 'upgradeStatus', :saas do
     let_it_be(:runner) { create(:ci_runner, description: 'Runner 1', version: 'adfe156', revision: 'a') }
 
-    before do
-      expect(::Gitlab::Ci::RunnerUpgradeCheck.instance).to receive(:check_runner_upgrade_status)
-        .and_return(upgrade_status)
-        .once
+    context 'requested by non-paid user' do
+      let(:current_user) { admin }
+
+      context 'with RunnerUpgradeCheck returning :available' do
+        let(:upgrade_status) { :available }
+        let(:expected_upgrade_status) { 'NOT_AVAILABLE' } # non-paying users always see NOT_AVAILABLE
+
+        it_behaves_like('runner details fetch operation returning expected upgradeStatus')
+      end
     end
 
-    context 'with RunnerUpgradeCheck returning :not_available' do
-      let(:upgrade_status) { :not_available }
-      let(:expected_upgrade_status) { 'NOT_AVAILABLE' }
+    context 'requested by paid user' do
+      let_it_be(:ultimate_group) { create(:group_with_plan, plan: :ultimate_plan) }
+      let_it_be(:user) { create(:user, :admin, namespace: create(:user_namespace)) }
 
-      it_behaves_like('runner details fetch operation returning expected upgradeStatus')
-    end
+      let(:current_user) { user }
 
-    context 'with RunnerUpgradeCheck returning :available' do
-      let(:upgrade_status) { :available }
-      let(:expected_upgrade_status) { 'AVAILABLE' }
+      before do
+        ultimate_group.add_reporter(user)
 
-      it_behaves_like('runner details fetch operation returning expected upgradeStatus')
-    end
+        expect(::Gitlab::Ci::RunnerUpgradeCheck.instance).to receive(:check_runner_upgrade_status)
+          .and_return(upgrade_status)
+          .once
+      end
 
-    context 'with RunnerUpgradeCheck returning :recommended' do
-      let(:upgrade_status) { :recommended }
-      let(:expected_upgrade_status) { 'RECOMMENDED' }
+      context 'with RunnerUpgradeCheck returning :not_available' do
+        let(:upgrade_status) { :not_available }
+        let(:expected_upgrade_status) { 'NOT_AVAILABLE' }
 
-      it_behaves_like('runner details fetch operation returning expected upgradeStatus')
+        it_behaves_like('runner details fetch operation returning expected upgradeStatus')
+      end
+
+      context 'with RunnerUpgradeCheck returning :available' do
+        let(:upgrade_status) { :available }
+        let(:expected_upgrade_status) { 'AVAILABLE' }
+
+        it_behaves_like('runner details fetch operation returning expected upgradeStatus')
+      end
+
+      context 'with RunnerUpgradeCheck returning :recommended' do
+        let(:upgrade_status) { :recommended }
+        let(:expected_upgrade_status) { 'RECOMMENDED' }
+
+        it_behaves_like('runner details fetch operation returning expected upgradeStatus')
+      end
     end
   end
 end
