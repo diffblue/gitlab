@@ -1,6 +1,7 @@
 <script>
 import { GlIcon, GlTooltipDirective } from '@gitlab/ui';
 import { sprintf, s__ } from '~/locale';
+import CiIcon from '~/vue_shared/components/ci_icon.vue';
 import { accessValue } from '../accessors/linked_pipelines_accessors';
 
 export default {
@@ -8,6 +9,7 @@ export default {
     GlTooltip: GlTooltipDirective,
   },
   components: {
+    CiIcon,
     GlIcon,
   },
   inject: {
@@ -74,10 +76,9 @@ export default {
 
       return `${pipeline.project.name} - ${label}`;
     },
-    getStatusIcon(pipeline) {
-      const { icon } = accessValue(pipeline, this.dataMethod, 'detailedStatus');
-
-      return `${icon}_borderless`;
+    pipelineStatus(pipeline) {
+      // detailedStatus is graphQL, details.status is REST
+      return pipeline?.detailedStatus || pipeline?.details?.status;
     },
     triggerButtonClass(pipeline) {
       const { group } = accessValue(pipeline, this.dataMethod, 'detailedStatus');
@@ -95,9 +96,9 @@ export default {
       'is-upstream': isUpstream,
       'is-downstream': isDownstream,
     }"
-    class="linked-pipeline-mini-list inline-block"
+    class="linked-pipeline-mini-list gl-align-items-center gl-display-inline-flex gl-flex-wrap gl-my-1"
   >
-    <gl-icon v-if="isDownstream" class="arrow-icon" name="long-arrow" />
+    <gl-icon v-if="isDownstream" class="arrow-icon gl-mx-2 gl-text-gray-500" name="long-arrow" />
 
     <a
       v-for="pipeline in linkedPipelinesTrimmed"
@@ -105,9 +106,15 @@ export default {
       v-gl-tooltip="{ title: pipelineTooltipText(pipeline) }"
       :href="pipeline.path"
       :class="triggerButtonClass(pipeline)"
-      class="linked-pipeline-mini-item"
+      class="linked-pipeline-mini-item gl-align-items-center gl-display-inline-flex gl-mr-2 gl-rounded-full"
     >
-      <gl-icon :name="getStatusIcon(pipeline)" />
+      <ci-icon
+        is-interactive
+        css-classes="gl-rounded-full"
+        :size="24"
+        :status="pipelineStatus(pipeline)"
+        class="gl-align-items-center gl-display-inline-flex"
+      />
     </a>
 
     <a
@@ -115,11 +122,11 @@ export default {
       v-gl-tooltip="{ title: counterTooltipText }"
       :title="counterTooltipText"
       :href="pipelinePath"
-      class="linked-pipelines-counter linked-pipeline-mini-item"
+      class="gl-align-items-center gl-bg-gray-50 gl-display-inline-flex gl-font-sm gl-h-6 gl-justify-content-center gl-rounded-pill gl-text-decoration-none gl-text-gray-500 gl-w-7 linked-pipelines-counter linked-pipeline-mini-item"
     >
       {{ counterLabel }}
     </a>
 
-    <gl-icon v-if="isUpstream" class="arrow-icon" name="long-arrow" />
+    <gl-icon v-if="isUpstream" class="arrow-icon gl-mx-2 gl-text-gray-500" name="long-arrow" />
   </span>
 </template>
