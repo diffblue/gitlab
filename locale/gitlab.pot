@@ -32567,6 +32567,9 @@ msgstr ""
 msgid "Runners|Enter the number of seconds. This timeout takes precedence over lower timeouts set for the project."
 msgstr ""
 
+msgid "Runners|Executor"
+msgstr ""
+
 msgid "Runners|Group"
 msgstr ""
 
