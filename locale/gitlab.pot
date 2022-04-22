@@ -37710,6 +37710,9 @@ msgstr ""
 msgid "TestReports|No test cases were found in the test report."
 msgstr ""
 
+msgid "TestReports|Test details are populated by job artifacts. The job artifacts from this pipeline are expired."
+msgstr ""
+
 msgid "TestReports|Tests"
 msgstr ""
 
