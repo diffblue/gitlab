@@ -10101,6 +10101,9 @@ msgstr ""
 msgid "Copy branch name"
 msgstr ""
 
+msgid "Copy code"
+msgstr ""
+
 msgid "Copy codes"
 msgstr ""
 
