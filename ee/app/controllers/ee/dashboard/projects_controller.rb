@@ -8,6 +8,8 @@ module EE
 
       prepended do
         before_action :check_adjourned_deletion_listing_availability, only: [:removed]
+
+        urgency :low, [:removed]
       end
 
       # rubocop:disable Gitlab/ModuleWithInstanceVariables

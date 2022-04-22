@@ -67,7 +67,7 @@ module EE
               use :gitlab_subscription_optional_attributes
             end
           end
-          put ':id', feature_category: :subgroups do
+          put ':id', feature_category: :subgroups, urgency: :low do
             authenticated_as_admin!
 
             namespace = find_namespace(params[:id])
