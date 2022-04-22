@@ -57,12 +57,23 @@ module Gitlab
         raise(error) if raise_error?
       end
 
-      def increment
-        @count += 1 if enabled?
+      def increment(sql = nil)
+        @count += 1 if enabled? && !ignorable?(sql)
+      end
+
+      # queries can be safely ignored if they are amoritized in regular usage
+      # (i.e. only requested occasionally and otherwise cached).
+      def ignorable?(sql)
+        return true if sql&.include?('SELECT 1 AS one FROM "geo_nodes" LIMIT 1')
+        return true if sql&.include?('SELECT "licenses".* FROM "licenses" ORDER BY "licenses"."id"')
+
+        false
       end
 
       def executed_sql(sql)
-        @sql_executed << sql if @count <= LOG_THRESHOLD
+        return if @count > LOG_THRESHOLD || ignorable?(sql)
+
+        @sql_executed << sql
       end
 
       def raise_error?
