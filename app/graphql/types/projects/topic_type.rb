@@ -12,6 +12,9 @@ module Types
       field :name, GraphQL::Types::String, null: false,
             description: 'Name of the topic.'
 
+      field :title, GraphQL::Types::String, null: false,
+            description: 'Title of the topic.'
+
       field :description, GraphQL::Types::String, null: true,
             description: 'Description of the topic.'
 

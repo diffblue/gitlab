@@ -4,8 +4,8 @@ import { nextTick } from 'vue';
 import TopicsTokenSelector from '~/projects/settings/topics/components/topics_token_selector.vue';
 
 const mockTopics = [
-  { id: 1, name: 'topic1', avatarUrl: 'avatar.com/topic1.png' },
-  { id: 2, name: 'GitLab', avatarUrl: 'avatar.com/GitLab.png' },
+  { id: 1, name: 'topic1', title: 'Topic 1', avatarUrl: 'avatar.com/topic1.png' },
+  { id: 2, name: 'GitLab', title: 'GitLab', avatarUrl: 'avatar.com/GitLab.png' },
 ];
 
 describe('TopicsTokenSelector', () => {

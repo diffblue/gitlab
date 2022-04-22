@@ -29,7 +29,7 @@ module Projects
       end
 
       def search(query)
-        fuzzy_search(query, [:name])
+        fuzzy_search(query, [:name, :title])
       end
 
       def update_non_private_projects_counter(ids_before, ids_after, project_visibility_level_before, project_visibility_level_after)
