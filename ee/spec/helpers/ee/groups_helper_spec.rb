@@ -87,24 +87,62 @@ RSpec.describe GroupsHelper do
   describe '#remove_group_message' do
     subject { helper.remove_group_message(group) }
 
+    shared_examples 'permanent deletion message' do
+      it 'returns the message related to permanent deletion' do
+        expect(subject).to include("You are going to remove #{group.name}")
+        expect(subject).to include("Removed groups CANNOT be restored!")
+      end
+    end
+
+    shared_examples 'delayed deletion message' do
+      it 'returns the message related to delayed deletion' do
+        expect(subject).to include("The contents of this group, its subgroups and projects will be permanently removed after")
+      end
+    end
+
     context 'delayed deletion feature is available' do
       before do
         stub_licensed_features(adjourned_deletion_for_projects_and_groups: true)
       end
 
-      it 'returns the message related to delayed deletion' do
-        expect(subject).to include("The contents of this group, its subgroups and projects will be permanently removed after")
-      end
+      it_behaves_like 'delayed deletion message'
 
       context 'group is already marked for deletion' do
         before do
           create(:group_deletion_schedule, group: group, marked_for_deletion_on: Date.current)
         end
 
-        it 'returns the message related to permanent deletion' do
-          expect(subject).to include("You are going to remove #{group.name}")
-          expect(subject).to include("Removed groups CANNOT be restored!")
+        it_behaves_like 'permanent deletion message'
+      end
+
+      context 'when group delay deletion is enabled' do
+        before do
+          stub_application_setting(delayed_group_deletion: true)
         end
+
+        context 'when adjourned deletion period is > 0' do
+          before do
+            stub_application_setting(deletion_adjourned_period: 1)
+          end
+
+          it_behaves_like 'delayed deletion message'
+        end
+
+        context 'when adjourned deletion period = 0' do
+          before do
+            stub_application_setting(deletion_adjourned_period: 0)
+          end
+
+          it_behaves_like 'permanent deletion message'
+        end
+      end
+
+      context 'when group delay deletion is disabled' do
+        before do
+          stub_application_setting(delayed_group_deletion: false)
+        end
+
+        it_behaves_like 'permanent deletion message'
       end
     end
 
@@ -113,10 +151,7 @@ RSpec.describe GroupsHelper do
         stub_licensed_features(adjourned_deletion_for_projects_and_groups: false)
       end
 
-      it 'returns the message related to permanent deletion' do
-        expect(subject).to include("You are going to remove #{group.name}")
-        expect(subject).to include("Removed groups CANNOT be restored!")
-      end
+      it_behaves_like 'permanent deletion message'
     end
   end
 

@@ -895,19 +895,32 @@ RSpec.describe API::Groups do
           stub_application_setting(deletion_adjourned_period: 1)
         end
 
-        context 'success' do
-          it 'marks the group for delayed deletion' do
-            subject
-            group.reload
-
-            expect(response).to have_gitlab_http_status(:accepted)
-            expect(group.marked_for_deletion_on).to eq(Date.today)
-            expect(group.deleting_user).to eq(user)
+        context 'when delayed group deletion is enabled' do
+          before do
+            stub_application_setting(delayed_group_deletion: true)
           end
 
-          it 'does not immediately enqueue the job to delete the group' do
-            expect { subject }.not_to change(GroupDestroyWorker.jobs, :size)
+          context 'success' do
+            it 'marks the group for delayed deletion' do
+              subject
+              group.reload
+
+              expect(response).to have_gitlab_http_status(:accepted)
+              expect(group.marked_for_deletion_on).to eq(Date.current)
+              expect(group.deleting_user).to eq(user)
+            end
+
+            it 'does not immediately enqueue the job to delete the group' do
+              expect { subject }.not_to change(GroupDestroyWorker.jobs, :size)
+            end
           end
+        end
+        context 'when delayed group deletion is disabled' do
+          before do
+            stub_application_setting(delayed_group_deletion: false)
+          end
+
+          it_behaves_like 'immediately enqueues the job to delete the group'
         end
 
         context 'failure' do
@@ -941,7 +954,7 @@ RSpec.describe API::Groups do
           delete api("/groups/#{subgroup.id}", user)
 
           expect(response).to have_gitlab_http_status(:accepted)
-          expect(subgroup.marked_for_deletion_on).to eq(Date.today)
+          expect(subgroup.marked_for_deletion_on).to eq(Date.current)
           expect(subgroup.deleting_user).to eq(user)
         end
       end

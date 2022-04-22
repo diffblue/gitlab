@@ -187,6 +187,13 @@ RSpec.describe API::Settings, 'EE Settings' do
     it_behaves_like 'settings for licensed features'
   end
 
+  context 'default delayed group deletion' do
+    let(:settings) { { delayed_group_deletion: true } }
+    let(:feature) { :adjourned_deletion_for_projects_and_groups }
+
+    it_behaves_like 'settings for licensed features'
+  end
+
   context 'delayed project deletion' do
     let(:settings) { { delayed_project_deletion: true } }
     let(:feature) { :adjourned_deletion_for_projects_and_groups }

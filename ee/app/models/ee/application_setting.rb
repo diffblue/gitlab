@@ -123,6 +123,7 @@ module EE
 
       alias_attribute :delayed_project_deletion, :delayed_project_removal
 
+      before_save :update_delayed_group_deletion, if: :deletion_adjourned_period_changed?
       after_commit :update_personal_access_tokens_lifetime, if: :saved_change_to_max_personal_access_token_lifetime?
       after_commit :resume_elasticsearch_indexing
 
@@ -458,6 +459,10 @@ module EE
       end
     rescue ::Gitlab::UrlBlocker::BlockedUrlError
       errors.add(:elasticsearch_url, "only supports valid HTTP(S) URLs.")
+    end
+
+    def update_delayed_group_deletion
+      self.delayed_group_deletion = self.deletion_adjourned_period > 0
     end
   end
 end
