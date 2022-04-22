@@ -6369,6 +6369,9 @@ msgstr ""
 msgid "BulkImport|Group import history"
 msgstr ""
 
+msgid "BulkImport|History"
+msgstr ""
+
 msgid "BulkImport|Import failed: Destination cannot be a subgroup of the source group. Change the destination and try again."
 msgstr ""
 
