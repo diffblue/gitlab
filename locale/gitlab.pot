@@ -5454,9 +5454,6 @@ msgstr ""
 msgid "Available on-demand"
 msgstr ""
 
-msgid "Available runners: %{runners}"
-msgstr ""
-
 msgid "Available shared runners:"
 msgstr ""
 
@@ -18150,9 +18147,6 @@ msgstr ""
 msgid "GroupSettings|If the parent group's visibility is lower than the group's current visibility, visibility levels for subgroups and projects will be changed to match the new parent group's visibility."
 msgstr ""
 
-msgid "GroupSettings|New runners registration token has been generated!"
-msgstr ""
-
 msgid "GroupSettings|Overrides user notification preferences for all members of the group, subgroups, and projects."
 msgstr ""
 
@@ -24787,9 +24781,6 @@ msgstr ""
 msgid "Multi-project"
 msgstr ""
 
-msgid "Multi-project Runners cannot be removed"
-msgstr ""
-
 msgid "Multiple HTTP integrations are not supported for this project"
 msgstr ""
 
@@ -25437,9 +25428,6 @@ msgid "No Milestone"
 msgstr ""
 
 msgid "No Scopes"
-msgstr ""
-
-msgid "No Tag"
 msgstr ""
 
 msgid "No active admin user found"
@@ -32450,9 +32438,6 @@ msgstr ""
 msgid "Runner API"
 msgstr ""
 
-msgid "Runner cannot be deleted, please contact your administrator."
-msgstr ""
-
 msgid "Runner tokens"
 msgstr ""
 
@@ -32466,9 +32451,6 @@ msgid "Runners"
 msgstr ""
 
 msgid "Runners are processes that pick up and execute CI/CD jobs for GitLab."
-msgstr ""
-
-msgid "Runners currently online: %{active_runners_count}"
 msgstr ""
 
 msgid "Runners page."
@@ -32876,9 +32858,6 @@ msgid "Runners|active"
 msgstr ""
 
 msgid "Runners|group"
-msgstr ""
-
-msgid "Runners|locked"
 msgstr ""
 
 msgid "Runners|never contacted"
@@ -40124,9 +40103,6 @@ msgid "Two-factor grace period"
 msgstr ""
 
 msgid "Type"
-msgstr ""
-
-msgid "Type/State"
 msgstr ""
 
 msgid "U2F Devices (%{length})"

@@ -8,7 +8,6 @@ import DropdownWeight from './dropdown_weight';
 export default class AvailableDropdownMappings {
   constructor({
     container,
-    runnerTagsEndpoint,
     labelsEndpoint,
     milestonesEndpoint,
     iterationsEndpoint,
@@ -20,7 +19,6 @@ export default class AvailableDropdownMappings {
     includeDescendantGroups,
   }) {
     this.container = container;
-    this.runnerTagsEndpoint = runnerTagsEndpoint;
     this.labelsEndpoint = labelsEndpoint;
     this.milestonesEndpoint = milestonesEndpoint;
     this.iterationsEndpoint = iterationsEndpoint;
