@@ -32,7 +32,7 @@ export default {
           class="js-epic-tree-tab"
           data-testid="tree-view-button"
           :selected="activeTab === $options.ITEM_TABS.TREE"
-          @click="() => $emit('tab-change', this.$options.ITEM_TABS.TREE)"
+          @click="() => $emit('tab-change', $options.ITEM_TABS.TREE)"
         >
           {{ __('Tree view') }}
         </gl-button>
@@ -41,7 +41,7 @@ export default {
           class="js-epic-roadmap-tab"
           data-testid="roadmap-view-button"
           :selected="activeTab === $options.ITEM_TABS.ROADMAP"
-          @click="() => $emit('tab-change', this.$options.ITEM_TABS.ROADMAP)"
+          @click="() => $emit('tab-change', $options.ITEM_TABS.ROADMAP)"
         >
           {{ __('Roadmap view') }}
         </gl-button>

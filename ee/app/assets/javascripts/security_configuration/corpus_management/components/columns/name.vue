@@ -44,7 +44,7 @@ export default {
       <span class="gl-text-gray-500" data-testid="file-size">({{ fileSize }})</span>
     </div>
     <div data-testid="latest-job" class="gl-text-truncate">
-      {{ this.$options.i18n.latestJob }}
+      {{ $options.i18n.latestJob }}
       <gl-link v-if="jobUrl" :href="jobUrl" target="_blank">
         {{ latestJob }}
       </gl-link>

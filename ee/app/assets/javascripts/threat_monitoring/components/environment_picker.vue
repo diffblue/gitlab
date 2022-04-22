@@ -102,7 +102,7 @@ export default {
         :loading="isLoadingEnvironments"
         @click="fetchEnvironments"
       >
-        {{ this.$options.i18n.loadMore }}
+        {{ $options.i18n.loadMore }}
       </gl-button>
     </gl-dropdown>
   </gl-form-group>
