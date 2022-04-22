@@ -6,6 +6,8 @@ export default ({
   pendingMembersCount = 0,
   addSeatsHref = '',
   hasNoSubscription = null,
+  maxFreeNamespaceSeats = null,
+  explorePlansPath = '',
 } = {}) => ({
   isLoading: false,
   hasError: false,
@@ -28,4 +30,6 @@ export default ({
   seatsOwed: null,
   hasNoSubscription,
   addSeatsHref,
+  maxFreeNamespaceSeats,
+  explorePlansPath,
 });

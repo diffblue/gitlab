@@ -5748,6 +5748,9 @@ msgstr ""
 msgid "Billings|Reactivate trial"
 msgstr ""
 
+msgid "Billings|Seats in use / Seats available"
+msgstr ""
+
 msgid "Billings|Seats in use / Seats in subscription"
 msgstr ""
 
@@ -5773,6 +5776,9 @@ msgid "Billings|You'll now be able to take advantage of free CI/CD minutes on sh
 msgstr ""
 
 msgid "Billings|Your account has been validated"
+msgstr ""
+
+msgid "Billing| Free groups on GitLab are limited to %{maxNamespaceSeats} seats"
 msgstr ""
 
 msgid "Billing|%{user} was successfully approved"
@@ -5814,10 +5820,16 @@ msgstr ""
 msgid "Billing|Enter at least three characters to search."
 msgstr ""
 
+msgid "Billing|Explore all plans"
+msgstr ""
+
 msgid "Billing|Export list"
 msgstr ""
 
 msgid "Billing|Group invite"
+msgstr ""
+
+msgid "Billing|If the group has over %{maxNamespaceSeats} members, only those occupying a seat can access the namespace. To ensure all members (active and %{linkStart}over limit%{linkEnd}) can access the namespace, you can start a trial or upgrade to a paid tier."
 msgstr ""
 
 msgid "Billing|Members who were invited via a group invitation cannot be removed. You can either remove the entire group, or ask an Owner of the invited group to remove the member."

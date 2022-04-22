@@ -4,6 +4,7 @@ class Groups::UsageQuotasController < Groups::ApplicationController
   before_action :authorize_admin_group!
   before_action :verify_usage_quotas_enabled!
   before_action :push_additional_repo_storage_by_namespace_feature, only: :index
+  before_action :push_free_user_cap_feature_flag, only: :index
 
   layout 'group_settings'
 
@@ -28,5 +29,9 @@ class Groups::UsageQuotasController < Groups::ApplicationController
 
   def push_additional_repo_storage_by_namespace_feature
     push_to_gon_attributes(:features, :additional_repo_storage_by_namespace, @group.additional_repo_storage_by_namespace_enabled?)
+  end
+
+  def push_free_user_cap_feature_flag
+    push_frontend_feature_flag(:free_user_cap, @group)
   end
 end
