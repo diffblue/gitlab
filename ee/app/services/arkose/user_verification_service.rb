@@ -144,7 +144,7 @@ module Arkose
                     ARKOSE_LABS_SUBDOMAIN
                   end
 
-      "http://#{subdomain}.arkoselabs.com/api/v4/verify"
+      "https://#{subdomain}.arkoselabs.com/api/v4/verify"
     end
   end
 end

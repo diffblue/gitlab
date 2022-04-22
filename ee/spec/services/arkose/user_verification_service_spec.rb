@@ -133,7 +133,7 @@ RSpec.describe Arkose::UserVerificationService do
         stub_application_setting(arkose_labs_namespace: "gitlab")
       end
 
-      it_behaves_like 'interacting with Arkose verify API', "http://gitlab-verify.arkoselabs.com/api/v4/verify"
+      it_behaves_like 'interacting with Arkose verify API', "https://gitlab-verify.arkoselabs.com/api/v4/verify"
     end
 
     context 'when Arkose application settings are not present, fallback to environment variables' do
@@ -141,7 +141,7 @@ RSpec.describe Arkose::UserVerificationService do
         stub_env('ARKOSE_LABS_PRIVATE_KEY': arkose_labs_private_api_key)
       end
 
-      it_behaves_like 'interacting with Arkose verify API', "http://verify-api.arkoselabs.com/api/v4/verify"
+      it_behaves_like 'interacting with Arkose verify API', "https://verify-api.arkoselabs.com/api/v4/verify"
     end
 
     context 'when feature arkose_labs_prevent_login is disabled' do
