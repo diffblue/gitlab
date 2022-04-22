@@ -83,7 +83,7 @@ module Types
           designs_by_id = ids.map(&:second).index_by(&:id)
 
           by_version.each do |v, designs|
-            actions = ::DesignManagement::Action.most_recent.up_to_version(v).by_design(designs).preload(:version)
+            actions = ::DesignManagement::Action.most_recent.up_to_version(v).by_design(designs).with_version
             actions.each do |action|
               action.design = designs_by_id[action.design_id] # eliminate duplicate load
               loader.call([v, action.design], action)
