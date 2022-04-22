@@ -116,6 +116,12 @@ describe('packages_list', () => {
 
       expect(findPackageListDeleteModal().exists()).toBe(true);
     });
+
+    it('does not have an error alert displayed', () => {
+      mountComponent();
+
+      expect(findErrorPackageAlert().exists()).toBe(false);
+    });
   });
 
   describe('when the user can destroy the package', () => {
@@ -162,6 +168,14 @@ describe('packages_list', () => {
       expect(findErrorPackageAlert().text()).toBe(
         'There was a timeout and the package was not published. Delete this package and try again.',
       );
+    });
+
+    it('should display the deletion modal when clicked on the confirm button', async () => {
+      findErrorPackageAlert().vm.$emit('primaryAction');
+
+      await nextTick();
+
+      expect(findPackageListDeleteModal().text()).toContain(errorPackage.name);
     });
   });
 

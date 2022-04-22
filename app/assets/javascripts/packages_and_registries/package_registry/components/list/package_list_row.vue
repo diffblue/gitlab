@@ -83,6 +83,8 @@ export default {
     createdAt: __('Created %{timestamp}'),
     removePackage: s__('PackageRegistry|Remove package'),
     errorPublishing: s__('PackageRegistry|Error publishing'),
+    warning: __('Warning'),
+    moreActions: __('More actions'),
   },
 };
 </script>
@@ -136,7 +138,7 @@ export default {
           v-gl-tooltip="{ title: $options.i18n.erroredPackageText }"
           name="warning"
           class="gl-text-red-500"
-          :aria-label="__('Warning')"
+          :aria-label="$options.i18n.warning"
           data-testid="warning-icon"
         />
         <span class="gl-text-red-500">{{ $options.i18n.errorPublishing }}</span>
@@ -161,7 +163,7 @@ export default {
       <gl-dropdown
         data-testid="delete-dropdown"
         icon="ellipsis_v"
-        text="More actions"
+        :text="$options.i18n.moreActions"
         :text-sr-only="true"
         category="tertiary"
         no-caret
