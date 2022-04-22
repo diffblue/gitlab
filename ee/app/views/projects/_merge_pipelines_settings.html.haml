@@ -1,8 +1,8 @@
 - return unless merge_pipelines_available?
+- configuring_pipelines_for_merge_requests_help_link_url = help_page_path('ci/pipelines/merge_request_pipelines.md', anchor: 'prerequisites')
+- configuring_pipelines_for_merge_requests_help_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: configuring_pipelines_for_merge_requests_help_link_url }
 
-.form-check.builds-feature
-  - configuring_pipelines_for_merge_requests_help_link_url = help_page_path('ci/pipelines/merge_request_pipelines.md', anchor: 'prerequisites')
-  - configuring_pipelines_for_merge_requests_help_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: configuring_pipelines_for_merge_requests_help_link_url }
+.builds-feature
   = form.gitlab_ui_checkbox_component :merge_pipelines_enabled,
     s_('ProjectSettings|Enable merged results pipelines'),
     checkbox_options: { data: { qa_selector: 'merged_results_pipeline_checkbox' }, class: 'js-merge-options-merge-pipelines' },
