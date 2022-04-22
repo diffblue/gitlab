@@ -16,6 +16,7 @@ RSpec.describe Groups::OpenIssuesCountService, :use_clean_rails_memory_store_cac
     before do
       allow(IssuesFinder).to receive(:new).and_call_original
     end
+
     it 'uses the IssuesFinder to scope issues' do
       expect(IssuesFinder)
         .to receive(:new)
@@ -56,6 +57,7 @@ RSpec.describe Groups::OpenIssuesCountService, :use_clean_rails_memory_store_cac
       it_behaves_like 'a counter caching service with threshold'
     end
   end
+
   describe '#clear_all_cache_keys' do
     it 'calls `Rails.cache.delete` with the correct keys' do
       expect(Rails.cache).to receive(:delete)

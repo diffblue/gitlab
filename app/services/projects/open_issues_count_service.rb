@@ -57,12 +57,11 @@ module Projects
       end
     end
 
-    # We only show total issues count for admins, who are allowed to view hidden issues.
-    # We also only show issues count including confidential for reporters, who are allowed to view confidential issues.
+    # We only show issues count including confidential for reporters, who are allowed to view confidential issues.
     # This will still show a discrepancy on issues number but should be less than before.
     # Check https://gitlab.com/gitlab-org/gitlab-foss/issues/38418 description.
-    # rubocop: disable CodeReuse/ActiveRecord
 
+    # rubocop: disable CodeReuse/ActiveRecord
     def self.query(projects, public_only: true)
       issues_filtered_by_type = Issue.opened.with_issue_type(Issue::TYPES_FOR_LIST)
 
