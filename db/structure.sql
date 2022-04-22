@@ -15665,7 +15665,7 @@ CREATE TABLE group_deploy_keys (
     expires_at timestamp with time zone,
     key text NOT NULL,
     title text,
-    fingerprint text NOT NULL,
+    fingerprint text,
     fingerprint_sha256 bytea,
     CONSTRAINT check_cc0365908d CHECK ((char_length(title) <= 255)),
     CONSTRAINT check_e4526dcf91 CHECK ((char_length(fingerprint) <= 255)),
