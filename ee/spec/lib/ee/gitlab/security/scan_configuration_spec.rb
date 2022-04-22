@@ -65,7 +65,7 @@ RSpec.describe ::Gitlab::Security::ScanConfiguration do
         where(:type, :configuration_path) do
           :sast | lazy { "#{path}/sast" }
           :dast | lazy { "#{path}/dast" }
-          :dast_profiles | lazy { "#{path}/dast_scans" }
+          :dast_profiles | lazy { "#{path}/profile_library" }
           :api_fuzzing | lazy { "#{path}/api_fuzzing" }
           :corpus_management | lazy { "#{path}/corpus_management" }
         end

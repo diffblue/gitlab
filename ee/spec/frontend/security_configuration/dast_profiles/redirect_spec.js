@@ -3,7 +3,7 @@ import { TEST_HOST } from 'helpers/test_constants';
 import * as urlUtility from '~/lib/utils/url_utility';
 
 const fullPath = '/group/project';
-const profilesLibraryPath = `${fullPath}/-/security/configuration/dast_scans`;
+const profilesLibraryPath = `${fullPath}/-/security/configuration/profile_library`;
 const newOnDemandScanPath = `${fullPath}/-/on_demand_scans`;
 const editOnDemandScanPath = `${fullPath}/-/on_demand_scans/3/edit`;
 const dastConfigPath = `${fullPath}/-/security/configuration/dast`;

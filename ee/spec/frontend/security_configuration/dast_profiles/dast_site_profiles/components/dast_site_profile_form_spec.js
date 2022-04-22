@@ -16,7 +16,7 @@ import {
 } from 'ee/security_configuration/dast_profiles/dast_site_profiles/constants';
 
 const projectFullPath = 'group/project';
-const profilesLibraryPath = `${TEST_HOST}/${projectFullPath}/-/security/configuration/dast_scans`;
+const profilesLibraryPath = `${TEST_HOST}/${projectFullPath}/-/security/configuration/profile_library`;
 const onDemandScansPath = `${TEST_HOST}/${projectFullPath}/-/on_demand_scans`;
 const profileName = 'My DAST site profile';
 const targetUrl = 'http://example.com';

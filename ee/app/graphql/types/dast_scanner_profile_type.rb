@@ -40,7 +40,7 @@ module Types
           description: 'List of security policy names that are referencing given project.'
 
     def edit_path
-      Rails.application.routes.url_helpers.edit_project_security_configuration_dast_scans_dast_scanner_profile_path(object.project, object)
+      Rails.application.routes.url_helpers.edit_project_security_configuration_profile_library_dast_scanner_profile_path(object.project, object)
     end
 
     def referenced_in_security_policies

@@ -29,10 +29,10 @@ module Projects::OnDemandScansHelper
     common_data(project).merge({
       'default-branch' => project.default_branch,
       'on-demand-scans-path' => project_on_demand_scans_path(project, anchor: 'saved'),
-      'scanner-profiles-library-path' => project_security_configuration_dast_scans_path(project, anchor: 'scanner-profiles'),
-      'site-profiles-library-path' => project_security_configuration_dast_scans_path(project, anchor: 'site-profiles'),
-      'new-scanner-profile-path' => new_project_security_configuration_dast_scans_dast_scanner_profile_path(project),
-      'new-site-profile-path' => new_project_security_configuration_dast_scans_dast_site_profile_path(project),
+      'scanner-profiles-library-path' => project_security_configuration_profile_library_path(project, anchor: 'scanner-profiles'),
+      'site-profiles-library-path' => project_security_configuration_profile_library_path(project, anchor: 'site-profiles'),
+      'new-scanner-profile-path' => new_project_security_configuration_profile_library_dast_scanner_profile_path(project),
+      'new-site-profile-path' => new_project_security_configuration_profile_library_dast_site_profile_path(project),
       'timezones' => timezone_data(format: :full).to_json
     })
   end
