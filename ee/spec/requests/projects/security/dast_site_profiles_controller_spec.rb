@@ -96,6 +96,8 @@ RSpec.describe Projects::Security::DastSiteProfilesController, type: :request do
       end
 
       context 'record exists' do
+        let(:dast_site_profile) { create(:dast_site_profile, :with_dast_submit_field, project: project) }
+
         before do
           create(:dast_site_profile_secret_variable, :password, dast_site_profile: dast_site_profile)
           create(:dast_site_profile_secret_variable, :request_headers, dast_site_profile: dast_site_profile)
@@ -117,7 +119,8 @@ RSpec.describe Projects::Security::DastSiteProfilesController, type: :request do
               username: dast_site_profile.auth_username,
               usernameField: dast_site_profile.auth_username_field,
               password: Dast::SiteProfilePresenter::REDACTED_PASSWORD,
-              passwordField: dast_site_profile.auth_password_field
+              passwordField: dast_site_profile.auth_password_field,
+              submitField: dast_site_profile.auth_submit_field
             },
             referencedInSecurityPolicies: dast_site_profile.referenced_in_security_policies
           }.to_json

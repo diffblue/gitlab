@@ -29,7 +29,7 @@ module Projects
                 targetType
                 excludedUrls
                 requestHeaders
-                auth { enabled url username usernameField password passwordField }
+                auth { enabled url username usernameField password passwordField submitField }
                 referencedInSecurityPolicies
               }
             }

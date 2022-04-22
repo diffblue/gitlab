@@ -35,6 +35,7 @@ export default {
         password: s__('DastProfiles|Password'),
         usernameField: s__('DastProfiles|Username form field'),
         passwordField: s__('DastProfiles|Password form field'),
+        submitField: s__('DastProfiles|Submit button'),
         excludedUrls: this.isTargetAPI
           ? s__('DastProfiles|Excluded paths')
           : s__('DastProfiles|Excluded URLs'),
@@ -80,6 +81,7 @@ export default {
       <summary-cell :label="i18n.password" value="••••••••" />
       <summary-cell :label="i18n.usernameField" :value="profile.auth.usernameField" />
       <summary-cell :label="i18n.passwordField" :value="profile.auth.passwordField" />
+      <summary-cell :label="i18n.submitField" :value="profile.auth.submitField" />
     </template>
     <summary-cell :label="i18n.excludedUrls" :value="displayExcludedUrls" />
     <summary-cell

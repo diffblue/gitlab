@@ -44,6 +44,7 @@ export default {
       // default to commonly used names for `username` and `password` fields in authentcation forms
       usernameField = 'username',
       passwordField = 'password',
+      submitField,
     } = this.value.fields;
 
     return {
@@ -58,6 +59,7 @@ export default {
             : initFormField({ value: password }),
           usernameField: initFormField({ value: usernameField }),
           passwordField: initFormField({ value: passwordField }),
+          submitField: initFormField({ value: submitField, required: false, skipValidation: true }),
         },
       },
       isSensitiveFieldRequired: !this.isEditMode,
@@ -164,6 +166,21 @@ export default {
               type="text"
               required
               :state="form.fields.passwordField.state"
+            />
+          </gl-form-group>
+        </div>
+        <div class="row">
+          <gl-form-group
+            :label="s__('DastProfiles|Submit button (optional)')"
+            :invalid-feedback="form.fields.submitField.feedback"
+            class="col-md-6"
+          >
+            <gl-form-input
+              v-model="form.fields.submitField.value"
+              v-validation:[showValidation]
+              name="submitField"
+              type="text"
+              :state="form.fields.submitField.state"
             />
           </gl-form-group>
         </div>
