@@ -737,6 +737,6 @@ This section describes how the scripts can be used to manage the GLFM specificat
 1. Run [`update-example-snapshots.rb`](#update-example-snapshotsrb-script) to update the [example snapshot files](#example-snapshot-files).
 1. Visually inspect and confirm any resulting changes to the [example snapshot files](#example-snapshot-files).
 1. Run [`run-snapshot-tests.sh`](#run-snapshot-testssh-script) as a convenience script to run all relevant frontend (RSpec) and backend (Jest) tests which use the example snapshots.
-    1. Any frontend or backend snapshot test may also be run individually.
-    1. All frontend and backend tests will also be run as part of the Continuous Integration suite, as they normally are.
+   1. Any frontend or backend snapshot test may also be run individually.
+   1. All frontend and backend tests are also run as part of the continuous integration suite, as they normally are.
 1. Commit any changes to the [input specification files](#input-specification-files), [output specification files](#output-specification-files), or [example snapshot files](#example-snapshot-files).
