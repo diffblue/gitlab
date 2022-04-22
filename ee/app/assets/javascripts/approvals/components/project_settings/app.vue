@@ -1,4 +1,5 @@
 <script>
+import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import App from '../app.vue';
 import ScanResultPolicies from '../security_orchestration/scan_result_policies.vue';
 import ProjectApprovalSettings from './project_approval_settings.vue';
@@ -11,6 +12,7 @@ export default {
     ProjectRules,
     ScanResultPolicies,
   },
+  mixins: [glFeatureFlagMixin()],
 };
 </script>
 
@@ -21,7 +23,7 @@ export default {
         <project-rules />
       </template>
     </app>
-    <scan-result-policies class="gl-mt-5" />
+    <scan-result-policies v-if="glFeatures.securityOrchestrationPolicies" class="gl-mt-5" />
     <project-approval-settings class="gl-mt-5" />
   </div>
 </template>
