@@ -3,7 +3,7 @@
 module QA
   module Resource
     class Job < Base
-      attr_accessor :id, :project
+      attr_accessor :id, :name, :project
 
       attributes :id,
                  :project

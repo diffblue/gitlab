@@ -19,7 +19,7 @@ module QA
         end
       end
 
-      let(:commit) do
+      let!(:commit) do
         Resource::Repository::Commit.fabricate_via_api! do |commit|
           commit.project = project
           commit.commit_message = 'Add .gitlab-ci.yml'
@@ -52,27 +52,20 @@ module QA
         'continues to display the archived trace',
          testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/357771'
       ) do
-        commit.project.visit!
-        Flow::Pipeline.visit_latest_pipeline
-
-        Page::Project::Pipeline::Show.perform do |pipeline|
-          pipeline.click_job("#{pipeline_job_name}")
-        end
-
-        Page::Project::Job::Show.perform do |job|
-          Support::Waiter.wait_until { job.successful? }
-        end
-
         job = Resource::Job.fabricate_via_api! do |job|
-          job.id = current_url.split('/')[-1].to_i
+          job.id = project.job_by_name(pipeline_job_name)[:id]
+          job.name = pipeline_job_name
           job.project = project
         end
 
-        Support::Waiter.wait_until(max_duration: 120) do
+        job.visit!
+
+        Support::Waiter.wait_until(max_duration: 150) do
           job.artifacts.any?
         end
 
         Page::Project::Job::Show.perform do |job|
+          job.refresh
           expect(job).to have_job_log
         end
       end
