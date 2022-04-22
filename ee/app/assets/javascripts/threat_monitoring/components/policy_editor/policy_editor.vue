@@ -1,7 +1,6 @@
 <script>
 import { GlAlert, GlFormGroup, GlFormSelect } from '@gitlab/ui';
 import { s__ } from '~/locale';
-import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { POLICY_TYPE_COMPONENT_OPTIONS } from '../constants';
 import EnvironmentPicker from '../environment_picker.vue';
 import NetworkPolicyEditor from './network_policy/network_policy_editor.vue';
@@ -18,7 +17,6 @@ export default {
     ScanExecutionPolicyEditor,
     ScanResultPolicyEditor,
   },
-  mixins: [glFeatureFlagMixin()],
   inject: ['policyType'],
   props: {
     assignedPolicyProject: {
@@ -55,11 +53,7 @@ export default {
       );
     },
     policyTypes() {
-      const types = Object.values(POLICY_TYPE_COMPONENT_OPTIONS);
-
-      return this.isScanResultPolicyEnabled
-        ? types
-        : types.filter((type) => type.value !== POLICY_TYPE_COMPONENT_OPTIONS.scanResult?.value);
+      return Object.values(POLICY_TYPE_COMPONENT_OPTIONS);
     },
     policyOptions() {
       return (
@@ -72,9 +66,6 @@ export default {
     },
     shouldAllowPolicyTypeSelection() {
       return !this.existingPolicy;
-    },
-    isScanResultPolicyEnabled() {
-      return this.glFeatures.scanResultPolicy;
     },
   },
   methods: {

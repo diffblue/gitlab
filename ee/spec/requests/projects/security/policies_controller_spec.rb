@@ -110,7 +110,6 @@ RSpec.describe Projects::Security::PoliciesController, type: :request do
           let(:service) { instance_double('::Security::SecurityOrchestrationPolicies::FetchPolicyApproversService', execute: service_result) }
 
           before do
-            stub_feature_flags(scan_result_policy: true)
             allow_next_instance_of(Repository) do |repository|
               allow(repository).to receive(:blob_data_at).and_return({ scan_result_policy: [policy] }.to_yaml)
             end
@@ -128,22 +127,6 @@ RSpec.describe Projects::Security::PoliciesController, type: :request do
             expect(app['data-policy']).to eq(policy.to_json)
             expect(app['data-policy-type']).to eq(type)
             expect(app['data-scan-result-approvers']).to include(user.name, user.id.to_s, group.full_path, group.id.to_s)
-          end
-
-          context 'with feature flag disabled' do
-            before do
-              stub_feature_flags(scan_result_policy: false)
-            end
-
-            it 'renders the edit page without approvers data' do
-              get edit
-
-              app = Nokogiri::HTML.parse(response.body).at_css('div#js-policy-builder-app')
-
-              expect(app['data-policy']).to eq(policy.to_json)
-              expect(app['data-policy-type']).to eq(type)
-              expect(app['data-scan-result-approvers']).to be_nil
-            end
           end
         end
 

@@ -18,7 +18,6 @@ module Security
 
       def active_scan_result_policies
         return [] if project.blank?
-        return [] unless ::Feature.enabled?(:scan_result_policy, project, default_enabled: :yaml)
 
         scan_result_policies&.select { |config| config[:enabled] }&.first(LIMIT)
       end

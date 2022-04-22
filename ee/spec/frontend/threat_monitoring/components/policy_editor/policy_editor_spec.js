@@ -32,7 +32,6 @@ describe('PolicyEditor component', () => {
       },
       provide: {
         policyType: undefined,
-        glFeatures: { scanResultPolicy: true },
         ...provide,
       },
       stubs: { GlFormSelect },
@@ -100,26 +99,6 @@ describe('PolicyEditor component', () => {
         expect(component.props('isEditing')).toBe(false);
       },
     );
-
-    describe('with scan_result_policy feature flag disabled', () => {
-      beforeEach(async () => {
-        factory({ provide: { glFeatures: { scanResultPolicy: false } } });
-        const formSelect = findFormSelect();
-        formSelect.vm.$emit('change', POLICY_TYPE_COMPONENT_OPTIONS.scanResult.value);
-        await nextTick();
-      });
-
-      it('does not render scan result policy', () => {
-        const component = findScanResultPolicyEditor();
-        expect(component.exists()).toBe(false);
-      });
-
-      it('renders network policy with isEditing set to false', () => {
-        const component = findNeworkPolicyEditor();
-        expect(component.exists()).toBe(true);
-        expect(component.props('isEditing')).toBe(false);
-      });
-    });
   });
 
   describe('when an existing policy is present', () => {
@@ -133,7 +112,7 @@ describe('PolicyEditor component', () => {
       async ({ existingPolicy, findComponent, option, policyType }) => {
         factory({
           propsData: { existingPolicy },
-          provide: { policyType, glFeatures: { scanResultPolicy: true } },
+          provide: { policyType },
         });
         await nextTick();
         const formSelect = findFormSelect();
@@ -145,31 +124,5 @@ describe('PolicyEditor component', () => {
         expect(component.props('isEditing')).toBe(true);
       },
     );
-
-    describe('with scan_result_policy feature flag disabled', () => {
-      beforeEach(() => {
-        factory({
-          propsData: { existingPolicy: mockScanResultObject },
-          provide: {
-            policyType: POLICY_TYPE_COMPONENT_OPTIONS.scanResult.urlParameter,
-            glFeatures: { scanResultPolicy: false },
-          },
-        });
-      });
-
-      it('does not display the scan result as one of the dropdown options', () => {
-        const formSelect = findFormSelect();
-        expect(formSelect.vm.$attrs.options).toMatchObject([
-          POLICY_TYPE_COMPONENT_OPTIONS.container,
-          POLICY_TYPE_COMPONENT_OPTIONS.scanExecution,
-        ]);
-      });
-
-      it('renders network policy with isEditing set to true', () => {
-        const component = findNeworkPolicyEditor();
-        expect(component.exists()).toBe(true);
-        expect(component.props('isEditing')).toBe(true);
-      });
-    });
   });
 });

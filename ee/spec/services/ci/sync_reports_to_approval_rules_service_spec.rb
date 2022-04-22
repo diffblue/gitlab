@@ -399,15 +399,9 @@ RSpec.describe Ci::SyncReportsToApprovalRulesService, '#execute' do
               create(:ee_ci_build, :success, :dependency_scanning, name: 'ds_job', pipeline: base_pipeline, project: project)
             end
 
-            context 'with feature flag disabled' do
-              before do
-                stub_feature_flags(scan_result_policy: false)
-              end
-
-              it "won't change approval_required count" do
-                expect { subject }
-                .not_to change { report_approver_rule.reload.approvals_required }
-              end
+            it "lowers approval_required count" do
+              expect { subject }
+              .to change { report_approver_rule.reload.approvals_required }.from(2).to(0)
             end
           end
         end

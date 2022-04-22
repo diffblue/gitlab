@@ -20,16 +20,6 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyS
 
     subject { service.execute }
 
-    context 'when feature flag is disabled' do
-      before do
-        stub_feature_flags(scan_result_policy: false)
-      end
-
-      it 'does not change approval project rules' do
-        expect { subject }.not_to change { project.approval_rules.count }
-      end
-    end
-
     context 'without any require_approval action' do
       let(:policy) { build(:scan_result_policy, name: 'Test Policy', actions: [{ type: 'another_one' }]) }
 

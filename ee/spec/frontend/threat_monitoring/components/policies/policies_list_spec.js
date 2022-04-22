@@ -93,7 +93,6 @@ describe('PoliciesList component', () => {
             newPolicyPath: 'path/to/policy',
             groupPath: undefined,
             projectPath: projectFullPath,
-            glFeatures: { scanResultPolicy: true },
           },
           apolloProvider: createMockApollo([
             [networkPoliciesQuery, requestHandlers.networkPolicies],
