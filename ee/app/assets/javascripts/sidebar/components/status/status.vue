@@ -214,7 +214,7 @@ export default {
 
       <gl-loading-icon v-if="isFetching" size="sm" :inline="true" />
       <p v-else-if="!isDropdownShowing" class="value gl-m-0" :class="{ 'no-value': !status }">
-        <span v-if="status" class="text-plain gl-font-weight-bold">{{ statusText }}</span>
+        <span v-if="status" class="text-plain">{{ statusText }}</span>
         <span v-else>{{ $options.i18n.noneText }}</span>
       </p>
     </div>
