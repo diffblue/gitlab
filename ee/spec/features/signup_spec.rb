@@ -124,4 +124,29 @@ RSpec.describe 'Signup on EE' do
       expect(page).to have_current_path(new_project_path)
     end
   end
+
+  describe 'password complexity', :js do
+    let(:path_to_visit) { new_user_registration_path }
+    let(:password_input_selector) { :new_user_password }
+    let(:submit_button_selector) { _('Register') }
+
+    it_behaves_like 'password complexity validations'
+
+    context 'when all password complexity rules are enabled' do
+      include_context 'with all password complexity rules enabled'
+
+      context 'when all rules are matched' do
+        let(:password) { '12345aA.' }
+
+        it 'creates the user' do
+          visit path_to_visit
+
+          fill_in_signup_form
+          fill_in password_input_selector, with: password
+
+          expect { click_button submit_button_selector }.to change { User.count }.by(1)
+        end
+      end
+    end
+  end
 end

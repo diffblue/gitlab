@@ -159,4 +159,47 @@ RSpec.describe EE::AuthHelper do
       end
     end
   end
+
+  describe '#password_rule_list' do
+    context 'when password complexity feature is not available' do
+      it 'returns nil' do
+        expect(password_rule_list).to be_nil
+      end
+    end
+
+    context 'when password complexity feature is available' do
+      before do
+        stub_licensed_features(password_complexity: true)
+      end
+
+      context 'without any rules' do
+        it 'returns an empty array' do
+          expect(password_rule_list).to match_array([])
+        end
+      end
+
+      context 'with one rule' do
+        before do
+          stub_application_setting(password_number_required: true)
+        end
+
+        it 'returns only one rule' do
+          expect(password_rule_list).to match_array([:number])
+        end
+      end
+
+      context 'with all rules' do
+        before do
+          stub_application_setting(password_number_required: true)
+          stub_application_setting(password_symbol_required: true)
+          stub_application_setting(password_lowercase_required: true)
+          stub_application_setting(password_uppercase_required: true)
+        end
+
+        it 'returns all rules' do
+          expect(password_rule_list).to match_array([:number, :symbol, :lowercase, :uppercase])
+        end
+      end
+    end
+  end
 end
