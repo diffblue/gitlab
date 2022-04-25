@@ -4,6 +4,6 @@ classes:
 - Users::CreditCardValidation
 feature_categories:
 - purchase
-description: TODO
+description: Stores whether the user has completed a first time validation to run CI pipelines
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/60626
 milestone: '13.12'

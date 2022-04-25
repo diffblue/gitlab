@@ -4,6 +4,7 @@ classes:
 - Namespace::AdminNote
 feature_categories:
 - authentication_and_authorization
+- subgroups
 description: TODO
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/47825
 milestone: '13.11'
