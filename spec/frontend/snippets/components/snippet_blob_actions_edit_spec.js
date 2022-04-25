@@ -9,6 +9,7 @@ import {
   SNIPPET_BLOB_ACTION_CREATE,
   SNIPPET_BLOB_ACTION_MOVE,
 } from '~/snippets/constants';
+import { s__ } from '~/locale';
 import { testEntries, createBlobFromTestEntry } from '../test_utils';
 
 const TEST_BLOBS = [
@@ -283,7 +284,9 @@ describe('snippets/components/snippet_blob_actions_edit', () => {
   });
 
   describe('isValid prop', () => {
-    const validationMessage = 'This field is required.';
+    const validationMessage = s__(
+      "Snippets|Snippets can't contain empty files. Ensure all files have content, or delete them.",
+    );
 
     describe('when not present', () => {
       it('sets the label validation state to true', () => {

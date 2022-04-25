@@ -133,7 +133,11 @@ export default {
     <gl-form-group
       :label="s__('Snippets|Files')"
       :label-for="firstInputId"
-      :invalid-feedback="__('This field is required.')"
+      :invalid-feedback="
+        s__(
+          'Snippets|Snippets can\'t contain empty files. Ensure all files have content, or delete them.',
+        )
+      "
       :state="isValid"
     >
       <snippet-blob-edit

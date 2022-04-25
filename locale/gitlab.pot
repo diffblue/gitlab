@@ -35392,6 +35392,9 @@ msgstr ""
 msgid "Snippets|Optionally add a description about what your snippet does or how to use it…"
 msgstr ""
 
+msgid "Snippets|Snippets can't contain empty files. Ensure all files have content, or delete them."
+msgstr ""
+
 msgid "Snowplow"
 msgstr ""
 
