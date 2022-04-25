@@ -116,11 +116,11 @@ export default {
       }
       return this.snippet.webUrl;
     },
-    blobsState() {
-      return !this.showValidation || this.hasValidBlobs;
+    shouldShowBlobsErrors() {
+      return this.showValidation && !this.hasValidBlobs;
     },
-    titleState() {
-      return !this.showValidation || this.isTitleValid;
+    shouldShowTitleErrors() {
+      return this.showValidation && !this.isTitleValid;
     },
   },
   beforeCreate() {
@@ -226,7 +226,7 @@ export default {
         :label="__('Title')"
         label-for="snippet-title"
         :invalid-feedback="__('This field is required.')"
-        :state="titleState"
+        :state="!shouldShowTitleErrors"
       >
         <gl-form-input
           id="snippet-title"
@@ -243,7 +243,7 @@ export default {
       />
       <snippet-blob-actions-edit
         :init-blobs="blobs"
-        :is-valid="blobsState"
+        :is-valid="!shouldShowBlobsErrors"
         @actions="updateActions"
       />
 
