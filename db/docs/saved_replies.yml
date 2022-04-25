@@ -4,6 +4,6 @@ classes:
 - Users::SavedReply
 feature_categories:
 - team_planning
-description: TODO
+description: Text templates used to populate comments using a quick action
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/80807
 milestone: '14.9'
