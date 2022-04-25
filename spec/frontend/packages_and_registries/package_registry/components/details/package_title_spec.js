@@ -120,12 +120,6 @@ describe('PackageTitle', () => {
   });
 
   describe('sub-header', () => {
-    it('has the eye icon', async () => {
-      await createComponent();
-
-      expect(findSubHeaderIcon().props('name')).toBe('eye');
-    });
-
     it('has a text showing version', async () => {
       await createComponent();
 

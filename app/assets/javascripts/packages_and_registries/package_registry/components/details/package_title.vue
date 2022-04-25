@@ -84,7 +84,6 @@ export default {
     data-qa-selector="package_title"
   >
     <template #sub-header>
-      <gl-icon name="eye" class="gl-mr-3" />
       <span data-testid="sub-header">
         <gl-sprintf :message="$options.i18n.packageInfo">
           <template #version>
