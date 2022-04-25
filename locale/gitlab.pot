@@ -42600,7 +42600,7 @@ msgstr ""
 msgid "Who will be using this group?"
 msgstr ""
 
-msgid "Why are you signing up? (Optional)"
+msgid "Why are you signing up? (optional)"
 msgstr ""
 
 msgid "Wiki"

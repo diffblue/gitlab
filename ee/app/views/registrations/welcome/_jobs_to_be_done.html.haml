@@ -4,5 +4,5 @@
     = f.select :registration_objective, shuffled_registration_objective_options, { include_blank: _('Please select...') }, class: 'form-control js-jobs-to-be-done-dropdown'
 .row
   .form-group.col-sm-12.js-jobs-to-be-done-other-group.hidden
-    = label_tag :jobs_to_be_done_other, _('Why are you signing up? (Optional)')
+    = label_tag :jobs_to_be_done_other, _('Why are you signing up? (optional)')
     = text_field_tag :jobs_to_be_done_other, '', class: 'form-control'
