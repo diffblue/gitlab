@@ -42,10 +42,21 @@ RSpec.describe Gitlab::Database::BackgroundMigration::Adapt do
       subject
     end
 
-    it 'does not fail when the indicator raises an error' do
-      expect(indicator).to receive(:evaluate).and_raise(RuntimeError, 'I dont know whats happening')
+    context 'on error' do
+      it 'does not fail when the indicator raises an error' do
+        expect(indicator).to receive(:evaluate).and_raise(RuntimeError, 'everything broken')
 
-      expect { subject }.not_to raise_error
+        expect { subject }.not_to raise_error
+      end
+
+      it 'reports the exception to error tracking' do
+        error = RuntimeError.new('everything broken')
+        allow(indicator).to receive(:evaluate).and_raise(error)
+
+        expect(Gitlab::ErrorTracking).to receive(:track_exception).with(error, migration_id: migration.id)
+
+        subject
+      end
     end
 
     context 'with default indicator (integration test)', :freeze_time do

@@ -21,6 +21,8 @@ module Gitlab
           signal = begin
             indicator_class.new(migration.adapt_context).evaluate
           rescue StandardError => e
+            Gitlab::ErrorTracking.track_exception(e, migration_id: migration.id)
+
             UnknownSignal.new(indicator_class, reason: "unknown error: #{e}")
           end
 
