@@ -8,6 +8,7 @@ exports[`DependencyListJobFailedAlert component matches the snapshot 1`] = `
   primarybuttontext=""
   secondarybuttonlink="/jobs/foo/3210"
   secondarybuttontext="View job"
+  showicon="true"
   title="Job failed to generate the dependency list"
   variant="danger"
 >
