@@ -36354,7 +36354,7 @@ msgstr ""
 msgid "Sub-batch size"
 msgstr ""
 
-msgid "Subdomains of the Pages root domain %{root_domain} are reserved and cannot be used as custom pages domains."
+msgid "Subdomains of the Pages root domain %{root_domain} are reserved and cannot be used as custom Pages domains."
 msgstr ""
 
 msgid "Subgroup information"
