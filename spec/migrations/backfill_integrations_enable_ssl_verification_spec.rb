@@ -5,17 +5,17 @@ require_migration!
 
 RSpec.describe BackfillIntegrationsEnableSslVerification do
   let_it_be(:migration) { described_class::MIGRATION }
-  let_it_be(:integrations) { Gitlab::BackgroundMigration::BackfillIntegrationsEnableSslVerification::Integration }
+  let_it_be(:integrations) { described_class::Integration }
 
   before do
     stub_const("#{described_class.name}::BATCH_SIZE", 2)
 
-    integrations.create!(id: 1, type: 'DroneCiService')
-    integrations.create!(id: 2, type: 'DroneCiService', properties: {})
-    integrations.create!(id: 3, type: 'BambooService', properties: {})
-    integrations.create!(id: 4, type: 'TeamcityService', properties: {})
-    integrations.create!(id: 5, type: 'DroneCiService', properties: {})
-    integrations.create!(id: 6, type: 'TeamcityService', properties: {})
+    integrations.create!(id: 1, type_new: 'Integrations::DroneCi')
+    integrations.create!(id: 2, type_new: 'Integrations::DroneCi', properties: {})
+    integrations.create!(id: 3, type_new: 'Integrations::Bamboo', properties: {})
+    integrations.create!(id: 4, type_new: 'Integrations::Teamcity', properties: {})
+    integrations.create!(id: 5, type_new: 'Integrations::DroneCi', properties: {})
+    integrations.create!(id: 6, type_new: 'Integrations::Teamcity', properties: {})
   end
 
   describe '#up' do

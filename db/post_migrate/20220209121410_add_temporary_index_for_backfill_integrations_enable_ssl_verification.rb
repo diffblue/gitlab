@@ -4,7 +4,8 @@ class AddTemporaryIndexForBackfillIntegrationsEnableSslVerification < Gitlab::Da
   disable_ddl_transaction!
 
   INDEX_NAME = 'tmp_index_integrations_on_id_where_type_droneci_or_teamcity'
-  INDEX_CONDITION = "type IN ('DroneCiService', 'TeamcityService') AND properties IS NOT NULL"
+  INDEX_CONDITION = "type_new IN ('Integrations::DroneCi', 'Integrations::Teamcity') " \
+    "AND encrypted_properties IS NOT NULL"
 
   def up
     # this index is used in 20220209121435_backfill_integrations_enable_ssl_verification
