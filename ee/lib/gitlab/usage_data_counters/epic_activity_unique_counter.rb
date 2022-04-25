@@ -40,6 +40,7 @@ module Gitlab
       EPIC_BLOCKING_ADDED = 'g_project_management_epic_blocking_added'
       EPIC_BLOCKING_REMOVED = 'g_project_management_epic_blocking_removed'
       EPIC_BLOCKED_ADDED = 'g_project_management_epic_blocked_added'
+      EPIC_BLOCKED_REMOVED = 'g_project_management_epic_blocked_removed'
 
       class << self
         def track_epic_created_action(author:)
@@ -172,6 +173,10 @@ module Gitlab
 
         def track_linked_epic_with_type_is_blocked_by_added(author:)
           track_unique_action(EPIC_BLOCKED_ADDED, author)
+        end
+
+        def track_linked_epic_with_type_is_blocked_by_removed(author:)
+          track_unique_action(EPIC_BLOCKED_REMOVED, author)
         end
 
         private
