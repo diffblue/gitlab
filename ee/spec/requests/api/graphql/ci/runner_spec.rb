@@ -39,7 +39,7 @@ RSpec.describe 'Query.runner(id)' do
 
       context 'with RunnerUpgradeCheck returning :available' do
         let(:upgrade_status) { :available }
-        let(:expected_upgrade_status) { 'NOT_AVAILABLE' } # non-paying users always see NOT_AVAILABLE
+        let(:expected_upgrade_status) { 'UNKNOWN' } # non-paying users always see UNKNOWN
 
         it_behaves_like('runner details fetch operation returning expected upgradeStatus')
       end
