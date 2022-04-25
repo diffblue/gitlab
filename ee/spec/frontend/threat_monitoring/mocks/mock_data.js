@@ -297,7 +297,7 @@ export const mockScanResultPolicy = {
   name: 'critical vulnerability CS approvals',
   updatedAt: new Date('2021-06-07T00:00:00.000Z'),
   yaml: mockScanResultManifest,
-  enabled: true,
+  enabled: false,
 };
 
 export const mockScanResultPolicySecond = {

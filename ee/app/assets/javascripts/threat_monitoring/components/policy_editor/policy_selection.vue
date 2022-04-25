@@ -1,5 +1,4 @@
 <script>
-import networkIllustration from '@gitlab/svgs/dist/illustrations/network.svg';
 import shieldCheckIllustration from '@gitlab/svgs/dist/illustrations/shield-check.svg';
 import magnifyingGlassIllustration from '@gitlab/svgs/dist/illustrations/magnifying-glass.svg';
 import { GlCard, GlButton, GlSafeHtmlDirective } from '@gitlab/ui';
@@ -10,13 +9,6 @@ import { POLICY_TYPE_COMPONENT_OPTIONS } from '../constants';
 const i18n = {
   examples: __('Examples'),
   selectPolicy: s__('SecurityOrchestration|Select policy'),
-  networkPolicyTitle: s__('SecurityOrchestration|Network policy'),
-  networkPolicyDesc: s__(
-    'SecurityOrchestration|Use network policies to create firewall rules for network connections in your Kubernetes cluster.',
-  ),
-  networkPolicyExample: s__(
-    'SecurityOrchestration|Allow all inbound traffic to all pods from all pods on ports 443/TCP.',
-  ),
   scanResultPolicyTitle: s__('SecurityOrchestration|Scan result policy'),
   scanResultPolicyDesc: s__(
     'SecurityOrchestration|Use a scan result policy to create rules that ensure security issues are checked before merging a merge request.',
@@ -47,13 +39,6 @@ export default {
     },
   },
   policies: [
-    {
-      urlParameter: POLICY_TYPE_COMPONENT_OPTIONS.container.urlParameter,
-      title: i18n.networkPolicyTitle,
-      description: i18n.networkPolicyDesc,
-      example: i18n.networkPolicyExample,
-      svg: networkIllustration,
-    },
     {
       urlParameter: POLICY_TYPE_COMPONENT_OPTIONS.scanResult.urlParameter,
       title: i18n.scanResultPolicyTitle,
