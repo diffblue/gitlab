@@ -90,7 +90,6 @@ module Elastic
     end
 
     def query_batch_size
-      return self.class::QUERY_BATCH_SIZE if self.class.const_defined?(:QUERY_BATCH_SIZE)
       return batch_size if respond_to?(:batch_size)
 
       raise NotImplemented
