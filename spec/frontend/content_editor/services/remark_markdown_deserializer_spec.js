@@ -86,109 +86,212 @@ const {
 });
 
 describe('content_editor/services/remark_markdown_deserializer', () => {
-  const mdSetextHeadingOne = `
-Heading
-one
-======
-`;
-  const mdSetextHeadingTwo = `
-Heading
-two
--------
-`;
-  const mdBulletListExample = `
-- List item 1
-- List item 2
-`;
-  const mdOrderedListExample = `
-1. List item 1
-1. List item 2
-`;
-  const mdNestedListExample = `
-- List item 1
-  - Sub list item 1
-`;
-  const mdLooseList = `
-- List item 1 paragraph 1
-
-  List item 1 paragraph 2
-- List item 2
-`;
-  const mdBlockquote = `
-> This is a blockquote
-`;
-  const mdBlockquoteWithList = `
-> - List item 1
-> - List item 2
-`;
-  const mdIndentedCodeBlock = `
-    const fn = () => 'GitLab';
-`;
-  const mdFencedCodeBlock = `
-\`\`\`javascript
-  const fn = () => 'GitLab';
-\`\`\`\
-`;
-  const mdFencedCodeBlockEmpty = `
-\`\`\`
-\`\`\`\
-`;
-  const mdFencedCodeBlockWithEmptyLines = `
-\`\`\`javascript
-  const fn = () => 'GitLab';
-
-
-\`\`\`\
-`;
-  const mdHardBreak = `
-This is a paragraph with a\\
-hard line break`;
-
   let deserializer;
 
   beforeEach(() => {
     deserializer = createRemarkMarkdownDeserializer();
   });
 
-  it.each`
-    markdown                                                       | createDoc
-    ${'__bold text__'}                                             | ${() => doc(paragraph(bold('bold text')))}
-    ${'**bold text**'}                                             | ${() => doc(paragraph(bold('bold text')))}
-    ${'<strong>bold text</strong>'}                                | ${() => doc(paragraph(bold('bold text')))}
-    ${'<b>bold text</b>'}                                          | ${() => doc(paragraph(bold('bold text')))}
-    ${'_italic text_'}                                             | ${() => doc(paragraph(italic('italic text')))}
-    ${'*italic text*'}                                             | ${() => doc(paragraph(italic('italic text')))}
-    ${'<em>italic text</em>'}                                      | ${() => doc(paragraph(italic('italic text')))}
-    ${'<i>italic text</i>'}                                        | ${() => doc(paragraph(italic('italic text')))}
-    ${'---'}                                                       | ${() => doc(horizontalRule())}
-    ${'***'}                                                       | ${() => doc(horizontalRule())}
-    ${'___'}                                                       | ${() => doc(horizontalRule())}
-    ${'<hr>'}                                                      | ${() => doc(horizontalRule())}
-    ${'[GitLab](https://gitlab.com "Go to GitLab")'}               | ${() => doc(paragraph(link({ href: 'https://gitlab.com', title: 'Go to GitLab' }, 'GitLab')))}
-    ${'![GitLab Logo](https://gitlab.com/logo.png "GitLab Logo")'} | ${() => doc(paragraph(image({ src: 'https://gitlab.com/logo.png', alt: 'GitLab Logo', title: 'GitLab Logo' })))}
-    ${'`inline code`'}                                             | ${() => doc(paragraph(code('inline code')))}
-    ${'# Heading 1'}                                               | ${() => doc(heading({ level: 1 }, 'Heading 1'))}
-    ${'## Heading 2'}                                              | ${() => doc(heading({ level: 2 }, 'Heading 2'))}
-    ${'### Heading 3'}                                             | ${() => doc(heading({ level: 3 }, 'Heading 3'))}
-    ${'#### Heading 4'}                                            | ${() => doc(heading({ level: 4 }, 'Heading 4'))}
-    ${'##### Heading 5'}                                           | ${() => doc(heading({ level: 5 }, 'Heading 5'))}
-    ${'###### Heading 6'}                                          | ${() => doc(heading({ level: 6 }, 'Heading 6'))}
-    ${mdSetextHeadingOne}                                          | ${() => doc(heading({ level: 1 }, 'Heading\none'))}
-    ${mdSetextHeadingTwo}                                          | ${() => doc(heading({ level: 2 }, 'Heading\ntwo'))}
-    ${mdBulletListExample}                                         | ${() => doc(bulletList(listItem(paragraph('List item 1')), listItem(paragraph('List item 2'))))}
-    ${mdOrderedListExample}                                        | ${() => doc(orderedList(listItem(paragraph('List item 1')), listItem(paragraph('List item 2'))))}
-    ${mdNestedListExample}                                         | ${() => doc(bulletList(listItem(paragraph('List item 1'), bulletList(listItem(paragraph('Sub list item 1'))))))}
-    ${mdLooseList}                                                 | ${() => doc(bulletList(listItem(paragraph('List item 1 paragraph 1'), paragraph('List item 1 paragraph 2')), listItem(paragraph('List item 2'))))}
-    ${mdBlockquote}                                                | ${() => doc(blockquote(paragraph('This is a blockquote')))}
-    ${mdBlockquoteWithList}                                        | ${() => doc(blockquote(bulletList(listItem(paragraph('List item 1')), listItem(paragraph('List item 2')))))}
-    ${mdIndentedCodeBlock}                                         | ${() => doc(codeBlock({ language: '' }, "const fn = () => 'GitLab';\n"))}
-    ${mdFencedCodeBlock}                                           | ${() => doc(codeBlock({ language: 'javascript' }, "  const fn = () => 'GitLab';\n"))}
-    ${mdFencedCodeBlockEmpty}                                      | ${() => doc(codeBlock({ language: '' }, ''))}
-    ${mdFencedCodeBlockWithEmptyLines}                             | ${() => doc(codeBlock({ language: 'javascript' }, "  const fn = () => 'GitLab';\n\n\n"))}
-    ${mdHardBreak}                                                 | ${() => doc(paragraph('This is a paragraph with a', hardBreak(), '\nhard line break'))}
-  `('deserializes $markdown correctly', async ({ markdown, createDoc }) => {
+  it.each([
+    {
+      markdown: '__bold text__',
+      doc: doc(paragraph(bold('bold text'))),
+    },
+    {
+      markdown: '**bold text**',
+      doc: doc(paragraph(bold('bold text'))),
+    },
+    {
+      markdown: '<strong>bold text</strong>',
+      doc: doc(paragraph(bold('bold text'))),
+    },
+    {
+      markdown: '<b>bold text</b>',
+      doc: doc(paragraph(bold('bold text'))),
+    },
+    {
+      markdown: '_italic text_',
+      doc: doc(paragraph(italic('italic text'))),
+    },
+    {
+      markdown: '*italic text*',
+      doc: doc(paragraph(italic('italic text'))),
+    },
+    {
+      markdown: '<em>italic text</em>',
+      doc: doc(paragraph(italic('italic text'))),
+    },
+    {
+      markdown: '<i>italic text</i>',
+      doc: doc(paragraph(italic('italic text'))),
+    },
+    {
+      markdown: '`inline code`',
+      doc: doc(paragraph(code('inline code'))),
+    },
+    {
+      markdown: '[GitLab](https://gitlab.com "Go to GitLab")',
+      doc: doc(paragraph(link({ href: 'https://gitlab.com', title: 'Go to GitLab' }, 'GitLab'))),
+    },
+    {
+      markdown: `
+This is a paragraph with a\\
+hard line break`,
+      doc: doc(paragraph('This is a paragraph with a', hardBreak(), '\nhard line break')),
+    },
+    {
+      markdown: '![GitLab Logo](https://gitlab.com/logo.png "GitLab Logo")',
+      doc: doc(
+        paragraph(
+          image({ src: 'https://gitlab.com/logo.png', alt: 'GitLab Logo', title: 'GitLab Logo' }),
+        ),
+      ),
+    },
+    {
+      markdown: '---',
+      doc: doc(horizontalRule()),
+    },
+    {
+      markdown: '***',
+      doc: doc(horizontalRule()),
+    },
+    {
+      markdown: '___',
+      doc: doc(horizontalRule()),
+    },
+    {
+      markdown: '<hr>',
+      doc: doc(horizontalRule()),
+    },
+    {
+      markdown: '# Heading 1',
+      doc: doc(heading({ level: 1 }, 'Heading 1')),
+    },
+    {
+      markdown: '## Heading 2',
+      doc: doc(heading({ level: 2 }, 'Heading 2')),
+    },
+    {
+      markdown: '### Heading 3',
+      doc: doc(heading({ level: 3 }, 'Heading 3')),
+    },
+    {
+      markdown: '#### Heading 4',
+      doc: doc(heading({ level: 4 }, 'Heading 4')),
+    },
+    {
+      markdown: '##### Heading 5',
+      doc: doc(heading({ level: 5 }, 'Heading 5')),
+    },
+    {
+      markdown: '###### Heading 6',
+      doc: doc(heading({ level: 6 }, 'Heading 6')),
+    },
+    {
+      markdown: `
+Heading
+one
+======
+`,
+      doc: doc(heading({ level: 1 }, 'Heading\none')),
+    },
+    {
+      markdown: `
+Heading
+two
+-------
+`,
+      doc: doc(heading({ level: 2 }, 'Heading\ntwo')),
+    },
+    {
+      markdown: `
+- List item 1
+- List item 2
+`,
+      doc: doc(bulletList(listItem(paragraph('List item 1')), listItem(paragraph('List item 2')))),
+    },
+    {
+      markdown: `
+1. List item 1
+1. List item 2
+`,
+      doc: doc(orderedList(listItem(paragraph('List item 1')), listItem(paragraph('List item 2')))),
+    },
+    {
+      markdown: `
+- List item 1
+  - Sub list item 1
+`,
+      doc: doc(
+        bulletList(
+          listItem(paragraph('List item 1\n'), bulletList(listItem(paragraph('Sub list item 1')))),
+        ),
+      ),
+    },
+    {
+      markdown: `
+- List item 1 paragraph 1
+
+  List item 1 paragraph 2
+- List item 2
+`,
+      doc: doc(
+        bulletList(
+          listItem(paragraph('List item 1 paragraph 1'), paragraph('List item 1 paragraph 2')),
+          listItem(paragraph('List item 2')),
+        ),
+      ),
+    },
+    {
+      markdown: `
+> This is a blockquote
+`,
+      doc: doc(blockquote(paragraph('This is a blockquote'))),
+    },
+    {
+      markdown: `
+> - List item 1
+> - List item 2
+`,
+      doc: doc(
+        blockquote(
+          bulletList(listItem(paragraph('List item 1')), listItem(paragraph('List item 2'))),
+        ),
+      ),
+    },
+    {
+      markdown: `
+    const fn = () => 'GitLab';
+`,
+      doc: doc(codeBlock({ language: '' }, "const fn = () => 'GitLab';\n")),
+    },
+    {
+      markdown: `
+\`\`\`javascript
+  const fn = () => 'GitLab';
+\`\`\`\
+`,
+      doc: doc(codeBlock({ language: 'javascript' }, "  const fn = () => 'GitLab';\n")),
+    },
+    {
+      markdown: `
+\`\`\`
+\`\`\`\
+`,
+      doc: doc(codeBlock({ language: '' }, '')),
+    },
+    {
+      markdown: `
+\`\`\`javascript
+  const fn = () => 'GitLab';
+
+
+\`\`\`\
+`,
+      doc: doc(codeBlock({ language: 'javascript' }, "  const fn = () => 'GitLab';\n\n\n")),
+    },
+  ])('deserializes %s correctly', async ({ markdown, doc: expectedDoc }) => {
     const { schema } = tiptapEditor;
-    const expectedDoc = createDoc();
     const { document } = await deserializer.deserialize({ schema, content: markdown });
 
     expect(document.toJSON()).toEqual(expectedDoc.toJSON());

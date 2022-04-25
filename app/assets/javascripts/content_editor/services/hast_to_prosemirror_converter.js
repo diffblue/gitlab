@@ -1,3 +1,24 @@
+/**
+ * This module implements a function that converts a Hast Abstract
+ * Syntax Tree (AST) to a ProseMirror document.
+ *
+ * This implementation is based on the prosemirror-markdown’s from_markdown module
+ * https://github.com/ProseMirror/prosemirror-markdown/blob/master/src/from_markdown.js.
+ *
+ * This implementation deviates significantly from the original because
+ * prosemirror-markdown supports converting an markdown-it AST instead of a
+ * HAST one. This implementation also adds sourcemap attributes automatically to every
+ * ProseMirror node and mark created during the conversion process.
+ *
+ * We recommend becoming familiar with HAST and ProseMirror documents to
+ * facilitate the understanding of the behavior implemented in this module.
+ *
+ * Unist syntax tree documentation: https://github.com/syntax-tree/unist
+ * Hast tree documentation: https://github.com/syntax-tree/hast
+ * ProseMirror document documentation: https://prosemirror.net/docs/ref/#model.Document_Structure
+ * visit-parents documentation: https://github.com/syntax-tree/unist-util-visit-parents
+ */
+
 import { Mark } from 'prosemirror-model';
 import { visitParents } from 'unist-util-visit-parents';
 import { toString } from 'hast-util-to-string';
@@ -6,8 +27,6 @@ import { isFunction } from 'lodash';
 /**
  * Merges two ProseMirror text nodes if both text nodes
  * have the same set of marks.
- *
- * ProseMirror Node: https://prosemirror.net/docs/ref/#model.Node
  *
  * @param {ProseMirror.Node} a first ProseMirror node
  * @param {ProseMirror.Node} b second ProseMirror node
@@ -58,8 +77,6 @@ function createSourceMapAttributes(hastNode, source) {
  * Other attributes are retrieved by invoking a getAttrs
  * function provided by the ProseMirror node factory spec.
  *
- * Hast node documentation: https://github.com/syntax-tree/hast
- *
  * @param {*} proseMirrorNodeSpec ProseMirror node spec object
  * @param {HastNode} hastNode A hast node
  * @param {Array<HastNode>} hastParents All the ancestors of the hastNode
@@ -79,8 +96,6 @@ function getAttrs(proseMirrorNodeSpec, hastNode, hastParents, source) {
 /**
  * Keeps track of the Hast -> ProseMirror conversion process.
  *
- * Node state
- *
  * When the `openNode` method is invoked, it adds the node to a stack
  * data structure. When the `closeNode` method is invoked, it removes the
  * last element from the Stack, creates a ProseMirror node, and adds that
@@ -91,8 +106,6 @@ function getAttrs(proseMirrorNodeSpec, hastNode, hastParents, source) {
  * - blockquote
  *   - paragraph
  *     - text
- *
- * This class will store this tree in the Stack in the following way:
  *
  * 3. text
  * 2. paragraph
@@ -114,22 +127,38 @@ class HastToProseMirrorConverterState {
     this.marks = Mark.none;
   }
 
-  push(node) {
-    this.stack.push(node);
-  }
-
-  pop() {
-    return this.stack.pop();
-  }
-
+  /**
+   * Gets the first element of the node stack
+   */
   get top() {
     return this.stack[this.stack.length - 1];
   }
 
+  /**
+   * Detects if the node stack is empty
+   */
   get empty() {
     return this.stack.length === 0;
   }
 
+  /**
+   * Creates a text node and adds it to
+   * the top node in the stack.
+   *
+   * It applies the marks stored temporarily
+   * by calling the `addMark` method. After
+   * the text node is added, it clears the mark
+   * set afterward.
+   *
+   * If the top block node has a text
+   * node with the same set of marks as the
+   * text node created, this method merges
+   * both text nodes
+   *
+   * @param {ProseMirror.Schema} schema ProseMirror schema
+   * @param {String} text Text
+   * @returns
+   */
   addText(schema, text) {
     if (!text) return;
     const nodes = this.top.content;
@@ -143,49 +172,74 @@ class HastToProseMirrorConverterState {
       nodes.push(node);
     }
 
-    this.clearMarks();
+    this.closeMarks();
   }
 
+  /**
+   * Adds a mark to the set of marks stored temporarily
+   * until addText is called.
+   * @param {*} markType
+   * @param {*} attrs
+   */
   openMark(markType, attrs) {
     this.marks = markType.create(attrs).addToSet(this.marks);
   }
 
-  clearMarks() {
+  /**
+   * Empties the temporary Mark set.
+   */
+  closeMarks() {
     this.marks = Mark.none;
   }
 
-  addNode(type, attrs, content) {
-    const node = type.createAndFill(attrs, content, this.marks);
+  /**
+   * Adds a node to the stack data structure.
+   *
+   * @param {Schema.NodeType} type ProseMirror Schema for the node
+   * @param {HastNode} hastNode Hast node from which the ProseMirror node will be created
+   * @param {*} attrs Node’s attributes
+   * @param {*} factorySpec The factory spec used to create the node factory
+   */
+  openNode(type, hastNode, attrs, factorySpec) {
+    this.stack.push({ type, attrs, content: [], hastNode, factorySpec });
+  }
+
+  /**
+   * Removes the top ProseMirror node from the
+   * conversion stack and adds the node to the
+   * previous element.
+   * @returns
+   */
+  closeNode() {
+    const { type, attrs, content } = this.stack.pop();
+    const node = type.createAndFill(attrs, content);
+
     if (!node) return null;
+
+    if (this.marks.length) {
+      this.marks = Mark.none;
+    }
 
     if (!this.empty) {
       this.top.content.push(node);
     }
+
     return node;
   }
 
-  openNode(type, hastNode, attrs, factorySpec) {
-    this.push({ type, attrs, content: [], token: hastNode, factorySpec });
-  }
-
-  closeUntilParent(parent) {
-    while (parent !== this.top?.token) {
+  closeUntil(hastNode) {
+    while (hastNode !== this.top?.hastNode) {
       this.closeNode();
     }
-  }
-
-  closeNode() {
-    if (this.marks.length) this.marks = Mark.none;
-    const info = this.pop();
-    return this.addNode(info.type, info.attrs, info.content);
   }
 }
 
 /**
- * Create ProseMirror node factories based on one or more factory specifications.
+ * Create ProseMirror node/mark factories based on one or more
+ * factory specifications.
  *
- * Note: Read the public API documentation of this module for instructions about how
- * to define these specifications.
+ * Note: Read `createProseMirrorDocFromMdastTree` documentation
+ * for instructions about how to define these specifications.
  *
  * @param {model.ProseMirrorSchema} schema A ProseMirror schema used to create the
  * ProseMirror nodes and marks.
@@ -195,11 +249,26 @@ class HastToProseMirrorConverterState {
  * @returns An object that contains ProseMirror node factories
  */
 const createProseMirrorNodeFactories = (schema, proseMirrorFactorySpecs, source) => {
-  const handlers = {};
+  const handlers = {
+    root: (state, hastNode) => state.openNode(schema.topNodeType, hastNode, {}),
+    text: (state, hastNode) => {
+      const { factorySpec } = state.top;
 
-  Object.keys(proseMirrorFactorySpecs).forEach((hastNodeTagName) => {
-    const factorySpec = proseMirrorFactorySpecs[hastNodeTagName];
+      if (/^\s+$/.test(hastNode.value)) {
+        return;
+      }
 
+      if (factorySpec.wrapTextInParagraph === true) {
+        state.openNode(schema.nodeType('paragraph'));
+        state.addText(schema, hastNode.value);
+        state.closeNode();
+      } else {
+        state.addText(schema, hastNode.value);
+      }
+    },
+  };
+
+  for (const [hastNodeTagName, factorySpec] of Object.entries(proseMirrorFactorySpecs)) {
     if (factorySpec.block) {
       handlers[hastNodeTagName] = (state, hastNode, parent, ancestors) => {
         const nodeType = schema.nodeType(
@@ -208,7 +277,7 @@ const createProseMirrorNodeFactories = (schema, proseMirrorFactorySpecs, source)
             : factorySpec.block,
         );
 
-        state.closeUntilParent(parent);
+        state.closeUntil(parent);
         state.openNode(
           nodeType,
           hastNode,
@@ -216,10 +285,10 @@ const createProseMirrorNodeFactories = (schema, proseMirrorFactorySpecs, source)
           factorySpec,
         );
       };
-    } else if (factorySpec.node) {
-      const nodeType = schema.nodeType(factorySpec.node);
+    } else if (factorySpec.inline) {
+      const nodeType = schema.nodeType(factorySpec.inline);
       handlers[hastNodeTagName] = (state, hastNode, parent) => {
-        state.closeUntilParent(parent);
+        state.closeUntil(parent);
 
         if (factorySpec.inlineContent === true) {
           state.openNode(
@@ -230,8 +299,10 @@ const createProseMirrorNodeFactories = (schema, proseMirrorFactorySpecs, source)
           );
           state.addText(schema, toString(hastNode));
         } else {
-          state.addNode(nodeType, getAttrs(factorySpec, hastNode, parent, source));
+          state.openNode(nodeType, hastNode, getAttrs(factorySpec, hastNode, parent, source));
         }
+
+        state.closeNode();
       };
     } else if (factorySpec.mark) {
       const markType = schema.marks[factorySpec.mark];
@@ -245,43 +316,30 @@ const createProseMirrorNodeFactories = (schema, proseMirrorFactorySpecs, source)
     } else {
       throw new RangeError(`Unrecognized node factory spec ${JSON.stringify(factorySpec)}`);
     }
-  });
-
-  handlers.text = (state, hastNode) => {
-    const { factorySpec } = state.top;
-
-    if (/^\s+$/.test(hastNode.value)) {
-      return;
-    }
-
-    if (factorySpec.wrapTextInParagraph === true) {
-      state.openNode(schema.nodeType('paragraph'));
-      state.addText(schema, hastNode.value.trim());
-      state.closeNode();
-    } else {
-      state.addText(schema, hastNode.value);
-    }
-  };
-
-  handlers.softbreak = handlers.softbreak || ((state) => state.addText(schema, '\n'));
+  }
 
   return handlers;
 };
 
 /**
- * Converts a Hast Abstract Syntax Tree to a ProseMirror document based on a series
- * of specifications that describe how to map all the nodes of the former to ProseMirror
- * nodes or marks.
+ * Converts a Hast AST to a ProseMirror document based on a series
+ * of specifications that describe how to map all the nodes of the former
+ * to ProseMirror nodes or marks.
  *
- * This converter will trigger an error if it doesn’t find a specification for a Hast node.
- * The specification object describes how to map a Hast node to a ProseMirror node or mark. It
- * should have the following shape:
+ * The specification object describes how to map a Hast node to a ProseMirror node or mark.
+ * The converter will trigger an error if it doesn’t find a specification
+ * for a Hast node while traversing the AST.
  *
- *  {
- *    [hastNode.tagName]:
- *  }
+ * The object should have the following shape:
  *
- *  Where each property in the object represents a HAST node with a given tag name, for example:
+ * {
+ *   [hastNode.tagName]: {
+ *     [block|node|mark]: [ProseMirror.Node.name],
+ *     ...configurationOptions
+ *   }
+ * }
+ *
+ * Where each property in the object represents a HAST node with a given tag name, for example:
  *
  *  {
  *    h1: {},
@@ -291,22 +349,15 @@ const createProseMirrorNodeFactories = (schema, proseMirrorFactorySpecs, source)
  *    // etc
  *  }
  *
- * Each HAST node should map to a ProseMirror node. A ProseMirror node can have one of the following
- * types:
+ * You can specify the type of ProseMirror object adding one the following
+ * properties:
  *
- * 1. A "block" type which contains one or more children.
- * 2. A "node" or leaf type doesn’t contain any children, but it can have inline, unstructured content.
- * 3. A "mark" decorates text nodes.
+ * 1. "block": A ProseMirror node that contains one or more children.
+ * 2. "inline": A ProseMirror node that doesn’t contain any children although
+ *    it can have inline content like a code block or a reference.
+ * 3. "mark": A ProseMirror mark.
  *
- * Use the following syntax to indicate how to map a HAST node to a ProseMirror node:
- *
- * {
- *   [hastNode.tagName]: {
- *     [block|node|mark]: [ProseMirror.Node.name],
- *   }
- * }
- *
- * For example:
+ * The value of that property should be the name of the ProseMirror node or mark, i.e:
  *
  * {
  *    h1: {
@@ -343,17 +394,36 @@ const createProseMirrorNodeFactories = (schema, proseMirrorFactorySpecs, source)
  *   }
  * }
  *
- * You can also provide a `getAttrs` function to compute a ProseMirror node
- * or mark attributes. The converter will invoke `getAttrs` with the following
- * parameters:
+ * Configuration options
+ * ----------------------
+ *
+ * You can customize the conversion process for every node or mark
+ * setting the following properties in the specification object:
+ *
+ * **getAttrs**
+ *
+ * Computes a ProseMirror node or mark attributes. The converter will invoke
+ * `getAttrs` with the following parameters:
  *
  * 1. hastNode: The hast node
  * 2. hasParents: All the hast node’s ancestors up to the root node
  * 3. source: Markdown source file’s content
  *
- * Unist syntax tree documentation: https://github.com/syntax-tree/unist
- * Hast tree documentation: https://github.com/syntax-tree/hast
- * ProseMirror document documentation: https://prosemirror.net/docs/ref/#model.Document_Structure
+ * **wrapTextInParagraph**
+ *
+ * This property only applies to block nodes. If a block node contains text,
+ * it will wrap that text in a paragraph. This is useful for ProseMirror block
+ * nodes that don’t allow text directly such as list items and tables.
+ *
+ * **skipChildren**
+ *
+ * Skips a hast node’s children while traversing the tree.
+ *
+ * **inlineContent**
+ *
+ * This property only applies to inline nodes. This property is useful for edge
+ * cases such as code blocks where the node is inline but it still has editable
+ * content.
  *
  * @param {model.Document_Schema} params.schema A ProseMirror schema that specifies the shape
  * of the ProseMirror document.
@@ -367,13 +437,7 @@ export const createProseMirrorDocFromMdastTree = ({ schema, factorySpecs, tree, 
   const proseMirrorNodeFactories = createProseMirrorNodeFactories(schema, factorySpecs, source);
   const state = new HastToProseMirrorConverterState();
 
-  state.push({ type: schema.topNodeType, content: [], token: tree });
-
   visitParents(tree, (hastNode, ancestors) => {
-    if (ancestors.length === 0) {
-      return true;
-    }
-
     const parent = ancestors[ancestors.length - 1];
     const skipChildren = factorySpecs[hastNode.tagName]?.skipChildren;
 

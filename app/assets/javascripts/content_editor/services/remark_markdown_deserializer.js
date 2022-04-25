@@ -33,7 +33,7 @@ const factorySpecs = {
     getAttrs: () => ({ level: 6 }),
   },
   pre: {
-    node: 'codeBlock',
+    inline: 'codeBlock',
     inlineContent: true,
     skipChildren: true,
     getAttrs: (hastNode) => {
@@ -43,17 +43,17 @@ const factorySpecs = {
       return { language };
     },
   },
-  hr: { node: 'horizontalRule' },
+  hr: { inline: 'horizontalRule' },
   img: {
-    node: 'image',
+    inline: 'image',
     getAttrs: (hastNode) => ({
       src: hastNode.properties.src,
       title: hastNode.properties.title,
       alt: hastNode.properties.alt,
     }),
   },
+  br: { inline: 'hardBreak' },
   code: { mark: 'code' },
-  br: { node: 'hardBreak' },
   em: { mark: 'italic' },
   i: { mark: 'italic' },
   strong: { mark: 'bold' },
