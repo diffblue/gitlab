@@ -50,6 +50,12 @@ RSpec.describe Gitlab::Database::BackgroundMigration::Adapt::AutovacuumActiveOnT
       it 'remembers the indicator class' do
         expect(subject.indicator_class).to eq(described_class)
       end
+
+      it 'returns Normal signal in case the feature flag is disabled' do
+        stub_feature_flags(batched_migrations_adapt_on_autovacuum: false)
+
+        expect(subject).to be_a(Gitlab::Database::BackgroundMigration::Adapt::NormalSignal)
+      end
     end
   end
 end
