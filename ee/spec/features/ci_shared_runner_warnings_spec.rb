@@ -94,6 +94,19 @@ RSpec.describe 'CI shared runner limits' do
 
           alerts_according_to_role(visible: visible, message: message)
         end
+
+        context 'when in a subgroup', :saas do
+          let(:subgroup) { create(:group, parent: group) }
+          let(:subproject) { create(:project, :repository, namespace: subgroup, shared_runners_enabled: true) }
+          let(:pipeline) { create(:ci_empty_pipeline, project: subproject, sha: subproject.commit.sha, ref: 'master') }
+          let!(:job) { create(:ci_build, pipeline: pipeline) }
+
+          it 'displays a warning message on subproject homepage' do
+            visit project_path(subproject)
+
+            alerts_according_to_role(visible: visible, message: message)
+          end
+        end
       end
 
       context 'when limit not yet exceeded' do
