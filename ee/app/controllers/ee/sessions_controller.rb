@@ -5,8 +5,6 @@ module EE
     extend ActiveSupport::Concern
     extend ::Gitlab::Utils::Override
 
-    ARKOSE_LABS_NAMESPACE = 'client'
-
     prepended do
       include ArkoseLabsCSP
 
@@ -134,8 +132,7 @@ module EE
     end
 
     def arkose_labs_domain
-      namespace = ::Gitlab::CurrentSettings.arkose_labs_namespace || ARKOSE_LABS_NAMESPACE
-      "#{namespace}-api.arkoselabs.com"
+      "#{::Gitlab::CurrentSettings.arkose_labs_namespace}-api.arkoselabs.com"
     end
   end
 end

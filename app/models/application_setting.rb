@@ -20,6 +20,8 @@ class ApplicationSetting < ApplicationRecord
   KROKI_URL_ERROR_MESSAGE = 'Please check your Kroki URL setting in ' \
     'Admin Area > Settings > General > Kroki'
 
+  ARKOSE_LABS_DEFAULT_NAMESPACE = 'client'
+
   enum whats_new_variant: { all_tiers: 0, current_tier: 1, disabled: 2 }, _prefix: true
 
   add_authentication_token_field :runners_registration_token, encrypted: -> { Feature.enabled?(:application_settings_tokens_optional_encryption) ? :optional : :required }
@@ -77,6 +79,7 @@ class ApplicationSetting < ApplicationRecord
   default_value_for :id, 1
   default_value_for :repository_storages_weighted, {}
   default_value_for :kroki_formats, {}
+  default_value_for :arkose_labs_namespace, ARKOSE_LABS_DEFAULT_NAMESPACE
 
   chronic_duration_attr_writer :archive_builds_in_human_readable, :archive_builds_in_seconds
 
