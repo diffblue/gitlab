@@ -1,5 +1,5 @@
 {
-  "version": "1.2",
+  "version": "14.1.1",
   "vulnerabilities": [
     {
       "category": "sast",
@@ -136,9 +136,9 @@
       },
       "flags": [
         {
-          "type": "",
-          "origin": "",
-          "description": ""
+          "type": "flagged-as-likely-false-positive",
+          "origin": "vet",
+          "description": "This vulnerability has been identified as a potential false positive by the VET post-analyzer"
         }
       ],
       "identifiers": [

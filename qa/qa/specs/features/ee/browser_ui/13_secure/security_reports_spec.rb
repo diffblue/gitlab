@@ -6,7 +6,7 @@ module QA
     let(:dependency_scan_example_vuln) { 'Prototype pollution attack in mixin-deep' }
     let(:container_scan_example_vuln) { 'CVE-2017-18269 in glibc' }
     let(:sast_scan_example_vuln) { 'Cipher with no integrity' }
-    let(:dast_scan_example_vuln) { 'Cookie Without SameSite Attribute' }
+    let(:dast_scan_example_vuln) { 'Flask debug mode identified on target:7777' }
     let(:sast_scan_fp_example_vuln) { "Possible unprotected redirect" }
     let(:sast_scan_fp_example_vuln_desc) { "Possible unprotected redirect near line 46" }
 
