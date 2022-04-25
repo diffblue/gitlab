@@ -402,7 +402,9 @@ module EE
           {}.tap do |secure_jobs|
             ::Security::Scan.scan_types.each do |name, scan_type|
               by_scan_type = ::Security::Scan.where(scan_type: scan_type).where(time_period)
-              secure_jobs["#{name}_scans".to_sym] = count(by_scan_type, :build_id, start: start, finish: finish)
+              # increase the batch size to match ee/lib/gitlab/usage/metrics/instrumentations/count_ci_builds_metric.rb
+              secure_jobs["#{name}_scans".to_sym] =
+                count(by_scan_type, :build_id, start: start, finish: finish, batch_size: 1_000_000)
             end
           end
         end
