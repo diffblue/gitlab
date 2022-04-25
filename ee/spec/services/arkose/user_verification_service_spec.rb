@@ -28,7 +28,7 @@ RSpec.describe Arkose::UserVerificationService do
           context 'when the risk score is not high' do
             let(:arkose_ec_response) { Gitlab::Json.parse(File.read(Rails.root.join('ee/spec/fixtures/arkose/successfully_solved_ec_response.json'))) }
 
-            it 'makes a request to the Verify API' do
+            before do
               stub_request(:post, verify_api_url)
                 .with(
                   body: /.*/,
@@ -36,7 +36,11 @@ RSpec.describe Arkose::UserVerificationService do
                     'Accept' => '*/*'
                   }
                 ).to_return(status: 200, body: "", headers: {})
+            end
+
+            it 'makes a request to the Verify API' do
               subject
+
               expect(WebMock).to have_requested(:post, verify_api_url)
             end
 

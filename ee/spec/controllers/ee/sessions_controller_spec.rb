@@ -155,11 +155,9 @@ RSpec.describe SessionsController, :geo do
       let(:params) { { arkose_labs_token: session_token, user: user_params } }
 
       context 'when ArkoseLabs namespace setting is not set' do
-        before do
-          get(:new)
-        end
-
         it 'passes the default API domain to the view' do
+          get(:new)
+
           expect(subject.instance_variable_get(:@arkose_labs_domain)).to eq "client-api.arkoselabs.com"
         end
       end
@@ -167,10 +165,11 @@ RSpec.describe SessionsController, :geo do
       context 'when ArkoseLabs namespace setting is set' do
         before do
           stub_application_setting(arkose_labs_namespace: "gitlab")
-          get(:new)
         end
 
         it 'passes the custom API domain to the view' do
+          get(:new)
+
           expect(subject.instance_variable_get(:@arkose_labs_domain)).to eq "gitlab-api.arkoselabs.com"
         end
       end
