@@ -33,8 +33,8 @@ RSpec.describe Admin::BackgroundMigrationsController, :enable_admin_mode do
     using RSpec::Parameterized::TableSyntax
 
     let(:default_model) { ActiveRecord::Base }
-    let(:xpto_model) { Ci::ApplicationRecord }
-    let(:base_models) { { 'main' => default_model, 'xpto' => xpto_model } }
+    let(:model_on_other_database) { Ci::ApplicationRecord }
+    let(:base_models) { { 'main' => default_model, 'xpto' => model_on_other_database } }
 
     before do
       allow(Gitlab::Database).to receive(:database_base_models).and_return(base_models)
@@ -42,7 +42,7 @@ RSpec.describe Admin::BackgroundMigrationsController, :enable_admin_mode do
 
     where(:database_param, :expected_base_model) do
       nil    | lazy { default_model }
-      'xpto' | lazy { xpto_model }
+      'xpto' | lazy { model_on_other_database }
     end
 
     with_them do
