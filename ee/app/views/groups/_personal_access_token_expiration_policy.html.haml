@@ -4,6 +4,6 @@
 - instance_level_policy_in_words = instance_level_policy ? n_("%{no_of_days} day", "%{no_of_days} days", instance_level_policy) % { no_of_days: instance_level_policy } : _('no expiration')
 
 .form-group
-  = f.label :max_personal_access_token_lifetime, _('Maximum allowable lifetime for personal access token (days)'), class: 'label-light'
+  = f.label :max_personal_access_token_lifetime, _('Maximum allowable lifetime for access token (days)'), class: 'label-light'
   = f.number_field :max_personal_access_token_lifetime, class: 'form-control form-control-sm w-auto'
   %span.form-text.text-muted#max_personal_access_token_lifetime= _('If blank, set allowable lifetime to %{instance_level_policy_in_words}, as defined by the instance admin. Once set, existing tokens for users in this group may be revoked.') % { instance_level_policy_in_words: instance_level_policy_in_words }

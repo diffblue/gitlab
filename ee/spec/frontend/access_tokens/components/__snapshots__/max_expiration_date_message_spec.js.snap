@@ -5,7 +5,7 @@ exports[`MaxExpirationDateMessage when \`maxDate\` is set renders max date expir
   An Administrator has set the maximum expiration date to 2022-03-02. 
   <a
     class="gl-link"
-    href="/help/user/admin_area/settings/account_and_limit_settings#limit-the-lifetime-of-personal-access-tokens"
+    href="/help/user/admin_area/settings/account_and_limit_settings#limit-the-lifetime-of-access-tokens"
     rel="noopener"
     target="_blank"
   >
