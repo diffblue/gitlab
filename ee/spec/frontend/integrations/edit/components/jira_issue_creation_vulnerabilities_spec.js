@@ -1,4 +1,4 @@
-import { GlAlert, GlDropdown, GlDropdownItem } from '@gitlab/ui';
+import { GlAlert, GlBadge, GlDropdown, GlDropdownItem } from '@gitlab/ui';
 import { within } from '@testing-library/dom';
 import { mount, shallowMount } from '@vue/test-utils';
 import { nextTick } from 'vue';
@@ -7,8 +7,9 @@ import JiraIssueCreationVulnerabilities, {
 } from 'ee/integrations/edit/components/jira_issue_creation_vulnerabilities.vue';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import { createStore } from '~/integrations/edit/store';
+import { billingPlans, billingPlanNames } from '~/integrations/constants';
 
-describe('JiraIssuesFields', () => {
+describe('JiraissueCreationVulnerabilities', () => {
   let store;
   let wrapper;
 
@@ -43,6 +44,7 @@ describe('JiraIssuesFields', () => {
   const findEnableJiraVulnerabilities = () => wrapper.findByTestId('enable-jira-vulnerabilities');
   const findIssueTypeSection = () => wrapper.findByTestId('issue-type-section');
   const findIssueTypeDropdown = () => wrapper.findComponent(GlDropdown);
+  const findGlBadge = () => wrapper.findComponent(GlBadge);
   const findAllIssueDropdownItems = () => findIssueTypeDropdown().findAllComponents(GlDropdownItem);
   const findFetchIssueTypeButton = () => wrapper.findByTestId('fetch-issue-types');
   const findFetchErrorAlert = () => wrapper.findComponent(GlAlert);
@@ -60,6 +62,11 @@ describe('JiraIssuesFields', () => {
 
     it('contains a heading', () => {
       expect(withinComponent().getByText(i18n.checkbox.label)).not.toBe(null);
+    });
+
+    it('contains a GlBadge', () => {
+      expect(findGlBadge().exists()).toBe(true);
+      expect(findGlBadge().text()).toMatchInterpolatedText(billingPlanNames[billingPlans.ULTIMATE]);
     });
 
     it('contains a more detailed description', () => {

@@ -1,6 +1,7 @@
 <script>
 import {
   GlAlert,
+  GlBadge,
   GlButton,
   GlButtonGroup,
   GlDropdown,
@@ -11,6 +12,7 @@ import {
 } from '@gitlab/ui';
 import { mapGetters, mapState } from 'vuex';
 import { s__ } from '~/locale';
+import { billingPlans, billingPlanNames } from '~/integrations/constants';
 import { defaultJiraIssueTypeId } from '../constants';
 
 export const i18n = {
@@ -36,6 +38,7 @@ export default {
   i18n,
   components: {
     GlAlert,
+    GlBadge,
     GlButton,
     GlButtonGroup,
     GlDropdown,
@@ -77,7 +80,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['isInheriting']),
+    ...mapGetters(['isInheriting', 'propsSource']),
     ...mapState(['jiraIssueTypes', 'isLoadingJiraIssueTypes', 'loadingJiraIssueTypesErrorMessage']),
     checkboxDisabled() {
       return !this.showFullFeature || this.isInheriting;
@@ -109,6 +112,9 @@ export default {
       }
       return '';
     },
+    ultimateBadgeText() {
+      return billingPlanNames[billingPlans.ULTIMATE];
+    },
   },
   mounted() {
     if (this.initialIsEnabled) {
@@ -135,7 +141,16 @@ export default {
       data-testid="enable-jira-vulnerabilities"
       :disabled="checkboxDisabled"
     >
-      {{ $options.i18n.checkbox.label }}
+      <span>{{ $options.i18n.checkbox.label }}</span
+      ><gl-badge
+        :href="propsSource.aboutPricingUrl"
+        target="_blank"
+        rel="noopener noreferrer"
+        variant="tier"
+        class="gl-vertical-align-middle gl-mt-n2 gl-ml-2"
+      >
+        <gl-icon name="license" class="gl-mr-2" />{{ ultimateBadgeText }}
+      </gl-badge>
       <template #help>
         {{ $options.i18n.checkbox.description }}
       </template>
