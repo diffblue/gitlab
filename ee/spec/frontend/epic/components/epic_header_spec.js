@@ -33,8 +33,7 @@ describe('EpicHeaderComponent', () => {
   const findStatusBox = () => wrapper.find('[data-testid="status-box"]');
   const findStatusIcon = () => wrapper.find('[data-testid="status-icon"]');
   const findStatusText = () => wrapper.find('[data-testid="status-text"]');
-  const findConfidentialIcon = () =>
-    wrapper.find('[data-testid="confidential-icon"]').findComponent(GlIcon);
+  const findConfidentialIcon = () => wrapper.find('[data-testid="confidential-icon"]');
   const findAuthorDetails = () => wrapper.find('[data-testid="author-details"]');
   const findActionButtons = () => wrapper.find('[data-testid="action-buttons"]');
   const findToggleStatusButton = () => wrapper.find('[data-testid="toggle-status-button"]');
@@ -124,7 +123,10 @@ describe('EpicHeaderComponent', () => {
       const confidentialIcon = findConfidentialIcon();
 
       expect(confidentialIcon.exists()).toBe(true);
-      expect(confidentialIcon.props('name')).toBe('eye-slash');
+      expect(confidentialIcon.props()).toMatchObject({
+        workspaceType: 'project',
+        issuableType: 'issue',
+      });
     });
 
     it('renders epic author details element', () => {
