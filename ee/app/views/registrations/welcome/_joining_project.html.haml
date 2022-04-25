@@ -1,5 +1,6 @@
 - return unless Gitlab.com?
 - return if in_trial_flow?
+- return if user_has_memberships?
 
 .row
   .form-group.col-sm-12

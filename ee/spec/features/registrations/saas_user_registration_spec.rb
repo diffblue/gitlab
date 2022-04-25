@@ -5,8 +5,6 @@ require 'spec_helper'
 RSpec.describe "User registration", :js, :saas do
   include AfterNextHelpers
 
-  let_it_be(:user) { create(:user) }
-
   before do
     stub_feature_flags(
       # This is an experiment that we're trying to clean up at the same time as
@@ -29,34 +27,78 @@ RSpec.describe "User registration", :js, :saas do
       about_your_company_registration_flow: true
     )
 
+    stub_application_setting(
+      # Saas doesn't require admin approval.
+      require_admin_approval_after_user_signup: false
+    )
+
     # The groups_and_projects_controller (on `click_on 'Create project'`) is over
     # the query limit threshold, so we have to adjust it.
     # https://gitlab.com/gitlab-org/gitlab/-/issues/338737
     stub_const('Gitlab::QueryLimiting::Transaction::THRESHOLD', 270)
+  end
 
-    # Various actions in this flow can trigger a request off to the customerApp
-    # to log the lead data generated in the registration flows.
-    stub_request(:post, Gitlab::SubscriptionPortal.default_subscriptions_url).to_return(
-      status: 200,
-      body: '',
-      headers: {}
-    )
+  def fill_in_sign_up_form(user)
+    fill_in 'First name', with: user.first_name
+    fill_in 'Last name', with: user.last_name
+    fill_in 'Username', with: user.username
+    fill_in 'Email', with: user.email
+    fill_in 'Password', with: user.password
+  end
 
-    sign_in user
-    visit users_sign_up_welcome_path
+  def fill_in_welcome_form
+    select 'Other', from: 'user_role'
+    fill_in 'What is your job title? (optional)', with: 'My role' # behind the user_other_role_details feature flag.
+
+    select 'A different reason', from: 'user_registration_objective'
+    fill_in 'Why are you signing up? (optional)', with: 'My reason'
+  end
+
+  describe "when accepting an invite" do
+    let_it_be(:user) { build(:user, name: 'Invited User') }
+    let_it_be(:owner) { create(:user, name: 'John Doe') }
+    let_it_be(:group) { create(:group, name: 'Test Group') }
+
+    before do
+      group.add_owner(owner)
+
+      invitation = create(:group_member, :invited, :developer,
+        invite_email: user.email,
+        group: group,
+        created_by: owner
+      )
+      visit invite_path(invitation.raw_invite_token, invite_type: Emails::Members::INITIAL_INVITE)
+
+      fill_in_sign_up_form(user)
+      click_on 'Register'
+    end
+
+    it "doesn't ask me what I would like to do" do
+      expect(page).to have_content('Welcome to GitLab, Invited!')
+      expect(page).not_to have_content('What would you like to do?')
+    end
+
+    it "sends me to the group activity page" do
+      fill_in_welcome_form
+      click_on 'Get started!'
+
+      expect(page).to have_current_path(activity_group_path(group), ignore_query: true)
+      expect(page).to have_content('You have been granted Developer access to group Test Group')
+    end
   end
 
   describe "using the standard flow" do
+    let_it_be(:user) { create(:user, name: 'Onboarding User') }
+
+    before do
+      sign_in user
+      visit users_sign_up_welcome_path
+    end
+
     it "presents the initial welcome step" do
-      expect(page).to have_content('Welcome to GitLab')
+      expect(page).to have_content('Welcome to GitLab, Onboarding!')
 
-      select 'Other', from: 'user_role'
-
-      # This is behind the user_other_role_details feature flag.
-      fill_in 'user_other_role', with: 'My role'
-
-      select 'A different reason', from: 'user_registration_objective'
-      fill_in 'jobs_to_be_done_other', with: 'My reason'
+      fill_in_welcome_form
     end
 
     context "just for me" do
