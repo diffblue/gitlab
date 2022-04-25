@@ -122,7 +122,7 @@ exports[`packages_list_row renders 1`] = `
           secondarytext=""
           variant="danger"
         >
-          Remove package
+          Delete package
         </gl-dropdown-item-stub>
       </gl-dropdown-stub>
     </div>

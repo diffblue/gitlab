@@ -81,7 +81,7 @@ export default {
   i18n: {
     erroredPackageText: s__('PackageRegistry|Invalid Package: failed metadata extraction'),
     createdAt: __('Created %{timestamp}'),
-    removePackage: s__('PackageRegistry|Remove package'),
+    deletePackage: s__('PackageRegistry|Delete package'),
     errorPublishing: s__('PackageRegistry|Error publishing'),
     warning: __('Warning'),
     moreActions: __('More actions'),
@@ -172,7 +172,7 @@ export default {
           data-testid="action-delete"
           variant="danger"
           @click="$emit('packageToDelete', packageEntity)"
-          >{{ $options.i18n.removePackage }}</gl-dropdown-item
+          >{{ $options.i18n.deletePackage }}</gl-dropdown-item
         >
       </gl-dropdown>
     </template>
