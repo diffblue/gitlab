@@ -16,6 +16,14 @@ RSpec.describe GroupPolicy do
        admin_epic_board_list)
   end
 
+  let(:auditor_permissions) do
+    %i[
+      read_group
+      read_group_security_dashboard
+      read_cluster
+    ]
+  end
+
   context 'when epics feature is disabled' do
     let(:current_user) { owner }
 
@@ -1142,11 +1150,9 @@ RSpec.describe GroupPolicy do
       end
 
       specify do
-        expect_allowed(:read_group)
-        expect_allowed(:read_group_security_dashboard)
-        expect_disallowed(:upload_file)
+        expect_allowed(*auditor_permissions)
         expect_disallowed(*reporter_permissions)
-        expect_disallowed(*developer_permissions)
+        expect_disallowed(*(developer_permissions - auditor_permissions))
         expect_disallowed(*maintainer_permissions)
         expect_disallowed(*owner_permissions)
       end

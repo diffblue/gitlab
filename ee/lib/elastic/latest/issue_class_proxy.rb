@@ -58,19 +58,22 @@ module Elastic
       end
 
       def should_use_project_ids_filter?(options)
-        options[:project_ids] == :any ||
-        options[:group_ids].blank? ||
-        !Elastic::DataMigrationService.migration_has_finished?(:redo_backfill_namespace_ancestry_ids_for_issues)
+        options[:project_ids] == :any || options[:group_ids].blank?
       end
 
       def authorization_filter(query_hash, options)
         return project_ids_filter(query_hash, options) if should_use_project_ids_filter?(options)
 
         current_user = options[:current_user]
-        namespace_ancestry = Namespace.find(authorized_namespace_ids(current_user, options))
-                                      .map(&:elastic_namespace_ancestry)
+        namespaces = Namespace.find(authorized_namespace_ids(current_user, options))
+        namespace_ancestry = namespaces.map(&:elastic_namespace_ancestry)
 
         return project_ids_filter(query_hash, options) if namespace_ancestry.blank?
+
+        context.name(:reject_projects) do
+          query_hash[:query][:bool][:must_not] ||= []
+          query_hash[:query][:bool][:must_not] << rejected_project_filter(namespaces, options)
+        end
 
         context.name(:namespace) do
           query_hash[:query][:bool][:filter] ||= []
@@ -78,6 +81,24 @@ module Elastic
         end
 
         query_hash
+      end
+
+      def rejected_project_filter(namespaces, options)
+        current_user = options[:current_user]
+        scoped_project_ids = scoped_project_ids(current_user, options[:project_ids])
+        return {} if scoped_project_ids == :any
+
+        project_ids = filter_ids_by_feature(scoped_project_ids, current_user, 'issues')
+        rejected_ids = namespaces.map do |namespace|
+          namespace.all_project_ids_except(project_ids)
+        end.flatten
+
+        {
+          terms: {
+            _name: context.name,
+            project_id: rejected_ids
+          }
+        }
       end
 
       # Builds an elasticsearch query that will select documents from a

@@ -2,16 +2,16 @@ import { GlSprintf } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import AccountVerificationModal from 'ee/billings/components/account_verification_modal.vue';
 import Zuora from 'ee/billings/components/zuora.vue';
+import { verificationModalDefaultGon, verificationModalDefaultProps } from '../mock_data';
 
 describe('Account verification modal', () => {
   let wrapper;
 
+  const originalGon = window.gon;
+
   const createComponent = () => {
     wrapper = shallowMount(AccountVerificationModal, {
-      propsData: {
-        iframeUrl: 'https://gitlab.com',
-        allowedOrigin: 'https://gitlab.com',
-      },
+      propsData: verificationModalDefaultProps,
       stubs: {
         GlSprintf,
       },
@@ -22,7 +22,15 @@ describe('Account verification modal', () => {
 
   const zuoraSubmitSpy = jest.fn();
 
+  beforeEach(() => {
+    window.gon = {
+      ...originalGon,
+      ...verificationModalDefaultGon,
+    };
+  });
+
   afterEach(() => {
+    window.gon = originalGon;
     wrapper.destroy();
   });
 

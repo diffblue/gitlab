@@ -187,6 +187,16 @@ RSpec.describe EE::NamespacesHelper do
         expect(helper.buy_additional_minutes_path(personal_namespace)).to eq EE::SUBSCRIPTIONS_MORE_MINUTES_URL
       end
     end
+
+    context 'when called from a subgroup' do
+      let(:group) { create(:group) }
+      let(:subgroup) { create(:group, parent: group) }
+
+      it 'returns the selected group id as the parent group' do
+        link = helper.buy_additional_minutes_path(subgroup)
+        expect(link).to eq buy_minutes_subscriptions_path(selected_group: group.id)
+      end
+    end
   end
 
   describe '#buy_storage_path' do

@@ -42,7 +42,7 @@ module EE
     def buy_additional_minutes_path(namespace)
       return EE::SUBSCRIPTIONS_MORE_MINUTES_URL if use_customers_dot_for_addon_path?(namespace)
 
-      buy_minutes_subscriptions_path(selected_group: namespace.id)
+      buy_minutes_subscriptions_path(selected_group: namespace.root_ancestor.id)
     end
 
     def buy_addon_target_attr(namespace)
