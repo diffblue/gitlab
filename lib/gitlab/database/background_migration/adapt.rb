@@ -16,8 +16,6 @@ module Gitlab
         # The implementation is robust to errors and expected not to raise unexpected
         # errors when evaluating system indicators.
         def self.adapt!(migration, indicator_class = AutovacuumActiveOnTable)
-          return unless Feature.enabled?(:adapt_batched_migrations, type: :ops, default_enabled: :yaml)
-
           signal = begin
             indicator_class.new(migration.adapt_context).evaluate
           rescue StandardError => e

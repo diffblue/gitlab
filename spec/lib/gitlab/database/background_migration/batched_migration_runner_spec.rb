@@ -63,13 +63,34 @@ RSpec.describe Gitlab::Database::BackgroundMigration::BatchedMigrationRunner do
             sub_batch_size: migration.sub_batch_size)
         end
 
-        it 'runs the adapt framework after executing the job' do
-          migration.update!(min_value: event1.id, max_value: event2.id)
+        context 'with adapt_batched_migrations enabled' do
+          before do
+            stub_feature_flags(adapt_batched_migrations: true)
+          end
 
-          expect(migration_wrapper).to receive(:perform).ordered
-          expect(migration).to receive(:adapt!).ordered
+          it 'runs the adapt framework after executing the job' do
+            migration.update!(min_value: event1.id, max_value: event2.id)
 
-          runner.run_migration_job(migration)
+            expect(migration_wrapper).to receive(:perform).ordered
+            expect(migration).to receive(:adapt!).ordered
+
+            runner.run_migration_job(migration)
+          end
+        end
+
+        context 'without adapt_batched_migrations enabled' do
+          before do
+            stub_feature_flags(adapt_batched_migrations: false)
+          end
+
+          it 'runs optimizes after executing the job' do
+            migration.update!(min_value: event1.id, max_value: event2.id)
+
+            expect(migration_wrapper).to receive(:perform).ordered
+            expect(migration).to receive(:optimize!).ordered
+
+            runner.run_migration_job(migration)
+          end
         end
       end
 
