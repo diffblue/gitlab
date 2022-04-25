@@ -58,6 +58,12 @@ RSpec.describe Boards::Epics::ListService do
         .new(group, user, { board_id: board.id, id: list1.id, from_id: list1_epic2.id })
         .execute
     end
+
+    it 'returns opened items when using board param only' do
+      epics = described_class.new(group, user, { board: board }).execute
+
+      expect(epics).to match_array([backlog_epic1])
+    end
   end
 
   describe '#metadata' do
@@ -74,7 +80,7 @@ RSpec.describe Boards::Epics::ListService do
     context 'with all fields included in the required_fields' do
       let(:fields) { [:total_weight, :epics_count] }
 
-      it 'containes correct data including weight' do
+      it 'contains correct data including weight' do
         expect(subject).to eq({ total_weight: 7, epics_count: 3 })
       end
     end
@@ -82,15 +88,15 @@ RSpec.describe Boards::Epics::ListService do
     context 'with total_weight not included in the required_fields' do
       let(:fields) { [:epics_count] }
 
-      it 'containes correct data without weight' do
+      it 'contains correct data without weight' do
         expect(subject).to eq({ epics_count: 3 })
       end
     end
 
-    context 'with epics_countr not included in the required_fields' do
+    context 'with epics_count not included in the required_fields' do
       let(:fields) { [:total_weight] }
 
-      it 'containes correct data without weight' do
+      it 'contains correct data without weight' do
         expect(subject).to eq({ total_weight: 7 })
       end
     end
