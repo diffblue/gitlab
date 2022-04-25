@@ -145,7 +145,7 @@ module Arkose
                     "#{arkose_labs_namespace}-verify"
                   end
 
-      "https://#{subdomain}.arkoselabs.com/api/v4/verify"
+      "https://#{subdomain}.arkoselabs.com/api/v4/verify/"
     end
   end
 end
