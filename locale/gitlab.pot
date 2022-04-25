@@ -14206,9 +14206,7 @@ msgid "Enterprise"
 msgstr ""
 
 msgid "Environment"
-msgid_plural "Environments"
-msgstr[0] ""
-msgstr[1] ""
+msgstr ""
 
 msgid "Environment does not have deployments"
 msgstr ""
@@ -25071,9 +25069,6 @@ msgstr ""
 msgid "NetworkPolicies|Create policy"
 msgstr ""
 
-msgid "NetworkPolicies|Define this policy's location, conditions and actions."
-msgstr ""
-
 msgid "NetworkPolicies|Delete policy"
 msgstr ""
 
@@ -25081,9 +25076,6 @@ msgid "NetworkPolicies|Delete policy: %{policy}"
 msgstr ""
 
 msgid "NetworkPolicies|Deny all traffic"
-msgstr ""
-
-msgid "NetworkPolicies|Edit policy"
 msgstr ""
 
 msgid "NetworkPolicies|Environment does not have deployment platform"
@@ -25101,9 +25093,6 @@ msgstr ""
 msgid "NetworkPolicies|Kubernetes error: %{error}"
 msgstr ""
 
-msgid "NetworkPolicies|Network"
-msgstr ""
-
 msgid "NetworkPolicies|Network Policies can be used to limit which network traffic is allowed between containers inside the cluster."
 msgstr ""
 
@@ -25117,9 +25106,6 @@ msgid "NetworkPolicies|None selected"
 msgstr ""
 
 msgid "NetworkPolicies|Policy %{policyName} was successfully changed"
-msgstr ""
-
-msgid "NetworkPolicies|Policy definition"
 msgstr ""
 
 msgid "NetworkPolicies|Rule mode"
@@ -33614,6 +33600,9 @@ msgstr ""
 msgid "SecurityOrchestration|Create security policy"
 msgstr ""
 
+msgid "SecurityOrchestration|Define this policy's location, conditions and actions."
+msgstr ""
+
 msgid "SecurityOrchestration|Description"
 msgstr ""
 
@@ -33693,6 +33682,9 @@ msgid "SecurityOrchestration|Policy cannot be enabled for non-existing branches 
 msgstr ""
 
 msgid "SecurityOrchestration|Policy cannot be enabled without branch information"
+msgstr ""
+
+msgid "SecurityOrchestration|Policy definition"
 msgstr ""
 
 msgid "SecurityOrchestration|Policy description"
