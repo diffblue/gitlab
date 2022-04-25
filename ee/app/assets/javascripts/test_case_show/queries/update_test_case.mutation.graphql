@@ -6,6 +6,10 @@ mutation updateTestCase($updateTestCaseInput: UpdateIssueInput!) {
     errors
     issue {
       ...TestCase
+      taskCompletionStatus {
+        count
+        completedCount
+      }
     }
   }
 }
