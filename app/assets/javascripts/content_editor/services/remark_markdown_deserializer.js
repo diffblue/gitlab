@@ -33,9 +33,9 @@ const factorySpecs = {
     getAttrs: () => ({ level: 6 }),
   },
   pre: {
-    inline: 'codeBlock',
-    inlineContent: true,
+    block: 'codeBlock',
     skipChildren: true,
+    getContent: ({ hastNodeText }) => hastNodeText,
     getAttrs: (hastNode) => {
       const languageClass = hastNode.children[0]?.properties.className?.[0];
       const language = isString(languageClass) ? languageClass.replace('language-', '') : '';

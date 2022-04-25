@@ -2,12 +2,12 @@
  * This module implements a function that converts a Hast Abstract
  * Syntax Tree (AST) to a ProseMirror document.
  *
- * This implementation is based on the prosemirror-markdown’s from_markdown module
+ * It is based on the prosemirror-markdown’s from_markdown module
  * https://github.com/ProseMirror/prosemirror-markdown/blob/master/src/from_markdown.js.
  *
- * This implementation deviates significantly from the original because
+ * It deviates significantly from the original because
  * prosemirror-markdown supports converting an markdown-it AST instead of a
- * HAST one. This implementation also adds sourcemap attributes automatically to every
+ * HAST one. It also adds sourcemap attributes automatically to every
  * ProseMirror node and mark created during the conversion process.
  *
  * We recommend becoming familiar with HAST and ProseMirror documents to
@@ -284,24 +284,30 @@ const createProseMirrorNodeFactories = (schema, proseMirrorFactorySpecs, source)
           getAttrs(factorySpec, hastNode, parent, source),
           factorySpec,
         );
+
+        /**
+         * If a getContent function is provided, we immediately close
+         * the node to delegate content processing to this function.
+         * */
+        if (isFunction(factorySpec.getContent)) {
+          state.addText(
+            schema,
+            factorySpec.getContent({ hastNode, hastNodeText: toString(hastNode) }),
+          );
+          state.closeNode();
+        }
       };
     } else if (factorySpec.inline) {
       const nodeType = schema.nodeType(factorySpec.inline);
       handlers[hastNodeTagName] = (state, hastNode, parent) => {
         state.closeUntil(parent);
-
-        if (factorySpec.inlineContent === true) {
-          state.openNode(
-            nodeType,
-            hastNode,
-            getAttrs(factorySpec, hastNode, parent, source),
-            factorySpec,
-          );
-          state.addText(schema, toString(hastNode));
-        } else {
-          state.openNode(nodeType, hastNode, getAttrs(factorySpec, hastNode, parent, source));
-        }
-
+        state.openNode(
+          nodeType,
+          hastNode,
+          getAttrs(factorySpec, hastNode, parent, source),
+          factorySpec,
+        );
+        // Inline nodes do not have children therefore they are immediately closed
         state.closeNode();
       };
     } else if (factorySpec.mark) {
@@ -419,11 +425,14 @@ const createProseMirrorNodeFactories = (schema, proseMirrorFactorySpecs, source)
  *
  * Skips a hast node’s children while traversing the tree.
  *
- * **inlineContent**
+ * **getContent**
  *
- * This property only applies to inline nodes. This property is useful for edge
- * cases such as code blocks where the node is inline but it still has editable
- * content.
+ * Allows to pass a custom function that returns the content of a block node. The
+ * Content is limited to a single text node therefore the function should return
+ * a String value.
+ *
+ * Use this property along skipChildren to provide custom processing of child nodes
+ * for a block node.
  *
  * @param {model.Document_Schema} params.schema A ProseMirror schema that specifies the shape
  * of the ProseMirror document.
