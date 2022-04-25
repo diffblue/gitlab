@@ -26,6 +26,12 @@ RSpec.describe Users::CaptchaChallengeService do
         stub_feature_flags(arkose_labs_login_challenge: true)
       end
 
+      context 'when the user does not exist' do
+        subject { Users::CaptchaChallengeService.new(nil).execute }
+
+        it { is_expected.to eq(result) }
+      end
+
       context 'when the user has never logged in previously' do
         before do
           user.last_sign_in_at = nil
