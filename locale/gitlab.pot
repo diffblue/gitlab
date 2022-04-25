@@ -23778,6 +23778,9 @@ msgstr ""
 msgid "Merge request %{mr_link} was reviewed by %{mr_author}"
 msgstr ""
 
+msgid "Merge request actions"
+msgstr ""
+
 msgid "Merge request analytics"
 msgstr ""
 
@@ -31659,9 +31662,6 @@ msgid "Reply…"
 msgstr ""
 
 msgid "Repo by URL"
-msgstr ""
-
-msgid "Report %{display_issuable_type} that are abusive, inappropriate or spam."
 msgstr ""
 
 msgid "Report abuse"
