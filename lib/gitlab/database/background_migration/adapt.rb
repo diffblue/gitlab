@@ -26,11 +26,19 @@ module Gitlab
 
           case signal
           when StopSignal
+            Gitlab::AppLogger.info(
+              message: "Batched migration #{migration} got stop signal: #{signal}",
+              migration_id: migration.id
+            )
+
             migration.hold!
           when NormalSignal
             migration.optimize!
           when UnknownSignal
-            Gitlab::AppLogger.error("Failed to evaluate adapt signals for background migration: #{signal}")
+            Gitlab::AppLogger.error(
+              message: "Failed to evaluate adapt signals for batched migration #{migration}: #{signal}",
+              migration_id: migration.id
+            )
           else
             # oblivious to what's going on, we just do nothing and carry on
           end

@@ -209,6 +209,13 @@ module Gitlab
         end
 
         def hold!(until_time: 10.minutes.from_now)
+          duration_s = (until_time - Time.current).round
+          Gitlab::AppLogger.info(
+            message: "Batched migration #{id} put on hold until #{until_time}",
+            migration_id: id,
+            duration_s: duration_s
+          )
+
           update!(on_hold_until: until_time)
         end
 
@@ -216,6 +223,10 @@ module Gitlab
           return false unless on_hold_until
 
           on_hold_until > Time.zone.now
+        end
+
+        def to_s
+          "BatchedMigration[id: #{id}]"
         end
 
         private
