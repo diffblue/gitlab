@@ -130,8 +130,18 @@ describe('content_editor/services/remark_markdown_deserializer', () => {
       doc: doc(paragraph(code('inline code'))),
     },
     {
+      markdown: '**`inline code bold`**',
+      doc: doc(paragraph(bold(code('inline code bold')))),
+    },
+    {
       markdown: '[GitLab](https://gitlab.com "Go to GitLab")',
       doc: doc(paragraph(link({ href: 'https://gitlab.com', title: 'Go to GitLab' }, 'GitLab'))),
+    },
+    {
+      markdown: '**[GitLab](https://gitlab.com "Go to GitLab")**',
+      doc: doc(
+        paragraph(bold(link({ href: 'https://gitlab.com', title: 'Go to GitLab' }, 'GitLab'))),
+      ),
     },
     {
       markdown: `
