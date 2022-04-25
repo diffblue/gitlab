@@ -146,7 +146,7 @@ RSpec.describe BuildDetailsEntity do
           expect(message).to include('test2')
         end
 
-        it 'expect to include message for list of invalid dependencies' do
+        it 'includes message for list of invalid dependencies' do
           expect(message).to include('could not retrieve the needed artifacts:')
         end
       end
@@ -161,12 +161,12 @@ RSpec.describe BuildDetailsEntity do
 
         it { is_expected.to include(failure_reason: 'missing_dependency_failure') }
 
-        it 'exculdes the failing dependencies in the callout message' do
+        it 'excludes the failing dependencies in the callout message' do
           expect(message).not_to include('test1')
           expect(message).not_to include('test2')
         end
 
-        it 'expect to include message for list of invalid dependencies' do
+        it 'includes the correct punctuation in the message' do
           expect(message).to include('could not retrieve the needed artifacts.')
         end
       end
