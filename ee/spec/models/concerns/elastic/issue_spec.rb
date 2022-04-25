@@ -112,16 +112,6 @@ RSpec.describe Issue, :elastic do
     let_it_be(:issue) { create(:issue, project: project, assignees: [assignee]) }
     let_it_be(:award_emoji) { create(:award_emoji, :upvote, awardable: issue) }
 
-    context 'when add_namespace_ancestry_ids_to_issues_mapping migration is not done' do
-      before do
-        set_elasticsearch_migration_to :add_namespace_ancestry_ids_to_issues_mapping, including: false
-      end
-
-      it "returns json without namespace_ancestry" do
-        expect(issue.__elasticsearch__.as_indexed_json.keys).not_to include('namespace_ancestry_ids')
-      end
-    end
-
     it "returns json with all needed elements" do
       expected_hash = issue.attributes.extract!(
         'id',

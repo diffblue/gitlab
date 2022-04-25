@@ -7,7 +7,7 @@ module Elastic
 
       def elastic_search(query, options: {})
         options[:features] = 'merge_requests'
-        options[:no_join_project] = Elastic::DataMigrationService.migration_has_finished?(:add_new_data_to_merge_requests_documents)
+        options[:no_join_project] = true
 
         query_hash =
           if query =~ /\!(\d+)\z/
