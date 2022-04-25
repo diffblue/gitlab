@@ -1610,6 +1610,9 @@ msgstr ""
 msgid "A non-confidential epic cannot be assigned to a confidential parent epic"
 msgstr ""
 
+msgid "A page with that title already exists"
+msgstr ""
+
 msgid "A plain HTML site that uses Netlify for CI/CD instead of GitLab, but still with all the other great GitLab features"
 msgstr ""
 
@@ -13447,6 +13450,9 @@ msgid "Due Date"
 msgstr ""
 
 msgid "Due date"
+msgstr ""
+
+msgid "Duplicate page: %{error_message}"
 msgstr ""
 
 msgid "Duration"
