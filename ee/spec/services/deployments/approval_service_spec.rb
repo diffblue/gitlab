@@ -79,18 +79,6 @@ RSpec.describe Deployments::ApprovalService do
         expect(subject[:approval].approval_rule).to eq(approval_rule)
         expect(::Deployments::Approval.last.approval_rule).to eq(approval_rule)
       end
-
-      context 'when deployment_approval_rules feature flag is disabled' do
-        before do
-          stub_feature_flags(deployment_approval_rules: false)
-        end
-
-        it 'does not set an rule to the deployment approval' do
-          expect(subject[:status]).to eq(:success)
-          expect(subject[:approval].approval_rule).to be_nil
-          expect(::Deployments::Approval.last.approval_rule).to be_nil
-        end
-      end
     end
   end
 
