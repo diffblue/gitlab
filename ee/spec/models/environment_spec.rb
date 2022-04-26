@@ -353,14 +353,6 @@ RSpec.describe Environment, :use_clean_rails_memory_store_caching do
       let!(:approval_rule) { create(:protected_environment_approval_rule, :maintainer_access, protected_environment: protected_environment) }
 
       it { is_expected.to eq(true) }
-
-      context 'when deployment_approval_rules feature flag is disabled' do
-        before do
-          stub_feature_flags(deployment_approval_rules: false)
-        end
-
-        it { is_expected.to eq(false) }
-      end
     end
   end
 
