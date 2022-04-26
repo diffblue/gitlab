@@ -237,42 +237,6 @@ RSpec.describe Gitlab::GitAccess do
       end
     end
 
-    shared_examples_for 'a push to repository using git-rev-list for checking against repository size limit' do
-      context 'when repository size is over limit' do
-        let(:repository_size) { 2.megabytes }
-        let(:repository_size_limit) { 1.megabyte }
-
-        it_behaves_like 'a push to repository over the limit'
-      end
-
-      context 'when repository size is below the limit' do
-        let(:repository_size) { 1.megabyte }
-        let(:repository_size_limit) { 2.megabytes }
-
-        it_behaves_like 'a push to repository below the limit'
-
-        context 'when new change exceeds the limit' do
-          it 'rejects the push' do
-            expect(repository.new_blobs(sha_with_2_mb_file)).to be_present
-
-            expect do
-              push_changes("#{Gitlab::Git::BLANK_SHA} #{sha_with_2_mb_file} refs/heads/my_branch_2")
-            end.to raise_error(described_class::ForbiddenError, /Your push to this repository would cause it to exceed the size limit/)
-          end
-        end
-
-        context 'when new change does not exceed the limit' do
-          it 'accepts the push' do
-            expect(repository.new_blobs(sha_with_smallest_changes)).to be_present
-
-            expect do
-              push_changes("#{Gitlab::Git::BLANK_SHA} #{sha_with_smallest_changes} refs/heads/my_branch_3")
-            end.not_to raise_error
-          end
-        end
-      end
-    end
-
     context 'when GIT_OBJECT_DIRECTORY_RELATIVE env var is set' do
       before do
         allow(Gitlab::Git::HookEnv)
@@ -321,8 +285,40 @@ RSpec.describe Gitlab::GitAccess do
       end
     end
 
-    context 'when GIT_OBJECT_DIRECTORY_RELATIVE env var is not set' do
-      it_behaves_like 'a push to repository using git-rev-list for checking against repository size limit'
+    context 'when GIT_OBJECT_DIRECTORY_RELATIVE env var is not set and git-rev-list is used for checking against the repository size limit' do
+      context 'when repository size is over limit' do
+        let(:repository_size) { 2.megabytes }
+        let(:repository_size_limit) { 1.megabyte }
+
+        it_behaves_like 'a push to repository over the limit'
+      end
+
+      context 'when repository size is below the limit' do
+        let(:repository_size) { 1.megabyte }
+        let(:repository_size_limit) { 2.megabytes }
+
+        it_behaves_like 'a push to repository below the limit'
+
+        context 'when new change exceeds the limit' do
+          it 'rejects the push' do
+            expect(repository.new_blobs(sha_with_2_mb_file)).to be_present
+
+            expect do
+              push_changes("#{Gitlab::Git::BLANK_SHA} #{sha_with_2_mb_file} refs/heads/my_branch_2")
+            end.to raise_error(described_class::ForbiddenError, /Your push to this repository would cause it to exceed the size limit/)
+          end
+        end
+
+        context 'when new change does not exceed the limit' do
+          it 'accepts the push' do
+            expect(repository.new_blobs(sha_with_smallest_changes)).to be_present
+
+            expect do
+              push_changes("#{Gitlab::Git::BLANK_SHA} #{sha_with_smallest_changes} refs/heads/my_branch_3")
+            end.not_to raise_error
+          end
+        end
+      end
     end
   end
 
