@@ -4,6 +4,7 @@ classes:
 - ProjectSecuritySetting
 feature_categories:
 - dependency_scanning
-description: TODO
+- container_scanning
+description: Project settings related to security features.
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/32577
 milestone: '13.1'
