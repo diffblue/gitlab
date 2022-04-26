@@ -4,6 +4,6 @@ classes:
 - ProgrammingLanguage
 feature_categories:
 - source_code_management
-description: TODO
+description: Contains known programming languages and their assigned colors
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab-foss/-/merge_requests/19480
 milestone: '11.2'
