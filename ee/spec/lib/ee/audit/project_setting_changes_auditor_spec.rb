@@ -22,17 +22,21 @@ RSpec.describe EE::Audit::ProjectSettingChangesAuditor do
               project.project_setting.update!(squash_option: prev_value)
             end
 
-            next if new_value == prev_value
+            if new_value != prev_value
+              it 'creates an audit event' do
+                project.project_setting.update!(squash_option: new_value)
 
-            it 'creates an audit event' do
-              project.project_setting.update!(squash_option: new_value)
-
-              expect { project_setting_changes_auditor.execute }.to change { AuditEvent.count }.by(1)
-              expect(AuditEvent.last.details).to include({
-                                                           change: 'squash_option',
-                                                           from: prev_value,
-                                                           to: new_value
-                                                         })
+                expect { project_setting_changes_auditor.execute }.to change { AuditEvent.count }.by(1)
+                expect(AuditEvent.last.details).to include(
+                  {
+                    custom_message: "Changed squash option to #{project.project_setting.human_squash_option}"
+                  })
+              end
+            else
+              it 'does not create audit event' do
+                project.project_setting.update!(squash_option: new_value)
+                expect { project_setting_changes_auditor.execute }.to not_change { AuditEvent.count }
+              end
             end
           end
         end

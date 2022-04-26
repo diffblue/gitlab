@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
 module ExternalStatusChecks
-  class DestroyService < BaseContainerService
+  class DestroyService < BaseService
     def execute(rule)
       return unauthorized_error_response unless current_user.can?(:admin_project, container)
 
-      if rule.destroy
+      if with_audit_logged(rule, 'delete_status_check') { rule.destroy }
         ServiceResponse.success
       else
         ServiceResponse.error(message: 'Failed to destroy rule',

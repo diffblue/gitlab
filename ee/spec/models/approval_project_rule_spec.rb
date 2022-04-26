@@ -246,65 +246,39 @@ RSpec.describe ApprovalProjectRule do
 
     let_it_be(:rule, reload: true) { create(:approval_project_rule, name: 'Vulnerability', users: [user], groups: [group]) }
 
-    shared_examples 'auditable' do
-      context 'when audit event queue is active' do
-        before do
-          allow(::Gitlab::Audit::EventQueue).to receive(:active?).and_return(true)
-        end
-
-        it 'adds message to audit event queue' do
-          action!
-
-          expect(::Gitlab::Audit::EventQueue.current).to contain_exactly(message)
-        end
-      end
-
-      context 'when audit event queue is not active' do
-        before do
-          allow(::Gitlab::Audit::EventQueue).to receive(:active?).and_return(false)
-        end
-
-        it 'does not add message to audit event queue' do
-          action!
-
-          expect(::Gitlab::Audit::EventQueue.current).to be_empty
-        end
-      end
-    end
-
     describe '#audit_add users after :add' do
       let(:action!) { rule.update!(users: [user, new_user]) }
       let(:message) { 'Added User Spiderman to approval group on Vulnerability rule' }
 
-      it_behaves_like 'auditable'
+      it_behaves_like 'audit event queue'
     end
 
     describe '#audit_remove users after :remove' do
       let(:action!) { rule.update!(users: []) }
       let(:message) { 'Removed User Batman from approval group on Vulnerability rule' }
 
-      it_behaves_like 'auditable'
+      it_behaves_like 'audit event queue'
     end
 
     describe '#audit_add groups after :add' do
       let(:action!) { rule.update!(groups: [group, new_group]) }
       let(:message) { 'Added Group Avengers to approval group on Vulnerability rule' }
 
-      it_behaves_like 'auditable'
+      it_behaves_like 'audit event queue'
     end
 
     describe '#audit_remove groups after :remove' do
       let(:action!) { rule.update!(groups: []) }
       let(:message) { 'Removed Group Justice League from approval group on Vulnerability rule' }
 
-      it_behaves_like 'auditable'
+      it_behaves_like 'audit event queue'
     end
 
     describe "#audit_creation after approval rule is created" do
       let(:action!) { create(:approval_project_rule, approvals_required: 1) }
       let(:message) {'Added approval rule with number of required approvals of 1'}
 
-      it_behaves_like 'auditable'
+      it_behaves_like 'audit event queue'
     end
 
     describe '#vulnerability_states_for_branch' do

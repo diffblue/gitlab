@@ -187,4 +187,94 @@ RSpec.describe MergeRequests::ExternalStatusCheck, type: :model do
       end
     end
   end
+
+  describe 'callbacks', :request_store do
+    let_it_be(:project) { create(:project) }
+    let_it_be(:master_branch) { create(:protected_branch, project: project, name: 'master') }
+    let_it_be(:main_branch) { create(:protected_branch, project: project, name: 'main') }
+    let_it_be(:external_status_check, reload: true) do
+      create(:external_status_check, project: project, name: 'QA', protected_branches: [])
+    end
+
+    describe '#audit_add branches after :add' do
+      context 'when branch is added from zero branches' do
+        let(:action!) { external_status_check.update!(protected_branches: [main_branch]) }
+        let(:message) { 'Added protected branch main to QA status check and removed all other branches from status check' }
+
+        it_behaves_like 'audit event queue'
+      end
+
+      context 'when another branch is added' do
+        before do
+          external_status_check.update!(protected_branches: [main_branch])
+        end
+
+        let(:action!) { external_status_check.update!(protected_branches: [main_branch, master_branch]) }
+        let(:message) { 'Added protected branch master to QA status check' }
+
+        it_behaves_like 'audit event queue'
+      end
+    end
+
+    describe '#audit_remove branches after :remove' do
+      context 'when all the branches are removed' do
+        before do
+          external_status_check.update!(protected_branches: [main_branch])
+        end
+
+        let(:action!) { external_status_check.update!(protected_branches: []) }
+        let(:message) { 'Added all branches to QA status check' }
+
+        it_behaves_like 'audit event queue'
+      end
+
+      context 'when a branch is removed' do
+        before do
+          external_status_check.update!(protected_branches: [main_branch, master_branch])
+        end
+
+        let(:action!) { external_status_check.update!(protected_branches: [master_branch]) }
+        let(:message) { 'Removed protected branch main from QA status check' }
+
+        it_behaves_like 'audit event queue'
+      end
+    end
+
+    describe '#audit_creation external status check after :create' do
+      context 'when protected branches are added' do
+        let_it_be(:external_status_check) do
+          described_class.new(name: 'QAv2',
+                              project: project,
+                              external_url: 'https://www.example.com',
+                              protected_branch_ids: [main_branch.id, master_branch.id])
+        end
+
+        let(:action!) { external_status_check.save! }
+        let(:message) { 'Added QAv2 status check with protected branch(es) main, master' }
+
+        it_behaves_like 'audit event queue'
+      end
+
+      context 'when all branches are added' do
+        let_it_be(:external_status_check) do
+          described_class.new(name: 'QAv2',
+                              project: project,
+                              external_url: 'https://www.example.com',
+                              protected_branch_ids: [])
+        end
+
+        let(:action!) { external_status_check.save! }
+        let(:message) { 'Added QAv2 status check with all branches' }
+
+        it_behaves_like 'audit event queue'
+      end
+    end
+
+    describe '#audit_creation external status check after :create' do
+      let(:action!) { external_status_check.destroy! }
+      let(:message) { 'Removed QA status check' }
+
+      it_behaves_like 'audit event queue'
+    end
+  end
 end

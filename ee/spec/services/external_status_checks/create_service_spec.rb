@@ -66,4 +66,33 @@ RSpec.describe ExternalStatusChecks::CreateService do
       expect(rule.protected_branches).to contain_exactly(protected_branch)
     end
   end
+
+  describe 'audit events' do
+    context 'when licensed' do
+      before do
+        stub_licensed_features(audit_events: true)
+      end
+
+      context 'when external status check save operation succeeds', :request_store do
+        it 'logs an audit event' do
+          expect { subject }.to change { AuditEvent.count }.by(1)
+          expect(AuditEvent.last.details).to include({
+                    custom_message: "Added Test status check with protected branch(es) #{protected_branch.name}"
+                  })
+        end
+      end
+
+      context 'when external status check save operation fails' do
+        before do
+          allow(::MergeRequests::ExternalStatusCheck).to receive(:save).and_return(false)
+        end
+
+        it 'does not log any audit event' do
+          expect { subject }.not_to change { AuditEvent.count }
+        end
+      end
+    end
+
+    it_behaves_like 'does not create audit event when not licensed'
+  end
 end

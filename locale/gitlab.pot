@@ -7094,6 +7094,9 @@ msgstr ""
 msgid "Changed reviewer(s)."
 msgstr ""
 
+msgid "Changed squash option to %{squash_option}"
+msgstr ""
+
 msgid "Changed the title to \"%{title_param}\"."
 msgstr ""
 
