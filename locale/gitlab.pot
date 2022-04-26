@@ -2651,6 +2651,9 @@ msgstr ""
 msgid "AdminSettings|Enable smartcn custom analyzer: Search"
 msgstr ""
 
+msgid "AdminSettings|Enabled"
+msgstr ""
+
 msgid "AdminSettings|Feed token"
 msgstr ""
 
@@ -2661,6 +2664,9 @@ msgid "AdminSettings|If not specified at the group or instance level, the defaul
 msgstr ""
 
 msgid "AdminSettings|If there isn't any existing index, GitLab creates one."
+msgstr ""
+
+msgid "AdminSettings|Import sources"
 msgstr ""
 
 msgid "AdminSettings|Keep the latest artifacts for all jobs in the latest successful pipelines"
@@ -2714,7 +2720,7 @@ msgstr ""
 msgid "AdminSettings|Preview payload"
 msgstr ""
 
-msgid "AdminSettings|Project export enabled"
+msgid "AdminSettings|Project export"
 msgstr ""
 
 msgid "AdminSettings|Protect CI/CD variables by default"
