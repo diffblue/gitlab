@@ -31,6 +31,6 @@ export default {
   <span v-if="hasTarget" class="gl-text-gray-900"> {{ target }} </span>
   <span v-else v-gl-tooltip.hover class="gl-text-gray-900" :title="$options.i18n.noSetInfo">
     <gl-icon class="gl-mr-1" :size="16" name="information-o" />
-    {{ this.$options.i18n.notSet }}
+    {{ $options.i18n.notSet }}
   </span>
 </template>

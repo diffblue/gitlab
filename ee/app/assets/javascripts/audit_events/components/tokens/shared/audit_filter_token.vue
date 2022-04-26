@@ -148,7 +148,7 @@ export default {
 
 <template>
   <gl-filtered-search-token
-    v-bind="{ ...this.$props, ...this.$attrs }"
+    v-bind="{ ...$props, ...$attrs }"
     :operators="config.operators"
     v-on="$listeners"
   >

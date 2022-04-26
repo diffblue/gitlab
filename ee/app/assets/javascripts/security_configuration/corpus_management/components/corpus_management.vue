@@ -137,11 +137,11 @@ export default {
     <div v-else>
       <header>
         <h4 class="gl-my-5">
-          {{ this.$options.i18n.header }}
+          {{ $options.i18n.header }}
         </h4>
         <p>
-          {{ this.$options.i18n.subHeader }}
-          <gl-link :href="corpusHelpPath">{{ this.$options.i18n.learnMore }}</gl-link>
+          {{ $options.i18n.subHeader }}
+          <gl-link :href="corpusHelpPath">{{ $options.i18n.learnMore }}</gl-link>
         </p>
       </header>
 
