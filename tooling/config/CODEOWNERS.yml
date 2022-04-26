@@ -1,0 +1,30 @@
+# This is supposed to be used with:
+#     tooling/bin/find_codeowners tooling/config/CODEOWNERS.yml
+# And paste the contents into .gitlab/CODEOWNERS
+
+'[Authentication and Authorization]':
+  '@gitlab-org/manage/authentication-and-authorization':
+    allow:
+      keywords:
+        - password
+        - auth
+        - token
+      patterns:
+        - '/{,ee/}app/**/*%{keyword}*{/**/*,}'
+        - '/{,ee/}config/**/*%{keyword}*{/**/*,}'
+        - '/{,ee/}lib/**/*%{keyword}*{/**/*,}'
+    deny:
+      keywords:
+        - author.
+        - author_
+        - authored
+        - authoring
+        - .png
+        - .svg
+        - deploy_token
+        - runner{,s}_token
+        - job_token
+        - tokenizer
+        - filtered_search
+      patterns:
+        - '**/*%{keyword}*{/**/*,}'
