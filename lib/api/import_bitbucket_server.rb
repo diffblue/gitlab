@@ -3,6 +3,7 @@
 module API
   class ImportBitbucketServer < ::API::Base
     feature_category :importers
+    urgency :low
 
     before do
       forbidden! unless Gitlab::CurrentSettings.import_sources&.include?('bitbucket_server')
