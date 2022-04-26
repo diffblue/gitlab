@@ -4,6 +4,6 @@ classes:
 - Vulnerability
 feature_categories:
 - vulnerability_management
-description: TODO
+description: stores information about vulnerabilites, Vulnerability is the object with which users interact with
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/16181
 milestone: '12.4'
