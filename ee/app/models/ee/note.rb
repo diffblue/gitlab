@@ -22,7 +22,7 @@ module EE
     class_methods do
       # override
       def use_separate_indices?
-        Elastic::DataMigrationService.migration_has_finished?(:migrate_notes_to_separate_index)
+        true
       end
     end
 

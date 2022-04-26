@@ -765,4 +765,17 @@ describe('Api', () => {
       expect(mock.history.post[0].data).toBe(JSON.stringify({ status: 'rejected', comment }));
     });
   });
+
+  describe('validatePaymentMethod', () => {
+    it('submits the custom value stream data', () => {
+      const response = {};
+      const expectedUrl = '/gitlab/-/subscriptions/validate_payment_method';
+      mock.onPost(expectedUrl).reply(httpStatus.OK, response);
+
+      return Api.validatePaymentMethod('id', 'user_id').then((res) => {
+        expect(res.data).toEqual(response);
+        expect(res.config.url).toEqual(expectedUrl);
+      });
+    });
+  });
 });

@@ -175,24 +175,6 @@ RSpec.describe Sidebars::Projects::Menus::SecurityComplianceMenu do
       end
     end
 
-    describe 'Threat monitoring' do
-      let(:item_id) { :threat_monitoring }
-
-      before do
-        stub_licensed_features(threat_monitoring: true)
-      end
-
-      context 'when user can access threat monitoring' do
-        it { is_expected.not_to be_nil }
-      end
-
-      context 'when user cannot access threat monitoring' do
-        let(:user) { nil }
-
-        it { is_expected.to be_nil }
-      end
-    end
-
     describe 'Policies' do
       let(:item_id) { :scan_policies }
 

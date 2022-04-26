@@ -1,10 +1,10 @@
 <script>
+import { logError } from '~/lib/logger';
 import updateState from 'ee/subscriptions/graphql/mutations/update_state.mutation.graphql';
 import BillingAddress from 'jh_else_ee/vue_shared/purchase_flow/components/checkout/billing_address.vue';
 import ConfirmOrder from 'ee/vue_shared/purchase_flow/components/checkout/confirm_order.vue';
 import PaymentMethod from 'ee/vue_shared/purchase_flow/components/checkout/payment_method.vue';
 import { GENERAL_ERROR_MESSAGE } from 'ee/vue_shared/purchase_flow/constants';
-import createFlash from '~/flash';
 import { s__ } from '~/locale';
 
 export default {
@@ -32,8 +32,12 @@ export default {
           },
         })
         .catch((error) => {
-          createFlash({ message: GENERAL_ERROR_MESSAGE, error, captureError: true });
+          this.emitError(error);
         });
+    },
+    emitError(error) {
+      this.$emit('alertError', GENERAL_ERROR_MESSAGE);
+      logError(error);
     },
   },
   i18n: {
@@ -43,7 +47,6 @@ export default {
 </script>
 <template>
   <div class="checkout gl-display-flex gl-flex-direction-column gl-align-items-center">
-    <div class="flash-container"></div>
     <h2 class="gl-align-self-start gl-mt-6 gl-mb-7 gl-mb-lg-5">{{ $options.i18n.checkout }}</h2>
     <slot name="purchase-details"></slot>
     <billing-address />

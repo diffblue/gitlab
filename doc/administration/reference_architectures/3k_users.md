@@ -1335,8 +1335,8 @@ To configure the Praefect nodes, on each one:
    praefect['database_host'] = '10.6.0.141'
    praefect['database_port'] = 5432
    # `no_proxy` settings must always be a direct connection for caching
-   praefect['database_host_no_proxy'] = '10.6.0.141'
-   praefect['database_port_no_proxy'] = 5432
+   praefect['database_direct_host'] = '10.6.0.141'
+   praefect['database_direct_port'] = 5432
    praefect['database_dbname'] = 'praefect_production'
    praefect['database_user'] = 'praefect'
    praefect['database_password'] = '<praefect_postgresql_password>'
@@ -2108,7 +2108,7 @@ GitLab has been tested on a number of object storage providers:
 - [Google Cloud Storage](https://cloud.google.com/storage)
 - [Digital Ocean Spaces](http://www.digitalocean.com/products/spaces)
 - [Oracle Cloud Infrastructure](https://docs.cloud.oracle.com/en-us/iaas/Content/Object/Tasks/s3compatibleapi.htm)
-- [OpenStack Swift](https://docs.openstack.org/swift/latest/s3_compat.html)
+- [OpenStack Swift (S3 compatibility mode)](https://docs.openstack.org/swift/latest/s3_compat.html)
 - [Azure Blob storage](https://docs.microsoft.com/en-us/azure/storage/blobs/storage-blobs-introduction)
 - On-premises hardware and appliances from various storage vendors.
 - MinIO. We have [a guide to deploying this](https://docs.gitlab.com/charts/advanced/external-object-storage/minio.html) within our Helm Chart documentation.

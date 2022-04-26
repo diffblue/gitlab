@@ -90,8 +90,6 @@ module EE
     end
 
     def has_approval_rules?
-      return false unless ::Feature.enabled?(:deployment_approval_rules, project, default_enabled: :yaml)
-
       associated_approval_rules.any?
     end
 

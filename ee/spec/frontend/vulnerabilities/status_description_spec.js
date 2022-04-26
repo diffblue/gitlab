@@ -137,7 +137,7 @@ describe('Vulnerability status description component', () => {
 
       expect(userLoadingIcon().exists()).toBe(false);
       expect(userAvatar().props()).toMatchObject({
-        linkHref: user.user_path,
+        linkHref: user.web_url,
         imgSrc: user.avatar_url,
         username: user.name,
       });

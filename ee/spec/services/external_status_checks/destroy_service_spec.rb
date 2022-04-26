@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe ExternalStatusChecks::DestroyService do
   let_it_be(:project) { create(:project) }
-  let_it_be(:rule) { create(:external_status_check, project: project) }
+  let_it_be(:rule) { create(:external_status_check, name: 'QA', project: project) }
 
   let(:current_user) { project.first_owner }
 
@@ -39,5 +39,35 @@ RSpec.describe ExternalStatusChecks::DestroyService do
       expect(subject.message).to eq('Failed to destroy rule')
       expect(subject.payload[:errors]).to contain_exactly('Not allowed')
     end
+  end
+
+  describe 'audit events' do
+    context 'when licensed' do
+      before do
+        stub_licensed_features(audit_events: true)
+      end
+
+      context 'when rule destroy operation succeeds', :request_store do
+        it 'logs an audit event' do
+          expect { subject }.to change { AuditEvent.count }.by(1)
+          expect(AuditEvent.last.details).to include({
+                                                       target_type: 'MergeRequests::ExternalStatusCheck',
+                                                       custom_message: 'Removed QA status check'
+                                                     })
+        end
+      end
+
+      context 'when rule destroy operation fails' do
+        before do
+          allow(::MergeRequests::ExternalStatusCheck).to receive(:destroy).and_return(false)
+        end
+
+        it 'does not log any audit event' do
+          expect { subject }.not_to change { AuditEvent.count }
+        end
+      end
+    end
+
+    it_behaves_like 'does not create audit event when not licensed'
   end
 end

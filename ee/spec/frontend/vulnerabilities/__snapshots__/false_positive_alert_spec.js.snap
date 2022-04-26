@@ -8,6 +8,7 @@ exports[`False positive alert component should render the alert message 1`] = `
   primarybuttontext=""
   secondarybuttonlink=""
   secondarybuttontext=""
+  showicon="true"
   title="False positive detected"
   variant="warning"
 >

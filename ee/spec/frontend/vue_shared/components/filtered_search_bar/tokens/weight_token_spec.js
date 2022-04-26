@@ -15,6 +15,7 @@ describe('WeightToken', () => {
         active: false,
         config,
         value,
+        cursorPosition: 'start',
       },
       provide: {
         portalName: 'fake target',

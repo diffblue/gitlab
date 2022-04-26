@@ -1,0 +1,144 @@
+# frozen_string_literal: true
+
+require 'spec_helper'
+
+RSpec.describe 'SAST.latest.gitlab-ci.yml' do
+  subject(:template) do
+    <<~YAML
+      include:
+        - template: 'Jobs/SAST.latest.gitlab-ci.yml'
+    YAML
+  end
+
+  describe 'the created pipeline' do
+    let(:default_branch) { 'master' }
+    let(:files) { { 'README.txt' => '' } }
+    let(:project) { create(:project, :custom_repo, files: files) }
+    let(:user) { project.first_owner }
+    let(:service) { Ci::CreatePipelineService.new(project, user, ref: 'master') }
+    let(:pipeline) { service.execute!(:push).payload }
+    let(:build_names) { pipeline.builds.pluck(:name) }
+
+    before do
+      stub_ci_pipeline_yaml_file(template)
+      allow_next_instance_of(Ci::BuildScheduleWorker) do |worker|
+        allow(worker).to receive(:perform).and_return(true)
+      end
+      allow(project).to receive(:default_branch).and_return(default_branch)
+    end
+
+    context 'when project has no license' do
+      context 'when SAST_DISABLED=1' do
+        before do
+          create(:ci_variable, project: project, key: 'SAST_DISABLED', value: '1')
+        end
+
+        it 'includes no jobs' do
+          expect { pipeline }.to raise_error(Ci::CreatePipelineService::CreateError)
+        end
+      end
+
+      context 'when SAST_EXPERIMENTAL_FEATURES is disabled for iOS projects' do
+        let(:files) { { 'a.xcodeproj/x.pbxproj' => '' } }
+
+        before do
+          create(:ci_variable, project: project, key: 'SAST_EXPERIMENTAL_FEATURES', value: 'false')
+        end
+
+        it 'includes no jobs' do
+          expect { pipeline }.to raise_error(Ci::CreatePipelineService::CreateError)
+        end
+      end
+
+      context 'by default' do
+        describe 'language detection' do
+          let(:experimental_vars) { { 'SAST_EXPERIMENTAL_FEATURES' => 'true' } }
+          let(:kubernetes_vars) { { 'SCAN_KUBERNETES_MANIFESTS' => 'true' } }
+          let(:android) { 'Android' }
+          let(:ios) { 'iOS' }
+
+          using RSpec::Parameterized::TableSyntax
+
+          where(:case_name, :files, :variables, :include_build_names) do
+            ref(:android)          | { 'AndroidManifest.xml' => '', 'a.java' => '' } | ref(:experimental_vars) | %w(mobsf-android-sast)
+            ref(:android)          | { 'app/src/main/AndroidManifest.xml' => '' }    | ref(:experimental_vars) | %w(mobsf-android-sast)
+            ref(:android)          | { 'a/b/AndroidManifest.xml' => '' }             | ref(:experimental_vars) | %w(mobsf-android-sast)
+            ref(:android)          | { 'a/b/android.apk' => '' }                     | ref(:experimental_vars) | %w(mobsf-android-sast)
+            ref(:android)          | { 'android.apk' => '' }                         | ref(:experimental_vars) | %w(mobsf-android-sast)
+            'Apex'                 | { 'app.cls' => '' }                             | {}                      | %w(pmd-apex-sast)
+            'C'                    | { 'app.c' => '' }                               | {}                      | %w(flawfinder-sast)
+            'C++'                  | { 'app.cpp' => '' }                             | {}                      | %w(flawfinder-sast)
+            'C#'                   | { 'app.csproj' => '' }                          | {}                      | %w(security-code-scan-sast)
+            'Elixir'               | { 'mix.exs' => '' }                             | {}                      | %w(sobelow-sast)
+            'Golang'               | { 'main.go' => '' }                             | {}                      | %w(gosec-sast)
+            'Groovy'               | { 'app.groovy' => '' }                          | {}                      | %w(spotbugs-sast)
+            ref(:ios)              | { 'a.xcodeproj/x.pbxproj' => '' }               | ref(:experimental_vars) | %w(mobsf-ios-sast)
+            ref(:ios)              | { 'a/b/ios.ipa' => '' }                         | ref(:experimental_vars) | %w(mobsf-ios-sast)
+            'Java'                 | { 'app.java' => '' }                            | {}                      | %w(spotbugs-sast)
+            'Java with MobSF'      | { 'app.java' => '' }                            | ref(:experimental_vars) | %w(spotbugs-sast)
+            'Java without MobSF'   | { 'AndroidManifest.xml' => '', 'a.java' => '' } | {}                      | %w(spotbugs-sast)
+            'Javascript'           | { 'app.js' => '' }                              | {}                      | %w(eslint-sast semgrep-sast)
+            'JSX'                  | { 'app.jsx' => '' }                             | {}                      | %w(eslint-sast semgrep-sast)
+            'Javascript Node'      | { 'package.json' => '' }                        | {}                      | %w(nodejs-scan-sast)
+            'HTML'                 | { 'index.html' => '' }                          | {}                      | %w(eslint-sast)
+            'Kubernetes Manifests' | { 'Chart.yaml' => '' }                          | ref(:kubernetes_vars)   | %w(kubesec-sast)
+            'Multiple languages'   | { 'app.java' => '', 'app.js' => '' }            | {}                      | %w(eslint-sast spotbugs-sast)
+            'PHP'                  | { 'app.php' => '' }                             | {}                      | %w(phpcs-security-audit-sast)
+            'Python'               | { 'app.py' => '' }                              | {}                      | %w(bandit-sast semgrep-sast)
+            'Ruby'                 | { 'config/routes.rb' => '' }                    | {}                      | %w(brakeman-sast)
+            'Scala'                | { 'app.scala' => '' }                           | {}                      | %w(spotbugs-sast)
+            'Typescript'           | { 'app.ts' => '' }                              | {}                      | %w(eslint-sast semgrep-sast)
+            'Typescript JSX'       | { 'app.tsx' => '' }                             | {}                      | %w(eslint-sast semgrep-sast)
+            'Visual Basic'         | { 'app.vbproj' => '' }                          | {}                      | %w(security-code-scan-sast)
+          end
+
+          with_them do
+            before do
+              variables.each do |(key, value)|
+                create(:ci_variable, project: project, key: key, value: value)
+              end
+            end
+
+            context 'when branch pipeline' do
+              it 'creates a pipeline with the expected jobs' do
+                expect(pipeline.errors.full_messages).to be_empty
+                expect(build_names).to include(*include_build_names)
+              end
+            end
+
+            context 'when MR pipeline' do
+              let(:service) { MergeRequests::CreatePipelineService.new(project: project, current_user: user) }
+              let(:feature_branch) { 'feature' }
+              let(:pipeline) { service.execute(merge_request).payload }
+
+              let(:merge_request) do
+                create(:merge_request,
+                  source_project: project,
+                  source_branch: feature_branch,
+                  target_project: project,
+                  target_branch: default_branch)
+              end
+
+              before do
+                files.each do |filename, contents|
+                  project.repository.create_file(
+                    project.creator,
+                    filename,
+                    contents,
+                    message: "Add #{filename}",
+                    branch_name: feature_branch)
+                end
+              end
+
+              it 'creates a pipeline with the expected jobs' do
+                expect(pipeline).to be_merge_request_event
+                expect(pipeline.errors.full_messages).to be_empty
+                expect(build_names).to include(*include_build_names)
+              end
+            end
+          end
+        end
+      end
+    end
+  end
+end

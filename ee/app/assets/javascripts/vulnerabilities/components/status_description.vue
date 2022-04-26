@@ -98,7 +98,7 @@ export default {
         <gl-loading-icon v-if="isLoadingUser" class="d-inline ml-1" size="sm" />
         <user-avatar-link
           v-else-if="user"
-          :link-href="user.user_path"
+          :link-href="user.web_url"
           :img-src="user.avatar_url"
           :img-size="24"
           :username="user.name"

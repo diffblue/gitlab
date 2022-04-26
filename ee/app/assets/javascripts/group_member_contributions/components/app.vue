@@ -31,8 +31,6 @@ export default {
   },
   methods: {
     handleColumnClick(columnName) {
-      // This is probably a false positive.
-      // eslint-disable-next-line vue/no-mutating-props
       this.store.sortMembers(columnName);
     },
   },

@@ -128,6 +128,7 @@ export default {
     :suggestions="iterations"
     :suggestions-loading="loading"
     :get-active-token-value="getActiveIteration"
+    v-bind="$attrs"
     @fetch-suggestions="fetchIterations"
     v-on="$listeners"
   >

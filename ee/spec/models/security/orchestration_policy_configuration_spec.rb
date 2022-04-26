@@ -470,16 +470,6 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
         expect(active_scan_result_policies).to match_array([])
       end
     end
-
-    context 'when scan_result_policy feature flag is disabled' do
-      before do
-        stub_feature_flags(scan_result_policy: false)
-      end
-
-      it 'returns empty array' do
-        expect(active_scan_result_policies).to match_array([])
-      end
-    end
   end
 
   describe '#scan_result_policies' do

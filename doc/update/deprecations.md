@@ -1262,7 +1262,7 @@ If you have explicitly excluded bundler-audit using DS_EXCLUDED_ANALYZERS you wi
 
 ## 14.5
 
-### Converting an instance (shared) runner to a project (specific) runner
+### Changing an instance (shared) runner to a project (specific) runner
 
 WARNING:
 This feature will be changed or removed in 15.0
@@ -1270,7 +1270,11 @@ as a [breaking change](https://docs.gitlab.com/ee/development/contributing/#brea
 Before updating GitLab, review the details carefully to determine if you need to make any
 changes to your code, settings, or workflow.
 
-In GitLab 15.0, we will remove the feature that enables you to convert an instance (shared) runner to a project (specific) runner. Users who need to add a runner to only a particular project can register a runner to the project directly.
+In GitLab 15.0, you can no longer change an instance (shared) runner to a project (specific) runner.
+
+Users often accidentally change instance runners to project runners, and they're unable to change them back. GitLab does not allow you to change a project runner to a shared runner because of the security implications. A runner meant for one project could be set to run jobs for an entire instance.
+
+Administrators who need to add runners for multiple projects can register a runner for one project, then go to the Admin view and choose additional projects.
 
 **Planned removal milestone: 15.0 (2022-05-22)**
 
@@ -1337,24 +1341,26 @@ When checking if a runner is `paused`, API users are advised to check the boolea
 ### SaaS certificate-based integration with Kubernetes
 
 WARNING:
-This feature will be changed or removed in 15.0
+This feature will be changed or removed in 15.6
 as a [breaking change](https://docs.gitlab.com/ee/development/contributing/#breaking-changes).
 Before updating GitLab, review the details carefully to determine if you need to make any
 changes to your code, settings, or workflow.
 
-The certificate-based integration with Kubernetes will be [deprecated and removed](https://about.gitlab.com/blog/2021/11/15/deprecating-the-cert-based-kubernetes-integration/). As a GitLab SaaS customer, you will no longer be able to integrate GitLab and your cluster using the certificate-based approach as of GitLab 15.0.
+The certificate-based integration with Kubernetes will be [deprecated and removed](https://about.gitlab.com/blog/2021/11/15/deprecating-the-cert-based-kubernetes-integration/). As a GitLab SaaS customer, on new namespaces, you will no longer be able to integrate GitLab and your cluster using the certificate-based approach as of GitLab 15.0. The integration for current users will be enabled per namespace. The integrations are expected to be switched off completely on GitLab SaaS around 2022 November 22.
 
 For a more robust, secure, forthcoming, and reliable integration with Kubernetes, we recommend you use the
 [agent for Kubernetes](https://docs.gitlab.com/ee/user/clusters/agent/) to connect Kubernetes clusters with GitLab. [How do I migrate?](https://docs.gitlab.com/ee/user/infrastructure/clusters/migrate_to_gitlab_agent.html)
 
 For updates and details about this deprecation, follow [this epic](https://gitlab.com/groups/gitlab-org/configure/-/epics/8).
 
-**Planned removal milestone: 15.0 (2022-05-22)**
+GitLab self-managed customers can still use the feature [with a feature flag](https://docs.gitlab.com/ee/update/deprecations.html#self-managed-certificate-based-integration-with-kubernetes).
+
+**Planned removal milestone: 15.6 (2022-11-22)**
 
 ### Self-managed certificate-based integration with Kubernetes
 
 WARNING:
-This feature will be changed or removed in 15.6
+This feature will be changed or removed in 16.0
 as a [breaking change](https://docs.gitlab.com/ee/development/contributing/#breaking-changes).
 Before updating GitLab, review the details carefully to determine if you need to make any
 changes to your code, settings, or workflow.
@@ -1363,14 +1369,14 @@ The certificate-based integration with Kubernetes [will be deprecated and remove
 
 As a self-managed customer, we are introducing a feature flag in GitLab 15.0 so you can keep your certificate-based integration enabled. However, the feature flag will be disabled by default, so this change is a **breaking change**.
 
-In GitLab 15.6 we will remove both the feature, and its related code. Until the final removal in 15.6, features built on this integration will continue to work, if you enable the feature flag. Until the feature is removed, GitLab will continue to fix security and critical issues as they arise.
+In GitLab 16.0 we will remove both the feature and its related code. Until the final removal in 16.0, features built on this integration will continue to work, if you enable the feature flag. Until the feature is removed, GitLab will continue to fix security and critical issues as they arise.
 
 For a more robust, secure, forthcoming, and reliable integration with Kubernetes, we recommend you use the
 [agent for Kubernetes](https://docs.gitlab.com/ee/user/clusters/agent/) to connect Kubernetes clusters with GitLab. [How do I migrate?](https://docs.gitlab.com/ee/user/infrastructure/clusters/migrate_to_gitlab_agent.html)
 
 For updates and details about this deprecation, follow [this epic](https://gitlab.com/groups/gitlab-org/configure/-/epics/8).
 
-**Planned removal milestone: 15.6 (2022-11-22)**
+**Planned removal milestone: 16.0 (2023-05-22)**
 
 ### Support for SLES 12 SP2
 

@@ -106,11 +106,24 @@ BEGIN
 END;
 $$;
 
-CREATE FUNCTION postgres_pg_stat_activity_autovacuum() RETURNS SETOF pg_stat_activity
+CREATE FUNCTION nullify_merge_request_metrics_build_data() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+IF (OLD.pipeline_id IS NOT NULL) AND (NEW.pipeline_id IS NULL) THEN
+  NEW.latest_build_started_at = NULL;
+  NEW.latest_build_finished_at = NULL;
+END IF;
+RETURN NEW;
+
+END
+$$;
+
+CREATE FUNCTION postgres_pg_stat_activity_autovacuum() RETURNS TABLE(query text, query_start timestamp with time zone)
     LANGUAGE sql SECURITY DEFINER
     SET search_path TO 'pg_catalog', 'pg_temp'
     AS $$
-  SELECT *
+  SELECT query, query_start
   FROM pg_stat_activity
   WHERE datname = current_database()
     AND state = 'active'
@@ -15526,6 +15539,7 @@ CREATE TABLE gitlab_subscriptions (
     seats_in_use integer DEFAULT 0 NOT NULL,
     seats_owed integer DEFAULT 0 NOT NULL,
     trial_extension_type smallint,
+    max_seats_used_changed_at timestamp with time zone,
     CONSTRAINT check_77fea3f0e7 CHECK ((namespace_id IS NOT NULL))
 );
 
@@ -15665,7 +15679,7 @@ CREATE TABLE group_deploy_keys (
     expires_at timestamp with time zone,
     key text NOT NULL,
     title text,
-    fingerprint text NOT NULL,
+    fingerprint text,
     fingerprint_sha256 bytea,
     CONSTRAINT check_cc0365908d CHECK ((char_length(title) <= 255)),
     CONSTRAINT check_e4526dcf91 CHECK ((char_length(fingerprint) <= 255)),
@@ -15888,10 +15902,13 @@ CREATE TABLE in_product_marketing_emails (
     id bigint NOT NULL,
     user_id bigint NOT NULL,
     cta_clicked_at timestamp with time zone,
-    track smallint NOT NULL,
-    series smallint NOT NULL,
+    track smallint,
+    series smallint,
     created_at timestamp with time zone NOT NULL,
-    updated_at timestamp with time zone NOT NULL
+    updated_at timestamp with time zone NOT NULL,
+    campaign text,
+    CONSTRAINT check_9d8b29f74f CHECK ((char_length(campaign) <= 255)),
+    CONSTRAINT in_product_marketing_emails_track_and_series_or_campaign CHECK ((((track IS NOT NULL) AND (series IS NOT NULL) AND (campaign IS NULL)) OR ((track IS NULL) AND (series IS NULL) AND (campaign IS NOT NULL))))
 );
 
 CREATE SEQUENCE in_product_marketing_emails_id_seq
@@ -18744,7 +18761,7 @@ CREATE VIEW postgres_autovacuum_activity AS
          SELECT postgres_pg_stat_activity_autovacuum.query,
             postgres_pg_stat_activity_autovacuum.query_start,
             regexp_matches(postgres_pg_stat_activity_autovacuum.query, '^autovacuum: VACUUM (w+).(w+)'::text) AS matches
-           FROM postgres_pg_stat_activity_autovacuum() postgres_pg_stat_activity_autovacuum(datid, datname, pid, usesysid, usename, application_name, client_addr, client_hostname, client_port, backend_start, xact_start, query_start, state_change, wait_event_type, wait_event, state, backend_xid, backend_xmin, query, backend_type)
+           FROM postgres_pg_stat_activity_autovacuum() postgres_pg_stat_activity_autovacuum(query, query_start)
           WHERE (postgres_pg_stat_activity_autovacuum.query ~* '^autovacuum: VACUUM w+.w+'::text)
         )
  SELECT ((processes.matches[1] || '.'::text) || processes.matches[2]) AS table_identifier,
@@ -27910,6 +27927,8 @@ CREATE INDEX index_imported_projects_on_import_type_creator_id_created_at ON pro
 
 CREATE INDEX index_imported_projects_on_import_type_id ON projects USING btree (import_type, id) WHERE (import_type IS NOT NULL);
 
+CREATE UNIQUE INDEX index_in_product_marketing_emails_on_user_campaign ON in_product_marketing_emails USING btree (user_id, campaign);
+
 CREATE INDEX index_in_product_marketing_emails_on_user_id ON in_product_marketing_emails USING btree (user_id);
 
 CREATE UNIQUE INDEX index_in_product_marketing_emails_on_user_track_series ON in_product_marketing_emails USING btree (user_id, track, series);
@@ -29702,10 +29721,6 @@ CREATE UNIQUE INDEX taggings_idx ON taggings USING btree (tag_id, taggable_id, t
 
 CREATE UNIQUE INDEX term_agreements_unique_index ON term_agreements USING btree (user_id, term_id);
 
-CREATE INDEX tmp_gitlab_subscriptions_max_seats_used_migration ON gitlab_subscriptions USING btree (id) WHERE ((start_date >= '2021-08-02'::date) AND (start_date <= '2021-11-20'::date) AND (max_seats_used <> 0) AND (max_seats_used > seats_in_use) AND (max_seats_used > seats));
-
-CREATE INDEX tmp_gitlab_subscriptions_max_seats_used_migration_2 ON gitlab_subscriptions USING btree (id) WHERE ((start_date < '2021-08-02'::date) AND (max_seats_used <> 0) AND (max_seats_used > seats_in_use) AND (max_seats_used > seats));
-
 CREATE INDEX tmp_idx_container_repos_on_non_migrated ON container_repositories USING btree (project_id, id) WHERE ((migration_state <> 'import_done'::text) AND (created_at < '2022-01-23 00:00:00'::timestamp without time zone));
 
 CREATE INDEX tmp_index_ci_job_artifacts_on_id_where_trace_and_expire_at ON ci_job_artifacts USING btree (id) WHERE ((file_type = 3) AND (expire_at = ANY (ARRAY['2021-04-22 00:00:00+00'::timestamp with time zone, '2021-05-22 00:00:00+00'::timestamp with time zone, '2021-06-22 00:00:00+00'::timestamp with time zone, '2022-01-22 00:00:00+00'::timestamp with time zone, '2022-02-22 00:00:00+00'::timestamp with time zone, '2022-03-22 00:00:00+00'::timestamp with time zone, '2022-04-22 00:00:00+00'::timestamp with time zone])));
@@ -29723,8 +29738,6 @@ CREATE INDEX tmp_index_for_project_namespace_id_migration_on_routes ON routes US
 CREATE INDEX tmp_index_issues_on_issue_type_and_id ON issues USING btree (issue_type, id);
 
 CREATE INDEX tmp_index_members_on_state ON members USING btree (state) WHERE (state = 2);
-
-CREATE INDEX tmp_index_merge_requests_draft_and_status_leaky_regex ON merge_requests USING btree (id) WHERE ((draft = true) AND (state_id = 1) AND ((title)::text ~* '^\[draft\]|\(draft\)|draft:|draft|\[WIP\]|WIP:|WIP'::text) AND ((title)::text !~* '^(\[draft\]|\(draft\)|draft:|draft|\[WIP\]|WIP:|WIP)'::text));
 
 CREATE INDEX tmp_index_namespaces_empty_traversal_ids_with_child_namespaces ON namespaces USING btree (id) WHERE ((parent_id IS NOT NULL) AND (traversal_ids = '{}'::integer[]));
 
@@ -31059,6 +31072,8 @@ CREATE TRIGGER ci_runners_loose_fk_trigger AFTER DELETE ON ci_runners REFERENCIN
 CREATE TRIGGER merge_requests_loose_fk_trigger AFTER DELETE ON merge_requests REFERENCING OLD TABLE AS old_table FOR EACH STATEMENT EXECUTE FUNCTION insert_into_loose_foreign_keys_deleted_records();
 
 CREATE TRIGGER namespaces_loose_fk_trigger AFTER DELETE ON namespaces REFERENCING OLD TABLE AS old_table FOR EACH STATEMENT EXECUTE FUNCTION insert_into_loose_foreign_keys_deleted_records();
+
+CREATE TRIGGER nullify_merge_request_metrics_build_data_on_update BEFORE UPDATE ON merge_request_metrics FOR EACH ROW EXECUTE FUNCTION nullify_merge_request_metrics_build_data();
 
 CREATE TRIGGER projects_loose_fk_trigger AFTER DELETE ON projects REFERENCING OLD TABLE AS old_table FOR EACH STATEMENT EXECUTE FUNCTION insert_into_loose_foreign_keys_deleted_records();
 

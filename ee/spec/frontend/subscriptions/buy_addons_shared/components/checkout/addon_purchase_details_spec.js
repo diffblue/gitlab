@@ -1,23 +1,24 @@
-import { GlAlert } from '@gitlab/ui';
+import { GlAlert, GlFormInput } from '@gitlab/ui';
 import Vue from 'vue';
 import { merge } from 'lodash';
 import VueApollo from 'vue-apollo';
 import { stateData as initialStateData } from 'ee_jest/subscriptions/mock_data';
 import AddonPurchaseDetails from 'ee/subscriptions/buy_addons_shared/components/checkout/addon_purchase_details.vue';
-import subscriptionsResolvers from 'ee/subscriptions/buy_addons_shared/graphql/resolvers';
 import stateQuery from 'ee/subscriptions/graphql/queries/state.query.graphql';
 import Step from 'ee/vue_shared/purchase_flow/components/step.vue';
-import purchaseFlowResolvers from 'ee/vue_shared/purchase_flow/graphql/resolvers';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
+import waitForPromises from 'helpers/wait_for_promises';
+import { GENERAL_ERROR_MESSAGE } from 'ee/vue_shared/purchase_flow/constants';
 
 Vue.use(VueApollo);
 
 describe('AddonPurchaseDetails', () => {
-  const resolvers = { ...purchaseFlowResolvers, ...subscriptionsResolvers };
   let wrapper;
+  let updateState = jest.fn();
 
   const createMockApolloProvider = (stateData = {}) => {
+    const resolvers = { Mutation: { updateState } };
     const mockApollo = createMockApollo([], resolvers);
     const data = merge({}, initialStateData, stateData);
     mockApollo.clients.defaultClient.cache.writeQuery({
@@ -47,6 +48,7 @@ describe('AddonPurchaseDetails', () => {
 
   const findQuantity = () => wrapper.findComponent({ ref: 'quantity' });
   const findGlAlert = () => wrapper.findComponent(GlAlert);
+  const findGlFormInput = () => wrapper.findComponent(GlFormInput);
   const findProductLabel = () => wrapper.findByTestId('product-label');
   const isStepValid = () => wrapper.findComponent(Step).props('isValid');
 
@@ -100,6 +102,23 @@ describe('AddonPurchaseDetails', () => {
       createComponent({}, { showAlert: true, alertText: 'Alert text about your purchase' });
       expect(findGlAlert().isVisible()).toBe(true);
       expect(findGlAlert().text()).toMatchInterpolatedText('Alert text about your purchase');
+    });
+  });
+
+  describe('when the mutation fails', () => {
+    beforeEach(() => {
+      jest.spyOn(console, 'error').mockImplementation(() => {});
+      updateState = jest.fn().mockRejectedValue(new Error('Error om input change'));
+      createComponent();
+    });
+
+    it('should emit `alertError` event', async () => {
+      findGlFormInput().element.value = 2;
+      findGlFormInput().trigger('input');
+
+      await waitForPromises();
+
+      expect(wrapper.emitted('alertError')).toEqual([[GENERAL_ERROR_MESSAGE]]);
     });
   });
 });

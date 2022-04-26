@@ -24,15 +24,4 @@ RSpec.describe Resolvers::SecurityOrchestration::ScanResultPolicyResolver do
   subject(:resolve_scan_policies) { resolve(described_class, obj: project, ctx: { current_user: user }) }
 
   it_behaves_like 'as an orchestration policy'
-
-  context 'with feature flag scan_result_policy is disabled' do
-    before do
-      stub_licensed_features(security_orchestration_policies: true)
-      stub_feature_flags(scan_result_policy: false)
-    end
-
-    it 'returns no scan result policies' do
-      expect(resolve_scan_policies).to be_empty
-    end
-  end
 end

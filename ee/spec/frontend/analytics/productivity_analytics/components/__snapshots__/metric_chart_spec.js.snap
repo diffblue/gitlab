@@ -10,6 +10,7 @@ exports[`MetricChart component template when isLoading is false and chart data i
     primarybuttontext=""
     secondarybuttonlink=""
     secondarybuttontext=""
+    showicon="true"
     title=""
     variant="info"
   >

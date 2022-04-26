@@ -14,10 +14,7 @@ import {
   stateData as mockStateData,
 } from 'ee_jest/subscriptions/mock_data';
 import createMockApollo from 'helpers/mock_apollo_helper';
-import createFlash from '~/flash';
-import flushPromises from 'helpers/flush_promises';
-
-jest.mock('~/flash');
+import waitForPromises from 'helpers/wait_for_promises';
 
 Vue.use(VueApollo);
 
@@ -93,18 +90,16 @@ describe('Checkout', () => {
   });
 
   describe('when the mutation fails', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
+      jest.spyOn(console, 'error').mockImplementation(() => {});
       updateState = jest.fn().mockRejectedValue(new Error('Yikes!'));
       createComponent();
-      return flushPromises();
+
+      await waitForPromises();
     });
 
-    it('displays a flash message', () => {
-      expect(createFlash).toHaveBeenCalledWith({
-        message: GENERAL_ERROR_MESSAGE,
-        error: new Error('Yikes!'),
-        captureError: true,
-      });
+    it('should emit `alertError` event', () => {
+      expect(wrapper.emitted('alertError')).toEqual([[GENERAL_ERROR_MESSAGE]]);
     });
   });
 });

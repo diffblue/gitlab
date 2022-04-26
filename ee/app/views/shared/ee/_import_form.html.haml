@@ -3,8 +3,7 @@
 
 .form-group
   = f.gitlab_ui_checkbox_component :mirror,
-      _('Mirror repository'),
-      checkbox_options: { disabled: true }
+      _('Mirror repository')
   .form-text.text-muted
     = _("Automatically update this project's branches and tags from the upstream repository every hour.")
   - if Gitlab::CurrentSettings.should_check_namespace_plan?

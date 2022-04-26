@@ -51,6 +51,7 @@ describe('EpicToken', () => {
         config,
         value,
         active,
+        cursorPosition: 'start',
       },
       provide: {
         portalName: 'fake target',

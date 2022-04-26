@@ -462,7 +462,7 @@ RSpec.describe GitlabSubscription, :saas do
     end
 
     it 'gitlab_subscription columns are contained in gitlab_subscription_history columns' do
-      diff_attrs = %w(updated_at seats_in_use seats_owed)
+      diff_attrs = %w(updated_at seats_in_use seats_owed max_seats_used_changed_at)
       expect(described_class.attribute_names - GitlabSubscriptionHistory.attribute_names).to eq(diff_attrs)
     end
 
@@ -473,7 +473,15 @@ RSpec.describe GitlabSubscription, :saas do
 
     context 'before_update', :freeze_time do
       let(:gitlab_subscription) do
-        create(:gitlab_subscription, seats_in_use: 20, max_seats_used: 42, seats: 13, seats_owed: 29, start_date: Date.today - 1.year)
+        create(
+          :gitlab_subscription,
+          seats_in_use: 20,
+          max_seats_used: 42,
+          max_seats_used_changed_at: 1.month.ago,
+          seats: 13,
+          seats_owed: 29,
+          start_date: Date.today - 1.year
+        )
       end
 
       it 'logs previous state to gitlab subscription history' do
@@ -488,6 +496,21 @@ RSpec.describe GitlabSubscription, :saas do
         )
       end
 
+      context 'when max_seats_used has changed' do
+        it 'updates the max_seats_used_changed_at' do
+          expect { gitlab_subscription.update!(max_seats_used: 52) }
+            .to change(gitlab_subscription, :max_seats_used_changed_at)
+            .to(be_like_time(Time.current))
+        end
+      end
+
+      context 'when max_seats_used has not changed' do
+        it 'does not change the max_seats_used_changed_at' do
+          expect { gitlab_subscription.update!(max_seats_used: 42, seats_in_use: 25) }
+            .to not_change(gitlab_subscription, :max_seats_used_changed_at)
+        end
+      end
+
       context 'when start and end dates change' do
         context 'when start_date is after the old end_date' do
           it 'resets seats attributes' do
@@ -500,6 +523,7 @@ RSpec.describe GitlabSubscription, :saas do
               .and change(gitlab_subscription, :end_date).to(new_end)
               .and change(gitlab_subscription, :max_seats_used).from(42).to(20)
               .and change(gitlab_subscription, :seats_owed).from(29).to(7)
+              .and change(gitlab_subscription, :max_seats_used_changed_at).to(nil)
               .and not_change(gitlab_subscription, :seats_in_use)
           end
         end
@@ -516,6 +540,7 @@ RSpec.describe GitlabSubscription, :saas do
             end.to change(gitlab_subscription, :start_date).to(new_start)
               .and change(gitlab_subscription, :end_date).to(new_end)
               .and change(gitlab_subscription, :max_seats_used).from(42).to(20)
+              .and change(gitlab_subscription, :max_seats_used_changed_at).to(nil)
               .and change(gitlab_subscription, :seats_owed).from(29).to(7)
               .and not_change(gitlab_subscription, :seats_in_use)
           end
@@ -531,6 +556,7 @@ RSpec.describe GitlabSubscription, :saas do
             end.to change(gitlab_subscription, :start_date).to(new_start)
               .and change(gitlab_subscription, :end_date).to(new_end)
               .and not_change(gitlab_subscription, :max_seats_used)
+              .and not_change(gitlab_subscription, :max_seats_used_changed_at)
               .and not_change(gitlab_subscription, :seats_owed)
           end
         end
@@ -542,6 +568,7 @@ RSpec.describe GitlabSubscription, :saas do
             gitlab_subscription.update!(start_date: Date.today)
           end.to change(gitlab_subscription, :start_date).to(Date.today)
             .and not_change(gitlab_subscription, :max_seats_used)
+            .and not_change(gitlab_subscription, :max_seats_used_changed_at)
             .and not_change(gitlab_subscription, :seats_owed)
         end
       end
@@ -551,6 +578,7 @@ RSpec.describe GitlabSubscription, :saas do
           expect do
             gitlab_subscription.update!(seats_in_use: 99)
           end.to not_change(gitlab_subscription, :max_seats_used)
+            .and not_change(gitlab_subscription, :max_seats_used_changed_at)
             .and not_change(gitlab_subscription, :seats_owed)
         end
       end

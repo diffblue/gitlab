@@ -28,6 +28,7 @@ function createComponent(options = {}) {
     propsData: {
       config,
       value,
+      cursorPosition: 'start',
     },
     stubs: {
       GlFilteredSearchToken: stubComponent(GlFilteredSearchToken, {

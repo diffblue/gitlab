@@ -36,6 +36,7 @@ describe('MemberToken', () => {
         value,
         config,
         active: false,
+        cursorPosition: 'start',
       },
       stubs: { AuditFilterToken },
     });

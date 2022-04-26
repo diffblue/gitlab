@@ -69,6 +69,8 @@ module Types
     mount_mutation Mutations::MergeRequests::SetDraft, calls_gitaly: true
     mount_mutation Mutations::MergeRequests::SetAssignees
     mount_mutation Mutations::MergeRequests::ReviewerRereview
+    mount_mutation Mutations::MergeRequests::RequestAttention, feature_flag: :mr_attention_requests
+    mount_mutation Mutations::MergeRequests::RemoveAttentionRequest, feature_flag: :mr_attention_requests
     mount_mutation Mutations::MergeRequests::ToggleAttentionRequested, feature_flag: :mr_attention_requests
     mount_mutation Mutations::Metrics::Dashboard::Annotations::Create
     mount_mutation Mutations::Metrics::Dashboard::Annotations::Delete
@@ -88,6 +90,7 @@ module Types
     mount_mutation Mutations::Terraform::State::Delete
     mount_mutation Mutations::Terraform::State::Lock
     mount_mutation Mutations::Terraform::State::Unlock
+    mount_mutation Mutations::Timelogs::Delete
     mount_mutation Mutations::Todos::Create
     mount_mutation Mutations::Todos::MarkDone
     mount_mutation Mutations::Todos::Restore

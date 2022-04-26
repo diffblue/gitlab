@@ -7,8 +7,10 @@ RSpec.describe UpdateMaxSeatsUsedForGitlabComSubscriptionsWorker, :saas do
     subject { described_class.new }
 
     let_it_be(:bronze_plan) { create(:bronze_plan) }
-    let_it_be(:gitlab_subscription, refind: true) { create(:gitlab_subscription, seats: 1) }
-    let_it_be(:gitlab_subscription_2, refind: true) { create(:gitlab_subscription, seats: 11) }
+    let_it_be(:gitlab_subscription, refind: true) { create(:gitlab_subscription, seats: 2) }
+    let_it_be(:gitlab_subscription_2, refind: true) do
+      create(:gitlab_subscription, seats: 11, max_seats_used: 11, max_seats_used_changed_at: 1.month.ago.to_s(:db))
+    end
 
     let(:db_is_read_only) { false }
     let(:subscription_attrs) { nil }
@@ -31,22 +33,26 @@ RSpec.describe UpdateMaxSeatsUsedForGitlabComSubscriptionsWorker, :saas do
         end.to not_change(gitlab_subscription, :max_seats_used)
           .and not_change(gitlab_subscription, :seats_in_use)
           .and not_change(gitlab_subscription, :seats_owed)
+          .and not_change(gitlab_subscription, :max_seats_used_changed_at)
           .and not_change(gitlab_subscription_2, :max_seats_used)
           .and not_change(gitlab_subscription_2, :seats_in_use)
           .and not_change(gitlab_subscription_2, :seats_owed)
+          .and not_change(gitlab_subscription_2, :max_seats_used_changed_at)
       end
     end
 
     shared_examples 'updates only paid plans' do
-      it "persists seat attributes after refresh_seat_attributes! for only paid plans" do
+      it "persists seat attributes after refresh_seat_attributes! for only paid plans", :freeze_time do
         expect do
           perform_and_reload
         end.to not_change(gitlab_subscription, :max_seats_used)
           .and not_change(gitlab_subscription, :seats_in_use)
           .and not_change(gitlab_subscription, :seats_owed)
-          .and change(gitlab_subscription_2, :max_seats_used).from(0).to(14)
+          .and not_change(gitlab_subscription, :max_seats_used_changed_at)
+          .and change(gitlab_subscription_2, :max_seats_used).from(11).to(14)
           .and change(gitlab_subscription_2, :seats_in_use).from(0).to(13)
           .and change(gitlab_subscription_2, :seats_owed).from(0).to(12)
+          .and change(gitlab_subscription_2, :max_seats_used_changed_at).to(be_like_time(Time.current))
       end
     end
 
@@ -87,16 +93,42 @@ RSpec.describe UpdateMaxSeatsUsedForGitlabComSubscriptionsWorker, :saas do
           gitlab_subscription_2.update!(hosted_plan: bronze_plan)
         end
 
-        it 'persists seat attributes after refresh_seat_attributes' do
+        it 'persists seat attributes after refresh_seat_attributes', :freeze_time do
           expect do
             perform_and_reload
-          end.to change(gitlab_subscription, :max_seats_used).from(0).to(4)
-            .and change(gitlab_subscription, :seats_in_use).from(0).to(3)
-            .and change(gitlab_subscription, :seats_owed).from(0).to(2)
-            .and change(gitlab_subscription_2, :max_seats_used).from(0).to(14)
+          end.to change(gitlab_subscription, :max_seats_used).from(0).to(5)
+            .and change(gitlab_subscription, :seats_in_use).from(0).to(4)
+            .and change(gitlab_subscription, :seats_owed).from(0).to(3)
+            .and change(gitlab_subscription, :max_seats_used_changed_at).from(nil).to(be_like_time(Time.current))
+            .and change(gitlab_subscription_2, :max_seats_used).from(11).to(14)
             .and change(gitlab_subscription_2, :seats_in_use).from(0).to(13)
             .and change(gitlab_subscription_2, :seats_owed).from(0).to(12)
+            .and change(gitlab_subscription_2, :max_seats_used_changed_at).to(be_like_time(Time.current))
         end
+      end
+    end
+
+    context 'when the max_seat_used does not increase' do
+      before do
+        allow_next_found_instance_of(GitlabSubscription) do |subscription|
+          allow(subscription).to receive(:refresh_seat_attributes!) do
+            subscription.max_seats_used = subscription.max_seats_used
+            subscription.seats_in_use = subscription.seats - 1
+            subscription.seats_owed = subscription.seats_owed
+          end
+        end
+      end
+
+      it 'does not change the max_seats_used or max_seats_used_changed_at', :freeze_time do
+        expect { perform_and_reload }
+          .to not_change(gitlab_subscription, :max_seats_used)
+          .and not_change(gitlab_subscription, :seats_owed)
+          .and not_change(gitlab_subscription, :max_seats_used_changed_at)
+          .and change(gitlab_subscription, :seats_in_use).from(0).to(1)
+          .and not_change(gitlab_subscription_2, :max_seats_used)
+          .and not_change(gitlab_subscription_2, :max_seats_used_changed_at)
+          .and not_change(gitlab_subscription_2, :seats_owed)
+          .and change(gitlab_subscription_2, :seats_in_use).from(0).to(10)
       end
     end
 
@@ -124,15 +156,17 @@ RSpec.describe UpdateMaxSeatsUsedForGitlabComSubscriptionsWorker, :saas do
         perform_and_reload
       end
 
-      it 'successfully updates remaining subscriptions' do
+      it 'successfully updates remaining subscriptions', :freeze_time do
         expect do
           perform_and_reload
         end.to not_change(gitlab_subscription, :max_seats_used).from(0)
           .and not_change(gitlab_subscription, :seats_in_use).from(0)
           .and not_change(gitlab_subscription, :seats_owed).from(0)
-          .and change(gitlab_subscription_2, :max_seats_used).from(0).to(14)
+          .and not_change(gitlab_subscription, :max_seats_used_changed_at)
+          .and change(gitlab_subscription_2, :max_seats_used).from(11).to(14)
           .and change(gitlab_subscription_2, :seats_in_use).from(0).to(13)
           .and change(gitlab_subscription_2, :seats_owed).from(0).to(12)
+          .and change(gitlab_subscription_2, :max_seats_used_changed_at).to(be_like_time(Time.current))
       end
     end
   end

@@ -40,7 +40,7 @@ export default {
         ><gl-link
           :href="
             helpPagePath('user/admin_area/settings/account_and_limit_settings', {
-              anchor: 'limit-the-lifetime-of-personal-access-tokens',
+              anchor: 'limit-the-lifetime-of-access-tokens',
             })
           "
           target="_blank"

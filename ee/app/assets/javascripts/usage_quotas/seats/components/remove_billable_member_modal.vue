@@ -98,7 +98,7 @@ export default {
     </p>
 
     <label id="input-label">
-      <gl-sprintf :message="this.$options.i18n.inputLabel">
+      <gl-sprintf :message="$options.i18n.inputLabel">
         <template #username>
           <gl-badge variant="danger">{{ billableMemberToRemove.username }}</gl-badge>
         </template>

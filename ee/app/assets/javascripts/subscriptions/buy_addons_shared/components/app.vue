@@ -125,13 +125,14 @@ export default {
       <gl-alert v-if="alertMessage" class="checkout-alert" variant="danger" :dismissible="false">
         {{ alertMessage }}
       </gl-alert>
-      <checkout :plan="plan">
+      <checkout :plan="plan" @alertError="alertError">
         <template #purchase-details>
           <addon-purchase-details
             :product-label="plan.label"
             :quantity="quantity"
             :show-alert="true"
             :alert-text="i18n.alertText"
+            @alertError="alertError"
           >
             <template #formula>
               {{ formulaText }}

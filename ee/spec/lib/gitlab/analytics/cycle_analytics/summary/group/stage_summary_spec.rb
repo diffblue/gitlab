@@ -234,8 +234,8 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::Group::StageSummary d
         }).data.third
       end
 
-      it 'includes the unit: `per day`' do
-        expect(subject[:unit]).to eq(_('per day'))
+      it 'includes the unit: `/day`' do
+        expect(subject[:unit]).to eq(_('/day'))
       end
 
       before do

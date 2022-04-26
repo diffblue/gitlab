@@ -49,5 +49,13 @@ RSpec.describe Ci::CopyCrossDatabaseAssociationsService do
         expect(new_build).not_to be_failed
       end
     end
+
+    context 'when the job is not a build' do
+      let_it_be(:old_build) { create(:ci_bridge, pipeline: pipeline) }
+
+      it 'is successful' do
+        expect(execute).to be_success
+      end
+    end
   end
 end

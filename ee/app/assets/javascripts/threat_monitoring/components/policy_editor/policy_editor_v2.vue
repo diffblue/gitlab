@@ -1,8 +1,6 @@
 <script>
 import { GlAlert, GlFormGroup, GlFormSelect } from '@gitlab/ui';
 import { POLICY_TYPE_COMPONENT_OPTIONS } from '../constants';
-import EnvironmentPicker from '../environment_picker.vue';
-import NetworkPolicyEditor from './network_policy/network_policy_editor.vue';
 import ScanExecutionPolicyEditor from './scan_execution_policy/scan_execution_policy_editor.vue';
 import ScanResultPolicyEditor from './scan_result_policy/scan_result_policy_editor.vue';
 
@@ -11,8 +9,6 @@ export default {
     GlAlert,
     GlFormGroup,
     GlFormSelect,
-    EnvironmentPicker,
-    NetworkPolicyEditor,
     ScanExecutionPolicyEditor,
     ScanResultPolicyEditor,
   },
@@ -53,12 +49,14 @@ export default {
       );
     },
     policyTypes() {
-      return Object.values(POLICY_TYPE_COMPONENT_OPTIONS);
+      return Object.values(POLICY_TYPE_COMPONENT_OPTIONS).filter(
+        (type) => type.value !== POLICY_TYPE_COMPONENT_OPTIONS.container?.value,
+      );
     },
     policyOptions() {
       return (
         this.policyTypes.find(({ value }) => value === this.selectedPolicyType) ||
-        POLICY_TYPE_COMPONENT_OPTIONS.container
+        POLICY_TYPE_COMPONENT_OPTIONS.scanExecution
       );
     },
     shouldAllowPolicyTypeSelection() {
@@ -82,9 +80,6 @@ export default {
         </li>
       </ul>
     </gl-alert>
-    <div class="gl-display-flex">
-      <environment-picker v-if="policyOptions.shouldShowEnvironmentPicker" />
-    </div>
     <component
       :is="policyOptions.component"
       :existing-policy="existingPolicy"

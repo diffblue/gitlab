@@ -9,7 +9,6 @@ module Projects
       before_action :validate_policy_configuration, only: :edit
 
       before_action do
-        push_frontend_feature_flag(:scan_result_policy, project, default_enabled: :yaml)
         push_frontend_feature_flag(:container_security_policy_selection, project, default_enabled: :yaml)
       end
 
@@ -94,7 +93,7 @@ module Projects
       end
 
       def approvers
-        return unless Feature.enabled?(:scan_result_policy, project, default_enabled: :yaml) && @policy_type == :scan_result_policy
+        return unless @policy_type == :scan_result_policy
 
         result = ::Security::SecurityOrchestrationPolicies::FetchPolicyApproversService.new(
           policy: @policy,

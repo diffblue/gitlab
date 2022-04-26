@@ -1,7 +1,6 @@
 <script>
 import { GlFormGroup, GlDropdown, GlDropdownItem } from '@gitlab/ui';
 import { __ } from '~/locale';
-import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { POLICY_TYPE_OPTIONS } from './constants';
 
 export default {
@@ -11,7 +10,6 @@ export default {
     GlDropdown,
     GlDropdownItem,
   },
-  mixins: [glFeatureFlagMixin()],
   props: {
     value: {
       type: String,
@@ -26,15 +24,8 @@ export default {
     selectedValueText() {
       return Object.values(POLICY_TYPE_OPTIONS).find(({ value }) => value === this.value).text;
     },
-    isScanResultPolicyEnabled() {
-      return this.glFeatures.scanResultPolicy;
-    },
     policyTypeOptions() {
-      const policyType = POLICY_TYPE_OPTIONS;
-      if (!this.isScanResultPolicyEnabled) {
-        delete policyType.POLICY_TYPE_SCAN_RESULT;
-      }
-      return policyType;
+      return POLICY_TYPE_OPTIONS;
     },
   },
   methods: {

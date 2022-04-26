@@ -14,6 +14,7 @@ module EE
         if ::Gitlab.com?
           gon.subscriptions_url                = ::Gitlab::SubscriptionPortal::SUBSCRIPTIONS_URL
           gon.payment_form_url                 = ::Gitlab::SubscriptionPortal::PAYMENT_FORM_URL
+          gon.payment_validation_form_id       = ::Gitlab::SubscriptionPortal::PAYMENT_VALIDATION_FORM_ID
           gon.registration_validation_form_url = ::Gitlab::SubscriptionPortal::REGISTRATION_VALIDATION_FORM_URL
         end
       end

@@ -3459,6 +3459,52 @@ Input type: `MergeRequestCreateInput`
 | <a id="mutationmergerequestcreateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 | <a id="mutationmergerequestcreatemergerequest"></a>`mergeRequest` | [`MergeRequest`](#mergerequest) | Merge request after mutation. |
 
+### `Mutation.mergeRequestRemoveAttentionRequest`
+
+Available only when feature flag `mr_attention_requests` is enabled. This flag is disabled by default, because the feature is experimental and is subject to change without notice.
+
+Input type: `MergeRequestRemoveAttentionRequestInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationmergerequestremoveattentionrequestclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationmergerequestremoveattentionrequestiid"></a>`iid` | [`String!`](#string) | IID of the merge request to mutate. |
+| <a id="mutationmergerequestremoveattentionrequestprojectpath"></a>`projectPath` | [`ID!`](#id) | Project the merge request to mutate is in. |
+| <a id="mutationmergerequestremoveattentionrequestuserid"></a>`userId` | [`UserID!`](#userid) | User ID of the user for attention request removal. |
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationmergerequestremoveattentionrequestclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationmergerequestremoveattentionrequesterrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
+| <a id="mutationmergerequestremoveattentionrequestmergerequest"></a>`mergeRequest` | [`MergeRequest`](#mergerequest) | Merge request after mutation. |
+
+### `Mutation.mergeRequestRequestAttention`
+
+Available only when feature flag `mr_attention_requests` is enabled. This flag is disabled by default, because the feature is experimental and is subject to change without notice.
+
+Input type: `MergeRequestRequestAttentionInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationmergerequestrequestattentionclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationmergerequestrequestattentioniid"></a>`iid` | [`String!`](#string) | IID of the merge request to mutate. |
+| <a id="mutationmergerequestrequestattentionprojectpath"></a>`projectPath` | [`ID!`](#id) | Project the merge request to mutate is in. |
+| <a id="mutationmergerequestrequestattentionuserid"></a>`userId` | [`UserID!`](#userid) | User ID of the user to request attention. |
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationmergerequestrequestattentionclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationmergerequestrequestattentionerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
+| <a id="mutationmergerequestrequestattentionmergerequest"></a>`mergeRequest` | [`MergeRequest`](#mergerequest) | Merge request after mutation. |
+
 ### `Mutation.mergeRequestReviewerRereview`
 
 Input type: `MergeRequestReviewerRereviewInput`
@@ -4542,6 +4588,25 @@ Input type: `TimelineEventUpdateInput`
 | <a id="mutationtimelineeventupdateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationtimelineeventupdateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 | <a id="mutationtimelineeventupdatetimelineevent"></a>`timelineEvent` | [`TimelineEventType`](#timelineeventtype) | Timeline event. |
+
+### `Mutation.timelogDelete`
+
+Input type: `TimelogDeleteInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationtimelogdeleteclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationtimelogdeleteid"></a>`id` | [`TimelogID!`](#timelogid) | Global ID of the timelog. |
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationtimelogdeleteclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationtimelogdeleteerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
+| <a id="mutationtimelogdeletetimelog"></a>`timelog` | [`Timelog`](#timelog) | Deleted timelog. |
 
 ### `Mutation.todoCreate`
 
@@ -16591,6 +16656,7 @@ Describes an incident management timeline event.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
+| <a id="timelogid"></a>`id` | [`ID!`](#id) | Internal ID of the timelog. |
 | <a id="timelogissue"></a>`issue` | [`Issue`](#issue) | Issue that logged time was added to. |
 | <a id="timelogmergerequest"></a>`mergeRequest` | [`MergeRequest`](#mergerequest) | Merge request that logged time was added to. |
 | <a id="timelognote"></a>`note` | [`Note`](#note) | Note where the quick action was executed to add the logged time. |
@@ -17841,10 +17907,11 @@ Values for sorting runners.
 
 | Value | Description |
 | ----- | ----------- |
-| <a id="cirunnerupgradestatustypeavailable"></a>`AVAILABLE` | An update is available for the runner. |
-| <a id="cirunnerupgradestatustypeinvalid"></a>`INVALID` | The runner version is invalid. |
-| <a id="cirunnerupgradestatustypenot_available"></a>`NOT_AVAILABLE` | An update is not available for the runner. |
-| <a id="cirunnerupgradestatustyperecommended"></a>`RECOMMENDED` | An update is available and recommended for the runner. |
+| <a id="cirunnerupgradestatustypeavailable"></a>`AVAILABLE` | Upgrade is available for the runner. |
+| <a id="cirunnerupgradestatustypeinvalid"></a>`INVALID` | Runner version is not valid. |
+| <a id="cirunnerupgradestatustypenot_available"></a>`NOT_AVAILABLE` | Upgrade is not available for the runner. |
+| <a id="cirunnerupgradestatustyperecommended"></a>`RECOMMENDED` | Upgrade is available and recommended for the runner. |
+| <a id="cirunnerupgradestatustypeunknown"></a>`UNKNOWN` | Upgrade status is unknown. |
 
 ### `CodeQualityDegradationSeverity`
 
@@ -19823,6 +19890,12 @@ Time represented in ISO 8601.
 For example: "2021-03-09T14:58:50+00:00".
 
 See `https://www.iso.org/iso-8601-date-and-time-format.html`.
+
+### `TimelogID`
+
+A `TimelogID` is a global ID. It is encoded as a string.
+
+An example `TimelogID` is: `"gid://gitlab/Timelog/1"`.
 
 ### `TodoID`
 

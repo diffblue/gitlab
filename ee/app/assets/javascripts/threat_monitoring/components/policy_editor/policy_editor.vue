@@ -1,10 +1,7 @@
 <script>
 import { GlAlert, GlFormGroup, GlFormSelect } from '@gitlab/ui';
 import { s__ } from '~/locale';
-import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { POLICY_TYPE_COMPONENT_OPTIONS } from '../constants';
-import EnvironmentPicker from '../environment_picker.vue';
-import NetworkPolicyEditor from './network_policy/network_policy_editor.vue';
 import ScanExecutionPolicyEditor from './scan_execution_policy/scan_execution_policy_editor.vue';
 import ScanResultPolicyEditor from './scan_result_policy/scan_result_policy_editor.vue';
 
@@ -13,12 +10,9 @@ export default {
     GlAlert,
     GlFormGroup,
     GlFormSelect,
-    EnvironmentPicker,
-    NetworkPolicyEditor,
     ScanExecutionPolicyEditor,
     ScanResultPolicyEditor,
   },
-  mixins: [glFeatureFlagMixin()],
   inject: ['policyType'],
   props: {
     assignedPolicyProject: {
@@ -35,7 +29,7 @@ export default {
     return {
       error: '',
       errorMessages: [],
-      newPolicyType: POLICY_TYPE_COMPONENT_OPTIONS.container.value,
+      newPolicyType: POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.value,
     };
   },
   computed: {
@@ -55,11 +49,9 @@ export default {
       );
     },
     policyTypes() {
-      const types = Object.values(POLICY_TYPE_COMPONENT_OPTIONS);
-
-      return this.isScanResultPolicyEnabled
-        ? types
-        : types.filter((type) => type.value !== POLICY_TYPE_COMPONENT_OPTIONS.scanResult?.value);
+      return Object.values(POLICY_TYPE_COMPONENT_OPTIONS).filter(
+        (type) => type.value !== POLICY_TYPE_COMPONENT_OPTIONS.container?.value,
+      );
     },
     policyOptions() {
       return (
@@ -67,14 +59,11 @@ export default {
           return this.isEditing
             ? option.urlParameter === this.currentPolicyType
             : option.value === this.currentPolicyType;
-        }) || POLICY_TYPE_COMPONENT_OPTIONS.container
+        }) || POLICY_TYPE_COMPONENT_OPTIONS.scanExecution
       );
     },
     shouldAllowPolicyTypeSelection() {
       return !this.existingPolicy;
-    },
-    isScanResultPolicyEnabled() {
-      return this.glFeatures.scanResultPolicy;
     },
   },
   methods: {
@@ -120,7 +109,6 @@ export default {
           @change="handleNewPolicyType"
         />
       </gl-form-group>
-      <environment-picker v-if="policyOptions.shouldShowEnvironmentPicker" class="gl-ml-5" />
     </div>
     <component
       :is="policyOptions.component"

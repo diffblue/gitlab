@@ -332,7 +332,7 @@ RSpec.describe 'Pipeline', :js do
 
     before do
       allow(Gitlab).to receive(:com?) { true }
-      stub_feature_flags(account_verification_payment_form_refresh: false)
+      stub_feature_flags(use_api_for_payment_validation: false)
       create(:gitlab_subscription, :active_trial, namespace: namespace, hosted_plan: ultimate_plan)
     end
 
@@ -355,7 +355,7 @@ RSpec.describe 'Pipeline', :js do
       it 'pushes use_api_for_payment_validation feature flag' do
         visit project_pipeline_validate_account_path(project, pipeline)
 
-        expect(page).to have_pushed_frontend_feature_flags(useApiForPaymentValidation: true)
+        expect(page).to have_pushed_frontend_feature_flags(useApiForPaymentValidation: false)
       end
     end
   end

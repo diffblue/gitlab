@@ -501,7 +501,7 @@ msgstr ""
 msgid "%{code_open}Masked:%{code_close} Hidden in job logs. Must match masking requirements."
 msgstr ""
 
-msgid "%{code_open}Protected:%{code_close} Only exposed to protected branches or tags."
+msgid "%{code_open}Protected:%{code_close} Only exposed to protected branches or protected tags."
 msgstr ""
 
 msgid "%{commit_author_link} authored %{commit_authored_timeago}"
@@ -1324,6 +1324,9 @@ msgstr ""
 msgid "/"
 msgstr ""
 
+msgid "/day"
+msgstr ""
+
 msgid "0 bytes"
 msgstr ""
 
@@ -1608,6 +1611,9 @@ msgid "A new personal access token, named %{token_name}, has been created."
 msgstr ""
 
 msgid "A non-confidential epic cannot be assigned to a confidential parent epic"
+msgstr ""
+
+msgid "A page with that title already exists"
 msgstr ""
 
 msgid "A plain HTML site that uses Netlify for CI/CD instead of GitLab, but still with all the other great GitLab features"
@@ -2603,6 +2609,9 @@ msgstr ""
 msgid "AdminSettings|Configure Let's Encrypt"
 msgstr ""
 
+msgid "AdminSettings|Disable Elasticsearch until indexing completes."
+msgstr ""
+
 msgid "AdminSettings|Disable feed token"
 msgstr ""
 
@@ -2615,6 +2624,9 @@ msgstr ""
 msgid "AdminSettings|Domain verification is an essential security measure for public GitLab sites. Users are required to demonstrate they control a domain before it is enabled. %{link_start}Learn more.%{link_end}"
 msgstr ""
 
+msgid "AdminSettings|Elasticsearch indexing"
+msgstr ""
+
 msgid "AdminSettings|Email from GitLab - email users right from the Admin Area. %{link_start}Learn more%{link_end}."
 msgstr ""
 
@@ -2624,10 +2636,25 @@ msgstr ""
 msgid "AdminSettings|Enable Service Ping"
 msgstr ""
 
+msgid "AdminSettings|Enable kuromoji custom analyzer: Indexing"
+msgstr ""
+
+msgid "AdminSettings|Enable kuromoji custom analyzer: Search"
+msgstr ""
+
 msgid "AdminSettings|Enable pipeline suggestion banner"
 msgstr ""
 
 msgid "AdminSettings|Enable shared runners for new projects"
+msgstr ""
+
+msgid "AdminSettings|Enable smartcn custom analyzer: Indexing"
+msgstr ""
+
+msgid "AdminSettings|Enable smartcn custom analyzer: Search"
+msgstr ""
+
+msgid "AdminSettings|Enabled"
 msgstr ""
 
 msgid "AdminSettings|Feed token"
@@ -2639,6 +2666,12 @@ msgstr ""
 msgid "AdminSettings|If not specified at the group or instance level, the default is %{default_initial_branch_name}. Does not affect existing repositories."
 msgstr ""
 
+msgid "AdminSettings|If there isn't any existing index, GitLab creates one."
+msgstr ""
+
+msgid "AdminSettings|Import sources"
+msgstr ""
+
 msgid "AdminSettings|Keep the latest artifacts for all jobs in the latest successful pipelines"
 msgstr ""
 
@@ -2646,6 +2679,9 @@ msgid "AdminSettings|Let's Encrypt email"
 msgstr ""
 
 msgid "AdminSettings|Limit project size at a global, group, and project level. %{link_start}Learn more%{link_end}."
+msgstr ""
+
+msgid "AdminSettings|Limit the number of namespaces and projects that can be indexed."
 msgstr ""
 
 msgid "AdminSettings|Maximum duration of a session for Git operations when 2FA is enabled."
@@ -2678,10 +2714,16 @@ msgstr ""
 msgid "AdminSettings|No required pipeline"
 msgstr ""
 
+msgid "AdminSettings|Only enable search after installing the plugin, enabling indexing, and recreating the index."
+msgstr ""
+
+msgid "AdminSettings|Pause Elasticsearch indexing"
+msgstr ""
+
 msgid "AdminSettings|Preview payload"
 msgstr ""
 
-msgid "AdminSettings|Project export enabled"
+msgid "AdminSettings|Project export"
 msgstr ""
 
 msgid "AdminSettings|Protect CI/CD variables by default"
@@ -2700,6 +2742,9 @@ msgid "AdminSettings|Restrict group access by IP address. %{link_start}Learn mor
 msgstr ""
 
 msgid "AdminSettings|Save %{name} limits"
+msgstr ""
+
+msgid "AdminSettings|Search with Elasticsearch enabled"
 msgstr ""
 
 msgid "AdminSettings|Select a CI/CD template"
@@ -2744,6 +2789,9 @@ msgstr ""
 msgid "AdminSettings|The template for the required pipeline configuration can be one of the GitLab-provided templates, or a custom template added to an instance template repository. %{link_start}How do I create an instance template repository?%{link_end}"
 msgstr ""
 
+msgid "AdminSettings|There are Advanced Search migrations pending that require indexing to pause. Indexing must remain paused until GitLab completes the migrations."
+msgstr ""
+
 msgid "AdminSettings|To enable Registration Features, first enable Service Ping."
 msgstr ""
 
@@ -2751,6 +2799,12 @@ msgid "AdminSettings|To help improve GitLab and its user experience, GitLab peri
 msgstr ""
 
 msgid "AdminSettings|Total number of jobs in currently active pipelines"
+msgstr ""
+
+msgid "AdminSettings|Use AWS hosted Elasticsearch with IAM credentials"
+msgstr ""
+
+msgid "AdminSettings|When paused, GitLab still tracks the changes. This is useful for cluster/index migrations."
 msgstr ""
 
 msgid "AdminSettings|You can enable Registration Features because Service Ping is enabled. To continue using Registration Features in the future, you will also need to register with GitLab via a new cloud licensing service."
@@ -4342,10 +4396,19 @@ msgstr ""
 msgid "ApplicationSettings|Add a link to Grafana"
 msgstr ""
 
-msgid "ApplicationSettings|After sign up text"
+msgid "ApplicationSettings|After sign-up text"
+msgstr ""
+
+msgid "ApplicationSettings|After the instance reaches the user cap, any user who is added or requests access must be approved by an administrator. Leave blank for unlimited."
 msgstr ""
 
 msgid "ApplicationSettings|Allowed domains for sign-ups"
+msgstr ""
+
+msgid "ApplicationSettings|Any user that visits %{host} and creates an account must be explicitly approved by an administrator before they can sign in. Only effective if sign-ups are enabled."
+msgstr ""
+
+msgid "ApplicationSettings|Any user that visits %{host} can create an account."
 msgstr ""
 
 msgid "ApplicationSettings|Approve %d user"
@@ -4388,43 +4451,40 @@ msgstr ""
 msgid "ApplicationSettings|Enable Slack application"
 msgstr ""
 
-msgid "ApplicationSettings|Enable domain denylist for sign ups"
+msgid "ApplicationSettings|Enable domain denylist for sign-ups"
 msgstr ""
 
-msgid "ApplicationSettings|Enable email restrictions for sign ups"
+msgid "ApplicationSettings|Enable email restrictions for sign-ups"
 msgstr ""
 
 msgid "ApplicationSettings|Enter denylist manually"
 msgstr ""
 
-msgid "ApplicationSettings|Markdown enabled"
-msgstr ""
-
 msgid "ApplicationSettings|Minimum password length (number of characters)"
 msgstr ""
 
-msgid "ApplicationSettings|ONLY users with e-mail addresses that match these domain(s) will be able to sign-up. Wildcards allowed. Use separate lines for multiple entries. Ex: domain.com, *.domain.com"
-msgstr ""
-
-msgid "ApplicationSettings|Once the instance reaches the user cap, any user who is added or requests access will have to be approved by an admin. Leave the field empty for unlimited."
+msgid "ApplicationSettings|Only users with e-mail addresses that match these domain(s) can sign up. Wildcards allowed. Use separate lines for multiple entries. Example: domain.com, *.domain.com"
 msgstr ""
 
 msgid "ApplicationSettings|Require admin approval for new sign-ups"
 msgstr ""
 
-msgid "ApplicationSettings|Restricts sign-ups for email addresses that match the given regex. See the %{linkStart}supported syntax%{linkEnd} for more information."
+msgid "ApplicationSettings|Restricts sign-ups for email addresses that match the given regex. %{linkStart}What is the supported syntax?%{linkEnd}"
 msgstr ""
 
 msgid "ApplicationSettings|Save changes"
 msgstr ""
 
-msgid "ApplicationSettings|See GitLab's %{linkStart}Password Policy Guidelines%{linkEnd}"
+msgid "ApplicationSettings|See GitLab's %{linkStart}Password Policy Guidelines%{linkEnd}."
 msgstr ""
 
 msgid "ApplicationSettings|Send confirmation email on sign-up"
 msgstr ""
 
 msgid "ApplicationSettings|Sign-up enabled"
+msgstr ""
+
+msgid "ApplicationSettings|Text shown after a user signs up. Markdown enabled."
 msgstr ""
 
 msgid "ApplicationSettings|This option is only available on GitLab.com"
@@ -4436,16 +4496,10 @@ msgstr ""
 msgid "ApplicationSettings|User cap"
 msgstr ""
 
-msgid "ApplicationSettings|Users with e-mail addresses that match these domain(s) will NOT be able to sign-up. Wildcards allowed. Use separate lines for multiple entries. Ex: domain.com, *.domain.com"
+msgid "ApplicationSettings|Users with e-mail addresses that match these domain(s) cannot sign up. Wildcards allowed. Use separate lines for multiple entries. Example: domain.com, *.domain.com"
 msgstr ""
 
-msgid "ApplicationSettings|Users with e-mail addresses that match these domain(s) will NOT be able to sign-up. Wildcards allowed. Use separate lines or commas for multiple entries."
-msgstr ""
-
-msgid "ApplicationSettings|When enabled, any user visiting %{host} and creating an account will have to be explicitly approved by an admin before they can sign in. This setting is effective only if sign-ups are enabled."
-msgstr ""
-
-msgid "ApplicationSettings|When enabled, any user visiting %{host} will be able to create an account."
+msgid "ApplicationSettings|Users with e-mail addresses that match these domain(s) cannot sign up. Wildcards allowed. Use separate lines or commas for multiple entries."
 msgstr ""
 
 msgid "ApplicationSettings|domain.com"
@@ -5454,9 +5508,6 @@ msgstr ""
 msgid "Available on-demand"
 msgstr ""
 
-msgid "Available runners: %{runners}"
-msgstr ""
-
 msgid "Available shared runners:"
 msgstr ""
 
@@ -5610,6 +5661,9 @@ msgstr ""
 msgid "Basic information"
 msgstr ""
 
+msgid "Batch size"
+msgstr ""
+
 msgid "Be careful. Changing the project's namespace can have unintended side effects."
 msgstr ""
 
@@ -5740,6 +5794,9 @@ msgid "Billings|By extending your trial, you will receive an additional 30 days 
 msgstr ""
 
 msgid "Billings|By reactivating your trial, you will receive an additional 30 days of %{planName}. Your trial can be only reactivated once."
+msgstr ""
+
+msgid "Billings|Error validating card details"
 msgstr ""
 
 msgid "Billings|Extend trial"
@@ -6367,6 +6424,9 @@ msgid "BulkImport|From source group"
 msgstr ""
 
 msgid "BulkImport|Group import history"
+msgstr ""
+
+msgid "BulkImport|History"
 msgstr ""
 
 msgid "BulkImport|Import failed: Destination cannot be a subgroup of the source group. Change the destination and try again."
@@ -7035,6 +7095,9 @@ msgid "Changed merge method to %{merge_method}"
 msgstr ""
 
 msgid "Changed reviewer(s)."
+msgstr ""
+
+msgid "Changed squash option to %{squash_option}"
 msgstr ""
 
 msgid "Changed the title to \"%{title_param}\"."
@@ -7904,7 +7967,7 @@ msgstr ""
 msgid "ClusterAgents|An error occurred while loading your agents"
 msgstr ""
 
-msgid "ClusterAgents|An error occurred while retrieving GitLab Agent activity. Reload the page to try again."
+msgid "ClusterAgents|An error occurred while retrieving agent activity. Reload the page to try again."
 msgstr ""
 
 msgid "ClusterAgents|An unknown error occurred. Please try again."
@@ -8039,6 +8102,11 @@ msgstr ""
 msgid "ClusterAgents|Never connected"
 msgstr ""
 
+msgid "ClusterAgents|No activity occurred in the past day"
+msgid_plural "ClusterAgents|No activity occurred in the past %d days"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "ClusterAgents|No agents"
 msgstr ""
 
@@ -8066,7 +8134,7 @@ msgstr ""
 msgid "ClusterAgents|Security"
 msgstr ""
 
-msgid "ClusterAgents|See Agent activity updates such as tokens created or revoked and clusters connected or not connected."
+msgid "ClusterAgents|See agent activity updates, like tokens created or revoked and clusters connected or not connected."
 msgstr ""
 
 msgid "ClusterAgents|Select an agent or enter a name to create new"
@@ -8086,11 +8154,6 @@ msgstr ""
 
 msgid "ClusterAgents|The agent version do not match each other across your cluster's pods. This can happen when a new agent version was just deployed and Kubernetes is shutting down the old pods."
 msgstr ""
-
-msgid "ClusterAgents|There's no activity from the past day"
-msgid_plural "ClusterAgents|There's no activity from the past %d days"
-msgstr[0] ""
-msgstr[1] ""
 
 msgid "ClusterAgents|This agent has no tokens"
 msgstr ""
@@ -8116,7 +8179,7 @@ msgstr ""
 msgid "ClusterAgents|We would love to learn more about your experience with the GitLab Agent."
 msgstr ""
 
-msgid "ClusterAgents|What is GitLab Agent activity?"
+msgid "ClusterAgents|What is agent activity?"
 msgstr ""
 
 msgid "ClusterAgents|What is default configuration?"
@@ -10081,9 +10144,6 @@ msgid "Copy External ID to clipboard"
 msgstr ""
 
 msgid "Copy ID"
-msgstr ""
-
-msgid "Copy IP Address"
 msgstr ""
 
 msgid "Copy KRB5 clone URL"
@@ -12225,6 +12285,9 @@ msgstr ""
 msgid "DependencyProxy|Image list"
 msgstr ""
 
+msgid "DependencyProxy|Scheduled for deletion"
+msgstr ""
+
 msgid "DependencyProxy|Storage settings"
 msgstr ""
 
@@ -13126,9 +13189,6 @@ msgstr ""
 msgid "Disable"
 msgstr ""
 
-msgid "Disable Elasticsearch until indexing completes."
-msgstr ""
-
 msgid "Disable Two-factor Authentication"
 msgstr ""
 
@@ -13455,6 +13515,9 @@ msgstr ""
 msgid "Due date"
 msgstr ""
 
+msgid "Duplicate page: %{error_message}"
+msgstr ""
+
 msgid "Duration"
 msgstr ""
 
@@ -13663,9 +13726,6 @@ msgid "Elasticsearch AWS IAM credentials"
 msgstr ""
 
 msgid "Elasticsearch HTTP client timeout value in seconds."
-msgstr ""
-
-msgid "Elasticsearch indexing"
 msgstr ""
 
 msgid "Elasticsearch indexing restrictions"
@@ -13950,12 +14010,6 @@ msgstr ""
 msgid "Enable integration"
 msgstr ""
 
-msgid "Enable kuromoji custom analyzer: Indexing"
-msgstr ""
-
-msgid "Enable kuromoji custom analyzer: Search"
-msgstr ""
-
 msgid "Enable logs collection"
 msgstr ""
 
@@ -13999,12 +14053,6 @@ msgid "Enable shared runners for this group"
 msgstr ""
 
 msgid "Enable shared runners for this project"
-msgstr ""
-
-msgid "Enable smartcn custom analyzer: Indexing"
-msgstr ""
-
-msgid "Enable smartcn custom analyzer: Search"
 msgstr ""
 
 msgid "Enable two-factor authentication"
@@ -14073,7 +14121,7 @@ msgstr ""
 msgid "Enforce SSH key expiration"
 msgstr ""
 
-msgid "Enforce personal access token expiration"
+msgid "Enforce access token expiration"
 msgstr ""
 
 msgid "Enforce two-factor authentication"
@@ -14176,9 +14224,7 @@ msgid "Enterprise"
 msgstr ""
 
 msgid "Environment"
-msgid_plural "Environments"
-msgstr[0] ""
-msgstr[1] ""
+msgstr ""
 
 msgid "Environment does not have deployments"
 msgstr ""
@@ -18150,9 +18196,6 @@ msgstr ""
 msgid "GroupSettings|If the parent group's visibility is lower than the group's current visibility, visibility levels for subgroups and projects will be changed to match the new parent group's visibility."
 msgstr ""
 
-msgid "GroupSettings|New runners registration token has been generated!"
-msgstr ""
-
 msgid "GroupSettings|Overrides user notification preferences for all members of the group, subgroups, and projects."
 msgstr ""
 
@@ -18971,6 +19014,9 @@ msgstr ""
 msgid "IP subnet restriction only allowed for top-level groups"
 msgstr ""
 
+msgid "Id"
+msgstr ""
+
 msgid "Identifier"
 msgstr ""
 
@@ -19026,9 +19072,6 @@ msgid "If the YouTube URL is https://www.youtube.com/watch?v=0t1DgySidms then th
 msgstr ""
 
 msgid "If the number of active users exceeds the user limit, you will be charged for the number of %{users_over_license_link} at your next license reconciliation."
-msgstr ""
-
-msgid "If there isn't any existing index, GitLab creates one."
 msgstr ""
 
 msgid "If this email was added in error, you can remove it here:"
@@ -19391,6 +19434,9 @@ msgstr ""
 msgid "InProductMarketing|Break down silos to coordinate seamlessly across development, operations, and security with a consistent experience across the development lifecycle."
 msgstr ""
 
+msgid "InProductMarketing|Building for iOS? We've got you covered."
+msgstr ""
+
 msgid "InProductMarketing|Burn up/down charts"
 msgstr ""
 
@@ -19511,6 +19557,9 @@ msgstr ""
 msgid "InProductMarketing|Get our import guides"
 msgstr ""
 
+msgid "InProductMarketing|Get set up to build for iOS"
+msgstr ""
+
 msgid "InProductMarketing|Get started today"
 msgstr ""
 
@@ -19620,6 +19669,9 @@ msgid "InProductMarketing|Keep your code quality high by defining who should app
 msgstr ""
 
 msgid "InProductMarketing|Launch GitLab CI/CD in 20 minutes or less"
+msgstr ""
+
+msgid "InProductMarketing|Learn how to build for iOS"
 msgstr ""
 
 msgid "InProductMarketing|Lower cost of development"
@@ -19805,7 +19857,13 @@ msgstr ""
 msgid "InProductMarketing|Visualize your epics and milestones in a timeline."
 msgstr ""
 
+msgid "InProductMarketing|Want to get your iOS app up and running, including publishing all the way to TestFlight? Follow our guide to set up GitLab and fastlane to publish iOS apps to the App Store."
+msgstr ""
+
 msgid "InProductMarketing|Want to host GitLab on your servers?"
+msgstr ""
+
+msgid "InProductMarketing|Watch iOS building in action."
 msgstr ""
 
 msgid "InProductMarketing|We know a thing or two about efficiency and we don't want to keep that to ourselves. Sign up for a free trial of GitLab Ultimate and your teams will be on it from day one."
@@ -20597,6 +20655,9 @@ msgid "Internal users"
 msgstr ""
 
 msgid "Internal users cannot be deactivated"
+msgstr ""
+
+msgid "Interval"
 msgstr ""
 
 msgid "Interval Pattern"
@@ -22745,9 +22806,6 @@ msgstr ""
 msgid "Limit the number of issues and epics per minute a user can create through web and API requests."
 msgstr ""
 
-msgid "Limit the number of namespaces and projects that can be indexed."
-msgstr ""
-
 msgid "Limit the size of Sidekiq jobs stored in Redis."
 msgstr ""
 
@@ -23294,6 +23352,9 @@ msgstr ""
 msgid "Max 100,000 events"
 msgstr ""
 
+msgid "Max Value"
+msgstr ""
+
 msgid "Max authenticated Git LFS requests per period per user"
 msgstr ""
 
@@ -23331,6 +23392,9 @@ msgid "Maximum Terraform Module package file size in bytes"
 msgstr ""
 
 msgid "Maximum Users"
+msgstr ""
+
+msgid "Maximum allowable lifetime for access token (days)"
 msgstr ""
 
 msgid "Maximum allowable lifetime for personal access token (days)"
@@ -23770,6 +23834,9 @@ msgid "Merge request"
 msgstr ""
 
 msgid "Merge request %{mr_link} was reviewed by %{mr_author}"
+msgstr ""
+
+msgid "Merge request actions"
 msgstr ""
 
 msgid "Merge request analytics"
@@ -24544,6 +24611,9 @@ msgstr ""
 msgid "Milestones|Use milestones to track issues and merge requests over a fixed period of time"
 msgstr ""
 
+msgid "Min Value"
+msgstr ""
+
 msgid "Minimum capacity to be available before we schedule more mirrors preemptively."
 msgstr ""
 
@@ -24770,9 +24840,6 @@ msgid "MrList|Review requested from %{name}"
 msgstr ""
 
 msgid "Multi-project"
-msgstr ""
-
-msgid "Multi-project Runners cannot be removed"
 msgstr ""
 
 msgid "Multiple HTTP integrations are not supported for this project"
@@ -25032,9 +25099,6 @@ msgstr ""
 msgid "NetworkPolicies|Create policy"
 msgstr ""
 
-msgid "NetworkPolicies|Define this policy's location, conditions and actions."
-msgstr ""
-
 msgid "NetworkPolicies|Delete policy"
 msgstr ""
 
@@ -25042,9 +25106,6 @@ msgid "NetworkPolicies|Delete policy: %{policy}"
 msgstr ""
 
 msgid "NetworkPolicies|Deny all traffic"
-msgstr ""
-
-msgid "NetworkPolicies|Edit policy"
 msgstr ""
 
 msgid "NetworkPolicies|Environment does not have deployment platform"
@@ -25062,9 +25123,6 @@ msgstr ""
 msgid "NetworkPolicies|Kubernetes error: %{error}"
 msgstr ""
 
-msgid "NetworkPolicies|Network"
-msgstr ""
-
 msgid "NetworkPolicies|Network Policies can be used to limit which network traffic is allowed between containers inside the cluster."
 msgstr ""
 
@@ -25078,9 +25136,6 @@ msgid "NetworkPolicies|None selected"
 msgstr ""
 
 msgid "NetworkPolicies|Policy %{policyName} was successfully changed"
-msgstr ""
-
-msgid "NetworkPolicies|Policy definition"
 msgstr ""
 
 msgid "NetworkPolicies|Rule mode"
@@ -25422,9 +25477,6 @@ msgid "No Milestone"
 msgstr ""
 
 msgid "No Scopes"
-msgstr ""
-
-msgid "No Tag"
 msgstr ""
 
 msgid "No active admin user found"
@@ -26480,9 +26532,6 @@ msgstr ""
 msgid "Only effective when remote storage is enabled. Set to 0 for no size limit."
 msgstr ""
 
-msgid "Only enable search after installing the plugin, enabling indexing, and recreating the index."
-msgstr ""
-
 msgid "Only include features new to your current subscription tier."
 msgstr ""
 
@@ -26927,6 +26976,12 @@ msgstr ""
 msgid "PackageRegistry|Delete package"
 msgstr ""
 
+msgid "PackageRegistry|Delete this package"
+msgstr ""
+
+msgid "PackageRegistry|Error publishing"
+msgstr ""
+
 msgid "PackageRegistry|Failed to load the package data"
 msgstr ""
 
@@ -27098,6 +27153,12 @@ msgid "PackageRegistry|There are no packages yet"
 msgstr ""
 
 msgid "PackageRegistry|There was a problem fetching the details for this package."
+msgstr ""
+
+msgid "PackageRegistry|There was a timeout and the package was not published. Delete this package and try again."
+msgstr ""
+
+msgid "PackageRegistry|There was an error publishing a %{packageName} package"
 msgstr ""
 
 msgid "PackageRegistry|This NuGet package has no dependencies."
@@ -27319,7 +27380,7 @@ msgstr ""
 msgid "Pause"
 msgstr ""
 
-msgid "Pause Elasticsearch indexing"
+msgid "Pause time (ms)"
 msgstr ""
 
 msgid "Paused"
@@ -27503,9 +27564,6 @@ msgid "Pipeline %{label}"
 msgstr ""
 
 msgid "Pipeline %{label} for \"%{dataTitle}\""
-msgstr ""
-
-msgid "Pipeline Editor"
 msgstr ""
 
 msgid "Pipeline Editor|Are you sure you want to reset the file to its last committed version?"
@@ -31661,9 +31719,6 @@ msgstr ""
 msgid "Repo by URL"
 msgstr ""
 
-msgid "Report %{display_issuable_type} that are abusive, inappropriate or spam."
-msgstr ""
-
 msgid "Report abuse"
 msgstr ""
 
@@ -32435,9 +32490,6 @@ msgstr ""
 msgid "Runner API"
 msgstr ""
 
-msgid "Runner cannot be deleted, please contact your administrator."
-msgstr ""
-
 msgid "Runner tokens"
 msgstr ""
 
@@ -32451,9 +32503,6 @@ msgid "Runners"
 msgstr ""
 
 msgid "Runners are processes that pick up and execute CI/CD jobs for GitLab."
-msgstr ""
-
-msgid "Runners currently online: %{active_runners_count}"
 msgstr ""
 
 msgid "Runners page."
@@ -32514,9 +32563,6 @@ msgstr ""
 msgid "Runners|Capacity of 1 enables warm HA through Auto Scaling group re-spawn. Capacity of 2 enables hot HA because the service is available even when a node is lost. Capacity of 3 or more enables hot HA and manual scaling of runner fleet."
 msgstr ""
 
-msgid "Runners|Change to project runner"
-msgstr ""
-
 msgid "Runners|Checkbox"
 msgstr ""
 
@@ -32571,6 +32617,9 @@ msgid "Runners|Download latest binary"
 msgstr ""
 
 msgid "Runners|Enter the number of seconds. This timeout takes precedence over lower timeouts set for the project."
+msgstr ""
+
+msgid "Runners|Executor"
 msgstr ""
 
 msgid "Runners|Group"
@@ -32764,6 +32813,9 @@ msgstr ""
 msgid "Runners|Runs untagged jobs"
 msgstr ""
 
+msgid "Runners|Select projects to assign to this runner"
+msgstr ""
+
 msgid "Runners|Select your preferred option here. In the next step, you can choose the capacity for your runner in the AWS CloudFormation console."
 msgstr ""
 
@@ -32848,9 +32900,6 @@ msgstr ""
 msgid "Runners|Windows 2019 Shell with manual scaling and optional scheduling. Non-spot."
 msgstr ""
 
-msgid "Runners|You are about to change this instance runner to a project runner. This operation is not reversible. Are you sure you want to continue?"
-msgstr ""
-
 msgid "Runners|You can set up a specific runner to be used by multiple projects but you cannot make this a shared runner."
 msgstr ""
 
@@ -32861,9 +32910,6 @@ msgid "Runners|active"
 msgstr ""
 
 msgid "Runners|group"
-msgstr ""
-
-msgid "Runners|locked"
 msgstr ""
 
 msgid "Runners|never contacted"
@@ -33572,7 +33618,7 @@ msgstr ""
 msgid "SecurityOrchestration|All policies"
 msgstr ""
 
-msgid "SecurityOrchestration|Allow all inbound traffic to all pods from all pods on ports 443/TCP."
+msgid "SecurityOrchestration|Allow up to 10 minutes for any policy changes to take effect."
 msgstr ""
 
 msgid "SecurityOrchestration|An error occurred assigning your security policy project"
@@ -33594,6 +33640,9 @@ msgid "SecurityOrchestration|Create more robust vulnerability rules and apply th
 msgstr ""
 
 msgid "SecurityOrchestration|Create security policy"
+msgstr ""
+
+msgid "SecurityOrchestration|Define this policy's location, conditions and actions."
 msgstr ""
 
 msgid "SecurityOrchestration|Description"
@@ -33629,9 +33678,6 @@ msgstr ""
 msgid "SecurityOrchestration|If any scanner finds a newly detected critical vulnerability in an open merge request targeting the master branch, then require two approvals from any member of App security."
 msgstr ""
 
-msgid "SecurityOrchestration|If you are using Auto DevOps, your %{monospacedStart}auto-deploy-values.yaml%{monospacedEnd} file will not be updated if you change a policy in this section. Auto DevOps users should make changes by following the %{linkStart}Container Network Policy documentation%{linkEnd}."
-msgstr ""
-
 msgid "SecurityOrchestration|Invalid policy type"
 msgstr ""
 
@@ -33639,9 +33685,6 @@ msgid "SecurityOrchestration|Latest scan run against %{agent}"
 msgstr ""
 
 msgid "SecurityOrchestration|Network"
-msgstr ""
-
-msgid "SecurityOrchestration|Network policy"
 msgstr ""
 
 msgid "SecurityOrchestration|New network policy"
@@ -33674,6 +33717,9 @@ msgstr ""
 msgid "SecurityOrchestration|Policies"
 msgstr ""
 
+msgid "SecurityOrchestration|Policies created in this project are applied through a background job that runs once every 10 minutes."
+msgstr ""
+
 msgid "SecurityOrchestration|Policy Type"
 msgstr ""
 
@@ -33681,6 +33727,9 @@ msgid "SecurityOrchestration|Policy cannot be enabled for non-existing branches 
 msgstr ""
 
 msgid "SecurityOrchestration|Policy cannot be enabled without branch information"
+msgstr ""
+
+msgid "SecurityOrchestration|Policy definition"
 msgstr ""
 
 msgid "SecurityOrchestration|Policy description"
@@ -33809,9 +33858,6 @@ msgstr ""
 msgid "SecurityOrchestration|Use a scan result policy to create rules that ensure security issues are checked before merging a merge request."
 msgstr ""
 
-msgid "SecurityOrchestration|Use network policies to create firewall rules for network connections in your Kubernetes cluster."
-msgstr ""
-
 msgid "SecurityOrchestration|View policy project"
 msgstr ""
 
@@ -33867,9 +33913,6 @@ msgid "SecurityOrchestration|vulnerability"
 msgstr ""
 
 msgid "SecurityPolicies|+%{count} more"
-msgstr ""
-
-msgid "SecurityPolicies|Environment(s)"
 msgstr ""
 
 msgid "SecurityPolicies|Policy type"
@@ -36306,6 +36349,9 @@ msgstr ""
 msgid "Strikethrough text"
 msgstr ""
 
+msgid "Sub-batch size"
+msgstr ""
+
 msgid "Subgroup information"
 msgstr ""
 
@@ -38040,9 +38086,6 @@ msgstr ""
 msgid "Theme"
 msgstr ""
 
-msgid "There are Advanced Search migrations pending that require indexing to pause. Indexing must remain paused until GitLab completes the migrations."
-msgstr ""
-
 msgid "There are currently no events."
 msgstr ""
 
@@ -39004,9 +39047,6 @@ msgid "This will remove the fork relationship between this project and other pro
 msgstr ""
 
 msgid "Thread to reply to cannot be found"
-msgstr ""
-
-msgid "Threat monitoring"
 msgstr ""
 
 msgid "ThreatMonitoring|Alert Details"
@@ -40109,9 +40149,6 @@ msgid "Two-factor grace period"
 msgstr ""
 
 msgid "Type"
-msgstr ""
-
-msgid "Type/State"
 msgstr ""
 
 msgid "U2F Devices (%{length})"
@@ -42550,16 +42587,13 @@ msgstr ""
 msgid "When enabled, cleanup polices execute faster but put more load on Redis."
 msgstr ""
 
-msgid "When enabled, existing personal access tokens may be revoked. Leave blank for no limit."
+msgid "When enabled, existing access tokens may be revoked. Leave blank for no limit."
 msgstr ""
 
 msgid "When enabled, job logs are collected by Datadog and displayed along with pipeline execution traces."
 msgstr ""
 
 msgid "When merge requests and commits in the default branch close, any issues they reference also close."
-msgstr ""
-
-msgid "When paused, GitLab still tracks the changes. This is useful for cluster/index migrations."
 msgstr ""
 
 msgid "When this merge request is accepted"
@@ -42603,7 +42637,7 @@ msgstr ""
 msgid "Who will be using this group?"
 msgstr ""
 
-msgid "Why are you signing up? (Optional)"
+msgid "Why are you signing up? (optional)"
 msgstr ""
 
 msgid "Wiki"
@@ -45442,9 +45476,6 @@ msgid "pending comment"
 msgstr ""
 
 msgid "pending deletion"
-msgstr ""
-
-msgid "per day"
 msgstr ""
 
 msgid "personal access token"

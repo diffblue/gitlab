@@ -25,6 +25,8 @@ module EE
         cost_factor.enabled?(project)
       end
 
+      # TODO: remove this method when ci_queuing_use_denormalized_data_strategy
+      # feature flag is removed
       def visibility_levels_without_minutes_quota
         ::Gitlab::VisibilityLevel.options.values.reject do |visibility_level|
           cost_factor.for_visibility(visibility_level) > 0

@@ -1,14 +1,31 @@
 <script>
-import { GlButtonGroup, GlButton, GlModal, GlModalDirective, GlTooltipDirective } from '@gitlab/ui';
+import {
+  GlButtonGroup,
+  GlButton,
+  GlIcon,
+  GlModal,
+  GlModalDirective,
+  GlTooltipDirective,
+} from '@gitlab/ui';
 import { s__, sprintf } from '~/locale';
-import { DELETE_MODAL_CONFIG, EDITOR_MODES, EDITOR_MODE_RULE, EDITOR_MODE_YAML } from './constants';
+import {
+  DELETE_MODAL_CONFIG,
+  EDITOR_MODES,
+  EDITOR_MODE_RULE,
+  EDITOR_MODE_YAML,
+  POLICY_RUN_TIME_MESSAGE,
+  POLICY_RUN_TIME_TOOLTIP,
+} from './constants';
 
 export default {
   i18n: {
     DELETE_MODAL_CONFIG,
+    POLICY_RUN_TIME_MESSAGE,
+    POLICY_RUN_TIME_TOOLTIP,
   },
   components: {
     GlButton,
+    GlIcon,
     GlModal,
     GlButtonGroup,
     PolicyYamlEditor: () =>
@@ -135,7 +152,7 @@ export default {
           </gl-button>
         </gl-button-group>
       </div>
-      <div class="gl-display-flex gl-sm-flex-direction-column">
+      <div class="gl-display-flex gl-flex-direction-column gl-lg-flex-direction-row">
         <section class="gl-w-full gl-mr-7">
           <div v-if="shouldShowRuleEditor" data-testid="rule-editor">
             <slot name="rule-editor"></slot>
@@ -158,33 +175,42 @@ export default {
       </div>
     </div>
     <slot name="bottom"></slot>
-    <span
-      v-gl-tooltip.hover.focus="{ disabled: disableTooltip }"
-      class="gl-pt-2"
-      :title="saveTooltipText"
-      data-testid="save-policy-tooltip"
-    >
-      <gl-button
-        type="submit"
-        variant="confirm"
-        data-testid="save-policy"
-        :loading="isUpdatingPolicy"
-        :disabled="disableUpdate"
-        @click="savePolicy"
+    <div class="gl-display-flex gl-flex-direction-column gl-align-items-center gl-lg-display-block">
+      <span
+        v-gl-tooltip.hover.focus="{ disabled: disableTooltip }"
+        class="gl-pt-2"
+        :title="saveTooltipText"
+        data-testid="save-policy-tooltip"
       >
-        {{ saveButtonText }}
+        <gl-button
+          type="submit"
+          variant="confirm"
+          data-testid="save-policy"
+          :loading="isUpdatingPolicy"
+          :disabled="disableUpdate"
+          @click="savePolicy"
+        >
+          {{ saveButtonText }}
+        </gl-button>
+      </span>
+      <gl-button
+        v-if="isEditing"
+        v-gl-modal="'delete-modal'"
+        class="gl-mt-5 gl-lg-mt-0"
+        category="secondary"
+        variant="danger"
+        data-testid="delete-policy"
+        :loading="isRemovingPolicy"
+        >{{ s__('NetworkPolicies|Delete policy') }}</gl-button
+      >
+      <gl-button class="gl-mt-5 gl-lg-mt-0" category="secondary" :href="policiesPath">
+        {{ __('Cancel') }}
       </gl-button>
-    </span>
-    <gl-button
-      v-if="isEditing"
-      v-gl-modal="'delete-modal'"
-      category="secondary"
-      variant="danger"
-      data-testid="delete-policy"
-      :loading="isRemovingPolicy"
-      >{{ s__('NetworkPolicies|Delete policy') }}</gl-button
-    >
-    <gl-button category="secondary" :href="policiesPath">{{ __('Cancel') }}</gl-button>
+      <span class="gl-ml-11 gl-mt-5 gl-lg-mt-0" data-testid="policy-run-time-info">
+        <gl-icon v-gl-tooltip="$options.i18n.POLICY_RUN_TIME_TOOLTIP" name="information-o" />
+        {{ $options.i18n.POLICY_RUN_TIME_MESSAGE }}
+      </span>
+    </div>
     <gl-modal
       modal-id="delete-modal"
       :title="deleteModalTitle"

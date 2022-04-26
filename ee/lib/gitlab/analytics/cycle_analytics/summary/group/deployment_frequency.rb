@@ -25,7 +25,7 @@ module Gitlab
             end
 
             def unit
-              _('per day')
+              _('/day')
             end
 
             def links

@@ -11,9 +11,14 @@ module EE
       def execute
         return if model.blank?
 
-        audit_changes(:squash_option, as: 'squash_option', entity: @project, model: model)
-        audit_changes(:allow_merge_on_skipped_pipeline, as: 'allow_merge_on_skipped_pipeline', entity: @project,
-                      model: model)
+        if should_audit? :allow_merge_on_skipped_pipeline
+          audit_changes(:allow_merge_on_skipped_pipeline, as: 'allow_merge_on_skipped_pipeline', entity: @project,
+                        model: model)
+        end
+
+        audit_squash_option
+        audit_changes(:merge_commit_template, as: 'merge_commit_template', entity: @project, model: model)
+        audit_changes(:squash_commit_template, as: 'squash_commit_template', entity: @project, model: model)
       end
 
       def attributes_from_auditable_model(column)
@@ -22,6 +27,22 @@ module EE
           to: model.previous_changes[column].last,
           target_details: @project.full_path
         }
+      end
+
+      private
+
+      def audit_squash_option
+        return unless audit_required? :squash_option
+
+        squash_option_message = _("Changed squash option to %{squash_option}") %
+          { squash_option: model.human_squash_option }
+        audit_context = {
+          author: @current_user,
+          scope: @project,
+          target: @project,
+          message: squash_option_message
+        }
+        ::Gitlab::Audit::Auditor.audit(audit_context)
       end
     end
   end

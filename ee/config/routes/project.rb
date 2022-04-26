@@ -39,11 +39,6 @@ constraints(::Constraints::ProjectUrlConstrainer.new) do
 
         resources :subscriptions, only: [:create, :destroy]
 
-        resource :threat_monitoring, only: [:show], controller: :threat_monitoring do
-          get '/alerts/:iid', action: 'alert_details', constraints: { iid: /\d+/ }, as: :threat_monitoring_alert
-          resources :policies, only: [:new, :edit], controller: :threat_monitoring, constraints: { id: %r{[^/]+} }
-        end
-
         resources :protected_environments, only: [:create, :update, :destroy], constraints: { id: /\d+/ } do
           collection do
             get 'search'

@@ -17,7 +17,6 @@ module EE
             add_item(on_demand_scans_menu_item)
             add_item(dependencies_menu_item)
             add_item(license_compliance_menu_item)
-            add_item(threat_monitoring_menu_item)
             add_item(scan_policies_menu_item)
             add_item(audit_events_menu_item)
             add_item(configuration_menu_item)
@@ -128,19 +127,6 @@ module EE
               link: project_licenses_path(context.project),
               active_routes: { path: 'projects/licenses#index' },
               item_id: :license_compliance
-            )
-          end
-
-          def threat_monitoring_menu_item
-            unless can?(context.current_user, :read_threat_monitoring, context.project)
-              return ::Sidebars::NilMenuItem.new(item_id: :threat_monitoring)
-            end
-
-            ::Sidebars::MenuItem.new(
-              title: _('Threat monitoring'),
-              link: project_threat_monitoring_path(context.project),
-              active_routes: { controller: ['projects/threat_monitoring'] },
-              item_id: :threat_monitoring
             )
           end
 

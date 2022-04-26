@@ -8,6 +8,7 @@ exports[`DependencyListIncompleteAlert component matches the snapshot 1`] = `
   primarybuttontext=""
   secondarybuttonlink=""
   secondarybuttontext=""
+  showicon="true"
   title="Unsupported file(s) detected"
   variant="warning"
 >

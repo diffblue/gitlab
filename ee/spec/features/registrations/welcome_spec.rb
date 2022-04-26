@@ -38,11 +38,11 @@ RSpec.describe 'Welcome screen', :js do
     end
 
     it 'allows specifying other for jobs_to_be_done' do
-      expect(page).not_to have_content('Why are you signing up? (Optional)')
+      expect(page).not_to have_content('Why are you signing up? (optional)')
 
       select 'A different reason', from: 'user_registration_objective'
 
-      expect(page).to have_content('Why are you signing up? (Optional)')
+      expect(page).to have_content('Why are you signing up? (optional)')
 
       fill_in 'jobs_to_be_done_other', with: 'My reason'
     end

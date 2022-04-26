@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Verify', :docker, :runner do
+  RSpec.describe 'Verify', :runner do
     describe 'In merge trains' do
       context 'new thread discussion' do
-        let(:executor) { "qa-runner-#{Faker::Alphanumeric.alphanumeric(8)}" }
+        let(:executor) { "qa-runner-#{Faker::Alphanumeric.alphanumeric(number: 8)}" }
         let!(:runner) do
           Resource::Runner.fabricate! do |runner|
             runner.project = project

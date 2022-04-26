@@ -27,6 +27,7 @@ describe('ProjectToken', () => {
         value,
         config,
         active: false,
+        cursorPosition: 'start',
       },
       stubs: { AuditFilterToken },
     });
