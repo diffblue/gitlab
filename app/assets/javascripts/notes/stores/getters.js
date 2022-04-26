@@ -193,10 +193,10 @@ export const unresolvedDiscussionsIdsByDiff = (state, getters, allState) => {
       }
 
       const authoritativeA = authoritativeFiles.find((source) =>
-        match({ mode: 'mr', fileA: source, fileB: a.diff_file }),
+        match({ fileA: source, fileB: a.diff_file, mode: 'mr' }),
       );
       const authoritativeB = authoritativeFiles.find((source) =>
-        match({ mode: 'mr', fileA: source, fileB: b.diff_file }),
+        match({ fileA: source, fileB: b.diff_file, mode: 'mr' }),
       );
 
       if (authoritativeA && authoritativeB) {
