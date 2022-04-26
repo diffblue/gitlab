@@ -49,21 +49,5 @@ RSpec.describe MergeRequests::RemoveApprovalService do
         execute!
       end
     end
-
-    context 'with an approved merge request' do
-      let(:notification_service) { NotificationService.new }
-
-      before do
-        merge_request.approvals.create!(user: user)
-        allow(service).to receive(:notification_service).and_return(notification_service)
-      end
-
-      it 'fires an unapproved webhook and sends a notification' do
-        expect(notification_service).to receive_message_chain(:async, :unapprove_mr).with(merge_request, user)
-        expect(service).to receive(:execute_hooks).with(merge_request, 'unapproved')
-
-        execute!
-      end
-    end
   end
 end

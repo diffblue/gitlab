@@ -15,14 +15,6 @@ module EE
       add_mr_approvers_email(merge_request, new_approvers, current_user)
     end
 
-    def approve_mr(merge_request, current_user)
-      approve_mr_email(merge_request, merge_request.target_project, current_user)
-    end
-
-    def unapprove_mr(merge_request, current_user)
-      unapprove_mr_email(merge_request, merge_request.target_project, current_user)
-    end
-
     def mirror_was_hard_failed(project)
       return if project.emails_disabled?
 
@@ -133,22 +125,6 @@ module EE
     def add_mr_approvers_email(merge_request, approvers, current_user)
       approvers.each do |approver|
         mailer.add_merge_request_approver_email(approver.id, merge_request.id, current_user.id).deliver_later
-      end
-    end
-
-    def approve_mr_email(merge_request, project, current_user)
-      recipients = ::NotificationRecipients::BuildService.build_recipients(merge_request, current_user, action: 'approve')
-
-      recipients.each do |recipient|
-        mailer.approved_merge_request_email(recipient.user.id, merge_request.id, current_user.id).deliver_later
-      end
-    end
-
-    def unapprove_mr_email(merge_request, project, current_user)
-      recipients = ::NotificationRecipients::BuildService.build_recipients(merge_request, current_user, action: 'unapprove')
-
-      recipients.each do |recipient|
-        mailer.unapproved_merge_request_email(recipient.user.id, merge_request.id, current_user.id).deliver_later
       end
     end
 

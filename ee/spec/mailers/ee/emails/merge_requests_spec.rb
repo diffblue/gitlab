@@ -46,34 +46,4 @@ RSpec.describe EE::Emails::MergeRequests do
       end
     end
   end
-
-  describe '#approved_merge_request_email' do
-    subject { Notify.approved_merge_request_email(recipient.id, merge_request.id, current_user.id) }
-
-    it 'has the correct body' do
-      aggregate_failures do
-        is_expected.to have_body_text('was approved by')
-        is_expected.to have_body_text(current_user.name)
-        is_expected.to have_text_part_content(assignee.name)
-        is_expected.to have_html_part_content(assignee.name)
-        is_expected.to have_text_part_content(reviewer.name)
-        is_expected.to have_html_part_content(reviewer.name)
-      end
-    end
-  end
-
-  describe '#unapproved_merge_request_email' do
-    subject { Notify.unapproved_merge_request_email(recipient.id, merge_request.id, current_user.id) }
-
-    it 'has the correct body' do
-      aggregate_failures do
-        is_expected.to have_body_text('was unapproved by')
-        is_expected.to have_body_text(current_user.name)
-        is_expected.to have_text_part_content(assignee.name)
-        is_expected.to have_html_part_content(assignee.name)
-        is_expected.to have_text_part_content(reviewer.name)
-        is_expected.to have_html_part_content(reviewer.name)
-      end
-    end
-  end
 end
