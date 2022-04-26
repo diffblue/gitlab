@@ -11,6 +11,7 @@ class SurveyResponsesController < ApplicationController
   skip_before_action :authenticate_user!
 
   feature_category :navigation
+  urgency :low
 
   def index
     render layout: false
