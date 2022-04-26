@@ -6,8 +6,8 @@ module Gitlab
       class CostFactor
         DISABLED = 0.0
         STANDARD = 1.0
+        REDUCED = 0.008
         OPEN_SOURCE = 0.008
-        NEW_NAMESPACE_PUBLIC_PROJECT = 0.008
 
         def initialize(runner_matcher)
           ensure_runner_matcher_instance(runner_matcher)
@@ -33,7 +33,7 @@ module Gitlab
             # Once visibility level cost factors are consolidated into a single
             # cost factor, this condition can be removed.
             # https://gitlab.com/gitlab-org/gitlab/-/issues/243722
-            NEW_NAMESPACE_PUBLIC_PROJECT
+            REDUCED
           elsif runner_cost_factor == STANDARD && project.actual_plan.open_source?
             OPEN_SOURCE
           else
