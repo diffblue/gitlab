@@ -9,7 +9,7 @@
           = topic_icon(topic, class: "avatar s40")
       = link_to detail_page_link do
         - if topic.title.length > max_topic_title_length
-          %h5.str-truncated.has-tooltip{ title: topic.title }
+          %h5.gl-str-truncated.has-tooltip{ title: topic.title }
             = truncate(topic.title, length: max_topic_title_length)
         - else
           %h5

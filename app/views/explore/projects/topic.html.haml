@@ -10,7 +10,7 @@
     .avatar-container.rect-avatar.s60.gl-flex-shrink-0
       = topic_icon(@topic, alt: _('Topic avatar'), class: 'avatar topic-avatar s60')
     - if @topic.title.length > max_topic_title_length
-      %h1.gl-mt-3.str-truncated.has-tooltip{ title: @topic.title }
+      %h1.gl-mt-3.gl-str-truncated.has-tooltip{ title: @topic.title }
         = truncate(@topic.title, length: max_topic_title_length)
     - else
       %h1.gl-mt-3
