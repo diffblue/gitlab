@@ -9,8 +9,8 @@ class Projects::RequirementsManagement::RequirementsController < Projects::Appli
   before_action :authorize_import_access!, only: [:import_csv, :authorize]
 
   feature_category :requirements_management
-  urgency :medium, [:index, :authorize]
-  urgency :low, [:import_csv]
+  urgency :high, [:authorize]
+  urgency :low, [:index, :import_csv]
 
   def index
     respond_to do |format|
