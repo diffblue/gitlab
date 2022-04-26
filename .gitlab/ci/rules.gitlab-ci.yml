@@ -607,6 +607,7 @@
   rules:
     - <<: *if-not-ee
       when: never
+    - <<: *if-merge-request-targeting-stable-branch
     - <<: *if-merge-request-labels-run-review-app
     - <<: *if-dot-com-gitlab-org-and-security-merge-request
       changes: *ci-build-images-patterns
@@ -621,6 +622,7 @@
   rules:
     - <<: *if-not-canonical-namespace
       when: never
+    - <<: *if-merge-request-targeting-stable-branch
     - <<: *if-merge-request-labels-run-review-app
     - <<: *if-auto-deploy-branches
     - changes: *ci-build-images-patterns
@@ -695,6 +697,7 @@
   rules:
     - <<: *if-not-canonical-namespace
       when: never
+    - <<: *if-merge-request-targeting-stable-branch
     - <<: *if-merge-request-labels-run-review-app
     - <<: *if-auto-deploy-branches
     - changes: *code-qa-patterns
@@ -885,6 +888,8 @@
     - <<: *if-dot-com-gitlab-org-and-security-merge-request
       changes: *feature-flag-development-config-patterns
       when: never
+    - <<: *if-merge-request-targeting-stable-branch
+      allow_failure: true
     - <<: *if-dot-com-gitlab-org-and-security-merge-request
       changes: *nodejs-patterns
       allow_failure: true
