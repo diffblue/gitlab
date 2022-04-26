@@ -33618,6 +33618,9 @@ msgstr ""
 msgid "SecurityOrchestration|All policies"
 msgstr ""
 
+msgid "SecurityOrchestration|Allow up to 10 minutes for any policy changes to take effect."
+msgstr ""
+
 msgid "SecurityOrchestration|An error occurred assigning your security policy project"
 msgstr ""
 
@@ -33712,6 +33715,9 @@ msgid "SecurityOrchestration|Only owners can update Security Policy Project"
 msgstr ""
 
 msgid "SecurityOrchestration|Policies"
+msgstr ""
+
+msgid "SecurityOrchestration|Policies created in this project are applied through a background job that runs once every 10 minutes."
 msgstr ""
 
 msgid "SecurityOrchestration|Policy Type"
