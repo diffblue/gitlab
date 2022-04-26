@@ -3,12 +3,10 @@ import { GlButton, GlDrawer, GlTabs, GlTab } from '@gitlab/ui';
 import { DRAWER_Z_INDEX } from '~/lib/utils/constants';
 import { getContentWrapperHeight, removeUnnecessaryDashes } from '../../utils';
 import { POLICIES_LIST_CONTAINER_CLASS, POLICY_TYPE_COMPONENT_OPTIONS } from '../constants';
-import CiliumNetworkPolicy from './cilium_network_policy.vue';
 import ScanExecutionPolicy from './scan_execution_policy.vue';
 import ScanResultPolicy from './scan_result_policy.vue';
 
 const policyComponent = {
-  [POLICY_TYPE_COMPONENT_OPTIONS.container.value]: CiliumNetworkPolicy,
   [POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.value]: ScanExecutionPolicy,
   [POLICY_TYPE_COMPONENT_OPTIONS.scanResult.value]: ScanResultPolicy,
 };
@@ -21,7 +19,6 @@ export default {
     GlTabs,
     PolicyYamlEditor: () =>
       import(/* webpackChunkName: 'policy_yaml_editor' */ '../policy_yaml_editor.vue'),
-    CiliumNetworkPolicy,
     ScanExecutionPolicy,
     ScanResultPolicy,
   },
@@ -81,16 +78,18 @@ export default {
         category="primary"
         variant="info"
         :href="editPolicyPath"
-        >{{ s__('NetworkPolicies|Edit policy') }}</gl-button
+        >{{ s__('SecurityOrchestration|Edit policy') }}</gl-button
       >
     </template>
     <gl-tabs v-if="policy" class="gl-p-0!" justified content-class="gl-py-0" lazy>
       <gl-tab title="Details" class="gl-mt-5 gl-ml-6 gl-mr-3">
         <component :is="policyComponent" v-if="policyComponent" :policy="policy" />
         <div v-else>
-          <h5>{{ s__('NetworkPolicies|Policy definition') }}</h5>
+          <h5>{{ s__('SecurityOrchestration|Policy definition') }}</h5>
           <p>
-            {{ s__("NetworkPolicies|Define this policy's location, conditions and actions.") }}
+            {{
+              s__("SecurityOrchestration|Define this policy's location, conditions and actions.")
+            }}
           </p>
           <policy-yaml-editor
             :value="policyYaml"
