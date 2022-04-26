@@ -3,6 +3,7 @@ module Arkose
   class UserVerificationService
     attr_reader :url, :session_token, :user
 
+    ARKOSE_LABS_DEFAULT_NAMESPACE = 'client'
     ARKOSE_LABS_DEFAULT_SUBDOMAIN = 'verify-api'
     ALLOWLIST_TELLTALE = 'gitlab1-whitelist-qa-team'
 
@@ -139,7 +140,7 @@ module Arkose
 
     def arkose_verify_url
       arkose_labs_namespace = ::Gitlab::CurrentSettings.arkose_labs_namespace
-      subdomain = if arkose_labs_namespace == ::ApplicationSetting::ARKOSE_LABS_DEFAULT_NAMESPACE
+      subdomain = if arkose_labs_namespace == ARKOSE_LABS_DEFAULT_NAMESPACE
                     ARKOSE_LABS_DEFAULT_SUBDOMAIN
                   else
                     "#{arkose_labs_namespace}-verify"

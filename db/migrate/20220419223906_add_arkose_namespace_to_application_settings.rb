@@ -5,7 +5,11 @@ class AddArkoseNamespaceToApplicationSettings < Gitlab::Database::Migration[2.0]
 
   def up
     unless column_exists?(:application_settings, :arkose_labs_namespace)
-      add_column :application_settings, :arkose_labs_namespace, :text
+      add_column :application_settings,
+                 :arkose_labs_namespace,
+                 :text,
+                 default: ::Arkose::UserVerificationService::ARKOSE_LABS_DEFAULT_NAMESPACE,
+                 null: false
     end
 
     add_text_limit :application_settings, :arkose_labs_namespace, 255
