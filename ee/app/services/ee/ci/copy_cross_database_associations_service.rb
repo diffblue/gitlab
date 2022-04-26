@@ -7,6 +7,8 @@ module EE
 
       override :execute
       def execute(old_build, new_build)
+        return ServiceResponse.success unless old_build.instance_of?(::Ci::Build)
+
         response = AppSec::Dast::Builds::AssociateService.new(
           ci_build_id: new_build.id,
           dast_site_profile_id: old_build.dast_site_profile&.id,
