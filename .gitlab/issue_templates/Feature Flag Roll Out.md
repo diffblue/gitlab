@@ -125,6 +125,10 @@ To do so, follow these steps:
     - [ ] `/chatops run release check <merge-request-url> <milestone>`
 - [ ] Close [the feature issue](ISSUE LINK) to indicate the feature will be released in the current milestone.
 - [ ] Set the next milestone to this rollout issue for scheduling [the flag removal](#release-the-feature).
+- [ ] Clean up the feature flag from all environments by running these chatops command in `#production` channel:
+    - [ ] `/chatops run feature delete <feature-flag-name> --dev`
+    - [ ] `/chatops run feature delete <feature-flag-name> --staging`
+    - [ ] `/chatops run feature delete <feature-flag-name>`
 - [ ] (Optional) You can [create a separate issue](https://gitlab.com/gitlab-org/gitlab/-/issues/new?issuable_template=Feature%20Flag%20Cleanup) for scheduling the steps below to [Release the feature](#release-the-feature).
     - [ ] Set the title to "[Feature flag] Cleanup `<feature-flag-name>`".
     - [ ] Execute the `/copy_metadata <this-rollout-issue-link>` quick action to copy the labels from this rollout issue.
