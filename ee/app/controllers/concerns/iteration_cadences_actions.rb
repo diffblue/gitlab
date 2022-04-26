@@ -9,6 +9,7 @@ module IterationCadencesActions
     before_action :set_noteable_type, only: [:index]
 
     feature_category :team_planning
+    urgency :low
   end
 
   def index; end

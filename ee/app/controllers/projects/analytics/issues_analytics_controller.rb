@@ -9,6 +9,7 @@ class Projects::Analytics::IssuesAnalyticsController < Projects::ApplicationCont
   track_redis_hll_event :show, name: 'p_analytics_issues'
 
   feature_category :planning_analytics
+  urgency :low
 
   def show
     respond_to do |format|
