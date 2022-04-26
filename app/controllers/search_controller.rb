@@ -26,7 +26,7 @@ class SearchController < ApplicationController
 
   feature_category :global_search
   urgency :high, [:opensearch]
-  urgency :low, [:count]
+  urgency :low, [:count, :autocomplete]
 
   def show
     @project = search_service.project

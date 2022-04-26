@@ -2,6 +2,7 @@
 
 class Admin::ElasticsearchController < Admin::ApplicationController
   feature_category :global_search
+  urgency :low
 
   # POST
   # Scheduling indexing jobs

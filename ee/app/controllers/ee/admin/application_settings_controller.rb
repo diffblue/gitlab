@@ -14,6 +14,7 @@ module EE
         feature_category :provision, [:seat_link_payload]
         feature_category :source_code_management, [:templates]
         feature_category :global_search, [:advanced_search]
+        urgency :low, [:advanced_search]
 
         def elasticsearch_reindexing_task
           @last_elasticsearch_reindexing_task = Elastic::ReindexingTask.last
