@@ -991,10 +991,10 @@
     url-search-params-polyfill "^5.0.0"
     vue-runtime-helpers "^1.1.2"
 
-"@gitlab/visual-review-tools@1.6.1":
-  version "1.6.1"
-  resolved "https://registry.yarnpkg.com/@gitlab/visual-review-tools/-/visual-review-tools-1.6.1.tgz#0d8f3ff9f51b05f7c80b9a107727703d48997e4e"
-  integrity sha512-vY8K1igwZFoEOmU0h4E7XTLlilsQ4ylPr27O01UsSe6ZTKi6oEMREsRAEpNIUgRlxUARCsf+Opp4pgSFzFkFcw==
+"@gitlab/visual-review-tools@1.7.0":
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/@gitlab/visual-review-tools/-/visual-review-tools-1.7.0.tgz#18a59911484ddbbee433d3701316b5ab8e4077a5"
+  integrity sha512-o9gM3W6guSl00aS0hJcXePuR/mkmq38F5FhUgTlMBkB5+R68aO87md3cSvSMfJin0MjPlWktBNAfaz+y5CQ39g==
 
 "@graphql-eslint/eslint-plugin@3.10.2":
   version "3.10.2"
