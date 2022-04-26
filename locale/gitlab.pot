@@ -501,7 +501,7 @@ msgstr ""
 msgid "%{code_open}Masked:%{code_close} Hidden in job logs. Must match masking requirements."
 msgstr ""
 
-msgid "%{code_open}Protected:%{code_close} Only exposed to protected branches or tags."
+msgid "%{code_open}Protected:%{code_close} Only exposed to protected branches or protected tags."
 msgstr ""
 
 msgid "%{commit_author_link} authored %{commit_authored_timeago}"
