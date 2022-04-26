@@ -19,8 +19,6 @@ export const MODAL_MESSAGE = s__(
 
 export const MODAL_TITLE = s__("SecurityOrchestration|Don't show the alert anymore");
 
-export const PORTAL_NAME = 'vulnerability-report-sticky';
-
 export const VULNERABILITY_REPORT_OPERATIONAL_TAB_LINK_LOCATION =
   '/-/security/vulnerability_report/?tab=OPERATIONAL';
 
