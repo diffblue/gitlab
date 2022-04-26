@@ -1324,6 +1324,9 @@ msgstr ""
 msgid "/"
 msgstr ""
 
+msgid "/day"
+msgstr ""
+
 msgid "0 bytes"
 msgstr ""
 
@@ -45475,9 +45478,6 @@ msgid "pending comment"
 msgstr ""
 
 msgid "pending deletion"
-msgstr ""
-
-msgid "per day"
 msgstr ""
 
 msgid "personal access token"
