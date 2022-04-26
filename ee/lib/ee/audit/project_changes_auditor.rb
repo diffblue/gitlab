@@ -16,6 +16,7 @@ module EE
         audit_changes(:reset_approvals_on_push, as: 'require new approvals when new commits are added to an MR', model: model)
         audit_changes(:disable_overriding_approvers_per_merge_request, as: 'prevent users from modifying MR approval rules in merge requests', model: model)
         audit_changes(:require_password_to_approve, as: 'require user password for approvals', model: model)
+        audit_changes(:merge_requests_template, as: 'merge_requests_template', model: model) if should_audit? :merge_requests_template
 
         audit_changes(:resolve_outdated_diff_discussions, as: 'resolve_outdated_diff_discussions', model: model)
         audit_changes(:printing_merge_request_link_enabled, as: 'printing_merge_request_link_enabled', model: model)

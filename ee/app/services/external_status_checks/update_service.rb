@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 
 module ExternalStatusChecks
-  class UpdateService < BaseContainerService
+  class UpdateService < BaseService
     def execute
       return unauthorized_error_response unless current_user.can?(:admin_project, container)
 
-      if rule.update(resource_params)
+      if with_audit_logged(rule, 'update_status_check') { rule.update(resource_params) }
+        log_audit_event
         ServiceResponse.success(payload: { rule: rule })
       else
         ServiceResponse.error(message: 'Failed to update rule',
@@ -21,7 +22,7 @@ module ExternalStatusChecks
     end
 
     def rule
-      container.external_status_checks.find(params[:check_id])
+      @rule ||= container.external_status_checks.find(params[:check_id])
     end
 
     def unauthorized_error_response
@@ -30,6 +31,10 @@ module ExternalStatusChecks
         payload: { errors: ['Not allowed'] },
         http_status: :unauthorized
       )
+    end
+
+    def log_audit_event
+      Audit::ExternalStatusCheckChangesAuditor.new(current_user, rule).execute
     end
   end
 end

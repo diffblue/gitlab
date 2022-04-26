@@ -83,6 +83,18 @@ RSpec.describe EE::Audit::ProjectChangesAuditor do
         expect(AuditEvent.last.details[:change]).to eq 'packages_enabled'
       end
 
+      it 'creates an event when the merge requests template changes' do
+        project.update!(merge_requests_template: 'I am a merge request template')
+
+        expect { foo_instance.execute }.to change { AuditEvent.count }.by(1)
+        expect(AuditEvent.last.details[:change]).to eq 'merge_requests_template'
+        expect(AuditEvent.last.details).to include({
+                                                     change: 'merge_requests_template',
+                                                     from: nil,
+                                                     to: 'I am a merge request template'
+                                                   })
+      end
+
       it 'creates an event when the merge requests author approval changes' do
         project.update!(merge_requests_author_approval: true)
 
