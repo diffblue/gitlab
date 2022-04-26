@@ -142,6 +142,26 @@ RSpec.describe CommitStatus do
     end
   end
 
+  describe '.cancelable' do
+    subject { described_class.cancelable }
+
+    %i[running pending waiting_for_resource preparing created scheduled].each do |status|
+      context "when #{status} commit status" do
+        let!(:commit_status) { create(:commit_status, status, pipeline: pipeline) }
+
+        it { is_expected.to contain_exactly(commit_status) }
+      end
+    end
+
+    %i[failed success skipped canceled manual].each do |status|
+      context "when #{status} commit status" do
+        let!(:commit_status) { create(:commit_status, status, pipeline: pipeline) }
+
+        it { is_expected.to be_empty }
+      end
+    end
+  end
+
   describe '#started?' do
     subject { commit_status.started? }
 
