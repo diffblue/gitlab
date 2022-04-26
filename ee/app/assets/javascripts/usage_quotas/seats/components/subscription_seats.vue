@@ -126,9 +126,15 @@ export default {
       return this.hasNoSubscription ? this.total : this.seatsInUse;
     },
     seatsInUseText() {
-      return this.hasNoSubscription && this.glFeatures.freeUserCap
+      return this.hasLimitedFreePlan
         ? this.$options.i18n.seatsAvailableText
         : this.$options.i18n.seatsInSubscriptionText;
+    },
+    displayedTotalSeats() {
+      return this.totalSeatsAvailable ? String(this.totalSeatsAvailable) : '-';
+    },
+    hasLimitedFreePlan() {
+      return this.hasNoSubscription && this.glFeatures.freeUserCap;
     },
   },
   created() {
@@ -167,9 +173,6 @@ export default {
     },
     isProjectInvite(item) {
       return item.user.membership_type === 'project_invite';
-    },
-    hasLimitedFreePlan() {
-      return this.hasNoSubscription && this.glFeatures.freeUserCap;
     },
     shouldShowDetails(item) {
       return !this.isGroupInvite(item) && !this.isProjectInvite(item);
@@ -218,13 +221,12 @@ export default {
         :description="seatsInUseText"
         :percentage="seatsInUsePercentage"
         :usage-value="String(totalSeatsInUse)"
-        :total-value="totalSeatsAvailable ? String(totalSeatsAvailable) : '-'"
+        :total-value="displayedTotalSeats"
         class="gl-w-full gl-md-w-half gl-md-mr-5"
       />
 
       <subscription-upgrade-info-card
-        v-if="hasLimitedFreePlan()"
-        data-testid="subscription-upgrad-info-card"
+        v-if="hasLimitedFreePlan"
         :max-namespace-seats="maxFreeNamespaceSeats"
         :explore-plans-path="explorePlansPath"
         class="gl-w-full gl-md-w-half gl-md-mt-0 gl-mt-5"

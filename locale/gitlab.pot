@@ -5778,9 +5778,6 @@ msgstr ""
 msgid "Billings|Your account has been validated"
 msgstr ""
 
-msgid "Billing| Free groups on GitLab are limited to %{maxNamespaceSeats} seats"
-msgstr ""
-
 msgid "Billing|%{user} was successfully approved"
 msgstr ""
 
@@ -5824,6 +5821,9 @@ msgid "Billing|Explore all plans"
 msgstr ""
 
 msgid "Billing|Export list"
+msgstr ""
+
+msgid "Billing|Free groups on GitLab are limited to %{maxNamespaceSeats} seats"
 msgstr ""
 
 msgid "Billing|Group invite"
