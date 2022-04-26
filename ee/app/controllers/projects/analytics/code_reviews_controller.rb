@@ -10,6 +10,7 @@ module Projects
       track_redis_hll_event :index, name: 'p_analytics_code_reviews'
 
       feature_category :value_stream_management
+      urgency :low
 
       def index
       end

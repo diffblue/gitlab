@@ -6,6 +6,7 @@ module API
       include PaginationParams
 
       feature_category :value_stream_management
+      urgency :low
 
       helpers do
         def project

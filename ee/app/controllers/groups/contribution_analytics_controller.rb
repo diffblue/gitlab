@@ -11,6 +11,7 @@ class Groups::ContributionAnalyticsController < Groups::ApplicationController
   track_redis_hll_event :show, name: 'g_analytics_contribution'
 
   feature_category :value_stream_management
+  urgency :low
 
   def show
     @start_date = data_collector.from
