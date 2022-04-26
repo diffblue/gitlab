@@ -157,7 +157,7 @@ table.test-coverage th {
   </tr>
     <tr>
     <th scope="row">1k</th>
-    <td><a href="https://gitlab.com/gitlab-org/quality/performance/-/wikis/Benchmarks/Latest/1k">Daily</a> (to be moved to Weekly)</td>
+    <td><a href="https://gitlab.com/gitlab-org/quality/performance/-/wikis/Benchmarks/Latest/1k">Weekly</a></td>
     <td></td>
     <td></td>
     <td></td>
@@ -165,7 +165,7 @@ table.test-coverage th {
   </tr>
   <tr>
     <th scope="row">2k</th>
-    <td><a href="https://gitlab.com/gitlab-org/quality/performance/-/wikis/Benchmarks/Latest/2k">Daily</a> (to be moved to Weekly)</td>
+    <td><a href="https://gitlab.com/gitlab-org/quality/performance/-/wikis/Benchmarks/Latest/2k">Weekly</a></td>
     <td></td>
     <td></td>
     <td></td>
