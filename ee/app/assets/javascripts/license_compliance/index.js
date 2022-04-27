@@ -43,6 +43,7 @@ export default () => {
 
   return new Vue({
     el,
+    name: 'LicenseComplianceAppRoot',
     store,
     components: {
       LicenseComplianceApp,

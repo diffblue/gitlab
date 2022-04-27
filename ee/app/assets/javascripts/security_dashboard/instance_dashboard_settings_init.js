@@ -12,6 +12,7 @@ export default (el) => {
 
   return new Vue({
     el,
+    name: 'SecurityDashboardSettingsRoot',
     apolloProvider,
     render(createElement) {
       return createElement(ProjectManager, {
