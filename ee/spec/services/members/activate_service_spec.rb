@@ -48,10 +48,12 @@ RSpec.describe Members::ActivateService do
 
       it 'logs the approval in application logs' do
         expect(Gitlab::AppLogger).to receive(:info).with(
-          message: "Group member access approved",
-          group: group.id,
-          member: member.id,
-          approved_by: current_user.id
+          {
+            message: "Group member access approved",
+            group: group.id,
+            member: member.id,
+            approved_by: current_user.id
+          }
         )
 
         execute
@@ -163,9 +165,11 @@ RSpec.describe Members::ActivateService do
 
         it 'logs the approval in application logs' do
           expect(Gitlab::AppLogger).to receive(:info).with(
-            message: "Approved all pending group members",
-            group: group.id,
-            approved_by: current_user.id
+            {
+              message: "Approved all pending group members",
+              group: group.id,
+              approved_by: current_user.id
+            }
           )
 
           execute

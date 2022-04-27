@@ -11,7 +11,7 @@ RSpec.describe StatusPage::Renderer do
 
       expect(MarkupHelper)
         .to receive(:markdown_field)
-        .with(object, field, issue_iid: issue_iid, post_process_pipeline: ::Gitlab::StatusPage::Pipeline::PostProcessPipeline)
+        .with(object, field, { issue_iid: issue_iid, post_process_pipeline: ::Gitlab::StatusPage::Pipeline::PostProcessPipeline })
 
       described_class.markdown(object, field, issue_iid: issue_iid)
     end

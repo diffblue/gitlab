@@ -56,7 +56,7 @@ RSpec.describe ::Gitlab::Ci::Pipeline::Chain::Limit::Activity, :saas do
     it 'logs the error' do
       expect(Gitlab::ErrorTracking).to receive(:log_exception).with(
         instance_of(Gitlab::Ci::Limit::LimitExceededError),
-        project_id: project.id, plan: namespace.actual_plan_name
+        { project_id: project.id, plan: namespace.actual_plan_name }
       )
 
       subject

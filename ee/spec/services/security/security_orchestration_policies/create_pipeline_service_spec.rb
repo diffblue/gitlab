@@ -148,7 +148,8 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CreatePipelineService do
 
             it 'parses variables from the action and applies them in configuration service' do
               expect_next_instance_of(::Security::SecurityOrchestrationPolicies::CiConfigurationService) do |ci_configuration_service|
-                expect(ci_configuration_service).to receive(:execute).once.with(action, 'SAST_DISABLED' => nil, 'SAST_EXCLUDED_ANALYZERS' => 'semgrep').and_call_original
+                expect(ci_configuration_service).to receive(:execute).once
+                  .with(action, { 'SAST_DISABLED' => nil, 'SAST_EXCLUDED_ANALYZERS' => 'semgrep' }).and_call_original
               end
 
               subject

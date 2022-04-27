@@ -16,9 +16,11 @@ RSpec.describe Groups::CreateEventWorker do
 
   it 'passes the correct arguments' do
     expect(Event).to receive(:create!).with(
-      group_id: group.id,
-      action: :created,
-      author_id: user.id
+      {
+        group_id: group.id,
+        action: :created,
+        author_id: user.id
+      }
     )
 
     worker.perform(group.id, user.id, :created)
