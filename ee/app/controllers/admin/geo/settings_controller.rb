@@ -5,6 +5,7 @@ class Admin::Geo::SettingsController < Admin::ApplicationSettingsController
   before_action :check_license!, except: :show
 
   feature_category :geo_replication
+  urgency :low
 
   def show
   end
