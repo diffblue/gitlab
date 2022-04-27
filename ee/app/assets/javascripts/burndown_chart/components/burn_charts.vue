@@ -2,7 +2,8 @@
 import { GlAlert, GlButton, GlButtonGroup } from '@gitlab/ui';
 import dateFormat from 'dateformat';
 import { cloneDeep } from 'lodash';
-import BurnupQuery from 'shared_queries/burndown_chart/burnup.query.graphql';
+import BurnupQueryIteration from 'shared_queries/burndown_chart/burnup.iteration.query.graphql';
+import BurnupQueryMilestone from 'shared_queries/burndown_chart/burnup.milestone.query.graphql';
 import createFlash from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 import { getDayDifference, nDaysAfter, newDateAsLocaleTime } from '~/lib/utils/datetime_utility';
@@ -76,13 +77,15 @@ export default {
       skip() {
         return !this.milestoneId && !this.iterationId;
       },
-      query: BurnupQuery,
+      query() {
+        return this.iterationId ? BurnupQueryIteration : BurnupQueryMilestone;
+      },
       variables() {
         const fullPath = this.isIterationReport ? { fullPath: this.fullPath } : {};
 
         return {
-          id: this.iterationId || this.milestoneId,
-          isIteration: Boolean(this.iterationId),
+          iterationId: this.iterationId,
+          milestoneId: this.milestoneId,
           weight: !this.issuesSelected,
           ...fullPath,
         };
