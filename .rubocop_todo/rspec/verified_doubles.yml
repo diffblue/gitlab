@@ -301,9 +301,6 @@ RSpec/VerifiedDoubles:
     - spec/controllers/projects/blob_controller_spec.rb
     - spec/controllers/projects/branches_controller_spec.rb
     - spec/controllers/projects/clusters_controller_spec.rb
-    - spec/controllers/projects/error_tracking/projects_controller_spec.rb
-    - spec/controllers/projects/error_tracking/stack_traces_controller_spec.rb
-    - spec/controllers/projects/error_tracking_controller_spec.rb
     - spec/controllers/projects/import/jira_controller_spec.rb
     - spec/controllers/projects/jobs_controller_spec.rb
     - spec/controllers/projects/merge_requests/diffs_controller_spec.rb
