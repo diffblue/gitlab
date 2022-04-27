@@ -19,7 +19,7 @@ module EE
 
         return false if group.errors.present?
 
-        super.tap { |success| log_audit_event if success }
+        super.tap { |success| log_audit_events if success }
       end
 
       private
@@ -103,7 +103,10 @@ module EE
 
         return if comma_separated_ranges.nil?
 
-        IpRestrictions::UpdateService.new(group, comma_separated_ranges).execute
+        # rubocop:disable Gitlab/ModuleWithInstanceVariables
+        @ip_restriction_update_service = IpRestrictions::UpdateService.new(current_user, group, comma_separated_ranges)
+        @ip_restriction_update_service.execute
+        # rubocop:enable Gitlab/ModuleWithInstanceVariables
       end
 
       def handle_allowed_email_domains_update
@@ -119,7 +122,9 @@ module EE
         @allowed_settings_params ||= super + EE_SETTINGS_PARAMS
       end
 
-      def log_audit_event
+      def log_audit_events
+        @ip_restriction_update_service&.log_audit_event # rubocop:disable Gitlab/ModuleWithInstanceVariables
+
         EE::Audit::GroupChangesAuditor.new(current_user, group).execute
       end
     end

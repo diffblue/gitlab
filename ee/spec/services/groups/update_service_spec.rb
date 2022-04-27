@@ -21,11 +21,11 @@ RSpec.describe Groups::UpdateService, '#execute' do
       }
     end
 
-    describe '#visibility' do
-      before do
-        group.add_owner(user)
-      end
+    before do
+      group.add_owner(user)
+    end
 
+    describe '#visibility' do
       include_examples 'audit event logging' do
         let(:operation) do
           update_group(group, user, visibility_level: Gitlab::VisibilityLevel::PRIVATE)
@@ -42,6 +42,32 @@ RSpec.describe Groups::UpdateService, '#execute' do
               from: 'Public',
               to: 'Private'
             )
+          end
+        end
+      end
+    end
+
+    describe 'ip restrictions' do
+      context 'when IP restrictions were changed' do
+        before do
+          group.add_owner(user)
+        end
+
+        include_examples 'audit event logging' do
+          let(:operation) do
+            update_group(group, user, ip_restriction_ranges: '192.168.0.0/24,10.0.0.0/8' )
+          end
+
+          let(:fail_condition!) do
+            allow(group).to receive(:save).and_return(false)
+          end
+
+          let(:attributes) do
+            audit_event_params.tap do |param|
+              param[:details].merge!(
+                custom_message: "Group IP restrictions updated from '' to '192.168.0.0/24,10.0.0.0/8'"
+              )
+            end
           end
         end
       end

@@ -10,19 +10,41 @@ module EE
       # marks the records that exist for the group right now, but are not in `comma_separated_ranges` for deletion.
       # builds new ip_restriction records that do not exist for the group right now, but exists in `comma_separated_ranges`
 
-      def initialize(group, comma_separated_ranges)
+      def initialize(current_user, group, comma_separated_ranges)
+        @current_user = current_user
         @group = group
         @comma_separated_ranges = comma_separated_ranges
       end
 
       def execute
+        @old_ranges = existing_ranges
+
         mark_deleted_ranges_for_destruction
         build_new_ip_restriction_records
+
+        @new_ranges = existing_ranges
+      end
+
+      # This method is public because this service doesn't save anything to DB.
+      # Save happens when parent group is saved in EE:Groups::UpdateService
+      def log_audit_event
+        raise "Nothing to log, the service must be executed first." unless @old_ranges && @new_ranges
+
+        return unless group.licensed_feature_available?(:extended_audit_events)
+        return if @old_ranges.sort == @new_ranges.sort
+
+        ::Gitlab::Audit::Auditor.audit(
+          name: 'ip_restrictions_changed',
+          message: "Group IP restrictions updated from '#{@old_ranges.join(',')}' to '#{@new_ranges.join(',')}'",
+          target: group,
+          scope: group,
+          author: current_user
+        )
       end
 
       private
 
-      attr_reader :group, :comma_separated_ranges
+      attr_reader :group, :current_user, :comma_separated_ranges
 
       def mark_deleted_ranges_for_destruction
         return unless ranges_to_be_deleted.present?
@@ -55,7 +77,7 @@ module EE
       end
 
       def existing_ranges
-        group.ip_restrictions.map(&:range)
+        group.ip_restrictions.reject(&:marked_for_destruction?).map(&:range)
       end
 
       def current_ranges
