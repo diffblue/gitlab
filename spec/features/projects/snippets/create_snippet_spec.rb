@@ -91,8 +91,8 @@ RSpec.describe 'Projects > Snippets > Create Snippet', :js do
   end
 
   it 'shows validation errors' do
-    title_validation_message = "This field is required."
-    files_validation_message = "Snippets can't contain empty files. Ensure all files have content, or delete them."
+    title_validation_message = _("This field is required.")
+    files_validation_message = _("Snippets can't contain empty files. Ensure all files have content, or delete them.")
 
     click_button('Create snippet')
 
