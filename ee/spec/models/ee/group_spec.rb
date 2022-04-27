@@ -2368,9 +2368,72 @@ RSpec.describe Group do
     end
   end
 
+  describe '#recent_activity_by_users_in_hierarchy' do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:group_user) { create(:group_member, :owner, group: group, user: create(:user)).user }
+    let_it_be(:epic) { create(:epic, group: group) }
+    let_it_be(:epic_event) { create(:event, :created, target: epic, group: group, author: group_user) }
+
+    it 'returns a separate hash for another group' do
+      expect(group.recent_activity_by_users_in_hierarchy)
+        .to include(group_user.id => epic_event.id)
+    end
+  end
+
   it_behaves_like 'can move repository storage' do
     let_it_be(:container) { create(:group, :wiki_repo) }
 
     let(:repository) { container.wiki.repository }
+  end
+
+  describe '#memberships_to_be_deactivated' do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:project) { create(:project, group: group) }
+
+    before do
+      create_list(:group_member, 4, :active, group: group)
+      create_list(:project_member, 7, :active, project: project)
+    end
+
+    it "returns all but 5 memberships in groups and projects" do
+      expect(group.memberships_to_be_deactivated.map(&:state)).to eq([::Member::STATE_ACTIVE] * 6)
+    end
+
+    context 'with some awaiting members' do
+      it "returns only active members ignoring awaiting ones" do
+        create(:project_member, :awaiting, project: project)
+
+        expect(group.memberships_to_be_deactivated.map(&:state)).to eq([::Member::STATE_ACTIVE] * 6)
+      end
+    end
+  end
+
+  describe '#trimmable_user_ids' do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:owner1) { create(:user) }
+    let_it_be(:owner2) { create(:user) }
+    let_it_be(:project) { create(:project, group: group) }
+    let_it_be(:project_user) { create(:project_member, project: project).user }
+    let_it_be(:project_2) { create(:project, group: group) }
+    let_it_be(:project2_user) { create(:project_member, project: project_2).user }
+    let_it_be(:bot_project_user) { create(:project_member, project: project, user: create(:user, :bot)).user }
+    let_it_be(:requesting_user) { create(:project_member, :access_request, project: project).user }
+    let_it_be(:group_user) { create(:group_member, :owner, group: group, user: create(:user)).user }
+
+    before do
+      group.add_owner(owner1)
+      group.add_owner(owner2)
+      create(:project_member, :invited, project: project)
+      create(:project_member) # a random project member with project not under our group
+      create(:group_member) # a random group member with group not under our group
+      create(:project_member, project: project_2, user: project_user) # member using same user as project_user
+      create(:project_member, project: project, user: create(:user, :project_bot)) # project bot
+      create(:project_member, project: project, user: create(:user, :blocked)) # not active user
+    end
+
+    it 'only includes users from projects of a group and the owners of the group' do
+      expect(group.trimmable_user_ids)
+        .to contain_exactly(project_user.id, owner1.id, owner2.id, project2_user.id, bot_project_user.id, requesting_user.id, group_user.id)
+    end
   end
 end

@@ -472,8 +472,64 @@ module EE
       end
     end
 
+    def trimmable_user_ids
+      strong_memoize(:trimmable_user_ids) do
+        active_members = ::Member.in_hierarchy(self).active_state
+
+        users_without_project_bots(active_members)
+          .with_state(:active)
+          .pluck(:id)
+      end
+    end
+
+    def recent_activity_by_users_in_hierarchy
+      strong_memoize(:recent_activity_by_users_in_hierarchy) do
+        ::Event.from_union(
+          [
+            ::Event.where(author: trimmable_user_ids).where(project: root_ancestor.all_projects),
+            ::Event.where(author: trimmable_user_ids).where(group: root_ancestor.self_and_descendants)
+          ]
+        ).group(:author_id).maximum(:id)
+      end
+    end
+
+    def take_high_activity_user_ids(user_ids, count = ::Namespaces::FreeUserCap::FREE_USER_LIMIT)
+      user_ids
+        .sort_by { |e| -recent_activity_by_users_in_hierarchy[e].to_i }
+        .take(count)
+    end
+
+    def staying_in_user_ids
+      strong_memoize(:staying_in_user_ids) do
+        if trimmable_user_ids.count <= ::Namespaces::FreeUserCap::FREE_USER_LIMIT
+          trimmable_user_ids
+        else
+          if owner_ids.count == ::Namespaces::FreeUserCap::FREE_USER_LIMIT
+            owner_ids
+          elsif owner_ids.count > ::Namespaces::FreeUserCap::FREE_USER_LIMIT
+            take_high_activity_user_ids(owner_ids)
+          else
+            additional_non_owners = take_high_activity_user_ids(trimmable_user_ids, ::Namespaces::FreeUserCap::FREE_USER_LIMIT) - owner_ids
+            owners_and_users = take_high_activity_user_ids(owner_ids) + additional_non_owners
+            owners_and_users.take(::Namespaces::FreeUserCap::FREE_USER_LIMIT)
+          end
+        end
+      end
+    end
+
+    def memberships_to_be_deactivated
+      ::Member
+        .in_hierarchy(self)
+        .active_state
+        .excluding_users(staying_in_user_ids)
+    end
+
     def exclude_guests?
       false
+    end
+
+    def owner_ids
+      [owner.id]
     end
 
     private

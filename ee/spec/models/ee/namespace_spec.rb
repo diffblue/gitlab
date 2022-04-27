@@ -989,7 +989,146 @@ RSpec.describe Namespace do
     end
   end
 
-  describe '#free_plan_user_ids' do
+  describe 'trimmable_user_ids' do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:project) { create(:project, namespace: group) }
+
+    subject(:trimmable_user_ids) { group.trimmable_user_ids }
+
+    before do
+      create_list(:project_member, 3, :active, project: project)
+      create_list(:group_member, 2, :active, group: group)
+
+      # some deactivated users as members
+      create(:project_member, :active, project: project, user: create(:user, state: 'deactivated'))
+
+      # some active users but in awaiting state
+      create(:project_member, :awaiting, project: project)
+    end
+
+    it 'returns except awaiting members and deactivated users' do
+      expect(trimmable_user_ids.count).to eq(5)
+    end
+  end
+
+  describe '#recent_activity_by_users_in_hierarchy' do
+    let_it_be(:namespace) { create(:namespace) }
+    let_it_be(:project) { create(:project, namespace: namespace) }
+    let_it_be(:project_user) { create(:project_member, project: project).user }
+    let_it_be(:bot_project_user) { create(:project_member, project: project, user: create(:user, :bot)).user }
+    let_it_be(:owner_event) { create(:event, author: namespace.owner, project: project) }
+    let_it_be(:project_event) { create(:event, author: project_user, project: project) }
+    let_it_be(:bot_event) { create(:event, author: bot_project_user, project: project) }
+
+    it 'returns a hash of most recent activity ID for each user' do
+      expect(namespace.recent_activity_by_users_in_hierarchy)
+        .to include(
+          namespace.owner.id => owner_event.id,
+          project_user.id => project_event.id,
+          bot_project_user.id => bot_event.id
+        )
+    end
+  end
+
+  describe '#take_high_activity_user_ids' do
+    let_it_be(:example_activity_by_user) do
+      { 1 => 321, 2 => 5112, 3 => 511, 4 => 51, 5 => 15, 6 => 52, 7 => 0, 8 => 12, 9 => 100 }
+    end
+
+    before do
+      allow(namespace).to receive(:recent_activity_by_users_in_hierarchy).and_return(example_activity_by_user)
+    end
+
+    it 'takes 5 most recently active users' do
+      expect(namespace.take_high_activity_user_ids(Array(1..9))).to eq([2, 3, 1, 9, 6])
+    end
+
+    it 'takes 3 most recently active users when given 3 users' do
+      expect(namespace.take_high_activity_user_ids(Array(1..3))).to eq([2, 3, 1])
+    end
+
+    it 'takes 5 most recently active users when given some other users' do
+      expect(namespace.take_high_activity_user_ids(Array(3..9))).to eq([3, 9, 6, 4, 5])
+    end
+  end
+
+  describe '#staying_in_user_ids' do
+    let(:user_ids) { Array(1..20) }
+    let(:activity_by_user) { user_ids.to_h { |k| [k, k] } }
+
+    before do
+      allow(namespace).to receive(:recent_activity_by_users_in_hierarchy).and_return(activity_by_user)
+    end
+
+    subject(:staying_in_user_ids) { namespace.staying_in_user_ids }
+
+    it "returns all users when namespace has exactly 5 users" do
+      allow(namespace).to receive(:trimmable_user_ids).and_return(user_ids.take(5))
+
+      expect(staying_in_user_ids).to eq([1, 2, 3, 4, 5])
+    end
+
+    it "returns all users when namespace has less than 5 users" do
+      allow(namespace).to receive(:trimmable_user_ids).and_return(user_ids.take(3))
+
+      expect(staying_in_user_ids).to eq([1, 2, 3])
+    end
+
+    it "returns all owners if namespace has 5 owners and even more users" do
+      allow(namespace).to receive(:trimmable_user_ids).and_return(user_ids.take(10))
+      allow(namespace).to receive(:owner_ids).and_return(user_ids.take(5))
+
+      expect(staying_in_user_ids).to eq([1, 2, 3, 4, 5])
+    end
+
+    it "returns top 5 most active owners when namespace has more than 5 owners" do
+      allow(namespace).to receive(:trimmable_user_ids).and_return(user_ids.take(15))
+      allow(namespace).to receive(:owner_ids).and_return(user_ids.take(10))
+
+      expect(staying_in_user_ids).to eq([10, 9, 8, 7, 6])
+    end
+
+    it "returns 3 owners and top 2 users when namespace has 3 owners and over limit users" do
+      allow(namespace).to receive(:trimmable_user_ids).and_return(user_ids.take(10))
+      allow(namespace).to receive(:owner_ids).and_return(user_ids.take(3))
+
+      expect(staying_in_user_ids).to eq([3, 2, 1, 10, 9])
+    end
+
+    context 'owners are also top active users' do
+      let(:activity_by_user) { user_ids.to_h { |k| [k, 100 - k] } }
+
+      it "returns 3 owners and top 2 non owner users when top active users include owners too" do
+        allow(namespace).to receive(:trimmable_user_ids).and_return(user_ids.take(6))
+        allow(namespace).to receive(:owner_ids).and_return(user_ids.take(3))
+
+        expect(staying_in_user_ids).to eq([1, 2, 3, 4, 5])
+      end
+    end
+  end
+
+  describe '#memberships_to_be_deactivated' do
+    let(:namespace) { create(:namespace) }
+    let(:project) { create(:project, namespace: namespace) }
+
+    before do
+      create_list(:project_member, 7, :active, project: project)
+    end
+
+    it "returns all but 5 memberships in namespace and projects" do
+      expect(namespace.memberships_to_be_deactivated.map(&:state)).to eq([::Member::STATE_ACTIVE] * 3)
+    end
+
+    context 'with some awaiting members' do
+      it "returns only active members ignoring awaiting ones" do
+        create(:project_member, :awaiting, project: project)
+
+        expect(namespace.memberships_to_be_deactivated.map(&:state)).to eq([::Member::STATE_ACTIVE] * 3)
+      end
+    end
+  end
+
+  describe '#trimmable_user_ids' do
     let_it_be(:namespace) { create(:namespace) }
     let_it_be(:owner) { namespace.owner }
     let_it_be(:project) { create(:project, namespace: namespace) }
@@ -997,10 +1136,10 @@ RSpec.describe Namespace do
     let_it_be(:project_2) { create(:project, namespace: namespace) }
     let_it_be(:project2_user) { create(:project_member, project: project_2).user }
     let_it_be(:bot_project_user) { create(:project_member, project: project, user: create(:user, :bot)).user }
+    let_it_be(:requesting_user) { create(:project_member, :access_request, project: project).user }
 
     before do
-      create(:project_member, :invited, project: project) # invited member
-      create(:project_member, :access_request, project: project) # requested member
+      create(:project_member, :invited, project: project)
       create(:project_member) # a random project member with project not under our namespace
       create(:group_member) # a random group member with group not under our namespace
       create(:project_member, project: project_2, user: project_user) # member using same user as project_user
@@ -1009,7 +1148,14 @@ RSpec.describe Namespace do
     end
 
     it 'only includes users from projects of a personal namespace and the owner of the namespace' do
-      expect(namespace.free_plan_user_ids).to contain_exactly(project_user.id, owner.id, project2_user.id, bot_project_user.id)
+      expect(namespace.trimmable_user_ids)
+        .to contain_exactly(project_user.id, owner.id, project2_user.id, bot_project_user.id, requesting_user.id)
+    end
+  end
+
+  describe '#owner_ids' do
+    it 'returns the owner_ids for a personal namespace' do
+      expect(namespace.owner_ids).to eq([namespace.owner.id])
     end
   end
 
