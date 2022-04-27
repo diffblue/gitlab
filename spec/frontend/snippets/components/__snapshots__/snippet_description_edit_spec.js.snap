@@ -31,6 +31,7 @@ exports[`Snippet Description Edit component rendering matches the snapshot 1`] =
         data-testid="markdownHeader"
         enablepreview="true"
         linecontent=""
+        restrictedtoolbaritems=""
         suggestionstartindex="0"
       />
        
@@ -81,6 +82,7 @@ exports[`Snippet Description Edit component rendering matches the snapshot 1`] =
             canattachfile="true"
             markdowndocspath="help/"
             quickactionsdocspath=""
+            showcommenttoolbar="true"
           />
         </div>
       </div>
