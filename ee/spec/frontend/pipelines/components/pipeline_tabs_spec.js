@@ -27,6 +27,7 @@ describe('The Pipeline Tabs', () => {
   const defaultProvide = {
     canGenerateCodequalityReports: false,
     codequalityReportDownloadPath: '',
+    defaultTabValue: '',
     exposeSecurityDashboard: false,
     exposeLicenseScanningData: false,
   };
@@ -41,9 +42,7 @@ describe('The Pipeline Tabs', () => {
         },
         stubs: {
           BasePipelineTabs,
-          Dag: { template: '<div id="dag"/>' },
           JobsApp: { template: '<div class="jobs" />' },
-          PipelineGraph: { template: '<div id="graph" />' },
           TestReports: { template: '<div id="tests" />' },
         },
       }),

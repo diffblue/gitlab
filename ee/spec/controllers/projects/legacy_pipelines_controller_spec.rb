@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+# rubocop:disable RSpec/FilePath
 
 require 'spec_helper'
 
@@ -9,7 +10,7 @@ RSpec.describe Projects::PipelinesController do
 
   before do
     project.add_developer(user)
-
+    stub_feature_flags(pipeline_tabs_vue: false)
     sign_in(user)
   end
 
@@ -26,8 +27,9 @@ RSpec.describe Projects::PipelinesController do
           get :security, params: { namespace_id: project.namespace, project_id: project, id: pipeline }
         end
 
-        it 'redirects to the pipeline page with the security tab query param' do
-          expect(response).to redirect_to(pipeline_path(pipeline, tab: 'security'))
+        it do
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(response).to render_template :show
         end
       end
 
@@ -70,18 +72,41 @@ RSpec.describe Projects::PipelinesController do
   describe 'GET codequality_report' do
     let(:pipeline) { create(:ci_pipeline, project: project) }
 
-    it 'redirects to pipeline path with dag tab query param' do
+    it do
       get :codequality_report, params: { namespace_id: project.namespace, project_id: project, id: pipeline }
 
-      expect(response).to redirect_to(pipeline_path(pipeline, tab: 'codequality_report'))
+      expect(response).to have_gitlab_http_status(:ok)
+      expect(response).to render_template :show
     end
   end
 
   describe 'GET licenses' do
-    let(:licenses_with_html) {get :licenses, format: :html, params: { namespace_id: project.namespace, project_id: project, id: pipeline }}
-    let(:licenses_with_json) {get :licenses, format: :json, params: { namespace_id: project.namespace, project_id: project, id: pipeline }}
+    let(:licenses_with_html) do
+      get :licenses,
+      format: :html,
+      params: {
+        namespace_id: project.namespace,
+        project_id: project,
+        id: pipeline
+      }
+    end
+
+    let(:licenses_with_json) do
+      get :licenses,
+      format: :json,
+      params: {
+        namespace_id: project.namespace,
+        project_id: project,
+        id: pipeline
+      }
+    end
+
     let!(:mit_license) { create(:software_license, :mit) }
-    let!(:software_license_policy) { create(:software_license_policy, software_license: mit_license, project: project) }
+    let!(:software_license_policy) do
+      create(:software_license_policy,
+        software_license: mit_license,
+        project: project)
+    end
 
     let(:payload) { Gitlab::Json.parse(licenses_with_json.body) }
 
@@ -97,8 +122,9 @@ RSpec.describe Projects::PipelinesController do
           licenses_with_html
         end
 
-        it 'redirects to the pipeline page with the licenses tab query param' do
-          expect(response).to redirect_to(pipeline_path(pipeline, tab: 'licenses'))
+        it do
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(response).to render_template :show
         end
       end
 
@@ -114,7 +140,9 @@ RSpec.describe Projects::PipelinesController do
 
         it 'will return mit license allowed status' do
           payload_mit = payload.find { |l| l['name'] == 'MIT' }
-          expect(payload_mit['count']).to eq(pipeline.license_scanning_report.licenses.find { |x| x.name == 'MIT' }.count)
+          expect(payload_mit['count']).to eq(
+            pipeline.license_scanning_report.licenses.find { |x| x.name == 'MIT' }.count
+          )
           expect(payload_mit['url']).to eq('http://opensource.org/licenses/mit-license')
           expect(payload_mit['classification']['approval_status']).to eq('allowed')
         end

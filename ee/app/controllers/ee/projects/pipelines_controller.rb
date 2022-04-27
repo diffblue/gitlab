@@ -23,7 +23,11 @@ module EE
 
       def security
         if pipeline.expose_security_dashboard?
-          render_show
+          if ::Feature.enabled?(:pipeline_tabs_vue, project, default_enabled: :yaml)
+            redirect_to pipeline_path(pipeline, tab: 'security')
+          else
+            render_show
+          end
         else
           redirect_to pipeline_path(pipeline)
         end
@@ -34,7 +38,13 @@ module EE
         return access_to_licenses_denied! unless report_exists
 
         respond_to do |format|
-          format.html { render_show }
+          format.html do
+            if ::Feature.enabled?(:pipeline_tabs_vue, project, default_enabled: :yaml)
+              redirect_to pipeline_path(pipeline, tab: 'licenses')
+            else
+              render_show
+            end
+          end
           format.json do
             render status: :ok, json: LicenseScanningReportsSerializer.new.represent(
               project.license_compliance(pipeline).find_policies(detected_only: true)
@@ -44,7 +54,11 @@ module EE
       end
 
       def codequality_report
-        render_show
+        if ::Feature.enabled?(:pipeline_tabs_vue, project, default_enabled: :yaml)
+          redirect_to pipeline_path(pipeline, tab: 'codequality_report')
+        else
+          render_show
+        end
       end
 
       private
