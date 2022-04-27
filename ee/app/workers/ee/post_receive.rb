@@ -14,10 +14,6 @@ module EE
     def after_project_changes_hooks(project, user, refs, changes)
       super
 
-      if audit_push?(project)
-        ::RepositoryPushAuditEventWorker.perform_async(changes, project.id, user.id)
-      end
-
       if ::Gitlab::Geo.primary?
         ::Geo::RepositoryUpdatedService.new(project.repository, refs: refs, changes: changes).execute
       end
@@ -43,10 +39,6 @@ module EE
         # it's already deprecated. See https://gitlab.com/groups/gitlab-org/-/epics/2809
         snippet.snippet_repository.replicator.handle_after_update if snippet.snippet_repository
       end
-    end
-
-    def audit_push?(project)
-      project.push_audit_events_enabled? && !::Gitlab::Database.read_only?
     end
   end
 end
