@@ -25,6 +25,7 @@ module EE
       else
         if ::Feature.enabled?(:arkose_labs_login_challenge)
           @arkose_labs_public_key ||= arkose_public_api_key # rubocop:disable Gitlab/ModuleWithInstanceVariables
+          @arkose_labs_domain ||= arkose_labs_domain # rubocop:disable Gitlab/ModuleWithInstanceVariables
         end
 
         super
@@ -128,6 +129,10 @@ module EE
 
     def arkose_public_api_key
       ::Gitlab::CurrentSettings.arkose_labs_public_api_key || ENV['ARKOSE_LABS_PUBLIC_KEY']
+    end
+
+    def arkose_labs_domain
+      "#{::Gitlab::CurrentSettings.arkose_labs_namespace}-api.arkoselabs.com"
     end
   end
 end

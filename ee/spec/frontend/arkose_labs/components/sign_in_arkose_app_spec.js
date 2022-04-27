@@ -25,6 +25,7 @@ const MOCK_USERNAME = 'cassiopeia';
 const MOCK_PUBLIC_KEY = 'arkose-labs-public-api-key';
 const MOCK_ARKOSE_RESPONSE = { completed: true, token: 'verification-token', suppressed: false };
 const MOCK_ARKOSE_RESPONSE_SUPPRESSED = { ...MOCK_ARKOSE_RESPONSE, suppressed: true };
+const MOCK_DOMAIN = 'client-api.arkoselabs.com';
 
 describe('SignInArkoseApp', () => {
   let wrapper;
@@ -51,6 +52,7 @@ describe('SignInArkoseApp', () => {
     wrapper = mountExtended(SignInArkoseApp, {
       propsData: {
         publicKey: MOCK_PUBLIC_KEY,
+        domain: MOCK_DOMAIN,
         formSelector: makeTestIdSelector('sign-in-form'),
         usernameSelector: makeTestIdSelector('username-field'),
         submitSelector: makeTestIdSelector('sign-in-button'),
@@ -74,7 +76,10 @@ describe('SignInArkoseApp', () => {
   // Assertions
   const itInitializesArkoseLabs = () => {
     it("includes ArkoseLabs' script", () => {
-      expect(initArkoseLabsScript).toHaveBeenCalledWith({ publicKey: MOCK_PUBLIC_KEY });
+      expect(initArkoseLabsScript).toHaveBeenCalledWith({
+        publicKey: MOCK_PUBLIC_KEY,
+        domain: MOCK_DOMAIN,
+      });
     });
 
     it('creates a hidden input for the verification token', () => {

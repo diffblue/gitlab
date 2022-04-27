@@ -4,7 +4,7 @@ const CALLBACK_NAME = '_initArkoseLabsScript_callback_';
 
 const getCallbackName = () => uniqueId(CALLBACK_NAME);
 
-export const initArkoseLabsScript = ({ publicKey }) => {
+export const initArkoseLabsScript = ({ publicKey, domain }) => {
   const callbackFunctionName = getCallbackName();
 
   return new Promise((resolve) => {
@@ -16,7 +16,7 @@ export const initArkoseLabsScript = ({ publicKey }) => {
     const tag = document.createElement('script');
     [
       ['type', 'text/javascript'],
-      ['src', `https://client-api.arkoselabs.com/v2/${publicKey}/api.js`],
+      ['src', `https://${domain}/v2/${publicKey}/api.js`],
       ['data-callback', callbackFunctionName],
     ].forEach(([attr, value]) => {
       tag.setAttribute(attr, value);

@@ -13,14 +13,15 @@ export const setupArkoseLabs = () => {
     return null;
   }
 
-  const publicKey = el.dataset.apiKey;
+  const { apiKey, domain } = el.dataset;
 
   return new Vue({
     el,
     render(h) {
       return h(SignInArkoseApp, {
         props: {
-          publicKey,
+          publicKey: apiKey,
+          domain,
           formSelector: FORM_SELECTOR,
           usernameSelector: USERNAME_SELECTOR,
           submitSelector: SUBMIT_SELECTOR,

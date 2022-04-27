@@ -30,6 +30,10 @@ export default {
       type: String,
       required: true,
     },
+    domain: {
+      type: String,
+      required: true,
+    },
     formSelector: {
       type: String,
       required: true,
@@ -141,7 +145,10 @@ export default {
     async initArkoseLabs() {
       this.arkoseInitialized = true;
 
-      const enforcement = await initArkoseLabsScript({ publicKey: this.publicKey });
+      const enforcement = await initArkoseLabsScript({
+        publicKey: this.publicKey,
+        domain: this.domain,
+      });
 
       enforcement.setConfig({
         mode: 'inline',
