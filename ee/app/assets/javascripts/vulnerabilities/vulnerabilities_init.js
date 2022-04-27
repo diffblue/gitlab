@@ -16,6 +16,7 @@ export default (el) => {
 
   return new Vue({
     el,
+    name: 'VulnerabilityRoot',
     apolloProvider,
     provide: {
       reportType: vulnerability.reportType,

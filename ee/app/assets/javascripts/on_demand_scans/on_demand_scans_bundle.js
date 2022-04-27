@@ -19,6 +19,7 @@ export default () => {
 
   return new Vue({
     el,
+    name: 'OnDemandScansRoot',
     router: createRouter(),
     apolloProvider,
     provide: {
