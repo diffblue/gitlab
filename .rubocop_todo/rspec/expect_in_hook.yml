@@ -411,7 +411,6 @@ RSpec/ExpectInHook:
     - 'spec/services/design_management/save_designs_service_spec.rb'
     - 'spec/services/discussions/capture_diff_note_position_service_spec.rb'
     - 'spec/services/environments/reset_auto_stop_service_spec.rb'
-    - 'spec/services/error_tracking/base_service_spec.rb'
     - 'spec/services/error_tracking/issue_details_service_spec.rb'
     - 'spec/services/error_tracking/issue_latest_event_service_spec.rb'
     - 'spec/services/error_tracking/issue_update_service_spec.rb'

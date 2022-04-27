@@ -1006,7 +1006,6 @@ RSpec/VerifiedDoubles:
     - spec/services/container_expiration_policies/cleanup_service_spec.rb
     - spec/services/deployments/create_service_spec.rb
     - spec/services/discussions/capture_diff_note_position_service_spec.rb
-    - spec/services/error_tracking/base_service_spec.rb
     - spec/services/error_tracking/issue_update_service_spec.rb
     - spec/services/event_create_service_spec.rb
     - spec/services/git/base_hooks_service_spec.rb
