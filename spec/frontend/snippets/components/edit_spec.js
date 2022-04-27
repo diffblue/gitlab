@@ -268,38 +268,64 @@ describe('Snippet Edit app', () => {
     );
 
     describe('form submission handling', () => {
-      it.each`
-        snippetGid          | projectPath       | uploadedFiles          | input                                                                                                     | mutationType
-        ${''}               | ${''}             | ${TEST_UPLOADED_FILES} | ${{ ...getApiData({ title: 'Title' }), projectPath: '', uploadedFiles: TEST_UPLOADED_FILES }}             | ${'createSnippet'}
-        ${''}               | ${'project/path'} | ${TEST_UPLOADED_FILES} | ${{ ...getApiData({ title: 'Title' }), projectPath: 'project/path', uploadedFiles: TEST_UPLOADED_FILES }} | ${'createSnippet'}
-        ${TEST_SNIPPET_GID} | ${''}             | ${[]}                  | ${getApiData(createSnippet())}                                                                            | ${'updateSnippet'}
-        ${TEST_SNIPPET_GID} | ${'project/path'} | ${[]}                  | ${getApiData(createSnippet())}                                                                            | ${'updateSnippet'}
-      `(
-        'should submit mutation $mutationType (snippetGid=$snippetGid, projectPath=$projectPath, uploadedFiles=$uploadedFiles)',
-        async ({ snippetGid, projectPath, uploadedFiles, input, mutationType }) => {
-          await createComponentAndLoad({
-            props: {
-              snippetGid,
-              projectPath,
-            },
-          });
+      describe('when creating a new snippet', () => {
+        it.each`
+          projectPath       | uploadedFiles          | input
+          ${''}             | ${TEST_UPLOADED_FILES} | ${{ ...getApiData({ title: 'Title' }), projectPath: '', uploadedFiles: TEST_UPLOADED_FILES }}
+          ${'project/path'} | ${TEST_UPLOADED_FILES} | ${{ ...getApiData({ title: 'Title' }), projectPath: 'project/path', uploadedFiles: TEST_UPLOADED_FILES }}
+        `(
+          'should submit a createSnippet mutation (projectPath=$projectPath, uploadedFiles=$uploadedFiles)',
+          async ({ projectPath, uploadedFiles, input }) => {
+            await createComponentAndLoad({
+              props: {
+                snippetGid: '',
+                projectPath,
+              },
+            });
 
-          if (!snippetGid) {
             setTitle(input.title);
-          }
+            setUploadFilesHtml(uploadedFiles);
 
-          setUploadFilesHtml(uploadedFiles);
+            await nextTick();
 
-          await nextTick();
+            clickSubmitBtn();
 
-          clickSubmitBtn();
+            expect(mutateSpy).toHaveBeenCalledTimes(1);
+            expect(mutateSpy).toHaveBeenCalledWith('createSnippet', {
+              input,
+            });
+          },
+        );
+      });
 
-          expect(mutateSpy).toHaveBeenCalledTimes(1);
-          expect(mutateSpy).toHaveBeenCalledWith(mutationType, {
-            input,
-          });
-        },
-      );
+      describe('when updating a snippet', () => {
+        it.each`
+          projectPath       | uploadedFiles | input
+          ${''}             | ${[]}         | ${getApiData(createSnippet())}
+          ${'project/path'} | ${[]}         | ${getApiData(createSnippet())}
+        `(
+          'should submit an updateSnippet mutation (projectPath=$projectPath, uploadedFiles=$uploadedFiles)',
+          async ({ projectPath, uploadedFiles, input }) => {
+            await createComponentAndLoad({
+              props: {
+                snippetGid: TEST_SNIPPET_GID,
+                projectPath,
+              },
+            });
+
+            setUploadFilesHtml(uploadedFiles);
+
+            await nextTick();
+
+            clickSubmitBtn();
+
+            expect(mutateSpy).toHaveBeenCalledTimes(1);
+            expect(mutateSpy).toHaveBeenCalledWith('updateSnippet', {
+              input,
+            });
+          },
+        );
+      });
 
       it('should redirect to snippet view on successful mutation', async () => {
         await createComponentAndSubmit();
@@ -307,42 +333,55 @@ describe('Snippet Edit app', () => {
         expect(urlUtils.redirectTo).toHaveBeenCalledWith(TEST_WEB_URL);
       });
 
-      it.each`
-        snippetGid          | projectPath       | mutationRes                                          | expectMessage
-        ${''}               | ${'project/path'} | ${createMutationResponseWithErrors('createSnippet')} | ${`Can't create snippet: ${TEST_MUTATION_ERROR}`}
-        ${''}               | ${''}             | ${createMutationResponseWithErrors('createSnippet')} | ${`Can't create snippet: ${TEST_MUTATION_ERROR}`}
-        ${TEST_SNIPPET_GID} | ${'project/path'} | ${createMutationResponseWithErrors('updateSnippet')} | ${`Can't update snippet: ${TEST_MUTATION_ERROR}`}
-        ${TEST_SNIPPET_GID} | ${''}             | ${createMutationResponseWithErrors('updateSnippet')} | ${`Can't update snippet: ${TEST_MUTATION_ERROR}`}
-      `(
-        'should flash error with (snippet=$snippetGid, projectPath=$projectPath)',
-        async ({ snippetGid, projectPath, mutationRes, expectMessage }) => {
-          mutateSpy.mockResolvedValue(mutationRes);
+      describe('when there are errors after creating a new snippet', () => {
+        it.each`
+          projectPath
+          ${'project/path'}
+          ${''}
+        `('should flash error (projectPath=$projectPath)', async ({ projectPath }) => {
+          mutateSpy.mockResolvedValue(createMutationResponseWithErrors('createSnippet'));
 
-          if (!snippetGid) {
-            await createComponentAndLoad({
-              props: { projectPath, snippetGid },
-            });
+          await createComponentAndLoad({
+            props: { projectPath, snippetGid: '' },
+          });
 
-            setTitle('Title');
+          setTitle('Title');
 
-            clickSubmitBtn();
+          clickSubmitBtn();
 
-            await waitForPromises();
-          } else {
-            await createComponentAndSubmit({
-              props: {
-                projectPath,
-                snippetGid,
-              },
-            });
-          }
+          await waitForPromises();
 
           expect(urlUtils.redirectTo).not.toHaveBeenCalled();
           expect(createFlash).toHaveBeenCalledWith({
-            message: expectMessage,
+            message: `Can't create snippet: ${TEST_MUTATION_ERROR}`,
           });
-        },
-      );
+        });
+      });
+
+      describe('when there are errors after updating a snippet', () => {
+        it.each`
+          projectPath
+          ${'project/path'}
+          ${''}
+        `(
+          'should flash error with (snippet=$snippetGid, projectPath=$projectPath)',
+          async ({ projectPath }) => {
+            mutateSpy.mockResolvedValue(createMutationResponseWithErrors('updateSnippet'));
+
+            await createComponentAndSubmit({
+              props: {
+                projectPath,
+                snippetGid: TEST_SNIPPET_GID,
+              },
+            });
+
+            expect(urlUtils.redirectTo).not.toHaveBeenCalled();
+            expect(createFlash).toHaveBeenCalledWith({
+              message: `Can't update snippet: ${TEST_MUTATION_ERROR}`,
+            });
+          },
+        );
+      });
 
       describe('with apollo network error', () => {
         beforeEach(async () => {
