@@ -5,6 +5,7 @@ module API
     include PaginationParams
 
     feature_category :continuous_integration
+    urgency :low
 
     before do
       authorize_read_merge_trains!
