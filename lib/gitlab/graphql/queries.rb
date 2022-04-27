@@ -240,6 +240,8 @@ module Gitlab
         end
       end
 
+      # TODO: some queries live under app/graphql/queries - we should look there
+      # for fragments too.
       class Fragments
         def initialize(root, dir = 'app/assets/javascripts')
           @root = root
@@ -278,7 +280,7 @@ module Gitlab
 
       def self.all
         ['.', 'ee'].flat_map do |prefix|
-          find(Rails.root / prefix / 'app/assets/javascripts')
+          find(Rails.root / prefix / 'app/assets/javascripts') + find(Rails.root / prefix / 'app/graphql/queries')
         end
       end
 
