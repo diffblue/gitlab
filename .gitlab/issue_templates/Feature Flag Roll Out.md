@@ -161,7 +161,7 @@ You can either [create a follow-up issue for Feature Flag Cleanup](https://gitla
       the feature can be officially announced in a release blog post.
     - [ ] `/chatops run release check <merge-request-url> <milestone>`
 - [ ] Close [the feature issue](ISSUE LINK) to indicate the feature will be released in the current milestone.
-- [ ] Clean up the feature flag from all environments by running these chatops command in `#production` channel:
+- [ ] If not already done, clean up the feature flag from all environments by running these chatops command in `#production` channel:
     - [ ] `/chatops run feature delete <feature-flag-name> --dev`
     - [ ] `/chatops run feature delete <feature-flag-name> --staging`
     - [ ] `/chatops run feature delete <feature-flag-name>`
