@@ -1335,6 +1335,27 @@ To stop `systemd` from cleaning the Pages related content:
    sudo gitlab-ctl restart gitlab-pages
    ```
 
+### Unable to access Gitlab pages 
+
+If you are unable to access your GitLab pages; receiving  502 errors or getting into a login loop,
+and in the Pages log you can see the following error:
+
+```plaintext
+"error":"retrieval context done: context deadline exceeded","host":"root.docs-cit.otenet.gr","level":"error","msg":"could not fetch domain information from a source"
+```
+
+1.  Add the following to `/etc/gitlab/gitlab.rb`:
+
+   ```ruby
+   gitlab_pages['internal_gitlab_server'] = 'http://localhost:8080'
+   ```
+
+1. Restart GitLab Pages:
+
+   ```shell
+   sudo gitlab-ctl restart gitlab-pages
+   ```
+
 ### 404 error after promoting a Geo secondary to a primary node
 
 Pages files are not among the
