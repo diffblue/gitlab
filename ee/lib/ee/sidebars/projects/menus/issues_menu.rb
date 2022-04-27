@@ -35,9 +35,9 @@ module EE
 
           def iterations_menu_item
             if !show_issues_menu_items? ||
+              context.project.personal? ||
               !context.project.licensed_feature_available?(:iterations) ||
-              !can?(context.current_user, :read_iteration, context.project) ||
-              context.project.personal?
+              !can?(context.current_user, :read_iteration, context.project)
               return ::Sidebars::NilMenuItem.new(item_id: :iterations)
             end
 
