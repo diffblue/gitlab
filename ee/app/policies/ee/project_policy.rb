@@ -375,7 +375,7 @@ module EE
 
       rule { can?(:read_project) & requirements_available }.enable :read_requirement
 
-      rule { requirements_available & reporter }.policy do
+      rule { requirements_available & (reporter | admin) }.policy do
         enable :create_requirement
         enable :create_requirement_test_report
         enable :admin_requirement
@@ -384,7 +384,7 @@ module EE
         enable :export_requirements
       end
 
-      rule { requirements_available & owner }.enable :destroy_requirement
+      rule { requirements_available & (owner | admin) }.enable :destroy_requirement
 
       rule { quality_management_available & can?(:reporter_access) & can?(:create_issue) }.enable :create_test_case
 

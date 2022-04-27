@@ -29,10 +29,10 @@ RSpec.shared_examples 'resource with requirement permissions' do
       stub_licensed_features(requirements: true)
     end
 
-    context 'with admin' do
+    context 'with admin', :enable_admin_mode do
       let(:current_user) { admin }
 
-      it_behaves_like 'user with read-only permissions'
+      it { is_expected.to be_allowed(*all_permissions) }
     end
 
     context 'with owner' do
@@ -115,7 +115,7 @@ RSpec.shared_examples 'resource with requirement permissions' do
             enable_admin_mode!(current_user)
           end
 
-          it_behaves_like 'user with read-only permissions'
+          it { is_expected.to be_allowed(*all_permissions) }
         end
       end
 
