@@ -190,7 +190,6 @@ module GitlabSubscriptions
       personal_access_token_expiration_policy
       project_quality_summary
       prometheus_alerts
-      pseudonymizer
       quality_management
       related_epics
       release_evidence_test_artifacts
