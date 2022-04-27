@@ -1,4 +1,4 @@
-import { s__ } from '~/locale';
+import { __, s__ } from '~/locale';
 
 export const INPUT_DEBOUNCE = 500;
 
@@ -28,4 +28,9 @@ export const DEFAULT_PAGINATION_CURSORS = {
   before: null,
   after: null,
   first: GRAPHQL_PAGE_SIZE,
+};
+
+export const BRANCH_FILTER_OPTIONS = {
+  allBranches: __('All branches'),
+  allProtectedBranches: __('All protected branches'),
 };

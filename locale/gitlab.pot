@@ -3671,6 +3671,9 @@ msgstr ""
 msgid "All projects selected"
 msgstr ""
 
+msgid "All protected branches"
+msgstr ""
+
 msgid "All threads resolved"
 msgstr ""
 
@@ -34284,6 +34287,9 @@ msgid "Select assignee(s)"
 msgstr ""
 
 msgid "Select branch"
+msgstr ""
+
+msgid "Select branches"
 msgstr ""
 
 msgid "Select due date"
