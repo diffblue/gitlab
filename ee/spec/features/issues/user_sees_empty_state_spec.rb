@@ -2,9 +2,13 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Issues' do
+RSpec.describe 'Issues', :js do
   let_it_be(:project) { create(:project, :public) }
   let_it_be(:auditor) { create(:user, auditor: true) }
+
+  before do
+    stub_feature_flags(vue_issues_list: true)
+  end
 
   shared_examples 'empty state' do |expect_button|
     it "shows empty state #{expect_button ? 'with' : 'without'} \"New issue\" button" do

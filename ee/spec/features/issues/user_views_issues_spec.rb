@@ -10,6 +10,9 @@ RSpec.describe 'User views issues page', :js do
   let_it_be(:issue3) { create(:issue, project: project, health_status: 'at_risk') }
 
   before do
+    stub_feature_flags(vue_issues_list: true)
+    stub_licensed_features(blocked_issues: true, issuable_health_status: true, issue_weights: true)
+
     sign_in(user)
     visit project_issues_path(project)
   end
