@@ -23,6 +23,10 @@ module Projects
       reorder(order_expression.desc, arel_table['non_private_projects_count'].desc, arel_table['id'])
     end
 
+    def title_or_name
+      title || name
+    end
+
     class << self
       def find_by_name_case_insensitive(name)
         find_by('LOWER(name) = ?', name.downcase)

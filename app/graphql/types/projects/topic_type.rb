@@ -13,6 +13,7 @@ module Types
             description: 'Name of the topic.'
 
       field :title, GraphQL::Types::String, null: false,
+            method: :title_or_name,
             description: 'Title of the topic.'
 
       field :description, GraphQL::Types::String, null: true,
