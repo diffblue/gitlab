@@ -88,7 +88,7 @@ export default {
         'SecurityOrchestration|New scan result policy',
       ),
       [POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.value]: s__(
-        'SecurityOrchestration|New scan exection policy',
+        'SecurityOrchestration|New scan execution policy',
       ),
       default: s__('SecurityOrchestration|New policy'),
     },
@@ -100,7 +100,7 @@ export default {
         'SecurityOrchestration|Edit scan result policy',
       ),
       [POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.value]: s__(
-        'SecurityOrchestration|Edit scan exection policy',
+        'SecurityOrchestration|Edit scan execution policy',
       ),
       default: s__('SecurityOrchestration|New policy'),
     },
