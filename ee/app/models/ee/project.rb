@@ -387,10 +387,6 @@ module EE
       shared_runners_enabled? && shared_runners_limit_namespace.shared_runners_minutes_limit_enabled?
     end
 
-    def push_audit_events_enabled?
-      ::Feature.enabled?(:repository_push_audit_event, self)
-    end
-
     override :feature_available?
     def feature_available?(feature, user = nil)
       if ::ProjectFeature::FEATURES.include?(feature)
