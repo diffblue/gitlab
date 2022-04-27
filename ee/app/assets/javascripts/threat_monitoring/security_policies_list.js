@@ -25,6 +25,7 @@ export default (el, namespaceType) => {
   return new Vue({
     apolloProvider,
     el,
+    name: 'PoliciesAppRoot',
     provide: {
       assignedPolicyProject: JSON.parse(assignedPolicyProject),
       disableSecurityPolicyProject: parseBoolean(disableSecurityPolicyProject),
