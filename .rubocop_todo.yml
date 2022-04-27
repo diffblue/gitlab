@@ -363,11 +363,6 @@ Style/RescueModifier:
 Style/SingleArgumentDig:
   Enabled: false
 
-# Offense count: 63
-# Configuration parameters: AllowModifier.
-Style/SoleNestedConditional:
-  Enabled: false
-
 # Offense count: 562
 # Cop supports --auto-correct.
 Style/StringConcatenation:
