@@ -123,7 +123,7 @@ To do so, follow these steps:
       If the merge request was deployed before [the monthly release was tagged](https://about.gitlab.com/handbook/engineering/releases/#self-managed-releases-1),
       the feature can be officially announced in a release blog post.
     - [ ] `/chatops run release check <merge-request-url> <milestone>`
-- [ ] Clean up the feature flag from all environments by running these chatops command in `#production` channel:
+- [ ] Consider cleaning up the feature flag from all environments by running these chatops command in `#production` channel. Otherwise these settings may override the default enabled.
     - [ ] `/chatops run feature delete <feature-flag-name> --dev`
     - [ ] `/chatops run feature delete <feature-flag-name> --staging`
     - [ ] `/chatops run feature delete <feature-flag-name>`
