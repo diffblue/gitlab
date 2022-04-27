@@ -351,9 +351,6 @@ RSpec/VerifiedDoubles:
     - spec/graphql/mutations/merge_requests/accept_spec.rb
     - spec/graphql/mutations/merge_requests/create_spec.rb
     - spec/graphql/resolvers/design_management/versions_resolver_spec.rb
-    - spec/graphql/resolvers/error_tracking/sentry_detailed_error_resolver_spec.rb
-    - spec/graphql/resolvers/error_tracking/sentry_error_collection_resolver_spec.rb
-    - spec/graphql/resolvers/error_tracking/sentry_errors_resolver_spec.rb
     - spec/graphql/resolvers/kas/agent_connections_resolver_spec.rb
     - spec/graphql/resolvers/projects/jira_projects_resolver_spec.rb
     - spec/graphql/types/ci/detailed_status_type_spec.rb
