@@ -61,7 +61,7 @@ actions: []
 `;
 
 export const mockDastScanExecutionManifest = `type: scan_execution_policy
-name: Test Dast
+name: Scheduled Dast/SAST scan
 description: This policy enforces pipeline configuration to have a job with DAST scan
 enabled: false
 rules:
@@ -90,7 +90,7 @@ actions:
 
 export const mockDastScanExecutionObject = {
   type: 'scan_execution_policy',
-  name: 'Test Dast',
+  name: 'Scheduled Dast/SAST scan',
   description: 'This policy enforces pipeline configuration to have a job with DAST scan',
   enabled: false,
   rules: [{ type: 'pipeline', branches: ['main'] }],
@@ -218,7 +218,7 @@ export const mockNetworkPoliciesResponse = [
 
 export const mockScanExecutionPolicy = {
   __typename: 'ScanExecutionPolicy',
-  name: 'Scheduled DAST scan',
+  name: 'Scheduled DAST/SAST scan',
   updatedAt: new Date('2021-06-07T00:00:00.000Z'),
   yaml: mockDastScanExecutionManifest,
   enabled: true,
