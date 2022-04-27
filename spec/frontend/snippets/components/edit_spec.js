@@ -120,7 +120,8 @@ describe('Snippet Edit app', () => {
       .map((path) => `<input name="files[]" value="${path}">`)
       .join('');
   };
-  const setTitle = (val) => wrapper.find('#snippet-title').vm.$emit('input', val);
+  const setTitle = (val) =>
+    wrapper.find('[data-testid="snippet-title-input"]').vm.$emit('input', val);
   const setDescription = (val) => wrapper.find(SnippetDescriptionEdit).vm.$emit('input', val);
 
   const createComponent = ({ props = {}, selectedLevel = SNIPPET_VISIBILITY_PRIVATE } = {}) => {

@@ -231,6 +231,7 @@ export default {
         <gl-form-input
           id="snippet-title"
           v-model="snippet.title"
+          data-testid="snippet-title-input"
           data-qa-selector="snippet_title_field"
           :autofocus="true"
         />
