@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Mutations::MergeRequests::Accept do
+  include GraphqlHelpers
+
   let_it_be(:user) { create(:user) }
 
   let(:project) { create(:project, :public, :repository) }
@@ -11,7 +13,7 @@ RSpec.describe Mutations::MergeRequests::Accept do
 
   let(:context) do
     GraphQL::Query::Context.new(
-      query: double('query', schema: GitlabSchema),
+      query: query_double(schema: GitlabSchema),
       values: { current_user: user },
       object: nil
     )
