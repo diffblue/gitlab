@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class Groups::UsageQuotasController < Groups::ApplicationController
+  include OneTrustCSP
+
   before_action :authorize_admin_group!
   before_action :verify_usage_quotas_enabled!
   before_action :push_additional_repo_storage_by_namespace_feature, only: :index
