@@ -1335,16 +1335,16 @@ To stop `systemd` from cleaning the Pages related content:
    sudo gitlab-ctl restart gitlab-pages
    ```
 
-### Unable to access Gitlab pages 
+### Unable to access GitLab Pages
 
-If you are unable to access your GitLab pages; receiving  502 errors or getting into a login loop,
-and in the Pages log you can see the following error:
+If you can't access your GitLab Pages (such as receiving `502 Bad Gateway` errors, or a login loop)
+and in your Pages log shows this error:
 
 ```plaintext
 "error":"retrieval context done: context deadline exceeded","host":"root.docs-cit.otenet.gr","level":"error","msg":"could not fetch domain information from a source"
 ```
 
-1.  Add the following to `/etc/gitlab/gitlab.rb`:
+1. Add the following to `/etc/gitlab/gitlab.rb`:
 
    ```ruby
    gitlab_pages['internal_gitlab_server'] = 'http://localhost:8080'
