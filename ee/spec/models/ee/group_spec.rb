@@ -2387,8 +2387,8 @@ RSpec.describe Group do
   end
 
   describe '#memberships_to_be_deactivated' do
-    let_it_be(:group) { create(:group) }
-    let_it_be(:project) { create(:project, group: group) }
+    let(:group) { create(:group) }
+    let(:project) { create(:project, group: group) }
 
     before do
       create_list(:group_member, 4, :active, group: group)
