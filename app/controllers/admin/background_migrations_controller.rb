@@ -4,6 +4,8 @@ class Admin::BackgroundMigrationsController < Admin::ApplicationController
   feature_category :database
   urgency :low
 
+  around_action :support_multiple_databases
+
   def index
     @relations_by_tab = {
       'queued' => batched_migration_class.queued.queue_order,
@@ -44,6 +46,13 @@ class Admin::BackgroundMigrationsController < Admin::ApplicationController
 
   private
 
+  def support_multiple_databases
+    Gitlab::Database::SharedModel.using_connection(base_model.connection) do
+      yield
+    end
+  end
+
+
   def base_model
     database = params[:database] || Gitlab::Database::MAIN_DATABASE_NAME
 
@@ -51,8 +60,6 @@ class Admin::BackgroundMigrationsController < Admin::ApplicationController
   end
 
   def batched_migration_class
-    @batched_migration_class ||= Gitlab::Database::SharedModel.using_connection(base_model.connection) do
-      Gitlab::Database::BackgroundMigration::BatchedMigration
-    end
+    @batched_migration_class ||= Gitlab::Database::BackgroundMigration::BatchedMigration
   end
 end
