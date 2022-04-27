@@ -119,10 +119,10 @@ export const INVALID_CODE_ERROR_MESSAGE = 'invalid activation code';
 export const CONNECTIVITY_ERROR = 'CONNECTIVITY_ERROR';
 export const INVALID_CODE_ERROR = 'INVALID_CODE_ERROR';
 export const generalActivationErrorTitle = s__(
-  'SuperSonics|An error occurred while activating your subscription.',
+  'SuperSonics|An error occurred while adding your subscription.',
 );
 export const generalActivationErrorMessage = s__(
-  'SuperSonics|You can learn more about %{activationLinkStart}activating your subscription%{activationLinkEnd}. If you need further assistance, please %{supportLinkStart}contact GitLab Support%{supportLinkEnd}.',
+  'SuperSonics|Learn more about %{activationLinkStart}activating your subscription%{activationLinkEnd}. If you need further assistance, %{supportLinkStart}contact GitLab Support%{supportLinkEnd}.',
 );
 export const invalidActivationCode = s__(
   'SuperSonics|The activation code is not valid. Please make sure to copy it exactly from the Customers Portal or confirmation email. Learn more about %{linkStart}activating your subscription%{linkEnd}.',
