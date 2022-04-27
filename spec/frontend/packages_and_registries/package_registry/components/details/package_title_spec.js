@@ -1,4 +1,4 @@
-import { GlIcon, GlSprintf } from '@gitlab/ui';
+import { GlSprintf } from '@gitlab/ui';
 import { GlBreakpointInstance } from '@gitlab/ui/dist/utils';
 import { nextTick } from 'vue';
 import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
@@ -46,7 +46,6 @@ describe('PackageTitle', () => {
   const findPackageRef = () => wrapper.findByTestId('package-ref');
   const findPackageTags = () => wrapper.findComponent(PackageTags);
   const findPackageBadges = () => wrapper.findAllByTestId('tag-badge');
-  const findSubHeaderIcon = () => wrapper.findComponent(GlIcon);
   const findSubHeaderText = () => wrapper.findByTestId('sub-header');
   const findSubHeaderTimeAgo = () => wrapper.findComponent(TimeAgoTooltip);
 
