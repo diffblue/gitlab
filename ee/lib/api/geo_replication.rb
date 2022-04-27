@@ -7,6 +7,7 @@ module API
     include ::Gitlab::Utils::StrongMemoize
 
     feature_category :geo_replication
+    urgency :low
 
     before do
       authenticated_as_admin!
