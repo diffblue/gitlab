@@ -58,6 +58,7 @@ export default (el, dashboardType) => {
 
   return new Vue({
     el,
+    name: 'SecurityDashboardRoot',
     store,
     router,
     apolloProvider,

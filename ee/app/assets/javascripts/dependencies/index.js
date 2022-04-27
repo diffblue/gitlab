@@ -16,6 +16,7 @@ export default () => {
 
   return new Vue({
     el,
+    name: 'DependenciesAppRoot',
     components: {
       DependenciesApp,
     },
