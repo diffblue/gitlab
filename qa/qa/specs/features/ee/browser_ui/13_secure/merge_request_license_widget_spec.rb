@@ -4,7 +4,7 @@ module QA
   # Leaving :global scope out of feature_flag metadata
   # This will allow test to still run in staging since we are only checking if the feature is enabled
   RSpec.describe 'Secure', :runner, feature_flag: { name: 'lc_remove_legacy_approval_status' } do
-    describe 'License merge request widget' do
+    describe 'License merge request widget', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/360307' do
       let(:approved_license_name) { "MIT License" }
       let(:denied_license_name) { "zlib License" }
       let(:executor) { "qa-runner-#{Time.now.to_i}" }
