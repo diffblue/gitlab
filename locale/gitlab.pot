@@ -6615,6 +6615,9 @@ msgstr ""
 msgid "CI/CD configuration file"
 msgstr ""
 
+msgid "CI/CD minutes"
+msgstr ""
+
 msgid "CI/CD|No projects have been added to the scope"
 msgstr ""
 
@@ -6628,6 +6631,9 @@ msgid "CICDAnalytics|Deployment frequency"
 msgstr ""
 
 msgid "CICDAnalytics|Lead time"
+msgstr ""
+
+msgid "CICDAnalytics|No shared runner minute usage data available"
 msgstr ""
 
 msgid "CICDAnalytics|Projects with releases"
@@ -7206,6 +7212,9 @@ msgid "Check again"
 msgstr ""
 
 msgid "Check feature availability on namespace plan"
+msgstr ""
+
+msgid "Check out branch"
 msgstr ""
 
 msgid "Check out, review, and merge locally"
@@ -13470,9 +13479,6 @@ msgstr ""
 msgid "Download artifacts"
 msgstr ""
 
-msgid "Download as"
-msgstr ""
-
 msgid "Download codes"
 msgstr ""
 
@@ -13564,6 +13570,9 @@ msgid "Duplicate page: %{error_message}"
 msgstr ""
 
 msgid "Duration"
+msgstr ""
+
+msgid "Duration (min)"
 msgstr ""
 
 msgid "Duration|%s days"
@@ -13843,6 +13852,9 @@ msgid "Email notification for unknown sign-ins"
 msgstr ""
 
 msgid "Email patch"
+msgstr ""
+
+msgid "Email patches"
 msgstr ""
 
 msgid "Email sent"
@@ -40685,6 +40697,12 @@ msgstr ""
 msgid "UsageQuota|CI minutes usage by project"
 msgstr ""
 
+msgid "UsageQuota|CI/CD minutes usage"
+msgstr ""
+
+msgid "UsageQuota|CI/CD minutes usage since %{timeElapsed}"
+msgstr ""
+
 msgid "UsageQuota|Code packages and container images."
 msgstr ""
 
@@ -40745,6 +40763,9 @@ msgstr ""
 msgid "UsageQuota|Shared bits of code and text."
 msgstr ""
 
+msgid "UsageQuota|Shared runner usage"
+msgstr ""
+
 msgid "UsageQuota|Snippets"
 msgstr ""
 
@@ -40793,6 +40814,12 @@ msgstr ""
 msgid "UsageQuota|Usage breakdown"
 msgstr ""
 
+msgid "UsageQuota|Usage by month"
+msgstr ""
+
+msgid "UsageQuota|Usage by project"
+msgstr ""
+
 msgid "UsageQuota|Usage of group resources across the projects in the %{strong_start}%{group_name}%{strong_end} group"
 msgstr ""
 
@@ -40803,9 +40830,6 @@ msgid "UsageQuota|Usage of resources across your projects"
 msgstr ""
 
 msgid "UsageQuota|Usage quotas help link"
-msgstr ""
-
-msgid "UsageQuota|Usage since"
 msgstr ""
 
 msgid "UsageQuota|When you purchase additional storage, we automatically unlock projects that were locked when you reached the %{actualRepositorySizeLimit} limit."
@@ -45080,9 +45104,6 @@ msgstr ""
 msgid "mrWidget|Cancel auto-merge"
 msgstr ""
 
-msgid "mrWidget|Check out branch"
-msgstr ""
-
 msgid "mrWidget|Checking if merge request can be merged…"
 msgstr ""
 
@@ -45122,9 +45143,6 @@ msgid "mrWidget|Dismiss"
 msgstr ""
 
 msgid "mrWidget|Does not delete the source branch"
-msgstr ""
-
-msgid "mrWidget|Email patches"
 msgstr ""
 
 msgid "mrWidget|Failed to load deployment statistics"
@@ -45235,9 +45253,6 @@ msgid "mrWidget|Open in Gitpod"
 msgstr ""
 
 msgid "mrWidget|Open in Web IDE"
-msgstr ""
-
-msgid "mrWidget|Plain diff"
 msgstr ""
 
 msgid "mrWidget|Please restore it or use a different %{type} branch."

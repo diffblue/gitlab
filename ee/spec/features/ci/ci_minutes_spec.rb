@@ -20,13 +20,19 @@ RSpec.describe 'CI minutes', :js do
     visit profile_usage_quotas_path
   end
 
-  it 'renders a dropdown with the months of available analytics' do
+  it 'renders two dropdowns of available analytics for project charts' do
     wait_for_requests
 
-    page.find('[data-testid="project-month-dropdown"]').click
+    page.find('[data-testid="minutes-usage-project-year-dropdown"]').click
 
-    page.within '[data-testid="project-month-dropdown"]' do
-      expect(page.all('[data-testid="month-dropdown-item"]').size).to eq 2
+    page.within '[data-testid="minutes-usage-project-year-dropdown"]' do
+      expect(page.all('[data-testid="minutes-usage-project-year-dropdown-item"]').size).to eq 2
+    end
+
+    page.find('[data-testid="minutes-usage-project-month-dropdown"]').click
+
+    page.within '[data-testid="minutes-usage-project-month-dropdown"]' do
+      expect(page.all('[data-testid="minutes-usage-project-month-dropdown-item"]').size).to eq 2
     end
   end
 end

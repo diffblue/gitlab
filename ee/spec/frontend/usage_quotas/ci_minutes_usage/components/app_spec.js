@@ -1,3 +1,4 @@
+import { GlLoadingIcon } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
@@ -32,6 +33,7 @@ describe('CI minutes usage app groups', () => {
     });
   }
 
+  const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const findMinutesUsageMonthChart = () => wrapper.findComponent(MinutesUsageMonthChart);
   const findMinutesUsageProjectChart = () => wrapper.findComponent(MinutesUsageProjectChart);
 
@@ -48,6 +50,10 @@ describe('CI minutes usage app groups', () => {
     expect(queryHandlerSpy).toHaveBeenCalledWith({ namespaceId: 'gid://gitlab/Group/1' });
   });
 
+  it('should display loading icon while query is fetching', () => {
+    expect(findLoadingIcon().exists()).toBe(true);
+  });
+
   describe('after query finishes', () => {
     beforeEach(async () => {
       await waitForPromises();
@@ -56,17 +62,16 @@ describe('CI minutes usage app groups', () => {
 
     it('should render minutes usage month chart', () => {
       expect(findMinutesUsageMonthChart().props()).toEqual({
-        minutesUsageData: [
-          ['Jun 2021', 5],
-          ['Jul 2021', 0],
-        ],
+        ciMinutesUsage: ciMinutesUsageMockData.data.ciMinutesUsage.nodes,
       });
+      expect(findLoadingIcon().exists()).toBe(false);
     });
 
     it('should render minutes usage project chart', () => {
       expect(findMinutesUsageProjectChart().props()).toEqual({
         minutesUsageData: ciMinutesUsageMockData.data.ciMinutesUsage.nodes,
       });
+      expect(findLoadingIcon().exists()).toBe(false);
     });
   });
 });

@@ -11,7 +11,8 @@ RSpec.describe ::EE::API::Entities::BillableMember do
       group_member_user_ids: [],
       project_member_user_ids: [],
       shared_group_user_ids: [],
-      shared_project_user_ids: []
+      shared_project_user_ids: [],
+      awaiting_user_ids: []
     }
   end
 
@@ -33,6 +34,32 @@ RSpec.describe ::EE::API::Entities::BillableMember do
         expect(entity_representation.keys).to include(:email)
         expect(entity_representation[:email]).to eq public_email
         expect(entity_representation[:email]).not_to eq member.email
+      end
+    end
+  end
+
+  context 'membership_state' do
+    using RSpec::Parameterized::TableSyntax
+
+    where(:key, :result) do
+      :group_member_user_ids   | 'active'
+      :project_member_user_ids | 'active'
+      :shared_group_user_ids   | 'active'
+      :shared_project_user_ids | 'active'
+      :awaiting_user_ids       | 'awaiting'
+    end
+
+    with_them do
+      let(:options) { super().merge(key => [member.id]) }
+
+      it { expect(entity_representation[:membership_state]).to eq(result) }
+    end
+
+    context 'with multiple states' do
+      let(:options) { super().merge(group_member_user_ids: [member.id], awaiting_user_ids: [member.id]) }
+
+      it 'returns the expected membership status' do
+        expect(entity_representation[:membership_state]).to eq 'active'
       end
     end
   end

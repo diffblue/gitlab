@@ -9,6 +9,7 @@ module EE
         expose :membership_type
         expose :removable
         expose :created_at
+        expose :membership_state
 
         private
 
@@ -17,6 +18,17 @@ module EE
           return 'project_member' if user_in_array?(:project_member_user_ids)
           return 'group_invite'   if user_in_array?(:shared_group_user_ids)
           return 'project_invite' if user_in_array?(:shared_project_user_ids)
+        end
+
+        def membership_state
+          has_any_active_membership? ? 'active' : 'awaiting'
+        end
+
+        def has_any_active_membership?
+          user_in_array?(:group_member_user_ids) ||
+            user_in_array?(:project_member_user_ids) ||
+            user_in_array?(:shared_group_user_ids) ||
+            user_in_array?(:shared_project_user_ids)
         end
 
         def removable

@@ -131,7 +131,8 @@ RSpec.describe BilledUsersFinder do
             :group_member_user_ids,
             :project_member_user_ids,
             :shared_group_user_ids,
-            :shared_project_user_ids
+            :shared_project_user_ids,
+            :awaiting_user_ids
           ])
         end
 

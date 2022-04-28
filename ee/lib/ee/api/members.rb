@@ -138,7 +138,8 @@ module EE
                     group_member_user_ids: result[:group_member_user_ids],
                     project_member_user_ids: result[:project_member_user_ids],
                     shared_group_user_ids: result[:shared_group_user_ids],
-                    shared_project_user_ids: result[:shared_project_user_ids]
+                    shared_project_user_ids: result[:shared_project_user_ids],
+                    awaiting_user_ids: result[:awaiting_user_ids]
           end
 
           desc 'Get the memberships of a billable user of a root group.' do

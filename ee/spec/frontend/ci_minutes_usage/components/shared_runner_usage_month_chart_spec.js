@@ -1,23 +1,23 @@
 import { GlAreaChart } from '@gitlab/ui/dist/charts';
 import { nextTick } from 'vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import MinutesUsageMonthChart from 'ee/ci_minutes_usage/components/minutes_usage_month_chart.vue';
+import SharedRunnerUsageMonthChart from 'ee/ci_minutes_usage/components/shared_runner_usage_month_chart.vue';
 import { ciMinutesUsageMockData } from '../mock_data';
 
 const {
   data: { ciMinutesUsage },
 } = ciMinutesUsageMockData;
 
-describe('Minutes usage by month chart component', () => {
+describe('Shared runner usage month chart component', () => {
   let wrapper;
 
   const findAreaChart = () => wrapper.findComponent(GlAreaChart);
-  const findYearDropdown = () => wrapper.findByTestId('minutes-usage-month-dropdown');
+  const findYearDropdown = () => wrapper.findByTestId('shared-runner-usage-month-dropdown');
   const findAllYearDropdownItems = () =>
-    wrapper.findAllByTestId('minutes-usage-month-dropdown-item');
+    wrapper.findAllByTestId('shared-runner-usage-month-dropdown-item');
 
   const createComponent = (usageData = ciMinutesUsage.nodes) => {
-    wrapper = shallowMountExtended(MinutesUsageMonthChart, {
+    wrapper = shallowMountExtended(SharedRunnerUsageMonthChart, {
       propsData: {
         ciMinutesUsage: usageData,
       },
@@ -32,12 +32,10 @@ describe('Minutes usage by month chart component', () => {
     wrapper.destroy();
   });
 
-  it('renders an area chart component', () => {
+  it('renders a area chart component with axis legends', () => {
     expect(findAreaChart().exists()).toBe(true);
-  });
-
-  it('should contain a responsive attribute for the area chart', () => {
-    expect(findAreaChart().attributes('responsive')).toBeDefined();
+    expect(findAreaChart().props('option').xAxis.name).toBe('Month');
+    expect(findAreaChart().props('option').yAxis.name).toBe('Duration (min)');
   });
 
   it('renders year dropdown component', () => {
@@ -47,6 +45,10 @@ describe('Minutes usage by month chart component', () => {
 
   it('renders only the years with available minutes data', () => {
     expect(findAllYearDropdownItems().length).toBe(2);
+  });
+
+  it('should contain a responsive attribute for the column chart', () => {
+    expect(findAreaChart().attributes('responsive')).toBeDefined();
   });
 
   it('should change the selected year in the year dropdown', async () => {

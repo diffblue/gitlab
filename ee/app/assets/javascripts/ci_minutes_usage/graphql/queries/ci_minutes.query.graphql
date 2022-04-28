@@ -4,6 +4,7 @@ query getCiMinutesUsage {
       month
       monthIso8601
       minutes
+      sharedRunnersDuration
       projects {
         nodes {
           name
