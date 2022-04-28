@@ -106,7 +106,7 @@ module API
           requires :merge_request_iid, type: Integer, desc: 'The IID of a merge request'
           requires :external_status_check_id, type: Integer, desc: 'The ID of a external status check'
           requires :sha, type: String, desc: 'The current SHA at HEAD of the merge request.'
-          optional :status, type: String, desc: 'Status of the merge request status check', default: 'passed', values: %w(passed failed)
+          requires :status, type: String, desc: 'Status of the merge request status check', values: %w(passed failed)
         end
         post 'status_check_responses' do
           merge_request = find_merge_request_with_access(params[:merge_request_iid], :approve_merge_request)
