@@ -632,11 +632,6 @@ module EE
       super unless mirror?
     end
 
-    def merge_requests_ff_only_enabled
-      super
-    end
-    alias_method :merge_requests_ff_only_enabled?, :merge_requests_ff_only_enabled
-
     override :disabled_integrations
     def disabled_integrations
       strong_memoize(:disabled_integrations) do
