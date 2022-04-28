@@ -7202,6 +7202,9 @@ msgstr ""
 msgid "Check feature availability on namespace plan"
 msgstr ""
 
+msgid "Check out branch"
+msgstr ""
+
 msgid "Check out, review, and merge locally"
 msgstr ""
 
@@ -13464,9 +13467,6 @@ msgstr ""
 msgid "Download artifacts"
 msgstr ""
 
-msgid "Download as"
-msgstr ""
-
 msgid "Download codes"
 msgstr ""
 
@@ -13837,6 +13837,9 @@ msgid "Email notification for unknown sign-ins"
 msgstr ""
 
 msgid "Email patch"
+msgstr ""
+
+msgid "Email patches"
 msgstr ""
 
 msgid "Email sent"
@@ -45062,9 +45065,6 @@ msgstr ""
 msgid "mrWidget|Cancel auto-merge"
 msgstr ""
 
-msgid "mrWidget|Check out branch"
-msgstr ""
-
 msgid "mrWidget|Checking if merge request can be merged…"
 msgstr ""
 
@@ -45104,9 +45104,6 @@ msgid "mrWidget|Dismiss"
 msgstr ""
 
 msgid "mrWidget|Does not delete the source branch"
-msgstr ""
-
-msgid "mrWidget|Email patches"
 msgstr ""
 
 msgid "mrWidget|Failed to load deployment statistics"
@@ -45217,9 +45214,6 @@ msgid "mrWidget|Open in Gitpod"
 msgstr ""
 
 msgid "mrWidget|Open in Web IDE"
-msgstr ""
-
-msgid "mrWidget|Plain diff"
 msgstr ""
 
 msgid "mrWidget|Please restore it or use a different %{type} branch."
