@@ -13,7 +13,7 @@ module ContainerRegistry
       data_consistency :always
       feature_category :container_registry
       urgency :low
-      deduplicate :until_executing, including_scheduled: true
+      deduplicate :until_executing, ttl: DEFAULT_LEASE_TIMEOUT
       idempotent!
 
       def perform
