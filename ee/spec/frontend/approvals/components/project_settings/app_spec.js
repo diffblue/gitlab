@@ -11,8 +11,15 @@ describe('Approvals ProjectSettings App', () => {
   const findScanResultPolicies = () => wrapper.findComponent(ScanResultPolicies);
   const findProjectApprovalSettings = () => wrapper.findComponent(ProjectApprovalSettings);
 
-  const factory = () => {
-    wrapper = shallowMount(App);
+  const factory = (glFeatures = {}) => {
+    wrapper = shallowMount(App, {
+      provide: {
+        glFeatures: {
+          securityOrchestrationPolicies: true,
+          ...glFeatures,
+        },
+      },
+    });
   };
 
   beforeEach(() => {
@@ -28,6 +35,18 @@ describe('Approvals ProjectSettings App', () => {
       expect(findApp().exists()).toBe(true);
       expect(findScanResultPolicies().exists()).toBe(true);
       expect(findProjectApprovalSettings().exists()).toBe(true);
+    });
+
+    describe('without licensed feature securityOrchestrationPolicies', () => {
+      beforeEach(() => {
+        factory({ securityOrchestrationPolicies: false });
+      });
+
+      it('renders all but the scan result policies component', () => {
+        expect(findApp().exists()).toBe(true);
+        expect(findScanResultPolicies().exists()).toBe(false);
+        expect(findProjectApprovalSettings().exists()).toBe(true);
+      });
     });
   });
 });

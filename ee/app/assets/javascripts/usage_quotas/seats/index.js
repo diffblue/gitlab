@@ -21,6 +21,8 @@ export default (containerId = 'js-seat-usage-app') => {
     pendingMembersCount,
     addSeatsHref,
     hasNoSubscription,
+    maxFreeNamespaceSeats,
+    explorePlansPath,
   } = el.dataset;
 
   return new Vue({
@@ -36,6 +38,8 @@ export default (containerId = 'js-seat-usage-app') => {
         pendingMembersCount,
         addSeatsHref,
         hasNoSubscription: parseBoolean(hasNoSubscription),
+        maxFreeNamespaceSeats: parseInt(maxFreeNamespaceSeats, 10),
+        explorePlansPath,
       }),
     ),
     render(createElement) {

@@ -28,6 +28,8 @@ import { s__, __, sprintf, n__ } from '~/locale';
 import FilterSortContainerRoot from '~/vue_shared/components/filtered_search_bar/filtered_search_bar_root.vue';
 import StatisticsCard from 'ee/usage_quotas/components/statistics_card.vue';
 import StatisticsSeatsCard from 'ee/usage_quotas/components/statistics_seats_card.vue';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+import SubscriptionUpgradeInfoCard from './subscription_upgrade_info_card.vue';
 import RemoveBillableMemberModal from './remove_billable_member_modal.vue';
 import SubscriptionSeatDetails from './subscription_seat_details.vue';
 
@@ -51,7 +53,9 @@ export default {
     FilterSortContainerRoot,
     StatisticsCard,
     StatisticsSeatsCard,
+    SubscriptionUpgradeInfoCard,
   },
+  mixins: [glFeatureFlagsMixin()],
   computed: {
     ...mapState([
       'isLoading',
@@ -72,6 +76,8 @@ export default {
       'seatsOwed',
       'addSeatsHref',
       'hasNoSubscription',
+      'maxFreeNamespaceSeats',
+      'explorePlansPath',
     ]),
     ...mapGetters(['tableItems']),
     currentPage: {
@@ -104,13 +110,31 @@ export default {
       return this.pendingMembersCount > 0 && this.pendingMembersPagePath;
     },
     seatsInUsePercentage() {
-      return Math.round((this.seatsInUse * 100) / this.seatsInSubscription);
+      if (this.totalSeatsAvailable == null) {
+        return 0;
+      }
+
+      return Math.round((this.totalSeatsInUse * 100) / this.totalSeatsAvailable);
     },
-    totalSeatsInSubscription() {
-      return this.hasNoSubscription ? '-' : String(this.seatsInSubscription);
+    totalSeatsAvailable() {
+      if (this.hasNoSubscription) {
+        return this.glFeatures.freeUserCap ? this.maxFreeNamespaceSeats : null;
+      }
+      return this.seatsInSubscription;
     },
     totalSeatsInUse() {
-      return this.hasNoSubscription ? String(this.total) : String(this.seatsInUse);
+      return this.hasNoSubscription ? this.total : this.seatsInUse;
+    },
+    seatsInUseText() {
+      return this.hasLimitedFreePlan
+        ? this.$options.i18n.seatsAvailableText
+        : this.$options.i18n.seatsInSubscriptionText;
+    },
+    displayedTotalSeats() {
+      return this.totalSeatsAvailable ? String(this.totalSeatsAvailable) : '-';
+    },
+    hasLimitedFreePlan() {
+      return this.hasNoSubscription && this.glFeatures.freeUserCap;
     },
   },
   created() {
@@ -163,7 +187,8 @@ export default {
     ),
     filterUsersPlaceholder: __('Filter users'),
     pendingMembersAlertButtonText: s__('Billing|View pending approvals'),
-    seatsInUseText: s__('Billings|Seats in use / Seats in subscription'),
+    seatsInSubscriptionText: s__('Billings|Seats in use / Seats in subscription'),
+    seatsAvailableText: s__('Billings|Seats in use / Seats available'),
     seatsInUseLink: helpPagePath('subscription/gitlab_com/index', {
       anchor: 'how-seat-usage-is-determined',
     }),
@@ -193,14 +218,21 @@ export default {
     <div class="gl-bg-gray-10 gl-display-flex gl-sm-flex-direction-column gl-p-5">
       <statistics-card
         :help-link="$options.i18n.seatsInUseLink"
-        :description="$options.i18n.seatsInUseText"
+        :description="seatsInUseText"
         :percentage="seatsInUsePercentage"
-        :usage-value="totalSeatsInUse"
-        :total-value="totalSeatsInSubscription"
+        :usage-value="String(totalSeatsInUse)"
+        :total-value="displayedTotalSeats"
         class="gl-w-full gl-md-w-half gl-md-mr-5"
       />
 
+      <subscription-upgrade-info-card
+        v-if="hasLimitedFreePlan"
+        :max-namespace-seats="maxFreeNamespaceSeats"
+        :explore-plans-path="explorePlansPath"
+        class="gl-w-full gl-md-w-half gl-md-mt-0 gl-mt-5"
+      />
       <statistics-seats-card
+        v-else
         :seats-used="maxSeatsUsed"
         :seats-owed="seatsOwed"
         :purchase-button-link="addSeatsHref"

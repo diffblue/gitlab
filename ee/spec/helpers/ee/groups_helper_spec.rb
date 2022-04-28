@@ -258,6 +258,43 @@ RSpec.describe GroupsHelper do
     end
   end
 
+  describe '#group_seats_usage_quota_app_data' do
+    subject(:group_seats_usage_quota_app_data) { helper.group_seats_usage_quota_app_data(group) }
+
+    let(:data) do
+      {
+        namespace_id: group.id,
+        namespace_name: group.name,
+        seat_usage_export_path: group_seat_usage_path(group, format: :csv),
+        pending_members_page_path: pending_members_group_usage_quotas_path(group),
+        pending_members_count: ::Member.in_hierarchy(group).with_state("awaiting").count,
+        add_seats_href: ::Gitlab::SubscriptionPortal.add_extra_seats_url(group.id),
+        has_no_subscription: group.has_free_or_no_subscription?.to_s,
+        max_free_namespace_seats: 10,
+        explore_plans_path: group_billings_path(group)
+      }
+    end
+
+    before do
+      stub_const("::Namespaces::FreeUserCap::FREE_USER_LIMIT", 10)
+      expect(group).to receive(:apply_user_cap?).and_return(user_cap_applied)
+    end
+
+    context 'when user cap is applied' do
+      let(:user_cap_applied) { true }
+      let(:expected_data) { data.merge({ pending_members_page_path: pending_members_group_usage_quotas_path(group) }) }
+
+      it { is_expected.to eql(expected_data) }
+    end
+
+    context 'when user cap is not applied' do
+      let(:user_cap_applied) { false }
+      let(:expected_data) { data.merge({ pending_members_page_path: nil }) }
+
+      it { is_expected.to eql(expected_data) }
+    end
+  end
+
   describe '#require_verification_for_namespace_creation_enabled?' do
     let(:user_created_at) { RequireVerificationForNamespaceCreationExperiment::EXPERIMENT_START_DATE + 1.hour }
     let(:owner) { create(:user, created_at: user_created_at) }

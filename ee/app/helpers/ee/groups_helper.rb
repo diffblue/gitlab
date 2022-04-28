@@ -61,6 +61,23 @@ module EE
       !params[:purchased_product].blank?
     end
 
+    def group_seats_usage_quota_app_data(group)
+      pending_members_page_path = group.apply_user_cap? ? pending_members_group_usage_quotas_path(group) : nil
+      pending_members_count = ::Member.in_hierarchy(group).with_state("awaiting").count
+
+      {
+        namespace_id: group.id,
+        namespace_name: group.name,
+        seat_usage_export_path: group_seat_usage_path(group, format: :csv),
+        pending_members_page_path: pending_members_page_path,
+        pending_members_count: pending_members_count,
+        add_seats_href: add_seats_url(group),
+        has_no_subscription: group.has_free_or_no_subscription?.to_s,
+        max_free_namespace_seats: ::Namespaces::FreeUserCap::FREE_USER_LIMIT,
+        explore_plans_path: group_billings_path(group)
+      }
+    end
+
     override :require_verification_for_namespace_creation_enabled?
     def require_verification_for_namespace_creation_enabled?
       # Skip the verification for admins and auditors (added mainly for E2E tests)

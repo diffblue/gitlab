@@ -13,6 +13,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import StatisticsCard from 'ee/usage_quotas/components/statistics_card.vue';
 import StatisticsSeatsCard from 'ee/usage_quotas/components/statistics_seats_card.vue';
+import SubscriptionUpgradeInfoCard from 'ee/usage_quotas/seats/components/subscription_upgrade_info_card.vue';
 import SubscriptionSeats from 'ee/usage_quotas/seats/components/subscription_seats.vue';
 import { CANNOT_REMOVE_BILLABLE_MEMBER_MODAL_CONTENT } from 'ee/usage_quotas/seats/constants';
 import { mockDataSeats, mockTableItems } from 'ee_jest/usage_quotas/seats/mock_data';
@@ -33,6 +34,9 @@ const providedFields = {
   namespaceName: 'Test Group Name',
   namespaceId: '1000',
   seatUsageExportPath: '/groups/test_group/-/seat_usage.csv',
+  maxFreeNamespaceSeats: 5,
+  explorePlansPath: '/groups/test_group/-/billings',
+  hasNoSubscription: false,
 };
 
 const fakeStore = ({ initialState, initialGetters }) =>
@@ -63,10 +67,12 @@ describe('Subscription Seats', () => {
     initialState = {},
     mountFn = shallowMount,
     initialGetters = {},
+    provide = {},
   } = {}) => {
     return extendedWrapper(
       mountFn(SubscriptionSeats, {
         store: fakeStore({ initialState, initialGetters }),
+        provide,
       }),
     );
   };
@@ -82,6 +88,7 @@ describe('Subscription Seats', () => {
   const findErrorModal = () => wrapper.findComponent(GlModal);
   const findStatisticsCard = () => wrapper.findComponent(StatisticsCard);
   const findStatisticsSeatsCard = () => wrapper.findComponent(StatisticsSeatsCard);
+  const findSubscriptionUpgradeCard = () => wrapper.findComponent(SubscriptionUpgradeInfoCard);
 
   const serializeUser = (rowWrapper) => {
     const avatarLink = rowWrapper.findComponent(GlAvatarLink);
@@ -236,14 +243,24 @@ describe('Subscription Seats', () => {
   });
 
   describe('statistics cards', () => {
+    const defaultInitialState = {
+      seatsInSubscription: 3,
+      total: 2,
+      seatsInUse: 2,
+      maxSeatsUsed: 3,
+      seatsOwed: 1,
+    };
+
+    const defaultProps = {
+      helpLink: '/help/subscription/gitlab_com/index#how-seat-usage-is-determined',
+      totalUnit: null,
+      usageUnit: null,
+    };
+
     beforeEach(() => {
       wrapper = createComponent({
-        initialState: {
-          seatsInSubscription: 3,
-          seatsInUse: 2,
-          maxSeatsUsed: 3,
-          seatsOwed: 1,
-        },
+        initialState: defaultInitialState,
+        provide: { glFeatures: { freeUserCap: false } },
       });
     });
 
@@ -251,26 +268,79 @@ describe('Subscription Seats', () => {
       expect(actionSpies.fetchGitlabSubscription).toHaveBeenCalled();
     });
 
-    it('renders <statistics-card> with the necessary props', () => {
-      const statisticsCard = findStatisticsCard();
+    describe('renders <statistics-card>', () => {
+      describe('when group has a subscription', () => {
+        it('renders <statistics-card> with the necessary props', () => {
+          const statisticsCard = findStatisticsCard();
 
-      expect(statisticsCard.exists()).toBe(true);
-      expect(statisticsCard.props()).toEqual(
-        expect.objectContaining({
-          description: 'Seats in use / Seats in subscription',
-          helpLink: '/help/subscription/gitlab_com/index#how-seat-usage-is-determined',
-          percentage: 67,
-          totalUnit: null,
-          totalValue: '3',
-          usageUnit: null,
-          usageValue: '2',
-        }),
-      );
+          expect(statisticsCard.exists()).toBe(true);
+          expect(statisticsCard.props()).toEqual(
+            expect.objectContaining({
+              ...defaultProps,
+              description: 'Seats in use / Seats in subscription',
+              percentage: 67,
+              totalValue: '3',
+              usageValue: '2',
+            }),
+          );
+        });
+      });
+
+      describe('when group has no subscription', () => {
+        describe('when freeUserCap does not apply', () => {
+          beforeEach(() => {
+            wrapper = createComponent({
+              initialState: { ...defaultInitialState, hasNoSubscription: true },
+              provide: { glFeatures: { freeUserCap: false } },
+            });
+          });
+
+          it('renders <statistics-card> with the necessary props', () => {
+            const statisticsCard = findStatisticsCard();
+
+            expect(statisticsCard.exists()).toBe(true);
+            expect(statisticsCard.props()).toEqual(
+              expect.objectContaining({
+                ...defaultProps,
+                description: 'Seats in use / Seats in subscription',
+                percentage: 0,
+                totalValue: '-',
+                usageValue: '2',
+              }),
+            );
+          });
+        });
+
+        describe('when freeUserCap applies', () => {
+          beforeEach(() => {
+            wrapper = createComponent({
+              initialState: { ...defaultInitialState, hasNoSubscription: true },
+              provide: { glFeatures: { freeUserCap: true } },
+            });
+          });
+
+          it('renders <statistics-card> with the necessary props', () => {
+            const statisticsCard = findStatisticsCard();
+
+            expect(statisticsCard.exists()).toBe(true);
+            expect(statisticsCard.props()).toEqual(
+              expect.objectContaining({
+                ...defaultProps,
+                description: 'Seats in use / Seats available',
+                percentage: 40,
+                totalValue: '5',
+                usageValue: '2',
+              }),
+            );
+          });
+        });
+      });
     });
 
     it('renders <statistics-seats-card> with the necessary props', () => {
       const statisticsSeatsCard = findStatisticsSeatsCard();
 
+      expect(findSubscriptionUpgradeCard().exists()).toBe(false);
       expect(statisticsSeatsCard.exists()).toBe(true);
       expect(statisticsSeatsCard.props()).toEqual(
         expect.objectContaining({
@@ -278,6 +348,28 @@ describe('Subscription Seats', () => {
           seatsUsed: 3,
         }),
       );
+    });
+
+    describe('for free namespace with limit', () => {
+      beforeEach(() => {
+        wrapper = createComponent({
+          initialState: { hasNoSubscription: true },
+          provide: { glFeatures: { freeUserCap: true } },
+        });
+      });
+
+      it('renders <subscription-upgrade-info-card> with the necessary props', () => {
+        const upgradeInfoCard = findSubscriptionUpgradeCard();
+
+        expect(findStatisticsSeatsCard().exists()).toBe(false);
+        expect(upgradeInfoCard.exists()).toBe(true);
+        expect(upgradeInfoCard.props()).toEqual(
+          expect.objectContaining({
+            maxNamespaceSeats: providedFields.maxFreeNamespaceSeats,
+            explorePlansPath: providedFields.explorePlansPath,
+          }),
+        );
+      });
     });
   });
 
