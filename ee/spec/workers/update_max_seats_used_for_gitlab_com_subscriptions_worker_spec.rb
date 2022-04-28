@@ -7,9 +7,16 @@ RSpec.describe UpdateMaxSeatsUsedForGitlabComSubscriptionsWorker, :saas do
     subject { described_class.new }
 
     let_it_be(:bronze_plan) { create(:bronze_plan) }
-    let_it_be(:gitlab_subscription, refind: true) { create(:gitlab_subscription, seats: 2) }
+    let_it_be(:gitlab_subscription, refind: true) do
+      create(:gitlab_subscription, namespace: create(:namespace, :with_namespace_settings), seats: 2)
+    end
+
     let_it_be(:gitlab_subscription_2, refind: true) do
-      create(:gitlab_subscription, seats: 11, max_seats_used: 11, max_seats_used_changed_at: 1.month.ago.to_s(:db))
+      create(:gitlab_subscription,
+             namespace: create(:namespace, :with_namespace_settings),
+             seats: 11,
+             max_seats_used: 11,
+             max_seats_used_changed_at: 1.month.ago.to_s(:db))
     end
 
     let(:db_is_read_only) { false }
