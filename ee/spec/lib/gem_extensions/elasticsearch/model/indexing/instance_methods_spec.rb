@@ -6,12 +6,11 @@ RSpec.describe GemExtensions::Elasticsearch::Model::Indexing::InstanceMethods do
   describe '#index_document' do
     let(:project) { Project.new(id: 1) }
 
-    it 'overrides _id with type being prepended' do
+    it 'overrides _id' do
       proxy = Elastic::Latest::ProjectInstanceProxy.new(project)
 
       expect(proxy.client).to receive(:index).with(
         index: 'gitlab-test',
-        type: 'doc',
         id: 'project_1',
         body: proxy.as_indexed_json
       )

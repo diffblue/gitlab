@@ -4,12 +4,6 @@ require 'spec_helper'
 require_relative './config_shared_examples'
 
 RSpec.describe Elastic::Latest::Config do
-  describe '.document_type' do
-    it 'returns config' do
-      expect(described_class.document_type).to eq('doc')
-    end
-  end
-
   describe '.settings' do
     it_behaves_like 'config settings return correct values'
   end

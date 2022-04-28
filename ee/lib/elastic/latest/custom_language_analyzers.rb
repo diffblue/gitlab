@@ -7,10 +7,10 @@ module Elastic
         SUPPORTED_FIELDS = %i{title description}.freeze
 
         def custom_analyzers_mappings(type: :text)
-          hash = { doc: { properties: {} } }
+          hash = { properties: {} }
 
           SUPPORTED_FIELDS.each do |field|
-            hash[:doc][:properties][field] = {
+            hash[:properties][field] = {
               fields: custom_analyzers_fields(type: type)
             }
           end

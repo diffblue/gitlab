@@ -12,14 +12,12 @@ RSpec.describe Elastic::Latest::CustomLanguageAnalyzers do
     it 'returns correct structure' do
       expect(described_class.custom_analyzers_mappings).to eq(
         {
-          doc: {
-            properties: {
-              title: {
-                fields: described_class.custom_analyzers_fields(type: :text)
-              },
-              description: {
-                fields: described_class.custom_analyzers_fields(type: :text)
-              }
+          properties: {
+            title: {
+              fields: described_class.custom_analyzers_fields(type: :text)
+            },
+            description: {
+              fields: described_class.custom_analyzers_fields(type: :text)
             }
           }
         }

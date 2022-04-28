@@ -7,7 +7,6 @@ module Elastic
       extend Elasticsearch::Model::Indexing::ClassMethods
       extend Elasticsearch::Model::Naming::ClassMethods
 
-      self.document_type = 'doc'
       self.index_name = [Rails.application.class.module_parent_name.downcase, Rails.env, 'notes'].join('-')
 
       settings Elastic::Latest::Config.settings.to_hash.deep_merge(
