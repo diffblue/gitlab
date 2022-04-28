@@ -55,7 +55,7 @@ module EE
                 end
               end
 
-              namespace 'modules/starboard_vulnerability' do
+              namespace 'modules/starboard_vulnerability', urgency: :low do
                 desc 'PUT starboard vulnerability' do
                   detail 'Idempotently creates a security vulnerability from starboard'
                 end
@@ -134,7 +134,7 @@ module EE
                 end
 
                 route_setting :authentication, cluster_agent_token_allowed: true
-                post "/scan_result" do
+                post "/scan_result", urgency: :low do
                   not_found! if agent.project.nil?
 
                   service = ::Vulnerabilities::StarboardVulnerabilityResolveService.new(agent, params[:uuids])
