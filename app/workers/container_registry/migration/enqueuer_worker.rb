@@ -66,6 +66,7 @@ module ContainerRegistry
       end
 
       def tag_count_too_high?
+        return false if migration.max_tags_count == 0
         return false unless next_repository.tags_count > migration.max_tags_count
 
         next_repository.skip_import(reason: :too_many_tags)
