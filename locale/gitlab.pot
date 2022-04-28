@@ -6600,6 +6600,9 @@ msgstr ""
 msgid "CI/CD configuration file"
 msgstr ""
 
+msgid "CI/CD minutes"
+msgstr ""
+
 msgid "CI/CD|No projects have been added to the scope"
 msgstr ""
 
@@ -6613,6 +6616,9 @@ msgid "CICDAnalytics|Deployment frequency"
 msgstr ""
 
 msgid "CICDAnalytics|Lead time"
+msgstr ""
+
+msgid "CICDAnalytics|No shared runner minute usage data available"
 msgstr ""
 
 msgid "CICDAnalytics|Projects with releases"
@@ -13540,6 +13546,9 @@ msgid "Duplicate page: %{error_message}"
 msgstr ""
 
 msgid "Duration"
+msgstr ""
+
+msgid "Duration (min)"
 msgstr ""
 
 msgid "Duration|%s days"
@@ -40712,6 +40721,12 @@ msgstr ""
 msgid "UsageQuota|CI minutes usage by project"
 msgstr ""
 
+msgid "UsageQuota|CI/CD minutes usage"
+msgstr ""
+
+msgid "UsageQuota|CI/CD minutes usage since %{timeElapsed}"
+msgstr ""
+
 msgid "UsageQuota|Code packages and container images."
 msgstr ""
 
@@ -40772,6 +40787,9 @@ msgstr ""
 msgid "UsageQuota|Shared bits of code and text."
 msgstr ""
 
+msgid "UsageQuota|Shared runner usage"
+msgstr ""
+
 msgid "UsageQuota|Snippets"
 msgstr ""
 
@@ -40820,6 +40838,12 @@ msgstr ""
 msgid "UsageQuota|Usage breakdown"
 msgstr ""
 
+msgid "UsageQuota|Usage by month"
+msgstr ""
+
+msgid "UsageQuota|Usage by project"
+msgstr ""
+
 msgid "UsageQuota|Usage of group resources across the projects in the %{strong_start}%{group_name}%{strong_end} group"
 msgstr ""
 
@@ -40830,9 +40854,6 @@ msgid "UsageQuota|Usage of resources across your projects"
 msgstr ""
 
 msgid "UsageQuota|Usage quotas help link"
-msgstr ""
-
-msgid "UsageQuota|Usage since"
 msgstr ""
 
 msgid "UsageQuota|When you purchase additional storage, we automatically unlock projects that were locked when you reached the %{actualRepositorySizeLimit} limit."
