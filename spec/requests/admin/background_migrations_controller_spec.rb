@@ -30,31 +30,34 @@ RSpec.describe Admin::BackgroundMigrationsController, :enable_admin_mode do
   end
 
   describe 'GET #index' do
-    using RSpec::Parameterized::TableSyntax
-
     let(:default_model) { ActiveRecord::Base }
     let(:model_on_other_database) { Ci::ApplicationRecord }
-    let(:base_models) { { 'main' => default_model, 'xpto' => model_on_other_database } }
 
     before do
       allow(Gitlab::Database).to receive(:database_base_models).and_return(base_models)
     end
 
-    where(:database_param, :expected_base_model) do
-      nil    | lazy { default_model }
-      'xpto' | lazy { model_on_other_database }
+    context 'when no database is provided' do
+      let(:base_models) { { 'fake_db' => default_model } }
+
+      before do
+        stub_const('Gitlab::Database::MAIN_DATABASE_NAME', 'fake_db')
+      end
+
+      it 'uses the default connection' do
+        expect(Gitlab::Database::SharedModel).to receive(:using_connection).with(default_model.connection).and_yield
+
+        get admin_background_migrations_path
+      end
     end
 
-    with_them do
-      it "uses the correct connection" do
-        expect(Gitlab::Database::SharedModel).to receive(:using_connection)
-                                                   .with(expected_base_model.connection).and_yield
+    context 'when a database is provided' do
+      let(:base_models) { { 'fake_db' => default_model, 'xpto' => model_on_other_database } }
 
-        if database_param.blank?
-          get admin_background_migrations_path
-        else
-          get admin_background_migrations_path, params: { database: database_param }
-        end
+      it "uses the correct connection" do
+        expect(Gitlab::Database::SharedModel).to receive(:using_connection).with(model_on_other_database.connection).and_yield
+
+        get admin_background_migrations_path, params: { database: 'xpto' }
       end
     end
   end
