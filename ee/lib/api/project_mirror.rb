@@ -2,7 +2,7 @@
 
 module API
   class ProjectMirror < ::API::Base
-    feature_category :pipeline_authoring
+    feature_category :source_code_management
 
     helpers do
       def github_webhook_signature
