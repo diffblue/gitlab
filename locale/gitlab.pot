@@ -21684,6 +21684,9 @@ msgstr ""
 msgid "Jobs|All"
 msgstr ""
 
+msgid "Jobs|An error occurred while loading the Failed Jobs tab."
+msgstr ""
+
 msgid "Jobs|Are you sure you want to proceed?"
 msgstr ""
 
@@ -21712,6 +21715,9 @@ msgid "Jobs|Raw text search is not currently supported for the jobs filtered sea
 msgstr ""
 
 msgid "Jobs|Status"
+msgstr ""
+
+msgid "Jobs|There was a problem fetching the failed jobs."
 msgstr ""
 
 msgid "Jobs|Use jobs to automate your tasks"
@@ -21814,6 +21820,9 @@ msgid "Job|The artifacts were removed"
 msgstr ""
 
 msgid "Job|The artifacts will be removed"
+msgstr ""
+
+msgid "Job|There was a problem retrying the failed job."
 msgstr ""
 
 msgid "Job|These artifacts are the latest. They will not be deleted (even if expired) until newer artifacts are available."
