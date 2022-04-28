@@ -11,7 +11,8 @@ class NetworkPolicyMetricsWorker # rubocop:disable Scalability/IdempotentWorker
   sidekiq_options retry: 3
 
   queue_namespace :cronjob
-  feature_category :container_network_security
+  # This worker is being removed in https://gitlab.com/gitlab-org/gitlab/-/issues/352285
+  feature_category :not_owned # rubocop:todo Gitlab/AvoidFeatureCategoryNotOwned
 
   def perform
     services = ::Integrations::Prometheus
