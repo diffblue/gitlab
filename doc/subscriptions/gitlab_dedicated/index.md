@@ -53,7 +53,7 @@ Features that we do not plan to offer at all:
 
 The following AWS regions are not available at launch:
 
-- Jarkata (ap-southeast-3)
+- Jakarta (ap-southeast-3)
 - Bahrain (me-south-1)
 - Hong Kong (ap-east-1)
 - Cape Town (af-south-1)
