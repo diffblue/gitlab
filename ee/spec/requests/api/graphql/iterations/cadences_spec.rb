@@ -55,31 +55,6 @@ RSpec.describe 'getting iterations' do
         it_behaves_like 'returns cadence by id'
       end
     end
-
-    context 'by integer id' do
-      let(:cadence_id) { iteration_cadence1.id.to_s }
-      let(:expected_result) { [iteration_cadence1] }
-
-      context 'fetching cadences from group level' do
-        let(:group_or_project) { group }
-
-        it_behaves_like 'returns cadence by id'
-
-        context 'from a different group' do
-          let(:other_group) { create(:group) }
-          let(:group_or_project) { other_group }
-          let(:expected_result) { [] }
-
-          it_behaves_like 'returns cadence by id'
-        end
-      end
-
-      context 'fetching cadences from project level' do
-        let(:group_or_project) { project }
-
-        it_behaves_like 'returns cadence by id'
-      end
-    end
   end
 
   def iteration_cadences_query(group)
@@ -100,7 +75,7 @@ RSpec.describe 'getting iterations' do
   def iteration_cadence_by_id(parent)
     if parent.is_a?(Group)
       <<~QUERY
-        query($id: ID!) {
+        query($id: IterationsCadenceID!) {
           group(fullPath: "#{parent.full_path}") {
             id,
             iterationCadences(id: $id) {
@@ -113,7 +88,7 @@ RSpec.describe 'getting iterations' do
       QUERY
     else
       <<~QUERY
-      query($id: ID!) {
+      query($id: IterationsCadenceID!) {
         project(fullPath: "#{parent.full_path}") {
           id,
           iterationCadences(id: $id) {
