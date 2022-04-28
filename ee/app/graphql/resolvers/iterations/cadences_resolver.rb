@@ -29,7 +29,7 @@ module Resolvers
       def resolve(id: nil, **args)
         authorize!
 
-        args[:id] = parse_id(id) if id.present?
+        args[:id] = id.model_id if id.present?
 
         cadences = ::Iterations::CadencesFinder.new(current_user, group, args).execute
 
@@ -37,13 +37,6 @@ module Resolvers
       end
 
       private
-
-      def parse_id(id)
-        GitlabSchema.parse_gid(id, expected_type: ::Iterations::Cadence).model_id
-      rescue Gitlab::Graphql::Errors::ArgumentError
-        # we need to support parameter as a raw model ID, not just valid global ID.
-        id
-      end
 
       def group
         @parent ||= object.respond_to?(:sync) ? object.sync : object

@@ -1,4 +1,4 @@
-mutation securityDashboardDestroyNote($id: ID!) {
+mutation securityDashboardDestroyNote($id: NoteID!) {
   destroyNote(input: { id: $id }) {
     errors
     note {

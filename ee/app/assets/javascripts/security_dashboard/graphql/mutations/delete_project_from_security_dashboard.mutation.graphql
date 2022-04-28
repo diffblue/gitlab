@@ -1,4 +1,4 @@
-mutation deleteProjectFromSecurityDashboard($id: ID!) {
+mutation deleteProjectFromSecurityDashboard($id: ProjectID!) {
   removeProjectFromSecurityDashboard(input: { id: $id }) {
     errors
   }

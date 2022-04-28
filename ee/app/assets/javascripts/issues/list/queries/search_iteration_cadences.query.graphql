@@ -1,7 +1,7 @@
 query searchIterationCadences(
   $fullPath: ID!
   $title: String
-  $id: ID
+  $id: IterationsCadenceID
   $isProject: Boolean = false
 ) {
   group(fullPath: $fullPath) @skip(if: $isProject) {

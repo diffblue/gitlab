@@ -3,7 +3,7 @@
 
 query Iterations(
   $fullPath: ID!
-  $iterationCadenceId: ID!
+  $iterationCadenceId: IterationsCadenceID!
   $state: IterationState!
   $beforeCursor: String
   $afterCursor: String

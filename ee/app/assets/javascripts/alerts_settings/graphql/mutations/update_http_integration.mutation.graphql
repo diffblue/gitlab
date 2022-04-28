@@ -1,7 +1,7 @@
 #import "~/alerts_settings/graphql/fragments/http_integration_item.fragment.graphql"
 
 mutation updateHttpIntegrationEE(
-  $id: ID!
+  $id: AlertManagementHttpIntegrationID!
   $name: String!
   $active: Boolean!
   $payloadExample: JsonString

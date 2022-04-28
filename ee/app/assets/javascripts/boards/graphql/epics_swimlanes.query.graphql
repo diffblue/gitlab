@@ -2,7 +2,7 @@
 
 query BoardEE(
   $fullPath: ID!
-  $boardId: ID!
+  $boardId: BoardID!
   $issueFilters: BoardIssueInput
   $isGroup: Boolean = false
   $isProject: Boolean = false
