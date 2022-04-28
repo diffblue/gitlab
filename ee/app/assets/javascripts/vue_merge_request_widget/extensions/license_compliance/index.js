@@ -24,8 +24,8 @@ export default {
   computed: {
     summary() {
       if (
-        this.collapsedData[0].new_licenses.length > 0 &&
-        this.collapsedData[0].removed_licenses.length > 0
+        this.collapsedData[0].new_licenses?.length > 0 &&
+        this.collapsedData[0].removed_licenses?.length > 0
       ) {
         const newLicenses = n__(
           '%d new license',
@@ -40,13 +40,13 @@ export default {
         );
 
         return sprintf(__(`License Compliance detected ${newLicenses} and ${removedLicenses}`));
-      } else if (this.collapsedData[0].new_licenses.length > 0) {
+      } else if (this.collapsedData[0].new_licenses?.length > 0) {
         return n__(
           'LicenseCompliance|License Compliance detected %d new license',
           'LicenseCompliance|License Compliance detected %d new licenses',
           this.collapsedData[0].new_licenses.length,
         );
-      } else if (this.collapsedData[0].removed_licenses.length > 0) {
+      } else if (this.collapsedData[0].removed_licenses?.length > 0) {
         return n__(
           'LicenseCompliance|License Compliance detected %d removed license',
           'LicenseCompliance|License Compliance detected %d removed licenses',
@@ -57,7 +57,7 @@ export default {
       return s__('LicenseCompliance|License Compliance detected no new licenses');
     },
     statusIcon() {
-      if (this.collapsedData[0].new_licenses.length === 0) {
+      if (this.collapsedData[0].new_licenses?.length === 0) {
         return EXTENSION_ICONS.success;
       }
       return EXTENSION_ICONS.warning;

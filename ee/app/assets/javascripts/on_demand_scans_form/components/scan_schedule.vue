@@ -1,5 +1,6 @@
 <script>
-import { GlCard, GlDatepicker, GlFormCheckbox, GlFormGroup } from '@gitlab/ui';
+import { GlDatepicker, GlFormGroup, GlToggle } from '@gitlab/ui';
+import { s__ } from '~/locale';
 import DropdownInput from 'ee/security_configuration/components/dropdown_input.vue';
 import {
   dateAndTimeToISOString,
@@ -12,10 +13,16 @@ import { toGraphQLCadence, fromGraphQLCadence } from '../utils';
 
 export default {
   name: 'ScanSchedule',
+  i18n: {
+    scanScheduleToggleText: s__('OnDemandScans|Enable scan schedule'),
+    scanStartTimeLabel: s__('OnDemandScans|Start time'),
+    scanScheduleRepeatLabel: s__('OnDemandScans|at'),
+    scanScheduleRepeatDefaultLabel: s__('OnDemandScans|Repeats'),
+    scanScheduleTimezoneLabel: s__('OnDemandScans|Timezone'),
+  },
   components: {
-    GlCard,
     GlDatepicker,
-    GlFormCheckbox,
+    GlToggle,
     GlFormGroup,
     DropdownInput,
     TimezoneDropdown,
@@ -91,30 +98,23 @@ export default {
 </script>
 
 <template>
-  <gl-card class="gl-bg-gray-10">
-    <div class="row">
-      <div class="col-12 col-md-6">
-        <gl-form-checkbox v-model="form.isScheduledScan" class="gl-mb-3" @input="handleInput">
-          <span class="gl-font-weight-bold">{{ s__('OnDemandScans|Schedule scan') }}</span>
-        </gl-form-checkbox>
-        <gl-form-group
-          class="gl-pl-6"
-          data-testid="profile-schedule-form-group"
-          :disabled="!form.isScheduledScan"
-        >
+  <div class="row">
+    <div class="col-12 col-md-6">
+      <gl-toggle
+        v-model="form.isScheduledScan"
+        class="gl-mb-3"
+        :label="$options.i18n.scanScheduleToggleText"
+        @change="handleInput"
+      />
+      <transition name="fade">
+        <gl-form-group v-if="form.isScheduledScan" data-testid="profile-schedule-form-group">
           <div class="gl-font-weight-bold gl-mb-3">
-            {{ s__('OnDemandScans|Start time') }}
+            {{ $options.i18n.scanStartTimeLabel }}
           </div>
-          <timezone-dropdown
-            v-model="timezone"
-            :timezone-data="timezones"
-            :disabled="!form.isScheduledScan"
-            @input="handleInput"
-          />
-          <div class="gl-display-flex gl-align-items-center">
+          <div class="gl-display-flex gl-align-items-center gl-mb-5">
             <gl-datepicker v-model="form.startDate" @input="handleInput" />
             <span class="gl-px-3">
-              {{ __('at') }}
+              {{ $options.i18n.scanScheduleRepeatLabel }}
             </span>
             <input
               v-model="form.startTime"
@@ -123,19 +123,30 @@ export default {
               @input="handleInput"
             />
           </div>
+
+          <div class="gl-font-weight-bold gl-mb-3">
+            {{ $options.i18n.scanScheduleTimezoneLabel }}
+          </div>
+
+          <timezone-dropdown
+            v-model="timezone"
+            :timezone-data="timezones"
+            :disabled="!form.isScheduledScan"
+            @input="handleInput"
+          />
+
           <dropdown-input
             v-model="form.cadence"
-            :label="__('Repeats')"
-            :default-text="__('Repeats')"
+            :label="$options.i18n.scanScheduleRepeatDefaultLabel"
+            :default-text="$options.i18n.scanScheduleRepeatDefaultLabel"
             :options="$options.SCAN_CADENCE_OPTIONS"
             :disabled="!form.isScheduledScan"
             field="repeat-input"
-            class="gl-mt-5"
             data-testid="schedule-cadence-input"
             @input="handleInput"
           />
         </gl-form-group>
-      </div>
+      </transition>
     </div>
-  </gl-card>
+  </div>
 </template>

@@ -2,13 +2,12 @@
 import {
   GlAlert,
   GlButton,
-  GlCard,
   GlForm,
+  GlIcon,
   GlFormGroup,
   GlFormInput,
   GlFormTextarea,
   GlLink,
-  GlSkeletonLoader,
   GlSprintf,
   GlSafeHtmlDirective,
   GlTooltipDirective,
@@ -26,7 +25,8 @@ import RefSelector from '~/ref/components/ref_selector.vue';
 import { REF_TYPE_BRANCHES } from '~/ref/constants';
 import LocalStorageSync from '~/vue_shared/components/local_storage_sync.vue';
 import validation from '~/vue_shared/directives/validation';
-import { HELP_PAGE_PATH } from 'ee/on_demand_scans/constants';
+import { HELP_PAGE_PATH, DAST_CONFIGURATION_HELP_PATH } from 'ee/on_demand_scans/constants';
+import SectionLayout from '~/vue_shared/security_configuration/components/section_layout.vue';
 import dastProfileCreateMutation from '../graphql/dast_profile_create.mutation.graphql';
 import dastProfileUpdateMutation from '../graphql/dast_profile_update.mutation.graphql';
 import {
@@ -69,6 +69,46 @@ export default {
   saveAndRunScanBtnId: 'scan-submit-button',
   saveScanBtnId: 'scan-save-button',
   helpPagePath: HELP_PAGE_PATH,
+  dastConfigurationHelpPath: DAST_CONFIGURATION_HELP_PATH,
+  i18n: {
+    newOnDemandScanHeader: s__('OnDemandScans|New on-demand scan'),
+    newOnDemandScanHeaderDescription: s__(
+      'OnDemandScans|On-demand scans run outside the DevOps cycle and find vulnerabilities in your projects. %{learnMoreLinkStart}Learn more%{learnMoreLinkEnd}',
+    ),
+    editOnDemandScanHeader: s__('OnDemandScans|Edit on-demand scan'),
+    branchSelectorHelpText: s__(
+      'OnDemandScans|Scan results will be associated with the selected branch.',
+    ),
+    dastConfigurationHeader: s__('OnDemandScans|DAST configuration'),
+    dastConfigurationDescription: s__(
+      "OnDemandScans|DAST scans for vulnerabilities in your project's running application, website, or API.  For details of all configuration options, see the %{linkStart}GitLab DAST documentation%{linkEnd}.",
+    ),
+    scanConfigurationNameLabel: s__('OnDemandScans|Scan name'),
+    scanConfigurationNamePlaceholder: s__('OnDemandScans|My daily scan'),
+    scanConfigurationDescriptionLabel: s__('OnDemandScans|Description (optional)'),
+    scanConfigurationDescriptionPlaceholder: s__(
+      `OnDemandScans|For example: Tests the login page for SQL injections`,
+    ),
+    scanConfigurationHeader: s__('OnDemandScans|Scan configuration'),
+    scanConfigurationDescription: s__(
+      'OnDemandScans|Define the fundamental configuration options for your on-demand scan.',
+    ),
+    scanConfigurationDefaultBranchLabel: s__(
+      'OnDemandScans|You must create a repository within your project to run an on-demand scan.',
+    ),
+    scanTypeHeader: s__('OnDemandScans|Scan type'),
+    scanTypeText: s__('OnDemandScans|Dynamic Application Security Testing (DAST)'),
+    scanTypeTooltip: s__(
+      'OnDemandScans|Analyze a deployed version of your web application for known vulnerabilities by examining it from the outside in. DAST works by simulating external attacks on your application while it is running.',
+    ),
+    scanScheduleHeader: s__('OnDemandScans|Scan schedule'),
+    scanScheduleDescription: s__(
+      'OnDemandScans|Add a schedule to run this scan at a specified date and time or on a recurring basis. Scheduled scans are automatically saved to scan library.',
+    ),
+    saveAndRunScanButton: s__('OnDemandScans|Save and run scan'),
+    saveScanButton: s__('OnDemandScans|Save scan'),
+    cancelButton: s__('OnDemandScans|Cancel'),
+  },
   components: {
     RefSelector,
     ProfileConflictAlert,
@@ -77,15 +117,15 @@ export default {
     ScanSchedule,
     GlAlert,
     GlButton,
-    GlCard,
     GlForm,
+    GlIcon,
     GlFormGroup,
     GlFormInput,
     GlFormTextarea,
     GlLink,
-    GlSkeletonLoader,
     GlSprintf,
     LocalStorageSync,
+    SectionLayout,
   },
   directives: {
     SafeHtml: GlSafeHtmlDirective,
@@ -153,8 +193,8 @@ export default {
     },
     title() {
       return this.isEdit
-        ? s__('OnDemandScans|Edit on-demand DAST scan')
-        : s__('OnDemandScans|New on-demand DAST scan');
+        ? this.$options.i18n.editOnDemandScanHeader
+        : this.$options.i18n.newOnDemandScanHeader;
     },
     selectedScannerProfile() {
       return this.selectedScannerProfileId
@@ -329,21 +369,12 @@ export default {
       :value="formFieldValues"
       @input="updateFromStorage"
     />
-    <header class="gl-mb-6">
+    <header class="gl-border-b gl-pb-6">
       <div class="gl-mt-6 gl-display-flex">
-        <h2 class="gl-flex-grow-1 gl-my-0">{{ title }}</h2>
-        <gl-button :href="onDemandScansPath" data-testid="manage-profiles-link">
-          {{ s__('OnDemandScans|Manage DAST scans') }}
-        </gl-button>
+        <h1 class="gl-font-size-h1 gl-flex-grow-1 gl-my-0">{{ title }}</h1>
       </div>
       <p>
-        <gl-sprintf
-          :message="
-            s__(
-              'OnDemandScans|On-demand scans run outside the DevOps cycle and find vulnerabilities in your projects. %{learnMoreLinkStart}Learn more%{learnMoreLinkEnd}',
-            )
-          "
-        >
+        <gl-sprintf :message="$options.i18n.newOnDemandScanHeaderDescription">
           <template #learnMoreLink="{ content }">
             <gl-link :href="$options.helpPagePath" data-testid="help-page-link">
               {{ content }}
@@ -366,104 +397,128 @@ export default {
         <li v-for="error in errors" :key="error" v-safe-html="error"></li>
       </ul>
     </gl-alert>
+    <section-layout
+      v-if="!failedToLoadProfiles"
+      :heading="$options.i18n.scanConfigurationHeader"
+      :is-loading="isLoadingProfiles"
+    >
+      <template #description>
+        <p>{{ $options.i18n.scanConfigurationDescription }}</p>
+      </template>
+      <template #features>
+        <gl-form-group
+          class="gl-mb-6"
+          :label="$options.i18n.scanConfigurationNameLabel"
+          :invalid-feedback="form.fields.name.feedback"
+        >
+          <gl-form-input
+            v-model="form.fields.name.value"
+            v-validation:[form.showValidation]
+            data-testid="dast-scan-name-input"
+            type="text"
+            :placeholder="$options.i18n.scanConfigurationNamePlaceholder"
+            :state="form.fields.name.state"
+            name="name"
+            required
+          />
+        </gl-form-group>
 
-    <template v-if="isLoadingProfiles">
-      <gl-skeleton-loader :width="1248" :height="180">
-        <rect x="0" y="0" width="100" height="15" rx="4" />
-        <rect x="0" y="24" width="460" height="32" rx="4" />
-        <rect x="0" y="71" width="100" height="15" rx="4" />
-        <rect x="0" y="95" width="460" height="72" rx="4" />
-      </gl-skeleton-loader>
-      <gl-card v-for="i in 2" :key="i" class="gl-mb-5">
-        <template #header>
-          <gl-skeleton-loader :width="1248" :height="15">
-            <rect x="0" y="0" width="300" height="15" rx="4" />
-          </gl-skeleton-loader>
-        </template>
-        <gl-skeleton-loader :width="1248" :height="15">
-          <rect x="0" y="0" width="600" height="15" rx="4" />
-        </gl-skeleton-loader>
-        <gl-skeleton-loader :width="1248" :height="15">
-          <rect x="0" y="0" width="300" height="15" rx="4" />
-        </gl-skeleton-loader>
-      </gl-card>
-    </template>
-    <template v-else-if="!failedToLoadProfiles">
-      <gl-form-group
-        :label="s__('OnDemandScans|Scan name')"
-        :invalid-feedback="form.fields.name.feedback"
-      >
-        <gl-form-input
-          v-model="form.fields.name.value"
-          v-validation:[form.showValidation]
-          class="mw-460"
-          data-testid="dast-scan-name-input"
-          type="text"
-          :placeholder="s__('OnDemandScans|My daily scan')"
-          :state="form.fields.name.state"
-          name="name"
-          required
+        <gl-form-group class="gl-mb-6" :label="$options.i18n.scanConfigurationDescriptionLabel">
+          <gl-form-textarea
+            v-model="form.fields.description.value"
+            data-testid="dast-scan-description-input"
+            :placeholder="$options.i18n.scanConfigurationDescriptionPlaceholder"
+            name="description"
+            :state="form.fields.description.state"
+          />
+        </gl-form-group>
+
+        <gl-form-group class="gl-mb-6" :label="$options.i18n.scanTypeHeader">
+          <span>{{ $options.i18n.scanTypeText }}</span>
+          <gl-icon
+            v-gl-tooltip="$options.i18n.scanTypeTooltip"
+            name="question-o"
+            class="gl-ml-2 gl-link gl-cursor-pointer"
+          />
+        </gl-form-group>
+
+        <gl-form-group class="gl-mb-3" :label="__('Branch')">
+          <small class="form-text text-gl-muted gl-mt-0 gl-mb-5">
+            {{ $options.i18n.branchSelectorHelpText }}
+          </small>
+          <ref-selector
+            v-model="selectedBranch"
+            data-testid="dast-scan-branch-input"
+            no-flip
+            :enabled-ref-types="$options.enabledRefTypes"
+            :project-id="projectPath"
+            :translations="{
+              dropdownHeader: __('Select a branch'),
+              searchPlaceholder: __('Search'),
+              noRefSelected: __('No available branches'),
+              noResults: __('No available branches'),
+            }"
+          />
+          <div v-if="!defaultBranch" class="gl-text-red-500 gl-mt-3">
+            {{ $options.i18n.scanConfigurationDefaultBranchLabel }}
+          </div>
+        </gl-form-group>
+      </template>
+    </section-layout>
+
+    <section-layout
+      v-if="!failedToLoadProfiles"
+      :heading="$options.i18n.dastConfigurationHeader"
+      :is-loading="isLoadingProfiles"
+    >
+      <template #description>
+        <gl-sprintf :message="$options.i18n.dastConfigurationDescription">
+          <template #link="{ content }">
+            <gl-link :href="$options.dastConfigurationHelpPath">{{ content }}</gl-link>
+          </template>
+        </gl-sprintf>
+      </template>
+      <template #features>
+        <scanner-profile-selector
+          v-model="selectedScannerProfileId"
+          class="gl-mb-6"
+          :profiles="scannerProfiles"
+          :selected-profile="selectedScannerProfile"
+          :has-conflict="hasProfilesConflict"
+          :dast-scan-id="dastScanId"
         />
-      </gl-form-group>
-      <gl-form-group :label="s__('OnDemandScans|Description (optional)')">
-        <gl-form-textarea
-          v-model="form.fields.description.value"
-          class="mw-460"
-          data-testid="dast-scan-description-input"
-          :placeholder="s__(`OnDemandScans|For example: Tests the login page for SQL injections`)"
-          name="description"
-          :state="form.fields.description.state"
+
+        <site-profile-selector
+          v-model="selectedSiteProfileId"
+          class="gl-mb-3"
+          :profiles="siteProfiles"
+          :selected-profile="selectedSiteProfile"
+          :has-conflict="hasProfilesConflict"
+          :dast-scan-id="dastScanId"
         />
-      </gl-form-group>
+      </template>
+    </section-layout>
 
-      <gl-form-group :label="__('Branch')">
-        <ref-selector
-          v-model="selectedBranch"
-          data-testid="dast-scan-branch-input"
-          no-flip
-          :enabled-ref-types="$options.enabledRefTypes"
-          :project-id="projectPath"
-          :translations="{
-            dropdownHeader: __('Select a branch'),
-            searchPlaceholder: __('Search'),
-            noRefSelected: __('No available branches'),
-            noResults: __('No available branches'),
-          }"
+    <section-layout
+      v-if="!failedToLoadProfiles"
+      :heading="$options.i18n.scanScheduleHeader"
+      :is-loading="isLoadingProfiles"
+    >
+      <template #description>
+        <p>{{ $options.i18n.scanScheduleDescription }}</p>
+      </template>
+      <template #features>
+        <scan-schedule v-model="profileSchedule" />
+
+        <profile-conflict-alert
+          v-if="hasProfilesConflict"
+          data-testid="on-demand-scans-profiles-conflict-alert"
         />
-        <div v-if="!defaultBranch" class="gl-text-red-500 gl-mt-3">
-          {{
-            s__(
-              'OnDemandScans|You must create a repository within your project to run an on-demand scan.',
-            )
-          }}
-        </div>
-      </gl-form-group>
+      </template>
+    </section-layout>
 
-      <scanner-profile-selector
-        v-model="selectedScannerProfileId"
-        class="gl-mb-5"
-        :profiles="scannerProfiles"
-        :selected-profile="selectedScannerProfile"
-        :has-conflict="hasProfilesConflict"
-        :dast-scan-id="dastScanId"
-      />
-      <site-profile-selector
-        v-model="selectedSiteProfileId"
-        class="gl-mb-5"
-        :profiles="siteProfiles"
-        :selected-profile="selectedSiteProfile"
-        :has-conflict="hasProfilesConflict"
-        :dast-scan-id="dastScanId"
-      />
-
-      <scan-schedule v-model="profileSchedule" class="gl-mb-5" />
-
-      <profile-conflict-alert
-        v-if="hasProfilesConflict"
-        data-testid="on-demand-scans-profiles-conflict-alert"
-      />
-
-      <div class="gl-mt-6 gl-pt-6">
+    <div v-if="!failedToLoadProfiles">
+      <div class="gl-pt-6">
         <gl-button
           type="submit"
           variant="confirm"
@@ -472,7 +527,7 @@ export default {
           :disabled="isSubmitButtonDisabled"
           :loading="loading === $options.saveAndRunScanBtnId"
         >
-          {{ s__('OnDemandScans|Save and run scan') }}
+          {{ $options.i18n.saveAndRunScanButton }}
         </gl-button>
         <gl-button
           variant="confirm"
@@ -482,16 +537,16 @@ export default {
           :loading="loading === $options.saveScanBtnId"
           @click="onSubmit({ runAfter: false, button: $options.saveScanBtnId })"
         >
-          {{ s__('OnDemandScans|Save scan') }}
+          {{ $options.i18n.saveScanButton }}
         </gl-button>
         <gl-button
           data-testid="on-demand-scan-cancel-button"
           :disabled="Boolean(loading)"
           @click="onCancelClicked"
         >
-          {{ __('Cancel') }}
+          {{ $options.i18n.cancelButton }}
         </gl-button>
       </div>
-    </template>
+    </div>
   </gl-form>
 </template>
