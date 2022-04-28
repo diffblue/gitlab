@@ -51,7 +51,7 @@ for new versions to deploy while the migrations are still running.
 Background Migration contrary to regular migrations does have access to multiple databases
 and can be used to efficiently access and update data across them. To properly indicate
 a database to be used it is desired to create ActiveRecord model inline the migration code.
-Such model should use a correct [`ApplicationRecord`](database/multiple_databases.md#gitlab-schema)
+Such model should use a correct [`ApplicationRecord`](multiple_databases.md#gitlab-schema)
 depending on which database the table is located. As such usage of `ActiveRecord::Base`
 is disallowed as it does not describe a explicitly database to be used to access given table.
 
