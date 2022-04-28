@@ -249,10 +249,12 @@ module Projects
     def validate_import_source_enabled!
       return unless @params[:import_type]
 
-      return if INTERNAL_IMPORT_SOURCES.include?(@params[:import_type])
+      import_type = @params[:import_type].to_s
 
-      unless ::Gitlab::CurrentSettings.import_sources&.include?(@params[:import_type])
-        raise ImportSourceDisabledError, "#{@params[:import_type]} import source is disabled"
+      return if INTERNAL_IMPORT_SOURCES.include?(import_type)
+
+      unless ::Gitlab::CurrentSettings.import_sources&.include?(import_type)
+        raise ImportSourceDisabledError, "#{import_type} import source is disabled"
       end
     end
 
