@@ -5,7 +5,6 @@ module API
     include PaginationParams
 
     feature_category :feature_flags
-    urgency :low, ['features', 'client/register', 'client/metrics']
 
     namespace :feature_flags do
       resource :unleash, requirements: API::NAMESPACE_OR_PROJECT_REQUIREMENTS do
@@ -31,7 +30,7 @@ module API
           end
 
           desc 'Get a list of features'
-          get 'client/features', urgency: :medium do
+          get 'client/features' do
             present :version, 1
             present :features, feature_flags, with: ::API::Entities::UnleashFeature
           end
