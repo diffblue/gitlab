@@ -37,6 +37,10 @@ RSpec.describe Sidebars::Projects::Menus::IssuesMenu do
   end
 
   describe 'Iterations' do
+    let(:user) { create(:user) }
+    let(:group) { build(:group) }
+    let(:project) { build(:project, group: group) }
+
     subject { described_class.new(context).renderable_items.index { |e| e.item_id == :iterations} }
 
     context 'when licensed feature iterations is not enabled' do
@@ -53,8 +57,20 @@ RSpec.describe Sidebars::Projects::Menus::IssuesMenu do
       end
 
       context 'when user can read iterations' do
+        before do
+          group.add_owner(user)
+        end
+
         it 'includes iterations menu item' do
           is_expected.to be_present
+        end
+
+        context 'when project is namespaced to a user' do
+          let(:project) { build(:project, namespace: user.namespace) }
+
+          it 'does not include iterations menu item' do
+            is_expected.to be_nil
+          end
         end
       end
 

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class Projects::IterationsController < Projects::ApplicationController
+  before_action :check_project_is_group_namespace!
   before_action :check_iterations_available!
   before_action :authorize_show_iteration!
 
@@ -11,6 +12,10 @@ class Projects::IterationsController < Projects::ApplicationController
   def show; end
 
   private
+
+  def check_project_is_group_namespace!
+    render_404 if project.personal?
+  end
 
   def check_iterations_available!
     render_404 unless project.feature_available?(:iterations)

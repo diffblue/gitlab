@@ -7,17 +7,51 @@ RSpec.describe 'Project navbar' do
 
   include_context 'project navbar structure'
 
-  let_it_be(:project) { create(:project, :repository) }
-
-  let(:user) { project.first_owner }
+  let_it_be(:user) { create(:user) }
+  let_it_be(:project) { create(:project, :repository, namespace: user.namespace) }
 
   before do
+    project.add_owner(user)
+
     sign_in(user)
 
     stub_feature_flags(harbor_registry_integration: false)
     insert_package_nav(_('Infrastructure'))
     insert_infrastructure_registry_nav
     insert_infrastructure_google_cloud_nav
+  end
+
+  context 'when iterations is available' do
+    before do
+      stub_licensed_features(iterations: true)
+    end
+
+    context 'when project is namespaced to a user' do
+      before do
+        visit project_path(project)
+      end
+
+      it_behaves_like 'verified navigation bar'
+    end
+
+    context 'when project is namespaced to a group' do
+      let_it_be(:group) { create(:group) }
+      let_it_be(:project) { create(:project, :repository, group: group) }
+
+      before do
+        group.add_developer(user)
+
+        insert_after_sub_nav_item(
+          _('Milestones'),
+          within: _('Issues'),
+          new_sub_nav_item_name: _('Iterations')
+        )
+
+        visit project_path(project)
+      end
+
+      it_behaves_like 'verified navigation bar'
+    end
   end
 
   context 'when issue analytics is available' do
