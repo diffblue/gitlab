@@ -9,7 +9,6 @@ class Projects::BadgesController < Projects::ApplicationController
   feature_category :continuous_integration, [:index, :pipeline]
   feature_category :code_testing, [:coverage]
   feature_category :release_orchestration, [:release]
-  urgency :low
 
   def pipeline
     pipeline_status = Gitlab::Ci::Badge::Pipeline::Status
