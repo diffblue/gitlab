@@ -74,7 +74,9 @@ RSpec.describe 'gitlab:elastic namespace rake tasks', :elastic, :silence_stdout 
       end
 
       after do
-        es_helper.client.indices.delete(index: "#{es_helper.target_name}*")
+        es_helper.client.cat.indices(index: "#{es_helper.target_name}-*", h: 'index').split("\n").each do |index_name|
+          es_helper.client.indices.delete(index: index_name)
+        end
       end
 
       it 'does not alias the new index' do

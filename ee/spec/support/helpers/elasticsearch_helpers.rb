@@ -4,7 +4,7 @@ module ElasticsearchHelpers
   def assert_named_queries(*expected_names)
     es_host = Gitlab::CurrentSettings.elasticsearch_url.first
     search_uri =
-      Addressable::Template.new("#{es_host}/{index}/doc/_search{?params*}")
+      Addressable::Template.new("#{es_host}/{index}/_search{?params*}")
 
     ensure_names_present = lambda do |req|
       payload = Gitlab::Json.parse(req.body)
@@ -20,7 +20,7 @@ module ElasticsearchHelpers
       false
     end
 
-    a_named_query = a_request(:get, search_uri).with(&ensure_names_present)
+    a_named_query = a_request(:post, search_uri).with(&ensure_names_present)
     message = "Expected a query with the following names: #{expected_names.inspect}"
     expect(a_named_query).to have_been_made.at_least_once, message
   end

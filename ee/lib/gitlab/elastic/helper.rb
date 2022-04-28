@@ -90,20 +90,18 @@ module Gitlab
       def create_migrations_index
         settings = { number_of_shards: 1 }
         mappings = {
-          _doc: {
-            properties: {
-              completed: {
-                type: 'boolean'
-              },
-              state: {
-                type: 'object'
-              },
-              started_at: {
-                type: 'date'
-              },
-              completed_at: {
-                type: 'date'
-              }
+          properties: {
+            completed: {
+              type: 'boolean'
+            },
+            state: {
+              type: 'object'
+            },
+            started_at: {
+              type: 'date'
+            },
+            completed_at: {
+              type: 'date'
             }
           }
         }
@@ -114,7 +112,7 @@ module Gitlab
             settings: settings.to_hash,
             mappings: mappings.to_hash
           }
-        }.merge(additional_index_options)
+        }
 
         client.indices.create create_index_options
 
@@ -262,14 +260,7 @@ module Gitlab
       def get_mapping(index_name: nil)
         index = target_index_name(target: index_name)
         mappings = client.indices.get_mapping({ index: index })
-
-        # The check for version 6 (and the spec testing this code) should be removed when support for
-        # Elasticsearch v6.8 is removed
-        if Gitlab::VersionInfo.parse(client.info['version']['number']).major == 6
-          mappings.dig(index, 'mappings', 'doc', 'properties')
-        else
-          mappings.dig(index, 'mappings', 'properties')
-        end
+        mappings.dig(index, 'mappings', 'properties')
       end
 
       def update_settings(index_name: nil, settings:)
@@ -281,7 +272,6 @@ module Gitlab
           index: index_name || target_index_name,
           body: mappings
         }
-        options[:type] = 'doc' if Gitlab::VersionInfo.parse(client.info['version']['number']).major == 6
         client.indices.put_mapping(options)
       end
 
@@ -355,10 +345,8 @@ module Gitlab
         mappings.merge!(options[:mappings]) if options[:mappings]
 
         meta_info = {
-          doc: {
-            _meta: {
-              created_by: Gitlab::VERSION
-            }
+          _meta: {
+            created_by: Gitlab::VERSION
           }
         }
 
@@ -368,22 +356,10 @@ module Gitlab
             settings: settings,
             mappings: mappings.deep_merge(meta_info)
           }
-        }.merge(additional_index_options)
+        }
 
         client.indices.create create_index_options
         client.indices.put_alias(name: alias_name, index: index_name) if with_alias
-      end
-
-      def additional_index_options
-        {}.tap do |options|
-          # include_type_name defaults to false in ES7. This will ensure ES7
-          # behaves like ES6 when creating mappings. See
-          # https://www.elastic.co/blog/moving-from-types-to-typeless-apis-in-elasticsearch-7-0
-          # for more information. We also can't set this for any versions before
-          # 6.8 as this parameter was not supported. Since it defaults to true in
-          # all 6.x it's safe to only set it for 7.x.
-          options[:include_type_name] = true if Gitlab::VersionInfo.parse(client.info['version']['number']).major == 7
-        end
       end
     end
   end
