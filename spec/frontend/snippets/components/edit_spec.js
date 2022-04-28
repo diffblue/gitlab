@@ -1,5 +1,4 @@
 import { GlFormGroup, GlLoadingIcon } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import { merge } from 'lodash';
 
@@ -7,6 +6,7 @@ import VueApollo, { ApolloMutation } from 'vue-apollo';
 import { useFakeDate } from 'helpers/fake_date';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import GetSnippetQuery from 'shared_queries/snippet/snippet.query.graphql';
 import createFlash from '~/flash';
 import * as urlUtils from '~/lib/utils/url_utility';
@@ -111,18 +111,19 @@ describe('Snippet Edit app', () => {
     gon.relative_url_root = originalRelativeUrlRoot;
   });
 
-  const findBlobActions = () => wrapper.find(SnippetBlobActionsEdit);
-  const findCancelButton = () => wrapper.find('[data-testid="snippet-cancel-btn"]');
-  const clickSubmitBtn = () => wrapper.find('[data-testid="snippet-edit-form"]').trigger('submit');
+  const findBlobActions = () => wrapper.findComponent(SnippetBlobActionsEdit);
+  const findCancelButton = () => wrapper.findByTestId('snippet-cancel-btn');
+  const clickSubmitBtn = () => wrapper.findByTestId('snippet-edit-form').trigger('submit');
+
   const triggerBlobActions = (actions) => findBlobActions().vm.$emit('actions', actions);
   const setUploadFilesHtml = (paths) => {
     wrapper.vm.$el.innerHTML = paths
       .map((path) => `<input name="files[]" value="${path}">`)
       .join('');
   };
-  const setTitle = (val) =>
-    wrapper.find('[data-testid="snippet-title-input"]').vm.$emit('input', val);
-  const setDescription = (val) => wrapper.find(SnippetDescriptionEdit).vm.$emit('input', val);
+  const setTitle = (val) => wrapper.findByTestId('snippet-title-input').vm.$emit('input', val);
+  const setDescription = (val) =>
+    wrapper.findComponent(SnippetDescriptionEdit).vm.$emit('input', val);
 
   const createComponent = ({ props = {}, selectedLevel = SNIPPET_VISIBILITY_PRIVATE } = {}) => {
     if (wrapper) {
@@ -137,7 +138,7 @@ describe('Snippet Edit app', () => {
     ];
     const apolloProvider = createMockApollo(requestHandlers);
 
-    wrapper = shallowMount(SnippetEditApp, {
+    wrapper = shallowMountExtended(SnippetEditApp, {
       apolloProvider,
       stubs: {
         ApolloMutation,
@@ -175,7 +176,7 @@ describe('Snippet Edit app', () => {
     it('renders loader', () => {
       createComponent();
 
-      expect(wrapper.find(GlLoadingIcon).exists()).toBe(true);
+      expect(wrapper.findComponent(GlLoadingIcon).exists()).toBe(true);
     });
   });
 
@@ -191,10 +192,10 @@ describe('Snippet Edit app', () => {
     });
 
     it('should render components', () => {
-      expect(wrapper.find(GlFormGroup).attributes('label')).toEqual('Title');
-      expect(wrapper.find(SnippetDescriptionEdit).exists()).toBe(true);
-      expect(wrapper.find(SnippetVisibilityEdit).exists()).toBe(true);
-      expect(wrapper.find(FormFooterActions).exists()).toBe(true);
+      expect(wrapper.findComponent(GlFormGroup).attributes('label')).toEqual('Title');
+      expect(wrapper.findComponent(SnippetDescriptionEdit).exists()).toBe(true);
+      expect(wrapper.findComponent(SnippetVisibilityEdit).exists()).toBe(true);
+      expect(wrapper.findComponent(FormFooterActions).exists()).toBe(true);
       expect(findBlobActions().exists()).toBe(true);
     });
 
