@@ -1,25 +1,28 @@
-import { GlAlert, GlDropdown, GlDropdownItem } from '@gitlab/ui';
 import { GlColumnChart } from '@gitlab/ui/dist/charts';
-import { shallowMount } from '@vue/test-utils';
+import { nextTick } from 'vue';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import MinutesUsageProjectChart from 'ee/ci_minutes_usage/components/minutes_usage_project_chart.vue';
-import { formatDate } from '~/lib/utils/datetime_utility';
 import { ciMinutesUsageMockData } from '../mock_data';
 
-const defaultProps = { minutesUsageData: ciMinutesUsageMockData.data.ciMinutesUsage.nodes };
+const {
+  data: { ciMinutesUsage },
+} = ciMinutesUsageMockData;
 
 describe('Minutes usage by project chart component', () => {
   let wrapper;
 
   const findColumnChart = () => wrapper.findComponent(GlColumnChart);
-  const findDropdown = () => wrapper.findComponent(GlDropdown);
-  const findAllDropdownItems = () => wrapper.findAllComponents(GlDropdownItem);
-  const findAlert = () => wrapper.findComponent(GlAlert);
+  const findMonthDropdown = () => wrapper.findByTestId('minutes-usage-project-month-dropdown');
+  const findAllMonthDropdownItems = () =>
+    wrapper.findAllByTestId('minutes-usage-project-month-dropdown-item');
+  const findYearDropdown = () => wrapper.findByTestId('minutes-usage-project-year-dropdown');
+  const findAllYearDropdownItems = () =>
+    wrapper.findAllByTestId('minutes-usage-project-year-dropdown-item');
 
-  const createComponent = (props = {}) => {
-    wrapper = shallowMount(MinutesUsageProjectChart, {
+  const createComponent = (usageData = ciMinutesUsage.nodes) => {
+    wrapper = shallowMountExtended(MinutesUsageProjectChart, {
       propsData: {
-        ...defaultProps,
-        ...props,
+        minutesUsageData: usageData,
       },
     });
   };
@@ -36,32 +39,46 @@ describe('Minutes usage by project chart component', () => {
     it('renders a column chart component with axis legends', () => {
       expect(findColumnChart().exists()).toBe(true);
       expect(findColumnChart().props('xAxisTitle')).toBe('Projects');
-      expect(findColumnChart().props('yAxisTitle')).toBe('Minutes');
-      expect(findAlert().exists()).toBe(false);
+      expect(findColumnChart().props('yAxisTitle')).toBe('CI/CD minutes');
     });
 
-    it('renders a dropdown component', () => {
-      expect(findDropdown().exists()).toBe(true);
-      expect(findDropdown().props('text')).toBe(
-        formatDate(ciMinutesUsageMockData.data.ciMinutesUsage.nodes[0].monthIso8601, 'mmm yyyy'),
-      );
-      expect(findAlert().exists()).toBe(false);
+    it('renders year dropdown component', () => {
+      expect(findYearDropdown().exists()).toBe(true);
+      expect(findYearDropdown().props('text')).toBe('2021');
     });
 
-    it('renders only the months with available minutes data', () => {
-      expect(findAllDropdownItems().length).toBe(1);
+    it('renders month dropdown component', () => {
+      expect(findMonthDropdown().exists()).toBe(true);
+      expect(findMonthDropdown().props('text')).toBe('June');
+    });
+
+    it('renders only the months / years with available minutes data', () => {
+      expect(findAllMonthDropdownItems().length).toBe(2);
+      expect(findAllYearDropdownItems().length).toBe(2);
     });
 
     it('should contain a responsive attribute for the column chart', () => {
       expect(findColumnChart().attributes('responsive')).toBeDefined();
     });
-  });
 
-  describe('without CI minutes data', () => {
-    it('renders an alert when no data is available', () => {
-      createComponent({ minutesUsageData: [] });
+    it('changes the selected year in the year dropdown', async () => {
+      expect(findYearDropdown().props('text')).toBe('2021');
 
-      expect(findAlert().exists()).toBe(true);
+      findAllYearDropdownItems().at(1).vm.$emit('click');
+
+      await nextTick();
+
+      expect(findYearDropdown().props('text')).toBe('2022');
+    });
+
+    it('changes the selected month in the month dropdown', async () => {
+      expect(findMonthDropdown().props('text')).toBe('June');
+
+      findAllMonthDropdownItems().at(1).vm.$emit('click');
+
+      await nextTick();
+
+      expect(findMonthDropdown().props('text')).toBe('July');
     });
   });
 });

@@ -19,8 +19,7 @@
       %strong
         - last_reset = minutes_quota.reset_date
         - if last_reset
-          = s_('UsageQuota|Usage since')
-          = last_reset.strftime('%b %d, %Y')
+          = sprintf(s_('UsageQuota|CI/CD minutes usage since %{timeElapsed}'), { timeElapsed: last_reset.strftime('%b %d, %Y') })
         - else
           = s_('UsageQuota|Current period usage')
       %div{ data: { qa_selector: "plan_ci_minutes" } }
@@ -48,7 +47,7 @@
       %th
         = _('Project')
       %th
-        = _('Minutes')
+        = s_('UsageQuota|CI/CD minutes usage')
 
   %tbody
     - if !minutes_quota_presenter.any_project_enabled?

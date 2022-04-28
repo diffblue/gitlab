@@ -1,13 +1,14 @@
 <script>
-import { GlAlert, GlDropdown, GlDropdownItem } from '@gitlab/ui';
+import { GlDropdown, GlDropdownItem } from '@gitlab/ui';
 import { GlColumnChart } from '@gitlab/ui/dist/charts';
-import { keyBy } from 'lodash';
+import { isEmpty } from 'lodash';
 import { formatDate } from '~/lib/utils/datetime_utility';
+import { formatYearMonthData } from '../utils';
 import {
   USAGE_BY_PROJECT,
   X_AXIS_PROJECT_LABEL,
   X_AXIS_CATEGORY,
-  Y_AXIS_LABEL,
+  Y_AXIS_PROJECT_LABEL,
   NO_CI_MINUTES_MSG,
 } from '../constants';
 
@@ -15,10 +16,9 @@ export default {
   USAGE_BY_PROJECT,
   X_AXIS_PROJECT_LABEL,
   X_AXIS_CATEGORY,
-  Y_AXIS_LABEL,
+  Y_AXIS_PROJECT_LABEL,
   NO_CI_MINUTES_MSG,
   components: {
-    GlAlert,
     GlColumnChart,
     GlDropdown,
     GlDropdownItem,
@@ -32,90 +32,123 @@ export default {
   data() {
     return {
       selectedMonth: '',
+      selectedYear: '',
+      formattedData: [],
     };
   },
   computed: {
     chartData() {
       return [
         {
-          data: this.getUsageDataSelectedMonth,
+          data: this?.getUsageSelectedYearMonth,
         },
       ];
     },
-    usageDataByMonth() {
-      return keyBy(this.minutesUsageData, 'monthIso8601');
+
+    usageDataByYear() {
+      return this.formattedData.length > 0
+        ? this.formattedData.reduce((prev, cur) => {
+            if (!prev[cur.year]) {
+              // eslint-disable-next-line no-param-reassign
+              prev[cur.year] = {};
+            }
+
+            // eslint-disable-next-line no-param-reassign
+            prev[cur.year][cur.monthName] = cur;
+            return prev;
+          }, {})
+        : [];
     },
-    getUsageDataSelectedMonth() {
-      return this.usageDataByMonth[this.selectedMonth]?.projects?.nodes.map((cur) => [
-        cur.name,
-        cur.minutes,
-      ]);
+    years() {
+      return Object.keys(this?.usageDataByYear);
     },
-    months() {
-      return this.minutesUsageData.filter((cur) => cur.minutes > 0).map((cur) => cur.monthIso8601);
+    availableMonths() {
+      if (this.usageDataByYear && this.selectedYear) {
+        return Object.keys(this.usageDataByYear[this.selectedYear]);
+      }
+      return [];
     },
-    isDataEmpty() {
-      return this.minutesUsageData.length === 0 && !this.selectedMonth;
+    getDataSelectedMonth() {
+      if (this.usageDataByYear && this.selectedYear) {
+        return this.usageDataByYear[this.selectedYear][this?.selectedMonth];
+      }
+      return {};
+    },
+    getUsageSelectedYearMonth() {
+      return !isEmpty(this.getDataSelectedMonth)
+        ? this.getDataSelectedMonth.projects.nodes.map((cur) => [cur.name, cur.minutes])
+        : [];
     },
   },
   watch: {
-    months() {
+    years() {
+      this.setFirstYearDropdown();
       this.setFirstMonthDropdown();
     },
   },
   mounted() {
-    if (!this.isDataEmpty) {
-      this.setFirstMonthDropdown();
-    }
+    this.setFirstYearDropdown();
+    this.setFirstMonthDropdown();
+
+    this.formattedData = formatYearMonthData(this.minutesUsageData, true);
   },
   methods: {
     changeSelectedMonth(monthIso8601) {
       this.selectedMonth = monthIso8601;
     },
     setFirstMonthDropdown() {
-      [this.selectedMonth] = this.months;
+      [this.selectedMonth] = this.availableMonths;
     },
     getFormattedMonthYear(monthIso8601) {
       return formatDate(monthIso8601, 'mmm yyyy');
+    },
+    changeSelectedYear(year) {
+      this.selectedYear = year;
+      this.setFirstMonthDropdown();
+    },
+    setFirstYearDropdown() {
+      [this.selectedYear] = this.years;
     },
   },
 };
 </script>
 <template>
   <div>
-    <div class="gl-display-flex gl-mt-7" :class="{ 'gl-mb-3': !isDataEmpty }">
-      <h5 class="gl-flex-grow-1">{{ $options.USAGE_BY_PROJECT }}</h5>
-
-      <gl-dropdown
-        v-if="!isDataEmpty"
-        :text="getFormattedMonthYear(selectedMonth)"
-        data-testid="project-month-dropdown"
-        right
-      >
+    <div class="gl-display-flex gl-mt-7 gl-mb-3">
+      <div class="gl-flex-grow-1"></div>
+      <gl-dropdown :text="selectedYear" data-testid="minutes-usage-project-year-dropdown" right>
         <gl-dropdown-item
-          v-for="(monthIso8601, index) in months"
-          :key="index"
-          :is-checked="selectedMonth === monthIso8601"
+          v-for="year in years"
+          :key="year"
+          :is-checked="selectedYear === year"
           is-check-item
-          data-testid="month-dropdown-item"
-          @click="changeSelectedMonth(monthIso8601)"
+          data-testid="minutes-usage-project-year-dropdown-item"
+          @click="changeSelectedYear(year)"
         >
-          {{ getFormattedMonthYear(monthIso8601) }}
+          {{ year }}
+        </gl-dropdown-item>
+      </gl-dropdown>
+      <gl-dropdown :text="selectedMonth" data-testid="minutes-usage-project-month-dropdown" right>
+        <gl-dropdown-item
+          v-for="month in availableMonths"
+          :key="month"
+          :is-checked="selectedMonth === month"
+          is-check-item
+          data-testid="minutes-usage-project-month-dropdown-item"
+          @click="changeSelectedMonth(month)"
+        >
+          {{ month }}
         </gl-dropdown-item>
       </gl-dropdown>
     </div>
     <gl-column-chart
-      v-if="!isDataEmpty"
       class="gl-mb-3"
       responsive
       :width="0"
       :bars="chartData"
-      :y-axis-title="$options.Y_AXIS_LABEL"
+      :y-axis-title="$options.Y_AXIS_PROJECT_LABEL"
       :x-axis-title="$options.X_AXIS_PROJECT_LABEL"
       :x-axis-type="$options.X_AXIS_CATEGORY"
     />
-    <gl-alert v-else class="gl-mb-5" :dismissible="false">
-      {{ $options.NO_CI_MINUTES_MSG }}
-    </gl-alert>
   </div>
 </template>
