@@ -16,6 +16,7 @@ class Groups::SsoController < Groups::ApplicationController
   layout 'devise'
 
   feature_category :authentication_and_authorization
+  urgency :low
 
   def saml
     @redirect_path = safe_redirect_path(params[:redirect]) || group_path(unauthenticated_group)
