@@ -111,7 +111,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService d
             dependencies: [],
             script: ['gtcs scan'],
             variables: {
-              CS_ANALYZER_IMAGE: "#{Gitlab::Saas.registry_prefix}/security-products/container-scanning:4",
+              CS_ANALYZER_IMAGE: "#{Gitlab::Saas.registry_prefix}/security-products/container-scanning:5",
               GIT_STRATEGY: 'none'
             },
             rules: [
