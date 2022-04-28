@@ -29,9 +29,6 @@ module EE
 
           override :move_arguments
           def move_arguments(args)
-            # TODO: remove this line once the compatibility layer is removed
-            # See: https://gitlab.com/gitlab-org/gitlab/-/issues/257883
-            coerce_global_id_arguments!(args)
             epic_arguments = args.slice(:epic_id).transform_values { |id| id&.model_id }
 
             super.merge!(epic_arguments)

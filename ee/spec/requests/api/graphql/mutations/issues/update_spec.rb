@@ -76,36 +76,6 @@ RSpec.describe 'Update of an existing issue' do
         expect(graphql_errors).not_to be_blank
       end
     end
-
-    # TODO: remove when the global-ID compatibility layer is removed,
-    # at which point this error becomes unreachable because the query will
-    # be rejected as ill-typed.
-    context 'the epic is not an epic, using the ID type' do
-      let(:mutation) do
-        query = <<~GQL
-        mutation($epic: ID!, $path: ID!, $iid: String!) {
-          updateIssue(input: { epicId: $epic, projectPath: $path, iid: $iid }) {
-            errors
-          }
-        }
-        GQL
-
-        ::GraphqlHelpers::MutationDefinition.new(query, {
-          epic: global_id_of(create(:user)),
-          iid: issue.iid.to_s,
-          path: project.full_path
-        })
-      end
-
-      it 'does not set the epic' do
-        post_graphql_mutation(mutation, current_user: current_user)
-
-        expect(response).to have_gitlab_http_status(:success)
-        expect(graphql_errors).to contain_exactly(
-          a_hash_including('message' => /No object found/)
-        )
-      end
-    end
   end
 
   context 'removing epic' do

@@ -48,7 +48,6 @@ module Mutations
       end
 
       def find_object(id:)
-        id = ::Types::GlobalIDType[::Vulnerabilities::Finding].coerce_isolated_input(id)
         GitlabSchema.find_by_gid(id)
       end
     end

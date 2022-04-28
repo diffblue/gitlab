@@ -29,9 +29,7 @@ module Resolvers
 
     def find_dast_site_profiles(args)
       if args[:id]
-        # TODO: remove this coercion when the compatibility layer is removed
-        # See: https://gitlab.com/gitlab-org/gitlab/-/issues/257883
-        gid = ::Types::GlobalIDType[::DastSiteProfile].coerce_isolated_input(args[:id])
+        gid = args[:id]
         DastSiteProfilesFinder.new(project_id: project.id, id: gid.model_id).execute
       else
         DastSiteProfilesFinder.new(project_id: project.id).execute

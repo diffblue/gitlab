@@ -149,30 +149,18 @@ module Types
     end
 
     def issue(id:)
-      # TODO: remove this line when the compatibility layer is removed
-      # See: https://gitlab.com/gitlab-org/gitlab/-/issues/257883
-      id = ::Types::GlobalIDType[::Issue].coerce_isolated_input(id)
       GitlabSchema.find_by_gid(id)
     end
 
     def merge_request(id:)
-      # TODO: remove this line when the compatibility layer is removed
-      # See: https://gitlab.com/gitlab-org/gitlab/-/issues/257883
-      id = ::Types::GlobalIDType[::MergeRequest].coerce_isolated_input(id)
       GitlabSchema.find_by_gid(id)
     end
 
     def milestone(id:)
-      # TODO: remove this line when the compatibility layer is removed
-      # See: https://gitlab.com/gitlab-org/gitlab/-/issues/257883
-      id = ::Types::GlobalIDType[Milestone].coerce_isolated_input(id)
       GitlabSchema.find_by_gid(id)
     end
 
     def container_repository(id:)
-      # TODO: remove this line when the compatibility layer is removed
-      # See: https://gitlab.com/gitlab-org/gitlab/-/issues/257883
-      id = ::Types::GlobalIDType[::ContainerRepository].coerce_isolated_input(id)
       GitlabSchema.find_by_gid(id)
     end
 

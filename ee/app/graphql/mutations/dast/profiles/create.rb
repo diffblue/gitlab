@@ -55,13 +55,8 @@ module Mutations
         def resolve(full_path:, name:, description: '', branch_name: nil, dast_site_profile_id:, dast_scanner_profile_id:, run_after_create: false, dast_profile_schedule: nil)
           project = authorized_find!(full_path)
 
-          # TODO: remove explicit coercion once compatibility layer is removed
-          # See: https://gitlab.com/gitlab-org/gitlab/-/issues/257883
-          site_profile_id = ::Types::GlobalIDType[::DastSiteProfile].coerce_isolated_input(dast_site_profile_id)
-          scanner_profile_id = ::Types::GlobalIDType[::DastScannerProfile].coerce_isolated_input(dast_scanner_profile_id)
-
-          dast_site_profile = project.dast_site_profiles.find(site_profile_id.model_id)
-          dast_scanner_profile = project.dast_scanner_profiles.find(scanner_profile_id.model_id)
+          dast_site_profile = project.dast_site_profiles.find(dast_site_profile_id.model_id)
+          dast_scanner_profile = project.dast_scanner_profiles.find(dast_scanner_profile_id.model_id)
 
           response = ::AppSec::Dast::Profiles::CreateService.new(
             container: project,

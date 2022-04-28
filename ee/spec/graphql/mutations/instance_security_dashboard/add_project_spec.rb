@@ -92,14 +92,6 @@ RSpec.describe Mutations::InstanceSecurityDashboard::AddProject do
             expect(user.security_dashboard_projects).to include(already_added_project)
           end
         end
-
-        context 'with invalid params' do
-          let(:selected_project) { user }
-
-          it 'raises an error' do
-            expect { subject }.to raise_error(::GraphQL::CoercionError)
-          end
-        end
       end
     end
   end

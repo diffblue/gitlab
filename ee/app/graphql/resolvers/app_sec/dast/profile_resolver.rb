@@ -53,13 +53,7 @@ module Resolvers
         end
 
         def find_dast_profiles(args)
-          params = { project_id: project.id }
-
-          if args[:id]
-            # TODO: remove this coercion when the compatibility layer is removed
-            # See: https://gitlab.com/gitlab-org/gitlab/-/issues/257883
-            params[:id] = ::Types::GlobalIDType[::Dast::Profile].coerce_isolated_input(args[:id]).model_id
-          end
+          params = { project_id: project.id, id: args[:id]&.model_id }
 
           params[:has_dast_profile_schedule] = args[:has_dast_profile_schedule] if args.has_key?(:has_dast_profile_schedule)
 

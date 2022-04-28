@@ -79,7 +79,7 @@ RSpec.describe 'Query.project(fullPath).dastSiteValidations' do
           dast_site_validation3,
           dast_site_validation2,
           dast_site_validation1
-        ].map { |validation| global_id_of(validation)}
+        ].map { |validation| global_id_of(validation).to_s }
       end
     end
 

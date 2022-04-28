@@ -45,17 +45,6 @@ RSpec.describe Mutations::InstanceSecurityDashboard::RemoveProject do
           it { is_expected.to eq(errors: ['The project does not belong to your dashboard or you don\'t have permission to perform this action']) }
         end
 
-        context 'when provided project_id is not a Project' do
-          let(:project_id) { 'gid://gitlab/Vulnerability/1' }
-
-          it 'raises an error' do
-            expect { subject }.to raise_error(
-              GraphQL::CoercionError,
-              "\"#{project_id}\" does not represent an instance of Project"
-            )
-          end
-        end
-
         context 'when project is configured in security dashboard' do
           let(:project_id) { GitlabSchema.id_from_object(already_added_project) }
 

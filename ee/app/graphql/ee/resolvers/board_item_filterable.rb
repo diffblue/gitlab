@@ -43,10 +43,7 @@ module EE
 
         if iterations.present?
           filters[:iteration_id] = iterations.map do |global_id|
-            # TODO: remove this line when the compatibility layer is removed
-            # See: https://gitlab.com/gitlab-org/gitlab/-/issues/257883
-            parsed_id = ::Types::GlobalIDType[::Iteration].coerce_isolated_input(global_id)
-            parsed_id&.model_id
+            global_id&.model_id
           end
 
         elsif iteration_wildcard_id
@@ -57,12 +54,7 @@ module EE
       def filter_by_iteration_cadence(filters)
         return if filters[:iteration_cadence_id].blank?
 
-        filters[:iteration_cadence_id].map! do |iteration_cadence_id|
-          # TODO: remove this line when the compatibility layer is removed
-          # See: https://gitlab.com/gitlab-org/gitlab/-/issues/257883
-          parsed_id = ::Types::GlobalIDType[::Iterations::Cadence].coerce_isolated_input(iteration_cadence_id)
-          parsed_id&.model_id
-        end
+        filters[:iteration_cadence_id].map!(&:model_id)
       end
 
       def filter_by_weight(filters)

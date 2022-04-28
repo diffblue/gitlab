@@ -36,13 +36,5 @@ RSpec.describe Mutations::Namespaces::IncreaseStorageTemporarily do
         expect(namespace.reload.temporary_storage_increase_ends_on).to be_present
       end
     end
-
-    context 'with invalid params' do
-      let_it_be(:namespace) { user }
-
-      it 'raises an error' do
-        expect { subject }.to raise_error(::GraphQL::CoercionError)
-      end
-    end
   end
 end

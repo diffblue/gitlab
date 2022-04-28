@@ -37,9 +37,7 @@ module Resolvers
     end
 
     def resolve_gids(gids, gid_class)
-      gids.map do |gid|
-        Types::GlobalIDType[gid_class].coerce_isolated_input(gid).model_id
-      end
+      gids.map(&:model_id)
     end
   end
 end
