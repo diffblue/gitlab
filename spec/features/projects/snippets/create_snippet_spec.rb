@@ -89,22 +89,4 @@ RSpec.describe 'Projects > Snippets > Create Snippet', :js do
       expect(page).to have_content('New Snippet')
     end
   end
-
-  it 'shows validation errors' do
-    title_validation_message = _("This field is required.")
-    files_validation_message = _("Snippets can't contain empty files. Ensure all files have content, or delete them.")
-
-    click_button('Create snippet')
-
-    expect(page).to have_content(title_validation_message)
-    expect(page).to have_content(files_validation_message)
-
-    snippet_fill_in_title(title)
-
-    expect(page).not_to have_content(title_validation_message)
-
-    snippet_fill_in_form(title: title, content: file_content)
-
-    expect(page).not_to have_content(files_validation_message)
-  end
 end
