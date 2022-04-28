@@ -9,6 +9,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CreatePipelineService do
     let_it_be_with_reload(:project) { create(:project, :repository) }
     let_it_be(:current_user) { project.first_owner }
     let_it_be(:branch) { project.default_branch }
+    let_it_be(:license) { create(:license, plan: License::ULTIMATE_PLAN) }
 
     let(:action) { { scan: 'secret_detection' } }
     let(:scan_type) { action[:scan] }
@@ -20,6 +21,11 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CreatePipelineService do
     end
 
     subject { service.execute }
+
+    before do
+      allow(License).to receive(:current).and_return(license)
+      stub_licensed_features(cluster_image_scanning: true, container_scanning: true)
+    end
 
     shared_examples 'valid security orchestration policy action' do
       it 'returns a success status' do
@@ -175,7 +181,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CreatePipelineService do
         before do
           project.update_attribute(:namespace_id, compliance_group.id)
           compliance_project.add_maintainer(current_user)
-          stub_licensed_features(evaluate_group_level_compliance_pipeline: true)
+          stub_licensed_features(cluster_image_scanning: true, container_scanning: true, evaluate_group_level_compliance_pipeline: true)
           allow_next(Repository).to receive(:blob_data_at).with(ref_sha, '.compliance-gitlab-ci.yml').and_return(compliance_config)
         end
 

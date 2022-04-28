@@ -71,6 +71,14 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService d
               paths: ['gl-cluster-image-scanning-report.json']
             },
             dependencies: [],
+            rules: [
+              { if: "$CLUSTER_IMAGE_SCANNING_DISABLED", when: "never" },
+              {
+                if: '($KUBECONFIG == null || $KUBECONFIG == "") && ($CIS_KUBECONFIG == null || $CIS_KUBECONFIG == "")',
+                when: "never"
+              },
+              { if: "$CI_COMMIT_BRANCH && $GITLAB_FEATURES =~ /\\bcluster_image_scanning\\b/" }
+            ],
             script: ['/analyzer run'],
             variables: {
               CIS_ANALYZER_IMAGE: "#{Gitlab::Saas.registry_prefix}/security-products/cluster-image-scanning:0"
@@ -107,13 +115,13 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService d
               GIT_STRATEGY: 'none'
             },
             rules: [
+              { if: "$CONTAINER_SCANNING_DISABLED", when: "never" },
               {
-                if: '$CI_GITLAB_FIPS_MODE == "true" && $CS_ANALYZER_IMAGE !~ /-(fips|ubi)\z/',
+                if: '$CI_COMMIT_BRANCH && $GITLAB_FEATURES =~ /\bcontainer_scanning\b/ && '\
+                    '$CI_GITLAB_FIPS_MODE == "true" && $CS_ANALYZER_IMAGE !~ /-(fips|ubi)\z/',
                 variables: { CS_IMAGE_SUFFIX: '-fips' }
               },
-              {
-                when: 'always'
-              }
+              { if: '$CI_COMMIT_BRANCH && $GITLAB_FEATURES =~ /\bcontainer_scanning\b/' }
             ]
           }
 
