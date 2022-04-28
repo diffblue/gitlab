@@ -20,6 +20,10 @@ module Namespaces
       feature_enabled?
     end
 
+    def feature_enabled?
+      ::Feature.enabled?(:free_user_cap, root_namespace, default_enabled: :yaml)
+    end
+
     private
 
     attr_reader :root_namespace
@@ -30,10 +34,6 @@ module Namespaces
 
     def enforceable_subscription?
       ::Gitlab::CurrentSettings.should_check_namespace_plan? && root_namespace.has_free_or_no_subscription?
-    end
-
-    def feature_enabled?
-      ::Feature.enabled?(:free_user_cap, root_namespace, default_enabled: :yaml)
     end
   end
 end
