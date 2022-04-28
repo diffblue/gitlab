@@ -91,6 +91,9 @@ export default {
         !this.shouldShowExtension
       );
     },
+    shouldShowLicenseComplianceExtension() {
+      return window.gon?.features?.refactorLicenseComplianceExtension;
+    },
     hasLoadPerformanceMetrics() {
       return (
         this.mr.loadPerformanceMetrics?.degraded?.length > 0 ||
@@ -220,7 +223,7 @@ export default {
   },
   methods: {
     registerLicenseCompliance() {
-      if (this.shouldShowExtension) {
+      if (this.shouldShowLicenseComplianceExtension) {
         registerExtension(licenseComplianceExtension);
       }
     },
@@ -475,7 +478,7 @@ export default {
       </mr-widget-enable-feature-prompt>
 
       <mr-widget-licenses
-        v-if="shouldRenderLicenseReport && !shouldShowExtension"
+        v-if="shouldRenderLicenseReport && !shouldShowLicenseComplianceExtension"
         :api-url="mr.licenseScanning.managed_licenses_path"
         :approvals-api-path="mr.apiApprovalsPath"
         :licenses-api-path="licensesApiPath"
