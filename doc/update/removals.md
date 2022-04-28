@@ -92,6 +92,18 @@ As part of the work to create a [Package Registry GraphQL API](https://gitlab.co
 
 In GitLab 15.0, we will completely remove `Version` from `PackageType`.
 
+### Remove dependency_proxy_for_private_groups feature flag
+
+WARNING:
+This feature was changed or removed in 15.0
+as a [breaking change](https://docs.gitlab.com/ee/development/contributing/#breaking-changes).
+Before updating GitLab, review the details carefully to determine if you need to make any
+changes to your code, settings, or workflow.
+
+A feature flag was [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/11582) in GitLab 13.7 as part of the change to require authentication to use the Dependency Proxy. Before GitLab 13.7, you could use the Dependency Proxy without authentication.
+
+In GitLab 15.0, we will remove the feature flag, and you must always authenticate when you use the Dependency Proxy.
+
 ### Update to the Container Registry group-level API
 
 WARNING:
