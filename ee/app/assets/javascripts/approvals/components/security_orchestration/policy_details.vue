@@ -31,7 +31,9 @@ export default {
       return humanizeAction(this.policyAction);
     },
     policyEditPath() {
-      return `${this.securityPoliciesPath}/${this.policy.name}/edit?type=scan_result_policy`;
+      return `${this.securityPoliciesPath}/${encodeURIComponent(
+        this.policy.name,
+      )}/edit?type=scan_result_policy`;
     },
   },
 };

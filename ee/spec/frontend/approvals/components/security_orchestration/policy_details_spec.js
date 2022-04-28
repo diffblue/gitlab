@@ -8,7 +8,7 @@ describe('PolicyDetails', () => {
   let wrapper;
 
   const initialPolicy = {
-    name: 'test policy',
+    name: 'test policy/test approval',
     isSelected: true,
     rules: [
       {
@@ -54,7 +54,9 @@ describe('PolicyDetails', () => {
     });
 
     it('renders a link to policy path', () => {
-      const policyPath = 'policy/path/test policy/edit?type=scan_result_policy';
+      const policyPath = `policy/path/${encodeURIComponent(
+        initialPolicy.name,
+      )}/edit?type=scan_result_policy`;
 
       expect(findLink().attributes('href')).toBe(policyPath);
     });
