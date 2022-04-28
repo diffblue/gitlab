@@ -54,7 +54,7 @@ RSpec.describe Admin::BackgroundMigrationsController, :enable_admin_mode do
       it 'returns default database records' do
         get admin_background_migrations_path
 
-        expect(assigns(:migrations)).to eq([main_database_migration])
+        expect(assigns(:migrations)).to match_array([main_database_migration])
       end
     end
 
@@ -74,7 +74,7 @@ RSpec.describe Admin::BackgroundMigrationsController, :enable_admin_mode do
 
           get admin_background_migrations_path, params: { database: 'ci' }
 
-          expect(assigns(:migrations)).to eq([ci_database_migration])
+          expect(assigns(:migrations)).to match_array([ci_database_migration])
           expect(assigns(:migrations)).not_to include(main_database_migration)
         end
       end

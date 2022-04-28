@@ -52,7 +52,6 @@ class Admin::BackgroundMigrationsController < Admin::ApplicationController
     end
   end
 
-
   def base_model
     database = params[:database] || Gitlab::Database::MAIN_DATABASE_NAME
 
