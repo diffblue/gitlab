@@ -20,10 +20,6 @@ RSpec.describe 'Projects > Snippets > Create Snippet', :js do
 
   def fill_form
     snippet_fill_in_form(title: title, content: file_content, description: md_description)
-
-    # It takes some time after sending keys for the vue
-    # component to update
-    sleep 1
   end
 
   before do
