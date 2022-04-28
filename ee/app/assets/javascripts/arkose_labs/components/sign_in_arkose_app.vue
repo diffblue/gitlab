@@ -214,7 +214,7 @@ export default {
       :class="arkoseContainerClass"
       data-testid="arkose-labs-challenge"
     ></div>
-    <div v-if="showErrorContainer" class="gl-mb-3" data-testid="arkose-labs-error-message">
+    <div v-if="showErrorContainer" class="gl-mb-3 gl-px-5" data-testid="arkose-labs-error-message">
       <gl-alert
         v-if="showArkoseFailure"
         :title="$options.MSG_ARKOSE_FAILURE_TITLE"
