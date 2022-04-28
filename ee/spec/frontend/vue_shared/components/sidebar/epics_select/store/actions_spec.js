@@ -199,7 +199,7 @@ describe('EpicsSelect', () => {
               state,
               dispatch: () => {},
             },
-            'foo',
+            { search: 'foo' },
           );
 
           expect(Api.groupEpics).toHaveBeenCalledWith({
@@ -207,6 +207,30 @@ describe('EpicsSelect', () => {
             includeDescendantGroups: false,
             includeAncestorGroups: true,
             search: 'foo',
+          });
+        });
+
+        it('should call `Api.groupEpics` with `state=opened` as param', () => {
+          jest.spyOn(Api, 'groupEpics').mockReturnValue(
+            Promise.resolve({
+              data: mockEpics,
+            }),
+          );
+
+          actions.fetchEpics(
+            {
+              state,
+              dispatch: () => {},
+            },
+            { search: '', state: 'opened' },
+          );
+
+          expect(Api.groupEpics).toHaveBeenCalledWith({
+            groupId: state.groupId,
+            includeDescendantGroups: false,
+            includeAncestorGroups: true,
+            search: '',
+            state: 'opened',
           });
         });
       });

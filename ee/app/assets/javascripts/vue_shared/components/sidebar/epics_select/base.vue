@@ -74,6 +74,11 @@ export default {
       required: false,
       default: true,
     },
+    showOnlyOpenedEpics: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   data() {
     return {
@@ -122,6 +127,12 @@ export default {
     epicListNotValid() {
       return this.groupEpics.length === 0 && !this.isLoading;
     },
+    fetchEpicParams() {
+      if (this.showOnlyOpenedEpics) {
+        return { state: 'opened' };
+      }
+      return {};
+    },
   },
   watch: {
     /**
@@ -155,9 +166,9 @@ export default {
      */
     searchQuery(value) {
       if (value) {
-        this.fetchEpics(this.searchQuery);
+        this.fetchEpics({ search: this.searchQuery, ...this.fetchEpicParams });
       } else {
-        this.fetchEpics();
+        this.fetchEpics({ search: '', ...this.fetchEpicParams });
       }
     },
     search: debounce(function debouncedEpicSearch() {
@@ -210,7 +221,7 @@ export default {
 
       if (dropdown && this.isDropdownShowing) {
         dropdown.show();
-        this.fetchEpics();
+        this.fetchEpics({ search: '', ...this.fetchEpicParams });
       }
     },
   },

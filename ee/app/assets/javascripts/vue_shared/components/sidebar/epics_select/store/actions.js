@@ -38,7 +38,7 @@ export const receiveEpicsFailure = ({ commit }) => {
   });
   commit(types.RECEIVE_EPICS_FAILURE);
 };
-export const fetchEpics = ({ state, dispatch }, search = '') => {
+export const fetchEpics = ({ state, dispatch }, { search = '', state: stateParam } = {}) => {
   dispatch('requestEpics');
 
   Api.groupEpics({
@@ -46,6 +46,7 @@ export const fetchEpics = ({ state, dispatch }, search = '') => {
     includeDescendantGroups: false,
     includeAncestorGroups: true,
     search,
+    state: stateParam,
   })
     .then(({ data }) => {
       dispatch('receiveEpicsSuccess', data);

@@ -96,6 +96,7 @@ export default {
     includeAncestorGroups = false,
     includeDescendantGroups = true,
     search = '',
+    state,
   }) {
     const url = Api.buildUrl(this.groupEpicsPath).replace(':id', groupId);
     const params = {
@@ -105,6 +106,10 @@ export default {
 
     if (search) {
       params.search = search;
+    }
+
+    if (state) {
+      params.state = state;
     }
 
     return axios.get(url, {
