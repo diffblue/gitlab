@@ -1,4 +1,5 @@
 import { GlButton, GlPopover } from '@gitlab/ui';
+import { nextTick } from 'vue';
 import { mountExtended, extendedWrapper } from 'helpers/vue_test_utils_helper';
 import { trimText } from 'helpers/text_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -202,6 +203,7 @@ describe('ee/environments/components/environment_approval.vue', () => {
         api.mockRejectedValue({ response: { data: { message: 'oops' } } });
 
         await button.trigger('click');
+        await nextTick();
 
         expect(createAlert).toHaveBeenCalledWith({ message: 'oops' });
       });
@@ -219,6 +221,23 @@ describe('ee/environments/components/environment_approval.vue', () => {
 
         expect(popover.attributes('show')).toBeUndefined();
       });
+    });
+  });
+
+  describe('showing text', () => {
+    it('should show text by default', () => {
+      wrapper = createWrapper();
+      const button = findButton();
+
+      expect(button.text()).toBe(s__('DeploymentApproval|Approval options'));
+    });
+
+    it('should hide the text if show text is false, and put it in the title', () => {
+      wrapper = createWrapper({ propsData: { showText: false } });
+      const button = findButton();
+
+      expect(button.text()).toBe('');
+      expect(button.attributes('title')).toBe(s__('DeploymentApproval|Approval options'));
     });
   });
 });

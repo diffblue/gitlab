@@ -16,6 +16,8 @@ module EE
 
       has_many :approvals, class_name: 'Deployments::Approval'
 
+      scope :with_approvals, -> { preload(approvals: [:user])}
+
       state_machine :status do
         after_transition any => :success do |deployment|
           deployment.run_after_commit do
