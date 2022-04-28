@@ -4,6 +4,7 @@ exports[`DeleteModal component layout matches the snapshot 1`] = `
 <gl-modal-stub
   actioncancel="[object Object]"
   actionprimary="[object Object]"
+  arialabel=""
   dismisslabel="Close"
   modalclass=""
   modalid="delete-framework-modal"
