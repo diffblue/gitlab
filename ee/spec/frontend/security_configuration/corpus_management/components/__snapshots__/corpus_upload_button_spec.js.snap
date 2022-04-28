@@ -20,6 +20,7 @@ exports[`Corpus Upload Button component renders header 1`] = `
   <gl-modal-stub
     actioncancel="[object Object]"
     actionprimary="[object Object]"
+    arialabel=""
     dismisslabel="Close"
     modalclass=""
     modalid="corpus-upload-modal"

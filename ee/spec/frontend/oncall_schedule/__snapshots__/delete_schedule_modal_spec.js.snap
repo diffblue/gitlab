@@ -4,6 +4,7 @@ exports[`DeleteScheduleModal renders delete schedule modal layout 1`] = `
 <gl-modal-stub
   actioncancel="[object Object]"
   actionprimary="[object Object]"
+  arialabel=""
   data-testid="delete-schedule-modal-37"
   dismisslabel="Close"
   modalclass=""
