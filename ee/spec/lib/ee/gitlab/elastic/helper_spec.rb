@@ -111,19 +111,17 @@ RSpec.describe Gitlab::Elastic::Helper, :request_store do
   end
 
   describe '#default_mappings' do
-    it 'has only one type' do
-      expect(helper.default_mappings.keys).to match_array %i(doc)
-    end
-
     context 'custom analyzers' do
-      let(:custom_analyzers_mappings) { { doc: { properties: { title: { fields: { custom: true } } } } } }
+      let(:custom_analyzers_mappings) do
+        { properties: { title: { fields: { custom: true } } } }
+      end
 
       before do
         allow(::Elastic::Latest::CustomLanguageAnalyzers).to receive(:custom_analyzers_mappings).and_return(custom_analyzers_mappings)
       end
 
       it 'merges custom language analyzers mappings' do
-        expect(helper.default_mappings[:doc][:properties][:title]).to include(custom_analyzers_mappings[:doc][:properties][:title])
+        expect(helper.default_mappings[:properties][:title]).to include(custom_analyzers_mappings[:properties][:title])
       end
     end
   end
@@ -528,26 +526,6 @@ RSpec.describe Gitlab::Elastic::Helper, :request_store do
 
     it 'reads mappings from client', :elastic do
       is_expected.not_to be_nil
-    end
-
-    context 'when using elasticsearch version 6.8' do
-      before do
-        info = {
-          'version' => {
-            'number' => '6.8.1',
-            'build_type' => 'docker',
-            'lucene_version' => '8.6.2'
-          }
-        }
-        mapping = { "#{index_name}": { mappings: { doc: { properties: { test: 1 } } } } }.with_indifferent_access
-
-        allow(Gitlab::Elastic::Helper.default.client).to receive(:info).and_return(info)
-        allow(helper.client.indices).to receive(:get_mapping).and_return(mapping)
-      end
-
-      it 'reads mappings from client' do
-        is_expected.not_to be_nil
-      end
     end
   end
 end
