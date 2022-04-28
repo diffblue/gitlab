@@ -20,8 +20,9 @@ RSpec.describe 'Topic show page' do
       visit topic_explore_projects_path(topic_name: topic.name)
     end
 
-    it 'shows name, avatar and description as markdown' do
+    it 'shows title, avatar and description as markdown' do
       expect(page).to have_content(topic.title)
+      expect(page).not_to have_content(topic.name)
       expect(page).to have_selector('.avatar-container > img.topic-avatar')
       expect(find('.topic-description')).to have_selector('p > strong')
       expect(find('.topic-description')).to have_selector('p > a[rel]')
