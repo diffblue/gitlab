@@ -9,6 +9,8 @@ import OnDemandScansForm from 'ee/on_demand_scans_form/components/on_demand_scan
 import ScannerProfileSelector from 'ee/on_demand_scans_form/components/profile_selector/scanner_profile_selector.vue';
 import SiteProfileSelector from 'ee/on_demand_scans_form/components/profile_selector/site_profile_selector.vue';
 import ScanSchedule from 'ee/on_demand_scans_form/components/scan_schedule.vue';
+import SectionLayout from '~/vue_shared/security_configuration/components/section_layout.vue';
+import SectionLoader from '~/vue_shared/security_configuration/components/section_loader.vue';
 import dastProfileCreateMutation from 'ee/on_demand_scans_form/graphql/dast_profile_create.mutation.graphql';
 import dastProfileUpdateMutation from 'ee/on_demand_scans_form/graphql/dast_profile_update.mutation.graphql';
 import dastScannerProfilesQuery from 'ee/security_configuration/dast_profiles/graphql/dast_scanner_profiles.query.graphql';
@@ -177,6 +179,8 @@ describe('OnDemandScansForm', () => {
             RefSelector: RefSelectorStub,
             LocalStorageSync,
             ScanSchedule: true,
+            SectionLayout,
+            SectionLoader,
           },
         },
         { ...options, localVue, apolloProvider },
@@ -214,7 +218,7 @@ describe('OnDemandScansForm', () => {
     it('renders properly', () => {
       createComponent();
 
-      expect(wrapper.text()).toContain('New on-demand DAST scan');
+      expect(wrapper.text()).toContain('New on-demand scan');
       expect(wrapper.findComponent(ScanSchedule).exists()).toBe(true);
     });
 
@@ -289,7 +293,7 @@ describe('OnDemandScansForm', () => {
       });
 
       it('sets the title properly', () => {
-        expect(wrapper.text()).toContain('Edit on-demand DAST scan');
+        expect(wrapper.text()).toContain('Edit on-demand scan');
       });
 
       it('populates the fields with passed values', () => {
