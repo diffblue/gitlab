@@ -47,14 +47,14 @@ module Ci
         unsafe_find_current(namespace_id)
       end
 
-      def self.increase_usage(usage, increments)
+      def increase_usage(increments)
         increment_params = increments.select { |_attribute, value| value > 0 }
         return if increment_params.empty?
 
         # The use of `update_counters` ensures we do a SQL update rather than
         # incrementing the counter for the object in memory and then save it.
         # This is better for concurrent updates.
-        update_counters(usage, increment_params)
+        self.class.update_counters(self, increment_params)
       end
 
       def self.reset_current_usage(namespace)

@@ -66,7 +66,7 @@ RSpec.describe Ci::Minutes::ProjectMonthlyUsage do
     end
   end
 
-  describe '.increase_usage' do
+  describe '#increase_usage' do
     let_it_be_with_refind(:current_usage) do
       create(:ci_project_monthly_usage,
         project: project,
