@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class Profiles::UsageQuotasController < Profiles::ApplicationController
+  include OneTrustCSP
+
   before_action :push_additional_repo_storage_by_namespace_feature, only: :index
 
   feature_category :purchase
