@@ -8,6 +8,9 @@ export const HELP_PAGE_PATH = helpPagePath('user/application_security/dast/index
 export const LEARN_MORE_TEXT = s__(
   'OnDemandScans|%{learnMoreLinkStart}Learn more about on-demand scans%{learnMoreLinkEnd}.',
 );
+export const DAST_CONFIGURATION_HELP_PATH = helpPagePath('user/application_security/dast/index', {
+  anchor: 'on-demand-scans',
+});
 
 export const PIPELINE_TABS_KEYS = ['all', 'running', 'finished', 'scheduled', 'saved'];
 export const PIPELINES_PER_PAGE = 20;

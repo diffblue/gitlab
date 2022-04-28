@@ -26,8 +26,9 @@ RSpec.describe 'User creates On-demand Scan' do
     end
 
     it 'shows new scan page', :aggregate_failures, :js do
-      expect(page).to have_content 'New on-demand DAST scan'
-      expect(page).to have_link 'Manage DAST scans'
+      expect(page).to have_content 'New on-demand scan'
+      expect(page).to have_content 'Scan configuration'
+      expect(page).to have_content 'DAST configuration'
       expect(page).to have_button 'Save and run scan'
       expect(page).to have_button 'Save scan'
 

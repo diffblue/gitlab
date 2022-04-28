@@ -1,4 +1,4 @@
-import { GlDatepicker, GlFormCheckbox, GlFormGroup } from '@gitlab/ui';
+import { GlDatepicker, GlFormGroup, GlToggle } from '@gitlab/ui';
 import { merge } from 'lodash';
 import { nextTick } from 'vue';
 import mockTimezones from 'test_fixtures/timezones/full.json';
@@ -15,7 +15,7 @@ describe('ScanSchedule', () => {
   let wrapper;
 
   // Finders
-  const findCheckbox = () => wrapper.findComponent(GlFormCheckbox);
+  const findToggle = () => wrapper.findComponent(GlToggle);
   const findProfileScheduleFormGroup = () => wrapper.findByTestId('profile-schedule-form-group');
   const findTimezoneDropdown = () => wrapper.findComponent(TimezoneDropdown);
   const findDatepicker = () => wrapper.findComponent(GlDatepicker);
@@ -42,8 +42,8 @@ describe('ScanSchedule', () => {
             GlFormGroup: stubComponent(GlFormGroup, {
               props: ['disabled'],
             }),
-            GlFormCheckbox: stubComponent(GlFormCheckbox, {
-              props: ['checked'],
+            GlToggle: stubComponent(GlToggle, {
+              props: ['value'],
             }),
             TimezoneDropdown: stubComponent(TimezoneDropdown, {
               props: ['disabled', 'timezoneData', 'value'],
@@ -64,14 +64,17 @@ describe('ScanSchedule', () => {
       createComponent();
     });
 
-    it('by default, checkbox is unchecked and fields are disabled', () => {
-      expect(findCheckbox().props('checked')).toBe(false);
-      expect(findProfileScheduleFormGroup().props('disabled')).toBe(true);
-      expect(findTimezoneDropdown().props('disabled')).toBe(true);
-      expect(findCadenceInput().props('disabled')).toBe(true);
+    it('by default, checkbox is unchecked and fields are hidden', () => {
+      expect(findToggle().props('value')).toBe(false);
+      expect(findProfileScheduleFormGroup().exists()).toBe(false);
+      expect(findTimezoneDropdown().exists()).toBe(false);
+      expect(findCadenceInput().exists()).toBe(false);
     });
 
-    it('initializes timezone dropdown properly', () => {
+    it('initializes timezone dropdown properly', async () => {
+      findToggle().vm.$emit('change', true);
+      await nextTick();
+
       const timezoneDropdown = findTimezoneDropdown();
 
       expect(timezoneDropdown.props('timezoneData')).toEqual(mockTimezones);
@@ -82,14 +85,14 @@ describe('ScanSchedule', () => {
   describe('once schedule is activated', () => {
     beforeEach(() => {
       createComponent();
-      findCheckbox().vm.$emit('input', true);
+      findToggle().vm.$emit('change', true);
     });
 
-    it('enables fields', () => {
-      expect(findTimezoneDropdown().attributes('disabled')).toBeUndefined();
-      expect(findProfileScheduleFormGroup().props('disabled')).toBe(false);
-      expect(findTimezoneDropdown().props('disabled')).toBe(false);
-      expect(findCadenceInput().props('disabled')).toBe(false);
+    it('shows fields', () => {
+      expect(findTimezoneDropdown().exists()).toBe(true);
+      expect(findProfileScheduleFormGroup().exists()).toBe(true);
+      expect(findTimezoneDropdown().exists()).toBe(true);
+      expect(findCadenceInput().exists()).toBe(true);
     });
 
     it('emits input payload', () => {
@@ -142,7 +145,7 @@ describe('ScanSchedule', () => {
     });
 
     it('deactives schedule when checkbox is unchecked', async () => {
-      findCheckbox().vm.$emit('input', false);
+      findToggle().vm.$emit('change', false);
       await nextTick();
 
       expect(wrapper.emitted().input).toHaveLength(2);
@@ -175,7 +178,7 @@ describe('ScanSchedule', () => {
         },
       });
 
-      expect(findCheckbox().props('checked')).toBe(true);
+      expect(findToggle().props('value')).toBe(true);
       expect(findDatepicker().props('value')).toEqual(new Date(schedule.startsAt));
       expect(findTimeInput().element.value).toBe('08:45');
       expect(findCadenceInput().props('value')).toBe(SCAN_CADENCE_OPTIONS[3].value);
