@@ -4,6 +4,7 @@ exports[`Modal delete Modal the modal text matches the snapshot 1`] = `
 <gl-modal-stub
   actioncancel="[object Object]"
   actionprimary="[object Object]"
+  arialabel=""
   dismisslabel="Close"
   modalclass=""
   modalid="status-checks-delete-modal"

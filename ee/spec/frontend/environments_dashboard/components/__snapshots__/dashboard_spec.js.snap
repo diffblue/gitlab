@@ -5,6 +5,7 @@ exports[`dashboard should match the snapshot 1`] = `
   class="environments-dashboard"
 >
   <gl-modal-stub
+    arialabel=""
     dismisslabel="Close"
     modalclass=""
     modalid="add-projects-modal"

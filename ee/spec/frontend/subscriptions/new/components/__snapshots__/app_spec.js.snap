@@ -3,6 +3,7 @@
 exports[`App component cart_abandonment_modal experiment candidate matches the snapshot 1`] = `
 <div>
   <gl-modal-stub
+    arialabel=""
     dismisslabel="Close"
     modalclass=""
     modalid="subscription-modal"
