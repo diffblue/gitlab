@@ -462,11 +462,7 @@ class ContainerRepository < ApplicationRecord
   end
 
   def start_expiration_policy!
-    update!(expiration_policy_started_at: Time.zone.now)
-  end
-
-  def reset_last_cleanup_deleted_tags_count!
-    update!(last_cleanup_deleted_tags_count: nil)
+    update!(expiration_policy_started_at: Time.zone.now, last_cleanup_deleted_tags_count: nil)
   end
 
   def size
