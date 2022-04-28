@@ -31,11 +31,12 @@ RSpec.describe Admin::BackgroundMigrationsController, :enable_admin_mode do
 
   describe 'GET #index' do
     let(:default_model) { ActiveRecord::Base }
-    let(:model_on_other_database) { Ci::ApplicationRecord }
 
     before do
       allow(Gitlab::Database).to receive(:database_base_models).and_return(base_models)
     end
+
+    let!(:main_database_migration) { create(:batched_background_migration, :active) }
 
     context 'when no database is provided' do
       let(:base_models) { { 'fake_db' => default_model } }
@@ -49,15 +50,33 @@ RSpec.describe Admin::BackgroundMigrationsController, :enable_admin_mode do
 
         get admin_background_migrations_path
       end
+
+      it 'returns default database records' do
+        get admin_background_migrations_path
+
+        expect(assigns(:migrations)).to eq([main_database_migration])
+      end
     end
 
-    context 'when a database is provided' do
-      let(:base_models) { { 'fake_db' => default_model, 'xpto' => model_on_other_database } }
+    context 'when multiple database is enabled', :add_ci_connection do
+      let(:base_models) { { 'fake_db' => default_model, 'ci' => ci_model } }
+      let(:ci_model) { Ci::ApplicationRecord }
 
-      it "uses the correct connection" do
-        expect(Gitlab::Database::SharedModel).to receive(:using_connection).with(model_on_other_database.connection).and_yield
+      context 'when CI database is provided' do
+        it "uses CI database connection" do
+          expect(Gitlab::Database::SharedModel).to receive(:using_connection).with(ci_model.connection).and_yield
 
-        get admin_background_migrations_path, params: { database: 'xpto' }
+          get admin_background_migrations_path, params: { database: 'ci' }
+        end
+
+        it 'returns CI database records' do
+          ci_database_migration = Gitlab::Database::SharedModel.using_connection(ci_model.connection) { create(:batched_background_migration, :active) }
+
+          get admin_background_migrations_path, params: { database: 'ci' }
+
+          expect(assigns(:migrations)).to eq([ci_database_migration])
+          expect(assigns(:migrations)).not_to include(main_database_migration)
+        end
       end
     end
   end
