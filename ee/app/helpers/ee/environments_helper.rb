@@ -21,5 +21,23 @@ module EE
 
       super.merge(ee_metrics_data)
     end
+
+    def deployment_approval_data(deployment)
+      { pending_approval_count: deployment.pending_approval_count,
+        iid: deployment.iid,
+        id: deployment.id,
+        required_approval_count: deployment.environment.required_approval_count,
+        can_approve_deployment: can?(current_user, :update_deployment, deployment).to_s,
+        deployable_name: deployment.deployable&.name,
+        approvals: ::API::Entities::Deployments::Approval.represent(deployment.approvals).to_json,
+        project_id: deployment.project_id,
+        name: deployment.environment.name,
+        tier: deployment.environment.tier }
+    end
+
+    def show_deployment_approval?(deployment)
+      can?(current_user, :update_deployment, deployment) &&
+        deployment.environment.required_approval_count > 0
+    end
   end
 end

@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Projects::EnvironmentsController do
   let_it_be(:user) { create(:user) }
-  let_it_be(:project) { create(:project) }
+  let_it_be(:project) { create(:project, :repository) }
 
   let_it_be(:environment) do
     create(:environment, name: 'production', project: project)
@@ -14,6 +14,27 @@ RSpec.describe Projects::EnvironmentsController do
     project.add_maintainer(user)
 
     sign_in(user)
+  end
+
+  describe 'GET #show' do
+    before do
+      create(:deployment, :success, environment: environment, project: project) do |deployment|
+        create(:deployment_approval, deployment: deployment)
+      end
+      create(:deployment, :failed, environment: environment, project: project)
+    end
+
+    it 'preloads approvals their authors' do
+      get :show, params: environment_params
+
+      assigns(:deployments).each do |deployment|
+        expect(deployment.association(:approvals)).to be_loaded
+
+        deployment.approvals.each do |approval|
+          expect(approval.association(:user)).to be_loaded
+        end
+      end
+    end
   end
 
   describe '#GET terminal' do
