@@ -63,13 +63,13 @@ module Ci
 
         ::Ci::Minutes::NamespaceMonthlyUsage.transaction do
           if namespace_usage
-            ::Ci::Minutes::NamespaceMonthlyUsage.increase_usage(namespace_usage,
+            namespace_usage.increase_usage(
               amount_used: consumption,
               shared_runners_duration: duration)
           end
 
           if project_usage
-            ::Ci::Minutes::ProjectMonthlyUsage.increase_usage(project_usage,
+            project_usage.increase_usage(
               amount_used: consumption,
               shared_runners_duration: duration)
           end

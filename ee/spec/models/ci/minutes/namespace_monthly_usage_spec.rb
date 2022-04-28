@@ -208,7 +208,7 @@ RSpec.describe Ci::Minutes::NamespaceMonthlyUsage do
     end
   end
 
-  describe '.increase_usage' do
+  describe '#increase_usage' do
     it_behaves_like 'CI minutes increase usage'
   end
 
