@@ -2,7 +2,7 @@
 
 module AuditEvents
   class RunnerAuditEventService < ::AuditEventService
-    SAFE_TOKEN_LENGTH = 8
+    include SafeRunnerToken
 
     # Logs an audit event related to a runner event
     #
@@ -62,15 +62,6 @@ module AuditEvents
       else
         url_helpers.admin_runner_path(@runner)
       end
-    end
-
-    def safe_author(author)
-      return author unless author.is_a?(String)
-
-      safe_token_length = SAFE_TOKEN_LENGTH
-      safe_token_length += ::RunnersTokenPrefixable::RUNNERS_TOKEN_PREFIX.length if author.start_with?(::RunnersTokenPrefixable::RUNNERS_TOKEN_PREFIX)
-
-      author[0...safe_token_length]
     end
   end
 end
