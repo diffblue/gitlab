@@ -38,6 +38,11 @@ export default {
       required: true,
       type: Object,
     },
+    showText: {
+      required: false,
+      type: Boolean,
+      default: true,
+    },
   },
   data() {
     return {
@@ -53,6 +58,9 @@ export default {
       return sprintf(this.$options.i18n.title, {
         deploymentIid: this.deploymentIid,
       });
+    },
+    buttonTitle() {
+      return this.showText ? '' : this.$options.i18n.button;
     },
     upcomingDeployment() {
       return this.environment?.upcomingDeployment;
@@ -113,11 +121,14 @@ export default {
     actOnDeployment(action) {
       this.loading = true;
       this.show = false;
-      action({
+      return action({
         id: this.projectId,
         deploymentId: this.upcomingDeployment.id,
         comment: this.comment,
       })
+        .then(() => {
+          this.$emit('change');
+        })
         .catch((err) => {
           if (err.response) {
             createAlert({ message: err.response.data.message });
@@ -125,7 +136,6 @@ export default {
         })
         .finally(() => {
           this.loading = false;
-          this.$emit('change');
         });
     },
     approvalText({ user }) {
@@ -160,8 +170,18 @@ export default {
 </script>
 <template>
   <gl-button-group v-if="needsApproval">
-    <gl-button :id="id" ref="button" :loading="loading" icon="thumb-up" @click="showPopover">
-      {{ $options.i18n.button }}
+    <gl-button
+      :id="id"
+      ref="button"
+      v-gl-tooltip
+      :loading="loading"
+      :title="buttonTitle"
+      icon="thumb-up"
+      @click="showPopover"
+    >
+      <template v-if="showText">
+        {{ $options.i18n.button }}
+      </template>
     </gl-button>
     <gl-popover :target="id" triggers="click blur" placement="top" :title="title" :show="show">
       <p>
