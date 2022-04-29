@@ -16,6 +16,8 @@ module Gitlab
           def data
             [lead_time, cycle_time].tap do |array|
               array << serialize(lead_time_for_changes, with_unit: true) if lead_time_for_changes.value.present?
+              array << serialize(time_to_restore_service, with_unit: true) if time_to_restore_service.value.present?
+              array << serialize(change_failure_rate, with_unit: true) if change_failure_rate.value.present?
             end
           end
 
@@ -41,6 +43,22 @@ module Gitlab
 
           def lead_time_for_changes
             @lead_time_for_changes ||= Summary::LeadTimeForChanges.new(
+              stage: stage,
+              current_user: current_user,
+              options: options
+            )
+          end
+
+          def time_to_restore_service
+            @time_to_restore_service ||= Summary::TimeToRestoreService.new(
+              stage: stage,
+              current_user: current_user,
+              options: options
+            )
+          end
+
+          def change_failure_rate
+            @change_failure_rate ||= Summary::ChangeFailureRate.new(
               stage: stage,
               current_user: current_user,
               options: options
