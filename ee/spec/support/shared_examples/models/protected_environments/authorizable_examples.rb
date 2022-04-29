@@ -77,6 +77,27 @@ RSpec.shared_examples 'authorizable for protected environments' do |factory_name
 
         it { is_expected.to be_falsy }
       end
+
+      context 'when there is an inherited member of a group' do
+        let_it_be(:parent_group) { create(:group) }
+        let_it_be(:child_group) { create(:group, parent: parent_group, projects: [project])}
+
+        before do
+          parent_group.add_reporter(user)
+        end
+
+        context 'when group inheritance type is direct' do
+          let(:authorizable) { create(factory_name, protected_environment: protected_environment, group: child_group) }
+
+          it { is_expected.to be_falsey }
+        end
+
+        context 'when group inheritance type is all inheritance' do
+          let(:authorizable) { create(factory_name, protected_environment: protected_environment, group: child_group, group_inheritance_type: ProtectedEnvironments::Authorizable::GROUP_INHERITANCE_TYPE[:ALL]) }
+
+          it { is_expected.to be_truthy }
+        end
+      end
     end
 
     describe 'access level' do
