@@ -56,9 +56,9 @@ RSpec.describe Iterations::RollOverIssuesService do
         it { is_expected.to be_error }
       end
 
-      context 'when user is a team member' do
+      context 'when user is a Guest' do
         before do
-          group.add_reporter(user)
+          group.add_guest(user)
         end
 
         it { is_expected.to be_error }
@@ -66,9 +66,9 @@ RSpec.describe Iterations::RollOverIssuesService do
     end
 
     context 'when user has permissions to roll-over issues' do
-      context 'when user is a team member' do
+      context 'when user is a Reporter' do
         before do
-          group.add_developer(user)
+          group.add_reporter(user)
         end
 
         it { is_expected.not_to be_error }
