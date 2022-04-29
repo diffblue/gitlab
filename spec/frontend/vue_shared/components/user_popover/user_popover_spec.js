@@ -1,14 +1,17 @@
 import { GlSkeletonLoader, GlIcon } from '@gitlab/ui';
-import MockAdapter from 'axios-mock-adapter';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import { AVAILABILITY_STATUS } from '~/set_status_modal/utils';
 import UserNameWithStatus from '~/sidebar/components/assignees/user_name_with_status.vue';
 import UserPopover from '~/vue_shared/components/user_popover/user_popover.vue';
 import axios from '~/lib/utils/axios_utils';
-import httpStatus from '~/lib/utils/http_status';
 import createFlash from '~/flash';
+import { followUser, unfollowUser } from '~/api/user_api';
 
 jest.mock('~/flash');
+jest.mock('~/api/user_api', () => ({
+  followUser: jest.fn(),
+  unfollowUser: jest.fn(),
+}));
 
 const DEFAULT_PROPS = {
   user: {
@@ -31,23 +34,14 @@ describe('User Popover Component', () => {
   const fixtureTemplate = 'merge_requests/diff_comment.html';
 
   let wrapper;
-  let mock;
-  let apiVersion;
 
   beforeEach(() => {
-    apiVersion = gon.api_version;
-    gon.api_version = 'v4';
-    mock = new MockAdapter(axios);
     loadFixtures(fixtureTemplate);
     gon.features = {};
   });
 
   afterEach(() => {
-    gon.api_version = apiVersion;
-    mock.restore();
     wrapper.destroy();
-
-    gon.features = {};
   });
 
   const findUserStatus = () => wrapper.findByTestId('user-popover-status');
@@ -321,7 +315,7 @@ describe('User Popover Component', () => {
 
       describe('when clicking', () => {
         it('follows the user', async () => {
-          mock.onPost('/api/v4/users/1/follow').reply(httpStatus.OK);
+          followUser.mockResolvedValue({});
 
           await findToggleFollowButton().trigger('click');
 
@@ -335,7 +329,7 @@ describe('User Popover Component', () => {
 
         describe('when an error occurs', () => {
           beforeEach(() => {
-            mock.onPost('/api/v4/users/1/follow').replyOnce(httpStatus.INTERNAL_SERVER_ERROR);
+            followUser.mockRejectedValue({});
 
             findToggleFollowButton().trigger('click');
           });
@@ -345,7 +339,7 @@ describe('User Popover Component', () => {
 
             expect(createFlash).toHaveBeenCalledWith({
               message: 'An error occurred while trying to follow this user, please try again.',
-              error: new Error('Request failed with status code 500'),
+              error: {},
               captureError: true,
             });
           });
@@ -370,7 +364,7 @@ describe('User Popover Component', () => {
 
       describe('when clicking', () => {
         it('unfollows the user', async () => {
-          mock.onPost('/api/v4/users/1/unfollow').reply(httpStatus.OK);
+          unfollowUser.mockResolvedValue({});
 
           findToggleFollowButton().trigger('click');
 
@@ -382,7 +376,7 @@ describe('User Popover Component', () => {
 
         describe('when an error occurs', () => {
           beforeEach(async () => {
-            mock.onPost('/api/v4/users/1/unfollow').replyOnce(httpStatus.INTERNAL_SERVER_ERROR);
+            unfollowUser.mockRejectedValue({});
 
             findToggleFollowButton().trigger('click');
 
@@ -392,7 +386,7 @@ describe('User Popover Component', () => {
           it('shows an error message', () => {
             expect(createFlash).toHaveBeenCalledWith({
               message: 'An error occurred while trying to unfollow this user, please try again.',
-              error: new Error('Request failed with status code 500'),
+              error: {},
               captureError: true,
             });
           });
