@@ -12,24 +12,16 @@ RSpec.describe GroupsController do
   let_it_be(:subgroup) { create(:group, :private, parent: group) }
   let_it_be(:subgroup2) { create(:group, :private, parent: subgroup) }
 
+  before do
+    stub_feature_flags(vue_issues_list: true)
+  end
+
   describe 'GET #show' do
     let(:namespace) { group }
 
     subject { get :show, params: { id: group.to_param } }
 
     it_behaves_like 'namespace storage limit alert'
-  end
-
-  describe 'GET #issues' do
-    it 'does not list test cases' do
-      issue = create(:issue, project: project, title: 'foo')
-      incident = create(:incident, project: project)
-      create(:quality_test_case, project: project)
-
-      get :issues, params: { id: group.to_param }
-
-      expect(assigns(:issues)).to match_array([issue, incident])
-    end
   end
 
   describe 'GET #activity' do

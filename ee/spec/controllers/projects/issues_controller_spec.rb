@@ -7,6 +7,10 @@ RSpec.describe Projects::IssuesController do
   let(:project)   { create(:project_empty_repo, :public, namespace: namespace) }
   let(:user) { create(:user) }
 
+  before do
+    stub_feature_flags(vue_issues_list: true)
+  end
+
   describe 'licensed features' do
     let(:project) { create(:project, group: namespace) }
     let(:user) { create(:user) }
@@ -27,27 +31,6 @@ RSpec.describe Projects::IssuesController do
     context 'licensed' do
       before do
         stub_licensed_features(issue_weights: true, epics: true, security_dashboard: true, issuable_default_templates: true)
-      end
-
-      describe '#index' do
-        it 'allows sorting by weight' do
-          expected = [issue, issue2].sort_by(&:weight)
-
-          perform :get, :index, sort: 'weight'
-
-          expect(response).to have_gitlab_http_status(:ok)
-          expect(assigns(:issues)).to eq(expected)
-        end
-
-        it 'allows filtering by weight' do
-          _ = issue
-          _ = issue2
-
-          perform :get, :index, weight: 1
-
-          expect(response).to have_gitlab_http_status(:ok)
-          expect(assigns(:issues)).to eq([issue2])
-        end
       end
 
       describe '#update' do
@@ -188,17 +171,6 @@ RSpec.describe Projects::IssuesController do
     context 'unlicensed' do
       before do
         stub_licensed_features(issue_weights: false, epics: false, security_dashboard: false)
-      end
-
-      describe '#index' do
-        it 'ignores filtering by weight' do
-          expected = [issue, issue2]
-
-          perform :get, :index, weight: 1
-
-          expect(response).to have_gitlab_http_status(:ok)
-          expect(assigns(:issues)).to match_array(expected)
-        end
       end
 
       describe '#update' do
