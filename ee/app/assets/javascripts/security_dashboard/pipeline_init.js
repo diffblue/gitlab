@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import { parseBoolean } from '~/lib/utils/common_utils';
+import findingsQuery from 'ee/security_dashboard/graphql/queries/pipeline_findings.query.graphql';
 import PipelineSecurityDashboard from './components/pipeline/pipeline_security_dashboard.vue';
 import apolloProvider from './graphql/provider';
 import createRouter from './router';
@@ -69,6 +70,7 @@ export default () => {
       loadingErrorIllustrations,
       falsePositiveDocUrl,
       canViewFalsePositive: parseBoolean(canViewFalsePositive),
+      vulnerabilitiesQuery: findingsQuery,
     },
     render(createElement) {
       return createElement(PipelineSecurityDashboard);
