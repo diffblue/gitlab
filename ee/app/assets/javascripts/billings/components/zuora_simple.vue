@@ -18,20 +18,24 @@ const parseJson = (data) => {
   return {};
 };
 
-export const ACTION_CUSTOMIZE_ERROR_MESSAGE = 'customizeErrorMessage';
-export const ACTION_RESIZE = 'resize';
+export const DEFAULT_IFRAME_BOTTOM_HEIGHT = 55;
 export const DEFAULT_IFRAME_CONTAINER_MIN_HEIGHT = '200px';
 export const ERROR = 'error';
 export const ERROR_CLIENT = 'client_error';
 export const SUCCESS = 'success';
 export const ZUORA_EVENT_CATEGORY = 'Zuora_cc';
 
-export const Event = {
+export const Action = Object.freeze({
+  CUSTOMIZE_ERROR_MESSAGE: 'customizeErrorMessage',
+  RESIZE: 'resize',
+});
+
+export const Event = Object.freeze({
   FETCH_PARAMS: 'payment_form_fetch_params',
   IFRAME_LOADED: 'iframe_loaded',
   PAYMENT_SUBMITTED: 'payment_form_submitted',
   PAYMENT_VALIDATE: 'payment_method_validate',
-};
+});
 
 /*
 [ZuoraSimple]  It renders an iframe with the relevant Zuora HPM.
@@ -74,11 +78,14 @@ export default {
     };
   },
   computed: {
+    iframeCalculatedHeight() {
+      return this.iframeHeight - DEFAULT_IFRAME_BOTTOM_HEIGHT;
+    },
     iFrameStyle() {
       if (!this.zuoraLoaded) {
         return { height: DEFAULT_IFRAME_CONTAINER_MIN_HEIGHT };
       }
-      const height = Math.max(0, this.iframeHeight);
+      const height = Math.max(0, this.iframeCalculatedHeight);
       return { height: `${height}px`, minHeight: DEFAULT_IFRAME_CONTAINER_MIN_HEIGHT };
     },
     renderParams() {
@@ -107,6 +114,8 @@ export default {
             ...data,
             location: btoa(window.location.href),
             user_id: this.currentUserId,
+            // It won't use the Zuora callback upon success
+            submitEnabled: 'true',
           };
           this.renderZuoraIframe();
         })
@@ -135,7 +144,7 @@ export default {
       const iFrameData = parseJson(data);
       const { action, key, height, message } = iFrameData;
       switch (action) {
-        case ACTION_CUSTOMIZE_ERROR_MESSAGE:
+        case Action.CUSTOMIZE_ERROR_MESSAGE:
           window.Z.sendErrorMessageToHpm(key, message);
           this.track(ERROR_CLIENT, {
             label: Event.PAYMENT_SUBMITTED,
@@ -143,7 +152,7 @@ export default {
           });
           this.isLoading = false;
           break;
-        case ACTION_RESIZE:
+        case Action.RESIZE:
           this.iframeHeight = height > 0 ? height : this.iframeHeight;
           this.isLoading = false;
           break;
@@ -226,6 +235,7 @@ export default {
     <div
       id="zuora_payment"
       :style="iFrameStyle"
+      class="gl-overflow-hidden"
       :class="{ 'gl-visibility-hidden': !shouldShowZuoraFrame }"
     ></div>
   </div>

@@ -3,8 +3,8 @@ import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import Zuora, {
-  ACTION_CUSTOMIZE_ERROR_MESSAGE,
-  ACTION_RESIZE,
+  Action,
+  DEFAULT_IFRAME_BOTTOM_HEIGHT,
   DEFAULT_IFRAME_CONTAINER_MIN_HEIGHT,
   ERROR,
   ERROR_CLIENT,
@@ -127,8 +127,10 @@ describe('Zuora', () => {
         });
 
         it('applies the correct style', () => {
+          const height = initialHeight - DEFAULT_IFRAME_BOTTOM_HEIGHT;
+
           expect(findZuoraPayment().attributes('style')).toBe(
-            `height: ${initialHeight}px; min-height: ${DEFAULT_IFRAME_CONTAINER_MIN_HEIGHT};`,
+            `height: ${height}px; min-height: ${DEFAULT_IFRAME_CONTAINER_MIN_HEIGHT};`,
           );
         });
 
@@ -232,11 +234,11 @@ describe('Zuora', () => {
         });
       });
 
-      describe(`when dispatching a ${ACTION_CUSTOMIZE_ERROR_MESSAGE} event type`, () => {
+      describe(`when dispatching a ${Action.CUSTOMIZE_ERROR_MESSAGE} event type`, () => {
         const key = 'CreditCardNumber';
         const message = 'Required field';
         const data = JSON.stringify({
-          action: ACTION_CUSTOMIZE_ERROR_MESSAGE,
+          action: Action.CUSTOMIZE_ERROR_MESSAGE,
           key,
           message,
         });
@@ -259,8 +261,10 @@ describe('Zuora', () => {
             .mockResolvedValue({ data: { someData: 'some-data' } });
           await wrapper.vm.zuoraScriptEl.onload();
 
+          const height = initialHeight - DEFAULT_IFRAME_BOTTOM_HEIGHT;
+
           expect(findZuoraPayment().attributes('style')).toBe(
-            `height: ${initialHeight}px; min-height: ${DEFAULT_IFRAME_CONTAINER_MIN_HEIGHT};`,
+            `height: ${height}px; min-height: ${DEFAULT_IFRAME_CONTAINER_MIN_HEIGHT};`,
           );
         });
 
@@ -278,8 +282,10 @@ describe('Zuora', () => {
         });
       });
 
-      describe(`when dispatching a ${ACTION_RESIZE} event type`, () => {
-        const data = JSON.stringify({ action: ACTION_RESIZE, height: 500 });
+      describe(`when dispatching a ${Action.RESIZE} event type`, () => {
+        const receivedHeight = 500;
+        const height = receivedHeight - DEFAULT_IFRAME_BOTTOM_HEIGHT;
+        const data = JSON.stringify({ action: Action.RESIZE, height: receivedHeight });
 
         beforeEach(() => {
           window.dispatchEvent(new MessageEvent('message', { data }));
@@ -295,15 +301,13 @@ describe('Zuora', () => {
             .mockResolvedValue({ data: { someData: 'some-data' } });
           await wrapper.vm.zuoraScriptEl.onload();
 
-          const height = 500;
-
           expect(findZuoraPayment().attributes('style')).toBe(
             `height: ${height}px; min-height: ${DEFAULT_IFRAME_CONTAINER_MIN_HEIGHT};`,
           );
 
           window.dispatchEvent(
             new MessageEvent('message', {
-              data: JSON.stringify({ action: ACTION_RESIZE, height: 0 }),
+              data: JSON.stringify({ action: Action.RESIZE, height: 0 }),
             }),
           );
 
@@ -351,8 +355,10 @@ describe('Zuora', () => {
         });
 
         it('applies the correct style', () => {
+          const height = initialHeight - DEFAULT_IFRAME_BOTTOM_HEIGHT;
+
           expect(findZuoraPayment().attributes('style')).toBe(
-            `height: ${initialHeight}px; min-height: ${DEFAULT_IFRAME_CONTAINER_MIN_HEIGHT};`,
+            `height: ${height}px; min-height: ${DEFAULT_IFRAME_CONTAINER_MIN_HEIGHT};`,
           );
         });
 
@@ -492,8 +498,10 @@ describe('Zuora', () => {
         });
 
         it('applies the correct style', () => {
+          const height = initialHeight - DEFAULT_IFRAME_BOTTOM_HEIGHT;
+
           expect(findZuoraPayment().attributes('style')).toBe(
-            `height: ${initialHeight}px; min-height: ${DEFAULT_IFRAME_CONTAINER_MIN_HEIGHT};`,
+            `height: ${height}px; min-height: ${DEFAULT_IFRAME_CONTAINER_MIN_HEIGHT};`,
           );
         });
 
@@ -581,8 +589,10 @@ describe('Zuora', () => {
         });
 
         it('applies the correct style', () => {
+          const height = initialHeight - DEFAULT_IFRAME_BOTTOM_HEIGHT;
+
           expect(findZuoraPayment().attributes('style')).toBe(
-            `height: ${initialHeight}px; min-height: ${DEFAULT_IFRAME_CONTAINER_MIN_HEIGHT};`,
+            `height: ${height}px; min-height: ${DEFAULT_IFRAME_CONTAINER_MIN_HEIGHT};`,
           );
         });
 
