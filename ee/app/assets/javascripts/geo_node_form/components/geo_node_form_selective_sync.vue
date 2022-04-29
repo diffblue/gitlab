@@ -1,5 +1,13 @@
 <script>
-import { GlFormGroup, GlFormSelect, GlFormCheckbox, GlSprintf, GlLink, GlBadge } from '@gitlab/ui';
+import {
+  GlFormGroup,
+  GlFormSelect,
+  GlFormCheckbox,
+  GlLink,
+  GlBadge,
+  GlIcon,
+  GlPopover,
+} from '@gitlab/ui';
 import { s__, __ } from '~/locale';
 import {
   SELECTIVE_SYNC_MORE_INFO,
@@ -17,11 +25,17 @@ export default {
     learnMore: __('Learn more'),
     selectiveSyncFieldLabel: s__('Geo|Selective synchronization'),
     selectiveSyncFieldDescription: s__('Geo|Choose specific groups or storage shards'),
+    selectiveSyncPopoverText: s__(
+      'Geo|Geo allows you to choose specific groups or storage shards to replicate.',
+    ),
     namespacesSelectFieldLabel: s__('Geo|Groups to synchronize'),
     shardsSelectFieldLabel: s__('Geo|Shards to synchronize'),
     objectStorageFieldLabel: s__('Geo|Object Storage replication'),
     objectStorageFieldDescription: s__(
-      'Geo|If enabled, GitLab will handle Object Storage replication using Geo. %{linkStart}Learn more%{linkEnd}',
+      'Geo|If enabled, GitLab will handle Object Storage replication using Geo.',
+    ),
+    objectStorageFieldPopoverText: s__(
+      'Geo|Geo can replicate objects stored in Object Storage (AWS S3, or other compatible object storage).',
     ),
     objectStorageCheckboxLabel: s__(
       'Geo|Allow this secondary site to replicate content on Object Storage',
@@ -34,9 +48,10 @@ export default {
     GeoNodeFormNamespaces,
     GeoNodeFormShards,
     GlFormCheckbox,
-    GlSprintf,
     GlLink,
     GlBadge,
+    GlIcon,
+    GlPopover,
   },
   props: {
     nodeData: {
@@ -79,18 +94,37 @@ export default {
     <h2 class="gl-font-size-h2 gl-my-5">{{ $options.i18n.syncSettings }}</h2>
     <p class="gl-mb-5">
       {{ $options.i18n.syncSubtitle }}
-      <gl-link
-        :href="$options.SELECTIVE_SYNC_MORE_INFO"
-        target="_blank"
-        data-testid="selectiveSyncMoreInfo"
-        >{{ $options.i18n.learnMore }}</gl-link
-      >
     </p>
     <gl-form-group
-      :label="$options.i18n.selectiveSyncFieldLabel"
-      label-for="node-selective-synchronization-field"
       :description="$options.i18n.selectiveSyncFieldDescription"
+      data-testid="selective-sync-form-group"
     >
+      <template #label>
+        <div class="gl-display-flex gl-align-items-center">
+          <label for="node-selective-synchronization-field" class="gl-mb-0">{{
+            $options.i18n.selectiveSyncFieldLabel
+          }}</label>
+          <gl-icon
+            ref="selectiveSyncPopover"
+            tabindex="0"
+            name="question-o"
+            class="gl-text-blue-600 gl-cursor-pointer gl-ml-2"
+          />
+          <gl-popover
+            :target="() => $refs.selectiveSyncPopover.$el"
+            placement="top"
+            triggers="hover focus"
+            :title="$options.i18n.selectiveSyncFieldLabel"
+          >
+            <p class="gl-font-base">
+              {{ $options.i18n.selectiveSyncPopoverText }}
+            </p>
+            <gl-link :href="$options.SELECTIVE_SYNC_MORE_INFO" target="_blank">{{
+              $options.i18n.learnMore
+            }}</gl-link>
+          </gl-popover>
+        </div>
+      </template>
       <!-- eslint-disable vue/no-mutating-props -->
       <gl-form-select
         id="node-selective-synchronization-field"
@@ -127,26 +161,43 @@ export default {
         @removeSyncOption="removeSyncOption"
       />
     </gl-form-group>
-    <gl-form-group>
+    <gl-form-group
+      :description="$options.i18n.objectStorageFieldDescription"
+      data-testid="object-storage-form-group"
+    >
       <template #label>
-        <label for="node-object-storage-field" class="gl-mb-0">{{
-          $options.i18n.objectStorageFieldLabel
-        }}</label>
-        <gl-badge variant="info" size="sm" :href="$options.OBJECT_STORAGE_BETA" target="_blank">{{
-          $options.i18n.beta
-        }}</gl-badge>
-      </template>
-      <template #description>
-        <gl-sprintf :message="$options.i18n.objectStorageFieldDescription">
-          <template #link="{ content }">
-            <gl-link
-              :href="$options.OBJECT_STORAGE_MORE_INFO"
-              data-testid="objectStorageMoreInfo"
-              target="_blank"
-              >{{ content }}</gl-link
-            >
-          </template>
-        </gl-sprintf>
+        <div class="gl-display-flex gl-align-items-center">
+          <label for="node-object-storage-field" class="gl-mb-0">{{
+            $options.i18n.objectStorageFieldLabel
+          }}</label>
+          <gl-badge
+            class="gl-mx-2"
+            variant="info"
+            size="sm"
+            :href="$options.OBJECT_STORAGE_BETA"
+            target="_blank"
+            >{{ $options.i18n.beta }}</gl-badge
+          >
+          <gl-icon
+            ref="objectStoragePopover"
+            tabindex="0"
+            name="question-o"
+            class="gl-text-blue-600 gl-cursor-pointer"
+          />
+          <gl-popover
+            :target="() => $refs.objectStoragePopover.$el"
+            placement="top"
+            triggers="hover focus"
+            :title="$options.i18n.objectStorageFieldLabel"
+          >
+            <p class="gl-font-base">
+              {{ $options.i18n.objectStorageFieldPopoverText }}
+            </p>
+            <gl-link :href="$options.OBJECT_STORAGE_MORE_INFO" target="_blank">{{
+              $options.i18n.learnMore
+            }}</gl-link>
+          </gl-popover>
+        </div>
       </template>
       <!-- eslint-disable vue/no-mutating-props -->
       <gl-form-checkbox id="node-object-storage-field" v-model="nodeData.syncObjectStorage">{{

@@ -12,12 +12,12 @@ export const VALIDATION_FIELD_KEYS = {
   MINIMUM_REVERIFICATION_INTERVAL: 'minimumReverificationInterval',
 };
 
-export const NODE_NAME_MORE_INFO = helpPagePath('user/admin_area/geo_nodes.html', {
+export const PRIMARY_SITE_SETTINGS = helpPagePath('user/admin_area/geo_nodes.html', {
   anchor: 'common-settings',
 });
 
-export const NODE_INTERNAL_URL_MORE_INFO = helpPagePath('user/admin_area/geo_nodes.html', {
-  anchor: 'set-up-the-internal-urls',
+export const SECONDARY_SITE_SETTINGS = helpPagePath('user/admin_area/geo_nodes.html', {
+  anchor: 'secondary-site-settings',
 });
 
 export const SELECTIVE_SYNC_MORE_INFO = helpPagePath(

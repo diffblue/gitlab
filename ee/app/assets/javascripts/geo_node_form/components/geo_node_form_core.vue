@@ -1,12 +1,8 @@
 <script>
-import { GlFormGroup, GlFormInput, GlSprintf, GlLink } from '@gitlab/ui';
+import { GlFormGroup, GlFormInput, GlSprintf } from '@gitlab/ui';
 import { mapActions, mapState } from 'vuex';
 import { s__, __ } from '~/locale';
-import {
-  VALIDATION_FIELD_KEYS,
-  NODE_NAME_MORE_INFO,
-  NODE_INTERNAL_URL_MORE_INFO,
-} from '../constants';
+import { VALIDATION_FIELD_KEYS } from '../constants';
 import { validateName, validateUrl } from '../validations';
 
 export default {
@@ -14,7 +10,7 @@ export default {
   i18n: {
     nameFieldLabel: __('Name'),
     nameFieldDescription: s__(
-      'Geo|Must match with the %{codeStart}geo_node_name%{codeEnd} in %{codeStart}/etc/gitlab/gitlab.rb%{codeEnd}. %{linkStart}Learn more%{linkEnd}',
+      'Geo|Must match with the %{codeStart}geo_node_name%{codeEnd} in %{codeStart}/etc/gitlab/gitlab.rb%{codeEnd}.',
     ),
     urlFieldLabel: __('URL'),
     urlFieldDescription: s__(
@@ -22,17 +18,16 @@ export default {
     ),
     internalUrlFieldLabel: s__('Geo|Internal URL (optional)'),
     primarySiteInternalUrlFieldDescription: s__(
-      'Geo|The URL of the primary site that is used internally by the secondary sites. %{linkStart}Learn more.%{linkEnd}',
+      'Geo|The URL of the primary site that is used internally by the secondary sites.',
     ),
     secondarySiteInternalUrlFieldDescription: s__(
-      'Geo|The URL of the secondary site that is used internally by the primary site. %{linkStart}Learn more.%{linkEnd}',
+      'Geo|The URL of the secondary site that is used internally by the primary site.',
     ),
   },
   components: {
     GlFormGroup,
     GlFormInput,
     GlSprintf,
-    GlLink,
   },
   props: {
     nodeData: {
@@ -57,8 +52,6 @@ export default {
       this.setError({ key: VALIDATION_FIELD_KEYS.URL, error: validateUrl(this.nodeData.url) });
     },
   },
-  NODE_NAME_MORE_INFO,
-  NODE_INTERNAL_URL_MORE_INFO,
 };
 </script>
 
@@ -74,14 +67,6 @@ export default {
         <gl-sprintf :message="$options.i18n.nameFieldDescription">
           <template #code="{ content }">
             <code>{{ content }}</code>
-          </template>
-          <template #link="{ content }">
-            <gl-link
-              :href="$options.NODE_NAME_MORE_INFO"
-              target="_blank"
-              data-testid="nodeNameMoreInfo"
-              >{{ content }}</gl-link
-            >
           </template>
         </gl-sprintf>
       </template>
@@ -140,19 +125,8 @@ export default {
         class="col-12 col-sm-6"
         :label="$options.i18n.internalUrlFieldLabel"
         label-for="node-internal-url-field"
+        :description="internalUrlDescription"
       >
-        <template #description>
-          <gl-sprintf :message="internalUrlDescription">
-            <template #link="{ content }">
-              <gl-link
-                :href="$options.NODE_INTERNAL_URL_MORE_INFO"
-                target="_blank"
-                data-testid="nodeInternalUrlMoreInfo"
-                >{{ content }}</gl-link
-              >
-            </template>
-          </gl-sprintf>
-        </template>
         <div class="gl-display-flex gl-align-items-center">
           <!-- eslint-disable vue/no-mutating-props -->
           <gl-form-input

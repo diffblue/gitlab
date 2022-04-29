@@ -301,89 +301,105 @@ RSpec.describe Ci::Build, :saas do
   describe '#collect_security_reports!' do
     let(:security_reports) { ::Gitlab::Ci::Reports::Security::Reports.new(pipeline) }
 
-    subject { job.collect_security_reports!(security_reports) }
-
     before do
       stub_licensed_features(sast: true, dependency_scanning: true, container_scanning: true, dast: true)
     end
 
-    context 'when build has a security report' do
-      context 'when there is a sast report' do
-        let!(:artifact) { create(:ee_ci_job_artifact, :sast, job: job, project: job.project) }
+    context 'when report types are given' do
+      let!(:ds_artifact) { create(:ee_ci_job_artifact, :dependency_scanning, job: job, project: job.project) }
+      let!(:cs_artifact) { create(:ee_ci_job_artifact, :container_scanning, job: job, project: job.project) }
 
-        it 'parses blobs and add the results to the report' do
-          subject
+      subject { job.collect_security_reports!(security_reports, report_types: %w[container_scanning]) }
 
-          expect(security_reports.get_report('sast', artifact).findings.size).to eq(5)
+      it 'parses blobs and add the results for given report types' do
+        subject
+
+        expect(security_reports.get_report('dependency_scanning', ds_artifact).findings.size).to eq(0)
+        expect(security_reports.get_report('container_scanning', cs_artifact).findings.size).to eq(8)
+      end
+    end
+
+    context 'when report types are not given' do
+      subject { job.collect_security_reports!(security_reports) }
+
+      context 'when build has a security report' do
+        context 'when there is a sast report' do
+          let!(:artifact) { create(:ee_ci_job_artifact, :sast, job: job, project: job.project) }
+
+          it 'parses blobs and add the results to the report' do
+            subject
+
+            expect(security_reports.get_report('sast', artifact).findings.size).to eq(5)
+          end
+
+          it 'adds the created date to the report' do
+            subject
+
+            expect(security_reports.get_report('sast', artifact).created_at.to_s).to eq(artifact.created_at.to_s)
+          end
         end
 
-        it 'adds the created date to the report' do
-          subject
+        context 'when there are multiple reports' do
+          let!(:sast_artifact) { create(:ee_ci_job_artifact, :sast, job: job, project: job.project) }
+          let!(:ds_artifact) { create(:ee_ci_job_artifact, :dependency_scanning, job: job, project: job.project) }
+          let!(:cs_artifact) { create(:ee_ci_job_artifact, :container_scanning, job: job, project: job.project) }
+          let!(:dast_artifact) { create(:ee_ci_job_artifact, :dast, job: job, project: job.project) }
 
-          expect(security_reports.get_report('sast', artifact).created_at.to_s).to eq(artifact.created_at.to_s)
+          it 'parses blobs and adds the results to the reports' do
+            subject
+
+            expect(security_reports.get_report('sast', sast_artifact).findings.size).to eq(5)
+            expect(security_reports.get_report('dependency_scanning', ds_artifact).findings.size).to eq(4)
+            expect(security_reports.get_report('container_scanning', cs_artifact).findings.size).to eq(8)
+            expect(security_reports.get_report('dast', dast_artifact).findings.size).to eq(20)
+          end
+        end
+
+        context 'when there is a corrupted sast report' do
+          let!(:artifact) { create(:ee_ci_job_artifact, :sast_with_corrupted_data, job: job, project: job.project) }
+
+          it 'stores an error' do
+            subject
+
+            expect(security_reports.get_report('sast', artifact)).to be_errored
+          end
+        end
+
+        context 'vulnerability_finding_signatures' do
+          let!(:artifact) { create(:ee_ci_job_artifact, :sast, job: job, project: job.project) }
+
+          where(vulnerability_finding_signatures: [true, false])
+          with_them do
+            it 'parses the report' do
+              stub_licensed_features(
+                sast: true,
+                vulnerability_finding_signatures: vulnerability_finding_signatures
+              )
+
+              expect(::Gitlab::Ci::Parsers::Security::Sast).to receive(:new).with(
+                artifact.file.read,
+                kind_of(::Gitlab::Ci::Reports::Security::Report),
+                vulnerability_finding_signatures
+              )
+
+              subject
+            end
+          end
         end
       end
 
-      context 'when there are multiple reports' do
-        let!(:sast_artifact) { create(:ee_ci_job_artifact, :sast, job: job, project: job.project) }
-        let!(:ds_artifact) { create(:ee_ci_job_artifact, :dependency_scanning, job: job, project: job.project) }
-        let!(:cs_artifact) { create(:ee_ci_job_artifact, :container_scanning, job: job, project: job.project) }
-        let!(:dast_artifact) { create(:ee_ci_job_artifact, :dast, job: job, project: job.project) }
+      context 'when there is unsupported file type' do
+        let!(:artifact) { create(:ee_ci_job_artifact, :codequality, job: job, project: job.project) }
 
-        it 'parses blobs and adds the results to the reports' do
-          subject
-
-          expect(security_reports.get_report('sast', sast_artifact).findings.size).to eq(5)
-          expect(security_reports.get_report('dependency_scanning', ds_artifact).findings.size).to eq(4)
-          expect(security_reports.get_report('container_scanning', cs_artifact).findings.size).to eq(8)
-          expect(security_reports.get_report('dast', dast_artifact).findings.size).to eq(20)
+        before do
+          stub_const("Ci::JobArtifact::SECURITY_REPORT_FILE_TYPES", %w[codequality])
         end
-      end
-
-      context 'when there is a corrupted sast report' do
-        let!(:artifact) { create(:ee_ci_job_artifact, :sast_with_corrupted_data, job: job, project: job.project) }
 
         it 'stores an error' do
           subject
 
-          expect(security_reports.get_report('sast', artifact)).to be_errored
+          expect(security_reports.get_report('codequality', artifact)).to be_errored
         end
-      end
-
-      context 'vulnerability_finding_signatures' do
-        let!(:artifact) { create(:ee_ci_job_artifact, :sast, job: job, project: job.project) }
-
-        where(vulnerability_finding_signatures: [true, false])
-        with_them do
-          it 'parses the report' do
-            stub_licensed_features(
-              sast: true,
-              vulnerability_finding_signatures: vulnerability_finding_signatures
-            )
-
-            expect(::Gitlab::Ci::Parsers::Security::Sast).to receive(:new).with(
-              artifact.file.read,
-              kind_of(::Gitlab::Ci::Reports::Security::Report),
-              vulnerability_finding_signatures
-            )
-
-            subject
-          end
-        end
-      end
-    end
-
-    context 'when there is unsupported file type' do
-      let!(:artifact) { create(:ee_ci_job_artifact, :codequality, job: job, project: job.project) }
-
-      before do
-        stub_const("Ci::JobArtifact::SECURITY_REPORT_FILE_TYPES", %w[codequality])
-      end
-
-      it 'stores an error' do
-        subject
-
-        expect(security_reports.get_report('codequality', artifact)).to be_errored
       end
     end
   end

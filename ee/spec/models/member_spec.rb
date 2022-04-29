@@ -443,6 +443,95 @@ RSpec.describe Member, type: :model do
     end
   end
 
+  context 'when activating a member', :saas do
+    let(:user_cap) { true }
+    let(:member) { group.members.last }
+
+    let_it_be(:group, refind: true) { create(:group_with_plan, plan: :free_plan) }
+    let_it_be(:project, refind: true) { create(:project, namespace: group)}
+    let_it_be(:active_user) { create(:user) }
+    let_it_be(:active_member) { create(:group_member, :maintainer, group: group, user: active_user) }
+    let_it_be(:user) { create(:user) }
+    let_it_be(:member, refind: true) { create(:group_member, :awaiting, :maintainer, group: group, user: user) }
+
+    before do
+      stub_ee_application_setting(should_check_namespace_plan: true)
+      stub_const('::Namespaces::FreeUserCap::FREE_USER_LIMIT', 1)
+
+      allow_next_found_instance_of(Group) do |group|
+        allow(group).to receive(:apply_user_cap?).and_return(apply_user_cap)
+      end
+
+      expect(member).to be_awaiting
+    end
+
+    context 'when limit has been reached and user cap does not apply' do
+      let(:apply_user_cap) { false }
+
+      it 'activates user' do
+        member.activate
+
+        expect(member).to be_active
+      end
+    end
+
+    context 'when user cap applies' do
+      let(:apply_user_cap) { true }
+
+      context 'when limit has been reached' do
+        it 'keeps user awaiting' do
+          member.activate
+
+          expect(member).to be_awaiting
+        end
+
+        context 'when user already has an other active membership' do
+          context 'when project membership' do
+            let(:member) { create(:project_member, :awaiting, :maintainer, project: project, user: active_user) }
+
+            it 'activates member for the same user' do
+              member.activate
+
+              expect(member).to be_active
+            end
+          end
+
+          context 'when sub-group membership' do
+            let(:member) { create(:group_member, :awaiting, :maintainer, group: sub_group, user: active_user) }
+
+            it 'activates member for the same user' do
+              member.activate
+
+              expect(member).to be_active
+            end
+          end
+        end
+
+        context 'when user has an other awaiting membership' do
+          let(:member) { create(:project_member, :awaiting, :maintainer, project: project, user: user) }
+
+          it 'keeps the member awaiting' do
+            member.activate
+
+            expect(member).to be_awaiting
+          end
+        end
+      end
+
+      context 'when there is enough capacity' do
+        before do
+          stub_const('::Namespaces::FreeUserCap::FREE_USER_LIMIT', 2)
+        end
+
+        it 'activates member' do
+          member.activate
+
+          expect(member).to be_active
+        end
+      end
+    end
+  end
+
   describe '.distinct_awaiting_or_invited_for_group' do
     let_it_be(:other_sub_group) { create(:group, parent: group) }
     let_it_be(:active_group_member) { create(:group_member, group: group) }
