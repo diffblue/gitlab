@@ -201,7 +201,7 @@ RSpec.describe Emails::Projects do
         "deleted on #{deletion_date} due to inactivity")
       is_expected.to have_body_text(project.http_url_to_repo)
       is_expected.to have_body_text("Due to inactivity, the #{project_link} project is scheduled to be deleted " \
-        "on #{deletion_date}")
+        "on <b>#{deletion_date}</b>")
       is_expected.to have_body_text("To ensure #{project_link} is unscheduled for deletion, check that activity has " \
         "been logged by GitLab")
       is_expected.to have_body_text("This email supersedes any previous emails about scheduled deletion you may " \

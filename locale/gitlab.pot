@@ -13359,7 +13359,7 @@ msgstr ""
 msgid "Due date"
 msgstr ""
 
-msgid "Due to inactivity, the %{project_link} project is scheduled to be deleted on %{deletion_date}. To unschedule the deletion of %{project_link}, perform some activity on it. For example:"
+msgid "Due to inactivity, the %{project_link} project is scheduled to be deleted on %{b_open}%{deletion_date}%{b_close}. To unschedule the deletion of %{project_link}, perform some activity on it. For example:"
 msgstr ""
 
 msgid "Due to inactivity, the %{project_name} (%{project_link}) project is scheduled to be deleted on %{deletion_date}. To unschedule the deletion of %{project_name}, perform some activity on it. For example:"
