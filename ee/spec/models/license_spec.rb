@@ -31,7 +31,7 @@ RSpec.describe License do
         context 'with offline cloud license' do
           let(:gl_license) { build(:gitlab_license, :cloud, :offline_enabled, starts_at: 'not-a-date') }
           let(:error_message) do
-            'The license key is invalid. Make sure it is exactly as you received it from GitLab Inc.'
+            _('The license key is invalid. Make sure it is exactly as you received it from GitLab Inc.')
           end
 
           it_behaves_like 'an invalid license'
@@ -48,7 +48,7 @@ RSpec.describe License do
         it 'adds an error' do
           expect(license).not_to be_valid
           expect(license.errors.full_messages.to_sentence)
-            .to include 'The license key is invalid. Make sure it is exactly as you received it from GitLab Inc.'
+            .to include _('The license key is invalid. Make sure it is exactly as you received it from GitLab Inc.')
         end
       end
     end
