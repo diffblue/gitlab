@@ -81,6 +81,8 @@ module ActiveRecord
       if values[:cached] && skip_cached
         @cached << values[:sql]
       elsif !skip_schema_queries || !values[:name]&.include?("SCHEMA")
+        return if ignorable?(values)
+
         backtrace = @query_recorder_debug ? show_backtrace(values, duration) : nil
         @log << values[:sql]
         store_sql_by_source(values: values, duration: duration, backtrace: backtrace)
@@ -101,6 +103,10 @@ module ActiveRecord
 
     def occurrences
       @occurrences ||= @log.group_by(&:to_s).transform_values(&:count)
+    end
+
+    def ignorable?(values)
+      values[:name]&.match(/License Load/)
     end
   end
 end

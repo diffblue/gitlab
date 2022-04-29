@@ -10,9 +10,9 @@ module Gitlab
       def call(env)
         Gitlab::ProcessMemoryCache.cache_backend.clear
 
-        @app.call(env).tap do
-          Gitlab::ProcessMemoryCache.cache_backend.clear
-        end
+        @app.call(env)
+      ensure
+        Gitlab::ProcessMemoryCache.cache_backend.clear
       end
     end
   end
