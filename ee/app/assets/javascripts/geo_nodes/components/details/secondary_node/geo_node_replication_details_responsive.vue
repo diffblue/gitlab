@@ -1,7 +1,5 @@
 <script>
-import { GlIcon, GlPopover, GlLink } from '@gitlab/ui';
 import GeoNodeProgressBar from 'ee/geo_nodes/components/details/geo_node_progress_bar.vue';
-import { HELP_INFO_URL } from 'ee/geo_nodes/constants';
 import { s__, __ } from '~/locale';
 
 export default {
@@ -23,9 +21,6 @@ export default {
     nothingToVerify: s__('Geo|Nothing to verify'),
   },
   components: {
-    GlIcon,
-    GlPopover,
-    GlLink,
     GeoNodeProgressBar,
   },
   props: {
@@ -40,7 +35,6 @@ export default {
       default: () => [],
     },
   },
-  HELP_INFO_URL,
 };
 </script>
 
@@ -54,27 +48,7 @@ export default {
         <span class="gl-font-weight-bold">{{ $options.i18n.dataType }}</span>
         <span class="gl-font-weight-bold">{{ $options.i18n.component }}</span>
         <span class="gl-font-weight-bold">{{ $options.i18n.syncStatus }}</span>
-        <div class="gl-display-flex gl-align-items-center">
-          <span class="gl-font-weight-bold">{{ $options.i18n.verifStatus }}</span>
-          <gl-icon
-            ref="verificationStatus"
-            tabindex="0"
-            name="question"
-            class="gl-text-blue-500 gl-cursor-pointer gl-ml-2"
-          />
-          <gl-popover
-            :target="() => $refs.verificationStatus.$el"
-            placement="top"
-            triggers="hover focus"
-          >
-            <p class="gl-font-base">
-              {{ $options.i18n.popoverHelpText }}
-            </p>
-            <gl-link :href="$options.HELP_INFO_URL" target="_blank">{{
-              $options.i18n.learnMore
-            }}</gl-link>
-          </gl-popover>
-        </div>
+        <span class="gl-font-weight-bold">{{ $options.i18n.verifStatus }}</span>
       </slot>
     </div>
     <div

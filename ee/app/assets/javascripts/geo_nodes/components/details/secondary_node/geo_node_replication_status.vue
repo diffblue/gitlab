@@ -39,8 +39,8 @@ export default {
     >
     <gl-icon
       ref="replicationStatus"
-      name="question"
-      class="gl-text-blue-500 gl-cursor-pointer gl-ml-2"
+      name="question-o"
+      class="gl-text-blue-600 gl-cursor-pointer gl-ml-2"
     />
     <gl-popover :target="() => $refs.replicationStatus.$el" placement="top" triggers="hover focus">
       <p class="gl-font-base">
