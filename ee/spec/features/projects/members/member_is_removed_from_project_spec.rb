@@ -6,7 +6,7 @@ RSpec.describe 'Projects > Members > Member is removed from project', :js do
   include Spec::Support::Helpers::ModalHelpers
 
   let(:user) { create(:user) }
-  let(:project) { create(:project) }
+  let(:project) { create(:project, :with_namespace_settings) }
   let(:other_user) { create(:user) }
 
   before do

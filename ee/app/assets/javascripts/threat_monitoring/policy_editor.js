@@ -4,6 +4,7 @@ import { convertObjectPropsToCamelCase, parseBoolean } from '~/lib/utils/common_
 import PolicyEditorApp from './components/policy_editor/policy_editor.vue';
 import NewPolicyApp from './components/policy_editor/new_policy.vue';
 import { DEFAULT_ASSIGNED_POLICY_PROJECT } from './constants';
+import createStore from './store';
 import { gqClient } from './utils';
 
 Vue.use(VueApollo);
@@ -61,6 +62,7 @@ export default (el, namespaceType) => {
       scanPolicyDocumentationPath,
       scanResultPolicyApprovers,
     },
+    store: createStore(),
     render(createElement) {
       return createElement(component, { props });
     },
