@@ -1,9 +1,9 @@
 import Vue from 'vue';
 import apolloProvider from 'ee/subscriptions/buy_addons_shared/graphql';
-import RegistrationForm from 'ee/registrations/components/company_form.vue';
+import CompanyForm from 'ee/registrations/components/company_form.vue';
 
 export default () => {
-  const el = document.querySelector('#js-company-registration-form');
+  const el = document.querySelector('#js-registrations-company-form');
 
   const { submitPath, trial } = el.dataset;
 
@@ -14,7 +14,7 @@ export default () => {
       submitPath,
     },
     render(createElement) {
-      return createElement(RegistrationForm, {
+      return createElement(CompanyForm, {
         props: { trial },
       });
     },

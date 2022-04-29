@@ -5,13 +5,12 @@ require 'spec_helper'
 RSpec.describe "User registration", :js, :saas do
   include AfterNextHelpers
 
+  let(:service_with_success) do
+    instance_double(GitlabSubscriptions::CreateTrialOrLeadService, execute: ServiceResponse.success)
+  end
+
   before do
     stub_feature_flags(
-      # This is an experiment that we're trying to clean up at the same time as
-      # adding these new registration flows:
-      # https://gitlab.com/gitlab-org/gitlab/-/issues/350278
-      bypass_registration: true,
-
       # This is an "experiment" that's not been cleaned up and is over a year old:
       # https://gitlab.com/gitlab-org/gitlab/-/issues/255170
       user_other_role_details: true,
@@ -35,7 +34,7 @@ RSpec.describe "User registration", :js, :saas do
     # The groups_and_projects_controller (on `click_on 'Create project'`) is over
     # the query limit threshold, so we have to adjust it.
     # https://gitlab.com/gitlab-org/gitlab/-/issues/338737
-    stub_const('Gitlab::QueryLimiting::Transaction::THRESHOLD', 270)
+    stub_const('Gitlab::QueryLimiting::Transaction::THRESHOLD', 271)
   end
 
   def fill_in_sign_up_form(user)
@@ -52,6 +51,15 @@ RSpec.describe "User registration", :js, :saas do
 
     select 'A different reason', from: 'user_registration_objective'
     fill_in 'Why are you signing up? (optional)', with: 'My reason'
+  end
+
+  def fill_in_company_form
+    fill_in 'company_name', with: 'Test Company'
+    select '1 - 99', from: 'company_size'
+    select 'United States of America', from: 'country'
+    select 'Florida', from: 'state'
+    fill_in 'phone_number', with: '+1234567890'
+    fill_in 'website_url', with: 'https://gitlab.com'
   end
 
   describe "when accepting an invite" do
@@ -103,6 +111,7 @@ RSpec.describe "User registration", :js, :saas do
 
     context "just for me" do
       before do
+        fill_in_welcome_form
         choose 'Just me'
         check 'I\'d like to receive updates about GitLab via email'
       end
@@ -127,6 +136,7 @@ RSpec.describe "User registration", :js, :saas do
 
         before do
           choose 'Create a new project'
+
           click_on 'Continue'
         end
 
@@ -162,6 +172,7 @@ RSpec.describe "User registration", :js, :saas do
 
     context "for my company" do
       before do
+        fill_in_welcome_form
         choose 'My company or team'
       end
 
@@ -177,7 +188,8 @@ RSpec.describe "User registration", :js, :saas do
       end
 
       context "wanting to create a project" do
-        # This flow is behind the combined_registration feature flag.
+        # This flow is behind the combined_registration and the
+        # about_your_company_registration_flow feature flags.
 
         before do
           choose 'Create a new project'
@@ -187,53 +199,46 @@ RSpec.describe "User registration", :js, :saas do
         it "prompts for details about my company" do
           expect(page).to have_content 'About your company'
 
-          fill_in 'company_name', with: 'Test Company'
-          select '1 - 99', from: 'company_size'
-          select 'United States of America', from: 'country'
-          select 'Florida', from: 'state'
-          fill_in 'phone_number', with: '+1234567890'
-          fill_in 'website_url', with: 'https://gitlab.com'
+          fill_in_company_form
         end
 
         context "and opting into a trial" do
           before do
+            fill_in_company_form
             click_button class: 'gl-toggle'
 
-            expect_next(GitlabSubscriptions::CreateLeadService).to receive(:execute).with(
-              trial_user: ActionController::Parameters.new(
-                company_name: '',
-                company_size: '',
-                phone_number: '',
-                country: '',
-                website_url: '',
-                work_email: user.email,
-                uid: user.id,
-                setup_for_company: true,
-                skip_email_confirmation: true,
-                gitlab_com_trial: true,
-                provider: 'gitlab',
-                newsletter_segment: true
+            expect(GitlabSubscriptions::CreateTrialOrLeadService).to receive(:new).with(
+              user: user,
+              params: ActionController::Parameters.new(
+                company_name: 'Test Company',
+                company_size: '1-99',
+                phone_number: '+1234567890',
+                country: 'US',
+                state: 'FL',
+                website_url: 'https://gitlab.com',
+                trial: 'true',
+                # these are the passed through params
+                role: 'other',
+                other_role: 'My role',
+                registration_objective: 'other',
+                jobs_to_be_done_other: 'My reason'
               ).permit!
-            ).and_return(success: true)
+            ).and_return(service_with_success)
 
             click_on 'Continue'
           end
 
           it "creates my new group and project with a trial" do
-            pending
-
             fill_in 'group_name', with: 'Test Group'
             fill_in 'blank_project_name', with: 'Test Project'
 
-            expect_next(GitlabSubscriptions::CreateLeadService).to receive(:execute).with(
+            expect_next(GitlabSubscriptions::ApplyTrialService).to receive(:execute).with(
               uid: user.id,
-              trial_user:
-                ActionController::Parameters.new(
-                  namespace_id: Namespace.maximum(:id).to_i + 1,
-                  trial_entity: 'company',
-                  gitlab_com_trial: true,
-                  sync_to_gl: true
-                ).permit!
+              trial_user: ActionController::Parameters.new(
+                namespace_id: Namespace.maximum(:id).to_i + 1,
+                gitlab_com_trial: true,
+                sync_to_gl: true
+              ).permit!
             ).and_return(success: true)
 
             click_on 'Create project'
@@ -244,12 +249,24 @@ RSpec.describe "User registration", :js, :saas do
 
         context "without a trial" do
           before do
+            fill_in_company_form
+
+            expect(GitlabSubscriptions::CreateTrialOrLeadService).to receive(:new).with(
+              user: user,
+              params: hash_including(
+                trial: 'false',
+                # these are the passed through params
+                role: 'other',
+                other_role: 'My role',
+                registration_objective: 'other',
+                jobs_to_be_done_other: 'My reason'
+              )
+            ).and_return(service_with_success)
+
             click_on 'Continue'
           end
 
           it "creates my new group and project without a trial" do
-            pending
-
             fill_in 'group_name', with: 'Test Group'
             fill_in 'blank_project_name', with: 'Test Project'
             click_on 'Create project'

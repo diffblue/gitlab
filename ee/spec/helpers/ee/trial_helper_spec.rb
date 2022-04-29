@@ -59,9 +59,11 @@ RSpec.describe EE::TrialHelper do
   describe '#create_company_form_data' do
     let(:extra_params) do
       {
+        trial: 'true',
         role: '_params_role_',
-        jtbd: '_params_jtbd_',
-        comment: '_params_comment_'
+        other_role: '_params_other_role_',
+        registration_objective: '_params_registration_objective_',
+        jobs_to_be_done_other: '_params_jobs_to_be_done_other'
       }
     end
 
@@ -81,7 +83,7 @@ RSpec.describe EE::TrialHelper do
 
     it 'allows overriding data with params' do
       submit_path = {
-        submit_path: '/users/sign_up/company?comment=_params_comment_&jtbd=_params_jtbd_&role=_params_role_'
+        submit_path: "/users/sign_up/company?#{extra_params.to_query}"
       }
 
       expect(helper.create_company_form_data).to match(submit_path)
