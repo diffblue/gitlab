@@ -4,8 +4,7 @@ import { convertObjectPropsToCamelCase, parseBoolean } from '~/lib/utils/common_
 import PolicyEditorApp from './components/policy_editor/policy_editor.vue';
 import NewPolicyApp from './components/policy_editor/new_policy.vue';
 import { DEFAULT_ASSIGNED_POLICY_PROJECT } from './constants';
-import createStore from './store';
-import { gqClient, isValidEnvironmentId } from './utils';
+import { gqClient } from './utils';
 
 Vue.use(VueApollo);
 
@@ -16,38 +15,17 @@ const apolloProvider = new VueApollo({
 export default (el, namespaceType) => {
   const {
     assignedPolicyProject,
-    defaultEnvironmentId,
     disableScanPolicyUpdate,
-    environmentsEndpoint,
     createAgentHelpPath,
-    networkPoliciesEndpoint,
-    networkDocumentationPath,
     policiesPath,
     policy,
     policyEditorEmptyStateSvgPath,
     policyType,
     projectPath,
     projectId,
-    environmentId,
     scanPolicyDocumentationPath,
     scanResultApprovers,
   } = el.dataset;
-
-  // We require the project to have at least one available environment.
-  // An invalid default environment id means there there are no available
-  // environments, therefore infrastructure cannot be set up. A valid default
-  // environment id only means that infrastructure *might* be set up.
-  const hasEnvironment = isValidEnvironmentId(parseInt(defaultEnvironmentId, 10));
-
-  const store = createStore();
-  store.dispatch('threatMonitoring/setEnvironmentEndpoint', environmentsEndpoint);
-  store.dispatch('networkPolicies/setEndpoints', {
-    networkPoliciesEndpoint,
-  });
-  store.dispatch('threatMonitoring/setHasEnvironment', hasEnvironment);
-  if (hasEnvironment && environmentId !== undefined) {
-    store.dispatch('threatMonitoring/setCurrentEnvironmentId', parseInt(environmentId, 10));
-  }
 
   const policyProject = JSON.parse(assignedPolicyProject);
   const props = {
@@ -75,7 +53,6 @@ export default (el, namespaceType) => {
       createAgentHelpPath,
       disableScanPolicyUpdate: parseBoolean(disableScanPolicyUpdate),
       namespaceType,
-      networkDocumentationPath,
       policyEditorEmptyStateSvgPath,
       policyType,
       projectId,
@@ -84,7 +61,6 @@ export default (el, namespaceType) => {
       scanPolicyDocumentationPath,
       scanResultPolicyApprovers,
     },
-    store,
     render(createElement) {
       return createElement(component, { props });
     },

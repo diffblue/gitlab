@@ -3,9 +3,7 @@ import { POLICY_TYPE_COMPONENT_OPTIONS } from 'ee/threat_monitoring/components/c
 import PolicyDrawer from 'ee/threat_monitoring/components/policy_drawer/policy_drawer.vue';
 import ScanExecutionPolicy from 'ee/threat_monitoring/components/policy_drawer/scan_execution_policy.vue';
 import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import { mockNetworkPoliciesResponse, mockScanExecutionPolicy } from '../../mocks/mock_data';
-
-const [mockGenericPolicy] = mockNetworkPoliciesResponse;
+import { mockScanExecutionPolicy } from '../../mocks/mock_data';
 
 describe('PolicyDrawer component', () => {
   let wrapper;
@@ -58,13 +56,15 @@ describe('PolicyDrawer component', () => {
       factory({
         mountFn: mountExtended,
         propsData: {
-          policy: mockGenericPolicy,
+          policy: mockScanExecutionPolicy,
         },
       });
     });
 
     it('renders network policy editor with manifest', () => {
-      expect(findDefaultComponentPolicyEditor().attributes('value')).toBe(mockGenericPolicy.yaml);
+      expect(findDefaultComponentPolicyEditor().attributes('value')).toBe(
+        mockScanExecutionPolicy.yaml,
+      );
     });
 
     itRendersEditButton();
