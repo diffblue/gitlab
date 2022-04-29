@@ -7,6 +7,7 @@ module API
     ENVIRONMENT_ENDPOINT_REQUIREMENTS = API::NAMESPACE_OR_PROJECT_REQUIREMENTS.merge(name: API::NO_SLASH_URL_PART_REGEX)
 
     feature_category :continuous_delivery
+    urgency :low
 
     helpers do
       params :protected_environment_approval_rules do

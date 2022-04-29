@@ -4,6 +4,7 @@ module API
   module Dora
     class Metrics < ::API::Base
       feature_category :continuous_delivery
+      urgency :low
 
       helpers do
         params :dora_metrics_params do
