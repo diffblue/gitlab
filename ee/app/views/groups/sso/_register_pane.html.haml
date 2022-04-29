@@ -1,6 +1,6 @@
 #register-pane.login-box.tab-pane.rounded.active{ role: 'tabpanel' }
   .login-body
-    = form_for(resource, as: "new_user", url: group_sign_up_path(@unauthenticated_group), html: { class: "new_new_user gl-show-field-errors", "aria-live" => "assertive" }) do |f|
+    = gitlab_ui_form_for(resource, as: "new_user", url: group_sign_up_path(@unauthenticated_group), html: { class: "new_new_user gl-show-field-errors", "aria-live" => "assertive" }) do |f|
       .devise-errors
         = devise_error_messages!
 
