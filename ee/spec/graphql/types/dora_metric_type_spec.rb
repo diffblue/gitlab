@@ -16,6 +16,6 @@ RSpec.describe Types::DoraMetricType do
   describe 'value field' do
     subject { described_class.fields['value'] }
 
-    it { is_expected.to have_graphql_type(GraphQL::Types::Int) }
+    it { is_expected.to have_graphql_type(GraphQL::Types::Float) }
   end
 end
