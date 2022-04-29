@@ -242,14 +242,14 @@ module EE
         enable :read_iteration_cadence
       end
 
-      rule { developer & iterations_available }.policy do
+      rule { reporter & iterations_available }.policy do
         enable :create_iteration
         enable :admin_iteration
         enable :create_iteration_cadence
         enable :admin_iteration_cadence
       end
 
-      rule { (automation_bot | developer) & iterations_available }.policy do
+      rule { (automation_bot | reporter) & iterations_available }.policy do
         enable :rollover_issues
       end
 

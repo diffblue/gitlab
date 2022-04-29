@@ -6,8 +6,8 @@ RSpec.describe Iterations::Cadences::CreateService do
   let_it_be(:group, refind: true) { create(:group) }
   let_it_be(:user) { create(:user) }
 
-  before do
-    group.add_developer(user)
+  before_all do
+    group.add_reporter(user)
   end
 
   shared_examples 'does not create an interation cadence' do |errors|
@@ -100,7 +100,7 @@ RSpec.describe Iterations::Cadences::CreateService do
 
       context 'no permissions' do
         before do
-          group.add_reporter(user)
+          group.add_guest(user)
         end
 
         it 'is not allowed' do

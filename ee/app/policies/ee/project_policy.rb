@@ -191,7 +191,7 @@ module EE
         enable :read_ci_minutes_quota
       end
 
-      rule { can?(:developer_access) & iterations_available }.policy do
+      rule { can?(:reporter_access) & iterations_available }.policy do
         enable :create_iteration
         enable :admin_iteration
       end
