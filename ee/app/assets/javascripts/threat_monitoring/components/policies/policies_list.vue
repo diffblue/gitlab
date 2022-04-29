@@ -129,7 +129,7 @@ export default {
         };
         return mergeUrlParams(
           parameters,
-          this.newPolicyPath.replace('new', `${this.selectedPolicy.name}/edit`),
+          this.newPolicyPath.replace('new', `${encodeURIComponent(this.selectedPolicy.name)}/edit`),
         );
       }
 
