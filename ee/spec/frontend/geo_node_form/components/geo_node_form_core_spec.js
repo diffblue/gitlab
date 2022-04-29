@@ -2,11 +2,7 @@ import { mount } from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
 import GeoNodeFormCore from 'ee/geo_node_form/components/geo_node_form_core.vue';
-import {
-  VALIDATION_FIELD_KEYS,
-  NODE_NAME_MORE_INFO,
-  NODE_INTERNAL_URL_MORE_INFO,
-} from 'ee/geo_node_form/constants';
+import { VALIDATION_FIELD_KEYS } from 'ee/geo_node_form/constants';
 import { MOCK_NODE, STRING_OVER_255 } from '../mock_data';
 
 Vue.use(Vuex);
@@ -48,11 +44,8 @@ describe('GeoNodeFormCore', () => {
   });
 
   const findGeoNodeFormNameField = () => wrapper.find('#node-name-field');
-  const findGeoNodeFormNameMoreInformation = () => wrapper.find('[data-testid="nodeNameMoreInfo"');
   const findGeoNodeFormUrlField = () => wrapper.find('#node-url-field');
   const findGeoNodeInternalUrlField = () => wrapper.find('#node-internal-url-field');
-  const findGeoNodeFormInternalUrlMoreInformation = () =>
-    wrapper.find('[data-testid="nodeInternalUrlMoreInfo"');
   const findErrorMessage = () => wrapper.find('.invalid-feedback');
 
   describe('template', () => {
@@ -66,10 +59,6 @@ describe('GeoNodeFormCore', () => {
 
     it('renders Geo Node Form Url Field', () => {
       expect(findGeoNodeFormUrlField().exists()).toBe(true);
-    });
-
-    it('renders Geo Node Form Name More Information link correctly', () => {
-      expect(findGeoNodeFormNameMoreInformation().attributes('href')).toBe(NODE_NAME_MORE_INFO);
     });
 
     describe.each`
@@ -86,13 +75,6 @@ describe('GeoNodeFormCore', () => {
 
         it('shows the Internal URL Field', () => {
           expect(findGeoNodeInternalUrlField().exists()).toBe(true);
-        });
-
-        it('shows the Internal URL More Information Link', () => {
-          expect(findGeoNodeFormInternalUrlMoreInformation().exists()).toBe(true);
-          expect(findGeoNodeFormInternalUrlMoreInformation().attributes('href')).toBe(
-            NODE_INTERNAL_URL_MORE_INFO,
-          );
         });
       });
     });
