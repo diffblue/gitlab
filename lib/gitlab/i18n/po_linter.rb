@@ -245,12 +245,12 @@ module Gitlab
           []
         elsif variables.any? { |variable| unnamed_variable?(variable) }
           variables.map do |variable|
-            variable == '%d' ? Random.rand(1000) : Gitlab::Utils.random_string
+            variable == '%d' ? Random.rand(1000) : SecureRandom.uuid
           end
         else
           variables.each_with_object({}) do |variable, hash|
             variable_name = variable[/\w+/]
-            hash[variable_name] = Gitlab::Utils.random_string
+            hash[variable_name] = SecureRandom.uuid
           end
         end
       end
