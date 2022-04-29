@@ -26,7 +26,7 @@ module EE
     end
 
     def create_company_form_data
-      submit_params = glm_params.merge(params.slice(:trial, :role, :jtbd, :comment).to_unsafe_h.symbolize_keys)
+      submit_params = glm_params.merge(passed_through_params.to_unsafe_h.symbolize_keys)
       {
         submit_path: users_sign_up_company_path(submit_params)
       }
@@ -94,6 +94,16 @@ module EE
     end
 
     private
+
+    def passed_through_params
+      params.slice(
+        :trial,
+        :role,
+        :other_role,
+        :registration_objective,
+        :jobs_to_be_done_other
+      )
+    end
 
     def trialable_group_namespaces
       strong_memoize(:trialable_group_namespaces) do

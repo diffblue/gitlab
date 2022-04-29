@@ -97,13 +97,17 @@ module EE
         experiment(:combined_registration, user: current_user)
       end
 
+      def passed_through_params
+        update_params.slice(:role, :other_role, :registration_objective).merge(params.permit(:jobs_to_be_done_other))
+      end
+
       override :update_success_path
       def update_success_path
         if params[:joining_project] == 'true'
           path_for_signed_in_user(current_user)
         else
           if show_company_form?
-            new_users_sign_up_company_path
+            new_users_sign_up_company_path(passed_through_params)
           else
             experiment(:combined_registration, user: current_user).redirect_path
           end
