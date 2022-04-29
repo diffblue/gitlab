@@ -8,13 +8,13 @@ module Tooling
       load_definitions.each do |section, group_defintions|
         puts section
 
-        group_defintions.each do |group, allow:, deny:|
+        group_defintions.each do |group, list|
           matched_files = git_ls_files.each_line.select do |line|
-            allow.find do |pattern|
+            list[:allow].find do |pattern|
               path = "/#{line.chomp}"
 
               path_matches?(pattern, path) &&
-                deny.none? { |pattern| path_matches?(pattern, path) }
+                list[:deny].none? { |pattern| path_matches?(pattern, path) }
             end
           end
 
@@ -45,9 +45,9 @@ module Tooling
 
       result.each do |section, group_defintions|
         group_defintions.each do |group, definitions|
-          definitions.transform_values! do |keywords:, patterns:|
-            keywords.flat_map do |keyword|
-              patterns.map do |pattern|
+          definitions.transform_values! do |rules|
+            rules[:keywords].flat_map do |keyword|
+              rules[:patterns].map do |pattern|
                 pattern % { keyword: keyword }
               end
             end
