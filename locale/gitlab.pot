@@ -15057,6 +15057,9 @@ msgstr ""
 msgid "Environments|Rollback environment %{name}?"
 msgstr ""
 
+msgid "Environments|Search by environment name"
+msgstr ""
+
 msgid "Environments|Show all"
 msgstr ""
 

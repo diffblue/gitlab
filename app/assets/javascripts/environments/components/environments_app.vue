@@ -1,5 +1,5 @@
 <script>
-import { GlBadge, GlPagination, GlTab, GlTabs } from '@gitlab/ui';
+import { GlBadge, GlPagination, GlSearchBoxByType, GlTab, GlTabs } from '@gitlab/ui';
 import { s__, __, sprintf } from '~/locale';
 import { updateHistory, setUrlParams, queryToObject } from '~/lib/utils/url_utility';
 import environmentAppQuery from '../graphql/queries/environment_app.query.graphql';
@@ -31,6 +31,7 @@ export default {
     StopEnvironmentModal,
     GlBadge,
     GlPagination,
+    GlSearchBoxByType,
     GlTab,
     GlTabs,
   },
@@ -41,6 +42,7 @@ export default {
         return {
           scope: this.scope,
           page: this.page ?? 1,
+          search: this.search,
         };
       },
       pollInterval() {
@@ -80,10 +82,11 @@ export default {
     next: __('Next'),
     prev: __('Prev'),
     goto: (page) => sprintf(__('Go to page %{page}'), { page }),
+    searchPlaceholder: s__('Environments|Search by environment name'),
   },
   modalId: 'enable-review-app-info',
   data() {
-    const { page = '1', scope } = queryToObject(window.location.search);
+    const { page = '1', search = '', scope } = queryToObject(window.location.search);
     return {
       interval: undefined,
       isReviewAppModalVisible: false,
@@ -97,6 +100,7 @@ export default {
       environmentToStop: {},
       environmentToChangeCanary: {},
       weight: 0,
+      search,
     };
   },
   computed: {
@@ -154,9 +158,11 @@ export default {
   },
   mounted() {
     window.addEventListener('popstate', this.syncPageFromQueryParams);
+    window.addEventListener('popstate', this.syncSearchFromQueryParams);
   },
   destroyed() {
     window.removeEventListener('popstate', this.syncPageFromQueryParams);
+    window.removeEventListener('popstate', this.syncSearchFromQueryParams);
     this.$apollo.queries.environmentApp.stopPolling();
   },
   methods: {
@@ -178,9 +184,21 @@ export default {
       });
       this.resetPolling();
     },
+    setSearch(input) {
+      this.search = input;
+      updateHistory({
+        url: setUrlParams({ search: this.search }),
+        title: document.title,
+      });
+      this.resetPolling();
+    },
     syncPageFromQueryParams() {
       const { page = '1' } = queryToObject(window.location.search);
       this.page = parseInt(page, 10);
+    },
+    syncSearchFromQueryParams() {
+      const { search = '' } = queryToObject(window.location.search);
+      this.search = search;
     },
     resetPolling() {
       this.$apollo.queries.environmentApp.stopPolling();
@@ -237,12 +255,19 @@ export default {
         </template>
       </gl-tab>
     </gl-tabs>
+    <gl-search-box-by-type
+      class="gl-mb-4"
+      :value="search"
+      :placeholder="$options.i18n.searchPlaceholder"
+      @input="setSearch"
+    />
     <template v-if="hasEnvironments">
       <environment-folder
         v-for="folder in folders"
         :key="folder.name"
         class="gl-mb-3"
         :scope="scope"
+        :search="search"
         :nested-environment="folder"
       />
       <environment-item
