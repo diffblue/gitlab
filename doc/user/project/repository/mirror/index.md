@@ -257,3 +257,30 @@ In some cases, pull mirroring does not transfer LFS files. This issue occurs whe
   [Fixed](https://gitlab.com/gitlab-org/gitlab/-/issues/335123) in GitLab 14.0.6.
 - You mirror an external repository using object storage.
   An issue exists [to fix this problem](https://gitlab.com/gitlab-org/gitlab/-/issues/335495).
+
+### `The repository is being updated`, but neither fails nor succeeds visibly
+
+In rare cases, mirroring slots on Redis can become exhausted,
+possibly because Sidekiq workers are reaped due to OoM events.
+In effect, mirroring jobs start (and are done quickly),
+but without either failing nor succeeding nor a clear log.
+
+Enter the [Rails console](../../../../administration/operations/rails_console.md)
+and check Redis' mirroring capacity:
+
+```ruby
+current = Gitlab::Redis::SharedState.with { |redis| redis.scard('MIRROR_PULL_CAPACITY') }.to_i
+maximum = Gitlab::CurrentSettings.mirror_max_capacity
+available = maximum - current
+```
+
+If it is 0 or very low, you can drain all stuck jobs with:
+
+```ruby
+Gitlab::Redis::SharedState.with { |redis| redis.smembers('MIRROR_PULL_CAPACITY') }.each do |pid|
+  Gitlab::Redis::SharedState.with { |redis| redis.srem('MIRROR_PULL_CAPACITY', pid) }
+end
+```
+
+Afterwards, the [background jobs page](../../../admin_area/index.md#background-jobs)
+should show new mirroring jobs getting scheduled, esp. when [triggered manually](#update-a-mirror).
