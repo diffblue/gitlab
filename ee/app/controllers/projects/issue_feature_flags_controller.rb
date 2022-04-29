@@ -7,7 +7,7 @@ module Projects
     before_action :authorize_admin_feature_flags_issue_links!
 
     feature_category :feature_flags
-    urgency :low, [:create, :destroy]
+    urgency :low, [:index, :show]
 
     private
 
