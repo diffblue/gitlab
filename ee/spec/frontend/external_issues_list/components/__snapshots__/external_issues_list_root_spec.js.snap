@@ -152,6 +152,7 @@ Object {
       "title": "Updated date",
     },
   ],
+  "syncFilterAndSort": false,
   "tabCounts": null,
   "tabs": Array [
     Object {
