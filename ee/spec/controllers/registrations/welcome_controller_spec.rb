@@ -143,9 +143,11 @@ RSpec.describe Registrations::WelcomeController do
           role: 'software_developer',
           setup_for_company: setup_for_company,
           email_opted_in: email_opted_in,
-          registration_objective: 'code_storage'
+          registration_objective: 'code_storage',
+          other_role: '_other_role_'
         },
-        joining_project: joining_project
+        joining_project: joining_project,
+        jobs_to_be_done_other: '_jobs_to_be_done_other_'
       }
     end
 
@@ -280,8 +282,16 @@ RSpec.describe Registrations::WelcomeController do
 
           context 'when setup_for_company is "true"' do
             let(:setup_for_company) { 'true' }
+            let(:expected_params) do
+              {
+                registration_objective: 'code_storage',
+                role: 'software_developer',
+                other_role: '_other_role_',
+                jobs_to_be_done_other: '_jobs_to_be_done_other_'
+              }
+            end
 
-            it { is_expected.to redirect_to new_users_sign_up_company_path }
+            it { is_expected.to redirect_to new_users_sign_up_company_path(expected_params) }
           end
 
           context 'when setup_for_company is "false"' do

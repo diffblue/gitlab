@@ -3,16 +3,20 @@ module GitlabSubscriptions
   class CreateTrialOrLeadService
     def initialize(user:, params:)
       @params = params.merge(hardcoded_values).merge(user_values(user))
+      @generate_trial = Gitlab::Utils.to_boolean(params[:trial])
     end
 
     def execute
-      generate_response
-      result
+      response = submit_client_request(@params, generate_trial: @generate_trial)
+
+      if response[:success]
+        ServiceResponse.success
+      else
+        ServiceResponse.error(message: response.dig(:data, :errors), http_status: :unprocessable_entity)
+      end
     end
 
     private
-
-    attr_reader :response, :params
 
     def hardcoded_values
       {
@@ -33,24 +37,12 @@ module GitlabSubscriptions
       }
     end
 
-    def result
-      if response[:success]
-        ServiceResponse.success
+    def submit_client_request(params, generate_trial: false)
+      if generate_trial
+        client.generate_trial(trial_user: params)
       else
-        ServiceResponse.error(message: response.dig(:data, :errors), http_status: :unprocessable_entity)
+        client.generate_hand_raise_lead(params)
       end
-    end
-
-    def generate_response
-      @response = if trial?
-                    client.generate_trial(trial_user: params)
-                  else
-                    client.generate_hand_raise_lead(params)
-                  end
-    end
-
-    def trial?
-      Gitlab::Utils.to_boolean(params[:trial])
     end
 
     def client

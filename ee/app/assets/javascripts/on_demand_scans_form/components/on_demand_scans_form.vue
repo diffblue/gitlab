@@ -27,6 +27,7 @@ import LocalStorageSync from '~/vue_shared/components/local_storage_sync.vue';
 import validation from '~/vue_shared/directives/validation';
 import { HELP_PAGE_PATH, DAST_CONFIGURATION_HELP_PATH } from 'ee/on_demand_scans/constants';
 import SectionLayout from '~/vue_shared/security_configuration/components/section_layout.vue';
+import ConfigurationPageLayout from 'ee/security_configuration/components/configuration_page_layout.vue';
 import dastProfileCreateMutation from '../graphql/dast_profile_create.mutation.graphql';
 import dastProfileUpdateMutation from '../graphql/dast_profile_update.mutation.graphql';
 import {
@@ -126,6 +127,7 @@ export default {
     GlSprintf,
     LocalStorageSync,
     SectionLayout,
+    ConfigurationPageLayout,
   },
   directives: {
     SafeHtml: GlSafeHtmlDirective,
@@ -361,192 +363,192 @@ export default {
 </script>
 
 <template>
-  <gl-form novalidate @submit.prevent="onSubmit()">
-    <local-storage-sync
-      v-if="!isEdit"
-      :storage-key="storageKey"
-      :clear="clearStorage"
-      :value="formFieldValues"
-      @input="updateFromStorage"
-    />
-    <header class="gl-border-b gl-pb-6">
-      <div class="gl-mt-6 gl-display-flex">
-        <h1 class="gl-font-size-h1 gl-flex-grow-1 gl-my-0">{{ title }}</h1>
+  <configuration-page-layout>
+    <template #heading>
+      {{ title }}
+    </template>
+    <template #description>
+      <gl-sprintf :message="$options.i18n.newOnDemandScanHeaderDescription">
+        <template #learnMoreLink="{ content }">
+          <gl-link :href="$options.helpPagePath" data-testid="help-page-link">
+            {{ content }}
+          </gl-link>
+        </template>
+      </gl-sprintf>
+    </template>
+    <gl-form novalidate @submit.prevent="onSubmit()">
+      <local-storage-sync
+        v-if="!isEdit"
+        :storage-key="storageKey"
+        :clear="clearStorage"
+        :value="formFieldValues"
+        @input="updateFromStorage"
+      />
+
+      <gl-alert
+        v-if="showAlert"
+        variant="danger"
+        class="gl-mb-5"
+        data-testid="on-demand-scan-error"
+        :dismissible="!failedToLoadProfiles"
+        @dismiss="hideErrors"
+      >
+        {{ errorMessage }}
+        <ul v-if="errors.length" class="gl-mt-3 gl-mb-0">
+          <li v-for="error in errors" :key="error" v-safe-html="error"></li>
+        </ul>
+      </gl-alert>
+      <section-layout
+        v-if="!failedToLoadProfiles"
+        :heading="$options.i18n.scanConfigurationHeader"
+        :is-loading="isLoadingProfiles"
+      >
+        <template #description>
+          <p>{{ $options.i18n.scanConfigurationDescription }}</p>
+        </template>
+        <template #features>
+          <gl-form-group
+            class="gl-mb-6"
+            :label="$options.i18n.scanConfigurationNameLabel"
+            :invalid-feedback="form.fields.name.feedback"
+          >
+            <gl-form-input
+              v-model="form.fields.name.value"
+              v-validation:[form.showValidation]
+              data-testid="dast-scan-name-input"
+              type="text"
+              :placeholder="$options.i18n.scanConfigurationNamePlaceholder"
+              :state="form.fields.name.state"
+              name="name"
+              required
+            />
+          </gl-form-group>
+
+          <gl-form-group class="gl-mb-6" :label="$options.i18n.scanConfigurationDescriptionLabel">
+            <gl-form-textarea
+              v-model="form.fields.description.value"
+              data-testid="dast-scan-description-input"
+              :placeholder="$options.i18n.scanConfigurationDescriptionPlaceholder"
+              name="description"
+              :state="form.fields.description.state"
+            />
+          </gl-form-group>
+
+          <gl-form-group class="gl-mb-6" :label="$options.i18n.scanTypeHeader">
+            <span>{{ $options.i18n.scanTypeText }}</span>
+            <gl-icon
+              v-gl-tooltip="$options.i18n.scanTypeTooltip"
+              name="question-o"
+              class="gl-ml-2 gl-link gl-cursor-pointer"
+            />
+          </gl-form-group>
+
+          <gl-form-group class="gl-mb-3" :label="__('Branch')">
+            <small class="form-text text-gl-muted gl-mt-0 gl-mb-5">
+              {{ $options.i18n.branchSelectorHelpText }}
+            </small>
+            <ref-selector
+              v-model="selectedBranch"
+              data-testid="dast-scan-branch-input"
+              no-flip
+              :enabled-ref-types="$options.enabledRefTypes"
+              :project-id="projectPath"
+              :translations="{
+                dropdownHeader: __('Select a branch'),
+                searchPlaceholder: __('Search'),
+                noRefSelected: __('No available branches'),
+                noResults: __('No available branches'),
+              }"
+            />
+            <div v-if="!defaultBranch" class="gl-text-red-500 gl-mt-3">
+              {{ $options.i18n.scanConfigurationDefaultBranchLabel }}
+            </div>
+          </gl-form-group>
+        </template>
+      </section-layout>
+
+      <section-layout
+        v-if="!failedToLoadProfiles"
+        :heading="$options.i18n.dastConfigurationHeader"
+        :is-loading="isLoadingProfiles"
+      >
+        <template #description>
+          <gl-sprintf :message="$options.i18n.dastConfigurationDescription">
+            <template #link="{ content }">
+              <gl-link :href="$options.dastConfigurationHelpPath">{{ content }}</gl-link>
+            </template>
+          </gl-sprintf>
+        </template>
+        <template #features>
+          <scanner-profile-selector
+            v-model="selectedScannerProfileId"
+            class="gl-mb-6"
+            :profiles="scannerProfiles"
+            :selected-profile="selectedScannerProfile"
+            :has-conflict="hasProfilesConflict"
+            :dast-scan-id="dastScanId"
+          />
+
+          <site-profile-selector
+            v-model="selectedSiteProfileId"
+            class="gl-mb-3"
+            :profiles="siteProfiles"
+            :selected-profile="selectedSiteProfile"
+            :has-conflict="hasProfilesConflict"
+            :dast-scan-id="dastScanId"
+          />
+        </template>
+      </section-layout>
+
+      <section-layout
+        v-if="!failedToLoadProfiles"
+        :heading="$options.i18n.scanScheduleHeader"
+        :is-loading="isLoadingProfiles"
+      >
+        <template #description>
+          <p>{{ $options.i18n.scanScheduleDescription }}</p>
+        </template>
+        <template #features>
+          <scan-schedule v-model="profileSchedule" />
+
+          <profile-conflict-alert
+            v-if="hasProfilesConflict"
+            data-testid="on-demand-scans-profiles-conflict-alert"
+          />
+        </template>
+      </section-layout>
+
+      <div v-if="!failedToLoadProfiles">
+        <div class="gl-pt-6">
+          <gl-button
+            type="submit"
+            variant="confirm"
+            class="js-no-auto-disable"
+            data-testid="on-demand-scan-submit-button"
+            :disabled="isSubmitButtonDisabled"
+            :loading="loading === $options.saveAndRunScanBtnId"
+          >
+            {{ $options.i18n.saveAndRunScanButton }}
+          </gl-button>
+          <gl-button
+            variant="confirm"
+            category="secondary"
+            data-testid="on-demand-scan-save-button"
+            :disabled="isSaveButtonDisabled"
+            :loading="loading === $options.saveScanBtnId"
+            @click="onSubmit({ runAfter: false, button: $options.saveScanBtnId })"
+          >
+            {{ $options.i18n.saveScanButton }}
+          </gl-button>
+          <gl-button
+            data-testid="on-demand-scan-cancel-button"
+            :disabled="Boolean(loading)"
+            @click="onCancelClicked"
+          >
+            {{ $options.i18n.cancelButton }}
+          </gl-button>
+        </div>
       </div>
-      <p>
-        <gl-sprintf :message="$options.i18n.newOnDemandScanHeaderDescription">
-          <template #learnMoreLink="{ content }">
-            <gl-link :href="$options.helpPagePath" data-testid="help-page-link">
-              {{ content }}
-            </gl-link>
-          </template>
-        </gl-sprintf>
-      </p>
-    </header>
-
-    <gl-alert
-      v-if="showAlert"
-      variant="danger"
-      class="gl-mb-5"
-      data-testid="on-demand-scan-error"
-      :dismissible="!failedToLoadProfiles"
-      @dismiss="hideErrors"
-    >
-      {{ errorMessage }}
-      <ul v-if="errors.length" class="gl-mt-3 gl-mb-0">
-        <li v-for="error in errors" :key="error" v-safe-html="error"></li>
-      </ul>
-    </gl-alert>
-    <section-layout
-      v-if="!failedToLoadProfiles"
-      :heading="$options.i18n.scanConfigurationHeader"
-      :is-loading="isLoadingProfiles"
-    >
-      <template #description>
-        <p>{{ $options.i18n.scanConfigurationDescription }}</p>
-      </template>
-      <template #features>
-        <gl-form-group
-          class="gl-mb-6"
-          :label="$options.i18n.scanConfigurationNameLabel"
-          :invalid-feedback="form.fields.name.feedback"
-        >
-          <gl-form-input
-            v-model="form.fields.name.value"
-            v-validation:[form.showValidation]
-            data-testid="dast-scan-name-input"
-            type="text"
-            :placeholder="$options.i18n.scanConfigurationNamePlaceholder"
-            :state="form.fields.name.state"
-            name="name"
-            required
-          />
-        </gl-form-group>
-
-        <gl-form-group class="gl-mb-6" :label="$options.i18n.scanConfigurationDescriptionLabel">
-          <gl-form-textarea
-            v-model="form.fields.description.value"
-            data-testid="dast-scan-description-input"
-            :placeholder="$options.i18n.scanConfigurationDescriptionPlaceholder"
-            name="description"
-            :state="form.fields.description.state"
-          />
-        </gl-form-group>
-
-        <gl-form-group class="gl-mb-6" :label="$options.i18n.scanTypeHeader">
-          <span>{{ $options.i18n.scanTypeText }}</span>
-          <gl-icon
-            v-gl-tooltip="$options.i18n.scanTypeTooltip"
-            name="question-o"
-            class="gl-ml-2 gl-link gl-cursor-pointer"
-          />
-        </gl-form-group>
-
-        <gl-form-group class="gl-mb-3" :label="__('Branch')">
-          <small class="form-text text-gl-muted gl-mt-0 gl-mb-5">
-            {{ $options.i18n.branchSelectorHelpText }}
-          </small>
-          <ref-selector
-            v-model="selectedBranch"
-            data-testid="dast-scan-branch-input"
-            no-flip
-            :enabled-ref-types="$options.enabledRefTypes"
-            :project-id="projectPath"
-            :translations="{
-              dropdownHeader: __('Select a branch'),
-              searchPlaceholder: __('Search'),
-              noRefSelected: __('No available branches'),
-              noResults: __('No available branches'),
-            }"
-          />
-          <div v-if="!defaultBranch" class="gl-text-red-500 gl-mt-3">
-            {{ $options.i18n.scanConfigurationDefaultBranchLabel }}
-          </div>
-        </gl-form-group>
-      </template>
-    </section-layout>
-
-    <section-layout
-      v-if="!failedToLoadProfiles"
-      :heading="$options.i18n.dastConfigurationHeader"
-      :is-loading="isLoadingProfiles"
-    >
-      <template #description>
-        <gl-sprintf :message="$options.i18n.dastConfigurationDescription">
-          <template #link="{ content }">
-            <gl-link :href="$options.dastConfigurationHelpPath">{{ content }}</gl-link>
-          </template>
-        </gl-sprintf>
-      </template>
-      <template #features>
-        <scanner-profile-selector
-          v-model="selectedScannerProfileId"
-          class="gl-mb-6"
-          :profiles="scannerProfiles"
-          :selected-profile="selectedScannerProfile"
-          :has-conflict="hasProfilesConflict"
-          :dast-scan-id="dastScanId"
-        />
-
-        <site-profile-selector
-          v-model="selectedSiteProfileId"
-          class="gl-mb-3"
-          :profiles="siteProfiles"
-          :selected-profile="selectedSiteProfile"
-          :has-conflict="hasProfilesConflict"
-          :dast-scan-id="dastScanId"
-        />
-      </template>
-    </section-layout>
-
-    <section-layout
-      v-if="!failedToLoadProfiles"
-      :heading="$options.i18n.scanScheduleHeader"
-      :is-loading="isLoadingProfiles"
-    >
-      <template #description>
-        <p>{{ $options.i18n.scanScheduleDescription }}</p>
-      </template>
-      <template #features>
-        <scan-schedule v-model="profileSchedule" />
-
-        <profile-conflict-alert
-          v-if="hasProfilesConflict"
-          data-testid="on-demand-scans-profiles-conflict-alert"
-        />
-      </template>
-    </section-layout>
-
-    <div v-if="!failedToLoadProfiles">
-      <div class="gl-pt-6">
-        <gl-button
-          type="submit"
-          variant="confirm"
-          class="js-no-auto-disable"
-          data-testid="on-demand-scan-submit-button"
-          :disabled="isSubmitButtonDisabled"
-          :loading="loading === $options.saveAndRunScanBtnId"
-        >
-          {{ $options.i18n.saveAndRunScanButton }}
-        </gl-button>
-        <gl-button
-          variant="confirm"
-          category="secondary"
-          data-testid="on-demand-scan-save-button"
-          :disabled="isSaveButtonDisabled"
-          :loading="loading === $options.saveScanBtnId"
-          @click="onSubmit({ runAfter: false, button: $options.saveScanBtnId })"
-        >
-          {{ $options.i18n.saveScanButton }}
-        </gl-button>
-        <gl-button
-          data-testid="on-demand-scan-cancel-button"
-          :disabled="Boolean(loading)"
-          @click="onCancelClicked"
-        >
-          {{ $options.i18n.cancelButton }}
-        </gl-button>
-      </div>
-    </div>
-  </gl-form>
+    </gl-form>
+  </configuration-page-layout>
 </template>
