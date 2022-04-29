@@ -44,7 +44,7 @@ describe('GeoNodeReplicationStatus', () => {
 
       it('renders the question icon correctly', () => {
         expect(findQuestionIcon().exists()).toBe(true);
-        expect(findQuestionIcon().attributes('name')).toBe('question');
+        expect(findQuestionIcon().attributes('name')).toBe('question-o');
       });
 
       it('renders the GlPopover always', () => {

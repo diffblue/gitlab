@@ -1,14 +1,11 @@
-import { GlIcon, GlPopover, GlLink, GlButton, GlSprintf } from '@gitlab/ui';
+import { GlButton, GlSprintf } from '@gitlab/ui';
 import Vue from 'vue';
 import Vuex from 'vuex';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import GeoNodeReplicationDetails from 'ee/geo_nodes/components/details/secondary_node/geo_node_replication_details.vue';
 import GeoNodeReplicationDetailsResponsive from 'ee/geo_nodes/components/details/secondary_node/geo_node_replication_details_responsive.vue';
 import GeoNodeReplicationStatusMobile from 'ee/geo_nodes/components/details/secondary_node/geo_node_replication_status_mobile.vue';
-import {
-  GEO_REPLICATION_TYPES_URL,
-  GEO_REPLICATION_SUPPORTED_TYPES_URL,
-} from 'ee/geo_nodes/constants';
+import { GEO_REPLICATION_SUPPORTED_TYPES_URL } from 'ee/geo_nodes/constants';
 import { MOCK_NODES, MOCK_REPLICABLE_TYPES } from 'ee_jest/geo_nodes/mock_data';
 
 Vue.use(Vuex);
@@ -53,33 +50,10 @@ describe('GeoNodeReplicationDetails', () => {
     findGeoMobileReplicationDetails().findComponent(GeoNodeReplicationStatusMobile);
   const findGeoDesktopReplicationDetails = () =>
     wrapper.findByTestId('geo-replication-details-desktop');
-  const findGlIcon = () => wrapper.findComponent(GlIcon);
-  const findGlPopover = () => wrapper.findComponent(GlPopover);
-  const findGlPopoverLink = () => findGlPopover().findComponent(GlLink);
   const findCollapseButton = () => wrapper.findComponent(GlButton);
   const findNAVerificationHelpLink = () => wrapper.findByTestId('naVerificationHelpLink');
 
   describe('template', () => {
-    describe('always', () => {
-      beforeEach(() => {
-        createComponent();
-      });
-
-      it('renders the question icon correctly', () => {
-        expect(findGlIcon().exists()).toBe(true);
-        expect(findGlIcon().props('name')).toBe('question');
-      });
-
-      it('renders the GlPopover always', () => {
-        expect(findGlPopover().exists()).toBe(true);
-      });
-
-      it('renders the popover link correctly', () => {
-        expect(findGlPopoverLink().exists()).toBe(true);
-        expect(findGlPopoverLink().attributes('href')).toBe(GEO_REPLICATION_TYPES_URL);
-      });
-    });
-
     describe('when un-collapsed', () => {
       beforeEach(() => {
         createComponent();

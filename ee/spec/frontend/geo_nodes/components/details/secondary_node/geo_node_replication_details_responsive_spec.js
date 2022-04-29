@@ -1,8 +1,6 @@
-import { GlIcon, GlPopover, GlLink } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import GeoNodeProgressBar from 'ee/geo_nodes/components/details/geo_node_progress_bar.vue';
 import GeoNodeReplicationDetailsResponsive from 'ee/geo_nodes/components/details/secondary_node/geo_node_replication_details_responsive.vue';
-import { HELP_INFO_URL } from 'ee/geo_nodes/constants';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 
 describe('GeoNodeReplicationDetailsResponsive', () => {
@@ -31,9 +29,6 @@ describe('GeoNodeReplicationDetailsResponsive', () => {
     wrapper.destroy();
   });
 
-  const findGlIcon = () => wrapper.findComponent(GlIcon);
-  const findGlPopover = () => wrapper.findComponent(GlPopover);
-  const findGlPopoverLink = () => findGlPopover().findComponent(GlLink);
   const findReplicationDetailsHeader = () => wrapper.findByTestId('replication-details-header');
   const findReplicationDetailsItems = () => wrapper.findAllByTestId('replication-details-item');
   const findFirstReplicationDetailsItemSyncStatus = () =>
@@ -56,20 +51,6 @@ describe('GeoNodeReplicationDetailsResponsive', () => {
           expect(findReplicationDetailsHeader().text()).toContain(
             'Data type Component Synchronization status Verification status',
           );
-        });
-
-        it('renders the question icon correctly', () => {
-          expect(findGlIcon().exists()).toBe(true);
-          expect(findGlIcon().props('name')).toBe('question');
-        });
-
-        it('renders the GlPopover always', () => {
-          expect(findGlPopover().exists()).toBe(true);
-        });
-
-        it('renders the popover link correctly', () => {
-          expect(findGlPopoverLink().exists()).toBe(true);
-          expect(findGlPopoverLink().attributes('href')).toBe(HELP_INFO_URL);
         });
       });
 

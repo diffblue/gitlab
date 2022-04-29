@@ -1,10 +1,9 @@
-import { GlLink, GlButton, GlLoadingIcon, GlModal, GlSprintf } from '@gitlab/ui';
+import { GlButton, GlLoadingIcon, GlModal, GlSprintf } from '@gitlab/ui';
 import Vue from 'vue';
 import Vuex from 'vuex';
 import GeoNodesApp from 'ee/geo_nodes/components/app.vue';
 import GeoNodes from 'ee/geo_nodes/components/geo_nodes.vue';
 import GeoNodesEmptyState from 'ee/geo_nodes/components/geo_nodes_empty_state.vue';
-import { GEO_INFO_URL } from 'ee/geo_nodes/constants';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import {
   MOCK_NODES,
@@ -55,7 +54,6 @@ describe('GeoNodesApp', () => {
   });
 
   const findGeoNodesAppContainer = () => wrapper.find('section');
-  const findGeoLearnMoreLink = () => wrapper.findComponent(GlLink);
   const findGeoAddSiteButton = () => wrapper.findComponent(GlButton);
   const findGlLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const findGeoEmptyState = () => wrapper.findComponent(GeoNodesEmptyState);
@@ -74,11 +72,6 @@ describe('GeoNodesApp', () => {
 
       it('renders the Geo Nodes App Container', () => {
         expect(findGeoNodesAppContainer().exists()).toBe(true);
-      });
-
-      it('renders the Learn more link correctly', () => {
-        expect(findGeoLearnMoreLink().exists()).toBe(true);
-        expect(findGeoLearnMoreLink().attributes('href')).toBe(GEO_INFO_URL);
       });
 
       it('renders the GlModal', () => {
