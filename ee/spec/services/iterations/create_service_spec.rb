@@ -6,8 +6,8 @@ RSpec.describe Iterations::CreateService do
   shared_examples 'iterations create service' do
     let_it_be(:user) { create(:user) }
 
-    before do
-      parent.add_developer(user)
+    before_all do
+      parent.add_reporter(user)
     end
 
     context 'iterations feature enabled' do
@@ -60,7 +60,7 @@ RSpec.describe Iterations::CreateService do
 
         context 'no permissions' do
           before do
-            parent.add_reporter(user)
+            parent.add_guest(user)
           end
 
           it 'is not allowed' do
