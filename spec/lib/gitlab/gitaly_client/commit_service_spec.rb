@@ -493,6 +493,61 @@ RSpec.describe Gitlab::GitalyClient::CommitService do
     end
   end
 
+  describe '#object_existence_map' do
+    shared_examples 'a CheckObjectsExistRequest' do
+      before do
+        ::Gitlab::GitalyClient.clear_stubs!
+      end
+
+      it 'returns expected results' do
+        expect_next_instance_of(Gitaly::CommitService::Stub) do |service|
+          expect(service)
+            .to receive(:check_objects_exist)
+            .and_call_original
+        end
+
+        expect(client.object_existence_map(revisions.keys)).to eq(revisions)
+      end
+    end
+
+    context 'with empty request' do
+      let(:revisions) { {} }
+
+      it_behaves_like 'a CheckObjectsExistRequest'
+    end
+
+    context 'when revision exists' do
+      let(:revisions) { { 'refs/heads/master' => true } }
+
+      it_behaves_like 'a CheckObjectsExistRequest'
+    end
+
+    context 'when revision does not exist' do
+      let(:revisions) { { 'refs/does/not/exist' => false } }
+
+      it_behaves_like 'a CheckObjectsExistRequest'
+    end
+
+    context 'when request contains mixed revisions' do
+      let(:revisions) do
+        {
+          "refs/heads/master" => true,
+          "refs/does/not/exist" => false
+        }
+      end
+
+      it_behaves_like 'a CheckObjectsExistRequest'
+    end
+
+    context 'when requesting many revisions' do
+      let(:revisions) do
+        Array(1..1234).to_h { |i| ["refs/heads/#{i}", false] }
+      end
+
+      it_behaves_like 'a CheckObjectsExistRequest'
+    end
+  end
+
   describe '#commits_by_message' do
     shared_examples 'a CommitsByMessageRequest' do
       let(:commits) { create_list(:gitaly_commit, 2) }

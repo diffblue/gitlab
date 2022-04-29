@@ -387,6 +387,35 @@ module Gitlab
         consume_commits_response(response)
       end
 
+      # Check whether the given revisions exist. Returns a hash mapping the revision name to either `true` if the
+      # revision exists, or `false` otherwise. This function accepts all revisions as specified by
+      # gitrevisions(1).
+      def object_existence_map(revisions, gitaly_repo: @gitaly_repo)
+        enum = Enumerator.new do |y|
+          # This is a bug in Gitaly: revisions of the initial request are ignored. This will be fixed in v15.0 via
+          # https://gitlab.com/gitlab-org/gitaly/-/merge_requests/4510, so we can merge initial request and the initial
+          # set of revisions starting with v15.1.
+          y.yield Gitaly::CheckObjectsExistRequest.new(repository: gitaly_repo)
+
+          revisions.each_slice(100) do |revisions_subset|
+            y.yield Gitaly::CheckObjectsExistRequest.new(revisions: revisions_subset)
+          end
+        end
+
+        response = GitalyClient.call(
+          @repository.storage, :commit_service, :check_objects_exist, enum, timeout: GitalyClient.medium_timeout
+        )
+
+        existence_by_revision = {}
+        response.each do |message|
+          message.revisions.each do |revision|
+            existence_by_revision[revision.name] = revision.exists
+          end
+        end
+
+        existence_by_revision
+      end
+
       def filter_shas_with_signatures(shas)
         request = Gitaly::FilterShasWithSignaturesRequest.new(repository: @gitaly_repo)
 
