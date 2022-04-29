@@ -48,12 +48,11 @@ describe('PoliciesList component', () => {
         {
           propsData: {
             documentationPath: 'documentation_path',
-            newPolicyPath: '/policies/new',
           },
           provide: {
             documentationPath: 'path/to/docs',
             namespaceType: NAMESPACE_TYPES.PROJECT,
-            newPolicyPath: 'path/to/policy',
+            newPolicyPath: `${projectFullPath}/-/security/policies/new`,
             groupPath: undefined,
             projectPath: projectFullPath,
           },
@@ -219,8 +218,8 @@ describe('PoliciesList component', () => {
 
   describe.each`
     description         | policy                                  | policyType         | editPolicyPath
-    ${'scan execution'} | ${mockScanExecutionPoliciesResponse[0]} | ${'scanExecution'} | ${'path/to/policy?type=scan_execution_policy'}
-    ${'scan result'}    | ${mockScanResultPoliciesResponse[0]}    | ${'scanResult'}    | ${'path/to/policy?type=scan_result_policy'}
+    ${'scan execution'} | ${mockScanExecutionPoliciesResponse[0]} | ${'scanExecution'} | ${`${projectFullPath}/-/security/policies/${encodeURIComponent(mockScanExecutionPoliciesResponse[0].name)}/edit?type=scan_execution_policy`}
+    ${'scan result'}    | ${mockScanResultPoliciesResponse[0]}    | ${'scanResult'}    | ${`${projectFullPath}/-/security/policies/${encodeURIComponent(mockScanResultPoliciesResponse[0].name)}/edit?type=scan_result_policy`}
   `('given there is a $description policy selected', ({ policy, policyType, editPolicyPath }) => {
     beforeEach(() => {
       mountShallowWrapper();

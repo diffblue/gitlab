@@ -144,7 +144,7 @@ export default {
 </script>
 <template>
   <section>
-    <div v-if="shouldShowTable">
+    <div v-if="shouldShowTable" class="gl-mt-6">
       <gl-table
         :aria-label="tableLabel"
         :busy="isLoadingInitialProfiles"
