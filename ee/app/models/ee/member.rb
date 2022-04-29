@@ -12,7 +12,7 @@ module EE
         end
 
         event :activate do
-          transition awaiting: :active
+          transition awaiting: :active, if: :has_capacity_left?
         end
 
         state :awaiting, value: ::Member::STATE_AWAITING
@@ -153,10 +153,18 @@ module EE
     end
 
     def set_membership_activation
-      return unless source.root_ancestor.apply_user_cap? # this guard is likely cheaper than doing the Member query all the time
-      return if user && ::Member.in_hierarchy(source).with_user(user).with_state(:active).any?
+      self.state = ::Member::STATE_AWAITING unless has_capacity_left?
+    end
 
-      self.state = ::Member::STATE_AWAITING if source.root_ancestor.user_limit_reached?
+    def has_capacity_left?
+      return true unless source.root_ancestor.apply_user_cap?
+      return true if any_existing_active_membership?
+
+      !source.root_ancestor.user_limit_reached?
+    end
+
+    def any_existing_active_membership?
+      user && ::Member.in_hierarchy(source).with_user(user).with_state(:active).any?
     end
   end
 end
