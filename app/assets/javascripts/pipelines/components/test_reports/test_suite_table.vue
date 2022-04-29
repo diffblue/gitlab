@@ -80,7 +80,7 @@ export default {
       <div
         v-for="(testCase, index) in getSuiteTests"
         :key="index"
-        class="gl-responsive-table-row rounded align-items-md-start mt-xs-3"
+        class="gl-responsive-table-row rounded align-items-md-start"
         data-testid="test-case-row"
       >
         <div class="table-section section-20 section-wrap">

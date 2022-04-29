@@ -55,7 +55,7 @@ describe('Mutations TestReports Store', () => {
         response: { data: { errors: message } },
       });
 
-      expect(mockState.errorMessage).toEqual(message);
+      expect(mockState.errorMessage).toBe(message);
     });
 
     it('should show a flash message otherwise', () => {
