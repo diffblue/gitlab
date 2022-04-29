@@ -14,8 +14,9 @@ RSpec.describe 'Project navbar' do
   before do
     sign_in(user)
 
+    stub_config(registry: { enabled: false })
     stub_feature_flags(harbor_registry_integration: false)
-    insert_package_nav(_('Infrastructure'))
+    insert_package_nav(_('Deployments'))
     insert_infrastructure_registry_nav
     insert_infrastructure_google_cloud_nav
   end
@@ -71,7 +72,7 @@ RSpec.describe 'Project navbar' do
         insert_container_nav
 
         insert_after_sub_nav_item(
-          _('Monitor'),
+          _('CI/CD'),
           within: _('Settings'),
           new_sub_nav_item_name: _('Packages & Registries')
         )
