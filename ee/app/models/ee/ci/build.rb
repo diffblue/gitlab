@@ -99,8 +99,8 @@ module EE
         job_artifacts.security_reports.any?
       end
 
-      def collect_security_reports!(security_reports)
-        each_report(::Ci::JobArtifact::SECURITY_REPORT_FILE_TYPES) do |file_type, blob, report_artifact|
+      def collect_security_reports!(security_reports, report_types: ::Ci::JobArtifact::SECURITY_REPORT_FILE_TYPES)
+        each_report(report_types) do |file_type, blob, report_artifact|
           security_reports.get_report(file_type, report_artifact).tap do |security_report|
             next unless project.feature_available?(LICENSED_PARSER_FEATURES.fetch(file_type))
 
