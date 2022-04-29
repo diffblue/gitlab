@@ -3,4 +3,4 @@
 
 require_relative '../lib/tooling/find_codeowners'
 
-Tooling::FindCodeowners.run
+Tooling::FindCodeowners.new.execute

@@ -3,17 +3,13 @@
 require 'yaml'
 
 module Tooling
-  module FindCodeowners
-    module_function
-
-    def run
-      ls_files = git_ls_files
-
+  class FindCodeowners
+    def execute
       load_definitions.each do |section, group_defintions|
         puts section
 
         group_defintions.each do |group, allow:, deny:|
-          matched_files = ls_files.each_line.select do |line|
+          matched_files = git_ls_files.each_line.select do |line|
             allow.find do |pattern|
               path = "/#{line.chomp}"
 
@@ -25,6 +21,11 @@ module Tooling
           consolidated = consolidate_paths(matched_files)
           consolidated_again = consolidate_paths(consolidated)
 
+          # Consider the directory structure is a tree structure:
+          # https://en.wikipedia.org/wiki/Tree_(data_structure)
+          # After we consolidated the leaf entries, it could be possible that
+          # we can consolidate further for the new leaves. Repeat this
+          # process until we see no improvements.
           while consolidated_again.size < consolidated.size
             consolidated = consolidated_again
             consolidated_again = consolidate_paths(consolidated)
@@ -36,6 +37,8 @@ module Tooling
         end
       end
     end
+
+    private
 
     def load_definitions
       result = load_config
@@ -89,12 +92,12 @@ module Tooling
       end.sort
     end
 
-    def git_ls_files
-      `git ls-files`
-    end
-
     def find_dir_maxdepth_1(dir)
       `find #{dir} -maxdepth 1`
+    end
+
+    def git_ls_files
+      @git_ls_files ||= `git ls-files`
     end
   end
 end

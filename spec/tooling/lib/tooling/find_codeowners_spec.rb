@@ -3,9 +3,11 @@
 require_relative '../../../../tooling/lib/tooling/find_codeowners'
 
 RSpec.describe Tooling::FindCodeowners do
-  describe '#run' do
+  describe '#execute' do
+    let(:subject) { described_class.new }
+
     before do
-      allow(described_class).to receive(:git_ls_files).and_return(<<~LINES)
+      allow(subject).to receive(:git_ls_files).and_return(<<~LINES)
         dir/0/0/0
         dir/0/0/2
         dir/0/1
@@ -19,11 +21,11 @@ RSpec.describe Tooling::FindCodeowners do
         'dir' => "dir\ndir/0/0/0\ndir/0/0/2\ndir/0/1\ndir/1\ndir/2\n"
       }
 
-      allow(described_class).to receive(:find_dir_maxdepth_1) do |dir|
+      allow(subject).to receive(:find_dir_maxdepth_1) do |dir|
         find_results[dir]
       end
 
-      allow(described_class).to receive(:load_config).and_return(
+      allow(subject).to receive(:load_config).and_return(
         '[Section name]': {
           '@group': {
             allow: {
@@ -40,7 +42,7 @@ RSpec.describe Tooling::FindCodeowners do
     end
 
     it 'prints CODEOWNERS as configured' do
-      expect { described_class.run }.to output(<<~CODEOWNERS).to_stdout
+      expect { subject.execute }.to output(<<~CODEOWNERS).to_stdout
         [Section name]
         /dir/0/0 @group
         /dir/2 @group
@@ -50,7 +52,7 @@ RSpec.describe Tooling::FindCodeowners do
 
   describe '#load_definitions' do
     it 'expands the allow and deny list with keywords and patterns' do
-      described_class.load_definitions.each do |section, group_defintions|
+      described_class.new.__send__(:load_definitions).each do |section, group_defintions|
         group_defintions.each do |group, definitions|
           expect(definitions[:allow]).to be_an(Array)
           expect(definitions[:deny]).to be_an(Array)
@@ -59,7 +61,7 @@ RSpec.describe Tooling::FindCodeowners do
     end
 
     it 'expands the auth group' do
-      auth = described_class.load_definitions.dig(
+      auth = described_class.new.__send__(:load_definitions).dig(
         :'[Authentication and Authorization]',
         :'@gitlab-org/manage/authentication-and-authorization')
 
@@ -94,7 +96,7 @@ RSpec.describe Tooling::FindCodeowners do
 
   describe '#load_config' do
     it 'loads the config with symbolized keys' do
-      config = described_class.load_config
+      config = described_class.new.__send__(:load_config)
 
       expect_hash_keys_to_be_symbols(config)
     end
@@ -120,13 +122,15 @@ RSpec.describe Tooling::FindCodeowners do
 
       expect(File).to receive(:fnmatch?).with(pattern, path, expected_flags)
 
-      described_class.path_matches?(pattern, path)
+      described_class.new.__send__(:path_matches?, pattern, path)
     end
   end
 
   describe '#consolidate_paths' do
+    let(:subject) { described_class.new }
+
     before do
-      allow(described_class).to receive(:find_dir_maxdepth_1).and_return(<<~LINES)
+      allow(subject).to receive(:find_dir_maxdepth_1).and_return(<<~LINES)
         dir
         dir/0
         dir/2
@@ -139,7 +143,7 @@ RSpec.describe Tooling::FindCodeowners do
       let(:input_paths) { %W[dir/0\n dir/1\n dir/2\n dir/3\n] }
 
       it 'consolidates into the directory' do
-        paths = described_class.consolidate_paths(input_paths)
+        paths = subject.__send__(:consolidate_paths, input_paths)
 
         expect(paths).to eq(["dir\n"])
       end
@@ -149,7 +153,7 @@ RSpec.describe Tooling::FindCodeowners do
       let(:input_paths) { %W[dir/0\n dir/1\n dir/2\n] }
 
       it 'returns the original paths' do
-        paths = described_class.consolidate_paths(input_paths)
+        paths = subject.__send__(:consolidate_paths, input_paths)
 
         expect(paths).to eq(input_paths)
       end
