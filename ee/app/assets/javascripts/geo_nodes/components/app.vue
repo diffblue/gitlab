@@ -1,8 +1,8 @@
 <script>
-import { GlLink, GlButton, GlLoadingIcon, GlModal, GlSprintf } from '@gitlab/ui';
+import { GlButton, GlLoadingIcon, GlModal } from '@gitlab/ui';
 import { mapActions, mapState, mapGetters } from 'vuex';
 import { s__, __ } from '~/locale';
-import { GEO_INFO_URL, REMOVE_NODE_MODAL_ID } from '../constants';
+import { REMOVE_NODE_MODAL_ID } from '../constants';
 import GeoNodesFilters from './geo_nodes_filters.vue';
 import GeoNodes from './geo_nodes.vue';
 import GeoNodesEmptyState from './geo_nodes_empty_state.vue';
@@ -12,7 +12,7 @@ export default {
   i18n: {
     geoSites: s__('Geo|Geo sites'),
     helpText: s__(
-      'Geo|With GitLab Geo, you can install a special read-only and replicated instance anywhere. %{linkStart}Learn more%{linkEnd}',
+      'Geo|With GitLab Geo, you can install a special read-only and replicated instance anywhere.',
     ),
     addSite: s__('Geo|Add site'),
     modalTitle: s__('Geo|Remove site'),
@@ -29,14 +29,12 @@ export default {
     noResultsDescription: s__('Geo|Edit your search and try again.'),
   },
   components: {
-    GlLink,
     GlButton,
     GlLoadingIcon,
     GeoNodesFilters,
     GeoNodes,
     GeoNodesEmptyState,
     GlModal,
-    GlSprintf,
   },
   props: {
     newNodeUrl: {
@@ -86,7 +84,6 @@ export default {
   methods: {
     ...mapActions(['fetchNodes', 'cancelNodeRemoval', 'removeNode']),
   },
-  GEO_INFO_URL,
   MODAL_PRIMARY_ACTION: {
     text: s__('Geo|Remove site'),
     attributes: {
@@ -106,15 +103,7 @@ export default {
     <div
       class="gl-display-flex gl-flex-direction-column gl-md-flex-direction-row gl-md-align-items-center gl-pb-5 gl-border-b-1 gl-border-b-solid gl-border-b-gray-100"
     >
-      <div class="gl-mr-5">
-        <gl-sprintf :message="$options.i18n.helpText">
-          <template #link="{ content }">
-            <gl-link :href="$options.GEO_INFO_URL" target="_blank">
-              {{ content }}
-            </gl-link>
-          </template>
-        </gl-sprintf>
-      </div>
+      <p class="gl-mr-5 gl-mb-0">{{ $options.i18n.helpText }}</p>
       <gl-button
         v-if="hasNodes"
         class="gl-w-full gl-md-w-auto gl-ml-auto gl-mr-5 gl-mt-5 gl-md-mt-0"

@@ -1,7 +1,7 @@
 <script>
 import { GlEmptyState } from '@gitlab/ui';
 import { s__ } from '~/locale';
-import { GEO_FEATURE_URL } from '../constants';
+import { GEO_INFO_URL } from '../constants';
 
 export default {
   name: 'GeoNodesEmptyState',
@@ -34,7 +34,7 @@ export default {
   },
   computed: {
     primaryButtonLink() {
-      return this.showLearnMoreButton ? GEO_FEATURE_URL : '';
+      return this.showLearnMoreButton ? GEO_INFO_URL : '';
     },
     primaryButtonText() {
       return this.showLearnMoreButton ? this.$options.i18n.learnMoreButtonText : '';

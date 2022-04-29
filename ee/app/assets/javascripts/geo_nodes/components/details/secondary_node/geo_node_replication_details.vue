@@ -1,11 +1,8 @@
 <script>
-import { GlIcon, GlPopover, GlLink, GlButton, GlSprintf } from '@gitlab/ui';
+import { GlLink, GlButton, GlSprintf } from '@gitlab/ui';
 import { mapGetters, mapState } from 'vuex';
-import {
-  GEO_REPLICATION_TYPES_URL,
-  GEO_REPLICATION_SUPPORTED_TYPES_URL,
-} from 'ee/geo_nodes/constants';
-import { s__, __ } from '~/locale';
+import { GEO_REPLICATION_SUPPORTED_TYPES_URL } from 'ee/geo_nodes/constants';
+import { s__ } from '~/locale';
 import GeoNodeReplicationDetailsResponsive from './geo_node_replication_details_responsive.vue';
 import GeoNodeReplicationStatusMobile from './geo_node_replication_status_mobile.vue';
 
@@ -13,15 +10,11 @@ export default {
   name: 'GeoNodeReplicationDetails',
   i18n: {
     replicationDetails: s__('Geo|Replication Details'),
-    popoverText: s__('Geo|Geo supports replication of many data types.'),
-    learnMore: __('Learn more'),
     naVerificationHelpText: s__(
       'Geo|%{boldStart}N/A%{boldEnd}: Geo does not verify this component yet. See the %{linkStart}data types we plan to support%{linkEnd}.',
     ),
   },
   components: {
-    GlIcon,
-    GlPopover,
     GlLink,
     GlButton,
     GlSprintf,
@@ -73,16 +66,13 @@ export default {
       this.collapsed = !this.collapsed;
     },
   },
-  GEO_REPLICATION_TYPES_URL,
   GEO_REPLICATION_SUPPORTED_TYPES_URL,
 };
 </script>
 
 <template>
   <div>
-    <div
-      class="gl-display-flex gl-align-items-center gl-cursor-pointer gl-py-5 gl-border-b-1 gl-border-b-solid gl-border-b-gray-100 gl-border-t-1 gl-border-t-solid gl-border-t-gray-100"
-    >
+    <div class="gl-py-5 gl-border-b gl-border-t">
       <gl-button
         class="gl-mr-1 gl-p-0!"
         category="tertiary"
@@ -92,23 +82,6 @@ export default {
       >
         {{ $options.i18n.replicationDetails }}
       </gl-button>
-      <gl-icon
-        ref="replicationDetails"
-        name="question"
-        class="gl-text-blue-500 gl-cursor-pointer gl-ml-2"
-      />
-      <gl-popover
-        :target="() => $refs.replicationDetails.$el"
-        placement="top"
-        triggers="hover focus"
-      >
-        <p class="gl-font-base">
-          {{ $options.i18n.popoverText }}
-        </p>
-        <gl-link :href="$options.GEO_REPLICATION_TYPES_URL" target="_blank">{{
-          $options.i18n.learnMore
-        }}</gl-link>
-      </gl-popover>
     </div>
     <div v-if="!collapsed">
       <geo-node-replication-details-responsive

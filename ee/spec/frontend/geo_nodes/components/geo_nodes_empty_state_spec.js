@@ -1,7 +1,7 @@
 import { GlEmptyState } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import GeoNodesEmptyState from 'ee/geo_nodes/components/geo_nodes_empty_state.vue';
-import { GEO_FEATURE_URL } from 'ee/geo_nodes/constants';
+import { GEO_INFO_URL } from 'ee/geo_nodes/constants';
 import { MOCK_EMPTY_STATE_SVG } from '../mock_data';
 
 describe('GeoNodesEmptyState', () => {
@@ -59,7 +59,7 @@ describe('GeoNodesEmptyState', () => {
         expect(findGeoEmptyState().props('primaryButtonText')).toBe(
           GeoNodesEmptyState.i18n.learnMoreButtonText,
         );
-        expect(findGeoEmptyState().props('primaryButtonLink')).toBe(GEO_FEATURE_URL);
+        expect(findGeoEmptyState().props('primaryButtonLink')).toBe(GEO_INFO_URL);
       });
     });
 

@@ -59,7 +59,7 @@ describe('GeoNodeVerificationInfo', () => {
 
       it('renders the question icon correctly', () => {
         expect(findGlIcon().exists()).toBe(true);
-        expect(findGlIcon().props('name')).toBe('question');
+        expect(findGlIcon().props('name')).toBe('question-o');
       });
 
       it('renders the GlPopover always', () => {
