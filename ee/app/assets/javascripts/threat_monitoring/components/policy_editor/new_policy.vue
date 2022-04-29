@@ -81,9 +81,6 @@ export default {
   },
   i18n: {
     titles: {
-      [POLICY_TYPE_COMPONENT_OPTIONS.container.value]: s__(
-        'SecurityOrchestration|New network policy',
-      ),
       [POLICY_TYPE_COMPONENT_OPTIONS.scanResult.value]: s__(
         'SecurityOrchestration|New scan result policy',
       ),
@@ -93,9 +90,6 @@ export default {
       default: s__('SecurityOrchestration|New policy'),
     },
     editTitles: {
-      [POLICY_TYPE_COMPONENT_OPTIONS.container.value]: s__(
-        'SecurityOrchestration|Edit network policy',
-      ),
       [POLICY_TYPE_COMPONENT_OPTIONS.scanResult.value]: s__(
         'SecurityOrchestration|Edit scan result policy',
       ),

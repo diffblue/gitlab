@@ -23,7 +23,7 @@ const createPolicyFetchError = ({ gqlError, networkError }) => {
   const error =
     gqlError?.message ||
     networkError?.message ||
-    s__('NetworkPolicies|Something went wrong, unable to fetch policies');
+    s__('SecurityOrchestration|Something went wrong, unable to fetch policies');
   createFlash({
     message: error,
   });

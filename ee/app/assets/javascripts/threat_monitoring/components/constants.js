@@ -23,18 +23,6 @@ export const COLORS = {
 export { dateFormats as DATE_FORMATS } from '~/analytics/shared/constants';
 
 export const POLICY_TYPE_COMPONENT_OPTIONS = {
-  container: {
-    component: 'network-policy-editor',
-    kind: {
-      cilium: 'CiliumNetworkPolicy',
-      network: 'NetworkPolicy',
-    },
-    shouldShowEnvironmentPicker: true,
-    text: s__('SecurityOrchestration|Network'),
-    typeName: 'NetworkPolicy',
-    urlParameter: 'container_policy',
-    value: 'container',
-  },
   scanExecution: {
     component: 'scan-execution-policy-editor',
     text: s__('SecurityOrchestration|Scan Execution'),

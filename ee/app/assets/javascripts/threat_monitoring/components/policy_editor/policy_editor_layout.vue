@@ -97,7 +97,9 @@ export default {
   },
   computed: {
     deleteModalTitle() {
-      return sprintf(s__('NetworkPolicies|Delete policy: %{policy}'), { policy: this.policyName });
+      return sprintf(s__('SecurityOrchestration|Delete policy: %{policy}'), {
+        policy: this.policyName,
+      });
     },
     saveTooltipText() {
       return this.customSaveTooltipText || this.saveButtonText;
@@ -106,8 +108,8 @@ export default {
       return (
         this.customSaveButtonText ||
         (this.isEditing
-          ? s__('NetworkPolicies|Save changes')
-          : s__('NetworkPolicies|Create policy'))
+          ? s__('SecurityOrchestration|Save changes')
+          : s__('SecurityOrchestration|Create policy'))
       );
     },
     shouldShowRuleEditor() {
@@ -201,7 +203,7 @@ export default {
         variant="danger"
         data-testid="delete-policy"
         :loading="isRemovingPolicy"
-        >{{ s__('NetworkPolicies|Delete policy') }}</gl-button
+        >{{ s__('SecurityOrchestration|Delete policy') }}</gl-button
       >
       <gl-button class="gl-mt-5 gl-lg-mt-0" category="secondary" :href="policiesPath">
         {{ __('Cancel') }}
@@ -220,7 +222,7 @@ export default {
     >
       {{
         s__(
-          'NetworkPolicies|Are you sure you want to delete this policy? This action cannot be undone.',
+          'SecurityOrchestration|Are you sure you want to delete this policy? This action cannot be undone.',
         )
       }}
     </gl-modal>

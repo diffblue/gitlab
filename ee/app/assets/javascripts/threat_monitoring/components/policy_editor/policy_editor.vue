@@ -49,9 +49,7 @@ export default {
       );
     },
     policyTypes() {
-      return Object.values(POLICY_TYPE_COMPONENT_OPTIONS).filter(
-        (type) => type.value !== POLICY_TYPE_COMPONENT_OPTIONS.container?.value,
-      );
+      return Object.values(POLICY_TYPE_COMPONENT_OPTIONS);
     },
     policyOptions() {
       return (
