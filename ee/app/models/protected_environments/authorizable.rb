@@ -9,6 +9,11 @@ module ProtectedEnvironments
       belongs_to :group
     end
 
+    GROUP_INHERITANCE_TYPE = {
+      DIRECT: 0,
+      ALL: 1
+    }.freeze
+
     ALLOWED_ACCESS_LEVELS = [
       Gitlab::Access::MAINTAINER,
       Gitlab::Access::DEVELOPER,
@@ -25,7 +30,12 @@ module ProtectedEnvironments
       return false unless user
       return true if user.admin? # rubocop: disable Cop/UserAdmin
       return user.id == user_id if user_type?
-      return group.users.exists?(user.id) if group_type?
+
+      if inherit_group_membership?
+        return group.member?(user) if group_type?
+      else
+        return group.users.exists?(user.id) if group_type?
+      end
 
       protected_environment.container_access_level(user) >= access_level
     end
@@ -50,6 +60,10 @@ module ProtectedEnvironments
 
     def role?
       type == :role
+    end
+
+    def inherit_group_membership?
+      group_inheritance_type == GROUP_INHERITANCE_TYPE[:ALL]
     end
 
     def humanize
