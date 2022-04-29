@@ -9,21 +9,21 @@ export const DAST_SITE_VALIDATION_METHODS = {
     value: DAST_SITE_VALIDATION_METHOD_TEXT_FILE,
     text: s__('DastSiteValidation|Text file validation'),
     i18n: {
-      locationStepLabel: s__('DastSiteValidation|Step 3 - Confirm text file location and validate'),
+      locationStepLabel: s__('DastSiteValidation|Step 3 - Confirm text file location.'),
     },
   },
   [DAST_SITE_VALIDATION_METHOD_HTTP_HEADER]: {
     value: DAST_SITE_VALIDATION_METHOD_HTTP_HEADER,
     text: s__('DastSiteValidation|Header validation'),
     i18n: {
-      locationStepLabel: s__('DastSiteValidation|Step 3 - Confirm header location and validate'),
+      locationStepLabel: s__('DastSiteValidation|Step 3 - Confirm header location.'),
     },
   },
   [DAST_SITE_VALIDATION_METHOD_META_TAG]: {
     value: DAST_SITE_VALIDATION_METHOD_META_TAG,
     text: s__('DastSiteValidation|Meta tag validation'),
     i18n: {
-      locationStepLabel: s__('DastSiteValidation|Step 3 - Confirm meta tag location and validate'),
+      locationStepLabel: s__('DastSiteValidation|Step 3 - Confirm meta tag location.'),
     },
   },
 };

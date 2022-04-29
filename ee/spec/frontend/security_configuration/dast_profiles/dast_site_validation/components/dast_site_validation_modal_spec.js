@@ -162,7 +162,7 @@ describe('DastSiteValidationModal', () => {
 
       it('renders an input group with the target URL prepended', () => {
         const inputGroup = withinComponent().getByRole('group', {
-          name: 'Step 3 - Confirm text file location and validate',
+          name: 'Step 3 - Confirm text file location.',
         });
         expect(inputGroup).not.toBeNull();
         expect(inputGroup.textContent).toContain(targetUrl);
@@ -259,8 +259,8 @@ describe('DastSiteValidationModal', () => {
       });
 
       it.each([
-        /step 2 - add following http header to your site/i,
-        /step 3 - confirm header location and validate/i,
+        /step 2 - add the following http header to your site./i,
+        /step 3 - confirm header location./i,
       ])('shows the correct descriptions', (descriptionText) => {
         expect(withinComponent().getByText(descriptionText)).not.toBe(null);
       });
@@ -294,8 +294,8 @@ describe('DastSiteValidationModal', () => {
       });
 
       it.each([
-        /step 2 - add following meta tag to your site/i,
-        /step 3 - confirm meta tag location and validate/i,
+        /step 2 - add the following meta tag to your site./i,
+        /step 3 - confirm meta tag location./i,
       ])('shows the correct descriptions', (descriptionText) => {
         expect(withinComponent().getByText(descriptionText)).not.toBe(null);
       });

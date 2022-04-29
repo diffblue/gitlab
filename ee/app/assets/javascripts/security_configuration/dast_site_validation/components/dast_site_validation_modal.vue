@@ -73,7 +73,7 @@ export default {
     modalProps() {
       return {
         id: DAST_SITE_VALIDATION_MODAL_ID,
-        title: s__('DastSiteValidation|Validate target site'),
+        title: s__('DastSiteValidation|Validate site'),
         primaryProps: {
           text: s__('DastSiteValidation|Validate'),
           attributes: [
@@ -238,17 +238,21 @@ export default {
       <p>
         {{
           s__(
-            'DastSiteValidation|To run an active scan, validate your target site. All site profiles that share the same base URL share the same validation status.',
+            'DastSiteValidation|To run an active scan, validate your site. Site profile validation reduces the risk of running an active scan against the wrong website. All site profiles that share the same base URL share the same validation status.',
           )
         }}
         <gl-link :href="helpUrl" target="_blank">{{ __('Learn more.') }}</gl-link>
       </p>
-      <gl-form-group :label="s__('DastSiteValidation|Step 1 - Choose site validation method')">
+      <gl-form-group :label="s__('DastSiteValidation|Step 1 - Choose site validation method.')">
         <gl-form-radio-group v-model="validationMethod" :options="validationMethodOptions" />
       </gl-form-group>
       <gl-form-group
         v-if="isTextFileValidation"
-        :label="s__('DastSiteValidation|Step 2 - Add following text to the target site')"
+        :label="
+          s__(
+            'DastSiteValidation|Step 2 - Download the following text file, then upload it to the target site.',
+          )
+        "
       >
         <gl-button
           variant="confirm"
@@ -265,7 +269,7 @@ export default {
       </gl-form-group>
       <gl-form-group
         v-else-if="isHttpHeaderValidation"
-        :label="s__('DastSiteValidation|Step 2 - Add following HTTP header to your site')"
+        :label="s__('DastSiteValidation|Step 2 - Add the following HTTP header to your site.')"
       >
         <code class="gl-p-3 gl-bg-black gl-text-white">{{ httpHeader }}</code>
         <modal-copy-button
@@ -276,7 +280,7 @@ export default {
       </gl-form-group>
       <gl-form-group
         v-else-if="isMetaTagValidation"
-        :label="s__('DastSiteValidation|Step 2 - Add following meta tag to your site')"
+        :label="s__('DastSiteValidation|Step 2 - Add the following meta tag to your site.')"
       >
         <code class="gl-p-3 gl-bg-black gl-text-white">{{ metaTag }}</code>
         <modal-copy-button
