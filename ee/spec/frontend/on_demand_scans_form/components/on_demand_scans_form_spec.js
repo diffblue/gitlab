@@ -9,6 +9,7 @@ import OnDemandScansForm from 'ee/on_demand_scans_form/components/on_demand_scan
 import ScannerProfileSelector from 'ee/on_demand_scans_form/components/profile_selector/scanner_profile_selector.vue';
 import SiteProfileSelector from 'ee/on_demand_scans_form/components/profile_selector/site_profile_selector.vue';
 import ScanSchedule from 'ee/on_demand_scans_form/components/scan_schedule.vue';
+import ConfigurationPageLayout from 'ee/security_configuration/components/configuration_page_layout.vue';
 import SectionLayout from '~/vue_shared/security_configuration/components/section_layout.vue';
 import SectionLoader from '~/vue_shared/security_configuration/components/section_loader.vue';
 import dastProfileCreateMutation from 'ee/on_demand_scans_form/graphql/dast_profile_create.mutation.graphql';
@@ -181,6 +182,7 @@ describe('OnDemandScansForm', () => {
             ScanSchedule: true,
             SectionLayout,
             SectionLoader,
+            ConfigurationPageLayout,
           },
         },
         { ...options, localVue, apolloProvider },
