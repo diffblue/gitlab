@@ -4,6 +4,7 @@ class Projects::ProtectedEnvironmentsController < Projects::ApplicationControlle
   before_action :protected_environment, except: [:create, :search]
 
   feature_category :continuous_delivery
+  urgency :low
 
   def create
     protected_environment = ::ProtectedEnvironments::CreateService.new(container: @project, current_user: current_user, params: protected_environment_params).execute
