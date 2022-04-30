@@ -24,7 +24,10 @@ const TEST_USERS = [
   { id: 3, name: 'Sit', username: 'sit', avatar_url: TEST_USER_AVATAR },
 ];
 
-const waitForEvent = ($input, event) => new Promise((resolve) => $input.one(event, resolve));
+const waitForEvent = ($input, event) =>
+  new Promise((resolve) => {
+    $input.one(event, resolve);
+  });
 const parseAvatar = (element) =>
   element.classList.contains('identicon') ? null : element.getAttribute('src');
 const select2Container = () => document.querySelector('.select2-container');

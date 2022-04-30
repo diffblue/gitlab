@@ -31,7 +31,11 @@ describe('ViolationFilter component', () => {
   const defaultProjects = createDefaultProjects(2);
   const projectsResponse = createDefaultProjectsResponse(defaultProjects);
 
-  const groupProjectsLoading = jest.fn().mockReturnValue(new Promise((resolve) => resolve));
+  const groupProjectsLoading = jest.fn().mockReturnValue(
+    new Promise((resolve) => {
+      resolve();
+    }),
+  );
   const groupProjectsSuccess = jest.fn().mockResolvedValue(projectsResponse);
 
   const findProjectsFilter = () => wrapper.findComponent(ProjectsDropdownFilter);

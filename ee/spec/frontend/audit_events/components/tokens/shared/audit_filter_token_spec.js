@@ -19,7 +19,10 @@ describe('AuditFilterToken', () => {
     },
   ];
   const mockResponseFailed = { response: { status: httpStatusCodes.NOT_FOUND } };
-  const mockFetchLoading = () => new Promise((resolve) => resolve);
+  const mockFetchLoading = () =>
+    new Promise((resolve) => {
+      resolve();
+    });
 
   const findFilteredSearchSuggestions = () => wrapper.findAllByTestId('audit-filter-suggestion');
   const findFilteredSearchToken = () => wrapper.find('#filtered-search-token');
