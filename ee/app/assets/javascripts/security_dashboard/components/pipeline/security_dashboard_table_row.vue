@@ -75,7 +75,7 @@ export default {
     },
     extraIdentifierCount() {
       const { identifiers } = this.vulnerability;
-      return identifiers?.length - 1;
+      return identifiers.length - 1;
     },
     isSelected() {
       return Boolean(this.selectedVulnerabilities[this.vulnerability.id]);

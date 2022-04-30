@@ -64,22 +64,22 @@ export default {
     },
     testSuccessPercentage() {
       return formatStat(
-        this.projectQuality?.testReportSummary.total.success /
-          this.projectQuality?.testReportSummary.total.count,
+        this.projectQuality.testReportSummary.total.success /
+          this.projectQuality.testReportSummary.total.count,
         percent,
       );
     },
     testFailurePercentage() {
       return formatStat(
-        this.projectQuality?.testReportSummary.total.failed /
-          this.projectQuality?.testReportSummary.total.count,
+        this.projectQuality.testReportSummary.total.failed /
+          this.projectQuality.testReportSummary.total.count,
         percent,
       );
     },
     testSkippedPercentage() {
       return formatStat(
-        this.projectQuality?.testReportSummary.total.skipped /
-          this.projectQuality?.testReportSummary.total.count,
+        this.projectQuality.testReportSummary.total.skipped /
+          this.projectQuality.testReportSummary.total.count,
         percent,
       );
     },
