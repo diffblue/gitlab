@@ -8378,9 +8378,6 @@ msgstr ""
 msgid "ClusterAgent|You have insufficient permissions to delete this cluster agent"
 msgstr ""
 
-msgid "ClusterApplicationsRemoved|One-click application management was removed in GitLab 14.0. Your applications are still installed in your cluster, and integrations continue working."
-msgstr ""
-
 msgid "ClusterIntegration|%{linkStart}More information%{linkEnd}"
 msgstr ""
 
