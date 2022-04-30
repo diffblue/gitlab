@@ -409,6 +409,18 @@ class ProjectPresenter < Gitlab::View::Presenter::Delegated
     end
   end
 
+  def escaped_http_url_to_repo
+    strong_memoize(:escaped_http_url_to_repo) do
+      CGI.escape(project.http_url_to_repo)
+    end
+  end
+
+  def escaped_ssh_url_to_repo
+    strong_memoize(:escaped_ssh_url_to_repo) do
+      CGI.escape(project.ssh_url_to_repo)
+    end
+  end
+
   private
 
   def integrations_anchor_data
