@@ -44,6 +44,7 @@ export const IterationFilterType = {
 
 export const IterationIDs = {
   NONE: 'gid://gitlab/Iteration/0',
+  ANY: 'gid://gitlab/Iteration/-1',
   CURRENT: 'gid://gitlab/Iteration/-4',
 };
 

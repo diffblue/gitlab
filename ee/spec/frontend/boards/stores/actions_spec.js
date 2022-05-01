@@ -1245,7 +1245,7 @@ describe('fetchIterationCadences', () => {
         query: searchIterationCadencesQuery,
         variables: {
           fullPath: 'gitlab-org/gitlab',
-          id: 11,
+          id: 'gid://gitlab/Iterations::Cadence/11',
           isProject: false,
         },
       });

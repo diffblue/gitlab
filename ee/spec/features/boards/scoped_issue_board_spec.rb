@@ -324,6 +324,15 @@ RSpec.describe 'Scoped issue boards', :js do
             expect(page).not_to have_content(_('Iteration'))
           end
         end
+
+        it 'sets board to any iteration within cadence' do
+          update_board_iteration('Any')
+
+          expect(find('.gl-filtered-search-scrollable')).to have_content(cadence.title)
+          expect(find('.gl-filtered-search-scrollable')).to have_content('Any')
+
+          expect(all('.board')[1]).to have_selector('.board-card', count: 0)
+        end
       end
 
       context 'iteration - iteration_cadences FF off' do

@@ -12,6 +12,7 @@ import listsIssuesQuery from '~/boards/graphql/lists_issues.query.graphql';
 import projectBoardMembersQuery from '~/boards/graphql/project_board_members.query.graphql';
 import actionsCE from '~/boards/stores/actions';
 import * as typesCE from '~/boards/stores/mutation_types';
+import { TYPE_ITERATIONS_CADENCE } from '~/graphql_shared/constants';
 import { getIdFromGraphQLId, convertToGraphQLId } from '~/graphql_shared/utils';
 import { historyPushState, convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import { mergeUrlParams, removeParams, queryToObject } from '~/lib/utils/url_utility';
@@ -203,7 +204,11 @@ export default {
     let variables = { fullPath, title, isProject: boardType === BoardType.project };
 
     if (!Number.isNaN(id) && title !== '') {
-      variables = { fullPath, id, isProject: boardType === BoardType.project };
+      variables = {
+        fullPath,
+        id: convertToGraphQLId(TYPE_ITERATIONS_CADENCE, id),
+        isProject: boardType === BoardType.project,
+      };
     }
 
     return gqlClient
