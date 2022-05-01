@@ -1,22 +1,39 @@
 <script>
-import { GlButton } from '@gitlab/ui';
+import {
+  GlButton,
+  GlIcon,
+  GlDropdownDivider,
+  GlDropdownItem,
+  GlDropdownSectionHeader,
+} from '@gitlab/ui';
 import { isEmpty } from 'lodash';
 import { mapActions, mapGetters } from 'vuex';
 
 import searchIterationQuery from 'ee/issues/list/queries/search_iterations.query.graphql';
 import { getIterationPeriod } from 'ee/iterations/utils';
-import { n__, s__, __ } from '~/locale';
+import { n__, s__, __, sprintf } from '~/locale';
 import { TYPE_ITERATION } from '~/graphql_shared/constants';
 import { convertToGraphQLId, getIdFromGraphQLId } from '~/graphql_shared/utils';
 import DropdownWidget from '~/vue_shared/components/dropdown/dropdown_widget/dropdown_widget.vue';
+import TooltipOnTruncate from '~/vue_shared/components/tooltip_on_truncate/tooltip_on_truncate.vue';
 
-import { IterationsPreset, ANY_ITERATION } from '../constants';
+import {
+  IterationsPreset,
+  IterationFilterType,
+  ANY_ITERATION,
+  CURRENT_ITERATION,
+} from '../constants';
 
 export default {
   IterationsPreset,
   components: {
     GlButton,
+    GlIcon,
+    GlDropdownDivider,
+    GlDropdownItem,
+    GlDropdownSectionHeader,
     DropdownWidget,
+    TooltipOnTruncate,
   },
   inject: ['fullPath'],
   props: {
@@ -38,6 +55,8 @@ export default {
         ? {
             ...this.board.iteration,
             id: convertToGraphQLId(TYPE_ITERATION, getIdFromGraphQLId(this.board.iteration?.id)),
+            iterationCadenceId: this.board.iterationCadence?.id,
+            cadenceTitle: this.board.iterationCadence?.title,
           }
         : null,
       isEditing: false,
@@ -69,9 +88,15 @@ export default {
   computed: {
     ...mapGetters(['isProjectBoard']),
     anyIteration() {
-      return this.selected.id === ANY_ITERATION.id;
+      return this.selected.id === ANY_ITERATION.id && this.selected.iterationCadenceId === null;
     },
     iterationTitle() {
+      if (this.selected.cadenceTitle) {
+        return sprintf(s__('BoardScope|%{iterationTitle} iteration in %{iterationCadence}'), {
+          iterationTitle: this.selected.title,
+          iterationCadence: this.selected.cadenceTitle,
+        });
+      }
       return this.anyIteration ? ANY_ITERATION.title : this.selected.title;
     },
     iterationTitleClass() {
@@ -104,7 +129,23 @@ export default {
             id,
             title,
             secondaryText: durationText,
-            options: [cadenceIteration],
+            options: [
+              {
+                key: `${id}-${IterationFilterType.any}`,
+                id: ANY_ITERATION.id,
+                iterationCadenceId: id,
+                title: IterationFilterType.any,
+                cadenceTitle: title,
+              },
+              {
+                key: `${id}-${IterationFilterType.current}`,
+                id: CURRENT_ITERATION.id,
+                iterationCadenceId: id,
+                title: IterationFilterType.current,
+                cadenceTitle: title,
+              },
+              cadenceIteration,
+            ],
           });
         }
       });
@@ -123,7 +164,7 @@ export default {
       this.toggleEdit();
       this.$emit(
         'set-iteration',
-        iteration?.id !== ANY_ITERATION.id ? iteration : { id: null, iterationCadenceId: null },
+        !this.anyIteration ? iteration : { id: null, iterationCadenceId: null },
       );
     },
     toggleEdit() {
@@ -149,6 +190,12 @@ export default {
       return iteration.title
         ? `${iteration.title}: ${getIterationPeriod(iteration)}`
         : getIterationPeriod(iteration);
+    },
+    isSelected(option) {
+      const isIterationSelected = this.selected && option.id && this.selected.id === option.id;
+      return option.iterationCadenceId
+        ? isIterationSelected && this.selected.iterationCadenceId === option.iterationCadenceId
+        : isIterationSelected;
     },
   },
   i18n: {
@@ -187,13 +234,49 @@ export default {
       :select-text="$options.i18n.selectIteration"
       :search-text="$options.i18n.searchIterations"
       :preset-options="$options.IterationsPreset"
-      :grouped-options="iterationsByCadence"
       :is-loading="isLoading"
       :selected="selected"
       :search-term="search"
+      :custom-is-selected-option="isSelected"
       @hide="hideDropdown"
       @set-option="selectIteration"
       @set-search="setSearch"
-    />
+    >
+      <template #grouped-options>
+        <template v-for="(cadence, index) in iterationsByCadence">
+          <gl-dropdown-divider v-if="index !== 0" :key="index" />
+          <gl-dropdown-section-header :key="cadence.id">
+            <div class="gl-display-flex gl-max-w-full gl-justify-content-space-between">
+              <tooltip-on-truncate
+                :title="cadence.title"
+                class="gl-text-truncate gl-max-w-full gl-mr-3"
+              >
+                {{ cadence.title }}
+              </tooltip-on-truncate>
+              <span
+                v-if="cadence.secondaryText"
+                class="gl-float-right gl-font-weight-normal gl-flex-shrink-0"
+              >
+                <gl-icon name="clock" class="gl-mr-2" />
+                {{ cadence.secondaryText }}
+              </span>
+            </div>
+          </gl-dropdown-section-header>
+          <gl-dropdown-item
+            v-for="iteration in cadence.options"
+            :key="iteration.key"
+            :is-checked="isSelected(iteration)"
+            is-check-centered
+            is-check-item
+            data-testid="unselected-option"
+            @click="selectIteration(iteration)"
+          >
+            <slot name="item" :item="iteration">
+              {{ iteration.title }}
+            </slot>
+          </gl-dropdown-item>
+        </template>
+      </template>
+    </dropdown-widget>
   </div>
 </template>

@@ -13,14 +13,29 @@ import { boardObj } from 'jest/boards/mock_data';
 
 import defaultStore from '~/boards/stores';
 import searchIterationQuery from 'ee/issues/list/queries/search_iterations.query.graphql';
+import { ANY_ITERATION, CURRENT_ITERATION, IterationFilterType } from 'ee/boards/constants';
 import DropdownWidget from '~/vue_shared/components/dropdown/dropdown_widget/dropdown_widget.vue';
-import { mockIterationsResponse, mockIterations } from './mock_data';
+import { mockIterationsResponse, mockIterations, mockIterationCadence } from './mock_data';
 
 Vue.use(VueApollo);
 
 describe('Iteration select component', () => {
   let wrapper;
   let fakeApollo;
+
+  const mockAnyIterationInCadence = {
+    id: ANY_ITERATION.id,
+    title: IterationFilterType.any,
+    iterationCadenceId: mockIterationCadence.id,
+    cadenceTitle: mockIterationCadence.title,
+  };
+
+  const mockCurrentIterationInCadence = {
+    id: CURRENT_ITERATION.id,
+    title: IterationFilterType.current,
+    iterationCadenceId: mockIterationCadence.id,
+    cadenceTitle: mockIterationCadence.title,
+  };
 
   const selectedText = () => wrapper.findByTestId('selected-iteration').text();
   const findEditButton = () => wrapper.findComponent(GlButton);
@@ -97,6 +112,24 @@ describe('Iteration select component', () => {
     it('shows Edit button if canEdit is true', () => {
       expect(findEditButton().exists()).toBe(true);
     });
+
+    it('renders cadence when Any in cadence is selected', async () => {
+      findEditButton().vm.$emit('click');
+
+      findDropdown().vm.$emit('set-option', mockAnyIterationInCadence);
+      await nextTick();
+
+      expect(selectedText()).toBe(`Any iteration in ${mockIterationCadence.title}`);
+    });
+
+    it('renders cadence when Current in cadence is selected', async () => {
+      findEditButton().vm.$emit('click');
+
+      findDropdown().vm.$emit('set-option', mockCurrentIterationInCadence);
+      await nextTick();
+
+      expect(selectedText()).toBe(`Current iteration in ${mockIterationCadence.title}`);
+    });
   });
 
   describe('when editing', () => {
@@ -110,7 +143,6 @@ describe('Iteration select component', () => {
       expect(iterationsQueryHandlerSuccess).toHaveBeenCalled();
 
       expect(findDropdown().isVisible()).toBe(true);
-      expect(findDropdown().props('groupedOptions')).toHaveLength(2);
     });
   });
 

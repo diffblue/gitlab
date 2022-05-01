@@ -139,16 +139,18 @@ export const mockMilestones = [
   },
 ];
 
+export const mockIterationCadence = {
+  id: 'gid://gitlab/Iterations::Cadence/1',
+  title: 'GitLab.org Iterations',
+  durationInWeeks: 1,
+  __typename: 'IterationCadence',
+};
+
 export const mockIterations = [
   {
     id: 'gid://gitlab/Iteration/1',
     title: null,
-    iterationCadence: {
-      id: 'gid://gitlab/Iterations::Cadence/1',
-      title: 'GitLab.org Iterations',
-      durationInWeeks: 1,
-      __typename: 'IterationCadence',
-    },
+    iterationCadence: mockIterationCadence,
     startDate: '2021-10-05',
     dueDate: '2021-10-10',
     __typename: 'Iteration',
