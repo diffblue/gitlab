@@ -50,13 +50,10 @@ RSpec.describe Namespaces::RemoveProjectGroupLinksOutsideHierarchyService do
         end
 
         it 'logs an info' do
-          pgl_links = ProjectGroupLink.in_project(namespace.all_projects)
-                                      .not_in_group(::Group.groups_including_descendants_by([namespace])).ids.join(', ')
           expect(Gitlab::AppLogger).to receive(:info).with(
             {
               namespace: namespace.id,
-              message: "Removing the ProjectGroupLinks outside the hierarchy with ids: " \
-                       "[#{pgl_links}]"
+              message: /Removing the ProjectGroupLinks outside the hierarchy with ids: /
             }
           )
 
