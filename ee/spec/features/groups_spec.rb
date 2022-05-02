@@ -13,12 +13,10 @@ RSpec.describe 'Group' do
     end
 
     let(:path) { edit_group_path(group, anchor: 'js-permissions-settings') }
-    let(:group_wiki_toggle) { true }
     let(:group_wiki_licensed_feature) { true }
 
     before do
       stub_licensed_features(group_wikis: group_wiki_licensed_feature)
-      stub_feature_flags(group_wiki_settings_toggle: group_wiki_toggle)
 
       sign_in(user)
 
@@ -46,14 +44,6 @@ RSpec.describe 'Group' do
 
           expect(page).to have_content 'successfully updated'
           expect(group.reload.group_feature.wiki_access_level).to eq wiki_access_level
-        end
-      end
-
-      context 'when feature flag :group_wiki_settings_toggle is disabled' do
-        let(:group_wiki_toggle) { false }
-
-        it 'wiki settings form is not present' do
-          expect(page).not_to have_content('Disable the group-level wiki')
         end
       end
     end
