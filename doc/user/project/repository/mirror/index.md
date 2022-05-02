@@ -261,26 +261,27 @@ In some cases, pull mirroring does not transfer LFS files. This issue occurs whe
 ### `The repository is being updated`, but neither fails nor succeeds visibly
 
 In rare cases, mirroring slots on Redis can become exhausted,
-possibly because Sidekiq workers are reaped due to OoM events.
-In effect, mirroring jobs start (and are done quickly),
-but without either failing nor succeeding nor a clear log.
+possibly because Sidekiq workers are reaped due to out-of-memory (OoM) events.
+When this occurs, mirroring jobs start and complete quickly, but they neither
+fail nor succeed. They also do not leave a clear log. To check for this problem:
 
-Enter the [Rails console](../../../../administration/operations/rails_console.md)
-and check Redis' mirroring capacity:
+1. Enter the [Rails console](../../../../administration/operations/rails_console.md)
+   and check Redis' mirroring capacity:
 
-```ruby
-current = Gitlab::Redis::SharedState.with { |redis| redis.scard('MIRROR_PULL_CAPACITY') }.to_i
-maximum = Gitlab::CurrentSettings.mirror_max_capacity
-available = maximum - current
-```
+   ```ruby
+   current = Gitlab::Redis::SharedState.with { |redis| redis.scard('MIRROR_PULL_CAPACITY') }.to_i
+   maximum = Gitlab::CurrentSettings.mirror_max_capacity
+   available = maximum - current
+   ```
 
-If it is 0 or very low, you can drain all stuck jobs with:
+1. If the mirroring capacity is `0` or very low, you can drain all stuck jobs with:
 
-```ruby
-Gitlab::Redis::SharedState.with { |redis| redis.smembers('MIRROR_PULL_CAPACITY') }.each do |pid|
-  Gitlab::Redis::SharedState.with { |redis| redis.srem('MIRROR_PULL_CAPACITY', pid) }
-end
-```
+   ```ruby
+   Gitlab::Redis::SharedState.with { |redis| redis.smembers('MIRROR_PULL_CAPACITY') }.each do |pid|
+     Gitlab::Redis::SharedState.with { |redis| redis.srem('MIRROR_PULL_CAPACITY', pid) }
+   end
+   ```
 
-Afterwards, the [background jobs page](../../../admin_area/index.md#background-jobs)
-should show new mirroring jobs getting scheduled, esp. when [triggered manually](#update-a-mirror).
+1. After you run the command, the [background jobs page](../../../admin_area/index.md#background-jobs)
+   should show new mirroring jobs being scheduled, especially when
+   [triggered manually](#update-a-mirror).
