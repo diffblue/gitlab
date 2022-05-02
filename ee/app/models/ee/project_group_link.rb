@@ -5,6 +5,9 @@ module EE
     extend ActiveSupport::Concern
 
     prepended do
+      scope :in_project, -> (projects) { where(project: projects) }
+      scope :not_in_group, -> (groups) { where.not(group: groups) }
+
       before_destroy :delete_related_access_levels
     end
 
