@@ -10,9 +10,11 @@ RSpec.describe GemExtensions::Elasticsearch::Model::Indexing::InstanceMethods do
       proxy = Elastic::Latest::ProjectInstanceProxy.new(project)
 
       expect(proxy.client).to receive(:index).with(
-        index: 'gitlab-test',
-        id: 'project_1',
-        body: proxy.as_indexed_json
+        {
+          index: 'gitlab-test',
+          id: 'project_1',
+          body: proxy.as_indexed_json
+        }
       )
 
       proxy.index_document

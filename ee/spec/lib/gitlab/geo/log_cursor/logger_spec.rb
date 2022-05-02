@@ -32,11 +32,15 @@ RSpec.describe Gitlab::Geo::LogCursor::Logger, :geo do
 
   describe '.event_info' do
     it 'logs an info event' do
-      expect(::Gitlab::Logger).to receive(:info).with(pid: 111,
-                                                      class: "LoggerSpec",
-                                                      host: 'localhost',
-                                                      message: 'Test',
-                                                      cursor_delay_s: 0.0)
+      expect(::Gitlab::Logger).to receive(:info).with(
+        {
+          pid: 111,
+          class: "LoggerSpec",
+          host: 'localhost',
+          message: 'Test',
+          cursor_delay_s: 0.0
+        }
+      )
 
       logger.event_info(Time.now, 'Test')
     end

@@ -10,7 +10,7 @@ RSpec.describe Gitlab::Geo::Replication::JobArtifactRetriever, :geo do
 
     context 'when the job artifact exists' do
       before do
-        expect(::Ci::JobArtifact).to receive(:find_by).with(id: job_artifact.id).and_return(job_artifact)
+        expect(::Ci::JobArtifact).to receive(:find_by).with({ id: job_artifact.id }).and_return(job_artifact)
       end
 
       context 'when the job artifact is an archive file_type and has a file' do
@@ -37,7 +37,7 @@ RSpec.describe Gitlab::Geo::Replication::JobArtifactRetriever, :geo do
         end
 
         it 'logs the missing file' do
-          expect(retriever).to receive(:log_error).with("Could not upload job artifact because it does not have a file", id: job_artifact.id)
+          expect(retriever).to receive(:log_error).with("Could not upload job artifact because it does not have a file", { id: job_artifact.id })
 
           subject
         end

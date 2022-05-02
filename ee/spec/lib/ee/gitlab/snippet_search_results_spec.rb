@@ -15,7 +15,7 @@ RSpec.describe Gitlab::SnippetSearchResults do
 
   context 'when all requirements are met' do
     it 'calls the finder with the restrictive scope' do
-      expect(SnippetsFinder).to receive(:new).with(user, authorized_and_user_personal: true).and_call_original
+      expect(SnippetsFinder).to receive(:new).with(user, { authorized_and_user_personal: true }).and_call_original
 
       subject
     end
