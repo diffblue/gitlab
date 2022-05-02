@@ -31308,13 +31308,25 @@ msgstr ""
 msgid "Releases|New Release"
 msgstr ""
 
+msgid "Releases|Tag message"
+msgstr ""
+
+msgid "Release|Include message from the annotated tag."
+msgstr ""
+
 msgid "Release|Something went wrong while creating a new release."
 msgstr ""
 
 msgid "Release|Something went wrong while getting the release details."
 msgstr ""
 
+msgid "Release|Something went wrong while getting the tag notes."
+msgstr ""
+
 msgid "Release|Something went wrong while saving the release details."
+msgstr ""
+
+msgid "Release|You can edit the content later by editing the release. %{linkStart}How do I edit a release?%{linkEnd}"
 msgstr ""
 
 msgid "Reload page"
