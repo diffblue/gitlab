@@ -190,18 +190,17 @@ export function transformBoardConfig(boardConfig) {
     updateScopeObject('milestone_title', milestoneTitle);
   }
 
-  const { iterationId } = boardConfig;
+  const { iterationId, iterationCadenceId } = boardConfig;
   if (iterationId === IterationIDs.NONE) {
     updateScopeObject('iteration_id', IterationFilterType.none);
+  } else if (iterationId === IterationIDs.ANY) {
+    updateScopeObject('iteration_id', IterationFilterType.any);
+    updateScopeObject('iteration_cadence_id', getIdFromGraphQLId(iterationCadenceId));
   } else if (iterationId === IterationIDs.CURRENT) {
     updateScopeObject('iteration_id', IterationFilterType.current);
+    updateScopeObject('iteration_cadence_id', getIdFromGraphQLId(iterationCadenceId));
   } else if (iterationId) {
     updateScopeObject('iteration_id', getIdFromGraphQLId(iterationId));
-  }
-
-  const { iterationCadenceId } = boardConfig;
-  if (iterationCadenceId) {
-    updateScopeObject('iteration_cadence_id', getIdFromGraphQLId(iterationCadenceId));
   }
 
   let { weight } = boardConfig;

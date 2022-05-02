@@ -182,6 +182,7 @@ describe('transformBoardConfig', () => {
     ],
     weight: 0,
     iterationId: 'gid://gitlab/Iteration/1',
+    iterationCadenceId: 'gid://gitlab/Iteration::Cadence/1',
   };
 
   it('formats url parameters from boardConfig object', () => {
@@ -199,5 +200,27 @@ describe('transformBoardConfig', () => {
     expect(result).toBe(
       'milestone_title=milestone&iteration_id=1&weight=0&assignee_username=username',
     );
+  });
+
+  it('adds iteration_cadence_id when iteration param is any', () => {
+    const boardConfigWithCadence = {
+      iterationId: IterationIDs.ANY,
+      iterationCadenceId: 'gid://gitlab/Iteration::Cadence/1',
+    };
+
+    const result = transformBoardConfig(boardConfigWithCadence);
+
+    expect(result).toBe('iteration_id=Any&iteration_cadence_id=1');
+  });
+
+  it('adds iteration_cadence_id when iteration param is current', () => {
+    const boardConfigWithCadence = {
+      iterationId: IterationIDs.CURRENT,
+      iterationCadenceId: 'gid://gitlab/Iteration::Cadence/1',
+    };
+
+    const result = transformBoardConfig(boardConfigWithCadence);
+
+    expect(result).toBe('iteration_id=Current&iteration_cadence_id=1');
   });
 });
