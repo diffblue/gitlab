@@ -24,7 +24,7 @@ RSpec.describe Members::InviteService, :aggregate_failures, :saas do
   end
 
   describe '#execute' do
-    context 'with group plan' do
+    context 'with group plan observing quota limits' do
       let(:plan_limits) { create(:plan_limits, daily_invites: daily_invites) }
       let(:plan) { create(:plan, limits: plan_limits) }
       let!(:subscription) do
