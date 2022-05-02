@@ -159,13 +159,9 @@ describe('ViolationFilter component', () => {
     });
 
     describe('when the defaultProjects are being fetched', () => {
-      beforeEach(async () => {
+      it('sets the project filter to loading', () => {
         createComponent({ defaultQuery: { ...defaultQuery, projectIds } }, groupProjectsLoading);
 
-        await waitForPromises();
-      });
-
-      it('sets the project filter to loading', async () => {
         expect(findProjectsFilter().props()).toMatchObject({
           defaultProjects: [],
           loadingDefaultProjects: true,
@@ -174,13 +170,11 @@ describe('ViolationFilter component', () => {
     });
 
     describe('when the defaultProjects have been fetched', () => {
-      beforeEach(async () => {
+      it('sets the default projects on the project filter', async () => {
         createComponent({ defaultQuery: { ...defaultQuery, projectIds } });
 
         await waitForPromises();
-      });
 
-      it('sets the default projects on the project filter', async () => {
         expect(findProjectsFilter().props()).toMatchObject({
           defaultProjects,
           loadingDefaultProjects: false,
