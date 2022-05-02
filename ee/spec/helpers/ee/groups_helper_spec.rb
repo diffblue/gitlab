@@ -332,4 +332,12 @@ RSpec.describe GroupsHelper do
       it { is_expected.to eq(false) }
     end
   end
+
+  describe '#saml_sso_settings_generate_helper_text' do
+    let(:text) { 'some text' }
+    let(:result) { "<span class=\"js-helper-text gl-clearfix\">#{text}</span>" }
+
+    specify { expect(helper.saml_sso_settings_generate_helper_text(display_none: false, text: text)).to eq result }
+    specify { expect(helper.saml_sso_settings_generate_helper_text(display_none: true, text: text)).to include('gl-display-none') }
+  end
 end
