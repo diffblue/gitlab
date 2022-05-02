@@ -7,11 +7,15 @@ import { __ } from '~/locale';
 
 import TimeagoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
 import UserAvatarLink from '~/vue_shared/components/user_avatar/user_avatar_link.vue';
+import ConfidentialityBadge from '~/vue_shared/components/confidentiality_badge.vue';
 
+import { IssuableType, WorkspaceType } from '~/issues/constants';
 import { statusType } from '../constants';
 import epicUtils from '../utils/epic_utils';
 
 export default {
+  WorkspaceType,
+  IssuableType,
   directives: {
     GlTooltipDirective,
   },
@@ -20,6 +24,7 @@ export default {
     GlButton,
     UserAvatarLink,
     TimeagoTooltip,
+    ConfidentialityBadge,
     GitlabTeamMemberBadge: () =>
       import('ee_component/vue_shared/components/user_avatar/badges/gitlab_team_member_badge.vue'),
   },
@@ -84,13 +89,12 @@ export default {
         <span class="d-none d-sm-block" data-testid="status-text">{{ statusText }}</span>
       </div>
       <div class="issuable-meta" data-testid="author-details">
-        <div
+        <confidentiality-badge
           v-if="confidential"
-          class="issuable-warning-icon inline"
           data-testid="confidential-icon"
-        >
-          <gl-icon name="eye-slash" class="icon" />
-        </div>
+          :workspace-type="$options.WorkspaceType.project"
+          :issuable-type="$options.IssuableType.Issue"
+        />
         {{ __('Created') }}
         <timeago-tooltip :time="created" />
         {{ __('by') }}

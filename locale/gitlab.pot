@@ -26472,6 +26472,9 @@ msgstr ""
 msgid "One or more of your personal access tokens will expire in %{days_to_expire} days or less:"
 msgstr ""
 
+msgid "Only %{workspaceType} members with at least Reporter role can view or be notified about this %{issuableType}."
+msgstr ""
+
 msgid "Only 'Reporter' roles and above on tiers Premium and above can see Value Stream Analytics."
 msgstr ""
 
@@ -26494,6 +26497,9 @@ msgid "Only allow anyone to register for accounts on GitLab instances that you i
 msgstr ""
 
 msgid "Only effective when remote storage is enabled. Set to 0 for no size limit."
+msgstr ""
+
+msgid "Only group members with at least Reporter role can view or be notified about this epic."
 msgstr ""
 
 msgid "Only include features new to your current subscription tier."
@@ -38443,9 +38449,6 @@ msgstr ""
 msgid "This %{issuableDisplayName} is locked. Only project members can comment."
 msgstr ""
 
-msgid "This %{issuableType} is confidential"
-msgstr ""
-
 msgid "This %{issuable} is locked. Only %{strong_open}project members%{strong_close} can comment."
 msgstr ""
 
@@ -43023,7 +43026,7 @@ msgstr ""
 msgid "You are going to turn off the confidentiality. This means %{strongStart}everyone%{strongEnd} will be able to see and leave a comment on this %{issuableType}."
 msgstr ""
 
-msgid "You are going to turn on confidentiality. Only team members with %{strongStart}at least Reporter access%{strongEnd} will be able to see and leave comments on the %{issuableType}."
+msgid "You are going to turn on confidentiality. Only %{context} members with %{strongStart}at least Reporter role%{strongEnd} can view or be notified about this %{issuableType}."
 msgstr ""
 
 msgid "You are not allowed to %{action} a user"
