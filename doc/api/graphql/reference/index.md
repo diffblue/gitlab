@@ -181,29 +181,6 @@ Fields related to Instance Security Dashboard.
 
 Returns [`InstanceSecurityDashboard`](#instancesecuritydashboard).
 
-### `Query.instanceStatisticsMeasurements`
-
-Get statistics on the instance.
-
-WARNING:
-**Deprecated** in 13.10.
-This was renamed.
-Use: [`Query.usageTrendsMeasurements`](#queryusagetrendsmeasurements).
-
-Returns [`UsageTrendsMeasurementConnection`](#usagetrendsmeasurementconnection).
-
-This field returns a [connection](#connections). It accepts the
-four standard [pagination arguments](#connection-pagination-arguments):
-`before: String`, `after: String`, `first: Int`, `last: Int`.
-
-#### Arguments
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| <a id="queryinstancestatisticsmeasurementsidentifier"></a>`identifier` | [`MeasurementIdentifier!`](#measurementidentifier) | Type of measurement or statistics to retrieve. |
-| <a id="queryinstancestatisticsmeasurementsrecordedafter"></a>`recordedAfter` | [`Time`](#time) | Measurement recorded after this date. |
-| <a id="queryinstancestatisticsmeasurementsrecordedbefore"></a>`recordedBefore` | [`Time`](#time) | Measurement recorded before this date. |
-
 ### `Query.issue`
 
 Find an issue.
