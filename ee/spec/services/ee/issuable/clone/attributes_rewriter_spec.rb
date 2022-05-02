@@ -34,7 +34,7 @@ RSpec.describe Issuable::Clone::AttributesRewriter do
           milestone = create(:milestone, title: 'milestone', group: group)
           original_issue.update!(milestone: milestone)
 
-          expect(new_epic).to receive(:update).with(labels: [])
+          expect(new_epic).to receive(:update).with({ labels: [] })
 
           subject.execute
         end

@@ -14,9 +14,9 @@ RSpec.describe Gitlab::Geo, :geo, :request_store do
       expanded_key = "geo:#{key}:#{Gitlab::VERSION}:#{Rails.version}"
 
       expect(Gitlab::ProcessMemoryCache.cache_backend).to receive(:write)
-        .with(expanded_key, an_instance_of(String), expires_in: expected_l1_expiry).and_call_original
+        .with(expanded_key, an_instance_of(String), { expires_in: expected_l1_expiry }).and_call_original
       expect(Rails.cache).to receive(:write)
-        .with(expanded_key, an_instance_of(String), expires_in: expected_l2_expiry)
+        .with(expanded_key, an_instance_of(String), { expires_in: expected_l2_expiry })
 
       described_class.public_send(method)
     end

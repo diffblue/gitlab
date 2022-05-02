@@ -75,9 +75,9 @@ RSpec.describe Elastic::MigrationRecord, :elastic do
 
   describe '#fail' do
     it 'calls halt with failed: true' do
-      expect(record).to receive(:halt).with(failed: true, foo: :bar)
+      expect(record).to receive(:halt).with({ failed: true, foo: :bar })
 
-      record.fail(foo: :bar)
+      record.fail({ foo: :bar })
     end
   end
 
