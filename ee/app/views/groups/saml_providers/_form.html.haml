@@ -1,43 +1,26 @@
 %section.saml_provider.gl-mt-5
-  = form_for [group, saml_provider], url: group_saml_providers_path, html: { id: 'js-saml-settings-form' } do |f|
+  = gitlab_ui_form_for [group, saml_provider], url: group_saml_providers_path, html: { id: 'js-saml-settings-form' } do |f|
     .form-group
       = form_errors(saml_provider)
-      .gl-form-checkbox.custom-control.custom-checkbox
-        = f.check_box :enabled, { class: 'custom-control-input js-group-saml-enabled-input' }
-        = f.label :enabled, { class: 'custom-control-label' } do
-          = s_('GroupSAML|Enable SAML authentication for this group')
+      = f.gitlab_ui_checkbox_component :enabled, s_('GroupSAML|Enable SAML authentication for this group'), checkbox_options: { class: 'js-group-saml-enabled-input' }
     .form-group
-      .gl-form-checkbox.custom-control.custom-checkbox
-        = f.check_box :enforced_sso, { checked: saml_provider.new_record? || saml_provider.enforced_sso?, class: 'custom-control-input js-group-saml-enforced-sso-input', data: { qa_selector: 'enforced_sso_checkbox' } }
-        = f.label :enforced_sso, { class: 'custom-control-label' } do
-          = s_('GroupSAML|Enforce SSO-only authentication for web activity for this group')
-          %p.help-text.js-helper-text{ class: saml_provider.enabled? && 'gl-display-none' }
-            = s_('GroupSAML|Before enforcing SSO, enable SAML authentication.')
-          %p.help-text.js-warning{ class: saml_provider.enforced_sso? && 'gl-display-none' }
-            - link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: help_page_path('user/group/saml_sso/index', anchor: 'sso-enforcement') }
-            = html_escape(s_('GroupSAML|%{strongOpen}Warning%{strongClose} - Enable %{linkStart}SSO enforcement%{linkEnd} to reduce security risks.')) % { strongOpen: '<strong>'.html_safe, strongClose: '</strong>'.html_safe, linkStart: link_start, linkEnd: '</a>'.html_safe }
+      - enable_saml_help_text = s_('GroupSAML|Before enforcing SSO, enable SAML authentication.')
+      - web_activity_warning_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: help_page_path('user/group/saml_sso/index', anchor: 'sso-enforcement') }
+      - web_activity_warning_text = html_escape(s_('GroupSAML|%{strongOpen}Warning%{strongClose} - Enable %{linkStart}SSO enforcement%{linkEnd} to reduce security risks.')) % { strongOpen: '<strong>'.html_safe, strongClose: '</strong>'.html_safe, linkStart: web_activity_warning_link_start, linkEnd: '</a>'.html_safe }
+      - web_activity_warning_tag = '<span class="js-warning %{class}">%{text}</span>'.html_safe % { class: saml_provider.enforced_sso? && 'gl-display-none', text: web_activity_warning_text }
+      - web_activity_help_text = '%{enable_saml_help_text_tag}%{web_activity_warning_tag}'.html_safe % { enable_saml_help_text_tag: saml_sso_settings_generate_helper_text(display_none: saml_provider.enabled?, text: enable_saml_help_text), web_activity_warning_tag: web_activity_warning_tag }
+      = f.gitlab_ui_checkbox_component :enforced_sso, s_('GroupSAML|Enforce SSO-only authentication for web activity for this group'), help_text: web_activity_help_text, checkbox_options: { checked: saml_provider.new_record? || saml_provider.enforced_sso?, class: 'js-group-saml-enforced-sso-input', data: { qa_selector: 'enforced_sso_checkbox' } }
+
     .form-group
-      .gl-form-checkbox.custom-control.custom-checkbox
-        = f.check_box :git_check_enforced, { class: 'custom-control-input js-group-saml-enforced-git-check-input' }
-        = f.label :git_check_enforced, { class: 'custom-control-label' } do
-          = s_('GroupSAML|Enforce SSO-only authentication for Git and Dependency Proxy activity for this group')
-          %p.help-text.js-helper-text{ class: saml_provider.enabled? && 'gl-display-none' }
-            = s_('GroupSAML|Before enforcing SSO-only authentication for Git activity, enable SSO-only authentication for web activity.')
+      - enable_web_auth_help_text = s_('GroupSAML|Before enforcing SSO-only authentication for Git activity, enable SSO-only authentication for web activity.')
+      = f.gitlab_ui_checkbox_component :git_check_enforced, s_('GroupSAML|Enforce SSO-only authentication for Git and Dependency Proxy activity for this group'), help_text: saml_sso_settings_generate_helper_text(display_none: saml_provider.enabled?, text: enable_web_auth_help_text), checkbox_options: { class: 'js-group-saml-enforced-git-check-input' }
     - if Feature.enabled?(:group_managed_accounts, group)
       .form-group
-        .gl-form-checkbox.custom-control.custom-checkbox
-          = f.check_box :enforced_group_managed_accounts, { class: 'custom-control-input js-group-saml-enforced-group-managed-accounts-input', data: { qa_selector: 'group_managed_accounts_checkbox' } }
-          = f.label :enforced_group_managed_accounts, { class: 'custom-control-label' } do
-            = s_('GroupSAML|Enforce users to have dedicated group-managed accounts for this group')
-            %p.help-text.js-helper-text{ class: saml_provider.enforced_sso? && 'gl-display-none' }
-              = s_('GroupSAML|To be able to enable group-managed accounts, you first need to enable enforced SSO.')
+        - enforce_sso_help_text = s_('GroupSAML|To be able to enable group-managed accounts, you first need to enable enforced SSO.')
+        = f.gitlab_ui_checkbox_component :enforced_group_managed_accounts, s_('GroupSAML|Enforce users to have dedicated group-managed accounts for this group'), help_text: saml_sso_settings_generate_helper_text(display_none: saml_provider.enforced_sso?, text: enforce_sso_help_text), checkbox_options: { class: 'js-group-saml-enforced-group-managed-accounts-input', data: { qa_selector: 'group_managed_accounts_checkbox' } }
       .form-group
-        .gl-form-checkbox.custom-control.custom-checkbox
-          = f.check_box :prohibited_outer_forks, { class: 'custom-control-input js-group-saml-prohibited-outer-forks-input' }
-          = f.label :prohibited_outer_forks, { class: 'custom-control-label' } do
-            = s_('GroupSAML|Prohibit outer forks for this group')
-            %p.help-text.js-helper-text{ class: saml_provider.enforced_group_managed_accounts? && 'gl-display-none' }
-              = s_('GroupSAML|To be able to prohibit outer forks, you first need to enforce dedicate group managed accounts.')
+        - enforce_accounts_help_text = s_('GroupSAML|To be able to prohibit outer forks, you first need to enforce dedicate group managed accounts.')
+        = f.gitlab_ui_checkbox_component :prohibited_outer_forks, s_('GroupSAML|Prohibit outer forks for this group'), help_text: saml_sso_settings_generate_helper_text(display_none: saml_provider.enforced_group_managed_accounts?, text: enforce_accounts_help_text), checkbox_options: { class: 'js-group-saml-prohibited-outer-forks-input' }
         .bs-callout.bs-callout-info.js-callout{ class: !saml_provider.enforced_group_managed_accounts? && 'gl-display-none' }
           = s_('GroupSAML|With prohibit outer forks flag enabled group members will be able to fork project only inside your group.')
     .well-segment.borderless.mb-3.col-12.col-lg-9.p-0
