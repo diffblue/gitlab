@@ -50,6 +50,7 @@ RSpec.describe ProjectPolicy do
         read_project_audit_events
         read_cluster
         read_terraform_state
+        read_project_merge_request_analytics
       ]
     end
 
@@ -1808,7 +1809,7 @@ RSpec.describe ProjectPolicy do
         project_with_analytics_enabled.add_developer(developer)
       end
 
-      context 'when analytics is enabled for the project' do
+      context 'when analytics is disabled for the project' do
         let(:project) { project_with_analytics_disabled }
 
         context 'for guest user' do
@@ -1846,21 +1847,37 @@ RSpec.describe ProjectPolicy do
           it { is_expected.to be_allowed(:read_code_review_analytics) }
           it { is_expected.to be_allowed(:read_issue_analytics) }
         end
+
+        context 'for auditor' do
+          let(:current_user) { auditor }
+
+          it { is_expected.to be_allowed(:read_project_merge_request_analytics) }
+          it { is_expected.to be_allowed(:read_code_review_analytics) }
+          it { is_expected.to be_allowed(:read_issue_analytics) }
+        end
       end
 
       context 'when analytics is enabled for the project' do
-        let(:project) { project_with_analytics_private }
+        let(:project) { project_with_analytics_enabled }
 
         context 'for guest user' do
           let(:current_user) { guest }
 
           it { is_expected.to be_disallowed(:read_project_merge_request_analytics) }
           it { is_expected.to be_disallowed(:read_code_review_analytics) }
-          it { is_expected.to be_disallowed(:read_issue_analytics) }
+          it { is_expected.to be_allowed(:read_issue_analytics) }
         end
 
         context 'for developer' do
           let(:current_user) { developer }
+
+          it { is_expected.to be_allowed(:read_project_merge_request_analytics) }
+          it { is_expected.to be_allowed(:read_code_review_analytics) }
+          it { is_expected.to be_allowed(:read_issue_analytics) }
+        end
+
+        context 'for auditor' do
+          let(:current_user) { auditor }
 
           it { is_expected.to be_allowed(:read_project_merge_request_analytics) }
           it { is_expected.to be_allowed(:read_code_review_analytics) }
