@@ -87,7 +87,18 @@ RSpec.describe Projects::SlackApplicationInstallService do
       }
     end
 
-    shared_context 'legacy response' do
+    shared_examples 'success response' do
+      it 'returns success result and creates all needed records' do
+        result = service.execute
+
+        expect(result).to eq(status: :success)
+        expect_slack_integration_is_created
+        expect(ChatName.count).to be_zero
+      end
+    end
+
+    shared_examples 'legacy response' do
+      let(:params) { super().without(:v2) }
       let(:exchange_url) { described_class::SLACK_EXCHANGE_TOKEN_URL_LEGACY }
       let(:redirect_url) { super().delete_suffix('?v2=true') }
       let(:response) do
@@ -100,20 +111,6 @@ RSpec.describe Projects::SlackApplicationInstallService do
           team_name: 'Team name'
         }
       end
-    end
-
-    it 'returns success result and creates all needed records' do
-      result = service.execute
-
-      expect(result).to eq(status: :success)
-      expect_slack_integration_is_created
-      expect(ChatName.count).to be_zero
-    end
-
-    context 'when the v2 param is missing in the query string' do
-      let(:params) { super().without(:v2) }
-
-      include_context 'legacy response'
 
       it 'uses the legacy endpoint and creates all needed records' do
         result = service.execute
@@ -124,32 +121,39 @@ RSpec.describe Projects::SlackApplicationInstallService do
       end
     end
 
+    it_behaves_like 'success response'
+    it_behaves_like 'legacy response'
+
+    context 'when integration record already exists' do
+      before do
+        project.create_gitlab_slack_application_integration!
+      end
+
+      it_behaves_like 'success response'
+
+      context 'when installation record already exists' do
+        before do
+          project.gitlab_slack_application_integration.create_slack_integration!(
+            team_id: 'T12345',
+            team_name: 'Team name',
+            alias: project.full_path,
+            user_id: 'U12345'
+          )
+        end
+
+        it 'returns error and does not create any records' do
+          expect { service.execute }.to raise_error(ActiveRecord::RecordInvalid)
+        end
+      end
+    end
+
     context 'when the FF :slack_app_use_v2_flow is disabled' do
       before do
         stub_feature_flags(slack_app_use_v2_flow: false)
       end
 
-      it 'still uses the v2 endpoint and creates all needed records' do
-        result = service.execute
-
-        expect(result).to eq(status: :success)
-        expect_slack_integration_is_created
-        expect(ChatName.count).to be_zero
-      end
-
-      context 'when the v2 param is missing in the query string' do
-        let(:params) { super().without(:v2) }
-
-        include_context 'legacy response'
-
-        it 'uses the legacy endpoint and creates all needed records' do
-          result = service.execute
-
-          expect(result).to eq(status: :success)
-          expect_slack_integration_is_created
-          expect_chat_name_is_created
-        end
-      end
+      it_behaves_like 'success response'
+      it_behaves_like 'legacy response'
     end
   end
 end
