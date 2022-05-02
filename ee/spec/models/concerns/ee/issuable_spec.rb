@@ -155,10 +155,10 @@ RSpec.describe EE::Issuable do
 
         issue.escalation_status.update!(**policy_changes, **status_changes)
 
-        expect(Gitlab::HookData::IssuableBuilder).to receive(:new).with(issue).and_return(builder)
+        expect(Gitlab::DataBuilder::Issuable).to receive(:new).with(issue).and_return(builder)
       end
 
-      it 'delegates to Gitlab::HookData::IssuableBuilder#build' do
+      it 'delegates to Gitlab::DataBuilder::Issuable#build' do
         expect(builder).to receive(:build).with(
           user: user,
           changes: hash_including(
