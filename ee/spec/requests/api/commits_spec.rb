@@ -19,36 +19,6 @@ RSpec.describe API::Commits do
 
       subject
     end
-
-    context 'when push_rules_supersede_code_owners is false' do
-      let(:error_msg) { "CodeOwners error msg" }
-
-      before do
-        stub_feature_flags(push_rules_supersede_code_owners: false)
-
-        allow(ProtectedBranch)
-          .to receive(:branch_requires_code_owner_approval?)
-          .with(project, branch).and_return(code_owner_approval_required)
-      end
-
-      it "creates a new validator with expected parameters" do
-        expect(Gitlab::CodeOwners::Validator)
-          .to receive(:new).with(project, branch, Array(paths)).and_call_original
-
-        subject
-      end
-
-      specify do
-        expect_next_instance_of(Gitlab::CodeOwners::Validator) do |validator|
-          expect(validator).to receive(:execute).and_return(error_msg)
-        end
-
-        subject
-
-        expect(response).to have_gitlab_http_status(:bad_request)
-        expect(json_response["message"]).to include(error_msg)
-      end
-    end
   end
 
   describe "POST /projects/:id/repository/commits" do
