@@ -105,7 +105,7 @@ export function initIterationReport({ namespaceType, initiallyEditing } = {}) {
 function injectVueRouterIntoBreadcrumbs(router, groupPath) {
   const breadCrumbEls = document.querySelectorAll('nav .js-breadcrumbs-list li');
   const breadCrumbEl = breadCrumbEls[breadCrumbEls.length - 1];
-  const crumbs = [breadCrumbEl.querySelector('h2')];
+  const crumbs = [breadCrumbEl.querySelector('a')];
   const nestedBreadcrumbEl = document.createElement('div');
   breadCrumbEl.replaceChild(nestedBreadcrumbEl, crumbs[0]);
   return new Vue({
