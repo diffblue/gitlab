@@ -240,7 +240,8 @@ module Gitlab
         end
       end
 
-      # TODO: some queries live under app/graphql/queries - we should look there
+      # TODO: some queries live under app/graphql/queries - we should look there if/when we add fragments there
+      # See: https://gitlab.com/gitlab-org/gitlab/-/issues/361079
       # for fragments too.
       class Fragments
         def initialize(root, dir = 'app/assets/javascripts')
