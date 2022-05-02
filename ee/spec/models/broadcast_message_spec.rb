@@ -16,7 +16,7 @@ RSpec.describe BroadcastMessage do
 
         described_class.current
 
-        Timecop.travel(3.weeks) do
+        travel_to(3.weeks.from_now) do
           described_class.current
         end
       end
@@ -33,7 +33,7 @@ RSpec.describe BroadcastMessage do
 
           described_class.current
 
-          Timecop.travel(3.weeks) do
+          travel_to(3.weeks.from_now) do
             described_class.current
           end
         end
@@ -49,13 +49,13 @@ RSpec.describe BroadcastMessage do
 
           described_class.current
 
-          Timecop.travel(20.seconds) do
+          travel_to(20.seconds.from_now) do
             described_class.current
           end
 
           expect(described_class).to receive(:where).and_call_original.once
 
-          Timecop.travel(40.seconds) do
+          travel_to(40.seconds.from_now) do
             described_class.current
           end
         end
