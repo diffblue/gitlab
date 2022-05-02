@@ -628,6 +628,16 @@ RSpec.describe API::Members do
         expect(json_response.map { |m| m['source_full_name'] }).to include(project.full_name)
       end
 
+      it 'includes awaiting memberships' do
+        membership = developer.members.first
+        membership.wait
+
+        get api("/groups/#{group.id}/billable_members/#{developer.id}/memberships", owner)
+
+        expect(response).to have_gitlab_http_status(:ok)
+        expect(json_response.map { |m| m['id'] }).to include(membership.id)
+      end
+
       it 'paginates results' do
         subgroup = create(:group, name: 'SubGroup A', parent: group)
         subgroup.add_developer(developer)
