@@ -11,7 +11,6 @@ module EE
       def validate!
         super
 
-        validate_against_codeowner_rules!
         validate_repository_size!
       end
 
@@ -21,21 +20,6 @@ module EE
         if size_checker.above_size_limit?
           raise_error(size_checker.error_message.commit_error)
         end
-      end
-
-      def validate_against_codeowner_rules!
-        codeowners_error = check_against_codeowners(project, params[:branch_name], extracted_paths)
-
-        if codeowners_error.present?
-          raise_error(codeowners_error.tr("\n", " "))
-        end
-      end
-
-      def check_against_codeowners(project, branch, paths)
-        return if paths.empty?
-        return if ::Feature.enabled?(:push_rules_supersede_code_owners, project, default_enabled: true)
-
-        ::Gitlab::CodeOwners::Validator.new(project, branch, paths).execute
       end
 
       def extracted_paths
