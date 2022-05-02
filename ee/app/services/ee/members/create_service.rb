@@ -30,7 +30,7 @@ module EE
       end
 
       def invite_quota_exceeded?
-        return unless source.actual_limits.daily_invites
+        return if source.actual_limits.daily_invites == 0
 
         invite_count = ::Member.invite.created_today.in_hierarchy(source).count
 
