@@ -29,7 +29,21 @@ module EE
     end
 
     def add_to_slack_link(project, slack_app_id)
-      "https://slack.com/oauth/authorize?scope=commands&client_id=#{slack_app_id}&redirect_uri=#{slack_auth_project_settings_slack_url(project)}&state=#{escaped_form_authenticity_token}"
+      query = {
+        scope: ::Projects::SlackApplicationInstallService::DEFAULT_SCOPES.join(','),
+        client_id: slack_app_id,
+        redirect_uri: slack_auth_project_settings_slack_url(project),
+        state: form_authenticity_token
+      }
+
+      if ::Projects::SlackApplicationInstallService.use_v2_flow?
+        authorize_url = ::Projects::SlackApplicationInstallService::SLACK_AUTHORIZE_URL
+        query[:redirect_uri] += '?v2=true'
+      else
+        authorize_url = ::Projects::SlackApplicationInstallService::SLACK_AUTHORIZE_URL_LEGACY
+      end
+
+      "#{authorize_url}?#{query.to_query}"
     end
 
     def gitlab_slack_application_data(projects)
@@ -41,10 +55,6 @@ module EE
         gitlab_logo_path: image_path('illustrations/gitlab_logo.svg'),
         slack_logo_path: image_path('illustrations/slack_logo.svg')
       }
-    end
-
-    def escaped_form_authenticity_token
-      CGI.escape(form_authenticity_token)
     end
 
     def jira_issues_show_data
