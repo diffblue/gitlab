@@ -744,6 +744,10 @@ class ProjectPolicy < BasePolicy
     enable :access_security_and_compliance
   end
 
+  rule { auditor }.policy do
+    enable :read_security_orchestration_policies
+  end
+
   rule { ~admin & ~project_runner_registration_allowed }.policy do
     prevent :register_project_runners
   end

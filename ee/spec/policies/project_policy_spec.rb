@@ -733,6 +733,17 @@ RSpec.describe ProjectPolicy do
         it { is_expected.to be_allowed(:update_security_orchestration_policy_project) }
       end
     end
+
+    context 'with auditor role' do
+      where(role: %w[auditor])
+
+      with_them do
+        let(:current_user) { public_send(role) }
+
+        it { is_expected.to be_allowed(:read_security_orchestration_policies) }
+        it { is_expected.to be_disallowed(:update_security_orchestration_policy_project) }
+      end
+    end
   end
 
   describe 'coverage_fuzzing' do
