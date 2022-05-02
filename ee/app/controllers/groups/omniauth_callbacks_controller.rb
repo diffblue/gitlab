@@ -6,6 +6,7 @@ class Groups::OmniauthCallbacksController < OmniauthCallbacksController
   skip_before_action :verify_authenticity_token, only: [:failure, :group_saml]
 
   feature_category :authentication_and_authorization
+  urgency :low
 
   def group_saml
     @unauthenticated_group = Group.find_by_full_path(params[:group_id])
