@@ -392,7 +392,7 @@
   :tags: []
 - :name: cronjob:network_policy_metrics
   :worker_name: NetworkPolicyMetricsWorker
-  :feature_category: :container_network_security
+  :feature_category: :not_owned
   :has_external_dependencies:
   :urgency: :low
   :resource_boundary: :unknown

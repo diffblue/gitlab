@@ -10,7 +10,8 @@ module Projects
       before_action :authorize_read_threat_monitoring!
       before_action :set_polling_interval, only: [:summary]
 
-      feature_category :container_network_security
+      # This controller is being removed in https://gitlab.com/gitlab-org/gitlab/-/issues/352285
+      feature_category :not_owned # rubocop:todo Gitlab/AvoidFeatureCategoryNotOwned
 
       def summary
         return not_found unless environment.has_metrics?
