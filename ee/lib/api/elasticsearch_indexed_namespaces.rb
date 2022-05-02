@@ -5,6 +5,7 @@ module API
     before { authenticated_as_admin! }
 
     feature_category :global_search
+    urgency :low
 
     resource :elasticsearch_indexed_namespaces do
       desc 'Rollout namespaces to be indexed up to n%' do
