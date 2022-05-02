@@ -20,7 +20,7 @@ module EE
                 detail 'Retrieves project info (if authorized)'
               end
               route_setting :authentication, cluster_agent_token_allowed: true
-              get '/project_info' do
+              get '/project_info', urgency: :low do
                 project = find_project(params[:id])
 
                 not_found! unless agent_has_access_to_project?(project)
