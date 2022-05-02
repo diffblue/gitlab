@@ -7,6 +7,7 @@ module EE
     prepended do
       feature_category :subgroups, [:project_groups, :namespace_routes]
       feature_category :projects, [:project_routes]
+      urgency :high, [:project_groups]
     end
 
     def project_groups
