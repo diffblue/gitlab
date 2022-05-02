@@ -9,7 +9,7 @@ class Projects::Quality::TestCasesController < Projects::ApplicationController
 
   feature_category :quality_management
   urgency :low, [:index]
-  urgency :medium, [:new, :show]
+  urgency :default, [:new, :show]
 
   def index
     respond_to do |format|
