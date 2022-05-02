@@ -91,7 +91,7 @@ RSpec.describe Gitlab::Geo::EventGapTracking, :clean_gitlab_redis_shared_state d
 
       gap_event = create(:geo_event_log, id: gap_id)
 
-      Timecop.travel(12.minutes) do
+      travel_to(12.minutes.from_now) do
         expect { |blk| gap_tracking.fill_gaps(&blk) }.to yield_with_args(gap_event)
       end
 
@@ -101,7 +101,7 @@ RSpec.describe Gitlab::Geo::EventGapTracking, :clean_gitlab_redis_shared_state d
     it 'drops gaps older than 1 hour' do
       gap_tracking.check!(event_id_with_gap)
 
-      Timecop.travel(62.minutes) do
+      travel_to(62.minutes.from_now) do
         expect { |blk| gap_tracking.fill_gaps(&blk) }.not_to yield_with_args(anything)
       end
 
@@ -170,7 +170,7 @@ RSpec.describe Gitlab::Geo::EventGapTracking, :clean_gitlab_redis_shared_state d
         expected_gaps << [gap_id.to_s, Time.now.to_i]
       end
 
-      Timecop.travel(2.minutes) do
+      travel_to(2.minutes.from_now) do
         gap_tracking.previous_id = 17
         gap_tracking.send(:track_gaps, 19)
         expected_gaps << [18.to_s, Time.now.to_i]

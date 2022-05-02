@@ -51,7 +51,7 @@ RSpec.describe Gitlab::Geo::JwtRequestDecoder do
     it 'raises InvalidSignatureTimeError after expiring' do
       subject
 
-      Timecop.travel(2.minutes) { expect { subject.decode }.to raise_error(Gitlab::Geo::InvalidSignatureTimeError) }
+      travel_to(2.minutes.from_now) { expect { subject.decode }.to raise_error(Gitlab::Geo::InvalidSignatureTimeError) }
     end
 
     it 'raises InvalidSignatureTimeError to decode when clocks are not in sync' do

@@ -299,7 +299,7 @@ RSpec.describe Gitlab::Geo::LogCursor::Daemon, :clean_gitlab_redis_shared_state 
   def read_gaps
     gaps = []
 
-    Timecop.travel(12.minutes) do
+    travel_to(12.minutes.from_now) do
       daemon.send(:gap_tracking).send(:fill_gaps) { |event| gaps << event.id }
     end
 
