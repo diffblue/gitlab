@@ -59,7 +59,6 @@ module Gitlab
       push_frontend_feature_flag(:source_editor_toolbar, default_enabled: :yaml)
       push_frontend_feature_flag(:gl_avatar_for_all_user_avatars, default_enabled: :yaml)
       push_frontend_feature_flag(:mr_attention_requests, default_enabled: :yaml)
-      push_frontend_feature_flag(:markdown_continue_lists, default_enabled: :yaml)
       push_frontend_feature_flag(:follow_in_user_popover, current_user, default_enabled: :yaml)
     end
 
