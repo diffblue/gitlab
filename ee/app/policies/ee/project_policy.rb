@@ -279,6 +279,7 @@ module EE
         enable :read_project_audit_events
         enable :read_cluster
         enable :read_terraform_state
+        enable :read_project_merge_request_analytics
       end
 
       rule { ~security_and_compliance_disabled & auditor }.policy do
