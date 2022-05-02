@@ -13,11 +13,11 @@ RSpec.describe 'Iterations list', :js do
   let_it_be(:subgroup_iteration) { create(:iteration, :skip_future_date_validation, group: subgroup, start_date: now - 3.days, due_date: now + 4.days) }
   let_it_be(:subgroup_closed_iteration) { create(:iteration, :skip_future_date_validation, group: subgroup, start_date: now - 5.days, due_date: now - 4.days) }
 
-  context 'as guest' do
-    before do
-      stub_feature_flags(iteration_cadences: false)
-    end
+  before do
+    stub_feature_flags(iteration_cadences: false)
+  end
 
+  context 'as guest' do
     context 'when in group' do
       before do
         visit group_iterations_path(group)

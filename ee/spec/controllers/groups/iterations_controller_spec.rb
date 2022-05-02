@@ -86,7 +86,6 @@ RSpec.describe Groups::IterationsController do
         false | :developer | lazy { iteration }
         true  | :none      | lazy { iteration }
         true  | :guest     | lazy { other_iteration }
-        true  | :developer | lazy { other_iteration }
       end
 
       with_them do
@@ -146,7 +145,6 @@ RSpec.describe Groups::IterationsController do
 
       context 'when role is developer' do
         let(:iteration_license_available) { true }
-        let(:iteration_cadences) { true }
         let(:role) { :developer }
 
         it 'redirects to the group iteration cadence index path' do
@@ -192,7 +190,6 @@ RSpec.describe Groups::IterationsController do
 
       context 'when role is developer and can edit the requested iteration' do
         let(:iteration_license_available) { true }
-        let(:iteration_cadences) { true }
         let(:role) { :developer }
 
         it 'redirects to the corresponding iteration cadence path' do

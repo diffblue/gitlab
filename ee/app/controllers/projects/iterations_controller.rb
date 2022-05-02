@@ -9,13 +9,15 @@ class Projects::IterationsController < Projects::ApplicationController
   feature_category :team_planning
 
   def index
-    redirect_to project_iteration_cadences_path(project) if project.group.iteration_cadences_feature_flag_enabled?
+    return unless project.group.iteration_cadences_feature_flag_enabled?
+
+    redirect_to project_iteration_cadences_path(project)
   end
 
   def show
-    if project.group.iteration_cadences_feature_flag_enabled?
-      redirect_to project_iteration_cadence_iteration_path(project, iteration_cadence_id: cadence_id, id: params[:id])
-    end
+    return unless project.group.iteration_cadences_feature_flag_enabled?
+
+    redirect_to project_iteration_cadence_iteration_path(project, iteration_cadence_id: cadence_id, id: params[:id])
   end
 
   private

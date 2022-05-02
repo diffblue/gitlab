@@ -10,6 +10,9 @@ RSpec.describe Projects::IterationsController do
   shared_examples 'iterations license is not available' do
     before do
       stub_licensed_features(iterations: false)
+
+      project.add_developer(user)
+
       sign_in(user)
     end
 
@@ -76,14 +79,12 @@ RSpec.describe Projects::IterationsController do
     let_it_be(:cadence) { create(:iterations_cadence, group: group) }
     let_it_be(:iteration) { create(:iteration, iterations_cadence: cadence) }
 
-    let(:requested_iteration) { iteration }
-
     subject do
       get :show,
       params: {
         namespace_id: project.namespace,
         project_id: project,
-        id: requested_iteration.id
+        id: iteration.id
       }
     end
 
@@ -113,12 +114,7 @@ RSpec.describe Projects::IterationsController do
         end
 
         context 'when current user cannot view the requested iteration' do
-          let_it_be(:other_iteration) do
-            other_cadence = create(:iterations_cadence, group: create(:group))
-            create(:iteration, iterations_cadence: other_cadence)
-          end
-
-          let(:requested_iteration) { other_iteration }
+          let_it_be(:iteration) { create(:iteration, iterations_cadence: create(:iterations_cadence)) }
 
           it_behaves_like 'returning response status', :not_found
         end
@@ -130,8 +126,8 @@ RSpec.describe Projects::IterationsController do
             expect(response).to redirect_to(
               project_iteration_cadence_iteration_path(
                 project,
-                iteration_cadence_id: requested_iteration.iterations_cadence_id,
-                id: requested_iteration.id
+                iteration_cadence_id: iteration.iterations_cadence_id,
+                id: iteration.id
               )
             )
           end

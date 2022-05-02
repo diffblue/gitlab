@@ -10,23 +10,27 @@ class Groups::IterationsController < Groups::ApplicationController
   feature_category :team_planning
 
   def index
-    redirect_to group_iteration_cadences_path(group) if group.iteration_cadences_feature_flag_enabled?
+    return unless group.iteration_cadences_feature_flag_enabled?
+
+    redirect_to group_iteration_cadences_path(group)
   end
 
   def show
-    if group.iteration_cadences_feature_flag_enabled?
-      redirect_to group_iteration_cadence_iteration_path(iteration_cadence_id: cadence_id, id: params[:id])
-    end
+    return unless group.iteration_cadences_feature_flag_enabled?
+
+    redirect_to group_iteration_cadence_iteration_path(iteration_cadence_id: cadence_id, id: params[:id])
   end
 
   def new
-    redirect_to group_iteration_cadences_path(group) if group.iteration_cadences_feature_flag_enabled?
+    return unless group.iteration_cadences_feature_flag_enabled?
+
+    redirect_to group_iteration_cadences_path(group)
   end
 
   def edit
-    if group.iteration_cadences_feature_flag_enabled?
-      redirect_to edit_group_iteration_cadence_iteration_path(iteration_cadence_id: cadence_id, id: params[:id])
-    end
+    return unless group.iteration_cadences_feature_flag_enabled?
+
+    redirect_to edit_group_iteration_cadence_iteration_path(iteration_cadence_id: cadence_id, id: params[:id])
   end
 
   private
