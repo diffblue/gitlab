@@ -81,12 +81,36 @@ RSpec.describe EE::IntegrationsHelper do
   end
 
   describe '#add_to_slack_link' do
-    it 'encodes a masked CSRF token' do
-      expect(subject).to receive(:form_authenticity_token).and_return('a token')
-      slack_link = subject.add_to_slack_link(project, '123456')
+    let(:slack_link) { subject.add_to_slack_link(project, 'A12345') }
+    let(:query) { Rack::Utils.parse_query(URI.parse(slack_link).query) }
 
-      expect(slack_link).to start_with('https://slack.com/oauth/authorize')
-      expect(slack_link).to include('redirect_uri=http://some-path/project/1&state=a+token')
+    before do
+      expect(subject).to receive(:form_authenticity_token).and_return('a token')
+    end
+
+    it 'returns the endpoint URL with all needed params' do
+      expect(slack_link).to start_with(Projects::SlackApplicationInstallService::SLACK_AUTHORIZE_URL)
+      expect(slack_link).to include('&state=a+token')
+
+      expect(query).to include(
+        'scope' => 'commands',
+        'client_id' => 'A12345',
+        'redirect_uri' => subject.slack_auth_project_settings_slack_url(project) + '?v2=true',
+        'state' => 'a token'
+      )
+    end
+
+    context 'when the FF :slack_app_use_v2_flow is disabled' do
+      before do
+        stub_feature_flags(slack_app_use_v2_flow: false)
+      end
+
+      it 'returns the URL for the legacy endpoint' do
+        expect(slack_link).to start_with(Projects::SlackApplicationInstallService::SLACK_AUTHORIZE_URL_LEGACY)
+        expect(query).to include(
+          'redirect_uri' => subject.slack_auth_project_settings_slack_url(project)
+        )
+      end
     end
   end
 
