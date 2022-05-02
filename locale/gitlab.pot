@@ -13998,9 +13998,6 @@ msgstr ""
 msgid "Enable What's new: Current tier only"
 msgstr ""
 
-msgid "Enable a Prometheus endpoint that exposes health and performance statistics. The Health Check menu item appears in the Monitoring section of the Admin Area. Restart required."
-msgstr ""
-
 msgid "Enable access to the performance bar for non-administrators in a given group."
 msgstr ""
 
@@ -14026,6 +14023,9 @@ msgid "Enable authentication"
 msgstr ""
 
 msgid "Enable automatic repository housekeeping"
+msgstr ""
+
+msgid "Enable collection of application metrics. Restart required."
 msgstr ""
 
 msgid "Enable container expiration and retention policies for projects created earlier than GitLab 12.7."
@@ -18982,6 +18982,9 @@ msgid "How many seconds an IP counts toward the IP address limit."
 msgstr ""
 
 msgid "How the job limiter handles jobs exceeding the thresholds specified below. The 'track' mode only logs the jobs. The 'compress' mode compresses the jobs and raises an exception if the compressed size exceeds the limit."
+msgstr ""
+
+msgid "How to export these metrics to Prometheus?"
 msgstr ""
 
 msgid "I accept the %{terms_link}"
