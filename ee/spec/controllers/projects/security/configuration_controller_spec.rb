@@ -78,7 +78,7 @@ RSpec.describe Projects::Security::ConfigurationController do
           'div#js-security-configuration'\
             "[data-auto-devops-help-page-path=\"#{help_page_path('topics/autodevops/index')}\"]"\
             "[data-help-page-path=\"#{help_page_path('user/application_security/index')}\"]"\
-            "[data-latest-pipeline-path=\"#{help_page_path('ci/pipelines')}\"]"
+            "[data-latest-pipeline-path=\"#{help_page_path('ci/pipelines/index')}\"]"
         )
       end
 
