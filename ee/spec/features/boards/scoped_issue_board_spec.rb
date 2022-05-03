@@ -80,6 +80,24 @@ RSpec.describe 'Scoped issue boards', :js do
 
           expect_dot_highlight('Edit board')
         end
+
+        context 'iteration' do
+          let_it_be(:cadence) { create(:iterations_cadence, group: group, active: true, duration_in_weeks: 1, title: 'one week iterations') }
+          let_it_be(:iteration) { create(:current_iteration, :skip_future_date_validation, iterations_cadence: cadence, title: 'one test', group: group, start_date: 1.day.ago, due_date: Date.today) }
+
+          before do
+            stub_feature_flags(iteration_cadences: true)
+          end
+
+          it 'creates a board with any iteration within cadence' do
+            create_board_iteration('Any')
+
+            expect(find('.gl-filtered-search-scrollable')).to have_content(cadence.title)
+            expect(find('.gl-filtered-search-scrollable')).to have_content('Any')
+
+            expect(all('.board')[1]).to have_selector('.board-card', count: 0)
+          end
+        end
       end
 
       context 'labels' do
@@ -621,6 +639,10 @@ RSpec.describe 'Scoped issue boards', :js do
 
   def create_board_assignee(assignee_name)
     create_board_scope('assignee', assignee_name)
+  end
+
+  def create_board_iteration(iteration_title)
+    create_board_scope('iteration', iteration_title)
   end
 
   # Update board helper methods
