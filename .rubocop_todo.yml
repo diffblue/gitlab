@@ -200,11 +200,6 @@ Style/CaseLikeIf:
 Style/EmptyMethod:
   Enabled: false
 
-# Offense count: 118
-# Cop supports --auto-correct.
-Style/ExplicitBlockArgument:
-  Enabled: false
-
 # Offense count: 581
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle.
