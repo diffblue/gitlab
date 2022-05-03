@@ -158,8 +158,3 @@ Style/Lambda:
 # Cop supports --auto-correct.
 Style/RedundantRegexpEscape:
   Enabled: false
-
-# Offense count: 53
-# Cop supports --auto-correct.
-Style/RescueModifier:
-  Enabled: false
