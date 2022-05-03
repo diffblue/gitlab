@@ -61,7 +61,13 @@ RSpec.describe Groups::SecurityFeaturesHelper do
   describe '#group_level_security_dashboard_data' do
     subject { helper.group_level_security_dashboard_data(group) }
 
-    let(:common_expected_data) do
+    before do
+      allow(helper).to receive(:current_user).and_return(:user)
+      allow(helper).to receive(:can?).and_return(true)
+    end
+
+    let(:has_projects) { 'false' }
+    let(:expected_data) do
       {
         projects_endpoint: "http://localhost/api/v4/groups/#{group.id}/projects",
         group_full_path: group.full_path,
@@ -75,31 +81,17 @@ RSpec.describe Groups::SecurityFeaturesHelper do
         vulnerabilities_export_endpoint: "/api/v4/security/groups/#{group.id}/vulnerability_exports",
         scanners: '[]',
         can_admin_vulnerability: 'true',
-        can_view_false_positive: 'false'
+        can_view_false_positive: 'false',
+        has_projects: has_projects
       }
     end
 
-    before do
-      allow(helper).to receive(:current_user).and_return(:user)
-      allow(helper).to receive(:can?).and_return(true)
-    end
-
     context 'when it does not have projects' do
-      let(:expected_data) do
-        common_expected_data.merge({
-          has_projects: 'false'
-        })
-      end
-
       it { is_expected.to eq(expected_data) }
     end
 
     context 'when it has projects' do
-      let(:expected_data) do
-        common_expected_data.merge({
-          has_projects: 'true'
-        })
-      end
+      let(:has_projects) { 'true' }
 
       before do
         create(:project, :public, group: group)
@@ -110,11 +102,7 @@ RSpec.describe Groups::SecurityFeaturesHelper do
 
     context 'when it does not have projects but has subgroups that do' do
       let(:subgroup) { create(:group, parent: group) }
-      let(:expected_data) do
-        common_expected_data.merge({
-          has_projects: 'true'
-        })
-      end
+      let(:has_projects) { 'true' }
 
       before do
         create(:project, :public, group: subgroup)
