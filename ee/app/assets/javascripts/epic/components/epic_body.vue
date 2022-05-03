@@ -28,6 +28,8 @@ export default {
       'initialDescriptionText',
       'lockVersion',
       'sidebarCollapsed',
+      'state',
+      'confidential',
     ]),
     ...mapGetters(['isUserSignedIn']),
   },
@@ -52,6 +54,8 @@ export default {
         :lock-version="lockVersion"
         :initial-description-html="initialDescriptionHtml"
         :initial-description-text="initialDescriptionText"
+        :issuable-status="state"
+        :is-confidential="confidential"
         :show-inline-edit-button="true"
         :enable-autocomplete="true"
         project-namespace
