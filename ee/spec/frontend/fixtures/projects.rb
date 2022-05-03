@@ -17,13 +17,14 @@ RSpec.describe 'Projects (JavaScript fixtures)', type: :controller do
     context 'project storage statistics query' do
       before do
         project.statistics.update!(
-          repository_size: 3900000,
-          lfs_objects_size: 4800000,
-          build_artifacts_size: 400000,
-          pipeline_artifacts_size: 400000,
-          wiki_size: 300000,
-          packages_size: 3800000,
-          uploads_size: 900000
+          repository_size: 3_900_000,
+          lfs_objects_size: 4_800_000,
+          build_artifacts_size: 400_000,
+          pipeline_artifacts_size: 400_000,
+          container_registry_size: 3_900_000,
+          wiki_size: 300_000,
+          packages_size: 3_800_000,
+          uploads_size: 900_000
         )
       end
 

@@ -11,12 +11,20 @@ describe('ProjectStorageDetail', () => {
   const { storageTypes } = projectData.storage;
   const defaultProps = { storageTypes };
 
-  const createComponent = (props = {}) => {
+  const createComponent = (
+    props = {},
+    { containerRegistryProjectStatistics } = { containerRegistryProjectStatistics: true },
+  ) => {
     wrapper = extendedWrapper(
       mount(ProjectStorageDetail, {
         propsData: {
           ...defaultProps,
           ...props,
+        },
+        provide: {
+          glFeatures: {
+            containerRegistryProjectStatistics,
+          },
         },
       }),
     );
@@ -29,6 +37,16 @@ describe('ProjectStorageDetail', () => {
   });
   afterEach(() => {
     wrapper.destroy();
+  });
+
+  describe('with container registry FF off', () => {
+    beforeEach(() => {
+      createComponent(null, { containerRegistryProjectStatistics: false });
+    });
+
+    it('skips container registry entry', () => {
+      expect(wrapper.findByTestId('containerRegistrySize-name').exists()).toBe(false);
+    });
   });
 
   describe('with storage types', () => {
