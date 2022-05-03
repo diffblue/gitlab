@@ -23718,6 +23718,9 @@ msgstr ""
 msgid "Maximum number of unique IP addresses per user."
 msgstr ""
 
+msgid "Maximum of 255 characters"
+msgstr ""
+
 msgid "Maximum page reached"
 msgstr ""
 

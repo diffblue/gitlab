@@ -1,16 +1,20 @@
-import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
+import VueApollo from 'vue-apollo';
 
-import { nextTick } from 'vue';
 import TestCaseCreateRoot from 'ee/test_case_create/components/test_case_create_root.vue';
 import createTestCase from 'ee/test_case_create/queries/create_test_case.mutation.graphql';
+import createMockApollo from 'helpers/mock_apollo_helper';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import waitForPromises from 'helpers/wait_for_promises';
 
 import createFlash from '~/flash';
 import IssuableCreate from '~/vue_shared/issuable/create/components/issuable_create_root.vue';
-import IssuableForm from '~/vue_shared/issuable/create/components/issuable_form.vue';
 import { redirectTo } from '~/lib/utils/url_utility';
 
 jest.mock('~/flash');
 jest.mock('~/lib/utils/url_utility');
+
+Vue.use(VueApollo);
 
 const mockProvide = {
   projectFullPath: 'gitlab-org/gitlab-test',
@@ -21,202 +25,132 @@ const mockProvide = {
   labelsManagePath: '/gitlab-org/gitlab-shell/-/labels',
 };
 
-const createComponent = () =>
-  shallowMount(TestCaseCreateRoot, {
-    provide: mockProvide,
-    mocks: {
-      $apollo: {
-        mutate: jest.fn(),
-      },
+const mutationResponseSuccess = {
+  data: {
+    createTestCase: {
+      clientMutationId: '',
+      errors: [],
     },
-    stubs: {
-      IssuableCreate,
-      IssuableForm,
+  },
+};
+
+const titleError = 'Title is too long';
+
+const mutationResponseError = {
+  data: {
+    createTestCase: {
+      clientMutationId: '',
+      errors: [titleError],
     },
-  });
+  },
+};
+
+const mutationSuccessHandler = jest.fn().mockResolvedValue(mutationResponseSuccess);
 
 describe('TestCaseCreateRoot', () => {
   let wrapper;
 
-  beforeEach(() => {
-    wrapper = createComponent();
-  });
+  const findSubmitButton = () => wrapper.findByTestId('submit-test-case');
+  const findCancelButton = () => wrapper.findByTestId('cancel-test-case');
+
+  const createComponent = ({ title = '', handler = mutationSuccessHandler } = {}) => {
+    wrapper = shallowMountExtended(TestCaseCreateRoot, {
+      provide: mockProvide,
+      apolloProvider: createMockApollo([[createTestCase, handler]]),
+      stubs: {
+        IssuableCreate,
+        IssuableForm: {
+          template: `
+            <div>
+              <slot
+                name="actions"
+                issuable-title="${title}"
+                issuable-description="Test description"
+                :selected-labels="[]"
+              ></slot>
+            </div>
+          `,
+        },
+      },
+    });
+  };
 
   afterEach(() => {
     wrapper.destroy();
   });
 
-  describe('methods', () => {
-    describe('handleTestCaseSubmitClick', () => {
-      const issuableTitle = 'Sample title';
-      const issuableDescription = 'Sample _description_.';
-      const selectedLabels = [
-        {
-          id: 1,
-          set: true,
-          color: '#BADA55',
-          text_color: '#FFFFFF',
-          title: 'Bug',
+  it('renders disabled `Submit test case` button if no title is entered', () => {
+    createComponent();
+
+    expect(findSubmitButton().props('disabled')).toBe(true);
+  });
+
+  it('renders enabled `Submit test case` button if title is entered', () => {
+    createComponent({ title: 'Test title' });
+
+    expect(findSubmitButton().props('disabled')).toBe(false);
+  });
+
+  describe('when creating new case', () => {
+    beforeEach(() => {
+      createComponent({ title: 'Test title' });
+      findSubmitButton().vm.$emit('click');
+    });
+
+    it('calls mutation on submit button click', () => {
+      expect(mutationSuccessHandler).toHaveBeenCalledWith({
+        createTestCaseInput: {
+          description: 'Test description',
+          labelIds: [],
+          projectPath: 'gitlab-org/gitlab-test',
+          title: 'Test title',
         },
-      ];
-      const mockCreateMutationResult = {
-        data: {
-          createTestCase: {
-            errors: [],
-          },
-        },
-      };
-
-      it('sets `createTestCaseRequestActive` prop to true', () => {
-        jest.spyOn(wrapper.vm.$apollo, 'mutate').mockResolvedValue(mockCreateMutationResult);
-
-        wrapper.vm.handleTestCaseSubmitClick({
-          issuableTitle,
-          issuableDescription,
-          selectedLabels,
-        });
-
-        expect(wrapper.vm.createTestCaseRequestActive).toBe(true);
       });
+    });
 
-      it('calls `$apollo.mutate` with `createTestCase` mutation and input variables containing projectPath, title, description and labelIds', () => {
-        jest.spyOn(wrapper.vm.$apollo, 'mutate').mockResolvedValue(mockCreateMutationResult);
+    it('shows loading state on submit button', () => {
+      expect(findSubmitButton().props('loading')).toBe(true);
+    });
 
-        wrapper.vm.handleTestCaseSubmitClick({
-          issuableTitle,
-          issuableDescription,
-          selectedLabels,
-        });
+    it('disables cancel button', () => {
+      expect(findCancelButton().props('disabled')).toBe(true);
+    });
 
-        expect(wrapper.vm.$apollo.mutate).toHaveBeenCalledWith(
-          expect.objectContaining({
-            mutation: createTestCase,
-            variables: {
-              createTestCaseInput: {
-                projectPath: 'gitlab-org/gitlab-test',
-                title: issuableTitle,
-                description: issuableDescription,
-                labelIds: selectedLabels.map((label) => label.id),
-              },
-            },
-          }),
-        );
-      });
+    it('redirects after successful mutation', async () => {
+      await waitForPromises();
 
-      it('calls `redirectTo` with projectTestCasesPath when mutation is successful', () => {
-        jest.spyOn(wrapper.vm.$apollo, 'mutate').mockResolvedValue(mockCreateMutationResult);
-
-        return wrapper.vm
-          .handleTestCaseSubmitClick({
-            issuableTitle,
-            issuableDescription,
-            selectedLabels,
-          })
-          .then(() => {
-            expect(redirectTo).toHaveBeenCalledWith(mockProvide.projectTestCasesPath);
-          })
-          .finally(() => {
-            expect(wrapper.vm.createTestCaseRequestActive).toBe(false);
-          });
-      });
-
-      it('calls `createFlash` with message and error captured when mutation fails', () => {
-        jest.spyOn(wrapper.vm.$apollo, 'mutate').mockRejectedValue({});
-
-        return wrapper.vm
-          .handleTestCaseSubmitClick({
-            issuableTitle,
-            issuableDescription,
-            selectedLabels,
-          })
-          .then(() => {
-            expect(createFlash).toHaveBeenCalledWith({
-              message: 'Something went wrong while creating a test case.',
-              captureError: true,
-              error: expect.any(Object),
-            });
-          })
-          .finally(() => {
-            expect(wrapper.vm.createTestCaseRequestActive).toBe(false);
-          });
-      });
+      expect(redirectTo).toHaveBeenCalledWith(mockProvide.projectTestCasesPath);
     });
   });
 
-  describe('template', () => {
-    it('renders issuable-create as a root component', () => {
-      const {
-        descriptionPreviewPath,
-        descriptionHelpPath,
-        labelsFetchPath,
-        labelsManagePath,
-      } = mockProvide;
-
-      expect(wrapper.findComponent(IssuableCreate).exists()).toBe(true);
-      expect(wrapper.findComponent(IssuableCreate).props()).toMatchObject({
-        descriptionPreviewPath,
-        descriptionHelpPath,
-        labelsFetchPath,
-        labelsManagePath,
-      });
+  it('shows an error when mutation has unrecoverable error', async () => {
+    const mockError = new Error();
+    createComponent({
+      title: 'Test title',
+      handler: jest.fn().mockRejectedValue(mockError),
     });
+    findSubmitButton().vm.$emit('click');
+    await waitForPromises();
 
-    it('renders page title', () => {
-      expect(wrapper.find('h3').text()).toBe('New Test Case');
+    expect(createFlash).toHaveBeenCalledWith({
+      captureError: true,
+      error: mockError,
+      message: 'Something went wrong while creating a test case.',
     });
+  });
 
-    it('renders page actions', () => {
-      const submitEl = wrapper.find('[data-testid="submit-test-case"]');
-      const cancelEl = wrapper.find('[data-testid="cancel-test-case"]');
-
-      expect(submitEl.text()).toBe('Submit test case');
-      expect(submitEl.props()).toMatchObject({
-        loading: false,
-        disabled: true,
-      });
-      expect(cancelEl.text()).toBe('Cancel');
-      expect(cancelEl.props('disabled')).toBe(false);
-      expect(cancelEl.attributes('href')).toBe(mockProvide.projectTestCasesPath);
+  it('shows a warning  when mutation has recoverable error', async () => {
+    createComponent({
+      title: 'Test title',
+      handler: jest.fn().mockResolvedValue(mutationResponseError),
     });
+    findSubmitButton().vm.$emit('click');
+    await waitForPromises();
 
-    it('submit button shows loading animation when `createTestCaseRequestActive` is true', async () => {
-      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-      // eslint-disable-next-line no-restricted-syntax
-      wrapper.setData({
-        createTestCaseRequestActive: true,
-      });
-
-      await nextTick();
-
-      expect(wrapper.find('[data-testid="submit-test-case"]').props('loading')).toBe(true);
-    });
-
-    it('cancel button is disabled when `createTestCaseRequestActive` is true', async () => {
-      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-      // eslint-disable-next-line no-restricted-syntax
-      wrapper.setData({
-        createTestCaseRequestActive: true,
-      });
-
-      await nextTick();
-
-      expect(wrapper.find('[data-testid="cancel-test-case"]').props('disabled')).toBe(true);
-    });
-
-    describe('events', () => {
-      it('submit button click calls `handleTestCaseSubmitClick` method', () => {
-        jest.spyOn(wrapper.vm, 'handleTestCaseSubmitClick').mockImplementation(jest.fn);
-
-        const submitButton = wrapper.find('[data-testid="submit-test-case"]');
-
-        submitButton.vm.$emit('click');
-
-        expect(wrapper.vm.handleTestCaseSubmitClick).toHaveBeenCalledWith({
-          issuableTitle: '',
-          issuableDescription: '',
-          selectedLabels: [],
-        });
-      });
+    expect(createFlash).toHaveBeenCalledWith({
+      captureError: true,
+      error: titleError,
+      message: titleError,
     });
   });
 });
