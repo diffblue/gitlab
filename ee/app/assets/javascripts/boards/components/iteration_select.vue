@@ -51,10 +51,10 @@ export default {
     return {
       search: '',
       iterations: [],
-      selected: this.board.iteration
+      selected: this.board.iteration?.id
         ? {
             ...this.board.iteration,
-            id: convertToGraphQLId(TYPE_ITERATION, getIdFromGraphQLId(this.board.iteration?.id)),
+            id: convertToGraphQLId(TYPE_ITERATION, getIdFromGraphQLId(this.board.iteration.id)),
             iterationCadenceId: this.board.iterationCadence?.id,
             cadenceTitle: this.board.iterationCadence?.title,
           }
