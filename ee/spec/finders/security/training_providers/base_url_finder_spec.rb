@@ -7,6 +7,7 @@ RSpec.describe Security::TrainingProviders::BaseUrlFinder do
   let_it_be(:provider) { create(:security_training_provider, name: provider_name) }
   let_it_be(:identifier) { create(:vulnerabilities_identifier, external_type: 'cwe', external_id: 2) }
   let_it_be(:dummy_url) { 'http://test.host/test' }
+  let_it_be(:language) { "ruby" }
 
   describe '#execute' do
     it 'raises an error if full_url is not implemented' do
@@ -28,6 +29,12 @@ RSpec.describe Security::TrainingProviders::BaseUrlFinder do
       it 'returns a nil url with status pending' do
         expect(described_class.new(identifier.project, provider, identifier.external_id).execute).to eq({ name: provider.name, url: nil, status: 'pending' })
       end
+
+      context 'when a language is used on the finder' do
+        it 'returns a nil url with status pending' do
+          expect(described_class.new(identifier.project, provider, identifier.external_id, language).execute).to eq({ name: provider.name, url: nil, status: 'pending' })
+        end
+      end
     end
 
     context 'when response_url is not nil' do
@@ -41,6 +48,12 @@ RSpec.describe Security::TrainingProviders::BaseUrlFinder do
 
       it 'returns a url with status completed' do
         expect(described_class.new(identifier.project, provider, identifier.external_id).execute).to eq({ name: provider.name, url: dummy_url, status: 'completed', identifier: identifier.external_id })
+      end
+
+      context 'when a language is used on the finder' do
+        it 'returns a url with status completed' do
+          expect(described_class.new(identifier.project, provider, identifier.external_id, language).execute).to eq({ name: provider.name, url: dummy_url, status: 'completed', identifier: identifier.external_id })
+        end
       end
     end
 
@@ -56,12 +69,24 @@ RSpec.describe Security::TrainingProviders::BaseUrlFinder do
       it 'returns nil' do
         expect(described_class.new(identifier.project, provider, identifier.external_id).execute).to be_nil
       end
+
+      context 'when a language is used on the finder' do
+        it 'returns nil' do
+          expect(described_class.new(identifier.project, provider, identifier.external_id, language).execute).to be_nil
+        end
+      end
     end
   end
 
   describe '.from_cache' do
     it 'returns instance of finder object' do
       expect(described_class.from_cache("#{identifier.project.id}-#{provider.id}-#{identifier.external_id}")).to be_an_instance_of(described_class)
+    end
+
+    context 'when a language is used on the finder' do
+      it 'returns instance of finder object' do
+        expect(described_class.from_cache("#{identifier.project.id}-#{provider.id}-#{identifier.external_id}-#{language}")).to be_an_instance_of(described_class)
+      end
     end
   end
 end
