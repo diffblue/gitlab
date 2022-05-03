@@ -1,0 +1,22 @@
+.gl-card.gl-mt-7.gl-mr-7.billing-plan-card{ class: card_border_classes, data: { testid: card_testid } }
+  .gl-card-header{ class: header_classes }
+    = header_text
+  .gl-card-body
+    = image_tag image_path('logo.svg'), class: 'svg gl-w-8!'
+    .gl-font-size-h1.gl-font-weight-bold.gl-line-height-24.gl-text-purple-800.gl-mb-3
+      = name
+    .gl-font-sm.gl-mb-4.gl-mx-4.gl-text-gray-700
+      = elevator_pitch
+    .gl-line-height-52.gl-font-size-h-display-xl.gl-font-weight-bold.gl-text-gray-800.gl-mb-4
+      = price_per_month
+    .gl-min-h-8.gl-mb-4
+      .gl-font-sm.gl-mx-4.gl-text-gray-700
+        = s_("BillingPlans|per user/month")
+      - unless free?
+        .gl-font-sm.gl-mt-0.gl-mx-4.gl-text-gray-700
+          = annual_price_text
+    = link_to cta_text, cta_url, class: cta_classes, data: cta_data
+    %ul.gl-pl-6.gl-pr-0
+      - features.each do |feature|
+        %li.gl-text-left.gl-font-sm.gl-text-gray-700.gl-line-height-normal
+          = feature.title

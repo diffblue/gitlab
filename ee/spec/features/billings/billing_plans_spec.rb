@@ -71,65 +71,6 @@ RSpec.describe 'Billing plan pages', :feature, :saas, :js do
     end
   end
 
-  shared_examples 'can contact sales' do
-    before do
-      visit page_path
-    end
-
-    it 'displays the in-app hand raise lead', :aggregate_failures do
-      form_data = {
-        first_name: user.first_name,
-        last_name: user.last_name,
-        phone_number: '+1 23 456-78-90',
-        company_size: '1 - 99',
-        company_name: user.organization,
-        country: { id: 'US', name: 'United States of America' },
-        state: { id: 'CA', name: 'California' }
-      }
-      hand_raise_lead_params = {
-        "first_name" => form_data[:first_name],
-        "last_name" => form_data[:last_name],
-        "company_name" => form_data[:company_name],
-        "company_size" => form_data[:company_size].delete(' '),
-        "phone_number" => form_data[:phone_number],
-        "country" => form_data.dig(:country, :id),
-        "state" => form_data.dig(:state, :id),
-        "namespace_id" => namespace.id,
-        "comment" => '',
-        "glm_content" => 'billing-group',
-        "work_email" => user.email,
-        "uid" => user.id,
-        "setup_for_company" => user.setup_for_company,
-        "provider" => "gitlab",
-        "glm_source" => 'gitlab.com'
-      }
-
-      lead_params = ActionController::Parameters.new(hand_raise_lead_params).permit!
-
-      expect_next_instance_of(GitlabSubscriptions::CreateHandRaiseLeadService) do |service|
-        expect(service).to receive(:execute).with(lead_params).and_return(double('lead', success?: true ))
-      end
-
-      page.within('[data-testid="plan-card-premium"]') do
-        click_button 'Contact sales'
-      end
-
-      expect(page).to have_content('Contact our Sales team')
-      expect(page).to have_field('First Name', with: form_data[:first_name])
-      expect(page).to have_field('Last Name', with: form_data[:last_name])
-      expect(page).to have_field('Company Name', with: form_data[:company_name])
-
-      page.within('[data-testid="hand-raise-lead-modal"]') do
-        select form_data[:company_size], from: 'company-size'
-        fill_in 'phone-number', with: form_data[:phone_number]
-        select form_data.dig(:country, :name), from: 'country'
-        select form_data.dig(:state, :name), from: 'state'
-
-        click_button 'Submit information'
-      end
-    end
-  end
-
   shared_examples 'non-upgradable plan' do
     before do
       visit page_path
@@ -191,67 +132,6 @@ RSpec.describe 'Billing plan pages', :feature, :saas, :js do
     end
   end
 
-  shared_examples 'active deprecated plan' do
-    let(:legacy_plan) { plans_data.find { |plan_data| plan_data[:id] == 'bronze-external-id' } }
-    let(:expected_card_header) { "#{legacy_plan[:name]} (Legacy)" }
-
-    before do
-      stub_feature_flags(hide_deprecated_billing_plans: true)
-
-      visit page_path
-    end
-
-    it 'renders the plan card marked as Legacy' do
-      page.within("[data-testid='billing-plans']") do
-        panels = page.all('.card')
-        expect(panels.length).to eq(plans_data.length)
-
-        panel_with_legacy_plan = page.find("[data-testid='plan-card-#{legacy_plan[:code]}']")
-
-        expect(panel_with_legacy_plan.find('.card-header')).to have_content(expected_card_header)
-        expect(panel_with_legacy_plan.find('.card-body')).to have_link('frequently asked questions')
-      end
-    end
-  end
-
-  shared_examples 'inactive deprecated plan' do
-    let(:legacy_plan) { plans_data.find { |plan_data| plan_data[:id] == 'bronze-external-id' } }
-
-    before do
-      stub_feature_flags(hide_deprecated_billing_plans: true)
-
-      visit page_path
-    end
-
-    it 'does not render the card for that plan' do
-      expect(page).not_to have_selector("[data-testid='plan-card-#{legacy_plan[:code]}']")
-    end
-  end
-
-  shared_examples 'plan with free upgrade' do
-    before do
-      visit page_path
-    end
-
-    it 'displays the free upgrade' do
-      within '.card-badge' do
-        expect(page).to have_text('Free upgrade!')
-      end
-    end
-  end
-
-  shared_examples 'plan with sales-assisted upgrade' do
-    before do
-      visit page_path
-    end
-
-    it 'displays the sales assisted offer' do
-      within '.card-badge' do
-        expect(page).to have_text('Upgrade offers available!')
-      end
-    end
-  end
-
   context 'users profile billing page' do
     let(:page_path) { profile_billings_path }
 
@@ -308,8 +188,36 @@ RSpec.describe 'Billing plan pages', :feature, :saas, :js do
           stub_eoa_eligibility_request(namespace.id, true, premium_plan_data[:id])
         end
 
-        it_behaves_like 'plan with free upgrade'
-        it_behaves_like 'active deprecated plan'
+        it 'displays the free upgrade' do
+          visit page_path
+
+          within '.card-badge' do
+            expect(page).to have_text('Free upgrade!')
+          end
+        end
+
+        context 'with an active deprecated plan' do
+          let(:legacy_plan) { plans_data.find { |plan_data| plan_data[:id] == 'bronze-external-id' } }
+          let(:expected_card_header) { "#{legacy_plan[:name]} (Legacy)" }
+
+          before do
+            stub_feature_flags(hide_deprecated_billing_plans: true)
+
+            visit page_path
+          end
+
+          it 'renders the plan card marked as Legacy' do
+            page.within("[data-testid='billing-plans']") do
+              panels = page.all('.card')
+              expect(panels.length).to eq(plans_data.length)
+
+              panel_with_legacy_plan = page.find("[data-testid='plan-card-#{legacy_plan[:code]}']")
+
+              expect(panel_with_legacy_plan.find('.card-header')).to have_content(expected_card_header)
+              expect(panel_with_legacy_plan.find('.card-body')).to have_link('frequently asked questions')
+            end
+          end
+        end
 
         context 'with more than 25 users' do
           let!(:subscription) { create(:gitlab_subscription, namespace: namespace, hosted_plan: plan, seats: 30) }
@@ -318,7 +226,13 @@ RSpec.describe 'Billing plan pages', :feature, :saas, :js do
             stub_eoa_eligibility_request(namespace.id, false, premium_plan_data[:id])
           end
 
-          it_behaves_like 'plan with sales-assisted upgrade'
+          it 'displays the sales assisted offer' do
+            visit page_path
+
+            within '.card-badge' do
+              expect(page).to have_text('Upgrade offers available!')
+            end
+          end
         end
       end
     end
@@ -408,6 +322,48 @@ RSpec.describe 'Billing plan pages', :feature, :saas, :js do
     let(:namespace) { create(:group) }
     let!(:group_member) { create(:group_member, :owner, group: namespace, user: user) }
 
+    shared_context 'hand raise lead form setup' do
+      let(:form_data) do
+        {
+          first_name: user.first_name,
+          last_name: user.last_name,
+          phone_number: '+1 23 456-78-90',
+          company_size: '1 - 99',
+          company_name: user.organization,
+          country: { id: 'US', name: 'United States of America' },
+          state: { id: 'CA', name: 'California' }
+        }
+      end
+
+      let(:hand_raise_lead_params) do
+        {
+          "first_name" => form_data[:first_name],
+          "last_name" => form_data[:last_name],
+          "company_name" => form_data[:company_name],
+          "company_size" => form_data[:company_size].delete(' '),
+          "phone_number" => form_data[:phone_number],
+          "country" => form_data.dig(:country, :id),
+          "state" => form_data.dig(:state, :id),
+          "namespace_id" => namespace.id,
+          "comment" => '',
+          "glm_content" => 'billing-group',
+          "work_email" => user.email,
+          "uid" => user.id,
+          "setup_for_company" => user.setup_for_company,
+          "provider" => "gitlab",
+          "glm_source" => 'gitlab.com'
+        }
+      end
+
+      let(:lead_params) { ActionController::Parameters.new(hand_raise_lead_params).permit! }
+
+      before do
+        expect_next_instance_of(GitlabSubscriptions::CreateHandRaiseLeadService) do |service|
+          expect(service).to receive(:execute).with(lead_params).and_return(double('lead', success?: true ))
+        end
+      end
+    end
+
     context 'when a group is the top-level group' do
       let(:page_path) { group_billings_path(namespace) }
 
@@ -456,7 +412,18 @@ RSpec.describe 'Billing plan pages', :feature, :saas, :js do
           expect(page).to have_selector("[data-testid='billing-plans']")
         end
 
-        it_behaves_like 'can contact sales'
+        context 'when submitting hand raise lead' do
+          include_context 'hand raise lead form setup'
+
+          it 'displays the in-app hand raise lead' do
+            page.within('[data-testid="plan-card-premium"]') do
+              click_button 'Contact sales'
+            end
+
+            fill_hand_raise_lead_form_and_submit
+          end
+        end
+
         it_behaves_like 'plan with subscription table'
       end
 
@@ -464,6 +431,22 @@ RSpec.describe 'Billing plan pages', :feature, :saas, :js do
         let(:plan) { free_plan }
 
         it_behaves_like 'used seats rendering for non paid subscriptions'
+
+        context 'with promote_premium_billing_page experiment candidate experience' do
+          include_context 'hand raise lead form setup'
+
+          before do
+            stub_experiments(promote_premium_billing_page: :candidate)
+          end
+
+          it 'submits hand raise lead form' do
+            visit page_path
+
+            click_button 'Talk to an expert today'
+
+            fill_hand_raise_lead_form_and_submit
+          end
+        end
       end
 
       context 'on trial' do
@@ -528,6 +511,24 @@ RSpec.describe 'Billing plan pages', :feature, :saas, :js do
       all('[data-testid="content-cell"]').each do |cell|
         label = cell.first('[data-testid="property-label"]')
         break cell.find('[data-testid="property-value"]').text if label&.text == 'Seats currently in use'
+      end
+    end
+
+    def fill_hand_raise_lead_form_and_submit
+      page.within('[data-testid="hand-raise-lead-modal"]') do
+        aggregate_failures do
+          expect(page).to have_content('Contact our Sales team')
+          expect(page).to have_field('First Name', with: form_data[:first_name])
+          expect(page).to have_field('Last Name', with: form_data[:last_name])
+          expect(page).to have_field('Company Name', with: form_data[:company_name])
+        end
+
+        select form_data[:company_size], from: 'company-size'
+        fill_in 'phone-number', with: form_data[:phone_number]
+        select form_data.dig(:country, :name), from: 'country'
+        select form_data.dig(:state, :name), from: 'state'
+
+        click_button 'Submit information'
       end
     end
   end

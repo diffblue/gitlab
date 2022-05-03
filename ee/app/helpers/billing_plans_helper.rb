@@ -151,6 +151,18 @@ module BillingPlansHelper
     }
   end
 
+  def free_plan_billing_hand_raise_props(namespace, glm_content:)
+    hand_raise_props(namespace, glm_content: glm_content)
+      .merge(button_text: s_("BillingPlans|Talk to an expert today."),
+             button_attributes: {
+               variant: 'link',
+               class: "gl-vertical-align-text-bottom"
+             }.to_json,
+             track_experiment: :promote_premium_billing_page,
+             track_action: 'click_link',
+             track_label: 'hand_raise_lead_form')
+  end
+
   def billing_upgrade_button_data(plan)
     {
       track_action: 'click_button',
