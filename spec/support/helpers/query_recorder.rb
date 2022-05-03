@@ -80,7 +80,7 @@ module ActiveRecord
 
       if values[:cached] && skip_cached
         @cached << values[:sql]
-      elsif !skip_schema_queries || !values[:name]&.include?("SCHEMA")
+      elsif !ignorable?(values)
         return if ignorable?(values)
 
         backtrace = @query_recorder_debug ? show_backtrace(values, duration) : nil
@@ -106,7 +106,10 @@ module ActiveRecord
     end
 
     def ignorable?(values)
-      values[:name]&.match(/License Load/)
+      return true if skip_schema_queries && values[:name]&.include?("SCHEMA")
+      return true if values[:name]&.match(/License Load/)
+
+      false
     end
   end
 end
