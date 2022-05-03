@@ -7,7 +7,7 @@
         = group_icon(namespace, class: 'avatar avatar-tile s96', width: 96, height: 96, alt: namespace.name)
 
   %h4
-    = s_("BillingPlans|%{group_name} is currently using the %{plan_name}.").html_safe % { group_name: namespace.full_name,
+    = s_("BillingPlans|%{group_name} is currently using the %{plan_name}").html_safe % { group_name: namespace.full_name,
       plan_name: current_plan.name }
 
   = yield

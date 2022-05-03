@@ -1,0 +1,36 @@
+= render layout: 'shared/billings/billing_plans_layout', locals: { namespace: namespace, current_plan: current_plan } do
+
+  - all_groups_link = link_to s_("BillingPlans|Check out all groups"),
+                      dashboard_groups_path,
+                      data: { track_action: 'click_button', track_label: 'view_all_groups', track_experiment: :promote_premium_billing_page }
+
+  = html_escape(s_("BillingPlans|Not the group you're looking for? %{all_groups_link}.")) % { all_groups_link: all_groups_link.html_safe }
+
+  .gl-flex-direction-row.gl-display-flex.gl-flex-wrap.gl-justify-content-center.gl-mb-7.gl-ml-7{ data: { track_action: 'render', track_experiment: :promote_premium_billing_page } }
+    = render Billing::PlanComponent.with_collection(plans_data, namespace: namespace)
+  .gl-mb-2
+    = s_("BillingPlans|All plans have unlimited (private) repositories.")
+  .gl-mb-5
+    = s_("BillingPlans|Ready to explore the value of the paid features today? Start a trial, no credit card required.")
+  = link_to s_("BillingPlans|Start a free Ultimate trial"),
+        new_trial_path,
+        class: ["gl-mb-6 btn gl-button btn-confirm-secondary"],
+        data: { track_action: 'click_button', track_label: 'start_trial', track_experiment: :promote_premium_billing_page }
+  .billing-plan-divider.gl-m-auto.gl-border-b-solid.gl-border-1.gl-border-gray-75.gl-mb-7
+  - image_alt = s_('InProductMarketing|Team members collaborating')
+  = image_tag 'marketing/free-trial-team-members.png', alt: image_alt, title: image_alt, width: 280, height: 125, class: 'gl-mb-6'
+  .gl-font-size-h1.gl-font-weight-bold.gl-line-height-24.gl-mb-4
+    = s_("BillingPlans|Still have questions?")
+  .gl-display-inline-flex.gl-mb-4
+    = s_("BillingPlans|We're here to help.")
+    &nbsp;
+    .js-hand-raise-lead-button{ data: free_plan_billing_hand_raise_props(namespace, glm_content: 'billing-group') }
+  .gl-mb-5
+    = s_("BillingPlans|Loved and trusted by our customers")
+    = emoji_icon('heart', 'aria-hidden': true, class: "gl-font-base gl-vertical-align-baseline")
+  %div
+    = image_tag("marketing/siemens.svg", alt: 'Siemens', title: 'Siemens', class: "gl-mr-5", width: 150, height: 25)
+    = image_tag("marketing/chorus.svg", alt: 'Chorus', title: 'Chorus', class: "gl-mr-5", width: 100, height: 25)
+    = image_tag("marketing/wish.svg", alt: 'Wish', title: 'Wish', class: "gl-mr-5", width: 70, height: 25)
+    = image_tag("marketing/knowbe4.svg", alt: 'Knowbe4', title: 'Knowbe4', width: 130, height: 25)
+
