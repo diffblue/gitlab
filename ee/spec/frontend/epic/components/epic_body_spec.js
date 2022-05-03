@@ -38,7 +38,8 @@ describe('EpicBodyComponent', () => {
       zoomMeetingUrl: '',
       publishedIncidentUrl: '',
       issuableRef: '',
-      issuableStatus: '',
+      issuableStatus: 'opened',
+      isConfidential: false,
       initialTitleHtml: 'This is a sample epic',
       initialTitleText: 'This is a sample epic',
     });
