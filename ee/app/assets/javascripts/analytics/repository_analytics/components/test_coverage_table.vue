@@ -219,7 +219,6 @@ export default {
     <gl-table
       v-else-if="hasCoverageData"
       data-testid="test-coverage-data-table"
-      thead-class="thead-white"
       :fields="$options.tableFields"
       :items="sortedCoverageData"
     >

@@ -12,7 +12,7 @@ exports[`MergeRequestTable component template matches the snapshot 1`] = `
   <!---->
   <!---->
   <thead
-    class="thead-white border-bottom"
+    class=""
     role="rowgroup"
   >
     <!---->
@@ -102,7 +102,7 @@ exports[`MergeRequestTable component template matches the snapshot 1`] = `
     >
       <td
         aria-colindex="1"
-        class="table-col d-flex align-items-center"
+        class="table-col d-flex align-items-center d-sm-table-cell"
         data-label="Merge Request"
         role="cell"
       >

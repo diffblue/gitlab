@@ -54,7 +54,7 @@ export default {
       key: 'mr_details',
       label: __('Merge Request'),
       thClass: 'w-30p',
-      tdClass: 'table-col d-flex align-items-center',
+      tdClass: 'table-col d-flex align-items-center d-sm-table-cell',
     },
     {
       key: 'review_time',
@@ -100,7 +100,6 @@ export default {
     :fields="$options.tableHeaderFields"
     :items="mergeRequests"
     stacked="sm"
-    thead-class="thead-white border-bottom"
   >
     <template #cell(mr_details)="items">
       <div class="d-flex flex-column flex-grow align-items-end align-items-sm-start">
