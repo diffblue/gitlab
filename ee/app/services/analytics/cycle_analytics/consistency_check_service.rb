@@ -7,13 +7,18 @@ module Analytics
 
       BATCH_LIMIT = 1000
 
+      delegate :monotonic_time, to: :'Gitlab::Metrics::System'
+
       def initialize(group:, event_model:)
         @group = group
         @event_model = event_model
       end
 
       # rubocop: disable CodeReuse/ActiveRecord
-      def execute
+      def execute(max_runtime: nil)
+        @max_runtime = max_runtime
+        @start_time = monotonic_time
+
         error_response = validate
         return error_response if error_response
 
@@ -21,6 +26,11 @@ module Analytics
           scope = event_model.where(stage_event_hash_id: stage_event_hash_id).where.not(end_event_timestamp: nil).order_by_end_event(:asc)
 
           iterator(scope).each_batch(of: BATCH_LIMIT) do |relation|
+            # rubocop: disable Cop/AvoidReturnFromBlocks
+            return success(:group_partially_processed) if @max_runtime.present? && elapsed_time >= @max_runtime
+
+            # rubocop: enable Cop/AvoidReturnFromBlocks
+
             ids = relation.pluck(event_model.issuable_id_column)
 
             next if ids.empty?
@@ -44,6 +54,10 @@ module Analytics
         success(:group_processed)
       end
       # rubocop: enable CodeReuse/ActiveRecord
+
+      def elapsed_time
+        monotonic_time - @start_time
+      end
 
       private
 

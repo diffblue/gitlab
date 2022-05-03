@@ -9,7 +9,9 @@ RSpec.describe Analytics::CycleAnalytics::ConsistencyCheckService, :aggregate_fa
   let_it_be(:project1) { create(:project, group: group) }
   let_it_be(:project2) { create(:project, group: subgroup) }
 
-  subject(:service_response) { described_class.new(group: group, event_model: event_model).execute }
+  let(:service) { described_class.new(group: group, event_model: event_model) }
+
+  subject(:service_response) { service.execute }
 
   shared_examples 'consistency check examples' do
     context 'when two records are deleted' do
@@ -28,6 +30,24 @@ RSpec.describe Analytics::CycleAnalytics::ConsistencyCheckService, :aggregate_fa
         all_stage_events = event_model.all
         expect(all_stage_events.size).to eq(1)
         expect(all_stage_events.first[event_model.issuable_id_column]).to eq(record2.id)
+      end
+
+      context 'when running out of allotted time' do
+        let(:max_runtime) { 10 }
+
+        subject(:service_response) { service.execute(max_runtime: max_runtime) }
+
+        before do
+          allow(service).to receive(:elapsed_time).and_return(max_runtime)
+        end
+
+        it 'stops early' do
+          expect(service_response).to be_success
+          expect(service_response.payload[:reason]).to eq(:group_partially_processed)
+
+          all_stage_events = event_model.all
+          expect(all_stage_events.size).to eq(3)
+        end
       end
     end
 
