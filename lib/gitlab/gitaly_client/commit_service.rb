@@ -276,7 +276,36 @@ module Gitlab
           )
 
           response = GitalyClient.call(@repository.storage, :commit_service, :list_all_commits, request, timeout: GitalyClient.medium_timeout)
-          consume_commits_response(response)
+
+          quarantined_commits = consume_commits_response(response)
+
+          if Feature.enabled?(:filter_quarantined_commits)
+            quarantined_commit_ids = quarantined_commits.map(&:id)
+
+            # While in general the quarantine directory would only contain objects
+            # which are actually new, this is not guaranteed by Git. In fact,
+            # git-push(1) may sometimes push objects which already exist in the
+            # target repository. We do not want to return those from this method
+            # though given that they're not actually new.
+            #
+            # To fix this edge-case we thus have to filter commits down to those
+            # which don't yet exist. To do so, we must check for object existence
+            # in the main repository, but the object directory of our repository
+            # points into the object quarantine. This can be fixed by unsetting
+            # it, which will cause us to use the normal repository as indicated by
+            # its relative path again.
+            main_repo = @gitaly_repo.dup
+            main_repo.git_object_directory = ""
+
+            # Check object existence of all quarantined commits' IDs.
+            quarantined_commit_existence = object_existence_map(quarantined_commit_ids, gitaly_repo: main_repo)
+
+            # And then we reject all quarantined commits which exist in the main
+            # repository already.
+            quarantined_commits.reject! { |c| quarantined_commit_existence[c.id] }
+          end
+
+          quarantined_commits
         else
           list_commits(Array.wrap(revisions) + %w[--not --all])
         end
