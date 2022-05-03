@@ -5,6 +5,7 @@ Array [
   Object {
     "email": "administrator@email.com",
     "removeUserButtonExists": true,
+    "toggle": null,
     "tooltip": undefined,
     "user": Object {
       "avatarLabeled": Object {
@@ -21,6 +22,7 @@ Array [
   Object {
     "email": "agustin_walker@email.com",
     "removeUserButtonExists": true,
+    "toggle": null,
     "tooltip": undefined,
     "user": Object {
       "avatarLabeled": Object {
@@ -37,6 +39,7 @@ Array [
   Object {
     "email": "Private",
     "removeUserButtonExists": true,
+    "toggle": null,
     "tooltip": "An email address is only visible for users with public emails.",
     "user": Object {
       "avatarLabeled": Object {
@@ -55,6 +58,7 @@ Array [
   Object {
     "email": "jdoe@email.com",
     "removeUserButtonExists": true,
+    "toggle": null,
     "tooltip": undefined,
     "user": Object {
       "avatarLabeled": Object {

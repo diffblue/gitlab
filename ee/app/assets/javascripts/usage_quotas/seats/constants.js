@@ -7,29 +7,37 @@ export const HEADER_TOTAL_ENTRIES = 'x-total';
 export const HEADER_PAGE_NUMBER = 'x-page';
 export const HEADER_ITEMS_PER_PAGE = 'x-per-page';
 
-export const FIELDS = [
+const ALL_FIELDS = [
   {
     key: 'user',
     label: __('User'),
-    thClass: thWidthClass(40),
+    thClass: thWidthClass(30),
   },
   {
     key: 'email',
     label: __('Email'),
-    thClass: thWidthClass(40),
+    thClass: thWidthClass(20),
   },
   {
     key: 'lastActivityTime',
     label: __('Last activity'),
-    thClass: thWidthClass(40),
+    thClass: thWidthClass(20),
+  },
+  {
+    key: 'membershipState',
+    label: __('In a seat'),
+    thClass: thWidthClass(10),
   },
   {
     key: 'actions',
     label: '',
+    thClass: thWidthClass(20),
     tdClass: 'text-right',
-    customStyle: { width: '35px' },
   },
 ];
+
+export const STANDARD_FIELDS = ALL_FIELDS.filter(({ key }) => key !== 'membershipState');
+export const LIMITED_FREE_PLAN_FIELDS = ALL_FIELDS;
 
 export const DETAILS_FIELDS = [
   { key: 'source_full_name', label: s__('Billing|Direct memberships'), thClass: thWidthClass(40) },
@@ -71,3 +79,6 @@ export const SORT_OPTIONS = [
     },
   },
 ];
+
+export const MEMBER_AWAITING_STATE = 'awaiting';
+export const MEMBER_ACTIVE_STATE = 'active';

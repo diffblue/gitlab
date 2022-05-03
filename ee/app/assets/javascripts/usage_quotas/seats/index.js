@@ -40,6 +40,7 @@ export default (containerId = 'js-seat-usage-app') => {
         hasNoSubscription: parseBoolean(hasNoSubscription),
         maxFreeNamespaceSeats: parseInt(maxFreeNamespaceSeats, 10),
         explorePlansPath,
+        freeUserCapEnabled: gon.features.freeUserCap,
       }),
     ),
     render(createElement) {

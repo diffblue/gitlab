@@ -8,6 +8,7 @@ export default ({
   hasNoSubscription = null,
   maxFreeNamespaceSeats = null,
   explorePlansPath = '',
+  freeUserCapEnabled = false,
 } = {}) => ({
   isLoading: false,
   hasError: false,
@@ -32,4 +33,6 @@ export default ({
   addSeatsHref,
   maxFreeNamespaceSeats,
   explorePlansPath,
+  hasLimitedFreePlan: hasNoSubscription && freeUserCapEnabled,
+  hasReachedFreePlanLimit: null,
 });

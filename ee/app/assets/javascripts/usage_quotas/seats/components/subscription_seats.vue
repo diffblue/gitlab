@@ -11,24 +11,27 @@ import {
   GlPagination,
   GlTable,
   GlTooltipDirective,
+  GlToggle,
 } from '@gitlab/ui';
 import { mapActions, mapState, mapGetters } from 'vuex';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { visitUrl } from '~/lib/utils/url_utility';
 import {
-  FIELDS,
+  STANDARD_FIELDS,
+  LIMITED_FREE_PLAN_FIELDS,
   AVATAR_SIZE,
   REMOVE_BILLABLE_MEMBER_MODAL_ID,
   CANNOT_REMOVE_BILLABLE_MEMBER_MODAL_ID,
   CANNOT_REMOVE_BILLABLE_MEMBER_MODAL_TITLE,
   CANNOT_REMOVE_BILLABLE_MEMBER_MODAL_CONTENT,
   SORT_OPTIONS,
+  MEMBER_ACTIVE_STATE,
+  MEMBER_AWAITING_STATE,
 } from 'ee/usage_quotas/seats/constants';
 import { s__, __, sprintf, n__ } from '~/locale';
 import FilterSortContainerRoot from '~/vue_shared/components/filtered_search_bar/filtered_search_bar_root.vue';
 import StatisticsCard from 'ee/usage_quotas/components/statistics_card.vue';
 import StatisticsSeatsCard from 'ee/usage_quotas/components/statistics_seats_card.vue';
-import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import SubscriptionUpgradeInfoCard from './subscription_upgrade_info_card.vue';
 import RemoveBillableMemberModal from './remove_billable_member_modal.vue';
 import SubscriptionSeatDetails from './subscription_seat_details.vue';
@@ -48,6 +51,7 @@ export default {
     GlIcon,
     GlPagination,
     GlTable,
+    GlToggle,
     RemoveBillableMemberModal,
     SubscriptionSeatDetails,
     FilterSortContainerRoot,
@@ -55,7 +59,6 @@ export default {
     StatisticsSeatsCard,
     SubscriptionUpgradeInfoCard,
   },
-  mixins: [glFeatureFlagsMixin()],
   computed: {
     ...mapState([
       'isLoading',
@@ -78,6 +81,8 @@ export default {
       'hasNoSubscription',
       'maxFreeNamespaceSeats',
       'explorePlansPath',
+      'hasLimitedFreePlan',
+      'hasReachedFreePlanLimit',
     ]),
     ...mapGetters(['tableItems']),
     currentPage: {
@@ -107,7 +112,9 @@ export default {
       );
     },
     shouldShowPendingMembersAlert() {
-      return this.pendingMembersCount > 0 && this.pendingMembersPagePath;
+      return (
+        this.pendingMembersCount > 0 && this.pendingMembersPagePath && !this.hasLimitedFreePlan
+      );
     },
     seatsInUsePercentage() {
       if (this.totalSeatsAvailable == null) {
@@ -118,11 +125,14 @@ export default {
     },
     totalSeatsAvailable() {
       if (this.hasNoSubscription) {
-        return this.glFeatures.freeUserCap ? this.maxFreeNamespaceSeats : null;
+        return this.hasLimitedFreePlan ? this.maxFreeNamespaceSeats : null;
       }
       return this.seatsInSubscription;
     },
     totalSeatsInUse() {
+      if (this.hasLimitedFreePlan) {
+        return this.seatsInUse;
+      }
       return this.hasNoSubscription ? this.total : this.seatsInUse;
     },
     seatsInUseText() {
@@ -133,8 +143,8 @@ export default {
     displayedTotalSeats() {
       return this.totalSeatsAvailable ? String(this.totalSeatsAvailable) : '-';
     },
-    hasLimitedFreePlan() {
-      return this.hasNoSubscription && this.glFeatures.freeUserCap;
+    fields() {
+      return this.hasLimitedFreePlan ? LIMITED_FREE_PLAN_FIELDS : STANDARD_FIELDS;
     },
   },
   created() {
@@ -180,6 +190,15 @@ export default {
     navigateToPendingMembersPage() {
       visitUrl(this.pendingMembersPagePath);
     },
+    isToggleDisabled(user) {
+      return this.hasReachedFreePlanLimit && user.membership_state === MEMBER_AWAITING_STATE;
+    },
+    toggleTooltipText(user) {
+      return this.isToggleDisabled(user) ? this.$options.i18n.activateMemberRestrictedText : null;
+    },
+    membershipStateToggleValue(user) {
+      return user.membership_state === MEMBER_ACTIVE_STATE;
+    },
   },
   i18n: {
     emailNotVisibleTooltipText: s__(
@@ -189,12 +208,16 @@ export default {
     pendingMembersAlertButtonText: s__('Billing|View pending approvals'),
     seatsInSubscriptionText: s__('Billings|Seats in use / Seats in subscription'),
     seatsAvailableText: s__('Billings|Seats in use / Seats available'),
+    inASeatLabel: s__('Billings|In a seat'),
     seatsInUseLink: helpPagePath('subscription/gitlab_com/index', {
       anchor: 'how-seat-usage-is-determined',
     }),
+    activateMemberRestrictedText: s__(
+      'Billings|To make this member active, you must first remove an existing active member, or toggle them to over limit.',
+    ),
   },
   avatarSize: AVATAR_SIZE,
-  fields: FIELDS,
+
   removeBillableMemberModalId: REMOVE_BILLABLE_MEMBER_MODAL_ID,
   cannotRemoveModalId: CANNOT_REMOVE_BILLABLE_MEMBER_MODAL_ID,
   cannotRemoveModalTitle: CANNOT_REMOVE_BILLABLE_MEMBER_MODAL_TITLE,
@@ -264,7 +287,7 @@ export default {
     <gl-table
       class="seats-table"
       :items="tableItems"
-      :fields="$options.fields"
+      :fields="fields"
       :busy="isLoading"
       :show-empty="true"
       data-testid="table"
@@ -324,6 +347,17 @@ export default {
         <span>
           {{ data.item.user.last_activity_on ? data.item.user.last_activity_on : __('Never') }}
         </span>
+      </template>
+
+      <template #cell(membershipState)="{ item: { user } }">
+        <gl-toggle
+          v-gl-tooltip
+          label="$options.i18n.inASeatLabel"
+          label-position="hidden"
+          :value="membershipStateToggleValue(user)"
+          :disabled="isToggleDisabled(user)"
+          :title="toggleTooltipText(user)"
+        />
       </template>
 
       <template #cell(actions)="data">

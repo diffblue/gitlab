@@ -7,6 +7,7 @@ import {
   GlAvatarLabeled,
   GlBadge,
   GlModal,
+  GlToggle,
 } from '@gitlab/ui';
 import { mount, shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
@@ -37,6 +38,8 @@ const providedFields = {
   maxFreeNamespaceSeats: 5,
   explorePlansPath: '/groups/test_group/-/billings',
   hasNoSubscription: false,
+  hasLimitedFreePlan: false,
+  hasReachedFreePlanLimit: false,
 };
 
 const fakeStore = ({ initialState, initialGetters }) =>
@@ -107,6 +110,20 @@ describe('Subscription Seats', () => {
     };
   };
 
+  const serializeToggle = (rowWrapper) => {
+    const toggle = rowWrapper.findComponent(GlToggle);
+
+    if (!toggle.exists()) {
+      return null;
+    }
+
+    return {
+      disabled: toggle.props().disabled,
+      title: toggle.attributes('title'),
+      value: toggle.props().value,
+    };
+  };
+
   const serializeTableRow = (rowWrapper) => {
     const emailWrapper = rowWrapper.find('[data-testid="email"]');
 
@@ -114,6 +131,7 @@ describe('Subscription Seats', () => {
       user: serializeUser(rowWrapper),
       email: emailWrapper.text(),
       tooltip: emailWrapper.find('span').attributes('title'),
+      toggle: serializeToggle(rowWrapper),
       removeUserButtonExists: rowWrapper.findComponent(GlButton).exists(),
     };
   };
@@ -161,6 +179,82 @@ describe('Subscription Seats', () => {
         const serializedTable = findSerializedTable(findTable());
 
         expect(serializedTable).toMatchSnapshot();
+      });
+
+      describe('membership toggles', () => {
+        it.each`
+          hasNoSubscription | hasLimitedFreePlan | shouldBeRendered
+          ${false}          | ${false}           | ${false}
+          ${true}           | ${false}           | ${false}
+          ${true}           | ${true}            | ${true}
+        `(
+          'rendering toggles $shouldBeRendered when hasLimitedFreePlan=$hasLimitedFreePlan and hasNoSubscription=$hasNoSubscription',
+          ({ hasNoSubscription, hasLimitedFreePlan, shouldBeRendered }) => {
+            wrapper = createComponent({
+              mountFn: mount,
+              initialGetters: {
+                tableItems: () => mockTableItems,
+              },
+              initialState: {
+                hasNoSubscription,
+                hasLimitedFreePlan,
+              },
+            });
+
+            const toggles = findTable().findAllComponents(GlToggle);
+            expect(toggles.exists()).toBe(shouldBeRendered);
+          },
+        );
+
+        describe('when limited free plan reached limit', () => {
+          let serializedTable;
+
+          beforeEach(() => {
+            wrapper = createComponent({
+              mountFn: mount,
+              initialGetters: {
+                tableItems: () => mockTableItems,
+              },
+              initialState: {
+                hasNoSubscription: true,
+                hasLimitedFreePlan: true,
+                hasReachedFreePlanLimit: true,
+              },
+            });
+
+            serializedTable = findSerializedTable(findTable());
+          });
+
+          it('sets toggle props correctly for active users', () => {
+            serializedTable.forEach((serializedRow) => {
+              const currentMember = mockTableItems.find((item) => {
+                return item.user.name === serializedRow.user.avatarLink.alt;
+              });
+
+              if (currentMember.user.membership_state === 'active') {
+                expect(serializedRow.toggle.disabled).toBe(false);
+                expect(serializedRow.toggle.title).toBeUndefined();
+                expect(serializedRow.toggle.value).toBe(true);
+              }
+            });
+          });
+
+          it('sets toggle props correctly for awaiting users', () => {
+            serializedTable.forEach((serializedRow) => {
+              const currentMember = mockTableItems.find((item) => {
+                return item.user.name === serializedRow.user.avatarLink.alt;
+              });
+
+              if (currentMember.user.membership_state === 'awaiting') {
+                expect(serializedRow.toggle.disabled).toBe(true);
+                expect(serializedRow.toggle.title).toBe(
+                  'To make this member active, you must first remove an existing active member, or toggle them to over limit.',
+                );
+                expect(serializedRow.toggle.value).toBe(false);
+              }
+            });
+          });
+        });
       });
     });
 
@@ -245,7 +339,7 @@ describe('Subscription Seats', () => {
   describe('statistics cards', () => {
     const defaultInitialState = {
       seatsInSubscription: 3,
-      total: 2,
+      total: 10,
       seatsInUse: 2,
       maxSeatsUsed: 3,
       seatsOwed: 1,
@@ -260,7 +354,6 @@ describe('Subscription Seats', () => {
     beforeEach(() => {
       wrapper = createComponent({
         initialState: defaultInitialState,
-        provide: { glFeatures: { freeUserCap: false } },
       });
     });
 
@@ -287,11 +380,14 @@ describe('Subscription Seats', () => {
       });
 
       describe('when group has no subscription', () => {
-        describe('when freeUserCap does not apply', () => {
+        describe('when not on limited free plan', () => {
           beforeEach(() => {
             wrapper = createComponent({
-              initialState: { ...defaultInitialState, hasNoSubscription: true },
-              provide: { glFeatures: { freeUserCap: false } },
+              initialState: {
+                ...defaultInitialState,
+                hasNoSubscription: true,
+                hasLimitedFreePlan: false,
+              },
             });
           });
 
@@ -305,17 +401,20 @@ describe('Subscription Seats', () => {
                 description: 'Seats in use / Seats in subscription',
                 percentage: 0,
                 totalValue: '-',
-                usageValue: '2',
+                usageValue: '10',
               }),
             );
           });
         });
 
-        describe('when freeUserCap applies', () => {
+        describe('when on limited free plan', () => {
           beforeEach(() => {
             wrapper = createComponent({
-              initialState: { ...defaultInitialState, hasNoSubscription: true },
-              provide: { glFeatures: { freeUserCap: true } },
+              initialState: {
+                ...defaultInitialState,
+                hasNoSubscription: true,
+                hasLimitedFreePlan: true,
+              },
             });
           });
 
@@ -353,8 +452,7 @@ describe('Subscription Seats', () => {
     describe('for free namespace with limit', () => {
       beforeEach(() => {
         wrapper = createComponent({
-          initialState: { hasNoSubscription: true },
-          provide: { glFeatures: { freeUserCap: true } },
+          initialState: { hasNoSubscription: true, hasLimitedFreePlan: true },
         });
       });
 
@@ -408,18 +506,20 @@ describe('Subscription Seats', () => {
 
   describe('pending members alert', () => {
     it.each`
-      pendingMembersPagePath | pendingMembersCount | shouldBeRendered
-      ${undefined}           | ${undefined}        | ${false}
-      ${undefined}           | ${0}                | ${false}
-      ${'fake-path'}         | ${0}                | ${false}
-      ${'fake-path'}         | ${3}                | ${true}
+      pendingMembersPagePath | pendingMembersCount | hasLimitedFreePlan | shouldBeRendered
+      ${undefined}           | ${undefined}        | ${false}           | ${false}
+      ${undefined}           | ${0}                | ${false}           | ${false}
+      ${'fake-path'}         | ${0}                | ${false}           | ${false}
+      ${'fake-path'}         | ${3}                | ${true}            | ${false}
+      ${'fake-path'}         | ${3}                | ${false}           | ${true}
     `(
-      'rendering alert is $shouldBeRendered when pendingMembersPagePath=$pendingMembersPagePath and pendingMembersCount=$pendingMembersCount',
-      ({ pendingMembersPagePath, pendingMembersCount, shouldBeRendered }) => {
+      'rendering alert is $shouldBeRendered when pendingMembersPagePath=$pendingMembersPagePath and pendingMembersCount=$pendingMembersCount and hasLimitedFreePlan=$hasLimitedFreePlan',
+      ({ pendingMembersPagePath, pendingMembersCount, shouldBeRendered, hasLimitedFreePlan }) => {
         wrapper = createComponent({
           initialState: {
             pendingMembersCount,
             pendingMembersPagePath,
+            hasLimitedFreePlan,
           },
         });
 
