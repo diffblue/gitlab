@@ -38,8 +38,6 @@ module Tooling
       end
     end
 
-    private
-
     def load_definitions
       result = load_config
 

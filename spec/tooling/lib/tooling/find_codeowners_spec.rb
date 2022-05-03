@@ -54,7 +54,7 @@ RSpec.describe Tooling::FindCodeowners do
 
   describe '#load_definitions' do
     it 'expands the allow and deny list with keywords and patterns' do
-      subject.__send__(:load_definitions).each do |section, group_defintions|
+      subject.load_definitions.each do |section, group_defintions|
         group_defintions.each do |group, definitions|
           expect(definitions[:allow]).to be_an(Array)
           expect(definitions[:deny]).to be_an(Array)
@@ -63,7 +63,7 @@ RSpec.describe Tooling::FindCodeowners do
     end
 
     it 'expands the auth group' do
-      auth = subject.__send__(:load_definitions).dig(
+      auth = subject.load_definitions.dig(
         :'[Authentication and Authorization]',
         :'@gitlab-org/manage/authentication-and-authorization')
 
@@ -98,7 +98,7 @@ RSpec.describe Tooling::FindCodeowners do
 
   describe '#load_config' do
     it 'loads the config with symbolized keys' do
-      config = subject.__send__(:load_config)
+      config = subject.load_config
 
       expect_hash_keys_to_be_symbols(config)
     end
@@ -111,7 +111,7 @@ RSpec.describe Tooling::FindCodeowners do
       it 'calls safe_load_file' do
         expect(YAML).to receive(:safe_load_file)
 
-        subject.__send__(:load_config)
+        subject.load_config
       end
     end
 
@@ -123,7 +123,7 @@ RSpec.describe Tooling::FindCodeowners do
       it 'calls load_file' do
         expect(YAML).to receive(:safe_load)
 
-        subject.__send__(:load_config)
+        subject.load_config
       end
     end
 
@@ -148,7 +148,7 @@ RSpec.describe Tooling::FindCodeowners do
 
       expect(File).to receive(:fnmatch?).with(pattern, path, expected_flags)
 
-      subject.__send__(:path_matches?, pattern, path)
+      subject.path_matches?(pattern, path)
     end
   end
 
@@ -167,7 +167,7 @@ RSpec.describe Tooling::FindCodeowners do
       let(:input_paths) { %W[dir/0\n dir/1\n dir/2\n dir/3\n] }
 
       it 'consolidates into the directory' do
-        paths = subject.__send__(:consolidate_paths, input_paths)
+        paths = subject.consolidate_paths(input_paths)
 
         expect(paths).to eq(["dir\n"])
       end
@@ -177,7 +177,7 @@ RSpec.describe Tooling::FindCodeowners do
       let(:input_paths) { %W[dir/0\n dir/1\n dir/2\n] }
 
       it 'returns the original paths' do
-        paths = subject.__send__(:consolidate_paths, input_paths)
+        paths = subject.consolidate_paths(input_paths)
 
         expect(paths).to eq(input_paths)
       end
@@ -188,7 +188,7 @@ RSpec.describe Tooling::FindCodeowners do
     it 'calls `find dir -maxdepth 1`' do
       expect(subject).to receive(:`).with('find tmp -maxdepth 1').and_call_original
 
-      subject.__send__(:find_dir_maxdepth_1, 'tmp')
+      subject.find_dir_maxdepth_1('tmp')
     end
   end
 
@@ -196,7 +196,7 @@ RSpec.describe Tooling::FindCodeowners do
     it 'calls `git ls-files`' do
       expect(subject).to receive(:`).with('git ls-files').and_call_original
 
-      subject.__send__(:git_ls_files)
+      subject.git_ls_files
     end
   end
 end
