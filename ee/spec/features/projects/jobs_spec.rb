@@ -39,5 +39,23 @@ RSpec.describe 'Jobs', :clean_gitlab_redis_shared_state do
         expect(page).not_to have_content('You have used 1000 out of 500 of your shared Runners pipeline minutes.')
       end
     end
+
+    context 'when job is not running', :js do
+      let(:job) { create(:ci_build, :success, :trace_artifact, pipeline: pipeline) }
+      let(:project) { create(:project, :repository) }
+
+      context 'when namespace is over_storage_limit?' do
+        it 'does not show retry button' do
+          allow_next_found_instance_of(Namespace) do |instance|
+            allow(instance).to receive(:over_storage_limit?).and_return(true)
+          end
+          visit project_job_path(project, job)
+          wait_for_requests
+
+          expect(page).not_to have_link('Retry')
+          expect(page).to have_content('Job succeeded')
+        end
+      end
+    end
   end
 end
