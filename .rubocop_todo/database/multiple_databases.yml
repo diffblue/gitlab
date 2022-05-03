@@ -30,7 +30,6 @@ Database/MultipleDatabases:
     - lib/gitlab/background_migration/fix_projects_without_project_feature.rb
     - lib/gitlab/background_migration/fix_projects_without_prometheus_service.rb
     - lib/gitlab/background_migration/migrate_shimo_confluence_integration_category.rb
-    - lib/gitlab/background_migration/migrate_stage_status.rb
     - lib/gitlab/background_migration/move_container_registry_enabled_to_project_feature.rb
     - lib/gitlab/background_migration/nullify_orphan_runner_id_on_ci_builds.rb
     - lib/gitlab/background_migration/populate_container_repository_migration_plan.rb
