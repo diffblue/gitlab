@@ -63,6 +63,11 @@ export default {
       required: false,
       default: false,
     },
+    reachedLimit: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   data() {
     return {
@@ -134,6 +139,8 @@ export default {
       this.$emit('reset');
     },
     onSubmit(args) {
+      if (this.reachedLimit) return;
+
       if (this.enabledOverageCheck && !this.hasOverage) {
         this.checkAndSubmit(args);
       } else {
@@ -210,6 +217,7 @@ export default {
     :extra-slots="$options.EXTRA_SLOTS"
     :submit-disabled="submitDisabledEE"
     :prevent-cancel-default="showOverageModal"
+    :reached-limit="reachedLimit"
     @reset="onReset"
     @submit="onSubmit"
     @cancel="onCancel"
