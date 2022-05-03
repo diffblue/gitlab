@@ -419,6 +419,21 @@ sudo gitlab-ctl reconfigure
 To help us resolve this problem, consider commenting on
 [the issue](https://gitlab.com/gitlab-org/gitlab/-/issues/4489).
 
+### Message: `FATAL:  could not connect to the primary server: server certificate for "PostgreSQL" does not match host name`
+
+This happens because the PostgreSQL certificate that the Omnibus GitLab package automatically creates contains
+the Common Name `PostgreSQL`, but the replication is connecting to a different host and GitLab attempts to use
+the `verify-full` SSL mode by default.
+
+In order to fix this, you can either:
+
+- Use the `--sslmode=verify-ca` argument with the `replicate-geo-database` command.
+- For an already replicated database, change `sslmode=verify-full` to `sslmode=verify-ca`
+  in `/var/opt/gitlab/postgresql/data/gitlab-geo.conf` and run `gitlab-ctl restart postgresql`.
+- [Configure SSL for PostgreSQL](https://docs.gitlab.com/omnibus/settings/database.html#configuring-ssl)
+  with a custom certificate (including the host name that's used to connect to the database in the CN or SAN)
+  instead of using the automatically generated certificate.
+
 ### Message: `LOG:  invalid CIDR mask in address`
 
 This happens on wrongly-formatted addresses in `postgresql['md5_auth_cidr_addresses']`.
