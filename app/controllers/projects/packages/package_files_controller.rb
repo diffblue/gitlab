@@ -7,7 +7,6 @@ module Projects
       include SendFileUpload
 
       feature_category :package_registry
-      urgency :low
 
       def download
         package_file = project.package_files.find(params[:id])

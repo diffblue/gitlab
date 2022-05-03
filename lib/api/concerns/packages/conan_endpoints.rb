@@ -33,7 +33,6 @@ module API
 
         included do
           feature_category :package_registry
-          urgency :low
 
           helpers ::API::Helpers::PackagesManagerClientsHelpers
           helpers ::API::Helpers::Packages::Conan::ApiHelpers
@@ -57,7 +56,7 @@ module API
 
           route_setting :authentication, job_token_allowed: true, basic_auth_personal_access_token: true
 
-          get 'ping' do
+          get 'ping', urgency: :default do
             header 'X-Conan-Server-Capabilities', [].join(',')
           end
 
@@ -71,7 +70,7 @@ module API
 
           route_setting :authentication, job_token_allowed: true, basic_auth_personal_access_token: true
 
-          get 'conans/search' do
+          get 'conans/search', urgency: :low do
             service = ::Packages::Conan::SearchService.new(current_user, query: params[:q]).execute
             service.payload
           end
@@ -90,7 +89,7 @@ module API
 
             route_setting :authentication, job_token_allowed: true, basic_auth_personal_access_token: true
 
-            get 'authenticate' do
+            get 'authenticate', urgency: :low do
               unauthorized! unless token
 
               token.to_jwt
@@ -102,7 +101,7 @@ module API
 
             route_setting :authentication, job_token_allowed: true, basic_auth_personal_access_token: true
 
-            get 'check_credentials' do
+            get 'check_credentials', urgency: :default do
               authenticate!
               :ok
             end
@@ -134,7 +133,7 @@ module API
 
             route_setting :authentication, job_token_allowed: true, basic_auth_personal_access_token: true
 
-            get 'packages/:conan_package_reference' do
+            get 'packages/:conan_package_reference', urgency: :low do
               authorize!(:read_package, project)
 
               presenter = ::Packages::Conan::PackagePresenter.new(
@@ -153,7 +152,7 @@ module API
 
             route_setting :authentication, job_token_allowed: true, basic_auth_personal_access_token: true
 
-            get do
+            get urgency: :low do
               authorize!(:read_package, project)
 
               presenter = ::Packages::Conan::PackagePresenter.new(package, current_user, project)
@@ -175,7 +174,7 @@ module API
 
             route_setting :authentication, job_token_allowed: true, basic_auth_personal_access_token: true
 
-            get 'packages/:conan_package_reference/digest' do
+            get 'packages/:conan_package_reference/digest', urgency: :low do
               present_package_download_urls
             end
 
@@ -185,7 +184,7 @@ module API
 
             route_setting :authentication, job_token_allowed: true, basic_auth_personal_access_token: true
 
-            get 'digest' do
+            get 'digest', urgency: :low do
               present_recipe_download_urls
             end
 
@@ -205,7 +204,7 @@ module API
 
             route_setting :authentication, job_token_allowed: true, basic_auth_personal_access_token: true
 
-            get 'packages/:conan_package_reference/download_urls' do
+            get 'packages/:conan_package_reference/download_urls', urgency: :low do
               present_package_download_urls
             end
 
@@ -215,7 +214,7 @@ module API
 
             route_setting :authentication, job_token_allowed: true, basic_auth_personal_access_token: true
 
-            get 'download_urls' do
+            get 'download_urls', urgency: :low do
               present_recipe_download_urls
             end
 
@@ -236,7 +235,7 @@ module API
 
             route_setting :authentication, job_token_allowed: true, basic_auth_personal_access_token: true
 
-            post 'packages/:conan_package_reference/upload_urls' do
+            post 'packages/:conan_package_reference/upload_urls', urgency: :low do
               authorize!(:read_package, project)
 
               status 200
@@ -249,7 +248,7 @@ module API
 
             route_setting :authentication, job_token_allowed: true, basic_auth_personal_access_token: true
 
-            post 'upload_urls' do
+            post 'upload_urls', urgency: :low do
               authorize!(:read_package, project)
 
               status 200
@@ -262,7 +261,7 @@ module API
 
             route_setting :authentication, job_token_allowed: true, basic_auth_personal_access_token: true
 
-            delete do
+            delete urgency: :low do
               authorize!(:destroy_package, project)
 
               track_package_event('delete_package', :conan, category: 'API::ConanPackages', user: current_user, project: project, namespace: project.namespace)
@@ -298,7 +297,7 @@ module API
 
               route_setting :authentication, job_token_allowed: true, basic_auth_personal_access_token: true
 
-              get do
+              get urgency: :low do
                 download_package_file(:recipe_file)
               end
 
@@ -312,7 +311,7 @@ module API
 
               route_setting :authentication, job_token_allowed: true, basic_auth_personal_access_token: true
 
-              put do
+              put urgency: :low do
                 upload_package_file(:recipe_file)
               end
 
@@ -322,7 +321,7 @@ module API
 
               route_setting :authentication, job_token_allowed: true, basic_auth_personal_access_token: true
 
-              put 'authorize' do
+              put 'authorize', urgency: :low do
                 authorize_workhorse!(subject: project, maximum_size: project.actual_limits.conan_max_file_size)
               end
             end
@@ -339,7 +338,7 @@ module API
 
               route_setting :authentication, job_token_allowed: true, basic_auth_personal_access_token: true
 
-              get do
+              get urgency: :low do
                 download_package_file(:package_file)
               end
 
@@ -349,7 +348,7 @@ module API
 
               route_setting :authentication, job_token_allowed: true, basic_auth_personal_access_token: true
 
-              put 'authorize' do
+              put 'authorize', urgency: :low do
                 authorize_workhorse!(subject: project, maximum_size: project.actual_limits.conan_max_file_size)
               end
 
@@ -363,7 +362,7 @@ module API
 
               route_setting :authentication, job_token_allowed: true, basic_auth_personal_access_token: true
 
-              put do
+              put urgency: :low do
                 upload_package_file(:package_file)
               end
             end
