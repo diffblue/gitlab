@@ -188,10 +188,11 @@ export default {
       }"
     >
       <related-items-tree-header :class="{ 'border-bottom-0': itemsFetchResultEmpty }" />
-
       <slot-switch
         v-if="visibleForm && parentItem.confidential"
-        :active-slot-names="[visibleForm]"
+        :active-slot-names="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ [
+          visibleForm,
+        ] /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */"
         class="gl-p-5 gl-pb-0"
       >
         <template v-for="slot in formSlots" #[slot.name]>
@@ -212,7 +213,9 @@ export default {
       </slot-switch>
       <slot-switch
         v-if="visibleForm"
-        :active-slot-names="[visibleForm]"
+        :active-slot-names="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ [
+          visibleForm,
+        ] /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */"
         class="card-body add-item-form-container"
         :class="{
           'border-bottom-0': itemsFetchResultEmpty,

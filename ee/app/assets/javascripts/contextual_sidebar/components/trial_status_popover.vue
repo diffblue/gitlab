@@ -99,7 +99,7 @@ export default {
     :container="containerId"
     :target="targetId"
     :disabled="disabled"
-    :delay="{ hide: 400 }"
+    :delay="{ hide: 400 } /* eslint-disable-line @gitlab/vue-no-new-non-primitive-in-template */"
     @shown="onShown"
   >
     <template #title>

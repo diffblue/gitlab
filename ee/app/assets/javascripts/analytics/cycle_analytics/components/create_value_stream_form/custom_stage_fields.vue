@@ -155,7 +155,9 @@ export default {
         :requires-label="startEventRequiresLabel"
         :label-error="fieldErrorMessage('startEventLabelId')"
         :has-label-error="hasFieldErrors('startEventLabelId')"
-        :selected-label-ids="[stage.startEventLabelId]"
+        :selected-label-ids="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ [
+          stage.startEventLabelId,
+        ] /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */"
         @update-label="$emit('input', { field: 'startEventLabelId', value: $event })"
       />
     </div>
@@ -179,7 +181,9 @@ export default {
         :requires-label="endEventRequiresLabel"
         :label-error="fieldErrorMessage('endEventLabelId')"
         :has-label-error="hasFieldErrors('endEventLabelId')"
-        :selected-label-ids="[stage.endEventLabelId]"
+        :selected-label-ids="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ [
+          stage.endEventLabelId,
+        ] /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */"
         @update-label="$emit('input', { field: 'endEventLabelId', value: $event })"
       />
     </div>

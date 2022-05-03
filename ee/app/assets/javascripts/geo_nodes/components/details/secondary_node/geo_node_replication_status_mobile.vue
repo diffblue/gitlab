@@ -25,7 +25,12 @@ export default {
       <span class="gl-font-sm gl-mb-3">{{ translations.syncStatus }}</span>
       <geo-node-progress-bar
         v-if="item.syncValues"
-        :title="sprintf(translations.progressBarSyncTitle, { component: item.component })"
+        :title="
+          /* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */
+          sprintf(translations.progressBarSyncTitle, {
+            component: item.component,
+          }) /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */
+        "
         :target="`mobile-sync-progress-${item.component}`"
         :values="item.syncValues"
       />
@@ -35,7 +40,12 @@ export default {
       <span class="gl-font-sm gl-mb-3">{{ translations.verifStatus }}</span>
       <geo-node-progress-bar
         v-if="item.verificationValues"
-        :title="sprintf(translations.progressBarVerifTitle, { component: item.component })"
+        :title="
+          /* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */
+          sprintf(translations.progressBarVerifTitle, {
+            component: item.component,
+          }) /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */
+        "
         :target="`mobile-verification-progress-${item.component}`"
         :values="item.verificationValues"
         :success-label="translations.verified"

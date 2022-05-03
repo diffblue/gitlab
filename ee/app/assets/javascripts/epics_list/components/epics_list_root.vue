@@ -240,7 +240,12 @@ export default {
     :current-tab="currentState"
     :tab-counts="epicsCount"
     :search-input-placeholder="__('Search or filter results...')"
-    :search-tokens="getFilteredSearchTokens({ supportsEpic: false })"
+    :search-tokens="
+      /* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */
+      getFilteredSearchTokens({
+        supportsEpic: false,
+      }) /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */
+    "
     :sort-options="$options.EpicsSortOptions"
     :initial-filter-value="getFilteredSearchValue()"
     :initial-sort-by="sortedBy"

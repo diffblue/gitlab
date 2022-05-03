@@ -170,11 +170,13 @@ export default {
       data-testid="delete-value-stream-modal"
       modal-id="delete-value-stream-modal"
       :title="__('Delete Value Stream')"
-      :action-primary="{
+      :action-primary="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ {
         text: $options.i18n.DELETE,
         attributes: [{ variant: 'danger' }, { loading: isDeleting }],
-      }"
-      :action-cancel="{ text: $options.i18n.CANCEL }"
+      } /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */"
+      :action-cancel="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ {
+        text: $options.i18n.CANCEL,
+      } /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */"
       @primary.prevent="onDelete"
     >
       <gl-alert v-if="deleteValueStreamError" variant="danger">{{

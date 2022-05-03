@@ -34,8 +34,18 @@ export default {
   <div>
     <gl-button
       v-gl-tooltip
-      :title="sprintf($options.i18n.editButtonTooltip, { nodeType })"
-      :aria-label="sprintf($options.i18n.editButtonTooltip, { nodeType })"
+      :title="
+        /* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ sprintf(
+          $options.i18n.editButtonTooltip,
+          { nodeType },
+        ) /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */
+      "
+      :aria-label="
+        /* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ sprintf(
+          $options.i18n.editButtonTooltip,
+          { nodeType },
+        ) /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */
+      "
       icon="pencil"
       class="gl-mr-3"
       data-testid="geo-desktop-edit-action"
@@ -43,8 +53,18 @@ export default {
     />
     <gl-button
       v-gl-tooltip
-      :title="sprintf($options.i18n.removeButtonTooltip, { nodeType })"
-      :aria-label="sprintf($options.i18n.removeButtonTooltip, { nodeType })"
+      :title="
+        /* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ sprintf(
+          $options.i18n.removeButtonTooltip,
+          { nodeType },
+        ) /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */
+      "
+      :aria-label="
+        /* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ sprintf(
+          $options.i18n.removeButtonTooltip,
+          { nodeType },
+        ) /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */
+      "
       icon="remove"
       :disabled="!canRemoveNode(node.id)"
       data-testid="geo-desktop-remove-action"

@@ -55,7 +55,9 @@ export default {
   <div class="gl-display-flex gl-align-items-center gl-justify-content-space-between">
     <gl-tabs content-class="gl-p-0">
       <gl-tab
-        :title-link-attributes="{ 'data-testid': 'state-opened' }"
+        :title-link-attributes="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ {
+          'data-testid': 'state-opened',
+        } /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */"
         :active="isOpenTab"
         @click="$emit('click-tab', { filterBy: $options.FilterState.opened })"
       >
@@ -65,7 +67,9 @@ export default {
         </template>
       </gl-tab>
       <gl-tab
-        :title-link-attributes="{ 'data-testid': 'state-archived' }"
+        :title-link-attributes="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ {
+          'data-testid': 'state-archived',
+        } /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */"
         :active="isArchivedTab"
         @click="$emit('click-tab', { filterBy: $options.FilterState.archived })"
       >
@@ -77,7 +81,9 @@ export default {
         </template>
       </gl-tab>
       <gl-tab
-        :title-link-attributes="{ 'data-testid': 'state-all' }"
+        :title-link-attributes="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ {
+          'data-testid': 'state-all',
+        } /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */"
         :active="isAllTab"
         @click="$emit('click-tab', { filterBy: $options.FilterState.all })"
       >

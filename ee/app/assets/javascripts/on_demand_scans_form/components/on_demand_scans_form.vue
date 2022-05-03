@@ -453,12 +453,12 @@ export default {
               no-flip
               :enabled-ref-types="$options.enabledRefTypes"
               :project-id="projectPath"
-              :translations="{
+              :translations="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ {
                 dropdownHeader: __('Select a branch'),
                 searchPlaceholder: __('Search'),
                 noRefSelected: __('No available branches'),
                 noResults: __('No available branches'),
-              }"
+              } /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */"
             />
             <div v-if="!defaultBranch" class="gl-text-red-500 gl-mt-3">
               {{ $options.i18n.scanConfigurationDefaultBranchLabel }}

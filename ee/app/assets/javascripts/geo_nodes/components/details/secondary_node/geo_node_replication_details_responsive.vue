@@ -63,7 +63,12 @@ export default {
         <div class="gl-mr-5" data-testid="sync-status">
           <geo-node-progress-bar
             v-if="item.syncValues"
-            :title="sprintf($options.i18n.progressBarSyncTitle, { component: item.component })"
+            :title="
+              /* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ sprintf(
+                $options.i18n.progressBarSyncTitle,
+                { component: item.component },
+              ) /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */
+            "
             :target="`sync-progress-${nodeId}-${item.component}`"
             :values="item.syncValues"
           />
@@ -72,7 +77,12 @@ export default {
         <div data-testid="verification-status">
           <geo-node-progress-bar
             v-if="item.verificationValues"
-            :title="sprintf($options.i18n.progressBarVerifTitle, { component: item.component })"
+            :title="
+              /* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ sprintf(
+                $options.i18n.progressBarVerifTitle,
+                { component: item.component },
+              ) /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */
+            "
             :target="`verification-progress-${nodeId}-${item.component}`"
             :values="item.verificationValues"
             :success-label="$options.i18n.verified"

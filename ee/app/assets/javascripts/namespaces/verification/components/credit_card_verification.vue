@@ -54,7 +54,9 @@ export default {
       <create-group-description-details />
     </div>
     <div class="col-lg-9">
-      <gl-breadcrumb :items="[]" />
+      <gl-breadcrumb
+        :items="[] /* eslint-disable-line @gitlab/vue-no-new-non-primitive-in-template */"
+      />
       <label class="gl-mt-3">{{ $options.I18N_FORM_TITLE }}</label>
       <p>{{ $options.I18N_FORM_EXPLANATION }}</p>
       <zuora

@@ -40,14 +40,14 @@ export default {
     <drawer-section-header>{{ $options.i18n.header }}</drawer-section-header>
     <branch-details
       class="gl-justify-content-start gl-text-gray-500"
-      :source-branch="{
+      :source-branch="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ {
         name: sourceBranch,
         uri: sourceBranchUri,
-      }"
-      :target-branch="{
+      } /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */"
+      :target-branch="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ {
         name: targetBranch,
         uri: targetBranchUri,
-      }"
+      } /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */"
     />
   </div>
 </template>

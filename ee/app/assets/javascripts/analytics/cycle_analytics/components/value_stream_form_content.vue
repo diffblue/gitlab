@@ -336,7 +336,9 @@ export default {
     :title="formTitle"
     :action-primary="primaryProps"
     :action-secondary="secondaryProps"
-    :action-cancel="{ text: $options.i18n.BTN_CANCEL }"
+    :action-cancel="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ {
+      text: $options.i18n.BTN_CANCEL,
+    } /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */"
     @hidden.prevent="$emit('hidden')"
     @secondary.prevent="onAddStage"
     @primary.prevent="onSubmit"

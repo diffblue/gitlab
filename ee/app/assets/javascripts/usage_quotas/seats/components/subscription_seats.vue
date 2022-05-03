@@ -243,7 +243,7 @@ export default {
     <div class="gl-bg-gray-10 gl-p-5 gl-display-flex">
       <filter-sort-container-root
         :namespace="namespaceId"
-        :tokens="[]"
+        :tokens="[] /* eslint-disable-line @gitlab/vue-no-new-non-primitive-in-template */"
         :search-input-placeholder="$options.i18n.filterUsersPlaceholder"
         :sort-options="$options.sortOptions"
         initial-sort-by="last_activity_on_desc"
@@ -361,7 +361,9 @@ export default {
       ref="cannotRemoveModal"
       :modal-id="$options.cannotRemoveModalId"
       :title="$options.cannotRemoveModalTitle"
-      :action-primary="{ text: __('Okay') }"
+      :action-primary="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ {
+        text: __('Okay'),
+      } /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */"
       static
     >
       <p>
