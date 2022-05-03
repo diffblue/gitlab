@@ -25572,9 +25572,6 @@ msgstr ""
 msgid "No matching results..."
 msgstr ""
 
-msgid "No member or user provided"
-msgstr ""
-
 msgid "No members found"
 msgstr ""
 

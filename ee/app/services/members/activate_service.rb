@@ -25,7 +25,6 @@ module Members
     def execute
       return error(_('No group provided')) unless group
       return error(_('You do not have permission to approve a member'), :forbidden) unless allowed?
-      return error(_('No member or user provided')) unless activate_all || member || user
       return error(_('You can only approve an indivdual user, member, or all members')) unless valid_params?
 
       if activate_memberships

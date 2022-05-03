@@ -81,17 +81,19 @@ RSpec.describe Members::ActivateService do
         end
       end
 
+      context 'when no member, no user or activate_all is provided' do
+        let(:params) { {} }
+
+        it 'returns an error' do
+          result = execute
+
+          expect(result[:status]).to eq :error
+          expect(result[:message]).to eq 'You can only approve an indivdual user, member, or all members'
+        end
+      end
+
       context 'when activating an individual member' do
         let(:params) { { member: member } }
-
-        context 'when no member is provided' do
-          it 'returns an error' do
-            result = execute
-
-            expect(result[:status]).to eq :error
-            expect(result[:message]).to eq 'No member or user provided'
-          end
-        end
 
         context 'when member is an awaiting member of a root group' do
           it_behaves_like 'successful member activation' do
@@ -151,17 +153,6 @@ RSpec.describe Members::ActivateService do
 
       context 'when activating a user' do
         let(:params) { { user: user } }
-
-        context 'when no user is provided' do
-          let(:params) { {} }
-
-          it 'returns an error' do
-            result = execute
-
-            expect(result[:status]).to eq :error
-            expect(result[:message]).to eq 'No member or user provided'
-          end
-        end
 
         context 'when user is an awaiting member of a root group' do
           it_behaves_like 'successful member activation' do
