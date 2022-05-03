@@ -2,7 +2,7 @@
 
 module QA
   RSpec.describe 'Create' do
-    describe 'Approval rules', quarantine: { issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/215876', type: :flaky } do
+    describe 'Approval rules' do
       let(:approver1) { Resource::User.fabricate_or_use(Runtime::Env.gitlab_qa_username_1, Runtime::Env.gitlab_qa_password_1) }
       let(:approver2) { Resource::User.fabricate_or_use(Runtime::Env.gitlab_qa_username_2, Runtime::Env.gitlab_qa_password_2) }
       let(:project) do
