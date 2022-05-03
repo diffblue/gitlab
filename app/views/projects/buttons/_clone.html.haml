@@ -34,14 +34,16 @@
         %a.dropdown-item.open-with-link{ href: 'vscode://vscode.git/clone?url=' + escaped_ssh_url_to_repo }
           .gl-new-dropdown-item-text-wrapper
             = _('Visual Studio Code (SSH)')
-        %a.dropdown-item.open-with-link{ href: 'jetbrains://idea/checkout/git?idea.required.plugins.id=Git4Idea&checkout.repo=' + escaped_ssh_url_to_repo }
-          .gl-new-dropdown-item-text-wrapper
-            = _('IntelliJ IDEA (SSH)')
       - if http_enabled?
         - escaped_http_url_to_repo = CGI.escape(project.http_url_to_repo)
         %a.dropdown-item.open-with-link{ href: 'vscode://vscode.git/clone?url=' + escaped_http_url_to_repo }
           .gl-new-dropdown-item-text-wrapper
             = _('Visual Studio Code (HTTPS)')
+      - if ssh_enabled?
+        %a.dropdown-item.open-with-link{ href: 'jetbrains://idea/checkout/git?idea.required.plugins.id=Git4Idea&checkout.repo=' + escaped_ssh_url_to_repo }
+          .gl-new-dropdown-item-text-wrapper
+            = _('IntelliJ IDEA (SSH)')
+      - if http_enabled?
         %a.dropdown-item.open-with-link{ href: 'jetbrains://idea/checkout/git?idea.required.plugins.id=Git4Idea&checkout.repo=' + escaped_http_url_to_repo }
           .gl-new-dropdown-item-text-wrapper
             = _('IntelliJ IDEA (HTTPS)')
