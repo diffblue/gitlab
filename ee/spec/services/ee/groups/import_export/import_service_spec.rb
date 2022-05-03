@@ -56,7 +56,7 @@ RSpec.describe Groups::ImportExport::ImportService do
     it 'does not call the group wiki restorer' do
       expect(::Gitlab::ImportExport::RepoRestorer).not_to receive(:new)
 
-      expect { import_service.execute }.not_to raise_error(Gitlab::ImportExport::Error)
+      expect { import_service.execute }.not_to raise_error
     end
   end
 end

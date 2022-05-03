@@ -672,10 +672,8 @@ RSpec.describe AuditEventService, :request_store do
 
       context 'when the event is created within a transaction' do
         it 'does not raise an error about a job being enqueued from within a transaction' do
-          RSpec::Expectations.configuration.on_potential_false_positives = :nothing
-
           ApplicationRecord.transaction do
-            expect { event }.not_to raise_error(Sidekiq::Worker::EnqueueFromTransactionError)
+            expect { event }.not_to raise_error
           end
         end
       end

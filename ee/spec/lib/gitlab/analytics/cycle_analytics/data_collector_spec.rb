@@ -347,7 +347,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::DataCollector do
             subject { described_class.new(stage: stage, params: params) }
 
             it 'does not raise query syntax error' do
-              expect { subject.records_fetcher.serialized_records }.not_to raise_error(ActiveRecord::StatementInvalid)
+              expect { subject.records_fetcher.serialized_records }.not_to raise_error
             end
           end
         end

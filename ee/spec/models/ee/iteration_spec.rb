@@ -417,8 +417,8 @@ RSpec.describe Iteration do
 
         it "does not raise an error on creation with a unique sequence number within a cadence", :aggregate_failures do
           expect do
-            create(:iteration, :with_due_date, sequence: 2, iterations_cadence: iterations_cadence1, start_date: 2.weeks.from_now)
-          end.not_to raise_error(ActiveRecord::RecordNotUnique)
+            create(:iteration, :with_due_date, sequence: 2, iterations_cadence: iterations_cadence, start_date: 2.weeks.from_now)
+          end.not_to raise_error
         end
       end
 
@@ -481,7 +481,7 @@ RSpec.describe Iteration do
               iteration1.update_columns(dates2)
               iteration2.update_columns(dates1)
             end
-          end.not_to raise_exception(ActiveRecord::StatementInvalid, /PG::ExclusionViolation/)
+          end.not_to raise_exception
         end
       end
     end
