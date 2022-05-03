@@ -236,11 +236,6 @@ Style/ExplicitBlockArgument:
 Style/FormatString:
   Enabled: false
 
-# Offense count: 897
-# Configuration parameters: MinBodyLength.
-Style/GuardClause:
-  Enabled: false
-
 # Offense count: 59
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle.
