@@ -11,9 +11,9 @@ module Security
     # Configuration values;
     #
     #   `model`:     The ActiveRecord model which the task is ingesting the data for.
-    #   `unique_by`: Optional value to set unique constraint which will be used by
-    #                PostgreSQL to update records on conflict. The task raises an exception
-    #                in case of a conflict if this is not set.
+    #   `unique_by`: Optional attribute names to set unique constraint which will be used by
+    #                PostgreSQL to update records on conflict. The duplicate records will be
+    #                ignored by PostgreSQL if this is not provided.
     #   `uses`:      Optional value to set return columns of the insert query.
     #                The method named `after_ingest` will be called if this value is set.
     #
@@ -109,7 +109,13 @@ module Security
       end
 
       def insert_attributes
-        @insert_attributes ||= attributes.map { |values| values.merge(timestamps) }
+        @insert_attributes ||= unique_attributes.map { |values| values.merge(timestamps) }
+      end
+
+      def unique_attributes
+        return attributes unless unique_by.present?
+
+        attributes.uniq { |values| values.with_indifferent_access.slice(*unique_by) }
       end
 
       # `BulkInsertSafe` module is trying to update all the attributes
