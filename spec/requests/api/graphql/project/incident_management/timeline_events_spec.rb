@@ -22,8 +22,13 @@ RSpec.describe 'getting incident timeline events' do
     )
   end
 
-  let_it_be(:second_timeline_event) { create(:incident_management_timeline_event, incident: incident, project: project) }
-  let_it_be(:another_timeline_event) { create(:incident_management_timeline_event, incident: another_incident, project: project) }
+  let_it_be(:second_timeline_event) do
+    create(:incident_management_timeline_event, incident: incident, project: project)
+  end
+
+  let_it_be(:another_timeline_event) do
+    create(:incident_management_timeline_event, incident: another_incident, project: project)
+  end
 
   let(:params) { { incident_id: incident.to_global_id.to_s } }
 
@@ -59,7 +64,6 @@ RSpec.describe 'getting incident timeline events' do
   end
 
   before do
-    stub_licensed_features(incident_timeline_events: true)
     project.add_guest(current_user)
     post_graphql(query, current_user: current_user)
   end

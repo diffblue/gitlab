@@ -16,10 +16,6 @@ RSpec.describe Mutations::IncidentManagement::TimelineEvent::PromoteFromNote do
 
   specify { expect(described_class).to require_graphql_authorizations(:admin_incident_management_timeline_event) }
 
-  before do
-    stub_licensed_features(incident_timeline_events: true)
-  end
-
   describe '#resolve' do
     subject(:resolve) { mutation_for(project, current_user).resolve(**args) }
 

@@ -47,6 +47,10 @@ module Types
     mount_mutation Mutations::DependencyProxy::ImageTtlGroupPolicy::Update
     mount_mutation Mutations::DependencyProxy::GroupSettings::Update
     mount_mutation Mutations::Environments::CanaryIngress::Update
+    mount_mutation Mutations::IncidentManagement::TimelineEvent::Create
+    mount_mutation Mutations::IncidentManagement::TimelineEvent::PromoteFromNote
+    mount_mutation Mutations::IncidentManagement::TimelineEvent::Update
+    mount_mutation Mutations::IncidentManagement::TimelineEvent::Destroy
     mount_mutation Mutations::Issues::Create
     mount_mutation Mutations::Issues::SetAssignees
     mount_mutation Mutations::Issues::SetCrmContacts

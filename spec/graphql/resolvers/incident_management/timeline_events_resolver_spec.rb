@@ -8,8 +8,13 @@ RSpec.describe Resolvers::IncidentManagement::TimelineEventsResolver do
   let_it_be(:current_user) { create(:user) }
   let_it_be(:project) { create(:project) }
   let_it_be(:incident) { create(:incident, project: project) }
-  let_it_be(:first_timeline_event) { create(:incident_management_timeline_event, project: project, incident: incident) }
-  let_it_be(:second_timeline_event) { create(:incident_management_timeline_event, project: project, incident: incident) }
+  let_it_be(:first_timeline_event) do
+    create(:incident_management_timeline_event, project: project, incident: incident)
+  end
+
+  let_it_be(:second_timeline_event) do
+    create(:incident_management_timeline_event, project: project, incident: incident)
+  end
 
   let(:args) { { incident_id: incident.to_global_id } }
   let(:resolver) { described_class }
@@ -17,7 +22,6 @@ RSpec.describe Resolvers::IncidentManagement::TimelineEventsResolver do
   subject(:resolved_timeline_events) { sync(resolve_timeline_events(args, current_user: current_user).to_a) }
 
   before do
-    stub_licensed_features(incident_timeline_events: true)
     project.add_guest(current_user)
   end
 
