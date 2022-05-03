@@ -22,11 +22,11 @@ exports[`StreamDestinationEditor when initialized should render correctly 1`] = 
       class="gl-alert-content"
       role="alert"
     >
-      <h4
+      <h2
         class="gl-alert-title"
       >
         Destinations receive all audit event data
-      </h4>
+      </h2>
        
       <div
         class="gl-alert-body"
