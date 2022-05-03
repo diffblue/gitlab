@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require Rails.root.join('db', 'post_migrate', '20210302074524_backfill_namespace_statistics_with_wiki_size.rb')
+require_migration!
 
 RSpec.describe BackfillNamespaceStatisticsWithWikiSize do
   let_it_be(:shards) { table(:shards) }

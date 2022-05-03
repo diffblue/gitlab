@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-
-require Rails.root.join('db', 'post_migrate', '20210303121224_update_gitlab_subscriptions_start_at_post_eoa.rb')
+require_migration!
 
 RSpec.describe UpdateGitlabSubscriptionsStartAtPostEoa do
   let(:migration) { described_class.new }

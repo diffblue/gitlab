@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require Rails.root.join('ee', 'db', 'geo', 'migrate', '20191010204941_migrate_lfs_objects_to_separate_registry.rb')
+require_migration!
 
 RSpec.describe MigrateLfsObjectsToSeparateRegistry, :geo do
   let(:file_registry) { table(:file_registry) }
