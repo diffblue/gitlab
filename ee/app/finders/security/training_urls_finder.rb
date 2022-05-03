@@ -2,7 +2,7 @@
 
 module Security
   class TrainingUrlsFinder
-    def initialize(project, identifier_external_ids, language)
+    def initialize(project, identifier_external_ids, language = nil)
       @project = project
       @identifier_external_ids = identifier_external_ids
       @language = language
