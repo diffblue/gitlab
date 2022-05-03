@@ -58,6 +58,12 @@ module Gitlab
 
           next [] if newrevs.empty?
 
+          # When filtering quarantined commits we can enable usage of the object
+          # quarantine no matter whether we have an `oldrev` or not.
+          if Feature.enabled?(:filter_quarantined_commits)
+            allow_quarantine = true
+          end
+
           project.repository.new_commits(newrevs, allow_quarantine: allow_quarantine)
         end
       end
