@@ -81,7 +81,6 @@ module ActiveRecord
       if values[:cached] && skip_cached
         @cached << values[:sql]
       elsif !ignorable?(values)
-        return if ignorable?(values)
 
         backtrace = @query_recorder_debug ? show_backtrace(values, duration) : nil
         @log << values[:sql]
