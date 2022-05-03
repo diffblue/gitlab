@@ -11,7 +11,7 @@ module EE
     end
 
     override :active_record_base
-    def active_record_base
+    def active_record_base(...)
       if geo_migration?
         ::Geo::TrackingBase
       else
