@@ -24,8 +24,6 @@ query getIssuesEE(
   $iterationId: [ID]
   $iterationWildcardId: IterationWildcardId
   $weight: String
-  $crmContactId: String
-  $crmOrganizationId: String
   $not: NegatedIssueFilterInput
   $beforeCursor: String
   $afterCursor: String
@@ -54,8 +52,6 @@ query getIssuesEE(
       iterationId: $iterationId
       iterationWildcardId: $iterationWildcardId
       weight: $weight
-      crmContactId: $crmContactId
-      crmOrganizationId: $crmOrganizationId
       not: $not
       before: $beforeCursor
       after: $afterCursor
@@ -97,8 +93,6 @@ query getIssuesEE(
       iterationId: $iterationId
       iterationWildcardId: $iterationWildcardId
       weight: $weight
-      crmContactId: $crmContactId
-      crmOrganizationId: $crmOrganizationId
       not: $not
       before: $beforeCursor
       after: $afterCursor
