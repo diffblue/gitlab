@@ -204,7 +204,9 @@ export default {
         :chart-data="getColumnChartData(chartKeys.main)"
       >
         <gl-column-chart
-          :bars="[{ name: 'full', data: getColumnChartData(chartKeys.main) }]"
+          :bars="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ [
+            { name: 'full', data: getColumnChartData(chartKeys.main) },
+          ] /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */"
           :option="getColumnChartOption(chartKeys.main)"
           :y-axis-title="__('Merge requests')"
           :x-axis-title="__('Days')"
@@ -255,7 +257,9 @@ export default {
               "
             >
               <gl-column-chart
-                :bars="[{ name: 'full', data: getColumnChartData(chartKeys.timeBasedHistogram) }]"
+                :bars="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ [
+                  { name: 'full', data: getColumnChartData(chartKeys.timeBasedHistogram) },
+                ] /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */"
                 :option="getColumnChartOption(chartKeys.timeBasedHistogram)"
                 :y-axis-title="s__('ProductivityAnalytics|Merge requests')"
                 :x-axis-title="s__('ProductivityAnalytics|Hours')"
@@ -281,7 +285,9 @@ export default {
               "
             >
               <gl-column-chart
-                :bars="[{ name: 'full', data: getColumnChartData(chartKeys.commitBasedHistogram) }]"
+                :bars="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ [
+                  { name: 'full', data: getColumnChartData(chartKeys.commitBasedHistogram) },
+                ] /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */"
                 :option="getColumnChartOption(chartKeys.commitBasedHistogram)"
                 :y-axis-title="s__('ProductivityAanalytics|Merge requests')"
                 :x-axis-title="getMetricLabel(chartKeys.commitBasedHistogram)"

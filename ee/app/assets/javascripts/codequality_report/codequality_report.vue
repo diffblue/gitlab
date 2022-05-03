@@ -69,7 +69,7 @@ export default {
       :error-text="translateText('Code Quality').error"
       :success-text="codequalityText"
       :unresolved-issues="codequalityIssues"
-      :resolved-issues="[]"
+      :resolved-issues="[] /* eslint-disable-line @gitlab/vue-no-new-non-primitive-in-template */"
       :has-issues="hasCodequalityIssues"
       :component="$options.componentNames.CodequalityIssueBody"
       class="codequality-report"

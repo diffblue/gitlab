@@ -137,7 +137,7 @@ export default {
       :error-text="$options.i18n.errorText"
       :success-text="codequalityText"
       :unresolved-issues="codequalityViolations.parsedList"
-      :resolved-issues="[]"
+      :resolved-issues="[] /* eslint-disable-line @gitlab/vue-no-new-non-primitive-in-template */"
       :has-issues="hasCodequalityViolations"
       :component="$options.componentNames.CodequalityIssueBody"
       class="codequality-report"

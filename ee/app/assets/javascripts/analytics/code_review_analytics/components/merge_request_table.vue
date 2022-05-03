@@ -136,7 +136,13 @@ export default {
     </template>
 
     <template #cell(approved_by)="{ value }">
-      <approvers-column :approvers="value && value.length ? value : []" />
+      <approvers-column
+        :approvers="
+          value && value.length
+            ? value
+            : [] /* eslint-disable-line @gitlab/vue-no-new-non-primitive-in-template */
+        "
+      />
     </template>
 
     <template #cell(diff_stats)="{ value }">

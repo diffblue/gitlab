@@ -227,11 +227,11 @@ export default {
     :form-touched="formTouched"
     :is-policy-profile="isPolicyProfile"
     :block-submit="isSubmitBlocked"
-    :modal-props="{
+    :modal-props="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ {
       title: i18n.modal.title,
       okTitle: i18n.modal.okTitle,
       cancelTitle: i18n.modal.cancelTitle,
-    }"
+    } /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */"
     @submit="form.showValidation = true"
     v-on="$listeners"
   >

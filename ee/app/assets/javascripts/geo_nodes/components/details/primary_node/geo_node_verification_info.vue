@@ -64,7 +64,12 @@ export default {
       }}</span>
       <geo-node-progress-bar
         class="gl-mt-3"
-        :title="sprintf($options.i18n.progressBarTitle, { title: bar.title })"
+        :title="
+          /* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */
+          sprintf($options.i18n.progressBarTitle, {
+            title: bar.title,
+          }) /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */
+        "
         :values="bar.values"
         :success-label="$options.i18n.checksummed"
         :unavailable-label="$options.i18n.nothingToChecksum"

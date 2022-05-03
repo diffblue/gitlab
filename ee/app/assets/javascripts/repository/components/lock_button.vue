@@ -96,11 +96,13 @@ export default {
       modal-id="lock-file-modal"
       :visible="isModalVisible"
       :title="$options.i18n.modalTitle"
-      :action-primary="{
+      :action-primary="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ {
         text: $options.i18n.actionPrimary,
         attributes: { variant: 'confirm', 'data-qa-selector': 'confirm_ok_button' },
-      }"
-      :action-cancel="{ text: $options.i18n.actionCancel }"
+      } /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */"
+      :action-cancel="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ {
+        text: $options.i18n.actionCancel,
+      } /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */"
       @primary="handleModalPrimary"
       @hide="hideModal"
     >

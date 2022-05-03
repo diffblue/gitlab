@@ -182,7 +182,9 @@ export default {
 
       <gl-column-chart
         data-qa-selector="issues_analytics_graph"
-        :bars="[{ name: 'Full', data }]"
+        :bars="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ [
+          { name: 'Full', data },
+        ] /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */"
         :option="chartOptions"
         :y-axis-title="s__('IssuesAnalytics|Issues created')"
         :x-axis-title="s__('IssuesAnalytics|Last 12 months') + ' (' + chartDateRange + ')'"

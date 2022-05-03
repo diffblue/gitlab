@@ -39,9 +39,10 @@ export default {
       <template #helpLink="{ content }"
         ><gl-link
           :href="
+            /* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */
             helpPagePath('user/admin_area/settings/account_and_limit_settings', {
               anchor: 'limit-the-lifetime-of-access-tokens',
-            })
+            }) /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */
           "
           target="_blank"
           >{{ content }}</gl-link

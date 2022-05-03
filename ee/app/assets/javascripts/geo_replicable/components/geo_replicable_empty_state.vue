@@ -27,7 +27,12 @@ export default {
 
 <template>
   <gl-empty-state
-    :title="sprintf(__('There are no %{replicableTypeName} to show'), { replicableTypeName })"
+    :title="
+      /* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */
+      sprintf(__('There are no %{replicableTypeName} to show'), {
+        replicableTypeName,
+      }) /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */
+    "
     :svg-path="geoReplicableEmptySvgPath"
   >
     <template #description>

@@ -98,17 +98,17 @@ export default {
 <template>
   <gl-modal
     ref="modal"
-    :action-primary="{
+    :action-primary="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ {
       text: $options.i18n.primaryText,
       attributes: [{ variant: 'confirm' }, { id: 'copy-yaml-snippet-and-edit-button' }],
-    }"
-    :action-secondary="{
+    } /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */"
+    :action-secondary="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ {
       text: $options.i18n.secondaryText,
       attributes: [{ variant: 'default' }, { id: 'copy-yaml-snippet-button' }],
-    }"
-    :action-cancel="{
+    } /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */"
+    :action-cancel="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ {
       text: $options.i18n.cancelText,
-    }"
+    } /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */"
     :modal-id="$options.CONFIGURATION_SNIPPET_MODAL_ID"
     :title="modalTitle"
     @hide="onHide"

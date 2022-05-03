@@ -170,7 +170,10 @@ export default {
       :timeframe="timeframe"
       :current-group-id="currentGroupId"
       :client-width="clientWidth"
-      :children="childrenEpics[epic.id] || []"
+      :children="
+        childrenEpics[epic.id] ||
+        [] /* eslint-disable-line @gitlab/vue-no-new-non-primitive-in-template */
+      "
       :child-level="childLevel + 1"
       :children-epics="childrenEpics"
       :children-flags="childrenFlags"

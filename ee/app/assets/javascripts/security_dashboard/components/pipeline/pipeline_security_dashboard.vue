@@ -160,7 +160,9 @@ export default {
     <security-dashboard
       v-if="!shouldShowGraphqlVulnerabilityReport"
       :vulnerabilities-endpoint="vulnerabilitiesEndpoint"
-      :lock-to-project="{ id: projectId }"
+      :lock-to-project="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ {
+        id: projectId,
+      } /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */"
       :pipeline-id="pipeline.id"
       :loading-error-illustrations="loadingErrorIllustrations"
       :security-report-summary="reportSummary"

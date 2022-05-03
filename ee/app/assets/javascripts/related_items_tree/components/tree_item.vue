@@ -108,7 +108,10 @@ export default {
     <tree-root
       v-if="itemExpanded || showEpicDropzone"
       :parent-item="item"
-      :children="children[itemReference] || []"
+      :children="
+        children[itemReference] ||
+        [] /* eslint-disable-line @gitlab/vue-no-new-non-primitive-in-template */
+      "
       class="sub-tree-root"
     />
   </li>
