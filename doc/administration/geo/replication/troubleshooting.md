@@ -1116,6 +1116,21 @@ This is due to [Pages data not being managed by Geo](datatypes.md#limitations-on
 Find advice to resolve those error messages in the
 [Pages administration documentation](../../../administration/pages/index.md#404-error-after-promoting-a-geo-secondary-to-a-primary-node).
 
+### Primary site returns 500 error when accessing `/admin/geo/replication/projects`
+
+Navigating to **Admin > Geo > Replication** (or `/admin/geo/replication/projects`) on a primary Geo site, shows a 500 error, while that same link on the secondary works fine. The primary's `production.log` has a similar entry to the following:
+
+```plaintext
+Geo::TrackingBase::SecondaryNotConfigured: Geo secondary database is not configured
+  from ee/app/models/geo/tracking_base.rb:26:in `connection'
+  [..]
+  from ee/app/views/admin/geo/projects/_all.html.haml:1
+```
+
+On a Geo primary site this error can be ignored.
+
+This happens because GitLab is attempting to display registries from the [Geo tracking database](../../../administration/geo/#geo-tracking-database) which doesn't exist on the primary site (only the original projects exist on the primary; no replicated projects are present, therefore no tracking database exists). 
+
 ## Fixing client errors
 
 ### Authorization errors from LFS HTTP(s) client requests
