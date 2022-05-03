@@ -44,7 +44,13 @@ export default {
         .then(({ data = {} }) => {
           const errors = data.createTestCase?.errors;
           if (errors?.length) {
-            throw new Error(`Error creating a test case. Error message: ${errors[0].message}`);
+            const error = errors[0];
+            createFlash({
+              message: error,
+              captureError: true,
+              error,
+            });
+            return;
           }
           redirectTo(this.projectTestCasesPath);
         })
