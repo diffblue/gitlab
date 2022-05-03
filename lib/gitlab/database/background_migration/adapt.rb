@@ -20,6 +20,10 @@ module Gitlab
             indicator_class.new(migration.adapt_context).evaluate
           rescue StandardError => e
             Gitlab::ErrorTracking.track_exception(e, migration_id: migration.id)
+            Gitlab::AppLogger.error(
+              message: "Failed to evaluate adapt signals for batched migration #{migration}: #{e}",
+              migration_id: migration.id
+            )
 
             UnknownSignal.new(indicator_class, reason: "unknown error: #{e}")
           end
@@ -32,11 +36,11 @@ module Gitlab
             )
 
             migration.hold!
-          when NormalSignal
+          when NormalSignal, NoSignal
             migration.optimize!
           when UnknownSignal
-            Gitlab::AppLogger.error(
-              message: "Failed to evaluate adapt signals for batched migration #{migration}: #{signal}",
+            Gitlab::AppLogger.warn(
+              message: "Unknown indicator status for batched migration #{migration}: #{signal}",
               migration_id: migration.id
             )
           else

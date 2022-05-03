@@ -29,6 +29,10 @@ module Gitlab
         # When given an UnknownSignal, something unexpected happened while
         # we evaluated system indicators.
         class UnknownSignal < Signal; end
+
+        # No signal could be determined, e.g. because the indicator
+        # was disabled.
+        class NoSignal < Signal; end
       end
     end
   end

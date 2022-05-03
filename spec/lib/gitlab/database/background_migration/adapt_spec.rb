@@ -23,8 +23,9 @@ RSpec.describe Gitlab::Database::BackgroundMigration::Adapt do
       allow(indicator_class).to receive(:new).with(migration.adapt_context).and_return(indicator)
     end
 
-    let(:stop_signal) { described_class::StopSignal.new(indicator_class, reason: 'taking a break') }
+    let(:stop_signal) { described_class::StopSignal.new(indicator_class, reason: 'take a break!') }
     let(:normal_signal) { described_class::NormalSignal.new(indicator_class, reason: 'carry on with stuff') }
+    let(:no_signal) { described_class::NoSignal.new(indicator_class, reason: 'indicator disabled') }
 
     it 'puts the migration on hold when given the stop signal' do
       expect(indicator).to receive(:evaluate).and_return(stop_signal)
@@ -34,8 +35,16 @@ RSpec.describe Gitlab::Database::BackgroundMigration::Adapt do
       subject
     end
 
-    it 'optimizes the migration when given the normal signal' do
+    it 'optimizes the migration when given the NormalSignal signal' do
       expect(indicator).to receive(:evaluate).and_return(normal_signal)
+      expect(migration).to receive(:optimize!)
+      expect(migration).not_to receive(:hold!)
+
+      subject
+    end
+
+    it 'optimizes the migration when given the NoSignal signal' do
+      expect(indicator).to receive(:evaluate).and_return(no_signal)
       expect(migration).to receive(:optimize!)
       expect(migration).not_to receive(:hold!)
 
