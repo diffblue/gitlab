@@ -9,12 +9,15 @@ module EE
       dataset = super
 
       if !source.root_ancestor.user_namespace? && ::Namespaces::FreeUserCap.new(source.root_ancestor).enforce_cap?
-        dataset.merge({
-          new_trial_registration_path: new_trial_path,
-          purchase_path: group_billings_path(source.root_ancestor),
-          free_users_limit: ::Namespaces::FreeUserCap::FREE_USER_LIMIT,
-          members_count: source.root_ancestor.free_plan_members_count
-        })
+        dataset.merge(
+          users_limit_dataset: {
+            new_trial_registration_path: new_trial_path,
+            members_path: group_usage_quotas_path(source.root_ancestor),
+            purchase_path: group_billings_path(source.root_ancestor),
+            free_users_limit: ::Namespaces::FreeUserCap::FREE_USER_LIMIT,
+            members_count: source.root_ancestor.free_plan_members_count
+          }.to_json
+        )
       else
         dataset
       end

@@ -21056,10 +21056,10 @@ msgstr ""
 msgid "InviteMembersModal|Create issues for your new team member to work on (optional)"
 msgstr ""
 
-msgid "InviteMembersModal|GitLab is better with colleagues!"
+msgid "InviteMembersModal|Explore paid plans"
 msgstr ""
 
-msgid "InviteMembersModal|GitLab member or email address"
+msgid "InviteMembersModal|GitLab is better with colleagues!"
 msgstr ""
 
 msgid "InviteMembersModal|How about inviting a colleague or two to join you?"
@@ -21074,10 +21074,10 @@ msgstr ""
 msgid "InviteMembersModal|Invite members"
 msgstr ""
 
-msgid "InviteMembersModal|Members were successfully added"
+msgid "InviteMembersModal|Manage members"
 msgstr ""
 
-msgid "InviteMembersModal|New members will be unable to participate. You can manage your members by removing ones you no longer need."
+msgid "InviteMembersModal|Members were successfully added"
 msgstr ""
 
 msgid "InviteMembersModal|Search for a group to invite"
@@ -21095,10 +21095,19 @@ msgstr ""
 msgid "InviteMembersModal|Something went wrong"
 msgstr ""
 
+msgid "InviteMembersModal|This feature is disabled until this group has space for more members."
+msgstr ""
+
 msgid "InviteMembersModal|To assign issues to a new team member, you need a project for the issues. %{linkStart}Create a project to get started.%{linkEnd}"
 msgstr ""
 
 msgid "InviteMembersModal|To get more members an owner of this namespace can %{trialLinkStart}start a trial%{trialLinkEnd} or %{upgradeLinkStart}upgrade%{upgradeLinkEnd} to a paid tier."
+msgstr ""
+
+msgid "InviteMembersModal|Username or email address"
+msgstr ""
+
+msgid "InviteMembersModal|You cannot add more members, but you can remove members who no longer need access. To get more members and access to additional paid features, an owner of this namespace can start a trial or upgrade to a paid tier."
 msgstr ""
 
 msgid "InviteMembersModal|You only have space for %{count} more %{members} in %{name}"

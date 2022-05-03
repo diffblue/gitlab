@@ -9,10 +9,11 @@ RSpec.describe EE::InviteMembersHelper do
 
     let(:notification_attributes) do
       {
-        free_users_limit: ::Namespaces::FreeUserCap::FREE_USER_LIMIT,
-        members_count: project.root_ancestor.free_plan_members_count,
-        new_trial_registration_path: new_trial_path,
-        purchase_path: group_billings_path(project.root_ancestor)
+        'free_users_limit' => ::Namespaces::FreeUserCap::FREE_USER_LIMIT,
+        'members_count' => project.root_ancestor.free_plan_members_count,
+        'new_trial_registration_path' => new_trial_path,
+        'members_path' => group_usage_quotas_path(project.root_ancestor),
+        'purchase_path' => group_billings_path(project.root_ancestor)
       }
     end
 
@@ -26,7 +27,7 @@ RSpec.describe EE::InviteMembersHelper do
       end
 
       it 'does not include users limit notification data' do
-        expect(helper.common_invite_modal_dataset(project)).not_to include(notification_attributes)
+        expect(helper.common_invite_modal_dataset(project)).not_to have_key(:users_limit_dataset)
       end
     end
 
@@ -37,7 +38,7 @@ RSpec.describe EE::InviteMembersHelper do
         end
 
         it 'does not include users limit notification data' do
-          expect(helper.common_invite_modal_dataset(project)).not_to include(notification_attributes)
+          expect(helper.common_invite_modal_dataset(project)).not_to have_key(:users_limit_dataset)
         end
       end
 
@@ -47,7 +48,8 @@ RSpec.describe EE::InviteMembersHelper do
         end
 
         it 'includes users limit notification data' do
-          expect(helper.common_invite_modal_dataset(project)).to include(notification_attributes)
+          users_limit_dataset = Gitlab::Json.parse(helper.common_invite_modal_dataset(project)[:users_limit_dataset])
+          expect(users_limit_dataset).to eq(notification_attributes)
         end
       end
     end
