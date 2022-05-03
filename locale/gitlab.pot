@@ -18553,13 +18553,13 @@ msgstr ""
 msgid "GroupsNew|Create this in the %{pat_link_start}user settings%{pat_link_end} of the source GitLab instance. For %{short_living_link_start}security reasons%{short_living_link_end}, use a short expiration date when creating the token."
 msgstr ""
 
-msgid "GroupsNew|Export groups with all their related data and move to a new GitLab instance."
-msgstr ""
-
 msgid "GroupsNew|GitLab source URL"
 msgstr ""
 
 msgid "GroupsNew|Groups can also be nested by creating %{linkStart}subgroups%{linkEnd}."
+msgstr ""
+
+msgid "GroupsNew|Import a group and related data from another GitLab instance."
 msgstr ""
 
 msgid "GroupsNew|Import group"
