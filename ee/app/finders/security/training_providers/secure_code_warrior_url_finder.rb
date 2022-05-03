@@ -12,7 +12,12 @@ module Security
       end
 
       def full_url
-        Gitlab::Utils.append_path(provider.url, "?Id=gitlab&MappingList=cwe&MappingKey=#{identifier_external_id}")
+        Gitlab::Utils.append_path(provider.url,
+                                  "?Id=gitlab&MappingList=cwe&MappingKey=#{identifier_external_id}#{language_param}")
+      end
+
+      def language_param
+        "&LanguageKey=#{@language}" if @language
       end
     end
   end

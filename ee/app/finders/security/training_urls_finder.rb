@@ -2,9 +2,10 @@
 
 module Security
   class TrainingUrlsFinder
-    def initialize(project, identifier_external_ids)
+    def initialize(project, identifier_external_ids, language)
       @project = project
       @identifier_external_ids = identifier_external_ids
+      @language = language
     end
 
     def execute
@@ -15,14 +16,14 @@ module Security
 
     private
 
-    attr_reader :project, :identifier_external_ids
+    attr_reader :project, :identifier_external_ids, :language
 
     def security_training_urls(identifier_external_ids)
       [].tap do |content_urls|
         training_providers.each do |provider|
           identifier_external_ids.each do |identifier_external_id|
             class_name = "::Security::TrainingProviders::#{provider.name.delete(' ')}UrlFinder".safe_constantize
-            content_url = class_name.new(project, provider, identifier_external_id).execute if class_name
+            content_url = class_name.new(project, provider, identifier_external_id, language).execute if class_name
             content_urls << content_url if content_url
           end
         end

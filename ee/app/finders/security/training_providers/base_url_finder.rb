@@ -10,11 +10,12 @@ module Security
       self.reactive_cache_lifetime = 10.minutes
       self.reactive_cache_work_type = :external_dependency
 
-      def initialize(project, provider, identifier_external_id)
+      def initialize(project, provider, identifier_external_id, language = nil)
         @project = project
         @provider = provider
         @identifier_external_id = identifier_external_id.split('-').last
         @identifier = identifier_external_id # we need this to hold the pre-parsed data
+        @language = language
       end
 
       def execute
@@ -36,7 +37,7 @@ module Security
 
       private
 
-      attr_reader :project, :provider, :identifier_external_id
+      attr_reader :project, :provider, :identifier_external_id, :language
 
       def response_url
         strong_memoize(:response_url) do
@@ -51,7 +52,11 @@ module Security
       # Required for ReactiveCaching; Usage overridden by
       # self.reactive_cache_worker_finder
       def id
-        "#{project.id}-#{provider.id}-#{identifier_external_id}"
+        "#{project.id}-#{provider.id}-#{identifier_external_id}#{language_id_prefix}"
+      end
+
+      def language_id_prefix
+        "-#{@language}" if @language
       end
     end
   end

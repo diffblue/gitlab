@@ -18,7 +18,11 @@ module Security
       end
 
       def full_url
-        Gitlab::Utils.append_path(provider.url, "?cwe=#{identifier_external_id}")
+        Gitlab::Utils.append_path(provider.url, "?cwe=#{identifier_external_id}#{language_param}")
+      end
+
+      def language_param
+        "&language=#{@language}" if @language
       end
     end
   end
