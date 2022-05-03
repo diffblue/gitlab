@@ -18,8 +18,6 @@ query getIssuesCountEE(
   $iterationId: [ID]
   $iterationWildcardId: IterationWildcardId
   $weight: String
-  $crmContactId: String
-  $crmOrganizationId: String
   $not: NegatedIssueFilterInput
 ) {
   group(fullPath: $fullPath) @skip(if: $isProject) {
@@ -43,8 +41,6 @@ query getIssuesCountEE(
       iterationId: $iterationId
       iterationWildcardId: $iterationWildcardId
       weight: $weight
-      crmContactId: $crmContactId
-      crmOrganizationId: $crmOrganizationId
       not: $not
     ) {
       count
@@ -68,8 +64,6 @@ query getIssuesCountEE(
       iterationId: $iterationId
       iterationWildcardId: $iterationWildcardId
       weight: $weight
-      crmContactId: $crmContactId
-      crmOrganizationId: $crmOrganizationId
       not: $not
     ) {
       count
@@ -93,8 +87,6 @@ query getIssuesCountEE(
       iterationId: $iterationId
       iterationWildcardId: $iterationWildcardId
       weight: $weight
-      crmContactId: $crmContactId
-      crmOrganizationId: $crmOrganizationId
       not: $not
     ) {
       count
@@ -122,8 +114,6 @@ query getIssuesCountEE(
       iterationId: $iterationId
       iterationWildcardId: $iterationWildcardId
       weight: $weight
-      crmContactId: $crmContactId
-      crmOrganizationId: $crmOrganizationId
       not: $not
     ) {
       count
@@ -148,8 +138,6 @@ query getIssuesCountEE(
       iterationId: $iterationId
       iterationWildcardId: $iterationWildcardId
       weight: $weight
-      crmContactId: $crmContactId
-      crmOrganizationId: $crmOrganizationId
       not: $not
     ) {
       count
@@ -174,8 +162,6 @@ query getIssuesCountEE(
       iterationId: $iterationId
       iterationWildcardId: $iterationWildcardId
       weight: $weight
-      crmContactId: $crmContactId
-      crmOrganizationId: $crmOrganizationId
       not: $not
     ) {
       count
