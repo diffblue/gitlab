@@ -253,11 +253,6 @@ Style/HashEachMethods:
 Style/IfInsideElse:
   Enabled: false
 
-# Offense count: 1934
-# Cop supports --auto-correct.
-Style/IfUnlessModifier:
-  Enabled: false
-
 # Offense count: 64
 # Cop supports --auto-correct.
 Style/KeywordParametersOrder:
