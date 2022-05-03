@@ -36,6 +36,12 @@ export default {
     state.maxSeatsUsed = usage?.max_seats_used ?? 0;
     state.seatsOwed = usage?.seats_owed ?? 0;
 
+    if (state.hasLimitedFreePlan) {
+      state.hasReachedFreePlanLimit = state.seatsInUse >= state.maxFreeNamespaceSeats;
+    } else {
+      state.hasReachedFreePlanLimit = false;
+    }
+
     state.isLoading = false;
   },
 
