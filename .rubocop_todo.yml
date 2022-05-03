@@ -156,11 +156,6 @@ Rails/NegateInclude:
 Rails/Pick:
   Enabled: false
 
-# Offense count: 123
-# Cop supports --auto-correct.
-Rails/Pluck:
-  Enabled: false
-
 # Offense count: 39
 # Cop supports --auto-correct.
 # Configuration parameters: Include.
