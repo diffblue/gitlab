@@ -31,7 +31,7 @@ module Groups::SecurityFeaturesHelper
       can_admin_vulnerability: can?(current_user, :admin_vulnerability, group).to_s,
       false_positive_doc_url: help_page_path('user/application_security/vulnerabilities/index'),
       can_view_false_positive: group.licensed_feature_available?(:sast_fp_reduction).to_s,
-      has_projects: group.projects.any?.to_s
+      has_projects: Project.for_group_and_its_subgroups(group).any?.to_s
     }
   end
 

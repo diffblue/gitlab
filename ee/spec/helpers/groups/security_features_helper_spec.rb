@@ -66,6 +66,7 @@ RSpec.describe Groups::SecurityFeaturesHelper do
       allow(helper).to receive(:can?).and_return(true)
     end
 
+    let(:has_projects) { 'false' }
     let(:expected_data) do
       {
         projects_endpoint: "http://localhost/api/v4/groups/#{group.id}/projects",
@@ -81,11 +82,34 @@ RSpec.describe Groups::SecurityFeaturesHelper do
         scanners: '[]',
         can_admin_vulnerability: 'true',
         can_view_false_positive: 'false',
-        has_projects: 'false'
+        has_projects: has_projects
       }
     end
 
-    it { is_expected.to eq(expected_data) }
+    context 'when it does not have projects' do
+      it { is_expected.to eq(expected_data) }
+    end
+
+    context 'when it has projects' do
+      let(:has_projects) { 'true' }
+
+      before do
+        create(:project, :public, group: group)
+      end
+
+      it { is_expected.to eq(expected_data) }
+    end
+
+    context 'when it does not have projects but has subgroups that do' do
+      let(:subgroup) { create(:group, parent: group) }
+      let(:has_projects) { 'true' }
+
+      before do
+        create(:project, :public, group: subgroup)
+      end
+
+      it { is_expected.to eq(expected_data) }
+    end
   end
 
   describe '#group_security_discover_data' do
