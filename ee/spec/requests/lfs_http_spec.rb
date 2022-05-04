@@ -3,7 +3,9 @@
 require 'spec_helper'
 
 RSpec.describe 'Git LFS API and storage' do
+  include LfsHttpHelpers
   include WorkhorseHelpers
+  include WorkhorseLfsHelpers
   include EE::GeoHelpers
 
   let(:user) { create(:user) }
@@ -197,6 +199,7 @@ RSpec.describe 'Git LFS API and storage' do
 
       context 'when user is authenticated' do
         let(:authorization) { authorize_user }
+        let(:include_workhorse_jwt_header) { true }
 
         context 'when user has push access to the project' do
           before do
@@ -218,34 +221,6 @@ RSpec.describe 'Git LFS API and storage' do
           end
         end
       end
-    end
-
-    def put_finalize(lfs_tmp = lfs_tmp_file, with_tempfile: false, verified: true, args: {})
-      upload_path = LfsObjectUploader.workhorse_local_upload_path
-      file_path = upload_path + '/' + lfs_tmp if lfs_tmp
-
-      if with_tempfile
-        FileUtils.mkdir_p(upload_path)
-        FileUtils.touch(file_path)
-      end
-
-      extra_args = {
-        'file.path' => file_path,
-        'file.name' => File.basename(file_path)
-      }
-
-      put_finalize_with_args(args.merge(extra_args).compact, verified: verified)
-    end
-
-    def put_finalize_with_args(args, verified:)
-      finalize_headers = headers
-      finalize_headers.merge!(workhorse_internal_api_request_header) if verified
-
-      put "#{project.http_url_to_repo}/gitlab-lfs/objects/#{sample_oid}/#{sample_size}", params: args, headers: finalize_headers
-    end
-
-    def lfs_tmp_file
-      "#{sample_oid}012345678"
     end
   end
 
