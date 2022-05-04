@@ -22,25 +22,29 @@ from where content is sourced, the `gitlab-docs` project, and the published outp
 
 ```mermaid
   graph LR
-    A[gitlab/doc]
-    B[gitlab-runner/docs]
-    C[omnibus-gitlab/doc]
-    D[charts/doc]
-    E[gitlab-docs]
-    A --> E
-    B --> E
-    C --> E
-    D --> E
-    E -- Build pipeline --> F
-    F[docs.gitlab.com]
-    H[/ee/]
-    I[/runner/]
-    J[/omnibus/]
-    K[/charts/]
-    F --> H
-    F --> I
-    F --> J
-    F --> K
+    A[gitlab-org/gitlab/doc]
+    B[gitlab-org/gitlab-runner/docs]
+    C[gitlab-org/omnibus-gitlab/doc]
+    D[gitlab-org/charts/gitlab/doc]
+    E[gitlab-org/cloud-native/gitlab-operator/doc]
+    Y[gitlab-org/gitlab-docs]
+    A --> Y
+    B --> Y
+    C --> Y
+    D --> Y
+    E --> Y
+    Y -- Build pipeline --> Z
+    Z[docs.gitlab.com]
+    M[//ee/]
+    N[//runner/]
+    O[//omnibus/]
+    P[//charts/]
+    Q[//operator/]
+    Z --> M
+    Z --> N
+    Z --> O
+    Z --> P
+    Z --> Q
 ```
 
 GitLab docs content isn't kept in the `gitlab-docs` repository.
@@ -48,9 +52,10 @@ All documentation files are hosted in the respective repository of each
 product, and all together are pulled to generate the docs website:
 
 - [GitLab](https://gitlab.com/gitlab-org/gitlab/-/tree/master/doc)
-- [Omnibus GitLab](https://gitlab.com/gitlab-org/omnibus-gitlab/tree/master/doc)
+- [Omnibus GitLab](https://gitlab.com/gitlab-org/omnibus-gitlab/-/tree/master/doc)
 - [GitLab Runner](https://gitlab.com/gitlab-org/gitlab-runner/-/tree/main/docs)
-- [GitLab Chart](https://gitlab.com/charts/gitlab/tree/master/doc)
+- [GitLab Chart](https://gitlab.com/gitlab-org/charts/gitlab/-/tree/master/doc)
+- [GitLab Operator](https://gitlab.com/gitlab-org/cloud-native/gitlab-operator/-/tree/master/doc)
 
 Learn more about [the docs folder structure](folder_structure.md).
 
