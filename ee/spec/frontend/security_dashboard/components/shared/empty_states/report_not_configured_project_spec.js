@@ -24,11 +24,10 @@ describe('Project report not configured component', () => {
   };
 
   describe.each`
-    provide                                                                                                  | expectedShow
-    ${{ newVulnerabilityPath: '', canAdminVulnerability: true, glFeatures: { newVulnerabilityForm: true } }} | ${false}
-    ${{ newVulnerabilityPath, canAdminVulnerability: false, glFeatures: { newVulnerabilityForm: true } }}    | ${false}
-    ${{ newVulnerabilityPath, canAdminVulnerability: true, glFeatures: { newVulnerabilityForm: false } }}    | ${false}
-    ${{ newVulnerabilityPath, canAdminVulnerability: true, glFeatures: { newVulnerabilityForm: true } }}     | ${true}
+    provide                                                      | expectedShow
+    ${{ newVulnerabilityPath: '', canAdminVulnerability: true }} | ${false}
+    ${{ newVulnerabilityPath, canAdminVulnerability: false }}    | ${false}
+    ${{ newVulnerabilityPath, canAdminVulnerability: true }}     | ${true}
   `('should display or hide the button based on the condition', ({ provide, expectedShow }) => {
     beforeEach(() => {
       createComponent({ provide });
@@ -44,7 +43,6 @@ describe('Project report not configured component', () => {
       createComponent({
         provide: {
           canAdminVulnerability: true,
-          glFeatures: { newVulnerabilityForm: true },
         },
       });
     });
