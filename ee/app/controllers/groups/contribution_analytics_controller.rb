@@ -10,7 +10,7 @@ class Groups::ContributionAnalyticsController < Groups::ApplicationController
 
   track_redis_hll_event :show, name: 'g_analytics_contribution'
 
-  feature_category :planning_analytics
+  feature_category :value_stream_management
 
   def show
     @start_date = data_collector.from

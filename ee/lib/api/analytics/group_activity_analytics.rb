@@ -7,7 +7,7 @@ module API
         'This feature is gated by the `:group_activity_analytics`'\
         ' feature flag, introduced in GitLab 12.9.'
 
-      feature_category :planning_analytics
+      feature_category :value_stream_management
 
       before do
         authenticate!

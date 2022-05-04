@@ -9,7 +9,7 @@ module Projects
 
       track_redis_hll_event :index, name: 'p_analytics_code_reviews'
 
-      feature_category :planning_analytics
+      feature_category :value_stream_management
 
       def index
       end
