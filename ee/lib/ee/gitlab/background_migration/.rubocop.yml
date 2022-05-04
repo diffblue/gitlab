@@ -5,3 +5,6 @@ inherit_from: ../../../../../lib/gitlab/background_migration/.rubocop.yml
 
 Style/Documentation:
   Enabled: false
+
+Migration/BackgroundMigrationBaseClass:
+  Enabled: false
