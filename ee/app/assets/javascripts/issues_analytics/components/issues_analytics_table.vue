@@ -161,7 +161,6 @@ export default {
     :fields="$options.tableHeaderFields"
     :items="issues"
     stacked="sm"
-    thead-class="thead-white border-bottom"
     striped
   >
     <template #cell(issue_details)="{ item }">
