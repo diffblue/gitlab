@@ -6164,6 +6164,9 @@ msgstr ""
 msgid "BoardScope|Current iteration"
 msgstr ""
 
+msgid "BoardScope|Don't filter milestone"
+msgstr ""
+
 msgid "BoardScope|Edit"
 msgstr ""
 

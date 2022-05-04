@@ -87,8 +87,8 @@ describe('Milestone select component', () => {
   });
 
   describe('when not editing', () => {
-    it('defaults to Any milestone', () => {
-      expect(selectedText()).toContain('Any Milestone');
+    it("defaults to Don't filter milestone", () => {
+      expect(selectedText()).toContain("Don't filter milestone");
     });
 
     it('skips the queries and does not render dropdown', () => {
