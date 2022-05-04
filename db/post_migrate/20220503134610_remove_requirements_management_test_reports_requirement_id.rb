@@ -14,7 +14,9 @@ class RemoveRequirementsManagementTestReportsRequirementId < Gitlab::Database::M
 
   def down
     unless column_exists?(TARGET_TABLE, :requirement_id)
-      add_column TARGET_TABLE, :requirement_id, :bigint, after: :created_at
+      with_lock_retries do
+        add_column TARGET_TABLE, :requirement_id, :bigint, after: :created_at
+      end
     end
 
     add_concurrent_index TARGET_TABLE, :requirement_id,
