@@ -45710,6 +45710,9 @@ msgstr ""
 msgid "pipelineEditorWalkthrough|Use the %{boldStart}commit changes%{boldEnd} button at the bottom of the page to run the pipeline."
 msgstr ""
 
+msgid "pipelineEditorWalkthrough|You can use the file tree to view your pipeline configuration files."
+msgstr ""
+
 msgid "pod_name can contain only lowercase letters, digits, '-', and '.' and must start and end with an alphanumeric character"
 msgstr ""
 
