@@ -78,6 +78,10 @@ export const MilestoneIDs = {
   ANY: -1,
 };
 
+export const DONT_FILTER_MILESTONE = {
+  id: null,
+  title: s__("BoardScope|Don't filter milestone"),
+};
 export const ANY_MILESTONE = {
   id: 'gid://gitlab/Milestone/-1',
   title: s__('BoardScope|Any Milestone'),
@@ -96,6 +100,7 @@ export const STARTED_MILESTONE = {
 };
 
 export const MilestonesPreset = [
+  DONT_FILTER_MILESTONE,
   ANY_MILESTONE,
   NO_MILESTONE,
   UPCOMING_MILESTONE,

@@ -68,11 +68,18 @@ RSpec.describe 'Scoped issue boards', :js do
           expect(page).to have_selector('.board-card', count: 2)
         end
 
+        it 'creates board not filtering by Milestone' do
+          create_board_milestone('Don\'t filter milestone')
+
+          expect(find('.gl-filtered-search-scrollable')).to have_content("")
+          expect(page).to have_selector('.board-card', count: 3)
+        end
+
         it 'creates board filtering by Any Milestone' do
           create_board_milestone('Any Milestone')
 
           expect(find('.gl-filtered-search-scrollable')).to have_content("")
-          expect(page).to have_selector('.board-card', count: 3)
+          expect(page).to have_selector('.board-card', count: 1)
         end
 
         it 'displays dot highlight and tooltip' do
@@ -263,8 +270,8 @@ RSpec.describe 'Scoped issue boards', :js do
           expect(page).to have_selector('.board-card', count: 1)
         end
 
-        it 'sets board to any milestone' do
-          update_board_milestone('Any Milestone')
+        it 'removes milestone filter' do
+          update_board_milestone('Don\'t filter milestone')
 
           expect(find('.gl-filtered-search-scrollable')).not_to have_content(milestone.title)
 
@@ -273,6 +280,16 @@ RSpec.describe 'Scoped issue boards', :js do
           expect(page).to have_selector('.board', count: 2)
           expect(all('.board').first).to have_selector('.board-card', count: 2)
           expect(all('.board').last).to have_selector('.board-card', count: 1)
+        end
+
+        it 'sets board to any milestone' do
+          update_board_milestone('Any Milestone')
+
+          expect(find('.gl-filtered-search-scrollable')).not_to have_content(milestone.title)
+
+          find('.board', match: :first)
+
+          expect(all('.board')[1]).to have_selector('.board-card', count: 1)
         end
 
         it 'sets board to upcoming milestone' do

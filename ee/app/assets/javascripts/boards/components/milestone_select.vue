@@ -9,7 +9,7 @@ import projectMilestonesQuery from '~/sidebar/queries/project_milestones.query.g
 
 import DropdownWidget from '~/vue_shared/components/dropdown/dropdown_widget/dropdown_widget.vue';
 
-import { MilestonesPreset, ANY_MILESTONE } from '../constants';
+import { MilestonesPreset, DONT_FILTER_MILESTONE } from '../constants';
 
 export default {
   MilestonesPreset,
@@ -64,7 +64,7 @@ export default {
   computed: {
     ...mapGetters(['isProjectBoard']),
     anyMilestone() {
-      return this.selected.title === ANY_MILESTONE.title;
+      return this.selected.title === DONT_FILTER_MILESTONE.title;
     },
     milestoneTitle() {
       return this.selected.title;
@@ -78,7 +78,7 @@ export default {
   },
   created() {
     if (isEmpty(this.board.milestone)) {
-      this.selected = ANY_MILESTONE;
+      this.selected = DONT_FILTER_MILESTONE;
     }
   },
   methods: {
@@ -86,8 +86,7 @@ export default {
     selectMilestone(milestone) {
       this.selected = milestone;
       this.toggleEdit();
-      // TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/354264
-      this.$emit('set-milestone', milestone?.id !== ANY_MILESTONE.id ? milestone?.id : null);
+      this.$emit('set-milestone', milestone?.id);
     },
     toggleEdit() {
       if (!this.isEditing && !this.isDropdownShowing) {
