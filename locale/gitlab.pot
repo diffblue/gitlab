@@ -17446,6 +17446,12 @@ msgstr ""
 msgid "GitLabPages|Remove"
 msgstr ""
 
+msgid "GitLabPages|Remove certificate"
+msgstr ""
+
+msgid "GitLabPages|Remove domain"
+msgstr ""
+
 msgid "GitLabPages|Remove pages"
 msgstr ""
 
