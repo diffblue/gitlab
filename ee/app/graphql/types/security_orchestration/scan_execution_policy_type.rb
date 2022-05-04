@@ -10,6 +10,10 @@ module Types
       description 'Represents the scan execution policy'
 
       implements OrchestrationPolicyType
+
+      field :source, Types::SecurityOrchestration::SecurityPolicySourceType,
+            null: false,
+            description: 'Source of the policy. Its fields depend on the source type.'
     end
     # rubocop: enable Graphql/AuthorizeTypes
   end

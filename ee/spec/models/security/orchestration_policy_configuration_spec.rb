@@ -538,4 +538,18 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
       it { is_expected.to eq true }
     end
   end
+
+  describe '#source' do
+    subject { security_orchestration_policy_configuration.source }
+
+    context 'when project is assigned to policy configuration' do
+      it { is_expected.to eq security_orchestration_policy_configuration.project }
+    end
+
+    context 'when namespace is assigned to policy configuration' do
+      let(:security_orchestration_policy_configuration) { create(:security_orchestration_policy_configuration, :namespace) }
+
+      it { is_expected.to eq security_orchestration_policy_configuration.namespace }
+    end
+  end
 end

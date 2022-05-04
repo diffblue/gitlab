@@ -36,11 +36,8 @@ module Gitlab
 
           attr_reader :project
 
-          delegate :all_security_orchestration_policy_configurations, to: :project, allow_nil: true
-
           def valid_security_orchestration_policy_configurations
-            @valid_security_orchestration_policy_configurations ||=
-              all_security_orchestration_policy_configurations&.select(&:policy_configuration_valid?)
+            @valid_security_orchestration_policy_configurations ||= project.all_security_orchestration_policy_configurations
           end
 
           def prepare_on_demand_scans_template

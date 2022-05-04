@@ -3294,7 +3294,21 @@ RSpec.describe Project do
         create(:security_orchestration_policy_configuration, project: project)
       end
 
-      it { is_expected.to match_array([project_security_orchestration_policy_configuration]) }
+      context 'when configuration is invalid' do
+        before do
+          allow(project_security_orchestration_policy_configuration).to receive(:policy_configuration_valid?).and_return(false)
+        end
+
+        it { is_expected.to be_empty }
+      end
+
+      context 'when configuration is valid' do
+        before do
+          allow(project_security_orchestration_policy_configuration).to receive(:policy_configuration_valid?).and_return(true)
+        end
+
+        it { is_expected.to match_array([project_security_orchestration_policy_configuration]) }
+      end
     end
 
     context 'when security orchestration policy is configured for namespaces and project' do
@@ -3311,15 +3325,35 @@ RSpec.describe Project do
         create(:security_orchestration_policy_configuration, project: project)
       end
 
-      it 'returns security policy configurations for all parent groups and project' do
-        expect(subject).to match_array(
-          [
-            parent_security_orchestration_policy_configuration,
-            child_security_orchestration_policy_configuration,
-            child_security_orchestration_policy_configuration_2,
-            project_security_orchestration_policy_configuration
-          ]
-        )
+      context 'when configuration is invalid' do
+        before do
+          allow_next_found_instances_of(Security::OrchestrationPolicyConfiguration, 4) do |configuration|
+            allow(configuration).to receive(:policy_configuration_valid?).and_return(false)
+          end
+        end
+
+        it 'returns security policy configurations for all valid parent groups and project' do
+          expect(subject).to be_empty
+        end
+      end
+
+      context 'when configuration is valid' do
+        before do
+          allow_next_found_instances_of(Security::OrchestrationPolicyConfiguration, 4) do |configuration|
+            allow(configuration).to receive(:policy_configuration_valid?).and_return(true)
+          end
+        end
+
+        it 'returns security policy configurations for all valid parent groups and project' do
+          expect(subject).to match_array(
+            [
+              parent_security_orchestration_policy_configuration,
+              child_security_orchestration_policy_configuration,
+              child_security_orchestration_policy_configuration_2,
+              project_security_orchestration_policy_configuration
+            ]
+          )
+        end
       end
     end
   end

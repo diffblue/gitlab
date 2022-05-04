@@ -1906,6 +1906,46 @@ RSpec.describe Namespace do
     end
   end
 
+  describe '#all_security_orchestration_policy_configurations' do
+    subject { child_group_2.all_security_orchestration_policy_configurations }
+
+    let!(:parent_group) { create(:group) }
+    let!(:child_group) { create(:group, parent: parent_group) }
+    let!(:child_group_2) { create(:group, parent: child_group) }
+
+    let!(:parent_security_orchestration_policy_configuration) { create(:security_orchestration_policy_configuration, :namespace, namespace: parent_group) }
+    let!(:child_security_orchestration_policy_configuration) { create(:security_orchestration_policy_configuration, :namespace, namespace: child_group_2) }
+
+    context 'when configuration is invalid' do
+      before do
+        allow_next_found_instances_of(Security::OrchestrationPolicyConfiguration, 2) do |configuration|
+          allow(configuration).to receive(:policy_configuration_valid?).and_return(false)
+        end
+      end
+
+      it 'returns security policy configurations for all valid parent groups' do
+        expect(subject).to be_empty
+      end
+    end
+
+    context 'when configuration is valid' do
+      before do
+        allow_next_found_instances_of(Security::OrchestrationPolicyConfiguration, 2) do |configuration|
+          allow(configuration).to receive(:policy_configuration_valid?).and_return(true)
+        end
+      end
+
+      it 'returns security policy configurations for all valid parent groups' do
+        expect(subject).to match_array(
+          [
+            parent_security_orchestration_policy_configuration,
+            child_security_orchestration_policy_configuration
+          ]
+        )
+      end
+    end
+  end
+
   def create_project(repository_size:, lfs_objects_size:, repository_size_limit:)
     create(:project, namespace: namespace, repository_size_limit: repository_size_limit).tap do |project|
       create(:project_statistics, project: project, repository_size: repository_size, lfs_objects_size: lfs_objects_size)

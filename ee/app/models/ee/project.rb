@@ -855,12 +855,14 @@ module EE
 
     def all_security_orchestration_policy_configurations
       all_parent_groups = group&.self_and_ancestor_ids
+      return [] if all_parent_groups.blank? && !security_orchestration_policy_configuration&.policy_configuration_valid?
       return Array.wrap(security_orchestration_policy_configuration) if all_parent_groups.blank?
 
-      [
-        security_orchestration_policy_configuration,
-        *::Security::OrchestrationPolicyConfiguration.where(namespace_id: all_parent_groups)
-      ].compact
+      ::Security::OrchestrationPolicyConfiguration
+        .for_project(id)
+        .or(::Security::OrchestrationPolicyConfiguration.for_namespace(all_parent_groups))
+        .with_project_and_namespace
+        .select { |configuration| configuration&.policy_configuration_valid? }
     end
 
     override :inactive?

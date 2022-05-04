@@ -5,27 +5,35 @@ module Resolvers
     class ScanExecutionPolicyResolver < BaseResolver
       include ResolvesOrchestrationPolicy
 
+      POLICY_YAML_ATTRIBUTES = %i[name description enabled actions rules].freeze
+
       type Types::SecurityOrchestration::ScanExecutionPolicyType, null: true
 
       argument :action_scan_types, [::Types::Security::ReportTypeEnum],
-             description: "Filters policies by the action scan type. "\
+               description: "Filters policies by the action scan type. "\
                           "Only these scan types are supported: #{::Security::ScanExecutionPolicy::SCAN_TYPES.map { |type| "`#{type}`" }.join(', ')}.",
-             required: false
+               required: false
+
+      argument :relationship, ::Types::SecurityOrchestration::SecurityPolicyRelationTypeEnum,
+               description: 'Filter policies by the given policy relationship.',
+               required: false,
+               default_value: :direct
 
       def resolve(**args)
-        return [] unless valid?
-
-        authorize!
-
-        policies = policy_configuration.scan_execution_policy
+        policies = fetch_scan_execution_policies(args[:relationship])
         policies = filter_scan_types(policies, args[:action_scan_types]) if args[:action_scan_types]
         policies.map do |policy|
           {
             name: policy[:name],
             description: policy[:description],
             enabled: policy[:enabled],
-            yaml: YAML.dump(policy.deep_stringify_keys),
-            updated_at: policy_configuration.policy_last_updated_at
+            yaml: YAML.dump(policy.slice(*POLICY_YAML_ATTRIBUTES).deep_stringify_keys),
+            updated_at: policy_configuration.policy_last_updated_at,
+            source: {
+              project: policy[:project],
+              namespace: policy[:namespace],
+              inherited: policy[:inherited]
+            }
           }
         end
       end
