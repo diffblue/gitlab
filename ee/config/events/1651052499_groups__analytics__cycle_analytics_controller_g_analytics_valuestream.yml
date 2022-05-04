@@ -1,0 +1,21 @@
+---
+description: Visit value_stream_analytics page
+category: Groups::Analytics::CycleAnalyticsController
+action: g_analytics_valuestream
+label_description:
+property_description:
+value_description:
+extra_properties:
+identifiers:
+product_section: dev
+product_stage: manage
+product_group: group::optimize
+product_category:
+milestone: "15.0"
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/82264
+distributions:
+- ee
+tiers: 
+- premium
+- ultimate
+
