@@ -37,7 +37,7 @@ module IncidentManagement
       end
 
       def add_system_note(timeline_event)
-        return unless Feature.enabled?(:incident_timeline, incident.project, default_enabled: :yaml)
+        return unless Feature.enabled?(:incident_timeline, incident.project)
 
         changes = was_changed(timeline_event)
         return if changes == :none

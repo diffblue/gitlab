@@ -29,7 +29,7 @@ module EE
       end
 
       def saas_user_caps_i18n_string(group)
-        if ::Feature.enabled?(:saas_user_caps_auto_approve_pending_users_on_cap_increase, group.root_ancestor, default_enabled: :yaml)
+        if ::Feature.enabled?(:saas_user_caps_auto_approve_pending_users_on_cap_increase, group.root_ancestor)
           s_('GroupSettings|When the number of active users exceeds this number, additional users must be %{user_cap_docs_link_start}approved by an owner%{user_cap_docs_link_end}. Leave empty if you don\'t want to enforce approvals.')
         else
           s_('GroupSettings|When the number of active users exceeds this number, additional users must be %{user_cap_docs_link_start}approved by an owner%{user_cap_docs_link_end}. Leave empty if you don\'t want to enforce approvals. Increasing the user cap will not automatically approve pending users.')

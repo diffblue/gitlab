@@ -12,7 +12,7 @@ module Namespaces
     private
 
     def feature_enabled?
-      ::Feature.enabled?(:preview_free_user_cap, root_namespace, default_enabled: :yaml)
+      ::Feature.enabled?(:preview_free_user_cap, root_namespace)
     end
   end
 end

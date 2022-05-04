@@ -20,7 +20,7 @@ module Projects
     SLACK_EXCHANGE_TOKEN_URL_LEGACY = 'https://slack.com/api/oauth.access'
 
     def self.use_v2_flow?
-      Feature.enabled?(:slack_app_use_v2_flow, default_enabled: :yaml)
+      Feature.enabled?(:slack_app_use_v2_flow)
     end
 
     def execute

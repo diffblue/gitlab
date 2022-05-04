@@ -5,7 +5,7 @@ module Projects
     include SecurityAndCompliancePermissions
 
     before_action do
-      push_frontend_feature_flag(:lc_remove_legacy_approval_status, @project, default_enabled: :yaml)
+      push_frontend_feature_flag(:lc_remove_legacy_approval_status, @project)
     end
 
     before_action :authorize_read_licenses!, only: [:index]

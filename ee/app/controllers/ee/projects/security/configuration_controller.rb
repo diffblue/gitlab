@@ -13,7 +13,7 @@ module EE
           before_action :authorize_read_security_dashboard!, except: [:show]
 
           before_action only: [:show] do
-            push_frontend_feature_flag(:security_auto_fix, project, default_enabled: false)
+            push_frontend_feature_flag(:security_auto_fix, project)
           end
 
           before_action only: [:auto_fix] do

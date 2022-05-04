@@ -42,7 +42,7 @@ module IncidentManagement
       attr_reader :project, :user, :incident, :params
 
       def add_system_note(timeline_event)
-        return unless Feature.enabled?(:incident_timeline, project, default_enabled: :yaml)
+        return unless Feature.enabled?(:incident_timeline, project)
 
         SystemNoteService.add_timeline_event(timeline_event)
       end

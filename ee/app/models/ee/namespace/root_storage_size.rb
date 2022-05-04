@@ -51,9 +51,9 @@ module EE
       return false if root_namespace.opensource_plan?
       return false if gitlab_subscription.start_date < EFFECTIVE_DATE
 
-      return ::Feature.enabled?(:enforce_storage_limit_for_paid, root_namespace, default_enabled: :yaml) if root_namespace.paid?
+      return ::Feature.enabled?(:enforce_storage_limit_for_paid, root_namespace) if root_namespace.paid?
 
-      ::Feature.enabled?(:enforce_storage_limit_for_free, root_namespace, default_enabled: :yaml)
+      ::Feature.enabled?(:enforce_storage_limit_for_free, root_namespace)
     end
 
     private

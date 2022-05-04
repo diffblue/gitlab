@@ -17,7 +17,7 @@ class Groups::Analytics::CycleAnalyticsController < Groups::Analytics::Applicati
   end
 
   before_action do
-    push_frontend_feature_flag(:use_vsa_aggregated_tables, @group, default_enabled: :yaml)
+    push_frontend_feature_flag(:use_vsa_aggregated_tables, @group)
   end
 
   layout 'group'

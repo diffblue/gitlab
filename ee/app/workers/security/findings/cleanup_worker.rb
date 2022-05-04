@@ -12,7 +12,7 @@ module Security
       idempotent!
 
       def perform
-        return unless Feature.enabled?(:purge_stale_security_findings, type: :ops, default_enabled: :yaml)
+        return unless Feature.enabled?(:purge_stale_security_findings, type: :ops)
 
         ::Security::Findings::CleanupService.delete_stale_records
       end

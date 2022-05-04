@@ -9,7 +9,7 @@ module Projects
       before_action :validate_policy_configuration, only: :edit
 
       before_action do
-        push_frontend_feature_flag(:container_security_policy_selection, project, default_enabled: :yaml)
+        push_frontend_feature_flag(:container_security_policy_selection, project)
       end
 
       feature_category :security_orchestration

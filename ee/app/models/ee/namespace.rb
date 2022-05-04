@@ -337,13 +337,13 @@ module EE
     end
 
     def can_extend_trial?
-      return false unless ::Feature.enabled?(:allow_extend_reactivate_trial, default_enabled: :yaml)
+      return false unless ::Feature.enabled?(:allow_extend_reactivate_trial)
 
       trial_active? && !trial_extended_or_reactivated?
     end
 
     def can_reactivate_trial?
-      return false unless ::Feature.enabled?(:allow_extend_reactivate_trial, default_enabled: :yaml)
+      return false unless ::Feature.enabled?(:allow_extend_reactivate_trial)
 
       !trial_active? && !never_had_trial? && !trial_extended_or_reactivated? && free_plan?
     end
@@ -455,7 +455,7 @@ module EE
       return false unless group_namespace?
       return false unless ::Gitlab.com?
 
-      ::Feature.enabled?(:saas_user_caps, root_ancestor, default_enabled: :yaml)
+      ::Feature.enabled?(:saas_user_caps, root_ancestor)
     end
 
     def apply_user_cap?

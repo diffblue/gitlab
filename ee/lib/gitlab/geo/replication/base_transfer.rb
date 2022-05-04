@@ -266,7 +266,7 @@ module Gitlab
           # types of artifacts are not checksummed at all at the moment.
           return false if expected_checksum.blank?
 
-          return false unless Feature.enabled?(:geo_file_transfer_validation, default_enabled: true)
+          return false unless Feature.enabled?(:geo_file_transfer_validation)
 
           expected_checksum != actual_checksum(file_path)
         end

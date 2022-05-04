@@ -840,7 +840,7 @@ module EE
 
     def force_cost_factor?
       ::Gitlab.com? && public? &&
-        (::Feature.enabled?(:ci_minutes_cost_factor_for_all_public_projects, self, default_enabled: :yaml) ||
+        (::Feature.enabled?(:ci_minutes_cost_factor_for_all_public_projects, self) ||
         namespace.created_at >= PUBLIC_COST_FACTOR_RELEASE_DAY)
     end
 

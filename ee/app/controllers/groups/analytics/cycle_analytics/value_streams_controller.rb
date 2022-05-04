@@ -99,7 +99,7 @@ class Groups::Analytics::CycleAnalytics::ValueStreamsController < Groups::Analyt
   def value_streams
     value_streams = @group.value_streams.preload_associated_models
 
-    if Feature.enabled?(:use_vsa_aggregated_tables, @group, default_enabled: :yaml)
+    if Feature.enabled?(:use_vsa_aggregated_tables, @group)
       value_streams
     else
       value_streams.presence || [in_memory_default_value_stream]

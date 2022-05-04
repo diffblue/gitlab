@@ -5,7 +5,7 @@ class Groups::BillingsController < Groups::ApplicationController
   before_action :verify_namespace_plan_check_enabled
 
   before_action only: [:index] do
-    push_frontend_feature_flag(:refresh_billings_seats, type: :ops, default_enabled: :yaml)
+    push_frontend_feature_flag(:refresh_billings_seats, type: :ops)
   end
 
   layout 'group_settings'
@@ -27,7 +27,7 @@ class Groups::BillingsController < Groups::ApplicationController
   end
 
   def refresh_seats
-    if Feature.enabled?(:refresh_billings_seats, type: :ops, default_enabled: :yaml)
+    if Feature.enabled?(:refresh_billings_seats, type: :ops)
       success = update_subscription_seats
     end
 

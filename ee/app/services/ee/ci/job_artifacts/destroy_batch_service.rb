@@ -13,7 +13,7 @@ module EE
           return yield unless ::Geo::EventStore.can_create_event?
 
           ### Deprecated way of creating events. Should be removed by https://gitlab.com/gitlab-org/gitlab/-/issues/349056
-          if ::Feature.disabled?(:geo_job_artifact_replication, default_enabled: :yaml)
+          if ::Feature.disabled?(:geo_job_artifact_replication)
             yield
 
             ::Gitlab::Database::QueryAnalyzers::PreventCrossDatabaseModification.allow_cross_database_modification_within_transaction(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/351849') do
