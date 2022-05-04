@@ -532,6 +532,15 @@ module EE
       [owner.id]
     end
 
+    def all_security_orchestration_policy_configurations
+      return Array.wrap(security_orchestration_policy_configuration) if self_and_ancestor_ids.blank?
+
+      ::Security::OrchestrationPolicyConfiguration
+        .for_namespace(self_and_ancestor_ids)
+        .with_project_and_namespace
+        .select { |configuration| configuration&.policy_configuration_valid? }
+    end
+
     private
 
     def free_user_cap

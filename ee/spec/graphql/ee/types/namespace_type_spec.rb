@@ -15,6 +15,7 @@ RSpec.describe GitlabSchema.types['Namespace'] do
       is_temporary_storage_increase_enabled
       temporary_storage_increase_ends_on
       compliance_frameworks
+      scan_execution_policies
     ]
 
     expect(described_class).to include_graphql_fields(*expected_fields)

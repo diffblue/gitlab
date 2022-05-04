@@ -5,10 +5,20 @@ require 'spec_helper'
 RSpec.describe Resolvers::SecurityOrchestration::ScanExecutionPolicyResolver do
   include GraphqlHelpers
 
-  include_context 'orchestration policy context'
+  let_it_be(:group) { create(:group) }
+  let_it_be(:project) { create(:project, group: group) }
+  let_it_be(:policy) { build(:scan_execution_policy, name: 'Run DAST in every pipeline') }
+  let_it_be(:policy_yaml) { build(:orchestration_policy_yaml, scan_execution_policy: [policy]) }
+  let_it_be(:policy_management_project) do
+    create(
+      :project, :custom_repo,
+      files: {
+        '.gitlab/security-policies/policy.yml' => policy_yaml
+      })
+  end
 
-  let(:policy) { build(:scan_execution_policy, name: 'Run DAST in every pipeline') }
-  let(:policy_yaml) { build(:orchestration_policy_yaml, scan_execution_policy: [policy]) }
+  let_it_be(:user) { policy_management_project.first_owner }
+
   let(:args) { {} }
   let(:expected_resolved) do
     [
@@ -17,14 +27,115 @@ RSpec.describe Resolvers::SecurityOrchestration::ScanExecutionPolicyResolver do
         description: 'This policy enforces to run DAST for every pipeline within the project',
         enabled: true,
         yaml: YAML.dump(policy.deep_stringify_keys),
-        updated_at: policy_last_updated_at
+        updated_at: policy_configuration.policy_last_updated_at,
+        source: {
+          project: project,
+          namespace: nil,
+          inherited: false
+        }
       }
     ]
   end
 
   subject(:resolve_scan_policies) { resolve(described_class, obj: project, args: args, ctx: { current_user: user }) }
 
-  it_behaves_like 'as an orchestration policy'
+  let_it_be(:policy_configuration) do
+    create(
+      :security_orchestration_policy_configuration,
+      security_policy_management_project: policy_management_project,
+      project: project
+    )
+  end
+
+  describe '#resolve' do
+    context 'when feature is not licensed' do
+      before do
+        stub_licensed_features(security_orchestration_policies: false)
+      end
+
+      it 'returns empty collection' do
+        expect(resolve_scan_policies).to be_empty
+      end
+    end
+
+    context 'when feature is licensed' do
+      before do
+        stub_licensed_features(security_orchestration_policies: true)
+      end
+
+      context 'when policies are available for project only' do
+        it 'returns scan execution policies' do
+          expect(resolve_scan_policies).to eq(expected_resolved)
+        end
+      end
+
+      context 'when policies are available for project and namespace' do
+        let_it_be(:group_policy_configuration) do
+          create(
+            :security_orchestration_policy_configuration,
+            :namespace,
+            security_policy_management_project: policy_management_project,
+            namespace: group
+          )
+        end
+
+        context 'when relationship argument is not provided' do
+          it 'returns scan execution policies for project only' do
+            expect(resolve_scan_policies).to eq(expected_resolved)
+          end
+        end
+
+        context 'when relationship argument is provided as DIRECT' do
+          let(:args) { { relationship: :direct } }
+
+          it 'returns scan execution policies for project only' do
+            expect(resolve_scan_policies).to eq(expected_resolved)
+          end
+        end
+
+        context 'when relationship argument is provided as INHERITED' do
+          let(:args) { { relationship: :inherited } }
+
+          it 'returns scan execution policies defined for both project and namespace' do
+            expect(resolve_scan_policies).to match_array([
+              {
+                name: 'Run DAST in every pipeline',
+                description: 'This policy enforces to run DAST for every pipeline within the project',
+                enabled: true,
+                yaml: YAML.dump(policy.deep_stringify_keys),
+                updated_at: policy_configuration.policy_last_updated_at,
+                source: {
+                  project: project,
+                  namespace: nil,
+                  inherited: false
+                }
+              },
+              {
+                name: 'Run DAST in every pipeline',
+                description: 'This policy enforces to run DAST for every pipeline within the project',
+                enabled: true,
+                yaml: YAML.dump(policy.deep_stringify_keys),
+                updated_at: group_policy_configuration.policy_last_updated_at,
+                source: {
+                  project: nil,
+                  namespace: group,
+                  inherited: true
+                }
+              }
+            ])
+          end
+        end
+      end
+
+      context 'when user is unauthorized' do
+        let(:user) { create(:user) }
+
+        it 'returns empty collection' do
+          expect(resolve_scan_policies).to be_empty
+        end
+      end
+    end
+  end
 
   context 'when action_scan_types is given' do
     before do

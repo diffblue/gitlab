@@ -60,6 +60,13 @@ module EE
               description: 'Compliance frameworks available to projects in this namespace.',
               resolver: ::Resolvers::ComplianceManagement::FrameworkResolver
 
+        field :scan_execution_policies,
+              ::Types::SecurityOrchestration::ScanExecutionPolicyType.connection_type,
+              calls_gitaly: true,
+              null: true,
+              description: 'Scan Execution Policies of the namespace.',
+              resolver: ::Resolvers::SecurityOrchestration::ScanExecutionPolicyResolver
+
         def additional_purchased_storage_size
           object.additional_purchased_storage_size.megabytes
         end

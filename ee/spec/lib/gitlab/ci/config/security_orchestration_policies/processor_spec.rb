@@ -64,7 +64,8 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor do
       end
 
       it 'extends config with additional jobs' do
-        expect(subject).to include(expected_configuration)
+        expect(subject.keys).to include(expected_jobs)
+        expect(subject.values).to include(expected_configuration)
       end
     end
 
@@ -79,7 +80,8 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor do
         end
 
         it 'extends config with additional jobs' do
-          expect(subject).to include(expected_configuration)
+          expect(subject.keys).to include(expected_jobs)
+          expect(subject.values).to include(expected_configuration)
         end
       end
 
@@ -91,7 +93,8 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor do
         end
 
         it 'extends config with additional jobs' do
-          expect(subject).to include(expected_configuration)
+          expect(subject.keys).to include(expected_jobs)
+          expect(subject.values).to include(expected_configuration)
         end
       end
     end
@@ -158,30 +161,28 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor do
         let_it_be(:dast_site_profile) { create(:dast_site_profile, project: project, name: 'Site Profile') }
 
         it_behaves_like 'with different scan type' do
+          let(:expected_jobs) { starting_with('dast-on-demand-') }
           let(:expected_configuration) do
             {
-              image: 'image:1.0.0',
-              'dast-on-demand-0': {
-                stage: 'dast',
-                image: {
-                  name: '$SECURE_ANALYZERS_PREFIX/dast:$DAST_VERSION'
-                },
-                variables: {
-                  DAST_VERSION: 2,
-                  SECURE_ANALYZERS_PREFIX: secure_analyzers_prefix,
-                  GIT_STRATEGY: 'none'
-                },
-                allow_failure: true,
-                script: ['/analyze'],
-                artifacts: {
-                  reports: {
-                    dast: 'gl-dast-report.json'
-                  }
-                },
-                dast_configuration: {
-                  site_profile: dast_site_profile.name,
-                  scanner_profile: dast_scanner_profile.name
+              stage: 'dast',
+              image: {
+                name: '$SECURE_ANALYZERS_PREFIX/dast:$DAST_VERSION'
+              },
+              variables: {
+                DAST_VERSION: 2,
+                SECURE_ANALYZERS_PREFIX: secure_analyzers_prefix,
+                GIT_STRATEGY: 'none'
+              },
+              allow_failure: true,
+              script: ['/analyze'],
+              artifacts: {
+                reports: {
+                  dast: 'gl-dast-report.json'
                 }
+              },
+              dast_configuration: {
+                site_profile: dast_site_profile.name,
+                scanner_profile: dast_scanner_profile.name
               }
             }
           end
@@ -193,41 +194,39 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor do
 
       context 'when scan type is secret_detection' do
         it_behaves_like 'with different scan type' do
+          let(:expected_jobs) { starting_with('secret-detection-') }
           let(:expected_configuration) do
-            {
-              'secret-detection-0': hash_including(
-                rules: [{ if: '$SECRET_DETECTION_DISABLED', when: 'never' }, { if: '$CI_COMMIT_BRANCH' }],
-                stage: scan_policy_stage,
-                image: '$SECURE_ANALYZERS_PREFIX/secrets:$SECRETS_ANALYZER_VERSION$SECRET_DETECTION_IMAGE_SUFFIX',
-                services: [],
-                allow_failure: true,
-                artifacts: {
-                  reports: {
-                    secret_detection: 'gl-secret-detection-report.json'
-                  }
-                },
-                variables: {
-                  GIT_DEPTH: '50',
-                  SECURE_ANALYZERS_PREFIX: secure_analyzers_prefix,
-                  SECRETS_ANALYZER_VERSION: '3',
-                  SECRET_DETECTION_IMAGE_SUFFIX: '',
-                  SECRET_DETECTION_EXCLUDED_PATHS: '',
-                  SECRET_DETECTION_HISTORIC_SCAN: 'false'
-                })
-            }
+            hash_including(
+              rules: [{ if: '$SECRET_DETECTION_DISABLED', when: 'never' }, { if: '$CI_COMMIT_BRANCH' }],
+              stage: scan_policy_stage,
+              image: '$SECURE_ANALYZERS_PREFIX/secrets:$SECRETS_ANALYZER_VERSION$SECRET_DETECTION_IMAGE_SUFFIX',
+              services: [],
+              allow_failure: true,
+              artifacts: {
+                reports: {
+                  secret_detection: 'gl-secret-detection-report.json'
+                }
+              },
+              variables: {
+                GIT_DEPTH: '50',
+                SECURE_ANALYZERS_PREFIX: secure_analyzers_prefix,
+                SECRETS_ANALYZER_VERSION: '3',
+                SECRET_DETECTION_IMAGE_SUFFIX: '',
+                SECRET_DETECTION_EXCLUDED_PATHS: '',
+                SECRET_DETECTION_HISTORIC_SCAN: 'false'
+              })
           end
         end
       end
 
       context 'when scan type is sast is configured for namespace policy project' do
         it_behaves_like 'with different scan type' do
+          let(:expected_jobs) { starting_with('sast-') }
           let(:expected_configuration) do
-            {
-              'sast-1': hash_including(
-                inherit: { variables: false },
-                trigger: { include: [{ template: "Security/SAST.gitlab-ci.yml" }] }
-              )
-            }
+            hash_including(
+              inherit: { variables: false },
+              trigger: { include: [{ template: "Security/SAST.gitlab-ci.yml" }] }
+            )
           end
         end
       end
