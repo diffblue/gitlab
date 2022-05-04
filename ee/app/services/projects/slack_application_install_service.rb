@@ -28,7 +28,8 @@ module Projects
 
       return error("Slack: #{slack_data['error']}") unless slack_data['ok']
 
-      integration = project.create_or_load_association(:gitlab_slack_application_integration)
+      integration = project.gitlab_slack_application_integration \
+        || project.create_gitlab_slack_application_integration!
 
       SlackIntegration.create!(
         service_id: integration.id,
