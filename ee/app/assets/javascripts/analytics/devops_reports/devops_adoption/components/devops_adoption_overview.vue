@@ -71,7 +71,7 @@ export default {
 };
 </script>
 <template>
-  <gl-loading-icon v-if="loading" size="md" class="gl-mt-5" />
+  <gl-loading-icon v-if="loading" size="lg" class="gl-mt-5" />
   <div v-else data-testid="overview-container">
     <p class="gl-text-gray-400 gl-my-3" data-testid="overview-container-header">{{ headerText }}</p>
     <div

@@ -63,7 +63,7 @@ export default {
 };
 </script>
 <template>
-  <gl-loading-icon v-if="isLoading" size="md" class="gl-my-5" />
+  <gl-loading-icon v-if="isLoading" size="lg" class="gl-my-5" />
   <div v-else-if="hasEnabledNamespaceData" class="gl-mt-3">
     <div class="gl-mb-3" data-testid="tableHeader">
       <p class="gl-text-gray-400">

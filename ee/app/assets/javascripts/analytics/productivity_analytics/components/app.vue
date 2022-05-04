@@ -344,7 +344,7 @@ export default {
         </div>
 
         <div class="js-mr-table">
-          <gl-loading-icon v-if="isLoadingTable" size="md" class="my-4 py-4" />
+          <gl-loading-icon v-if="isLoadingTable" size="lg" class="my-4 py-4" />
           <merge-request-table
             v-if="showMergeRequestTable"
             :merge-requests="mergeRequests"

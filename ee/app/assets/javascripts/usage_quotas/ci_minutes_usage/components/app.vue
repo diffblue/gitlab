@@ -43,7 +43,7 @@ export default {
 </script>
 <template>
   <div :class="borderStyles" class="gl-my-7">
-    <gl-loading-icon v-if="loading" size="md" class="gl-mb-5" />
+    <gl-loading-icon v-if="loading" size="lg" class="gl-mb-5" />
     <template v-else>
       <minutes-usage-month-chart :class="borderStyles" :ci-minutes-usage="ciMinutesUsage" />
       <minutes-usage-project-chart :minutes-usage-data="ciMinutesUsage" />

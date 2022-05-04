@@ -269,7 +269,7 @@ export default {
 };
 </script>
 <template>
-  <gl-loading-icon v-if="tableDataLoading" size="md" />
+  <gl-loading-icon v-if="tableDataLoading" size="lg" />
   <div v-else-if="tableDataAvailable">
     <gl-table-lite
       :fields="$options.tableHeaderFields"
