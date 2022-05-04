@@ -121,10 +121,10 @@ constraints(::Constraints::GroupUrlConstrainer.new) do
       end
 
       resources :epic_issues, only: [:index, :create, :destroy, :update], as: 'issues', path: 'issues'
-      resources :epic_links, only: [:index, :create, :destroy, :update], as: 'links', path: 'links'
 
       scope module: :epics do
         resources :notes, only: [:index, :create, :destroy, :update], concerns: :awardable, constraints: { id: /\d+/ }
+        resources :epic_links, only: [:index, :create, :destroy, :update], as: 'links', path: 'links'
         resources :related_epic_links, only: [:index, :create, :destroy]
       end
 

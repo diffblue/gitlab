@@ -38,7 +38,7 @@ module Epics
 
     def create_issuable_links(parent)
       service, issuable = if moving_object.is_a?(Epic)
-                            [EpicLinks::CreateService, moving_object]
+                            [Epics::EpicLinks::CreateService, moving_object]
                           elsif moving_object.is_a?(EpicIssue)
                             [EpicIssues::CreateService, moving_object.issue]
                           end

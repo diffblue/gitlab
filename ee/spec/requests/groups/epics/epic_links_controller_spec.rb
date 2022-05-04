@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::EpicLinksController do
+RSpec.describe Groups::Epics::EpicLinksController do
   let(:group) { create(:group, :public) }
   let(:parent_epic) { create(:epic, group: group) }
   let(:epic1) { create(:epic, group: group) }
@@ -34,7 +34,7 @@ RSpec.describe Groups::EpicLinksController do
       epic1.update!(parent: parent_epic)
     end
 
-    subject { get :index, params: { group_id: group, epic_id: parent_epic.to_param } }
+    subject { get group_epic_links_path(group_id: group, epic_id: parent_epic.to_param) }
 
     it_behaves_like 'unlicensed subepics action'
 
@@ -51,7 +51,7 @@ RSpec.describe Groups::EpicLinksController do
         end
 
         it 'returns the correct JSON response' do
-          list_service_response = EpicLinks::ListService.new(parent_epic, user).execute
+          list_service_response = Epics::EpicLinks::ListService.new(parent_epic, user).execute
 
           expect(response).to have_gitlab_http_status(:ok)
           expect(json_response).to eq(list_service_response.as_json)
@@ -74,7 +74,7 @@ RSpec.describe Groups::EpicLinksController do
     subject do
       reference = [epic1.to_reference(full: true)]
 
-      post :create, params: { group_id: group, epic_id: parent_epic.to_param, issuable_references: reference }
+      post group_epic_links_path(group_id: group, epic_id: parent_epic.to_param, issuable_references: reference)
     end
 
     it_behaves_like 'unlicensed subepics action'
@@ -91,7 +91,7 @@ RSpec.describe Groups::EpicLinksController do
 
         it 'returns correct response for the correct issue reference' do
           subject
-          list_service_response = EpicLinks::ListService.new(parent_epic, user).execute
+          list_service_response = Epics::EpicLinks::ListService.new(parent_epic, user).execute
 
           expect(response).to have_gitlab_http_status(:ok)
           expect(json_response).to eq('message' => nil, 'issuables' => list_service_response.as_json)
@@ -125,7 +125,9 @@ RSpec.describe Groups::EpicLinksController do
     let(:move_before_epic) { epic2 }
 
     subject do
-      put :update, params: { group_id: group, epic_id: parent_epic.to_param, id: epic1.id, epic: { move_before_id: move_before_epic.id } }
+      put group_epic_link_path(group_id: group, epic_id: parent_epic.to_param,
+                               id: epic1.id, epic: { move_before_id:
+                                                     move_before_epic.id })
     end
 
     it_behaves_like 'unlicensed subepics action'
@@ -178,7 +180,7 @@ RSpec.describe Groups::EpicLinksController do
 
     let(:features_when_forbidden) { { epics: false } }
 
-    subject { delete :destroy, params: { group_id: group, epic_id: parent_epic.to_param, id: epic1.id } }
+    subject { delete group_epic_link_path(group_id: group, epic_id: parent_epic.to_param, id: epic1.id) }
 
     it_behaves_like 'unlicensed subepics action'
 
@@ -217,7 +219,7 @@ RSpec.describe Groups::EpicLinksController do
 
       context 'when the epic does not have any parent' do
         it 'returns status 404' do
-          delete :destroy, params: { group_id: group, epic_id: parent_epic.to_param, id: epic2.id }
+          delete group_epic_link_path(group_id: group, epic_id: parent_epic.to_param, id: epic2.id)
 
           expect(response).to have_gitlab_http_status(:forbidden)
         end

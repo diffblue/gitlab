@@ -70,7 +70,7 @@ module Epics
     def assign_parent_epic_for(epic)
       return unless parent_epic
 
-      result = EpicLinks::CreateService.new(parent_epic, current_user, { target_issuable: epic }).execute
+      result = Epics::EpicLinks::CreateService.new(parent_epic, current_user, { target_issuable: epic }).execute
 
       unless result[:status] == :error
         track_epic_parent_updated
@@ -82,7 +82,7 @@ module Epics
     def assign_child_epic_for(epic)
       return unless child_epic
 
-      result = EpicLinks::CreateService.new(epic, current_user, { target_issuable: child_epic }).execute
+      result = Epics::EpicLinks::CreateService.new(epic, current_user, { target_issuable: child_epic }).execute
 
       unless result[:status] == :error
         track_epic_parent_updated
