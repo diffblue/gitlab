@@ -1,0 +1,26 @@
+#import "~/graphql_shared/fragments/page_info.fragment.graphql"
+
+query getNamespaceProjectsInfo(
+  $fullPath: ID!
+  $first: Int
+  $last: Int
+  $after: String
+  $before: String
+) {
+  namespace(fullPath: $fullPath) {
+    id
+    projects(first: $first, last: $last, after: $after, before: $before, includeSubgroups: true) {
+      nodes {
+        id
+        fullPath
+        name
+        nameWithNamespace
+        avatarUrl
+        webUrl
+      }
+      pageInfo {
+        ...PageInfo
+      }
+    }
+  }
+}

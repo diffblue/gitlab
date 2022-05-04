@@ -281,12 +281,16 @@ RSpec.describe EE::NamespacesHelper do
         stub_ee_application_setting(should_check_namespace_plan: true)
       end
 
-      it 'returns a hash with buy_additional_minutes data' do
+      it 'returns a hash with SaaS data' do
+        minutes_quota_presenter = ::Ci::Minutes::QuotaPresenter.new(user_group.ci_minutes_quota)
+
         expect(helper.pipeline_usage_quota_app_data(user_group)).to eql({
           namespace_actual_plan_name: user_group.actual_plan_name,
           namespace_path: user_group.full_path,
           namespace_id: user_group.id,
+          user_namespace: user_group.user_namespace?.to_s,
           page_size: Kaminari.config.default_per_page,
+          ci_minutes: { any_project_enabled: minutes_quota_presenter.any_project_enabled?.to_s },
           buy_additional_minutes_path: EE::SUBSCRIPTIONS_MORE_MINUTES_URL,
           buy_additional_minutes_target: '_blank'
         })
@@ -294,11 +298,12 @@ RSpec.describe EE::NamespacesHelper do
     end
 
     context 'Gitlab Self-Managed' do
-      it 'returns a hash without buy_additional_minutes data' do
+      it 'returns a hash without SaaS data' do
         expect(helper.pipeline_usage_quota_app_data(user_group)).to eql({
           namespace_actual_plan_name: user_group.actual_plan_name,
           namespace_path: user_group.full_path,
           namespace_id: user_group.id,
+          user_namespace: user_group.user_namespace?.to_s,
           page_size: Kaminari.config.default_per_page
         })
       end
