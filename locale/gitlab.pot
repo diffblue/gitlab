@@ -20837,6 +20837,12 @@ msgstr ""
 msgid "Integrations|can't exceed %{recipients_limit}"
 msgstr ""
 
+msgid "IntelliJ IDEA (HTTPS)"
+msgstr ""
+
+msgid "IntelliJ IDEA (SSH)"
+msgstr ""
+
 msgid "Interactive mode"
 msgstr ""
 
