@@ -23,7 +23,7 @@ class TrialRegistrationsController < RegistrationsController
   private
 
   def set_redirect_url
-    target_url = new_trial_url(params: request.query_parameters)
+    target_url = new_users_sign_up_company_path(trial: true)
 
     if user_signed_in?
       redirect_to target_url

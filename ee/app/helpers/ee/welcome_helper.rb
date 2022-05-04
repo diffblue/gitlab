@@ -9,7 +9,7 @@ module EE
     end
 
     def in_trial_flow?
-      redirect_path == new_trial_path
+      redirect_path == new_trial_path || redirect_path == new_users_sign_up_company_path
     end
 
     def in_trial_onboarding_flow?
