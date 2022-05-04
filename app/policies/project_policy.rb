@@ -744,7 +744,7 @@ class ProjectPolicy < BasePolicy
     enable :access_security_and_compliance
   end
 
-  rule { auditor }.policy do
+  rule { security_orchestration_policies_enabled & auditor }.policy do
     enable :read_security_orchestration_policies
   end
 
