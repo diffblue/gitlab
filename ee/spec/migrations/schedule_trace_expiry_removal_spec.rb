@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require Rails.root.join('db', 'post_migrate', '20220131000001_schedule_trace_expiry_removal.rb')
+require_migration!
 
 RSpec.describe ScheduleTraceExpiryRemoval do
   let(:scheduling_migration) { described_class.new }

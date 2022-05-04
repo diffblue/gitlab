@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require Rails.root.join('db', 'post_migrate', '20220110171049_schedule_populate_test_reports_issue_id.rb')
+require_migration!
 
 RSpec.describe SchedulePopulateTestReportsIssueId do
   let(:issues) { table(:issues) }

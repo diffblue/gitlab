@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require Rails.root.join('db', 'post_migrate', '20220224000000_async_build_trace_expire_at_index.rb')
+require_migration!
 
 RSpec.describe AsyncBuildTraceExpireAtIndex do
   describe '#up' do
