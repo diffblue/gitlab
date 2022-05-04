@@ -89,4 +89,18 @@ RSpec.describe Security::TrainingProviders::BaseUrlFinder do
       end
     end
   end
+
+  context "private" do
+    describe '#id' do
+      it 'returns a cache key for ReactiveCaching specific to the request trainign urls' do
+        expect(described_class.new(identifier.project, provider, identifier.external_id).send(:id)).to eq("#{identifier.project.id}-#{provider.id}-#{identifier.external_id}")
+      end
+
+      context 'when a language is used on the finder' do
+        it 'returns a cache key for ReactiveCaching specific to the request trainign urls and language' do
+          expect(described_class.new(identifier.project, provider, identifier.external_id, language).send(:id)).to eq("#{identifier.project.id}-#{provider.id}-#{identifier.external_id}-#{language}")
+        end
+      end
+    end
+  end
 end

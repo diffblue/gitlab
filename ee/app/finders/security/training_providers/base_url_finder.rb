@@ -52,10 +52,10 @@ module Security
       # Required for ReactiveCaching; Usage overridden by
       # self.reactive_cache_worker_finder
       def id
-        "#{project.id}-#{provider.id}-#{identifier_external_id}#{language_id_prefix}"
+        "#{project.id}-#{provider.id}-#{identifier_external_id}#{language_id_suffix}"
       end
 
-      def language_id_prefix
+      def language_id_suffix
         "-#{@language}" if @language
       end
     end
