@@ -7,7 +7,7 @@ class Projects::Analytics::MergeRequestAnalyticsController < Projects::Applicati
 
   track_redis_hll_event :show, name: 'p_analytics_merge_request'
 
-  feature_category :planning_analytics
+  feature_category :value_stream_management
 
   def show
   end

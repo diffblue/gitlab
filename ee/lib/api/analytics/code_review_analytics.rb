@@ -5,7 +5,7 @@ module API
     class CodeReviewAnalytics < ::API::Base
       include PaginationParams
 
-      feature_category :planning_analytics
+      feature_category :value_stream_management
 
       helpers do
         def project

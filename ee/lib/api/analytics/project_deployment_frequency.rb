@@ -16,7 +16,7 @@ module API
         DEPLOYMENT_FREQUENCY_INTERVAL_DAILY
       ].freeze
 
-      feature_category :planning_analytics
+      feature_category :value_stream_management
 
       before do
         authenticate!
