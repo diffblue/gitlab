@@ -375,6 +375,7 @@ describe('Zuora', () => {
               location: btoa(window.location.href),
               user_id: currentUserId,
               someData: 'some-data',
+              submitEnabled: 'true',
             }),
             expect.anything(),
             expect.any(Function),
