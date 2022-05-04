@@ -98,7 +98,7 @@ export default class MergeRequestStore extends CEMergeRequestStore {
 
     if (this.hasApprovalsAvailable && this.approvals && this.approvalsLeft) return !this.isApproved;
 
-    if (this.blockingMergeRequests.total_count > 0) return true;
+    if (this.blockingMergeRequests?.total_count > 0) return true;
 
     return super.hasMergeChecksFailed;
   }
