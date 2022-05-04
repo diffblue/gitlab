@@ -40835,6 +40835,9 @@ msgstr ""
 msgid "UsageQuota|%{help_link_start}Shared runners%{help_link_end} are disabled, so there are no limits set on pipeline usage"
 msgstr ""
 
+msgid "UsageQuota|%{linkStart}Shared runners%{linkEnd} are disabled, so there are no limits set on pipeline usage"
+msgstr ""
+
 msgid "UsageQuota|%{linkTitle} help link"
 msgstr ""
 
@@ -40932,6 +40935,9 @@ msgid "UsageQuota|Shared runner usage"
 msgstr ""
 
 msgid "UsageQuota|Snippets"
+msgstr ""
+
+msgid "UsageQuota|Something went wrong while fetching pipeline statistics"
 msgstr ""
 
 msgid "UsageQuota|Something went wrong while fetching project storage statistics"

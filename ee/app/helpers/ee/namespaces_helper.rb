@@ -71,7 +71,12 @@ module EE
     def pipeline_usage_quota_app_data(namespace)
       return super unless ::Gitlab::CurrentSettings.should_check_namespace_plan?
 
+      minutes_quota_presenter = ::Ci::Minutes::QuotaPresenter.new(namespace.ci_minutes_quota)
+
       super.merge(
+        ci_minutes: {
+          any_project_enabled: minutes_quota_presenter.any_project_enabled?.to_s
+        },
         buy_additional_minutes_path: buy_additional_minutes_path(namespace),
         buy_additional_minutes_target: buy_addon_target_attr(namespace)
       )
