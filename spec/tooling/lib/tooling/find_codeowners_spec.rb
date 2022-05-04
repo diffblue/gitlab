@@ -4,38 +4,19 @@ require_relative '../../../../tooling/lib/tooling/find_codeowners'
 
 RSpec.describe Tooling::FindCodeowners do
   let(:subject) { described_class.new }
+  let(:root) { File.expand_path('../../fixtures/find_codeowners', __dir__) }
 
   describe '#execute' do
     before do
-      allow(subject).to receive(:git_ls_files).and_return(<<~LINES)
-        dir/0/0/2/0
-        dir/0/0/2/2
-        dir/0/0/3
-        dir/0/1
-        dir/1
-        dir/2
-      LINES
-
-      find_results = {
-        'dir/0/0/2' => "dir/0/0/2\ndir/0/0/2/0\ndir/0/0/2/2\n",
-        'dir/0/0' => "dir/0/0\ndir/0/0/2\ndir/0/0/3\n",
-        'dir/0' => "dir/0\ndir/0/0\ndir/0/1\n",
-        'dir' => "dir\ndir/0\ndir/1\ndir/2\n"
-      }
-
-      allow(subject).to receive(:find_dir_maxdepth_1) do |dir|
-        find_results[dir]
-      end
-
       allow(subject).to receive(:load_config).and_return(
         '[Section name]': {
           '@group': {
             allow: {
-              keywords: ['dir'],
-              patterns: ['/%{keyword}/**/*']
+              keywords: %w[dir0 file],
+              patterns: ['/%{keyword}/**/*', '/%{keyword}']
             },
             deny: {
-              keywords: ['1'],
+              keywords: %w[file0],
               patterns: ['**/%{keyword}']
             }
           }
@@ -44,10 +25,14 @@ RSpec.describe Tooling::FindCodeowners do
     end
 
     it 'prints CODEOWNERS as configured' do
-      expect { subject.execute }.to output(<<~CODEOWNERS).to_stdout
+      expect do
+        Dir.chdir(root) do
+          subject.execute
+        end
+      end.to output(<<~CODEOWNERS).to_stdout
         [Section name]
-        /dir/0/0 @group
-        /dir/2 @group
+        /dir0/dir1 @group
+        /file @group
       CODEOWNERS
     end
   end
@@ -181,22 +166,6 @@ RSpec.describe Tooling::FindCodeowners do
 
         expect(paths).to eq(input_paths)
       end
-    end
-  end
-
-  describe '#find_dir_maxdepth_1' do
-    it 'calls `find dir -maxdepth 1`' do
-      expect(subject).to receive(:`).with('find tmp -maxdepth 1').and_call_original
-
-      subject.find_dir_maxdepth_1('tmp')
-    end
-  end
-
-  describe '#git_ls_files' do
-    it 'calls `git ls-files`' do
-      expect(subject).to receive(:`).with('git ls-files').and_call_original
-
-      subject.git_ls_files
     end
   end
 end

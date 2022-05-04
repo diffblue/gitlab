@@ -90,6 +90,8 @@ module Tooling
       end.sort
     end
 
+    private
+
     def find_dir_maxdepth_1(dir)
       `find #{dir} -maxdepth 1`
     end
