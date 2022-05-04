@@ -4,18 +4,6 @@ module EE
   module ApplicationSettingsHelper
     extend ::Gitlab::Utils::Override
 
-    def pseudonymizer_enabled_help_text
-      _("Enable Pseudonymizer data collection")
-    end
-
-    def pseudonymizer_description_text
-      _("GitLab runs a background job to export pseudonymized CSVs of the GitLab database. The CSV files are then uploaded to your configured object storage directory.")
-    end
-
-    def pseudonymizer_disabled_description_text
-      _("Pseudonymized data collection is disabled. When enabled, GitLab runs a background job to export pseudonymized CSVs of the GitLab database. The CSV files are then uploaded to your configured object storage directory.")
-    end
-
     override :visible_attributes
     def visible_attributes
       super + [
@@ -59,7 +47,6 @@ module EE
         :lock_memberships_to_ldap,
         :max_personal_access_token_lifetime,
         :max_ssh_key_lifetime,
-        :pseudonymizer_enabled,
         :repository_size_limit,
         :secret_detection_token_revocation_enabled,
         :secret_detection_token_revocation_url,

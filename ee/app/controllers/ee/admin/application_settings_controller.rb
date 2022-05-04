@@ -50,7 +50,6 @@ module EE
           custom_project_templates: :custom_project_templates_group_id,
           email_additional_text: :email_additional_text,
           custom_file_templates: :file_template_project_id,
-          pseudonymizer: :pseudonymizer_enabled,
           default_project_deletion_protection: :default_project_deletion_protection,
           adjourned_deletion_for_projects_and_groups: [:delayed_project_deletion, :delayed_group_deletion,
                                                        :deletion_adjourned_period],

@@ -168,7 +168,6 @@ module EE
           mirror_capacity_threshold: Settings.gitlab['mirror_capacity_threshold'],
           mirror_max_capacity: Settings.gitlab['mirror_max_capacity'],
           mirror_max_delay: Settings.gitlab['mirror_max_delay'],
-          pseudonymizer_enabled: false,
           repository_size_limit: 0,
           secret_detection_token_revocation_enabled: false,
           secret_detection_token_revocation_url: nil,
@@ -246,14 +245,6 @@ module EE
       return namespaces if ignore_descendants
 
       namespaces.self_and_descendants
-    end
-
-    def pseudonymizer_available?
-      License.feature_available?(:pseudonymizer)
-    end
-
-    def pseudonymizer_enabled?
-      pseudonymizer_available? && super
     end
 
     def should_check_namespace_plan?
