@@ -12,9 +12,9 @@ RSpec.describe Members::ActivateService do
 
     let(:member) { nil }
     let(:group) { root_group }
-    let(:activate_all) { false }
+    let(:params) { { member: member } }
 
-    subject(:execute) { described_class.new(group, member: member, current_user: current_user, activate_all: activate_all).execute }
+    subject(:execute) { described_class.new(group, current_user: current_user, **params).execute }
 
     context 'when unauthorized' do
       it 'returns an access error' do
@@ -47,14 +47,19 @@ RSpec.describe Members::ActivateService do
       end
 
       it 'logs the approval in application logs' do
-        expect(Gitlab::AppLogger).to receive(:info).with(
-          {
-            message: "Group member access approved",
-            group: group.id,
-            member: member.id,
-            approved_by: current_user.id
-          }
-        )
+        expected_params = {
+          message: "Group member access approved",
+          group: group.id,
+          approved_by: current_user.id
+        }
+
+        if params[:member]
+          expected_params[:member] = member.id
+        elsif params[:user]
+          expected_params[:user] = user.id
+        end
+
+        expect(Gitlab::AppLogger).to receive(:info).with(expected_params)
 
         execute
       end
@@ -65,15 +70,30 @@ RSpec.describe Members::ActivateService do
         group.add_owner(current_user)
       end
 
-      context 'when activating an individual member' do
-        context 'when no member is provided' do
-          it 'returns an error' do
-            result = execute
+      context 'when member, user or activate_all is not mutual exclusive' do
+        let(:params) { { member: member, user: user, activate_all: true } }
 
-            expect(result[:status]).to eq :error
-            expect(result[:message]).to eq 'No member provided'
-          end
+        it 'returns an error' do
+          result = execute
+
+          expect(result[:status]).to eq :error
+          expect(result[:message]).to eq 'You can only approve an indivdual user, member, or all members'
         end
+      end
+
+      context 'when no member, no user or activate_all is provided' do
+        let(:params) { {} }
+
+        it 'returns an error' do
+          result = execute
+
+          expect(result[:status]).to eq :error
+          expect(result[:message]).to eq 'You can only approve an indivdual user, member, or all members'
+        end
+      end
+
+      context 'when activating an individual member' do
+        let(:params) { { member: member } }
 
         context 'when member is an awaiting member of a root group' do
           it_behaves_like 'successful member activation' do
@@ -131,13 +151,59 @@ RSpec.describe Members::ActivateService do
         end
       end
 
+      context 'when activating a user' do
+        let(:params) { { user: user } }
+
+        context 'when user is an awaiting member of a root group' do
+          it_behaves_like 'successful member activation' do
+            let(:member) { create(:group_member, :awaiting, group: root_group, user: user) }
+          end
+        end
+
+        context 'when user is an awaiting member of a sub-group' do
+          let(:group) { sub_group }
+
+          it_behaves_like 'successful member activation' do
+            let(:member) { create(:group_member, :awaiting, group: sub_group, user: user) }
+          end
+        end
+
+        context 'when user is an awaiting member of a project' do
+          it_behaves_like 'successful member activation' do
+            let(:member) { create(:project_member, :awaiting, project: project, user: user) }
+          end
+        end
+
+        context 'when user is not an awaiting member' do
+          let(:member) { create(:group_member, group: root_group, user: user) }
+
+          it 'returns an error' do
+            result = execute
+
+            expect(result[:status]).to eq :error
+            expect(result[:message]).to eq 'No memberships found'
+          end
+        end
+
+        context 'when there are multiple awaiting member records in the hierarchy for the user' do
+          let_it_be(:member) { create(:group_member, :awaiting, group: root_group, user: user) }
+          let_it_be(:sub_member) { create(:group_member, :awaiting, group: sub_group, user: user) }
+
+          it 'activates the members' do
+            expect(execute[:status]).to eq :success
+            expect(member.reload.active?).to be true
+            expect(sub_member.reload.active?).to be true
+          end
+        end
+      end
+
       context 'when activating all awaiting members' do
         let!(:group_members)   { create_list(:group_member, 5, :awaiting, group: group) }
         let!(:sub_group_members) { create_list(:group_member, 5, :awaiting, group: sub_group) }
         let!(:project_members) { create_list(:project_member, 5, :awaiting, project: project) }
 
         let(:member) { nil }
-        let(:activate_all) { true }
+        let(:params) { { activate_all: true } }
 
         it 'activates all awaiting group members' do
           execute
