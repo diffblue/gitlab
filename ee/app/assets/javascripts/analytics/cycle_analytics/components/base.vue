@@ -5,6 +5,7 @@ import createFlash from '~/flash';
 import { s__ } from '~/locale';
 import { refreshCurrentPage } from '~/lib/utils/url_utility';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+import { VSA_METRICS_GROUPS } from '~/analytics/shared/constants';
 import ValueStreamMetrics from '~/analytics/shared/components/value_stream_metrics.vue';
 import PathNavigation from '~/cycle_analytics/components/path_navigation.vue';
 import StageTable from '~/cycle_analytics/components/stage_table.vue';
@@ -212,6 +213,7 @@ export default {
     },
   },
   METRICS_REQUESTS,
+  VSA_METRICS_GROUPS,
   aggregationPopoverOptions: {
     triggers: 'hover',
     placement: 'left',
@@ -286,6 +288,7 @@ export default {
           :request-path="currentGroupPath"
           :request-params="cycleAnalyticsRequestParams"
           :requests="$options.METRICS_REQUESTS"
+          :group-by="$options.VSA_METRICS_GROUPS"
         />
         <div class="gl-mb-6" :class="[isOverviewStageSelected ? 'gl-mt-2' : 'gl-mt-6']">
           <duration-chart :stages="activeStages" :selected-stage="selectedStage" />

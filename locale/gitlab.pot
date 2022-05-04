@@ -41651,6 +41651,9 @@ msgstr ""
 msgid "ValueStreamAnalytics|Average number of deployments to production per day."
 msgstr ""
 
+msgid "ValueStreamAnalytics|DORA metrics"
+msgstr ""
+
 msgid "ValueStreamAnalytics|Dashboard"
 msgstr ""
 
@@ -41658,6 +41661,9 @@ msgid "ValueStreamAnalytics|Go to docs"
 msgstr ""
 
 msgid "ValueStreamAnalytics|Items in Value Stream Analytics are currently filtered by their creation time. There is an %{epic_link_start}epic%{epic_link_end} that will change the Value Stream Analytics date filter to use the end event time for the selected stage."
+msgstr ""
+
+msgid "ValueStreamAnalytics|Key metrics"
 msgstr ""
 
 msgid "ValueStreamAnalytics|Median time between merge request merge and deployment to a production environment for all MRs deployed in the given time period."
