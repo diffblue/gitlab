@@ -5,9 +5,11 @@ module Analytics
     include MergeRequestMetricsRefresh
 
     # Override `MergeRequestMetricsRefresh#initialize` to accept single MR only
+    # rubocop:disable Lint/UselessMethodDefinition
     def initialize(merge_request)
       super
     end
+    # rubocop:enable Lint/UselessMethodDefinition
 
     private
 
