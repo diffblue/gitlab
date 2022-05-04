@@ -60,4 +60,21 @@ RSpec.describe IncidentManagement::EscalationPolicy do
 
     it { is_expected.to eq({ id: escalation_policy.id, name: escalation_policy.name }) }
   end
+
+  describe '#find_by_name' do
+    let_it_be(:name) { 'oTheR polIcY nAme' }
+    let_it_be(:policy) { create(:incident_management_escalation_policy, name: 'Other Policy Name') }
+
+    describe 'with valid name' do
+      subject { IncidentManagement::EscalationPolicy.find_by_name(name) }
+
+      it { is_expected.to eq(policy) }
+    end
+
+    describe 'with name as nil' do
+      subject { IncidentManagement::EscalationPolicy.find_by_name(nil) }
+
+      it { is_expected.to be_nil }
+    end
+  end
 end

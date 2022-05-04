@@ -56,6 +56,13 @@ RSpec.shared_examples 'page quick action' do
           expect(incident.reload.escalation_status.policy).to eq(escalation_policy)
         end
 
+        it 'starts escalation with policy name as case insensitive' do
+          add_note('/page SpEc Policy')
+
+          expect(page).to have_content('Started escalation for this incident.')
+          expect(incident.reload.escalation_status.policy).to eq(escalation_policy)
+        end
+
         it 'does not escalate when policy does not exist' do
           add_note('/page wrong policy')
 

@@ -21,6 +21,10 @@ module IncidentManagement
 
     delegate :name, to: :project, prefix: true
 
+    def self.find_by_name(name)
+      find_by('LOWER(name) = ?', name&.downcase)
+    end
+
     def hook_attrs
       {
         id: id,
