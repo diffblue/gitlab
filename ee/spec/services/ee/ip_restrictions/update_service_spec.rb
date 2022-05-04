@@ -3,15 +3,17 @@
 require 'spec_helper'
 
 RSpec.describe EE::IpRestrictions::UpdateService do
-  let(:group) { create(:group) }
+  subject(:service) { described_class.new(current_user, group, comma_separated_ranges) }
 
-  subject { described_class.new(group, comma_separated_ranges).execute }
+  let(:group) { create(:group) }
+  let(:current_user) { build(:user) }
+  let(:comma_separated_ranges) { '192.168.0.0/24,10.0.0.0/8' }
 
   describe '#execute' do
+    subject { service.execute }
+
     context 'for a group that has no ip restriction' do
       context 'with valid IP subnets' do
-        let(:comma_separated_ranges) { '192.168.0.0/24,10.0.0.0/8' }
-
         it 'builds new ip_restriction records' do
           subject
 
@@ -106,6 +108,65 @@ RSpec.describe EE::IpRestrictions::UpdateService do
             expect(newly_built_ip_restriction_records.map(&:range)).to include('255.255.128.0/17')
           end
         end
+      end
+    end
+  end
+
+  describe '#log_audit_event' do
+    before do
+      stub_licensed_features(extended_audit_events: true)
+    end
+
+    context 'when new ranges are different from old ranges' do
+      it "logs ip_restrictions_changed event" do
+        subject.execute
+
+        expect(Gitlab::Audit::Auditor).to receive(:audit).with(
+          name: 'ip_restrictions_changed',
+          message: "Group IP restrictions updated from '' to '#{comma_separated_ranges}'",
+          target: group,
+          scope: group,
+          author: current_user
+        ).and_call_original
+
+        subject.log_audit_event
+      end
+
+      context "when license doesn't allow auditing" do
+        before do
+          stub_licensed_features(extended_audit_events: false)
+        end
+
+        it "doesn't log any events" do
+          subject.execute
+
+          expect(Gitlab::Audit::Auditor).not_to receive(:audit)
+
+          subject.log_audit_event
+        end
+      end
+    end
+
+    context 'when new ranges are the same as old ranges' do
+      before do
+        comma_separated_ranges.split(',').reverse_each do |range|
+          create(:ip_restriction, group: group, range: range)
+        end
+      end
+
+      it "doesn't log any events" do
+        subject.execute
+
+        expect(Gitlab::Audit::Auditor).not_to receive(:audit)
+
+        subject.log_audit_event
+      end
+    end
+
+    context 'when log is called without prior execute' do
+      it 'raises an error' do
+        expect { subject.log_audit_event }
+          .to raise_error("Nothing to log, the service must be executed first.")
       end
     end
   end
