@@ -30,7 +30,7 @@ describe('groupedSecretDetectionText', () => {
       countMessage: '',
       critical: 0,
       high: 0,
-      message: 'Secret detection detected %{totalStart}no%{totalEnd} vulnerabilities.',
+      message: 'Secret detection detected %{totalStart}no%{totalEnd} new vulnerabilities.',
       other: 0,
       status: '',
       total: 0,

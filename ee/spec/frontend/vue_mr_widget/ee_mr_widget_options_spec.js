@@ -188,7 +188,7 @@ describe('ee merge request widget options', () => {
               .find(`${SAST_SELECTOR} .report-block-list-issue-description`)
               .text(),
           ),
-        ).toEqual('SAST detected no vulnerabilities.');
+        ).toEqual('SAST detected no new vulnerabilities.');
       });
     });
 
@@ -299,7 +299,7 @@ describe('ee merge request widget options', () => {
               .find(`${DEPENDENCY_SCANNING_SELECTOR} .report-block-list-issue-description`)
               .text(),
           ),
-        ).toEqual('Dependency scanning detected no vulnerabilities.');
+        ).toEqual('Dependency scanning detected no new vulnerabilities.');
       });
     });
 
@@ -319,7 +319,7 @@ describe('ee merge request widget options', () => {
               .find(`${DEPENDENCY_SCANNING_SELECTOR} .report-block-list-issue-description`)
               .text(),
           ),
-        ).toEqual('Dependency scanning detected no vulnerabilities.');
+        ).toEqual('Dependency scanning detected no new vulnerabilities.');
       });
     });
 
