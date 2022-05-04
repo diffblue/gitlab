@@ -20705,6 +20705,9 @@ msgstr ""
 msgid "Integrations|Failed to load namespaces. Please try again."
 msgstr ""
 
+msgid "Integrations|Failed to load subscriptions."
+msgstr ""
+
 msgid "Integrations|Failed to sign in to GitLab."
 msgstr ""
 
