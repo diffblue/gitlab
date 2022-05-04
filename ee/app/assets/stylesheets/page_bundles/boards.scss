@@ -1,10 +1,16 @@
 @import '../../../../../app/assets/stylesheets/page_bundles/boards';
 
-.board-add-new-list .gl-new-dropdown-inner {
-  max-height: 12rem !important;
+.board-add-new-list {
+  .board-inner {
+    background: var(--gray-50, $gray-10);
+  }
 
-  .gl-form-radio {
-    min-height: 1em;
+  .gl-new-dropdown-inner {
+    max-height: 12rem !important;
+
+    .gl-form-radio {
+      min-height: 1em;
+    }
   }
 }
 
