@@ -35034,9 +35034,6 @@ msgstr ""
 msgid "Set up new password"
 msgstr ""
 
-msgid "Set up shared runner availability"
-msgstr ""
-
 msgid "Set up your project to automatically push and/or pull changes to/from another repository. Branches, tags, and commits will be synced automatically."
 msgstr ""
 
