@@ -257,31 +257,75 @@ RSpec.describe Group do
     end
   end
 
-  describe '.groups_user_can_read_epics' do
-    let_it_be(:user) { create(:user) }
-    let_it_be(:private_group) { create(:group, :private) }
+  describe '.groups_user_can' do
+    let_it_be(:public_group) { create(:group, :public) }
+    let_it_be(:internal_subgroup) { create(:group, :internal, parent: public_group) }
+    let_it_be(:private_subgroup_1) { create(:group, :private, parent: internal_subgroup) }
+    let_it_be(:private_subgroup_2) { create(:group, :private, parent: private_subgroup_1) }
+
+    let(:user) { create(:user) }
+    let(:groups) { described_class.where(id: [public_group.id, internal_subgroup.id, private_subgroup_1.id, private_subgroup_2.id]) }
 
     subject do
-      groups = described_class.where(id: private_group.id)
-      described_class.groups_user_can_read_epics(groups, user)
+      described_class.groups_user_can(groups, user, action)
     end
 
-    it 'does not return inaccessible groups' do
-      expect(subject).to be_empty
-    end
-
-    context 'with authorized user' do
-      before do
-        private_group.add_developer(user)
-      end
-
+    shared_examples 'a filter for permissioned groups' do
       context 'with epics enabled' do
         before do
           stub_licensed_features(epics: true)
         end
 
-        it 'returns epic groups user can access' do
-          expect(subject).to eq [private_group]
+        context 'when groups array is empty' do
+          let(:groups) { [] }
+
+          it 'does not use filter optimization' do
+            expect(Group).not_to receive(:filter_groups_user_can)
+
+            expect(subject).to be_empty
+          end
+        end
+
+        it 'uses filter optmization to return groups with access' do
+          expect(Group).not_to receive(:filter_groups_user_can)
+
+          expect(subject).to eq expected_groups
+        end
+
+        context 'when sync_traversal_ids is disabled' do
+          before do
+            stub_feature_flags(sync_traversal_ids: false)
+          end
+
+          it 'does not use filter optimization' do
+            expect(Group).not_to receive(:filter_groups_user_can)
+
+            expect(subject).to eq expected_groups
+          end
+        end
+
+        context 'when use_traversal_ids is disabled' do
+          before do
+            stub_feature_flags(use_traversal_ids: false)
+          end
+
+          it 'does not use filter optimization' do
+            expect(Group).not_to receive(:filter_groups_user_can)
+
+            expect(subject).to eq expected_groups
+          end
+        end
+
+        context 'when find_epics_performance_improvement is disabled' do
+          before do
+            stub_feature_flags(find_epics_performance_improvement: false)
+          end
+
+          it 'does not use filter optimization' do
+            expect(Group).not_to receive(:filter_groups_user_can)
+
+            expect(subject).to eq expected_groups
+          end
         end
       end
 
@@ -296,19 +340,75 @@ RSpec.describe Group do
       end
     end
 
+    context 'for :read_epic permission' do
+      let(:action) { :read_epic }
+
+      context 'when user has minimal access to group' do
+        before do
+          public_group.add_user(user, Gitlab::Access::MINIMAL_ACCESS)
+        end
+
+        it_behaves_like 'a filter for permissioned groups' do
+          let(:expected_groups) { [public_group, internal_subgroup] }
+        end
+      end
+
+      context 'when user is a group member' do
+        before do
+          public_group.add_guest(user)
+        end
+
+        it_behaves_like 'a filter for permissioned groups' do
+          let(:expected_groups) { [public_group, internal_subgroup, private_subgroup_1, private_subgroup_2] }
+        end
+      end
+
+      context 'when user is not member of any group' do
+        it_behaves_like 'a filter for permissioned groups' do
+          let(:user) { create(:user) }
+          let(:expected_groups) { [public_group, internal_subgroup] }
+        end
+      end
+    end
+
+    context 'for :read_confidential_epic permission' do
+      let(:action) { :read_confidential_epic }
+
+      before do
+        private_subgroup_1.add_reporter(user)
+      end
+
+      it_behaves_like 'a filter for permissioned groups' do
+        let(:expected_groups) { [private_subgroup_1, private_subgroup_2] }
+      end
+    end
+
+    context 'when action is not allowed to use filtering optmization' do
+      let(:action) { :read_nested_project_resources }
+
+      before do
+        private_subgroup_1.add_reporter(user)
+      end
+
+      it 'returns an empty list' do
+        expect(subject).to be_empty
+      end
+    end
+
     context 'getting group root ancestor' do
-      let_it_be(:subgroup1) { create(:group, :private, parent: private_group) }
-      let_it_be(:subgroup2) { create(:group, :private, parent: subgroup1) }
+      before do
+        public_group.add_reporter(user)
+      end
 
       shared_examples 'group root ancestor' do
         it 'does not exceed SQL queries count' do
-          groups = described_class.where(id: subgroup1)
+          groups = described_class.where(id: private_subgroup_1)
           control_count = ActiveRecord::QueryRecorder.new do
-            described_class.groups_user_can_read_epics(groups, user, **params)
+            described_class.groups_user_can(groups, user, :read_epic, **params)
           end.count
 
-          groups = described_class.where(id: [subgroup1, subgroup2])
-          expect { described_class.groups_user_can_read_epics(groups, user, **params) }
+          groups = described_class.where(id: [private_subgroup_1, private_subgroup_2])
+          expect { described_class.groups_user_can(groups, user, :read_epic, **params) }
             .not_to exceed_query_limit(control_count + extra_query_count)
         end
       end

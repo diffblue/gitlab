@@ -235,6 +235,38 @@ RSpec.describe EpicsFinder do
               end
             end
 
+            context 'query counts' do
+              let_it_be(:current_user) { create(:user) }
+              let_it_be(:subgroup_1) { create(:group, :private, parent_id: group.id) }
+              let_it_be(:subgroup_2) { create(:group, :private, parent_id: subgroup_1.id) }
+              let_it_be(:subgroup_3) { create(:group, :private, parent_id: subgroup_2.id) }
+
+              let(:finder) { described_class.new(current_user, finder_params) }
+              let(:finder_params) { { include_descendant_groups: true, include_ancestor_groups: true, group_id: subgroup_1.id } }
+
+              before do
+                subgroup_1.add_reporter(current_user)
+              end
+
+              it 'executes less queries with find_epics_performance_improvement flag on' do
+                count_with_feature_flag = ActiveRecord::QueryRecorder.new(query_recorder_debug: true) do
+                  described_class.new(current_user, finder_params).execute
+                end
+
+                stub_feature_flags(find_epics_performance_improvement: false)
+                ::Gitlab::SafeRequestStore.clear!
+
+                count_without_feature_flag = ActiveRecord::QueryRecorder.new(query_recorder_debug: true) do
+                  described_class.new(current_user, finder_params).execute
+                end
+
+                # Giving a context of 21 subgroups in the hierarchy:
+                # - Without feature flag enabled ran 37 queries
+                # - With feature flag enabled ran 26 queries
+                expect(count_with_feature_flag.count).to be < count_without_feature_flag.count
+              end
+            end
+
             context 'when user is a member of an ancestor group that is not the root ancestor' do
               let_it_be(:subgroup_reporter) { create(:user) }
 

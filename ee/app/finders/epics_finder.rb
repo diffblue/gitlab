@@ -118,7 +118,7 @@ class EpicsFinder < IssuableFinder
   def groups_user_can_read_epics(groups)
     # `same_root` should be set only if we are sure that all groups
     # in related_groups have the same ancestor root group
-    ::Group.groups_user_can_read_epics(groups, current_user, same_root: true)
+    Group.groups_user_can(groups, current_user, :read_epic, same_root: true)
   end
 
   def filter_items(items)
@@ -155,9 +155,6 @@ class EpicsFinder < IssuableFinder
   end
 
   def related_groups
-    include_ancestors = params.fetch(:include_ancestor_groups, false)
-    include_descendants = params.fetch(:include_descendant_groups, true)
-
     if include_ancestors && include_descendants
       params.group.self_and_hierarchy
     elsif include_ancestors
@@ -220,11 +217,12 @@ class EpicsFinder < IssuableFinder
     # single group sent in params, or permissioned_related_groups that can
     # include ancestors and descendants, so all have the same ancestor root group.
     # See https://gitlab.com/gitlab-org/gitlab/issues/11539
-    Group.preset_root_ancestor_for(groups)
-
-    DeclarativePolicy.user_scope do
-      groups.select { |group| Ability.allowed?(current_user, :read_confidential_epic, group) }
-    end
+    Group.groups_user_can(
+      groups,
+      current_user,
+      :read_confidential_epic,
+      same_root: true
+    )
   end
 
   # @param include_confidential [Boolean] if this method should factor in
@@ -288,5 +286,13 @@ class EpicsFinder < IssuableFinder
     return items if params[:hierarchy_order]
 
     super
+  end
+
+  def include_descendants
+    @include_descendants ||= params.fetch(:include_descendant_groups, true)
+  end
+
+  def include_ancestors
+    @include_ancestors ||= params.fetch(:include_ancestor_groups, false)
   end
 end
