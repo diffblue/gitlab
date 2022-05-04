@@ -66,7 +66,6 @@ function mountBoardApp(el) {
       issuableType: issuableTypes.epic,
       emailsDisabled: parseBoolean(el.dataset.emailsDisabled),
       hasMissingBoards: parseBoolean(el.dataset.hasMissingBoards),
-      hasScope: parseBoolean(el.dataset.hasScope),
       weights: JSON.parse(el.dataset.weights),
       // Permissions
       canUpdate: parseBoolean(el.dataset.canUpdate),
