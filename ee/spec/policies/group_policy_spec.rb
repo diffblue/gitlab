@@ -1080,6 +1080,16 @@ RSpec.describe GroupPolicy do
         it { is_expected.to be_allowed(:read_security_orchestration_policies) }
       end
     end
+
+    context 'with auditor role' do
+      where(role: %w[auditor])
+
+      with_them do
+        let(:current_user) { public_send(role) }
+
+        it { is_expected.to be_allowed(:read_security_orchestration_policies) }
+      end
+    end
   end
 
   describe 'admin_vulnerability' do

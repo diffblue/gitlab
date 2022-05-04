@@ -331,6 +331,10 @@ module EE
         enable :read_security_orchestration_policies
       end
 
+      rule { security_orchestration_policies_enabled & auditor }.policy do
+        enable :read_security_orchestration_policies
+      end
+
       rule { security_dashboard_enabled & developer }.policy do
         enable :read_group_security_dashboard
         enable :admin_vulnerability
