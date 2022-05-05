@@ -23,7 +23,11 @@ module Iterations
     validates :automatic, inclusion: [true, false]
     validates :description, length: { maximum: 5000 }
 
+    validate :cadence_has_not_started, on: :update, if: -> { automatic? && start_date_changed? }
+    validate :first_iteration_has_not_started, on: :update, if: -> { converted_to_automatic? && start_date_changed? }
     validate :cadence_is_automatic
+
+    before_update :set_to_first_start_date, if: -> { converted_to_automatic? }
 
     after_commit :ensure_iterations_in_advance, on: [:create, :update], if: :changed_iterations_automation_fields?
 
@@ -76,6 +80,20 @@ module Iterations
       (previous_changes.keys.map(&:to_sym) & ITERATIONS_AUTOMATION_FIELDS).present?
     end
 
+    def cadence_has_not_started
+      if has_started?
+        errors.add(:base, _('You cannot change the start date after the cadence has started. Please create a new cadence.'))
+      end
+    end
+
+    def first_iteration_has_not_started
+      return if iterations.empty?
+
+      if first_iteration_start_date <= Date.current
+        errors.add(:base, _('You cannot change the start date because the first iteration has already started on %{start_date}.') % { start_date: first_iteration_start_date.to_s })
+      end
+    end
+
     def update_iteration_sequences
       connection.execute <<~SQL
         UPDATE sprints SET sequence=t.row_number
@@ -88,6 +106,22 @@ module Iterations
     end
 
     private
+
+    def has_started?
+      start_date_was <= Date.current
+    end
+
+    def set_to_first_start_date
+      self.start_date = first_iteration_start_date unless iterations.empty?
+    end
+
+    def first_iteration_start_date
+      iterations.first.start_date
+    end
+
+    def converted_to_automatic?
+      automatic_changed? && automatic?
+    end
 
     def cadence_is_automatic
       return unless changes.key?(:automatic)

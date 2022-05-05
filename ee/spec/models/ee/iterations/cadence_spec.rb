@@ -11,6 +11,8 @@ RSpec.describe ::Iterations::Cadence do
   end
 
   describe 'validations' do
+    using RSpec::Parameterized::TableSyntax
+
     let(:instance_attributes) { {} }
 
     subject { build(:iterations_cadence, **instance_attributes) }
@@ -67,6 +69,92 @@ RSpec.describe ::Iterations::Cadence do
         end
       end
     end
+
+    shared_examples 'updating the start date is valid' do
+      where(:prev_start_date, :new_start_date) do
+        Date.current + 1.day  | Date.current
+        Date.current + 7.days | Date.current + 3.days
+        Date.current + 7.days | Date.current + 14.days
+      end
+
+      with_them do
+        it 'is valid' do
+          cadence = build(:iterations_cadence, start_date: prev_start_date, automatic: automatic).tap { |cadence| cadence.save!(validate: false) }
+          cadence.assign_attributes({ start_date: new_start_date })
+
+          expect(cadence).to be_valid
+        end
+      end
+    end
+
+    describe '#cadence_has_not_started', :freeze_time do
+      context 'when updating an automatic cadence that has started' do
+        let(:cadence) { create(:iterations_cadence, start_date: Date.current) }
+
+        it 'is invalid and adds an error message' do
+          cadence.assign_attributes({ start_date: Date.current + 7.days })
+
+          expect(cadence).to be_invalid
+          expect(cadence.errors.full_messages).to include('You cannot change the start date after the cadence has started. Please create a new cadence.')
+        end
+      end
+
+      context 'when updating an automatic cadence that has not started' do
+        let(:automatic) { true }
+
+        it_behaves_like 'updating the start date is valid'
+      end
+    end
+
+    describe '#first_iteration_has_not_started', :freeze_time do
+      context 'when updating an manual cadence that has started' do
+        let!(:cadence) { build(:iterations_cadence, start_date: Date.current, automatic: false).tap { |cadence| cadence.save!(validate: false) } }
+        let!(:iteration) { create(:iteration, iterations_cadence: cadence, start_date: Date.current) }
+
+        it 'is invalid and adds an error message' do
+          cadence.assign_attributes({ start_date: Date.current + 7.days, automatic: true })
+
+          expect(cadence).to be_invalid
+          expect(cadence.errors.full_messages).to include("You cannot change the start date because the first iteration has already started on #{iteration.start_date}.")
+        end
+      end
+
+      context 'when updating an manual cadence that has not started' do
+        let(:automatic) { false }
+
+        it_behaves_like 'updating the start date is valid'
+      end
+    end
+  end
+
+  describe 'callbacks' do
+    describe 'before_update :set_to_first_start_date' do
+      context 'when manual cadence is updated to use automated scheduling', :freeze_time do
+        let(:cadence_start_date) { Date.new(2022, 4, 1) }
+        let(:iteration_start_date) { cadence_start_date - 1.month }
+        let(:cadence) { build(:iterations_cadence, start_date: cadence_start_date, automatic: false).tap { |cadence| cadence.save!(validate: false) } }
+
+        context 'when no iteration exists' do
+          it 'keeps the start date' do
+            cadence.update!(automatic: true)
+
+            expect(cadence.start_date).to eq(cadence_start_date)
+          end
+        end
+
+        context 'when an iteration exists' do
+          before do
+            create(:iteration, iterations_cadence: cadence, start_date: iteration_start_date)
+          end
+
+          it 'sets start date to the start date of the first iteration' do
+            cadence.update!(automatic: true)
+
+            expect(cadence.start_date).to eq(iteration_start_date)
+          end
+        end
+      end
+    end
   end
 
   describe '#update_iteration_sequences', :aggregate_failures do
@@ -80,8 +168,8 @@ RSpec.describe ::Iterations::Cadence do
 
     context 'an iteration is created or updated' do
       where(:start_date, :expected_ordered_title) do
-        1.week.ago       | lazy { %w[iteration a b] }
-        Date.today       | lazy { %w[iteration a b] }
+        1.week.ago | lazy { %w[iteration a b] }
+        Date.current | lazy { %w[iteration a b] }
         2.weeks.from_now | lazy { %w[a iteration b] }
         4.weeks.from_now | lazy { %w[a b iteration] }
       end
