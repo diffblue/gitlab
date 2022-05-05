@@ -64,7 +64,7 @@ module Projects
     end
 
     def deletion_date
-      Date.parse(grace_months_after_deletion_notification.from_now.to_s).to_s
+      grace_months_after_deletion_notification.from_now.to_date.to_s
     end
 
     def delete_project(project, user)

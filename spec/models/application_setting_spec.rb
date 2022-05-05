@@ -1348,10 +1348,13 @@ RSpec.describe ApplicationSetting do
     it "deletes the redis key used for tracking inactive projects deletion warning emails when setting is updated",
        :clean_gitlab_redis_shared_state do
       Gitlab::Redis::SharedState.with do |redis|
-        expect(redis).to receive(:del).with("inactive_projects_deletion_warning_email_notified")
+        redis.hset("inactive_projects_deletion_warning_email_notified", "project:1", "2020-01-01")
       end
 
-      setting.update!(inactive_projects_delete_after_months: 6)
+      Gitlab::Redis::SharedState.with do |redis|
+        expect { setting.update!(inactive_projects_delete_after_months: 6) }
+          .to change { redis.hgetall('inactive_projects_deletion_warning_email_notified') }.to({})
+      end
     end
   end
 end
