@@ -66,18 +66,6 @@ RSpec.describe 'EE-specific admin routing' do
     it 'routes patch /:id to #update' do
       expect(patch("/admin/geo/sites/#{geo_node.id}")).to route_to('admin/geo/nodes#update', id: geo_node.to_param)
     end
-
-    it 'redirects /nodes to /sites', type: :request do
-      expect(get('/admin/geo/nodes')).to redirect_to('/admin/geo/sites')
-    end
-
-    it 'redirects /nodes/new to /sites/new', type: :request do
-      expect(get('/admin/geo/nodes/new')).to redirect_to('/admin/geo/sites/new')
-    end
-
-    it 'redirects /nodes/:id/edit to /sites/:id/new', type: :request do
-      expect(get("/admin/geo/nodes/#{geo_node.id}/edit")).to redirect_to("/admin/geo/sites/#{geo_node.id}/edit")
-    end
   end
 
   describe Admin::Geo::SettingsController, 'routing' do
