@@ -23,6 +23,7 @@ import { redirectTo, queryToObject } from '~/lib/utils/url_utility';
 import { s__ } from '~/locale';
 import RefSelector from '~/ref/components/ref_selector.vue';
 import { REF_TYPE_BRANCHES } from '~/ref/constants';
+import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import LocalStorageSync from '~/vue_shared/components/local_storage_sync.vue';
 import validation from '~/vue_shared/directives/validation';
 import { HELP_PAGE_PATH, DAST_CONFIGURATION_HELP_PATH } from 'ee/on_demand_scans/constants';
@@ -42,6 +43,8 @@ import ProfileConflictAlert from './profile_selector/profile_conflict_alert.vue'
 import ScannerProfileSelector from './profile_selector/scanner_profile_selector.vue';
 import SiteProfileSelector from './profile_selector/site_profile_selector.vue';
 import ScanSchedule from './scan_schedule.vue';
+import ScannerProfileEmptyState from './profile_selector/scanner_profile_empty_state.vue';
+import SiteProfileEmptyState from './profile_selector/site_profile_empty_state.vue';
 
 export const ON_DEMAND_SCANS_STORAGE_KEY = 'on-demand-scans-new-form';
 
@@ -128,12 +131,15 @@ export default {
     LocalStorageSync,
     SectionLayout,
     ConfigurationPageLayout,
+    ScannerProfileEmptyState,
+    SiteProfileEmptyState,
   },
   directives: {
     SafeHtml: GlSafeHtmlDirective,
     GlTooltip: GlTooltipDirective,
     validation: validation(),
   },
+  mixins: [glFeatureFlagMixin()],
   apollo: {
     scannerProfiles: createProfilesApolloOptions(
       'scannerProfiles',
@@ -146,7 +152,7 @@ export default {
       SITE_PROFILES_QUERY,
     ),
   },
-  inject: ['projectPath', 'onDemandScansPath'],
+  inject: ['projectPath', 'onDemandScansPath', 'newScannerProfilePath', 'newSiteProfilePath'],
   props: {
     defaultBranch: {
       type: String,
@@ -187,6 +193,12 @@ export default {
     };
   },
   computed: {
+    hasScannerProfileSelector() {
+      return Boolean(this.selectedScannerProfile);
+    },
+    hasSiteProfileSelector() {
+      return Boolean(this.selectedSiteProfile);
+    },
     dastScanId() {
       return this.dastScan?.id ?? null;
     },
@@ -480,7 +492,13 @@ export default {
           </gl-sprintf>
         </template>
         <template #features>
+          <scanner-profile-empty-state
+            v-if="!hasScannerProfileSelector && glFeatures.dastUiRedesign"
+            class="gl-mb-8"
+            :new-profile-path="newScannerProfilePath"
+          />
           <scanner-profile-selector
+            v-else
             v-model="selectedScannerProfileId"
             class="gl-mb-6"
             :profiles="scannerProfiles"
@@ -489,9 +507,15 @@ export default {
             :dast-scan-id="dastScanId"
           />
 
-          <site-profile-selector
-            v-model="selectedSiteProfileId"
+          <site-profile-empty-state
+            v-if="!hasSiteProfileSelector && glFeatures.dastUiRedesign"
             class="gl-mb-3"
+            :new-profile-path="newSiteProfilePath"
+          />
+          <site-profile-selector
+            v-else
+            v-model="selectedSiteProfileId"
+            class="gl-mb-2"
             :profiles="siteProfiles"
             :selected-profile="selectedSiteProfile"
             :has-conflict="hasProfilesConflict"
