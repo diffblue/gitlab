@@ -7,9 +7,9 @@
       variant: payload.display_error_version? ? :danger : :warning,
       alert_class: 'gl-my-5',
       alert_data: { testid: 'manual-quarterly-co-term-banner' },
-      dismissible: false) do
-      .gl-alert-body
+      dismissible: false) do |c|
+      = c.body do
         = payload.body
-      .gl-alert-actions
+      = c.actions do
         = link_to s_('SubscriptionBanner|Export license usage file'), admin_license_usage_export_path(format: :csv), class: 'btn gl-alert-action gl-button btn-confirm'
         = link_to s_('SubscriptionBanner|Add new license'), new_admin_license_path, class: 'btn gl-alert-action gl-button btn-default'
