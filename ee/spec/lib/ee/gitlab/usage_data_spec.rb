@@ -116,8 +116,6 @@ RSpec.describe Gitlab::UsageData do
         user_preferences_group_overview_details
         user_preferences_group_overview_security_dashboard
         template_repositories
-        network_policy_forwards
-        network_policy_drops
         users_visiting_testing_license_compliance_full_report
         users_clicking_license_testing_visiting_external_website
       ))

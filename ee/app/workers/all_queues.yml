@@ -390,15 +390,6 @@
   :weight: 1
   :idempotent:
   :tags: []
-- :name: cronjob:network_policy_metrics
-  :worker_name: NetworkPolicyMetricsWorker
-  :feature_category: :not_owned
-  :has_external_dependencies:
-  :urgency: :low
-  :resource_boundary: :unknown
-  :weight: 1
-  :idempotent:
-  :tags: []
 - :name: cronjob:security_create_orchestration_policy
   :worker_name: Security::CreateOrchestrationPolicyWorker
   :feature_category: :security_orchestration
