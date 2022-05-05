@@ -26,6 +26,9 @@ module QA
         # Save the scenario class name
         Runtime::Scenario.define(:klass, self.class.name)
 
+        # Set large setup attribute
+        Runtime::Scenario.define(:large_setup?, args.include?('can_use_large_setup'))
+
         ##
         # Setup knapsack and download latest report
         #
