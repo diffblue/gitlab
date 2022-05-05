@@ -20995,6 +20995,9 @@ msgstr ""
 msgid "InviteMembersModal|To get more members an owner of this namespace can %{trialLinkStart}start a trial%{trialLinkEnd} or %{upgradeLinkStart}upgrade%{upgradeLinkEnd} to a paid tier."
 msgstr ""
 
+msgid "InviteMembersModal|To make more space, you can remove members who no longer need access."
+msgstr ""
+
 msgid "InviteMembersModal|Username or email address"
 msgstr ""
 
@@ -21002,6 +21005,9 @@ msgid "InviteMembersModal|You cannot add more members, but you can remove member
 msgstr ""
 
 msgid "InviteMembersModal|You only have space for %{count} more %{members} in %{name}"
+msgstr ""
+
+msgid "InviteMembersModal|You only have space for %{count} more %{members} in your personal projects"
 msgstr ""
 
 msgid "InviteMembersModal|You're inviting a group to the %{strongStart}%{name}%{strongEnd} group."
@@ -21017,6 +21023,9 @@ msgid "InviteMembersModal|You're inviting members to the %{strongStart}%{name}%{
 msgstr ""
 
 msgid "InviteMembersModal|You've reached your %{count} %{members} limit for %{name}"
+msgstr ""
+
+msgid "InviteMembersModal|You've reached your %{count} %{members} limit for your personal projects"
 msgstr ""
 
 msgid "InviteMembers|Invite a group"
