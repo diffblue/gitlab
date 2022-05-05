@@ -22734,7 +22734,7 @@ msgstr ""
 msgid "List of suitable GCP locations"
 msgstr ""
 
-msgid "List of users allowed to exceed the rate limit."
+msgid "List of users who are allowed to exceed the rate limit. Example: username1, username2"
 msgstr ""
 
 msgid "List options"
