@@ -219,7 +219,7 @@ RSpec.describe MergeTrains::RefreshMergeRequestService do
 
         context 'when it failed to merge the merge request' do
           before do
-            allow(merge_request).to receive(:mergeable_state?) { true }
+            allow(merge_request).to receive(:broken?) { false }
             merge_request.update!(merge_error: 'Branch has been updated since the merge was requested.')
             allow_next_instance_of(MergeRequests::MergeService) do |instance|
               allow(instance).to receive(:execute) { { result: :error } }
