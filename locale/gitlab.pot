@@ -3570,9 +3570,6 @@ msgstr ""
 msgid "AlertSettings|You can map default GitLab alert fields to your payload keys in the dropdowns below."
 msgstr ""
 
-msgid "AlertSettings|You can now set up alert endpoints for manually configured Prometheus instances in the Alerts section on the Operations settings page. Alert endpoint fields on this page have been deprecated."
-msgstr ""
-
 msgid "AlertSettings|{ \"events\": [{ \"application\": \"Name of application\" }] }"
 msgstr ""
 
@@ -5348,9 +5345,6 @@ msgid "Authored %{timeago} by %{author}"
 msgstr ""
 
 msgid "Authorization code:"
-msgstr ""
-
-msgid "Authorization key"
 msgstr ""
 
 msgid "Authorization required"
@@ -15449,9 +15443,6 @@ msgstr ""
 msgid "Failed to request attention because no user was found."
 msgstr ""
 
-msgid "Failed to reset key. Please try again."
-msgstr ""
-
 msgid "Failed to retrieve page"
 msgstr ""
 
@@ -16232,9 +16223,6 @@ msgid "Generate a default set of labels"
 msgstr ""
 
 msgid "Generate group access tokens scoped to this group for your applications that need access to the GitLab API."
-msgstr ""
-
-msgid "Generate key"
 msgstr ""
 
 msgid "Generate new export"
@@ -30882,9 +30870,6 @@ msgstr ""
 msgid "Receive a %{strongOpen}$50 gift card%{strongClose} as a thank you for your time."
 msgstr ""
 
-msgid "Receive alerts from manually configured Prometheus servers."
-msgstr ""
-
 msgid "Receive any notifications from GitLab."
 msgstr ""
 
@@ -32004,12 +31989,6 @@ msgstr ""
 msgid "Reset"
 msgstr ""
 
-msgid "Reset authorization key"
-msgstr ""
-
-msgid "Reset authorization key?"
-msgstr ""
-
 msgid "Reset file"
 msgstr ""
 
@@ -32017,9 +31996,6 @@ msgid "Reset filters"
 msgstr ""
 
 msgid "Reset health check access token"
-msgstr ""
-
-msgid "Reset key"
 msgstr ""
 
 msgid "Reset link will be generated and sent to the user. %{break} User will be forced to set the password on first sign in."
@@ -32035,9 +32011,6 @@ msgid "Reset template"
 msgstr ""
 
 msgid "Reset to project defaults"
-msgstr ""
-
-msgid "Resetting the authorization key will invalidate the previous key. Existing alert configurations will need to be updated with the new key."
 msgstr ""
 
 msgid "Resolve"
@@ -39306,9 +39279,6 @@ msgstr ""
 msgid "To reactivate your account, sign in to GitLab at %{gitlab_url}."
 msgstr ""
 
-msgid "To receive alerts from manually configured Prometheus services, add the following URL and Authorization key to your Prometheus webhook config file. Learn more about %{linkStart}configuring Prometheus%{linkEnd} to send alerts to GitLab."
-msgstr ""
-
 msgid "To renew, export your license usage file and email it to %{renewal_service_email}. A new license will be emailed to the email address registered in the %{customers_dot}. You can add this license to your instance."
 msgstr ""
 
@@ -41569,9 +41539,6 @@ msgid "VisibilityLevel|Public"
 msgstr ""
 
 msgid "VisibilityLevel|Unknown"
-msgstr ""
-
-msgid "Visit settings page"
 msgstr ""
 
 msgid "Visual Studio Code (HTTPS)"
