@@ -89,6 +89,12 @@ GitLab fields when you [create an HTTP endpoint](#http-endpoints):
 
 ![Alert Management List](img/custom_alert_mapping_v13_11.png)
 
+### External Prometheus integration
+
+For GitLab versions 13.1 and greater, read
+[External Prometheus Instances](../metrics/alerts.md#external-prometheus-instances)
+to configure alerts for this integration.
+
 ## Customize the alert payload outside of GitLab
 
 For HTTP Endpoints without [custom mappings](#map-fields-in-custom-alerts), you can customize the payload by sending the following
