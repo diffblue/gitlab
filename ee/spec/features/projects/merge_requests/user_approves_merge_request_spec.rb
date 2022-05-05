@@ -21,11 +21,11 @@ RSpec.describe 'User approves a merge request', :js do
 
     it 'approves a merge request' do
       page.within('.mr-state-widget') do
-        expect(page).to have_button('Merge', disabled: true)
+        expect(page).not_to have_button('Merge')
 
         click_button('Approve')
 
-        expect(page).to have_button('Merge', disabled: false)
+        expect(page).to have_button('Merge')
       end
     end
   end
@@ -85,7 +85,7 @@ RSpec.describe 'User approves a merge request', :js do
 
     it 'does not approves a merge request' do
       page.within('.mr-state-widget') do
-        expect(page).to have_button('Merge', disabled: true)
+        expect(page).not_to have_button('Merge')
         expect(page).not_to have_button('Approve')
         expect(page).to have_content('Requires 1 approval from eligible users.')
       end

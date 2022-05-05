@@ -39,7 +39,7 @@ RSpec.describe 'Merge Request > User views blocked MR', :js do
         visit project_merge_request_path(project, blocked_mr)
 
         expect(page).to have_content('Depends on 1 merge request')
-        expect(page).to have_button('Merge', disabled: true)
+        expect(page).not_to have_button('Merge')
 
         click_button 'Expand'
 
@@ -57,7 +57,7 @@ RSpec.describe 'Merge Request > User views blocked MR', :js do
         visit project_merge_request_path(project, blocked_mr)
 
         expect(page).to have_content('Depends on 1 merge request')
-        expect(page).to have_button('Merge', disabled: true)
+        expect(page).not_to have_button('Merge')
 
         click_button 'Expand'
 
