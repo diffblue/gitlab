@@ -67,8 +67,9 @@ RSpec.describe 'Setting the escalation policy of an issue' do
 
     expect(response).to have_gitlab_http_status(:success)
     expect(mutation_response['errors']).to be_empty
-    expect(mutation_response['issue']['escalationPolicy']['id']).to eq(global_id_of(escalation_policy))
-    expect(mutation_response['issue']['escalationPolicy']['name']).to eq(escalation_policy.name)
+    expect(mutation_response['issue']['escalationPolicy']).to match a_graphql_entity_for(
+      escalation_policy, :name
+    )
     expect(escalation_status.reload.policy).to eq(escalation_policy)
   end
 

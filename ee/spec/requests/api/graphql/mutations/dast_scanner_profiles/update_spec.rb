@@ -39,15 +39,14 @@ RSpec.describe 'Update a DAST Scanner Profile' do
   it_behaves_like 'an on-demand scan mutation when user cannot run an on-demand scan'
 
   it_behaves_like 'an on-demand scan mutation when user can run an on-demand scan' do
-    it 'returns the dast_scanner_profile' do
+    it 'returns the dast_scanner_profile', :aggregate_failures do
       subject
 
-      expect(mutation_response['id']).to eq(global_id_of(dast_scanner_profile))
+      expect(mutation_response).to match a_graphql_entity_for(dast_scanner_profile)
       expect(mutation_response).to have_key('dastScannerProfile')
 
       profile = mutation_response['dastScannerProfile']
-      expect(profile['id']).to eq(global_id_of(dast_scanner_profile))
-      expect(profile['profileName']).to eq(new_profile_name)
+      expect(profile).to match a_graphql_entity_for(dast_scanner_profile, profile_name: new_profile_name)
     end
 
     it 'updates the dast_scanner_profile' do

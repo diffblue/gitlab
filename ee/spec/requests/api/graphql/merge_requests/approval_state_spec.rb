@@ -93,24 +93,25 @@ RSpec.describe 'Query.project.mergeRequest.approvalState' do
       it 'returns appropriate data' do
         post_graphql(query)
 
-        expect(approval_state).to eq({
+        expect(approval_state).to match a_hash_including(
           'approvalRulesOverwritten' => false,
-          'rules' => [{
-            'approvalsRequired' => 0,
-            'approved' => true,
-            'approvedBy' => { 'nodes' => [] },
-            'containsHiddenGroups' => false,
-            'eligibleApprovers' => [{ 'id' => global_id_of(user) }],
-            'groups' => { 'nodes' => [] },
-            'id' => global_id_of(code_owner_rule),
-            'name' => code_owner_rule.name,
-            'overridden' => false,
-            'section' => 'codeowners',
-            'sourceRule' => nil,
-            'type' => 'CODE_OWNER',
-            'users' => { 'nodes' => [{ 'id' => global_id_of(user) }] }
-          }]
-        })
+          'rules' => contain_exactly(
+            a_graphql_entity_for(
+              code_owner_rule, :name,
+              'approvalsRequired' => 0,
+              'approved' => true,
+              'approvedBy' => { 'nodes' => [] },
+              'containsHiddenGroups' => false,
+              'eligibleApprovers' => contain_exactly(a_graphql_entity_for(user)),
+              'groups' => { 'nodes' => [] },
+              'overridden' => false,
+              'section' => 'codeowners',
+              'sourceRule' => nil,
+              'type' => 'CODE_OWNER',
+              'users' => { 'nodes' => contain_exactly(a_graphql_entity_for(user)) }
+            )
+          )
+        )
       end
     end
   end

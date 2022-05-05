@@ -26,11 +26,11 @@ RSpec.describe 'Creating a DAST Scanner Profile' do
     it 'returns the dast_scanner_profile id' do
       post_graphql_mutation(mutation, current_user: current_user)
 
-      expect(mutation_response['id']).to eq(global_id_of(dast_scanner_profile))
+      expect(mutation_response).to match a_graphql_entity_for(dast_scanner_profile)
       expect(mutation_response).to have_key('dastScannerProfile')
 
       profile = mutation_response['dastScannerProfile']
-      expect(profile['id']).to eq(global_id_of(dast_scanner_profile))
+      expect(profile).to match a_graphql_entity_for(dast_scanner_profile)
       expect(profile['profileName']).to eq(dast_scanner_profile.name)
     end
 

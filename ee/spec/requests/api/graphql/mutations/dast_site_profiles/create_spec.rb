@@ -43,7 +43,7 @@ RSpec.describe 'Creating a DAST Site Profile' do
 
       dast_site_profile = DastSiteProfile.find_by(project: project, name: profile_name)
 
-      expect(mutation_response).to include('id' => global_id_of(dast_site_profile))
+      expect(mutation_response).to match(a_graphql_entity_for(dast_site_profile))
     end
   end
 end

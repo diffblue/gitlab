@@ -106,12 +106,12 @@ RSpec.describe Projects::OnDemandScansController, type: :request do
           get edit_path
 
           json_data = {
-            id: global_id_of(dast_profile),
+            **a_graphql_entity_for(dast_profile),
             name: dast_profile.name,
             description: dast_profile.description,
             branch: { name: project.default_branch_or_main },
-            dastSiteProfile: { id: global_id_of(DastSiteProfile.new(id: dast_profile.dast_site_profile_id)) },
-            dastScannerProfile: { id: global_id_of(DastScannerProfile.new(id: dast_profile.dast_scanner_profile_id)) },
+            dastSiteProfile: a_graphql_entity_for(DastSiteProfile.new(id: dast_profile.dast_site_profile_id)),
+            dastScannerProfile: a_graphql_entity_for(DastScannerProfile.new(id: dast_profile.dast_scanner_profile_id)),
             dastProfileSchedule: {
               active: dast_profile_schedule.active,
               cadence: {
@@ -125,7 +125,7 @@ RSpec.describe Projects::OnDemandScansController, type: :request do
 
           on_demand_div = Nokogiri::HTML.parse(response.body).at_css('div#js-on-demand-scans-form')
 
-          expect(on_demand_div.attributes['data-dast-scan'].value).to include(json_data)
+          expect(on_demand_div.attributes['data-dast-scan'].value).to eq json_data
         end
       end
 

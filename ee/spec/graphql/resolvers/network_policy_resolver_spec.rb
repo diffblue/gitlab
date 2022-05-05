@@ -86,7 +86,7 @@ RSpec.describe Resolvers::NetworkPolicyResolver do
         end
 
         context 'when environment_id is provided' do
-          let(:environment_id) { 'gid://gitlab/Environment/31' }
+          let(:environment_id) { global_id_of(model_name: 'Environment', id: 31) }
 
           it 'uses NetworkPolicies::ResourceService with resolved environment_id to fetch policies' do
             expect(NetworkPolicies::ResourcesService).to receive(:new).with(project: project, environment_id: '31')

@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Mutations::DastScannerProfiles::Update do
+  include GraphqlHelpers
+
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project, group: group) }
   let_it_be(:user) { create(:user) }
@@ -83,7 +85,7 @@ RSpec.describe Mutations::DastScannerProfiles::Update do
         end
 
         context 'when dast scanner profile does not exist' do
-          let(:scanner_profile_id) { Gitlab::GlobalId.build(nil, model_name: 'DastScannerProfile', id: 'does_not_exist') }
+          let(:scanner_profile_id) { global_id_of(model_name: 'DastScannerProfile', id: 'does_not_exist') }
 
           it 'raises an exception' do
             expect { subject }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)

@@ -51,7 +51,7 @@ RSpec.describe 'Update of an existing issue' do
       expect(response).to have_gitlab_http_status(:success)
       expect(graphql_errors).to be_blank
       expect(mutated_issue).to include(
-        'epic' => include('id' => global_id_of(epic))
+        'epic' => a_graphql_entity_for(epic)
       )
     end
 

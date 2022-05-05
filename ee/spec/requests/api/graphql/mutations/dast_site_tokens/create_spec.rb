@@ -31,7 +31,7 @@ RSpec.describe 'Creating a DAST Site Token' do
 
       dast_site_token = DastSiteToken.find_by!(project: project, token: uuid)
 
-      expect(mutation_response["id"]).to eq(global_id_of(dast_site_token))
+      expect(mutation_response).to match a_graphql_entity_for(dast_site_token)
     end
 
     it 'creates a new dast_site_token' do

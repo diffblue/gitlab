@@ -71,8 +71,8 @@ RSpec.describe 'Creating a new on-call schedule' do
 
     expect(response).to have_gitlab_http_status(:success)
 
-    expect(oncall_rotation_response.slice(*%w[id name length lengthUnit])).to eq(
-      'id' => global_id_of(new_oncall_rotation),
+    expect(oncall_rotation_response.slice(*%w[id name length lengthUnit])).to match a_graphql_entity_for(
+      new_oncall_rotation,
       'name' => args[:name],
       'length' => 1,
       'lengthUnit' => 'DAYS'
@@ -81,13 +81,8 @@ RSpec.describe 'Creating a new on-call schedule' do
     start_time = "#{args[:starts_at][:date]} #{args[:starts_at][:time]}".in_time_zone(schedule.timezone)
     expect(Time.parse(oncall_rotation_response['startsAt'])).to eq(start_time)
 
-    expect(oncall_rotation_response.dig('participants', 'nodes')).to contain_exactly(
-      {
-        'user' => {
-          'id' => global_id_of(current_user),
-          'username' => current_user.username
-        }
-      }
+    expect(oncall_rotation_response.dig('participants', 'nodes')).to contain_exactly a_hash_including(
+      'user' => a_graphql_entity_for(current_user, :username)
     )
   end
 

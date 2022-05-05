@@ -58,9 +58,8 @@ RSpec.describe 'MergeRequestReviewer' do
       end
 
       it 'returns appropriate data' do
-        the_rule = {
-          'id' => global_id_of(rule),
-          'name' => rule.name,
+        the_rule = a_graphql_entity_for(
+          rule, :name,
           'type' => 'CODE_OWNER',
           'approvalsRequired' => 0,
           'approved' => true,
@@ -68,11 +67,11 @@ RSpec.describe 'MergeRequestReviewer' do
           'overridden' => false,
           'section' => 'codeowners',
           'sourceRule' => nil
-        }
+        )
 
         post_graphql(query)
 
-        expect(interaction['applicableApprovalRules'].first).to include(the_rule)
+        expect(interaction['applicableApprovalRules'].first).to match the_rule
       end
     end
   end
