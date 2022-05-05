@@ -1,6 +1,6 @@
 import Tracking from '~/tracking';
 
-describe('FormTracking', () => {
+describe('EnableFormTracking', () => {
   let formTrackingSpy;
 
   beforeEach(() => {
@@ -11,7 +11,7 @@ describe('FormTracking', () => {
 
   it('initialized with the correct configuration', () => {
     expect(formTrackingSpy).toHaveBeenCalledWith({
-      forms: { allow: ['new_new_user'] },
+      forms: { allow: ['new_user'] },
     });
   });
 });
