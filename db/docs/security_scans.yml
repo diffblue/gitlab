@@ -4,6 +4,6 @@ classes:
 - Security::Scan
 feature_categories:
 - vulnerability_management
-description: stores information about security scans ran as a part of Ci::Build
+description: Stores information about the security scans that are a part of Ci::Build
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/23669
 milestone: '12.8'
