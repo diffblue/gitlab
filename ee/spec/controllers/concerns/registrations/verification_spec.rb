@@ -32,6 +32,10 @@ RSpec.describe Registrations::Verification do
   end
 
   describe '#require_verification' do
+    before do
+      stub_experiments(require_verification_for_namespace_creation: :candidate)
+    end
+
     describe 'verification is not required' do
       it 'does not redirect' do
         get :index
@@ -57,6 +61,14 @@ RSpec.describe Registrations::Verification do
 
       it 'does not redirect on POST requests' do
         post :create
+
+        expect(response).to have_gitlab_http_status(:ok)
+      end
+
+      it 'does not redirect when the experiment is inactive' do
+        stub_experiments(require_verification_for_namespace_creation: :control)
+
+        get :index
 
         expect(response).to have_gitlab_http_status(:ok)
       end
