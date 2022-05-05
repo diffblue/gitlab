@@ -14,6 +14,7 @@ module Projects
       end
 
       feature_category :vulnerability_management
+      urgency :low
     end
   end
 end

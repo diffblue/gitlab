@@ -37,12 +37,11 @@ module EE
         feature_category :code_review, [:delete_description_version, :description_diff]
 
         urgency :high, [:delete_description_version]
-        urgency :low, [:description_diff]
-        urgency :low, [
-          :sast_reports,
-          :secret_detection_reports
-        ]
-        urgency :low, [:metrics_reports]
+        urgency :low, [:container_scanning_reports,
+                       :dependency_scanning_reports, :sast_reports,
+                       :secret_detection_reports, :dast_reports,
+                       :coverage_fuzzing_reports, :api_fuzzing_reports,
+                       :metrics_reports, :description_diff]
       end
 
       def can_run_sast_experiments_on?(project)
