@@ -262,13 +262,6 @@ RSpec.describe Admin::ApplicationSettingsController do
       end
     end
 
-    it 'updates setting to enforce access token expiration' do
-      put :update, params: { application_setting: { enforce_pat_expiration: false } }
-
-      expect(response).to redirect_to(general_admin_application_settings_path)
-      expect(ApplicationSetting.current.enforce_pat_expiration).to be_falsey
-    end
-
     context 'maintenance mode settings' do
       let(:message) { 'Maintenance mode is on.' }
 

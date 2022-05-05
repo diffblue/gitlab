@@ -10,7 +10,6 @@ module PersonalAccessTokens
     def execute
       # TODO: Change to `project.feature_available?` https://gitlab.com/gitlab-org/gitlab/-/issues/323908
       return unless ::License.feature_available?(:personal_access_token_expiration_policy)
-      return unless PersonalAccessToken.expiration_enforced?
       return unless expiration_date && user_affected?
 
       notify_user

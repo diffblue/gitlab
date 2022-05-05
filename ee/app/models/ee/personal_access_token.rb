@@ -39,29 +39,6 @@ module EE
           ]
         )
       end
-
-      def expiration_enforced?
-        return true unless enforce_pat_expiration_feature_available?
-
-        ::Gitlab::CurrentSettings.enforce_pat_expiration?
-      end
-
-      def enforce_pat_expiration_feature_available?
-        License.feature_available?(:enforce_personal_access_token_expiration)
-      end
-    end
-
-    override :expired?
-    def expired?
-      return super if self.class.expiration_enforced?
-
-      # The user is notified about the expired-yet-active status of the token through an in-app banner: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/34101
-      false
-    end
-
-    override :expired_but_not_enforced?
-    def expired_but_not_enforced?
-      expired_original? && !self.class.expiration_enforced?
     end
 
     override :revoke!

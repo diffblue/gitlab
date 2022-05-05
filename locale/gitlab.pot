@@ -395,11 +395,6 @@ msgid_plural "%d tags per image name"
 msgstr[0] ""
 msgstr[1] ""
 
-msgid "%d token has expired"
-msgid_plural "%d tokens have expired"
-msgstr[0] ""
-msgstr[1] ""
-
 msgid "%d unassigned issue"
 msgid_plural "%d unassigned issues"
 msgstr[0] ""
@@ -5140,10 +5135,10 @@ msgstr ""
 msgid "At least one of group_id or project_id must be specified"
 msgstr ""
 
-msgid "At least one of your Personal Access Tokens is expired, but expiration enforcement is disabled. %{generate_new}"
+msgid "At least one of your Personal Access Tokens is expired. %{generate_new}"
 msgstr ""
 
-msgid "At least one of your Personal Access Tokens will expire soon, but expiration enforcement is disabled. %{generate_new}"
+msgid "At least one of your Personal Access Tokens will expire soon. %{generate_new}"
 msgstr ""
 
 msgid "At risk"
@@ -13935,9 +13930,6 @@ msgstr ""
 msgid "Enforce SSH key expiration"
 msgstr ""
 
-msgid "Enforce access token expiration"
-msgstr ""
-
 msgid "Enforce two-factor authentication"
 msgstr ""
 
@@ -16216,9 +16208,6 @@ msgid "Generate key"
 msgstr ""
 
 msgid "Generate new export"
-msgstr ""
-
-msgid "Generate new token"
 msgstr ""
 
 msgid "Generate project access tokens scoped to this project for your applications that need access to the GitLab API."
@@ -27276,9 +27265,6 @@ msgid "Personal Access Token"
 msgstr ""
 
 msgid "Personal Access Token prefix"
-msgstr ""
-
-msgid "Personal access tokens are not revoked upon expiration."
 msgstr ""
 
 msgid "Personal project creation is not allowed. Please contact your administrator with questions"
@@ -39440,9 +39426,6 @@ msgstr ""
 msgid "Token name"
 msgstr ""
 
-msgid "Token valid until revoked"
-msgstr ""
-
 msgid "Tokens|Scopes set the permission levels granted to the token."
 msgstr ""
 
@@ -40182,9 +40165,6 @@ msgid "Unsupported sort value."
 msgstr ""
 
 msgid "Unsupported todo type passed. Supported todo types are: %{todo_types}"
-msgstr ""
-
-msgid "Until revoked, expired personal access tokens pose a security risk."
 msgstr ""
 
 msgid "Unused"

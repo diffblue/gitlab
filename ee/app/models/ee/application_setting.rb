@@ -157,7 +157,6 @@ module EE
           elasticsearch_analyzers_kuromoji_search: false,
           email_additional_text: nil,
           enforce_namespace_storage_limit: false,
-          enforce_pat_expiration: true,
           future_subscriptions: [],
           geo_node_allowed_ips: '0.0.0.0/0, ::/0',
           git_two_factor_session_expiry: 15,
