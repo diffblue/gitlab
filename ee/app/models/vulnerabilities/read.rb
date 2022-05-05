@@ -25,8 +25,8 @@ module Vulnerabilities
     enum report_type: ::Enums::Vulnerability.report_types
     enum severity: ::Enums::Vulnerability.severity_levels, _prefix: :severity
 
-    scope :order_severity_asc, -> { reorder(severity: :asc) }
-    scope :order_severity_desc, -> { reorder(severity: :desc) }
+    scope :order_severity_asc, -> { reorder(severity: :asc, vulnerability_id: :desc) }
+    scope :order_severity_desc, -> { reorder(severity: :desc, vulnerability_id: :desc) }
     scope :order_detected_at_asc, -> { reorder(vulnerability_id: :asc) }
     scope :order_detected_at_desc, -> { reorder(vulnerability_id: :desc) }
 

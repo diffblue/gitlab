@@ -32,20 +32,6 @@ RSpec.describe API::Vulnerabilities do
         expect(response.headers['X-Total']).to eq project.vulnerabilities.count.to_s
       end
 
-      context 'when vulnerability_reads_table is disabled' do
-        before do
-          stub_feature_flags(vulnerability_reads_table: false)
-        end
-
-        it 'returns all vulnerabilities of a project' do
-          get_vulnerabilities
-
-          expect(response).to have_gitlab_http_status(:ok)
-          expect(response).to match_response_schema('public_api/v4/vulnerabilities', dir: 'ee')
-          expect(response.headers['X-Total']).to eq project.vulnerabilities.count.to_s
-        end
-      end
-
       context 'with pagination' do
         let(:project_vulnerabilities_path) { "#{super()}?page=3&per_page=1" }
 

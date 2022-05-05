@@ -41,6 +41,10 @@ FactoryBot.define do
   end
 
   factory :vulnerabilities_finding, class: 'Vulnerabilities::Finding' do
+    after(:build) do |finding, evaluator|
+      finding.project = evaluator.vulnerability.project if evaluator.vulnerability
+    end
+
     name { 'Cipher with no integrity' }
     project
     project_fingerprint { generate(:project_fingerprint) }
