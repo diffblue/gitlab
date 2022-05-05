@@ -169,6 +169,40 @@ RSpec.describe GitlabSubscription, :saas do
     end
   end
 
+  describe '#seats_remaining' do
+    context 'when there are more seats used than available in the subscription' do
+      it 'returns zero' do
+        subscription = build(:gitlab_subscription, seats: 10, max_seats_used: 15)
+
+        expect(subscription.seats_remaining).to eq 0
+      end
+    end
+
+    context 'when seats used equals seats in subscription' do
+      it 'returns zero' do
+        subscription = build(:gitlab_subscription, seats: 10, max_seats_used: 10)
+
+        expect(subscription.seats_remaining).to eq 0
+      end
+    end
+
+    context 'when there are seats left in the subscription' do
+      it 'returns the seat count remaining from the max seats used' do
+        subscription = build(:gitlab_subscription, seats: 10, max_seats_used: 5)
+
+        expect(subscription.seats_remaining).to eq 5
+      end
+    end
+
+    context 'when max seat data has not yet been generated for the subscription' do
+      it 'returns the seat count of the subscription' do
+        subscription = build(:gitlab_subscription, seats: 10, max_seats_used: nil)
+
+        expect(subscription.seats_remaining).to eq 10
+      end
+    end
+  end
+
   describe '#refresh_seat_attributes!' do
     subject(:gitlab_subscription) { create(:gitlab_subscription, seats: 3, max_seats_used: 2) }
 
