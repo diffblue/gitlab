@@ -4,9 +4,7 @@ describe('EnableFormTracking', () => {
   let formTrackingSpy;
 
   beforeEach(() => {
-    formTrackingSpy = jest
-      .spyOn(Tracking, 'enableFormTracking')
-      .mockImplementation(() => null);
+    formTrackingSpy = jest.spyOn(Tracking, 'enableFormTracking').mockImplementation(() => null);
   });
 
   it('initialized with the correct configuration', () => {
