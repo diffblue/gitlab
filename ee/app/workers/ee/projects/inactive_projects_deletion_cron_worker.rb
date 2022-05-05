@@ -19,6 +19,18 @@ module EE
 
         super
       end
+
+      override :send_notification
+      def send_notification(delay, project, user)
+        super
+
+        ::AuditEventService.new(
+          user,
+          project,
+          action: :custom,
+          custom_message: "Project is scheduled to be deleted on #{deletion_date} due to inactivity."
+        ).for_project.security_event
+      end
     end
   end
 end

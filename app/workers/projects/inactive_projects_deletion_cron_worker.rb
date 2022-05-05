@@ -16,6 +16,8 @@ module Projects
 
       admin_user = User.admins.humans.active.first
 
+      return unless admin_user
+
       notified_inactive_projects = deletion_warning_notified_projects
 
       Project.inactive.without_deleted.find_each(batch_size: 100).with_index do |project, index| # rubocop: disable CodeReuse/ActiveRecord
@@ -27,7 +29,7 @@ module Projects
           deletion_warning_email_sent_on = notified_inactive_projects["project:#{project.id}"]
 
           if send_deletion_warning_email?(deletion_warning_email_sent_on, project)
-            ::Projects::InactiveProjectsDeletionNotificationWorker.perform_in(delay, project.id, deletion_date)
+            send_notification(delay, project, admin_user)
           elsif deletion_warning_email_sent_on && delete_due_to_inactivity?(deletion_warning_email_sent_on)
             delete_redis_entry(project)
             delete_project(project, admin_user)
@@ -75,6 +77,10 @@ module Projects
       Gitlab::Redis::SharedState.with do |redis|
         redis.hdel('inactive_projects_deletion_warning_email_notified', "project:#{project.id}")
       end
+    end
+
+    def send_notification(delay, project, user)
+      ::Projects::InactiveProjectsDeletionNotificationWorker.perform_in(delay, project.id, deletion_date)
     end
   end
 end

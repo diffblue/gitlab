@@ -134,15 +134,4 @@ RSpec.describe Projects::InactiveProjectsDeletionCronWorker do
       end
     end
   end
-
-  private
-
-  def grace_months_after_deletion_notification
-    (::Gitlab::CurrentSettings.inactive_projects_delete_after_months -
-      ::Gitlab::CurrentSettings.inactive_projects_send_warning_email_after_months).months
-  end
-
-  def deletion_date
-    Date.parse(grace_months_after_deletion_notification.from_now.to_s).to_s
-  end
 end
