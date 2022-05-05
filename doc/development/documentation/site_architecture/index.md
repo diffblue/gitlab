@@ -231,31 +231,9 @@ If you don't specify `editor:`, the simple one is used by default.
 ## Algolia search engine
 
 The docs site uses [Algolia DocSearch](https://community.algolia.com/docsearch/)
-for its search function. This is how it works:
+for its search function.
 
-1. GitLab is a member of the [DocSearch program](https://community.algolia.com/docsearch/#join-docsearch-program),
-   which is the free tier of [Algolia](https://www.algolia.com/).
-1. Algolia hosts a [DocSearch configuration](https://github.com/algolia/docsearch-configs/blob/master/configs/gitlab.json)
-   for the GitLab docs site, and we've worked together to refine it.
-1. That [configuration](https://community.algolia.com/docsearch/config-file.html) is
-   parsed by their [crawler](https://community.algolia.com/docsearch/crawler-overview.html)
-   every 24h and [stores](https://community.algolia.com/docsearch/inside-the-engine.html)
-   the [DocSearch index](https://community.algolia.com/docsearch/how-do-we-build-an-index.html)
-   on [Algolia's servers](https://community.algolia.com/docsearch/faq.html#where-is-my-data-hosted%3F).
-1. On the docs side, we use a [DocSearch layout](https://gitlab.com/gitlab-org/gitlab-docs/blob/main/layouts/docsearch.html) which
-   is present on pretty much every page except <https://docs.gitlab.com/search/>,
-   which uses its [own layout](https://gitlab.com/gitlab-org/gitlab-docs/blob/main/layouts/instantsearch.html). In those layouts,
-   there's a JavaScript snippet which initiates DocSearch by using an API key
-   and an index name (`gitlab`) that are needed for Algolia to show the results.
-
-### Algolia notes for GitLab team members
-
-If you're a GitLab team member, find credentials for the Algolia dashboard
-in the shared [GitLab 1Password account](https://about.gitlab.com/handbook/security/#1password-for-teams).
-To receive weekly reports of the search usage, search the Google doc with
-title `Email, Slack, and GitLab Groups and Aliases`, search for `docsearch`,
-and add a comment with your email to be added to the alias that gets the weekly
-reports.
+Learn more in <https://gitlab.com/gitlab-org/gitlab-docs/-/blob/main/doc/docsearch.md>.
 
 ## Monthly release process (versions)
 
