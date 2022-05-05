@@ -6,6 +6,8 @@ import { nextTick } from 'vue';
 import siteProfilesFixtures from 'test_fixtures/graphql/security_configuration/dast_profiles/graphql/dast_site_profiles.query.graphql.basic.json';
 import scannerProfilesFixtures from 'test_fixtures/graphql/security_configuration/dast_profiles/graphql/dast_scanner_profiles.query.graphql.basic.json';
 import OnDemandScansForm from 'ee/on_demand_scans_form/components/on_demand_scans_form.vue';
+import ScannerProfileEmptyState from 'ee/on_demand_scans_form/components/profile_selector/scanner_profile_empty_state.vue';
+import SiteProfileEmptyState from 'ee/on_demand_scans_form/components/profile_selector/site_profile_empty_state.vue';
 import ScannerProfileSelector from 'ee/on_demand_scans_form/components/profile_selector/scanner_profile_selector.vue';
 import SiteProfileSelector from 'ee/on_demand_scans_form/components/profile_selector/site_profile_selector.vue';
 import ScanSchedule from 'ee/on_demand_scans_form/components/scan_schedule.vue';
@@ -89,6 +91,8 @@ describe('OnDemandScansForm', () => {
   const findSaveButton = () => findByTestId('on-demand-scan-save-button');
   const findCancelButton = () => findByTestId('on-demand-scan-cancel-button');
   const findProfileSummary = () => findByTestId('selected-profile-summary');
+  const findScannerProfileEmptyState = () => wrapper.findComponent(ScannerProfileEmptyState);
+  const findSiteProfileEmptyState = () => wrapper.findComponent(SiteProfileEmptyState);
 
   const hasSiteProfileAttributes = () => {
     expect(findScannerProfilesSelector().attributes('value')).toBe(dastScan.dastScannerProfile.id);
@@ -140,7 +144,11 @@ describe('OnDemandScansForm', () => {
     ]);
   };
 
-  const createComponentFactory = (mountFn = shallowMount) => (options = {}, withHandlers) => {
+  const createComponentFactory = (mountFn = shallowMount) => (
+    options = {},
+    withHandlers,
+    glFeatures = {},
+  ) => {
     localVue = createLocalVue();
     let defaultMocks = {
       $apollo: {
@@ -174,6 +182,7 @@ describe('OnDemandScansForm', () => {
             newScannerProfilePath,
             newSiteProfilePath,
             dastSiteValidationDocsPath,
+            ...glFeatures,
           },
           stubs: {
             GlFormInput: GlFormInputStub,
@@ -673,6 +682,43 @@ describe('OnDemandScansForm', () => {
       expect(wrapper.text()).toContain(
         'You must create a repository within your project to run an on-demand scan.',
       );
+    });
+  });
+
+  describe('empty state under feature flag', () => {
+    it('should show scanner empty state when no scanner is selected', () => {
+      createShallowComponent({}, false, {
+        glFeatures: {
+          dastUiRedesign: true,
+        },
+      });
+
+      const emptyState = findScannerProfileEmptyState();
+
+      expect(emptyState.exists()).toBe(true);
+      expect(emptyState.props('newProfilePath')).toBe(newScannerProfilePath);
+    });
+
+    it('should show site empty state when no scanner is selected', () => {
+      createShallowComponent(
+        {
+          data: {
+            scannerProfiles: [],
+            siteProfiles: [],
+          },
+        },
+        false,
+        {
+          glFeatures: {
+            dastUiRedesign: true,
+          },
+        },
+      );
+
+      const emptyState = findSiteProfileEmptyState();
+
+      expect(emptyState.exists()).toBe(true);
+      expect(emptyState.props('newProfilePath')).toBe(newSiteProfilePath);
     });
   });
 });
