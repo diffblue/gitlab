@@ -7,7 +7,7 @@ RSpec.describe Iterations::Cadences::UpdateService do
 
   let_it_be(:group, refind: true) { create(:group) }
   let_it_be(:user) { create(:user) }
-  let_it_be(:iteration_cadence, refind: true) { create(:iterations_cadence, group: group, start_date: Date.today, duration_in_weeks: 1, iterations_in_advance: 2) }
+  let_it_be(:iteration_cadence, refind: true) { create(:iterations_cadence, group: group, start_date: 7.days.from_now, duration_in_weeks: 1, iterations_in_advance: 2) }
 
   let(:params) do
     {
