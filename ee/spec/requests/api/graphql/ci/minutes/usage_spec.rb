@@ -10,10 +10,23 @@ RSpec.describe 'Query.ciMinutesUsage' do
   let_it_be_with_refind(:group) { create(:group, :public, name: 'test') }
 
   before(:all) do
-    create(:ci_namespace_monthly_usage, namespace: user.namespace, amount_used: 50, date: Date.new(2021, 5, 1))
-    create(:ci_project_monthly_usage, project: user_project, amount_used: 40, date: Date.new(2021, 5, 1))
+    create(:ci_namespace_monthly_usage,
+      namespace: user.namespace,
+      amount_used: 50,
+      shared_runners_duration: 100,
+      date: Date.new(2021, 5, 1))
 
-    create(:ci_namespace_monthly_usage, namespace: group, amount_used: 100, date: Date.new(2021, 6, 1))
+    create(:ci_project_monthly_usage,
+      project: user_project,
+      amount_used: 40,
+      shared_runners_duration: 80,
+      date: Date.new(2021, 5, 1))
+
+    create(:ci_namespace_monthly_usage,
+      namespace: group,
+      amount_used: 100,
+      shared_runners_duration: 200,
+      date: Date.new(2021, 6, 1))
   end
 
   subject(:result) { post_graphql(query, current_user: user) }
@@ -25,11 +38,13 @@ RSpec.describe 'Query.ciMinutesUsage' do
           ciMinutesUsage {
             nodes {
               minutes
+              sharedRunnersDuration
               month
               projects {
                 nodes {
                   name
                   minutes
+                  sharedRunnersDuration
                 }
               }
             }
@@ -45,9 +60,11 @@ RSpec.describe 'Query.ciMinutesUsage' do
       expect(monthly_usage).to contain_exactly({
         'month' => 'May',
         'minutes' => 50,
+        'sharedRunnersDuration' => 100,
         'projects' => { 'nodes' => [{
           'name' => 'Project 1',
-          'minutes' => 40
+          'minutes' => 40,
+          'sharedRunnersDuration' => 80
         }] }
       })
     end
@@ -77,6 +94,7 @@ RSpec.describe 'Query.ciMinutesUsage' do
           ciMinutesUsage(namespaceId: "#{namespace.to_global_id}") {
             nodes {
               minutes
+              sharedRunnersDuration
               month
             }
           }
@@ -96,7 +114,8 @@ RSpec.describe 'Query.ciMinutesUsage' do
           monthly_usage = graphql_data_at(:ci_minutes_usage, :nodes)
           expect(monthly_usage).to contain_exactly({
             'month' => 'June',
-            'minutes' => 100
+            'minutes' => 100,
+            'sharedRunnersDuration' => 200
           })
         end
       end
