@@ -27,6 +27,7 @@ module Security
     scope :for_project, -> (project_id) { where(project_id: project_id) }
     scope :for_namespace, -> (namespace_id) { where(namespace_id: namespace_id) }
     scope :with_project_and_namespace, -> { includes(:project, :namespace) }
+    scope :for_management_project, -> (management_project_id) { where(security_policy_management_project_id: management_project_id) }
     scope :with_outdated_configuration, -> do
       joins(:security_policy_management_project)
         .where(arel_table[:configured_at].lt(Project.arel_table[:last_repository_updated_at]).or(arel_table[:configured_at].eq(nil)))

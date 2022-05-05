@@ -10,8 +10,17 @@ module EE
         super
         ApprovalRules::FinalizeService.new(merge_request).execute
 
-        if compliance_violations_enabled?(merge_request.target_project.namespace)
+        target_project = merge_request.target_project
+        if compliance_violations_enabled?(target_project.namespace)
           ComplianceManagement::MergeRequests::ComplianceViolationsWorker.perform_async(merge_request.id)
+        end
+
+        return unless target_project.licensed_feature_available?(:security_orchestration_policies)
+
+        Security::OrchestrationPolicyConfiguration
+          .for_management_project(target_project)
+          .each do |configuration|
+          Security::SyncScanPoliciesWorker.perform_async(configuration.id)
         end
       end
 

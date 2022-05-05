@@ -53,5 +53,47 @@ RSpec.describe MergeRequests::PostMergeService do
         end
       end
     end
+
+    context 'security orchestration policy configuration' do
+      let(:security_orchestration_enabled) { true }
+      let(:policy_configuration) { create(:security_orchestration_policy_configuration, project: main_project, security_policy_management_project: project) }
+
+      let_it_be(:main_project) { create(:project, :repository) }
+      let_it_be(:another_project) { create(:project, :repository) }
+      let_it_be(:another_policy_configuration) { create(:security_orchestration_policy_configuration, project: another_project, security_policy_management_project: project) }
+
+      before do
+        stub_licensed_features(security_orchestration_policies: security_orchestration_enabled)
+      end
+
+      it 'executes Security::SyncScanResultPolicyWorker for each configuration project' do
+        expect(Security::SyncScanPoliciesWorker).to receive(:perform_async).with(policy_configuration.id)
+        expect(Security::SyncScanPoliciesWorker).to receive(:perform_async).with(another_policy_configuration.id)
+
+        subject
+      end
+
+      context 'without licensed feature' do
+        let(:security_orchestration_enabled) { false }
+
+        it 'does not execute Security::SyncScanResultPolicyWorker for each configuration project' do
+          expect(Security::SyncScanPoliciesWorker).not_to receive(:perform_async)
+
+          subject
+        end
+      end
+
+      context 'with unrelated policy configurations' do
+        let(:policy_configuration) { create(:security_orchestration_policy_configuration, project: main_project, security_policy_management_project: unrelated_project) }
+
+        let_it_be(:unrelated_project) { create(:project, :repository) }
+
+        it 'does not execute Security::SyncScanResultPolicyWorker for each configuration project' do
+          expect(Security::SyncScanPoliciesWorker).not_to receive(:perform_async).with(policy_configuration.id)
+
+          subject
+        end
+      end
+    end
   end
 end

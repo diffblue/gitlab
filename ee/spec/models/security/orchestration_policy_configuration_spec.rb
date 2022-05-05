@@ -69,6 +69,18 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
     end
   end
 
+  describe '.for_management_project' do
+    let_it_be(:security_orchestration_policy_configuration_1) { create(:security_orchestration_policy_configuration, security_policy_management_project: security_policy_management_project) }
+    let_it_be(:security_orchestration_policy_configuration_2) { create(:security_orchestration_policy_configuration, security_policy_management_project: security_policy_management_project) }
+    let_it_be(:security_orchestration_policy_configuration_3) { create(:security_orchestration_policy_configuration) }
+
+    subject { described_class.for_management_project(security_policy_management_project) }
+
+    it 'returns configuration for given the policy management project' do
+      is_expected.to contain_exactly(security_orchestration_policy_configuration_1, security_orchestration_policy_configuration_2)
+    end
+  end
+
   describe '.with_outdated_configuration' do
     let!(:security_orchestration_policy_configuration_1) { create(:security_orchestration_policy_configuration, configured_at: nil) }
     let!(:security_orchestration_policy_configuration_2) { create(:security_orchestration_policy_configuration, configured_at: Time.zone.now - 1.hour) }
