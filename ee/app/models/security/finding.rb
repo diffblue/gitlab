@@ -17,6 +17,11 @@ module Security
     belongs_to :scanner, class_name: 'Vulnerabilities::Scanner', inverse_of: :security_findings, optional: false
 
     has_one :build, through: :scan, disable_joins: true
+    has_many :feedbacks,
+             class_name: 'Vulnerabilities::Feedback',
+             inverse_of: :security_finding,
+             primary_key: 'uuid',
+             foreign_key: 'finding_uuid'
 
     enum confidence: ::Enums::Vulnerability.confidence_levels, _prefix: :confidence
     enum severity: ::Enums::Vulnerability.severity_levels, _prefix: :severity
@@ -35,7 +40,7 @@ module Security
             Scan.select(1)
                 .has_dismissal_feedback
                 .where('security_scans.id = security_findings.scan_id')
-                .where('vulnerability_feedback.project_fingerprint = security_findings.project_fingerprint'))
+                .where('vulnerability_feedback.finding_uuid = security_findings.uuid'))
     end
     scope :latest, -> { joins(:scan).merge(Security::Scan.latest_successful) }
     scope :ordered, -> { order(severity: :desc, confidence: :desc, id: :asc) }

@@ -11,8 +11,8 @@ RSpec.describe Vulnerabilities::DestroyDismissalFeedbackService do
     finding_1 = create(:vulnerabilities_finding, project: project)
     finding_2 = create(:vulnerabilities_finding, project: project)
 
-    create(:vulnerability_feedback, project: project, category: finding_1.report_type, project_fingerprint: finding_1.project_fingerprint)
-    create(:vulnerability_feedback, project: project, category: finding_2.report_type, project_fingerprint: finding_2.project_fingerprint)
+    create(:vulnerability_feedback, project: project, category: finding_1.report_type, finding_uuid: finding_1.uuid)
+    create(:vulnerability_feedback, project: project, category: finding_2.report_type, finding_uuid: finding_2.uuid)
     create(:vulnerability_feedback)
 
     vulnerability.findings << finding_1

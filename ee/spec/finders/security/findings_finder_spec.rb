@@ -47,28 +47,26 @@ RSpec.describe Security::FindingsFinder do
         Gitlab::Ci::Parsers::Security::Sast.parse!(sast_content, report_sast)
         report_sast.merge!(report_sast)
 
-        { artifact_ds => report_ds, artifact_sast => report_sast }.each do |artifact, report|
+        findings = { artifact_ds => report_ds, artifact_sast => report_sast }.collect do |artifact, report|
           scan = create(:security_scan, :latest_successful, scan_type: artifact.job.name, build: artifact.job)
 
-          report.findings.each_with_index do |finding, index|
+          report.findings.collect do |finding, index|
             create(:security_finding,
                    severity: finding.severity,
                    confidence: finding.confidence,
-                   project_fingerprint: finding.project_fingerprint,
                    uuid: finding.uuid,
                    deduplicated: true,
                    scan: scan)
           end
-        end
+        end.flatten
 
-        Security::Finding.by_project_fingerprints('204732fd9e78053dee33a0cad08930c129da197d')
-                         .update_all(deduplicated: false)
+        findings.second.update!(deduplicated: false)
 
         create(:vulnerability_feedback,
                :dismissal,
                project: pipeline.project,
                category: :sast,
-               project_fingerprint: 'db759283b7fb13eae48a3f60db4c7506cdab8f26')
+               finding_uuid: findings.first.uuid)
       end
 
       before do
@@ -201,105 +199,60 @@ RSpec.describe Security::FindingsFinder do
       end
 
       describe '#findings' do
-        subject { finder_result.findings.map(&:project_fingerprint) }
+        subject { finder_result.findings.map(&:uuid) }
 
         context 'with the default parameters' do
-          let(:expected_fingerprints) do
-            %w[
-              4ae096451135db224b9e16818baaca8096896522
-              0bfcfbb70b15a7cecef9a1ea39df15ecfd88949f
-              157f362acf654c60e224400f59a088e1c01b369f
-              b9c0d1cdc7cb9c180ebb6981abbddc2df0172509
-              baf3e36cda35331daed7a3e80155533d552844fa
-              3204893d5894c74aaee86ce5bc28427f9f14e512
-              98366a28fa80b23a1dafe2b36e239a04909495c4
-              9a644ee1b89ac29d6175dc1170914f47b0531635
-            ]
-          end
+          let(:expected_uuids) { Security::Finding.pluck(:uuid) - [Security::Finding.second[:uuid]] }
 
-          it { is_expected.to match_array(expected_fingerprints) }
+          it { is_expected.to match_array(expected_uuids) }
         end
 
         context 'when the page is provided' do
           let(:page) { 2 }
           # Limit per_page to force pagination on smaller dataset
           let(:per_page) { 2 }
-          let(:expected_fingerprints) do
-            %w[
-              0bfcfbb70b15a7cecef9a1ea39df15ecfd88949f
-              baf3e36cda35331daed7a3e80155533d552844fa
-            ]
-          end
+          let(:expected_uuids) { Security::Finding.pluck(:uuid)[4..5] }
 
-          it { is_expected.to match_array(expected_fingerprints) }
+          it { is_expected.to match_array(expected_uuids) }
         end
 
         context 'when the per_page is provided' do
           let(:per_page) { 1 }
-          let(:expected_fingerprints) do
-            %w[
-              4ae096451135db224b9e16818baaca8096896522
-            ]
-          end
+          let(:expected_uuids) { [Security::Finding.pluck(:uuid).first] }
 
-          it { is_expected.to match_array(expected_fingerprints) }
+          it { is_expected.to match_array(expected_uuids) }
         end
 
         context 'when the `severity_levels` is provided' do
           let(:severity_levels) { [:medium] }
-          let(:expected_fingerprints) do
-            %w[
-              0bfcfbb70b15a7cecef9a1ea39df15ecfd88949f
-              9a644ee1b89ac29d6175dc1170914f47b0531635
-              b9c0d1cdc7cb9c180ebb6981abbddc2df0172509
-              baf3e36cda35331daed7a3e80155533d552844fa
-            ]
-          end
+          let(:expected_uuids) { Security::Finding.where(severity: 'medium').pluck(:uuid) }
 
-          it { is_expected.to match_array(expected_fingerprints) }
+          it { is_expected.to match_array(expected_uuids) }
         end
 
         context 'when the `confidence_levels` is provided' do
           let(:confidence_levels) { [:low] }
-          let(:expected_fingerprints) do
-            %w[
-              98366a28fa80b23a1dafe2b36e239a04909495c4
-            ]
-          end
+          let(:expected_uuids) { Security::Finding.where(confidence: 'low' ).pluck(:uuid) }
 
-          it { is_expected.to match_array(expected_fingerprints) }
+          it { is_expected.to match_array(expected_uuids) }
         end
 
         context 'when the `report_types` is provided' do
           let(:report_types) { :dependency_scanning }
-          let(:expected_fingerprints) do
-            %w[
-              3204893d5894c74aaee86ce5bc28427f9f14e512
-              157f362acf654c60e224400f59a088e1c01b369f
-              4ae096451135db224b9e16818baaca8096896522
-            ]
+          let(:expected_uuids) do
+            Security::Finding.by_scan(Security::Scan.find_by(scan_type: 'dependency_scanning')).pluck(:uuid) -
+              [Security::Finding.second[:uuid]]
           end
 
-          it { is_expected.to match_array(expected_fingerprints) }
+          it { is_expected.to match_array(expected_uuids) }
         end
 
         context 'when the `scope` is provided as `all`' do
           let(:scope) { 'all' }
 
-          let(:expected_fingerprints) do
-            %w[
-              4ae096451135db224b9e16818baaca8096896522
-              157f362acf654c60e224400f59a088e1c01b369f
-              baf3e36cda35331daed7a3e80155533d552844fa
-              0bfcfbb70b15a7cecef9a1ea39df15ecfd88949f
-              98366a28fa80b23a1dafe2b36e239a04909495c4
-              b9c0d1cdc7cb9c180ebb6981abbddc2df0172509
-              3204893d5894c74aaee86ce5bc28427f9f14e512
-              9a644ee1b89ac29d6175dc1170914f47b0531635
-            ]
-          end
+          let(:expected_uuids) { Security::Finding.pluck(:uuid) - [Security::Finding.second[:uuid]] }
 
-          it { is_expected.to match_array(expected_fingerprints) }
+          it { is_expected.to match_array(expected_uuids) }
         end
 
         context 'when there is a retried build' do
@@ -307,12 +260,9 @@ RSpec.describe Security::FindingsFinder do
           let(:artifact) { create(:ee_ci_job_artifact, :dependency_scanning, job: retried_build) }
           let(:report) { create(:ci_reports_security_report, pipeline: pipeline, type: :dependency_scanning) }
           let(:report_types) { :dependency_scanning }
-          let(:expected_fingerprints) do
-            %w[
-              3204893d5894c74aaee86ce5bc28427f9f14e512
-              157f362acf654c60e224400f59a088e1c01b369f
-              4ae096451135db224b9e16818baaca8096896522
-            ]
+          let(:expected_uuids) do
+            Security::Finding.by_scan(Security::Scan.find_by(scan_type: 'dependency_scanning')).pluck(:uuid) -
+              [Security::Finding.second[:uuid]]
           end
 
           before do
@@ -326,29 +276,22 @@ RSpec.describe Security::FindingsFinder do
               create(:security_finding,
                      severity: finding.severity,
                      confidence: finding.confidence,
-                     project_fingerprint: finding.project_fingerprint,
                      uuid: finding.uuid,
                      deduplicated: true,
                      scan: scan)
             end
           end
 
-          it { is_expected.to match_array(expected_fingerprints) }
+          it { is_expected.to match_array(expected_uuids) }
         end
 
         context 'when the `security_findings` records have `overridden_uuid`s' do
           let(:security_findings) { Security::Finding.by_build_ids(build_1) }
-          let(:expected_fingerprints) do
-            %w[
-              4ae096451135db224b9e16818baaca8096896522
-              0bfcfbb70b15a7cecef9a1ea39df15ecfd88949f
-              157f362acf654c60e224400f59a088e1c01b369f
-              b9c0d1cdc7cb9c180ebb6981abbddc2df0172509
-              baf3e36cda35331daed7a3e80155533d552844fa
-              3204893d5894c74aaee86ce5bc28427f9f14e512
-              98366a28fa80b23a1dafe2b36e239a04909495c4
-              9a644ee1b89ac29d6175dc1170914f47b0531635
-            ]
+
+          let(:expected_uuids) do
+            Security::Finding.where(overridden_uuid: nil).pluck(:uuid)
+              .concat(Security::Finding.where.not(overridden_uuid: nil).pluck(:overridden_uuid)) -
+              [Security::Finding.second[:overridden_uuid]]
           end
 
           before do
@@ -357,13 +300,13 @@ RSpec.describe Security::FindingsFinder do
             end
           end
 
-          it { is_expected.to match_array(expected_fingerprints) }
+          it { is_expected.to match_array(expected_uuids) }
         end
 
         context 'when a build has more than one security report artifacts' do
           let(:report_types) { :secret_detection }
           let(:secret_detection_report) { create(:ci_reports_security_report, pipeline: pipeline, type: :secret_detection) }
-          let(:expected_fingerprints) { secret_detection_report.findings.map(&:project_fingerprint) }
+          let(:expected_uuids) { secret_detection_report.findings.map(&:uuid) }
 
           before do
             scan = create(:security_scan, :latest_successful, scan_type: :secret_detection, build: build_2)
@@ -376,14 +319,27 @@ RSpec.describe Security::FindingsFinder do
               create(:security_finding,
                      severity: finding.severity,
                      confidence: finding.confidence,
-                     project_fingerprint: finding.project_fingerprint,
                      uuid: finding.uuid,
                      deduplicated: true,
                      scan: scan)
             end
           end
 
-          it { is_expected.to match_array(expected_fingerprints) }
+          it { is_expected.to match_array(expected_uuids) }
+        end
+
+        context 'when a vulnerability already exist for a security finding' do
+          let(:vulnerability) { create(:vulnerability, :with_finding, project: pipeline.project) }
+
+          subject { finder_result.findings.map(&:vulnerability).first }
+
+          before do
+            vulnerability.finding.update_attribute(:uuid, Security::Finding.first.uuid)
+          end
+
+          describe 'the vulnerability is included in results' do
+            it { is_expected.to eq(vulnerability) }
+          end
         end
       end
     end

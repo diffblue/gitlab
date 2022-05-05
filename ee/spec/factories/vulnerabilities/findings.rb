@@ -177,7 +177,7 @@ FactoryBot.define do
         create(:vulnerability_feedback,
                :dismissal,
                project: finding.project,
-               project_fingerprint: finding.project_fingerprint)
+               finding_uuid: finding.uuid)
       end
     end
 

@@ -39,6 +39,8 @@ module Vulnerabilities
 
     has_many :vulnerability_flags, class_name: 'Vulnerabilities::Flag', inverse_of: :finding, foreign_key: 'vulnerability_occurrence_id'
 
+    has_many :feedbacks, class_name: 'Vulnerabilities::Feedback', inverse_of: :finding, primary_key: 'uuid', foreign_key: 'finding_uuid'
+
     has_one :finding_evidence, class_name: 'Vulnerabilities::Finding::Evidence', inverse_of: :finding, foreign_key: 'vulnerability_occurrence_id'
 
     serialize :config_options, Serializers::Json # rubocop:disable Cop/ActiveRecordSerialize
@@ -92,7 +94,7 @@ module Vulnerabilities
     scope :eager_load_comparison_entities, -> { includes(:scanner, :primary_identifier) }
 
     scope :all_preloaded, -> do
-      preload(:scanner, :identifiers, project: [:namespace, :project_feature])
+      preload(:scanner, :identifiers, :feedbacks, project: [:namespace, :project_feature])
     end
 
     scope :scoped_project, -> { where('vulnerability_occurrences.project_id = projects.id') }
@@ -138,11 +140,8 @@ module Vulnerabilities
     end
 
     def self.related_dismissal_feedback
-      Feedback
-      .where(arel_table[:report_type].eq(Feedback.arel_table[:category]))
-      .where(arel_table[:project_id].eq(Feedback.arel_table[:project_id]))
-      .where(Arel::Nodes::NamedFunction.new('ENCODE', [arel_table[:project_fingerprint], Arel::Nodes::SqlLiteral.new("'HEX'")]).eq(Feedback.arel_table[:project_fingerprint]))
-      .for_dismissal
+      Feedback.where('vulnerability_occurrences.uuid = vulnerability_feedback.finding_uuid::text')
+              .for_dismissal
     end
     private_class_method :related_dismissal_feedback
 
@@ -159,21 +158,13 @@ module Vulnerabilities
     end
 
     def load_feedback
-      BatchLoader.for(finding_key).batch do |finding_keys, loader|
-        project_ids = finding_keys.map { |key| key[:project_id] }
-        categories = finding_keys.map { |key| key[:category] }
-        fingerprints = finding_keys.map { |key| key[:project_fingerprint] }
+      BatchLoader.for(uuid).batch do |uuids, loader|
+        finding_feedbacks = Vulnerabilities::Feedback.all_preloaded.where(finding_uuid: uuids.uniq)
 
-        feedback = Vulnerabilities::Feedback.all_preloaded.where(
-          project_id: project_ids.uniq,
-          category: categories.uniq,
-          project_fingerprint: fingerprints.uniq
-        ).to_a
-
-        finding_keys.each do |finding_key|
+        uuids.each do |finding_uuid|
           loader.call(
-            finding_key,
-            feedback.select { |f| finding_key == f.finding_key }
+            finding_uuid,
+            finding_feedbacks.select { |f| finding_uuid == f.finding_uuid }
           )
         end
       end
@@ -397,16 +388,6 @@ module Vulnerabilities
 
     def primary_identifier_fingerprint
       identifiers.first&.fingerprint
-    end
-
-    private
-
-    def finding_key
-      {
-        project_id: project_id,
-        category: report_type,
-        project_fingerprint: project_fingerprint
-      }
     end
   end
 end

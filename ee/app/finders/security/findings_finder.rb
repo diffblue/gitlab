@@ -59,7 +59,7 @@ module Security
 
       Vulnerabilities::Finding.new(finding_data).tap do |finding|
         finding.location_fingerprint = report_finding.location.fingerprint
-        finding.vulnerability = vulnerability_for(security_finding)
+        finding.vulnerability = vulnerability_for(security_finding.uuid)
         finding.project = project
         finding.sha = pipeline.sha
         finding.scanner = security_finding.scanner
@@ -82,8 +82,8 @@ module Security
       report_findings.dig(security_finding.build.id, lookup_uuid)
     end
 
-    def vulnerability_for(security_finding)
-      existing_vulnerabilities.dig(security_finding.scan.scan_type, security_finding.project_fingerprint)&.first
+    def vulnerability_for(finding_uuid)
+      existing_vulnerabilities[finding_uuid]
     end
 
     def calculate_false_positive?
@@ -93,20 +93,13 @@ module Security
     def existing_vulnerabilities
       @existing_vulnerabilities ||= begin
         project.vulnerabilities
-               .with_findings
-               .with_report_types(loaded_report_types)
-               .by_project_fingerprints(loaded_project_fingerprints)
-               .group_by(&:report_type)
-               .transform_values { |vulnerabilties| vulnerabilties.group_by { |v| v.finding.project_fingerprint } }
+               .with_findings_by_uuid(loaded_uuids)
+               .index_by(&:finding_uuid)
       end
     end
 
-    def loaded_report_types
-      security_findings.map(&:scan_type).uniq
-    end
-
-    def loaded_project_fingerprints
-      security_findings.map(&:project_fingerprint)
+    def loaded_uuids
+      security_findings.map(&:uuid)
     end
 
     def report_findings

@@ -9,6 +9,16 @@ module Vulnerabilities
     belongs_to :issue
     belongs_to :merge_request
     belongs_to :pipeline, class_name: 'Ci::Pipeline', foreign_key: :pipeline_id
+    belongs_to :finding,
+               primary_key: :uuid,
+               foreign_key: :finding_uuid,
+               class_name: 'Vulnerabilities::Finding',
+               inverse_of: :feedbacks
+    belongs_to :security_finding,
+               primary_key: :uuid,
+               foreign_key: :finding_uuid,
+               class_name: 'Security::Finding',
+               inverse_of: :feedbacks
 
     belongs_to :comment_author, class_name: 'User'
 
@@ -75,27 +85,11 @@ module Vulnerabilities
       comment.present? && comment_author.present?
     end
 
-    def finding_key
-      {
-        project_id: project_id,
-        category: category,
-        project_fingerprint: project_fingerprint
-      }
-    end
-
     def touch_pipeline
       pipeline&.touch if pipeline&.needs_touch?
     rescue ActiveRecord::StaleObjectError
       # Often the pipeline has already been updated by creating vulnerability feedback
       # in batches. In this case, we can ignore the exception as it's already been touched.
-    end
-
-    def finding
-      Finding.find_by(
-        project_id: project_id,
-        report_type: category,
-        project_fingerprint: project_fingerprint
-      )
     end
   end
 end
