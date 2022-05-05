@@ -28379,6 +28379,8 @@ CREATE INDEX index_namespace_admin_notes_on_namespace_id ON namespace_admin_note
 
 CREATE UNIQUE INDEX index_namespace_aggregation_schedules_on_namespace_id ON namespace_aggregation_schedules USING btree (namespace_id);
 
+CREATE INDEX index_namespace_ci_cd_settings_on_stale_runner_pruning_enabled ON namespace_ci_cd_settings USING btree (allow_stale_runner_pruning) WHERE (allow_stale_runner_pruning = true);
+
 CREATE UNIQUE INDEX index_namespace_root_storage_statistics_on_namespace_id ON namespace_root_storage_statistics USING btree (namespace_id);
 
 CREATE UNIQUE INDEX index_namespace_statistics_on_namespace_id ON namespace_statistics USING btree (namespace_id);
