@@ -204,6 +204,69 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql do
     end
   end
 
+  describe '#subscription_seat_usage_alerts_eligibility' do
+    let(:query) do
+      <<~GQL
+        query($namespaceId: ID!) {
+          subscription(namespaceId: $namespaceId) {
+            eligibleForSeatUsageAlerts
+          }
+        }
+      GQL
+    end
+
+    it 'returns success when a valid license key is specified' do
+      expected_args = {
+        query: query,
+        variables: {
+          namespaceId: 'namespace-id'
+        }
+      }
+
+      expected_response = {
+        success: true,
+        data: {
+          "data" => {
+            "subscription" => {
+              "eligibleForSeatUsageAlerts" => true
+            }
+          }
+        }
+      }
+
+      expect(client).to receive(:execute_graphql_query).with(expected_args).and_return(expected_response)
+
+      result = client.subscription_seat_usage_alerts_eligibility('namespace-id')
+
+      expect(result).to eq({ success: true, eligible_for_seat_usage_alerts: true })
+    end
+
+    it 'returns failure when license_key is invalid' do
+      error = "some error"
+      expect(client).to receive(:execute_graphql_query).and_return(
+        {
+          success: false,
+          data: {
+            errors: error
+          }
+        }
+      )
+
+      result = client.subscription_seat_usage_alerts_eligibility('failing-namespace-id')
+
+      expect(result).to eq({ success: false, errors: error })
+    end
+
+    context 'with no namespace_id' do
+      it 'returns failure' do
+        expect(client).not_to receive(:execute_graphql_query)
+
+        expect(client.subscription_seat_usage_alerts_eligibility(nil))
+          .to eq({ success: false, errors: 'Must provide a namespace ID' })
+      end
+    end
+  end
+
   describe '#get_plans' do
     subject { client.get_plans(tags: ['test-plan-id']) }
 

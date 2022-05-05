@@ -86,6 +86,30 @@ module Gitlab
             end
           end
 
+          def subscription_seat_usage_alerts_eligibility(namespace_id)
+            return error('Must provide a namespace ID') unless namespace_id
+
+            query = <<~GQL
+              query($namespaceId: ID!) {
+                subscription(namespaceId: $namespaceId) {
+                  eligibleForSeatUsageAlerts
+                }
+              }
+            GQL
+
+            response = execute_graphql_query({ query: query, variables: { namespaceId: namespace_id } })
+
+            if response[:success]
+              {
+                success: true,
+                eligible_for_seat_usage_alerts: response.dig(:data, 'data', 'subscription',
+                                                             'eligibleForSeatUsageAlerts')
+              }
+            else
+              error(response.dig(:data, :errors))
+            end
+          end
+
           def subscription_last_term(namespace_id)
             return error('Must provide a namespace ID') unless namespace_id
 
