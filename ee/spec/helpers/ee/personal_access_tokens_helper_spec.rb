@@ -153,37 +153,21 @@ RSpec.describe EE::PersonalAccessTokensHelper do
     it_behaves_like 'feature availability'
   end
 
-  describe '#enforce_pat_expiration_feature_available?' do
-    subject { helper.enforce_pat_expiration_feature_available? }
-
-    let(:feature) { :enforce_personal_access_token_expiration }
-
-    it_behaves_like 'feature availability'
-  end
-
   describe '#token_expiry_banner_message' do
     subject { helper.token_expiry_banner_message(user) }
 
     let_it_be(:user) { create(:user) }
 
-    context 'when user has an expired token requiring rotation' do
-      let_it_be(:expired_pat) { create(:personal_access_token, :expired, user: user, created_at: 1.month.ago) }
-
-      it { is_expected.to eq('At least one of your Personal Access Tokens is expired, but expiration enforcement is disabled. %{generate_new}') }
-    end
-
     context 'when user has an expiring token requiring rotation' do
       let_it_be(:expiring_pat) { create(:personal_access_token, expires_at: 3.days.from_now, user: user, created_at: 1.month.ago) }
 
-      it { is_expected.to eq('At least one of your Personal Access Tokens will expire soon, but expiration enforcement is disabled. %{generate_new}') }
+      it { is_expected.to eq('At least one of your Personal Access Tokens will expire soon. %{generate_new}') }
     end
-  end
 
-  describe '#personal_access_token_expiration_enforced' do
-    it 'calls the class method expiration_enforced?' do
-      expect(::PersonalAccessToken).to receive(:expiration_enforced?)
+    context 'when user has an expired token requiring rotation' do
+      let_it_be(:expiring_pat) { create(:personal_access_token, :expired, user: user, created_at: 1.month.ago) }
 
-      helper.personal_access_token_expiration_enforced?
+      it { is_expected.to eq('At least one of your Personal Access Tokens is expired. %{generate_new}') }
     end
   end
 end

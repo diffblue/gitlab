@@ -216,63 +216,19 @@ RSpec.describe EE::Users::CalloutsHelper do
     end
   end
 
-  describe '.show_token_expiry_notification?' do
-    subject { helper.show_token_expiry_notification? }
-
-    let_it_be(:user) { create(:user) }
-
-    where(:expiration_enforced?, :dismissed_callout?, :active?, :result) do
-      true  | true  | true  | false
-      true  | true  | false | false
-      true  | false | true  | false
-      false | true  | true  | false
-      true  | false | false | false
-      false | false | true  | true
-      false | true  | false | false
-      false | false | false | false
-    end
-
-    with_them do
-      before do
-        allow(helper).to receive(:current_user).and_return(user)
-        allow(user).to receive(:active?).and_return(active?)
-        allow(helper).to receive(:token_expiration_enforced?).and_return(expiration_enforced?)
-        allow(user).to receive(:dismissed_callout?).and_return(dismissed_callout?)
-      end
-
-      it do
-        expect(subject).to be result
-      end
-
-      context 'when user is nil' do
-        before do
-          allow(helper).to receive(:current_user).and_return(nil)
-          allow(helper).to receive(:token_expiration_enforced?).and_return(false)
-        end
-
-        it do
-          expect(subject).to be false
-        end
-      end
-    end
-  end
-
   describe '.show_profile_token_expiry_notification?' do
     subject { helper.show_profile_token_expiry_notification? }
 
     let_it_be(:user) { create(:user) }
 
-    where(:expiration_enforced?, :dismissed_callout?, :result) do
-      true  | true  | false
-      true  | false | false
-      false | true  | false
-      false | false | true
+    where(:dismissed_callout?, :result) do
+      true  | false
+      false | true
     end
 
     with_them do
       before do
         allow(helper).to receive(:current_user).and_return(user)
-        allow(helper).to receive(:token_expiration_enforced?).and_return(expiration_enforced?)
         allow(helper).to receive(:user_dismissed?).and_return(dismissed_callout?)
       end
 

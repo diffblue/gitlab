@@ -21,21 +21,12 @@ module EE
       ::License.feature_available?(:personal_access_token_expiration_policy)
     end
 
-    override :personal_access_token_expiration_enforced?
-    def personal_access_token_expiration_enforced?
-      ::PersonalAccessToken.expiration_enforced?
-    end
-
-    def enforce_pat_expiration_feature_available?
-      ::PersonalAccessToken.enforce_pat_expiration_feature_available?
-    end
-
     def token_expiry_banner_message(user)
       verifier = ::PersonalAccessTokens::RotationVerifierService.new(user)
 
-      return _('At least one of your Personal Access Tokens is expired, but expiration enforcement is disabled. %{generate_new}') if verifier.expired?
+      return _('At least one of your Personal Access Tokens is expired. %{generate_new}') if verifier.expired?
 
-      return _('At least one of your Personal Access Tokens will expire soon, but expiration enforcement is disabled. %{generate_new}') if verifier.expiring_soon?
+      return _('At least one of your Personal Access Tokens will expire soon. %{generate_new}') if verifier.expiring_soon?
     end
 
     private

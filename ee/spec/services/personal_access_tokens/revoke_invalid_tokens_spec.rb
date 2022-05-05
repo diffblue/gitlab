@@ -57,26 +57,6 @@ RSpec.describe PersonalAccessTokens::RevokeInvalidTokens do
 
         it_behaves_like 'revokes token'
 
-        context 'enforcement of personal access token expiry' do
-          using RSpec::Parameterized::TableSyntax
-
-          where(:licensed, :application_setting, :behavior) do
-            true  | true   | 'revokes token'
-            true  | false  | 'does not revoke token'
-            false | true   | 'revokes token'
-            false | false  | 'revokes token'
-          end
-
-          with_them do
-            before do
-              stub_licensed_features(enforce_personal_access_token_expiration: licensed)
-              stub_application_setting(enforce_pat_expiration: application_setting)
-
-              it_behaves_like behavior
-            end
-          end
-        end
-
         context 'user optout for notifications' do
           before do
             allow(user).to receive(:can?).and_return(false)

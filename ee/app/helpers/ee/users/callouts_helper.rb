@@ -65,16 +65,8 @@ module EE
         render 'shared/two_factor_auth_recovery_settings_check'
       end
 
-      def show_token_expiry_notification?
-        return false unless current_user
-
-        !token_expiration_enforced? &&
-          current_user.active? &&
-          !user_dismissed?(PERSONAL_ACCESS_TOKEN_EXPIRY, 1.week.ago)
-      end
-
       def show_profile_token_expiry_notification?
-        !token_expiration_enforced? && !user_dismissed?(PROFILE_PERSONAL_ACCESS_TOKEN_EXPIRY, 1.day.ago)
+        !user_dismissed?(PROFILE_PERSONAL_ACCESS_TOKEN_EXPIRY, 1.day.ago)
       end
 
       def show_new_user_signups_cap_reached?
@@ -155,13 +147,6 @@ module EE
 
       def show_ultimate_trial_suitable_env?
         ::Gitlab.com? && !::Gitlab::Database.read_only?
-      end
-
-      def token_expiration_enforced?
-        ::PersonalAccessToken.expiration_enforced?
-      end
-
-      def current_settings
       end
 
       def callouts_trials_link_url
