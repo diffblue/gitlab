@@ -1,64 +1,27 @@
 # frozen_string_literal: true
 
 module Namespaces
-  class PreviewFreeUserCapAlertComponent < ViewComponent::Base
-    # @param [Namespace or Group] namespace
-    # @param [User] user
-    # @param [String] content_class
-    def initialize(namespace:, user:, content_class:)
-      @namespace = namespace
-      @user = user
-      @content_class = content_class
-    end
-
+  class PreviewFreeUserCapAlertComponent < FreeUserCapAlertComponent
     private
 
     PREVIEW_USER_OVER_LIMIT_FREE_PLAN_ALERT = 'preview_user_over_limit_free_plan_alert'
-    BLOG_URL = 'https://about.gitlab.com/blog/2022/03/24/efficient-free-tier'
     IGNORE_DISMISSAL_EARLIER_THAN = 14.days.ago
+    BLOG_URL = 'https://about.gitlab.com/blog/2022/03/24/efficient-free-tier'
 
-    attr_reader :namespace, :user, :content_class
-
-    def render?
-      return false unless user
-      return false if preview_dismissed?
-      return false unless Ability.allowed?(user, :owner_access, namespace)
-
+    def breached_cap_limit?
       ::Namespaces::PreviewFreeUserCap.new(namespace).over_limit?
     end
 
-    def preview_dismissed?
-      if namespace.user_namespace?
-        user.dismissed_callout?(feature_name: PREVIEW_USER_OVER_LIMIT_FREE_PLAN_ALERT,
-                                ignore_dismissal_earlier_than: IGNORE_DISMISSAL_EARLIER_THAN)
-      else
-        user.dismissed_callout_for_group?(feature_name: PREVIEW_USER_OVER_LIMIT_FREE_PLAN_ALERT,
-                                          group: namespace,
-                                          ignore_dismissal_earlier_than: IGNORE_DISMISSAL_EARLIER_THAN)
-      end
+    def variant
+      :info
     end
 
-    def alert_data
-      base_data = {
-        track_action: 'render',
-        track_label: 'user_limit_banner',
-        feature_id: PREVIEW_USER_OVER_LIMIT_FREE_PLAN_ALERT,
-        testid: 'user-over-limit-free-plan-alert'
-      }
-
-      if namespace.user_namespace?
-        base_data.merge(dismiss_endpoint: callouts_path)
-      else
-        base_data.merge(dismiss_endpoint: group_callouts_path, group_id: namespace.id)
-      end
+    def ignore_dismissal_earlier_than
+      IGNORE_DISMISSAL_EARLIER_THAN
     end
 
-    def close_button_data
-      {
-        track_action: 'dismiss_banner',
-        track_label: 'user_limit_banner',
-        testid: 'user-over-limit-free-plan-dismiss'
-      }
+    def feature_name
+      PREVIEW_USER_OVER_LIMIT_FREE_PLAN_ALERT
     end
 
     def alert_attributes
@@ -78,19 +41,11 @@ module Namespaces
             link_start: '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: BLOG_URL },
             link_end: link_end,
             move_link_start: '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % {
-              url: help_page_path('user/project/settings/index',
-                                  anchor: 'transferring-an-existing-project-into-another-namespace')
+              url: move_url
             },
             move_link_end: link_end
           },
-          primary_cta: (link_to _('View all personal projects'),
-                                user_projects_path(user.username),
-                                class: 'btn gl-alert-action btn-info btn-md gl-button',
-                                data: {
-                                  track_action: 'click_button',
-                                  track_label: 'view_personal_projects',
-                                  testid: 'user-over-limit-primary-cta'
-                                })
+          primary_cta: user_namespace_primary_cta
         }
       else
         {
@@ -113,20 +68,8 @@ module Namespaces
             link_start: '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: BLOG_URL },
             link_end: link_end
           },
-          primary_cta: (link_to _('Manage members'),
-                                group_usage_quotas_path(namespace),
-                                class: 'btn gl-alert-action btn-info btn-md gl-button',
-                                data: {
-                                  track_action: 'click_button',
-                                  track_label: 'manage_members',
-                                  testid: 'user-over-limit-primary-cta'
-                                }),
-          secondary_cta: (link_to _('Explore paid plans'),
-                                  group_billings_path(namespace),
-                                  class: 'btn gl-alert-action btn-default btn-md gl-button',
-                                  data: { track_action: 'click_button',
-                                          track_label: 'explore_paid_plans',
-                                          testid: 'user-over-limit-secondary-cta' })
+          primary_cta: namespace_primary_cta,
+          secondary_cta: namespace_secondary_cta
         }
       end
     end
