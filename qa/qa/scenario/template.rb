@@ -35,9 +35,14 @@ module QA
         Support::KnapsackReport.configure!
 
         ##
+        # Configure browser
+        #
+        Runtime::Browser.configure!
+
+        ##
         # Perform before hooks, which are different for CE and EE
         #
-        Runtime::Release.perform_before_hooks unless Runtime::Env.dry_run
+        QA::Runtime::Release.perform_before_hooks unless QA::Runtime::Env.dry_run
 
         Runtime::Feature.enable(options[:enable_feature]) if options.key?(:enable_feature)
 
