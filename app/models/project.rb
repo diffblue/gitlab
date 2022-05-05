@@ -2896,8 +2896,6 @@ class Project < ApplicationRecord
   end
 
   def inactive?
-    return false unless Feature.enabled?(:inactive_projects_deletion, root_namespace, default_enabled: :yaml)
-
     (statistics || build_statistics).storage_size > ::Gitlab::CurrentSettings.inactive_projects_min_size_mb.megabytes &&
       last_activity_at < ::Gitlab::CurrentSettings.inactive_projects_send_warning_email_after_months.months.ago
   end

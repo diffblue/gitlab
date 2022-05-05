@@ -872,8 +872,6 @@ module EE
 
     override :inactive?
     def inactive?
-      return false unless ::Feature.enabled?(:inactive_projects_deletion, root_namespace, default_enabled: :yaml)
-
       ::Gitlab.com? && root_namespace.paid? ? false : super
     end
 

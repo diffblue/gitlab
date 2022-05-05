@@ -3337,49 +3337,33 @@ RSpec.describe Project do
   end
 
   describe '#inactive?' do
-    context 'when feature flag is disabled' do
-      before do
-        stub_feature_flags(inactive_projects_deletion: false)
-      end
-
-      it 'returns false' do
-        expect(project.inactive?).to eq(false)
-      end
-    end
-
-    context 'when feature flag is enabled' do
-      before do
-        stub_feature_flags(inactive_projects_deletion: true)
-      end
-
-      context 'when Gitlab.com', :saas do
-        context 'when project belongs to paid namespace' do
-          before do
-            stub_application_setting(inactive_projects_min_size_mb: 5)
-            stub_application_setting(inactive_projects_send_warning_email_after_months: 24)
-          end
-
-          it 'returns false' do
-            ultimate_group = create(:group_with_plan, plan: :ultimate_plan)
-            ultimate_project = create(:project, last_activity_at: 3.years.ago, namespace: ultimate_group)
-
-            expect(ultimate_project.inactive?).to eq(false)
-          end
+    context 'when Gitlab.com', :saas do
+      context 'when project belongs to paid namespace' do
+        before do
+          stub_application_setting(inactive_projects_min_size_mb: 5)
+          stub_application_setting(inactive_projects_send_warning_email_after_months: 24)
         end
 
-        context 'when project belongs to free namespace' do
-          let_it_be(:no_plan_group) { create(:group_with_plan, plan: nil) }
-          let_it_be_with_reload(:project) { create(:project, namespace: no_plan_group) }
+        it 'returns false' do
+          ultimate_group = create(:group_with_plan, plan: :ultimate_plan)
+          ultimate_project = create(:project, last_activity_at: 3.years.ago, namespace: ultimate_group)
 
-          it_behaves_like 'returns true if project is inactive'
+          expect(ultimate_project.inactive?).to eq(false)
         end
       end
 
-      context 'when not Gitlab.com' do
-        let_it_be_with_reload(:project) { create(:project, name: 'test-project') }
+      context 'when project belongs to free namespace' do
+        let_it_be(:no_plan_group) { create(:group_with_plan, plan: nil) }
+        let_it_be_with_reload(:project) { create(:project, namespace: no_plan_group) }
 
         it_behaves_like 'returns true if project is inactive'
       end
+    end
+
+    context 'when not Gitlab.com' do
+      let_it_be_with_reload(:project) { create(:project, name: 'test-project') }
+
+      it_behaves_like 'returns true if project is inactive'
     end
   end
 
