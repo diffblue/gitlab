@@ -9966,6 +9966,9 @@ msgstr ""
 msgid "Copy URL"
 msgstr ""
 
+msgid "Copy audio URL"
+msgstr ""
+
 msgid "Copy branch name"
 msgstr ""
 
@@ -9997,6 +10000,9 @@ msgid "Copy file contents"
 msgstr ""
 
 msgid "Copy file path"
+msgstr ""
+
+msgid "Copy image URL"
 msgstr ""
 
 msgid "Copy issue URL to clipboard"
@@ -10045,6 +10051,9 @@ msgid "Copy trigger token"
 msgstr ""
 
 msgid "Copy value"
+msgstr ""
+
+msgid "Copy video URL"
 msgstr ""
 
 msgid "Corpus Management"
@@ -11817,6 +11826,9 @@ msgstr ""
 msgid "Delete artifacts"
 msgstr ""
 
+msgid "Delete audio"
+msgstr ""
+
 msgid "Delete badge"
 msgstr ""
 
@@ -11836,6 +11848,9 @@ msgid "Delete deploy key"
 msgstr ""
 
 msgid "Delete file"
+msgstr ""
+
+msgid "Delete image"
 msgstr ""
 
 msgid "Delete image repository"
@@ -11890,6 +11905,9 @@ msgid "Delete user list"
 msgstr ""
 
 msgid "Delete variable"
+msgstr ""
+
+msgid "Delete video"
 msgstr ""
 
 msgid "DeleteProject|Failed to remove events. Please try again or contact administrator."
@@ -12531,6 +12549,9 @@ msgid "Describe the goal of the changes and what reviewers should be aware of."
 msgstr ""
 
 msgid "Description"
+msgstr ""
+
+msgid "Description (alt text)"
 msgstr ""
 
 msgid "Description (optional)"
@@ -13440,6 +13461,9 @@ msgstr ""
 msgid "Edit application"
 msgstr ""
 
+msgid "Edit audio description"
+msgstr ""
+
 msgid "Edit comment"
 msgstr ""
 
@@ -13474,6 +13498,9 @@ msgid "Edit group: %{group_name}"
 msgstr ""
 
 msgid "Edit identity for %{user_name}"
+msgstr ""
+
+msgid "Edit image description"
 msgstr ""
 
 msgid "Edit in pipeline editor"
@@ -13516,6 +13543,9 @@ msgid "Edit topic: %{topic_name}"
 msgstr ""
 
 msgid "Edit user: %{user_name}"
+msgstr ""
+
+msgid "Edit video description"
 msgstr ""
 
 msgid "Edit wiki page"
@@ -31497,7 +31527,16 @@ msgstr ""
 msgid "Replace all label(s)"
 msgstr ""
 
+msgid "Replace audio"
+msgstr ""
+
 msgid "Replace file"
+msgstr ""
+
+msgid "Replace image"
+msgstr ""
+
+msgid "Replace video"
 msgstr ""
 
 msgid "Replaced all labels with %{label_references} %{label_text}."
