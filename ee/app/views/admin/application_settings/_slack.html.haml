@@ -24,6 +24,9 @@
           = f.label :slack_app_secret, 'APP_SECRET', class: 'label-bold'
           = f.text_field :slack_app_secret, class: 'form-control gl-form-input'
         .form-group
+          = f.label :slack_app_signing_secret, s_('SlackIntegration|Signing Secret'), class: 'label-bold'
+          = f.text_field :slack_app_signing_secret, class: 'form-control gl-form-input'
+        .form-group
           = f.label :slack_app_verification_token, 'Verification token', class: 'label-bold'
           = f.text_field :slack_app_verification_token, class: 'form-control gl-form-input'
 

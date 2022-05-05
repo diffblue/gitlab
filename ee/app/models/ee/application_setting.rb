@@ -175,6 +175,7 @@ module EE
           slack_app_enabled: false,
           slack_app_id: nil,
           slack_app_secret: nil,
+          slack_app_signing_secret: nil,
           slack_app_verification_token: nil
         )
       end

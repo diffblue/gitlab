@@ -54,6 +54,7 @@ module EE
         :slack_app_enabled,
         :slack_app_id,
         :slack_app_secret,
+        :slack_app_signing_secret,
         :slack_app_verification_token,
         :throttle_incident_management_notification_enabled,
         :throttle_incident_management_notification_per_period,
