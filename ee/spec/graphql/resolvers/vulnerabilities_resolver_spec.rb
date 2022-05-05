@@ -26,11 +26,6 @@ RSpec.describe Resolvers::VulnerabilitiesResolver do
     let(:current_user) { user }
     let(:params) { {} }
     let(:vulnerable) { project }
-    let(:vulnerability_reads_table_enabled) { false }
-
-    before do
-      stub_feature_flags(vulnerability_reads_table: vulnerability_reads_table_enabled)
-    end
 
     context 'when given sort' do
       context 'when sorting descending by severity' do
@@ -221,37 +216,10 @@ RSpec.describe Resolvers::VulnerabilitiesResolver do
       let_it_be(:cluster_finding) { create(:vulnerabilities_finding, :with_cluster_image_scanning_scanning_metadata, vulnerability: cluster_vulnerability, project: project) }
       let_it_be(:cluster_gid) { ::Gitlab::GlobalId.as_global_id(cluster_finding.location['kubernetes_resource']['cluster_id'].to_i, model_name: 'Clusters::Cluster') }
 
-      context 'when vulnerability_reads_table is disabled' do
-        before do
-          # cluster_id is not supported by vulnerability_reads
-          stub_feature_flags(vulnerability_reads_table: false)
-        end
+      let(:params) { { cluster_id: [Gitlab::GlobalId.build(nil, model_name: 'Clusters::Cluster', id: non_existing_record_id)] } }
 
-        let(:params) { { cluster_id: [cluster_gid] } }
-
-        it 'only returns vulnerabilities with given cluster' do
-          is_expected.to contain_exactly(cluster_vulnerability)
-        end
-
-        context 'when different report_type is given along with cluster' do
-          let(:params) { { report_type: %w[sast], cluster_id: [cluster_gid] } }
-
-          it 'returns empty list' do
-            is_expected.to be_empty
-          end
-        end
-      end
-
-      context 'when vulnerability_reads_table is enabled' do
-        before do
-          stub_feature_flags(vulnerability_reads_table: true)
-        end
-
-        let(:params) { { cluster_id: [Gitlab::GlobalId.build(nil, model_name: 'Clusters::Cluster', id: non_existing_record_id)] } }
-
-        it 'ignores the filter and returns unmatching vulnerabilities' do
-          is_expected.to include(cluster_vulnerability)
-        end
+      it 'ignores the filter and returns unmatching vulnerabilities' do
+        is_expected.to include(cluster_vulnerability)
       end
     end
 
@@ -272,22 +240,6 @@ RSpec.describe Resolvers::VulnerabilitiesResolver do
         it 'returns empty list' do
           is_expected.to be_empty
         end
-      end
-    end
-
-    context 'when vulnerability_reads_table feature is enabled' do
-      let(:vulnerability_reads_table_enabled) { true }
-      let(:params) { { report_type: %w[sast dast] } }
-      let(:vulnerable) { project }
-
-      it 'returns vulnerabilities of a project' do
-        is_expected.to contain_exactly(low_vulnerability, critical_vulnerability)
-      end
-
-      it 'calls VulnerabilityReadsFinder' do
-        expect(Security::VulnerabilityReadsFinder).to receive(:new).with(vulnerable, params).and_call_original
-
-        subject
       end
     end
   end

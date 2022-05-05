@@ -7,7 +7,7 @@ RSpec.describe 'Query.vulnerabilities.issueLinks' do
 
   let_it_be(:project) { create(:project) }
   let_it_be(:user) { create(:user, security_dashboard_projects: [project]) }
-  let_it_be(:vulnerability) { create(:vulnerability, project: project) }
+  let_it_be(:vulnerability) { create(:vulnerability, :with_finding, project: project) }
   let_it_be(:created_issue) { create(:issue, project: project) }
   let_it_be(:related_issue) { create(:issue, project: project) }
   let_it_be(:related_issue_link) { create(:vulnerabilities_issue_link, :related, vulnerability: vulnerability, issue: related_issue) }

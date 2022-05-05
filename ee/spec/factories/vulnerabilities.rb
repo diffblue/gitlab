@@ -58,6 +58,19 @@ FactoryBot.define do
       end
     end
 
+    trait :with_read do
+      after(:create) do |vulnerability|
+        create(
+          :vulnerability_read,
+          vulnerability: vulnerability,
+          project: vulnerability.project,
+          report_type: vulnerability.report_type,
+          severity: vulnerability.severity,
+          state: vulnerability.state
+        )
+      end
+    end
+
     trait :with_notes do
       transient do
         notes_count { 3 }
