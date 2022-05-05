@@ -25,9 +25,7 @@ module Mutations
     end
 
     def find_group(full_path)
-      Group
-        .find_by_full_path(full_path)
-        .then { |group| Feature.enabled?(:group_level_security_policies, group, default_enabled: :yaml) ? group : nil }
+      Group.find_by_full_path(full_path)
     end
   end
 end

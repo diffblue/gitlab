@@ -90,24 +90,7 @@ RSpec.describe Mutations::SecurityPolicy::AssignSecurityPolicyProject do
     context 'for namespace' do
       let(:container) { namespace }
 
-      context 'when feature is enabled' do
-        before do
-          stub_feature_flags(group_level_security_policies: namespace)
-        end
-
-        it_behaves_like 'assigns security policy project'
-      end
-
-      context 'when feature is disabled' do
-        before do
-          stub_licensed_features(security_orchestration_policies: true)
-          stub_feature_flags(group_level_security_policies: false)
-        end
-
-        it 'raises exception' do
-          expect { subject }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
-        end
-      end
+      it_behaves_like 'assigns security policy project'
     end
   end
 end

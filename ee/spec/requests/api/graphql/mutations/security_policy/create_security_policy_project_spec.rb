@@ -90,22 +90,6 @@ RSpec.describe 'Creates and assigns scan execution policy project to a project/n
       namespace.add_owner(owner)
     end
 
-    context 'when feature is enabled' do
-      before do
-        stub_feature_flags(group_level_security_policies: namespace)
-      end
-
-      it_behaves_like 'creates security policy project'
-    end
-
-    context 'when feature is disabled' do
-      before do
-        stub_licensed_features(security_orchestration_policies: true)
-        stub_feature_flags(group_level_security_policies: false)
-      end
-
-      it_behaves_like 'a mutation that returns top-level errors',
-                  errors: [Gitlab::Graphql::Authorize::AuthorizeResource::RESOURCE_ACCESS_ERROR]
-    end
+    it_behaves_like 'creates security policy project'
   end
 end

@@ -97,24 +97,7 @@ RSpec.describe Mutations::SecurityPolicy::UnassignSecurityPolicyProject do
         namespace_without_policy_project.add_owner(owner)
       end
 
-      context 'when feature is enabled' do
-        before do
-          stub_feature_flags(group_level_security_policies: [namespace, namespace_without_policy_project])
-        end
-
-        it_behaves_like 'unassigns security policy project'
-      end
-
-      context 'when feature is disabled' do
-        before do
-          stub_licensed_features(security_orchestration_policies: true)
-          stub_feature_flags(group_level_security_policies: false)
-        end
-
-        it 'raises exception' do
-          expect { subject }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
-        end
-      end
+      it_behaves_like 'unassigns security policy project'
     end
   end
 end
