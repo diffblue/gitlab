@@ -34,7 +34,7 @@ RSpec.describe 'Query.instanceSecurityDashboard.projects' do
         end
 
         it 'finds only projects that were added to instance security dashboard' do
-          expect(projects).to contain_exactly({ "id" => global_id_of(project) })
+          expect(projects).to contain_exactly(a_graphql_entity_for(project))
         end
       end
     end

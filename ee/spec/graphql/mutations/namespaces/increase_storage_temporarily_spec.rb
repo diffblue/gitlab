@@ -9,7 +9,7 @@ RSpec.describe Mutations::Namespaces::IncreaseStorageTemporarily do
   subject(:mutation) { described_class.new(object: nil, context: { current_user: user }, field: nil) }
 
   describe '#resolve' do
-    subject { mutation.resolve(id: namespace.to_global_id.to_s) }
+    subject { mutation.resolve(id: namespace.to_global_id) }
 
     before do
       allow_next_instance_of(EE::Namespace::RootStorageSize, namespace) do |root_storage|

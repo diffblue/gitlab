@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Mutations::Dast::Profiles::Run do
+  include GraphqlHelpers
+
   let_it_be_with_refind(:project) { create(:project, :repository) }
 
   let_it_be(:user) { create(:user) }
@@ -60,7 +62,7 @@ RSpec.describe Mutations::Dast::Profiles::Run do
         end
 
         context 'when the dast_profile does not exist' do
-          let(:dast_profile_id) { Gitlab::GlobalId.build(nil, model_name: 'Dast::Profile', id: 'does_not_exist') }
+          let(:dast_profile_id) { global_id_of(model_name: 'Dast::Profile', id: 'does_not_exist') }
 
           it 'raises an exception' do
             expect { subject }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)

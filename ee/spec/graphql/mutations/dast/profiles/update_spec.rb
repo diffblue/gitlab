@@ -159,7 +159,7 @@ RSpec.describe Mutations::Dast::Profiles::Update do
         end
 
         context 'when the dast_profile does not exist' do
-          let(:dast_profile_gid) { Gitlab::GlobalId.build(nil, model_name: 'Dast::Profile', id: 'does_not_exist') }
+          let(:dast_profile_gid) { global_id_of(model_name: 'Dast::Profile', id: 'does_not_exist') }
 
           it_behaves_like 'an unrecoverable failure'
         end

@@ -31,7 +31,7 @@ RSpec.describe 'Creating a DAST Site Token' do
 
       dast_site_validation = DastSiteValidation.find_by!(url_path: validation_path)
 
-      expect(mutation_response["id"]).to eq(global_id_of(dast_site_validation))
+      expect(mutation_response).to match a_graphql_entity_for(dast_site_validation)
     end
 
     it 'creates a new dast_site_validation' do

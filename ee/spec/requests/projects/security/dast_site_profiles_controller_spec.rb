@@ -106,14 +106,12 @@ RSpec.describe Projects::Security::DastSiteProfilesController, type: :request do
         it 'includes a serialized dast_profile in the response body' do
           get edit_path
 
-          json_data = {
-            id: global_id_of(dast_site_profile),
-            name: dast_site_profile.name,
+          json_data = a_graphql_entity_for(
+            dast_site_profile, :name, :excluded_urls, :referenced_in_security_policies,
             targetUrl:  dast_site_profile.dast_site.url,
             targetType: dast_site_profile.target_type.upcase,
-            excludedUrls:  dast_site_profile.excluded_urls,
             requestHeaders:  Dast::SiteProfilePresenter::REDACTED_REQUEST_HEADERS,
-            auth: {
+            auth: a_graphql_entity_for(
               enabled: dast_site_profile.auth_enabled,
               url: dast_site_profile.auth_url,
               username: dast_site_profile.auth_username,
@@ -121,13 +119,13 @@ RSpec.describe Projects::Security::DastSiteProfilesController, type: :request do
               password: Dast::SiteProfilePresenter::REDACTED_PASSWORD,
               passwordField: dast_site_profile.auth_password_field,
               submitField: dast_site_profile.auth_submit_field
-            },
-            referencedInSecurityPolicies: dast_site_profile.referenced_in_security_policies
-          }.to_json
+            )
+          )
 
           form = Nokogiri::HTML.parse(response.body).at_css('div.js-dast-site-profile-form')
+          serialized = Gitlab::Json.parse(form.attributes['data-site-profile'].value)
 
-          expect(form.attributes['data-site-profile'].value).to include(json_data)
+          expect(serialized).to match(json_data)
         end
       end
 

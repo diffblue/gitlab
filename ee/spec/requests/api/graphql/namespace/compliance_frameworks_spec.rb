@@ -28,8 +28,8 @@ RSpec.describe 'getting a list of compliance frameworks for a root namespace' do
       post_graphql(query, current_user: current_user)
 
       expect(graphql_data_at(*path)).to contain_exactly(
-        a_hash_including('id' => global_id_of(compliance_framework_1)),
-        a_hash_including('id' => global_id_of(compliance_framework_2))
+        a_graphql_entity_for(compliance_framework_1),
+        a_graphql_entity_for(compliance_framework_2)
       )
     end
 
@@ -43,7 +43,7 @@ RSpec.describe 'getting a list of compliance frameworks for a root namespace' do
       it 'returns only a single compliance framework' do
         post_graphql(query, current_user: current_user)
 
-        expect(graphql_data_at(:namespace, :complianceFrameworks, :nodes).map { |n| n['id'] }).to contain_exactly(global_id_of(compliance_framework_1))
+        expect(graphql_data_at(:namespace, :complianceFrameworks, :nodes)).to contain_exactly(a_graphql_entity_for(compliance_framework_1))
       end
     end
 

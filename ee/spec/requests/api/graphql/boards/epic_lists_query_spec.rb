@@ -78,8 +78,11 @@ RSpec.describe 'get list of epic boards' do
         post_graphql(pagination_query, current_user: current_user)
 
         # ordered by list_type then position - backlog first and closed last.
-        assert_field_value('id', [global_id_of(list3), global_id_of(list1), global_id_of(list2)])
-        assert_field_value('collapsed', [false, true, false])
+        expect(list_nodes).to match [
+          a_graphql_entity_for(list3, collapsed: false),
+          a_graphql_entity_for(list1, collapsed: true),
+          a_graphql_entity_for(list2, collapsed: false)
+        ]
       end
 
       it 'returns the correct metadata values' do
@@ -97,13 +100,11 @@ RSpec.describe 'get list of epic boards' do
         params = { epicFilters: { labelName: label.title, confidential: false } }
         post_graphql(pagination_query(params), current_user: current_user)
 
-        assert_field_value('epicsCount', [1, 0, 0])
-        expected_metadata = [
-          { 'epicsCount' => 1, 'totalWeight' => 7 },
-          { 'epicsCount' => 0, 'totalWeight' => nil },
-          { 'epicsCount' => 0, 'totalWeight' => nil }
+        expect(list_nodes).to match [
+          a_hash_including('epicsCount' => 1, 'metadata' => { 'epicsCount' => 1, 'totalWeight' => 7 }),
+          a_hash_including('epicsCount' => 0, 'metadata' => { 'epicsCount' => 0, 'totalWeight' => nil }),
+          a_hash_including('epicsCount' => 0, 'metadata' => { 'epicsCount' => 0, 'totalWeight' => nil })
         ]
-        assert_field_value('metadata', expected_metadata)
       end
 
       context 'when totalWeight not requested' do
@@ -112,17 +113,17 @@ RSpec.describe 'get list of epic boards' do
         it 'does not required the value from the service' do
           post_graphql(pagination_query, current_user: current_user)
 
-          expect(dig_data('metadata').first.keys).to match_array(['epicsCount'])
+          expect(list_nodes('metadata').first.keys).to match_array(['epicsCount'])
         end
       end
     end
   end
 
   def assert_field_value(field, expected_value)
-    expect(dig_data(field)).to eq(expected_value)
+    expect(list_nodes(field)).to eq(expected_value)
   end
 
-  def dig_data(field)
-    graphql_dig_at(graphql_data, 'group', 'epicBoard', 'lists', 'nodes', field)
+  def list_nodes(*fields)
+    graphql_dig_at(graphql_data, 'group', 'epicBoard', 'lists', 'nodes', *fields)
   end
 end

@@ -9,7 +9,7 @@ RSpec.describe Mutations::Vulnerabilities::FindingDismiss do
   describe '#resolve' do
     let_it_be(:finding) { create(:vulnerabilities_finding) }
     let_it_be(:user) { create(:user) }
-    let_it_be(:finding_id) { GitlabSchema.id_from_object(finding).to_s }
+    let_it_be(:finding_id) { global_id_of(finding) }
 
     let(:comment) { 'Dismissal Feedback' }
     let(:mutated_finding) { subject[:finding] }

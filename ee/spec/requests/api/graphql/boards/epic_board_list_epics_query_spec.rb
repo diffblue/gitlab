@@ -45,10 +45,6 @@ RSpec.describe 'get list of epics for an epic  board list' do
     let(:epic_fields) { all_graphql_fields_for('epics'.classify) }
     let(:all_records) { [epic2.to_global_id.to_s, epic1.to_global_id.to_s, epic3.to_global_id.to_s] }
 
-    def pagination_results_data(nodes)
-      nodes.map { |list| list['id'] }
-    end
-
     it_behaves_like 'sorted paginated query' do
       # currently we don't support custom sorting for epic lists,
       # nil value will be ignored by ::Graphql::Arguments
@@ -66,8 +62,8 @@ RSpec.describe 'get list of epics for an epic  board list' do
 
       post_graphql(query, current_user: current_user)
 
-      boards = graphql_data_at(*data_path, :nodes, :id)
-      expect(boards).to contain_exactly(global_id_of(epic3))
+      boards = graphql_data_at(*data_path, :nodes)
+      expect(boards).to contain_exactly(a_graphql_entity_for(epic3))
     end
 
     context 'when negated' do
@@ -77,8 +73,8 @@ RSpec.describe 'get list of epics for an epic  board list' do
 
         post_graphql(query, current_user: current_user)
 
-        boards = graphql_data_at(*data_path, :nodes, :id)
-        expect(boards).to contain_exactly(global_id_of(epic1), global_id_of(epic2))
+        boards = graphql_data_at(*data_path, :nodes)
+        expect(boards).to contain_exactly(a_graphql_entity_for(epic1), a_graphql_entity_for(epic2))
       end
     end
   end

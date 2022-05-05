@@ -33,7 +33,7 @@ RSpec.describe 'Creating a DAST Profile' do
     it 'returns dastProfile.id' do
       subject
 
-      expect(mutation_response.dig('dastProfile', 'id')).to eq(global_id_of(dast_profile))
+      expect(mutation_response['dastProfile']).to match a_graphql_entity_for(dast_profile)
     end
 
     it 'returns dastProfile.editPath' do

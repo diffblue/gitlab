@@ -107,13 +107,10 @@ RSpec.describe 'getting Alert Management HTTP Integrations' do
 
         it 'returns the correct properties of the integrations' do
           expect(integrations).to include(
-            {
-              'id' => global_id_of(active_http_integration),
+            a_graphql_entity_for(
+              active_http_integration,
+              :token, :name, :active, :url,
               'type' => 'HTTP',
-              'name' => active_http_integration.name,
-              'active' => active_http_integration.active,
-              'token' => active_http_integration.token,
-              'url' => active_http_integration.url,
               'apiUrl' => nil,
               'payloadExample' => payload_example.to_json,
               'payloadAttributeMappings' => [
@@ -142,19 +139,16 @@ RSpec.describe 'getting Alert Management HTTP Integrations' do
                   'type' => 'STRING'
                 }
               ]
-            },
-            {
-              'id' => global_id_of(inactive_http_integration),
+            ),
+            a_graphql_entity_for(
+              inactive_http_integration,
+              :name, :active, :token, :url,
               'type' => 'HTTP',
-              'name' => inactive_http_integration.name,
-              'active' => inactive_http_integration.active,
-              'token' => inactive_http_integration.token,
-              'url' => inactive_http_integration.url,
               'apiUrl' => nil,
               'payloadExample' => "{}",
               'payloadAttributeMappings' => [],
               'payloadAlertFields' => []
-            }
+            )
           )
         end
       end
@@ -164,22 +158,15 @@ RSpec.describe 'getting Alert Management HTTP Integrations' do
 
         it_behaves_like 'a working graphql query'
 
-        specify { expect(integrations).to be_one }
-
         it 'returns the correct properties of the integration' do
-          expect(integrations).to include(
-            {
-              'id' => global_id_of(inactive_http_integration),
-              'type' => 'HTTP',
-              'name' => inactive_http_integration.name,
-              'active' => inactive_http_integration.active,
-              'token' => inactive_http_integration.token,
-              'url' => inactive_http_integration.url,
-              'apiUrl' => nil,
-              'payloadExample' => "{}",
-              'payloadAttributeMappings' => [],
-              'payloadAlertFields' => []
-            }
+          expect(integrations).to contain_exactly a_graphql_entity_for(
+            inactive_http_integration,
+            :name, :active, :token, :url,
+            'type' => 'HTTP',
+            'apiUrl' => nil,
+            'payloadExample' => "{}",
+            'payloadAttributeMappings' => [],
+            'payloadAlertFields' => []
           )
         end
       end
