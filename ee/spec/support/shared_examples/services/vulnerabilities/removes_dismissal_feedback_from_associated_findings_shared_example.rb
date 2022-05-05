@@ -8,7 +8,7 @@ RSpec.shared_examples 'removes dismissal feedback from associated findings' do
            :dismissal,
            project: finding.project,
            category: finding.report_type,
-           project_fingerprint: finding.project_fingerprint)
+           finding_uuid: finding.uuid)
   end
 
   context 'when there is no error' do

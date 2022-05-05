@@ -12,6 +12,12 @@ RSpec.describe Security::Finding do
     it { is_expected.to belong_to(:scan).required }
     it { is_expected.to belong_to(:scanner).required }
     it { is_expected.to have_one(:build).through(:scan) }
+    it {
+      is_expected.to have_many(:feedbacks)
+                  .with_primary_key('uuid')
+                  .class_name('Vulnerabilities::Feedback')
+                  .with_foreign_key('finding_uuid')
+    }
   end
 
   describe 'validations' do
@@ -90,13 +96,13 @@ RSpec.describe Security::Finding do
              :dismissal,
              project: scan_1.project,
              category: scan_1.scan_type,
-             project_fingerprint: finding_1.project_fingerprint)
+             finding_uuid: finding_1.uuid)
 
       create(:vulnerability_feedback,
              :dismissal,
              project: scan_2.project,
              category: scan_2.scan_type,
-             project_fingerprint: finding_2.project_fingerprint)
+             finding_uuid: finding_2.uuid)
     end
 
     it { is_expected.to match_array(expected_findings) }

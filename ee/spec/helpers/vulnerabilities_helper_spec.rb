@@ -153,7 +153,7 @@ RSpec.describe VulnerabilitiesHelper do
 
       context 'with existing merge request feedback' do
         before do
-          create(:vulnerability_feedback, :merge_request, project: project, pipeline: pipeline, project_fingerprint: finding.project_fingerprint)
+          create(:vulnerability_feedback, :merge_request, project: project, pipeline: pipeline, finding_uuid: finding.uuid)
         end
 
         it { is_expected.to be_truthy }
@@ -344,7 +344,7 @@ RSpec.describe VulnerabilitiesHelper do
     end
 
     context 'with existing dismissal feedback' do
-      let_it_be(:feedback) { create(:vulnerability_feedback, :comment, :dismissal, project: project, pipeline: pipeline, project_fingerprint: finding.project_fingerprint) }
+      let_it_be(:feedback) { create(:vulnerability_feedback, :comment, :dismissal, project: project, pipeline: pipeline, finding_uuid: finding.uuid) }
 
       it 'returns dismissal feedback information', :aggregate_failures do
         dismissal_feedback = subject[:dismissal_feedback]

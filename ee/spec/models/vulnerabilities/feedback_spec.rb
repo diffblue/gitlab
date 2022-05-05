@@ -20,6 +20,8 @@ RSpec.describe Vulnerabilities::Feedback do
     it { is_expected.to belong_to(:issue) }
     it { is_expected.to belong_to(:merge_request) }
     it { is_expected.to belong_to(:pipeline).class_name('Ci::Pipeline').with_foreign_key('pipeline_id') }
+    it { is_expected.to belong_to(:finding).with_primary_key('uuid').class_name('Vulnerabilities::Finding').with_foreign_key('finding_uuid') }
+    it { is_expected.to belong_to(:security_finding).with_primary_key('uuid').class_name('Security::Finding').with_foreign_key('finding_uuid') }
   end
 
   describe 'validations' do
@@ -317,38 +319,6 @@ RSpec.describe Vulnerabilities::Feedback do
 
         expect { described_class.find_or_init_for(feedback_params) }.to raise_error(ArgumentError, /category/)
       end
-    end
-  end
-
-  describe '#occurrence_key' do
-    let(:project) { create(:project) }
-    let(:category) { 'sast' }
-    let(:project_fingerprint) { Digest::SHA1.hexdigest('foo') }
-    let(:feedback) { build(:vulnerability_feedback, project: project, category: category, project_fingerprint: project_fingerprint) }
-
-    subject { feedback.finding_key }
-
-    it { is_expected.to eq({ project_id: project.id, category: category, project_fingerprint: project_fingerprint }) }
-  end
-
-  describe '#finding' do
-    let_it_be(:feedback) { create(:vulnerability_feedback) }
-
-    subject { feedback.finding }
-
-    context 'when the is no finding persisted' do
-      it { is_expected.to be_nil }
-    end
-
-    context 'when there is a persisted finding' do
-      let!(:finding) do
-        create(:vulnerabilities_finding,
-               project: feedback.project,
-               report_type: feedback.category,
-               project_fingerprint: feedback.project_fingerprint)
-      end
-
-      it { is_expected.to eq(finding) }
     end
   end
 
