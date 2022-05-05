@@ -42,13 +42,13 @@ export default {
 
 <template>
   <tr>
-    <td class="gl-text-gray-500">
+    <td>
       {{ policy.name }}
     </td>
-    <td class="gl-text-gray-500">
+    <td>
       {{ branches }}
     </td>
-    <td class="gl-text-gray-500 gl-text-center">
+    <td class="gl-text-center">
       {{ approvalsRequired }}
     </td>
     <td>
