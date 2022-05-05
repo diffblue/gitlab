@@ -356,10 +356,9 @@ RSpec.describe MergeRequests::UpdateService, :mailer do
               merge_request.find_reviewer(user2).update!(state: :unreviewed)
 
               update_merge_request({
-                reviewer_ids: [user2.id, user.id]
+                reviewer_ids: [user2.id]
               })
 
-              expect(merge_request.find_reviewer(user).state).to eq('attention_requested')
               expect(merge_request.find_reviewer(user2).state).to eq('unreviewed')
             end
 
@@ -1140,10 +1139,9 @@ RSpec.describe MergeRequests::UpdateService, :mailer do
 
           it 'keeps original assignees state' do
             update_merge_request({
-              assignee_ids: [user3.id, user2.id]
+              assignee_ids: [user3.id]
             })
 
-            expect(merge_request.find_assignee(user2).state).to eq('attention_requested')
             expect(merge_request.find_assignee(user3).state).to eq('unreviewed')
           end
 
