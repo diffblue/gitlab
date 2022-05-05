@@ -1,4 +1,4 @@
-import initGkeNamespace from '~/create_cluster/gke_cluster_namespace';
+import initGkeNamespace from '~/clusters/gke_cluster_namespace';
 
 describe('GKE cluster namespace', () => {
   const changeEvent = new Event('change');
