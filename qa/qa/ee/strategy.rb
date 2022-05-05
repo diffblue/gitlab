@@ -6,16 +6,10 @@ module QA
       extend self
 
       def perform_before_hooks
-        # Without a license, perform the CE before hooks only.
-        unless ENV['EE_LICENSE'].present?
-          QA::CE::Strategy.perform_before_hooks
-          return
-        end
+        QA::CE::Strategy.perform_before_hooks
+        return unless ENV['EE_LICENSE'].present?
 
-        QA::Support::Retrier.retry_on_exception do
-          QA::Runtime::Browser.visit(:gitlab, QA::Page::Main::Login)
-        end
-
+        QA::Runtime::Logger.info("Performing initial license fabrication!")
         QA::Support::Retrier.retry_on_exception do
           QA::Page::Main::Menu.perform(&:sign_out_if_signed_in)
 
