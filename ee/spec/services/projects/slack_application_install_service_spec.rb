@@ -6,6 +6,9 @@ RSpec.describe Projects::SlackApplicationInstallService do
   let_it_be(:user) { create(:user) }
   let_it_be_with_refind(:project) { create(:project) }
 
+  let(:integration) { project.gitlab_slack_application_integration }
+  let(:installation) { integration.slack_integration }
+
   let(:slack_app_id) { 'A12345' }
   let(:slack_app_secret) { 'secret' }
   let(:oauth_code) { 'code' }
@@ -30,10 +33,8 @@ RSpec.describe Projects::SlackApplicationInstallService do
       .to_return(body: response.to_json, headers: { 'Content-Type' => 'application/json' })
   end
 
-  def expect_slack_integration_is_created
+  def expect_slack_integration_has_correct_attributes
     project.reload
-    integration = project.gitlab_slack_application_integration
-    installation = integration.slack_integration
 
     expect(integration).to be_present
     expect(installation).to be_present
@@ -42,18 +43,9 @@ RSpec.describe Projects::SlackApplicationInstallService do
       team_id: 'T12345',
       team_name: 'Team name',
       alias: project.full_path,
-      user_id: 'U12345'
-    )
-  end
-
-  def expect_chat_name_is_created
-    expect(user.chat_names.first).to have_attributes(
-      service_id: project.gitlab_slack_application_integration.id,
-      team_id: 'T12345',
-      team_domain: 'Team name',
-      chat_id: 'U12345',
-      chat_name: 'username',
-      user: user
+      user_id: 'U12345',
+      bot_user_id: params[:v2] ? 'U99999' : nil,
+      bot_access_token: params[:v2] ? 'token-XXXXX' : nil
     )
   end
 
@@ -92,7 +84,7 @@ RSpec.describe Projects::SlackApplicationInstallService do
         result = service.execute
 
         expect(result).to eq(status: :success)
-        expect_slack_integration_is_created
+        expect_slack_integration_has_correct_attributes
         expect(ChatName.count).to be_zero
       end
     end
@@ -116,8 +108,16 @@ RSpec.describe Projects::SlackApplicationInstallService do
         result = service.execute
 
         expect(result).to eq(status: :success)
-        expect_slack_integration_is_created
-        expect_chat_name_is_created
+        expect_slack_integration_has_correct_attributes
+
+        expect(user.chat_names.first).to have_attributes(
+          service_id: integration.id,
+          team_id: 'T12345',
+          team_domain: 'Team name',
+          chat_id: 'U12345',
+          chat_name: 'username',
+          user: user
+        )
       end
     end
 
@@ -133,17 +133,18 @@ RSpec.describe Projects::SlackApplicationInstallService do
 
       context 'when installation record already exists' do
         before do
-          project.gitlab_slack_application_integration.create_slack_integration!(
-            team_id: 'T12345',
-            team_name: 'Team name',
-            alias: project.full_path,
-            user_id: 'U12345'
+          integration.create_slack_integration!(
+            team_id: 'old value',
+            team_name: 'old value',
+            alias: 'old value',
+            user_id: 'old value',
+            bot_user_id: 'old value',
+            bot_access_token: 'old value'
           )
         end
 
-        it 'returns error and does not create any records' do
-          expect { service.execute }.to raise_error(ActiveRecord::RecordInvalid)
-        end
+        it_behaves_like 'success response'
+        it_behaves_like 'legacy response'
       end
     end
 

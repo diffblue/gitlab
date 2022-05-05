@@ -31,8 +31,17 @@ module Projects
       integration = project.gitlab_slack_application_integration \
         || project.create_gitlab_slack_application_integration!
 
-      SlackIntegration.create!(
-        service_id: integration.id,
+      installation = integration.slack_integration || integration.build_slack_integration
+
+      if using_v2_flow?
+        installation.bot_user_id = slack_data['bot_user_id']
+        installation.bot_access_token = slack_data['access_token']
+      else
+        installation.bot_user_id = nil
+        installation.bot_access_token = nil
+      end
+
+      installation.update!(
         team_id: slack_data.dig('team', 'id'),
         team_name: slack_data.dig('team', 'name'),
         alias: project.full_path,

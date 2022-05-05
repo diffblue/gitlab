@@ -20602,7 +20602,11 @@ CREATE TABLE slack_integrations (
     alias character varying NOT NULL,
     user_id character varying NOT NULL,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    bot_user_id text,
+    encrypted_bot_access_token bytea,
+    encrypted_bot_access_token_iv bytea,
+    CONSTRAINT check_bc553aea8a CHECK ((char_length(bot_user_id) <= 255))
 );
 
 CREATE SEQUENCE slack_integrations_id_seq
