@@ -14,7 +14,7 @@ module Mutations
 
       argument :full_path, GraphQL::Types::String,
                required: false,
-               description: 'Full path of the project.'
+               description: 'Full path of the project or group.'
 
       argument :project_path, GraphQL::Types::ID,
                required: false,
