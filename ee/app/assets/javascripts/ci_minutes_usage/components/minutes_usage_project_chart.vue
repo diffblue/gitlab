@@ -116,7 +116,12 @@ export default {
   <div>
     <div class="gl-display-flex gl-mt-7 gl-mb-3">
       <div class="gl-flex-grow-1"></div>
-      <gl-dropdown :text="selectedYear" data-testid="minutes-usage-project-year-dropdown" right>
+      <gl-dropdown
+        :text="selectedYear"
+        class="gl-mr-3"
+        data-testid="minutes-usage-project-year-dropdown"
+        right
+      >
         <gl-dropdown-item
           v-for="year in years"
           :key="year"
