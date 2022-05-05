@@ -12,7 +12,7 @@ module EE
           override :checks
           def checks
             super + [
-              ::SystemCheck::App::ElasticsearchCheck
+              ::SystemCheck::App::SearchCheck
             ]
           end
         end
