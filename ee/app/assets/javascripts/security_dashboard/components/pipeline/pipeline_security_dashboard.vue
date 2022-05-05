@@ -1,11 +1,12 @@
 <script>
-import { GlEmptyState } from '@gitlab/ui';
+import { GlEmptyState, GlButton } from '@gitlab/ui';
 import { mapActions } from 'vuex';
 import pipelineSecurityReportSummaryQuery from 'ee/security_dashboard/graphql/queries/pipeline_security_report_summary.query.graphql';
 import { reportTypeToSecurityReportTypeEnum } from 'ee/vue_shared/security_reports/constants';
 import { fetchPolicies } from '~/lib/graphql';
 import { s__ } from '~/locale';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+import { helpPagePath } from '~/helpers/help_page_helper';
 import ScanAlerts, { TYPE_ERRORS, TYPE_WARNINGS } from './scan_alerts.vue';
 import ReportStatusAlert, { STATUS_PURGED } from './report_status_alert.vue';
 import SecurityDashboard from './security_dashboard_vuex.vue';
@@ -24,6 +25,7 @@ export default {
     SecurityReportsSummary,
     SecurityDashboard,
     PipelineVulnerabilityReport,
+    GlButton,
   },
   mixins: [glFeatureFlagMixin()],
   inject: [
@@ -131,13 +133,31 @@ export default {
     parsingWarningAlertDescription: s__(
       'SecurityReports|Check the messages generated while parsing the following security reports, as they may prevent the results from being ingested by GitLab. Ensure the security report conforms to a supported %{helpPageLinkStart}JSON schema%{helpPageLinkEnd}.',
     ),
+    pageDescription: s__(
+      `SecurityReports|Results show vulnerabilities introduced by the merge request, in addition to existing vulnerabilities from the latest successful pipeline in your project's default branch.`,
+    ),
+    pageDescriptionHelpLink: helpPagePath(
+      'user/application_security/security_dashboard/index.html',
+      { anchor: 'view-vulnerabilities-in-a-pipeline' },
+    ),
   },
 };
 </script>
 
 <template>
-  <div>
-    <div v-if="reportSummary" class="gl-my-5">
+  <div class="gl-mt-5">
+    <p>
+      {{ $options.i18n.pageDescription }}
+      <gl-button
+        class="gl-ml-2 vertical-align-text-top"
+        icon="question-o"
+        variant="link"
+        target="_blank"
+        :href="$options.i18n.pageDescriptionHelpLink"
+      />
+    </p>
+
+    <div v-if="reportSummary" class="gl-mb-5">
       <scan-alerts
         v-if="showScanErrors"
         :type="$options.errorsAlertType"
@@ -154,9 +174,11 @@ export default {
         :description="$options.i18n.parsingWarningAlertDescription"
         class="gl-mb-5"
       />
+
       <report-status-alert v-if="hasPurgedScans" class="gl-mb-5" />
       <security-reports-summary :summary="reportSummary" :jobs="jobs" />
     </div>
+
     <security-dashboard
       v-if="!shouldShowGraphqlVulnerabilityReport"
       :vulnerabilities-endpoint="vulnerabilitiesEndpoint"

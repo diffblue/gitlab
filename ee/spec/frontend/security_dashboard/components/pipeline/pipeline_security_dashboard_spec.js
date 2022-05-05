@@ -1,4 +1,4 @@
-import { GlEmptyState } from '@gitlab/ui';
+import { GlEmptyState, GlButton } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
@@ -261,6 +261,20 @@ describe('Pipeline Security Dashboard component', () => {
 
       it('does not show the alert', () => {
         expect(findScanAlerts().exists()).toBe(false);
+      });
+    });
+  });
+
+  describe('page description', () => {
+    it('shows page description and help link', () => {
+      factory();
+
+      expect(wrapper.html()).toContain(PipelineSecurityDashboard.i18n.pageDescription);
+      expect(wrapper.find(GlButton).attributes()).toMatchObject({
+        variant: 'link',
+        icon: 'question-o',
+        target: '_blank',
+        href: PipelineSecurityDashboard.i18n.pageDescriptionHelpLink,
       });
     });
   });
