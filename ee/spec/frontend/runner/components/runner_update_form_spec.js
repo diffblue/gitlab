@@ -6,13 +6,17 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { runnerData } from 'jest/runner/mock_data';
-import { createAlert, VARIANT_SUCCESS } from '~/flash';
+import { VARIANT_SUCCESS } from '~/flash';
+import { redirectTo } from '~/lib/utils/url_utility';
+import { saveAlertToLocalStorage } from '~/runner/local_storage_alert/save_alert_to_local_storage';
 import RunnerUpdateForm from '~/runner/components/runner_update_form.vue';
 import runnerUpdateMutation from '~/runner/graphql/details/runner_update.mutation.graphql';
 
-jest.mock('~/flash');
+jest.mock('~/runner/local_storage_alert/save_alert_to_local_storage');
+jest.mock('~/lib/utils/url_utility');
 
 const mockRunner = runnerData.data.runner;
+const mockRunnerPath = '/admin/runners/1';
 
 Vue.use(VueApollo);
 
@@ -29,8 +33,6 @@ describe('RunnerUpdateForm', () => {
   const findPrivateProjectsCostFactorInput = () => findPrivateProjectsCostFactor().find('input');
   const findPublicProjectsCostFactorInput = () => findPublicProjectsCostFactor().find('input');
 
-  const findSubmit = () => wrapper.find('[type="submit"]');
-  const findSubmitDisabledAttr = () => findSubmit().attributes('disabled');
   const submitForm = () => findForm().trigger('submit');
   const submitFormAndWait = () => submitForm().then(waitForPromises);
 
@@ -39,6 +41,7 @@ describe('RunnerUpdateForm', () => {
       mount(RunnerUpdateForm, {
         propsData: {
           runner: mockRunner,
+          runnerPath: mockRunnerPath,
           ...props,
         },
         apolloProvider: createMockApollo([[runnerUpdateMutation, runnerUpdateHandler]]),
@@ -52,12 +55,13 @@ describe('RunnerUpdateForm', () => {
       input: expect.objectContaining(submittedRunner),
     });
 
-    expect(createAlert).toHaveBeenLastCalledWith({
-      message: expect.stringContaining('saved'),
-      variant: VARIANT_SUCCESS,
-    });
-
-    expect(findSubmitDisabledAttr()).toBeUndefined();
+    expect(saveAlertToLocalStorage).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: expect.any(String),
+        variant: VARIANT_SUCCESS,
+      }),
+    );
+    expect(redirectTo).toHaveBeenCalledWith(mockRunnerPath);
   };
 
   beforeEach(() => {
