@@ -390,6 +390,15 @@
   :weight: 1
   :idempotent:
   :tags: []
+- :name: cronjob:namespaces_free_user_cap
+  :worker_name: Namespaces::FreeUserCapWorker
+  :feature_category: :free_user_caps_conversion
+  :has_external_dependencies:
+  :urgency: :low
+  :resource_boundary: :cpu
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: cronjob:security_create_orchestration_policy
   :worker_name: Security::CreateOrchestrationPolicyWorker
   :feature_category: :security_orchestration
