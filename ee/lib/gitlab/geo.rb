@@ -16,6 +16,7 @@ module Gitlab
     ).freeze
 
     API_SCOPE = 'geo_api'
+    DEFAULT_DEV_PRIMARY_NODE_NAME = 'gitlab-development-kit'
     GEO_PROXIED_HEADER = 'HTTP_GITLAB_WORKHORSE_GEO_PROXY'
     GEO_PROXIED_EXTRA_DATA_HEADER = 'HTTP_GITLAB_WORKHORSE_GEO_PROXY_EXTRA_DATA'
 
@@ -89,8 +90,24 @@ module Gitlab
       self.enabled? && self.current_node&.primary?
     end
 
-    def self.secondary?
+    def self.secondary?(infer_without_database: false)
+      return self.secondary_check_without_db_connection if infer_without_database
+
       self.enabled? && self.current_node&.secondary?
+    end
+
+    def self.secondary_check_without_db_connection
+      # In tests, we almost always have a tracking DB configured to make running tests easier,
+      # and in CI we can't rely on the node name, so this is disabled (but tested as well)
+      return false if Rails.env.test?
+
+      # In the GDK, the tracking database is usually configured for the primary node as well to
+      # make running tests easier.
+      #
+      # This attempts to "guess" this is running on the primary based on the node name
+      return false if Rails.env.development? && GeoNode.current_node_name == ::Gitlab::Geo::DEFAULT_DEV_PRIMARY_NODE_NAME
+
+      ::Gitlab::Geo.geo_database_configured?
     end
 
     def self.current_node_misconfigured?
