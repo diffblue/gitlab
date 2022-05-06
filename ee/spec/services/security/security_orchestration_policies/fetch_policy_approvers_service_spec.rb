@@ -20,7 +20,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::FetchPolicyApproversServ
     end
 
     context 'with group outside of the scope' do
-      let(:unrelated_group) { create(:group) }
+      let(:unrelated_group) { create(:group, :private) }
       let(:action) { { type: "require_approval", approvals_required: 1, group_approvers_ids: [unrelated_group.id, group.id] } }
 
       it 'does not return the unrelated group' do
@@ -133,32 +133,19 @@ RSpec.describe Security::SecurityOrchestrationPolicies::FetchPolicyApproversServ
     end
 
     context 'with more groups than the limit' do
-      using RSpec::Parameterized::TableSyntax
+      let_it_be(:over_limit) { Security::ScanResultPolicy::APPROVERS_LIMIT + 1 }
+      let_it_be(:groups) { create_list(:group, over_limit) }
+      let_it_be(:groups_ids) { groups.pluck(:id) }
+      let_it_be(:groups_paths) { groups.pluck(:path) }
 
-      let(:group_ids) { [group.id] }
-      let(:group_paths) { [group.path] }
+      let(:action) { { type: "require_approval", approvals_required: 1, group_approvers: groups_paths, group_approvers_ids: groups_ids } }
 
-      where(:ids_multiplier, :paths_multiplier, :ids_expected, :paths_expected) do
-        150 | 150 | 150 | 150
-        300 | 300 | 0   | 300
-        300 | 200 | 100 | 200
-        600 | 600 | 0   | 300
-      end
+      it 'considers only the first within the limit' do
+        response = service.execute
 
-      with_them do
-        let(:group_ids_multiplied) { group_ids * ids_multiplier }
-        let(:group_path_multiplied) { group_paths * paths_multiplier }
-        let(:group_ids_expected) { group_ids * ids_expected }
-        let(:group_path_expected) { group_paths * paths_expected }
-        let(:action) { { type: "require_approval", approvals_required: 1, group_approvers: group_path_multiplied, group_approvers_ids: group_ids_multiplied } }
-
-        it 'considers only the first within the limit' do
-          expect(Projects::GroupsFinder).to receive_message_chain(:new, :execute, :by_ids_or_paths).with(group_ids_expected, group_path_expected)
-
-          service.execute
-
-          expect((group_ids_expected + group_path_expected).count).not_to be > Security::ScanResultPolicy::APPROVERS_LIMIT
-        end
+        expect(response[:status]).to eq(:success)
+        expect(response[:users]).to be_empty
+        expect(response[:groups].count).not_to be > Security::ScanResultPolicy::APPROVERS_LIMIT
       end
     end
   end

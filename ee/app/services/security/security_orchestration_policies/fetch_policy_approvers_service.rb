@@ -5,8 +5,6 @@ module Security
     class FetchPolicyApproversService
       include BaseServiceUtility
 
-      GROUP_FINDER_PARAMS = { with_shared: true, shared_visible_only: true, shared_min_access_level: 30 }.freeze
-
       def initialize(policy:, project:, current_user:)
         @policy = policy
         @project = project
@@ -36,13 +34,18 @@ module Security
         project.team.users.by_ids_or_usernames(user_ids, user_names)
       end
 
+      # rubocop: disable Cop/GroupPublicOrVisibleToUser
       def group_approvers(action)
         return [] unless action[:group_approvers] || action[:group_approvers_ids]
 
         group_paths, group_ids = approvers_within_limit(action[:group_approvers], action[:group_approvers_ids])
 
-        Projects::GroupsFinder.new(project: project, current_user: current_user, params: GROUP_FINDER_PARAMS).execute.by_ids_or_paths(group_ids, group_paths)
+        # Using GroupFinder here would make groups more restrictive than current features related to others approval project rules as in:
+        # https://gitlab.com/gitlab-org/gitlab/-/blob/0aa924eaa1a4ca5ed6b226d826f7298ec847ea5f/ee/app/services/concerns/approval_rules/updater.rb#L44
+        # Therefore data migrated from Vulnerability-Check into Scan result policies would be inconsistent.
+        Group.public_or_visible_to_user(current_user).by_ids_or_paths(group_ids, group_paths)
       end
+      # rubocop: enable Cop/GroupPublicOrVisibleToUser
 
       def approvers_within_limit(names, ids)
         filtered_names = names&.first(Security::ScanResultPolicy::APPROVERS_LIMIT) || []
