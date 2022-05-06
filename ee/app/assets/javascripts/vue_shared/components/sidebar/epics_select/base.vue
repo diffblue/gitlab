@@ -9,9 +9,10 @@ import {
 } from '@gitlab/ui';
 import { debounce } from 'lodash';
 import { mapState, mapGetters, mapActions } from 'vuex';
+import { IssuableStates } from '~/vue_shared/issuable/list/constants';
 import { noneEpic } from 'ee/vue_shared/constants';
 import { __, s__ } from '~/locale';
-import { DropdownVariant, DATA_REFETCH_DELAY, EPIC_STATES } from './constants';
+import { DropdownVariant, DATA_REFETCH_DELAY } from './constants';
 import DropdownValue from './dropdown_value.vue';
 import DropdownValueCollapsed from './dropdown_value_collapsed.vue';
 import createStore from './store';
@@ -129,7 +130,7 @@ export default {
     },
     fetchEpicParams() {
       if (this.showOnlyOpenedEpics) {
-        return { state: EPIC_STATES.OPENED };
+        return { state: IssuableStates.Opened };
       }
       return {};
     },
