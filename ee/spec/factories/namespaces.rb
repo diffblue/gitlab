@@ -57,6 +57,8 @@ FactoryBot.define do
 
     after(:create) do |namespace, evaluator|
       if evaluator.plan
+        create(:namespace_settings, namespace: namespace)
+
         create(:gitlab_subscription,
                namespace: namespace,
                hosted_plan: create(evaluator.plan),

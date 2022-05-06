@@ -140,4 +140,24 @@ RSpec.describe Namespaces::FreeUserCap, :saas do
       it { is_expected.to be true }
     end
   end
+
+  describe '.trimming_enabled?' do
+    subject(:trimming_enabled?) { described_class.trimming_enabled? }
+
+    context 'when free_user_cap_data_remediation_job is disabled' do
+      before do
+        stub_feature_flags(free_user_cap_data_remediation_job: false)
+      end
+
+      it { is_expected.to be false }
+    end
+
+    context 'when :free_user_cap_data_remediation_job is enabled' do
+      before do
+        stub_feature_flags(free_user_cap_data_remediation_job: true)
+      end
+
+      it { is_expected.to be true }
+    end
+  end
 end
