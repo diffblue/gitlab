@@ -120,4 +120,74 @@ RSpec.describe LicenseHelper do
       end
     end
   end
+
+  describe '#show_promotions?' do
+    context 'without a user' do
+      subject { helper.show_promotions?(nil) }
+
+      it { is_expected.to eq(false) }
+    end
+
+    context 'with a user' do
+      let_it_be(:selected_user) { create(:user) }
+
+      subject { helper.show_promotions?(selected_user) }
+
+      context 'on saas' do
+        before do
+          stub_ee_application_setting(should_check_namespace_plan: true)
+        end
+
+        it { is_expected.to eq(true) }
+      end
+
+      context 'when gitlabdotcom returns false' do
+        before do
+          allow(Gitlab).to receive(:com?).and_return(false)
+        end
+
+        it { is_expected.to eq(false) }
+      end
+
+      context 'on EE' do
+        context 'with hide on self managed true' do
+          subject { helper.show_promotions?(selected_user, hide_on_self_managed: true) }
+
+          it { is_expected.to eq(false) }
+        end
+
+        context 'without a valid license' do
+          before do
+            allow(License).to receive(:current).and_return(nil)
+          end
+
+          it { is_expected.to eq(true) }
+        end
+
+        context 'with a valid license' do
+          let_it_be(:license) { create(:license) }
+
+          before do
+            allow(License).to receive(:current).and_return(license)
+          end
+
+          context 'expired license' do
+            before do
+              allow(license).to receive(:expired?).and_return(true)
+            end
+
+            it { is_expected.to eq(true) }
+          end
+
+          context 'non expired license' do
+            before do
+              allow(license).to receive(:expired?).and_return(false)
+            end
+
+            it { is_expected.to eq(false) }
+          end
+        end
+      end
+    end
+  end
 end

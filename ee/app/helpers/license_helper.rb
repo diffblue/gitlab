@@ -28,12 +28,14 @@ module LicenseHelper
     uri.to_s
   end
 
-  def show_promotions?(selected_user = current_user)
+  def show_promotions?(selected_user = current_user, hide_on_self_managed: false)
     return false unless selected_user
 
     if Gitlab::CurrentSettings.current_application_settings
-      .should_check_namespace_plan?
+      .should_check_namespace_plan? # that checks Gitlab.com? too
       true
+    elsif hide_on_self_managed
+      false
     else
       license = License.current
       license.nil? || license.expired?
