@@ -14,7 +14,7 @@ module Projects
     def perform
       return unless ::Gitlab::CurrentSettings.delete_inactive_projects?
 
-      admin_user = User.admins.humans.active.first
+      admin_user = User.admins.active.first
 
       return unless admin_user
 
