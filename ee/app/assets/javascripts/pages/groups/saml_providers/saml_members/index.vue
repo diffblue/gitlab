@@ -21,7 +21,7 @@ export default {
     },
     {
       key: 'identity',
-      label: s__('GroupSAML|Identity'),
+      label: s__('GroupSAML|Identifier'),
     },
   ],
   mounted() {
