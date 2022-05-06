@@ -55,10 +55,4 @@ RSpec.describe Integration do
       expect(described_class.vulnerability_hooks.count).to eq 0
     end
   end
-
-  describe '.integration_type_to_name' do
-    it 'transforms the type to a name' do
-      expect(described_class.integration_type_to_name('MyServiceService')).to eq('my_service')
-    end
-  end
 end

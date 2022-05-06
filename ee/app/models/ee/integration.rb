@@ -36,12 +36,6 @@ module EE
         names
       end
 
-      # Returns the integration name for the given type.
-      # Example: "AsanaService" => "asana".
-      def integration_type_to_name(type)
-        type.delete_suffix('Service').underscore
-      end
-
       private
 
       # Returns true if this instance can show SaaS-only integrations.
