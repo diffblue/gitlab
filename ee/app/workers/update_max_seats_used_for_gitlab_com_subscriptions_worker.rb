@@ -33,7 +33,7 @@ class UpdateMaxSeatsUsedForGitlabComSubscriptionsWorker # rubocop:disable Scalab
           subscription.max_seats_used,
           subscription.seats_in_use,
           subscription.seats_owed,
-          max_seat_used_changed_at.present? ? "timestamp '#{max_seat_used_changed_at}'" : '(select null::timestamp)'
+          max_seat_used_changed_at.present? ? "timestamp '#{max_seat_used_changed_at}'" : 'NULL::timestamp'
         ]
       rescue ActiveRecord::QueryCanceled => e
         track_error(e, subscription)
