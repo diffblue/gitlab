@@ -25,7 +25,7 @@ module Namespaces
     end
 
     def self.trimming_enabled?
-      ::Feature.enabled?(:free_user_cap_data_remediation_job, default_enabled: :yaml)
+      ::Feature.enabled?(:free_user_cap_data_remediation_job)
     end
 
     private
