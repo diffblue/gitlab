@@ -7398,6 +7398,30 @@ The edge type for [`OncallParticipantType`](#oncallparticipanttype).
 | <a id="oncallparticipanttypeedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
 | <a id="oncallparticipanttypeedgenode"></a>`node` | [`OncallParticipantType`](#oncallparticipanttype) | The item at the end of the edge. |
 
+#### `PackageBaseConnection`
+
+The connection type for [`PackageBase`](#packagebase).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="packagebaseconnectioncount"></a>`count` | [`Int!`](#int) | Total count of collection. |
+| <a id="packagebaseconnectionedges"></a>`edges` | [`[PackageBaseEdge]`](#packagebaseedge) | A list of edges. |
+| <a id="packagebaseconnectionnodes"></a>`nodes` | [`[PackageBase]`](#packagebase) | A list of nodes. |
+| <a id="packagebaseconnectionpageinfo"></a>`pageInfo` | [`PageInfo!`](#pageinfo) | Information to aid in pagination. |
+
+#### `PackageBaseEdge`
+
+The edge type for [`PackageBase`](#packagebase).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="packagebaseedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
+| <a id="packagebaseedgenode"></a>`node` | [`PackageBase`](#packagebase) | The item at the end of the edge. |
+
 #### `PackageConnection`
 
 The connection type for [`Package`](#package).
@@ -13961,7 +13985,7 @@ Active period time range for on-call rotation.
 
 ### `Package`
 
-Represents a package in the Package Registry. Note that this type is in beta and susceptible to changes.
+Represents a package with pipelines in the Package Registry.
 
 #### Fields
 
@@ -13979,6 +14003,26 @@ Represents a package in the Package Registry. Note that this type is in beta and
 | <a id="packagetags"></a>`tags` | [`PackageTagConnection`](#packagetagconnection) | Package tags. (see [Connections](#connections)) |
 | <a id="packageupdatedat"></a>`updatedAt` | [`Time!`](#time) | Date of most recent update. |
 | <a id="packageversion"></a>`version` | [`String`](#string) | Version string. |
+
+### `PackageBase`
+
+Represents a package in the Package Registry.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="packagebasecandestroy"></a>`canDestroy` | [`Boolean!`](#boolean) | Whether the user can destroy the package. |
+| <a id="packagebasecreatedat"></a>`createdAt` | [`Time!`](#time) | Date of creation. |
+| <a id="packagebaseid"></a>`id` | [`PackagesPackageID!`](#packagespackageid) | ID of the package. |
+| <a id="packagebasemetadata"></a>`metadata` | [`PackageMetadata`](#packagemetadata) | Package metadata. |
+| <a id="packagebasename"></a>`name` | [`String!`](#string) | Name of the package. |
+| <a id="packagebasepackagetype"></a>`packageType` | [`PackageTypeEnum!`](#packagetypeenum) | Package type. |
+| <a id="packagebaseproject"></a>`project` | [`Project!`](#project) | Project where the package is stored. |
+| <a id="packagebasestatus"></a>`status` | [`PackageStatus!`](#packagestatus) | Package status. |
+| <a id="packagebasetags"></a>`tags` | [`PackageTagConnection`](#packagetagconnection) | Package tags. (see [Connections](#connections)) |
+| <a id="packagebaseupdatedat"></a>`updatedAt` | [`Time!`](#time) | Date of most recent update. |
+| <a id="packagebaseversion"></a>`version` | [`String`](#string) | Version string. |
 
 ### `PackageComposerJsonType`
 
@@ -14020,7 +14064,7 @@ Represents a package dependency link.
 
 ### `PackageDetailsType`
 
-Represents a package details in the Package Registry. Note that this type is in beta and susceptible to changes.
+Represents a package details in the Package Registry.
 
 #### Fields
 
@@ -14048,7 +14092,7 @@ Represents a package details in the Package Registry. Note that this type is in 
 | <a id="packagedetailstypetags"></a>`tags` | [`PackageTagConnection`](#packagetagconnection) | Package tags. (see [Connections](#connections)) |
 | <a id="packagedetailstypeupdatedat"></a>`updatedAt` | [`Time!`](#time) | Date of most recent update. |
 | <a id="packagedetailstypeversion"></a>`version` | [`String`](#string) | Version string. |
-| <a id="packagedetailstypeversions"></a>`versions` | [`PackageConnection`](#packageconnection) | Other versions of the package. (see [Connections](#connections)) |
+| <a id="packagedetailstypeversions"></a>`versions` | [`PackageBaseConnection`](#packagebaseconnection) | Other versions of the package. (see [Connections](#connections)) |
 
 ### `PackageFile`
 
