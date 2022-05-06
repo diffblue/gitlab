@@ -407,12 +407,6 @@ RSpec.describe 'Admin updates EE-only settings' do
         end
       end
     end
-
-    context 'License file link' do
-      it 'provides a link to add a License file' do
-        expect(page).to have_link(text: 'Add a license', href: new_admin_license_path)
-      end
-    end
   end
 
   def current_settings

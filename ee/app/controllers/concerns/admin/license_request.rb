@@ -16,7 +16,7 @@ module Admin
       return if license
 
       flash.keep
-      redirect_to new_admin_license_path
+      redirect_to general_admin_application_settings_path
     end
   end
 end

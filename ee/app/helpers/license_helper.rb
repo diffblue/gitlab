@@ -3,7 +3,7 @@
 module LicenseHelper
   include ActionView::Helpers::AssetTagHelper
 
-  delegate :new_admin_license_path, to: 'Gitlab::Routing.url_helpers'
+  delegate :general_admin_application_settings_path, to: 'Gitlab::Routing.url_helpers'
 
   def seats_calculation_message(license)
     return unless license.exclude_guests_from_active_count?

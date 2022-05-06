@@ -225,11 +225,6 @@ msgid_plural "%d errors"
 msgstr[0] ""
 msgstr[1] ""
 
-msgid "%d error found:"
-msgid_plural "%d errors found:"
-msgstr[0] ""
-msgstr[1] ""
-
 msgid "%d exporter"
 msgid_plural "%d exporters"
 msgstr[0] ""
@@ -767,9 +762,6 @@ msgid "%{level_name} is not allowed in a %{group_level_name} group."
 msgstr ""
 
 msgid "%{level_name} is not allowed since the fork source project has lower visibility."
-msgstr ""
-
-msgid "%{link_start}Add a license%{link_end} that you have received from GitLab Inc."
 msgstr ""
 
 msgid "%{link_start}Remove the %{draft_snippet} prefix%{link_end} from the title to allow this merge request to be merged when it's ready."
@@ -22484,9 +22476,6 @@ msgstr ""
 msgid "License compliance"
 msgstr ""
 
-msgid "License file"
-msgstr ""
-
 msgid "License key"
 msgstr ""
 
@@ -37563,9 +37552,6 @@ msgstr[0] ""
 msgstr[1] ""
 
 msgid "The fork relationship has been removed."
-msgstr ""
-
-msgid "The form contains the following errors:"
 msgstr ""
 
 msgid "The form contains the following warning:"

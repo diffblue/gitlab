@@ -51,13 +51,27 @@ RSpec.describe 'admin/application_settings/general.html.haml' do
     end
 
     context 'with a valid license and service ping disabled' do
+      let(:current_license) { build(:license) }
+
       before do
-        license = build(:license)
-        allow(License).to receive(:current).and_return(license)
+        allow(License).to receive(:current).and_return(current_license)
         stub_application_setting(usage_ping_enabled: false)
       end
 
       it_behaves_like 'does not render registration features prompt', :application_setting_disabled_repository_size_limit
+    end
+  end
+
+  describe 'add license' do
+    let(:current_license) { build(:license) }
+
+    before do
+      assign(:new_license, current_license)
+      render
+    end
+
+    it 'shows the Add License section' do
+      expect(rendered).to have_css('#js-add-license-toggle')
     end
   end
 end
