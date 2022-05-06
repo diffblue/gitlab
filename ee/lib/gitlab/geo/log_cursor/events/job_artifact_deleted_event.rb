@@ -24,7 +24,8 @@ module Gitlab
               'Delete job artifact scheduled',
               file_id: event.job_artifact_id,
               file_path: event.file_path,
-              job_id: job_id)
+              job_id: job_id,
+              uploader_class: 'JobArtifactUploader')
           end
         end
       end

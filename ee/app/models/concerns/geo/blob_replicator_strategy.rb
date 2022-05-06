@@ -94,7 +94,8 @@ module Geo
       ::Geo::FileRegistryRemovalService.new(
         replicable_name,
         model_record_id,
-        removed_blob_path(event_data[:uploader_class], event_data[:blob_path])
+        removed_blob_path(event_data[:uploader_class], event_data[:blob_path]),
+        event_data[:uploader_class]
       ).execute
     end
 

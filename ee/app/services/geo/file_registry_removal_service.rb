@@ -19,10 +19,11 @@ module Geo
     # There is a possibility that the replicable's record does not exist
     # anymore. In this case, you need to pass the file_path parameter
     # explicitly.
-    def initialize(object_type, object_db_id, file_path = nil)
+    def initialize(object_type, object_db_id, file_path = nil, uploader_class = nil)
       @object_type = object_type.to_sym
       @object_db_id = object_db_id
       @object_file_path = file_path
+      @object_uploader_class = uploader_class
     end
 
     def execute
@@ -39,7 +40,7 @@ module Geo
         destroy_file
         destroy_registry
 
-        log_info('Local file & registry removed')
+        log_info('File & registry removed')
       end
     rescue SystemCallError => e
       log_error('Could not remove file', e.message)
@@ -61,11 +62,27 @@ module Geo
     # rubocop: enable CodeReuse/ActiveRecord
 
     def destroy_file
-      if file_path && File.exist?(file_path)
-        log_info('Unlinking file', file_path: file_path)
-        File.unlink(file_path)
+      if file_path
+        if File.exist?(file_path)
+          log_info('Unlinking file', file_path: file_path)
+          File.unlink(file_path)
+        elsif object_storage_enabled?
+          log_info('Local file not found. Trying object storage')
+          destroy_object_storage_file
+        else
+          log_error('Unable to unlink file from filesystem, or object storage. A file may be orphaned', object_type: object_type)
+        end
       else
         log_error('Unable to unlink file because file path is unknown. A file may be orphaned', object_type: object_type, object_db_id: object_db_id)
+      end
+    end
+
+    def destroy_object_storage_file
+      if object_file.nil?
+        log_error("Can't find #{object_file_path} in object storage path #{object_storage_config[:remote_directory]}")
+      else
+        log_info("Removing #{object_file_path} from #{object_storage_config[:remote_directory]}")
+        object_file.destroy
       end
     end
 
@@ -108,6 +125,10 @@ module Geo
           raise NameError, "Unrecognized type: #{object_type}"
         end
       rescue RuntimeError, NameError, ActiveRecord::RecordNotFound => err
+        unless @object_uploader_class.nil?
+          next @object_uploader_class.constantize.new(object_type)
+        end
+
         # When cleaning up registries, there are some cases where
         # it's impossible to unlink the file:
         #
@@ -124,6 +145,33 @@ module Geo
 
     def lease_key
       "file_registry_removal_service:#{object_type}:#{object_db_id}"
+    end
+
+    def object_storage_config
+      return if file_uploader.nil?
+
+      file_uploader.options.object_store
+    end
+
+    def object_storage_enabled?
+      return false if object_storage_config.nil?
+      return false unless object_storage_config.enabled
+
+      true
+    end
+
+    def object_file
+      config = object_storage_config[:connection].to_hash.deep_symbolize_keys
+
+      ::Fog::Storage.new(config)
+        .directories.new(key: object_storage_config[:remote_directory])
+        .files.head(object_file_path)
+    end
+
+    def object_file_path
+      return file_path if file_uploader.nil?
+
+      file_path.delete_prefix("#{file_uploader.root}/")
     end
 
     def lease_timeout
