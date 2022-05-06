@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe SoftwareLicensePolicies::CreateService do
   let(:project) { create(:project) }
-  let(:params) { { name: 'ExamplePL/2.1', approval_status: 'blacklisted' } }
+  let(:params) { { name: 'ExamplePL/2.1', approval_status: 'denied' } }
 
   let(:user) do
     create(:user).tap do |u|
@@ -31,33 +31,22 @@ RSpec.describe SoftwareLicensePolicies::CreateService do
 
     context 'with a user who is allowed to admin' do
       context 'when valid parameters are specified' do
-        where(:approval_status, :expected_classification) do
-          [
-            %w[allowed allowed],
-            %w[approved allowed],
-            %w[denied denied],
-            %w[blacklisted denied]
-          ]
+        let(:params) { { name: 'MIT', approval_status: 'allowed' } }
+        let(:result) { subject.execute }
+
+        before do
+          allow(RefreshLicenseComplianceChecksWorker).to receive(:perform_async)
+          result
         end
 
-        with_them do
-          let(:params) { { name: 'MIT', approval_status: approval_status } }
-          let(:result) { subject.execute }
-
-          before do
-            allow(RefreshLicenseComplianceChecksWorker).to receive(:perform_async)
-            result
-          end
-
-          it 'creates one software license policy correctly' do
-            expect(project.software_license_policies.count).to be(1)
-            expect(result[:status]).to be(:success)
-            expect(result[:software_license_policy]).to be_present
-            expect(result[:software_license_policy]).to be_persisted
-            expect(result[:software_license_policy].name).to eql(params[:name])
-            expect(result[:software_license_policy].classification).to eql(expected_classification)
-            expect(RefreshLicenseComplianceChecksWorker).to have_received(:perform_async).with(project.id)
-          end
+        it 'creates one software license policy correctly' do
+          expect(project.software_license_policies.count).to be(1)
+          expect(result[:status]).to be(:success)
+          expect(result[:software_license_policy]).to be_present
+          expect(result[:software_license_policy]).to be_persisted
+          expect(result[:software_license_policy].name).to eq(params[:name])
+          expect(result[:software_license_policy].classification).to eq(params[:approval_status])
+          expect(RefreshLicenseComplianceChecksWorker).to have_received(:perform_async).with(project.id)
         end
       end
 

@@ -49,6 +49,14 @@ class SoftwareLicensePolicy < ApplicationRecord
 
   delegate :name, :spdx_identifier, to: :software_license
 
+  def self.approval_status_values
+    if ::Feature.enabled?(:lc_remove_legacy_approval_status, default_enabled: :yaml)
+      %w(allowed denied)
+    else
+      %w(allowed denied approved blacklisted)
+    end
+  end
+
   def approval_status
     if Feature.enabled?(:lc_remove_legacy_approval_status, project)
       classification

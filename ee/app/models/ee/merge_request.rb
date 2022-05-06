@@ -181,7 +181,7 @@ module EE
 
       licenses.any? do |l|
         status = l.dig('classification', 'approval_status')
-        if ::Feature.enabled?(:lc_remove_legacy_approval_status)
+        if ::Feature.enabled?(:lc_remove_legacy_approval_status, default_enabled: :yaml)
           'denied' == status
         else
           %w[blacklisted denied].include?(status)
