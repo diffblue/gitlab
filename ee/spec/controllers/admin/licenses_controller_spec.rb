@@ -17,7 +17,7 @@ RSpec.describe Admin::LicensesController do
         post :create, params: { license: { data: '' } }
       end.not_to change(License, :count)
 
-      expect(response).to redirect_to new_admin_license_path
+      expect(response).to redirect_to general_admin_application_settings_path
       expect(flash[:alert]).to include(
         'The license you uploaded is invalid. If the issue persists, contact support at ' \
           '<a href="https://support.gitlab.com">https://support.gitlab.com</a>'
@@ -45,7 +45,7 @@ RSpec.describe Admin::LicensesController do
             post :create, params: { license: { data: license.data } }
           end.not_to change(License, :count)
 
-          expect(response).to redirect_to new_admin_license_path
+          expect(response).to redirect_to general_admin_application_settings_path
           expect(flash[:alert]).to include(
             html_escape("It looks like you're attempting to activate your subscription. Use %{link} instead.") % {
               link: "<a href=\"#{admin_subscription_path}\">the Subscription page</a>".html_safe
@@ -60,8 +60,8 @@ RSpec.describe Admin::LicensesController do
         post :create, params: { license: { data: 'GA!89-)GaRBAGE' } }
       end.not_to change(License, :count)
 
-      expect(response).to render_template(:new)
-      expect(response.body).to include(_('The license key is invalid. Make sure it is exactly as you received it from GitLab Inc.'))
+      expect(response).to redirect_to general_admin_application_settings_path
+      expect(flash[:alert]).to include(_('The license key is invalid. Make sure it is exactly as you received it from GitLab Inc.'))
     end
 
     it 'redirects to the subscription page when a valid license is entered/uploaded' do

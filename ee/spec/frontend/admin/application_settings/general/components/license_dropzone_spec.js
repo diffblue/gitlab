@@ -1,8 +1,8 @@
 import { GlSprintf } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import { nextTick } from 'vue';
-import LicenseNewApp from 'ee/admin/licenses/new/components/license_new_app.vue';
-import { FILE_UPLOAD_ERROR_MESSAGE } from 'ee/admin/licenses/new/constants';
+import LicenseDropzone from 'ee/admin/application_settings/general/components/license_dropzone.vue';
+import { FILE_UPLOAD_ERROR_MESSAGE } from 'ee/admin/application_settings/general/constants';
 import createFlash from '~/flash';
 import UploadDropzone from '~/vue_shared/components/upload_dropzone/upload_dropzone.vue';
 
@@ -14,7 +14,7 @@ describe('Upload dropzone component', () => {
   const findUploadDropzone = () => wrapper.find(UploadDropzone);
 
   function createComponent() {
-    wrapper = shallowMount(LicenseNewApp, {
+    wrapper = shallowMount(LicenseDropzone, {
       stubs: {
         GlSprintf,
       },

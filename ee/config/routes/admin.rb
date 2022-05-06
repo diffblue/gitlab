@@ -30,7 +30,7 @@ namespace :admin do
   end
   resources :user_permission_exports, controller: 'user_permission_exports', only: [:index]
 
-  resource :license, only: [:show, :new, :create, :destroy] do
+  resource :license, only: [:show, :create, :destroy] do
     get :download, on: :member
     post :sync_seat_link, on: :collection
 

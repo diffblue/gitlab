@@ -38,6 +38,11 @@ module EE
         define_method(action) { perform_update if submitted? }
       end
 
+      def general
+        super
+        @new_license ||= License.new(data: params[:trial_key]) # rubocop:disable Gitlab/ModuleWithInstanceVariables
+      end
+
       def visible_application_setting_attributes
         attrs = super
 

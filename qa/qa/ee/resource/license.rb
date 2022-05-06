@@ -9,13 +9,13 @@ module QA
           QA::Page::Main::Menu.perform(&:go_to_admin_area)
           QA::Page::Admin::Menu.perform(&:click_subscription_menu_link)
 
-          EE::Page::Admin::License.perform do |license_page|
-            if license_page.license?
+          EE::Page::Admin::Settings::Component::AddLicense.perform do |admin_settings|
+            if EE::Page::Admin::Subscription.perform(&:license?)
               QA::Runtime::Logger.debug("A license already exists.")
             else
               QA::Page::Admin::Menu.perform(&:go_to_general_settings)
 
-              license_page.add_new_license(license)
+              admin_settings.add_new_license(license)
 
               license_length = license.to_s.strip.length
               license_info = "TEST_LICENSE_MODE: #{ENV['TEST_LICENSE_MODE']}. License key length: #{license_length}. " + (license_length > 5 ? "Last five characters: #{license.to_s.strip[-5..]}" : "")

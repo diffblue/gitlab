@@ -10,11 +10,6 @@ class Admin::LicensesController < Admin::ApplicationController
 
   feature_category :provision
 
-  def new
-    @content_class = 'limit-container-width' unless fluid_layout
-    @license ||= License.new(data: params[:trial_key])
-  end
-
   def create
     return upload_license_error if license_params[:data].blank? && license_params[:data_file].blank?
 
@@ -22,16 +17,18 @@ class Admin::LicensesController < Admin::ApplicationController
 
     return upload_license_error(cloud_license: true) if @license.online_cloud_license?
 
-    respond_with(@license, location: admin_subscription_path) do
-      if @license.save
-        notice = if @license.started?
-                   _('The license was successfully uploaded and is now active. You can see the details below.')
-                 else
-                   _('The license was successfully uploaded and will be active from %{starts_at}. You can see the details below.' % { starts_at: @license.starts_at })
-                 end
+    if @license.save
+      notice = if @license.started?
+                 _('The license was successfully uploaded and is now active. You can see the details below.')
+               else
+                 _('The license was successfully uploaded and will be active from %{starts_at}. You can see the details below.' % { starts_at: @license.starts_at })
+               end
 
-        flash[:notice] = notice
-      end
+      flash[:notice] = notice
+      redirect_to(admin_subscription_path)
+    else
+      flash[:alert] = @license.errors.full_messages.join.html_safe
+      redirect_to general_admin_application_settings_path
     end
   end
 
@@ -82,6 +79,6 @@ class Admin::LicensesController < Admin::ApplicationController
                     end
 
     @license = License.new
-    redirect_to new_admin_license_path
+    redirect_to general_admin_application_settings_path
   end
 end

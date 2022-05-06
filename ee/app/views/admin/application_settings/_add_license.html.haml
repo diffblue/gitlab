@@ -1,0 +1,50 @@
+- return unless @new_license.present?
+
+%section.settings#js-add-license-toggle{ class: ('expanded' if expanded_by_default?) }
+  .settings-header{ data: { testid: 'expand_add_license_header' } }
+    %h4
+      = _('Add License')
+    %button.btn.gl-button.btn-default.js-settings-toggle{ type: 'button', data: { qa_selector: 'expand_add_license_button' } }
+      = expanded_by_default? ? 'Collapse' : 'Expand'
+    %p
+      - if License.current
+        = _('To continue using GitLab Enterprise Edition, upload the %{codeOpen}.gitlab-license%{codeClose} file or enter the license key you have received from GitLab Inc.').html_safe % {codeOpen: '<code>'.html_safe, codeClose: '</code>'.html_safe}
+      - else
+        = _('To start using GitLab Enterprise Edition, upload the %{codeOpen}.gitlab-license%{codeClose} file or enter the license key you have received from GitLab Inc.').html_safe % {codeOpen: '<code>'.html_safe, codeClose: '</code>'.html_safe}
+
+  .settings-content
+    - eula_url = "https://#{ApplicationHelper.promo_host}/terms/#subscription"
+    - eula_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: eula_url }
+
+    %hr
+    = form_for @new_license, url: admin_license_path, html: { name: 'addLicense', multipart: true, class: 'fieldset-form', autocomplete: 'off' } do |f|
+      .form-group
+        .form-check
+          = radio_button_tag :license_type, :file, @new_license.data.blank?, class: 'form-check-input'
+          = label_tag :license_type_file, class: 'form-check-label' do
+            .option-title
+              = _('Upload %{file_name} file').html_safe % { file_name: '<code>.gitlab-license</code>'.html_safe }
+
+        .form-group.license-file.gl-mt-4
+          #js-license-new-app
+
+        .form-check.gl-my-4
+          = radio_button_tag :license_type, :key, @new_license.data.present?, class: 'form-check-input', data: { qa_selector: 'license_type_key_radio' }
+          = label_tag :license_type_key, class: 'form-check-label' do
+            .option-title
+              = _('Enter license key')
+        .form-group.license-key.hidden
+          = f.label :data, _('License key'), class: 'gl-sr-only'
+          = f.text_area :data, class: "form-control license-key-field", data: { qa_selector: 'license_key_field' }, rows: 20
+
+      %hr
+
+      %h4.gl-font-base= _("Terms of service")
+
+      .form-group
+        = label_tag :accept_eula, nil, class: 'form-check-label' do
+          = check_box_tag :accept_eula, nil, false, data: { qa_selector: 'accept_eula_checkbox' }
+          = _('Unless otherwise agreed to in writing with GitLab, by clicking "Upload License" you agree that your use of GitLab Software is subject to the %{eula_link_start}Terms of Service%{eula_link_end}.').html_safe % { eula_link_start: eula_link_start, eula_url: eula_url, eula_link_end: '</a>'.html_safe }
+
+      .form-actions
+        = f.submit 'Add license', class: 'gl-button btn btn-confirm', data: { qa_selector: 'license_upload_button' }, disabled: true
