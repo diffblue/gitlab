@@ -4,6 +4,7 @@ require 'spec_helper'
 
 RSpec.describe AuditEvents::BuildService do
   let(:author) { build_stubbed(:author, current_sign_in_ip: '127.0.0.1') }
+  let(:deploy_token) { build_stubbed(:deploy_token, user: author) }
   let(:scope) { build_stubbed(:group) }
   let(:target) { build_stubbed(:project) }
   let(:ip_address) { '192.168.8.8' }
@@ -82,6 +83,22 @@ RSpec.describe AuditEvents::BuildService do
           it 'uses impersonator current_sign_in_ip' do
             expect(event.ip_address).to eq(impersonator.current_sign_in_ip)
           end
+        end
+      end
+
+      context 'when deploy token is passed as author' do
+        let(:service) do
+          described_class.new(
+            author: deploy_token,
+            scope: scope,
+            target: target,
+            message: message
+          )
+        end
+
+        it 'expect author to be user' do
+          expect(event.author_id).to eq(deploy_token.user.id)
+          expect(event.author_name).to eq(deploy_token.user.name)
         end
       end
     end
