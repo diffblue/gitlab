@@ -18,13 +18,13 @@ export const SEVERITY_LEVELS = {
 };
 
 export const REPORT_TYPES_DEFAULT = {
+  api_fuzzing: s__('ciReport|API Fuzzing'),
   container_scanning: s__('ciReport|Container Scanning'),
+  coverage_fuzzing: s__('ciReport|Coverage Fuzzing'),
   dast: s__('ciReport|DAST'),
   dependency_scanning: s__('ciReport|Dependency Scanning'),
   sast: s__('ciReport|SAST'),
   secret_detection: s__('ciReport|Secret Detection'),
-  coverage_fuzzing: s__('ciReport|Coverage Fuzzing'),
-  api_fuzzing: s__('ciReport|API Fuzzing'),
 };
 
 export const REPORT_TYPES_WITH_CLUSTER_IMAGE = {
