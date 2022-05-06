@@ -251,28 +251,28 @@ describe('Grouped security reports app', () => {
 
         // Renders the summary text
         expect(findReportSummary().text()).toEqual(
-          'Security scanning detected no vulnerabilities.',
+          'Security scanning detected no new vulnerabilities.',
         );
 
         const wrapperText = wrapper.text();
 
         // Renders Sast result
-        expect(wrapperText).toContain('SAST detected no vulnerabilities.');
+        expect(wrapperText).toContain('SAST detected no new vulnerabilities.');
 
         // Renders DSS result
-        expect(wrapper.text()).toContain('Dependency scanning detected no vulnerabilities.');
+        expect(wrapper.text()).toContain('Dependency scanning detected no new vulnerabilities.');
 
         // Renders container scanning result
-        expect(wrapperText).toContain('Container scanning detected no vulnerabilities.');
+        expect(wrapperText).toContain('Container scanning detected no new vulnerabilities.');
 
         // Renders DAST result
-        expect(wrapperText).toContain('DAST detected no vulnerabilities.');
+        expect(wrapperText).toContain('DAST detected no new vulnerabilities.');
 
         // Renders Coverage Fuzzing result
-        expect(wrapperText).toContain('Coverage fuzzing detected no vulnerabilities.');
+        expect(wrapperText).toContain('Coverage fuzzing detected no new vulnerabilities.');
 
         // Renders API Fuzzing result
-        expect(wrapperText).toContain('API fuzzing detected no vulnerabilities.');
+        expect(wrapperText).toContain('API fuzzing detected no new vulnerabilities.');
       });
     });
 
