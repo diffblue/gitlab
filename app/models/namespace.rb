@@ -510,6 +510,20 @@ class Namespace < ApplicationRecord
     @shared_runners ||= shared_runners_enabled ? Ci::Runner.instance_type : Ci::Runner.none
   end
 
+  def find_or_build_ci_cd_settings
+    ci_cd_settings || build_ci_cd_settings
+  end
+
+  # Overridden in EE::Namespace
+  def allow_stale_runner_pruning?
+    false
+  end
+
+  # Overridden in EE::Namespace
+  def allow_stale_runner_pruning=(_value)
+    raise NotImplementedError
+  end
+
   def root?
     !has_parent?
   end

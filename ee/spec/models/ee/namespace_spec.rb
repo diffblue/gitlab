@@ -363,6 +363,35 @@ RSpec.describe Namespace do
         end
       end
     end
+
+    describe '.allowing_stale_runner_pruning', :saas do
+      let_it_be(:namespace1) { create(:namespace) }
+      let_it_be(:namespace2) { create(:namespace) }
+
+      subject { described_class.allowing_stale_runner_pruning }
+
+      context 'when there are no runner settings' do
+        it { is_expected.to be_empty }
+      end
+
+      context 'when there are CI/CD settings' do
+        context 'allowing stale runner pruning' do
+          before do
+            namespace1.update!(allow_stale_runner_pruning: true)
+          end
+
+          it { is_expected.to match_array(namespace1) }
+        end
+
+        context 'not allowing stale runner pruning' do
+          before do
+            namespace1.update!(allow_stale_runner_pruning: false)
+          end
+
+          it { is_expected.to be_empty }
+        end
+      end
+    end
   end
 
   context 'validation' do
@@ -1936,6 +1965,70 @@ RSpec.describe Namespace do
             child_security_orchestration_policy_configuration
           ]
         )
+      end
+    end
+  end
+
+  describe '#allow_stale_runner_pruning?' do
+    subject { namespace.allow_stale_runner_pruning? }
+
+    it { is_expected.to eq false }
+
+    context 'with ci_cd_setting.allow_stale_runner_pruning set to false' do
+      before do
+        namespace.allow_stale_runner_pruning = false
+      end
+
+      it { is_expected.to eq false }
+    end
+
+    context 'with ci_cd_setting.allow_stale_runner_pruning set to true' do
+      before do
+        namespace.allow_stale_runner_pruning = true
+      end
+
+      it { is_expected.to eq true }
+    end
+  end
+
+  describe '#allow_stale_runner_pruning=' do
+    context 'with no existing ci_cd_setting association' do
+      context 'when value is set to true' do
+        it 'does not build association' do
+          namespace.allow_stale_runner_pruning = false
+          namespace.save!
+
+          expect(namespace.ci_cd_settings).to be_nil
+        end
+      end
+
+      context 'when value is set to true' do
+        it 'builds association' do
+          namespace.allow_stale_runner_pruning = true
+          namespace.save!
+
+          expect(namespace.ci_cd_settings).not_to be_nil
+          expect(namespace.ci_cd_settings.allow_stale_runner_pruning).to eq true
+          expect(namespace.ci_cd_settings.persisted?).to eq true
+        end
+      end
+    end
+
+    context 'with existing ci_cd_setting association' do
+      before do
+        namespace.build_ci_cd_settings(allow_stale_runner_pruning: false)
+      end
+
+      context 'when value is set to true' do
+        it 'updates association' do
+          namespace.allow_stale_runner_pruning = true
+          namespace.save!
+
+          expect(namespace.ci_cd_settings.allow_stale_runner_pruning).to eq true
+          expect(namespace.ci_cd_settings.persisted?).to eq true
+          expect(namespace.ci_cd_settings.valid?).to eq true
+          expect(namespace.valid?).to eq true
+        end
       end
     end
   end
