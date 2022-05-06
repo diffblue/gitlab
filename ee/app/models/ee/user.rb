@@ -447,7 +447,7 @@ module EE
 
     def created_after_credit_card_release_day?(project)
       created_at >= ::Users::CreditCardValidation::RELEASE_DAY ||
-        ::Feature.enabled?(:ci_require_credit_card_for_old_users, project, default_enabled: :yaml)
+        ::Feature.enabled?(:ci_require_credit_card_for_old_users, project)
     end
 
     def requires_credit_card_to_run_pipelines?(project)
@@ -470,9 +470,9 @@ module EE
       return false if ci_quota.enabled? && ci_quota.limit.any_purchased?
 
       if root_namespace.free_plan?
-        ::Feature.enabled?(:ci_require_credit_card_on_free_plan, project, default_enabled: :yaml)
+        ::Feature.enabled?(:ci_require_credit_card_on_free_plan, project)
       elsif root_namespace.trial?
-        ::Feature.enabled?(:ci_require_credit_card_on_trial_plan, project, default_enabled: :yaml)
+        ::Feature.enabled?(:ci_require_credit_card_on_trial_plan, project)
       else
         false
       end

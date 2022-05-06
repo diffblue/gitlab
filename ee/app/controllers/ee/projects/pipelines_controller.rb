@@ -9,10 +9,10 @@ module EE
       prepended do
         before_action :authorize_read_licenses!, only: [:licenses]
         before_action do
-          push_frontend_feature_flag(:pipeline_security_dashboard_graphql, project, type: :development, default_enabled: :yaml)
-          push_frontend_feature_flag(:graphql_code_quality_full_report, project, type: :development, default_enabled: :yaml)
-          push_frontend_feature_flag(:use_api_for_payment_validation, project, default_enabled: :yaml)
-          push_frontend_feature_flag(:lc_remove_legacy_approval_status, project, default_enabled: :yaml)
+          push_frontend_feature_flag(:pipeline_security_dashboard_graphql, project, type: :development)
+          push_frontend_feature_flag(:graphql_code_quality_full_report, project, type: :development)
+          push_frontend_feature_flag(:use_api_for_payment_validation, project)
+          push_frontend_feature_flag(:lc_remove_legacy_approval_status, project)
         end
 
         feature_category :license_compliance, [:licenses]
@@ -24,7 +24,7 @@ module EE
 
       def security
         if pipeline.expose_security_dashboard?
-          if ::Feature.enabled?(:pipeline_tabs_vue, project, default_enabled: :yaml)
+          if ::Feature.enabled?(:pipeline_tabs_vue, project)
             redirect_to pipeline_path(pipeline, tab: 'security')
           else
             render_show
@@ -40,7 +40,7 @@ module EE
 
         respond_to do |format|
           format.html do
-            if ::Feature.enabled?(:pipeline_tabs_vue, project, default_enabled: :yaml)
+            if ::Feature.enabled?(:pipeline_tabs_vue, project)
               redirect_to pipeline_path(pipeline, tab: 'licenses')
             else
               render_show
@@ -55,7 +55,7 @@ module EE
       end
 
       def codequality_report
-        if ::Feature.enabled?(:pipeline_tabs_vue, project, default_enabled: :yaml)
+        if ::Feature.enabled?(:pipeline_tabs_vue, project)
           redirect_to pipeline_path(pipeline, tab: 'codequality_report')
         else
           render_show

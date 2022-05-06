@@ -73,7 +73,7 @@ module EE
     end
 
     def display_license_banner?
-      ::Feature.enabled?(:subscribable_license_banner, default_enabled: true)
+      ::Feature.enabled?(:subscribable_license_banner)
     end
 
     def display_subscription_banner?

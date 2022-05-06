@@ -209,7 +209,7 @@ module EE
         return false unless group.sync_traversal_ids?
         return false unless group.use_traversal_ids?
 
-        ::Feature.enabled?(:find_epics_performance_improvement, default_enabled: :yaml)
+        ::Feature.enabled?(:find_epics_performance_improvement)
       end
 
       # Prevents doing one query to check user access for each group when possible.

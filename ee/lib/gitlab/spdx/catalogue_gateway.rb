@@ -7,7 +7,7 @@ module Gitlab
       OFFLINE_CATALOGUE = Rails.root.join('vendor/spdx.json').freeze
 
       def fetch
-        return offline_catalogue if Feature.enabled?(:offline_spdx_catalogue, default_enabled: true)
+        return offline_catalogue if Feature.enabled?(:offline_spdx_catalogue)
 
         response = ::Gitlab::HTTP.get(URL)
 

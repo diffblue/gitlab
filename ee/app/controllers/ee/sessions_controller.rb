@@ -10,7 +10,7 @@ module EE
 
       before_action :gitlab_geo_logout, only: [:destroy]
       before_action only: [:new] do
-        push_frontend_feature_flag(:arkose_labs_login_challenge, default_enabled: :yaml)
+        push_frontend_feature_flag(:arkose_labs_login_challenge)
       end
     end
 
@@ -82,7 +82,7 @@ module EE
 
     override :check_captcha
     def check_captcha
-      if ::Feature.enabled?(:arkose_labs_login_challenge, default_enabled: :yaml)
+      if ::Feature.enabled?(:arkose_labs_login_challenge)
         check_arkose_captcha
       else
         super

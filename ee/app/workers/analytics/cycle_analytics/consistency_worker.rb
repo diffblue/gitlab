@@ -20,7 +20,7 @@ module Analytics
       delegate :monotonic_time, to: :'Gitlab::Metrics::System'
 
       def perform
-        return if Feature.disabled?(:vsa_consistency_worker, default_enabled: :yaml)
+        return if Feature.disabled?(:vsa_consistency_worker)
 
         current_time = Time.current
         start_time = monotonic_time

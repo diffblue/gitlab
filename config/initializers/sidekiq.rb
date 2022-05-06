@@ -8,13 +8,13 @@ end
 def enable_reliable_fetch?
   return true unless Feature::FlipperFeature.table_exists?
 
-  Feature.enabled?(:gitlab_sidekiq_reliable_fetcher, type: :ops, default_enabled: true)
+  Feature.enabled?(:gitlab_sidekiq_reliable_fetcher, type: :ops)
 end
 
 def enable_semi_reliable_fetch_mode?
   return true unless Feature::FlipperFeature.table_exists?
 
-  Feature.enabled?(:gitlab_sidekiq_enable_semi_reliable_fetcher, type: :ops, default_enabled: true)
+  Feature.enabled?(:gitlab_sidekiq_enable_semi_reliable_fetcher, type: :ops)
 end
 
 # Custom Queues configuration

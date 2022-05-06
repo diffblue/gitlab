@@ -23,7 +23,7 @@ module EE
 
       condition(:top_level_group_creation_enabled) do
         if ::Gitlab.com?
-          ::Feature.enabled?(:top_level_group_creation_enabled, type: :ops, default_enabled: true)
+          ::Feature.enabled?(:top_level_group_creation_enabled, type: :ops)
         else
           true
         end

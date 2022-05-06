@@ -111,7 +111,7 @@ module API
         post 'status_check_responses' do
           merge_request = find_merge_request_with_access(params[:merge_request_iid], :approve_merge_request)
 
-          status = ::Feature.enabled?(:status_checks_add_status_field, merge_request.project, default_enabled: :yaml) ? params[:status] : 'passed'
+          status = ::Feature.enabled?(:status_checks_add_status_field, merge_request.project) ? params[:status] : 'passed'
           status_check = merge_request.project.external_status_checks.find(params[:external_status_check_id])
 
           check_sha_param!(params, merge_request)

@@ -14,7 +14,7 @@ module Arkose
     feature_category :authentication_and_authorization
 
     def perform
-      return unless ::Feature.enabled?(:arkose_labs_login_challenge, default_enabled: :yaml)
+      return unless ::Feature.enabled?(:arkose_labs_login_challenge)
 
       ::Arkose::BlockedUsersReportService.new.execute
     end

@@ -177,7 +177,7 @@ module Gitlab
         private
 
         def track_unique_action(action, author)
-          return unless Feature.enabled?(:track_epics_activity, default_enabled: true)
+          return unless Feature.enabled?(:track_epics_activity)
           return unless author
 
           Gitlab::UsageDataCounters::HLLRedisCounter.track_event(action, values: author.id)

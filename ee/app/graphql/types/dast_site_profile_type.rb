@@ -78,7 +78,7 @@ module Types
     end
 
     def scan_method
-      return unless Feature.enabled?(:dast_api_scanner, object.project, default_enabled: :yaml)
+      return unless Feature.enabled?(:dast_api_scanner, object.project)
 
       object.scan_method
     end

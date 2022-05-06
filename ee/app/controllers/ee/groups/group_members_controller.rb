@@ -22,7 +22,7 @@ module EE
         before_action :authorize_update_group_member!, only: [:update, :override]
 
         before_action do
-          push_frontend_feature_flag(:overage_members_modal, @group, default_enabled: :yaml) if ::Gitlab::CurrentSettings.should_check_namespace_plan?
+          push_frontend_feature_flag(:overage_members_modal, @group) if ::Gitlab::CurrentSettings.should_check_namespace_plan?
         end
       end
 

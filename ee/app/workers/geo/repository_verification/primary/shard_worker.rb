@@ -114,7 +114,7 @@ module Geo
         end
 
         def reverification_enabled?
-          ::Feature.enabled?(:geo_repository_reverification, default_enabled: true)
+          ::Feature.enabled?(:geo_repository_reverification)
         end
       end
     end

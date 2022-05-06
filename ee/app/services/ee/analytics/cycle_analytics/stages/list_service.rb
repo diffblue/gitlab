@@ -11,7 +11,7 @@ module EE
           def execute
             return forbidden unless allowed?
 
-            if parent.is_a?(Group) && ::Feature.enabled?(:use_vsa_aggregated_tables, parent, default_enabled: :yaml)
+            if parent.is_a?(Group) && ::Feature.enabled?(:use_vsa_aggregated_tables, parent)
               success(persisted_stages)
             else
               success(persisted_stages.presence || build_default_stages)

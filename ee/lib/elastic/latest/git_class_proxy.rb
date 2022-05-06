@@ -149,7 +149,7 @@ module Elastic
           filter :filename, field: :file_name
           filter :path, parser: ->(input) { "*#{input.downcase}*" }
 
-          if Feature.enabled?(:elastic_file_name_reverse_optimization, default_enabled: :yaml)
+          if Feature.enabled?(:elastic_file_name_reverse_optimization)
             filter :extension, field: 'file_name.reverse', type: :prefix, parser: ->(input) { input.downcase.reverse + '.' }
           else
             filter :extension, field: :path, parser: ->(input) { '*.' + input.downcase }
@@ -318,7 +318,7 @@ module Elastic
       end
 
       def include_aggregations?(type, count_only, current_user)
-        type == 'blob' && !count_only && ::Feature.enabled?(:search_blobs_language_aggregation, current_user, default_enabled: :yaml)
+        type == 'blob' && !count_only && ::Feature.enabled?(:search_blobs_language_aggregation, current_user)
       end
     end
   end

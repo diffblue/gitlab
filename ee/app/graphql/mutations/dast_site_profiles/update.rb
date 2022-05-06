@@ -55,7 +55,7 @@ module Mutations
           auth_submit_field: auth_params[:submit_field]
         }.compact
 
-        if Feature.enabled?(:dast_api_scanner, dast_site_profile.project, default_enabled: :yaml)
+        if Feature.enabled?(:dast_api_scanner, dast_site_profile.project)
           dast_site_profile_params[:scan_method] = params[:scan_method]
         end
 

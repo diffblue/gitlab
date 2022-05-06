@@ -14,7 +14,7 @@ module API
     resource :users do
       desc 'Get captcha check result for ArkoseLabs'
       get ':username/captcha_check', requirements: { username: %r{[^/]+} } do
-        not_found! 'User' unless Feature.enabled?(:arkose_labs_login_challenge, default_enabled: :yaml)
+        not_found! 'User' unless Feature.enabled?(:arkose_labs_login_challenge)
 
         rate_limit_reached = false
         check_rate_limit!(:search_rate_limit_unauthenticated, scope: [ip_address]) do

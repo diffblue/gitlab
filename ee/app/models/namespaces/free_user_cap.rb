@@ -21,7 +21,7 @@ module Namespaces
     end
 
     def feature_enabled?
-      ::Feature.enabled?(:free_user_cap, root_namespace, default_enabled: :yaml)
+      ::Feature.enabled?(:free_user_cap, root_namespace)
     end
 
     def self.trimming_enabled?

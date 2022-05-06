@@ -15,7 +15,7 @@ module EE
     def after_wiki_activity
       super
 
-      return unless ::Feature.enabled?(:touch_project_repository_state_updated_at, default_enabled: :yaml)
+      return unless ::Feature.enabled?(:touch_project_repository_state_updated_at)
 
       project.repository_state&.touch(:last_wiki_updated_at)
     end

@@ -46,7 +46,7 @@ module BillingPlansHelper
       billable_seats_href: billable_seats_href(namespace),
       plan_name: plan&.name
     }.tap do |attrs|
-      if Feature.enabled?(:refresh_billings_seats, type: :ops, default_enabled: :yaml)
+      if Feature.enabled?(:refresh_billings_seats, type: :ops)
         attrs[:refresh_seats_href] = refresh_seats_group_billings_url(namespace)
       end
     end
