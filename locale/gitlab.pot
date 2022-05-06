@@ -16710,6 +16710,9 @@ msgstr ""
 msgid "Geo|Shards to synchronize"
 msgstr ""
 
+msgid "Geo|Show more"
+msgstr ""
+
 msgid "Geo|Site name can't be blank"
 msgstr ""
 
