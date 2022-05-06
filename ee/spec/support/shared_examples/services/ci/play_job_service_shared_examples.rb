@@ -14,7 +14,7 @@ RSpec.shared_examples 'prevents playing job when credit card is required' do
     end
 
     it 'does not raise any exception' do
-      expect { subject }.not_to raise_error(::Gitlab::Access::AccessDeniedError)
+      expect { subject }.not_to raise_error
     end
   end
 

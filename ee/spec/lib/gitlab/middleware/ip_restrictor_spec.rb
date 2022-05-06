@@ -30,7 +30,7 @@ RSpec.describe Gitlab::Middleware::IpRestrictor do
       expect(::Gitlab::IpAddressState).to receive(:nullify_address)
       expect(app).to receive(:call).and_raise('boom')
 
-      expect { middleware.call(env) }.to raise_error
+      expect { middleware.call(env) }.to raise_error('boom')
     end
 
     context 'when it is internal endpoint' do
