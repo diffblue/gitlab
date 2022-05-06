@@ -97,7 +97,6 @@ RSpec.describe EE::SecurityOrchestrationHelper do
           assigned_policy_project: nil.to_json,
           default_environment_id: -1,
           disable_scan_policy_update: 'false',
-          network_policies_endpoint: kind_of(String),
           create_agent_help_path: kind_of(String),
           environments_endpoint: kind_of(String),
           network_documentation_path: kind_of(String),

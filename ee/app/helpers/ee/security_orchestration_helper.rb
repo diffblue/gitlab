@@ -39,7 +39,6 @@ module EE::SecurityOrchestrationHelper
         project_path: container.full_path,
         project_id: container.id,
         default_environment_id: container.default_environment&.id || -1,
-        network_policies_endpoint: project_security_network_policies_path(container),
         create_agent_help_path: help_page_url('user/clusters/agent/install/index'),
         network_documentation_path: help_page_path('user/application_security/policies/index'),
         environments_endpoint: project_environments_path(container),

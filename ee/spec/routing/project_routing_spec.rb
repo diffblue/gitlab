@@ -84,16 +84,4 @@ RSpec.describe 'EE-specific project routing' do
       end
     end
   end
-
-  describe Projects::Security::NetworkPoliciesController, 'routing' do
-    where(:id) do
-      %w[test.1.2 test-policy test:policy]
-    end
-
-    with_them do
-      it "to #update" do
-        expect(put("/gitlab/gitlabhq/-/security/network_policies/#{id}")).to route_to('projects/security/network_policies#update', namespace_id: 'gitlab', project_id: 'gitlabhq', id: id)
-      end
-    end
-  end
 end
