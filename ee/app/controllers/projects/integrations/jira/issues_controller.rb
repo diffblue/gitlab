@@ -91,7 +91,13 @@ module Projects
         protected
 
         def check_feature_enabled!
-          return render_404 unless project.jira_issues_integration_available? && project.jira_integration.issues_enabled
+          return render_404 unless project.jira_issues_integration_available? &&
+                                    jira_integration&.active &&
+                                    jira_integration&.issues_enabled
+        end
+
+        def jira_integration
+          @jira_integration ||= project.jira_integration
         end
 
         def render_error(exception)
