@@ -39,8 +39,6 @@ RSpec.describe 'Related Epics', :js do
   end
 
   before do
-    stub_feature_flags(related_epics_widget: true)
-
     visit_epic
   end
 
@@ -154,8 +152,6 @@ RSpec.describe 'Related Epics', :js do
 
   describe 'when related epics is not supported by license' do
     before do
-      stub_feature_flags(related_epics_widget: true)
-
       visit_epic(related_epics: false)
     end
 

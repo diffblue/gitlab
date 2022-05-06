@@ -11,10 +11,6 @@ module API
     feature_category :portfolio_management
 
     helpers do
-      def authorize_related_epics_feature_flag!
-        not_found! unless Feature.enabled?(:related_epics_widget, user_group, default_enabled: :yaml)
-      end
-
       def find_permissioned_epic!(iid, group_id: nil, permission: :admin_related_epic_link)
         group = group_id ? find_group!(group_id) : user_group
         epic = group.epics.find_by_iid!(iid)
@@ -29,7 +25,6 @@ module API
 
     before do
       authenticate_non_get!
-      authorize_related_epics_feature_flag!
       authorize_related_epics_feature!
     end
 

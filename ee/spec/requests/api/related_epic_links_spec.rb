@@ -29,15 +29,6 @@ RSpec.describe API::RelatedEpicLinks do
 
       it { is_expected.to eq(403) }
     end
-
-    context 'when related epics widget feature flag is disabled' do
-      before do
-        stub_licensed_features(epics: true, related_epics: true)
-        stub_feature_flags(related_epics_widget: false)
-      end
-
-      it { is_expected.to eq(404) }
-    end
   end
 
   describe 'GET /related_epics' do

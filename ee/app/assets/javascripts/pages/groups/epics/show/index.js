@@ -7,11 +7,9 @@ import initAwardsApp from '~/emoji/awards_app';
 initNotesApp();
 initEpicApp();
 
-if (gon.features.relatedEpicsWidget) {
-  import('ee/linked_epics/linked_epics_bundle')
-    .then((m) => m.default())
-    .catch(() => {});
-}
+import('ee/linked_epics/linked_epics_bundle')
+  .then((m) => m.default())
+  .catch(() => {});
 
 requestIdleCallback(() => {
   new ShortcutsEpic(); // eslint-disable-line no-new

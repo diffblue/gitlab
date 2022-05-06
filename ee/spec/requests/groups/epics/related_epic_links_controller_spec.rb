@@ -16,18 +16,6 @@ RSpec.describe Groups::Epics::RelatedEpicLinksController do
   end
 
   shared_examples 'a not available action' do
-    context 'when related_epics flag is disabled' do
-      before do
-        stub_feature_flags(related_epics_widget: false)
-      end
-
-      it 'returns not_found error' do
-        request
-
-        expect(response).to have_gitlab_http_status(:not_found)
-      end
-    end
-
     context 'when related_epics are not available' do
       before do
         stub_licensed_features(epics: true, related_epics: false)

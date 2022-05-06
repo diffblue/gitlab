@@ -8,7 +8,6 @@ module Groups
     class RelatedEpicLinksController < Groups::ApplicationController
       include EpicRelations
 
-      before_action :ensure_related_epics_enabled!
       before_action :check_epics_available!
       before_action :check_related_epics_available!
       before_action :authorize_related_epic_link_association!, only: [:destroy]
@@ -41,10 +40,6 @@ module Groups
 
       def create_service
         ::Epics::RelatedEpicLinks::CreateService.new(epic, current_user, create_params)
-      end
-
-      def ensure_related_epics_enabled!
-        render_404 unless Feature.enabled?(:related_epics_widget, epic&.group, default_enabled: :yaml)
       end
 
       def create_params
