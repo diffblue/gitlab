@@ -60,9 +60,11 @@ module Security
         project.team.users.get_ids_by_ids_or_usernames(user_ids, user_names)
       end
 
+      # rubocop: disable Cop/GroupPublicOrVisibleToUser
       def groups_ids(group_ids, group_paths)
-        Group.unscoped.public_to_user(author).get_ids_by_ids_or_paths(group_ids, group_paths)
+        Group.public_or_visible_to_user(author).get_ids_by_ids_or_paths(group_ids, group_paths)
       end
+      # rubocop: enable Cop/GroupPublicOrVisibleToUser
     end
   end
 end

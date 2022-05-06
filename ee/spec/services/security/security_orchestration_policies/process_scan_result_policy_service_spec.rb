@@ -4,18 +4,18 @@ require 'spec_helper'
 
 RSpec.describe Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyService do
   describe '#execute' do
-    let_it_be(:policy_configuration) { create(:security_orchestration_policy_configuration) }
+    let(:policy_configuration) { create(:security_orchestration_policy_configuration, project: project) }
+    let(:project) { create(:project, namespace: group) }
 
     let(:group) { create(:group, :public) }
     let(:policy) { build(:scan_result_policy, name: 'Test Policy') }
     let(:policy_yaml) { Gitlab::Config::Loader::Yaml.new(policy.to_yaml).load! }
-    let(:project) { policy_configuration.project }
-    let(:approver) { project.first_owner }
+    let(:approver) { create(:user) }
     let(:service) { described_class.new(policy_configuration: policy_configuration, policy: policy, policy_index: 0) }
 
     before do
       group.add_maintainer(approver)
-      allow(policy_configuration).to receive(:policy_last_updated_by).and_return(project.first_owner)
+      allow(policy_configuration).to receive(:policy_last_updated_by).and_return(approver)
     end
 
     subject { service.execute }
@@ -59,6 +59,45 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyS
       let(:policy) { build(:scan_result_policy, name: 'Test Policy', actions: [{ type: 'require_approval', approvals_required: 1, group_approvers_ids: [group.id] }]) }
 
       it_behaves_like 'create approval rule with specific approver'
+
+      context 'with public group outside of the scope' do
+        let(:another_group) { create(:group, :public) }
+        let(:policy) { build(:scan_result_policy, name: 'Test Policy', actions: [{ type: 'require_approval', approvals_required: 1, group_approvers_ids: [another_group.id] }]) }
+
+        it 'does not include any approvers' do
+          subject
+
+          expect(project.approval_rules.first.approvers).to be_empty
+        end
+      end
+
+      context 'with private group outside of the scope' do
+        let(:another_group) { create(:group, :private) }
+        let(:policy) { build(:scan_result_policy, name: 'Test Policy', actions: [{ type: 'require_approval', approvals_required: 1, group_approvers_ids: [another_group.id] }]) }
+
+        it 'does not include any approvers' do
+          subject
+
+          expect(project.approval_rules.first.approvers).to be_empty
+        end
+      end
+
+      context 'with an invited group' do
+        let(:group_user) { create(:user)}
+        let(:another_group) { create(:group, :public) }
+        let(:policy) { build(:scan_result_policy, name: 'Test Policy', actions: [{ type: 'require_approval', approvals_required: 1, group_approvers_ids: [another_group.id] }]) }
+
+        before do
+          another_group.add_maintainer(group_user)
+          project.invited_groups = [another_group]
+        end
+
+        it 'includes group related approvers' do
+          subject
+
+          expect(project.approval_rules.first.approvers).to match_array([group_user])
+        end
+      end
     end
 
     context 'with only group path' do
