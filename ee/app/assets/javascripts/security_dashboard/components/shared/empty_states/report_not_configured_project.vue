@@ -1,6 +1,5 @@
 <script>
 import { GlEmptyState, GlButton } from '@gitlab/ui';
-import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { s__, __ } from '~/locale';
 
 export default {
@@ -8,7 +7,6 @@ export default {
     GlEmptyState,
     GlButton,
   },
-  mixins: [glFeatureFlagsMixin()],
   inject: [
     'emptyStateSvgPath',
     'securityConfigurationPath',
@@ -18,11 +16,7 @@ export default {
   ],
   computed: {
     shouldShowNewVulnerabilityButton() {
-      return (
-        this.glFeatures.newVulnerabilityForm &&
-        Boolean(this.newVulnerabilityPath) &&
-        this.canAdminVulnerability
-      );
+      return Boolean(this.newVulnerabilityPath) && this.canAdminVulnerability;
     },
   },
   i18n: {
