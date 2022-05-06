@@ -130,6 +130,7 @@ RSpec.shared_examples 'a blob replicator' do
     let!(:blob_path) { replicator.carrierwave_uploader.relative_path.to_s }
     let!(:uploader_class) { replicator.carrierwave_uploader.class.to_s }
     let!(:deleted_params) { { model_record_id: model_record_id, uploader_class: uploader_class, blob_path: blob_path } }
+    let!(:secondary_blob_path ) { File.join(uploader_class.constantize.root, blob_path) }
 
     context 'when model_record was deleted from the DB and the replicator only has its ID' do
       before do
@@ -146,11 +147,9 @@ RSpec.shared_examples 'a blob replicator' do
       it 'invokes Geo::FileRegistryRemovalService' do
         service = double(:service)
 
-        secondary_blob_path = File.join(uploader_class.constantize.root, blob_path)
-
         expect(service).to receive(:execute)
         expect(::Geo::FileRegistryRemovalService)
-          .to receive(:new).with(secondary_side_replicator.replicable_name, model_record_id, secondary_blob_path).and_return(service)
+          .to receive(:new).with(secondary_side_replicator.replicable_name, model_record_id, secondary_blob_path, uploader_class).and_return(service)
 
         secondary_side_replicator.consume(:deleted, **deleted_params)
       end
@@ -163,9 +162,29 @@ RSpec.shared_examples 'a blob replicator' do
 
           expect(service).to receive(:execute)
           expect(::Geo::FileRegistryRemovalService)
-            .to receive(:new).with(secondary_side_replicator.replicable_name, model_record_id, blob_path).and_return(service)
+            .to receive(:new).with(secondary_side_replicator.replicable_name, model_record_id, blob_path, nil).and_return(service)
 
           secondary_side_replicator.consume(:deleted, **deprecated_deleted_params)
+        end
+      end
+
+      context 'when object storage is enabled' do
+        let(:config) { uploader_class.constantize.options.object_store }
+        let(:connection ) { Fog::Storage.new(config.connection.to_hash.deep_symbolize_keys) }
+        let(:directory) { connection.directories.new(key: config.remote_directory) }
+
+        before do
+          stub_object_storage_uploader(config: config, uploader: uploader_class.constantize)
+          allow(File).to receive(:exist?).and_call_original
+          allow(File).to receive(:exist?).with(secondary_blob_path).and_return(false)
+          directory.files.create(key: blob_path) # rubocop:disable Rails/SaveBang
+        end
+
+        it 'deletes the file from object storage' do
+          service = ::Geo::FileRegistryRemovalService.new(secondary_side_replicator.replicable_name, model_record_id, secondary_blob_path, uploader_class)
+          expect(directory.files.head(blob_path)).not_to be_nil
+          service.execute
+          expect(directory.files.head(blob_path)).to be_nil
         end
       end
     end
