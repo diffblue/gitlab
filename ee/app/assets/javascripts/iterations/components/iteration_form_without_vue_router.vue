@@ -264,7 +264,7 @@ export default {
       <gl-button
         :loading="loading"
         data-testid="save-iteration"
-        variant="success"
+        variant="confirm"
         data-qa-selector="save_iteration_button"
         @click="save"
       >
