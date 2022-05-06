@@ -93,9 +93,9 @@ RSpec.describe Groups::IterationsController do
       end
 
       context 'when current user can view the requested iteration' do
-        where(:iteration_license_available, :role, :requested_iteration) do
-          true  | :guest     | lazy { iteration }
-          true  | :developer | lazy { iteration }
+        where(:iteration_license_available, :role) do
+          true  | :guest
+          true  | :developer
         end
 
         with_them do
@@ -104,8 +104,8 @@ RSpec.describe Groups::IterationsController do
 
             expect(response).to redirect_to(
               group_iteration_cadence_iteration_path(
-                iteration_cadence_id: requested_iteration.iterations_cadence_id,
-                id: requested_iteration.id
+                iteration_cadence_id: iteration.iterations_cadence_id,
+                id: iteration.id
               )
             )
           end
