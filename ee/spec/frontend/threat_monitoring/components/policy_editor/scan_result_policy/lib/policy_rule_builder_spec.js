@@ -4,6 +4,7 @@ import { nextTick } from 'vue';
 import Api from 'ee/api';
 import PolicyRuleBuilder from 'ee/threat_monitoring/components/policy_editor/scan_result_policy/policy_rule_builder.vue';
 import ProtectedBranchesSelector from 'ee/vue_shared/components/branches_selector/protected_branches_selector.vue';
+import PolicyRuleMultiSelect from 'ee/threat_monitoring/components/policy_rule_multi_select.vue';
 
 describe('PolicyRuleBuilder', () => {
   let wrapper;
@@ -46,6 +47,7 @@ describe('PolicyRuleBuilder', () => {
   const findVulnStates = () => wrapper.find('[data-testid="vulnerability-states-select"]');
   const findVulnAllowed = () => wrapper.find('[data-testid="vulnerabilities-allowed-input"]');
   const findDeleteBtn = () => wrapper.findComponent(GlButton);
+  const findAllPolicyRuleMultiSelect = () => wrapper.findAllComponents(PolicyRuleMultiSelect);
 
   beforeEach(() => {
     jest
@@ -74,6 +76,16 @@ describe('PolicyRuleBuilder', () => {
       await nextTick();
 
       expect(findDeleteBtn().exists()).toBe(true);
+    });
+
+    it('includes select all option to all PolicyRuleMultiSelect', async () => {
+      factory();
+      await nextTick();
+      const props = findAllPolicyRuleMultiSelect().wrappers.map((w) => w.props());
+
+      expect(props).toEqual(
+        expect.arrayContaining([expect.objectContaining({ includeSelectAll: true })]),
+      );
     });
   });
 

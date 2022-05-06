@@ -109,7 +109,6 @@ export default {
             :item-type-name="$options.i18n.scanners"
             :items="$options.REPORT_TYPES_DEFAULT"
             data-testid="scanners-select"
-            :include-select-all="false"
           />
         </template>
 
