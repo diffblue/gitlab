@@ -71,6 +71,13 @@ module EE
             render_validation_error!(updated_member)
           end
         end
+
+        def billable_member?(group, user)
+          billed_users_finder = BilledUsersFinder.new(group, include_awaiting_members: true)
+          users = billed_users_finder.execute[:users]
+
+          users.include?(user)
+        end
       end
     end
   end

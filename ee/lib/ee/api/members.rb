@@ -157,7 +157,7 @@ module EE
 
             user = ::User.find(params[:user_id])
 
-            not_found!('User') unless BilledUsersFinder.new(group, include_awaiting_members: true).execute[:users].include?(user)
+            not_found!('User') unless billable_member?(group, user)
 
             memberships = user.members.in_hierarchy(group).including_source
 
