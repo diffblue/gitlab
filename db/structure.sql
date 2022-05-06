@@ -29547,6 +29547,8 @@ CREATE INDEX index_vulnerability_external_issue_links_on_author_id ON vulnerabil
 
 CREATE INDEX index_vulnerability_external_issue_links_on_vulnerability_id ON vulnerability_external_issue_links USING btree (vulnerability_id);
 
+CREATE INDEX index_vulnerability_feedback_finding_uuid ON vulnerability_feedback USING btree (finding_uuid);
+
 CREATE INDEX index_vulnerability_feedback_on_author_id ON vulnerability_feedback USING btree (author_id);
 
 CREATE INDEX index_vulnerability_feedback_on_comment_author_id ON vulnerability_feedback USING btree (comment_author_id);
