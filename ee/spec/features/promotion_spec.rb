@@ -163,7 +163,12 @@ RSpec.describe 'Promotions', :js do
         sign_in(user)
       end
 
-      it_behaves_like 'Epics promotion'
+      it 'does not appear on the page' do
+        visit project_issue_path(project, issue)
+        wait_for_requests
+
+        expect(page).not_to have_selector('.js-epics-sidebar-callout')
+      end
     end
   end
 
@@ -214,7 +219,6 @@ RSpec.describe 'Promotions', :js do
       click_link 'Learn more'
 
       expect(page).to have_selector('.js-weight-sidebar-callout')
-      expect(page).to have_selector('.promotion-issue-sidebar-message', visible: false)
     end
 
     context 'when checking namespace plans' do
