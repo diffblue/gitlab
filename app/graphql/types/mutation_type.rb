@@ -112,6 +112,7 @@ module Types
     mount_mutation Mutations::Ci::Pipeline::Destroy
     mount_mutation Mutations::Ci::Pipeline::Retry
     mount_mutation Mutations::Ci::CiCdSettingsUpdate
+    mount_mutation Mutations::Ci::NamespaceCiCdSettingsUpdate
     mount_mutation Mutations::Ci::Job::Play
     mount_mutation Mutations::Ci::Job::Retry
     mount_mutation Mutations::Ci::Job::Cancel
