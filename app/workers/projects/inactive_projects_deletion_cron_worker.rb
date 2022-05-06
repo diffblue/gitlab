@@ -21,7 +21,7 @@ module Projects
       notified_inactive_projects = deletion_warning_notified_projects
 
       Project.inactive.without_deleted.find_each(batch_size: 100).with_index do |project, index| # rubocop: disable CodeReuse/ActiveRecord
-        next unless Feature.enabled?(:inactive_projects_deletion, project.root_namespace, default_enabled: :yaml)
+        next unless Feature.enabled?(:inactive_projects_deletion, project.root_namespace)
 
         delay = index * INTERVAL
 
