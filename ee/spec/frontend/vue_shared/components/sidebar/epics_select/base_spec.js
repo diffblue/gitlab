@@ -111,14 +111,25 @@ describe('EpicsSelect', () => {
           wrapper.vm.$store.dispatch('setSearchQuery', 'foo');
 
           await nextTick();
-          expect(wrapper.vm.fetchEpics).toHaveBeenCalledWith('foo');
+          expect(wrapper.vm.fetchEpics).toHaveBeenCalledWith({ search: 'foo' });
+        });
+
+        it('should call action `fetchEpics` with `searchQuery` and `state`', async () => {
+          wrapper.setProps({
+            showOnlyOpenedEpics: true,
+          });
+
+          wrapper.vm.$store.dispatch('setSearchQuery', 'foobar');
+
+          await nextTick();
+          expect(wrapper.vm.fetchEpics).toHaveBeenCalledWith({ search: 'foobar', state: 'opened' });
         });
 
         it('should call action `fetchEpics` without any params when value is empty', async () => {
           wrapper.vm.$store.dispatch('setSearchQuery', '');
 
           await nextTick();
-          expect(wrapper.vm.fetchEpics).toHaveBeenCalledWith();
+          expect(wrapper.vm.fetchEpics).toHaveBeenCalledWith({ search: '' });
         });
       });
     });

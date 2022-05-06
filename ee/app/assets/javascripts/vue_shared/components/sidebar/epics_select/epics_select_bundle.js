@@ -3,6 +3,7 @@ import Vue from 'vue';
 import EpicsSelect from 'ee/vue_shared/components/sidebar/epics_select/base.vue';
 import { DropdownVariant } from 'ee/vue_shared/components/sidebar/epics_select/constants';
 import { placeholderEpic } from 'ee/vue_shared/constants';
+import { parseBoolean } from '~/lib/utils/common_utils';
 
 export default () => {
   const el = document.getElementById('js-epic-select-root');
@@ -40,6 +41,7 @@ export default () => {
           initialEpicLoading: false,
           variant: DropdownVariant.Standalone,
           showHeader: Boolean(el.dataset.showHeader),
+          showOnlyOpenedEpics: parseBoolean(el.dataset.showOnlyOpenedEpics),
         },
         on: {
           epicSelect: this.handleEpicSelect.bind(this),

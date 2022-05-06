@@ -9,6 +9,7 @@ import {
 } from '@gitlab/ui';
 import { debounce } from 'lodash';
 import { mapState, mapGetters, mapActions } from 'vuex';
+import { IssuableStates } from '~/vue_shared/issuable/list/constants';
 import { noneEpic } from 'ee/vue_shared/constants';
 import { __, s__ } from '~/locale';
 import { DropdownVariant, DATA_REFETCH_DELAY } from './constants';
@@ -74,6 +75,11 @@ export default {
       required: false,
       default: true,
     },
+    showOnlyOpenedEpics: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   data() {
     return {
@@ -122,6 +128,12 @@ export default {
     epicListNotValid() {
       return this.groupEpics.length === 0 && !this.isLoading;
     },
+    fetchEpicParams() {
+      if (this.showOnlyOpenedEpics) {
+        return { state: IssuableStates.Opened };
+      }
+      return {};
+    },
   },
   watch: {
     /**
@@ -155,9 +167,9 @@ export default {
      */
     searchQuery(value) {
       if (value) {
-        this.fetchEpics(this.searchQuery);
+        this.fetchEpics({ search: this.searchQuery, ...this.fetchEpicParams });
       } else {
-        this.fetchEpics();
+        this.fetchEpics({ search: '', ...this.fetchEpicParams });
       }
     },
     search: debounce(function debouncedEpicSearch() {
@@ -210,7 +222,7 @@ export default {
 
       if (dropdown && this.isDropdownShowing) {
         dropdown.show();
-        this.fetchEpics();
+        this.fetchEpics({ search: '', ...this.fetchEpicParams });
       }
     },
   },
