@@ -21,7 +21,7 @@ import { visitUrl } from '~/lib/utils/url_utility';
 import { getCookie, setCookie } from '~/lib/utils/common_utils';
 import {
   STANDARD_FIELDS,
-  LIMITED_FREE_PLAN_FIELDS,
+  FIELDS_WITH_MEMBERSHIP_TOGGLE,
   AVATAR_SIZE,
   REMOVE_BILLABLE_MEMBER_MODAL_ID,
   CANNOT_REMOVE_BILLABLE_MEMBER_MODAL_ID,
@@ -128,7 +128,9 @@ export default {
     },
     shouldShowPendingMembersAlert() {
       return (
-        this.pendingMembersCount > 0 && this.pendingMembersPagePath && !this.hasLimitedFreePlan
+        this.pendingMembersCount > 0 &&
+        this.pendingMembersPagePath &&
+        !this.hasLimitedPlanOrPreviewLimitedPlan
       );
     },
     seatsInUsePercentage() {
@@ -145,13 +147,13 @@ export default {
       return this.seatsInSubscription;
     },
     totalSeatsInUse() {
-      if (this.hasLimitedFreePlan) {
+      if (this.hasLimitedPlanOrPreviewLimitedPlan) {
         return this.seatsInUse;
       }
       return this.hasNoSubscription ? this.total : this.seatsInUse;
     },
     seatsInUseText() {
-      return this.hasLimitedFreePlan
+      return this.hasLimitedPlanOrPreviewLimitedPlan
         ? this.$options.i18n.seatsAvailableText
         : this.$options.i18n.seatsInSubscriptionText;
     },
@@ -162,10 +164,23 @@ export default {
       return sprintf(this.$options.i18n.seatsTooltipText, { number: this.maxFreeNamespaceSeats });
     },
     displayedTotalSeats() {
-      return this.totalSeatsAvailable ? String(this.totalSeatsAvailable) : '-';
+      return this.totalSeatsAvailable
+        ? String(this.totalSeatsAvailable)
+        : this.$options.i18n.unlimited;
     },
     fields() {
-      return this.hasLimitedFreePlan ? LIMITED_FREE_PLAN_FIELDS : STANDARD_FIELDS;
+      return this.hasLimitedPlanOrPreviewLimitedPlan
+        ? FIELDS_WITH_MEMBERSHIP_TOGGLE
+        : STANDARD_FIELDS;
+    },
+    showUpgradeInfoCard() {
+      if (!this.hasNoSubscription) {
+        return false;
+      }
+      return this.hasLimitedPlanOrPreviewLimitedPlan;
+    },
+    hasLimitedPlanOrPreviewLimitedPlan() {
+      return this.hasLimitedFreePlan || this.previewFreeUserCap;
     },
   },
   created() {
@@ -262,6 +277,7 @@ export default {
     seatsAlertBody: s__(
       "Billing|You can begin moving members in %{namespaceName} now. A member loses access to the group when you turn off %{strongStart}In a seat%{strongEnd}. If over 5 members have %{strongStart}In a seat%{strongEnd} enabled after June 22, 2022, we'll select the 5 members who maintain access. We'll first count members that have Owner and Maintainer roles, then the most recently active members until we reach 5 members. The remaining members will get a status of Over limit and lose access to the group.",
     ),
+    unlimited: __('Unlimited'),
   },
   avatarSize: AVATAR_SIZE,
 
@@ -281,6 +297,7 @@ export default {
       :dismissible="false"
       :primary-button-text="$options.i18n.pendingMembersAlertButtonText"
       class="gl-my-3"
+      data-testid="pending-members-alert"
       @primaryAction="navigateToPendingMembersPage"
     >
       {{ pendingMembersAlertMessage }}
@@ -296,7 +313,6 @@ export default {
       >
         <gl-sprintf :message="$options.i18n.seatsAlertBody">
           <template #namespaceName>{{ namespaceName }}</template>
-
           <template #strong="{ content }">
             <strong>{{ content }}</strong>
           </template>
@@ -315,7 +331,7 @@ export default {
         />
 
         <subscription-upgrade-info-card
-          v-if="hasLimitedFreePlan"
+          v-if="showUpgradeInfoCard"
           :max-namespace-seats="maxFreeNamespaceSeats"
           :explore-plans-path="explorePlansPath"
           class="gl-w-full gl-md-w-half gl-md-mt-0 gl-mt-5"

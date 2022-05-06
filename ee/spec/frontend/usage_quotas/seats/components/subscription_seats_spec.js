@@ -198,13 +198,14 @@ describe('Subscription Seats', () => {
 
       describe('membership toggles', () => {
         it.each`
-          hasNoSubscription | hasLimitedFreePlan | shouldBeRendered
-          ${false}          | ${false}           | ${false}
-          ${true}           | ${false}           | ${false}
-          ${true}           | ${true}            | ${true}
+          hasNoSubscription | hasLimitedFreePlan | previewFreeUserCap | shouldBeRendered
+          ${false}          | ${false}           | ${false}           | ${false}
+          ${true}           | ${false}           | ${false}           | ${false}
+          ${true}           | ${true}            | ${false}           | ${true}
+          ${true}           | ${false}           | ${true}            | ${true}
         `(
-          'rendering toggles $shouldBeRendered when hasLimitedFreePlan=$hasLimitedFreePlan and hasNoSubscription=$hasNoSubscription',
-          ({ hasNoSubscription, hasLimitedFreePlan, shouldBeRendered }) => {
+          'rendering toggles $shouldBeRendered when hasLimitedFreePlan=$hasLimitedFreePlan and hasNoSubscription=$hasNoSubscription and previewFreeUserCap=$previewFreeUserCap',
+          ({ hasNoSubscription, hasLimitedFreePlan, previewFreeUserCap, shouldBeRendered }) => {
             wrapper = createComponent({
               mountFn: mount,
               initialGetters: {
@@ -213,6 +214,7 @@ describe('Subscription Seats', () => {
               initialState: {
                 hasNoSubscription,
                 hasLimitedFreePlan,
+                previewFreeUserCap,
               },
             });
 
@@ -414,16 +416,14 @@ describe('Subscription Seats', () => {
           const statisticsCard = findStatisticsCard();
 
           expect(statisticsCard.exists()).toBe(true);
-          expect(statisticsCard.props()).toEqual(
-            expect.objectContaining({
-              ...defaultProps,
-              description: 'Seats in use / Seats in subscription',
-              percentage: 67,
-              totalValue: '3',
-              usageValue: '2',
-              helpTooltip: null,
-            }),
-          );
+          expect(statisticsCard.props()).toMatchObject({
+            ...defaultProps,
+            description: 'Seats in use / Seats in subscription',
+            percentage: 67,
+            totalValue: '3',
+            usageValue: '2',
+            helpTooltip: null,
+          });
         });
       });
 
@@ -443,16 +443,14 @@ describe('Subscription Seats', () => {
             const statisticsCard = findStatisticsCard();
 
             expect(statisticsCard.exists()).toBe(true);
-            expect(statisticsCard.props()).toEqual(
-              expect.objectContaining({
-                ...defaultProps,
-                description: 'Seats in use / Seats in subscription',
-                percentage: 0,
-                totalValue: '-',
-                usageValue: '10',
-                helpTooltip: null,
-              }),
-            );
+            expect(statisticsCard.props()).toMatchObject({
+              ...defaultProps,
+              description: 'Seats in use / Seats in subscription',
+              percentage: 0,
+              totalValue: 'Unlimited',
+              usageValue: '10',
+              helpTooltip: null,
+            });
           });
         });
 
@@ -471,16 +469,40 @@ describe('Subscription Seats', () => {
             const statisticsCard = findStatisticsCard();
 
             expect(statisticsCard.exists()).toBe(true);
-            expect(statisticsCard.props()).toEqual(
-              expect.objectContaining({
-                ...defaultProps,
-                description: 'Seats in use / Seats available',
-                percentage: 40,
-                totalValue: '5',
-                usageValue: '2',
-                helpTooltip: 'Free groups are limited to 5 seats.',
-              }),
-            );
+            expect(statisticsCard.props()).toMatchObject({
+              ...defaultProps,
+              description: 'Seats in use / Seats available',
+              percentage: 40,
+              totalValue: '5',
+              usageValue: '2',
+              helpTooltip: 'Free groups are limited to 5 seats.',
+            });
+          });
+        });
+
+        describe('when preview free user cap', () => {
+          beforeEach(() => {
+            wrapper = createComponent({
+              initialState: {
+                ...defaultInitialState,
+                hasNoSubscription: true,
+                hasLimitedFreePlan: false,
+                previewFreeUserCap: true,
+              },
+            });
+          });
+
+          it('renders <statistics-card> with the necessary props', () => {
+            const statisticsCard = findStatisticsCard();
+
+            expect(statisticsCard.exists()).toBe(true);
+            expect(statisticsCard.props()).toMatchObject({
+              ...defaultProps,
+              description: 'Seats in use / Seats available',
+              percentage: 0,
+              totalValue: 'Unlimited',
+              usageValue: '2',
+            });
           });
         });
       });
@@ -491,12 +513,10 @@ describe('Subscription Seats', () => {
 
       expect(findSubscriptionUpgradeCard().exists()).toBe(false);
       expect(statisticsSeatsCard.exists()).toBe(true);
-      expect(statisticsSeatsCard.props()).toEqual(
-        expect.objectContaining({
-          seatsOwed: 1,
-          seatsUsed: 3,
-        }),
-      );
+      expect(statisticsSeatsCard.props()).toMatchObject({
+        seatsOwed: 1,
+        seatsUsed: 3,
+      });
     });
 
     describe('for free namespace with limit', () => {
@@ -511,12 +531,33 @@ describe('Subscription Seats', () => {
 
         expect(findStatisticsSeatsCard().exists()).toBe(false);
         expect(upgradeInfoCard.exists()).toBe(true);
-        expect(upgradeInfoCard.props()).toEqual(
-          expect.objectContaining({
-            maxNamespaceSeats: providedFields.maxFreeNamespaceSeats,
-            explorePlansPath: providedFields.explorePlansPath,
-          }),
-        );
+        expect(upgradeInfoCard.props()).toMatchObject({
+          maxNamespaceSeats: providedFields.maxFreeNamespaceSeats,
+          explorePlansPath: providedFields.explorePlansPath,
+        });
+      });
+    });
+
+    describe('for free namespace with free user cap preview enabled', () => {
+      beforeEach(() => {
+        wrapper = createComponent({
+          initialState: {
+            hasNoSubscription: true,
+            hasLimitedFreePlan: false,
+            previewFreeUserCap: true,
+          },
+        });
+      });
+
+      it('renders <subscription-upgrade-info-card> with the necessary props', () => {
+        const upgradeInfoCard = findSubscriptionUpgradeCard();
+
+        expect(findStatisticsSeatsCard().exists()).toBe(false);
+        expect(upgradeInfoCard.exists()).toBe(true);
+        expect(upgradeInfoCard.props()).toMatchObject({
+          maxNamespaceSeats: providedFields.maxFreeNamespaceSeats,
+          explorePlansPath: providedFields.explorePlansPath,
+        });
       });
     });
   });
@@ -556,24 +597,34 @@ describe('Subscription Seats', () => {
 
   describe('pending members alert', () => {
     it.each`
-      pendingMembersPagePath | pendingMembersCount | hasLimitedFreePlan | shouldBeRendered
-      ${undefined}           | ${undefined}        | ${false}           | ${false}
-      ${undefined}           | ${0}                | ${false}           | ${false}
-      ${'fake-path'}         | ${0}                | ${false}           | ${false}
-      ${'fake-path'}         | ${3}                | ${true}            | ${false}
-      ${'fake-path'}         | ${3}                | ${false}           | ${true}
+      pendingMembersPagePath | pendingMembersCount | hasLimitedFreePlan | previewFreeUserCap | shouldBeRendered
+      ${undefined}           | ${undefined}        | ${false}           | ${false}           | ${false}
+      ${undefined}           | ${0}                | ${false}           | ${false}           | ${false}
+      ${'fake-path'}         | ${0}                | ${false}           | ${false}           | ${false}
+      ${'fake-path'}         | ${3}                | ${true}            | ${false}           | ${false}
+      ${'fake-path'}         | ${3}                | ${false}           | ${true}            | ${false}
+      ${'fake-path'}         | ${3}                | ${false}           | ${false}           | ${true}
     `(
-      'rendering alert is $shouldBeRendered when pendingMembersPagePath=$pendingMembersPagePath and pendingMembersCount=$pendingMembersCount and hasLimitedFreePlan=$hasLimitedFreePlan',
-      ({ pendingMembersPagePath, pendingMembersCount, shouldBeRendered, hasLimitedFreePlan }) => {
+      'rendering alert is $shouldBeRendered when pendingMembersPagePath=$pendingMembersPagePath and pendingMembersCount=$pendingMembersCount and hasLimitedFreePlan=$hasLimitedFreePlan and previewFreeUserCap=$previewFreeUserCap',
+      ({
+        pendingMembersPagePath,
+        pendingMembersCount,
+        shouldBeRendered,
+        hasLimitedFreePlan,
+        previewFreeUserCap,
+      }) => {
         wrapper = createComponent({
           initialState: {
             pendingMembersCount,
             pendingMembersPagePath,
             hasLimitedFreePlan,
+            previewFreeUserCap,
           },
         });
 
-        expect(wrapper.findComponent(GlAlert).exists()).toBe(shouldBeRendered);
+        expect(wrapper.find('[data-testid="pending-members-alert"]').exists()).toBe(
+          shouldBeRendered,
+        );
       },
     );
   });
