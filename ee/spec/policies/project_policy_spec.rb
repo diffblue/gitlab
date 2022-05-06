@@ -1848,6 +1848,14 @@ RSpec.describe ProjectPolicy do
           it { is_expected.to be_allowed(:read_issue_analytics) }
         end
 
+        context 'for admin', :enable_admin_mode do
+          let(:current_user) { admin }
+
+          it { is_expected.to be_allowed(:read_project_merge_request_analytics) }
+          it { is_expected.to be_allowed(:read_code_review_analytics) }
+          it { is_expected.to be_allowed(:read_issue_analytics) }
+        end
+
         context 'for auditor' do
           let(:current_user) { auditor }
 
@@ -1870,6 +1878,14 @@ RSpec.describe ProjectPolicy do
 
         context 'for developer' do
           let(:current_user) { developer }
+
+          it { is_expected.to be_allowed(:read_project_merge_request_analytics) }
+          it { is_expected.to be_allowed(:read_code_review_analytics) }
+          it { is_expected.to be_allowed(:read_issue_analytics) }
+        end
+
+        context 'for admin', :enable_admin_mode do
+          let(:current_user) { admin }
 
           it { is_expected.to be_allowed(:read_project_merge_request_analytics) }
           it { is_expected.to be_allowed(:read_code_review_analytics) }

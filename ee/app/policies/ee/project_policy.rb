@@ -371,7 +371,7 @@ module EE
       rule { (admin | reporter) & dora4_analytics_available }
         .enable :read_dora4_analytics
 
-      rule { reporter & project_merge_request_analytics_available }
+      rule { (admin | reporter) & project_merge_request_analytics_available }
         .enable :read_project_merge_request_analytics
 
       rule { can?(:read_project) & requirements_available }.enable :read_requirement
