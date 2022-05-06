@@ -1,5 +1,5 @@
 <script>
-import { GlButton, GlIcon, GlTooltipDirective } from '@gitlab/ui';
+import { GlButton, GlBadge, GlIcon, GlTooltipDirective } from '@gitlab/ui';
 import { mapState, mapGetters, mapActions } from 'vuex';
 import { EVENT_ISSUABLE_VUE_APP_CHANGE } from '~/issuable/constants';
 
@@ -21,6 +21,7 @@ export default {
   },
   components: {
     GlIcon,
+    GlBadge,
     GlButton,
     UserAvatarLink,
     TimeagoTooltip,
@@ -42,7 +43,7 @@ export default {
     ]),
     ...mapGetters(['isEpicOpen']),
     statusIcon() {
-      return this.isEpicOpen ? 'issue-open-m' : 'mobile-issue-close';
+      return this.isEpicOpen ? 'epic' : 'epic-closed';
     },
     statusText() {
       return this.isEpicOpen ? __('Open') : __('Closed');
@@ -80,14 +81,17 @@ export default {
 <template>
   <div class="detail-page-header gl-flex-wrap gl-py-3">
     <div class="detail-page-header-body">
-      <div
+      <gl-badge
+        class="issuable-status-badge gl-mr-3"
         :class="{ 'status-box-open': isEpicOpen, 'status-box-issue-closed': !isEpicOpen }"
-        class="issuable-status-box status-box"
+        :variant="isEpicOpen ? 'success' : 'info'"
         data-testid="status-box"
       >
-        <gl-icon :name="statusIcon" class="d-block d-sm-none" data-testid="status-icon" />
-        <span class="d-none d-sm-block" data-testid="status-text">{{ statusText }}</span>
-      </div>
+        <gl-icon :name="statusIcon" data-testid="status-icon" />
+        <span class="gl-display-none gl-sm-display-block gl-ml-2" data-testid="status-text">{{
+          statusText
+        }}</span>
+      </gl-badge>
       <div class="issuable-meta" data-testid="author-details">
         <confidentiality-badge
           v-if="confidential"

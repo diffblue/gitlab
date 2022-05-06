@@ -23,6 +23,7 @@ export default function initTestCaseShow({ mountPointSelector }) {
 
   return new Vue({
     el,
+    name: 'TestCaseRoot',
     apolloProvider,
     provide: {
       ...el.dataset,

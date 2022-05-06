@@ -62,7 +62,7 @@ export default {
       return this.testCase.state === 'opened';
     },
     statusBadgeClass() {
-      return this.isTestCaseOpen ? 'status-box-open' : 'status-box-issue-closed';
+      return this.isTestCaseOpen ? 'issuable-status-badge-open' : 'issuable-status-badge-closed';
     },
     statusIcon() {
       return this.isTestCaseOpen ? 'issue-open-m' : 'mobile-issue-close';
@@ -166,6 +166,7 @@ export default {
       :task-completion-status="taskCompletionStatus"
       :task-list-update-path="updatePath"
       :task-list-lock-version="lockVersion"
+      status-icon-class="gl-sm-display-none"
       @edit-issuable="handleEditTestCase"
       @task-list-update-success="handleTaskListUpdateSuccess"
       @task-list-update-failure="handleTaskListUpdateFailure"

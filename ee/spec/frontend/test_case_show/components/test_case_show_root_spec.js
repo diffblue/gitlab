@@ -71,9 +71,9 @@ describe('TestCaseShowRoot', () => {
 
   describe('computed', () => {
     describe.each`
-      state       | isTestCaseOpen | statusBadgeClass             | statusIcon              | statusBadgeText | testCaseActionButtonVariant | testCaseActionTitle
-      ${'opened'} | ${true}        | ${'status-box-open'}         | ${'issue-open-m'}       | ${'Open'}       | ${'warning'}                | ${'Archive test case'}
-      ${'closed'} | ${false}       | ${'status-box-issue-closed'} | ${'mobile-issue-close'} | ${'Archived'}   | ${'default'}                | ${'Reopen test case'}
+      state       | isTestCaseOpen | statusBadgeClass                  | statusIcon              | statusBadgeText | testCaseActionButtonVariant | testCaseActionTitle
+      ${'opened'} | ${true}        | ${'issuable-status-badge-open'}   | ${'issue-open-m'}       | ${'Open'}       | ${'warning'}                | ${'Archive test case'}
+      ${'closed'} | ${false}       | ${'issuable-status-badge-closed'} | ${'mobile-issue-close'} | ${'Archived'}   | ${'default'}                | ${'Reopen test case'}
     `(
       'when `testCase.state` is $state',
       ({
