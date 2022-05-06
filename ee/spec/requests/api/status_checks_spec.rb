@@ -60,7 +60,7 @@ RSpec.describe API::StatusChecks do
           it 'has the correct status values' do
             subject
 
-            expect(json_response[0]["status"]).to eq('approved')
+            expect(json_response[0]["status"]).to eq('passed')
             expect(json_response[1]["status"]).to eq('pending')
             expect(json_response[2]["status"]).to eq('pending')
           end
