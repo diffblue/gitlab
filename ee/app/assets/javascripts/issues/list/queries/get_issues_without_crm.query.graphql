@@ -1,7 +1,7 @@
 #import "~/graphql_shared/fragments/page_info.fragment.graphql"
-#import "./issue.fragment.graphql"
+#import "~/issues/list/queries/issue.fragment.graphql"
 
-query getIssues(
+query getIssuesWithoutCrmEE(
   $isProject: Boolean = false
   $isSignedIn: Boolean = false
   $fullPath: ID!
@@ -20,8 +20,10 @@ query getIssues(
   $releaseTag: [String!]
   $releaseTagWildcardId: ReleaseTagWildcardId
   $types: [IssueType!]
-  $crmContactId: String
-  $crmOrganizationId: String
+  $epicId: String
+  $iterationId: [ID]
+  $iterationWildcardId: IterationWildcardId
+  $weight: String
   $not: NegatedIssueFilterInput
   $beforeCursor: String
   $afterCursor: String
@@ -31,6 +33,7 @@ query getIssues(
   group(fullPath: $fullPath) @skip(if: $isProject) {
     id
     issues(
+      includeSubepics: true
       includeSubgroups: true
       iid: $iid
       search: $search
@@ -45,8 +48,10 @@ query getIssues(
       milestoneWildcardId: $milestoneWildcardId
       myReactionEmoji: $myReactionEmoji
       types: $types
-      crmContactId: $crmContactId
-      crmOrganizationId: $crmOrganizationId
+      epicId: $epicId
+      iterationId: $iterationId
+      iterationWildcardId: $iterationWildcardId
+      weight: $weight
       not: $not
       before: $beforeCursor
       after: $afterCursor
@@ -59,12 +64,16 @@ query getIssues(
       nodes {
         ...IssueFragment
         reference(full: true)
+        blockingCount
+        healthStatus
+        weight
       }
     }
   }
   project(fullPath: $fullPath) @include(if: $isProject) {
     id
     issues(
+      includeSubepics: true
       iid: $iid
       search: $search
       sort: $sort
@@ -80,8 +89,10 @@ query getIssues(
       releaseTag: $releaseTag
       releaseTagWildcardId: $releaseTagWildcardId
       types: $types
-      crmContactId: $crmContactId
-      crmOrganizationId: $crmOrganizationId
+      epicId: $epicId
+      iterationId: $iterationId
+      iterationWildcardId: $iterationWildcardId
+      weight: $weight
       not: $not
       before: $beforeCursor
       after: $afterCursor
@@ -93,6 +104,9 @@ query getIssues(
       }
       nodes {
         ...IssueFragment
+        blockingCount
+        healthStatus
+        weight
       }
     }
   }

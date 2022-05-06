@@ -1,4 +1,4 @@
-query getIssuesCountEE(
+query getIssuesCountWithoutCrm(
   $isProject: Boolean = false
   $fullPath: ID!
   $iid: String
@@ -14,18 +14,11 @@ query getIssuesCountEE(
   $releaseTag: [String!]
   $releaseTagWildcardId: ReleaseTagWildcardId
   $types: [IssueType!]
-  $epicId: String
-  $iterationId: [ID]
-  $iterationWildcardId: IterationWildcardId
-  $weight: String
-  $crmContactId: String
-  $crmOrganizationId: String
   $not: NegatedIssueFilterInput
 ) {
   group(fullPath: $fullPath) @skip(if: $isProject) {
     id
     openedIssues: issues(
-      includeSubepics: true
       includeSubgroups: true
       state: opened
       iid: $iid
@@ -39,18 +32,11 @@ query getIssuesCountEE(
       milestoneWildcardId: $milestoneWildcardId
       myReactionEmoji: $myReactionEmoji
       types: $types
-      epicId: $epicId
-      iterationId: $iterationId
-      iterationWildcardId: $iterationWildcardId
-      weight: $weight
-      crmContactId: $crmContactId
-      crmOrganizationId: $crmOrganizationId
       not: $not
     ) {
       count
     }
     closedIssues: issues(
-      includeSubepics: true
       includeSubgroups: true
       state: closed
       iid: $iid
@@ -64,18 +50,11 @@ query getIssuesCountEE(
       milestoneWildcardId: $milestoneWildcardId
       myReactionEmoji: $myReactionEmoji
       types: $types
-      epicId: $epicId
-      iterationId: $iterationId
-      iterationWildcardId: $iterationWildcardId
-      weight: $weight
-      crmContactId: $crmContactId
-      crmOrganizationId: $crmOrganizationId
       not: $not
     ) {
       count
     }
     allIssues: issues(
-      includeSubepics: true
       includeSubgroups: true
       state: all
       iid: $iid
@@ -89,12 +68,6 @@ query getIssuesCountEE(
       milestoneWildcardId: $milestoneWildcardId
       myReactionEmoji: $myReactionEmoji
       types: $types
-      epicId: $epicId
-      iterationId: $iterationId
-      iterationWildcardId: $iterationWildcardId
-      weight: $weight
-      crmContactId: $crmContactId
-      crmOrganizationId: $crmOrganizationId
       not: $not
     ) {
       count
@@ -103,7 +76,6 @@ query getIssuesCountEE(
   project(fullPath: $fullPath) @include(if: $isProject) {
     id
     openedIssues: issues(
-      includeSubepics: true
       state: opened
       iid: $iid
       search: $search
@@ -118,18 +90,11 @@ query getIssuesCountEE(
       releaseTag: $releaseTag
       releaseTagWildcardId: $releaseTagWildcardId
       types: $types
-      epicId: $epicId
-      iterationId: $iterationId
-      iterationWildcardId: $iterationWildcardId
-      weight: $weight
-      crmContactId: $crmContactId
-      crmOrganizationId: $crmOrganizationId
       not: $not
     ) {
       count
     }
     closedIssues: issues(
-      includeSubepics: true
       state: closed
       iid: $iid
       search: $search
@@ -144,18 +109,11 @@ query getIssuesCountEE(
       releaseTag: $releaseTag
       releaseTagWildcardId: $releaseTagWildcardId
       types: $types
-      epicId: $epicId
-      iterationId: $iterationId
-      iterationWildcardId: $iterationWildcardId
-      weight: $weight
-      crmContactId: $crmContactId
-      crmOrganizationId: $crmOrganizationId
       not: $not
     ) {
       count
     }
     allIssues: issues(
-      includeSubepics: true
       state: all
       iid: $iid
       search: $search
@@ -170,12 +128,6 @@ query getIssuesCountEE(
       releaseTag: $releaseTag
       releaseTagWildcardId: $releaseTagWildcardId
       types: $types
-      epicId: $epicId
-      iterationId: $iterationId
-      iterationWildcardId: $iterationWildcardId
-      weight: $weight
-      crmContactId: $crmContactId
-      crmOrganizationId: $crmOrganizationId
       not: $not
     ) {
       count
