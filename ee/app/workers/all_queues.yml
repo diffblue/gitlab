@@ -93,6 +93,15 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: cronjob:ci_runners_stale_group_runners_prune_cron
+  :worker_name: Ci::Runners::StaleGroupRunnersPruneCronWorker
+  :feature_category: :runner_fleet
+  :has_external_dependencies:
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: cronjob:clear_shared_runners_minutes
   :worker_name: ClearSharedRunnersMinutesWorker
   :feature_category: :continuous_integration
