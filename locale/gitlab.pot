@@ -40443,6 +40443,9 @@ msgstr ""
 msgid "UsageQuota|Current period usage"
 msgstr ""
 
+msgid "UsageQuota|Dependency proxy"
+msgstr ""
+
 msgid "UsageQuota|File attachments and smaller design graphics."
 msgstr ""
 
@@ -40465,6 +40468,9 @@ msgid "UsageQuota|Learn more about excess storage usage"
 msgstr ""
 
 msgid "UsageQuota|Learn more about usage quotas"
+msgstr ""
+
+msgid "UsageQuota|Local proxy used for frequently-accessed upstream Docker images. %{linkStart}More information%{linkEnd}"
 msgstr ""
 
 msgid "UsageQuota|No CI minutes usage data available."

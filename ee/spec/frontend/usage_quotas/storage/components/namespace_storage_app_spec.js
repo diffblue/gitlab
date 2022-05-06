@@ -6,6 +6,7 @@ import StorageInlineAlert from 'ee/usage_quotas/storage/components/storage_inlin
 import TemporaryStorageIncreaseModal from 'ee/usage_quotas/storage/components/temporary_storage_increase_modal.vue';
 import UsageStatistics from 'ee/usage_quotas/storage/components/usage_statistics.vue';
 import UsageGraph from 'ee/usage_quotas/storage/components/usage_graph.vue';
+import DependencyProxyUsage from 'ee/usage_quotas/storage/components/dependency_proxy_usage.vue';
 import { formatUsageSize } from 'ee/usage_quotas/storage/utils';
 import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
 import {
@@ -30,16 +31,21 @@ describe('NamespaceStorageApp', () => {
   const findProjectList = () => wrapper.findComponent(ProjectList);
   const findPrevButton = () => wrapper.find('[data-testid="prevButton"]');
   const findNextButton = () => wrapper.find('[data-testid="nextButton"]');
+  const findDependencyProxy = () => wrapper.findComponent(DependencyProxyUsage);
 
   const createComponent = ({
     provide = {},
     loading = false,
     additionalRepoStorageByNamespace = false,
     namespace = {},
+    dependencyProxyTotalSize = '',
   } = {}) => {
     $apollo = {
       queries: {
         namespace: {
+          loading,
+        },
+        dependencyProxyTotalSize: {
           loading,
         },
       },
@@ -60,6 +66,7 @@ describe('NamespaceStorageApp', () => {
       data() {
         return {
           namespace,
+          dependencyProxyTotalSize,
         };
       },
     });
@@ -146,6 +153,20 @@ describe('NamespaceStorageApp', () => {
         expect(link.exists()).toBe(true);
         expect(link.attributes('href')).toBe('customers.gitlab.com');
       });
+    });
+  });
+
+  describe('Dependency proxy usage', () => {
+    beforeEach(() => {
+      createComponent({
+        additionalRepoStorageByNamespace: true,
+        namespace: withRootStorageStatistics,
+        dependencyProxyTotalSize: '512 bytes',
+      });
+    });
+
+    it('should show the dependency proxy usage component', () => {
+      expect(findDependencyProxy().exists()).toBe(true);
     });
   });
 

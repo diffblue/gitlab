@@ -7,16 +7,19 @@ import {
   GlIcon,
   GlKeysetPagination,
 } from '@gitlab/ui';
+import * as Sentry from '@sentry/browser';
 import { parseBoolean } from '~/lib/utils/common_utils';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { PROJECT_TABLE_LABEL_STORAGE_USAGE } from '../constants';
 import query from '../queries/namespace_storage.query.graphql';
+import GetDependencyProxyTotalSizeQuery from '../queries/dependency_proxy_usage.query.graphql';
 import { formatUsageSize, parseGetStorageResults } from '../utils';
 import ProjectList from './project_list.vue';
 import StorageInlineAlert from './storage_inline_alert.vue';
 import TemporaryStorageIncreaseModal from './temporary_storage_increase_modal.vue';
 import UsageGraph from './usage_graph.vue';
 import UsageStatistics from './usage_statistics.vue';
+import DependencyProxyUsage from './dependency_proxy_usage.vue';
 
 export default {
   name: 'NamespaceStorageApp',
@@ -31,6 +34,7 @@ export default {
     StorageInlineAlert,
     GlKeysetPagination,
     TemporaryStorageIncreaseModal,
+    DependencyProxyUsage,
   },
   directives: {
     GlModalDirective,
@@ -62,12 +66,30 @@ export default {
         this.firstFetch = false;
       },
     },
+    dependencyProxyTotalSize: {
+      query: GetDependencyProxyTotalSizeQuery,
+      variables() {
+        return {
+          fullPath: this.namespacePath,
+        };
+      },
+      update({ group }) {
+        return group?.dependencyProxyTotalSize;
+      },
+      error(error) {
+        Sentry.withScope((scope) => {
+          scope.setTag('component', this.$options.name);
+          Sentry.captureException(error);
+        });
+      },
+    },
   },
   data() {
     return {
       namespace: {},
       searchTerm: '',
       firstFetch: true,
+      dependencyProxyTotalSize: '',
     };
   },
   computed: {
@@ -97,6 +119,9 @@ export default {
     },
     isQueryLoading() {
       return this.$apollo.queries.namespace.loading;
+    },
+    isDependencyProxyStorageQueryLoading() {
+      return this.$apollo.queries.dependencyProxyTotalSize.loading;
     },
     pageInfo() {
       return this.namespace.projects?.pageInfo ?? {};
@@ -216,6 +241,10 @@ export default {
         />
       </div>
     </div>
+    <dependency-proxy-usage
+      :dependency-proxy-total-size="dependencyProxyTotalSize"
+      :loading="isDependencyProxyStorageQueryLoading"
+    />
     <project-list
       :projects="namespaceProjects"
       :is-loading="isQueryLoading"
