@@ -42,7 +42,7 @@ export default {
     <div class="mt-3">
       <gl-button
         ref="saveButton"
-        variant="success"
+        variant="confirm"
         :disabled="isSaveButtonDisabled"
         :loading="isSaving"
         @click="$emit('onSave', sanitizedComment)"
