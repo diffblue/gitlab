@@ -1,5 +1,6 @@
 import { shallowMount } from '@vue/test-utils';
-import ReportNotConfiguredGroup from 'ee/security_dashboard/components/shared/empty_states/report_not_configured_group.vue';
+import { GlEmptyState } from '@gitlab/ui';
+import ReportNotConfiguredGroup from 'ee/security_dashboard/components/group/report_not_configured_group.vue';
 
 describe('Group report not configured component', () => {
   let wrapper;
@@ -22,7 +23,13 @@ describe('Group report not configured component', () => {
     wrapper.destroy();
   });
 
-  it('matches snapshot', () => {
-    expect(wrapper.html()).toMatchSnapshot();
+  it('passes expected props to the GlEmptyState', () => {
+    expect(wrapper.find(GlEmptyState).props()).toMatchObject({
+      title: ReportNotConfiguredGroup.i18n.title,
+      svgPath: emptyStateSvgPath,
+      secondaryButtonText: ReportNotConfiguredGroup.i18n.secondaryButtonText,
+      secondaryButtonLink: dashboardDocumentation,
+      description: ReportNotConfiguredGroup.i18n.description,
+    });
   });
 });

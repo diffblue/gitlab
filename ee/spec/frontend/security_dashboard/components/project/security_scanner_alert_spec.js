@@ -1,5 +1,5 @@
-import { within, fireEvent } from '@testing-library/dom';
 import { mount } from '@vue/test-utils';
+import { GlLink, GlAlert } from '@gitlab/ui';
 import SecurityScannerAlert from 'ee/security_dashboard/components/project/security_scanner_alert.vue';
 
 describe('EE Vulnerability Security Scanner Alert', () => {
@@ -10,63 +10,47 @@ describe('EE Vulnerability Security Scanner Alert', () => {
   });
 
   const createWrapper = ({ props = {}, provide = {} } = {}) => {
-    const defaultProps = {
-      notEnabledScanners: [],
-      noPipelineRunScanners: [],
-    };
-
-    const defaultProvide = {
-      notEnabledScannersHelpPath: '',
-      noPipelineRunScannersHelpPath: '',
-    };
-
     wrapper = mount(SecurityScannerAlert, {
-      propsData: { ...defaultProps, ...props },
+      propsData: {
+        notEnabledScanners: [],
+        noPipelineRunScanners: [],
+        ...props,
+      },
       provide: () => ({
-        ...defaultProvide,
+        notEnabledScannersHelpPath: '',
+        noPipelineRunScannersHelpPath: '',
         ...provide,
       }),
     });
   };
 
-  const withinWrapper = () => within(wrapper.element);
-  const findAlert = () => withinWrapper().queryByRole('alert');
-  const findById = (testId) => withinWrapper().getByTestId(testId);
+  const findAlert = () => wrapper.findComponent(GlAlert);
+  const findAlertLink = () => wrapper.findComponent(GlLink);
 
   describe('container', () => {
     it('renders when disabled scanners are detected', () => {
       createWrapper({ props: { notEnabledScanners: ['SAST'], noPipelineRunScanners: [] } });
 
-      expect(findAlert()).not.toBe(null);
+      expect(findAlert().exists()).toBe(true);
     });
 
     it('renders when scanners without pipeline runs are detected', () => {
       createWrapper({ props: { notEnabledScanners: [], noPipelineRunScanners: ['DAST'] } });
 
-      expect(findAlert()).not.toBe(null);
+      expect(findAlert().exists()).toBe(true);
     });
 
     it('does not render when all scanners are enabled', () => {
       createWrapper({ props: { notEnabledScanners: [], noPipelineRunScanners: [] } });
 
-      expect(findAlert()).toBe(null);
+      expect(findAlert().exists()).toBe(false);
     });
   });
 
   describe('dismissal', () => {
-    it('renders a button', () => {
+    it('emits when the alert is dismissed', () => {
       createWrapper({ props: { notEnabledScanners: ['SAST'] } });
-
-      expect(withinWrapper().getByRole('button', { name: /dismiss/i })).not.toBe(null);
-    });
-
-    it('emits when the button is clicked', async () => {
-      createWrapper({ props: { notEnabledScanners: ['SAST'] } });
-
-      const dismissalButton = withinWrapper().getByRole('button', { name: /dismiss/i });
-      expect(wrapper.emitted('dismiss')).toBe(undefined);
-
-      await fireEvent.click(dismissalButton);
+      findAlert().vm.$emit('dismiss');
 
       expect(wrapper.emitted('dismiss')).toHaveLength(1);
     });
@@ -74,15 +58,15 @@ describe('EE Vulnerability Security Scanner Alert', () => {
 
   describe('alert text', () => {
     it.each`
-      alertType          | givenScanners                                  | expectedTextContained
-      ${'notEnabled'}    | ${{ notEnabledScanners: ['SAST'] }}            | ${'SAST is not enabled for this project'}
-      ${'notEnabled'}    | ${{ notEnabledScanners: ['SAST', 'DAST'] }}    | ${'SAST, DAST are not enabled for this project'}
-      ${'noPipelineRun'} | ${{ noPipelineRunScanners: ['SAST'] }}         | ${'SAST result is not available because a pipeline has not been run since it was enabled'}
-      ${'noPipelineRun'} | ${{ noPipelineRunScanners: ['SAST', 'DAST'] }} | ${'SAST, DAST results are not available because a pipeline has not been run since it was enabled'}
-    `('renders the correct warning', ({ alertType, givenScanners, expectedTextContained }) => {
+      givenScanners                                  | expectedTextContained
+      ${{ notEnabledScanners: ['SAST'] }}            | ${'SAST is not enabled for this project'}
+      ${{ notEnabledScanners: ['SAST', 'DAST'] }}    | ${'SAST, DAST are not enabled for this project'}
+      ${{ noPipelineRunScanners: ['SAST'] }}         | ${'SAST result is not available because a pipeline has not been run since it was enabled'}
+      ${{ noPipelineRunScanners: ['SAST', 'DAST'] }} | ${'SAST, DAST results are not available because a pipeline has not been run since it was enabled'}
+    `('renders the correct warning', ({ givenScanners, expectedTextContained }) => {
       createWrapper({ props: { ...givenScanners } });
 
-      expect(findById(alertType).innerText).toContain(expectedTextContained);
+      expect(findAlert().text()).toContain(expectedTextContained);
     });
   });
 
@@ -92,16 +76,14 @@ describe('EE Vulnerability Security Scanner Alert', () => {
       ${'notEnabled'}    | ${'More information'}
       ${'noPipelineRun'} | ${'Run a pipeline'}
     `('link for $alertType scanners renders correctly', ({ alertType, linkText }) => {
+      const link = 'http://foo.com/';
       createWrapper({
-        props: {
-          [`${alertType}Scanners`]: ['SAST'],
-        },
-        provide: {
-          [`${alertType}ScannersHelpPath`]: 'http://foo.com/',
-        },
+        props: { [`${alertType}Scanners`]: ['SAST'] },
+        provide: { [`${alertType}ScannersHelpPath`]: link },
       });
 
-      expect(within(findById(alertType)).getByText(linkText).href).toBe('http://foo.com/');
+      expect(findAlertLink().text()).toBe(linkText);
+      expect(findAlertLink().attributes('href')).toBe(link);
     });
   });
 });
