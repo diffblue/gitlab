@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe 'Groups > Usage Quotas' do
+  include UsageQuotasHelpers
+
   let_it_be(:user) { create(:user) }
 
   let(:group) { create(:group) }
@@ -190,7 +192,7 @@ RSpec.describe 'Groups > Usage Quotas' do
     it 'points to GitLab CI minutes purchase flow' do
       visit_usage_quotas_page
 
-      expect(page).to have_link('Buy additional minutes', href: buy_minutes_subscriptions_path(selected_group: group.id))
+      expect(page).to have_link('Buy additional minutes', href: buy_minutes_subscriptions_link(group))
     end
   end
 
