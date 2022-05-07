@@ -28,7 +28,6 @@ export default {
 <template>
   <gl-modal
     size="sm"
-    ok-variant="success"
     :title="$options.modalTitle"
     :ok-title="$options.okTitle"
     :cancel-title="$options.cancelTitle"
