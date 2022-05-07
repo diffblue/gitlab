@@ -30,7 +30,7 @@ export default {
   },
   inject: ['submitPath'],
   props: {
-    trial: {
+    trialOnboardingFlow: {
       type: Boolean,
       required: false,
       default: false,
@@ -159,7 +159,7 @@ export default {
       optional
     >
       <gl-form-text class="gl-pb-3">{{ $options.i18n.trialToggleDescription }}</gl-form-text>
-      <registration-trial-toggle :active="trial" data-testid="trial" />
+      <registration-trial-toggle :active="trialOnboardingFlow" data-testid="trial_onboarding_flow" />
     </gl-form-group>
     <gl-button type="submit" variant="confirm" class="gl-w-20">
       {{ $options.i18n.formSubmitText }}

@@ -46015,9 +46015,6 @@ msgstr ""
 msgid "toggle collapse"
 msgstr ""
 
-msgid "trial=true"
-msgstr ""
-
 msgid "triggered"
 msgstr ""
 

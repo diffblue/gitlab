@@ -39,10 +39,12 @@ RSpec.describe TrialRegistrationsController do
     context 'when customer is authenticated' do
       let_it_be(:logged_in_user) { create(:user) }
 
-      it { is_expected.to redirect_to(new_users_sign_up_company_path(trial: true)) }
+      it { is_expected.to redirect_to(new_trial_url) }
 
       context 'when there are additional query params' do
-        it { is_expected.to redirect_to(new_users_sign_up_company_path(trial: true)) }
+        let(:get_params) { { glm_source: 'some_source', glm_content: 'some_content' } }
+
+        it { is_expected.to redirect_to(new_trial_url(get_params)) }
       end
     end
 
