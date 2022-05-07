@@ -18,7 +18,7 @@ describe('SurveyRequestBanner Component', () => {
   let wrapper;
   const findSharedSurveyBanner = () => wrapper.findComponent(sharedSurveyBanner);
 
-  const SURVEY_REQUEST_SVG_PATH = 'foo.svg';
+  const SVG_PATH = 'foo.svg';
 
   const createComponent = (
     vulnerabilityManagementSurvey = { vulnerabilityManagementSurvey: true },
@@ -27,7 +27,7 @@ describe('SurveyRequestBanner Component', () => {
       mount(SurveyRequestBanner, {
         provide: {
           glFeatures: { ...vulnerabilityManagementSurvey },
-          surveyRequestSvgPath: SURVEY_REQUEST_SVG_PATH,
+          securityDashboardEmptySvgPath: SVG_PATH,
         },
       }),
     );
@@ -51,7 +51,7 @@ describe('SurveyRequestBanner Component', () => {
         storageKey: SURVEY_BANNER_LOCAL_STORAGE_KEY,
         daysToAskLater: SURVEY_DAYS_TO_ASK_LATER,
         surveyLink: SURVEY_LINK,
-        svgPath: SURVEY_REQUEST_SVG_PATH,
+        svgPath: SVG_PATH,
         title: SURVEY_TITLE,
         toastMessage: SURVEY_TOAST_MESSAGE,
       });
