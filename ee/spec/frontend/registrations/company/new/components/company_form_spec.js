@@ -19,7 +19,7 @@ describe('RegistrationForm', () => {
       provide: {
         submitPath: SUBMIT_PATH,
       },
-      propsData: { trial: true },
+      propsData: { trialOnboardingFlow: true },
     });
   };
 
@@ -42,7 +42,7 @@ describe('RegistrationForm', () => {
       ${true}   | ${'To activate your trial, we need additional details from you.'}
       ${false}  | ${'To complete registration, we need additional details from you.'}
     `('displays the correct page description text', async ({ trialBool, descriptionText }) => {
-      wrapper.setProps({ trial: trialBool });
+      wrapper.setProps({ trialOnboardingFlow: trialBool });
       await nextTick();
 
       expect(findDescription().text()).toContain(descriptionText);
@@ -53,7 +53,7 @@ describe('RegistrationForm', () => {
     });
 
     it('sets the trial value to be true', () => {
-      expect(wrapper.props().trial).toBe(true);
+      expect(wrapper.props().trialOnboardingFlow).toBe(true);
       expect(wrapper.findComponent(RegistrationTrialToggle).props('active')).toBe(true);
     });
 
@@ -64,7 +64,7 @@ describe('RegistrationForm', () => {
       ${'country'}
       ${'phone_number'}
       ${'website_url'}
-      ${'trial'}
+      ${'trial_onboarding_flow'}
     `('has the correct form input in the form content', ({ testid }) => {
       expect(findFormInput(testid).exists()).toBe(true);
     });

@@ -57,7 +57,7 @@ export default {
       ];
     },
     descriptionText() {
-      return this.trial
+      return this.trialOnboardingFlow
         ? this.$options.i18n.description.trial
         : this.$options.i18n.description.registration;
     },
