@@ -220,17 +220,18 @@ export default {
             v-if="isStorageIncreaseModalVisible"
             v-gl-modal-directive="$options.modalId"
             category="secondary"
-            variant="success"
+            variant="confirm"
             data-testid="temporary-storage-increase-button"
             >{{ s__('UsageQuota|Increase storage temporarily') }}</gl-button
           >
-          <gl-link
+          <gl-button
             v-if="purchaseStorageUrl"
             :href="purchaseStorageUrl"
-            class="btn btn-success gl-ml-2"
+            class="gl-ml-2"
             target="_blank"
+            variant="confirm"
             data-testid="purchase-storage-link"
-            >{{ s__('UsageQuota|Purchase more storage') }}</gl-link
+            >{{ s__('UsageQuota|Purchase more storage') }}</gl-button
           >
         </div>
       </div>
