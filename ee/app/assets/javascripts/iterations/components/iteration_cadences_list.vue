@@ -100,13 +100,14 @@ export default {
     },
     state() {
       switch (this.tabIndex) {
-        default:
         case 0:
           return 'opened';
         case 1:
           return 'closed';
         case 2:
           return 'all';
+        default:
+          return 'opened';
       }
     },
     manualCadenceExists() {
