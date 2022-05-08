@@ -120,13 +120,6 @@ Rails/MailerName:
 Rails/NegateInclude:
   Enabled: false
 
-# Offense count: 39
-# Cop supports --auto-correct.
-# Configuration parameters: Include.
-# Include: **/Rakefile, **/*.rake
-Rails/RakeEnvironment:
-  Enabled: false
-
 # Offense count: 44
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle.
