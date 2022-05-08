@@ -39,13 +39,6 @@ RSpec/PredicateMatcher:
 RSpec/RepeatedExampleGroupBody:
   Enabled: false
 
-# Offense count: 667
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: and_return, block
-RSpec/ReturnFromStub:
-  Enabled: false
-
 # Offense count: 610
 # Cop supports --auto-correct.
 RSpec/ScatteredLet:
