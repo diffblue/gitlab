@@ -113,12 +113,16 @@ module EE
         return if user.blank? || project.blank?
         return unless ::Feature.enabled?(:audit_event_streaming_git_operations, project.group)
 
-        AuditEvents::BuildService.new(
+        audit_context = {
+          name: 'repository_git_operation',
+          stream_only: true,
           author: user,
           scope: project,
           target: project,
           message: { protocol: 'http', action: 'git-upload-pack' }
-        ).execute.stream_to_external_destinations(use_json: true)
+        }
+
+        ::Gitlab::Audit::Auditor.audit(audit_context)
       end
     end
   end

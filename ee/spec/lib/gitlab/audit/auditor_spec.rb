@@ -21,6 +21,32 @@ RSpec.describe Gitlab::Audit::Auditor do
 
   subject(:auditor) { described_class }
 
+  shared_examples 'only streamed' do
+    it 'enqueues an event' do
+      expect_any_instance_of(AuditEvent) do |event|
+        expect(event).to receive(:stream_to_external_destinations).with(use_json: true, audit_operation: name)
+      end
+
+      audit!
+    end
+
+    it 'does not log audit events to file' do
+      freeze_time do
+        expect(::Gitlab::AuditJsonLogger).not_to receive(:build)
+
+        audit!
+      end
+    end
+
+    it 'does not log audit events to database' do
+      freeze_time do
+        expect(AuditEvent).not_to receive(:bulk_insert!)
+
+        audit!
+      end
+    end
+  end
+
   describe '.audit' do
     context 'when recording multiple events', :request_store do
       let(:audit!) { auditor.audit(context, &operation) }
@@ -82,6 +108,14 @@ RSpec.describe Gitlab::Audit::Auditor do
         )
       end
 
+      it 'enqueues an event stream' do
+        expect_any_instance_of(AuditEvent) do |event|
+          expect(event).to receive(:stream_to_external_destinations).with(use_json: true, audit_operation: name)
+        end
+
+        audit!
+      end
+
       context 'when overriding the create datetime' do
         let(:context) { { name: name, author: author, scope: scope, target: target, created_at: 3.weeks.ago } }
 
@@ -118,6 +152,14 @@ RSpec.describe Gitlab::Audit::Auditor do
             )
           end
         end
+      end
+
+      context 'when event is only streamed' do
+        let(:context) do
+          { name: name, author: author, scope: scope, target: target, created_at: 3.weeks.ago, stream_only: true }
+        end
+
+        it_behaves_like 'only streamed'
       end
     end
 
@@ -157,6 +199,22 @@ RSpec.describe Gitlab::Audit::Auditor do
             'details' => kind_of(Hash)
           )
         )
+      end
+
+      context 'when event is only streamed' do
+        let(:context) do
+          {
+            name: name,
+            author: author,
+            scope: scope,
+            target: target,
+            created_at: 3.weeks.ago,
+            stream_only: true,
+            message: 'test'
+          }
+        end
+
+        it_behaves_like 'only streamed'
       end
     end
 
