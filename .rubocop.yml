@@ -243,6 +243,11 @@ Rails/ApplicationRecord:
     - ee/db/**/*.rb
     - ee/spec/**/*.rb
 
+Rails/ActiveRecordCallbacksOrder:
+  Include:
+    - app/models/**/*.rb
+    - ee/app/models/**/*.rb
+
 Cop/DefaultScope:
   Enabled: true
 
