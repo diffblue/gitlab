@@ -51,11 +51,6 @@ Rails/ApplicationController:
     - 'spec/controllers/concerns/continue_params_spec.rb'
     - 'spec/lib/marginalia_spec.rb'
 
-# Offense count: 155
-# Cop supports --auto-correct.
-Rails/ContentTag:
-  Enabled: false
-
 # Offense count: 313
 # Configuration parameters: Include.
 # Include: db/migrate/*.rb
