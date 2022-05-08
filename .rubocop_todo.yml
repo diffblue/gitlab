@@ -16,8 +16,3 @@ Rails/CreateTableWithTimestamps:
 # Include: app/models/**/*.rb
 Rails/HasManyOrHasOneDependent:
   Enabled: false
-
-# Offense count: 42
-# Cop supports --auto-correct.
-Style/CaseLikeIf:
-  Enabled: false
