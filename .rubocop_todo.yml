@@ -96,12 +96,6 @@ Rails/ContentTag:
 Rails/CreateTableWithTimestamps:
   Enabled: false
 
-# Offense count: 361
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: slashes, arguments
-Rails/FilePath:
-  Enabled: false
-
 # Offense count: 354
 # Configuration parameters: Include.
 # Include: app/models/**/*.rb
