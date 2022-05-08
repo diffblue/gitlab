@@ -232,8 +232,3 @@ Style/RescueModifier:
 # Cop supports --auto-correct.
 Style/SingleArgumentDig:
   Enabled: false
-
-# Offense count: 562
-# Cop supports --auto-correct.
-Style/StringConcatenation:
-  Enabled: false
