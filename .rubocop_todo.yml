@@ -125,13 +125,6 @@ Rails/IndexWith:
 Rails/InverseOf:
   Enabled: false
 
-# Offense count: 62
-# Configuration parameters: Include.
-# Include: app/controllers/**/*.rb
-Rails/LexicallyScopedActionFilter:
-  Enabled: false
-
-
 # Offense count: 1
 # Cop supports --auto-correct.
 # Configuration parameters: Include.
