@@ -476,9 +476,11 @@ code. It contains only shell scripting commands for the relevant
 
 ```mermaid
 graph LR
-subgraph script:
-  A{run-snapshopt-tests.sh} --> B
+subgraph tests:
   B[relevant rspec+jest test files]
+end
+subgraph script:
+  A{run-snapshopt-tests.sh} -->|invokes| B
 end
 subgraph input:<br/>YAML
   C[examples_index.yml] --> B
@@ -487,7 +489,7 @@ subgraph input:<br/>YAML
   F[prosemirror_json.yml] --> B
 end
 subgraph output:<br/>test results/output
-  B --> G[rspec/jest output]
+  B --> H[rspec+jest output]
 end
 ```
 
