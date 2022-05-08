@@ -90,12 +90,6 @@ Rails/CreateTableWithTimestamps:
 Rails/HasManyOrHasOneDependent:
   Enabled: false
 
-# Offense count: 537
-# Configuration parameters: Include.
-# Include: app/helpers/**/*.rb
-Rails/HelperInstanceVariable:
-  Enabled: false
-
 # Offense count: 47
 # Cop supports --auto-correct.
 Rails/IndexWith:
