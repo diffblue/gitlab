@@ -18,7 +18,7 @@ RSpec.describe Groups::GroupMembersController do
     context 'when group has email domain feature enabled' do
       let(:email) { 'test@gitlab.com' }
       let(:member_user) { create(:user, email: email) }
-      let(:member) { group.add_guest(member_user) }
+      let!(:member) { group.add_guest(member_user) }
 
       before do
         stub_licensed_features(group_allowed_email_domains: true)

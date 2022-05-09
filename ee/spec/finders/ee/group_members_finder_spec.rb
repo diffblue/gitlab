@@ -40,7 +40,6 @@ RSpec.describe GroupMembersFinder do
 
       context 'when group allows minimal access members' do
         before do
-          group.clear_memoization(:feature_available)
           stub_licensed_features(minimal_access_role: true)
         end
 

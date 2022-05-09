@@ -82,7 +82,7 @@ RSpec.describe Boards::Epics::CreateService do
     end
 
     context 'when epics feature is not available' do
-      it_behaves_like 'epic creation error', /does not exist or you don't have permission/
+      it_behaves_like 'epic creation error', 'This feature is not available'
     end
   end
 end

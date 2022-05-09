@@ -38,7 +38,6 @@ RSpec.describe Mutations::Issues::Update do
     subject { mutation.resolve(**params) }
 
     before do
-      group.clear_memoization(:feature_available)
       project.add_reporter(user)
       group.add_guest(user)
     end

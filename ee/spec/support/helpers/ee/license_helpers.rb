@@ -51,6 +51,7 @@ module EE
       end
 
       ::Project.prepend ClearLicensedFeatureAvailableCache
+      ::Namespace.prepend ClearLicensedFeatureAvailableCache
     end
 
     # This patch helps `stub_licensed_features` to work properly

@@ -19,10 +19,10 @@ RSpec.shared_context 'group managed account with project members' do
   let(:gma_member) { create :user, managing_group: group }
 
   before do
-    stub_licensed_features(group_saml: true)
-
     project.add_maintainer(member)
     project.add_maintainer(gma_member)
+
+    stub_licensed_features(group_saml: true)
   end
 end
 
