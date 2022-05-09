@@ -17,21 +17,52 @@ RSpec.describe Projects::EnvironmentsController do
   end
 
   describe 'GET #show' do
-    before do
-      create(:deployment, :success, environment: environment, project: project) do |deployment|
-        create(:deployment_approval, deployment: deployment)
+    context 'deployment approvals' do
+      before do
+        create(:deployment, :success, environment: environment, project: project) do |deployment|
+          create(:deployment_approval, deployment: deployment)
+        end
+        create(:deployment, :failed, environment: environment, project: project)
       end
-      create(:deployment, :failed, environment: environment, project: project)
+
+      it 'preloads approvals their authors' do
+        get :show, params: environment_params
+
+        assigns(:deployments).each do |deployment|
+          expect(deployment.association(:approvals)).to be_loaded
+
+          deployment.approvals.each do |approval|
+            expect(approval.association(:user)).to be_loaded
+          end
+        end
+      end
     end
 
-    it 'preloads approvals their authors' do
-      get :show, params: environment_params
+    context 'queries' do
+      before do
+        create(:protected_environment, project: project, name: environment.name) do |protected_environment|
+          create(:protected_environment_approval_rule, :maintainer_access, protected_environment: protected_environment)
+          create(:protected_environment_approval_rule, user: create(:user),
+                 protected_environment: protected_environment)
+          create(:protected_environment_approval_rule, group: create(:group),
+                 protected_environment: protected_environment)
+        end
 
-      assigns(:deployments).each do |deployment|
-        expect(deployment.association(:approvals)).to be_loaded
+        stub_licensed_features(protected_environments: true)
+      end
 
-        deployment.approvals.each do |approval|
-          expect(approval.association(:user)).to be_loaded
+      it_behaves_like 'avoids N+1 queries on environment detail page'
+
+      def create_deployment_with_associations(sequence:)
+        commit = project.commit("HEAD~#{sequence}")
+        create(:user, email: commit.author_email)
+
+        deployer = create(:user)
+        build = create(:ci_build, environment: environment.name,
+                       pipeline: create(:ci_pipeline, project: environment.project), user: deployer)
+        create(:deployment, :blocked, environment: environment, deployable: build, user: deployer, project: project,
+               sha: commit.sha) do |deployment|
+          create_list(:deployment_approval, 2, deployment: deployment)
         end
       end
     end
