@@ -91,11 +91,13 @@ describe('User Popovers', () => {
         triggerEvent('mouseover', link);
       });
 
+      await Promise.resolve();
+
       expect(findPopovers().length).toBe(linksWithUsers.length + addedLinks.length);
     });
   });
 
-  it('does not initialize the user popovers twice for the same element', () => {
+  it('does not initialize the user popovers twice for the same element', async () => {
     const [firstUserLink] = findFixtureLinks();
     triggerEvent('mouseover', firstUserLink);
     jest.runOnlyPendingTimers();
@@ -103,6 +105,8 @@ describe('User Popovers', () => {
     jest.runOnlyPendingTimers();
     triggerEvent('mouseover', firstUserLink);
     jest.runOnlyPendingTimers();
+
+    await Promise.resolve();
 
     expect(findPopovers().length).toBe(1);
   });

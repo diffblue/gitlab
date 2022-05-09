@@ -61,7 +61,7 @@ const populateUserInfo = (user) => {
   );
 };
 
-function showPopover(el, user, mountPopover) {
+function createPopover(el, user) {
   removeTitle(el);
   const preloadedUserInfo = getPreloadedUserInfo(el.dataset);
 
@@ -71,7 +71,7 @@ function showPopover(el, user, mountPopover) {
     populateUserInfo(user);
   }
   const UserPopoverComponent = Vue.extend(UserPopover);
-  const popoverInstance = new UserPopoverComponent({
+  return new UserPopoverComponent({
     propsData: {
       target: el,
       user,
@@ -79,11 +79,9 @@ function showPopover(el, user, mountPopover) {
       placement: el.dataset.placement || 'top',
     },
   });
-  mountPopover(popoverInstance);
-  return popoverInstance;
 }
 
-function launchPopover(el, mountPopover) {
+async function launchPopover(el, mountPopover) {
   if (el.user) return;
 
   const emptyUser = {
@@ -102,19 +100,23 @@ function launchPopover(el, mountPopover) {
     },
     { once: true },
   );
-  const renderedPopover = showPopover(el, emptyUser, mountPopover);
+  const popoverInstance = createPopover(el, emptyUser, mountPopover);
 
   const { userId } = el.dataset;
 
-  renderedPopover.$on('follow', () => {
+  popoverInstance.$on('follow', () => {
     UsersCache.updateById(userId, { is_followed: true });
     el.user.isFollowed = true;
   });
 
-  renderedPopover.$on('unfollow', () => {
+  popoverInstance.$on('unfollow', () => {
     UsersCache.updateById(userId, { is_followed: false });
     el.user.isFollowed = false;
   });
+
+  // wait a microtask in case the user is retrieved from cache to avoid flashing
+  await Promise.resolve();
+  mountPopover(popoverInstance);
 }
 
 const userLinkSelector = 'a.js-user-link, a.gfm-project_member';
