@@ -126,6 +126,27 @@ RSpec.shared_examples 'a verifiable replicator' do
     end
   end
 
+  describe '.verification_total_count' do
+    context 'when verification is enabled' do
+      it 'returns the number of verification_not_disabled registry rows' do
+        allow(described_class).to receive(:verification_enabled?).and_return(true)
+        relation = instance_double(ActiveRecord::Relation, count: 123)
+        registry = class_double(Geo::PackageFileRegistry, verification_not_disabled: relation)
+        allow(described_class).to receive(:registry_class).and_return(registry)
+
+        expect(described_class.verification_total_count).to eq(123)
+      end
+    end
+
+    context 'when verification is disabled' do
+      it 'returns nil' do
+        allow(described_class).to receive(:verification_enabled?).and_return(false)
+
+        expect(described_class.verification_total_count).to be_nil
+      end
+    end
+  end
+
   describe '.trigger_background_verification' do
     context 'when verification is enabled' do
       before do

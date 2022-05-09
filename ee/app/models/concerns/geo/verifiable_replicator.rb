@@ -194,7 +194,9 @@ module Geo
         # Bonus: This causes the progress bar to be hidden.
         return unless verification_enabled?
 
-        registry_class.available_verifiables.count
+        # Exclude resources where verification is disabled. We need to do
+        # frontend work if we want to show admins verification_disabled things.
+        registry_class.verification_not_disabled.count
       end
     end
 

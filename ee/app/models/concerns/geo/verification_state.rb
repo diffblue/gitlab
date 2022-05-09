@@ -43,6 +43,7 @@ module Geo
       scope :verification_succeeded, -> { available_verifiables.with_verification_state(:verification_succeeded) }
       scope :verification_failed, -> { available_verifiables.with_verification_state(:verification_failed) }
       scope :verification_disabled, -> { available_verifiables.with_verification_state(:verification_disabled) }
+      scope :verification_not_disabled, -> { available_verifiables.where.not(verification_state: verification_state_value(:verification_disabled)) }
       scope :checksummed, -> { where.not(verification_checksum: nil) }
       scope :not_checksummed, -> { where(verification_checksum: nil) }
       scope :verification_timed_out, -> { available_verifiables.where(verification_arel_table[:verification_state].eq(1)).where(verification_arel_table[:verification_started_at].lt(VERIFICATION_TIMEOUT.ago)) }
