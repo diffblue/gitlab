@@ -28,9 +28,13 @@ class DastScannerProfilesFinder
   end
 
   def by_project(relation)
-    return relation unless params[:project_ids]
-
-    relation.project_id_in(params[:project_ids])
+    if params[:project_ids]
+      relation.project_id_in(params[:project_ids])
+    elsif params[:project_id]
+      relation.project_id_in(params[:project_id])
+    else
+      relation
+    end
   end
 
   def by_name(relation)

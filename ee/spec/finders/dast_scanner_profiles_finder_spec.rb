@@ -27,11 +27,19 @@ RSpec.describe DastScannerProfilesFinder do
       end
     end
 
-    context 'filter by project' do
+    context 'filter by projects' do
       let(:params) { { project_ids: [dast_scanner_profile1.project.id, dast_scanner_profile2.project.id] } }
 
       it 'returns the matching dast_scanner_profiles' do
         expect(subject).to contain_exactly(dast_scanner_profile1, dast_scanner_profile2)
+      end
+    end
+
+    context 'filter by a project' do
+      let(:params) { { project_id: dast_scanner_profile1.project.id } }
+
+      it 'returns the matching dast_scanner_profile' do
+        expect(subject).to contain_exactly(dast_scanner_profile1)
       end
     end
 

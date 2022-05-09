@@ -61,38 +61,67 @@ RSpec.describe AppSec::Dast::Profiles::CreateAssociationsService do
       end
 
       context 'when the build has multiple dast_configurations' do
-        let_it_be(:dast_site_profile_2) { create(:dast_site_profile, project: project) }
-        let_it_be(:dast_scanner_profile_2) { create(:dast_scanner_profile, project: project) }
+        let(:dast_site_profile_2) do
+          create(:dast_site_profile, project: custom_project, name: dast_site_profile_2_name)
+        end
 
-        let(:dast_scanner_profile_2_name) { dast_scanner_profile_2.name }
-        let(:dast_site_profile_2_name) { dast_site_profile_2.name }
+        let(:dast_scanner_profile_2) do
+          create(:dast_scanner_profile, project: custom_project, name: dast_scanner_profile_2_name)
+        end
 
         let!(:dast_build_2) do
           create(:ci_build, project: project, user: user, pipeline: pipeline, stage_id: stage.id,
-                 options: { dast_configuration: { site_profile: dast_site_profile_2_name,
-                                                  scanner_profile: dast_scanner_profile_2_name } })
+                 options: { dast_configuration: { site_profile: dast_site_profile_2.name,
+                                                  scanner_profile: dast_scanner_profile_2.name } })
         end
 
         let(:builds) { [dast_build, dast_build_2] }
         let(:params) { { builds: builds } }
 
-        let(:expected_associations) do
-          {
-            dast_build => {
-              dast_site_profile: dast_site_profile,
-              dast_scanner_profile: dast_scanner_profile
-            },
-            dast_build_2 => {
-              dast_site_profile: dast_site_profile_2,
-              dast_scanner_profile: dast_scanner_profile_2
+        context 'with different name and same project' do
+          let(:dast_scanner_profile_2_name) { 'test' }
+          let(:dast_site_profile_2_name) { 'test' }
+          let(:custom_project) { project }
+          let(:expected_associations) do
+            {
+              dast_build => {
+                dast_site_profile: dast_site_profile,
+                dast_scanner_profile: dast_scanner_profile
+              },
+              dast_build_2 => {
+                dast_site_profile: dast_site_profile_2,
+                dast_scanner_profile: dast_scanner_profile_2
+              }
             }
-          }
+          end
+
+          it 'associate the associations correctly', :aggregate_failures do
+            expected_associations.each do |build, associations|
+              associations.each do |association_name, association|
+                expect(build.public_send(association_name)).to eq(association)
+              end
+            end
+          end
         end
 
-        it 'associations the associations correctly', :aggregate_failures do
-          expected_associations.each do |build, associations|
-            associations.each do |association_name, association|
-              expect(build.public_send(association_name)).to eq(association)
+        context 'with same named profiles from different project' do
+          let(:dast_scanner_profile_2_name) { dast_scanner_profile.name }
+          let(:dast_site_profile_2_name) { dast_site_profile.name }
+          let(:custom_project) { create(:project) }
+          let(:expected_associations) do
+            {
+              dast_build => {
+                dast_site_profile: dast_site_profile,
+                dast_scanner_profile: dast_scanner_profile
+              }
+            }
+          end
+
+          it 'associate the associations correctly', :aggregate_failures do
+            expected_associations.each do |build, associations|
+              associations.each do |association_name, association|
+                expect(build.public_send(association_name)).to eq(association)
+              end
             end
           end
         end
