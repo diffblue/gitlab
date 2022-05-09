@@ -8,7 +8,9 @@ module EE
       private
 
       def group_relation
-        ::Group.includes(:route, :owners, group_wiki_repository: :shard) # rubocop: disable CodeReuse/ActiveRecord
+        scope = ::Group.includes(:route, :owners, group_wiki_repository: :shard) # rubocop: disable CodeReuse/ActiveRecord
+        scope = scope.id_in(GroupWikiRepository.for_repository_storage(storages).select(:group_id)) if storages.any?
+        scope
       end
 
       def find_groups_in_batches(&block)
