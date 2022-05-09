@@ -6,11 +6,11 @@ import Zuora, {
   Action,
   DEFAULT_IFRAME_BOTTOM_HEIGHT,
   DEFAULT_IFRAME_CONTAINER_MIN_HEIGHT,
-  ERROR,
-  ERROR_CLIENT,
   Event,
-  SUCCESS,
+  TrackingEvent,
+  TrackingLabel,
   ZUORA_EVENT_CATEGORY,
+  INVALID_SECURITY,
 } from 'ee/billings/components/zuora_simple.vue';
 import { ERROR_LOADING_PAYMENT_FORM } from 'ee/subscriptions/constants';
 import { mockTracking, unmockTracking } from 'helpers/tracking_helper';
@@ -106,12 +106,15 @@ describe('Zuora', () => {
   describe('iFrame callbacks', () => {
     describe('paymentFormSubmitted', () => {
       describe('when not successful', () => {
+        const errorCode = 'PAYMENT_ERROR';
+        const errorMessage = 'Payment Error';
+
         beforeEach(() => {
           window.Z = {
             runAfterRender: (fn) => fn(),
             renderWithErrorHandler: (params, _, paymentFormSubmitted) =>
               Promise.resolve().then(() =>
-                paymentFormSubmitted({ success: 'false', message: ERROR }),
+                paymentFormSubmitted({ success: 'false', errorCode, errorMessage }),
               ),
           };
           createComponent();
@@ -135,16 +138,47 @@ describe('Zuora', () => {
         });
 
         it('shows an error alert', () => {
-          expect(findAlert().text()).toBe(ERROR);
+          expect(findAlert().text()).toBe(errorMessage);
+        });
+
+        it('emits payment-submit-error', () => {
+          expect(wrapper.emitted(Event.PAYMENT_SUBMIT_ERROR)).toEqual([
+            [{ errorCode, errorMessage }],
+          ]);
         });
 
         it('tracks the y error event', () => {
           expect(trackingSpy).toHaveBeenCalledTimes(2);
-          expect(trackingSpy).toHaveBeenLastCalledWith(ZUORA_EVENT_CATEGORY, ERROR, {
-            label: Event.PAYMENT_SUBMITTED,
-            property: ERROR,
+          expect(trackingSpy).toHaveBeenLastCalledWith(ZUORA_EVENT_CATEGORY, TrackingEvent.ERROR, {
+            label: TrackingLabel.PAYMENT_SUBMITTED,
+            property: errorMessage,
             category: ZUORA_EVENT_CATEGORY,
           });
+        });
+      });
+
+      describe('when not successful with invalid security code', () => {
+        const errorMessage = 'Iframe error';
+
+        beforeEach(() => {
+          window.Z = {
+            runAfterRender: (fn) => fn(),
+            renderWithErrorHandler: (params, _, paymentFormSubmitted) =>
+              paymentFormSubmitted({
+                success: false,
+                refId,
+                errorCode: INVALID_SECURITY,
+                errorMessage,
+              }),
+          };
+          createComponent();
+          wrapper.vm.zuoraScriptEl.onload();
+        });
+
+        it('emits load-error', () => {
+          expect(wrapper.emitted(Event.LOAD_ERROR)).toEqual([
+            [{ errorCode: INVALID_SECURITY, errorMessage }],
+          ]);
         });
       });
 
@@ -166,6 +200,10 @@ describe('Zuora', () => {
           expect(Api.validatePaymentMethod).toHaveBeenCalledTimes(1);
           expect(Api.validatePaymentMethod).toHaveBeenCalledWith(refId, currentUserId);
         });
+
+        it('emits payment-submit-success', () => {
+          expect(wrapper.emitted(Event.PAYMENT_SUBMIT_SUCCESS)).toEqual([[{ refId }]]);
+        });
       });
     });
 
@@ -177,7 +215,7 @@ describe('Zuora', () => {
           window.Z = {
             runAfterRender: (fn) => fn(),
             renderWithErrorHandler: (params, _, paymentFormSubmitted, handleError) =>
-              Promise.resolve().then(() => handleError(ERROR, null, iFrameErrorMessage)),
+              Promise.resolve().then(() => handleError('error', null, iFrameErrorMessage)),
           };
           createComponent();
           wrapper.vm.zuoraScriptEl.onload();
@@ -189,8 +227,8 @@ describe('Zuora', () => {
 
         it('tracks the payment_form_submitted error event', () => {
           expect(trackingSpy).toHaveBeenCalledTimes(2);
-          expect(trackingSpy).toHaveBeenLastCalledWith(ZUORA_EVENT_CATEGORY, ERROR, {
-            label: Event.PAYMENT_SUBMITTED,
+          expect(trackingSpy).toHaveBeenLastCalledWith(ZUORA_EVENT_CATEGORY, TrackingEvent.ERROR, {
+            label: TrackingLabel.PAYMENT_SUBMITTED,
             property: iFrameErrorMessage,
             category: ZUORA_EVENT_CATEGORY,
           });
@@ -204,7 +242,6 @@ describe('Zuora', () => {
           runAfterRender: (fn) => fn(),
           sendErrorMessageToHpm: jest.fn(),
         };
-
         jest.spyOn(Api, 'fetchPaymentFormParams').mockResolvedValue(new Promise(() => {}));
         jest.spyOn(Api, 'validatePaymentMethod').mockResolvedValue(new Promise(() => {}));
         createComponent();
@@ -231,54 +268,6 @@ describe('Zuora', () => {
           window.dispatchEvent(new MessageEvent('message', { data: [] }));
 
           expect(findLoading().exists()).toBe(true);
-        });
-      });
-
-      describe(`when dispatching a ${Action.CUSTOMIZE_ERROR_MESSAGE} event type`, () => {
-        const key = 'CreditCardNumber';
-        const message = 'Required field';
-        const data = JSON.stringify({
-          action: Action.CUSTOMIZE_ERROR_MESSAGE,
-          key,
-          message,
-        });
-
-        beforeEach(() => {
-          window.dispatchEvent(new MessageEvent('message', { data }));
-        });
-
-        it('does not show the loading icon', () => {
-          expect(findLoading().exists()).toBe(false);
-        });
-
-        it('does not show an error alert', () => {
-          expect(findAlert().exists()).toBe(false);
-        });
-
-        it('applies the default style', async () => {
-          jest
-            .spyOn(Api, 'fetchPaymentFormParams')
-            .mockResolvedValue({ data: { someData: 'some-data' } });
-          await wrapper.vm.zuoraScriptEl.onload();
-
-          const height = initialHeight - DEFAULT_IFRAME_BOTTOM_HEIGHT;
-
-          expect(findZuoraPayment().attributes('style')).toBe(
-            `height: ${height}px; min-height: ${DEFAULT_IFRAME_CONTAINER_MIN_HEIGHT};`,
-          );
-        });
-
-        it('invokes sendErrorMessageToHpm with the correct params', () => {
-          expect(window.Z.sendErrorMessageToHpm).toHaveBeenCalledTimes(1);
-          expect(window.Z.sendErrorMessageToHpm).toHaveBeenCalledWith(key, message);
-        });
-
-        it('tracks client_error event', () => {
-          expect(trackingSpy).toHaveBeenCalledWith(ZUORA_EVENT_CATEGORY, ERROR_CLIENT, {
-            category: ZUORA_EVENT_CATEGORY,
-            label: Event.PAYMENT_SUBMITTED,
-            property: message,
-          });
         });
       });
 
@@ -315,6 +304,117 @@ describe('Zuora', () => {
             `height: ${height}px; min-height: ${DEFAULT_IFRAME_CONTAINER_MIN_HEIGHT};`,
           );
         });
+      });
+    });
+
+    describe('handleErrorMessage', () => {
+      describe('server-validation-error', () => {
+        const errorDetails = {
+          key: 'error',
+          code: 'unknown',
+          message: 'Credit card expiry date should be in future',
+        };
+
+        beforeEach(() => {
+          window.Z = {
+            runAfterRender: (fn) => fn(),
+            sendErrorMessageToHpm: jest.fn(),
+            renderWithErrorHandler: (params, _, paymentFormSubmitted, handleErrorMessage) =>
+              Promise.resolve().then(() =>
+                handleErrorMessage(errorDetails.key, errorDetails.code, errorDetails.message),
+              ),
+          };
+          createComponent();
+          wrapper.vm.zuoraScriptEl.onload();
+        });
+
+        it('does not show the loading icon', () => {
+          expect(findLoading().exists()).toBe(false);
+        });
+
+        it('shows alert with error message', () => {
+          expect(findAlert().text()).toBe(errorDetails.message);
+        });
+
+        it('emits server-validation-error', () => {
+          expect(wrapper.emitted(Event.SERVER_VALIDATION_ERROR)).toEqual([[errorDetails]]);
+        });
+
+        it('tracks server-validation-error event', () => {
+          expect(trackingSpy).toHaveBeenLastCalledWith(ZUORA_EVENT_CATEGORY, TrackingEvent.ERROR, {
+            label: TrackingLabel.PAYMENT_SUBMITTED,
+            property: errorDetails.message,
+            category: ZUORA_EVENT_CATEGORY,
+          });
+        });
+      });
+
+      describe('client-validation-error', () => {
+        const errorDetails = {
+          key: 'creditCardNumber',
+          code: '001',
+          message: 'Required field empty',
+        };
+
+        beforeEach(() => {
+          window.Z = {
+            runAfterRender: (fn) => fn(),
+            sendErrorMessageToHpm: jest.fn(),
+            renderWithErrorHandler: (params, _, paymentFormSubmitted, handleErrorMessage) =>
+              Promise.resolve().then(() =>
+                handleErrorMessage(errorDetails.key, errorDetails.code, errorDetails.message),
+              ),
+          };
+          createComponent();
+          wrapper.vm.zuoraScriptEl.onload();
+        });
+
+        it('does not show the loading icon', () => {
+          expect(findLoading().exists()).toBe(false);
+        });
+
+        it('does not show alert with error message', () => {
+          expect(findAlert().exists()).toBe(false);
+        });
+
+        it('invokes sendErrorMessageToHpm with the correct params', () => {
+          expect(window.Z.sendErrorMessageToHpm).toHaveBeenCalledTimes(1);
+          expect(window.Z.sendErrorMessageToHpm).toHaveBeenCalledWith(
+            errorDetails.key,
+            errorDetails.message,
+          );
+        });
+
+        it('emits client-validation-error', () => {
+          expect(wrapper.emitted(Event.CLIENT_VALIDATION_ERROR)).toEqual([[errorDetails]]);
+        });
+
+        it('tracks client-validation-error event', () => {
+          expect(trackingSpy).toHaveBeenLastCalledWith(
+            ZUORA_EVENT_CATEGORY,
+            TrackingEvent.ERROR_CLIENT,
+            {
+              label: TrackingLabel.PAYMENT_SUBMITTED,
+              property: errorDetails.message,
+              category: ZUORA_EVENT_CATEGORY,
+            },
+          );
+        });
+      });
+    });
+
+    describe('submit', () => {
+      beforeEach(() => {
+        window.Z = {
+          submit: () => {},
+        };
+        createComponent();
+        wrapper.vm.zuoraScriptEl.onload();
+        wrapper.vm.submit();
+      });
+
+      it('emits payment-submission-processing', () => {
+        expect(wrapper.emitted(Event.PAYMENT_SUBMISSION_PROCESSING)).toHaveLength(1);
       });
     });
   });
@@ -362,10 +462,18 @@ describe('Zuora', () => {
           );
         });
 
+        it('emits loaded', () => {
+          expect(wrapper.emitted(Event.LOADED)).toHaveLength(1);
+        });
+
         it('tracks frame_loaded event', () => {
-          expect(trackingSpy).toHaveBeenCalledWith(ZUORA_EVENT_CATEGORY, Event.IFRAME_LOADED, {
-            category: ZUORA_EVENT_CATEGORY,
-          });
+          expect(trackingSpy).toHaveBeenCalledWith(
+            ZUORA_EVENT_CATEGORY,
+            TrackingEvent.IFRAME_LOADED,
+            {
+              category: ZUORA_EVENT_CATEGORY,
+            },
+          );
         });
 
         it('calls the Z method with the correct params', () => {
@@ -385,8 +493,10 @@ describe('Zuora', () => {
       });
 
       describe('when resolved with an error', () => {
+        const error = 'error';
+
         beforeEach(() => {
-          jest.spyOn(Api, 'fetchPaymentFormParams').mockResolvedValue({ data: { errors: ERROR } });
+          jest.spyOn(Api, 'fetchPaymentFormParams').mockResolvedValue({ data: { errors: error } });
           createComponent();
           wrapper.vm.zuoraScriptEl.onload();
         });
@@ -397,9 +507,9 @@ describe('Zuora', () => {
 
         it('tracks the payment_form_fetch_params error event', () => {
           expect(trackingSpy).toHaveBeenCalledTimes(1);
-          expect(trackingSpy).toHaveBeenCalledWith(ZUORA_EVENT_CATEGORY, ERROR, {
-            label: Event.FETCH_PARAMS,
-            property: ERROR,
+          expect(trackingSpy).toHaveBeenCalledWith(ZUORA_EVENT_CATEGORY, TrackingEvent.ERROR, {
+            label: TrackingLabel.FETCH_PARAMS,
+            property: error,
             category: ZUORA_EVENT_CATEGORY,
           });
         });
@@ -418,8 +528,8 @@ describe('Zuora', () => {
 
         it('tracks the payment_form_fetch_params error event', () => {
           expect(trackingSpy).toHaveBeenCalledTimes(1);
-          expect(trackingSpy).toHaveBeenCalledWith(ZUORA_EVENT_CATEGORY, ERROR, {
-            label: Event.FETCH_PARAMS,
+          expect(trackingSpy).toHaveBeenCalledWith(ZUORA_EVENT_CATEGORY, TrackingEvent.ERROR, {
+            label: TrackingLabel.FETCH_PARAMS,
             property: ERROR_LOADING_PAYMENT_FORM,
             category: ZUORA_EVENT_CATEGORY,
           });
@@ -455,8 +565,8 @@ describe('Zuora', () => {
 
         it('tracks the payment_form_fetch_params error event', () => {
           expect(trackingSpy).toHaveBeenCalledTimes(1);
-          expect(trackingSpy).toHaveBeenCalledWith(ZUORA_EVENT_CATEGORY, ERROR, {
-            label: Event.FETCH_PARAMS,
+          expect(trackingSpy).toHaveBeenCalledWith(ZUORA_EVENT_CATEGORY, TrackingEvent.ERROR, {
+            label: TrackingLabel.FETCH_PARAMS,
             property: 'Request failed with status code 401',
             category: ZUORA_EVENT_CATEGORY,
           });
@@ -476,7 +586,6 @@ describe('Zuora', () => {
       describe('when pending', () => {
         beforeEach(() => {
           jest.spyOn(Api, 'validatePaymentMethod').mockResolvedValue(new Promise(() => {}));
-
           createComponent();
           wrapper.vm.zuoraScriptEl.onload();
         });
@@ -510,17 +619,21 @@ describe('Zuora', () => {
           expect(findAlert().exists()).toBe(false);
         });
 
-        it('emits a success event', () => {
-          expect(wrapper.emitted(SUCCESS)).toHaveLength(1);
+        it('emits success', () => {
+          expect(wrapper.emitted(Event.SUCCESS)).toHaveLength(1);
         });
 
-        it('tracks the payment_form_fetch_params error event', () => {
+        it('tracks the payment_method_validate success event', () => {
           expect(trackingSpy).toHaveBeenCalledTimes(2);
-          expect(trackingSpy).toHaveBeenLastCalledWith(ZUORA_EVENT_CATEGORY, SUCCESS, {
-            label: Event.PAYMENT_VALIDATE,
-            property: `payment_method_id: ${refId}`,
-            category: ZUORA_EVENT_CATEGORY,
-          });
+          expect(trackingSpy).toHaveBeenLastCalledWith(
+            ZUORA_EVENT_CATEGORY,
+            TrackingEvent.SUCCESS,
+            {
+              label: TrackingLabel.PAYMENT_VALIDATE,
+              property: `payment_method_id: ${refId}`,
+              category: ZUORA_EVENT_CATEGORY,
+            },
+          );
         });
       });
 
@@ -537,10 +650,10 @@ describe('Zuora', () => {
           expect(findAlert().text()).toBe(wrapper.vm.$options.i18n.paymentValidationError);
         });
 
-        it('tracks the payment_form_fetch_params error event', () => {
+        it('tracks the payment_method_validate error event', () => {
           expect(trackingSpy).toHaveBeenCalledTimes(2);
-          expect(trackingSpy).toHaveBeenLastCalledWith(ZUORA_EVENT_CATEGORY, ERROR, {
-            label: Event.PAYMENT_VALIDATE,
+          expect(trackingSpy).toHaveBeenLastCalledWith(ZUORA_EVENT_CATEGORY, TrackingEvent.ERROR, {
+            label: TrackingLabel.PAYMENT_VALIDATE,
             property: wrapper.vm.$options.i18n.paymentValidationError,
             category: ZUORA_EVENT_CATEGORY,
           });
@@ -558,10 +671,10 @@ describe('Zuora', () => {
           expect(findAlert().text()).toBe(wrapper.vm.$options.i18n.paymentValidationError);
         });
 
-        it('tracks the payment_form_fetch_params error event', () => {
+        it('tracks the payment_method_validate error event', () => {
           expect(trackingSpy).toHaveBeenCalledTimes(2);
-          expect(trackingSpy).toHaveBeenLastCalledWith(ZUORA_EVENT_CATEGORY, ERROR, {
-            label: Event.PAYMENT_VALIDATE,
+          expect(trackingSpy).toHaveBeenLastCalledWith(ZUORA_EVENT_CATEGORY, TrackingEvent.ERROR, {
+            label: TrackingLabel.PAYMENT_VALIDATE,
             property: wrapper.vm.$options.i18n.paymentValidationError,
             category: ZUORA_EVENT_CATEGORY,
           });
@@ -599,8 +712,8 @@ describe('Zuora', () => {
 
         it('tracks the payment_form_fetch_params error event', () => {
           expect(trackingSpy).toHaveBeenCalledTimes(2);
-          expect(trackingSpy).toHaveBeenLastCalledWith(ZUORA_EVENT_CATEGORY, ERROR, {
-            label: Event.PAYMENT_VALIDATE,
+          expect(trackingSpy).toHaveBeenLastCalledWith(ZUORA_EVENT_CATEGORY, TrackingEvent.ERROR, {
+            label: TrackingLabel.PAYMENT_VALIDATE,
             property: 'Request failed with status code 401',
             category: ZUORA_EVENT_CATEGORY,
           });

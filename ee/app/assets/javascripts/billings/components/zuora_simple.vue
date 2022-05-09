@@ -20,21 +20,36 @@ const parseJson = (data) => {
 
 export const DEFAULT_IFRAME_BOTTOM_HEIGHT = 55;
 export const DEFAULT_IFRAME_CONTAINER_MIN_HEIGHT = '200px';
-export const ERROR = 'error';
-export const ERROR_CLIENT = 'client_error';
-export const SUCCESS = 'success';
 export const ZUORA_EVENT_CATEGORY = 'Zuora_cc';
+export const INVALID_SECURITY = 'Invalid_Security';
 
 export const Action = Object.freeze({
-  CUSTOMIZE_ERROR_MESSAGE: 'customizeErrorMessage',
   RESIZE: 'resize',
 });
 
 export const Event = Object.freeze({
-  FETCH_PARAMS: 'payment_form_fetch_params',
+  LOADED: 'loaded',
+  LOAD_ERROR: 'load-error',
+  PAYMENT_SUBMISSION_PROCESSING: 'payment-submission-processing',
+  CLIENT_VALIDATION_ERROR: 'client-validation-error',
+  SERVER_VALIDATION_ERROR: 'server-validation-error',
+  PAYMENT_SUBMIT_ERROR: 'payment-submit-error',
+  PAYMENT_SUBMIT_SUCCESS: 'payment-submit-success',
+  SUCCESS: 'success',
+});
+
+export const TrackingEvent = Object.freeze({
+  ERROR: 'error',
+  ERROR_CLIENT: 'client_error',
+  SUCCESS: 'success',
   IFRAME_LOADED: 'iframe_loaded',
+});
+
+export const TrackingLabel = Object.freeze({
+  FETCH_PARAMS: 'payment_form_fetch_params',
   PAYMENT_SUBMITTED: 'payment_form_submitted',
   PAYMENT_VALIDATE: 'payment_method_validate',
+  IFRAME_LOAD_ERROR: 'iframe_load_error',
 });
 
 /*
@@ -42,7 +57,20 @@ export const Event = Object.freeze({
 
 This component will not re-render on failure, but instead displays
 error states in either the iframe (client side validation) or as an alert.
- */
+
+[Events emitted]:
+| Event Name                        | Payload                            | Event Trigger                                |
+|-----------------------------------|------------------------------------|----------------------------------------------|
+| loaded                            | N/A                                | iframe loads successfully                     |
+| load-error                        | { errorCode, errorMessage }        | iframe load fails                            |
+| payment-submission-processing     | N/A                                | User clicks on make payment button           |
+| client-validation-error           | { key, code, message }             | Client side validation from Zuora            |
+| server-validation-error           | { key, code, message }             | Server side validation from Zuora            |
+| payment-submit-error              | { errorCode, errorMessage }        | Error while making payment (post validation) |
+| payment-submit-success            | { refId }                          | Success in creating payment method in Zuora |
+| success                           | N/A                                | Payment method validation success            |
+
+*/
 export default {
   i18n: {
     paymentValidationError: s__('Billings|Error validating card details'),
@@ -70,6 +98,7 @@ export default {
   data() {
     return {
       error: null,
+      iframeLoadError: null,
       iframeHeight: this.initialHeight,
       isLoading: true,
       paymentFormParams: {},
@@ -121,8 +150,8 @@ export default {
         })
         .catch((error = {}) => {
           this.handleError(ERROR_LOADING_PAYMENT_FORM);
-          this.track(ERROR, {
-            label: Event.FETCH_PARAMS,
+          this.track(TrackingEvent.ERROR, {
+            label: TrackingLabel.FETCH_PARAMS,
             property: error.errorMessage || error.message || ERROR_LOADING_PAYMENT_FORM,
           });
         });
@@ -131,27 +160,34 @@ export default {
       this.isLoading = false;
       this.error = msg;
     },
-    handleErrorMessage(key, code, msg) {
-      if (key.toLowerCase() === ERROR) {
-        this.track(ERROR, {
-          label: Event.PAYMENT_SUBMITTED,
-          property: msg,
+    /*
+      For error handling, refer to below Zuora documentation:
+      https://knowledgecenter.zuora.com/Billing/Billing_and_Payments/LA_Hosted_Payment_Pages/B_Payment_Pages_2.0/N_Error_Handling_for_Payment_Pages_2.0/Customize_Error_Messages_for_Payment_Pages_2.0#Define_Custom_Error_Message_Handling_Function
+      https://knowledgecenter.zuora.com/Billing/Billing_and_Payments/LA_Hosted_Payment_Pages/B_Payment_Pages_2.0/H_Integrate_Payment_Pages_2.0/A_Advanced_Integration_of_Payment_Pages_2.0#Customize_Error_Messages_in_Advanced_Integration
+    */
+    handleErrorMessage(key, code, message) {
+      const emitPayload = { key, code, message };
+      if (key.toLowerCase() === 'error') {
+        this.track(TrackingEvent.ERROR, {
+          label: TrackingLabel.PAYMENT_SUBMITTED,
+          property: message,
         });
-        this.handleError(msg);
+        this.handleError(message);
+        this.$emit(Event.SERVER_VALIDATION_ERROR, emitPayload);
+      } else {
+        window.Z.sendErrorMessageToHpm(key, message);
+        this.isLoading = false;
+        this.track(TrackingEvent.ERROR_CLIENT, {
+          label: TrackingLabel.PAYMENT_SUBMITTED,
+          property: message,
+        });
+        this.$emit(Event.CLIENT_VALIDATION_ERROR, emitPayload);
       }
     },
     handleMessage({ data } = {}) {
       const iFrameData = parseJson(data);
-      const { action, key, height, message } = iFrameData;
+      const { action, height } = iFrameData;
       switch (action) {
-        case Action.CUSTOMIZE_ERROR_MESSAGE:
-          window.Z.sendErrorMessageToHpm(key, message);
-          this.track(ERROR_CLIENT, {
-            label: Event.PAYMENT_SUBMITTED,
-            property: message,
-          });
-          this.isLoading = false;
-          break;
         case Action.RESIZE:
           this.iframeHeight = height > 0 ? height : this.iframeHeight;
           this.isLoading = false;
@@ -163,7 +199,10 @@ export default {
     iFrameDidRender() {
       this.isLoading = false;
       this.zuoraLoaded = true;
-      this.track(Event.IFRAME_LOADED);
+      if (!this.iframeLoadError) {
+        this.track(TrackingEvent.IFRAME_LOADED);
+        this.$emit(Event.LOADED);
+      }
     },
     loadZuoraScript() {
       this.isLoading = true;
@@ -176,14 +215,27 @@ export default {
         document.head.appendChild(this.zuoraScriptEl);
       }
     },
-    paymentFormSubmitted({ message, success, refId } = {}) {
+    paymentFormSubmitted({ success, refId, errorCode, errorMessage } = {}) {
       if (parseBoolean(success)) {
+        this.$emit(Event.PAYMENT_SUBMIT_SUCCESS, { refId });
         return this.validatePaymentMethod(refId);
       }
-      this.handleError(message);
-      return this.track(ERROR, {
-        label: Event.PAYMENT_SUBMITTED,
-        property: message,
+
+      this.handleError(errorMessage);
+      let event;
+      let trackingLabel;
+      if (errorCode === INVALID_SECURITY) {
+        event = Event.LOAD_ERROR;
+        trackingLabel = TrackingLabel.IFRAME_LOAD_ERROR;
+        this.iframeLoadError = true;
+      } else {
+        event = Event.PAYMENT_SUBMIT_ERROR;
+        trackingLabel = TrackingLabel.PAYMENT_SUBMITTED;
+      }
+      this.$emit(event, { errorCode, errorMessage });
+      return this.track(TrackingEvent.ERROR, {
+        label: trackingLabel,
+        property: errorMessage,
       });
     },
     renderZuoraIframe() {
@@ -199,6 +251,7 @@ export default {
       window.Z.submit();
       this.error = null;
       this.isLoading = true;
+      this.$emit(Event.PAYMENT_SUBMISSION_PROCESSING);
     },
     validatePaymentMethod(id) {
       this.isLoading = true;
@@ -207,17 +260,17 @@ export default {
           if (!parseBoolean(data.success)) {
             throw new Error();
           }
-          this.$emit(SUCCESS);
-          this.track(SUCCESS, {
-            label: Event.PAYMENT_VALIDATE,
+          this.$emit(Event.SUCCESS);
+          this.track(TrackingEvent.SUCCESS, {
+            label: TrackingLabel.PAYMENT_VALIDATE,
             property: `payment_method_id: ${id}`,
           });
         })
         .catch(({ message }) => {
           const errorMessage = message || this.$options.i18n.paymentValidationError;
           this.handleError(errorMessage);
-          this.track(ERROR, {
-            label: Event.PAYMENT_VALIDATE,
+          this.track(TrackingEvent.ERROR, {
+            label: TrackingLabel.PAYMENT_VALIDATE,
             property: errorMessage,
           });
         });
