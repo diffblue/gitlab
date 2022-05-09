@@ -23,7 +23,7 @@ RSpec.describe Ci::Runners::StaleGroupRunnersPruneCronWorker do
       expect_next_instance_of(Ci::Runners::StaleGroupRunnersPruneService) do |service|
         expect(service)
           .to receive(:perform)
-          .with([group2])
+          .with([group2.ci_cd_settings])
       end
 
       worker.perform

@@ -17,7 +17,9 @@ module Ci
       idempotent!
 
       def perform
-        ::Ci::Runners::StaleGroupRunnersPruneService.new.perform(Namespace.allowing_stale_runner_pruning)
+        namespace_ids = NamespaceCiCdSetting.allowing_stale_runner_pruning.select(:namespace_id)
+
+        ::Ci::Runners::StaleGroupRunnersPruneService.new.perform(namespace_ids)
       end
     end
   end

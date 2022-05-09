@@ -82,10 +82,6 @@ module EE
           .or(where.not(last_ci_minutes_usage_notification_level: nil))
       end
 
-      scope :allowing_stale_runner_pruning, -> do
-        joins(:ci_cd_settings).where(ci_cd_settings: { allow_stale_runner_pruning: true })
-      end
-
       delegate :additional_purchased_storage_size, :additional_purchased_storage_size=,
         :additional_purchased_storage_ends_on, :additional_purchased_storage_ends_on=,
         :temporary_storage_increase_ends_on, :temporary_storage_increase_ends_on=,
