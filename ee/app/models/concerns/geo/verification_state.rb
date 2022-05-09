@@ -15,7 +15,8 @@ module Geo
       verification_pending: 0,
       verification_started: 1,
       verification_succeeded: 2,
-      verification_failed: 3
+      verification_failed: 3,
+      verification_disabled: 4
     }.freeze
 
     VERIFICATION_TIMEOUT = 8.hours
@@ -31,7 +32,8 @@ module Geo
                             :verification_started?, :verification_succeeded,
                             :with_verification_state, :verification_started,
                             :verification_succeeded?, :verification_failed,
-                            :verification_pending].freeze
+                            :verification_pending, :verification_disabled,
+                            :verification_disabled!, :verification_disabled?].freeze
 
     included do
       sha_attribute :verification_checksum
@@ -40,6 +42,7 @@ module Geo
       scope :verification_started, -> { available_verifiables.with_verification_state(:verification_started) }
       scope :verification_succeeded, -> { available_verifiables.with_verification_state(:verification_succeeded) }
       scope :verification_failed, -> { available_verifiables.with_verification_state(:verification_failed) }
+      scope :verification_disabled, -> { available_verifiables.with_verification_state(:verification_disabled) }
       scope :checksummed, -> { where.not(verification_checksum: nil) }
       scope :not_checksummed, -> { where(verification_checksum: nil) }
       scope :verification_timed_out, -> { available_verifiables.where(verification_arel_table[:verification_state].eq(1)).where(verification_arel_table[:verification_started_at].lt(VERIFICATION_TIMEOUT.ago)) }

@@ -15,12 +15,13 @@ module Geo
         state :verification_failed, value: VerificationState::VERIFICATION_STATE_VALUES[:verification_failed] do
           validates :verification_failure, presence: true
         end
+        state :verification_disabled, value: VerificationState::VERIFICATION_STATE_VALUES[:verification_disabled]
 
         before_transition any => :verification_started do |instance, _|
           instance.verification_started_at = Time.current
         end
 
-        before_transition [:verification_pending, :verification_started, :verification_succeeded] => :verification_pending do |instance, _|
+        before_transition [:verification_pending, :verification_started, :verification_succeeded, :verification_disabled] => :verification_pending do |instance, _|
           instance.clear_verification_failure_fields!
         end
 
@@ -41,7 +42,7 @@ module Geo
         end
 
         event :verification_started do
-          transition [:verification_pending, :verification_started, :verification_succeeded, :verification_failed] => :verification_started
+          transition [:verification_pending, :verification_started, :verification_succeeded, :verification_failed, :verification_disabled] => :verification_started
         end
 
         event :verification_succeeded do
@@ -49,11 +50,15 @@ module Geo
         end
 
         event :verification_failed do
-          transition [:verification_pending, :verification_started, :verification_succeeded, :verification_failed] => :verification_failed
+          transition [:verification_pending, :verification_started, :verification_succeeded, :verification_failed, :verification_disabled] => :verification_failed
+        end
+
+        event :verification_disabled do
+          transition [:verification_pending, :verification_started, :verification_succeeded, :verification_failed, :verification_disabled] => :verification_disabled
         end
 
         event :verification_pending do
-          transition [:verification_pending, :verification_started, :verification_succeeded, :verification_failed] => :verification_pending
+          transition [:verification_pending, :verification_started, :verification_succeeded, :verification_failed, :verification_disabled] => :verification_pending
         end
       end
     end
