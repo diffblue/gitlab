@@ -11,13 +11,13 @@ RSpec.describe AuditEvents::AuditEventStreamingWorker do
 
   shared_context 'a successful audit event stream' do
     context 'when audit event id is passed' do
-      subject { worker.perform(event.id) }
+      subject { worker.perform('audit_operation', event.id) }
 
       include_context 'audit event stream'
     end
 
     context 'when audit event json is passed' do
-      subject { worker.perform(nil, event.to_json) }
+      subject { worker.perform('audit_operation', nil, event.to_json) }
 
       include_context 'audit event stream'
     end
@@ -25,19 +25,19 @@ RSpec.describe AuditEvents::AuditEventStreamingWorker do
 
   shared_context 'a error is raised' do
     context 'when audit event id is passed' do
-      subject { worker.perform(event.id) }
+      subject { worker.perform('audit_operation', event.id) }
 
       include_context 'http post error'
     end
 
     context 'when audit event json is passed' do
-      subject { worker.perform(nil, event.to_json) }
+      subject { worker.perform('audit_operation', nil, event.to_json) }
 
       include_context 'http post error'
     end
 
     context 'when both audit event id and audit event json is passed' do
-      subject { worker.perform(event.id, event.to_json) }
+      subject { worker.perform('audit_operation', event.id, event.to_json) }
 
       it 'a argument error is raised' do
         expect { subject }.to raise_error(ArgumentError, 'audit_event_id and audit_event_json cannot be passed together')
@@ -66,7 +66,7 @@ RSpec.describe AuditEvents::AuditEventStreamingWorker do
       end
 
       it 'sends the correct verification header' do
-        expect(Gitlab::HTTP).to receive(:post).with(an_instance_of(String), a_hash_including(headers: { 'X-Gitlab-Event-Streaming-Token' => anything })).once
+        expect(Gitlab::HTTP).to receive(:post).with(an_instance_of(String), a_hash_including(headers: { "X-Gitlab-Audit-Event-Type" => "audit_operation", 'X-Gitlab-Event-Streaming-Token' => anything })).once
 
         subject
       end
@@ -136,7 +136,7 @@ RSpec.describe AuditEvents::AuditEventStreamingWorker do
 
   shared_examples 'no HTTP calls are made' do
     context 'when audit event id is passed as param' do
-      subject { worker.perform(event.id) }
+      subject { worker.perform('audit_operation', event.id) }
 
       it 'makes no HTTP calls' do
         expect(Gitlab::HTTP).not_to receive(:post)
@@ -146,7 +146,7 @@ RSpec.describe AuditEvents::AuditEventStreamingWorker do
     end
 
     context 'when audit event json is passed as param' do
-      subject { worker.perform(nil, event.to_json) }
+      subject { worker.perform('audit_operation', nil, event.to_json) }
 
       it 'makes no HTTP calls' do
         expect(Gitlab::HTTP).not_to receive(:post)

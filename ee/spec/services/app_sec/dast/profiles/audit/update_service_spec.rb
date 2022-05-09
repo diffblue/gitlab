@@ -83,7 +83,7 @@ RSpec.describe AppSec::Dast::Profiles::Audit::UpdateService do
         auditor.execute
       end
 
-      expect(recorder.count).to be <= 18
+      expect(recorder.count).to be <= 20
     end
   end
 end

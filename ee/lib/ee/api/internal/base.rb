@@ -28,12 +28,16 @@ module EE
               return if actor.user.blank? || @project.blank?
               return unless ::Feature.enabled?(:audit_event_streaming_git_operations, @project.group)
 
-              ::AuditEvents::BuildService.new(
+              audit_context = {
+                name: 'repository_git_operation',
+                stream_only: true,
                 author: actor.user,
                 scope: @project,
                 target: @project,
                 message: msg
-              ).execute.stream_to_external_destinations(use_json: true)
+              }
+
+              ::Gitlab::Audit::Auditor.audit(audit_context)
             end
 
             override :two_factor_otp_check

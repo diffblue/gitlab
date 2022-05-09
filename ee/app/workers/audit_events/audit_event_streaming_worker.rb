@@ -4,7 +4,8 @@ module AuditEvents
   class AuditEventStreamingWorker
     include ApplicationWorker
 
-    HEADER_KEY = "X-Gitlab-Event-Streaming-Token"
+    STREAMING_TOKEN_HEADER_KEY = "X-Gitlab-Event-Streaming-Token"
+    EVENT_TYPE_HEADER_KEY = "X-Gitlab-Audit-Event-Type"
     REQUEST_BODY_SIZE_LIMIT = 25.megabytes
 
     # Audit Events contains a unique ID so the ingesting system should
@@ -14,7 +15,7 @@ module AuditEvents
     data_consistency :always
     feature_category :audit_events
 
-    def perform(audit_event_id, audit_event_json = nil)
+    def perform(audit_operation, audit_event_id, audit_event_json = nil)
       raise ArgumentError, 'audit_event_id and audit_event_json cannot be passed together' if audit_event_id.present? && audit_event_json.present?
 
       audit_event = audit_event(audit_event_id, audit_event_json)
@@ -28,7 +29,10 @@ module AuditEvents
         Gitlab::HTTP.post(destination.destination_url,
                           body: Gitlab::Json::LimitedEncoder.encode(audit_event.as_json, limit: REQUEST_BODY_SIZE_LIMIT),
                           use_read_total_timeout: true,
-                          headers: { HEADER_KEY => destination.verification_token })
+                          headers: {
+                            STREAMING_TOKEN_HEADER_KEY => destination.verification_token,
+                            EVENT_TYPE_HEADER_KEY => audit_operation
+                          })
       rescue URI::InvalidURIError => e
         Gitlab::ErrorTracking.log_exception(e)
       rescue *Gitlab::HTTP::HTTP_ERRORS

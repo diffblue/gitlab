@@ -54,6 +54,7 @@ module Gitlab
         @context = context
 
         @name = @context.fetch(:name, 'audit_operation')
+        @stream_only = @context.fetch(:stream_only, false)
         @author = @context.fetch(:author)
         @scope = @context.fetch(:scope)
         @target = @context.fetch(:target)
@@ -77,12 +78,18 @@ module Gitlab
 
       def single_audit
         events = [build_event(@message)]
+
         record(events)
       end
 
       def record(events)
-        log_to_database(events)
-        log_to_file(events)
+        log_to_database(events) unless @stream_only
+        log_to_file(events) unless @stream_only
+        send_to_stream(events)
+      end
+
+      def send_to_stream(events)
+        events.each { |e| e.stream_to_external_destinations(use_json: true, event_name: @name) }
       end
 
       def build_event(message)
