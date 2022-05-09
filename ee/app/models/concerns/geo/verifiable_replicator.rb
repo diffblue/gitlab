@@ -262,10 +262,10 @@ module Geo
       Gitlab::Geo.secondary? ? registry : model_record
     end
 
-    # For example, remote stored files are filtered from available_verifiables
-    # because we don't support verification of remote stored files.
-    def will_never_be_checksummed_on_the_primary?
-      !model_record.in_available_verifiables?
+    # For example, remote stored files will never become verification_succeeded
+    # until verification of remote stored files is implemented.
+    def primary_verification_succeeded?
+      model_record.verification_succeeded?
     end
 
     # @abstract
