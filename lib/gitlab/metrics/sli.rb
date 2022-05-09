@@ -3,8 +3,6 @@
 module Gitlab
   module Metrics
     class Sli
-      SliNotInitializedError = Class.new(StandardError)
-
       COUNTER_PREFIX = 'gitlab_sli'
 
       class << self
@@ -16,6 +14,8 @@ module Gitlab
 
         def initialize_sli(name, possible_label_combinations)
           INITIALIZATION_MUTEX.synchronize do
+            next known_slis[name] if initialized?(name)
+
             sli = new(name)
             sli.initialize_counters(possible_label_combinations)
             known_slis[name] = sli

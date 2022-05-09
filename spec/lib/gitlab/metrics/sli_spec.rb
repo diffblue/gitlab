@@ -15,10 +15,11 @@ RSpec.describe Gitlab::Metrics::Sli do
     end
 
     describe '.[]' do
-      it 'warns about an uninitialized SLI but returns and stores a new one' do
+      it 'returns and stores a new, uninitialized SLI' do
         sli = described_class[:bar]
 
         expect(described_class[:bar]).to be(sli)
+        expect(described_class[:bar]).not_to be_initialized
       end
 
       it 'returns the same object for multiple accesses' do
@@ -27,6 +28,34 @@ RSpec.describe Gitlab::Metrics::Sli do
         2.times do
           expect(described_class[:huzzah]).to be(sli)
         end
+      end
+    end
+
+    describe '.initialize_sli' do
+      it 'returns and stores a new initialized SLI' do
+        counters = [fake_total_counter(:bar), fake_success_counter(:bar)]
+
+        sli = described_class.initialize_sli(:bar, [{ hello: :world }])
+
+        expect(sli).to be_initialized
+        expect(counters).to all(have_received(:get).with(hello: :world))
+        expect(counters).to all(have_received(:get).with(hello: :world))
+      end
+
+      it 'does not change labels for an already-initialized SLI' do
+        counters = [fake_total_counter(:bar), fake_success_counter(:bar)]
+
+        sli = described_class.initialize_sli(:bar, [{ hello: :world }])
+
+        expect(sli).to be_initialized
+        expect(counters).to all(have_received(:get).with(hello: :world))
+        expect(counters).to all(have_received(:get).with(hello: :world))
+
+        counters.each do |counter|
+          expect(counter).not_to receive(:get)
+        end
+
+        expect(described_class.initialize_sli(:bar, [{ other: :labels }])).to eq(sli)
       end
     end
 
