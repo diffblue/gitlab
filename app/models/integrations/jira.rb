@@ -169,7 +169,7 @@ module Integrations
           type: SECTION_TYPE_JIRA_ISSUES,
           title: _('Issues'),
           description: jira_issues_section_description,
-          plan: License::PREMIUM_PLAN
+          plan: 'premium'
         })
       end
 

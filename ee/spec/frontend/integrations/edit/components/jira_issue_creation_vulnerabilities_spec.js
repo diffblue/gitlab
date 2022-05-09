@@ -9,7 +9,7 @@ import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import { createStore } from '~/integrations/edit/store';
 import { billingPlans, billingPlanNames } from '~/integrations/constants';
 
-describe('JiraissueCreationVulnerabilities', () => {
+describe('JiraIssueCreationVulnerabilities', () => {
   let store;
   let wrapper;
 
