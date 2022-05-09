@@ -3,7 +3,7 @@
 module EE
   module Mutations
     module Ci
-      module CiCdSettingsUpdate
+      module ProjectCiCdSettingsUpdate
         extend ActiveSupport::Concern
         extend ::Gitlab::Utils::Override
 

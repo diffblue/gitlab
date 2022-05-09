@@ -850,6 +850,11 @@ Input type: `BulkEnableDevopsAdoptionNamespacesInput`
 
 ### `Mutation.ciCdSettingsUpdate`
 
+WARNING:
+**Deprecated** in 15.0.
+This was renamed.
+Use: `ProjectCiCdSettingsUpdate`.
+
 Input type: `CiCdSettingsUpdateInput`
 
 #### Arguments
@@ -3907,6 +3912,29 @@ Input type: `PipelineRetryInput`
 | <a id="mutationpipelineretryclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationpipelineretryerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 | <a id="mutationpipelineretrypipeline"></a>`pipeline` | [`Pipeline`](#pipeline) | Pipeline after mutation. |
+
+### `Mutation.projectCiCdSettingsUpdate`
+
+Input type: `ProjectCiCdSettingsUpdateInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationprojectcicdsettingsupdateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationprojectcicdsettingsupdatefullpath"></a>`fullPath` | [`ID!`](#id) | Full Path of the project the settings belong to. |
+| <a id="mutationprojectcicdsettingsupdatejobtokenscopeenabled"></a>`jobTokenScopeEnabled` | [`Boolean`](#boolean) | Indicates CI job tokens generated in this project have restricted access to resources. |
+| <a id="mutationprojectcicdsettingsupdatekeeplatestartifact"></a>`keepLatestArtifact` | [`Boolean`](#boolean) | Indicates if the latest artifact should be kept for this project. |
+| <a id="mutationprojectcicdsettingsupdatemergepipelinesenabled"></a>`mergePipelinesEnabled` | [`Boolean`](#boolean) | Indicates if merge pipelines are enabled for the project. |
+| <a id="mutationprojectcicdsettingsupdatemergetrainsenabled"></a>`mergeTrainsEnabled` | [`Boolean`](#boolean) | Indicates if merge trains are enabled for the project. |
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationprojectcicdsettingsupdatecicdsettings"></a>`ciCdSettings` | [`ProjectCiCdSetting!`](#projectcicdsetting) | CI/CD settings after mutation. |
+| <a id="mutationprojectcicdsettingsupdateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationprojectcicdsettingsupdateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 
 ### `Mutation.projectSetComplianceFramework`
 
