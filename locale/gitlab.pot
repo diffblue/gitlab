@@ -5758,7 +5758,6 @@ msgstr ""
 msgid "BillingPlans|Manage plan"
 msgstr ""
 
-<<<<<<< HEAD
 msgid "BillingPlans|Not the group you're looking for? %{all_groups_link}."
 msgstr ""
 
@@ -5769,9 +5768,9 @@ msgid "BillingPlans|Organization wide security, compliance and planning"
 msgstr ""
 
 msgid "BillingPlans|Portfolio management"
-=======
+msgstr ""
+
 msgid "BillingPlans|Premium"
->>>>>>> f50f1291d97 (Add GlBadge with link to Jira vulnerabilities)
 msgstr ""
 
 msgid "BillingPlans|Pricing page"
@@ -5816,6 +5815,9 @@ msgstr ""
 msgid "BillingPlans|To manage the plan for this group, visit the billing section of %{parent_billing_page_link}."
 msgstr ""
 
+msgid "BillingPlans|Ultimate"
+msgstr ""
+
 msgid "BillingPlans|Upgrade to Premium"
 msgstr ""
 
@@ -5826,9 +5828,6 @@ msgid "BillingPlans|Value stream management"
 msgstr ""
 
 msgid "BillingPlans|We're here to help."
-msgstr ""
-
-msgid "BillingPlans|Ultimate"
 msgstr ""
 
 msgid "BillingPlans|While GitLab is ending availability of the Bronze plan, you can still renew your Bronze subscription one additional time before %{eoa_bronze_plan_end_date}. We are also offering a limited time free upgrade to our Premium Plan (up to 25 users)! Learn more about the changes and offers in our %{announcement_link}."
@@ -28461,9 +28460,6 @@ msgid "Preferences|Use relative times"
 msgstr ""
 
 msgid "Preferences|When you type in a description or comment box, selected text is surrounded by the corresponding character after typing one of the following characters: %{supported_characters}."
-msgstr ""
-
-msgid "Premium"
 msgstr ""
 
 msgid "Preparing the report for the scan."
