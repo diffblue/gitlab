@@ -1,31 +1,14 @@
 <script>
-import {
-  GlButtonGroup,
-  GlButton,
-  GlIcon,
-  GlModal,
-  GlModalDirective,
-  GlTooltipDirective,
-} from '@gitlab/ui';
+import { GlButtonGroup, GlButton, GlModal, GlModalDirective, GlTooltipDirective } from '@gitlab/ui';
 import { s__, sprintf } from '~/locale';
-import {
-  DELETE_MODAL_CONFIG,
-  EDITOR_MODES,
-  EDITOR_MODE_RULE,
-  EDITOR_MODE_YAML,
-  POLICY_RUN_TIME_MESSAGE,
-  POLICY_RUN_TIME_TOOLTIP,
-} from './constants';
+import { DELETE_MODAL_CONFIG, EDITOR_MODES, EDITOR_MODE_RULE, EDITOR_MODE_YAML } from './constants';
 
 export default {
   i18n: {
     DELETE_MODAL_CONFIG,
-    POLICY_RUN_TIME_MESSAGE,
-    POLICY_RUN_TIME_TOOLTIP,
   },
   components: {
     GlButton,
-    GlIcon,
     GlModal,
     GlButtonGroup,
     PolicyYamlEditor: () =>
@@ -208,10 +191,6 @@ export default {
       <gl-button class="gl-mt-5 gl-lg-mt-0" category="secondary" :href="policiesPath">
         {{ __('Cancel') }}
       </gl-button>
-      <span class="gl-ml-11 gl-mt-5 gl-lg-mt-0" data-testid="policy-run-time-info">
-        <gl-icon v-gl-tooltip="$options.i18n.POLICY_RUN_TIME_TOOLTIP" name="information-o" />
-        {{ $options.i18n.POLICY_RUN_TIME_MESSAGE }}
-      </span>
     </div>
     <gl-modal
       modal-id="delete-modal"
