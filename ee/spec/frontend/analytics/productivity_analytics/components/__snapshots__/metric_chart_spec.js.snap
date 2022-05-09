@@ -106,7 +106,7 @@ exports[`MetricChart component template when isLoading is true matches the snaps
     class="my-4 py-4"
     color="dark"
     label="Loading"
-    size="md"
+    size="lg"
   />
 </div>
 `;

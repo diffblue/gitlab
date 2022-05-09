@@ -86,7 +86,7 @@ export default {
 <template>
   <div>
     <h5 v-if="title">{{ title }}</h5>
-    <gl-loading-icon v-if="isLoading" size="md" class="my-4 py-4" />
+    <gl-loading-icon v-if="isLoading" size="lg" class="my-4 py-4" />
     <template v-else>
       <gl-alert v-if="infoMessage" :dismissible="false">{{ infoMessage }}</gl-alert>
       <template v-else>

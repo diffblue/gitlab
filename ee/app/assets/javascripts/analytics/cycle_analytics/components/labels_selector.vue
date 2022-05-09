@@ -176,7 +176,7 @@ export default {
         {{ labelTitle(label) }}
       </gl-dropdown-item>
       <div v-show="loading" class="text-center">
-        <gl-loading-icon :inline="true" size="md" />
+        <gl-loading-icon :inline="true" size="lg" />
       </div>
       <div v-show="noMatchingLabels" class="text-secondary">
         {{ __('No matching labels') }}
