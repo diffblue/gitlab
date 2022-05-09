@@ -84,7 +84,7 @@ export const projectHelpLinks = {
     anchor: 'when-job-artifacts-are-deleted',
   }),
   packages: helpPagePath('user/packages/package_registry/index.md', {
-    anchor: 'delete-a-package',
+    anchor: 'reduce-storage-usage',
   }),
   repository: helpPagePath('user/project/repository/reducing_the_repo_size_using_git'),
   snippets: helpPagePath('user/snippets', {
