@@ -2,6 +2,7 @@ import Vue from 'vue';
 import { debounce } from 'lodash';
 import UsersCache from './lib/utils/users_cache';
 import UserPopover from './vue_shared/components/user_popover/user_popover.vue';
+import { USER_POPOVER_DELAY } from './vue_shared/components/user_popover/constants';
 
 const removeTitle = (el) => {
   // Removing titles so its not showing tooltips also
@@ -128,7 +129,7 @@ const lazyLaunchPopover = debounce((mountPopover, event) => {
   if (userLink) {
     launchPopover(userLink, mountPopover);
   }
-}, 200);
+}, USER_POPOVER_DELAY);
 
 let hasAddedLazyPopovers = false;
 
