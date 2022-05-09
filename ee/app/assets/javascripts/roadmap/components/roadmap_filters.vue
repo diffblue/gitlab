@@ -38,6 +38,7 @@ export default {
       'epicsState',
       'sortedBy',
       'filterParams',
+      'timeframeRangeType',
       'isProgressTrackingActive',
       'progressTracking',
       'isShowingMilestones',

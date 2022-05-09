@@ -44,6 +44,7 @@ export default () => {
 
   return new Vue({
     el,
+    name: 'RoadmapRoot',
     apolloProvider,
     store: createStore(),
     components: {
