@@ -28,7 +28,7 @@ module Resolvers
             description: policy[:description],
             enabled: policy[:enabled],
             yaml: YAML.dump(policy.slice(*POLICY_YAML_ATTRIBUTES).deep_stringify_keys),
-            updated_at: policy_configuration.policy_last_updated_at,
+            updated_at: policy[:config].policy_last_updated_at,
             source: {
               project: policy[:project],
               namespace: policy[:namespace],

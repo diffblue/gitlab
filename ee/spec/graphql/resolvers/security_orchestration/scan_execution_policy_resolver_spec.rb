@@ -9,7 +9,8 @@ RSpec.describe Resolvers::SecurityOrchestration::ScanExecutionPolicyResolver do
   let_it_be(:project) { create(:project, group: group) }
   let_it_be(:policy) { build(:scan_execution_policy, name: 'Run DAST in every pipeline') }
   let_it_be(:policy_yaml) { build(:orchestration_policy_yaml, scan_execution_policy: [policy]) }
-  let_it_be(:policy_management_project) do
+
+  let!(:policy_management_project) do
     create(
       :project, :custom_repo,
       files: {
@@ -17,7 +18,7 @@ RSpec.describe Resolvers::SecurityOrchestration::ScanExecutionPolicyResolver do
       })
   end
 
-  let_it_be(:user) { policy_management_project.first_owner }
+  let(:user) { policy_management_project.first_owner }
 
   let(:args) { {} }
   let(:expected_resolved) do
@@ -39,7 +40,7 @@ RSpec.describe Resolvers::SecurityOrchestration::ScanExecutionPolicyResolver do
 
   subject(:resolve_scan_policies) { resolve(described_class, obj: project, args: args, ctx: { current_user: user }) }
 
-  let_it_be(:policy_configuration) do
+  let!(:policy_configuration) do
     create(
       :security_orchestration_policy_configuration,
       security_policy_management_project: policy_management_project,
@@ -69,8 +70,56 @@ RSpec.describe Resolvers::SecurityOrchestration::ScanExecutionPolicyResolver do
         end
       end
 
+      context 'when policies are available for namespace only' do
+        let!(:policy_configuration) { nil }
+
+        let!(:group_policy_configuration) do
+          create(
+            :security_orchestration_policy_configuration,
+            :namespace,
+            security_policy_management_project: policy_management_project,
+            namespace: group
+          )
+        end
+
+        context 'when relationship argument is not provided' do
+          it 'returns no scan execution policies' do
+            expect(resolve_scan_policies).to be_empty
+          end
+        end
+
+        context 'when relationship argument is provided as DIRECT' do
+          let(:args) { { relationship: :direct } }
+
+          it 'returns no scan execution policies' do
+            expect(resolve_scan_policies).to be_empty
+          end
+        end
+
+        context 'when relationship argument is provided as INHERITED' do
+          let(:args) { { relationship: :inherited } }
+
+          it 'returns scan execution policies for groups only' do
+            expect(resolve_scan_policies).to eq([
+              {
+                name: 'Run DAST in every pipeline',
+                description: 'This policy enforces to run DAST for every pipeline within the project',
+                enabled: true,
+                yaml: YAML.dump(policy.deep_stringify_keys),
+                updated_at: group_policy_configuration.policy_last_updated_at,
+                source: {
+                  project: nil,
+                  namespace: group,
+                  inherited: true
+                }
+              }
+            ])
+          end
+        end
+      end
+
       context 'when policies are available for project and namespace' do
-        let_it_be(:group_policy_configuration) do
+        let!(:group_policy_configuration) do
           create(
             :security_orchestration_policy_configuration,
             :namespace,
