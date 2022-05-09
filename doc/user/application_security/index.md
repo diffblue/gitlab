@@ -213,7 +213,10 @@ security issues:
 
 ### Migration of existing Vulnerability-Check rules
 
-For projects with existing rules which already has a security orchestration project, a new MR with the content of the existing rule will be created against the default branch belonging to the security orchestration project. To maintain the same security approval rules that you had in place prior to GitLab 15.0, we recommend that you merge this new MR.
+If your projects have rules that have a security orchestration project, a new MR with 
+the existing rule's content is created automatically against the default branch belonging
+to the security orchestration project. To maintain the same security approval rules you 
+had before GitLab 15.0, we recommend merging this new MR.
 
 On the other hand, for projects with existing rules but without a security orchestration project, a new security orchestration project will be created with the content of the existing rule. In this case no additional action will be required.
 
