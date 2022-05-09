@@ -253,13 +253,11 @@ export default {
       no-local-sorting
       sort-icon-left
       show-empty
-      head-variant="white"
       stacked="lg"
       select-mode="single"
       hover
       selected-variant="primary"
       class="compliance-report-table"
-      thead-class="gl-border-b-solid gl-border-b-1 gl-border-b-gray-100"
       @row-selected="toggleDrawer"
       @sort-changed="handleSortChanged"
     >
