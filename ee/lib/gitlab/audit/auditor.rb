@@ -89,7 +89,7 @@ module Gitlab
       end
 
       def send_to_stream(events)
-        events.each { |e| e.stream_to_external_destinations(use_json: true, audit_operation: @name) }
+        events.each { |e| e.stream_to_external_destinations(use_json: true, event_name: @name) }
       end
 
       def build_event(message)

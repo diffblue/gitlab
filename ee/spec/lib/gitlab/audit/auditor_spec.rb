@@ -24,7 +24,7 @@ RSpec.describe Gitlab::Audit::Auditor do
   shared_examples 'only streamed' do
     it 'enqueues an event' do
       expect_any_instance_of(AuditEvent) do |event|
-        expect(event).to receive(:stream_to_external_destinations).with(use_json: true, audit_operation: name)
+        expect(event).to receive(:stream_to_external_destinations).with(use_json: true, event_name: name)
       end
 
       audit!
@@ -110,7 +110,7 @@ RSpec.describe Gitlab::Audit::Auditor do
 
       it 'enqueues an event stream' do
         expect_any_instance_of(AuditEvent) do |event|
-          expect(event).to receive(:stream_to_external_destinations).with(use_json: true, audit_operation: name)
+          expect(event).to receive(:stream_to_external_destinations).with(use_json: true, event_name: name)
         end
 
         audit!
