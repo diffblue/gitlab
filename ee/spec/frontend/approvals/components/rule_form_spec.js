@@ -1,31 +1,18 @@
-import { GlDropdown, GlFormGroup, GlFormInput, GlTruncate } from '@gitlab/ui';
+import { GlFormGroup, GlFormInput } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
 import ApproversList from 'ee/approvals/components/approvers_list.vue';
 import ApproversSelect from 'ee/approvals/components/approvers_select.vue';
 import RuleForm, { READONLY_NAMES } from 'ee/approvals/components/rule_form.vue';
-import {
-  TYPE_USER,
-  TYPE_GROUP,
-  TYPE_HIDDEN_GROUPS,
-  VULNERABILITY_CHECK_NAME,
-  APPROVAL_VULNERABILITY_STATES,
-  APPROVAL_DIALOG_I18N,
-} from 'ee/approvals/constants';
+import { TYPE_USER, TYPE_GROUP, TYPE_HIDDEN_GROUPS } from 'ee/approvals/constants';
 import { createStoreOptions } from 'ee/approvals/stores';
 import projectSettingsModule from 'ee/approvals/stores/modules/project_settings';
-import { REPORT_TYPES_DEFAULT } from 'ee/security_dashboard/store/constants';
 import ProtectedBranchesSelector from 'ee/vue_shared/components/branches_selector/protected_branches_selector.vue';
 import { stubComponent } from 'helpers/stub_component';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import {
-  TEST_RULE,
-  TEST_RULE_VULNERABILITY_CHECK,
-  TEST_PROTECTED_BRANCHES,
-  TEST_RULE_WITH_PROTECTED_BRANCHES,
-} from '../mocks';
+import { TEST_RULE, TEST_PROTECTED_BRANCHES, TEST_RULE_WITH_PROTECTED_BRANCHES } from '../mocks';
 
 const TEST_PROJECT_ID = '7';
 const TEST_APPROVERS = [{ id: 7, type: TYPE_USER }];
@@ -83,12 +70,6 @@ describe('EE Approvals RuleForm', () => {
   const findApproversList = () => wrapper.findComponent(ApproversList);
   const findProtectedBranchesSelector = () => wrapper.findComponent(ProtectedBranchesSelector);
   const findBranchesValidation = () => wrapper.findByTestId('branches-group');
-  const findScannersGroup = () => wrapper.findByTestId('scanners-group');
-  const findVulnerabilityFormGroup = () => wrapper.findByTestId('vulnerability-amount-group');
-  const findSeverityLevelsGroup = () => wrapper.findByTestId('severity-levels-group');
-  const findVulnerabilityStatesGroup = () => wrapper.findByTestId('vulnerability-states-group');
-  const findVulnerabilityStatesDropdown = () =>
-    findVulnerabilityStatesGroup().findComponent(GlDropdown);
 
   const inputsAreValid = (inputs) => inputs.every((x) => x.props('state'));
 
@@ -187,15 +168,11 @@ describe('EE Approvals RuleForm', () => {
             name: 'Lorem',
             approvalsRequired: 2,
             users,
-            vulnerabilitiesAllowed: 0,
             groups,
             userRecords,
             groupRecords,
             removeHiddenGroups: false,
-            scanners: [],
-            severityLevels: [],
             protectedBranchIds: branches.map((x) => x.id),
-            vulnerabilityStates: [],
           };
 
           await findNameInput().vm.$emit('input', expected.name);
@@ -268,15 +245,11 @@ describe('EE Approvals RuleForm', () => {
           name: 'Lorem',
           approvalsRequired: 2,
           users,
-          vulnerabilitiesAllowed: 0,
           groups,
           userRecords,
           groupRecords,
           removeHiddenGroups: false,
-          scanners: [],
-          severityLevels: [],
           protectedBranchIds: branches.map((x) => x.id),
-          vulnerabilityStates: [],
         };
 
         beforeEach(async () => {
@@ -350,15 +323,11 @@ describe('EE Approvals RuleForm', () => {
         const expected = {
           ...TEST_RULE,
           users,
-          vulnerabilitiesAllowed: 0,
           groups,
           userRecords,
           groupRecords,
           removeHiddenGroups: false,
-          scanners: [],
-          severityLevels: [],
           protectedBranchIds: [],
-          vulnerabilityStates: [],
         };
 
         it('on submit, puts rule', async () => {
@@ -535,20 +504,13 @@ describe('EE Approvals RuleForm', () => {
 
     describe('with approval suggestions', () => {
       describe.each`
-        defaultRuleName             | expectedDisabledAttribute | expectedDisplayedScanners | expectedDisplayVulnerabilityAllowed | expectedDisplayedSeverityLevels
-        ${VULNERABILITY_CHECK_NAME} | ${true}                   | ${true}                   | ${true}                             | ${true}
-        ${'License-Check'}          | ${true}                   | ${false}                  | ${false}                            | ${false}
-        ${'Coverage-Check'}         | ${true}                   | ${false}                  | ${false}                            | ${false}
-        ${'Foo Bar Baz'}            | ${false}                  | ${false}                  | ${false}                            | ${false}
+        defaultRuleName     | expectedDisabledAttribute
+        ${'License-Check'}  | ${true}
+        ${'Coverage-Check'} | ${true}
+        ${'Foo Bar Baz'}    | ${false}
       `(
         'with defaultRuleName set to $defaultRuleName',
-        ({
-          defaultRuleName,
-          expectedDisabledAttribute,
-          expectedDisplayedScanners,
-          expectedDisplayVulnerabilityAllowed,
-          expectedDisplayedSeverityLevels,
-        }) => {
+        ({ defaultRuleName, expectedDisabledAttribute }) => {
           beforeEach(() => {
             createComponent({
               initRule: null,
@@ -561,21 +523,6 @@ describe('EE Approvals RuleForm', () => {
             expectedDisabledAttribute ? 'disables' : 'does not disable'
           } the name text field`, () => {
             expect(findNameInput().props('disabled')).toBe(expectedDisabledAttribute);
-          });
-
-          it(`${expectedDisplayedScanners ? 'shows' : 'does not show'} scanners dropdown`, () => {
-            expect(findScannersGroup().exists()).toBe(expectedDisplayedScanners);
-          });
-
-          it(`it ${
-            expectedDisplayVulnerabilityAllowed ? 'shows' : 'does not show'
-          } the number of vulnerabilities form group`, () => {
-            expect(findVulnerabilityFormGroup().exists()).toBe(expectedDisplayVulnerabilityAllowed);
-          });
-          it(`it ${
-            expectedDisplayedSeverityLevels ? 'shows' : 'does not show'
-          } severity levels dropdown`, () => {
-            expect(findSeverityLevelsGroup().exists()).toBe(expectedDisplayedSeverityLevels);
           });
         },
       );
@@ -603,208 +550,6 @@ describe('EE Approvals RuleForm', () => {
 
         it(`it disables the name text field`, () => {
           expect(findNameInput().props('disabled')).toBe(true);
-        });
-      });
-    });
-
-    describe(`with ${VULNERABILITY_CHECK_NAME}`, () => {
-      describe('and with two scanners selected', () => {
-        beforeEach(() => {
-          createComponent({
-            initRule: TEST_RULE_VULNERABILITY_CHECK,
-          });
-          findForm().trigger('submit');
-        });
-
-        it('dispatches the action on submit', () => {
-          expect(actions.postRule).toHaveBeenCalledWith(
-            expect.anything(),
-            expect.objectContaining({ scanners: ['sast', 'dast'] }),
-          );
-        });
-      });
-
-      describe('and with all scanners selected', () => {
-        const findAllScannersSelected = () => wrapper.findByTestId('all-scanners-selected');
-        beforeEach(() => {
-          createComponent({
-            initRule: TEST_RULE_VULNERABILITY_CHECK,
-          });
-          findAllScannersSelected().trigger('click');
-          findForm().trigger('submit');
-        });
-
-        it('selects all scanners', () => {
-          const scannerDropdown = findScannersGroup().findComponent(GlDropdown);
-          expect(scannerDropdown.attributes().text).toBe('All scanners');
-        });
-
-        it('dispatches the action on submit with empty array', () => {
-          const expectedScanners = [];
-          expect(actions.postRule).toHaveBeenCalledWith(
-            expect.anything(),
-            expect.objectContaining({ scanners: expectedScanners }),
-          );
-        });
-      });
-
-      describe('with invalid number of vulnerabilities', () => {
-        beforeEach(() => {
-          createComponent({
-            initRule: {
-              ...TEST_RULE_VULNERABILITY_CHECK,
-              vulnerabilitiesAllowed: -1,
-            },
-          });
-          findForm().trigger('submit');
-        });
-
-        it('does not dispatch the action on submit', () => {
-          expect(actions.postRule).not.toHaveBeenCalled();
-        });
-      });
-
-      describe('with valid number of vulnerabilities', () => {
-        beforeEach(() => {
-          createComponent({
-            initRule: TEST_RULE_VULNERABILITY_CHECK,
-          });
-          findForm().trigger('submit');
-        });
-
-        it('dispatches the action on submit', () => {
-          expect(actions.postRule).toHaveBeenCalledWith(
-            expect.anything(),
-            expect.objectContaining({ vulnerabilitiesAllowed: 0 }),
-          );
-        });
-
-        it('contains the supported report types and select all option', () => {
-          const supportedReportsPlusAll = Object.keys(REPORT_TYPES_DEFAULT).length + 1;
-          expect(findScannersGroup().findAllComponents(GlTruncate)).toHaveLength(
-            supportedReportsPlusAll,
-          );
-        });
-      });
-
-      describe('and without any severity levels selected', () => {
-        beforeEach(() => {
-          createComponent({
-            initRule: {
-              ...TEST_RULE_VULNERABILITY_CHECK,
-              severityLevels: [],
-            },
-          });
-          findForm().trigger('submit');
-        });
-
-        it('does not dispatch the action on submit', () => {
-          expect(actions.postRule).not.toHaveBeenCalled();
-        });
-      });
-
-      describe('with one severity level selected', () => {
-        beforeEach(() => {
-          createComponent({
-            initRule: TEST_RULE_VULNERABILITY_CHECK,
-          });
-          findForm().trigger('submit');
-        });
-
-        it('dispatches the action on submit', () => {
-          expect(actions.postRule).toHaveBeenCalledWith(
-            expect.anything(),
-            expect.objectContaining({ severityLevels: ['high'] }),
-          );
-        });
-      });
-
-      describe('without any vulnerability state selected', () => {
-        beforeEach(() => {
-          createComponent({
-            initRule: {
-              ...TEST_RULE_VULNERABILITY_CHECK,
-              vulnerabilityStates: [],
-            },
-          });
-          findForm().trigger('submit');
-        });
-
-        it('does not dispatch the action on submit', () => {
-          expect(actions.postRule).not.toHaveBeenCalled();
-        });
-
-        it('changes vulnerability states dropdown text to select vulnerability states', () => {
-          expect(findVulnerabilityStatesDropdown().props('text')).toBe(
-            APPROVAL_DIALOG_I18N.form.vulnerabilityStatesSelectLabel,
-          );
-        });
-
-        it('shows error message in regards to vulnerability states selection', () => {
-          expect(findVulnerabilityStatesGroup().props('invalidFeedback')).toBe(
-            APPROVAL_DIALOG_I18N.validations.vulnerabilityStatesRequired,
-          );
-        });
-      });
-
-      describe('with one vulnerability state selected', () => {
-        beforeEach(() => {
-          createComponent({
-            initRule: {
-              ...TEST_RULE_VULNERABILITY_CHECK,
-              vulnerabilityStates: ['newly_detected'],
-            },
-          });
-          findForm().trigger('submit');
-        });
-
-        it('dispatches the action on submit', () => {
-          expect(actions.postRule).toHaveBeenCalledWith(
-            expect.anything(),
-            expect.objectContaining({
-              vulnerabilityStates: TEST_RULE_VULNERABILITY_CHECK.vulnerabilityStates,
-            }),
-          );
-        });
-
-        it('changes vulnerability states dropdown text to its name', () => {
-          expect(findVulnerabilityStatesDropdown().props('text')).toBe(
-            APPROVAL_VULNERABILITY_STATES.newly_detected,
-          );
-        });
-      });
-
-      describe('with all vulnerability states selected', () => {
-        beforeEach(() => {
-          createComponent({
-            initRule: {
-              ...TEST_RULE_VULNERABILITY_CHECK,
-              vulnerabilityStates: Object.keys(APPROVAL_VULNERABILITY_STATES),
-            },
-          });
-        });
-
-        it('changes vulnerability states dropdown text to all selected', () => {
-          expect(findVulnerabilityStatesDropdown().props('text')).toBe(
-            APPROVAL_DIALOG_I18N.form.allVulnerabilityStatesSelectedLabel,
-          );
-        });
-      });
-
-      describe('with all but one vulnerability state selected', () => {
-        beforeEach(() => {
-          createComponent({
-            initRule: {
-              ...TEST_RULE_VULNERABILITY_CHECK,
-              vulnerabilityStates: Object.keys(APPROVAL_VULNERABILITY_STATES).splice(1),
-            },
-          });
-        });
-
-        it('changes vulnerability states dropdown text to all selected', () => {
-          expect(findVulnerabilityStatesDropdown().props('text')).toBe(
-            'Previously detected +3 more',
-          );
         });
       });
     });

@@ -107,12 +107,12 @@ describe('Approvals ProjectRules', () => {
     });
   });
 
-  describe('when the Vulnerability-Check group is used', () => {
+  describe('when the License-Check group is used', () => {
     let rows;
 
     beforeEach(() => {
       const rules = createProjectRules();
-      rules[0].name = 'Vulnerability-Check';
+      rules[0].name = 'License-Check';
       store.modules.approvals.state.rules = rules;
       store.state.settings.allowMultiRule = true;
     });
@@ -137,7 +137,7 @@ describe('Approvals ProjectRules', () => {
   describe('approval suggestions', () => {
     beforeEach(() => {
       const rules = createProjectRules();
-      rules[0].name = 'Vulnerability-Check';
+      rules[0].name = 'License-Check';
       store.modules.approvals.state.rules = rules;
       store.state.settings.allowMultiRule = true;
 

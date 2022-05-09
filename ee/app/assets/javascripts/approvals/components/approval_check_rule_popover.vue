@@ -1,5 +1,5 @@
 <script>
-import { VULNERABILITY_CHECK_NAME, LICENSE_CHECK_NAME, APPROVAL_RULE_CONFIGS } from '../constants';
+import { LICENSE_CHECK_NAME, APPROVAL_RULE_CONFIGS } from '../constants';
 import ApprovalCheckPopover from './approval_check_popover.vue';
 
 export default {
@@ -19,14 +19,11 @@ export default {
     },
   },
   computed: {
-    showVulnerabilityCheckPopover() {
-      return this.rule.name === VULNERABILITY_CHECK_NAME;
-    },
     showLicenseCheckPopover() {
       return this.rule.name === LICENSE_CHECK_NAME;
     },
     showApprovalCheckPopover() {
-      return this.showVulnerabilityCheckPopover || this.showLicenseCheckPopover;
+      return this.showLicenseCheckPopover;
     },
     approvalRuleConfig() {
       return APPROVAL_RULE_CONFIGS[this.rule.name];

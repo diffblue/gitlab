@@ -1,11 +1,7 @@
 <script>
 import { GlDeprecatedSkeletonLoading as GlSkeletonLoading } from '@gitlab/ui';
 import { mapState, mapActions } from 'vuex';
-import {
-  LICENSE_CHECK_NAME,
-  VULNERABILITY_CHECK_NAME,
-  COVERAGE_CHECK_NAME,
-} from 'ee/approvals/constants';
+import { LICENSE_CHECK_NAME, COVERAGE_CHECK_NAME } from 'ee/approvals/constants';
 import { s__ } from '~/locale';
 import UnconfiguredSecurityRule from './unconfigured_security_rule.vue';
 
@@ -15,9 +11,6 @@ export default {
     GlSkeletonLoading,
   },
   inject: {
-    vulnerabilityCheckHelpPagePath: {
-      default: '',
-    },
     licenseCheckHelpPagePath: {
       default: '',
     },
@@ -37,13 +30,6 @@ export default {
     },
     securityRules() {
       return [
-        {
-          name: VULNERABILITY_CHECK_NAME,
-          description: s__(
-            'SecurityApprovals|Requires approval for vulnerabilities. %{linkStart}Learn more.%{linkEnd}',
-          ),
-          docsPath: this.vulnerabilityCheckHelpPagePath,
-        },
         {
           name: LICENSE_CHECK_NAME,
           description: s__(

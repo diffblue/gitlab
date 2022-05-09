@@ -17,23 +17,13 @@ export const RULE_TYPE_CODE_OWNER = 'code_owner';
 export const RULE_TYPE_ANY_APPROVER = 'any_approver';
 export const RULE_NAME_ANY_APPROVER = 'All Members';
 
-export const VULNERABILITY_CHECK_NAME = 'Vulnerability-Check';
 export const LICENSE_CHECK_NAME = 'License-Check';
 export const COVERAGE_CHECK_NAME = 'Coverage-Check';
 
 export const REPORT_TYPE_LICENSE_SCANNING = 'license_scanning';
-export const REPORT_TYPE_VULNERABILITY = 'vulnerability';
 export const REPORT_TYPE_CODE_COVERAGE = 'code_coverage';
 
 export const APPROVAL_RULE_CONFIGS = {
-  [VULNERABILITY_CHECK_NAME]: {
-    title: s__('SecurityApprovals|Vulnerability-Check'),
-    popoverText: s__(
-      'SecurityApprovals|A merge request approval is required when a security report contains a new vulnerability.',
-    ),
-    documentationText: s__('SecurityApprovals|Learn more about Vulnerability-Check'),
-    reportType: REPORT_TYPE_VULNERABILITY,
-  },
   [LICENSE_CHECK_NAME]: {
     title: s__('SecurityApprovals|License-Check'),
     popoverText: s__(
@@ -106,30 +96,6 @@ export const APPROVAL_DIALOG_I18N = {
     protectedBranchDescription: __(
       'Apply this approval rule to all branches or a specific protected branch.',
     ),
-    scannersLabel: s__('ApprovalRule|Security scanners'),
-    scannersSelectLabel: s__('ApprovalRule|Select scanners'),
-    scannersDescription: s__(
-      'ApprovalRule|Apply this approval rule to consider only the selected security scanners.',
-    ),
-    selectAllLabel: s__('ApprovalRule|Select All'),
-    allScannersSelectedLabel: s__('ApprovalRule|All scanners'),
-    multipleSelectedLabel: s__('ApprovalRule|%{firstLabel} +%{numberOfAdditionalLabels} more'),
-    vulnerabilitiesAllowedLabel: s__('ApprovalRule|Vulnerabilities allowed'),
-    vulnerabilitiesAllowedDescription: s__(
-      'ApprovalRule|Number of vulnerabilities allowed before approval rule is triggered.',
-    ),
-    vulnerabilityStatesLabel: s__('ApprovalRule|Vulnerability states'),
-    vulnerabilityStatesDescription: s__(
-      'ApprovalRule|Apply this approval rule to consider only the selected vulnerability states.',
-    ),
-    vulnerabilityStatesSelectLabel: s__('ApprovalRule|Select vulnerability states'),
-    allVulnerabilityStatesSelectedLabel: s__('ApprovalRule|All vulnerability states'),
-    severityLevelsLabel: s__('ApprovalRule|Severity levels'),
-    severityLevelsDescription: s__(
-      'ApprovalRule|Apply this approval rule to consider only the selected severity levels.',
-    ),
-    severityLevelsSelectLabel: s__('ApprovalRule|Select severity levels'),
-    allSeverityLevelsSelectedLabel: s__('ApprovalRule|All severity levels'),
   },
   validations: {
     approvalsRequiredNegativeNumber: __('Please enter a non-negative number'),
@@ -141,21 +107,7 @@ export const APPROVAL_DIALOG_I18N = {
     branchesRequired: __('Please select a valid target branch'),
     ruleNameTaken: __('Rule name is already taken.'),
     ruleNameMissing: __('Please provide a name'),
-    scannersRequired: s__('ApprovalRule|Please select at least one security scanner'),
-    vulnerabilitiesAllowedMinimum: s__(
-      'ApprovalRule|Please enter a number equal or greater than zero',
-    ),
-    severityLevelsRequired: s__('ApprovalRule|Please select at least one severity level'),
-    vulnerabilityStatesRequired: s__('ApprovalRule|Please select at least one vulnerability state'),
   },
-};
-
-export const APPROVAL_VULNERABILITY_STATES = {
-  newly_detected: s__('ApprovalRule|Newly detected'),
-  detected: s__('ApprovalRule|Previously detected'),
-  confirmed: s__('ApprovalRule|Confirmed'),
-  dismissed: s__('ApprovalRule|Dismissed'),
-  resolved: s__('ApprovalRule|Resolved'),
 };
 
 export const MR_APPROVALS_PROMO_DISMISSED = 'mr_approvals_promo.dismissed';

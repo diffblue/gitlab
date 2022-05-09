@@ -1,8 +1,6 @@
 import {
-  VULNERABILITY_CHECK_NAME,
   LICENSE_CHECK_NAME,
   COVERAGE_CHECK_NAME,
-  REPORT_TYPE_VULNERABILITY,
   REPORT_TYPE_LICENSE_SCANNING,
   REPORT_TYPE_CODE_COVERAGE,
   RULE_TYPE_REPORT_APPROVER,
@@ -37,11 +35,10 @@ describe('approvals mappers', () => {
 
   describe('mapApprovalRuleRequest', () => {
     describe.each`
-      ruleName                    | expectedReportType              | expectedRuleType
-      ${VULNERABILITY_CHECK_NAME} | ${REPORT_TYPE_VULNERABILITY}    | ${RULE_TYPE_REPORT_APPROVER}
-      ${LICENSE_CHECK_NAME}       | ${REPORT_TYPE_LICENSE_SCANNING} | ${RULE_TYPE_REPORT_APPROVER}
-      ${COVERAGE_CHECK_NAME}      | ${REPORT_TYPE_CODE_COVERAGE}    | ${RULE_TYPE_REPORT_APPROVER}
-      ${'Test Name'}              | ${undefined}                    | ${undefined}
+      ruleName               | expectedReportType              | expectedRuleType
+      ${LICENSE_CHECK_NAME}  | ${REPORT_TYPE_LICENSE_SCANNING} | ${RULE_TYPE_REPORT_APPROVER}
+      ${COVERAGE_CHECK_NAME} | ${REPORT_TYPE_CODE_COVERAGE}    | ${RULE_TYPE_REPORT_APPROVER}
+      ${'Test Name'}         | ${undefined}                    | ${undefined}
     `('with rule name set to $ruleName', ({ ruleName, expectedRuleType, expectedReportType }) => {
       it(`it returns ${expectedRuleType} rule_type for ${ruleName}`, () => {
         expect(mapApprovalRuleRequest({ name: ruleName }).rule_type).toBe(expectedRuleType);

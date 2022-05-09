@@ -104,16 +104,6 @@ export const TEST_RULE = {
   groups: [{ id: 1 }, { id: 2 }],
 };
 
-export const TEST_RULE_VULNERABILITY_CHECK = {
-  ...TEST_RULE,
-  id: null,
-  name: 'Vulnerability-Check',
-  scanners: ['sast', 'dast'],
-  vulnerabilitiesAllowed: 0,
-  severityLevels: ['high'],
-  vulnerabilityStates: ['newly_detected'],
-};
-
 export const TEST_RULE_WITH_PROTECTED_BRANCHES = {
   ...TEST_RULE,
   protectedBranches: TEST_PROTECTED_BRANCHES,

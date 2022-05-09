@@ -1,3 +1,5 @@
+import { s__ } from '~/locale';
+
 export { fromYaml } from './from_yaml';
 export { toYaml } from './to_yaml';
 export { buildRule, invalidScanners } from './rules';
@@ -23,3 +25,11 @@ actions:
     approvals_required: 1
     user_approvers: []
 `;
+
+export const APPROVAL_VULNERABILITY_STATES = {
+  newly_detected: s__('ApprovalRule|Newly detected'),
+  detected: s__('ApprovalRule|Previously detected'),
+  confirmed: s__('ApprovalRule|Confirmed'),
+  dismissed: s__('ApprovalRule|Dismissed'),
+  resolved: s__('ApprovalRule|Resolved'),
+};
