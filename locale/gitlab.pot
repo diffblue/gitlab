@@ -10963,12 +10963,6 @@ msgstr ""
 msgid "CycleAnalytics|'%{name}' is collecting the data. This can take a few minutes."
 msgstr ""
 
-msgid "CycleAnalytics|Aggregation disabled"
-msgstr ""
-
-msgid "CycleAnalytics|Aggregation enabled"
-msgstr ""
-
 msgid "CycleAnalytics|Average time to completion"
 msgstr ""
 
@@ -10988,9 +10982,6 @@ msgid "CycleAnalytics|Date"
 msgstr ""
 
 msgid "CycleAnalytics|Display chart filters"
-msgstr ""
-
-msgid "CycleAnalytics|Filter by stop date"
 msgstr ""
 
 msgid "CycleAnalytics|If you have recently upgraded to GitLab Premium, it can take up to 30 minutes for data to collect and display."
@@ -11048,16 +11039,10 @@ msgstr ""
 msgid "CycleAnalytics|There is no data for 'Total time' available. Adjust the current filters."
 msgstr ""
 
-msgid "CycleAnalytics|There was an error updating the aggregation status, please try again."
-msgstr ""
-
 msgid "CycleAnalytics|Total time"
 msgstr ""
 
 msgid "CycleAnalytics|Type of work"
-msgstr ""
-
-msgid "CycleAnalytics|When enabled, the results show items with a stop event within the date range. When disabled, the results show items with a start event within the date range."
 msgstr ""
 
 msgid "CycleAnalytics|group dropdown filter"

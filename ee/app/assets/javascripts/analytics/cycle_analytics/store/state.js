@@ -28,7 +28,6 @@ export default () => ({
   isEditingValueStream: false,
   isDeletingValueStream: false,
   isFetchingGroupLabels: false,
-  isUpdatingAggregation: false,
   isCreatingAggregation: false,
 
   createValueStreamErrors: {},
