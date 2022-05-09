@@ -28,11 +28,21 @@ module Namespaces
             Namespaces::DeactivateMembersOverLimitService.new(namespace).execute
             count += 1
           end
+
+          remediate_group_sharing(namespace)
         end
       rescue StandardError => ex
-        logger.error("Cannot remove members from namespace ID=#{namespace.id} due to: #{ex} in #{count} run")
+        logger.error("Cannot remediate namespace with ID=#{namespace.id} due to: #{ex} in #{count} run")
       end
     end
     # :nocov:
+
+    private
+
+    def remediate_group_sharing(namespace)
+      return unless ::Namespaces::FreeUserCap.group_sharing_remediation_enabled?
+
+      Namespaces::UpdatePreventSharingOutsideHierarchyService.new(namespace).execute
+    end
   end
 end
