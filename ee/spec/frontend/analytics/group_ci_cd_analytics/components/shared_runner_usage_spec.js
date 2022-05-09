@@ -1,3 +1,4 @@
+import timezoneMock from 'timezone-mock';
 import { GlAreaChart } from '@gitlab/ui/dist/charts';
 import { createLocalVue, shallowMount } from '@vue/test-utils';
 import VueApollo from 'vue-apollo';
@@ -78,6 +79,30 @@ describe('Shared runner usage tab', () => {
 
     it('should not display the chart', () => {
       expect(findAreaChart().exists()).toBe(false);
+    });
+  });
+
+  describe.each`
+    timezone
+    ${'Europe/London'}
+    ${'US/Pacific'}
+  `('when viewing in timezone', ({ timezone }) => {
+    describe(timezone, () => {
+      beforeEach(async () => {
+        timezoneMock.register(timezone);
+
+        createComponentWithApollo();
+
+        await waitForPromises();
+      });
+
+      afterEach(() => {
+        timezoneMock.unregister();
+      });
+
+      it('has the right start month', () => {
+        expect(findAreaChart().props('data')[0].data[0][0]).toEqual('Sep 2021');
+      });
     });
   });
 });

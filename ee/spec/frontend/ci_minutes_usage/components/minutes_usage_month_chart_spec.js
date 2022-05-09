@@ -1,3 +1,4 @@
+import timezoneMock from 'timezone-mock';
 import { GlAreaChart } from '@gitlab/ui/dist/charts';
 import { nextTick } from 'vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
@@ -57,5 +58,26 @@ describe('Minutes usage by month chart component', () => {
     await nextTick();
 
     expect(findYearDropdown().props('text')).toBe('2022');
+  });
+
+  describe.each`
+    timezone
+    ${'Europe/London'}
+    ${'US/Pacific'}
+  `('when viewing in timezone', ({ timezone }) => {
+    describe(timezone, () => {
+      beforeEach(async () => {
+        createComponent();
+        timezoneMock.register(timezone);
+      });
+
+      afterEach(() => {
+        timezoneMock.unregister();
+      });
+
+      it('has the right start month', () => {
+        expect(findAreaChart().props('data')[0].data[0][0]).toEqual('Jun 2021');
+      });
+    });
   });
 });

@@ -5,6 +5,7 @@ import { formatDate } from '~/lib/utils/datetime_utility';
 import { TYPE_GROUP } from '~/graphql_shared/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { s__, __ } from '~/locale';
+import { formatWithUtc } from '../constants';
 import getCiMinutesUsageByNamespace from '../graphql/ci_minutes.query.graphql';
 
 const timeFormatter = (val) => val;
@@ -70,7 +71,7 @@ export default {
           return new Date(a.monthIso8601) - new Date(b.monthIso8601);
         })
         .map((cur) => [
-          formatDate(cur.monthIso8601, 'mmm yyyy'),
+          formatDate(cur.monthIso8601, 'mmm yyyy', formatWithUtc),
           parseFloat((cur.sharedRunnersDuration / 60).toFixed(2)),
         ]);
     },

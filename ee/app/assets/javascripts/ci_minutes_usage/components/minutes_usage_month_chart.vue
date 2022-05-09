@@ -8,6 +8,7 @@ import {
   X_AXIS_MONTH_LABEL,
   X_AXIS_CATEGORY,
   Y_AXIS_PROJECT_LABEL,
+  formatWithUtc,
 } from '../constants';
 import { getUsageDataByYear } from '../utils';
 
@@ -61,7 +62,7 @@ export default {
           .sort((a, b) => {
             return new Date(a.monthIso8601) - new Date(b.monthIso8601);
           })
-          .map((cur) => [formatDate(cur.monthIso8601, 'mmm yyyy'), cur.minutes]);
+          .map((cur) => [formatDate(cur.monthIso8601, 'mmm yyyy', formatWithUtc), cur.minutes]);
       }
       return [];
     },
