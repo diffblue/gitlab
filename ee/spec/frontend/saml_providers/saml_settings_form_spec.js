@@ -1,14 +1,19 @@
-import SamlSettingsForm from 'ee/saml_providers/saml_settings_form';
 import 'bootstrap';
+import { loadHTMLFixture, resetHTMLFixture } from 'helpers/fixtures';
+import SamlSettingsForm from 'ee/saml_providers/saml_settings_form';
 
 describe('SamlSettingsForm', () => {
   const FIXTURE = 'groups/saml_providers/show.html';
 
   let samlSettingsForm;
   beforeEach(() => {
-    loadFixtures(FIXTURE);
+    loadHTMLFixture(FIXTURE);
     samlSettingsForm = new SamlSettingsForm('#js-saml-settings-form');
     samlSettingsForm.init();
+  });
+
+  afterEach(() => {
+    resetHTMLFixture();
   });
 
   const findGroupSamlSetting = () => samlSettingsForm.settings.find((s) => s.name === 'group-saml');

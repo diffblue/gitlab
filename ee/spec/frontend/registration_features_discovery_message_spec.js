@@ -3,6 +3,7 @@ import {
   SERVICE_PING_SETTINGS_LINK_SELECTOR,
   initServicePingSettingsClickTracking,
 } from 'ee/registration_features_discovery_message';
+import { setHTMLFixture, resetHTMLFixture } from 'helpers/fixtures';
 import { TEST_HOST } from 'spec/test_constants';
 import api from '~/api';
 
@@ -19,12 +20,16 @@ describe('track settings link clicks', () => {
 
   describe('when links are present', () => {
     beforeEach(() => {
-      setFixtures(`
+      setHTMLFixture(`
         <a class="js-go-to-service-ping-settings" href="${TEST_HOST}"></a>
         <a class="js-go-to-service-ping-settings" href="${TEST_HOST}"></a>
       `);
 
       initServicePingSettingsClickTracking();
+    });
+
+    afterEach(() => {
+      resetHTMLFixture();
     });
 
     it('track RedisHLL events', () => {

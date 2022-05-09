@@ -1,4 +1,5 @@
 import { GlBreakpointInstance as bp } from '@gitlab/ui/dist/utils';
+import { setHTMLFixture, resetHTMLFixture } from 'helpers/fixtures';
 import mountComponents from 'ee/registrations/groups_projects/new';
 import * as showTooltip from 'ee/registrations/groups_projects/new/show_tooltip';
 
@@ -13,13 +14,17 @@ const setup = () => {
       <input type="submit" />
     </form>
   `;
-  setFixtures(fixture);
+  setHTMLFixture(fixture);
   mountComponents();
 };
 
 describe('importButtonsSubmit', () => {
   beforeEach(() => {
     setup();
+  });
+
+  afterEach(() => {
+    resetHTMLFixture();
   });
 
   const findSubmit = () => document.querySelector('.js-import-project-form input[type="submit"]');
@@ -45,11 +50,13 @@ describe('mobileTooltipOpts', () => {
     jest.spyOn(bp, 'getBreakpointSize').mockReturnValue('xs');
     setup();
     expect(showTooltipSpy).toHaveBeenCalledWith(expect.any(String), { placement: 'bottom' });
+    resetHTMLFixture();
   });
 
   it('when not xs breakpoint size, passes emptyt tooltip options', () => {
     jest.spyOn(bp, 'getBreakpointSize').mockReturnValue('lg');
     setup();
     expect(showTooltipSpy).toHaveBeenCalledWith(expect.any(String), {});
+    resetHTMLFixture();
   });
 });

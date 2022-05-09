@@ -6,7 +6,7 @@ import {
   isValidEnvironmentId,
   removeUnnecessaryDashes,
 } from 'ee/threat_monitoring/utils';
-import { setHTMLFixture } from 'helpers/fixtures';
+import { setHTMLFixture, resetHTMLFixture } from 'helpers/fixtures';
 import { mockScanExecutionPolicy } from './mocks/mock_data';
 
 describe('Threat Monitoring Utils', () => {
@@ -21,6 +21,10 @@ describe('Threat Monitoring Utils', () => {
 
     beforeEach(() => {
       setHTMLFixture(fixture);
+    });
+
+    afterEach(() => {
+      resetHTMLFixture();
     });
 
     it('returns the height of an element that exists', () => {

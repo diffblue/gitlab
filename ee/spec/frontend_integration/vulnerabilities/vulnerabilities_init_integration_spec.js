@@ -1,5 +1,6 @@
 import { screen, within } from '@testing-library/dom';
 import initVulnerabilities from 'ee/vulnerabilities/vulnerabilities_init';
+import { setHTMLFixture, resetHTMLFixture } from 'helpers/fixtures';
 import { waitForText } from 'helpers/wait_for_text';
 import { VULNERABILITY_STATES } from 'ee/vulnerabilities/constants';
 import { mockIssueLink } from '../test_helpers/mock_data/vulnerabilities_mock_data';
@@ -26,7 +27,7 @@ describe('Vulnerability Report', () => {
   };
 
   beforeEach(() => {
-    setFixtures('<div class="vulnerability-details"></div>');
+    setHTMLFixture('<div class="vulnerability-details"></div>');
 
     container = document.querySelector('.vulnerability-details');
     vm = createComponent(container);
@@ -36,6 +37,7 @@ describe('Vulnerability Report', () => {
     vm.$destroy();
     vm = null;
     container = null;
+    resetHTMLFixture();
   });
 
   it("displays the vulnerability's status", () => {

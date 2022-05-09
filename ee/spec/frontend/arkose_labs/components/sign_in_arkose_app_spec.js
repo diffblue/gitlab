@@ -1,5 +1,6 @@
 import { nextTick } from 'vue';
 import AxiosMockAdapter from 'axios-mock-adapter';
+import { loadHTMLFixture, resetHTMLFixture } from 'helpers/fixtures';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import SignInArkoseApp from 'ee/arkose_labs/components/sign_in_arkose_app.vue';
 import axios from '~/lib/utils/axios_utils';
@@ -44,7 +45,7 @@ describe('SignInArkoseApp', () => {
 
   // Helpers
   const createForm = (username = '') => {
-    loadFixtures('sessions/new.html');
+    loadHTMLFixture('sessions/new.html');
     findUsernameInput().value = username;
   };
   const initArkoseLabs = (username) => {
@@ -103,7 +104,7 @@ describe('SignInArkoseApp', () => {
   afterEach(() => {
     axiosMock.restore();
     wrapper?.destroy();
-    document.body.innerHTML = '';
+    resetHTMLFixture();
   });
 
   describe('when the username field is pre-filled', () => {

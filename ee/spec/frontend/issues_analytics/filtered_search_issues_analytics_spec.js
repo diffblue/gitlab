@@ -1,3 +1,4 @@
+import { setHTMLFixture, resetHTMLFixture } from 'helpers/fixtures';
 import FilteredSearchIssueAnalytics from 'ee/issues_analytics/filtered_search_issues_analytics';
 
 describe('FilteredSearchIssueAnalytics', () => {
@@ -7,13 +8,15 @@ describe('FilteredSearchIssueAnalytics', () => {
     let availableTokenKeys = null;
 
     beforeEach(() => {
-      setFixtures(fixture);
+      setHTMLFixture(fixture);
       component = new FilteredSearchIssueAnalytics();
       availableTokenKeys = component.filteredSearchTokenKeys.tokenKeys.map(({ key }) => key);
     });
 
     afterEach(() => {
       component = null;
+
+      resetHTMLFixture();
     });
 
     it.each`
