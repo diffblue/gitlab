@@ -770,8 +770,7 @@ class NotificationService
   end
 
   def inactive_project_deletion_warning(project, deletion_date)
-    recipients = owners_and_maintainers_without_invites(project).eager_load(:user) # rubocop: disable CodeReuse/ActiveRecord
-    recipients.each do |recipient|
+    owners_and_maintainers_without_invites(project).each do |recipient|
       mailer.inactive_project_deletion_warning_email(project, recipient.user, deletion_date).deliver_later
     end
   end
