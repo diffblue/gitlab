@@ -75,7 +75,9 @@ describe('License Compliance extension', () => {
 
       await waitForPromises();
 
-      expect(wrapper.text()).toBe('License Compliance detected no new licenses');
+      expect(wrapper.text()).toBe(
+        'License Compliance detected no licenses for the source branch only',
+      );
     });
 
     it('displays new licenses count', async () => {
@@ -85,7 +87,9 @@ describe('License Compliance extension', () => {
 
       await waitForPromises();
 
-      expect(wrapper.text()).toBe('License Compliance detected 3 new licenses');
+      expect(wrapper.text()).toBe(
+        'License Compliance detected 3 licenses for the source branch only',
+      );
     });
 
     it('displays removed licenses count', async () => {
@@ -95,7 +99,9 @@ describe('License Compliance extension', () => {
 
       await waitForPromises();
 
-      expect(wrapper.text()).toBe('License Compliance detected 3 removed licenses');
+      expect(wrapper.text()).toBe(
+        'License Compliance detected no licenses for the source branch only',
+      );
     });
 
     it('displays new and removed licenses count', async () => {
@@ -106,7 +112,7 @@ describe('License Compliance extension', () => {
       await waitForPromises();
 
       expect(wrapper.text()).toBe(
-        'License Compliance detected 3 new licenses and 3 removed licenses',
+        'License Compliance detected 3 licenses for the source branch only',
       );
     });
   });
