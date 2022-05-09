@@ -3,6 +3,10 @@
 require 'spec_helper'
 
 RSpec.describe 'projects/merge_requests/show.html.haml' do
+  before do
+    stub_feature_flags(updated_mr_header: false)
+  end
+
   include_context 'merge request show action'
 
   context 'when merge request is created by a GitLab team member' do
