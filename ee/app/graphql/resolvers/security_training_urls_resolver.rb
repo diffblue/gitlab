@@ -17,7 +17,7 @@ module Resolvers
     argument :language,
          GraphQL::Types::String,
          required: false,
-         description: 'Desired languages for training urls - defaults to Java if language is unsupported.'
+         description: 'Desired language for training urls.'
 
     alias_method :project, :object
 
