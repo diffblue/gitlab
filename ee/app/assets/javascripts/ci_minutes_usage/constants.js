@@ -14,3 +14,4 @@ export const CI_CD_MINUTES_USAGE = s__('UsageQuota|CI/CD minutes usage');
 export const SHARED_RUNNER_USAGE = s__('UsageQuota|Shared runner usage');
 
 export const X_AXIS_CATEGORY = 'category';
+export const formatWithUtc = true;
