@@ -34,7 +34,7 @@ module ResolvesOrchestrationPolicy
         .flat_map do |config|
           config
             .scan_execution_policy
-            .map { |policy| policy.merge(project: config.project, namespace: config.namespace, inherited: config.source != object) }
+            .map { |policy| policy.merge(config: config, project: config.project, namespace: config.namespace, inherited: config.source != object) }
         end
     end
 
