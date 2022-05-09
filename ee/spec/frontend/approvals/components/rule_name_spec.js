@@ -15,7 +15,6 @@ describe('RuleName component', () => {
         ...props,
       },
       provide: {
-        vulnerabilityCheckHelpPagePath: '/vuln-check-docs',
         licenseCheckHelpPagePath: '/liceene-check-docs',
       },
     });
@@ -27,10 +26,9 @@ describe('RuleName component', () => {
   });
 
   describe.each`
-    name                     | hasTooltip | hasLink
-    ${'Foo'}                 | ${false}   | ${false}
-    ${'Vulnerability-Check'} | ${true}    | ${true}
-    ${'License-Check'}       | ${true}    | ${true}
+    name               | hasTooltip | hasLink
+    ${'Foo'}           | ${false}   | ${false}
+    ${'License-Check'} | ${true}    | ${true}
   `('with job name set to $name', ({ name, hasTooltip, hasLink }) => {
     beforeEach(() => {
       createWrapper({ name });

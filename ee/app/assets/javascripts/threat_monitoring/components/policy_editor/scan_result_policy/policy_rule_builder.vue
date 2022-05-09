@@ -4,7 +4,7 @@ import { s__ } from '~/locale';
 import { REPORT_TYPES_DEFAULT, SEVERITY_LEVELS } from 'ee/security_dashboard/store/constants';
 import ProtectedBranchesSelector from 'ee/vue_shared/components/branches_selector/protected_branches_selector.vue';
 import PolicyRuleMultiSelect from 'ee/threat_monitoring/components/policy_rule_multi_select.vue';
-import { APPROVAL_VULNERABILITY_STATES } from 'ee/approvals/constants';
+import { APPROVAL_VULNERABILITY_STATES } from './lib';
 
 export default {
   scanResultRuleCopy: s__(

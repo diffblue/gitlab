@@ -3,11 +3,7 @@ import { mount } from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
 import UnconfiguredSecurityRule from 'ee/approvals/components/security_configuration/unconfigured_security_rule.vue';
-import {
-  LICENSE_CHECK_NAME,
-  VULNERABILITY_CHECK_NAME,
-  COVERAGE_CHECK_NAME,
-} from 'ee/approvals/constants';
+import { LICENSE_CHECK_NAME, COVERAGE_CHECK_NAME } from 'ee/approvals/constants';
 
 Vue.use(Vuex);
 
@@ -17,12 +13,6 @@ describe('UnconfiguredSecurityRule component', () => {
 
   const findDescription = () => wrapper.findComponent(GlSprintf);
   const findButton = () => wrapper.findComponent(GlButton);
-
-  const vulnCheckRule = {
-    name: VULNERABILITY_CHECK_NAME,
-    description: 'vuln-check description with enable button',
-    docsPath: 'docs/vuln-check',
-  };
 
   const licenseCheckRule = {
     name: LICENSE_CHECK_NAME,
@@ -53,7 +43,6 @@ describe('UnconfiguredSecurityRule component', () => {
   describe.each`
     rule                 | ruleName                  | descriptionText
     ${licenseCheckRule}  | ${licenseCheckRule.name}  | ${licenseCheckRule.description}
-    ${vulnCheckRule}     | ${vulnCheckRule.name}     | ${vulnCheckRule.description}
     ${coverageCheckRule} | ${coverageCheckRule.name} | ${coverageCheckRule.description}
   `('with $ruleName', ({ rule, descriptionText }) => {
     beforeEach(() => {

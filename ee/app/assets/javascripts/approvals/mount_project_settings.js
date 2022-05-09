@@ -14,7 +14,6 @@ export default function mountProjectSettingsApprovals(el) {
   }
 
   const {
-    vulnerabilityCheckHelpPagePath,
     licenseCheckHelpPagePath,
     coverageCheckHelpPagePath,
     fullPath,
@@ -45,7 +44,6 @@ export default function mountProjectSettingsApprovals(el) {
     el,
     store,
     provide: {
-      vulnerabilityCheckHelpPagePath,
       licenseCheckHelpPagePath,
       coverageCheckHelpPagePath,
       fullPath,

@@ -35,18 +35,16 @@ describe('EE MR Widget mappers', () => {
       });
 
       it('approvalRuleNamesLeft includes report approvers', () => {
-        data.approval_rules_left.push(
-          { name: 'License-Check', rule_type: RULE_TYPE_REPORT_APPROVER },
-          { name: 'Vulnerability-Check', rule_type: RULE_TYPE_REPORT_APPROVER },
-        );
+        data.approval_rules_left.push({
+          name: 'License-Check',
+          rule_type: RULE_TYPE_REPORT_APPROVER,
+        });
 
         const result = mapApprovalsResponse(data);
 
-        expect(result).toEqual(
-          expect.objectContaining({
-            approvalRuleNamesLeft: ['Lorem', 'Ipsum', 'License-Check', 'Vulnerability-Check'],
-          }),
-        );
+        expect(result).toMatchObject({
+          approvalRuleNamesLeft: ['Lorem', 'Ipsum', 'License-Check'],
+        });
       });
 
       it('approvalRuleNamesLeft includes "Code Owners" if any', () => {
