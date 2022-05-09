@@ -3,7 +3,6 @@ import { GlLink, GlTooltip, GlIcon } from '@gitlab/ui';
 import { __, sprintf } from '~/locale';
 import CiBadgeLink from '~/vue_shared/components/ci_badge_link.vue';
 import CiIcon from '~/vue_shared/components/ci_icon.vue';
-import { STATUS_FAILED } from '../constants';
 
 export default {
   components: {
@@ -18,11 +17,6 @@ export default {
       type: Object,
       required: true,
     },
-    hasPipelineFailed: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
   },
   relations: {
     current: __('Current Project'),
@@ -35,24 +29,6 @@ export default {
     },
     upstreamPipeline() {
       return this.lastPipeline.triggered_by;
-    },
-    downstreamPipelinesHaveFailed() {
-      return (
-        this.downstreamPipelines &&
-        this.downstreamPipelines.some(
-          (pipeline) =>
-            pipeline.details &&
-            pipeline.details.status &&
-            pipeline.details.status.group === STATUS_FAILED,
-        )
-      );
-    },
-    pipelineClasses() {
-      const hasFailures = this.hasPipelineFailed || this.downstreamPipelinesHaveFailed;
-      return {
-        'dashboard-card-footer-failed': hasFailures,
-        'bg-white': hasFailures,
-      };
     },
     hasDownstreamPipelines() {
       return this.downstreamPipelines && this.downstreamPipelines.length > 0;
@@ -93,7 +69,7 @@ export default {
 };
 </script>
 <template>
-  <div :class="pipelineClasses" class="dashboard-card-footer py-1 px-2 mt-3">
+  <div class="dashboard-card-footer py-1 px-2 mt-3 bg-white">
     <template v-if="upstreamPipeline">
       <gl-link
         ref="upstreamStatus"

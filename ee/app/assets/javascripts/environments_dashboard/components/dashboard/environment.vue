@@ -177,11 +177,7 @@ export default {
         </div>
 
         <div v-if="lastPipeline" class="col-12">
-          <project-pipeline
-            :project-name="environment.name_with_namespace"
-            :last-pipeline="lastPipeline"
-            :has-pipeline-failed="hasPipelineFailed"
-          />
+          <project-pipeline :last-pipeline="lastPipeline" />
         </div>
       </div>
 
