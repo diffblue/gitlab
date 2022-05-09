@@ -6377,6 +6377,9 @@ msgstr ""
 msgid "Branches|Active branches"
 msgstr ""
 
+msgid "Branches|After you confirm and select %{strongStart}%{buttonText},%{strongEnd} you cannot recover this branch."
+msgstr ""
+
 msgid "Branches|All"
 msgstr ""
 
@@ -6425,9 +6428,6 @@ msgstr ""
 msgid "Branches|No branches to show"
 msgstr ""
 
-msgid "Branches|Once you confirm and press %{strongStart}%{buttonText},%{strongEnd} it cannot be undone or recovered."
-msgstr ""
-
 msgid "Branches|Only a project maintainer or owner can delete a protected branch"
 msgstr ""
 
@@ -6467,7 +6467,7 @@ msgstr ""
 msgid "Branches|The default branch cannot be deleted"
 msgstr ""
 
-msgid "Branches|This branch hasn’t been merged into %{defaultBranchName}. To avoid data loss, consider merging this branch before deleting it."
+msgid "Branches|This branch hasn't been merged into %{defaultBranchName}. To avoid data loss, consider merging this branch before deleting it."
 msgstr ""
 
 msgid "Branches|To discard the local changes and overwrite the branch with the upstream version, delete it here and choose 'Update Now' above."
@@ -6482,10 +6482,10 @@ msgstr ""
 msgid "Branches|Yes, delete protected branch"
 msgstr ""
 
-msgid "Branches|You're about to permanently delete the branch %{strongStart}%{branchName}.%{strongEnd}"
+msgid "Branches|You're about to permanently delete the branch %{branchName}."
 msgstr ""
 
-msgid "Branches|You're about to permanently delete the protected branch %{strongStart}%{branchName}.%{strongEnd}"
+msgid "Branches|You're about to permanently delete the protected branch %{branchName}."
 msgstr ""
 
 msgid "Branches|diverged from upstream"
