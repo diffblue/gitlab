@@ -47,60 +47,6 @@ RSpec.describe Projects::Security::PoliciesController, type: :request do
           expect(app['data-scan-result-approvers']).to be_nil
         end
 
-        context 'when type is container_runtime' do
-          let_it_be(:type) { 'container_policy' }
-          let_it_be(:environment) { create(:environment, :with_review_app, project: project) }
-
-          let(:environment_id) { environment.id }
-          let(:kind) { 'CiliumNetworkPolicy' }
-          let(:policy_name) { 'policy' }
-          let(:network_policy) do
-            Gitlab::Kubernetes::CiliumNetworkPolicy.new(
-              name: policy_name,
-              namespace: 'another',
-              selector: { matchLabels: { role: 'db' } },
-              ingress: [{ from: [{ namespaceSelector: { matchLabels: { project: 'myproject' } } }] }]
-            )
-          end
-
-          let(:service) { instance_double('NetworkPolicies::FindResourceService', execute: ServiceResponse.success(payload: network_policy)) }
-
-          let(:edit) do
-            edit_project_security_policy_url(
-              project,
-              id: policy_name,
-              type: type,
-              environment_id: environment_id,
-              kind: kind
-            )
-          end
-
-          before do
-            allow(NetworkPolicies::FindResourceService).to(
-              receive(:new)
-                .with(resource_name: policy_name, environment: environment, kind: Gitlab::Kubernetes::CiliumNetworkPolicy::KIND)
-                .and_return(service)
-            )
-          end
-
-          it 'renders edit page with network policy' do
-            get edit
-
-            app = Nokogiri::HTML.parse(response.body).at_css('div#js-policy-builder-app')
-
-            expect(app.attributes['data-policy'].value).to eq(network_policy.to_json)
-            expect(app.attributes['data-policy-type'].value).to eq(type)
-            expect(app.attributes['data-environment-id'].value).to eq(environment_id.to_s)
-          end
-
-          it 'does not contain any approver data' do
-            get edit
-            app = Nokogiri::HTML.parse(response.body).at_css('div#js-policy-builder-app')
-
-            expect(app['data-scan-result-approvers']).to be_nil
-          end
-        end
-
         context 'with scan result policy type' do
           let_it_be(:type) {'scan_result_policy'}
           let_it_be(:policy) {build(:scan_result_policy)}
