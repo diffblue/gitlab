@@ -151,9 +151,7 @@ RSpec.describe Projects::TransferService do
 
         context 'when target namespace has a premium plan' do
           it 'does not revoke PATs' do
-            subject.execute(premium_group)
-
-            expect { subject.execute(group) }.not_to change { revoked_tokens.count }
+            expect { subject.execute(premium_group) }.not_to change { revoked_tokens.count }
           end
         end
 

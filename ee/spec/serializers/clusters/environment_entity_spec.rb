@@ -25,8 +25,7 @@ RSpec.describe Clusters::EnvironmentEntity do
 
       context 'deploy board available' do
         before do
-          allow(group).to receive(:feature_available?).and_call_original
-          allow(group).to receive(:feature_available?).with(:cluster_deployments).and_return(true)
+          stub_licensed_features(cluster_deployments: true)
         end
 
         it 'matches expected schema' do
@@ -40,7 +39,7 @@ RSpec.describe Clusters::EnvironmentEntity do
 
       context 'deploy board not available' do
         before do
-          allow(group).to receive(:feature_available?).with(:cluster_deployments).and_return(false)
+          stub_licensed_features(cluster_deployments: false)
         end
 
         it 'matches expected schema' do

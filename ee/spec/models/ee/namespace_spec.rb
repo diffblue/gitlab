@@ -561,12 +561,6 @@ RSpec.describe Namespace do
       is_expected.to be_truthy
     end
 
-    it 'only checks the plan once' do
-      expect(group).to receive(:load_feature_available).once.and_call_original
-
-      2.times { group.licensed_feature_available?(:push_rules) }
-    end
-
     context 'when checking namespace plan' do
       before do
         stub_application_setting_on_object(group, should_check_namespace_plan: true)

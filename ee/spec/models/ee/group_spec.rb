@@ -1754,10 +1754,6 @@ RSpec.describe Group do
 
       let(:data) { { some: 'info' } }
 
-      before do
-        group.clear_memoization(:feature_available)
-      end
-
       context 'when group_webhooks feature is enabled' do
         before do
           stub_licensed_features(group_webhooks: true)
@@ -1910,7 +1906,6 @@ RSpec.describe Group do
 
     context 'when group webhooks are unlicensed' do
       before do
-        subgroup.clear_memoization(:feature_available)
         stub_licensed_features(group_webhooks: false)
       end
 

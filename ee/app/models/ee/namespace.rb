@@ -166,7 +166,7 @@ module EE
     # being licensed.
     override :licensed_feature_available?
     def licensed_feature_available?(feature)
-      available_features = strong_memoize(:feature_available) do
+      available_features = strong_memoize(:licensed_feature_available) do
         Hash.new do |h, f|
           h[f] = load_feature_available(f)
         end
@@ -583,7 +583,7 @@ module EE
     end
 
     def clear_feature_available_cache
-      clear_memoization(:feature_available)
+      clear_memoization(:licensed_feature_available)
     end
 
     def sync_name_with_customers_dot
