@@ -5896,6 +5896,9 @@ msgstr ""
 msgid "Billings|Extend trial"
 msgstr ""
 
+msgid "Billings|Free groups are limited to %{number} seats."
+msgstr ""
+
 msgid "Billings|In a seat"
 msgstr ""
 
