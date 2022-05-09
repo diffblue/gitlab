@@ -28,6 +28,10 @@ module Namespaces
       ::Feature.enabled?(:free_user_cap_data_remediation_job, default_enabled: :yaml)
     end
 
+    def self.group_sharing_remediation_enabled?
+      ::Feature.enabled?(:free_user_cap_group_sharing_remediation)
+    end
+
     private
 
     attr_reader :root_namespace
