@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ServicePing::BuildPayloadService do
+RSpec.describe ServicePing::BuildPayload do
   describe '#execute' do
     subject(:service_ping_payload) { described_class.new.execute }
 
@@ -15,7 +15,8 @@ RSpec.describe ServicePing::BuildPayloadService do
     end
 
     before do
-      allow(User).to receive(:single_user).and_return(double(:user, requires_usage_stats_consent?: false))
+      allow(User).to receive(:single_user)
+        .and_return(instance_double(User, :user, requires_usage_stats_consent?: false))
     end
 
     context 'GitLab instance have a license' do

@@ -6,7 +6,12 @@ RSpec.describe ServicePing::ServicePingSettings do
   using RSpec::Parameterized::TableSyntax
 
   describe '#product_intelligence_enabled?' do
-    where(:usage_ping_enabled, :customer_service_enabled, :requires_usage_stats_consent, :expected_product_intelligence_enabled) do
+    where(
+      :usage_ping_enabled,
+      :customer_service_enabled,
+      :requires_usage_stats_consent,
+      :expected_product_intelligence_enabled
+    ) do
       # Customer service enabled
       true  | true  | false | true
       false | true  | true  | false
@@ -28,7 +33,8 @@ RSpec.describe ServicePing::ServicePingSettings do
 
     with_them do
       before do
-        allow(User).to receive(:single_user).and_return(double(:user, requires_usage_stats_consent?: requires_usage_stats_consent))
+        allow(User).to receive(:single_user)
+          .and_return(instance_double(User, :user, requires_usage_stats_consent?: requires_usage_stats_consent))
         stub_config_setting(usage_ping_enabled: usage_ping_enabled)
         create_current_license(operational_metrics_enabled: customer_service_enabled)
       end

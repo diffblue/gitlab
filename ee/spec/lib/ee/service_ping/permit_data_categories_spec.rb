@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ServicePing::PermitDataCategoriesService do
+RSpec.describe ServicePing::PermitDataCategories do
   describe '#execute' do
     subject(:permitted_categories) { described_class.new.execute }
 
@@ -46,7 +46,8 @@ RSpec.describe ServicePing::PermitDataCategoriesService do
 
           context 'when User.single_user&.requires_usage_stats_consent? is required' do
             before do
-              allow(User).to receive(:single_user).and_return(double(:user, requires_usage_stats_consent?: true))
+              allow(User).to receive(:single_user)
+                .and_return(instance_double(User, :user, requires_usage_stats_consent?: true))
             end
 
             it 'returns no categories' do

@@ -2,13 +2,13 @@
 
 module EE
   module ServicePing
-    module PermitDataCategoriesService
+    module PermitDataCategories
       extend ::Gitlab::Utils::Override
 
-      STANDARD_CATEGORY = ::ServicePing::PermitDataCategoriesService::STANDARD_CATEGORY
-      SUBSCRIPTION_CATEGORY = ::ServicePing::PermitDataCategoriesService::SUBSCRIPTION_CATEGORY
-      OPTIONAL_CATEGORY = ::ServicePing::PermitDataCategoriesService::OPTIONAL_CATEGORY
-      OPERATIONAL_CATEGORY = ::ServicePing::PermitDataCategoriesService::OPERATIONAL_CATEGORY
+      STANDARD_CATEGORY = ::ServicePing::PermitDataCategories::STANDARD_CATEGORY
+      SUBSCRIPTION_CATEGORY = ::ServicePing::PermitDataCategories::SUBSCRIPTION_CATEGORY
+      OPTIONAL_CATEGORY = ::ServicePing::PermitDataCategories::OPTIONAL_CATEGORY
+      OPERATIONAL_CATEGORY = ::ServicePing::PermitDataCategories::OPERATIONAL_CATEGORY
 
       override :execute
       def execute
