@@ -93,7 +93,7 @@ module API
           .find(declared_params[:related_epic_link_id])
 
         result = ::Epics::RelatedEpicLinks::DestroyService
-          .new(epic_link, current_user)
+          .new(epic_link, epic, current_user)
           .execute
 
         if result[:status] == :success

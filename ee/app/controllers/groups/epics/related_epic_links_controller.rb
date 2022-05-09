@@ -35,7 +35,7 @@ module Groups
       end
 
       def destroy_service
-        ::Epics::RelatedEpicLinks::DestroyService.new(link, current_user)
+        ::Epics::RelatedEpicLinks::DestroyService.new(link, epic, current_user)
       end
 
       def create_service

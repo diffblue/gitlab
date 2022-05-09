@@ -49,6 +49,7 @@ options:
     - g_project_management_epic_blocking_added
     - g_project_management_epic_blocking_removed
     - g_project_management_epic_blocked_added
+    - g_project_management_epic_blocked_removed
 distribution:
 - ee
 tier:
