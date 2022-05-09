@@ -34,8 +34,7 @@ module Projects
         @policy_type = params[:type].presence&.to_sym
         result = ::Security::SecurityOrchestrationPolicies::PolicyConfigurationValidationService.new(
           policy_configuration: policy_configuration,
-          type: @policy_type,
-          environment_id: params[:environment_id].presence
+          type: @policy_type
         ).execute
 
         if result[:status] == :error
@@ -56,29 +55,6 @@ module Projects
       end
 
       def policy
-        if @policy_type == :container_policy
-          # Currently, container policies are stored as active record objects and other policies
-          # are stored in a policy management project. When we have a unified approach for
-          # storing the security policies, we can remove this conditional and retrieve all of
-          # the policies using the FetchPolicyService.
-          container_policy
-        else
-          default_policy
-        end
-      end
-
-      def container_policy
-        @environment = project.environments.find(params[:environment_id])
-        result = NetworkPolicies::FindResourceService.new(
-          resource_name: @policy_name,
-          environment: @environment,
-          kind: params[:kind].presence || Gitlab::Kubernetes::CiliumNetworkPolicy::KIND
-        ).execute
-
-        result.payload if result.success?
-      end
-
-      def default_policy
         result = ::Security::SecurityOrchestrationPolicies::FetchPolicyService.new(
           policy_configuration: policy_configuration,
           name: @policy_name,

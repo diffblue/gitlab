@@ -10,10 +10,9 @@ RSpec.describe Security::SecurityOrchestrationPolicies::PolicyConfigurationValid
     let(:policy) { build(:scan_execution_policy) }
     let(:policy_blob) { build(:orchestration_policy_yaml, scan_execution_policy: [policy]) }
     let(:type) { :scan_execution_policy }
-    let(:environment_id) { nil }
 
     subject(:service) do
-      described_class.new(policy_configuration: policy_configuration, type: type, environment_id: environment_id)
+      described_class.new(policy_configuration: policy_configuration, type: type)
     end
 
     before do
@@ -75,46 +74,6 @@ RSpec.describe Security::SecurityOrchestrationPolicies::PolicyConfigurationValid
         expect(response[:status]).to eq(:error)
         expect(response[:message]).to eq('Invalid policy type')
         expect(response[:invalid_component]).to eq(:parameter)
-      end
-    end
-
-    context 'when type is container_runtime' do
-      let(:type) { :container_policy }
-
-      context 'when environment_id is missing' do
-        let(:environment_id) { nil }
-
-        it 'returns an error' do
-          response = service.execute
-
-          expect(response[:status]).to eq(:error)
-          expect(response[:message]).to eq('environment_id parameter is required when type is container_policy')
-          expect(response[:invalid_component]).to eq(:parameter)
-        end
-      end
-
-      context 'when environment_id is provided' do
-        let(:environment_id) { 123 }
-
-        context 'when security_orchestration_policies_configuration is missing' do
-          let(:policy_configuration) { nil }
-
-          it 'ignores policy configuration errors and returns success' do
-            response = service.execute
-
-            expect(response[:status]).to eq(:success)
-          end
-        end
-
-        context 'when security_orchestration_policies_configuration is invalid' do
-          let(:policy_blob) { { scan_execution_policy: 'invalid' }.to_yaml }
-
-          it 'ignores policy configuration errors and returns success' do
-            response = service.execute
-
-            expect(response[:status]).to eq(:success)
-          end
-        end
       end
     end
 
