@@ -35,7 +35,6 @@ RSpec.describe 'Jobs/Browser-Performance-Testing.gitlab-ci.yml' do
 
     before do
       stub_ci_pipeline_yaml_file(template)
-      stub_feature_flags(redirect_to_latest_template_jobs_browser_performance_testing: false)
 
       allow_next_instance_of(Ci::BuildScheduleWorker) do |worker|
         allow(worker).to receive(:perform).and_return(true)
