@@ -1,6 +1,7 @@
-import { s__, n__, __, sprintf } from '~/locale';
+import { s__, n__ } from '~/locale';
 import axios from '~/lib/utils/axios_utils';
 import { EXTENSION_ICONS } from '~/vue_merge_request_widget/constants';
+import { LICENSE_APPROVAL_STATUS } from 'ee/vue_shared/license_compliance/constants';
 import { parseDependencies } from './utils';
 
 // TODO: Clean up both status versions as part of https://gitlab.com/gitlab-org/gitlab/-/issues/356206
@@ -22,39 +23,59 @@ export default {
   expandEvent: 'i_testing_license_compliance_widget_total',
   props: ['licenseCompliance'],
   computed: {
+    newLicenses() {
+      return this.collapsedData[0].new_licenses || [];
+    },
+    licenseReportLength() {
+      return this.newLicenses().length;
+    },
+    hasReportItems() {
+      return this.licenseReportLength() > 0;
+    },
+    hasBaseReportLicenses() {
+      return this.collapsedData[0].existing_licenses?.length > 0;
+    },
+    hasDeniedLicense() {
+      return (this.newLicenses() || []).some(
+        (license) => license.approvalStatus === LICENSE_APPROVAL_STATUS.DENIED,
+      );
+    },
     summary() {
-      if (
-        this.collapsedData[0].new_licenses?.length > 0 &&
-        this.collapsedData[0].removed_licenses?.length > 0
-      ) {
-        const newLicenses = n__(
-          '%d new license',
-          '%d new licenses',
-          this.collapsedData[0].new_licenses.length,
-        );
+      if (this.hasReportItems()) {
+        if (this.hasBaseReportLicenses()) {
+          return this.hasDeniedLicense()
+            ? n__(
+                'LicenseCompliance|License Compliance detected %d new license and policy violation',
+                'LicenseCompliance|License Compliance detected %d new licenses and policy violations',
+                this.licenseReportLength(),
+              )
+            : n__(
+                'LicenseCompliance|License Compliance detected %d new license',
+                'LicenseCompliance|License Compliance detected %d new licenses',
+                this.licenseReportLength(),
+              );
+        }
 
-        const removedLicenses = n__(
-          '%d removed license',
-          '%d removed licenses',
-          this.collapsedData[0].removed_licenses.length,
-        );
-
-        return sprintf(__(`License Compliance detected ${newLicenses} and ${removedLicenses}`));
-      } else if (this.collapsedData[0].new_licenses?.length > 0) {
-        return n__(
-          'LicenseCompliance|License Compliance detected %d new license',
-          'LicenseCompliance|License Compliance detected %d new licenses',
-          this.collapsedData[0].new_licenses.length,
-        );
-      } else if (this.collapsedData[0].removed_licenses?.length > 0) {
-        return n__(
-          'LicenseCompliance|License Compliance detected %d removed license',
-          'LicenseCompliance|License Compliance detected %d removed licenses',
-          this.collapsedData[0].removed_licenses.length,
-        );
+        return this.hasDeniedLicense()
+          ? n__(
+              'LicenseCompliance|License Compliance detected %d license and policy violation for the source branch only',
+              'LicenseCompliance|License Compliance detected %d licenses and policy violations for the source branch only',
+              this.licenseReportLength(),
+            )
+          : n__(
+              'LicenseCompliance|License Compliance detected %d license for the source branch only',
+              'LicenseCompliance|License Compliance detected %d licenses for the source branch only',
+              this.licenseReportLength(),
+            );
       }
 
-      return s__('LicenseCompliance|License Compliance detected no new licenses');
+      if (this.hasBaseReportLicenses()) {
+        return s__('LicenseCompliance|License Compliance detected no new licenses');
+      }
+
+      return s__(
+        'LicenseCompliance|License Compliance detected no licenses for the source branch only',
+      );
     },
     statusIcon() {
       if (this.collapsedData[0].new_licenses?.length === 0) {
