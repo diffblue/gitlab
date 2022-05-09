@@ -30,7 +30,7 @@ module EE
       def log_audit_event
         raise "Nothing to log, the service must be executed first." unless @old_ranges && @new_ranges
 
-        return unless group.licensed_feature_available?(:extended_audit_events)
+        return unless License.feature_available?(:extended_audit_events)
         return if @old_ranges.sort == @new_ranges.sort
 
         ::Gitlab::Audit::Auditor.audit(
