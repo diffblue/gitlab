@@ -22,7 +22,6 @@ export function initJiraConnect() {
   const {
     groupsPath,
     subscriptions,
-    addSubscriptionsPath,
     subscriptionsPath,
     usersPath,
     gitlabUserPath,
@@ -37,7 +36,6 @@ export function initJiraConnect() {
     store,
     provide: {
       groupsPath,
-      addSubscriptionsPath,
       subscriptionsPath,
       usersPath,
       gitlabUserPath,

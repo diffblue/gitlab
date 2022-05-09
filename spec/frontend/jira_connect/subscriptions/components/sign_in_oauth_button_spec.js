@@ -12,6 +12,7 @@ import waitForPromises from 'helpers/wait_for_promises';
 import httpStatus from '~/lib/utils/http_status';
 import AccessorUtilities from '~/lib/utils/accessor';
 import { getCurrentUser } from '~/rest_api';
+import createStore from '~/jira_connect/subscriptions/store';
 
 jest.mock('~/lib/utils/accessor');
 jest.mock('~/jira_connect/subscriptions/utils');
@@ -31,9 +32,14 @@ const mockOauthMetadata = {
 describe('SignInOauthButton', () => {
   let wrapper;
   let mockAxios;
+  let store;
 
   const createComponent = ({ slots } = {}) => {
+    store = createStore();
+    jest.spyOn(store, 'dispatch').mockImplementation();
+
     wrapper = shallowMount(SignInOauthButton, {
+      store,
       slots,
       provide: {
         oauthMetadata: mockOauthMetadata,
@@ -117,10 +123,6 @@ describe('SignInOauthButton', () => {
               await waitForPromises();
             });
 
-            it('emits `error` event', () => {
-              expect(wrapper.emitted('error')).toBeTruthy();
-            });
-
             it('does not emit `sign-in` event', () => {
               expect(wrapper.emitted('sign-in')).toBeFalsy();
             });
@@ -164,25 +166,21 @@ describe('SignInOauthButton', () => {
             });
           });
 
-          it('executes GET request to fetch user data', () => {
-            expect(getCurrentUser).toHaveBeenCalledWith({
-              headers: { Authorization: `Bearer ${mockAccessToken}` },
-            });
+          it('dispatches fetchCurrentUser action', () => {
+            expect(store.dispatch).toHaveBeenCalledWith('fetchCurrentUser', mockAccessToken);
           });
 
           it('emits `sign-in` event with user data', () => {
-            expect(wrapper.emitted('sign-in')[0]).toEqual([mockUser]);
+            expect(wrapper.emitted('sign-in')[0]).toBeTruthy();
           });
         });
 
         describe('when API requests fail', () => {
           beforeEach(async () => {
             jest.spyOn(axios, 'post');
-            jest.spyOn(axios, 'get');
             mockAxios
               .onPost(mockOauthMetadata.oauth_token_url)
-              .replyOnce(httpStatus.INTERNAL_SERVER_ERROR, { access_token: mockAccessToken });
-            mockAxios.onGet('/api/v4/user').replyOnce(httpStatus.INTERNAL_SERVER_ERROR, mockUser);
+              .replyOnce(httpStatus.INTERNAL_SERVER_ERROR);
 
             window.dispatchEvent(new MessageEvent('message', mockEvent));
 
@@ -190,7 +188,7 @@ describe('SignInOauthButton', () => {
           });
 
           it('emits `error` event', () => {
-            expect(wrapper.emitted('error')).toBeTruthy();
+            expect(wrapper.emitted('error')[0]).toEqual([]);
           });
 
           it('does not emit `sign-in` event', () => {

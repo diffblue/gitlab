@@ -1,4 +1,5 @@
 <script>
+import { mapActions } from 'vuex';
 import { GlButton } from '@gitlab/ui';
 import axios from '~/lib/utils/axios_utils';
 import {
@@ -8,7 +9,6 @@ import {
 } from '~/jira_connect/subscriptions/constants';
 import { setUrlParams } from '~/lib/utils/url_utility';
 import AccessorUtilities from '~/lib/utils/accessor';
-import { getCurrentUser } from '~/rest_api';
 import { createCodeVerifier, createCodeChallenge } from '../pkce';
 
 export default {
@@ -31,6 +31,7 @@ export default {
     window.removeEventListener('message', this.handleWindowMessage);
   },
   methods: {
+    ...mapActions(['fetchCurrentUser']),
     async startOAuthFlow() {
       this.loading = true;
 
@@ -58,7 +59,6 @@ export default {
     async handleWindowMessage(event) {
       if (window.origin !== event.origin) {
         this.loading = false;
-        this.handleError();
         return;
       }
 
@@ -74,8 +74,8 @@ export default {
       const code = event.data?.code;
       try {
         const accessToken = await this.getOAuthToken(code);
-
-        await this.loadUser(accessToken);
+        await this.fetchCurrentUser(accessToken);
+        this.$emit('sign-in');
       } catch (e) {
         this.handleError();
       } finally {
@@ -97,13 +97,6 @@ export default {
       });
 
       return data.access_token;
-    },
-    async loadUser(accessToken) {
-      const { data } = await getCurrentUser({
-        headers: { Authorization: `Bearer ${accessToken}` },
-      });
-
-      this.$emit('sign-in', data);
     },
   },
   i18n: {
