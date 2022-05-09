@@ -549,12 +549,12 @@ module EE
     def allow_stale_runner_pruning?
       return false unless ci_cd_settings
 
-      ci_cd_settings.allow_stale_runner_pruning
+      ci_cd_settings.allow_stale_runner_pruning?
     end
 
     override :allow_stale_runner_pruning=
     def allow_stale_runner_pruning=(value)
-      return unless ci_cd_settings || value
+      return if ci_cd_settings.blank? && !value
 
       find_or_build_ci_cd_settings.allow_stale_runner_pruning = value
     end

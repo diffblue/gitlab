@@ -1976,7 +1976,7 @@ RSpec.describe Namespace do
 
     context 'with ci_cd_setting.allow_stale_runner_pruning set to false' do
       before do
-        namespace.allow_stale_runner_pruning = false
+        namespace.find_or_build_ci_cd_settings.allow_stale_runner_pruning = false
       end
 
       it { is_expected.to eq false }
@@ -1984,7 +1984,7 @@ RSpec.describe Namespace do
 
     context 'with ci_cd_setting.allow_stale_runner_pruning set to true' do
       before do
-        namespace.allow_stale_runner_pruning = true
+        namespace.find_or_build_ci_cd_settings.allow_stale_runner_pruning = true
       end
 
       it { is_expected.to eq true }
@@ -1993,10 +1993,10 @@ RSpec.describe Namespace do
 
   describe '#allow_stale_runner_pruning=' do
     context 'with no existing ci_cd_setting association' do
-      context 'when value is set to true' do
-        it 'does not build association' do
-          namespace.allow_stale_runner_pruning = false
-          namespace.save!
+      context 'when value is set to false' do
+        it 'does not build new association' do
+          namespace.update!(allow_stale_runner_pruning: false)
+          namespace.reload
 
           expect(namespace.ci_cd_settings).to be_nil
         end
@@ -2004,12 +2004,11 @@ RSpec.describe Namespace do
 
       context 'when value is set to true' do
         it 'builds association' do
-          namespace.allow_stale_runner_pruning = true
-          namespace.save!
+          namespace.update!(allow_stale_runner_pruning: true)
+          namespace.reload
 
           expect(namespace.ci_cd_settings).not_to be_nil
-          expect(namespace.ci_cd_settings.allow_stale_runner_pruning).to eq true
-          expect(namespace.ci_cd_settings.persisted?).to eq true
+          expect(namespace.ci_cd_settings.allow_stale_runner_pruning?).to eq true
         end
       end
     end
@@ -2021,13 +2020,10 @@ RSpec.describe Namespace do
 
       context 'when value is set to true' do
         it 'updates association' do
-          namespace.allow_stale_runner_pruning = true
-          namespace.save!
+          namespace.update!(allow_stale_runner_pruning: true)
+          namespace.reload
 
-          expect(namespace.ci_cd_settings.allow_stale_runner_pruning).to eq true
-          expect(namespace.ci_cd_settings.persisted?).to eq true
-          expect(namespace.ci_cd_settings.valid?).to eq true
-          expect(namespace.valid?).to eq true
+          expect(namespace.ci_cd_settings.allow_stale_runner_pruning?).to eq true
         end
       end
     end

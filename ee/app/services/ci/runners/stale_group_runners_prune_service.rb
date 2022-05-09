@@ -23,11 +23,13 @@ module Ci
 
       # rubocop: disable CodeReuse/ActiveRecord
       def delete_stale_group_runners(groups)
-        return 0 unless groups&.any?
+        return 0 unless groups.any?
 
         total_count = 0
 
         groups.each_batch(of: GROUP_BATCH_SIZE, order_hint: :id) do |group_batch|
+          # Prune stale runners in small batches of `BATCH_SIZE` in order to reduce pressure on the database and
+          # to allow it to perform any cleanup required.
           loop do
             count = delete_stale_group_runners_in_batches(group_batch.ids)
             total_count += count

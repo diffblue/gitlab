@@ -4,19 +4,15 @@ require 'spec_helper'
 
 RSpec.describe Ci::Runners::StaleGroupRunnersPruneService do
   let!(:group) { create(:group) }
-  let!(:active_runner) do
-    create(:ci_runner, :group, groups: [group], created_at: 5.months.ago, contacted_at: 10.seconds.ago)
-  end
-
-  let!(:stale_runners) do
-    create_list(:ci_runner, 3, :group, groups: [group], created_at: 5.months.ago, contacted_at: 4.months.ago)
-  end
-
   let(:service) { described_class.new }
 
   subject(:status) { service.perform(groups) }
 
   context 'with empty groups relation' do
+    let!(:stale_runner) do
+      create(:ci_runner, :group, groups: [group], created_at: 5.months.ago, contacted_at: 4.months.ago)
+    end
+
     let(:groups) { Group.none }
 
     it 'does not prune any runners and returns :success status' do
@@ -27,11 +23,19 @@ RSpec.describe Ci::Runners::StaleGroupRunnersPruneService do
           status: :success,
           total_pruned: 0
         })
-      end.not_to change { Ci::Runner.count }.from(4)
+      end.not_to change { Ci::Runner.count }.from(1)
     end
   end
 
   context 'with group' do
+    let!(:active_runner) do
+      create(:ci_runner, :group, groups: [group], created_at: 5.months.ago, contacted_at: 10.seconds.ago)
+    end
+
+    let!(:stale_runners) do
+      create_list(:ci_runner, 3, :group, groups: [group], created_at: 5.months.ago, contacted_at: 4.months.ago)
+    end
+
     let(:groups) { Group.where(id: group.id) }
 
     before do
