@@ -19,7 +19,7 @@ export default (el, namespaceType) => {
     documentationPath,
     groupPath,
     newPolicyPath,
-    projectPath,
+    namespacePath,
   } = el.dataset;
 
   return new Vue({
@@ -31,10 +31,10 @@ export default (el, namespaceType) => {
       disableSecurityPolicyProject: parseBoolean(disableSecurityPolicyProject),
       documentationPath,
       newPolicyPath,
-      projectPath,
       emptyFilterSvgPath,
       emptyListSvgPath,
       groupPath,
+      namespacePath,
       namespaceType,
     },
     render(createElement) {

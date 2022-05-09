@@ -1,7 +1,7 @@
 - breadcrumb_title _("Policies")
 - @content_wrapper_class = 'js-security-policies-container-wrapper'
 
-#js-group-security-policies-list{ data: { group_path: group.full_path,
+#js-group-security-policies-list{ data: { namespace_path: group.full_path,
   assigned_policy_project: assigned_policy_project(group),
   disable_security_policy_project: !can_update_security_orchestration_policy_project?(group),
   new_policy_path: new_group_security_policy_path(group),

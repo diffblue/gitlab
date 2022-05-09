@@ -20,8 +20,7 @@ import {
 
 Vue.use(VueApollo);
 
-const projectFullPath = 'project/path';
-const groupFullPath = 'group/path';
+const namespacePath = 'path/to/project/or/group';
 const projectScanExecutionPoliciesSpy = projectScanExecutionPolicies(
   mockScanExecutionPoliciesResponse,
 );
@@ -52,9 +51,8 @@ describe('PoliciesList component', () => {
           provide: {
             documentationPath: 'path/to/docs',
             namespaceType: NAMESPACE_TYPES.PROJECT,
-            newPolicyPath: `${projectFullPath}/-/security/policies/new`,
-            groupPath: undefined,
-            projectPath: projectFullPath,
+            namespacePath,
+            newPolicyPath: `${namespacePath}/-/security/policies/new`,
           },
           apolloProvider: createMockApollo([
             [projectScanExecutionPoliciesQuery, requestHandlers.projectScanExecutionPolicies],
@@ -99,10 +97,10 @@ describe('PoliciesList component', () => {
 
     it('fetches policies', () => {
       expect(requestHandlers.projectScanExecutionPolicies).toHaveBeenCalledWith({
-        fullPath: projectFullPath,
+        fullPath: namespacePath,
       });
       expect(requestHandlers.scanResultPolicies).toHaveBeenCalledWith({
-        fullPath: projectFullPath,
+        fullPath: namespacePath,
       });
     });
 
@@ -177,8 +175,7 @@ describe('PoliciesList component', () => {
     beforeEach(async () => {
       mountShallowWrapper({
         provide: {
-          groupPath: groupFullPath,
-          projectPath: undefined,
+          namespacePath,
           namespaceType: NAMESPACE_TYPES.GROUP,
         },
       });
@@ -218,8 +215,8 @@ describe('PoliciesList component', () => {
 
   describe.each`
     description         | policy                                  | policyType         | editPolicyPath
-    ${'scan execution'} | ${mockScanExecutionPoliciesResponse[0]} | ${'scanExecution'} | ${`${projectFullPath}/-/security/policies/${encodeURIComponent(mockScanExecutionPoliciesResponse[0].name)}/edit?type=scan_execution_policy`}
-    ${'scan result'}    | ${mockScanResultPoliciesResponse[0]}    | ${'scanResult'}    | ${`${projectFullPath}/-/security/policies/${encodeURIComponent(mockScanResultPoliciesResponse[0].name)}/edit?type=scan_result_policy`}
+    ${'scan execution'} | ${mockScanExecutionPoliciesResponse[0]} | ${'scanExecution'} | ${`${namespacePath}/-/security/policies/${encodeURIComponent(mockScanExecutionPoliciesResponse[0].name)}/edit?type=scan_execution_policy`}
+    ${'scan result'}    | ${mockScanResultPoliciesResponse[0]}    | ${'scanResult'}    | ${`${namespacePath}/-/security/policies/${encodeURIComponent(mockScanResultPoliciesResponse[0].name)}/edit?type=scan_result_policy`}
   `('given there is a $description policy selected', ({ policy, policyType, editPolicyPath }) => {
     beforeEach(() => {
       mountShallowWrapper();

@@ -43,7 +43,7 @@ export default {
   inject: [
     'disableSecurityPolicyProject',
     'documentationPath',
-    'projectPath',
+    'namespacePath',
     'assignedPolicyProject',
   ],
   props: {
@@ -87,7 +87,7 @@ export default {
           mutation: linkSecurityPolicyProject,
           variables: {
             input: {
-              projectPath: this.projectPath,
+              fullPath: this.namespacePath,
               securityPolicyProjectId: this.selectedProjectId,
             },
           },
@@ -117,7 +117,7 @@ export default {
           mutation: unlinkSecurityPolicyProject,
           variables: {
             input: {
-              projectPath: this.projectPath,
+              fullPath: this.namespacePath,
             },
           },
         });
