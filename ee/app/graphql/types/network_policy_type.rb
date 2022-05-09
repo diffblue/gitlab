@@ -47,14 +47,7 @@ module Types
           description: 'Environments where this policy is applied.'
 
     def environments
-      BatchLoader::GraphQL.for(object[:environment_ids]).batch do |policy_environment_ids, loader|
-        finder = ::Environments::EnvironmentsFinder.new(object[:project], context[:current_user], environment_ids: policy_environment_ids.flatten.uniq)
-        environments_by_id = finder.execute.index_by(&:id)
-
-        policy_environment_ids.each do |ids|
-          loader.call(ids, environments_by_id.values_at(*ids))
-        end
-      end
+      []
     end
   end
 end
