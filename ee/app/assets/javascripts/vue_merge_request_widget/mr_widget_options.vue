@@ -316,11 +316,15 @@ export default {
 </script>
 <template>
   <div v-if="isLoaded" class="mr-state-widget gl-mt-3">
-    <header class="gl-rounded-base gl-border-solid gl-border-1 gl-border-gray-100">
+    <header
+      v-if="shouldRenderCollaborationStatus || !isUpdatedHeaderEnabled"
+      :class="{ 'mr-widget-workflow gl-mt-0!': isUpdatedHeaderEnabled }"
+      class="gl-rounded-base gl-border-solid gl-border-1 gl-border-gray-100"
+    >
       <mr-widget-alert-message v-if="shouldRenderCollaborationStatus" type="info">
         {{ s__('mrWidget|Members who can merge are allowed to add commits.') }}
       </mr-widget-alert-message>
-      <mr-widget-header :mr="mr" />
+      <mr-widget-header v-if="!isUpdatedHeaderEnabled" :mr="mr" />
     </header>
     <mr-widget-suggest-pipeline
       v-if="shouldSuggestPipelines"
@@ -525,6 +529,8 @@ export default {
             v-if="shouldRenderRelatedLinks"
             :state="mr.state"
             :related-links="mr.relatedLinks"
+            :diverged-commits-count="mr.divergedCommitsCount"
+            :target-branch-path="mr.targetBranchPath"
             class="mr-info-list gl-ml-7 gl-pb-5"
           />
 
