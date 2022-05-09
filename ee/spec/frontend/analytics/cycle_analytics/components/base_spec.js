@@ -72,6 +72,10 @@ const initialCycleAnalyticsState = {
   createdBefore,
   group: currentGroup,
   stage,
+  aggregation: {
+    lastRunAt: null,
+    nextRunAt: null,
+  },
 };
 
 const mocks = {
@@ -144,7 +148,7 @@ describe('EE Value Stream Analytics component', () => {
       },
       provide: {
         glFeatures: {
-          useVsaAggregatedTables: true,
+          useVsaAggregatedTables: false,
           ...featureFlags,
         },
       },
@@ -348,76 +352,44 @@ describe('EE Value Stream Analytics component', () => {
     });
   });
 
-  describe('with aggregation data', () => {
-    beforeEach(async () => {
-      wrapper = await createComponent({
-        initialState: {
-          ...initialCycleAnalyticsState,
-          aggregation: {
-            ...aggregationData,
-          },
-        },
-      });
-    });
-
-    it('renders the aggregation status', () => {
-      expect(findAggregationStatus().exists()).toBe(true);
-      expect(findAggregationStatus().props('data')).toEqual(aggregationData);
-    });
-
-    describe('lastRunAt is null', () => {
+  describe('with useVsaAggregatedTables=true', () => {
+    describe('with aggregation data', () => {
       beforeEach(async () => {
         wrapper = await createComponent({
-          initialState: {
-            ...initialCycleAnalyticsState,
-            aggregation: {
-              ...aggregationData,
-              lastRunAt: null,
-            },
-          },
-        });
-      });
-
-      it('does not render the aggregation status', () => {
-        expect(findAggregationStatus().exists()).toBe(false);
-      });
-    });
-
-    describe('enabled=false', () => {
-      beforeEach(async () => {
-        wrapper = await createComponent({
-          initialState: {
-            ...initialCycleAnalyticsState,
-            aggregation: {
-              ...aggregationData,
-              enabled: false,
-            },
-          },
-        });
-      });
-
-      it('does not render the aggregation status', () => {
-        expect(findAggregationStatus().exists()).toBe(false);
-      });
-    });
-
-    describe('useVsaAggregatedTables = false', () => {
-      beforeEach(async () => {
-        wrapper = await createComponent({
-          initialState: {
-            ...initialCycleAnalyticsState,
-            aggregation: {
-              ...aggregationData,
-            },
-          },
           featureFlags: {
-            useVsaAggregatedTables: false,
+            useVsaAggregatedTables: true,
+          },
+          initialState: {
+            ...initialCycleAnalyticsState,
+            aggregation: {
+              ...aggregationData,
+            },
           },
         });
       });
 
-      it('does not render the aggregation status', () => {
-        expect(findAggregationStatus().exists()).toBe(false);
+      it('renders the aggregation status', () => {
+        expect(findAggregationStatus().exists()).toBe(true);
+        expect(findAggregationStatus().props('data')).toEqual(aggregationData);
+      });
+
+      describe('lastRunAt is null', () => {
+        beforeEach(async () => {
+          wrapper = await createComponent({
+            featureFlags: { useVsaAggregatedTables: true },
+            initialState: {
+              ...initialCycleAnalyticsState,
+              aggregation: {
+                ...aggregationData,
+                lastRunAt: null,
+              },
+            },
+          });
+        });
+
+        it('does not render the aggregation status', () => {
+          expect(findAggregationStatus().exists()).toBe(false);
+        });
       });
     });
   });

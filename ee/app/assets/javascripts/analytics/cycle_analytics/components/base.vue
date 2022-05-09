@@ -108,10 +108,10 @@ export default {
       return this.createdAfter && this.createdBefore;
     },
     canToggleAggregation() {
-      return this.glFeatures.useVsaAggregatedTables;
+      return false;
     },
     isAggregationEnabled() {
-      return this.canToggleAggregation && this.aggregation.enabled;
+      return this.glFeatures.useVsaAggregatedTables;
     },
     isAggregationStatusAvailable() {
       return this.isAggregationEnabled && this.aggregation.lastRunAt;
