@@ -218,7 +218,7 @@ the existing rule's content is created automatically against the default branch 
 to the security orchestration project. To maintain the same security approval rules you 
 had before GitLab 15.0, we recommend merging this new MR.
 
-On the other hand, for projects with existing rules but without a security orchestration project, a new security orchestration project will be created with the content of the existing rule. In this case no additional action will be required.
+If your projects have rules without a security orchestration project, a new security orchestration project is created automatically with the content of the existing rule. No additional action is required.
 
 ## Using private Maven repositories
 
