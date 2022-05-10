@@ -16,6 +16,35 @@ RSpec.describe Gitlab::Ci::Parsers::Security::Validators::SchemaValidator do
     :api_fuzzing                | ['root is missing required keys: vulnerabilities']                   | lazy { expected_warnings_array } | { 'version' => '10.0.0', 'vulnerabilities' => [] }
   end
 
+  let(:supported_schema_versions) { %w[14.1.0] }
+  let(:supported_hash) do
+    {
+      cluster_image_scanning: supported_schema_versions,
+      container_scanning: supported_schema_versions,
+      coverage_fuzzing: supported_schema_versions,
+      dast: supported_schema_versions,
+      dependency_scanning: supported_schema_versions,
+      api_fuzzing: supported_schema_versions
+    }
+  end
+
+  let(:deprecated_schema_versions) { %w[10.0.0] }
+  let(:deprecations_hash) do
+    {
+      cluster_image_scanning: deprecated_schema_versions,
+      container_scanning: deprecated_schema_versions,
+      coverage_fuzzing: deprecated_schema_versions,
+      dast: deprecated_schema_versions,
+      dependency_scanning: deprecated_schema_versions,
+      api_fuzzing: deprecated_schema_versions
+    }
+  end
+
+  before do
+    stub_const("#{described_class}::SUPPORTED_VERSIONS", supported_hash)
+    stub_const("#{described_class}::DEPRECATED_VERSIONS", deprecations_hash)
+  end
+
   with_them do
     let(:validator) { described_class.new(report_type, report_data, valid_data['version'], project: project) }
 
