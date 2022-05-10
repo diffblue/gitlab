@@ -1,4 +1,5 @@
 import Cookies from 'js-cookie';
+import { setHTMLFixture, resetHTMLFixture } from 'helpers/fixtures';
 import initNamespaceStorageLimitAlert from 'ee/namespace_storage_limit_alert';
 
 describe('broadcast message on dismiss', () => {
@@ -8,13 +9,17 @@ describe('broadcast message on dismiss', () => {
   };
 
   beforeEach(() => {
-    setFixtures(`
+    setHTMLFixture(`
     <div class="js-namespace-storage-alert">
       <button class="js-namespace-storage-alert-dismiss" data-id="1" data-level="info"></button>
     </div>
     `);
 
     initNamespaceStorageLimitAlert();
+  });
+
+  afterEach(() => {
+    resetHTMLFixture();
   });
 
   it('removes alert', () => {

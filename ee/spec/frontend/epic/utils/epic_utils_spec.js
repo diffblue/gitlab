@@ -1,11 +1,15 @@
 import Cookies from 'js-cookie';
-
+import { setHTMLFixture, resetHTMLFixture } from 'helpers/fixtures';
 import epicUtils from 'ee/epic/utils/epic_utils';
 
 describe('epicUtils', () => {
   describe('toggleContainerClass', () => {
     beforeEach(() => {
-      setFixtures('<div class="page-with-contextual-sidebar"></div>');
+      setHTMLFixture('<div class="page-with-contextual-sidebar"></div>');
+    });
+
+    afterEach(() => {
+      resetHTMLFixture();
     });
 
     it('toggles provided class on containerEl', () => {

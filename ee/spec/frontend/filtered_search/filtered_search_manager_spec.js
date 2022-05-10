@@ -1,6 +1,7 @@
+import { setHTMLFixture, resetHTMLFixture } from 'helpers/fixtures';
+import FilteredSearchSpecHelper from 'helpers/filtered_search_spec_helper';
 import FilteredSearchManager from 'ee/filtered_search/filtered_search_manager';
 import IssuableFilteredSearchTokenKeys from 'ee/filtered_search/issuable_filtered_search_token_keys';
-import FilteredSearchSpecHelper from 'helpers/filtered_search_spec_helper';
 import FilteredSearchDropdownManager from '~/filtered_search/filtered_search_dropdown_manager';
 import { FILTERED_SEARCH } from '~/filtered_search/constants';
 
@@ -26,7 +27,7 @@ describe('Filtered Search Manager (EE)', () => {
   };
 
   beforeEach(() => {
-    setFixtures(`
+    setHTMLFixture(`
       <div class="filtered-search-box">
         <form>
           <ul class="tokens-container list-unstyled">
@@ -47,6 +48,8 @@ describe('Filtered Search Manager (EE)', () => {
 
   afterEach(() => {
     manager.cleanup();
+
+    resetHTMLFixture();
   });
 
   describe('getSearchTokens', () => {

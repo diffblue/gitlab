@@ -2,7 +2,7 @@ import { shallowMount } from '@vue/test-utils';
 import { GlButton } from '@gitlab/ui';
 import CreditCardVerification from 'ee/registrations/groups_projects/new/components/credit_card_verification.vue';
 import { IFRAME_MINIMUM_HEIGHT } from 'ee/registrations/groups_projects/new/constants';
-import { setHTMLFixture } from 'helpers/fixtures';
+import { setHTMLFixture, resetHTMLFixture } from 'helpers/fixtures';
 import eventHub from 'ee/registrations/groups_projects/new/event_hub';
 
 describe('CreditCardVerification', () => {
@@ -42,6 +42,7 @@ describe('CreditCardVerification', () => {
 
   afterEach(() => {
     wrapper.destroy();
+    resetHTMLFixture();
   });
 
   describe('when the component is mounted', () => {

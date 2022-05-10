@@ -4,6 +4,7 @@ import Vue, { nextTick } from 'vue';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import Vuex from 'vuex';
+import { setHTMLFixture, resetHTMLFixture } from 'helpers/fixtures';
 import IssuesAnalytics from 'ee/issues_analytics/components/issues_analytics.vue';
 import IssuesAnalyticsTable from 'ee/issues_analytics/components/issues_analytics_table.vue';
 import { createStore } from 'ee/issues_analytics/stores';
@@ -31,7 +32,7 @@ describe('Issue Analytics component', () => {
     jest.spyOn(store, 'dispatch').mockImplementation();
 
     mountComponent = (data) => {
-      setFixtures('<div id="mock-filter"></div>');
+      setHTMLFixture('<div id="mock-filter"></div>');
       const propsData = data || {
         endpoint: TEST_HOST,
         issuesApiEndpoint: `${TEST_HOST}/api/issues`,
@@ -56,6 +57,8 @@ describe('Issue Analytics component', () => {
   afterEach(() => {
     wrapper.destroy();
     axiosMock.restore();
+
+    resetHTMLFixture();
   });
 
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);

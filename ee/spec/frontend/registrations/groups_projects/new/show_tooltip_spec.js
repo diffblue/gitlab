@@ -1,16 +1,19 @@
 import { nextTick } from 'vue';
 import showTooltip from 'ee/registrations/groups_projects/new/show_tooltip';
+import { setHTMLFixture, resetHTMLFixture } from 'helpers/fixtures';
 import * as tooltips from '~/tooltips';
 
-const fixture = `<div class='my-tooltip' title='this is a tooltip!'></div>`;
-
-beforeEach(() => {
-  setFixtures(fixture);
-});
-
-const findBodyText = () => document.body.innerText;
-
 describe('showTooltip', () => {
+  beforeEach(() => {
+    setHTMLFixture("<div class='my-tooltip' title='this is a tooltip!'></div>");
+  });
+
+  afterEach(() => {
+    resetHTMLFixture();
+  });
+
+  const findBodyText = () => document.body.innerText;
+
   it('renders a tooltip immediately', async () => {
     expect(findBodyText()).toBe('');
     showTooltip('.my-tooltip');

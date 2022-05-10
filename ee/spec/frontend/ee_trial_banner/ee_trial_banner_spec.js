@@ -1,4 +1,5 @@
 import Cookies from 'js-cookie';
+import { setHTMLFixture, resetHTMLFixture } from 'helpers/fixtures';
 import initEETrialBanner from 'ee/ee_trial_banner';
 
 describe('EE gitlab license banner dismiss', () => {
@@ -21,7 +22,7 @@ describe('EE gitlab license banner dismiss', () => {
     document.querySelector('.js-gitlab-ee-license-banner').classList.contains('hidden');
 
   beforeEach(() => {
-    setFixtures(`
+    setHTMLFixture(`
     <div class="js-gitlab-ee-license-banner">
       <button class="js-close"><span class="child-element">X</span></button>
       <a href="#" class="btn gl-button btn-confirm"></a>
@@ -33,6 +34,8 @@ describe('EE gitlab license banner dismiss', () => {
 
   afterEach(() => {
     Cookies.remove('show_ee_trial_banner');
+
+    resetHTMLFixture();
   });
 
   it('should remove the license banner when a close button is clicked', () => {

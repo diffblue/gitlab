@@ -5,7 +5,7 @@ import Mousetrap from 'mousetrap';
 import { nextTick } from 'vue';
 import TestCaseSidebar from 'ee/test_case_show/components/test_case_sidebar.vue';
 import { mockCurrentUserTodo, mockLabels } from 'jest/vue_shared/issuable/list/mock_data';
-
+import { setHTMLFixture, resetHTMLFixture } from 'helpers/fixtures';
 import { keysFor, ISSUABLE_CHANGE_LABEL } from '~/behaviors/shortcuts/keybindings';
 import ProjectSelect from '~/vue_shared/components/sidebar/issuable_move_dropdown.vue';
 import LabelsSelect from '~/vue_shared/components/sidebar/labels_select_vue/labels_select_root.vue';
@@ -43,13 +43,14 @@ describe('TestCaseSidebar', () => {
   let wrapper;
 
   beforeEach(() => {
-    setFixtures('<aside class="right-sidebar"></aside>');
+    setHTMLFixture('<aside class="right-sidebar"></aside>');
     mousetrapSpy = jest.spyOn(Mousetrap, 'bind');
     wrapper = createComponent();
   });
 
   afterEach(() => {
     wrapper.destroy();
+    resetHTMLFixture();
   });
 
   describe('computed', () => {
@@ -138,7 +139,11 @@ describe('TestCaseSidebar', () => {
 
     describe('toggleSidebar', () => {
       beforeEach(() => {
-        setFixtures('<button class="js-toggle-right-sidebar-button"></button>');
+        setHTMLFixture('<button class="js-toggle-right-sidebar-button"></button>');
+      });
+
+      afterEach(() => {
+        resetHTMLFixture();
       });
 
       it('dispatches click event on sidebar toggle button', () => {
@@ -150,11 +155,15 @@ describe('TestCaseSidebar', () => {
 
     describe('expandSidebarAndOpenDropdown', () => {
       beforeEach(() => {
-        setFixtures(`
+        setHTMLFixture(`
           <div class="js-labels-block">
             <button class="js-sidebar-dropdown-toggle"></button>
           </div>
         `);
+      });
+
+      afterEach(() => {
+        resetHTMLFixture();
       });
 
       it('calls `toggleSidebar` method and sets `sidebarExpandedOnClick` to true when `sidebarExpanded` prop is false', async () => {

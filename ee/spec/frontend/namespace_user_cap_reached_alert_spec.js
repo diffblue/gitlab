@@ -1,4 +1,5 @@
 import Cookies from 'js-cookie';
+import { setHTMLFixture, resetHTMLFixture } from 'helpers/fixtures';
 import initNamespaceUserCapReachedAlert from 'ee/namespace_user_cap_reached_alert';
 
 describe('dismissing the alert', () => {
@@ -8,13 +9,17 @@ describe('dismissing the alert', () => {
   };
 
   beforeEach(() => {
-    setFixtures(`
+    setHTMLFixture(`
     <div class="js-namespace-user-cap-alert">
       <button class="js-namespace-user-cap-alert-dismiss" data-cookie-id="hide_user_cap_alert_1" data-level="info"></button>
     </div>
     `);
 
     initNamespaceUserCapReachedAlert();
+  });
+
+  afterEach(() => {
+    resetHTMLFixture();
   });
 
   it('sets the banner to be hidden for thirty days', () => {
