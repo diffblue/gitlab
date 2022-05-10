@@ -14,8 +14,6 @@ new NoEmojiValidator(); // eslint-disable-line no-new
 
 trackFreeTrialAccountSubmissions();
 
-document.addEventListener('DOMContentLoaded', () => {
-  Tracking.enableFormTracking({
-    forms: { allow: ['new_user'] },
-  });
+Tracking.enableFormTracking({
+  forms: { allow: ['new_user'] },
 });
