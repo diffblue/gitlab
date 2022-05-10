@@ -36,9 +36,22 @@ export const erroredGetAlertDetailsQuerySpy = jest.fn().mockResolvedValue({
 export const projectScanExecutionPolicies = (nodes) =>
   jest.fn().mockResolvedValue({
     data: {
-      project: {
+      namespace: {
         id: '3',
         __typename: 'Project',
+        scanExecutionPolicies: {
+          nodes,
+        },
+      },
+    },
+  });
+
+export const groupScanExecutionPolicies = (nodes) =>
+  jest.fn().mockResolvedValue({
+    data: {
+      namespace: {
+        id: '3',
+        __typename: 'Group',
         scanExecutionPolicies: {
           nodes,
         },

@@ -1,18 +1,22 @@
 import { GlTable, GlDrawer } from '@gitlab/ui';
 import Vue, { nextTick } from 'vue';
-import { merge } from 'lodash';
 import VueApollo from 'vue-apollo';
 import { POLICY_TYPE_OPTIONS } from 'ee/threat_monitoring/components/constants';
 import PoliciesList from 'ee/threat_monitoring/components/policies/policies_list.vue';
 import PolicyDrawer from 'ee/threat_monitoring/components/policy_drawer/policy_drawer.vue';
 import { NAMESPACE_TYPES } from 'ee/threat_monitoring/constants';
 import projectScanExecutionPoliciesQuery from 'ee/threat_monitoring/graphql/queries/project_scan_execution_policies.query.graphql';
+import groupScanExecutionPoliciesQuery from 'ee/threat_monitoring/graphql/queries/group_scan_execution_policies.query.graphql';
 import scanResultPoliciesQuery from 'ee/threat_monitoring/graphql/queries/scan_result_policies.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { stubComponent } from 'helpers/stub_component';
 import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import { projectScanExecutionPolicies, scanResultPolicies } from '../../mocks/mock_apollo';
+import {
+  projectScanExecutionPolicies,
+  groupScanExecutionPolicies,
+  scanResultPolicies,
+} from '../../mocks/mock_apollo';
 import {
   mockScanExecutionPoliciesResponse,
   mockScanResultPoliciesResponse,
@@ -24,53 +28,49 @@ const namespacePath = 'path/to/project/or/group';
 const projectScanExecutionPoliciesSpy = projectScanExecutionPolicies(
   mockScanExecutionPoliciesResponse,
 );
+const groupScanExecutionPoliciesSpy = groupScanExecutionPolicies(mockScanExecutionPoliciesResponse);
 const scanResultPoliciesSpy = scanResultPolicies(mockScanResultPoliciesResponse);
 const defaultRequestHandlers = {
   projectScanExecutionPolicies: projectScanExecutionPoliciesSpy,
+  groupScanExecutionPolicies: groupScanExecutionPoliciesSpy,
   scanResultPolicies: scanResultPoliciesSpy,
 };
 describe('PoliciesList component', () => {
   let wrapper;
   let requestHandlers;
 
-  const factory = (mountFn = mountExtended) => (options = {}) => {
-    const { handlers, ...wrapperOptions } = options;
-
+  const factory = (mountFn = mountExtended) => ({ handlers = {}, provide = {} } = {}) => {
     requestHandlers = {
       ...defaultRequestHandlers,
       ...handlers,
     };
 
-    wrapper = mountFn(
-      PoliciesList,
-      merge(
-        {
-          propsData: {
-            documentationPath: 'documentation_path',
+    wrapper = mountFn(PoliciesList, {
+      propsData: {
+        documentationPath: 'documentation_path',
+      },
+      provide: {
+        documentationPath: 'path/to/docs',
+        namespacePath,
+        namespaceType: NAMESPACE_TYPES.PROJECT,
+        newPolicyPath: `${namespacePath}/-/security/policies/new`,
+        ...provide,
+      },
+      apolloProvider: createMockApollo([
+        [projectScanExecutionPoliciesQuery, requestHandlers.projectScanExecutionPolicies],
+        [groupScanExecutionPoliciesQuery, requestHandlers.groupScanExecutionPolicies],
+        [scanResultPoliciesQuery, requestHandlers.scanResultPolicies],
+      ]),
+      stubs: {
+        PolicyDrawer: stubComponent(PolicyDrawer, {
+          props: {
+            ...PolicyDrawer.props,
+            ...GlDrawer.props,
           },
-          provide: {
-            documentationPath: 'path/to/docs',
-            namespaceType: NAMESPACE_TYPES.PROJECT,
-            namespacePath,
-            newPolicyPath: `${namespacePath}/-/security/policies/new`,
-          },
-          apolloProvider: createMockApollo([
-            [projectScanExecutionPoliciesQuery, requestHandlers.projectScanExecutionPolicies],
-            [scanResultPoliciesQuery, requestHandlers.scanResultPolicies],
-          ]),
-          stubs: {
-            PolicyDrawer: stubComponent(PolicyDrawer, {
-              props: {
-                ...PolicyDrawer.props,
-                ...GlDrawer.props,
-              },
-            }),
-            NoPoliciesEmptyState: true,
-          },
-        },
-        wrapperOptions,
-      ),
-    );
+        }),
+        NoPoliciesEmptyState: true,
+      },
+    });
   };
   const mountShallowWrapper = factory(shallowMountExtended);
   const mountWrapper = factory();
@@ -99,6 +99,7 @@ describe('PoliciesList component', () => {
       expect(requestHandlers.projectScanExecutionPolicies).toHaveBeenCalledWith({
         fullPath: namespacePath,
       });
+      expect(requestHandlers.groupScanExecutionPolicies).not.toHaveBeenCalled();
       expect(requestHandlers.scanResultPolicies).toHaveBeenCalledWith({
         fullPath: namespacePath,
       });
@@ -184,6 +185,9 @@ describe('PoliciesList component', () => {
 
     it('does not fetch policies', () => {
       expect(requestHandlers.projectScanExecutionPolicies).not.toHaveBeenCalled();
+      expect(requestHandlers.groupScanExecutionPolicies).toHaveBeenCalledWith({
+        fullPath: namespacePath,
+      });
       expect(requestHandlers.scanResultPolicies).not.toHaveBeenCalled();
     });
   });
