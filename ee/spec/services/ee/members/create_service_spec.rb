@@ -12,7 +12,7 @@ RSpec.describe Members::CreateService do
 
   let(:params) do
     {
-      user_ids: project_users.map(&:id).join(','),
+      user_id: project_users.map(&:id).join(','),
       access_level: Gitlab::Access::GUEST,
       invite_source: '_invite_source_'
     }
@@ -97,7 +97,7 @@ RSpec.describe Members::CreateService do
   context 'when assigning tasks to be done' do
     let(:params) do
       {
-        user_ids: project_users.map(&:id).join(','),
+        user_id: project_users.map(&:id).join(','),
         access_level: Gitlab::Access::DEVELOPER,
         tasks_to_be_done: %w(ci code),
         tasks_project_id: project.id,
