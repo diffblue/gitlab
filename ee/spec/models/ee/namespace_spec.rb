@@ -1987,8 +1987,8 @@ RSpec.describe Namespace do
     end
 
     context 'with existing ci_cd_setting association' do
-      before do
-        namespace.build_ci_cd_settings(allow_stale_runner_pruning: false)
+      let(:ci_cd_settings) do
+        ::NamespaceCiCdSetting.find_or_initialize_by(namespace_id: namespace.id, allow_stale_runner_pruning: false)
       end
 
       context 'when value is set to true' do

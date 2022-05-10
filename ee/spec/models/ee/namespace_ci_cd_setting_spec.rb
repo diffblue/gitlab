@@ -14,18 +14,21 @@ RSpec.describe NamespaceCiCdSetting do
     end
 
     context 'when there are CI/CD settings' do
-      context 'allowing stale runner pruning' do
-        before do
-          namespace1.update!(allow_stale_runner_pruning: true)
-        end
+      let!(:ci_cd_settings1) do
+        ::NamespaceCiCdSetting.find_or_initialize_by(
+          namespace_id: namespace1.id,
+          allow_stale_runner_pruning: allow_stale_runner_pruning
+        ).tap(&:save!)
+      end
 
-        it { is_expected.to match_array(namespace1.ci_cd_settings) }
+      context 'allowing stale runner pruning' do
+        let(:allow_stale_runner_pruning) { true }
+
+        it { is_expected.to match_array(ci_cd_settings1) }
       end
 
       context 'not allowing stale runner pruning' do
-        before do
-          namespace1.update!(allow_stale_runner_pruning: false)
-        end
+        let(:allow_stale_runner_pruning) { false }
 
         it { is_expected.to be_empty }
       end
