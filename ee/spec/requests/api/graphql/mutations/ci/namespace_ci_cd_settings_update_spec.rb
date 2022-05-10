@@ -6,23 +6,26 @@ RSpec.describe 'NamespaceCiCdSettingsUpdate' do
   include GraphqlHelpers
 
   let_it_be(:namespace) do
-    create(:group, :public).tap(&:save!)
+    create(:group, :public, allow_stale_runner_pruning: true).tap(&:save!)
   end
 
   let(:variables) do
     {
-      full_path: namespace.full_path
+      full_path: namespace.full_path,
+      allow_stale_runner_pruning: false
     }
   end
 
   let(:mutation) { graphql_mutation(:namespace_ci_cd_settings_update, variables) }
+
+  subject(:request) { post_graphql_mutation(mutation, current_user: user) }
 
   context 'when unauthorized' do
     let(:user) { create(:user) }
 
     shared_examples 'unauthorized' do
       it 'returns an error' do
-        post_graphql_mutation(mutation, current_user: user)
+        request
 
         expect(graphql_errors).not_to be_empty
       end
@@ -48,19 +51,25 @@ RSpec.describe 'NamespaceCiCdSettingsUpdate' do
       namespace.add_owner(user)
     end
 
-    it 'returns :success' do
-      post_graphql_mutation(mutation, current_user: user)
+    it 'updates allow_stale_runner_pruning?' do
+      request
 
-      namespace.reload
+      expect(namespace.reload.ci_cd_settings.allow_stale_runner_pruning?).to eq(false)
+    end
 
-      expect(response).to have_gitlab_http_status(:success)
+    it 'does not update allow_stale_runner_pruning? if not specified' do
+      variables.except!(:allow_stale_runner_pruning)
+
+      request
+
+      expect(namespace.reload.ci_cd_settings.allow_stale_runner_pruning?).to eq(true)
     end
 
     context 'when bad arguments are provided' do
       let(:variables) { { full_path: '' } }
 
       it 'returns the errors' do
-        post_graphql_mutation(mutation, current_user: user)
+        request
 
         expect(graphql_errors).not_to be_empty
       end

@@ -9,6 +9,9 @@ module Mutations
 
       authorize :admin_namespace
 
+      argument :allow_stale_runner_pruning, GraphQL::Types::Boolean,
+        required: false,
+        description: copy_field_description(Types::Ci::NamespaceCiCdSettingType, :allow_stale_runner_pruning)
       argument :full_path, GraphQL::Types::ID,
         required: true,
         description: 'Full path of the namespace the settings belong to.'
@@ -20,7 +23,9 @@ module Mutations
 
       def resolve(full_path:, **args)
         namespace = authorized_find!(full_path)
+        # rubocop:disable CodeReuse/ActiveRecord
         settings = ::NamespaceCiCdSetting.find_or_initialize_by(namespace_id: namespace.id)
+        # rubocop:enable CodeReuse/ActiveRecord
         settings.update(args)
 
         {

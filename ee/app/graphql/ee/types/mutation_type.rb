@@ -93,6 +93,7 @@ module EE
         mount_mutation ::Mutations::AuditEvents::ExternalAuditEventDestinations::Create
         mount_mutation ::Mutations::AuditEvents::ExternalAuditEventDestinations::Destroy
         mount_mutation ::Mutations::AuditEvents::ExternalAuditEventDestinations::Update
+        mount_mutation ::Mutations::Ci::NamespaceCiCdSettingsUpdate
 
         prepend(Types::DeprecatedMutations)
       end
