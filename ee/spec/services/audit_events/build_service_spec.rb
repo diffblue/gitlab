@@ -97,8 +97,8 @@ RSpec.describe AuditEvents::BuildService do
         end
 
         it 'expect author to be user' do
-          expect(event.author_id).to eq(deploy_token.user.id)
-          expect(event.author_name).to eq(deploy_token.user.name)
+          expect(event.author_id).to eq(-2)
+          expect(event.author_name).to eq(deploy_token.name)
         end
       end
     end

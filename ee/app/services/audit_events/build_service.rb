@@ -68,7 +68,7 @@ module AuditEvents
     end
 
     def build_author(author)
-      return author.user if author.instance_of? DeployToken
+      author.id = -2 if author.instance_of? DeployToken
 
       author.impersonated? ? ::Gitlab::Audit::ImpersonatedAuthor.new(author) : author
     end
