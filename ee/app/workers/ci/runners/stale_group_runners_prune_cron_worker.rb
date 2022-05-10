@@ -10,7 +10,7 @@ module Ci
       include ApplicationWorker
       include CronjobQueue
 
-      data_consistency :always
+      data_consistency :sticky
       feature_category :runner_fleet
       urgency :low
 
