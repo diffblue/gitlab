@@ -164,11 +164,7 @@ export default {
         </div>
 
         <div class="col-12">
-          <project-pipeline
-            :project-name="project.name_with_namespace"
-            :last-pipeline="lastPipeline"
-            :has-pipeline-failed="hasPipelineFailed"
-          />
+          <project-pipeline :last-pipeline="lastPipeline" />
         </div>
       </div>
 
