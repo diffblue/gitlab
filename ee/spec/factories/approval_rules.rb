@@ -21,16 +21,11 @@ FactoryBot.define do
   factory :report_approver_rule, parent: :approval_merge_request_rule do
     merge_request
     rule_type { :report_approver }
-    report_type { :vulnerability }
+    report_type { :license_scanning }
     sequence(:name) { |n| "*-#{n}.js" }
 
     trait :requires_approval do
       approvals_required { rand(1..ApprovalProjectRule::APPROVALS_REQUIRED_MAX) }
-    end
-
-    trait :vulnerability do
-      name { ApprovalRuleLike::DEFAULT_NAME_FOR_VULNERABILITY_REPORT }
-      report_type { :vulnerability }
     end
 
     trait :license_scanning do
@@ -61,16 +56,6 @@ FactoryBot.define do
 
     trait :requires_approval do
       approvals_required { rand(1..ApprovalProjectRule::APPROVALS_REQUIRED_MAX) }
-    end
-
-    trait :vulnerability_report do
-      rule_type { :report_approver }
-      name { ApprovalRuleLike::DEFAULT_NAME_FOR_VULNERABILITY_REPORT }
-      report_type { :vulnerability }
-    end
-
-    trait :vulnerability do
-      vulnerability_report
     end
 
     trait :license_scanning do

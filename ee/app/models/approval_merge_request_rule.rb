@@ -53,7 +53,6 @@ class ApprovalMergeRequestRule < ApplicationRecord
   alias_method :regular, :regular?
   alias_method :code_owner, :code_owner?
 
-  scope :vulnerability_report, -> { report_approver.vulnerability }
   scope :license_compliance, -> { report_approver.license_scanning }
   scope :coverage, -> { report_approver.code_coverage }
   scope :with_head_pipeline, -> { includes(merge_request: [:head_pipeline]) }

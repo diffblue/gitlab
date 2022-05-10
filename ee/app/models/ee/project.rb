@@ -844,10 +844,6 @@ module EE
         namespace.created_at >= PUBLIC_COST_FACTOR_RELEASE_DAY)
     end
 
-    def vulnerability_report_rule
-      approval_rules.vulnerability_reports.first
-    end
-
     def all_security_orchestration_policy_configurations
       all_parent_groups = group&.self_and_ancestor_ids
       return [] if all_parent_groups.blank? && !security_orchestration_policy_configuration&.policy_configuration_valid?

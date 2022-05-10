@@ -16,7 +16,6 @@ RSpec.describe MergeRequests::SyncReportApproverApprovalRules do
     end
 
     where(:default_name, :report_type) do
-      'Vulnerability-Check' | :vulnerability
       'License-Check'       | :license_scanning
       'Coverage-Check'      | :code_coverage
     end
@@ -57,18 +56,14 @@ RSpec.describe MergeRequests::SyncReportApproverApprovalRules do
     end
 
     context "when a project has multiple report approval rules" do
-      let!(:vulnerability_project_rule) { create(:approval_project_rule, :vulnerability_report, project: merge_request.target_project) }
       let!(:license_compliance_project_rule) { create(:approval_project_rule, :license_scanning, project: merge_request.target_project) }
       let!(:coverage_project_rule) { create(:approval_project_rule, :code_coverage, project: merge_request.target_project) }
 
       context "when none of the rules have been synchronized to the merge request yet" do
-        let(:vulnerability_check_rule) { merge_request.reload.approval_rules.vulnerability_report.last }
         let(:license_check_rule) { merge_request.reload.approval_rules.license_compliance.last }
         let(:coverage_check_rule) { merge_request.reload.approval_rules.coverage.last }
 
         before do
-          vulnerability_project_rule.users << create(:user)
-          vulnerability_project_rule.groups << create(:group)
           license_compliance_project_rule.users << create(:user)
           license_compliance_project_rule.groups << create(:group)
           coverage_project_rule.users << create(:user)
@@ -77,12 +72,7 @@ RSpec.describe MergeRequests::SyncReportApproverApprovalRules do
           service.execute
         end
 
-        specify { expect(merge_request.reload.approval_rules.count).to be(3) }
-        specify { expect(vulnerability_check_rule).to be_report_approver }
-        specify { expect(vulnerability_check_rule.approvals_required).to eql(vulnerability_project_rule.approvals_required) }
-        specify { expect(vulnerability_check_rule).to be_vulnerability }
-        specify { expect(vulnerability_check_rule.name).to eq(vulnerability_project_rule.name) }
-        specify { expect(vulnerability_check_rule.approval_project_rule).to eq(vulnerability_project_rule) }
+        specify { expect(merge_request.reload.approval_rules.count).to be(2) }
         specify { expect(license_check_rule).to be_report_approver }
         specify { expect(license_check_rule.approvals_required).to eql(license_compliance_project_rule.approvals_required) }
         specify { expect(license_check_rule).to be_license_scanning }
@@ -102,8 +92,7 @@ RSpec.describe MergeRequests::SyncReportApproverApprovalRules do
           service.execute
         end
 
-        specify { expect(merge_request.reload.approval_rules.count).to be(3) }
-        specify { expect(merge_request.reload.approval_rules.vulnerability_report.count).to be(1) }
+        specify { expect(merge_request.reload.approval_rules.count).to be(2) }
         specify { expect(merge_request.reload.approval_rules.coverage.count).to be(1) }
         specify { expect(merge_request.reload.approval_rules.license_compliance).to match_array([previous_rule]) }
       end

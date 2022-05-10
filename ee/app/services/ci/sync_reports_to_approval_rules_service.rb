@@ -8,12 +8,6 @@ module Ci
       policy_configuration
       policy_rule_reports
       policy_rule_scanners
-      project_rule_scanners
-      project_rule_severity_levels
-      project_rule_vulnerabilities_allowed
-      project_rule_vulnerability_states
-      project_vulnerability_report
-      reports
     ).freeze
 
     def initialize(pipeline)
@@ -22,7 +16,6 @@ module Ci
 
     def execute
       sync_license_scanning_rules
-      sync_vulnerability_rules
       sync_coverage_rules
       sync_scan_finding
       success
@@ -55,14 +48,6 @@ module Ci
                                     pipeline.merge_requests_as_head_pipeline)
     end
 
-    def sync_vulnerability_rules
-      # If we have some reports, then we want to sync them early;
-      # If we don't have reports, then we should wait until pipeline stops.
-      return if reports.empty? && !pipeline.complete?
-
-      remove_required_approvals_for(ApprovalMergeRequestRule.vulnerability_report, merge_requests_approved_security_reports)
-    end
-
     def sync_coverage_rules
       return unless pipeline.complete?
 
@@ -78,33 +63,15 @@ module Ci
       remove_required_approvals_for_scan_finding(pipeline.merge_requests_as_head_pipeline.opened)
     end
 
-    def reports
-      strong_memoize(:reports) do
-        project_rule_scanners ? pipeline.security_reports(report_types: project_rule_scanners) : []
-      end
-    end
-
     def policy_rule_reports
       strong_memoize(:policy_rule_reports) do
         policy_rule_scanners ? pipeline.security_reports(report_types: policy_rule_scanners) : []
       end
     end
 
-    def project_rule_scanners
-      strong_memoize(:project_rule_scanners) do
-        project_vulnerability_report&.scanners
-      end
-    end
-
     def policy_rule_scanners
       strong_memoize(:policy_rule_scanners) do
         policy_configuration&.uniq_scanners
-      end
-    end
-
-    def project_rule_vulnerabilities_allowed
-      strong_memoize(:project_rule_vulnerabilities_allowed) do
-        project_vulnerability_report&.vulnerabilities_allowed
       end
     end
 
@@ -125,12 +92,6 @@ module Ci
       pipeline.coverage < base_pipeline.coverage
     end
 
-    def merge_requests_approved_security_reports
-      pipeline.merge_requests_as_head_pipeline.reject do |merge_request|
-        reports.present? && reports.violates_default_policy_against?(merge_request.base_pipeline&.security_reports, project_rule_vulnerabilities_allowed, project_rule_severity_levels, project_rule_vulnerability_states)
-      end
-    end
-
     def remove_required_approvals_for(rules, merge_requests)
       rules
         .for_unmerged_merge_requests(merge_requests)
@@ -145,24 +106,6 @@ module Ci
           violates_default_policy?(rule.source_rule, base_reports)
         end
         scan_finding_rules.remove_required_approved(selected_rules)
-      end
-    end
-
-    def project_rule_severity_levels
-      strong_memoize(:project_rule_severity_levels) do
-        project_vulnerability_report&.severity_levels
-      end
-    end
-
-    def project_rule_vulnerability_states
-      strong_memoize(:project_rule_vulnerability_states) do
-        project_vulnerability_report&.vulnerability_states_for_branch
-      end
-    end
-
-    def project_vulnerability_report
-      strong_memoize(:project_vulnerability_report) do
-        pipeline.project.vulnerability_report_rule
       end
     end
 

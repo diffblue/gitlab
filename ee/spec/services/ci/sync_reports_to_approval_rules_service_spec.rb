@@ -215,16 +215,6 @@ RSpec.describe Ci::SyncReportsToApprovalRulesService, '#execute' do
     end
   end
 
-  context 'with security rules' do
-    let(:report_approver_rule) { create(:report_approver_rule, merge_request: merge_request, approvals_required: 2) }
-
-    before do
-      create(:approval_project_rule, :vulnerability, project: project, approvals_required: 2, scanners: scanners, vulnerabilities_allowed: vulnerabilities_allowed, severity_levels: severity_levels, vulnerability_states: vulnerability_states)
-    end
-
-    include_context 'security reports with vulnerabilities'
-  end
-
   context 'with code coverage rules' do
     let!(:head_pipeline_builds) do
       [

@@ -103,7 +103,7 @@ RSpec.describe API::ProjectApprovalRules do
 
       context 'report_approver rules' do
         let!(:report_approver_rule) do
-          create(:approval_project_rule, :vulnerability_report, project: project)
+          create(:approval_project_rule, :license_scanning, project: project)
         end
 
         it 'includes report_approver rules' do

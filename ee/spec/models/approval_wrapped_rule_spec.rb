@@ -222,7 +222,7 @@ RSpec.describe ApprovalWrappedRule do
     end
 
     context 'with report_type other than scan_finding' do
-      let(:report_type) { :vulnerability }
+      let(:report_type) { :license_scanning }
 
       it 'returns rule name as is' do
         expect(subject.name).to eq(rule_name)

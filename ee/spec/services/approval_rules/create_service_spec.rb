@@ -213,7 +213,7 @@ RSpec.describe ApprovalRules::CreateService do
       let(:result) { subject.execute }
 
       context 'without report_type' do
-        subject { described_class.new(target, user, { name: 'Vulnerability-Check', approvals_required: 1, rule_type: :report_approver }) }
+        subject { described_class.new(target, user, { name: 'License-Check', approvals_required: 1, rule_type: :report_approver }) }
 
         specify { expect(result[:status]).to eq(:error) }
       end
@@ -224,7 +224,6 @@ RSpec.describe ApprovalRules::CreateService do
         subject { described_class.new(target, user, { name: rule_name, approvals_required: 1, rule_type: :report_approver, report_type: report_type }) }
 
         where(:rule_name, :report_type) do
-          'Vulnerability-Check' | :vulnerability
           'License-Check'       | :license_scanning
           'Coverage-Check'      | :code_coverage
         end

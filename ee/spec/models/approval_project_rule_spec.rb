@@ -33,7 +33,7 @@ RSpec.describe ApprovalProjectRule do
   describe '.regular' do
     it 'returns non-report_approver records' do
       rules = create_list(:approval_project_rule, 2)
-      create(:approval_project_rule, :vulnerability_report)
+      create(:approval_project_rule, :license_scanning)
 
       expect(described_class.regular).to contain_exactly(*rules)
     end
@@ -43,7 +43,7 @@ RSpec.describe ApprovalProjectRule do
     it 'returns regular or any-approver rules' do
       any_approver_rule = create(:approval_project_rule, rule_type: :any_approver)
       regular_rule = create(:approval_project_rule)
-      create(:approval_project_rule, :vulnerability_report)
+      create(:approval_project_rule, :license_scanning)
 
       expect(described_class.regular_or_any_approver).to(
         contain_exactly(any_approver_rule, regular_rule)
@@ -59,35 +59,15 @@ RSpec.describe ApprovalProjectRule do
     end
   end
 
-  describe '.vulnerability_reports scope' do
-    subject { described_class.vulnerability_reports }
-
-    context 'with vulnerability reports' do
-      before do
-        create(:approval_project_rule, :vulnerability_report)
-      end
-
-      it { is_expected.to be_present }
-    end
-
-    context 'without vulnerability reports' do
-      before do
-        create(:approval_project_rule)
-      end
-
-      it { is_expected.to be_empty }
-    end
-  end
-
   describe '#regular?' do
-    let(:vulnerability_approver_rule) { build(:approval_project_rule, :vulnerability_report) }
+    let(:license_scanning_approver_rule) { build(:approval_project_rule, :license_scanning) }
 
     it 'returns true for regular rules' do
       expect(subject.regular?).to eq(true)
     end
 
     it 'returns false for report_approver rules' do
-      expect(vulnerability_approver_rule.regular?). to eq(false)
+      expect(license_scanning_approver_rule.regular?). to eq(false)
     end
   end
 
@@ -98,14 +78,14 @@ RSpec.describe ApprovalProjectRule do
   end
 
   describe '#report_approver?' do
-    let(:vulnerability_approver_rule) { build(:approval_project_rule, :vulnerability_report) }
+    let(:license_scanning_approver_rule) { build(:approval_project_rule, :license_scanning) }
 
     it 'returns false for regular rules' do
       expect(subject.report_approver?).to eq(false)
     end
 
     it 'returns true for report_approver rules' do
-      expect(vulnerability_approver_rule.report_approver?). to eq(true)
+      expect(license_scanning_approver_rule.report_approver?). to eq(true)
     end
   end
 
@@ -114,8 +94,8 @@ RSpec.describe ApprovalProjectRule do
       expect(build(:approval_project_rule).rule_type).to eq('regular')
     end
 
-    it 'returns the report_approver type for vulnerability report approvers rules' do
-      expect(build(:approval_project_rule, :vulnerability_report).rule_type).to eq('report_approver')
+    it 'returns the report_approver type for license scanning approvers rules' do
+      expect(build(:approval_project_rule, :license_scanning).rule_type).to eq('report_approver')
     end
   end
 
@@ -131,7 +111,6 @@ RSpec.describe ApprovalProjectRule do
     end
 
     where(:default_name, :report_type) do
-      'Vulnerability-Check'  | :vulnerability
       'License-Check'        | :license_scanning
       'Coverage-Check'       | :code_coverage
       'Scan finding example' | :scan_finding
@@ -157,13 +136,11 @@ RSpec.describe ApprovalProjectRule do
   describe "validation" do
     let(:project_approval_rule) { create(:approval_project_rule) }
     let(:license_compliance_rule) { create(:approval_project_rule, :license_scanning) }
-    let(:vulnerability_check_rule) { create(:approval_project_rule, :vulnerability) }
     let(:coverage_check_rule) { create(:approval_project_rule, :code_coverage) }
 
     context "when creating a new rule" do
       specify { expect(project_approval_rule).to be_valid }
       specify { expect(license_compliance_rule).to be_valid }
-      specify { expect(vulnerability_check_rule).to be_valid }
       specify { expect(coverage_check_rule).to be_valid }
     end
 
@@ -188,38 +165,6 @@ RSpec.describe ApprovalProjectRule do
 
         specify { expect(subject).not_to be_valid }
         specify { expect { subject.valid? }.to change { subject.errors[:report_type].present? } }
-      end
-
-      context "with a `Vulnerability-Check` rule" do
-        context 'different combinations of specific attributes' do
-          using RSpec::Parameterized::TableSyntax
-
-          where(:is_valid, :scanners, :vulnerabilities_allowed, :severity_levels, :vulnerability_states) do
-            true  | []                                     | 0     | []                       | %w(newly_detected)
-            true  | %w(dast)                               | 1     | %w(critical high medium) | %w(newly_detected resolved)
-            true  | %w(dast sast)                          | 10    | %w(critical high)        | %w(resolved detected)
-            true  | %w(dast dast)                          | 100   | %w(critical)             | %w(detected dismissed)
-            false | %w(dast dast)                          | 100   | %w(critical)             | %w(dismissed unknown)
-            false | %w(dast dast)                          | 100   | %w(unknown_severity)     | %w(detected dismissed)
-            false | %w(dast unknown_scanner)               | 100   | %w(critical)             | %w(detected dismissed)
-            false | [described_class::UNSUPPORTED_SCANNER] | 100   | %w(critical)             | %w(detected dismissed)
-            false | %w(dast sast)                          | 1.1   | %w(critical)             | %w(detected dismissed)
-            false | %w(dast sast)                          | 'one' | %w(critical)             | %w(detected dismissed)
-          end
-
-          with_them do
-            let(:vulnerability_check_rule) { build(:approval_project_rule, :vulnerability, scanners: scanners, vulnerabilities_allowed: vulnerabilities_allowed, severity_levels: severity_levels, vulnerability_states: vulnerability_states) }
-
-            specify { expect(vulnerability_check_rule.valid?).to be(is_valid) }
-          end
-        end
-
-        context 'with invalid name' do
-          subject { vulnerability_check_rule }
-
-          specify { expect(subject).not_to be_valid }
-          specify { expect { subject.valid? }.to change { subject.errors[:report_type].present? } }
-        end
       end
     end
   end
@@ -338,7 +283,7 @@ RSpec.describe ApprovalProjectRule do
     end
 
     context 'without scan_finding approval rules' do
-      let(:type) { :vulnerability }
+      let(:type) { :license_scanning }
 
       it { is_expected.to be_empty }
     end
