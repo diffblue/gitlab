@@ -117,11 +117,11 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService d
             rules: [
               { if: "$CONTAINER_SCANNING_DISABLED", when: "never" },
               {
-                if: '$CI_COMMIT_BRANCH && $GITLAB_FEATURES =~ /\bcontainer_scanning\b/ && '\
+                if: '$CI_COMMIT_BRANCH && '\
                     '$CI_GITLAB_FIPS_MODE == "true" && $CS_ANALYZER_IMAGE !~ /-(fips|ubi)\z/',
                 variables: { CS_IMAGE_SUFFIX: '-fips' }
               },
-              { if: '$CI_COMMIT_BRANCH && $GITLAB_FEATURES =~ /\bcontainer_scanning\b/' }
+              { if: '$CI_COMMIT_BRANCH' }
             ]
           }
 
