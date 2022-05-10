@@ -16747,6 +16747,15 @@ Describes an incident management timeline event.
 | <a id="timelogsummary"></a>`summary` | [`String`](#string) | Summary of how the time was spent. |
 | <a id="timelogtimespent"></a>`timeSpent` | [`Int!`](#int) | Time spent displayed in seconds. |
 | <a id="timeloguser"></a>`user` | [`UserCore!`](#usercore) | User that logged the time. |
+| <a id="timeloguserpermissions"></a>`userPermissions` | [`TimelogPermissions!`](#timelogpermissions) | Permissions for the current user on the resource. |
+
+### `TimelogPermissions`
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="timelogpermissionsadmintimelog"></a>`adminTimelog` | [`Boolean!`](#boolean) | Indicates the user can perform `admin_timelog` on this resource. |
 
 ### `Todo`
 
