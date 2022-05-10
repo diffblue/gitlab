@@ -1,5 +1,5 @@
 <script>
-import { GlTooltipDirective, GlIcon, GlButton, GlButtonGroup } from '@gitlab/ui';
+import { GlTooltipDirective, GlButton, GlButtonGroup } from '@gitlab/ui';
 import { mapGetters, mapActions } from 'vuex';
 import { __ } from '~/locale';
 import discussionNavigation from '../mixins/discussion_navigation';
@@ -9,18 +9,23 @@ export default {
     GlTooltip: GlTooltipDirective,
   },
   components: {
-    GlIcon,
     GlButton,
     GlButtonGroup,
   },
   mixins: [discussionNavigation],
+  props: {
+    blocksMerge: {
+      type: Boolean,
+      required: true,
+    },
+  },
   computed: {
     ...mapGetters([
       'getUserData',
       'getNoteableData',
       'resolvableDiscussionsCount',
       'unresolvedDiscussionsCount',
-      'discussions',
+      'allResolvableDiscussions',
     ]),
     isLoggedIn() {
       return this.getUserData.id;
@@ -31,14 +36,8 @@ export default {
     resolveAllDiscussionsIssuePath() {
       return this.getNoteableData.create_issue_to_resolve_discussions_path;
     },
-    toggeableDiscussions() {
-      return this.discussions.filter((discussion) => !discussion.individual_note);
-    },
     allExpanded() {
-      return this.toggeableDiscussions.every((discussion) => discussion.expanded);
-    },
-    lineResolveClass() {
-      return this.allResolved ? 'line-resolve-btn is-active' : 'line-resolve-text';
+      return this.allResolvableDiscussions.every((discussion) => discussion.expanded);
     },
     toggleThreadsLabel() {
       return this.allExpanded ? __('Collapse all threads') : __('Expand all threads');
@@ -48,7 +47,7 @@ export default {
     ...mapActions(['setExpandDiscussions']),
     handleExpandDiscussions() {
       this.setExpandDiscussions({
-        discussionIds: this.toggeableDiscussions.map((discussion) => discussion.id),
+        discussionIds: this.allResolvableDiscussions.map((discussion) => discussion.id),
         expanded: !this.allExpanded,
       });
     },
@@ -60,18 +59,22 @@ export default {
   <div
     v-if="resolvableDiscussionsCount > 0"
     ref="discussionCounter"
-    class="line-resolve-all-container full-width-mobile gl-display-flex d-sm-flex"
+    class="gl-display-flex discussions-counter"
   >
-    <div class="line-resolve-all">
-      <span :class="lineResolveClass">
-        <template v-if="allResolved">
-          <gl-icon name="check-circle-filled" />
-          {{ __('All threads resolved') }}
-        </template>
-        <template v-else>
-          {{ n__('%d unresolved thread', '%d unresolved threads', unresolvedDiscussionsCount) }}
-        </template>
-      </span>
+    <div
+      class="gl-display-flex gl-align-items-center gl-px-4 gl-rounded-base gl-mr-3"
+      :class="{
+        'gl-bg-orange-50': blocksMerge,
+        'gl-bg-blue-50': !blocksMerge,
+      }"
+      data-testid="discussions-counter-text"
+    >
+      <template v-if="allResolved">
+        {{ __('All threads resolved') }}
+      </template>
+      <template v-else>
+        {{ n__('%d unresolved thread', '%d unresolved threads', unresolvedDiscussionsCount) }}
+      </template>
     </div>
     <gl-button-group>
       <gl-button
@@ -100,7 +103,7 @@ export default {
         :title="toggleThreadsLabel"
         :aria-label="toggleThreadsLabel"
         class="toggle-all-discussions-btn"
-        :icon="allExpanded ? 'angle-up' : 'angle-down'"
+        :icon="allExpanded ? 'collapse' : 'expand'"
         @click="handleExpandDiscussions"
       />
     </gl-button-group>
