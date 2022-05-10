@@ -14,10 +14,15 @@ module Resolvers
          required: true,
          description: 'List of external IDs of vulnerability identifiers.'
 
+    argument :language,
+         GraphQL::Types::String,
+         required: false,
+         description: 'Desired language for training urls.'
+
     alias_method :project, :object
 
     def resolve(**args)
-      ::Security::TrainingUrlsFinder.new(project, args[:identifier_external_ids]).execute
+      ::Security::TrainingUrlsFinder.new(project, args[:identifier_external_ids], args[:language]).execute
     end
   end
 end

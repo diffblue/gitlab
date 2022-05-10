@@ -51,5 +51,16 @@ RSpec.describe Security::TrainingProviders::KontraUrlFinder do
         expect(described_class.new(identifier.project, provider, identifier.external_id).full_url).to eq('example.com/?cwe=2')
       end
     end
+
+    context "when a language is provided" do
+      let_it_be(:language) { 'ruby' }
+
+      it 'returns full url path with the language parameter mapped' do
+        expect(described_class.new(identifier.project,
+                                   provider,
+                                   identifier.external_id,
+                                   language).full_url).to eq("example.com/?cwe=2&language=#{language}")
+      end
+    end
   end
 end

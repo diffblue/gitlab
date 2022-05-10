@@ -4,10 +4,11 @@ require 'spec_helper'
 
 RSpec.describe Security::TrainingUrlsFinder do
   let_it_be(:project) { create(:project) }
+  let_it_be(:language) { nil }
   let_it_be(:vulnerability) { create(:vulnerability, :with_findings, project: project) }
   let_it_be(:identifier) { create(:vulnerabilities_identifier, project: project, external_type: 'cwe', external_id: 2) }
 
-  subject { described_class.new(project, identifier_external_ids).execute }
+  subject { described_class.new(project, identifier_external_ids, language).execute }
 
   context 'no identifier with cwe external type' do
     let(:identifier_external_ids) { [] }
@@ -53,6 +54,21 @@ RSpec.describe Security::TrainingUrlsFinder do
             [{ name: 'Kontra', url: 'http://test.host/test', status: 'completed', identifier: identifier.external_id }]
           )
         end
+
+        context 'when a language is provided' do
+          let_it_be(:language) { 'ruby' }
+
+          it 'returns training urls list with status completed' do
+            is_expected.to match_array(
+              [{
+                name: 'Kontra',
+                url: 'http://test.host/test',
+                status: 'completed',
+                identifier: identifier.external_id
+              }]
+            )
+          end
+        end
       end
 
       context 'when training url has not yet been reactively cached' do
@@ -64,6 +80,14 @@ RSpec.describe Security::TrainingUrlsFinder do
 
         it 'returns training urls list with status pending' do
           is_expected.to match_array([{ name: 'Kontra', url: nil, status: 'pending' }])
+        end
+
+        context 'when a language is provided' do
+          let_it_be(:language) { 'ruby' }
+
+          it 'returns training urls list with status pending' do
+            is_expected.to match_array([{ name: 'Kontra', url: nil, status: 'pending' }])
+          end
         end
       end
 
