@@ -120,7 +120,7 @@ RSpec.describe 'Admin views Subscription', :js do
         page.within(find('#subscription-activation-modal', match: :first)) do
           fill_activation_form
 
-          expect(page).to have_content('There is a connectivity issue.')
+          expect(page).to have_content('Cannot activate instance due to a connectivity issue.')
         end
       end
     end
@@ -159,8 +159,31 @@ RSpec.describe 'Admin views Subscription', :js do
         end
       end
 
-      it 'shows an error message' do
+      it 'shows the general error message' do
         expect(page).to have_content('An error occurred while adding your subscription.')
+      end
+    end
+
+    context 'when license is expired' do
+      let_it_be(:license_to_be_created) { build(:license, data: build(:gitlab_license, { starts_at: Date.current - 1.year - 1.month, expires_at: Date.current - 1.month, cloud_licensing_enabled: true, plan: License::ULTIMATE_PLAN }).export) }
+
+      before do
+        stub_request(:post, EE::SUBSCRIPTIONS_GRAPHQL_URL)
+          .to_return(status: 200, body: {
+            "data": {
+              "cloudActivationActivate": {
+                "licenseKey": license_to_be_created.data
+              }
+            }
+          }.to_json, headers: { 'Content-Type' => 'application/json' })
+
+        page.within(find('#content-body', match: :first)) do
+          fill_activation_form
+        end
+      end
+
+      it 'shows the license expired error message' do
+        expect(page).to have_content('Your subscription is expired.')
       end
     end
 

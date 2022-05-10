@@ -1,16 +1,14 @@
 import { GlLink, GlSprintf } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import SubscriptionActivationErrors, {
-  subscriptionActivationHelpLink,
-  troubleshootingHelpLink,
+  i18n,
+  links,
 } from 'ee/admin/subscriptions/show/components/subscription_activation_errors.vue';
 import {
   CONNECTIVITY_ERROR,
-  generalActivationErrorMessage,
-  generalActivationErrorTitle,
+  EXPIRED_LICENSE_SERVER_ERROR,
   invalidActivationCode,
   INVALID_CODE_ERROR,
-  supportLink,
 } from 'ee/admin/subscriptions/show/constants';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 
@@ -18,6 +16,7 @@ describe('SubscriptionActivationErrors', () => {
   let wrapper;
 
   const findConnectivityErrorAlert = () => wrapper.findByTestId('connectivity-error-alert');
+  const findExpiredLicenseErrorAlert = () => wrapper.findByTestId('expired-error-alert');
   const findGeneralErrorAlert = () => wrapper.findByTestId('general-error-alert');
   const findInvalidActivationCode = () => wrapper.findByTestId('invalid-activation-error-alert');
   const findRoot = () => wrapper.findByTestId('root');
@@ -52,18 +51,34 @@ describe('SubscriptionActivationErrors', () => {
       createComponent({ props: { error: CONNECTIVITY_ERROR } });
     });
 
-    it('shows some help links', () => {
+    it('displays a help link', () => {
       const alert = findConnectivityErrorAlert();
 
-      expect(alert.findAllComponents(GlLink).at(0).attributes('href')).toBe(
-        subscriptionActivationHelpLink,
-      );
-      expect(alert.findAllComponents(GlLink).at(1).attributes('href')).toBe(
-        troubleshootingHelpLink,
+      expect(alert.findComponent(GlLink).attributes('href')).toBe(links.troubleshootingHelpLink);
+    });
+
+    it('does not show other alerts', () => {
+      expect(findExpiredLicenseErrorAlert().exists()).toBe(false);
+      expect(findGeneralErrorAlert().exists()).toBe(false);
+      expect(findInvalidActivationCode().exists()).toBe(false);
+    });
+  });
+
+  describe('expired license error', () => {
+    beforeEach(() => {
+      createComponent({ props: { error: EXPIRED_LICENSE_SERVER_ERROR } });
+    });
+
+    it('displays a help link', () => {
+      const alert = findExpiredLicenseErrorAlert();
+
+      expect(alert.findComponent(GlLink).attributes('href')).toBe(
+        links.purchaseSubscriptionLinkStart,
       );
     });
 
     it('does not show other alerts', () => {
+      expect(findConnectivityErrorAlert().exists()).toBe(false);
       expect(findGeneralErrorAlert().exists()).toBe(false);
       expect(findInvalidActivationCode().exists()).toBe(false);
     });
@@ -75,7 +90,9 @@ describe('SubscriptionActivationErrors', () => {
     });
 
     it('shows the alert', () => {
-      expect(findInvalidActivationCode().attributes('title')).toBe(generalActivationErrorTitle);
+      expect(findInvalidActivationCode().attributes('title')).toBe(
+        i18n.GENERAL_ACTIVATION_ERROR_TITLE,
+      );
     });
 
     it('shows a text to help the user', () => {
@@ -83,6 +100,7 @@ describe('SubscriptionActivationErrors', () => {
     });
 
     it('does not show other alerts', () => {
+      expect(findExpiredLicenseErrorAlert().exists()).toBe(false);
       expect(findConnectivityErrorAlert().exists()).toBe(false);
       expect(findGeneralErrorAlert().exists()).toBe(false);
     });
@@ -94,26 +112,31 @@ describe('SubscriptionActivationErrors', () => {
     });
 
     it('shows a general error alert', () => {
-      expect(findGeneralErrorAlert().props('title')).toBe(generalActivationErrorTitle);
+      expect(findGeneralErrorAlert().props('title')).toBe(i18n.GENERAL_ACTIVATION_ERROR_TITLE);
     });
 
     it('shows some help links', () => {
       const alert = findGeneralErrorAlert();
 
       expect(alert.findAllComponents(GlLink).at(0).attributes('href')).toBe(
-        subscriptionActivationHelpLink,
+        links.subscriptionActivationHelpLink,
       );
 
-      expect(supportLink).toMatch(/https:\/\/about.gitlab.(com|cn)\/support\/#contact-support/);
+      expect(links.supportLink).toMatch(
+        /https:\/\/about.gitlab.(com|cn)\/support\/#contact-support/,
+      );
 
-      expect(alert.findAllComponents(GlLink).at(1).attributes('href')).toBe(supportLink);
+      expect(alert.findAllComponents(GlLink).at(1).attributes('href')).toBe(links.supportLink);
     });
 
     it('shows a text to help the user', () => {
-      expect(findGeneralErrorAlert().text()).toMatchInterpolatedText(generalActivationErrorMessage);
+      expect(findGeneralErrorAlert().text()).toMatchInterpolatedText(
+        i18n.GENERAL_ACTIVATION_ERROR_MESSAGE,
+      );
     });
 
     it('does not show the connectivity alert', () => {
+      expect(findExpiredLicenseErrorAlert().exists()).toBe(false);
       expect(findConnectivityErrorAlert().exists()).toBe(false);
       expect(findInvalidActivationCode().exists()).toBe(false);
     });

@@ -63,14 +63,6 @@ export const subscriptionTable = {
   title: __('Subscription History'),
   type: __('Type'),
 };
-export const connectivityIssue = s__('SuperSonics|There is a connectivity issue.');
-export const manualSyncPendingText = s__(
-  'SuperSonics|Your subscription details will sync shortly.',
-);
-export const manualSyncPendingTitle = s__('SuperSonics|Sync subscription request.');
-export const manualSyncFailureText = s__(
-  'SuperSonics|You can no longer sync your subscription details with GitLab. Get help for the most common connectivity issues by %{connectivityHelpLinkStart}troubleshooting the activation code%{connectivityHelpLinkEnd}.',
-);
 
 export const subscriptionActivationForm = {
   activationCode: s__('SuperSonics|Activation code'),
@@ -116,25 +108,19 @@ export const SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT = 'subscription-activation-su
 export const SUBSCRIPTION_ACTIVATION_FINALIZED_EVENT = 'subscription-activation-finalized';
 
 export const INVALID_CODE_ERROR_MESSAGE = 'invalid activation code';
+export const EXPIRED_LICENSE_SERVER_ERROR = 'This license has already expired.';
 export const CONNECTIVITY_ERROR = 'CONNECTIVITY_ERROR';
 export const INVALID_CODE_ERROR = 'INVALID_CODE_ERROR';
-export const generalActivationErrorTitle = s__(
-  'SuperSonics|An error occurred while adding your subscription.',
-);
-export const generalActivationErrorMessage = s__(
-  'SuperSonics|Learn more about %{activationLinkStart}activating your subscription%{activationLinkEnd}. If you need further assistance, %{supportLinkStart}contact GitLab Support%{supportLinkEnd}.',
-);
 export const invalidActivationCode = s__(
   'SuperSonics|The activation code is not valid. Please make sure to copy it exactly from the Customers Portal or confirmation email. Learn more about %{linkStart}activating your subscription%{linkEnd}.',
 );
-export const connectivityErrorAlert = {
-  subtitle: s__(
-    'SuperSonics|To activate your subscription, connect to GitLab servers through the %{linkStart}Cloud Licensing%{linkEnd} service, a hassle-free way to manage your subscription.',
-  ),
-  helpText: s__(
-    'SuperSonics|Get help for the most common connectivity issues by %{linkStart}troubleshooting the activation code%{linkEnd}.',
-  ),
-};
+export const CONNECTIVITY_ERROR_TITLE = s__(
+  'SuperSonics|Cannot activate instance due to a connectivity issue.',
+);
+export const CONNECTIVITY_ERROR_MESSAGE = s__(
+  'SuperSonics|To activate your subscription, your instance needs to connect to GitLab. %{learnMoreLinkStart}Learn more%{learnMoreLinkEnd}.',
+);
+
 export const supportLink = `${PROMO_URL}/support/#contact-support`;
 export const subscriptionBannerTitle = s__('SuperSonics|Cloud licensing');
 export const subscriptionBannerText = s__(
