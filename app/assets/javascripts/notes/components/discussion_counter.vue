@@ -65,7 +65,7 @@ export default {
       class="gl-display-flex gl-align-items-center gl-px-4 gl-rounded-base gl-mr-3"
       :class="{
         'gl-bg-orange-50': blocksMerge,
-        'gl-bg-blue-50': !blocksMerge,
+        'gl-bg-gray-50': !blocksMerge,
       }"
       data-testid="discussions-counter-text"
     >
@@ -77,15 +77,6 @@ export default {
       </template>
     </div>
     <gl-button-group>
-      <gl-button
-        v-if="resolveAllDiscussionsIssuePath && !allResolved"
-        v-gl-tooltip
-        :href="resolveAllDiscussionsIssuePath"
-        :title="__('Create issue to resolve all threads')"
-        :aria-label="__('Create issue to resolve all threads')"
-        class="new-issue-for-discussion discussion-create-issue-btn"
-        icon="issue-new"
-      />
       <gl-button
         v-if="isLoggedIn && !allResolved"
         v-gl-tooltip
