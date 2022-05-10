@@ -78,16 +78,14 @@ module EE
       end
 
       def vulnerability(id:)
-        # TODO: remove this line when the compatibility layer is removed
-        # See: https://gitlab.com/gitlab-org/gitlab/-/issues/257883
-        id = ::Types::GlobalIDType[::Vulnerability].coerce_isolated_input(id)
         ::GitlabSchema.find_by_gid(id)
       end
 
       def iteration(id:)
-        # TODO: remove this line when the compatibility layer is removed
-        # See: https://gitlab.com/gitlab-org/gitlab/-/issues/257883
-        id = ::Types::GlobalIDType[Iteration].coerce_isolated_input(id)
+        # This field coerces its ID, and thus allows the use of ID typed values.
+        # This should be removed when app/graphql/queries/burndown_chart/burnup.query.graphql
+        # has been fixed/removed and as part of !83457
+        id = ::Types::GlobalIDType[Iteration].coerce_input(id, context)
         ::GitlabSchema.find_by_gid(id)
       end
 

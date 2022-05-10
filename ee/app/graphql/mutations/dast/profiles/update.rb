@@ -71,8 +71,8 @@ module Mutations
             name: name,
             description: description,
             branch_name: branch_name,
-            dast_site_profile_id: as_model_id(SiteProfileID, args[:dast_site_profile_id]),
-            dast_scanner_profile_id: as_model_id(ScannerProfileID, dast_scanner_profile_id),
+            dast_site_profile_id: args[:dast_site_profile_id]&.model_id,
+            dast_scanner_profile_id: dast_scanner_profile_id&.model_id,
             dast_profile_schedule: args[:dast_profile_schedule],
             run_after_update: run_after_update
           }.compact
@@ -88,19 +88,7 @@ module Mutations
 
         private
 
-        def as_model_id(klass, value)
-          return unless value
-
-          # TODO: remove explicit coercion once compatibility layer is removed
-          # See: https://gitlab.com/gitlab-org/gitlab/-/issues/257883
-          klass.coerce_isolated_input(value).model_id
-        end
-
         def find_object(id)
-          # TODO: remove this line when the compatibility layer is removed
-          # See: https://gitlab.com/gitlab-org/gitlab/-/issues/257883
-          id = ProfileID.coerce_isolated_input(id)
-
           GitlabSchema.find_by_gid(id)
         end
       end

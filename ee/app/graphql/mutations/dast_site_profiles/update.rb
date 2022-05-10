@@ -37,8 +37,6 @@ module Mutations
 
         auth_params = params[:auth] || {}
 
-        # TODO: remove explicit coercion once compatibility layer has been removed
-        # See: https://gitlab.com/gitlab-org/gitlab/-/issues/257883
         dast_site_profile_params = {
           id: dast_site_profile.id,
           name: profile_name,
@@ -67,10 +65,6 @@ module Mutations
       private
 
       def find_object(id)
-        # TODO: remove this line when the compatibility layer is removed
-        # See: https://gitlab.com/gitlab-org/gitlab/-/issues/257883
-        id = SiteProfileID.coerce_isolated_input(id)
-
         GitlabSchema.find_by_gid(id)
       end
     end

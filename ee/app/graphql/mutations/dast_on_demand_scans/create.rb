@@ -44,10 +44,6 @@ module Mutations
 
       # rubocop: disable CodeReuse/ActiveRecord
       def find_dast_site_profile(project, dast_site_profile_id)
-        # TODO: remove explicit coercion once compatibility layer is removed
-        # See: https://gitlab.com/gitlab-org/gitlab/-/issues/257883
-        dast_site_profile_id = ::Types::GlobalIDType[::DastSiteProfile].coerce_isolated_input(dast_site_profile_id)
-
         DastSiteProfilesFinder.new(project_id: project.id, id: dast_site_profile_id.model_id)
           .execute
           .first!
@@ -57,11 +53,6 @@ module Mutations
       # rubocop: disable CodeReuse/ActiveRecord
       def find_dast_scanner_profile(project, dast_scanner_profile_id)
         return unless dast_scanner_profile_id
-
-        # TODO: remove explicit coercion once compatibility layer is removed
-        # See: https://gitlab.com/gitlab-org/gitlab/-/issues/257883
-        dast_scanner_profile_id = ::Types::GlobalIDType[::DastScannerProfile]
-                                    .coerce_isolated_input(dast_scanner_profile_id)
 
         DastScannerProfilesFinder.new(
           project_ids: [project.id],

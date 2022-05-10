@@ -42,9 +42,6 @@ module EE
 
         override :build_create_issue_params
         def build_create_issue_params(params, project)
-          # TODO: remove this line when the compatibility layer is removed
-          # See: https://gitlab.com/gitlab-org/gitlab/-/issues/257883
-          params[:epic_id] = ::Types::GlobalIDType[::Epic].coerce_isolated_input(params[:epic_id]) if params[:epic_id]
           params[:epic_id] = params[:epic_id]&.model_id if params.key?(:epic_id)
 
           handle_iteration_params(params, project)
@@ -56,13 +53,7 @@ module EE
           group = project.group
           return unless group && group.licensed_feature_available?(:iterations)
 
-          # TODO: remove this line when the compatibility layer is removed
-          # See: https://gitlab.com/gitlab-org/gitlab/-/issues/257883
-          params[:iteration_id] = ::Types::GlobalIDType[::Iteration].coerce_isolated_input(params[:iteration_id]) if params[:iteration_id]
           params[:iteration_id] = params[:iteration_id]&.model_id
-          # TODO: remove this line when the compatibility layer is removed
-          # See: https://gitlab.com/gitlab-org/gitlab/-/issues/257883
-          params[:iteration_cadence_id] = ::Types::GlobalIDType[::Iterations::Cadence].coerce_isolated_input(params[:iteration_cadence_id]) if params[:iteration_cadence_id]
           params[:iteration_cadence_id] = params[:iteration_cadence_id]&.model_id
         end
 

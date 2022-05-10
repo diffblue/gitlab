@@ -29,11 +29,7 @@ module Mutations
       end
 
       def extract_project_id(gid)
-        return unless gid.present?
-
-        # TODO: remove explicit coercion once compatibility layer has been removed
-        # See: https://gitlab.com/gitlab-org/gitlab/-/issues/257883
-        Types::GlobalIDType[::Project].coerce_isolated_input(gid).model_id
+        gid&.model_id
       end
 
       def remove_project(project_id)

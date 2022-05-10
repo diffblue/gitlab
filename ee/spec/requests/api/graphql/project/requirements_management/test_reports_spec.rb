@@ -77,7 +77,7 @@ RSpec.describe 'getting test reports of a requirement' do
         let(:sort_param)       { :CREATED_ASC }
         let(:first_param)      { 2 }
         let(:all_records) do
-          in_creation_order.map { |r| global_id_of(r) }
+          in_creation_order.map { |r| global_id_of(r).to_s }
         end
       end
 
@@ -85,7 +85,7 @@ RSpec.describe 'getting test reports of a requirement' do
         let(:sort_param)       { :CREATED_DESC }
         let(:first_param)      { 2 }
         let(:all_records) do
-          in_creation_order.reverse.map { |r| global_id_of(r) }
+          in_creation_order.reverse.map { |r| global_id_of(r).to_s }
         end
       end
     end

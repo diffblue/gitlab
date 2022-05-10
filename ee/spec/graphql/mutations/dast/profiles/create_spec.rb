@@ -30,8 +30,8 @@ RSpec.describe Mutations::Dast::Profiles::Create do
         name: name,
         description: description,
         branch_name: branch_name,
-        dast_site_profile_id: dast_site_profile.to_global_id.to_s,
-        dast_scanner_profile_id: dast_scanner_profile.to_global_id.to_s,
+        dast_site_profile_id: dast_site_profile.to_global_id,
+        dast_scanner_profile_id: dast_scanner_profile.to_global_id,
         run_after_create: run_after_create,
         dast_profile_schedule: dast_profile_schedule
       )

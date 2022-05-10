@@ -40,9 +40,6 @@ module Mutations
       private
 
       def find_policy_project(id)
-        # TODO: remove explicit coercion once compatibility layer has been removed
-        # See: https://gitlab.com/gitlab-org/gitlab/-/issues/257883
-        id = ::Types::GlobalIDType[::Project].coerce_isolated_input(id)
         ::Gitlab::Graphql::Lazy.force(GitlabSchema.object_from_id(id, expected_type: Project))
       end
 

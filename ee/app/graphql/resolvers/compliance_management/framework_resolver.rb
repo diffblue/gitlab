@@ -14,10 +14,6 @@ module Resolvers
                required: false
 
       def resolve(id: nil)
-        # TODO: remove this line when the compatibility layer is removed
-        # See: https://gitlab.com/gitlab-org/gitlab/-/issues/257883
-        id = ::Types::GlobalIDType[::ComplianceManagement::Framework].coerce_isolated_input(id) unless id.nil?
-
         BatchLoader::GraphQL
           .for([object.id, id&.model_id])
           .batch(default_value: []) do |keys, loader|

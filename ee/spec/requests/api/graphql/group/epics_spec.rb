@@ -92,7 +92,7 @@ RSpec.describe 'Epics through GroupQuery' do
         end
 
         def global_ids(*epics)
-          epics.map { |epic| global_id_of(epic) }
+          epics.map { |epic| global_id_of(epic).to_s }
         end
 
         context 'with start_date_asc' do

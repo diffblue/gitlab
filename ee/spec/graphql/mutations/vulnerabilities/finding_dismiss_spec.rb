@@ -27,14 +27,6 @@ RSpec.describe Mutations::Vulnerabilities::FindingDismiss do
         end
       end
 
-      context 'with invalid params' do
-        let(:finding_id) { global_id_of(user) }
-
-        it 'raises an error' do
-          expect { subject }.to raise_error(::GraphQL::CoercionError)
-        end
-      end
-
       context 'when user has access to the project' do
         before do
           finding.project.add_developer(user)

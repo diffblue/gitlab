@@ -34,25 +34,14 @@ module Mutations
 
       def parse_arguments(args = {})
         if args[:assignee_id]
-          # TODO: remove this line when the compatibility layer is removed
-          # See: https://gitlab.com/gitlab-org/gitlab/-/issues/257883
-          args[:assignee_id] = ::Types::GlobalIDType[::User].coerce_isolated_input(args[:assignee_id])
           args[:assignee_id] = args[:assignee_id].model_id
         end
 
         if args[:milestone_id]
-          # TODO: remove this line when the compatibility layer is removed
-          # See: https://gitlab.com/gitlab-org/gitlab/-/issues/257883
-          args[:milestone_id] = ::Types::GlobalIDType[::Milestone].coerce_isolated_input(args[:milestone_id])
           args[:milestone_id] = args[:milestone_id].model_id
         end
 
         if args[:iteration_cadence_id]
-          # TODO: remove this line when the compatibility layer is removed
-          # See: https://gitlab.com/gitlab-org/gitlab/-/issues/257883
-          args[:iteration_cadence_id] = ::Types::GlobalIDType[::Iterations::Cadence].coerce_isolated_input(
-            args[:iteration_cadence_id]
-          )
           args[:iteration_cadence_id] = args[:iteration_cadence_id].model_id
         end
 
