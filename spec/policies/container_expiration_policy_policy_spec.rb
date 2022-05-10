@@ -11,9 +11,10 @@ RSpec.describe ContainerExpirationPolicyPolicy do
   subject { described_class.new(user, project.container_expiration_policy) }
 
   where(:user_type, :allowed_to_destroy_container_image) do
-    :anonymous | false
-    :guest     | false
-    :developer | true
+    :anonymous  | false
+    :guest      | false
+    :developer  | false
+    :maintainer | true
   end
 
   with_them do
@@ -23,9 +24,9 @@ RSpec.describe ContainerExpirationPolicyPolicy do
       end
 
       if params[:allowed_to_destroy_container_image]
-        it { is_expected.to be_allowed(:destroy_container_image) }
+        it { is_expected.to be_allowed(:admin_container_image) }
       else
-        it { is_expected.not_to be_allowed(:destroy_container_image) }
+        it { is_expected.not_to be_allowed(:admin_container_image) }
       end
     end
   end
