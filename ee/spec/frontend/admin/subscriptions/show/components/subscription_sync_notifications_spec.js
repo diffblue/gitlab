@@ -2,13 +2,9 @@ import { GlAlert, GlLink, GlSprintf } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import SubscriptionSyncNotifications, {
   INFO_ALERT_DISMISSED_EVENT,
+  i18n,
 } from 'ee/admin/subscriptions/show/components/subscription_sync_notifications.vue';
-import {
-  connectivityIssue,
-  manualSyncPendingText,
-  manualSyncPendingTitle,
-  subscriptionSyncStatus,
-} from 'ee/admin/subscriptions/show/constants';
+import { subscriptionSyncStatus } from 'ee/admin/subscriptions/show/constants';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 
 describe('Subscription Sync Notifications', () => {
@@ -58,11 +54,11 @@ describe('Subscription Sync Notifications', () => {
     });
 
     it('displays an alert with a title', () => {
-      expect(findInfoAlert().props('title')).toBe(manualSyncPendingTitle);
+      expect(findInfoAlert().props('title')).toBe(i18n.MANUAL_SYNC_PENDING_TITLE);
     });
 
     it('displays an alert with a message', () => {
-      expect(findInfoAlert().text()).toBe(manualSyncPendingText);
+      expect(findInfoAlert().text()).toBe(i18n.MANUAL_SYNC_PENDING_TEXT);
     });
 
     it('emits an event when dismissed', () => {
@@ -81,7 +77,7 @@ describe('Subscription Sync Notifications', () => {
     });
 
     it('displays an alert with a failure title', () => {
-      expect(findFailureAlert().props('title')).toBe(connectivityIssue);
+      expect(findFailureAlert().props('title')).toBe(i18n.CONNECTIVITY_ERROR_TITLE);
     });
 
     it('displays an alert with a failure message', () => {
