@@ -107,6 +107,16 @@ As part of the work to create a [Package Registry GraphQL API](https://gitlab.co
 
 In GitLab 15.0, we will completely remove `Version` from `PackageType`.
 
+### Remove `promote-to-primary-node` command from `gitlab-ctl`
+
+WARNING:
+This feature was changed or removed in 15.0
+as a [breaking change](https://docs.gitlab.com/ee/development/contributing/#breaking-changes).
+Before updating GitLab, review the details carefully to determine if you need to make any
+changes to your code, settings, or workflow.
+
+In GitLab 14.5, we introduced the command `gitlab-ctl promote` to promote any Geo secondary node to a primary during a failover. This command replaces `gitlab-ctl promote-to-primary-node` which was only usable for single-node Geo sites. `gitlab-ctl promote-to-primary-node` has been removed in GitLab 15.0.
+
 ### Remove dependency_proxy_for_private_groups feature flag
 
 WARNING:
