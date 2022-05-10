@@ -531,7 +531,7 @@ class Namespace < ApplicationRecord
 
   def certificate_based_clusters_enabled?
     ::Gitlab::SafeRequestStore.fetch("certificate_based_clusters:ns:#{self.id}") do
-      Feature.enabled?(:certificate_based_clusters, self, type: :ops)
+      Feature.enabled?(:certificate_based_clusters, self.root_ancestor, type: :ops)
     end
   end
 
