@@ -87,7 +87,7 @@ export default {
       />
     </gl-form-group>
     <section
-      class="gl-display-flex gl-align-items-center gl-p-5 gl-mt-6 gl-bg-gray-10 gl-border-t-solid gl-border-t-1 gl-border-gray-100"
+      class="gl-display-flex gl-align-items-center gl-py-5 gl-mt-6 gl-border-t-solid gl-border-t-1 gl-border-gray-100"
     >
       <gl-button
         data-testid="settingsSaveButton"
