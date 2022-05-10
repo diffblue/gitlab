@@ -21,6 +21,8 @@ module Epics::RelatedEpicLinks::UsageDataHelper
 
   ALLOWED_EVENT_TYPES = [:added, :removed].freeze
 
+  private
+
   def track_related_epics_event_for(link_type:, event_type:)
     return unless ALLOWED_LINK_TYPES.include?(link_type)
     return unless ALLOWED_EVENT_TYPES.include?(event_type)
