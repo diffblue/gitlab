@@ -463,5 +463,12 @@ module EE
 
       group.feature_available_non_trial?(:resource_access_token)
     end
+
+    override :change_prevent_sharing_groups_outside_hierarchy_available?
+    def change_prevent_sharing_groups_outside_hierarchy_available?
+      return false if ::Namespaces::FreeUserCap.new(subject).enforce_cap?
+
+      super
+    end
   end
 end
