@@ -58,9 +58,9 @@ RSpec.describe ProjectsController do
       end
     end
 
-    context 'with additional_repo_storage_by_namespace_enabled? enabled' do
+    context 'with automatic_purchased_storage_allocation set to true' do
       before do
-        allow_any_instance_of(EE::Namespace).to receive(:additional_repo_storage_by_namespace_enabled?).and_return(true)
+        stub_application_setting(automatic_purchased_storage_allocation: true)
       end
 
       it 'does not show over size limit warning when above_size_limit' do
@@ -74,9 +74,9 @@ RSpec.describe ProjectsController do
       end
     end
 
-    context 'with additional_repo_storage_by_namespace_enabled? disabled' do
+    context 'with automatic_purchased_storage_allocation set to false' do
       before do
-        allow_any_instance_of(EE::Namespace).to receive(:additional_repo_storage_by_namespace_enabled?).and_return(false)
+        stub_application_setting(automatic_purchased_storage_allocation: false)
       end
 
       it 'shows the over size limit warning message if above_size_limit' do
