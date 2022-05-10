@@ -75,7 +75,8 @@ RSpec.describe API::ProtectedEnvironments do
       context 'with multiple approval rules' do
         before do
           create(:protected_environment_approval_rule, :maintainer_access,
-            protected_environment: project_protected_environment, required_approvals: 3)
+            protected_environment: project_protected_environment, required_approvals: 3,
+                 group_inheritance_type: ::ProtectedEnvironments::Authorizable::GROUP_INHERITANCE_TYPE[:ALL])
         end
 
         it 'returns the protected environment' do
@@ -87,6 +88,7 @@ RSpec.describe API::ProtectedEnvironments do
           expect(json_response['deploy_access_levels'][0]['access_level']).to eq(::Gitlab::Access::MAINTAINER)
           expect(json_response['approval_rules'][0]['access_level']).to eq(::Gitlab::Access::MAINTAINER)
           expect(json_response['approval_rules'][0]['required_approvals']).to eq(3)
+          expect(json_response['approval_rules'][0]['group_inheritance_type']).to eq(::ProtectedEnvironments::Authorizable::GROUP_INHERITANCE_TYPE[:ALL])
         end
       end
 
@@ -157,7 +159,8 @@ RSpec.describe API::ProtectedEnvironments do
         project.add_developer(deployer)
 
         post api_url, params: { name: 'staging', deploy_access_levels: [{ user_id: deployer.id }],
-                                approval_rules: [{ access_level: Gitlab::Access::MAINTAINER }] }
+                                approval_rules: [{ access_level: Gitlab::Access::MAINTAINER,
+                                                   group_inheritance_type: ::ProtectedEnvironments::Authorizable::GROUP_INHERITANCE_TYPE[:ALL] }] }
 
         expect(response).to have_gitlab_http_status(:created)
         expect(response).to match_response_schema('public_api/v4/protected_environment', dir: 'ee')
@@ -165,6 +168,7 @@ RSpec.describe API::ProtectedEnvironments do
         expect(json_response['deploy_access_levels'].first['user_id']).to eq(deployer.id)
         expect(json_response['approval_rules'].count).to eq(1)
         expect(json_response['approval_rules'].first['access_level']).to eq(Gitlab::Access::MAINTAINER)
+        expect(json_response['approval_rules'].first['group_inheritance_type']).to eq(::ProtectedEnvironments::Authorizable::GROUP_INHERITANCE_TYPE[:ALL])
       end
 
       context 'without deploy_access_levels' do
@@ -331,6 +335,19 @@ RSpec.describe API::ProtectedEnvironments do
         expect(response).to match_response_schema('public_api/v4/protected_environment', dir: 'ee')
         expect(json_response['name']).to eq('staging')
         expect(json_response['deploy_access_levels'].first['access_level']).to eq(Gitlab::Access::MAINTAINER)
+      end
+
+      it 'protects the environment with group allowed to deploy with inheritance', :aggregate_failures do
+        subgroup = create(:group, parent: group)
+
+        post api_url, params: { name: 'staging', deploy_access_levels: [{ group_id: subgroup.id,
+                                                                          group_inheritance_type: ::ProtectedEnvironments::Authorizable::GROUP_INHERITANCE_TYPE[:ALL] }] }
+
+        expect(response).to have_gitlab_http_status(:created)
+        expect(response).to match_response_schema('public_api/v4/protected_environment', dir: 'ee')
+        expect(json_response['name']).to eq('staging')
+        expect(json_response['deploy_access_levels'].first['group_id']).to eq(subgroup.id)
+        expect(json_response['deploy_access_levels'].first['group_inheritance_type']).to eq(::ProtectedEnvironments::Authorizable::GROUP_INHERITANCE_TYPE[:ALL])
       end
 
       it 'protects the environment and require approvals' do

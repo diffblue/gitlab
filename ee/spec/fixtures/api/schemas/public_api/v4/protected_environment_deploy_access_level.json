@@ -6,7 +6,6 @@
     "access_level_description": { "type": ["string", "null"] },
     "user_id": { "type": ["integer", "null"] },
     "group_id": { "type": ["integer", "null"] },
-    "required_approvals": { "type": ["integer"] },
     "group_inheritance_type": { "type":  ["integer", "null"] }
   },
   "additionalProperties": false
