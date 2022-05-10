@@ -16,7 +16,7 @@ import SavedTab from 'ee/on_demand_scans/components/tabs/saved.vue';
 import EmptyState from 'ee/on_demand_scans/components/empty_state.vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import onDemandScansCounts from 'ee/on_demand_scans/graphql/on_demand_scan_counts.query.graphql';
-import flushPromises from 'helpers/flush_promises';
+import waitForPromises from 'helpers/wait_for_promises';
 
 Vue.use(VueApollo);
 
@@ -121,7 +121,7 @@ describe('OnDemandScans', () => {
     expect(findEmptyState().exists()).toBe(true);
     expect(requestHandler).toHaveBeenCalled();
 
-    await flushPromises();
+    await waitForPromises();
 
     expect(findTabs().exists()).toBe(true);
     expect(findEmptyState().exists()).toBe(false);
