@@ -112,22 +112,13 @@ The permissions model for GraphQL is being updated. After 15.0, users with the G
 
 The issue for this removal is [GitLab-#350682](https://gitlab.com/gitlab-org/gitlab/-/issues/350682)
 
-### `omniauth-kerberos` gem
+### Remove Versions from PackageType
 
 WARNING:
 This feature was changed or removed in 15.0
 as a [breaking change](https://docs.gitlab.com/ee/development/contributing/#breaking-changes).
 Before updating GitLab, review the details carefully to determine if you need to make any
 changes to your code, settings, or workflow.
-
-The `omniauth-kerberos` gem is no longer supported. This gem has not been maintained and has very little usage. Therefore, we
-removed support for this authentication method and recommend using [SPEGNO](https://en.wikipedia.org/wiki/SPNEGO) instead. You can
-follow the [upgrade instructions](https://docs.gitlab.com/ee/integration/kerberos.html#upgrading-from-password-based-to-ticket-based-kerberos-sign-ins)
-to upgrade from the removed integration to the new supported one.
-
-We are not removing Kerberos SPNEGO integration. We are removing the old password-based Kerberos.
-
-### Remove Versions from PackageType
 
 As part of the work to create a [Package Registry GraphQL API](https://gitlab.com/groups/gitlab-org/-/epics/6318), the Package group deprecated the `Version` type for the basic `PackageType` type and moved it to [`PackageDetailsType`](https://docs.gitlab.com/ee/api/graphql/reference/index.html#packagedetailstype).
 
@@ -281,6 +272,21 @@ The `Managed-Cluster-Applications.gitlab-ci.yml` CI/CD template is being removed
 As of GitLab 15.0, the `artifacts:report:cobertura` keyword has been replaced by
 [`artifacts:reports:coverage_report`](https://gitlab.com/gitlab-org/gitlab/-/issues/344533). Cobertura is the only
 supported report file, but this is the first step towards GitLab supporting other report types.
+
+### `omniauth-kerberos` gem
+
+WARNING:
+This feature was changed or removed in 15.0
+as a [breaking change](https://docs.gitlab.com/ee/development/contributing/#breaking-changes).
+Before updating GitLab, review the details carefully to determine if you need to make any
+changes to your code, settings, or workflow.
+
+The `omniauth-kerberos` gem is no longer supported. This gem has not been maintained and has very little usage. Therefore, we
+removed support for this authentication method and recommend using [SPEGNO](https://en.wikipedia.org/wiki/SPNEGO) instead. You can
+follow the [upgrade instructions](https://docs.gitlab.com/ee/integration/kerberos.html#upgrading-from-password-based-to-ticket-based-kerberos-sign-ins)
+to upgrade from the removed integration to the new supported one.
+
+We are not removing Kerberos SPNEGO integration. We are removing the old password-based Kerberos.
 
 ## 14.10
 
