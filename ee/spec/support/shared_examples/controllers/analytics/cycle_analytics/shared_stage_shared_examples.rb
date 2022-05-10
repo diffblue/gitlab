@@ -227,7 +227,7 @@ RSpec.shared_examples 'Value Stream Analytics Stages controller' do
         end
 
         it 'accepts sort params' do
-          if Feature.enabled?(:use_vsa_aggregated_tables, default_enabled: :yaml)
+          if Feature.enabled?(:use_vsa_aggregated_tables)
             travel_to DateTime.new(2019, 1, 5) do
               event_1 = create(:cycle_analytics_merge_request_stage_event,
                                stage_event_hash_id: stage.stage_event_hash_id,
@@ -270,7 +270,7 @@ RSpec.shared_examples 'Value Stream Analytics Stages controller' do
 
       context 'pagination' do
         it 'exposes pagination headers' do
-          if Feature.enabled?(:use_vsa_aggregated_tables, default_enabled: :yaml)
+          if Feature.enabled?(:use_vsa_aggregated_tables)
             create_list(:cycle_analytics_merge_request_stage_event, 3)
             stub_const('Gitlab::Analytics::CycleAnalytics::Aggregated::RecordsFetcher::MAX_RECORDS', 2)
           else
@@ -278,7 +278,7 @@ RSpec.shared_examples 'Value Stream Analytics Stages controller' do
             stub_const('Gitlab::Analytics::CycleAnalytics::RecordsFetcher::MAX_RECORDS', 2)
           end
 
-          if Feature.enabled?(:use_vsa_aggregated_tables, default_enabled: :yaml)
+          if Feature.enabled?(:use_vsa_aggregated_tables)
             allow_any_instance_of(Gitlab::Analytics::CycleAnalytics::Aggregated::RecordsFetcher).to receive(:query).and_return(Analytics::CycleAnalytics::MergeRequestStageEvent.all)
           else
             allow_any_instance_of(Gitlab::Analytics::CycleAnalytics::RecordsFetcher).to receive(:query).and_return(MergeRequest.join_metrics.all)
@@ -298,7 +298,7 @@ RSpec.shared_examples 'Value Stream Analytics Stages controller' do
       it 'matches the response schema' do
         fake_result = [double(MergeRequest, average_duration_in_seconds: 10, date: Time.current.to_date)]
 
-        if Feature.enabled?(:use_vsa_aggregated_tables, default_enabled: :yaml)
+        if Feature.enabled?(:use_vsa_aggregated_tables)
           expect_any_instance_of(Gitlab::Analytics::CycleAnalytics::Aggregated::DataForDurationChart).to receive(:average_by_day).and_return(fake_result)
         else
           expect_any_instance_of(Gitlab::Analytics::CycleAnalytics::DataForDurationChart).to receive(:average_by_day).and_return(fake_result)

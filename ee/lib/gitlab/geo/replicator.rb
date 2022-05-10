@@ -154,19 +154,15 @@ module Gitlab
       end
 
       def self.enabled?
-        Feature.enabled?(
-          replication_enabled_feature_key,
-          default_enabled: replication_enabled_by_default?)
+        Feature.enabled?(replication_enabled_feature_key)
       end
 
       def self.disabled?
         !enabled?
       end
 
-      # Replication is set behind a feature flag, which is enabled by default.
-      # If you want it disabled by default, override this method.
       def self.replication_enabled_by_default?
-        true
+        Feature::Definition.default_enabled?(replication_enabled_feature_key, default_enabled_if_undefined: true)
       end
 
       # @example Given `Geo::PackageFileRegistryFinder`, this returns
