@@ -20,10 +20,10 @@ RSpec.describe Namespaces::DeactivateMembersOverLimitService, :saas do
     end
 
     it 'logs an info' do
-      expect(Gitlab::AppLogger).to receive(:info).with(
+      expect(Gitlab::AppLogger).to receive(:info).with({
         namespace: group.id,
         message: 'Deactivated all members over the free user limit'
-      )
+      })
 
       described_class.new(group).execute
     end
@@ -36,11 +36,11 @@ RSpec.describe Namespaces::DeactivateMembersOverLimitService, :saas do
       end
 
       it 'logs an error' do
-        expect(Gitlab::AppLogger).to receive(:error).with(
+        expect(Gitlab::AppLogger).to receive(:error).with({
           namespace: group.id,
           message: 'An error has occurred',
           details: 'An exception'
-        )
+        })
 
         described_class.new(group).execute
       end
