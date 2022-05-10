@@ -608,7 +608,7 @@ production: &base
       cron: "*/10 * * * *"
 
     # Periodically prune stale runners from namespaces having opted-in.
-    ci_runners_stale_group_runners_prune_cron_worker:
+    ci_runners_stale_group_runners_prune_worker_cron:
       cron: "0 2 * * *"
 
   registry:
