@@ -170,51 +170,6 @@ RSpec.describe API::Internal::Kubernetes do
     end
   end
 
-  describe 'POST /internal/kubernetes/modules/cilium_alert' do
-    let(:method) { :post }
-    let(:api_url) { '/internal/kubernetes/modules/cilium_alert' }
-
-    include_examples 'authorization'
-    include_examples 'agent authentication'
-
-    context 'is authenticated for an agent' do
-      before do
-        stub_licensed_features(cilium_alerts: true)
-      end
-
-      let(:payload) { build(:network_alert_payload) }
-
-      it 'returns no_content for valid alert payload' do
-        send_request(params: { alert: payload })
-
-        expect(AlertManagement::Alert.count).to eq(1)
-        expect(AlertManagement::Alert.all.first.project).to eq(agent.project)
-        expect(response).to have_gitlab_http_status(:success)
-      end
-
-      context 'when payload is invalid' do
-        let(:payload) { { temp: {} } }
-
-        it 'returns bad request' do
-          send_request(params: { alert: payload })
-          expect(response).to have_gitlab_http_status(:bad_request)
-        end
-      end
-
-      context 'when feature is not available' do
-        before do
-          stub_licensed_features(cilium_alerts: false)
-        end
-
-        it 'returns forbidden for non licensed project' do
-          send_request(params: { alert: payload })
-
-          expect(response).to have_gitlab_http_status(:forbidden)
-        end
-      end
-    end
-  end
-
   describe 'PUT /internal/kubernetes/modules/starboard_vulnerability' do
     let(:method) { :put }
     let(:api_url) { '/internal/kubernetes/modules/starboard_vulnerability' }
