@@ -51,7 +51,7 @@ RSpec.describe Billing::PlanComponent, :aggregate_failures, type: :component do
 
     it 'has header for the current plan' do
       expect(rendered_component).to have_content('Recommended')
-      expect(rendered_component).to have_selector('.gl-bg-theme-indigo-800')
+      expect(rendered_component).to have_selector('.gl-bg-purple-800')
     end
 
     it 'has pricing info' do
