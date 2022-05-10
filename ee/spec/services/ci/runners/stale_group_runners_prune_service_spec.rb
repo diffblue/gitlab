@@ -41,12 +41,9 @@ RSpec.describe Ci::Runners::StaleGroupRunnersPruneService do
 
     before do
       stub_const("#{described_class}::GROUP_BATCH_SIZE", 1)
-      stub_const("#{described_class}::BATCH_SIZE", 1)
     end
 
     it 'prunes all runners in batches' do
-      expect(service).to receive(:delete_stale_group_runners_in_batches).twice.and_call_original
-
       expect do
         expect(status).to match({
           status: :success,

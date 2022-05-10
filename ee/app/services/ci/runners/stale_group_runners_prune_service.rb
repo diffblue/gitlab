@@ -6,8 +6,6 @@ module Ci
       include BaseServiceUtility
 
       GROUP_BATCH_SIZE = 1_000
-      BATCH_SIZE = 2_000
-      PAUSE_SECONDS = 2
 
       def perform(namespace_ids)
         total_pruned = delete_stale_group_runners(namespace_ids)
@@ -28,26 +26,12 @@ module Ci
         total_count = 0
 
         namespace_ids.each_batch(of: GROUP_BATCH_SIZE) do |namespace_id_batch|
-          count = delete_stale_group_runners_in_batches(namespace_id_batch.to_a)
-          total_count += count
+          total_count += stale_runners(namespace_id_batch.to_a).delete_all
         end
 
         total_count
       end
       # rubocop: enable CodeReuse/ActiveRecord
-
-      def delete_stale_group_runners_in_batches(namespace_id_batch)
-        # Prune stale runners in small batches of `BATCH_SIZE` in order to reduce pressure on the database and
-        # to allow it to perform any cleanup required.
-
-        count = 0
-        stale_runners(namespace_id_batch).each_batch(of: BATCH_SIZE) do |runner_batch|
-          count += runner_batch.delete_all
-          sleep PAUSE_SECONDS
-        end
-
-        count
-      end
     end
   end
 end
