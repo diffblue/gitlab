@@ -20,7 +20,7 @@ module Types
               description: 'Total number of minutes used by all projects in the namespace.'
 
         field :projects, ::Types::Ci::Minutes::ProjectMonthlyUsageType.connection_type, null: true,
-              description: 'CI minutes usage data for projects in the namespace.'
+              description: 'CI/CD minutes usage data for projects in the namespace.'
 
         field :shared_runners_duration, ::GraphQL::Types::Int, null: true,
               description: 'Total duration (in seconds) of shared runners use by the namespace for the month.'
