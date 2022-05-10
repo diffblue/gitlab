@@ -16,6 +16,7 @@ class Namespace < ApplicationRecord
   include Namespaces::Traversal::Linear
   include EachBatch
   include BlocksUnsafeSerialization
+  include Ci::NamespaceSettings
 
   # Temporary column used for back-filling project namespaces.
   # Remove it once the back-filling of all project namespaces is done.
@@ -508,20 +509,6 @@ class Namespace < ApplicationRecord
 
   def shared_runners
     @shared_runners ||= shared_runners_enabled ? Ci::Runner.instance_type : Ci::Runner.none
-  end
-
-  def find_or_build_ci_cd_settings
-    ci_cd_settings || build_ci_cd_settings
-  end
-
-  # Overridden in EE::Namespace
-  def allow_stale_runner_pruning?
-    false
-  end
-
-  # Overridden in EE::Namespace
-  def allow_stale_runner_pruning=(_value)
-    raise NotImplementedError
   end
 
   def root?

@@ -23,7 +23,7 @@ module Ci
 
       # rubocop: disable CodeReuse/ActiveRecord
       def delete_stale_group_runners(namespace_ids)
-        return 0 unless namespace_ids.any?
+        return 0 if namespace_ids.empty?
 
         total_count = 0
 

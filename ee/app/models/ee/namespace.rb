@@ -9,6 +9,7 @@ module EE
     extend ActiveSupport::Concern
     extend ::Gitlab::Utils::Override
     include ::Gitlab::Utils::StrongMemoize
+    include Ci::NamespaceSettings
 
     NAMESPACE_PLANS_TO_LICENSE_PLANS = {
       ::Plan::BRONZE => License::STARTER_PLAN,
@@ -539,20 +540,6 @@ module EE
         .for_namespace(self_and_ancestor_ids)
         .with_project_and_namespace
         .select { |configuration| configuration&.policy_configuration_valid? }
-    end
-
-    override :allow_stale_runner_pruning?
-    def allow_stale_runner_pruning?
-      return false unless ci_cd_settings
-
-      ci_cd_settings.allow_stale_runner_pruning?
-    end
-
-    override :allow_stale_runner_pruning=
-    def allow_stale_runner_pruning=(value)
-      return if ci_cd_settings.blank? && !value
-
-      find_or_build_ci_cd_settings.allow_stale_runner_pruning = value
     end
 
     private

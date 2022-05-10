@@ -1943,11 +1943,13 @@ RSpec.describe Namespace do
   describe '#allow_stale_runner_pruning?' do
     subject { namespace.allow_stale_runner_pruning? }
 
+    let(:ci_cd_settings) { ::NamespaceCiCdSetting.find_or_initialize_by(namespace_id: namespace.id) }
+
     it { is_expected.to eq false }
 
     context 'with ci_cd_setting.allow_stale_runner_pruning set to false' do
       before do
-        namespace.find_or_build_ci_cd_settings.allow_stale_runner_pruning = false
+        ci_cd_settings.update!(allow_stale_runner_pruning: false)
       end
 
       it { is_expected.to eq false }
@@ -1955,7 +1957,7 @@ RSpec.describe Namespace do
 
     context 'with ci_cd_setting.allow_stale_runner_pruning set to true' do
       before do
-        namespace.find_or_build_ci_cd_settings.allow_stale_runner_pruning = true
+        ci_cd_settings.update!(allow_stale_runner_pruning: true)
       end
 
       it { is_expected.to eq true }
