@@ -1,5 +1,5 @@
 <script>
-import { GlAlert, GlLink, GlLoadingIcon } from '@gitlab/ui';
+import { GlAlert, GlButton, GlLink, GlLoadingIcon } from '@gitlab/ui';
 import { sprintf } from '~/locale';
 import {
   ERROR_MESSAGE,
@@ -9,6 +9,7 @@ import {
   TOTAL_USAGE_SUBTITLE,
   TOTAL_USAGE_DEFAULT_TEXT,
   HELP_LINK_ARIA_LABEL,
+  RECALCULATE_REPOSITORY_LABEL
 } from '../constants';
 import getProjectStorageStatistics from '../queries/project_storage.query.graphql';
 import { parseGetProjectStorageResults } from '../utils';
@@ -19,6 +20,7 @@ export default {
   name: 'ProjectStorageApp',
   components: {
     GlAlert,
+    GlButton,
     GlLink,
     GlLoadingIcon,
     UsageGraph,
@@ -69,6 +71,7 @@ export default {
   USAGE_QUOTAS_LABEL,
   TOTAL_USAGE_TITLE,
   TOTAL_USAGE_SUBTITLE,
+  RECALCULATE_REPOSITORY_LABEL
 };
 </script>
 <template>
@@ -101,6 +104,11 @@ export default {
     <div v-if="project.statistics" class="gl-w-full">
       <usage-graph :root-storage-statistics="project.statistics" :limit="0" />
     </div>
+    <div class="gl-w-full gl-my-5">
+      <gl-button category="secondary">
+        {{ $options.RECALCULATE_REPOSITORY_LABEL }}
+      </gl-button>
+    </div>  
     <project-storage-detail :storage-types="storageTypes" />
   </div>
 </template>

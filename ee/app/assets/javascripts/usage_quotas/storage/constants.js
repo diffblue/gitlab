@@ -13,6 +13,7 @@ export const TOTAL_USAGE_TITLE = s__('UsageQuota|Usage breakdown');
 export const TOTAL_USAGE_SUBTITLE = s__(
   'UsageQuota|Includes artifacts, repositories, wiki, uploads, and other items.',
 );
+export const RECALCULATE_REPOSITORY_LABEL = s__('UsageQuota|Recalculate repository usage');
 
 export const PROJECT_STORAGE_TYPES = [
   {

@@ -40690,6 +40690,9 @@ msgstr ""
 msgid "UsageQuota|Purchased storage used"
 msgstr ""
 
+msgid "UsageQuota|Recalculate repository usage"
+msgstr ""
+
 msgid "UsageQuota|Repository"
 msgstr ""
 
