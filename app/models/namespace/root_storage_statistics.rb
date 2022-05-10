@@ -42,10 +42,24 @@ class Namespace::RootStorageStatistics < ApplicationRecord
   private
 
   def merged_attributes
-    attributes_from_project_statistics.merge!(
+    [
       attributes_from_personal_snippets,
-      attributes_from_namespace_statistics
-    ) { |key, v1, v2| v1 + v2 }
+      attributes_from_namespace_statistics,
+      attribute_container_registry_size
+    ].reduce(attributes_from_project_statistics) do |val, merged_hash|
+      merged_hash.merge!(val) { |key, v1, v2| v1 + v2 }
+    end
+  end
+
+  def attribute_container_registry_size
+    return {} unless Feature.enabled?(:container_registry_namespace_statistics, namespace, default_enabled: :yaml)
+
+    container_registry_size = namespace.container_repositories_size || 0
+
+    {
+      "storage_size" => container_registry_size,
+      "container_registry_size" => container_registry_size
+    }
   end
 
   def attributes_from_project_statistics
