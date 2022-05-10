@@ -9,6 +9,10 @@ module Backup
     # if some of these files are still there, we don't need them in the backup
     LEGACY_PAGES_TMP_PATH = '@pages.tmp'
 
+    LIST_ENVS = {
+      skipped: 'SKIP'
+    }.freeze
+
     TaskDefinition = Struct.new(
       :enabled, # `true` if the task can be used. Treated as `true` when not specified.
       :human_name, # Name of the task used for logging.
@@ -245,7 +249,7 @@ module Backup
         gitlab_version: Gitlab::VERSION,
         tar_version: tar_version,
         installation_type: Gitlab::INSTALLATION_TYPE,
-        skipped: ENV["SKIP"]
+        skipped: ENV['SKIP']
       }
     end
 
@@ -256,7 +260,8 @@ module Backup
         backup_created_at: Time.zone.now,
         gitlab_version: Gitlab::VERSION,
         tar_version: tar_version,
-        installation_type: Gitlab::INSTALLATION_TYPE
+        installation_type: Gitlab::INSTALLATION_TYPE,
+        skipped: list_env(:skipped).join(',')
       )
     end
 
@@ -443,8 +448,18 @@ module Backup
     end
 
     def skipped?(item)
-      ENV.fetch('SKIP', '').include?(item) ||
-        backup_information[:skipped] && backup_information[:skipped].include?(item)
+      skipped.include?(item)
+    end
+
+    def skipped
+      @skipped ||= list_env(:skipped)
+    end
+
+    def list_env(name)
+      list = ENV.fetch(LIST_ENVS[name], '').split(',')
+      list += backup_information[name].split(',') if backup_information[name]
+      list.uniq!
+      list
     end
 
     def enabled_task?(task_name)
