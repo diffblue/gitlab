@@ -30,6 +30,23 @@ For removal reviewers (Technical Writers only):
 
 ## 15.0
 
+### Background upload for object storage
+
+WARNING:
+This feature was changed or removed in 15.0
+as a [breaking change](https://docs.gitlab.com/ee/development/contributing/#breaking-changes).
+Before updating GitLab, review the details carefully to determine if you need to make any
+changes to your code, settings, or workflow.
+
+To reduce the overall complexity and maintenance burden of GitLab's [object storage feature](https://docs.gitlab.com/ee/administration/object_storage.html), support for using `background_upload` has been removed in GitLab 15.0.
+
+This impacts a small subset of object storage providers, including but not limited to:
+
+- **OpenStack** Customers using OpenStack need to change their configuration to use the S3 API instead of Swift.
+- **RackSpace** Customers using RackSpace-based object storage need to migrate data to a different provider.
+
+If your object storage provider does not support `background_upload`, please [migrate objects to a supported object storage provider](https://docs.gitlab.com/ee/administration/object_storage.html#migrate-objects-to-a-different-object-storage-provider).
+
 ### Container Network and Host Security
 
 WARNING:
