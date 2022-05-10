@@ -652,7 +652,7 @@ RSpec.describe GeoNode, :request_store, :geo, type: :model do
 
   describe '#geo_projects_url' do
     it 'returns the Geo Projects url for the specific node' do
-      expected_url = 'https://localhost:3000/gitlab/admin/geo/projects'
+      expected_url = 'https://localhost:3000/gitlab/admin/geo/replication/projects'
 
       expect(new_node.geo_projects_url).to eq(expected_url)
     end

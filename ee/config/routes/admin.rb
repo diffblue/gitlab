@@ -49,10 +49,6 @@ namespace :admin do
   namespace :geo do
     get '/' => 'nodes#index'
 
-    # Old Routes Replaced in 13.0
-    get '/projects', to: redirect(path: 'admin/geo/replication/projects')
-    get '/designs', to: redirect(path: 'admin/geo/replication/designs')
-
     resources :nodes, path: 'sites', only: [:index, :create, :new, :edit, :update] do
       member do
         scope '/replication' do
@@ -61,11 +57,6 @@ namespace :admin do
         end
       end
     end
-
-    # Old Route Replaced in 14.7
-    get '/nodes', to: redirect(path: 'admin/geo/sites')
-    get '/nodes/new', to: redirect(path: 'admin/geo/sites/new')
-    get '/nodes/:id/edit', to: redirect(path: 'admin/geo/sites/%{id}/edit')
 
     scope '/replication' do
       get '/', to: redirect(path: 'admin/geo/sites')
