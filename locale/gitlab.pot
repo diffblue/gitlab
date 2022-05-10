@@ -38838,9 +38838,6 @@ msgstr ""
 msgid "ThreatMonitoring|Something went wrong, unable to fetch environments"
 msgstr ""
 
-msgid "ThreatMonitoring|Something went wrong, unable to fetch statistics"
-msgstr ""
-
 msgid "ThreatMonitoring|Status"
 msgstr ""
 
