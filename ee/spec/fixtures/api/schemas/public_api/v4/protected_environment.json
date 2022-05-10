@@ -6,7 +6,7 @@
   ],
   "properties": {
     "name": { "type": "string" },
-    "deploy_access_levels": { "type": "array", "items": { "$ref": "protected_ref_access.json" } },
+    "deploy_access_levels": { "type": "array", "items": { "$ref": "protected_environment_deploy_access_level.json" } },
     "required_approval_count": { "type":  "integer" },
     "approval_rules": { "type": "array", "items": { "$ref": "protected_environment_approval_rule.json" } }
   },

@@ -9,6 +9,6 @@ RSpec.describe API::Entities::ProtectedEnvironments::ApprovalRuleForSummary do
 
   it 'exposes correct attributes' do
     expect(subject.keys).to contain_exactly(:user_id, :group_id, :access_level, :access_level_description,
-                                            :required_approvals, :deployment_approvals)
+                                            :required_approvals, :deployment_approvals, :group_inheritance_type)
   end
 end

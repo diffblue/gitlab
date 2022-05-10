@@ -16,7 +16,17 @@ module API
           optional :user_id, type: Integer
           optional :group_id, type: Integer
           optional :required_approvals, type: Integer, default: 1, desc: 'The number of approvals required in this rule'
+          optional :group_inheritance_type, type: Integer, values: ::ProtectedEnvironments::Authorizable::GROUP_INHERITANCE_TYPE.values
           at_least_one_of :access_level, :user_id, :group_id
+        end
+      end
+
+      params :protected_environment_deploy_access_levels do
+        requires :deploy_access_levels, as: :deploy_access_levels_attributes, type: Array, desc: 'An array of users/groups allowed to deploy environment' do
+          optional :access_level, type: Integer, values: ::ProtectedEnvironment::DeployAccessLevel::ALLOWED_ACCESS_LEVELS
+          optional :user_id, type: Integer
+          optional :group_id, type: Integer
+          optional :group_inheritance_type, type: Integer, values: ::ProtectedEnvironments::Authorizable::GROUP_INHERITANCE_TYPE.values
         end
       end
     end
@@ -66,12 +76,7 @@ module API
         requires :name, type: String, desc: 'The name of the protected environment'
         optional :required_approval_count, type: Integer, desc: 'The number of approvals required to deploy to this environment', default: 0
 
-        requires :deploy_access_levels, type: Array, desc: 'An array of users/groups allowed to deploy environment' do
-          optional :access_level, type: Integer, values: ::ProtectedEnvironment::DeployAccessLevel::ALLOWED_ACCESS_LEVELS
-          optional :user_id, type: Integer
-          optional :group_id, type: Integer
-        end
-
+        use :protected_environment_deploy_access_levels
         use :protected_environment_approval_rules
       end
       post ':id/protected_environments' do
@@ -82,10 +87,6 @@ module API
         end
 
         declared_params = declared_params(include_missing: false)
-        # TODO: replace with `as: :deploy_access_levels_attributes` after the Grape update:
-        # https://gitlab.com/gitlab-org/gitlab/issues/195960
-        # original issue - https://github.com/ruby-grape/grape/issues/1874
-        declared_params[:deploy_access_levels_attributes] = declared_params.delete(:deploy_access_levels)
         protected_environment = ::ProtectedEnvironments::CreateService
                                   .new(container: user_project, current_user: current_user, params: declared_params).execute
 
@@ -155,12 +156,7 @@ module API
         requires :name, type: String, desc: 'The tier name of the protected environment'
         optional :required_approval_count, type: Integer, desc: 'The number of approvals required to deploy to this environment', default: 0
 
-        requires :deploy_access_levels, as: :deploy_access_levels_attributes, type: Array, desc: 'An array of users/groups allowed to deploy environment' do
-          optional :access_level, type: Integer, values: ::ProtectedEnvironment::DeployAccessLevel::ALLOWED_ACCESS_LEVELS
-          optional :user_id, type: Integer
-          optional :group_id, type: Integer
-        end
-
+        use :protected_environment_deploy_access_levels
         use :protected_environment_approval_rules
       end
       post ':id/protected_environments' do
