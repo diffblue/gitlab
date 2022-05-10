@@ -69,7 +69,7 @@ RSpec.shared_examples 'an API endpoint for creating project approval rule' do
       context 'without report_type' do
         it 'returns a error http status' do
           expect do
-            post api(url, current_user), params: params.merge(name: 'Vulnerability-Check')
+            post api(url, current_user), params: params.merge(name: 'License-Check')
           end.not_to change { ApprovalProjectRule.report_approver.count }
 
           expect(response).to have_gitlab_http_status(:bad_request)
@@ -80,7 +80,6 @@ RSpec.shared_examples 'an API endpoint for creating project approval rule' do
         using RSpec::Parameterized::TableSyntax
 
         where(:rule_name, :report_type) do
-          'Vulnerability-Check' | :vulnerability
           'License-Check'       | :license_scanning
           'Coverage-Check'      | :code_coverage
         end

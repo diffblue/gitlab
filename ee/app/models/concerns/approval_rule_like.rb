@@ -5,7 +5,6 @@ module ApprovalRuleLike
 
   DEFAULT_NAME = 'Default'
   DEFAULT_NAME_FOR_LICENSE_REPORT = 'License-Check'
-  DEFAULT_NAME_FOR_VULNERABILITY_REPORT = 'Vulnerability-Check'
   DEFAULT_NAME_FOR_COVERAGE = 'Coverage-Check'
   APPROVALS_REQUIRED_MAX = 100
   ALL_MEMBERS = 'All Members'
@@ -19,7 +18,7 @@ module ApprovalRuleLike
     has_many :group_users, -> { distinct }, through: :groups, source: :users
 
     enum report_type: {
-      vulnerability: 1,
+      vulnerability: 1, # To be removed after all MRs (related to https://gitlab.com/gitlab-org/gitlab/-/issues/356996) get merged
       license_scanning: 2,
       code_coverage: 3,
       scan_finding: 4
@@ -32,7 +31,6 @@ module ApprovalRuleLike
     scope :with_users, -> { preload(:users, :group_users) }
     scope :regular_or_any_approver, -> { where(rule_type: [:regular, :any_approver]) }
     scope :for_groups, -> (groups) { joins(:groups).where(approval_project_rules_groups: { group_id: groups }) }
-    scope :vulnerability_reports, -> { where(rule_type: :report_approver, name: ApprovalRuleLike::DEFAULT_NAME_FOR_VULNERABILITY_REPORT) }
   end
 
   def audit_add

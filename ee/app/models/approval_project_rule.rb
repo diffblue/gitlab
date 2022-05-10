@@ -36,7 +36,7 @@ class ApprovalProjectRule < ApplicationRecord
   validates :scanners, if: :scanners_changed?, inclusion: { in: SUPPORTED_SCANNERS }
 
   # No scanners specified in a vulnerability approval rule means all scanners will be used.
-  # Vulnerability-Check and scan result policy approval rules require at least one scanner.
+  # scan result policy approval rules require at least one scanner.
   default_value_for :scanners, allows_nil: false, value: []
 
   validates :vulnerabilities_allowed, numericality: { only_integer: true }
@@ -119,7 +119,6 @@ class ApprovalProjectRule < ApplicationRecord
 
   def validate_security_report_approver_name
     [
-      [DEFAULT_NAME_FOR_VULNERABILITY_REPORT, 'vulnerability'],
       [DEFAULT_NAME_FOR_LICENSE_REPORT, 'license_scanning'],
       [DEFAULT_NAME_FOR_COVERAGE, 'code_coverage']
     ].each do |report|

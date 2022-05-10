@@ -125,17 +125,10 @@ RSpec.describe ApprovalMergeRequestRule, factory_default: :keep do
       end
     end
 
-    describe '.vulnerability_report' do
-      it 'returns the correct rules' do
-        expect(described_class.vulnerability_report)
-          .to contain_exactly(report_approver_rule)
-      end
-    end
-
     describe '.license_compliance' do
       it 'returns the correct rules' do
         expect(described_class.license_compliance)
-          .to contain_exactly(license_rule)
+          .to contain_exactly(license_rule, report_approver_rule)
       end
     end
 

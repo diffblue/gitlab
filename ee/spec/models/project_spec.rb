@@ -3255,29 +3255,6 @@ RSpec.describe Project do
     end
   end
 
-  describe '#vulnerability_report_rule' do
-    subject { project.vulnerability_report_rule }
-
-    context 'with vulnerability report rule' do
-      let!(:rule) { create(:approval_project_rule, :vulnerability_report, project: project) }
-
-      it { is_expected.to eql(rule) }
-    end
-
-    context 'without vulnerability report rule' do
-      let!(:rule) { create(:approval_project_rule, project: project) }
-
-      it { is_expected.to be_nil }
-    end
-
-    context 'with multiple rules' do
-      let!(:rule) { create(:approval_project_rule, project: project) }
-      let!(:vuln_rule) { create(:approval_project_rule, :vulnerability_report, project: project) }
-
-      it { is_expected.to eql(vuln_rule) }
-    end
-  end
-
   describe '#visible_approval_rules' do
     let(:scan_finding_rule) { create(:approval_project_rule, project: project, report_type: :scan_finding) }
 
