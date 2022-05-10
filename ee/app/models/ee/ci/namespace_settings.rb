@@ -20,7 +20,7 @@ module EE
       return if ci_cd_settings.blank? && !value
 
       ci_cd_settings ||= ::NamespaceCiCdSetting.find_or_initialize_by(namespace_id: id)
-      ci_cd_settings.allow_stale_runner_pruning = value
+      ci_cd_settings.update(allow_stale_runner_pruning: value)
     end
   end
 end
