@@ -233,11 +233,6 @@ Style/Lambda:
 Style/NumericLiteralPrefix:
   Enabled: false
 
-# Offense count: 206
-# Cop supports --auto-correct.
-Style/RedundantInterpolation:
-  Enabled: false
-
 # Offense count: 279
 # Cop supports --auto-correct.
 Style/RedundantRegexpEscape:
