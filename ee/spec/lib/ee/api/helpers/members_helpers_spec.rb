@@ -20,4 +20,29 @@ RSpec.describe EE::API::Helpers::MembersHelpers do
       expect(described_class.member_sort_options).to match_array sort_options
     end
   end
+
+  describe '.billable_member?' do
+    let_it_be(:group) { build(:group) }
+    let_it_be(:user) { build(:user) }
+
+    subject(:billable_member) { members_helpers.billable_member?(group, user)}
+
+    before do
+      expect_next_instance_of(BilledUsersFinder, group, include_awaiting_members: true) do |finder|
+        expect(finder).to receive(:execute).and_return({ users: found_users })
+      end
+    end
+
+    context 'when member is billable' do
+      let(:found_users) { [user] }
+
+      it { is_expected.to eq(true) }
+    end
+
+    context 'when member is not billable' do
+      let(:found_users) { [] }
+
+      it { is_expected.to eq(false) }
+    end
+  end
 end
