@@ -12,6 +12,7 @@ module Ci
     include Gitlab::Utils::StrongMemoize
     include TaggableQueries
     include Presentable
+    include EachBatch
 
     add_authentication_token_field :token, encrypted: :optional, expires_at: :compute_token_expiration, expiration_enforced?: :token_expiration_enforced?
 

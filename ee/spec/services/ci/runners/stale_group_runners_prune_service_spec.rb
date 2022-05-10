@@ -36,14 +36,16 @@ RSpec.describe Ci::Runners::StaleGroupRunnersPruneService do
       create_list(:ci_runner, 3, :group, groups: [group], created_at: 5.months.ago, contacted_at: 4.months.ago)
     end
 
-    let(:groups) { Group.where(id: group.id) }
+    let(:group2) { create(:group) }
+    let(:groups) { Group.where(id: [group.id, group2.id]) }
 
     before do
+      stub_const("#{described_class}::GROUP_BATCH_SIZE", 1)
       stub_const("#{described_class}::BATCH_SIZE", 1)
     end
 
     it 'prunes all runners in batches' do
-      expect(service).to receive(:delete_stale_group_runners_in_batches).exactly(4).times.and_call_original
+      expect(service).to receive(:delete_stale_group_runners_in_batches).twice.and_call_original
 
       expect do
         expect(status).to match({
