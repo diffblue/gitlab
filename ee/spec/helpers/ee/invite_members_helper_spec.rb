@@ -12,7 +12,6 @@ RSpec.describe EE::InviteMembersHelper do
         'free_users_limit' => ::Namespaces::FreeUserCap::FREE_USER_LIMIT,
         'members_count' => project.root_ancestor.free_plan_members_count,
         'new_trial_registration_path' => new_trial_path,
-        'members_path' => group_usage_quotas_path(project.root_ancestor),
         'purchase_path' => group_billings_path(project.root_ancestor)
       }
     end
@@ -37,8 +36,13 @@ RSpec.describe EE::InviteMembersHelper do
           build(:user_namespace, projects: [project], gitlab_subscription: build(:gitlab_subscription, :free))
         end
 
-        it 'does not include users limit notification data' do
-          expect(helper.common_invite_modal_dataset(project)).not_to have_key(:users_limit_dataset)
+        it 'includes users limit notification data' do
+          users_limit_dataset = Gitlab::Json.parse(helper.common_invite_modal_dataset(project)[:users_limit_dataset])
+
+          expect(users_limit_dataset).to eq(notification_attributes.merge({
+            'user_namespace' => 'true',
+            'members_path' => namespace_project_project_members_path(project.root_ancestor, project)
+          }))
         end
       end
 
@@ -49,7 +53,11 @@ RSpec.describe EE::InviteMembersHelper do
 
         it 'includes users limit notification data' do
           users_limit_dataset = Gitlab::Json.parse(helper.common_invite_modal_dataset(project)[:users_limit_dataset])
-          expect(users_limit_dataset).to eq(notification_attributes)
+
+          expect(users_limit_dataset).to eq(notification_attributes.merge({
+            'user_namespace' => 'false',
+            'members_path' => group_usage_quotas_path(project.root_ancestor)
+          }))
         end
       end
     end
