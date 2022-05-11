@@ -486,4 +486,19 @@ RSpec.describe ProjectsHelper do
       end
     end
   end
+
+  describe "#shared_runners_duration_minutes" do
+    let(:minutes_used) { 70.3 }
+    let(:shared_runners_duration_used) { 133.2 }
+
+    subject { helper.shared_runners_duration_minutes(project) }
+
+    before do
+      create(:ci_project_monthly_usage, project: project, amount_used: minutes_used, shared_runners_duration: shared_runners_duration_used)
+    end
+
+    it 'returns shared runners duration in minutes' do
+      expect(subject).to eq(2)
+    end
+  end
 end

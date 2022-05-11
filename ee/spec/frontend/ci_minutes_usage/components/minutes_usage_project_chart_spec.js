@@ -2,6 +2,7 @@ import { GlColumnChart } from '@gitlab/ui/dist/charts';
 import { nextTick } from 'vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import MinutesUsageProjectChart from 'ee/ci_minutes_usage/components/minutes_usage_project_chart.vue';
+import { Y_AXIS_PROJECT_LABEL, Y_AXIS_SHARED_RUNNER_LABEL } from 'ee/ci_minutes_usage/constants';
 import { ciMinutesUsageMockData } from '../mock_data';
 
 const {
@@ -19,10 +20,11 @@ describe('Minutes usage by project chart component', () => {
   const findAllYearDropdownItems = () =>
     wrapper.findAllByTestId('minutes-usage-project-year-dropdown-item');
 
-  const createComponent = (usageData = ciMinutesUsage.nodes) => {
+  const createComponent = (usageData = ciMinutesUsage.nodes, displaySharedRunner = false) => {
     wrapper = shallowMountExtended(MinutesUsageProjectChart, {
       propsData: {
         minutesUsageData: usageData,
+        displaySharedRunnerData: displaySharedRunner,
       },
     });
   };
@@ -31,7 +33,7 @@ describe('Minutes usage by project chart component', () => {
     wrapper.destroy();
   });
 
-  describe('with CI minutes data', () => {
+  describe('ci/cd minutes usage', () => {
     beforeEach(() => {
       createComponent();
     });
@@ -39,7 +41,7 @@ describe('Minutes usage by project chart component', () => {
     it('renders a column chart component with axis legends', () => {
       expect(findColumnChart().exists()).toBe(true);
       expect(findColumnChart().props('xAxisTitle')).toBe('Projects');
-      expect(findColumnChart().props('yAxisTitle')).toBe('CI/CD minutes');
+      expect(findColumnChart().props('yAxisTitle')).toBe(Y_AXIS_PROJECT_LABEL);
     });
 
     it('renders year dropdown component', () => {
@@ -79,6 +81,46 @@ describe('Minutes usage by project chart component', () => {
       await nextTick();
 
       expect(findMonthDropdown().props('text')).toBe('July');
+    });
+
+    it('displays ci/cd minutes usage data on the chart', () => {
+      const expectedChartData = [
+        {
+          data: [
+            [
+              ciMinutesUsage.nodes[0].projects.nodes[0].name,
+              ciMinutesUsage.nodes[0].projects.nodes[0].minutes,
+            ],
+          ],
+        },
+      ];
+
+      expect(findColumnChart().props('bars')).toEqual(expectedChartData);
+    });
+  });
+
+  describe('shared runners usage', () => {
+    beforeEach(() => {
+      createComponent(ciMinutesUsage.nodes, true);
+    });
+
+    it('displays shared runners y-axis title', () => {
+      expect(findColumnChart().props('yAxisTitle')).toBe(Y_AXIS_SHARED_RUNNER_LABEL);
+    });
+
+    it('displays shared runners duration on the chart', () => {
+      const expectedChartData = [
+        {
+          data: [
+            [
+              ciMinutesUsage.nodes[0].projects.nodes[0].name,
+              (ciMinutesUsage.nodes[0].projects.nodes[0].sharedRunnersDuration / 60).toFixed(2),
+            ],
+          ],
+        },
+      ];
+
+      expect(findColumnChart().props('bars')).toEqual(expectedChartData);
     });
   });
 });

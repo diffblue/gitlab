@@ -12,6 +12,7 @@ export const ciMinutesUsageMockData = {
               {
                 name: 'devcafe-wp-theme',
                 minutes: 5,
+                sharedRunnersDuration: 60,
               },
             ],
           },

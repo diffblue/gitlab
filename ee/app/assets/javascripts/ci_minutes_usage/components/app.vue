@@ -85,6 +85,20 @@ export default {
         <no-minutes-alert v-if="!hasMinutes" />
         <minutes-usage-project-chart v-else :minutes-usage-data="ciMinutesUsage" />
       </gl-tab>
+      <gl-tab>
+        <template #title>
+          <div id="shared-runner-message-popover-container" class="gl-display-flex">
+            <span class="gl-mr-2">{{ $options.SHARED_RUNNER_USAGE }}</span>
+            <help-popover :options="$options.popoverOptions" />
+          </div>
+        </template>
+        <no-minutes-alert v-if="!hasMinutes" />
+        <minutes-usage-project-chart
+          v-else
+          :minutes-usage-data="ciMinutesUsage"
+          display-shared-runner-data
+        />
+      </gl-tab>
     </gl-tabs>
   </div>
 </template>

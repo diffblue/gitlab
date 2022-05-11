@@ -1315,6 +1315,25 @@ RSpec.describe Project do
     end
   end
 
+  describe '#shared_runners_duration' do
+    subject { project.shared_runners_duration }
+
+    context 'when shared runners have not been used' do
+      it { is_expected.to be_zero }
+    end
+
+    context 'when shared runners have been used' do
+      let(:minutes_used) { 70.3 }
+      let(:shared_runners_duration_used) { 133.2 }
+
+      before do
+        create(:ci_project_monthly_usage, project: project, amount_used: minutes_used, shared_runners_duration: shared_runners_duration_used)
+      end
+
+      it { is_expected.to eq(133) }
+    end
+  end
+
   describe '#root_namespace' do
     let(:project) { build(:project, namespace: parent) }
 

@@ -271,6 +271,10 @@ module EE
       end
     end
 
+    def shared_runners_duration_minutes(project)
+      project.shared_runners_duration.seconds.in_minutes.round
+    end
+
     private
 
     def remove_message_data(project)
