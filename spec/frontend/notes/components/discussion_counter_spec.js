@@ -83,7 +83,7 @@ describe('DiscussionCounter component', () => {
     it.each`
       blocksMerge | color
       ${true}     | ${'gl-bg-orange-50'}
-      ${false}    | ${'gl-bg-blue-50'}
+      ${false}    | ${'gl-bg-gray-50'}
     `(
       'changes background color to $color if blocksMerge is $blocksMerge',
       ({ blocksMerge, color }) => {
@@ -130,26 +130,26 @@ describe('DiscussionCounter component', () => {
       updateStoreWithExpanded(true);
 
       expect(wrapper.vm.allExpanded).toBe(true);
-      expect(toggleAllButton.props('icon')).toBe('angle-up');
+      expect(toggleAllButton.props('icon')).toBe('collapse');
 
       toggleAllButton.vm.$emit('click');
 
       await nextTick();
       expect(wrapper.vm.allExpanded).toBe(false);
-      expect(toggleAllButton.props('icon')).toBe('angle-down');
+      expect(toggleAllButton.props('icon')).toBe('expand');
     });
 
     it('expands all discussions if collapsed', async () => {
       updateStoreWithExpanded(false);
 
       expect(wrapper.vm.allExpanded).toBe(false);
-      expect(toggleAllButton.props('icon')).toBe('angle-down');
+      expect(toggleAllButton.props('icon')).toBe('expand');
 
       toggleAllButton.vm.$emit('click');
 
       await nextTick();
       expect(wrapper.vm.allExpanded).toBe(true);
-      expect(toggleAllButton.props('icon')).toBe('angle-up');
+      expect(toggleAllButton.props('icon')).toBe('collapse');
     });
   });
 });

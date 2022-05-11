@@ -74,29 +74,43 @@ export default {
       </template>
       <template v-else>
         {{ n__('%d unresolved thread', '%d unresolved threads', unresolvedDiscussionsCount) }}
+        <gl-button-group class="gl-ml-3">
+          <gl-button
+            v-gl-tooltip.hover
+            :title="__('Jump to previous unresolved thread')"
+            :aria-label="__('Jump to previous unresolved thread')"
+            class="discussion-previous-btn"
+            data-track-action="click_button"
+            data-track-label="mr_previous_unresolved_thread"
+            data-track-property="click_previous_unresolved_thread_top"
+            icon="angle-up"
+            category="tertiary"
+            size="small"
+            @click="jumpToPreviousDiscussion"
+          />
+          <gl-button
+            v-gl-tooltip.hover
+            :title="__('Jump to next unresolved thread')"
+            :aria-label="__('Jump to next unresolved thread')"
+            class="discussion-next-btn"
+            data-track-action="click_button"
+            data-track-label="mr_next_unresolved_thread"
+            data-track-property="click_next_unresolved_thread_top"
+            icon="angle-down"
+            category="tertiary"
+            size="small"
+            @click="jumpToNextDiscussion"
+          />
+        </gl-button-group>
       </template>
     </div>
-    <gl-button-group>
-      <gl-button
-        v-if="isLoggedIn && !allResolved"
-        v-gl-tooltip
-        :title="__('Jump to next unresolved thread')"
-        :aria-label="__('Jump to next unresolved thread')"
-        class="discussion-next-btn"
-        data-track-action="click_button"
-        data-track-label="mr_next_unresolved_thread"
-        data-track-property="click_next_unresolved_thread_top"
-        icon="comment-next"
-        @click="jumpToNextDiscussion"
-      />
-      <gl-button
-        v-gl-tooltip
-        :title="toggleThreadsLabel"
-        :aria-label="toggleThreadsLabel"
-        class="toggle-all-discussions-btn"
-        :icon="allExpanded ? 'collapse' : 'expand'"
-        @click="handleExpandDiscussions"
-      />
-    </gl-button-group>
+    <gl-button
+      v-gl-tooltip
+      :title="toggleThreadsLabel"
+      :aria-label="toggleThreadsLabel"
+      class="toggle-all-discussions-btn"
+      :icon="allExpanded ? 'collapse' : 'expand'"
+      @click="handleExpandDiscussions"
+    />
   </div>
 </template>

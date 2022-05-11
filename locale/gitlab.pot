@@ -10330,9 +10330,6 @@ msgstr ""
 msgid "Create issue"
 msgstr ""
 
-msgid "Create issue to resolve all threads"
-msgstr ""
-
 msgid "Create iteration"
 msgstr ""
 
@@ -21844,6 +21841,9 @@ msgid "July"
 msgstr ""
 
 msgid "Jump to next unresolved thread"
+msgstr ""
+
+msgid "Jump to previous unresolved thread"
 msgstr ""
 
 msgid "Jun"
