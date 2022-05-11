@@ -1,8 +1,5 @@
 - project = local_assigns.fetch(:project)
 
 - if project.jira_issue_association_required_to_merge_enabled?
-  .form-check.gl-mb-3
-    = form.fields_for :project_setting do |settings|
-      = settings.check_box :prevent_merge_without_jira_issue, class: 'form-check-input'
-      = settings.label :prevent_merge_without_jira_issue, class: 'form-check-label' do
-        = s_('ProjectSettings|Require an associated issue from Jira')
+  = form.fields_for :project_setting do |settings|
+    = settings.gitlab_ui_checkbox_component :prevent_merge_without_jira_issue, s_('ProjectSettings|Require an associated issue from Jira')
