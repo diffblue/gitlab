@@ -10705,7 +10705,13 @@ msgstr ""
 msgid "Crm|No contacts found"
 msgstr ""
 
+msgid "Crm|No organization"
+msgstr ""
+
 msgid "Crm|No organizations found"
+msgstr ""
+
+msgid "Crm|Organization"
 msgstr ""
 
 msgid "Crm|Organization has been added."
