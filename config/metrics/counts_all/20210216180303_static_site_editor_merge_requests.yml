@@ -7,7 +7,7 @@ product_stage: create
 product_group: group::editor
 product_category: static_site_editor
 value_type: number
-status: active
+status: removed
 time_frame: all
 data_source: redis
 distribution:
@@ -18,3 +18,4 @@ tier:
 - premium
 - ultimate
 milestone: "<13.9"
+milestone_removed: "15.0"

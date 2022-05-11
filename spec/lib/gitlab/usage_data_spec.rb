@@ -755,7 +755,6 @@ RSpec.describe Gitlab::UsageData, :aggregate_failures do
 
     it { is_expected.to include(:kubernetes_agent_gitops_sync) }
     it { is_expected.to include(:kubernetes_agent_k8s_api_proxy_request) }
-    it { is_expected.to include(:static_site_editor_views) }
     it { is_expected.to include(:package_events_i_package_pull_package) }
     it { is_expected.to include(:package_events_i_package_delete_package_by_user) }
     it { is_expected.to include(:package_events_i_package_conan_push_package) }
@@ -1188,12 +1187,6 @@ RSpec.describe Gitlab::UsageData, :aggregate_failures do
 
       counter.track_web_ide_edit_action(author: user3, time: time - 3.days)
       counter.track_snippet_editor_edit_action(author: user3)
-
-      counter.track_sse_edit_action(author: user1)
-      counter.track_sse_edit_action(author: user1)
-      counter.track_sse_edit_action(author: user2)
-      counter.track_sse_edit_action(author: user3)
-      counter.track_sse_edit_action(author: user2, time: time - 3.days)
     end
 
     it 'returns the distinct count of user actions within the specified time period' do
@@ -1206,8 +1199,7 @@ RSpec.describe Gitlab::UsageData, :aggregate_failures do
           action_monthly_active_users_web_ide_edit: 2,
           action_monthly_active_users_sfe_edit: 2,
           action_monthly_active_users_snippet_editor_edit: 2,
-          action_monthly_active_users_ide_edit: 3,
-          action_monthly_active_users_sse_edit: 3
+          action_monthly_active_users_ide_edit: 3
         }
       )
     end
