@@ -4,6 +4,7 @@ require 'spec_helper'
 
 RSpec.describe 'CI shared runner limits' do
   using RSpec::Parameterized::TableSyntax
+  include UsageQuotasHelpers
 
   let_it_be(:user) { create(:user) }
 
@@ -193,7 +194,7 @@ RSpec.describe 'CI shared runner limits' do
 
     page.within('.shared-runner-quota-message') do
       expect(page).to have_content(message)
-      expect(page).to have_link 'Buy more Pipeline minutes', href: buy_minutes_subscriptions_path(selected_group: group.id)
+      expect(page).to have_link 'Buy more Pipeline minutes', href: buy_minutes_subscriptions_link(group)
     end
   end
 
