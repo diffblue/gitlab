@@ -102,7 +102,7 @@ RSpec.describe Gitlab::Ci::Config do
                 stage: 'dast',
                 image: { name: '$SECURE_ANALYZERS_PREFIX/dast:$DAST_VERSION' },
                 variables: {
-                  DAST_VERSION: 2,
+                  DAST_VERSION: 3,
                   SECURE_ANALYZERS_PREFIX: secure_analyzers_prefix,
                   GIT_STRATEGY: 'none'
                 },
