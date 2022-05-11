@@ -4,6 +4,7 @@
 module Groups
   class FeatureDiscoveryMomentsController < Groups::ApplicationController
     feature_category :experimentation_conversion
+    urgency :low, [:advanced_features_dashboard]
 
     before_action :ensure_group_eligible_for_trial!, only: :advanced_features_dashboard
     before_action :authorize_admin_group!, only: :advanced_features_dashboard
