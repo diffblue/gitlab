@@ -58,7 +58,7 @@ describe('ScanNewPolicyModal Component', () => {
       provide: {
         disableSecurityPolicyProject: false,
         documentationPath: 'test/path/index.md',
-        projectPath: 'path/to/project',
+        namespacePath: 'path/to/project/or/group',
         assignedPolicyProject: null,
         ...provide,
       },

@@ -47,7 +47,7 @@ export default {
   directives: {
     GlTooltip: GlTooltipDirective,
   },
-  inject: ['documentationPath', 'groupPath', 'projectPath', 'namespaceType', 'newPolicyPath'],
+  inject: ['documentationPath', 'namespacePath', 'namespaceType', 'newPolicyPath'],
   props: {
     shouldUpdatePolicyList: {
       type: Boolean,
@@ -62,7 +62,7 @@ export default {
       },
       variables() {
         return {
-          fullPath: this.projectPath || this.groupPath,
+          fullPath: this.namespacePath,
         };
       },
       update(data) {
@@ -74,7 +74,7 @@ export default {
       query: scanResultPoliciesQuery,
       variables() {
         return {
-          fullPath: this.projectPath,
+          fullPath: this.namespacePath,
         };
       },
       update(data) {
