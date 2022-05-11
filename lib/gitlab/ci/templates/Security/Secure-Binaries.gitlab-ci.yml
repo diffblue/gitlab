@@ -68,6 +68,8 @@ variables:
 
 bandit:
   extends: .download_images
+  variables:
+    SECURE_BINARIES_ANALYZER_VERSION: "2"
   only:
     variables:
       - $SECURE_BINARIES_DOWNLOAD_IMAGES == "true" &&
@@ -75,6 +77,8 @@ bandit:
 
 brakeman:
   extends: .download_images
+  variables:
+    SECURE_BINARIES_ANALYZER_VERSION: "3"
   only:
     variables:
       - $SECURE_BINARIES_DOWNLOAD_IMAGES == "true" &&
@@ -91,6 +95,8 @@ gosec:
 
 spotbugs:
   extends: .download_images
+  variables:
+    SECURE_BINARIES_ANALYZER_VERSION: "3"
   only:
     variables:
       - $SECURE_BINARIES_DOWNLOAD_IMAGES == "true" &&
@@ -98,6 +104,8 @@ spotbugs:
 
 flawfinder:
   extends: .download_images
+  variables:
+    SECURE_BINARIES_ANALYZER_VERSION: "3"
   only:
     variables:
       - $SECURE_BINARIES_DOWNLOAD_IMAGES == "true" &&
@@ -105,6 +113,8 @@ flawfinder:
 
 phpcs-security-audit:
   extends: .download_images
+  variables:
+    SECURE_BINARIES_ANALYZER_VERSION: "3"
   only:
     variables:
       - $SECURE_BINARIES_DOWNLOAD_IMAGES == "true" &&
@@ -121,6 +131,8 @@ security-code-scan:
 
 nodejs-scan:
   extends: .download_images
+  variables:
+    SECURE_BINARIES_ANALYZER_VERSION: "3"
   only:
     variables:
       - $SECURE_BINARIES_DOWNLOAD_IMAGES == "true" &&
@@ -128,6 +140,8 @@ nodejs-scan:
 
 eslint:
   extends: .download_images
+  variables:
+    SECURE_BINARIES_ANALYZER_VERSION: "2"
   only:
     variables:
       - $SECURE_BINARIES_DOWNLOAD_IMAGES == "true" &&
@@ -140,10 +154,12 @@ secrets:
       - $SECURE_BINARIES_DOWNLOAD_IMAGES == "true" &&
           $SECURE_BINARIES_ANALYZERS =~ /\bsecrets\b/
   variables:
-    SECURE_BINARIES_ANALYZER_VERSION: "3"
+    SECURE_BINARIES_ANALYZER_VERSION: "4"
 
 semgrep:
   extends: .download_images
+  variables:
+    SECURE_BINARIES_ANALYZER_VERSION: "3"
   only:
     variables:
       - $SECURE_BINARIES_DOWNLOAD_IMAGES == "true" &&
@@ -151,6 +167,8 @@ semgrep:
 
 sobelow:
   extends: .download_images
+  variables:
+    SECURE_BINARIES_ANALYZER_VERSION: "3"
   only:
     variables:
       - $SECURE_BINARIES_DOWNLOAD_IMAGES == "true" &&
@@ -158,6 +176,8 @@ sobelow:
 
 pmd-apex:
   extends: .download_images
+  variables:
+    SECURE_BINARIES_ANALYZER_VERSION: "3"
   only:
     variables:
       - $SECURE_BINARIES_DOWNLOAD_IMAGES == "true" &&
@@ -165,6 +185,8 @@ pmd-apex:
 
 kubesec:
   extends: .download_images
+  variables:
+    SECURE_BINARIES_ANALYZER_VERSION: "3"
   only:
     variables:
       - $SECURE_BINARIES_DOWNLOAD_IMAGES == "true" &&
