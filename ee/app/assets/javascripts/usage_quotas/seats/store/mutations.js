@@ -87,6 +87,16 @@ export default {
     }
   },
 
+  [types.CHANGE_MEMBERSHIP_STATE](state) {
+    state.isLoading = true;
+    state.hasError = false;
+  },
+
+  [types.CHANGE_MEMBERSHIP_STATE_ERROR](state) {
+    state.isLoading = false;
+    state.hasError = true;
+  },
+
   [types.REMOVE_BILLABLE_MEMBER](state) {
     state.isLoading = true;
     state.hasError = false;

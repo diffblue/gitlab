@@ -29,6 +29,7 @@ const actionSpies = {
   resetBillableMembers: jest.fn(),
   setBillableMemberToRemove: jest.fn(),
   setSearchQuery: jest.fn(),
+  changeMembershipState: jest.fn(),
 };
 
 const providedFields = {
@@ -233,7 +234,7 @@ describe('Subscription Seats', () => {
 
               if (currentMember.user.membership_state === 'active') {
                 expect(serializedRow.toggle.disabled).toBe(false);
-                expect(serializedRow.toggle.title).toBeUndefined();
+                expect(serializedRow.toggle.title).toBe('');
                 expect(serializedRow.toggle.value).toBe(true);
               }
             });
@@ -253,6 +254,38 @@ describe('Subscription Seats', () => {
                 expect(serializedRow.toggle.value).toBe(false);
               }
             });
+          });
+
+          it('disables the toggles when isLoading=true', () => {
+            wrapper = createComponent({
+              mountFn: mount,
+              initialGetters: {
+                tableItems: () => mockTableItems,
+              },
+              initialState: {
+                isLoading: true,
+                hasNoSubscription: true,
+                hasLimitedFreePlan: true,
+                hasReachedFreePlanLimit: true,
+              },
+            });
+
+            serializedTable = findSerializedTable(findTable());
+
+            serializedTable.forEach((serializedRow) => {
+              expect(serializedRow.toggle.disabled).toBe(true);
+            });
+          });
+
+          it('calls the changeMembershipState action when clicking the toggle', () => {
+            const toggles = findTable().findComponent(GlToggle);
+
+            toggles.vm.$emit('change', false);
+
+            expect(actionSpies.changeMembershipState).toHaveBeenCalledWith(
+              expect.any(Object),
+              mockTableItems[0].user,
+            );
           });
         });
       });

@@ -142,6 +142,31 @@ module EE
                     awaiting_user_ids: result[:awaiting_user_ids]
           end
 
+          desc 'Changes the state of the memberships of a user in the group'
+          params do
+            requires :user_id, type: Integer, desc: 'The user ID of the user'
+            requires :state, type: String, values: %w(awaiting active), desc: 'The new state for the memberships of the user'
+          end
+          put ":id/members/:user_id/state", feature_category: :user_management do
+            user = find_user(params[:user_id])
+            not_found!('User') unless user
+
+            group = find_group(params[:id])
+            not_found!('Group') unless group
+            bad_request! unless group.root?
+            bad_request! unless can?(current_user, :admin_group_member, group)
+
+            service = params[:state] == 'active' ? ::Members::ActivateService : ::Members::AwaitService
+
+            result = service.new(group, current_user: current_user, user: user).execute
+
+            if result[:status] == :success
+              { success: true }
+            else
+              unprocessable_entity!(result[:message])
+            end
+          end
+
           desc 'Get the memberships of a billable user of a root group.' do
             success ::EE::API::Entities::BillableMembership
           end

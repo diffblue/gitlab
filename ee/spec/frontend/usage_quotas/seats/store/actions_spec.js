@@ -2,6 +2,7 @@ import MockAdapter from 'axios-mock-adapter';
 import * as GroupsApi from 'ee/api/groups_api';
 import Api from 'ee/api';
 import * as actions from 'ee/usage_quotas/seats/store/actions';
+import { MEMBER_ACTIVE_STATE, MEMBER_AWAITING_STATE } from 'ee/usage_quotas/seats/constants';
 import * as types from 'ee/usage_quotas/seats/store/mutation_types';
 import State from 'ee/usage_quotas/seats/store/state';
 import {
@@ -293,6 +294,103 @@ describe('seats actions', () => {
 
       expect(createAlert).toHaveBeenCalledWith({
         message: 'An error occurred while removing a billable member.',
+      });
+    });
+  });
+
+  describe('changeMembershipState', () => {
+    let user;
+    let expectedActions;
+    let expectedMutations;
+
+    beforeEach(() => {
+      state.namespaceId = 1;
+      user = { id: 2, membership_state: MEMBER_ACTIVE_STATE };
+    });
+
+    afterEach(() => {
+      mock.reset();
+    });
+
+    describe('on success', () => {
+      beforeEach(() => {
+        mock
+          .onPut('/api/v4/groups/1/members/2/state')
+          .replyOnce(httpStatusCodes.OK, { success: true });
+
+        expectedActions = [
+          { type: 'fetchBillableMembersList' },
+          { type: 'fetchGitlabSubscription' },
+        ];
+
+        expectedMutations = [{ type: types.CHANGE_MEMBERSHIP_STATE }];
+      });
+
+      describe('for an active user', () => {
+        it('passes correct arguments to Api call for an active user', () => {
+          const spy = jest.spyOn(GroupsApi, 'changeMembershipState');
+
+          jest.spyOn(GroupsApi, 'fetchBillableGroupMembersList');
+          jest.spyOn(Api, 'userSubscription');
+
+          testAction({
+            action: actions.changeMembershipState,
+            payload: user,
+            state,
+            expectedMutations,
+            expectedActions,
+          });
+
+          expect(spy).toBeCalledWith(state.namespaceId, user.id, MEMBER_AWAITING_STATE);
+        });
+      });
+
+      describe('for an awaiting user', () => {
+        it('passes correct arguments to Api call for an active user', () => {
+          const spy = jest.spyOn(GroupsApi, 'changeMembershipState');
+
+          testAction({
+            action: actions.changeMembershipState,
+            payload: { ...user, membership_state: MEMBER_AWAITING_STATE },
+            state,
+            expectedMutations,
+            expectedActions,
+          });
+
+          expect(spy).toBeCalledWith(state.namespaceId, user.id, MEMBER_ACTIVE_STATE);
+        });
+      });
+    });
+
+    describe('on error', () => {
+      beforeEach(() => {
+        mock
+          .onPut('/api/v4/groups/1/members/2/state')
+          .replyOnce(httpStatusCodes.UNPROCESSABLE_ENTITY, {});
+      });
+
+      it('should dispatch the request and error actions', async () => {
+        await testAction({
+          action: actions.changeMembershipState,
+          payload: user,
+          state,
+          expectedMutations: [{ type: types.CHANGE_MEMBERSHIP_STATE }],
+          expectedActions: [{ type: 'changeMembershipStateError' }],
+        });
+      });
+    });
+  });
+
+  describe('changeMembershipStateError', () => {
+    it('ccommits mutation and calls createAlert', async () => {
+      await testAction({
+        action: actions.changeMembershipStateError,
+        state,
+        expectedMutations: [{ type: types.CHANGE_MEMBERSHIP_STATE_ERROR }],
+      });
+
+      expect(createAlert).toHaveBeenCalledWith({
+        message: 'Something went wrong. Please try again.',
       });
     });
   });
