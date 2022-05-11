@@ -56,6 +56,16 @@ module EE
       ::Feature.enabled?(:enforce_storage_limit_for_free, root_namespace)
     end
 
+    def exceeded_size(change_size = 0)
+      size = current_size + change_size - limit
+
+      [size, 0].max
+    end
+
+    def changes_will_exceed_size_limit?(change_size)
+      limit != 0 && exceeded_size(change_size) > 0
+    end
+
     private
 
     attr_reader :root_namespace
