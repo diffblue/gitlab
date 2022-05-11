@@ -171,7 +171,7 @@ export default {
         />
         <gl-button
           v-else
-          variant="success"
+          variant="confirm"
           category="secondary"
           :href="createJiraIssueUrl"
           icon="external-link"

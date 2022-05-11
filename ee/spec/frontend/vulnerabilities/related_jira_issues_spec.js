@@ -137,11 +137,11 @@ describe('EE RelatedJiraIssues Component', () => {
       });
 
       describe('when createVulnerabilityJiraIssueViaGraphql Flag is on', () => {
-        it('shows createJiraIssue Component when createVulnerabilityJiraIssueViaGraphql Flag is true', () => {
+        it('shows createJiraIssue Component', () => {
           expect(findCreateJiraIssueComponent().exists()).toBe(true);
         });
 
-        it('does not show CreateJiraIssueButton when createVulnerabilityJiraIssueViaGraphql Flag is true ', () => {
+        it('does not show CreateJiraIssueButton', () => {
           expect(findCreateJiraIssueLink().exists()).toBe(false);
         });
       });
@@ -156,12 +156,20 @@ describe('EE RelatedJiraIssues Component', () => {
           );
         });
 
-        it('does not show createJiraIssue Component when createVulnerabilityJiraIssueViaGraphql Flag is false ', () => {
+        it('does not show createJiraIssue Component', () => {
           expect(findCreateJiraIssueComponent().exists()).toBe(false);
         });
 
-        it('shows CreateJiraIssueButton when createVulnerabilityJiraIssueViaGraphql Flag is true', () => {
-          expect(findCreateJiraIssueLink().exists()).toBe(true);
+        it('shows CreateJiraIssueButton', () => {
+          expect(findCreateJiraIssueLink().props()).toMatchObject({
+            variant: 'confirm',
+            category: 'secondary',
+            icon: 'external-link',
+          });
+
+          expect(findCreateJiraIssueLink().attributes()).toMatchObject({
+            href: defaultProvide.createJiraIssueUrl,
+          });
         });
       });
 
