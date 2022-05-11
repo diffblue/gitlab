@@ -142,7 +142,7 @@ export default {
       <gl-button
         v-if="projects.length"
         v-gl-modal="$options.modalId"
-        variant="success"
+        variant="confirm"
         category="primary"
         data-testid="add-projects-button"
         data-qa-selector="add_projects_button"
