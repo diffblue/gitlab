@@ -3,11 +3,15 @@ import { POLICY_TYPE_COMPONENT_OPTIONS } from 'ee/threat_monitoring/components/c
 import PolicySelection from 'ee/threat_monitoring/components/policy_editor/policy_selection.vue';
 
 describe('PolicySelection component', () => {
+  const policiesPath = '/policies/path';
   let wrapper;
 
   const factory = () => {
     wrapper = shallowMountExtended(PolicySelection, {
       stubs: { GlCard: true },
+      provide: {
+        policiesPath,
+      },
     });
   };
 
@@ -33,5 +37,10 @@ describe('PolicySelection component', () => {
         `?type=${id}`,
       );
     });
+  });
+
+  it('displays a cancel button which brings back to policies page', () => {
+    factory();
+    expect(wrapper.findByTestId('back-button').attributes('href')).toBe(policiesPath);
   });
 });
