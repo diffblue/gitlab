@@ -207,7 +207,6 @@ module GitlabSubscriptions
       ssh_key_expiration_policy
       status_page
       subepics
-      threat_monitoring
       vulnerability_auto_fix
       vulnerability_finding_signatures
     ].freeze
