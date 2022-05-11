@@ -263,7 +263,7 @@ export default {
         <gl-button
           v-else-if="actionButtons.length > 0"
           class="ml-2"
-          variant="success"
+          variant="confirm"
           category="secondary"
           :loading="isProcessingAction"
           @click="triggerClick(actionButtons[0].action)"
