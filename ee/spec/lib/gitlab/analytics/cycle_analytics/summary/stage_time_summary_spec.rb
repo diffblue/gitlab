@@ -258,75 +258,82 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::StageTimeSummary do
     end
   end
 
-  describe '#lead_time_for_changes' do
-    let(:lead_time_for_changes_title) { s_('CycleAnalytics|Lead Time for Changes') }
+  describe 'dora4 metrics' do
+    let(:lead_time_for_changes) { subject[2] }
+    let(:time_to_restore_service) { subject[3] }
+    let(:change_failure_rate) { subject[4] }
 
-    context 'when dora4_analytics feature is not available' do
+    before do
+      stub_licensed_features(dora4_analytics: true)
+    end
+
+    context 'when no data available' do
+      it 'returns no data' do
+        expect(lead_time_for_changes[:title]).to eq(s_('CycleAnalytics|Lead Time for Changes'))
+        expect(lead_time_for_changes[:value]).to eq('-')
+        expect(time_to_restore_service[:title]).to eq(s_('CycleAnalytics|Time to Restore Service'))
+        expect(time_to_restore_service[:value]).to eq('-')
+        expect(change_failure_rate[:title]).to eq(s_('CycleAnalytics|Change Failure Rate'))
+        expect(change_failure_rate[:value]).to eq('0')
+      end
+    end
+
+    context 'when feature is not available' do
       before do
         stub_licensed_features(dora4_analytics: false)
       end
 
-      it 'does not include lead_time_for_changes in the result array' do
-        expect(subject.size).to eq(2)
-
-        titles = subject.pluck(:title)
-
-        expect(titles).not_to include(lead_time_for_changes_title)
+      it 'does not return any dora4 metrics' do
+        expect(subject.size).to eq 2
       end
     end
 
-    context 'when dora4_analytics feature is available' do
-      let(:lead_time_for_changes) { subject.third }
+    context 'with present data' do
+      let_it_be(:environment_1) { create(:environment, :production, project: project) }
+      let_it_be(:environment_2) { create(:environment, :production, project: project_2) }
+      let_it_be(:environment_3) { create(:environment, :production, project: project_3) }
 
       before do
-        stub_licensed_features(dora4_analytics: true)
+        create(:dora_daily_metrics,
+               environment: environment_1,
+               date: from,
+               lead_time_for_changes_in_seconds: 2.hours,
+               time_to_restore_service_in_seconds: 6.hours,
+               incidents_count: 1,
+               deployment_frequency: 2)
+
+        create(:dora_daily_metrics,
+               environment: environment_2,
+               date: from,
+               lead_time_for_changes_in_seconds: 4.hours, # median
+               time_to_restore_service_in_seconds: 8.hours, # median
+               incidents_count: 3,
+               deployment_frequency: 4)
+
+        create(:dora_daily_metrics,
+               environment: environment_3,
+               date: from,
+               lead_time_for_changes_in_seconds: 7.hours,
+               time_to_restore_service_in_seconds: 9.hours,
+               incidents_count: 5,
+               deployment_frequency: 6)
       end
 
-      context 'when no aggregated data available' do
-        it 'returns no data' do
-          expect(lead_time_for_changes[:title]).to eq(lead_time_for_changes_title)
-          expect(lead_time_for_changes[:value]).to eq('-')
-        end
+      it 'returns 3 metrics' do
+        expect(lead_time_for_changes[:value]).to eq((5.0 / 24).round(1).to_s) # median
+        expect(time_to_restore_service[:value]).to eq((8.0 / 24).round(1).to_s) # median
+        expect(change_failure_rate[:value]).to eq((9.0 * 100 / 12).round(1).to_s) # rate
       end
 
-      context 'when data is available' do
-        let(:environment_1) { create(:environment, :production, project: project) }
-        let(:environment_2) { create(:environment, :production, project: project_2) }
-        let(:environment_3) { create(:environment, :production, project: project_3) }
-
+      context 'when project ids filter is given' do
         before do
-          create(:dora_daily_metrics,
-                 environment: environment_1,
-                 date: from,
-                 lead_time_for_changes_in_seconds: 2.hours.seconds.to_i)
-
-          create(:dora_daily_metrics,
-                 environment: environment_2,
-                 date: from,
-                 lead_time_for_changes_in_seconds: 5.hours.seconds.to_i) # median
-
-          create(:dora_daily_metrics,
-                 environment: environment_3,
-                 date: from,
-                 lead_time_for_changes_in_seconds: 7.hours.seconds.to_i)
+          options[:projects] = [project]
         end
 
-        it 'returns the median lead time for changes in days' do
-          expected_value = 5.hours.fdiv(1.day).round(1) # 0.2
-
-          expect(lead_time_for_changes[:value]).to eq(expected_value.to_s)
-        end
-
-        context 'when project ids filter is given' do
-          before do
-            options[:projects] = [project]
-          end
-
-          it 'returns the median lead time for changes in days for the selected project' do
-            expected_value = 2.hours.fdiv(1.day).round(1) # 0.1
-
-            expect(lead_time_for_changes[:value]).to eq(expected_value.to_s)
-          end
+        it 'filters metrics subset by project' do
+          expect(lead_time_for_changes[:value]).to eq((2.0 / 24).round(1).to_s)
+          expect(time_to_restore_service[:value]).to eq((6.0 / 24).round(1).to_s)
+          expect(change_failure_rate[:value]).to eq((1.0 * 100 / 2).round(1).to_s)
         end
       end
     end
