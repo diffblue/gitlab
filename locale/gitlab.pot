@@ -17837,7 +17837,7 @@ msgstr ""
 msgid "GroupSAML|Generate a SCIM token to set up your System for Cross-Domain Identity Management."
 msgstr ""
 
-msgid "GroupSAML|Identity"
+msgid "GroupSAML|Identifier"
 msgstr ""
 
 msgid "GroupSAML|Identity provider single sign-on URL"
