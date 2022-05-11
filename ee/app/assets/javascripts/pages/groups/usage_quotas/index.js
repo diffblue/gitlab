@@ -4,7 +4,6 @@ import initNamespaceStorage from 'ee/usage_quotas/storage/init_namespace_storage
 import initCiMinutesUsageApp from 'ee/usage_quotas/ci_minutes_usage';
 import LinkedTabs from '~/lib/utils/bootstrap_linked_tabs';
 import { trackAddToCartUsageTab } from '~/google_tag_manager';
-import initSharedRunnerUsageApp from 'ee/analytics/group_ci_cd_analytics/init_shared_runners_usage_on_usage_quotas';
 
 const initLinkedTabs = () => {
   if (!document.querySelector('.js-storage-tabs')) {
@@ -57,5 +56,4 @@ const fixPipelinesPagination = () => {
 fixPipelinesPagination();
 initVueApps();
 initLinkedTabs();
-initSharedRunnerUsageApp();
 trackAddToCartUsageTab();
