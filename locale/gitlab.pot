@@ -23312,6 +23312,12 @@ msgstr ""
 msgid "Maximum duration of a session."
 msgstr ""
 
+msgid "Maximum export size"
+msgstr ""
+
+msgid "Maximum export size (MB)"
+msgstr ""
+
 msgid "Maximum field length"
 msgstr ""
 
@@ -23430,6 +23436,9 @@ msgid "Maximum size limit for each repository."
 msgstr ""
 
 msgid "Maximum size of Elasticsearch bulk indexing requests."
+msgstr ""
+
+msgid "Maximum size of export files."
 msgstr ""
 
 msgid "Maximum size of import files."
@@ -34553,6 +34562,9 @@ msgstr ""
 msgid "Set time estimate to %{time_estimate}."
 msgstr ""
 
+msgid "Set to 0 for no size limit."
+msgstr ""
+
 msgid "Set up CI/CD"
 msgstr ""
 
@@ -37744,6 +37756,9 @@ msgid "The project is accessible only by members of the project. Access must be 
 msgstr ""
 
 msgid "The project is still being deleted. Please try again later."
+msgstr ""
+
+msgid "The project size exceeds the export limit."
 msgstr ""
 
 msgid "The project was successfully forked."
