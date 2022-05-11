@@ -1,0 +1,65 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DastScannerProfileSummary renders properly 1`] = `
+<dast-profile-summary-card-stub
+  iseditable="true"
+>
+  
+    Validation pending
+  
+  <summary-cell-stub
+    class=""
+    label="Target URL"
+    value="http://pending.test"
+  />
+   
+  <summary-cell-stub
+    label="Site type"
+    value="Website"
+  />
+   
+  <summary-cell-stub
+    label="Authentication URL"
+    value="http://pending.test/sign-in"
+  />
+   
+  <summary-cell-stub
+    label="Username"
+    value="validation-pending@example.com"
+  />
+   
+  <summary-cell-stub
+    label="Password"
+    value="••••••••"
+  />
+   
+  <summary-cell-stub
+    label="Username form field"
+    value="session[username]"
+  />
+   
+  <summary-cell-stub
+    label="Password form field"
+    value="session[password]"
+  />
+   
+  <summary-cell-stub
+    label="Submit button"
+  />
+   
+  <summary-cell-stub
+    label="Excluded URLs"
+    value="http://pending.test/sign-out,http://pending.test/hidden"
+  />
+   
+  <summary-cell-stub
+    label="Request headers"
+    value=""
+  />
+   
+  <summary-cell-stub
+    label="Validation status"
+    value="Not Validated"
+  />
+</dast-profile-summary-card-stub>
+`;

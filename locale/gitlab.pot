@@ -13435,6 +13435,9 @@ msgstr ""
 msgid "Edit Pipeline Schedule"
 msgstr ""
 
+msgid "Edit Profile"
+msgstr ""
+
 msgid "Edit Release"
 msgstr ""
 
@@ -34080,6 +34083,9 @@ msgid "Select Git revision"
 msgstr ""
 
 msgid "Select Page"
+msgstr ""
+
+msgid "Select Profile"
 msgstr ""
 
 msgid "Select a branch"
