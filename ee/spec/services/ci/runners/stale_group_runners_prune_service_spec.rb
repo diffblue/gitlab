@@ -6,7 +6,7 @@ RSpec.describe Ci::Runners::StaleGroupRunnersPruneService do
   let!(:group) { create(:group) }
   let(:service) { described_class.new }
 
-  subject(:status) { service.perform(groups) }
+  subject(:status) { service.perform(groups.select(:id)) }
 
   context 'with empty groups relation' do
     let!(:stale_runner) do
