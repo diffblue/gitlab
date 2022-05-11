@@ -24,7 +24,7 @@ RSpec.describe SoftwareLicensePolicies::UpdateService do
 
     context 'approval status update' do
       let(:opts) do
-        { approval_status: 'approved' }
+        { approval_status: 'allowed' }
       end
 
       context 'with license management unavailable' do
