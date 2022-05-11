@@ -9,6 +9,7 @@ module EE
     extend ActiveSupport::Concern
     extend ::Gitlab::Utils::Override
     include ::Gitlab::Utils::StrongMemoize
+    include Ci::NamespaceSettings
 
     NAMESPACE_PLANS_TO_LICENSE_PLANS = {
       ::Plan::BRONZE => License::STARTER_PLAN,

@@ -1940,6 +1940,68 @@ RSpec.describe Namespace do
     end
   end
 
+  describe '#allow_stale_runner_pruning?' do
+    subject { namespace.allow_stale_runner_pruning? }
+
+    let(:ci_cd_settings) { ::NamespaceCiCdSetting.find_or_initialize_by(namespace_id: namespace.id) }
+
+    it { is_expected.to eq false }
+
+    context 'with ci_cd_setting.allow_stale_runner_pruning set to false' do
+      before do
+        ci_cd_settings.update!(allow_stale_runner_pruning: false)
+      end
+
+      it { is_expected.to eq false }
+    end
+
+    context 'with ci_cd_setting.allow_stale_runner_pruning set to true' do
+      before do
+        ci_cd_settings.update!(allow_stale_runner_pruning: true)
+      end
+
+      it { is_expected.to eq true }
+    end
+  end
+
+  describe '#allow_stale_runner_pruning=' do
+    context 'with no existing ci_cd_setting association' do
+      context 'when value is set to false' do
+        it 'does not build new association' do
+          namespace.update!(allow_stale_runner_pruning: false)
+          namespace.reload
+
+          expect(namespace.ci_cd_settings).to be_nil
+        end
+      end
+
+      context 'when value is set to true' do
+        it 'builds association' do
+          namespace.update!(allow_stale_runner_pruning: true)
+          namespace.reload
+
+          expect(namespace.ci_cd_settings).not_to be_nil
+          expect(namespace.ci_cd_settings.allow_stale_runner_pruning?).to eq true
+        end
+      end
+    end
+
+    context 'with existing ci_cd_setting association' do
+      let(:ci_cd_settings) do
+        ::NamespaceCiCdSetting.find_or_initialize_by(namespace_id: namespace.id, allow_stale_runner_pruning: false)
+      end
+
+      context 'when value is set to true' do
+        it 'updates association' do
+          namespace.update!(allow_stale_runner_pruning: true)
+          namespace.reload
+
+          expect(namespace.ci_cd_settings.allow_stale_runner_pruning?).to eq true
+        end
+      end
+    end
+  end
+
   def create_project(repository_size:, lfs_objects_size:, repository_size_limit:)
     create(:project, namespace: namespace, repository_size_limit: repository_size_limit).tap do |project|
       create(:project_statistics, project: project, repository_size: repository_size, lfs_objects_size: lfs_objects_size)
