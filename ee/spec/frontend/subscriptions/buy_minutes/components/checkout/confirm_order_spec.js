@@ -12,7 +12,7 @@ import { createMockApolloProvider } from 'ee_jest/vue_shared/purchase_flow/spec_
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import flash from '~/flash';
 import * as UrlUtility from '~/lib/utils/url_utility';
-import flushPromises from 'helpers/flush_promises';
+import waitForPromises from 'helpers/wait_for_promises';
 
 jest.mock('~/lib/utils/url_utility');
 jest.mock('~/flash');
@@ -117,7 +117,7 @@ describe('Confirm Order', () => {
       it('redirects to the location if it succeeds', async () => {
         Api.confirmOrder = jest.fn().mockResolvedValueOnce({ data: { location } });
         findConfirmButton().vm.$emit('click');
-        await flushPromises();
+        await waitForPromises();
 
         expect(UrlUtility.redirectTo).toHaveBeenCalledTimes(1);
         expect(UrlUtility.redirectTo).toHaveBeenCalledWith(location);
@@ -127,7 +127,7 @@ describe('Confirm Order', () => {
         const errors = 'an error';
         Api.confirmOrder = jest.fn().mockResolvedValueOnce({ data: { errors } });
         findConfirmButton().vm.$emit('click');
-        await flushPromises();
+        await waitForPromises();
 
         expect(flash.mock.calls[0][0]).toMatchObject({
           message: GENERAL_ERROR_MESSAGE,

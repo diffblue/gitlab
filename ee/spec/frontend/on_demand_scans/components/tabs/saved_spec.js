@@ -18,7 +18,6 @@ import {
 } from 'ee/on_demand_scans/constants';
 import { s__ } from '~/locale';
 import ScanTypeBadge from 'ee/security_configuration/dast_profiles/components/dast_scan_type_badge.vue';
-import flushPromises from 'helpers/flush_promises';
 import { redirectTo } from '~/lib/utils/url_utility';
 import { PROJECT_ON_DEMAND_SCAN_COUNTS_ETAG_MOCK } from '../../mocks';
 
@@ -193,7 +192,7 @@ describe('Saved tab', () => {
             GlTable: GlTableMock,
           },
         });
-        await flushPromises();
+        await waitForPromises();
       });
 
       it('renders the button', () => {
@@ -219,7 +218,7 @@ describe('Saved tab', () => {
 
       it("redirects to the pipeline's page once the mutation resolves", async () => {
         findRunScanButton().vm.$emit('click');
-        await flushPromises();
+        await waitForPromises();
 
         expect(redirectTo).toHaveBeenCalledWith('/pipelines/1');
       });

@@ -11,7 +11,7 @@ import Zuora from 'ee/vue_shared/purchase_flow/components/checkout/zuora.vue';
 import { stateData as initialStateData } from 'ee_jest/subscriptions/mock_data';
 import { createMockApolloProvider } from 'ee_jest/vue_shared/purchase_flow/spec_helper';
 import axios from '~/lib/utils/axios_utils';
-import flushPromises from 'helpers/flush_promises';
+import waitForPromises from 'helpers/wait_for_promises';
 import { mockTracking } from 'helpers/tracking_helper';
 
 Vue.use(VueApollo);
@@ -106,7 +106,7 @@ describe('Zuora', () => {
     beforeEach(() => {
       createComponent();
       wrapper.vm.zuoraScriptEl.onload();
-      return flushPromises();
+      return waitForPromises();
     });
 
     it('tracks frame_loaded event', () => {
@@ -121,7 +121,7 @@ describe('Zuora', () => {
       createComponent({}, { isLoading: false });
       wrapper.vm.zuoraScriptEl.onload();
       axiosMock.onGet(`/-/subscriptions/payment_form`).reply(401, {});
-      return flushPromises();
+      return waitForPromises();
     });
 
     it('tracks the error event', () => {
@@ -147,7 +147,7 @@ describe('Zuora', () => {
 
       createComponent({}, { isLoading: false });
       wrapper.vm.zuoraScriptEl.onload();
-      return flushPromises();
+      return waitForPromises();
     });
 
     it('tracks success event', () => {
@@ -170,7 +170,7 @@ describe('Zuora', () => {
       createComponent({}, { isLoading: false });
       wrapper.vm.zuoraScriptEl.onload();
       axiosMock.onGet(`/-/subscriptions/payment_method`).reply(401, {});
-      return flushPromises();
+      return waitForPromises();
     });
 
     it('tracks the error event', () => {
@@ -187,7 +187,7 @@ describe('Zuora', () => {
     beforeEach(() => {
       createComponent({ accountId: id }, { isLoading: false });
       wrapper.vm.zuoraScriptEl.onload();
-      return flushPromises();
+      return waitForPromises();
     });
 
     it(`calls render with ${id}`, () => {
