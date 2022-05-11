@@ -20,15 +20,21 @@ import { TYPE_SCANNER_PROFILE, TYPE_SITE_PROFILE } from '~/graphql_shared/consta
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { serializeFormObject } from '~/lib/utils/forms';
 import { redirectTo, queryToObject } from '~/lib/utils/url_utility';
-import { s__ } from '~/locale';
+import { s__, __ } from '~/locale';
 import RefSelector from '~/ref/components/ref_selector.vue';
 import { REF_TYPE_BRANCHES } from '~/ref/constants';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import LocalStorageSync from '~/vue_shared/components/local_storage_sync.vue';
 import validation from '~/vue_shared/directives/validation';
-import { HELP_PAGE_PATH, DAST_CONFIGURATION_HELP_PATH } from 'ee/on_demand_scans/constants';
+import {
+  HELP_PAGE_PATH,
+  DAST_CONFIGURATION_HELP_PATH,
+  SCANNER_TYPE,
+  SITE_TYPE,
+} from 'ee/on_demand_scans/constants';
 import SectionLayout from '~/vue_shared/security_configuration/components/section_layout.vue';
 import ConfigurationPageLayout from 'ee/security_configuration/components/configuration_page_layout.vue';
+import DastProfilesSidebar from 'ee/security_configuration/dast_profiles/dast_profiles_sidebar/dast_profiles_sidebar.vue';
 import dastProfileCreateMutation from '../graphql/dast_profile_create.mutation.graphql';
 import dastProfileUpdateMutation from '../graphql/dast_profile_update.mutation.graphql';
 import {
@@ -93,6 +99,12 @@ export default {
     scanConfigurationDescriptionPlaceholder: s__(
       `OnDemandScans|For example: Tests the login page for SQL injections`,
     ),
+    scanConfigurationBranchDropDown: {
+      dropdownHeader: __('Select a branch'),
+      searchPlaceholder: __('Search'),
+      noRefSelected: __('No available branches'),
+      noResults: __('No available branches'),
+    },
     scanConfigurationHeader: s__('OnDemandScans|Scan configuration'),
     scanConfigurationDescription: s__(
       'OnDemandScans|Define the fundamental configuration options for your on-demand scan.',
@@ -133,6 +145,7 @@ export default {
     ConfigurationPageLayout,
     ScannerProfileEmptyState,
     SiteProfileEmptyState,
+    DastProfilesSidebar,
   },
   directives: {
     SafeHtml: GlSafeHtmlDirective,
@@ -152,7 +165,7 @@ export default {
       SITE_PROFILES_QUERY,
     ),
   },
-  inject: ['projectPath', 'onDemandScansPath', 'newScannerProfilePath', 'newSiteProfilePath'],
+  inject: ['projectPath', 'onDemandScansPath'],
   props: {
     defaultBranch: {
       type: String,
@@ -190,6 +203,9 @@ export default {
       errors: [],
       showAlert: false,
       clearStorage: false,
+      isSideDrawerOpen: false,
+      profileType: '',
+      selectedProfiles: [],
     };
   },
   computed: {
@@ -347,6 +363,21 @@ export default {
       this.errors = errors;
       this.showAlert = true;
     },
+    openScannerProfileDrawer() {
+      this.isSideDrawerOpen = true;
+      this.profileType = SCANNER_TYPE;
+      this.selectedProfiles = this.scannerProfiles;
+    },
+    openSiteProfileDrawer() {
+      this.isSideDrawerOpen = true;
+      this.profileType = SITE_TYPE;
+      this.selectedProfiles = this.siteProfiles;
+    },
+    closeSideDrawer() {
+      this.isSideDrawerOpen = false;
+      this.profileType = '';
+      this.selectedProfiles = [];
+    },
     hideErrors() {
       this.errorType = null;
       this.errors = [];
@@ -465,12 +496,7 @@ export default {
               no-flip
               :enabled-ref-types="$options.enabledRefTypes"
               :project-id="projectPath"
-              :translations="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ {
-                dropdownHeader: __('Select a branch'),
-                searchPlaceholder: __('Search'),
-                noRefSelected: __('No available branches'),
-                noResults: __('No available branches'),
-              } /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */"
+              :translations="$options.i18n.scanConfigurationBranchDropDown"
             />
             <div v-if="!defaultBranch" class="gl-text-red-500 gl-mt-3">
               {{ $options.i18n.scanConfigurationDefaultBranchLabel }}
@@ -495,7 +521,7 @@ export default {
           <scanner-profile-empty-state
             v-if="!hasScannerProfileSelector && glFeatures.dastUiRedesign"
             class="gl-mb-8"
-            :new-profile-path="newScannerProfilePath"
+            @click="openScannerProfileDrawer"
           />
           <scanner-profile-selector
             v-else
@@ -510,7 +536,7 @@ export default {
           <site-profile-empty-state
             v-if="!hasSiteProfileSelector && glFeatures.dastUiRedesign"
             class="gl-mb-3"
-            :new-profile-path="newSiteProfilePath"
+            @click="openSiteProfileDrawer"
           />
           <site-profile-selector
             v-else
@@ -574,5 +600,12 @@ export default {
         </div>
       </div>
     </gl-form>
+    <dast-profiles-sidebar
+      v-if="glFeatures.dastUiRedesign"
+      :profiles="selectedProfiles"
+      :profile-type="profileType"
+      :is-open="isSideDrawerOpen"
+      @close-drawer="closeSideDrawer"
+    />
   </configuration-page-layout>
 </template>

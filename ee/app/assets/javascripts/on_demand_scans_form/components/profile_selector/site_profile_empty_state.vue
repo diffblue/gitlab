@@ -25,12 +25,6 @@ export default {
     GlLink,
     GlSprintf,
   },
-  props: {
-    newProfilePath: {
-      type: String,
-      required: true,
-    },
-  },
 };
 </script>
 
@@ -54,10 +48,10 @@ export default {
     </empty-state>
 
     <gl-button
-      :href="newProfilePath"
       variant="confirm"
       category="secondary"
       data-testid="create-site-profile-link"
+      @click="$emit('click')"
     >
       {{ $options.i18n.selectProfileButton }}
     </gl-button>
