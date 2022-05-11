@@ -84,7 +84,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::PolicyConfigurationValid
         response = service.execute
 
         expect(response[:status]).to eq(:error)
-        expect(response[:message]).to eq("Policy management project does have any policies in #{::Security::OrchestrationPolicyConfiguration::POLICY_PATH}")
+        expect(response[:message]).to eq("Policy management project does not have any policies in #{::Security::OrchestrationPolicyConfiguration::POLICY_PATH}")
         expect(response[:invalid_component]).to eq(:policy_project)
       end
     end

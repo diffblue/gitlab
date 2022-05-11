@@ -18,7 +18,7 @@ module Security
 
         unless policy_configuration.policy_configuration_exists?
           return error_response(
-            _("Policy management project does have any policies in %{policy_path}" % {
+            _("Policy management project does not have any policies in %{policy_path}" % {
               policy_path: ::Security::OrchestrationPolicyConfiguration::POLICY_PATH
             }),
             :policy_project
