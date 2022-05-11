@@ -21,20 +21,12 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'getUserData',
-      'getNoteableData',
       'resolvableDiscussionsCount',
       'unresolvedDiscussionsCount',
       'allResolvableDiscussions',
     ]),
-    isLoggedIn() {
-      return this.getUserData.id;
-    },
     allResolved() {
       return this.unresolvedDiscussionsCount === 0;
-    },
-    resolveAllDiscussionsIssuePath() {
-      return this.getNoteableData.create_issue_to_resolve_discussions_path;
     },
     allExpanded() {
       return this.allResolvableDiscussions.every((discussion) => discussion.expanded);
