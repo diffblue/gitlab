@@ -31205,10 +31205,10 @@ msgstr ""
 msgid "Release|Something went wrong while getting the release details."
 msgstr ""
 
-msgid "Release|Something went wrong while getting the tag notes."
+msgid "Release|Something went wrong while saving the release details."
 msgstr ""
 
-msgid "Release|Something went wrong while saving the release details."
+msgid "Release|Unable to fetch the tag notes."
 msgstr ""
 
 msgid "Release|You can edit the content later by editing the release. %{linkStart}How do I edit a release?%{linkEnd}"
@@ -34265,6 +34265,9 @@ msgstr ""
 msgid "Selected projects"
 msgstr ""
 
+msgid "Selected tag is already in use. Choose another option."
+msgstr ""
+
 msgid "Selecting a GitLab user will add a link to the GitLab user in the descriptions of issues and comments (e.g. \"By %{link_open}@johnsmith%{link_close}\"). It will also associate and/or assign these issues and comments with the selected user."
 msgstr ""
 
@@ -36827,7 +36830,7 @@ msgstr ""
 msgid "Tag name"
 msgstr ""
 
-msgid "Tag name is required"
+msgid "Tag name is required."
 msgstr ""
 
 msgid "Tag push"
