@@ -8,11 +8,20 @@ module EE
     def common_invite_modal_dataset(source)
       dataset = super
 
-      if !source.root_ancestor.user_namespace? && ::Namespaces::FreeUserCap.new(source.root_ancestor).enforce_cap?
+      if ::Namespaces::FreeUserCap.new(source.root_ancestor).enforce_cap?
+        user_namespace = source.root_ancestor.user_namespace?
+
+        members_path = if user_namespace
+                         namespace_project_project_members_path(source.root_ancestor, source)
+                       else
+                         group_usage_quotas_path(source.root_ancestor)
+                       end
+
         dataset.merge(
           users_limit_dataset: {
+            user_namespace: user_namespace.to_s,
             new_trial_registration_path: new_trial_path,
-            members_path: group_usage_quotas_path(source.root_ancestor),
+            members_path: members_path,
             purchase_path: group_billings_path(source.root_ancestor),
             free_users_limit: ::Namespaces::FreeUserCap::FREE_USER_LIMIT,
             members_count: source.root_ancestor.free_plan_members_count
