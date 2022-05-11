@@ -29584,6 +29584,9 @@ msgstr ""
 msgid "ProjectSettings|Housekeeping, export, archive, change path, transfer, and delete."
 msgstr ""
 
+msgid "ProjectSettings|How do they differ?"
+msgstr ""
+
 msgid "ProjectSettings|If merge trains are enabled, merging is only possible if the branch can be rebased without conflicts."
 msgstr ""
 
@@ -29597,9 +29600,6 @@ msgid "ProjectSettings|Issues"
 msgstr ""
 
 msgid "ProjectSettings|LFS objects from this repository are available to forks. %{linkStart}How do I remove them?%{linkEnd}"
-msgstr ""
-
-msgid "ProjectSettings|Learn about commit history."
 msgstr ""
 
 msgid "ProjectSettings|Leave empty to use default template."
