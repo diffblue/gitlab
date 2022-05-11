@@ -33,6 +33,22 @@ module EE
         end
       end
 
+      def matches_build?(build)
+        return false unless super(build)
+
+        allowed_for_plans?(build)
+      end
+
+      def allowed_for_plans?(build)
+        return true unless ::Feature.enabled?(:ci_runner_separation_by_plan, self, type: :ops)
+        return true if allowed_plans.empty?
+
+        plans = build.namespace&.plans || []
+
+        common = allowed_plans & plans.map(&:name)
+        common.any?
+      end
+
       private
 
       def cost_factor

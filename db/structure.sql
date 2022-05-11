@@ -13036,6 +13036,7 @@ CREATE TABLE ci_runners (
     executor_type smallint,
     maintainer_note text,
     token_expires_at timestamp with time zone,
+    allowed_plans text[] DEFAULT '{}'::text[] NOT NULL,
     CONSTRAINT check_ce275cee06 CHECK ((char_length(maintainer_note) <= 1024))
 );
 
