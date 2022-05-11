@@ -33,11 +33,21 @@ RSpec.describe Namespaces::FreeUserCapWorker, type: :worker do
           GitlabSubscription.set_callback(:save, :after, :set_prevent_sharing_groups_outside_hierarchy)
         end
 
-        it 'subsequent runs deactivates members in batches with limit' do
+        it 'remediates data and settings according to free plan guidelines' do
           g1 = create(:group_with_plan, plan: :free_plan)
+
           g2 = create(:group_with_plan, plan: :free_plan)
+          p1forg2 = create(:project, group: g2)
+          internal_pglforg2 = create(:project_group_link, project: p1forg2, group: create(:group, parent: g2))
+          create(:project_group_link, project: p1forg2)
+
           g3 = create(:group_with_plan, plan: :free_plan)
+
           g4 = create(:group_with_plan, plan: :premium_plan)
+          p1forg4 = create(:project, group: g4)
+          internal_pglforg4 = create(:project_group_link, project: p1forg4, group: create(:group, parent: g4))
+          external_pglforg4 = create(:project_group_link, project: p1forg4)
+
           g5 = create(:group)
           g6 = create(:group_with_plan, plan: :free_plan)
           g7 = create(:namespace_with_plan, plan: :free_plan)
@@ -55,11 +65,13 @@ RSpec.describe Namespaces::FreeUserCapWorker, type: :worker do
           described_class.new.perform
           expect(namespaces.map { |ns| Member.in_hierarchy(ns).awaiting.count }).to eq([0, 1, 2, 0, 0, 0, 0])
           expect_shared_setting_remediated(namespaces: namespaces, remediated_namespaces: [g1, g2, g3])
+          expect(ProjectGroupLink.in_project(g2.all_projects)).to match_array([internal_pglforg2])
 
           # second run skips g4 trims g5, g6
           described_class.new.perform
           expect(namespaces.map { |ns| Member.in_hierarchy(ns).awaiting.count }).to eq([0, 1, 2, 0, 4, 5, 0])
           expect_shared_setting_remediated(namespaces: namespaces, remediated_namespaces: [g1, g2, g3, g5, g6])
+          expect(ProjectGroupLink.in_project(g4.all_projects)).to match_array([internal_pglforg4, external_pglforg4])
 
           # third run trims g7
           described_class.new.perform
@@ -71,6 +83,7 @@ RSpec.describe Namespaces::FreeUserCapWorker, type: :worker do
           described_class.new.perform
           expect(namespaces.map { |ns| Member.in_hierarchy(ns).awaiting.count }).to eq([0, 1, 2, 3, 4, 5, 7])
           expect_shared_setting_remediated(namespaces: namespaces, remediated_namespaces: [g1, g2, g3, g5, g6, g7, g4])
+          expect(ProjectGroupLink.in_project(g4.all_projects)).to match_array([internal_pglforg4])
 
           # fifth run trims g2 which adds more members
           create_list(:group_member, 4, :active, source: g2)

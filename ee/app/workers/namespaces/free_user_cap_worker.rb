@@ -43,6 +43,7 @@ module Namespaces
       return unless ::Namespaces::FreeUserCap.group_sharing_remediation_enabled?
 
       Namespaces::UpdatePreventSharingOutsideHierarchyService.new(namespace).execute
+      Namespaces::RemoveProjectGroupLinksOutsideHierarchyService.new(namespace).execute
     end
   end
 end

@@ -3,11 +3,31 @@
 require 'spec_helper'
 
 RSpec.describe ProjectGroupLink do
+  let_it_be(:project) { create(:project) }
+  let_it_be(:group) { create(:group) }
+  let_it_be(:project_group_link) { create(:project_group_link, project: project, group: group) }
+
+  describe 'scopes' do
+    describe '.in_project' do
+      it 'provides correct link records' do
+        create(:project_group_link)
+
+        expect(described_class.in_project(project)).to match_array([project_group_link])
+      end
+    end
+
+    describe '.not_in_group' do
+      it 'provides correct link records' do
+        not_shared_with_group = create(:group)
+        create(:project_group_link, project: project, group: not_shared_with_group)
+
+        expect(described_class.not_in_group(not_shared_with_group)).to match_array([project_group_link])
+      end
+    end
+  end
+
   describe '#destroy' do
-    let(:project) { create(:project) }
-    let(:group) { create(:group) }
-    let(:user) { create(:user) }
-    let!(:project_group_link) { create(:project_group_link, project: project, group: group) }
+    let_it_be(:user) { create(:user) }
 
     before do
       project.add_developer(user)
