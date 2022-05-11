@@ -5,17 +5,17 @@ import VueApollo from 'vue-apollo';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import { runnerData } from 'jest/runner/mock_data';
+import { runnerFormData } from 'jest/runner/mock_data';
 import { VARIANT_SUCCESS } from '~/flash';
 import { redirectTo } from '~/lib/utils/url_utility';
 import { saveAlertToLocalStorage } from '~/runner/local_storage_alert/save_alert_to_local_storage';
 import RunnerUpdateForm from '~/runner/components/runner_update_form.vue';
-import runnerUpdateMutation from '~/runner/graphql/details/runner_update.mutation.graphql';
+import runnerUpdateMutation from '~/runner/graphql/edit/runner_update.mutation.graphql';
 
 jest.mock('~/runner/local_storage_alert/save_alert_to_local_storage');
 jest.mock('~/lib/utils/url_utility');
 
-const mockRunner = runnerData.data.runner;
+const mockRunner = runnerFormData.data.runner;
 const mockRunnerPath = '/admin/runners/1';
 
 Vue.use(VueApollo);
