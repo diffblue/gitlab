@@ -66,6 +66,16 @@ because the [web server](../../../development/architecture.md#components)
 must receive the file before GitLab can generate the commit.
 Use [Git LFS](../../../topics/git/lfs/index.md) to add large files to a repository.
 
+## Max export size
+
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/86124) in GitLab 15.0.
+
+To modify the maximum file size for exports in GitLab:
+
+1. On the top bar, select **Menu > Admin**.
+1. On the left sidebar, select **Settings > General**, then expand **Account and limit**.
+1. Increase or decrease by changing the value in **Maximum export size (MB)**.
+
 ## Max import size
 
 > [Modified](https://gitlab.com/gitlab-org/gitlab/-/issues/251106) from 50 MB to unlimited in GitLab 13.8.
