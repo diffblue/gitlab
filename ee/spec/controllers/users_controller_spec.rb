@@ -16,6 +16,7 @@ RSpec.describe UsersController do
         get :available_project_templates, params: { username: user.username }, xhr: true
 
         expect(response).to have_gitlab_http_status(:ok)
+        expect(response.media_type).to eq 'text/html'
       end
     end
 
@@ -34,6 +35,7 @@ RSpec.describe UsersController do
         get :available_group_templates, params: { username: user.username }, xhr: true
 
         expect(response).to have_gitlab_http_status(:ok)
+        expect(response.media_type).to eq 'text/html'
       end
     end
 
