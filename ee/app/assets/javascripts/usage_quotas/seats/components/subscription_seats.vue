@@ -157,6 +157,7 @@ export default {
       'fetchGitlabSubscription',
       'resetBillableMembers',
       'setBillableMemberToRemove',
+      'changeMembershipState',
       'setSearchQuery',
       'setCurrentPage',
       'setSortOption',
@@ -191,10 +192,15 @@ export default {
       visitUrl(this.pendingMembersPagePath);
     },
     isToggleDisabled(user) {
-      return this.hasReachedFreePlanLimit && user.membership_state === MEMBER_AWAITING_STATE;
+      return this.isLoading || this.restrictActivatingUser(user);
     },
     toggleTooltipText(user) {
-      return this.isToggleDisabled(user) ? this.$options.i18n.activateMemberRestrictedText : null;
+      return this.restrictActivatingUser(user)
+        ? this.$options.i18n.activateMemberRestrictedText
+        : '';
+    },
+    restrictActivatingUser(user) {
+      return this.hasReachedFreePlanLimit && user.membership_state === MEMBER_AWAITING_STATE;
     },
     membershipStateToggleValue(user) {
       return user.membership_state === MEMBER_ACTIVE_STATE;
@@ -357,6 +363,7 @@ export default {
           :value="membershipStateToggleValue(user)"
           :disabled="isToggleDisabled(user)"
           :title="toggleTooltipText(user)"
+          @change="changeMembershipState(user)"
         />
       </template>
 

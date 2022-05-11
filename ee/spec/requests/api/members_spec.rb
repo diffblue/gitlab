@@ -649,6 +649,117 @@ RSpec.describe API::Members do
       end
     end
 
+    describe 'PUT /groups/:id/members/:user_id/state', :saas do
+      let(:url) { "/groups/#{group.id}/members/#{user.id}/state" }
+      let(:state) { 'active' }
+      let(:params) { { state: state } }
+
+      let_it_be(:user) { create(:user) }
+
+      subject(:change_state) { put api(url, current_user), params: params }
+
+      context 'when the current user has insufficient rights' do
+        let(:current_user) { create(:user) }
+
+        it 'returns 400' do
+          change_state
+
+          expect(response).to have_gitlab_http_status(:bad_request)
+        end
+      end
+
+      context 'when authenticated as an owner' do
+        let(:current_user) { owner }
+
+        context 'when setting the user to be active' do
+          let(:state) { 'active' }
+
+          it 'is successful' do
+            member = create(:group_member, :awaiting, group: group, user: user)
+
+            change_state
+
+            expect(response).to have_gitlab_http_status(:success)
+            expect(member.reload).to be_active
+          end
+        end
+
+        context 'when setting the user to be awaiting' do
+          let(:state) { 'awaiting' }
+
+          it 'is successful' do
+            member = create(:group_member, :active, group: group, user: user)
+
+            change_state
+
+            expect(response).to have_gitlab_http_status(:success)
+            expect(member.reload).to be_awaiting
+          end
+        end
+
+        it 'forwards the error from the service' do
+          change_state
+
+          expect(response).to have_gitlab_http_status(:unprocessable_entity)
+          expect(json_response['message']).to eq "No memberships found"
+        end
+
+        context 'with invalid parameters' do
+          let(:state) { 'non-existing-state' }
+
+          it 'returns a relevant error message' do
+            change_state
+
+            expect(response).to have_gitlab_http_status(:bad_request)
+            expect(json_response['error']).to eq 'state does not have a valid value'
+          end
+        end
+
+        context 'with a group that does not exist' do
+          let(:url) { "/groups/foo/members/#{user.id}/state" }
+
+          it 'returns a relevant error message' do
+            change_state
+
+            expect(response).to have_gitlab_http_status(:not_found)
+            expect(json_response['message']).to eq '404 Group Not Found'
+          end
+        end
+
+        context 'with a group that is a sub-group' do
+          let(:url) { "/groups/#{nested_group.id}/members/#{user.id}/state" }
+
+          it 'returns a relevant error message' do
+            change_state
+
+            expect(response).to have_gitlab_http_status(:bad_request)
+          end
+        end
+
+        context 'with a user that does not exist' do
+          let(:url) { "/groups/#{group.id}/members/0/state" }
+
+          it 'returns a relevant error message' do
+            change_state
+
+            expect(response).to have_gitlab_http_status(:not_found)
+            expect(json_response['message']).to eq '404 User Not Found'
+          end
+        end
+
+        context 'with a user that is not a member of the group' do
+          it 'returns a relevant error message' do
+            create(:group_member, :awaiting, group: create(:group), user: user)
+
+            change_state
+
+            expect(response).to have_gitlab_http_status(:unprocessable_entity)
+            expect(json_response['message']).to eq "No memberships found"
+          end
+        end
+      end
+    end
+
     describe 'DELETE /groups/:id/billable_members/:user_id' do
       context 'when the current user has insufficient rights' do
         it 'returns 400' do

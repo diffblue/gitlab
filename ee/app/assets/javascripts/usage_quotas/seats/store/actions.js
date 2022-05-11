@@ -1,7 +1,8 @@
 import * as GroupsApi from 'ee/api/groups_api';
 import Api from 'ee/api';
 import { createAlert, VARIANT_SUCCESS } from '~/flash';
-import { s__ } from '~/locale';
+import { s__, __ } from '~/locale';
+import { MEMBER_ACTIVE_STATE, MEMBER_AWAITING_STATE } from '../constants';
 import * as types from './mutation_types';
 
 export const fetchBillableMembersList = ({ commit, dispatch, state }) => {
@@ -53,6 +54,30 @@ export const resetBillableMembers = ({ commit }) => {
 
 export const setBillableMemberToRemove = ({ commit }, member) => {
   commit(types.SET_BILLABLE_MEMBER_TO_REMOVE, member);
+};
+
+export const changeMembershipState = async ({ commit, dispatch, state }, user) => {
+  commit(types.CHANGE_MEMBERSHIP_STATE);
+
+  try {
+    const newState =
+      user.membership_state === MEMBER_ACTIVE_STATE ? MEMBER_AWAITING_STATE : MEMBER_ACTIVE_STATE;
+
+    await GroupsApi.changeMembershipState(state.namespaceId, user.id, newState);
+
+    await dispatch('fetchBillableMembersList');
+    await dispatch('fetchGitlabSubscription');
+  } catch {
+    dispatch('changeMembershipStateError');
+  }
+};
+
+export const changeMembershipStateError = ({ commit }) => {
+  createAlert({
+    message: __('Something went wrong. Please try again.'),
+  });
+
+  commit(types.CHANGE_MEMBERSHIP_STATE_ERROR);
 };
 
 export const removeBillableMember = ({ dispatch, state }) => {
