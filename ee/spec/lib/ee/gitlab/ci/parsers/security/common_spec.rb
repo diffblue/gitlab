@@ -72,6 +72,22 @@ RSpec.describe Gitlab::Ci::Parsers::Security::Common do
       describe 'parsing remediations' do
         let(:expected_remediation) { create(:ci_reports_security_remediation, diff: '') }
 
+        context 'when one remediation closes two CVEs' do
+          it 'assigns it to both findings' do
+            vulnerability1 = report.findings.find { |x| x.compare_key == "CVE-2139" }
+            vulnerability2 = report.findings.find { |x| x.compare_key == "CVE-2140" }
+
+            remediation = {
+              'fixes' => [{ 'cve' => 'CVE-2139' }, { 'cve' => 'CVE-2140' }],
+              'summary' => 'this remediates CVE-2139 and CVE-2140',
+              'diff' => 'dG90YWxseSBsZWdpdGltYXRlIGRpZmYsIDEwLzEwIHdvdWxkIGFwcGx5'
+            }
+
+            expect(Gitlab::Json.parse(vulnerability1.raw_metadata).dig('remediations').first).to include remediation
+            expect(Gitlab::Json.parse(vulnerability2.raw_metadata).dig('remediations').first).to include remediation
+          end
+        end
+
         it 'finds remediation with same cve' do
           finding = report.findings.find { |x| x.compare_key == "CVE-1020" }
           remediation = { 'fixes' => [{ 'cve' => 'CVE-1020' }], 'summary' => '', 'diff' => '' }
@@ -121,7 +137,7 @@ RSpec.describe Gitlab::Ci::Parsers::Security::Common do
           expect(scans.map(&:type).all?('dependency_scanning')).to be(true)
           expect(scans.map(&:start_time).all?('placeholder-value')).to be(true)
           expect(scans.map(&:end_time).all?('placeholder-value')).to be(true)
-          expect(scans.size).to eq(3)
+          expect(scans.size).to eq(7)
           expect(scans.first).to be_a(::Gitlab::Ci::Reports::Security::Scan)
         end
       end
