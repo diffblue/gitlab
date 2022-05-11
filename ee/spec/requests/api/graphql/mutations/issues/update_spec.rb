@@ -62,7 +62,9 @@ RSpec.describe 'Update of an existing issue' do
         post_graphql_mutation(mutation, current_user: current_user)
 
         expect(response).to have_gitlab_http_status(:success)
-        expect(graphql_errors).not_to be_blank
+        expect(graphql_errors).to contain_exactly(
+          a_hash_including('message' => /The resource that you are attempting to access does not exist/)
+        )
       end
     end
 
