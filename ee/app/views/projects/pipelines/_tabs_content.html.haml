@@ -3,26 +3,11 @@
 
 - license_management_settings_path = can?(current_user, :admin_software_license_policy, project) ? license_management_settings_path(project) : nil
 - licenses_api_path = licenses_project_pipeline_path(project, pipeline) if project.feature_available?(:license_scanning)
-- vulnerabilities_endpoint_path = expose_path(api_v4_projects_vulnerability_findings_path(id: project.id, params: { pipeline_id: pipeline.id }))
-- vulnerability_exports_endpoint_path = expose_path(api_v4_security_projects_vulnerability_exports_path(id: project.id))
 - codequality_report_download_path = pipeline.downloadable_path_for_report_type(:codequality) if project.feature_available?(:full_codequality_report)
 
 - if pipeline.expose_security_dashboard?
   #js-tab-security.build-security.tab-pane
-    #js-security-report-app{ data: { empty_state_svg_path: image_path('illustrations/security-dashboard-empty-state.svg'),
-    pipeline_id: pipeline.id,
-    pipeline_iid: pipeline.iid,
-    project_id: project.id,
-    source_branch: pipeline.source_ref,
-    pipeline_jobs_path: expose_path(api_v4_projects_pipelines_jobs_path(id: project.id, pipeline_id: pipeline.id)),
-    vulnerabilities_endpoint: vulnerabilities_endpoint_path,
-    vulnerability_exports_endpoint: vulnerability_exports_endpoint_path,
-    empty_state_unauthorized_svg_path: image_path('illustrations/user-not-logged-in.svg'),
-    empty_state_forbidden_svg_path: image_path('illustrations/lock_promotion.svg'),
-    project_full_path: project.path_with_namespace,
-    commit_path_template: commit_path_template(project),
-    can_admin_vulnerability: can?(current_user, :admin_vulnerability, project).to_s,
-    can_view_false_positive: project.licensed_feature_available?(:sast_fp_reduction).to_s } }
+    #js-security-report-app{ data: vulnerability_report_data(project, pipeline, current_user) }
 
 - if pipeline.expose_license_scanning_data?
   #js-tab-licenses.tab-pane
