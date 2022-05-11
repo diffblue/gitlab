@@ -21,6 +21,7 @@ export default {
   },
   computed: {
     ...mapGetters([
+      'getNoteableData',
       'resolvableDiscussionsCount',
       'unresolvedDiscussionsCount',
       'allResolvableDiscussions',
@@ -33,6 +34,9 @@ export default {
     },
     toggleThreadsLabel() {
       return this.allExpanded ? __('Collapse all threads') : __('Expand all threads');
+    },
+    resolveAllDiscussionsIssuePath() {
+      return this.getNoteableData.create_issue_to_resolve_discussions_path;
     },
   },
   methods: {
@@ -54,7 +58,7 @@ export default {
     class="gl-display-flex discussions-counter"
   >
     <div
-      class="gl-display-flex gl-align-items-center gl-px-4 gl-rounded-base gl-mr-3"
+      class="gl-display-flex gl-align-items-center gl-pl-3 gl-pr-1 gl-rounded-base gl-mr-3"
       :class="{
         'gl-bg-orange-50': blocksMerge,
         'gl-bg-gray-50': !blocksMerge,
@@ -71,38 +75,47 @@ export default {
             v-gl-tooltip.hover
             :title="__('Jump to previous unresolved thread')"
             :aria-label="__('Jump to previous unresolved thread')"
-            class="discussion-previous-btn"
+            class="discussion-previous-btn gl-rounded-base! gl-px-2!"
             data-track-action="click_button"
             data-track-label="mr_previous_unresolved_thread"
             data-track-property="click_previous_unresolved_thread_top"
             icon="angle-up"
             category="tertiary"
-            size="small"
             @click="jumpToPreviousDiscussion"
           />
           <gl-button
             v-gl-tooltip.hover
             :title="__('Jump to next unresolved thread')"
             :aria-label="__('Jump to next unresolved thread')"
-            class="discussion-next-btn"
+            class="discussion-next-btn gl-rounded-base! gl-px-2!"
             data-track-action="click_button"
             data-track-label="mr_next_unresolved_thread"
             data-track-property="click_next_unresolved_thread_top"
             icon="angle-down"
             category="tertiary"
-            size="small"
             @click="jumpToNextDiscussion"
           />
         </gl-button-group>
       </template>
     </div>
-    <gl-button
-      v-gl-tooltip
-      :title="toggleThreadsLabel"
-      :aria-label="toggleThreadsLabel"
-      class="toggle-all-discussions-btn"
-      :icon="allExpanded ? 'collapse' : 'expand'"
-      @click="handleExpandDiscussions"
-    />
+    <gl-button-group>
+      <gl-button
+        v-gl-tooltip
+        :title="toggleThreadsLabel"
+        :aria-label="toggleThreadsLabel"
+        class="toggle-all-discussions-btn"
+        :icon="allExpanded ? 'collapse' : 'expand'"
+        @click="handleExpandDiscussions"
+      />
+      <gl-button
+        v-if="resolveAllDiscussionsIssuePath && !allResolved"
+        v-gl-tooltip
+        :href="resolveAllDiscussionsIssuePath"
+        :title="__('Create issue to resolve all threads')"
+        :aria-label="__('Create issue to resolve all threads')"
+        class="new-issue-for-discussion discussion-create-issue-btn"
+        icon="issue-new"
+      />
+    </gl-button-group>
   </div>
 </template>

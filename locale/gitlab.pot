@@ -10330,6 +10330,9 @@ msgstr ""
 msgid "Create issue"
 msgstr ""
 
+msgid "Create issue to resolve all threads"
+msgstr ""
+
 msgid "Create iteration"
 msgstr ""
 
