@@ -15,6 +15,22 @@ RSpec.shared_examples 'seat count alert' do
     end
   end
 
+  context 'when the feature flag is disabled' do
+    it 'sets the seat_count_data to nil' do
+      stub_feature_flags(seat_count_alerts: false)
+
+      seat_count_data = { namespace: namespace, remaining_seat_count: 1, seats_in_use: 9, total_seat_count: 10 }
+
+      allow_next_instance_of(GitlabSubscriptions::Reconciliations::CalculateSeatCountDataService) do |service|
+        allow(service).to receive(:execute).and_return(seat_count_data)
+      end
+
+      subject
+
+      expect(assigns(:seat_count_data)).to be_nil
+    end
+  end
+
   context 'when the namespace does not qualify for the alert' do
     it 'sets the seat_count_data to nil' do
       allow_next_instance_of(GitlabSubscriptions::Reconciliations::CalculateSeatCountDataService) do |service|
