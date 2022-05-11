@@ -75,7 +75,7 @@ module Security
       end
 
       def branch_name
-        @branch_name ||= "update-policy-#{Time.now.to_i}"
+        @branch_name ||= params[:branch_name] || "update-policy-#{Time.now.to_i}"
       end
 
       def policy
