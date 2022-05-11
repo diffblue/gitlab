@@ -781,6 +781,9 @@ msgstr ""
 msgid "%{message} showing first %{warnings_displayed}"
 msgstr ""
 
+msgid "%{message}. Your attention request was removed."
+msgstr ""
+
 msgid "%{milestone} (expired)"
 msgstr ""
 
@@ -4720,6 +4723,9 @@ msgstr ""
 msgid "Approved-By"
 msgstr ""
 
+msgid "Approved. Your attention request was removed."
+msgstr ""
+
 msgid "Approver"
 msgstr ""
 
@@ -5047,6 +5053,9 @@ msgid "Assigned to me"
 msgstr ""
 
 msgid "Assigned to you"
+msgstr ""
+
+msgid "Assigned user(s). Your attention request was removed."
 msgstr ""
 
 msgid "Assignee"
@@ -31926,10 +31935,16 @@ msgstr ""
 msgid "Requested attention from @%{username}"
 msgstr ""
 
+msgid "Requested attention from @%{username}. Your own attention request was removed."
+msgstr ""
+
 msgid "Requested design version does not exist."
 msgstr ""
 
 msgid "Requested review"
+msgstr ""
+
+msgid "Requested review. Your attention request was removed."
 msgstr ""
 
 msgid "Requested states are invalid"
