@@ -454,7 +454,7 @@ msgstr ""
 msgid "%{authorsName}'s thread"
 msgstr ""
 
-msgid "%{author} requested to merge %{span_start}%{source_branch} %{copy_button}%{span_end} into %{target_branch} %{created_at}"
+msgid "%{author} requested to merge %{source_branch} %{copy_button} into %{target_branch} %{created_at}"
 msgstr ""
 
 msgid "%{board_target} not found"
