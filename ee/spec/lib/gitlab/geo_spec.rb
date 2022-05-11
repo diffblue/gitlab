@@ -162,26 +162,76 @@ RSpec.describe Gitlab::Geo, :geo, :request_store do
   end
 
   describe '.secondary?' do
-    context 'when current node is a secondary node' do
-      before do
-        stub_current_geo_node(secondary_node)
+    context 'when infer_without_database is not set' do
+      subject { described_class.secondary? }
+
+      context 'when current node is a secondary node' do
+        before do
+          stub_current_geo_node(secondary_node)
+        end
+
+        it { is_expected.to be_truthy }
+
+        context 'when GeoNode is disabled' do
+          before do
+            allow(described_class).to receive(:enabled?) { false }
+          end
+
+          it { is_expected.to be_falsey }
+        end
       end
 
-      it 'returns true' do
-        expect(described_class.secondary?).to be_truthy
-      end
-
-      it 'returns false when GeoNode is disabled' do
-        allow(described_class).to receive(:enabled?) { false }
-
-        expect(described_class.secondary?).to be_falsey
+      context 'when current node is a primary node' do
+        it { is_expected.to be_falsey }
       end
     end
 
-    context 'when current node is a primary node' do
-      it 'returns false' do
-        expect(described_class.secondary?).to be_falsey
+    context 'when infer_without_database is true' do
+      subject { described_class.secondary?(infer_without_database: true) }
+
+      where(:is_secondary) { [true, false] }
+      with_them do
+        before do
+          allow(Gitlab::Geo).to receive(:secondary_check_without_db_connection) { is_secondary }
+        end
+
+        it { is_expected.to be(is_secondary) }
       end
+    end
+  end
+
+  describe '.secondary_check_without_db_connection' do
+    subject { described_class.secondary_check_without_db_connection }
+
+    context 'when in a test environment' do
+      before do
+        allow(Rails).to receive_message_chain(:env, :test?).and_return(true)
+      end
+
+      it { is_expected.to be_falsey }
+    end
+
+    where(:geo_database_configured, :is_dev, :node_name, :expected_secondary) do
+      true  | true  | ::Gitlab::Geo::DEFAULT_DEV_PRIMARY_NODE_NAME | false
+      true  | true  | 'some-example-node-name'                     | true
+      true  | false | ::Gitlab::Geo::DEFAULT_DEV_PRIMARY_NODE_NAME | true
+      true  | false | 'some-example-node-name'                     | true
+      false | true  | ::Gitlab::Geo::DEFAULT_DEV_PRIMARY_NODE_NAME | false
+      false | true  | 'some-example-node-name'                     | false
+      false | false | ::Gitlab::Geo::DEFAULT_DEV_PRIMARY_NODE_NAME | false
+      false | false | 'some-example-node-name'                     | false
+    end
+
+    with_them do
+      before do
+        allow(Rails).to receive_message_chain(:env, :test?).and_return(false)
+        allow(Rails).to receive_message_chain(:env, :development?).and_return(is_dev)
+        allow(Gitlab::Geo).to receive(:geo_database_configured?) { geo_database_configured }
+
+        stub_current_node_name(node_name)
+      end
+
+      it { is_expected.to be(expected_secondary) }
     end
   end
 

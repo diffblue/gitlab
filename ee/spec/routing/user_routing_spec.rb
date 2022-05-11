@@ -34,33 +34,17 @@ RSpec.describe 'EE-specific user routing' do
       end
     end
 
-    context 'no database connection' do
+    context 'when a Geo secondary, checked without a database connection' do
       before do
-        allow(Gitlab::Geo).to receive(:connected?).and_return(false)
+        allow(Gitlab::Geo).to receive(:secondary?).with(infer_without_database: true).and_return(false)
       end
 
       it_behaves_like 'routes session paths', :regular
     end
 
-    context 'Geo is disabled' do
+    context 'Geo database is configured' do
       before do
-        allow(Gitlab::Geo).to receive(:enabled?).and_return(false)
-      end
-
-      it_behaves_like 'routes session paths', :regular
-    end
-
-    context 'current node is a Geo primary' do
-      before do
-        allow(Gitlab::Geo).to receive(:secondary?).and_return(false)
-      end
-
-      it_behaves_like 'routes session paths', :regular
-    end
-
-    context 'current node is a Geo secondary' do
-      before do
-        allow(Gitlab::Geo).to receive(:secondary?).and_return(true)
+        allow(Gitlab::Geo).to receive(:secondary?).with(infer_without_database: true).and_return(true)
       end
 
       it_behaves_like 'routes session paths', :geo
