@@ -6,14 +6,12 @@ RSpec.describe Ci::Runners::StaleGroupRunnersPruneService do
   let!(:group) { create(:group) }
   let(:service) { described_class.new }
 
-  subject(:status) { service.perform(groups.select(:id)) }
+  subject(:status) { service.perform(NamespaceCiCdSetting.allowing_stale_runner_pruning.select(:namespace_id)) }
 
   context 'with empty groups relation' do
     let!(:stale_runner) do
       create(:ci_runner, :group, groups: [group], created_at: 5.months.ago, contacted_at: 4.months.ago)
     end
-
-    let(:groups) { Group.none }
 
     it 'does not prune any runners and returns :success status' do
       expect(service).not_to receive(:delete_stale_group_runners_in_batches)
@@ -37,10 +35,12 @@ RSpec.describe Ci::Runners::StaleGroupRunnersPruneService do
     end
 
     let(:group2) { create(:group) }
-    let(:groups) { Group.where(id: [group.id, group2.id]) }
 
     before do
       stub_const("#{described_class}::GROUP_BATCH_SIZE", 1)
+
+      group.ci_cd_settings.update!(allow_stale_runner_pruning: true)
+      group2.ci_cd_settings.update!(allow_stale_runner_pruning: true)
     end
 
     it 'prunes all runners in batches' do
