@@ -125,6 +125,30 @@ RSpec.describe Security::SecurityOrchestrationPolicies::PolicyCommitService do
           end
         end
       end
+
+      context 'with branch_name as parameter' do
+        let(:branch_name) {'main'}
+        let(:params) { { policy_yaml: input_policy_yaml, operation: operation, branch_name: branch_name } }
+
+        it 'returns error', :aggregate_failures do
+          response = service.execute
+          expect(response[:status]).to eq(:error)
+          expect(response[:message]).to eq("You are not allowed to push into this branch")
+          expect(response[:http_status]).to eq(:bad_request)
+        end
+
+        context 'with user as a member of security project' do
+          before do
+            policy_configuration.security_policy_management_project.add_developer(current_user)
+          end
+
+          it 'returns success', :aggregate_failures do
+            response = service.execute
+            expect(response[:status]).to eq(:success)
+            expect(response[:branch]).to eq(branch_name)
+          end
+        end
+      end
     end
 
     context 'when service is used for project' do
