@@ -12,7 +12,6 @@ RSpec.describe IncidentManagement::TimelineEvents::UpdateService do
   let(:params) { { note: 'Updated note', occurred_at: occurred_at } }
 
   before do
-    stub_licensed_features(incident_timeline_events: true)
     stub_feature_flags(incident_timeline: project)
   end
 
@@ -141,14 +140,6 @@ RSpec.describe IncidentManagement::TimelineEvents::UpdateService do
     context 'when user does not have permissions' do
       before do
         project.add_reporter(user)
-      end
-
-      it_behaves_like 'error response', 'You have insufficient permissions to manage timeline events for this incident'
-    end
-
-    context 'when licensed feature is not available' do
-      before do
-        stub_licensed_features(incident_timeline_events: false)
       end
 
       it_behaves_like 'error response', 'You have insufficient permissions to manage timeline events for this incident'

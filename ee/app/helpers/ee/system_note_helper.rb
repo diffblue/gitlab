@@ -23,8 +23,7 @@ module EE
       'vulnerability_dismissed' => 'cancel',
       'vulnerability_resolved' => 'status_closed',
       'published' => 'bullhorn',
-      'paging_started' => 'mobile',
-      'timeline_event' => 'clock'
+      'paging_started' => 'mobile'
     }.freeze
 
     override :system_note_icon_name

@@ -30,8 +30,13 @@ RSpec.describe IncidentManagement::TimelineEvent do
   end
 
   describe '.order_occurred_at_asc' do
-    let_it_be(:occurred_3mins_ago) { create(:incident_management_timeline_event, project: project, occurred_at: 3.minutes.ago) }
-    let_it_be(:occurred_2mins_ago) { create(:incident_management_timeline_event, project: project, occurred_at: 2.minutes.ago) }
+    let_it_be(:occurred_3mins_ago) do
+      create(:incident_management_timeline_event, project: project, occurred_at: 3.minutes.ago)
+    end
+
+    let_it_be(:occurred_2mins_ago) do
+      create(:incident_management_timeline_event, project: project, occurred_at: 2.minutes.ago)
+    end
 
     subject(:order) { described_class.order_occurred_at_asc }
 
@@ -43,7 +48,9 @@ RSpec.describe IncidentManagement::TimelineEvent do
   describe '#cache_markdown_field' do
     let(:note) { 'note **bold** _italic_ `code` ![image](/path/img.png) :+1:👍' }
     let(:expected_note_html) do
-      '<p>note <strong>bold</strong> <em>italic</em> <code>code</code> <a class="with-attachment-icon" href="/path/img.png" target="_blank">image</a> 👍👍</p>'
+      # rubocop:disable Layout/LineLength
+      '<p>note <strong>bold</strong> <em>italic</em> <code>code</code> <a class="with-attachment-icon" href="/path/img.png" target="_blank" rel="noopener noreferrer">image</a> 👍👍</p>'
+      # rubocop:enable Layout/LineLength
     end
 
     before do
@@ -51,7 +58,9 @@ RSpec.describe IncidentManagement::TimelineEvent do
     end
 
     context 'on create' do
-      let(:timeline_event) { build(:incident_management_timeline_event, project: project, incident: incident, note: note) }
+      let(:timeline_event) do
+        build(:incident_management_timeline_event, project: project, incident: incident, note: note)
+      end
 
       it 'updates note_html', :aggregate_failures do
         expect(Banzai::Renderer).to receive(:cacheless_render_field)

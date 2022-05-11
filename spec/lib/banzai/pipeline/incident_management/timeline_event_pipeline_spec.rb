@@ -12,9 +12,9 @@ RSpec.describe Banzai::Pipeline::IncidentManagement::TimelineEventPipeline do
           *Banzai::Pipeline::PlainMarkdownPipeline.filters,
           *Banzai::Pipeline::GfmPipeline.reference_filters,
           Banzai::Filter::EmojiFilter,
+          Banzai::Filter::SanitizationFilter,
           Banzai::Filter::ExternalLinkFilter,
-          Banzai::Filter::ImageLinkFilter,
-          Banzai::Filter::SanitizationFilter
+          Banzai::Filter::ImageLinkFilter
         ]
       )
     end
@@ -40,14 +40,22 @@ RSpec.describe Banzai::Pipeline::IncidentManagement::TimelineEventPipeline do
     context 'when markdown contains links' do
       let(:markdown) { '[GitLab](https://gitlab.com)' }
 
-      it { is_expected.to eq(%q(<p><a href="https://gitlab.com" target="_blank">GitLab</a></p>)) }
+      it do
+        is_expected.to eq(
+          %q(<p><a href="https://gitlab.com" rel="nofollow noreferrer noopener" target="_blank">GitLab</a></p>)
+        )
+      end
     end
 
     context 'when markdown contains images' do
       let(:markdown) { '![Name](/path/to/image.png)' }
 
       it 'replaces image with a link to the image' do
-        is_expected.to eq(%q(<p><a class="with-attachment-icon" href="/path/to/image.png" target="_blank">Name</a></p>))
+        # rubocop:disable Layout/LineLength
+        is_expected.to eq(
+          '<p><a class="with-attachment-icon" href="/path/to/image.png" target="_blank" rel="noopener noreferrer">Name</a></p>'
+        )
+        # rubocop:enable Layout/LineLength
       end
     end
 
