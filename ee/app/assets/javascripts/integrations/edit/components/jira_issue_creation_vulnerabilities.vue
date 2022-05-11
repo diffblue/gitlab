@@ -147,9 +147,10 @@ export default {
         target="_blank"
         rel="noopener noreferrer"
         variant="tier"
+        icon="license"
         class="gl-vertical-align-middle gl-mt-n2 gl-ml-2"
       >
-        <gl-icon name="license" class="gl-mr-2" />{{ ultimateBadgeText }}
+        {{ ultimateBadgeText }}
       </gl-badge>
       <template #help>
         {{ $options.i18n.checkbox.description }}

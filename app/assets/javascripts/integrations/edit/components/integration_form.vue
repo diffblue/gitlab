@@ -2,7 +2,6 @@
 import {
   GlBadge,
   GlButton,
-  GlIcon,
   GlModalDirective,
   GlSafeHtmlDirective as SafeHtml,
   GlForm,
@@ -53,7 +52,6 @@ export default {
     GlBadge,
     GlButton,
     GlForm,
-    GlIcon,
   },
   directives: {
     GlModal: GlModalDirective,
@@ -233,11 +231,10 @@ export default {
                 target="_blank"
                 rel="noopener noreferrer"
                 variant="tier"
+                icon="license"
                 class="gl-ml-3"
               >
-                <gl-icon name="license" class="gl-mr-2" />{{
-                  $options.billingPlanNames[section.plan]
-                }}
+                {{ $options.billingPlanNames[section.plan] }}
               </gl-badge>
             </h4>
             <p v-safe-html:[$options.descriptionHtmlConfig]="section.description"></p>
