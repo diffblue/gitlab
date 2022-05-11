@@ -39027,16 +39027,10 @@ msgstr ""
 msgid "ThreatMonitoring|Alerts"
 msgstr ""
 
-msgid "ThreatMonitoring|All Environments"
-msgstr ""
-
 msgid "ThreatMonitoring|Date and time"
 msgstr ""
 
 msgid "ThreatMonitoring|Dismissed"
-msgstr ""
-
-msgid "ThreatMonitoring|Environment"
 msgstr ""
 
 msgid "ThreatMonitoring|Events"
@@ -39064,9 +39058,6 @@ msgid "ThreatMonitoring|No alerts to display."
 msgstr ""
 
 msgid "ThreatMonitoring|Resolved"
-msgstr ""
-
-msgid "ThreatMonitoring|Something went wrong, unable to fetch environments"
 msgstr ""
 
 msgid "ThreatMonitoring|Status"
