@@ -32,6 +32,7 @@ db_namespace = namespace :db do
   namespace :version do
     ActiveRecord::Tasks::DatabaseTasks.for_each(databases) do |name|
       desc "Retrieves the current #{name} database schema version number"
+      # rubocop:disable Database/MultipleDatabases
       task name => :load_config do
         original_db_config = ActiveRecord::Base.connection_db_config
         db_config = ActiveRecord::Base.configurations.configs_for(env_name: ActiveRecord::Tasks::DatabaseTasks.env, name: name)
@@ -40,6 +41,7 @@ db_namespace = namespace :db do
       ensure
         ActiveRecord::Base.establish_connection(original_db_config) if original_db_config # rubocop: disable Database/EstablishConnection
       end
+      # rubocop:enable Database/MultipleDatabases
     end
   end
 
