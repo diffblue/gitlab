@@ -283,6 +283,16 @@ has been removed.
 To set test coverage parsing, use the project’s `.gitlab-ci.yml` file by providing a regular expression with the
 [`coverage` keyword](https://docs.gitlab.com/ee/ci/yaml/index.html#coverage).
 
+### The `promote-db` command is no longer available from `gitlab-ctl`
+
+WARNING:
+This feature was changed or removed in 15.0
+as a [breaking change](https://docs.gitlab.com/ee/development/contributing/#breaking-changes).
+Before updating GitLab, review the details carefully to determine if you need to make any
+changes to your code, settings, or workflow.
+
+In GitLab 14.5, we introduced the command `gitlab-ctl promote` to promote any Geo secondary node to a primary during a failover. This command replaces `gitlab-ctl promote-db` which is used to promote database nodes in multi-node Geo secondary sites. The `gitlab-ctl promote-db` command has been removed in GitLab 15.0.
+
 ### Update to the Container Registry group-level API
 
 WARNING:
