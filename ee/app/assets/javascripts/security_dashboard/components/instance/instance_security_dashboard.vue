@@ -5,10 +5,10 @@ import vulnerabilityGradesQuery from 'ee/security_dashboard/graphql/queries/inst
 import vulnerabilityHistoryQuery from 'ee/security_dashboard/graphql/queries/instance_vulnerability_history.query.graphql';
 import { PROJECT_LOADING_ERROR_MESSAGE } from 'ee/security_dashboard/helpers';
 import createFlash from '~/flash';
-import ReportNotConfigured from '../shared/empty_states/report_not_configured_instance.vue';
 import VulnerabilitySeverities from '../shared/project_security_status_chart.vue';
 import SecurityDashboardLayout from '../shared/security_dashboard_layout.vue';
 import VulnerabilitiesOverTimeChart from '../shared/vulnerabilities_over_time_chart.vue';
+import ReportNotConfigured from './report_not_configured_instance.vue';
 
 export default {
   components: {

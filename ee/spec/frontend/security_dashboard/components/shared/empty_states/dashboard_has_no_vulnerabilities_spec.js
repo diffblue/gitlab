@@ -1,4 +1,5 @@
-import { mount } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import { GlEmptyState } from '@gitlab/ui';
 import DashboardHasNoVulnerabilities from 'ee/security_dashboard/components/shared/empty_states/dashboard_has_no_vulnerabilities.vue';
 
 describe('dashboard has no vulnerabilities empty state', () => {
@@ -7,7 +8,7 @@ describe('dashboard has no vulnerabilities empty state', () => {
   const dashboardDocumentation = '/path/to/dashboard/documentation';
 
   const createWrapper = () =>
-    mount(DashboardHasNoVulnerabilities, {
+    shallowMount(DashboardHasNoVulnerabilities, {
       provide: {
         emptyStateSvgPath,
         dashboardDocumentation,
@@ -22,7 +23,13 @@ describe('dashboard has no vulnerabilities empty state', () => {
     wrapper.destroy();
   });
 
-  it('matches snapshot', () => {
-    expect(wrapper.html()).toMatchSnapshot();
+  it('passes expected props to the GlEmptyState', () => {
+    expect(wrapper.find(GlEmptyState).props()).toMatchObject({
+      title: DashboardHasNoVulnerabilities.i18n.title,
+      svgPath: emptyStateSvgPath,
+      primaryButtonLink: dashboardDocumentation,
+      primaryButtonText: DashboardHasNoVulnerabilities.i18n.primaryButtonText,
+      description: DashboardHasNoVulnerabilities.i18n.description,
+    });
   });
 });

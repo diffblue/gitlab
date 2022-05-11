@@ -2,7 +2,7 @@ import { GlLoadingIcon } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import GroupSecurityDashboard from 'ee/security_dashboard/components/group/group_security_dashboard.vue';
-import ReportNotConfiguredGroup from 'ee/security_dashboard/components/shared/empty_states/report_not_configured_group.vue';
+import ReportNotConfiguredGroup from 'ee/security_dashboard/components/group/report_not_configured_group.vue';
 import VulnerabilitySeverities from 'ee/security_dashboard/components/shared/project_security_status_chart.vue';
 import SecurityDashboardLayout from 'ee/security_dashboard/components/shared/security_dashboard_layout.vue';
 import VulnerabilitiesOverTimeChart from 'ee/security_dashboard/components/shared/vulnerabilities_over_time_chart.vue';

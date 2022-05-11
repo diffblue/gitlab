@@ -8,8 +8,8 @@ import createFlash from '~/flash';
 import { formatDate, getDateInPast } from '~/lib/utils/datetime_utility';
 import { getSvgIconPathContent } from '~/lib/utils/icon_utils';
 import { s__, __ } from '~/locale';
-import ReportNotConfigured from '../shared/empty_states/report_not_configured_project.vue';
 import SecurityDashboardLayout from '../shared/security_dashboard_layout.vue';
+import ReportNotConfigured from './report_not_configured_project.vue';
 
 const CHART_DEFAULT_DAYS = 30;
 const MAX_DAYS = 100;

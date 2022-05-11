@@ -4,7 +4,7 @@ import { shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import ProjectSecurityDashboard from 'ee/security_dashboard/components/project/project_security_dashboard.vue';
-import ReportNotConfigured from 'ee/security_dashboard/components/shared/empty_states/report_not_configured_project.vue';
+import ReportNotConfigured from 'ee/security_dashboard/components/project/report_not_configured_project.vue';
 import SecurityDashboardLayout from 'ee/security_dashboard/components/shared/security_dashboard_layout.vue';
 import SecurityTrainingPromo from 'ee/security_dashboard/components/shared/security_training_promo.vue';
 import projectsHistoryQuery from 'ee/security_dashboard/graphql/queries/project_vulnerabilities_by_day_and_count.query.graphql';

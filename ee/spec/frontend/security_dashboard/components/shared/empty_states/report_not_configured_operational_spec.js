@@ -1,4 +1,5 @@
 import { shallowMount } from '@vue/test-utils';
+import { GlEmptyState } from '@gitlab/ui';
 import ReportNotConfiguredOperational from 'ee/security_dashboard/components/shared/empty_states/report_not_configured_operational.vue';
 
 describe('Operational report not configured component', () => {
@@ -7,7 +8,7 @@ describe('Operational report not configured component', () => {
   const operationalEmptyStateSvgPath = '/operational-placeholder.svg';
   const operationalHelpPath = '/operational-help';
 
-  const createComponent = (dashboardType = 'project') => {
+  const createComponent = ({ dashboardType = 'project' }) => {
     wrapper = shallowMount(ReportNotConfiguredOperational, {
       provide: {
         dashboardType,
@@ -22,18 +23,25 @@ describe('Operational report not configured component', () => {
     wrapper.destroy();
   });
 
-  it('matches the snapshot for projects', () => {
-    createComponent();
-    expect(wrapper.element).toMatchSnapshot();
-  });
+  it.each`
+    dashboardType | description                                                 | primaryButtonText
+    ${'project'}  | ${ReportNotConfiguredOperational.i18n.description.project}  | ${ReportNotConfiguredOperational.i18n.primaryButtonText}
+    ${'group'}    | ${ReportNotConfiguredOperational.i18n.description.group}    | ${''}
+    ${'instance'} | ${ReportNotConfiguredOperational.i18n.description.instance} | ${''}
+  `(
+    'passes expected props to the GlEmptyState for the dashboardType report',
+    ({ dashboardType, description, primaryButtonText }) => {
+      createComponent({ dashboardType });
 
-  it('matches the snapshot for groups', () => {
-    createComponent('group');
-    expect(wrapper.element).toMatchSnapshot();
-  });
-
-  it('matches the snapshot for instances', () => {
-    createComponent('instance');
-    expect(wrapper.element).toMatchSnapshot();
-  });
+      expect(wrapper.find(GlEmptyState).props()).toMatchObject({
+        title: ReportNotConfiguredOperational.i18n.title,
+        svgPath: operationalEmptyStateSvgPath,
+        primaryButtonText,
+        primaryButtonLink: operationalConfigurationPath,
+        secondaryButtonText: ReportNotConfiguredOperational.i18n.secondaryButtonText,
+        secondaryButtonLink: operationalHelpPath,
+        description,
+      });
+    },
+  );
 });

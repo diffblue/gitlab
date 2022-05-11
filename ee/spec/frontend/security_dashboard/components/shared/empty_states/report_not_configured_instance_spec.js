@@ -1,5 +1,6 @@
 import { shallowMount } from '@vue/test-utils';
-import ReportNotConfiguredInstance from 'ee/security_dashboard/components/shared/empty_states/report_not_configured_instance.vue';
+import { GlEmptyState } from '@gitlab/ui';
+import ReportNotConfiguredInstance from 'ee/security_dashboard/components/instance/report_not_configured_instance.vue';
 
 describe('Instance report not configured component', () => {
   let wrapper;
@@ -24,7 +25,15 @@ describe('Instance report not configured component', () => {
     wrapper.destroy();
   });
 
-  it('matches snapshot', () => {
-    expect(wrapper.html()).toMatchSnapshot();
+  it('passes expected props to the GlEmptyState', () => {
+    expect(wrapper.find(GlEmptyState).props()).toMatchObject({
+      title: ReportNotConfiguredInstance.i18n.title,
+      svgPath: emptyStateSvgPath,
+      primaryButtonText: ReportNotConfiguredInstance.i18n.primaryButtonText,
+      primaryButtonLink: instanceDashboardSettingsPath,
+      secondaryButtonText: ReportNotConfiguredInstance.i18n.secondaryButtonText,
+      secondaryButtonLink: dashboardDocumentation,
+      description: ReportNotConfiguredInstance.i18n.description,
+    });
   });
 });
