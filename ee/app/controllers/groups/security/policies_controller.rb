@@ -61,7 +61,7 @@ module Groups
 
       def group_security_policy_available?
         can?(current_user, :read_security_orchestration_policies, group) &&
-          Feature.enabled?(:group_level_security_policies, group, default_enabled: :yaml)
+          Feature.enabled?(:group_level_security_policies, group)
       end
 
       def authorize_group_security_policies!
