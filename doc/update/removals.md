@@ -112,6 +112,10 @@ The permissions model for GraphQL is being updated. After 15.0, users with the G
 
 The issue for this removal is [GitLab-#350682](https://gitlab.com/gitlab-org/gitlab/-/issues/350682)
 
+### Legacy Geo Admin UI routes
+
+In GitLab 13.0, we introduced new project and design replication details routes in the Geo Admin UI. These routes are `/admin/geo/replication/projects` and `/admin/geo/replication/designs`. We kept the legacy routes and redirected them to the new routes. These legacy routes `/admin/geo/projects` and `/admin/geo/designs` have been removed in GitLab 15.0. Please update any bookmarks or scripts that may use the legacy routes.
+
 ### OAuth tokens without an expiration
 
 WARNING:
