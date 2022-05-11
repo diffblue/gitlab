@@ -49,7 +49,6 @@ export default {
     :modal-id="modalId"
     :ok-disabled="isApproving"
     :title="__('Enter your password to approve')"
-    ok-variant="success"
     modal-class="js-mr-approvals-modal"
     @ok="approve"
     @hide="onHide"
