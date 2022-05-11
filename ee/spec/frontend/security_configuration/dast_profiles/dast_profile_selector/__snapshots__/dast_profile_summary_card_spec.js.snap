@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DastProfileSummaryCard renders properly 1`] = `
+<gl-card-stub
+  bodyclass=""
+  class="gl-m-3 gl-p-0!"
+  footerclass=""
+  headerclass=""
+>
+   
+</gl-card-stub>
+`;
