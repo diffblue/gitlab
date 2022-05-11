@@ -329,11 +329,7 @@ module API
           end
         end
 
-<<<<<<< HEAD
         # TODO: backwards compatibility; remove after https://gitlab.com/gitlab-org/gitlab-shell/-/merge_requests/454 is merged
-=======
-        # TODO: backwards compatibility; remove after https://gitlab.com/gitlab-org/gitlab-shell/-/merge_requests/454 is merged:w
->>>>>>> 3ea5c57479cad37e3744112952b2f558c427d0d7
         post '/two_factor_otp_check', feature_category: :authentication_and_authorization do
           status 200
 
