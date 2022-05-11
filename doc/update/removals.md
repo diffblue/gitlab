@@ -78,6 +78,29 @@ The Container Registry supports [authentication](https://gitlab.com/gitlab-org/c
 
 Since it isn't used in the context of GitLab (the product), `htpasswd` authentication will be deprecated in GitLab 14.9 and removed in GitLab 15.0.
 
+### Custom `geo:db:*` Rake tasks are no longer available
+
+In GitLab 14.8, we [deprecated the `geo:db:*` Rake tasks and replaced them with built-in tasks](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/77269/diffs) after [switching the Geo tracking database to use Rails' 6 support of multiple databases](https://gitlab.com/groups/gitlab-org/-/epics/6458).
+The following `geo:db:*` tasks have been removed from GitLab 15.0 and have been replaced with their corresponding `db:*:geo` tasks:
+
+- `geo:db:drop` -> `db:drop:geo`
+- `geo:db:create` -> `db:create:geo`
+- `geo:db:setup` -> `db:setup:geo`
+- `geo:db:migrate` -> `db:migrate:geo`
+- `geo:db:rollback` -> `db:rollback:geo`
+- `geo:db:version` -> `db:version:geo`
+- `geo:db:reset` -> `db:reset:geo`
+- `geo:db:seed` -> `db:seed:geo`
+- `geo:schema:load:geo` -> `db:schema:load:geo`
+- `geo:db:schema:dump` -> `db:schema:dump:geo`
+- `geo:db:migrate:up` -> `db:migrate:up:geo`
+- `geo:db:migrate:down` -> `db:migrate:down:geo`
+- `geo:db:migrate:redo` -> `db:migrate:redo:geo`
+- `geo:db:migrate:status` -> `db:migrate:status:geo`
+- `geo:db:test:prepare` -> `db:test:prepare:geo`
+- `geo:db:test:load` -> `db:test:load:geo`
+- `geo:db:test:purge` -> `db:test:purge:geo`
+
 ### GitLab Serverless
 
 WARNING:
