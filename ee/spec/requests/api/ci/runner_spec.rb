@@ -3,14 +3,20 @@
 require 'spec_helper'
 
 RSpec.describe API::Ci::Runner do
-  let_it_be(:project) { create(:project, :repository) }
+  let_it_be_with_reload(:project) { create(:project, :repository) }
+
+  let_it_be(:user) { create(:user) }
+  let_it_be(:ref) { 'master' }
+  let_it_be(:pipeline) { create(:ci_pipeline, project: project, ref: ref) }
+  let_it_be(:runner) { create(:ci_runner, :project, projects: [project]) }
+
+  before_all do
+    project.add_developer(user)
+  end
 
   describe '/api/v4/jobs' do
-    let(:runner) { create(:ci_runner, :project, projects: [project]) }
-
     describe 'POST /api/v4/jobs/request' do
       context 'secrets management' do
-        let(:pipeline) { create(:ci_pipeline, project: project, ref: 'master') }
         let(:valid_secrets) do
           {
             DATABASE_PASSWORD: {
@@ -114,10 +120,120 @@ RSpec.describe API::Ci::Runner do
       def request_job_with_secrets_supported
         request_job info: { features: { vault_secrets: true } }
       end
+
+      def request_job(token = runner.token, **params)
+        post api('/jobs/request'), params: params.merge(token: token)
+      end
     end
 
-    def request_job(token = runner.token, **params)
-      post api('/jobs/request'), params: params.merge(token: token)
+    describe 'GET api/v4/jobs/:id/artifacts' do
+      let_it_be(:job) { create(:ci_build, :success, ref: ref, pipeline: pipeline, user: user) }
+
+      before_all do
+        create(:ci_job_artifact, :archive, job: job)
+      end
+
+      shared_examples 'successful artifact download' do
+        it 'downloads artifacts' do
+          download_artifact
+
+          expect(response).to have_gitlab_http_status(:ok)
+        end
+      end
+
+      shared_examples 'forbidden request' do
+        it 'responds with forbidden' do
+          download_artifact
+
+          expect(response).to have_gitlab_http_status(:forbidden)
+        end
+      end
+
+      context 'when a job has a cross-project dependency' do
+        let_it_be(:downstream_project) { create(:project) }
+        let_it_be_with_reload(:downstream_project_dev) { create(:user) }
+
+        let_it_be(:options) do
+          {
+            cross_dependencies: [
+              {
+                project: project.full_path,
+                ref: ref,
+                job: job.name,
+                artifacts: true
+              }
+            ]
+
+          }
+        end
+
+        let_it_be_with_reload(:downstream_ci_build) do
+          create(:ci_build, :running, project: downstream_project, user: user, options: options)
+        end
+
+        let(:token) { downstream_ci_build.token }
+
+        before_all do
+          downstream_project.add_developer(user)
+          downstream_project.add_developer(downstream_project_dev)
+        end
+
+        before do
+          stub_licensed_features(cross_project_pipelines: true)
+        end
+
+        context 'when the job is created by a user with sufficient permission in upstream project' do
+          it_behaves_like 'successful artifact download'
+
+          context 'and the upstream project has disabled public builds' do
+            before do
+              project.update!(public_builds: false)
+            end
+
+            it_behaves_like 'successful artifact download'
+          end
+        end
+
+        context 'when the job is created by a user without sufficient permission in upstream project' do
+          before do
+            downstream_ci_build.update!(user: downstream_project_dev)
+          end
+
+          it_behaves_like 'forbidden request'
+
+          context 'and the upstream project has disabled public builds' do
+            before do
+              project.update!(public_builds: false)
+            end
+
+            it_behaves_like 'forbidden request'
+          end
+        end
+
+        context 'when the upstream project is public and the job user does not have permission in the project' do
+          before do
+            project.update!(visibility_level: Gitlab::VisibilityLevel::PUBLIC)
+            downstream_ci_build.update!(user: downstream_project_dev)
+          end
+
+          it_behaves_like 'successful artifact download'
+
+          context 'and the upstream project has disabled public builds' do
+            before do
+              project.update!(public_builds: false)
+            end
+
+            it_behaves_like 'forbidden request'
+          end
+        end
+      end
+
+      def download_artifact(params = {}, request_headers = headers)
+        params = params.merge(token: token)
+        job.reload
+
+        get api("/jobs/#{job.id}/artifacts"), params: params, headers: request_headers
+      end
     end
   end
 end
