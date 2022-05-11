@@ -225,6 +225,22 @@ If you installed GitLab from source, verify manually that both servers are confi
 
 The Static Site Editor was deprecated in GitLab 14.7 and the feature is being removed in GitLab 15.0. Incoming requests to the Static Site Editor will be redirected and open the target file to edit in the Web IDE. Current users of the Static Site Editor can view the [documentation](https://docs.gitlab.com/ee/user/project/static_site_editor/) for more information, including how to remove the configuration files from existing projects. We will continue investing in improvements to the Markdown editing experience by [maturing the Content Editor](https://gitlab.com/groups/gitlab-org/-/epics/5401) and making it available as a way to edit content across GitLab.
 
+### Support for legacy format of `config/database.yml` removed
+
+WARNING:
+This feature was changed or removed in 15.0
+as a [breaking change](https://docs.gitlab.com/ee/development/contributing/#breaking-changes).
+Before updating GitLab, review the details carefully to determine if you need to make any
+changes to your code, settings, or workflow.
+
+The syntax of [GitLab's database](https://docs.gitlab.com/omnibus/settings/database.html)
+configuration located in `database.yml` has changed and the legacy format has been removed.
+The legacy format supported a single PostgreSQL adapter, whereas the new format supports multiple databases.
+The `main:` database needs to be defined as a first configuration item.
+
+This change only impacts users compiling GitLab from source, all the other installation methods handle this configuration automatically.
+Instructions are available [in the source update documentation](https://docs.gitlab.com/ee/update/upgrading_from_source.html#new-configuration-options-for-databaseyml).
+
 ### Test coverage project CI/CD setting
 
 WARNING:
