@@ -24924,12 +24924,6 @@ msgstr ""
 msgid "NetworkPolicies|Kubernetes error: %{error}"
 msgstr ""
 
-msgid "NetworkPolicies|Policy %{policyName} was successfully changed"
-msgstr ""
-
-msgid "NetworkPolicies|Something went wrong, failed to update policy"
-msgstr ""
-
 msgid "NetworkPolicy|Policy"
 msgstr ""
 
