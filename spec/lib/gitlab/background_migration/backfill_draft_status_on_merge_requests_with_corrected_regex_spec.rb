@@ -2,7 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::BackgroundMigration::BackfillDraftStatusOnMergeRequests, :migration, schema: 20220326161803 do
+RSpec.describe Gitlab::BackgroundMigration::BackfillDraftStatusOnMergeRequestsWithCorrectedRegex,
+  :migration, schema: 20220326161803 do
   let(:namespaces)     { table(:namespaces) }
   let(:projects)       { table(:projects) }
   let(:merge_requests) { table(:merge_requests) }
@@ -30,6 +31,12 @@ RSpec.describe Gitlab::BackgroundMigration::BackfillDraftStatusOnMergeRequests, 
         (1..4).each do |n|
           create_merge_request(
             title: "#{prefix} This is a title",
+            draft: false,
+            state_id: n
+          )
+
+          create_merge_request(
+            title: "This is a title with the #{prefix} in a weird spot",
             draft: false,
             state_id: n
           )
