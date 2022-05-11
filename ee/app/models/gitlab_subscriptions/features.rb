@@ -168,7 +168,6 @@ module GitlabSubscriptions
       dependency_scanning
       devops_adoption
       dora4_analytics
-      enforce_ssh_key_expiration
       enterprise_templates
       environment_alerts
       evaluate_group_level_compliance_pipeline
