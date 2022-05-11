@@ -23,18 +23,6 @@ RSpec.describe 'Container-Scanning.gitlab-ci.yml' do
     end
 
     context 'when project has no license' do
-      it 'includes no jobs' do
-        expect { pipeline }.to raise_error(Ci::CreatePipelineService::CreateError)
-      end
-    end
-
-    context 'when project has Ultimate license' do
-      let(:license) { build(:license, plan: License::ULTIMATE_PLAN) }
-
-      before do
-        allow(License).to receive(:current).and_return(license)
-      end
-
       context 'by default' do
         it 'includes job' do
           expect(build_names).to match_array(%w[container_scanning])
