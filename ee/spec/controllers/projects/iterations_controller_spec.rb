@@ -10,6 +10,9 @@ RSpec.describe Projects::IterationsController do
   shared_examples 'iterations license is not available' do
     before do
       stub_licensed_features(iterations: false)
+
+      project.add_developer(user)
+
       sign_in(user)
     end
 
@@ -57,6 +60,18 @@ RSpec.describe Projects::IterationsController do
 
         it_behaves_like 'returning response status', :success
       end
+
+      context 'when iteration cadences is enabled' do
+        before do
+          stub_feature_flags(iteration_cadences: true)
+        end
+
+        it 'redirects to the project iteration cadence index path' do
+          subject
+
+          expect(response).to redirect_to(project_iteration_cadences_path(project))
+        end
+      end
     end
   end
 
@@ -64,14 +79,12 @@ RSpec.describe Projects::IterationsController do
     let_it_be(:cadence) { create(:iterations_cadence, group: group) }
     let_it_be(:iteration) { create(:iteration, iterations_cadence: cadence) }
 
-    let(:requested_iteration) { iteration }
-
     subject do
       get :show,
       params: {
         namespace_id: project.namespace,
         project_id: project,
-        id: requested_iteration.id
+        id: iteration.id
       }
     end
 
@@ -93,6 +106,32 @@ RSpec.describe Projects::IterationsController do
         end
 
         it_behaves_like 'returning response status', :success
+      end
+
+      context 'when iteration cadences is enabled' do
+        before do
+          stub_feature_flags(iteration_cadences: true)
+        end
+
+        context 'when current user cannot view the requested iteration' do
+          let_it_be(:iteration) { create(:iteration, iterations_cadence: create(:iterations_cadence)) }
+
+          it_behaves_like 'returning response status', :not_found
+        end
+
+        context 'when current user can view the requested iteration' do
+          it 'redirects to the project iteration cadence iteration show path' do
+            subject
+
+            expect(response).to redirect_to(
+              project_iteration_cadence_iteration_path(
+                project,
+                iteration_cadence_id: iteration.iterations_cadence_id,
+                id: iteration.id
+              )
+            )
+          end
+        end
       end
     end
   end
