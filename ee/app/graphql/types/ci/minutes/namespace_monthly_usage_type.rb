@@ -23,7 +23,7 @@ module Types
               description: 'CI minutes usage data for projects in the namespace.'
 
         field :shared_runners_duration, ::GraphQL::Types::Int, null: true,
-              description: 'Total numbers of minutes used by the shared runners in the namespace.'
+              description: 'Total duration (in seconds) of shared runners use by the namespace for the month.'
 
         def month
           object.date.strftime('%B')

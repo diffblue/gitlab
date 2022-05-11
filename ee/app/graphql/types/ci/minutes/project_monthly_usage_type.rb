@@ -12,6 +12,9 @@ module Types
               method: :amount_used,
               description: 'Number of CI minutes used by the project in the month.'
 
+        field :shared_runners_duration, ::GraphQL::Types::Int, null: true,
+              description: 'Total duration (in seconds) of shared runners use by the project for the month.'
+
         field :name, GraphQL::Types::String, null: true,
               description: 'Name of the project.'
 
