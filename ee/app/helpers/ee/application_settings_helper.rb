@@ -39,7 +39,6 @@ module EE
         :elasticsearch_analyzers_kuromoji_enabled,
         :elasticsearch_analyzers_kuromoji_search,
         :enforce_namespace_storage_limit,
-        :enforce_ssh_key_expiration,
         :geo_node_allowed_ips,
         :geo_status_timeout,
         :help_text,

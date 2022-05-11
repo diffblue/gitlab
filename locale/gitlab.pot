@@ -13954,9 +13954,6 @@ msgstr ""
 msgid "Ends: %{endsAt}"
 msgstr ""
 
-msgid "Enforce SSH key expiration"
-msgstr ""
-
 msgid "Enforce two-factor authentication"
 msgstr ""
 
@@ -28798,9 +28795,6 @@ msgstr ""
 msgid "Profiles|Expiration date"
 msgstr ""
 
-msgid "Profiles|Expired key is not valid."
-msgstr ""
-
 msgid "Profiles|Expired:"
 msgstr ""
 
@@ -28828,9 +28822,6 @@ msgstr ""
 msgid "Profiles|Increase your account's security by enabling Two-Factor Authentication (2FA)"
 msgstr ""
 
-msgid "Profiles|Invalid key."
-msgstr ""
-
 msgid "Profiles|Invalid password"
 msgstr ""
 
@@ -28849,13 +28840,7 @@ msgstr ""
 msgid "Profiles|Key becomes invalid on this date. Maximum lifetime for SSH keys is %{max_ssh_key_lifetime} days"
 msgstr ""
 
-msgid "Profiles|Key can still be used after expiration."
-msgstr ""
-
 msgid "Profiles|Key titles are publicly visible."
-msgstr ""
-
-msgid "Profiles|Key usable beyond expiration date."
 msgstr ""
 
 msgid "Profiles|Last used:"

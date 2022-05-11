@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe EE::ApplicationSettingsHelper do
   describe '.visible_attributes' do
     context 'personal access token parameters' do
-      it { expect(visible_attributes).to include(*%i(max_personal_access_token_lifetime enforce_ssh_key_expiration)) }
+      it { expect(visible_attributes).to include(*%i(max_personal_access_token_lifetime)) }
     end
   end
 

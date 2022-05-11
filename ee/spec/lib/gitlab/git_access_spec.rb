@@ -1051,16 +1051,11 @@ RSpec.describe Gitlab::GitAccess do
 
   describe '#check_valid_actor!' do
     context 'key expiration is enforced' do
-      let(:actor) { build(:personal_key, expires_at: 2.days.ago) }
-
-      before do
-        stub_licensed_features(enforce_ssh_key_expiration: true)
-        stub_ee_application_setting(enforce_ssh_key_expiration: true)
-      end
+      let(:actor) { build(:key, expires_at: 2.days.ago) }
 
       it 'does not allow expired keys', :aggregate_failures do
-        expect { push_changes }.to raise_forbidden('Your SSH key has expired and the instance administrator has enforced expiration.')
-        expect { pull_changes }.to raise_forbidden('Your SSH key has expired and the instance administrator has enforced expiration.')
+        expect { push_changes }.to raise_forbidden('Your SSH key has expired.')
+        expect { pull_changes }.to raise_forbidden('Your SSH key has expired.')
       end
     end
   end
