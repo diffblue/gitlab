@@ -1,5 +1,5 @@
 <script>
-import { GlCard, GlSprintf } from '@gitlab/ui';
+import { GlCard } from '@gitlab/ui';
 import { parseSeconds, stringifyTime } from '~/lib/utils/datetime_utility';
 import { __, s__ } from '~/locale';
 import TimeAgo from '~/vue_shared/components/time_ago_tooltip.vue';
@@ -10,7 +10,6 @@ export default {
     otherInfo: __('Other information'),
     dbReplicationLag: s__('Geo|Data replication lag'),
     lastEventId: s__('Geo|Last event ID from primary'),
-    lastEventTime: s__('Geo|(%{timeAgo})'),
     lastCursorEventId: s__('Geo|Last event ID processed by cursor'),
     storageConfig: s__('Geo|Storage config'),
     shardsNotMatched: s__('Geo|Does not match the primary storage configuration'),
@@ -20,7 +19,6 @@ export default {
   classTimestamp: 'gl-text-gray-500 gl-font-sm gl-font-weight-normal',
   components: {
     GlCard,
-    GlSprintf,
     TimeAgo,
   },
   props: {
@@ -86,11 +84,7 @@ export default {
         <template v-if="hasEventInfo">
           <span v-if="node.lastEventId">{{ node.lastEventId }}</span>
           <span v-if="lastEventTimestamp" :class="$options.classTimestamp">
-            <gl-sprintf :message="$options.i18n.lastEventTime">
-              <template #timeAgo>
-                <time-ago :time="lastEventTimestamp" />
-              </template>
-            </gl-sprintf>
+            <time-ago :time="lastEventTimestamp" />
           </span>
         </template>
         <span v-else>{{ $options.i18n.unknown }}</span>
@@ -102,11 +96,7 @@ export default {
         <template v-if="hasCursorEventInfo">
           <span v-if="node.cursorLastEventId">{{ node.cursorLastEventId }}</span>
           <span v-if="lastCursorEventTimestamp" :class="$options.classTimestamp">
-            <gl-sprintf :message="$options.i18n.lastEventTime">
-              <template #timeAgo>
-                <time-ago :time="lastCursorEventTimestamp" />
-              </template>
-            </gl-sprintf>
+            <time-ago :time="lastCursorEventTimestamp" />
           </span>
         </template>
         <span v-else>{{ $options.i18n.unknown }}</span>
