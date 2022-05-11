@@ -49,6 +49,7 @@ export default {
   data() {
     const {
       name = '',
+      profileName = '',
       targetUrl = '',
       excludedUrls = [],
       requestHeaders = '',
@@ -62,7 +63,7 @@ export default {
       state: false,
       showValidation: false,
       fields: {
-        profileName: initFormField({ value: name }),
+        profileName: initFormField({ value: name || profileName }),
         targetUrl: initFormField({ value: targetUrl }),
         excludedUrls: initFormField({
           value: (excludedUrls || []).join(EXCLUDED_URLS_SEPARATOR),

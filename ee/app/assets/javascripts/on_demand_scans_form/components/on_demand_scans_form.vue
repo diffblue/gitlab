@@ -612,6 +612,7 @@ export default {
       :profiles="selectedProfiles"
       :profile-type="profileType"
       :is-open="isSideDrawerOpen"
+      :is-loading="isLoadingProfiles"
       @close-drawer="closeSideDrawer"
       @profile-submitted="onScannerProfileCreated"
     />
