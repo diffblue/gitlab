@@ -16307,9 +16307,6 @@ msgstr ""
 msgid "Geo|%{title} checksum progress"
 msgstr ""
 
-msgid "Geo|(%{timeAgo})"
-msgstr ""
-
 msgid "Geo|Add New Site"
 msgstr ""
 
