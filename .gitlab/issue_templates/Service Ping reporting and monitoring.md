@@ -79,7 +79,7 @@ To verify that the ServicePing was received in the VersionsApp do the following 
 
 1. Go to the versions app console and locate: `RawUsageData.find(uuid: '')`.
 1. Go to the Rails console and check the related `RawUsageData` object.
-1. Or go to the VersionsApp UI https://version.gitlab.com/usage_data/usage_data_id
+1. Or go to the VersionsApp UI https://version.gitlab.com/usage_data/usage_data_id.
 
 ```ruby
 /bin/herokuish procfile exec rails console
