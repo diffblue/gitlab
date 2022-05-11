@@ -1,6 +1,6 @@
 .custom-project-templates
-  - if custom_project_templates.present?
-    - custom_project_templates.each do |template|
+  - if @custom_project_templates.present?
+    - @custom_project_templates.each do |template|
       .template-option.d-flex.align-items-center{ data: { qa_selector: 'template_option_row' } }
         .avatar-container.s40
           = project_icon(template, alt: template.name, class: 'btn-template-icon avatar s40 avatar-tile', lazy: false)
@@ -18,7 +18,7 @@
             %span{ data: { qa_selector: 'use_template_button' } }
               = _('Use template')
 
-    = paginate custom_project_templates, params: {controller: 'users', action: 'available_project_templates', username: current_user.username}, theme: 'gitlab', remote: true
+    = paginate @custom_project_templates, params: { controller: 'users', action: 'available_project_templates', username: current_user.username }, theme: 'gitlab', remote: true
   - else
     .bs-callout.bs-callout-warning
       %p

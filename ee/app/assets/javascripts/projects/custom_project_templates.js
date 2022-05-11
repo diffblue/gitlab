@@ -1,7 +1,10 @@
 import $ from 'jquery';
-import { Rails } from '~/lib/utils/rails_ujs';
+import axios from '~/lib/utils/axios_utils';
 import eventHub from '~/projects/new/event_hub';
 import projectNew from '~/projects/project_new';
+
+const INSTANCE_TAB_CONTENT_SELECTOR = '.js-custom-instance-project-templates-tab-content';
+const GROUP_TAB_CONTENT_SELECTOR = '.js-custom-group-project-templates-tab-content';
 
 const bindEvents = () => {
   const $newProjectForm = $('#new_project');
@@ -15,6 +18,7 @@ const bindEvents = () => {
   const $projectFieldsFormInput = $('.project-fields-form input#project_use_custom_template');
   const $subgroupWithTemplatesIdInput = $('.js-project-group-with-project-templates-id');
   const $namespaceSelect = $projectFieldsForm.find('.js-select-namespace');
+  const $pagination = $('.gl-pagination');
   let hasUserDefinedProjectName = false;
 
   if ($newProjectForm.length !== 1 || $useCustomTemplateBtn.length === 0) {
@@ -120,6 +124,17 @@ const bindEvents = () => {
     disableCustomTemplate();
   });
 
+  $pagination.on('ajax:success', (event) => {
+    const $tabContent = $pagination.closest(
+      [INSTANCE_TAB_CONTENT_SELECTOR, GROUP_TAB_CONTENT_SELECTOR].join(','),
+    );
+    const doc = event.detail[0];
+    const element = document.adoptNode(doc.body.firstElementChild);
+
+    $tabContent.empty().append(element);
+    bindEvents();
+  });
+
   $(document).on('click', '.js-template-group-options', function toggleExpandedClass() {
     $(this).toggleClass('expanded');
   });
@@ -127,20 +142,18 @@ const bindEvents = () => {
 
 export default () => {
   const $navElement = $('.js-custom-instance-project-templates-nav-link');
-  const $tabContent = $('.js-custom-instance-project-templates-tab-content');
+  const $tabContent = $(INSTANCE_TAB_CONTENT_SELECTOR);
   const $groupNavElement = $('.js-custom-group-project-templates-nav-link');
-  const $groupTabContent = $('.js-custom-group-project-templates-tab-content');
+  const $groupTabContent = $(GROUP_TAB_CONTENT_SELECTOR);
+  const fetchHtmlForTabContent = async ($content) => {
+    const response = await axios.get($content.data('initialTemplates'));
+    // eslint-disable-next-line no-param-reassign
+    $content[0].innerHTML = response.data;
+    bindEvents();
+  };
 
-  $tabContent.on('ajax:success', bindEvents);
-  $groupTabContent.on('ajax:success', bindEvents);
-
-  $navElement.one('click', () => {
-    Rails.ajax({ url: $tabContent.data('initialTemplates'), type: 'GET' });
-  });
-
-  $groupNavElement.one('click', () => {
-    Rails.ajax({ url: $groupTabContent.data('initialTemplates'), type: 'GET' });
-  });
+  $navElement.one('click', () => fetchHtmlForTabContent($tabContent));
+  $groupNavElement.one('click', () => fetchHtmlForTabContent($groupTabContent));
 
   bindEvents();
 };

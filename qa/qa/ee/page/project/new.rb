@@ -18,12 +18,12 @@ module QA
                 element :instance_template_tab_badge
               end
 
-              view 'ee/app/views/users/_custom_project_templates_from_groups.html.haml' do
+              view 'ee/app/views/users/available_group_templates.html.haml' do
                 element :use_template_button
                 element :template_option_row
               end
 
-              view 'ee/app/views/users/_custom_project_templates.html.haml' do
+              view 'ee/app/views/users/available_project_templates.html.haml' do
                 element :use_template_button
                 element :template_option_row
               end
