@@ -281,4 +281,83 @@ RSpec.describe EE::Namespace::RootStorageSize, :saas do
       end
     end
   end
+
+  describe '#exceeded_size' do
+    context 'when given a parameter' do
+      where(:change_size, :expected_excess_size) do
+        150.megabytes | 100.megabytes
+        60.megabytes  | 10.megabytes
+        51.megabytes  | 1.megabyte
+        50.megabytes  | 0
+        10.megabytes  | 0
+        0             | 0
+      end
+
+      with_them do
+        it 'returns the size in bytes that the change exceeds the limit' do
+          expect(model.exceeded_size(change_size)).to eq(expected_excess_size)
+        end
+      end
+    end
+
+    context 'without a parameter' do
+      where(:current_size, :expected_excess_size) do
+        0             | 0
+        50.megabytes  | 0
+        100.megabytes | 0
+        101.megabytes | 1.megabyte
+        170.megabytes | 70.megabytes
+      end
+
+      with_them do
+        it 'returns the size in bytes that the current storage size exceeds the limit' do
+          expect(model.exceeded_size).to eq(expected_excess_size)
+        end
+      end
+    end
+  end
+
+  describe '#changes_will_exceed_size_limit?' do
+    context 'when the changes will exceed the size limit' do
+      where(:change_size) { [51.megabytes, 60.megabytes, 100.megabytes] }
+
+      with_them do
+        it 'returns true' do
+          expect(model.changes_will_exceed_size_limit?(change_size)).to eq(true)
+        end
+      end
+    end
+
+    context 'when the changes will not exceed the size limit' do
+      where(:change_size) { [0, 1.megabyte, 40.megabytes, 50.megabytes] }
+
+      with_them do
+        it 'returns false' do
+          expect(model.changes_will_exceed_size_limit?(change_size)).to eq(false)
+        end
+      end
+    end
+
+    context 'when the current size exceeds the limit' do
+      let(:current_size) { 101.megabytes }
+
+      where(:change_size) { [0, 1.megabyte, 60.megabytes, 100.megabytes] }
+
+      with_them do
+        it 'returns true regardless of change_size' do
+          expect(model.changes_will_exceed_size_limit?(change_size)).to eq(true)
+        end
+      end
+    end
+
+    context 'when storage size limit is 0' do
+      before do
+        plan_limits.update!(storage_size_limit: 0)
+      end
+
+      it 'returns false' do
+        expect(model.changes_will_exceed_size_limit?(120.megabytes)).to eq(false)
+      end
+    end
+  end
 end
