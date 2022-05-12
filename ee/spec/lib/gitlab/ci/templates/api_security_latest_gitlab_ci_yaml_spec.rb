@@ -2,20 +2,20 @@
 
 require 'spec_helper'
 
-RSpec.describe 'API-Fuzzing.gitlab-ci.yml' do
-  subject(:template) { Gitlab::Template::GitlabCiYmlTemplate.find('API-Fuzzing') }
+RSpec.describe 'API-Fuzzing.latest.gitlab-ci.yml' do
+  subject(:template) { Gitlab::Template::GitlabCiYmlTemplate.find('API-Fuzzing.latest') }
 
   specify { expect(template).not_to be_nil }
 
   describe 'the template file' do
     let(:template_filename) { Rails.root.join("lib/gitlab/ci/templates/" + template.full_name) }
     let(:contents) { File.read(template_filename) }
-    let(:production_registry) { '${SECURE_ANALYZERS_PREFIX}/api-fuzzing:${FUZZAPI_VERSION}' }
-    let(:staging_registry) { '${SECURE_ANALYZERS_PREFIX}/api-fuzzing-src:${FUZZAPI_VERSION}' }
+    let(:production_registry) { 'FUZZAPI_IMAGE: api-security' }
+    let(:staging_registry) { 'FUZZAPI_IMAGE: api-fuzzing-src' }
 
     # Make sure future changes to the template use the production container registry.
     #
-    # The API Fuzzing template is developed against a dev container registry.
+    # The API Security template is developed against a dev container registry.
     # The registry is switched when releasing new versions. The difference in
     # names between development and production is also quite small making it
     # easy to miss during review.
@@ -133,6 +133,34 @@ RSpec.describe 'API-Fuzzing.gitlab-ci.yml' do
 
           it 'includes no jobs' do
             expect { pipeline }.to raise_error(Ci::CreatePipelineService::CreateError)
+          end
+        end
+
+        context 'when CI_GITLAB_FIPS_MODE=false' do
+          let(:build_dast_api) { pipeline.builds.find_by(name: 'apifuzzer_fuzz') }
+          let(:build_variables) { build_dast_api.variables.pluck(:key, :value) }
+
+          before do
+            create(:ci_variable, project: project, key: 'CI_GITLAB_FIPS_MODE', value: 'false')
+            create(:ci_variable, project: project, key: 'FUZZAPI_HAR', value: 'testing.har')
+            create(:ci_variable, project: project, key: 'FUZZAPI_TARGET_URL', value: 'http://example.com')
+          end
+
+          it 'sets FUZZAPI_IMAGE_SUFFIX to ""' do
+            expect(build_variables).to be_include(['FUZZAPI_IMAGE_SUFFIX', ''])
+          end
+        end
+
+        context 'when CI_GITLAB_FIPS_MODE=true' do
+          let(:build_dast_api) { pipeline.builds.find_by(name: 'apifuzzer_fuzz') }
+          let(:build_variables) { build_dast_api.variables.pluck(:key, :value) }
+
+          before do
+            create(:ci_variable, project: project, key: 'CI_GITLAB_FIPS_MODE', value: 'true')
+          end
+
+          it 'sets FUZZAPI_IMAGE_SUFFIX to "-fips"' do
+            expect(build_variables).to be_include(['FUZZAPI_IMAGE_SUFFIX', '-fips'])
           end
         end
       end

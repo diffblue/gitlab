@@ -10,8 +10,8 @@ RSpec.describe 'DAST-API.gitlab-ci.yml' do
   describe 'the template file' do
     let(:template_filename) { Rails.root.join("lib/gitlab/ci/templates/" + template.full_name) }
     let(:contents) { File.read(template_filename) }
-    let(:production_registry) { '$SECURE_ANALYZERS_PREFIX/api-fuzzing:$DAST_API_VERSION' }
-    let(:staging_registry) { '$SECURE_ANALYZERS_PREFIX/api-fuzzing-src:$DAST_API_VERSION' }
+    let(:production_registry) { 'DAST_API_IMAGE: api-security' }
+    let(:staging_registry) { 'DAST_API_IMAGE: api-fuzzing-src' }
 
     # Make sure future changes to the template use the production container registry.
     #
@@ -96,6 +96,32 @@ RSpec.describe 'DAST-API.gitlab-ci.yml' do
 
           it 'includes no jobs' do
             expect { pipeline }.to raise_error(Ci::CreatePipelineService::CreateError)
+          end
+        end
+
+        context 'when CI_GITLAB_FIPS_MODE=false' do
+          let(:build_dast_api) { pipeline.builds.find_by(name: 'dast_api') }
+          let(:build_variables) { build_dast_api.variables.pluck(:key, :value) }
+
+          before do
+            create(:ci_variable, project: project, key: 'CI_GITLAB_FIPS_MODE', value: 'false')
+          end
+
+          it 'sets DAST_API_IMAGE_SUFFIX to ""' do
+            expect(build_variables).to be_include(['DAST_API_IMAGE_SUFFIX', ''])
+          end
+        end
+
+        context 'when CI_GITLAB_FIPS_MODE=true' do
+          let(:build_dast_api) { pipeline.builds.find_by(name: 'dast_api') }
+          let(:build_variables) { build_dast_api.variables.pluck(:key, :value) }
+
+          before do
+            create(:ci_variable, project: project, key: 'CI_GITLAB_FIPS_MODE', value: 'true')
+          end
+
+          it 'sets DAST_API_IMAGE_SUFFIX to "-fips"' do
+            expect(build_variables).to be_include(['DAST_API_IMAGE_SUFFIX', '-fips'])
           end
         end
       end

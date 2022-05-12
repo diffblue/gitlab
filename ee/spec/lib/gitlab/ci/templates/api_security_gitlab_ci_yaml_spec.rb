@@ -2,20 +2,20 @@
 
 require 'spec_helper'
 
-RSpec.describe 'API-Fuzzing.latest.gitlab-ci.yml' do
-  subject(:template) { Gitlab::Template::GitlabCiYmlTemplate.find('API-Fuzzing.latest') }
+RSpec.describe 'API-Fuzzing.gitlab-ci.yml' do
+  subject(:template) { Gitlab::Template::GitlabCiYmlTemplate.find('API-Fuzzing') }
 
   specify { expect(template).not_to be_nil }
 
   describe 'the template file' do
     let(:template_filename) { Rails.root.join("lib/gitlab/ci/templates/" + template.full_name) }
     let(:contents) { File.read(template_filename) }
-    let(:production_registry) { 'FUZZAPI_IMAGE: api-fuzzing' }
+    let(:production_registry) { 'FUZZAPI_IMAGE: api-security' }
     let(:staging_registry) { 'FUZZAPI_IMAGE: api-fuzzing-src' }
 
     # Make sure future changes to the template use the production container registry.
     #
-    # The API Fuzzing template is developed against a dev container registry.
+    # The API Security template is developed against a dev container registry.
     # The registry is switched when releasing new versions. The difference in
     # names between development and production is also quite small making it
     # easy to miss during review.
