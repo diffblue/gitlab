@@ -207,16 +207,30 @@ RSpec.describe EE::Namespace::RootStorageSize, :saas do
   end
 
   describe '#enforce_limit?' do
-    subject { model.enforce_limit? }
+    before do
+      stub_feature_flags(namespace_storage_limit_bypass_date_check: false)
+    end
 
     around do |example|
       travel_to(current_date) { example.run }
+    end
+
+    subject { model.enforce_limit? }
+
+    shared_examples ':namespace_storage_limit_bypass_date_check enabled' do
+      before do
+        stub_feature_flags(namespace_storage_limit_bypass_date_check: true)
+      end
+
+      it { is_expected.to eq(true) }
     end
 
     context 'when current date is before enforcement date' do
       let(:current_date) { described_class::ENFORCEMENT_DATE - 1.day }
 
       it { is_expected.to eq(false) }
+
+      it_behaves_like ':namespace_storage_limit_bypass_date_check enabled'
     end
 
     context 'when current date is on or after enforcement date' do
@@ -264,6 +278,8 @@ RSpec.describe EE::Namespace::RootStorageSize, :saas do
         context 'when subscription start date is on or after effective date' do
           it { is_expected.to eq(true) }
         end
+
+        it_behaves_like ':namespace_storage_limit_bypass_date_check enabled'
       end
 
       context 'when subscription is for a paid plan' do
@@ -278,6 +294,8 @@ RSpec.describe EE::Namespace::RootStorageSize, :saas do
         context 'when subscription start date is on or after effective date' do
           it { is_expected.to eq(true) }
         end
+
+        it_behaves_like ':namespace_storage_limit_bypass_date_check enabled'
       end
     end
   end
