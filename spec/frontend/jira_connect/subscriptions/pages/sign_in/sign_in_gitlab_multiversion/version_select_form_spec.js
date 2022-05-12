@@ -3,13 +3,10 @@ import { nextTick } from 'vue';
 
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import VersionSelectForm from '~/jira_connect/subscriptions/pages/sign_in/sign_in_gitlab_multiversion/version_select_form.vue';
-import createStore from '~/jira_connect/subscriptions/store';
 
 describe('VersionSelectForm', () => {
   let wrapper;
-  let store;
 
-  const findSelfManagedInstanceInput = () => wrapper.findComponent(GlFormInput);
   const findFormRadioGroup = () => wrapper.findComponent(GlFormRadioGroup);
   const findForm = () => wrapper.findComponent(GlForm);
   const findInput = () => wrapper.findComponent(GlFormInput);
@@ -17,11 +14,7 @@ describe('VersionSelectForm', () => {
   const submitForm = () => findForm().vm.$emit('submit', new Event('submit'));
 
   const createComponent = () => {
-    store = createStore();
-
-    wrapper = shallowMountExtended(VersionSelectForm, {
-      store,
-    });
+    wrapper = shallowMountExtended(VersionSelectForm);
   };
 
   afterEach(() => {
@@ -38,7 +31,7 @@ describe('VersionSelectForm', () => {
     });
 
     it('does not render instance input', () => {
-      expect(findSelfManagedInstanceInput().exists()).toBe(false);
+      expect(findInput().exists()).toBe(false);
     });
 
     describe('when form is submitted', () => {

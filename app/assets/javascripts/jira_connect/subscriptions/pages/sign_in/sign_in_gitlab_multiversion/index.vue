@@ -4,8 +4,6 @@ import { s__ } from '~/locale';
 import SignInOauthButton from '../../../components/sign_in_oauth_button.vue';
 import VersionSelectForm from './version_select_form.vue';
 
-const DEFAULT_GITLAB_BASE_PATH = '';
-
 export default {
   name: 'SignInGitlabMultiversion',
   components: {
@@ -15,12 +13,12 @@ export default {
   },
   data() {
     return {
-      gitlabBasePath: DEFAULT_GITLAB_BASE_PATH,
+      gitlabBasePath: null,
     };
   },
   computed: {
     hasSelectedVersion() {
-      return this.gitlabBasePath !== DEFAULT_GITLAB_BASE_PATH;
+      return this.gitlabBasePath !== null;
     },
     subtitle() {
       return this.hasSelectedVersion
@@ -30,7 +28,7 @@ export default {
   },
   methods: {
     resetGitlabBasePath() {
-      this.gitlabBasePath = DEFAULT_GITLAB_BASE_PATH;
+      this.gitlabBasePath = null;
     },
     onVersionSelect(gitlabBasePath) {
       this.gitlabBasePath = gitlabBasePath;

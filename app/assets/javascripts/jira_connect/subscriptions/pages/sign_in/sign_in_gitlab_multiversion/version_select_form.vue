@@ -74,7 +74,6 @@ export default {
     <gl-form-group
       v-if="isSelfManagedSelected"
       class="gl-ml-6"
-      :optional="false"
       :label="$options.i18n.instanceURLInputLabel"
       :description="$options.i18n.instanceURLInputDescription"
       label-for="self-managed-instance-input"
