@@ -83,6 +83,7 @@ RSpec.describe MergeRequests::PushOptionsHandlerService do
       expect(last_mr.description).to eq(multiline_description)
     end
   end
+
   shared_examples_for 'a service that can set the draft of a merge request' do
     subject(:last_mr) { MergeRequest.last }
 
