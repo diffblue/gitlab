@@ -7,6 +7,15 @@
 - help_advanced_search_migrations_link_start = help_link_start.html_safe % { anchor: "advanced-search-migrations" }
 - help_recreate_index_link_start = help_link_start.html_safe % { anchor: "last-resort-to-recreate-an-index" }
 
+- if @search_error_if_version_incompatible
+  - content_for :page_level_alert do
+    %div{ class: [container_class, @content_class, 'gl-pt-5!'] }
+      = render Pajamas::AlertComponent.new(title: s_('AdvancedSearch|Elasticsearch version not compatible'),
+        dismissible: false,
+        variant: :danger) do |c|
+        = c.body do
+          = _('Pause indexing and upgrade Elasticsearch to a supported version.')
+          = link_to _('Learn more.'), help_page_path('integration/elasticsearch', anchor: 'version-requirements')
 
 - if @elasticsearch_warn_if_not_using_aliases
   - content_for :page_level_alert do
