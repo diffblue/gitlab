@@ -7,6 +7,7 @@ import { mergeUrlParams } from '~/lib/utils/url_utility';
 import { POLICY_TYPE_COMPONENT_OPTIONS } from '../constants';
 
 const i18n = {
+  cancel: __('Cancel'),
   examples: __('Examples'),
   selectPolicy: s__('SecurityOrchestration|Select policy'),
   scanResultPolicyTitle: s__('SecurityOrchestration|Scan result policy'),
@@ -33,6 +34,7 @@ export default {
   directives: {
     SafeHtml: GlSafeHtmlDirective,
   },
+  inject: ['policiesPath'],
   methods: {
     constructUrl(policyType) {
       return mergeUrlParams({ type: policyType }, window.location.href);
@@ -59,32 +61,35 @@ export default {
 };
 </script>
 <template>
-  <div
-    class="gl-display-grid gl-md-grid-template-columns-2 gl-gap-6"
-    data-qa-selector="policy_selection_wizard"
-  >
-    <gl-card
-      v-for="option in $options.policies"
-      :key="option.title"
-      body-class="gl-p-6 gl-display-flex gl-flex-grow-1"
+  <div class="gl-mb-4">
+    <div
+      class="gl-display-grid gl-md-grid-template-columns-2 gl-gap-6 gl-mb-4"
+      data-qa-selector="policy_selection_wizard"
     >
-      <div class="gl-mr-6 gl-text-white">
-        <div v-safe-html:[$options.safeHtmlConfig]="option.svg"></div>
-      </div>
-      <div class="gl-display-flex gl-flex-direction-column">
-        <h4 class="gl-mt-0">{{ option.title }}</h4>
-        <p>{{ option.description }}</p>
-        <h5>{{ $options.i18n.examples }}</h5>
-        <p class="gl-flex-grow-1">{{ option.example }}</p>
-        <div>
-          <gl-button
-            variant="confirm"
-            :href="constructUrl(option.urlParameter)"
-            :data-testid="`select-policy-${option.urlParameter}`"
-            >{{ $options.i18n.selectPolicy }}</gl-button
-          >
+      <gl-card
+        v-for="option in $options.policies"
+        :key="option.title"
+        body-class="gl-p-6 gl-display-flex gl-flex-grow-1"
+      >
+        <div class="gl-mr-6 gl-text-white">
+          <div v-safe-html:[$options.safeHtmlConfig]="option.svg"></div>
         </div>
-      </div>
-    </gl-card>
+        <div class="gl-display-flex gl-flex-direction-column">
+          <h4 class="gl-mt-0">{{ option.title }}</h4>
+          <p>{{ option.description }}</p>
+          <h5>{{ $options.i18n.examples }}</h5>
+          <p class="gl-flex-grow-1">{{ option.example }}</p>
+          <div>
+            <gl-button
+              variant="confirm"
+              :href="constructUrl(option.urlParameter)"
+              :data-testid="`select-policy-${option.urlParameter}`"
+              >{{ $options.i18n.selectPolicy }}</gl-button
+            >
+          </div>
+        </div>
+      </gl-card>
+    </div>
+    <gl-button :href="policiesPath" data-testid="back-button">{{ $options.i18n.cancel }}</gl-button>
   </div>
 </template>
