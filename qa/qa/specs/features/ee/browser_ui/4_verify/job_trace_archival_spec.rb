@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 module QA
   RSpec.describe 'Verify', :orchestrated, :runner, :requires_admin, :geo do
-    describe 'When CI job trace is archived and geo is enabled' do
+    describe 'When CI job log is archived and geo is enabled' do
       let(:executor) { "qa-runner-#{Time.now.to_i}" }
       let(:pipeline_job_name) { 'test-archival' }
 
