@@ -42,5 +42,3 @@ module Mutations
     end
   end
 end
-
-Mutations::Ci::NamespaceCiCdSettingsUpdate.prepend_mod_with('Mutations::Ci::NamespaceCiCdSettingsUpdate')

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Mutations::Ci::CiCdSettingsUpdate do
+RSpec.describe Mutations::Ci::ProjectCiCdSettingsUpdate do
   include GraphqlHelpers
 
   let_it_be(:project) { create(:project) }
