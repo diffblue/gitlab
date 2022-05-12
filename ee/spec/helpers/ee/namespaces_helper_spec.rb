@@ -2,6 +2,8 @@
 require 'spec_helper'
 
 RSpec.describe EE::NamespacesHelper do
+  include NamespacesTestHelper
+
   let!(:user) { create(:user) }
   let!(:user_project_creation_level) { nil }
 
@@ -177,7 +179,7 @@ RSpec.describe EE::NamespacesHelper do
 
     let(:namespace) { build_stubbed(:group) }
 
-    it { is_expected.to eq buy_minutes_subscriptions_path(selected_group: namespace.id) }
+    it { is_expected.to eq get_buy_minutes_path(namespace) }
 
     context 'when called for a personal namespace' do
       let(:user) { create(:user) }
@@ -194,7 +196,7 @@ RSpec.describe EE::NamespacesHelper do
 
       it 'returns the selected group id as the parent group' do
         link = helper.buy_additional_minutes_path(subgroup)
-        expect(link).to eq buy_minutes_subscriptions_path(selected_group: group.id)
+        expect(link).to eq get_buy_minutes_path(group)
       end
     end
   end
@@ -204,7 +206,7 @@ RSpec.describe EE::NamespacesHelper do
 
     let(:namespace) { build_stubbed(:group) }
 
-    it { is_expected.to eq buy_storage_subscriptions_path(selected_group: namespace.id) }
+    it { is_expected.to eq get_buy_storage_path(namespace) }
 
     context 'when called for a personal namespace' do
       let(:user) { create(:user) }
