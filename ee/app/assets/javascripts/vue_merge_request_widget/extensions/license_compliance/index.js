@@ -1,7 +1,6 @@
 import { s__, n__ } from '~/locale';
 import axios from '~/lib/utils/axios_utils';
 import { EXTENSION_ICONS } from '~/vue_merge_request_widget/constants';
-import { LICENSE_APPROVAL_STATUS } from 'ee/vue_shared/license_compliance/constants';
 import { parseDependencies } from './utils';
 
 // TODO: Clean up both status versions as part of https://gitlab.com/gitlab-org/gitlab/-/issues/356206
@@ -24,21 +23,25 @@ export default {
   props: ['licenseCompliance'],
   computed: {
     newLicenses() {
-      return this.collapsedData[0].new_licenses || [];
+      return this.collapsedData[0].new_licenses || 0;
     },
-    licenseReportLength() {
-      return this.newLicenses().length;
+    existingLicenses() {
+      return this.collapsedData[0].existing_licenses || 0;
+    },
+    deniedLicenses() {
+      return this.collapsedData[0].denied_licenses || 0;
+    },
+    licenseReportCount() {
+      return this.newLicenses();
     },
     hasReportItems() {
-      return this.licenseReportLength() > 0;
+      return this.licenseReportCount() > 0;
     },
     hasBaseReportLicenses() {
-      return this.collapsedData[0].existing_licenses?.length > 0;
+      return this.existingLicenses() > 0;
     },
     hasDeniedLicense() {
-      return (this.newLicenses() || []).some(
-        (license) => license.approvalStatus === LICENSE_APPROVAL_STATUS.DENIED,
-      );
+      return this.deniedLicenses() > 0;
     },
     summary() {
       if (this.hasReportItems()) {
@@ -47,12 +50,12 @@ export default {
             ? n__(
                 'LicenseCompliance|License Compliance detected %d new license and policy violation',
                 'LicenseCompliance|License Compliance detected %d new licenses and policy violations',
-                this.licenseReportLength(),
+                this.licenseReportCount(),
               )
             : n__(
                 'LicenseCompliance|License Compliance detected %d new license',
                 'LicenseCompliance|License Compliance detected %d new licenses',
-                this.licenseReportLength(),
+                this.licenseReportCount(),
               );
         }
 
@@ -60,12 +63,12 @@ export default {
           ? n__(
               'LicenseCompliance|License Compliance detected %d license and policy violation for the source branch only',
               'LicenseCompliance|License Compliance detected %d licenses and policy violations for the source branch only',
-              this.licenseReportLength(),
+              this.licenseReportCount(),
             )
           : n__(
               'LicenseCompliance|License Compliance detected %d license for the source branch only',
               'LicenseCompliance|License Compliance detected %d licenses for the source branch only',
-              this.licenseReportLength(),
+              this.licenseReportCount(),
             );
       }
 
@@ -78,7 +81,7 @@ export default {
       );
     },
     statusIcon() {
-      if (this.collapsedData[0].new_licenses?.length === 0) {
+      if (this.newLicenses() === 0) {
         return EXTENSION_ICONS.success;
       }
       return EXTENSION_ICONS.warning;
@@ -86,10 +89,12 @@ export default {
   },
   methods: {
     fetchCollapsedData() {
-      const { license_scanning_comparison_path } = this.licenseCompliance;
+      const { license_scanning_comparison_collapsed_path } = this.licenseCompliance;
 
-      return Promise.all([this.fetchReport(license_scanning_comparison_path)]).then(
-        (values) => values,
+      return Promise.all([this.fetchReport(license_scanning_comparison_collapsed_path)]).then(
+        (values) => {
+          return values;
+        },
       );
     },
     fetchFullData() {
