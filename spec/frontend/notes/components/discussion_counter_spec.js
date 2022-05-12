@@ -96,7 +96,7 @@ describe('DiscussionCounter component', () => {
 
     it.each`
       title                | resolved | groupLength
-      ${'not allResolved'} | ${false} | ${3}
+      ${'not allResolved'} | ${false} | ${4}
       ${'allResolved'}     | ${true}  | ${1}
     `('renders correctly if $title', ({ resolved, groupLength }) => {
       updateStore({ resolvable: true, resolved });
