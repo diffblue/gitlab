@@ -111,14 +111,13 @@ module API
         post 'status_check_responses' do
           merge_request = find_merge_request_with_access(params[:merge_request_iid], :approve_merge_request)
 
-          status = ::Feature.enabled?(:status_checks_add_status_field, merge_request.project) ? params[:status] : 'passed'
           status_check = merge_request.project.external_status_checks.find(params[:external_status_check_id])
 
           check_sha_param!(params, merge_request)
 
           not_found! unless current_user.can?(:provide_status_check_response, merge_request)
 
-          approval = merge_request.status_check_responses.create!(external_status_check: status_check, sha: params[:sha], status: status)
+          approval = merge_request.status_check_responses.create!(external_status_check: status_check, sha: params[:sha], status: params[:status])
 
           present(approval, with: Entities::MergeRequests::StatusCheckResponse)
         end

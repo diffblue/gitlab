@@ -10,11 +10,7 @@ module API
         expose :status
 
         def status
-          if ::Feature.enabled?(:status_checks_add_status_field, object.project)
-            object.status(options[:merge_request], options[:sha])
-          else
-            object.approved?(options[:merge_request], options[:sha]) ? 'passed' : 'pending'
-          end
+          object.status(options[:merge_request], options[:sha])
         end
       end
     end

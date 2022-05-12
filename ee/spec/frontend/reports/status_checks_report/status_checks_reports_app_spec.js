@@ -40,9 +40,6 @@ describe('Grouped test reports app', () => {
 
   beforeEach(() => {
     mock = new MockAdapter(axios);
-    window.gon.features = {
-      statusChecksAddStatusField: true,
-    };
   });
 
   afterEach(() => {
