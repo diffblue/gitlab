@@ -168,6 +168,10 @@ The issue for this removal is [GitLab-#350682](https://gitlab.com/gitlab-org/git
 
 In GitLab 13.0, we introduced new project and design replication details routes in the Geo Admin UI. These routes are `/admin/geo/replication/projects` and `/admin/geo/replication/designs`. We kept the legacy routes and redirected them to the new routes. These legacy routes `/admin/geo/projects` and `/admin/geo/designs` have been removed in GitLab 15.0. Please update any bookmarks or scripts that may use the legacy routes.
 
+### Legacy approval status names in License Compliance API
+
+We have now removed the deprecated legacy names for approval status of license policy (`blacklisted`, `approved`) in the API queries and responses. If you are using our License Compliance API you should stop using the `approved` and `blacklisted` query parameters, they are now `allowed` and `denied`. In 15.0 the responses will also stop using `approved` and `blacklisted` so you may need to adjust any of your custom tools.
+
 ### OAuth implicit grant
 
 WARNING:
