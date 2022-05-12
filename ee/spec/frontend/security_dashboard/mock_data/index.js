@@ -300,7 +300,7 @@ export const mockPipelineFindingsResponse = ({ hasNextPage } = {}) => ({
               state: 'RESOLVED',
               identifiers: [
                 {
-                  externalType: 'retire.js',
+                  externalType: 'npm',
                   name: 'RETIRE-JS-baf1b2b5f9a7c1dc0fb152365126e6c3',
                   __typename: 'VulnerabilityIdentifier',
                 },

@@ -145,8 +145,8 @@
     "severity": "High",
     "solution": "upgrade to \u003e= 1.9.24",
     "scanner": {
-      "id": "bundler_audit",
-      "name": "bundler-audit"
+      "id": "gemnasium",
+      "name": "gemnasium"
     },
     "location": {
       "file": "sast-sample-rails/Gemfile.lock",
@@ -173,6 +173,6 @@
     "priority": "High",
     "file": "sast-sample-rails/Gemfile.lock",
     "url": "https://github.com/ffi/ffi/releases/tag/1.9.24",
-    "tool": "bundler_audit"
+    "tool": "gemnasium"
   }
 ]

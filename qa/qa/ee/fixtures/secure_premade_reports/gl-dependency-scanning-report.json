@@ -8,8 +8,8 @@
       "cve": "package.json:mixin-deep:cve:CVE-2019-10746",
       "severity": "High",
       "scanner": {
-        "id": "retire.js",
-        "name": "Retire.js"
+        "id": "gemnasium",
+        "name": "gemnasium"
       },
       "location": {
         "file": "package.json",
@@ -41,8 +41,8 @@
       "cve": "node_modules/webpack-dev-server/client/live.bundle.js:jquery:cve:CVE-2019-11358",
       "severity": "Low",
       "scanner": {
-        "id": "retire.js",
-        "name": "Retire.js"
+        "id": "gemnasium",
+        "name": "gemnasium"
       },
       "location": {
         "file": "node_modules/webpack-dev-server/client/live.bundle.js",
