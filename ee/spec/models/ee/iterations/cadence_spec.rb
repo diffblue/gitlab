@@ -157,6 +157,155 @@ RSpec.describe ::Iterations::Cadence do
     end
   end
 
+  describe '#next_schedule_date_and_count', :freeze_time do
+    let_it_be(:group) { create(:group) }
+
+    let(:cadence_start_date) { Date.new(2022, 4, 1) }
+    let(:cadence_start_day) { Date::DAYS_INTO_WEEK.key(cadence_start_date.wday) }
+    let(:cadence) { create(:iterations_cadence, group: group, start_date: cadence_start_date, iterations_in_advance: 1, duration_in_weeks: 1) }
+    let(:schedule_start_date) { cadence.next_schedule_date_and_count[0] }
+    let(:schedule_count) { cadence.next_schedule_date_and_count[1] }
+
+    where(:today, :existing_iterations, :expected_schedule_start, :expected_schedule_count) do
+      [
+        [
+          lazy { cadence_start_date + 7.days },
+          [],
+          lazy { cadence_start_date },
+          1 + 1 + 1 # 1 past iterations + 1 current iteration + 1 future iteration
+        ],
+        [
+          lazy { cadence_start_date + 6.days },
+          [],
+          lazy { cadence_start_date },
+          1 + 1 # 1 current iteration + 1 future iteration
+        ],
+        [
+          lazy { cadence_start_date },
+          [],
+          lazy { cadence_start_date },
+          1 + 1 # 1 current iteration + 1 future iteration
+        ],
+        [
+          lazy { cadence_start_date - 6.days },
+          [],
+          lazy { cadence_start_date },
+          1 # 1 future iteration
+        ],
+        [
+          lazy { cadence_start_date + 14.days },
+          lazy { [{ start_date: cadence_start_date, due_date: cadence_start_date + 6.days }] },
+          lazy { cadence_start_date + 7 },
+          3 # 1 past iterations + 1 current iteration + 1 future iteration
+        ],
+        [
+          lazy { cadence_start_date + 14.days },
+          lazy { [{ start_date: cadence_start_date, due_date: cadence_start_date + 3.days }] },
+          lazy { cadence_start_date + 7.days },
+          3 # 1 past iterations + 1 current iteration + 1 future iteration
+        ],
+        [
+          lazy { cadence_start_date + 7.days },
+          lazy { [{ start_date: cadence_start_date, due_date: cadence_start_date + 6.days }] },
+          lazy { cadence_start_date + 7.days },
+          1 + 1 # 1 current iteration + 1 future iteration
+        ],
+        [
+          # There cannot be a current iteration scheduled in this scenario.
+          # The past and only iteration ended on Sat Apr 9th and the next Friday comes on Apr 15th.
+          # We would encounter this type of edge case if the cadence had been previously manually managed but has been converted to automatic.
+          Date.new(2022, 4, 10),
+          [{ start_date: Date.new(2022, 4, 5), due_date: Date.new(2022, 4, 9) }],
+          lazy { Date.new(2022, 4, 9).next_week.next_occurring(cadence_start_day) },
+          1 # 1 future iteration
+        ],
+        [
+          Date.new(2022, 4, 10),
+          lazy do
+            [
+              { start_date: Date.new(2022, 4, 1), due_date: Date.new(2022, 4, 4) },
+              { start_date: Date.new(2022, 4, 5), due_date: Date.new(2022, 4, 10) }
+            ]
+          end,
+          lazy { Date.new(2022, 4, 10).next_week.next_occurring(cadence_start_day) },
+          1 # 1 future iteration
+        ]
+      ]
+    end
+
+    with_them do
+      before do
+        travel_to today
+
+        existing_iterations.each do |i|
+          create(:iteration, iterations_cadence: cadence, start_date: i[:start_date], due_date: i[:due_date])
+        end
+      end
+
+      it 'returns the next occurring cadence start day after the most recent iteration is due with correct scheduling count' do
+        expect(schedule_start_date.wday).to eq(expected_schedule_start.wday)
+        expect(schedule_start_date).to eq(expected_schedule_start)
+        expect(schedule_count).to eq(expected_schedule_count)
+      end
+    end
+  end
+
+  describe '#next_open_iteration_start_date', :time_freeze do
+    let_it_be(:group) { create(:group) }
+
+    let(:today) { Date.new(2022, 4, 1) }
+    let(:cadence_start_date) { Date.new(2022, 3, 1) }
+    let(:cadence_start_day) { Date::DAYS_INTO_WEEK.key(cadence_start_date.wday) }
+
+    let(:cadence) { create(:iterations_cadence, group: group, start_date: cadence_start_date, iterations_in_advance: 1, duration_in_weeks: 1) }
+
+    before do
+      travel_to today
+    end
+
+    it 'returns the cadence start date when neither past nor current iteration exists' do
+      expect(cadence.next_open_iteration_start_date).to eq(cadence.start_date)
+    end
+
+    context 'when past iteration exists' do
+      let!(:past_iteration) { create(:iteration, iterations_cadence: cadence, start_date: cadence_start_date, due_date: today - 7.days ) }
+
+      context 'when past iteration is the cadence start day from the previous week' do
+        it "returns the cadence start day for the current week" do
+          expect(cadence.next_open_iteration_start_date.wday).to eq(cadence.start_date.wday)
+          expect(cadence.next_open_iteration_start_date).to eq(today.beginning_of_week.next_occurring(cadence_start_day))
+        end
+      end
+
+      context 'when many iterations can fit in-between the current date and the previous iteration due date' do
+        let!(:past_iteration) { create(:iteration, iterations_cadence: cadence, start_date: cadence_start_date, due_date: cadence_start_date + 1.day ) }
+
+        it "returns the date for the cadence start day nearest to the current date from the last iteration's due date" do
+          expect(cadence.next_open_iteration_start_date.wday).to eq(cadence.start_date.wday)
+          expect(cadence.next_open_iteration_start_date).to eq(today.prev_occurring(cadence_start_day))
+        end
+      end
+
+      context 'when past iteration is yesterday' do
+        let!(:past_iteration) { create(:iteration, iterations_cadence: cadence, start_date: cadence_start_date, due_date: today - 1.day ) }
+
+        it "returns the date for the cadence start day nearest to the current date from the last iteration's due date" do
+          expect(cadence.next_open_iteration_start_date.wday).to eq(cadence.start_date.wday)
+          expect(cadence.next_open_iteration_start_date).to eq(past_iteration.due_date.next_occurring(cadence_start_day))
+        end
+      end
+
+      context 'when current iteration exists' do
+        let!(:current_iteration) { create(:iteration, iterations_cadence: cadence, start_date: today) }
+
+        it "returns the date for the cadence start day following the current iteration's due date" do
+          expect(cadence.next_open_iteration_start_date.wday).to eq(cadence.start_date.wday)
+          expect(cadence.next_open_iteration_start_date).to eq(current_iteration.due_date.next_occurring(cadence_start_day))
+        end
+      end
+    end
+  end
+
   describe '#update_iteration_sequences', :aggregate_failures do
     using RSpec::Parameterized::TableSyntax
 
@@ -168,8 +317,8 @@ RSpec.describe ::Iterations::Cadence do
 
     context 'an iteration is created or updated' do
       where(:start_date, :expected_ordered_title) do
-        1.week.ago | lazy { %w[iteration a b] }
-        Date.current | lazy { %w[iteration a b] }
+        1.week.ago       | lazy { %w[iteration a b] }
+        Date.current     | lazy { %w[iteration a b] }
         2.weeks.from_now | lazy { %w[a iteration b] }
         4.weeks.from_now | lazy { %w[a b iteration] }
       end
