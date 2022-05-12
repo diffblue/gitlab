@@ -28,7 +28,8 @@ module GitlabSubscriptions
     end
 
     def display_alert?
-      !!upcoming_reconciliation&.display_alert?
+      !!upcoming_reconciliation&.display_alert? &&
+        (namespace.present? || !::License.current&.offline_cloud_license?)
     end
 
     private
