@@ -590,18 +590,18 @@ RSpec.describe Gitlab::UsageData do
 
     it 'counts pipelines that have security jobs' do
       for_defined_days_back do
-        ds_build = create(:ci_build, name: 'retirejs', user: user, status: 'success')
-        ds_bundler_audit_build = create(:ci_build, :failed, user: user, name: 'retirejs')
-        ds_bundler_build = create(:ci_build, name: 'bundler-audit', user: user, commit_id: ds_build.pipeline.id, status: 'success')
+        ds_build = create(:ci_build, name: 'gemnasium', user: user, status: 'success')
+        ds_failed_build = create(:ci_build, :failed, user: user, name: 'gemnasium')
+        ds_java_build = create(:ci_build, name: 'gemnasium-maven', user: user, commit_id: ds_build.pipeline.id, status: 'success')
         secret_detection_build = create(:ci_build, name: 'secret', user: user, commit_id: ds_build.pipeline.id, status: 'success')
         cs_build = create(:ci_build, name: 'container-scanning', user: user, status: 'success')
         sast_build = create(:ci_build, name: 'sast', user: user, status: 'success', retried: true)
         create(:security_scan, build: ds_build, scan_type: 'dependency_scanning' )
-        create(:security_scan, build: ds_bundler_build, scan_type: 'dependency_scanning')
+        create(:security_scan, build: ds_java_build, scan_type: 'dependency_scanning')
         create(:security_scan, build: secret_detection_build, scan_type: 'secret_detection')
         create(:security_scan, build: cs_build, scan_type: 'container_scanning')
         create(:security_scan, build: sast_build, scan_type: 'sast')
-        create(:security_scan, build: ds_bundler_audit_build, scan_type: 'dependency_scanning')
+        create(:security_scan, build: ds_failed_build, scan_type: 'dependency_scanning')
       end
 
       expect(described_class.usage_activity_by_stage_secure({})).to include(
