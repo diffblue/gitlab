@@ -3,7 +3,7 @@ import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
 import GeoNodeActionsDesktop from 'ee/geo_nodes/components/header/geo_node_actions_desktop.vue';
-import { MOCK_NODES } from 'ee_jest/geo_nodes/mock_data';
+import { MOCK_PRIMARY_NODE } from 'ee_jest/geo_nodes/mock_data';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 
 Vue.use(Vuex);
@@ -12,7 +12,7 @@ describe('GeoNodeActionsDesktop', () => {
   let wrapper;
 
   const defaultProps = {
-    node: MOCK_NODES[0],
+    node: MOCK_PRIMARY_NODE,
   };
 
   const createComponent = (props, getters) => {
@@ -56,7 +56,7 @@ describe('GeoNodeActionsDesktop', () => {
 
       it('renders edit link correctly', () => {
         expect(findGeoDesktopActionsButtons().at(0).attributes('href')).toBe(
-          MOCK_NODES[0].webEditUrl,
+          MOCK_PRIMARY_NODE.webEditUrl,
         );
       });
 
@@ -90,7 +90,7 @@ describe('GeoNodeActionsDesktop', () => {
     `('action tooltips', ({ primary, editTooltip, removeTooltip }) => {
       describe(`when node is ${primary ? '' : ' not'} a primary node`, () => {
         beforeEach(() => {
-          createComponent({ node: { ...MOCK_NODES[0], primary } });
+          createComponent({ node: { ...MOCK_PRIMARY_NODE, primary } });
         });
 
         it(`sets edit tooltip to ${editTooltip}`, () => {

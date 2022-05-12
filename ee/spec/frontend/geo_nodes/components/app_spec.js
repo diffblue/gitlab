@@ -6,6 +6,8 @@ import GeoNodes from 'ee/geo_nodes/components/geo_nodes.vue';
 import GeoNodesEmptyState from 'ee/geo_nodes/components/geo_nodes_empty_state.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import {
+  MOCK_PRIMARY_NODE,
+  MOCK_SECONDARY_NODE,
   MOCK_NODES,
   MOCK_NEW_NODE_URL,
   MOCK_NOT_CONFIGURED_EMPTY_STATE,
@@ -113,25 +115,24 @@ describe('GeoNodesApp', () => {
     );
 
     describe('with Geo Nodes', () => {
-      const primaryNodes = MOCK_NODES.filter((n) => n.primary);
-      const secondaryNodes = MOCK_NODES.filter((n) => !n.primary);
-
       beforeEach(() => {
-        createComponent({ nodes: MOCK_NODES }, null, { filteredNodes: () => MOCK_NODES });
+        createComponent({ nodes: [MOCK_PRIMARY_NODE, MOCK_SECONDARY_NODE] }, null, {
+          filteredNodes: () => MOCK_NODES,
+        });
       });
 
       it('renders the correct Geo Node component for each node', () => {
-        expect(findPrimaryGeoNodes()).toHaveLength(primaryNodes.length);
-        expect(findSecondaryGeoNodes()).toHaveLength(secondaryNodes.length);
+        expect(findPrimaryGeoNodes()).toHaveLength(1);
+        expect(findSecondaryGeoNodes()).toHaveLength(1);
       });
     });
 
     describe.each`
-      description                                | nodes                                   | primaryTitle | secondaryTitle
-      ${'with both primary and secondary nodes'} | ${MOCK_NODES}                           | ${true}      | ${true}
-      ${'with only primary nodes'}               | ${MOCK_NODES.filter((n) => n.primary)}  | ${true}      | ${false}
-      ${'with only secondary nodes'}             | ${MOCK_NODES.filter((n) => !n.primary)} | ${false}     | ${true}
-      ${'with no nodes'}                         | ${[]}                                   | ${false}     | ${false}
+      description                                | nodes                    | primaryTitle | secondaryTitle
+      ${'with both primary and secondary nodes'} | ${MOCK_NODES}            | ${true}      | ${true}
+      ${'with only primary nodes'}               | ${[MOCK_PRIMARY_NODE]}   | ${true}      | ${false}
+      ${'with only secondary nodes'}             | ${[MOCK_SECONDARY_NODE]} | ${false}     | ${true}
+      ${'with no nodes'}                         | ${[]}                    | ${false}     | ${false}
     `('Site Titles', ({ description, nodes, primaryTitle, secondaryTitle }) => {
       describe(`${description}`, () => {
         beforeEach(() => {
@@ -150,11 +151,11 @@ describe('GeoNodesApp', () => {
 
     describe('Empty state', () => {
       describe.each`
-        description                                                      | nodes         | filteredNodes      | renderEmptyState | emptyStateProps
-        ${'with no nodes configured'}                                    | ${[]}         | ${[]}              | ${true}          | ${MOCK_NOT_CONFIGURED_EMPTY_STATE}
-        ${'with nodes configured and no user filter'}                    | ${MOCK_NODES} | ${MOCK_NODES}      | ${false}         | ${null}
-        ${'with nodes configured and user filters returning results'}    | ${MOCK_NODES} | ${[MOCK_NODES[0]]} | ${false}         | ${null}
-        ${'with nodes configured and user filters returning no results'} | ${MOCK_NODES} | ${[]}              | ${true}          | ${MOCK_NO_RESULTS_EMPTY_STATE}
+        description                                                      | nodes         | filteredNodes          | renderEmptyState | emptyStateProps
+        ${'with no nodes configured'}                                    | ${[]}         | ${[]}                  | ${true}          | ${MOCK_NOT_CONFIGURED_EMPTY_STATE}
+        ${'with nodes configured and no user filter'}                    | ${MOCK_NODES} | ${MOCK_NODES}          | ${false}         | ${null}
+        ${'with nodes configured and user filters returning results'}    | ${MOCK_NODES} | ${[MOCK_PRIMARY_NODE]} | ${false}         | ${null}
+        ${'with nodes configured and user filters returning no results'} | ${MOCK_NODES} | ${[]}                  | ${true}          | ${MOCK_NO_RESULTS_EMPTY_STATE}
       `('$description', ({ nodes, filteredNodes, renderEmptyState, emptyStateProps }) => {
         beforeEach(() => {
           createComponent({ nodes }, null, { filteredNodes: () => filteredNodes });

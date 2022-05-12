@@ -8,6 +8,8 @@ import {
   MOCK_SECONDARY_VERIFICATION_INFO,
   MOCK_SECONDARY_SYNC_INFO,
   MOCK_FILTER_NODES,
+  MOCK_PRIMARY_NODE,
+  MOCK_SECONDARY_NODE,
 } from '../mock_data';
 
 describe('GeoNodes Store Getters', () => {
@@ -28,7 +30,7 @@ describe('GeoNodes Store Getters', () => {
 
     describe('on primary node', () => {
       it('returns only replicable types that have checksum data', () => {
-        expect(getters.verificationInfo(state)(MOCK_NODES[0].id)).toStrictEqual(
+        expect(getters.verificationInfo(state)(MOCK_PRIMARY_NODE.id)).toStrictEqual(
           MOCK_PRIMARY_VERIFICATION_INFO,
         );
       });
@@ -36,7 +38,7 @@ describe('GeoNodes Store Getters', () => {
 
     describe('on secondary node', () => {
       it('returns only replicable types that have verification data', () => {
-        expect(getters.verificationInfo(state)(MOCK_NODES[1].id)).toStrictEqual(
+        expect(getters.verificationInfo(state)(MOCK_SECONDARY_NODE.id)).toStrictEqual(
           MOCK_SECONDARY_VERIFICATION_INFO,
         );
       });
@@ -49,16 +51,18 @@ describe('GeoNodes Store Getters', () => {
     });
 
     it('returns the nodes sync information', () => {
-      expect(getters.syncInfo(state)(MOCK_NODES[1].id)).toStrictEqual(MOCK_SECONDARY_SYNC_INFO);
+      expect(getters.syncInfo(state)(MOCK_SECONDARY_NODE.id)).toStrictEqual(
+        MOCK_SECONDARY_SYNC_INFO,
+      );
     });
   });
 
   describe.each`
-    nodeToRemove     | nodes              | canRemove
-    ${MOCK_NODES[0]} | ${[MOCK_NODES[0]]} | ${true}
-    ${MOCK_NODES[0]} | ${MOCK_NODES}      | ${false}
-    ${MOCK_NODES[1]} | ${[MOCK_NODES[1]]} | ${true}
-    ${MOCK_NODES[1]} | ${MOCK_NODES}      | ${true}
+    nodeToRemove           | nodes                    | canRemove
+    ${MOCK_PRIMARY_NODE}   | ${[MOCK_PRIMARY_NODE]}   | ${true}
+    ${MOCK_PRIMARY_NODE}   | ${MOCK_NODES}            | ${false}
+    ${MOCK_SECONDARY_NODE} | ${[MOCK_SECONDARY_NODE]} | ${true}
+    ${MOCK_SECONDARY_NODE} | ${MOCK_NODES}            | ${true}
   `(`canRemoveNode`, ({ nodeToRemove, nodes, canRemove }) => {
     describe(`when node.primary ${nodeToRemove.primary} and total nodes is ${nodes.length}`, () => {
       beforeEach(() => {

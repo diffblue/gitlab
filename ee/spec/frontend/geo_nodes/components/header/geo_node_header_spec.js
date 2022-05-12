@@ -4,13 +4,13 @@ import GeoNodeActions from 'ee/geo_nodes/components/header/geo_node_actions.vue'
 import GeoNodeHeader from 'ee/geo_nodes/components/header/geo_node_header.vue';
 import GeoNodeHealthStatus from 'ee/geo_nodes/components/header/geo_node_health_status.vue';
 import GeoNodeLastUpdated from 'ee/geo_nodes/components/header/geo_node_last_updated.vue';
-import { MOCK_NODES } from 'ee_jest/geo_nodes/mock_data';
+import { MOCK_PRIMARY_NODE, MOCK_SECONDARY_NODE } from 'ee_jest/geo_nodes/mock_data';
 
 describe('GeoNodeHeader', () => {
   let wrapper;
 
   const defaultProps = {
-    node: MOCK_NODES[0],
+    node: MOCK_PRIMARY_NODE,
     collapsed: false,
   };
 
@@ -95,7 +95,7 @@ describe('GeoNodeHeader', () => {
 
       describe('when current node is false', () => {
         beforeEach(() => {
-          createComponent({ node: MOCK_NODES[1] });
+          createComponent({ node: MOCK_SECONDARY_NODE });
         });
 
         it('does not render', () => {
@@ -108,7 +108,10 @@ describe('GeoNodeHeader', () => {
       describe('when lastSuccessfulStatusCheckTimestamp exists', () => {
         beforeEach(() => {
           createComponent({
-            node: { ...MOCK_NODES[1], lastSuccessfulStatusCheckTimestamp: new Date().getTime() },
+            node: {
+              ...MOCK_SECONDARY_NODE,
+              lastSuccessfulStatusCheckTimestamp: new Date().getTime(),
+            },
           });
         });
 

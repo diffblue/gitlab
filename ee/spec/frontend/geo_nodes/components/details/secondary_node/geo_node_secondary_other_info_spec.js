@@ -1,7 +1,7 @@
 import { GlSprintf } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import GeoNodeSecondaryOtherInfo from 'ee/geo_nodes/components/details/secondary_node/geo_node_secondary_other_info.vue';
-import { MOCK_NODES } from 'ee_jest/geo_nodes/mock_data';
+import { MOCK_SECONDARY_NODE } from 'ee_jest/geo_nodes/mock_data';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import TimeAgo from '~/vue_shared/components/time_ago_tooltip.vue';
 
@@ -12,7 +12,7 @@ describe('GeoNodeSecondaryOtherInfo', () => {
   let wrapper;
 
   const defaultProps = {
-    node: MOCK_NODES[1],
+    node: MOCK_SECONDARY_NODE,
   };
 
   const createComponent = (props) => {
