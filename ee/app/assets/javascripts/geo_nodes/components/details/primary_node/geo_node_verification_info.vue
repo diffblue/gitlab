@@ -49,7 +49,11 @@ export default {
         name="question-o"
         class="gl-text-blue-600 gl-cursor-pointer gl-ml-2"
       />
-      <gl-popover :target="() => $refs.verificationInfo.$el" placement="top" triggers="hover focus">
+      <gl-popover
+        :target="() => $refs.verificationInfo && $refs.verificationInfo.$el"
+        placement="top"
+        triggers="hover focus"
+      >
         <p class="gl-font-base">
           {{ $options.i18n.replicationHelpText }}
         </p>
