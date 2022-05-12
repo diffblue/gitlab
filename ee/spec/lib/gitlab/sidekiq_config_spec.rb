@@ -60,6 +60,7 @@ RSpec.describe Gitlab::SidekiqConfig do
 
     before do
       allow(described_class).to receive(:workers).and_return(workers)
+      allow(Gitlab).to receive(:jh?).and_return(false)
 
       allow(YAML).to receive(:load_file)
                        .with(described_class::FOSS_QUEUE_CONFIG_PATH)
