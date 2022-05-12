@@ -3,10 +3,13 @@
 module ComplianceManagement
   class Framework < ApplicationRecord
     include StripAttribute
+    include IgnorableColumns
 
     self.table_name = 'compliance_management_frameworks'
 
     strip_attributes! :name, :color
+
+    ignore_column :regulated, remove_with: '15.2', remove_after: '2022-07-22'
 
     belongs_to :namespace
     has_many :project_settings, class_name: 'ComplianceManagement::ComplianceFramework::ProjectSettings'
@@ -16,7 +19,6 @@ module ComplianceManagement
     validates :name, presence: true, length: { maximum: 255 }
     validates :description, presence: true, length: { maximum: 255 }
     validates :color, color: true, allow_blank: false, length: { maximum: 10 }
-    validates :regulated, presence: true
     validates :namespace_id, uniqueness: { scope: :name }
     validates :pipeline_configuration_full_path, length: { maximum: 255 }
 
