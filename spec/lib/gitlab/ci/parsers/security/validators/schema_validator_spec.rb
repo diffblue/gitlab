@@ -272,6 +272,32 @@ RSpec.describe Gitlab::Ci::Parsers::Security::Validators::SchemaValidator do
         end
       end
     end
+
+    context 'when not given a schema version' do
+      let(:report_type) { :dast }
+      let(:report_version) { nil }
+      let(:report_data) do
+        {
+          'vulnerabilities' => []
+        }
+      end
+
+      context 'if enforce_security_report_validation is enabled' do
+        before do
+          stub_feature_flags(enforce_security_report_validation: true)
+        end
+
+        it { is_expected.to be_falsey }
+      end
+
+      context 'if enforce_security_report_validation is disabled' do
+        before do
+          stub_feature_flags(enforce_security_report_validation: false)
+        end
+
+        it { is_expected.to be_truthy }
+      end
+    end
   end
 
   describe '#errors' do
@@ -467,6 +493,41 @@ RSpec.describe Gitlab::Ci::Parsers::Security::Validators::SchemaValidator do
 
           it { is_expected.to match_array(expected_errors) }
         end
+      end
+    end
+
+    context 'when not given a schema version' do
+      let(:report_type) { :dast }
+      let(:report_version) { nil }
+      let(:report_data) do
+        {
+          'vulnerabilities' => []
+        }
+      end
+
+      context 'if enforce_security_report_validation is enabled' do
+        before do
+          stub_feature_flags(enforce_security_report_validation: true)
+        end
+
+        let(:expected_errors) do
+          [
+            "root is missing required keys: version",
+            "Report version not provided, dast report type supports versions: 14.0.0, 14.0.1, 14.0.2, 14.0.3, 14.0.4, 14.0.5, 14.0.6, 14.1.0, 14.1.1, 14.1.2"
+          ]
+        end
+
+        it { is_expected.to match_array(expected_errors) }
+      end
+
+      context 'if enforce_security_report_validation is disabled' do
+        before do
+          stub_feature_flags(enforce_security_report_validation: false)
+        end
+
+        let(:expected_errors) { [] }
+
+        it { is_expected.to match_array(expected_errors) }
       end
     end
   end
@@ -744,6 +805,41 @@ RSpec.describe Gitlab::Ci::Parsers::Security::Validators::SchemaValidator do
 
           it { is_expected.to match_array(expected_warnings) }
         end
+      end
+    end
+
+    context 'when not given a schema version' do
+      let(:report_type) { :dast }
+      let(:report_version) { nil }
+      let(:report_data) do
+        {
+          'vulnerabilities' => []
+        }
+      end
+
+      context 'if enforce_security_report_validation is enabled' do
+        before do
+          stub_feature_flags(enforce_security_report_validation: true)
+        end
+
+        let(:expected_warnings) { [] }
+
+        it { is_expected.to match_array(expected_warnings) }
+      end
+
+      context 'if enforce_security_report_validation is disabled' do
+        before do
+          stub_feature_flags(enforce_security_report_validation: false)
+        end
+
+        let(:expected_warnings) do
+          [
+            "root is missing required keys: version",
+            "Report version not provided, dast report type supports versions: 14.0.0, 14.0.1, 14.0.2, 14.0.3, 14.0.4, 14.0.5, 14.0.6, 14.1.0, 14.1.1, 14.1.2"
+          ]
+        end
+
+        it { is_expected.to match_array(expected_warnings) }
       end
     end
   end
