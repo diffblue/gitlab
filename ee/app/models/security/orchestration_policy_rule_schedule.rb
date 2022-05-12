@@ -43,12 +43,12 @@ module Security
         .uniq
     end
 
-    def applicable_clusters
-      policy&.dig(:rules, rule_index, :clusters)
+    def applicable_agents
+      policy&.dig(:rules, rule_index, :agents)
     end
 
-    def for_cluster?
-      applicable_clusters.present?
+    def for_agent?
+      applicable_agents.present?
     end
 
     private

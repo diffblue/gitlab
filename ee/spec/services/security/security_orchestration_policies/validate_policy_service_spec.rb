@@ -8,7 +8,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService do
     let(:enabled) { true }
     let(:policy_type) { 'scan_execution_policy' }
     let(:name) { 'New policy' }
-    let(:rule) { { clusters: { production: {} } } }
+    let(:rule) { { agents: { production: {} } } }
     let(:policy) do
       {
         type: policy_type,
@@ -67,10 +67,10 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService do
     end
 
     shared_examples 'checks if branches are provided in rule' do
-      context 'when rule has clusters defined' do
+      context 'when rule has agents defined' do
         let(:rule) do
           {
-            clusters: {
+            agents: {
               production: {}
             },
             branches: branches
@@ -90,7 +90,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService do
         end
       end
 
-      context 'when rule does not have clusters defined' do
+      context 'when rule does not have agents defined' do
         let(:rule) do
           {
             branches: branches
@@ -124,10 +124,10 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService do
     end
 
     shared_examples 'checks if branches are defined in the project' do
-      context 'when rule has clusters defined' do
+      context 'when rule has agents defined' do
         let(:rule) do
           {
-            clusters: {
+            agents: {
               production: {}
             },
             branches: branches
@@ -153,7 +153,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService do
         end
       end
 
-      context 'when rule does not have clusters defined' do
+      context 'when rule does not have agents defined' do
         let(:rule) do
           {
             branches: branches

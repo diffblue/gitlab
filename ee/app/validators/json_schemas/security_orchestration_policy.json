@@ -53,7 +53,7 @@
                 "cadence": {
                   "type": "string"
                 },
-                "clusters": {
+                "agents": {
                   "type": "object",
                   "minProperties": 1,
                   "maxProperties": 1,
@@ -62,24 +62,6 @@
                       "type": "object",
                       "properties": {
                         "namespaces": {
-                          "type": "array",
-                          "items": {
-                            "type": "string"
-                          }
-                        },
-                        "resources": {
-                          "type": "array",
-                          "items": {
-                            "type": "string"
-                          }
-                        },
-                        "containers": {
-                          "type": "array",
-                          "items": {
-                            "type": "string"
-                          }
-                        },
-                        "kinds": {
                           "type": "array",
                           "items": {
                             "type": "string"

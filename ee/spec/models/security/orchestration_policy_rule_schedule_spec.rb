@@ -191,7 +191,7 @@ RSpec.describe Security::OrchestrationPolicyRuleSchedule do
     end
   end
 
-  describe '#applicable_clusters' do
+  describe '#applicable_agents' do
     let_it_be_with_reload(:project) { create(:project, :repository) }
     let_it_be_with_reload(:policy_configuration) { create(:security_orchestration_policy_configuration, project: project) }
 
@@ -199,9 +199,9 @@ RSpec.describe Security::OrchestrationPolicyRuleSchedule do
       create(:security_orchestration_policy_rule_schedule, security_orchestration_policy_configuration: policy_configuration, rule_index: rule_index)
     end
 
-    let(:clusters) do
+    let(:agents) do
       {
-        'production-cluster': {
+        'production-agent': {
           namespaces: ['production-namespace']
         }
       }
@@ -209,31 +209,31 @@ RSpec.describe Security::OrchestrationPolicyRuleSchedule do
 
     let(:policy) do
       build(:scan_execution_policy, rules: [
-        { type: 'schedule', clusters: clusters, cadence: '*/20 * * * *' },
+        { type: 'schedule', agents: agents, cadence: '*/20 * * * *' },
         { type: 'pipeline', branches: ['main'] }
       ])
     end
 
-    subject { rule_schedule.applicable_clusters }
+    subject { rule_schedule.applicable_agents }
 
     before do
       allow(rule_schedule).to receive(:policy).and_return(policy)
     end
 
-    context 'when applicable rule contains clusters configuration' do
+    context 'when applicable rule contains agents configuration' do
       let(:rule_index) { 0 }
 
-      it { is_expected.to eq(clusters) }
+      it { is_expected.to eq(agents) }
     end
 
-    context 'when applicable rule does not contain clusters configuration' do
+    context 'when applicable rule does not contain agents configuration' do
       let(:rule_index) { 1 }
 
       it { is_expected.to be_nil }
     end
   end
 
-  describe '#for_cluster?' do
+  describe '#for_agent?' do
     let_it_be_with_reload(:project) { create(:project, :repository) }
     let_it_be_with_reload(:policy_configuration) { create(:security_orchestration_policy_configuration, project: project) }
 
@@ -241,9 +241,9 @@ RSpec.describe Security::OrchestrationPolicyRuleSchedule do
       create(:security_orchestration_policy_rule_schedule, security_orchestration_policy_configuration: policy_configuration, rule_index: rule_index)
     end
 
-    let(:clusters) do
+    let(:agents) do
       {
-        'production-cluster': {
+        'production-agent': {
           namespaces: ['production-namespace']
         }
       }
@@ -251,24 +251,24 @@ RSpec.describe Security::OrchestrationPolicyRuleSchedule do
 
     let(:policy) do
       build(:scan_execution_policy, rules: [
-        { type: 'schedule', clusters: clusters, cadence: '*/20 * * * *' },
+        { type: 'schedule', agents: agents, cadence: '*/20 * * * *' },
         { type: 'pipeline', branches: ['main'] }
       ])
     end
 
-    subject { rule_schedule.for_cluster? }
+    subject { rule_schedule.for_agent? }
 
     before do
       allow(rule_schedule).to receive(:policy).and_return(policy)
     end
 
-    context 'when applicable rule contains clusters configuration' do
+    context 'when applicable rule contains agents configuration' do
       let(:rule_index) { 0 }
 
       it { is_expected.to eq(true) }
     end
 
-    context 'when applicable rule does not contain clusters configuration' do
+    context 'when applicable rule does not contain agents configuration' do
       let(:rule_index) { 1 }
 
       it { is_expected.to eq(false) }
