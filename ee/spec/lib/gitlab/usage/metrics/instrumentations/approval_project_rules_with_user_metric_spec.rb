@@ -22,7 +22,7 @@ RSpec.describe Gitlab::Usage::Metrics::Instrumentations::ApprovalProjectRulesWit
       create_list(:approval_project_rule, 2, project: project, users: create_list(:user, 2), approvals_required: 1)
     end
 
-    it_behaves_like 'a correct instrumented metric value and query', { data_source: 'database', options: { count_type: 'more_approvers_than_required' } }
+    it_behaves_like 'a correct instrumented metric value and query', { time_frame: 'all', options: { count_type: 'more_approvers_than_required' } }
   end
 
   context 'for more approvers than required' do
@@ -32,7 +32,7 @@ RSpec.describe Gitlab::Usage::Metrics::Instrumentations::ApprovalProjectRulesWit
       create_list(:approval_project_rule, 2, project: project, users: [user], approvals_required: 2)
     end
 
-    it_behaves_like 'a correct instrumented metric value and query', { data_source: 'database', options: { count_type: 'less_approvers_than_required' } }
+    it_behaves_like 'a correct instrumented metric value and query', { time_frame: 'all', options: { count_type: 'less_approvers_than_required' } }
   end
 
   context 'for more approvers than required' do
@@ -42,6 +42,6 @@ RSpec.describe Gitlab::Usage::Metrics::Instrumentations::ApprovalProjectRulesWit
       create_list(:approval_project_rule, 2, project: project, users: [user], approvals_required: 1)
     end
 
-    it_behaves_like 'a correct instrumented metric value and query', { data_source: 'database', options: { count_type: 'exact_required_approvers' } }
+    it_behaves_like 'a correct instrumented metric value and query', { time_frame: 'all', options: { count_type: 'exact_required_approvers' } }
   end
 end
