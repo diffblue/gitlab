@@ -23012,6 +23012,9 @@ msgstr ""
 msgid "Makes this issue confidential."
 msgstr ""
 
+msgid "Manage"
+msgstr ""
+
 msgid "Manage %{workspace} labels"
 msgstr ""
 
