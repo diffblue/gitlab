@@ -39757,6 +39757,9 @@ msgstr ""
 msgid "Trigger cluster reindexing. Only use this with an index that was created in GitLab 13.0 or later."
 msgstr ""
 
+msgid "Trigger job"
+msgstr ""
+
 msgid "Trigger manual job"
 msgstr ""
 
