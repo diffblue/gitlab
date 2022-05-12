@@ -13,9 +13,12 @@ RSpec.describe Gitlab::CodeOwners do
 
   before do
     project.add_developer(code_owner)
-    allow(project.repository).to receive(:code_owners_blob)
+
+    allow_next_instance_of(Repository) do |repo|
+      allow(repo).to receive(:code_owners_blob)
       .with(ref: codeowner_lookup_ref)
       .and_return(codeowner_blob)
+    end
   end
 
   describe '.for_blob' do
@@ -103,7 +106,7 @@ RSpec.describe Gitlab::CodeOwners do
   end
 
   describe '.fast_path_lookup and .slow_path_lookup' do
-    let(:codeowner_lookup_ref) { merge_request.target_branch }
+    let(:codeowner_lookup_ref) { 'with-codeowners' }
     let(:codeowner_content) { 'files/ruby/feature.rb @owner-1' }
     let(:merge_request) do
       create(
@@ -122,7 +125,9 @@ RSpec.describe Gitlab::CodeOwners do
     it 'returns equivalent results' do
       fast_results = described_class.entries_for_merge_request(merge_request).first
 
-      expect(merge_request.merge_request_diff).to receive(:overflow?).and_return(true)
+      allow_next_instance_of(MergeRequestDiff) do |mrd|
+        expect(mrd).to receive(:overflow?) { true }
+      end
 
       slow_results = described_class.entries_for_merge_request(merge_request).first
 
@@ -136,7 +141,7 @@ RSpec.describe Gitlab::CodeOwners do
     subject(:entries) { described_class.entries_for_merge_request(merge_request, merge_request_diff: merge_request_diff) }
 
     let(:merge_request_diff) { nil }
-    let(:codeowner_lookup_ref) { merge_request.target_branch }
+    let(:codeowner_lookup_ref) { 'with-codeowners' }
     let(:merge_request) do
       create(
         :merge_request,
@@ -151,7 +156,7 @@ RSpec.describe Gitlab::CodeOwners do
       before do
         stub_licensed_features(code_owners: true)
 
-        allow(merge_request).to receive(:modified_paths).with(past_merge_request_diff: merge_request_diff) { ['docs/CODEOWNERS'] }
+        allow(merge_request).to receive(:modified_paths).with(past_merge_request_diff: instance_of(MergeRequestDiff)) { ['docs/CODEOWNERS'] }
       end
 
       it 'returns owners for merge request' do
@@ -170,7 +175,9 @@ RSpec.describe Gitlab::CodeOwners do
 
       context 'when the merge request is large (>1_000 files)' do
         before do
-          expect(merge_request.merge_request_diff).to receive(:overflow?) { true }
+          allow_next_instance_of(MergeRequestDiff) do |mrd|
+            allow(mrd).to receive(:overflow?) { true }
+          end
         end
 
         it 'generates paths via .slow_path_lookup' do

@@ -59,8 +59,10 @@ module Gitlab
       #   records, if the diff_size is more than 1_000, we need to fall back to
       #   the MUCH slower method of using Repository#diff_stats, which isn't
       #   subject to the same limit.
-      #
-      if oversized_merge_request?(merge_request, merge_request_diff)
+
+      merge_request_diff ||= merge_head_or_empty_diff(merge_request)
+
+      if merge_request_diff.overflow?
         slow_path_lookup(merge_request, merge_request_diff)
       else
         fast_path_lookup(merge_request, merge_request_diff)
@@ -68,16 +70,15 @@ module Gitlab
     end
     private_class_method :paths_for_merge_request
 
-    def self.oversized_merge_request?(merge_request, merge_request_diff)
-      mrd_to_check_for_overflow = merge_request_diff || merge_request.merge_request_diff
+    def self.merge_head_or_empty_diff(merge_request)
+      # NOTE: We need to make sure merge_head_diff gets created first.
+      ::MergeRequests::MergeabilityCheckService.new(merge_request).execute(recheck: true)
 
-      mrd_to_check_for_overflow.overflow?
+      merge_request.merge_head_diff || MergeRequestDiff.new(merge_request_id: merge_request.id)
     end
-    private_class_method :oversized_merge_request?
+    private_class_method :merge_head_or_empty_diff
 
     def self.slow_path_lookup(merge_request, merge_request_diff)
-      merge_request_diff ||= merge_request.merge_request_diff
-
       merge_request.project.repository.diff_stats(
         merge_request_diff.base_commit_sha,
         merge_request_diff.head_commit_sha
