@@ -10,6 +10,7 @@ module EE
         before_action :elasticsearch_reindexing_task, only: [:advanced_search]
         before_action :elasticsearch_index_settings, only: [:advanced_search]
         before_action :elasticsearch_warn_if_not_using_aliases, only: [:advanced_search]
+        before_action :search_error_if_version_incompatible, only: [:advanced_search]
 
         feature_category :provision, [:seat_link_payload]
         feature_category :source_code_management, [:templates]
@@ -29,6 +30,10 @@ module EE
           @elasticsearch_warn_if_not_using_aliases = ::Gitlab::Elastic::Helper.default.alias_missing?
         rescue StandardError => e
           log_exception(e)
+        end
+
+        def search_error_if_version_incompatible
+          @search_error_if_version_incompatible = !::Gitlab::Elastic::Helper.default.supported_version?
         end
       end
 

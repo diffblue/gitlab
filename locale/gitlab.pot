@@ -3258,6 +3258,9 @@ msgstr ""
 msgid "Advanced export options"
 msgstr ""
 
+msgid "AdvancedSearch|Elasticsearch version not compatible"
+msgstr ""
+
 msgid "AdvancedSearch|Reindex required"
 msgstr ""
 
@@ -27185,6 +27188,9 @@ msgid "Paths to protect with rate limiting"
 msgstr ""
 
 msgid "Pause"
+msgstr ""
+
+msgid "Pause indexing and upgrade Elasticsearch to a supported version."
 msgstr ""
 
 msgid "Pause time (ms)"

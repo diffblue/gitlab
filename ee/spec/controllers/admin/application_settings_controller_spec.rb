@@ -321,8 +321,30 @@ RSpec.describe Admin::ApplicationSettingsController do
       @request.env['HTTP_REFERER'] = advanced_search_admin_application_settings_path
     end
 
+    context 'check search version is compatability' do
+      let_it_be(:helper) { ::Gitlab::Elastic::Helper.default }
+
+      before do
+        allow(::Gitlab::Elastic::Helper).to receive(:default).and_return(helper)
+      end
+
+      it 'does not alert when version is compatible' do
+        allow(helper).to receive(:supported_version?).and_return(true)
+
+        get :advanced_search
+        expect(assigns[:search_error_if_version_incompatible]).to be_falsey
+      end
+
+      it 'alerts when version is incompatible' do
+        allow(::Gitlab::Elastic::Helper.default).to receive(:supported_version?).and_return(false)
+
+        get :advanced_search
+        expect(assigns[:search_error_if_version_incompatible]).to be_truthy
+      end
+    end
+
     context 'warning if not using index aliases' do
-      let(:helper) { instance_double(::Gitlab::Elastic::Helper) }
+      let_it_be(:helper) { ::Gitlab::Elastic::Helper.default }
 
       before do
         allow(::Gitlab::Elastic::Helper).to receive(:default).and_return(helper)
