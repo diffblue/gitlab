@@ -30,6 +30,7 @@ const {
 const defaultProps = {
   profilesLibraryPath,
   onDemandScansPath,
+  projectFullPath,
 };
 
 describe('DastScannerProfileForm', () => {
@@ -57,9 +58,6 @@ describe('DastScannerProfileForm', () => {
         {},
         {
           propsData: defaultProps,
-          provide: {
-            projectFullPath,
-          },
           mocks: {
             $apollo: {
               mutate: jest.fn(),
@@ -88,6 +86,7 @@ describe('DastScannerProfileForm', () => {
       propsData: {
         ...defaultProps,
         showHeader: false,
+        stacked: true,
       },
     });
     expect(findBaseDastProfileForm().props('showHeader')).toBe(false);

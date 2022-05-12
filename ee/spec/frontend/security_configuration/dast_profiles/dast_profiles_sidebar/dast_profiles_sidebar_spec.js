@@ -1,9 +1,13 @@
+import { nextTick } from 'vue';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import DastProfilesSidebar from 'ee/security_configuration/dast_profiles/dast_profiles_sidebar/dast_profiles_sidebar.vue';
 import { scannerProfiles } from 'ee_jest/security_configuration/dast_profiles/mocks/mock_data';
+import { SCANNER_TYPE, SITE_TYPE } from 'ee/on_demand_scans/constants';
 
 describe('DastProfilesSidebar', () => {
   let wrapper;
+  const projectPath = 'projectPath';
+
   const createComponent = (options = {}) => {
     wrapper = mountExtended(DastProfilesSidebar, {
       propsData: {
@@ -12,12 +16,19 @@ describe('DastProfilesSidebar', () => {
       stubs: {
         GlDrawer: true,
       },
+      provide: {
+        projectPath,
+      },
     });
   };
 
   const findSidebarHeader = () => wrapper.findByTestId('sidebar-header');
   const findEmptyStateHeader = () => wrapper.findByTestId('empty-state-header');
   const findNewScanButton = () => wrapper.findByTestId('new-profile-button');
+  const findEmptyNewScanButton = () => wrapper.findByTestId('new-empty-profile-button');
+  const findNewDastScannerProfileForm = () => wrapper.findByTestId('dast-scanner-parent-group');
+  const findNewDastSiteProfileForm = () => wrapper.findByTestId('dast-site-parent-group');
+  const findCancelButton = () => wrapper.findByTestId('dast-profile-form-cancel-button');
 
   afterEach(() => {
     wrapper.destroy();
@@ -44,6 +55,48 @@ describe('DastProfilesSidebar', () => {
 
   it('should hide new scan button when no profiles exists', () => {
     createComponent();
+
     expect(findNewScanButton().exists()).toBe(false);
+  });
+
+  it('should open new scanner profile form from header', async () => {
+    createComponent({ profileType: SCANNER_TYPE, profiles: scannerProfiles });
+    findNewScanButton().vm.$emit('click');
+
+    await nextTick();
+
+    expect(findNewDastScannerProfileForm().exists()).toBe(true);
+  });
+
+  describe('new profile form', () => {
+    it('should show new scanner profile form', async () => {
+      createComponent({ profileType: SCANNER_TYPE });
+      findEmptyNewScanButton().vm.$emit('click');
+
+      await nextTick();
+
+      expect(findNewDastScannerProfileForm().exists()).toBe(true);
+    });
+
+    it('should show new site profile form', async () => {
+      createComponent({ profileType: SITE_TYPE });
+      findEmptyNewScanButton().vm.$emit('click');
+
+      await nextTick();
+
+      expect(findNewDastSiteProfileForm().exists()).toBe(true);
+    });
+
+    it('should close form when cancelled', async () => {
+      createComponent({ profileType: SITE_TYPE });
+      findEmptyNewScanButton().vm.$emit('click');
+      await nextTick();
+
+      findCancelButton().vm.$emit('click');
+
+      await nextTick();
+
+      expect(findEmptyStateHeader().exists()).toBe(true);
+    });
   });
 });

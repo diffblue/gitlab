@@ -5,6 +5,7 @@ import {
   GlFormInput,
   GlFormInputGroup,
   GlFormRadioGroup,
+  GlFormRadio,
   GlInputGroupText,
 } from '@gitlab/ui';
 import { initFormField } from 'ee/security_configuration/utils';
@@ -33,6 +34,7 @@ export default {
     GlFormInput,
     GlFormInputGroup,
     GlFormRadioGroup,
+    GlFormRadio,
     GlInputGroupText,
     tooltipIcon,
   },
@@ -138,6 +140,7 @@ export default {
     :form-touched="formTouched"
     :is-policy-profile="isPolicyProfile"
     :block-submit="!form.state"
+    :show-header="!stacked"
     :modal-props="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ {
       title: i18n.modal.title,
       okTitle: i18n.modal.okTitle,
@@ -177,24 +180,30 @@ export default {
         />
       </gl-form-group>
 
-      <hr class="gl-border-gray-100" />
-
       <gl-form-group>
         <template #label>
           {{ s__('DastProfiles|Scan mode') }}
           <tooltip-icon :title="i18n.tooltips.scanMode" />
         </template>
 
-        <gl-form-radio-group
-          v-model="form.fields.scanType.value"
-          :options="$options.SCAN_TYPE_OPTIONS"
-          data-testid="scan-type-option"
-        />
+        <gl-form-radio-group v-model="form.fields.scanType.value" data-testid="scan-type-option">
+          <gl-form-radio
+            v-for="option in $options.SCAN_TYPE_OPTIONS"
+            :key="option.value"
+            :value="option.value"
+          >
+            {{ option.text }}
+            <template #help>
+              {{ option.helpText }}
+            </template>
+          </gl-form-radio>
+        </gl-form-radio-group>
       </gl-form-group>
 
       <div class="row">
         <gl-form-group
-          class="col-md-6 mb-0"
+          class="gl-mb-0"
+          :class="{ 'col-md-6': !stacked, 'col-md-12': stacked, 'gl-mb-4': stacked }"
           :invalid-feedback="form.fields.spiderTimeout.feedback"
           :state="form.fields.spiderTimeout.state"
         >
@@ -224,7 +233,8 @@ export default {
         </gl-form-group>
 
         <gl-form-group
-          class="col-md-6 mb-0"
+          class="gl-mb-0"
+          :class="{ 'col-md-6': !stacked, 'col-md-12': stacked }"
           :invalid-feedback="form.fields.targetTimeout.feedback"
           :state="form.fields.targetTimeout.state"
         >
@@ -254,10 +264,11 @@ export default {
         </gl-form-group>
       </div>
 
-      <hr class="gl-border-gray-100" />
-
-      <div class="row">
-        <gl-form-group class="col-md-6 mb-0">
+      <div class="row gl-mt-5">
+        <gl-form-group
+          class="gl-mb-0"
+          :class="{ 'col-md-6': !stacked, 'col-md-12': stacked, 'gl-mb-4': stacked }"
+        >
           <template #label>
             {{ s__('DastProfiles|AJAX spider') }}
             <tooltip-icon :title="i18n.tooltips.ajaxSpider" />
@@ -267,7 +278,7 @@ export default {
           }}</gl-form-checkbox>
         </gl-form-group>
 
-        <gl-form-group class="col-md-6 mb-0">
+        <gl-form-group class="gl-mb-0" :class="{ 'col-md-6': !stacked, 'col-md-12': stacked }">
           <template #label>
             {{ s__('DastProfiles|Debug messages') }}
             <tooltip-icon :title="i18n.tooltips.debugMessage" />

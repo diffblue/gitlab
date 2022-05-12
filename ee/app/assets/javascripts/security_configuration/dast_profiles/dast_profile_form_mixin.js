@@ -6,12 +6,20 @@ export default () => ({
   directives: {
     validation: validation(),
   },
-  inject: ['projectFullPath'],
   props: {
     profile: {
       type: Object,
       required: false,
       default: () => ({}),
+    },
+    projectFullPath: {
+      type: String,
+      required: true,
+    },
+    stacked: {
+      type: Boolean,
+      required: false,
+      default: false,
     },
   },
   computed: {

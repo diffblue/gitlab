@@ -27,6 +27,7 @@ const scanFilePath = 'test-path';
 const defaultProps = {
   profilesLibraryPath,
   onDemandScansPath,
+  projectFullPath,
 };
 
 describe('DastSiteProfileForm', () => {
@@ -83,7 +84,7 @@ describe('DastSiteProfileForm', () => {
       {},
       {
         propsData: defaultProps,
-        provide: { projectFullPath, glFeatures: { dastApiScanner: true } },
+        provide: { glFeatures: { dastApiScanner: true } },
       },
       options,
     );
@@ -108,6 +109,7 @@ describe('DastSiteProfileForm', () => {
       propsData: {
         ...defaultProps,
         showHeader: false,
+        stacked: true,
       },
     });
     expect(findBaseDastProfileForm().props('showHeader')).toBe(false);
