@@ -15,6 +15,7 @@ import ScanAlerts, {
 import SecurityDashboard from 'ee/security_dashboard/components/pipeline/security_dashboard_vuex.vue';
 import SecurityReportsSummary from 'ee/security_dashboard/components/pipeline/security_reports_summary.vue';
 import PipelineVulnerabilityReport from 'ee/security_dashboard/components/pipeline/pipeline_vulnerability_report.vue';
+import { DOC_PATH_SECURITY_CONFIGURATION } from 'ee/security_dashboard/constants';
 import {
   pipelineSecurityReportSummary,
   pipelineSecurityReportSummaryWithErrors,
@@ -28,7 +29,6 @@ import {
 
 Vue.use(Vuex);
 
-const dashboardDocumentation = '/help/docs';
 const emptyStateSvgPath = '/svgs/empty/svg';
 const pipelineId = 1234;
 const pipelineIid = 4321;
@@ -77,7 +77,6 @@ describe('Pipeline Security Dashboard component', () => {
         projectId,
         projectFullPath: 'my-path',
         emptyStateSvgPath,
-        dashboardDocumentation,
         pipeline: {
           id: pipelineId,
           iid: pipelineIid,
@@ -161,7 +160,7 @@ describe('Pipeline Security Dashboard component', () => {
         svgPath: '/svgs/empty/svg',
         title: 'No vulnerabilities found for this pipeline',
         description: `While it's rare to have no vulnerabilities for your pipeline, it can happen. In any event, we ask that you double check your settings to make sure all security scanning jobs have passed successfully.`,
-        primaryButtonLink: '/help/docs',
+        primaryButtonLink: DOC_PATH_SECURITY_CONFIGURATION,
         primaryButtonText: 'Learn more about setting up your dashboard',
       });
     });

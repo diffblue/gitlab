@@ -1,17 +1,13 @@
 <script>
 import { GlEmptyState } from '@gitlab/ui';
 import { s__, __ } from '~/locale';
+import { DOC_PATH_POLICIES } from 'ee/security_dashboard/constants';
 
 export default {
   components: {
     GlEmptyState,
   },
-  inject: [
-    'dashboardType',
-    'operationalConfigurationPath',
-    'operationalEmptyStateSvgPath',
-    'operationalHelpPath',
-  ],
+  inject: ['dashboardType', 'operationalConfigurationPath', 'operationalEmptyStateSvgPath'],
   i18n: {
     title: s__('SecurityReports|Monitor vulnerabilities across clusters'),
     description: {
@@ -36,6 +32,7 @@ export default {
       return this.dashboardType === 'project' ? this.$options.i18n.primaryButtonText : '';
     },
   },
+  DOC_PATH_POLICIES,
 };
 </script>
 
@@ -47,6 +44,6 @@ export default {
     :primary-button-text="primaryButtonText"
     :primary-button-link="operationalConfigurationPath"
     :secondary-button-text="$options.i18n.secondaryButtonText"
-    :secondary-button-link="operationalHelpPath"
+    :secondary-button-link="$options.DOC_PATH_POLICIES"
   />
 </template>

@@ -1,6 +1,7 @@
 <script>
 import { GlAlert, GlSprintf, GlButton } from '@gitlab/ui';
 import { s__ } from '~/locale';
+import { DOC_PATH_SECURITY_SCANNER_INTEGRATION_RETENTION_PERIOD } from 'ee/security_dashboard/constants';
 
 export const STATUS_PURGED = 'PURGED';
 
@@ -10,13 +11,13 @@ export default {
     GlSprintf,
     GlButton,
   },
-  inject: ['vulnerabilityRetentionPeriodHelpPageLink'],
   i18n: {
     reportStatusTitle: s__('SecurityReports|Report has expired'),
     reportExpiredMessage: s__(
       `SecurityReports|The security report for this pipeline has %{helpPageLinkStart}expired%{helpPageLinkEnd}. Re-run the pipeline to generate a new security report.`,
     ),
   },
+  DOC_PATH_SECURITY_SCANNER_INTEGRATION_RETENTION_PERIOD,
 };
 </script>
 
@@ -29,7 +30,7 @@ export default {
           <gl-button
             variant="link"
             icon="external-link"
-            :href="vulnerabilityRetentionPeriodHelpPageLink"
+            :href="$options.DOC_PATH_SECURITY_SCANNER_INTEGRATION_RETENTION_PERIOD"
             target="_blank"
           >
             {{ content }}

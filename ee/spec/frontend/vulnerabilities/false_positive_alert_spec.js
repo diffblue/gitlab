@@ -12,7 +12,6 @@ describe('False positive alert component', () => {
   const createWrapper = (provide) => {
     return shallowMount(FalsePositiveAlert, {
       provide: {
-        falsePositiveDocUrl: '/docs',
         canViewFalsePositive: true,
         ...provide,
       },

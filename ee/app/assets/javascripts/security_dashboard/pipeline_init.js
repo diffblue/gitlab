@@ -16,7 +16,6 @@ export default () => {
   }
 
   const {
-    dashboardDocumentation,
     emptyStateSvgPath,
     pipelineId,
     pipelineIid,
@@ -29,9 +28,6 @@ export default () => {
     projectFullPath,
     pipelineJobsPath,
     canAdminVulnerability,
-    securityReportHelpPageLink,
-    vulnerabilityRetentionPeriodHelpPageLink,
-    falsePositiveDocUrl,
     canViewFalsePositive,
   } = el.dataset;
 
@@ -55,7 +51,6 @@ export default () => {
       // fullPath is needed even though projectFullPath is already provided because
       // vulnerability_list_graphql.vue expects the property name to be 'fullPath'
       fullPath: projectFullPath,
-      dashboardDocumentation,
       emptyStateSvgPath,
       canAdminVulnerability: parseBoolean(canAdminVulnerability),
       pipeline: {
@@ -64,11 +59,8 @@ export default () => {
         jobsPath: pipelineJobsPath,
         sourceBranch,
       },
-      securityReportHelpPageLink,
-      vulnerabilityRetentionPeriodHelpPageLink,
       vulnerabilitiesEndpoint,
       loadingErrorIllustrations,
-      falsePositiveDocUrl,
       canViewFalsePositive: parseBoolean(canViewFalsePositive),
       vulnerabilitiesQuery: findingsQuery,
     },

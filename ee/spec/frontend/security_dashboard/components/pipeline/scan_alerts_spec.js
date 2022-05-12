@@ -3,6 +3,7 @@ import { shallowMount } from '@vue/test-utils';
 import PipelineScanAlerts from 'ee/security_dashboard/components/pipeline/scan_alerts.vue';
 import { trimText } from 'helpers/text_helper';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
+import { DOC_PATH_SECURITY_SCANNER_INTEGRATION_REPORT } from 'ee/security_dashboard/constants';
 
 const TEST_HELP_PAGE_LINK = 'http://help.com';
 const TEST_SCANS_WITH_ERRORS = [
@@ -70,7 +71,9 @@ describe('ee/security_dashboard/components/pipeline_scan_alerts.vue', () => {
   });
 
   it('links to the security-report help page', () => {
-    expect(findHelpPageLink().attributes('href')).toBe(TEST_HELP_PAGE_LINK);
+    expect(findHelpPageLink().attributes('href')).toBe(
+      DOC_PATH_SECURITY_SCANNER_INTEGRATION_REPORT,
+    );
   });
 
   describe('alert details', () => {

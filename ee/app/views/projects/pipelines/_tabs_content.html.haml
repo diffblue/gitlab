@@ -9,8 +9,7 @@
 
 - if pipeline.expose_security_dashboard?
   #js-tab-security.build-security.tab-pane
-    #js-security-report-app{ data: { dashboard_documentation: help_page_path('user/application_security/security_dashboard/index'),
-    empty_state_svg_path: image_path('illustrations/security-dashboard-empty-state.svg'),
+    #js-security-report-app{ data: { empty_state_svg_path: image_path('illustrations/security-dashboard-empty-state.svg'),
     pipeline_id: pipeline.id,
     pipeline_iid: pipeline.iid,
     project_id: project.id,
@@ -23,10 +22,7 @@
     project_full_path: project.path_with_namespace,
     commit_path_template: commit_path_template(project),
     can_admin_vulnerability: can?(current_user, :admin_vulnerability, project).to_s,
-    false_positive_doc_url: help_page_path('user/application_security/vulnerabilities/index'),
-    can_view_false_positive: project.licensed_feature_available?(:sast_fp_reduction).to_s,
-    security_report_help_page_link: help_page_path('development/integrations/secure', anchor: 'report'),
-    vulnerability_retention_period_help_page_link: help_page_path('development/integrations/secure', anchor: 'retention-period-for-vulnerabilities') } }
+    can_view_false_positive: project.licensed_feature_available?(:sast_fp_reduction).to_s } }
 
 - if pipeline.expose_license_scanning_data?
   #js-tab-licenses.tab-pane

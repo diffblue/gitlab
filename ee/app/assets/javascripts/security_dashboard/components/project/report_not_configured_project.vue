@@ -1,6 +1,7 @@
 <script>
 import { GlEmptyState, GlButton } from '@gitlab/ui';
 import { s__, __ } from '~/locale';
+import { DOC_PATH_SECURITY_CONFIGURATION } from 'ee/security_dashboard/constants';
 
 export default {
   components: {
@@ -10,7 +11,6 @@ export default {
   inject: [
     'emptyStateSvgPath',
     'securityConfigurationPath',
-    'securityDashboardHelpPath',
     'newVulnerabilityPath',
     'canAdminVulnerability',
   ],
@@ -28,6 +28,7 @@ export default {
     primaryButtonText: s__('SecurityReports|Configure security testing'),
     secondaryButtonText: __('Learn more'),
   },
+  DOC_PATH_SECURITY_CONFIGURATION,
 };
 </script>
 
@@ -45,7 +46,7 @@ export default {
       :primary-button-text="$options.i18n.primaryButtonText"
       :primary-button-link="securityConfigurationPath"
       :secondary-button-text="$options.i18n.secondaryButtonText"
-      :secondary-button-link="securityDashboardHelpPath"
+      :secondary-button-link="$options.DOC_PATH_SECURITY_CONFIGURATION"
     />
   </div>
 </template>

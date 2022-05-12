@@ -1,15 +1,12 @@
 <script>
 import { GlEmptyState } from '@gitlab/ui';
 import { s__ } from '~/locale';
+import { DOC_PATH_SECURITY_CONFIGURATION } from 'ee/security_dashboard/constants';
 
 export default {
   components: { GlEmptyState },
   props: {
     svgPath: {
-      type: String,
-      required: true,
-    },
-    link: {
       type: String,
       required: true,
     },
@@ -21,6 +18,7 @@ export default {
     ),
     primaryButtonText: s__('SecurityReports|Learn more about setting up your dashboard'),
   },
+  DOC_PATH_SECURITY_CONFIGURATION,
 };
 </script>
 
@@ -29,7 +27,7 @@ export default {
     :svg-path="svgPath"
     :title="$options.i18n.title"
     :description="$options.i18n.description"
-    :primary-button-link="link"
+    :primary-button-link="$options.DOC_PATH_SECURITY_CONFIGURATION"
     :primary-button-text="$options.i18n.primaryButtonText"
   />
 </template>
