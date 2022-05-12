@@ -1,7 +1,7 @@
 <script>
 import SummaryRow from '~/reports/components/summary_row.vue';
 import { ICON_SUCCESS, ICON_PENDING, ICON_FAILED } from '~/reports/constants';
-import { PASSED, APPROVED, FAILED } from 'ee/reports/status_checks_report/constants';
+import { PASSED, FAILED } from 'ee/reports/status_checks_report/constants';
 
 export default {
   name: 'StatusCheckIssueBody',
@@ -17,8 +17,6 @@ export default {
   computed: {
     statusIcon() {
       switch (this.issue.status) {
-        case APPROVED:
-          return ICON_SUCCESS;
         case PASSED:
           return ICON_SUCCESS;
         case FAILED:

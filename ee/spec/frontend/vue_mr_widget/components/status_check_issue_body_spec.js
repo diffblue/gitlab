@@ -35,11 +35,10 @@ describe('status check issue body', () => {
   });
 
   it.each`
-    status        | icon
-    ${'passed'}   | ${'success'}
-    ${'approved'} | ${'success'}
-    ${'pending'}  | ${'pending'}
-    ${'failed'}   | ${'failed'}
+    status       | icon
+    ${'passed'}  | ${'success'}
+    ${'pending'} | ${'pending'}
+    ${'failed'}  | ${'failed'}
   `('sets the status-icon to $icon when the check status is $status', ({ status, icon }) => {
     createComponent({ status });
 

@@ -5,7 +5,7 @@ import {
   EXTENSION_SUMMARY_FAILED_CLASS,
   EXTENSION_SUMMARY_NEUTRAL_CLASS,
 } from '~/vue_merge_request_widget/constants';
-import { APPROVED, PASSED, PENDING } from 'ee/reports/status_checks_report/constants';
+import { PASSED, PENDING } from 'ee/reports/status_checks_report/constants';
 
 export default {
   name: 'WidgetStatusChecks',
@@ -103,9 +103,6 @@ export default {
       statusChecks.forEach((statusCheck) => {
         switch (statusCheck.status) {
           case PASSED:
-            approved.push(this.createReportRow(statusCheck, EXTENSION_ICONS.success));
-            break;
-          case APPROVED:
             approved.push(this.createReportRow(statusCheck, EXTENSION_ICONS.success));
             break;
           case PENDING:

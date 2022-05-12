@@ -5,7 +5,7 @@ import axios from '~/lib/utils/axios_utils';
 import { sprintf, s__ } from '~/locale';
 import ReportSection from '~/reports/components/report_section.vue';
 import { status } from '~/reports/constants';
-import { APPROVED, PASSED, PENDING, FAILED } from './constants';
+import { PASSED, PENDING, FAILED } from './constants';
 
 export default {
   name: 'StatusChecksReportsApp',
@@ -27,7 +27,7 @@ export default {
   },
   computed: {
     approvedStatusChecks() {
-      return this.statusChecks.filter((s) => [PASSED, APPROVED].includes(s.status));
+      return this.statusChecks.filter((s) => s.status === PASSED);
     },
     pendingStatusChecks() {
       return this.statusChecks.filter((s) => s.status === PENDING);
