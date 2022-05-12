@@ -39,6 +39,13 @@ RSpec.describe Gitlab::Usage::Metrics::Instrumentations::CountBulkImportsEntitie
     end
   end
 
+  context 'with invalid source_type' do
+    it 'raises ArgumentError' do
+      expect { described_class.new(time_frame: 'all', options: { source_type: 'random' }) }
+        .to raise_error(ArgumentError, /source_type/)
+    end
+  end
+
   context 'with source_type project_entity' do
     context 'with all time frame' do
       let(:expected_value) { 4 }
