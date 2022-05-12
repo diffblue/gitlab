@@ -78,8 +78,8 @@ describe('ScanResultPolicyEditor', () => {
       provide: {
         disableScanPolicyUpdate: false,
         policyEditorEmptyStateSvgPath,
-        projectId: 1,
-        projectPath: defaultProjectPath,
+        namespaceId: 1,
+        namespacePath: defaultProjectPath,
         scanPolicyDocumentationPath,
         scanResultPolicyApprovers,
         ...provide,
@@ -233,7 +233,7 @@ describe('ScanResultPolicyEditor', () => {
             action === SECURITY_POLICY_ACTIONS.APPEND
               ? fromYaml(yamlEditorValue).name
               : mockScanResultObject.name,
-          projectPath: defaultProjectPath,
+          namespacePath: defaultProjectPath,
           yamlEditorValue,
         });
         expect(visitUrl).toHaveBeenCalledWith(

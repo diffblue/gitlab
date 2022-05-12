@@ -71,8 +71,7 @@ describe('ScanExecutionPolicyEditor', () => {
       provide: {
         disableScanPolicyUpdate: false,
         policyEditorEmptyStateSvgPath,
-        projectId: 1,
-        projectPath: defaultProjectPath,
+        namespacePath: defaultProjectPath,
         scanPolicyDocumentationPath,
         ...provide,
       },
@@ -128,7 +127,7 @@ describe('ScanExecutionPolicyEditor', () => {
             action === SECURITY_POLICY_ACTIONS.APPEND
               ? fromYaml(yamlEditorValue).name
               : mockDastScanExecutionObject.name,
-          projectPath: defaultProjectPath,
+          namespacePath: defaultProjectPath,
           yamlEditorValue,
         });
         await nextTick();

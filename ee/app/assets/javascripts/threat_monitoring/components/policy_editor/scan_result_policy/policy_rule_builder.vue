@@ -19,7 +19,7 @@ export default {
     GlFormGroup,
     PolicyRuleMultiSelect,
   },
-  inject: ['projectId'],
+  inject: ['namespaceId'],
   props: {
     initRule: {
       type: Object,
@@ -116,7 +116,7 @@ export default {
           <gl-form-group class="gl-ml-3 gl-mr-3 gl-mb-3!" data-testid="branches-group">
             <protected-branches-selector
               v-model="branchesToAdd"
-              :project-id="projectId"
+              :project-id="namespaceId"
               :selected-branches-names="branchesToAdd"
             />
           </gl-form-group>
