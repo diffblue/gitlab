@@ -2,8 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Jobs/SAST-IaC.gitlab-ci.yml' do
-  subject(:template) { Gitlab::Template::GitlabCiYmlTemplate.find('Jobs/SAST-IaC') }
+RSpec.describe 'Jobs/SAST-IaC.latest.gitlab-ci.yml' do
+  subject(:template) { Gitlab::Template::GitlabCiYmlTemplate.find('Jobs/SAST-IaC.latest') }
 
   describe 'the created pipeline' do
     let_it_be(:project) { create(:project, :repository) }
