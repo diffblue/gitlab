@@ -2,6 +2,7 @@
 #import "~/issues/list/queries/issue.fragment.graphql"
 
 query getIssuesEE(
+  $hideUsers: Boolean = false
   $isProject: Boolean = false
   $isSignedIn: Boolean = false
   $fullPath: ID!
