@@ -32,7 +32,7 @@ export default {
 </script>
 
 <template>
-  <gl-card class="gl-m-3 gl-p-0!">
+  <gl-card :class="{ 'gl-m-3 gl-p-0!': allowSelection }">
     <template #header>
       <div class="gl-display-flex gl-justify-content-space-between gl-align-items-center">
         <h3 class="gl-font-lg gl-my-0">
@@ -43,7 +43,9 @@ export default {
             v-if="allowSelection"
             v-gl-tooltip
             data-testid="selected-profile-edit-link"
-            category="primary"
+            variant="confirm"
+            size="small"
+            category="secondary"
             :title="$options.i18n.selectTitle"
             >{{ $options.i18n.selectBtnText }}</gl-button
           >
@@ -52,6 +54,7 @@ export default {
             v-gl-tooltip
             data-testid="selected-profile-edit-link"
             category="primary"
+            size="small"
             icon="pencil"
             :title="$options.i18n.editTitle"
             :aria-label="$options.i18n.editTitle"

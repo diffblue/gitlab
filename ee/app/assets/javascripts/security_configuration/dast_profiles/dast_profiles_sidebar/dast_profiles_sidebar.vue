@@ -7,6 +7,8 @@ import DastScannerProfileForm from 'ee/security_configuration/dast_profiles/dast
 import DastSiteProfileForm from 'ee/security_configuration/dast_profiles/dast_site_profiles/components/dast_site_profile_form.vue';
 import DastProfilesLoader from 'ee/security_configuration/dast_profiles/components/dast_profiles_loader.vue';
 import { getContentWrapperHeight } from 'ee/threat_monitoring/utils';
+import ScannerProfileSummary from 'ee/security_configuration/dast_profiles/dast_profile_selector/scanner_profile_summary.vue';
+import SiteProfileSummary from 'ee/security_configuration/dast_profiles/dast_profile_selector/site_profile_summary.vue';
 
 export default {
   i18n: {
@@ -25,6 +27,8 @@ export default {
     DastScannerProfileForm,
     DastSiteProfileForm,
     DastProfilesLoader,
+    ScannerProfileSummary,
+    SiteProfileSummary,
   },
   inject: ['projectPath'],
   props: {
@@ -81,6 +85,9 @@ export default {
     sidebarHeader() {
       return capitalizeFirstCharacter(this.profileType);
     },
+    summaryComponent() {
+      return this.profileType === SCANNER_TYPE ? ScannerProfileSummary : SiteProfileSummary;
+    },
   },
   methods: {
     closeDrawer() {
@@ -114,7 +121,7 @@ export default {
   >
     <template #title>
       <div class="gl-display-flex gl-w-full gl-align-items-center gl-justify-content-space-between">
-        <h4 data-testid="sidebar-header" class="gl-font-size-h2 gl-my-0 gl-mr-3">
+        <h4 data-testid="sidebar-header" class="sidebar-header gl-font-size-h2 gl-my-0 gl-mr-3">
           <gl-sprintf :message="$options.i18n.scanSidebarHeader">
             <template #scannerType>
               <span>{{ sidebarHeader }}</span>
@@ -189,8 +196,25 @@ export default {
             />
           </div>
         </transition>
-        <slot v-if="isShowProfilesState" name="content"></slot>
+        <!-- Profile list -->
+        <div v-if="isShowProfilesState" class="gl-p-1!">
+          <template v-for="profile in profiles">
+            <component
+              :is="summaryComponent"
+              :key="profile.id"
+              :profile="profile"
+              :allow-selection="true"
+            />
+          </template>
+        </div>
       </template>
     </template>
   </gl-drawer>
 </template>
+
+<style>
+.gl-drawer-title {
+  margin-left: -12px;
+  margin-right: -12px;
+}
+</style>

@@ -1,0 +1,21 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DastProfileSelectorEmptyState renders properly 1`] = `
+<div>
+  <div
+    class="gl-bg-gray-10 gl-display-flex gl-flex-direction-column gl-text-center gl-align-items-center gl-p-6 gl-rounded-small gl-mb-5"
+  >
+    <h5
+      class="gl-h5 gl-text-gray-500 gl-mt-0 gl-mb-2"
+    >
+      heading
+    </h5>
+     
+    <span
+      class="gl-text-gray-500"
+    >
+      content
+    </span>
+  </div>
+</div>
+`;

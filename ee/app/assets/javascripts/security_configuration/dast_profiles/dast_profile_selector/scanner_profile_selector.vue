@@ -1,46 +1,82 @@
 <script>
 import { GlButton, GlLink, GlSprintf } from '@gitlab/ui';
+import ScannerProfileSummary from 'ee/security_configuration/dast_profiles/dast_profile_selector/scanner_profile_summary.vue';
+
 import { s__ } from '~/locale';
 import { helpPagePath } from '~/helpers/help_page_helper';
-import EmptyState from './empty_state.vue';
+import EmptyState from 'ee/security_configuration/dast_profiles/dast_profile_selector/empty_state.vue';
 
 const SCANNER_PROFILE_INFO = helpPagePath('user/application_security/dast/index', {
   anchor: 'scanner-profile',
 });
 
 export default {
-  SCANNER_PROFILE_INFO,
+  name: 'DastScannerProfileSelector',
   i18n: {
     emptyStateHeader: s__('DastProfiles|Scanner Profile'),
     emptyStateContentHeader: s__('DastProfiles|No scanner profile selected'),
     emptyStateContent: s__('DastProfiles|Select a scanner profile to run a DAST scan'),
     selectProfileButton: s__('DastProfiles|Select scanner profile'),
+    changeProfileButton: s__('DastProfiles|Change scanner profile'),
     scannerProfileDescription: s__(
       'DastProfiles|Scanner profiles define the configuration details of a security scanner. %{linkStart}Learn more%{linkEnd}.',
     ),
   },
+  SCANNER_PROFILE_INFO,
   components: {
     EmptyState,
     GlButton,
     GlLink,
     GlSprintf,
+    ScannerProfileSummary,
+  },
+  props: {
+    profiles: {
+      type: Array,
+      required: false,
+      default: () => [],
+    },
+    selectedProfile: {
+      type: Object,
+      required: false,
+      default: null,
+    },
+  },
+  computed: {
+    hasScannerProfileSelector() {
+      return Boolean(this.selectedProfile);
+    },
+    actionButtonText() {
+      return this.hasScannerProfileSelector
+        ? this.$options.i18n.changeProfileButton
+        : this.$options.i18n.selectProfileButton;
+    },
+  },
+
+  methods: {
+    selectProfile() {
+      this.$emit('open-drawer');
+    },
   },
 };
 </script>
 
 <template>
   <div>
-    <empty-state>
-      <template #main-header>
+    <div class="gl-mb-4">
+      <h4 class="gl-font-lg gl-mt-0 gl-mb-2">
         {{ $options.i18n.emptyStateHeader }}
-      </template>
-      <template #header-description>
+      </h4>
+      <p>
         <gl-sprintf :message="$options.i18n.scannerProfileDescription">
           <template #link="{ content }">
             <gl-link :href="$options.SCANNER_PROFILE_INFO">{{ content }}</gl-link>
           </template>
         </gl-sprintf>
-      </template>
+      </p>
+    </div>
+
+    <empty-state v-if="!hasScannerProfileSelector" class="gl-mb-4">
       <template #header>
         {{ $options.i18n.emptyStateContentHeader }}
       </template>
@@ -49,13 +85,15 @@ export default {
       </template>
     </empty-state>
 
+    <scanner-profile-summary v-else :profile="selectedProfile" class="gl-mb-4" />
+
     <gl-button
+      data-testid="select-profile-action-btn"
       variant="confirm"
       category="secondary"
-      data-testid="create-scanner-profile-link"
-      @click="$emit('click')"
+      @click="selectProfile"
     >
-      {{ $options.i18n.selectProfileButton }}
+      {{ actionButtonText }}
     </gl-button>
   </div>
 </template>
