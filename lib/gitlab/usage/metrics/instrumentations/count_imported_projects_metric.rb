@@ -16,24 +16,28 @@ module Gitlab
           relation { ::Project }
 
           start do |time_constraints|
-            start = time_constraints[:created_at]&.first
+            unless time_constraints.nil?
+              start = time_constraints[:created_at]&.first
 
-            unless start.nil?
-              ::Project
-                .select(:id)
-                .where(Project.arel_table[:created_at].gteq(start)) # rubocop:disable UsageData/LargeTable
-                .order(created_at: :asc).limit(1).first&.id
+              unless start.nil?
+                ::Project
+                  .select(:id)
+                  .where(Project.arel_table[:created_at].gteq(start)) # rubocop:disable UsageData/LargeTable
+                  .order(created_at: :asc).limit(1).first&.id
+              end
             end
           end
 
           finish do |time_constraints|
-            finish = time_constraints[:created_at]&.last
+            unless time_constraints.nil?
+              finish = time_constraints[:created_at]&.last
 
-            unless finish.nil?
-              ::Project
-                .select(:id)
-                .where(Project.arel_table[:created_at].lteq(finish)) # rubocop:disable UsageData/LargeTable
-                .order(created_at: :desc).limit(1).first&.id
+              unless finish.nil?
+                ::Project
+                  .select(:id)
+                  .where(Project.arel_table[:created_at].lteq(finish)) # rubocop:disable UsageData/LargeTable
+                  .order(created_at: :desc).limit(1).first&.id
+              end
             end
           end
 
