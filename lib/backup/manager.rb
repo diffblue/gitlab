@@ -56,9 +56,7 @@ module Backup
 
       write_backup_information
 
-      if skipped?('tar')
-        upload
-      else
+      unless skipped?('tar')
         pack
         upload
         cleanup
@@ -299,7 +297,7 @@ module Backup
 
     def upload
       connection_settings = Gitlab.config.backup.upload.connection
-      if connection_settings.blank? || skipped?('remote')
+      if connection_settings.blank? || skipped?('remote') || skipped?('tar')
         puts_time "Uploading backup archive to remote storage #{remote_directory} ... ".color(:blue) + "[SKIPPED]".color(:cyan)
         return
       end
