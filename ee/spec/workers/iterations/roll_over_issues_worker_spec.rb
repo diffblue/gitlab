@@ -43,7 +43,7 @@ RSpec.describe Iterations::RollOverIssuesWorker do
     end
 
     context 'when roll-over option on iteration cadence is enabled' do
-      context 'when service fails to create future iteration' do
+      context 'when service fails to create upcoming iteration' do
         it 'logs error' do
           expect(Iterations::RollOverIssuesService).to receive(:new).and_return(mock_failure_service).once
           expect(worker).to receive(:log_error)
@@ -75,7 +75,7 @@ RSpec.describe Iterations::RollOverIssuesWorker do
           worker.perform(cadence.iterations)
         end
 
-        context 'when service fails to create future iteration' do
+        context 'when service fails to create upcoming iteration' do
           it 'logs error and exits early' do
             expect(Iterations::RollOverIssuesService).not_to receive(:new)
             expect(Iterations::Cadences::CreateIterationsInAdvanceService).to receive(:new).and_return(mock_failure_service)

@@ -21204,7 +21204,7 @@ msgstr ""
 msgid "Iterations"
 msgstr ""
 
-msgid "Iterations|Add a duration, and number of future iterations in order to convert this cadence to automatic scheduling."
+msgid "Iterations|Add a duration, and number of upcoming iterations in order to convert this cadence to automatic scheduling."
 msgstr ""
 
 msgid "Iterations|Add iteration"
@@ -21264,7 +21264,7 @@ msgstr ""
 msgid "Iterations|Error loading iteration cadences."
 msgstr ""
 
-msgid "Iterations|Future iterations"
+msgid "Iterations|First iteration start date"
 msgstr ""
 
 msgid "Iterations|Iteration cadences"
@@ -21279,7 +21279,7 @@ msgstr ""
 msgid "Iterations|Learn more about automatic scheduling"
 msgstr ""
 
-msgid "Iterations|Move incomplete issues to the next iteration"
+msgid "Iterations|Move incomplete issues to the next iteration."
 msgstr ""
 
 msgid "Iterations|New iteration"
@@ -21300,10 +21300,13 @@ msgstr ""
 msgid "Iterations|No iterations in cadence."
 msgstr ""
 
+msgid "Iterations|No one can change this date after the cadence has begun."
+msgstr ""
+
 msgid "Iterations|No open iterations."
 msgstr ""
 
-msgid "Iterations|Number of future iterations you would like to have scheduled"
+msgid "Iterations|Number of upcoming iterations that should be scheduled at a time."
 msgstr ""
 
 msgid "Iterations|Open"
@@ -21333,13 +21336,13 @@ msgstr ""
 msgid "Iterations|Start date"
 msgstr ""
 
-msgid "Iterations|The duration for each iteration (in weeks)"
+msgid "Iterations|The duration of each iteration (in weeks)."
 msgstr ""
 
 msgid "Iterations|The iteration has been deleted."
 msgstr ""
 
-msgid "Iterations|The start date of your first iteration"
+msgid "Iterations|The start date of the first iteration determines when your cadence begins."
 msgstr ""
 
 msgid "Iterations|This cadence requires an update"
@@ -21361,6 +21364,9 @@ msgid "Iterations|Unable to find iteration."
 msgstr ""
 
 msgid "Iterations|Unable to save cadence. Please try again."
+msgstr ""
+
+msgid "Iterations|Upcoming iterations"
 msgstr ""
 
 msgid "Iteration|Dates cannot overlap with other existing Iterations within this group"
@@ -43038,9 +43044,6 @@ msgid "You cannot approve your own deployment."
 msgstr ""
 
 msgid "You cannot change the start date after the cadence has started. Please create a new cadence."
-msgstr ""
-
-msgid "You cannot change the start date because the first iteration has already started on %{start_date}."
 msgstr ""
 
 msgid "You cannot combine replace_ids with add_ids or remove_ids"

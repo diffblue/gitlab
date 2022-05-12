@@ -110,13 +110,13 @@ RSpec.describe Iterations::DeleteService do
           it_behaves_like 'iteration delete fails with message', message: ["upcoming/current iterations can't be deleted unless they are the last one in the cadence"]
         end
 
-        context 'when deleting a future iteration that is not the last one' do
+        context 'when deleting a upcoming iteration that is not the last one' do
           let(:iteration_to_delete) { future_iteration }
 
           it_behaves_like 'iteration delete fails with message', message: ["upcoming/current iterations can't be deleted unless they are the last one in the cadence"]
         end
 
-        context 'when deleting the last future iteration' do
+        context 'when deleting the last upcoming iteration' do
           let(:iteration_to_delete) { last_future_iteration }
           let(:associated_mr) { last_future_merge_request }
           let(:associated_issue) { last_future_issue }

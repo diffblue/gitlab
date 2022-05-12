@@ -15,7 +15,7 @@ module QA
         attribute :id
         attribute :description
         attribute :duration
-        attribute :future_iterations
+        attribute :upcoming_iterations
         attribute :start_date
         attribute :title
 
@@ -24,7 +24,7 @@ module QA
           @description = "This is a test cadence."
           @title = "Iteration Cadence #{SecureRandom.hex(8)}"
           @duration = 2
-          @future_iterations = 2
+          @upcoming_iterations = 2
         end
 
         def fabricate!
@@ -38,7 +38,7 @@ module QA
             new.fill_title(@title)
             new.fill_start_date(@start_date)
             new.fill_duration(@duration)
-            new.fill_future_iterations(@future_iterations)
+            new.fill_upcoming_iterations(@upcoming_iterations)
             new.click_create_iteration_cadence_button
           end
         end
@@ -65,7 +65,7 @@ module QA
                 title: "#{@title}"
                 description: "#{@description}"
                 startDate: "#{@start_date}"
-                iterationsInAdvance: #{@future_iterations}
+                iterationsInAdvance: #{@upcoming_iterations}
                 durationInWeeks: #{@duration}
                 automatic: true
                 active: true

@@ -12,6 +12,7 @@ export const iterationStates = {
   closed: 'closed',
   upcoming: 'upcoming',
   expired: 'expired',
+  all: 'all',
 };
 
 export default {};

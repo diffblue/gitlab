@@ -26,8 +26,8 @@ module QA
                 select_element(:iteration_cadence_duration_field, duration)
               end
 
-              def fill_future_iterations(future_iterations)
-                select_element(:iteration_cadence_future_iterations_field, future_iterations)
+              def fill_upcoming_iterations(upcoming_iterations)
+                select_element(:iteration_cadence_upcoming_iterations_field, upcoming_iterations)
               end
 
               def fill_start_date(start_date)
