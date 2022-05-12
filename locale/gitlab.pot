@@ -6034,6 +6034,9 @@ msgstr ""
 msgid "Billings|Validate user account"
 msgstr ""
 
+msgid "Billings|You can't change the seat status of a user who was invited via a group or project."
+msgstr ""
+
 msgid "Billings|You'll now be able to take advantage of free CI/CD minutes on shared runners."
 msgstr ""
 
