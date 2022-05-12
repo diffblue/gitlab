@@ -111,7 +111,7 @@ RSpec.shared_examples 'gets registries for' do |args|
 
   context 'when the feature is enabled by default' do
     before do
-      skip "Skipping since #{replicator_class.name} is disabled by default" unless replicator_class.replication_enabled_by_default?
+      skip "Skipping since #{replicator_class.name} is disabled by default" unless Feature::Definition.default_enabled?(feature_flag, default_enabled_if_undefined: true)
     end
 
     context 'when the feature is disabled' do
@@ -131,7 +131,7 @@ RSpec.shared_examples 'gets registries for' do |args|
 
   context 'when the feature is disabled by default' do
     before do
-      skip "Skipping since #{replicator_class.name} is enabled by default" if replicator_class.replication_enabled_by_default?
+      skip "Skipping since #{replicator_class.name} is enabled by default" if Feature::Definition.default_enabled?(feature_flag, default_enabled_if_undefined: true)
     end
 
     context 'when the feature is disabled' do
