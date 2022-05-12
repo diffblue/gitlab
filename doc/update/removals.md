@@ -432,6 +432,18 @@ to upgrade from the removed integration to the new supported one.
 
 We are not removing Kerberos SPNEGO integration. We are removing the old password-based Kerberos.
 
+### bundler-audit Dependency Scanning tool
+
+WARNING:
+This feature was changed or removed in 15.0
+as a [breaking change](https://docs.gitlab.com/ee/development/contributing/#breaking-changes).
+Before updating GitLab, review the details carefully to determine if you need to make any
+changes to your code, settings, or workflow.
+
+We are removing bundler-audit from Dependency Scanning on May 22, 2022 in 15.0. After this removal, Ruby scanning functionality will not be affected as it is still being covered by Gemnasium.
+
+If you have explicitly excluded bundler-audit using the `DS_EXCLUDED_ANALYZERS` variable, then you will be able to remove the reference to bundler-audit. If you have customized your pipeline’s Dependency Scanning configuration related to the `bundler-audit-dependency_scanning` job, then you will want to switch to `gemnasium-dependency_scanning`. If you have not used the `DS_EXCLUDED_ANALYZERS` to reference bundler-audit or customized your template specifically for bundler-audit, you will not need to take any action.
+
 ## 14.10
 
 ### Permissions change for downloading Composer dependencies
