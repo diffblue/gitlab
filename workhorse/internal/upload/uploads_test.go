@@ -12,6 +12,7 @@ import (
 	"net/http/httptest"
 	"net/textproto"
 	"os"
+	"path"
 	"regexp"
 	"strconv"
 	"strings"
@@ -286,11 +287,12 @@ func TestUploadingMultipleFiles(t *testing.T) {
 }
 
 func TestUploadProcessingFile(t *testing.T) {
+	testhelper.ConfigureSecret()
 	tempPath, err := ioutil.TempDir("", "uploads")
 	require.NoError(t, err)
 	defer os.RemoveAll(tempPath)
 
-	_, testServer := test.StartObjectStore()
+	objectStore, testServer := test.StartObjectStore()
 	defer testServer.Close()
 
 	storeUrl := testServer.URL + test.ObjectPath
@@ -298,21 +300,24 @@ func TestUploadProcessingFile(t *testing.T) {
 	tests := []struct {
 		name    string
 		preauth *api.Response
+		content func(t *testing.T) []byte
 	}{
 		{
 			name:    "FileStore Upload",
 			preauth: &api.Response{TempPath: tempPath},
+			content: func(t *testing.T) []byte {
+				entries, err := os.ReadDir(tempPath)
+				require.NoError(t, err)
+				require.Len(t, entries, 1)
+				content, err := os.ReadFile(path.Join(tempPath, entries[0].Name()))
+				require.NoError(t, err)
+				return content
+			},
 		},
 		{
 			name:    "ObjectStore Upload",
-			preauth: &api.Response{RemoteObject: api.RemoteObject{StoreURL: storeUrl}},
-		},
-		{
-			name: "ObjectStore and FileStore Upload",
-			preauth: &api.Response{
-				TempPath:     tempPath,
-				RemoteObject: api.RemoteObject{StoreURL: storeUrl},
-			},
+			preauth: &api.Response{RemoteObject: api.RemoteObject{StoreURL: storeUrl, ID: "123"}},
+			content: func(*testing.T) []byte { return objectStore.GetObject(test.ObjectPath) },
 		},
 	}
 
@@ -330,17 +335,16 @@ func TestUploadProcessingFile(t *testing.T) {
 			httpRequest.Header.Set("Content-Type", writer.FormDataContentType())
 
 			response := httptest.NewRecorder()
-			apiResponse := &api.Response{TempPath: tempPath}
 			preparer := &DefaultPreparer{}
-			opts, err := preparer.Prepare(apiResponse)
+			opts, err := preparer.Prepare(test.preauth)
 			require.NoError(t, err)
 
-			interceptMultipartFiles(response, httpRequest, nilHandler, apiResponse, &testFormProcessor{}, opts)
+			interceptMultipartFiles(response, httpRequest, nilHandler, test.preauth, &testFormProcessor{}, opts)
 
 			require.Equal(t, 200, response.Code)
+			require.Equal(t, "test", string(test.content(t)))
 		})
 	}
-
 }
 
 func TestInvalidFileNames(t *testing.T) {
