@@ -199,13 +199,6 @@ Style/KeywordParametersOrder:
 Style/Lambda:
   Enabled: false
 
-# Offense count: 101
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedOctalStyle.
-# SupportedOctalStyles: zero_with_o, zero_only
-Style/NumericLiteralPrefix:
-  Enabled: false
-
 # Offense count: 279
 # Cop supports --auto-correct.
 Style/RedundantRegexpEscape:
