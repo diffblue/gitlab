@@ -17,13 +17,11 @@ module Analytics
 
       MAX_RUNTIME = 250.seconds
 
-      delegate :monotonic_time, to: :'Gitlab::Metrics::System'
-
       def perform
         return if Feature.disabled?(:vsa_consistency_worker)
 
         current_time = Time.current
-        @start_time = monotonic_time
+        runtime_limiter = Analytics::CycleAnalytics::RuntimeLimiter.new(MAX_RUNTIME)
         over_time = false
 
         loop do
@@ -31,10 +29,10 @@ module Analytics
           break if batch.empty?
 
           batch.each do |aggregation|
-            run_consistency_check_services(aggregation.group)
-            aggregation.update!(last_consistency_check_updated_at: current_time)
+            response = run_consistency_check_services(aggregation.group, runtime_limiter, cursor_data(aggregation))
+            save_cursor_attrs!(aggregation, response, current_time)
 
-            if elapsed_time >= MAX_RUNTIME
+            if limit_reached?(response) || runtime_limiter.over_time?
               over_time = true
               break
             end
@@ -46,13 +44,81 @@ module Analytics
 
       private
 
-      def elapsed_time
-        monotonic_time - @start_time
+      def run_consistency_check_services(group, runtime_limiter, cursor_data)
+        # Skip issues if the previous run stopped at merge requests,
+        # as it means that issues were already processed
+        unless cursor_data[:merge_requests_stage_event_hash_id].present?
+          response = Analytics::CycleAnalytics::ConsistencyCheckService.new(
+            group: group,
+            event_model: Analytics::CycleAnalytics::IssueStageEvent
+          ).execute(runtime_limiter: runtime_limiter, cursor_data: cursor_data)
+
+          return response if limit_reached?(response)
+        end
+
+        Analytics::CycleAnalytics::ConsistencyCheckService.new(
+          group: group,
+          event_model: Analytics::CycleAnalytics::MergeRequestStageEvent
+        ).execute(runtime_limiter: runtime_limiter, cursor_data: cursor_data)
       end
 
-      def run_consistency_check_services(group)
-        Analytics::CycleAnalytics::ConsistencyCheckService.new(group: group, event_model: Analytics::CycleAnalytics::IssueStageEvent).execute(max_runtime: MAX_RUNTIME - elapsed_time)
-        Analytics::CycleAnalytics::ConsistencyCheckService.new(group: group, event_model: Analytics::CycleAnalytics::MergeRequestStageEvent).execute(max_runtime: MAX_RUNTIME - elapsed_time)
+      def limit_reached?(service_response)
+        service_response.payload[:reason] == :limit_reached
+      end
+
+      def save_cursor_attrs!(aggregation, service_response, current_time)
+        # Reset all cursor attrs that are not explicitly set
+        attrs = {
+          last_consistency_check_issues_stage_event_hash_id: nil,
+          last_consistency_check_issues_start_event_timestamp: nil,
+          last_consistency_check_issues_end_event_timestamp: nil,
+          last_consistency_check_issues_issuable_id: nil,
+          last_consistency_check_merge_requests_stage_event_hash_id: nil,
+          last_consistency_check_merge_requests_start_event_timestamp: nil,
+          last_consistency_check_merge_requests_end_event_timestamp: nil,
+          last_consistency_check_merge_requests_issuable_id: nil
+        }
+
+        if limit_reached?(service_response)
+          attrs.merge!(cursor_attrs(service_response))
+        else
+          attrs[:last_consistency_check_updated_at] = current_time
+        end
+
+        aggregation.update!(attrs)
+      end
+
+      def cursor_attrs(service_response)
+        payload = service_response.payload
+        cursor = payload[:cursor]
+        model = payload[:model]
+
+        if model == ::Issue
+          {
+            last_consistency_check_issues_stage_event_hash_id: payload[:stage_event_hash_id],
+            last_consistency_check_issues_start_event_timestamp: cursor['start_event_timestamp'],
+            last_consistency_check_issues_end_event_timestamp: cursor['end_event_timestamp'],
+            last_consistency_check_issues_issuable_id: cursor['issue_id']
+          }
+        elsif model == ::MergeRequest
+          {
+            last_consistency_check_merge_requests_stage_event_hash_id: payload[:stage_event_hash_id],
+            last_consistency_check_merge_requests_start_event_timestamp: cursor['start_event_timestamp'],
+            last_consistency_check_merge_requests_end_event_timestamp: cursor['end_event_timestamp'],
+            last_consistency_check_merge_requests_issuable_id: cursor['merge_request_id']
+          }
+        else
+          raise "invalid model #{model}"
+        end
+      end
+
+      def cursor_data(aggregation)
+        {
+          issues_stage_event_hash_id: aggregation.last_consistency_check_issues_stage_event_hash_id,
+          merge_requests_stage_event_hash_id: aggregation.last_consistency_check_merge_requests_stage_event_hash_id,
+          issues_cursor: aggregation.consistency_check_cursor_for(Analytics::CycleAnalytics::IssueStageEvent).compact,
+          merge_requests_cursor: aggregation.consistency_check_cursor_for(Analytics::CycleAnalytics::IssueStageEvent).compact
+        }
       end
     end
   end

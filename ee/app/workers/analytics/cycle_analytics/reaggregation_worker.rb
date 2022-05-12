@@ -17,13 +17,11 @@ module Analytics
 
       MAX_RUNTIME = 250.seconds
 
-      delegate :monotonic_time, to: :'Gitlab::Metrics::System'
-
       def perform
         return if Feature.disabled?(:vsa_reaggregation_worker)
 
         current_time = Time.current
-        start_time = monotonic_time
+        runtime_limiter = Analytics::CycleAnalytics::RuntimeLimiter.new(MAX_RUNTIME)
         over_time = false
 
         loop do
@@ -33,7 +31,7 @@ module Analytics
           batch.each do |aggregation|
             Analytics::CycleAnalytics::AggregatorService.new(aggregation: aggregation, mode: :full).execute
 
-            if monotonic_time - start_time >= MAX_RUNTIME
+            if runtime_limiter.over_time?
               over_time = true
               break
             end
