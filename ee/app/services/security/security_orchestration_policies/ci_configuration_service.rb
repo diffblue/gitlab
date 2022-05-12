@@ -5,7 +5,6 @@ module Security
     class CiConfigurationService
       SCAN_TEMPLATES = {
         'secret_detection' => 'Jobs/Secret-Detection',
-        'cluster_image_scanning' => 'Security/Cluster-Image-Scanning',
         'container_scanning' => 'Security/Container-Scanning',
         'sast' => 'Security/SAST'
       }.freeze
@@ -14,7 +13,7 @@ module Security
         case action[:scan]
         when 'secret_detection'
           secret_detection_configuration(ci_variables)
-        when 'container_scanning', 'cluster_image_scanning'
+        when 'container_scanning'
           scan_configuration(action[:scan], ci_variables)
         when 'sast'
           child_pipeline_configuration(action[:scan], ci_variables)
