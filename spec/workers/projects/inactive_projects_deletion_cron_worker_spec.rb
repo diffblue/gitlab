@@ -132,6 +132,8 @@ RSpec.describe Projects::InactiveProjectsDeletionCronWorker do
           end
         end
       end
+
+      it_behaves_like 'an idempotent worker'
     end
   end
 end

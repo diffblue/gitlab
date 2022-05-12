@@ -778,9 +778,7 @@ class ApplicationSetting < ApplicationRecord
   end
 
   def reset_deletion_warning_redis_key
-    Gitlab::Redis::SharedState.with do |redis|
-      redis.del('inactive_projects_deletion_warning_email_notified')
-    end
+    Gitlab::InactiveProjectsDeletionWarningTracker.reset_all
   end
 end
 

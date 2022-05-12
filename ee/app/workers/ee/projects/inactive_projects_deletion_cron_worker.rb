@@ -8,6 +8,7 @@ module EE
       override :delete_project
       def delete_project(project, user)
         return super unless License.feature_available?(:adjourned_deletion_for_projects_and_groups)
+        # Can't use `project.adjourned_deletion?` see https://gitlab.com/gitlab-org/gitlab/-/merge_requests/85689#note_943072034
         return super unless project.adjourned_deletion_configured?
 
         ::Projects::MarkForDeletionService.new(project, user, {}).execute
@@ -15,6 +16,7 @@ module EE
 
       override :send_deletion_warning_email?
       def send_deletion_warning_email?(deletion_warning_email_sent_on, project)
+        # Can't use `project.marked_for_deletion?`, see https://gitlab.com/gitlab-org/gitlab/-/merge_requests/85689#note_943072064
         return false if project.marked_for_deletion_at?
 
         super

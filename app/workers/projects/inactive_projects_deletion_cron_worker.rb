@@ -1,13 +1,14 @@
 # frozen_string_literal: true
 
 module Projects
-  class InactiveProjectsDeletionCronWorker # rubocop:disable Scalability/IdempotentWorker
+  class InactiveProjectsDeletionCronWorker
     include ApplicationWorker
     include Gitlab::Utils::StrongMemoize
     include CronjobQueue
 
+    idempotent!
     data_consistency :always
-    feature_category :source_code_management
+    feature_category :compliance_management
 
     INTERVAL = 2.seconds.to_i
 
@@ -18,7 +19,7 @@ module Projects
 
       return unless admin_user
 
-      notified_inactive_projects = deletion_warning_notified_projects
+      notified_inactive_projects = Gitlab::InactiveProjectsDeletionWarningTracker.notified_projects
 
       Project.inactive.without_deleted.find_each(batch_size: 100).with_index do |project, index| # rubocop: disable CodeReuse/ActiveRecord
         next unless Feature.enabled?(:inactive_projects_deletion, project.root_namespace)
@@ -31,7 +32,7 @@ module Projects
           if send_deletion_warning_email?(deletion_warning_email_sent_on, project)
             send_notification(delay, project, admin_user)
           elsif deletion_warning_email_sent_on && delete_due_to_inactivity?(deletion_warning_email_sent_on)
-            delete_redis_entry(project)
+            Gitlab::InactiveProjectsDeletionWarningTracker.new(project.id).reset
             delete_project(project, admin_user)
           end
         end
@@ -39,16 +40,6 @@ module Projects
     end
 
     private
-
-    # Redis key 'inactive_projects_deletion_warning_email_notified' is a hash. It stores the date when the
-    # deletion warning notification email was sent for an inactive project. The fields and values look like:
-    # {"project:1"=>"2022-04-22", "project:5"=>"2022-04-22", "project:7"=>"2022-04-25"}
-    # @return [Hash]
-    def deletion_warning_notified_projects
-      Gitlab::Redis::SharedState.with do |redis|
-        redis.hgetall('inactive_projects_deletion_warning_email_notified')
-      end
-    end
 
     def grace_months_after_deletion_notification
       strong_memoize(:grace_months_after_deletion_notification) do
@@ -71,12 +62,6 @@ module Projects
 
     def delete_project(project, user)
       ::Projects::DestroyService.new(project, user, {}).async_execute
-    end
-
-    def delete_redis_entry(project)
-      Gitlab::Redis::SharedState.with do |redis|
-        redis.hdel('inactive_projects_deletion_warning_email_notified', "project:#{project.id}")
-      end
     end
 
     def send_notification(delay, project, user)

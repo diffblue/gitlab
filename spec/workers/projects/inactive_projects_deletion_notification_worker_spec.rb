@@ -19,11 +19,6 @@ RSpec.describe Projects::InactiveProjectsDeletionNotificationWorker do
     end
 
     it 'adds the project_id to redis key that tracks the deletion warning emails' do
-      Gitlab::Redis::SharedState.with do |redis|
-        expect(redis).to receive(:hset).with('inactive_projects_deletion_warning_email_notified',
-                                             "project:#{project.id}", Date.current)
-      end
-
       worker.perform(project.id, deletion_date)
 
       Gitlab::Redis::SharedState.with do |redis|
@@ -37,6 +32,10 @@ RSpec.describe Projects::InactiveProjectsDeletionNotificationWorker do
                                                                     { project_id: non_existing_project_id })
 
       worker.perform(non_existing_project_id, deletion_date)
+    end
+
+    it_behaves_like 'an idempotent worker' do
+      let(:job_args) { [project.id, deletion_date] }
     end
   end
 end
