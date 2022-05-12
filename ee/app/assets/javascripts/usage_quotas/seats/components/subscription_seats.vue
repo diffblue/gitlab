@@ -140,6 +140,12 @@ export default {
         ? this.$options.i18n.seatsAvailableText
         : this.$options.i18n.seatsInSubscriptionText;
     },
+    seatsInUseTooltipText() {
+      if (!this.hasLimitedFreePlan) {
+        return null;
+      }
+      return sprintf(this.$options.i18n.seatsTooltipText, { number: this.maxFreeNamespaceSeats });
+    },
     displayedTotalSeats() {
       return this.totalSeatsAvailable ? String(this.totalSeatsAvailable) : '-';
     },
@@ -214,6 +220,7 @@ export default {
     pendingMembersAlertButtonText: s__('Billing|View pending approvals'),
     seatsInSubscriptionText: s__('Billings|Seats in use / Seats in subscription'),
     seatsAvailableText: s__('Billings|Seats in use / Seats available'),
+    seatsTooltipText: s__('Billings|Free groups are limited to %{number} seats.'),
     inASeatLabel: s__('Billings|In a seat'),
     seatsInUseLink: helpPagePath('subscription/gitlab_com/index', {
       anchor: 'how-seat-usage-is-determined',
@@ -247,6 +254,7 @@ export default {
     <div class="gl-bg-gray-10 gl-display-flex gl-sm-flex-direction-column gl-p-5">
       <statistics-card
         :help-link="$options.i18n.seatsInUseLink"
+        :help-tooltip="seatsInUseTooltipText"
         :description="seatsInUseText"
         :percentage="seatsInUsePercentage"
         :usage-value="String(totalSeatsInUse)"

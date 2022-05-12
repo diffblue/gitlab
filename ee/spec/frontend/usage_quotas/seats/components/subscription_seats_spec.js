@@ -407,6 +407,7 @@ describe('Subscription Seats', () => {
               percentage: 67,
               totalValue: '3',
               usageValue: '2',
+              helpTooltip: null,
             }),
           );
         });
@@ -435,6 +436,7 @@ describe('Subscription Seats', () => {
                 percentage: 0,
                 totalValue: '-',
                 usageValue: '10',
+                helpTooltip: null,
               }),
             );
           });
@@ -462,6 +464,7 @@ describe('Subscription Seats', () => {
                 percentage: 40,
                 totalValue: '5',
                 usageValue: '2',
+                helpTooltip: 'Free groups are limited to 5 seats.',
               }),
             );
           });

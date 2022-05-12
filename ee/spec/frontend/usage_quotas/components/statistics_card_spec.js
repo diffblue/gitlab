@@ -96,10 +96,13 @@ describe('StatisticsCard', () => {
     it('renders help link if description and helpLink props are passed', () => {
       const description = 'description value';
       const helpLink = 'https://docs.gitlab.com';
-      createComponent({ description, helpLink });
+      const helpTooltip = 'Tooltip text';
+
+      createComponent({ description, helpLink, helpTooltip });
 
       expect(findDescriptionBlock().text()).toBe(description);
       expect(findHelpLink().attributes('href')).toBe(helpLink);
+      expect(findHelpLink().attributes('title')).toBe(helpTooltip);
     });
 
     it('does not render help link if prop is not passed', () => {

@@ -1,9 +1,12 @@
 <script>
-import { GlLink, GlIcon, GlButton, GlProgressBar } from '@gitlab/ui';
+import { GlLink, GlIcon, GlTooltipDirective, GlButton, GlProgressBar } from '@gitlab/ui';
 
 export default {
   name: 'StatisticsCard',
   components: { GlLink, GlIcon, GlButton, GlProgressBar },
+  directives: {
+    GlTooltip: GlTooltipDirective,
+  },
   props: {
     usageValue: {
       type: String,
@@ -36,6 +39,11 @@ export default {
       default: null,
     },
     helpLabel: {
+      type: String,
+      required: false,
+      default: null,
+    },
+    helpTooltip: {
       type: String,
       required: false,
       default: null,
@@ -104,10 +112,12 @@ export default {
       {{ description }}
       <gl-link
         v-if="helpLink"
+        v-gl-tooltip
         :href="helpLink"
         target="_blank"
         rel="noopener noreferrer nofollow"
         class="gl-ml-2"
+        :title="helpTooltip"
         :aria-label="helpLabel"
       >
         <gl-icon name="question-o" />
