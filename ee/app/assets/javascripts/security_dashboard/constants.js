@@ -1,4 +1,5 @@
 import { s__ } from '~/locale';
+import { helpPagePath } from '~/helpers/help_page_helper';
 
 export const COLLAPSE_SECURITY_REPORTS_SUMMARY_LOCAL_STORAGE_KEY =
   'hide_pipelines_security_reports_summary_details';
@@ -20,3 +21,26 @@ export const SURVEY_TOAST_MESSAGE = s__(
 
 export const DEFAULT_SCANNER = 'GitLab';
 export const SCANNER_ID_PREFIX = 'gid://gitlab/Vulnerabilities::Scanner/';
+
+export const DOC_PATH_APPLICATION_SECURITY = helpPagePath('user/application_security/index');
+export const DOC_PATH_VULNERABILITY_DETAILS = helpPagePath(
+  'user/application_security/vulnerabilities/index',
+);
+export const DOC_PATH_VULNERABILITY_REPORT = helpPagePath(
+  'user/application_security/vulnerability_report/index',
+);
+export const DOC_PATH_SECURITY_DASHBOARD = helpPagePath(
+  'user/application_security/security_dashboard/index',
+);
+export const DOC_PATH_SECURITY_CONFIGURATION = helpPagePath(
+  'user/application_security/configuration/index',
+);
+export const DOC_PATH_POLICIES = helpPagePath('user/application_security/policies/index');
+export const DOC_PATH_SECURITY_SCANNER_INTEGRATION_REPORT = helpPagePath(
+  'development/integrations/secure',
+  { anchor: 'report' },
+);
+export const DOC_PATH_SECURITY_SCANNER_INTEGRATION_RETENTION_PERIOD = helpPagePath(
+  'development/integrations/secure',
+  { anchor: 'retention-period-for-vulnerabilities' },
+);

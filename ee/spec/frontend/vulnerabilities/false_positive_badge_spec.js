@@ -12,7 +12,6 @@ describe('False positive badge component', () => {
   const createWrapper = (provide) => {
     return shallowMount(FalsePositiveBadge, {
       provide: {
-        falsePositiveDocUrl: '/docs',
         canViewFalsePositive: true,
         ...provide,
       },

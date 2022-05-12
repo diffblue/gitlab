@@ -1,6 +1,7 @@
 import { mount } from '@vue/test-utils';
 import { GlLink, GlAlert } from '@gitlab/ui';
 import SecurityScannerAlert from 'ee/security_dashboard/components/project/security_scanner_alert.vue';
+import { DOC_PATH_APPLICATION_SECURITY } from 'ee/security_dashboard/constants';
 
 describe('EE Vulnerability Security Scanner Alert', () => {
   let wrapper;
@@ -17,8 +18,7 @@ describe('EE Vulnerability Security Scanner Alert', () => {
         ...props,
       },
       provide: () => ({
-        notEnabledScannersHelpPath: '',
-        noPipelineRunScannersHelpPath: '',
+        newProjectPipelinePath: '',
         ...provide,
       }),
     });
@@ -71,19 +71,20 @@ describe('EE Vulnerability Security Scanner Alert', () => {
   });
 
   describe('help links', () => {
+    const newProjectPipelinePath = 'http://foo.com/';
+
     it.each`
-      alertType          | linkText
-      ${'notEnabled'}    | ${'More information'}
-      ${'noPipelineRun'} | ${'Run a pipeline'}
-    `('link for $alertType scanners renders correctly', ({ alertType, linkText }) => {
-      const link = 'http://foo.com/';
+      alertType          | linkText              | link
+      ${'notEnabled'}    | ${'More information'} | ${DOC_PATH_APPLICATION_SECURITY}
+      ${'noPipelineRun'} | ${'Run a pipeline'}   | ${newProjectPipelinePath}
+    `('link for $alertType scanners renders correctly', ({ alertType, linkText, link }) => {
       createWrapper({
         props: { [`${alertType}Scanners`]: ['SAST'] },
-        provide: { [`${alertType}ScannersHelpPath`]: link },
+        provide: { newProjectPipelinePath },
       });
 
       expect(findAlertLink().text()).toBe(linkText);
-      expect(findAlertLink().attributes('href')).toBe(link);
+      expect(wrapper.findComponent(GlLink).attributes('href')).toBe(link);
     });
   });
 });

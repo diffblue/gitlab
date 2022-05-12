@@ -7,6 +7,7 @@ import { fetchPolicies } from '~/lib/graphql';
 import { s__ } from '~/locale';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { helpPagePath } from '~/helpers/help_page_helper';
+import { DOC_PATH_SECURITY_CONFIGURATION } from 'ee/security_dashboard/constants';
 import ScanAlerts, { TYPE_ERRORS, TYPE_WARNINGS } from './scan_alerts.vue';
 import ReportStatusAlert, { STATUS_PURGED } from './report_status_alert.vue';
 import SecurityDashboard from './security_dashboard_vuex.vue';
@@ -29,7 +30,6 @@ export default {
   },
   mixins: [glFeatureFlagMixin()],
   inject: [
-    'dashboardDocumentation',
     'emptyStateSvgPath',
     'loadingErrorIllustrations',
     'pipeline',
@@ -79,7 +79,7 @@ export default {
         description: s__(
           `SecurityReports|While it's rare to have no vulnerabilities for your pipeline, it can happen. In any event, we ask that you double check your settings to make sure all security scanning jobs have passed successfully.`,
         ),
-        primaryButtonLink: this.dashboardDocumentation,
+        primaryButtonLink: DOC_PATH_SECURITY_CONFIGURATION,
         primaryButtonText: s__('SecurityReports|Learn more about setting up your dashboard'),
       };
     },

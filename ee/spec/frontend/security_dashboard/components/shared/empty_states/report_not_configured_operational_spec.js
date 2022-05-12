@@ -1,12 +1,12 @@
 import { shallowMount } from '@vue/test-utils';
 import { GlEmptyState } from '@gitlab/ui';
 import ReportNotConfiguredOperational from 'ee/security_dashboard/components/shared/empty_states/report_not_configured_operational.vue';
+import { DOC_PATH_POLICIES } from 'ee/security_dashboard/constants';
 
 describe('Operational report not configured component', () => {
   let wrapper;
   const operationalConfigurationPath = '/operational-configuration';
   const operationalEmptyStateSvgPath = '/operational-placeholder.svg';
-  const operationalHelpPath = '/operational-help';
 
   const createComponent = ({ dashboardType = 'project' }) => {
     wrapper = shallowMount(ReportNotConfiguredOperational, {
@@ -14,7 +14,6 @@ describe('Operational report not configured component', () => {
         dashboardType,
         operationalConfigurationPath,
         operationalEmptyStateSvgPath,
-        operationalHelpPath,
       },
     });
   };
@@ -39,7 +38,7 @@ describe('Operational report not configured component', () => {
         primaryButtonText,
         primaryButtonLink: operationalConfigurationPath,
         secondaryButtonText: ReportNotConfiguredOperational.i18n.secondaryButtonText,
-        secondaryButtonLink: operationalHelpPath,
+        secondaryButtonLink: DOC_PATH_POLICIES,
         description,
       });
     },

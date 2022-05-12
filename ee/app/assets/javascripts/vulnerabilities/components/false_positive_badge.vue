@@ -1,6 +1,7 @@
 <script>
 import { GlPopover, GlBadge, GlSprintf, GlLink } from '@gitlab/ui';
 import { s__ } from '~/locale';
+import { DOC_PATH_VULNERABILITY_DETAILS } from 'ee/security_dashboard/constants';
 
 export default {
   components: {
@@ -10,7 +11,6 @@ export default {
     GlLink,
   },
   inject: {
-    falsePositiveDocUrl: {},
     canViewFalsePositive: {
       default: false,
     },
@@ -34,6 +34,7 @@ export default {
       'Vulnerability|The scanner determined this vulnerability to be a false positive. Verify the evaluation before changing its status. %{linkStart}Learn more about false positive detection.%{linkEnd}',
     ),
   },
+  DOC_PATH_VULNERABILITY_DETAILS,
 };
 </script>
 
@@ -43,9 +44,13 @@ export default {
     <gl-popover ref="popover" :target="target" :title="$options.i18n.title" placement="top">
       <gl-sprintf :message="$options.i18n.message">
         <template #link="{ content }">
-          <gl-link class="gl-font-sm" :href="falsePositiveDocUrl" target="_blank">{{
-            content
-          }}</gl-link>
+          <gl-link
+            class="gl-font-sm"
+            :href="$options.DOC_PATH_VULNERABILITY_DETAILS"
+            target="_blank"
+          >
+            {{ content }}
+          </gl-link>
         </template>
       </gl-sprintf>
     </gl-popover>
