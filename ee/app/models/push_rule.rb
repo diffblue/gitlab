@@ -19,6 +19,20 @@ class PushRule < ApplicationRecord
     branch_name_regex
   ].freeze
 
+  AUDIT_LOG_ALLOWLIST = {
+    commit_committer_check: 'reject unverified users',
+    reject_unsigned_commits: 'reject unsigned commits',
+    deny_delete_tag: 'do not allow users to remove Git tags with git push',
+    member_check: 'check whether the commit author is a GitLab user',
+    prevent_secrets: 'prevent pushing secret files',
+    branch_name_regex: 'required branch name regex',
+    commit_message_regex: 'required commit message regex',
+    commit_message_negative_regex: 'rejected commit message regex',
+    author_email_regex: 'required author email regex',
+    file_name_regex: 'prohibited file name regex',
+    max_file_size: 'maximum file size (MB)'
+  }.freeze
+
   belongs_to :project, inverse_of: :push_rule
   has_one :group, inverse_of: :push_rule, autosave: true
 
