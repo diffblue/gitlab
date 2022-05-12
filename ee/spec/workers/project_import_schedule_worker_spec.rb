@@ -43,16 +43,30 @@ RSpec.describe ProjectImportScheduleWorker do
     end
 
     context 'project is not found' do
-      it 'raises ImportStateNotFound' do
-        expect { subject.perform(-1) }.to raise_error(described_class::ImportStateNotFound)
+      it 'does not fail' do
+        expect { subject.perform(-1) }.not_to raise_error
+      end
+
+      it 'logs the error' do
+        expect(subject).to receive(:log_extra_metadata_on_done)
+          .with(:mirroring_skipped, 'No import state found for -1').and_call_original
+
+        subject.perform(-1)
       end
     end
 
     context 'project does not have import state' do
-      it 'raises ImportStateNotFound' do
+      it 'does not fail' do
         expect(project.import_state).to be_nil
 
-        expect { subject.perform(project.id) }.to raise_error(described_class::ImportStateNotFound)
+        expect { subject.perform(project.id) }.not_to raise_error
+      end
+
+      it 'logs the error' do
+        expect(subject).to receive(:log_extra_metadata_on_done)
+          .with(:mirroring_skipped, "No import state found for #{project.id}").and_call_original
+
+        subject.perform(project.id)
       end
     end
   end

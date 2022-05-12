@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 class ProjectImportScheduleWorker
-  ImportStateNotFound = Class.new(StandardError)
-
   include ApplicationWorker
 
   data_consistency :always
@@ -22,9 +20,13 @@ class ProjectImportScheduleWorker
     return if Gitlab::Database.read_only?
 
     project = Project.with_route.with_import_state.with_namespace.find_by_id(project_id)
-    raise ImportStateNotFound unless project&.import_state
 
     with_context(project: project) do
+      unless project&.import_state
+        log_extra_metadata_on_done(:mirroring_skipped, "No import state found for #{project_id}")
+        next
+      end
+
       project.import_state.schedule
     end
   end
