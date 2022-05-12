@@ -29485,7 +29485,7 @@ msgstr ""
 msgid "ProjectSettings|Additional settings that influence how and when merges are done."
 msgstr ""
 
-msgid "ProjectSettings|All discussions must be resolved"
+msgid "ProjectSettings|All threads must be resolved"
 msgstr ""
 
 msgid "ProjectSettings|Allow"
@@ -29497,7 +29497,7 @@ msgstr ""
 msgid "ProjectSettings|Analytics"
 msgstr ""
 
-msgid "ProjectSettings|Automatically resolve merge request diff discussions when they become outdated"
+msgid "ProjectSettings|Automatically resolve merge request diff threads when they become outdated"
 msgstr ""
 
 msgid "ProjectSettings|Badges"
