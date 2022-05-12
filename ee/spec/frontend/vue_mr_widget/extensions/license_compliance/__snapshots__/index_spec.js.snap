@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`License Compliance extension expanded data with new licesnes displays allowed licenses 1`] = `
+exports[`License Compliance extension expanded data with new licenses displays allowed licenses 1`] = `
 <div
   class="gl-py-3 gl-pl-7"
   data-testid="extension-list-item"
@@ -155,7 +155,7 @@ exports[`License Compliance extension expanded data with new licesnes displays a
 </div>
 `;
 
-exports[`License Compliance extension expanded data with new licesnes displays denied licenses 1`] = `
+exports[`License Compliance extension expanded data with new licenses displays denied licenses 1`] = `
 <div
   class="gl-py-3 gl-pl-7 gl-border-b-solid gl-border-b-1 gl-border-gray-100"
   data-testid="extension-list-item"
@@ -310,7 +310,7 @@ exports[`License Compliance extension expanded data with new licesnes displays d
 </div>
 `;
 
-exports[`License Compliance extension expanded data with new licesnes displays uncategorized licenses 1`] = `
+exports[`License Compliance extension expanded data with new licenses displays uncategorized licenses 1`] = `
 <div
   class="gl-py-3 gl-pl-7 gl-border-b-solid gl-border-b-1 gl-border-gray-100"
   data-testid="extension-list-item"

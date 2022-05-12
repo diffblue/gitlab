@@ -8,6 +8,7 @@ import licenseComplianceExtension from 'ee/vue_merge_request_widget/extensions/l
 import httpStatusCodes from '~/lib/utils/http_status';
 import {
   licenseComplianceSuccess,
+  licenseComplianceSuccessExpanded,
   licenseComplianceRemovedLicenses,
   licenseComplianceNewAndRemovedLicenses,
   licenseComplianceEmpty,
@@ -34,6 +35,7 @@ describe('License Compliance extension', () => {
         mr: {
           licenseCompliance: {
             license_scanning_comparison_path: endpoint,
+            license_scanning_comparison_collapsed_path: endpoint,
             api_approvals_path: endpoint,
           },
         },
@@ -118,9 +120,9 @@ describe('License Compliance extension', () => {
   });
 
   describe('expanded data', () => {
-    describe('with new licesnes', () => {
+    describe('with new licenses', () => {
       beforeEach(async () => {
-        mockApi(httpStatusCodes.OK, licenseComplianceSuccess);
+        mockApi(httpStatusCodes.OK, licenseComplianceSuccessExpanded);
 
         createComponent();
 
