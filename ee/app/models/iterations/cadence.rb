@@ -7,7 +7,7 @@ module Iterations
 
     self.table_name = 'iterations_cadences'
 
-    ITERATIONS_AUTOMATION_FIELDS = [:duration_in_weeks, :iterations_in_advance].freeze
+    ITERATIONS_AUTOMATION_FIELDS = [:start_date, :duration_in_weeks, :iterations_in_advance].freeze
 
     belongs_to :group
     has_many :iterations, foreign_key: :iterations_cadence_id, inverse_of: :iterations_cadence
@@ -105,7 +105,102 @@ module Iterations
       SQL
     end
 
+    # The method returns the date on which the next iteration needs to start
+    # and the number of iterations needed to be scheduled starting from the date.
+    #
+    # Example. A cadence is created with a start date that's in the past.
+    #   The first iteration needs to start on the cadence start date.
+    #   We then need to create a certain number of iterations that follow the first iteration back to back:
+    #     - Some number of past iterations (these are effectively backfilled)
+    #     - A current iteration
+    #     - Some number of upcoming iterations following 'iterations_in_advance'
+    #
+    # If a cadence already has iterations, it takes more effort to figure out
+    # when the next iteration needs to be starting. Please see the specs for scenarios.
+    def next_schedule_date_and_count
+      new_start_date = if iterations.empty?
+                         start_date
+                       else
+                         latest_iteration.due_date.next_occurring(start_weekday)
+                       end
+
+      [new_start_date, schedule_count(new_start_date)]
+    end
+
+    # The method returns the date on which the first upcoming iteration must start.
+    # This method is used when a cadence changes its settings and
+    # the dates of existing upcoming iterations need to be re-aligned based on the new cadence settings.
+    def next_open_iteration_start_date
+      if open_iterations.any?
+        open_iterations.first.due_date.next_occurring(start_weekday)
+      elsif past_iterations.any?
+        # Find the start date for the nearest open iteration
+        # as if iterations had been scheduled continously from the most recent past iteration.
+        open_start_date = past_iterations.last.due_date.next_occurring(start_weekday)
+        open_due_date = open_start_date + duration_in_days - 1
+
+        if open_due_date < Date.current
+          intermediate_iterations = ((Date.current - open_start_date) / duration_in_days).floor
+          hypothetical_last_due_date = open_start_date + intermediate_iterations * duration_in_days - 1
+
+          open_start_date = hypothetical_last_due_date.next_occurring(start_weekday)
+        end
+
+        open_start_date
+      else
+        start_date
+      end
+    end
+
     private
+
+    def schedule_count(new_start_date)
+      if current_iteration_start_date?(new_start_date)
+        1 + iterations_in_advance
+      elsif closed_iteration_start_date?(new_start_date)
+        backfill_iterations = ((Date.current - new_start_date) / duration_in_days).floor
+
+        backfill_iterations + 1 + iterations_in_advance
+      else
+        if start_date == new_start_date
+          iterations_in_advance
+        else
+          prev_open_due_date = open_iterations.any? ? open_iterations.first.due_date : Date.current
+          future_count = ((new_start_date - prev_open_due_date - 1) / duration_in_days).floor
+
+          # Take a max b/c iterations are never deleted.
+          [0, iterations_in_advance - future_count].max
+        end
+      end
+    end
+
+    def latest_iteration
+      iterations.due_date_order_asc.last
+    end
+
+    def past_iterations
+      iterations.due_date_order_asc.due_date_passed
+    end
+
+    def open_iterations
+      iterations.due_date_order_asc.start_date_passed
+    end
+
+    def current_iteration_start_date?(start_date)
+      start_date <= Date.current && compute_due_date(start_date) >= Date.current
+    end
+
+    def closed_iteration_start_date?(start_date)
+      compute_due_date(start_date) < Date.current
+    end
+
+    def compute_due_date(start_date)
+      start_date + duration_in_days - 1
+    end
+
+    def start_weekday
+      Date::DAYS_INTO_WEEK.key(start_date.wday)
+    end
 
     def has_started?
       start_date_was <= Date.current

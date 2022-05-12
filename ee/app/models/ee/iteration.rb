@@ -238,6 +238,10 @@ module EE
       self.iterations_cadence = default_cadence
     end
 
+    def set_iteration_state
+      self.state = self.class.compute_state(start_date, due_date)
+    end
+
     private
 
     def last_iteration_in_cadence?
@@ -298,10 +302,6 @@ module EE
       return unless project_id.present?
 
       errors.add(:project_id, s_("is not allowed. We do not currently support project-level iterations"))
-    end
-
-    def set_iteration_state
-      self.state = self.class.compute_state(start_date, due_date)
     end
 
     def update_iteration_sequences

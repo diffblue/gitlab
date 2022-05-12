@@ -32,16 +32,14 @@ module Iterations
 
       def build_new_iterations
         new_iterations = []
-        new_start_date = new_iteration_start_date
-        iteration_number = new_iteration_number
+        new_start_date, schedule_count = cadence.next_schedule_date_and_count
 
         Iteration.with_group_iid_supply(cadence.group) do |supply|
-          1.upto(new_iterations_count) do
-            iteration = build_iteration(cadence, new_start_date, iteration_number, supply.next_value)
+          1.upto(schedule_count) do
+            iteration = build_iteration(cadence, new_start_date, supply.next_value)
 
             new_iterations << iteration
 
-            iteration_number += 1
             new_start_date = iteration[:due_date] + 1.day
           end
 
@@ -49,7 +47,7 @@ module Iterations
         end
       end
 
-      def build_iteration(cadence, next_start_date, iteration_number, iid)
+      def build_iteration(cadence, next_start_date, iid)
         current_time = Time.current
         duration = cadence.duration_in_weeks
         # because iteration start and due date are dates and not datetime and
@@ -72,13 +70,9 @@ module Iterations
         }
       end
 
-      def start_date
-        @start_date ||= cadence.start_date >= Date.today ? cadence.start_date : Date.today
-      end
-
       def existing_iterations_in_advance
         # we will be allowing up to 10 iterations in advance, so it should be fine to load all in memory
-        @existing_iterations_in_advance ||= cadence_iterations.with_start_date_after(start_date).to_a
+        @existing_iterations_in_advance ||= cadence_iterations.with_start_date_after(Date.current).to_a
       end
 
       def cadence_iterations
@@ -89,50 +83,22 @@ module Iterations
         @last_cadence_iteration ||= cadence_iterations.last
       end
 
-      def new_iteration_number
-        @new_iteration_number ||= cadence_iterations.count + 1
-      end
-
-      def new_iteration_start_date
-        strong_memoize(:new_iteration_start_date) do
-          last_iteration_due_date = last_cadence_iteration&.due_date
-          last_iteration_due_date += 1.day if last_iteration_due_date
-          [last_iteration_due_date, cadence.start_date].compact.max
-        end
-      end
-
-      def new_iterations_count
-        strong_memoize(:new_iterations_count) do
-          if existing_iterations_in_advance.count == 0
-            if cadence.start_date >= Date.today
-              cadence.iterations_in_advance
-            else
-              backfill_iterations_count = ((Date.today - new_iteration_start_date - 1).to_f / (7 * cadence.duration_in_weeks).to_f).ceil
-              backfill_iterations_count + cadence.iterations_in_advance
-            end
-          else
-            cadence.iterations_in_advance - existing_iterations_in_advance.count
-          end
-        end
-      end
-
       def update_existing_iterations!
         return if existing_iterations_in_advance.empty?
 
-        prev_iteration = nil
+        next_start_date = cadence.next_open_iteration_start_date
 
         existing_iterations_in_advance.each do |iteration|
-          if iteration.duration_in_days != cadence.duration_in_days
-            iteration.start_date = prev_iteration.due_date + 1.day if prev_iteration
-            iteration.due_date = iteration.start_date + cadence.duration_in_days.days - 1.day
-          end
+          iteration.start_date = next_start_date
+          iteration.due_date = iteration.start_date + cadence.duration_in_days.days - 1.day
+          iteration.set_iteration_state
 
-          prev_iteration = iteration
+          next_start_date = iteration.due_date + 1.day
         end
 
         cadence.transaction do
           existing_iterations_in_advance.each do |it|
-            it.update_columns({ start_date: it.start_date, due_date: it.due_date })
+            it.update_columns({ state_enum: it.state_enum, start_date: it.start_date, due_date: it.due_date })
           end
         end
       end
