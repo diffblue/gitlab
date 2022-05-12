@@ -160,6 +160,18 @@ RSpec.describe Gitlab::Database do
       end
     end
 
+    context 'when the connection is LoadBalancing::ConnectionProxy', :database_replica do
+      it 'returns primary db config even if ambiguous queries default to replica' do
+        Gitlab::Database::LoadBalancing::Session.current.use_primary!
+        primary_config = described_class.db_config_for_connection(ActiveRecord::Base.connection)
+
+        Gitlab::Database::LoadBalancing::Session.clear_session
+        Gitlab::Database::LoadBalancing::Session.current.fallback_to_replicas_for_ambiguous_queries do
+          expect(described_class.db_config_for_connection(ActiveRecord::Base.connection)).to eq(primary_config)
+        end
+      end
+    end
+
     context 'when the pool is a NullPool' do
       it 'returns nil' do
         connection = double(:active_record_connection, pool: ActiveRecord::ConnectionAdapters::NullPool.new)
