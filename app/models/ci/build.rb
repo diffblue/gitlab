@@ -673,7 +673,7 @@ module Ci
     end
 
     def has_live_trace?
-      trace.live_trace_exist?
+      trace.live?
     end
 
     def has_archived_trace?
