@@ -88,22 +88,6 @@ RSpec.describe 'DAST.latest.gitlab-ci.yml' do
         include_examples 'includes no jobs'
       end
 
-      context 'when DAST_WEBSITE is present' do
-        before do
-          create(:ci_variable, project: project, key: 'DAST_WEBSITE', value: 'http://example.com')
-        end
-
-        include_examples 'includes dast job'
-      end
-
-      context 'when DAST_API_SPECIFICATION is present' do
-        before do
-          create(:ci_variable, project: project, key: 'DAST_API_SPECIFICATION', value: 'http://my.api/api-specification.yml')
-        end
-
-        include_examples 'includes dast job'
-      end
-
       context 'when project has Ultimate license' do
         let(:license) { build(:license, plan: License::ULTIMATE_PLAN) }
 
