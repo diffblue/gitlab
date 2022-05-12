@@ -141,7 +141,7 @@ module EE
       }
     end
 
-    def resync_all_button
+    def resync_all_button(all_project_size)
       # This is deprecated and Hard Coded for Projects.
       # All new replicable types should be using geo_replicable/app.vue
 
@@ -149,7 +149,7 @@ module EE
         path: resync_all_admin_geo_projects_url,
         method: 'post',
         modal_attributes: {
-          title: s_('Geo|Resync all projects'),
+          title: sprintf(s_('Geo|Resync all %{all_project_size} projects'), { all_project_size: all_project_size }),
           message: s_('Geo|This will resync all projects. It may take some time to complete. Are you sure you want to continue?'),
           okTitle: s_('Geo|Resync all'),
           size: 'sm'
@@ -159,7 +159,7 @@ module EE
       button_tag(s_("Geo|Resync all"), type: "button", class: 'gl-button btn btn-default gl-mr-3 js-confirm-modal-button', data: resync_all_projects_modal_data)
     end
 
-    def reverify_all_button
+    def reverify_all_button(all_project_size)
       # This is deprecated and Hard Coded for Projects.
       # All new replicable types should be using geo_replicable/app.vue
 
@@ -167,7 +167,7 @@ module EE
         path: reverify_all_admin_geo_projects_url,
         method: 'post',
         modal_attributes: {
-          title: s_('Geo|Reverify all projects'),
+          title: sprintf(s_('Geo|Reverify all %{all_project_size} projects'), { all_project_size: all_project_size }),
           message: s_('Geo|This will reverify all projects. It may take some time to complete. Are you sure you want to continue?'),
           okTitle: s_('Geo|Reverify all'),
           size: 'sm'

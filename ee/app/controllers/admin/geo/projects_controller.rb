@@ -23,7 +23,8 @@ class Admin::Geo::ProjectsController < Admin::Geo::ApplicationController
       @registries = @registries.with_search(params[:name])
     end
 
-    @action_buttons = [helpers.resync_all_button, helpers.reverify_all_button]
+    all_projects_size = finder.all_projects.size
+    @action_buttons = [helpers.resync_all_button(all_projects_size), helpers.reverify_all_button(all_projects_size)]
   end
 
   def destroy
