@@ -36,7 +36,7 @@ module QA
           cadence.description = description
           cadence.start_date = start_date
           cadence.duration = 2
-          cadence.future_iterations = 2
+          cadence.upcoming_iterations = 2
         end
 
         EE::Page::Group::Iteration::Cadence::Index.perform do |cadence|

@@ -17,6 +17,8 @@ import { helpPagePath } from '~/helpers/help_page_helper';
 import createCadence from '../queries/cadence_create.mutation.graphql';
 import updateCadence from '../queries/cadence_update.mutation.graphql';
 import readCadence from '../queries/iteration_cadence.query.graphql';
+import iterationsInCadence from '../queries/group_iterations_in_cadence.query.graphql';
+import { iterationStates } from '../constants';
 
 const i18n = Object.freeze({
   title: {
@@ -24,22 +26,27 @@ const i18n = Object.freeze({
     placeholder: s__('Iterations|Cadence name'),
   },
   startDate: {
-    label: s__('Iterations|Start date'),
+    label: s__('Iterations|First iteration start date'),
     placeholder: s__('Iterations|Select start date'),
-    description: s__('Iterations|The start date of your first iteration'),
+    labelDescription: s__(
+      'Iterations|The start date of the first iteration determines when your cadence begins.',
+    ),
+    description: s__('Iterations|No one can change this date after the cadence has begun.'),
   },
   duration: {
     label: s__('Iterations|Duration'),
-    description: s__('Iterations|The duration for each iteration (in weeks)'),
+    labelDescription: s__('Iterations|The duration of each iteration (in weeks).'),
     placeholder: s__('Iterations|Select duration'),
   },
   rollOver: {
     label: s__('Iterations|Roll over issues'),
-    description: s__('Iterations|Move incomplete issues to the next iteration'),
+    description: s__('Iterations|Move incomplete issues to the next iteration.'),
   },
-  futureIterations: {
-    label: s__('Iterations|Future iterations'),
-    description: s__('Iterations|Number of future iterations you would like to have scheduled'),
+  upcomingIterations: {
+    label: s__('Iterations|Upcoming iterations'),
+    labelDescription: s__(
+      'Iterations|Number of upcoming iterations that should be scheduled at a time.',
+    ),
     placeholder: s__('Iterations|Select number'),
   },
   description: {
@@ -58,7 +65,7 @@ const i18n = Object.freeze({
   deprecationAlert: {
     title: s__('Iterations|This cadence requires an update'),
     message: s__(
-      'Iterations|Add a duration, and number of future iterations in order to convert this cadence to automatic scheduling.',
+      'Iterations|Add a duration, and number of upcoming iterations in order to convert this cadence to automatic scheduling.',
     ),
     primaryButtonText: s__('Iterations|Learn more about automatic scheduling'),
   },
@@ -68,9 +75,9 @@ export default {
   iterationCadencesHelpPagePath: helpPagePath('user/group/iterations/index.md', {
     anchor: 'iteration-cadences',
   }),
-  availableDurations: [{ value: 0, text: i18n.duration.placeholder }, 1, 2, 3, 4, 5, 6],
-  availableFutureIterations: [
-    { value: 0, text: i18n.futureIterations.placeholder },
+  availableDurations: [{ value: 0, text: i18n.duration.placeholder }, 1, 2, 3, 4],
+  availableUpcomingIterations: [
+    { value: 0, text: i18n.upcomingIterations.placeholder },
     2,
     4,
     6,
@@ -98,6 +105,7 @@ export default {
           nodes: [],
         },
       },
+      iterations: [],
       loading: false,
       errorMessage: '',
       title: '',
@@ -125,6 +133,21 @@ export default {
     },
     isEdit() {
       return Boolean(this.cadenceId);
+    },
+    startDateEditable() {
+      if (this.iterations.length === 0) {
+        return true;
+      }
+
+      const firstIterationUpcoming = this.iterations[0].state === iterationStates.upcoming;
+      if (firstIterationUpcoming) return true;
+
+      return false;
+    },
+    isStartDateDisabled() {
+      if (this.loadingCadence) return true;
+
+      return this.isEdit && !this.startDateEditable;
     },
     page() {
       return this.isEdit ? 'edit' : 'new';
@@ -158,6 +181,9 @@ export default {
 
       return vars;
     },
+  },
+  mounted() {
+    this.$apollo.queries.iterations.refetch();
   },
   apollo: {
     group: {
@@ -197,6 +223,33 @@ export default {
 
         if (!cadence.automatic) {
           this.validateAllFields();
+        }
+      },
+      error(error) {
+        this.errorMessage = error;
+      },
+    },
+    iterations: {
+      query: iterationsInCadence,
+      skip() {
+        return !this.isEdit || this.loadingCadence;
+      },
+      variables() {
+        return {
+          fullPath: this.fullPath,
+          iterationCadenceId: convertToGraphQLId(TYPE_ITERATIONS_CADENCE, this.cadenceId),
+          firstPageSize: 1,
+          state: iterationStates.all,
+        };
+      },
+      update({ workspace } = {}) {
+        if (!workspace) return [];
+
+        return workspace.iterations?.nodes || [];
+      },
+      result() {
+        if (!this.automatic) {
+          this.startDate = this.iterations[0].startDate;
         }
       },
       error(error) {
@@ -278,6 +331,8 @@ export default {
         {{ i18n[page].title }}
       </h3>
     </div>
+    <hr class="gl-mt-0" />
+
     <gl-form>
       <gl-alert
         v-if="isEdit && !automatic"
@@ -294,9 +349,8 @@ export default {
       }}</gl-alert>
 
       <gl-form-group
+        class="gl-pt-3"
         :label="i18n.title.label"
-        :label-cols-md="2"
-        label-class="text-right-md gl-pt-3!"
         label-for="cadence-title"
         :invalid-feedback="i18n.requiredField"
         :state="validationState.title"
@@ -307,7 +361,6 @@ export default {
           autocomplete="off"
           data-qa-selector="iteration_cadence_title_field"
           :placeholder="i18n.title.placeholder"
-          size="xl"
           :state="validationState.title"
           :disabled="loadingCadence"
           @blur="validate('title')"
@@ -315,9 +368,9 @@ export default {
       </gl-form-group>
 
       <gl-form-group
+        class="gl-pt-3"
         :label="i18n.startDate.label"
-        :label-cols-md="2"
-        label-class="text-right-md gl-pt-3!"
+        :label-description="i18n.startDate.labelDescription"
         label-for="cadence-start-date"
         :description="i18n.startDate.description"
         :invalid-feedback="i18n.requiredField"
@@ -331,7 +384,7 @@ export default {
             class="datepicker gl-datepicker-input"
             autocomplete="off"
             inputmode="none"
-            :disabled="loadingCadence"
+            :disabled="isStartDateDisabled"
             :state="validationState.startDate"
             data-qa-selector="iteration_cadence_start_date_field"
             @blur="validate('startDate')"
@@ -340,11 +393,10 @@ export default {
       </gl-form-group>
 
       <gl-form-group
+        class="gl-pt-3"
         :label="i18n.duration.label"
-        :label-cols-md="2"
-        label-class="text-right-md gl-pt-3!"
+        :label-description="i18n.duration.labelDescription"
         label-for="cadence-duration"
-        :description="i18n.duration.description"
         :invalid-feedback="i18n.requiredField"
         :state="validationState.durationInWeeks"
       >
@@ -360,29 +412,27 @@ export default {
       </gl-form-group>
 
       <gl-form-group
-        :label="i18n.futureIterations.label"
-        :label-cols-md="2"
-        :content-cols-md="2"
-        label-class="text-right-md gl-pt-3!"
-        label-for="cadence-schedule-future-iterations"
-        :description="i18n.futureIterations.description"
+        class="gl-pt-3"
+        :label="i18n.upcomingIterations.label"
+        :label-description="i18n.upcomingIterations.labelDescription"
+        label-for="cadence-schedule-upcoming-iterations"
         :invalid-feedback="i18n.requiredField"
         :state="validationState.iterationsInAdvance"
       >
         <gl-form-select
-          id="cadence-schedule-future-iterations"
+          id="cadence-schedule-upcoming-iterations"
           v-model.number="iterationsInAdvance"
           :disabled="loadingCadence"
-          :options="$options.availableFutureIterations"
+          :options="$options.availableUpcomingIterations"
           class="gl-form-input-md"
-          data-qa-selector="iteration_cadence_future_iterations_field"
+          data-qa-selector="iteration_cadence_upcoming_iterations_field"
           @change="validate('iterationsInAdvance')"
         />
       </gl-form-group>
 
       <gl-form-group
-        :label-cols-md="2"
-        label-class="gl-font-weight-bold text-right-md gl-pt-3!"
+        class="gl-pt-3"
+        label-class="gl-font-weight-bold"
         label-for="cadence-rollover-issues"
         :description="i18n.rollOver.description"
       >
@@ -392,10 +442,9 @@ export default {
       </gl-form-group>
 
       <gl-form-group
+        class="gl-pt-3"
         :label="i18n.description.label"
-        :label-cols-md="2"
         :content-cols-md="2"
-        label-class="text-right-md gl-pt-3!"
         label-for="cadence-description"
       >
         <gl-form-textarea

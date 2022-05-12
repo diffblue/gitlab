@@ -18,13 +18,13 @@ module Types
         description: 'Duration in weeks of the iterations within this cadence.'
 
       field :iterations_in_advance, GraphQL::Types::Int, null: true,
-        description: 'Future iterations to be created when iteration cadence is set to automatic.'
+        description: 'Upcoming iterations to be created when iteration cadence is set to automatic.'
 
       field :start_date, Types::TimeType, null: true,
         description: 'Timestamp of the iteration cadence start date.'
 
       field :automatic, GraphQL::Types::Boolean, null: true,
-        description: 'Whether the iteration cadence should automatically generate future iterations.'
+        description: 'Whether the iteration cadence should automatically generate upcoming iterations.'
 
       field :active, GraphQL::Types::Boolean, null: true,
         description: 'Whether the iteration cadence is active.'
