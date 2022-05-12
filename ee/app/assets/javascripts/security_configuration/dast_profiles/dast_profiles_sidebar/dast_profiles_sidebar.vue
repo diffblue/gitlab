@@ -2,7 +2,9 @@
 import { GlButton, GlDrawer, GlSprintf } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { capitalizeFirstCharacter } from '~/lib/utils/text_utility';
-import { SCANNER_TYPE } from 'ee/on_demand_scans/constants';
+import { SCANNER_TYPE, SITE_TYPE } from 'ee/on_demand_scans/constants';
+import DastScannerProfileForm from 'ee/security_configuration/dast_profiles/dast_scanner_profiles/components/dast_scanner_profile_form.vue';
+import DastSiteProfileForm from 'ee/security_configuration/dast_profiles/dast_site_profiles/components/dast_site_profile_form.vue';
 import { getContentWrapperHeight } from 'ee/threat_monitoring/utils';
 
 export default {
@@ -19,7 +21,10 @@ export default {
     GlButton,
     GlDrawer,
     GlSprintf,
+    DastScannerProfileForm,
+    DastSiteProfileForm,
   },
+  inject: ['projectPath'],
   props: {
     isOpen: {
       type: Boolean,
@@ -43,7 +48,7 @@ export default {
   },
   data() {
     return {
-      newScannerMode: false,
+      editingMode: false,
     };
   },
   computed: {
@@ -54,7 +59,16 @@ export default {
       return this.profiles.length > 0;
     },
     isEmptyState() {
-      return !this.hasProfiles && !this.newScannerMode;
+      return !this.hasProfiles && !this.editingMode;
+    },
+    isScannerType() {
+      return this.profileType === SCANNER_TYPE;
+    },
+    isSiteType() {
+      return this.profileType === SITE_TYPE;
+    },
+    isShowProfilesState() {
+      return this.hasProfiles && !this.editingMode;
     },
     sidebarHeader() {
       return capitalizeFirstCharacter(this.profileType);
@@ -62,11 +76,18 @@ export default {
   },
   methods: {
     closeDrawer() {
-      this.newScannerMode = false;
+      this.editingMode = false;
       this.$emit('close-drawer');
     },
-    enableNewScannerMode() {
-      this.newScannerMode = true;
+    enableEditingMode() {
+      this.editingMode = true;
+    },
+    cancelEditingMode() {
+      this.editingMode = false;
+    },
+    submitEditingMode() {
+      this.editingMode = false;
+      this.$emit('profile-submitted', this.profileType);
     },
   },
 };
@@ -95,6 +116,7 @@ export default {
           category="primary"
           size="small"
           data-testid="new-profile-button"
+          @click="enableEditingMode"
         >
           {{ $options.i18n.scanSidebarHeaderButton }}
         </gl-button>
@@ -121,7 +143,8 @@ export default {
           class="gl-mt-5"
           variant="confirm"
           category="primary"
-          @click="enableNewScannerMode"
+          data-testid="new-empty-profile-button"
+          @click="enableEditingMode"
         >
           <gl-sprintf :message="$options.i18n.emptyStateButton">
             <template #scannerType>
@@ -130,7 +153,25 @@ export default {
           </gl-sprintf>
         </gl-button>
       </div>
-      <slot v-else name="content"></slot>
+      <transition name="gl-drawer">
+        <div v-if="editingMode">
+          <dast-scanner-profile-form
+            v-if="isScannerType"
+            :stacked="true"
+            :project-full-path="projectPath"
+            @cancel="cancelEditingMode"
+            @success="submitEditingMode"
+          />
+          <dast-site-profile-form
+            v-else-if="isSiteType"
+            :stacked="true"
+            :project-full-path="projectPath"
+            @cancel="cancelEditingMode"
+            @success="submitEditingMode"
+          />
+        </div>
+      </transition>
+      <slot v-if="isShowProfilesState" name="content"></slot>
     </template>
   </gl-drawer>
 </template>
