@@ -15,8 +15,10 @@ RSpec.describe Namespaces::UpdatePreventSharingOutsideHierarchyService do
 
     it 'logs an info' do
       expect(Gitlab::AppLogger).to receive(:info).with(
-        namespace: namespace.id,
-        message: "Setting the namespace setting for prevent_sharing_groups_outside_hierarchy to true"
+        {
+          namespace: namespace.id,
+          message: "Setting the namespace setting for prevent_sharing_groups_outside_hierarchy to true"
+        }
       )
 
       subject.execute
@@ -59,9 +61,11 @@ RSpec.describe Namespaces::UpdatePreventSharingOutsideHierarchyService do
 
       it 'logs an error' do
         expect(Gitlab::AppLogger).to receive(:error).with(
-          namespace: namespace.id,
-          message: 'An error has occurred',
-          details: 'An exception'
+          {
+            namespace: namespace.id,
+            message: 'An error has occurred',
+            details: 'An exception'
+          }
         )
 
         subject.execute

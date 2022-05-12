@@ -27,8 +27,10 @@ RSpec.describe Namespaces::RemoveProjectGroupLinksOutsideHierarchyService do
 
       it 'logs an info' do
         expect(Gitlab::AppLogger).to receive(:info).with(
-          namespace: namespace.id,
-          message: "Removing the ProjectGroupLinks outside the hierarchy with ids: [#{external_group_link.id}]"
+          {
+            namespace: namespace.id,
+            message: "Removing the ProjectGroupLinks outside the hierarchy with ids: [#{external_group_link.id}]"
+          }
         )
 
         subject.execute
@@ -51,9 +53,11 @@ RSpec.describe Namespaces::RemoveProjectGroupLinksOutsideHierarchyService do
           pgl_links = ProjectGroupLink.in_project(namespace.all_projects)
                                       .not_in_group(::Group.groups_including_descendants_by([namespace])).ids.join(', ')
           expect(Gitlab::AppLogger).to receive(:info).with(
-            namespace: namespace.id,
-            message: "Removing the ProjectGroupLinks outside the hierarchy with ids: " \
-                     "[#{pgl_links}]"
+            {
+              namespace: namespace.id,
+              message: "Removing the ProjectGroupLinks outside the hierarchy with ids: " \
+                       "[#{pgl_links}]"
+            }
           )
 
           subject.execute
@@ -69,9 +73,11 @@ RSpec.describe Namespaces::RemoveProjectGroupLinksOutsideHierarchyService do
 
         it 'logs an error' do
           expect(Gitlab::AppLogger).to receive(:error).with(
-            namespace: namespace.id,
-            message: 'An error has occurred',
-            details: 'An exception'
+            {
+              namespace: namespace.id,
+              message: 'An error has occurred',
+              details: 'An exception'
+            }
           )
 
           subject.execute
