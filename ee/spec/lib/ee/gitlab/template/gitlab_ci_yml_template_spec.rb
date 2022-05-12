@@ -8,7 +8,6 @@ RSpec.describe Gitlab::Template::GitlabCiYmlTemplate do
 
     it 'finds the Security Products templates' do
       expect(templates).to include('Container-Scanning')
-      expect(templates).to include('Cluster-Image-Scanning')
       expect(templates).to include('DAST')
       expect(templates).to include('Dependency-Scanning')
       expect(templates).to include('License-Scanning')

@@ -54,41 +54,6 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService d
         end
       end
 
-      context 'when scan type is cluster_image_scanning' do
-        let_it_be(:action) { { scan: 'cluster_image_scanning' } }
-        let_it_be(:template_name) { 'Security/Cluster-Image-Scanning' }
-        let_it_be(:ci_variables) { {} }
-
-        it_behaves_like 'with template name for scan type'
-
-        it 'returns prepared CI configuration for Cluster Image Scanning' do
-          expected_configuration = {
-            image: '$CIS_ANALYZER_IMAGE',
-            stage: 'test',
-            allow_failure: true,
-            artifacts: {
-              reports: { cluster_image_scanning: 'gl-cluster-image-scanning-report.json' },
-              paths: ['gl-cluster-image-scanning-report.json']
-            },
-            dependencies: [],
-            rules: [
-              { if: "$CLUSTER_IMAGE_SCANNING_DISABLED", when: "never" },
-              {
-                if: '($KUBECONFIG == null || $KUBECONFIG == "") && ($CIS_KUBECONFIG == null || $CIS_KUBECONFIG == "")',
-                when: "never"
-              },
-              { if: "$CI_COMMIT_BRANCH && $GITLAB_FEATURES =~ /\\bcluster_image_scanning\\b/" }
-            ],
-            script: ['/analyzer run'],
-            variables: {
-              CIS_ANALYZER_IMAGE: "#{Gitlab::Saas.registry_prefix}/security-products/cluster-image-scanning:0"
-            }
-          }
-
-          expect(subject.deep_symbolize_keys).to eq(expected_configuration)
-        end
-      end
-
       context 'when scan type is container_scanning' do
         let_it_be(:action) { { scan: 'container_scanning' } }
         let_it_be(:template_name) { 'Security/Container-Scanning' }

@@ -85,43 +85,6 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CreatePipelineService do
           expect(build.variables.to_runner_variables).to include(*expected_variables)
         end
 
-        context 'for cluster_image_scanning scan' do
-          let_it_be(:cluster) { create(:cluster, :provided_by_user, name: 'production') }
-          let_it_be(:cluster_project) { create(:cluster_project, cluster: cluster, project: project) }
-          let_it_be(:environment) { create(:environment, name: 'environment-name', project: project) }
-          let_it_be(:kubernetes_namespace) { create(:cluster_kubernetes_namespace, cluster: cluster, cluster_project: cluster_project, project: project, environment: environment) }
-
-          let(:action) { { scan: 'cluster_image_scanning', clusters: { production: { namespaces: ['gitlab-namespace'] } } } }
-
-          it_behaves_like 'valid security orchestration policy action'
-
-          it 'sets the build name to cluster_image_scanning' do
-            build = pipeline.builds.first
-
-            expect(build.name).to eq('cluster_image_scanning')
-          end
-
-          it 'creates a build with appropriate variables' do
-            build = pipeline.builds.first
-
-            expected_variables = [
-              hash_including(
-                key: 'CIS_KUBECONFIG',
-                public: false,
-                masked: false
-              ),
-              {
-                key: 'CIS_RESOURCE_NAMESPACES',
-                masked: false,
-                public: true,
-                value: 'gitlab-namespace'
-              }
-            ]
-
-            expect(build.variables.to_runner_variables).to include(*expected_variables)
-          end
-        end
-
         context 'for container_scanning scan' do
           let(:action) { { scan: 'container_scanning' } }
 
