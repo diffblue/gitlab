@@ -55,3 +55,40 @@ RSpec.shared_examples_for 'over the free user limit alert' do
     it_behaves_like 'performs entire show dismiss cycle'
   end
 end
+
+RSpec.shared_examples_for 'user namespace over the free user limit alert' do
+  context 'when over limit for preview' do
+    before do
+      stub_ee_application_setting(should_check_namespace_plan: true)
+      stub_feature_flags(free_user_cap: false)
+      stub_feature_flags(preview_free_user_cap: true)
+      stub_const('::Namespaces::FreeUserCap::FREE_USER_LIMIT', 1)
+    end
+
+    let(:alert_title_content) do
+      'From June 22, 2022 (GitLab 15.1), you can have a maximum'
+    end
+
+    it 'shows free user limit warning and honors dismissal', :js do
+      visit_page
+
+      expect(page).not_to have_content(alert_title_content)
+
+      project.add_developer(create(:user))
+
+      page.refresh
+
+      expect(page).to have_content(alert_title_content)
+
+      page.within('[data-testid="user-over-limit-free-plan-alert"]') do
+        expect(page).to have_link('View all personal projects')
+      end
+
+      find('[data-testid="user-over-limit-free-plan-dismiss"]').click
+
+      page.refresh
+
+      expect(page).not_to have_content(alert_title_content)
+    end
+  end
+end

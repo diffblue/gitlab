@@ -64,31 +64,59 @@ RSpec.describe 'Project show page', :feature do
   end
 
   context 'when over free user limit', :saas do
-    let_it_be(:group) { create(:group_with_plan, plan: :free_plan) }
-
     subject(:visit_page) { visit project_path(project) }
 
-    before do
-      group.add_owner(user)
-      sign_in(user)
+    context 'with group namespace' do
+      let_it_be(:group) { create(:group_with_plan, plan: :free_plan) }
+
+      before do
+        group.add_owner(user)
+        sign_in(user)
+      end
+
+      context 'with repository' do
+        let_it_be(:project) { create(:project, :repository, group: group) }
+
+        it_behaves_like 'over the free user limit alert'
+      end
+
+      context 'with empty repository' do
+        let_it_be(:project) { create(:project, :empty_repo, group: group) }
+
+        it_behaves_like 'over the free user limit alert'
+      end
+
+      context 'without repository' do
+        let_it_be(:project) { create(:project, group: group) }
+
+        it_behaves_like 'over the free user limit alert'
+      end
     end
 
-    context 'with repository' do
-      let_it_be(:project) { create(:project, :repository, group: group) }
+    context 'with user namespace' do
+      let_it_be(:namespace) { create(:namespace_with_plan, plan: :free_plan) }
 
-      it_behaves_like 'over the free user limit alert'
-    end
+      before do
+        sign_in(project.owner)
+      end
 
-    context 'with empty repository' do
-      let_it_be(:project) { create(:project, :empty_repo, group: group) }
+      context 'with repository' do
+        let_it_be(:project) { create(:project, :repository, namespace: namespace) }
 
-      it_behaves_like 'over the free user limit alert'
-    end
+        it_behaves_like 'user namespace over the free user limit alert'
+      end
 
-    context 'without repository' do
-      let_it_be(:project) { create(:project, group: group) }
+      context 'with empty repository' do
+        let_it_be(:project) { create(:project, :empty_repo, namespace: namespace) }
 
-      it_behaves_like 'over the free user limit alert'
+        it_behaves_like 'user namespace over the free user limit alert'
+      end
+
+      context 'without repository' do
+        let_it_be(:project) { create(:project, namespace: namespace) }
+
+        it_behaves_like 'user namespace over the free user limit alert'
+      end
     end
   end
 end
