@@ -47,9 +47,8 @@ module EE
     end
 
     def enforce_limit?
-      return false if Date.current < ENFORCEMENT_DATE
+      return false unless enforceable_dates?
       return false if root_namespace.opensource_plan?
-      return false if gitlab_subscription.start_date < EFFECTIVE_DATE
 
       return ::Feature.enabled?(:enforce_storage_limit_for_paid, root_namespace) if root_namespace.paid?
 
@@ -67,6 +66,11 @@ module EE
     end
 
     private
+
+    def enforceable_dates?
+      ::Feature.enabled?(:namespace_storage_limit_bypass_date_check, root_namespace) ||
+        (Date.current >= ENFORCEMENT_DATE && gitlab_subscription.start_date >= EFFECTIVE_DATE)
+    end
 
     attr_reader :root_namespace
 
