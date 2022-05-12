@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe TrialStatusWidgetHelper, :saas do
+  include TrialStatusWidgetTestHelper
+
   describe 'data attributes for mounting Vue components', :freeze_time do
     let(:trial_length) { 30 } # days
     let(:trial_days_remaining) { 18 }
@@ -49,7 +51,7 @@ RSpec.describe TrialStatusWidgetHelper, :saas do
         expect(data_attrs).to match(
           shared_expected_attrs.merge(
             group_name: group.name,
-            purchase_href: new_subscriptions_path(namespace_id: group.id, plan_id: 'ultimate-plan-id'),
+            purchase_href: purchase_href(group),
             target_id: shared_expected_attrs[:container_id],
             trial_end_date: trial_end_date
           )
@@ -71,7 +73,7 @@ RSpec.describe TrialStatusWidgetHelper, :saas do
               company_name: user.organization,
               glm_content: 'trial-status-show-group',
               group_name: group.name,
-              purchase_href: new_subscriptions_path(namespace_id: group.id, plan_id: 'ultimate-plan-id'),
+              purchase_href: purchase_href(group),
               target_id: shared_expected_attrs[:container_id],
               trial_end_date: trial_end_date
             )
