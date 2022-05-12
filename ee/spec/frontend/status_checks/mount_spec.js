@@ -15,8 +15,8 @@ describe('mountStatusChecks', () => {
 
   const setUpDocument = () => {
     el = document.createElement('div');
-    el.dataset.projectId = projectId;
-    el.dataset.statusChecksPath = statusChecksPath;
+    el.setAttribute('data-project-id', projectId);
+    el.setAttribute('data-status-checks-path', statusChecksPath);
 
     document.body.appendChild(el);
 
