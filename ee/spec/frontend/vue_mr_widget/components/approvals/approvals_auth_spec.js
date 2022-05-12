@@ -29,13 +29,13 @@ describe('Approval auth component', () => {
     });
 
     it('password input control is rendered', () => {
-      expect(wrapper.find('input').exists()).toBe(true);
+      expect(findInput().exists()).toBe(true);
     });
 
     it('does not disable approve button', () => {
-      const attrs = wrapper.attributes();
-
-      expect(attrs['ok-disabled']).toBeUndefined();
+      expect(wrapper.findComponent(GlModal).props('actionPrimary')).toMatchObject({
+        attributes: { loading: false },
+      });
     });
 
     it('does not show error message', () => {
@@ -66,9 +66,9 @@ describe('Approval auth component', () => {
     });
 
     it('disables the approve button', () => {
-      const attrs = wrapper.attributes();
-
-      expect(attrs['ok-disabled']).toEqual('true');
+      expect(wrapper.findComponent(GlModal).props('actionPrimary')).toMatchObject({
+        attributes: { loading: true },
+      });
     });
   });
 
