@@ -105,10 +105,3 @@ Style/HashAsLastArrayItem:
 # Cop supports --auto-correct.
 Style/KeywordParametersOrder:
   Enabled: false
-
-# Offense count: 458
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: line_count_dependent, lambda, literal
-Style/Lambda:
-  Enabled: false
