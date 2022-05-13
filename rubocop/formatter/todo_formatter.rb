@@ -14,13 +14,6 @@ module RuboCop
     # For example, this formatter stores offenses for `RSpec/VariableName`
     # in `.rubocop_todo/rspec/variable_name.yml`.
     class TodoFormatter < BaseFormatter
-      # Disable a cop which exceeds this limit. This way we ensure that we
-      # don't enable a cop by accident when moving it from
-      # .rubocop_todo.yml to .rubocop_todo/.
-      # We keep the cop disabled if it has been disabled previously explicitly
-      # via `Enabled: false` in .rubocop_todo.yml or .rubocop_todo/.
-      MAX_OFFENSE_COUNT = 15
-
       class Todo
         attr_reader :cop_name, :files, :offense_count
 
@@ -84,7 +77,7 @@ module RuboCop
         yaml << '# Cop supports --auto-correct.' if todo.autocorrectable?
         yaml << "#{todo.cop_name}:"
 
-        if previously_disabled?(todo) && offense_count_exceeded?(todo)
+        if previously_disabled?(todo)
           yaml << "  # Offense count: #{todo.offense_count}"
           yaml << '  # Temporarily disabled due to too many offenses'
           yaml << '  Enabled: false'
@@ -97,10 +90,6 @@ module RuboCop
         yaml << ''
 
         yaml.join("\n")
-      end
-
-      def offense_count_exceeded?(todo)
-        todo.offense_count > MAX_OFFENSE_COUNT
       end
 
       def check_multiple_configurations!

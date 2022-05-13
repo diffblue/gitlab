@@ -38,8 +38,6 @@ RSpec.describe RuboCop::Formatter::TodoFormatter do
     let(:offense_autocorrect) { fake_offense('B/AutoCorrect') }
 
     before do
-      stub_const("#{described_class}::MAX_OFFENSE_COUNT", 1)
-
       stub_rubocop_registry(
         'A/Offense' => { autocorrectable: false },
         'B/AutoCorrect' => { autocorrectable: true }
