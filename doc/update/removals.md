@@ -140,6 +140,30 @@ You should not upgrade to Elasticsearch 8 until you have completed the GitLab 15
 
 View the [version requirements](https://docs.gitlab.com/ee/integration/elasticsearch.html#version-requirements) for details.
 
+### External status check API breaking changes
+
+WARNING:
+This feature was changed or removed in 15.0
+as a [breaking change](https://docs.gitlab.com/ee/development/contributing/#breaking-changes).
+Before updating GitLab, review the details carefully to determine if you need to make any
+changes to your code, settings, or workflow.
+
+The [external status check API](https://docs.gitlab.com/ee/api/status_checks.html) was originally implemented to
+support pass-by-default requests to mark a status check as passing. Pass-by-default requests are now removed.
+Specifically, the following are removed:
+
+- Requests that do not contain the `status` field.
+- Requests that have the `status` field set to `approved`.
+
+From GitLab 15.0, status checks are only set to a passing state if the `status` field is both present
+and set to `passed`. Requests that:
+
+- Do not contain the `status` field will be rejected with a `400` error. For more information, see [the relevant issue](https://gitlab.com/gitlab-org/gitlab/-/issues/338827).
+- Contain any value other than `passed`, such as `approved`, cause the status check to fail. For more information, see [the relevant issue](https://gitlab.com/gitlab-org/gitlab/-/issues/339039).
+
+To align with this change, API calls to list external status checks also return the value of `passed` rather than
+`approved` for status checks that have passed.
+
 ### GitLab Serverless
 
 WARNING:
