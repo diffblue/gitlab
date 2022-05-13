@@ -284,8 +284,9 @@ production clone.
 ### Add a migration to create the index synchronously
 
 After the index is verified to exist on the production database, create a second
-merge request that adds the index synchronously. The synchronous
-migration results in a no-op on GitLab.com, but you should still add the
+merge request that adds the index synchronously. The schema changes must be
+updated and committed to `structure.sql` in this second merge request. 
+The synchronous migration results in a no-op on GitLab.com, but you should still add the
 migration as expected for other installations. The below block
 demonstrates how to create the second migration for the previous
 asynchronous example.
