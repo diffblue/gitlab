@@ -32,6 +32,7 @@ export default (el, dashboardType) => {
     projectFullPath: el.dataset.projectFullPath,
     securityConfigurationPath: el.dataset.securityConfigurationPath,
     surveyRequestSvgPath: el.dataset.surveyRequestSvgPath,
+    hasProjects: parseBoolean(el.dataset.hasProjects),
   };
 
   let component;

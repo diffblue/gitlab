@@ -1,11 +1,17 @@
-query instanceProjects($search: String, $pageSize: Int) {
+query instanceProjects($search: String, $pageSize: Int, $after: String) {
   instance: instanceSecurityDashboard {
-    projects(search: $search, first: $pageSize) {
-      nodes {
-        id
-        name
-        nameWithNamespace
-        avatarUrl
+    projects(search: $search, first: $pageSize, after: $after) {
+      edges {
+        node {
+          id
+          name
+          nameWithNamespace
+          avatarUrl
+        }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
       }
     }
   }

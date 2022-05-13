@@ -4,6 +4,7 @@ import {
   GlDropdownText,
   GlLoadingIcon,
   GlSafeHtmlDirective as SafeHtml,
+  GlIntersectionObserver,
 } from '@gitlab/ui';
 import { escapeRegExp, has, xorBy } from 'lodash';
 import { DASHBOARD_TYPES } from 'ee/security_dashboard/store/constants';
@@ -25,12 +26,14 @@ const mapProjects = (projects = []) =>
   projects.map((p) => ({ id: getIdFromGraphQLId(p.id).toString(), name: p.name }));
 
 export default {
+  name: 'ProjectFilter',
   components: {
     FilterBody,
     FilterItem,
     GlDropdownDivider,
     GlLoadingIcon,
     GlDropdownText,
+    GlIntersectionObserver,
   },
   directives: { SafeHtml },
   extends: SimpleFilter,
@@ -38,6 +41,7 @@ export default {
   data: () => ({
     projectsCache: {},
     projects: [],
+    pageInfo: null,
     searchTerm: '',
     hasDropdownBeenOpened: false,
   }),
@@ -58,6 +62,10 @@ export default {
     isLoadingProjects() {
       return this.$apollo.queries.projects.loading;
     },
+    // Full spinner is when all the dropdown contents are replaced with a spinner.
+    shouldShowFullSpinner() {
+      return this.isLoadingProjects && (this.isSearching || !this.pageInfo);
+    },
     isLoadingProjectsById() {
       return this.$apollo.queries.projectsById.loading;
     },
@@ -68,7 +76,7 @@ export default {
       return this.searchTerm.length > 0;
     },
     showSelectedProjectsSection() {
-      return this.selectedOptions?.length && !this.isSearching;
+      return Boolean(this.selectedOptions?.length) && !this.isSearching;
     },
     showAllOption() {
       return !this.isLoadingProjects && !this.isSearching && !this.isMaxProjectsSelected;
@@ -85,6 +93,9 @@ export default {
         ? groupProjectsQuery
         : instanceProjectsQuery;
     },
+    shouldShowIntersectionObserver() {
+      return this.pageInfo?.hasNextPage && !this.isLoadingProjects;
+    },
   },
   apollo: {
     // Gets the projects from the project IDs in the querystring and adds them to the cache.
@@ -96,6 +107,7 @@ export default {
       variables() {
         return {
           fullPath: this.groupFullPath,
+          pageSize: SELECTED_PROJECTS_MAX_COUNT,
           // The IDs have to be in the format "gid://gitlab/Project/${projectId}"
           ids: convertToGraphQLIds(PROJECT_ENTITY_NAME, this.uncachedIds),
         };
@@ -107,7 +119,7 @@ export default {
           this.$set(this.projectsCache, id, undefined);
         });
 
-        const projects = mapProjects(data[this.dashboardType].projects.nodes);
+        const projects = mapProjects(data[this.dashboardType].projects.edges.map((x) => x.node));
         this.saveProjectsToCache(projects);
         // Now that we have the project for each uncached ID, set the selected options.
         this.selectedOptions = this.querystringOptions;
@@ -127,13 +139,14 @@ export default {
       },
       variables() {
         return {
-          pageSize: 20,
           fullPath: this.groupFullPath,
           search: this.searchTerm,
         };
       },
       update(data) {
-        return mapProjects(data[this.dashboardType].projects.nodes);
+        const { projects } = data[this.dashboardType];
+        this.pageInfo = projects.pageInfo;
+        return mapProjects(projects.edges.map((x) => x.node));
       },
       result() {
         this.saveProjectsToCache(this.projects);
@@ -177,6 +190,9 @@ export default {
     saveProjectsToCache(projects) {
       projects.forEach((project) => this.$set(this.projectsCache, project.id, project));
     },
+    fetchNextPage() {
+      this.$apollo.queries.projects.fetchMore({ variables: { after: this.pageInfo.endCursor } });
+    },
   },
   i18n: {
     enterMoreCharactersToSearch: __('Enter at least three characters to search'),
@@ -215,7 +231,12 @@ export default {
       @click="deselectAllOptions"
     />
 
-    <gl-loading-icon v-if="isLoadingProjects" size="lg" class="gl-mt-4 gl-mb-3" />
+    <gl-loading-icon
+      v-if="shouldShowFullSpinner"
+      size="md"
+      class="gl-mt-4 gl-mb-3"
+      data-testid="loading-icon-full"
+    />
     <gl-dropdown-text v-else-if="isMaxProjectsSelected">
       {{ $options.i18n.maxProjectsSelected }}
     </gl-dropdown-text>
@@ -235,6 +256,8 @@ export default {
       >
         <div v-safe-html="highlightSearchTerm(project.name)"></div>
       </filter-item>
+      <gl-intersection-observer v-if="shouldShowIntersectionObserver" @appear="fetchNextPage" />
+      <gl-loading-icon v-if="isLoadingProjects" class="gl-my-2" data-testid="loading-icon-paging" />
     </template>
   </filter-body>
 </template>
