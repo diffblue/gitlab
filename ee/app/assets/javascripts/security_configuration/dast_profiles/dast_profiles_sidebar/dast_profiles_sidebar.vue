@@ -1,4 +1,5 @@
 <script>
+import { isEmpty } from 'lodash';
 import { GlButton, GlDrawer, GlSprintf } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { capitalizeFirstCharacter } from '~/lib/utils/text_utility';
@@ -18,6 +19,8 @@ export default {
     ),
     emptyStateHeader: s__('OnDemandScans|No %{scannerType} profiles found for DAST'),
     scanSidebarHeader: s__('OnDemandScans|%{scannerType} profile library'),
+    scanCreateSidebarHeader: s__('OnDemandScans|New %{scannerType} profile'),
+    scanEditSidebarHeader: s__('OnDemandScans|Edit %{scannerType} profile'),
     scanSidebarHeaderButton: s__('OnDemandScans|New profile'),
   },
   components: {
@@ -61,6 +64,18 @@ export default {
       required: false,
       default: false,
     },
+    /**
+     * There is an option to activate
+     * editing mode from parent
+     * This property is used for
+     * passing profile for editing and
+     * activating editing mode
+     */
+    activeProfile: {
+      type: Object,
+      required: false,
+      default: () => ({}),
+    },
   },
   data() {
     return {
@@ -78,6 +93,9 @@ export default {
     isEmptyState() {
       return !this.hasProfiles && !this.editingMode;
     },
+    editExistingProfileMode() {
+      return !isEmpty(this.profileForEditing);
+    },
     isScannerType() {
       return this.profileType === SCANNER_TYPE;
     },
@@ -93,6 +111,22 @@ export default {
     summaryComponent() {
       return this.profileType === SCANNER_TYPE ? ScannerProfileSummary : SiteProfileSummary;
     },
+    editingModeHeader() {
+      return this.editExistingProfileMode
+        ? this.$options.i18n.scanEditSidebarHeader
+        : this.$options.i18n.scanCreateSidebarHeader;
+    },
+  },
+  /**
+   * Only if activeProfile is passed from parent
+   * editing mode should be immediately activated
+   */
+  watch: {
+    activeProfile(newVal) {
+      if (!isEmpty(newVal)) {
+        this.enableEditScannerMode(this.activeProfile);
+      }
+    },
   },
   methods: {
     closeDrawer() {
@@ -104,10 +138,17 @@ export default {
       this.editingMode = true;
     },
     enableEditScannerMode(profile) {
+      this.editingMode = true;
       this.profileForEditing = profile;
     },
+    /**
+     * reopen even for closing editing layer
+     * and opening drawer with profiles list
+     */
     cancelEditingMode() {
       this.editingMode = false;
+      this.profileForEditing = {};
+      this.$emit('reopen-drawer', this.profileType);
     },
     submitEditingMode() {
       this.editingMode = false;
@@ -130,9 +171,14 @@ export default {
     <template #title>
       <div class="gl-display-flex gl-w-full gl-align-items-center gl-justify-content-space-between">
         <h4 data-testid="sidebar-header" class="sidebar-header gl-font-size-h2 gl-my-0 gl-mr-3">
-          <gl-sprintf :message="$options.i18n.scanSidebarHeader">
+          <gl-sprintf v-if="!editingMode" :message="$options.i18n.scanSidebarHeader">
             <template #scannerType>
               <span>{{ sidebarHeader }}</span>
+            </template>
+          </gl-sprintf>
+          <gl-sprintf v-else :message="editingModeHeader">
+            <template #scannerType>
+              <span>{{ profileType }}</span>
             </template>
           </gl-sprintf>
         </h4>
@@ -213,6 +259,7 @@ export default {
               :profile="profile"
               :is-profile-in-use="isProfileInUse(profile)"
               :allow-selection="true"
+              @edit="enableEditScannerMode(profile)"
               @select-profile="$emit('select-profile', { profile, profileType })"
             />
           </template>

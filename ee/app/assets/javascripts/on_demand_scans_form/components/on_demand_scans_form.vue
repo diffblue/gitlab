@@ -80,6 +80,8 @@ export default {
   saveScanBtnId: 'scan-save-button',
   helpPagePath: HELP_PAGE_PATH,
   dastConfigurationHelpPath: DAST_CONFIGURATION_HELP_PATH,
+  SCANNER_TYPE,
+  SITE_TYPE,
   i18n: {
     newOnDemandScanHeader: s__('OnDemandScans|New on-demand scan'),
     newOnDemandScanHeaderDescription: s__(
@@ -205,6 +207,7 @@ export default {
       clearStorage: false,
       isSideDrawerOpen: false,
       profileType: '',
+      activeProfile: {},
     };
   },
   computed: {
@@ -373,19 +376,20 @@ export default {
       this.errors = errors;
       this.showAlert = true;
     },
-    openScannerProfileDrawer() {
+    openProfileDrawer(type) {
       this.isSideDrawerOpen = false;
       this.$nextTick(() => {
         this.isSideDrawerOpen = true;
-        this.profileType = SCANNER_TYPE;
+        this.profileType = type;
       });
     },
-    openSiteProfileDrawer() {
-      this.isSideDrawerOpen = false;
-      this.$nextTick(() => {
-        this.isSideDrawerOpen = true;
-        this.profileType = SITE_TYPE;
-      });
+    enableEditingMode(type) {
+      this.selectActiveProfile(type);
+      this.openProfileDrawer(type);
+    },
+    selectActiveProfile(type) {
+      this.activeProfile =
+        type === SCANNER_TYPE ? this.selectedScannerProfile : this.selectedSiteProfile;
     },
     closeSideDrawer() {
       this.isSideDrawerOpen = false;
@@ -554,7 +558,8 @@ export default {
               :profiles="scannerProfiles"
               :selected-profile="selectedScannerProfile"
               :profile-id-in-use="savedScannerProfileId"
-              @open-drawer="openScannerProfileDrawer"
+              @open-drawer="openProfileDrawer($options.SCANNER_TYPE)"
+              @edit="enableEditingMode($options.SCANNER_TYPE)"
             />
 
             <site-profile-selector-new
@@ -562,7 +567,8 @@ export default {
               :profiles="scannerProfiles"
               :selected-profile="selectedSiteProfile"
               :profile-id-in-use="savedSiteProfileId"
-              @open-drawer="openSiteProfileDrawer"
+              @open-drawer="openProfileDrawer($options.SITE_TYPE)"
+              @edit="enableEditingMode($options.SITE_TYPE)"
             />
           </template>
 
@@ -642,10 +648,12 @@ export default {
       v-if="glFeatures.dastUiRedesign"
       :profiles="selectedProfiles"
       :profile-id-in-use="profileIdInUse"
+      :active-profile="activeProfile"
       :profile-type="profileType"
       :is-open="isSideDrawerOpen"
       :is-loading="isLoadingProfiles"
       @close-drawer="closeSideDrawer"
+      @reopen-drawer="openProfileDrawer"
       @profile-submitted="onScannerProfileCreated"
       @select-profile="updateProfileFromSelector"
     />
