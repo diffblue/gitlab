@@ -182,9 +182,6 @@ describe('EpicsListRoot', () => {
         filterParams: {
           search: 'foo',
         },
-        epics: {
-          list: mockEpics,
-        },
       });
 
       await nextTick();

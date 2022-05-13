@@ -129,14 +129,6 @@ export default {
     epicsListLoading() {
       return this.$apollo.queries.epics.loading;
     },
-    currentEpicsCount() {
-      return this.epicsListLoading
-        ? this.epicsCount
-        : {
-            ...this.epicsCount,
-            [this.currentState]: this.epics.list.length,
-          };
-    },
     epicsListEmpty() {
       return !this.$apollo.queries.epics.loading && !this.epics.list.length;
     },
@@ -246,7 +238,7 @@ export default {
     :namespace="groupFullPath"
     :tabs="$options.IssuableListTabs"
     :current-tab="currentState"
-    :tab-counts="currentEpicsCount"
+    :tab-counts="epicsCount"
     :search-input-placeholder="__('Search or filter results...')"
     :search-tokens="
       /* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */
