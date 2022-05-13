@@ -46,10 +46,3 @@ Style/CaseLikeIf:
 # SupportedStyles: compact, expanded
 Style/EmptyMethod:
   Enabled: false
-
-# Offense count: 59
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: braces, no_braces
-Style/HashAsLastArrayItem:
-  Enabled: false
