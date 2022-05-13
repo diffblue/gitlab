@@ -308,6 +308,20 @@ module EE
       def with_api_entity_associations
         super.preload(group: [:ip_restrictions, :saml_provider])
       end
+
+      override :inactive
+      def inactive
+        return super unless ::Gitlab.com?
+
+        statistics = ::ProjectStatistics.arel_table
+        minimum_size_mb = ::Gitlab::CurrentSettings.inactive_projects_min_size_mb.megabytes
+        last_activity_cutoff = ::Gitlab::CurrentSettings.inactive_projects_send_warning_email_after_months.months.ago
+
+        for_plan_name(::Plan.default_plans)
+          .joins(:statistics)
+          .where((statistics[:storage_size]).gt(minimum_size_mb))
+          .where('last_activity_at < ?', last_activity_cutoff)
+      end
     end
 
     def can_store_security_reports?

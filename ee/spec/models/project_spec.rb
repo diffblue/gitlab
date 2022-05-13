@@ -5,6 +5,7 @@ require 'spec_helper'
 RSpec.describe Project do
   include ProjectForksHelper
   include ::EE::GeoHelpers
+  include ::ProjectHelpers
   using RSpec::Parameterized::TableSyntax
 
   let(:project) { create(:project) }
@@ -3363,6 +3364,59 @@ RSpec.describe Project do
       let_it_be_with_reload(:project) { create(:project, name: 'test-project') }
 
       it_behaves_like 'returns true if project is inactive'
+    end
+  end
+
+  describe '.inactive', :saas do
+    before do
+      stub_application_setting(inactive_projects_min_size_mb: 5)
+      stub_application_setting(inactive_projects_send_warning_email_after_months: 24)
+    end
+
+    it 'returns inactive projects belonging to free namespace' do
+      ultimate_group = create(:group_with_plan, plan: :ultimate_plan)
+      premium_group = create(:group_with_plan, plan: :premium_plan)
+      free_plan_group = create(:group_with_plan, plan: :free_plan)
+
+      free_small_active_project =
+        create_project_with_statistics(free_plan_group, with_data: true, size_multiplier: 1.kilobyte).tap do |project|
+          project.update!(last_activity_at: 7.days.ago)
+        end
+
+      free_small_inactive_project =
+        create_project_with_statistics(free_plan_group, with_data: true, size_multiplier: 1.kilobyte).tap do |project|
+          project.update!(last_activity_at: 3.years.ago)
+        end
+
+      free_large_inactive_project =
+        create_project_with_statistics(free_plan_group, with_data: true, size_multiplier: 10.megabytes).tap do |project|
+          project.update!(last_activity_at: 3.years.ago)
+        end
+
+      free_large_active_project =
+        create_project_with_statistics(free_plan_group, with_data: true, size_multiplier: 10.megabytes).tap do |project|
+          project.update!(last_activity_at: 7.days.ago)
+        end
+
+      paid_small_active_project =
+        create_project_with_statistics(premium_group, with_data: true, size_multiplier: 1.megabyte).tap do |project|
+          project.update!(last_activity_at: 7.days.ago)
+        end
+
+      paid_small_inactive_project =
+        create_project_with_statistics(premium_group, with_data: true, size_multiplier: 1.megabyte).tap do |project|
+          project.update!(last_activity_at: 7.years.ago)
+        end
+
+      paid_large_inactive_project =
+        create_project_with_statistics(ultimate_group, with_data: true, size_multiplier: 1.gigabyte).tap do |project|
+          project.update!(last_activity_at: 7.years.ago)
+        end
+
+      expect(described_class.inactive).to contain_exactly(free_large_inactive_project)
+      expect(described_class.inactive)
+        .not_to include(free_small_active_project, free_small_inactive_project, free_large_active_project,
+                        paid_small_active_project, paid_small_inactive_project, paid_large_inactive_project)
     end
   end
 end
