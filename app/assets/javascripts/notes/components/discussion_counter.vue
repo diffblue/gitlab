@@ -58,11 +58,12 @@ export default {
     class="gl-display-flex discussions-counter"
   >
     <div
-      class="gl-display-flex gl-align-items-center gl-pl-3 gl-rounded-base gl-mr-3"
+      class="gl-display-flex gl-align-items-center gl-pl-4 gl-rounded-base gl-mr-3"
       :class="{
         'gl-bg-orange-50': blocksMerge,
         'gl-bg-gray-50': !blocksMerge,
-        'gl-pr-3': allResolved,
+        'gl-pr-4': allResolved,
+        'gl-pr-2': !allResolved,
       }"
       data-testid="discussions-counter-text"
     >
