@@ -23,20 +23,6 @@ module Mutations
         def find_object(id:)
           GitlabSchema.object_from_id(id, expected_type: ::IncidentManagement::TimelineEvent).sync
         end
-
-        def authorize!(object)
-          raise_feature_not_available! if object && !timeline_events_available?(object)
-
-          super
-        end
-
-        def raise_feature_not_available!
-          raise_resource_not_available_error! 'Timeline events are not supported for this project'
-        end
-
-        def timeline_events_available?(object)
-          ::Gitlab::IncidentManagement.timeline_events_available?(object.project)
-        end
       end
     end
   end

@@ -8,7 +8,9 @@ RSpec.describe 'Updating an incident timeline event' do
   let_it_be(:user) { create(:user) }
   let_it_be(:project) { create(:project) }
   let_it_be(:incident) { create(:incident, project: project) }
-  let_it_be_with_reload(:timeline_event) { create(:incident_management_timeline_event, incident: incident, project: project) }
+  let_it_be_with_reload(:timeline_event) do
+    create(:incident_management_timeline_event, incident: incident, project: project)
+  end
 
   let(:occurred_at) { 1.minute.ago.iso8601 }
 
@@ -43,7 +45,6 @@ RSpec.describe 'Updating an incident timeline event' do
   let(:mutation_response) { graphql_mutation_response(:timeline_event_update) }
 
   before do
-    stub_licensed_features(incident_timeline_events: true)
     project.add_developer(user)
   end
 

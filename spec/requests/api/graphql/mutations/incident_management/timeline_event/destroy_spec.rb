@@ -36,7 +36,6 @@ RSpec.describe 'Removing an incident timeline event' do
   let(:mutation_response) { graphql_mutation_response(:timeline_event_destroy) }
 
   before do
-    stub_licensed_features(incident_timeline_events: true)
     project.add_developer(user)
   end
 

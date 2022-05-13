@@ -37,16 +37,6 @@ RSpec.shared_examples 'failing to create an incident timeline event' do
       expect { resolve }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
     end
   end
-
-  context 'when timeline event feature is not available' do
-    before do
-      stub_licensed_features(incident_timeline_events: false)
-    end
-
-    it 'raises an error' do
-      expect { resolve }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
-    end
-  end
 end
 
 # Requres:

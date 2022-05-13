@@ -2,41 +2,41 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Promote an incident timeline event from a comment' do
+RSpec.describe 'Creating an incident timeline event' do
   include GraphqlHelpers
 
   let_it_be(:user) { create(:user) }
   let_it_be(:project) { create(:project) }
   let_it_be(:incident) { create(:incident, project: project) }
-  let_it_be(:comment) { create(:note, project: project, noteable: incident) }
+  let_it_be(:event_occurred_at) { Time.current }
+  let_it_be(:note) { 'demo note' }
 
-  let(:input) { { note_id: comment.to_global_id.to_s } }
+  let(:input) { { incident_id: incident.to_global_id.to_s, note: note, occurred_at: event_occurred_at } }
   let(:mutation) do
-    graphql_mutation(:timeline_event_promote_from_note, input) do
+    graphql_mutation(:timeline_event_create, input) do
       <<~QL
         clientMutationId
         errors
         timelineEvent {
+          id
           author { id username }
           incident { id title }
-          promotedFromNote { id }
           note
-          action
           editable
+          action
           occurredAt
         }
       QL
     end
   end
 
-  let(:mutation_response) { graphql_mutation_response(:timeline_event_promote_from_note) }
+  let(:mutation_response) { graphql_mutation_response(:timeline_event_create) }
 
   before do
-    stub_licensed_features(incident_timeline_events: true)
     project.add_developer(user)
   end
 
-  it 'creates incident timeline event from the note', :aggregate_failures do
+  it 'creates incident timeline event', :aggregate_failures do
     post_graphql_mutation(mutation, current_user: user)
 
     timeline_event_response = mutation_response['timelineEvent']
@@ -51,13 +51,10 @@ RSpec.describe 'Promote an incident timeline event from a comment' do
         'id' => incident.to_global_id.to_s,
         'title' => incident.title
       },
-      'promotedFromNote' => {
-        'id' => comment.to_global_id.to_s
-      },
-      'note' => comment.note,
+      'note' => note,
       'action' => 'comment',
       'editable' => false,
-      'occurredAt' => comment.created_at.iso8601
+      'occurredAt' => event_occurred_at.iso8601
     )
   end
 end
