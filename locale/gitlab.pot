@@ -5638,6 +5638,78 @@ msgstr ""
 msgid "Batch size"
 msgstr ""
 
+msgid "Batched Job|Background Migrations"
+msgstr ""
+
+msgid "Batched Job|Batched Job (Id: %{id})"
+msgstr ""
+
+msgid "BatchedJob|Attempts"
+msgstr ""
+
+msgid "BatchedJob|Batch size"
+msgstr ""
+
+msgid "BatchedJob|Batched Jobs"
+msgstr ""
+
+msgid "BatchedJob|Created At"
+msgstr ""
+
+msgid "BatchedJob|Created at"
+msgstr ""
+
+msgid "BatchedJob|Exception Class"
+msgstr ""
+
+msgid "BatchedJob|Exception Message"
+msgstr ""
+
+msgid "BatchedJob|Exception class"
+msgstr ""
+
+msgid "BatchedJob|Exception message"
+msgstr ""
+
+msgid "BatchedJob|Finished at"
+msgstr ""
+
+msgid "BatchedJob|Max Value"
+msgstr ""
+
+msgid "BatchedJob|Max value"
+msgstr ""
+
+msgid "BatchedJob|Min Value"
+msgstr ""
+
+msgid "BatchedJob|Min value"
+msgstr ""
+
+msgid "BatchedJob|Next Status"
+msgstr ""
+
+msgid "BatchedJob|Next status"
+msgstr ""
+
+msgid "BatchedJob|Pause ms"
+msgstr ""
+
+msgid "BatchedJob|Pause time (ms)"
+msgstr ""
+
+msgid "BatchedJob|Previous Status"
+msgstr ""
+
+msgid "BatchedJob|Previous status"
+msgstr ""
+
+msgid "BatchedJob|Started at"
+msgstr ""
+
+msgid "BatchedJob|Transition logs:"
+msgstr ""
+
 msgid "Be careful. Changing the project's namespace can have unintended side effects."
 msgstr ""
 
