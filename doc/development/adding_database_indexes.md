@@ -158,7 +158,7 @@ and should not be used. Some other points to consider:
 ### Why explicit names are required
 
 As Rails is database agnostic, it generates an index name only
-from the required options of all indexes: table name and column name(s).
+from the required options of all indexes: table name and column names.
 For example, imagine the following two indexes are created in a migration:
 
 ```ruby
@@ -173,7 +173,7 @@ Creation of the second index would fail, because Rails would generate
 the same name for both indexes.
 
 This is further complicated by the behavior of the `index_exists?` method.
-It considers only the table name, column name(s) and uniqueness specification
+It considers only the table name, column names, and uniqueness specification
 of the index when making a comparison. Consider:
 
 ```ruby
