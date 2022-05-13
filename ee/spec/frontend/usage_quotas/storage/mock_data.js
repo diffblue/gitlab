@@ -192,3 +192,9 @@ export const withRootStorageStatistics = {
 export const mockGetNamespaceStorageStatisticsGraphQLResponse = {
   nodes: projects.map((node) => node),
 };
+
+export const statisticsCardDefaultProps = {
+  totalStorage: 100 * 1024,
+  usedStorage: 50 * 1024,
+  hideProgressBar: false,
+};

@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import createDefaultClient from '~/lib/graphql';
-import { projectHelpLinks as helpLinks } from './constants';
+import { projectHelpPaths as helpLinks } from './constants';
 import ProjectStorageApp from './components/project_storage_app.vue';
 
 Vue.use(VueApollo);

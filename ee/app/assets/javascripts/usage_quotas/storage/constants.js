@@ -62,6 +62,18 @@ export const PROJECT_TABLE_LABEL_STORAGE_TYPE = s__('UsageQuota|Storage type');
 export const PROJECT_TABLE_LABEL_USAGE = s__('UsageQuota|Usage');
 export const PROJECT_TABLE_LABEL_STORAGE_USAGE = s__('UsageQuota|Storage used');
 
+export const STORAGE_STATISTICS_USAGE_QUOTA_LEARN_MORE = s__(
+  'UsageQuota|Learn more about usage quotas.',
+);
+
+export const STORAGE_STATISTICS_NAMESPACE_STORAGE_USED = s__('UsageQuota|Namespace storage used');
+
+export const STORAGE_STATISTICS_PURCHASED_STORAGE_USED = s__('UsageQuota|Purchased storage used');
+
+export const STORAGE_STATISTICS_PURCHASED_STORAGE = s__('UsageQuota|Purchased storage');
+
+export const BUY_STORAGE = s__('UsageQuota|Buy storage');
+
 export const SKELETON_LOADER_ROWS = 5;
 
 export const NONE_THRESHOLD = 'none';
@@ -78,7 +90,7 @@ export const STORAGE_USAGE_THRESHOLDS = {
   [ERROR_THRESHOLD]: 1.0,
 };
 
-export const projectHelpLinks = {
+export const projectHelpPaths = {
   usageQuotas: helpPagePath('user/usage_quotas'),
   buildArtifacts: helpPagePath('ci/pipelines/job_artifacts', {
     anchor: 'when-job-artifacts-are-deleted',

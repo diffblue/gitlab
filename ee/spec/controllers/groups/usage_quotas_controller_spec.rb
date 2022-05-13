@@ -9,31 +9,24 @@ RSpec.describe Groups::UsageQuotasController do
   before do
     sign_in(user)
     group.add_owner(user)
-
-    allow_next_found_instance_of(Group) do |group|
-      allow(group).to receive(:additional_repo_storage_by_namespace_enabled?)
-        .and_return(additional_repo_storage_by_namespace_enabled)
-    end
   end
 
-  describe 'Pushing the `additionalRepoStorageByNamespace` feature flag to the frontend' do
-    context 'when additional_repo_storage_by_namespace_enabled is false' do
-      let(:additional_repo_storage_by_namespace_enabled) { false }
-
+  describe 'Pushing the `updateStorageUsageDesign` feature flag to the frontend' do
+    context 'when update_storage_usage_design is false' do
       it 'is disabled' do
+        stub_feature_flags(update_storage_usage_design: false)
         get :index, params: { group_id: group }
 
-        expect(Gon.features).to include('additionalRepoStorageByNamespace' => false)
+        expect(Gon.features).not_to include('updateStorageUsageDesign' => true)
       end
     end
 
-    context 'when additional_repo_storage_by_namespace_enabled is true' do
-      let(:additional_repo_storage_by_namespace_enabled) { true }
-
+    context 'when update_storage_usage_design is true' do
       it 'is enabled' do
+        stub_feature_flags(update_storage_usage_design: true)
         get :index, params: { group_id: group }
 
-        expect(Gon.features).to include('additionalRepoStorageByNamespace' => true)
+        expect(Gon.features).to include('updateStorageUsageDesign' => true)
       end
     end
   end

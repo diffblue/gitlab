@@ -5,6 +5,7 @@ import ProjectList from 'ee/usage_quotas/storage/components/project_list.vue';
 import StorageInlineAlert from 'ee/usage_quotas/storage/components/storage_inline_alert.vue';
 import TemporaryStorageIncreaseModal from 'ee/usage_quotas/storage/components/temporary_storage_increase_modal.vue';
 import UsageStatistics from 'ee/usage_quotas/storage/components/usage_statistics.vue';
+import StorageUsageStatistics from 'ee/usage_quotas/storage/components/storage_usage_statistics.vue';
 import UsageGraph from 'ee/usage_quotas/storage/components/usage_graph.vue';
 import DependencyProxyUsage from 'ee/usage_quotas/storage/components/dependency_proxy_usage.vue';
 import { formatUsageSize } from 'ee/usage_quotas/storage/utils';
@@ -27,6 +28,7 @@ describe('NamespaceStorageApp', () => {
     wrapper.find("[data-testid='temporary-storage-increase-button']");
   const findUsageGraph = () => wrapper.findComponent(UsageGraph);
   const findUsageStatistics = () => wrapper.findComponent(UsageStatistics);
+  const findStorageUsageStatistics = () => wrapper.findComponent(StorageUsageStatistics);
   const findStorageInlineAlert = () => wrapper.findComponent(StorageInlineAlert);
   const findProjectList = () => wrapper.findComponent(ProjectList);
   const findPrevButton = () => wrapper.find('[data-testid="prevButton"]');
@@ -35,10 +37,13 @@ describe('NamespaceStorageApp', () => {
 
   const createComponent = ({
     provide = {},
+    storageLimitEnforced = false,
     loading = false,
     additionalRepoStorageByNamespace = false,
     namespace = {},
     dependencyProxyTotalSize = '',
+    isFreeNamespace = false,
+    glFeatures = {},
   } = {}) => {
     $apollo = {
       queries: {
@@ -57,11 +62,14 @@ describe('NamespaceStorageApp', () => {
         GlModalDirective: createMockDirective(),
       },
       provide: {
-        glFeatures: {
-          additionalRepoStorageByNamespace,
-        },
+        glFeatures,
         ...defaultNamespaceProvideValues,
         ...provide,
+      },
+      propsData: {
+        storageLimitEnforced,
+        isAdditionalStorageFlagEnabled: additionalRepoStorageByNamespace,
+        isFreeNamespace,
       },
       data() {
         return {
@@ -313,6 +321,57 @@ describe('NamespaceStorageApp', () => {
             variables: expect.objectContaining({ first: expect.any(Number) }),
           }),
         );
+      });
+    });
+  });
+
+  describe('new storage statistics usage design', () => {
+    describe('when updateStorageUsageDesign feature flag is false', () => {
+      it('does not render the new storage design', () => {
+        createComponent({
+          additionalRepoStorageByNamespace: true,
+          namespace: withRootStorageStatistics,
+          isFreeNamespace: true,
+          glFeatures: { updateStorageUsageDesign: false },
+        });
+
+        expect(findStorageUsageStatistics().exists()).toBe(false);
+      });
+    });
+
+    describe('when updateStorageUsageDesign feature flag is true', () => {
+      beforeEach(() => {
+        createComponent({
+          additionalRepoStorageByNamespace: true,
+          glFeatures: { updateStorageUsageDesign: true },
+          namespace: withRootStorageStatistics,
+          storageLimitEnforced: true,
+          isFreeNamespace: true,
+        });
+      });
+
+      it('renders the new storage design', () => {
+        expect(findStorageUsageStatistics().exists()).toBe(true);
+      });
+
+      it('passes storageLimitEnforced prop correctly', () => {
+        expect(findStorageUsageStatistics().props('storageLimitEnforced')).toBe(true);
+      });
+    });
+
+    describe('when updateStorageUsageDesign feature flag is true and namespace is not on free plan', () => {
+      beforeEach(() => {
+        createComponent({
+          additionalRepoStorageByNamespace: true,
+          glFeatures: { updateStorageUsageDesign: true },
+          namespace: withRootStorageStatistics,
+          storageLimitEnforced: true,
+          isFreeNamespace: false,
+        });
+      });
+
+      it('does not render the new storage design', () => {
+        expect(findStorageUsageStatistics().exists()).toBe(false);
       });
     });
   });
