@@ -48,11 +48,6 @@ Rails/MailerName:
   Exclude:
     - 'app/mailers/notify.rb'
 
-# Offense count: 51
-# Cop supports --auto-correct.
-Rails/NegateInclude:
-  Enabled: false
-
 # Offense count: 44
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle.
