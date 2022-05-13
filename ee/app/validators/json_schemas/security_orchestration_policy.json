@@ -53,6 +53,24 @@
                 "cadence": {
                   "type": "string"
                 },
+                "agents": {
+                  "type": "object",
+                  "minProperties": 1,
+                  "maxProperties": 1,
+                  "patternProperties": {
+                    "\\A[a-z0-9]([-a-z0-9]*[a-z0-9])?\\z": {
+                      "type": "object",
+                      "properties": {
+                        "namespaces": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
                 "clusters": {
                   "type": "object",
                   "minProperties": 1,

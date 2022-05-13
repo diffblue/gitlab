@@ -36,7 +36,7 @@ module Security
       def blank_branch_for_rule?
         return false if policy_type == :scan_result_policy
 
-        policy[:rules].any? { |rule| rule[:clusters].blank? && rule[:branches].blank? }
+        policy[:rules].any? { |rule| rule[:agents].blank? && rule[:branches].blank? }
       end
 
       def missing_branch_for_rule?
@@ -49,7 +49,7 @@ module Security
       def missing_branch_names
         strong_memoize(:missing_branch_names) do
           policy[:rules]
-            .select { |rule| rule[:clusters].blank? }
+            .select { |rule| rule[:agents].blank? }
             .flat_map { |rule| rule[:branches] }
             .compact
             .uniq
