@@ -277,7 +277,7 @@ GitLab will start scheduling new iterations on the same day of the week as the s
 starting from the nearest such day from the current date.
 
 During the conversion process GitLab does not delete or modify existing **ongoing** or
-**closed** iterations. If you have iterations with start dates in the ,
+**closed** iterations. If you have iterations with start dates in the future,
 they are updated to fit your cadence settings.
 
 #### Converted cadences example
