@@ -41,27 +41,8 @@ module Backup
     end
 
     def create
-      if incremental?
-        unpack(ENV.fetch('PREVIOUS_BACKUP', ENV['BACKUP']))
-        read_backup_information
-        verify_backup_version
-        update_backup_information
-      end
-
-      build_backup_information
-
-      definitions.keys.each do |task_name|
-        run_create_task(task_name)
-      end
-
-      write_backup_information
-
-      unless skipped?('tar')
-        pack
-        upload
-        cleanup
-        remove_old
-      end
+      unpack(ENV.fetch('PREVIOUS_BACKUP', ENV['BACKUP'])) if incremental?
+      run_all_create_tasks
 
       puts_time "Warning: Your gitlab.rb and gitlab-secrets.json files contain sensitive data \n" \
            "and are not included in this backup. You will need these files to restore a backup.\n" \
@@ -94,18 +75,7 @@ module Backup
 
     def restore
       unpack(ENV['BACKUP'])
-      read_backup_information
-      verify_backup_version
-
-      definitions.keys.each do |task_name|
-        run_restore_task(task_name) if !skipped?(task_name) && enabled_task?(task_name)
-      end
-
-      Rake::Task['gitlab:shell:setup'].invoke
-      Rake::Task['cache:clear'].invoke
-
-      cleanup unless skipped?('tar')
-      remove_tmp
+      run_all_restore_tasks
 
       puts_time "Warning: Your gitlab.rb and gitlab-secrets.json files contain sensitive data \n" \
         "and are not included in this backup. You will need to restore these files manually.".color(:red)
@@ -225,6 +195,48 @@ module Backup
 
     def build_files_task(app_files_dir, excludes: [])
       Files.new(progress, app_files_dir, excludes: excludes)
+    end
+
+    def run_all_create_tasks
+      if incremental?
+        read_backup_information
+        verify_backup_version
+        update_backup_information
+      end
+
+      build_backup_information
+
+      definitions.keys.each do |task_name|
+        run_create_task(task_name)
+      end
+
+      write_backup_information
+
+      unless skipped?('tar')
+        pack
+        upload
+        remove_old
+      end
+
+    ensure
+      cleanup unless skipped?('tar')
+      remove_tmp
+    end
+
+    def run_all_restore_tasks
+      read_backup_information
+      verify_backup_version
+
+      definitions.keys.each do |task_name|
+        run_restore_task(task_name) if !skipped?(task_name) && enabled_task?(task_name)
+      end
+
+      Rake::Task['gitlab:shell:setup'].invoke
+      Rake::Task['cache:clear'].invoke
+
+    ensure
+      cleanup unless skipped?('tar')
+      remove_tmp
     end
 
     def incremental?
