@@ -6,6 +6,7 @@ import (
 
 	"gitlab.com/gitlab-org/gitaly/v14/proto/go/gitalypb"
 
+	"gitlab.com/gitlab-org/gitlab/workhorse/internal/api"
 	"gitlab.com/gitlab-org/gitlab/workhorse/internal/gitaly"
 	"gitlab.com/gitlab-org/gitlab/workhorse/internal/helper"
 	"gitlab.com/gitlab-org/gitlab/workhorse/internal/log"
@@ -14,7 +15,7 @@ import (
 
 type diff struct{ senddata.Prefix }
 type diffParams struct {
-	GitalyServer   gitaly.Server
+	GitalyServer   api.GitalyServer
 	RawDiffRequest string
 }
 

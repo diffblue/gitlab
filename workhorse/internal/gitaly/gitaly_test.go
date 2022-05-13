@@ -8,6 +8,8 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc/metadata"
+
+	"gitlab.com/gitlab-org/gitlab/workhorse/internal/api"
 )
 
 func TestMain(m *testing.M) {
@@ -96,12 +98,6 @@ func testOutgoingIDAndUsername(t *testing.T, ctx context.Context) {
 	}
 }
 
-type response struct {
-	GL_ID        string
-	GL_USERNAME  string
-	GitalyServer Server
-}
-
 func features() map[string]string {
 	features := make(map[string]string)
 	for k, v := range allowedFeatures() {
@@ -115,8 +111,8 @@ func features() map[string]string {
 	return features
 }
 
-func serverFixture() Server {
-	return Server{Address: "tcp://localhost:123"}
+func serverFixture() api.GitalyServer {
+	return api.GitalyServer{Address: "tcp://localhost:123"}
 }
 
 func allowedFeatures() map[string]string {
