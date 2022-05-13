@@ -49,7 +49,7 @@ module Gitlab
     # It does not include the default public schema
     EXTRA_SCHEMAS = [DYNAMIC_PARTITIONS_SCHEMA, STATIC_PARTITIONS_SCHEMA].freeze
 
-    PRIMARY_DATABASE_NAME = ActiveRecord::Base.connection_db_config.name.to_sym
+    PRIMARY_DATABASE_NAME = ActiveRecord::Base.connection_db_config.name.to_sym # rubocop:disable Database/MultipleDatabases
 
     def self.database_base_models
       @database_base_models ||= {
