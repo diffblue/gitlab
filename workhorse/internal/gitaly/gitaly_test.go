@@ -16,32 +16,56 @@ func TestMain(m *testing.M) {
 }
 
 func TestNewSmartHTTPClient(t *testing.T) {
-	ctx, client, err := NewSmartHTTPClient(context.Background(), serverFixture())
+	ctx, client, err := NewSmartHTTPClient(
+		context.Background(),
+		serverFixture(),
+		WithFeatures(features()),
+		WithUsername("gl_username"),
+		WithUserID("gl_id"),
+	)
 	require.NoError(t, err)
 	testOutgoingMetadata(t, ctx)
+	testOutgoingIDAndUsername(t, ctx)
 	require.NotNil(t, client.sidechannelRegistry)
 }
 
 func TestNewBlobClient(t *testing.T) {
-	ctx, _, err := NewBlobClient(context.Background(), serverFixture())
+	ctx, _, err := NewBlobClient(
+		context.Background(),
+		serverFixture(),
+		WithFeatures(features()),
+	)
 	require.NoError(t, err)
 	testOutgoingMetadata(t, ctx)
 }
 
 func TestNewRepositoryClient(t *testing.T) {
-	ctx, _, err := NewRepositoryClient(context.Background(), serverFixture())
+	ctx, _, err := NewRepositoryClient(
+		context.Background(),
+		serverFixture(),
+		WithFeatures(features()),
+	)
+
 	require.NoError(t, err)
 	testOutgoingMetadata(t, ctx)
 }
 
 func TestNewNamespaceClient(t *testing.T) {
-	ctx, _, err := NewNamespaceClient(context.Background(), serverFixture())
+	ctx, _, err := NewNamespaceClient(
+		context.Background(),
+		serverFixture(),
+		WithFeatures(features()),
+	)
 	require.NoError(t, err)
 	testOutgoingMetadata(t, ctx)
 }
 
 func TestNewDiffClient(t *testing.T) {
-	ctx, _, err := NewDiffClient(context.Background(), serverFixture())
+	ctx, _, err := NewDiffClient(
+		context.Background(),
+		serverFixture(),
+		WithFeatures(features()),
+	)
 	require.NoError(t, err)
 	testOutgoingMetadata(t, ctx)
 }
@@ -61,16 +85,38 @@ func testOutgoingMetadata(t *testing.T, ctx context.Context) {
 	}
 }
 
-func serverFixture() Server {
+func testOutgoingIDAndUsername(t *testing.T, ctx context.Context) {
+	md, ok := metadata.FromOutgoingContext(ctx)
+	require.True(t, ok, "get metadata from context")
+
+	for k, v := range glMetadata() {
+		actual := md[k]
+		require.Len(t, actual, 1, "expect one value for %v", k)
+		require.Equal(t, v, actual[0], "value for %v", k)
+	}
+}
+
+type response struct {
+	GL_ID        string
+	GL_USERNAME  string
+	GitalyServer Server
+}
+
+func features() map[string]string {
 	features := make(map[string]string)
 	for k, v := range allowedFeatures() {
 		features[k] = v
 	}
+
 	for k, v := range badFeatureMetadata() {
 		features[k] = v
 	}
 
-	return Server{Address: "tcp://localhost:123", Features: features}
+	return features
+}
+
+func serverFixture() Server {
+	return Server{Address: "tcp://localhost:123"}
 }
 
 func allowedFeatures() map[string]string {
@@ -84,5 +130,12 @@ func badFeatureMetadata() map[string]string {
 	return map[string]string{
 		"bad-metadata-1": "bad-value-1",
 		"bad-metadata-2": "bad-value-2",
+	}
+}
+
+func glMetadata() map[string]string {
+	return map[string]string{
+		"user_id":  "gl_id",
+		"username": "gl_username",
 	}
 }

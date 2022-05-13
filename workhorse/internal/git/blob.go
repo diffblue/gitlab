@@ -26,7 +26,12 @@ func (b *blob) Inject(w http.ResponseWriter, r *http.Request, sendData string) {
 		return
 	}
 
-	ctx, blobClient, err := gitaly.NewBlobClient(r.Context(), params.GitalyServer)
+	ctx, blobClient, err := gitaly.NewBlobClient(
+		r.Context(),
+		params.GitalyServer,
+		gitaly.WithFeatures(params.GitalyServer.Features),
+	)
+
 	if err != nil {
 		helper.Fail500(w, r, fmt.Errorf("blob.GetBlob: %v", err))
 		return
