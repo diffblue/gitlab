@@ -195,8 +195,3 @@ Style/RedundantRegexpEscape:
 # Cop supports --auto-correct.
 Style/RescueModifier:
   Enabled: false
-
-# Offense count: 123
-# Cop supports --auto-correct.
-Style/SingleArgumentDig:
-  Enabled: false
