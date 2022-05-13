@@ -9,6 +9,7 @@ const TEST_DATASET = {
   link: '/test/link',
   svgPath: '/test/no_changes_state.svg',
   emptyStateSvgPath: '/test/empty_state.svg',
+  hasProjects: 'true',
 };
 
 describe('Security Dashboard', () => {

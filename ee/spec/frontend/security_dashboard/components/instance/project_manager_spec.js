@@ -152,20 +152,20 @@ describe('Project Manager component', () => {
       expect(spyMutate).toHaveBeenCalledTimes(1);
     });
 
-    it('adding a project unsuccessfully shows a flash', () => {
+    it('adding projects only shows a flash message for failed projects', async () => {
       const mocks = {
         $apollo: {
-          mutate: jest.fn().mockRejectedValue(),
+          mutate: jest.fn().mockRejectedValueOnce().mockResolvedValueOnce({}),
         },
       };
-      createWrapper({ data: { selectedProjects: singleProjectList }, mocks });
+      createWrapper({ data: { selectedProjects: multipleProjectsList }, mocks });
       findAddProjectsButton().vm.$emit('click');
-      return waitForPromises().then(() => {
-        expect(createFlash).toHaveBeenCalledTimes(1);
-        expect(createFlash).toHaveBeenCalledWith({
-          message:
-            'Unable to add Sample Project 1: Project was not found or you do not have permission to add this project to Security Dashboards.',
-        });
+      await waitForPromises();
+
+      expect(createFlash).toHaveBeenCalledTimes(1);
+      expect(createFlash).toHaveBeenCalledWith({
+        message:
+          'Unable to add Sample Project 2: Project was not found or you do not have permission to add this project to Security Dashboards.',
       });
     });
 
@@ -188,7 +188,7 @@ describe('Project Manager component', () => {
   });
 
   describe('removing projects', () => {
-    it('removing a project calls the mutatation', () => {
+    it('removing a project calls the mutation', () => {
       createWrapper({ props: { projects: singleProjectList } });
       findProjectList().vm.$emit('projectRemoved', mockProject);
       expect(spyMutate).toHaveBeenCalledTimes(1);
