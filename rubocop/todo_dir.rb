@@ -6,8 +6,10 @@ require 'active_support/inflector/inflections'
 module RuboCop
   # Helper class to manage file access to RuboCop TODOs in .rubocop_todo directory.
   class TodoDir
+    # Default path to the directory where TODO YAML files are located.
     DEFAULT_TODO_DIR = File.expand_path('../.rubocop_todo', __dir__)
 
+    # Suffix a TODO file.
     SUFFIX_YAML = '.yml'
 
     # Suffix to indicate TODOs being inspected right now.
@@ -15,17 +17,30 @@ module RuboCop
 
     attr_reader :directory
 
+    # Instantiates a TodoDir.
+    #
+    # @param directory [String] base directory where all TODO YAML files are written to.
+    # @param inflector [ActiveSupport::Inflector, #underscore] an object which supports
+    #                  converting a string to its underscored version.
     def initialize(directory, inflector: ActiveSupport::Inflector)
       @directory = directory
       @inflector = inflector
     end
 
+    # Reads content of TODO YAML for given +cop_name+.
+    #
+    # @param cop_name [String] name of the cop rule
+    #
+    # @return [String, nil] content of the TODO YAML file if it exists
     def read(cop_name)
       path = path_for(cop_name)
 
       File.read(path) if File.exist?(path)
     end
 
+    # Saves +content+ for given +cop_name+ to TODO YAML file.
+    #
+    # @return [String] path of the written TODO YAML file
     def write(cop_name, content)
       path = path_for(cop_name)
 
@@ -35,6 +50,10 @@ module RuboCop
       path
     end
 
+    # Marks a TODO YAML file for inspection by renaming the original TODO YAML
+    # and appending the suffix +.inspect+ to it.
+    #
+    # @return [Boolean] +true+ a file was marked for inspection successfully.
     def inspect(cop_name)
       path = path_for(cop_name)
 
@@ -46,6 +65,11 @@ module RuboCop
       end
     end
 
+    # Marks all TODO YAML files for inspection.
+    #
+    # @return [Integer] number of renamed YAML TODO files.
+    #
+    # @see inspect
     def inspect_all
       pattern = File.join(@directory, "**/*#{SUFFIX_YAML}")
 
@@ -54,12 +78,24 @@ module RuboCop
       end
     end
 
+    # Returns a list of TODO YAML files which are marked for inspection.
+    #
+    # @return [Array<String>] list of paths
+    #
+    # @see inspect
+    # @see inspect_all
     def list_inspect
       pattern = File.join(@directory, "**/*#{SUFFIX_YAML}#{SUFFIX_INSPECT}")
 
       Dir.glob(pattern)
     end
 
+    # Deletes a list of TODO yaml files which were marked for inspection.
+    #
+    # @return [Integer] number of deleted YAML TODO files.
+    #
+    # @see #inspect
+    # @see #inspect_all
     def delete_inspected
       list_inspect.count do |path|
         File.delete(path)
