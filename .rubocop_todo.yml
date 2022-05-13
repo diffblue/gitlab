@@ -94,13 +94,6 @@ Rails/NegateInclude:
 Rails/WhereExists:
   Enabled: false
 
-# Offense count: 240
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: separated, grouped
-Style/AccessorGrouping:
-  Enabled: false
-
 # Offense count: 42
 # Cop supports --auto-correct.
 Style/CaseLikeIf:
