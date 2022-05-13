@@ -9557,6 +9557,9 @@ msgstr ""
 msgid "ContainerRegistry|Copy build command"
 msgstr ""
 
+msgid "ContainerRegistry|Copy image path"
+msgstr ""
+
 msgid "ContainerRegistry|Copy login command"
 msgstr ""
 
