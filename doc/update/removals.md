@@ -315,6 +315,27 @@ starting in GitLab 15.0.
 
 Runners that have never contacted the GitLab instance will also return `stale` if created more than 3 months ago.
 
+### SAST support for .NET 2.1
+
+The [GitLab SAST Security Code Scan analyzer](https://gitlab.com/gitlab-org/security-products/analyzers/security-code-scan) scans .NET code for security vulnerabilities.
+For technical reasons, the analyzer must first build the code to scan it.
+
+In GitLab versions prior to 15.0, the default analyzer image (version 2) included support for:
+
+- .NET 2.1
+- .NET Core 3.1
+- .NET 5.0
+
+In GitLab 15.0, we've changed the default major version for this analyzer from version 2 to version 3. This change:
+
+- Adds [severity values for vulnerabilities](https://gitlab.com/gitlab-org/gitlab/-/issues/350408) along with [other new features and improvements](https://gitlab.com/gitlab-org/security-products/analyzers/security-code-scan/-/blob/master/CHANGELOG.md).
+- Removes .NET 2.1 support.
+- Adds support for .NET 6.0, Visual Studio 2019, and Visual Studio 2022.
+
+Version 3 was [announced in GitLab 14.6](https://about.gitlab.com/releases/2021/12/22/gitlab-14-6-released/#sast-support-for-net-6) and made available as an optional upgrade.
+
+If you rely on .NET 2.1 support being present in the analyzer image by default, you must take action as detailed in the [deprecation issue for this change](https://gitlab.com/gitlab-org/gitlab/-/issues/352553#breaking-change).
+
 ### Sidekiq configuration for metrics and health checks
 
 WARNING:
