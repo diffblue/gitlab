@@ -26,7 +26,7 @@ RSpec.describe 'Test Cases', :js do
     context 'header' do
       it 'shows status, created date and author' do
         page.within('.test-case-container .detail-page-header-body') do
-          expect(page.find('.issuable-status-box')).to have_content('Open')
+          expect(page.find('.issuable-status-badge')).to have_content('Open')
           expect(page.find('.issuable-meta')).to have_content('Created 5 days ago')
           expect(page.find('.issuable-meta')).to have_link(user.name)
         end
@@ -46,7 +46,7 @@ RSpec.describe 'Test Cases', :js do
 
           wait_for_requests
 
-          expect(page.find('.issuable-status-box')).to have_content('Archived')
+          expect(page.find('.issuable-status-badge')).to have_content('Archived')
           expect(page).to have_button('Reopen test case')
         end
       end

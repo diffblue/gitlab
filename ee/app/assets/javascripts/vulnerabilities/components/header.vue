@@ -226,10 +226,7 @@ export default {
       :default-branch-name="vulnerability.projectDefaultBranch"
     />
     <div class="detail-page-header">
-      <div
-        class="detail-page-header-body align-items-center"
-        data-testid="vulnerability-detail-body"
-      >
+      <div class="detail-page-header-body" data-testid="vulnerability-detail-body">
         <gl-loading-icon v-if="isLoadingVulnerability" size="sm" class="mr-2" />
         <gl-badge v-else class="gl-mr-4" :variant="stateVariant">
           {{ stateName }}
