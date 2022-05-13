@@ -5,6 +5,7 @@ module API
     include PaginationParams
 
     feature_category :team_planning
+    urgency :low
 
     helpers do
       params :list_params do

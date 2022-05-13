@@ -12,6 +12,7 @@ module Boards
 
     before_action :authorize_read_parent, only: [:index]
     feature_category :team_planning
+    urgency :low
 
     def index
       user_ids = user_finder.execute.select(:user_id)

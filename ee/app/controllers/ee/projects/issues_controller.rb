@@ -33,6 +33,7 @@ module EE
         end
 
         feature_category :team_planning, [:delete_description_version, :description_diff]
+        urgency :low, [:delete_description_version, :description_diff]
       end
 
       private
