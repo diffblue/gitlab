@@ -20,8 +20,10 @@ module RuboCop
       @inflector = inflector
     end
 
-    def read(cop_name, suffix = nil)
-      read_suffixed(cop_name)
+    def read(cop_name)
+      path = path_for(cop_name)
+
+      File.read(path) if File.exist?(path)
     end
 
     def write(cop_name, content)
@@ -66,14 +68,8 @@ module RuboCop
 
     private
 
-    def read_suffixed(cop_name, suffix = nil)
-      path = path_for(cop_name, suffix)
-
-      File.read(path) if File.exist?(path)
-    end
-
-    def path_for(cop_name, suffix = nil)
-      todo_path = "#{@inflector.underscore(cop_name)}.yml#{suffix}"
+    def path_for(cop_name)
+      todo_path = "#{@inflector.underscore(cop_name)}#{SUFFIX_YAML}"
 
       File.join(@directory, todo_path)
     end
