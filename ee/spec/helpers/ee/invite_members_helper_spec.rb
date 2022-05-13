@@ -30,7 +30,7 @@ RSpec.describe EE::InviteMembersHelper do
       end
     end
 
-    context 'when applying the free user cap is valid' do
+    context 'when on free plan' do
       context 'when user namespace' do
         let!(:user_namespace) do
           build(:user_namespace, projects: [project], gitlab_subscription: build(:gitlab_subscription, :free))
@@ -58,6 +58,16 @@ RSpec.describe EE::InviteMembersHelper do
             'user_namespace' => 'false',
             'members_path' => group_usage_quotas_path(project.root_ancestor)
           }))
+        end
+
+        context 'when exclude_from_free_user_cap set to true' do
+          before do
+            group.namespace_settings.update_column(:exclude_from_free_user_cap, true)
+          end
+
+          it 'does not include users limit notification data' do
+            expect(helper.common_invite_modal_dataset(project)).not_to have_key(:users_limit_dataset)
+          end
         end
       end
     end

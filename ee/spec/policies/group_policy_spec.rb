@@ -984,6 +984,15 @@ RSpec.describe GroupPolicy do
 
           is_expected.to be_disallowed permission
         end
+
+        context 'when exclude_from_free_user_cap is set to true' do
+          it 'allows changing the setting' do
+            group.namespace_settings.update_column(:exclude_from_free_user_cap, true)
+            create(:gitlab_subscription, :free, namespace: group)
+
+            is_expected.to be_allowed permission
+          end
+        end
       end
 
       context 'with paid plans', :saas do
