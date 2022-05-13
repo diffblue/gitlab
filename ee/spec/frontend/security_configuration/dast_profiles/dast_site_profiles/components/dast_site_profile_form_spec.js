@@ -279,7 +279,9 @@ describe('DastSiteProfileForm', () => {
     });
 
     it('populates the fields with the data passed in via the siteProfile prop', () => {
-      expect(findProfileNameInput().element.value).toBe(profile?.name ?? '');
+      expect(findProfileNameInput().element.value).toBe(
+        (profile?.name || profile?.profileName) ?? '',
+      );
     });
 
     it('passes props vars to base component', () => {

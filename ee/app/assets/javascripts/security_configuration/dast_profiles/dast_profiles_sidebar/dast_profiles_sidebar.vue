@@ -5,6 +5,7 @@ import { capitalizeFirstCharacter } from '~/lib/utils/text_utility';
 import { SCANNER_TYPE, SITE_TYPE } from 'ee/on_demand_scans/constants';
 import DastScannerProfileForm from 'ee/security_configuration/dast_profiles/dast_scanner_profiles/components/dast_scanner_profile_form.vue';
 import DastSiteProfileForm from 'ee/security_configuration/dast_profiles/dast_site_profiles/components/dast_site_profile_form.vue';
+import DastProfilesLoader from 'ee/security_configuration/dast_profiles/components/dast_profiles_loader.vue';
 import { getContentWrapperHeight } from 'ee/threat_monitoring/utils';
 
 export default {
@@ -23,6 +24,7 @@ export default {
     GlSprintf,
     DastScannerProfileForm,
     DastSiteProfileForm,
+    DastProfilesLoader,
   },
   inject: ['projectPath'],
   props: {
@@ -45,10 +47,16 @@ export default {
       required: false,
       default: SCANNER_TYPE,
     },
+    isLoading: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   data() {
     return {
       editingMode: false,
+      profileForEditing: {},
     };
   },
   computed: {
@@ -80,7 +88,11 @@ export default {
       this.$emit('close-drawer');
     },
     enableEditingMode() {
+      this.profileForEditing = {};
       this.editingMode = true;
+    },
+    enableEditScannerMode(profile) {
+      this.profileForEditing = profile;
     },
     cancelEditingMode() {
       this.editingMode = false;
@@ -123,55 +135,62 @@ export default {
       </div>
     </template>
     <template #default>
-      <div
-        v-if="isEmptyState"
-        class="gl-display-flex gl-flex-direction-column gl-align-items-center gl-mt-11"
-      >
-        <h5 class="gl-text-secondary gl-mt-0 gl-mb-2" data-testid="empty-state-header">
-          <slot name="header">
-            <gl-sprintf :message="$options.i18n.emptyStateHeader">
+      <template v-if="isLoading">
+        <DastProfilesLoader />
+      </template>
+      <template v-else>
+        <div
+          v-if="isEmptyState"
+          class="gl-display-flex gl-flex-direction-column gl-align-items-center gl-mt-11"
+        >
+          <h5 class="gl-text-secondary gl-mt-0 gl-mb-2" data-testid="empty-state-header">
+            <slot name="header">
+              <gl-sprintf :message="$options.i18n.emptyStateHeader">
+                <template #scannerType>
+                  <span>{{ profileType }}</span>
+                </template>
+              </gl-sprintf>
+            </slot>
+          </h5>
+          <span class="gl-text-gray-500 gl-text-center">
+            {{ $options.i18n.emptyStateContent }}
+          </span>
+          <gl-button
+            class="gl-mt-5"
+            variant="confirm"
+            category="primary"
+            data-testid="new-empty-profile-button"
+            @click="enableEditingMode"
+          >
+            <gl-sprintf :message="$options.i18n.emptyStateButton">
               <template #scannerType>
                 <span>{{ profileType }}</span>
               </template>
             </gl-sprintf>
-          </slot>
-        </h5>
-        <span class="gl-text-gray-500 gl-text-center">
-          {{ $options.i18n.emptyStateContent }}
-        </span>
-        <gl-button
-          class="gl-mt-5"
-          variant="confirm"
-          category="primary"
-          data-testid="new-empty-profile-button"
-          @click="enableEditingMode"
-        >
-          <gl-sprintf :message="$options.i18n.emptyStateButton">
-            <template #scannerType>
-              <span>{{ profileType }}</span>
-            </template>
-          </gl-sprintf>
-        </gl-button>
-      </div>
-      <transition name="gl-drawer">
-        <div v-if="editingMode">
-          <dast-scanner-profile-form
-            v-if="isScannerType"
-            :stacked="true"
-            :project-full-path="projectPath"
-            @cancel="cancelEditingMode"
-            @success="submitEditingMode"
-          />
-          <dast-site-profile-form
-            v-else-if="isSiteType"
-            :stacked="true"
-            :project-full-path="projectPath"
-            @cancel="cancelEditingMode"
-            @success="submitEditingMode"
-          />
+          </gl-button>
         </div>
-      </transition>
-      <slot v-if="isShowProfilesState" name="content"></slot>
+        <transition name="gl-drawer">
+          <div v-if="editingMode">
+            <dast-scanner-profile-form
+              v-if="isScannerType"
+              :stacked="true"
+              :profile="profileForEditing"
+              :project-full-path="projectPath"
+              @cancel="cancelEditingMode"
+              @success="submitEditingMode"
+            />
+            <dast-site-profile-form
+              v-else-if="isSiteType"
+              :stacked="true"
+              :profile="profileForEditing"
+              :project-full-path="projectPath"
+              @cancel="cancelEditingMode"
+              @success="submitEditingMode"
+            />
+          </div>
+        </transition>
+        <slot v-if="isShowProfilesState" name="content"></slot>
+      </template>
     </template>
   </gl-drawer>
 </template>

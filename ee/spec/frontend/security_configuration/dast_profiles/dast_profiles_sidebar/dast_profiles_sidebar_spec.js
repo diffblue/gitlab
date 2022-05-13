@@ -3,6 +3,7 @@ import { mountExtended } from 'helpers/vue_test_utils_helper';
 import DastProfilesSidebar from 'ee/security_configuration/dast_profiles/dast_profiles_sidebar/dast_profiles_sidebar.vue';
 import { scannerProfiles } from 'ee_jest/security_configuration/dast_profiles/mocks/mock_data';
 import { SCANNER_TYPE, SITE_TYPE } from 'ee/on_demand_scans/constants';
+import DastProfilesLoader from 'ee/security_configuration/dast_profiles/components/dast_profiles_loader.vue';
 
 describe('DastProfilesSidebar', () => {
   let wrapper;
@@ -29,6 +30,7 @@ describe('DastProfilesSidebar', () => {
   const findNewDastScannerProfileForm = () => wrapper.findByTestId('dast-scanner-parent-group');
   const findNewDastSiteProfileForm = () => wrapper.findByTestId('dast-site-parent-group');
   const findCancelButton = () => wrapper.findByTestId('dast-profile-form-cancel-button');
+  const findSkeletonLoader = () => wrapper.findComponent(DastProfilesLoader);
 
   afterEach(() => {
     wrapper.destroy();
@@ -97,6 +99,13 @@ describe('DastProfilesSidebar', () => {
       await nextTick();
 
       expect(findEmptyStateHeader().exists()).toBe(true);
+    });
+  });
+
+  describe('loading state', () => {
+    it('should show loaders when loading is in progress', () => {
+      createComponent({ isLoading: true });
+      expect(findSkeletonLoader().exists()).toBe(true);
     });
   });
 });
