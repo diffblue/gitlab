@@ -144,6 +144,7 @@ module Ci
 
     scope :eager_load_job_artifacts, -> { includes(:job_artifacts) }
     scope :eager_load_tags, -> { includes(:tags) }
+    scope :eager_load_for_archiving_trace, -> { includes(:project, :pending_state) }
 
     scope :eager_load_everything, -> do
       includes(
