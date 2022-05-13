@@ -18684,6 +18684,9 @@ msgstr ""
 msgid "Hide"
 msgstr ""
 
+msgid "Hide Live Preview"
+msgstr ""
+
 msgid "Hide archived projects"
 msgstr ""
 
