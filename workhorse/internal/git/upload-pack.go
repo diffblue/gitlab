@@ -48,6 +48,8 @@ func handleUploadPackWithGitaly(ctx context.Context, a *api.Response, clientRequ
 		ctx,
 		a.GitalyServer,
 		gitaly.WithFeatures(a.GitalyServer.Features),
+		gitaly.WithUserID(a.GL_ID),
+		gitaly.WithUsername(a.GL_USERNAME),
 	)
 	if err != nil {
 		return fmt.Errorf("get gitaly client: %w", err)

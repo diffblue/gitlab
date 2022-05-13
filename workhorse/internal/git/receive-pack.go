@@ -24,6 +24,8 @@ func handleReceivePack(w *HttpResponseWriter, r *http.Request, a *api.Response) 
 		r.Context(),
 		a.GitalyServer,
 		gitaly.WithFeatures(a.GitalyServer.Features),
+		gitaly.WithUserID(a.GL_ID),
+		gitaly.WithUsername(a.GL_USERNAME),
 	)
 	if err != nil {
 		return fmt.Errorf("smarthttp.ReceivePack: %v", err)

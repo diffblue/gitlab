@@ -91,11 +91,8 @@ func testOutgoingIDAndUsername(t *testing.T, ctx context.Context) {
 	md, ok := metadata.FromOutgoingContext(ctx)
 	require.True(t, ok, "get metadata from context")
 
-	for k, v := range glMetadata() {
-		actual := md[k]
-		require.Len(t, actual, 1, "expect one value for %v", k)
-		require.Equal(t, v, actual[0], "value for %v", k)
-	}
+	require.Equal(t, md["user_id"], []string{"gl_id"})
+	require.Equal(t, md["username"], []string{"gl_username"})
 }
 
 func features() map[string]string {
@@ -126,12 +123,5 @@ func badFeatureMetadata() map[string]string {
 	return map[string]string{
 		"bad-metadata-1": "bad-value-1",
 		"bad-metadata-2": "bad-value-2",
-	}
-}
-
-func glMetadata() map[string]string {
-	return map[string]string{
-		"user_id":  "gl_id",
-		"username": "gl_username",
 	}
 }
