@@ -15,13 +15,6 @@ Gitlab/PolicyRuleBoolean:
 RSpec/RepeatedExampleGroupBody:
   Enabled: false
 
-# Offense count: 26
-# Cop supports --auto-correct.
-# Configuration parameters: Include.
-# Include: app/models/**/*.rb
-Rails/ActiveRecordCallbacksOrder:
-  Enabled: false
-
 # Offense count: 313
 # Configuration parameters: Include.
 # Include: db/migrate/*.rb
