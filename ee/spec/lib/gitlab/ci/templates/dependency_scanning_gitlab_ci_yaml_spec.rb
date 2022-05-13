@@ -2,6 +2,99 @@
 
 require 'spec_helper'
 
+RSpec.shared_examples 'language detection' do
+  using RSpec::Parameterized::TableSyntax
+
+  where(:case_name, :files, :include_build_names) do
+    'Go'                             | { 'go.sum' => '' }                        | %w(gemnasium-dependency_scanning)
+    'Java'                           | { 'pom.xml' => '' }                       | %w(gemnasium-maven-dependency_scanning)
+    'Java Gradle'                    | { 'build.gradle' => '' }                  | %w(gemnasium-maven-dependency_scanning)
+    'Java Gradle Kotlin DSL'         | { 'build.gradle.kts' => '' }              | %w(gemnasium-maven-dependency_scanning)
+    'Javascript package-lock.json'   | { 'package-lock.json' => '' }             | %w(gemnasium-dependency_scanning)
+    'Javascript yarn.lock'           | { 'yarn.lock' => '' }                     | %w(gemnasium-dependency_scanning)
+    'Javascript npm-shrinkwrap.json' | { 'npm-shrinkwrap.json' => '' }           | %w(gemnasium-dependency_scanning)
+    'Multiple languages'             | { 'pom.xml' => '', 'package-lock.json' => '' } | %w(gemnasium-maven-dependency_scanning gemnasium-dependency_scanning)
+    'NuGet'                          | { 'packages.lock.json' => '' }            | %w(gemnasium-dependency_scanning)
+    'Conan'                          | { 'conan.lock' => '' }                    | %w(gemnasium-dependency_scanning)
+    'PHP'                            | { 'composer.lock' => '' }                 | %w(gemnasium-dependency_scanning)
+    'Python requirements.txt'        | { 'requirements.txt' => '' }              | %w(gemnasium-python-dependency_scanning)
+    'Python requirements.pip'        | { 'requirements.pip' => '' }              | %w(gemnasium-python-dependency_scanning)
+    'Python Pipfile'                 | { 'Pipfile' => '' }                       | %w(gemnasium-python-dependency_scanning)
+    'Python requires.txt'            | { 'requires.txt' => '' }                  | %w(gemnasium-python-dependency_scanning)
+    'Python with setup.py'           | { 'setup.py' => '' }                      | %w(gemnasium-python-dependency_scanning)
+    'Ruby Gemfile.lock'              | { 'Gemfile.lock' => '' }                  | %w(gemnasium-dependency_scanning)
+    'Ruby gems.locked'               | { 'gems.locked' => '' }                   | %w(gemnasium-dependency_scanning)
+    'Scala'                          | { 'build.sbt' => '' }                     | %w(gemnasium-maven-dependency_scanning)
+  end
+
+  with_them do
+    let(:project) { create(:project, :custom_repo, files: files_at_depth_x) }
+
+    context 'with file at root' do
+      let(:files_at_depth_x) { files }
+
+      it 'creates a pipeline with the expected jobs' do
+        expect(build_names).to include(*include_build_names)
+      end
+
+      include_examples 'predefined image suffix'
+    end
+
+    context 'with file at depth 1' do
+      # prepend a directory to files (e.g. convert go.sum to foo/go.sum)
+      let(:files_at_depth_x) { files.transform_keys { |k| "foo/#{k}"} }
+
+      it 'creates a pipeline with the expected jobs' do
+        expect(build_names).to include(*include_build_names)
+      end
+
+      include_examples 'predefined image suffix'
+    end
+
+    context 'with file at depth 2' do
+      # prepend a directory to files (e.g. convert go.sum to foo/bar/go.sum)
+      let(:files_at_depth_x) { files.transform_keys { |k| "foo/bar/#{k}"} }
+
+      it 'creates a pipeline with the expected jobs' do
+        expect(build_names).to include(*include_build_names)
+      end
+
+      include_examples 'predefined image suffix'
+    end
+
+    context 'with file at depth > 2' do
+      let(:files_at_depth_x) { files.transform_keys { |k| "foo/bar/baz/#{k}"} }
+
+      it 'includes no job' do
+        expect { pipeline }.to raise_error(Ci::CreatePipelineService::CreateError)
+      end
+    end
+  end
+end
+
+RSpec.shared_examples 'PIP_REQUIREMENTS_FILE support' do
+  context 'when PIP_REQUIREMENTS_FILE is defined' do
+    before do
+      create(:ci_variable, project: project, key: 'PIP_REQUIREMENTS_FILE', value: '/some/path/requirements.txt')
+    end
+
+    it 'creates a pipeline with the expected jobs' do
+      expect(build_names).to include('gemnasium-python-dependency_scanning')
+    end
+
+    include_examples 'predefined image suffix'
+  end
+end
+
+RSpec.shared_examples 'predefined image suffix' do
+  it 'sets the image suffix as expected' do
+    pipeline.builds.each do |build|
+      expect(build.image.name).to end_with('$DS_IMAGE_SUFFIX')
+      expect(String(build.variables.to_hash['DS_IMAGE_SUFFIX'])).to eql(expected_image_suffix)
+    end
+  end
+end
+
 RSpec.describe 'Dependency-Scanning.gitlab-ci.yml' do
   subject(:template) { Gitlab::Template::GitlabCiYmlTemplate.find('Dependency-Scanning') }
 
@@ -84,79 +177,21 @@ RSpec.describe 'Dependency-Scanning.gitlab-ci.yml' do
       end
 
       context 'by default' do
-        describe 'language detection' do
-          using RSpec::Parameterized::TableSyntax
+        let(:expected_image_suffix) { "" }
 
-          where(:case_name, :files, :include_build_names) do
-            'Go'                             | { 'go.sum' => '' }                        | %w(gemnasium-dependency_scanning)
-            'Java'                           | { 'pom.xml' => '' }                       | %w(gemnasium-maven-dependency_scanning)
-            'Java Gradle'                    | { 'build.gradle' => '' }                  | %w(gemnasium-maven-dependency_scanning)
-            'Java Gradle Kotlin DSL'         | { 'build.gradle.kts' => '' }              | %w(gemnasium-maven-dependency_scanning)
-            'Javascript package-lock.json'   | { 'package-lock.json' => '' }             | %w(gemnasium-dependency_scanning)
-            'Javascript yarn.lock'           | { 'yarn.lock' => '' }                     | %w(gemnasium-dependency_scanning)
-            'Javascript npm-shrinkwrap.json' | { 'npm-shrinkwrap.json' => '' }           | %w(gemnasium-dependency_scanning)
-            'Multiple languages'             | { 'pom.xml' => '', 'package-lock.json' => '' } | %w(gemnasium-maven-dependency_scanning gemnasium-dependency_scanning)
-            'NuGet'                          | { 'packages.lock.json' => '' }            | %w(gemnasium-dependency_scanning)
-            'Conan'                          | { 'conan.lock' => '' }                    | %w(gemnasium-dependency_scanning)
-            'PHP'                            | { 'composer.lock' => '' }                 | %w(gemnasium-dependency_scanning)
-            'Python requirements.txt'        | { 'requirements.txt' => '' }              | %w(gemnasium-python-dependency_scanning)
-            'Python requirements.pip'        | { 'requirements.pip' => '' }              | %w(gemnasium-python-dependency_scanning)
-            'Python Pipfile'                 | { 'Pipfile' => '' }                       | %w(gemnasium-python-dependency_scanning)
-            'Python requires.txt'            | { 'requires.txt' => '' }                  | %w(gemnasium-python-dependency_scanning)
-            'Python with setup.py'           | { 'setup.py' => '' }                      | %w(gemnasium-python-dependency_scanning)
-            'Ruby Gemfile.lock'              | { 'Gemfile.lock' => '' }                  | %w(gemnasium-dependency_scanning)
-            'Ruby gems.locked'               | { 'gems.locked' => '' }                   | %w(gemnasium-dependency_scanning)
-            'Scala'                          | { 'build.sbt' => '' }                     | %w(gemnasium-maven-dependency_scanning)
-          end
+        include_examples 'language detection'
+        include_examples 'PIP_REQUIREMENTS_FILE support'
+      end
 
-          with_them do
-            let(:project) { create(:project, :custom_repo, files: files_at_depth_x) }
+      context 'when FIPS mode is enabled' do
+        let(:expected_image_suffix) { "-fips" }
 
-            context 'with file at root' do
-              let(:files_at_depth_x) { files }
-
-              it 'creates a pipeline with the expected jobs' do
-                expect(build_names).to include(*include_build_names)
-              end
-            end
-
-            context 'with file at depth 1' do
-              # prepend a directory to files (e.g. convert go.sum to foo/go.sum)
-              let(:files_at_depth_x) { files.transform_keys { |k| "foo/#{k}"} }
-
-              it 'creates a pipeline with the expected jobs' do
-                expect(build_names).to include(*include_build_names)
-              end
-            end
-
-            context 'with file at depth 2' do
-              # prepend a directory to files (e.g. convert go.sum to foo/bar/go.sum)
-              let(:files_at_depth_x) { files.transform_keys { |k| "foo/bar/#{k}"} }
-
-              it 'creates a pipeline with the expected jobs' do
-                expect(build_names).to include(*include_build_names)
-              end
-            end
-
-            context 'with file at depth > 2' do
-              let(:files_at_depth_x) { files.transform_keys { |k| "foo/bar/baz/#{k}"} }
-
-              it 'includes no job' do
-                expect { pipeline }.to raise_error(Ci::CreatePipelineService::CreateError)
-              end
-            end
-          end
+        before do
+          create(:ci_variable, project: project, key: 'CI_GITLAB_FIPS_MODE', value: 'true')
         end
 
-        context 'when PIP_REQUIREMENTS_FILE is defined' do
-          before do
-            create(:ci_variable, project: project, key: 'PIP_REQUIREMENTS_FILE', value: '/some/path/requirements.txt')
-          end
-
-          it 'creates a pipeline with the expected jobs' do
-            expect(build_names).to include('gemnasium-python-dependency_scanning')
-          end
-        end
+        include_examples 'language detection'
+        include_examples 'PIP_REQUIREMENTS_FILE support'
       end
     end
   end
