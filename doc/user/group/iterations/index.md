@@ -172,15 +172,9 @@ To group issues by label:
 
 ## Iteration cadences
 
-> - [Introduced](https://gitlab.com/groups/gitlab-org/-/epics/5077) in GitLab 14.1.
-> - Deployed behind a [feature flag](../../feature_flags.md), named `iteration_cadences`, disabled by default.
+> - [Introduced](https://gitlab.com/groups/gitlab-org/-/epics/5077) in GitLab 14.1 [with a flag](../../../administration/feature_flags.md), named `iteration_cadences`. Disabled by default.
 > - [Changed](https://gitlab.com/gitlab-org/gitlab/-/issues/354977) in GitLab 15.0: All scheduled iterations must start on the same day of the week as the cadence start day. Start date of cadence cannot be edited after the first iteration starts.
-
-FLAG:
-On self-managed GitLab, by default this feature is not available. To make it available, ask an
-administrator to [enable the feature flag](../../../administration/feature_flags.md) named
-`iteration_cadences` for a root group.
-On GitLab.com, this feature is not available. This feature is not ready for production use.
+> - [Enabled on GitLab.com and self-managed](https://gitlab.com/gitlab-org/gitlab/-/issues/354878) in GitLab 15.0.
 
 Iteration cadences automate iteration scheduling. You can use them to
 automate creating iterations every 1, 2, 3, or 4 weeks. You can also
