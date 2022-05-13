@@ -528,4 +528,51 @@ RSpec.describe Gitlab::Elastic::Helper, :request_store do
       is_expected.not_to be_nil
     end
   end
+
+  describe '#supported_version?' do
+    subject { helper.supported_version? }
+
+    context 'when Elasticsearch is not enabled' do
+      before do
+        stub_ee_application_setting(elasticsearch_indexing: false)
+      end
+
+      it { is_expected.to be_truthy }
+    end
+
+    context 'when Elasticsearch is enabled' do
+      before do
+        stub_ee_application_setting(elasticsearch_indexing: true)
+        allow(Gitlab::Elastic::Helper.default.client).to receive(:ping).and_return(true)
+      end
+
+      context 'when version is compatible' do
+        before do
+          allow_next_instance_of(::SystemCheck::App::SearchCheck) do |instance|
+            allow(instance).to receive(:check?).and_return(true)
+          end
+        end
+
+        it { is_expected.to be_truthy }
+      end
+
+      context 'when version is incompatible' do
+        before do
+          allow_next_instance_of(::SystemCheck::App::SearchCheck) do |instance|
+            allow(instance).to receive(:check?).and_return(false)
+          end
+        end
+
+        it { is_expected.to be_falsey }
+      end
+
+      context 'when Elasticsearch is unreachable' do
+        before do
+          allow(Gitlab::Elastic::Helper.default.client).to receive(:ping).and_raise(StandardError)
+        end
+
+        it { is_expected.to be_truthy }
+      end
+    end
+  end
 end

@@ -36,7 +36,7 @@ RSpec.describe 'Related issues', :js do
 
       expect(page).not_to have_selector('.modal-content', visible: true)
 
-      within(first('.status-box', visible: :all)) do
+      within(first('.issuable-status-badge', visible: :all)) do
         expect(page).to have_text 'Closed'
       end
     end

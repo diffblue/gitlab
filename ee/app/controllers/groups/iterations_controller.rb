@@ -8,6 +8,7 @@ class Groups::IterationsController < Groups::ApplicationController
   before_action :set_iteration!, only: [:show, :edit], if: -> { group.iteration_cadences_feature_flag_enabled? }
 
   feature_category :team_planning
+  urgency :low
 
   def index
     return unless group.iteration_cadences_feature_flag_enabled?

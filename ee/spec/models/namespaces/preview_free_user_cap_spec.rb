@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Namespaces::PreviewFreeUserCap, :saas do
-  let_it_be(:namespace) { create(:group_with_plan, plan: :free_plan) }
+  let_it_be(:namespace, reload: true) { create(:group_with_plan, plan: :free_plan) }
 
   let(:should_check_namespace_plan) { true }
 
@@ -75,6 +75,14 @@ RSpec.describe Namespaces::PreviewFreeUserCap, :saas do
 
         context 'when should check namespace plan is false' do
           let(:should_check_namespace_plan) { false }
+
+          it { is_expected.to be false }
+        end
+
+        context 'when excluded from free user cap' do
+          before do
+            namespace.namespace_settings.update_column(:exclude_from_free_user_cap, true)
+          end
 
           it { is_expected.to be false }
         end

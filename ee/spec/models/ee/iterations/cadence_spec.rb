@@ -104,22 +104,8 @@ RSpec.describe ::Iterations::Cadence do
 
         it_behaves_like 'updating the start date is valid'
       end
-    end
 
-    describe '#first_iteration_has_not_started', :freeze_time do
-      context 'when updating an manual cadence that has started' do
-        let!(:cadence) { build(:iterations_cadence, start_date: Date.current, automatic: false).tap { |cadence| cadence.save!(validate: false) } }
-        let!(:iteration) { create(:iteration, iterations_cadence: cadence, start_date: Date.current) }
-
-        it 'is invalid and adds an error message' do
-          cadence.assign_attributes({ start_date: Date.current + 7.days, automatic: true })
-
-          expect(cadence).to be_invalid
-          expect(cadence.errors.full_messages).to include("You cannot change the start date because the first iteration has already started on #{iteration.start_date}.")
-        end
-      end
-
-      context 'when updating an manual cadence that has not started' do
+      context 'when updating a manual cadence' do
         let(:automatic) { false }
 
         it_behaves_like 'updating the start date is valid'
@@ -128,7 +114,7 @@ RSpec.describe ::Iterations::Cadence do
   end
 
   describe 'callbacks' do
-    describe 'before_update :set_to_first_start_date' do
+    describe 'before_validation :set_to_first_start_date' do
       context 'when manual cadence is updated to use automated scheduling', :freeze_time do
         let(:cadence_start_date) { Date.new(2022, 4, 1) }
         let(:iteration_start_date) { cadence_start_date - 1.month }

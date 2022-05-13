@@ -1,5 +1,5 @@
 query projectScanExecutionPolicies($fullPath: ID!) {
-  project(fullPath: $fullPath) {
+  namespace: project(fullPath: $fullPath) {
     id
     scanExecutionPolicies {
       nodes {

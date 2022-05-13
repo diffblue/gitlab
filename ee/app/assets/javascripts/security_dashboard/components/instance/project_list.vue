@@ -27,7 +27,7 @@ export default {
     projects: {
       query: projectsQuery,
       update(data) {
-        const projects = data?.instance?.projects?.nodes;
+        const projects = data?.instance?.projects?.edges?.map((p) => p.node);
 
         if (projects === undefined) {
           this.showErrorFlash();

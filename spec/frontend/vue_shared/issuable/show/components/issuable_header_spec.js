@@ -1,6 +1,6 @@
 import { GlIcon, GlAvatarLabeled } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-
+import { setHTMLFixture, resetHTMLFixture } from 'helpers/fixtures';
 import IssuableHeader from '~/vue_shared/issuable/show/components/issuable_header.vue';
 
 import { mockIssuableShowProps, mockIssuable } from '../mock_data';
@@ -34,6 +34,7 @@ describe('IssuableHeader', () => {
 
   afterEach(() => {
     wrapper.destroy();
+    resetHTMLFixture();
   });
 
   describe('computed', () => {
@@ -47,7 +48,7 @@ describe('IssuableHeader', () => {
 
   describe('handleRightSidebarToggleClick', () => {
     beforeEach(() => {
-      setFixtures('<button class="js-toggle-right-sidebar-button">Collapse sidebar</button>');
+      setHTMLFixture('<button class="js-toggle-right-sidebar-button">Collapse sidebar</button>');
     });
 
     it('dispatches `click` event on sidebar toggle button', () => {
@@ -69,9 +70,11 @@ describe('IssuableHeader', () => {
     it('renders issuable status icon and text', () => {
       createComponent();
       const statusBoxEl = wrapper.findByTestId('status');
+      const statusIconEl = statusBoxEl.findComponent(GlIcon);
 
       expect(statusBoxEl.exists()).toBe(true);
-      expect(statusBoxEl.find(GlIcon).props('name')).toBe(mockIssuableShowProps.statusIcon);
+      expect(statusIconEl.props('name')).toBe(mockIssuableShowProps.statusIcon);
+      expect(statusIconEl.attributes('class')).toBe(mockIssuableShowProps.statusIconClass);
       expect(statusBoxEl.text()).toContain('Open');
     });
 

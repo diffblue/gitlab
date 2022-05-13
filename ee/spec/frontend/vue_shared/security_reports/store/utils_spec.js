@@ -117,7 +117,7 @@ describe('security reports utils', () => {
 
     it.each`
       vulnerabilities              | message                                                             | countMessage
-      ${undefined}                 | ${' detected %{totalStart}no%{totalEnd} new vulnerabilities.'}      | ${''}
+      ${undefined}                 | ${' detected no %{totalStart}new%{totalEnd} vulnerabilities.'}      | ${''}
       ${{ critical }}              | ${` detected %{totalStart}2%{totalEnd} potential vulnerabilities`}  | ${`%{criticalStart}2 Critical%{criticalEnd} %{highStart}0 High%{highEnd} and %{otherStart}0 Others%{otherEnd}`}
       ${{ high }}                  | ${` detected %{totalStart}4%{totalEnd} potential vulnerabilities`}  | ${`%{criticalStart}0 Critical%{criticalEnd} %{highStart}4 High%{highEnd} and %{otherStart}0 Others%{otherEnd}`}
       ${{ other }}                 | ${` detected %{totalStart}7%{totalEnd} potential vulnerabilities`}  | ${`%{criticalStart}0 Critical%{criticalEnd} %{highStart}0 High%{highEnd} and %{otherStart}7 Others%{otherEnd}`}
@@ -146,7 +146,7 @@ describe('security reports utils', () => {
     it('should pass through the report type', () => {
       const reportType = 'HAL';
       expect(groupedTextBuilder({ reportType }).message).toEqual(
-        'HAL detected %{totalStart}no%{totalEnd} new vulnerabilities.',
+        'HAL detected no %{totalStart}new%{totalEnd} vulnerabilities.',
       );
     });
 
@@ -233,7 +233,7 @@ describe('security reports utils', () => {
         countMessage: '',
         critical: 0,
         high: 0,
-        message: 'dummyReport detected %{totalStart}no%{totalEnd} new vulnerabilities.',
+        message: 'dummyReport detected no %{totalStart}new%{totalEnd} vulnerabilities.',
         other: 0,
         status: '',
         total: 0,

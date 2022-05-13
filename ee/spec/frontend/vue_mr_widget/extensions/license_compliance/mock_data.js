@@ -74,25 +74,31 @@ export const licenses = [
 ];
 
 export const licenseComplianceSuccess = {
+  new_licenses: licenses.length,
+  existing_licenses: 0,
+  removed_licenses: 0,
+};
+
+export const licenseComplianceSuccessExpanded = {
   new_licenses: licenses,
-  existing_licenses: [],
-  removed_licenses: [],
+  existing_licenses: 0,
+  removed_licenses: 0,
 };
 
 export const licenseComplianceNewAndRemovedLicenses = {
-  new_licenses: licenses,
-  existing_licenses: [],
-  removed_licenses: licenses,
+  new_licenses: licenses.length,
+  existing_licenses: 0,
+  removed_licenses: licenses.length,
 };
 
 export const licenseComplianceRemovedLicenses = {
-  new_licenses: [],
-  existing_licenses: [],
-  removed_licenses: licenses,
+  new_licenses: 0,
+  existing_licenses: 0,
+  removed_licenses: licenses.length,
 };
 
 export const licenseComplianceEmpty = {
-  new_licenses: [],
-  existing_licenses: [],
-  removed_licenses: [],
+  new_licenses: 0,
+  existing_licenses: 0,
+  removed_licenses: 0,
 };

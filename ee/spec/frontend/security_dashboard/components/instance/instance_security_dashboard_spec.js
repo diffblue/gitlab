@@ -1,6 +1,4 @@
-import { GlLoadingIcon } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import { nextTick } from 'vue';
 import InstanceSecurityDashboard from 'ee/security_dashboard/components/instance/instance_security_dashboard.vue';
 import ReportNotConfiguredInstance from 'ee/security_dashboard/components/instance/report_not_configured_instance.vue';
 import VulnerabilitySeverities from 'ee/security_dashboard/components/shared/project_security_status_chart.vue';
@@ -9,105 +7,41 @@ import VulnerabilitiesOverTimeChart from 'ee/security_dashboard/components/share
 import vulnerabilityGradesQuery from 'ee/security_dashboard/graphql/queries/instance_vulnerability_grades.query.graphql';
 import vulnerabilityHistoryQuery from 'ee/security_dashboard/graphql/queries/instance_vulnerability_history.query.graphql';
 
-jest.mock(
-  'ee/security_dashboard/graphql/queries/instance_vulnerability_grades.query.graphql',
-  () => ({
-    mockGrades: true,
-  }),
-);
-jest.mock(
-  'ee/security_dashboard/graphql/queries/instance_vulnerability_history.query.graphql',
-  () => ({
-    mockHistory: true,
-  }),
-);
-
 describe('Instance Security Dashboard component', () => {
   let wrapper;
 
-  const findSecurityChartsLayoutComponent = () => wrapper.findComponent(SecurityDashboardLayout);
-  const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
+  const findSecurityDashboardLayout = () => wrapper.findComponent(SecurityDashboardLayout);
   const findVulnerabilitiesOverTimeChart = () =>
     wrapper.findComponent(VulnerabilitiesOverTimeChart);
   const findVulnerabilitySeverities = () => wrapper.findComponent(VulnerabilitySeverities);
   const findReportNotConfigured = () => wrapper.findComponent(ReportNotConfiguredInstance);
 
-  const createWrapper = ({ loading = false } = {}) => {
+  const createWrapper = ({ hasProjects } = {}) => {
     wrapper = shallowMount(InstanceSecurityDashboard, {
-      mocks: {
-        $apollo: {
-          queries: {
-            projects: {
-              loading,
-            },
-          },
-        },
-      },
-      stubs: {
-        SecurityDashboardLayout,
-      },
+      provide: { hasProjects },
+      stubs: { SecurityDashboardLayout },
     });
   };
 
   afterEach(() => {
     wrapper.destroy();
-    wrapper = null;
-  });
-
-  it('renders the loading page', () => {
-    createWrapper({ loading: true });
-
-    const securityChartsLayout = findSecurityChartsLayoutComponent();
-    const reportNotConfigured = findReportNotConfigured();
-    const loadingIcon = findLoadingIcon();
-    const vulnerabilitiesOverTimeChart = findVulnerabilitiesOverTimeChart();
-    const vulnerabilitySeverities = findVulnerabilitySeverities();
-
-    expect(securityChartsLayout.exists()).toBe(true);
-    expect(reportNotConfigured.exists()).toBe(false);
-    expect(loadingIcon.exists()).toBe(true);
-    expect(vulnerabilitiesOverTimeChart.exists()).toBe(false);
-    expect(vulnerabilitySeverities.exists()).toBe(false);
   });
 
   it('renders the empty state', () => {
-    createWrapper();
+    createWrapper({ hasProjects: false });
 
-    const securityChartsLayout = findSecurityChartsLayoutComponent();
-    const reportNotConfigured = findReportNotConfigured();
-    const loadingIcon = findLoadingIcon();
-    const vulnerabilitiesOverTimeChart = findVulnerabilitiesOverTimeChart();
-    const vulnerabilitySeverities = findVulnerabilitySeverities();
-
-    expect(securityChartsLayout.exists()).toBe(true);
-    expect(reportNotConfigured.exists()).toBe(true);
-    expect(loadingIcon.exists()).toBe(false);
-    expect(vulnerabilitiesOverTimeChart.exists()).toBe(false);
-    expect(vulnerabilitySeverities.exists()).toBe(false);
+    expect(findSecurityDashboardLayout().exists()).toBe(true);
+    expect(findReportNotConfigured().exists()).toBe(true);
+    expect(findVulnerabilitiesOverTimeChart().exists()).toBe(false);
+    expect(findVulnerabilitySeverities().exists()).toBe(false);
   });
 
   it('renders the default page', async () => {
-    createWrapper();
-    // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-    // eslint-disable-next-line no-restricted-syntax
-    wrapper.setData({ projects: [{ name: 'project1' }] });
-    await nextTick();
+    createWrapper({ hasProjects: true });
 
-    const securityChartsLayout = findSecurityChartsLayoutComponent();
-    const reportNotConfigured = findReportNotConfigured();
-    const loadingIcon = findLoadingIcon();
-    const vulnerabilitiesOverTimeChart = findVulnerabilitiesOverTimeChart();
-    const vulnerabilitySeverities = findVulnerabilitySeverities();
-
-    expect(securityChartsLayout.exists()).toBe(true);
-    expect(reportNotConfigured.exists()).toBe(false);
-    expect(loadingIcon.exists()).toBe(false);
-    expect(vulnerabilitiesOverTimeChart.props()).toEqual({ query: vulnerabilityHistoryQuery });
-    expect(vulnerabilitySeverities.exists()).toBe(true);
-    expect(vulnerabilitySeverities.props()).toEqual({
-      query: vulnerabilityGradesQuery,
-      groupFullPath: undefined,
-      helpPagePath: '',
-    });
+    expect(findSecurityDashboardLayout().exists()).toBe(true);
+    expect(findReportNotConfigured().exists()).toBe(false);
+    expect(findVulnerabilitiesOverTimeChart().props('query')).toBe(vulnerabilityHistoryQuery);
+    expect(findVulnerabilitySeverities().props('query')).toBe(vulnerabilityGradesQuery);
   });
 });

@@ -66,7 +66,7 @@ export default {
         };
       },
       update(data) {
-        return data?.project?.scanExecutionPolicies?.nodes ?? [];
+        return data?.namespace?.scanExecutionPolicies?.nodes ?? [];
       },
       error: createPolicyFetchError,
     },
@@ -227,10 +227,7 @@ export default {
       sort-icon-left
       sort-by="updatedAt"
       sort-desc
-      head-variant="white"
       stacked="md"
-      thead-class="gl-text-gray-900 border-bottom"
-      tbody-class="gl-text-gray-900"
       show-empty
       hover
       selectable

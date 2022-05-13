@@ -43,7 +43,6 @@ describe('Security Dashboard component', () => {
     wrapper = shallowMount(SecurityDashboard, {
       store,
       propsData: {
-        dashboardDocumentation: '',
         projectFullPath: '/path',
         vulnerabilitiesEndpoint,
         pipelineId,

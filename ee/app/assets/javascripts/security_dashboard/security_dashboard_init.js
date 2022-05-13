@@ -19,10 +19,7 @@ export default (el, dashboardType) => {
       el,
       render(createElement) {
         return createElement(UnavailableState, {
-          props: {
-            link: el.dataset.dashboardDocumentation,
-            svgPath: el.dataset.emptyStateSvgPath,
-          },
+          props: { svgPath: el.dataset.emptyStateSvgPath },
         });
       },
     });
@@ -30,13 +27,12 @@ export default (el, dashboardType) => {
 
   const props = {};
   const provide = {
-    dashboardDocumentation: el.dataset.dashboardDocumentation,
     emptyStateSvgPath: el.dataset.emptyStateSvgPath,
     groupFullPath: el.dataset.groupFullPath,
     projectFullPath: el.dataset.projectFullPath,
     securityConfigurationPath: el.dataset.securityConfigurationPath,
     surveyRequestSvgPath: el.dataset.surveyRequestSvgPath,
-    securityDashboardHelpPath: el.dataset.securityDashboardHelpPath,
+    hasProjects: parseBoolean(el.dataset.hasProjects),
   };
 
   let component;

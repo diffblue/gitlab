@@ -1,4 +1,5 @@
 import AxiosMockAdapter from 'axios-mock-adapter';
+import { setHTMLFixture, resetHTMLFixture } from 'helpers/fixtures';
 import testAction from 'helpers/vuex_action_helper';
 import { TEST_HOST } from 'spec/test_constants';
 import Api from '~/api';
@@ -51,7 +52,7 @@ describe('Actions Notes Store', () => {
     axiosMock = new AxiosMockAdapter(axios);
 
     // This is necessary as we query Close issue button at the top of issue page when clicking bottom button
-    setFixtures(
+    setHTMLFixture(
       '<div class="detail-page-header-actions"><button class="btn-close btn-grouped"></button></div>',
     );
   });
@@ -59,6 +60,7 @@ describe('Actions Notes Store', () => {
   afterEach(() => {
     resetStore(store);
     axiosMock.restore();
+    resetHTMLFixture();
   });
 
   describe('setNotesData', () => {
@@ -400,13 +402,13 @@ describe('Actions Notes Store', () => {
     beforeEach(() => {
       axiosMock.onDelete(endpoint).replyOnce(200, {});
 
-      document.body.dataset.page = '';
+      document.body.setAttribute('data-page', '');
     });
 
     afterEach(() => {
       axiosMock.restore();
 
-      document.body.dataset.page = '';
+      document.body.setAttribute('data-page', '');
     });
 
     it('commits DELETE_NOTE and dispatches updateMergeRequestWidget', () => {
@@ -436,7 +438,7 @@ describe('Actions Notes Store', () => {
     it('dispatches removeDiscussionsFromDiff on merge request page', () => {
       const note = { path: endpoint, id: 1 };
 
-      document.body.dataset.page = 'projects:merge_requests:show';
+      document.body.setAttribute('data-page', 'projects:merge_requests:show');
 
       return testAction(
         actions.removeNote,
@@ -469,13 +471,13 @@ describe('Actions Notes Store', () => {
     beforeEach(() => {
       axiosMock.onDelete(endpoint).replyOnce(200, {});
 
-      document.body.dataset.page = '';
+      document.body.setAttribute('data-page', '');
     });
 
     afterEach(() => {
       axiosMock.restore();
 
-      document.body.dataset.page = '';
+      document.body.setAttribute('data-page', '');
     });
 
     it('dispatches removeNote', () => {

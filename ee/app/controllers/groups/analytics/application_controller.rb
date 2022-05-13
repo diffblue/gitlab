@@ -5,6 +5,7 @@ class Groups::Analytics::ApplicationController < ApplicationController
   include GracefulTimeoutHandling
 
   feature_category :planning_analytics
+  urgency :low
 
   private
 

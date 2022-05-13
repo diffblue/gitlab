@@ -326,6 +326,13 @@ module Gitlab
         {}
       end
 
+      def supported_version?
+        return true unless ping?
+
+        search_check = ::SystemCheck::App::SearchCheck.new
+        search_check.skip? || search_check.check?
+      end
+
       private
 
       def create_index(index_name, alias_name, with_alias, settings, mappings, options)

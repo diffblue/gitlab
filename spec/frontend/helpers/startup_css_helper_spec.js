@@ -1,3 +1,4 @@
+import { setHTMLFixture, resetHTMLFixture } from 'helpers/fixtures';
 import { waitForCSSLoaded } from '~/helpers/startup_css_helper';
 
 describe('waitForCSSLoaded', () => {
@@ -41,29 +42,32 @@ describe('waitForCSSLoaded', () => {
 
   describe('with startup css enabled', () => {
     it('should dispatch CSSLoaded when the assets are cached or already loaded', async () => {
-      setFixtures(`
+      setHTMLFixture(`
         <link href="one.css" data-startupcss="loaded">
         <link href="two.css" data-startupcss="loaded">
       `);
       await waitForCSSLoaded(mockedCallback);
 
       expect(mockedCallback).toHaveBeenCalledTimes(1);
+
+      resetHTMLFixture();
     });
 
     it('should wait to call CssLoaded until the assets are loaded', async () => {
-      setFixtures(`
+      setHTMLFixture(`
         <link href="one.css" data-startupcss="loading">
         <link href="two.css" data-startupcss="loading">
       `);
       const events = waitForCSSLoaded(mockedCallback);
-      document.querySelectorAll('[data-startupcss="loading"]').forEach((elem) => {
-        // eslint-disable-next-line no-param-reassign
-        elem.dataset.startupcss = 'loaded';
-      });
+      document
+        .querySelectorAll('[data-startupcss="loading"]')
+        .forEach((elem) => elem.setAttribute('data-startupcss', 'loaded'));
       document.dispatchEvent(new CustomEvent('CSSStartupLinkLoaded'));
       await events;
 
       expect(mockedCallback).toHaveBeenCalledTimes(1);
+
+      resetHTMLFixture();
     });
   });
 });

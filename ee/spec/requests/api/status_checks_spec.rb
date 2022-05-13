@@ -51,20 +51,6 @@ RSpec.describe API::StatusChecks do
           expect(json_response[1]["status"]).to eq('pending')
           expect(json_response[2]["status"]).to eq('pending')
         end
-
-        context 'when status_checks_add_status_field is disabled' do
-          before do
-            stub_feature_flags(status_checks_add_status_field: false)
-          end
-
-          it 'has the correct status values' do
-            subject
-
-            expect(json_response[0]["status"]).to eq('passed')
-            expect(json_response[1]["status"]).to eq('pending')
-            expect(json_response[2]["status"]).to eq('pending')
-          end
-        end
       end
     end
   end
@@ -109,22 +95,6 @@ RSpec.describe API::StatusChecks do
       before do
         stub_licensed_features(external_status_checks: true)
         project.add_user(user, :maintainer) if user
-      end
-
-      context 'when status_checks_add_status_field flag is disabled' do
-        before do
-          stub_feature_flags(status_checks_add_status_field: false)
-        end
-
-        context 'status is failed' do
-          let(:status) { 'failed' }
-
-          it 'is overridden to passed' do
-            subject
-
-            expect(MergeRequests::StatusCheckResponse.last.status).to eq("passed")
-          end
-        end
       end
 
       context 'when external status check ID does not belong to the requested project' do

@@ -850,6 +850,11 @@ Input type: `BulkEnableDevopsAdoptionNamespacesInput`
 
 ### `Mutation.ciCdSettingsUpdate`
 
+WARNING:
+**Deprecated** in 15.0.
+This was renamed.
+Use: `ProjectCiCdSettingsUpdate`.
+
 Input type: `CiCdSettingsUpdateInput`
 
 #### Arguments
@@ -3109,12 +3114,12 @@ Input type: `IterationCadenceCreateInput`
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mutationiterationcadencecreateactive"></a>`active` | [`Boolean!`](#boolean) | Whether the iteration cadence is active. |
-| <a id="mutationiterationcadencecreateautomatic"></a>`automatic` | [`Boolean!`](#boolean) | Whether the iteration cadence should automatically generate future iterations. |
+| <a id="mutationiterationcadencecreateautomatic"></a>`automatic` | [`Boolean!`](#boolean) | Whether the iteration cadence should automatically generate upcoming iterations. |
 | <a id="mutationiterationcadencecreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationiterationcadencecreatedescription"></a>`description` | [`String`](#string) | Description of the iteration cadence. Maximum length is 5000 characters. |
 | <a id="mutationiterationcadencecreatedurationinweeks"></a>`durationInWeeks` | [`Int`](#int) | Duration in weeks of the iterations within this cadence. |
 | <a id="mutationiterationcadencecreategrouppath"></a>`groupPath` | [`ID!`](#id) | Group where the iteration cadence is created. |
-| <a id="mutationiterationcadencecreateiterationsinadvance"></a>`iterationsInAdvance` | [`Int`](#int) | Future iterations to be created when iteration cadence is set to automatic. |
+| <a id="mutationiterationcadencecreateiterationsinadvance"></a>`iterationsInAdvance` | [`Int`](#int) | Upcoming iterations to be created when iteration cadence is set to automatic. |
 | <a id="mutationiterationcadencecreaterollover"></a>`rollOver` | [`Boolean`](#boolean) | Whether the iteration cadence should roll over issues to the next iteration or not. |
 | <a id="mutationiterationcadencecreatestartdate"></a>`startDate` | [`Time`](#time) | Timestamp of the iteration cadence start date. |
 | <a id="mutationiterationcadencecreatetitle"></a>`title` | [`String`](#string) | Title of the iteration cadence. |
@@ -3155,12 +3160,12 @@ Input type: `IterationCadenceUpdateInput`
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mutationiterationcadenceupdateactive"></a>`active` | [`Boolean`](#boolean) | Whether the iteration cadence is active. |
-| <a id="mutationiterationcadenceupdateautomatic"></a>`automatic` | [`Boolean`](#boolean) | Whether the iteration cadence should automatically generate future iterations. |
+| <a id="mutationiterationcadenceupdateautomatic"></a>`automatic` | [`Boolean`](#boolean) | Whether the iteration cadence should automatically generate upcoming iterations. |
 | <a id="mutationiterationcadenceupdateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationiterationcadenceupdatedescription"></a>`description` | [`String`](#string) | Description of the iteration cadence. Maximum length is 5000 characters. |
 | <a id="mutationiterationcadenceupdatedurationinweeks"></a>`durationInWeeks` | [`Int`](#int) | Duration in weeks of the iterations within this cadence. |
 | <a id="mutationiterationcadenceupdateid"></a>`id` | [`IterationsCadenceID!`](#iterationscadenceid) | Global ID of the iteration cadence. |
-| <a id="mutationiterationcadenceupdateiterationsinadvance"></a>`iterationsInAdvance` | [`Int`](#int) | Future iterations to be created when iteration cadence is set to automatic. |
+| <a id="mutationiterationcadenceupdateiterationsinadvance"></a>`iterationsInAdvance` | [`Int`](#int) | Upcoming iterations to be created when iteration cadence is set to automatic. |
 | <a id="mutationiterationcadenceupdaterollover"></a>`rollOver` | [`Boolean`](#boolean) | Whether the iteration cadence should roll over issues to the next iteration or not. |
 | <a id="mutationiterationcadenceupdatestartdate"></a>`startDate` | [`Time`](#time) | Timestamp of the iteration cadence start date. |
 | <a id="mutationiterationcadenceupdatetitle"></a>`title` | [`String`](#string) | Title of the iteration cadence. |
@@ -3907,6 +3912,29 @@ Input type: `PipelineRetryInput`
 | <a id="mutationpipelineretryclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationpipelineretryerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 | <a id="mutationpipelineretrypipeline"></a>`pipeline` | [`Pipeline`](#pipeline) | Pipeline after mutation. |
+
+### `Mutation.projectCiCdSettingsUpdate`
+
+Input type: `ProjectCiCdSettingsUpdateInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationprojectcicdsettingsupdateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationprojectcicdsettingsupdatefullpath"></a>`fullPath` | [`ID!`](#id) | Full Path of the project the settings belong to. |
+| <a id="mutationprojectcicdsettingsupdatejobtokenscopeenabled"></a>`jobTokenScopeEnabled` | [`Boolean`](#boolean) | Indicates CI job tokens generated in this project have restricted access to resources. |
+| <a id="mutationprojectcicdsettingsupdatekeeplatestartifact"></a>`keepLatestArtifact` | [`Boolean`](#boolean) | Indicates if the latest artifact should be kept for this project. |
+| <a id="mutationprojectcicdsettingsupdatemergepipelinesenabled"></a>`mergePipelinesEnabled` | [`Boolean`](#boolean) | Indicates if merge pipelines are enabled for the project. |
+| <a id="mutationprojectcicdsettingsupdatemergetrainsenabled"></a>`mergeTrainsEnabled` | [`Boolean`](#boolean) | Indicates if merge trains are enabled for the project. |
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationprojectcicdsettingsupdatecicdsettings"></a>`ciCdSettings` | [`ProjectCiCdSetting!`](#projectcicdsetting) | CI/CD settings after mutation. |
+| <a id="mutationprojectcicdsettingsupdateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationprojectcicdsettingsupdateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 
 ### `Mutation.projectSetComplianceFramework`
 
@@ -7417,6 +7445,30 @@ The edge type for [`OncallParticipantType`](#oncallparticipanttype).
 | ---- | ---- | ----------- |
 | <a id="oncallparticipanttypeedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
 | <a id="oncallparticipanttypeedgenode"></a>`node` | [`OncallParticipantType`](#oncallparticipanttype) | The item at the end of the edge. |
+
+#### `PackageBaseConnection`
+
+The connection type for [`PackageBase`](#packagebase).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="packagebaseconnectioncount"></a>`count` | [`Int!`](#int) | Total count of collection. |
+| <a id="packagebaseconnectionedges"></a>`edges` | [`[PackageBaseEdge]`](#packagebaseedge) | A list of edges. |
+| <a id="packagebaseconnectionnodes"></a>`nodes` | [`[PackageBase]`](#packagebase) | A list of nodes. |
+| <a id="packagebaseconnectionpageinfo"></a>`pageInfo` | [`PageInfo!`](#pageinfo) | Information to aid in pagination. |
+
+#### `PackageBaseEdge`
+
+The edge type for [`PackageBase`](#packagebase).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="packagebaseedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
+| <a id="packagebaseedgenode"></a>`node` | [`PackageBase`](#packagebase) | The item at the end of the edge. |
 
 #### `PackageConnection`
 
@@ -11313,6 +11365,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | ---- | ---- | ----------- |
 | <a id="groupactualrepositorysizelimit"></a>`actualRepositorySizeLimit` | [`Float`](#float) | Size limit for repositories in the namespace in bytes. |
 | <a id="groupadditionalpurchasedstoragesize"></a>`additionalPurchasedStorageSize` | [`Float`](#float) | Additional storage purchased for the root namespace in bytes. |
+| <a id="groupallowstalerunnerpruning"></a>`allowStaleRunnerPruning` | [`Boolean!`](#boolean) | Indicates whether to regularly prune stale group runners. Defaults to false. |
 | <a id="groupautodevopsenabled"></a>`autoDevopsEnabled` | [`Boolean`](#boolean) | Indicates whether Auto DevOps is enabled for all projects within this group. |
 | <a id="groupavatarurl"></a>`avatarUrl` | [`String`](#string) | Avatar URL of the group. |
 | <a id="groupcontacts"></a>`contacts` | [`CustomerRelationsContactConnection`](#customerrelationscontactconnection) | Find contacts of this group. (see [Connections](#connections)) |
@@ -11636,7 +11689,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="groupiterationcadencesactive"></a>`active` | [`Boolean`](#boolean) | Whether the iteration cadence is active. |
-| <a id="groupiterationcadencesautomatic"></a>`automatic` | [`Boolean`](#boolean) | Whether the iteration cadence should automatically generate future iterations. |
+| <a id="groupiterationcadencesautomatic"></a>`automatic` | [`Boolean`](#boolean) | Whether the iteration cadence should automatically generate upcoming iterations. |
 | <a id="groupiterationcadencesdurationinweeks"></a>`durationInWeeks` | [`Int`](#int) | Duration in weeks of the iterations within this cadence. |
 | <a id="groupiterationcadencesid"></a>`id` | [`IterationsCadenceID`](#iterationscadenceid) | Global ID of the iteration cadence to look up. |
 | <a id="groupiterationcadencesincludeancestorgroups"></a>`includeAncestorGroups` | [`Boolean`](#boolean) | Whether to include ancestor groups to search iterations cadences in. |
@@ -12373,11 +12426,11 @@ Represents an iteration cadence.
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="iterationcadenceactive"></a>`active` | [`Boolean`](#boolean) | Whether the iteration cadence is active. |
-| <a id="iterationcadenceautomatic"></a>`automatic` | [`Boolean`](#boolean) | Whether the iteration cadence should automatically generate future iterations. |
+| <a id="iterationcadenceautomatic"></a>`automatic` | [`Boolean`](#boolean) | Whether the iteration cadence should automatically generate upcoming iterations. |
 | <a id="iterationcadencedescription"></a>`description` | [`String`](#string) | Description of the iteration cadence. Maximum length is 5000 characters. |
 | <a id="iterationcadencedurationinweeks"></a>`durationInWeeks` | [`Int`](#int) | Duration in weeks of the iterations within this cadence. |
 | <a id="iterationcadenceid"></a>`id` | [`IterationsCadenceID!`](#iterationscadenceid) | Global ID of the iteration cadence. |
-| <a id="iterationcadenceiterationsinadvance"></a>`iterationsInAdvance` | [`Int`](#int) | Future iterations to be created when iteration cadence is set to automatic. |
+| <a id="iterationcadenceiterationsinadvance"></a>`iterationsInAdvance` | [`Int`](#int) | Upcoming iterations to be created when iteration cadence is set to automatic. |
 | <a id="iterationcadencerollover"></a>`rollOver` | [`Boolean!`](#boolean) | Whether the iteration cadence should roll over issues to the next iteration or not. |
 | <a id="iterationcadencestartdate"></a>`startDate` | [`Time`](#time) | Timestamp of the iteration cadence start date. |
 | <a id="iterationcadencetitle"></a>`title` | [`String!`](#string) | Title of the iteration cadence. |
@@ -13991,7 +14044,7 @@ Active period time range for on-call rotation.
 
 ### `Package`
 
-Represents a package in the Package Registry. Note that this type is in beta and susceptible to changes.
+Represents a package with pipelines in the Package Registry.
 
 #### Fields
 
@@ -14009,6 +14062,26 @@ Represents a package in the Package Registry. Note that this type is in beta and
 | <a id="packagetags"></a>`tags` | [`PackageTagConnection`](#packagetagconnection) | Package tags. (see [Connections](#connections)) |
 | <a id="packageupdatedat"></a>`updatedAt` | [`Time!`](#time) | Date of most recent update. |
 | <a id="packageversion"></a>`version` | [`String`](#string) | Version string. |
+
+### `PackageBase`
+
+Represents a package in the Package Registry.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="packagebasecandestroy"></a>`canDestroy` | [`Boolean!`](#boolean) | Whether the user can destroy the package. |
+| <a id="packagebasecreatedat"></a>`createdAt` | [`Time!`](#time) | Date of creation. |
+| <a id="packagebaseid"></a>`id` | [`PackagesPackageID!`](#packagespackageid) | ID of the package. |
+| <a id="packagebasemetadata"></a>`metadata` | [`PackageMetadata`](#packagemetadata) | Package metadata. |
+| <a id="packagebasename"></a>`name` | [`String!`](#string) | Name of the package. |
+| <a id="packagebasepackagetype"></a>`packageType` | [`PackageTypeEnum!`](#packagetypeenum) | Package type. |
+| <a id="packagebaseproject"></a>`project` | [`Project!`](#project) | Project where the package is stored. |
+| <a id="packagebasestatus"></a>`status` | [`PackageStatus!`](#packagestatus) | Package status. |
+| <a id="packagebasetags"></a>`tags` | [`PackageTagConnection`](#packagetagconnection) | Package tags. (see [Connections](#connections)) |
+| <a id="packagebaseupdatedat"></a>`updatedAt` | [`Time!`](#time) | Date of most recent update. |
+| <a id="packagebaseversion"></a>`version` | [`String`](#string) | Version string. |
 
 ### `PackageComposerJsonType`
 
@@ -14050,7 +14123,7 @@ Represents a package dependency link.
 
 ### `PackageDetailsType`
 
-Represents a package details in the Package Registry. Note that this type is in beta and susceptible to changes.
+Represents a package details in the Package Registry.
 
 #### Fields
 
@@ -14078,7 +14151,7 @@ Represents a package details in the Package Registry. Note that this type is in 
 | <a id="packagedetailstypetags"></a>`tags` | [`PackageTagConnection`](#packagetagconnection) | Package tags. (see [Connections](#connections)) |
 | <a id="packagedetailstypeupdatedat"></a>`updatedAt` | [`Time!`](#time) | Date of most recent update. |
 | <a id="packagedetailstypeversion"></a>`version` | [`String`](#string) | Version string. |
-| <a id="packagedetailstypeversions"></a>`versions` | [`PackageConnection`](#packageconnection) | Other versions of the package. (see [Connections](#connections)) |
+| <a id="packagedetailstypeversions"></a>`versions` | [`PackageBaseConnection`](#packagebaseconnection) | Other versions of the package. (see [Connections](#connections)) |
 
 ### `PackageFile`
 
@@ -15008,7 +15081,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="projectiterationcadencesactive"></a>`active` | [`Boolean`](#boolean) | Whether the iteration cadence is active. |
-| <a id="projectiterationcadencesautomatic"></a>`automatic` | [`Boolean`](#boolean) | Whether the iteration cadence should automatically generate future iterations. |
+| <a id="projectiterationcadencesautomatic"></a>`automatic` | [`Boolean`](#boolean) | Whether the iteration cadence should automatically generate upcoming iterations. |
 | <a id="projectiterationcadencesdurationinweeks"></a>`durationInWeeks` | [`Int`](#int) | Duration in weeks of the iterations within this cadence. |
 | <a id="projectiterationcadencesid"></a>`id` | [`IterationsCadenceID`](#iterationscadenceid) | Global ID of the iteration cadence to look up. |
 | <a id="projectiterationcadencesincludeancestorgroups"></a>`includeAncestorGroups` | [`Boolean`](#boolean) | Whether to include ancestor groups to search iterations cadences in. |
@@ -17960,8 +18033,8 @@ Include type.
 
 | Value | Description |
 | ----- | ----------- |
+| <a id="ciconfigincludetypefile"></a>`file` | Project file include. |
 | <a id="ciconfigincludetypelocal"></a>`local` | Local include. |
-| <a id="ciconfigincludetypeproject"></a>`project` | Project include. |
 | <a id="ciconfigincludetyperemote"></a>`remote` | Remote include. |
 | <a id="ciconfigincludetypetemplate"></a>`template` | Template include. |
 

@@ -1,5 +1,6 @@
 <script>
 import { GlAccordion, GlAccordionItem, GlAlert, GlButton, GlSprintf } from '@gitlab/ui';
+import { DOC_PATH_SECURITY_SCANNER_INTEGRATION_REPORT } from 'ee/security_dashboard/constants';
 
 export const TYPE_ERRORS = 'errors';
 export const TYPE_WARNINGS = 'warnings';
@@ -12,7 +13,6 @@ export default {
     GlButton,
     GlSprintf,
   },
-  inject: ['securityReportHelpPageLink'],
   props: {
     scans: {
       type: Array,
@@ -47,6 +47,7 @@ export default {
       }));
     },
   },
+  DOC_PATH_SECURITY_SCANNER_INTEGRATION_REPORT,
 };
 </script>
 
@@ -61,7 +62,7 @@ export default {
           <gl-button
             variant="link"
             icon="external-link"
-            :href="securityReportHelpPageLink"
+            :href="$options.DOC_PATH_SECURITY_SCANNER_INTEGRATION_REPORT"
             target="_blank"
           >
             {{ content }}

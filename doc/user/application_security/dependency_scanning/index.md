@@ -43,17 +43,17 @@ possible, we encourage you to use all of our security scanning tools:
   efforts to de-duplicate these findings can be tracked in
   [this issue](https://gitlab.com/gitlab-org/gitlab/-/issues/348655).
 
-The following diagram summarizes which types of dependencies each scanning tool can detect:
+The following table summarizes which types of dependencies each scanning tool can detect:
 
-| Feature                                                     | Dependency Scanning | Container Scanning |
-| ----------------------------------------------------------- | ------------------- | ------------------ |
-| Identify the manifest, lock file, or static file that introduced the dependency              | :white_check_mark: | :x: |
-| Development dependencies                                                                     | :white_check_mark: | :x: |
-| Dependencies in a lock file committed to your repository                                     | :white_check_mark: | :white_check_mark: <sup>1</sup> |
-| Binaries built by Go                                                                         | :x: | :white_check_mark: <sup>2</sup> |
-| Dynamically-linked language-specific dependencies installed by the Operating System          | :x: | :white_check_mark: |
-| Operating system dependencies                                                                | :x: | :white_check_mark: |
-| Language-specific dependencies installed on the operating system (not built by your project) | :x: | :white_check_mark: |
+| Feature                                                                                      | Dependency Scanning | Container Scanning          |
+| -----------------------------------------------------------                                  | ------------------- | ------------------          |
+| Identify the manifest, lock file, or static file that introduced the dependency              | **{check-circle}**      | **{dotted-circle}**             |
+| Development dependencies                                                                     | **{check-circle}**      | **{dotted-circle}**             |
+| Dependencies in a lock file committed to your repository                                     | **{check-circle}**      | **{check-circle}** <sup>1</sup> |
+| Binaries built by Go                                                                         | **{dotted-circle}**     | **{check-circle}** <sup>2</sup> |
+| Dynamically-linked language-specific dependencies installed by the Operating System          | **{dotted-circle}**     | **{check-circle}**              |
+| Operating system dependencies                                                                | **{dotted-circle}**     | **{check-circle}**              |
+| Language-specific dependencies installed on the operating system (not built by your project) | **{dotted-circle}**     | **{check-circle}**              |
 
 1. Lock file must be present in the image to be detected.
 1. Binary file must be present in the image to be detected.
@@ -153,9 +153,9 @@ table.supported-languages ul {
   </thead>
   <tbody>
     <tr>
-      <td rowspan="2">Ruby</td>
-      <td rowspan="2">N/A</td>
-      <td rowspan="2"><a href="https://bundler.io/">Bundler</a></td>
+      <td>Ruby</td>
+      <td>N/A</td>
+      <td><a href="https://bundler.io/">Bundler</a></td>
       <td>
         <ul>
             <li><code>Gemfile.lock</code></li>
@@ -164,11 +164,6 @@ table.supported-languages ul {
       </td>
       <td><a href="https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium">Gemnasium</a></td>
       <td>Y</td>
-    </tr>
-    <tr>
-      <td><code>Gemfile.lock</code></td>
-      <td><a href="https://github.com/rubysec/bundler-audit">bundler-audit</a></td>
-      <td>N</td>
     </tr>
     <tr>
       <td>PHP</td>
@@ -217,9 +212,9 @@ table.supported-languages ul {
       <td>N</td>
     </tr>
     <tr>
-      <td rowspan="3">JavaScript</td>
-      <td rowspan="2">N/A</td>
-      <td rowspan="2"><a href="https://www.npmjs.com/">npm</a></td>
+      <td rowspan="2">JavaScript</td>
+      <td>N/A</td>
+      <td><a href="https://www.npmjs.com/">npm</a></td>
       <td>
         <ul>
             <li><code>package-lock.json</code></li>
@@ -228,11 +223,6 @@ table.supported-languages ul {
       </td>
       <td><a href="https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium">Gemnasium</a></td>
       <td>Y</td>
-    </tr>
-    <tr>
-      <td><code>package.json</code></td>
-      <td><a href="https://retirejs.github.io/retire.js/">Retire.js</a></td>
-      <td>N</td>
     </tr>
     <tr>
       <td>N/A</td>
@@ -254,7 +244,7 @@ table.supported-languages ul {
     </tr>
     <tr>
       <td rowspan="3">Python</td>
-      <td rowspan="3">3.6</td>
+      <td rowspan="3">3.9</td>
       <td><a href="https://setuptools.readthedocs.io/en/latest/">setuptools</a></td>
       <td><code>setup.py</code></td>
       <td><a href="https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium">Gemnasium</a></td>
@@ -355,24 +345,17 @@ To support the following package managers, the GitLab analyzers proceed in two s
 
 | Package Manager | Pre-installed Versions                                                                                                                                                                                                                                                                                                                                                                                     | Tested Versions                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | ------          | ------                                                                                                                                                                                                                                                                                                                                                                                                     | ------                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| Bundler         | [2.1.4](https://gitlab.com/gitlab-org/security-products/analyzers/bundler-audit/-/blob/v2.11.3/Dockerfile#L15)<sup><b><a href="#exported-dependency-information-notes-1">1</a></b></sup>                                                                                                                                                                                                                   | [1.17.3](https://gitlab.com/gitlab-org/security-products/tests/ruby-bundler/-/blob/master/Gemfile.lock#L118), [2.1.4](https://gitlab.com/gitlab-org/security-products/tests/ruby-bundler/-/blob/bundler2-FREEZE/Gemfile.lock#L118)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | sbt             | [1.6.1](https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium-maven/-/blob/v2.24.6/config/.tool-versions#L4)                                                                                                                                                                                                                                                                                 | [1.0.4](https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium-maven/-/blob/v2.28.1/spec/image_spec.rb#L443-447), [1.1.6](https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium-maven/-/blob/v2.28.1/spec/image_spec.rb#L449-453), [1.2.8](https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium-maven/-/blob/v2.28.1/spec/image_spec.rb#L455-459), [1.3.12](https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium-maven/-/blob/v2.28.1/spec/image_spec.rb#L461-465), [1.4.6](https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium-maven/-/blob/v2.28.1/spec/image_spec.rb#L467-471), [1.5.8](https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium-maven/-/blob/v2.28.1/spec/image_spec.rb#L473-477), [1.6.1](https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium-maven/-/blob/v2.28.1/spec/image_spec.rb#L479-483)                                                                                                                                                                                                                                                                                                                                                                                                |
 | Maven           | [3.6.3](https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium-maven/-/blob/v2.28.1/spec/image_spec.rb#L95-97)                                                                                                                                                                                                                                                                                 | [3.6.3](https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium-maven/-/blob/v2.28.1/spec/image_spec.rb#L95-97)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| Gradle          | [6.7.1](https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium-maven/-/blob/v2.23.0/config/.tool-versions#L5)<sup><b><a href="#exported-dependency-information-notes-2">2</a></b></sup>, [7.3.3](https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium-maven/-/blob/v2.26.0/config/.tool-versions#L5)<sup><b><a href="#exported-dependency-information-notes-2">2</a></b></sup> | [5.6.4](https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium-maven/-/blob/v2.28.1/spec/image_spec.rb#L319-323), [6.7](https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium-maven/-/blob/v2.28.1/spec/image_spec.rb#L286-288)<sup><b><a href="#exported-dependency-information-notes-3">3</a></b></sup>, [6.9](https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium-maven/-/blob/v2.28.1/spec/image_spec.rb#L331-335), [7.3](https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium-maven/-/blob/v2.28.1/spec/image_spec.rb#L300-302)<sup><b><a href="#exported-dependency-information-notes-3">3</a></b></sup> |
+| Gradle          | [6.7.1](https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium-maven/-/blob/v2.23.0/config/.tool-versions#L5)<sup><b><a href="#exported-dependency-information-notes-1">1</a></b></sup>, [7.3.3](https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium-maven/-/blob/v2.26.0/config/.tool-versions#L5)<sup><b><a href="#exported-dependency-information-notes-1">1</a></b></sup> | [5.6.4](https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium-maven/-/blob/v2.28.1/spec/image_spec.rb#L319-323), [6.7](https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium-maven/-/blob/v2.28.1/spec/image_spec.rb#L286-288)<sup><b><a href="#exported-dependency-information-notes-2">2</a></b></sup>, [6.9](https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium-maven/-/blob/v2.28.1/spec/image_spec.rb#L331-335), [7.3](https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium-maven/-/blob/v2.28.1/spec/image_spec.rb#L300-302)<sup><b><a href="#exported-dependency-information-notes-2">2</a></b></sup> |
 | setuptools      | [50.3.2](https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium/-/blob/v2.29.9/Dockerfile#L27)                                                                                                                                                                                                                                                                                                | [57.5.0](https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium-python/-/blob/v2.22.0/spec/image_spec.rb#L224-247)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | pip             | [20.2.4](https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium/-/blob/v2.29.9/Dockerfile#L26)                                                                                                                                                                                                                                                                                                | [20.x](https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium-python/-/blob/v2.22.0/spec/image_spec.rb#L77-91)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| Pipenv          | [2018.11.26](https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium-python/-/blob/v2.18.4/requirements.txt#L13)                                                                                                                                                                                                                                                                               | [2018.11.26](https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium-python/-/blob/v2.22.0/spec/image_spec.rb#L168-191)<sup><b><a href="#exported-dependency-information-notes-4">4</a></b></sup>, [2018.11.26](https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium-python/-/blob/v2.22.0/spec/image_spec.rb#L143-166)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| Pipenv          | [2018.11.26](https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium-python/-/blob/v2.18.4/requirements.txt#L13)                                                                                                                                                                                                                                                                               | [2018.11.26](https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium-python/-/blob/v2.22.0/spec/image_spec.rb#L168-191)<sup><b><a href="#exported-dependency-information-notes-3">3</a></b></sup>, [2018.11.26](https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium-python/-/blob/v2.22.0/spec/image_spec.rb#L143-166)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 
 <!-- markdownlint-disable MD044 -->
 <ol>
   <li>
     <a id="exported-dependency-information-notes-1"></a>
-    <p>
-      The pre-installed and tested version of <code>Bundler</code> is only used for the <a href="https://gitlab.com/gitlab-org/security-products/analyzers/bundler-audit">bundler-audit</a> analyzer, and is not used for <a href="https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium">gemnasium</a>.
-    </p>
-  </li>
-  <li>
-    <a id="exported-dependency-information-notes-2"></a>
     <p>
       Different versions of Java require different versions of Gradle. The versions of Gradle listed in the above table are pre-installed
       in the analyzer image. The version of Gradle used by the analyzer depends on whether your project uses a <code>gradlew</code>
@@ -400,13 +383,13 @@ To support the following package managers, the GitLab analyzers proceed in two s
     </ul>
   </li>
   <li>
-    <a id="exported-dependency-information-notes-3"></a>
+    <a id="exported-dependency-information-notes-2"></a>
     <p>
       These tests confirm that if a <code>gradlew</code> file does not exist, the version of <code>Gradle</code> pre-installed in the analyzer image is used.
     </p>
   </li>
   <li>
-    <a id="exported-dependency-information-notes-4"></a>
+    <a id="exported-dependency-information-notes-3"></a>
     <p>
       This test confirms that if a <code>Pipfile.lock</code> file is found, it will be used by <a href="https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium">Gemnasium</a> to scan the exact package versions listed in this file.
     </p>
@@ -427,22 +410,6 @@ a repository contains either a `Gemfile.lock`, `api/Gemfile.lock`, or `api/clien
 NOTE:
 If you've run into problems while scanning multiple files, please contribute a comment to
 [this issue](https://gitlab.com/gitlab-org/gitlab/-/issues/337056).
-
-#### Ruby
-
-The following analyzers are executed, each of which have different behavior when processing multiple files:
-
-- [Gemnasium](https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium)
-
-   Supports multiple lockfiles.
-
-- [bundler-audit](https://github.com/rubysec/bundler-audit)
-
-   Does not support multiple lockfiles. When multiple lockfiles exist, `bundler-audit`
-   analyzes the first lockfile discovered while traversing the directory tree in alphabetical order.
-
-WARNING:
-The `bundler-audit` analyzer is deprecated and will be removed in GitLab 15.0 since it duplicates the functionality of the `gemnasium` analyzer. For more information, read the [deprecation announcement](../../../update/deprecations.md#bundler-audit-dependency-scanning-tool).
 
 #### Python
 
@@ -474,14 +441,10 @@ The following analyzers are executed, each of which have different behavior when
    Does not support multiple lockfiles. When multiple lockfiles exist, `Retire.js`
    analyzes the first lockfile discovered while traversing the directory tree in alphabetical order.
 
-From GitLab 14.8 the `Gemnasium` analyzer scans supported JavaScript projects for vendored libraries
+From GitLab 14.8 the `gemnasium` analyzer scans supported JavaScript projects for vendored libraries
 (that is, those checked into the project but not managed by the package manager).
 
-WARNING:
-The `retire.js` analyzer is deprecated and will be removed in GitLab 15.0 since it duplicates the functionality of the `gemnasium` analyzer. For more information, read the [deprecation announcement](../../../update/deprecations.md#retire-js-dependency-scanning-tool).
-We execute both analyzers because they use different sources of vulnerability data. The result is more comprehensive analysis than if only one was executed.
-
-#### PHP, Go, C, C++, .NET, C&#35;
+#### PHP, Go, C, C++, .NET, C&#35;, Ruby, JavaScript
 
 The analyzer for these languages supports multiple lockfiles.
 
@@ -599,7 +562,7 @@ The following variables allow configuration of global dependency scanning settin
 | `DS_EXCLUDED_ANALYZERS`      | Specify the analyzers (by name) to exclude from Dependency Scanning. For more information, see [Dependency Scanning Analyzers](analyzers.md). |
 | `DS_DEFAULT_ANALYZERS`      | This feature was [deprecated](https://gitlab.com/gitlab-org/gitlab/-/issues/351963) in GitLab 14.8 and [removed](https://gitlab.com/gitlab-org/gitlab/-/issues/351963) in 15.0. Use `DS_EXCLUDED_ANALYZERS` instead. |
 | `DS_EXCLUDED_PATHS`         | Exclude files and directories from the scan based on the paths. A comma-separated list of patterns. Patterns can be globs, or file or folder paths (for example, `doc,spec`). Parent directories also match patterns. Default: `"spec, test, tests, tmp"`. |
-| `DS_IMAGE_SUFFIX`           | Suffix added to the image name. If set to `-fips`, `FIPS-enabled` images are used for scan. See [FIPS-enabled images](#fips-enabled-images) for more details. [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/354796) in GitLab 14.10. |
+| `DS_IMAGE_SUFFIX`           | Suffix added to the image name. ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/354796) in GitLab 14.10.) Automatically set to `"-fips"` when FIPS mode is enabled. ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/357922) in GitLab 15.0.) |
 | `SECURE_ANALYZERS_PREFIX`   | Override the name of the Docker registry providing the official default images (proxy). Read more about [customizing analyzers](analyzers.md). |
 | `SECURE_LOG_LEVEL`          | Set the minimum logging level. Messages of this logging level or higher are output. From highest to lowest severity, the logging levels are: `fatal`, `error`, `warn`, `info`, `debug`. [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/10880) in GitLab 13.1. Default: `info`. |
 
@@ -609,16 +572,13 @@ The following variables are used for configuring specific analyzers (used for a 
 
 | CI/CD variable                       | Analyzer           | Default                      | Description |
 |--------------------------------------| ------------------ | ---------------------------- |------------ |
-| `BUNDLER_AUDIT_UPDATE_DISABLED`      | `bundler-audit`    | `"false"`                    | Disable automatic updates for the `bundler-audit` analyzer. Use if you're running dependency scanning in an offline, air-gapped environment.|
-| `BUNDLER_AUDIT_ADVISORY_DB_URL`      | `bundler-audit`    | `https://github.com/rubysec/ruby-advisory-db` | URL of the advisory database used by bundler-audit. |
-| `BUNDLER_AUDIT_ADVISORY_DB_REF_NAME` | `bundler-audit`    | `master`                     | Git ref for the advisory database specified by `BUNDLER_AUDIT_ADVISORY_DB_URL`. |
 | `GEMNASIUM_DB_LOCAL_PATH`            | `gemnasium`        | `/gemnasium-db`              | Path to local Gemnasium database. |
 | `GEMNASIUM_DB_UPDATE_DISABLED`       | `gemnasium`        | `"false"`                    | Disable automatic updates for the `gemnasium-db` advisory database (For usage see: [examples](#hosting-a-copy-of-the-gemnasium_db-advisory-database))|
 | `GEMNASIUM_DB_REMOTE_URL`            | `gemnasium`        | `https://gitlab.com/gitlab-org/security-products/gemnasium-db.git` | Repository URL for fetching the Gemnasium database. |
 | `GEMNASIUM_DB_REF_NAME`              | `gemnasium`        | `master`                     | Branch name for remote repository database. `GEMNASIUM_DB_REMOTE_URL` is required. |
 | `DS_REMEDIATE`                       | `gemnasium`        | `"true"`                     | Enable automatic remediation of vulnerable dependencies. |
 | `GEMNASIUM_LIBRARY_SCAN_ENABLED`     | `gemnasium`        | `"true"`                     | Enable detecting vulnerabilities in vendored JavaScript libraries. For now, `gemnasium` leverages [`Retire.js`](https://github.com/RetireJS/retire.js) to do this job. [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/350512) in GitLab 14.8. |
-| `DS_JAVA_VERSION`                    | `gemnasium-maven`  | `11`                         | Version of Java. Available versions: `8`, `11`, `13`, `14`, `15`, `16`, `17`. |
+| `DS_JAVA_VERSION`                    | `gemnasium-maven`  | `17`                         | Version of Java. Available versions: `8`, `11`, `13`, `14`, `15`, `16`, `17`. |
 | `MAVEN_CLI_OPTS`                     | `gemnasium-maven`  | `"-DskipTests --batch-mode"` | List of command line arguments that are passed to `maven` by the analyzer. See an example for [using private repositories](../index.md#using-private-maven-repositories). |
 | `GRADLE_CLI_OPTS`                    | `gemnasium-maven`  |                              | List of command line arguments that are passed to `gradle` by the analyzer. |
 | `SBT_CLI_OPTS`                       | `gemnasium-maven`  |                              | List of command-line arguments that the analyzer passes to `sbt`. |
@@ -627,9 +587,6 @@ The following variables are used for configuring specific analyzers (used for a 
 | `PIP_REQUIREMENTS_FILE`              | `gemnasium-python` |                              | Pip requirements file to be scanned. |
 | `DS_PIP_VERSION`                     | `gemnasium-python` |                              | Force the install of a specific pip version (example: `"19.3"`), otherwise the pip installed in the Docker image is used. ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/12811) in GitLab 12.7) |
 | `DS_PIP_DEPENDENCY_PATH`             | `gemnasium-python` |                              | Path to load Python pip dependencies from. ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/12412) in GitLab 12.2) |
-| `RETIREJS_JS_ADVISORY_DB`            | `retire.js`        | `https://raw.githubusercontent.com/RetireJS/retire.js/master/repository/jsrepository.json` | Path or URL to `retire.js` JS vulnerability data file. Note that if the URL hosting the data file uses a custom SSL certificate, for example in an offline installation, you can pass the certificate in the `ADDITIONAL_CA_CERT_BUNDLE` variable. |
-| `RETIREJS_NODE_ADVISORY_DB`          | `retire.js`        | `https://raw.githubusercontent.com/RetireJS/retire.js/master/repository/npmrepository.json` | Path or URL to `retire.js` node vulnerability data file. Note that if the URL hosting the data file uses a custom SSL certificate, for example in an offline installation, you can pass the certificate in the `ADDITIONAL_CA_CERT_BUNDLE` variable. |
-| `RETIREJS_ADVISORY_DB_INSECURE`      | `retire.js`        | `false`                      | Enable fetching remote JS and Node vulnerability data files (defined by the `RETIREJS_JS_ADVISORY_DB` and `RETIREJS_NODE_ADVISORY_DB` variables) from hosts using an insecure or self-signed SSL (TLS) certificate. |
 
 #### Other variables
 
@@ -687,32 +644,10 @@ Read more on [how to use private Maven repositories](../index.md#using-private-m
 GitLab also offers [FIPS-enabled Red Hat UBI](https://www.redhat.com/en/blog/introducing-red-hat-universal-base-image)
 versions of the Gemnasium images. You can therefore replace standard images with FIPS-enabled images.
 
-To use FIPS-enabled images, set the `DS_IMAGE_SUFFIX` to `-fips`,
-and set `DS_EXCLUDED_ANALYZERS` to `bundler-audit, retire.js`
-to exclude the analyzers that don't support FIPS.
+Gemnasium scanning jobs automatically use FIPS-enabled image when FIPS mode is enabled in the GitLab instance.
+([Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/357922) in GitLab 15.0.)
 
-```yaml
-variables:
-  DS_IMAGE_SUFFIX: "-fips"
-  DS_EXCLUDED_ANALYZERS: "bundler-audit, retire.js"
-```
-
-If you want to execute `bundler-audit` or `retire.js` in your project pipeline, you can override the
-Gemnasium scanning jobs, and set `DS_IMAGE_SUFFIX` to `-fips` only for those jobs.
-
-```yaml
-gemnasium-dependency_scanning:
-  variables:
-    DS_IMAGE_SUFFIX: "-fips"
-
-gemnasium-maven-dependency_scanning:
-  variables:
-    DS_IMAGE_SUFFIX: "-fips"
-
-gemnasium-python-dependency_scanning:
-  variables:
-    DS_IMAGE_SUFFIX: "-fips"
-```
+To manually switch to FIPS-enabled images, set the variable `DS_IMAGE_SUFFIX` to `"-fips"`.
 
 ## Interacting with the vulnerabilities
 
@@ -964,9 +899,6 @@ Here are the requirements for using dependency scanning in an offline environmen
 
   This advisory database is constantly being updated, so you must periodically sync your local copy with GitLab.
 
-- _Only if scanning Ruby projects_: Host an offline Git copy of the [advisory database](https://github.com/rubysec/ruby-advisory-db).
-- _Only if scanning npm/yarn projects_: Host an offline copy of the [`retire.js`](https://github.com/RetireJS/retire.js/) [node](https://github.com/RetireJS/retire.js/blob/master/repository/npmrepository.json) and [`js`](https://github.com/RetireJS/retire.js/blob/master/repository/jsrepository.json) advisory databases.
-
 Note that GitLab Runner has a [default `pull policy` of `always`](https://docs.gitlab.com/runner/executors/docker.html#using-the-always-pull-policy),
 meaning the runner tries to pull Docker images from the GitLab container registry even if a local
 copy is available. The GitLab Runner [`pull_policy` can be set to `if-not-present`](https://docs.gitlab.com/runner/executors/docker.html#using-the-if-not-present-pull-policy)
@@ -981,11 +913,9 @@ import the following default dependency scanning analyzer images from `registry.
 your [local Docker container registry](../../packages/container_registry/index.md):
 
 ```plaintext
-registry.gitlab.com/security-products/gemnasium:2
-registry.gitlab.com/security-products/gemnasium-maven:2
-registry.gitlab.com/security-products/gemnasium-python:2
-registry.gitlab.com/security-products/retire.js:2
-registry.gitlab.com/security-products/bundler-audit:2
+registry.gitlab.com/security-products/gemnasium:3
+registry.gitlab.com/security-products/gemnasium-maven:3
+registry.gitlab.com/security-products/gemnasium-python:3
 ```
 
 The process for importing Docker images into a local offline Docker registry depends on
@@ -1007,8 +937,6 @@ Support for custom certificate authorities was introduced in the following versi
 | `gemnasium` | [v2.8.0](https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium/-/releases/v2.8.0) |
 | `gemnasium-maven` | [v2.9.0](https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium-maven/-/releases/v2.9.0) |
 | `gemnasium-python` | [v2.7.0](https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium-python/-/releases/v2.7.0) |
-| `retire.js` | [v2.4.0](https://gitlab.com/gitlab-org/security-products/analyzers/retire.js/-/releases/v2.4.0) |
-| `bundler-audit` | [v2.4.0](https://gitlab.com/gitlab-org/security-products/analyzers/bundler-audit/-/releases/v2.4.0) |
 
 ### Set dependency scanning CI/CD job variables to use local dependency scanning analyzers
 
@@ -1141,22 +1069,6 @@ intended to obtain a private package from a private index. This only affects use
 requires that the package does not already exist in the public index (and thus the attacker can put the package there with an arbitrary
 version number).
 
-## Limitations
-
-### Referencing local dependencies using a path in JavaScript projects
-
-The [Retire.js](https://gitlab.com/gitlab-org/security-products/analyzers/retire.js) analyzer
-doesn't support dependency references made with [local paths](https://docs.npmjs.com/cli/v6/configuring-npm/package-json/#local-paths)
-in the `package.json` of JavaScript projects. The dependency scan outputs the following error for
-such references:
-
-```plaintext
-ERROR: Could not find dependencies: <dependency-name>. You may need to run npm install
-```
-
-As a workaround, add the [`retire.js`](analyzers.md) analyzer to
-[`DS_EXCLUDED_ANALYZERS`](#configuring-dependency-scanning).
-
 ## Troubleshooting
 
 ### Working around missing support for certain languages or package managers
@@ -1217,11 +1129,6 @@ syntax. This directive is limited to 10000 checks and always returns `true` afte
 number. Because of this, and depending on the number of files in your repository, a dependency
 scanning job might be triggered even if the scanner doesn't support your project.
 
-### Issues building projects with npm or yarn packages relying on Python 2
-
-[Python 2 was removed](https://www.python.org/doc/sunset-python-2/) from the `retire.js` analyzer in GitLab 13.7 (analyzer version 2.10.1). Projects using packages
-with a dependency on this version of Python should use `retire.js` version 2.10.0 or lower (for example, `registry.gitlab.com/gitlab-org/security-products/analyzers/retire.js:2.10.0`).
-
 ### Error: `dependency_scanning is used for configuration only, and its script should not be executed`
 
 For information on this, see the [GitLab Secure troubleshooting section](../index.md#error-job-is-used-for-configuration-only-and-its-script-should-not-be-executed).
@@ -1280,7 +1187,7 @@ We recommend committing the lock files, which prevents this warning.
 
 If you have manually set `DS_MAJOR_VERSION` or `DS_ANALYZER_IMAGE` for specific reasons,
 and now must update your configuration to again get the latest patched versions of our
-analyzers, edit your `gitlab-ci.yml` file and either:
+analyzers, edit your `.gitlab-ci.yml` file and either:
 
 - Set your `DS_MAJOR_VERSION` to match the latest version as seen in
   [our current Dependency Scanning template](https://gitlab.com/gitlab-org/gitlab/blob/master/lib/gitlab/ci/templates/Security/Dependency-Scanning.gitlab-ci.yml#L18).
@@ -1310,5 +1217,22 @@ To work around this error, downgrade the analyzer's version of `setuptools` (e.g
 gemnasium-python-dependency_scanning:
   before_script:
     - pip install setuptools==57.5.0
-  image: registry.gitlab.com/gitlab-org/security-products/analyzers/gemnasium-python:2-python-3.9
+```
+
+### Dependency Scanning of projects using psycopg2 fails with `pg_config executable not found` error
+
+Scanning a Python project that depends on `psycopg2` can fail with this message:
+
+```plaintext
+Error: pg_config executable not found.
+```
+
+[psycopg2](https://pypi.org/project/psycopg2/) depends on the `libpq-dev` Debian package,
+which is not installed in the `gemnasium-python` Docker image. To work around this error,
+install the `libpq-dev` package in a `before_script`:
+
+```yaml
+gemnasium-python-dependency_scanning:
+  before_script:
+    - apt-get update && apt-get install -y libpq-dev
 ```

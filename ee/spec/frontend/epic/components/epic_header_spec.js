@@ -45,14 +45,14 @@ describe('EpicHeaderComponent', () => {
       it('returns string `issue-open-m` when `isEpicOpen` is true', () => {
         store.state.state = statusType.open;
 
-        expect(findStatusIcon().props('name')).toBe('issue-open-m');
+        expect(findStatusIcon().props('name')).toBe('epic');
       });
 
       it('returns string `mobile-issue-close` when `isEpicOpen` is false', async () => {
         store.state.state = statusType.close;
 
         await nextTick();
-        expect(findStatusIcon().props('name')).toBe('mobile-issue-close');
+        expect(findStatusIcon().props('name')).toBe('epic-closed');
       });
     });
 
@@ -112,7 +112,7 @@ describe('EpicHeaderComponent', () => {
       const statusBox = findStatusBox();
 
       expect(statusBox.exists()).toBe(true);
-      expect(statusBox.findComponent(GlIcon).props('name')).toBe('issue-open-m');
+      expect(statusBox.findComponent(GlIcon).props('name')).toBe('epic');
       expect(statusBox.find('span').text()).toBe('Open');
     });
 

@@ -73,7 +73,6 @@ module QA
 
           Page::Project::Pipeline::Show.perform do |pipeline|
             expect(pipeline).to have_job('gemnasium-dependency_scanning')
-            expect(pipeline).to have_job('bundler-audit-dependency_scanning')
           end
 
           Page::Project::Menu.perform(&:click_on_security_configuration_link)

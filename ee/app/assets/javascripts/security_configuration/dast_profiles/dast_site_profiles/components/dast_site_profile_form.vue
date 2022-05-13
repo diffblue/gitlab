@@ -49,6 +49,7 @@ export default {
   data() {
     const {
       name = '',
+      profileName = '',
       targetUrl = '',
       excludedUrls = [],
       requestHeaders = '',
@@ -62,7 +63,7 @@ export default {
       state: false,
       showValidation: false,
       fields: {
-        profileName: initFormField({ value: name }),
+        profileName: initFormField({ value: name || profileName }),
         targetUrl: initFormField({ value: targetUrl }),
         excludedUrls: initFormField({
           value: (excludedUrls || []).join(EXCLUDED_URLS_SEPARATOR),
@@ -227,6 +228,7 @@ export default {
     :form-touched="formTouched"
     :is-policy-profile="isPolicyProfile"
     :block-submit="isSubmitBlocked"
+    :show-header="!stacked"
     :modal-props="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ {
       title: i18n.modal.title,
       okTitle: i18n.modal.okTitle,
@@ -249,7 +251,7 @@ export default {
 
     <template #error-message>{{ i18n.errorMessage }}</template>
 
-    <gl-form-group data-testid="dast-site-parent-group" :disabled="isPolicyProfile">
+    <gl-form-group class="gl-mb-0" data-testid="dast-site-parent-group" :disabled="isPolicyProfile">
       <gl-form-group
         :label="s__('DastProfiles|Profile name')"
         :invalid-feedback="form.fields.profileName.feedback"
@@ -265,8 +267,6 @@ export default {
           :state="form.fields.profileName.state"
         />
       </gl-form-group>
-
-      <hr class="gl-border-gray-100" />
 
       <gl-form-group :label="s__('DastProfiles|Site type')">
         <gl-form-radio-group
@@ -343,7 +343,7 @@ export default {
         <gl-form-group
           :label="i18n.excludedUrls.label"
           :invalid-feedback="form.fields.excludedUrls.feedback"
-          class="col-md-6"
+          :class="{ 'col-md-6': !stacked, 'col-md-12': stacked }"
         >
           <template #label>
             {{ i18n.excludedUrls.label }}
@@ -365,7 +365,10 @@ export default {
           }}</gl-form-text>
         </gl-form-group>
 
-        <gl-form-group :invalid-feedback="form.fields.requestHeaders.feedback" class="col-md-6">
+        <gl-form-group
+          :invalid-feedback="form.fields.requestHeaders.feedback"
+          :class="{ 'col-md-6': !stacked, 'col-md-12': stacked }"
+        >
           <template #label>
             {{ i18n.requestHeaders.label }}
             <tooltip-icon :title="i18n.requestHeaders.tooltip" />
@@ -394,6 +397,7 @@ export default {
       :disabled="isPolicyProfile"
       :show-validation="form.showValidation"
       :is-edit-mode="isEdit"
+      :stacked="stacked"
     />
   </base-dast-profile-form>
 </template>

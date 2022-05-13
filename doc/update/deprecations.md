@@ -51,6 +51,24 @@ Most of the deprecations are **planned for removal in 15.0**, and many of them a
 
 <div class="deprecation removal-160 breaking-change">
 
+### CiCdSettingsUpdate mutation renamed to ProjectCiCdSettingsUpdate
+
+WARNING:
+This feature will be changed or removed in 16.0
+as a [breaking change](https://docs.gitlab.com/ee/development/contributing/#breaking-changes).
+Before updating GitLab, review the details carefully to determine if you need to make any
+changes to your code, settings, or workflow.
+
+The `CiCdSettingsUpdate` mutation was renamed to `ProjectCiCdSettingsUpdate` in GitLab 15.0.
+The `CiCdSettingsUpdate` mutation will be removed in GitLab 16.0.
+Any user scripts that use the `CiCdSettingsUpdate` mutation must be updated to use `ProjectCiCdSettingsUpdate`
+instead.
+
+**Planned removal milestone: <span class="removal-milestone">16.0</span> (2023-05-22)**
+</div>
+
+<div class="deprecation removal-160 breaking-change">
+
 ### GraphQL API legacyMode argument for Runner status
 
 WARNING:
@@ -331,21 +349,6 @@ Any API calls attempting to change the rate limits for `user_email_lookup_limit`
 <div class="announcement-milestone">
 
 ## 14.8
-
-<div class="deprecation removal-150 breaking-change">
-
-### Changes to the `CI_JOB_JWT`
-
-WARNING:
-This feature will be changed or removed in 15.0
-as a [breaking change](https://docs.gitlab.com/ee/development/contributing/#breaking-changes).
-Before updating GitLab, review the details carefully to determine if you need to make any
-changes to your code, settings, or workflow.
-
-The `CI_JOB_JWT` will be updated to support a wider variety of cloud providers. It will be changed to match [`CI_JOB_JWT_V2`](https://docs.gitlab.com/ee/ci/variables/predefined_variables.html), but this change may not be backwards compatible for all users, including Hashicorp Vault users. To maintain the current behavior, users can switch to using `CI_JOB_JWT_V1`, or update their configuration in GitLab 15.0 to use the improved `CI_JOB_JWT`.
-
-**Planned removal milestone: <span class="removal-milestone">15.0</span> (2022-05-22)**
-</div>
 
 <div class="deprecation removal-149">
 

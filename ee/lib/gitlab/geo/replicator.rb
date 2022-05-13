@@ -161,10 +161,6 @@ module Gitlab
         !enabled?
       end
 
-      def self.replication_enabled_by_default?
-        Feature::Definition.default_enabled?(replication_enabled_feature_key, default_enabled_if_undefined: true)
-      end
-
       # @example Given `Geo::PackageFileRegistryFinder`, this returns
       #   `::Geo::PackageFileReplicator`
       # @example Given `Resolver::Geo::PackageFileRegistriesResolver`, this

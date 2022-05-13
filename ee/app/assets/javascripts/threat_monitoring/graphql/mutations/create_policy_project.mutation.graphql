@@ -1,5 +1,5 @@
-mutation createPolicyProject($projectPath: ID!) {
-  securityPolicyProjectCreate(input: { projectPath: $projectPath }) {
+mutation createPolicyProject($fullPath: String!) {
+  securityPolicyProjectCreate(input: { fullPath: $fullPath }) {
     project {
       fullPath
       id

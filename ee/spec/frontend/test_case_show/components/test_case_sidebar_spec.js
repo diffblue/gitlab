@@ -288,7 +288,7 @@ describe('TestCaseSidebar', () => {
 
       await nextTick();
 
-      todoEl = wrapper.find('button');
+      todoEl = wrapper.findComponent(GlButton);
 
       expect(todoEl.exists()).toBe(true);
       expect(todoEl.attributes('title')).toBe('Add a to do');

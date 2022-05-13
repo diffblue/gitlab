@@ -3,8 +3,7 @@ import { shallowMount } from '@vue/test-utils';
 import ReportStatusAlert from 'ee/security_dashboard/components/pipeline/report_status_alert.vue';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import { trimText } from 'helpers/text_helper';
-
-const TEST_HELP_PAGE_LINK = 'https://help.com';
+import { DOC_PATH_SECURITY_SCANNER_INTEGRATION_RETENTION_PERIOD } from 'ee/security_dashboard/constants';
 
 describe('ee/security_dashboard/components/report_status_alert.vue', () => {
   let wrapper;
@@ -15,9 +14,6 @@ describe('ee/security_dashboard/components/report_status_alert.vue', () => {
   const createWrapper = () =>
     extendedWrapper(
       shallowMount(ReportStatusAlert, {
-        provide: {
-          vulnerabilityRetentionPeriodHelpPageLink: TEST_HELP_PAGE_LINK,
-        },
         stubs: {
           GlSprintf,
         },
@@ -47,6 +43,8 @@ describe('ee/security_dashboard/components/report_status_alert.vue', () => {
   });
 
   it('links to the security-report help page', () => {
-    expect(findHelpPageLink().attributes('href')).toBe(TEST_HELP_PAGE_LINK);
+    expect(findHelpPageLink().attributes('href')).toBe(
+      DOC_PATH_SECURITY_SCANNER_INTEGRATION_RETENTION_PERIOD,
+    );
   });
 });

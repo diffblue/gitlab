@@ -781,6 +781,9 @@ msgstr ""
 msgid "%{message} showing first %{warnings_displayed}"
 msgstr ""
 
+msgid "%{message}. Your attention request was removed."
+msgstr ""
+
 msgid "%{milestone} (expired)"
 msgstr ""
 
@@ -899,7 +902,7 @@ msgstr ""
 msgid "%{reportType} detected %{totalStart}%{total}%{totalEnd} potential %{vulnMessage}"
 msgstr ""
 
-msgid "%{reportType} detected %{totalStart}no%{totalEnd} new vulnerabilities."
+msgid "%{reportType} detected no %{totalStart}new%{totalEnd} vulnerabilities."
 msgstr ""
 
 msgid "%{retryButtonStart}Try again%{retryButtonEnd} or %{newFileButtonStart}attach a new file%{newFileButtonEnd}."
@@ -2085,6 +2088,9 @@ msgstr ""
 msgid "Add a comment to this line or drag for multiple lines"
 msgstr ""
 
+msgid "Add a confidential internal note to this %{noteableDisplayName}."
+msgstr ""
+
 msgid "Add a custom message with details about the instance's shared runners. The message is visible in group and project CI/CD settings, in the Runners section. Markdown is supported."
 msgstr ""
 
@@ -2206,6 +2212,9 @@ msgid "Add header and footer to emails. Please note that color settings will onl
 msgstr ""
 
 msgid "Add image comment"
+msgstr ""
+
+msgid "Add internal note"
 msgstr ""
 
 msgid "Add italic text"
@@ -2595,6 +2604,9 @@ msgstr ""
 msgid "AdminProjects|Delete Project %{projectName}?"
 msgstr ""
 
+msgid "AdminSettings|%{strongStart}WARNING:%{strongEnd} Environment variable %{environment_variable} does not exist or is not pointing to a valid directory. %{icon_link}"
+msgstr ""
+
 msgid "AdminSettings|A Let's Encrypt account will be configured for this GitLab instance using this email address. You will receive emails to warn of expiring certificates. %{link_start}Learn more.%{link_end}"
 msgstr ""
 
@@ -2638,6 +2650,9 @@ msgid "AdminSettings|Enable Registration Features"
 msgstr ""
 
 msgid "AdminSettings|Enable Service Ping"
+msgstr ""
+
+msgid "AdminSettings|Enable a Prometheus endpoint that exposes health and performance statistics. The Health Check menu item appears in the Monitoring section of the Admin Area. Restart required. %{link_start}Learn more.%{link_end}"
 msgstr ""
 
 msgid "AdminSettings|Enable kuromoji custom analyzer: Indexing"
@@ -3250,6 +3265,9 @@ msgid "Advanced Settings"
 msgstr ""
 
 msgid "Advanced export options"
+msgstr ""
+
+msgid "AdvancedSearch|Elasticsearch version not compatible"
 msgstr ""
 
 msgid "AdvancedSearch|Reindex required"
@@ -4720,6 +4738,9 @@ msgstr ""
 msgid "Approved-By"
 msgstr ""
 
+msgid "Approved. Your attention request was removed."
+msgstr ""
+
 msgid "Approver"
 msgstr ""
 
@@ -4792,7 +4813,7 @@ msgstr ""
 msgid "Are you sure you want to attempt to merge?"
 msgstr ""
 
-msgid "Are you sure you want to cancel editing this comment?"
+msgid "Are you sure you want to cancel editing this %{commentType}?"
 msgstr ""
 
 msgid "Are you sure you want to close this blocked issue?"
@@ -4804,7 +4825,7 @@ msgstr ""
 msgid "Are you sure you want to delete these artifacts?"
 msgstr ""
 
-msgid "Are you sure you want to delete this %{typeOfComment}?"
+msgid "Are you sure you want to delete this %{commentType}?"
 msgstr ""
 
 msgid "Are you sure you want to delete this SSH key?"
@@ -5047,6 +5068,9 @@ msgid "Assigned to me"
 msgstr ""
 
 msgid "Assigned to you"
+msgstr ""
+
+msgid "Assigned user(s). Your attention request was removed."
 msgstr ""
 
 msgid "Assignee"
@@ -5629,6 +5653,78 @@ msgstr ""
 msgid "Batch size"
 msgstr ""
 
+msgid "Batched Job|Background Migrations"
+msgstr ""
+
+msgid "Batched Job|Batched Job (Id: %{id})"
+msgstr ""
+
+msgid "BatchedJob|Attempts"
+msgstr ""
+
+msgid "BatchedJob|Batch size"
+msgstr ""
+
+msgid "BatchedJob|Batched Jobs"
+msgstr ""
+
+msgid "BatchedJob|Created At"
+msgstr ""
+
+msgid "BatchedJob|Created at"
+msgstr ""
+
+msgid "BatchedJob|Exception Class"
+msgstr ""
+
+msgid "BatchedJob|Exception Message"
+msgstr ""
+
+msgid "BatchedJob|Exception class"
+msgstr ""
+
+msgid "BatchedJob|Exception message"
+msgstr ""
+
+msgid "BatchedJob|Finished at"
+msgstr ""
+
+msgid "BatchedJob|Max Value"
+msgstr ""
+
+msgid "BatchedJob|Max value"
+msgstr ""
+
+msgid "BatchedJob|Min Value"
+msgstr ""
+
+msgid "BatchedJob|Min value"
+msgstr ""
+
+msgid "BatchedJob|Next Status"
+msgstr ""
+
+msgid "BatchedJob|Next status"
+msgstr ""
+
+msgid "BatchedJob|Pause ms"
+msgstr ""
+
+msgid "BatchedJob|Pause time (ms)"
+msgstr ""
+
+msgid "BatchedJob|Previous Status"
+msgstr ""
+
+msgid "BatchedJob|Previous status"
+msgstr ""
+
+msgid "BatchedJob|Started at"
+msgstr ""
+
+msgid "BatchedJob|Transition logs:"
+msgstr ""
+
 msgid "Be careful. Changing the project's namespace can have unintended side effects."
 msgstr ""
 
@@ -5896,6 +5992,9 @@ msgstr ""
 msgid "Billings|Extend trial"
 msgstr ""
 
+msgid "Billings|Free groups are limited to %{number} seats."
+msgstr ""
+
 msgid "Billings|In a seat"
 msgstr ""
 
@@ -5983,6 +6082,9 @@ msgstr ""
 msgid "Billing|Free groups on GitLab are limited to %{maxNamespaceSeats} seats"
 msgstr ""
 
+msgid "Billing|From June 22, 2022 (GitLab 15.1), free groups will be limited to 5 members"
+msgstr ""
+
 msgid "Billing|Group invite"
 msgstr ""
 
@@ -6017,6 +6119,9 @@ msgid "Billing|View pending approvals"
 msgstr ""
 
 msgid "Billing|You are about to remove user %{username} from your subscription. If you continue, the user will be removed from the %{namespace} group and all its subgroups and projects. This action can't be undone."
+msgstr ""
+
+msgid "Billing|You can begin moving members in %{namespaceName} now. A member loses access to the group when you turn off %{strongStart}In a seat%{strongEnd}. If over 5 members have %{strongStart}In a seat%{strongEnd} enabled after June 22, 2022, we'll select the 5 members who maintain access. We'll first count members that have Owner and Maintainer roles, then the most recently active members until we reach 5 members. The remaining members will get a status of Over limit and lose access to the group."
 msgstr ""
 
 msgid "Bitbucket Server Import"
@@ -6715,6 +6820,9 @@ msgstr ""
 msgid "CI/CD configuration file"
 msgstr ""
 
+msgid "CI/CD limits"
+msgstr ""
+
 msgid "CI/CD minutes"
 msgstr ""
 
@@ -6801,6 +6909,9 @@ msgstr ""
 msgid "CICD|Jobs"
 msgstr ""
 
+msgid "CICD|Limit"
+msgstr ""
+
 msgid "CICD|Limit CI_JOB_TOKEN access"
 msgstr ""
 
@@ -6811,6 +6922,9 @@ msgid "CICD|The Auto DevOps pipeline runs by default in all projects with no CI/
 msgstr ""
 
 msgid "CICD|The Auto DevOps pipeline runs if no alternative CI configuration file is found."
+msgstr ""
+
+msgid "CICD|There are several CI/CD limits in place."
 msgstr ""
 
 msgid "CICD|group enabled"
@@ -10867,9 +10981,6 @@ msgstr ""
 msgid "Customize name"
 msgstr ""
 
-msgid "Customize your pipeline configuration and coverage report."
-msgstr ""
-
 msgid "Customize your pipeline configuration."
 msgstr ""
 
@@ -11189,6 +11300,9 @@ msgstr ""
 msgid "DastProfiles|Are you sure you want to delete this profile?"
 msgstr ""
 
+msgid "DastProfiles|Attacks the target to find potential vulnerabilities. Active scans are potentially harmful to the site being scanned."
+msgstr ""
+
 msgid "DastProfiles|Authentication"
 msgstr ""
 
@@ -11298,6 +11412,9 @@ msgid "DastProfiles|Minimum = 0 (no timeout enabled), Maximum = 2880 minutes"
 msgstr ""
 
 msgid "DastProfiles|Minimum = 1 second, Maximum = 3600 seconds"
+msgstr ""
+
+msgid "DastProfiles|Monitors all HTTP requests sent to the target to find potential vulnerabilities."
 msgstr ""
 
 msgid "DastProfiles|New scanner profile"
@@ -11807,6 +11924,9 @@ msgid "Delete %{name}"
 msgstr ""
 
 msgid "Delete Comment"
+msgstr ""
+
+msgid "Delete Internal Note"
 msgstr ""
 
 msgid "Delete Key"
@@ -13103,6 +13223,12 @@ msgstr ""
 msgid "Discover|Upgrade now"
 msgstr ""
 
+msgid "Discuss a specific suggestion or question internally that needs to be resolved."
+msgstr ""
+
+msgid "Discuss a specific suggestion or question internally."
+msgstr ""
+
 msgid "Discuss a specific suggestion or question that needs to be resolved."
 msgstr ""
 
@@ -13819,9 +13945,6 @@ msgstr ""
 msgid "Enable automatic repository housekeeping"
 msgstr ""
 
-msgid "Enable collection of application metrics. Restart required."
-msgstr ""
-
 msgid "Enable container expiration and retention policies for projects created earlier than GitLab 12.7."
 msgstr ""
 
@@ -14078,9 +14201,6 @@ msgid "Environment is required for Stages::VariableEndpointInserter"
 msgstr ""
 
 msgid "Environment scope"
-msgstr ""
-
-msgid "Environment variable %{environment_variable} does not exist or is not pointing to a valid directory."
 msgstr ""
 
 msgid "Environment variables are configured by your administrator to be %{link_start}protected%{link_end} by default."
@@ -16319,9 +16439,6 @@ msgstr ""
 msgid "Geo|%{title} checksum progress"
 msgstr ""
 
-msgid "Geo|(%{timeAgo})"
-msgstr ""
-
 msgid "Geo|Add New Site"
 msgstr ""
 
@@ -16922,6 +17039,9 @@ msgstr ""
 msgid "GitLab"
 msgstr ""
 
+msgid "GitLab (self-managed)"
+msgstr ""
+
 msgid "GitLab / Unsubscribe"
 msgstr ""
 
@@ -17034,6 +17154,9 @@ msgid "GitLab will create a branch in your fork and start a merge request."
 msgstr ""
 
 msgid "GitLab.com"
+msgstr ""
+
+msgid "GitLab.com (SaaS)"
 msgstr ""
 
 msgid "GitLab.com import"
@@ -18591,6 +18714,9 @@ msgstr ""
 msgid "Hide"
 msgstr ""
 
+msgid "Hide Live Preview"
+msgstr ""
+
 msgid "Hide archived projects"
 msgstr ""
 
@@ -18764,9 +18890,6 @@ msgid "How many seconds an IP counts toward the IP address limit."
 msgstr ""
 
 msgid "How the job limiter handles jobs exceeding the thresholds specified below. The 'track' mode only logs the jobs. The 'compress' mode compresses the jobs and raises an exception if the compressed size exceeds the limit."
-msgstr ""
-
-msgid "How to export these metrics to Prometheus?"
 msgstr ""
 
 msgid "I accept the %{terms_link}"
@@ -20517,6 +20640,9 @@ msgstr ""
 msgid "Internal error occurred while delivering this webhook."
 msgstr ""
 
+msgid "Internal note"
+msgstr ""
+
 msgid "Internal users"
 msgstr ""
 
@@ -21204,7 +21330,7 @@ msgstr ""
 msgid "Iterations"
 msgstr ""
 
-msgid "Iterations|Add a duration, and number of future iterations in order to convert this cadence to automatic scheduling."
+msgid "Iterations|Add a duration, and number of upcoming iterations in order to convert this cadence to automatic scheduling."
 msgstr ""
 
 msgid "Iterations|Add iteration"
@@ -21264,7 +21390,7 @@ msgstr ""
 msgid "Iterations|Error loading iteration cadences."
 msgstr ""
 
-msgid "Iterations|Future iterations"
+msgid "Iterations|First iteration start date"
 msgstr ""
 
 msgid "Iterations|Iteration cadences"
@@ -21279,7 +21405,7 @@ msgstr ""
 msgid "Iterations|Learn more about automatic scheduling"
 msgstr ""
 
-msgid "Iterations|Move incomplete issues to the next iteration"
+msgid "Iterations|Move incomplete issues to the next iteration."
 msgstr ""
 
 msgid "Iterations|New iteration"
@@ -21300,10 +21426,13 @@ msgstr ""
 msgid "Iterations|No iterations in cadence."
 msgstr ""
 
+msgid "Iterations|No one can change this date after the cadence has begun."
+msgstr ""
+
 msgid "Iterations|No open iterations."
 msgstr ""
 
-msgid "Iterations|Number of future iterations you would like to have scheduled"
+msgid "Iterations|Number of upcoming iterations that should be scheduled at a time."
 msgstr ""
 
 msgid "Iterations|Open"
@@ -21333,13 +21462,13 @@ msgstr ""
 msgid "Iterations|Start date"
 msgstr ""
 
-msgid "Iterations|The duration for each iteration (in weeks)"
+msgid "Iterations|The duration of each iteration (in weeks)."
 msgstr ""
 
 msgid "Iterations|The iteration has been deleted."
 msgstr ""
 
-msgid "Iterations|The start date of your first iteration"
+msgid "Iterations|The start date of the first iteration determines when your cadence begins."
 msgstr ""
 
 msgid "Iterations|This cadence requires an update"
@@ -21361,6 +21490,9 @@ msgid "Iterations|Unable to find iteration."
 msgstr ""
 
 msgid "Iterations|Unable to save cadence. Please try again."
+msgstr ""
+
+msgid "Iterations|Upcoming iterations"
 msgstr ""
 
 msgid "Iteration|Dates cannot overlap with other existing Iterations within this group"
@@ -21474,6 +21606,9 @@ msgstr ""
 msgid "JiraService|Base URL of the Jira instance."
 msgstr ""
 
+msgid "JiraService|Change GitLab version"
+msgstr ""
+
 msgid "JiraService|Define the type of Jira issue to create from a vulnerability."
 msgstr ""
 
@@ -21507,7 +21642,13 @@ msgstr ""
 msgid "JiraService|For example, AB"
 msgstr ""
 
+msgid "JiraService|For example: https://gitlab.example.com"
+msgstr ""
+
 msgid "JiraService|GitLab for Jira Configuration"
+msgstr ""
+
+msgid "JiraService|GitLab instance URL"
 msgstr ""
 
 msgid "JiraService|IDs must be a list of numbers that can be split with , or ;"
@@ -21558,6 +21699,9 @@ msgstr ""
 msgid "JiraService|Set a custom final state by using transition IDs. %{linkStart}Learn about transition IDs%{linkEnd}"
 msgstr ""
 
+msgid "JiraService|Sign in to GitLab to link namespaces."
+msgstr ""
+
 msgid "JiraService|Sign in to GitLab.com to get started."
 msgstr ""
 
@@ -21598,6 +21742,12 @@ msgid "JiraService|Warning: All GitLab users with access to this GitLab project 
 msgstr ""
 
 msgid "JiraService|Web URL"
+msgstr ""
+
+msgid "JiraService|Welcome to GitLab for Jira"
+msgstr ""
+
+msgid "JiraService|What version of GitLab are you using?"
 msgstr ""
 
 msgid "JiraService|When a Jira issue is mentioned in a commit or merge request, a remote link and comment (if enabled) will be created."
@@ -21865,6 +22015,9 @@ msgid "July"
 msgstr ""
 
 msgid "Jump to next unresolved thread"
+msgstr ""
+
+msgid "Jump to previous unresolved thread"
 msgstr ""
 
 msgid "Jun"
@@ -23001,6 +23154,9 @@ msgid "Make sure you save it - you won't be able to access it again."
 msgstr ""
 
 msgid "Makes this issue confidential."
+msgstr ""
+
+msgid "Manage"
 msgstr ""
 
 msgid "Manage %{workspace} labels"
@@ -24646,6 +24802,9 @@ msgstr ""
 msgid "More topics"
 msgstr ""
 
+msgid "Most common"
+msgstr ""
+
 msgid "Most relevant"
 msgstr ""
 
@@ -25624,16 +25783,19 @@ msgstr ""
 msgid "Notes rate limit"
 msgstr ""
 
+msgid "Notes|Are you sure you want to cancel creating this %{commentType}?"
+msgstr ""
+
 msgid "Notes|Are you sure you want to cancel creating this comment?"
 msgstr ""
 
 msgid "Notes|Collapse replies"
 msgstr ""
 
-msgid "Notes|Confidential comments are only visible to members with the role of Reporter or higher"
+msgid "Notes|Internal notes are only visible to the author, assignees, and members with the role of Reporter or higher"
 msgstr ""
 
-msgid "Notes|Make this comment confidential"
+msgid "Notes|Make this an internal note"
 msgstr ""
 
 msgid "Notes|Show all activity"
@@ -25648,10 +25810,7 @@ msgstr ""
 msgid "Notes|This comment has changed since you started editing, please review the %{open_link}updated comment%{close_link} to ensure information is not lost"
 msgstr ""
 
-msgid "Notes|This comment is confidential and only visible to group members"
-msgstr ""
-
-msgid "Notes|This comment is confidential and only visible to project members"
+msgid "Notes|This internal note will always remain confidential"
 msgstr ""
 
 msgid "Notes|You're only seeing %{boldStart}other activity%{boldEnd} in the feed. To add a comment, switch to one of the following options."
@@ -27179,6 +27338,9 @@ msgid "Paths to protect with rate limiting"
 msgstr ""
 
 msgid "Pause"
+msgstr ""
+
+msgid "Pause indexing and upgrade Elasticsearch to a supported version."
 msgstr ""
 
 msgid "Pause time (ms)"
@@ -29479,7 +29641,7 @@ msgstr ""
 msgid "ProjectSettings|Additional settings that influence how and when merges are done."
 msgstr ""
 
-msgid "ProjectSettings|All discussions must be resolved"
+msgid "ProjectSettings|All threads must be resolved"
 msgstr ""
 
 msgid "ProjectSettings|Allow"
@@ -29491,7 +29653,7 @@ msgstr ""
 msgid "ProjectSettings|Analytics"
 msgstr ""
 
-msgid "ProjectSettings|Automatically resolve merge request diff discussions when they become outdated"
+msgid "ProjectSettings|Automatically resolve merge request diff threads when they become outdated"
 msgstr ""
 
 msgid "ProjectSettings|Badges"
@@ -31553,6 +31715,9 @@ msgstr ""
 msgid "Reply by email"
 msgstr ""
 
+msgid "Reply internally"
+msgstr ""
+
 msgid "Reply to comment"
 msgstr ""
 
@@ -31920,10 +32085,16 @@ msgstr ""
 msgid "Requested attention from @%{username}"
 msgstr ""
 
+msgid "Requested attention from @%{username}. Your own attention request was removed."
+msgstr ""
+
 msgid "Requested design version does not exist."
 msgstr ""
 
 msgid "Requested review"
+msgstr ""
+
+msgid "Requested review. Your attention request was removed."
 msgstr ""
 
 msgid "Requested states are invalid"
@@ -32861,6 +33032,9 @@ msgid "Save comment"
 msgstr ""
 
 msgid "Save deploy freeze"
+msgstr ""
+
+msgid "Save internal note"
 msgstr ""
 
 msgid "Save password"
@@ -35812,6 +35986,9 @@ msgid "Start free trial"
 msgstr ""
 
 msgid "Start inputting changes and we will generate a YAML-file for you to add to your repository"
+msgstr ""
+
+msgid "Start internal thread"
 msgstr ""
 
 msgid "Start merge train"
@@ -39751,6 +39928,9 @@ msgstr ""
 msgid "Trigger cluster reindexing. Only use this with an index that was created in GitLab 13.0 or later."
 msgstr ""
 
+msgid "Trigger job"
+msgstr ""
+
 msgid "Trigger manual job"
 msgstr ""
 
@@ -40426,6 +40606,9 @@ msgstr ""
 msgid "UsageQuota|Buy additional minutes"
 msgstr ""
 
+msgid "UsageQuota|Buy storage"
+msgstr ""
+
 msgid "UsageQuota|CI minutes usage by month"
 msgstr ""
 
@@ -40471,7 +40654,13 @@ msgstr ""
 msgid "UsageQuota|Learn more about usage quotas"
 msgstr ""
 
+msgid "UsageQuota|Learn more about usage quotas."
+msgstr ""
+
 msgid "UsageQuota|Local proxy used for frequently-accessed upstream Docker images. %{linkStart}More information%{linkEnd}"
+msgstr ""
+
+msgid "UsageQuota|Namespace storage used"
 msgstr ""
 
 msgid "UsageQuota|No CI minutes usage data available."
@@ -40492,7 +40681,13 @@ msgstr ""
 msgid "UsageQuota|Purchase more storage"
 msgstr ""
 
+msgid "UsageQuota|Purchased storage"
+msgstr ""
+
 msgid "UsageQuota|Purchased storage available"
+msgstr ""
+
+msgid "UsageQuota|Purchased storage used"
 msgstr ""
 
 msgid "UsageQuota|Repository"
@@ -41941,9 +42136,6 @@ msgstr ""
 msgid "Vulnerability|View training"
 msgstr ""
 
-msgid "WARNING:"
-msgstr ""
-
 msgid "WARNING: This snippet contains hidden files which might be used to mask malicious behavior. Exercise caution if cloning and executing code from this snippet."
 msgstr ""
 
@@ -42708,6 +42900,9 @@ msgstr ""
 msgid "Write a description…"
 msgstr ""
 
+msgid "Write an internal note or drag your files here…"
+msgstr ""
+
 msgid "Write milestone description..."
 msgstr ""
 
@@ -43038,9 +43233,6 @@ msgid "You cannot approve your own deployment."
 msgstr ""
 
 msgid "You cannot change the start date after the cadence has started. Please create a new cadence."
-msgstr ""
-
-msgid "You cannot change the start date because the first iteration has already started on %{start_date}."
 msgstr ""
 
 msgid "You cannot combine replace_ids with add_ids or remove_ids"
@@ -44601,6 +44793,9 @@ msgid "instance completed"
 msgid_plural "instances completed"
 msgstr[0] ""
 msgstr[1] ""
+
+msgid "internal note"
+msgstr ""
 
 msgid "invalid milestone state `%{state}`"
 msgstr ""

@@ -17,7 +17,7 @@ export default () => {
     dastConfigurationPath,
   } = el.dataset;
 
-  const props = {};
+  const props = { projectFullPath };
 
   if (el.dataset.scannerProfile) {
     props.profile = convertObjectPropsToCamelCase(JSON.parse(el.dataset.scannerProfile));
@@ -32,9 +32,6 @@ export default () => {
   return new Vue({
     el,
     apolloProvider,
-    provide: {
-      projectFullPath,
-    },
     render(h) {
       return h(DastScannerProfileForm, {
         props,

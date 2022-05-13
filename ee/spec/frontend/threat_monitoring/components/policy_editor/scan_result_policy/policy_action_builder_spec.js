@@ -56,7 +56,7 @@ describe('PolicyActionBuilder', () => {
         ...propsData,
       },
       provide: {
-        projectId: '1',
+        namespaceId: '1',
       },
     });
   };

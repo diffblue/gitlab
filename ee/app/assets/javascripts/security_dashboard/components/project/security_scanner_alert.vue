@@ -1,6 +1,7 @@
 <script>
 import { GlAlert, GlIntersperse, GlLink, GlSprintf } from '@gitlab/ui';
 import { n__ } from '~/locale';
+import { DOC_PATH_APPLICATION_SECURITY } from 'ee/security_dashboard/constants';
 
 export default {
   components: {
@@ -9,7 +10,7 @@ export default {
     GlLink,
     GlSprintf,
   },
-  inject: ['notEnabledScannersHelpPath', 'noPipelineRunScannersHelpPath'],
+  inject: ['newProjectPipelinePath'],
   props: {
     notEnabledScanners: {
       type: Array,
@@ -25,13 +26,13 @@ export default {
       return [
         {
           key: 'notEnabled',
-          documentation: this.notEnabledScannersHelpPath,
+          link: DOC_PATH_APPLICATION_SECURITY,
           content: this.notEnabledAlertMessage,
           scanners: this.notEnabledScanners,
         },
         {
           key: 'noPipelineRun',
-          documentation: this.noPipelineRunScannersHelpPath,
+          link: this.newProjectPipelinePath,
           content: this.noPipelineRunAlertMessage,
           scanners: this.noPipelineRunScanners,
         },
@@ -71,7 +72,7 @@ export default {
               </gl-intersperse>
             </template>
             <template #link="{ content }">
-              <gl-link :href="alertMessage.documentation" target="_blank">{{ content }}</gl-link>
+              <gl-link :href="alertMessage.link" target="_blank">{{ content }}</gl-link>
             </template>
           </gl-sprintf>
         </li>

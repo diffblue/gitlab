@@ -7,6 +7,8 @@ export function confirmAction(
     primaryBtnText,
     secondaryBtnVariant,
     secondaryBtnText,
+    cancelBtnVariant,
+    cancelBtnText,
     modalHtmlMessage,
     title,
     hideCancel,
@@ -28,6 +30,8 @@ export function confirmAction(
               secondaryVariant: secondaryBtnVariant,
               primaryVariant: primaryBtnVariant,
               primaryText: primaryBtnText,
+              cancelVariant: cancelBtnVariant,
+              cancelText: cancelBtnText,
               title,
               modalHtmlMessage,
               hideCancel,
@@ -52,7 +56,7 @@ export function confirmAction(
 export function confirmViaGlModal(message, element) {
   const primaryBtnConfig = {};
 
-  const { confirmBtnVariant } = element.dataset;
+  const confirmBtnVariant = element.getAttribute('data-confirm-btn-variant');
 
   if (confirmBtnVariant) {
     primaryBtnConfig.primaryBtnVariant = confirmBtnVariant;

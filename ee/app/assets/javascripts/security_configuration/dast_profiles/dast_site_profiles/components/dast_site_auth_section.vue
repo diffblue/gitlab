@@ -34,6 +34,11 @@ export default {
       required: false,
       default: false,
     },
+    stacked: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   data() {
     const {
@@ -96,6 +101,7 @@ export default {
             :label="s__('DastProfiles|Authentication URL')"
             :invalid-feedback="form.fields.url.feedback"
             class="col-md-6"
+            :class="{ 'col-md-12': stacked }"
           >
             <gl-form-input
               v-model="form.fields.url.value"
@@ -112,6 +118,7 @@ export default {
             :label="s__('DastProfiles|Username')"
             :invalid-feedback="form.fields.username.feedback"
             class="col-md-6"
+            :class="{ 'col-md-12': stacked }"
           >
             <gl-form-input
               v-model="form.fields.username.value"
@@ -127,6 +134,7 @@ export default {
             :label="s__('DastProfiles|Password')"
             :invalid-feedback="form.fields.password.feedback"
             class="col-md-6"
+            :class="{ 'col-md-12': stacked }"
           >
             <gl-form-input
               v-model="form.fields.password.value"
@@ -144,6 +152,7 @@ export default {
             :label="s__('DastProfiles|Username form field')"
             :invalid-feedback="form.fields.usernameField.feedback"
             class="col-md-6"
+            :class="{ 'col-md-12': stacked }"
           >
             <gl-form-input
               v-model="form.fields.usernameField.value"
@@ -158,6 +167,7 @@ export default {
             :label="s__('DastProfiles|Password form field')"
             :invalid-feedback="form.fields.passwordField.feedback"
             class="col-md-6"
+            :class="{ 'col-md-12': stacked }"
           >
             <gl-form-input
               v-model="form.fields.passwordField.value"
@@ -174,6 +184,7 @@ export default {
             :label="s__('DastProfiles|Submit button (optional)')"
             :invalid-feedback="form.fields.submitField.feedback"
             class="col-md-6"
+            :class="{ 'col-md-12': stacked }"
           >
             <gl-form-input
               v-model="form.fields.submitField.value"

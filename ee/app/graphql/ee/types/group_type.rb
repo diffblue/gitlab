@@ -109,6 +109,12 @@ module EE
               resolver: ::Resolvers::ComplianceManagement::MergeRequests::ComplianceViolationResolver,
               authorize: :read_group_compliance_dashboard
 
+        field :allow_stale_runner_pruning,
+              ::GraphQL::Types::Boolean,
+              null: false,
+              description: 'Indicates whether to regularly prune stale group runners. Defaults to false.',
+              method: :allow_stale_runner_pruning?
+
         def billable_members_count(requested_hosted_plan: nil)
           object.billable_members_count(requested_hosted_plan)
         end

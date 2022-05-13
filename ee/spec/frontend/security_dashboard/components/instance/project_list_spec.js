@@ -33,7 +33,8 @@ describe('Project List component', () => {
     data: {
       instance: {
         projects: {
-          nodes: projects,
+          edges: projects.map((node) => ({ node })),
+          pageInfo: { hasNextPage: false, endCursor: null },
         },
       },
     },
@@ -92,9 +93,9 @@ describe('Project List component', () => {
   describe('project item', () => {
     const projects = generateMockProjects(1);
 
-    beforeEach(async () => {
+    beforeEach(() => {
       createWrapper({ projects });
-      await waitForPromises();
+      return waitForPromises();
     });
 
     it('renders a project item with an avatar', () => {

@@ -158,6 +158,30 @@ RSpec.describe ContainerRegistry::Migration do
     end
   end
 
+  describe '.pre_import_timeout' do
+    let(:value) { 10.minutes }
+
+    before do
+      stub_application_setting(container_registry_pre_import_timeout: value)
+    end
+
+    it 'returns the matching application_setting' do
+      expect(described_class.pre_import_timeout).to eq(value)
+    end
+  end
+
+  describe '.import_timeout' do
+    let(:value) { 10.minutes }
+
+    before do
+      stub_application_setting(container_registry_import_timeout: value)
+    end
+
+    it 'returns the matching application_setting' do
+      expect(described_class.import_timeout).to eq(value)
+    end
+  end
+
   describe '.target_plans' do
     subject { described_class.target_plans }
 
@@ -198,6 +222,20 @@ RSpec.describe ContainerRegistry::Migration do
     context 'feature flag disabled' do
       before do
         stub_feature_flags(container_registry_migration_phase2_enqueue_twice: false)
+      end
+
+      it { is_expected.to eq(false) }
+    end
+  end
+
+  describe '.enqueue_loop?' do
+    subject { described_class.enqueuer_loop? }
+
+    it { is_expected.to eq(true) }
+
+    context 'feature flag disabled' do
+      before do
+        stub_feature_flags(container_registry_migration_phase2_enqueuer_loop: false)
       end
 
       it { is_expected.to eq(false) }

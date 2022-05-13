@@ -1,12 +1,12 @@
 import { GlButton, GlEmptyState } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import ReportNotConfiguredProject from 'ee/security_dashboard/components/project/report_not_configured_project.vue';
+import { DOC_PATH_SECURITY_CONFIGURATION } from 'ee/security_dashboard/constants';
 
 describe('Project report not configured component', () => {
   let wrapper;
   const emptyStateSvgPath = '/placeholder.svg';
   const securityConfigurationPath = '/configuration';
-  const securityDashboardHelpPath = '/help';
   const newVulnerabilityPath = '/vulnerability/new';
 
   const findButton = () => wrapper.findComponent(GlButton);
@@ -16,9 +16,8 @@ describe('Project report not configured component', () => {
       provide: {
         emptyStateSvgPath,
         securityConfigurationPath,
-        securityDashboardHelpPath,
         newVulnerabilityPath,
-        canAdminVulnerability: true,
+        canAdminVulnerability: false,
         ...provide,
       },
     });
@@ -33,7 +32,7 @@ describe('Project report not configured component', () => {
       primaryButtonText: ReportNotConfiguredProject.i18n.primaryButtonText,
       primaryButtonLink: securityConfigurationPath,
       secondaryButtonText: ReportNotConfiguredProject.i18n.secondaryButtonText,
-      secondaryButtonLink: securityDashboardHelpPath,
+      secondaryButtonLink: DOC_PATH_SECURITY_CONFIGURATION,
       description: ReportNotConfiguredProject.i18n.description,
     });
   });

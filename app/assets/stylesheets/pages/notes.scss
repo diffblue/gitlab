@@ -133,6 +133,11 @@ $system-note-svg-size: 16px;
     display: block;
     position: relative;
 
+    .timeline-discussion-body {
+      overflow-x: auto;
+      overflow-y: hidden;
+    }
+
     .diff-content {
       overflow: visible;
       padding: 0;
@@ -194,13 +199,10 @@ $system-note-svg-size: 16px;
     }
 
     .note-body {
-      display: flex;
-      flex-direction: column;
-
+      overflow-x: auto;
+      overflow-y: hidden;
 
       .note-text {
-        overflow-x: auto;
-        overflow-y: hidden;
         word-wrap: break-word;
       }
     }
@@ -835,35 +837,6 @@ $system-note-svg-size: 16px;
 
   a:not(.learn-more) {
     color: $blue-600;
-  }
-}
-
-.line-resolve-all-container {
-  > div {
-    white-space: nowrap;
-  }
-
-  .btn-group .btn:first-child {
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
-  }
-}
-
-.line-resolve-all {
-  vertical-align: middle;
-  display: inline-block;
-  padding: $gl-padding-8 $gl-padding-12;
-  background-color: $gray-light;
-  border: 1px solid $border-color;
-  border-right: 0;
-  border-radius: $border-radius-default;
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
-  font-size: $gl-font-size;
-  line-height: 1rem;
-
-  @include media-breakpoint-down(xs) {
-    flex: 1;
   }
 }
 

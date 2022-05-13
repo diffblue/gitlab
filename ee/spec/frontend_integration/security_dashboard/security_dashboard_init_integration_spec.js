@@ -8,8 +8,8 @@ const EMPTY_DIV = document.createElement('div');
 const TEST_DATASET = {
   link: '/test/link',
   svgPath: '/test/no_changes_state.svg',
-  dashboardDocumentation: '/test/dashboard_page',
   emptyStateSvgPath: '/test/empty_state.svg',
+  hasProjects: 'true',
 };
 
 describe('Security Dashboard', () => {

@@ -62,6 +62,27 @@ RSpec.describe 'view usage quotas' do
       end
     end
 
+    context 'preview_free_user_cap feature flag' do
+      subject(:body) { response.body }
+
+      before do
+        stub_feature_flags(preview_free_user_cap: preview_free_user_cap_enabled)
+        send_request
+      end
+
+      context 'when disabled' do
+        let(:preview_free_user_cap_enabled) { false }
+
+        it { is_expected.to have_pushed_frontend_feature_flags(previewFreeUserCap: false)}
+      end
+
+      context 'when enabled' do
+        let(:preview_free_user_cap_enabled) { true }
+
+        it { is_expected.to have_pushed_frontend_feature_flags(previewFreeUserCap: true)}
+      end
+    end
+
     def send_request
       get group_usage_quotas_path(group)
     end

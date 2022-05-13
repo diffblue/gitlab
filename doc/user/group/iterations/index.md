@@ -172,15 +172,9 @@ To group issues by label:
 
 ## Iteration cadences
 
-> - [Introduced](https://gitlab.com/groups/gitlab-org/-/epics/5077) in GitLab 14.1.
-> - Deployed behind a [feature flag](../../feature_flags.md), named `iteration_cadences`, disabled by default.
+> - [Introduced](https://gitlab.com/groups/gitlab-org/-/epics/5077) in GitLab 14.1 [with a flag](../../../administration/feature_flags.md), named `iteration_cadences`. Disabled by default.
 > - [Changed](https://gitlab.com/gitlab-org/gitlab/-/issues/354977) in GitLab 15.0: All scheduled iterations must start on the same day of the week as the cadence start day. Start date of cadence cannot be edited after the first iteration starts.
-
-FLAG:
-On self-managed GitLab, by default this feature is not available. To make it available, ask an
-administrator to [enable the feature flag](../../../administration/feature_flags.md) named
-`iteration_cadences` for a root group.
-On GitLab.com, this feature is not available. This feature is not ready for production use.
+> - [Enabled on GitLab.com and self-managed](https://gitlab.com/gitlab-org/gitlab/-/issues/354878) in GitLab 15.0.
 
 Iteration cadences automate iteration scheduling. You can use them to
 automate creating iterations every 1, 2, 3, or 4 weeks. You can also
@@ -201,10 +195,10 @@ To create an iteration cadence:
 1. Select **New iteration cadence**.
 1. Complete the fields.
    - Enter the title and description of the iteration cadence.
-   - Enter the start date of the iteration cadence. Iterations will be scheduled to
+   - Enter the first iteration start date of the iteration cadence. Iterations will be scheduled to
      begin on the same day of the week as the day of the week of the start date.
    - From the **Duration** dropdown list, select how many weeks each iteration should last.
-   - From the **Future iterations** dropdown list, select how many future iterations should be
+   - From the **Upcoming iterations** dropdown list, select how many upcoming iterations should be
      created and maintained by GitLab.
    - Optional. To move incomplete issues to the next iteration, select **Roll over issues**.
 1. Select **Create cadence**. The cadence list page opens.
@@ -221,14 +215,14 @@ To edit an iteration cadence:
 1. On the left sidebar, select **Issues > Iterations**.
 1. Select **Edit iteration cadence**.
 
-When you edit the **Duration**, **Future iterations**, or **Start date** fields,
-only future iterations are affected.
+When you edit the **Duration**, **Upcoming iterations**, or **First iteration start date** fields,
+only upcoming iterations are affected.
 
-You can edit the start date of a cadence if the cadence has not started yet.
+You can edit the first iteration start date of a cadence if the cadence has not started yet.
 
-Editing **Future iterations** is a non-destructive action.
-If ten future iterations already exist, changing the number under **Future iterations** to `2`
-doesn't delete the eight existing future iterations.
+Editing **Upcoming iterations** is a non-destructive action.
+If ten upcoming iterations already exist, changing the number under **Upcoming iterations** to `2`
+doesn't delete the eight existing upcoming iterations.
 
 ### Delete an iteration cadence
 
@@ -267,12 +261,12 @@ To upgrade the iteration cadence to use the automation features:
 1. On the top bar, select **Menu > Groups** and find your group.
 1. On the left sidebar, select **Issues > Iterations**.
 1. Select the three-dot menu (**{ellipsis_v}**) > **Edit cadence** for the cadence you want to upgrade.
-1. Complete the required fields **Duration** and **Future iterations**. 
+1. Complete the required fields **Duration** and **Upcoming iterations**.
 1. Select **Save changes**.
 
 #### Start dates of converted cadences
 
-The start date of your converted cadence is set to the start date of its
+The first iteration start date of your converted cadence is set to the start date of its
 **first** existing iteration.
 
 If you attempt to set a new start date, the conversion fails with an error message.

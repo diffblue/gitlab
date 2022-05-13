@@ -1,6 +1,7 @@
 import { GlDropdownItem } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import { nextTick } from 'vue';
+import { setHTMLFixture, resetHTMLFixture } from 'helpers/fixtures';
 import TableContents from '~/blob/components/table_contents.vue';
 
 let wrapper;
@@ -10,14 +11,14 @@ function createComponent() {
 }
 
 async function setLoaded(loaded) {
-  document.querySelector('.blob-viewer').dataset.loaded = loaded;
+  document.querySelector('.blob-viewer').setAttribute('data-loaded', loaded);
 
   await nextTick();
 }
 
 describe('Markdown table of contents component', () => {
   beforeEach(() => {
-    setFixtures(`
+    setHTMLFixture(`
       <div class="blob-viewer" data-type="rich" data-loaded="false">
         <h1><a href="#1"></a>Hello</h1>
         <h2><a href="#2"></a>World</h2>
@@ -29,6 +30,7 @@ describe('Markdown table of contents component', () => {
 
   afterEach(() => {
     wrapper.destroy();
+    resetHTMLFixture();
   });
 
   describe('not loaded', () => {
@@ -51,7 +53,7 @@ describe('Markdown table of contents component', () => {
     it('does not show dropdown when viewing non-rich content', async () => {
       createComponent();
 
-      document.querySelector('.blob-viewer').dataset.type = 'simple';
+      document.querySelector('.blob-viewer').setAttribute('data-type', 'simple');
 
       await setLoaded(true);
 

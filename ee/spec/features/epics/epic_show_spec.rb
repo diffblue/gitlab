@@ -166,7 +166,7 @@ RSpec.describe 'Epic show', :js do
 
     it 'shows epic status, date and author in header' do
       page.within('.epic-page-container .detail-page-header-body') do
-        expect(find('.issuable-status-box > span')).to have_content('Open')
+        expect(find('.issuable-status-badge > span')).to have_content('Open')
         expect(find('.issuable-meta')).to have_content('Created')
         expect(find('.issuable-meta [data-testid="user-avatar-link-username"]')).to have_content('Rick Sanchez')
       end
@@ -307,25 +307,25 @@ RSpec.describe 'Epic show', :js do
   describe 'epic actions', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/297505' do
     shared_examples 'epic closed' do |selector|
       it 'can close an epic' do
-        expect(find('.status-box')).to have_content 'Open'
+        expect(find('.issuable-status-badge')).to have_content 'Open'
 
         within selector do
           click_button 'Close epic'
         end
 
-        expect(find('.status-box')).to have_content 'Closed'
+        expect(find('.issuable-status-badge')).to have_content 'Closed'
       end
     end
 
     shared_examples 'epic reopened' do |selector|
       it 'can reopen an epic' do
-        expect(find('.status-box')).to have_content 'Closed'
+        expect(find('.issuable-status-badge')).to have_content 'Closed'
 
         within selector do
           click_button 'Reopen epic'
         end
 
-        expect(find('.status-box')).to have_content 'Open'
+        expect(find('.issuable-status-badge')).to have_content 'Open'
       end
     end
 

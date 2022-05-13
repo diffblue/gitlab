@@ -175,15 +175,16 @@ export default {
         }}</gl-button>
       </div>
       <div v-else class="block todo">
-        <button
-          v-gl-tooltip.viewport="{ placement: 'left' }"
+        <gl-button
+          v-gl-tooltip:body.viewport.left
           :title="todoActionText"
-          class="btn-blank sidebar-collapsed-icon"
+          class="sidebar-collapsed-icon"
+          category="tertiary"
           @click="handleTodoButtonClick"
         >
           <gl-loading-icon v-if="todoUpdateInProgress" size="sm" />
           <gl-icon v-else :name="todoIcon" :class="{ 'todo-undone': isTodoPending }" />
-        </button>
+        </gl-button>
       </div>
     </template>
     <labels-select

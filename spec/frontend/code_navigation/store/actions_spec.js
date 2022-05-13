@@ -1,4 +1,5 @@
 import MockAdapter from 'axios-mock-adapter';
+import { setHTMLFixture, resetHTMLFixture } from 'helpers/fixtures';
 import testAction from 'helpers/vuex_action_helper';
 import actions from '~/code_navigation/store/actions';
 import { setCurrentHoverElement, addInteractionClass } from '~/code_navigation/utils';
@@ -174,10 +175,14 @@ describe('Code navigation actions', () => {
     let target;
 
     beforeEach(() => {
-      setFixtures(
+      setHTMLFixture(
         '<div data-path="index.js"><div class="line"><div class="js-test"></div></div></div>',
       );
       target = document.querySelector('.js-test');
+    });
+
+    afterEach(() => {
+      resetHTMLFixture();
     });
 
     it('returns early when no data exists', () => {
@@ -190,8 +195,8 @@ describe('Code navigation actions', () => {
 
     it('commits SET_CURRENT_DEFINITION with LSIF data', () => {
       target.classList.add('js-code-navigation');
-      target.dataset.lineIndex = '0';
-      target.dataset.charIndex = '0';
+      target.setAttribute('data-line-index', '0');
+      target.setAttribute('data-char-index', '0');
 
       return testAction(
         actions.showDefinition,
@@ -213,8 +218,8 @@ describe('Code navigation actions', () => {
 
     it('adds hll class to target element', () => {
       target.classList.add('js-code-navigation');
-      target.dataset.lineIndex = '0';
-      target.dataset.charIndex = '0';
+      target.setAttribute('data-line-index', '0');
+      target.setAttribute('data-char-index', '0');
 
       return testAction(
         actions.showDefinition,
@@ -238,8 +243,8 @@ describe('Code navigation actions', () => {
 
     it('caches current target element', () => {
       target.classList.add('js-code-navigation');
-      target.dataset.lineIndex = '0';
-      target.dataset.charIndex = '0';
+      target.setAttribute('data-line-index', '0');
+      target.setAttribute('data-char-index', '0');
 
       return testAction(
         actions.showDefinition,

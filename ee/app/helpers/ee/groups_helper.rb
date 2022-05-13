@@ -78,6 +78,22 @@ module EE
       }
     end
 
+    def usage_quotas_storage_app_data(group)
+      url_to_purchase_storage = buy_storage_path(group) if purchase_storage_link_enabled?(group)
+      buy_addon_target_attr = buy_addon_target_attr(group) if purchase_storage_link_enabled?(group)
+
+      {
+        namespace_path: group.full_path,
+        purchase_storage_url: url_to_purchase_storage,
+        buy_addon_target_attr: buy_addon_target_attr,
+        is_temporary_storage_increase_visible: temporary_storage_increase_visible?(group).to_s,
+        default_per_page: page_size,
+        storage_limit_enforced: ::Namespaces::Storage::EnforcementCheckService.enforce_limit?(group).to_s,
+        additional_repo_storage_by_namespace: group.additional_repo_storage_by_namespace_enabled?.to_s,
+        is_free_namespace: (!group.paid?).to_s
+      }
+    end
+
     override :require_verification_for_namespace_creation_enabled?
     def require_verification_for_namespace_creation_enabled?
       # Skip the verification for admins and auditors (added mainly for E2E tests)

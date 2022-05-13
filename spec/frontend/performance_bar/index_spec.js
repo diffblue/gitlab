@@ -1,4 +1,5 @@
 import MockAdapter from 'axios-mock-adapter';
+import { setHTMLFixture, resetHTMLFixture } from 'helpers/fixtures';
 import axios from '~/lib/utils/axios_utils';
 import '~/performance_bar/components/performance_bar_app.vue';
 import performanceBar from '~/performance_bar';
@@ -11,16 +12,16 @@ describe('performance bar wrapper', () => {
   let vm;
 
   beforeEach(() => {
-    setFixtures('<div id="js-peek"></div>');
+    setHTMLFixture('<div id="js-peek"></div>');
     const peekWrapper = document.getElementById('js-peek');
     performance.getEntriesByType = jest.fn().mockReturnValue([]);
 
     peekWrapper.setAttribute('id', 'js-peek');
-    peekWrapper.dataset.env = 'development';
-    peekWrapper.dataset.requestId = '123';
-    peekWrapper.dataset.peekUrl = '/-/peek/results';
-    peekWrapper.dataset.statsUrl = 'https://log.gprd.gitlab.net/app/dashboards#/view/';
-    peekWrapper.dataset.profileUrl = '?lineprofiler=true';
+    peekWrapper.setAttribute('data-env', 'development');
+    peekWrapper.setAttribute('data-request-id', '123');
+    peekWrapper.setAttribute('data-peek-url', '/-/peek/results');
+    peekWrapper.setAttribute('data-stats-url', 'https://log.gprd.gitlab.net/app/dashboards#/view/');
+    peekWrapper.setAttribute('data-profile-url', '?lineprofiler=true');
 
     mock = new MockAdapter(axios);
 
@@ -49,6 +50,7 @@ describe('performance bar wrapper', () => {
     vm.$destroy();
     document.getElementById('js-peek').remove();
     mock.restore();
+    resetHTMLFixture();
   });
 
   describe('addRequest', () => {

@@ -154,8 +154,6 @@ export default {
 
     <slot></slot>
 
-    <hr class="gl-border-gray-100" />
-
     <gl-button
       :disabled="isPolicyProfile"
       :loading="isLoading"

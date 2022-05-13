@@ -77,12 +77,9 @@ export default {
               const newProject = results.addProjectToSecurityDashboard.project;
 
               const data = produce(sourceData, (draftData) => {
-                draftData.instance.projects.nodes = [
-                  ...draftData.instance.projects.nodes,
-                  {
-                    ...newProject,
-                    vulnerabilitySeveritiesCount: newProject.vulnerabilitySeveritiesCount || null,
-                  },
+                draftData.instance.projects.edges = [
+                  ...draftData.instance.projects.edges,
+                  { node: newProject },
                 ];
               });
 
@@ -111,7 +108,7 @@ export default {
           this.$emit('handleProjectManipulation', false);
 
           if (invalidProjects.length) {
-            const invalidProjectsByErrorMessage = response.reduce((acc, value) => {
+            const invalidProjectsByErrorMessage = invalidProjects.reduce((acc, value) => {
               acc[value.error] = acc[value.error] ?? [];
               acc[value.error].push(value.project);
 
@@ -132,7 +129,7 @@ export default {
             );
 
             createFlash({
-              message: errorMessages.join('<br/>'),
+              message: errorMessages.join(' '),
             });
           }
         })
@@ -153,8 +150,8 @@ export default {
             const sourceData = store.readQuery({ query: instanceProjectsQuery });
 
             const data = produce(sourceData, (draftData) => {
-              draftData.instance.projects.nodes = draftData.instance.projects.nodes.filter(
-                (curr) => curr.id !== id,
+              draftData.instance.projects.edges = draftData.instance.projects.edges.filter(
+                (curr) => curr.node.id !== id,
               );
             });
 

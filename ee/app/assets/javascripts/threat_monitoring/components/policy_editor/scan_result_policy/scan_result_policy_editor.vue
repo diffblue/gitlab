@@ -70,8 +70,8 @@ export default {
   inject: [
     'disableScanPolicyUpdate',
     'policyEditorEmptyStateSvgPath',
-    'projectId',
-    'projectPath',
+    'namespaceId',
+    'namespacePath',
     'scanPolicyDocumentationPath',
     'scanResultPolicyApprovers',
   ],
@@ -164,7 +164,7 @@ export default {
     },
     async getSecurityPolicyProject() {
       if (!this.newlyCreatedPolicyProject && !this.assignedPolicyProject.fullPath) {
-        this.newlyCreatedPolicyProject = await assignSecurityPolicyProject(this.projectPath);
+        this.newlyCreatedPolicyProject = await assignSecurityPolicyProject(this.namespacePath);
       }
 
       return this.newlyCreatedPolicyProject || this.assignedPolicyProject;
@@ -183,7 +183,7 @@ export default {
           action,
           assignedPolicyProject,
           name: this.originalName || fromYaml(yamlValue)?.name,
-          projectPath: this.projectPath,
+          namespacePath: this.namespacePath,
           yamlEditorValue: yamlValue,
         });
 
@@ -232,7 +232,7 @@ export default {
         if (this.invalidForRuleMode()) {
           this.yamlEditorError = new Error();
         } else {
-          this.fetchBranches({ branches: this.allBranches(), projectId: this.projectId });
+          this.fetchBranches({ branches: this.allBranches(), projectId: this.namespaceId });
         }
       }
     },

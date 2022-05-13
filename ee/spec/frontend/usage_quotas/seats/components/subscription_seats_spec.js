@@ -8,6 +8,7 @@ import {
   GlBadge,
   GlModal,
   GlToggle,
+  GlSprintf,
 } from '@gitlab/ui';
 import { mount, shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
@@ -16,10 +17,20 @@ import StatisticsCard from 'ee/usage_quotas/components/statistics_card.vue';
 import StatisticsSeatsCard from 'ee/usage_quotas/components/statistics_seats_card.vue';
 import SubscriptionUpgradeInfoCard from 'ee/usage_quotas/seats/components/subscription_upgrade_info_card.vue';
 import SubscriptionSeats from 'ee/usage_quotas/seats/components/subscription_seats.vue';
-import { CANNOT_REMOVE_BILLABLE_MEMBER_MODAL_CONTENT } from 'ee/usage_quotas/seats/constants';
+
+import {
+  CANNOT_REMOVE_BILLABLE_MEMBER_MODAL_CONTENT,
+  RENDER_SEATS_PAGE_TRACK_LABEL,
+  RENDER_SEATS_ALERT_TRACK_LABEL,
+  DISMISS_SEATS_ALERT_TRACK_LABEL,
+  DISMISS_SEATS_ALERT_COOKIE_NAME,
+} from 'ee/usage_quotas/seats/constants';
+
 import { mockDataSeats, mockTableItems } from 'ee_jest/usage_quotas/seats/mock_data';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
+import { mockTracking } from 'helpers/tracking_helper';
 import FilterSortContainerRoot from '~/vue_shared/components/filtered_search_bar/filtered_search_bar_root.vue';
+import { getCookie, setCookie } from '~/lib/utils/common_utils';
 
 Vue.use(Vuex);
 
@@ -41,6 +52,7 @@ const providedFields = {
   hasNoSubscription: false,
   hasLimitedFreePlan: false,
   hasReachedFreePlanLimit: false,
+  previewFreeUserCap: false,
 };
 
 const fakeStore = ({ initialState, initialGetters }) =>
@@ -77,6 +89,7 @@ describe('Subscription Seats', () => {
       mountFn(SubscriptionSeats, {
         store: fakeStore({ initialState, initialGetters }),
         provide,
+        stubs: { GlAlert, GlSprintf },
       }),
     );
   };
@@ -93,6 +106,7 @@ describe('Subscription Seats', () => {
   const findStatisticsCard = () => wrapper.findComponent(StatisticsCard);
   const findStatisticsSeatsCard = () => wrapper.findComponent(StatisticsSeatsCard);
   const findSubscriptionUpgradeCard = () => wrapper.findComponent(SubscriptionUpgradeInfoCard);
+  const findSeatsAlertBanner = () => wrapper.findByTestId('seats-alert-banner');
 
   const serializeUser = (rowWrapper) => {
     const avatarLink = rowWrapper.findComponent(GlAvatarLink);
@@ -407,6 +421,7 @@ describe('Subscription Seats', () => {
               percentage: 67,
               totalValue: '3',
               usageValue: '2',
+              helpTooltip: null,
             }),
           );
         });
@@ -435,6 +450,7 @@ describe('Subscription Seats', () => {
                 percentage: 0,
                 totalValue: '-',
                 usageValue: '10',
+                helpTooltip: null,
               }),
             );
           });
@@ -462,6 +478,7 @@ describe('Subscription Seats', () => {
                 percentage: 40,
                 totalValue: '5',
                 usageValue: '2',
+                helpTooltip: 'Free groups are limited to 5 seats.',
               }),
             );
           });
@@ -559,5 +576,98 @@ describe('Subscription Seats', () => {
         expect(wrapper.findComponent(GlAlert).exists()).toBe(shouldBeRendered);
       },
     );
+  });
+
+  describe('seats alert banner', () => {
+    let originalAlertBannerCookie;
+    let trackingSpy;
+
+    beforeEach(() => {
+      originalAlertBannerCookie = getCookie(DISMISS_SEATS_ALERT_COOKIE_NAME);
+      trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
+    });
+
+    afterEach(() => {
+      wrapper.destroy();
+      setCookie(DISMISS_SEATS_ALERT_COOKIE_NAME, originalAlertBannerCookie);
+    });
+
+    it('renders page without the banner and does not track', () => {
+      wrapper = createComponent();
+
+      expect(trackingSpy).not.toHaveBeenCalledWith(undefined, 'render', {
+        label: RENDER_SEATS_PAGE_TRACK_LABEL,
+      });
+
+      expect(trackingSpy).not.toHaveBeenCalledWith(undefined, 'render', {
+        label: RENDER_SEATS_ALERT_TRACK_LABEL,
+      });
+
+      expect(findSeatsAlertBanner().exists()).toBe(false);
+    });
+
+    describe('when previewFreeUserCap is enabled and alert is dismissed', () => {
+      it('renders page without the banner and tracks events', () => {
+        setCookie(DISMISS_SEATS_ALERT_COOKIE_NAME, 'true');
+        wrapper = createComponent({ initialState: { previewFreeUserCap: true } });
+
+        expect(trackingSpy).toHaveBeenCalledWith(undefined, 'render', {
+          label: RENDER_SEATS_PAGE_TRACK_LABEL,
+        });
+        expect(trackingSpy).not.toHaveBeenCalledWith(undefined, 'render', {
+          label: RENDER_SEATS_ALERT_TRACK_LABEL,
+        });
+        expect(findSeatsAlertBanner().exists()).toBe(false);
+      });
+    });
+
+    describe('when alert is not dismissed', () => {
+      it('renders page without the banner', () => {
+        setCookie(DISMISS_SEATS_ALERT_COOKIE_NAME, 'false');
+        wrapper = createComponent();
+
+        expect(findSeatsAlertBanner().exists()).toBe(false);
+      });
+    });
+
+    describe('when previewFreeUserCap is enabled and alert is not dismissed', () => {
+      it('renders page with the banner and tracks events', () => {
+        setCookie(DISMISS_SEATS_ALERT_COOKIE_NAME, 'false');
+        wrapper = createComponent({ initialState: { previewFreeUserCap: true } });
+
+        expect(trackingSpy).toHaveBeenCalledWith(undefined, 'render', {
+          label: RENDER_SEATS_PAGE_TRACK_LABEL,
+        });
+        expect(trackingSpy).toHaveBeenCalledWith(undefined, 'render', {
+          label: RENDER_SEATS_ALERT_TRACK_LABEL,
+        });
+
+        expect(findSeatsAlertBanner().props('title')).toEqual(
+          'From June 22, 2022 (GitLab 15.1), free groups will be limited to 5 members',
+        );
+
+        expect(findSeatsAlertBanner().text()).toContain(
+          "You can begin moving members in Test Group Name now. A member loses access to the group when you turn off In a seat. If over 5 members have In a seat enabled after June 22, 2022, we'll select the 5 members who maintain access. We'll first count members that have Owner and Maintainer roles, then the most recently active members until we reach 5 members. The remaining members will get a status of Over limit and lose access to the group.",
+        );
+      });
+    });
+
+    describe('dismiss', () => {
+      it('sets cookie and tracks dismiss', () => {
+        setCookie(DISMISS_SEATS_ALERT_COOKIE_NAME, 'false');
+        wrapper = createComponent({ initialState: { previewFreeUserCap: true } });
+
+        expect(wrapper.vm.isDismissedSeatsAlert).toBe(false);
+
+        findSeatsAlertBanner().vm.$emit('dismiss');
+
+        expect(getCookie(DISMISS_SEATS_ALERT_COOKIE_NAME)).toBe('true');
+        expect(wrapper.vm.isDismissedSeatsAlert).toBe(true);
+
+        expect(trackingSpy).toHaveBeenCalledWith(undefined, 'dismiss', {
+          label: DISMISS_SEATS_ALERT_TRACK_LABEL,
+        });
+      });
+    });
   });
 });

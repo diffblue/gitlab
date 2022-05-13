@@ -205,7 +205,6 @@ export default {
       clearStorage: false,
       isSideDrawerOpen: false,
       profileType: '',
-      selectedProfiles: [],
     };
   },
   computed: {
@@ -295,6 +294,9 @@ export default {
     storageKey() {
       return `${this.projectPath}/${ON_DEMAND_SCANS_STORAGE_KEY}`;
     },
+    selectedProfiles() {
+      return this.profileType === SCANNER_TYPE ? this.scannerProfiles : this.siteProfiles;
+    },
   },
   created() {
     const params = queryToObject(window.location.search, { legacySpacesDecode: true });
@@ -366,17 +368,13 @@ export default {
     openScannerProfileDrawer() {
       this.isSideDrawerOpen = true;
       this.profileType = SCANNER_TYPE;
-      this.selectedProfiles = this.scannerProfiles;
     },
     openSiteProfileDrawer() {
       this.isSideDrawerOpen = true;
       this.profileType = SITE_TYPE;
-      this.selectedProfiles = this.siteProfiles;
     },
     closeSideDrawer() {
       this.isSideDrawerOpen = false;
-      this.profileType = '';
-      this.selectedProfiles = [];
     },
     hideErrors() {
       this.errorType = null;
@@ -400,6 +398,15 @@ export default {
       // precedence is given to profile IDs passed from the query params
       this.selectedSiteProfileId = this.selectedSiteProfileId ?? selectedSiteProfileId;
       this.selectedScannerProfileId = this.selectedScannerProfileId ?? selectedScannerProfileId;
+    },
+    onScannerProfileCreated() {
+      /**
+       * TODO remove refetch method
+       * after feature is complete
+       * substitute with cache update flow
+       */
+      const type = `${this.profileType}Profiles`;
+      this.$apollo.queries[type].refetch();
     },
   },
 };
@@ -605,7 +612,9 @@ export default {
       :profiles="selectedProfiles"
       :profile-type="profileType"
       :is-open="isSideDrawerOpen"
+      :is-loading="isLoadingProfiles"
       @close-drawer="closeSideDrawer"
+      @profile-submitted="onScannerProfileCreated"
     />
   </configuration-page-layout>
 </template>

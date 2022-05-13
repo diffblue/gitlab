@@ -12,10 +12,13 @@ import {
   GlTable,
   GlTooltipDirective,
   GlToggle,
+  GlSprintf,
 } from '@gitlab/ui';
 import { mapActions, mapState, mapGetters } from 'vuex';
+import Tracking from '~/tracking';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { visitUrl } from '~/lib/utils/url_utility';
+import { getCookie, setCookie } from '~/lib/utils/common_utils';
 import {
   STANDARD_FIELDS,
   LIMITED_FREE_PLAN_FIELDS,
@@ -27,6 +30,10 @@ import {
   SORT_OPTIONS,
   MEMBER_ACTIVE_STATE,
   MEMBER_AWAITING_STATE,
+  DISMISS_SEATS_ALERT_COOKIE_NAME,
+  RENDER_SEATS_PAGE_TRACK_LABEL,
+  RENDER_SEATS_ALERT_TRACK_LABEL,
+  DISMISS_SEATS_ALERT_TRACK_LABEL,
 } from 'ee/usage_quotas/seats/constants';
 import { s__, __, sprintf, n__ } from '~/locale';
 import FilterSortContainerRoot from '~/vue_shared/components/filtered_search_bar/filtered_search_bar_root.vue';
@@ -52,12 +59,19 @@ export default {
     GlPagination,
     GlTable,
     GlToggle,
+    GlSprintf,
     RemoveBillableMemberModal,
     SubscriptionSeatDetails,
     FilterSortContainerRoot,
     StatisticsCard,
     StatisticsSeatsCard,
     SubscriptionUpgradeInfoCard,
+  },
+  mixins: [Tracking.mixin()],
+  data() {
+    return {
+      isDismissedSeatsAlert: getCookie(DISMISS_SEATS_ALERT_COOKIE_NAME) === 'true',
+    };
   },
   computed: {
     ...mapState([
@@ -83,6 +97,7 @@ export default {
       'explorePlansPath',
       'hasLimitedFreePlan',
       'hasReachedFreePlanLimit',
+      'previewFreeUserCap',
     ]),
     ...mapGetters(['tableItems']),
     currentPage: {
@@ -140,6 +155,12 @@ export default {
         ? this.$options.i18n.seatsAvailableText
         : this.$options.i18n.seatsInSubscriptionText;
     },
+    seatsInUseTooltipText() {
+      if (!this.hasLimitedFreePlan) {
+        return null;
+      }
+      return sprintf(this.$options.i18n.seatsTooltipText, { number: this.maxFreeNamespaceSeats });
+    },
     displayedTotalSeats() {
       return this.totalSeatsAvailable ? String(this.totalSeatsAvailable) : '-';
     },
@@ -150,6 +171,14 @@ export default {
   created() {
     this.fetchBillableMembersList();
     this.fetchGitlabSubscription();
+
+    if (this.previewFreeUserCap) {
+      this.track('render', { label: RENDER_SEATS_PAGE_TRACK_LABEL });
+    }
+
+    if (this.previewFreeUserCap && !this.isDismissedSeatsAlert) {
+      this.track('render', { label: RENDER_SEATS_ALERT_TRACK_LABEL });
+    }
   },
   methods: {
     ...mapActions([
@@ -205,6 +234,11 @@ export default {
     membershipStateToggleValue(user) {
       return user.membership_state === MEMBER_ACTIVE_STATE;
     },
+    dismissSeatsAlert() {
+      setCookie(DISMISS_SEATS_ALERT_COOKIE_NAME, 'true');
+      this.isDismissedSeatsAlert = true;
+      this.track('dismiss', { label: DISMISS_SEATS_ALERT_TRACK_LABEL });
+    },
   },
   i18n: {
     emailNotVisibleTooltipText: s__(
@@ -214,12 +248,19 @@ export default {
     pendingMembersAlertButtonText: s__('Billing|View pending approvals'),
     seatsInSubscriptionText: s__('Billings|Seats in use / Seats in subscription'),
     seatsAvailableText: s__('Billings|Seats in use / Seats available'),
+    seatsTooltipText: s__('Billings|Free groups are limited to %{number} seats.'),
     inASeatLabel: s__('Billings|In a seat'),
     seatsInUseLink: helpPagePath('subscription/gitlab_com/index', {
       anchor: 'how-seat-usage-is-determined',
     }),
     activateMemberRestrictedText: s__(
       'Billings|To make this member active, you must first remove an existing active member, or toggle them to over limit.',
+    ),
+    seatsAlertTitle: s__(
+      'Billing|From June 22, 2022 (GitLab 15.1), free groups will be limited to 5 members',
+    ),
+    seatsAlertBody: s__(
+      "Billing|You can begin moving members in %{namespaceName} now. A member loses access to the group when you turn off %{strongStart}In a seat%{strongEnd}. If over 5 members have %{strongStart}In a seat%{strongEnd} enabled after June 22, 2022, we'll select the 5 members who maintain access. We'll first count members that have Owner and Maintainer roles, then the most recently active members until we reach 5 members. The remaining members will get a status of Over limit and lose access to the group.",
     ),
   },
   avatarSize: AVATAR_SIZE,
@@ -244,29 +285,49 @@ export default {
     >
       {{ pendingMembersAlertMessage }}
     </gl-alert>
-    <div class="gl-bg-gray-10 gl-display-flex gl-sm-flex-direction-column gl-p-5">
-      <statistics-card
-        :help-link="$options.i18n.seatsInUseLink"
-        :description="seatsInUseText"
-        :percentage="seatsInUsePercentage"
-        :usage-value="String(totalSeatsInUse)"
-        :total-value="displayedTotalSeats"
-        class="gl-w-full gl-md-w-half gl-md-mr-5"
-      />
+    <div class="gl-bg-gray-10 gl-p-5">
+      <gl-alert
+        v-if="previewFreeUserCap && !isDismissedSeatsAlert"
+        variant="info"
+        class="gl-mb-5"
+        data-testid="seats-alert-banner"
+        :title="$options.i18n.seatsAlertTitle"
+        @dismiss="dismissSeatsAlert"
+      >
+        <gl-sprintf :message="$options.i18n.seatsAlertBody">
+          <template #namespaceName>{{ namespaceName }}</template>
 
-      <subscription-upgrade-info-card
-        v-if="hasLimitedFreePlan"
-        :max-namespace-seats="maxFreeNamespaceSeats"
-        :explore-plans-path="explorePlansPath"
-        class="gl-w-full gl-md-w-half gl-md-mt-0 gl-mt-5"
-      />
-      <statistics-seats-card
-        v-else
-        :seats-used="maxSeatsUsed"
-        :seats-owed="seatsOwed"
-        :purchase-button-link="addSeatsHref"
-        class="gl-w-full gl-md-w-half gl-md-mt-0 gl-mt-5"
-      />
+          <template #strong="{ content }">
+            <strong>{{ content }}</strong>
+          </template>
+        </gl-sprintf>
+      </gl-alert>
+
+      <div class="gl-display-flex gl-sm-flex-direction-column">
+        <statistics-card
+          :help-link="$options.i18n.seatsInUseLink"
+          :help-tooltip="seatsInUseTooltipText"
+          :description="seatsInUseText"
+          :percentage="seatsInUsePercentage"
+          :usage-value="String(totalSeatsInUse)"
+          :total-value="displayedTotalSeats"
+          class="gl-w-full gl-md-w-half gl-md-mr-5"
+        />
+
+        <subscription-upgrade-info-card
+          v-if="hasLimitedFreePlan"
+          :max-namespace-seats="maxFreeNamespaceSeats"
+          :explore-plans-path="explorePlansPath"
+          class="gl-w-full gl-md-w-half gl-md-mt-0 gl-mt-5"
+        />
+        <statistics-seats-card
+          v-else
+          :seats-used="maxSeatsUsed"
+          :seats-owed="seatsOwed"
+          :purchase-button-link="addSeatsHref"
+          class="gl-w-full gl-md-w-half gl-md-mt-0 gl-mt-5"
+        />
+      </div>
     </div>
 
     <div class="gl-bg-gray-10 gl-p-5 gl-display-flex">

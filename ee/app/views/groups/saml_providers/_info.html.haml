@@ -13,20 +13,19 @@
         = html_escape(_("Fill in the fields below, turn on %{strong_open}Enable SAML authentication for this group%{strong_close}, and press %{strong_open}Save changes%{strong_close}")) % { strong_open: '<strong>'.html_safe, strong_close: '</strong>'.html_safe }
       %li
         = html_escape(_("Share the %{strong_open}GitLab single sign-on URL%{strong_close} with members so they can sign in to your group through your identity provider")) % { strong_open: '<strong>'.html_safe, strong_close: '</strong>'.html_safe }
-  .well-segment.borderless.mb-3
+  .well-segment.borderless.gl-mb-5
     = render 'info_row', field: :assertion_consumer_service_url, label_text: _('Assertion consumer service URL')
     .form-text.text-muted= _('Also called "Relying party service URL" or "Reply URL"')
-  .well-segment.borderless
+  .well-segment.borderless.gl-mb-5
     = render 'info_row', field: :issuer, label_text: _('Identifier')
     .form-text.text-muted= _('Also called "Issuer" or "Relying party trust identifier"')
-  .well-segment.borderless
+  .well-segment.borderless.gl-mb-5
     %label= _("GitLab metadata URL")
     - metadata_url = user_group_saml_omniauth_metadata_url(@group)
     %div= link_to metadata_url, metadata_url
     .form-text.text-muted= _("Used to help configure your identity provider")
-  - if @saml_provider.persisted?
-    .well-segment.borderless
-      %label= _("GitLab single sign-on URL")
-      - user_login_url = sso_group_saml_providers_url(@group, token: @group.saml_discovery_token)
-      %div= link_to user_login_url, user_login_url, data: { qa_selector: 'user_login_url_link' }
-      .form-text.text-muted= _("Used by members to sign in to your group in GitLab")
+  .well-segment.borderless.gl-mb-5
+    %label= _("GitLab single sign-on URL")
+    - user_login_url = sso_group_saml_providers_url(@group, token: @group.saml_discovery_token)
+    %div= link_to user_login_url, user_login_url, data: { qa_selector: 'user_login_url_link' }
+    .form-text.text-muted= _("Used by members to sign in to your group in GitLab")

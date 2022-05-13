@@ -2,6 +2,7 @@
 
 import MockAdapter from 'axios-mock-adapter';
 import $ from 'jquery';
+import { loadHTMLFixture, resetHTMLFixture } from 'helpers/fixtures';
 import { setTestTimeout } from 'helpers/timeout';
 import { BlobViewer } from '~/blob/viewer/index';
 import axios from '~/lib/utils/axios_utils';
@@ -26,7 +27,7 @@ describe('Blob viewer', () => {
     $.fn.extend(jQueryMock);
     mock = new MockAdapter(axios);
 
-    loadFixtures('blob/show_readme.html');
+    loadHTMLFixture('blob/show_readme.html');
     $('#modal-upload-blob').remove();
 
     mock.onGet(/blob\/.+\/README\.md/).reply(200, {
@@ -39,6 +40,8 @@ describe('Blob viewer', () => {
   afterEach(() => {
     mock.restore();
     window.location.hash = '';
+
+    resetHTMLFixture();
   });
 
   it('loads source file after switching views', async () => {
@@ -77,9 +80,9 @@ describe('Blob viewer', () => {
     return asyncClick()
       .then(() => asyncClick())
       .then(() => {
-        expect(document.querySelector('.blob-viewer[data-type="simple"]').dataset.loaded).toBe(
-          'true',
-        );
+        expect(
+          document.querySelector('.blob-viewer[data-type="simple"]').getAttribute('data-loaded'),
+        ).toBe('true');
       });
   });
 

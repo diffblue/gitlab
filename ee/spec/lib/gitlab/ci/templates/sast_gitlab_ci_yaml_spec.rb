@@ -106,7 +106,7 @@ RSpec.describe 'SAST.gitlab-ci.yml' do
         using RSpec::Parameterized::TableSyntax
 
         where(:case_name, :files, :gitlab_version, :image_tag) do
-          'security-code-scan-sast' | { 'app.csproj' => '' } | 14 | '2'
+          'security-code-scan-sast' | { 'app.csproj' => '' } | 14 | '3'
           'security-code-scan-sast' | { 'app.csproj' => '' } | 15 | '3'
         end
 
