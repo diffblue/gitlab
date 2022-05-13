@@ -18,7 +18,7 @@ module Namespaces
       return unless ::Namespaces::FreeUserCap.trimming_enabled?
 
       count = 0
-      Namespace.in_default_plan.find_each do |namespace|
+      Namespace.in_default_plan.top_most.find_each do |namespace|
         break if count >= MAX_NAMESPACES_TO_TRIM
 
         next unless ::Namespaces::FreeUserCap.new(namespace).enforce_cap?
@@ -44,6 +44,7 @@ module Namespaces
 
       Namespaces::UpdatePreventSharingOutsideHierarchyService.new(namespace).execute
       Namespaces::RemoveProjectGroupLinksOutsideHierarchyService.new(namespace).execute
+      Namespaces::RemoveGroupGroupLinksOutsideHierarchyService.new(namespace).execute
     end
   end
 end

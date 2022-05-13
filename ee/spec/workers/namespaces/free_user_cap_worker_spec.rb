@@ -37,21 +37,35 @@ RSpec.describe Namespaces::FreeUserCapWorker, type: :worker do
           g1 = create(:group_with_plan, plan: :free_plan)
 
           g2 = create(:group_with_plan, plan: :free_plan)
-          p1forg2 = create(:project, group: g2)
-          internal_pglforg2 = create(:project_group_link, project: p1forg2, group: create(:group, parent: g2))
-          create(:project_group_link, project: p1forg2)
+
+          g2_subgroup = create(:group, parent: g2)
+          internal_ggl_for_g2 = create(:group_group_link,
+                                       shared_group: g2_subgroup,
+                                       shared_with_group: create(:group, parent: g2))
+          create(:group_group_link, shared_group: g2_subgroup, shared_with_group: create(:group))
+
+          p1_for_g2 = create(:project, group: g2)
+          internal_pgl_for_g2 = create(:project_group_link, project: p1_for_g2, group: create(:group, parent: g2))
+          create(:project_group_link, project: p1_for_g2)
 
           g3 = create(:group_with_plan, plan: :free_plan)
 
           g4 = create(:group_with_plan, plan: :premium_plan)
-          p1forg4 = create(:project, group: g4)
-          internal_pglforg4 = create(:project_group_link, project: p1forg4, group: create(:group, parent: g4))
-          external_pglforg4 = create(:project_group_link, project: p1forg4)
+
+          g4_subgroup = create(:group, parent: g4)
+          internal_ggl_for_g4 = create(:group_group_link,
+                                       shared_group: g4_subgroup,
+                                       shared_with_group: create(:group, parent: g4))
+          external_ggl_for_g4 = create(:group_group_link, shared_group: g4_subgroup, shared_with_group: create(:group))
+
+          p1_for_g4 = create(:project, group: g4)
+          internal_pgl_for_g4 = create(:project_group_link, project: p1_for_g4, group: create(:group, parent: g4))
+          external_pgl_for_g4 = create(:project_group_link, project: p1_for_g4)
 
           g5 = create(:group)
           g6 = create(:group_with_plan, plan: :free_plan)
           g7 = create(:namespace_with_plan, plan: :free_plan)
-          p1forg7 = create(:project, namespace: g7)
+          p1_for_g7 = create(:project, namespace: g7)
 
           namespaces = [g1, g2, g3, g4, g5, g6]
           namespaces.each.with_index do |g, i|
@@ -59,19 +73,23 @@ RSpec.describe Namespaces::FreeUserCapWorker, type: :worker do
           end
 
           namespaces << g7
-          create_list(:project_member, 8, :active, project: p1forg7)
+          create_list(:project_member, 8, :active, project: p1_for_g7)
 
           # first run trims 2 namespaces: g2 and g3. g1 already within limit and is skipped
           described_class.new.perform
           expect(namespaces.map { |ns| Member.in_hierarchy(ns).awaiting.count }).to eq([0, 1, 2, 0, 0, 0, 0])
           expect_shared_setting_remediated(namespaces: namespaces, remediated_namespaces: [g1, g2, g3])
-          expect(ProjectGroupLink.in_project(g2.all_projects)).to match_array([internal_pglforg2])
+          expect(ProjectGroupLink.in_project(g2.all_projects)).to match_array([internal_pgl_for_g2])
+          expect(GroupGroupLink.in_shared_group(g2.self_and_descendants)).to match_array([internal_ggl_for_g2])
 
           # second run skips g4 trims g5, g6
           described_class.new.perform
           expect(namespaces.map { |ns| Member.in_hierarchy(ns).awaiting.count }).to eq([0, 1, 2, 0, 4, 5, 0])
           expect_shared_setting_remediated(namespaces: namespaces, remediated_namespaces: [g1, g2, g3, g5, g6])
-          expect(ProjectGroupLink.in_project(g4.all_projects)).to match_array([internal_pglforg4, external_pglforg4])
+          expect(ProjectGroupLink.in_project(g4.all_projects))
+            .to match_array([internal_pgl_for_g4, external_pgl_for_g4])
+          expect(GroupGroupLink.in_shared_group(g4.self_and_descendants))
+            .to match_array([internal_ggl_for_g4, external_ggl_for_g4])
 
           # third run trims g7
           described_class.new.perform
@@ -83,7 +101,8 @@ RSpec.describe Namespaces::FreeUserCapWorker, type: :worker do
           described_class.new.perform
           expect(namespaces.map { |ns| Member.in_hierarchy(ns).awaiting.count }).to eq([0, 1, 2, 3, 4, 5, 7])
           expect_shared_setting_remediated(namespaces: namespaces, remediated_namespaces: [g1, g2, g3, g5, g6, g7, g4])
-          expect(ProjectGroupLink.in_project(g4.all_projects)).to match_array([internal_pglforg4])
+          expect(ProjectGroupLink.in_project(g4.all_projects)).to match_array([internal_pgl_for_g4])
+          expect(GroupGroupLink.in_shared_group(g4.self_and_descendants)).to match_array([internal_ggl_for_g4])
 
           # fifth run trims g2 which adds more members
           create_list(:group_member, 4, :active, source: g2)
