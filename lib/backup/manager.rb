@@ -93,7 +93,7 @@ module Backup
     end
 
     def restore
-      cleanup_required = unpack(ENV['BACKUP'])
+      unpack(ENV['BACKUP'])
       read_backup_information
       verify_backup_version
 
@@ -104,10 +104,7 @@ module Backup
       Rake::Task['gitlab:shell:setup'].invoke
       Rake::Task['cache:clear'].invoke
 
-      if cleanup_required
-        cleanup
-      end
-
+      cleanup unless skipped?('tar')
       remove_tmp
 
       puts_time "Warning: Your gitlab.rb and gitlab-secrets.json files contain sensitive data \n" \
@@ -403,8 +400,7 @@ module Backup
     def unpack(source_backup_id)
       if source_backup_id.blank? && non_tarred_backup?
         puts_time "Non tarred backup found in #{backup_path}, using that"
-
-        return false
+        return
       end
 
       Dir.chdir(backup_path) do
