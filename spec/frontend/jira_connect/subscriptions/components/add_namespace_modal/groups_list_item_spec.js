@@ -7,6 +7,11 @@ import * as JiraConnectApi from '~/jira_connect/subscriptions/api';
 import GroupItemName from '~/jira_connect/subscriptions/components/group_item_name.vue';
 import GroupsListItem from '~/jira_connect/subscriptions/components/add_namespace_modal/groups_list_item.vue';
 import { persistAlert, reloadPage } from '~/jira_connect/subscriptions/utils';
+import {
+  I18N_ADD_SUBSCRIPTION_SUCCESS_ALERT_TITLE,
+  I18N_ADD_SUBSCRIPTION_SUCCESS_ALERT_MESSAGE,
+  INTEGRATIONS_DOC_LINK,
+} from '~/jira_connect/subscriptions/constants';
 import createStore from '~/jira_connect/subscriptions/store';
 import { mockGroup1 } from '../../mock_data';
 
@@ -83,10 +88,9 @@ describe('GroupsListItem', () => {
           mockGroup1.full_path,
         );
         expect(persistAlert).toHaveBeenCalledWith({
-          linkUrl: '/help/integration/jira_development_panel.html#use-the-integration',
-          message:
-            'You should now see GitLab.com activity inside your Jira Cloud issues. %{linkStart}Learn more%{linkEnd}',
-          title: 'Namespace successfully linked',
+          linkUrl: INTEGRATIONS_DOC_LINK,
+          message: I18N_ADD_SUBSCRIPTION_SUCCESS_ALERT_MESSAGE,
+          title: I18N_ADD_SUBSCRIPTION_SUCCESS_ALERT_TITLE,
           variant: 'success',
         });
       });

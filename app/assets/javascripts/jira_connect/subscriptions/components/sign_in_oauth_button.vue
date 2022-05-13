@@ -1,5 +1,5 @@
 <script>
-import { mapActions } from 'vuex';
+import { mapActions, mapMutations } from 'vuex';
 import { GlButton } from '@gitlab/ui';
 import axios from '~/lib/utils/axios_utils';
 import {
@@ -10,6 +10,7 @@ import {
 import { setUrlParams } from '~/lib/utils/url_utility';
 import AccessorUtilities from '~/lib/utils/accessor';
 import { createCodeVerifier, createCodeChallenge } from '../pkce';
+import { SET_ACCESS_TOKEN } from '../store/mutation_types';
 
 export default {
   components: {
@@ -31,7 +32,10 @@ export default {
     window.removeEventListener('message', this.handleWindowMessage);
   },
   methods: {
-    ...mapActions(['fetchCurrentUser']),
+    ...mapActions(['loadCurrentUser']),
+    ...mapMutations({
+      setAccessToken: SET_ACCESS_TOKEN,
+    }),
     async startOAuthFlow() {
       this.loading = true;
 
@@ -74,7 +78,9 @@ export default {
       const code = event.data?.code;
       try {
         const accessToken = await this.getOAuthToken(code);
-        await this.fetchCurrentUser(accessToken);
+        await this.loadCurrentUser(accessToken);
+
+        this.setAccessToken(accessToken);
         this.$emit('sign-in');
       } catch (e) {
         this.handleError();

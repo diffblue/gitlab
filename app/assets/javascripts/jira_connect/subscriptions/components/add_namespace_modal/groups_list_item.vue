@@ -1,5 +1,5 @@
 <script>
-import { mapActions, mapState } from 'vuex';
+import { mapActions } from 'vuex';
 import { GlButton } from '@gitlab/ui';
 import { addSubscription } from '~/jira_connect/subscriptions/api';
 import { persistAlert, reloadPage } from '~/jira_connect/subscriptions/utils';
@@ -43,19 +43,20 @@ export default {
     };
   },
   computed: {
-    ...mapState(['addSubscriptionLoading']),
     oauthEnabled() {
       return this.glFeatures.jiraConnectOauth;
     },
   },
   methods: {
     ...mapActions(['addSubscription']),
-    onClick() {
+    async onClick() {
       if (this.oauthEnabled) {
-        this.addSubscription({
+        this.isLoading = true;
+        await this.addSubscription({
           namespacePath: this.group.full_path,
           subscriptionsPath: this.subscriptionsPath,
         });
+        this.isLoading = false;
       } else {
         this.deprecatedAddSubscription();
       }
@@ -94,7 +95,7 @@ export default {
         <gl-button
           category="secondary"
           variant="confirm"
-          :loading="isLoading || addSubscriptionLoading"
+          :loading="isLoading"
           :disabled="disabled"
           @click.prevent="onClick"
         >

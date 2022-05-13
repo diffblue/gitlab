@@ -18,7 +18,7 @@ export const I18N_ADD_SUBSCRIPTION_SUCCESS_ALERT_TITLE = s__(
 export const I18N_ADD_SUBSCRIPTION_SUCCESS_ALERT_MESSAGE = s__(
   'Integrations|You should now see GitLab.com activity inside your Jira Cloud issues. %{linkStart}Learn more%{linkEnd}',
 );
-export const INTEGRATIONS_DOC_LINK = helpPagePath('integration/jira_development_panel.html', {
+export const INTEGRATIONS_DOC_LINK = helpPagePath('integration/jira_development_panel', {
   anchor: 'use-the-integration',
 });
 

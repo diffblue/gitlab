@@ -1,6 +1,6 @@
 import { fetchSubscriptions as fetchSubscriptionsREST } from '~/jira_connect/subscriptions/api';
 import { getCurrentUser } from '~/rest_api';
-import { addSubscription as addSubscriptionREST } from '~/api/integrations_api';
+import { addJiraConnectSubscription } from '~/api/integrations_api';
 import {
   I18N_ADD_SUBSCRIPTION_SUCCESS_ALERT_TITLE,
   I18N_ADD_SUBSCRIPTION_SUCCESS_ALERT_MESSAGE,
@@ -17,7 +17,6 @@ import {
   SET_ALERT,
   SET_CURRENT_USER,
   SET_CURRENT_USER_ERROR,
-  SET_ACCESS_TOKEN,
 } from './mutation_types';
 
 export const fetchSubscriptions = async ({ commit }, subscriptionsPath) => {
@@ -34,14 +33,13 @@ export const fetchSubscriptions = async ({ commit }, subscriptionsPath) => {
   }
 };
 
-export const fetchCurrentUser = async ({ commit }, accessToken) => {
+export const loadCurrentUser = async ({ commit }, accessToken) => {
   try {
     const { data: user } = await getCurrentUser({
       headers: { Authorization: `Bearer ${accessToken}` },
     });
 
     commit(SET_CURRENT_USER, user);
-    commit(SET_ACCESS_TOKEN, accessToken);
   } catch (e) {
     commit(SET_CURRENT_USER_ERROR, e);
   }
@@ -54,7 +52,7 @@ export const addSubscription = async (
   try {
     commit(ADD_SUBSCRIPTION_LOADING, true);
 
-    await addSubscriptionREST(namespacePath, {
+    await addJiraConnectSubscription(namespacePath, {
       jwt: await getJwt(),
       accessToken: state.accessToken,
     });

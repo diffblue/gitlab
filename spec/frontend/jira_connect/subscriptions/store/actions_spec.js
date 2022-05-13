@@ -3,7 +3,7 @@ import testAction from 'helpers/vuex_action_helper';
 import * as types from '~/jira_connect/subscriptions/store/mutation_types';
 import {
   fetchSubscriptions,
-  fetchCurrentUser,
+  loadCurrentUser,
   addSubscription,
 } from '~/jira_connect/subscriptions/store/actions';
 import state from '~/jira_connect/subscriptions/store/state';
@@ -73,7 +73,7 @@ describe('JiraConnect actions', () => {
     });
   });
 
-  describe('fetchCurrentUser', () => {
+  describe('loadCurrentUser', () => {
     const mockAccessToken = 'abcd1234';
 
     describe('when API request succeeds', () => {
@@ -82,13 +82,10 @@ describe('JiraConnect actions', () => {
         jest.spyOn(userApi, 'getCurrentUser').mockResolvedValue({ data: mockUser });
 
         await testAction(
-          fetchCurrentUser,
+          loadCurrentUser,
           mockAccessToken,
           mockedState,
-          [
-            { type: types.SET_CURRENT_USER, payload: mockUser },
-            { type: types.SET_ACCESS_TOKEN, payload: mockAccessToken },
-          ],
+          [{ type: types.SET_CURRENT_USER, payload: mockUser }],
           [],
         );
 
@@ -103,7 +100,7 @@ describe('JiraConnect actions', () => {
         jest.spyOn(userApi, 'getCurrentUser').mockRejectedValue();
 
         await testAction(
-          fetchCurrentUser,
+          loadCurrentUser,
           mockAccessToken,
           mockedState,
           [{ type: types.SET_CURRENT_USER_ERROR }],
@@ -123,7 +120,9 @@ describe('JiraConnect actions', () => {
 
     describe('when API request succeeds', () => {
       it('commits the SET_ACCESS_TOKEN and SET_CURRENT_USER mutations', async () => {
-        jest.spyOn(integrationsApi, 'addSubscription').mockResolvedValue({ success: true });
+        jest
+          .spyOn(integrationsApi, 'addJiraConnectSubscription')
+          .mockResolvedValue({ success: true });
 
         await testAction(
           addSubscription,
@@ -145,7 +144,7 @@ describe('JiraConnect actions', () => {
           [{ type: 'fetchSubscriptions', payload: mockSubscriptionsPath }],
         );
 
-        expect(integrationsApi.addSubscription).toHaveBeenCalledWith(mockNamespace, {
+        expect(integrationsApi.addJiraConnectSubscription).toHaveBeenCalledWith(mockNamespace, {
           accessToken: null,
           jwt: '1234',
         });
@@ -154,7 +153,7 @@ describe('JiraConnect actions', () => {
 
     describe('when API request fails', () => {
       it('commits the SET_CURRENT_USER_ERROR mutation', async () => {
-        jest.spyOn(integrationsApi, 'addSubscription').mockRejectedValue();
+        jest.spyOn(integrationsApi, 'addJiraConnectSubscription').mockRejectedValue();
 
         await testAction(
           addSubscription,

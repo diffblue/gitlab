@@ -13,6 +13,7 @@ import httpStatus from '~/lib/utils/http_status';
 import AccessorUtilities from '~/lib/utils/accessor';
 import { getCurrentUser } from '~/rest_api';
 import createStore from '~/jira_connect/subscriptions/store';
+import { SET_ACCESS_TOKEN } from '~/jira_connect/subscriptions/store/mutation_types';
 
 jest.mock('~/lib/utils/accessor');
 jest.mock('~/jira_connect/subscriptions/utils');
@@ -37,6 +38,7 @@ describe('SignInOauthButton', () => {
   const createComponent = ({ slots } = {}) => {
     store = createStore();
     jest.spyOn(store, 'dispatch').mockImplementation();
+    jest.spyOn(store, 'commit').mockImplementation();
 
     wrapper = shallowMount(SignInOauthButton, {
       store,
@@ -166,8 +168,12 @@ describe('SignInOauthButton', () => {
             });
           });
 
-          it('dispatches fetchCurrentUser action', () => {
-            expect(store.dispatch).toHaveBeenCalledWith('fetchCurrentUser', mockAccessToken);
+          it('dispatches loadCurrentUser action', () => {
+            expect(store.dispatch).toHaveBeenCalledWith('loadCurrentUser', mockAccessToken);
+          });
+
+          it('commits SET_ACCESS_TOKEN mutation with correct access token', () => {
+            expect(store.commit).toHaveBeenCalledWith(SET_ACCESS_TOKEN, mockAccessToken);
           });
 
           it('emits `sign-in` event with user data', () => {
