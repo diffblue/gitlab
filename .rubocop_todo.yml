@@ -111,13 +111,6 @@ Rails/WhereExists:
 Style/AccessorGrouping:
   Enabled: false
 
-# Offense count: 188
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: percent_q, bare_percent
-Style/BarePercentLiterals:
-  Enabled: false
-
 # Offense count: 42
 # Cop supports --auto-correct.
 Style/CaseLikeIf:
