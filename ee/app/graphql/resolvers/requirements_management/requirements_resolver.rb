@@ -29,8 +29,9 @@ module Resolvers
 
         args[:project_id] = project.id
         args[:iids] ||= [args[:iid]].compact
+        requirements = apply_lookahead(find_requirements(args))
 
-        apply_lookahead(find_requirements(args))
+        offset_pagination(requirements)
       end
 
       private

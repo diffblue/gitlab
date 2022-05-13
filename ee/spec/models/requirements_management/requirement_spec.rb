@@ -141,6 +141,53 @@ RSpec.describe RequirementsManagement::Requirement do
         it { is_expected.to contain_exactly(requirement1) }
       end
     end
+
+    describe '.for_state' do
+      let_it_be(:requirement1) { create(:requirement, state: :opened) }
+      let_it_be(:requirement2) { create(:requirement, state: :archived) }
+
+      context 'for opened state' do
+        subject { described_class.for_state(:opened) }
+
+        it { is_expected.to contain_exactly(requirement1) }
+      end
+
+      context 'for archived state' do
+        subject { described_class.for_state(:archived) }
+
+        it { is_expected.to contain_exactly(requirement2) }
+      end
+    end
+
+    describe 'ordering' do
+      let_it_be(:requirement1) { create(:requirement, created_at: 6.days.ago, updated_at: 4.days.ago) }
+      let_it_be(:requirement2) { create(:requirement, created_at: 5.days.ago, updated_at: 3.days.ago) }
+      let_it_be(:requirement3) { create(:requirement, created_at: 4.days.ago, updated_at: 2.days.ago) }
+
+      describe '.order_created_desc' do
+        subject { described_class.order_created_desc }
+
+        it { is_expected.to eq([requirement3, requirement2, requirement1]) }
+      end
+
+      describe '.order_created_asc' do
+        subject { described_class.order_created_asc }
+
+        it { is_expected.to eq([requirement1, requirement2, requirement3]) }
+      end
+
+      describe '.order_updated_desc' do
+        subject { described_class.order_updated_desc }
+
+        it { is_expected.to eq([requirement3, requirement2, requirement1]) }
+      end
+
+      describe '.order_updated_asc' do
+        subject { described_class.order_updated_asc }
+
+        it { is_expected.to eq([requirement1, requirement2, requirement3]) }
+      end
+    end
   end
 
   describe '.without_test_reports' do
