@@ -8,6 +8,8 @@ module RuboCop
   class TodoDir
     DEFAULT_TODO_DIR = File.expand_path('../.rubocop_todo', __dir__)
 
+    SUFFIX_YAML = '.yml'
+
     # Suffix to indicate TODOs being inspected right now.
     SUFFIX_INSPECT = '.inspect'
 
@@ -43,7 +45,7 @@ module RuboCop
     end
 
     def inspect_all
-      pattern = File.join(@directory, '**/*.yml')
+      pattern = File.join(@directory, "**/*#{SUFFIX_YAML}")
 
       Dir.glob(pattern).count do |path|
         FileUtils.mv(path, "#{path}#{SUFFIX_INSPECT}")
@@ -51,15 +53,13 @@ module RuboCop
     end
 
     def list_inspect
-      pattern = File.join(@directory, "**/*.yml.inspect")
+      pattern = File.join(@directory, "**/*#{SUFFIX_YAML}#{SUFFIX_INSPECT}")
 
       Dir.glob(pattern)
     end
 
     def delete_inspected
-      pattern = File.join(@directory, '**/*.yml.inspect')
-
-      Dir.glob(pattern).count do |path|
+      list_inspect.count do |path|
         File.delete(path)
       end
     end
