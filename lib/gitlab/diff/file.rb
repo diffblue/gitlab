@@ -373,7 +373,7 @@ module Gitlab
       end
 
       def rendered
-        return unless use_semantic_ipynb_diff? && use_renderable_diff? && ipynb? && modified_file? && !too_large?
+        return unless use_semantic_ipynb_diff? && ipynb? && modified_file? && !too_large?
 
         strong_memoize(:rendered) { Rendered::Notebook::DiffFile.new(self) }
       end
