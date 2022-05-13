@@ -6,16 +6,11 @@ require 'active_support/inflector/inflections'
 module RuboCop
   # Helper class to manage file access to RuboCop TODOs in .rubocop_todo directory.
   class TodoDir
-    # Default path to the directory where TODO YAML files are located.
-    DEFAULT_TODO_DIR = File.expand_path('../.rubocop_todo', __dir__)
-
     # Suffix a TODO file.
     SUFFIX_YAML = '.yml'
 
     # Suffix to indicate TODOs being inspected right now.
     SUFFIX_INSPECT = '.inspect'
-
-    attr_reader :directory
 
     # Instantiates a TodoDir.
     #

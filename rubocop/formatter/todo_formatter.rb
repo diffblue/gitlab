@@ -34,12 +34,20 @@ module RuboCop
         end
       end
 
-      def initialize(output, options = {})
-        directory = options.delete(:rubocop_todo_dir) || TodoDir::DEFAULT_TODO_DIR
+      DEFAULT_BASE_DIRECTORY = File.expand_path('../../.rubocop_todo', __dir__)
+
+      class << self
+        attr_accessor :base_directory
+      end
+
+      self.base_directory = DEFAULT_BASE_DIRECTORY
+
+      def initialize(output, _options = {})
+        @directory = self.class.base_directory
         @todos = Hash.new { |hash, cop_name| hash[cop_name] = Todo.new(cop_name) }
         @todo_dir = TodoDir.new(directory)
-        @config_inspect_todo_dir = load_config_inspect_todo_dir(directory)
-        @config_old_todo_yml = load_config_old_todo_yml(directory)
+        @config_inspect_todo_dir = load_config_inspect_todo_dir
+        @config_old_todo_yml = load_config_old_todo_yml
         check_multiple_configurations!
 
         super
@@ -64,10 +72,21 @@ module RuboCop
         end
       end
 
+      def self.with_base_directory(directory)
+        old = base_directory
+        self.base_directory = directory
+
+        yield
+      ensure
+        self.base_directory = old
+      end
+
       private
 
+      attr_reader :directory
+
       def relative_path(path)
-        parent = File.expand_path('..', @todo_dir.directory)
+        parent = File.expand_path('..', directory)
         path.delete_prefix("#{parent}/")
       end
 
@@ -110,7 +129,7 @@ module RuboCop
         config['Enabled'] == false
       end
 
-      def load_config_inspect_todo_dir(directory)
+      def load_config_inspect_todo_dir
         @todo_dir.list_inspect.each_with_object({}) do |path, combined|
           config = YAML.load_file(path)
           combined.update(config) if Hash === config
@@ -119,7 +138,7 @@ module RuboCop
 
       # Load YAML configuration from `.rubocop_todo.yml`.
       # We consider this file already old, obsolete, and to be removed soon.
-      def load_config_old_todo_yml(directory)
+      def load_config_old_todo_yml
         path = File.expand_path(File.join(directory, '../.rubocop_todo.yml'))
         config = YAML.load_file(path) if File.exist?(path)
 
