@@ -21891,6 +21891,9 @@ msgstr ""
 msgid "Jump to next unresolved thread"
 msgstr ""
 
+msgid "Jump to previous unresolved thread"
+msgstr ""
+
 msgid "Jun"
 msgstr ""
 
