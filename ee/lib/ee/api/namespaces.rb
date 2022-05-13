@@ -89,7 +89,7 @@ module EE
 
             requires :start_date, type: Date, desc: 'The date when subscription was started'
           end
-          post ":id/gitlab_subscription", feature_category: :purchase do
+          post ":id/gitlab_subscription", urgency: :low, feature_category: :purchase do
             authenticated_as_admin!
 
             namespace = find_namespace!(params[:id])
@@ -107,7 +107,7 @@ module EE
           desc 'Returns the subscription for the namespace' do
             success ::API::Entities::GitlabSubscription
           end
-          get ":id/gitlab_subscription", feature_category: :purchase do
+          get ":id/gitlab_subscription", urgency: :low, feature_category: :purchase do
             namespace = find_namespace!(params[:id])
             authorize! :admin_namespace, namespace
 
@@ -120,7 +120,7 @@ module EE
           params do
             use :gitlab_subscription_optional_attributes
           end
-          put ":id/gitlab_subscription", feature_category: :purchase do
+          put ":id/gitlab_subscription", urgency: :low, feature_category: :purchase do
             authenticated_as_admin!
 
             namespace = find_namespace!(params[:id])

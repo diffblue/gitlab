@@ -9,6 +9,7 @@ module Subscriptions
     before_action :find_group
 
     feature_category :purchase
+    urgency :low
 
     def edit
     end

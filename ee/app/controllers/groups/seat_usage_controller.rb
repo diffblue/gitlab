@@ -8,6 +8,7 @@ class Groups::SeatUsageController < Groups::ApplicationController
   layout "group_settings"
 
   feature_category :purchase
+  urgency :low
 
   def show
     respond_to do |format|

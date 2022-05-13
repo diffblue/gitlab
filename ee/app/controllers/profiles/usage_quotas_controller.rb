@@ -4,6 +4,7 @@ class Profiles::UsageQuotasController < Profiles::ApplicationController
   include OneTrustCSP
 
   feature_category :purchase
+  urgency :low
 
   before_action only: [:index] do
     push_frontend_feature_flag(:gitlab_gtm_datalayer, type: :ops)
