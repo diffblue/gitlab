@@ -118,7 +118,7 @@ organizations using the GraphQL API.
 
 ### View issues linked to a contact
 
-To view a contact's issues:
+To view a contact's issues, select a contact from the issue sidebar, or:
 
 1. On the top bar, select **Menu > Groups** and find your group.
 1. On the left sidebar, select **Customer relations > Contacts**.
