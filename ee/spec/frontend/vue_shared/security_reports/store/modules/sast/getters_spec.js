@@ -30,7 +30,7 @@ describe('groupedSastText', () => {
       countMessage: '',
       critical: 0,
       high: 0,
-      message: 'SAST detected %{totalStart}no%{totalEnd} new vulnerabilities.',
+      message: 'SAST detected no %{totalStart}new%{totalEnd} vulnerabilities.',
       other: 0,
       status: '',
       total: 0,
