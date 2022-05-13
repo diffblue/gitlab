@@ -73,8 +73,3 @@ Style/EmptyMethod:
 # SupportedStyles: braces, no_braces
 Style/HashAsLastArrayItem:
   Enabled: false
-
-# Offense count: 64
-# Cop supports --auto-correct.
-Style/KeywordParametersOrder:
-  Enabled: false
