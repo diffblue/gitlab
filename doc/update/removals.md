@@ -240,6 +240,17 @@ Disabling SSH expiration enforcement is unusual from a security perspective and 
 key is unintentionally able to be used. Unexpected behavior in a security feature is inherently dangerous and so now we enforce
 expiration on all SSH keys.
 
+### Optional enforcement of personal access token expiration
+
+WARNING:
+This feature was changed or removed in 15.0
+as a [breaking change](https://docs.gitlab.com/ee/development/contributing/#breaking-changes).
+Before updating GitLab, review the details carefully to determine if you need to make any
+changes to your code, settings, or workflow.
+
+Allowing expired personal access tokens to be used is unusual from a security perspective and could create unusual situations where an
+expired key is unintentionally able to be used. Unexpected behavior in a security feature is inherently dangerous and so we now do not let expired personal access tokens be used.
+
 ### Remove Versions from PackageType
 
 WARNING:
