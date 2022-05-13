@@ -30,7 +30,7 @@ describe('groupedApiFuzzingText', () => {
       countMessage: '',
       critical: 0,
       high: 0,
-      message: 'API fuzzing detected %{totalStart}no%{totalEnd} new vulnerabilities.',
+      message: 'API fuzzing detected no %{totalStart}new%{totalEnd} vulnerabilities.',
       other: 0,
       status: '',
       total: 0,
