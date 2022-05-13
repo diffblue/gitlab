@@ -118,7 +118,7 @@ Showing cross-schema foreign keys (20):
    19 |       N |                ci_project_monthly_usages |             projects |                     project_id |         cascade
 
 To match foreign key (FK), write one or many filters to match against FROM/TO/COLUMN:
-- scripts/decomposition/generate-loose-foreign-key <filters...>
+- scripts/decomposition/generate-loose-foreign-key (filters...)
 - scripts/decomposition/generate-loose-foreign-key ci_job_artifacts project_id
 - scripts/decomposition/generate-loose-foreign-key dast_site_profiles_pipelines
 ```

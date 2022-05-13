@@ -118,6 +118,6 @@ At any moment, but usually _during_ or _after_ the design's implementation:
 - Create issues with the [`~UX debt`](issue_workflow.md#technical-and-ux-debt)
   label for intentional deviations from the agreed-upon UX requirements due to
   time or feasibility challenges, linking back to the corresponding issues or
-  MRs.
+  merge requests.
 - Create issues for [feature additions or enhancements](issue_workflow.md#feature-proposals)
   outside the agreed-upon UX requirements to avoid scope creep.
