@@ -59,7 +59,6 @@ module Gitlab
       #   records, if the diff_size is more than 1_000, we need to fall back to
       #   the MUCH slower method of using Repository#diff_stats, which isn't
       #   subject to the same limit.
-
       merge_request_diff ||= merge_head_or_empty_diff(merge_request)
 
       if merge_request_diff.overflow?
@@ -74,7 +73,7 @@ module Gitlab
       # NOTE: We need to make sure merge_head_diff gets created first.
       ::MergeRequests::MergeabilityCheckService.new(merge_request).execute(recheck: true)
 
-      merge_request.merge_head_diff || MergeRequestDiff.new(merge_request_id: merge_request.id)
+      merge_request.merge_head_diff || ::MergeRequestDiff.new(merge_request_id: merge_request.id)
     end
     private_class_method :merge_head_or_empty_diff
 

@@ -155,19 +155,70 @@ RSpec.describe Gitlab::CodeOwners do
     context 'when the feature is available' do
       before do
         stub_licensed_features(code_owners: true)
-
-        allow(merge_request).to receive(:modified_paths).with(past_merge_request_diff: instance_of(MergeRequestDiff)) { ['docs/CODEOWNERS'] }
       end
 
-      it 'returns owners for merge request' do
-        expect(entries.first).to have_attributes(pattern: 'docs/CODEOWNERS', users: [code_owner])
+      it 'runs mergeability check to reload merge_head_diff' do
+        mergeability_service = instance_double(MergeRequests::MergeabilityCheckService)
+        expect(mergeability_service).to receive(:execute).with(recheck: true)
+        expect(MergeRequests::MergeabilityCheckService).to receive(:new).with(merge_request) { mergeability_service }
+
+        expect(merge_request).to receive(:merge_head_diff).and_call_original
+
+        entries
+      end
+
+      context 'when merge_head_diff exists' do
+        before do
+          expect(described_class).to receive(:fast_path_lookup) do |_, mrd|
+            expect(mrd.state).to eq 'collected'
+            expect(mrd.diff_type).to eq 'merge_head'
+          end.and_return(modified_paths)
+        end
+
+        context 'when the changed file paths have matching code owners' do
+          let(:modified_paths) { ['docs/CODEOWNERS'] }
+
+          it 'returns owners for merge request' do
+            expect(entries.first).to have_attributes(pattern: 'docs/CODEOWNERS', users: [code_owner])
+          end
+        end
+
+        context 'when the changed file paths do not have matching code owners' do
+          let(:modified_paths) { ['files/ruby/feature.rb'] }
+
+          it 'returns an empty array' do
+            expect(entries).to be_empty
+          end
+        end
+      end
+
+      context 'when merge_head_diff does not exist' do
+        it 'falls back to an empty merge_request_diff' do
+          mergeability_service = instance_double(MergeRequests::MergeabilityCheckService)
+          expect(mergeability_service).to receive(:execute).with(recheck: true)
+          expect(MergeRequests::MergeabilityCheckService).to receive(:new).with(merge_request).and_return(mergeability_service)
+          expect(merge_request).to receive(:merge_head_diff).and_return(nil)
+
+          expect(described_class).to receive(:fast_path_lookup) do |_, mrd|
+            expect(mrd.state).to eq 'empty'
+          end.and_return([])
+
+          expect(entries).to be_empty
+        end
       end
 
       context 'when merge_request_diff is specified' do
         let(:merge_request_diff) { merge_request.merge_request_diff }
 
+        before do
+          expect(described_class).to receive(:fast_path_lookup) do |_, mrd|
+            expect(mrd.state).to eq 'collected'
+            expect(mrd.diff_type).to eq 'regular'
+          end.and_return(['docs/CODEOWNERS'])
+        end
+
         it 'returns owners at the specified ref' do
-          expect(described_class).to receive(:fast_path_lookup).and_call_original
+          expect(MergeRequests::MergeabilityCheckService).not_to receive(:new)
 
           expect(entries.first).to have_attributes(pattern: 'docs/CODEOWNERS', users: [code_owner])
         end
