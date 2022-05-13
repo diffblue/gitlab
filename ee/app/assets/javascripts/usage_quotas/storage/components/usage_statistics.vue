@@ -2,7 +2,7 @@
 import { GlButton } from '@gitlab/ui';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { s__ } from '~/locale';
-import { formatUsageSize } from '../utils';
+import { formatUsageSize, formatSizeAndSplit } from '../utils';
 import UsageStatisticsCard from './usage_statistics_card.vue';
 
 export default {
@@ -69,23 +69,7 @@ export default {
     },
   },
   methods: {
-    /**
-     * The formatUsageSize method returns
-     * value along with the unit. However, the unit
-     * and the value needs to be separated so that
-     * they can have different styles. The method
-     * splits the value into value and unit.
-     *
-     * @params {Number} size size in bytes
-     * @returns {Object} value and unit of formatted size
-     */
-    formatSizeAndSplit(size) {
-      const formattedSize = formatUsageSize(size);
-      return {
-        value: formattedSize.slice(0, -3),
-        unit: formattedSize.slice(-3),
-      };
-    },
+    formatSizeAndSplit,
   },
 };
 </script>

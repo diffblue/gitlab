@@ -1,7 +1,8 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import createDefaultClient from '~/lib/graphql';
-import { projectHelpLinks as helpLinks } from './constants';
+import { parseBoolean } from '~/lib/utils/common_utils';
+import { projectHelpPaths as helpLinks } from './constants';
 import NamespaceStorageApp from './components/namespace_storage_app.vue';
 
 Vue.use(VueApollo);
@@ -14,6 +15,9 @@ export default () => {
     buyAddonTargetAttr,
     isTemporaryStorageIncreaseVisible,
     defaultPerPage,
+    storageLimitEnforced,
+    additionalRepoStorageByNamespace,
+    isFreeNamespace,
   } = el.dataset;
 
   const apolloProvider = new VueApollo({
@@ -33,7 +37,13 @@ export default () => {
       defaultPerPage: Number(defaultPerPage),
     },
     render(createElement) {
-      return createElement(NamespaceStorageApp);
+      return createElement(NamespaceStorageApp, {
+        props: {
+          storageLimitEnforced: parseBoolean(storageLimitEnforced),
+          isAdditionalStorageFlagEnabled: parseBoolean(additionalRepoStorageByNamespace),
+          isFreeNamespace: parseBoolean(isFreeNamespace),
+        },
+      });
     },
   });
 };

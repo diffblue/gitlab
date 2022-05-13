@@ -4,8 +4,6 @@
 = render "layouts/google_tag_manager_body"
 
 - page_title s_("UsageQuota|Usage")
-- url_to_purchase_storage = buy_storage_path(@group) if purchase_storage_link_enabled?(@group)
-- buy_addon_target_attr = buy_addon_target_attr(@group) if purchase_storage_link_enabled?(@group)
 
 - if show_product_purchase_success_alert?
   = render 'product_purchase_success_alert', product_name: params[:purchased_product]
@@ -41,4 +39,4 @@
   .tab-pane#shared-runners-usage-quota-tab
     #js-shared-runner-usage-quota{ data: { namespace_id: @group.id } }
   .tab-pane#storage-quota-tab
-    #js-storage-counter-app{ data: { namespace_path: @group.full_path, purchase_storage_url: url_to_purchase_storage, buy_addon_target_attr: buy_addon_target_attr, is_temporary_storage_increase_visible: temporary_storage_increase_visible?(@group).to_s, default_per_page: page_size } }
+    #js-storage-counter-app{ data: usage_quotas_storage_app_data(@group) }

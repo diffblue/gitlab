@@ -20,6 +20,7 @@ import TemporaryStorageIncreaseModal from './temporary_storage_increase_modal.vu
 import UsageGraph from './usage_graph.vue';
 import UsageStatistics from './usage_statistics.vue';
 import DependencyProxyUsage from './dependency_proxy_usage.vue';
+import StorageUsageStatistics from './storage_usage_statistics.vue';
 
 export default {
   name: 'NamespaceStorageApp',
@@ -31,6 +32,7 @@ export default {
     UsageGraph,
     ProjectList,
     UsageStatistics,
+    StorageUsageStatistics,
     StorageInlineAlert,
     GlKeysetPagination,
     TemporaryStorageIncreaseModal,
@@ -38,9 +40,6 @@ export default {
   },
   directives: {
     GlModalDirective,
-  },
-  i18n: {
-    PROJECT_TABLE_LABEL_STORAGE_USAGE,
   },
   mixins: [glFeatureFlagsMixin()],
   inject: [
@@ -84,6 +83,26 @@ export default {
       },
     },
   },
+  props: {
+    storageLimitEnforced: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    isAdditionalStorageFlagEnabled: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    isFreeNamespace: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+  },
+  i18n: {
+    PROJECT_TABLE_LABEL_STORAGE_USAGE,
+  },
   data() {
     return {
       namespace: {},
@@ -99,8 +118,8 @@ export default {
     isStorageIncreaseModalVisible() {
       return parseBoolean(this.isTemporaryStorageIncreaseVisible);
     },
-    isAdditionalStorageFlagEnabled() {
-      return this.glFeatures.additionalRepoStorageByNamespace;
+    shouldUseNewStorageDesign() {
+      return this.isFreeNamespace && this.glFeatures.updateStorageUsageDesign;
     },
     formattedNamespaceLimit() {
       return formatUsageSize(this.namespace.limit);
@@ -185,7 +204,15 @@ export default {
       :actual-repository-size-limit="namespace.actualRepositorySizeLimit"
     />
     <div v-if="isAdditionalStorageFlagEnabled && storageStatistics">
-      <usage-statistics :root-storage-statistics="storageStatistics" />
+      <storage-usage-statistics
+        v-if="shouldUseNewStorageDesign"
+        :storage-limit-enforced="storageLimitEnforced"
+        :additional-purchased-storage-size="storageStatistics.additionalPurchasedStorageSize"
+        :actual-repository-size-limit="storageStatistics.actualRepositorySizeLimit"
+        :total-repository-size="storageStatistics.totalRepositorySize"
+        :total-repository-size-excess="storageStatistics.totalRepositorySizeExcess"
+      />
+      <usage-statistics v-else :root-storage-statistics="storageStatistics" />
     </div>
     <div v-else class="gl-py-4 gl-px-2 gl-m-0">
       <div class="gl-display-flex gl-align-items-center">
