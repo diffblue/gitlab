@@ -84,7 +84,7 @@ RSpec.describe IncidentManagement::Incidents::UploadMetricService do
           context 'guest is author of issuable' do
             let(:issuable) { create(:incident, project: project, author: current_user) }
 
-            it_behaves_like 'uploads the metric'
+            it_behaves_like 'no metric saved, an error given', 'Not allowed!'
           end
         end
       end
