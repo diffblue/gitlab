@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe 'Every metric definition' do
   include UsageDataHelpers
 
-  let(:usage_ping) { ServicePing::BuildPayloadService.new.execute }
+  let(:usage_ping) { ServicePing::BuildPayload.new.execute }
   let(:ignored_usage_ping_key_patterns) do
     %w(
       license_add_ons
