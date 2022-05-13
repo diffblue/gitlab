@@ -124,8 +124,3 @@ Style/KeywordParametersOrder:
 # SupportedStyles: line_count_dependent, lambda, literal
 Style/Lambda:
   Enabled: false
-
-# Offense count: 279
-# Cop supports --auto-correct.
-Style/RedundantRegexpEscape:
-  Enabled: false
