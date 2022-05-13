@@ -1,5 +1,5 @@
 query groupScanExecutionPolicies($fullPath: ID!) {
-  group(fullPath: $fullPath) @client {
+  namespace: group(fullPath: $fullPath) {
     id
     scanExecutionPolicies {
       nodes {

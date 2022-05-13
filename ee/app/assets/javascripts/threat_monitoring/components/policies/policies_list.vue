@@ -66,7 +66,7 @@ export default {
         };
       },
       update(data) {
-        return data?.project?.scanExecutionPolicies?.nodes ?? [];
+        return data?.namespace?.scanExecutionPolicies?.nodes ?? [];
       },
       error: createPolicyFetchError,
     },
