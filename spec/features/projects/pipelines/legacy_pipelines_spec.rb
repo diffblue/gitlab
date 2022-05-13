@@ -17,6 +17,8 @@ RSpec.describe 'Pipelines', :js do
 
       project.add_developer(user)
       project.update!(auto_devops_attributes: { enabled: false })
+
+      stub_feature_flags(pipeline_tabs_vue: false)
     end
 
     describe 'GET /:project/-/pipelines' do
@@ -217,7 +219,8 @@ RSpec.describe 'Pipelines', :js do
         end
 
         shared_examples_for 'Correct merge request pipeline information' do
-          it 'does not show detached tag for the pipeline, and shows the link of the merge request, and does not show the ref of the pipeline', :sidekiq_might_not_need_inline do
+          it 'does not show detached tag for the pipeline, and shows the link of the merge request' \
+             'and does not show the ref of the pipeline', :sidekiq_might_not_need_inline do
             within '.pipeline-tags' do
               expect(page).not_to have_content(expected_detached_mr_tag)
 
@@ -297,7 +300,9 @@ RSpec.describe 'Pipelines', :js do
           end
 
           it 'enqueues manual action job' do
-            expect(page).to have_selector('[data-testid="pipelines-manual-actions-dropdown"] .gl-dropdown-toggle:disabled')
+            expect(page).to have_selector(
+              '[data-testid="pipelines-manual-actions-dropdown"] .gl-dropdown-toggle:disabled'
+            )
           end
         end
       end
@@ -621,7 +626,14 @@ RSpec.describe 'Pipelines', :js do
         create_build('test', 1, 'audit', :created)
         create_build('deploy', 2, 'production', :created)
 
-        create(:generic_commit_status, pipeline: pipeline, stage: 'external', name: 'jenkins', stage_idx: 3, ref: 'master')
+        create(
+          :generic_commit_status,
+          pipeline: pipeline,
+          stage: 'external',
+          name: 'jenkins',
+          stage_idx: 3,
+          ref: 'master'
+        )
 
         visit project_pipeline_path(project, pipeline)
         wait_for_requests
@@ -711,7 +723,8 @@ RSpec.describe 'Pipelines', :js do
           end
 
           it { expect(page).to have_content('Missing CI config file') }
-          it 'creates a pipeline after first request failed and a valid gitlab-ci.yml file is available when trying again' do
+          it 'creates a pipeline after first request failed and a valid gitlab-ci.yml file' \
+            'is available when trying again' do
             stub_ci_pipeline_to_return_yaml_file
 
             expect do
@@ -793,29 +806,12 @@ RSpec.describe 'Pipelines', :js do
     describe 'Empty State' do
       let(:project) { create(:project, :repository) }
 
-      context 'when `ios_specific_templates` is not enabled' do
-        before do
-          visit project_pipelines_path(project)
-        end
-
-        it 'renders empty state' do
-          expect(page).to have_content 'Try test template'
-        end
+      before do
+        visit project_pipelines_path(project)
       end
 
-      describe 'when the `ios_specific_templates` experiment is enabled and the "Set up a runner" button is clicked' do
-        before do
-          stub_experiments(ios_specific_templates: :candidate)
-          create(:project_setting, project: project, target_platforms: %w(ios))
-          visit project_pipelines_path(project)
-          click_button 'Set up a runner'
-        end
-
-        it 'displays a modal with the macOS platform selected and an explanation popover' do
-          expect(page).to have_button 'macOS', class: 'selected'
-          expect(page).to have_selector('#runner-instructions-modal___BV_modal_content_')
-          expect(page).to have_selector('.popover')
-        end
+      it 'renders empty state' do
+        expect(page).to have_content 'Try test template'
       end
     end
   end
