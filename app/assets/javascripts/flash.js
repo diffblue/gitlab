@@ -223,7 +223,7 @@ const createAlert = function createAlert({
  *  @param {Boolean} options.fadeTransition   Boolean to determine whether to fade the alert out
  *  @param {Boolean} options.captureError     Boolean to determine whether to send error to Sentry
  *  @param {Object} options.error             Error to be captured in Sentry
- *  @deprecated Use `createAlert` instead
+ *  @deprecated Use `createAlert` instead. See https://gitlab.com/gitlab-org/gitlab/-/issues/362334.
  */
 const createFlash = function createFlash({
   message,
