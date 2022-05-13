@@ -110,7 +110,7 @@
   .settings-content
     = render 'ci/token_access/index'
 
-- if Feature.enabled?(:ci_secure_files, @project) && can?(current_user, :read_secure_files, @project)
+- if show_secure_files_setting(@project, current_user)
   %section.settings
     .settings-header
       %h4.settings-title
@@ -120,3 +120,4 @@
       %p
         = _("Use Secure Files to store files used by your pipelines such as Android keystores, or Apple provisioning profiles and signing certificates.")
         = link_to _('Learn more'), help_page_path('ci/secure_files/index'), target: '_blank', rel: 'noopener noreferrer'
+
