@@ -41,6 +41,7 @@ export default (containerId = 'js-seat-usage-app') => {
         maxFreeNamespaceSeats: parseInt(maxFreeNamespaceSeats, 10),
         explorePlansPath,
         freeUserCapEnabled: gon.features.freeUserCap,
+        previewFreeUserCap: gon.features.previewFreeUserCap,
       }),
     ),
     render(createElement) {

@@ -9,6 +9,7 @@ export default ({
   maxFreeNamespaceSeats = null,
   explorePlansPath = '',
   freeUserCapEnabled = false,
+  previewFreeUserCap = false,
 } = {}) => ({
   isLoading: false,
   hasError: false,
@@ -35,4 +36,5 @@ export default ({
   explorePlansPath,
   hasLimitedFreePlan: hasNoSubscription && freeUserCapEnabled,
   hasReachedFreePlanLimit: null,
+  previewFreeUserCap: hasNoSubscription && previewFreeUserCap,
 });
