@@ -187,7 +187,7 @@ module Ci
     scope :downloadable, -> { where(file_type: DOWNLOADABLE_TYPES) }
     scope :unlocked, -> { joins(job: :pipeline).merge(::Ci::Pipeline.unlocked) }
     scope :order_expired_asc, -> { order(expire_at: :asc) }
-    scope :with_destroy_preloads, -> { includes(project: [:route, :statistics]) }
+    scope :with_destroy_preloads, -> { includes(project: [:route, :statistics, :build_artifacts_size_refresh]) }
 
     scope :for_project, ->(project) { where(project_id: project) }
     scope :created_in_time_range, ->(from: nil, to: nil) { where(created_at: from..to) }

@@ -224,4 +224,26 @@ RSpec.describe Projects::BuildArtifactsSizeRefresh, type: :model do
       expect(batch).to eq([artifact_2, artifact_3])
     end
   end
+
+  describe '#started?' do
+    using RSpec::Parameterized::TableSyntax
+
+    let_it_be(:project) { create(:project) }
+
+    subject { refresh.started? }
+
+    where(:refresh_state, :result) do
+      :created | false
+      :pending | true
+      :running | true
+    end
+
+    with_them do
+      let(:refresh) do
+        create(:project_build_artifacts_size_refresh, refresh_state, project: project)
+      end
+
+      it { is_expected.to eq(result) }
+    end
+  end
 end
