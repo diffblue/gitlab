@@ -79,46 +79,45 @@ export default {
 </script>
 <template>
   <div
+    class="gl-display-flex gl-align-items-center"
     data-qa-selector="admin_license_compliance_container"
     data-testid="admin-license-compliance-row"
   >
-    <issue-status-icon :status="status" class="float-left gl-mr-3" />
-    <span class="js-license-name">{{ license.name }}</span>
-    <div class="float-right">
-      <div class="d-flex">
-        <gl-loading-icon
-          v-if="loading"
-          size="sm"
-          class="js-loading-icon d-flex align-items-center mr-2"
-        />
-        <gl-dropdown
-          :text="dropdownText"
-          :disabled="loading"
-          toggle-class="d-flex justify-content-between align-items-center"
-          right
-        >
-          <gl-dropdown-item @click="allowLicense(license)">
-            <gl-icon :class="allowedIconClass" name="mobile-issue-close" />
-            {{ $options[$options.LICENSE_APPROVAL_ACTION.ALLOW] }}
-          </gl-dropdown-item>
-          <gl-dropdown-item @click="denyLicense(license)">
-            <gl-icon :class="deniedIconClass" name="mobile-issue-close" />
-            {{ $options[$options.LICENSE_APPROVAL_ACTION.DENY] }}
-          </gl-dropdown-item>
-        </gl-dropdown>
+    <issue-status-icon :status="status" class="gl-display-flex gl-mr-3" />
+    <span class="gl-flex-grow-1" data-testid="license-name">{{ license.name }}</span>
+    <div class="gl-display-flex">
+      <gl-loading-icon
+        v-if="loading"
+        size="sm"
+        class="gl-display-flex gl-align-items-center gl-mr-3"
+      />
+      <gl-dropdown
+        :text="dropdownText"
+        :disabled="loading"
+        toggle-class="gl-display-flex gl-justify-content-space-between gl-align-items-center"
+        right
+      >
+        <gl-dropdown-item @click="allowLicense(license)">
+          <gl-icon :class="allowedIconClass" name="mobile-issue-close" />
+          {{ $options[$options.LICENSE_APPROVAL_ACTION.ALLOW] }}
+        </gl-dropdown-item>
+        <gl-dropdown-item @click="denyLicense(license)">
+          <gl-icon :class="deniedIconClass" name="mobile-issue-close" />
+          {{ $options[$options.LICENSE_APPROVAL_ACTION.DENY] }}
+        </gl-dropdown-item>
+      </gl-dropdown>
 
-        <gl-button
-          v-gl-tooltip
-          v-gl-modal.modal-license-delete-confirmation
-          :title="__('Remove license')"
-          :aria-label="__('Remove license')"
-          :disabled="loading"
-          icon="remove"
-          class="js-remove-button gl-ml-3"
-          category="tertiary"
-          @click="setLicenseInModal(license)"
-        />
-      </div>
+      <gl-button
+        v-gl-tooltip
+        v-gl-modal.modal-license-delete-confirmation
+        :title="__('Remove license')"
+        :aria-label="__('Remove license')"
+        :disabled="loading"
+        icon="remove"
+        class="gl-ml-3"
+        category="tertiary"
+        @click="setLicenseInModal(license)"
+      />
     </div>
   </div>
 </template>
