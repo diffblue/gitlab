@@ -54,7 +54,7 @@ export default {
   },
 
   methods: {
-    selectProfile() {
+    openDrawer() {
       this.$emit('open-drawer');
     },
   },
@@ -91,7 +91,7 @@ export default {
       data-testid="select-profile-action-btn"
       variant="confirm"
       category="secondary"
-      @click="selectProfile"
+      @click="openDrawer"
     >
       {{ actionButtonText }}
     </gl-button>

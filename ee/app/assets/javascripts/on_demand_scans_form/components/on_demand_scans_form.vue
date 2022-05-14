@@ -402,6 +402,13 @@ export default {
       this.selectedSiteProfileId = this.selectedSiteProfileId ?? selectedSiteProfileId;
       this.selectedScannerProfileId = this.selectedScannerProfileId ?? selectedScannerProfileId;
     },
+    updateProfileFromSelector({ profile, profileType }) {
+      if (profileType === SCANNER_TYPE) {
+        this.selectedScannerProfileId = profile.id;
+      } else {
+        this.selectedSiteProfileId = profile.id;
+      }
+    },
     onScannerProfileCreated() {
       /**
        * TODO remove refetch method
@@ -626,6 +633,7 @@ export default {
       :is-loading="isLoadingProfiles"
       @close-drawer="closeSideDrawer"
       @profile-submitted="onScannerProfileCreated"
+      @select-profile="updateProfileFromSelector"
     />
   </configuration-page-layout>
 </template>

@@ -204,6 +204,7 @@ export default {
               :key="profile.id"
               :profile="profile"
               :allow-selection="true"
+              @select-profile="$emit('select-profile', { profile, profileType })"
             />
           </template>
         </div>
