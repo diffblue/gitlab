@@ -720,6 +720,34 @@ describe('OnDemandScansForm', () => {
       expect(findDastProfilesSidebar().exists()).toBe(true);
       expect(findDastProfilesSidebar().props('isOpen')).toBe(true);
     });
+
+    describe('profile selection', () => {
+      const [scannerProfile] = scannerProfiles;
+      const [siteProfile] = siteProfiles;
+
+      beforeEach(() => {
+        createComponent({}, false, {
+          glFeatures: {
+            dastUiRedesign: true,
+          },
+        });
+      });
+
+      it.each`
+        profile           | profileType  | selector
+        ${scannerProfile} | ${'scanner'} | ${findScannerProfilesSelectorNew}
+        ${siteProfile}    | ${'site'}    | ${findSiteProfilesSelectorNew}
+      `('update $profileType profile correctly', async ({ profile, profileType, selector }) => {
+        findDastProfilesSidebar().vm.$emit('select-profile', {
+          profile,
+          profileType,
+        });
+        await nextTick();
+
+        expect(selector().exists()).toBe(true);
+        expect(selector().props('selectedProfile')).toEqual(profile);
+      });
+    });
   });
 
   describe('With `dastUiRedesign` feature flag off', () => {

@@ -42,17 +42,18 @@ export default {
           <gl-button
             v-if="allowSelection"
             v-gl-tooltip
-            data-testid="selected-profile-edit-link"
+            data-testid="profile-select-btn"
             variant="confirm"
             size="small"
             category="secondary"
             :title="$options.i18n.selectTitle"
+            @click="$emit('select-profile')"
             >{{ $options.i18n.selectBtnText }}</gl-button
           >
           <gl-button
             v-if="isEditable"
             v-gl-tooltip
-            data-testid="selected-profile-edit-link"
+            data-testid="profile-edit-btn"
             category="primary"
             size="small"
             icon="pencil"
