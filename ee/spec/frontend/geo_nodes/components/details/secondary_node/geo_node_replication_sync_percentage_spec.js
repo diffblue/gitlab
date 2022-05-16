@@ -46,6 +46,7 @@ describe('GeoNodeReplicationSyncPercentage', () => {
       ${'with all failure'}     | ${[{ total: 100, success: 0 }]}                               | ${'gl-bg-red-500'}   | ${'0%'}
       ${'with multiple data'}   | ${[{ total: 100, success: 100 }, { total: 100, success: 0 }]} | ${'gl-bg-red-500'}   | ${'50%'}
       ${'with malformed data'}  | ${[{ total: null, success: 0 }]}                              | ${'gl-bg-gray-200'}  | ${'N/A'}
+      ${'with Infinity result'} | ${[{ total: null, success: 1 }]}                              | ${'gl-bg-gray-200'}  | ${'N/A'}
       ${'with very small data'} | ${[{ total: 1000, success: 1 }]}                              | ${'gl-bg-red-500'}   | ${'< 1%'}
     `('conditionally $description', ({ values, expectedColor, expectedText }) => {
       beforeEach(() => {

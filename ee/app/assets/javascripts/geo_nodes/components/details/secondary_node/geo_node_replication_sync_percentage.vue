@@ -29,8 +29,8 @@ export default {
         return '< 1';
       }
 
-      // If total/success has any null values it will return NaN, lets render N/A for this case too.
-      return Number.isNaN(percent) ? null : percent;
+      // Display N/A when percent is not valide.
+      return Number.isFinite(percent) ? percent : null;
     },
     percentColor() {
       if (this.percent === null) {
