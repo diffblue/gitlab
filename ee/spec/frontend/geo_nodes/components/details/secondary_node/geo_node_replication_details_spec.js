@@ -1,4 +1,4 @@
-import { GlButton, GlSprintf } from '@gitlab/ui';
+import { GlButton, GlSprintf, GlLink } from '@gitlab/ui';
 import Vue from 'vue';
 import Vuex from 'vuex';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
@@ -52,6 +52,8 @@ describe('GeoNodeReplicationDetails', () => {
     wrapper.findByTestId('geo-replication-details-desktop');
   const findCollapseButton = () => wrapper.findComponent(GlButton);
   const findNAVerificationHelpLink = () => wrapper.findByTestId('naVerificationHelpLink');
+  const findReplicableComponent = () => wrapper.findByTestId('replicable-component');
+  const findReplicableComponentLink = () => findReplicableComponent().findComponent(GlLink);
 
   describe('template', () => {
     describe('when un-collapsed', () => {
@@ -123,6 +125,9 @@ describe('GeoNodeReplicationDetails', () => {
     const mockExpectedNoValues = {
       dataTypeTitle: MOCK_REPLICABLE_TYPES[0].dataTypeTitle,
       component: MOCK_REPLICABLE_TYPES[0].titlePlural,
+      replicationView: new URL(
+        `${MOCK_SECONDARY_NODE.url}${MOCK_REPLICABLE_TYPES[0].customReplicationUrl}`,
+      ),
       syncValues: null,
       verificationValues: null,
     };
@@ -130,6 +135,9 @@ describe('GeoNodeReplicationDetails', () => {
     const mockExpectedOnlySync = {
       dataTypeTitle: MOCK_REPLICABLE_TYPES[0].dataTypeTitle,
       component: MOCK_REPLICABLE_TYPES[0].titlePlural,
+      replicationView: new URL(
+        `${MOCK_SECONDARY_NODE.url}${MOCK_REPLICABLE_TYPES[0].customReplicationUrl}`,
+      ),
       syncValues: { total: 100, success: 0 },
       verificationValues: null,
     };
@@ -137,6 +145,9 @@ describe('GeoNodeReplicationDetails', () => {
     const mockExpectedOnlyVerif = {
       dataTypeTitle: MOCK_REPLICABLE_TYPES[0].dataTypeTitle,
       component: MOCK_REPLICABLE_TYPES[0].titlePlural,
+      replicationView: new URL(
+        `${MOCK_SECONDARY_NODE.url}${MOCK_REPLICABLE_TYPES[0].customReplicationUrl}`,
+      ),
       syncValues: null,
       verificationValues: { total: 50, success: 50 },
     };
@@ -144,6 +155,9 @@ describe('GeoNodeReplicationDetails', () => {
     const mockExpectedBothTypes = {
       dataTypeTitle: MOCK_REPLICABLE_TYPES[0].dataTypeTitle,
       component: MOCK_REPLICABLE_TYPES[0].titlePlural,
+      replicationView: new URL(
+        `${MOCK_SECONDARY_NODE.url}${MOCK_REPLICABLE_TYPES[0].customReplicationUrl}`,
+      ),
       syncValues: { total: 100, success: 0 },
       verificationValues: { total: 50, success: 50 },
     };
@@ -183,5 +197,40 @@ describe('GeoNodeReplicationDetails', () => {
         });
       },
     );
+
+    describe('component links', () => {
+      describe('with noReplicationView', () => {
+        beforeEach(() => {
+          createComponent({ replicableTypes: [MOCK_REPLICABLE_TYPES[1]] });
+        });
+
+        it('renders replicable component title', () => {
+          expect(findReplicableComponent().text()).toBe(MOCK_REPLICABLE_TYPES[1].titlePlural);
+        });
+
+        it(`does not render GlLink to secondary replication view`, () => {
+          expect(findReplicableComponentLink().exists()).toBe(false);
+        });
+      });
+    });
+
+    describe.each`
+      description                       | replicableType              | expectedUrl
+      ${'with customReplicationUrl'}    | ${MOCK_REPLICABLE_TYPES[2]} | ${`${MOCK_SECONDARY_NODE.url}${MOCK_REPLICABLE_TYPES[2].customReplicationUrl}`}
+      ${'without customReplicationUrl'} | ${MOCK_REPLICABLE_TYPES[3]} | ${`${MOCK_SECONDARY_NODE.url}admin/geo/sites/${MOCK_SECONDARY_NODE.id}/replication/${MOCK_REPLICABLE_TYPES[3].namePlural}`}
+    `('component links $description', ({ replicableType, expectedUrl }) => {
+      beforeEach(() => {
+        createComponent({ replicableTypes: [replicableType] });
+      });
+
+      it('renders replicable component title', () => {
+        expect(findReplicableComponent().text()).toBe(replicableType.titlePlural);
+      });
+
+      it(`renders GlLink to secondary replication view`, () => {
+        expect(findReplicableComponentLink().exists()).toBe(true);
+        expect(findReplicableComponentLink().attributes('href')).toBe(expectedUrl);
+      });
+    });
   });
 });
