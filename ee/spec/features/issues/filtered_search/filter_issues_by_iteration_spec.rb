@@ -19,32 +19,28 @@ RSpec.describe 'Filter issues by iteration', :js do
   let_it_be(:iteration_2_issue) { create(:issue, project: project, iteration: iteration_2) }
   let_it_be(:no_iteration_issue) { create(:issue, project: project) }
 
-  let(:filter_input) { find('.gl-filtered-search-term-input')}
-  let(:filter_first_suggestion) { find('.gl-filtered-search-suggestion-list').first('.gl-filtered-search-suggestion') }
-  let(:filter_submit) { find('.gl-search-box-by-click-search-button') }
+  before do
+    stub_feature_flags(vue_issues_list: true)
+  end
 
   shared_examples 'filters by iteration' do
     context 'when iterations are not available' do
       before do
         stub_licensed_features(iterations: false)
-        stub_feature_flags(vue_issues_list: true)
 
         visit page_path
       end
 
       it 'does not show the iteration filter option' do
-        filter_input.click
+        click_filtered_search_bar
 
-        page.within('.gl-filtered-search-suggestion-list') do
-          expect(page).not_to have_content('Iteration')
-        end
+        expect_no_suggestion 'Iteration'
       end
     end
 
     context 'when iterations are available' do
       before do
         stub_licensed_features(iterations: true)
-        stub_feature_flags(vue_issues_list: true)
 
         visit page_path
 
@@ -75,7 +71,7 @@ RSpec.describe 'Filter issues by iteration', :js do
 
       context 'when passing specific iteration by period' do
         before do
-          set_filter('iteration', iteration_1.period)
+          select_tokens 'Iteration', '=', iteration_1.period, submit: true
         end
 
         it_behaves_like 'filters issues by iteration'
@@ -83,7 +79,7 @@ RSpec.describe 'Filter issues by iteration', :js do
 
       context 'when passing Current iteration' do
         before do
-          set_filter('iteration', 'Current')
+          select_tokens 'Iteration', '=', 'Current', submit: true
         end
 
         it_behaves_like 'filters issues by iteration'
@@ -93,7 +89,7 @@ RSpec.describe 'Filter issues by iteration', :js do
         before do
           visit page_path
 
-          set_negated_filter('iteration', iteration_item)
+          select_tokens 'Iteration', '!=', iteration_item, submit: true
         end
 
         context 'with specific iteration' do
@@ -114,13 +110,9 @@ RSpec.describe 'Filter issues by iteration', :js do
   shared_examples 'shows iterations when using iteration token' do
     context 'when viewing list of iterations' do
       before do
-        stub_feature_flags(vue_issues_list: true)
-
         visit page_path
 
-        find_field('Search or filter results...').click
-        click_link 'Iteration'
-        click_link '= is'
+        select_tokens 'Iteration', '='
       end
 
       it 'shows cadence titles, and iteration periods and dates', :aggregate_failures do
@@ -181,21 +173,5 @@ RSpec.describe 'Filter issues by iteration', :js do
     end
 
     it_behaves_like 'filters by iteration'
-  end
-
-  def set_filter(type, filter_value)
-    filter_input.click
-    filter_input.set("#{type}:")
-    filter_first_suggestion.click # Select `=` operator
-    click_on filter_value
-    filter_submit.click
-  end
-
-  def set_negated_filter(type, filter_value)
-    filter_input.click
-    filter_input.set("#{type}:")
-    click_on '!='
-    click_on filter_value
-    filter_submit.click
   end
 end

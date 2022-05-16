@@ -17,9 +17,8 @@ RSpec.describe 'Filter issues by epic', :js do
   let_it_be(:epic_issue2) { create(:epic_issue, issue: issue2, epic: epic2) }
   let_it_be(:epic_issue3) { create(:epic_issue, issue: issue3, epic: epic2) }
 
-  let(:filter_dropdown) { find("#js-dropdown-epic .filter-dropdown") }
-
   before do
+    stub_feature_flags(vue_issues_list: true)
     stub_licensed_features(epics: true)
     group.add_maintainer(user)
 
@@ -28,28 +27,29 @@ RSpec.describe 'Filter issues by epic', :js do
 
   shared_examples 'filter issues by epic' do
     it 'filters issues by epic' do
-      input_filtered_search("epic:=&#{epic1.id}")
+      select_tokens 'Epic', '=', epic1.title, submit: true
 
       expect_issues_list_count(1)
     end
 
     it 'filters issues by negated epic' do
-      input_filtered_search("epic:!=&#{epic1.id}")
+      select_tokens 'Epic', '!=', epic1.title, submit: true
 
       expect_issues_list_count(2)
     end
 
     it 'shows epics in the filtered search dropdown' do
-      input_filtered_search('epic:=', submit: false, extra_space: false)
+      select_tokens 'Epic', '='
 
-      expect_filtered_search_dropdown_results(filter_dropdown, 2)
+      # Expect None, Any, My title 5, My title 4
+      expect_suggestion_count 4
     end
 
     it 'shows correct filtered search epic token value' do
-      input_filtered_search('epic:=', submit: false, extra_space: false)
+      select_tokens 'Epic', '='
       click_on epic1.title
 
-      expect(find('.filtered-search-token .value').text).to eq("\"#{epic1.title}\"::&#{epic1.id}")
+      expect_epic_token "&#{epic1.id}::#{epic1.title}"
     end
   end
 
