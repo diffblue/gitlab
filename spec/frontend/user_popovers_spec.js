@@ -91,8 +91,6 @@ describe('User Popovers', () => {
         triggerEvent('mouseover', link);
       });
 
-      await Promise.resolve();
-
       expect(findPopovers().length).toBe(linksWithUsers.length + addedLinks.length);
     });
   });
@@ -105,8 +103,6 @@ describe('User Popovers', () => {
     jest.runOnlyPendingTimers();
     triggerEvent('mouseover', firstUserLink);
     jest.runOnlyPendingTimers();
-
-    await Promise.resolve();
 
     expect(findPopovers().length).toBe(1);
   });
