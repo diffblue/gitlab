@@ -170,22 +170,6 @@ wiki, packages, or snippets. The repository size limit applies to both private a
 
 For details on manually purging files, see [reducing the repository size using Git](../../project/repository/reducing_the_repo_size_using_git.md).
 
-## Troubleshooting
-
-### 413 Request Entity Too Large
-
-When attaching a file to a comment or reply in GitLab displays a `413 Request Entity Too Large`
-error, the [max attachment size](#max-attachment-size)
-is probably larger than the web server's allowed value.
-
-To increase the max attachment size to 200 MB in a
-[Omnibus GitLab](https://docs.gitlab.com/omnibus/) install, you may need to
-add the line below to `/etc/gitlab/gitlab.rb` before increasing the max attachment size:
-
-```ruby
-nginx['client_max_body_size'] = "200m"
-```
-
 ## Customize session duration for Git Operations when 2FA is enabled **(PREMIUM SELF)**
 
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/296669) in GitLab 13.9.
@@ -315,3 +299,19 @@ NOTE:
 When this ability is disabled, GitLab administrators can still use the
 [Admin Area](../index.md#administering-users) or the
 [API](../../../api/users.md#user-modification) to update usernames.
+
+## Troubleshooting
+
+### 413 Request Entity Too Large
+
+When attaching a file to a comment or reply in GitLab displays a `413 Request Entity Too Large`
+error, the [max attachment size](#max-attachment-size)
+is probably larger than the web server's allowed value.
+
+To increase the max attachment size to 200 MB in a
+[Omnibus GitLab](https://docs.gitlab.com/omnibus/) install, you may need to
+add the line below to `/etc/gitlab/gitlab.rb` before increasing the max attachment size:
+
+```ruby
+nginx['client_max_body_size'] = "200m"
+```
