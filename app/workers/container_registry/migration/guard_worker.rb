@@ -13,7 +13,7 @@ module ContainerRegistry
       feature_category :container_registry
       urgency :low
       worker_resource_boundary :unknown
-      deduplicate :until_executed
+      deduplicate :until_executed, ttl: 5.minutes
       idempotent!
 
       def perform

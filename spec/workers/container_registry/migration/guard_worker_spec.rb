@@ -236,4 +236,11 @@ RSpec.describe ContainerRegistry::Migration::GuardWorker, :aggregate_failures do
       end
     end
   end
+
+  describe 'worker attributes' do
+    it 'has deduplication set' do
+      expect(described_class.get_deduplicate_strategy).to eq(:until_executed)
+      expect(described_class.get_deduplication_options).to include(ttl: 5.minutes)
+    end
+  end
 end
