@@ -22,7 +22,7 @@ module Security
         def new_finding_maps_with_issue_feedback
           finding_maps.select(&:new_record)
                       .each(&:issue_feedback) # This iteration is necessary to register BatchLoader.
-                      .select { |finding_map| finding_map.issue_feedback.present? }
+                      .select { |finding_map| finding_map.issue_feedback.try(:issue_id).present? }
         end
       end
     end
