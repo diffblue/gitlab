@@ -5,10 +5,11 @@ require 'spec_helper'
 RSpec.describe Backup::Repositories do
   let(:progress) { spy(:stdout) }
   let(:strategy) { spy(:strategy) }
+  let(:storages) { [] }
   let(:destination) { 'repositories' }
   let(:backup_id) { 'backup_id' }
 
-  subject { described_class.new(progress, strategy: strategy) }
+  subject { described_class.new(progress, strategy: strategy, storages: storages) }
 
   describe '#dump' do
     let_it_be(:project) { create(:project, :repository) }
@@ -50,11 +51,37 @@ RSpec.describe Backup::Repositories do
         subject.dump(destination, backup_id)
       end.not_to exceed_query_limit(control_count)
     end
+
+    context 'storages' do
+      let(:storages) { %w{default} }
+
+      before do
+        stub_storage_settings('test_second_storage' => {
+          'gitaly_address' => Gitlab.config.repositories.storages.default.gitaly_address,
+          'path' => TestEnv::SECOND_STORAGE_PATH
+        })
+      end
+
+      it 'calls enqueue for all repositories on the specified storage', :aggregate_failures do
+        excluded_group = create(:group, :wiki_repo)
+        excluded_group.group_wiki_repository.update!(shard_name: 'test_second_storage')
+
+        subject.dump(destination, backup_id)
+
+        expect(strategy).to have_received(:start).with(:create, destination, backup_id: backup_id)
+        expect(strategy).to have_received(:enqueue).with(project, Gitlab::GlRepository::PROJECT)
+        expect(strategy).not_to have_received(:enqueue).with(excluded_group, Gitlab::GlRepository::WIKI)
+        groups.each do |group|
+          expect(strategy).to have_received(:enqueue).with(group, Gitlab::GlRepository::WIKI)
+        end
+        expect(strategy).to have_received(:finish!)
+      end
+    end
   end
 
   describe '#restore' do
-    let_it_be(:project) { create(:project) }
-    let_it_be(:group) { create(:group) }
+    let_it_be(:project) { create(:project, :repository) }
+    let_it_be(:group) { create(:group, :wiki_repo) }
 
     it 'calls enqueue for each repository type', :aggregate_failures do
       subject.restore(destination)
@@ -63,6 +90,30 @@ RSpec.describe Backup::Repositories do
       expect(strategy).to have_received(:enqueue).with(project, Gitlab::GlRepository::PROJECT)
       expect(strategy).to have_received(:enqueue).with(group, Gitlab::GlRepository::WIKI)
       expect(strategy).to have_received(:finish!)
+    end
+
+    context 'storages' do
+      let(:storages) { %w{default} }
+
+      before do
+        stub_storage_settings('test_second_storage' => {
+          'gitaly_address' => Gitlab.config.repositories.storages.default.gitaly_address,
+          'path' => TestEnv::SECOND_STORAGE_PATH
+        })
+      end
+
+      it 'calls enqueue for all repositories on the specified storage', :aggregate_failures do
+        excluded_group = create(:group, :wiki_repo)
+        excluded_group.group_wiki_repository.update!(shard_name: 'test_second_storage')
+
+        subject.restore(destination)
+
+        expect(strategy).to have_received(:start).with(:restore, destination)
+        expect(strategy).not_to have_received(:enqueue).with(excluded_group, Gitlab::GlRepository::WIKI)
+        expect(strategy).to have_received(:enqueue).with(project, Gitlab::GlRepository::PROJECT)
+        expect(strategy).to have_received(:enqueue).with(group, Gitlab::GlRepository::WIKI)
+        expect(strategy).to have_received(:finish!)
+      end
     end
   end
 end
