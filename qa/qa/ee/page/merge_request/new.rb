@@ -39,7 +39,7 @@ module QA
                     select_user_member(user.username)
                   end
                   rule.key?(:groups) && rule[:groups].each do |group|
-                    select_group_member(group.name)
+                    select_group_member(group.full_path)
                   end
 
                   click_approvers_modal_ok_button
@@ -60,9 +60,9 @@ module QA
                 find('.select2-results .user-username', text: "@#{name}").click
               end
 
-              def select_group_member(name)
-                enter_member(name)
-                find('.select2-results .group-name', text: "#{name}").click
+              def select_group_member(path)
+                enter_member(path)
+                find('.select2-results .group-path', text: "#{path}").click
               end
 
               private
