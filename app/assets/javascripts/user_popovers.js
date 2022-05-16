@@ -81,7 +81,7 @@ function createPopover(el, user) {
   });
 }
 
-async function launchPopover(el, mountPopover) {
+function launchPopover(el, mountPopover) {
   if (el.user) return;
 
   const emptyUser = {
@@ -114,17 +114,12 @@ async function launchPopover(el, mountPopover) {
     el.user.isFollowed = false;
   });
 
-  // wait a microtask in case the user is retrieved from cache to avoid flashing
-  await Promise.resolve();
   mountPopover(popoverInstance);
 }
 
 const userLinkSelector = 'a.js-user-link, a.gfm-project_member';
 
-const getUserLinkNode = (node) => {
-  const startNode = 'matches' in node ? node : node.parentElement;
-  return startNode.closest(userLinkSelector);
-};
+const getUserLinkNode = (node) => node.closest(userLinkSelector);
 
 const lazyLaunchPopover = debounce((mountPopover, event) => {
   const userLink = getUserLinkNode(event.target);
