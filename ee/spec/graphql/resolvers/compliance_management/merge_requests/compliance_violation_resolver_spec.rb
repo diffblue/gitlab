@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Resolvers::ComplianceManagement::MergeRequests::ComplianceViolationResolver do
+RSpec.describe 'Resolvers::ComplianceManagement::MergeRequests::ComplianceViolationResolver' do
   using RSpec::Parameterized::TableSyntax
 
   include GraphqlHelpers
@@ -18,6 +18,7 @@ RSpec.describe Resolvers::ComplianceManagement::MergeRequests::ComplianceViolati
   let_it_be(:compliance_violation) { create(:compliance_violation, :approved_by_committer, severity_level: :low, merge_request: merge_request) }
   let_it_be(:compliance_violation2) { create(:compliance_violation, :approved_by_merge_request_author, severity_level: :high, merge_request: merge_request2) }
   let_it_be(:compliance_violation_outside_group) { create(:compliance_violation, :approved_by_committer, merge_request: merge_request_outside_group) }
+  let_it_be(:described_class) { Resolvers::ComplianceManagement::MergeRequests::ComplianceViolationResolver }
 
   before do
     merge_request.metrics.update!(merged_at: 3.days.ago)
@@ -57,9 +58,9 @@ RSpec.describe Resolvers::ComplianceManagement::MergeRequests::ComplianceViolati
 
         context 'when given merged at dates' do
           where(:merged_params, :result) do
-            { merged_before: 2.days.ago } | lazy { compliance_violation }
-            { merged_after: 2.days.ago } | lazy { compliance_violation2 }
-            { merged_before: Date.current, merged_after: 2.days.ago } | lazy { compliance_violation2 }
+            { merged_before: 2.days.ago.to_date } | lazy { compliance_violation }
+            { merged_after: 2.days.ago.to_date } | lazy { compliance_violation2 }
+            { merged_before: Date.current, merged_after: 2.days.ago.to_date } | lazy { compliance_violation2 }
           end
 
           with_them do

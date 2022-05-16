@@ -114,7 +114,7 @@ RSpec.describe Mutations::Vulnerabilities::Create do
               dismissed_at: dismissed_at,
               solution: "rm -rf --no-preserve-root /",
               message: "You can't fix this"
-            }
+            }.compact
           end
 
           it "returns a #{params[:state]} vulnerability", :aggregate_failures do

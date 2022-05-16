@@ -10,7 +10,7 @@ RSpec.describe Mutations::Security::TrainingProviderUpdate do
     let_it_be(:project) { create(:project) }
     let_it_be(:training, refind: true) { create(:security_training) }
 
-    let(:arguments) { { project_path: project.full_path, provider_id: training.provider.id, is_enabled: true, is_primary: false } }
+    let(:arguments) { { project_path: project.full_path, provider_id: training.provider.to_global_id, is_enabled: true, is_primary: false } }
     let(:service_result) { { status: :success, training: training } }
     let(:service_object) { instance_double(::Security::UpdateTrainingService, execute: service_result) }
 
@@ -24,7 +24,9 @@ RSpec.describe Mutations::Security::TrainingProviderUpdate do
 
     context 'when the user is not authorized' do
       it 'does not permit the action' do
-        expect { mutation_result }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
+        expect_graphql_error_to_be_created(Gitlab::Graphql::Errors::ResourceNotAvailable) do
+          mutation_result
+        end
       end
     end
 
@@ -36,11 +38,11 @@ RSpec.describe Mutations::Security::TrainingProviderUpdate do
       context 'when the mutation fails' do
         let(:service_result) { { status: :error, message: 'Error', training: training } }
 
-        it { is_expected.to eq({ training: training.provider, errors: ['Error'] }) }
+        it { is_expected.to include({ training: training.provider, errors: ['Error'] }) }
       end
 
       context 'when the mutation succeeds' do
-        it { is_expected.to eq({ training: training.provider, errors: [] }) }
+        it { is_expected.to include({ training: training.provider, errors: [] }) }
 
         describe 'training' do
           subject { mutation_result[:training] }
