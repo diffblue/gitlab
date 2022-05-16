@@ -68,7 +68,7 @@ describe('Test reports suite table', () => {
   it('should render a message when artifacts have expired', () => {
     createComponent({ suite: [], errorMessage: ARTIFACTS_EXPIRED_ERROR_MESSAGE });
 
-    expect(noCasesMessage().exists()).toBe(true);
+    expect(noCasesMessage().exists()).toBe(false);
     expect(artifactsExpiredMessage().exists()).toBe(true);
   });
 
