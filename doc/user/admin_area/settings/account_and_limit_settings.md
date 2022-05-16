@@ -315,3 +315,13 @@ add the line below to `/etc/gitlab/gitlab.rb` before increasing the max attachme
 ```ruby
 nginx['client_max_body_size'] = "200m"
 ```
+
+### Intermittent `Your push has been rejected, because this repository has exceeded its size limit` errors in [Rails exceptions log](../../../administration/logs.md#exceptions_jsonlog)
+
+If a repository seems to be affected by this problem temporarily and repeatedly,
+it is possible that [Housekeeking](../../../administration/housekeeping.md)
+causes your repository size to grow.
+To resolve this problem, either of these options helps in the short- to mid-term:
+
+- increase the [repository size limit](#repository-size-limit)
+- [reduce the repo size](../../project/repository/reducing_the_repo_size_using_git.md)
