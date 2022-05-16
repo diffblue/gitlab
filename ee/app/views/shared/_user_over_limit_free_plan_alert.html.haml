@@ -1,36 +1,8 @@
 - content_for :user_over_limit_free_plan_alert do
-  - if show_user_reached_limit_free_plan_alert?(source.root_ancestor)
-    .container-fluid.container-limited{ class: "gl-pb-2! gl-pt-6! #{@content_class}" }
-      = render Pajamas::AlertComponent.new(alert_class: 'js-user-over-limit-free-plan-alert',
-        variant: :warning,
-        alert_data: { track_action: 'render',
-                      track_label: 'user_limit_banner',
-                      dismiss_endpoint: group_callouts_path,
-                      feature_id: Users::GroupCalloutsHelper::USER_REACHED_LIMIT_FREE_PLAN_ALERT,
-                      group_id: source.root_ancestor.id,
-                      testid: 'user-over-limit-free-plan-alert' },
-        title: _("Looks like you've reached your %{free_limit} member limit for %{strong_start}%{namespace_name}%{strong_end}").html_safe % { free_limit: ::Namespaces::FreeUserCap::FREE_USER_LIMIT,
-          strong_start: "<strong>".html_safe,
-          strong_end: "</strong>".html_safe,
-          namespace_name: source.root_ancestor.name },
-        close_button_data: { track_action: 'dismiss_banner',
-                             track_label: 'user_limit_banner',
-                             testid: 'user-over-limit-free-plan-dismiss' }) do |c|
-        = c.body do
-          = _("You can't add any more, but you can manage your existing members, for example, by removing inactive members and replacing them with new members. To get more members an owner of this namespace can start a trial or upgrade to a paid tier.")
-        = c.actions do
-          = link_to _('Manage members'),
-            group_usage_quotas_path(source.root_ancestor),
-            class: 'btn gl-alert-action btn-info btn-md gl-button',
-            data: { track_action: 'click_button',
-                    track_label: 'manage_members',
-                    testid: 'user-over-limit-free-plan-manage' }
-          = link_to _('Explore paid plans'),
-            group_billings_path(source.root_ancestor),
-            class: 'btn gl-alert-action btn-default btn-md gl-button',
-            data: { track_action: 'click_button',
-                    track_label: 'explore_paid_plans',
-                    testid: 'user-over-limit-free-plan-explore' }
+  - if ::Namespaces::FreeUserCap.new(source.root_ancestor).feature_enabled?
+    = render Namespaces::FreeUserCapAlertComponent.new(namespace: source.root_ancestor,
+      user: current_user,
+      content_class: @content_class)
   - else
     = render Namespaces::PreviewFreeUserCapAlertComponent.new(namespace: source.root_ancestor,
       user: current_user,

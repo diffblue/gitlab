@@ -43148,6 +43148,9 @@ msgstr ""
 msgid "You can group test cases using labels. To learn about the future direction of this feature, visit %{linkStart}Quality Management direction page%{linkEnd}."
 msgstr ""
 
+msgid "You can have a maximum of %{free_limit} unique members across all of your personal projects. To view and manage members, check the members page for each project in your namespace. We recommend you %{move_link_start}move your projects to a group%{move_link_end} so you can easily manage users and features."
+msgstr ""
+
 msgid "You can invite a new member to %{project_name} or invite another group."
 msgstr ""
 
@@ -43577,6 +43580,9 @@ msgid "You're receiving this email because you have been mentioned on %{host}."
 msgstr ""
 
 msgid "You've already enabled two-factor authentication using one time password authenticators. In order to register a different device, you must first disable two-factor authentication."
+msgstr ""
+
+msgid "You've reached your %{free_limit} member limit across all your personal projects"
 msgstr ""
 
 msgid "You've rejected %{user}"
