@@ -29,9 +29,9 @@ We want to reduce the risk of database performance degradation by transforming
 a few largest database tables into smaller ones using PostgreSQL declarative
 partitioning.
 
-See more details about this effort in [the partent blueprint](./).
+See more details about this effort in [the parent blueprint](index.md).
 
-![pipeline-data-time-decay.png]()
+![pipeline_data_time_decay_png](pipeline_data_time_decay.png)
 
 ### How are CI/CD data decomposition, partitioning and time-decay related?
 
@@ -57,19 +57,19 @@ partitioning to implement time-decay might be especially beneficial. Usually to
 implement a time decay we mark data as archived, and migrate it out of a
 database to a different place once data is no longer relevant or needed.
 Because our dataset is extremely large (tens of terabytes) moving such a high
-ivolume of data is challenging. With implementing time-decay using partitioning
+volume of data is challenging. With implementing time-decay using partitioning
 we can simply archive the entire partition (or set of partitions) by updating a
 single record in one of our database tables. It is one of the least expensive
 ways to implement time-decay patterns at a database level.
 
-![decomposition-partitioning-comparision.png]()
+![decomposition_partitioning_comparison.png](decomposition_partitioning_comparison.png)
 
 ### Why do we need to partition CI/CD data?
 
 We need to partition CI/CD data because our database tables storing pipelines,
 builds, artifacts are too large. `ci_builds` database table is currently 3657
 GB large with an index size of 1356 GB. This is a lot and violates our
-[principle of 100 GB max size](../database_scaling/size-limits.html). We want
+[principle of 100 GB max size](../database_scaling/size-limits.md). We want
 to [build the alerting](https://gitlab.com/gitlab-com/gl-infra/tamland/-/issues/5)
 that will notify us when this number is exceeded.
 
@@ -180,13 +180,12 @@ structured and stored.
 CI/CD data is hierarchical data. Stages belong to pipelines, builds belong to
 stages, artifacts belong to builds (with rare exceptions). We want to design a
 partitioning strategy that reflects this hierarchy to reduce the complexity and
-cognitive load imposed on contributors.  With explicit `partition_id`
-associated with a pipeline, we can cascade the pipeline id number when trying
-to retrieve all resources associated with a pipeline. We know that for pipeline
-12345, that has `partition_id` 102, we are always able to find associated
-resources in logical partitions with number 102 in other routing tables, and
-PostgreSQL will know in which partitions these records are being stored for
-every table.
+cognitive load imposed on contributors. With explicit `partition_id` associated
+with a pipeline, we can cascade the pipeline id number when trying to retrieve
+all resources associated with a pipeline. We know that for pipeline 12345, that
+has `partition_id` 102, we are always able to find associated resources in
+logical partitions with number 102 in other routing tables, and PostgreSQL will
+know in which partitions these records are being stored for every table.
 
 Another interesting benefit for using a single and incremental latest
 `partition_id` number, associated with a least pipeline, is that in theory we
@@ -300,7 +299,7 @@ constraints we are currently using will perform in case of using the
 partitioned schema.
 
 We have also designed a query analyzer that makes it possible to detect direct
-usage of partitions zero, legay tables that have been attached as first
+usage of partitions zero, legacy tables that have been attached as first
 partitions to routing tables, to ensure that all queries are targeting
 partitioned schema / partitioned routing tables, like `p_ci_pipelines`.
 
@@ -308,7 +307,7 @@ partitioned schema / partitioned routing tables, like `p_ci_pipelines`.
 
 We do not want to partition using `project_id / namespace_id` because sharding
 / podding is a different problem to solve, on a different layer of the
-application. It doesn’t solve the original problem statement of performance
+application. It doesn't solve the original problem statement of performance
 growing worse over time as we build up infrequently read data. We want to
 introduce GitLab Pods in the future, and that is the primary mechanism of
 separating data based on a group or project the data is associated with.
@@ -330,7 +329,7 @@ hours, and always reading from two partitions through a routing table. The
 strategy to partition these tables is well understood, but requires a solid
 Ruby-based automation to manage the creation and deletion of these partitions.
 In order to achieve that we will collaborate with the Database team to adapt
-[existing database partitioning tools](/../../../database/table_partitioning.html)
+[existing database partitioning tools](/../../database/table_partitioning.md)
 to support CI/CD data partitioning.
 
 ### Iterating to reduce the risk
