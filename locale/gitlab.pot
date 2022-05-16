@@ -1515,6 +1515,12 @@ msgstr ""
 msgid "404|Please contact your GitLab administrator if you think this is a mistake."
 msgstr ""
 
+msgid "409|Please contact your GitLab administrator if you think this is a mistake."
+msgstr ""
+
+msgid "409|There was a conflict with your request."
+msgstr ""
+
 msgid "7 days"
 msgstr ""
 
