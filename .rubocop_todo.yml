@@ -6,11 +6,6 @@
 # Note that changes in the inspected code, or installation of new
 # versions of RuboCop, may require this file to be generated again.
 
-# Offense count: 1
-Gitlab/PolicyRuleBoolean:
-  Exclude:
-    - 'ee/app/policies/ee/identity_provider_policy.rb'
-
 # Configuration parameters: Include.
 # Include: db/migrate/*.rb
 Rails/CreateTableWithTimestamps:
