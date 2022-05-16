@@ -465,9 +465,9 @@ module EE
       return false unless created_after_credit_card_release_day?(project)
 
       root_namespace = project.root_namespace
-      ci_quota = root_namespace.ci_minutes_quota
+      ci_usage = root_namespace.ci_minutes_usage
 
-      return false if ci_quota.enabled? && ci_quota.limit.any_purchased?
+      return false if ci_usage.limit_enabled? && ci_usage.limit.any_purchased?
 
       if root_namespace.free_plan?
         ::Feature.enabled?(:ci_require_credit_card_on_free_plan, project)

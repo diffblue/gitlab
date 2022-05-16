@@ -1,19 +1,19 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-RSpec.describe Ci::Minutes::Quota do
+RSpec.describe Ci::Minutes::Usage do
   using RSpec::Parameterized::TableSyntax
 
   let_it_be_with_reload(:namespace) do
     create(:group, namespace_statistics: create(:namespace_statistics))
   end
 
-  let(:quota) { described_class.new(namespace) }
+  let(:usage) { described_class.new(namespace) }
 
   describe '#enabled?' do
     let(:project) { create(:project, namespace: namespace) }
 
-    subject { quota.enabled? }
+    subject { usage.limit_enabled? }
 
     context 'when namespace is root' do
       context 'when namespace has any project with shared runners enabled' do
@@ -64,9 +64,9 @@ RSpec.describe Ci::Minutes::Quota do
   end
 
   describe '#minutes_used_up?' do
-    subject { quota.minutes_used_up? }
+    subject { usage.minutes_used_up? }
 
-    where(:limit_enabled, :monthly_limit, :purchased_limit, :minutes_used, :result, :title) do
+    where(:limit_enabled, :monthly_limit, :purchased_limit, :minutes_used, :result, :case_name) do
       false | 0   | 0   | 40  | false | 'limit not enabled'
       true  | 0   | 200 | 40  | false | 'monthly limit not set and purchased limit set and low usage'
       true  | 200 | 0   | 40  | false | 'monthly limit set and purchased limit not set and usage below monthly'
@@ -80,10 +80,17 @@ RSpec.describe Ci::Minutes::Quota do
     end
 
     with_them do
-      let(:namespace) { create(:namespace, :with_ci_minutes, ci_minutes_limit: monthly_limit, ci_minutes_used: minutes_used) }
+      let(:namespace) do
+        create(
+          :namespace,
+          :with_ci_minutes,
+          ci_minutes_limit: monthly_limit,
+          ci_minutes_used: minutes_used
+        )
+      end
 
       before do
-        allow(quota).to receive(:enabled?).and_return(limit_enabled)
+        allow(usage).to receive(:enabled?).and_return(limit_enabled)
         namespace.extra_shared_runners_minutes_limit = purchased_limit
       end
 
@@ -94,7 +101,7 @@ RSpec.describe Ci::Minutes::Quota do
   describe '#total_minutes_used' do
     let(:namespace) { create(:namespace, :with_ci_minutes, ci_minutes_used: minutes_used) }
 
-    subject { quota.total_minutes_used }
+    subject { usage.total_minutes_used }
 
     where(:minutes_used, :expected_minutes) do
       nil | 0
@@ -110,7 +117,7 @@ RSpec.describe Ci::Minutes::Quota do
   end
 
   describe '#percent_total_minutes_remaining' do
-    subject { quota.percent_total_minutes_remaining }
+    subject { usage.percent_total_minutes_remaining }
 
     where(:total_minutes_used, :monthly_minutes, :purchased_minutes, :result) do
       0   | 0   | 0 | 0
@@ -122,7 +129,14 @@ RSpec.describe Ci::Minutes::Quota do
     end
 
     with_them do
-      let(:namespace) { create(:namespace, :with_ci_minutes, ci_minutes_used: total_minutes_used, ci_minutes_limit: monthly_minutes) }
+      let(:namespace) do
+        create(
+          :namespace,
+          :with_ci_minutes,
+          ci_minutes_used: total_minutes_used,
+          ci_minutes_limit: monthly_minutes
+        )
+      end
 
       before do
         allow(namespace).to receive(:extra_shared_runners_minutes_limit).and_return(purchased_minutes)
@@ -133,32 +147,39 @@ RSpec.describe Ci::Minutes::Quota do
   end
 
   describe '#monthly_minutes_used_up?' do
-    subject { quota.monthly_minutes_used_up? }
+    subject { usage.monthly_minutes_used_up? }
 
-    context 'when quota is enabled' do
+    context 'when usage is enabled' do
       let(:total_minutes) { 1000 }
-      let(:namespace) { create(:namespace, :with_ci_minutes, ci_minutes_limit: total_minutes, ci_minutes_used: total_minutes_used) }
+      let(:namespace) do
+        create(
+          :namespace,
+          :with_ci_minutes,
+          ci_minutes_used: total_minutes_used,
+          ci_minutes_limit: total_minutes
+        )
+      end
 
-      context 'when monthly minutes quota greater than monthly minutes used' do
+      context 'when monthly minutes usage greater than monthly minutes used' do
         let(:total_minutes_used) { total_minutes - 1 }
 
         it { is_expected.to be_falsey }
       end
 
-      context 'when monthly minutes quota less than monthly minutes used' do
+      context 'when monthly minutes usage less than monthly minutes used' do
         let(:total_minutes_used) { total_minutes + 1 }
 
         it { is_expected.to be_truthy }
       end
 
-      context 'when monthly minutes quota equals monthly minutes used' do
+      context 'when monthly minutes usage equals monthly minutes used' do
         let(:total_minutes_used) { total_minutes }
 
         it { is_expected.to be_truthy }
       end
     end
 
-    context 'when quota is disabled' do
+    context 'when usage is disabled' do
       before do
         allow(namespace).to receive(:shared_runners_minutes_limit).and_return(0)
       end
@@ -168,9 +189,9 @@ RSpec.describe Ci::Minutes::Quota do
   end
 
   describe '#purchased_minutes_used_up?' do
-    subject { quota.purchased_minutes_used_up? }
+    subject { usage.purchased_minutes_used_up? }
 
-    context 'when quota is enabled' do
+    context 'when usage is enabled' do
       before do
         allow(namespace).to receive(:shared_runners_minutes_limit).and_return(1000)
       end
@@ -193,7 +214,14 @@ RSpec.describe Ci::Minutes::Quota do
         end
 
         with_them do
-          let(:namespace) { create(:namespace, :with_ci_minutes, ci_minutes_limit: monthly_minutes, ci_minutes_used: total_minutes_used) }
+          let(:namespace) do
+            create(
+              :namespace,
+              :with_ci_minutes,
+              ci_minutes_limit: monthly_minutes,
+              ci_minutes_used: total_minutes_used
+            )
+          end
 
           before do
             allow(namespace).to receive(:extra_shared_runners_minutes_limit).and_return(purchased_minutes)
@@ -204,7 +232,7 @@ RSpec.describe Ci::Minutes::Quota do
       end
     end
 
-    context 'when quota is disabled' do
+    context 'when usage is disabled' do
       before do
         allow(namespace).to receive(:shared_runners_minutes_limit).and_return(0)
       end
@@ -214,9 +242,7 @@ RSpec.describe Ci::Minutes::Quota do
   end
 
   describe '#reset_date' do
-    let(:quota) { described_class.new(namespace) }
-
-    subject(:reset_date) { quota.reset_date }
+    subject(:reset_date) { usage.reset_date }
 
     around do |example|
       travel_to(Date.new(2021, 07, 14)) { example.run }

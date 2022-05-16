@@ -6,7 +6,7 @@ module EE
       module PendingBuildsStrategy
         extend ActiveSupport::Concern
 
-        def enforce_minutes_quota(relation)
+        def enforce_minutes_limit(relation)
           relation.with_ci_minutes_available
         end
       end

@@ -4,9 +4,9 @@ module EE
   module NamespacesHelper
     extend ::Gitlab::Utils::Override
 
-    def ci_minutes_report(quota_report)
-      content_tag(:span, class: "shared_runners_limit_#{quota_report.status}") do
-        "#{quota_report.used} / #{quota_report.limit}"
+    def ci_minutes_report(usage_report)
+      content_tag(:span, class: "shared_runners_limit_#{usage_report.status}") do
+        "#{usage_report.used} / #{usage_report.limit}"
       end
     end
 
@@ -67,15 +67,15 @@ module EE
       namespace.root_ancestor.free_plan? && !minute_limit_banner_dismissed?
     end
 
-    override :pipeline_usage_quota_app_data
-    def pipeline_usage_quota_app_data(namespace)
+    override :pipeline_usage_app_data
+    def pipeline_usage_app_data(namespace)
       return super unless ::Gitlab::CurrentSettings.should_check_namespace_plan?
 
-      minutes_quota_presenter = ::Ci::Minutes::QuotaPresenter.new(namespace.ci_minutes_quota)
+      minutes_usage_presenter = ::Ci::Minutes::UsagePresenter.new(namespace.ci_minutes_usage)
 
       super.merge(
         ci_minutes: {
-          any_project_enabled: minutes_quota_presenter.any_project_enabled?.to_s
+          any_project_enabled: minutes_usage_presenter.any_project_enabled?.to_s
         },
         buy_additional_minutes_path: buy_additional_minutes_path(namespace),
         buy_additional_minutes_target: buy_addon_target_attr(namespace)

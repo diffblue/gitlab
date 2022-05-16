@@ -28,9 +28,9 @@ RSpec.describe 'Reset namespace pipeline minutes', :js do
         expect(page).to have_selector('.gl-toast')
         expect(page).to have_current_path(%r(#{namespace.path}), ignore_query: true)
 
-        expect(namespace.reload.ci_minutes_quota.total_minutes_used).to eq(0)
-        expect(namespace.ci_minutes_quota.reset_date.month).to eq(time.month)
-        expect(namespace.ci_minutes_quota.reset_date.year).to eq(time.year)
+        expect(namespace.reload.ci_minutes_usage.total_minutes_used).to eq(0)
+        expect(namespace.ci_minutes_usage.reset_date.month).to eq(time.month)
+        expect(namespace.ci_minutes_usage.reset_date.year).to eq(time.year)
       end
     end
   end

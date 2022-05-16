@@ -56,7 +56,7 @@ module Gitlab
         private
 
         def uncached_current_balance
-          root_namespace.ci_minutes_quota.current_balance.to_f
+          root_namespace.ci_minutes_usage.current_balance.to_f
         end
       end
     end

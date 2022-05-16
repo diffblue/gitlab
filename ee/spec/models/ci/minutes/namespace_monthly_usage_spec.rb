@@ -145,7 +145,7 @@ RSpec.describe Ci::Minutes::NamespaceMonthlyUsage do
         let(:build) { create(:ci_build, :created, pipeline: pipeline) }
 
         before do
-          namespace.clear_memoization(:ci_minutes_quota)
+          namespace.clear_memoization(:ci_minutes_usage)
           create(:ci_runner, :instance_type)
         end
 

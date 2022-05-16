@@ -23,7 +23,7 @@ module EE
 
         def minutes_exceeded?(project)
           ::Ci::Runner.any_shared_runners_with_enabled_cost_factor?(project) &&
-            project.ci_minutes_quota.minutes_used_up?
+            project.ci_minutes_usage.minutes_used_up?
         end
       end
     end

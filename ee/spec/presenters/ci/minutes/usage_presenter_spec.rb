@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::Minutes::QuotaPresenter do
+RSpec.describe Ci::Minutes::UsagePresenter do
   include ::Ci::MinutesHelpers
 
   using RSpec::Parameterized::TableSyntax
@@ -11,14 +11,14 @@ RSpec.describe Ci::Minutes::QuotaPresenter do
     create(:group, namespace_statistics: create(:namespace_statistics))
   end
 
-  let(:quota) { Ci::Minutes::Quota.new(namespace) }
+  let(:usage) { Ci::Minutes::Usage.new(namespace) }
 
-  subject(:presenter) { described_class.new(quota) }
+  subject(:presenter) { described_class.new(usage) }
 
   describe '#monthly_minutes_report' do
-    context 'when the quota is not enabled' do
+    context 'when the usage is not enabled' do
       before do
-        allow(quota).to receive(:enabled?).and_return(false)
+        allow(usage).to receive(:limit_enabled?).and_return(false)
         allow(namespace).to receive(:root?).and_return(namespace_eligible)
         allow(namespace).to receive(:any_project_with_shared_runners_enabled?).and_return(true)
       end
@@ -66,7 +66,7 @@ RSpec.describe Ci::Minutes::QuotaPresenter do
 
     context 'when limited' do
       before do
-        allow(presenter).to receive(:enabled?).and_return(true)
+        allow(presenter).to receive(:limit_enabled?).and_return(true)
         allow(namespace).to receive(:any_project_with_shared_runners_enabled?).and_return(true)
         namespace.shared_runners_minutes_limit = 100
       end
@@ -76,7 +76,7 @@ RSpec.describe Ci::Minutes::QuotaPresenter do
           set_ci_minutes_used(namespace, 30)
         end
 
-        it 'returns report with under quota' do
+        it 'returns report with under usage' do
           report = presenter.monthly_minutes_report
 
           expect(report.limit).to eq 100
@@ -104,7 +104,7 @@ RSpec.describe Ci::Minutes::QuotaPresenter do
   describe '#purchased_minutes_report' do
     context 'when limit enabled' do
       before do
-        allow(quota).to receive(:enabled?).and_return(true)
+        allow(usage).to receive(:limit_enabled?).and_return(true)
         namespace.shared_runners_minutes_limit = 200
       end
 
@@ -195,7 +195,7 @@ RSpec.describe Ci::Minutes::QuotaPresenter do
   describe '#monthly_percent_used' do
     subject { presenter.monthly_percent_used }
 
-    where(:limit_enabled, :monthly_limit, :purchased_limit, :minutes_used, :result, :title) do
+    where(:limit_enabled, :monthly_limit, :purchased_limit, :minutes_used, :result, :case_name) do
       false | 200 | 0   | 40  | 0   | 'limit not enabled'
       true  | 200 | 0   | 0   | 0   | 'monthly limit set and no usage'
       true  | 200 | 0   | 40  | 20  | 'monthly limit set and usage lower than 100%'
@@ -210,7 +210,7 @@ RSpec.describe Ci::Minutes::QuotaPresenter do
 
     with_them do
       before do
-        allow(quota).to receive(:enabled?).and_return(limit_enabled)
+        allow(usage).to receive(:limit_enabled?).and_return(limit_enabled)
         allow(namespace).to receive(:any_project_with_shared_runners_enabled?).and_return(true)
         namespace.shared_runners_minutes_limit = monthly_limit
         namespace.extra_shared_runners_minutes_limit = purchased_limit
@@ -226,7 +226,7 @@ RSpec.describe Ci::Minutes::QuotaPresenter do
   describe '#purchased_percent_used' do
     subject { presenter.purchased_percent_used }
 
-    where(:limit_enabled, :monthly_limit, :purchased_limit, :minutes_used, :result, :title) do
+    where(:limit_enabled, :monthly_limit, :purchased_limit, :minutes_used, :result, :case_name) do
       false | 0   | 0   | 40  | 0   | 'limit not enabled'
       true  | 0   | 200 | 40  | 20  | 'monthly limit not set and purchased limit set and low usage'
       true  | 200 | 0   | 40  | 0   | 'monthly limit set and purchased limit not set and usage below monthly'
@@ -241,7 +241,7 @@ RSpec.describe Ci::Minutes::QuotaPresenter do
 
     with_them do
       before do
-        allow(quota).to receive(:enabled?).and_return(limit_enabled)
+        allow(usage).to receive(:limit_enabled?).and_return(limit_enabled)
         namespace.shared_runners_minutes_limit = monthly_limit
         namespace.extra_shared_runners_minutes_limit = purchased_limit
         set_ci_minutes_used(namespace, minutes_used)

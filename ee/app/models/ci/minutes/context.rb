@@ -13,13 +13,13 @@ module Ci
       end
 
       def percent_total_minutes_remaining
-        quota.percent_total_minutes_remaining
+        usage.percent_total_minutes_remaining
       end
 
       private
 
-      def quota
-        @quota ||= ::Ci::Minutes::Quota.new(namespace)
+      def usage
+        @usage ||= ::Ci::Minutes::Usage.new(namespace)
       end
     end
   end

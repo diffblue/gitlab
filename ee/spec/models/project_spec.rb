@@ -12,7 +12,7 @@ RSpec.describe Project do
   describe 'associations' do
     it { is_expected.to delegate_method(:shared_runners_seconds).to(:statistics) }
 
-    it { is_expected.to delegate_method(:ci_minutes_quota).to(:shared_runners_limit_namespace) }
+    it { is_expected.to delegate_method(:ci_minutes_usage).to(:shared_runners_limit_namespace) }
     it { is_expected.to delegate_method(:shared_runners_minutes_limit_enabled?).to(:shared_runners_limit_namespace) }
 
     it { is_expected.to delegate_method(:pipeline_configuration_full_path).to(:compliance_management_framework) }
@@ -3109,7 +3109,7 @@ RSpec.describe Project do
     subject { project.available_shared_runners }
 
     before do
-      allow(project).to receive(:ci_minutes_quota)
+      allow(project).to receive(:ci_minutes_usage)
         .and_return(double('quota', minutes_used_up?: minutes_used_up))
     end
 
@@ -3142,7 +3142,7 @@ RSpec.describe Project do
     subject { project.all_available_runners }
 
     before do
-      allow(project).to receive(:ci_minutes_quota)
+      allow(project).to receive(:ci_minutes_usage)
         .and_return(double('quota', minutes_used_up?: minutes_used_up))
     end
 

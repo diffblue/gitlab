@@ -1470,10 +1470,10 @@ RSpec.describe GroupPolicy do
     end
   end
 
-  describe ':read_ci_minutes_quota' do
+  describe ':read_ci_minutes_usage' do
     using RSpec::Parameterized::TableSyntax
 
-    let(:policy) { :read_ci_minutes_quota }
+    let(:policy) { :read_ci_minutes_usage }
 
     where(:role, :admin_mode, :allowed) do
       :guest      | nil   | false

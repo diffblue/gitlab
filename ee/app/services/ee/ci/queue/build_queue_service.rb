@@ -20,7 +20,7 @@ module EE
         # rubocop: disable CodeReuse/ActiveRecord
         def enforce_minutes_based_on_cost_factors(relation)
           if strategy.use_denormalized_data_strategy?
-            strategy.enforce_minutes_quota(relation)
+            strategy.enforce_minutes_limit(relation)
           else
             enforce_minutes_using_legacy_data(relation)
           end
@@ -35,7 +35,7 @@ module EE
           end
 
           visibility_relation = ::CommitStatus.where(
-            projects: { visibility_level: runner.visibility_levels_without_minutes_quota })
+            projects: { visibility_level: runner.visibility_levels_without_minutes_usage })
 
           enforce_limits_relation = ::CommitStatus.where('EXISTS (?)', builds_check_limit)
 

@@ -192,7 +192,7 @@ module EE
 
       delegate :shared_runners_seconds, to: :statistics, allow_nil: true
 
-      delegate :ci_minutes_quota, to: :shared_runners_limit_namespace
+      delegate :ci_minutes_usage, to: :shared_runners_limit_namespace
 
       delegate :merge_pipelines_enabled, :merge_pipelines_enabled=, to: :ci_cd_settings, allow_nil: true
       delegate :merge_trains_enabled, :merge_trains_enabled=, to: :ci_cd_settings, allow_nil: true
@@ -367,11 +367,11 @@ module EE
     end
 
     def ci_minutes_used
-      ci_minutes_usage.amount_used.to_i
+      ci_minutes_project_usage.amount_used.to_i
     end
 
     def shared_runners_available?
-      super && !ci_minutes_quota.minutes_used_up?
+      super && !ci_minutes_usage.minutes_used_up?
     end
 
     def link_pool_repository
@@ -867,8 +867,8 @@ module EE
 
     private
 
-    def ci_minutes_usage
-      strong_memoize(:ci_minutes_usage) do
+    def ci_minutes_project_usage
+      strong_memoize(:ci_minutes_project_usage) do
         ::Ci::Minutes::ProjectMonthlyUsage.find_or_create_current(project_id: id)
       end
     end
