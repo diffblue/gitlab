@@ -25110,18 +25110,6 @@ msgstr ""
 msgid "Network:"
 msgstr ""
 
-msgid "NetworkPolicies|Environment does not have deployment platform"
-msgstr ""
-
-msgid "NetworkPolicies|Invalid or empty policy"
-msgstr ""
-
-msgid "NetworkPolicies|Invalid or unsupported policy kind"
-msgstr ""
-
-msgid "NetworkPolicies|Kubernetes error: %{error}"
-msgstr ""
-
 msgid "NetworkPolicy|Policy"
 msgstr ""
 
