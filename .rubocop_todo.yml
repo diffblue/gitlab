@@ -21,10 +21,3 @@ Rails/HasManyOrHasOneDependent:
 # Cop supports --auto-correct.
 Style/CaseLikeIf:
   Enabled: false
-
-# Offense count: 205
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: compact, expanded
-Style/EmptyMethod:
-  Enabled: false
