@@ -163,7 +163,7 @@ export default {
         class="gl-card-header gl-display-flex gl-justify-content-space-between gl-align-items-center"
         data-testid="subscription-header"
       >
-        <strong>{{ subscriptionHeader }}</strong>
+        <strong data-qa-selector="subscription_header">{{ subscriptionHeader }}</strong>
         <div class="gl-display-flex">
           <extend-reactivate-trial-button
             v-if="availableTrialAction"
@@ -187,6 +187,7 @@ export default {
             v-if="canRefreshSeats"
             :class="{ 'gl-ml-2': buttons.length !== 0 }"
             data-testid="refresh-seats-button"
+            data-qa-selector="refresh_seats"
             category="secondary"
             variant="info"
             @click="refreshSeats"
