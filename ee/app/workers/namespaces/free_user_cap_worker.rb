@@ -7,7 +7,7 @@ module Namespaces
 
     MAX_NAMESPACES_TO_TRIM = 10_000
 
-    feature_category :free_user_caps_conversion
+    feature_category :experimentation_conversion
     data_consistency :always
     idempotent!
     worker_resource_boundary :cpu
