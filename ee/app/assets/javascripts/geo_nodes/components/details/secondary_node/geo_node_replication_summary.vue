@@ -9,7 +9,7 @@ export default {
   name: 'GeoNodeReplicationSummary',
   i18n: {
     replicationSummary: s__('Geo|Replication summary'),
-    replicationDetailsButton: s__('Geo|Open replications'),
+    replicationDetailsButton: s__('Geo|Full details'),
     replicationStatus: s__('Geo|Replication status'),
     syncSettings: s__('Geo|Synchronization settings'),
   },
