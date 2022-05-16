@@ -2,13 +2,13 @@
 
 require 'spec_helper'
 
-RSpec.describe Namespaces::FreeUserCapWorker, type: :worker do
+RSpec.describe Namespaces::FreeUserCap::RemediationWorker, type: :worker do
   using RSpec::Parameterized::TableSyntax
 
   describe '#perform' do
     before do
       stub_const('::Namespaces::FreeUserCap::FREE_USER_LIMIT', 2)
-      stub_const('Namespaces::FreeUserCapWorker::MAX_NAMESPACES_TO_TRIM', 2)
+      stub_const('Namespaces::FreeUserCap::RemediationWorker::MAX_NAMESPACES_TO_TRIM', 2)
     end
 
     context 'when on gitlab.com', :saas do
@@ -150,7 +150,7 @@ RSpec.describe Namespaces::FreeUserCapWorker, type: :worker do
         stub_ee_application_setting(should_check_namespace_plan: true)
         stub_feature_flags(free_user_cap_data_remediation_job: true, free_user_cap: true)
 
-        allow_next_instance_of(Namespaces::DeactivateMembersOverLimitService) do |instance|
+        allow_next_instance_of(Namespaces::FreeUserCap::DeactivateMembersOverLimitService) do |instance|
           allow(instance).to receive(:execute).and_raise('An exception')
         end
       end

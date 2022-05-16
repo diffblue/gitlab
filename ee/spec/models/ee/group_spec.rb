@@ -2396,7 +2396,7 @@ RSpec.describe Group do
     with_them do
       before do
         allow(group).to receive(:user_cap_reached?).and_return(user_cap_reached)
-        free_user_cap = instance_double(Namespaces::FreeUserCap, reached_limit?: reached_free_limit)
+        free_user_cap = instance_double(Namespaces::FreeUserCap::Standard, reached_limit?: reached_free_limit)
         allow(group).to receive(:free_user_cap).and_return(free_user_cap)
       end
 

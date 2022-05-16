@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Namespaces::UpdatePreventSharingOutsideHierarchyService do
+RSpec.describe Namespaces::FreeUserCap::UpdatePreventSharingOutsideHierarchyService do
   describe '#execute' do
     let_it_be(:namespace, reload: true) { create(:namespace, :with_namespace_settings) }
 

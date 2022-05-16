@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Namespaces::DeactivateMembersOverLimitService, :saas do
+RSpec.describe Namespaces::FreeUserCap::DeactivateMembersOverLimitService, :saas do
   before do
     stub_const('::Namespaces::FreeUserCap::FREE_USER_LIMIT', 2)
   end

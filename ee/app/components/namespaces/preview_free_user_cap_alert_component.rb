@@ -9,7 +9,7 @@ module Namespaces
     BLOG_URL = 'https://about.gitlab.com/blog/2022/03/24/efficient-free-tier'
 
     def breached_cap_limit?
-      ::Namespaces::PreviewFreeUserCap.new(namespace).over_limit?
+      ::Namespaces::FreeUserCap::Preview.new(namespace).over_limit?
     end
 
     def variant
