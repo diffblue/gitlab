@@ -69,13 +69,10 @@ You can launch Gitpod directly from GitLab in one of these ways:
 
   1. Select **Open in Gitpod**.
 - *From a merge request:*
-  1. Go to your merge request, and select **Overview** in the tab menu.
-  1. Scroll to the end of the merge request description.
-  1. Select the caret **(angle-down)** next to **Web IDE**, then select **Gitpod**
-     from the list:
+  1. Go to your merge request and click the **Code** button at the top of the page
 
-     ![Gitpod button on the merge request page](img/gitpod-button_v14_2.png)
+     ![Gitpod button on the merge request page](img/gitpod-button_v15.png)
 
-  1. Select **Open in Gitpod**.
+  1. Select **Open in Gitpod** from the dropdown
 
 Gitpod builds your development environment for your branch.

@@ -296,7 +296,7 @@ bin/rails test test/controllers/welcome_controller_test.rb:4
 
 To fix the broken test:
 
-1. Return to the **Overview** page for your merge request, and select **Open in Web IDE**.
+1. Return to your merge request, and select **Open in Web IDE** from the **Code** dropdown.
 1. In the left-hand directory of files, find the `test/controllers/welcome_controller_test.rb`
    file, and select it to open it.
 1. Change line 7 to say `You're on Rails! Powered by GitLab Auto DevOps.`
