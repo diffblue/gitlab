@@ -370,10 +370,6 @@ module EE
       ci_minutes_usage.amount_used.to_i
     end
 
-    def shared_runners_duration
-      ci_minutes_usage.shared_runners_duration
-    end
-
     def shared_runners_available?
       super && !ci_minutes_quota.minutes_used_up?
     end
