@@ -3,7 +3,6 @@ import { POLICY_TYPE_COMPONENT_OPTIONS } from 'ee/threat_monitoring/components/c
 import {
   getContentWrapperHeight,
   getPolicyType,
-  isValidEnvironmentId,
   removeUnnecessaryDashes,
 } from 'ee/threat_monitoring/utils';
 import { setHTMLFixture, resetHTMLFixture } from 'helpers/fixtures';
@@ -44,19 +43,6 @@ describe('Threat Monitoring Utils', () => {
       ${mockScanExecutionPolicy.__typename} | ${POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.value}
     `('returns $output when used on $input', ({ input, output }) => {
       expect(getPolicyType(input)).toBe(output);
-    });
-  });
-
-  describe('isValidEnvironmentId', () => {
-    it.each`
-      input        | output
-      ${-1}        | ${false}
-      ${undefined} | ${false}
-      ${'0'}       | ${false}
-      ${0}         | ${true}
-      ${1}         | ${true}
-    `('returns $output when used on $input', ({ input, output }) => {
-      expect(isValidEnvironmentId(input)).toBe(output);
     });
   });
 

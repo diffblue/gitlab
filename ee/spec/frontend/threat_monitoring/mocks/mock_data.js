@@ -32,23 +32,6 @@ actions:
 - scan: secret_detection
 `;
 
-export const mockEnvironmentsResponse = {
-  environments: [
-    {
-      id: 1129970,
-      name: 'production',
-      state: 'available',
-    },
-    {
-      id: 1156094,
-      name: 'review/enable-network-policies',
-      state: 'available',
-    },
-  ],
-  available_count: 2,
-  stopped_count: 5,
-};
-
 export const mockScanExecutionManifestNoActions = `type: scan_execution_policy
 name: Test Dast
 description: This policy enforces pipeline configuration to have a job with DAST scan
