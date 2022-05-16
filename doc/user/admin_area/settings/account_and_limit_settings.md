@@ -242,7 +242,7 @@ This feature was [removed](https://gitlab.com/gitlab-org/gitlab/-/issues/351963)
 > [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/3649) in GitLab 12.6.
 
 Users can optionally specify a lifetime for
-access tokens, this includes [personal](../../profile/personal_access_tokens.md), 
+access tokens, this includes [personal](../../profile/personal_access_tokens.md),
 [group](../../group/settings/group_access_tokens.md), and [project](../../project/settings/project_access_tokens.md) access tokens.
 This lifetime is not a requirement, and can be set to any arbitrary number of days.
 
@@ -316,12 +316,16 @@ add the line below to `/etc/gitlab/gitlab.rb` before increasing the max attachme
 nginx['client_max_body_size'] = "200m"
 ```
 
-### Intermittent `Your push has been rejected, because this repository has exceeded its size limit` errors in [Rails exceptions log](../../../administration/logs.md#exceptions_jsonlog)
+### This repository has exceeded its size limit
 
-If a repository seems to be affected by this problem temporarily and repeatedly,
-it is possible that [Housekeeking](../../../administration/housekeeping.md)
-causes your repository size to grow.
-To resolve this problem, either of these options helps in the short- to mid-term:
+If you receive intermittent push errors in your [Rails exceptions log](../../../administration/logs.md#exceptions_jsonlog), like this:
 
-- increase the [repository size limit](#repository-size-limit)
-- [reduce the repo size](../../project/repository/reducing_the_repo_size_using_git.md)
+```plaintext
+Your push has been rejected, because this repository has exceeded its size limit.
+```
+
+[Housekeeping](../../../administration/housekeeping.md) tasks may be causing your repository size to grow.
+To resolve this problem, either of these options helps in the short- to middle-term:
+
+- Increase the [repository size limit](#repository-size-limit).
+- [Reduce the repo size](../../project/repository/reducing_the_repo_size_using_git.md).
