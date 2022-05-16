@@ -3705,7 +3705,7 @@ msgstr ""
 msgid "All protected branches"
 msgstr ""
 
-msgid "All threads resolved"
+msgid "All threads resolved!"
 msgstr ""
 
 msgid "All users must accept the Terms of Service and Privacy Policy to access GitLab"
