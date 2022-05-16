@@ -1473,7 +1473,7 @@ msgstr ""
 msgid "1st contribution!"
 msgstr ""
 
-msgid "2. Before July 1, 2022, all free tier public open source projects will need to %{enrollment_link} to continue to receive GitLab Ultimate benefits."
+msgid "2. Before July 1, 2022, all free tier public open source projects must %{enrollment_link} to continue to receive GitLab Ultimate benefits."
 msgstr ""
 
 msgid "20-29 contributions"
@@ -16180,6 +16180,9 @@ msgstr ""
 msgid "For more information, go to the "
 msgstr ""
 
+msgid "For more information, see the %{faq_link}."
+msgstr ""
+
 msgid "For more information, see the File Hooks documentation."
 msgstr ""
 
@@ -28478,9 +28481,6 @@ msgid "Please type %{phrase_code} to proceed or close this modal to cancel."
 msgstr ""
 
 msgid "Please use this form to report to the admin users who create spam issues, comments or behave inappropriately."
-msgstr ""
-
-msgid "Please visit the %{faq_link} for more information."
 msgstr ""
 
 msgid "Please wait a moment, this page will automatically refresh when ready."
