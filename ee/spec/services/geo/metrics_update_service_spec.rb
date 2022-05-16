@@ -46,8 +46,6 @@ RSpec.describe Geo::MetricsUpdateService, :geo, :prometheus do
       repository_deleted_max_id: 23,
       repository_renamed_max_id: 11,
       repositories_changed_max_id: 109,
-      lfs_object_deleted_max_id: 84,
-      job_artifact_deleted_max_id: 78,
       hashed_storage_migrated_max_id: 9,
       hashed_storage_attachments_max_id: 65
     }
@@ -177,8 +175,6 @@ RSpec.describe Geo::MetricsUpdateService, :geo, :prometheus do
         expect(metric_value(:geo_repository_deleted_max_id)).to eq(23)
         expect(metric_value(:geo_repository_renamed_max_id)).to eq(11)
         expect(metric_value(:geo_repositories_changed_max_id)).to eq(109)
-        expect(metric_value(:geo_lfs_object_deleted_max_id)).to eq(84)
-        expect(metric_value(:geo_job_artifact_deleted_max_id)).to eq(78)
         expect(metric_value(:geo_hashed_storage_migrated_max_id)).to eq(9)
         expect(metric_value(:geo_hashed_storage_attachments_max_id)).to eq(65)
       end

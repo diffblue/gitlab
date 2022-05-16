@@ -164,65 +164,11 @@ RSpec.describe GeoNodeStatus, :geo do
     it 'counts synced job artifacts' do
       # These should be ignored
       create(:geo_upload_registry)
-      create(:geo_job_artifact_registry_legacy, :with_artifact, success: false)
+      create(:geo_job_artifact_registry, :failed)
 
-      create(:geo_job_artifact_registry_legacy, :with_artifact, success: true)
+      create(:geo_job_artifact_registry, :synced)
 
       expect(subject.job_artifacts_synced_count).to eq(1)
-    end
-  end
-
-  describe '#job_artifacts_synced_missing_on_primary_count' do
-    it 'counts job artifacts marked as synced due to file missing on the primary' do
-      stub_feature_flags(geo_job_artifact_replication: false)
-
-      # These should be ignored
-      create(:geo_upload_registry, missing_on_primary: true)
-      create(:geo_job_artifact_registry_legacy, :with_artifact, success: true)
-
-      create(:geo_job_artifact_registry_legacy, :with_artifact, success: true, missing_on_primary: true)
-
-      expect(subject.job_artifacts_synced_missing_on_primary_count).to eq(1)
-    end
-  end
-
-  describe '#job_artifacts_failed_count' do
-    it 'counts failed job artifacts' do
-      stub_feature_flags(geo_job_artifact_replication: false)
-
-      # These should be ignored
-      create(:geo_upload_registry, :failed)
-      create(:geo_job_artifact_registry_legacy, :with_artifact, success: true)
-      create(:geo_job_artifact_registry_legacy, :with_artifact, :failed)
-
-      expect(subject.job_artifacts_failed_count).to eq(1)
-    end
-  end
-
-  describe '#job_artifacts_synced_in_percentage' do
-    context 'when artifacts are available' do
-      before do
-        [project_1, project_2, project_3, project_4].each_with_index do |project, index|
-          build = create(:ci_build, project: project)
-          job_artifact = create(:ci_job_artifact, job: build)
-
-          create(:geo_job_artifact_registry_legacy, success: index.even?, artifact_id: job_artifact.id)
-        end
-      end
-
-      it 'returns the right percentage with no group restrictions' do
-        expect(subject.job_artifacts_synced_in_percentage).to be_within(0.0001).of(50)
-      end
-
-      it 'returns the right percentage with group restrictions' do
-        secondary.update_attribute(:namespaces, [group])
-
-        expect(subject.job_artifacts_synced_in_percentage).to be_within(0.0001).of(50)
-      end
-    end
-
-    it 'returns 0 when no artifacts are available' do
-      expect(subject.job_artifacts_synced_in_percentage).to eq(0)
     end
   end
 

@@ -49,17 +49,11 @@ module Geo
 
     private
 
-    # rubocop: disable CodeReuse/ActiveRecord
     def file_registry
       strong_memoize(:file_registry) do
-        if job_artifact? && ::Geo::JobArtifactReplicator.disabled?
-          ::Geo::JobArtifactRegistry.find_by(artifact_id: object_db_id)
-        elsif replicator
-          replicator.registry
-        end
+        replicator.registry
       end
     end
-    # rubocop: enable CodeReuse/ActiveRecord
 
     def destroy_file
       if file_path
@@ -115,15 +109,6 @@ module Geo
     def file_uploader
       strong_memoize(:file_uploader) do
         next replicator.carrierwave_uploader if replicator
-
-        case object_type
-        when :job_artifact
-          Ci::JobArtifact.find(object_db_id).file
-        when *Gitlab::Geo::Replication::USER_UPLOADS_OBJECT_TYPES
-          Upload.find(object_db_id).retrieve_uploader
-        else
-          raise NameError, "Unrecognized type: #{object_type}"
-        end
       rescue RuntimeError, NameError, ActiveRecord::RecordNotFound => err
         unless @object_uploader_class.nil?
           next @object_uploader_class.constantize.new(object_type)

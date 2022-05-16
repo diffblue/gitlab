@@ -165,15 +165,6 @@
   :weight: 1
   :idempotent:
   :tags: []
-- :name: cronjob:geo_file_download_dispatch
-  :worker_name: Geo::FileDownloadDispatchWorker
-  :feature_category: :geo_replication
-  :has_external_dependencies:
-  :urgency: :low
-  :resource_boundary: :unknown
-  :weight: 1
-  :idempotent:
-  :tags: []
 - :name: cronjob:geo_metrics_update
   :worker_name: Geo::MetricsUpdateWorker
   :feature_category: :geo_replication
@@ -581,15 +572,6 @@
   :tags: []
 - :name: geo:geo_event
   :worker_name: Geo::EventWorker
-  :feature_category: :geo_replication
-  :has_external_dependencies:
-  :urgency: :low
-  :resource_boundary: :unknown
-  :weight: 1
-  :idempotent:
-  :tags: []
-- :name: geo:geo_file_download
-  :worker_name: Geo::FileDownloadWorker
   :feature_category: :geo_replication
   :has_external_dependencies:
   :urgency: :low

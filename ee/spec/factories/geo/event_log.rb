@@ -26,10 +26,6 @@ FactoryBot.define do
       hashed_storage_attachments_event factory: :geo_hashed_storage_attachments_event
     end
 
-    trait :job_artifact_deleted_event do
-      job_artifact_deleted_event factory: :geo_job_artifact_deleted_event
-    end
-
     trait :reset_checksum_event do
       reset_checksum_event factory: :geo_reset_checksum_event
     end
@@ -116,17 +112,6 @@ FactoryBot.define do
 
     old_attachments_path { Storage::LegacyProject.new(project).disk_path }
     new_attachments_path { Storage::Hashed.new(project).disk_path }
-  end
-
-  factory :geo_job_artifact_deleted_event, class: 'Geo::JobArtifactDeletedEvent' do
-    job_artifact { association(:ci_job_artifact, :archive) }
-
-    after(:build, :stub) do |event, _|
-      local_store_path = Pathname.new(JobArtifactUploader.root)
-      relative_path = Pathname.new(event.job_artifact.file.path).relative_path_from(local_store_path)
-
-      event.file_path = relative_path
-    end
   end
 
   factory :geo_reset_checksum_event, class: 'Geo::ResetChecksumEvent' do

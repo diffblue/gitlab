@@ -10,7 +10,6 @@ RSpec.describe Gitlab::Geo::CronManager, :geo do
     repository_check_worker
     geo_repository_verification_primary_batch_worker
     geo_repository_sync_worker
-    geo_file_download_dispatch_worker
     geo_registry_sync_worker
     geo_container_repository_sync_worker
     geo_repository_verification_secondary_scheduler_worker
@@ -38,7 +37,6 @@ RSpec.describe Gitlab::Geo::CronManager, :geo do
 
     let(:secondary_jobs) do
       [
-        job('geo_file_download_dispatch_worker'),
         job('geo_registry_sync_worker'),
         job('geo_repository_sync_worker'),
         job('geo_container_repository_sync_worker'),

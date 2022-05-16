@@ -15,10 +15,6 @@ RSpec.describe Ci::JobArtifacts::DestroyBatchService do
     let_it_be(:security_finding) { create(:security_finding, scan: security_scan) }
     let_it_be(:event_data) { { job_ids: [artifact.job_id] } }
 
-    before do
-      stub_feature_flags(geo_job_artifact_replication: false)
-    end
-
     it 'destroys all expired artifacts', :sidekiq_inline do
       expect { subject }.to change { Ci::JobArtifact.count }.by(-1)
                         .and change { Security::Finding.count }.from(1).to(0)
@@ -37,22 +33,8 @@ RSpec.describe Ci::JobArtifacts::DestroyBatchService do
         create(:ee_ci_job_artifact, :archive)
       end
 
-      it 'creates a JobArtifactDeletedEvent' do
-        expect { subject }.to change { Geo::JobArtifactDeletedEvent.count }.by(2)
-      end
-
-      context 'with geo_job_artifact_replication flag enabled' do
-        before do
-          stub_feature_flags(geo_job_artifact_replication: true)
-        end
-
-        it 'does not create a JobArtifactDeletedEvent' do
-          expect { subject }.to change { Geo::JobArtifactDeletedEvent.count }.by(0)
-        end
-
-        it 'creates an Geo::EventLog', :sidekiq_inline do
-          expect { subject }.to change { ::Geo::Event.count }.by(2)
-        end
+      it 'creates an Geo::EventLog', :sidekiq_inline do
+        expect { subject }.to change { ::Geo::Event.count }.by(2)
       end
 
       context 'JobArtifact batch destroy fails' do
@@ -66,7 +48,6 @@ RSpec.describe Ci::JobArtifacts::DestroyBatchService do
         it 'does not create a JobArtifactDeletedEvent' do
           expect { subject }.to raise_error(ActiveRecord::RecordInvalid)
                             .and not_change { Ci::JobArtifact.count }
-                            .and not_change { Geo::JobArtifactDeletedEvent.count }
         end
       end
     end

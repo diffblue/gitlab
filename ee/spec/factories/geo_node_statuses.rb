@@ -48,7 +48,6 @@ FactoryBot.define do
       revision { Gitlab.revision }
       container_repositories_replication_enabled { false }
       design_repositories_replication_enabled { true }
-      job_artifacts_replication_enabled { false }
       repositories_replication_enabled { true }
       repository_verification_enabled { true }
 

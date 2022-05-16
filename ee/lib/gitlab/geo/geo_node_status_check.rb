@@ -28,7 +28,6 @@ module Gitlab
         print_verified_repositories
         print_wikis_status
         print_verified_wikis
-        print_ci_job_artifacts_status
         print_container_repositories_status
         print_design_repositories_status
         print_replicators_status
@@ -48,7 +47,6 @@ module Gitlab
         print_verified_repositories
         print_wikis_status
         print_verified_wikis
-        print_ci_job_artifacts_status
         print_container_repositories_status
         print_design_repositories_status
         print_replicators_status
@@ -258,18 +256,6 @@ module Gitlab
             percentage: current_node_status.wikis_verified_in_percentage
           )
         end
-      end
-
-      def print_ci_job_artifacts_status
-        return if ::Geo::JobArtifactReplicator.enabled?
-
-        print_counts_row(
-          description: 'CI job artifacts',
-          failed: current_node_status.job_artifacts_failed_count,
-          succeeded: current_node_status.job_artifacts_synced_count,
-          total: current_node_status.job_artifacts_count,
-          percentage: current_node_status.job_artifacts_synced_in_percentage
-        )
       end
 
       def print_container_repositories_status

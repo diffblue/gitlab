@@ -21,11 +21,6 @@ module EE
 
       has_one :job_artifact_state, autosave: false, inverse_of: :job_artifact, class_name: '::Geo::JobArtifactState'
 
-      # After destroy callbacks are often skipped because of FastDestroyAll.
-      # All destroy callbacks should be implemented in `Ci::JobArtifacts::DestroyBatchService`
-      # See https://gitlab.com/gitlab-org/gitlab/-/issues/297472
-      after_commit :log_geo_deleted_event, on: :destroy
-
       LICENSE_SCANNING_REPORT_FILE_TYPES = %w[license_scanning].freeze
       DEPENDENCY_LIST_REPORT_FILE_TYPES = %w[dependency_scanning].freeze
       METRICS_REPORT_FILE_TYPES = %w[metrics].freeze
@@ -114,7 +109,8 @@ module EE
     end
 
     def log_geo_deleted_event
-      ::Geo::JobArtifactDeletedEventStore.new(self).create!
+      # Keep empty for now. Should be addressed in future
+      # by https://gitlab.com/gitlab-org/gitlab/-/issues/232917
     end
 
     # Ideally we would have a method to return an instance of

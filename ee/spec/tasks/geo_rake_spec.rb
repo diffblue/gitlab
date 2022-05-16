@@ -134,7 +134,6 @@ RSpec.describe 'geo rake tasks', :geo, :silence_stdout do
           /Wikis: /,
           /Verified Wikis: /,
           /Uploads: /,
-          /CI job artifacts: /,
           /Container repositories: /,
           /Design repositories: /,
           /Repositories Checked: /,
@@ -169,13 +168,9 @@ RSpec.describe 'geo rake tasks', :geo, :silence_stdout do
           expect { run_rake_task('geo:status') }.not_to output(/Health Status Summary/).to_stdout
         end
 
-        context 'with SSF LFS replication eneabled' do
-          it 'prints messages for all the checks' do
-            stub_feature_flags(geo_job_artifact_replication: false)
-
-            checks.each do |text|
-              expect { run_rake_task('geo:status') }.to output(text).to_stdout
-            end
+        it 'prints messages for all the checks' do
+          checks.each do |text|
+            expect { run_rake_task('geo:status') }.to output(text).to_stdout
           end
         end
       end

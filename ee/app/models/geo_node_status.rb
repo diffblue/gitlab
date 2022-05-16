@@ -15,7 +15,6 @@ class GeoNodeStatus < ApplicationRecord
   # Prometheus metrics, no need to store them in the database
   attr_accessor :event_log_max_id, :repository_created_max_id, :repository_updated_max_id,
                 :repository_deleted_max_id, :repository_renamed_max_id, :repositories_changed_max_id,
-                :lfs_object_deleted_max_id, :job_artifact_deleted_max_id,
                 :lfs_objects_registry_count, :job_artifacts_registry_count,
                 :hashed_storage_migrated_max_id, :hashed_storage_attachments_max_id,
                 :repositories_checked_count, :repositories_checked_failed_count
@@ -66,7 +65,6 @@ class GeoNodeStatus < ApplicationRecord
     repositories_failed_count
     wikis_synced_count
     wikis_failed_count
-    job_artifacts_replication_enabled
     repositories_verified_count
     repositories_verification_failed_count
     repositories_verification_total_count
@@ -123,7 +121,6 @@ class GeoNodeStatus < ApplicationRecord
     wikis_verified_count: 'Number of wikis verified on secondary',
     wikis_verification_failed_count: 'Number of wikis failed to verify on secondary',
     wikis_checksum_mismatch_count: 'Number of wikis that checksum mismatch on secondary',
-    job_artifacts_replication_enabled: 'Boolean denoting if replication is enabled for Job Artifacts',
     job_artifacts_synced_missing_on_primary_count: 'Number of job artifacts marked as synced due to the file missing on the primary',
     replication_slots_count: 'Total number of replication slots on the primary',
     replication_slots_used_count: 'Number of replication slots in use on the primary',
@@ -140,8 +137,6 @@ class GeoNodeStatus < ApplicationRecord
     repository_deleted_max_id: 'Highest ID present in repositories deleted',
     repository_renamed_max_id: 'Highest ID present in repositories renamed',
     repositories_changed_max_id: 'Highest ID present in repositories changed',
-    lfs_object_deleted_max_id: 'Highest ID present in LFS objects deleted',
-    job_artifact_deleted_max_id: 'Highest ID present in job artifacts deleted',
     hashed_storage_migrated_max_id: 'Highest ID present in projects migrated to hashed storage',
     hashed_storage_attachments_max_id: 'Highest ID present in attachments migrated to hashed storage',
     repositories_checked_count: 'Number of repositories checked',
@@ -271,7 +266,6 @@ class GeoNodeStatus < ApplicationRecord
     if Gitlab::Geo.secondary?
       self.container_repositories_replication_enabled = Geo::ContainerRepositoryRegistry.replication_enabled?
       self.design_repositories_replication_enabled = Geo::DesignRegistry.replication_enabled?
-      self.job_artifacts_replication_enabled = Geo::JobArtifactRegistry.replication_enabled?
       self.repositories_replication_enabled = Geo::ProjectRegistry.replication_enabled?
     end
   end
@@ -417,7 +411,6 @@ class GeoNodeStatus < ApplicationRecord
     self.repository_deleted_max_id = Geo::RepositoryDeletedEvent.maximum(:id)
     self.repository_renamed_max_id = Geo::RepositoryRenamedEvent.maximum(:id)
     self.repositories_changed_max_id = Geo::RepositoriesChangedEvent.maximum(:id)
-    self.job_artifact_deleted_max_id = Geo::JobArtifactDeletedEvent.maximum(:id)
     self.hashed_storage_migrated_max_id = Geo::HashedStorageMigratedEvent.maximum(:id)
     self.hashed_storage_attachments_max_id = Geo::HashedStorageAttachmentsEvent.maximum(:id)
   end
@@ -443,7 +436,6 @@ class GeoNodeStatus < ApplicationRecord
     self.cursor_last_event_date = Geo::EventLog.find_by(id: self.cursor_last_event_id)&.created_at
 
     load_repositories_data
-    load_job_artifacts_data
     load_container_registry_data
     load_designs_data
     load_ssf_replicable_data
@@ -456,17 +448,6 @@ class GeoNodeStatus < ApplicationRecord
     self.repositories_failed_count = Geo::ProjectRegistry.sync_failed(:repository).count
     self.wikis_synced_count = Geo::ProjectRegistry.synced(:wiki).count
     self.wikis_failed_count = Geo::ProjectRegistry.sync_failed(:wiki).count
-  end
-
-  def load_job_artifacts_data
-    return unless job_artifacts_replication_enabled
-    return if ::Geo::JobArtifactReplicator.enabled?
-
-    self.job_artifacts_count = job_artifacts_finder.registry_count
-    self.job_artifacts_synced_count = job_artifacts_finder.synced_count
-    self.job_artifacts_failed_count = job_artifacts_finder.failed_count
-    self.job_artifacts_registry_count = job_artifacts_finder.registry_count
-    self.job_artifacts_synced_missing_on_primary_count = job_artifacts_finder.synced_missing_on_primary_count
   end
 
   def load_container_registry_data
@@ -566,10 +547,6 @@ class GeoNodeStatus < ApplicationRecord
 
   def primary_storage_digest
     @primary_storage_digest ||= Gitlab::Geo.primary_node.find_or_build_status.storage_configuration_digest
-  end
-
-  def job_artifacts_finder
-    @job_artifacts_finder ||= Geo::JobArtifactLegacyRegistryFinder.new
   end
 
   def container_registry_finder

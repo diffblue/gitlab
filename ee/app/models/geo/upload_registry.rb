@@ -30,12 +30,6 @@ class Geo::UploadRegistry < Geo::BaseRegistry
     [untracked, unused_tracked]
   end
 
-  # If false, RegistryConsistencyService will frequently check the end of the
-  # table to quickly handle new replicables.
-  def self.has_create_events?
-    ::Geo::UploadReplicator.enabled?
-  end
-
   def self.insert_for_model_ids(attrs)
     records = attrs.map do |file_id|
       new(file_id: file_id, created_at: Time.zone.now)

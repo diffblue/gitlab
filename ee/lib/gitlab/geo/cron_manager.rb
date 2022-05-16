@@ -19,7 +19,6 @@ module Gitlab
       ].freeze
 
       SECONDARY_GEO_JOBS = %w[
-        geo_file_download_dispatch_worker
         geo_registry_sync_worker
         geo_repository_sync_worker
         geo_container_repository_sync_worker
