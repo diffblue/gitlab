@@ -58,21 +58,10 @@ module Ci
 
       def track_monthly_usage(consumption, duration)
         # preload minutes usage data outside of transaction
-        project_usage
-        namespace_usage
+        usages = [project_usage, namespace_usage].compact
 
         ::Ci::Minutes::NamespaceMonthlyUsage.transaction do
-          if namespace_usage
-            namespace_usage.increase_usage(
-              amount_used: consumption,
-              shared_runners_duration: duration)
-          end
-
-          if project_usage
-            project_usage.increase_usage(
-              amount_used: consumption,
-              shared_runners_duration: duration)
-          end
+          usages.each { |usage| usage.increase_usage(amount_used: consumption, shared_runners_duration: duration) }
         end
       end
 
