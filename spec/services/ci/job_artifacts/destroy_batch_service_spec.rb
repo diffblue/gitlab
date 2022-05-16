@@ -76,7 +76,7 @@ RSpec.describe Ci::JobArtifacts::DestroyBatchService do
         create(:project_build_artifacts_size_refresh, :running, project: artifact_under_refresh_2.project)
       end
 
-      it 'logs the artifacts undergoing refresh and continues with the delete' do
+      it 'logs the artifacts undergoing refresh and continues with the delete', :aggregate_failures do
         expect(Gitlab::ProjectStatsRefreshConflictsLogger).to receive(:warn_artifact_deletion_during_stats_refresh).with(
           method: 'Ci::JobArtifacts::DestroyBatchService#execute',
           project_id: artifact_under_refresh_1.project.id

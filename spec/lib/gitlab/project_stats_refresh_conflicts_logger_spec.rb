@@ -8,11 +8,13 @@ RSpec.describe Gitlab::ProjectStatsRefreshConflictsLogger do
       project_id = 123
       method = 'Foo#action'
 
-      expect(Gitlab::AppLogger).to receive(:warn).with(
+      payload = Gitlab::ApplicationContext.current.merge(
         message: 'Deleted artifacts undergoing refresh',
         method: method,
         project_id: project_id
       )
+
+      expect(Gitlab::AppLogger).to receive(:warn).with(payload)
 
       described_class.warn_artifact_deletion_during_stats_refresh(project_id: project_id, method: method)
     end
