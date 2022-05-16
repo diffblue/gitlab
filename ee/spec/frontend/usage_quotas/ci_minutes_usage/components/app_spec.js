@@ -1,13 +1,13 @@
-import { GlLoadingIcon } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
+import { GlLoadingIcon, GlTab } from '@gitlab/ui';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import CiMinutesUsageAppGroup from 'ee/usage_quotas/ci_minutes_usage/components/app.vue';
 import MinutesUsageMonthChart from 'ee/ci_minutes_usage/components/minutes_usage_month_chart.vue';
-import MinutesUsageProjectChart from 'ee/ci_minutes_usage/components/minutes_usage_project_chart.vue';
+import SharedRunnerUsageMonthChart from 'ee/ci_minutes_usage/components/shared_runner_usage_month_chart.vue';
 import ciMinutesUsageGroup from 'ee/usage_quotas/ci_minutes_usage/graphql/queries/ci_minutes_namespace.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { ciMinutesUsageMockData } from '../mock_data';
 
 Vue.use(VueApollo);
@@ -25,7 +25,7 @@ describe('CI minutes usage app groups', () => {
   function createComponent() {
     const apolloProvider = createMockApolloProvider();
 
-    wrapper = shallowMount(CiMinutesUsageAppGroup, {
+    wrapper = shallowMountExtended(CiMinutesUsageAppGroup, {
       apolloProvider,
       provide: {
         namespaceId: 1,
@@ -35,7 +35,10 @@ describe('CI minutes usage app groups', () => {
 
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const findMinutesUsageMonthChart = () => wrapper.findComponent(MinutesUsageMonthChart);
-  const findMinutesUsageProjectChart = () => wrapper.findComponent(MinutesUsageProjectChart);
+  const findSharedRunnerUsageMonthChart = () => wrapper.findComponent(SharedRunnerUsageMonthChart);
+  const findMinutesUsageProjectChart = () => wrapper.findByTestId('minutes-by-project');
+  const findSharedRunnerUsageProjectChart = () => wrapper.findByTestId('shared-runner-by-project');
+  const findAllTabs = () => wrapper.findAllComponents(GlTab);
 
   beforeEach(() => {
     queryHandlerSpy = jest.fn().mockResolvedValue(ciMinutesUsageMockData);
@@ -60,8 +63,19 @@ describe('CI minutes usage app groups', () => {
       await nextTick();
     });
 
+    it('should display the correct number of tabs', () => {
+      expect(findAllTabs()).toHaveLength(4);
+    });
+
     it('should render minutes usage month chart', () => {
       expect(findMinutesUsageMonthChart().props()).toEqual({
+        ciMinutesUsage: ciMinutesUsageMockData.data.ciMinutesUsage.nodes,
+      });
+      expect(findLoadingIcon().exists()).toBe(false);
+    });
+
+    it('should render shared runner usage month chart', () => {
+      expect(findSharedRunnerUsageMonthChart().props()).toEqual({
         ciMinutesUsage: ciMinutesUsageMockData.data.ciMinutesUsage.nodes,
       });
       expect(findLoadingIcon().exists()).toBe(false);
@@ -71,6 +85,14 @@ describe('CI minutes usage app groups', () => {
       expect(findMinutesUsageProjectChart().props()).toEqual({
         minutesUsageData: ciMinutesUsageMockData.data.ciMinutesUsage.nodes,
         displaySharedRunnerData: false,
+      });
+      expect(findLoadingIcon().exists()).toBe(false);
+    });
+
+    it('should render shared runner usage project chart', () => {
+      expect(findSharedRunnerUsageProjectChart().props()).toEqual({
+        minutesUsageData: ciMinutesUsageMockData.data.ciMinutesUsage.nodes,
+        displaySharedRunnerData: true,
       });
       expect(findLoadingIcon().exists()).toBe(false);
     });

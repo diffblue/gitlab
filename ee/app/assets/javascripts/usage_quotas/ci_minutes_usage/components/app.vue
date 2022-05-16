@@ -93,7 +93,11 @@ export default {
       <gl-tabs>
         <gl-tab :title="$options.CI_CD_MINUTES_USAGE">
           <no-minutes-alert v-if="!hasMinutes" />
-          <minutes-usage-project-chart v-else :minutes-usage-data="ciMinutesUsage" />
+          <minutes-usage-project-chart
+            v-else
+            :minutes-usage-data="ciMinutesUsage"
+            data-testid="minutes-by-project"
+          />
         </gl-tab>
         <gl-tab>
           <template #title>
@@ -107,6 +111,7 @@ export default {
             v-else
             :minutes-usage-data="ciMinutesUsage"
             display-shared-runner-data
+            data-testid="shared-runner-by-project"
           />
         </gl-tab>
       </gl-tabs>
