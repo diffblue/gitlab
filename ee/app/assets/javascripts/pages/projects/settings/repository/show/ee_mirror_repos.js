@@ -40,12 +40,15 @@ export default class EEMirrorRepos extends MirrorRepos {
 
   hideForm() {
     return new Promise((resolve) => {
-      if (!this.$insertionPoint.html()) return resolve();
+      if (!this.$insertionPoint.html()) {
+        resolve();
+      }
 
       this.$insertionPoint.one('hidden.bs.collapse', () => {
         resolve();
       });
-      return this.$insertionPoint.collapse('hide');
+
+      this.$insertionPoint.collapse('hide');
     });
   }
 
@@ -81,15 +84,13 @@ export default class EEMirrorRepos extends MirrorRepos {
   initSelect2() {
     import(/* webpackChunkName: 'select2' */ 'select2/select2')
       .then(() => {
-        // eslint-disable-next-line promise/no-nesting
-        loadCSSFile(gon.select2_css_path)
-          .then(() => {
-            $('.js-mirror-user', this.$form).select2({
-              width: 'resolve',
-              dropdownAutoWidth: true,
-            });
-          })
-          .catch(() => {});
+        loadCSSFile(gon.select2_css_path);
+      })
+      .then(() => {
+        $('.js-mirror-user', this.$form).select2({
+          width: 'resolve',
+          dropdownAutoWidth: true,
+        });
       })
       .catch(() => {});
   }

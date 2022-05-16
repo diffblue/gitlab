@@ -142,7 +142,7 @@ export default {
   },
   methods: {
     formatTooltipText(params) {
-      const [, averageCoverage, projectCount, coverageCount] = params.seriesData?.[0]?.data;
+      const [, averageCoverage, projectCount, coverageCount] = params.seriesData[0].data;
 
       this.tooltipTitle = formatDate(params.value, 'mmm dd');
       this.tooltipAverageCoverage = formatPercent(averageCoverage, 2);

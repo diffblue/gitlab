@@ -72,7 +72,7 @@ export default {
       return debounce(this.loadSuggestions, 500);
     },
     hasSuggestions() {
-      return this.suggestions.length > 0;
+      return this.suggestions?.length > 0;
     },
     lowerCaseType() {
       return this.config.type.replace('_', ' ').trim().toLowerCase();

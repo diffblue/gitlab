@@ -54,7 +54,7 @@ const fetchMergeOptions = () => {
       query: getCiCdSettingsQuery(projectFullPath),
     })
     .then((result) => {
-      const { mergePipelinesEnabled, mergeTrainsEnabled } = result?.data?.project?.ciCdSettings;
+      const { mergePipelinesEnabled, mergeTrainsEnabled } = result.data.project.ciCdSettings;
 
       return { mergePipelinesEnabled, mergeTrainsEnabled };
     });

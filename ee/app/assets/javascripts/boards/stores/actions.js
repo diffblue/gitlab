@@ -62,7 +62,7 @@ const fetchAndFormatListIssues = (state, extraVariables) => {
       variables,
     })
     .then(({ data }) => {
-      const { lists } = data[boardType]?.board;
+      const { lists } = data[boardType].board;
       return { listItems: formatListIssues(lists), listPageInfo: formatListsPageInfo(lists) };
     });
 };
@@ -86,7 +86,7 @@ const fetchAndFormatListEpics = (state, extraVariables) => {
       variables,
     })
     .then(({ data }) => {
-      const { lists } = data.group?.epicBoard;
+      const { lists } = data.group.epicBoard;
       return { listItems: formatListEpics(lists), listPageInfo: formatEpicListsPageInfo(lists) };
     });
 };
@@ -271,7 +271,7 @@ export default {
         variables,
       })
       .then(({ data }) => {
-        const { epics } = data[boardType]?.board;
+        const { epics } = data[boardType].board;
         const epicsFormatted = epics.edges.map((e) => ({
           ...e.node,
         }));
@@ -323,7 +323,7 @@ export default {
           throw new Error();
         }
 
-        const { epicUserPreferences: userPreferences } = data?.updateBoardEpicUserPreferences;
+        const { epicUserPreferences: userPreferences } = data.updateBoardEpicUserPreferences;
         commit(types.SET_BOARD_EPIC_USER_PREFERENCES, { epicId, userPreferences });
       })
       .catch(() => {

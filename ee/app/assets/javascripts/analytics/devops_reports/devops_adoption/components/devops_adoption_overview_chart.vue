@@ -80,7 +80,7 @@ export default {
         (node) => node.namespace?.id === this.groupGid,
       );
 
-      return [...correctNode?.snapshots?.nodes].reverse();
+      return [...correctNode.snapshots.nodes].reverse();
     },
     groupBy() {
       return this.sortedNodes.map((snapshot) => dateFormat(snapshot.endTime, dateFormats.month));

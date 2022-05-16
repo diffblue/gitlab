@@ -288,10 +288,10 @@ export default {
         this.validateAllFields();
 
         if (!this.valid) {
-          return reject(new Error(s__('Iterations|Cadence configuration is invalid.')));
+          reject(new Error(s__('Iterations|Cadence configuration is invalid.')));
         }
 
-        return resolve();
+        resolve();
       })
         .then(() => {
           this.loading = true;

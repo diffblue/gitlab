@@ -1,3 +1,4 @@
+import { nextTick } from 'vue';
 import { GlLoadingIcon, GlAvatar } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
@@ -19,7 +20,7 @@ describe('AuditFilterToken', () => {
     },
   ];
   const mockResponseFailed = { response: { status: httpStatusCodes.NOT_FOUND } };
-  const mockFetchLoading = () => new Promise((resolve) => resolve);
+  const mockFetchLoading = () => new Promise(() => {});
 
   const findFilteredSearchSuggestions = () => wrapper.findAllByTestId('audit-filter-suggestion');
   const findFilteredSearchToken = () => wrapper.find('#filtered-search-token');
@@ -63,7 +64,6 @@ describe('AuditFilterToken', () => {
 
   afterEach(() => {
     wrapper.destroy();
-    wrapper = null;
   });
 
   it('passes the config correctly', () => {
@@ -98,11 +98,11 @@ describe('AuditFilterToken', () => {
     });
 
     describe('when fetching an item', () => {
-      beforeEach(() => {
+      it('shows only the view loading icon', async () => {
         initComponent({ value, fetchItem: mockFetchLoading });
-      });
 
-      it('shows only the view loading icon', () => {
+        await nextTick();
+
         expect(findViewLoadingIcon().exists()).toBe(true);
         expect(findSuggestionsLoadingIcon().exists()).toBe(false);
       });
@@ -157,11 +157,11 @@ describe('AuditFilterToken', () => {
     });
 
     describe('when fetching suggestions', () => {
-      beforeEach(() => {
+      it('shows only the suggestions loading icon', async () => {
         initComponent({ fetchSuggestions: mockFetchLoading });
-      });
 
-      it('shows only the suggestions loading icon', () => {
+        await nextTick();
+
         expect(findSuggestionsLoadingIcon().exists()).toBe(true);
         expect(findViewLoadingIcon().exists()).toBe(false);
       });
@@ -200,12 +200,13 @@ describe('AuditFilterToken', () => {
     });
 
     describe('when fetching the suggestions failed', () => {
-      beforeEach(() => {
+      it('shows a flash error message', async () => {
         const fetchSuggestions = jest.fn().mockRejectedValue(mockResponseFailed);
         initComponent({ fetchSuggestions });
-      });
 
-      it('shows a flash error message', () => {
+        await nextTick();
+        await nextTick();
+
         expect(createFlash).toHaveBeenCalledWith({
           message: 'Failed to find foo bar. Please search for another foo bar.',
         });
@@ -214,24 +215,20 @@ describe('AuditFilterToken', () => {
   });
 
   describe('when no suggestion could be found', () => {
-    beforeEach(() => {
+    it('renders an empty message', () => {
       const fetchSuggestions = jest.fn().mockResolvedValue([]);
       initComponent({ fetchSuggestions });
-    });
 
-    it('renders an empty message', () => {
       expect(wrapper.text()).toBe('No matching foo bar found.');
     });
   });
 
   describe('when a view item could not be found', () => {
-    beforeEach(() => {
+    it('does not render an item avatar', () => {
       const value = { data: 1 };
       const fetchItem = jest.fn().mockResolvedValue(undefined);
       initComponent({ value, fetchItem });
-    });
 
-    it('does not render an item avatar', () => {
       expect(findItemAvatar().exists()).toBe(false);
     });
   });

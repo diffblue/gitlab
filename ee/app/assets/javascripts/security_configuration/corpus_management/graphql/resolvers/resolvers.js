@@ -90,7 +90,7 @@ export default {
           });
         })
         .catch((e) => {
-          const { error } = e.response?.data;
+          const { error } = e.response.data;
           client.mutate({
             mutation: uploadError,
             variables: { projectPath, error },
