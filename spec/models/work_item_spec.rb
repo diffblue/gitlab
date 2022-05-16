@@ -11,6 +11,12 @@ RSpec.describe WorkItem do
     end
   end
 
+  describe '#widgets' do
+    subject { build(:work_item).widgets }
+
+    it { is_expected.to contain_exactly(instance_of(WorkItems::Widgets::Description)) }
+  end
+
   describe 'callbacks' do
     describe 'record_create_action' do
       it 'records the creation action after saving' do
