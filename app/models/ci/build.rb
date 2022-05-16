@@ -681,7 +681,7 @@ module Ci
     end
 
     def has_archived_trace?
-      trace.archived_trace_exist?
+      trace.archived?
     end
 
     def artifacts_file
