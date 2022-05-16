@@ -7,12 +7,6 @@
 # versions of RuboCop, may require this file to be generated again.
 
 # Configuration parameters: Include.
-# Include: db/migrate/*.rb
-Rails/CreateTableWithTimestamps:
-  Enabled: false
-
-# Offense count: 354
-# Configuration parameters: Include.
 # Include: app/models/**/*.rb
 Rails/HasManyOrHasOneDependent:
   Enabled: false
