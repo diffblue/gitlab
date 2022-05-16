@@ -6,7 +6,8 @@ import GeoNodeCoreDetails from 'ee/geo_nodes/components/details/geo_node_core_de
 import {
   MOCK_PRIMARY_VERSION,
   MOCK_REPLICABLE_TYPES,
-  MOCK_NODES,
+  MOCK_PRIMARY_NODE,
+  MOCK_SECONDARY_NODE,
 } from 'ee_jest/geo_nodes/mock_data';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 
@@ -16,7 +17,7 @@ describe('GeoNodeCoreDetails', () => {
   let wrapper;
 
   const defaultProps = {
-    node: MOCK_NODES[0],
+    node: MOCK_PRIMARY_NODE,
   };
 
   const createComponent = (initialState, props) => {
@@ -56,9 +57,9 @@ describe('GeoNodeCoreDetails', () => {
 
       it('renders the Node Url correctly', () => {
         expect(findNodeUrl().exists()).toBe(true);
-        expect(findNodeUrl().attributes('href')).toBe(MOCK_NODES[0].url);
+        expect(findNodeUrl().attributes('href')).toBe(MOCK_PRIMARY_NODE.url);
         expect(findNodeUrl().attributes('target')).toBe('_blank');
-        expect(findNodeUrl().text()).toBe(MOCK_NODES[0].url);
+        expect(findNodeUrl().text()).toBe(MOCK_PRIMARY_NODE.url);
       });
 
       it('renders the node version', () => {
@@ -68,8 +69,8 @@ describe('GeoNodeCoreDetails', () => {
 
     describe.each`
       node
-      ${MOCK_NODES[0]}
-      ${MOCK_NODES[1]}
+      ${MOCK_PRIMARY_NODE}
+      ${MOCK_SECONDARY_NODE}
     `('internal URL', ({ node }) => {
       beforeEach(() => {
         createComponent(null, { node });
@@ -91,7 +92,7 @@ describe('GeoNodeCoreDetails', () => {
         ${{ version: null, revision: null }}                                                  | ${'Unknown'}                                                            | ${true}
       `(`conditionally`, ({ currentNode, versionText, versionMismatch }) => {
         beforeEach(() => {
-          createComponent(null, { node: { ...MOCK_NODES[0], ...currentNode } });
+          createComponent(null, { node: { ...MOCK_PRIMARY_NODE, ...currentNode } });
         });
 
         describe(`when version mismatch is ${versionMismatch} and current node version is ${versionText}`, () => {

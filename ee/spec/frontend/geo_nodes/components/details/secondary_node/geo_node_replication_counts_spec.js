@@ -5,7 +5,7 @@ import GeoNodeReplicationCounts from 'ee/geo_nodes/components/details/secondary_
 import GeoNodeReplicationSyncPercentage from 'ee/geo_nodes/components/details/secondary_node/geo_node_replication_sync_percentage.vue';
 import { REPOSITORY, BLOB } from 'ee/geo_nodes/constants';
 import {
-  MOCK_NODES,
+  MOCK_SECONDARY_NODE,
   MOCK_SECONDARY_SYNC_INFO,
   MOCK_PRIMARY_VERIFICATION_INFO,
 } from 'ee_jest/geo_nodes/mock_data';
@@ -17,7 +17,7 @@ describe('GeoNodeReplicationCounts', () => {
   let wrapper;
 
   const defaultProps = {
-    nodeId: MOCK_NODES[1].id,
+    nodeId: MOCK_SECONDARY_NODE.id,
   };
 
   const createComponent = (props, getters) => {

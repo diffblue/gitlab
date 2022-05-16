@@ -6,7 +6,7 @@ import GeoNodeReplicationDetails from 'ee/geo_nodes/components/details/secondary
 import GeoNodeReplicationDetailsResponsive from 'ee/geo_nodes/components/details/secondary_node/geo_node_replication_details_responsive.vue';
 import GeoNodeReplicationStatusMobile from 'ee/geo_nodes/components/details/secondary_node/geo_node_replication_status_mobile.vue';
 import { GEO_REPLICATION_SUPPORTED_TYPES_URL } from 'ee/geo_nodes/constants';
-import { MOCK_NODES, MOCK_REPLICABLE_TYPES } from 'ee_jest/geo_nodes/mock_data';
+import { MOCK_SECONDARY_NODE, MOCK_REPLICABLE_TYPES } from 'ee_jest/geo_nodes/mock_data';
 
 Vue.use(Vuex);
 
@@ -14,7 +14,7 @@ describe('GeoNodeReplicationDetails', () => {
   let wrapper;
 
   const defaultProps = {
-    node: MOCK_NODES[1],
+    node: MOCK_SECONDARY_NODE,
   };
 
   const createComponent = (initialState, props, getters) => {
@@ -167,14 +167,14 @@ describe('GeoNodeReplicationDetails', () => {
         it('passes the correct props to the mobile replication details', () => {
           expect(findGeoMobileReplicationDetails().props()).toStrictEqual({
             replicationItems: expectedProps,
-            nodeId: MOCK_NODES[1].id,
+            nodeId: MOCK_SECONDARY_NODE.id,
           });
         });
 
         it('passes the correct props to the desktop replication details', () => {
           expect(findGeoDesktopReplicationDetails().props()).toStrictEqual({
             replicationItems: expectedProps,
-            nodeId: MOCK_NODES[1].id,
+            nodeId: MOCK_SECONDARY_NODE.id,
           });
         });
 

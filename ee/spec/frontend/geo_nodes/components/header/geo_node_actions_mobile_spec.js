@@ -3,7 +3,7 @@ import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
 import GeoNodeActionsMobile from 'ee/geo_nodes/components/header/geo_node_actions_mobile.vue';
-import { MOCK_NODES } from 'ee_jest/geo_nodes/mock_data';
+import { MOCK_PRIMARY_NODE } from 'ee_jest/geo_nodes/mock_data';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 
 Vue.use(Vuex);
@@ -12,7 +12,7 @@ describe('GeoNodeActionsMobile', () => {
   let wrapper;
 
   const defaultProps = {
-    node: MOCK_NODES[0],
+    node: MOCK_PRIMARY_NODE,
   };
 
   const createComponent = (props, getters) => {
@@ -62,7 +62,7 @@ describe('GeoNodeActionsMobile', () => {
 
       it('renders edit link correctly', () => {
         expect(findGeoMobileActionsDropdownItems().at(0).attributes('href')).toBe(
-          MOCK_NODES[0].webEditUrl,
+          MOCK_PRIMARY_NODE.webEditUrl,
         );
       });
 

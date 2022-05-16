@@ -2,14 +2,14 @@ import { GlPopover, GlLink } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import GeoNodeReplicationStatus from 'ee/geo_nodes/components/details/secondary_node/geo_node_replication_status.vue';
 import { REPLICATION_STATUS_UI, REPLICATION_PAUSE_URL } from 'ee/geo_nodes/constants';
-import { MOCK_NODES } from 'ee_jest/geo_nodes/mock_data';
+import { MOCK_SECONDARY_NODE } from 'ee_jest/geo_nodes/mock_data';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 
 describe('GeoNodeReplicationStatus', () => {
   let wrapper;
 
   const defaultProps = {
-    node: MOCK_NODES[1],
+    node: MOCK_SECONDARY_NODE,
   };
 
   const createComponent = (props) => {
