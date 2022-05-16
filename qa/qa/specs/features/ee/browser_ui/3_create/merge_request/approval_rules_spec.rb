@@ -18,9 +18,13 @@ module QA
         project.add_member(approver1)
         project.group.add_member(approver2)
 
-        Page::Main::Menu.perform(&:sign_out_if_signed_in)
+        Flow::Login.sign_in
+      end
 
-        login
+      after do
+        # Cleanup so that retries can start fresh
+        project&.group&.remove_member(approver2)
+        project&.remove_via_api!
       end
 
       it 'allows multiple approval rules with users and groups', quarantine: { issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/361342', type: :flaky }, testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347771' do
