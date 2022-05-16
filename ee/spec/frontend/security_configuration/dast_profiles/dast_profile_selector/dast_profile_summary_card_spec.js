@@ -17,7 +17,6 @@ describe('DastProfileSummaryCard', () => {
   };
 
   const findProfileSelectBtn = () => wrapper.findByTestId('profile-select-btn');
-  const findProfileEditBtn = () => wrapper.findByTestId('profile-edit-btn');
 
   beforeEach(() => {
     createComponent();
@@ -28,8 +27,6 @@ describe('DastProfileSummaryCard', () => {
   });
 
   it('renders properly', () => {
-    expect(findProfileSelectBtn().exists()).toBe(true);
-    expect(findProfileEditBtn().exists()).toBe(true);
     expect(wrapper.element).toMatchSnapshot();
   });
 
