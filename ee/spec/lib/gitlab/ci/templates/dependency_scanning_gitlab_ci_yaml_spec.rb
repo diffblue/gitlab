@@ -22,6 +22,7 @@ RSpec.shared_examples 'language detection' do
     'Python Pipfile'                 | { 'Pipfile' => '' }                       | %w(gemnasium-python-dependency_scanning)
     'Python requires.txt'            | { 'requires.txt' => '' }                  | %w(gemnasium-python-dependency_scanning)
     'Python with setup.py'           | { 'setup.py' => '' }                      | %w(gemnasium-python-dependency_scanning)
+    'Python with poetry.lock'        | { 'poetry.lock' => '' }                   | %w(gemnasium-python-dependency_scanning)
     'Ruby Gemfile.lock'              | { 'Gemfile.lock' => '' }                  | %w(gemnasium-dependency_scanning)
     'Ruby gems.locked'               | { 'gems.locked' => '' }                   | %w(gemnasium-dependency_scanning)
     'Scala'                          | { 'build.sbt' => '' }                     | %w(gemnasium-maven-dependency_scanning)
