@@ -9,6 +9,7 @@ import {
   X_AXIS_PROJECT_LABEL,
   X_AXIS_CATEGORY,
   Y_AXIS_PROJECT_LABEL,
+  Y_AXIS_SHARED_RUNNER_LABEL,
   NO_CI_MINUTES_MSG,
 } from '../constants';
 
@@ -17,6 +18,7 @@ export default {
   X_AXIS_PROJECT_LABEL,
   X_AXIS_CATEGORY,
   Y_AXIS_PROJECT_LABEL,
+  Y_AXIS_SHARED_RUNNER_LABEL,
   NO_CI_MINUTES_MSG,
   components: {
     GlColumnChart,
@@ -27,6 +29,11 @@ export default {
     minutesUsageData: {
       type: Array,
       required: true,
+    },
+    displaySharedRunnerData: {
+      type: Boolean,
+      required: false,
+      default: false,
     },
   },
   data() {
@@ -44,7 +51,15 @@ export default {
         },
       ];
     },
-
+    chartOptions() {
+      return {
+        yAxis: {
+          axisLabel: {
+            formatter: (val) => val,
+          },
+        },
+      };
+    },
     usageDataByYear() {
       return this.formattedData.length > 0
         ? this.formattedData.reduce((prev, cur) => {
@@ -76,8 +91,18 @@ export default {
     },
     getUsageSelectedYearMonth() {
       return !isEmpty(this.getDataSelectedMonth)
-        ? this.getDataSelectedMonth.projects.nodes.map((cur) => [cur.name, cur.minutes])
+        ? this.getDataSelectedMonth.projects.nodes.map((cur) => {
+            if (this.displaySharedRunnerData) {
+              return [cur.name, (cur.sharedRunnersDuration / 60).toFixed(2)];
+            }
+            return [cur.name, cur.minutes];
+          })
         : [];
+    },
+    yAxisTitle() {
+      return this.displaySharedRunnerData
+        ? this.$options.Y_AXIS_SHARED_RUNNER_LABEL
+        : this.$options.Y_AXIS_PROJECT_LABEL;
     },
   },
   watch: {
@@ -151,7 +176,8 @@ export default {
       responsive
       :width="0"
       :bars="chartData"
-      :y-axis-title="$options.Y_AXIS_PROJECT_LABEL"
+      :option="chartOptions"
+      :y-axis-title="yAxisTitle"
       :x-axis-title="$options.X_AXIS_PROJECT_LABEL"
       :x-axis-type="$options.X_AXIS_CATEGORY"
     />

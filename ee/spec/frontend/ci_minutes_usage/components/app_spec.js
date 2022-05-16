@@ -31,7 +31,7 @@ describe('CI minutes usage app', () => {
   }
 
   const findMinutesUsageMonthChart = () => wrapper.findComponent(MinutesUsageMonthChart);
-  const findMinutesUsageProjectChart = () => wrapper.findComponent(MinutesUsageProjectChart);
+  const findAllMinutesUsageProjectChart = () => wrapper.findAllComponents(MinutesUsageProjectChart);
   const findSharedRunnerUsageMonthChart = () => wrapper.findComponent(SharedRunnerUsageMonthChart);
   const findAllTabs = () => wrapper.findAllComponents(GlTab);
 
@@ -50,11 +50,11 @@ describe('CI minutes usage app', () => {
 
   it('should contain three charts', () => {
     expect(findMinutesUsageMonthChart().exists()).toBe(true);
-    expect(findMinutesUsageProjectChart().exists()).toBe(true);
+    expect(findAllMinutesUsageProjectChart()).toHaveLength(2);
     expect(findSharedRunnerUsageMonthChart().exists()).toBe(true);
   });
 
-  it('should display three tabs', () => {
-    expect(findAllTabs().length).toBe(3);
+  it('should display four tabs', () => {
+    expect(findAllTabs()).toHaveLength(4);
   });
 });

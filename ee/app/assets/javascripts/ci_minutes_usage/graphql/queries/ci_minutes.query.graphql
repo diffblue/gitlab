@@ -9,6 +9,7 @@ query getCiMinutesUsage {
         nodes {
           name
           minutes
+          sharedRunnersDuration
         }
       }
     }

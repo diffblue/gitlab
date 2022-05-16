@@ -70,6 +70,7 @@ describe('CI minutes usage app groups', () => {
     it('should render minutes usage project chart', () => {
       expect(findMinutesUsageProjectChart().props()).toEqual({
         minutesUsageData: ciMinutesUsageMockData.data.ciMinutesUsage.nodes,
+        displaySharedRunnerData: false,
       });
       expect(findLoadingIcon().exists()).toBe(false);
     });
