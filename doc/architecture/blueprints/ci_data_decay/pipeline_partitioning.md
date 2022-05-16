@@ -5,7 +5,7 @@ comments: false
 description: 'Pipeline data partitioning design'
 ---
 
-## Pipeline data partitioning design
+# Pipeline data partitioning design
 
 _The following contains information related to upcoming products, features, and
 functionality._
@@ -19,7 +19,7 @@ are subject to change or delay. The development, release and timing of any
 products, features, or functionality remain at the sole discretion of GitLab
 Inc._
 
-### What problem are we trying to solve?
+## What problem are we trying to solve?
 
 We want to partition CI/CD dataset, because some of the tables are extremely
 large, which might be challenging in terms of scaling reads, even if we ship CI
@@ -33,7 +33,7 @@ See more details about this effort in [the parent blueprint](index.md).
 
 ![pipeline_data_time_decay_png](pipeline_data_time_decay.png)
 
-### How are CI/CD data decomposition, partitioning and time-decay related?
+## How are CI/CD data decomposition, partitioning and time-decay related?
 
 CI Decomposition is about extracting a CI database cluster out of the “main”
 database cluster, to make it possible to have a different primary database
@@ -64,7 +64,7 @@ ways to implement time-decay patterns at a database level.
 
 ![decomposition_partitioning_comparison.png](decomposition_partitioning_comparison.png)
 
-### Why do we need to partition CI/CD data?
+## Why do we need to partition CI/CD data?
 
 We need to partition CI/CD data because our database tables storing pipelines,
 builds, artifacts are too large. `ci_builds` database table is currently 3657
@@ -76,11 +76,11 @@ that will notify us when this number is exceeded.
 We’ve seen numerous database-related production environment incidents, S1 and
 S2, over the last couple of months.
 
-* S1: 2022-03-17 [Increase in writes in `ci_builds` table](https://gitlab.com/gitlab-com/gl-infra/production/-/issues/6625)
-* S1: 2021-11-22 [Excessive buffer read in replicas for `ci_job_artifacts`](https://gitlab.com/gitlab-com/gl-infra/production/-/issues/5952)
-* S2: 2022-04-12 [Transactions detected that have been running for more than 10m](https://gitlab.com/gitlab-com/gl-infra/production/-/issues/6821)
-* S2: 2022-04-06 [Database contention plausibly caused by excessive `ci_builds` reads](https://gitlab.com/gitlab-com/gl-infra/production/-/issues/6773)
-* S2: 2022-03-18 [Unable to remove a foreign key on `ci_builds`](https://gitlab.com/gitlab-com/gl-infra/production/-/issues/6642)
+- S1: 2022-03-17 [Increase in writes in `ci_builds` table](https://gitlab.com/gitlab-com/gl-infra/production/-/issues/6625)
+- S1: 2021-11-22 [Excessive buffer read in replicas for `ci_job_artifacts`](https://gitlab.com/gitlab-com/gl-infra/production/-/issues/5952)
+- S2: 2022-04-12 [Transactions detected that have been running for more than 10m](https://gitlab.com/gitlab-com/gl-infra/production/-/issues/6821)
+- S2: 2022-04-06 [Database contention plausibly caused by excessive `ci_builds` reads](https://gitlab.com/gitlab-com/gl-infra/production/-/issues/6773)
+- S2: 2022-03-18 [Unable to remove a foreign key on `ci_builds`](https://gitlab.com/gitlab-com/gl-infra/production/-/issues/6642)
 
 See more detailed data, read from the database in March 2022. We do have around
 50 `ci_*` prefixed database tables, some of them would benefit from
@@ -117,7 +117,7 @@ with partitioning the most interesting tables in an iterative way, but we also
 should have a strategy for partitioning remaining ones if there is a need to do
 so.
 
-### How do we want to partition CI/CD data?
+## How do we want to partition CI/CD data?
 
 We want to partition CI/CD in iterations. It might not be feasible to partition
 all 6 problematic tables at once, so an iterative strategy might be necessary.
@@ -170,7 +170,7 @@ database tables than `ci_pipelines`, but because we can guarantee continuity of
 `partition_id` values, using `RANGE` partitioning might be a bit better
 strategy.
 
-### Why do we want to use explicit logical partition ids?
+## Why do we want to use explicit logical partition ids?
 
 Partitioning CI/CD data using logical `partition_id` has several benefits. We
 could partition by a primary key, but this would introduce much more complexity
@@ -181,7 +181,7 @@ CI/CD data is hierarchical data. Stages belong to pipelines, builds belong to
 stages, artifacts belong to builds (with rare exceptions). We want to design a
 partitioning strategy that reflects this hierarchy to reduce the complexity and
 cognitive load imposed on contributors. With explicit `partition_id` associated
-with a pipeline, we can cascade the pipeline id number when trying to retrieve
+with a pipeline, we can cascade the pipeline ID number when trying to retrieve
 all resources associated with a pipeline. We know that for pipeline 12345, that
 has `partition_id` 102, we are always able to find associated resources in
 logical partitions with number 102 in other routing tables, and PostgreSQL will
@@ -194,7 +194,7 @@ find this number, although we might not need to do this. The point here is that
 the single `partition_id` value for a pipeline gives us more choices later on
 than primary-keys-based partitioning.
 
-### Splitting large partitions into smaller ones
+## Splitting large partitions into smaller ones
 
 We want to start with the initial `pipeline_id` number 100 (or higher, like
 1000, depending on our calculations / estimations). We do not want to start
@@ -209,14 +209,14 @@ smaller ones (this is not something we know we will need to do for sure) we
 might be able to just use Background Migrations, and PostgreSQL will be smart
 enough to move rows between partitions.
 
-### Storing partitions metadata in the database
+## Storing partitions metadata in the database
 
 In order to build an efficient mechanism that will be responsible for creating
 new partitions, and to implement time decay we want to introduce a partitioning
 metadata table, called `ci_partitions`. In that table we would store metadata
 about all the logical partitions, with many pipelines per partition. We may
 need to store a range of pipeline ids per logical partition. Using it we will
-be able to find the `partition_id` number for a given pipeline id and we will
+be able to find the `partition_id` number for a given pipeline ID and we will
 also find information about which logical partitions are “active” or
 “archived”, which will help us to implement a time-decay pattern using database
 declarative partitioning.
@@ -225,7 +225,7 @@ declarative partitioning.
 pipeline ids range it is valid for and whether the partitions have been
 archived or not.
 
-### Implementing time-decay pattern using partitioning
+## Implementing time-decay pattern using partitioning
 
 We can use `ci_partitions` to implement a time-decay pattern using declarative
 partitioning. By telling PostgreSQL which logical partitions are archived we
@@ -250,13 +250,13 @@ description, but by using this strategy we can “archive” data, and make it m
 less expensive to reside in our PostgreSQL cluster, by simply toggling a
 boolean value.
 
-### Accessing partitioned data
+## Accessing partitioned data
 
 It will be possible to access partitioned data whether it has been archived or
 not, in most of the places in GitLab. On a merge request page, we will always
 show pipeline details even if a merge request has been created years ago. We
 can do that because `ci_partitions` will be a lookup table associating pipeline
-id with its `partition_id`, and we will be able to find a partition that all
+ID with its `partition_id`, and we will be able to find a partition that all
 pipeline data is being stored in.
 
 We will need to constraint access to searching through all pipelines, builds,
@@ -303,7 +303,7 @@ usage of partitions zero, legacy tables that have been attached as first
 partitions to routing tables, to ensure that all queries are targeting
 partitioned schema / partitioned routing tables, like `p_ci_pipelines`.
 
-### Why do we not want to partition using project / namespace identifier?
+## Why do we not want to partition using project / namespace identifier?
 
 We do not want to partition using `project_id / namespace_id` because sharding
 / podding is a different problem to solve, on a different layer of the
@@ -316,7 +316,7 @@ In theory we could use either `project_id` or `namespace_id` as a second
 partitioning dimension, but this would add more complexity to the problem that
 is complex enough already.
 
-### Partitioning builds queuing tables
+## Partitioning builds queuing tables
 
 We also do want to partition our builds queuing tables. Currently we do have
 two - `ci_pending_builds` and `ci_running_builds`. These tables are different
@@ -329,10 +329,10 @@ hours, and always reading from two partitions through a routing table. The
 strategy to partition these tables is well understood, but requires a solid
 Ruby-based automation to manage the creation and deletion of these partitions.
 In order to achieve that we will collaborate with the Database team to adapt
-[existing database partitioning tools](/../../database/table_partitioning.md)
+[existing database partitioning tools](../../../development/database/table_partitioning.md)
 to support CI/CD data partitioning.
 
-### Iterating to reduce the risk
+## Iterating to reduce the risk
 
 This strategy should reduce the risk of shipping CI/CD partitioning to
 acceptable levels. We are aware that because of exponential growth of CI/CD
@@ -340,7 +340,7 @@ data this is quite urgent, hence we also focus on shipping partitioning for
 reading only two partitions initially to make it possible to detach partitions
 zero in case of problems in our production environment.
 
-### Iterations
+## Iterations
 
 We want to first focus on Phase 1 interaction. The goal and the main objective
 of this iteration is to partition the biggest 6 CI database tables into 6
@@ -405,7 +405,6 @@ Authors:
 | Author                       | Grzegorz Bizon          |
 
 Recommenders:
-
 
 | Who                         | Role
 |-----------------------------|------------------------|
