@@ -68,9 +68,9 @@ module ContainerRegistry
 
         if Feature.enabled?(:registry_migration_guard_thresholds)
           timeout = if repository.migration_state == 'pre_importing'
-                      migration.pre_import_timeout
+                      migration.pre_import_timeout.seconds
                     else
-                      migration.import_timeout
+                      migration.import_timeout.seconds
                     end
         end
 

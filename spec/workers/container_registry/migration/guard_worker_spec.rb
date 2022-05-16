@@ -141,7 +141,7 @@ RSpec.describe ContainerRegistry::Migration::GuardWorker, :aggregate_failures do
             allow(client).to receive(:import_status).and_return(import_status)
           end
 
-          stub_application_setting(container_registry_pre_import_timeout: 10.minutes)
+          stub_application_setting(container_registry_pre_import_timeout: 10.minutes.to_i)
         end
 
         it 'will abort the migration' do
@@ -198,7 +198,7 @@ RSpec.describe ContainerRegistry::Migration::GuardWorker, :aggregate_failures do
             allow(client).to receive(:import_status).and_return(import_status)
           end
 
-          stub_application_setting(container_registry_import_timeout: 10.minutes)
+          stub_application_setting(container_registry_import_timeout: 10.minutes.to_i)
         end
 
         it 'will abort the migration' do
