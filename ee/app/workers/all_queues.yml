@@ -401,7 +401,7 @@
   :tags: []
 - :name: cronjob:namespaces_free_user_cap
   :worker_name: Namespaces::FreeUserCapWorker
-  :feature_category: :free_user_caps_conversion
+  :feature_category: :experimentation_conversion
   :has_external_dependencies:
   :urgency: :low
   :resource_boundary: :cpu
