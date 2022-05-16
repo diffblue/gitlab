@@ -202,7 +202,7 @@ RSpec.describe 'Merge request > User sets approvers', :js do
         # project setting in the beginning on the show MR page
         expect(page).to have_content("Requires 2 approvals from eligible users")
 
-        find('.merge-request').click_on 'Edit'
+        find('.detail-page-header-actions').click_on 'Edit'
         open_modal
 
         within_fieldset('Approvals required') do
@@ -219,7 +219,7 @@ RSpec.describe 'Merge request > User sets approvers', :js do
         expect(page).to have_content("Requires 3 approvals from eligible users")
 
         # new MR setting on the edit MR page
-        find('.merge-request').click_on 'Edit'
+        find('.detail-page-header-actions').click_on 'Edit'
         wait_for_requests
 
         open_modal
