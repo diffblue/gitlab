@@ -26,7 +26,7 @@ module EE
           def minutes_used_up?(build_matcher)
             build_matcher
               .project
-              .ci_minutes_quota
+              .ci_minutes_usage
               .minutes_used_up?
           end
         end

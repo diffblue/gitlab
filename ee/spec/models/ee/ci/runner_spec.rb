@@ -131,8 +131,8 @@ RSpec.describe EE::Ci::Runner do
     end
   end
 
-  describe '#visibility_levels_without_minutes_quota' do
-    subject { runner.visibility_levels_without_minutes_quota }
+  describe '#visibility_levels_without_minutes_usage' do
+    subject { runner.visibility_levels_without_minutes_usage }
 
     context 'with group type runner' do
       let(:runner) { create(:ci_runner, :group) }

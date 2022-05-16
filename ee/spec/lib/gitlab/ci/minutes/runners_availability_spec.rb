@@ -11,7 +11,7 @@ RSpec.describe Gitlab::Ci::Minutes::RunnersAvailability do
   let(:minutes) { described_class.new(project) }
 
   describe '#available?' do
-    where(:shared_runners_enabled, :minutes_quota, :private_runner_available, :result) do
+    where(:shared_runners_enabled, :minutes_usage, :private_runner_available, :result) do
       true  | :with_not_used_build_minutes_limit  | false | true
       true  | :with_not_used_build_minutes_limit  | true  | true
       true  | :with_used_build_minutes_limit      | false | false
@@ -23,7 +23,7 @@ RSpec.describe Gitlab::Ci::Minutes::RunnersAvailability do
     end
 
     with_them do
-      let!(:namespace) { create(:namespace, minutes_quota) }
+      let!(:namespace) { create(:namespace, minutes_usage) }
       let!(:project) { create(:project, namespace: namespace, shared_runners_enabled: shared_runners_enabled) }
       let!(:private_runner) { create(:ci_runner, :project, :online, projects: [project], active: private_runner_available) }
 

@@ -49,7 +49,7 @@ RSpec.describe Ci::PendingBuild do
 
     context 'when ci minutes are not available' do
       before do
-        allow_next_instance_of(::Ci::Minutes::Quota) do |instance|
+        allow_next_instance_of(::Ci::Minutes::Usage) do |instance|
           allow(instance).to receive(:minutes_used_up?).and_return(true)
         end
       end

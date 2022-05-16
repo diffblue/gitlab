@@ -6,7 +6,7 @@
 
 module Ci
   module Minutes
-    class Quota
+    class Usage
       include Gitlab::Utils::StrongMemoize
 
       attr_reader :namespace, :limit
@@ -16,16 +16,16 @@ module Ci
         @limit = ::Ci::Minutes::Limit.new(namespace)
       end
 
-      def enabled?
+      def limit_enabled?
         limit.enabled?
       end
 
       def minutes_used_up?
-        enabled? && total_minutes_used >= limit.total
+        limit_enabled? && total_minutes_used >= limit.total
       end
 
       def percent_total_minutes_remaining
-        return 0 unless limit.enabled?
+        return 0 unless limit_enabled?
 
         100 * total_minutes_remaining.to_i / limit.total
       end
@@ -44,7 +44,7 @@ module Ci
 
       # === private to view ===
       def monthly_minutes_used_up?
-        return false unless enabled?
+        return false unless limit_enabled?
 
         monthly_minutes_used >= limit.monthly
       end
@@ -54,7 +54,7 @@ module Ci
       end
 
       def purchased_minutes_used_up?
-        return false unless enabled?
+        return false unless limit_enabled?
 
         limit.any_purchased? && purchased_minutes_used >= limit.purchased
       end

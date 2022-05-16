@@ -333,7 +333,7 @@ module EE
         enable :read_group_compliance_dashboard
         enable :read_group_credentials_inventory
         enable :admin_group_credentials_inventory
-        enable :read_ci_minutes_quota
+        enable :read_ci_minutes_usage
       end
 
       rule { (admin | owner) & group_merge_request_approval_settings_enabled }.policy do

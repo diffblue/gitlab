@@ -183,7 +183,7 @@ module EE
       end
 
       rule { can?(:owner_access) }.policy do
-        enable :read_ci_minutes_quota
+        enable :read_ci_minutes_usage
       end
 
       rule { can?(:reporter_access) & iterations_available }.policy do

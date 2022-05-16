@@ -43,13 +43,13 @@ RSpec.describe EE::NamespacesHelper do
   end
 
   describe '#ci_minutes_report' do
-    let(:quota) { Ci::Minutes::Quota.new(user_group) }
-    let(:quota_presenter) { Ci::Minutes::QuotaPresenter.new(quota) }
+    let(:usage) { Ci::Minutes::Usage.new(user_group) }
+    let(:usage_presenter) { Ci::Minutes::UsagePresenter.new(usage) }
 
     describe 'rendering monthly minutes report' do
-      let(:report) { quota_presenter.monthly_minutes_report }
+      let(:report) { usage_presenter.monthly_minutes_report }
 
-      context "when ci minutes quota is not enabled" do
+      context "when ci minutes usage is not enabled" do
         before do
           user_group.update!(shared_runners_minutes_limit: 0)
         end
@@ -90,7 +90,7 @@ RSpec.describe EE::NamespacesHelper do
     end
 
     describe 'rendering purchased minutes report' do
-      let(:report) { Ci::Minutes::QuotaPresenter.new(quota).purchased_minutes_report }
+      let(:report) { usage_presenter.purchased_minutes_report }
 
       context 'when extra minutes are assigned' do
         before do
@@ -277,31 +277,32 @@ RSpec.describe EE::NamespacesHelper do
     end
   end
 
-  describe '#pipeline_usage_quota_app_data' do
-    context 'Gitlab SaaS', :saas do
+  describe '#pipeline_usage_app_data' do
+    context 'when gitlab sass', :saas do
       before do
+        allow(Gitlab).to receive(:com?).and_return(true)
         stub_ee_application_setting(should_check_namespace_plan: true)
       end
 
       it 'returns a hash with SaaS data' do
-        minutes_quota_presenter = ::Ci::Minutes::QuotaPresenter.new(user_group.ci_minutes_quota)
+        minutes_usage_presenter = ::Ci::Minutes::UsagePresenter.new(user_group.ci_minutes_usage)
 
-        expect(helper.pipeline_usage_quota_app_data(user_group)).to eql({
+        expect(helper.pipeline_usage_app_data(user_group)).to eql({
           namespace_actual_plan_name: user_group.actual_plan_name,
           namespace_path: user_group.full_path,
           namespace_id: user_group.id,
           user_namespace: user_group.user_namespace?.to_s,
           page_size: Kaminari.config.default_per_page,
-          ci_minutes: { any_project_enabled: minutes_quota_presenter.any_project_enabled?.to_s },
+          ci_minutes: { any_project_enabled: minutes_usage_presenter.any_project_enabled?.to_s },
           buy_additional_minutes_path: EE::SUBSCRIPTIONS_MORE_MINUTES_URL,
           buy_additional_minutes_target: '_blank'
         })
       end
     end
 
-    context 'Gitlab Self-Managed' do
+    context 'when gitlab self managed' do
       it 'returns a hash without SaaS data' do
-        expect(helper.pipeline_usage_quota_app_data(user_group)).to eql({
+        expect(helper.pipeline_usage_app_data(user_group)).to eql({
           namespace_actual_plan_name: user_group.actual_plan_name,
           namespace_path: user_group.full_path,
           namespace_id: user_group.id,

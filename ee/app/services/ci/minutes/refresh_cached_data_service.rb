@@ -29,7 +29,7 @@ module Ci
       def update_pending_builds!
         return unless ::Ci::PendingBuild.maintain_denormalized_data?
 
-        minutes_exceeded = @root_namespace.ci_minutes_quota.minutes_used_up?
+        minutes_exceeded = @root_namespace.ci_minutes_usage.minutes_used_up?
         all_namespace_ids = @root_namespace.self_and_descendant_ids.ids
 
         all_namespace_ids.in_groups_of(BATCH_SIZE, minutes_exceeded) do |namespace_ids|

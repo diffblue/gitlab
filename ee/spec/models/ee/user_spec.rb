@@ -1712,7 +1712,7 @@ RSpec.describe User do
         allow(project.namespace).to receive(:free_plan?).and_return(plan == :free)
         allow(project.namespace).to receive(:trial?).and_return(plan == :trial)
         project.namespace.update!(extra_shared_runners_minutes_limit: addon_mins)
-        project.namespace.clear_memoization(:ci_minutes_quota)
+        project.namespace.clear_memoization(:ci_minutes_usage)
         project.update!(shared_runners_enabled: shared_runners_enabled)
 
         stub_feature_flags(
@@ -1766,7 +1766,7 @@ RSpec.describe User do
         allow(project.namespace).to receive(:free_plan?).and_return(plan == :free)
         allow(project.namespace).to receive(:trial?).and_return(plan == :trial)
         project.namespace.update!(extra_shared_runners_minutes_limit: addon_mins)
-        project.namespace.clear_memoization(:ci_minutes_quota)
+        project.namespace.clear_memoization(:ci_minutes_usage)
         stub_feature_flags(
           ci_require_credit_card_on_free_plan: feature_flags.include?(:free),
           ci_require_credit_card_on_trial_plan: feature_flags.include?(:trial),

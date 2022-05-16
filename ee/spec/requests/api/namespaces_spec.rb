@@ -270,7 +270,7 @@ RSpec.describe API::Namespaces do
         end
 
         it 'updates pending builds data since adding extra minutes the quota is not used up anymore' do
-          minutes_exceeded = group1.ci_minutes_quota.minutes_used_up?
+          minutes_exceeded = group1.ci_minutes_usage.minutes_used_up?
           expect(minutes_exceeded).to eq(true)
 
           pending_build = create(:ci_pending_build, namespace: group1, minutes_exceeded: minutes_exceeded)

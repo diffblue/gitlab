@@ -82,8 +82,8 @@ RSpec.describe Ci::Minutes::TrackLiveConsumptionService, :saas do
 
     context 'when namespace has unlimited minutes' do
       before do
-        quota = double('quota', enabled?: false)
-        allow(project).to receive(:ci_minutes_quota).and_return(quota)
+        usage = double('usage', limit_enabled?: false)
+        allow(project).to receive(:ci_minutes_usage).and_return(usage)
       end
 
       it_behaves_like 'returns early', 'Cost factor not enabled for build'

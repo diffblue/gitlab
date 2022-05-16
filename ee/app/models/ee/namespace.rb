@@ -253,15 +253,15 @@ module EE
       end
     end
 
-    def ci_minutes_quota
-      strong_memoize(:ci_minutes_quota) do
-        ::Ci::Minutes::Quota.new(self)
+    def ci_minutes_usage
+      strong_memoize(:ci_minutes_usage) do
+        ::Ci::Minutes::Usage.new(self)
       end
     end
 
     # The same method name is used also at project level
     def shared_runners_minutes_limit_enabled?
-      any_project_with_shared_runners_enabled? && ci_minutes_quota.enabled?
+      any_project_with_shared_runners_enabled? && ci_minutes_usage.limit_enabled?
     end
 
     def any_project_with_shared_runners_enabled?

@@ -1,10 +1,10 @@
 - namespace = local_assigns.fetch(:namespace)
-- minutes_quota = namespace.ci_minutes_quota
-- minutes_quota_presenter = Ci::Minutes::QuotaPresenter.new(minutes_quota)
+- minutes_usage = namespace.ci_minutes_usage
+- minutes_usage_presenter = Ci::Minutes::UsagePresenter.new(minutes_usage)
 
-- if minutes_quota_presenter.display_shared_runners_data?
+- if minutes_usage_presenter.display_shared_runners_data?
   %li
     %span.light= _('Quota of CI/CD minutes:')
     %strong
-      = ci_minutes_report(minutes_quota_presenter.monthly_minutes_report)
+      = ci_minutes_report(minutes_usage_presenter.monthly_minutes_report)
       = link_to sprite_icon('question-o'), help_page_path('ci/pipelines/cicd_minutes'), target: '_blank', rel: 'noopener noreferrer'
