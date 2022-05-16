@@ -1,18 +1,16 @@
 # frozen_string_literal: true
 
 class ProjectImportScheduleWorker
-  ImportStateNotFound = Class.new(StandardError)
-
   include ApplicationWorker
 
-  data_consistency :always
+  data_consistency :delayed, feature_flag: :delayed_project_import_schedule_worker
   prepend WaitableWorker
 
   idempotent!
   deduplicate :until_executing, ttl: 5.minutes
 
   feature_category :source_code_management
-  sidekiq_options retry: false
+  sidekiq_options retry: 1
   loggable_arguments 1 # For the job waiter key
   log_bulk_perform_async!
 
@@ -22,9 +20,13 @@ class ProjectImportScheduleWorker
     return if Gitlab::Database.read_only?
 
     project = Project.with_route.with_import_state.with_namespace.find_by_id(project_id)
-    raise ImportStateNotFound unless project&.import_state
 
     with_context(project: project) do
+      unless project&.import_state
+        log_extra_metadata_on_done(:mirroring_skipped, "No import state found for #{project_id}")
+        next
+      end
+
       project.import_state.schedule
     end
   end
