@@ -25,7 +25,48 @@ exports[`Security Dashboard default states sets up group-level 1`] = `
             >
         Vulnerabilities over time
             </h4>
+            <p
+              class="gl-text-secondary"
+              data-testid="timeInfo"
+            >
+        June 6th to today
+            </p>
           </header>
+          <div
+            class="gl-display-flex btn-group"
+            role="group"
+          >
+            <button
+              class="btn btn-default btn-md gl-button selected"
+              type="button"
+            >
+              <span
+                class="gl-button-text"
+              >
+    30 Days
+              </span>
+            </button>
+            <button
+              class="btn btn-default btn-md gl-button"
+              type="button"
+            >
+              <span
+                class="gl-button-text"
+              >
+    60 Days
+              </span>
+            </button>
+            <button
+              class="btn btn-default btn-md gl-button"
+              type="button"
+            >
+              <span
+                class="gl-button-text"
+              >
+    90 Days
+              </span>
+            </button>
+          </div>
         </div>
         <div
           class="gl-spinner-container gl-my-12"
@@ -89,7 +130,48 @@ exports[`Security Dashboard default states sets up instance-level 1`] = `
             >
         Vulnerabilities over time
             </h4>
+            <p
+              class="gl-text-secondary"
+              data-testid="timeInfo"
+            >
+        June 6th to today
+            </p>
           </header>
+          <div
+            class="gl-display-flex btn-group"
+            role="group"
+          >
+            <button
+              class="btn btn-default btn-md gl-button selected"
+              type="button"
+            >
+              <span
+                class="gl-button-text"
+              >
+    30 Days
+              </span>
+            </button>
+            <button
+              class="btn btn-default btn-md gl-button"
+              type="button"
+            >
+              <span
+                class="gl-button-text"
+              >
+    60 Days
+              </span>
+            </button>
+            <button
+              class="btn btn-default btn-md gl-button"
+              type="button"
+            >
+              <span
+                class="gl-button-text"
+              >
+    90 Days
+              </span>
+            </button>
+          </div>
         </div>
         <div
           class="gl-spinner-container gl-my-12"

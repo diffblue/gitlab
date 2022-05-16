@@ -123,11 +123,11 @@ describe('Vulnerabilities Over Time Chart Component', () => {
       });
     });
 
-    it('only shows the header and loading icon', () => {
+    it('only shows the header, controls, and loading icon', () => {
       expect(wrapper.find('h4').exists()).toBe(true);
       expect(wrapper.findComponent(GlLoadingIcon).exists()).toBe(true);
-      expect(findTimeInfo().exists()).toBe(false);
-      expect(findChartButtons().exists()).toBe(false);
+      expect(findTimeInfo().exists()).toBe(true);
+      expect(findChartButtons().exists()).toBe(true);
       expect(wrapper.findComponent(GlTable).exists()).toBe(false);
     });
   });
