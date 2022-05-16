@@ -47,12 +47,11 @@ module Gitlab
         source_class_last_id, more_records = get_source_batch_last_id(batch_first_id)
         destination_class_last_id, more_destination_records = get_destination_batch_last_id(batch_first_id)
 
-        batch_last_id =
-          if !more_records && more_destination_records
-            destination_class_last_id
-          else
-            source_class_last_id
-          end
+        batch_last_id = if source_class_last_id && destination_class_last_id
+                          [source_class_last_id, destination_class_last_id].max
+                        else
+                          source_class_last_id || destination_class_last_id
+                        end
 
         if more_records || more_destination_records
           increment_batch(batch_last_id)
@@ -116,7 +115,7 @@ module Gitlab
           EXISTS (
             SELECT #{source_foreign_key}
             FROM #{destination_class.table_name}
-            WHERE #{source_foreign_key} >= MAX(batch.#{source_foreign_key})
+            WHERE #{source_foreign_key} > MAX(batch.#{source_foreign_key})
           ) AS more_rows
           FROM (
             SELECT #{source_foreign_key}
