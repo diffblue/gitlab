@@ -1,0 +1,83 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SiteProfileSelector renders properly with no profiles 1`] = `
+<div
+  props="[object Object]"
+>
+  <div
+    class="gl-mb-4"
+  >
+    <h4
+      class="gl-font-lg gl-mt-0 gl-mb-2"
+    >
+      
+      Site Profile
+    
+    </h4>
+     
+    <p>
+      <gl-sprintf-stub
+        message="Site profiles define the attributes and configuration details of your deployed application, website, or API. %{linkStart}Learn more%{linkEnd}."
+      />
+    </p>
+  </div>
+   
+  <empty-state-stub
+    class="gl-mb-4"
+  />
+   
+  <gl-button-stub
+    buttontextclasses=""
+    category="secondary"
+    data-testid="select-profile-action-btn"
+    icon=""
+    size="medium"
+    variant="confirm"
+  >
+    
+    Select site profile
+  
+  </gl-button-stub>
+</div>
+`;
+
+exports[`SiteProfileSelector renders properly with profiles 1`] = `
+<div
+  props="[object Object]"
+>
+  <div
+    class="gl-mb-4"
+  >
+    <h4
+      class="gl-font-lg gl-mt-0 gl-mb-2"
+    >
+      
+      Site Profile
+    
+    </h4>
+     
+    <p>
+      <gl-sprintf-stub
+        message="Site profiles define the attributes and configuration details of your deployed application, website, or API. %{linkStart}Learn more%{linkEnd}."
+      />
+    </p>
+  </div>
+   
+  <empty-state-stub
+    class="gl-mb-4"
+  />
+   
+  <gl-button-stub
+    buttontextclasses=""
+    category="secondary"
+    data-testid="select-profile-action-btn"
+    icon=""
+    size="medium"
+    variant="confirm"
+  >
+    
+    Select site profile
+  
+  </gl-button-stub>
+</div>
+`;

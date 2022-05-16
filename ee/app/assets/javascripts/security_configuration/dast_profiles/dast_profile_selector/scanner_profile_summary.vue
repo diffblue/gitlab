@@ -25,7 +25,7 @@ export default {
 </script>
 
 <template>
-  <dast-profile-summary-card>
+  <dast-profile-summary-card v-bind="$attrs">
     <template #title>
       {{ profile.profileName }}
     </template>

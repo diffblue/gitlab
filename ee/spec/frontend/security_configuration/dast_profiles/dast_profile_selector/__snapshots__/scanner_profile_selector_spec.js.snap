@@ -1,0 +1,83 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ScannerProfileSelector renders properly with no profiles 1`] = `
+<div
+  props="[object Object]"
+>
+  <div
+    class="gl-mb-4"
+  >
+    <h4
+      class="gl-font-lg gl-mt-0 gl-mb-2"
+    >
+      
+      Scanner Profile
+    
+    </h4>
+     
+    <p>
+      <gl-sprintf-stub
+        message="Scanner profiles define the configuration details of a security scanner. %{linkStart}Learn more%{linkEnd}."
+      />
+    </p>
+  </div>
+   
+  <empty-state-stub
+    class="gl-mb-4"
+  />
+   
+  <gl-button-stub
+    buttontextclasses=""
+    category="secondary"
+    data-testid="select-profile-action-btn"
+    icon=""
+    size="medium"
+    variant="confirm"
+  >
+    
+    Select scanner profile
+  
+  </gl-button-stub>
+</div>
+`;
+
+exports[`ScannerProfileSelector renders properly with profiles 1`] = `
+<div
+  props="[object Object]"
+>
+  <div
+    class="gl-mb-4"
+  >
+    <h4
+      class="gl-font-lg gl-mt-0 gl-mb-2"
+    >
+      
+      Scanner Profile
+    
+    </h4>
+     
+    <p>
+      <gl-sprintf-stub
+        message="Scanner profiles define the configuration details of a security scanner. %{linkStart}Learn more%{linkEnd}."
+      />
+    </p>
+  </div>
+   
+  <empty-state-stub
+    class="gl-mb-4"
+  />
+   
+  <gl-button-stub
+    buttontextclasses=""
+    category="secondary"
+    data-testid="select-profile-action-btn"
+    icon=""
+    size="medium"
+    variant="confirm"
+  >
+    
+    Select scanner profile
+  
+  </gl-button-stub>
+</div>
+`;

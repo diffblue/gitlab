@@ -35,6 +35,8 @@ import {
 import SectionLayout from '~/vue_shared/security_configuration/components/section_layout.vue';
 import ConfigurationPageLayout from 'ee/security_configuration/components/configuration_page_layout.vue';
 import DastProfilesSidebar from 'ee/security_configuration/dast_profiles/dast_profiles_sidebar/dast_profiles_sidebar.vue';
+import ScannerProfileSelectorNew from 'ee/security_configuration/dast_profiles/dast_profile_selector/scanner_profile_selector.vue';
+import SiteProfileSelectorNew from 'ee/security_configuration/dast_profiles/dast_profile_selector/site_profile_selector.vue';
 import dastProfileCreateMutation from '../graphql/dast_profile_create.mutation.graphql';
 import dastProfileUpdateMutation from '../graphql/dast_profile_update.mutation.graphql';
 import {
@@ -49,8 +51,6 @@ import ProfileConflictAlert from './profile_selector/profile_conflict_alert.vue'
 import ScannerProfileSelector from './profile_selector/scanner_profile_selector.vue';
 import SiteProfileSelector from './profile_selector/site_profile_selector.vue';
 import ScanSchedule from './scan_schedule.vue';
-import ScannerProfileEmptyState from './profile_selector/scanner_profile_empty_state.vue';
-import SiteProfileEmptyState from './profile_selector/site_profile_empty_state.vue';
 
 export const ON_DEMAND_SCANS_STORAGE_KEY = 'on-demand-scans-new-form';
 
@@ -143,9 +143,9 @@ export default {
     LocalStorageSync,
     SectionLayout,
     ConfigurationPageLayout,
-    ScannerProfileEmptyState,
-    SiteProfileEmptyState,
     DastProfilesSidebar,
+    ScannerProfileSelectorNew,
+    SiteProfileSelectorNew,
   },
   directives: {
     SafeHtml: GlSafeHtmlDirective,
@@ -208,9 +208,6 @@ export default {
     };
   },
   computed: {
-    hasScannerProfileSelector() {
-      return Boolean(this.selectedScannerProfile);
-    },
     hasSiteProfileSelector() {
       return Boolean(this.selectedSiteProfile);
     },
@@ -366,12 +363,18 @@ export default {
       this.showAlert = true;
     },
     openScannerProfileDrawer() {
-      this.isSideDrawerOpen = true;
-      this.profileType = SCANNER_TYPE;
+      this.isSideDrawerOpen = false;
+      this.$nextTick(() => {
+        this.isSideDrawerOpen = true;
+        this.profileType = SCANNER_TYPE;
+      });
     },
     openSiteProfileDrawer() {
-      this.isSideDrawerOpen = true;
-      this.profileType = SITE_TYPE;
+      this.isSideDrawerOpen = false;
+      this.$nextTick(() => {
+        this.isSideDrawerOpen = true;
+        this.profileType = SITE_TYPE;
+      });
     },
     closeSideDrawer() {
       this.isSideDrawerOpen = false;
@@ -518,42 +521,50 @@ export default {
         :is-loading="isLoadingProfiles"
       >
         <template #description>
-          <gl-sprintf :message="$options.i18n.dastConfigurationDescription">
-            <template #link="{ content }">
-              <gl-link :href="$options.dastConfigurationHelpPath">{{ content }}</gl-link>
-            </template>
-          </gl-sprintf>
+          <p>
+            <gl-sprintf :message="$options.i18n.dastConfigurationDescription">
+              <template #link="{ content }">
+                <gl-link :href="$options.dastConfigurationHelpPath">{{ content }}</gl-link>
+              </template>
+            </gl-sprintf>
+          </p>
         </template>
         <template #features>
-          <scanner-profile-empty-state
-            v-if="!hasScannerProfileSelector && glFeatures.dastUiRedesign"
-            class="gl-mb-8"
-            @click="openScannerProfileDrawer"
-          />
-          <scanner-profile-selector
-            v-else
-            v-model="selectedScannerProfileId"
-            class="gl-mb-6"
-            :profiles="scannerProfiles"
-            :selected-profile="selectedScannerProfile"
-            :has-conflict="hasProfilesConflict"
-            :dast-scan-id="dastScanId"
-          />
+          <template v-if="glFeatures.dastUiRedesign">
+            <scanner-profile-selector-new
+              class="gl-mb-6"
+              :profiles="scannerProfiles"
+              :selected-profile="selectedScannerProfile"
+              @open-drawer="openScannerProfileDrawer"
+            />
 
-          <site-profile-empty-state
-            v-if="!hasSiteProfileSelector && glFeatures.dastUiRedesign"
-            class="gl-mb-3"
-            @click="openSiteProfileDrawer"
-          />
-          <site-profile-selector
-            v-else
-            v-model="selectedSiteProfileId"
-            class="gl-mb-2"
-            :profiles="siteProfiles"
-            :selected-profile="selectedSiteProfile"
-            :has-conflict="hasProfilesConflict"
-            :dast-scan-id="dastScanId"
-          />
+            <site-profile-selector-new
+              class="gl-mb-2"
+              :profiles="scannerProfiles"
+              :selected-profile="selectedSiteProfile"
+              @open-drawer="openSiteProfileDrawer"
+            />
+          </template>
+
+          <template v-else>
+            <scanner-profile-selector
+              v-model="selectedScannerProfileId"
+              class="gl-mb-6"
+              :profiles="scannerProfiles"
+              :selected-profile="selectedScannerProfile"
+              :has-conflict="hasProfilesConflict"
+              :dast-scan-id="dastScanId"
+            />
+
+            <site-profile-selector
+              v-model="selectedSiteProfileId"
+              class="gl-mb-2"
+              :profiles="siteProfiles"
+              :selected-profile="selectedSiteProfile"
+              :has-conflict="hasProfilesConflict"
+              :dast-scan-id="dastScanId"
+            />
+          </template>
         </template>
       </section-layout>
 

@@ -11318,6 +11318,12 @@ msgstr ""
 msgid "DastProfiles|Branch missing"
 msgstr ""
 
+msgid "DastProfiles|Change scanner profile"
+msgstr ""
+
+msgid "DastProfiles|Change site profile"
+msgstr ""
+
 msgid "DastProfiles|Choose a scan method"
 msgstr ""
 
@@ -11432,9 +11438,6 @@ msgstr ""
 msgid "DastProfiles|No scanner profile selected"
 msgstr ""
 
-msgid "DastProfiles|No scanner profile selected."
-msgstr ""
-
 msgid "DastProfiles|No scanner profiles created yet"
 msgstr ""
 
@@ -11487,9 +11490,6 @@ msgid "DastProfiles|Scanner Profiles"
 msgstr ""
 
 msgid "DastProfiles|Scanner name"
-msgstr ""
-
-msgid "DastProfiles|Scanner profile"
 msgstr ""
 
 msgid "DastProfiles|Scanner profiles define the configuration details of a security scanner. %{linkStart}Learn more%{linkEnd}."

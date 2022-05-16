@@ -7,8 +7,6 @@ import siteProfilesFixtures from 'test_fixtures/graphql/security_configuration/d
 import scannerProfilesFixtures from 'test_fixtures/graphql/security_configuration/dast_profiles/graphql/dast_scanner_profiles.query.graphql.basic.json';
 import OnDemandScansForm from 'ee/on_demand_scans_form/components/on_demand_scans_form.vue';
 import DastProfilesSidebar from 'ee/security_configuration/dast_profiles/dast_profiles_sidebar/dast_profiles_sidebar.vue';
-import ScannerProfileEmptyState from 'ee/on_demand_scans_form/components/profile_selector/scanner_profile_empty_state.vue';
-import SiteProfileEmptyState from 'ee/on_demand_scans_form/components/profile_selector/site_profile_empty_state.vue';
 import ScannerProfileSelector from 'ee/on_demand_scans_form/components/profile_selector/scanner_profile_selector.vue';
 import SiteProfileSelector from 'ee/on_demand_scans_form/components/profile_selector/site_profile_selector.vue';
 import ScanSchedule from 'ee/on_demand_scans_form/components/scan_schedule.vue';
@@ -27,6 +25,8 @@ import { redirectTo } from '~/lib/utils/url_utility';
 import RefSelector from '~/ref/components/ref_selector.vue';
 import LocalStorageSync from '~/vue_shared/components/local_storage_sync.vue';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
+import ScannerProfileSelectorNew from 'ee/security_configuration/dast_profiles/dast_profile_selector/scanner_profile_selector.vue';
+import SiteProfileSelectorNew from 'ee/security_configuration/dast_profiles/dast_profile_selector/site_profile_selector.vue';
 import {
   siteProfiles,
   scannerProfiles,
@@ -92,9 +92,9 @@ describe('OnDemandScansForm', () => {
   const findSaveButton = () => findByTestId('on-demand-scan-save-button');
   const findCancelButton = () => findByTestId('on-demand-scan-cancel-button');
   const findProfileSummary = () => findByTestId('selected-profile-summary');
-  const findScannerEmptyStateSelectButton = () => findByTestId('create-scanner-profile-link');
   const findDastProfilesSidebar = () => wrapper.findComponent(DastProfilesSidebar);
-  const findSiteProfileEmptyState = () => wrapper.findComponent(SiteProfileEmptyState);
+  const findScannerProfilesSelectorNew = () => wrapper.findComponent(ScannerProfileSelectorNew);
+  const findSiteProfilesSelectorNew = () => wrapper.findComponent(SiteProfileSelectorNew);
 
   const hasSiteProfileAttributes = () => {
     expect(findScannerProfilesSelector().attributes('value')).toBe(dastScan.dastScannerProfile.id);
@@ -194,7 +194,6 @@ describe('OnDemandScansForm', () => {
             SectionLayout,
             SectionLoader,
             ConfigurationPageLayout,
-            ScannerProfileEmptyState,
           },
         },
         { ...options, localVue, apolloProvider },
@@ -688,7 +687,7 @@ describe('OnDemandScansForm', () => {
     });
   });
 
-  describe('empty state under feature flag', () => {
+  describe('With `dastUiRedesign` feature flag on', () => {
     beforeEach(() => {
       createShallowComponent({}, false, {
         glFeatures: {
@@ -697,9 +696,15 @@ describe('OnDemandScansForm', () => {
       });
     });
 
-    it('should open a side drawer from empty state', async () => {
-      expect(findDastProfilesSidebar().props('isOpen')).toBe(false);
-      findScannerEmptyStateSelectButton().vm.$emit('click');
+    it('should have correct component rendered', async () => {
+      expect(findScannerProfilesSelectorNew().exists()).toBe(true);
+      expect(findSiteProfilesSelectorNew().exists()).toBe(true);
+      expect(findScannerProfilesSelector().exists()).toBe(false);
+      expect(findSiteProfilesSelector().exists()).toBe(false);
+    });
+
+    it('should open a side drawer from scanner profile selector', async () => {
+      findScannerProfilesSelectorNew().vm.$emit('open-drawer');
 
       await nextTick();
 
@@ -707,25 +712,30 @@ describe('OnDemandScansForm', () => {
       expect(findDastProfilesSidebar().props('isOpen')).toBe(true);
     });
 
-    it('should show site empty state when no scanner is selected', () => {
-      createShallowComponent(
-        {
-          data: {
-            scannerProfiles: [],
-            siteProfiles: [],
-          },
-        },
-        false,
-        {
-          glFeatures: {
-            dastUiRedesign: true,
-          },
-        },
-      );
+    it('should open a side drawer from site profile selector', async () => {
+      findSiteProfilesSelectorNew().vm.$emit('open-drawer');
 
-      const emptyState = findSiteProfileEmptyState();
+      await nextTick();
 
-      expect(emptyState.exists()).toBe(true);
+      expect(findDastProfilesSidebar().exists()).toBe(true);
+      expect(findDastProfilesSidebar().props('isOpen')).toBe(true);
+    });
+  });
+
+  describe('With `dastUiRedesign` feature flag off', () => {
+    beforeEach(() => {
+      createShallowComponent({}, false, {
+        glFeatures: {
+          dastUiRedesign: false,
+        },
+      });
+    });
+
+    it('should have correct component rendered', async () => {
+      expect(findScannerProfilesSelectorNew().exists()).toBe(false);
+      expect(findSiteProfilesSelectorNew().exists()).toBe(false);
+      expect(findScannerProfilesSelector().exists()).toBe(true);
+      expect(findSiteProfilesSelector().exists()).toBe(true);
     });
   });
 });
