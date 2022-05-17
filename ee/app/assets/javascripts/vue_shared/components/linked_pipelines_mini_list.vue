@@ -12,6 +12,9 @@ export default {
     CiIcon,
     GlIcon,
   },
+  arrowStyles: [
+    'arrow-icon gl-display-inline-block gl-mx-1 gl-text-gray-500 gl-vertical-align-middle',
+  ],
   inject: {
     dataMethod: {
       default: 'rest',
@@ -96,9 +99,9 @@ export default {
       'is-upstream': isUpstream,
       'is-downstream': isDownstream,
     }"
-    class="linked-pipeline-mini-list gl-align-items-center gl-display-inline-flex gl-flex-wrap gl-my-1"
+    class="linked-pipeline-mini-list gl-my-1"
   >
-    <gl-icon v-if="isDownstream" class="arrow-icon gl-mx-2 gl-text-gray-500" name="long-arrow" />
+    <gl-icon v-if="isDownstream" :class="$options.arrowStyles" name="long-arrow" />
 
     <a
       v-for="pipeline in linkedPipelinesTrimmed"
@@ -106,7 +109,7 @@ export default {
       v-gl-tooltip="{ title: pipelineTooltipText(pipeline) }"
       :href="pipeline.path"
       :class="triggerButtonClass(pipeline)"
-      class="linked-pipeline-mini-item gl-align-items-center gl-display-inline-flex gl-mr-2 gl-rounded-full"
+      class="linked-pipeline-mini-item gl-display-inline-block gl-mr-2 gl-rounded-full gl-vertical-align-middle"
     >
       <ci-icon
         is-interactive
@@ -127,6 +130,6 @@ export default {
       {{ counterLabel }}
     </a>
 
-    <gl-icon v-if="isUpstream" class="arrow-icon gl-mx-2 gl-text-gray-500" name="long-arrow" />
+    <gl-icon v-if="isUpstream" :class="$options.arrowStyles" name="long-arrow" />
   </span>
 </template>
