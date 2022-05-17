@@ -19,7 +19,7 @@ module IncidentManagement
       # Required to find records by id on partitioned tables.
       self.primary_key = :id
 
-      partitioned_by :process_at, strategy: :monthly
+      partitioned_by :process_at, strategy: :monthly, retain_for: 2.months
 
       belongs_to :rule, class_name: 'EscalationRule', foreign_key: 'rule_id'
 
