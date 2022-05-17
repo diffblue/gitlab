@@ -27,6 +27,7 @@ RSpec.describe Admin::ApplicationSettingsController do
           slack_app_enabled: true,
           slack_app_id: 'slack_app_id',
           slack_app_secret: 'slack_app_secret',
+          slack_app_signing_secret: 'slack_app_signing_secret',
           slack_app_verification_token: 'slack_app_verification_token',
           allow_group_owners_to_manage_ldap: false,
           lock_memberships_to_ldap: true,
