@@ -10,23 +10,29 @@ RSpec.describe Ci::Runners::StaleGroupRunnersPruneCronWorker do
     let_it_be(:group2) { create(:group) }
 
     let!(:runner1) do
-      create(:ci_runner, :group, groups: [group1], created_at: 4.months.ago, contacted_at: 4.months.ago)
+      create(:ci_runner, :group, groups: [group1], created_at: 3.months.ago, contacted_at: 3.months.ago)
     end
 
     let!(:runner2) { create(:ci_runner, :group, groups: [group1]) }
-    let!(:runner3) { create(:ci_runner, :group, groups: [group2]) }
+    let!(:runner3) { create(:ci_runner, :group, groups: [group2], created_at: 2.months.ago) }
 
     it 'delegates to Ci::Runners::StaleGroupRunnersPruneService' do
-      group1.update!(allow_stale_runner_pruning: false)
-      group2.update!(allow_stale_runner_pruning: true)
+      group1.update!(allow_stale_runner_pruning: true)
+      group2.update!(allow_stale_runner_pruning: false)
 
       expect_next_instance_of(Ci::Runners::StaleGroupRunnersPruneService) do |service|
         expect(service)
           .to receive(:perform)
-          .with([group2.ci_cd_settings])
+          .with([group1.ci_cd_settings])
+          .and_call_original
       end
 
       worker.perform
+
+      expect(worker.logging_extras).to eq({
+        "extra.ci_runners_stale_group_runners_prune_cron_worker.status" => :success,
+        "extra.ci_runners_stale_group_runners_prune_cron_worker.total_pruned" => 1
+      })
     end
 
     it_behaves_like 'an idempotent worker' do
