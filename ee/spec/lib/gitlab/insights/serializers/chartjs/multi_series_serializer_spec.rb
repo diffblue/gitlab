@@ -3,34 +3,37 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Insights::Serializers::Chartjs::MultiSeriesSerializer do
-  it 'returns the correct format' do
-    input = build(:insights_issues_by_team_per_month)
-    expected = {
+  include_context 'Insights serializers context'
+
+  let!(:expected) do
+    {
       labels: ['January 2019', 'February 2019', 'March 2019'],
       datasets: [
         {
-          label: 'Manage',
+          label: "#{manage_label}",
           data: [1, 0, 0],
-          backgroundColor: '#34e34c'
+          backgroundColor: "#{colors[manage_label.to_sym]}"
         },
         {
-          label: 'Plan',
+          label: "#{plan_label}",
           data: [1, 1, 1],
-          backgroundColor: '#0b6cbd'
+          backgroundColor: "#{colors[plan_label.to_sym]}"
         },
         {
-          label: 'Create',
+          label: "#{create_label}",
           data: [1, 0, 1],
-          backgroundColor: '#686e69'
+          backgroundColor: "#{colors[create_label.to_sym]}"
         },
         {
-          label: 'undefined',
+          label: "#{undefined_label}",
           data: [0, 0, 1],
-          backgroundColor: '#808080'
+          backgroundColor: "#{colors[undefined_label.to_sym]}"
         }
       ]
     }.with_indifferent_access
+  end
 
+  it 'returns the correct format' do
     expect(described_class.present(input)).to eq(expected)
   end
 
@@ -46,7 +49,7 @@ RSpec.describe Gitlab::Insights::Serializers::Chartjs::MultiSeriesSerializer do
 
     with_them do
       it 'raises an error if the input is not in the correct format' do
-        expect { described_class.present(input) }.to raise_error(described_class::WrongInsightsFormatError, /Expected `input` to be of the form `Hash\[Symbol\|String, Hash\[Symbol\|String, Integer\]\]`, .+ given!/)
+        expect { subject }.to raise_error(described_class::WrongInsightsFormatError, /Expected `input` to be of the form `Hash\[Symbol\|String, Hash\[Symbol\|String, Integer\]\]`, .+ given!/)
       end
     end
   end
