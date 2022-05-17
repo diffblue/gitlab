@@ -401,8 +401,8 @@ RSpec.describe Gitlab::Database::MigrationHelpers::RestrictGitlabSchema, query_a
               ci: :dml_not_allowed
             },
             gitlab_schema_gitlab_shared: {
-              main: :dml_access_denied,
-              ci: :dml_access_denied
+              main: :runtime_error,
+              ci: :runtime_error
             },
             gitlab_schema_gitlab_main: {
               main: :success,
@@ -542,6 +542,10 @@ RSpec.describe Gitlab::Database::MigrationHelpers::RestrictGitlabSchema, query_a
                 when :dml_access_denied
                   expect { migration_class.migrate(:up) }.to raise_error(Gitlab::Database::QueryAnalyzers::RestrictAllowedSchemas::DMLAccessDeniedError)
                   expect { ignore_error(Gitlab::Database::QueryAnalyzers::RestrictAllowedSchemas::DMLAccessDeniedError) { migration_class.migrate(:down) } }.not_to raise_error
+
+                when :runtime_error
+                  expect { migration_class.migrate(:up) }.to raise_error(RuntimeError)
+                  expect { ignore_error(RuntimeError) { migration_class.migrate(:down) } }.not_to raise_error
 
                 when :ddl_not_allowed
                   expect { migration_class.migrate(:up) }.to raise_error(Gitlab::Database::QueryAnalyzers::RestrictAllowedSchemas::DDLNotAllowedError)
