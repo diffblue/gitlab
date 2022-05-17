@@ -141,8 +141,6 @@ func (rew *rewriter) handleFilePart(ctx context.Context, name string, p *multipa
 		return fmt.Errorf("illegal filename: %q", filename)
 	}
 
-	opts.TempFilePrefix = filename
-
 	var inputReader io.ReadCloser
 	var err error
 
@@ -164,7 +162,7 @@ func (rew *rewriter) handleFilePart(ctx context.Context, name string, p *multipa
 
 	defer inputReader.Close()
 
-	fh, err := destination.Upload(ctx, inputReader, -1, opts)
+	fh, err := destination.Upload(ctx, inputReader, -1, filename, opts)
 	if err != nil {
 		switch err {
 		case destination.ErrEntityTooLarge, exif.ErrRemovingExif:

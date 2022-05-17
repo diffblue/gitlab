@@ -352,7 +352,6 @@ func TestInvalidFileNames(t *testing.T) {
 
 		interceptMultipartFiles(response, httpRequest, nilHandler, apiResponse, &SavedFileTracker{Request: httpRequest}, opts)
 		require.Equal(t, testCase.code, response.Code)
-		require.Equal(t, testCase.expectedPrefix, opts.TempFilePrefix)
 	}
 }
 

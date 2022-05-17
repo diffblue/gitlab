@@ -61,8 +61,7 @@ func (a *artifactsUploadProcessor) generateMetadataFromZip(ctx context.Context, 
 	defer metaWriter.Close()
 
 	metaOpts := &destination.UploadOpts{
-		LocalTempPath:  os.TempDir(),
-		TempFilePrefix: "metadata.gz",
+		LocalTempPath: os.TempDir(),
 	}
 
 	fileName := file.LocalPath
@@ -87,7 +86,7 @@ func (a *artifactsUploadProcessor) generateMetadataFromZip(ctx context.Context, 
 	done := make(chan saveResult)
 	go func() {
 		var result saveResult
-		result.FileHandler, result.error = destination.Upload(ctx, metaReader, -1, metaOpts)
+		result.FileHandler, result.error = destination.Upload(ctx, metaReader, -1, "metadata.gz", metaOpts)
 
 		done <- result
 	}()
