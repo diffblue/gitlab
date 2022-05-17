@@ -13,7 +13,7 @@ module EE
           updated_scans_count = 0
           relation = ::Gitlab::BackgroundMigration::PurgeStaleSecurityScans::SecurityScan.by_range(start_id..end_id)
 
-          relation.each_batch do |batch|
+          relation.each_batch(of: 500) do |batch|
             updated_scans_count += batch.succeeded.update_all(status: :purged)
           end
 
