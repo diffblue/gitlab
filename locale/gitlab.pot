@@ -44217,9 +44217,6 @@ msgstr ""
 msgid "Your new comment"
 msgstr ""
 
-msgid "Your new personal access token has been created."
-msgstr ""
-
 msgid "Your password isn't required to view this page. If a password or any other personal details are requested, please contact your administrator to report abuse."
 msgstr ""
 
