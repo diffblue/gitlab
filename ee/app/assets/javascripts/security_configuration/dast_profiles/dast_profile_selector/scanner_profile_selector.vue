@@ -41,6 +41,11 @@ export default {
       required: false,
       default: null,
     },
+    profileIdInUse: {
+      type: String,
+      required: false,
+      default: null,
+    },
   },
   computed: {
     hasScannerProfileSelector() {
@@ -50,6 +55,9 @@ export default {
       return this.hasScannerProfileSelector
         ? this.$options.i18n.changeProfileButton
         : this.$options.i18n.selectProfileButton;
+    },
+    isProfileInUse() {
+      return this.selectedProfile?.id === this.profileIdInUse;
     },
   },
 
@@ -85,7 +93,12 @@ export default {
       </template>
     </empty-state>
 
-    <scanner-profile-summary v-else :profile="selectedProfile" class="gl-mb-4" />
+    <scanner-profile-summary
+      v-else
+      :profile="selectedProfile"
+      :is-profile-in-use="isProfileInUse"
+      class="gl-mb-4"
+    />
 
     <gl-button
       data-testid="select-profile-action-btn"
