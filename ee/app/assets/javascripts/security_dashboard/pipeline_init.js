@@ -40,9 +40,7 @@ export default () => {
     el,
     apolloProvider,
     router: createRouter(),
-    store: createDashboardStore({
-      dashboardType: DASHBOARD_TYPES.PIPELINE,
-    }),
+    store: createDashboardStore(),
     provide: {
       dashboardType: DASHBOARD_TYPES.PIPELINE,
       projectId: parseInt(projectId, 10),

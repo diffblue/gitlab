@@ -1,6 +1,5 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import { DASHBOARD_TYPES } from './constants';
 
 import filters from './modules/filters/index';
 import pipelineJobs from './modules/pipeline_jobs/index';
@@ -10,10 +9,7 @@ import mediator from './plugins/mediator';
 
 Vue.use(Vuex);
 
-export const getStoreConfig = (dashboardType = DASHBOARD_TYPES.PROJECT) => ({
-  state: () => ({
-    dashboardType,
-  }),
+export const getStoreConfig = () => ({
   modules: {
     vulnerableProjects,
     filters,
@@ -22,8 +18,8 @@ export const getStoreConfig = (dashboardType = DASHBOARD_TYPES.PROJECT) => ({
   },
 });
 
-export default ({ dashboardType = DASHBOARD_TYPES.PROJECT, plugins = [] } = {}) =>
+export default () =>
   new Vuex.Store({
-    ...getStoreConfig(dashboardType),
-    plugins: [mediator, ...plugins],
+    ...getStoreConfig(),
+    plugins: [mediator],
   });
