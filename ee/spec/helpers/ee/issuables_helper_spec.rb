@@ -28,6 +28,7 @@ RSpec.describe IssuablesHelper do
           epicsWebUrl: "/groups/#{@group.full_path}/-/epics",
           fullPath: @group.full_path,
           groupPath: @group.path,
+          state: epic.state,
           initialDescriptionHtml: '<p data-sourcepos="1:1-1:9" dir="auto">epic text</p>',
           initialDescriptionText: 'epic text',
           initialTaskStatus: '0 of 0 tasks completed',
