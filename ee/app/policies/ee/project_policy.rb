@@ -201,6 +201,10 @@ module EE
         enable :update_security_orchestration_policy_project
       end
 
+      rule { security_orchestration_policies_enabled & auditor }.policy do
+        enable :read_security_orchestration_policies
+      end
+
       rule { security_dashboard_enabled & can?(:developer_access) }.policy do
         enable :read_security_resource
         enable :read_vulnerability_scanner
