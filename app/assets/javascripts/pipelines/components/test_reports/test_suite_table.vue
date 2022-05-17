@@ -15,6 +15,13 @@ import { __, s__ } from '~/locale';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import TestCaseDetails from './test_case_details.vue';
 
+export const i18n = {
+  expiredArtifactsTitle: s__('TestReports|Job artifacts are expired'),
+  expiredArtifactsDescription: s__(
+    'TestReports|Test reports require job artifacts but all artifacts are expired. %{linkStart}Learn more%{linkEnd}',
+  ),
+};
+
 export default {
   name: 'TestsSuiteTable',
   components: {
@@ -54,12 +61,7 @@ export default {
     ...mapActions(['setPage']),
   },
   wrapSymbols: ['::', '#', '.', '_', '-', '/', '\\'],
-  i18n: {
-    expiredArtifactsTitle: s__('TestReports|Job artifacts are expired'),
-    expiredArtifactsDescription: s__(
-      'TestReports|Test reports require job artifacts but all artifacts are expired. %{linkStart}Learn more%{linkEnd}',
-    ),
-  },
+  i18n,
   learnMorePath: helpPagePath('ci/unit_test_reports', {
     anchor: 'viewing-unit-test-reports-on-gitlab',
   }),
