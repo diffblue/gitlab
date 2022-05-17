@@ -183,7 +183,7 @@ export default {
           </gl-sprintf>
         </h4>
         <gl-button
-          v-if="hasProfiles"
+          v-if="hasProfiles && !editingMode"
           class="gl-mr-4"
           variant="confirm"
           category="primary"

@@ -30,7 +30,7 @@ describe('DastProfilesSidebar', () => {
   const findNewDastScannerProfileForm = () => wrapper.findByTestId('dast-scanner-parent-group');
   const findNewDastSiteProfileForm = () => wrapper.findByTestId('dast-site-parent-group');
   const findCancelButton = () => wrapper.findByTestId('dast-profile-form-cancel-button');
-  const findEditButton = () => wrapper.findByTestId('selected-profile-edit-link');
+  const findEditButton = () => wrapper.findByTestId('profile-edit-btn');
   const findProfileNameInput = () => wrapper.findByTestId('profile-name-input');
   const findSkeletonLoader = () => wrapper.findComponent(DastProfilesLoader);
 
@@ -81,6 +81,7 @@ describe('DastProfilesSidebar', () => {
       await nextTick();
 
       expect(findNewDastScannerProfileForm().exists()).toBe(true);
+      expect(findNewScanButton().exists()).toBe(false);
     });
 
     it('should show new site profile form', async () => {
@@ -121,6 +122,7 @@ describe('DastProfilesSidebar', () => {
 
       expect(findProfileNameInput().element.value).toBe(scannerProfiles[0].profileName);
       expect(findNewDastScannerProfileForm().exists()).toBe(true);
+      expect(findNewScanButton().exists()).toBe(false);
       expect(findSidebarHeader().text()).toContain('Edit scanner profile');
     });
   });

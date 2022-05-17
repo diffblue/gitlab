@@ -393,6 +393,7 @@ export default {
     },
     closeSideDrawer() {
       this.isSideDrawerOpen = false;
+      this.activeProfile = {};
     },
     hideErrors() {
       this.errorType = null;
