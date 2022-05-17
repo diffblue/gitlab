@@ -95,9 +95,8 @@ export default {
     <template #right-actions>
       <slot name="commands"></slot>
     </template>
-    <template #metadata-count>
+    <template v-if="imagesCount" #metadata-count>
       <metadata-item
-        v-if="imagesCount"
         data-testid="images-count"
         icon="container-image"
         :text="imagesCountText"
