@@ -7,7 +7,10 @@ RSpec.describe Security::Ingestion::Tasks::IngestVulnerabilities do
     let_it_be(:user) { create(:user) }
     let_it_be(:pipeline) { create(:ci_pipeline, user: user) }
     let_it_be(:identifier) { create(:vulnerabilities_identifier) }
-    let_it_be(:existing_vulnerability) { create(:vulnerability, :detected, :with_finding, resolved_on_default_branch: true) }
+    let_it_be(:existing_vulnerability) do
+      create(:vulnerability, :detected, :with_finding,
+                                                resolved_on_default_branch: true, present_on_default_branch: false)
+    end
 
     let(:finding_maps) { create_list(:finding_map, 4) }
 
@@ -25,6 +28,25 @@ RSpec.describe Security::Ingestion::Tasks::IngestVulnerabilities do
 
     it 'marks the existing vulnerability as not resolved on default branch' do
       expect { ingest_vulnerabilities }.to change { existing_vulnerability.reload.resolved_on_default_branch }.to(false)
+    end
+
+    it 'creates new vulnerabilities with present_on_default_branch set to true' do
+      ingest_vulnerabilities
+      expect(Vulnerability.last.present_on_default_branch).to be_truthy
+    end
+
+    it 'updates present_on_default_branch to true for existing vulnerabilities' do
+      expect { ingest_vulnerabilities }.to change { existing_vulnerability.reload.present_on_default_branch }.to(true)
+    end
+
+    context 'when `deprecate_vulnerabilities_feedback` feature flag is disabled' do
+      before do
+        stub_feature_flags(deprecate_vulnerabilities_feedback: false)
+      end
+
+      it 'does not updates present_on_default_branch to true for existing vulnerabilities' do
+        expect { ingest_vulnerabilities }.to not_change { existing_vulnerability.reload.present_on_default_branch }
+      end
     end
   end
 end

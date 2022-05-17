@@ -28,7 +28,7 @@ module Security
           end
 
           def attributes_for(report_finding, feedback)
-            {
+            attributes = {
               author_id: pipeline.user_id,
               project_id: pipeline.project_id,
               title: report_finding.name.to_s.truncate(::Issuable::TITLE_LENGTH_MAX),
@@ -39,6 +39,12 @@ module Security
               dismissed_at: feedback&.created_at,
               dismissed_by_id: feedback&.author_id
             }
+
+            if ::Feature.enabled?(:deprecate_vulnerabilities_feedback, pipeline.project)
+              attributes.merge(present_on_default_branch: true)
+            else
+              attributes
+            end
           end
 
           def dismissal_feedback

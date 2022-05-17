@@ -18,7 +18,7 @@ module Security
           end
 
           def attributes_for(vulnerability_id, report_finding)
-            {
+            attributes = {
               id: vulnerability_id,
               title: report_finding.name.truncate(::Issuable::TITLE_LENGTH_MAX),
               severity: report_finding.severity,
@@ -26,6 +26,12 @@ module Security
               resolved_on_default_branch: false,
               updated_at: Time.zone.now
             }
+
+            if ::Feature.enabled?(:deprecate_vulnerabilities_feedback, pipeline.project)
+              attributes.merge(present_on_default_branch: true)
+            else
+              attributes
+            end
           end
         end
       end
