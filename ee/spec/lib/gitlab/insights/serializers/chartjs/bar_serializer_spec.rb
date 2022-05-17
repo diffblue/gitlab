@@ -3,15 +3,17 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Insights::Serializers::Chartjs::BarSerializer do
+  include_context 'Insights serializers context'
+
   it 'returns the correct format' do
     input = build(:insights_issues_by_team)
     expected = {
-      labels: %w[Manage Plan Create undefined],
+      labels: [manage_label, plan_label, create_label, undefined_label],
       datasets: [
         {
           label: nil,
           data: [1, 3, 2, 1],
-          backgroundColor: %w[#34e34c #0b6cbd #686e69 #808080]
+          backgroundColor: [colors[manage_label.to_sym], colors[plan_label.to_sym], colors[create_label.to_sym], colors[undefined_label.to_sym]]
         }
       ]
     }.with_indifferent_access
