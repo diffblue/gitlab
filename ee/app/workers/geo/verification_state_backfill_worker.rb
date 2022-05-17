@@ -23,5 +23,9 @@ module Geo
     def lease_timeout
       LEASE_TIMEOUT
     end
+
+    def set_custom_lease_key(replicable_name)
+      @lease_key = [self.class.name.underscore, replicable_name].join('-')
+    end
   end
 end
