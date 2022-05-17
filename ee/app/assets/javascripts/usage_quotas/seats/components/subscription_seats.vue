@@ -223,14 +223,14 @@ export default {
         this.$refs.cannotRemoveModal.show();
       }
     },
-    isGroupInvite(item) {
-      return item.user.membership_type === 'group_invite';
+    isGroupInvite(user) {
+      return user.membership_type === 'group_invite';
     },
-    isProjectInvite(item) {
-      return item.user.membership_type === 'project_invite';
+    isProjectInvite(user) {
+      return user.membership_type === 'project_invite';
     },
     shouldShowDetails(item) {
-      return !this.isGroupInvite(item) && !this.isProjectInvite(item);
+      return !this.isGroupInvite(item.user) && !this.isProjectInvite(item.user);
     },
     navigateToPendingMembersPage() {
       visitUrl(this.pendingMembersPagePath);
@@ -239,12 +239,22 @@ export default {
       return this.isLoading || this.restrictActivatingUser(user);
     },
     toggleTooltipText(user) {
-      return this.restrictActivatingUser(user)
-        ? this.$options.i18n.activateMemberRestrictedText
-        : '';
+      if (!this.restrictActivatingUser(user)) {
+        return '';
+      }
+
+      return this.isProjectOrGroupInvite(user)
+        ? this.$options.i18n.activateGroupOrProjectMemberRestrictedText
+        : this.$options.i18n.activateMemberRestrictedText;
     },
     restrictActivatingUser(user) {
-      return this.hasReachedFreePlanLimit && user.membership_state === MEMBER_AWAITING_STATE;
+      return (
+        (this.hasReachedFreePlanLimit && user.membership_state === MEMBER_AWAITING_STATE) ||
+        this.isProjectOrGroupInvite(user)
+      );
+    },
+    isProjectOrGroupInvite(user) {
+      return this.isGroupInvite(user) || this.isProjectInvite(user);
     },
     membershipStateToggleValue(user) {
       return user.membership_state === MEMBER_ACTIVE_STATE;
@@ -278,6 +288,9 @@ export default {
       "Billing|You can begin moving members in %{namespaceName} now. A member loses access to the group when you turn off %{strongStart}In a seat%{strongEnd}. If over 5 members have %{strongStart}In a seat%{strongEnd} enabled after June 22, 2022, we'll select the 5 members who maintain access. We'll first count members that have Owner and Maintainer roles, then the most recently active members until we reach 5 members. The remaining members will get a status of Over limit and lose access to the group.",
     ),
     unlimited: __('Unlimited'),
+    activateGroupOrProjectMemberRestrictedText: s__(
+      "Billings|You can't change the seat status of a user who was invited via a group or project.",
+    ),
   },
   avatarSize: AVATAR_SIZE,
 
@@ -400,10 +413,10 @@ export default {
               :sub-label="item.user.username"
             >
               <template #meta>
-                <gl-badge v-if="isGroupInvite(item)" size="sm" variant="muted">
+                <gl-badge v-if="isGroupInvite(item.user)" size="sm" variant="muted">
                   {{ s__('Billing|Group invite') }}
                 </gl-badge>
-                <gl-badge v-if="isProjectInvite(item)" size="sm" variant="muted">
+                <gl-badge v-if="isProjectInvite(item.user)" size="sm" variant="muted">
                   {{ s__('Billing|Project invite') }}
                 </gl-badge>
               </template>

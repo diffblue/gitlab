@@ -248,11 +248,21 @@ describe('Subscription Seats', () => {
                 return item.user.name === serializedRow.user.avatarLink.alt;
               });
 
-              if (currentMember.user.membership_state === 'active') {
-                expect(serializedRow.toggle.disabled).toBe(false);
-                expect(serializedRow.toggle.title).toBe('');
-                expect(serializedRow.toggle.value).toBe(true);
+              const { user } = currentMember;
+
+              if (user.membership_state !== 'active') {
+                return;
               }
+
+              if (
+                user.membership_type === 'group_invite' ||
+                user.membership_type === 'project_invite'
+              ) {
+                expect(serializedRow.toggle.disabled).toBe(true);
+              } else {
+                expect(serializedRow.toggle.disabled).toBe(false);
+              }
+              expect(serializedRow.toggle.value).toBe(true);
             });
           });
 
@@ -262,12 +272,26 @@ describe('Subscription Seats', () => {
                 return item.user.name === serializedRow.user.avatarLink.alt;
               });
 
-              if (currentMember.user.membership_state === 'awaiting') {
-                expect(serializedRow.toggle.disabled).toBe(true);
+              const { user } = currentMember;
+
+              if (user.membership_state !== 'awaiting') {
+                return;
+              }
+
+              expect(serializedRow.toggle.disabled).toBe(true);
+              expect(serializedRow.toggle.value).toBe(false);
+
+              if (
+                user.membership_type === 'group_invite' ||
+                user.membership_type === 'project_invite'
+              ) {
+                expect(serializedRow.toggle.title).toBe(
+                  "You can't change the seat status of a user who was invited via a group or project.",
+                );
+              } else {
                 expect(serializedRow.toggle.title).toBe(
                   'To make this member active, you must first remove an existing active member, or toggle them to over limit.',
                 );
-                expect(serializedRow.toggle.value).toBe(false);
               }
             });
           });
