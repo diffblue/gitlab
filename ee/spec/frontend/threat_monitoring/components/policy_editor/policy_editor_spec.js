@@ -16,13 +16,10 @@ describe('PolicyEditor component', () => {
   const findScanExecutionPolicyEditor = () => wrapper.findComponent(ScanExecutionPolicyEditor);
   const findScanResultPolicyEditor = () => wrapper.findComponent(ScanResultPolicyEditor);
 
-  const factory = ({ propsData = {}, provide = {} } = {}) => {
+  const factory = ({ provide = {} } = {}) => {
     wrapper = shallowMount(PolicyEditor, {
-      propsData: {
-        assignedPolicyProject: DEFAULT_ASSIGNED_POLICY_PROJECT,
-        ...propsData,
-      },
       provide: {
+        assignedPolicyProject: DEFAULT_ASSIGNED_POLICY_PROJECT,
         policyType: undefined,
         ...provide,
       },
@@ -105,8 +102,7 @@ describe('PolicyEditor component', () => {
       'renders the disabled form select for existing policy of type $policyType',
       async ({ existingPolicy, findComponent, option, policyType }) => {
         factory({
-          propsData: { existingPolicy },
-          provide: { policyType },
+          provide: { policyType, existingPolicy },
         });
         await nextTick();
         const formSelect = findFormSelect();

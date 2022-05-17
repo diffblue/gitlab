@@ -12,16 +12,11 @@ export default {
     ScanExecutionPolicyEditor,
     ScanResultPolicyEditor,
   },
+  inject: {
+    assignedPolicyProject: { default: null },
+    existingPolicy: { default: null },
+  },
   props: {
-    assignedPolicyProject: {
-      type: Object,
-      required: true,
-    },
-    existingPolicy: {
-      type: Object,
-      required: false,
-      default: null,
-    },
     // This is the `value` field of the POLICY_TYPE_COMPONENT_OPTIONS
     selectedPolicyType: {
       type: String,

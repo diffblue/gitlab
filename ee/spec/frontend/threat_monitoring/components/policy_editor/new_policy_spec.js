@@ -14,13 +14,12 @@ describe('NewPolicy component', () => {
   const findPolicyEditor = () => wrapper.findComponent(PolicyEditor);
   const findPath = () => wrapper.findComponent(GlPath);
 
-  const factory = ({ propsData = {}, provide = {} } = {}) => {
+  const factory = ({ provide = {} } = {}) => {
     wrapper = shallowMountExtended(NewPolicy, {
-      propsData: {
+      provide: {
         assignedPolicyProject: {},
-        ...propsData,
+        ...provide,
       },
-      provide,
       stubs: { GlPath: true },
     });
   };
@@ -85,12 +84,12 @@ describe('NewPolicy component', () => {
         .spyOn(urlUtils, 'getParameterByName')
         .mockReturnValue(POLICY_TYPE_COMPONENT_OPTIONS.scanResult.urlParameter);
       factory({
-        propsData: {
+        provide: {
+          namespaceType: NAMESPACE_TYPES.PROJECT,
           existingPolicy: {
             id: 'policy-id',
           },
         },
-        provide: { namespaceType: NAMESPACE_TYPES.PROJECT },
       });
     });
 

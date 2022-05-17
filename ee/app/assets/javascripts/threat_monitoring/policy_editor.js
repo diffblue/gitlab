@@ -29,15 +29,6 @@ export default (el, namespaceType) => {
   } = el.dataset;
 
   const policyProject = JSON.parse(assignedPolicyProject);
-  const props = {
-    assignedPolicyProject: policyProject
-      ? convertObjectPropsToCamelCase(policyProject)
-      : DEFAULT_ASSIGNED_POLICY_PROJECT,
-  };
-
-  if (policy) {
-    props.existingPolicy = { type: policyType, ...JSON.parse(policy) };
-  }
 
   const scanResultPolicyApprovers = scanResultApprovers ? JSON.parse(scanResultApprovers) : [];
 
@@ -61,10 +52,14 @@ export default (el, namespaceType) => {
       policiesPath,
       scanPolicyDocumentationPath,
       scanResultPolicyApprovers,
+      existingPolicy: policy ? { type: policyType, ...JSON.parse(policy) } : undefined,
+      assignedPolicyProject: policyProject
+        ? convertObjectPropsToCamelCase(policyProject)
+        : DEFAULT_ASSIGNED_POLICY_PROJECT,
     },
     store: createStore(),
     render(createElement) {
-      return createElement(component, { props });
+      return createElement(component);
     },
   });
 };

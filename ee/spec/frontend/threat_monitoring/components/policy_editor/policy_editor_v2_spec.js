@@ -14,14 +14,13 @@ describe('PolicyEditor V2 component', () => {
   const findScanExecutionPolicyEditor = () => wrapper.findComponent(ScanExecutionPolicyEditor);
   const findScanResultPolicyEditor = () => wrapper.findComponent(ScanResultPolicyEditor);
 
-  const factory = ({ propsData = {}, provide = {} } = {}) => {
+  const factory = ({ provide = {} } = {}) => {
     wrapper = shallowMount(PolicyEditor, {
       propsData: {
-        assignedPolicyProject: DEFAULT_ASSIGNED_POLICY_PROJECT,
         selectedPolicyType: 'container',
-        ...propsData,
       },
       provide: {
+        assignedPolicyProject: DEFAULT_ASSIGNED_POLICY_PROJECT,
         policyType: undefined,
         ...provide,
       },
