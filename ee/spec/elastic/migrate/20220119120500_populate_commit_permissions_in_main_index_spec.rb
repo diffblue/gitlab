@@ -21,8 +21,8 @@ RSpec.describe PopulateCommitPermissionsInMainIndex do
   describe 'migration_options' do
     it 'has migration options set', :aggregate_failures do
       expect(migration).to be_batched
-      expect(migration.batch_size).to eq(1500)
-      expect(migration.throttle_delay).to eq(0.2.seconds)
+      expect(migration.batch_size).to eq(200_000)
+      expect(migration.throttle_delay).to eq(1.minute)
     end
   end
 

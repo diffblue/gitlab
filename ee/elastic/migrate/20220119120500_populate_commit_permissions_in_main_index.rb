@@ -23,13 +23,14 @@ class PopulateCommitPermissionsInMainIndex < Elastic::Migration
   # fx(num_commits_in_permutation) = (num_commits_in_permutation / batch_size) * 2
   #
   batched!
-  batch_size 1500
-  throttle_delay 0.2.seconds
+  batch_size 200_000
+  throttle_delay 1.minute
 
   MAX_ATTEMPTS_PER_IDX = 30
   VISIBILITY_LEVELS = ::Gitlab::VisibilityLevel.values.freeze
   PERMISSIONS_MATRIX = VISIBILITY_LEVELS.product(VISIBILITY_LEVELS).sort.freeze
   LAST_PERMUTATION_IDX = PERMISSIONS_MATRIX.length - 1
+  ELASTIC_TIMEOUT = '5m'
 
   def migrate
     return setup unless permutation_idx.present?
@@ -233,7 +234,7 @@ class PopulateCommitPermissionsInMainIndex < Elastic::Migration
       }
     }
 
-    response = client.update_by_query(index: index_name, body: query, wait_for_completion: false, max_docs: batch_size)
+    response = client.update_by_query(index: index_name, body: query, wait_for_completion: false, max_docs: batch_size, timeout: ELASTIC_TIMEOUT)
     response['task']
   end
 
