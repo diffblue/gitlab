@@ -53,6 +53,7 @@ describe('EE IssuesListApp component', () => {
     isAnonymousSearchDisabled: false,
     isIssueRepositioningDisabled: false,
     isProject: true,
+    isPublicVisibilityRestricted: false,
     isSignedIn: true,
     jiraIntegrationPath: 'jira/integration/path',
     newIssuePath: 'new/issue/path',
