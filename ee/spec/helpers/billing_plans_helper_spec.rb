@@ -537,24 +537,26 @@ RSpec.describe BillingPlansHelper, :saas do
 
     let(:group) { build(:group) }
 
-    where(:free_personal, :trial_active, :gold_plan, :ultimate_plan, :expectations) do
-      false |  false | false | false | true
-      false |  true  | false | false | true
-      false |  false | true  | false | false
-      false |  true  | true  | false | true
-      false |  false | false | true  | false
-      false |  true  | false | true  | true
-      false |  false | true  | true  | false
-      false |  true  | true  | true  | true
-      true  |  true  | true  | true  | false
+    where(:free_personal, :trial_active, :gold_plan, :ultimate_plan, :opensource_plan, :expectations) do
+      false | false | false | false | false | true
+      false | true  | false | false | false | true
+      false | false | true  | false | false | false
+      false | true  | true  | false | false | true
+      false | false | false | true  | false | false
+      false | true  | false | true  | false | true
+      false | false | true  | true  | false | false
+      false | true  | true  | true  | false | true
+      true  | true  | true  | true  | false | false
+      false | false | false | false | true  | false
     end
 
     with_them do
       before do
+        allow(group).to receive(:free_personal?).and_return(free_personal)
         allow(group).to receive(:trial_active?).and_return(trial_active)
         allow(group).to receive(:gold_plan?).and_return(gold_plan)
         allow(group).to receive(:ultimate_plan?).and_return(ultimate_plan)
-        allow(group).to receive(:free_personal?).and_return(free_personal)
+        allow(group).to receive(:opensource_plan?).and_return(opensource_plan)
       end
 
       it 'returns boolean' do
