@@ -18708,6 +18708,9 @@ msgstr ""
 msgid "Help"
 msgstr ""
 
+msgid "Help translate GitLab into your language"
+msgstr ""
+
 msgid "Helps prevent bots from brute-force attacks."
 msgstr ""
 
@@ -26585,6 +26588,9 @@ msgstr ""
 msgid "Open in your IDE"
 msgstr ""
 
+msgid "Open new window"
+msgstr ""
+
 msgid "Open raw"
 msgstr ""
 
@@ -28675,7 +28681,7 @@ msgstr ""
 msgid "Preferences|Tab width"
 msgstr ""
 
-msgid "Preferences|This feature is experimental and translations are not complete yet"
+msgid "Preferences|This feature is experimental and translations are not yet complete."
 msgstr ""
 
 msgid "Preferences|This setting allows you to customize the appearance of the syntax."
