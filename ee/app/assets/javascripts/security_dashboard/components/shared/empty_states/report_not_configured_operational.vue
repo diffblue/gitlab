@@ -7,7 +7,7 @@ export default {
   components: {
     GlEmptyState,
   },
-  inject: ['dashboardType', 'operationalConfigurationPath', 'operationalEmptyStateSvgPath'],
+  inject: ['dashboardType', 'operationalConfigurationPath', 'securityDashboardEmptySvgPath'],
   i18n: {
     title: s__('SecurityReports|Monitor vulnerabilities across clusters'),
     description: {
@@ -39,7 +39,7 @@ export default {
 <template>
   <gl-empty-state
     :title="$options.i18n.title"
-    :svg-path="operationalEmptyStateSvgPath"
+    :svg-path="securityDashboardEmptySvgPath"
     :description="description"
     :primary-button-text="primaryButtonText"
     :primary-button-link="operationalConfigurationPath"

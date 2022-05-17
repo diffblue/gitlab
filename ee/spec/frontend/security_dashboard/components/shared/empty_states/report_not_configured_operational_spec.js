@@ -6,14 +6,14 @@ import { DOC_PATH_POLICIES } from 'ee/security_dashboard/constants';
 describe('Operational report not configured component', () => {
   let wrapper;
   const operationalConfigurationPath = '/operational-configuration';
-  const operationalEmptyStateSvgPath = '/operational-placeholder.svg';
+  const securityDashboardEmptySvgPath = '/operational-placeholder.svg';
 
   const createComponent = ({ dashboardType = 'project' }) => {
     wrapper = shallowMount(ReportNotConfiguredOperational, {
       provide: {
         dashboardType,
         operationalConfigurationPath,
-        operationalEmptyStateSvgPath,
+        securityDashboardEmptySvgPath,
       },
     });
   };
@@ -34,7 +34,7 @@ describe('Operational report not configured component', () => {
 
       expect(wrapper.find(GlEmptyState).props()).toMatchObject({
         title: ReportNotConfiguredOperational.i18n.title,
-        svgPath: operationalEmptyStateSvgPath,
+        svgPath: securityDashboardEmptySvgPath,
         primaryButtonText,
         primaryButtonLink: operationalConfigurationPath,
         secondaryButtonText: ReportNotConfiguredOperational.i18n.secondaryButtonText,

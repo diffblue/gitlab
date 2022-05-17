@@ -31,7 +31,7 @@ export default (el, dashboardType) => {
     groupFullPath: el.dataset.groupFullPath,
     projectFullPath: el.dataset.projectFullPath,
     securityConfigurationPath: el.dataset.securityConfigurationPath,
-    surveyRequestSvgPath: el.dataset.surveyRequestSvgPath,
+    securityDashboardEmptySvgPath: el.dataset.securityDashboardEmptySvgPath,
     hasProjects: parseBoolean(el.dataset.hasProjects),
   };
 

@@ -19,7 +19,7 @@ export default {
     SurveyBanner,
   },
   mixins: [glFeatureFlagsMixin()],
-  inject: ['surveyRequestSvgPath'],
+  inject: ['securityDashboardEmptySvgPath'],
   computed: {
     shouldShowSurveyBanner() {
       return this.glFeatures.vulnerabilityManagementSurvey;
@@ -39,7 +39,7 @@ export default {
 <template>
   <survey-banner
     v-if="shouldShowSurveyBanner"
-    :svg-path="surveyRequestSvgPath"
+    :svg-path="securityDashboardEmptySvgPath"
     :survey-link="$options.surveyLink"
     :days-to-ask-later="$options.daysToAskLater"
     :title="$options.title"
