@@ -31,6 +31,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService d
         it 'returns prepared CI configuration with Secret Detection scans' do
           expected_configuration = {
             rules: [{ if: '$SECRET_DETECTION_DISABLED', when: 'never' }, { if: '$CI_COMMIT_BRANCH' }],
+            script: ["/analyzer run"],
             stage: 'test',
             image: '$SECURE_ANALYZERS_PREFIX/secrets:$SECRETS_ANALYZER_VERSION$SECRET_DETECTION_IMAGE_SUFFIX',
             services: [],
@@ -43,7 +44,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService d
             variables: {
               GIT_DEPTH: '50',
               SECURE_ANALYZERS_PREFIX: secure_analyzers_prefix,
-              SECRETS_ANALYZER_VERSION: '3',
+              SECRETS_ANALYZER_VERSION: '4',
               SECRET_DETECTION_IMAGE_SUFFIX: '',
               SECRET_DETECTION_EXCLUDED_PATHS: '',
               SECRET_DETECTION_HISTORIC_SCAN: 'false'
