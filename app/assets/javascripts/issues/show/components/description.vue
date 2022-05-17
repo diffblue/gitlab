@@ -25,6 +25,10 @@ import animateMixin from '../mixins/animate';
 
 Vue.use(GlToast);
 
+const workItemTypes = {
+  TASK: 'task',
+};
+
 export default {
   directives: {
     SafeHtml,
@@ -214,7 +218,10 @@ export default {
       taskListFields.forEach((item, index) => {
         const taskLink = item.querySelector('.gfm-issue');
         if (taskLink) {
-          const { issue, referenceType } = taskLink.dataset;
+          const { issue, referenceType, issueType } = taskLink.dataset;
+          if (issueType !== workItemTypes.TASK) {
+            return;
+          }
           const workItemId = convertToGraphQLId(TYPE_WORK_ITEM, issue);
           this.addHoverListeners(taskLink, workItemId);
           taskLink.addEventListener('click', (e) => {
