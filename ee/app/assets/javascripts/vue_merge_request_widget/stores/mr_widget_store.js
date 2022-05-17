@@ -125,11 +125,13 @@ export default class MergeRequestStore extends CEMergeRequestStore {
     license_scanning_comparison_path,
     license_scanning_comparison_collapsed_path,
     api_approvals_path,
+    license_scanning,
   }) {
     this.licenseCompliance = {
       license_scanning_comparison_path,
       license_scanning_comparison_collapsed_path,
       api_approvals_path,
+      license_scanning,
     };
   }
 
