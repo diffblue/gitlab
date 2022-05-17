@@ -43,6 +43,20 @@ export default {
     hasDeniedLicense() {
       return this.deniedLicenses() > 0;
     },
+    tertiaryButtons() {
+      return [
+        {
+          text: s__('ciReport|Manage Licenses'),
+          href: this.licenseCompliance.license_scanning.settings_path,
+          target: '_blank',
+        },
+        {
+          text: s__('ciReport|Full Report'),
+          href: this.licenseCompliance.license_scanning.full_report_path,
+          target: '_blank',
+        },
+      ];
+    },
     summary() {
       if (this.hasReportItems()) {
         if (this.hasBaseReportLicenses()) {

@@ -44417,6 +44417,9 @@ msgstr ""
 msgid "ciReport|Found %{issuesWithCount}"
 msgstr ""
 
+msgid "ciReport|Full Report"
+msgstr ""
+
 msgid "ciReport|IaC Scanning"
 msgstr ""
 
@@ -44453,6 +44456,9 @@ msgid "ciReport|Loading %{reportName} report"
 msgstr ""
 
 msgid "ciReport|Loading Code Quality report"
+msgstr ""
+
+msgid "ciReport|Manage Licenses"
 msgstr ""
 
 msgid "ciReport|Manage licenses"

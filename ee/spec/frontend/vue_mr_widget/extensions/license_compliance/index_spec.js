@@ -4,6 +4,7 @@ import waitForPromises from 'helpers/wait_for_promises';
 import axios from '~/lib/utils/axios_utils';
 import extensionsContainer from '~/vue_merge_request_widget/components/extensions/container';
 import { registerExtension } from '~/vue_merge_request_widget/components/extensions';
+import actions from '~/vue_merge_request_widget/components/extensions/actions.vue';
 import licenseComplianceExtension from 'ee/vue_merge_request_widget/extensions/license_compliance';
 import httpStatusCodes from '~/lib/utils/http_status';
 import {
@@ -20,23 +21,38 @@ describe('License Compliance extension', () => {
 
   registerExtension(licenseComplianceExtension);
 
-  const endpoint = '/group-name/project-name/-/merge_requests/78/license_scanning_reports';
+  const licenseComparisonPath =
+    '/group-name/project-name/-/merge_requests/78/license_scanning_reports';
+  const licenseComparisonPathCollapsed =
+    '/group-name/project-name/-/merge_requests/78/license_scanning_reports_collapsed';
+  const fullReportPath = '/group-name/project-name/-/merge_requests/78/full_report';
+  const settingsPath = '/group-name/project-name/-/licenses#licenses';
+  const apiApprovalsPath = '/group-name/project-name/-/licenses#policies';
 
-  const mockApi = (statusCode, data) => {
+  const mockApi = (endpoint, statusCode, data) => {
     mock.onGet(endpoint).reply(statusCode, data);
   };
 
   const findToggleCollapsedButton = () => wrapper.findByTestId('toggle-button');
   const findAllExtensionListItems = () => wrapper.findAllByTestId('extension-list-item');
+  const findActionButtons = () => wrapper.findComponent(actions);
+  const findByHrefAttribute = (href) => wrapper.find(`[href="${href}"]`);
+  const findLicenseScanningReport = () => findByHrefAttribute(settingsPath);
+  const findFullReport = () => findByHrefAttribute(fullReportPath);
+  const findSummary = () => wrapper.findByTestId('widget-extension-top-level-summary');
 
   const createComponent = () => {
     wrapper = mountExtended(extensionsContainer, {
       propsData: {
         mr: {
           licenseCompliance: {
-            license_scanning_comparison_path: endpoint,
-            license_scanning_comparison_collapsed_path: endpoint,
-            api_approvals_path: endpoint,
+            license_scanning_comparison_path: licenseComparisonPath,
+            license_scanning_comparison_collapsed_path: licenseComparisonPathCollapsed,
+            api_approvals_path: apiApprovalsPath,
+            license_scanning: {
+              settings_path: settingsPath,
+              full_report_path: fullReportPath,
+            },
           },
         },
       },
@@ -54,75 +70,98 @@ describe('License Compliance extension', () => {
 
   describe('summary', () => {
     it('displays loading text', () => {
-      mockApi(httpStatusCodes.OK, licenseComplianceSuccess);
+      mockApi(licenseComparisonPathCollapsed, httpStatusCodes.OK, licenseComplianceSuccess);
 
       createComponent();
 
-      expect(wrapper.text()).toBe('License Compliance test metrics results are being parsed');
+      expect(findSummary().text()).toBe('License Compliance test metrics results are being parsed');
     });
 
     it('displays failed loading text', async () => {
-      mockApi(httpStatusCodes.INTERNAL_SERVER_ERROR);
+      mockApi(licenseComparisonPathCollapsed, httpStatusCodes.INTERNAL_SERVER_ERROR);
 
       createComponent();
 
       await waitForPromises();
-      expect(wrapper.text()).toBe('License Compliance failed loading results');
+      expect(findSummary().text()).toBe('License Compliance failed loading results');
     });
 
     it('displays no licenses', async () => {
-      mockApi(httpStatusCodes.OK, licenseComplianceEmpty);
+      mockApi(licenseComparisonPathCollapsed, httpStatusCodes.OK, licenseComplianceEmpty);
 
       createComponent();
 
       await waitForPromises();
 
-      expect(wrapper.text()).toBe(
+      expect(findSummary().text()).toBe(
         'License Compliance detected no licenses for the source branch only',
       );
     });
 
     it('displays new licenses count', async () => {
-      mockApi(httpStatusCodes.OK, licenseComplianceSuccess);
+      mockApi(licenseComparisonPathCollapsed, httpStatusCodes.OK, licenseComplianceSuccess);
 
       createComponent();
 
       await waitForPromises();
 
-      expect(wrapper.text()).toBe(
+      expect(findSummary().text()).toBe(
         'License Compliance detected 3 licenses for the source branch only',
       );
     });
 
     it('displays removed licenses count', async () => {
-      mockApi(httpStatusCodes.OK, licenseComplianceRemovedLicenses);
+      mockApi(licenseComparisonPathCollapsed, httpStatusCodes.OK, licenseComplianceRemovedLicenses);
 
       createComponent();
 
       await waitForPromises();
 
-      expect(wrapper.text()).toBe(
+      expect(findSummary().text()).toBe(
         'License Compliance detected no licenses for the source branch only',
       );
     });
 
     it('displays new and removed licenses count', async () => {
-      mockApi(httpStatusCodes.OK, licenseComplianceNewAndRemovedLicenses);
+      mockApi(
+        licenseComparisonPathCollapsed,
+        httpStatusCodes.OK,
+        licenseComplianceNewAndRemovedLicenses,
+      );
 
       createComponent();
 
       await waitForPromises();
 
-      expect(wrapper.text()).toBe(
+      expect(findSummary().text()).toBe(
         'License Compliance detected 3 licenses for the source branch only',
       );
+    });
+  });
+
+  describe('actions buttons', () => {
+    it('displays manage licenses and full report links', async () => {
+      mockApi(licenseComparisonPathCollapsed, httpStatusCodes.OK, licenseComplianceSuccess);
+
+      createComponent();
+
+      await waitForPromises();
+
+      expect(findLicenseScanningReport().exists()).toBe(true);
+      expect(findLicenseScanningReport().text()).toBe('Manage Licenses');
+
+      expect(findFullReport().exists()).toBe(true);
+      expect(findFullReport().text()).toBe('Full Report');
+
+      expect(findActionButtons().exists()).toBe(true);
     });
   });
 
   describe('expanded data', () => {
     describe('with new licenses', () => {
       beforeEach(async () => {
-        mockApi(httpStatusCodes.OK, licenseComplianceSuccessExpanded);
+        mockApi(licenseComparisonPathCollapsed, httpStatusCodes.OK, licenseComplianceSuccess);
+        mockApi(licenseComparisonPath, httpStatusCodes.OK, licenseComplianceSuccessExpanded);
 
         createComponent();
 
