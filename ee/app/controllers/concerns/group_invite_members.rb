@@ -6,7 +6,7 @@ module GroupInviteMembers
   def invite_members(group, invite_source:)
     invite_params = {
       source: group,
-      user_ids: emails_param[:emails]&.reject(&:blank?)&.join(','),
+      user_id: emails_param[:emails]&.reject(&:blank?)&.join(','),
       access_level: Gitlab::Access::DEVELOPER,
       invite_source: invite_source
     }
