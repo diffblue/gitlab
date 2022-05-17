@@ -21813,12 +21813,6 @@ msgstr ""
 msgid "Job Failed #%{build_id}"
 msgstr ""
 
-msgid "Job artifact"
-msgstr ""
-
-msgid "Job artifacts"
-msgstr ""
-
 msgid "Job has been erased"
 msgstr ""
 

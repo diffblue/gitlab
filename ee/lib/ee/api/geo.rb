@@ -70,34 +70,6 @@ module EE
             end
           end
 
-          # Verify the GitLab Geo transfer request is valid
-          # All transfers use the Authorization header to pass a JWT
-          # payload.
-          #
-          # For LFS objects, validate the object ID exists in the DB
-          # and that the object ID matches the requested ID. This is
-          # a sanity check against some malicious client requesting
-          # a random file path.
-          params do
-            requires :type, type: String, desc: 'File transfer type (e.g. lfs)'
-            requires :id, type: Integer, desc: 'The DB ID of the file'
-          end
-          get 'transfers/:type/:id' do
-            check_gitlab_geo_request_ip!
-            authorize_geo_transfer!(file_type: params[:type], file_id: params[:id])
-
-            decoded_params = geo_jwt_decoder.decode
-            service = ::Geo::FileUploadService.new(params, decoded_params)
-            response = service.execute
-
-            if response[:code] == :ok
-              file = response[:file]
-              present_carrierwave_file!(file)
-            else
-              error! response, response.delete(:code)
-            end
-          end
-
           # Post current node information to primary (e.g. health, repos synced, repos failed, etc.)
           #
           # Example request:

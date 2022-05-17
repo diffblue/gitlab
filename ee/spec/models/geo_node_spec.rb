@@ -570,14 +570,6 @@ RSpec.describe GeoNode, :request_store, :geo, type: :model do
     end
   end
 
-  describe '#geo_transfers_url' do
-    let(:transfers_url) { "https://localhost:3000/gitlab/api/#{api_version}/geo/transfers/lfs/1" }
-
-    it 'returns api url based on node uri' do
-      expect(new_node.geo_transfers_url(:lfs, 1)).to eq(transfers_url)
-    end
-  end
-
   describe '#geo_status_url' do
     let(:status_url) { "https://localhost:3000/gitlab/api/#{api_version}/geo/status" }
 

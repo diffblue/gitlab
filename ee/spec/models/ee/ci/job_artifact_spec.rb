@@ -25,16 +25,6 @@ RSpec.describe Ci::JobArtifact do
       stub_current_geo_node(primary)
     end
 
-    context 'when geo_job_artifact_replication is disabled' do
-      it 'creates a JobArtifactDeletedEvent' do
-        stub_feature_flags(geo_job_artifact_replication: false)
-
-        job_artifact = create(:ee_ci_job_artifact, :archive)
-
-        expect { job_artifact.destroy! }.to change { Geo::JobArtifactDeletedEvent.count }.by(1)
-      end
-    end
-
     context 'when pipeline is destroyed' do
       it 'creates a Geo Event', :sidekiq_inline do
         job_artifact = create(:ee_ci_job_artifact, :archive)
@@ -60,7 +50,6 @@ RSpec.describe Ci::JobArtifact do
 
         expect { job_artifact.destroy! }.to raise_error(ActiveRecord::RecordNotDestroyed)
                                         .and not_change { Ci::JobArtifact.count }
-                                        .and not_change { Geo::JobArtifactDeletedEvent.count }
       end
     end
   end

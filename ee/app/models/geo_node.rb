@@ -188,15 +188,6 @@ class GeoNode < ApplicationRecord
     geo_api_url("retrieve/#{replicable_name}/#{replicable_id}")
   end
 
-  # Geo API endpoint for retrieving a file based on Uploads
-  #
-  # @deprecated
-  # @param [String] file_type
-  # @param [Integer] file_id
-  def geo_transfers_url(file_type, file_id)
-    geo_api_url("transfers/#{file_type}/#{file_id}")
-  end
-
   def status_url
     geo_api_url('status')
   end

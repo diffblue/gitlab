@@ -54,7 +54,6 @@
       "pages_deployments_registry_count": { "type": "number" },
       "pages_deployments_verified_count": { "type": "number" },
       "repositories_replication_enabled": { "type": "boolean" },
-      "job_artifacts_replication_enabled": { "type": "boolean" },
       "lfs_objects_checksum_failed_count": { "type": "number" },
       "pipeline_artifacts_registry_count": { "type": "number" },
       "pipeline_artifacts_verified_count": { "type": "number" },

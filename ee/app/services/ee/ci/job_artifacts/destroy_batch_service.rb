@@ -12,18 +12,6 @@ module EE
         def destroy_around_hook(artifacts)
           return yield unless ::Geo::EventStore.can_create_event?
 
-          ### Deprecated way of creating events. Should be removed by https://gitlab.com/gitlab-org/gitlab/-/issues/349056
-          if ::Feature.disabled?(:geo_job_artifact_replication)
-            yield
-
-            ::Gitlab::Database::QueryAnalyzers::PreventCrossDatabaseModification.allow_cross_database_modification_within_transaction(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/351849') do
-              ::Geo::JobArtifactDeletedEventStore.bulk_create(artifacts)
-            end
-
-            return
-          end
-          ### Deprecated
-
           artifact_params = artifacts.map do |artifact|
             artifact.replicator.deleted_params
           end

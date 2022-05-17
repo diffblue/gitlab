@@ -18,7 +18,6 @@ module EE
       with_replicator ::Geo::UploadReplicator
 
       scope :for_model, ->(model) { where(model_id: model.id, model_type: model.class.name) }
-      scope :syncable, -> { with_files_stored_locally }
       scope :with_verification_state, ->(state) { joins(:upload_state).where(upload_states: { verification_state: verification_state_value(state) }) }
       scope :checksummed, -> { joins(:upload_state).where.not(upload_states: { verification_checksum: nil } ) }
       scope :not_checksummed, -> { joins(:upload_state).where(upload_states: { verification_checksum: nil } ) }
