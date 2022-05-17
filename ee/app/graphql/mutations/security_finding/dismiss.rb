@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 module Mutations
-  module Vulnerabilities
-    class FindingDismiss < BaseMutation
+  module SecurityFinding
+    class Dismiss < BaseMutation
       graphql_name 'VulnerabilityFindingDismiss'
 
       authorize :admin_vulnerability
