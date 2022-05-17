@@ -63,7 +63,10 @@ RSpec.describe Namespaces::FreeUserCapWorker, type: :worker do
           external_pgl_for_g4 = create(:project_group_link, project: p1_for_g4)
 
           g5 = create(:group)
+
           g6 = create(:group_with_plan, plan: :free_plan)
+          g6.namespace_settings.update_column(:exclude_from_free_user_cap, true)
+
           g7 = create(:namespace_with_plan, plan: :free_plan)
           p1_for_g7 = create(:project, namespace: g7)
 
@@ -77,38 +80,59 @@ RSpec.describe Namespaces::FreeUserCapWorker, type: :worker do
 
           # first run trims 2 namespaces: g2 and g3. g1 already within limit and is skipped
           described_class.new.perform
-          expect(namespaces.map { |ns| Member.in_hierarchy(ns).awaiting.count }).to eq([0, 1, 2, 0, 0, 0, 0])
-          expect_shared_setting_remediated(namespaces: namespaces, remediated_namespaces: [g1, g2, g3])
-          expect(ProjectGroupLink.in_project(g2.all_projects)).to match_array([internal_pgl_for_g2])
-          expect(GroupGroupLink.in_shared_group(g2.self_and_descendants)).to match_array([internal_ggl_for_g2])
 
-          # second run skips g4 trims g5, g6
-          described_class.new.perform
-          expect(namespaces.map { |ns| Member.in_hierarchy(ns).awaiting.count }).to eq([0, 1, 2, 0, 4, 5, 0])
-          expect_shared_setting_remediated(namespaces: namespaces, remediated_namespaces: [g1, g2, g3, g5, g6])
-          expect(ProjectGroupLink.in_project(g4.all_projects))
-            .to match_array([internal_pgl_for_g4, external_pgl_for_g4])
-          expect(GroupGroupLink.in_shared_group(g4.self_and_descendants))
-            .to match_array([internal_ggl_for_g4, external_ggl_for_g4])
+          aggregate_failures do
+            expect(namespaces.map { |ns| Member.in_hierarchy(ns).awaiting.count }).to eq([0, 1, 2, 0, 0, 0, 0])
+            expect_shared_setting_remediated(namespaces: namespaces, remediated_namespaces: [g1, g2, g3])
+            expect(ProjectGroupLink.in_project(g2.all_projects)).to match_array([internal_pgl_for_g2])
+            expect(GroupGroupLink.in_shared_group(g2.self_and_descendants)).to match_array([internal_ggl_for_g2])
+          end
 
-          # third run trims g7
+          # second run skips g4, g6 trims g5, g7
           described_class.new.perform
-          expect(namespaces.map { |ns| Member.in_hierarchy(ns).awaiting.count }).to eq([0, 1, 2, 0, 4, 5, 7])
-          expect_shared_setting_remediated(namespaces: namespaces, remediated_namespaces: [g1, g2, g3, g5, g6, g7])
+
+          aggregate_failures do
+            expect(namespaces.map { |ns| Member.in_hierarchy(ns).awaiting.count }).to eq([0, 1, 2, 0, 4, 0, 7])
+            expect_shared_setting_remediated(namespaces: namespaces, remediated_namespaces: [g1, g2, g3, g5, g7])
+            expect(ProjectGroupLink.in_project(g4.all_projects))
+              .to match_array([internal_pgl_for_g4, external_pgl_for_g4])
+            expect(GroupGroupLink.in_shared_group(g4.self_and_descendants))
+              .to match_array([internal_ggl_for_g4, external_ggl_for_g4])
+          end
+
+          # third run updates exclusion setting to false and trims g6
+          g6.namespace_settings.update_column(:exclude_from_free_user_cap, false)
+
+          described_class.new.perform
+
+          aggregate_failures do
+            expect(namespaces.map { |ns| Member.in_hierarchy(ns).awaiting.count }).to eq([0, 1, 2, 0, 4, 5, 7])
+            expect_shared_setting_remediated(namespaces: namespaces, remediated_namespaces: [g1, g2, g3, g5, g6, g7])
+          end
 
           # fourth run finally updates g4, which is downgraded to free
           g4.gitlab_subscription.update!(hosted_plan: create(:free_plan))
+
           described_class.new.perform
-          expect(namespaces.map { |ns| Member.in_hierarchy(ns).awaiting.count }).to eq([0, 1, 2, 3, 4, 5, 7])
-          expect_shared_setting_remediated(namespaces: namespaces, remediated_namespaces: [g1, g2, g3, g5, g6, g7, g4])
-          expect(ProjectGroupLink.in_project(g4.all_projects)).to match_array([internal_pgl_for_g4])
-          expect(GroupGroupLink.in_shared_group(g4.self_and_descendants)).to match_array([internal_ggl_for_g4])
+
+          aggregate_failures do
+            expect(namespaces.map { |ns| Member.in_hierarchy(ns).awaiting.count }).to eq([0, 1, 2, 3, 4, 5, 7])
+            expect_shared_setting_remediated(namespaces: namespaces,
+                                             remediated_namespaces: [g1, g2, g3, g5, g6, g7, g4])
+            expect(ProjectGroupLink.in_project(g4.all_projects)).to match_array([internal_pgl_for_g4])
+            expect(GroupGroupLink.in_shared_group(g4.self_and_descendants)).to match_array([internal_ggl_for_g4])
+          end
 
           # fifth run trims g2 which adds more members
           create_list(:group_member, 4, :active, source: g2)
+
           described_class.new.perform
-          expect(namespaces.map { |ns| Member.in_hierarchy(ns).awaiting.count }).to eq([0, 5, 2, 3, 4, 5, 7])
-          expect_shared_setting_remediated(namespaces: namespaces, remediated_namespaces: [g1, g2, g3, g4, g5, g6, g7])
+
+          aggregate_failures do
+            expect(namespaces.map { |ns| Member.in_hierarchy(ns).awaiting.count }).to eq([0, 5, 2, 3, 4, 5, 7])
+            expect_shared_setting_remediated(namespaces: namespaces,
+                                             remediated_namespaces: [g1, g2, g3, g4, g5, g6, g7])
+          end
         end
 
         def expect_shared_setting_remediated(namespaces:, remediated_namespaces:)
