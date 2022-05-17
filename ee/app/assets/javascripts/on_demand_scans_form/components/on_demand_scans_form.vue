@@ -294,6 +294,17 @@ export default {
     selectedProfiles() {
       return this.profileType === SCANNER_TYPE ? this.scannerProfiles : this.siteProfiles;
     },
+    savedScannerProfileId() {
+      return this.dastScan?.dastScannerProfile.id;
+    },
+    savedSiteProfileId() {
+      return this.dastScan?.dastSiteProfile.id;
+    },
+    profileIdInUse() {
+      return this.profileType === SCANNER_TYPE
+        ? this.savedScannerProfileId
+        : this.savedSiteProfileId;
+    },
   },
   created() {
     const params = queryToObject(window.location.search, { legacySpacesDecode: true });
@@ -542,6 +553,7 @@ export default {
               class="gl-mb-6"
               :profiles="scannerProfiles"
               :selected-profile="selectedScannerProfile"
+              :profile-id-in-use="savedScannerProfileId"
               @open-drawer="openScannerProfileDrawer"
             />
 
@@ -549,6 +561,7 @@ export default {
               class="gl-mb-2"
               :profiles="scannerProfiles"
               :selected-profile="selectedSiteProfile"
+              :profile-id-in-use="savedSiteProfileId"
               @open-drawer="openSiteProfileDrawer"
             />
           </template>
@@ -628,6 +641,7 @@ export default {
     <dast-profiles-sidebar
       v-if="glFeatures.dastUiRedesign"
       :profiles="selectedProfiles"
+      :profile-id-in-use="profileIdInUse"
       :profile-type="profileType"
       :is-open="isSideDrawerOpen"
       :is-loading="isLoadingProfiles"

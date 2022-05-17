@@ -11462,6 +11462,9 @@ msgstr ""
 msgid "DastProfiles|Password form field"
 msgstr ""
 
+msgid "DastProfiles|Profile is being used by this on-demand scan"
+msgstr ""
+
 msgid "DastProfiles|Profile name"
 msgstr ""
 
@@ -19358,6 +19361,9 @@ msgid "In the background, we're attempting to connect you again."
 msgstr ""
 
 msgid "In this page you will find information about the settings that are used in your current instance."
+msgstr ""
+
+msgid "In use"
 msgstr ""
 
 msgid "InProductMarketing|%{organization_name} logo"

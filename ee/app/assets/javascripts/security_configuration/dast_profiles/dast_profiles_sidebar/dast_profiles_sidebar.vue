@@ -42,6 +42,11 @@ export default {
       required: false,
       default: () => [],
     },
+    profileIdInUse: {
+      type: String,
+      required: false,
+      default: null,
+    },
     /**
      * String type in case
      * there will be more types
@@ -107,6 +112,9 @@ export default {
     submitEditingMode() {
       this.editingMode = false;
       this.$emit('profile-submitted', this.profileType);
+    },
+    isProfileInUse(profile) {
+      return profile.id === this.profileIdInUse;
     },
   },
 };
@@ -203,6 +211,7 @@ export default {
               :is="summaryComponent"
               :key="profile.id"
               :profile="profile"
+              :is-profile-in-use="isProfileInUse(profile)"
               :allow-selection="true"
               @select-profile="$emit('select-profile', { profile, profileType })"
             />

@@ -1,12 +1,13 @@
 <script>
-import { GlCard, GlButton, GlTooltipDirective as GlTooltip } from '@gitlab/ui';
-import { __ } from '~/locale';
+import { GlCard, GlButton, GlIcon, GlTooltipDirective as GlTooltip } from '@gitlab/ui';
+import { __, s__ } from '~/locale';
 
 export default {
   name: 'DastProfileSummaryCard',
   components: {
     GlCard,
     GlButton,
+    GlIcon,
   },
   directives: {
     GlTooltip,
@@ -22,11 +23,18 @@ export default {
       required: false,
       default: true,
     },
+    isProfileInUse: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   i18n: {
     editTitle: __('Edit Profile'),
     selectTitle: __('Select Profile'),
     selectBtnText: __('Select'),
+    selectedProfileLabel: __('In use'),
+    selectedProfileTooltip: s__('DastProfiles|Profile is being used by this on-demand scan'),
   },
 };
 </script>
@@ -35,9 +43,20 @@ export default {
   <gl-card :class="{ 'gl-m-3 gl-p-0!': allowSelection }">
     <template #header>
       <div class="gl-display-flex gl-justify-content-space-between gl-align-items-center">
-        <h3 class="gl-font-lg gl-my-0">
-          <slot name="title"></slot>
-        </h3>
+        <div>
+          <h3 class="gl-font-lg gl-my-0 gl-display-inline">
+            <slot name="title"></slot>
+          </h3>
+          <span
+            v-if="isProfileInUse"
+            v-gl-tooltip="$options.i18n.selectedProfileTooltip"
+            data-testid="in-use-label"
+            class="gl-text-green-500 gl-pl-2"
+          >
+            <gl-icon name="check-circle-filled" :size="16" />
+            {{ $options.i18n.selectedProfileLabel }}
+          </span>
+        </div>
         <div v-if="allowSelection || isEditable" class="gl-display-flex gl-gap-x-3">
           <gl-button
             v-if="allowSelection"
@@ -46,6 +65,7 @@ export default {
             variant="confirm"
             size="small"
             category="secondary"
+            :disabled="isProfileInUse"
             :title="$options.i18n.selectTitle"
             @click="$emit('select-profile')"
             >{{ $options.i18n.selectBtnText }}</gl-button
