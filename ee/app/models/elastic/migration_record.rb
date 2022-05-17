@@ -24,7 +24,7 @@ module Elastic
     def save_state!(state)
       completed = load_from_index&.dig('_source', 'completed')
 
-      client.index index: index_name, type: '_doc', id: version, body: { completed: completed, state: load_state.merge(state) }
+      client.index index: index_name, refresh: true, type: '_doc', id: version, body: { completed: completed, state: load_state.merge(state) }
     end
 
     def started?
