@@ -8,13 +8,13 @@ import * as types from './mutation_types';
 export const fetchBillableMembersList = ({ commit, dispatch, state }) => {
   commit(types.REQUEST_BILLABLE_MEMBERS);
 
-  const { page, search, sort, hasLimitedFreePlan } = state;
+  const { page, search, sort, hasLimitedFreePlan, previewFreeUserCap } = state;
 
   return GroupsApi.fetchBillableGroupMembersList(state.namespaceId, {
     page,
     search,
     sort,
-    include_awaiting_members: hasLimitedFreePlan,
+    include_awaiting_members: hasLimitedFreePlan || previewFreeUserCap,
   })
     .then(({ data, headers }) => dispatch('receiveBillableMembersListSuccess', { data, headers }))
     .catch(() => dispatch('receiveBillableMembersListError'));

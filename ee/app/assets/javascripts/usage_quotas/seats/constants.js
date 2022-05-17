@@ -37,7 +37,7 @@ const ALL_FIELDS = [
 ];
 
 export const STANDARD_FIELDS = ALL_FIELDS.filter(({ key }) => key !== 'membershipState');
-export const LIMITED_FREE_PLAN_FIELDS = ALL_FIELDS;
+export const FIELDS_WITH_MEMBERSHIP_TOGGLE = ALL_FIELDS;
 
 export const DETAILS_FIELDS = [
   { key: 'source_full_name', label: s__('Billing|Direct memberships'), thClass: thWidthClass(40) },

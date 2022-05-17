@@ -31,16 +31,31 @@ describe('seats actions', () => {
   });
 
   describe('fetchBillableMembersList', () => {
+    let spy;
+    const payload = {
+      page: 5,
+      search: 'search string',
+      sort: 'last_activity_on_desc',
+      include_awaiting_members: false,
+    };
+
     beforeEach(() => {
       gon.api_version = 'v4';
-      state.namespaceId = 1;
+
+      state = Object.assign(state, {
+        namespaceId: 1,
+        page: 5,
+        search: 'search string',
+        sort: 'last_activity_on_desc',
+        hasLimitedFreePlan: false,
+        previewFreeUserCap: false,
+        hasNoSubscription: false,
+      });
+
+      spy = jest.spyOn(GroupsApi, 'fetchBillableGroupMembersList');
     });
 
     it('passes correct arguments to Api call', () => {
-      const payload = { page: 5, search: 'search string', sort: 'last_activity_on_desc' };
-      state = Object.assign(state, payload);
-      const spy = jest.spyOn(GroupsApi, 'fetchBillableGroupMembersList');
-
       testAction({
         action: actions.fetchBillableMembersList,
         payload,
@@ -50,6 +65,48 @@ describe('seats actions', () => {
       });
 
       expect(spy).toBeCalledWith(state.namespaceId, expect.objectContaining(payload));
+    });
+
+    it('queries awaiting members when on limited free plan', () => {
+      state = Object.assign(state, {
+        ...payload,
+        hasLimitedFreePlan: true,
+        hasNoSubscription: true,
+      });
+
+      testAction({
+        action: actions.fetchBillableMembersList,
+        payload,
+        state,
+        expectedMutations: expect.anything(),
+        expectedActions: expect.anything(),
+      });
+
+      expect(spy).toBeCalledWith(
+        state.namespaceId,
+        expect.objectContaining({ ...payload, include_awaiting_members: true }),
+      );
+    });
+
+    it('queries awaiting members when previewFreeCap is enabled', () => {
+      state = Object.assign(state, {
+        ...payload,
+        previewFreeUserCap: true,
+        hasNoSubscription: true,
+      });
+
+      testAction({
+        action: actions.fetchBillableMembersList,
+        payload,
+        state,
+        expectedMutations: expect.anything(),
+        expectedActions: expect.anything(),
+      });
+
+      expect(spy).toBeCalledWith(
+        state.namespaceId,
+        expect.objectContaining({ ...payload, include_awaiting_members: true }),
+      );
     });
 
     describe('on success', () => {
