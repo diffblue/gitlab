@@ -279,24 +279,52 @@ RSpec.describe EE::NamespacesHelper do
 
   describe '#pipeline_usage_app_data' do
     context 'when gitlab sass', :saas do
+      let(:minutes_usage) { user_group.ci_minutes_usage }
+      let(:minutes_usage_reset_date) { minutes_usage.reset_date.strftime('%b %d, %Y') }
+      let(:minutes_usage_presenter) { ::Ci::Minutes::UsagePresenter.new(minutes_usage) }
+
       before do
         allow(Gitlab).to receive(:com?).and_return(true)
         stub_ee_application_setting(should_check_namespace_plan: true)
       end
 
-      it 'returns a hash with SaaS data' do
-        minutes_usage_presenter = ::Ci::Minutes::UsagePresenter.new(user_group.ci_minutes_usage)
+      shared_examples 'returns a hash with proper SaaS data' do
+        it 'matches the returned hash' do
+          expect(helper.pipeline_usage_app_data(user_group)).to eql({
+            namespace_actual_plan_name: user_group.actual_plan_name,
+            namespace_path: user_group.full_path,
+            namespace_id: user_group.id,
+            user_namespace: user_group.user_namespace?.to_s,
+            page_size: Kaminari.config.default_per_page,
+            ci_minutes: {
+              any_project_enabled: minutes_usage_presenter.any_project_enabled?.to_s,
+              last_reset_date: minutes_usage_reset_date,
+              display_minutes_available_data: minutes_usage_presenter.display_minutes_available_data?.to_s,
+              monthly_minutes_used: minutes_usage_presenter.monthly_minutes_report.used,
+              monthly_minutes_used_percentage: minutes_usage_presenter.monthly_percent_used,
+              monthly_minutes_limit: minutes_usage_presenter.monthly_minutes_report.limit,
+              purchased_minutes_used: minutes_usage_presenter.purchased_minutes_report.used,
+              purchased_minutes_used_percentage: minutes_usage_presenter.purchased_percent_used,
+              purchased_minutes_limit: minutes_usage_presenter.purchased_minutes_report.limit
+            },
+            buy_additional_minutes_path: EE::SUBSCRIPTIONS_MORE_MINUTES_URL,
+            buy_additional_minutes_target: '_blank'
+          })
+        end
+      end
 
-        expect(helper.pipeline_usage_app_data(user_group)).to eql({
-          namespace_actual_plan_name: user_group.actual_plan_name,
-          namespace_path: user_group.full_path,
-          namespace_id: user_group.id,
-          user_namespace: user_group.user_namespace?.to_s,
-          page_size: Kaminari.config.default_per_page,
-          ci_minutes: { any_project_enabled: minutes_usage_presenter.any_project_enabled?.to_s },
-          buy_additional_minutes_path: EE::SUBSCRIPTIONS_MORE_MINUTES_URL,
-          buy_additional_minutes_target: '_blank'
-        })
+      context 'with reset_date present' do
+        it_behaves_like 'returns a hash with proper SaaS data'
+      end
+
+      context 'with reset_date not present' do
+        let(:minutes_usage_reset_date) { '' }
+
+        before do
+          allow(minutes_usage).to receive(:reset_date).and_return(nil)
+        end
+
+        it_behaves_like 'returns a hash with proper SaaS data'
       end
     end
 

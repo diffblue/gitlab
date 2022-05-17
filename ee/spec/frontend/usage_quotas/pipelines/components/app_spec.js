@@ -2,13 +2,27 @@ import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import { GlAlert, GlButton, GlLoadingIcon } from '@gitlab/ui';
 import { formatDate } from '~/lib/utils/datetime_utility';
+import { sprintf } from '~/locale';
 import { pushEECproductAddToCartEvent } from '~/google_tag_manager';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import PipelineUsageApp from 'ee/usage_quotas/pipelines/components/app.vue';
 import ProjectList from 'ee/usage_quotas/pipelines/components/project_list.vue';
-import { LABEL_BUY_ADDITIONAL_MINUTES, ERROR_MESSAGE } from 'ee/usage_quotas/pipelines/constants';
+import UsageOverview from 'ee/usage_quotas/pipelines/components/usage_overview.vue';
+import {
+  LABEL_BUY_ADDITIONAL_MINUTES,
+  ERROR_MESSAGE,
+  TITLE_USAGE_SINCE,
+  TITLE_CURRENT_PERIOD,
+  TOTAL_USED_UNLIMITED,
+  MINUTES_USED,
+  ADDITIONAL_MINUTES,
+  PERCENTAGE_USED,
+  ADDITIONAL_MINUTES_HELP_LINK,
+  CI_MINUTES_HELP_LINK,
+  CI_MINUTES_HELP_LINK_LABEL,
+} from 'ee/usage_quotas/pipelines/constants';
 import getNamespaceProjectsInfo from 'ee/usage_quotas/pipelines/queries/namespace_projects_info.query.graphql';
 import getCiMinutesUsageNamespace from 'ee/usage_quotas/ci_minutes_usage/graphql/queries/ci_minutes_namespace.query.graphql';
 import {
@@ -47,6 +61,8 @@ describe('PipelineUsageApp', () => {
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const findProjectList = () => wrapper.findComponent(ProjectList);
   const findBuyAdditionalMinutesButton = () => wrapper.findComponent(GlButton);
+  const findMonthlyUsageOverview = () => wrapper.findByTestId('monthly-usage-overview');
+  const findPurchasedUsageOverview = () => wrapper.findByTestId('purchased-usage-overview');
 
   const createComponent = ({ provide = {}, mockApollo } = {}) => {
     wrapper = shallowMountExtended(PipelineUsageApp, {
@@ -97,6 +113,111 @@ describe('PipelineUsageApp', () => {
         expect(findBuyAdditionalMinutesButton().exists()).toBe(false);
       });
     });
+  });
+
+  describe('namespace ci usage overview', () => {
+    const mockApollo = createMockApolloProvider();
+
+    it('passes reset date for monthlyUsageTitle to minutes UsageOverview if present', async () => {
+      createComponent({ mockApollo });
+
+      await waitForPromises();
+
+      expect(findMonthlyUsageOverview().props('minutesTitle')).toBe(
+        sprintf(TITLE_USAGE_SINCE, {
+          usageSince: defaultProvide.ciMinutesLastResetDate,
+        }),
+      );
+    });
+
+    it('passes current period for monthlyUsageTitle to minutes UsageOverview if no reset date', async () => {
+      createComponent({ mockApollo, provide: { ciMinutesLastResetDate: '' } });
+
+      await waitForPromises();
+
+      expect(findMonthlyUsageOverview().props('minutesTitle')).toBe(TITLE_CURRENT_PERIOD);
+    });
+
+    it('passes correct props to minutes UsageOverview', async () => {
+      createComponent({ mockApollo });
+
+      await waitForPromises();
+
+      // The `replace` will be incorporated in `sprintf` here:
+      // https://gitlab.com/gitlab-org/gitlab/-/issues/362541
+      expect(findMonthlyUsageOverview().props()).toMatchObject({
+        helpLinkHref: CI_MINUTES_HELP_LINK,
+        helpLinkLabel: CI_MINUTES_HELP_LINK_LABEL,
+        minutesLimit: defaultProvide.ciMinutesMonthlyMinutesLimit,
+        minutesTitle: sprintf(TITLE_USAGE_SINCE, {
+          usageSince: defaultProvide.ciMinutesLastResetDate,
+        }),
+        minutesUsed: sprintf(MINUTES_USED, {
+          minutesUsed: `${defaultProvide.ciMinutesMonthlyMinutesUsed} / ${defaultProvide.ciMinutesMonthlyMinutesLimit}`,
+        }),
+        minutesUsedPercentage: sprintf(PERCENTAGE_USED, {
+          percentageUsed: defaultProvide.ciMinutesMonthlyMinutesUsedPercentage,
+        }).replace(/%+/g, '%'),
+      });
+    });
+
+    it('passes correct props to purchased minutes UsageOverview', async () => {
+      createComponent({ mockApollo });
+
+      await waitForPromises();
+
+      // The `replace` will be incorporated in `sprintf` here:
+      // https://gitlab.com/gitlab-org/gitlab/-/issues/362541
+      expect(findPurchasedUsageOverview().props()).toMatchObject({
+        helpLinkHref: ADDITIONAL_MINUTES_HELP_LINK,
+        helpLinkLabel: ADDITIONAL_MINUTES,
+        minutesLimit: defaultProvide.ciMinutesMonthlyMinutesLimit,
+        minutesTitle: ADDITIONAL_MINUTES,
+        minutesUsed: sprintf(MINUTES_USED, {
+          minutesUsed: `${defaultProvide.ciMinutesPurchasedMinutesUsed} / ${defaultProvide.ciMinutesPurchasedMinutesLimit}`,
+        }),
+        minutesUsedPercentage: sprintf(PERCENTAGE_USED, {
+          percentageUsed: defaultProvide.ciMinutesPurchasedMinutesUsedPercentage,
+        }).replace(/%+/g, '%'),
+      });
+    });
+
+    it('shows unlimited as usagePercentage on minutes UsageOverview under correct circumstances', async () => {
+      createComponent({
+        mockApollo,
+        provide: {
+          ciMinutesDisplayMinutesAvailableData: false,
+          ciMinutesAnyProjectEnabled: false,
+        },
+      });
+
+      await waitForPromises();
+
+      expect(findMonthlyUsageOverview().props('minutesUsedPercentage')).toBe(TOTAL_USED_UNLIMITED);
+    });
+
+    it.each`
+      displayData | purchasedLimit | showAdditionalMinutes
+      ${true}     | ${'100'}       | ${true}
+      ${true}     | ${'0'}         | ${false}
+      ${false}    | ${'100'}       | ${false}
+      ${false}    | ${'0'}         | ${false}
+    `(
+      'shows additional minutes: $showAdditionalMinutes when displayData is $displayData and purchase limit is $purchasedLimit',
+      ({ displayData, purchasedLimit, showAdditionalMinutes }) => {
+        createComponent({
+          mockApollo,
+          provide: {
+            ciMinutesDisplayMinutesAvailableData: displayData,
+            ciMinutesPurchasedMinutesLimit: purchasedLimit,
+          },
+        });
+        const expectedUsageOverviewInstances = showAdditionalMinutes ? 2 : 1;
+        expect(wrapper.findAllComponents(UsageOverview).length).toBe(
+          expectedUsageOverviewInstances,
+        );
+      },
+    );
   });
 
   describe('with apollo fetching successful', () => {
