@@ -114,7 +114,6 @@ module GitlabSubscriptions
       group_project_templates
       group_repository_analytics
       group_saml
-      group_saml_group_sync
       group_scoped_ci_variables
       group_wikis
       incident_sla
@@ -140,6 +139,7 @@ module GitlabSubscriptions
       project_aliases
       protected_environments
       reject_unsigned_commits
+      saml_group_sync
       scoped_labels
       smartcard_auth
       swimlanes

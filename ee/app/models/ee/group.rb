@@ -305,13 +305,21 @@ module EE
     end
 
     def saml_enabled?
-      return false unless saml_provider
+      group_saml_enabled? || global_saml_enabled?
+    end
+
+    def saml_group_sync_available?
+      feature_available?(:saml_group_sync) && root_ancestor.saml_enabled?
+    end
+
+    def group_saml_enabled?
+      return false unless saml_provider && ::Gitlab::Auth::GroupSaml::Config.enabled?
 
       saml_provider.persisted? && saml_provider.enabled?
     end
 
-    def saml_group_sync_available?
-      feature_available?(:group_saml_group_sync) && root_ancestor.saml_enabled?
+    def global_saml_enabled?
+      ::Gitlab::Auth::Saml::Config.enabled?
     end
 
     override :multiple_issue_boards_available?

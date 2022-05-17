@@ -96,16 +96,24 @@ module EE
         @subject.feature_available?(:cluster_deployments)
       end
 
-      condition(:group_saml_config_enabled, scope: :global) do
+      condition(:global_saml_enabled, scope: :global) do
+        ::Gitlab::Auth::Saml::Config.enabled?
+      end
+
+      condition(:global_saml_group_sync_enabled, scope: :global) do
+        ::Gitlab::Auth::Saml::Config.group_sync_enabled?
+      end
+
+      condition(:group_saml_globally_enabled, scope: :global) do
         ::Gitlab::Auth::GroupSaml::Config.enabled?
+      end
+
+      condition(:group_saml_enabled, scope: :subject) do
+        @subject.group_saml_enabled?
       end
 
       condition(:group_saml_available, scope: :subject) do
         !@subject.subgroup? && @subject.feature_available?(:group_saml)
-      end
-
-      condition(:group_saml_enabled, scope: :subject) do
-        @subject.saml_enabled?
       end
 
       condition(:group_saml_group_sync_available, scope: :subject) do
@@ -286,9 +294,13 @@ module EE
         enable :read_group_audit_events
       end
 
-      rule { group_saml_config_enabled & group_saml_available & (admin | owner) }.enable :admin_group_saml
+      rule { group_saml_globally_enabled & group_saml_available & (admin | owner) }.enable :admin_group_saml
 
-      rule { group_saml_config_enabled & group_saml_group_sync_available & (admin | owner) }.policy do
+      rule { group_saml_group_sync_available & (admin | owner) }.policy do
+        enable :admin_saml_group_links
+      end
+
+      rule { global_saml_enabled & global_saml_group_sync_enabled & (admin | owner) }.policy do
         enable :admin_saml_group_links
       end
 

@@ -12,13 +12,6 @@ module Gitlab
           @saml_provider = saml_provider
         end
 
-        override :link
-        def link
-          super
-
-          update_group_membership unless failed?
-        end
-
         protected
 
         # rubocop: disable CodeReuse/ActiveRecord
@@ -30,6 +23,7 @@ module Gitlab
         end
         # rubocop: enable CodeReuse/ActiveRecord
 
+        override :update_group_membership
         def update_group_membership
           auth_hash = AuthHash.new(oauth)
           MembershipUpdater.new(current_user, saml_provider, auth_hash).execute

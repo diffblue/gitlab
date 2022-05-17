@@ -621,6 +621,43 @@ RSpec.describe GroupPolicy do
     end
   end
 
+  describe 'admin_saml_group_links for global SAML' do
+    let(:current_user) { owner }
+
+    it { is_expected.to be_disallowed(:admin_saml_group_links) }
+
+    context 'when global SAML is enabled' do
+      before do
+        allow(Gitlab::Auth::Saml::Config).to receive_messages({ options: { name: 'saml', args: {} } })
+        allow(Gitlab::Auth::OAuth::Provider).to receive(:providers).and_return([:saml])
+      end
+
+      it { is_expected.to be_disallowed(:admin_saml_group_links) }
+
+      context 'when the groups attribute is configured' do
+        before do
+          allow(Gitlab::Auth::Saml::Config).to receive(:groups).and_return(['Groups'])
+        end
+
+        it { is_expected.to be_disallowed(:admin_saml_group_links) }
+
+        context 'when saml_group_sync feature is licensed' do
+          before do
+            stub_licensed_features(saml_group_sync: true)
+          end
+
+          it { is_expected.to be_allowed(:admin_saml_group_links) }
+
+          context 'when the current user is not an admin or owner' do
+            let(:current_user) { maintainer }
+
+            it { is_expected.to be_disallowed(:admin_saml_group_links) }
+          end
+        end
+      end
+    end
+  end
+
   context 'with ip restriction' do
     let(:current_user) { developer }
 
