@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe 'Create an external audit event destination' do
   include GraphqlHelpers
 
-  let_it_be(:group) { create(:group, :nested) }
+  let_it_be(:group) { create(:group) }
   let_it_be(:owner) { create(:user) }
 
   let(:current_user) { owner }
@@ -77,6 +77,12 @@ RSpec.describe 'Create an external audit event destination' do
           expect(mutation_response['externalAuditEventDestination']).to be_nil
           expect(mutation_response['errors']).to contain_exactly('Destination url is blocked: Only allowed schemes are http, https')
         end
+
+        it_behaves_like 'a mutation that does not create a destination'
+      end
+
+      context 'when group is a subgroup' do
+        let_it_be(:group) { create(:group, :nested) }
 
         it_behaves_like 'a mutation that does not create a destination'
       end

@@ -13,5 +13,13 @@ module AuditEvents
     validates :destination_url, public_url: true, presence: true
     validates :destination_url, uniqueness: { scope: :namespace_id }, length: { maximum: 255 }
     has_secure_token :verification_token, length: 24
+
+    validate :root_level_group?
+
+    private
+
+    def root_level_group?
+      errors.add(:group, 'must not be a subgroup') if group.subgroup?
+    end
   end
 end
