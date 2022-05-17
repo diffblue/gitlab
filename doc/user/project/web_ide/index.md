@@ -23,8 +23,8 @@ and from merge requests:
      1. Select **Open in Web IDE** from the list to display it as the editing option.
      1. Select **Open in Web IDE** to open the editor.
 - *When viewing a merge request* -
-  1. Go to your merge request
-  1. Click the **Code** button at the top of the page and select **Open in Web IDE** from the dropdown
+  1. Go to your merge request.
+  1. In the upper right corner, select **Code**, then select **Open in Gitpod**.
 
 ## File finder
 
