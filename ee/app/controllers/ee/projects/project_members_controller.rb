@@ -6,15 +6,7 @@ module EE
       extend ActiveSupport::Concern
       extend ::Gitlab::Utils::Override
 
-      prepended do
-        before_action :check_membership_lock!, only: [:import, :apply_import]
-      end
-
-      def check_membership_lock!
-        access_denied!('Membership is locked by group settings') if membership_locked?
-      end
-
-      protected
+      private
 
       override :invited_members
       def invited_members
