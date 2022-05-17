@@ -1,10 +1,13 @@
 <script>
 import { GlLink, GlButton, GlSprintf } from '@gitlab/ui';
 import { s__ } from '~/locale';
+import Tracking from '~/tracking';
+import { EXPLORE_PAID_PLANS_CLICKED } from '../constants';
 
 export default {
   name: 'SubscriptionUpgradeInfoCard',
   components: { GlLink, GlButton, GlSprintf },
+  mixins: [Tracking.mixin()],
   props: {
     maxNamespaceSeats: {
       type: Number,
@@ -23,6 +26,11 @@ export default {
     cta: s__('Billing|Explore all plans'),
   },
   overLimitLink: 'https://about.gitlab.com/blog/2022/03/24/efficient-free-tier/',
+  methods: {
+    trackClick() {
+      this.track('click_button', { label: EXPLORE_PAID_PLANS_CLICKED });
+    },
+  },
 };
 </script>
 
@@ -45,7 +53,12 @@ export default {
         </p>
       </div>
       <div>
-        <gl-button :href="explorePlansPath" category="primary" variant="confirm">
+        <gl-button
+          :href="explorePlansPath"
+          category="primary"
+          variant="confirm"
+          @click="trackClick"
+        >
           {{ $options.i18n.cta }}
         </gl-button>
       </div>
