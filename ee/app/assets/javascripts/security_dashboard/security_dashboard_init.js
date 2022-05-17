@@ -7,7 +7,6 @@ import ProjectSecurityCharts from './components/project/project_security_dashboa
 import UnavailableState from './components/shared/empty_states/unavailable_state.vue';
 import apolloProvider from './graphql/provider';
 import createRouter from './router';
-import createStore from './store';
 
 export default (el, dashboardType) => {
   if (!el) {
@@ -50,12 +49,10 @@ export default (el, dashboardType) => {
   }
 
   const router = createRouter();
-  const store = createStore({ dashboardType });
 
   return new Vue({
     el,
     name: 'SecurityDashboardRoot',
-    store,
     router,
     apolloProvider,
     provide: () => provide,
