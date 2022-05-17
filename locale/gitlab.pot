@@ -772,9 +772,6 @@ msgstr ""
 msgid "%{lock_path} is locked by GitLab User %{lock_user_id}"
 msgstr ""
 
-msgid "%{markdownDocsLinkStart}Markdown%{markdownDocsLinkEnd} and %{quickActionsDocsLinkStart}quick actions%{quickActionsDocsLinkEnd} are supported"
-msgstr ""
-
 msgid "%{mergeLength}/%{usersLength} can merge"
 msgstr ""
 
@@ -23285,16 +23282,10 @@ msgstr ""
 msgid "Mark to do as done"
 msgstr ""
 
-msgid "Markdown"
-msgstr ""
-
 msgid "Markdown Help"
 msgstr ""
 
 msgid "Markdown enabled."
-msgstr ""
-
-msgid "Markdown is supported"
 msgstr ""
 
 msgid "Markdown supported."
@@ -23322,6 +23313,9 @@ msgid "MarkdownEditor|Add strikethrough text (%{modifierKey}⇧X)"
 msgstr ""
 
 msgid "MarkdownEditor|Add strikethrough text (%{modifier_key}⇧X)"
+msgstr ""
+
+msgid "MarkdownToolbar|Supports %{markdownDocsLinkStart}Markdown%{markdownDocsLinkEnd}"
 msgstr ""
 
 msgid "Marked For Deletion At - %{deletion_time}"
@@ -25790,6 +25784,9 @@ msgid "Note: current forks will keep their visibility level."
 msgstr ""
 
 msgid "NoteForm|Note"
+msgstr ""
+
+msgid "NoteToolbar|Supports %{markdownDocsLinkStart}Markdown%{markdownDocsLinkEnd}. For %{quickActionsDocsLinkStart}quick actions%{quickActionsDocsLinkEnd}, type %{keyboardStart}/%{keyboardEnd}."
 msgstr ""
 
 msgid "Notes"
@@ -45573,9 +45570,6 @@ msgid "project namespace cannot be the parent of another namespace"
 msgstr ""
 
 msgid "projects"
-msgstr ""
-
-msgid "quick actions"
 msgstr ""
 
 msgid "reCAPTCHA"
