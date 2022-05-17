@@ -16,6 +16,13 @@ export const PROJECTS_TABLE_FIELDS = [
   },
 ];
 
+export const TITLE_USAGE_SINCE = s__('UsageQuota|Usage since %{usageSince}');
+export const TITLE_CURRENT_PERIOD = s__('UsageQuota|Current period usage');
+export const TOTAL_USED_UNLIMITED = __('Unlimited');
+export const MINUTES_USED = __('%{minutesUsed} minutes');
+export const ADDITIONAL_MINUTES = __('Additional minutes');
+export const PERCENTAGE_USED = __('%{percentageUsed}%% used');
+
 export const ERROR_MESSAGE = s__(
   'UsageQuota|Something went wrong while fetching pipeline statistics',
 );
@@ -28,3 +35,8 @@ export const LABEL_NO_PROJECTS = s__(
   'UsageQuota|This namespace has no projects which use shared runners',
 );
 export const USAGE_QUOTAS_HELP_LINK = helpPagePath('user/usage_quotas');
+export const ADDITIONAL_MINUTES_HELP_LINK = helpPagePath('ci/pipelines/cicd_minutes', {
+  anchor: 'purchase-additional-cicd-minutes-free-saas',
+});
+export const CI_MINUTES_HELP_LINK = helpPagePath('ci/pipelines/cicd_minutes');
+export const CI_MINUTES_HELP_LINK_LABEL = __('Shared runners help link');

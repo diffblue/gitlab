@@ -787,6 +787,9 @@ msgstr ""
 msgid "%{milliseconds}ms"
 msgstr ""
 
+msgid "%{minutesUsed} minutes"
+msgstr ""
+
 msgid "%{model_name} not found"
 msgstr ""
 
@@ -853,6 +856,9 @@ msgid "%{openedEpics} open, %{closedEpics} closed"
 msgstr ""
 
 msgid "%{openedIssues} open, %{closedIssues} closed"
+msgstr ""
+
+msgid "%{percentageUsed}%% used"
 msgstr ""
 
 msgid "%{percentage}%% issues closed"
@@ -40811,6 +40817,9 @@ msgid "UsageQuota|Usage of resources across your projects"
 msgstr ""
 
 msgid "UsageQuota|Usage quotas help link"
+msgstr ""
+
+msgid "UsageQuota|Usage since %{usageSince}"
 msgstr ""
 
 msgid "UsageQuota|When you purchase additional storage, we automatically unlock projects that were locked when you reached the %{actualRepositorySizeLimit} limit."

@@ -1,5 +1,6 @@
 <script>
 import { GlAlert, GlButton, GlLoadingIcon } from '@gitlab/ui';
+import { sprintf } from '~/locale';
 import { TYPE_GROUP } from '~/graphql_shared/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { pushEECproductAddToCartEvent } from '~/google_tag_manager';
@@ -7,18 +8,41 @@ import getCiMinutesUsageProfile from 'ee/ci_minutes_usage/graphql/queries/ci_min
 import getCiMinutesUsageNamespace from '../../ci_minutes_usage/graphql/queries/ci_minutes_namespace.query.graphql';
 import getNamespaceProjectsInfo from '../queries/namespace_projects_info.query.graphql';
 import { getProjectMinutesUsage } from '../utils';
-import { ERROR_MESSAGE, LABEL_BUY_ADDITIONAL_MINUTES } from '../constants';
+import {
+  ERROR_MESSAGE,
+  LABEL_BUY_ADDITIONAL_MINUTES,
+  TITLE_USAGE_SINCE,
+  TITLE_CURRENT_PERIOD,
+  TOTAL_USED_UNLIMITED,
+  MINUTES_USED,
+  ADDITIONAL_MINUTES,
+  PERCENTAGE_USED,
+  ADDITIONAL_MINUTES_HELP_LINK,
+  CI_MINUTES_HELP_LINK,
+  CI_MINUTES_HELP_LINK_LABEL,
+} from '../constants';
 import ProjectList from './project_list.vue';
+import UsageOverview from './usage_overview.vue';
+import MinutesUsageCharts from './minutes_usage_charts.vue';
 
 export default {
   name: 'PipelineUsageApp',
-  components: { GlAlert, GlButton, GlLoadingIcon, ProjectList },
+  components: { GlAlert, GlButton, GlLoadingIcon, ProjectList, UsageOverview, MinutesUsageCharts },
   inject: [
+    'pageSize',
     'namespacePath',
     'namespaceId',
-    'userNamespace',
-    'pageSize',
     'namespaceActualPlanName',
+    'userNamespace',
+    'ciMinutesAnyProjectEnabled',
+    'ciMinutesDisplayMinutesAvailableData',
+    'ciMinutesLastResetDate',
+    'ciMinutesMonthlyMinutesLimit',
+    'ciMinutesMonthlyMinutesUsed',
+    'ciMinutesMonthlyMinutesUsedPercentage',
+    'ciMinutesPurchasedMinutesLimit',
+    'ciMinutesPurchasedMinutesUsed',
+    'ciMinutesPurchasedMinutesUsedPercentage',
     'buyAdditionalMinutesPath',
     'buyAdditionalMinutesTarget',
   ],
@@ -26,7 +50,7 @@ export default {
     return {
       error: '',
       namespace: null,
-      ciMinutesUsages: null,
+      ciMinutesUsages: [],
     };
   },
   apollo: {
@@ -75,6 +99,30 @@ export default {
     isLoading() {
       return this.$apollo.queries.namespace.loading || this.$apollo.queries.ciMinutesUsages.loading;
     },
+    monthlyUsageTitle() {
+      if (this.ciMinutesLastResetDate) {
+        return sprintf(TITLE_USAGE_SINCE, {
+          usageSince: this.ciMinutesLastResetDate,
+        });
+      }
+
+      return TITLE_CURRENT_PERIOD;
+    },
+    monthlyMinutesUsed() {
+      return sprintf(MINUTES_USED, {
+        minutesUsed: `${this.ciMinutesMonthlyMinutesUsed} / ${this.ciMinutesMonthlyMinutesLimit}`,
+      });
+    },
+    purchasedMinutesUsed() {
+      return sprintf(MINUTES_USED, {
+        minutesUsed: `${this.ciMinutesPurchasedMinutesUsed} / ${this.ciMinutesPurchasedMinutesLimit}`,
+      });
+    },
+    shouldShowAdditionalMinutes() {
+      return (
+        this.ciMinutesDisplayMinutesAvailableData && Number(this.ciMinutesPurchasedMinutesLimit) > 0
+      );
+    },
   },
   methods: {
     clearError() {
@@ -94,14 +142,42 @@ export default {
     trackBuyAdditionalMinutesClick() {
       pushEECproductAddToCartEvent();
     },
+    usagePercentage(percentage) {
+      let percentageUsed;
+      if (this.ciMinutesDisplayMinutesAvailableData) {
+        percentageUsed = percentage;
+      } else if (this.ciMinutesAnyProjectEnabled) {
+        percentageUsed = 0;
+      }
+
+      if (percentageUsed) {
+        // We need to delete the duplicated `%` we added in
+        // the string definition in order to escape the string
+        // This will be incorporated in `sprintf` here:
+        // https://gitlab.com/gitlab-org/gitlab/-/issues/362541
+        return sprintf(PERCENTAGE_USED, {
+          percentageUsed,
+        }).replace(/%+/g, '%');
+      }
+
+      return TOTAL_USED_UNLIMITED;
+    },
   },
   LABEL_BUY_ADDITIONAL_MINUTES,
+  ADDITIONAL_MINUTES,
+  ADDITIONAL_MINUTES_HELP_LINK,
+  CI_MINUTES_HELP_LINK,
+  CI_MINUTES_HELP_LINK_LABEL,
 };
 </script>
 
 <template>
   <div>
     <section>
+      <div>
+        <gl-loading-icon v-if="isLoading" class="gl-mt-5" size="md" />
+        <minutes-usage-charts v-else :ci-minutes-usages="ciMinutesUsages" />
+      </div>
       <div v-if="shouldShowBuyAdditionalMinutes" class="gl-display-flex gl-justify-content-end">
         <gl-button
           :href="buyAdditionalMinutesPath"
@@ -123,6 +199,28 @@ export default {
         {{ error }}
       </gl-alert>
       <div v-else>
+        <div class="gl-p-5">
+          <usage-overview
+            :minutes-title="monthlyUsageTitle"
+            :minutes-used="monthlyMinutesUsed"
+            :minutes-used-percentage="usagePercentage(ciMinutesMonthlyMinutesUsedPercentage)"
+            :minutes-limit="ciMinutesMonthlyMinutesLimit"
+            :help-link-href="$options.CI_MINUTES_HELP_LINK"
+            :help-link-label="$options.CI_MINUTES_HELP_LINK_LABEL"
+            data-testid="monthly-usage-overview"
+          />
+          <usage-overview
+            v-if="shouldShowAdditionalMinutes"
+            class="gl-pt-5"
+            :minutes-title="$options.ADDITIONAL_MINUTES"
+            :minutes-used="purchasedMinutesUsed"
+            :minutes-used-percentage="usagePercentage(ciMinutesPurchasedMinutesUsedPercentage)"
+            :minutes-limit="ciMinutesPurchasedMinutesLimit"
+            :help-link-href="$options.ADDITIONAL_MINUTES_HELP_LINK"
+            :help-link-label="$options.ADDITIONAL_MINUTES"
+            data-testid="purchased-usage-overview"
+          />
+        </div>
         <project-list
           :projects="projects"
           :page-info="projectsPageInfo"
