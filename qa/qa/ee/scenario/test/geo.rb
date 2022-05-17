@@ -22,7 +22,7 @@ module QA
           def perform(options, *rspec_options)
             # Alias QA::Runtime::Scenario.gitlab_address to @address since
             # some components depends on QA::Runtime::Scenario.gitlab_address.
-            QA::Runtime::Scenario.define(:gitlab_address, QA::Runtime::Scenario.geo_primary_address)
+            QA::Support::GitlabAddress.define_gitlab_address_attribute!(QA::Runtime::Scenario.geo_primary_address)
             QA::Runtime::Scenario.define(:network, 'geo')
 
             unless options[:geo_skip_setup?]
