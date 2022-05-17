@@ -73,12 +73,10 @@
 
         = render_if_exists 'shared/issuable/sidebar_cve_id_request', issuable_sidebar: issuable_sidebar
 
-      -# haml-lint:disable InlineJavaScript
-      %script#js-lock-issue-data{ type: "application/json" }= { is_locked: !!issuable_sidebar[:discussion_locked], is_editable: can_edit_issuable }.to_json.html_safe
-      #js-lock-entry-point
-
-      - if signed_in && !moved_sidebar_enabled
-        .js-sidebar-subscriptions-entry-point
+      - if !moved_sidebar_enabled
+        #js-lock-entry-point
+        - if signed_in
+          .js-sidebar-subscriptions-entry-point
 
       .js-sidebar-participants-entry-point
 

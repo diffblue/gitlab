@@ -23036,6 +23036,9 @@ msgstr ""
 msgid "Lock memberships to LDAP synchronization"
 msgstr ""
 
+msgid "Lock merge request"
+msgstr ""
+
 msgid "Lock not found"
 msgstr ""
 
@@ -40373,6 +40376,9 @@ msgid "Unlock"
 msgstr ""
 
 msgid "Unlock account"
+msgstr ""
+
+msgid "Unlock merge request"
 msgstr ""
 
 msgid "Unlock more features with GitLab Ultimate"
