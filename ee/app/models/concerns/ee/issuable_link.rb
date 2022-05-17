@@ -48,8 +48,8 @@ module EE
           .group(grouping_row_name)
       end
 
-      def blocking_issuables_count_for(issue)
-        blocking_issuables_for_collection(issue.id)[0]&.count.to_i
+      def blocking_issuables_count_for(issuable)
+        blocking_issuables_for_collection(issuable.id)[0]&.count.to_i
       end
 
       private
