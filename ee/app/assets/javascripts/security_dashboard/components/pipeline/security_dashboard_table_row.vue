@@ -7,7 +7,6 @@ import {
   GlIcon,
 } from '@gitlab/ui';
 import { mapActions, mapState } from 'vuex';
-import { DASHBOARD_TYPES } from 'ee/security_dashboard/store/constants';
 import { VULNERABILITY_MODAL_ID } from 'ee/vue_shared/security_reports/components/constants';
 import SeverityBadge from 'ee/vue_shared/security_reports/components/severity_badge.vue';
 import convertReportType from 'ee/vue_shared/security_reports/store/utils/convert_report_type';
@@ -41,16 +40,12 @@ export default {
     },
   },
   computed: {
-    ...mapState(['dashboardType']),
     ...mapState('vulnerabilities', ['selectedVulnerabilities']),
     vulnerabilityIdentifier() {
       return getPrimaryIdentifier(this.vulnerability.identifiers, 'external_type');
     },
     vulnerabilityNamespace() {
-      const { project, location } = this.vulnerability;
-      if (this.dashboardType === DASHBOARD_TYPES.GROUP) {
-        return project && project.full_name;
-      }
+      const { location } = this.vulnerability;
       return location && (location.image || location.file || location.path);
     },
     isDismissed() {
