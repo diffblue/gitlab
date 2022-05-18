@@ -30,7 +30,7 @@ module API
         end
         get '/', urgency: :low do
           # If the project is archived, the project admin should still be able to read the approvers
-          authorize!(:update_approvers, user_project) unless can?(current_user, :admin_project, user_project)
+          authorize!(:read_approvers, user_project) unless can?(current_user, :admin_project, user_project)
 
           present user_project.present(current_user: current_user), with: EE::API::Entities::ApprovalSettings
         end

@@ -2022,5 +2022,31 @@ RSpec.describe ProjectPolicy do
       expect_disallowed(*maintainer_permissions)
       expect_disallowed(*owner_permissions)
     end
+
+    describe ':read_approvers' do
+      using RSpec::Parameterized::TableSyntax
+
+      let(:policy) { :read_approvers }
+
+      where(:role, :allowed) do
+        :guest      | false
+        :reporter   | false
+        :developer  | false
+        :maintainer | true
+        :auditor    | true
+        :owner      | true
+        :admin      | true
+      end
+
+      with_them do
+        let(:current_user) { public_send(role) }
+
+        before do
+          enable_admin_mode!(current_user) if role == :admin
+        end
+
+        it { is_expected.to(allowed ? be_allowed(policy) : be_disallowed(policy)) }
+      end
+    end
   end
 end

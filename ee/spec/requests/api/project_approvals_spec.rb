@@ -9,6 +9,7 @@ RSpec.describe API::ProjectApprovals do
   let_it_be(:admin)    { create(:user, :admin) }
   let_it_be(:project)  { create(:project, :public, :repository, creator: user, namespace: user.namespace, only_allow_merge_if_pipeline_succeeds: false) }
   let_it_be(:approver) { create(:user) }
+  let_it_be(:auditor)  { create(:user, :auditor) }
 
   let(:url) { "/projects/#{project.id}/approvals" }
 
@@ -46,6 +47,14 @@ RSpec.describe API::ProjectApprovals do
       expect(json_response["approver_groups"]).to be_empty
     end
 
+    context 'when user is an auditor' do
+      it 'allows access' do
+        get api(url, auditor)
+
+        expect(response).to have_gitlab_http_status(:ok)
+      end
+    end
+
     context 'when project is archived' do
       let_it_be(:archived_project) { create(:project, :archived, creator: user) }
 
@@ -66,6 +75,14 @@ RSpec.describe API::ProjectApprovals do
           archived_project.add_maintainer(user2)
 
           get api(url, user2)
+
+          expect(response).to have_gitlab_http_status(:ok)
+        end
+      end
+
+      context 'when user is an auditor' do
+        it 'allows access' do
+          get api(url, auditor)
 
           expect(response).to have_gitlab_http_status(:ok)
         end
@@ -198,6 +215,14 @@ RSpec.describe API::ProjectApprovals do
     context 'as a user without access' do
       it 'returns 403' do
         post api(url, user2), params: { approvals_before_merge: 4 }
+
+        expect(response).to have_gitlab_http_status(:forbidden)
+      end
+    end
+
+    context 'as a auditor user making changes' do
+      it 'returns 403' do
+        post api(url, auditor), params: { approvals_before_merge: 4 }
 
         expect(response).to have_gitlab_http_status(:forbidden)
       end
