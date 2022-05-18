@@ -249,6 +249,7 @@ module EE
       rule { can?(:maintainer_access) }.policy do
         enable :push_code_to_protected_branches
         enable :admin_path_locks
+        enable :read_approvers
         enable :update_approvers
         enable :modify_approvers_rules
         enable :modify_auto_fix_setting
@@ -273,6 +274,7 @@ module EE
         enable :read_cluster
         enable :read_terraform_state
         enable :read_project_merge_request_analytics
+        enable :read_approvers
       end
 
       rule { ~security_and_compliance_disabled & auditor }.policy do
