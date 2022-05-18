@@ -31,6 +31,16 @@ RSpec.describe GitlabSubscriptions::Reconciliations::CalculateSeatCountDataServi
       it { is_expected.to be nil }
     end
 
+    context 'when the max_seats_used has not been updated on the subscription' do
+      let(:root_ancestor) { create(:group) }
+
+      it 'returns nil' do
+        create(:gitlab_subscription, namespace: root_ancestor, plan_code: Plan::ULTIMATE, seats: 10, max_seats_used: 9)
+
+        expect(subject).to be_nil
+      end
+    end
+
     context 'when conditions are not met' do
       let(:max_seats_used) { 9 }
 
@@ -40,7 +50,8 @@ RSpec.describe GitlabSubscriptions::Reconciliations::CalculateSeatCountDataServi
           namespace: root_ancestor,
           plan_code: Plan::ULTIMATE,
           seats: 10,
-          max_seats_used: max_seats_used
+          max_seats_used: max_seats_used,
+          max_seats_used_changed_at: 1.day.ago
         )
       end
 
@@ -120,7 +131,8 @@ RSpec.describe GitlabSubscriptions::Reconciliations::CalculateSeatCountDataServi
           namespace: root_ancestor,
           plan_code: Plan::ULTIMATE,
           seats: seats,
-          max_seats_used: max_seats_used
+          max_seats_used: max_seats_used,
+          max_seats_used_changed_at: 1.day.ago
         )
 
         root_ancestor.add_owner(user)
