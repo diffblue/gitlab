@@ -402,19 +402,7 @@ CI/CD variable to `html`. This is useful if you just want to view the report in 
 human-readable format or to publish this artifact on GitLab Pages for even
 easier reviewing.
 
-```yaml
-include:
-  - template: Code-Quality.gitlab-ci.yml
-
-code_quality:
-  variables:
-    REPORT_FORMAT: html
-  artifacts:
-    paths: [gl-code-quality-report.html]
-```
-
-It's also possible to generate both JSON and HTML report files by defining
-another job and using `extends: code_quality`:
+To generate both JSON and HTML report files, add another job to your template by using `extends: code_quality`:
 
 ```yaml
 include:
@@ -427,6 +415,26 @@ code_quality_html:
   artifacts:
     paths: [gl-code-quality-report.html]
 ```
+
+NOTE:
+Adding a job means your code is scanned twice: once to generate a JSON report and once to generate an HTML report.
+
+You can also generate _only_ an HTML report instead of the standard JSON report. To do so, set `REPORT_FORMAT` to `html` in the existing job:
+
+```yaml
+include:
+  - template: Code-Quality.gitlab-ci.yml
+
+code_quality:
+  variables:
+    REPORT_FORMAT: html
+  artifacts:
+    paths: [gl-code-quality-report.html]
+```
+
+WARNING:
+If you only generate an HTML report, you can't see your results in the [merge request widget](#code-quality-widget), [pipeline report](#code-quality-reports), or [diff view](#code-quality-in-diff-view).
+These features require a JSON report.
 
 ## Extending functionality
 
