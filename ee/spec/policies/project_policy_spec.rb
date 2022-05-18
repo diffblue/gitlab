@@ -733,6 +733,36 @@ RSpec.describe ProjectPolicy do
         it { is_expected.to be_allowed(:update_security_orchestration_policy_project) }
       end
     end
+
+    context 'with auditor role' do
+      where(role: %w[auditor])
+
+      before do
+        project.project_feature.update!(security_orchestration_policies: feature_status)
+      end
+
+      context 'with policy feature enabled' do
+        let(:feature_status) { ProjectFeature::ENABLED }
+
+        with_them do
+          let(:current_user) { public_send(role) }
+
+          it { is_expected.to be_allowed(:read_security_orchestration_policies) }
+          it { is_expected.to be_disallowed(:update_security_orchestration_policy_project) }
+        end
+      end
+
+      context 'with policy feature disabled' do
+        let(:feature_status) { ProjectFeature::DISABLED }
+
+        with_them do
+          let(:current_user) { public_send(role) }
+
+          it { is_expected.to be_disallowed(:read_security_orchestration_policies) }
+          it { is_expected.to be_disallowed(:update_security_orchestration_policy_project) }
+        end
+      end
+    end
   end
 
   describe 'coverage_fuzzing' do
