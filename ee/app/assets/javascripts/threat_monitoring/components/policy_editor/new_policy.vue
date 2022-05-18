@@ -15,7 +15,6 @@ export default {
   },
   inject: {
     namespaceType: { default: '' },
-    assignedPolicyProject: { default: null },
     existingPolicy: { default: null },
   },
   data() {
