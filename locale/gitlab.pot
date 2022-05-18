@@ -17444,6 +17444,9 @@ msgstr ""
 msgid "GlobalSearch|in project"
 msgstr ""
 
+msgid "Globally-allowed IP ranges"
+msgstr ""
+
 msgid "Go Back"
 msgstr ""
 
@@ -35947,6 +35950,9 @@ msgid "Specific runners"
 msgstr ""
 
 msgid "Specified URL cannot be used: \"%{reason}\""
+msgstr ""
+
+msgid "Specify IP ranges that are always allowed for inbound traffic, for use with group-level IP restrictions. Runner and Pages daemon internal IPs should be listed here so that they can access project artifacts."
 msgstr ""
 
 msgid "Specify an email address regex pattern to identify default internal users."

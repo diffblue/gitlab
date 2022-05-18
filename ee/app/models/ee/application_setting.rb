@@ -92,11 +92,13 @@ module EE
 
       validates :future_subscriptions, json_schema: { filename: 'future_subscriptions' }
 
-      validates :geo_node_allowed_ips, length: { maximum: 255 }, presence: true
-
       validates :required_instance_ci_template, presence: true, allow_nil: true
 
+      validates :geo_node_allowed_ips, length: { maximum: 255 }, presence: true
       validate :check_geo_node_allowed_ips
+
+      validates :globally_allowed_ips, length: { maximum: 255 }, allow_blank: true
+      validate :check_globally_allowed_ips
 
       validates :max_personal_access_token_lifetime,
                 allow_blank: true,
@@ -160,6 +162,7 @@ module EE
           future_subscriptions: [],
           geo_node_allowed_ips: '0.0.0.0/0, ::/0',
           git_two_factor_session_expiry: 15,
+          globally_allowed_ips: '',
           lock_memberships_to_ldap: false,
           maintenance_mode: false,
           max_personal_access_token_lifetime: nil,
@@ -437,6 +440,12 @@ module EE
       ::Gitlab::CIDR.new(geo_node_allowed_ips)
     rescue ::Gitlab::CIDR::ValidationError => e
       errors.add(:geo_node_allowed_ips, e.message)
+    end
+
+    def check_globally_allowed_ips
+      ::Gitlab::CIDR.new(globally_allowed_ips)
+    rescue ::Gitlab::CIDR::ValidationError => e
+      errors.add(:globally_allowed_ips, e.message)
     end
 
     def check_elasticsearch_url_scheme

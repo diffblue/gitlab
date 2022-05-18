@@ -1,0 +1,9 @@
+- return unless License.feature_available?(:group_ip_restriction)
+
+- f = local_assigns.fetch(:form)
+
+.form-group
+  = f.label :globally_allowed_ips, _('Globally-allowed IP ranges'), class: 'label-bold'
+  = f.text_field :globally_allowed_ips, class: 'form-control gl-form-input', placeholder: '10.0.0.0/8, 192.168.1.0/24', :'aria-describedby' => 'globally_allowed_ips_help_block'
+  %span.form-text.text-muted#globally_allowed_ips_help_block
+    = _('Specify IP ranges that are always allowed for inbound traffic, for use with group-level IP restrictions. Runner and Pages daemon internal IPs should be listed here so that they can access project artifacts.')

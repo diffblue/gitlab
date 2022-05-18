@@ -124,7 +124,7 @@ RSpec.describe ApplicationSetting do
       it { is_expected.not_to allow_value(nil).for(:secret_detection_revocation_token_types_url) }
     end
 
-    context 'when validating allowed_ips' do
+    context 'when validating geo_node_allowed_ips' do
       where(:allowed_ips, :is_valid) do
         "192.1.1.1"                   | true
         "192.1.1.0/24"                | true
@@ -139,6 +139,27 @@ RSpec.describe ApplicationSetting do
       with_them do
         specify do
           setting.update_column(:geo_node_allowed_ips, allowed_ips)
+
+          expect(setting.reload.valid?).to eq(is_valid)
+        end
+      end
+    end
+
+    context 'when validating globally_allowed_ips' do
+      where(:allowed_ips, :is_valid) do
+        "192.1.1.1"                   | true
+        "192.1.1.0/24"                | true
+        "192.1.1.0/24, 192.1.20.23"   | true
+        "192.1.1.0/24, 192.23.0.0/16" | true
+        "192.1.1.0/34"                | false
+        "192.1.1.257"                 | false
+        "192.1.1.257, 192.1.1.1"      | false
+        "300.1.1.0/34"                | false
+      end
+
+      with_them do
+        specify do
+          setting.update_column(:globally_allowed_ips, allowed_ips)
 
           expect(setting.reload.valid?).to eq(is_valid)
         end

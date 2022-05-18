@@ -7,6 +7,8 @@ module Gitlab
 
     attr_reader :cidrs
 
+    delegate :empty?, to: :cidrs
+
     def initialize(values)
       @cidrs = parse_cidrs(values)
     end
