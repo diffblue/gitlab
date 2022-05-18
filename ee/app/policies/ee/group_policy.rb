@@ -478,7 +478,7 @@ module EE
 
     override :change_prevent_sharing_groups_outside_hierarchy_available?
     def change_prevent_sharing_groups_outside_hierarchy_available?
-      return false if ::Namespaces::FreeUserCap.new(subject).enforce_cap?
+      return false if ::Namespaces::FreeUserCap::Standard.new(subject).enforce_cap?
 
       super
     end

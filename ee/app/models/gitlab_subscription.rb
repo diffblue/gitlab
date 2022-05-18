@@ -211,7 +211,7 @@ class GitlabSubscription < ApplicationRecord
   end
 
   def set_prevent_sharing_groups_outside_hierarchy
-    free_user_cap = ::Namespaces::FreeUserCap.new(namespace)
+    free_user_cap = ::Namespaces::FreeUserCap::Standard.new(namespace)
 
     return unless free_user_cap.feature_enabled?
     return unless prevent_sharing_groups_outside_hierarchy?

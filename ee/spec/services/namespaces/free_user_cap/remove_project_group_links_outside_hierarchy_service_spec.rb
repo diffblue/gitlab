@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Namespaces::RemoveProjectGroupLinksOutsideHierarchyService do
+RSpec.describe Namespaces::FreeUserCap::RemoveProjectGroupLinksOutsideHierarchyService do
   describe '#execute', :aggregate_failures do
     let_it_be(:namespace) { create(:group) }
     let_it_be(:project) { create(:project, group: namespace) }

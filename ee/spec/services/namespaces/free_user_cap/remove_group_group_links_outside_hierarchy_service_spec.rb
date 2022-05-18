@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Namespaces::RemoveGroupGroupLinksOutsideHierarchyService do
+RSpec.describe Namespaces::FreeUserCap::RemoveGroupGroupLinksOutsideHierarchyService do
   describe '#execute' do
     let_it_be(:namespace, reload: true) { create(:group) }
 

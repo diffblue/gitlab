@@ -546,7 +546,7 @@ module EE
     private
 
     def free_user_cap
-      @free_user_cap ||= ::Namespaces::FreeUserCap.new(self)
+      @free_user_cap ||= ::Namespaces::FreeUserCap::Standard.new(self)
     end
 
     # Members belonging directly to Projects within user/project namespaces

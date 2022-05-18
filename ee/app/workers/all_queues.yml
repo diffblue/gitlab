@@ -390,8 +390,8 @@
   :weight: 1
   :idempotent:
   :tags: []
-- :name: cronjob:namespaces_free_user_cap
-  :worker_name: Namespaces::FreeUserCapWorker
+- :name: cronjob:namespaces_free_user_cap_remediation
+  :worker_name: Namespaces::FreeUserCap::RemediationWorker
   :feature_category: :experimentation_conversion
   :has_external_dependencies:
   :urgency: :low

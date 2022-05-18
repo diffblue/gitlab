@@ -976,7 +976,7 @@ RSpec.describe Namespace do
 
     with_them do
       before do
-        free_user_cap = instance_double(Namespaces::FreeUserCap, reached_limit?: reached_free_limit)
+        free_user_cap = instance_double(Namespaces::FreeUserCap::Standard, reached_limit?: reached_free_limit)
         allow(namespace).to receive(:free_user_cap).and_return(free_user_cap)
       end
 
@@ -1817,7 +1817,7 @@ RSpec.describe Namespace do
 
     with_them do
       before do
-        free_user_cap = instance_double(Namespaces::FreeUserCap, enforce_cap?: enforce_free_cap)
+        free_user_cap = instance_double(Namespaces::FreeUserCap::Standard, enforce_cap?: enforce_free_cap)
         allow(namespace).to receive(:user_cap_available?).and_return(user_cap_available)
         allow(namespace).to receive(:free_user_cap).and_return(free_user_cap)
       end

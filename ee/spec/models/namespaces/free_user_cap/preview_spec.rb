@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Namespaces::PreviewFreeUserCap, :saas do
+RSpec.describe Namespaces::FreeUserCap::Preview, :saas do
   let_it_be(:namespace, reload: true) { create(:group_with_plan, plan: :free_plan) }
 
   let(:should_check_namespace_plan) { true }
@@ -12,7 +12,7 @@ RSpec.describe Namespaces::PreviewFreeUserCap, :saas do
   end
 
   describe '#over_limit?' do
-    let(:free_plan_members_count) { described_class::FREE_USER_LIMIT + 1 }
+    let(:free_plan_members_count) { Namespaces::FreeUserCap::FREE_USER_LIMIT + 1 }
 
     subject(:over_limit?) { described_class.new(namespace).over_limit? }
 
@@ -35,13 +35,13 @@ RSpec.describe Namespaces::PreviewFreeUserCap, :saas do
       end
 
       context 'when under the number of free users limit' do
-        let(:free_plan_members_count) { described_class::FREE_USER_LIMIT - 1 }
+        let(:free_plan_members_count) { Namespaces::FreeUserCap::FREE_USER_LIMIT - 1 }
 
         it { is_expected.to be false }
       end
 
       context 'when at the same number as the free users limit' do
-        let(:free_plan_members_count) { described_class::FREE_USER_LIMIT }
+        let(:free_plan_members_count) { Namespaces::FreeUserCap::FREE_USER_LIMIT }
 
         it { is_expected.to be false }
       end

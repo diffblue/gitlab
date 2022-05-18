@@ -8,7 +8,7 @@ module EE
     def common_invite_modal_dataset(source)
       dataset = super
 
-      if ::Namespaces::FreeUserCap.new(source.root_ancestor).enforce_cap?
+      if ::Namespaces::FreeUserCap::Standard.new(source.root_ancestor).enforce_cap?
         user_namespace = source.root_ancestor.user_namespace?
 
         members_path = if user_namespace

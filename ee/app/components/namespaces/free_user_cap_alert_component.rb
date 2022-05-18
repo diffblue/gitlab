@@ -26,7 +26,7 @@ module Namespaces
     end
 
     def breached_cap_limit?
-      ::Namespaces::FreeUserCap.new(namespace).reached_limit?
+      ::Namespaces::FreeUserCap::Standard.new(namespace).reached_limit?
     end
 
     def variant

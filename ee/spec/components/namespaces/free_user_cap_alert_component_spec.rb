@@ -88,7 +88,7 @@ RSpec.describe Namespaces::FreeUserCapAlertComponent, :saas, :aggregate_failures
     let(:title) { "You've reached your #{::Namespaces::FreeUserCap::FREE_USER_LIMIT} member limit" }
 
     before do
-      allow_next_instance_of(::Namespaces::FreeUserCap) do |free_user_cap|
+      allow_next_instance_of(::Namespaces::FreeUserCap::Standard) do |free_user_cap|
         allow(free_user_cap).to receive(:reached_limit?).and_return(free_user_cap_reached_limit?)
       end
     end
@@ -149,7 +149,7 @@ RSpec.describe Namespaces::FreeUserCapAlertComponent, :saas, :aggregate_failures
 
   context 'when user is not authorized to see alert' do
     before do
-      allow_next_instance_of(::Namespaces::FreeUserCap) do |free_user_cap|
+      allow_next_instance_of(::Namespaces::FreeUserCap::Standard) do |free_user_cap|
         allow(free_user_cap).to receive(:reached_limit?).and_return(free_user_cap_reached_limit?)
       end
     end
@@ -165,7 +165,7 @@ RSpec.describe Namespaces::FreeUserCapAlertComponent, :saas, :aggregate_failures
     let_it_be(:user) { nil }
 
     before do
-      allow_next_instance_of(::Namespaces::FreeUserCap) do |free_user_cap|
+      allow_next_instance_of(::Namespaces::FreeUserCap::Standard) do |free_user_cap|
         allow(free_user_cap).to receive(:reached_limit?).and_return(free_user_cap_reached_limit?)
       end
     end
