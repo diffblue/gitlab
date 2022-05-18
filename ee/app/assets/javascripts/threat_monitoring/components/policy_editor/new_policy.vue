@@ -96,7 +96,7 @@ export default {
 </script>
 <template>
   <div>
-    <header class="gl-pb-5 gl-border-b-none">
+    <header class="gl-border-b-none">
       <h3>{{ title }}</h3>
       <gl-path v-if="enableWizard" :items="glPathItems" @selected="handlePathSelection" />
     </header>

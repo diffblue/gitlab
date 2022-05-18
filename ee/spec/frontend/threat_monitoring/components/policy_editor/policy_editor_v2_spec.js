@@ -9,7 +9,7 @@ import { DEFAULT_ASSIGNED_POLICY_PROJECT, NAMESPACE_TYPES } from 'ee/threat_moni
 describe('PolicyEditor V2 component', () => {
   let wrapper;
 
-  const findGroupLevelAlert = () => wrapper.findByTestId('group-level-alert');
+  const findGroupLevelNotification = () => wrapper.findByTestId('group-level-notification');
   const findErrorAlert = () => wrapper.findByTestId('error-alert');
   const findScanExecutionPolicyEditor = () => wrapper.findComponent(ScanExecutionPolicyEditor);
   const findScanResultPolicyEditor = () => wrapper.findComponent(ScanResultPolicyEditor);
@@ -36,11 +36,11 @@ describe('PolicyEditor V2 component', () => {
     beforeEach(factory);
 
     it.each`
-      component              | status                | findComponent          | state
-      ${'group-level alert'} | ${'does not display'} | ${findGroupLevelAlert} | ${false}
-      ${'error alert'}       | ${'does not display'} | ${findErrorAlert}      | ${false}
-    `('$status the $component', ({ findComponent, state }) => {
-      expect(findComponent().exists()).toBe(state);
+      component              | findComponent
+      ${'group-level alert'} | ${findGroupLevelNotification}
+      ${'error alert'}       | ${findErrorAlert}
+    `('does not display the $component', ({ findComponent }) => {
+      expect(findComponent().exists()).toBe(false);
     });
 
     it('renders the network policy editor component', () => {
@@ -88,7 +88,7 @@ describe('PolicyEditor V2 component', () => {
     });
 
     it('does display the group-level alert', () => {
-      expect(findGroupLevelAlert().exists()).toBe(true);
+      expect(findGroupLevelNotification().exists()).toBe(true);
     });
   });
 });

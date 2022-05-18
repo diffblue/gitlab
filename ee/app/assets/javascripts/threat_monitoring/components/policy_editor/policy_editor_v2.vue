@@ -76,16 +76,17 @@ export default {
 
 <template>
   <section class="policy-editor">
-    <gl-alert
+    <span
       v-if="namespaceType === $options.NAMESPACE_TYPES.GROUP"
       :title="$options.i18n.groupPolicyTitle"
-      data-testid="group-level-alert"
+      data-testid="group-level-notification"
       :dismissible="false"
     >
       {{ $options.i18n.groupPolicyMessage }}
-    </gl-alert>
+    </span>
     <gl-alert
       v-if="error"
+      class="gl-mt-5"
       :title="error"
       dismissible
       variant="danger"
