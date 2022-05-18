@@ -12,10 +12,18 @@ module Ci
       scope :current_month, -> { where(date: beginning_of_month) }
 
       scope :for_namespace_monthly_usage, -> (namespace_monthly_usage) do
-        where(
-          date: namespace_monthly_usage.date,
-          project: Ci::ProjectMirror.by_namespace_id(namespace_monthly_usage.namespace_id).select(:project_id)
-        )
+        if Feature.enabled?(:ci_show_all_projects_with_usage_sorted_descending, namespace_monthly_usage.namespace)
+          all_namespace_ids = namespace_monthly_usage.namespace.self_and_descendant_ids.ids
+          where(
+            date: namespace_monthly_usage.date,
+            project: Ci::ProjectMirror.by_namespace_id(all_namespace_ids).select(:project_id)
+          ).where('amount_used > 0 OR shared_runners_duration > 0').order(amount_used: :desc)
+        else
+          where(
+            date: namespace_monthly_usage.date,
+            project: Ci::ProjectMirror.by_namespace_id(namespace_monthly_usage.namespace_id).select(:project_id)
+          )
+        end
       end
 
       def self.beginning_of_month(time = Time.current)

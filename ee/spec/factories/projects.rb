@@ -66,5 +66,17 @@ FactoryBot.modify do
     trait :with_security_orchestration_policy_configuration do
       association :security_orchestration_policy_configuration, factory: :security_orchestration_policy_configuration
     end
+
+    trait :with_ci_minutes do
+      transient do
+        amount_used { 0 }
+      end
+
+      after(:create) do |project, evaluator|
+        if evaluator.amount_used
+          create(:ci_project_monthly_usage, project: project, amount_used: evaluator.amount_used)
+        end
+      end
+    end
   end
 end

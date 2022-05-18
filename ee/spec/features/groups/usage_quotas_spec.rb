@@ -8,7 +8,7 @@ RSpec.describe 'Groups > Usage Quotas' do
   let_it_be(:user) { create(:user) }
 
   let(:group) { create(:group) }
-  let!(:project) { create(:project, namespace: group, shared_runners_enabled: true) }
+  let!(:project) { create(:project, :with_ci_minutes, amount_used: 100, namespace: group, shared_runners_enabled: true) }
   let(:gitlab_dot_com) { true }
 
   before do
@@ -99,7 +99,7 @@ RSpec.describe 'Groups > Usage Quotas' do
 
   context 'when successfully purchasing CI Minutes' do
     let(:group) { create(:group, :with_ci_minutes) }
-    let!(:project) { create(:project, namespace: group, shared_runners_enabled: true) }
+    let!(:project) { create(:project, :with_ci_minutes, amount_used: 200, namespace: group, shared_runners_enabled: true) }
 
     it 'does show a banner' do
       visit group_usage_quotas_path(group, purchased_product: 'CI minutes')
@@ -130,6 +130,7 @@ RSpec.describe 'Groups > Usage Quotas' do
   context 'minutes over quota' do
     let(:group) { create(:group, :with_used_build_minutes_limit) }
     let!(:other_project) { create(:project, namespace: group, shared_runners_enabled: false) }
+    let!(:no_minutes_project) { create(:project, :with_ci_minutes, amount_used: 0, namespace: group, shared_runners_enabled: true) }
 
     include_examples 'linked in group settings dropdown'
 
@@ -163,6 +164,41 @@ RSpec.describe 'Groups > Usage Quotas' do
       expect(link['data-track-label']).to eq(group.actual_plan_name)
       expect(link['data-track-property']).to eq('pipeline_quota_page')
     end
+
+    context 'feature flag :ci_show_all_projects_with_usage_sorted_descending is enabled' do
+      let(:per_page) { 20 }
+
+      before do
+        allow(Kaminari.config).to receive(:default_per_page).and_return(per_page)
+        visit_usage_quotas_page
+      end
+
+      it 'does not show projects with 0 minutes used' do
+        page.within('.pipeline-project-metrics') do
+          expect(page).to have_content(project.full_name)
+          expect(page).not_to have_content(other_project.full_name)
+          expect(page).not_to have_content(no_minutes_project.full_name)
+        end
+      end
+    end
+
+    context 'feature flag :ci_show_all_projects_with_usage_sorted_descending is disabled' do
+      let(:per_page) { 20 }
+
+      before do
+        stub_feature_flags(ci_show_all_projects_with_usage_sorted_descending: false)
+        allow(Kaminari.config).to receive(:default_per_page).and_return(per_page)
+        visit_usage_quotas_page
+      end
+
+      it 'shows projects with 0 minutes used' do
+        page.within('.pipeline-project-metrics') do
+          expect(page).to have_content(project.full_name)
+          expect(page).not_to have_content(other_project.full_name)
+          expect(page).to have_content(no_minutes_project.full_name)
+        end
+      end
+    end
   end
 
   context 'when accessing subgroup' do
@@ -176,9 +212,9 @@ RSpec.describe 'Groups > Usage Quotas' do
     end
   end
 
-  context 'when accessing root group' do
+  context 'if feature flag :ci_show_all_projects_with_usage_sorted_descending is enabled when accessing root group' do
     let!(:subgroup) { create(:group, parent: group) }
-    let!(:subproject) { create(:project, namespace: subgroup, shared_runners_enabled: true) }
+    let!(:subproject) { create(:project, :with_ci_minutes, amount_used: 300, namespace: subgroup, shared_runners_enabled: true) }
 
     it 'does show projects of subgroup' do
       visit_usage_quotas_page
@@ -229,8 +265,36 @@ RSpec.describe 'Groups > Usage Quotas' do
     end
   end
 
+  context 'sorting when feature flag :ci_show_all_projects_with_usage_sorted_descending is enabled', :js do
+    let(:per_page) { 3 }
+    let!(:subgroup) { create(:group, parent: group) }
+    let!(:project2) { create(:project, :with_ci_minutes, amount_used: 5, namespace: group) }
+    let!(:project3) { create(:project, :with_ci_minutes, amount_used: 3, namespace: subgroup) }
+    let!(:project4) { create(:project, :with_ci_minutes, amount_used: 1, namespace: group) }
+    let!(:project5) { create(:project, :with_ci_minutes, amount_used: 8, namespace: subgroup) }
+
+    before do
+      allow(Kaminari.config).to receive(:default_per_page).and_return(per_page)
+
+      visit_usage_quotas_page('pipelines-quota-tab')
+    end
+
+    it 'sorts projects list by CI minutes used in descending order' do
+      expect(page).to have_selector('.pipeline-project-metrics')
+
+      expect(page.text.index(project5.full_name)).to be < page.text.index(project2.full_name)
+      click_next_page_pipeline_projects
+      expect(page.text.index(project3.full_name)).to be < page.text.index(project4.full_name)
+    end
+  end
+
   def visit_usage_quotas_page(anchor = 'seats-quota-tab')
     visit group_usage_quotas_path(group, anchor: anchor)
+  end
+
+  def click_next_page_pipeline_projects
+    page.find('.gl-pagination .pagination .js-next-button').click
+    wait_for_requests
   end
 
   def click_next_page

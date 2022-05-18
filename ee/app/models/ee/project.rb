@@ -380,10 +380,6 @@ module EE
       !disable_overriding_approvers_per_merge_request
     end
 
-    def ci_minutes_used
-      ci_minutes_project_usage.amount_used.to_i
-    end
-
     def shared_runners_available?
       super && !ci_minutes_usage.minutes_used_up?
     end
