@@ -1101,3 +1101,13 @@ es:ESHttpPost
 es:ESHttpPut
 es:ESHttpPatch
 ```
+
+### Role-mapping when using AWS Elasticsearch or AWS OpenSearch fine-grained access control
+
+When using fine-grained access control with an IAM role, you might encounter the following error:
+
+```plaintext
+{"error":{"root_cause":[{"type":"security_exception","reason":"no permissions for [indices:data/write/bulk] and User [name=arn:aws:iam::xxx:role/INSERT_ROLE_NAME_HERE, backend_roles=[arn:aws:iam::xxx:role/INSERT_ROLE_NAME_HERE], requestedTenant=null]"}],"type":"security_exception","reason":"no permissions for [indices:data/write/bulk] and User [name=arn:aws:iam::xxx:role/INSERT_ROLE_NAME_HERE, backend_roles=[arn:aws:iam::xxx:role/INSERT_ROLE_NAME_HERE], requestedTenant=null]"},"status":403}
+```
+
+To fix this, you need to [map the roles to users](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/fgac.html#fgac-mapping) in Kibana.
