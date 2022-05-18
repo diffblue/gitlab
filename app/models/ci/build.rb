@@ -826,11 +826,25 @@ module Ci
     end
 
     def erase_erasable_artifacts!
+      if project.refreshing_build_artifacts_size?
+        Gitlab::ProjectStatsRefreshConflictsLogger.warn_artifact_deletion_during_stats_refresh(
+          method: 'Ci::Build#erase_erasable_artifacts!',
+          project_id: project_id
+        )
+      end
+
       job_artifacts.erasable.destroy_all # rubocop: disable Cop/DestroyAll
     end
 
     def erase(opts = {})
       return false unless erasable?
+
+      if project.refreshing_build_artifacts_size?
+        Gitlab::ProjectStatsRefreshConflictsLogger.warn_artifact_deletion_during_stats_refresh(
+          method: 'Ci::Build#erase',
+          project_id: project_id
+        )
+      end
 
       job_artifacts.destroy_all # rubocop: disable Cop/DestroyAll
       erase_trace!

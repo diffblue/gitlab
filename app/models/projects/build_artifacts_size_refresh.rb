@@ -87,5 +87,9 @@ module Projects
         .order(:created_at)
         .limit(limit)
     end
+
+    def started?
+      !created?
+    end
   end
 end
