@@ -23,35 +23,5 @@
             = s_('Geo|Waiting for scheduler')
 
 - if project_registry.last_repository_sync_failure || project_registry.last_repository_verification_failure
-  .project-card-errors
-    .card-header.bg-transparent.border-bottom-0.border-top
-      %button.gl-button.btn.btn-link.btn-card-header.collapsed.d-flex{ type: 'button',
-          data: { toggle: 'collapse', target: "#project-errors-#{project_registry.project_id}" },
-          'aria-expanded' => 'false',
-          'aria-controls' => "project-errors-#{project_registry.project_id}" }
-        = sprite_icon('chevron-down', size: 18, css_class: 'mr-2 card-expand-icon hide')
-        = sprite_icon('chevron-up', size: 18, css_class: 'mr-2 card-collapse-icon')
-        .header-text-secondary
-          More
-    .collapse{ id: "project-errors-#{project_registry.project_id}",
-        'aria-labelledby' => "project-#{project_registry.project_id}-header" }
-      .card-body
-        .container.m-0.p-0
-          .row
-            .col-sm-8
-              %ul.unstyled-list.list-items-py-2
-                - if project_registry.last_repository_sync_failure
-                  %li.d-flex.text-danger-500
-                    = sprite_icon('warning', size: 18)
-                    %span.gl-ml-2
-                      = s_('Geo|Synchronization failed - %{error}') % { error: project_registry.last_repository_sync_failure }
-                - if project_registry.last_repository_verification_failure
-                  %li.d-flex.text-danger-500
-                    = sprite_icon('warning', size: 18)
-                    %span.gl-ml-2
-                      = s_('Geo|Verification failed - %{error}') % { error: project_registry.last_repository_verification_failure }
-            .col-sm-4.mt-3.mt-sm-0
-              .project-status-title.text-muted
-                = s_('Geo|Retry count')
-              .project-status-content
-                = project_registry.repository_retry_count.nil? ? 0 : project_registry.repository_retry_count
+  - config = prepare_error_app_data(project_registry)
+  .project-card-errors.js-project-card-errors{ data: { config: config } }
