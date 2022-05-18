@@ -74,4 +74,64 @@ RSpec.describe GitlabSubscriptions::UpcomingReconciliationEntity do
       end
     end
   end
+
+  describe '#display_alert?' do
+    using RSpec::Parameterized::TableSyntax
+
+    let_it_be(:namespace) { create(:namespace) }
+    let_it_be(:license) { create(:license) }
+
+    subject(:entity) do
+      described_class.new(
+        current_user: user,
+        namespace: with_namespace ? namespace : nil
+      )
+    end
+
+    before do
+      allow(License).to receive(:current).and_return(license)
+
+      if with_namespace
+        allow(GitlabSubscriptions::UpcomingReconciliation).to receive(:next)
+          .with(namespace.id).and_return(upcoming_reconciliation)
+      end
+    end
+
+    where(:upcoming_reconciliation_display_alert, :with_namespace, :offline_cloud_license, :expected) do
+      false | true | true | false
+      false | true | false | false
+      true | true | true | true
+      true | true | false | true
+      true | false | false | true
+      true | false | true | false
+    end
+
+    with_them do
+      it "returns result" do
+        allow(upcoming_reconciliation).to receive(:display_alert?)
+          .and_return(upcoming_reconciliation_display_alert)
+        allow(::License.current).to receive(:offline_cloud_license?)
+          .and_return(offline_cloud_license)
+
+        expect(entity.display_alert?).to eq(expected)
+      end
+    end
+
+    context 'without upcoming_reconciliation' do
+      let(:upcoming_reconciliation) { nil }
+      let(:with_namespace) { true }
+
+      it 'returns false' do
+        expect(entity.display_alert?).to eq(false)
+      end
+
+      context 'without namespace' do
+        let(:with_namespace) { false }
+
+        it 'returns false' do
+          expect(entity.display_alert?).to eq(false)
+        end
+      end
+    end
+  end
 end
