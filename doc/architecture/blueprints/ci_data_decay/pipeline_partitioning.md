@@ -7,7 +7,7 @@ description: 'Pipeline data partitioning design'
 
 # Pipeline data partitioning design
 
-_The following contains information related to upcoming products, features, and
+_Disclaimer: The following contains information related to upcoming products, features, and
 functionality._
 
 _It is important to note that the information presented is for informational
@@ -21,44 +21,42 @@ Inc._
 
 ## What problem are we trying to solve?
 
-We want to partition CI/CD dataset, because some of the tables are extremely
-large, which might be challenging in terms of scaling reads, even if we ship CI
-database decomposition soon.
+We want to partition the CI/CD dataset, because some of the tables are extremely
+large, which might be challenging in terms of scaling reads, even if we ship the
+CI/CD database decomposition soon.
 
 We want to reduce the risk of database performance degradation by transforming
-a few largest database tables into smaller ones using PostgreSQL declarative
+a few of the largest database tables into smaller ones using PostgreSQL declarative
 partitioning.
 
 See more details about this effort in [the parent blueprint](index.md).
 
-![pipeline_data_time_decay_png](pipeline_data_time_decay.png)
+![pipeline data time decay](pipeline_data_time_decay.png)
 
-## How are CI/CD data decomposition, partitioning and time-decay related?
+## How are CI/CD data decomposition, partitioning, and time-decay related?
 
-CI Decomposition is about extracting a CI database cluster out of the “main”
+CI/CD decomposition is extracting a CI/CD database cluster out of the "main"
 database cluster, to make it possible to have a different primary database
-receiving writes. The main outcome is doubling the capacity for writes and data
-storage. Because of the new database cluster not having to serve reads / writes
-for non-CI database tables, this will offer small additional capacity for reads
+receiving writes. The main benefit is doubling the capacity for writes and data
+storage. The new database cluster will not have to serve reads / writes
+for non-CI/CD database tables, so this offers some additional capacity for reads
 too.
 
-CI Partitioning is about dividing large CI database tables into smaller ones.
-The result of this will be an improvement in reads capacity, because it is much
-less expensive to read data from small tables, than it is to read data from
-large multi-terabytes tables. This will improve performance in other aspects
-too, because PostgreSQL will gain more efficiency in maintaining multiple small
-tables, in contrast to not-so-efficient maintaining a very large database
-table.
+CI/CD partitioning is dividing large CI/CD database tables into smaller ones.
+This will improve reads capacity, because it is much less expensive to read data
+from small tables, than from large multi-terabytes tables. Performance in other
+aspects will improve too, because PostgreSQL will be more efficient maintaining
+multiple small tables than maintaining a very large database table.
 
-CI time-decay is a pattern that allows us to benefit from the strong time-decay
+CI/CD time-decay allows us to benefit from the strong time-decay
 characteristics of pipeline data. It can be implemented in many different ways,
 not necessarily related to how we store data in the database, but using
-partitioning to implement time-decay might be especially beneficial. Usually to
-implement a time decay we mark data as archived, and migrate it out of a
-database to a different place once data is no longer relevant or needed.
-Because our dataset is extremely large (tens of terabytes) moving such a high
-volume of data is challenging. With implementing time-decay using partitioning
-we can simply archive the entire partition (or set of partitions) by updating a
+partitioning to implement time-decay might be especially beneficial. When implementing
+a time decay we usually mark data as archived, and migrate it out of a
+database to a different place when data is no longer relevant or needed.
+Our dataset is extremely large (tens of terabytes), so moving such a high
+volume of data is challenging. When time-decay is implemented using partitioning,
+we can archive the entire partition (or set of partitions) by simply updating a
 single record in one of our database tables. It is one of the least expensive
 ways to implement time-decay patterns at a database level.
 
@@ -67,14 +65,14 @@ ways to implement time-decay patterns at a database level.
 ## Why do we need to partition CI/CD data?
 
 We need to partition CI/CD data because our database tables storing pipelines,
-builds, artifacts are too large. `ci_builds` database table is currently 3657
-GB large with an index size of 1356 GB. This is a lot and violates our
+builds, and artifacts are too large. The `ci_builds` database table is currently 3657
+GB with an index of 1356 GB. This too much and violates our
 [principle of 100 GB max size](../database_scaling/size-limits.md). We want
-to [build the alerting](https://gitlab.com/gitlab-com/gl-infra/tamland/-/issues/5)
-that will notify us when this number is exceeded.
+to [build alerts](https://gitlab.com/gitlab-com/gl-infra/tamland/-/issues/5)
+to notify us when this number is exceeded.
 
-We’ve seen numerous database-related production environment incidents, S1 and
-S2, over the last couple of months.
+We’ve seen numerous S1 and S2 database-related production environment incidents,
+over the last couple of months, for example:
 
 - S1: 2022-03-17 [Increase in writes in `ci_builds` table](https://gitlab.com/gitlab-com/gl-infra/production/-/issues/6625)
 - S1: 2021-11-22 [Excessive buffer read in replicas for `ci_job_artifacts`](https://gitlab.com/gitlab-com/gl-infra/production/-/issues/5952)
@@ -82,11 +80,9 @@ S2, over the last couple of months.
 - S2: 2022-04-06 [Database contention plausibly caused by excessive `ci_builds` reads](https://gitlab.com/gitlab-com/gl-infra/production/-/issues/6773)
 - S2: 2022-03-18 [Unable to remove a foreign key on `ci_builds`](https://gitlab.com/gitlab-com/gl-infra/production/-/issues/6642)
 
-See more detailed data, read from the database in March 2022. We do have around
-50 `ci_*` prefixed database tables, some of them would benefit from
-partitioning.
-
-Simple SQL query used to get this data:
+For more detailed data, read from the database in March 2022. We have approximately
+50 `ci_*` prefixed database tables, and some of them would benefit from partitioning.
+A simple SQL query to get this data:
 
 ```sql
 WITH tables AS (SELECT table_name FROM information_schema.tables WHERE table_name LIKE 'ci_%')
@@ -106,107 +102,106 @@ WITH tables AS (SELECT table_name FROM information_schema.tables WHERE table_nam
 | `ci_pipelines`          | 400 GB     | 300 GB     |
 | `ci_stages`             | 200 GB     | 120 GB     |
 | `ci_pipeline_variables` | 100 GB     | 20 GB      |
-|  ... around 40 more     |            |            |
+| (...around 40 more)     |            |            |
 
-Based on the data in the table above, it is clear that there are tables that we
-do store a lot of information in.
+Based on the data in the table above, it is clear that there are tables with
+a lot of stored information.
 
-Even though we do have almost 50 CI/CD-related database tables, right now we
-are interested in partitioning only about 6 of them. It means that we can start
-with partitioning the most interesting tables in an iterative way, but we also
-should have a strategy for partitioning remaining ones if there is a need to do
-so.
+While we have almost 50 CI/CD-related database tables, we are initially
+interested in partitioning only about 6 of them. We can start by
+partitioning the most interesting tables in an iterative way, but we also
+should have a strategy for partitioning the remaining ones if needed.
 
 ## How do we want to partition CI/CD data?
 
-We want to partition CI/CD in iterations. It might not be feasible to partition
+We want to partition the CI/CD tables in iterations. It might not be feasible to partition
 all 6 problematic tables at once, so an iterative strategy might be necessary.
-We also want to have a strategy for partitioning remaining database tables,
+We also want to have a strategy for partitioning the remaining database tables
 when it becomes necessary.
 
 It is also important to avoid large data migrations. We store almost 6
 terabytes of data in the biggest CI/CD tables in many different columns and
-indexes. Migrating this amount of data might be challenging and might
-potentially cause instability of the production environment. Because of that,
-in one of the [first PoCs](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/80186)
-we’ve found a way to attach an existing database table as a partition zero,
-without downtime and excessive database locking. This makes it possible for us
-to create a partitioned schema (for example `p_ci_pipelines`) and to attach an
-existing `ci_pipelines` table as partition zero. It will be possible to use the
-legacy table as usual, but we can create a next partition when we see fit and
-the `p_ci_pipelines` table will be used for routing queries. In order to use
+indexes. Migrating this amount of data might be challenging and could
+cause instability in the production environment. Due to this concern,
+we’ve developed a way to attach an existing database table as a partition zero
+without downtime and excessive database locking, in one of the
+[first proofs of concept](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/80186).
+This makes creating a partitioned schema possible (for example `p_ci_pipelines`),
+and to attach an existing `ci_pipelines` table as partition zero. It will be possible to use the
+legacy table as usual, but we can create the next partition when needed and
+the `p_ci_pipelines` table will be used for routing queries. To use
 the routing table we need to find a good partitioning key.
 
-Our plan is to use logical partition ids. We want to start with the
-`ci_pipelines` table and create a `partition_id` column with a DEFAULT value of
-100 or 1000. Using a DEFAULT value makes it possible to avoid the challenge of
-backfilling this value for every row. By adding a CHECK constraint prior to
-attaching the first partition, we can tell PostgreSQL that we’ve already
+Our plan is to use logical partition IDs. We want to start with the
+`ci_pipelines` table and create a `partition_id` column with a `DEFAULT` value of
+`100` or `1000`. Using a `DEFAULT` value avoids the challenge of
+backfilling this value for every row. Adding a `CHECK` constraint prior to
+attaching the first partition tells PostgreSQL that we’ve already
 ensured consistency and there is no need to check it while holding an exclusive
 table lock when attaching this table as a partition to the routing table
-(partitioned schema definition). Every time we create a new partition for
-`p_ci_pipelines` we will increment this value, and the partitioning strategy
+(partitioned schema definition). We will increment this value every time we create
+a new partition for `p_ci_pipelines`, and the partitioning strategy
 will be `LIST` partitioning.
 
-We will also create a `partition_id` column in the other 6 database tables we
-want to initially, iteratively partition. Once a new pipeline gets created, it
-will get `partition_id` assigned, and all the related resources like builds,
-artifacts, will share the same value. We want to add a `partition_id` column to
-all the 6 problematic tables because this way we can avoid backfilling this
-data when we decide it is time to ship partitioning.
+We will also create a `partition_id` column in the other initial 6 database tables we
+want to iteratively partition. After a new pipeline is created, it
+will get a `partition_id` assigned, and all the related resources like builds and
+artifacts will share the same value. We want the `partition_id` column in
+all 6 problematic tables because we can avoid backfilling this
+data when we decide it is time to start partitioning.
 
-Because we want to partition CI/CD data iteratively, it means that we will
-start with the pipelines table, and create at least one partition, but
-presumably another one too. The pipeline table will be partitioned using `LIST`
-partitioning strategy. It means that it is possible that `p_ci_pipelines` will
-store data in two partitions with ids 100 and 101. Then we will take a stab at
-partitioning `ci_builds` and therefore in case of `p_ci_builds` we will need to
-use `RANGE` partitioning with ids 100 - 101, since builds for the two logical
-partitions used will still be stored in a single table. It means that physical
-partitioning and logical partitioning will be separated, and determined by the
-time when we ship partitioning for respective database tables. Using `RANGE`
-partitioning will works similarly to using `LIST` partitioning in case of other
-database tables than `ci_pipelines`, but because we can guarantee continuity of
-`partition_id` values, using `RANGE` partitioning might be a bit better
+We want to partition CI/CD data iteratively, so we will
+start with the pipelines table, and create at least one, but likely two, partitions.
+The pipeline table will be partitioned using the `LIST`
+partitioning strategy. It is possible that `p_ci_pipelines` will
+store data in two partitions with IDs of `100` and `101`. Then we will try
+partitioning `ci_builds`. Therefore we will need to use `RANGE` partitioning in
+`p_ci_builds` with IDs `100` and `101`, because builds for the two logical
+partitions used will still be stored in a single table. Physical
+partitioning and logical partitioning will be separated, and determined
+when we implement partitioning for the respective database tables. Using `RANGE`
+partitioning works similarly to using `LIST` partitioning in database tables
+other than `ci_pipelines`, but because we can guarantee continuity of
+`partition_id` values, using `RANGE` partitioning might be a better
 strategy.
 
 ## Why do we want to use explicit logical partition ids?
 
-Partitioning CI/CD data using logical `partition_id` has several benefits. We
+Partitioning CI/CD data using a logical `partition_id` has several benefits. We
 could partition by a primary key, but this would introduce much more complexity
 and additional cognitive load required to understand how the data is being
 structured and stored.
 
 CI/CD data is hierarchical data. Stages belong to pipelines, builds belong to
-stages, artifacts belong to builds (with rare exceptions). We want to design a
+stages, artifacts belong to builds (with rare exceptions). We are designing a
 partitioning strategy that reflects this hierarchy to reduce the complexity and
-cognitive load imposed on contributors. With explicit `partition_id` associated
+therefore cognitive load for contributors. With an explicit `partition_id` associated
 with a pipeline, we can cascade the pipeline ID number when trying to retrieve
-all resources associated with a pipeline. We know that for pipeline 12345, that
-has `partition_id` 102, we are always able to find associated resources in
-logical partitions with number 102 in other routing tables, and PostgreSQL will
+all resources associated with a pipeline. We know that for a pipeline `12345`
+with a `partition_id` of `102`, we are always able to find associated resources in
+logical partitions with number `102` in other routing tables, and PostgreSQL will
 know in which partitions these records are being stored for every table.
 
 Another interesting benefit for using a single and incremental latest
 `partition_id` number, associated with a least pipeline, is that in theory we
-cache it in Redis / in memory to avoid excessive reads from the database to
-find this number, although we might not need to do this. The point here is that
-the single `partition_id` value for a pipeline gives us more choices later on
+cache it in Redis or in memory to avoid excessive reads from the database to
+find this number, though we might not need to do this.
+The single `partition_id` value for a pipeline gives us more choices later on
 than primary-keys-based partitioning.
 
 ## Splitting large partitions into smaller ones
 
-We want to start with the initial `pipeline_id` number 100 (or higher, like
-1000, depending on our calculations / estimations). We do not want to start
-from 1, because we realize that existing tables are also large already, and we
-might want to split them into smaller partitions. If we start with 100, we will
-be able to create partitions for `partition_id` 1, 20, 45, and move existing
-records there by updating `partition_id` from 100 to a smaller number.
+We want to start with the initial `pipeline_id` number `100` (or higher, like
+`1000`, depending on our calculations and estimations). We do not want to start
+from 1, because existing tables are also large already, and we
+might want to split them into smaller partitions. If we start with `100`, we will
+be able to create partitions for `partition_id` of `1`, `20`, `45`, and move existing
+records there by updating `partition_id` from `100` to a smaller number.
 PostgreSQL will move these records into their respective partitions in a
-consistent way, provided that we do that in a transaction for all pipeline
+consistent way, provided that we do it in a transaction for all pipeline
 resources at the same time. If we ever decide to split large partitions into
-smaller ones (this is not something we know we will need to do for sure) we
-might be able to just use Background Migrations, and PostgreSQL will be smart
+smaller ones (it's not yet clear if we will need to do this), we
+might be able to just use background migrations, and PostgreSQL is smart
 enough to move rows between partitions.
 
 ## Storing partitions metadata in the database
@@ -225,7 +220,7 @@ declarative partitioning.
 pipeline ids range it is valid for and whether the partitions have been
 archived or not.
 
-## Implementing time-decay pattern using partitioning
+## Implementing a time-decay pattern using partitioning
 
 We can use `ci_partitions` to implement a time-decay pattern using declarative
 partitioning. By telling PostgreSQL which logical partitions are archived we
@@ -238,160 +233,167 @@ SELECT * FROM ci_builds WHERE partition_id IN (
 ```
 
 This query will make it possible to limit the number of partitions we will read
-from, and therefore will cut access to “archived” pipeline data, using our data
+from, and therefore will cut access to "archived" pipeline data, using our data
 retention policy for CI/CD data. Ideally we do not want to read from more than
-two partitions at once, hence we will need to align the automatic partitioning
+two partitions at once, so we need to align the automatic partitioning
 mechanisms with the time-decay policy. We will still need to implement new
 access patterns for the archived data, presumably through the API, but the cost
 of storing archived data in PostgreSQL will be reduced significantly this way.
 
 There are some technical details here that are out of the scope of this
-description, but by using this strategy we can “archive” data, and make it much
-less expensive to reside in our PostgreSQL cluster, by simply toggling a
+description, but by using this strategy we can "archive" data, and make it much
+less expensive to reside in our PostgreSQL cluster by simply toggling a
 boolean value.
 
 ## Accessing partitioned data
 
 It will be possible to access partitioned data whether it has been archived or
-not, in most of the places in GitLab. On a merge request page, we will always
-show pipeline details even if a merge request has been created years ago. We
-can do that because `ci_partitions` will be a lookup table associating pipeline
-ID with its `partition_id`, and we will be able to find a partition that all
-pipeline data is being stored in.
+not, in most places in GitLab. On a merge request page, we will always
+show pipeline details even if the merge request was created years ago. We
+can do that because `ci_partitions` will be a lookup table associating a pipeline ID
+with its `partition_id`, and we will be able to find the partition that all
+pipeline data is stored in.
 
-We will need to constraint access to searching through all pipelines, builds,
+We will need to constrain access to searching through all pipelines, builds,
 artifacts etc. It will be necessary to have different access patterns to
-accessing archived data, in the UI and API.
+access archived data in the UI and API.
 
 There are a few challenges in enforcing usage of the `partition_id`
 partitioning key in PostgreSQL. To make it easier to update our application to
 support this, we have designed a new queries analyzer in our
-[PoC merge request](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/80186).
+[proof of concept merge request](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/80186).
 It helps to find queries that are not using the partitioning key.
 
-In a [Proof of Concept merge request](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/84071)
-/ [issue](https://gitlab.com/gitlab-org/gitlab/-/issues/357090) we have
+In a [separate proof of concept merge request](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/84071)
+and [related issue](https://gitlab.com/gitlab-org/gitlab/-/issues/357090) we
 demonstrated that using the uniform `partition_id` makes it possible to extend
-Rails associations with additional scope modifier that will allow us to provide
+Rails associations with an additional scope modifier so we can provide
 the partitioning key in the SQL query.
 
-Using instance dependent associations, we can easily append partitioning key to
-SQL queries that are supposed to retrieve associated pipeline resources, like:
+Using instance dependent associations, we can easily append a partitioning key to
+SQL queries that are supposed to retrieve associated pipeline resources, for example:
 
 ```ruby
 has_many :builds, -> (pipeline) { where(partition_id: pipeline.partition_id) }
 ```
 
-The problem with that approach is that it makes preloading much more difficult
+The problem with this approach is that it makes preloading much more difficult
 as instance dependent associations can not be used with preloads:
 
-> ArgumentError: The association scope 'builds' is instance dependent (the
-> scope block takes an argument). Preloading instance dependent scopes is not
-> supported.
+```plaintext
+ArgumentError: The association scope 'builds' is instance dependent (the
+scope block takes an argument). Preloading instance dependent scopes is not
+supported.
+```
 
-We also need to build a Proof of Concept for removing data on the PostgreSQL
+We also need to build a proof of concept for removing data on the PostgreSQL
 side (using foreign keys with `ON DELETE CASCADE`) and removing data through
 Rails associations, as this might be an important area of uncertainty.
 
-We need to [better
-understand](https://gitlab.com/gitlab-org/gitlab/-/issues/360148) how unique
-constraints we are currently using will perform in case of using the
+We need to [better understand](https://gitlab.com/gitlab-org/gitlab/-/issues/360148)
+how unique constraints we are currently using will perform when using the
 partitioned schema.
 
 We have also designed a query analyzer that makes it possible to detect direct
-usage of partitions zero, legacy tables that have been attached as first
+usage of zero partitions, legacy tables that have been attached as first
 partitions to routing tables, to ensure that all queries are targeting
-partitioned schema / partitioned routing tables, like `p_ci_pipelines`.
+partitioned schema or partitioned routing tables, like `p_ci_pipelines`.
 
-## Why do we not want to partition using project / namespace identifier?
+## Why not partition using the project or namespace ID?
 
-We do not want to partition using `project_id / namespace_id` because sharding
-/ podding is a different problem to solve, on a different layer of the
+We do not want to partition using `project_id` or `namespace_id` because sharding
+and podding is a different problem to solve, on a different layer of the
 application. It doesn't solve the original problem statement of performance
 growing worse over time as we build up infrequently read data. We want to
 introduce GitLab Pods in the future, and that is the primary mechanism of
-separating data based on a group or project the data is associated with.
+separating data based on the group or project the data is associated with.
 
 In theory we could use either `project_id` or `namespace_id` as a second
-partitioning dimension, but this would add more complexity to the problem that
-is complex enough already.
+partitioning dimension, but this would add more complexity to a problem that
+is already very complex.
 
 ## Partitioning builds queuing tables
 
-We also do want to partition our builds queuing tables. Currently we do have
-two - `ci_pending_builds` and `ci_running_builds`. These tables are different
+We also want to partition our builds queuing tables. Currently have
+two: `ci_pending_builds` and `ci_running_builds`. These tables are different
 from other CI/CD data tables, as there are business rules in our product that
 make all data stored in them invalid after 24 hours.
 
-It means that we will need to use a different strategy to partition these
+As a result, we will need to use a different strategy to partition these
 database tables, by removing partitions entirely after these are older than 24
 hours, and always reading from two partitions through a routing table. The
 strategy to partition these tables is well understood, but requires a solid
 Ruby-based automation to manage the creation and deletion of these partitions.
-In order to achieve that we will collaborate with the Database team to adapt
+To achieve that we will collaborate with the Database team to adapt
 [existing database partitioning tools](../../../development/database/table_partitioning.md)
 to support CI/CD data partitioning.
 
 ## Iterating to reduce the risk
 
-This strategy should reduce the risk of shipping CI/CD partitioning to
-acceptable levels. We are aware that because of exponential growth of CI/CD
-data this is quite urgent, hence we also focus on shipping partitioning for
-reading only two partitions initially to make it possible to detach partitions
-zero in case of problems in our production environment.
+This strategy should reduce the risk of implementing CI/CD partitioning to
+acceptable levels. We are aware that this is an urgent need because of exponential
+growth of CI/CD data, so we are also focusing on implementing partitioning for
+reading only two partitions initially to make it possible to detach zero partitions
+in case of problems in our production environment.
 
 ## Iterations
 
-We want to first focus on Phase 1 interaction. The goal and the main objective
-of this iteration is to partition the biggest 6 CI database tables into 6
+We want to focus on Phase 1 interation first. The goal and the main objective
+of this iteration is to partition the biggest 6 CI/CD database tables into 6
 routing tables (partitioned schema) and 12 partitions. This will leave our
 Rails SQL queries mostly unchanged, but it will also make it possible to
-perform emergency detachment of “zero partitions” in case of a database
+perform emergency detachment of "zero partitions" if there is a database
 performance degradation. This will cut users off their old data, but the
-application will remain operable, up and running, which is a better alternative
+application will remain up and running, which is a better alternative
 to application-wide outage.
 
-1. Phase 0: Build CI/CD data partitioning strategy: DONE ✅
-1. Phase 1: Partition the 6 biggest CI/CD database tables.
-    1. Create partitioned schema for all 6 database tables
-    1. Design a way to cascade `partition_id` to all partitioned resources.
-    1. Ship initial query analyzers validating that we target routing tables.
-    1. Attach zero partitions to the partitioned database tables.
-    1. Update the application to target routing tables / partitioned tables.
-    1. Measure performance and efficiency of this solution.
-    Revert strategy: Switch back to using concrete partitions instead of routing tables.
-1. Phase 2: Add partitioning key to add SQL queries targeting partitioned tables.
-    1. Ship queries analyzer checking if queries targeting partitioned tables
-       are using proper partitioning keys.
-    1. Modify existing queries to make sure that all of them are using a
-       partitioning key as a filter.
-     Revert strategy: Using feature flags query-by-query.
-1. Phase 3: Build new partitioned data access patterns.
-    1. Build new API or extend existing one to allow access to data stored in
-       partitions that are supposed to be excluded based on the time-decay data
-       retention policy.
-    Revert strategy: Feature flags.
-1. Phase 4: Introduce time-decay mechanisms built on top of partitioning.
-    1. Build time-decay policy mechanisms.
-    1. Enable time-decay strategy on GitLab.com
-1. Phase 5: Introduce mechanisms for creating partitions automatically.
-    1. Make it possible to create partitions in an automatic way.
-    1. Ship new architecture to self-managed instances.
+1. **Phase 0**: Build CI/CD data partitioning strategy: Done. ✅
+1. **Phase 1**: Partition the 6 biggest CI/CD database tables.
+   1. Create partitioned schemas for all 6 database tables.
+   1. Design a way to cascade `partition_id` to all partitioned resources.
+   1. Implement initial query analyzers validating that we target routing tables.
+   1. Attach zero partitions to the partitioned database tables.
+   1. Update the application to target routing tables and partitioned tables.
+   1. Measure the performance and efficiency of this solution.
+
+   **Revert strategy**: Switch back to using concrete partitions instead of routing tables.
+
+1. **Phase 2**: Add a partitioning key to add SQL queries targeting partitioned tables.
+   1. Implement query analyzer to check if queries targeting partitioned tables
+      are using proper partitioning keys.
+   1. Modify existing queries to make sure that all of them are using a
+      partitioning key as a filter.
+
+   **Revert strategy**: Use feature flags, query by query.
+
+1. **Phase 3**: Build new partitioned data access patterns.
+   1. Build a new API or extend an existing one to allow access to data stored in
+      partitions that are supposed to be excluded based on the time-decay data
+      retention policy.
+
+   **Revert strategy**: Feature flags.
+
+1. **Phase 4**: Introduce time-decay mechanisms built on top of partitioning.
+   1. Build time-decay policy mechanisms.
+   1. Enable the time-decay strategy on GitLab.com.
+1. **Phase 5**: Introduce mechanisms for creating partitions automatically.
+   1. Make it possible to create partitions in an automatic way.
+   1. Deliver the new architecture to self-managed instances.
 
 ## Conclusions
 
 We want to build a solid strategy for partitioning CI/CD data. We are aware of
 the fact that it is difficult to iterate on this design, because a mistake made
 in managing the database schema of our multi-terabyte PostgreSQL instance might
-not be easily reversible without a potential downtime. That is the reason why
+not be easily reversible without potential downtime. That is the reason
 we are spending a significant amount of time to research and refine our
-partitioning strategy. Mistakes are risky, therefore we iterate on refining the
-strategy even before we start shipping changes to our database and code.
+partitioning strategy. There are risks for mistakes, so we will refine the strategy
+through iteration before we even start implementing changes to our database and code.
 
 We’ve managed to find a way to avoid large-scale data migrations, and we are
-building an iterative strategy for partitioning CI/CD data. In order to
-finalize building this strategy we started documenting all our findings in this
-document and shipping additional Proof of Concepts for areas that we do not
+building an iterative strategy for partitioning CI/CD data. To
+finalize building this strategy we are including all our findings in this
+document and creating additional proofs of concept for areas that we do not
 have enough confidence in.
 
 ## Who
@@ -400,14 +402,14 @@ Authors:
 
 <!-- vale gitlab.Spelling = NO -->
 
-| Role                         | Who
-|------------------------------|-------------------------|
-| Author                       | Grzegorz Bizon          |
+| Role   | Who            |
+|--------|----------------|
+| Author | Grzegorz Bizon |
 
 Recommenders:
 
-| Who                         | Role
-|-----------------------------|------------------------|
-| Kamil Trzciński             | Distingiushed Engineer |
+| Role                   | Who             |
+|------------------------|-----------------|
+| Distingiushed Engineer | Kamil Trzciński |
 
 <!-- vale gitlab.Spelling = YES -->
