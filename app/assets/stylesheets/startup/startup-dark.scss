@@ -787,9 +787,6 @@ input {
 .navbar-gitlab .header-content .title img {
   height: 24px;
 }
-.navbar-gitlab .header-content .title img + .logo-text {
-  margin-left: 8px;
-}
 .navbar-gitlab .header-content .title a {
   display: flex;
   align-items: center;
@@ -2044,18 +2041,8 @@ body.gl-dark {
 .gl-display-none {
   display: none;
 }
-@media (min-width: 992px) {
-  .gl-lg-display-none\! {
-    display: none !important;
-  }
-}
 .gl-display-flex {
   display: flex;
-}
-@media (min-width: 992px) {
-  .gl-lg-display-flex {
-    display: flex;
-  }
 }
 @media (min-width: 576px) {
   .gl-sm-display-block {
