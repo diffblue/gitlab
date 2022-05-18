@@ -26,18 +26,21 @@ RSpec.describe Ci::JobArtifact do
     end
 
     context 'when pipeline is destroyed' do
-      it 'creates a Geo Event', :sidekiq_inline do
+      it 'creates a Geo delete event async' do
         job_artifact = create(:ee_ci_job_artifact, :archive)
 
-        expect do
-          job_artifact.job.pipeline.destroy!
-        end.to change(Geo::Event.where(replicable_name: :job_artifact, event_name: :deleted), :count).by(1)
+        payload = {
+          model_record_id: job_artifact.id,
+          blob_path: job_artifact.file.relative_path,
+          uploader_class: 'JobArtifactUploader'
+        }
 
-        payload = Geo::Event.where(replicable_name: :job_artifact, event_name: :deleted).last.payload
+        expect(::Geo::JobArtifactReplicator)
+          .to receive(:bulk_create_delete_events_async)
+          .with([payload])
+          .once
 
-        expect(payload['model_record_id']).to eq(job_artifact.id)
-        expect(payload['blob_path']).to eq(job_artifact.file.relative_path.to_s)
-        expect(payload['uploader_class']).to eq('JobArtifactUploader')
+        job_artifact.job.pipeline.destroy!
       end
     end
 

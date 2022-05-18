@@ -19,9 +19,7 @@ module EE
           yield
 
           Sidekiq::Worker.skipping_transaction_check do
-            ::Gitlab::Database::QueryAnalyzers::PreventCrossDatabaseModification.allow_cross_database_modification_within_transaction(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/351849') do
-              ::Geo::JobArtifactReplicator.bulk_create_delete_events_async(artifact_params)
-            end
+            ::Geo::JobArtifactReplicator.bulk_create_delete_events_async(artifact_params)
           end
         end
 
