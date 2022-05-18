@@ -1,12 +1,12 @@
 - page_title _('Contribution Analytics')
 
-.mb-3
-  %h3
-    = _('Contribution Analytics')
+%h3= _('Contribution Analytics')
 
-.sub-header-block.gl-display-flex.gl-justify-content-space-between.gl-align-items-center
-  = s_('ContributionAnalytics|Contribution analytics for issues, merge requests and push events since %{start_date}') % { start_date: @start_date }
-  .js-contribution-analytics-date-selector{ data: { path: group_contribution_analytics_path } }
+= gl_tabs_nav(class: 'gl-mb-3', 'data-testid': 'contribution-analytics-date-nav') do
+  - date_range_nav.each do |range|
+    = gl_tab_link_to group_contribution_analytics_path(start_date: range[:date]), item_active: @start_date == range[:date] do
+      = range[:label]
+%p= s_('ContributionAnalytics|Contribution analytics for issues, merge requests and push events since %{start_date}') % { start_date: @start_date }
 
 %div{ data: { qa_selector: 'push_content' } }
   %h3= _('Pushes')
