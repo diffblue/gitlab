@@ -14,7 +14,10 @@ class Groups::UsageQuotasController < Groups::ApplicationController
 
   def index
     @hide_search_settings = true
-    @projects = @group.all_projects.with_shared_runners.page(params[:page])
+    @current_namespace_usage = Ci::Minutes::NamespaceMonthlyUsage.find_or_create_current(namespace_id: @group.id)
+    @projects_usage = Ci::Minutes::ProjectMonthlyUsage
+                        .for_namespace_monthly_usage(@current_namespace_usage)
+                        .page(params[:page])
   end
 
   def pending_members

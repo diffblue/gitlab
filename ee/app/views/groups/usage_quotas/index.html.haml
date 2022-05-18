@@ -35,7 +35,7 @@
   .tab-pane#pipelines-quota-tab
     #js-ci-minutes-usage-group{ data: { namespace_id: @group.id } }
     = render "namespaces/pipelines_quota/list",
-      locals: { namespace: @group, projects: @projects }
+      locals: { namespace: @group, projects_usage: @projects_usage }
   .tab-pane#shared-runners-usage-quota-tab
     #js-shared-runner-usage-quota{ data: { namespace_id: @group.id } }
   .tab-pane#storage-quota-tab

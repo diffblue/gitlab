@@ -1,8 +1,7 @@
 - namespace = locals.fetch(:namespace)
-- projects = locals.fetch(:projects)
+- projects_usage = locals.fetch(:projects_usage)
 - minutes_usage = namespace.ci_minutes_usage
 - minutes_usage_presenter = Ci::Minutes::UsagePresenter.new(minutes_usage)
-
 
 .pipeline-quota.container-fluid
   .row
@@ -58,18 +57,23 @@
             - help_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: runners_doc_path }
             = s_('UsageQuota|%{help_link_start}Shared runners%{help_link_end} are disabled, so there are no limits set on pipeline usage').html_safe % { help_link_start: help_link_start, help_link_end: '</a>'.html_safe }
     - else
-      - projects.each do |project|
+      - projects_usage.each do |project_usage|
         %tr
           %td
             .avatar-container.s20.d-none.d-sm-block
-              = project_icon(project, alt: '', class: 'avatar project-avatar s20')
-            %strong= link_to project.full_name, project
+              = project_icon(project_usage.project, alt: '', class: 'avatar project-avatar s20')
+            %strong= link_to project_usage.project.full_name, project_usage.project
           %td
-            = project.ci_minutes_used
-      - if projects.blank?
+            = project_usage.amount_used.to_i
+      - if projects_usage.blank?
         %tr
           %td{ colspan: 2 }
             .nothing-here-block
-              = s_('UsageQuota|This namespace has no projects which use shared runners')
+              = s_('UsageQuota|This namespace has no projects which used shared runners in the current period')
+      - if Feature.enabled?(:ci_show_all_projects_with_usage_sorted_descending, namespace)
+        %tr
+          %td{ colspan: 2 }
+            .col-sm-12.center
+              = s_('UsageQuota|This table omits projects that used 0 CI/CD minutes or 0 shared runners duration')
 
-= paginate projects, theme: "gitlab"
+= paginate projects_usage, theme: "gitlab"

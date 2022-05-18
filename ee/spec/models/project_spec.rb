@@ -1298,24 +1298,6 @@ RSpec.describe Project do
     end
   end
 
-  describe '#ci_minutes_used' do
-    subject { project.ci_minutes_used }
-
-    context 'when CI minutes have not been used' do
-      it { is_expected.to be_zero }
-    end
-
-    context 'when CI minutes have been used' do
-      let(:minutes_used) { 70.3 }
-
-      before do
-        create(:ci_project_monthly_usage, project: project, amount_used: minutes_used )
-      end
-
-      it { is_expected.to eq(70) }
-    end
-  end
-
   describe '#root_namespace' do
     let(:project) { build(:project, namespace: parent) }
 

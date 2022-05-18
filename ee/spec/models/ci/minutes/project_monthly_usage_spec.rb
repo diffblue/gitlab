@@ -79,6 +79,11 @@ RSpec.describe Ci::Minutes::ProjectMonthlyUsage do
   describe '.for_namespace_monthly_usage' do
     let(:date_for_usage) { Date.new(2021, 5, 1) }
     let(:namespace_usage) { create(:ci_namespace_monthly_usage, namespace: project.namespace, amount_used: 50, date: date_for_usage) }
+    let(:other_project) { create(:project, namespace: project.namespace) }
+
+    let(:top_group) { create(:group) }
+    let(:subgroup) { create(:group, parent: top_group) }
+    let(:group_usage) { create(:ci_namespace_monthly_usage, namespace: top_group, amount_used: 50, date: date_for_usage) }
 
     it "fetches project monthly usages matching the namespace monthly usage's date and namespace" do
       date_not_for_usage = date_for_usage + 1.month
@@ -94,6 +99,74 @@ RSpec.describe Ci::Minutes::ProjectMonthlyUsage do
     it 'does not join across databases' do
       with_cross_joins_prevented do
         described_class.for_namespace_monthly_usage(namespace_usage)
+      end
+    end
+
+    context 'when feature flag :ci_show_all_projects_with_usage_sorted_descending is disabled' do
+      before do
+        stub_feature_flags(ci_show_all_projects_with_usage_sorted_descending: false)
+      end
+
+      it "fetches project monthly usages even with 0 minutes used" do
+        matching_project_usage = create(:ci_project_monthly_usage, project: project, amount_used: 50, date: date_for_usage)
+        matching_project_usage_no_minutes = create(:ci_project_monthly_usage, project: other_project, amount_used: 0, date: date_for_usage)
+
+        project_usages = described_class.for_namespace_monthly_usage(namespace_usage)
+
+        expect(project_usages).to contain_exactly(matching_project_usage, matching_project_usage_no_minutes)
+      end
+    end
+
+    context 'when feature flag :ci_show_all_projects_with_usage_sorted_descending is enabled' do
+      it "fetches project monthly usages with more than 0 minutes used" do
+        matching_project_usage = create(:ci_project_monthly_usage, project: project, amount_used: 10, date: date_for_usage)
+        no_minutes_project = create(:ci_project_monthly_usage, project: other_project, amount_used: 0, date: date_for_usage)
+
+        project_usages = described_class.for_namespace_monthly_usage(namespace_usage)
+
+        expect(project_usages).to contain_exactly(matching_project_usage)
+        expect(project_usages).not_to include(no_minutes_project)
+      end
+    end
+
+    context 'when feature flag :ci_show_all_projects_with_usage_sorted_descending is enabled' do
+      it "fetches project monthly usages sorted by amount used in descending order" do
+        matching_project_usage_20_mins = create(:ci_project_monthly_usage, project: other_project, amount_used: 20, date: date_for_usage)
+        matching_project_usage_30_mins = create(:ci_project_monthly_usage, project: project, amount_used: 30, date: date_for_usage)
+        create(:ci_project_monthly_usage, project: create(:project, namespace: project.namespace), amount_used: 0, date: date_for_usage)
+
+        project_usages = described_class.for_namespace_monthly_usage(namespace_usage)
+
+        expect(project_usages).to start_with(matching_project_usage_30_mins)
+        expect(project_usages).to end_with(matching_project_usage_20_mins)
+        expect(project_usages).to contain_exactly(matching_project_usage_20_mins, matching_project_usage_30_mins)
+      end
+    end
+
+    context 'when feature flag :ci_show_all_projects_with_usage_sorted_descending is disabled' do
+      before do
+        stub_feature_flags(ci_show_all_projects_with_usage_sorted_descending: false)
+      end
+
+      it "includes usage data for projects in sub-groups" do
+        matching_project_usage = create(:ci_project_monthly_usage, project: create(:project, namespace: top_group), amount_used: 50, date: date_for_usage)
+        subgroup_project_usage = create(:ci_project_monthly_usage, project: create(:project, namespace: subgroup), amount_used: 10, date: date_for_usage)
+
+        project_usages = described_class.for_namespace_monthly_usage(group_usage)
+
+        expect(project_usages).to contain_exactly(matching_project_usage)
+        expect(project_usages).not_to include(subgroup_project_usage)
+      end
+    end
+
+    context 'when feature flag :ci_show_all_projects_with_usage_sorted_descending is enabled' do
+      it "fetches project monthly on top level namespace only" do
+        matching_project_usage = create(:ci_project_monthly_usage, project: create(:project, namespace: top_group), amount_used: 50, date: date_for_usage)
+        subgroup_project_usage = create(:ci_project_monthly_usage, project: create(:project, namespace: subgroup), amount_used: 10, date: date_for_usage)
+
+        project_usages = described_class.for_namespace_monthly_usage(group_usage)
+
+        expect(project_usages).to contain_exactly(matching_project_usage, subgroup_project_usage)
       end
     end
   end

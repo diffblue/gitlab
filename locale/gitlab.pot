@@ -40747,6 +40747,12 @@ msgstr ""
 msgid "UsageQuota|This namespace has no projects which use shared runners"
 msgstr ""
 
+msgid "UsageQuota|This namespace has no projects which used shared runners in the current period"
+msgstr ""
+
+msgid "UsageQuota|This table omits projects that used 0 CI/CD minutes or 0 shared runners duration"
+msgstr ""
+
 msgid "UsageQuota|Total excess storage used"
 msgstr ""
 
