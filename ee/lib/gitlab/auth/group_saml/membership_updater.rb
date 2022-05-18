@@ -17,13 +17,15 @@ module Gitlab
         end
 
         def execute
-          update_default_membership
+          add_default_membership
           enqueue_group_sync if sync_groups?
         end
 
         private
 
-        def update_default_membership
+        # Outside group sync user should only be added at default
+        # membership role if they are otherwise not a member
+        def add_default_membership
           return if group.member?(user)
 
           member = group.add_user(user, default_membership_role, blocking_refresh: false)
