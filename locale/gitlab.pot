@@ -31144,6 +31144,9 @@ msgstr ""
 msgid "Refresh the page and try again."
 msgstr ""
 
+msgid "Refresh the page in a few minutes to view usage."
+msgstr ""
+
 msgid "Refreshing in a second to show the updated status..."
 msgid_plural "Refreshing in %d seconds to show the updated status..."
 msgstr[0] ""
@@ -32035,6 +32038,9 @@ msgid "Repository size is above the limit."
 msgstr ""
 
 msgid "Repository size limit (MB)"
+msgstr ""
+
+msgid "Repository size recalculation started"
 msgstr ""
 
 msgid "Repository storage"
