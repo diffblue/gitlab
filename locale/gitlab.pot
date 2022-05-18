@@ -16150,6 +16150,12 @@ msgstr ""
 msgid "FogBugz import"
 msgstr ""
 
+msgid "Fogbugz|Fogbugz import failed due to an error: %{error}"
+msgstr ""
+
+msgid "Fogbugz|Project %{repo} could not be found"
+msgstr ""
+
 msgid "Folder/%{name}"
 msgstr ""
 
@@ -43407,6 +43413,9 @@ msgid "You don't have any recent searches"
 msgstr ""
 
 msgid "You don't have permission to review this deployment. Contact the project or group owner for help."
+msgstr ""
+
+msgid "You don't have permissions to create this project"
 msgstr ""
 
 msgid "You don't have sufficient permission to perform this action."
