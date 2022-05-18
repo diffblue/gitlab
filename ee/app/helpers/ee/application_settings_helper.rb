@@ -110,6 +110,7 @@ module EE
         pypi_package_requests_forwarding
         maintenance_mode
         maintenance_mode_message
+        globally_allowed_ips
       ]
     end
 

@@ -18,28 +18,30 @@ RSpec.describe Admin::ApplicationSettingsController do
 
     it 'updates the EE specific application settings' do
       settings = {
-          help_text: 'help_text',
-          repository_size_limit: 1024,
-          shared_runners_minutes: 60,
-          geo_status_timeout: 30,
-          check_namespace_plan: true,
-          authorized_keys_enabled: true,
-          slack_app_enabled: true,
-          slack_app_id: 'slack_app_id',
-          slack_app_secret: 'slack_app_secret',
-          slack_app_signing_secret: 'slack_app_signing_secret',
-          slack_app_verification_token: 'slack_app_verification_token',
-          allow_group_owners_to_manage_ldap: false,
-          lock_memberships_to_ldap: true,
-          geo_node_allowed_ips: '0.0.0.0/0, ::/0'
+        help_text: 'help_text',
+        repository_size_limit: 1024,
+        shared_runners_minutes: 60,
+        geo_status_timeout: 30,
+        check_namespace_plan: true,
+        authorized_keys_enabled: true,
+        slack_app_enabled: true,
+        slack_app_id: 'slack_app_id',
+        slack_app_secret: 'slack_app_secret',
+        slack_app_signing_secret: 'slack_app_signing_secret',
+        slack_app_verification_token: 'slack_app_verification_token',
+        allow_group_owners_to_manage_ldap: false,
+        lock_memberships_to_ldap: true,
+        geo_node_allowed_ips: '0.0.0.0/0, ::/0'
       }
 
       put :update, params: { application_setting: settings }
 
       expect(response).to redirect_to(general_admin_application_settings_path)
+
       settings.except(:repository_size_limit).each do |setting, value|
         expect(ApplicationSetting.current.public_send(setting)).to eq(value)
       end
+
       expect(ApplicationSetting.current.repository_size_limit).to eq(settings[:repository_size_limit].megabytes)
     end
 
@@ -186,6 +188,13 @@ RSpec.describe Admin::ApplicationSettingsController do
       end
 
       let(:feature) { :admin_merge_request_approvers_rules }
+
+      it_behaves_like 'settings for licensed features'
+    end
+
+    context 'globally allowed IPs' do
+      let(:settings) { { globally_allowed_ips: '10.0.0.0/8, 192.168.1.0/24' } }
+      let(:feature) { :group_ip_restriction }
 
       it_behaves_like 'settings for licensed features'
     end
