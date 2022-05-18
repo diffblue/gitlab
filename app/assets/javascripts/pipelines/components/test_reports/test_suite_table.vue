@@ -178,21 +178,21 @@ export default {
     </div>
 
     <div v-else>
-      <p v-if="getSuiteArtifactsExpired" data-testid="artifacts-expired">
-        <gl-empty-state
-          :title="$options.i18n.expiredArtifactsTitle"
-          :svg-path="artifactsExpiredImagePath"
-          :svg-height="100"
-        >
-          <template #description>
-            <gl-sprintf :message="$options.i18n.expiredArtifactsDescription">
-              <template #link="{ content }">
-                <gl-link :href="$options.learnMorePath">{{ content }}</gl-link>
-              </template>
-            </gl-sprintf>
-          </template>
-        </gl-empty-state>
-      </p>
+      <gl-empty-state
+        v-if="getSuiteArtifactsExpired"
+        :title="$options.i18n.expiredArtifactsTitle"
+        :svg-path="artifactsExpiredImagePath"
+        :svg-height="100"
+        data-testid="artifacts-expired"
+      >
+        <template #description>
+          <gl-sprintf :message="$options.i18n.expiredArtifactsDescription">
+            <template #link="{ content }">
+              <gl-link :href="$options.learnMorePath">{{ content }}</gl-link>
+            </template>
+          </gl-sprintf>
+        </template>
+      </gl-empty-state>
       <p v-else data-testid="no-test-cases">
         {{ s__('TestReports|There are no test cases to display.') }}
       </p>
