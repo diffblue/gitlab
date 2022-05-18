@@ -13,18 +13,9 @@ export default {
     PolicyEditor,
     PolicySelection,
   },
-  inject: ['namespaceType'],
-  // TODO: move this `inject` instead of `props`. We're using it in multiple levels.
-  props: {
-    assignedPolicyProject: {
-      type: Object,
-      required: true,
-    },
-    existingPolicy: {
-      type: Object,
-      required: false,
-      default: null,
-    },
+  inject: {
+    namespaceType: { default: '' },
+    existingPolicy: { default: null },
   },
   data() {
     return {
@@ -110,11 +101,6 @@ export default {
       <gl-path v-if="enableWizard" :items="glPathItems" @selected="handlePathSelection" />
     </header>
     <policy-selection v-if="!selectedPolicy" />
-    <policy-editor
-      v-else
-      :assigned-policy-project="assignedPolicyProject"
-      :existing-policy="existingPolicy"
-      :selected-policy-type="selectedPolicy.value"
-    />
+    <policy-editor v-else :selected-policy-type="selectedPolicy.value" />
   </div>
 </template>

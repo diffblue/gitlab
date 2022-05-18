@@ -13,17 +13,10 @@ export default {
     ScanExecutionPolicyEditor,
     ScanResultPolicyEditor,
   },
-  inject: ['policyType'],
-  props: {
-    assignedPolicyProject: {
-      type: Object,
-      required: true,
-    },
-    existingPolicy: {
-      type: Object,
-      required: false,
-      default: null,
-    },
+  inject: {
+    policyType: { default: '' },
+    assignedPolicyProject: { default: null },
+    existingPolicy: { default: null },
   },
   data() {
     return {
