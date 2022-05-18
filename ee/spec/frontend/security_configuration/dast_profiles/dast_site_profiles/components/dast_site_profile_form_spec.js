@@ -186,6 +186,22 @@ describe('DastSiteProfileForm', () => {
         expect(findRequestHeadersInput().element.value).toBe('');
         expect(findByNameAttribute('password').element.value).toBe('');
       });
+
+      it('updating an existing profile with empty submit field as blank', async () => {
+        createComponent({
+          propsData: {
+            profile: {
+              ...siteProfileWithSecrets,
+              auth: { enabled: true, submitField: 'hello' },
+            },
+          },
+        });
+        expect(findByNameAttribute('submitField').element.value).toBe('hello');
+
+        await setFieldValue(findByNameAttribute('submitField'), '');
+
+        expect(findBaseDastProfileForm().props('mutationVariables').auth.submitField).toEqual('');
+      });
     });
 
     describe('when target type is API', () => {

@@ -158,6 +158,9 @@ export default {
       if (authFields.password === REDACTED_PASSWORD) {
         delete authFields.password;
       }
+      if (!authFields.submitField) {
+        authFields.submitField = '';
+      }
       return authFields;
     },
     isTargetAPI() {
