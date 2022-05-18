@@ -6,9 +6,9 @@ module EE
 
     override :expires_at_field_data
     def expires_at_field_data
-      {
-        max_date: personal_access_token_max_expiry_date&.iso8601
-      }
+      return super unless ::License.feature_available?(:personal_access_token_expiration_policy)
+
+      super.merge(max_date: personal_access_token_max_expiry_date&.iso8601)
     end
   end
 end
