@@ -15,6 +15,7 @@ module EE
 
         class Requirement < ActiveRecord::Base; end
         class Issue < ActiveRecord::Base; end
+        class WorkItemType < ActiveRecord::Base; end
 
         # This is almost a hard copy of app/models/internal_id.rb
         # with exception of some variables and functions that are not needed.
@@ -117,8 +118,13 @@ module EE
             issue.project_id = params[:project_id]
             issue.issue_type = REQUIREMENT_ISSUE_TYPE
             issue.created_at = requirement.created_at
+            issue.work_item_type_id = requirement_work_item_type_id
             issue.updated_at = Time.current
           end
+        end
+
+        def requirement_work_item_type_id
+          @issue_work_item_type_id ||= WorkItemType.find_by(namespace_id: nil, name: 'Requirement').id
         end
 
         def mark_job_as_succeeded(*arguments)
