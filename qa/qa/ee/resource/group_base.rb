@@ -43,6 +43,24 @@ module QA
         def api_iterations_path
           "#{api_get_path}/iterations"
         end
+
+        # Check if the group has already been scheduled to be deleted
+        #
+        # @return [Boolean]
+        def marked_for_deletion?
+          reload!.api_response[:marked_for_deletion_on].present?
+        end
+
+        # Remove the group unless it's already scheduled for deletion.
+        def remove_via_api!
+          if marked_for_deletion?
+            QA::Runtime::Logger.debug("#{self.class.name} #{identifier} is already scheduled to be removed.")
+
+            return
+          end
+
+          super
+        end
       end
     end
   end
