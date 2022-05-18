@@ -1,4 +1,4 @@
-import initPolicyEditorApp from 'ee/threat_monitoring/policy_editor';
-import { NAMESPACE_TYPES } from 'ee/threat_monitoring/constants';
+import initPolicyEditorApp from 'ee/security_orchestration/policy_editor';
+import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 
 initPolicyEditorApp(document.getElementById('js-group-policy-builder-app'), NAMESPACE_TYPES.GROUP);

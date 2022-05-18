@@ -5,13 +5,13 @@ import { mount } from '@vue/test-utils';
 import { __ } from '~/locale';
 import ScanResultPolicies from 'ee/approvals/components/security_orchestration/scan_result_policies.vue';
 import securityOrchestrationModule from 'ee/approvals/stores/modules/security_orchestration';
-import { gqClient } from 'ee/threat_monitoring/utils';
+import { gqClient } from 'ee/security_orchestration/utils';
 import ScanResultPolicy from 'ee/approvals/components/security_orchestration/scan_result_policy.vue';
 import PolicyDetails from 'ee/approvals/components/security_orchestration/policy_details.vue';
 import {
   mockScanResultPolicy,
   mockScanResultPolicySecond,
-} from '../../../threat_monitoring/mocks/mock_data';
+} from '../../../security_orchestration/mocks/mock_data';
 
 Vue.use(Vuex);
 
