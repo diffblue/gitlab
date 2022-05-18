@@ -1,13 +1,13 @@
 import { shallowMount } from '@vue/test-utils';
 import { nextTick } from 'vue';
-import MRPopover from '~/mr_popover/components/mr_popover.vue';
+import IssuablePopover from '~/issuable/popover/components/mr_popover.vue';
 import CiIcon from '~/vue_shared/components/ci_icon.vue';
 
 describe('MR Popover', () => {
   let wrapper;
 
   beforeEach(() => {
-    wrapper = shallowMount(MRPopover, {
+    wrapper = shallowMount(IssuablePopover, {
       propsData: {
         target: document.createElement('a'),
         projectPath: 'foo/bar',

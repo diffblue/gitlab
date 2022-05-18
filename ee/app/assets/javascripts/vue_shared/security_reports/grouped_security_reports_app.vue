@@ -12,7 +12,7 @@ import { spriteIcon } from '~/lib/utils/common_utils';
 import { s__, n__, __, sprintf } from '~/locale';
 import { componentNames } from 'ee/reports/components/issue_body';
 import { fetchPolicies } from '~/lib/graphql';
-import { mrStates } from '~/mr_popover/constants';
+import { mrStates } from '~/issuable/popover/constants';
 import GroupedIssuesList from '~/reports/components/grouped_issues_list.vue';
 import ReportSection from '~/reports/components/report_section.vue';
 import SummaryRow from '~/reports/components/summary_row.vue';

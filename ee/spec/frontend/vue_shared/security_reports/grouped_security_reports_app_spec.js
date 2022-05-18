@@ -12,7 +12,7 @@ import { trimText } from 'helpers/text_helper';
 import { mockTracking, unmockTracking } from 'helpers/tracking_helper';
 import { waitForMutation } from 'helpers/vue_test_utils_helper';
 import axios from '~/lib/utils/axios_utils';
-import { mrStates } from '~/mr_popover/constants';
+import { mrStates } from '~/issuable/popover/constants';
 import GroupedIssuesList from '~/reports/components/grouped_issues_list.vue';
 import ReportSection from '~/reports/components/report_section.vue';
 import MergeRequestArtifactDownload from '~/vue_shared/security_reports/components/artifact_downloads/merge_request_artifact_download.vue';

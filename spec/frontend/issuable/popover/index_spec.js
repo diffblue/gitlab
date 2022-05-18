@@ -1,6 +1,6 @@
 import { setHTMLFixture } from 'helpers/fixtures';
 import * as createDefaultClient from '~/lib/graphql';
-import initMRPopovers from '~/mr_popover/index';
+import initMRPopovers from '~/issuable/popover/index';
 
 createDefaultClient.default = jest.fn();
 
