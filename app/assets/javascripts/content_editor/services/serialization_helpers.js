@@ -480,3 +480,28 @@ export const link = {
     return `](${state.esc(canonicalSrc || href)}${title ? ` ${state.quote(title)}` : ''})`;
   },
 };
+
+const generateStrikeTag = (open = true) => {
+  return (_, mark) => {
+    const type = /^(~~|<del|<strike|<s).*/.exec(mark.attrs.sourceMarkdown)?.[1];
+
+    switch (type) {
+      case '~~':
+        return type;
+      /* eslint-disable @gitlab/require-i18n-strings */
+      case '<del':
+      case '<strike':
+      case '<s':
+        return (open ? openTag : closeTag)(type.substring(1));
+      default:
+        return '~~';
+    }
+  };
+};
+
+export const strike = {
+  open: generateStrikeTag(),
+  close: generateStrikeTag(false),
+  mixable: true,
+  expelEnclosingWhitespace: true,
+};
