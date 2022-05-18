@@ -11767,6 +11767,8 @@ CREATE TABLE batched_background_migrations (
     max_batch_size integer,
     started_at timestamp with time zone,
     on_hold_until timestamp with time zone,
+    gitlab_schema text NOT NULL,
+    CONSTRAINT check_0406d9776f CHECK ((char_length(gitlab_schema) <= 255)),
     CONSTRAINT check_5bb0382d6f CHECK ((char_length(column_name) <= 63)),
     CONSTRAINT check_6b6a06254a CHECK ((char_length(table_name) <= 63)),
     CONSTRAINT check_batch_size_in_range CHECK ((batch_size >= sub_batch_size)),
@@ -26910,6 +26912,8 @@ CREATE UNIQUE INDEX index_batched_background_migrations_on_unique_configuration 
 CREATE INDEX index_batched_jobs_by_batched_migration_id_and_id ON batched_background_migration_jobs USING btree (batched_background_migration_id, id);
 
 CREATE INDEX index_batched_jobs_on_batched_migration_id_and_status ON batched_background_migration_jobs USING btree (batched_background_migration_id, status);
+
+CREATE UNIQUE INDEX index_batched_migrations_on_gl_schema_and_unique_configuration ON batched_background_migrations USING btree (gitlab_schema, job_class_name, table_name, column_name, job_arguments);
 
 CREATE INDEX index_board_assignees_on_assignee_id ON board_assignees USING btree (assignee_id);
 
