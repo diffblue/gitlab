@@ -31,11 +31,19 @@ module QA
               end
             end
 
-            def approve_license(license, selector = :approved_license_radio)
+            # Remove when feature flag lc_remove_legacy_approval_status no longer used
+            def has_ff_allowed_license_radio?
+              feature_flag_controlled_element(:lc_remove_legacy_approval_status,
+                                              :allowed_license_radio,
+                                              :approved_license_radio,
+                                              true)
+            end
+
+            def approve_license(license)
               click_element(:license_add_button)
               expand_select_list
               search_and_select_exact(license)
-              choose_element(selector, true)
+              choose_element(has_ff_allowed_license_radio?, true)
               click_element(:add_license_submit_button)
 
               has_approved_license?(license)
@@ -48,11 +56,19 @@ module QA
               end
             end
 
-            def deny_license(license, selector = :blacklisted_license_radio)
+            # Remove when feature flag lc_remove_legacy_approval_status no longer used
+            def has_ff_denied_license_button?
+              feature_flag_controlled_element(:lc_remove_legacy_approval_status,
+                                              :denied_license_radio,
+                                              :denied_license_radio,
+                                              true)
+            end
+
+            def deny_license(license)
               click_element(:license_add_button)
               expand_select_list
               search_and_select_exact(license)
-              choose_element(selector, true)
+              choose_element(has_ff_denied_license_button?, true)
               click_element(:add_license_submit_button)
 
               has_denied_license?(license)

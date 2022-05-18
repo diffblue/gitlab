@@ -1,11 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  # Leaving :global scope out of feature_flag metadata
-  # This will allow test to still run in staging since we are only checking if the feature is enabled
-  RSpec.describe 'Secure', :runner,
-    feature_flag: { name: 'lc_remove_legacy_approval_status' },
-    quarantine: { issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/362182', type: :broken } do
+  RSpec.describe 'Secure', :runner do
     describe 'License merge request widget' do
       let(:approved_license_name) { "MIT License" }
       let(:denied_license_name) { "zlib License" }
@@ -115,12 +111,8 @@ module QA
 
         EE::Page::Project::Secure::LicenseCompliance.perform do |license_compliance|
           license_compliance.open_tab
-
-          selector = Runtime::Feature.enabled?(:lc_remove_legacy_approval_status) ? :allowed_license_radio : :approved_license_radio
-          license_compliance.approve_license(approved_license_name, selector)
-
-          selector = Runtime::Feature.enabled?(:lc_remove_legacy_approval_status) ? :denied_license_radio : :blacklisted_license_radio
-          license_compliance.deny_license(denied_license_name, selector)
+          license_compliance.approve_license(approved_license_name)
+          license_compliance.deny_license(denied_license_name)
         end
 
         @merge_request.visit!
