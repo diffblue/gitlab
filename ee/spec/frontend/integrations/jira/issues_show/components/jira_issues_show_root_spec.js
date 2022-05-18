@@ -1,4 +1,4 @@
-import { GlAlert, GlLoadingIcon } from '@gitlab/ui';
+import { GlAlert, GlBadge, GlLoadingIcon } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import MockAdapter from 'axios-mock-adapter';
 
@@ -24,7 +24,7 @@ describe('JiraIssuesShow', () => {
   const findIssuableShow = () => wrapper.findComponent(IssuableShow);
   const findJiraIssueSidebar = () => wrapper.findComponent(JiraIssueSidebar);
   const findIssuableShowStatusBadge = () =>
-    wrapper.findComponent(IssuableHeader).find('[data-testid="status"]');
+    wrapper.findComponent(IssuableHeader).findComponent(GlBadge);
 
   const createComponent = () => {
     wrapper = shallowMount(JiraIssuesShow, {
