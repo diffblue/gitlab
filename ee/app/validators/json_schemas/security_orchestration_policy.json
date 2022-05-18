@@ -1,4 +1,7 @@
 {
+  "$id": "https://gitlab.com/.gitlab/security-policies/policy.yml",
+  "title": "GitLab Security Policies Configuration",
+  "description": "Policies in GitLab provide security teams a way to require scans of their choice to be run whenever a project pipeline runs according to the configuration specified. It is configured by supplying a file in `.gitlab/security-policies/policy.yml`, which will list applicable security policies. A full list of all options can be found at https://docs.gitlab.com/ee/user/application_security/policies/.",
   "type": "object",
   "anyOf":[
     {"required": ["scan_execution_policy"]},
@@ -7,6 +10,7 @@
   "properties": {
     "scan_execution_policy": {
       "type": "array",
+      "description": "Declares required security scans to be run on a specified schedule or with the project pipeline.",
       "additionalItems": false,
       "items": {
         "maxItems": 5,
@@ -19,16 +23,20 @@
         "type": "object",
         "properties": {
           "name": {
+            "description": "Name for the policy.",
             "minLength": 1,
             "type": "string"
           },
           "description": {
+            "description": "Specifies the longer description of the policy.",
             "type": "string"
           },
           "enabled": {
+            "description": "Whether to enforce this policy or not.",
             "type": "boolean"
           },
           "rules": {
+            "description": "Specifies conditions when this policy should be applied.",
             "type": "array",
             "additionalItems": false,
             "items": {
@@ -36,6 +44,7 @@
               "required": [],
               "properties": {
                 "type": {
+                  "description": "Specifies when this policy should be enforced. `pipeline` indicates that given policy should be enforced for the pipeline started for the branch matching one of the defined in `branches` field. `schedule` indicates that given policy should execute defined `actions` on specified `cadence`.",
                   "enum": [
                     "pipeline",
                     "schedule"
@@ -45,24 +54,29 @@
                 "branches": {
                   "type": "array",
                   "additionalItems": false,
+                  "description": "Used to specify a list of branches that should enforce this policy. Supports wildcard (ie. `*` or `release-*`). Supported only when `type` is set to `pipeline`.",
                   "items": {
                     "minLength": 1,
                     "type": "string"
                   }
                 },
                 "cadence": {
+                  "description": "Specifies when this policy should schedule a new pipeline with enforced `actions`. Uses cron expression as a format (ie. `0 22 * * 1-5`). Supported only when `type` is set to `schedule`.",
                   "type": "string"
                 },
                 "agents": {
                   "type": "object",
+                  "description": "Specifies names of the GitLab agents where cluster image scanning will run.",
                   "minProperties": 1,
                   "maxProperties": 1,
                   "patternProperties": {
                     "\\A[a-z0-9]([-a-z0-9]*[a-z0-9])?\\z": {
                       "type": "object",
+                      "description": "Specifies the name of the Kubernetes cluster configured for your project in GitLab.",
                       "properties": {
                         "namespaces": {
                           "type": "array",
+                          "description": "Specifies Kubernetes namespaces where resources will be scanned.",
                           "items": {
                             "type": "string"
                           }
@@ -125,6 +139,7 @@
           },
           "actions": {
             "type": "array",
+            "description": "Specifies a list of scans that should be enforced in this policy.",
             "additionalItems": false,
             "items": {
               "required": [
@@ -133,6 +148,7 @@
               "type": "object",
               "properties": {
                 "scan": {
+                  "description": "A type of the scan that should be enforced to run. Available: `dast`, `secret_detection`, `container_scanning`, `sast`.",
                   "enum": [
                     "dast",
                     "secret_detection",
@@ -143,9 +159,11 @@
                   "type": "string"
                 },
                 "scanner_profile": {
+                  "description": "A name of the DAST Scanner Profile to be used to execute DAST scan. Supported only when `scan` is set to `dast`.",
                   "type": "string"
                 },
                 "site_profile": {
+                  "description": "A name of the DAST Site Profile to be used to execute DAST scan. Supported only when `scan` is set to `dast`.",
                   "type": [
                     "string",
                     "null"
@@ -153,6 +171,7 @@
                 },
                 "variables": {
                   "type": "object",
+                  "description": "Defines environment variables for specific security jobs. Job level property overrides global variables.",
                   "patternProperties": {
                     "\\A[a-zA-Z_][a-zA-Z0-9_]*\\z": {
                       "type": "string"
@@ -233,6 +252,7 @@
     },
     "scan_result_policy": {
       "type": "array",
+      "description": "Declares actions to be enforced based on scan results.",
       "additionalItems": false,
       "items": {
         "maxItems": 5,
@@ -245,16 +265,20 @@
         "type": "object",
         "properties": {
           "name": {
+            "description": "Name for the policy.",
             "minLength": 1,
             "type": "string"
           },
           "description": {
+            "description": "Specifies the longer description of the policy.",
             "type": "string"
           },
           "enabled": {
+            "description": "Whether to enforce this policy or not.",
             "type": "boolean"
           },
           "rules": {
+            "description": "Specifies conditions when a this policy should be applied.",
             "type": "array",
             "maxItems": 5,
             "additionalItems": false,
@@ -272,10 +296,12 @@
                   "enum": [
                     "scan_finding"
                   ],
-                  "type": "string"
+                  "type": "string",
+                  "description": "Specified a type of the policy rule. `scan_finding` rule enforces the defined actions based on the provided information."
                 },
                 "branches": {
                   "type": "array",
+                  "description": "Specifies a list of protected branches that should be concidered to enforce this policy.",
                   "additionalItems": false,
                   "items": {
                     "minLength": 1,
@@ -283,6 +309,7 @@
                   }
                 },
                 "scanners": {
+                  "description": "Specifies a list of scanners that should be considered to enforce this policy. Possible values: `sast`, `secret_detection`, `dependency_scanning`, `container_scanning`, `dast`, `coverage_fuzzing`, `api_fuzzing`.",
                   "type": "array",
                   "additionalItems": false,
                   "items":{
@@ -291,9 +318,11 @@
                   }
                 },
                 "vulnerabilities_allowed":{
+                  "description": "Specifies a number of vulnerabilities allowed before this rule is enforced.",
                   "type": "integer"
                 },
                 "severity_levels":{
+                  "description": "Specifies a list of vulnerability security levels that should be concidered to enforce this policy. Possible values: `info`, `unknown`, `low`, `medium`, `high`, `critical`.",
                   "type": "array",
                   "additionalItems": false,
                   "items":{
@@ -312,6 +341,7 @@
                 },
                 "vulnerability_states":{
                   "type": "array",
+                  "description": "Specifies a list of vulnerability states that should be concidered to enforce this policy. The `newly_detected` state considers all newly detected vulnerabilities regardless of their status or dismissal. The other states consider findings that match the selected state and already exist in the default branch.",
                   "additionalItems": false,
                   "items":{
                     "type": {
@@ -331,6 +361,7 @@
             }
           },
           "actions": {
+            "description": "Specifies a list of actions that should be enforced in this policy. At least one of `user_approvers`, `user_approvers_ids`, `group_approvers`, `group_approvers_ids` should be provided.",
             "type": "array",
             "additionalItems": false,
             "items": {
@@ -346,12 +377,15 @@
                   "enum": [
                     "require_approval"
                   ],
-                  "type": "string"
+                  "type": "string",
+                  "description": "Specified a type of the policy action. `require_approval` action specifies required approvals (from selected groups or users) when this policy is applied."
                 },
                 "approvals_required": {
+                  "description": "Specifies a number of required merge request approvals.",
                   "type": "integer"
                 },
                 "user_approvers": {
+                  "description": "Specifies a list of users (by usernames) required to approve affected merge request.",
                   "type": "array",
                   "minItems": 1,
                   "additionalItems": false,
@@ -361,6 +395,7 @@
                   }
                 },
                 "user_approvers_ids": {
+                  "description": "Specifies a list of users (by IDs) required to approve affected merge request.",
                   "type": "array",
                   "minItems": 1,
                   "additionalItems": false,
@@ -371,6 +406,7 @@
                 },
                 "group_approvers": {
                   "type": "array",
+                  "description": "Specifies a list of groups (by group path) required to approve affected merge request.",
                   "minItems": 1,
                   "additionalItems": false,
                   "items": {
@@ -380,6 +416,7 @@
                 },
                 "group_approvers_ids": {
                   "type": "array",
+                  "description": "Specifies a list of groups (by IDs) required to approve affected merge request.",
                   "minItems": 1,
                   "additionalItems": false,
                   "items": {
