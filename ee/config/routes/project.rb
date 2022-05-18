@@ -50,7 +50,11 @@ constraints(::Constraints::ProjectUrlConstrainer.new) do
         namespace :security do
           resources :dashboard, only: [:index], controller: :dashboard
           resources :vulnerability_report, only: [:index], controller: :vulnerability_report
-          resources :policies, only: [:index, :new, :edit], constraints: { id: %r{[^/]+} }
+          resources :policies, only: [:index, :new, :edit], constraints: { id: %r{[^/]+} } do
+            collection do
+              get :schema
+            end
+          end
 
           resource :configuration, only: [], controller: :configuration do
             post :auto_fix, on: :collection

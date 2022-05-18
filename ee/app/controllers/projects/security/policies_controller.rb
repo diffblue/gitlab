@@ -28,6 +28,10 @@ module Projects
         render_404 if @policy.nil?
       end
 
+      def schema
+        render json: ::Security::OrchestrationPolicyConfiguration::POLICY_SCHEMA.as_json['root']
+      end
+
       private
 
       def validate_policy_configuration
