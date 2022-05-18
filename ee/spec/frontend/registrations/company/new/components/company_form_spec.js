@@ -1,10 +1,9 @@
-import { GlButton, GlForm, GlFormText } from '@gitlab/ui';
+import { GlButton, GlForm, GlFormText, GlToggle } from '@gitlab/ui';
 import { createLocalVue } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import RegistrationForm from 'ee/registrations/components/company_form.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { TRIAL_FORM_SUBMIT_TEXT } from 'ee/trials/constants';
-import RegistrationTrialToggle from 'ee/registrations/components/registration_trial_toggle.vue';
 
 const localVue = createLocalVue();
 
@@ -19,7 +18,7 @@ describe('RegistrationForm', () => {
       provide: {
         submitPath: SUBMIT_PATH,
       },
-      propsData: { trialOnboardingFlow: true },
+      propsData: { trial: true },
     });
   };
 
@@ -27,6 +26,7 @@ describe('RegistrationForm', () => {
   const findButton = () => wrapper.findComponent(GlButton);
   const findForm = () => wrapper.findComponent(GlForm);
   const findFormInput = (testId) => wrapper.findByTestId(testId);
+  const findToggle = () => wrapper.findComponent(GlToggle);
 
   beforeEach(() => {
     wrapper = createComponent();
@@ -42,7 +42,7 @@ describe('RegistrationForm', () => {
       ${true}   | ${'To activate your trial, we need additional details from you.'}
       ${false}  | ${'To complete registration, we need additional details from you.'}
     `('displays the correct page description text', async ({ trialBool, descriptionText }) => {
-      wrapper.setProps({ trialOnboardingFlow: trialBool });
+      wrapper.setProps({ trial: trialBool });
       await nextTick();
 
       expect(findDescription().text()).toContain(descriptionText);
@@ -53,8 +53,8 @@ describe('RegistrationForm', () => {
     });
 
     it('sets the trial value to be true', () => {
-      expect(wrapper.props().trialOnboardingFlow).toBe(true);
-      expect(wrapper.findComponent(RegistrationTrialToggle).props('active')).toBe(true);
+      expect(wrapper.props().trial).toBe(true);
+      expect(findToggle().props('value')).toBe(true);
     });
 
     it.each`

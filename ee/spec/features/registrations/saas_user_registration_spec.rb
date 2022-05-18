@@ -78,7 +78,7 @@ RSpec.describe "User registration", :js, :saas do
       country: 'US',
       state: 'FL',
       website_url: 'https://gitlab.com',
-      trial: 'true',
+      trial_onboarding_flow: 'true',
       # these are the passed through params
       role: 'other',
       other_role: 'My role',
@@ -89,7 +89,7 @@ RSpec.describe "User registration", :js, :saas do
 
   def company_params_trial_false
     hash_including(
-      trial: 'false',
+      trial_onboarding_flow: 'false',
       # these are the passed through params
       role: 'other',
       other_role: 'My role',
@@ -107,14 +107,7 @@ RSpec.describe "User registration", :js, :saas do
       fill_in 'group_name', with: 'Test Group'
       fill_in 'blank_project_name', with: 'Test Project'
 
-      expect_next(GitlabSubscriptions::ApplyTrialService).to receive(:execute).with(
-        uid: user.id,
-        trial_user: ActionController::Parameters.new(
-          namespace_id: Namespace.maximum(:id).to_i + 1,
-          gitlab_com_trial: true,
-          sync_to_gl: true
-        ).permit!
-      ).and_return(success: true)
+      expect_next(GitlabSubscriptions::ApplyTrialService).to receive(:execute).and_return(success: true)
 
       click_on 'Create project'
 
