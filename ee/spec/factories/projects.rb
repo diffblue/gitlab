@@ -70,11 +70,14 @@ FactoryBot.modify do
     trait :with_ci_minutes do
       transient do
         amount_used { 0 }
+        shared_runners_duration { 0 }
       end
 
       after(:create) do |project, evaluator|
-        if evaluator.amount_used
-          create(:ci_project_monthly_usage, project: project, amount_used: evaluator.amount_used)
+        if evaluator.amount_used || evaluator.shared_runners_duration
+          create(:ci_project_monthly_usage, project: project, amount_used: evaluator.amount_used,
+            shared_runners_duration: evaluator.shared_runners_duration
+          )
         end
       end
     end

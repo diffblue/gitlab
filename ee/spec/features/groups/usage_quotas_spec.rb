@@ -127,6 +127,22 @@ RSpec.describe 'Groups > Usage Quotas' do
     end
   end
 
+  context 'projects usage table' do
+    let!(:project) { create(:project, :with_ci_minutes, amount_used: 100, shared_runners_duration: 50, namespace: group, shared_runners_enabled: true) }
+
+    it 'displays correct table data' do
+      visit_usage_quotas_page
+
+      page.within('.pipeline-project-metrics') do
+        expect(page).to have_content("Project")
+        expect(page).to have_content("Shared runner usage")
+        expect(page).to have_content("CI/CD minutes usage")
+        expect(find('[data-testid="project_shared_runner_duration"]')).to have_text('50')
+        expect(find('[data-testid="project_amount_used"]')).to have_text('100')
+      end
+    end
+  end
+
   context 'minutes over quota' do
     let(:group) { create(:group, :with_used_build_minutes_limit) }
     let!(:other_project) { create(:project, namespace: group, shared_runners_enabled: false) }
