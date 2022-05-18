@@ -16,7 +16,7 @@ export default {
   name: 'GeoReplicableFilterBar',
   i18n: {
     resyncAll: s__('Geo|Resync all'),
-    resyncAllReplicables: s__('Geo|Resync all %{replicableType}'),
+    resyncAllReplicables: s__('Geo|Resync all %{total} %{replicableType}'),
     dropdownTitle: s__('Geo|Filter by status'),
     searchPlaceholder: s__('Geo|Filter by name'),
     modalBody: s__(
@@ -35,7 +35,7 @@ export default {
     GlModalDirective,
   },
   computed: {
-    ...mapState(['currentFilterIndex', 'filterOptions', 'searchFilter']),
+    ...mapState(['currentFilterIndex', 'filterOptions', 'searchFilter', 'paginationData']),
     ...mapGetters(['replicableTypeName']),
     search: {
       get() {
@@ -49,6 +49,7 @@ export default {
     resyncText() {
       return sprintf(this.$options.i18n.resyncAllReplicables, {
         replicableType: this.replicableTypeName,
+        total: this.paginationData.total,
       });
     },
   },
