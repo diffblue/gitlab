@@ -28425,6 +28425,8 @@ CREATE INDEX index_notes_on_author_id_and_created_at_and_id ON notes USING btree
 
 CREATE INDEX index_notes_on_commit_id ON notes USING btree (commit_id);
 
+CREATE INDEX index_notes_on_confidential ON notes USING btree (confidential) WHERE (confidential = true);
+
 CREATE INDEX index_notes_on_created_at ON notes USING btree (created_at);
 
 CREATE INDEX index_notes_on_discussion_id ON notes USING btree (discussion_id);
