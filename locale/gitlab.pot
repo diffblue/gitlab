@@ -26550,7 +26550,13 @@ msgstr ""
 msgid "Only Issue ID or merge request ID is required"
 msgstr ""
 
+msgid "Only Issue can be parent of Task."
+msgstr ""
+
 msgid "Only Project Members"
+msgstr ""
+
+msgid "Only Task can be assigned as a child in hierarchy."
 msgstr ""
 
 msgid "Only active projects show up in the search and on the dashboard."
@@ -27305,10 +27311,16 @@ msgstr ""
 msgid "Parent"
 msgstr ""
 
+msgid "Parent already has maximum number of children."
+msgstr ""
+
 msgid "Parent epic doesn't exist."
 msgstr ""
 
 msgid "Parent epic is not present."
+msgstr ""
+
+msgid "Parent must be in the same project as child."
 msgstr ""
 
 msgid "Parsing error for param :embed_json. %{message}"
