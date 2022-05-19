@@ -12,7 +12,6 @@ export default {
     BoardNewItem,
     GroupSelect,
   },
-  inject: ['boardId'],
   props: {
     list: {
       type: Object,

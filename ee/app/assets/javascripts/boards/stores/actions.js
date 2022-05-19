@@ -29,6 +29,7 @@ import {
 } from '../boards_util';
 
 import { EpicFilterType, GroupByParamType, FilterFields, IterationIDs } from '../constants';
+import epicBoardQuery from '../graphql/epic_board.query.graphql';
 import createEpicBoardListMutation from '../graphql/epic_board_list_create.mutation.graphql';
 import epicCreateMutation from '../graphql/epic_create.mutation.graphql';
 import epicMoveListMutation from '../graphql/epic_move_list.mutation.graphql';
@@ -95,6 +96,31 @@ export { gqlClient };
 
 export default {
   ...actionsCE,
+
+  fetchEpicBoard: ({ commit, dispatch }, { fullPath, boardId }) => {
+    commit(types.REQUEST_CURRENT_BOARD);
+
+    const variables = {
+      fullPath,
+      boardId,
+    };
+
+    return gqlClient
+      .query({
+        query: epicBoardQuery,
+        variables,
+      })
+      .then(({ data }) => {
+        if (data.workspace?.errors) {
+          commit(types.RECEIVE_BOARD_FAILURE);
+        } else {
+          const board = data.workspace?.board;
+          commit(types.RECEIVE_BOARD_SUCCESS, board);
+          dispatch('setBoardConfig', board);
+        }
+      })
+      .catch(() => commit(types.RECEIVE_BOARD_FAILURE));
+  },
 
   addListNewIssue: async (
     { state: { boardConfig, boardType, fullPath, filterParams }, dispatch, commit },
@@ -234,7 +260,7 @@ export default {
       });
   },
 
-  performSearch({ dispatch, getters }) {
+  performSearch({ dispatch, getters }, { resetLists = false } = {}) {
     dispatch(
       'setFilters',
       convertObjectPropsToCamelCase(queryToObject(window.location.search, { gatherArrays: true })),
@@ -245,7 +271,7 @@ export default {
       dispatch('fetchEpicsSwimlanes');
     }
 
-    dispatch('fetchLists');
+    dispatch('fetchLists', { resetLists });
     dispatch('resetIssues');
   },
 

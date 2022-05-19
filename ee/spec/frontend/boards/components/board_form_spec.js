@@ -57,6 +57,9 @@ describe('BoardForm', () => {
   const findDeleteConfirmation = () => wrapper.findByTestId('delete-confirmation-message');
   const findInput = () => wrapper.find('#board-new-name');
 
+  const setBoardMock = jest.fn();
+  const setErrorMock = jest.fn();
+
   const createStore = ({ getters = {} } = {}) => {
     store = new Vuex.Store({
       getters: {
@@ -65,6 +68,10 @@ describe('BoardForm', () => {
         isGroupBoard: () => true,
         isProjectBoard: () => false,
         ...getters,
+      },
+      actions: {
+        setBoard: setBoardMock,
+        setError: setErrorMock,
       },
     });
   };
@@ -151,7 +158,7 @@ describe('BoardForm', () => {
         expect(mutate).not.toHaveBeenCalled();
       });
 
-      it('calls a correct GraphQL mutation and redirects to correct page from existing board', async () => {
+      it('calls a correct GraphQL mutation and updates board on state', async () => {
         createComponent({ props: { canAdminBoard: true, currentPage: formType.new } });
         fillForm();
 
@@ -167,13 +174,12 @@ describe('BoardForm', () => {
         });
 
         await waitForPromises();
-        expect(visitUrl).toHaveBeenCalledWith('test-path');
+        expect(setBoardMock).toHaveBeenCalledTimes(1);
       });
 
-      it('shows a GlAlert if GraphQL mutation fails', async () => {
+      it('sets error if GraphQL mutation fails', async () => {
         mutate = jest.fn().mockRejectedValue('Houston, we have a problem');
         createComponent({ props: { canAdminBoard: true, currentPage: formType.new } });
-        jest.spyOn(wrapper.vm, 'setError').mockImplementation(() => {});
         fillForm();
 
         await waitForPromises();
@@ -181,8 +187,8 @@ describe('BoardForm', () => {
         expect(mutate).toHaveBeenCalled();
 
         await waitForPromises();
-        expect(visitUrl).not.toHaveBeenCalled();
-        expect(wrapper.vm.setError).toHaveBeenCalled();
+        expect(setBoardMock).not.toHaveBeenCalled();
+        expect(setErrorMock).toHaveBeenCalled();
       });
     });
   });
@@ -324,10 +330,10 @@ describe('BoardForm', () => {
       });
 
       await waitForPromises();
-      expect(visitUrl).toHaveBeenCalledWith('test-path');
+      expect(setBoardMock).toHaveBeenCalledTimes(1);
     });
 
-    it('shows a GlAlert if GraphQL mutation fails', async () => {
+    it('sets error if GraphQL mutation fails', async () => {
       mutate = jest.fn().mockRejectedValue('Houston, we have a problem');
       createComponent({
         props: {
@@ -336,7 +342,6 @@ describe('BoardForm', () => {
           currentBoard: currentEpicBoard,
         },
       });
-      jest.spyOn(wrapper.vm, 'setError').mockImplementation(() => {});
       findInput().trigger('keyup.enter', { metaKey: true });
 
       await waitForPromises();
@@ -344,8 +349,8 @@ describe('BoardForm', () => {
       expect(mutate).toHaveBeenCalled();
 
       await waitForPromises();
-      expect(visitUrl).not.toHaveBeenCalled();
-      expect(wrapper.vm.setError).toHaveBeenCalled();
+      expect(setBoardMock).not.toHaveBeenCalled();
+      expect(setErrorMock).toHaveBeenCalled();
     });
   });
 

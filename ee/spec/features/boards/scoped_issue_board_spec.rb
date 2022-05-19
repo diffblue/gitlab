@@ -546,10 +546,13 @@ RSpec.describe 'Scoped issue boards', :js do
       end
 
       context 'weight' do
-        let!(:issue_weight_1) { create(:issue, project: project, weight: 1) }
+        let_it_be(:issue_weight_1) { create(:issue, project: project, weight: 1) }
 
         it 'sets board weight' do
           update_board_weight(1)
+
+          expect(page).to have_css('.gl-filtered-search-token')
+          expect(find('.gl-filtered-search-scrollable')).to have_content(:all, '1')
 
           expect(page).to have_selector('.board-card', count: 1)
           expect(find('.board-card-title').text).to have_content(issue_weight_1.title)
@@ -557,6 +560,8 @@ RSpec.describe 'Scoped issue boards', :js do
 
         it 'sets board to Any weight' do
           update_board_weight('Any')
+
+          expect(page).not_to have_css('.gl-filtered-search-token')
 
           expect(page).to have_selector('.board-card', count: 4)
         end

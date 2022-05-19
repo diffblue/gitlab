@@ -29,6 +29,7 @@ import { mergeUrlParams, removeParams } from '~/lib/utils/url_utility';
 import { __ } from '~/locale';
 import {
   labels,
+  mockEpicBoard,
   mockLists,
   mockIssue,
   mockIssues,
@@ -53,6 +54,53 @@ beforeEach(() => {
 
 afterEach(() => {
   mock.restore();
+});
+
+describe('fetchEpicBoard', () => {
+  const payload = {
+    fullPath: 'gitlab-org',
+    fullBoardId: 'gid://gitlab/Board::EpicBoard/1',
+  };
+
+  const queryResponse = {
+    data: {
+      workspace: {
+        board: mockEpicBoard,
+      },
+    },
+  };
+
+  it('should commit mutation RECEIVE_BOARD_SUCCESS and dispatch setBoardConfig and performSearch on success', async () => {
+    jest.spyOn(gqlClient, 'query').mockResolvedValue(queryResponse);
+
+    await testAction({
+      action: actions.fetchEpicBoard,
+      payload,
+      expectedMutations: [
+        { type: types.REQUEST_CURRENT_BOARD },
+        {
+          type: types.RECEIVE_BOARD_SUCCESS,
+          payload: mockEpicBoard,
+        },
+      ],
+      expectedActions: [{ type: 'setBoardConfig', payload: mockEpicBoard }],
+    });
+  });
+
+  it('should commit mutation RECEIVE_BOARD_FAILURE on failure', async () => {
+    jest.spyOn(gqlClient, 'query').mockResolvedValue(Promise.reject());
+
+    await testAction({
+      action: actions.fetchBoard,
+      payload,
+      expectedMutations: [
+        { type: types.REQUEST_CURRENT_BOARD },
+        {
+          type: types.RECEIVE_BOARD_FAILURE,
+        },
+      ],
+    });
+  });
 });
 
 describe('setFilters', () => {
@@ -132,7 +180,7 @@ describe('performSearch', () => {
       state: { ...getters },
       expectedActions: [
         { type: 'setFilters', payload: {} },
-        { type: 'fetchLists' },
+        { type: 'fetchLists', payload: { resetLists: false } },
         { type: 'resetIssues' },
       ],
     });
@@ -147,7 +195,7 @@ describe('performSearch', () => {
         { type: 'setFilters', payload: {} },
         { type: 'resetEpics' },
         { type: 'fetchEpicsSwimlanes' },
-        { type: 'fetchLists' },
+        { type: 'fetchLists', payload: { resetLists: false } },
         { type: 'resetIssues' },
       ],
     });

@@ -32,6 +32,11 @@ function mountBoardApp(el) {
     ...convertObjectPropsToCamelCase(rawFilterParams),
   };
 
+  store.dispatch('fetchEpicBoard', {
+    fullPath,
+    boardId: fullEpicBoardId(boardId),
+  });
+
   store.dispatch('setInitialBoardData', {
     allowSubEpics: parseBoolean(el.dataset.subEpicsFeatureAvailable),
     boardType: el.dataset.parent,
