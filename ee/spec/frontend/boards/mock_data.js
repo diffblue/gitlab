@@ -9,15 +9,11 @@ import IterationToken from 'ee/vue_shared/components/filtered_search_bar/tokens/
 import ReleaseToken from '~/vue_shared/components/filtered_search_bar/tokens/release_token.vue';
 import WeightToken from 'ee/vue_shared/components/filtered_search_bar/tokens/weight_token.vue';
 
-export const mockEpicBoardResponse = {
-  data: {
-    workspace: {
-      epicBoard: {
-        id: 'gid://gitlab/Boards::EpicBoard/1',
-        name: 'Development',
-      },
-      __typename: 'Group',
-    },
+export const mockEpicBoard = {
+  id: 'gid://gitlab/Board::EpicBoard/1',
+  name: 'Development',
+  labels: {
+    nodes: [{ id: 'gid://gitlab/Label/32', title: 'Deliverable' }],
   },
 };
 

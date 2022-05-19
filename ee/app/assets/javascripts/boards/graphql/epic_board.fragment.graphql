@@ -1,0 +1,14 @@
+#import "~/graphql_shared/fragments/label.fragment.graphql"
+
+fragment EpicBoardFragment on EpicBoard {
+  id
+  name
+  hideBacklogList
+  hideClosedList
+  labels {
+    nodes {
+      ...Label
+    }
+  }
+  webPath
+}

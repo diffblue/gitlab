@@ -7,7 +7,6 @@ import BoardsSelectorFoss from '~/boards/components/boards_selector.vue';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import Tracking from '~/tracking';
 import epicBoardsQuery from '../graphql/epic_boards.query.graphql';
-import epicBoardQuery from '../graphql/epic_board.query.graphql';
 
 export default {
   extends: BoardsSelectorFoss,
@@ -16,9 +15,6 @@ export default {
     ...mapGetters(['isEpicBoard']),
     showCreate() {
       return this.isEpicBoard || this.multipleIssueBoardsAvailable;
-    },
-    currentBoardQuery() {
-      return this.isEpicBoard ? epicBoardQuery : this.currentBoardQueryCE;
     },
   },
   methods: {

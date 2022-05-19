@@ -46,12 +46,6 @@ export default {
     },
   },
   methods: {
-    epicBoardCreateResponse(data) {
-      return data.epicBoardCreate.epicBoard.webPath;
-    },
-    epicBoardUpdateResponse(data) {
-      return data.epicBoardUpdate.epicBoard.webPath;
-    },
     async createOrUpdateBoard() {
       const response = await this.$apollo.mutate({
         mutation: this.isEpicBoard ? this.currentEpicBoardMutation : this.currentMutation,
@@ -60,13 +54,13 @@ export default {
 
       if (!this.board.id) {
         return this.isEpicBoard
-          ? this.epicBoardCreateResponse(response.data)
-          : this.boardCreateResponse(response.data);
+          ? response.data.epicBoardCreate.epicBoard
+          : response.data.createBoard.board;
       }
 
       return this.isEpicBoard
-        ? this.epicBoardUpdateResponse(response.data)
-        : this.boardUpdateResponse(response.data);
+        ? response.data.epicBoardUpdate.epicBoard
+        : response.data.updateBoard.board;
     },
     async deleteBoard() {
       await this.$apollo.mutate({
