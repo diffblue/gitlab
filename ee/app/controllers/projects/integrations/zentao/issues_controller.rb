@@ -59,8 +59,15 @@ module Projects
         def render_error(exception)
           log_exception(exception)
 
-          render json: { errors: [s_('ZentaoIntegration|An error occurred while requesting data from the ZenTao service.')] },
-            status: :bad_request
+          respond_to do |format|
+            format.html do
+              render action_name
+            end
+            format.json do
+              render json: { errors: [s_('ZentaoIntegration|An error occurred while requesting data from the ZenTao service.')] },
+                status: :bad_request
+            end
+          end
         end
       end
     end
