@@ -29,9 +29,11 @@ module QA
             merge_request.no_preparation = true
           end.visit!
 
-          Page::MergeRequest::Show.perform(&:merge!)
+          Page::MergeRequest::Show.perform do |mr|
+            mr.merge!
 
-          expect(page).to have_content('The changes were merged')
+            expect(mr).to have_content(/The changes were merged|Changes merged into/)
+          end
         end
       end
 
