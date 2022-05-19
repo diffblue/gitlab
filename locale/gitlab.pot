@@ -37678,6 +37678,9 @@ msgstr ""
 msgid "The comparison view may be inaccurate due to merge conflicts."
 msgstr ""
 
+msgid "The complete DevOps platform. One application with endless possibilities. Organizations rely on GitLab’s source code management, CI/CD, security, and more to deliver software rapidly."
+msgstr ""
+
 msgid "The compliance report shows the merge request violations merged in protected environments."
 msgstr ""
 
