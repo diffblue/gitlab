@@ -46,7 +46,11 @@ module QA
         end
       end
 
-      it 'assigns a group iteration to an existing issue', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347942' do
+      it(
+        'assigns a group iteration to an existing issue',
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347942',
+        except: { subdomain: 'pre' }
+      ) do
         issue.visit!
 
         Page::Project::Issue::Show.perform do |issue|
