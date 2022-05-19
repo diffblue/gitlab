@@ -43,16 +43,12 @@ type artifactsUploadProcessor struct {
 // Artifacts is like a Multipart but specific for artifacts upload.
 func Artifacts(myAPI *api.API, h http.Handler, p Preparer) http.Handler {
 	return myAPI.PreAuthorizeHandler(func(w http.ResponseWriter, r *http.Request, a *api.Response) {
-		opts, err := p.Prepare(a)
-		if err != nil {
-			helper.Fail500(w, r, fmt.Errorf("UploadArtifacts: error preparing file storage options"))
-			return
-		}
-
 		format := r.URL.Query().Get(ArtifactFormatKey)
-
-		mg := &artifactsUploadProcessor{format: format, SavedFileTracker: SavedFileTracker{Request: r}}
-		interceptMultipartFiles(w, r, h, a, mg, opts)
+		mg := &artifactsUploadProcessor{
+			format:           format,
+			SavedFileTracker: SavedFileTracker{Request: r},
+		}
+		interceptMultipartFiles(w, r, h, mg, &eagerAuthorizer{a}, p)
 	}, "/authorize")
 }
 

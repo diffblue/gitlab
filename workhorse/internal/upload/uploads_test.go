@@ -71,12 +71,10 @@ func TestUploadHandlerForwardingRawData(t *testing.T) {
 	response := httptest.NewRecorder()
 
 	handler := newProxy(ts.URL)
-	apiResponse := &api.Response{TempPath: tempPath}
+	fa := &eagerAuthorizer{&api.Response{TempPath: tempPath}}
 	preparer := &DefaultPreparer{}
-	opts, err := preparer.Prepare(apiResponse)
-	require.NoError(t, err)
 
-	interceptMultipartFiles(response, httpRequest, handler, apiResponse, nil, opts)
+	interceptMultipartFiles(response, httpRequest, handler, nil, fa, preparer)
 
 	require.Equal(t, 202, response.Code)
 	require.Equal(t, "RESPONSE", response.Body.String(), "response body")
@@ -139,12 +137,10 @@ func TestUploadHandlerRewritingMultiPartData(t *testing.T) {
 
 	handler := newProxy(ts.URL)
 
-	apiResponse := &api.Response{TempPath: tempPath}
+	fa := &eagerAuthorizer{&api.Response{TempPath: tempPath}}
 	preparer := &DefaultPreparer{}
-	opts, err := preparer.Prepare(apiResponse)
-	require.NoError(t, err)
 
-	interceptMultipartFiles(response, httpRequest, handler, apiResponse, &testFormProcessor{}, opts)
+	interceptMultipartFiles(response, httpRequest, handler, &testFormProcessor{}, fa, preparer)
 	require.Equal(t, 202, response.Code)
 
 	cancel() // this will trigger an async cleanup
@@ -303,11 +299,10 @@ func TestUploadProcessingFile(t *testing.T) {
 			httpRequest.Header.Set("Content-Type", writer.FormDataContentType())
 
 			response := httptest.NewRecorder()
+			fa := &eagerAuthorizer{test.preauth}
 			preparer := &DefaultPreparer{}
-			opts, err := preparer.Prepare(test.preauth)
-			require.NoError(t, err)
 
-			interceptMultipartFiles(response, httpRequest, nilHandler, test.preauth, &testFormProcessor{}, opts)
+			interceptMultipartFiles(response, httpRequest, nilHandler, &testFormProcessor{}, fa, preparer)
 
 			require.Equal(t, 200, response.Code)
 			require.Equal(t, "test", string(test.content(t)))
@@ -317,7 +312,6 @@ func TestUploadProcessingFile(t *testing.T) {
 
 func TestInvalidFileNames(t *testing.T) {
 	testhelper.ConfigureSecret()
-	tempPath := t.TempDir()
 
 	for _, testCase := range []struct {
 		filename       string
@@ -345,12 +339,7 @@ func TestInvalidFileNames(t *testing.T) {
 		httpRequest.Header.Set("Content-Type", writer.FormDataContentType())
 
 		response := httptest.NewRecorder()
-		apiResponse := &api.Response{TempPath: tempPath}
-		preparer := &DefaultPreparer{}
-		opts, err := preparer.Prepare(apiResponse)
-		require.NoError(t, err)
-
-		interceptMultipartFiles(response, httpRequest, nilHandler, apiResponse, &SavedFileTracker{Request: httpRequest}, opts)
+		testInterceptMultipartFiles(t, response, httpRequest, nilHandler, &SavedFileTracker{Request: httpRequest})
 		require.Equal(t, testCase.code, response.Code)
 	}
 }
@@ -542,10 +531,8 @@ func waitUntilDeleted(t *testing.T, path string) {
 func testInterceptMultipartFiles(t *testing.T, w http.ResponseWriter, r *http.Request, h http.Handler, filter MultipartFormProcessor) {
 	t.Helper()
 
-	apiResponse := &api.Response{TempPath: t.TempDir()}
+	fa := &eagerAuthorizer{&api.Response{TempPath: t.TempDir()}}
 	preparer := &DefaultPreparer{}
-	opts, err := preparer.Prepare(apiResponse)
-	require.NoError(t, err)
 
-	interceptMultipartFiles(w, r, h, apiResponse, filter, opts)
+	interceptMultipartFiles(w, r, h, filter, fa, preparer)
 }
