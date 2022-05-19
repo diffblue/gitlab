@@ -86,13 +86,35 @@ export const mockDastScanExecutionObject = {
   ],
 };
 
-export const mockScanExecutionPolicy = {
+export const mockProjectScanExecutionPolicy = {
   __typename: 'ScanExecutionPolicy',
   name: 'Scheduled DAST/SAST scan',
   updatedAt: new Date('2021-06-07T00:00:00.000Z'),
   yaml: mockDastScanExecutionManifest,
   enabled: true,
   latestScan: { date: new Date('2021-06-07T00:00:00.000Z'), pipelineUrl: 'path/to/pipeline' },
+  source: {
+    __typename: 'ProjectSecurityPolicySource',
+  },
+};
+
+export const mockGroupScanExecutionPolicy = {
+  __typename: 'ScanExecutionPolicy',
+  name: 'Group Inherited Scheduled DAST/SAST scan',
+  updatedAt: new Date('2021-06-07T00:00:00.000Z'),
+  yaml: mockDastScanExecutionManifest,
+  enabled: false,
+  latestScan: { date: new Date('2021-06-07T00:00:00.000Z'), pipelineUrl: 'path/to/pipeline' },
+  source: {
+    __typename: 'GroupSecurityPolicySource',
+    inherited: true,
+    namespace: {
+      __typename: 'Namespace',
+      id: '1',
+      fullPath: 'parent-group-path',
+      name: 'parent-group-name',
+    },
+  },
 };
 
 export const mockScanResultManifest = `type: scan_result_policy
@@ -178,7 +200,10 @@ export const mockScanResultPolicySecond = {
   enabled: true,
 };
 
-export const mockScanExecutionPoliciesResponse = [mockScanExecutionPolicy];
+export const mockScanExecutionPoliciesResponse = [
+  mockProjectScanExecutionPolicy,
+  mockGroupScanExecutionPolicy,
+];
 
 export const mockScanResultPoliciesResponse = [mockScanResultPolicy];
 

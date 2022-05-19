@@ -1,5 +1,5 @@
 <script>
-import { GlIcon, GlLoadingIcon, GlTable, GlTooltipDirective } from '@gitlab/ui';
+import { GlIcon, GlLink, GlLoadingIcon, GlSprintf, GlTable, GlTooltipDirective } from '@gitlab/ui';
 import { NAMESPACE_TYPES } from 'ee/threat_monitoring/constants';
 import createFlash from '~/flash';
 import { getTimeago } from '~/lib/utils/datetime_utility';
@@ -12,6 +12,7 @@ import { getPolicyType } from '../../utils';
 import { POLICY_TYPE_COMPONENT_OPTIONS, POLICY_TYPE_OPTIONS } from '../constants';
 import PolicyDrawer from '../policy_drawer/policy_drawer.vue';
 import PolicyTypeFilter from '../policy_type_filter.vue';
+import { getSourceUrl, isPolicyInherited } from '../utils';
 import NoPoliciesEmptyState from './no_policies_empty_state.vue';
 
 const NAMESPACE_QUERY_DICT = {
@@ -38,7 +39,9 @@ const getPoliciesWithType = (policies, policyType) =>
 export default {
   components: {
     GlIcon,
+    GlLink,
     GlLoadingIcon,
+    GlSprintf,
     GlTable,
     NoPoliciesEmptyState,
     PolicyTypeFilter,
@@ -135,6 +138,12 @@ export default {
 
       return '';
     },
+    typeLabel() {
+      if (this.namespaceType === NAMESPACE_TYPES.GROUP) {
+        return this.$options.i18n.groupTypeLabel;
+      }
+      return this.$options.i18n.projectTypeLabel;
+    },
     policyType() {
       // eslint-disable-next-line no-underscore-dangle
       return this.selectedPolicy ? getPolicyType(this.selectedPolicy.__typename) : '';
@@ -159,8 +168,16 @@ export default {
         },
         {
           key: 'policyType',
-          label: s__('SecurityPolicies|Policy type'),
+          label: s__('SecurityOrchestration|Policy type'),
           sortable: true,
+        },
+        {
+          key: 'source',
+          label: s__('SecurityOrchestration|Source'),
+          sortable: true,
+          tdAttr: {
+            'data-testid': 'policy-source-cell',
+          },
         },
         {
           key: 'updatedAt',
@@ -184,6 +201,8 @@ export default {
       if (!updatedAt) return '';
       return getTimeago().format(updatedAt);
     },
+    getSourceUrl,
+    isPolicyInherited,
     presentPolicyDrawer(rows) {
       if (rows.length === 0) return;
 
@@ -198,8 +217,11 @@ export default {
     },
   },
   i18n: {
+    inheritedLabel: s__('SecurityOrchestration|Inherited from %{namespace}'),
     statusEnabled: __('Enabled'),
     statusDisabled: __('Disabled'),
+    groupTypeLabel: s__('SecurityOrchestration|This group'),
+    projectTypeLabel: s__('SecurityOrchestration|This project'),
   },
 };
 </script>
@@ -235,9 +257,9 @@ export default {
       selected-variant="primary"
       @row-selected="presentPolicyDrawer"
     >
-      <template #cell(status)="value">
+      <template #cell(status)="{ item: { enabled } }">
         <gl-icon
-          v-if="value.item.enabled"
+          v-if="enabled"
           v-gl-tooltip="$options.i18n.statusEnabled"
           :aria-label="$options.i18n.statusEnabled"
           name="check-circle-filled"
@@ -246,8 +268,19 @@ export default {
         <span v-else class="gl-sr-only">{{ $options.i18n.statusDisabled }}</span>
       </template>
 
-      <template #cell(updatedAt)="value">
-        {{ getTimeAgoString(value.item.updatedAt) }}
+      <template #cell(source)="{ value: source }">
+        <gl-sprintf v-if="isPolicyInherited(source)" :message="$options.i18n.inheritedLabel">
+          <template #namespace>
+            <gl-link :href="getSourceUrl(source.namespace.fullPath)" target="_blank">
+              {{ source.namespace.name }}
+            </gl-link>
+          </template>
+        </gl-sprintf>
+        <span v-else>{{ typeLabel }}</span>
+      </template>
+
+      <template #cell(updatedAt)="{ value: updatedAt }">
+        {{ getTimeAgoString(updatedAt) }}
       </template>
 
       <template #table-busy>

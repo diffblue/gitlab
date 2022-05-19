@@ -1,7 +1,7 @@
 import ScanExecutionPolicy from 'ee/threat_monitoring/components/policy_drawer/scan_execution_policy.vue';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import {
-  mockScanExecutionPolicy,
+  mockProjectScanExecutionPolicy,
   mockScanExecutionManifestNoActions,
   mockScanExecutionManifestMultipleActions,
 } from '../../mocks/mock_data';
@@ -23,9 +23,9 @@ describe('ScanExecutionPolicy component', () => {
 
   describe.each`
     title                       | propsData
-    ${'default policy'}         | ${{ policy: mockScanExecutionPolicy }}
-    ${'no action policy'}       | ${{ policy: { ...mockScanExecutionPolicy, yaml: mockScanExecutionManifestNoActions } }}
-    ${'multiple action policy'} | ${{ policy: { ...mockScanExecutionPolicy, yaml: mockScanExecutionManifestMultipleActions } }}
+    ${'default policy'}         | ${{ policy: mockProjectScanExecutionPolicy }}
+    ${'no action policy'}       | ${{ policy: { ...mockProjectScanExecutionPolicy, yaml: mockScanExecutionManifestNoActions } }}
+    ${'multiple action policy'} | ${{ policy: { ...mockProjectScanExecutionPolicy, yaml: mockScanExecutionManifestMultipleActions } }}
   `('$title', ({ propsData }) => {
     beforeEach(() => {
       factory({ propsData });

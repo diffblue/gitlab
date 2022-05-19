@@ -3,7 +3,10 @@ import { POLICY_TYPE_COMPONENT_OPTIONS } from 'ee/threat_monitoring/components/c
 import PolicyDrawer from 'ee/threat_monitoring/components/policy_drawer/policy_drawer.vue';
 import ScanExecutionPolicy from 'ee/threat_monitoring/components/policy_drawer/scan_execution_policy.vue';
 import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import { mockScanExecutionPolicy } from '../../mocks/mock_data';
+import {
+  mockProjectScanExecutionPolicy,
+  mockGroupScanExecutionPolicy,
+} from '../../mocks/mock_data';
 
 describe('PolicyDrawer component', () => {
   let wrapper;
@@ -11,16 +14,17 @@ describe('PolicyDrawer component', () => {
   const factory = ({ mountFn = shallowMountExtended, propsData, stubs = {} } = {}) => {
     wrapper = mountFn(PolicyDrawer, {
       propsData: {
-        editPolicyPath: '/policies/policy/edit?environment_id=-1',
+        editPolicyPath: '/policies/policy-name/edit?type="scanExecution"',
         open: true,
         ...propsData,
       },
-      stubs: { PolicyYamlEditor: true, ...stubs },
+      stubs: { PolicyYamlEditor: true, GlTooltip: true, ...stubs },
     });
   };
 
   // Finders
   const findEditButton = () => wrapper.findByTestId('edit-button');
+  const findTooltip = () => wrapper.findByTestId('edit-button-tooltip');
   const findAllTabs = () => wrapper.findAllComponents(GlTab);
   const findScanExecutionPolicy = () => wrapper.findComponent(ScanExecutionPolicy);
   const findDefaultComponentPolicyEditor = () =>
@@ -32,7 +36,7 @@ describe('PolicyDrawer component', () => {
     it('renders edit button', () => {
       const button = findEditButton();
       expect(button.exists()).toBe(true);
-      expect(button.attributes().href).toBe('/policies/policy/edit?environment_id=-1');
+      expect(button.attributes().href).toBe('/policies/policy-name/edit?type="scanExecution"');
     });
   };
 
@@ -41,7 +45,7 @@ describe('PolicyDrawer component', () => {
     wrapper = null;
   });
 
-  describe('by default', () => {
+  describe('without a policy', () => {
     beforeEach(() => {
       factory({ stubs: { GlDrawer } });
     });
@@ -51,28 +55,32 @@ describe('PolicyDrawer component', () => {
     });
   });
 
-  describe('given a generic network policy', () => {
+  describe('given a generic policy', () => {
     beforeEach(() => {
       factory({
         mountFn: mountExtended,
         propsData: {
-          policy: mockScanExecutionPolicy,
+          policy: mockProjectScanExecutionPolicy,
         },
       });
     });
 
-    it('renders network policy editor with manifest', () => {
+    it('renders policy editor with manifest', () => {
       expect(findDefaultComponentPolicyEditor().attributes('value')).toBe(
-        mockScanExecutionPolicy.yaml,
+        mockProjectScanExecutionPolicy.yaml,
       );
     });
 
     itRendersEditButton();
+
+    it('does not render the edit button tooltip', () => {
+      expect(findTooltip().exists()).toBe(false);
+    });
   });
 
   describe.each`
-    policyType                                           | mock                       | finder
-    ${POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.value} | ${mockScanExecutionPolicy} | ${findScanExecutionPolicy}
+    policyType                                           | mock                              | finder
+    ${POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.value} | ${mockProjectScanExecutionPolicy} | ${findScanExecutionPolicy}
   `('given a $policyType policy', ({ policyType, mock, finder }) => {
     beforeEach(() => {
       factory({
@@ -101,5 +109,26 @@ describe('PolicyDrawer component', () => {
     });
 
     itRendersEditButton();
+  });
+
+  describe('inherited policy', () => {
+    beforeEach(() => {
+      factory({
+        mountFn: mountExtended,
+        propsData: {
+          policy: mockGroupScanExecutionPolicy,
+        },
+      });
+    });
+
+    it('renders a disabled edit button', () => {
+      const button = findEditButton();
+      expect(button.exists()).toBe(true);
+      expect(button.props('disabled')).toBe(true);
+    });
+
+    it('renders the edit button tooltip', () => {
+      expect(findTooltip().exists()).toBe(true);
+    });
   });
 });

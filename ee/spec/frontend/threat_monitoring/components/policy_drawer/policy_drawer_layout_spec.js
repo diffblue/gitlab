@@ -5,7 +5,7 @@ import {
   NOT_ENABLED_LABEL,
 } from 'ee/threat_monitoring/components/policy_drawer/constants';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import { mockScanExecutionPolicy } from '../../mocks/mock_data';
+import { mockProjectScanExecutionPolicy } from '../../mocks/mock_data';
 
 describe('PolicyDrawerLayout component', () => {
   let wrapper;
@@ -37,9 +37,9 @@ describe('PolicyDrawerLayout component', () => {
   });
 
   describe.each`
-    context                 | props                                                            | enabled  | hasDescription
-    ${'enabled policy'}     | ${{ policy: mockScanExecutionPolicy, description: DESCRIPTION }} | ${true}  | ${true}
-    ${'not enabled policy'} | ${{ policy: { ...mockScanExecutionPolicy, enabled: false } }}    | ${false} | ${false}
+    context                 | props                                                                   | enabled  | hasDescription
+    ${'enabled policy'}     | ${{ policy: mockProjectScanExecutionPolicy, description: DESCRIPTION }} | ${true}  | ${true}
+    ${'not enabled policy'} | ${{ policy: { ...mockProjectScanExecutionPolicy, enabled: false } }}    | ${false} | ${false}
   `('$context', ({ enabled, hasDescription, props }) => {
     beforeEach(() => {
       factory(props);
