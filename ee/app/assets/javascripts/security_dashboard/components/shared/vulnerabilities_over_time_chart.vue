@@ -191,16 +191,11 @@ export default {
         <h4 class="gl-my-0">
           {{ __('Vulnerabilities over time') }}
         </h4>
-        <p
-          v-if="!isLoadingHistory"
-          data-testid="timeInfo"
-          class="gl-text-gray-500 js-vulnerabilities-chart-time-info"
-        >
+        <p data-testid="timeInfo" class="gl-text-secondary">
           {{ dateInfo }}
         </p>
       </header>
       <chart-buttons
-        v-if="!isLoadingHistory"
         :days="$options.days"
         :active-day="vulnerabilitiesHistoryDayRange"
         @days-selected="setVulnerabilitiesHistoryDayRange"
