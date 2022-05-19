@@ -25,10 +25,10 @@ RSpec.describe Namespaces::FreeUserCap::RemoveGroupGroupLinksOutsideHierarchySer
       it 'logs an info' do
         expect(Gitlab::AppLogger).to receive(:info)
                                        .with("GroupGroupLinks with ids: [#{external_group_link.id}] have been deleted.")
-        expect(Gitlab::AppLogger).to receive(:info).with(
+        expect(Gitlab::AppLogger).to receive(:info).with({
           namespace: namespace.id,
           message: "Removing the GroupGroupLinks outside the hierarchy with ids: [#{external_group_link.id}]"
-        )
+        })
 
         subject.execute
       end
@@ -41,11 +41,11 @@ RSpec.describe Namespaces::FreeUserCap::RemoveGroupGroupLinksOutsideHierarchySer
         end
 
         it 'logs an error' do
-          expect(Gitlab::AppLogger).to receive(:error).with(
+          expect(Gitlab::AppLogger).to receive(:error).with({
             namespace: namespace.id,
             message: 'An error has occurred',
             details: 'An exception'
-          )
+          })
 
           subject.execute
         end
