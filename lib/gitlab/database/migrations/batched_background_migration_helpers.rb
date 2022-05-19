@@ -148,22 +148,21 @@ module Gitlab
               'your migration class.'
           end
 
-          database_name = Gitlab::Database.db_config_name(connection)
-
-          unless ActiveRecord::Base.configurations.primary?(database_name)
-            raise 'The `#finalize_background_migration` is currently not supported when running in decomposed database, ' \
-              'and this database is not `main:`. For more information visit: ' \
-              'https://docs.gitlab.com/ee/development/database/migrations_for_multiple_databases.html'
-          end
-
           Gitlab::Database::BackgroundMigration::BatchedMigration.reset_column_information
 
-          migration = Gitlab::Database::BackgroundMigration::BatchedMigration.find_for_configuration(
-            gitlab_schema_from_context, job_class_name, table_name, column_name, job_arguments)
+          with_restored_connection_stack do
+            Gitlab::Database::QueryAnalyzers::RestrictAllowedSchemas.with_suppressed do
 
-          raise 'Could not find batched background migration' if migration.nil?
+              migration = Gitlab::Database::BackgroundMigration::BatchedMigration.find_for_configuration(
+                gitlab_schema_from_context, job_class_name, table_name, column_name, job_arguments)
 
-          Gitlab::Database::BackgroundMigration::BatchedMigrationRunner.finalize(job_class_name, table_name, column_name, job_arguments, connection: connection)
+              puts migration.id
+
+              raise 'Could not find batched background migration' if migration.nil?
+
+              puts Gitlab::Database::BackgroundMigration::BatchedMigrationRunner.finalize(job_class_name, table_name, column_name, job_arguments, connection: connection)
+            end
+          end
         end
 
         # Deletes batched background migration for the given configuration.
@@ -191,11 +190,12 @@ module Gitlab
         end
 
         def gitlab_schema_from_context
-          if respond_to?(:allowed_gitlab_schemas) # Gitlab::Database::Migration::V2_0
-            Array(allowed_gitlab_schemas).first
-          else                                    # Gitlab::Database::Migration::V1_0
-            :gitlab_main
-          end
+          :gitlab_ci
+          # if respond_to?(:allowed_gitlab_schemas) # Gitlab::Database::Migration::V2_0
+          #   Array(allowed_gitlab_schemas).first
+          # else                                    # Gitlab::Database::Migration::V1_0
+          #   :gitlab_main
+          # end
         end
       end
     end
