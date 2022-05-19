@@ -7,7 +7,7 @@ product_stage: create
 product_group: group::editor
 product_category: static_site_editor
 value_type: number
-status: removed
+status: active
 time_frame: all
 data_source: redis
 distribution:
@@ -21,4 +21,3 @@ performance_indicator_type:
 - gmau
 - paid_gmau
 milestone: "<13.9"
-milestone_removed: "15.0"

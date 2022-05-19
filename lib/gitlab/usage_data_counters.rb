@@ -15,6 +15,7 @@ module Gitlab
       MergeRequestCounter,
       DesignsCounter,
       KubernetesAgentCounter,
+      StaticSiteEditorCounter,
       DiffsCounter,
       ServiceUsageDataCounter
     ].freeze
