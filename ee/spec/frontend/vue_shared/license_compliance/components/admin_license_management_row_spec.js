@@ -22,25 +22,6 @@ describe('AdminLicenseManagementRow', () => {
   let actions;
 
   const createComponent = (props = { license: allowedLicense }) => {
-    if (wrapper) {
-      wrapper.destroy();
-    }
-
-    wrapper = mountExtended(AdminLicenseManagementRow, {
-      store,
-      propsData: {
-        ...props,
-      },
-    });
-  };
-
-  const findNthDropdown = (num) => wrapper.findAllComponents(GlDropdownItem).at(num);
-  const findNthDropdownIcon = (num) => wrapper.findAllComponents(GlIcon).at(num);
-  const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
-  const findDropdownToggle = () => wrapper.findComponent(GlDropdown);
-  const findRemoveButton = () => wrapper.findComponent(GlButton);
-
-  beforeEach(() => {
     actions = {
       setLicenseInModal: jest.fn(),
       allowLicense: jest.fn(),
@@ -57,8 +38,19 @@ describe('AdminLicenseManagementRow', () => {
       },
     });
 
-    createComponent();
-  });
+    wrapper = mountExtended(AdminLicenseManagementRow, {
+      store,
+      propsData: {
+        ...props,
+      },
+    });
+  };
+
+  const findNthDropdown = (num) => wrapper.findAllComponents(GlDropdownItem).at(num);
+  const findNthDropdownIcon = (num) => wrapper.findAllComponents(GlIcon).at(num);
+  const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
+  const findDropdownToggle = () => wrapper.findComponent(GlDropdown);
+  const findRemoveButton = () => wrapper.findComponent(GlButton);
 
   afterEach(() => {
     wrapper.destroy();
@@ -137,6 +129,10 @@ describe('AdminLicenseManagementRow', () => {
   });
 
   describe('interaction', () => {
+    beforeEach(() => {
+      createComponent();
+    });
+
     it('triggering setLicenseInModal by clicking the cancel button', () => {
       const linkEl = findRemoveButton();
       linkEl.trigger('click');
@@ -160,6 +156,10 @@ describe('AdminLicenseManagementRow', () => {
   });
 
   describe('template', () => {
+    beforeEach(() => {
+      createComponent();
+    });
+
     it('renders status icon', () => {
       const icon = wrapper.findComponent(IssueStatusIcon);
 
