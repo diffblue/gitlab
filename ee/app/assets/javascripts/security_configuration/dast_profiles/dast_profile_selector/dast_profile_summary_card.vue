@@ -79,6 +79,7 @@ export default {
             icon="pencil"
             :title="$options.i18n.editTitle"
             :aria-label="$options.i18n.editTitle"
+            @click="$emit('edit')"
           />
         </div>
       </div>

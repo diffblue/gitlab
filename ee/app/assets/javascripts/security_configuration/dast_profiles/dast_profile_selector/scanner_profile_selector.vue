@@ -98,6 +98,7 @@ export default {
       :profile="selectedProfile"
       :is-profile-in-use="isProfileInUse"
       class="gl-mb-4"
+      @edit="$emit('edit')"
     />
 
     <gl-button
