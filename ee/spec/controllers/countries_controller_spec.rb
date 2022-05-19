@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe CountriesController do
+  include CountriesControllerTestHelper
+
   describe 'GET #index' do
     it 'returns list of countries as json' do
       get :index
@@ -17,10 +19,9 @@ RSpec.describe CountriesController do
       get :index
 
       # response is returned as [["Afghanistan", "AF"], ["Albania", "AL"], ..]
-      resultant_countries = json_response.map {|row| row[0]}
+      resultant_countries = json_response.map { |row| row[0] }
 
-      expect(resultant_countries).not_to include(*World::DENYLIST)
-      expect(resultant_countries).not_to include(*World::JH_MARKET)
+      expect(resultant_countries).not_to include(*world_deny_list)
     end
   end
 end
