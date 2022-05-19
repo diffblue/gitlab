@@ -2,8 +2,10 @@
 module GitlabSubscriptions
   class CreateTrialOrLeadService
     def initialize(user:, params:)
-      @params = params.merge(hardcoded_values).merge(user_values(user))
       @generate_trial = Gitlab::Utils.to_boolean(params[:trial])
+
+      merged_params = params.merge(hardcoded_values).merge(user_values(user))
+      @params = remapping_for_api(merged_params)
     end
 
     def execute
@@ -37,11 +39,17 @@ module GitlabSubscriptions
       }
     end
 
+    def remapping_for_api(params)
+      params[:jtbd] = params.delete(:registration_objective)
+      params[:comment] ||= params.delete(:jobs_to_be_done_other)
+      params
+    end
+
     def submit_client_request(params, generate_trial: false)
       if generate_trial
-        client.generate_trial(trial_user: params)
+        client.generate_trial(params.merge(product_interaction: 'SaaS Trial'))
       else
-        client.generate_hand_raise_lead(params)
+        client.generate_lead(params.merge(product_interaction: 'SaaS Registration'))
       end
     end
 

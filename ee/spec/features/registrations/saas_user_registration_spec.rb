@@ -232,14 +232,14 @@ RSpec.describe "User registration", :js, :saas do
             fill_in 'group_name', with: 'Test Group'
             fill_in 'blank_project_name', with: 'Test Project'
 
-            expect_next(GitlabSubscriptions::ApplyTrialService).to receive(:execute).with(
+            expect_next(GitlabSubscriptions::ApplyTrialService).to receive(:execute).with({
               uid: user.id,
-              trial_user: ActionController::Parameters.new(
-                namespace_id: Namespace.maximum(:id).to_i + 1,
+              trial_user: hash_including(
+                namespace_id: anything,
                 gitlab_com_trial: true,
                 sync_to_gl: true
-              ).permit!
-            ).and_return(success: true)
+              )
+            }).and_return(success: true)
 
             click_on 'Create project'
 

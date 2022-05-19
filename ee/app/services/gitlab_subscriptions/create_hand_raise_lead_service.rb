@@ -3,7 +3,7 @@
 module GitlabSubscriptions
   class CreateHandRaiseLeadService
     def execute(params)
-      response = client.generate_hand_raise_lead(params)
+      response = client.generate_lead(hardcoded_values.merge(params))
 
       if response[:success]
         ServiceResponse.success
@@ -13,6 +13,12 @@ module GitlabSubscriptions
     end
 
     private
+
+    def hardcoded_values
+      {
+        product_interaction: 'Hand Raise PQL'
+      }
+    end
 
     def client
       Gitlab::SubscriptionPortal::Client
