@@ -25,15 +25,16 @@ module QA
 
     let(:free_plan_group) do
       Resource::Sandbox.fabricate! do |sandbox|
-        sandbox.path = "test-group-fulfillment-#{SecureRandom.hex(4)}"
+        sandbox.path = "fulfillment-free-plan-group-#{SecureRandom.hex(8)}"
+        sandbox.api_client = admin_api_client
       end
     end
 
     before do
       Flow::Login.sign_in(as: user)
+      free_plan_group.visit!
       free_plan_group.add_member(guest_user, Resource::Members::AccessLevel::GUEST)
       free_plan_group.add_member(developer_user, Resource::Members::AccessLevel::DEVELOPER)
-      free_plan_group.visit!
       Page::Group::Menu.perform(&:go_to_billing)
     end
 
