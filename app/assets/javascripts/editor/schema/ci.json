@@ -889,14 +889,7 @@
     },
     "job": {
       "allOf": [
-        { "$ref": "#/definitions/job_template" },
-        {
-          "anyOf": [
-            { "required": ["script"] },
-            { "required": ["extends"] },
-            { "required": ["trigger"] }
-          ]
-        }
+        { "$ref": "#/definitions/job_template" }
       ]
     },
     "job_template": {
