@@ -8,53 +8,39 @@ class TestBatchMigrationForCr < Gitlab::Database::Migration[2.0]
 
   disable_ddl_transaction!
 
-  class ClusterEnabledGrant < MigrationRecord
-    self.table_name = 'cluster_enabled_grants'
-  end
-
   def up
-    Group
-      .select(:id)
-      .where(id:
-          Group.joins(:cluster_groups)
-               .select('DISTINCT(traversal_ids[1])')
-            )
-      .each_batch(of: 1000) do |batch|
-      values = batch.map do |namespace|
-        "(#{namespace.id}, NOW())"
-      end.join(',')
+    define_batchable_model('cluster_groups').each_batch do |batch|
+      min, max = batch.pick('MIN(id), MAX(id)')
 
-      bulk_insert_query = <<-SQL
+      bulk_insert = <<-SQL
         INSERT INTO cluster_enabled_grants (namespace_id, created_at)
-        VALUES #{values}
-        ON CONFLICT (namespace_id) DO NOTHING;
+        SELECT DISTINCT(traversal_ids[1]), NOW()
+        FROM cluster_groups
+        INNER JOIN namespaces ON cluster_groups.group_id = namespaces.id
+        WHERE cluster_groups.id BETWEEN #{min} AND #{max}
+        ON CONFLICT (namespace_id) DO NOTHING
       SQL
 
-      connection.execute(bulk_insert_query)
+      connection.execute(bulk_insert)
     end
 
-    Namespace
-      .select(:id)
-      .where(id:
-        Namespace.joins(projects: :cluster_project)
-                 .select('DISTINCT(traversal_ids[1])')
-            )
-      .each_batch(of: 1000) do |batch|
-      values = batch.map do |namespace|
-        "(#{namespace.id}, NOW())"
-      end.join(',')
+    define_batchable_model('cluster_projects').each_batch do |batch|
+      min, max = batch.pick('MIN(id), MAX(id)')
 
-      bulk_insert_query = <<-SQL
+      bulk_insert = <<-SQL
         INSERT INTO cluster_enabled_grants (namespace_id, created_at)
-        VALUES #{values}
-        ON CONFLICT (namespace_id) DO NOTHING;
+        SELECT DISTINCT(traversal_ids[1]), NOW()
+        FROM cluster_projects
+        INNER JOIN projects ON cluster_projects.project_id = projects.id
+        INNER JOIN namespaces on projects.namespace_id = namespaces.id
+        WHERE cluster_projects.id BETWEEN #{min} AND #{max}
+        ON CONFLICT (namespace_id) DO NOTHING
       SQL
 
-      connection.execute(bulk_insert_query)
+      connection.execute(bulk_insert)
     end
   end
 
   def down
-    ClusterEnabledGrant.delete_all
   end
 end
