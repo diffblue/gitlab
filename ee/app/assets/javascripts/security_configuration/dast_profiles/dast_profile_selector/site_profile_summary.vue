@@ -1,4 +1,5 @@
 <script>
+import DastSiteValidationBadge from 'ee/security_configuration/dast_profiles/components/dast_site_validation_badge.vue';
 import {
   EXCLUDED_URLS_SEPARATOR,
   TARGET_TYPES,
@@ -13,6 +14,7 @@ export default {
   components: {
     DastProfileSummaryCard,
     SummaryCell,
+    DastSiteValidationBadge,
   },
   props: {
     profile: {
@@ -94,7 +96,9 @@ export default {
         :label="i18n.requestHeaders"
         :value="profile.requestHeaders ? __('[Redacted]') : undefined"
       />
-      <summary-cell :label="i18n.validationStatus" :value="isProfileValidated" />
+      <summary-cell :label="i18n.validationStatus">
+        <dast-site-validation-badge :status="profile.validationStatus" />
+      </summary-cell>
     </template>
   </dast-profile-summary-card>
 </template>

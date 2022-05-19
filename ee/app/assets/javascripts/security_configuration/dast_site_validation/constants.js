@@ -60,6 +60,9 @@ export const DAST_SITE_VALIDATION_STATUS_PROPS = {
     class: 'gl-text-red-500',
     title: s__('DastSiteValidation|The validation has failed. Please try again.'),
   },
+  [DAST_SITE_VALIDATION_STATUS.NONE]: {
+    labelText: s__('DastSiteValidation|Not validated'),
+  },
 };
 
 export const DAST_SITE_VALIDATION_HTTP_HEADER_KEY = 'Gitlab-On-Demand-DAST';

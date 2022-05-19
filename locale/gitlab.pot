@@ -11661,6 +11661,9 @@ msgstr ""
 msgid "DastSiteValidation|Meta tag validation"
 msgstr ""
 
+msgid "DastSiteValidation|Not validated"
+msgstr ""
+
 msgid "DastSiteValidation|Retry validation"
 msgstr ""
 
