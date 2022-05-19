@@ -192,7 +192,7 @@ If you have any questions, send an email to `opensource@gitlab.com` for assistan
 
 #### A note on licenses
 
-GitLab for Open Source Program benefits apply to an entire GitLab namespace. To qualify for the GitLab for Open Source Program, applicants must apply an [OSI-approved license](https://opensource.org/licenses/) to **each project in a namespace**.
+GitLab for Open Source Program benefits apply to an entire GitLab namespace. To qualify for the GitLab for Open Source Program, **all projects in an applicant's namespace** must carry an [OSI-approved license](https://opensource.org/licenses/).
 
 Click `Add LICENSE` from the project's overview page to select an open source license. If the license you prefer is not available as a license template, manually copy the entire, unaltered [text of your chosen license](https://opensource.org/licenses/alphabetical) into the `LICENSE` file. from Note that GitLab defaults to **All rights reserved** if users do not perform this action.
 
