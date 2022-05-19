@@ -67,10 +67,7 @@ func TestUploadHandlerForwardingRawData(t *testing.T) {
 	httpRequest, err := http.NewRequest("PATCH", ts.URL+"/url/path", bytes.NewBufferString("REQUEST"))
 	require.NoError(t, err)
 
-	tempPath, err := ioutil.TempDir("", "uploads")
-	require.NoError(t, err)
-	defer os.RemoveAll(tempPath)
-
+	tempPath := t.TempDir()
 	response := httptest.NewRecorder()
 
 	handler := newProxy(ts.URL)
@@ -87,10 +84,7 @@ func TestUploadHandlerForwardingRawData(t *testing.T) {
 
 func TestUploadHandlerRewritingMultiPartData(t *testing.T) {
 	var filePath string
-
-	tempPath, err := ioutil.TempDir("", "uploads")
-	require.NoError(t, err)
-	defer os.RemoveAll(tempPath)
+	tempPath := t.TempDir()
 
 	ts := testhelper.TestServerWithHandler(regexp.MustCompile(`/url/path\z`), func(w http.ResponseWriter, r *http.Request) {
 		require.Equal(t, "PUT", r.Method, "method")
@@ -160,10 +154,6 @@ func TestUploadHandlerRewritingMultiPartData(t *testing.T) {
 func TestUploadHandlerDetectingInjectedMultiPartData(t *testing.T) {
 	var filePath string
 
-	tempPath, err := ioutil.TempDir("", "uploads")
-	require.NoError(t, err)
-	defer os.RemoveAll(tempPath)
-
 	tests := []struct {
 		name     string
 		field    string
@@ -214,12 +204,8 @@ func TestUploadHandlerDetectingInjectedMultiPartData(t *testing.T) {
 			response := httptest.NewRecorder()
 
 			handler := newProxy(ts.URL)
-			apiResponse := &api.Response{TempPath: tempPath}
-			preparer := &DefaultPreparer{}
-			opts, err := preparer.Prepare(apiResponse)
-			require.NoError(t, err)
 
-			interceptMultipartFiles(response, httpRequest, handler, apiResponse, &testFormProcessor{}, opts)
+			testInterceptMultipartFiles(t, response, httpRequest, handler, &testFormProcessor{})
 			require.Equal(t, test.response, response.Code)
 
 			cancel() // this will trigger an async cleanup
@@ -229,10 +215,6 @@ func TestUploadHandlerDetectingInjectedMultiPartData(t *testing.T) {
 }
 
 func TestUploadProcessingField(t *testing.T) {
-	tempPath, err := ioutil.TempDir("", "uploads")
-	require.NoError(t, err)
-	defer os.RemoveAll(tempPath)
-
 	var buffer bytes.Buffer
 
 	writer := multipart.NewWriter(&buffer)
@@ -244,12 +226,8 @@ func TestUploadProcessingField(t *testing.T) {
 	httpRequest.Header.Set("Content-Type", writer.FormDataContentType())
 
 	response := httptest.NewRecorder()
-	apiResponse := &api.Response{TempPath: tempPath}
-	preparer := &DefaultPreparer{}
-	opts, err := preparer.Prepare(apiResponse)
-	require.NoError(t, err)
 
-	interceptMultipartFiles(response, httpRequest, nilHandler, apiResponse, &testFormProcessor{}, opts)
+	testInterceptMultipartFiles(t, response, httpRequest, nilHandler, &testFormProcessor{})
 
 	require.Equal(t, 500, response.Code)
 }
@@ -257,15 +235,11 @@ func TestUploadProcessingField(t *testing.T) {
 func TestUploadingMultipleFiles(t *testing.T) {
 	testhelper.ConfigureSecret()
 
-	tempPath, err := ioutil.TempDir("", "uploads")
-	require.NoError(t, err)
-	defer os.RemoveAll(tempPath)
-
 	var buffer bytes.Buffer
 
 	writer := multipart.NewWriter(&buffer)
 	for i := 0; i < 11; i++ {
-		_, err = writer.CreateFormFile(fmt.Sprintf("file %v", i), "my.file")
+		_, err := writer.CreateFormFile(fmt.Sprintf("file %v", i), "my.file")
 		require.NoError(t, err)
 	}
 	require.NoError(t, writer.Close())
@@ -275,12 +249,8 @@ func TestUploadingMultipleFiles(t *testing.T) {
 	httpRequest.Header.Set("Content-Type", writer.FormDataContentType())
 
 	response := httptest.NewRecorder()
-	apiResponse := &api.Response{TempPath: tempPath}
-	preparer := &DefaultPreparer{}
-	opts, err := preparer.Prepare(apiResponse)
-	require.NoError(t, err)
 
-	interceptMultipartFiles(response, httpRequest, nilHandler, apiResponse, &testFormProcessor{}, opts)
+	testInterceptMultipartFiles(t, response, httpRequest, nilHandler, &testFormProcessor{})
 
 	require.Equal(t, 400, response.Code)
 	require.Equal(t, "upload request contains more than 10 files\n", response.Body.String())
@@ -288,9 +258,7 @@ func TestUploadingMultipleFiles(t *testing.T) {
 
 func TestUploadProcessingFile(t *testing.T) {
 	testhelper.ConfigureSecret()
-	tempPath, err := ioutil.TempDir("", "uploads")
-	require.NoError(t, err)
-	defer os.RemoveAll(tempPath)
+	tempPath := t.TempDir()
 
 	objectStore, testServer := test.StartObjectStore()
 	defer testServer.Close()
@@ -349,10 +317,7 @@ func TestUploadProcessingFile(t *testing.T) {
 
 func TestInvalidFileNames(t *testing.T) {
 	testhelper.ConfigureSecret()
-
-	tempPath, err := ioutil.TempDir("", "uploads")
-	require.NoError(t, err)
-	defer os.RemoveAll(tempPath)
+	tempPath := t.TempDir()
 
 	for _, testCase := range []struct {
 		filename       string
@@ -393,10 +358,6 @@ func TestInvalidFileNames(t *testing.T) {
 
 func TestContentDispositionRewrite(t *testing.T) {
 	testhelper.ConfigureSecret()
-
-	tempPath, err := ioutil.TempDir("", "uploads")
-	require.NoError(t, err)
-	defer os.RemoveAll(tempPath)
 
 	tests := []struct {
 		desc            string
@@ -446,12 +407,7 @@ func TestContentDispositionRewrite(t *testing.T) {
 			})
 
 			response := httptest.NewRecorder()
-			apiResponse := &api.Response{TempPath: tempPath}
-			preparer := &DefaultPreparer{}
-			opts, err := preparer.Prepare(apiResponse)
-			require.NoError(t, err)
-
-			interceptMultipartFiles(response, httpRequest, customHandler, apiResponse, &SavedFileTracker{Request: httpRequest}, opts)
+			testInterceptMultipartFiles(t, response, httpRequest, customHandler, &SavedFileTracker{Request: httpRequest})
 
 			upstreamRequest, err := http.ReadRequest(bufio.NewReader(&upstreamRequestBuffer))
 			require.NoError(t, err)
@@ -538,10 +494,6 @@ func TestUploadHandlerRemovingExifCorruptedFile(t *testing.T) {
 }
 
 func runUploadTest(t *testing.T, image []byte, filename string, httpCode int, tsHandler func(http.ResponseWriter, *http.Request)) {
-	tempPath, err := ioutil.TempDir("", "uploads")
-	require.NoError(t, err)
-	defer os.RemoveAll(tempPath)
-
 	var buffer bytes.Buffer
 
 	writer := multipart.NewWriter(&buffer)
@@ -569,12 +521,8 @@ func runUploadTest(t *testing.T, image []byte, filename string, httpCode int, ts
 	response := httptest.NewRecorder()
 
 	handler := newProxy(ts.URL)
-	apiResponse := &api.Response{TempPath: tempPath}
-	preparer := &DefaultPreparer{}
-	opts, err := preparer.Prepare(apiResponse)
-	require.NoError(t, err)
 
-	interceptMultipartFiles(response, httpRequest, handler, apiResponse, &testFormProcessor{}, opts)
+	testInterceptMultipartFiles(t, response, httpRequest, handler, &testFormProcessor{})
 	require.Equal(t, httpCode, response.Code)
 }
 
@@ -590,4 +538,15 @@ func waitUntilDeleted(t *testing.T, path string) {
 		return err != nil
 	}, 10*time.Second, 10*time.Millisecond)
 	require.True(t, os.IsNotExist(err), "expected the file to be deleted")
+}
+
+func testInterceptMultipartFiles(t *testing.T, w http.ResponseWriter, r *http.Request, h http.Handler, filter MultipartFormProcessor) {
+	t.Helper()
+
+	apiResponse := &api.Response{TempPath: t.TempDir()}
+	preparer := &DefaultPreparer{}
+	opts, err := preparer.Prepare(apiResponse)
+	require.NoError(t, err)
+
+	interceptMultipartFiles(w, r, h, apiResponse, filter, opts)
 }
