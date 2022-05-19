@@ -59,12 +59,14 @@ RSpec.describe MergeRequests::CreatePipelineService, :clean_gitlab_redis_shared_
       end
     end
 
-    it 'creates a merge request pipeline', :sidekiq_might_not_need_inline do
-      subject
+    shared_examples_for 'merged result pipeline' do
+      it 'creates a merge result pipeline' do
+        subject
 
-      expect(merge_request.all_pipelines.count).to eq(1)
-      expect(merge_request.all_pipelines.last).to be_merged_result_pipeline
-      expect(merge_request.all_pipelines.last).not_to be_detached_merge_request_pipeline
+        expect(merge_request.all_pipelines.count).to eq(1)
+        expect(merge_request.all_pipelines.last).to be_merged_result_pipeline
+        expect(merge_request.all_pipelines.last).not_to be_detached_merge_request_pipeline
+      end
     end
 
     it 'responds with success', :sidekiq_might_not_need_inline, :aggregate_failures do
@@ -77,7 +79,17 @@ RSpec.describe MergeRequests::CreatePipelineService, :clean_gitlab_redis_shared_
         merge_request.update!(title: merge_request.wip_title)
       end
 
-      it_behaves_like 'detached merge request pipeline'
+      context 'when remove_mergeable_state_check is true' do
+        it_behaves_like 'merged result pipeline'
+      end
+
+      context 'when remove_mergeable_state_check is false' do
+        before do
+          stub_feature_flags(remove_mergeable_state_check: false)
+        end
+
+        it_behaves_like 'detached merge request pipeline'
+      end
     end
 
     context 'when merge request requires an approval' do
@@ -86,12 +98,8 @@ RSpec.describe MergeRequests::CreatePipelineService, :clean_gitlab_redis_shared_
                approvals_required: 1)
       end
 
-      it 'creates a merge request pipeline' do
-        subject
-
-        expect(merge_request.all_pipelines.count).to eq(1)
-        expect(merge_request.all_pipelines.last).to be_merged_result_pipeline
-        expect(merge_request.all_pipelines.last).not_to be_detached_merge_request_pipeline
+      context 'when remove_mergeable_state_check is true' do
+        it_behaves_like 'merged result pipeline'
       end
     end
 
