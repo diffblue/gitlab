@@ -228,11 +228,12 @@ As noted above, benefits of the GitLab for Open Source Program apply to all proj
 
 To be eligible for the GitLab Open Source Program, projects must be publicly visible. To check your project's public visibility settings:
 
- 1. Navigate to your project and select `Settings` < `General` from the left sidebar.
- 1. Expand `Visibility, project features, permissions`.
- 1. Set `Project visibility` to `Public`.
- 1. Ensure others can request access by selecting the `Users can request access` checkbox.
- 1. Take the screenshot of this view. Include as much of the publicly visible settings as possible. Make sure to include your project's name in the upper-left of the screenshot.
+1. On the top bar, select **Menu > Projects** and find your project. 
+1. From the left sidebar, select **Settings > General**.
+1. Expand **Visibility, project features, permissions**.
+1. From the **Project visibility** dropdown list, select **Public**.
+1. Select the **Users can request access** checkbox.
+1. Take a screenshot of this view. Include as much of the publicly visible settings as possible. Make sure to include your project's name in the upper-left of the screenshot.
 
 ![Publicly visible setting](img/publicly-visible.png)
 
