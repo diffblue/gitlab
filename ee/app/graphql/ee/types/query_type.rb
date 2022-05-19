@@ -75,6 +75,10 @@ module EE
                    required: false,
                    description: 'Global ID of the Namespace for the monthly CI/CD minutes usage.'
         end
+
+        field :epic_board_list, ::Types::Boards::EpicListType,
+               null: true,
+               resolver: ::Resolvers::Boards::EpicListResolver
       end
 
       def vulnerability(id:)

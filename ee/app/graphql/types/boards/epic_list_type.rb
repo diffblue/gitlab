@@ -2,7 +2,6 @@
 
 module Types
   module Boards
-    # rubocop: disable Graphql/AuthorizeTypes
     class EpicListType < BaseObject
       graphql_name 'EpicList'
       description 'Represents an epic board list'
@@ -10,6 +9,7 @@ module Types
       include Gitlab::Utils::StrongMemoize
 
       accepts ::Boards::EpicList
+      authorize :read_epic_board_list
 
       alias_method :list, :object
 
@@ -64,9 +64,17 @@ module Types
       end
 
       def params
-        (context[:epic_filters] || {}).merge(board_id: list.epic_board_id, id: list.id)
+        (context[:epic_filters] || {}).merge(board: list.epic_board, list: list)
+      end
+
+      def title
+        BatchLoader::GraphQL.for(object).batch do |lists, callback|
+          ActiveRecord::Associations::Preloader.new.preload(lists, :label) # rubocop: disable CodeReuse/ActiveRecord
+
+          # all list titles are preloaded at this point
+          lists.each { |list| callback.call(list, list.title) }
+        end
       end
     end
-    # rubocop: enable Graphql/AuthorizeTypes
   end
 end

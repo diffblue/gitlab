@@ -47,7 +47,7 @@ module Boards
       end
 
       def board
-        @board ||= parent.epic_boards.find(params[:board_id])
+        @board ||= params[:board].presence || parent.epic_boards.find(params[:board_id])
       end
 
       def order(items)
