@@ -14,7 +14,7 @@ tasks:
         # GitLab FOSS
         [[ -d /workspace/gitlab-foss ]] && ln -fs /workspace/gitlab-foss /workspace/gitlab-development-kit/gitlab
         # GitLab
-        [[ -d /workspace/gitlab ]] && ln -fs /workspace/gitlab /workspace/gitlab-development-kit/gitlab
+        [[ -d "$GITPOD_REPO_ROOT" ]] && ln -fs "$GITPOD_REPO_ROOT" /workspace/gitlab-development-kit/gitlab
         mv /workspace/gitlab-development-kit/secrets.yml /workspace/gitlab-development-kit/gitlab/config
         # ensure gdk.yml has correct instance settings
         gdk config set gitlab.rails.port 443
