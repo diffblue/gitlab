@@ -145,17 +145,7 @@ RSpec.describe API::Namespaces do
           group3.add_guest(user)
         end
 
-        context 'traversal_sync_ids feature flag is false' do
-          before do
-            stub_feature_flags(sync_traversal_ids: false)
-          end
-
-          it { expect { get api("/namespaces", user) }.not_to exceed_all_query_limit(control).with_threshold(7) }
-        end
-
-        context 'traversal_sync_ids feature flag is true' do
-          it { expect { get api("/namespaces", user) }.not_to exceed_all_query_limit(control).with_threshold(8) }
-        end
+        it { expect { get api("/namespaces", user) }.not_to exceed_all_query_limit(control).with_threshold(8) }
       end
 
       it 'includes max_seats_used' do

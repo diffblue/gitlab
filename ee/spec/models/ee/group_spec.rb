@@ -292,18 +292,6 @@ RSpec.describe Group do
           expect(subject).to eq expected_groups
         end
 
-        context 'when sync_traversal_ids is disabled' do
-          before do
-            stub_feature_flags(sync_traversal_ids: false)
-          end
-
-          it 'does not use filter optimization' do
-            expect(Group).not_to receive(:filter_groups_user_can)
-
-            expect(subject).to eq expected_groups
-          end
-        end
-
         context 'when use_traversal_ids is disabled' do
           before do
             stub_feature_flags(use_traversal_ids: false)

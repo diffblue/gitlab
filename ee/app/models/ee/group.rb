@@ -188,7 +188,7 @@ module EE
         # https://gitlab.com/gitlab-org/gitlab/issues/11539
         preset_root_ancestor_for(groups) if same_root
 
-        # If :find_epics_performance_improvement, :use_traversal_ids and :sync_traversal_ids
+        # If :find_epics_performance_improvement and :use_traversal_ids
         # are enabled we can use filter optmization to skip some permission check queries in group descendants.
         if can_use_filter_optimization?(groups)
           filter_groups_user_can(groups: groups, user: user, action: action)
@@ -206,7 +206,6 @@ module EE
 
         group = groups.first
 
-        return false unless group.sync_traversal_ids?
         return false unless group.use_traversal_ids?
 
         ::Feature.enabled?(:find_epics_performance_improvement)
