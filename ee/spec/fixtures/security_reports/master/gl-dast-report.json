@@ -590,7 +590,7 @@
     },
     "state": "FINISHED"
   },
-  "version": "2.5",
+  "version": "14.1.2",
   "vulnerabilities": [
     {
       "category": "dast",

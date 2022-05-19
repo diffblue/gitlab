@@ -16,7 +16,7 @@
     "type": "dast",
     "scanned_resources": []
   },
-  "version": "6.0.1",
+  "version": "14.1.2",
   "vulnerabilities": [
     {
       "id": "fd7e57d8-3126-46b5-a825-b9d2d8a6e13e",
