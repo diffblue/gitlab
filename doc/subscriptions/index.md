@@ -238,7 +238,7 @@ To be eligible for the GitLab Open Source Program, projects must be publicly vis
 ![Publicly visible setting](img/publicly-visible.png)
 
 NOTE:
-Exceptions to this public visibility requirement apply in select cases—for example, in cases where a project may hold sensitive data. Email `opensource@gitlab.com` with details of your use case to request written permission for exceptions.
+Exceptions to this public visibility requirement apply in select circumstances (for example, in cases where a project may hold sensitive data). Email `opensource@gitlab.com` with details of your use case to request written permission for exceptions.
 
 ### GitLab for Startups
 
