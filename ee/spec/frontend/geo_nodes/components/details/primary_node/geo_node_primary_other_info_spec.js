@@ -63,6 +63,16 @@ describe('GeoNodePrimaryOtherInfo', () => {
       });
     });
 
+    describe('when replicationSlotWAL is 0', () => {
+      beforeEach(() => {
+        createComponent({ node: { ...MOCK_PRIMARY_NODE, replicationSlotsMaxRetainedWalBytes: 0 } });
+      });
+
+      it('renders 0 bytes', () => {
+        expect(findReplicationSlotWAL().text()).toBe('0 bytes');
+      });
+    });
+
     describe('when replicationSlotWAL is null', () => {
       beforeEach(() => {
         createComponent({ node: MOCK_SECONDARY_NODE });

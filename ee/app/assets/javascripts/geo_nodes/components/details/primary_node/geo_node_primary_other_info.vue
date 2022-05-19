@@ -27,7 +27,8 @@ export default {
   },
   computed: {
     replicationSlotWAL() {
-      return this.node.replicationSlotsMaxRetainedWalBytes
+      return this.node.replicationSlotsMaxRetainedWalBytes ||
+        this.node.replicationSlotsMaxRetainedWalBytes === 0
         ? numberToHumanSize(this.node.replicationSlotsMaxRetainedWalBytes)
         : this.$options.i18n.unknown;
     },
