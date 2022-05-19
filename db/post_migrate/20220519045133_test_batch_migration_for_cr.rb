@@ -25,7 +25,7 @@ class TestBatchMigrationForCr < Gitlab::Database::Migration[2.0]
       end.join(',')
 
       bulk_insert_query = <<-SQL
-        INSERT INTO cluster_enabled_grants (namespace_id)
+        INSERT INTO cluster_enabled_grants (namespace_id, created_at)
         VALUES #{values}
         ON CONFLICT (namespace_id) DO NOTHING;
       SQL
