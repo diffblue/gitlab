@@ -233,7 +233,7 @@ export default {
 
     <gl-loading-icon
       v-if="shouldShowFullSpinner"
-      size="md"
+      size="lg"
       class="gl-mt-4 gl-mb-3"
       data-testid="loading-icon-full"
     />
