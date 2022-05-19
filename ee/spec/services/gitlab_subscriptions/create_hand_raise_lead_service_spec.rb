@@ -3,20 +3,19 @@
 require 'spec_helper'
 
 RSpec.describe GitlabSubscriptions::CreateHandRaiseLeadService do
-  subject(:execute) { described_class.new.execute(params) }
-
-  let(:params) { {} }
+  let(:params) { { first_name: 'Jeremy' } }
+  let(:expected_params) { params.merge(product_interaction: 'Hand Raise PQL') }
 
   describe '#execute' do
     before do
-      allow(Gitlab::SubscriptionPortal::Client).to receive(:generate_hand_raise_lead).with(params).and_return(response)
+      expect(Gitlab::SubscriptionPortal::Client).to receive(:generate_lead).with(expected_params).and_return(response)
     end
 
     context 'hand raise lead call is made successfully' do
       let(:response) { { success: true } }
 
       it 'returns success: true' do
-        result = execute
+        result = subject.execute(params)
 
         expect(result.is_a?(ServiceResponse)).to be true
         expect(result.success?).to be true
@@ -27,7 +26,7 @@ RSpec.describe GitlabSubscriptions::CreateHandRaiseLeadService do
       let(:response) { { success: false, data: { errors: ['some error'] } } }
 
       it 'returns success: false with errors' do
-        result = execute
+        result = subject.execute(params)
 
         expect(result.is_a?(ServiceResponse)).to be true
         expect(result.success?).to be false
