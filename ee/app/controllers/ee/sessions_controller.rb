@@ -124,7 +124,9 @@ module EE
       flash[:alert] = 'Login failed. Please retry from your primary device and network.'
       flash.delete :recaptcha_error
 
-      redirect_to new_user_session_path
+      add_gon_variables
+
+      respond_with_navigational(resource) { render :new }
     end
 
     def arkose_public_api_key
