@@ -1,6 +1,5 @@
 <script>
 import { GlTab, GlTabs } from '@gitlab/ui';
-import { s__ } from '~/locale';
 import HelpPopover from '~/vue_shared/components/help_popover.vue';
 import getCiMinutesUsage from '../graphql/queries/ci_minutes.query.graphql';
 import {
@@ -8,6 +7,7 @@ import {
   USAGE_BY_PROJECT_HEADER,
   CI_CD_MINUTES_USAGE,
   SHARED_RUNNER_USAGE,
+  SHARED_RUNNER_POPOVER_OPTIONS,
 } from '../constants';
 import MinutesUsageMonthChart from './minutes_usage_month_chart.vue';
 import MinutesUsageProjectChart from './minutes_usage_project_chart.vue';
@@ -42,18 +42,11 @@ export default {
       return this.ciMinutesUsage.length > 0;
     },
   },
-  popoverOptions: {
-    triggers: 'hover',
-    placement: 'top',
-    content: s__(
-      'CICDAnalytics|Shared runner usage is the total runtime of all jobs that ran on shared runners',
-    ),
-    title: s__('CICDAnalytics|What is shared runner usage?'),
-  },
   USAGE_BY_MONTH_HEADER,
   USAGE_BY_PROJECT_HEADER,
   CI_CD_MINUTES_USAGE,
   SHARED_RUNNER_USAGE,
+  SHARED_RUNNER_POPOVER_OPTIONS,
 };
 </script>
 <template>
@@ -72,7 +65,7 @@ export default {
         <template #title>
           <div id="shared-runner-message-popover-container" class="gl-display-flex">
             <span class="gl-mr-2">{{ $options.SHARED_RUNNER_USAGE }}</span>
-            <help-popover :options="$options.popoverOptions" />
+            <help-popover :options="$options.SHARED_RUNNER_POPOVER_OPTIONS" />
           </div>
         </template>
         <no-minutes-alert v-if="!hasMinutes" />

@@ -66,11 +66,13 @@ export const mockGetCiMinutesUsageNamespace = {
           month: 'January',
           monthIso8601: '2015-01-01',
           minutes: 35,
+          sharedRunnersDuration: 120,
           projects: {
             nodes: [
               {
                 name: 'Flight',
                 minutes: 35,
+                sharedRunnersDuration: 120,
                 __typename: 'CiMinutesProjectMonthlyUsage',
               },
             ],
