@@ -18,16 +18,16 @@
           = f.gitlab_ui_checkbox_component :slack_app_enabled, s_('ApplicationSettings|Enable Slack application'),
             help_text: s_('ApplicationSettings|This option is only available on GitLab.com')
         .form-group
-          = f.label :slack_app_id, 'APP_ID', class: 'label-bold'
+          = f.label :slack_app_id, s_('SlackIntegration|Client ID'), class: 'label-bold'
           = f.text_field :slack_app_id, class: 'form-control gl-form-input'
         .form-group
-          = f.label :slack_app_secret, 'APP_SECRET', class: 'label-bold'
+          = f.label :slack_app_secret, s_('SlackIntegration|Client secret'), class: 'label-bold'
           = f.text_field :slack_app_secret, class: 'form-control gl-form-input'
         .form-group
-          = f.label :slack_app_signing_secret, s_('SlackIntegration|Signing Secret'), class: 'label-bold'
+          = f.label :slack_app_signing_secret, s_('SlackIntegration|Signing secret'), class: 'label-bold'
           = f.text_field :slack_app_signing_secret, class: 'form-control gl-form-input'
         .form-group
-          = f.label :slack_app_verification_token, 'Verification token', class: 'label-bold'
+          = f.label :slack_app_verification_token, s_('SlackIntegration|Verification token'), class: 'label-bold'
           = f.text_field :slack_app_verification_token, class: 'form-control gl-form-input'
 
       = f.submit _('Save changes'), class: "gl-button btn btn-confirm"
