@@ -60,7 +60,7 @@ module QA
             def has_ff_denied_license_button?
               feature_flag_controlled_element(:lc_remove_legacy_approval_status,
                                               :denied_license_radio,
-                                              :denied_license_radio,
+                                              :blacklisted_license_radio,
                                               true)
             end
 
