@@ -13,7 +13,7 @@ RSpec.describe Projects::Settings::IntegrationsController do
 
   shared_examples 'endpoint with some disabled integrations' do
     it 'has some disabled integrations' do
-      get :show, params: { namespace_id: project.namespace, project_id: project }
+      get :index, params: { namespace_id: project.namespace, project_id: project }
 
       expect(active_services).not_to include(*disabled_integrations)
     end
@@ -21,7 +21,7 @@ RSpec.describe Projects::Settings::IntegrationsController do
 
   shared_examples 'endpoint without disabled integrations' do
     it 'does not have disabled integrations' do
-      get :show, params: { namespace_id: project.namespace, project_id: project }
+      get :index, params: { namespace_id: project.namespace, project_id: project }
 
       expect(active_services).to include(*disabled_integrations)
     end
@@ -32,7 +32,7 @@ RSpec.describe Projects::Settings::IntegrationsController do
     let(:disabled_integrations) { %w[Integrations::Github] }
 
     it 'enables SlackSlashCommands and disables GitlabSlackApplication' do
-      get :show, params: { namespace_id: project.namespace, project_id: project }
+      get :index, params: { namespace_id: project.namespace, project_id: project }
 
       expect(active_services).to include('Integrations::SlackSlashCommands')
       expect(active_services).not_to include('Integrations::GitlabSlackApplication')
@@ -42,7 +42,7 @@ RSpec.describe Projects::Settings::IntegrationsController do
       stub_application_setting(slack_app_enabled: true)
       allow(::Gitlab).to receive(:com?).and_return(true)
 
-      get :show, params: { namespace_id: project.namespace, project_id: project }
+      get :index, params: { namespace_id: project.namespace, project_id: project }
 
       expect(active_services).to include('Integrations::GitlabSlackApplication')
       expect(active_services).not_to include('Integrations::SlackSlashCommands')

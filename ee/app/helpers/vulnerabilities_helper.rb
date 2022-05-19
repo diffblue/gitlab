@@ -15,7 +15,7 @@ module VulnerabilitiesHelper
       new_issue_url: new_issue_url_for(vulnerability),
       create_jira_issue_url: create_jira_issue_url_for(vulnerability),
       related_jira_issues_path: project_integrations_jira_issues_path(vulnerability.project, vulnerability_ids: [vulnerability.id]),
-      jira_integration_settings_path: edit_project_integration_path(vulnerability.project, ::Integrations::Jira),
+      jira_integration_settings_path: edit_project_settings_integration_path(vulnerability.project, ::Integrations::Jira),
       has_mr: !!vulnerability.finding.merge_request_feedback.try(:merge_request_id),
       create_mr_url: create_vulnerability_feedback_merge_request_path(vulnerability.finding.project),
       discussions_url: discussions_project_security_vulnerability_path(vulnerability.project, vulnerability),

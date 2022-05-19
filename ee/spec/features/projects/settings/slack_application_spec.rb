@@ -7,7 +7,7 @@ RSpec.describe 'Slack application' do
   let(:user) { create(:user) }
   let(:role) { :developer }
   let(:integration) { create(:gitlab_slack_application_integration, project: project) }
-  let(:slack_application_form_path) { edit_project_integration_path(project, integration) }
+  let(:slack_application_form_path) { edit_project_settings_integration_path(project, integration) }
 
   before do
     gitlab_sign_in(user)

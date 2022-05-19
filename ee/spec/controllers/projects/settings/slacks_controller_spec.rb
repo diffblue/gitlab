@@ -13,7 +13,7 @@ RSpec.describe Projects::Settings::SlacksController do
 
   describe 'GET show' do
     def redirect_url(project)
-      edit_project_integration_path(
+      edit_project_settings_integration_path(
         project,
         project.build_gitlab_slack_application_integration
       )

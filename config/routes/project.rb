@@ -130,7 +130,17 @@ constraints(::Constraints::ProjectUrlConstrainer.new) do
             end
           end
 
-          resource :integrations, only: [:show]
+          resources :integrations, constraints: { id: %r{[^/]+} }, only: [:index, :edit, :update] do
+            member do
+              put :test
+            end
+
+            resources :hook_logs, only: [:show], controller: :integration_hook_logs do
+              member do
+                post :retry
+              end
+            end
+          end
 
           resource :repository, only: [:show], controller: :repository do
             # TODO: Removed this "create_deploy_token" route after change was made in app/helpers/ci_variables_helper.rb:14
@@ -206,18 +216,6 @@ constraints(::Constraints::ProjectUrlConstrainer.new) do
             post :promote
             post :toggle_subscription
             delete :remove_priority
-          end
-        end
-
-        resources :integrations, controller: :services, constraints: { id: %r{[^/]+} }, only: [:edit, :update] do
-          member do
-            put :test
-          end
-
-          resources :hook_logs, only: [:show], controller: :service_hook_logs do
-            member do
-              post :retry
-            end
           end
         end
 

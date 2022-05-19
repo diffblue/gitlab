@@ -13,7 +13,7 @@ RSpec.describe 'User activates GitHub integration' do
     end
 
     it 'renders 404 when trying to access integration settings directly' do
-      visit edit_project_integration_path(project, :github)
+      visit edit_project_settings_integration_path(project, :github)
 
       expect(page).to have_gitlab_http_status(:not_found)
     end
