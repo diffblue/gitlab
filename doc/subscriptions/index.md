@@ -210,7 +210,9 @@ As noted above, benefits of the GitLab for Open Source Program apply to all proj
 
 ##### Screenshot 1: License overview
 
-On the left sidebar, access your projet's overview by clicking its avatar (if you haven't specified an avatar for your project, this button will appear as a single letter). Take a screenshot of the project overview that clearly displays the license you've chosen for your project.
+1. On the top bar, select **Menu > Projects** and find your project.
+1. On the left sidebar, select your project avatar. If you haven't specified an avatar for your project, the avatar displays as a single letter.
+1. Take a screenshot of the project overview that clearly displays the license you've chosen for your project.
 
 ![License overview](img/license-overview.png)
 
