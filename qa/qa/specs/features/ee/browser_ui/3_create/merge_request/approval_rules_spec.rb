@@ -92,9 +92,9 @@ module QA
 
         Page::MergeRequest::Show.perform do |show|
           show.merge!
-        end
 
-        expect(page).to have_content('The changes were merged')
+          expect(show).to be_merged
+        end
       end
     end
   end
