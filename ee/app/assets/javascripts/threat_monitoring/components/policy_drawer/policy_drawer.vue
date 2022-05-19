@@ -1,8 +1,10 @@
 <script>
-import { GlButton, GlDrawer, GlTabs, GlTab } from '@gitlab/ui';
+import { GlButton, GlDrawer, GlLink, GlSprintf, GlTabs, GlTab, GlTooltip } from '@gitlab/ui';
+import { s__ } from '~/locale';
 import { DRAWER_Z_INDEX } from '~/lib/utils/constants';
 import { getContentWrapperHeight, removeUnnecessaryDashes } from '../../utils';
 import { POLICIES_LIST_CONTAINER_CLASS, POLICY_TYPE_COMPONENT_OPTIONS } from '../constants';
+import { getSourceUrl, isPolicyInherited } from '../utils';
 import ScanExecutionPolicy from './scan_execution_policy.vue';
 import ScanResultPolicy from './scan_result_policy.vue';
 
@@ -15,8 +17,11 @@ export default {
   components: {
     GlButton,
     GlDrawer,
+    GlLink,
+    GlSprintf,
     GlTab,
     GlTabs,
+    GlTooltip,
     PolicyYamlEditor: () =>
       import(/* webpackChunkName: 'policy_yaml_editor' */ '../policy_yaml_editor.vue'),
     ScanExecutionPolicy,
@@ -45,6 +50,9 @@ export default {
     },
   },
   computed: {
+    isPolicyInherited() {
+      return isPolicyInherited(this.policy.source);
+    },
     policyComponent() {
       return policyComponent[this.policyType] || null;
     },
@@ -58,6 +66,12 @@ export default {
     },
   },
   DRAWER_Z_INDEX,
+  getSourceUrl,
+  i18n: {
+    editButtonTooltipMessage: s__(
+      'SecurityOrchestration|This policy is inherited from the %{linkStart}namespace%{linkEnd} and must be edited there',
+    ),
+  },
 };
 </script>
 
@@ -72,14 +86,31 @@ export default {
       <h4 class="gl-my-0 gl-mr-3">{{ policy.name }}</h4>
     </template>
     <template v-if="policy" #header>
-      <gl-button
-        class="gl-mt-5"
-        data-testid="edit-button"
-        category="primary"
-        variant="info"
-        :href="editPolicyPath"
-        >{{ s__('SecurityOrchestration|Edit policy') }}</gl-button
+      <span ref="editButton" class="gl-display-inline-block">
+        <gl-button
+          class="gl-mt-5"
+          data-testid="edit-button"
+          category="primary"
+          variant="info"
+          :href="editPolicyPath"
+          :disabled="isPolicyInherited"
+          >{{ s__('SecurityOrchestration|Edit policy') }}</gl-button
+        >
+      </span>
+      <gl-tooltip
+        v-if="isPolicyInherited"
+        :target="() => $refs.editButton"
+        data-testid="edit-button-tooltip"
+        placement="bottom"
       >
+        <gl-sprintf :message="$options.i18n.editButtonTooltipMessage">
+          <template #link>
+            <gl-link :href="$options.getSourceUrl(policy.source.namespace.fullPath)">
+              {{ policy.source.namespace.name }}
+            </gl-link>
+          </template>
+        </gl-sprintf>
+      </gl-tooltip>
     </template>
     <gl-tabs v-if="policy" class="gl-p-0!" justified content-class="gl-py-0" lazy>
       <gl-tab title="Details" class="gl-mt-5 gl-ml-6 gl-mr-3">

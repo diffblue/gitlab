@@ -1,11 +1,16 @@
+#import "../fragments/scan_execution_policy_source.fragment.graphql"
+
 query groupScanExecutionPolicies($fullPath: ID!) {
   namespace: group(fullPath: $fullPath) {
     id
-    scanExecutionPolicies {
+    scanExecutionPolicies(relationship: INHERITED) {
       nodes {
         name
         yaml
         enabled
+        source {
+          ...SecurityPolicySource
+        }
         updatedAt
       }
     }

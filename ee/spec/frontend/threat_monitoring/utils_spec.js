@@ -6,7 +6,7 @@ import {
   removeUnnecessaryDashes,
 } from 'ee/threat_monitoring/utils';
 import { setHTMLFixture, resetHTMLFixture } from 'helpers/fixtures';
-import { mockScanExecutionPolicy } from './mocks/mock_data';
+import { mockProjectScanExecutionPolicy } from './mocks/mock_data';
 
 describe('Threat Monitoring Utils', () => {
   describe('getContentWrapperHeight', () => {
@@ -37,10 +37,10 @@ describe('Threat Monitoring Utils', () => {
 
   describe('getPolicyType', () => {
     it.each`
-      input                                 | output
-      ${''}                                 | ${undefined}
-      ${'UnknownPolicyType'}                | ${undefined}
-      ${mockScanExecutionPolicy.__typename} | ${POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.value}
+      input                                        | output
+      ${''}                                        | ${undefined}
+      ${'UnknownPolicyType'}                       | ${undefined}
+      ${mockProjectScanExecutionPolicy.__typename} | ${POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.value}
     `('returns $output when used on $input', ({ input, output }) => {
       expect(getPolicyType(input)).toBe(output);
     });

@@ -12,6 +12,7 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import { stubComponent } from 'helpers/stub_component';
 import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
+import { trimText } from 'helpers/text_helper';
 import {
   projectScanExecutionPolicies,
   groupScanExecutionPolicies,
@@ -78,6 +79,7 @@ describe('PoliciesList component', () => {
   const findPolicyTypeFilter = () => wrapper.findByTestId('policy-type-filter');
   const findPoliciesTable = () => wrapper.findComponent(GlTable);
   const findPolicyStatusCells = () => wrapper.findAllByTestId('policy-status-cell');
+  const findPolicySourceCells = () => wrapper.findAllByTestId('policy-source-cell');
   const findPolicyDrawer = () => wrapper.findByTestId('policyDrawer');
 
   afterEach(() => {
@@ -122,7 +124,7 @@ describe('PoliciesList component', () => {
     describe.each`
       rowIndex | expectedPolicyName                           | expectedPolicyType
       ${1}     | ${mockScanExecutionPoliciesResponse[0].name} | ${'Scan execution'}
-      ${2}     | ${mockScanResultPoliciesResponse[0].name}    | ${'Scan result'}
+      ${3}     | ${mockScanResultPoliciesResponse[0].name}    | ${'Scan result'}
     `('policy in row #$rowIndex', ({ rowIndex, expectedPolicyName, expectedPolicyType }) => {
       let row;
 
@@ -209,11 +211,28 @@ describe('PoliciesList component', () => {
     });
 
     it('renders a "Disabled" label for screen readers for disabled policies', () => {
-      const span = findPolicyStatusCells().at(1).find('span');
+      const span = findPolicyStatusCells().at(2).find('span');
 
       expect(span.exists()).toBe(true);
       expect(span.attributes('class')).toBe('gl-sr-only');
       expect(span.text()).toBe('Disabled');
+    });
+  });
+
+  describe('source column', () => {
+    beforeEach(async () => {
+      mountWrapper();
+      await waitForPromises();
+    });
+
+    it('renders when the policy is not inherited', () => {
+      expect(findPolicySourceCells().at(0).text()).toBe('This project');
+    });
+
+    it('renders when the policy is inherited', () => {
+      expect(trimText(findPolicySourceCells().at(1).text())).toBe(
+        'Inherited from parent-group-name',
+      );
     });
   });
 
