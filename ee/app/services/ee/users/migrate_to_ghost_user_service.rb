@@ -16,6 +16,8 @@ module EE
         migrate_epics
         migrate_requirements_management_requirements
         migrate_vulnerabilities_feedback
+        migrate_vulnerabilities
+        migrate_vulnerabilities_external_issue_links
         super
       end
 
@@ -31,14 +33,20 @@ module EE
       end
 
       def migrate_vulnerabilities_feedback
-        user.vulnerability_feedback.update_all(author_id: ghost_user.id)
-        user.commented_vulnerability_feedback.update_all(comment_author_id: ghost_user.id)
+        batched_migrate(Vulnerabilities::Feedback, :author_id)
+        batched_migrate(Vulnerabilities::Feedback, :comment_author_id)
+      end
+
+      def migrate_vulnerabilities
+        batched_migrate(::Vulnerability, :author_id)
+      end
+
+      def migrate_vulnerabilities_external_issue_links
+        batched_migrate(Vulnerabilities::ExternalIssueLink, :author_id)
       end
 
       def migrate_resource_iteration_events
-        ResourceIterationEvent.by_user(user).each_batch(of: BATCH_SIZE) do |batch|
-          batch.update_all(user_id: ghost_user.id)
-        end
+        batched_migrate(ResourceIterationEvent, :user_id)
       end
     end
   end
