@@ -392,8 +392,4 @@ module GitalySetup
   def praefect_binary
     File.join(tmp_tests_gitaly_dir, "_build", "bin", "praefect")
   end
-
-  def git_binary_exists?
-    File.exist?(git_binary)
-  end
 end
