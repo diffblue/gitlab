@@ -1,14 +1,13 @@
 # frozen_string_literal: true
 
-# See https://docs.gitlab.com/ee/development/migration_style_guide.html
-# for more information on how to write migrations for GitLab.
-
-class TestBatchMigrationForCr < Gitlab::Database::Migration[2.0]
+class BulkInsertClusterEnabledGrants < Gitlab::Database::Migration[2.0]
   restrict_gitlab_migration gitlab_schema: :gitlab_main
 
   disable_ddl_transaction!
 
   def up
+    return unless Gitlab.dev_or_test_env? || Gitlab.com?
+
     define_batchable_model('cluster_groups').each_batch do |batch|
       min, max = batch.pick('MIN(id), MAX(id)')
 
@@ -42,5 +41,6 @@ class TestBatchMigrationForCr < Gitlab::Database::Migration[2.0]
   end
 
   def down
+    # no-op
   end
 end
