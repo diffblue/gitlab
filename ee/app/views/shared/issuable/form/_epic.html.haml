@@ -5,9 +5,9 @@
 - form = local_assigns.fetch(:form)
 
 .form-group.row.issue-epic
-  = form.label :label_ids, class: "col-form-label col-md-2 col-lg-4" do
+  = form.label :label_ids, class: "col-12" do
     = _('Epic')
-  .col-md-10.col-lg-8
+  .col-12
     .issuable-form-select-holder
       %input{ id: 'issue_epic_id', type: 'hidden', name: 'issue[epic_id]' }
       #js-epic-select-root{ data: { group_id: project.group.id, show_header: 'true' } }
