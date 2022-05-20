@@ -204,7 +204,7 @@ As part of the [application verification process](https://about.gitlab.com/solut
 - [OSI-approved license contents](#screenshot-2-license-contents)
 - [Publicly visible settings](#screenshot-3-publicly-visible-settings)
 
-As noted above, benefits of the GitLab for Open Source Program apply to all project's in a GitLab namespace, and all projects in an eligible namespace must meet program requirements. However, applicants will submit materials for **one project** in their repsective namespaces; the open source program team will use this project to verify the contents of the entire applying namespace.
+Benefits of the GitLab Open Source Program apply to all projects in a GitLab namespace. All projects in an eligible namespace must meet program requirements. However, if you submit materials for **one project** in your namespace, the open source program team uses that project to verify the contents of the entire namespace you use when applying to the program.
 
 ##### Screenshot 1: License overview
 
