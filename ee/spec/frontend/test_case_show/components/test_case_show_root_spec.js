@@ -1,4 +1,4 @@
-import { GlLink, GlLoadingIcon, GlSprintf, GlAlert } from '@gitlab/ui';
+import { GlBadge, GlLink, GlLoadingIcon, GlSprintf, GlAlert } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 
 import { nextTick } from 'vue';
@@ -339,7 +339,7 @@ describe('TestCaseShowRoot', () => {
     });
 
     it('renders status-badge slot contents', () => {
-      expect(wrapper.find('[data-testid="status"]').text()).toContain('Open');
+      expect(wrapper.findComponent(GlBadge).text()).toContain('Open');
     });
 
     it('renders status-badge slot contents with updated test case URL when testCase.moved is true', () => {
@@ -355,7 +355,7 @@ describe('TestCaseShowRoot', () => {
       const wrapperMoved = createComponent({
         testCase: movedTestCase,
       });
-      const statusEl = wrapperMoved.find('[data-testid="status"]');
+      const statusEl = wrapperMoved.findComponent(GlBadge);
 
       expect(statusEl.text()).toContain('Archived');
       expect(statusEl.findComponent(GlLink).attributes('href')).toBe(movedTestCase.movedTo.webUrl);

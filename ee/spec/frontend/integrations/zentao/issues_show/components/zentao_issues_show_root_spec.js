@@ -26,7 +26,7 @@ describe('ZentaoIssuesShow', () => {
   const findGlLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const findIssuableShow = () => wrapper.findComponent(IssuableShow);
   const findIssuableShowStatusBadge = () =>
-    wrapper.findComponent(IssuableHeader).find('[data-testid="status"]');
+    wrapper.findComponent(IssuableHeader).findComponent(GlBadge);
 
   const createComponent = () => {
     wrapper = shallowMountExtended(ZentaoIssuesShow, {
