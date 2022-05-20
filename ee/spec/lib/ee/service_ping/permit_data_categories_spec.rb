@@ -8,22 +8,18 @@ RSpec.describe ServicePing::PermitDataCategories do
 
     context 'with out current license', :without_license do
       context 'when usage ping setting is set to true' do
-        before do
-          stub_config_setting(usage_ping_enabled: true)
-        end
-
         it 'returns all categories' do
+          stub_config_setting(usage_ping_enabled: true)
+
           expect(permitted_categories).to match_array(%w[standard subscription operational optional])
         end
       end
 
       context 'when usage ping setting is set to false' do
-        before do
+        it 'returns all categories' do
           stub_config_setting(usage_ping_enabled: false)
-        end
 
-        it 'returns no categories' do
-          expect(permitted_categories).to match_array([])
+          expect(permitted_categories).to match_array(%w[standard subscription operational optional])
         end
       end
     end
@@ -50,8 +46,8 @@ RSpec.describe ServicePing::PermitDataCategories do
                 .and_return(instance_double(User, :user, requires_usage_stats_consent?: true))
             end
 
-            it 'returns no categories' do
-              expect(permitted_categories).to match_array([])
+            it 'returns all categories' do
+              expect(permitted_categories).to match_array(%w[standard subscription operational optional])
             end
           end
         end
@@ -92,7 +88,7 @@ RSpec.describe ServicePing::PermitDataCategories do
           end
 
           it 'returns all categories' do
-            expect(permitted_categories).to match_array(%w[])
+            expect(permitted_categories).to match_array(%w[standard subscription operational optional])
           end
         end
       end

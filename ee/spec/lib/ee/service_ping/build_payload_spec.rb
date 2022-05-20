@@ -75,9 +75,7 @@ RSpec.describe ServicePing::BuildPayload do
             create_current_license(operational_metrics_enabled: false)
           end
 
-          it 'returns empty service ping payload' do
-            expect(service_ping_payload).to eq({})
-          end
+          it_behaves_like 'complete service ping payload'
         end
       end
     end
