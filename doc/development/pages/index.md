@@ -10,15 +10,18 @@ description: "GitLab's development guidelines for GitLab Pages"
 
 ## Configuring GitLab Pages hostname
 
-GitLab Pages needs a hostname/domain, since each different pages sites is accessed via a
-subdomain. GitLab Pages hostname can be set in different manners, like:
+GitLab Pages needs a hostname or domain, as each different GitLab Pages site is accessed via a
+subdomain. GitLab Pages hostname can be set in different manners:
 
-### Without wildcard, editing `/etc/hosts`
+- [Without wildcard, editing your hosts file](#without-wildcard-editing-your-hosts-file).
+- [With DNS wildcard alternatives](#with-dns-wildcard-alternatives).
 
-Since `/etc/hosts` don't support wildcard hostnames, you'll have to add to your configuration one
-entry for the GitLab Pages and then one entry for each page site.
+### Without wildcard, editing your hosts file
 
-   ```text
+As `/etc/hosts` don't support wildcard hostnames, you must configure one entry
+for GitLab Pages, and then one entry for each page site:
+
+   ```plaintext
    127.0.0.1 gdk.test           # If you're using GDK
    127.0.0.1 pages.gdk.test     # Pages host
    # Any namespace/group/user needs to be added
@@ -27,9 +30,9 @@ entry for the GitLab Pages and then one entry for each page site.
    127.0.0.1 root.pages.gdk.test # for the root pages
    ```
 
-### With dns wildcard alternatives
+### With DNS wildcard alternatives
 
-If instead of editing your `/etc/hosts` you'd prefer to use a dns wildcard, you can use:
+If instead of editing your `/etc/hosts` you'd prefer to use a DNS wildcard, you can use:
 
 - [`nip.io`](https://nip.io)
 - [`dnsmasq`](https://wiki.debian.org/dnsmasq)
@@ -39,21 +42,29 @@ If instead of editing your `/etc/hosts` you'd prefer to use a dns wildcard, you 
 Create a `gitlab-pages.conf` in the root of the GitLab Pages site, like:
 
 ```toml
-listen-http=:3010             # default port is 3010, but you can use any other
-pages-domain=pages.gdk.test   # your local GitLab Pages domain
-pages-root=shared/pages       # directory where the pages are stored
-log-verbose=true              # show more information in the logs
+# Default port is 3010, but you can use any other
+listen-http=:3010
+
+# Your local GitLab Pages domain
+pages-domain=pages.gdk.test
+
+# Directory where the pages are stored
+pages-root=shared/pages
+
+# Show more information in the logs
+log-verbose=true
 ```
 
-To see more options you can check [`internal/config/flags.go`](https://gitlab.com/gitlab-org/gitlab-pages/blob/master/internal/config/flags.go)
+To see more options you can check
+[`internal/config/flags.go`](https://gitlab.com/gitlab-org/gitlab-pages/blob/master/internal/config/flags.go)
 or run `gitlab-pages --help`.
 
 ### Running GitLab Pages manually
 
-For any changes in the code, you must run `make` to build the app, so it's best to just always run
+For any changes in the code, you must run `make` to build the app. It's best to just always run
 it before you start the app. It's quick to build so don't worry!
 
-```sh
+```shell
 make && ./gitlab-pages -config=gitlab-pages.conf
 ```
 
@@ -75,75 +86,74 @@ In the following steps, `$GDK_ROOT` is the directory where you cloned GDK.
 
 ### Running GitLab Pages with GDK
 
-Once these configurations are set GDK will manage a GitLab Pages process and you'll have access to
+After these configurations are set, GDK manages a GitLab Pages process, giving you access to
 it with commands like:
 
-   ```sh
-   $ gdk start gitlab-pages   # start GitLab Pages
-   $ gdk stop gitlab-pages    # stop GitLab Pages
-   $ gdk restart gitlab-pages # restart GitLab Pages
-   $ gdk tail gitlab-pages    # tail GitLab Pages logs
-   ```
+- Start: `gdk start gitlab-pages`
+- Stop: `gdk stop gitlab-pages`
+- Restart: `gdk restart gitlab-pages`
+- Tail logs: `gdk tail gitlab-pages`
 
 ### Running GitLab Pages manually
 
 You can also build and start the app independent of GDK processes management.
 
-For any changes in the code, you must run `make` to build the app, so it's best to just always run
+For any changes in the code, you must run `make` to build the app. It's best to just always run
 it before you start the app. It's quick to build so don't worry!
 
-```sh
+```shell
 make && ./gitlab-pages -config=gitlab-pages.conf
 ```
 
-#### Building Gitlab Pages in FIPS mode
+#### Building GitLab Pages in FIPS mode
 
-```sh
-$ FIPS_MODE=1 make && ./gitlab-pages -config=gitlab-pages.conf
+```shell
+FIPS_MODE=1 make && ./gitlab-pages -config=gitlab-pages.conf
 ```
 
 ### Creating GitLab Pages site
 
-To build a GitLab Pages site locally you'll have to [configure `gitlab-runner`](https://gitlab.com/gitlab-org/gitlab-development-kit/-/blob/main/doc/howto/runner.md)
+To build a GitLab Pages site locally you must
+[configure `gitlab-runner`](https://gitlab.com/gitlab-org/gitlab-development-kit/-/blob/main/doc/howto/runner.md)
 
-Check the [user manual](https://docs.gitlab.com/ee/user/project/pages/).
+Check the [user manual](../../user/project/pages/index.md).
 
 ### Enabling access control
 
-GitLab Pages have support to private sites, which means sites that only people who has access to the
-Gitlab's project will have access to its GitLab Pages site.
+GitLab Pages support private sites. Private sites can be accessed only by users
+who have access to your GitLab project.
 
 GitLab Pages access control is disabled by default. To enable it:
 
-1. Enable the GitLab Pages access control within GitLab itlsef, which can be done by editing
-   `gitlab.yml` or in the `gdk.yml` if you're using GDK.
+1. Enable the GitLab Pages access control in GitLab itself, which can be done by either:
+   - If you're not using GDK, editing `gitlab.yml`:
 
-   ```yaml
-   # gitlab/config/gitlab.yml
-   pages:
-     access_control: true
-   ```
+     ```yaml
+     # gitlab/config/gitlab.yml
+     pages:
+       access_control: true
+     ```
 
-   or
+   - Editing `gdk.yml` if you're using GDK:
 
-   ```yaml
-   # $GDK_ROOT/gdk.yml
-   gitlab_pages:
-     enabled: true
-     access_control: true
-   ```
+     ```yaml
+     # $GDK_ROOT/gdk.yml
+     gitlab_pages:
+       enabled: true
+       access_control: true
+     ```
 
-1. Restart GitLab (if running through the GDK, run `gdk restart`). Note that running
+1. Restart GitLab (if running through the GDK, run `gdk restart`). Running
    `gdk reconfigure` overwrites the value of `access_control` in `config/gitlab.yml`.
-1. In your local GitLab instance, in the browser navigate to `http://gdk.test:3000/admin/applications`.
-1. Create an [Instance-wide OAuth application](https://docs.gitlab.com/ee/integration/oauth_provider.html#instance-wide-applications).
-   - The scope is `api`
+1. In your local GitLab instance, in the browser go to `http://gdk.test:3000/admin/applications`.
+1. Create an [Instance-wide OAuth application](../../integration/oauth_provider.md#instance-wide-applications)
+   with the `api` scope.
 1. Set the value of your `redirect-uri` to the `pages-domain` authorization endpoint
    - `http://pages.gdk.test:3010/auth`, for example
-   - Note that the `redirect-uri` must not contain any GitLab Pages site domain
+   - The `redirect-uri` must not contain any GitLab Pages site domain.
 1. Add the auth client configuration:
 
-   - with GDK, in `gdk.yml`:
+   - With GDK, in `gdk.yml`:
 
       ```yaml
       gitlab_pages:
@@ -156,7 +166,7 @@ GitLab Pages access control is disabled by default. To enable it:
       GDK generates random `auth_secret` and builds the `auth_redirect_uri` based on GitLab Pages
       host configuration.
 
-   - without GDK, in `gitlab-pages.conf`:
+   - Without GDK, in `gitlab-pages.conf`:
 
       ```conf
       ## the following are only needed if you want to test auth for private projects
@@ -166,7 +176,7 @@ GitLab Pages access control is disabled by default. To enable it:
       auth-redirect-uri=http://pages.gdk.test:3010/auth # the authentication callback url for GitLab Pages
       ```
 
-1. If running Pages inside the GDK you can use GDK's `protected_config_files` section under `gdk` in
+1. If running Pages inside the GDK, you can use GDK's `protected_config_files` section under `gdk` in
    your `gdk.yml` to avoid getting `gitlab-pages.conf` configuration rewritten:
 
    ```yaml
@@ -177,7 +187,7 @@ GitLab Pages access control is disabled by default. To enable it:
 
 ## Linting
 
-```sh
+```shell
 # Run the linter locally
 make lint
 ```
@@ -186,7 +196,7 @@ make lint
 
 To run tests, you can use these commands:
 
-```sh
+```shell
 # This will run all of the tests in the codebase
 make test
 
