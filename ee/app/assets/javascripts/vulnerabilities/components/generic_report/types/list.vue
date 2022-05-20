@@ -1,4 +1,5 @@
 <script>
+// eslint-disable-next-line import/no-cycle
 import { isOfTypeList } from './utils';
 
 export default {
