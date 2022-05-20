@@ -11,6 +11,7 @@ class Groups::UsageQuotasController < Groups::ApplicationController
   layout 'group_settings'
 
   feature_category :purchase
+  urgency :low
 
   def index
     @hide_search_settings = true

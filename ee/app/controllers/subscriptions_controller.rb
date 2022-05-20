@@ -16,6 +16,7 @@ class SubscriptionsController < ApplicationController
   end
 
   feature_category :purchase
+  urgency :low
 
   content_security_policy do |p|
     next if p.directives.blank?

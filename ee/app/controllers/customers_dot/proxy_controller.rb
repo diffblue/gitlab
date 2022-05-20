@@ -6,6 +6,7 @@ module CustomersDot
     skip_before_action :verify_authenticity_token
 
     feature_category :purchase
+    urgency :low
 
     def graphql
       response = Gitlab::HTTP.post(EE::SUBSCRIPTIONS_GRAPHQL_URL,

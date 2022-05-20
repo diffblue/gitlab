@@ -19,6 +19,7 @@ class TrialsController < ApplicationController
   end
 
   feature_category :purchase
+  urgency :low
 
   def new
   end

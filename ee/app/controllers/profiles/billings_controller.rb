@@ -4,6 +4,7 @@ class Profiles::BillingsController < Profiles::ApplicationController
   before_action :verify_namespace_plan_check_enabled
 
   feature_category :purchase
+  urgency :low
 
   def index
     @hide_search_settings = true

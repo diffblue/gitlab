@@ -9,6 +9,7 @@ module API
       end
 
       feature_category :purchase
+      urgency :low
 
       namespace :internal do
         resource :upcoming_reconciliations do
