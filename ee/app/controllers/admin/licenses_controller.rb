@@ -9,6 +9,7 @@ class Admin::LicensesController < Admin::ApplicationController
   respond_to :html
 
   feature_category :provision
+  urgency :low
 
   def create
     return upload_license_error if license_params[:data].blank? && license_params[:data_file].blank?
