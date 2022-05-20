@@ -4,7 +4,7 @@ class AddWorkItemParentChildTable < Gitlab::Database::Migration[2.0]
   def up
     create_table :work_item_parent_links do |t|
       t.references :work_item,
-                   index: true,
+                   index: false,
                    unique: true,
                    foreign_key: { to_table: :issues, on_delete: :cascade },
                    null: false
@@ -14,6 +14,10 @@ class AddWorkItemParentChildTable < Gitlab::Database::Migration[2.0]
                    null: false
       t.integer :relative_position
       t.timestamps_with_timezone null: false
+
+      t.index [:work_item_id, :work_item_parent_id],
+              unique: true,
+              name: :index_parent_links_on_work_item_id_and_work_item_parent_id
     end
   end
 
