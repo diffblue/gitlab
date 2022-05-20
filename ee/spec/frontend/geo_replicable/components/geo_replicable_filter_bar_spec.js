@@ -120,7 +120,10 @@ describe('GeoReplicableFilterBar', () => {
       });
 
       it('updates title', async () => {
-        expect(findGlModal().props('title')).toBe('Resync all 0 designs');
+        expect(findGlModal().props('title')).toBe('Resync all designs');
+        wrapper.vm.$store.state.paginationData.total = 1;
+        await nextTick();
+        expect(findGlModal().props('title')).toBe('Resync all designs');
         wrapper.vm.$store.state.paginationData.total = 15;
         await nextTick();
         expect(findGlModal().props('title')).toBe('Resync all 15 designs');

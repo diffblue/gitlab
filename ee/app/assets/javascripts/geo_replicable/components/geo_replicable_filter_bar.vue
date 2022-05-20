@@ -16,7 +16,7 @@ export default {
   name: 'GeoReplicableFilterBar',
   i18n: {
     resyncAll: s__('Geo|Resync all'),
-    resyncAllReplicables: s__('Geo|Resync all %{total} %{replicableType}'),
+    resyncAllReplicables: s__('Geo|Resync all %{total}%{replicableType}'),
     dropdownTitle: s__('Geo|Filter by status'),
     searchPlaceholder: s__('Geo|Filter by name'),
     modalBody: s__(
@@ -49,7 +49,7 @@ export default {
     resyncText() {
       return sprintf(this.$options.i18n.resyncAllReplicables, {
         replicableType: this.replicableTypeName,
-        total: this.paginationData.total,
+        total: this.paginationData.total > 1 ? `${this.paginationData.total} ` : null,
       });
     },
   },
