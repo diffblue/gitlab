@@ -35,4 +35,10 @@ module AuditEventsHelper
   def show_filter_for_group?(group)
     can?(current_user, :admin_group, group)
   end
+
+  def show_streams_for_group?(group)
+    return false if group.subgroup?
+
+    can?(current_user, :admin_external_audit_events, group)
+  end
 end
