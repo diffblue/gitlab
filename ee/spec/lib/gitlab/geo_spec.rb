@@ -234,6 +234,38 @@ RSpec.describe Gitlab::Geo, :geo, :request_store do
     end
   end
 
+  describe '.gdk_geo_secondary?' do
+    subject { described_class.gdk_geo_secondary? }
+
+    context 'when GDK_GEO_SECONDARY environment variable is not set' do
+      it { is_expected.to be_falsey }
+    end
+
+    context 'when GDK_GEO_SECONDARY environment variable is 1' do
+      before do
+        stub_env('GDK_GEO_SECONDARY', '1')
+      end
+
+      it { is_expected.to be_truthy }
+    end
+
+    context 'when GDK_GEO_SECONDARY environment variable is 0' do
+      before do
+        stub_env('GDK_GEO_SECONDARY', '0')
+      end
+
+      it { is_expected.to be_falsey }
+    end
+
+    context 'when GDK_GEO_SECONDARY environment variable is true' do
+      before do
+        stub_env('GDK_GEO_SECONDARY', 'true')
+      end
+
+      it { is_expected.to be_falsey }
+    end
+  end
+
   describe '.secondary_with_primary?' do
     context 'when current node is a primary node' do
       it 'returns false' do
