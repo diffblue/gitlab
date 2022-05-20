@@ -1,9 +1,0 @@
-- content_for :user_over_limit_free_plan_alert do
-  - if ::Namespaces::FreeUserCap::Standard.new(source.root_ancestor).feature_enabled?
-    = render Namespaces::FreeUserCapAlertComponent.new(namespace: source.root_ancestor,
-      user: current_user,
-      content_class: @content_class)
-  - else
-    = render Namespaces::PreviewFreeUserCapAlertComponent.new(namespace: source.root_ancestor,
-      user: current_user,
-      content_class: @content_class)

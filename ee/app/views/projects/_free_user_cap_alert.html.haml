@@ -1,0 +1,4 @@
+- if project.personal?
+  = render 'shared/personal_free_user_cap_alert', source: project
+- else
+  = render 'shared/free_user_cap_alert', source: project
