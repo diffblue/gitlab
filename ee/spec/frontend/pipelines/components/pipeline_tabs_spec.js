@@ -30,6 +30,7 @@ describe('The Pipeline Tabs', () => {
     defaultTabValue: '',
     exposeSecurityDashboard: false,
     exposeLicenseScanningData: false,
+    totalJobCount: 10,
   };
 
   const createComponent = ({ propsData = {}, provide = {} } = {}) => {
@@ -42,7 +43,6 @@ describe('The Pipeline Tabs', () => {
         },
         stubs: {
           BasePipelineTabs,
-          JobsApp: { template: '<div class="jobs" />' },
           TestReports: { template: '<div id="tests" />' },
         },
       }),
