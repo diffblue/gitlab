@@ -134,7 +134,7 @@ module Gitlab
 
         return '/**/*' if pattern == '*'
 
-        unless pattern.starts_with?('/')
+        unless pattern.start_with?('/')
           pattern = "/**/#{pattern}"
         end
 
