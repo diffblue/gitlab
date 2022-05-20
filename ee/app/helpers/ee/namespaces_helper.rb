@@ -91,6 +91,27 @@ module EE
       )
     end
 
+    def storage_usage_app_data(namespace)
+      data = {
+        namespace_path: namespace.full_path,
+        purchase_storage_url: nil,
+        buy_addon_target_attr: nil,
+        is_temporary_storage_increase_visible: temporary_storage_increase_visible?(namespace).to_s,
+        default_per_page: page_size,
+        additional_repo_storage_by_namespace: current_user.namespace.additional_repo_storage_by_namespace_enabled?.to_s,
+        is_free_namespace: (!current_user.namespace.paid?).to_s
+      }
+
+      if purchase_storage_link_enabled?(namespace)
+        data.merge!({
+          purchase_storage_url: purchase_storage_url,
+          buy_addon_target_attr: buy_addon_target_attr(namespace)
+        })
+      end
+
+      data
+    end
+
     private
 
     def use_customers_dot_for_addon_path?(namespace)

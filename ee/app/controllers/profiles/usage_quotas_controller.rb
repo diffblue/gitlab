@@ -7,6 +7,7 @@ class Profiles::UsageQuotasController < Profiles::ApplicationController
 
   before_action only: [:index] do
     push_frontend_feature_flag(:gitlab_gtm_datalayer, type: :ops)
+    push_frontend_feature_flag(:update_storage_usage_design, current_user)
   end
 
   def index
