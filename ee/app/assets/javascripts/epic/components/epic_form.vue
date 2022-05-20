@@ -137,18 +137,17 @@ export default {
 
 <template>
   <div>
-    <h3 class="page-title gl-border-b-solid gl-border-b-gray-100 gl-border-b-1 gl-pb-5 gl-mb-6">
+    <h1 class="page-title gl-pb-5">
       {{ __('New Epic') }}
-    </h3>
+    </h1>
     <gl-form class="common-note-form new-epic-form" @submit.prevent="save">
-      <gl-form-group :label="__('Title')" label-for="epic-title">
+      <gl-form-group :label="__('Title (required)')" label-for="epic-title">
         <gl-form-input
           id="epic-title"
           ref="titleInput"
           v-model="title"
           data-testid="epic-title"
           data-qa-selector="epic_title_field"
-          :placeholder="s__('Epics|Enter a title for your epic')"
           autocomplete="off"
           autofocus
         />
@@ -190,7 +189,6 @@ export default {
           >{{ $options.i18n.confidentialityLabel }}</gl-form-checkbox
         >
       </gl-form-group>
-      <hr />
       <gl-form-group :label="__('Labels')">
         <labels-select-widget
           class="block labels js-labels-block"
@@ -240,7 +238,7 @@ export default {
         >
       </gl-form-group>
 
-      <div class="footer-block row-content-block gl-display-flex">
+      <div class="footer-block">
         <gl-button
           type="submit"
           variant="confirm"
@@ -248,6 +246,7 @@ export default {
           :disabled="!title"
           data-testid="save-epic"
           data-qa-selector="create_epic_button"
+          class="gl-mr-2"
           >{{ __('Create epic') }}</gl-button
         >
         <gl-button
