@@ -4,6 +4,7 @@ module API
   module Ci
     class Minutes < ::API::Base
       feature_category :utilization
+      urgency :low
 
       before { authenticated_as_admin! }
 
