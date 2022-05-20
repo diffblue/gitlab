@@ -130,9 +130,9 @@ module Billing
           }
         },
         'premium' => {
-          "card_border_classes": "gl-border-indigo-700",
+          "card_border_classes": "gl-border-purple-700",
           "header_text": s_("BillingPlans|Recommended"),
-          "header_classes": "gl-line-height-normal gl-font-weight-bold gl-py-4 gl-h-8 gl-bg-theme-indigo-800 " \
+          "header_classes": "gl-line-height-normal gl-font-weight-bold gl-py-4 gl-h-8 gl-bg-purple-800 " \
                             "gl-text-white",
           "elevator_pitch": s_("BillingPlans|Enhance team productivity and collaboration"),
           "features": [
