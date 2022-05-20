@@ -55,7 +55,7 @@ module Gitlab
         # then keep running until migration is finished.
         def finalize(job_class_name, table_name, column_name, job_arguments)
           migration = BatchedMigration.find_for_configuration(
-            :gitlab_ci,
+            Gitlab::Database.gitlab_schemas_for_connection(connection),
             job_class_name, table_name, column_name, job_arguments
           )
 
