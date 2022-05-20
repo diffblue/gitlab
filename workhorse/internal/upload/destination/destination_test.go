@@ -15,6 +15,8 @@ import (
 	"github.com/stretchr/testify/require"
 	"gocloud.dev/blob"
 
+	"gitlab.com/gitlab-org/labkit/fips"
+
 	"gitlab.com/gitlab-org/gitlab/workhorse/internal/config"
 	"gitlab.com/gitlab-org/gitlab/workhorse/internal/testhelper"
 	"gitlab.com/gitlab-org/gitlab/workhorse/internal/upload/destination"
@@ -206,7 +208,11 @@ func TestUpload(t *testing.T) {
 			}
 
 			require.Equal(t, test.ObjectSize, fh.Size)
-			require.Equal(t, test.ObjectMD5, fh.MD5())
+			if fips.Enabled() {
+				require.Empty(t, fh.MD5())
+			} else {
+				require.Equal(t, test.ObjectMD5, fh.MD5())
+			}
 			require.Equal(t, test.ObjectSHA256, fh.SHA256())
 
 			require.Equal(t, expectedPuts, osStub.PutsCnt(), "ObjectStore PutObject count mismatch")
@@ -478,7 +484,11 @@ func checkFileHandlerWithFields(t *testing.T, fh *destination.FileHandler, field
 	require.Equal(t, fh.RemoteURL, fields[key("remote_url")])
 	require.Equal(t, fh.RemoteID, fields[key("remote_id")])
 	require.Equal(t, strconv.FormatInt(test.ObjectSize, 10), fields[key("size")])
-	require.Equal(t, test.ObjectMD5, fields[key("md5")])
+	if fips.Enabled() {
+		require.Empty(t, fields[key("md5")])
+	} else {
+		require.Equal(t, test.ObjectMD5, fields[key("md5")])
+	}
 	require.Equal(t, test.ObjectSHA1, fields[key("sha1")])
 	require.Equal(t, test.ObjectSHA256, fields[key("sha256")])
 	require.Equal(t, test.ObjectSHA512, fields[key("sha512")])
