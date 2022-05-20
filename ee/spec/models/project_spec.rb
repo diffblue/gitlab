@@ -3401,4 +3401,24 @@ RSpec.describe Project do
                         paid_small_active_project, paid_small_inactive_project, paid_large_inactive_project)
     end
   end
+
+  describe '#security_training_available?' do
+    subject { build(:project) }
+
+    context 'when security_training feature is not available' do
+      it 'returns false' do
+        stub_licensed_features(security_training: false)
+
+        expect(subject.security_training_available?).to eq false
+      end
+    end
+
+    context 'when security_training feature is available' do
+      it 'returns true' do
+        stub_licensed_features(security_training: true)
+
+        expect(subject.security_training_available?).to eq true
+      end
+    end
+  end
 end

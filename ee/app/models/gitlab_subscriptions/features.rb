@@ -30,6 +30,7 @@ module GitlabSubscriptions
       repository_size_limit
       required_ci_templates
       seat_link
+      security_training
       usage_quotas
     ].freeze
 
@@ -202,6 +203,7 @@ module GitlabSubscriptions
       security_dashboard
       security_on_demand_scans
       security_orchestration_policies
+      security_training
       ssh_key_expiration_policy
       status_page
       subepics
