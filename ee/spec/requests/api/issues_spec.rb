@@ -757,7 +757,7 @@ RSpec.describe API::Issues, :mailer, :aggregate_failures do
     end
 
     where(:user_role, :own_issue, :expected_status) do
-      :guest    | true  | :can_upload_metric_image
+      :guest    | true  | :unauthorized_upload
       :guest    | false | :unauthorized_upload
       :reporter | true  | :can_upload_metric_image
       :reporter | false | :can_upload_metric_image
