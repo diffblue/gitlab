@@ -110,7 +110,7 @@ export default {
       class="jira-connect-header gl-display-flex gl-align-items-center gl-justify-content-center gl-px-5 gl-border-b-solid gl-border-b-gray-100 gl-border-b-1 gl-bg-white"
     >
       <gl-link :href="gitlabUrl" target="_blank">
-        <img :src="gitlabLogo" class="gl-h-6" />
+        <img :src="gitlabLogo" class="gl-h-6" :alt="__('GitLab')" />
       </gl-link>
       <user-link
         :user-signed-in="userSignedIn"
