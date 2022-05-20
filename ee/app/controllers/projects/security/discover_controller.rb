@@ -6,6 +6,7 @@ module Projects
       include SecurityAndCompliancePermissions
 
       feature_category :navigation
+      urgency :low
 
       def show
         render_404 unless helpers.show_discover_project_security?(@project)

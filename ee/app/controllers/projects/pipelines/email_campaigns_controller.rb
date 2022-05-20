@@ -6,6 +6,7 @@ module Projects
       before_action :check_if_gl_com_or_dev
 
       feature_category :navigation
+      urgency :low
 
       def validate_account
         track_email_cta_click
