@@ -162,21 +162,19 @@ export default {
 
 <template>
   <section class="gl-border-solid gl-rounded-base gl-border-1 gl-border-gray-100">
-    <div class="gl-p-5">
-      <header>
-        <h4 class="gl-mt-0 gl-mb-3">
-          {{ __('Vulnerabilities over time') }}
-        </h4>
-        <p data-testid="timeInfo" class="gl-text-secondary">
-          {{ dateInfo }}
-        </p>
-      </header>
+    <header class="gl-p-5">
+      <h4 class="gl-mt-0 gl-mb-3">
+        {{ __('Vulnerabilities over time') }}
+      </h4>
+      <p data-testid="timeInfo" class="gl-text-secondary">
+        {{ dateInfo }}
+      </p>
       <chart-buttons
         :days="$options.days"
         :active-day="selectedDayRange"
         @days-selected="setSelectedDayRange"
       />
-    </div>
+    </header>
 
     <gl-loading-icon v-if="isLoadingHistory" size="lg" class="gl-my-12" />
     <gl-table-lite
