@@ -16,7 +16,7 @@ RSpec.describe 'groups/group_members/index' do
     it 'renders the alert partial' do
       render
 
-      expect(rendered).to render_template('shared/_user_over_limit_free_plan_alert')
+      expect(rendered).to render_template('shared/_free_user_cap_alert')
     end
   end
 end

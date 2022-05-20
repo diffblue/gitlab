@@ -18,7 +18,7 @@ RSpec.describe 'projects/show' do
     it 'renders the alert partial' do
       render
 
-      expect(rendered).to render_template('shared/_user_over_limit_free_plan_alert')
+      expect(rendered).to render_template('projects/_free_user_cap_alert')
     end
   end
 end
