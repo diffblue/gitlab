@@ -125,6 +125,19 @@ RSpec.describe RegistrationsController do
             expect(audit_event.details[:target_details]).to eq(created_user.username)
             expect(audit_event.details[:custom_message]).to eq('Instance access request')
           end
+
+          context 'with invalid user' do
+            before do
+              # By creating the user beforehand, the next request
+              # will be invalid (duplicate email / username)
+              create(:user, **user_params[:user])
+            end
+
+            it 'does not log registration failure' do
+              expect { subject }.not_to change(AuditEvent, :count)
+              expect(response).to render_template(:new)
+            end
+          end
         end
       end
     end
