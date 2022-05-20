@@ -12,7 +12,7 @@ module Types
       end
 
       def self.ability_field(ability, **kword_args)
-        create_field_resolver(ability) unless resolving_keywords?(kword_args)
+        define_field_resolver_method(ability) unless resolving_keywords?(kword_args)
 
         permission_field(ability, **kword_args)
       end
@@ -27,9 +27,9 @@ module Types
         field(**kword_args) # rubocop:disable Graphql/Descriptions
       end
 
-      def self.create_field_resolver(ability)
+      def self.define_field_resolver_method(ability)
         unless self.respond_to?(ability)
-          define_method :"#{ability}" do |*args|
+          define_method ability.to_sym do |*args|
             Ability.allowed?(context[:current_user], ability, object, args.to_h)
           end
         end
