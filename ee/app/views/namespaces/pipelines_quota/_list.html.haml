@@ -46,6 +46,8 @@
       %th
         = _('Project')
       %th
+        = s_('UsageQuota|Shared runner usage')
+      %th
         = s_('UsageQuota|CI/CD minutes usage')
 
   %tbody
@@ -63,7 +65,9 @@
             .avatar-container.s20.d-none.d-sm-block
               = project_icon(project_usage.project, alt: '', class: 'avatar project-avatar s20')
             %strong= link_to project_usage.project.full_name, project_usage.project
-          %td
+          %td{ 'data-testid': 'project_shared_runner_duration' }
+            = project_usage.shared_runners_duration
+          %td{ 'data-testid': 'project_amount_used' }
             = project_usage.amount_used.to_i
       - if projects_usage.blank?
         %tr
