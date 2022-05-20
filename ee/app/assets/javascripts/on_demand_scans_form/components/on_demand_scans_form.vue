@@ -424,6 +424,7 @@ export default {
       } else {
         this.selectedSiteProfileId = profile.id;
       }
+      this.closeSideDrawer();
     },
     onScannerProfileCreated() {
       /**
