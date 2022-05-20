@@ -3,8 +3,14 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Database::Migrations::BatchedBackgroundMigrationHelpers do
+  let(:migration_class) do
+    Class.new(ActiveRecord::Migration[6.1])
+      .include(described_class)
+      .include(Gitlab::Database::Migrations::ReestablishedConnectionStack)
+  end
+
   let(:migration) do
-    ActiveRecord::Migration.new.extend(described_class).extend(Gitlab::Database::Migrations::ReestablishedConnectionStack)
+    migration_class.new
   end
 
   describe '#queue_batched_background_migration' do
@@ -232,87 +238,52 @@ RSpec.describe Gitlab::Database::Migrations::BatchedBackgroundMigrationHelpers d
       end
     end
 
-    context 'when multiple database is enabled' do
-      let(:migration_wrapper) do
-        Gitlab::Database::BackgroundMigration::BatchedMigrationWrapper.new(connection: connection)
-      end
-
-      let(:migration_helpers) { ActiveRecord::Migration.new }
-      let(:table_name) { :_test_batched_migrations_test_table }
-      let(:column_name) { :some_id }
-      let(:job_arguments) { [:some_id, :some_id_convert_to_bigint] }
-
-      let(:migration_status) { :active }
-
-      context 'when the migration is not yet completed', :reestablished_active_record_base do
-        # let(:batched_migration) do
-        #   create(:batched_background_migration, migration_status, max_value: 8, batch_size: 2, sub_batch_size: 1, interval: 0, table_name: table_name, column_name: column_name, job_arguments: job_arguments, pause_ms: 0, gitlab_schema: 'gitlab_ci')
-        # end
-
+    context 'when running migration in reconfigured ActiveRecord::Base context' do
+      it_behaves_like 'reconfigures connection stack', 'ci' do
         before do
-          skip_if_multiple_databases_not_setup
-
-          ActiveRecord::Base.establish_connection(:ci)
-
-          migration_helpers.drop_table table_name, if_exists: true
-          migration_helpers.create_table table_name, id: false do |t|
-            t.integer :some_id, primary_key: true
-            t.integer :some_id_convert_to_bigint
-          end
-
-          migration_helpers.execute("INSERT INTO #{table_name} VALUES (1, 1), (2, 2), (3, NULL), (4, NULL), (5, NULL), (6, NULL), (7, NULL), (8, NULL)")
-
-          # common_attributes = {
-          #   batched_migration: batched_migration,
-          #   batch_size: 2,
-          #   sub_batch_size: 1,
-          #   pause_ms: 0
-          # }
-
-          expect(Gitlab::Database::QueryAnalyzers::RestrictAllowedSchemas).to receive(:require_dml_mode!)
-
-          allow(described_class).to receive(:gitlab_schema_from_context).and_return(:ci)
+          create(:batched_background_migration,
+            job_class_name: 'Ci::MyClass',
+            table_name: :ci_builds,
+            column_name: :id,
+            job_arguments: [],
+            gitlab_schema: :gitlab_ci)
         end
 
-        after do
-          migration_helpers.drop_table table_name, if_exists: true
+        context 'when restrict_gitlab_migration is set to gitlab_ci' do
+          it 'finalizes the migration' do
+            migration_class.include(Gitlab::Database::MigrationHelpers::RestrictGitlabSchema)
+            migration_class.restrict_gitlab_migration gitlab_schema: :gitlab_ci
+
+            allow_next_instance_of(Gitlab::Database::BackgroundMigration::BatchedMigrationRunner) do |runner|
+              expect(runner).to receive(:finalize).with('Ci::MyClass', :ci_builds, :id, []) do
+                validate_connections_stack!
+              end
+            end
+
+            migration.finalize_batched_background_migration(
+              job_class_name: 'Ci::MyClass', table_name: :ci_builds, column_name: :id, job_arguments: [])
+          end
         end
 
-        it 'completes the migration' do
-          base_model = Gitlab::Database.database_base_models.fetch(:ci)
+        context 'when restrict_gitlab_migration is set to gitlab_main' do
+          it 'does not find any migrations' do
+            migration_class.include(Gitlab::Database::MigrationHelpers::RestrictGitlabSchema)
+            migration_class.restrict_gitlab_migration gitlab_schema: :gitlab_main
 
-          Gitlab::Database::SharedModel.using_connection(base_model.connection) do
-            batched_migration = create(:batched_background_migration, migration_status, max_value: 8, batch_size: 2, sub_batch_size: 1, interval: 0, table_name: table_name, column_name: column_name, job_arguments: job_arguments, pause_ms: 0, gitlab_schema: 'gitlab_ci')
-
-            common_attributes = {
-              batched_migration: batched_migration,
-              batch_size: 2,
-              sub_batch_size: 1,
-              pause_ms: 0
-            }
-
-            create(:batched_background_migration_job, :succeeded, common_attributes.merge(min_value: 1, max_value: 2))
-            create(:batched_background_migration_job, :pending, common_attributes.merge(min_value: 3, max_value: 4))
-            create(:batched_background_migration_job, :failed, common_attributes.merge(min_value: 5, max_value: 6, attempts: 1))
+            expect do
+              migration.finalize_batched_background_migration(
+                job_class_name: 'Ci::MyClass', table_name: :ci_builds, column_name: :id, job_arguments: [])
+            end.to raise_error /Could not find batched background migration/
           end
+        end
 
-
-          migration.finalize_batched_background_migration(job_class_name: 'CopyColumnUsingBackgroundMigrationJob', table_name: table_name, column_name: column_name, job_arguments: job_arguments)
-
-          expect(Gitlab::Database::BackgroundMigration::BatchedMigration).to receive(:find_for_configuration).twice
-            .with(:gitlab_ci, 'CopyColumnUsingBackgroundMigrationJob', table_name, column_name, job_arguments)
-            .and_return(batched_migration)
-
-          expect(batched_migration).to receive(:finalize!).and_call_original
-
-          expect do
-            migration.finalize_batched_background_migration(job_class_name: batched_migration.job_class_name, table_name: table_name, column_name: column_name, job_arguments: job_arguments)
-          end.to change { batched_migration.reload.status_name }.from(:active).to(:finished)
-
-          expect(batched_migration.batched_jobs).to all(be_succeeded)
-
-          not_converted = migration_helpers.execute("SELECT * FROM #{table_name} WHERE some_id_convert_to_bigint IS NULL")
-          expect(not_converted.to_a).to be_empty
+        context 'when no restrict is set' do
+          it 'does not find any migrations' do
+            expect do
+              migration.finalize_batched_background_migration(
+                job_class_name: 'Ci::MyClass', table_name: :ci_builds, column_name: :id, job_arguments: [])
+            end.to raise_error /Could not find batched background migration/
+          end
         end
       end
     end

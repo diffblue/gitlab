@@ -150,17 +150,17 @@ module Gitlab
 
           Gitlab::Database::BackgroundMigration::BatchedMigration.reset_column_information
 
-          with_restored_connection_stack do
+          migration = Gitlab::Database::BackgroundMigration::BatchedMigration.find_for_configuration(
+            gitlab_schema_from_context, job_class_name, table_name, column_name, job_arguments)
+
+          raise 'Could not find batched background migration' if migration.nil?
+
+          with_restored_connection_stack do |restored_connection|
             Gitlab::Database::QueryAnalyzers::RestrictAllowedSchemas.with_suppressed do
-
-              migration = Gitlab::Database::BackgroundMigration::BatchedMigration.find_for_configuration(
-                gitlab_schema_from_context, job_class_name, table_name, column_name, job_arguments)
-
-              puts migration.id
-
-              raise 'Could not find batched background migration' if migration.nil?
-
-              puts Gitlab::Database::BackgroundMigration::BatchedMigrationRunner.finalize(job_class_name, table_name, column_name, job_arguments, connection: connection)
+              Gitlab::Database::BackgroundMigration::BatchedMigrationRunner.finalize(
+                job_class_name, table_name,
+                column_name, job_arguments,
+                connection: restored_connection)
             end
           end
         end
@@ -190,12 +190,11 @@ module Gitlab
         end
 
         def gitlab_schema_from_context
-          :gitlab_ci
-          # if respond_to?(:allowed_gitlab_schemas) # Gitlab::Database::Migration::V2_0
-          #   Array(allowed_gitlab_schemas).first
-          # else                                    # Gitlab::Database::Migration::V1_0
-          #   :gitlab_main
-          # end
+          if respond_to?(:allowed_gitlab_schemas) # Gitlab::Database::Migration::V2_0
+            Array(allowed_gitlab_schemas).first
+          else                                    # Gitlab::Database::Migration::V1_0
+            :gitlab_main
+          end
         end
       end
     end
