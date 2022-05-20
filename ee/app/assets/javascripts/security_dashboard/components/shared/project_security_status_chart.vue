@@ -154,7 +154,7 @@ export default {
     class="gl-border-solid gl-border-1 gl-border-gray-100 gl-rounded-base gl-display-flex gl-flex-direction-column"
   >
     <header class="gl-p-5">
-      <h4 class="gl-my-0">
+      <h4 class="gl-mt-0 gl-mb-3">
         {{ __('Project security status') }}
         <gl-link
           v-if="helpPagePath"

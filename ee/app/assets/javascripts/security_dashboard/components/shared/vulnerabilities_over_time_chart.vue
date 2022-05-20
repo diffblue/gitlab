@@ -164,7 +164,7 @@ export default {
   <section class="gl-border-solid gl-rounded-base gl-border-1 gl-border-gray-100">
     <div class="gl-p-5">
       <header id="vulnerability-chart-header">
-        <h4 class="gl-my-0">
+        <h4 class="gl-mt-0 gl-mb-3">
           {{ __('Vulnerabilities over time') }}
         </h4>
         <p data-testid="timeInfo" class="gl-text-secondary">
