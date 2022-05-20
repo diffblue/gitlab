@@ -1,5 +1,5 @@
 <script>
-import { GlLink, GlTooltipDirective, GlIcon, GlLoadingIcon } from '@gitlab/ui';
+import { GlLink, GlTooltipDirective, GlIcon } from '@gitlab/ui';
 import { keyBy } from 'lodash';
 import {
   severityGroupTypes,
@@ -10,6 +10,7 @@ import {
 } from 'ee/security_dashboard/store/modules/vulnerable_projects/constants';
 import { Accordion, AccordionItem } from 'ee/vue_shared/components/accordion';
 import { s__, n__, sprintf } from '~/locale';
+import SecurityDashboardCard from './security_dashboard_card.vue';
 
 export default {
   css: {
@@ -30,7 +31,7 @@ export default {
     },
   },
   accordionItemsContentMaxHeight: '445px',
-  components: { Accordion, AccordionItem, GlLink, GlIcon, GlLoadingIcon },
+  components: { SecurityDashboardCard, Accordion, AccordionItem, GlLink, GlIcon },
   directives: {
     'gl-tooltip': GlTooltipDirective,
   },
@@ -150,28 +151,22 @@ export default {
 </script>
 
 <template>
-  <section
-    class="gl-border-solid gl-border-1 gl-border-gray-100 gl-rounded-base gl-display-flex gl-flex-direction-column"
-  >
-    <header class="gl-p-5">
-      <h4 class="gl-mt-0 gl-mb-3">
-        {{ __('Project security status') }}
-        <gl-link
-          v-if="helpPagePath"
-          :href="helpPagePath"
-          :aria-label="__('Project security status help page')"
-          target="_blank"
-          ><gl-icon name="question"
-        /></gl-link>
-      </h4>
-      <p v-if="!isLoadingGrades" class="gl-text-gray-500 gl-m-0">
-        {{ __('Projects are graded based on the highest severity vulnerability present') }}
-      </p>
-    </header>
+  <security-dashboard-card :is-loading="isLoadingGrades">
+    <template #title>
+      {{ __('Project security status') }}
+      <gl-link
+        v-if="helpPagePath"
+        :href="helpPagePath"
+        :aria-label="__('Project security status help page')"
+        target="_blank"
+        ><gl-icon name="question"
+      /></gl-link>
+    </template>
+    <template v-if="!isLoadingGrades" #help-text>
+      {{ __('Projects are graded based on the highest severity vulnerability present') }}
+    </template>
 
-    <gl-loading-icon v-if="isLoadingGrades" size="lg" class="gl-my-12" />
     <accordion
-      v-else
       class="security-dashboard-accordion gl-px-5 gl-display-flex gl-flex-grow-1 gl-border-t-1 gl-border-t-solid gl-border-t-gray-100"
     >
       <template #default="{ accordionId }">
@@ -229,5 +224,5 @@ export default {
         </accordion-item>
       </template>
     </accordion>
-  </section>
+  </security-dashboard-card>
 </template>
