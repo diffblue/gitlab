@@ -8,6 +8,7 @@ module Admin
       before_action :require_license, only: :show
 
       feature_category :utilization
+      urgency :low
 
       def show
         respond_to do |format|

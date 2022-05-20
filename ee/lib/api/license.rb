@@ -5,6 +5,7 @@ module API
     before { authenticated_as_admin! }
 
     feature_category :provision
+    urgency :low
 
     resource :license do
       desc 'Get information on the currently active license' do
