@@ -42,6 +42,7 @@ module EE
           :sast_reports,
           :secret_detection_reports
         ]
+        urgency :low, [:metrics_reports]
       end
 
       def can_run_sast_experiments_on?(project)
