@@ -17,6 +17,7 @@ module API
       ].freeze
 
       feature_category :value_stream_management
+      urgency :low
 
       before do
         authenticate!

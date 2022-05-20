@@ -8,6 +8,7 @@ module API
         ' feature flag, introduced in GitLab 12.9.'
 
       feature_category :value_stream_management
+      urgency :low
 
       before do
         authenticate!
