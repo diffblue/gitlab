@@ -188,7 +188,7 @@ GitLab Ultimate, plus 50,000 CI/CD minutes per month. For more information, see 
 
 If you have any questions, send an email to `opensource@gitlab.com` for assistance.
 
-#### A note on licenses
+#### License requirements for GitLab for Open Source Program members
 
 GitLab for Open Source Program benefits apply to an entire GitLab namespace. To qualify for the GitLab for Open Source Program, **all projects in an applicant's namespace** must carry an [OSI-approved license](https://opensource.org/licenses/).
 
