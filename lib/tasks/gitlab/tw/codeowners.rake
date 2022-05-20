@@ -120,7 +120,7 @@ namespace :tw do
       directory = directory_of_file(mapping.path)
 
       if writer_ownes_all_pages(mappings, directory, mapping.writer)
-        deduplicated_mappings.add "#{directory} #{mapping.writer}"
+        deduplicated_mappings.add "#{directory}/ #{mapping.writer}"
         next
       end
 
