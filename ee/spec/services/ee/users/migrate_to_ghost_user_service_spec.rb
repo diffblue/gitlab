@@ -35,6 +35,18 @@ RSpec.describe Users::MigrateToGhostUserService do
     end
   end
 
+  context 'vulnerability author' do
+    include_examples "migrating a deleted user's associated records to the ghost user", Vulnerability, [:author] do
+      let(:created_record) { create(:vulnerability, author: user) }
+    end
+  end
+
+  context 'vulnerability_external_issue_link author' do
+    include_examples "migrating a deleted user's associated records to the ghost user", Vulnerabilities::ExternalIssueLink, [:author] do
+      let(:created_record) { create(:vulnerabilities_external_issue_link, author: user) }
+    end
+  end
+
   context 'requirements' do
     include_examples "migrating a deleted user's associated records to the ghost user", RequirementsManagement::Requirement, [:author] do
       let(:created_record) { create(:requirement, author: user) }

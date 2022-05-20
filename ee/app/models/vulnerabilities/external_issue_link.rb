@@ -2,6 +2,7 @@
 
 module Vulnerabilities
   class ExternalIssueLink < ApplicationRecord
+    include EachBatch
     self.table_name = 'vulnerability_external_issue_links'
 
     belongs_to :author, class_name: 'User'
