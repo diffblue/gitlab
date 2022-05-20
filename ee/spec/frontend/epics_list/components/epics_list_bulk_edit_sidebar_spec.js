@@ -23,7 +23,7 @@ const mockEpic2 = {
   ...mockFormattedEpic2,
   id: 'gid://gitlab/Epic/2',
   labels: {
-    nodes: [mockScopedLabel],
+    nodes: [mockRegularLabel, mockScopedLabel],
   },
 };
 
@@ -44,6 +44,8 @@ const createComponent = ({ checkedEpics = [mockEpic1, mockEpic2] } = {}) =>
 describe('EpicsListBulkEditSidebar', () => {
   let wrapper;
   const findLabelsSelect = () => wrapper.findComponent(LabelsSelectWidget);
+  const checkedLabels = mockLabels.slice(0, 2).map((label) => ({ ...label, set: true }));
+  const removedLabels = mockLabels.slice(2).map((label) => ({ ...label, set: false }));
 
   beforeEach(() => {
     wrapper = createComponent();
@@ -62,33 +64,39 @@ describe('EpicsListBulkEditSidebar', () => {
       allowLabelEdit: true,
       allowMultiselect: true,
       allowScopedLabels: true,
-      selectedLabels: [mockRegularLabel, mockScopedLabel],
+      selectedLabels: [
+        { ...mockRegularLabel, set: true },
+        { ...mockScopedLabel, indeterminate: true },
+      ],
       labelsFetchPath,
       labelsManagePath,
       variant: 'embedded',
     });
   });
 
-  it('emits `bulk-update` event with request payload object on component after labels are selected/unselected', async () => {
-    // We're slicing `mockLabels` as it already includes
-    // 2 labels (as last 2 elements) that epics have present.
-    findLabelsSelect().vm.$emit('updateSelectedLabels', mockLabels.slice(0, 2));
+  it.each`
+    case         | touchedLabels    | addLabelIds | removeLabelIds
+    ${'added'}   | ${checkedLabels} | ${[29, 28]} | ${[]}
+    ${'removed'} | ${removedLabels} | ${[]}       | ${[26, 27]}
+  `(
+    'emits `bulk-update` event with request payload object on component after labels are $case',
+    async ({ touchedLabels, addLabelIds, removeLabelIds }) => {
+      findLabelsSelect().vm.$emit('onDropdownClose', touchedLabels);
 
-    await nextTick();
+      await nextTick();
 
-    wrapper.findComponent(GlForm).vm.$emit('submit', {
-      preventDefault: jest.fn(),
-    });
+      wrapper.findComponent(GlForm).vm.$emit('submit', {
+        preventDefault: jest.fn(),
+      });
 
-    await nextTick();
-
-    expect(wrapper.emitted('bulk-update')).toBeDefined();
-    expect(wrapper.emitted('bulk-update')[0]).toEqual([
-      {
-        issuable_ids: '1,2',
-        add_label_ids: [29, 28],
-        remove_label_ids: [26, 27],
-      },
-    ]);
-  });
+      expect(wrapper.emitted('bulk-update')).toBeDefined();
+      expect(wrapper.emitted('bulk-update')[0]).toEqual([
+        {
+          issuable_ids: '1,2',
+          add_label_ids: addLabelIds,
+          remove_label_ids: removeLabelIds,
+        },
+      ]);
+    },
+  );
 });
