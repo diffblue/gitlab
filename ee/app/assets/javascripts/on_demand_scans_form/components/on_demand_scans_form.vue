@@ -605,15 +605,16 @@ export default {
         </template>
         <template #features>
           <scan-schedule v-model="profileSchedule" />
-
-          <profile-conflict-alert
-            v-if="hasProfilesConflict"
-            data-testid="on-demand-scans-profiles-conflict-alert"
-          />
         </template>
       </section-layout>
 
       <div v-if="!failedToLoadProfiles">
+        <profile-conflict-alert
+          v-if="hasProfilesConflict"
+          class="gl-mt-6"
+          data-testid="on-demand-scans-profiles-conflict-alert"
+        />
+
         <div class="gl-pt-6">
           <gl-button
             type="submit"
