@@ -195,7 +195,7 @@ GitLab for Open Source Program benefits apply to an entire GitLab namespace. To 
 To add a license: 
 
 1. On the top bar, select **Menu > Projects** and find your project. 
-1. On the overview page, select **Add LICENSE**.  If the license you want is not available as a license template, manually copy the entire, unaltered [text of your chosen license](https://opensource.org/licenses/alphabetical) into the `LICENSE` file. Note that GitLab defaults to **All rights reserved** if users do not perform this action.
+1. On the overview page, select **Add LICENSE**. If the license you want is not available as a license template, manually copy the entire, unaltered [text of your chosen license](https://opensource.org/licenses/alphabetical) into the `LICENSE` file. Note that GitLab defaults to **All rights reserved** if users do not perform this action.
 
 Applicants must add the correct license to each project in their respective groups or namespaces When you're sure you're using OSI-approved licenses for your projects, you can take your screenshots.
 
