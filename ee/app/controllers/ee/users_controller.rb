@@ -12,6 +12,7 @@ module EE
 
       feature_category :source_code_management, [:available_project_templates]
 
+      urgency :low, [:available_group_templates]
       before_action :ensure_user_is_current_user!, only: [:available_project_templates, :available_group_templates]
     end
 
