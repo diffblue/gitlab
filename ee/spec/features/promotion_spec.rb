@@ -89,7 +89,7 @@ RSpec.describe 'Promotions', :js do
       visit project_milestone_path(project, milestone)
 
       within('#promote_burndown_charts') do
-        find('.close').click
+        find('.js-close').click
       end
 
       visit project_milestone_path(project, milestone)

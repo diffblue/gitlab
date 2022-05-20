@@ -1,0 +1,12 @@
+%section.gl-banner{ @banner_options, class: banner_class }
+  - if illustration?
+    .gl-banner-illustration
+      = illustration
+
+  .gl-banner-content
+    %h1.gl-banner-title= title
+    = content
+    = actions
+
+  %button.gl-button.gl-banner-close.btn-sm.btn-icon.js-close{ @close_options, class: close_class, type: 'button' }
+    = sprite_icon('close', size: 16, css_class: 'dismiss-icon')
