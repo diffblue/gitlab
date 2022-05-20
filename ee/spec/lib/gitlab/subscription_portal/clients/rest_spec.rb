@@ -64,7 +64,7 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Rest do
     it_behaves_like 'when http call raises an exception'
 
     it "nests in the trial_user param if needed" do
-      expect(client).to receive(:http_post).with('trials', anything, trial_user: { foo: 'bar' })
+      expect(client).to receive(:http_post).with('trials', anything, { trial_user: { foo: 'bar' } })
 
       client.generate_trial(foo: 'bar')
     end
