@@ -16,7 +16,6 @@ module Gitlab
     ).freeze
 
     API_SCOPE = 'geo_api'
-    DEFAULT_DEV_PRIMARY_NODE_NAME = 'gitlab-development-kit'
     GEO_PROXIED_HEADER = 'HTTP_GITLAB_WORKHORSE_GEO_PROXY'
     GEO_PROXIED_EXTRA_DATA_HEADER = 'HTTP_GITLAB_WORKHORSE_GEO_PROXY_EXTRA_DATA'
 
@@ -104,10 +103,17 @@ module Gitlab
       # In the GDK, the tracking database is usually configured for the primary node as well to
       # make running tests easier.
       #
-      # This attempts to "guess" this is running on the primary based on the node name
-      return false if Rails.env.development? && GeoNode.current_node_name == ::Gitlab::Geo::DEFAULT_DEV_PRIMARY_NODE_NAME
+      # GDK sets `GDK_GEO_SECONDARY=1` when `geo.secondary` => `true` in
+      # `gdk.yml` for Rails processes in `Procfile`. Note that here we are
+      # preferring to let Geo secondary sites in development execute and depend
+      # on `geo_database_configured?` (more like production).
+      return false if Rails.env.development? && !gdk_geo_secondary?
 
       ::Gitlab::Geo.geo_database_configured?
+    end
+
+    def self.gdk_geo_secondary?
+      ENV['GDK_GEO_SECONDARY'] == '1'
     end
 
     def self.current_node_misconfigured?
