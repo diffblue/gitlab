@@ -11,7 +11,8 @@ module Backup
 
     LIST_ENVS = {
       skipped: 'SKIP',
-      repositories_storages: 'REPOSITORIES_STORAGES'
+      repositories_storages: 'REPOSITORIES_STORAGES',
+      repositories_paths: 'REPOSITORIES_PATHS'
     }.freeze
 
     TaskDefinition = Struct.new(
@@ -193,6 +194,7 @@ module Backup
       Repositories.new(progress,
                        strategy: strategy,
                        storages: list_env(:repositories_storages),
+                       paths: list_env(:repositories_paths)
                       )
     end
 
@@ -269,7 +271,8 @@ module Backup
         tar_version: tar_version,
         installation_type: Gitlab::INSTALLATION_TYPE,
         skipped: ENV['SKIP'],
-        repositories_storages: ENV['REPOSITORIES_STORAGES']
+        repositories_storages: ENV['REPOSITORIES_STORAGES'],
+        repositories_paths: ENV['REPOSITORIES_PATHS']
       }
     end
 
@@ -282,7 +285,8 @@ module Backup
         tar_version: tar_version,
         installation_type: Gitlab::INSTALLATION_TYPE,
         skipped: list_env(:skipped).join(','),
-        repositories_storages: list_env(:repositories_storages).join(',')
+        repositories_storages: list_env(:repositories_storages).join(','),
+        repositories_paths: list_env(:repositories_paths).join(',')
       )
     end
 
