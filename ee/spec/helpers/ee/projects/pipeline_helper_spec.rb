@@ -17,10 +17,12 @@ RSpec.describe Projects::PipelineHelper do
         codequality_report_download_path: helper.codequality_report_download_path(project, pipeline),
         expose_license_scanning_data: pipeline.expose_license_scanning_data?.to_json,
         expose_security_dashboard: pipeline.expose_security_dashboard?.to_json,
+        full_path: project.full_path,
         graphql_resource_etag: graphql_etag_pipeline_path(pipeline),
         metrics_path: namespace_project_ci_prometheus_metrics_histograms_path(namespace_id: project.namespace, project_id: project, format: :json),
         pipeline_iid: pipeline.iid,
-        pipeline_project_path: project.full_path
+        pipeline_project_path: project.full_path,
+        total_job_count: pipeline.total_size
       })
     end
   end
