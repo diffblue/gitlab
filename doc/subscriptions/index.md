@@ -198,7 +198,7 @@ Applicants must add the correct license to each project in their respective grou
 
 #### Verification for Open Source Program
 
-As part of the [application verification process](https://about.gitlab.com/solutions/open-source/join/), applicants must upload **three screenshots**:
+As part of the [application verification process](https://about.gitlab.com/solutions/open-source/join/), you must upload **three screenshots**:
 
 - [OSI-approved license overview](#screenshot-1-license-overview)
 - [OSI-approved license contents](#screenshot-2-license-contents)
