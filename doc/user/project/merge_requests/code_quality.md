@@ -28,6 +28,20 @@ Code Quality:
 - Is available by using [Auto Code Quality](../../../topics/autodevops/stages.md#auto-code-quality), provided by [Auto DevOps](../../../topics/autodevops/index.md).
 - Can be extended through [Analysis Plugins](https://docs.codeclimate.com/docs/list-of-engines) or a [custom tool](#implementing-a-custom-tool).
 
+## Summary of features per tier
+
+Different features are available in different [GitLab tiers](https://about.gitlab.com/pricing/),
+as shown in the following table:
+
+| Capability                                                            | In Free             | In Premium          | In Ultimate        |
+|:----------------------------------------------------------------------|:--------------------|:--------------------|:-------------------|
+| [Configure scanners](#configuring-jobs-using-variables)               | **{check-circle}**  | **{check-circle}**  | **{check-circle}** |
+| [Integrate custom scanners](#implementing-a-custom-tool)              | **{check-circle}**  | **{check-circle}**  | **{check-circle}** |
+| [Generate JSON or HTML report artifacts](#generate-an-html-report)    | **{check-circle}**  | **{check-circle}**  | **{check-circle}** |
+| [See findings in merge request widget](#code-quality-widget)          | **{check-circle}**  | **{check-circle}**  | **{check-circle}** |
+| [See reports in CI pipelines](#code-quality-reports)                  | **{dotted-circle}** | **{check-circle}**  | **{check-circle}** |
+| [See findings in merge request diff view](#code-quality-in-diff-view) | **{dotted-circle}** | **{dotted-circle}** | **{check-circle}** |
+
 ## Code Quality Widget
 
 > [Moved](https://gitlab.com/gitlab-org/gitlab/-/issues/212499) to GitLab Free in 13.2.
