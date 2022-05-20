@@ -340,4 +340,49 @@ RSpec.describe EE::NamespacesHelper do
       end
     end
   end
+
+  describe '#storage_usage_app_data' do
+    let_it_be(:namespace) { create(:namespace) }
+    let_it_be(:admin) { create(:user, namespace: namespace) }
+
+    before do
+      allow(helper).to receive(:current_user).and_return(admin)
+    end
+
+    context 'when purchase_storage_link_enabled? is true' do
+      before do
+        allow(namespace).to receive(:additional_repo_storage_by_namespace_enabled?).and_return(true)
+      end
+
+      it 'returns a hash with storage data' do
+        expect(helper.storage_usage_app_data(namespace)).to eql({
+          additional_repo_storage_by_namespace: "true",
+          buy_addon_target_attr: "_blank",
+          purchase_storage_url: "https://customers.staging.gitlab.com/buy_storage",
+          default_per_page: 20,
+          namespace_path: namespace.full_path,
+          is_temporary_storage_increase_visible: "false",
+          is_free_namespace: "true"
+        })
+      end
+    end
+
+    context 'when purchase_storage_link_enabled? is false' do
+      before do
+        allow(namespace).to receive(:additional_repo_storage_by_namespace_enabled?).and_return(false)
+      end
+
+      it 'returns a hash with storage data' do
+        expect(helper.storage_usage_app_data(namespace)).to eql({
+          additional_repo_storage_by_namespace: "false",
+          buy_addon_target_attr: nil,
+          purchase_storage_url: nil,
+          default_per_page: 20,
+          namespace_path: namespace.full_path,
+          is_temporary_storage_increase_visible: "false",
+          is_free_namespace: "true"
+        })
+      end
+    end
+  end
 end
