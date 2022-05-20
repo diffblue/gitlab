@@ -184,9 +184,7 @@ Find more information on how to apply and renew at
 ### GitLab for Open Source
 
 For qualifying open source projects, the [GitLab for Open Source Program](https://about.gitlab.com/solutions/open-source/) provides
-GitLab Ultimate, plus 50,000 CI/CD minutes per month. More information on [program requirements](https://about.gitlab.com/solutions/open-source/join/#requirements),
-[renewals](https://about.gitlab.com/solutions/open-source/join/#renewals),
-and benefits are available on the [GitLab for Open Source Program application page](https://about.gitlab.com/solutions/open-source/join/).
+GitLab Ultimate, plus 50,000 CI/CD minutes per month. For more information, see [program requirements](https://about.gitlab.com/solutions/open-source/join/#requirements), [renewals](https://about.gitlab.com/solutions/open-source/join/#renewals), and [program benefits](https://about.gitlab.com/solutions/open-source/join/).
 
 If you have any questions, send an email to `opensource@gitlab.com` for assistance.
 
