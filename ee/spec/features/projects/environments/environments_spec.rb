@@ -33,7 +33,7 @@ RSpec.describe 'Environments page', :js do
 
     context 'when environment has manual actions' do
       let!(:pipeline) { create(:ci_pipeline, project: project) }
-      let!(:build) { create(:ci_build, pipeline: pipeline) }
+      let!(:build) { create(:ci_build, pipeline: pipeline, environment: 'production') }
 
       let!(:deployment) do
         create(:deployment,
