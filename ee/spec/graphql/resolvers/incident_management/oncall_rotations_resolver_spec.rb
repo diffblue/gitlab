@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Resolvers::IncidentManagement::OncallRotationsResolver do
+RSpec.describe 'Resolvers::IncidentManagement::OncallRotationsResolver' do
   include GraphqlHelpers
 
   let_it_be(:current_user) { create(:user) }
@@ -10,6 +10,7 @@ RSpec.describe Resolvers::IncidentManagement::OncallRotationsResolver do
   let_it_be(:second_rotation) { create(:incident_management_oncall_rotation, :with_participants, :utc, schedule: rotation.schedule) }
   let_it_be(:schedule) { rotation.schedule }
   let_it_be(:project) { rotation.project }
+  let_it_be(:described_class) { Resolvers::IncidentManagement::OncallRotationsResolver }
 
   let(:args) { {} }
   let(:resolver) { described_class }

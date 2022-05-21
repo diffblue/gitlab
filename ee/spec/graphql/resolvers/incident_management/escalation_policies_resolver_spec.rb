@@ -2,13 +2,14 @@
 
 require 'spec_helper'
 
-RSpec.describe Resolvers::IncidentManagement::EscalationPoliciesResolver do
+RSpec.describe 'Resolvers::IncidentManagement::EscalationPoliciesResolver' do
   include GraphqlHelpers
 
   let_it_be(:current_user) { create(:user) }
   let_it_be(:project) { create(:project) }
   let_it_be(:policy) { create(:incident_management_escalation_policy, project: project, name: 'Target policy') }
   let_it_be(:other_policy) { create(:incident_management_escalation_policy) }
+  let_it_be(:described_class) { Resolvers::IncidentManagement::EscalationPoliciesResolver }
 
   let(:args) { {} }
   let(:resolver) { described_class }
