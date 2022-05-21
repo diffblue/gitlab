@@ -308,3 +308,32 @@ To update the GPG key of the GitLab packages server run:
 curl --silent "https://packages.gitlab.com/gpg.key" | apt-key add -
 apt-get update
 ```
+
+### Mixlib::ShellOut::CommandTimeout: rails_migration[gitlab-rails] [..] Command timed out after 3600s
+
+If database schema and data changes (database migrations) need to take more than one hour to run,
+an upgrade will fail with `timed out` error:
+
+```plaintext
+FATAL: Mixlib::ShellOut::CommandTimeout: rails_migration[gitlab-rails] (gitlab::database_migrations line 51)
+had an error: Mixlib::ShellOut::CommandTimeout: bash[migrate gitlab-rails database]
+(/opt/gitlab/embedded/cookbooks/cache/cookbooks/gitlab/resources/rails_migration.rb line 16)
+had an error: Mixlib::ShellOut::CommandTimeout: Command timed out after 3600s:
+```
+
+To fix this:
+
+1. Run the remaining database migrations:
+
+   ```shell
+   sudo gitlab-rake db:migrate
+   ```
+
+   - This may take a very long time to complete. Use `screen` or some other mechanism to ensure
+     the program does not get interrupted by your SSH session being dropped.
+
+1. Complete the upgrade:
+
+   ```shell
+   sudo gitlab-ctl reconfigure
+   ```
