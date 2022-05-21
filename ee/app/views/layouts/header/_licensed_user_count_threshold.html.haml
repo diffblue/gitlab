@@ -8,5 +8,5 @@
       %h4.gl-alert-title= _('Your instance is approaching its licensed user count')
       = _('Your instance has %{remaining_user_count} users remaining of the %{total_user_count} included in your subscription. You can add more users than the number included in your license, and we will include the overage in your next bill.') % { remaining_user_count: remaining_user_count, total_user_count: total_user_count }
     .gl-alert-actions
-      = link_to _('View users statistics'), admin_users_path, class: 'btn gl-alert-action btn-info btn-md gl-button'
-      = link_to _('Contact support'), EE::CUSTOMER_LICENSE_SUPPORT_URL, rel: 'nofollow', class: 'btn gl-alert-action btn-info btn-md gl-button btn-info-secondary'
+      = link_to _('View users statistics'), admin_users_path, class: 'btn gl-alert-action btn-confirm btn-md gl-button'
+      = link_to _('Contact support'), EE::CUSTOMER_LICENSE_SUPPORT_URL, rel: 'nofollow', class: 'btn gl-alert-action btn-confirm btn-md gl-button btn-confirm-secondary'
