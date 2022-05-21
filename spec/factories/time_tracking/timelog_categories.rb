@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   factory :timelog_category, class: 'TimeTracking::TimelogCategory' do
-    group
+    namespace
 
     name { generate(:name) }
   end

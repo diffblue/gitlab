@@ -21085,7 +21085,7 @@ ALTER SEQUENCE terraform_states_id_seq OWNED BY terraform_states.id;
 
 CREATE TABLE timelog_categories (
     id bigint NOT NULL,
-    group_id bigint NOT NULL,
+    namespace_id bigint NOT NULL,
     created_at timestamp with time zone NOT NULL,
     updated_at timestamp with time zone NOT NULL,
     billing_rate numeric(18,4) DEFAULT 0.0,
@@ -29383,7 +29383,7 @@ CREATE UNIQUE INDEX index_terraform_states_on_project_id_and_name ON terraform_s
 
 CREATE UNIQUE INDEX index_terraform_states_on_uuid ON terraform_states USING btree (uuid);
 
-CREATE UNIQUE INDEX index_timelog_categories_on_unique_name_per_group ON timelog_categories USING btree (group_id, lower(name));
+CREATE UNIQUE INDEX index_timelog_categories_on_unique_name_per_namespace ON timelog_categories USING btree (namespace_id, lower(name));
 
 CREATE INDEX index_timelogs_on_issue_id ON timelogs USING btree (issue_id);
 
@@ -32867,9 +32867,6 @@ ALTER TABLE ONLY application_settings
 ALTER TABLE ONLY clusters_kubernetes_namespaces
     ADD CONSTRAINT fk_rails_7e7688ecaf FOREIGN KEY (cluster_id) REFERENCES clusters(id) ON DELETE CASCADE;
 
-ALTER TABLE ONLY timelog_categories
-    ADD CONSTRAINT fk_rails_804cda0e87 FOREIGN KEY (group_id) REFERENCES namespaces(id) ON DELETE CASCADE;
-
 ALTER TABLE ONLY ci_job_artifact_states
     ADD CONSTRAINT fk_rails_80a9cba3b2 FOREIGN KEY (job_artifact_id) REFERENCES ci_job_artifacts(id) ON DELETE CASCADE;
 
@@ -33058,6 +33055,9 @@ ALTER TABLE ONLY vulnerability_finding_signatures
 
 ALTER TABLE ONLY clusters_applications_cert_managers
     ADD CONSTRAINT fk_rails_9e4f2cb4b2 FOREIGN KEY (cluster_id) REFERENCES clusters(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY timelog_categories
+    ADD CONSTRAINT fk_rails_9f27b821a8 FOREIGN KEY (namespace_id) REFERENCES namespaces(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY resource_milestone_events
     ADD CONSTRAINT fk_rails_a006df5590 FOREIGN KEY (merge_request_id) REFERENCES merge_requests(id) ON DELETE CASCADE;

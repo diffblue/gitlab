@@ -7,13 +7,13 @@ module TimeTracking
 
     self.table_name = "timelog_categories"
 
-    belongs_to :group, -> { where(type: Group.sti_name) }, foreign_key: 'group_id'
+    belongs_to :namespace, foreign_key: 'namespace_id'
 
     strip_attributes! :name
 
-    validates :group, presence: true
+    validates :namespace, presence: true
     validates :name, presence: true
-    validates :name, uniqueness: { case_sensitive: false, scope: [:group_id] }
+    validates :name, uniqueness: { case_sensitive: false, scope: [:namespace_id] }
     validates :name, length: { maximum: 255 }
     validates :description, length: { maximum: 1024 }
     validates :color, color: true, allow_blank: false, length: { maximum: 7 }
@@ -27,8 +27,8 @@ module TimeTracking
     attribute :color, ::Gitlab::Database::Type::Color.new
     default_value_for :color, DEFAULT_COLOR
 
-    def self.find_by_name(group_id, name)
-      where(group: group_id)
+    def self.find_by_name(namespace_id, name)
+      where(namespace: namespace_id)
         .iwhere(name: name)
     end
   end
