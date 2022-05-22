@@ -1243,8 +1243,6 @@ RSpec.describe Project do
     it 'removes previous remote' do
       project = create(:project, :repository, :mirror)
 
-      expect(RepositoryRemoveRemoteWorker).not_to receive(:perform_async)
-
       project.update!(import_url: "http://test.com")
     end
   end
