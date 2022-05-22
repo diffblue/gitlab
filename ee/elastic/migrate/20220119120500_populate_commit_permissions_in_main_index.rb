@@ -234,7 +234,14 @@ class PopulateCommitPermissionsInMainIndex < Elastic::Migration
       }
     }
 
-    response = client.update_by_query(index: index_name, body: query, wait_for_completion: false, max_docs: batch_size, timeout: ELASTIC_TIMEOUT)
+    response = client.update_by_query(
+      index: index_name,
+      body: query,
+      wait_for_completion: false,
+      max_docs: batch_size,
+      timeout: ELASTIC_TIMEOUT,
+      conflicts: 'proceed'
+    )
     response['task']
   end
 
