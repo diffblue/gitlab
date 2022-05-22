@@ -1,12 +1,13 @@
 # frozen_string_literal: true
 
 class DastSite < ApplicationRecord
+  include AppSec::Dast::UrlAddressable
+
   belongs_to :project
   belongs_to :dast_site_validation
   has_many :dast_site_profiles
 
   validates :url, length: { maximum: 255 }, uniqueness: { scope: :project_id }
-  validates :url, addressable_url: true
 
   validates :project_id, presence: true
   validate :dast_site_validation_project_id_fk

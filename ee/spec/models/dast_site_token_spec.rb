@@ -19,16 +19,7 @@ RSpec.describe DastSiteToken, type: :model do
     it { is_expected.to validate_uniqueness_of(:token) }
     it { is_expected.to validate_uniqueness_of(:url).scoped_to(:project_id) }
 
-    context 'when the url is not public' do
-      subject { build(:dast_site_token, url: 'http://127.0.0.1') }
-
-      it 'is not valid' do
-        aggregate_failures do
-          expect(subject.valid?).to eq(false)
-          expect(subject.errors.full_messages).to include('Url is blocked: Requests to localhost are not allowed')
-        end
-      end
-    end
+    it_behaves_like 'dast url addressable'
   end
 
   describe '#dast_site' do
