@@ -12,6 +12,7 @@ RSpec.describe 'CI minutes', :js do
   end
 
   before do
+    stub_feature_flags(usage_quotas_pipelines_vue: false)
     create_ci_minutes_usage(50, Date.new(2021, 5, 1))
     create_ci_minutes_usage(60, Date.new(2021, 6, 1))
 

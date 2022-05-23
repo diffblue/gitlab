@@ -12,6 +12,7 @@ RSpec.describe 'Groups > Usage Quotas' do
   let(:gitlab_dot_com) { true }
 
   before do
+    stub_feature_flags(usage_quotas_pipelines_vue: false)
     allow(Gitlab).to receive(:com?).and_return(gitlab_dot_com)
 
     group.add_owner(user)
@@ -250,34 +251,42 @@ RSpec.describe 'Groups > Usage Quotas' do
 
   context 'pagination', :js do
     let(:per_page) { 1 }
-    let!(:projects) { create_list(:project, 3, namespace: group) }
+    let(:item_selector) { '.js-project-link' }
+    let(:prev_button_selector) { '[data-testid="prevButton"]' }
+    let(:next_button_selector) { '[data-testid="nextButton"]' }
+    let!(:projects) { create_list(:project, 3, :with_ci_minutes, amount_used: 5, namespace: group) }
 
     before do
       allow(Kaminari.config).to receive(:default_per_page).and_return(per_page)
-
-      visit_usage_quotas_page('storage-quota-tab')
+      stub_ee_application_setting(should_check_namespace_plan: true)
     end
 
-    it 'paginates correctly to page 3 and back' do
-      expect(page).to have_selector('.js-project-link', count: per_page)
-      page1_el_text = page.find('.js-project-link').text
-      click_next_page
+    context 'storage tab' do
+      before do
+        visit_usage_quotas_page('storage-quota-tab')
+      end
+      it_behaves_like 'correct pagination'
+    end
 
-      expect(page).to have_selector('.js-project-link', count: per_page)
-      page2_el_text = page.find('.js-project-link').text
-      click_next_page
+    context 'pipelines tab: with usage_quotas_pipelines_vue disabled' do
+      let(:item_selector) { '[data-testid="pipelines-quota-tab-project-name"]' }
+      let(:prev_button_selector) { '.page-item.js-previous-button a' }
+      let(:next_button_selector) { '.page-item.js-next-button a' }
 
-      expect(page).to have_selector('.js-project-link', count: per_page)
-      page3_el_text = page.find('.js-project-link').text
-      click_prev_page
+      before do
+        visit_usage_quotas_page('pipelines-quota-tab')
+      end
+      it_behaves_like 'correct pagination'
+    end
 
-      expect(page3_el_text).not_to eql(page2_el_text)
-      expect(page.find('.js-project-link').text).to eql(page2_el_text)
+    context 'pipelines tab: with usage_quotas_pipelines_vue enabled' do
+      let(:item_selector) { '[data-testid="pipelines-quota-tab-project-name"]' }
 
-      click_prev_page
-
-      expect(page.find('.js-project-link').text).to eql(page1_el_text)
-      expect(page).to have_selector('.js-project-link', count: per_page)
+      before do
+        stub_feature_flags(usage_quotas_pipelines_vue: true)
+        visit_usage_quotas_page('pipelines-quota-tab')
+      end
+      it_behaves_like 'correct pagination'
     end
   end
 
@@ -310,16 +319,6 @@ RSpec.describe 'Groups > Usage Quotas' do
 
   def click_next_page_pipeline_projects
     page.find('.gl-pagination .pagination .js-next-button').click
-    wait_for_requests
-  end
-
-  def click_next_page
-    page.find('[data-testid="nextButton"]').click
-    wait_for_requests
-  end
-
-  def click_prev_page
-    page.find('[data-testid="prevButton"]').click
     wait_for_requests
   end
 end

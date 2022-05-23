@@ -30,8 +30,11 @@
   .tab-pane#seats-quota-tab
     #js-seat-usage-app{ data: group_seats_usage_quota_app_data(@group) }
   .tab-pane#pipelines-quota-tab
-    #js-ci-minutes-usage-group{ data: { namespace_id: @group.id } }
-    = render "namespaces/pipelines_quota/list",
-      locals: { namespace: @group, projects_usage: @projects_usage }
+    - if Feature.enabled?(:usage_quotas_pipelines_vue, @group)
+      #js-pipeline-usage-app{ data: pipeline_usage_app_data(@group) }
+    - else
+      #js-ci-minutes-usage-group{ data: { namespace_id: @group.id } }
+      = render "namespaces/pipelines_quota/list",
+        locals: { namespace: @group, projects_usage: @projects_usage }
   .tab-pane#storage-quota-tab
     #js-storage-counter-app{ data: usage_quotas_storage_app_data(@group) }

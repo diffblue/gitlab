@@ -6,10 +6,7 @@ class Profiles::UsageQuotasController < Profiles::ApplicationController
   feature_category :purchase
   urgency :low
 
-  before_action only: [:index] do
-    push_frontend_feature_flag(:gitlab_gtm_datalayer, type: :ops)
-    push_frontend_feature_flag(:update_storage_usage_design, current_user)
-  end
+  before_action :push_feature_flags, only: :index
 
   def index
     @hide_search_settings = true
@@ -18,5 +15,13 @@ class Profiles::UsageQuotasController < Profiles::ApplicationController
     @projects_usage = Ci::Minutes::ProjectMonthlyUsage
                         .for_namespace_monthly_usage(@current_namespace_usage)
                         .page(params[:page])
+  end
+
+  private
+
+  def push_feature_flags
+    push_frontend_feature_flag(:gitlab_gtm_datalayer, type: :ops)
+    push_frontend_feature_flag(:update_storage_usage_design, current_user)
+    push_frontend_feature_flag(:usage_quotas_pipelines_vue, @group)
   end
 end

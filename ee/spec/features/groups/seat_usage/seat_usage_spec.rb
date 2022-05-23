@@ -12,6 +12,7 @@ RSpec.describe 'Groups > Usage Quotas > Seat Usage', :js do
   let_it_be(:shared_group_developer) { create(:user) }
 
   before do
+    stub_feature_flags(usage_quotas_pipelines_vue: false)
     allow(Gitlab).to receive(:com?).and_return(true)
     stub_application_setting(check_namespace_plan: true)
 

@@ -64,7 +64,8 @@
           %td
             .avatar-container.s20.d-none.d-sm-block
               = project_icon(project_usage.project, alt: '', class: 'avatar project-avatar s20')
-            %strong= link_to project_usage.project.full_name, project_usage.project
+            %strong{ data: {testid: "pipelines-quota-tab-project-name" } }
+              = link_to project_usage.project.full_name, project_usage.project
           %td{ 'data-testid': 'project_shared_runner_duration' }
             = project_usage.shared_runners_duration
           %td{ 'data-testid': 'project_amount_used' }

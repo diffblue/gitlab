@@ -7,6 +7,7 @@ class Groups::UsageQuotasController < Groups::ApplicationController
   before_action :verify_usage_quotas_enabled!
   before_action :push_free_user_cap_feature_flags, only: :index
   before_action :push_update_storage_usage_design, only: :index
+  before_action :push_usage_quotas_pipelines_vue, only: :index
 
   layout 'group_settings'
 
@@ -40,5 +41,9 @@ class Groups::UsageQuotasController < Groups::ApplicationController
   def push_free_user_cap_feature_flags
     push_frontend_feature_flag(:free_user_cap, @group)
     push_frontend_feature_flag(:preview_free_user_cap, @group)
+  end
+
+  def push_usage_quotas_pipelines_vue
+    push_frontend_feature_flag(:usage_quotas_pipelines_vue, @group)
   end
 end

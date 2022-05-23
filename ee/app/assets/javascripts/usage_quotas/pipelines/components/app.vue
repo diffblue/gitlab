@@ -203,6 +203,7 @@ export default {
           <usage-overview
             :minutes-title="monthlyUsageTitle"
             :minutes-used="monthlyMinutesUsed"
+            minutes-used-qa-selector="plan_ci_minutes"
             :minutes-used-percentage="usagePercentage(ciMinutesMonthlyMinutesUsedPercentage)"
             :minutes-limit="ciMinutesMonthlyMinutesLimit"
             :help-link-href="$options.CI_MINUTES_HELP_LINK"
@@ -214,6 +215,7 @@ export default {
             class="gl-pt-5"
             :minutes-title="$options.ADDITIONAL_MINUTES"
             :minutes-used="purchasedMinutesUsed"
+            minutes-used-qa-selector="additional_ci_minutes"
             :minutes-used-percentage="usagePercentage(ciMinutesPurchasedMinutesUsedPercentage)"
             :minutes-limit="ciMinutesPurchasedMinutesLimit"
             :help-link-href="$options.ADDITIONAL_MINUTES_HELP_LINK"

@@ -9,7 +9,7 @@ Vue.use(VueApollo);
 export default () => {
   const el = document.getElementById('js-pipeline-usage-app');
 
-  if (!el) {
+  if (!el || !gon.features?.usageQuotasPipelinesVue) {
     return false;
   }
 
