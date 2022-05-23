@@ -53,8 +53,11 @@ export default {
   },
   methods: {
     fetchCollapsedData() {
-      return axios.get(this.testResultsPath).then(({ data = {}, status }) => {
+      return axios.get(this.testResultsPath).then((res) => {
+        const { data = {}, status } = res;
+
         return {
+          ...res,
           data: {
             hasSuiteError: data.suites?.some((suite) => suite.status === ERROR_STATUS),
             parsingInProgress: status === 204,
