@@ -177,6 +177,9 @@ RSpec.describe GroupMember do
     end
 
     describe '#wait!' do
+      # the last owner can't be set to awaiting
+      let!(:owner) { create(:group_member, :owner, group: group) }
+
       it "refreshes the user's authorized projects" do
         membership = create(:group_member, source: group, user: user)
 

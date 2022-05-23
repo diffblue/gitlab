@@ -229,23 +229,42 @@ export default {
     isProjectInvite(user) {
       return user.membership_type === 'project_invite';
     },
-    shouldShowDetails(item) {
-      return !this.isGroupInvite(item.user) && !this.isProjectInvite(item.user);
-    },
-    navigateToPendingMembersPage() {
-      visitUrl(this.pendingMembersPagePath);
-    },
-    isToggleDisabled(user) {
-      return this.isLoading || this.restrictActivatingUser(user);
-    },
-    toggleTooltipText(user) {
-      if (!this.restrictActivatingUser(user)) {
-        return '';
+    toggleProps(user) {
+      const props = {
+        disabled: false,
+        title: '',
+        value: user.membership_state === MEMBER_ACTIVE_STATE,
+      };
+
+      if (this.isLoading) {
+        return { ...props, disabled: true };
       }
 
-      return this.isProjectOrGroupInvite(user)
-        ? this.$options.i18n.activateGroupOrProjectMemberRestrictedText
-        : this.$options.i18n.activateMemberRestrictedText;
+      if (user.id === gon.current_user_id) {
+        return {
+          ...props,
+          disabled: true,
+          title: this.$options.i18n.removeOwnSeatRestrictedText,
+        };
+      }
+
+      if (user.is_last_owner) {
+        return {
+          ...props,
+          disabled: true,
+          title: this.$options.i18n.removeLastOwnerSeatRestrictedText,
+        };
+      }
+
+      if (this.restrictActivatingUser(user)) {
+        const title = this.isProjectOrGroupInvite(user)
+          ? this.$options.i18n.activateGroupOrProjectMemberRestrictedText
+          : this.$options.i18n.activateMemberRestrictedText;
+
+        return { ...props, disabled: true, title };
+      }
+
+      return props;
     },
     restrictActivatingUser(user) {
       return (
@@ -253,11 +272,14 @@ export default {
         this.isProjectOrGroupInvite(user)
       );
     },
+    shouldShowDetails(item) {
+      return !this.isProjectOrGroupInvite(item.user);
+    },
     isProjectOrGroupInvite(user) {
       return this.isGroupInvite(user) || this.isProjectInvite(user);
     },
-    membershipStateToggleValue(user) {
-      return user.membership_state === MEMBER_ACTIVE_STATE;
+    navigateToPendingMembersPage() {
+      visitUrl(this.pendingMembersPagePath);
     },
     dismissSeatsAlert() {
       setCookie(DISMISS_SEATS_ALERT_COOKIE_NAME, 'true');
@@ -278,6 +300,12 @@ export default {
     seatsInUseLink: helpPagePath('subscription/gitlab_com/index', {
       anchor: 'how-seat-usage-is-determined',
     }),
+    removeLastOwnerSeatRestrictedText: s__(
+      'Billings|The last owner cannot be removed from a seat.',
+    ),
+    removeOwnSeatRestrictedText: s__(
+      "Billings|You can't remove yourself from a seat, but you can leave the group.",
+    ),
     activateMemberRestrictedText: s__(
       'Billings|To make this member active, you must first remove an existing active member, or toggle them to over limit.',
     ),
@@ -450,9 +478,7 @@ export default {
           v-gl-tooltip
           label="$options.i18n.inASeatLabel"
           label-position="hidden"
-          :value="membershipStateToggleValue(user)"
-          :disabled="isToggleDisabled(user)"
-          :title="toggleTooltipText(user)"
+          v-bind="toggleProps(user)"
           @change="changeMembershipState(user)"
         />
       </template>

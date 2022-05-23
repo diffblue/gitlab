@@ -226,7 +226,18 @@ describe('Subscription Seats', () => {
         describe('when limited free plan reached limit', () => {
           let serializedTable;
 
+          const forEachUser = (callback) => {
+            serializedTable.forEach((serializedRow) => {
+              const currentItem = mockTableItems.find(
+                (item) => item.user.name === serializedRow.user.avatarLink.alt,
+              );
+              callback(currentItem.user, serializedRow);
+            });
+          };
+
           beforeEach(() => {
+            global.gon.current_user_id = mockTableItems[mockTableItems.length - 1].user.id;
+
             wrapper = createComponent({
               mountFn: mount,
               initialGetters: {
@@ -242,56 +253,94 @@ describe('Subscription Seats', () => {
             serializedTable = findSerializedTable(findTable());
           });
 
-          it('sets toggle props correctly for active users', () => {
-            serializedTable.forEach((serializedRow) => {
-              const currentMember = mockTableItems.find((item) => {
-                return item.user.name === serializedRow.user.avatarLink.alt;
-              });
-
-              const { user } = currentMember;
-
-              if (user.membership_state !== 'active') {
-                return;
+          it('sets toggle value correctly for active users', () => {
+            forEachUser((user, serializedRow) => {
+              if (user.membership_state === 'active') {
+                expect(serializedRow.toggle.value).toBe(true);
               }
+            });
+          });
 
+          it('sets toggle value correctly for awaiting users', () => {
+            forEachUser((user, serializedRow) => {
+              if (user.membership_state === 'awaiting') {
+                expect(serializedRow.toggle.value).toBe(false);
+              }
+            });
+          });
+
+          it('sets toggle props correctly for last owners', () => {
+            forEachUser((user, serializedRow) => {
+              if (user.is_last_owner) {
+                expect(serializedRow.toggle.disabled).toBe(true);
+                expect(serializedRow.toggle.title).toBe(
+                  'The last owner cannot be removed from a seat.',
+                );
+              }
+            });
+          });
+
+          it('sets toggle props correctly for group or project invites', () => {
+            forEachUser((user, serializedRow) => {
               if (
                 user.membership_type === 'group_invite' ||
                 user.membership_type === 'project_invite'
               ) {
                 expect(serializedRow.toggle.disabled).toBe(true);
-              } else {
-                expect(serializedRow.toggle.disabled).toBe(false);
+                expect(serializedRow.toggle.title).toBe(
+                  "You can't change the seat status of a user who was invited via a group or project.",
+                );
               }
-              expect(serializedRow.toggle.value).toBe(true);
             });
           });
 
-          it('sets toggle props correctly for awaiting users', () => {
-            serializedTable.forEach((serializedRow) => {
-              const currentMember = mockTableItems.find((item) => {
-                return item.user.name === serializedRow.user.avatarLink.alt;
-              });
+          it('sets toggle props correctly for awaiting group or project members', () => {
+            forEachUser((user, serializedRow) => {
+              if (user.membership_state === 'active') {
+                return;
+              }
 
-              const { user } = currentMember;
+              if (
+                user.membership_type === 'group_member' ||
+                user.membership_type === 'project_member'
+              ) {
+                expect(serializedRow.toggle.disabled).toBe(true);
+                expect(serializedRow.toggle.title).toBe(
+                  'To make this member active, you must first remove an existing active member, or toggle them to over limit.',
+                );
+              }
+            });
+          });
 
-              if (user.membership_state !== 'awaiting') {
+          it('sets toggle props correctly for the current user', () => {
+            forEachUser((user, serializedRow) => {
+              if (user.id !== gon.current_user_id) {
                 return;
               }
 
               expect(serializedRow.toggle.disabled).toBe(true);
-              expect(serializedRow.toggle.value).toBe(false);
+              expect(serializedRow.toggle.title).toBe(
+                "You can't remove yourself from a seat, but you can leave the group.",
+              );
+            });
+          });
+
+          it('sets toggle props correctly for active group or project members', () => {
+            forEachUser((user, serializedRow) => {
+              if (
+                user.membership_state === 'awaiting' ||
+                user.is_last_owner ||
+                user.id === gon.current_user_id
+              ) {
+                return;
+              }
 
               if (
-                user.membership_type === 'group_invite' ||
-                user.membership_type === 'project_invite'
+                user.membership_type === 'group_member' ||
+                user.membership_type === 'project_member'
               ) {
-                expect(serializedRow.toggle.title).toBe(
-                  "You can't change the seat status of a user who was invited via a group or project.",
-                );
-              } else {
-                expect(serializedRow.toggle.title).toBe(
-                  'To make this member active, you must first remove an existing active member, or toggle them to over limit.',
-                );
+                expect(serializedRow.toggle.disabled).toBe(false);
+                expect(serializedRow.toggle.title).toBe('');
               }
             });
           });
@@ -357,7 +406,7 @@ describe('Subscription Seats', () => {
     describe('members avatar', () => {
       it('shows the correct avatarLinks length', () => {
         const avatarLinks = findTable().findAllComponents(GlAvatarLink);
-        expect(avatarLinks.length).toBe(4);
+        expect(avatarLinks.length).toBe(6);
       });
 
       it.each(['group_invite', 'project_invite'])(

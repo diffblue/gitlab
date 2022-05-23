@@ -3,11 +3,15 @@
 require 'spec_helper'
 
 RSpec.describe ::EE::API::Entities::BillableMember do
-  let(:last_activity_on) { Date.today }
-  let(:public_email) { nil }
-  let(:member) { build(:user, id: non_existing_record_id, public_email: public_email, email: 'private@email.com', last_activity_on: last_activity_on) }
+  let_it_be(:last_activity_on) { Date.today }
+  let_it_be(:group) { create(:group) }
+  let_it_be(:user) { create(:user, last_activity_on: last_activity_on) }
+  let_it_be(:member) { create(:group_member, :owner, user: user, group: group) }
+
   let(:options) do
     {
+      group: group,
+      current_user: user,
       group_member_user_ids: [],
       project_member_user_ids: [],
       shared_group_user_ids: [],
@@ -16,24 +20,33 @@ RSpec.describe ::EE::API::Entities::BillableMember do
     }
   end
 
-  subject(:entity_representation) { described_class.new(member, options).as_json }
+  subject(:entity_representation) { described_class.new(user, options).as_json }
 
   it 'returns the last_activity_on attribute' do
     expect(entity_representation[:last_activity_on]).to eq last_activity_on
   end
 
   it 'exposes the created_at field' do
-    expect(entity_representation[:created_at]).to eq(member.created_at)
+    expect(entity_representation[:created_at]).to eq(user.created_at)
+  end
+
+  it 'exposes the is_last_owner field' do
+    expect(entity_representation[:is_last_owner]).to eq(true)
   end
 
   context 'when the user has a public_email assigned' do
-    let(:public_email) { 'public@email.com' }
+    let_it_be(:public_email_address) { 'public@email.com' }
+
+    before do
+      create(:email, :confirmed, user: user, email: public_email_address)
+      user.update!(public_email: public_email_address)
+    end
 
     it 'exposes public_email instead of email' do
       aggregate_failures do
         expect(entity_representation.keys).to include(:email)
-        expect(entity_representation[:email]).to eq public_email
-        expect(entity_representation[:email]).not_to eq member.email
+        expect(entity_representation[:email]).to eq public_email_address
+        expect(entity_representation[:email]).not_to eq user.email
       end
     end
   end
@@ -50,13 +63,13 @@ RSpec.describe ::EE::API::Entities::BillableMember do
     end
 
     with_them do
-      let(:options) { super().merge(key => [member.id]) }
+      let(:options) { super().merge(key => [user.id]) }
 
       it { expect(entity_representation[:membership_state]).to eq(result) }
     end
 
     context 'with multiple states' do
-      let(:options) { super().merge(group_member_user_ids: [member.id], awaiting_user_ids: [member.id]) }
+      let(:options) { super().merge(group_member_user_ids: [user.id], awaiting_user_ids: [user.id]) }
 
       it 'returns the expected membership status' do
         expect(entity_representation[:membership_state]).to eq 'active'
@@ -65,7 +78,9 @@ RSpec.describe ::EE::API::Entities::BillableMember do
   end
 
   context 'when the user has no public_email assigned' do
-    let(:public_email) { nil }
+    before do
+      user.update!(public_email: nil)
+    end
 
     it 'returns a nil value for email' do
       aggregate_failures do
@@ -83,10 +98,11 @@ RSpec.describe ::EE::API::Entities::BillableMember do
       :project_member_user_ids | 'project_member' | true
       :shared_group_user_ids   | 'group_invite'   | false
       :shared_project_user_ids | 'project_invite' | false
+      :awaiting_user_ids       | nil              | true
     end
 
     with_them do
-      let(:options) { super().merge(user_ids => [member.id]) }
+      let(:options) { super().merge(user_ids => [user.id]) }
 
       it 'returns the expected membership_type value' do
         expect(entity_representation[:membership_type]).to eq membership_type

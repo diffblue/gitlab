@@ -74,5 +74,39 @@ Array [
       },
     },
   },
+  Object {
+    "email": "jsnow@email.com",
+    "removeUserButtonExists": true,
+    "toggle": null,
+    "tooltip": undefined,
+    "user": Object {
+      "avatarLabeled": Object {
+        "size": "32",
+        "src": "path/to/img_john_snow",
+        "text": "John Snow   @jown.snow",
+      },
+      "avatarLink": Object {
+        "alt": "John Snow",
+        "href": "path/to/john_snow",
+      },
+    },
+  },
+  Object {
+    "email": "current_user@email.com",
+    "removeUserButtonExists": true,
+    "toggle": null,
+    "tooltip": undefined,
+    "user": Object {
+      "avatarLabeled": Object {
+        "size": "32",
+        "src": "path/to/img_curent_user",
+        "text": "Current user   @current.user",
+      },
+      "avatarLink": Object {
+        "alt": "Current user",
+        "href": "path/to/current_user",
+      },
+    },
+  },
 ]
 `;
