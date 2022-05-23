@@ -8,6 +8,7 @@ RSpec.describe 'view usage quotas' do
     let_it_be(:user) { create(:user) }
 
     before_all do
+      stub_feature_flags(usage_quotas_pipelines_vue: false)
       group.add_owner(user)
     end
 

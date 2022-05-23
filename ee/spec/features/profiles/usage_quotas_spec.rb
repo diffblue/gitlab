@@ -14,7 +14,8 @@ RSpec.describe 'Profile > Usage Quota' do
   let_it_be(:other_project) { create(:project, namespace: namespace, shared_runners_enabled: false) }
 
   before do
-    gitlab_sign_in(user)
+    stub_feature_flags(usage_quotas_pipelines_vue: false)
+    sign_in(user)
   end
 
   it 'is linked within the profile page' do
@@ -41,7 +42,7 @@ RSpec.describe 'Profile > Usage Quota' do
         set_ci_minutes_used(namespace, used, project: project)
         namespace.update!(shared_runners_minutes_limit: quota)
 
-        visit profile_usage_quotas_path
+        visit_usage_quotas_page
       end
 
       it 'shows the correct quota status' do
@@ -66,6 +67,47 @@ RSpec.describe 'Profile > Usage Quota' do
       end
     end
 
+    context 'pagination', :js do
+      let(:per_page) { 1 }
+      let(:item_selector) { '.js-project-link' }
+      let(:prev_button_selector) { '[data-testid="prevButton"]' }
+      let(:next_button_selector) { '[data-testid="nextButton"]' }
+      let!(:projects) { create_list(:project, 3, :with_ci_minutes, amount_used: 5, namespace: namespace) }
+
+      before do
+        allow(Kaminari.config).to receive(:default_per_page).and_return(per_page)
+        stub_ee_application_setting(should_check_namespace_plan: true)
+      end
+
+      context 'storage tab' do
+        before do
+          visit_usage_quotas_page('storage-quota-tab')
+        end
+        it_behaves_like 'correct pagination'
+      end
+
+      context 'pipelines tab: with usage_quotas_pipelines_vue disabled' do
+        let(:item_selector) { '[data-testid="pipelines-quota-tab-project-name"]' }
+        let(:prev_button_selector) { '.page-item.js-previous-button a' }
+        let(:next_button_selector) { '.page-item.js-next-button a' }
+
+        before do
+          visit_usage_quotas_page
+        end
+        it_behaves_like 'correct pagination'
+      end
+
+      context 'pipelines tab: with usage_quotas_pipelines_vue enabled' do
+        let(:item_selector) { '[data-testid="pipelines-quota-tab-project-name"]' }
+
+        before do
+          stub_feature_flags(usage_quotas_pipelines_vue: true)
+          visit_usage_quotas_page
+        end
+        it_behaves_like 'correct pagination'
+      end
+    end
+
     context 'sorting when feature flag :ci_show_all_projects_with_usage_sorted_descending is enabled', :js do
       let(:per_page) { 2 }
       let!(:project2) { create(:project, :with_ci_minutes, amount_used: 5.7, namespace: namespace) }
@@ -76,7 +118,7 @@ RSpec.describe 'Profile > Usage Quota' do
       before do
         allow(Kaminari.config).to receive(:default_per_page).and_return(per_page)
 
-        visit profile_usage_quotas_path
+        visit_usage_quotas_page
       end
 
       it 'sorts projects list by CI minutes used in descending order' do
@@ -87,6 +129,10 @@ RSpec.describe 'Profile > Usage Quota' do
         expect(page.text.index(project3.full_name)).to be < page.text.index(project4.full_name)
       end
     end
+  end
+
+  def visit_usage_quotas_page(anchor = 'pipelines-quota-tab')
+    visit profile_usage_quotas_path(namespace, anchor: anchor)
   end
 
   def click_next_page_pipeline_projects

@@ -14,6 +14,11 @@ export default {
       type: String,
       required: true,
     },
+    minutesUsedQaSelector: {
+      type: String,
+      required: false,
+      default: '',
+    },
     minutesUsedPercentage: {
       type: String,
       required: true,
@@ -42,7 +47,7 @@ export default {
       <h5 class="gl-m-0" data-testid="minutes-title">
         {{ minutesTitle }}
       </h5>
-      <div data-qa-selector="plan_ci_minutes" data-testid="minutes-used">
+      <div :data-qa-selector="minutesUsedQaSelector" data-testid="minutes-used">
         {{ minutesUsed }}
         <gl-link :href="helpLinkHref" :aria-label="helpLinkLabel">
           <gl-icon name="question-o" :size="12" />

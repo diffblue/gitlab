@@ -1,5 +1,6 @@
 import $ from 'jquery';
 import SeatUsageApp from 'ee/usage_quotas/seats';
+import initPipelineUsageApp from 'ee/usage_quotas/pipelines';
 import initNamespaceStorage from 'ee/usage_quotas/storage/init_namespace_storage';
 import initCiMinutesUsageApp from 'ee/usage_quotas/ci_minutes_usage';
 import LinkedTabs from '~/lib/utils/bootstrap_linked_tabs';
@@ -17,18 +18,6 @@ const initLinkedTabs = () => {
   });
 };
 
-const initVueApps = () => {
-  if (document.querySelector('#js-seat-usage-app')) {
-    SeatUsageApp();
-  }
-
-  if (document.querySelector('#js-storage-counter-app')) {
-    initNamespaceStorage();
-  }
-
-  initCiMinutesUsageApp();
-};
-
 /**
  * This adds the current URL hash to the pagingation links so that the page
  * opens in the correct tab. This happens because rails pagination doesn't add
@@ -38,6 +27,10 @@ const initVueApps = () => {
  * To be removed with https://gitlab.com/gitlab-org/gitlab/-/issues/345373
  */
 const fixPipelinesPagination = () => {
+  if (gon.features?.usageQuotasPipelinesVue) {
+    return;
+  }
+
   const pipelinesQuotaTabLink = document.querySelector('#pipelines-quota');
   const pipelinesQuotaTab = document.querySelector('#pipelines-quota-tab');
 
@@ -54,6 +47,9 @@ const fixPipelinesPagination = () => {
 };
 
 fixPipelinesPagination();
-initVueApps();
+SeatUsageApp();
+initPipelineUsageApp();
+initNamespaceStorage();
+initCiMinutesUsageApp();
 initLinkedTabs();
 trackAddToCartUsageTab();

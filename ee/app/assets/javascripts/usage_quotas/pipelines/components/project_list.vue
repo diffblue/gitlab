@@ -70,9 +70,12 @@ export default {
             :alt="item.project.nameWithNamespace"
             class="gl-mr-3"
           />
-          <gl-link :href="item.project.webUrl" class="gl-font-weight-bold">{{
-            item.project.nameWithNamespace
-          }}</gl-link>
+          <gl-link
+            :href="item.project.webUrl"
+            class="gl-font-weight-bold"
+            data-testid="pipelines-quota-tab-project-name"
+            >{{ item.project.nameWithNamespace }}</gl-link
+          >
         </div>
       </template>
       <template #cell(minutes)="{ item }">

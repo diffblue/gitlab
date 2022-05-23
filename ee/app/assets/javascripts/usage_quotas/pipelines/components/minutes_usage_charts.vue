@@ -18,7 +18,7 @@ export default {
 </script>
 
 <template>
-  <div :class="borderStyles" class="gl-my-7">
+  <div :class="$options.borderStyles" class="gl-my-7">
     <minutes-usage-month-chart :class="$options.borderStyles" :ci-minutes-usage="ciMinutesUsages" />
     <minutes-usage-project-chart :minutes-usage-data="ciMinutesUsages" />
   </div>
