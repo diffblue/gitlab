@@ -19,7 +19,8 @@
       "type": ["string"]
     },
     "product_group": {
-      "type": "string"
+      "type": "string",
+      "pattern": "^group::[a-z ]+$"
     },
     "product_category": {
       "type": ["string", "null"]
