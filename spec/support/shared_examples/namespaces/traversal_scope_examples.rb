@@ -238,6 +238,12 @@ RSpec.shared_examples 'namespace traversal scopes' do
       subject { described_class.where(id: [nested_group_1, nested_group_2]).self_and_descendants(include_self: false) }
 
       it { is_expected.to contain_exactly(deep_nested_group_1, deep_nested_group_2) }
+
+      context 'with duplicate descendants' do
+        subject { described_class.where(id: [group_1, nested_group_1]).self_and_descendants(include_self: false) }
+
+        it { is_expected.to contain_exactly(nested_group_1, deep_nested_group_1) }
+      end
     end
 
     context 'with offset and limit' do
