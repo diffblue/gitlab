@@ -358,7 +358,7 @@ RSpec.describe EE::NamespacesHelper do
         expect(helper.storage_usage_app_data(namespace)).to eql({
           additional_repo_storage_by_namespace: "true",
           buy_addon_target_attr: "_blank",
-          purchase_storage_url: "https://customers.staging.gitlab.com/buy_storage",
+          purchase_storage_url: Gitlab::SubscriptionPortal.subscriptions_more_storage_url,
           default_per_page: 20,
           namespace_path: namespace.full_path,
           is_temporary_storage_increase_visible: "false",
