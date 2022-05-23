@@ -98,20 +98,6 @@ RSpec.describe 'Groups > Usage Quotas' do
     end
   end
 
-  context 'when successfully purchasing CI Minutes' do
-    let(:group) { create(:group, :with_ci_minutes) }
-    let!(:project) { create(:project, :with_ci_minutes, amount_used: 200, namespace: group, shared_runners_enabled: true) }
-
-    it 'does show a banner' do
-      visit group_usage_quotas_path(group, purchased_product: 'CI minutes')
-
-      page.within('#content-body') do
-        expect(page).to have_content('Thanks for your purchase!')
-        expect(page).to have_content('You have successfully purchased CI minutes. You\'ll receive a receipt by email.')
-      end
-    end
-  end
-
   context 'minutes under quota' do
     let(:group) { create(:group, :with_not_used_build_minutes_limit) }
 
@@ -124,22 +110,6 @@ RSpec.describe 'Groups > Usage Quotas' do
         expect(page).to have_content("300 / 500 minutes")
         expect(page).to have_content("60% used")
         expect(page).to have_selector('.bg-success')
-      end
-    end
-  end
-
-  context 'projects usage table' do
-    let!(:project) { create(:project, :with_ci_minutes, amount_used: 100, shared_runners_duration: 50, namespace: group, shared_runners_enabled: true) }
-
-    it 'displays correct table data' do
-      visit_usage_quotas_page
-
-      page.within('.pipeline-project-metrics') do
-        expect(page).to have_content("Project")
-        expect(page).to have_content("Shared runner usage")
-        expect(page).to have_content("CI/CD minutes usage")
-        expect(find('[data-testid="project_shared_runner_duration"]')).to have_text('50')
-        expect(find('[data-testid="project_amount_used"]')).to have_text('100')
       end
     end
   end
@@ -182,7 +152,7 @@ RSpec.describe 'Groups > Usage Quotas' do
       expect(link['data-track-property']).to eq('pipeline_quota_page')
     end
 
-    context 'feature flag :ci_show_all_projects_with_usage_sorted_descending is enabled' do
+    context 'usage by project' do
       let(:per_page) { 20 }
 
       before do
@@ -197,23 +167,70 @@ RSpec.describe 'Groups > Usage Quotas' do
           expect(page).not_to have_content(no_minutes_project.full_name)
         end
       end
+
+      context 'when group has projects in subgroups' do
+        let!(:subgroup) { create(:group, parent: group) }
+        let!(:subproject) { create(:project, :with_ci_minutes, amount_used: 300, namespace: subgroup, shared_runners_enabled: true) }
+
+        it 'shows projects inside the subgroup' do
+          visit_usage_quotas_page
+
+          expect(page).to have_content(project.full_name)
+          expect(page).to have_content(subproject.full_name)
+        end
+      end
+    end
+  end
+
+  describe 'Purchase additional CI minutes' do
+    it 'points to GitLab CI minutes purchase flow' do
+      visit_usage_quotas_page
+
+      expect(page).to have_link('Buy additional minutes', href: buy_minutes_subscriptions_link(group))
     end
 
-    context 'feature flag :ci_show_all_projects_with_usage_sorted_descending is disabled' do
-      let(:per_page) { 20 }
+    context 'when successfully purchasing CI Minutes' do
+      let(:group) { create(:group, :with_ci_minutes) }
+      let!(:project) { create(:project, :with_ci_minutes, amount_used: 200, namespace: group, shared_runners_enabled: true) }
 
-      before do
-        stub_feature_flags(ci_show_all_projects_with_usage_sorted_descending: false)
-        allow(Kaminari.config).to receive(:default_per_page).and_return(per_page)
-        visit_usage_quotas_page
-      end
+      it 'does show a banner' do
+        visit group_usage_quotas_path(group, purchased_product: 'CI minutes')
 
-      it 'shows projects with 0 minutes used' do
-        page.within('.pipeline-project-metrics') do
-          expect(page).to have_content(project.full_name)
-          expect(page).not_to have_content(other_project.full_name)
-          expect(page).to have_content(no_minutes_project.full_name)
+        page.within('#content-body') do
+          expect(page).to have_content('Thanks for your purchase!')
+          expect(page).to have_content('You have successfully purchased CI minutes. You\'ll receive a receipt by email.')
         end
+      end
+    end
+  end
+
+  context 'Projects usage table' do
+    let!(:project) { create(:project, :with_ci_minutes, amount_used: 100, shared_runners_duration: 1000, namespace: group, shared_runners_enabled: true) }
+
+    let(:per_page) { 20 }
+    let!(:subgroup) { create(:group, parent: group) }
+    let!(:project2) { create(:project, :with_ci_minutes, amount_used: 5, shared_runners_duration: 50, namespace: group) }
+    let!(:project3) { create(:project, :with_ci_minutes, amount_used: 3, shared_runners_duration: 30, namespace: subgroup) }
+    let!(:project4) { create(:project, :with_ci_minutes, amount_used: 1, shared_runners_duration: 10, namespace: group) }
+    let!(:project5) { create(:project, :with_ci_minutes, amount_used: 8, shared_runners_duration: 80, namespace: subgroup) }
+
+    before do
+      allow(Kaminari.config).to receive(:default_per_page).and_return(per_page)
+    end
+
+    it 'sorts projects list by CI minutes used in descending order' do
+      visit_usage_quotas_page('pipelines-quota-tab')
+
+      page.within('.pipeline-project-metrics') do
+        expect(page).to have_content("Project")
+        expect(page).to have_content("Shared runner usage")
+        expect(page).to have_content("CI/CD minutes usage")
+
+        shared_runner_durations = all('[data-testid="project_shared_runner_duration"]').map(&:text)
+        expect(shared_runner_durations).to eq(%w[1000 80 50 30 10])
+
+        amounts_used = all('[data-testid="project_amount_used"]').map(&:text)
+        expect(amounts_used).to eq(%w[100 8 5 3 1])
       end
     end
   end
@@ -226,26 +243,6 @@ RSpec.describe 'Groups > Usage Quotas' do
       visit_usage_quotas_page
 
       expect(page).to have_gitlab_http_status(:not_found)
-    end
-  end
-
-  context 'if feature flag :ci_show_all_projects_with_usage_sorted_descending is enabled when accessing root group' do
-    let!(:subgroup) { create(:group, parent: group) }
-    let!(:subproject) { create(:project, :with_ci_minutes, amount_used: 300, namespace: subgroup, shared_runners_enabled: true) }
-
-    it 'does show projects of subgroup' do
-      visit_usage_quotas_page
-
-      expect(page).to have_content(project.full_name)
-      expect(page).to have_content(subproject.full_name)
-    end
-  end
-
-  context 'when purchasing CI minutes' do
-    it 'points to GitLab CI minutes purchase flow' do
-      visit_usage_quotas_page
-
-      expect(page).to have_link('Buy additional minutes', href: buy_minutes_subscriptions_link(group))
     end
   end
 
@@ -287,29 +284,6 @@ RSpec.describe 'Groups > Usage Quotas' do
         visit_usage_quotas_page('pipelines-quota-tab')
       end
       it_behaves_like 'correct pagination'
-    end
-  end
-
-  context 'sorting when feature flag :ci_show_all_projects_with_usage_sorted_descending is enabled', :js do
-    let(:per_page) { 3 }
-    let!(:subgroup) { create(:group, parent: group) }
-    let!(:project2) { create(:project, :with_ci_minutes, amount_used: 5, namespace: group) }
-    let!(:project3) { create(:project, :with_ci_minutes, amount_used: 3, namespace: subgroup) }
-    let!(:project4) { create(:project, :with_ci_minutes, amount_used: 1, namespace: group) }
-    let!(:project5) { create(:project, :with_ci_minutes, amount_used: 8, namespace: subgroup) }
-
-    before do
-      allow(Kaminari.config).to receive(:default_per_page).and_return(per_page)
-
-      visit_usage_quotas_page('pipelines-quota-tab')
-    end
-
-    it 'sorts projects list by CI minutes used in descending order' do
-      expect(page).to have_selector('.pipeline-project-metrics')
-
-      expect(page.text.index(project5.full_name)).to be < page.text.index(project2.full_name)
-      click_next_page_pipeline_projects
-      expect(page.text.index(project3.full_name)).to be < page.text.index(project4.full_name)
     end
   end
 
