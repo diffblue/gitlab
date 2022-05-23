@@ -58,7 +58,6 @@ export default {
       'selectedStage',
       'stages',
       'selectedStageEvents',
-      'errorCode',
       'createdAfter',
       'createdBefore',
       'isLoadingValueStreams',
@@ -89,9 +88,6 @@ export default {
     },
     shouldRenderAggregationWarning() {
       return this.isCreatingAggregation || this.isWaitingForNextAggregation;
-    },
-    shouldDisplayFilters() {
-      return !this.errorCode && !this.hasNoAccessError;
     },
     selectedStageReady() {
       return !this.hasNoAccessError && this.selectedStage;
