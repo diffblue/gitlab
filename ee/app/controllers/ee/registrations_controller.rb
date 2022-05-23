@@ -32,6 +32,8 @@ module EE
     end
 
     def log_audit_event(user)
+      return unless user&.persisted?
+
       ::AuditEventService.new(
         user,
         user,
