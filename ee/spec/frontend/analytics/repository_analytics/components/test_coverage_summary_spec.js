@@ -50,6 +50,14 @@ describe('Test coverage table component', () => {
     wrapper = null;
   });
 
+  it('renders test coverage header', () => {
+    createComponent();
+
+    const header = wrapper.find('[data-testid="test-coverage-header"]');
+
+    expect(header.exists()).toBe(true);
+  });
+
   describe('when group code coverage is empty', () => {
     it('renders empty metrics', () => {
       createComponent();

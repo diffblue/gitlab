@@ -5,12 +5,14 @@ import {
   GlSprintf,
   GlDeprecatedSkeletonLoading as GlSkeletonLoading,
   GlSafeHtmlDirective as SafeHtml,
+  GlPopover,
 } from '@gitlab/ui';
 import { GlSingleStat, GlAreaChart } from '@gitlab/ui/dist/charts';
-import { formatDate } from '~/lib/utils/datetime_utility';
+import { formatDate, getTimeago, isToday, newDateAsLocaleTime } from '~/lib/utils/datetime_utility';
 import { SUPPORTED_FORMATS, getFormatter } from '~/lib/utils/unit_format';
-import { __, s__ } from '~/locale';
+import { __ } from '~/locale';
 import ChartSkeletonLoader from '~/vue_shared/components/resizable_chart/skeleton_loader.vue';
+import { summaryi18n as i18n } from '../constants';
 import getGroupTestCoverage from '../graphql/queries/get_group_test_coverage.query.graphql';
 
 const formatPercent = getFormatter(SUPPORTED_FORMATS.percentHundred);
@@ -24,12 +26,16 @@ export default {
     GlSprintf,
     GlSkeletonLoading,
     GlSingleStat,
+    GlPopover,
   },
   directives: {
     SafeHtml,
   },
   inject: {
     groupFullPath: {
+      default: '',
+    },
+    groupName: {
       default: '',
     },
   },
@@ -84,6 +90,9 @@ export default {
       groupCoverageChartData: [],
       coveragePercentage: null,
       tooltipTitle: null,
+      tooltipAverageCoverage: null,
+      tooltipProjectCount: null,
+      tooltipCoverageCount: null,
       hasError: false,
       isLoading: false,
     };
@@ -98,17 +107,20 @@ export default {
           key: 'projectCount',
           value: this.projectCount,
           label: this.$options.i18n.metrics.projectCountLabel,
+          popover: this.$options.i18n.metrics.projectCountPopover,
         },
         {
           key: 'averageCoverage',
           value: this.averageCoverage,
           unit: '%',
           label: this.$options.i18n.metrics.averageCoverageLabel,
+          popover: this.$options.i18n.metrics.averageCoveragePopover,
         },
         {
           key: 'coverageCount',
           value: this.coverageCount,
           label: this.$options.i18n.metrics.coverageCountLabel,
+          popover: this.$options.i18n.metrics.coverageCountPopover,
         },
       ];
     },
@@ -139,6 +151,16 @@ export default {
         },
       };
     },
+    latestCoverageTimeAgo() {
+      const latestCoverageDataPoint = this.groupCoverageChartData?.[
+        this.groupCoverageChartData.length - 1
+      ];
+      const latestCoverageDate = latestCoverageDataPoint?.data[0][0];
+      if (isToday(newDateAsLocaleTime(latestCoverageDate))) {
+        return __('today');
+      }
+      return getTimeago().format(latestCoverageDate);
+    },
   },
   methods: {
     formatTooltipText(params) {
@@ -150,47 +172,53 @@ export default {
       this.tooltipCoverageCount = coverageCount;
     },
   },
-  i18n: {
-    emptyChart: s__('RepositoriesAnalytics|No test coverage to display'),
-    graphCardHeader: s__('RepositoriesAnalytics|Average test coverage last 30 days'),
-    yAxisName: __('Coverage'),
-    xAxisName: __('Date'),
-    graphName: s__('RepositoriesAnalytics|Average coverage'),
-    graphTooltip: {
-      averageCoverage: s__('RepositoriesAnalytics|Code Coverage: %{averageCoverage}'),
-      projectCount: s__('RepositoriesAnalytics|Projects with Coverage: %{projectCount}'),
-      coverageCount: s__('RepositoriesAnalytics|Jobs with Coverage: %{coverageCount}'),
-    },
-    metrics: {
-      projectCountLabel: s__('RepositoriesAnalytics|Projects with Coverage'),
-      averageCoverageLabel: s__('RepositoriesAnalytics|Average Coverage by Job'),
-      coverageCountLabel: s__('RepositoriesAnalytics|Jobs with Coverage'),
-    },
-  },
+  i18n,
   chartEmptyStateIllustration,
 };
 </script>
 <template>
   <div>
+    <div class="gl-display-flex gl-align-items-center">
+      <h4 data-testid="test-coverage-header">
+        {{ $options.i18n.codeCoverageHeader }}
+      </h4>
+      <strong class="gl-ml-3 gl-text-gray-600">
+        <gl-sprintf v-if="!isChartEmpty" :message="$options.i18n.lastUpdated">
+          <template #timeAgo>{{ latestCoverageTimeAgo }}</template>
+        </gl-sprintf>
+      </strong>
+    </div>
     <div
       class="gl-display-flex gl-flex-direction-column gl-md-flex-direction-row gl-my-6 gl-align-items-flex-start"
     >
       <gl-skeleton-loading v-if="isLoading" />
-      <gl-single-stat
-        v-for="metric in metrics"
-        v-else
-        :key="metric.key"
-        class="gl-pr-9 gl-my-4 gl-md-mt-0 gl-md-mb-0"
-        :value="`${metric.value || '-'}`"
-        :unit="metric.value ? metric.unit : null"
-        :title="metric.label"
-        :should-animate="true"
-      />
+      <template v-for="metric in metrics" v-else>
+        <gl-single-stat
+          :id="metric.key"
+          :key="metric.key"
+          class="gl-pr-9 gl-my-4 gl-md-mt-0 gl-md-mb-0"
+          :value="`${metric.value || '-'}`"
+          :unit="metric.value ? metric.unit : null"
+          :title="metric.label"
+          :should-animate="true"
+        />
+        <gl-popover :key="`${metric.key}-popover`" :target="metric.key" :title="metric.label">
+          <gl-sprintf :message="metric.popover(metric.value || 0)">
+            <template #groupName>{{ groupName }}</template>
+            <template #metricValue>{{ metric.value || 0 }}{{ metric.unit }}</template>
+          </gl-sprintf>
+        </gl-popover>
+      </template>
     </div>
 
     <gl-card>
       <template #header>
-        <h5>{{ $options.i18n.graphCardHeader }}</h5>
+        <div class="gl-display-flex gl-align-items-center">
+          <h5>{{ $options.i18n.graphCardHeader }}</h5>
+          <strong class="gl-font-sm gl-ml-3 gl-text-gray-600">{{
+            $options.i18n.graphCardSubheader
+          }}</strong>
+        </div>
       </template>
 
       <chart-skeleton-loader v-if="isLoading" data-testid="group-coverage-chart-loading" />

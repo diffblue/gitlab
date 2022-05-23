@@ -1,7 +1,8 @@
 <script>
+import { GlSprintf, GlLink } from '@gitlab/ui';
 import Api from '~/api';
-import { s__ } from '~/locale';
-import DownloadTestCoverage from './download_test_coverage.vue';
+import { helpPagePath } from '~/helpers/help_page_helper';
+import { headeri18n as i18n } from '../constants';
 import TestCoverageSummary from './test_coverage_summary.vue';
 import TestCoverageTable from './test_coverage_table.vue';
 
@@ -12,24 +13,35 @@ export default {
   components: {
     TestCoverageSummary,
     TestCoverageTable,
-    DownloadTestCoverage,
+    GlSprintf,
+    GlLink,
+  },
+  inject: {
+    groupName: {
+      default: '',
+    },
   },
   mounted() {
     Api.trackRedisHllUserEvent(VISIT_EVENT_NAME);
   },
-  text: {
-    codeCoverageHeader: s__('RepositoriesAnalytics|Test Code Coverage'),
-  },
+  i18n,
+  learnMoreLinkPath: helpPagePath('user/group/repositories_analytics/index.md'),
 };
 </script>
 
 <template>
   <div>
-    <h4 data-testid="test-coverage-header">
-      {{ $options.text.codeCoverageHeader }}
-    </h4>
+    <h3 class="gl-mb-5">{{ $options.i18n.title }}</h3>
+    <gl-sprintf :message="$options.i18n.description">
+      <template #groupName>{{ groupName }}</template>
+      <template #learnMoreLink>
+        <gl-link :href="$options.learnMoreLinkPath">{{ __('Learn More') }}</gl-link>
+      </template>
+    </gl-sprintf>
+
+    <hr />
+
     <test-coverage-summary class="gl-mb-5" />
     <test-coverage-table class="gl-mb-5" />
-    <download-test-coverage />
   </div>
 </template>

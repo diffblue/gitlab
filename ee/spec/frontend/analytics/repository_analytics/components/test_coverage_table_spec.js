@@ -1,4 +1,4 @@
-import { GlTable } from '@gitlab/ui';
+import { GlTableLite } from '@gitlab/ui';
 import { mount, shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
@@ -11,6 +11,7 @@ import waitForPromises from 'helpers/wait_for_promises';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import Api from '~/api';
 import { getTimeago } from '~/lib/utils/datetime_utility';
+import DownloadTestCoverage from 'ee/analytics/repository_analytics/components/download_test_coverage.vue';
 import { defaultTestCoverageTable, projects } from '../mock_data';
 
 jest.mock('~/api.js');
@@ -25,7 +26,7 @@ describe('Test coverage table component', () => {
   const findProjectsDropdown = () => wrapper.findComponent(SelectProjectsDropdown);
   const findEmptyState = () => wrapper.findByTestId('test-coverage-table-empty-state');
   const findLoadingState = () => wrapper.findByTestId('test-coverage-loading-state');
-  const findTable = () => wrapper.findComponent(GlTable);
+  const findTable = () => wrapper.findComponent(GlTableLite);
   const findTableRows = () => findTable().findAll('tbody tr');
   const findProjectNameById = (id) => wrapper.findByTestId(`${id}-name`);
   const findProjectAverageById = (id) => wrapper.findByTestId(`${id}-average`);
@@ -89,6 +90,12 @@ describe('Test coverage table component', () => {
   });
 
   describe('when code coverage is available', () => {
+    it('renders the download test coverage component', () => {
+      createComponent({ mountFn: mount });
+
+      expect(wrapper.findComponent(DownloadTestCoverage).exists()).toBe(true);
+    });
+
     it('renders coverage table', async () => {
       const {
         id,

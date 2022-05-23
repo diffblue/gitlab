@@ -2,7 +2,6 @@
 import {
   GlAlert,
   GlButton,
-  GlCard,
   GlDropdown,
   GlDropdownSectionHeader,
   GlDropdownItem,
@@ -11,7 +10,8 @@ import {
 } from '@gitlab/ui';
 import { pikadayToString } from '~/lib/utils/datetime_utility';
 import { mergeUrlParams } from '~/lib/utils/url_utility';
-import { __, s__ } from '~/locale';
+import { __ } from '~/locale';
+import { downloadi18n as i18n } from '../constants';
 import SelectProjectsDropdown from './select_projects_dropdown.vue';
 
 export default {
@@ -19,7 +19,6 @@ export default {
   components: {
     GlAlert,
     GlButton,
-    GlCard,
     GlDropdown,
     GlDropdownSectionHeader,
     GlDropdownItem,
@@ -70,7 +69,7 @@ export default {
     },
     downloadCSVModalButton() {
       return {
-        text: this.$options.text.downloadCSVModalButton,
+        text: this.$options.i18n.downloadCSVModalButton,
         attributes: [
           { variant: 'info' },
           { href: this.csvReportPath },
@@ -112,18 +111,7 @@ export default {
       this.selectedProjectIds.splice(index, 1);
     },
   },
-  text: {
-    downloadTestCoverageHeader: s__('RepositoriesAnalytics|Download historic test coverage data'),
-    downloadCSVButton: s__('RepositoriesAnalytics|Download historic test coverage data (.csv)'),
-    dateRangeHeader: __('Date range'),
-    downloadCSVModalButton: s__('RepositoriesAnalytics|Download test coverage data (.csv)'),
-    downloadCSVModalDescription: s__(
-      'RepositoriesAnalytics|Historic Test Coverage Data is available in raw format (.csv) for further analysis.',
-    ),
-    projectDropdownHeader: __('Projects'),
-    projectSelectAll: __('Select all'),
-    queryErrorMessage: s__('RepositoriesAnalytics|There was an error fetching the projects.'),
-  },
+  i18n,
   dateRangeOptions: [
     { value: 7, text: __('Last week') },
     { value: 14, text: __('Last 2 weeks') },
@@ -135,22 +123,20 @@ export default {
 </script>
 
 <template>
-  <gl-card>
-    <template #header>
-      <h5>{{ $options.text.downloadTestCoverageHeader }}</h5>
-    </template>
-
+  <div class="gl-xs-w-full gl-sm-ml-3">
     <gl-button
       v-gl-modal-directive="'download-csv-modal'"
       category="primary"
       variant="info"
+      class="gl-xs-w-full"
       data-testid="group-code-coverage-modal-button"
-      >{{ $options.text.downloadCSVButton }}</gl-button
+      :aria-label="$options.i18n.downloadCSVButton"
+      >{{ $options.i18n.downloadCSVButton }}</gl-button
     >
 
     <gl-modal
       modal-id="download-csv-modal"
-      :title="$options.text.downloadTestCoverageHeader"
+      :title="$options.i18n.downloadTestCoverageHeader"
       no-fade
       :action-primary="downloadCSVModalButton"
       :action-cancel="cancelModalButton"
@@ -160,12 +146,12 @@ export default {
         variant="danger"
         data-testid="group-code-coverage-projects-error"
         @dismiss="dismissError"
-        >{{ $options.text.queryErrorMessage }}</gl-alert
+        >{{ $options.i18n.queryErrorMessage }}</gl-alert
       >
-      <div>{{ $options.text.downloadCSVModalDescription }}</div>
+      <div>{{ $options.i18n.downloadCSVModalDescription }}</div>
       <div class="gl-my-4">
         <label class="gl-display-block col-form-label-sm col-form-label">
-          {{ $options.text.projectDropdownHeader }}
+          {{ $options.i18n.projectDropdownHeader }}
         </label>
         <select-projects-dropdown
           ref="projectsDropdown"
@@ -180,17 +166,17 @@ export default {
           variant="link"
           data-testid="group-code-coverage-select-all-projects-button"
           @click="clickSelectAllProjects()"
-          >{{ $options.text.projectSelectAll }}</gl-button
+          >{{ $options.i18n.projectSelectAll }}</gl-button
         >
       </div>
 
       <div class="gl-my-4">
         <label class="gl-display-block col-form-label-sm col-form-label">
-          {{ $options.text.dateRangeHeader }}
+          {{ $options.i18n.dateRangeHeader }}
         </label>
         <gl-dropdown :text="selectedDateRange.text" class="gl-w-half">
           <gl-dropdown-section-header>
-            {{ $options.text.dateRangeHeader }}
+            {{ $options.i18n.dateRangeHeader }}
           </gl-dropdown-section-header>
           <gl-dropdown-item
             v-for="dateRange in $options.dateRangeOptions"
@@ -202,5 +188,5 @@ export default {
         </gl-dropdown>
       </div>
     </gl-modal>
-  </gl-card>
+  </div>
 </template>
