@@ -79,6 +79,7 @@ RSpec.describe EpicIssues::ListService do
           expected_result = [
             {
               id: issue2.id,
+              type: issue2.issue_type.upcase,
               title: issue2.title,
               assignees: [],
               state: issue2.state,
@@ -96,6 +97,7 @@ RSpec.describe EpicIssues::ListService do
             },
             {
               id: issue1.id,
+              type: issue1.issue_type.upcase,
               title: issue1.title,
               assignees: [],
               state: issue1.state,
@@ -113,6 +115,7 @@ RSpec.describe EpicIssues::ListService do
             },
             {
               id: issue3.id,
+              type: issue3.issue_type.upcase,
               title: issue3.title,
               assignees: [],
               state: issue3.state,
@@ -143,6 +146,7 @@ RSpec.describe EpicIssues::ListService do
           expected_result = [
             {
               id: issue2.id,
+              type: issue2.issue_type.upcase,
               title: issue2.title,
               assignees: [],
               state: issue2.state,
@@ -160,6 +164,7 @@ RSpec.describe EpicIssues::ListService do
             },
             {
               id: issue1.id,
+              type: issue1.issue_type.upcase,
               title: issue1.title,
               assignees: [],
               state: issue1.state,
