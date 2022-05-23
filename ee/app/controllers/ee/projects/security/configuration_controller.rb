@@ -24,7 +24,7 @@ module EE
           feature_category :static_application_security_testing, [:show]
           feature_category :dependency_scanning, [:auto_fix]
 
-          urgency :low, [:show]
+          urgency :low, [:show, :auto_fix]
         end
 
         # rubocop:disable Gitlab/ModuleWithInstanceVariables
