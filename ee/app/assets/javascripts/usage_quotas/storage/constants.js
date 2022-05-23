@@ -16,6 +16,13 @@ export const TOTAL_USAGE_SUBTITLE = s__(
 
 export const PROJECT_STORAGE_TYPES = [
   {
+    id: 'containerRegistrySize',
+    name: s__('UsageQuota|Container Registry'),
+    description: s__(
+      'UsageQuota|Gitlab-integrated Docker Container Registry for storing Docker Images.',
+    ),
+  },
+  {
     id: 'buildArtifactsSize',
     name: s__('UsageQuota|Artifacts'),
     description: s__('UsageQuota|Pipeline artifacts and job artifacts, created with CI/CD.'),
@@ -91,6 +98,9 @@ export const STORAGE_USAGE_THRESHOLDS = {
 };
 
 export const projectHelpPaths = {
+  containerRegistry: helpPagePath(
+    'user/packages/container_registry/reduce_container_registry_storage',
+  ),
   usageQuotas: helpPagePath('user/usage_quotas'),
   buildArtifacts: helpPagePath('ci/pipelines/job_artifacts', {
     anchor: 'when-job-artifacts-are-deleted',

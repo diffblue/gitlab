@@ -3,6 +3,7 @@ import { GlIcon, GlLink, GlSprintf, GlTableLite } from '@gitlab/ui';
 import { numberToHumanSize } from '~/lib/utils/number_utils';
 import { thWidthClass } from '~/lib/utils/table_utility';
 import { sprintf } from '~/locale';
+import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import {
   HELP_LINK_ARIA_LABEL,
   PROJECT_TABLE_LABEL_STORAGE_TYPE,
@@ -20,6 +21,7 @@ export default {
     GlSprintf,
     StorageTypeIcon,
   },
+  mixins: [glFeatureFlagMixin()],
   props: {
     storageTypes: {
       type: Array,
@@ -28,7 +30,16 @@ export default {
   },
   computed: {
     sizeSortedStorageTypes() {
-      return [...this.storageTypes].sort(descendingStorageUsageSort('value'));
+      return (
+        [...this.storageTypes]
+          // NOTE: this should be removed when related FF is rolled out (https://gitlab.com/gitlab-org/gitlab/-/issues/359852)
+          .filter(
+            (data) =>
+              data.storageType.id !== 'containerRegistrySize' ||
+              this.glFeatures.containerRegistryProjectStatistics,
+          )
+          .sort(descendingStorageUsageSort('value'))
+      );
     },
   },
   methods: {

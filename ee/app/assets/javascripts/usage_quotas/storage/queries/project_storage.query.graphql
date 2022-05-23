@@ -2,6 +2,7 @@ query getProjectStorageStatistics($fullPath: ID!) {
   project(fullPath: $fullPath) {
     id
     statistics {
+      containerRegistrySize
       buildArtifactsSize
       pipelineArtifactsSize
       lfsObjectsSize

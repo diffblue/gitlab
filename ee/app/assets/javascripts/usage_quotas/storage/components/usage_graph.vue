@@ -1,6 +1,7 @@
 <script>
 import { GlIcon, GlTooltipDirective } from '@gitlab/ui';
 import { numberToHumanSize } from '~/lib/utils/number_utils';
+import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { PROJECT_STORAGE_TYPES } from '../constants';
 import { descendingStorageUsageSort } from '../utils';
 
@@ -11,6 +12,7 @@ export default {
   directives: {
     GlTooltip: GlTooltipDirective,
   },
+  mixins: [glFeatureFlagMixin()],
   props: {
     rootStorageStatistics: {
       required: true,
@@ -24,6 +26,7 @@ export default {
   computed: {
     storageTypes() {
       const {
+        containerRegistrySize,
         buildArtifactsSize,
         pipelineArtifactsSize,
         lfsObjectsSize,
@@ -40,64 +43,78 @@ export default {
         return null;
       }
 
-      return [
-        {
-          id: 'repositorySize',
-          style: this.usageStyle(this.barRatio(repositorySize)),
-          class: 'gl-bg-data-viz-blue-500',
-          size: repositorySize,
-        },
-        {
-          id: 'lfsObjectsSize',
-          style: this.usageStyle(this.barRatio(lfsObjectsSize)),
-          class: 'gl-bg-data-viz-orange-600',
-          size: lfsObjectsSize,
-        },
-        {
-          id: 'packagesSize',
-          style: this.usageStyle(this.barRatio(packagesSize)),
-          class: 'gl-bg-data-viz-aqua-500',
-          size: packagesSize,
-        },
-        {
-          id: 'buildArtifactsSize',
-          style: this.usageStyle(this.barRatio(artifactsSize)),
-          class: 'gl-bg-data-viz-green-600',
-          size: artifactsSize,
-        },
-        {
-          id: 'wikiSize',
-          style: this.usageStyle(this.barRatio(wikiSize)),
-          class: 'gl-bg-data-viz-magenta-500',
-          size: wikiSize,
-        },
-        {
-          id: 'snippetsSize',
-          style: this.usageStyle(this.barRatio(snippetsSize)),
-          class: 'gl-bg-data-viz-orange-800',
-          size: snippetsSize,
-        },
-        {
-          id: 'uploadsSize',
-          style: this.usageStyle(this.barRatio(uploadsSize)),
-          class: 'gl-bg-data-viz-aqua-700',
-          size: uploadsSize,
-        },
-      ]
-        .filter((data) => data.size !== 0)
-        .sort(descendingStorageUsageSort('size'))
-        .map((storageType) => {
-          const storageTypeExtraData = PROJECT_STORAGE_TYPES.find(
-            (type) => storageType.id === type.id,
-          );
-          const { name, tooltip } = storageTypeExtraData || {};
+      return (
+        [
+          {
+            id: 'repositorySize',
+            style: this.usageStyle(this.barRatio(repositorySize)),
+            class: 'gl-bg-data-viz-blue-500',
+            size: repositorySize,
+          },
+          {
+            id: 'lfsObjectsSize',
+            style: this.usageStyle(this.barRatio(lfsObjectsSize)),
+            class: 'gl-bg-data-viz-orange-600',
+            size: lfsObjectsSize,
+          },
+          {
+            id: 'packagesSize',
+            style: this.usageStyle(this.barRatio(packagesSize)),
+            class: 'gl-bg-data-viz-aqua-500',
+            size: packagesSize,
+          },
+          {
+            id: 'containerRegistrySize',
+            style: this.usageStyle(this.barRatio(containerRegistrySize)),
+            class: 'gl-bg-data-viz-aqua-800',
+            size: containerRegistrySize,
+          },
+          {
+            id: 'buildArtifactsSize',
+            style: this.usageStyle(this.barRatio(artifactsSize)),
+            class: 'gl-bg-data-viz-green-600',
+            size: artifactsSize,
+          },
+          {
+            id: 'wikiSize',
+            style: this.usageStyle(this.barRatio(wikiSize)),
+            class: 'gl-bg-data-viz-magenta-500',
+            size: wikiSize,
+          },
+          {
+            id: 'snippetsSize',
+            style: this.usageStyle(this.barRatio(snippetsSize)),
+            class: 'gl-bg-data-viz-orange-800',
+            size: snippetsSize,
+          },
+          {
+            id: 'uploadsSize',
+            style: this.usageStyle(this.barRatio(uploadsSize)),
+            class: 'gl-bg-data-viz-aqua-700',
+            size: uploadsSize,
+          },
+        ]
+          // NOTE: this should be removed when related FF is rolled out (https://gitlab.com/gitlab-org/gitlab/-/issues/359852)
+          .filter(
+            (data) =>
+              data.id !== 'containerRegistrySize' ||
+              this.glFeatures.containerRegistryProjectStatistics,
+          )
+          .filter((data) => data.size !== 0)
+          .sort(descendingStorageUsageSort('size'))
+          .map((storageType) => {
+            const storageTypeExtraData = PROJECT_STORAGE_TYPES.find(
+              (type) => storageType.id === type.id,
+            );
+            const { name, tooltip } = storageTypeExtraData || {};
 
-          return {
-            name,
-            tooltip,
-            ...storageType,
-          };
-        });
+            return {
+              name,
+              tooltip,
+              ...storageType,
+            };
+          })
+      );
     },
   },
   methods: {
@@ -131,7 +148,7 @@ export default {
         data-testid="storage-type-usage"
       ></div>
     </div>
-    <div class="row py-0">
+    <div class="row gl-mb-4">
       <div
         v-for="storageType in storageTypes"
         :key="storageType.name"

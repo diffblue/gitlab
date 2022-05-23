@@ -14,6 +14,7 @@ export const projects = [
     name: 'dummy project',
     statistics: {
       commitCount: 1,
+      containerRegistrySize: 3_900_000,
       storageSize: 41943,
       repositorySize: 41943,
       lfsObjectsSize: 0,
@@ -33,6 +34,7 @@ export const projects = [
     name: 'Html5 Boilerplate',
     statistics: {
       commitCount: 0,
+      containerRegistrySize: 0,
       storageSize: 99000,
       repositorySize: 0,
       lfsObjectsSize: 0,
@@ -52,6 +54,7 @@ export const projects = [
     name: 'Twitter',
     statistics: {
       commitCount: 0,
+      containerRegistrySize: 0,
       storageSize: 12933460,
       repositorySize: 209710,
       lfsObjectsSize: 209720,
@@ -68,6 +71,15 @@ export const projectData = {
   storage: {
     totalUsage: '13.8 MiB',
     storageTypes: [
+      {
+        storageType: {
+          id: 'containerRegistrySize',
+          name: 'Container Registry',
+          description: 'Gitlab-integrated Docker Container Registry for storing Docker Images.',
+          helpPath: '/container_registry',
+        },
+        value: 3_900_000,
+      },
       {
         storageType: {
           id: 'buildArtifactsSize',
@@ -138,6 +150,7 @@ export const projectData = {
 };
 
 export const projectHelpLinks = {
+  containerRegistry: '/container_registry',
   usageQuotas: '/usage-quotas',
   buildArtifacts: '/build-artifacts',
   lfsObjects: '/lsf-objects',
