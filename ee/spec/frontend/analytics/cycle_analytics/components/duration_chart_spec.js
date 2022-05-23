@@ -1,4 +1,6 @@
 import { GlIcon } from '@gitlab/ui';
+import { GlLineChart } from '@gitlab/ui/dist/charts';
+import { dataVizBlue500 } from '@gitlab/ui/scss_to_js/scss_variables';
 import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
@@ -7,9 +9,9 @@ import {
   DURATION_TOTAL_TIME_DESCRIPTION,
   DURATION_STAGE_TIME_NO_DATA,
   DURATION_TOTAL_TIME_NO_DATA,
+  DURATION_CHART_Y_AXIS_TITLE,
 } from 'ee/analytics/cycle_analytics/constants';
 import DurationChart from 'ee/analytics/cycle_analytics/components/duration_chart.vue';
-import Scatterplot from 'ee/analytics/shared/components/scatterplot.vue';
 import ChartSkeletonLoader from '~/vue_shared/components/resizable_chart/skeleton_loader.vue';
 import { allowedStages as stages, durationChartPlottableData as durationData } from '../mock_data';
 
@@ -60,7 +62,6 @@ function createComponent({
     },
     stubs: {
       ChartSkeletonLoader: true,
-      Scatterplot: true,
       ...stubs,
     },
   });
@@ -71,7 +72,7 @@ describe('DurationChart', () => {
 
   const findContainer = (_wrapper) => _wrapper.find('[data-testid="vsa-duration-chart"]');
   const findChartDescription = (_wrapper) => _wrapper.findComponent(GlIcon);
-  const findScatterPlot = (_wrapper) => _wrapper.findComponent(Scatterplot);
+  const findDurationChart = (_wrapper) => _wrapper.findComponent(GlLineChart);
   const findLoader = (_wrapper) => _wrapper.findComponent(ChartSkeletonLoader);
 
   afterEach(() => {
@@ -88,8 +89,8 @@ describe('DurationChart', () => {
       expect(wrapper.element).toMatchSnapshot();
     });
 
-    it('renders the scatter plot', () => {
-      expect(findScatterPlot(wrapper).exists()).toBe(true);
+    it('renders the chart', () => {
+      expect(findDurationChart(wrapper).exists()).toBe(true);
     });
 
     it('renders the chart description', () => {
@@ -127,20 +128,24 @@ describe('DurationChart', () => {
       });
     });
 
-    it('renders the scatter plot', () => {
-      expect(findScatterPlot(wrapper).exists()).toBe(true);
+    it('renders the chart', () => {
+      expect(findDurationChart(wrapper).exists()).toBe(true);
     });
 
     it('renders the stage title', () => {
       expect(wrapper.text()).toContain(`Stage time: ${selectedStage.title}`);
     });
 
-    it('sets the scatter plot data', () => {
-      expect(findScatterPlot(wrapper).props('scatterData')).toBe(durationData);
-    });
-
-    it('sets the median line data', () => {
-      expect(findScatterPlot(wrapper).props('medianLineData')).toBe(durationData);
+    it('sets the chart data', () => {
+      expect(findDurationChart(wrapper).props('data')).toEqual([
+        {
+          data: durationData,
+          name: DURATION_CHART_Y_AXIS_TITLE,
+          lineStyle: {
+            color: dataVizBlue500,
+          },
+        },
+      ]);
     });
 
     it('renders the chart description', () => {

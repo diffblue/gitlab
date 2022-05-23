@@ -140,21 +140,20 @@ export const flattenDurationChartData = (data) =>
  *
  * The data is then computed and transformed into a format that can be passed to the chart:
  * [
- *  ['2019-09-02', 7, '2019-09-02'],
- *  ['2019-09-03', 10, '2019-09-03'],
- *  ['2019-09-04', 8, '2019-09-04'],
+ *  ['2019-09-02', 7],
+ *  ['2019-09-03', 10],
+ *  ['2019-09-04', 8],
  *  ...
  * ]
  *
  * In the data above, each array i represents a point in the scatterplot with the following data:
  * i[0] = date, displayed on x axis
  * i[1] = metric, displayed on y axis
- * i[2] = date, used in the tooltip
  *
  * @param {Array} data - The duration data for selected stages
  * @param {Date} startDate - The globally selected Value Stream Analytics start date
  * @param {Date} endDate - The globally selected Value Stream Analytics end date
- * @returns {Array} An array with each item being another arry of three items (plottable date, computed average, tooltip display date)
+ * @returns {Array} An array with each item being another array of three items (plottable date, computed average)
  */
 export const getDurationChartData = (data, startDate, endDate) => {
   const flattenedData = flattenDurationChartData(data);
@@ -174,7 +173,7 @@ export const getDurationChartData = (data, startDate, endDate) => {
       valuesForDay.length;
     const averagedDataInDays = secondsToDays(averagedData);
 
-    if (averagedDataInDays) eventData.push([currentISODate, averagedDataInDays, currentISODate]);
+    if (averagedDataInDays) eventData.push([currentISODate, averagedDataInDays]);
   }
 
   return eventData;
