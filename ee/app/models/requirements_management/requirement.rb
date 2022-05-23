@@ -52,10 +52,26 @@ module RequirementsManagement
 
     enum state: { opened: 1, archived: 2 }
 
+    scope :with_issue, -> { joins(:requirement_issue) }
     scope :for_iid, -> (iid) { where(iid: iid) }
-    scope :for_state, -> (state) { where(state: state) }
-    scope :with_author, -> (user) { where(author: user) }
-    scope :counts_by_state, -> { group(:state).count }
+    scope :with_author, -> (user) { with_issue.where('issues.author': user) }
+
+    # overrides default sortable scopes
+    scope :order_created_desc, -> { with_issue.reorder('issues.created_at desc') }
+    scope :order_created_asc, -> { with_issue.reorder('issues.created_at asc') }
+    scope :order_updated_desc, -> { with_issue.reorder('issues.updated_at desc') }
+    scope :order_updated_asc, -> { with_issue.reorder('issues.updated_at asc') }
+
+    scope :for_state, -> (state) { with_issue.where('issues.state_id': to_issue_state_id(state)) }
+
+    scope :counts_by_state, -> do
+      counts = with_issue.group('issues.state_id').count
+
+      counts.transform_keys do |state_id|
+        state_name = Issue.available_states.key(state_id)
+        STATE_MAP[state_name]
+      end
+    end
 
     # Used to filter requirements by latest test report state
     scope :include_last_test_report_with_state, -> do
@@ -86,7 +102,7 @@ module RequirementsManagement
       #
       # Returns an ActiveRecord::Relation.
       def search(query)
-        fuzzy_search(query, [:title])
+        with_issue.fuzzy_search(query, [Issue.arel_table[:title]])
       end
 
       def simple_sorts
@@ -95,6 +111,11 @@ module RequirementsManagement
 
       def sync_params
         [:title, :description, :state, :project_id, :author_id]
+      end
+
+      def to_issue_state_id(state)
+        name = STATE_MAP.invert[state.to_s]
+        Issue.available_states[name]
       end
     end
 

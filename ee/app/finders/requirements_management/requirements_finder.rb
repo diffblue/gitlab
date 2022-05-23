@@ -37,7 +37,7 @@ module RequirementsManagement
     def init_collection
       return RequirementsManagement::Requirement.none unless Ability.allowed?(current_user, :read_requirement, project)
 
-      project.requirements
+      project.requirements.with_issue
     end
 
     def by_iid(items)
