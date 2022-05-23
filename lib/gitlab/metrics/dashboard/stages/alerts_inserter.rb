@@ -10,13 +10,7 @@ module Gitlab
           include ::Gitlab::Utils::StrongMemoize
 
           def transform!
-            return if metrics_with_alerts.empty?
-
-            for_metrics do |metric|
-              next unless metrics_with_alerts.include?(metric[:metric_id])
-
-              metric[:alert_path] = alert_path(metric[:metric_id], project, params[:environment])
-            end
+            metrics_with_alerts
           end
 
           private
@@ -29,10 +23,6 @@ module Gitlab
 
               Set.new(alerts.map(&:prometheus_metric_id))
             end
-          end
-
-          def alert_path(metric_id, project, environment)
-            ::Gitlab::Routing.url_helpers.project_prometheus_alert_path(project, metric_id, environment_id: environment.id, format: :json)
           end
         end
       end
