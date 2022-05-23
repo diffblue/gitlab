@@ -30,7 +30,6 @@ describe('Incident Tabs component', () => {
             iid: '',
             projectId: '',
             uploadMetricsFeatureAvailable: true,
-            glFeatures: { incidentTimeline: true, incidentTimelineEvents: true },
           },
           data() {
             return { alert: mockAlert, ...data };
@@ -50,33 +49,13 @@ describe('Incident Tabs component', () => {
     );
   };
 
-  const findTimelineTab = () => wrapper.find('[data-testid="timeline-events-tab"]');
   const findMetricsTab = () => wrapper.find('[data-testid="metrics-tab"]');
 
-  describe('incident timeline tab', () => {
+  describe('upload metrics feature available', () => {
     beforeEach(() => {
       mountComponent();
     });
 
-    it('renders the timeline tab when feature flag is enabled', () => {
-      expect(findTimelineTab().exists()).toBe(true);
-      expect(findTimelineTab().attributes('title')).toBe('Timeline');
-    });
-
-    it('does not render timeline tab when feature flag is disabled', () => {
-      mountComponent({}, { provide: { glFeatures: { incidentTimeline: false } } });
-
-      expect(findTimelineTab().exists()).toBe(false);
-    });
-
-    it('does not render timeline tab when not available in license', () => {
-      mountComponent({}, { provide: { glFeatures: { incidentTimelineEvents: false } } });
-
-      expect(findTimelineTab().exists()).toBe(false);
-    });
-  });
-
-  describe('upload metrics feature available', () => {
     it('shows the metric tab when metrics are available', () => {
       mountComponent({}, { provide: { uploadMetricsFeatureAvailable: true } });
 

@@ -1,6 +1,6 @@
 import { shallowMount } from '@vue/test-utils';
 import { GlButton } from '@gitlab/ui';
-import TimelineEventsTab from 'ee/issues/show/components/incidents/timeline_events_tab.vue';
+import TimelineEventsTab from '~/issues/show/components/incidents/timeline_events_tab.vue';
 
 describe('TimlineEventsTab', () => {
   let wrapper;
@@ -19,12 +19,17 @@ describe('TimlineEventsTab', () => {
     }
   });
 
+  const findTimelineEventTab = () => wrapper.findComponent(TimelineEventsTab);
   const findNoEventsLine = () => wrapper.find('p');
   const findAddEventButton = () => wrapper.findComponent(GlButton);
 
   describe('empty state', () => {
     beforeEach(() => {
       mountComponent();
+    });
+
+    it('renders the title', () => {
+      expect(findTimelineEventTab().attributes('title')).toBe('Timeline');
     });
 
     it('renders the text', () => {
