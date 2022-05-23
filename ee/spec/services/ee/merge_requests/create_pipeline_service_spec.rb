@@ -8,9 +8,10 @@ RSpec.describe MergeRequests::CreatePipelineService, :clean_gitlab_redis_shared_
   describe '#execute' do
     subject { service.execute(merge_request) }
 
-    let(:service) { described_class.new(project: source_project, current_user: user) }
+    let(:service) { described_class.new(project: source_project, current_user: user, params: params) }
     let(:project) { create(:project, :repository) }
     let(:user) { create(:user) }
+    let(:params) { {} }
     let(:title) { 'Awesome merge request' }
     let(:merge_pipelines_enabled) { true }
     let(:merge_pipelines_license) { true }
@@ -72,6 +73,20 @@ RSpec.describe MergeRequests::CreatePipelineService, :clean_gitlab_redis_shared_
     it 'responds with success', :sidekiq_might_not_need_inline, :aggregate_failures do
       expect(subject).to be_success
       expect(subject.payload).to eq(Ci::Pipeline.last)
+    end
+
+    context 'when push options contain ci.skip' do
+      let(:params) { { push_options: { ci: { skip: true } } } }
+
+      it 'creates a skipped pipeline' do
+        subject
+
+        expect(merge_request.all_pipelines.count).to eq(1)
+        pipeline = merge_request.all_pipelines.last
+        expect(pipeline).to be_merged_result_pipeline
+        expect(pipeline.builds).to be_empty
+        expect(pipeline).to be_skipped
+      end
     end
 
     context 'when merge request is WIP' do

@@ -27,11 +27,13 @@ module EE
 
           ref_payload = result.payload.fetch(:merge_ref_head)
 
-          ::Ci::CreatePipelineService.new(merge_request.target_project, current_user,
-                                          ref: merge_request.merge_ref_path,
-                                          checkout_sha: ref_payload[:commit_id],
-                                          target_sha: ref_payload[:target_id],
-                                          source_sha: ref_payload[:source_id])
+          ::Ci::CreatePipelineService
+            .new(merge_request.target_project, current_user,
+              ref: merge_request.merge_ref_path,
+              checkout_sha: ref_payload[:commit_id],
+              target_sha: ref_payload[:target_id],
+              source_sha: ref_payload[:source_id],
+              push_options: params[:push_options])
             .execute(:merge_request_event, merge_request: merge_request)
         else
           cannot_create_pipeline_error
