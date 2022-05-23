@@ -10,6 +10,7 @@ module Groups
       end
 
       feature_category :vulnerability_management
+      urgency :low
 
       def index
         render :unavailable unless dashboard_available?

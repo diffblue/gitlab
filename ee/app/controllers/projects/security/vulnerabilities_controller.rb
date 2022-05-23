@@ -18,6 +18,7 @@ module Projects
       alias_method :vulnerable, :project
 
       feature_category :vulnerability_management
+      urgency :low
 
       def show
         pipeline = vulnerability.finding.first_finding_pipeline

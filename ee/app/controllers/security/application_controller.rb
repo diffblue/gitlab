@@ -9,6 +9,7 @@ module Security
     end
 
     feature_category :vulnerability_management
+    urgency :low
 
     protected
 

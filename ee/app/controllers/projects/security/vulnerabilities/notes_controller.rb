@@ -15,6 +15,7 @@ module Projects
         before_action :authorize_create_note!, only: [:create]
 
         feature_category :vulnerability_management
+        urgency :low
 
         private
 
