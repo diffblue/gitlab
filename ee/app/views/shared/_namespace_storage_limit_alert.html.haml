@@ -10,7 +10,7 @@
     - root_namespace = payload[:root_namespace]
     - style = namespace_storage_alert_style(alert_level)
     - icon = namespace_storage_alert_icon(alert_level)
-    - purchase_link = buy_storage_path(namespace) if purchase_storage_link_enabled?(namespace)
+    - purchase_link = buy_storage_path(root_namespace) if purchase_storage_link_enabled?(root_namespace)
     - usage_link = usage_quotas_path(root_namespace, anchor: 'storage-quota-tab')
     - show_storage_banner_actions = purchase_link || usage_link
 
