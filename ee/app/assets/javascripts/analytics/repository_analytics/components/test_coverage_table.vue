@@ -1,13 +1,25 @@
 <script>
-import { GlCard, GlEmptyState, GlLink, GlSkeletonLoader, GlTable } from '@gitlab/ui';
+import {
+  GlCard,
+  GlEmptyState,
+  GlLink,
+  GlSkeletonLoader,
+  GlTableLite,
+  GlIcon,
+  GlPopover,
+  GlSprintf,
+} from '@gitlab/ui';
 import Vue from 'vue';
 import api from '~/api';
 import { SUPPORTED_FORMATS, getFormatter } from '~/lib/utils/unit_format';
 import { joinPaths } from '~/lib/utils/url_utility';
+import { helpPagePath } from '~/helpers/help_page_helper';
 import { __, s__ } from '~/locale';
 import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
+import { tablei18n as i18n } from '../constants';
 import getProjectsTestCoverage from '../graphql/queries/get_projects_test_coverage.query.graphql';
 import SelectProjectsDropdown from './select_projects_dropdown.vue';
+import DownloadTestCoverage from './download_test_coverage.vue';
 
 export default {
   name: 'TestCoverageTable',
@@ -16,12 +28,19 @@ export default {
     GlEmptyState,
     GlLink,
     GlSkeletonLoader,
-    GlTable,
+    GlTableLite,
     SelectProjectsDropdown,
     TimeAgoTooltip,
+    DownloadTestCoverage,
+    GlIcon,
+    GlPopover,
+    GlSprintf,
   },
   inject: {
     groupFullPath: {
+      default: '',
+    },
+    groupName: {
       default: '',
     },
   },
@@ -162,13 +181,7 @@ export default {
       label: s__('RepositoriesAnalytics|Last Update'),
     },
   ],
-  text: {
-    header: s__('RepositoriesAnalytics|Latest test coverage results'),
-    emptyStateTitle: s__('RepositoriesAnalytics|Please select projects to display.'),
-    emptyStateDescription: s__(
-      'RepositoriesAnalytics|Please select a project or multiple projects to display their most recent test coverage data.',
-    ),
-  },
+  i18n,
   LOADING_STATE: {
     rows: 4,
     height: 10,
@@ -180,19 +193,33 @@ export default {
   },
   averageCoverageFormatter: getFormatter(SUPPORTED_FORMATS.percentHundred),
   servicePingProjectEvent: 'i_testing_group_code_coverage_project_click_total',
+  docsPath: helpPagePath('user/group/repositories_analytics/index.md'),
 };
 </script>
 <template>
   <gl-card>
     <template #header>
-      <div class="gl-display-flex gl-justify-content-space-between">
-        <h5>{{ $options.text.header }}</h5>
+      <div class="gl-display-flex gl-flex-wrap gl-align-items-center gl-justify-content-end">
+        <div class="gl-flex-grow-1">
+          <h5 class="gl-display-inline-block">{{ $options.i18n.header }}</h5>
+          <gl-icon
+            id="latest-coverage-help-icon"
+            name="question-o"
+            class="gl-text-blue-600 gl-cursor-help"
+          />
+          <gl-popover target="latest-coverage-help-icon" :title="$options.i18n.header">
+            <gl-sprintf :message="$options.i18n.popover">
+              <template #groupName>{{ groupName }}</template>
+            </gl-sprintf>
+          </gl-popover>
+        </div>
         <select-projects-dropdown
-          class="gl-w-quarter"
+          class="gl-xs-w-full gl-xs-mb-3"
           @projects-query-error="handleError"
           @select-all-projects="selectAllProjects"
           @select-project="toggleProject"
         />
+        <download-test-coverage />
       </div>
     </template>
 
@@ -216,7 +243,7 @@ export default {
       </gl-skeleton-loader>
     </template>
 
-    <gl-table
+    <gl-table-lite
       v-else-if="hasCoverageData"
       data-testid="test-coverage-data-table"
       :fields="$options.tableFields"
@@ -259,13 +286,13 @@ export default {
           :data-testid="`${item.id}-date`"
         />
       </template>
-    </gl-table>
+    </gl-table-lite>
 
     <gl-empty-state
       v-else
       class="gl-mt-3"
-      :title="$options.text.emptyStateTitle"
-      :description="$options.text.emptyStateDescription"
+      :title="$options.i18n.emptyStateTitle"
+      :description="$options.i18n.emptyStateDescription"
       data-testid="test-coverage-table-empty-state"
     />
   </gl-card>

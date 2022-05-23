@@ -11,7 +11,7 @@ const apolloProvider = new VueApollo({
 
 export default () => {
   const el = document.querySelector('#js-group-repository-analytics');
-  const { groupAnalyticsCoverageReportsPath, groupFullPath } = el?.dataset || {};
+  const { groupAnalyticsCoverageReportsPath, groupName, groupFullPath } = el?.dataset || {};
 
   if (el) {
     // eslint-disable-next-line no-new
@@ -23,6 +23,7 @@ export default () => {
       apolloProvider,
       provide: {
         groupAnalyticsCoverageReportsPath,
+        groupName,
         groupFullPath,
       },
       render(createElement) {

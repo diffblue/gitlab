@@ -1,8 +1,4 @@
 - page_title _("Repositories Analytics")
 
-.mb-3.border-bottom
-  %h3
-    = _("Repositories Analytics")
-
 #js-group-repository-analytics{ data: { group_analytics_coverage_reports_path: group_analytics_coverage_reports_path(@group, format: :csv),
-  group_full_path: @group.full_path } }
+  group_name: @group.name, group_full_path: @group.full_path } }

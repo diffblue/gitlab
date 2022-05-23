@@ -133,7 +133,7 @@ export default {
 </script>
 
 <template>
-  <gl-dropdown :text="dropdownPlaceholder" data-testid="select-projects-dropdown">
+  <gl-dropdown right :text="dropdownPlaceholder" data-testid="select-projects-dropdown">
     <gl-dropdown-section-header>
       {{ $options.text.projectDropdownHeader }}
     </gl-dropdown-section-header>
