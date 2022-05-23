@@ -9,6 +9,7 @@ import {
 } from '@gitlab/ui';
 import VueDraggable from 'vuedraggable';
 import { mapState, mapActions } from 'vuex';
+import { s__, __ } from '~/locale';
 import ProjectSelector from '~/vue_shared/components/project_selector/project_selector.vue';
 import DashboardProject from './project.vue';
 
@@ -68,6 +69,15 @@ export default {
     okDisabled() {
       return Object.keys(this.selectedProjects).length === 0;
     },
+    actionPrimary() {
+      return {
+        text: s__('OperationsDashboard|Add projects'),
+        attributes: {
+          disabled: this.okDisabled,
+          variant: 'confirm',
+        },
+      };
+    },
   },
   created() {
     this.setProjectEndpoints({
@@ -105,6 +115,11 @@ export default {
       this.toggleSelectedProject(project);
     },
   },
+  modal: {
+    actionCancel: {
+      text: __('Cancel'),
+    },
+  },
 };
 </script>
 
@@ -113,12 +128,11 @@ export default {
     <gl-modal
       :modal-id="$options.modalId"
       :title="s__('OperationsDashboard|Add projects')"
-      :ok-title="s__('OperationsDashboard|Add projects')"
-      :ok-disabled="okDisabled"
-      ok-variant="success"
+      :action-primary="actionPrimary"
+      :action-cancel="$options.modal.actionCancel"
       data-qa-selector="add_projects_modal"
-      @cancel="onCancel"
-      @ok="onOk"
+      @canceled="onCancel"
+      @primary="onOk"
     >
       <project-selector
         ref="projectSelector"
