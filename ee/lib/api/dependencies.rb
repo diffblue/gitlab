@@ -5,6 +5,7 @@ module API
     include PaginationParams
 
     feature_category :dependency_scanning
+    urgency :low
 
     helpers do
       def dependencies_by(params)

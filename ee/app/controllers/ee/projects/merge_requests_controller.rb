@@ -41,7 +41,8 @@ module EE
                        :dependency_scanning_reports, :sast_reports,
                        :secret_detection_reports, :dast_reports,
                        :coverage_fuzzing_reports, :api_fuzzing_reports,
-                       :metrics_reports, :description_diff]
+                       :metrics_reports, :description_diff,
+                       :license_scanning_reports, :license_scanning_reports_collapsed]
       end
 
       def can_run_sast_experiments_on?(project)

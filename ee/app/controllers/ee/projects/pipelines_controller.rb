@@ -19,8 +19,7 @@ module EE
         feature_category :vulnerability_management, [:security]
         feature_category :code_quality, [:codequality_report]
 
-        urgency :low, [:security]
-        urgency :low, [:codequality_report]
+        urgency :low, [:codequality_report, :licenses, :security]
       end
 
       def security

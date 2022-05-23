@@ -5,6 +5,7 @@ module API
     include PaginationParams
 
     feature_category :license_compliance
+    urgency :low
 
     before { authenticate! unless route.settings[:skip_authentication] }
 
