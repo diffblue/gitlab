@@ -87,6 +87,7 @@ module EE
       scope :with_deletion_schedule_only, -> { preload(:deletion_schedule) }
 
       scope :with_saml_provider, -> { preload(:saml_provider) }
+      scope :with_saml_group_links, -> { joins(:saml_group_links) }
 
       scope :where_group_links_with_provider, ->(provider) do
         joins(:ldap_group_links).where(ldap_group_links: { provider: provider })

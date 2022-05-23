@@ -20,7 +20,7 @@ module Gitlab
         attr_reader :user, :auth_hash
 
         def enqueue_group_sync
-          group_link_ids
+          ::Auth::SamlGroupSyncWorker.perform_async(user.id, group_link_ids)
         end
 
         def sync_groups?

@@ -30,7 +30,7 @@ RSpec.describe Gitlab::Auth::Saml::MembershipUpdater do
       end
 
       it 'does not enqueue group sync' do
-        expect(::SamlGroupLink).not_to receive(:by_saml_group_name)
+        expect(::Auth::SamlGroupSyncWorker).not_to receive(:perform_async)
 
         update_membership
       end
@@ -42,7 +42,7 @@ RSpec.describe Gitlab::Auth::Saml::MembershipUpdater do
       end
 
       it 'enqueues group sync' do
-        expect(::SamlGroupLink).to receive(:by_saml_group_name).and_call_original
+        expect(::Auth::SamlGroupSyncWorker).to receive(:perform_async).with(user.id, match_array(group_link.id))
 
         update_membership
       end
@@ -55,7 +55,7 @@ RSpec.describe Gitlab::Auth::Saml::MembershipUpdater do
         end
 
         it 'enqueues group sync' do
-          expect(::SamlGroupLink).not_to receive(:by_saml_group_name)
+          expect(::Auth::SamlGroupSyncWorker).to receive(:perform_async).with(user.id, [])
 
           update_membership
         end
@@ -67,7 +67,7 @@ RSpec.describe Gitlab::Auth::Saml::MembershipUpdater do
         end
 
         it 'enqueues group sync' do
-          expect(::SamlGroupLink).to receive(:by_saml_group_name).and_call_original
+          expect(::Auth::SamlGroupSyncWorker).to receive(:perform_async).with(user.id, [])
 
           update_membership
         end
