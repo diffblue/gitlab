@@ -6019,6 +6019,9 @@ msgstr ""
 msgid "Billings|Shared runners cannot be enabled until a valid credit card is on file."
 msgstr ""
 
+msgid "Billings|The last owner cannot be removed from a seat."
+msgstr ""
+
 msgid "Billings|To make this member active, you must first remove an existing active member, or toggle them to over limit."
 msgstr ""
 
@@ -6038,6 +6041,9 @@ msgid "Billings|Validate user account"
 msgstr ""
 
 msgid "Billings|You can't change the seat status of a user who was invited via a group or project."
+msgstr ""
+
+msgid "Billings|You can't remove yourself from a seat, but you can leave the group."
 msgstr ""
 
 msgid "Billings|You'll now be able to take advantage of free CI/CD minutes on shared runners."

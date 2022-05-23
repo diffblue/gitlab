@@ -532,6 +532,45 @@ RSpec.describe Member, type: :model do
     end
   end
 
+  context 'when setting the member to awaiting', :saas do
+    let_it_be(:group, refind: true) { create(:group_with_plan, plan: :free_plan) }
+    let_it_be(:member) { create(:group_member, :active, :owner, group: group) }
+
+    context 'when user is the last owner' do
+      it 'does not allow the member to be awaiting' do
+        expect(member).to be_active
+
+        member.wait
+
+        expect(member).to be_active
+      end
+    end
+
+    context 'when user is not the last owner' do
+      let_it_be(:second_owner) { create(:group_member, :owner, group: group) }
+
+      it 'sets the member to awaiting' do
+        expect(member).to be_active
+
+        member.wait
+
+        expect(member).to be_awaiting
+      end
+    end
+
+    context 'when invite' do
+      let_it_be(:member) { create(:group_member, :invited, :active, group: group) }
+
+      it 'sets the member to awaiting' do
+        expect(member).to be_active
+
+        member.wait
+
+        expect(member).to be_awaiting
+      end
+    end
+  end
+
   describe '.distinct_awaiting_or_invited_for_group' do
     let_it_be(:other_sub_group) { create(:group, parent: group) }
     let_it_be(:active_group_member) { create(:group_member, group: group) }

@@ -135,6 +135,7 @@ module EE
             present paginate(result[:users]),
                     with: ::EE::API::Entities::BillableMember,
                     current_user: current_user,
+                    group: group,
                     group_member_user_ids: result[:group_member_user_ids],
                     project_member_user_ids: result[:project_member_user_ids],
                     shared_group_user_ids: result[:shared_group_user_ids],

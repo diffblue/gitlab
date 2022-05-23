@@ -8,7 +8,7 @@ module EE
     prepended do
       state_machine :state, initial: :active do
         event :wait do
-          transition active: :awaiting
+          transition active: :awaiting, unless: :last_owner?
         end
 
         event :activate do
@@ -154,6 +154,10 @@ module EE
 
     def set_membership_activation
       self.state = ::Member::STATE_AWAITING unless has_capacity_left?
+    end
+
+    def last_owner?
+      source.root_ancestor.last_owner?(self.user)
     end
 
     def has_capacity_left?
