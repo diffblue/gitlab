@@ -26,7 +26,7 @@ module QA
           within_add_projects_modal do
             fill_project_search_input(project_name)
             select_project
-            find('button.btn.btn-success').click
+            find('button.btn.btn-confirm').click
           end
         end
 
