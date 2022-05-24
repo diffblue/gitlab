@@ -55,39 +55,11 @@ module Gitlab
     private_class_method :loader_for_merge_request
 
     def self.paths_for_merge_request(merge_request, merge_request_diff)
-      # Because MergeRequest#modified_paths is limited to only returning 1_000
-      #   records, if the diff_size is more than 1_000, we need to fall back to
-      #   the MUCH slower method of using Repository#diff_stats, which isn't
-      #   subject to the same limit.
-      merge_request_diff ||= merge_head_or_empty_diff(merge_request)
+      # NOTE: merge_head_diff is preferred as we want to include latest changes from the target branch
+      merge_request_diff ||= merge_request.merge_head_diff || merge_request.merge_request_diff
 
-      if merge_request_diff.overflow?
-        slow_path_lookup(merge_request, merge_request_diff)
-      else
-        fast_path_lookup(merge_request, merge_request_diff)
-      end
+      merge_request_diff.modified_paths(fallback_on_overflow: true)
     end
     private_class_method :paths_for_merge_request
-
-    def self.merge_head_or_empty_diff(merge_request)
-      # NOTE: We need to make sure merge_head_diff gets created first.
-      ::MergeRequests::MergeabilityCheckService.new(merge_request).execute(recheck: true)
-
-      merge_request.merge_head_diff || ::MergeRequestDiff.new(merge_request_id: merge_request.id)
-    end
-    private_class_method :merge_head_or_empty_diff
-
-    def self.slow_path_lookup(merge_request, merge_request_diff)
-      merge_request.project.repository.diff_stats(
-        merge_request_diff.base_commit_sha,
-        merge_request_diff.head_commit_sha
-      ).paths
-    end
-    private_class_method :slow_path_lookup
-
-    def self.fast_path_lookup(merge_request, merge_request_diff)
-      merge_request.modified_paths(past_merge_request_diff: merge_request_diff)
-    end
-    private_class_method :fast_path_lookup
   end
 end
