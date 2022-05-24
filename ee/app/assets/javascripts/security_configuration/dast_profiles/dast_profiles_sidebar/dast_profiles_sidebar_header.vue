@@ -1,21 +1,20 @@
 <script>
 import { isEmpty } from 'lodash';
-import { GlButton, GlSprintf } from '@gitlab/ui';
-import { s__ } from '~/locale';
+import { GlButton } from '@gitlab/ui';
+import { s__, sprintf } from '~/locale';
 import { capitalizeFirstCharacter } from '~/lib/utils/text_utility';
 import dastProfilesSidebarMixin from './dast_profiles_sidebar_mixin';
 
 export default {
   i18n: {
-    scanSidebarHeader: s__('OnDemandScans|%{scannerType} profile library'),
-    scanCreateSidebarHeader: s__('OnDemandScans|New %{scannerType} profile'),
-    scanEditSidebarHeader: s__('OnDemandScans|Edit %{scannerType} profile'),
+    scanSidebarHeader: s__('OnDemandScans|%{profileType} profile library'),
+    scanCreateSidebarHeader: s__('OnDemandScans|New %{profileType} profile'),
+    scanEditSidebarHeader: s__('OnDemandScans|Edit %{profileType} profile'),
     scanSidebarHeaderButton: s__('OnDemandScans|New profile'),
   },
   name: 'DastProfilesSidebarHeader',
   components: {
     GlButton,
-    GlSprintf,
   },
   mixins: [dastProfilesSidebarMixin()],
   props: {
@@ -32,12 +31,16 @@ export default {
   },
   computed: {
     sidebarHeader() {
-      return capitalizeFirstCharacter(this.profileType);
+      return sprintf(this.$options.i18n.scanSidebarHeader, {
+        profileType: capitalizeFirstCharacter(this.profileType),
+      });
     },
     editingModeHeader() {
-      return !isEmpty(this.profile)
+      const header = !isEmpty(this.profile)
         ? this.$options.i18n.scanEditSidebarHeader
         : this.$options.i18n.scanCreateSidebarHeader;
+
+      return sprintf(header, { profileType: this.profileType });
     },
   },
 };
@@ -46,16 +49,12 @@ export default {
 <template>
   <div class="gl-display-flex gl-w-full gl-align-items-center gl-justify-content-space-between">
     <h4 data-testid="sidebar-header" class="sidebar-header gl-font-size-h2 gl-my-0 gl-mr-3">
-      <gl-sprintf v-if="!isEditingMode" :message="$options.i18n.scanSidebarHeader">
-        <template #scannerType>
-          <span>{{ sidebarHeader }}</span>
-        </template>
-      </gl-sprintf>
-      <gl-sprintf v-else :message="editingModeHeader">
-        <template #scannerType>
-          <span>{{ profileType }}</span>
-        </template>
-      </gl-sprintf>
+      <template v-if="!isEditingMode">
+        {{ sidebarHeader }}
+      </template>
+      <template v-else>
+        {{ editingModeHeader }}
+      </template>
     </h4>
     <gl-button
       v-if="showNewProfileButton"

@@ -96,7 +96,7 @@ export default {
     },
   },
   methods: {
-    enableEditingMode(profile) {
+    enableEditingMode(profile = {}) {
       this.editingMode = true;
       this.profileForEditing = profile;
       this.$emit('reopen-drawer', this.profileType);
@@ -127,7 +127,7 @@ export default {
         :is-editing-mode="isEditingMode"
         :profile-type="profileType"
         :profile="profileForEditing"
-        @click="enableEditingMode({})"
+        @click="enableEditingMode"
       />
     </template>
     <template #default>
@@ -140,7 +140,7 @@ export default {
           v-if="isEmptyStateMode"
           class="gl-mt-11"
           :profile-type="profileType"
-          @click="enableEditingMode({})"
+          @click="enableEditingMode"
         />
 
         <!-- Create or Edit profile - editing mode -->
