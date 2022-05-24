@@ -103,9 +103,9 @@ RSpec.describe MergeTrains::RefreshMergeRequestService do
       end
     end
 
-    context 'when merge request is not under a mergeable state' do
+    context 'when merge request is not in a mergeable state' do
       before do
-        merge_request.update!(title: merge_request.wip_title)
+        merge_request.update!(title: merge_request.draft_title)
       end
 
       it_behaves_like 'drops the merge request from the merge train' do
