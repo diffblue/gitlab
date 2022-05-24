@@ -28,7 +28,7 @@ project.licensed_feature_available?(:feature_symbol)
 or
 
 ```ruby
-namespace.licensed_feature_available?(:feature_symbol)
+group.licensed_feature_available?(:feature_symbol)
 ```
 
 For projects, `licensed_feature_available` delegates to its associated `namespace`.
