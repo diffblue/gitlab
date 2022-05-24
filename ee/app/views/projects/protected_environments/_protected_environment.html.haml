@@ -11,4 +11,4 @@
 
   - if can_admin_project
     %td
-      = link_to s_('ProtectedEnvironment|Unprotect'), [@project, protected_environment], disabled: local_assigns[:disabled], data: { confirm: s_('ProtectedEnvironment|%{environment_name} will be writable for developers. Are you sure?') % { environment_name: protected_environment.name } }, method: :delete, class: 'btn gl-button btn-warning'
+      = link_to s_('ProtectedEnvironment|Unprotect'), [@project, protected_environment], disabled: local_assigns[:disabled], data: { confirm: s_('ProtectedEnvironment|%{environment_name} will be writable for developers. Are you sure?') % { environment_name: protected_environment.name } }, method: :delete, class: 'btn gl-button btn-danger'
