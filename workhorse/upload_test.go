@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
@@ -342,7 +341,7 @@ func TestLfsUpload(t *testing.T) {
 			require.Equal(t, oid, r.Form.Get("file.sha256"), "Invalid SHA256 populated")
 			require.Equal(t, strconv.Itoa(len(reqBody)), r.Form.Get("file.size"), "Invalid size populated")
 
-			tempfile, err := ioutil.ReadFile(r.Form.Get("file.path"))
+			tempfile, err := os.ReadFile(r.Form.Get("file.path"))
 			require.NoError(t, err)
 			require.Equal(t, reqBody, string(tempfile), "Temporary file has the wrong body")
 
@@ -366,7 +365,7 @@ func TestLfsUpload(t *testing.T) {
 	require.NoError(t, err)
 
 	defer resp.Body.Close()
-	rspData, err := ioutil.ReadAll(resp.Body)
+	rspData, err := io.ReadAll(resp.Body)
 	require.NoError(t, err)
 
 	// Expect the (eventual) response to be proxied through, untouched
@@ -428,7 +427,7 @@ func TestLfsUploadRouting(t *testing.T) {
 			require.NoError(t, err)
 			defer resp.Body.Close()
 
-			rspData, err := ioutil.ReadAll(resp.Body)
+			rspData, err := io.ReadAll(resp.Body)
 			require.NoError(t, err)
 
 			if tc.match {
@@ -467,7 +466,7 @@ func packageUploadTestServer(t *testing.T, method string, resource string, reqBo
 			require.Equal(t, len, r.Form.Get("file.size"), "Invalid size populated")
 
 			tmpFilePath := r.Form.Get("file.path")
-			fileData, err := ioutil.ReadFile(tmpFilePath)
+			fileData, err := os.ReadFile(tmpFilePath)
 			defer os.Remove(tmpFilePath)
 
 			require.NoError(t, err)
@@ -496,7 +495,7 @@ func testPackageFileUpload(t *testing.T, method string, resource string) {
 	resp, err := http.DefaultClient.Do(req)
 	require.NoError(t, err)
 
-	respData, err := ioutil.ReadAll(resp.Body)
+	respData, err := io.ReadAll(resp.Body)
 	require.NoError(t, err)
 	require.Equal(t, rspBody, string(respData), "Temporary file has the wrong body")
 	defer resp.Body.Close()
