@@ -4,6 +4,7 @@ require 'spec_helper'
 
 RSpec.describe 'Billing plan pages', :feature, :saas, :js do
   include SubscriptionPortalHelpers
+  include BillingPlansHelpers
 
   let(:user) { create(:user, first_name: 'James', last_name: 'Bond', organization: 'ACME') }
   let(:namespace) { user.namespace }
@@ -67,7 +68,7 @@ RSpec.describe 'Billing plan pages', :feature, :saas, :js do
     end
 
     it 'does not render in-app hand raise lead' do
-      expect(page).to have_selector(".js-hand-raise-lead-button[data-namespace-id='#{namespace.id}'][data-user-name='#{user.username}']", visible: false)
+      should_have_hand_raise_lead_button
     end
   end
 
@@ -416,11 +417,7 @@ RSpec.describe 'Billing plan pages', :feature, :saas, :js do
           include_context 'hand raise lead form setup'
 
           it 'displays the in-app hand raise lead' do
-            page.within('[data-testid="plan-card-premium"]') do
-              click_button 'Contact sales'
-            end
-
-            fill_hand_raise_lead_form_and_submit
+            click_premium_contact_sales_button_and_submit_form
           end
         end
 
