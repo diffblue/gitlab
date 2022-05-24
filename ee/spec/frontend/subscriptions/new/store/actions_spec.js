@@ -576,12 +576,11 @@ describe('Subscriptions Actions', () => {
     });
 
     describe('on error', () => {
-      const errors = 'errors';
-
-      beforeEach(() => mock.onPost(confirmOrderPath).replyOnce(200, { errors }));
-
       it('calls tracking event', async () => {
+        const errors = 'errors';
         const spy = jest.spyOn(Tracking, 'event');
+
+        mock.onPost(confirmOrderPath).replyOnce(200, { errors });
 
         await testAction(
           actions.confirmOrder,
@@ -595,6 +594,18 @@ describe('Subscriptions Actions', () => {
           label: 'confirm_purchase',
           property: errors,
         });
+      });
+
+      it('calls confirmOrderError with the returned group name error', async () => {
+        mock.onPost(confirmOrderPath).replyOnce(200, { name: ['Error_1', "Error ' 2"] });
+
+        await testAction(
+          actions.confirmOrder,
+          null,
+          {},
+          [{ type: 'UPDATE_IS_CONFIRMING_ORDER', payload: true }],
+          [{ type: 'confirmOrderError', payload: '"Name: Error_1, Error \' 2"' }],
+        );
       });
     });
 

@@ -220,8 +220,12 @@ export const confirmOrder = ({ getters, dispatch, commit }) => {
           location: data.location,
         });
       } else {
-        trackConfirmOrder(data.errors);
-        dispatch('confirmOrderError', JSON.stringify(data.errors));
+        const errors = data.name
+          ? sprintf(s__('Checkout|Name: %{errors}'), { errors: data.name.join(', ') }, false)
+          : data.errors;
+
+        trackConfirmOrder(errors);
+        dispatch('confirmOrderError', JSON.stringify(errors));
       }
     })
     .catch((e) => {
