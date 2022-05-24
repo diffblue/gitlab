@@ -22,7 +22,18 @@ module ComplianceManagement
     validates :namespace_id, uniqueness: { scope: :name }
     validates :pipeline_configuration_full_path, length: { maximum: 255 }
 
+    # Remove this validation once support for user namespaces is added.
+    # https://gitlab.com/gitlab-org/gitlab/-/issues/358423
+    validate :namespace_is_root_level_group
+
     scope :with_projects, ->(project_ids) { includes(:projects).where(projects: { id: project_ids }) }
     scope :with_namespaces, ->(namespace_ids) { includes(:namespace).where(namespaces: { id: namespace_ids })}
+
+    private
+
+    def namespace_is_root_level_group
+      errors.add(:namespace, 'must be a group, user namespaces are not supported.') unless namespace.group_namespace?
+      errors.add(:namespace, 'must be a root group.') if namespace.has_parent?
+    end
   end
 end

@@ -5,8 +5,8 @@ require 'spec_helper'
 RSpec.describe 'Create a Compliance Framework' do
   include GraphqlHelpers
 
-  let_it_be(:namespace) { create(:namespace) }
-  let_it_be(:current_user) { namespace.owner }
+  let_it_be(:namespace) { create(:group) }
+  let_it_be(:current_user) { create(:user) }
 
   let(:mutation) do
     graphql_mutation(
@@ -54,6 +54,7 @@ RSpec.describe 'Create a Compliance Framework' do
   context 'pipeline configuration feature is unlicensed' do
     before do
       stub_licensed_features(custom_compliance_frameworks: true, evaluate_group_level_compliance_pipeline: false)
+      namespace.add_owner(current_user)
       post_graphql_mutation(mutation, current_user: current_user)
     end
 
@@ -65,29 +66,43 @@ RSpec.describe 'Create a Compliance Framework' do
       stub_licensed_features(custom_compliance_frameworks: true, evaluate_group_level_compliance_pipeline: true)
     end
 
-    context 'current_user is namespace owner' do
-      it_behaves_like 'a mutation that creates a compliance framework'
+    context 'namespace is a personal namespace' do
+      let_it_be(:namespace) { create(:user_namespace) }
+
+      context 'current_user is namespace owner' do
+        let(:current_user) { namespace.owner }
+
+        it_behaves_like 'a mutation that returns errors in the response', errors: ['Failed to create framework',
+                                                                                   'Namespace must be a group, user namespaces are not supported.']
+
+        it 'does not create a new compliance framework' do
+          expect { subject }.not_to change { namespace.compliance_management_frameworks.count }
+        end
+      end
     end
 
-    context 'current_user is group owner' do
-      let_it_be(:namespace) { create(:group) }
-      let_it_be(:current_user) { create(:user) }
+    context 'namespace is a group' do
+      context 'current_user is group owner' do
+        before do
+          namespace.add_owner(current_user)
+        end
 
-      before do
-        namespace.add_owner(current_user)
+        it_behaves_like 'a mutation that creates a compliance framework'
       end
 
-      it_behaves_like 'a mutation that creates a compliance framework'
-    end
+      context 'current_user is not a group owner' do
+        context 'current_user is group owner' do
+          before do
+            namespace.add_maintainer(current_user)
+          end
 
-    context 'current_user is not namespace owner' do
-      let_it_be(:current_user) { create(:user) }
+          it 'does not create a new compliance framework' do
+            expect { subject }.not_to change { namespace.compliance_management_frameworks.count }
+          end
 
-      it 'does not create a new compliance framework' do
-        expect { subject }.not_to change { namespace.compliance_management_frameworks.count }
+          it_behaves_like 'a mutation that returns errors in the response', errors: ['Not permitted to create framework']
+        end
       end
-
-      it_behaves_like 'a mutation that returns errors in the response', errors: ['Not permitted to create framework']
     end
   end
 end

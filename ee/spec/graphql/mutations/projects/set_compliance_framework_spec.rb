@@ -3,9 +3,9 @@
 require 'spec_helper'
 
 RSpec.describe Mutations::Projects::SetComplianceFramework do
-  let_it_be(:namespace) { create(:namespace) }
-  let_it_be(:framework) { create(:compliance_framework, namespace: namespace) }
-  let_it_be(:project) { create(:project, :repository, namespace: namespace) }
+  let_it_be(:group) { create(:group) }
+  let_it_be(:framework) { create(:compliance_framework, namespace: group) }
+  let_it_be(:project) { create(:project, :repository, group: group) }
   let_it_be(:current_user) { create(:user) }
 
   let(:mutation) { described_class.new(object: nil, context: { current_user: current_user }, field: nil) }
@@ -67,7 +67,10 @@ RSpec.describe Mutations::Projects::SetComplianceFramework do
       end
 
       context 'current_user is a project owner' do
-        let(:current_user) { project.first_owner }
+        before do
+          group.add_owner(current_user)
+          project.add_owner(current_user)
+        end
 
         it_behaves_like "the user can change a project's compliance framework"
       end

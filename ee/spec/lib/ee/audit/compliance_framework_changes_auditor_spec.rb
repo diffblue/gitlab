@@ -5,8 +5,9 @@ require 'spec_helper'
 RSpec.describe EE::Audit::ComplianceFrameworkChangesAuditor do
   describe 'auditing compliance framework changes' do
     let_it_be(:user) { create(:user) }
+    let_it_be(:group) { create(:group) }
 
-    let(:project) { create(:project) }
+    let(:project) { create(:project, group: group) }
 
     before do
       project.reload
@@ -54,7 +55,7 @@ RSpec.describe EE::Audit::ComplianceFrameworkChangesAuditor do
 
       context 'when the framework is changed' do
         before do
-          project.update!(compliance_management_framework: create(:compliance_framework, namespace: project.namespace, name: 'SOX'))
+          project.update!(compliance_management_framework: create(:compliance_framework, namespace: project.group, name: 'SOX'))
         end
 
         it 'adds an audit event' do

@@ -526,11 +526,14 @@ RSpec.describe ProjectsController do
     end
 
     context 'compliance framework settings' do
+      let(:group) { create(:group) }
+      let(:project) { create(:project, group: group) }
+
       shared_examples 'no compliance framework is set' do
         it 'does not change compliance framework for project' do
           put :update,
               params: {
-                namespace_id: project.namespace,
+                namespace_id: project.group,
                 id: project,
                 project: params
               }
@@ -541,7 +544,7 @@ RSpec.describe ProjectsController do
       end
 
       context 'when unlicensed' do
-        let(:framework) { create(:compliance_framework, namespace: project.namespace.root_ancestor) }
+        let(:framework) { create(:compliance_framework, namespace: project.group.root_ancestor) }
         let(:params) { { compliance_framework_setting_attributes: { framework: framework.id } } }
 
         before do
@@ -552,22 +555,23 @@ RSpec.describe ProjectsController do
       end
 
       context 'when licensed' do
-        let(:framework) { create(:compliance_framework, namespace: project.namespace.root_ancestor) }
+        let(:framework) { create(:compliance_framework, namespace: project.group.root_ancestor) }
         let(:params) { { compliance_framework_setting_attributes: { framework: framework.id } } }
 
         before do
           stub_licensed_features(compliance_framework: true)
+          project.add_owner(user)
         end
 
         context 'current_user is a project owner' do
           before do
-            sign_in(project.first_owner)
+            sign_in(user)
           end
 
           it 'sets the compliance framework' do
             put :update,
                 params: {
-                  namespace_id: project.namespace,
+                  namespace_id: project.group,
                   id: project,
                   project: params
                 }

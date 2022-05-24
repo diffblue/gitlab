@@ -348,12 +348,16 @@ RSpec.describe Projects::UpdateService, '#execute' do
   end
 
   context 'custom compliance frameworks' do
-    let(:framework) { create(:compliance_framework, namespace: project.namespace) }
+    let(:group) { create(:group) }
+    let(:project) { create(:project, group: group) }
+    let(:framework) { create(:compliance_framework, namespace: group) }
     let(:opts) { { compliance_framework_setting_attributes: { framework: framework.id } } }
 
     context 'when current_user has :admin_compliance_framework ability' do
       before do
         stub_licensed_features(compliance_framework: true)
+        group.add_owner(user)
+        project.add_owner(user)
       end
 
       it 'updates the framework' do
