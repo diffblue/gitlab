@@ -55,7 +55,7 @@ RSpec.describe User do
         described_class.delete_all
         create(:user)
         ldap_user = create(:omniauth_user, provider: "ldapmain")
-        create(:omniauth_user, provider: "gitlub")
+        create(:omniauth_user, provider: "gitlab")
 
         users = described_class.non_ldap
 
