@@ -13,34 +13,15 @@ RSpec.describe ProjectWiki do
     end
 
     describe '#after_wiki_activity' do
-      context 'with the touch_project_repository_state_updated_at FF enabled' do
-        it 'updates project_repository_state activity', :freeze_time do
-          wiki_repository_state.update!(
-            last_wiki_updated_at: nil
-          )
+      it 'updates project_repository_state activity', :freeze_time do
+        wiki_repository_state.update!(
+          last_wiki_updated_at: nil
+        )
 
-          subject.send(:after_wiki_activity)
-          wiki_repository_state.reload
+        subject.send(:after_wiki_activity)
+        wiki_repository_state.reload
 
-          expect(wiki_repository_state.last_wiki_updated_at).to be_like_time(Time.current)
-        end
-      end
-
-      context 'with the touch_project_repository_state_updated_at FF disabled' do
-        before do
-          stub_feature_flags(touch_project_repository_state_updated_at: false)
-        end
-
-        it 'does not update project_repository_state activity', :freeze_time do
-          wiki_repository_state.update!(
-            last_wiki_updated_at: nil
-          )
-
-          subject.send(:after_wiki_activity)
-          wiki_repository_state.reload
-
-          expect(wiki_repository_state.last_wiki_updated_at).to be_nil
-        end
+        expect(wiki_repository_state.last_wiki_updated_at).to be_like_time(Time.current)
       end
     end
   end

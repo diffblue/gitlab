@@ -250,10 +250,7 @@ class Geo::ProjectRegistry < Geo::BaseRegistry
     # - We assume last_repository_updated_at is a timestamp of the latest change
     # - last_repository_updated_at is also touched when a project wiki is updated
     # - last_repository_updated_at touches are throttled within Event::REPOSITORY_UPDATED_AT_INTERVAL minutes
-    last_updated_at = if Feature.enabled?(:touch_project_repository_state_updated_at)
-                        registry.project.repository_state&.last_repository_updated_at
-                      end
-
+    last_updated_at = registry.project.repository_state&.last_repository_updated_at
     last_updated_at ||= registry.project.last_repository_updated_at
     last_successful_sync = registry.last_repository_successful_sync_at
 
