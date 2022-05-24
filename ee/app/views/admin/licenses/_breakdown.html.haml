@@ -7,8 +7,8 @@
 .d-flex
   .row
     .col-sm-6.d-flex.gl-mb-5
-      .gl-card
-        .gl-card-body
+      = render Pajamas::CardComponent.new do |c|
+        = c.body do
           %h2.gl-mt-0{ data: { "qa-selector": "users_in_license" } }
             = licensed_users(@license)
           .text-uppercase.gl-mb-4= _('Users in License')
@@ -20,8 +20,8 @@
           = _('The %{link_start}true-up model%{link_end} allows having more users, and additional users will incur a retroactive charge on renewal.').html_safe % { link_start: true_up_link_start, link_end: link_end }
           = seats_calculation_message(@license)
     .col-sm-6.d-flex.gl-mb-5
-      .gl-card
-        .gl-card-body
+      = render Pajamas::CardComponent.new do |c|
+        = c.body do
           %h2.gl-mt-0{ data: { "qa-selector": "billable_users" } }
             = number_with_delimiter @license.daily_billable_users_count
           .text-uppercase.gl-mb-4= _('Billable Users')
@@ -30,15 +30,15 @@
 .d-flex
   .row
     .col-sm-6.d-flex.gl-mb-5
-      .gl-card.flex-fill
-        .gl-card-body
+      = render Pajamas::CardComponent.new(card_options: { class: 'flex-fill' }) do |c|
+        = c.body do
           %h2.gl-mt-0{ data: { "qa-selector": "maximum_users" } }
             = number_with_delimiter @license.maximum_user_count
           .text-uppercase.gl-mb-4= _('Maximum Users')
           = _('This is the highest peak of users on your installation since the license started.')
     .col-sm-6.d-flex.gl-mb-5
-      .gl-card
-        .gl-card-body
+      = render Pajamas::CardComponent.new do |c|
+        = c.body do
           %h2.gl-mt-0{ data: { "qa-selector": "users_over_license" } }
             = number_with_delimiter users_over_license
           .text-uppercase.gl-mb-4= _('Users over License')
