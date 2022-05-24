@@ -39,34 +39,60 @@ RSpec.describe Security::StoreScansService do
       stub_licensed_features(sast: true, dast: false)
     end
 
-    it 'executes Security::StoreGroupedScansService for each group of artifacts if the feature is available' do
-      store_group_of_artifacts
-
-      expect(Security::StoreGroupedScansService).to have_received(:execute).with([sast_artifact])
-      expect(Security::StoreGroupedScansService).not_to have_received(:execute).with([dast_artifact])
-    end
-
-    context 'when the pipeline is for the default branch' do
+    context 'when the pipeline already has a purged security scan' do
       before do
-        allow(pipeline).to receive(:default_branch?).and_return(true)
+        create(:security_scan, status: :purged, build: sast_build)
       end
 
-      it 'schedules the `StoreSecurityReportsWorker`' do
+      it 'does not store the security scans' do
         store_group_of_artifacts
 
-        expect(StoreSecurityReportsWorker).to have_received(:perform_async).with(pipeline.id)
+        expect(Security::StoreGroupedScansService).not_to have_received(:execute)
+      end
+
+      context 'when the pipeline is for the default branch' do
+        before do
+          allow(pipeline).to receive(:default_branch?).and_return(true)
+        end
+
+        it 'does not schedule the `StoreSecurityReportsWorker`' do
+          store_group_of_artifacts
+
+          expect(StoreSecurityReportsWorker).not_to have_received(:perform_async)
+        end
       end
     end
 
-    context 'when the pipeline is not for the default branch' do
-      before do
-        allow(pipeline).to receive(:default_branch?).and_return(false)
-      end
-
-      it 'does not schedule the `StoreSecurityReportsWorker`' do
+    context 'when the pipeline does not have a purged security scan' do
+      it 'executes Security::StoreGroupedScansService for each group of artifacts if the feature is available' do
         store_group_of_artifacts
 
-        expect(StoreSecurityReportsWorker).not_to have_received(:perform_async)
+        expect(Security::StoreGroupedScansService).to have_received(:execute).with([sast_artifact])
+        expect(Security::StoreGroupedScansService).not_to have_received(:execute).with([dast_artifact])
+      end
+
+      context 'when the pipeline is for the default branch' do
+        before do
+          allow(pipeline).to receive(:default_branch?).and_return(true)
+        end
+
+        it 'schedules the `StoreSecurityReportsWorker`' do
+          store_group_of_artifacts
+
+          expect(StoreSecurityReportsWorker).to have_received(:perform_async).with(pipeline.id)
+        end
+      end
+
+      context 'when the pipeline is not for the default branch' do
+        before do
+          allow(pipeline).to receive(:default_branch?).and_return(false)
+        end
+
+        it 'does not schedule the `StoreSecurityReportsWorker`' do
+          store_group_of_artifacts
+
+          expect(StoreSecurityReportsWorker).not_to have_received(:perform_async)
+        end
       end
     end
   end
