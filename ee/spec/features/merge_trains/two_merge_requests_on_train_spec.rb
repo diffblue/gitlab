@@ -201,7 +201,7 @@ RSpec.describe 'Two merge requests on a merge train' do
 
   context 'when merge request 1 is not mergeable' do
     before do
-      merge_request_1.update!(title: merge_request_1.wip_title)
+      merge_request_1.update!(title: merge_request_1.draft_title)
       merge_request_1.merge_train.pipeline.succeed!
 
       merge_request_1.reload

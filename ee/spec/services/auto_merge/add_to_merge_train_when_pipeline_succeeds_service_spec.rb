@@ -160,7 +160,7 @@ RSpec.describe AutoMerge::AddToMergeTrainWhenPipelineSucceedsService do
 
     context 'when merge request is not mergeable' do
       before do
-        merge_request.update!(title: merge_request.wip_title)
+        merge_request.update!(title: merge_request.draft_title)
       end
 
       it { is_expected.to eq(false) }

@@ -89,9 +89,9 @@ RSpec.describe MergeRequests::CreatePipelineService, :clean_gitlab_redis_shared_
       end
     end
 
-    context 'when merge request is WIP' do
+    context 'when merge request is a draft' do
       before do
-        merge_request.update!(title: merge_request.wip_title)
+        merge_request.update!(title: merge_request.draft_title)
       end
 
       context 'when remove_mergeable_state_check is true' do
