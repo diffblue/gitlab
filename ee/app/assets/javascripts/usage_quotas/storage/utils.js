@@ -1,5 +1,6 @@
 import { numberToHumanSize, bytesToKiB } from '~/lib/utils/number_utils';
 import { gibibytes, kibibytes } from '~/lib/utils/unit_format';
+import { __ } from '~/locale';
 import { PROJECT_STORAGE_TYPES, STORAGE_USAGE_THRESHOLDS } from './constants';
 
 export function usageRatioToThresholdLevel(currentUsageRatio) {
@@ -97,7 +98,7 @@ export const parseProjects = ({
  * `rootStorageStatistics` will be sent as null until an
  * event happens to trigger the storage count.
  * For that reason we have to verify if `storageSize` is sent or
- * if we should render N/A
+ * if we should render 'Not applicable.'
  *
  * @param {Object} data graphql result
  * @returns {Object}
@@ -119,7 +120,7 @@ export const parseGetStorageResults = (data) => {
 
   const totalUsage = rootStorageStatistics?.storageSize
     ? numberToHumanSize(rootStorageStatistics.storageSize)
-    : 'N/A';
+    : __('Not applicable.');
 
   return {
     projects: {

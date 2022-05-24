@@ -85,7 +85,9 @@ describe('GeoNodeReplicationDetailsResponsive', () => {
             findFirstReplicationDetailsItemSyncStatus().findComponent(GeoNodeProgressBar).exists(),
           ).toBe(renderSyncProgress);
           expect(
-            extendedWrapper(findFirstReplicationDetailsItemSyncStatus()).findByText('N/A').exists(),
+            extendedWrapper(findFirstReplicationDetailsItemSyncStatus())
+              .findByText('Not applicable.')
+              .exists(),
           ).toBe(!renderSyncProgress);
 
           if (renderSyncProgress) {
@@ -103,7 +105,7 @@ describe('GeoNodeReplicationDetailsResponsive', () => {
           ).toBe(renderVerifProgress);
           expect(
             extendedWrapper(findFirstReplicationDetailsItemVerifStatus())
-              .findByText('N/A')
+              .findByText('Not applicable.')
               .exists(),
           ).toBe(!renderVerifProgress);
 

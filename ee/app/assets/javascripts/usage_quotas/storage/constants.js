@@ -8,7 +8,7 @@ export const ERROR_MESSAGE = s__(
 export const LEARN_MORE_LABEL = __('Learn more.');
 export const USAGE_QUOTAS_LABEL = s__('UsageQuota|Usage Quotas');
 export const HELP_LINK_ARIA_LABEL = s__('UsageQuota|%{linkTitle} help link');
-export const TOTAL_USAGE_DEFAULT_TEXT = __('N/A');
+export const TOTAL_USAGE_DEFAULT_TEXT = __('Not applicable.');
 export const TOTAL_USAGE_TITLE = s__('UsageQuota|Usage breakdown');
 export const TOTAL_USAGE_SUBTITLE = s__(
   'UsageQuota|Includes artifacts, repositories, wiki, uploads, and other items.',

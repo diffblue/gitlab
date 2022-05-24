@@ -11,7 +11,7 @@ export default {
   i18n: {
     replicationDetails: s__('Geo|Replication Details'),
     naVerificationHelpText: s__(
-      'Geo|%{boldStart}N/A%{boldEnd}: Geo does not verify this component yet. See the %{linkStart}data types we plan to support%{linkEnd}.',
+      'Geo|%{boldStart}Not applicable%{boldEnd}: Geo does not verify this component yet. See the %{linkStart}data types we plan to support%{linkEnd}.',
     ),
   },
   components: {

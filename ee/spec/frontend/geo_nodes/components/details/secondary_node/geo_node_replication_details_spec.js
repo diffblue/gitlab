@@ -83,7 +83,7 @@ describe('GeoNodeReplicationDetails', () => {
         ]);
       });
 
-      it('renders N/A Verification Help Text with correct link', () => {
+      it('renders Not applicable Verification Help Text with correct link', () => {
         expect(findNAVerificationHelpLink().attributes('href')).toBe(
           GEO_REPLICATION_SUPPORTED_TYPES_URL,
         );
@@ -192,7 +192,9 @@ describe('GeoNodeReplicationDetails', () => {
           });
         });
 
-        it(`does ${hasNAVerificationHelpText ? '' : 'not '}show N/A verification help text`, () => {
+        it(`does ${
+          hasNAVerificationHelpText ? '' : 'not '
+        }show Not applicable verification help text`, () => {
           expect(findNAVerificationHelpLink().exists()).toBe(hasNAVerificationHelpText);
         });
       },

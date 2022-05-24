@@ -16505,7 +16505,7 @@ msgid_plural "%d shards selected"
 msgstr[0] ""
 msgstr[1] ""
 
-msgid "Geo|%{boldStart}N/A%{boldEnd}: Geo does not verify this component yet. See the %{linkStart}data types we plan to support%{linkEnd}."
+msgid "Geo|%{boldStart}Not applicable%{boldEnd}: Geo does not verify this component yet. See the %{linkStart}data types we plan to support%{linkEnd}."
 msgstr ""
 
 msgid "Geo|%{component} synced"
@@ -25033,9 +25033,6 @@ msgstr ""
 msgid "My-Reaction"
 msgstr ""
 
-msgid "N/A"
-msgstr ""
-
 msgid "Name"
 msgstr ""
 
@@ -25817,6 +25814,9 @@ msgid "Not all browsers support WebAuthn. Therefore, we require that you set up 
 msgstr ""
 
 msgid "Not all data has been processed yet, the accuracy of the chart for the selected timeframe is limited."
+msgstr ""
+
+msgid "Not applicable."
 msgstr ""
 
 msgid "Not available"
