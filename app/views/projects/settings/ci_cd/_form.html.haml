@@ -39,9 +39,9 @@
 
         %hr
         .form-group
-          %h5.gl-mt-0
+          %h5.gl-mt-0.gl-mb-3
             = _("Git strategy")
-          %p
+          .gl-mb-3
             = _("Choose which Git strategy to use when fetching the project.")
             = link_to sprite_icon('question-o'), help_page_path('ci/pipelines/settings', anchor: 'choose-the-default-git-strategy'), target: '_blank', rel: 'noopener noreferrer'
           = f.gitlab_ui_radio_component :build_allow_git_fetch,
