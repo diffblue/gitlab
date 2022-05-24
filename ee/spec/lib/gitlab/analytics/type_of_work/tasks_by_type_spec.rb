@@ -13,6 +13,8 @@ RSpec.describe Gitlab::Analytics::TypeOfWork::TasksByType do
   let_it_be(:label_for_subgroup) { create(:group_label, group: group) }
   let_it_be(:other_label) { create(:group_label, group: other_group) }
   let_it_be(:project) { create(:project, group: group) }
+  let_it_be(:assignee) { create(:user) }
+  let_it_be(:milestone) { create(:milestone, group: group) }
 
   let(:params) do
     {
@@ -32,6 +34,7 @@ RSpec.describe Gitlab::Analytics::TypeOfWork::TasksByType do
 
   before do
     group.add_reporter(user)
+    group.add_developer(assignee)
   end
 
   shared_examples '#counts_by_labels' do
@@ -39,6 +42,8 @@ RSpec.describe Gitlab::Analytics::TypeOfWork::TasksByType do
       create(factory_name, {
         :created_at => 3.days.ago,
         :labels => [label],
+        :assignees => [assignee],
+        :milestone => milestone,
         project_attribute_name => project
       })
     end
@@ -114,6 +119,30 @@ RSpec.describe Gitlab::Analytics::TypeOfWork::TasksByType do
     context 'when filtering by `project_ids`' do
       before do
         params[:params][:project_ids] = [project.id]
+      end
+
+      it { expect(label_count_for(label, subject)).to eq(1) }
+    end
+
+    context 'when filtering by `author_username`' do
+      before do
+        params[:params][:author_username] = with_label.author.username
+      end
+
+      it { expect(label_count_for(label, subject)).to eq(1) }
+    end
+
+    context 'when filtering by `assignee_username`' do
+      before do
+        params[:params][:assignee_username] = [assignee.username]
+      end
+
+      it { expect(label_count_for(label, subject)).to eq(1) }
+    end
+
+    context 'when filtering by `milestone_title`' do
+      before do
+        params[:params][:milestone_title] = milestone.title
       end
 
       it { expect(label_count_for(label, subject)).to eq(1) }

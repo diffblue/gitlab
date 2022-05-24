@@ -27,7 +27,10 @@ class Groups::Analytics::TasksByTypeController < Groups::Analytics::ApplicationC
       label_ids: Array(params[:label_ids]),
       project_ids: Array(params[:project_ids]),
       created_after: @created_after.to_time.utc.beginning_of_day,
-      created_before: @created_before.to_time.utc.end_of_day
+      created_before: @created_before.to_time.utc.end_of_day,
+      author_username: params[:author_username],
+      assignee_username: params[:assignee_username],
+      milestone_id: params[:milestone_id]
     })
   end
 

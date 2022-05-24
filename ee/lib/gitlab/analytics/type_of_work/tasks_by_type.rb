@@ -55,7 +55,10 @@ module Gitlab
         end
 
         def finder_params
-          { include_subgroups: true, group_id: group.id }.merge(params.slice(:created_after, :created_before))
+          {
+            include_subgroups: true,
+            group_id: group.id
+          }.merge(params.slice(:created_after, :created_before, :author_username, :milestone_title, :assignee_username))
         end
 
         # rubocop: disable CodeReuse/ActiveRecord
