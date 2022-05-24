@@ -19,8 +19,6 @@ module EE
     def set_last_repository_updated_at
       super
 
-      return unless ::Feature.enabled?(:touch_project_repository_state_updated_at)
-
       ProjectRepositoryState.where(project_id: project_id).touch_all(:last_repository_updated_at, time: created_at)
     end
 

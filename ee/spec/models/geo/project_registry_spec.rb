@@ -434,49 +434,23 @@ RSpec.describe Geo::ProjectRegistry, :geo do
               context 'where last_repository_successful_sync_at is set', :freeze_time do
                 let_it_be(:project_repository_state) { create(:repository_state, project: project) }
 
-                context 'with the touch_project_repository_state_updated_at FF enabled' do
-                  where(:project_last_updated, :project_state_last_updated, :project_registry_last_synced, :expected_out_of_date?) do
-                    Time.current - 3.minutes | nil                      | Time.current - 5.minutes | true
-                    Time.current - 3.minutes | nil                      | Time.current - 1.minute  | false
-                    Time.current - 3.minutes | Time.current             | Time.current - 1.minute  | true
-                    Time.current - 3.minutes | Time.current - 2.minutes | Time.current - 1.minute  | false
-                    Time.current - 3.minutes | Time.current             | Time.current - 5.minutes | true
-                  end
-
-                  with_them do
-                    before do
-                      project.update!(last_repository_updated_at: project_last_updated)
-                      project_repository_state.update!(last_repository_updated_at: project_state_last_updated)
-                      create(:geo_project_registry, :synced, project: project, last_repository_successful_sync_at: project_registry_last_synced)
-                    end
-
-                    it 'returns the expected value' do
-                      expect(described_class.repository_out_of_date?(project.id)).to eq(expected_out_of_date?)
-                    end
-                  end
+                where(:project_last_updated, :project_state_last_updated, :project_registry_last_synced, :expected_out_of_date?) do
+                  Time.current - 3.minutes | nil                      | Time.current - 5.minutes | true
+                  Time.current - 3.minutes | nil                      | Time.current - 1.minute  | false
+                  Time.current - 3.minutes | Time.current             | Time.current - 1.minute  | true
+                  Time.current - 3.minutes | Time.current - 2.minutes | Time.current - 1.minute  | false
+                  Time.current - 3.minutes | Time.current             | Time.current - 5.minutes | true
                 end
 
-                context 'with the touch_project_repository_state_updated_at FF disabled' do
-                  where(:project_last_updated, :project_state_last_updated, :project_registry_last_synced, :expected_out_of_date?) do
-                    Time.current - 3.minutes | nil                      | Time.current - 5.minutes | true
-                    Time.current - 3.minutes | nil                      | Time.current - 1.minute  | false
-                    Time.current - 3.minutes | Time.current             | Time.current - 1.minute  | false
-                    Time.current - 3.minutes | Time.current - 2.minutes | Time.current - 1.minute  | false
-                    Time.current - 3.minutes | Time.current             | Time.current - 5.minutes | true
+                with_them do
+                  before do
+                    project.update!(last_repository_updated_at: project_last_updated)
+                    project_repository_state.update!(last_repository_updated_at: project_state_last_updated)
+                    create(:geo_project_registry, :synced, project: project, last_repository_successful_sync_at: project_registry_last_synced)
                   end
 
-                  with_them do
-                    before do
-                      stub_feature_flags(touch_project_repository_state_updated_at: false)
-
-                      project.update!(last_repository_updated_at: project_last_updated)
-                      project_repository_state.update!(last_repository_updated_at: project_state_last_updated)
-                      create(:geo_project_registry, :synced, project: project, last_repository_successful_sync_at: project_registry_last_synced)
-                    end
-
-                    it 'returns the expected value' do
-                      expect(described_class.repository_out_of_date?(project.id)).to eq(expected_out_of_date?)
-                    end
+                  it 'returns the expected value' do
+                    expect(described_class.repository_out_of_date?(project.id)).to eq(expected_out_of_date?)
                   end
                 end
               end
