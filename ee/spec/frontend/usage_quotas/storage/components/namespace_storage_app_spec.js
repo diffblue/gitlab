@@ -108,8 +108,8 @@ describe('NamespaceStorageApp', () => {
     });
   });
 
-  it('renders N/A for totalUsage when no rootStorageStatistics is provided', async () => {
-    expect(findTotalUsage().text()).toContain('N/A');
+  it('renders Not applicable for totalUsage when no rootStorageStatistics is provided', async () => {
+    expect(findTotalUsage().text()).toContain('Not applicable.');
   });
 
   describe('with rootStorageStatistics information', () => {

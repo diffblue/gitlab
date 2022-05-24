@@ -182,10 +182,10 @@ module Gitlab
             print " (#{time_ago_in_words(last_cursor_event_date)} ago)" if last_cursor_event_date
             puts
           else
-            puts 'N/A'
+            puts 'Not applicable.'
           end
         else
-          puts 'N/A'
+          puts 'Not applicable.'
         end
       end
       # rubocop: enable CodeReuse/ActiveRecord

@@ -13,7 +13,7 @@ describe('GeoNodeReplicationStatusMobile', () => {
       verificationValues: null,
     },
     translations: {
-      nA: 'N/A',
+      nA: 'Not applicable.',
       progressBarSyncTitle: '%{component} synced',
       progressBarVerifTitle: '%{component} verified',
     },
@@ -53,7 +53,7 @@ describe('GeoNodeReplicationStatusMobile', () => {
         expect(findItemSyncStatus().findComponent(GeoNodeProgressBar).exists()).toBe(
           renderSyncProgress,
         );
-        expect(extendedWrapper(findItemSyncStatus()).findByText('N/A').exists()).toBe(
+        expect(extendedWrapper(findItemSyncStatus()).findByText('Not applicable.').exists()).toBe(
           !renderSyncProgress,
         );
       });
@@ -62,9 +62,9 @@ describe('GeoNodeReplicationStatusMobile', () => {
         expect(findItemVerificationStatus().findComponent(GeoNodeProgressBar).exists()).toBe(
           renderVerifProgress,
         );
-        expect(extendedWrapper(findItemVerificationStatus()).findByText('N/A').exists()).toBe(
-          !renderVerifProgress,
-        );
+        expect(
+          extendedWrapper(findItemVerificationStatus()).findByText('Not applicable.').exists(),
+        ).toBe(!renderVerifProgress);
       });
     });
   });

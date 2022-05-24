@@ -176,7 +176,7 @@ export const defaultNamespaceProvideValues = {
 };
 
 export const namespaceData = {
-  totalUsage: 'N/A',
+  totalUsage: 'Not applicable.',
   limit: 10000000,
   projects: { data: projects },
 };

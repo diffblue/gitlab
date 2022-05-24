@@ -5,7 +5,7 @@ import { __ } from '~/locale';
 export default {
   name: 'GeoNodeReplicationSyncPercentage',
   i18n: {
-    nA: __('N/A'),
+    nA: __('Not applicable.'),
   },
   props: {
     values: {
@@ -29,7 +29,7 @@ export default {
         return '< 1';
       }
 
-      // Display N/A when percent is not valide.
+      // Display Not applicable when percent is not valide.
       return Number.isFinite(percent) ? percent : null;
     },
     percentColor() {

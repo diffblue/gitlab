@@ -15,7 +15,7 @@ export default {
       'Geo|Replicated data is verified with the secondary site(s) using checksums',
     ),
     learnMore: __('Learn more'),
-    nA: __('N/A'),
+    nA: __('Not applicable.'),
     progressBarSyncTitle: s__('Geo|%{component} synced'),
     progressBarVerifTitle: s__('Geo|%{component} verified'),
     verified: s__('Geo|Verified'),
