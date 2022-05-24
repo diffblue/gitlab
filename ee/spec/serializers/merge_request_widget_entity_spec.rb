@@ -53,7 +53,6 @@ RSpec.describe MergeRequestWidgetEntity do
     using RSpec::Parameterized::TableSyntax
 
     where(:json_entry, :artifact_type, :exposures) do
-      :codeclimate         | :codequality         | []
       :browser_performance | :browser_performance | [:degradation_threshold, :head_path, :base_path]
       :browser_performance | :performance         | [:degradation_threshold, :head_path, :base_path]
       :load_performance    | :load_performance    | [:head_path, :base_path]
