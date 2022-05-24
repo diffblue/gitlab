@@ -30,16 +30,11 @@ RSpec.describe EE::IntegrationsHelper do
         enable_jira_issues: 'true',
         enable_jira_vulnerabilities: 'false',
         project_key: 'FE',
-        vulnerabilities_issuetype: '10001',
-        upgrade_plan_path: nil
+        vulnerabilities_issuetype: '10001'
       }
     end
 
-    subject { helper.integration_form_data(integration) }
-
-    before do
-      assign(:project, project)
-    end
+    subject { helper.integration_form_data(integration, project: project) }
 
     context 'with Slack integration' do
       let(:integration) { build(:integrations_slack) }
