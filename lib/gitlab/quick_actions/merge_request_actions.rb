@@ -109,8 +109,7 @@ module Gitlab
         types MergeRequest
         condition do
           quick_action_target.respond_to?(:draft?) &&
-            # Allow it to mark as draft on MR creation page _or_ through MR
-            #                     notes
+            # Allow it to mark as draft on MR creation page or through MR notes
             #
             (quick_action_target.new_record? || current_user.can?(:"update_#{quick_action_target.to_ability_name}", quick_action_target))
         end
