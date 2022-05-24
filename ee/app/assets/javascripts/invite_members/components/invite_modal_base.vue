@@ -1,8 +1,10 @@
 <script>
 import { GlLink } from '@gitlab/ui';
 import { partition, isString } from 'lodash';
+import * as Sentry from '@sentry/browser';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import InviteModalBase from '~/invite_members/components/invite_modal_base.vue';
+import apolloProvider from '../provider';
 import {
   OVERAGE_MODAL_LINK,
   OVERAGE_MODAL_TITLE,
@@ -15,6 +17,7 @@ import {
 import { checkOverage } from '../check_overage';
 import { fetchSubscription } from '../get_subscription_data';
 import { fetchUserIdsFromGroup } from '../utils';
+import getSubscriptionEligibility from '../subscription_eligible.customer.query.graphql';
 
 const OVERAGE_CONTENT_SLOT = 'overage-content';
 const EXTRA_SLOTS = [
@@ -32,6 +35,7 @@ export default {
     GlLink,
     InviteModalBase,
   },
+  apolloProvider,
   mixins: [glFeatureFlagsMixin()],
   inheritAttrs: false,
   props: {
@@ -75,6 +79,8 @@ export default {
       totalUserCount: null,
       subscriptionSeats: 0,
       namespaceId: parseInt(this.rootGroupId, 10),
+      eligibleForSeatUsageAlerts: false,
+      isLoading: false,
     };
   },
   computed: {
@@ -142,15 +148,41 @@ export default {
       if (this.reachedLimit) return;
 
       if (this.enabledOverageCheck && !this.hasOverage) {
-        this.checkAndSubmit(args);
+        this.checkEligibility(args);
       } else {
-        this.$emit('submit', { accessLevel: args.accessLevel, expiresAt: args.expiresAt });
+        this.emitSubmit(args);
       }
+    },
+    checkEligibility(args) {
+      this.isLoading = true;
+      this.$apollo.addSmartQuery('eligibleForSeatUsageAlerts', {
+        query: getSubscriptionEligibility,
+        variables() {
+          return {
+            namespaceId: this.namespaceId,
+          };
+        },
+        update(data) {
+          return data.subscription?.eligibleForSeatUsageAlerts;
+        },
+        result({ data }) {
+          if (data?.subscription?.eligibleForSeatUsageAlerts) {
+            this.checkAndSubmit(args);
+            return;
+          }
+          // we don't want to block the flow if API response has unexpected data
+          this.emitSubmit(args);
+          this.isLoading = false;
+        },
+        error(er) {
+          this.isLoading = false;
+          Sentry.captureException(er);
+        },
+      });
     },
     async checkAndSubmit(args) {
       let usersToAddById = [];
       let usersToInviteByEmail = [];
-      this.isLoading = true;
 
       const subscriptionData = await fetchSubscription(this.namespaceId);
       this.subscriptionSeats = subscriptionData.subscriptionSeats;
@@ -174,8 +206,11 @@ export default {
       if (hasOverage) {
         this.totalUserCount = usersOverage;
       } else {
-        this.$emit('submit', { accessLevel: args.accessLevel, expiresAt: args.expiresAt });
+        this.emitSubmit(args);
       }
+    },
+    emitSubmit({ accessLevel, expiresAt } = {}) {
+      this.$emit('submit', { accessLevel, expiresAt });
     },
     passthroughSlotNames() {
       return Object.keys(this.$scopedSlots || {});
@@ -218,6 +253,7 @@ export default {
     :submit-disabled="submitDisabledEE"
     :prevent-cancel-default="showOverageModal"
     :reached-limit="reachedLimit"
+    :is-loading="isLoading"
     @reset="onReset"
     @submit="onSubmit"
     @cancel="onCancel"
