@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Mutations::ComplianceManagement::Frameworks::Create do
   let_it_be(:current_user) { create(:user) }
-  let_it_be(:namespace) { create(:namespace) }
+  let_it_be(:namespace) { create(:group) }
 
   let(:params) { valid_params }
   let(:mutation) { described_class.new(object: nil, context: { current_user: current_user }, field: nil) }
@@ -31,7 +31,7 @@ RSpec.describe Mutations::ComplianceManagement::Frameworks::Create do
         stub_licensed_features(custom_compliance_frameworks: true, evaluate_group_level_compliance_pipeline: true)
       end
 
-      context 'current_user is not namespace owner' do
+      context 'current_user is not group namespace owner' do
         it 'does not create a new compliance framework' do
           expect { subject }.not_to change { namespace.compliance_management_frameworks.count }
         end
@@ -42,8 +42,6 @@ RSpec.describe Mutations::ComplianceManagement::Frameworks::Create do
       end
 
       context 'current_user is group owner' do
-        let_it_be(:namespace) { create(:group) }
-
         before do
           namespace.add_owner(current_user)
         end
@@ -53,12 +51,14 @@ RSpec.describe Mutations::ComplianceManagement::Frameworks::Create do
         end
       end
 
-      context 'current_user is namespace owner' do
+      context 'current_user is personal namespace owner' do
+        let_it_be(:namespace) { create(:user_namespace) }
+
         let(:current_user) { namespace.owner }
 
         context 'framework parameters are valid' do
-          it 'creates a new compliance framework' do
-            expect { subject }.to change { namespace.compliance_management_frameworks.count }.by 1
+          it 'does not create a new compliance framework' do
+            expect { subject }.not_to change { namespace.compliance_management_frameworks.count }
           end
         end
 

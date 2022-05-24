@@ -3,15 +3,20 @@
 require 'spec_helper'
 
 RSpec.describe ComplianceManagement::Frameworks::DestroyService do
-  let_it_be_with_refind(:namespace) { create(:user_namespace) }
+  let_it_be_with_refind(:namespace) { create(:group) }
   let_it_be_with_refind(:framework) { create(:compliance_framework, namespace: namespace) }
+  let_it_be(:user) { create(:user) }
+
+  before do
+    namespace.add_owner(user)
+  end
 
   context 'when feature is disabled' do
     before do
       stub_licensed_features(custom_compliance_frameworks: false)
     end
 
-    subject { described_class.new(framework: framework, current_user: namespace.owner) }
+    subject { described_class.new(framework: framework, current_user: user) }
 
     it 'does not destroy the compliance framework' do
       expect { subject.execute }.not_to change { ComplianceManagement::Framework.count }
@@ -28,7 +33,7 @@ RSpec.describe ComplianceManagement::Frameworks::DestroyService do
     end
 
     context 'when current user is namespace owner' do
-      subject { described_class.new(framework: framework, current_user: namespace.owner) }
+      subject { described_class.new(framework: framework, current_user: user) }
 
       it 'destroys the compliance framework' do
         expect { subject.execute }.to change { ComplianceManagement::Framework.count }.by(-1)

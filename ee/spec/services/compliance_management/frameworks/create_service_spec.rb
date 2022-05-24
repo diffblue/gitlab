@@ -3,7 +3,12 @@
 require 'spec_helper'
 
 RSpec.describe ComplianceManagement::Frameworks::CreateService do
-  let_it_be_with_refind(:namespace) { create(:user_namespace) }
+  let_it_be_with_refind(:namespace) { create(:group) }
+  let_it_be(:current_user) { create(:user) }
+
+  before do
+    namespace.add_owner(current_user)
+  end
 
   let(:params) do
     {
@@ -18,7 +23,7 @@ RSpec.describe ComplianceManagement::Frameworks::CreateService do
       stub_licensed_features(custom_compliance_frameworks: false)
     end
 
-    subject { described_class.new(namespace: namespace, params: params, current_user: namespace.owner) }
+    subject { described_class.new(namespace: namespace, params: params, current_user: current_user) }
 
     it 'does not create a new compliance framework' do
       expect { subject.execute }.not_to change { ComplianceManagement::Framework.count }
@@ -56,7 +61,7 @@ RSpec.describe ComplianceManagement::Frameworks::CreateService do
     end
 
     context 'when using invalid parameters' do
-      subject { described_class.new(namespace: namespace, params: params.except(:name), current_user: namespace.owner) }
+      subject { described_class.new(namespace: namespace, params: params.except(:name), current_user: current_user) }
 
       let(:response) { subject.execute }
 
@@ -79,7 +84,7 @@ RSpec.describe ComplianceManagement::Frameworks::CreateService do
     end
 
     context 'when pipeline_configuration_full_path parameter is used and feature is not available' do
-      subject { described_class.new(namespace: namespace, params: params, current_user: namespace.owner) }
+      subject { described_class.new(namespace: namespace, params: params, current_user: current_user) }
 
       before do
         params[:pipeline_configuration_full_path] = '.compliance-gitlab-ci.yml@compliance/hipaa'
@@ -95,7 +100,7 @@ RSpec.describe ComplianceManagement::Frameworks::CreateService do
     end
 
     context 'when using parameters for a valid compliance framework' do
-      subject { described_class.new(namespace: namespace, params: params, current_user: namespace.owner) }
+      subject { described_class.new(namespace: namespace, params: params, current_user: current_user) }
 
       it 'audits the changes' do
         expect { subject.execute }.to change { AuditEvent.count }.by(1)

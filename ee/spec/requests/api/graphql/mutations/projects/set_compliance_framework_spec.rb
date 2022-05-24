@@ -5,10 +5,14 @@ require 'spec_helper'
 RSpec.describe 'Set project compliance framework' do
   include GraphqlHelpers
 
-  let_it_be(:namespace) { create(:namespace) }
+  let_it_be(:namespace) { create(:group) }
   let_it_be(:project) { create(:project, namespace: namespace) }
   let_it_be(:framework) { create(:compliance_framework, namespace: namespace) }
-  let_it_be(:current_user) { project.first_owner }
+  let_it_be(:current_user) { create(:user) }
+
+  before do
+    namespace.add_owner(current_user)
+  end
 
   let(:variables) { { project_id: GitlabSchema.id_from_object(project).to_s, compliance_framework_id: GitlabSchema.id_from_object(framework).to_s } }
 

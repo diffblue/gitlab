@@ -3,10 +3,14 @@
 require 'spec_helper'
 
 RSpec.describe ComplianceManagement::Frameworks::UpdateService do
-  let_it_be_with_refind(:namespace) { create(:user_namespace) }
+  let_it_be_with_refind(:namespace) { create(:group) }
   let_it_be_with_refind(:framework) { create(:compliance_framework, namespace: namespace) }
+  let_it_be(:current_user) { create(:user) }
 
-  let(:current_user) { namespace.owner }
+  before do
+    namespace.add_owner(current_user)
+  end
+
   let(:params) { { color: '#000001', description: 'New Description', name: 'New Name' } }
 
   subject { described_class.new(framework: framework, current_user: current_user, params: params) }

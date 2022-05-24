@@ -5,9 +5,10 @@ require 'spec_helper'
 RSpec.describe 'getting a list of compliance frameworks for a root namespace' do
   include GraphqlHelpers
 
-  let_it_be(:namespace) { create(:namespace) }
+  let_it_be(:namespace) { create(:group) }
   let_it_be(:compliance_framework_1) { create(:compliance_framework, namespace: namespace, name: 'Test1') }
   let_it_be(:compliance_framework_2) { create(:compliance_framework, namespace: namespace, name: 'Test2') }
+  let_it_be(:current_user) { create(:user) }
 
   let(:path) { %i[namespace compliance_frameworks nodes] }
 
@@ -20,9 +21,8 @@ RSpec.describe 'getting a list of compliance frameworks for a root namespace' do
   context 'when authenticated as the namespace owner' do
     before do
       stub_licensed_features(custom_compliance_frameworks: true)
+      namespace.add_owner(current_user)
     end
-
-    let(:current_user) { namespace.owner }
 
     it 'returns the groups compliance frameworks' do
       post_graphql(query, current_user: current_user)
