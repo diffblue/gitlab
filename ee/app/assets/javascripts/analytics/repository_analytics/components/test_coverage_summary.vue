@@ -52,12 +52,13 @@ export default {
       },
       result({ data }) {
         const groupCoverage = data.group.codeCoverageActivities.nodes;
-        const { projectCount, averageCoverage, coverageCount } =
+        const { projectCount, averageCoverage, coverageCount, date } =
           groupCoverage?.[groupCoverage.length - 1] || {};
 
         this.projectCount = projectCount;
         this.averageCoverage = averageCoverage;
         this.coverageCount = coverageCount;
+        this.latestCoverageDate = date;
         this.groupCoverageChartData = [
           {
             name: this.$options.i18n.graphName,
@@ -87,6 +88,7 @@ export default {
       projectCount: null,
       averageCoverage: null,
       coverageCount: null,
+      latestCoverageDate: null,
       groupCoverageChartData: [],
       coveragePercentage: null,
       tooltipTitle: null,
@@ -152,14 +154,13 @@ export default {
       };
     },
     latestCoverageTimeAgo() {
-      const latestCoverageDataPoint = this.groupCoverageChartData?.[
-        this.groupCoverageChartData.length - 1
-      ];
-      const latestCoverageDate = latestCoverageDataPoint?.data[0][0];
-      if (isToday(newDateAsLocaleTime(latestCoverageDate))) {
+      if (!this.latestCoverageDate) {
+        return null;
+      }
+      if (isToday(newDateAsLocaleTime(this.latestCoverageDate))) {
         return __('today');
       }
-      return getTimeago().format(latestCoverageDate);
+      return getTimeago().format(this.latestCoverageDate);
     },
   },
   methods: {
