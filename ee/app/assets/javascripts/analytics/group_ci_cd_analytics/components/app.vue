@@ -2,6 +2,7 @@
 import { GlTabs, GlTab, GlLink } from '@gitlab/ui';
 import DeploymentFrequencyCharts from 'ee/dora/components/deployment_frequency_charts.vue';
 import LeadTimeCharts from 'ee/dora/components/lead_time_charts.vue';
+import TimeToRestoreServiceCharts from 'ee/dora/components/time_to_restore_service_charts.vue';
 import { mergeUrlParams, updateHistory, getParameterValues } from '~/lib/utils/url_utility';
 import ReleaseStatsCard from './release_stats_card.vue';
 import SharedRunnersUsage from './shared_runner_usage.vue';
@@ -15,6 +16,7 @@ export default {
     GlLink,
     DeploymentFrequencyCharts,
     LeadTimeCharts,
+    TimeToRestoreServiceCharts,
     SharedRunnersUsage,
   },
   inject: {
@@ -41,7 +43,7 @@ export default {
       const tabsToShow = ['release-statistics'];
 
       if (this.shouldRenderDoraCharts) {
-        tabsToShow.push('deployment-frequency', 'lead-time');
+        tabsToShow.push('deployment-frequency', 'lead-time', 'time-to-restore-service');
       }
 
       tabsToShow.push('shared-runner-usage');
@@ -84,6 +86,9 @@ export default {
         </gl-tab>
         <gl-tab :title="s__('CICDAnalytics|Lead time')">
           <lead-time-charts />
+        </gl-tab>
+        <gl-tab :title="s__('CICDAnalytics|Time to restore service')">
+          <time-to-restore-service-charts />
         </gl-tab>
       </template>
       <gl-tab :title="s__('CICDAnalytics|Shared runner usage')">
