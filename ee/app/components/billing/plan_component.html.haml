@@ -1,7 +1,8 @@
-.gl-card.gl-mt-7.gl-mr-7.billing-plan-card{ class: card_border_classes, data: { testid: card_testid } }
-  .gl-card-header{ class: header_classes }
+= render Pajamas::CardComponent.new(card_options: { class: card_classes, data: { testid: card_testid }},
+                                    header_options: { class: header_classes }) do |c|
+  = c.header do
     = header_text
-  .gl-card-body
+  = c.body do
     = image_tag image_path('logo.svg'), class: 'svg gl-w-8!'
     .gl-font-size-h1.gl-font-weight-bold.gl-line-height-24.gl-text-purple-800.gl-mb-3
       = name

@@ -27,8 +27,8 @@ module Billing
       plan.free
     end
 
-    def card_border_classes
-      plan.card_border_classes
+    def card_classes
+      "gl-mt-7 gl-mr-7 billing-plan-card #{plan.card_border_classes}"
     end
 
     def card_testid
