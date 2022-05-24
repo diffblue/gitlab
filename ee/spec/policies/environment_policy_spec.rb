@@ -24,7 +24,7 @@ RSpec.describe EnvironmentPolicy do
     subject { user.can?(:destroy_environment, environment) }
 
     before do
-      environment.stop!
+      environment.stop_complete!
     end
 
     it_behaves_like 'protected environments access'
