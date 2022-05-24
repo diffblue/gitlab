@@ -43,13 +43,34 @@ RSpec.describe Ci::Runners::StaleGroupRunnersPruneService do
       group2.ci_cd_settings.update!(allow_stale_runner_pruning: true)
     end
 
-    it 'prunes all runners in batches' do
-      expect do
-        expect(status).to match({
-          status: :success,
-          total_pruned: 3
-        })
-      end.to change { Ci::Runner.count }.from(4).to(1)
+    context 'with :stale_runner_cleanup_for_namespace_development FF enabled' do
+      before do
+        stub_feature_flags(stale_runner_cleanup_for_namespace_development: [group, group2])
+      end
+
+      it 'prunes all runners in batches' do
+        expect do
+          expect(status).to match({
+            status: :success,
+            total_pruned: 3
+          })
+        end.to change { Ci::Runner.count }.from(4).to(1)
+      end
+    end
+
+    context 'with :stale_runner_cleanup_for_namespace_development FF disabled for group' do
+      before do
+        stub_feature_flags(stale_runner_cleanup_for_namespace_development: [group2])
+      end
+
+      it 'does not prune any runners' do
+        expect do
+          expect(status).to match({
+            status: :success,
+            total_pruned: 0
+          })
+        end.not_to change { Ci::Runner.count }
+      end
     end
   end
 end
