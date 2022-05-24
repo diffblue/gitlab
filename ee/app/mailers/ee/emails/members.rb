@@ -10,7 +10,7 @@ module EE
 
         @user = member.user
 
-        member_email_with_layout(
+        email_with_layout(
           to: member.user.email,
           subject: subject("Welcome to GitLab"))
       end

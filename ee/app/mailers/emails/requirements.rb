@@ -7,7 +7,9 @@ module Emails
       @project = Project.find(project_id)
       @results = results
 
-      requirement_email_with_layout(@user, @project.group, _('Imported requirements'))
+      email_with_layout(
+        to: @user.notification_email_for(@project.group),
+        subject: subject(_('Imported requirements')))
     end
 
     def requirements_csv_email(user, project, csv_data, export_status)
@@ -18,14 +20,9 @@ module Emails
       filename = "#{project.full_path.parameterize}_requirements_#{Date.current.iso8601}.csv"
       attachments[filename] = { content: csv_data, mime_type: 'text/csv' }
 
-      requirement_email_with_layout(user, @project.group, _('Exported requirements'))
-    end
-
-    def requirement_email_with_layout(user, group, subj)
-      mail(to: user.notification_email_for(group), subject: subject(subj)) do |format|
-        format.html { render layout: 'mailer' }
-        format.text { render layout: 'mailer' }
-      end
+      email_with_layout(
+        to: user.notification_email_for(@project.group),
+        subject: subject(_('Exported requirements')))
     end
   end
 end

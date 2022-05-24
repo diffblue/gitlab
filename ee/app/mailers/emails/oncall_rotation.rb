@@ -10,10 +10,9 @@ module Emails
       @schedule = rotation.schedule
       @project = rotation.project
 
-      mail(to: recipients.map(&:email), subject: subject('User removed from On-call rotation')) do |format|
-        format.html { render layout: 'mailer' }
-        format.text { render layout: 'mailer' }
-      end
+      email_with_layout(
+        to: recipients.map(&:email),
+        subject: subject('User removed from On-call rotation'))
     end
   end
 end

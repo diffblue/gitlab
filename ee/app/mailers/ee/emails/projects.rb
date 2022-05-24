@@ -36,10 +36,9 @@ module EE
         @project = project
         @rules = rules
 
-        mail(to: recipient.notification_email_for(@project.group), subject: subject('User removed from escalation policy')) do |format|
-          format.html { render layout: 'mailer' }
-          format.text { render layout: 'mailer' }
-        end
+        email_with_layout(
+          to: recipient.notification_email_for(@project.group),
+          subject: subject('User removed from escalation policy'))
       end
 
       def incident_escalation_fired_email(project, user, issue)
