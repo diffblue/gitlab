@@ -9,6 +9,11 @@ Vue.use(VueApollo);
 
 export default () => {
   const el = document.getElementById('js-storage-counter-app');
+
+  if (!el) {
+    return false;
+  }
+
   const {
     namespacePath,
     purchaseStorageUrl,

@@ -287,6 +287,22 @@ RSpec.describe 'Groups > Usage Quotas' do
     end
   end
 
+  context 'pending members', :js do
+    let!(:awaiting_member) { create(:group_member, :awaiting, group: group) }
+
+    it 'lists awaiting members and approves them' do
+      visit pending_members_group_usage_quotas_path(group)
+
+      expect(page.find('[data-testid="pending-members-row"]')).to have_text(awaiting_member.user.name)
+
+      click_button 'Approve'
+      click_button 'OK'
+      wait_for_requests
+
+      expect(awaiting_member.reload).to be_active
+    end
+  end
+
   def visit_usage_quotas_page(anchor = 'seats-quota-tab')
     visit group_usage_quotas_path(group, anchor: anchor)
   end
