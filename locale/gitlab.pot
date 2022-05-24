@@ -43092,7 +43092,19 @@ msgstr ""
 msgid "Work in progress Limit"
 msgstr ""
 
+msgid "WorkItem|Add"
+msgstr ""
+
+msgid "WorkItem|Add a child"
+msgstr ""
+
 msgid "WorkItem|Are you sure you want to delete the work item? This action cannot be reversed."
+msgstr ""
+
+msgid "WorkItem|Cancel"
+msgstr ""
+
+msgid "WorkItem|Child items"
 msgstr ""
 
 msgid "WorkItem|Convert to work item"
@@ -43105,6 +43117,9 @@ msgid "WorkItem|Delete work item"
 msgstr ""
 
 msgid "WorkItem|New Task"
+msgstr ""
+
+msgid "WorkItem|No child items are currently assigned. Use child items to prioritize tasks that your team should complete in order to accomplish your goals!"
 msgstr ""
 
 msgid "WorkItem|Select type"
