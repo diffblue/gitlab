@@ -7,10 +7,6 @@ RSpec.describe Projects::IssuesController do
   let(:project)   { create(:project_empty_repo, :public, namespace: namespace) }
   let(:user) { create(:user) }
 
-  before do
-    stub_feature_flags(vue_issues_list: true)
-  end
-
   describe 'licensed features' do
     let(:project) { create(:project, group: namespace) }
     let(:user) { create(:user) }
