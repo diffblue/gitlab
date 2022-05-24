@@ -102,36 +102,6 @@ RSpec.describe Gitlab::CodeOwners do
     end
   end
 
-  describe '.fast_path_lookup and .slow_path_lookup' do
-    let(:codeowner_lookup_ref) { merge_request.target_branch }
-    let(:codeowner_content) { 'files/ruby/feature.rb @owner-1' }
-    let(:merge_request) do
-      create(
-        :merge_request,
-        source_project: project,
-        source_branch: 'feature',
-        target_project: project,
-        target_branch: 'with-codeowners'
-      )
-    end
-
-    before do
-      stub_licensed_features(code_owners: true)
-    end
-
-    it 'returns equivalent results' do
-      fast_results = described_class.entries_for_merge_request(merge_request).first
-
-      expect(merge_request.merge_request_diff).to receive(:overflow?).and_return(true)
-
-      slow_results = described_class.entries_for_merge_request(merge_request).first
-
-      expect(slow_results.users).to eq(fast_results.users)
-      expect(slow_results.groups).to eq(fast_results.groups)
-      expect(slow_results.pattern).to eq(fast_results.pattern)
-    end
-  end
-
   describe '.entries_for_merge_request' do
     subject(:entries) { described_class.entries_for_merge_request(merge_request, merge_request_diff: merge_request_diff) }
 
@@ -150,34 +120,56 @@ RSpec.describe Gitlab::CodeOwners do
     context 'when the feature is available' do
       before do
         stub_licensed_features(code_owners: true)
-
-        allow(merge_request).to receive(:modified_paths).with(past_merge_request_diff: merge_request_diff) { ['docs/CODEOWNERS'] }
       end
 
-      it 'returns owners for merge request' do
-        expect(entries.first).to have_attributes(pattern: 'docs/CODEOWNERS', users: [code_owner])
+      context 'when merge_head_diff exists' do
+        before do
+          merge_head_diff = instance_double(MergeRequestDiff)
+          expect(merge_head_diff).to receive(:modified_paths).with(fallback_on_overflow: true).and_return(modified_paths)
+          expect(merge_request).to receive(:merge_head_diff).and_return(merge_head_diff)
+          expect(merge_request).not_to receive(:merge_request_diff).and_call_original
+        end
+
+        context 'when the changed file paths have matching code owners' do
+          let(:modified_paths) { ['docs/CODEOWNERS'] }
+
+          it 'returns owners for merge request' do
+            expect(entries.first).to have_attributes(pattern: 'docs/CODEOWNERS', users: [code_owner])
+          end
+        end
+
+        context 'when the changed file paths do not have matching code owners' do
+          let(:modified_paths) { ['files/ruby/feature.rb'] }
+
+          it 'returns an empty array' do
+            expect(entries).to be_empty
+          end
+        end
+      end
+
+      context 'when merge_head_diff does not exist' do
+        before do
+          expect(merge_request).to receive(:merge_head_diff).and_return(nil)
+        end
+
+        it 'falls back to merge_request_diff' do
+          expect(merge_request.merge_request_diff).to receive(:modified_paths).with(fallback_on_overflow: true).and_call_original
+
+          entries
+        end
       end
 
       context 'when merge_request_diff is specified' do
         let(:merge_request_diff) { merge_request.merge_request_diff }
+        let(:modified_paths) { ['docs/CODEOWNERS'] }
+
+        before do
+          expect(merge_request_diff).to receive(:modified_paths).with(fallback_on_overflow: true).and_return(modified_paths)
+        end
 
         it 'returns owners at the specified ref' do
-          expect(described_class).to receive(:fast_path_lookup).and_call_original
-
+          expect(merge_request).not_to receive(:merge_head_diff)
           expect(entries.first).to have_attributes(pattern: 'docs/CODEOWNERS', users: [code_owner])
-        end
-      end
-
-      context 'when the merge request is large (>1_000 files)' do
-        before do
-          expect(merge_request.merge_request_diff).to receive(:overflow?) { true }
-        end
-
-        it 'generates paths via .slow_path_lookup' do
-          expect(described_class).not_to receive(:fast_path_lookup)
-          expect(described_class).to receive(:slow_path_lookup).and_call_original
-
-          entries
         end
       end
     end
