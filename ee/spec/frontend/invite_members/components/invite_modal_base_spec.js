@@ -1,5 +1,7 @@
 import { GlModal, GlSprintf } from '@gitlab/ui';
-import { nextTick } from 'vue';
+import Vue, { nextTick } from 'vue';
+import VueApollo from 'vue-apollo';
+import waitForPromises from 'helpers/wait_for_promises';
 import { stubComponent } from 'helpers/stub_component';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import ContentTransition from '~/vue_shared/components/content_transition.vue';
@@ -10,9 +12,13 @@ import {
   OVERAGE_MODAL_CONTINUE_BUTTON,
   OVERAGE_MODAL_BACK_BUTTON,
 } from 'ee/invite_members/constants';
-import { propsData } from 'jest/invite_members/mock_data/modal_base';
+import { propsData as propsDataCE } from 'jest/invite_members/mock_data/modal_base';
 import { fetchUserIdsFromGroup } from 'ee/invite_members/utils';
+import getSubscriptionEligibility from 'ee/invite_members/subscription_eligible.customer.query.graphql';
+import createMockApollo from 'helpers/mock_apollo_helper';
 import { noFreePlacesSubscription as mockSubscription } from '../mock_data';
+
+Vue.use(VueApollo);
 
 jest.mock('ee/invite_members/check_overage', () => ({
   checkOverage: jest.fn().mockImplementation(() => ({ hasOverage: true, usersOverage: 2 })),
@@ -29,18 +35,30 @@ jest.mock('ee/invite_members/utils', () => ({
 describe('EEInviteModalBase', () => {
   let wrapper;
   let listenerSpy;
+  let mockApollo;
 
-  const createComponent = (props = {}, glFeatures = {}) => {
+  const defaultResolverMock = jest
+    .fn()
+    .mockResolvedValue({ data: { subscription: { eligibleForSeatUsageAlerts: true } } });
+
+  const createComponent = ({
+    props = {},
+    glFeatures = {},
+    queryHandler = defaultResolverMock,
+  } = {}) => {
+    mockApollo = createMockApollo([[getSubscriptionEligibility, queryHandler]]);
+
     wrapper = shallowMountExtended(EEInviteModalBase, {
       propsData: {
-        ...propsData,
+        ...propsDataCE,
         ...props,
       },
+      apolloProvider: mockApollo,
       provide: {
-        ...glFeatures,
+        glFeatures,
       },
       attrs: {
-        'access-levels': propsData.accessLevels,
+        'access-levels': propsDataCE.accessLevels,
       },
       stubs: {
         GlSprintf,
@@ -86,7 +104,7 @@ describe('EEInviteModalBase', () => {
 
     it('passes attrs to CE base', () => {
       expect(findCEBase().props()).toMatchObject({
-        ...propsData,
+        ...propsDataCE,
         currentSlot: 'default',
         extraSlots: EEInviteModalBase.EXTRA_SLOTS,
       });
@@ -104,14 +122,19 @@ describe('EEInviteModalBase', () => {
       expect(wrapper.emitted('reset')).toHaveLength(1);
     });
 
+    it("doesn't call api on initial render", () => {
+      expect(defaultResolverMock).toHaveBeenCalledTimes(0);
+    });
+
     describe('(integration) when invite is clicked', () => {
       beforeEach(async () => {
         clickInviteButton();
         await nextTick();
+        await waitForPromises();
       });
 
       it('does not change title', () => {
-        expect(findModalTitle()).toBe(propsData.modalTitle);
+        expect(findModalTitle()).toBe(propsDataCE.modalTitle);
       });
 
       it('shows initial modal content', () => {
@@ -126,9 +149,18 @@ describe('EEInviteModalBase', () => {
 
   describe('with overageMembersModal feature flag and a group to invite, and invite is clicked', () => {
     beforeEach(async () => {
-      createComponent({ newGroupToInvite: 123 }, { glFeatures: { overageMembersModal: true } });
+      createComponent({
+        props: { newGroupToInvite: 123, rootGroupId: '54321' },
+        glFeatures: { overageMembersModal: true },
+      });
       clickInviteButton();
       await nextTick();
+      await waitForPromises();
+    });
+
+    it('calls graphql API and passes correct parameters', () => {
+      expect(defaultResolverMock).toHaveBeenCalledTimes(1);
+      expect(defaultResolverMock).toHaveBeenCalledWith({ namespaceId: 54321 });
     });
 
     it('calls fetchUserIdsFromGroup and passes correct parameter', () => {
@@ -139,9 +171,9 @@ describe('EEInviteModalBase', () => {
 
   describe('with overageMembersModal feature flag, and invite is clicked ', () => {
     beforeEach(async () => {
-      createComponent({}, { glFeatures: { overageMembersModal: true } });
+      createComponent({ glFeatures: { overageMembersModal: true } });
       clickInviteButton();
-      await nextTick();
+      await waitForPromises();
     });
 
     it('does not emit submit', () => {
@@ -184,13 +216,63 @@ describe('EEInviteModalBase', () => {
       beforeEach(() => clickBackButton());
 
       it('shows the initial modal', () => {
-        expect(findModal().props('title')).toBe(propsData.modalTitle);
+        expect(findModal().props('title')).toBe(propsDataCE.modalTitle);
         expect(findInitialModalContent().isVisible()).toBe(true);
       });
 
       it("doesn't show the overage content", () => {
         expect(findOverageModalContent().isVisible()).toBe(false);
       });
+    });
+  });
+
+  describe('when the group is not eligible to show overage', () => {
+    beforeEach(async () => {
+      createComponent({
+        glFeatures: { overageMembersModal: true },
+        queryHandler: jest
+          .fn()
+          .mockResolvedValue({ data: { subscription: { eligibleForSeatUsageAlerts: false } } }),
+      });
+
+      clickInviteButton();
+      await nextTick();
+    });
+
+    it('shows the initial modal', () => {
+      expect(findModal().props('title')).toBe(propsDataCE.modalTitle);
+      expect(findInitialModalContent().isVisible()).toBe(true);
+    });
+
+    it("doesn't show the overage content", () => {
+      expect(findOverageModalContent().isVisible()).toBe(false);
+    });
+  });
+
+  describe('when group eligibility API request fails', () => {
+    beforeEach(async () => {
+      createComponent({
+        glFeatures: { overageMembersModal: true },
+        queryHandler: jest.fn().mockRejectedValue(new Error('GraphQL error')),
+      });
+
+      clickInviteButton();
+      await nextTick();
+      await waitForPromises();
+    });
+
+    it('emits submit event', () => {
+      expect(wrapper.emitted('submit')).toHaveLength(1);
+      expect(wrapper.emitted('submit')).toEqual([[{ accessLevel: 10, expiresAt: undefined }]]);
+    });
+
+    it('shows the initial modal', () => {
+      expect(findModal().props('title')).toBe(propsDataCE.modalTitle);
+      expect(findInitialModalContent().isVisible()).toBe(true);
+    });
+
+    it("doesn't show the overage content", () => {
+      expect(findOverageModalContent().isVisible()).toBe(false);
     });
   });
 });

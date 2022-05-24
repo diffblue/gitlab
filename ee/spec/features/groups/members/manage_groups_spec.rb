@@ -6,6 +6,7 @@ RSpec.describe 'Groups > Members > Manage groups', :js, :saas do
   include Spec::Support::Helpers::Features::MembersHelpers
   include Spec::Support::Helpers::Features::InviteMembersModalHelper
   include Spec::Support::Helpers::ModalHelpers
+  include SubscriptionPortalHelpers
 
   let_it_be(:user) { create(:user) }
   let_it_be(:user2) { create(:user) }
@@ -57,7 +58,9 @@ RSpec.describe 'Groups > Members > Manage groups', :js, :saas do
 
   before do
     sign_in(user)
+    stub_signing_key
     stub_application_setting(check_namespace_plan: true)
+    stub_subscription_request_seat_usage(true)
   end
 
   context 'for a free group' do
@@ -96,6 +99,15 @@ RSpec.describe 'Groups > Members > Manage groups', :js, :saas do
 
     it_behaves_like "triggers an overage modal when adding a group as Reporter"
     it_behaves_like "doesn't trigger an overage modal when adding a group with a given role", 'Guest'
+  end
+
+  context 'for a group not eligible for reconciliation', :aggregate_failures do
+    before do
+      create(:gitlab_subscription, namespace: group, hosted_plan: premium_plan, seats: 1, seats_in_use: 0)
+      stub_subscription_request_seat_usage(false)
+    end
+
+    it_behaves_like "doesn't trigger an overage modal when adding a group with a given role", 'Reporter'
   end
 
   def add_group(name, role, expires_at: nil)

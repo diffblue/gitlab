@@ -3,6 +3,12 @@
 module SubscriptionPortalHelpers
   include StubRequests
 
+  def stub_signing_key
+    key = OpenSSL::PKey::RSA.new(2048)
+
+    stub_application_setting(customers_dot_jwt_signing_key: key)
+  end
+
   def stub_eoa_eligibility_request(namespace_id, eligible = false, free_upgrade_plan_id = nil, assisted_upgrade_plan_id = nil)
     stub_full_request(EE::SUBSCRIPTIONS_GRAPHQL_URL, method: :post)
       .with(
@@ -35,6 +41,17 @@ module SubscriptionPortalHelpers
     else
       stub.to_return(status: 200, body: plans_data || plans_fixture)
     end
+  end
+
+  def stub_subscription_request_seat_usage(eligible)
+    stub_request(:post, EE::SUBSCRIPTIONS_GRAPHQL_URL)
+    .to_return(status: 200, body: {
+      "data": {
+        "subscription": {
+          "eligibleForSeatUsageAlerts": eligible
+        }
+      }
+    }.to_json, headers: { 'Content-Type' => 'application/json' })
   end
 
   private
