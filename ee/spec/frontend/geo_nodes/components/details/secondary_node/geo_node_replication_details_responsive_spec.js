@@ -1,3 +1,4 @@
+import { GlLink } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import GeoNodeProgressBar from 'ee/geo_nodes/components/details/geo_node_progress_bar.vue';
 import GeoNodeReplicationDetailsResponsive from 'ee/geo_nodes/components/details/secondary_node/geo_node_replication_details_responsive.vue';
@@ -35,6 +36,8 @@ describe('GeoNodeReplicationDetailsResponsive', () => {
     extendedWrapper(findReplicationDetailsItems().at(0)).findByTestId('sync-status');
   const findFirstReplicationDetailsItemVerifStatus = () =>
     extendedWrapper(findReplicationDetailsItems().at(0)).findByTestId('verification-status');
+  const findReplicableComponent = () => wrapper.findByTestId('replicable-component');
+  const findReplicableComponentLink = () => findReplicableComponent().findComponent(GlLink);
 
   describe('template', () => {
     describe('with default slots', () => {
@@ -111,6 +114,46 @@ describe('GeoNodeReplicationDetailsResponsive', () => {
                 .props('target'),
             ).toBe('verification-progress-42-Test Component');
           }
+        });
+      });
+
+      describe('component links', () => {
+        describe('with replicationView', () => {
+          const MOCK_REPLICATION_ITEM = {
+            component: 'Test Component',
+            replicationView: 'https://test.domain/path',
+          };
+
+          beforeEach(() => {
+            createComponent({ replicationItems: [MOCK_REPLICATION_ITEM] });
+          });
+
+          it('renders replicable component title', () => {
+            expect(findReplicableComponent().text()).toBe(MOCK_REPLICATION_ITEM.component);
+          });
+
+          it(`renders GlLink to secondary replication view`, () => {
+            expect(findReplicableComponentLink().exists()).toBe(true);
+            expect(findReplicableComponentLink().attributes('href')).toBe(
+              MOCK_REPLICATION_ITEM.replicationView,
+            );
+          });
+        });
+
+        describe('without replicationView', () => {
+          const MOCK_REPLICATION_ITEM = { component: 'Test Component', replicationView: null };
+
+          beforeEach(() => {
+            createComponent({ replicationItems: [MOCK_REPLICATION_ITEM] });
+          });
+
+          it('renders replicable component title', () => {
+            expect(findReplicableComponent().text()).toBe(MOCK_REPLICATION_ITEM.component);
+          });
+
+          it(`does not render GlLink to secondary replication view`, () => {
+            expect(findReplicableComponentLink().exists()).toBe(false);
+          });
         });
       });
     });

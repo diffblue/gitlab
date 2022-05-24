@@ -51,6 +51,7 @@ export default {
           component: replicable.titlePlural,
           syncValues: replicableSyncInfo ? replicableSyncInfo.values : null,
           verificationValues: replicableVerificationInfo ? replicableVerificationInfo.values : null,
+          replicationView: this.getReplicationView(replicable),
         };
       });
     },
@@ -64,6 +65,17 @@ export default {
   methods: {
     collapseSection() {
       this.collapsed = !this.collapsed;
+    },
+    getReplicationView(replicable) {
+      if (replicable.noReplicationView) {
+        return null;
+      }
+
+      const path = replicable.customReplicationUrl
+        ? `${this.node.url}${replicable.customReplicationUrl}`
+        : `${this.node.url}admin/geo/sites/${this.node.id}/replication/${replicable.namePlural}`;
+
+      return new URL(path);
     },
   },
   GEO_REPLICATION_SUPPORTED_TYPES_URL,
@@ -101,7 +113,12 @@ export default {
           <span class="gl-font-weight-bold">{{ translations.status }}</span>
         </template>
         <template #default="{ item, translations }">
-          <span class="gl-mr-5">{{ item.component }}</span>
+          <div class="gl-mr-5" data-testid="replicable-component">
+            <gl-link v-if="item.replicationView" :href="item.replicationView">{{
+              item.component
+            }}</gl-link>
+            <span v-else>{{ item.component }}</span>
+          </div>
           <geo-node-replication-status-mobile :item="item" :translations="translations" />
         </template>
       </geo-node-replication-details-responsive>

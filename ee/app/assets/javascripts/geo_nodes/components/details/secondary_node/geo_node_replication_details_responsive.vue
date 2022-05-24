@@ -1,4 +1,5 @@
 <script>
+import { GlLink } from '@gitlab/ui';
 import GeoNodeProgressBar from 'ee/geo_nodes/components/details/geo_node_progress_bar.vue';
 import { s__, __ } from '~/locale';
 
@@ -21,6 +22,7 @@ export default {
     nothingToVerify: s__('Geo|Nothing to verify'),
   },
   components: {
+    GlLink,
     GeoNodeProgressBar,
   },
   props: {
@@ -59,7 +61,12 @@ export default {
     >
       <slot :item="item" :translations="$options.i18n">
         <span class="gl-mr-5">{{ item.dataTypeTitle }}</span>
-        <span class="gl-mr-5">{{ item.component }}</span>
+        <div class="gl-mr-5" data-testid="replicable-component">
+          <gl-link v-if="item.replicationView" :href="item.replicationView">{{
+            item.component
+          }}</gl-link>
+          <span v-else>{{ item.component }}</span>
+        </div>
         <div class="gl-mr-5" data-testid="sync-status">
           <geo-node-progress-bar
             v-if="item.syncValues"

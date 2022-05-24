@@ -187,7 +187,7 @@ module EE
           title_plural: _('Repositories'),
           name: 'repository',
           name_plural: 'repositories',
-          secondary_view: true
+          custom_replication_url: 'admin/geo/replication/projects'
         },
         {
           data_type: 'repository',
@@ -195,7 +195,8 @@ module EE
           title: _('Wiki'),
           title_plural: _('Wikis'),
           name: 'wiki',
-          name_plural: 'wikis'
+          name_plural: 'wikis',
+          no_replication_view: true
         },
         {
           data_type: 'blob',
@@ -203,7 +204,8 @@ module EE
           title: _('Container repository'),
           title_plural: _('Container repositories'),
           name: 'container_repository',
-          name_plural: 'container_repositories'
+          name_plural: 'container_repositories',
+          no_replication_view: true
         },
         {
           data_type: 'repository',
@@ -212,7 +214,7 @@ module EE
           title_plural: _('Design repositories'),
           name: 'design_repository',
           name_plural: 'design_repositories',
-          secondary_view: true
+          custom_replication_url: 'admin/geo/replication/designs'
         }
       ]
 
@@ -225,8 +227,7 @@ module EE
             title: replicator_class.replicable_title,
             title_plural: replicator_class.replicable_title_plural,
             name: replicator_class.replicable_name,
-            name_plural: replicator_class.replicable_name_plural,
-            secondary_view: true
+            name_plural: replicator_class.replicable_name_plural
           }
         )
       end

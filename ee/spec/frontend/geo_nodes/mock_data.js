@@ -15,7 +15,7 @@ export const MOCK_REPLICABLE_TYPES = [
     titlePlural: 'Repositories',
     name: 'repository',
     namePlural: 'repositories',
-    secondaryView: true,
+    customReplicationUrl: 'admin/geo/replication/projects',
   },
   {
     dataType: 'repository',
@@ -24,6 +24,7 @@ export const MOCK_REPLICABLE_TYPES = [
     titlePlural: 'Wikis',
     name: 'wiki',
     namePlural: 'wikis',
+    noReplicationView: true,
   },
   {
     dataType: 'repository',
@@ -32,7 +33,7 @@ export const MOCK_REPLICABLE_TYPES = [
     titlePlural: 'Designs',
     name: 'design',
     namePlural: 'designs',
-    secondaryView: true,
+    customReplicationUrl: 'admin/geo/replication/designs',
   },
   {
     dataType: 'blob',
