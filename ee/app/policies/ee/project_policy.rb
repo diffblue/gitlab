@@ -306,6 +306,7 @@ module EE
         enable :read_terraform_state
         enable :read_project_merge_request_analytics
         enable :read_approvers
+        enable :read_on_demand_dast_scan
       end
 
       rule { ~security_and_compliance_disabled & auditor }.policy do

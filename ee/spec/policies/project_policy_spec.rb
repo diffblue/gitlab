@@ -51,6 +51,7 @@ RSpec.describe ProjectPolicy do
         read_cluster
         read_terraform_state
         read_project_merge_request_analytics
+        read_on_demand_dast_scan
       ]
     end
 
