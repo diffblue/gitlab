@@ -17,8 +17,6 @@ RSpec.describe 'Filter issues by multiple assignees', :js do
   end
 
   before do
-    stub_feature_flags(vue_issues_list: true)
-
     sign_in(user)
     visit project_issues_path(project)
   end

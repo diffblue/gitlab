@@ -18,7 +18,6 @@ RSpec.describe 'Filter issues by epic', :js do
   let_it_be(:epic_issue3) { create(:epic_issue, issue: issue3, epic: epic2) }
 
   before do
-    stub_feature_flags(vue_issues_list: true)
     stub_licensed_features(epics: true)
     group.add_maintainer(user)
 

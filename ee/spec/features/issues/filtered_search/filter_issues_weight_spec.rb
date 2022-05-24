@@ -22,7 +22,6 @@ RSpec.describe 'Filter issues weight', :js do
   end
 
   before do
-    stub_feature_flags(vue_issues_list: true)
     project.add_maintainer(user)
     sign_in(user)
 

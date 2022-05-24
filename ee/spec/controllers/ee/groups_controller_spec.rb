@@ -12,10 +12,6 @@ RSpec.describe GroupsController do
   let_it_be(:subgroup) { create(:group, :private, parent: group) }
   let_it_be(:subgroup2) { create(:group, :private, parent: subgroup) }
 
-  before do
-    stub_feature_flags(vue_issues_list: true)
-  end
-
   describe 'GET #show' do
     let(:namespace) { group }
 
