@@ -1455,9 +1455,6 @@ msgstr[1] ""
 msgid "1-9 contributions"
 msgstr ""
 
-msgid "1. Effective June 1, 2022, all GitLab Free tier public projects will be %{minutes_quota_link}."
-msgstr ""
-
 msgid "10-19 contributions"
 msgstr ""
 
@@ -1468,9 +1465,6 @@ msgid "192.168.0.0/24 or 2001:0DB8:1234::/48"
 msgstr ""
 
 msgid "1st contribution!"
-msgstr ""
-
-msgid "2. Before July 1, 2022, all GitLab Free tier public open source projects must %{enrollment_link} to continue to receive GitLab Ultimate benefits."
 msgstr ""
 
 msgid "20-29 contributions"
@@ -5764,6 +5758,9 @@ msgstr ""
 msgid "Be careful. Renaming a project's repository can have unintended side effects."
 msgstr ""
 
+msgid "Before July 1, 2022, all free tier public open source projects must %{enrollment_link} to continue to receive GitLab Ultimate benefits."
+msgstr ""
+
 msgid "Before enabling this integration, create a webhook for the room in Google Chat where you want to receive notifications from this project. %{docs_link}"
 msgstr ""
 
@@ -7410,7 +7407,7 @@ msgstr ""
 msgid "Changes the title to \"%{title_param}\"."
 msgstr ""
 
-msgid "Changes to GitLab Free tier public projects"
+msgid "Changes to free tier open source projects"
 msgstr ""
 
 msgid "Changes to the title have not been saved"
