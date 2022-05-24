@@ -2137,4 +2137,19 @@ RSpec.describe GroupPolicy do
       end
     end
   end
+
+  describe 'dependency proxy' do
+    context 'feature enabled' do
+      before do
+        stub_config(dependency_proxy: { enabled: true })
+      end
+
+      context 'auditor' do
+        let(:current_user) { auditor }
+
+        it { is_expected.to be_allowed(:read_dependency_proxy) }
+        it { is_expected.to be_disallowed(:admin_dependency_proxy) }
+      end
+    end
+  end
 end
