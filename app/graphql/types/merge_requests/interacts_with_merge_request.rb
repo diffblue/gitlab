@@ -14,6 +14,8 @@ module Types
       end
 
       def merge_request_interaction(parent:, id: nil)
+        # need the connection parent if called from a connection node:
+        parent = parent.parent if parent.try(:field)&.connection?
         Users::MergeRequestInteraction.new(user: object, merge_request: parent)
       end
     end

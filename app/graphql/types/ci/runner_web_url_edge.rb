@@ -17,24 +17,25 @@ module Types
         @runner = node.node
       end
 
+      # here parent is a Keyset::Connection
       def edit_url(parent:)
-        runner_url(parent: parent, url_type: :edit_url)
+        runner_url(owner: parent.parent, url_type: :edit_url)
       end
 
       def web_url(parent:)
-        runner_url(parent: parent, url_type: :default)
+        runner_url(owner: parent.parent, url_type: :default)
       end
 
       private
 
-      def runner_url(parent:, url_type: :default)
+      def runner_url(owner:, url_type: :default)
         # Only ::Group is supported at the moment, future iterations will include ::Project.
         # See https://gitlab.com/gitlab-org/gitlab/-/issues/16338
-        case parent
+        case owner
         when ::Group
-          return Gitlab::Routing.url_helpers.edit_group_runner_url(parent, @runner) if url_type == :edit_url
+          return Gitlab::Routing.url_helpers.edit_group_runner_url(owner, @runner) if url_type == :edit_url
 
-          Gitlab::Routing.url_helpers.group_runner_url(parent, @runner)
+          Gitlab::Routing.url_helpers.group_runner_url(owner, @runner)
         end
       end
     end
