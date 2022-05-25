@@ -1011,15 +1011,6 @@
   :weight: 2
   :idempotent:
   :tags: []
-- :name: dast_site_validation
-  :worker_name: DastSiteValidationWorker
-  :feature_category: :dynamic_application_security_testing
-  :has_external_dependencies:
-  :urgency: :low
-  :resource_boundary: :unknown
-  :weight: 1
-  :idempotent: true
-  :tags: []
 - :name: elastic_association_indexer
   :worker_name: ElasticAssociationIndexerWorker
   :feature_category: :global_search
