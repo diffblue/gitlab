@@ -387,6 +387,9 @@ export default {
       this.selectActiveProfile(type);
       this.openProfileDrawer(type);
     },
+    isNewProfile(id) {
+      return !this.selectedProfiles.some((profile) => profile.id === id);
+    },
     selectActiveProfile(type) {
       this.activeProfile =
         type === SCANNER_TYPE ? this.selectedScannerProfile : this.selectedSiteProfile;
@@ -418,21 +421,25 @@ export default {
       this.selectedSiteProfileId = this.selectedSiteProfileId ?? selectedSiteProfileId;
       this.selectedScannerProfileId = this.selectedScannerProfileId ?? selectedScannerProfileId;
     },
-    updateProfileFromSelector({ profile, profileType }) {
+    updateProfileFromSelector({ profile: { id }, profileType }) {
       if (profileType === SCANNER_TYPE) {
-        this.selectedScannerProfileId = profile.id;
+        this.selectedScannerProfileId = id;
       } else {
-        this.selectedSiteProfileId = profile.id;
+        this.selectedSiteProfileId = id;
       }
       this.closeSideDrawer();
     },
-    onScannerProfileCreated() {
+    onScannerProfileCreated({ profile, profileType }) {
       /**
        * TODO remove refetch method
        * after feature is complete
        * substitute with cache update flow
        */
-      const type = `${this.profileType}Profiles`;
+      if (this.isNewProfile(profile.id)) {
+        this.updateProfileFromSelector({ profile, profileType });
+      }
+
+      const type = `${profileType}Profiles`;
       this.$apollo.queries[type].refetch();
     },
   },

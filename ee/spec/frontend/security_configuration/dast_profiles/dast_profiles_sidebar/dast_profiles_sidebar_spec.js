@@ -33,6 +33,7 @@ describe('DastProfilesSidebar', () => {
   const findEditButton = () => wrapper.findByTestId('profile-edit-btn');
   const findProfileNameInput = () => wrapper.findByTestId('profile-name-input');
   const findSkeletonLoader = () => wrapper.findComponent(DastProfilesLoader);
+  const findDastProfilesList = () => wrapper.findByTestId('dast-profiles-sidebar list');
 
   afterEach(() => {
     wrapper.destroy();
@@ -124,6 +125,38 @@ describe('DastProfilesSidebar', () => {
       expect(findNewDastScannerProfileForm().exists()).toBe(true);
       expect(findNewScanButton().exists()).toBe(false);
       expect(findSidebarHeader().text()).toContain('Edit scanner profile');
+    });
+  });
+
+  describe('switching between modes', () => {
+    it('should return to reading mode from edit mode', async () => {
+      createComponent({ profileType: SCANNER_TYPE, profiles: scannerProfiles });
+
+      findEditButton().vm.$emit('click');
+
+      await nextTick();
+
+      expect(findNewDastScannerProfileForm().exists()).toBe(true);
+
+      findCancelButton().vm.$emit('click');
+
+      await nextTick();
+      expect(findDastProfilesList().exists()).toBe(true);
+    });
+
+    it('should return to reading mode from new profile mode', async () => {
+      createComponent({ profileType: SCANNER_TYPE, profiles: scannerProfiles });
+
+      findNewScanButton().vm.$emit('click');
+
+      await nextTick();
+
+      expect(findNewDastScannerProfileForm().exists()).toBe(true);
+
+      findCancelButton().vm.$emit('click');
+
+      await nextTick();
+      expect(findDastProfilesList().exists()).toBe(true);
     });
   });
 });

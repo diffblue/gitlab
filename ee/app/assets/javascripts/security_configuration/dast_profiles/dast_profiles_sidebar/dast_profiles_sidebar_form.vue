@@ -1,4 +1,5 @@
 <script>
+import { isEmpty } from 'lodash';
 import { SCANNER_TYPE } from 'ee/on_demand_scans/constants';
 import DastScannerProfileForm from 'ee/security_configuration/dast_profiles/dast_scanner_profiles/components/dast_scanner_profile_form.vue';
 import DastSiteProfileForm from 'ee/security_configuration/dast_profiles/dast_site_profiles/components/dast_site_profile_form.vue';
@@ -16,6 +17,14 @@ export default {
     formComponent() {
       return this.profileType === SCANNER_TYPE ? DastScannerProfileForm : DastSiteProfileForm;
     },
+    successEvent() {
+      return isEmpty(this.profile) ? 'created' : 'edited';
+    },
+  },
+  methods: {
+    emitEvent(id) {
+      this.$emit(this.successEvent, id);
+    },
   },
 };
 </script>
@@ -26,6 +35,7 @@ export default {
     :stacked="true"
     :profile="profile"
     :project-full-path="projectPath"
+    @success="emitEvent"
     v-on="$listeners"
   />
 </template>
