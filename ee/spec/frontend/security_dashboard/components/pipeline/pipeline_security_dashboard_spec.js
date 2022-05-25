@@ -51,23 +51,7 @@ describe('Pipeline Security Dashboard component', () => {
   const findReportStatusAlert = () => wrapper.findComponent(ReportStatusAlert);
 
   const factory = ({ stubs, provide, apolloProvider } = {}) => {
-    store = new Vuex.Store({
-      modules: {
-        vulnerabilities: {
-          namespaced: true,
-          actions: {
-            setSourceBranch() {},
-          },
-        },
-        pipelineJobs: {
-          namespaced: true,
-          actions: {
-            setPipelineJobsPath() {},
-            setProjectId() {},
-          },
-        },
-      },
-    });
+    store = new Vuex.Store();
     jest.spyOn(store, 'dispatch').mockImplementation();
 
     wrapper = shallowMount(PipelineSecurityDashboard, {

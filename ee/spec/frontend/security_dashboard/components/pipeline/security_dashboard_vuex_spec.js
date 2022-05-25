@@ -1,17 +1,18 @@
 import { shallowMount } from '@vue/test-utils';
 import MockAdapter from 'axios-mock-adapter';
-import { merge } from 'lodash';
-import { nextTick } from 'vue';
+import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
 import LoadingError from 'ee/security_dashboard/components/pipeline/loading_error.vue';
 import SecurityDashboardTable from 'ee/security_dashboard/components/pipeline/security_dashboard_table.vue';
 import SecurityDashboard from 'ee/security_dashboard/components/pipeline/security_dashboard_vuex.vue';
-import { getStoreConfig } from 'ee/security_dashboard/store';
+import { setupStore } from 'ee/security_dashboard/store';
 import { VULNERABILITY_MODAL_ID } from 'ee/vue_shared/security_reports/components/constants';
 import IssueModal from 'ee/vue_shared/security_reports/components/modal.vue';
 import { TEST_HOST } from 'helpers/test_constants';
 import axios from '~/lib/utils/axios_utils';
 import { BV_HIDE_MODAL } from '~/lib/utils/constants';
+
+Vue.use(Vuex);
 
 const pipelineId = 123;
 const pipelineIid = 12;
@@ -22,23 +23,12 @@ jest.mock('~/flash');
 describe('Security Dashboard component', () => {
   let wrapper;
   let mock;
-  let setPipelineIdSpy;
-  let fetchPipelineJobsSpy;
   let store;
 
   const createComponent = ({ props } = {}) => {
-    setPipelineIdSpy = jest.fn();
-    fetchPipelineJobsSpy = jest.fn();
-
-    const { actions, ...storeConfig } = getStoreConfig();
-    store = new Vuex.Store(
-      merge(storeConfig, {
-        modules: {
-          vulnerabilities: { actions: { setPipelineId: setPipelineIdSpy } },
-          pipelineJobs: { actions: { fetchPipelineJobs: fetchPipelineJobsSpy } },
-        },
-      }),
-    );
+    store = new Vuex.Store();
+    jest.spyOn(store, 'dispatch');
+    setupStore(store);
 
     wrapper = shallowMount(SecurityDashboard, {
       store,
@@ -72,11 +62,11 @@ describe('Security Dashboard component', () => {
     });
 
     it('sets the pipeline id', () => {
-      expect(setPipelineIdSpy).toHaveBeenCalledWith(expect.any(Object), pipelineId);
+      expect(store.dispatch).toHaveBeenCalledWith('vulnerabilities/setPipelineId', pipelineId);
     });
 
-    it('fetchs the pipeline jobs', () => {
-      expect(fetchPipelineJobsSpy).toHaveBeenCalledWith(expect.any(Object), undefined);
+    it('fetches the pipeline jobs', () => {
+      expect(store.dispatch).toHaveBeenCalledWith('pipelineJobs/fetchPipelineJobs', undefined);
     });
 
     it('renders the issue modal', () => {

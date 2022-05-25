@@ -4,7 +4,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import SecurityDashboardTableRow from 'ee/security_dashboard/components/pipeline/security_dashboard_table_row.vue';
 import VulnerabilityActionButtons from 'ee/security_dashboard/components/pipeline/vulnerability_action_buttons.vue';
-import createStore from 'ee/security_dashboard/store';
+import { setupStore } from 'ee/security_dashboard/store';
 import { VULNERABILITY_MODAL_ID } from 'ee/vue_shared/security_reports/components/constants';
 import SeverityBadge from 'ee/vue_shared/security_reports/components/severity_badge.vue';
 import { trimText } from 'helpers/text_helper';
@@ -27,7 +27,8 @@ describe('Security Dashboard Table Row', () => {
   };
 
   beforeEach(() => {
-    store = createStore();
+    store = new Vuex.Store();
+    setupStore(store);
     jest.spyOn(store, 'dispatch');
   });
 

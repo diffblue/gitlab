@@ -8,6 +8,7 @@ import { s__ } from '~/locale';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { DOC_PATH_SECURITY_CONFIGURATION } from 'ee/security_dashboard/constants';
+import { setupStore } from '../../store';
 import ScanAlerts, { TYPE_ERRORS, TYPE_WARNINGS } from './scan_alerts.vue';
 import ReportStatusAlert, { STATUS_PURGED } from './report_status_alert.vue';
 import SecurityDashboard from './security_dashboard_vuex.vue';
@@ -116,6 +117,7 @@ export default {
     },
   },
   created() {
+    setupStore(this.$store);
     this.setSourceBranch(this.pipeline.sourceBranch);
     this.setPipelineJobsPath(this.pipeline.jobsPath);
     this.setProjectId(this.projectId);
