@@ -10849,6 +10849,9 @@ msgstr ""
 msgid "Critical vulnerabilities present"
 msgstr ""
 
+msgid "Crm|Contact"
+msgstr ""
+
 msgid "Crm|Contact has been added."
 msgstr ""
 
