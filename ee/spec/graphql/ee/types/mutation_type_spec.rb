@@ -4,16 +4,20 @@ require 'spec_helper'
 
 RSpec.describe Types::MutationType do
   describe 'deprecated mutations' do
-    describe 'iterationCreate' do
-      let(:field) { get_field('iterationCreate') }
+    using RSpec::Parameterized::TableSyntax
 
-      it { expect(field.deprecation_reason).to eq('Manual iteration management is deprecated. Only automatic iteration cadences will be supported in the future. Deprecated in 14.10.') }
+    where(:field_name, :reason, :milestone) do
+      'IterationCreate' | 'Manual iteration management is deprecated. Only automatic iteration cadences will be supported in the future' | '14.10'
+      'CreateIteration' | 'Manual iteration management is deprecated. Only automatic iteration cadences will be supported in the future' | '14.0'
+      'ApiFuzzingCiConfigurationCreate' | 'The configuration snippet is now generated client-side' | '15.1'
     end
 
-    describe 'createIteration' do
-      let(:field) { get_field('createIteration') }
+    with_them do
+      let(:field) { get_field(field_name) }
+      let(:deprecation_reason) { "#{reason}. Deprecated in #{milestone}." }
 
-      it { expect(field.deprecation_reason).to eq('Manual iteration management is deprecated. Only automatic iteration cadences will be supported in the future. Deprecated in 14.0.') }
+      it { expect(field).to be_present }
+      it { expect(field.deprecation_reason).to eq(deprecation_reason) }
     end
   end
 
