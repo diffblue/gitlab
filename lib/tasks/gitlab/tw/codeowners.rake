@@ -18,7 +18,6 @@ namespace :tw do
       end
     end
 
-
     CODE_OWNER_RULES = [
       CodeOwnerRule.new('Activation', '@kpaizee'),
       CodeOwnerRule.new("Adoption", '@kpaizee'),
