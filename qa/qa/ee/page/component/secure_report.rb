@@ -22,7 +22,7 @@ module QA
 
               view 'ee/app/assets/javascripts/security_dashboard/components/
                     shared/vulnerability_report/vulnerability_list.vue' do
-                element :vulnerability_status
+                element :vulnerability_status_content
               end
             end
           end
@@ -61,7 +61,7 @@ module QA
           end
 
           def has_status?(status, vulnerability_name)
-            has_element?(:vulnerability_status,
+            has_element?(:vulnerability_status_content,
                          status_description: vulnerability_name, text: "#{status.capitalize}")
           end
         end
