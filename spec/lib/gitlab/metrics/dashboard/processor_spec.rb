@@ -16,7 +16,6 @@ RSpec.describe Gitlab::Metrics::Dashboard::Processor do
         Gitlab::Metrics::Dashboard::Stages::CustomMetricsInserter,
         Gitlab::Metrics::Dashboard::Stages::CustomMetricsDetailsInserter,
         Gitlab::Metrics::Dashboard::Stages::MetricEndpointInserter,
-        Gitlab::Metrics::Dashboard::Stages::AlertsInserter,
         Gitlab::Metrics::Dashboard::Stages::PanelIdsInserter,
         Gitlab::Metrics::Dashboard::Stages::UrlValidator
       ]
