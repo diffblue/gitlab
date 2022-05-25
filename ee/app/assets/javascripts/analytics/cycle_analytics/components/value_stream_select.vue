@@ -108,20 +108,10 @@ export default {
 </script>
 <template>
   <div>
-    <gl-button
-      v-if="isCustomValueStream"
-      v-gl-modal-directive="'value-stream-form-modal'"
-      data-testid="edit-value-stream"
-      data-track-action="click_button"
-      data-track-label="edit_value_stream_form_open"
-      @click="onEdit"
-      >{{ $options.i18n.EDIT_VALUE_STREAM }}</gl-button
-    >
     <gl-dropdown
       v-if="hasValueStreams"
       data-testid="dropdown-value-streams"
       :text="selectedValueStreamName"
-      right
     >
       <gl-dropdown-item
         v-for="{ id, name: streamName } in data"
@@ -157,7 +147,16 @@ export default {
       </template>
     </gl-dropdown>
     <gl-button
-      v-else
+      v-if="isCustomValueStream"
+      v-gl-modal-directive="'value-stream-form-modal'"
+      data-testid="edit-value-stream"
+      data-track-action="click_button"
+      data-track-label="edit_value_stream_form_open"
+      @click="onEdit"
+      >{{ $options.i18n.EDIT_VALUE_STREAM }}</gl-button
+    >
+    <gl-button
+      v-if="!hasValueStreams"
       v-gl-modal-directive="'value-stream-form-modal'"
       data-testid="create-value-stream-button"
       data-track-action="click_button"

@@ -41548,6 +41548,9 @@ msgstr ""
 msgid "ValueStreamAnalytics|Total number of deploys to production."
 msgstr ""
 
+msgid "ValueStreamAnalytics|Value Stream"
+msgstr ""
+
 msgid "ValueStreamEvent|Items in stage"
 msgstr ""
 
