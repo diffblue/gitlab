@@ -14,8 +14,6 @@ module Types
       end
 
       def merge_request_interaction(parent:, id: nil)
-        return unless parent.is_a?(MergeRequest)
-
         Users::MergeRequestInteraction.new(user: object, merge_request: parent)
       end
     end
