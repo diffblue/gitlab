@@ -1,6 +1,6 @@
 <script>
-import { GlEmptyState } from '@gitlab/ui';
 import { mapActions, mapState, mapGetters } from 'vuex';
+import { GlEmptyState } from '@gitlab/ui';
 import { refreshCurrentPage } from '~/lib/utils/url_utility';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { VSA_METRICS_GROUPS } from '~/analytics/shared/constants';
@@ -187,21 +187,26 @@ export default {
       :has-date-range-error="!hasDateRangeSet"
     />
     <template v-else>
-      <div
-        class="gl-display-flex gl-flex-direction-column gl-sm-flex-direction-row gl-justify-content-space-between"
-      >
+      <div class="gl-mb-6">
         <h3>{{ __('Value Stream Analytics') }}</h3>
-        <div class="gl-display-flex gl-flex-direction-row gl-align-items-center gl-mt-0 gl-sm-mt-5">
+      </div>
+      <div
+        class="gl-display-flex gl-flex-direction-column gl-sm-flex-direction-row gl-justify-content-space-between gl-mb-6"
+      >
+        <div class="gl-display-flex gl-align-items-center gl-xs-mb-3">
+          <label class="gl-m-0 gl-mr-2">{{ s__('ValueStreamAnalytics|Value Stream') }}</label>
+          <value-stream-select v-if="shouldDisplayCreateMultipleValueStreams" />
+        </div>
+        <div class="gl-display-flex gl-align-items-center">
           <value-stream-aggregation-status
             v-if="isAggregationStatusAvailable"
             :data="aggregation"
           />
-          <value-stream-select v-if="shouldDisplayCreateMultipleValueStreams" />
         </div>
       </div>
       <value-stream-filters
         v-if="!shouldRenderAggregationWarning"
-        class="gl-my-3"
+        class="gl-mb-6"
         :group-id="currentGroup.id"
         :group-path="currentGroupPath"
         :selected-projects="selectedProjects"
