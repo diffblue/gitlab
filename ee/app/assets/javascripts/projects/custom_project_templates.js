@@ -98,11 +98,11 @@ const bindEvents = () => {
     const $activeTabProjectPath = $('.tab-pane.active #project_path');
     $activeTabProjectName.focus();
     $activeTabProjectName.on('keyup', () => {
-      projectNew.onProjectNameChange($activeTabProjectName, $activeTabProjectPath);
+      projectNew.onProjectNameChangeJq($activeTabProjectName, $activeTabProjectPath);
       hasUserDefinedProjectName = $activeTabProjectName.val().trim().length > 0;
     });
     $activeTabProjectPath.on('keyup', () =>
-      projectNew.onProjectPathChange(
+      projectNew.onProjectPathChangeJq(
         $activeTabProjectName,
         $activeTabProjectPath,
         hasUserDefinedProjectName,
