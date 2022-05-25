@@ -55,8 +55,7 @@ module EE
     end
 
     def stream_to_external_destinations(use_json: false, event_name: 'audit_operation')
-      return if entity.nil?
-      return unless group_entity&.licensed_feature_available?(:external_audit_events)
+      return unless can_stream_to_external_destination?
 
       perform_params = use_json ? [event_name, nil, self.to_json] : [event_name, id, nil]
       AuditEvents::AuditEventStreamingWorker.perform_async(*perform_params)
@@ -67,6 +66,16 @@ module EE
     end
 
     private
+
+    def can_stream_to_external_destination?
+      return false if entity.nil?
+
+      group = group_entity
+      return false if group.nil?
+      return false unless group.licensed_feature_available?(:external_audit_events)
+
+      group.external_audit_event_destinations.exists?
+    end
 
     def group_entity
       case entity_type
