@@ -142,7 +142,11 @@ export default {
         </h2>
         <p class="mb-0">
           <gl-sprintf
-            :message="s__('Dependencies|Based on the %{linkStart}latest successful%{linkEnd} scan')"
+            :message="
+              s__(
+                'Dependencies|Software Bill of Materials (SBOM) based on the %{linkStart}latest successful%{linkEnd} scan',
+              )
+            "
           >
             <template #link="{ content }">
               <gl-link v-if="reportInfo.jobPath" ref="jobLink" :href="reportInfo.jobPath">{{
