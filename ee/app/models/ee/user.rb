@@ -16,6 +16,7 @@ module EE
 
     prepended do
       include UsageStatistics
+      include PasswordComplexity
 
       EMAIL_OPT_IN_SOURCE_ID_GITLAB_COM = 1
 
@@ -165,6 +166,16 @@ module EE
 
       def user_cap_max
         ::Gitlab::CurrentSettings.new_user_signups_cap
+      end
+
+      override :random_password
+      def random_password
+        1000.times do
+          password = super
+          next unless complexity_matched? password
+
+          return password
+        end
       end
     end
 
