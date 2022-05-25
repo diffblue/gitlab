@@ -100,7 +100,7 @@ function launchPopover(el, mountPopover) {
     },
     { once: true },
   );
-  const popoverInstance = createPopover(el, emptyUser, mountPopover);
+  const popoverInstance = createPopover(el, emptyUser);
 
   const { userId } = el.dataset;
 
