@@ -327,9 +327,9 @@ export default {
 <template>
   <article>
     <div class="gl-display-flex">
-      <h3 ref="pageTitle" class="page-title">
+      <h1 ref="pageTitle" class="page-title">
         {{ i18n[page].title }}
-      </h3>
+      </h1>
     </div>
     <hr class="gl-mt-0" />
 
