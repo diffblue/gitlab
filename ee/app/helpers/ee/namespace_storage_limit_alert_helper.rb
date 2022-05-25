@@ -32,9 +32,9 @@ module EE
 
     def namespace_storage_alert_style(alert_level)
       if alert_level == :error || alert_level == :alert
-        'danger'
+        :danger
       else
-        alert_level.to_s
+        alert_level
       end
     end
 
