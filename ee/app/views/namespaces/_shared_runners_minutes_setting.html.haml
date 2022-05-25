@@ -3,9 +3,8 @@
 - form = local_assigns.fetch(:form)
 
 .form-group.row
-  .col-sm-2.col-form-label
+  .col-12
     = form.label :shared_runners_minutes_limit, "Quota of CI/CD minutes"
-  .col-sm-10
     = form.number_field :shared_runners_minutes_limit, class: 'form-control', min: 0
     %span.form-text.text-muted#shared_runners_minutes_limit_help_block
       The maximum number of CI/CD minutes on shared runners that a group can use each month.

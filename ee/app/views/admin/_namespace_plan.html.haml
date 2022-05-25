@@ -2,9 +2,9 @@
 - return unless Gitlab::CurrentSettings.should_check_namespace_plan?
 
 .form-group.row
-  .col-sm-2.col-form-label
+  .col-12
     = f.label :plan
-  .col-sm-10
+  .col-12
     = f.fields_for :gitlab_subscription do |f|
       = f.select :hosted_plan_id, Plan.pluck(:title, :id),
         { include_blank: _('No plan') },
