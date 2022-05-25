@@ -41,9 +41,6 @@ export default {
     isIssueOpen() {
       return this.issue.state === IssuableStatus.Open;
     },
-    statusBadgeClass() {
-      return this.isIssueOpen ? 'status-box-open' : 'status-box-issue-closed';
-    },
     statusBadgeText() {
       return IssuableStatusText[this.issue?.state];
     },
@@ -91,12 +88,7 @@ export default {
     <template v-else>
       <external-issue-alert issue-tracker-name="ZenTao" :issue-url="issue.webUrl" />
 
-      <issuable-show
-        :issuable="issue"
-        :enable-edit="false"
-        :status-badge-class="statusBadgeClass"
-        :status-icon="statusIcon"
-      >
+      <issuable-show :issuable="issue" :enable-edit="false" :status-icon="statusIcon">
         <template v-if="statusBadgeText" #status-badge>{{ statusBadgeText }}</template>
 
         <template #right-sidebar-items>

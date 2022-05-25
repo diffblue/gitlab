@@ -108,10 +108,10 @@ describe('ZentaoIssuesShow', () => {
   });
 
   describe.each`
-    state                    | statusIcon              | statusBadgeClass             | badgeText
-    ${IssuableStatus.Open}   | ${'issue-open-m'}       | ${'status-box-open'}         | ${'Open'}
-    ${IssuableStatus.Closed} | ${'mobile-issue-close'} | ${'status-box-issue-closed'} | ${'Closed'}
-  `('when issue state is `$state`', ({ state, statusIcon, statusBadgeClass, badgeText }) => {
+    state                    | statusIcon              | badgeText
+    ${IssuableStatus.Open}   | ${'issue-open-m'}       | ${'Open'}
+    ${IssuableStatus.Closed} | ${'mobile-issue-close'} | ${'Closed'}
+  `('when issue state is `$state`', ({ state, statusIcon, badgeText }) => {
     beforeEach(async () => {
       mockAxios
         .onGet(mockZentaoIssuesShowPath)
@@ -123,10 +123,6 @@ describe('ZentaoIssuesShow', () => {
 
     it('sets `statusIcon` prop correctly', () => {
       expect(findIssuableShow().props('statusIcon')).toBe(statusIcon);
-    });
-
-    it('sets `statusBadgeClass` prop correctly', () => {
-      expect(findIssuableShow().props('statusBadgeClass')).toBe(statusBadgeClass);
     });
 
     it('renders correct status badge text', () => {

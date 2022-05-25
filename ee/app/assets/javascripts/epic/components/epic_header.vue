@@ -83,7 +83,6 @@ export default {
     <div class="detail-page-header-body">
       <gl-badge
         class="issuable-status-badge gl-mr-3"
-        :class="{ 'status-box-open': isEpicOpen, 'status-box-issue-closed': !isEpicOpen }"
         :variant="isEpicOpen ? 'success' : 'info'"
         data-testid="status-box"
       >

@@ -61,9 +61,6 @@ export default {
     isTestCaseOpen() {
       return this.testCase.state === 'opened';
     },
-    statusBadgeClass() {
-      return this.isTestCaseOpen ? 'issuable-status-badge-open' : 'issuable-status-badge-closed';
-    },
     statusIcon() {
       return this.isTestCaseOpen ? 'issue-open-m' : 'mobile-issue-close';
     },
@@ -155,7 +152,6 @@ export default {
     <issuable-show
       v-if="!testCaseLoading && !testCaseLoadFailed"
       :issuable="testCase"
-      :status-badge-class="statusBadgeClass"
       :status-icon="statusIcon"
       :enable-edit="canEditTestCase"
       :enable-autocomplete="true"
