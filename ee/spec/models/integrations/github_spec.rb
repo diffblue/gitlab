@@ -25,7 +25,7 @@ RSpec.describe Integrations::Github do
   subject { described_class.create!(integration_params) }
 
   before do
-    stub_licensed_features(github_project_service_integration: true)
+    stub_licensed_features(github_integration: true)
   end
 
   describe "Associations" do
@@ -276,7 +276,7 @@ RSpec.describe Integrations::Github do
 
     context 'without a license' do
       it 'does nothing' do
-        stub_licensed_features(github_project_service_integration: false)
+        stub_licensed_features(github_integration: false)
 
         result = subject.execute(pipeline_sample_data)
 
@@ -322,7 +322,7 @@ RSpec.describe Integrations::Github do
 
     context 'without a license' do
       it 'fails gracefully' do
-        stub_licensed_features(github_project_service_integration: false)
+        stub_licensed_features(github_integration: false)
 
         result = subject.test(pipeline_sample_data)
 

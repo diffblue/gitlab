@@ -78,7 +78,7 @@ RSpec.describe API::ProjectMirror do
           end
 
           before do
-            stub_licensed_features(ci_cd_projects: true, github_project_service_integration: true)
+            stub_licensed_features(ci_cd_projects: true, github_integration: true)
           end
 
           subject(:send_request) { do_post(params: params) }
@@ -138,7 +138,7 @@ RSpec.describe API::ProjectMirror do
 
           context 'when ci_cd_projects is not available' do
             before do
-              stub_licensed_features(ci_cd_projects: false, github_project_service_integration: true)
+              stub_licensed_features(ci_cd_projects: false, github_integration: true)
             end
 
             it 'returns the error message' do
@@ -148,9 +148,9 @@ RSpec.describe API::ProjectMirror do
             end
           end
 
-          context 'when github_project_service_integration is not available' do
+          context 'when github_integration is not available' do
             before do
-              stub_licensed_features(github_project_service_integration: false, ci_cd_projects: true)
+              stub_licensed_features(github_integration: false, ci_cd_projects: true)
             end
 
             it 'returns the error message' do
