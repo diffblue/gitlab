@@ -357,6 +357,12 @@ describe('NamespaceStorageApp', () => {
       it('passes storageLimitEnforced prop correctly', () => {
         expect(findStorageUsageStatistics().props('storageLimitEnforced')).toBe(true);
       });
+
+      it('passes storageSize as totalRepositorySize', () => {
+        expect(findStorageUsageStatistics().props('totalRepositorySize')).toBe(
+          withRootStorageStatistics.rootStorageStatistics.storageSize,
+        );
+      });
     });
 
     describe('when updateStorageUsageDesign feature flag is true and namespace is not on free plan', () => {
