@@ -19,17 +19,6 @@ RSpec.describe Geo::CreateRepositoryUpdatedEventWorker do
     end
 
     it_behaves_like 'subscribes to event'
-
-    include_examples 'an idempotent worker' do
-      let(:job_args) { [event.class.name, event.data] }
-
-      it 'calls replicator#replicate_destroy' do
-        expect { subject }
-          .to change { ::Geo::RepositoryUpdatedEvent.count }.by(IdempotentWorkerHelper::WORKER_EXEC_TIMES)
-
-        subject
-      end
-    end
   end
 
   context 'on a Geo secondary site' do
