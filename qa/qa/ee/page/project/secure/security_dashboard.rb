@@ -10,6 +10,8 @@ module QA
               element :vulnerability
               element :vulnerability_report_checkbox_all
               element :false_positive_vulnerability
+              element :vulnerability_remediated_badge_content
+              element :vulnerability_status_content
             end
 
             view 'ee/app/assets/javascripts/security_dashboard/components/shared/vulnerability_report/selection_summary.vue' do
@@ -35,10 +37,18 @@ module QA
               check_element(:vulnerability_report_checkbox_all, true)
             end
 
-            def change_bulk_state(status)
+            def select_single_vulnerability(vulnerability_name)
+              click_element(:vulnerability_status_content, status_description: vulnerability_name)
+            end
+
+            def change_state(status)
               click_element(:vulnerability_card_status_dropdown)
               click_element("item_status_#{status.downcase}")
               click_element(:change_status_button)
+            end
+
+            def has_remediated_badge?(vulnerability_name)
+              has_element?(:vulnerability_remediated_badge_content, activity_description: vulnerability_name)
             end
           end
         end
