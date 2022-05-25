@@ -1,6 +1,7 @@
 <script>
 import { GlTooltipDirective, GlTableLite, GlLoadingIcon } from '@gitlab/ui';
 import { GlSparklineChart } from '@gitlab/ui/dist/charts';
+import { set } from 'lodash';
 import { SEVERITY_LEVELS, DAYS } from 'ee/security_dashboard/store/constants';
 import SeverityBadge from 'ee/vue_shared/security_reports/components/severity_badge.vue';
 import { firstAndLastY } from '~/lib/utils/chart_utils';
@@ -11,13 +12,20 @@ import {
 } from '~/lib/utils/datetime_utility';
 import { formattedChangeInPercent } from '~/lib/utils/number_utils';
 import { s__, sprintf } from '~/locale';
+import { createAlert } from '~/flash';
 import ChartButtons from './vulnerabilities_over_time_chart_buttons.vue';
 
 const ISO_DATE = 'isoDate';
-const TH_CLASS = 'gl-bg-white!';
 const TD_CLASS = 'gl-border-none!';
-const TH_CLASS_TEXT_RIGHT = `${TH_CLASS} gl-text-right`;
-const TD_CLASS_TEXT_RIGHT = `${TD_CLASS} gl-text-right`;
+const CLASS_TEXT_RIGHT = `gl-text-right`;
+const TD_CLASS_TEXT_RIGHT = `${TD_CLASS} ${CLASS_TEXT_RIGHT}`;
+
+const severityLevels = [
+  SEVERITY_LEVELS.critical,
+  SEVERITY_LEVELS.high,
+  SEVERITY_LEVELS.medium,
+  SEVERITY_LEVELS.low,
+].map((l) => l.toLowerCase());
 
 export default {
   components: {
@@ -37,8 +45,7 @@ export default {
   data() {
     return {
       vulnerabilitiesHistory: {},
-      vulnerabilitiesHistoryDayRange: DAYS.thirty,
-      errorLoadingVulnerabilitiesHistory: false,
+      selectedDayRange: DAYS.thirty,
     };
   },
   days: Object.values(DAYS),
@@ -46,34 +53,26 @@ export default {
     {
       key: 'severityLevel',
       label: s__('VulnerabilityChart|Severity'),
-      thClass: TH_CLASS,
       tdClass: TD_CLASS,
     },
     {
       key: 'chartData',
       label: '',
-      thClass: TH_CLASS,
       tdClass: `${TD_CLASS} gl-w-full`,
     },
     {
       key: 'changeInPercent',
       label: '%',
-      thClass: TH_CLASS_TEXT_RIGHT,
+      thClass: CLASS_TEXT_RIGHT,
       tdClass: TD_CLASS_TEXT_RIGHT,
     },
     {
       key: 'currentVulnerabilitiesCount',
       label: '#',
-      thClass: TH_CLASS_TEXT_RIGHT,
+      thClass: CLASS_TEXT_RIGHT,
       tdClass: TD_CLASS_TEXT_RIGHT,
     },
   ],
-  severityLevels: [
-    SEVERITY_LEVELS.critical,
-    SEVERITY_LEVELS.high,
-    SEVERITY_LEVELS.medium,
-    SEVERITY_LEVELS.low,
-  ].map((l) => l.toLowerCase()),
   apollo: {
     vulnerabilitiesHistory: {
       query() {
@@ -82,7 +81,7 @@ export default {
       variables() {
         return {
           fullPath: this.groupFullPath,
-          startDate: formatDate(new Date(this.startDate), ISO_DATE),
+          startDate: formatDate(this.startDate, ISO_DATE),
           endDate: this.formattedEndDateCursor,
         };
       },
@@ -90,13 +89,17 @@ export default {
         return this.processRawData(results);
       },
       error() {
-        this.errorLoadingVulnerabilitiesHistory = true;
+        createAlert({
+          message: s__(
+            'SecurityReports|Error fetching the vulnerabilities over time. Please check your network connection and try again.',
+          ),
+        });
       },
     },
   },
   computed: {
     startDate() {
-      return differenceInMilliseconds(millisecondsPerDay * this.vulnerabilitiesHistoryDayRange);
+      return differenceInMilliseconds(millisecondsPerDay * this.selectedDayRange);
     },
     endDateCursor() {
       return Date.now();
@@ -105,8 +108,6 @@ export default {
       return formatDate(new Date(this.endDateCursor), ISO_DATE);
     },
     charts() {
-      const { severityLevels } = this.$options;
-
       return severityLevels.map((severityLevel) => {
         const history = Object.entries(this.vulnerabilitiesHistory[severityLevel] || {});
         const chartData = history.length ? history : this.emptyDataSet;
@@ -138,44 +139,19 @@ export default {
       return this.$apollo.queries.vulnerabilitiesHistory.loading;
     },
   },
-  watch: {
-    startDate() {
-      this.$apollo.queries.vulnerabilitiesHistory.refetch();
-    },
-  },
   methods: {
-    setVulnerabilitiesHistoryDayRange(days) {
-      this.vulnerabilitiesHistory = {};
-      this.vulnerabilitiesHistoryDayRange = days;
+    setSelectedDayRange(days) {
+      this.selectedDayRange = days;
     },
     processRawData(results) {
-      let { vulnerabilitiesCountByDay } = results;
+      const data = this.groupFullPath
+        ? results.group.vulnerabilitiesCountByDay
+        : results.vulnerabilitiesCountByDay;
 
-      if (this.groupFullPath) {
-        vulnerabilitiesCountByDay = results.group.vulnerabilitiesCountByDay;
-      }
-
-      const vulnerabilitiesData = vulnerabilitiesCountByDay.nodes.reduce(
-        (acc, v) => {
-          const { date, ...severities } = v;
-          Object.keys(severities).forEach((severity) => {
-            acc[severity] = acc[severity] || {};
-            acc[severity][date] = v[severity];
-          }, {});
-
-          return acc;
-        },
-        { ...this.vulnerabilitiesHistory },
-      );
-
-      // backend provide the data not sorted - we need to sort it by day first.
-      return Object.keys(vulnerabilitiesData).reduce((acc, severity) => {
-        acc[severity] = {};
-        Object.keys(vulnerabilitiesData[severity])
-          .sort()
-          .forEach((day) => {
-            acc[severity][day] = vulnerabilitiesData[severity][day];
-          }, {});
+      return data.nodes.reduce((acc, item) => {
+        severityLevels.forEach((severity) => {
+          set(acc, `${severity}.${item.date}`, item[severity]);
+        });
 
         return acc;
       }, {});
@@ -197,8 +173,8 @@ export default {
       </header>
       <chart-buttons
         :days="$options.days"
-        :active-day="vulnerabilitiesHistoryDayRange"
-        @days-selected="setVulnerabilitiesHistoryDayRange"
+        :active-day="selectedDayRange"
+        @days-selected="setSelectedDayRange"
       />
     </div>
 
@@ -207,7 +183,6 @@ export default {
       v-else
       :fields="$options.fields"
       :items="charts"
-      borderless
       class="js-vulnerabilities-chart-severity-level-breakdown gl-mb-3"
     >
       <template #head(changeInPercent)="{ label }">
