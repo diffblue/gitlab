@@ -85,11 +85,11 @@ class Admin::Geo::ProjectsController < Admin::Geo::ApplicationController
   end
 
   def compute_all_projects_size
-    limitCount = 10001
+    limit_count = 10001
 
-    @all_projects_size = finder.all_projects.limit(limitCount).count
+    @all_projects_size = finder.all_projects.limit(limit_count).count
 
-    if @all_projects_size >= limitCount
+    if @all_projects_size >= limit_count
       @all_projects_size = '10,000+'
     end
   end

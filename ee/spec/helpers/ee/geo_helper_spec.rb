@@ -28,7 +28,7 @@ RSpec.describe EE::GeoHelper do
       let!(:count) { 1 }
 
       it 'returns correct button' do
-        is_expected.to have_button _('Resync all')
+        is_expected.to have_button 'Resync all'
         is_expected.to include("Resync project")
       end
     end
@@ -57,7 +57,7 @@ RSpec.describe EE::GeoHelper do
       let!(:count) { 1 }
 
       it 'returns correct button' do
-        is_expected.to have_button _('Reverify all')
+        is_expected.to have_button 'Reverify all'
         is_expected.to include("Reverify project")
       end
     end
