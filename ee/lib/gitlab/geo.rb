@@ -113,7 +113,7 @@ module Gitlab
     end
 
     def self.gdk_geo_secondary?
-      ENV['GDK_GEO_SECONDARY'] == '1'
+      Gitlab::Utils.to_boolean(ENV['GDK_GEO_SECONDARY'])
     end
 
     def self.current_node_misconfigured?

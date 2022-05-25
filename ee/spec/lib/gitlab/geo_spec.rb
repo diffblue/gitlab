@@ -262,7 +262,7 @@ RSpec.describe Gitlab::Geo, :geo, :request_store do
         stub_env('GDK_GEO_SECONDARY', 'true')
       end
 
-      it { is_expected.to be_falsey }
+      it { is_expected.to be_truthy }
     end
   end
 
