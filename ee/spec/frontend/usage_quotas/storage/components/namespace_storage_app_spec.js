@@ -8,6 +8,7 @@ import UsageStatistics from 'ee/usage_quotas/storage/components/usage_statistics
 import StorageUsageStatistics from 'ee/usage_quotas/storage/components/storage_usage_statistics.vue';
 import UsageGraph from 'ee/usage_quotas/storage/components/usage_graph.vue';
 import DependencyProxyUsage from 'ee/usage_quotas/storage/components/dependency_proxy_usage.vue';
+import ContainerRegistryUsage from 'ee/usage_quotas/storage/components/container_registry_usage.vue';
 import { formatUsageSize } from 'ee/usage_quotas/storage/utils';
 import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
 import {
@@ -34,6 +35,7 @@ describe('NamespaceStorageApp', () => {
   const findPrevButton = () => wrapper.find('[data-testid="prevButton"]');
   const findNextButton = () => wrapper.find('[data-testid="nextButton"]');
   const findDependencyProxy = () => wrapper.findComponent(DependencyProxyUsage);
+  const findContainerRegistry = () => wrapper.findComponent(ContainerRegistryUsage);
 
   const createComponent = ({
     provide = {},
@@ -175,6 +177,30 @@ describe('NamespaceStorageApp', () => {
 
     it('should show the dependency proxy usage component', () => {
       expect(findDependencyProxy().exists()).toBe(true);
+    });
+  });
+
+  describe('Container registry usage', () => {
+    it('should hide the container registry usage component', () => {
+      createComponent({
+        namespace: withRootStorageStatistics,
+        glFeatures: { containerRegistryNamespaceStatistics: false },
+      });
+
+      expect(findContainerRegistry().exists()).toBe(false);
+    });
+
+    it('should show the container registry usage component', () => {
+      createComponent({
+        namespace: withRootStorageStatistics,
+        glFeatures: { containerRegistryNamespaceStatistics: true },
+      });
+
+      expect(findContainerRegistry().exists()).toBe(true);
+      expect(findContainerRegistry().props()).toEqual({
+        containerRegistrySize:
+          withRootStorageStatistics.rootStorageStatistics.containerRegistrySize,
+      });
     });
   });
 

@@ -192,6 +192,7 @@ export const withRootStorageStatistics = {
   additionalPurchasedStorageSize: 321,
   actualRepositorySizeLimit: 1002321,
   rootStorageStatistics: {
+    containerRegistrySize: 3_900_000,
     storageSize: 129334601,
     repositorySize: 46012030,
     lfsObjectsSize: 4329334601203,

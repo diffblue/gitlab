@@ -21,6 +21,7 @@ import UsageGraph from './usage_graph.vue';
 import UsageStatistics from './usage_statistics.vue';
 import DependencyProxyUsage from './dependency_proxy_usage.vue';
 import StorageUsageStatistics from './storage_usage_statistics.vue';
+import ContainerRegistryUsage from './container_registry_usage.vue';
 
 export default {
   name: 'NamespaceStorageApp',
@@ -37,6 +38,7 @@ export default {
     GlKeysetPagination,
     TemporaryStorageIncreaseModal,
     DependencyProxyUsage,
+    ContainerRegistryUsage,
   },
   directives: {
     GlModalDirective,
@@ -269,10 +271,19 @@ export default {
         />
       </div>
     </div>
+
     <dependency-proxy-usage
       :dependency-proxy-total-size="dependencyProxyTotalSize"
       :loading="isDependencyProxyStorageQueryLoading"
     />
+    <template
+      v-if="namespace.rootStorageStatistics && glFeatures.containerRegistryNamespaceStatistics"
+    >
+      <hr class="gl-my-2" />
+      <container-registry-usage
+        :container-registry-size="namespace.rootStorageStatistics.containerRegistrySize"
+      />
+    </template>
     <project-list
       :projects="namespaceProjects"
       :is-loading="isQueryLoading"
