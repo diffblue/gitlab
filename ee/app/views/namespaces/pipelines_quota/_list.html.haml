@@ -75,10 +75,9 @@
           %td{ colspan: 2 }
             .nothing-here-block
               = s_('UsageQuota|This namespace has no projects which used shared runners in the current period')
-      - if Feature.enabled?(:ci_show_all_projects_with_usage_sorted_descending, namespace)
-        %tr
-          %td{ colspan: 2 }
-            .col-sm-12.center
-              = s_('UsageQuota|This table omits projects that used 0 CI/CD minutes or 0 shared runners duration')
+      %tr
+        %td{ colspan: 2 }
+          .col-sm-12.center
+            = s_('UsageQuota|This table omits projects that used 0 CI/CD minutes or 0 shared runners duration')
 
 = paginate projects_usage, theme: "gitlab"

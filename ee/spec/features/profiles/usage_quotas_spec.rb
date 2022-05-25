@@ -108,7 +108,7 @@ RSpec.describe 'Profile > Usage Quota' do
       end
     end
 
-    context 'sorting when feature flag :ci_show_all_projects_with_usage_sorted_descending is enabled', :js do
+    context 'when many projects are paginated', :js do
       let(:per_page) { 2 }
       let!(:project2) { create(:project, :with_ci_minutes, amount_used: 5.7, namespace: namespace) }
       let!(:project3) { create(:project, :with_ci_minutes, amount_used: 3.1, namespace: namespace) }
