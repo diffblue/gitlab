@@ -61,7 +61,8 @@ export default {
     <td>
       <gl-button
         v-if="!allowMultiRule && canEdit"
-        class="ml-auto btn-info btn-inverted"
+        category="secondary"
+        variant="confirm"
         data-qa-selector="add_approvers_button"
         @click="openCreateModal(null)"
       >
