@@ -94,18 +94,42 @@ RSpec.describe Projects::Integrations::Zentao::IssuesController do
         end
       end
 
-      it 'renders `show` template' do
-        get :show, params: { namespace_id: project.namespace, project_id: project, id: 'story-1' }
+      context 'with valid request' do
+        it 'renders `show` template successfully' do
+          get :show, params: { namespace_id: project.namespace, project_id: project, id: 'story-1' }
 
-        expect(assigns(:issue_json)).to eq(issue_json)
-        expect(response).to have_gitlab_http_status(:ok)
-        expect(response).to render_template(:show)
+          expect(assigns(:issue_json)).to eq(issue_json)
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(response).to render_template(:show)
+        end
+
+        it 'returns JSON response successfully' do
+          get :show, params: { namespace_id: project.namespace, project_id: project, id: 'story-1', format: :json }
+
+          expect(json_response).to eq(issue_json)
+        end
       end
 
-      it 'returns JSON response' do
-        get :show, params: { namespace_id: project.namespace, project_id: project, id: 'story-1', format: :json }
+      context 'with bad request' do
+        before do
+          allow_next_instance_of(Integrations::ZentaoSerializers::IssueDetailSerializer) do |serializer|
+            allow(serializer).to receive(:represent).and_raise(::Gitlab::Zentao::Client::Error)
+          end
+        end
+        it 'renders `show` template successfully' do
+          get :show, params: { namespace_id: project.namespace, project_id: project, id: 'story-1' }
 
-        expect(json_response).to eq(issue_json)
+          expect(assigns(:issue_json)).to be_nil
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(response).to render_template(:show)
+        end
+
+        it 'returns JSON response with error messages' do
+          get :show, params: { namespace_id: project.namespace, project_id: project, id: 'story-1', format: :json }
+
+          expect(response).to have_gitlab_http_status(:bad_request)
+          expect(json_response['errors']).to be_present
+        end
       end
 
       context 'when the JSON fetched from ZenTao contains HTML' do
