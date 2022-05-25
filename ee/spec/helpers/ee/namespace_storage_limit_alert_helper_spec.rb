@@ -154,10 +154,10 @@ RSpec.describe EE::NamespaceStorageLimitAlertHelper do
     subject { helper.namespace_storage_alert_style(alert_level) }
 
     where(:alert_level, :result) do
-      :info      | 'info'
-      :warning   | 'warning'
-      :error     | 'danger'
-      :alert     | 'danger'
+      :info      | :info
+      :warning   | :warning
+      :error     | :danger
+      :alert     | :danger
     end
 
     with_them do

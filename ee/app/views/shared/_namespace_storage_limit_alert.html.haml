@@ -15,21 +15,14 @@
     - show_storage_banner_actions = purchase_link || usage_link
 
     .gl-py-5
-      .gl-alert.js-namespace-storage-alert{ class: "gl-alert-#{style}", role: 'alert' }
-        = sprite_icon(icon, css_class: "gl-icon gl-alert-icon")
-        .gl-alert-title
-          %h4.gl-alert-title= payload[:usage_message]
-
-        - if alert_level != :error
-          %button.js-namespace-storage-alert-dismiss.gl-alert-dismiss.gl-cursor-pointer{ type: 'button', 'aria-label' => _('Dismiss'), data: { id: root_namespace.id, level: alert_level } }
-            = sprite_icon('close', css_class: 'gl-icon')
-
-        .gl-alert-body
+      = render Pajamas::AlertComponent.new(variant: style, dismissible: alert_level != :error, title: payload[:usage_message], alert_class: 'js-namespace-storage-alert', close_button_class: 'js-namespace-storage-alert-dismiss', close_button_data: { id: root_namespace.id, level: alert_level }) do |c|
+        = c.body do
+          = sprite_icon(icon, css_class: "gl-icon gl-alert-icon")
           = payload[:explanation_message]
           = link_to _('Learn more.'), help_page_path('user/usage_quotas'), target: '_blank', rel: 'noopener noreferrer'
 
         - if show_storage_banner_actions
-          .gl-alert-actions
+          = c.actions do
             - if purchase_link
               = link_to(_('Purchase more storage'), purchase_link, class: "btn gl-alert-action btn-md gl-button btn-confirm")
             - if usage_link
