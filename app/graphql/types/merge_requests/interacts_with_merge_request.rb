@@ -5,8 +5,6 @@ module Types
     module InteractsWithMergeRequest
       extend ActiveSupport::Concern
 
-      include FindClosest
-
       included do
         field :merge_request_interaction,
               type: ::Types::UserMergeRequestInteractionType,
@@ -16,11 +14,9 @@ module Types
       end
 
       def merge_request_interaction(parent:, id: nil)
-        merge_request = closest_parent([::MergeRequest, ::MergeRequestPresenter], parent)
+        return unless parent.is_a?(MergeRequest)
 
-        return unless merge_request
-
-        Users::MergeRequestInteraction.new(user: object, merge_request: merge_request)
+        Users::MergeRequestInteraction.new(user: object, merge_request: parent)
       end
     end
   end
