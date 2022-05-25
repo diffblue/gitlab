@@ -26,6 +26,7 @@ module GitlabSubscriptions
       multiple_ldap_servers
       object_storage
       pages_size_limit
+      password_complexity
       project_aliases
       repository_size_limit
       required_ci_templates
@@ -135,6 +136,7 @@ module GitlabSubscriptions
       operations_dashboard
       package_forwarding
       pages_size_limit
+      password_complexity
       productivity_analytics
       project_aliases
       protected_environments

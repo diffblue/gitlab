@@ -2034,4 +2034,55 @@ RSpec.describe User do
       it { is_expected.to eq(result) }
     end
   end
+
+  describe '.random_password' do
+    let(:user) { build(:user) }
+
+    shared_examples_for 'validating with random_password' do
+      it 'is valid' do
+        user.password = described_class.random_password
+        expect(user).to be_valid
+      end
+    end
+
+    context 'when password_complexity is not available' do
+      it 'calls password_length once' do
+        expect(described_class).to receive(:password_length).and_call_original
+
+        expect(described_class.random_password.length).to be Devise.password_length.max
+      end
+    end
+
+    context 'when password_complexity is available' do
+      before do
+        stub_licensed_features(password_complexity: true)
+      end
+
+      context 'without any password complexity polices' do
+        it_behaves_like 'validating with random_password'
+      end
+
+      context 'when number is required' do
+        before do
+          stub_application_setting(password_number_required: true)
+        end
+
+        it_behaves_like 'validating with random_password'
+
+        it 'is invalid' do
+          user.password = 'qwertasdf'
+          expect(user).not_to be_valid
+        end
+      end
+
+      context 'when password complexity is required' do
+        before do
+          stub_application_setting(password_number_required: true)
+          stub_application_setting(password_symbol_required: true)
+        end
+
+        it_behaves_like 'validating with random_password'
+      end
+    end
+  end
 end
