@@ -79,43 +79,62 @@ RSpec.describe AuditEvent, type: :model do
   end
 
   describe '#stream_to_external_destinations' do
-    let_it_be(:event) { create(:audit_event, :group_event) }
-
     context 'feature is licensed' do
-      before do
-        stub_licensed_features(external_audit_events: true)
-      end
-
-      context 'entity is a project' do
-        let_it_be(:group) { create(:group, :nested) }
-        let_it_be(:project) { create(:project, group: group) }
-        let_it_be(:event) { create(:audit_event, :project_event, target_project: project) }
-
-        it 'enqueues one worker' do
-          expect(AuditEvents::AuditEventStreamingWorker).to receive(:perform_async).once
-
-          event.stream_to_external_destinations
-        end
-
-        context 'when entity is not a group or project' do
-          let_it_be(:event) { create(:user_audit_event) }
-
+      shared_examples 'successful audit event stream' do
+        context 'when the group has no destinations' do
           it 'enqueues no workers' do
             expect(AuditEvents::AuditEventStreamingWorker).not_to receive(:perform_async)
 
             event.stream_to_external_destinations
           end
         end
+
+        context 'when the group has destination' do
+          before do
+            group.external_audit_event_destinations.create!(destination_url: 'http://example.com')
+          end
+
+          it 'enqueues one worker' do
+            expect(AuditEvents::AuditEventStreamingWorker).to receive(:perform_async).once
+
+            event.stream_to_external_destinations
+          end
+        end
       end
 
-      it 'enqueues one worker' do
-        expect(AuditEvents::AuditEventStreamingWorker).to receive(:perform_async).once
+      before do
+        stub_licensed_features(external_audit_events: true)
+      end
 
-        event.stream_to_external_destinations
+      context 'entity is a group' do
+        let_it_be(:group) { create(:group) }
+        let_it_be(:event) { create(:audit_event, :group_event, target_group: group) }
+
+        it_behaves_like 'successful audit event stream'
+      end
+
+      context 'entity is a project' do
+        let_it_be(:group) { create(:group) }
+        let_it_be(:project) { create(:project, group: group) }
+        let_it_be(:event) { create(:audit_event, :project_event, target_project: project) }
+
+        it_behaves_like 'successful audit event stream'
+      end
+
+      context 'when entity is not a group or project' do
+        let_it_be(:event) { create(:user_audit_event) }
+
+        it 'enqueues no workers' do
+          expect(AuditEvents::AuditEventStreamingWorker).not_to receive(:perform_async)
+
+          event.stream_to_external_destinations
+        end
       end
     end
 
     context 'feature is unlicensed' do
+      let_it_be(:event) { create(:audit_event, :group_event) }
+
       before do
         stub_licensed_features(external_audit_events: false)
       end
