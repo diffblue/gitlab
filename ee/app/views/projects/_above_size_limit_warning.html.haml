@@ -1,5 +1,5 @@
 - size_checker = project.repository_size_checker
 - if size_checker.above_size_limit? && !::Gitlab::CurrentSettings.automatic_purchased_storage_allocation?
-  .gl-alert.gl-alert-warning.gl-display-none.gl-sm-display-block
-    = sprite_icon('warning', css_class: 'gl-icon gl-alert-icon gl-alert-icon-no-title')
-    = size_checker.error_message.above_size_limit_message
+  = render Pajamas::AlertComponent.new(variant: :warning, dismissible: false, alert_class: 'gl-display-none gl-sm-display-block') do |c|
+    = c.body do
+      = size_checker.error_message.above_size_limit_message
