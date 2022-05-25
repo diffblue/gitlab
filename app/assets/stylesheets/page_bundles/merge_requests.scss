@@ -740,7 +740,7 @@ $tabs-holder-z-index: 250;
 .merge-request-overview {
   @include media-breakpoint-up(md) {
     display: grid;
-    grid-template-columns: 1fr 270px;
+    grid-template-columns: calc(95% - 270px) auto;
     grid-gap: 5%;
   }
 }
