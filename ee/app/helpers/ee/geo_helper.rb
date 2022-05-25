@@ -149,7 +149,7 @@ module EE
         path: resync_all_admin_geo_projects_url,
         method: 'post',
         modal_attributes: {
-          title: all_project_size > 1 ? sprintf(s_('Geo|Resync all %{all_project_size} projects'), { all_project_size: all_project_size }) : s_('Geo|Resync project'),
+          title: all_project_size.to_i > 1 ? sprintf(s_('Geo|Resync all %{all_project_size} projects'), { all_project_size: all_project_size }) : s_('Geo|Resync project'),
           message: s_('Geo|This will resync all projects. It may take some time to complete. Are you sure you want to continue?'),
           okTitle: s_('Geo|Resync all'),
           size: 'sm'
@@ -167,7 +167,7 @@ module EE
         path: reverify_all_admin_geo_projects_url,
         method: 'post',
         modal_attributes: {
-          title: all_project_size > 1 ? sprintf(s_('Geo|Reverify all %{all_project_size} projects'), { all_project_size: all_project_size }) : s_('Geo|Reverify project'),
+          title: all_project_size.to_i > 1 ? sprintf(s_('Geo|Reverify all %{all_project_size} projects'), { all_project_size: all_project_size }) : s_('Geo|Reverify project'),
           message: s_('Geo|This will reverify all projects. It may take some time to complete. Are you sure you want to continue?'),
           okTitle: s_('Geo|Reverify all'),
           size: 'sm'
