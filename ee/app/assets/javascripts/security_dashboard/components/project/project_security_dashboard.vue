@@ -8,8 +8,6 @@ import createFlash from '~/flash';
 import { formatDate, getDateInPast } from '~/lib/utils/datetime_utility';
 import { getSvgIconPathContent } from '~/lib/utils/icon_utils';
 import { s__, __ } from '~/locale';
-import SecurityDashboardLayout from '../shared/security_dashboard_layout.vue';
-import ReportNotConfigured from './report_not_configured_project.vue';
 
 const CHART_DEFAULT_DAYS = 30;
 const MAX_DAYS = 100;
@@ -25,8 +23,6 @@ const SEVERITIES = [
 
 export default {
   components: {
-    ReportNotConfigured,
-    SecurityDashboardLayout,
     SecurityTrainingPromo,
     GlLoadingIcon,
     GlLineChart,
@@ -36,11 +32,6 @@ export default {
       type: String,
       required: false,
       default: '',
-    },
-    hasVulnerabilities: {
-      type: Boolean,
-      required: false,
-      default: false,
     },
   },
   apollo: {
@@ -53,14 +44,11 @@ export default {
           startDate: this.startDate,
         };
       },
-      update(data) {
-        return data?.project?.vulnerabilitiesCountByDay?.nodes ?? [];
+      update({ project }) {
+        return project.vulnerabilitiesCountByDay.nodes;
       },
       error() {
         createFlash({ message: PROJECT_LOADING_ERROR_MESSAGE });
-      },
-      skip() {
-        return !this.hasVulnerabilities;
       },
     },
   },
@@ -107,12 +95,6 @@ export default {
     isLoadingTrends() {
       return this.$apollo.queries.trendsByDay.loading;
     },
-    shouldShowCharts() {
-      return Boolean(!this.isLoadingTrends && this.trendsByDay.length) && this.chartWidth > 0;
-    },
-    shouldShowEmptyState() {
-      return !this.hasVulnerabilities;
-    },
     chartOptions() {
       return {
         xAxis: {
@@ -149,9 +131,6 @@ export default {
       };
     },
   },
-  mounted() {
-    this.chartWidth = this.$refs.layout.$el.clientWidth;
-  },
   created() {
     ['marquee-selection', 'redo', 'repeat', 'download', 'scroll-handle'].forEach(this.setSvg);
   },
@@ -169,22 +148,15 @@ export default {
 </script>
 
 <template>
-  <security-dashboard-layout ref="layout">
-    <template v-if="shouldShowEmptyState" #empty-state>
-      <report-not-configured />
-    </template>
-    <template v-else-if="shouldShowCharts" #default>
-      <security-training-promo />
-      <gl-line-chart
-        class="gl-mt-6"
-        :width="chartWidth"
-        :data="dataSeries"
-        :option="chartOptions"
-        :include-legend-avg-max="false"
-      />
-    </template>
-    <template v-else #loading>
-      <gl-loading-icon size="lg" class="gl-mt-6" />
-    </template>
-  </security-dashboard-layout>
+  <gl-loading-icon v-if="isLoadingTrends" size="lg" class="gl-mt-6" />
+
+  <div v-else>
+    <security-training-promo />
+    <gl-line-chart
+      class="gl-mt-6"
+      :data="dataSeries"
+      :option="chartOptions"
+      :include-legend-avg-max="false"
+    />
+  </div>
 </template>

@@ -4,12 +4,12 @@ exports[`Security Dashboard default states sets up group-level 1`] = `
 <div>
   <div>
     <h2
-      data-testid="title"
+      class="gl-mb-6"
     >
       Security Dashboard
     </h2>
     <div
-      class="security-charts gl-display-flex gl-flex-wrap"
+      class="security-charts gl-display-grid"
     >
       <section
         class="gl-border-solid gl-rounded-base gl-border-1 gl-border-gray-100"
@@ -109,12 +109,12 @@ exports[`Security Dashboard default states sets up instance-level 1`] = `
 <div>
   <div>
     <h2
-      data-testid="title"
+      class="gl-mb-6"
     >
       Security Dashboard
     </h2>
     <div
-      class="security-charts gl-display-flex gl-flex-wrap"
+      class="security-charts gl-display-grid"
     >
       <section
         class="gl-border-solid gl-rounded-base gl-border-1 gl-border-gray-100"
