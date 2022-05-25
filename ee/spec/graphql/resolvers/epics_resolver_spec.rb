@@ -352,6 +352,23 @@ RSpec.describe Resolvers::EpicsResolver do
           expect(epics).to contain_exactly(epic5)
         end
       end
+
+      context 'with `top_level_hierarchy_only` param set as `true`' do
+        let(:args) { { top_level_hierarchy_only: true } }
+
+        let_it_be(:child_epic) { create(:epic, group: group, title: 'child epic', parent: epic1) }
+        let_it_be(:child_epic2) { create(:epic, group: group, title: 'child epic 2', parent: epic1) }
+
+        it { expect(resolve_epics(args)).to contain_exactly(epic1, epic2) }
+
+        context 'when a parent epic is present' do
+          subject(:results) { resolve_epics(args, epic1) }
+
+          it 'ignores `top_level_hierarchy_only` param and return all children of the given epic' do
+            expect(results).to contain_exactly(child_epic, child_epic2)
+          end
+        end
+      end
     end
 
     context 'with negated filters' do
