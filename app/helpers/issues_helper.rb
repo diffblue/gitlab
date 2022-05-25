@@ -31,15 +31,15 @@ module IssuesHelper
     updated_mr_header_enabled = Feature.enabled?(:updated_mr_header, @project)
 
     if item.try(:expired?)
-      'status-box-expired'
+      'gl-bg-orange-500'
     elsif item.try(:merged?)
-      updated_mr_header_enabled ? 'badge-info' : 'status-box-mr-merged'
+      updated_mr_header_enabled ? 'badge-info' : 'gl-bg-blue-500'
     elsif item.closed?
-      item.is_a?(MergeRequest) && updated_mr_header_enabled ? 'badge-danger' : 'status-box-mr-closed'
+      item.is_a?(MergeRequest) && updated_mr_header_enabled ? 'badge-danger' : 'gl-bg-red-500'
     elsif item.try(:upcoming?)
-      'status-box-upcoming'
+      'gl-bg-gray-500'
     else
-      item.is_a?(MergeRequest) && updated_mr_header_enabled ? 'badge-success' : 'status-box-open'
+      item.is_a?(MergeRequest) && updated_mr_header_enabled ? 'badge-success' : 'gl-bg-green-500'
     end
   end
 

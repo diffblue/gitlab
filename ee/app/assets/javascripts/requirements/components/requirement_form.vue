@@ -255,7 +255,6 @@ export default {
       :show-field-title="true"
       :description-preview-path="descriptionPreviewPath"
       :description-help-path="descriptionHelpPath"
-      status-badge-class="status-box-open"
       status-icon="issue-open-m"
       @edit-issuable="$emit($options.events.enableEdit, $event)"
       @keydown-title.escape.exact.stop="handleFormInputKeyDown"

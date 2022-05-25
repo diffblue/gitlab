@@ -71,15 +71,14 @@ describe('TestCaseShowRoot', () => {
 
   describe('computed', () => {
     describe.each`
-      state       | isTestCaseOpen | statusBadgeClass                  | statusIcon              | statusBadgeText | testCaseActionButtonVariant | testCaseActionTitle
-      ${'opened'} | ${true}        | ${'issuable-status-badge-open'}   | ${'issue-open-m'}       | ${'Open'}       | ${'warning'}                | ${'Archive test case'}
-      ${'closed'} | ${false}       | ${'issuable-status-badge-closed'} | ${'mobile-issue-close'} | ${'Archived'}   | ${'default'}                | ${'Reopen test case'}
+      state       | isTestCaseOpen | statusIcon              | statusBadgeText | testCaseActionButtonVariant | testCaseActionTitle
+      ${'opened'} | ${true}        | ${'issue-open-m'}       | ${'Open'}       | ${'warning'}                | ${'Archive test case'}
+      ${'closed'} | ${false}       | ${'mobile-issue-close'} | ${'Archived'}   | ${'default'}                | ${'Reopen test case'}
     `(
       'when `testCase.state` is $state',
       ({
         state,
         isTestCaseOpen,
-        statusBadgeClass,
         statusIcon,
         statusBadgeText,
         testCaseActionButtonVariant,
@@ -101,7 +100,6 @@ describe('TestCaseShowRoot', () => {
         it.each`
           propName                         | propValue
           ${'isTestCaseOpen'}              | ${isTestCaseOpen}
-          ${'statusBadgeClass'}            | ${statusBadgeClass}
           ${'statusIcon'}                  | ${statusIcon}
           ${'statusBadgeText'}             | ${statusBadgeText}
           ${'testCaseActionButtonVariant'} | ${testCaseActionButtonVariant}
@@ -292,7 +290,7 @@ describe('TestCaseShowRoot', () => {
     });
 
     it('renders issuable-show when `testCaseLoading` prop is false', () => {
-      const { statusBadgeClass, statusIcon, editTestCaseFormVisible } = wrapper.vm;
+      const { statusIcon, editTestCaseFormVisible } = wrapper.vm;
       const {
         canEditTestCase,
         descriptionPreviewPath,
@@ -304,7 +302,6 @@ describe('TestCaseShowRoot', () => {
 
       expect(issuableShowEl.exists()).toBe(true);
       expect(issuableShowEl.props()).toMatchObject({
-        statusBadgeClass,
         statusIcon,
         descriptionPreviewPath,
         descriptionHelpPath,
