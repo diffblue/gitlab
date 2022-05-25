@@ -172,7 +172,7 @@ describe('TestCaseListRoot', () => {
           currentPage: 1,
         });
 
-        await nextTick;
+        await nextTick();
 
         expect(getIssuableList().props('nextPage')).toBe(2);
       });
@@ -184,7 +184,7 @@ describe('TestCaseListRoot', () => {
           currentPage: 3,
         });
 
-        await nextTick;
+        await nextTick();
 
         expect(getIssuableList().props('nextPage')).toBeNull();
       });
@@ -227,7 +227,7 @@ describe('TestCaseListRoot', () => {
       it('click-tab event changes currentState value and calls updateUrl', async () => {
         getIssuableList().vm.$emit('click-tab', 'closed');
 
-        await nextTick;
+        await nextTick();
         expect(getIssuableList().props('currentTab')).toBe('closed');
         expect(wrapper.vm.updateUrl).toHaveBeenCalled();
       });
@@ -270,7 +270,7 @@ describe('TestCaseListRoot', () => {
           },
         ]);
 
-        await nextTick;
+        await nextTick();
 
         expect(getIssuableList().props('initialFilterValue')).toEqual([
           { type: 'author_username', value: { data: 'root' } },
@@ -283,7 +283,7 @@ describe('TestCaseListRoot', () => {
       it('sort event changes sortedBy value and calls updateUrl', async () => {
         getIssuableList().vm.$emit('sort', 'updated_desc');
 
-        await nextTick;
+        await nextTick();
 
         expect(getIssuableList().props('initialSortBy')).toBe('updated_desc');
         expect(wrapper.vm.updateUrl).toHaveBeenCalled();
