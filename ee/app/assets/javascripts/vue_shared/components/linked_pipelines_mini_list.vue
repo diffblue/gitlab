@@ -13,7 +13,7 @@ export default {
     GlIcon,
   },
   arrowStyles: [
-    'arrow-icon gl-display-inline-block gl-mx-1 gl-text-gray-500 gl-vertical-align-middle',
+    'arrow-icon gl-display-inline-block gl-mx-1 gl-text-gray-500 gl-vertical-align-middle!',
   ],
   inject: {
     dataMethod: {
@@ -99,7 +99,7 @@ export default {
       'is-upstream': isUpstream,
       'is-downstream': isDownstream,
     }"
-    class="linked-pipeline-mini-list gl-my-1"
+    class="linked-pipeline-mini-list gl-display-inline gl-vertical-align-middle"
   >
     <gl-icon v-if="isDownstream" :class="$options.arrowStyles" name="long-arrow" />
 
@@ -109,7 +109,7 @@ export default {
       v-gl-tooltip="{ title: pipelineTooltipText(pipeline) }"
       :href="pipeline.path"
       :class="triggerButtonClass(pipeline)"
-      class="linked-pipeline-mini-item gl-display-inline-block gl-mr-2 gl-rounded-full gl-vertical-align-middle"
+      class="linked-pipeline-mini-item gl-display-inline-block gl-h-6 gl-mr-2 gl-my-2 gl-rounded-full gl-vertical-align-middle"
     >
       <ci-icon
         is-interactive
