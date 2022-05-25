@@ -2,7 +2,6 @@ import { sortBy } from 'lodash';
 import Vue from 'vue';
 import { __ } from '~/locale';
 import ColumnChart from './components/column_chart.vue';
-import DateSelector from './components/date_selector.vue';
 
 const sortByValue = (data) => sortBy(data, (item) => item[1]).reverse();
 
@@ -29,25 +28,6 @@ export default (dataEl) => {
       formattedData[id].push([data.labels[index], d]);
     });
   });
-
-  const dateSelectorEl = document.querySelector('.js-contribution-analytics-date-selector');
-
-  if (dateSelectorEl) {
-    const { path } = dateSelectorEl.dataset;
-    // eslint-disable-next-line no-new
-    new Vue({
-      el: dateSelectorEl,
-      components: {
-        DateSelector,
-      },
-      provide: {
-        path,
-      },
-      render(h) {
-        return h(DateSelector);
-      },
-    });
-  }
 
   const pushesEl = document.getElementById('js_pushes_chart_vue');
   if (allValuesEmpty(formattedData.push)) {

@@ -30,7 +30,7 @@ class Groups::ContributionAnalyticsController < Groups::ApplicationController
 
   def data_collector
     @data_collector ||= Gitlab::ContributionAnalytics::DataCollector
-      .new(group: @group, from: params[:start_date] || 1.week.ago.to_date)
+      .new(group: @group, from: from_date(params[:start_date]))
   end
 
   def authorize_read_contribution_analytics!
@@ -47,5 +47,11 @@ class Groups::ContributionAnalyticsController < Groups::ApplicationController
 
   def user_has_access_to_feature?
     can?(current_user, :read_group_contribution_analytics, @group)
+  end
+
+  def from_date(value)
+    Date.parse(value)
+  rescue Date::Error, TypeError
+    1.week.ago.to_date
   end
 end
