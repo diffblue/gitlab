@@ -46,7 +46,7 @@ module Projects
       private
 
       def redirect_to_service_page
-        redirect_to edit_project_integration_path(
+        redirect_to edit_project_settings_integration_path(
           project,
           project.gitlab_slack_application_integration || project.build_gitlab_slack_application_integration
         )
