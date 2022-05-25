@@ -11,7 +11,7 @@ RSpec.describe IncidentManagement::IssuableResourceLink, type: :model do
 
   describe 'validations' do
     it { is_expected.to validate_presence_of(:issue) }
-    it { is_expected.to validate_uniqueness_of(:link) }
+    it { is_expected.to validate_presence_of(:link) }
   end
 
   describe 'enums' do
@@ -19,6 +19,6 @@ RSpec.describe IncidentManagement::IssuableResourceLink, type: :model do
       { general: 0, zoom: 1, slack: 2 }
     end
 
-    it { is_expected.to define_enum_for(:link_type).with_valus(link_type_values) }
+    it { is_expected.to define_enum_for(:link_type).with_values(link_type_values) }
   end
 end

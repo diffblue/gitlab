@@ -74,7 +74,7 @@ module EE
 
       has_many :pending_escalations, class_name: 'IncidentManagement::PendingEscalations::Issue', foreign_key: :issue_id, inverse_of: :issue
 
-      has_many :issuable_resource_links, class_name: 'IncidentManagement::IssuableResourceLink', inverse_of: :incident
+      has_many :issuable_resource_links, class_name: 'IncidentManagement::IssuableResourceLink', inverse_of: :issue
 
       validates :weight, allow_nil: true, numericality: { greater_than_or_equal_to: 0 }
       validate :validate_confidential_epic

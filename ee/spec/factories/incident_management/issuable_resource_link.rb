@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   factory :issuable_resource_link, class: 'IncidentManagement::IssuableResourceLink' do
-    association :issue, factory: :incident
+    association :issue
     link { 'https://gitlab.example.com/zoom_link' }
     link_text { 'Incident zoom link' }
     link_type { 1 }
