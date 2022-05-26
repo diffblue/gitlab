@@ -1309,7 +1309,7 @@ module Ci
 
     def has_expired_test_reports?
       strong_memoize(:artifacts_expired) do
-        !has_reports?(::Ci::JobArtifact.test_reports.not_expired)
+        has_reports?(::Ci::JobArtifact.test_reports.all_expired)
       end
     end
 
