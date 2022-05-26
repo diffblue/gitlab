@@ -1272,15 +1272,6 @@
   :weight: 2
   :idempotent:
   :tags: []
-- :name: repository_push_audit_event
-  :worker_name: RepositoryPushAuditEventWorker
-  :feature_category: :authentication_and_authorization
-  :has_external_dependencies:
-  :urgency: :low
-  :resource_boundary: :unknown
-  :weight: 1
-  :idempotent:
-  :tags: []
 - :name: repository_update_mirror
   :worker_name: RepositoryUpdateMirrorWorker
   :feature_category: :source_code_management
