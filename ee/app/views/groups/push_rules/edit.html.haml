@@ -8,7 +8,8 @@
 
 = gitlab_ui_form_for @push_rule, url: group_push_rules_path(@group), as: :push_rule, method: :put do |f|
   - if @push_rule.errors.any?
-    .gl-alert.gl-alert-danger
-      - @push_rule.errors.full_messages.each do |msg|
-        %p= msg
+    = render Pajamas::AlertComponent.new(variant: :danger, dismissible: false) do |c|
+      = c.body do
+        - @push_rule.errors.full_messages.each do |msg|
+          %p= msg
   = render "shared/push_rules/form", f: f, context: @group
