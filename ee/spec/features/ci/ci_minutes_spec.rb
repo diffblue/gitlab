@@ -13,8 +13,8 @@ RSpec.describe 'CI minutes', :js do
 
   before do
     stub_feature_flags(usage_quotas_pipelines_vue: false)
-    create_ci_minutes_usage(50, Date.new(2021, 5, 1))
-    create_ci_minutes_usage(60, Date.new(2021, 6, 1))
+    create_ci_minutes_usage(50, Date.new(Time.zone.now.year, 5, 1))
+    create_ci_minutes_usage(60, Date.new(Time.zone.now.year, 6, 1))
 
     sign_in(user)
 
@@ -27,7 +27,7 @@ RSpec.describe 'CI minutes', :js do
     page.find('[data-testid="minutes-usage-project-year-dropdown"]').click
 
     page.within '[data-testid="minutes-usage-project-year-dropdown"]' do
-      expect(page.all('[data-testid="minutes-usage-project-year-dropdown-item"]').size).to eq 2
+      expect(page.all('[data-testid="minutes-usage-project-year-dropdown-item"]').size).to eq 1
     end
 
     page.find('[data-testid="minutes-usage-project-month-dropdown"]').click

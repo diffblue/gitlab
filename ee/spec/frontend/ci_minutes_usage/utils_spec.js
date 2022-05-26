@@ -1,4 +1,4 @@
-import { getUsageDataByYear, formatYearMonthData } from 'ee/ci_minutes_usage/utils';
+import { getUsageDataByYear, formatYearMonthData, getSortedYears } from 'ee/ci_minutes_usage/utils';
 import { ciMinutesUsageMockData } from './mock_data';
 
 const {
@@ -38,7 +38,15 @@ describe('CI Minutes Usage Utils', () => {
           minutes: 0,
           month: '08',
           monthIso8601: '2022-08-01',
-          projects: { nodes: [] },
+          projects: {
+            nodes: [
+              {
+                name: 'devcafe-mx',
+                minutes: 5,
+                sharedRunnersDuration: 80,
+              },
+            ],
+          },
           sharedRunnersDuration: 0,
           year: '2022',
         },
@@ -73,7 +81,15 @@ describe('CI Minutes Usage Utils', () => {
         minutes: 0,
         month: '08',
         monthIso8601: '2022-08-01',
-        projects: { nodes: [] },
+        projects: {
+          nodes: [
+            {
+              name: 'devcafe-mx',
+              minutes: 5,
+              sharedRunnersDuration: 80,
+            },
+          ],
+        },
         sharedRunnersDuration: 0,
         year: '2022',
       },
@@ -110,12 +126,27 @@ describe('CI Minutes Usage Utils', () => {
         month: '08',
         monthIso8601: '2022-08-01',
         monthName: 'August',
-        projects: { nodes: [] },
+        projects: {
+          nodes: [
+            {
+              name: 'devcafe-mx',
+              minutes: 5,
+              sharedRunnersDuration: 80,
+            },
+          ],
+        },
         sharedRunnersDuration: 0,
         year: '2022',
       },
     ];
 
     expect(formatYearMonthData(nodes, true)).toEqual(expectedFormat);
+  });
+
+  it('getSortedYears returns an array of years sorted in descending order', () => {
+    const expectedYears = ['2022', '2021'];
+    const usageDataByYear = getUsageDataByYear(nodes);
+
+    expect(getSortedYears(usageDataByYear)).toEqual(expectedYears);
   });
 });

@@ -10,7 +10,7 @@ import {
   Y_AXIS_PROJECT_LABEL,
   formatWithUtc,
 } from '../constants';
-import { getUsageDataByYear } from '../utils';
+import { getUsageDataByYear, getSortedYears } from '../utils';
 
 export default {
   components: {
@@ -67,7 +67,7 @@ export default {
       return [];
     },
     years() {
-      return Object.keys(this.usageDataByYear);
+      return getSortedYears(this.usageDataByYear);
     },
   },
   watch: {

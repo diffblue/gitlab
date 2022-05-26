@@ -3,7 +3,7 @@ import { GlDropdown, GlDropdownItem } from '@gitlab/ui';
 import { GlColumnChart } from '@gitlab/ui/dist/charts';
 import { isEmpty } from 'lodash';
 import { formatDate } from '~/lib/utils/datetime_utility';
-import { formatYearMonthData } from '../utils';
+import { formatYearMonthData, getSortedYears } from '../utils';
 import {
   USAGE_BY_PROJECT,
   X_AXIS_PROJECT_LABEL,
@@ -75,7 +75,7 @@ export default {
         : [];
     },
     years() {
-      return Object.keys(this?.usageDataByYear);
+      return getSortedYears(this?.usageDataByYear);
     },
     availableMonths() {
       if (this.usageDataByYear && this.selectedYear) {

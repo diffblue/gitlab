@@ -35,3 +35,7 @@ export const getUsageDataByYear = (ciMinutesUsage) => {
     return prev;
   }, {});
 };
+
+export const getSortedYears = (usageDataByYear) => {
+  return Object.keys(usageDataByYear).reverse();
+};
