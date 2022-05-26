@@ -317,14 +317,12 @@ export default {
 <template>
   <div v-if="isLoaded" class="mr-state-widget gl-mt-3">
     <header
-      v-if="shouldRenderCollaborationStatus || !isUpdatedHeaderEnabled"
-      :class="{ 'mr-widget-workflow gl-mt-0!': isUpdatedHeaderEnabled }"
-      class="gl-rounded-base gl-border-solid gl-border-1 gl-border-gray-100 gl-overflow-hidden"
+      v-if="shouldRenderCollaborationStatus"
+      class="gl-rounded-base gl-border-solid gl-border-1 gl-border-gray-100 gl-overflow-hidden mr-widget-workflow gl-mt-0!"
     >
       <mr-widget-alert-message v-if="shouldRenderCollaborationStatus" type="info">
         {{ s__('mrWidget|Members who can merge are allowed to add commits.') }}
       </mr-widget-alert-message>
-      <mr-widget-header v-if="!isUpdatedHeaderEnabled" :mr="mr" />
     </header>
     <mr-widget-suggest-pipeline
       v-if="shouldSuggestPipelines"
