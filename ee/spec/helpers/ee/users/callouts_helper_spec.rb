@@ -5,6 +5,7 @@ require "spec_helper"
 RSpec.describe EE::Users::CalloutsHelper do
   include Devise::Test::ControllerHelpers
   using RSpec::Parameterized::TableSyntax
+  include CalloutsTestHelper
 
   describe '.render_enable_hashed_storage_warning' do
     context 'when we should show the enable warning' do
@@ -421,7 +422,7 @@ RSpec.describe EE::Users::CalloutsHelper do
 
     describe '#callouts_trials_link_url' do
       it 'returns value of glm_source is gitlab.com' do
-        expect(helper.send(:callouts_trials_link_url)).to eq('/-/trial_registrations/new?glm_content=gold-callout&glm_source=gitlab.com')
+        expect(helper.send(:callouts_trials_link_url)).to eq(callouts_trials_link_path)
       end
     end
   end
