@@ -1,7 +1,6 @@
 - if admin_emails_are_currently_rate_limited?
-  %div{ class: 'gl-alert gl-alert-danger', role: 'alert' }
-    = sprite_icon('warning', css_class: 'gl-icon s16 gl-alert-icon gl-alert-icon-no-title')
-    .gl-alert-body
+  = render Pajamas::AlertComponent.new(variant: :danger, dismissible: false) do |c|
+    = c.body do
       = admin_emails_rate_limited_alert
 
 - page_title _("Email Notification")
