@@ -9,7 +9,6 @@ import SimpleFilter from './simple_filter.vue';
 const { NO_ACTIVITY, WITH_ISSUES, NO_LONGER_DETECTED } = activityOptions;
 
 export default {
-  includeAllInUrl: false,
   components: { FilterBody, FilterItem, GlDropdownDivider },
   extends: SimpleFilter,
   computed: {

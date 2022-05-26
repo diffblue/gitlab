@@ -4,8 +4,6 @@ import FilterBody from './filter_body.vue';
 import FilterItem from './filter_item.vue';
 
 export default {
-  includeAllInUrl: true,
-  urlField: 'id',
   components: { FilterBody, FilterItem },
   props: {
     filter: {
@@ -44,13 +42,11 @@ export default {
     querystringOptions() {
       // If the querystring IDs includes the All option, return an empty array. We'll do this even
       // if there are other IDs because the special All option takes precedence.
-      if (this.querystringIds.includes(this.filter.allOption[this.$options.urlField])) {
+      if (this.querystringIds.includes(this.filter.allOption.id)) {
         return [];
       }
 
-      const options = this.options.filter((x) =>
-        this.querystringIds.includes(x[this.$options.urlField]),
-      );
+      const options = this.options.filter((x) => this.querystringIds.includes(x.id));
       // If the querystring IDs didn't match any options, return the default options.
       if (!options.length) {
         return this.filter.defaultOptions;
@@ -80,12 +76,8 @@ export default {
       this.updateQuerystring();
     },
     updateQuerystring() {
-      // Most filters do not want "all" in the URL, but some do, so this is configurable
-      const optionsToSearch = this.$options.includeAllInUrl
-        ? 'selectedOptionsOrAll'
-        : 'selectedOptions';
+      const options = this.selectedOptionsOrAll.map((x) => x.id);
 
-      const options = this[optionsToSearch].map((x) => x[this.$options.urlField]);
       // To avoid a console error, don't update the querystring if it's the same as the current one.
       if (!this.$router || isEqual(this.querystringIds, options)) {
         return;
