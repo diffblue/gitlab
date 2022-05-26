@@ -5,7 +5,7 @@ import VueApollo from 'vue-apollo';
 import VulnerabilitySeverity from 'ee/security_dashboard/components/shared/project_security_status_chart.vue';
 import groupVulnerabilityGradesQuery from 'ee/security_dashboard/graphql/queries/group_vulnerability_grades.query.graphql';
 import instanceVulnerabilityGradesQuery from 'ee/security_dashboard/graphql/queries/instance_vulnerability_grades.query.graphql';
-import { severityGroupTypes } from 'ee/security_dashboard/store/modules/vulnerable_projects/constants';
+import { severityGroupTypes } from 'ee/security_dashboard/constants';
 import { Accordion, AccordionItem } from 'ee/vue_shared/components/accordion';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
