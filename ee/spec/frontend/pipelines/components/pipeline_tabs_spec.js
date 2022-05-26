@@ -30,6 +30,8 @@ describe('The Pipeline Tabs', () => {
     defaultTabValue: '',
     exposeSecurityDashboard: false,
     exposeLicenseScanningData: false,
+    failedJobsCount: 1,
+    failedJobsSummary: [],
     totalJobCount: 10,
   };
 
@@ -53,19 +55,30 @@ describe('The Pipeline Tabs', () => {
     wrapper.destroy();
   });
 
-  // The failed jobs MUST be removed from here and tested individually once
-  // the logic for the tab is implemented.
   describe('CE Tabs', () => {
     it.each`
       tabName          | tabComponent
       ${'Pipeline'}    | ${findPipelineTab}
       ${'Dag'}         | ${findDagTab}
-      ${'Failed Jobs'} | ${findFailedJobsTab}
       ${'Jobs'}        | ${findJobsTab}
+      ${'Failed Jobs'} | ${findFailedJobsTab}
       ${'Tests'}       | ${findTestsTab}
-    `('shows $tabName tab', ({ tabComponent }) => {
+    `('shows $tabName tab with its associated component', ({ tabComponent }) => {
       createComponent();
+
       expect(tabComponent().exists()).toBe(true);
+    });
+
+    describe('with no failed jobs', () => {
+      beforeEach(() => {
+        createComponent({
+          provide: { failedJobsCount: 0 },
+        });
+      });
+
+      it('hides the failed jobs tab', () => {
+        expect(findFailedJobsTab().exists()).toBe(false);
+      });
     });
   });
 

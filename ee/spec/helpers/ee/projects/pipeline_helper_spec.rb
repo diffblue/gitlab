@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Projects::PipelineHelper do
+  include Ci::BuildsHelper
+
   let_it_be(:user) { create(:user) }
   let_it_be(:project) { create(:project, :repository) }
   let_it_be(:raw_pipeline) { create(:ci_pipeline, project: project, ref: 'master', sha: project.commit.id) }
@@ -17,6 +19,8 @@ RSpec.describe Projects::PipelineHelper do
         codequality_report_download_path: helper.codequality_report_download_path(project, pipeline),
         expose_license_scanning_data: pipeline.expose_license_scanning_data?.to_json,
         expose_security_dashboard: pipeline.expose_security_dashboard?.to_json,
+        failed_jobs_count: pipeline.failed_builds.count,
+        failed_jobs_summary: prepare_failed_jobs_summary_data(pipeline.failed_builds),
         full_path: project.full_path,
         graphql_resource_etag: graphql_etag_pipeline_path(pipeline),
         metrics_path: namespace_project_ci_prometheus_metrics_histograms_path(namespace_id: project.namespace, project_id: project, format: :json),
