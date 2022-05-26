@@ -65,7 +65,7 @@ module QA
             dashboard.go_to_project(@project.name)
           end
 
-          Flow::Pipeline.visit_latest_pipeline(wait: Runtime::Geo.max_file_replication_time)
+          Flow::Pipeline.visit_latest_pipeline(wait: QA::EE::Runtime::Geo.max_file_replication_time)
 
           Page::Project::Pipeline::Show.perform do |pipeline|
             pipeline.wait_for_pipeline_job_replication(@pipeline_job_name)
@@ -96,7 +96,7 @@ module QA
             dashboard.go_to_project(@project.name)
           end
 
-          Flow::Pipeline.visit_latest_pipeline(wait: Runtime::Geo.max_file_replication_time)
+          Flow::Pipeline.visit_latest_pipeline(wait: QA::EE::Runtime::Geo.max_file_replication_time)
 
           Page::Project::Pipeline::Show.perform do |pipeline|
             pipeline.wait_for_pipeline_job_replication(@pipeline_job_name)
