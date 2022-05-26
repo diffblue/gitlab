@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe InvitedGroupEntity do
+RSpec.describe Autocomplete::GroupEntity do
   describe '#as_json' do
     let(:group) { build(:group, id: 1) }
 

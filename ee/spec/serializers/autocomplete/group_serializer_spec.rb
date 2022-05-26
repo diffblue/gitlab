@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe InvitedGroupSerializer do
+RSpec.describe Autocomplete::GroupSerializer do
   describe '#represent' do
     it 'includes the id, name, and avatar URL' do
       group = build(:group, id: 1)
