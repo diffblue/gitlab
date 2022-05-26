@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Geo', :orchestrated, :geo, feature_flag: { name: 'vue_issues_list', scope: :group } do
+  RSpec.describe 'Geo', :orchestrated, :geo do
     describe 'GitLab Geo attachment replication' do
       let(:file_to_attach) { File.absolute_path(File.join('qa', 'fixtures', 'designs', 'banana_sample.gif')) }
 
@@ -11,8 +11,6 @@ module QA
             project.name = 'project-for-issues'
             project.description = 'project for adding issues'
           end
-
-          Runtime::Feature.enable(:vue_issues_list, group: @project.group)
 
           @issue = Resource::Issue.fabricate_via_api! do |issue|
             issue.title = 'My geo issue'
@@ -46,9 +44,6 @@ module QA
           Page::Project::Menu.act { click_issues }
 
           Page::Project::Issue::Index.perform do |index|
-            # TODO: Remove this method when the `Runtime::Feature.enable` method call is removed
-            index.wait_for_vue_issues_list_ff
-
             index.wait_for_issue_replication(@issue)
           end
 
