@@ -1,6 +1,7 @@
 <script>
 import { GlAlert, GlFormGroup, GlFormSelect } from '@gitlab/ui';
 import { s__ } from '~/locale';
+import { NAMESPACE_TYPES } from '../../constants';
 import { POLICY_TYPE_COMPONENT_OPTIONS } from '../constants';
 import ScanExecutionPolicyEditor from './scan_execution_policy/scan_execution_policy_editor.vue';
 import ScanResultPolicyEditor from './scan_result_policy/scan_result_policy_editor.vue';
@@ -14,25 +15,29 @@ export default {
     ScanResultPolicyEditor,
   },
   inject: {
-    policyType: { default: '' },
     assignedPolicyProject: { default: null },
     existingPolicy: { default: null },
+    namespaceType: { default: NAMESPACE_TYPES.PROJECT },
+  },
+  props: {
+    // This is the `value` field of the POLICY_TYPE_COMPONENT_OPTIONS
+    selectedPolicyType: {
+      type: String,
+      required: true,
+    },
   },
   data() {
     return {
       error: '',
       errorMessages: [],
-      newPolicyType: POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.value,
     };
   },
   computed: {
-    currentPolicyType() {
-      return this.isEditing ? this.policyType : this.newPolicyType;
-    },
     isEditing() {
       if (!this.existingPolicy) {
         return false;
       }
+
       return Boolean(
         this.existingPolicy.creation_timestamp ||
           [
@@ -46,11 +51,8 @@ export default {
     },
     policyOptions() {
       return (
-        this.policyTypes.find((option) => {
-          return this.isEditing
-            ? option.urlParameter === this.currentPolicyType
-            : option.value === this.currentPolicyType;
-        }) || POLICY_TYPE_COMPONENT_OPTIONS.scanExecution
+        this.policyTypes.find(({ value }) => value === this.selectedPolicyType) ||
+        POLICY_TYPE_COMPONENT_OPTIONS.scanExecution
       );
     },
     shouldAllowPolicyTypeSelection() {
@@ -61,23 +63,34 @@ export default {
     setError(errors) {
       [this.error, ...this.errorMessages] = errors.split('\n');
     },
-    handleNewPolicyType(type) {
-      this.newPolicyType = type;
-    },
   },
+  NAMESPACE_TYPES,
   i18n: {
-    title: s__('SecurityOrchestration|Policy description'),
+    groupPolicyMessage: s__(
+      'SecurityOrchestration|After enabling a group-level policy, this policy automatically applies to all projects in this group.',
+    ),
+    groupPolicyTitle: s__('SecurityOrchestration|Group level policy'),
   },
 };
 </script>
 
 <template>
   <section class="policy-editor">
+    <span
+      v-if="namespaceType === $options.NAMESPACE_TYPES.GROUP"
+      :title="$options.i18n.groupPolicyTitle"
+      data-testid="group-level-notification"
+      :dismissible="false"
+    >
+      {{ $options.i18n.groupPolicyMessage }}
+    </span>
     <gl-alert
       v-if="error"
+      class="gl-mt-5"
       :title="error"
-      dissmissable="true"
+      dismissible
       variant="danger"
+      data-testid="error-alert"
       @dismiss="setError('')"
     >
       <ul v-if="errorMessages.length" class="gl-mb-0! gl-ml-5">
@@ -86,21 +99,6 @@ export default {
         </li>
       </ul>
     </gl-alert>
-    <header class="gl-pb-5">
-      <h3>{{ $options.i18n.title }}</h3>
-    </header>
-    <div class="gl-display-flex">
-      <gl-form-group :label="s__('SecurityOrchestration|Policy type')" label-for="policyType">
-        <gl-form-select
-          id="policyType"
-          data-qa-selector="policy_type_form_select"
-          :value="policyOptions.value"
-          :options="policyTypes"
-          :disabled="!shouldAllowPolicyTypeSelection"
-          @change="handleNewPolicyType"
-        />
-      </gl-form-group>
-    </div>
     <component
       :is="policyOptions.component"
       :existing-policy="existingPolicy"

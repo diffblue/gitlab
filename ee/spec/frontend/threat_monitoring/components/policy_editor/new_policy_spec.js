@@ -5,7 +5,7 @@ import { POLICY_TYPE_COMPONENT_OPTIONS } from 'ee/threat_monitoring/components/c
 import { NAMESPACE_TYPES } from 'ee/threat_monitoring/constants';
 import NewPolicy from 'ee/threat_monitoring/components/policy_editor/new_policy.vue';
 import PolicySelection from 'ee/threat_monitoring/components/policy_editor/policy_selection.vue';
-import PolicyEditor from 'ee/threat_monitoring/components/policy_editor/policy_editor_v2.vue';
+import PolicyEditor from 'ee/threat_monitoring/components/policy_editor/policy_editor.vue';
 
 describe('NewPolicy component', () => {
   let wrapper;

@@ -8,10 +8,6 @@ module Projects
       before_action :authorize_read_security_orchestration_policies!
       before_action :validate_policy_configuration, only: :edit
 
-      before_action do
-        push_frontend_feature_flag(:container_security_policy_selection, project)
-      end
-
       feature_category :security_orchestration
       urgency :default, [:edit]
       urgency :low, [:index, :new]
