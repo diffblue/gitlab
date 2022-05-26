@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 module QA
+  # This test uses `needs:project` premium feature,
+  # it can only be run against an EE instance with an active license
   RSpec.describe 'Verify' do
     describe 'Multi-project pipelines' do
       let(:downstream_job_name) { 'downstream_job' }
