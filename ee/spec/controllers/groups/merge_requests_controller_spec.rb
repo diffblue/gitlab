@@ -3,12 +3,12 @@
 require 'spec_helper'
 
 RSpec.describe Groups::MergeRequestsController do
-  let(:user)           { create(:user) }
-  let(:group)          { create(:group, :public) }
-  let(:project)        { create(:project, :repository, group: group) }
-  let(:milestone)      { create(:milestone, group: group) }
-  let(:merge_request1) { create(:merge_request, source_project: project, source_branch: 'branch-1') }
-  let(:merge_request2) { create(:merge_request, source_project: project, source_branch: 'branch-2') }
+  let_it_be(:user)           { create(:user) }
+  let_it_be(:group)          { create(:group, :public) }
+  let_it_be(:project)        { create(:project, :repository, group: group) }
+  let_it_be(:milestone)      { create(:milestone, group: group) }
+  let_it_be(:merge_request1) { create(:merge_request, source_project: project, source_branch: 'branch-1') }
+  let_it_be(:merge_request2) { create(:merge_request, source_project: project, source_branch: 'branch-2') }
 
   describe 'POST #bulk_update' do
     subject { post :bulk_update, params: params, format: :json }

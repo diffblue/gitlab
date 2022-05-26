@@ -3,8 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Groups::Security::ComplianceDashboardsController do
-  let(:user) { create(:user) }
-  let(:group) { create(:group) }
+  let_it_be(:user) { create(:user) }
+  let_it_be(:group) { create(:group) }
 
   before do
     sign_in(user)
@@ -19,7 +19,7 @@ RSpec.describe Groups::Security::ComplianceDashboardsController do
       end
 
       context 'and user is allowed to access group compliance dashboard' do
-        before do
+        before_all do
           group.add_owner(user)
         end
 
