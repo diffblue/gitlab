@@ -22,7 +22,7 @@ RSpec.describe EE::GeoHelper do
   end
 
   describe '#resync_all_button' do
-    subject { helper.resync_all_button(count) }
+    subject { helper.resync_all_button(count, 10001) }
 
     context 'when one project' do
       let!(:count) { 1 }
@@ -42,7 +42,7 @@ RSpec.describe EE::GeoHelper do
     end
 
     context 'when 10,000+ projects' do
-      let!(:count) { '10,000+' }
+      let!(:count) { 10001 }
 
       it 'returns correct button' do
         is_expected.to include("Resync all 10,000+ projects")
@@ -51,7 +51,7 @@ RSpec.describe EE::GeoHelper do
   end
 
   describe '#reverify_all_button' do
-    subject { helper.reverify_all_button(count) }
+    subject { helper.reverify_all_button(count, 10001) }
 
     context 'when one project' do
       let!(:count) { 1 }
@@ -71,7 +71,7 @@ RSpec.describe EE::GeoHelper do
     end
 
     context 'when 10,000+ projects' do
-      let!(:count) { '10,000+' }
+      let!(:count) { 10001 }
 
       it 'returns correct button' do
         is_expected.to include("Reverify all 10,000+ projects")

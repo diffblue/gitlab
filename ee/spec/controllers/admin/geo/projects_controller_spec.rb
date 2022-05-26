@@ -243,30 +243,4 @@ RSpec.describe Admin::Geo::ProjectsController, :geo do
       end
     end
   end
-
-  describe '#compute_all_projects_size' do
-    context "when count < 10,001" do
-      it 'returns value' do
-        allow_next_instance_of(::Geo::ProjectRegistryStatusFinder) do |instance|
-          allow(instance).to receive_message_chain(:all_projects, :limit, :count)
-                .and_return(100)
-        end
-        controller.send(:compute_all_projects_size)
-
-        expect(controller.instance_variable_get("@all_projects_size")).to be(100)
-      end
-    end
-
-    context "when count >= 10,001" do
-      it 'returns 10,000+' do
-        allow_next_instance_of(::Geo::ProjectRegistryStatusFinder) do |instance|
-          allow(instance).to receive_message_chain(:all_projects, :limit, :count)
-                .and_return(10001)
-        end
-        controller.send(:compute_all_projects_size)
-
-        expect(controller.instance_variable_get("@all_projects_size")).to be('10,000+')
-      end
-    end
-  end
 end

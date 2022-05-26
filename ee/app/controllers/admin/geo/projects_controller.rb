@@ -5,8 +5,10 @@ class Admin::Geo::ProjectsController < Admin::Geo::ApplicationController
   before_action :load_registry, except: [:index]
   before_action :limited_actions_message!
   before_action :load_node_data, only: [:index]
-  before_action :compute_all_projects_size, only: [:index]
+  before_action :compute_projects_limit_count, only: [:index]
   before_action :warn_viewing_primary_replication_data, only: [:index]
+
+  LIMIT_COUNT = 10001
 
   def index
     @registries = case params[:sync_status]
@@ -24,7 +26,7 @@ class Admin::Geo::ProjectsController < Admin::Geo::ApplicationController
       @registries = @registries.with_search(params[:name])
     end
 
-    @action_buttons = [helpers.resync_all_button(@all_projects_size), helpers.reverify_all_button(@all_projects_size)]
+    @action_buttons = [helpers.resync_all_button(@projects_limit_count, LIMIT_COUNT), helpers.reverify_all_button(@projects_limit_count, LIMIT_COUNT)]
   end
 
   def destroy
@@ -84,13 +86,7 @@ class Admin::Geo::ProjectsController < Admin::Geo::ApplicationController
     @finder ||= ::Geo::ProjectRegistryStatusFinder.new
   end
 
-  def compute_all_projects_size
-    limit_count = 10001
-
-    @all_projects_size = finder.all_projects.limit(limit_count).count
-
-    if @all_projects_size >= limit_count
-      @all_projects_size = '10,000+'
-    end
+  def compute_projects_limit_count
+    @projects_limit_count = finder.all_projects.limit(LIMIT_COUNT).count
   end
 end
