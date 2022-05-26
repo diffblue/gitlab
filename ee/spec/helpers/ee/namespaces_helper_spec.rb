@@ -191,12 +191,15 @@ RSpec.describe EE::NamespacesHelper do
     end
 
     context 'when called from a subgroup' do
-      let(:group) { create(:group) }
-      let(:subgroup) { create(:group, parent: group) }
+      let(:subgroup) { build_stubbed(:group, parent: namespace) }
+
+      before do
+        allow(subgroup).to receive(:root_ancestor).and_return(namespace)
+      end
 
       it 'returns the selected group id as the parent group' do
         link = helper.buy_additional_minutes_path(subgroup)
-        expect(link).to eq get_buy_minutes_path(group)
+        expect(link).to eq get_buy_minutes_path(namespace)
       end
     end
   end
@@ -207,6 +210,18 @@ RSpec.describe EE::NamespacesHelper do
     let(:namespace) { build_stubbed(:group) }
 
     it { is_expected.to eq get_buy_storage_path(namespace) }
+
+    context 'when called from a subgroup' do
+      let(:subgroup) { build_stubbed(:group, parent: namespace) }
+
+      before do
+        allow(subgroup).to receive(:root_ancestor).and_return(namespace)
+      end
+
+      it 'returns the buy URL with the parent group id' do
+        expect(helper.buy_storage_path(subgroup)).to eq get_buy_storage_path(namespace)
+      end
+    end
 
     context 'when called for a personal namespace' do
       let(:user) { create(:user) }
