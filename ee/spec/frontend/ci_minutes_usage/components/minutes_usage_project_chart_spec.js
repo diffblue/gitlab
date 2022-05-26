@@ -46,16 +46,16 @@ describe('Minutes usage by project chart component', () => {
 
     it('renders year dropdown component', () => {
       expect(findYearDropdown().exists()).toBe(true);
-      expect(findYearDropdown().props('text')).toBe('2021');
+      expect(findYearDropdown().props('text')).toBe('2022');
     });
 
     it('renders month dropdown component', () => {
       expect(findMonthDropdown().exists()).toBe(true);
-      expect(findMonthDropdown().props('text')).toBe('June');
+      expect(findMonthDropdown().props('text')).toBe('August');
     });
 
     it('renders only the months / years with available minutes data', () => {
-      expect(findAllMonthDropdownItems().length).toBe(2);
+      expect(findAllMonthDropdownItems().length).toBe(1);
       expect(findAllYearDropdownItems().length).toBe(2);
     });
 
@@ -64,16 +64,26 @@ describe('Minutes usage by project chart component', () => {
     });
 
     it('changes the selected year in the year dropdown', async () => {
-      expect(findYearDropdown().props('text')).toBe('2021');
+      expect(findYearDropdown().props('text')).toBe('2022');
 
       findAllYearDropdownItems().at(1).vm.$emit('click');
 
       await nextTick();
 
-      expect(findYearDropdown().props('text')).toBe('2022');
+      expect(findYearDropdown().props('text')).toBe('2021');
     });
 
     it('changes the selected month in the month dropdown', async () => {
+      expect(findYearDropdown().props('text')).toBe('2022');
+
+      findAllYearDropdownItems().at(1).vm.$emit('click');
+
+      await nextTick();
+
+      expect(findYearDropdown().props('text')).toBe('2021');
+
+      await nextTick();
+
       expect(findMonthDropdown().props('text')).toBe('June');
 
       findAllMonthDropdownItems().at(1).vm.$emit('click');
@@ -88,8 +98,8 @@ describe('Minutes usage by project chart component', () => {
         {
           data: [
             [
-              ciMinutesUsage.nodes[0].projects.nodes[0].name,
-              ciMinutesUsage.nodes[0].projects.nodes[0].minutes,
+              ciMinutesUsage.nodes[ciMinutesUsage.nodes.length - 1].projects.nodes[0].name,
+              ciMinutesUsage.nodes[ciMinutesUsage.nodes.length - 1].projects.nodes[0].minutes,
             ],
           ],
         },
@@ -113,8 +123,11 @@ describe('Minutes usage by project chart component', () => {
         {
           data: [
             [
-              ciMinutesUsage.nodes[0].projects.nodes[0].name,
-              (ciMinutesUsage.nodes[0].projects.nodes[0].sharedRunnersDuration / 60).toFixed(2),
+              ciMinutesUsage.nodes[ciMinutesUsage.nodes.length - 1].projects.nodes[0].name,
+              (
+                ciMinutesUsage.nodes[ciMinutesUsage.nodes.length - 1].projects.nodes[0]
+                  .sharedRunnersDuration / 60
+              ).toFixed(2),
             ],
           ],
         },

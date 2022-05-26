@@ -32,7 +32,13 @@ export const ciMinutesUsageMockData = {
           minutes: 0,
           sharedRunnersDuration: 0,
           projects: {
-            nodes: [],
+            nodes: [
+              {
+                name: 'devcafe-mx',
+                minutes: 5,
+                sharedRunnersDuration: 80,
+              },
+            ],
           },
         },
       ],

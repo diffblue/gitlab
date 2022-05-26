@@ -43,7 +43,7 @@ describe('Minutes usage by month chart component', () => {
 
   it('renders year dropdown component', () => {
     expect(findYearDropdown().exists()).toBe(true);
-    expect(findYearDropdown().props('text')).toBe('2021');
+    expect(findYearDropdown().props('text')).toBe('2022');
   });
 
   it('renders only the years with available minutes data', () => {
@@ -51,13 +51,13 @@ describe('Minutes usage by month chart component', () => {
   });
 
   it('should change the selected year in the year dropdown', async () => {
-    expect(findYearDropdown().props('text')).toBe('2021');
+    expect(findYearDropdown().props('text')).toBe('2022');
 
     findAllYearDropdownItems().at(1).vm.$emit('click');
 
     await nextTick();
 
-    expect(findYearDropdown().props('text')).toBe('2022');
+    expect(findYearDropdown().props('text')).toBe('2021');
   });
 
   describe.each`
@@ -76,7 +76,7 @@ describe('Minutes usage by month chart component', () => {
       });
 
       it('has the right start month', () => {
-        expect(findAreaChart().props('data')[0].data[0][0]).toEqual('Jun 2021');
+        expect(findAreaChart().props('data')[0].data[0][0]).toEqual('Aug 2022');
       });
     });
   });

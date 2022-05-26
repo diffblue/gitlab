@@ -4,7 +4,7 @@ import { GlAreaChart } from '@gitlab/ui/dist/charts';
 import { s__ } from '~/locale';
 import { formatDate } from '~/lib/utils/datetime_utility';
 import { X_AXIS_MONTH_LABEL, X_AXIS_CATEGORY, Y_AXIS_SHARED_RUNNER_LABEL } from '../constants';
-import { getUsageDataByYear } from '../utils';
+import { getUsageDataByYear, getSortedYears } from '../utils';
 
 export default {
   components: {
@@ -66,7 +66,7 @@ export default {
       return [];
     },
     years() {
-      return Object.keys(this.usageDataByYear);
+      return getSortedYears(this.usageDataByYear);
     },
   },
   watch: {
