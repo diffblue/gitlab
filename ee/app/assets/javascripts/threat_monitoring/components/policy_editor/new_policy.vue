@@ -5,7 +5,7 @@ import { getParameterByName, removeParams, visitUrl } from '~/lib/utils/url_util
 import { POLICY_TYPE_COMPONENT_OPTIONS } from '../constants';
 import { NAMESPACE_TYPES } from '../../constants';
 import PolicySelection from './policy_selection.vue';
-import PolicyEditor from './policy_editor_v2.vue';
+import PolicyEditor from './policy_editor.vue';
 
 export default {
   components: {

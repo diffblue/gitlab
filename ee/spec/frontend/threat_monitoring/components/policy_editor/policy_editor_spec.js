@@ -1,29 +1,30 @@
-import { GlAlert, GlFormSelect } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
 import { nextTick } from 'vue';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { POLICY_TYPE_COMPONENT_OPTIONS } from 'ee/threat_monitoring/components/constants';
 import PolicyEditor from 'ee/threat_monitoring/components/policy_editor/policy_editor.vue';
 import ScanExecutionPolicyEditor from 'ee/threat_monitoring/components/policy_editor/scan_execution_policy/scan_execution_policy_editor.vue';
 import ScanResultPolicyEditor from 'ee/threat_monitoring/components/policy_editor/scan_result_policy/scan_result_policy_editor.vue';
-import { DEFAULT_ASSIGNED_POLICY_PROJECT } from 'ee/threat_monitoring/constants';
-import { mockDastScanExecutionObject, mockScanResultObject } from '../../mocks/mock_data';
+import { DEFAULT_ASSIGNED_POLICY_PROJECT, NAMESPACE_TYPES } from 'ee/threat_monitoring/constants';
 
 describe('PolicyEditor component', () => {
   let wrapper;
 
-  const findAlert = () => wrapper.findComponent(GlAlert);
-  const findFormSelect = () => wrapper.findComponent(GlFormSelect);
+  const findGroupLevelNotification = () => wrapper.findByTestId('group-level-notification');
+  const findErrorAlert = () => wrapper.findByTestId('error-alert');
   const findScanExecutionPolicyEditor = () => wrapper.findComponent(ScanExecutionPolicyEditor);
   const findScanResultPolicyEditor = () => wrapper.findComponent(ScanResultPolicyEditor);
 
   const factory = ({ provide = {} } = {}) => {
-    wrapper = shallowMount(PolicyEditor, {
+    wrapper = shallowMountExtended(PolicyEditor, {
+      propsData: {
+        selectedPolicyType: 'container',
+      },
       provide: {
         assignedPolicyProject: DEFAULT_ASSIGNED_POLICY_PROJECT,
+        namespaceType: NAMESPACE_TYPES.PROJECT,
         policyType: undefined,
         ...provide,
       },
-      stubs: { GlFormSelect },
     });
   };
 
@@ -31,36 +32,26 @@ describe('PolicyEditor component', () => {
     wrapper.destroy();
   });
 
-  describe('default', () => {
+  describe('project-level', () => {
     beforeEach(factory);
 
-    it('does not display the alert', () => {
-      expect(findAlert().exists()).toBe(false);
+    it.each`
+      component              | findComponent
+      ${'group-level alert'} | ${findGroupLevelNotification}
+      ${'error alert'}       | ${findErrorAlert}
+    `('does not display the $component', ({ findComponent }) => {
+      expect(findComponent().exists()).toBe(false);
     });
 
-    it('renders the scan execution policy editor component', () => {
+    it('renders the network policy editor component', () => {
       expect(findScanExecutionPolicyEditor().props('existingPolicy')).toBe(null);
-    });
-
-    it('renders the form select', () => {
-      const formSelect = findFormSelect();
-      expect(formSelect.vm.$attrs.disabled).toBe(false);
-      expect(formSelect.vm.$attrs).toEqual(
-        expect.objectContaining({
-          options: [
-            POLICY_TYPE_COMPONENT_OPTIONS.scanExecution,
-            POLICY_TYPE_COMPONENT_OPTIONS.scanResult,
-          ],
-          value: POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.value,
-        }),
-      );
     });
 
     it('shows an alert when "error" is emitted from the component', async () => {
       const errorMessage = 'test';
       findScanExecutionPolicyEditor().vm.$emit('error', errorMessage);
       await nextTick();
-      const alert = findAlert();
+      const alert = findErrorAlert();
       expect(alert.exists()).toBe(true);
       expect(alert.props('title')).toBe(errorMessage);
     });
@@ -69,50 +60,35 @@ describe('PolicyEditor component', () => {
       const errorMessages = 'title\ndetail1';
       findScanExecutionPolicyEditor().vm.$emit('error', errorMessages);
       await nextTick();
-      const alert = findAlert();
+      const alert = findErrorAlert();
       expect(alert.exists()).toBe(true);
       expect(alert.props('title')).toBe('title');
       expect(alert.text()).toBe('detail1');
     });
 
     it.each`
-      policyType         | option                                         | findComponent
-      ${'scanExecution'} | ${POLICY_TYPE_COMPONENT_OPTIONS.scanExecution} | ${findScanExecutionPolicyEditor}
-      ${'scanResult'}    | ${POLICY_TYPE_COMPONENT_OPTIONS.scanResult}    | ${findScanResultPolicyEditor}
+      policyTypeId                                         | findComponent
+      ${POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.value} | ${findScanExecutionPolicyEditor}
+      ${POLICY_TYPE_COMPONENT_OPTIONS.scanResult.value}    | ${findScanResultPolicyEditor}
     `(
       'renders the policy editor of type $policyType when selected',
-      async ({ findComponent, option, policyType }) => {
-        const formSelect = findFormSelect();
-        formSelect.vm.$emit('change', policyType);
+      async ({ findComponent, policyTypeId }) => {
+        wrapper.setProps({ selectedPolicyType: policyTypeId });
         await nextTick();
         const component = findComponent();
-        expect(formSelect.attributes('value')).toBe(option.value);
         expect(component.exists()).toBe(true);
         expect(component.props('isEditing')).toBe(false);
       },
     );
   });
 
-  describe('when an existing policy is present', () => {
-    it.each`
-      policyType                 | option                                         | existingPolicy                 | findComponent
-      ${'scan_execution_policy'} | ${POLICY_TYPE_COMPONENT_OPTIONS.scanExecution} | ${mockDastScanExecutionObject} | ${findScanExecutionPolicyEditor}
-      ${'scan_result_policy'}    | ${POLICY_TYPE_COMPONENT_OPTIONS.scanResult}    | ${mockScanResultObject}        | ${findScanResultPolicyEditor}
-    `(
-      'renders the disabled form select for existing policy of type $policyType',
-      async ({ existingPolicy, findComponent, option, policyType }) => {
-        factory({
-          provide: { policyType, existingPolicy },
-        });
-        await nextTick();
-        const formSelect = findFormSelect();
-        expect(formSelect.exists()).toBe(true);
-        expect(formSelect.attributes('value')).toBe(option.value);
-        expect(formSelect.attributes('disabled')).toBe('true');
-        const component = findComponent();
-        expect(component.exists()).toBe(true);
-        expect(component.props('isEditing')).toBe(true);
-      },
-    );
+  describe('group-level', () => {
+    beforeEach(() => {
+      factory({ provide: { namespaceType: NAMESPACE_TYPES.GROUP } });
+    });
+
+    it('does display the group-level alert', () => {
+      expect(findGroupLevelNotification().exists()).toBe(true);
+    });
   });
 });
