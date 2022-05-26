@@ -19,6 +19,7 @@
     "id": { "type": "integer" },
     "confidential": { "type": "boolean" },
     "title": { "type": "string" },
+    "type": { "type": "string" },
     "assignees": { "type": "array" },
     "milestone": { "type": ["object", "null"] },
     "due_date": { "type": ["string", "null"] },
