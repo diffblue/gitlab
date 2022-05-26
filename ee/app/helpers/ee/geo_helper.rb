@@ -178,8 +178,8 @@ module EE
     end
 
     def format_project_count(projects_count, limit)
-      if(projects_count >= limit) 
-        projects_count = number_with_delimiter(limit-1) + "+"
+      if projects_count >= limit
+        number_with_delimiter(limit - 1) + "+"
       else
         number_with_delimiter(projects_count)
       end

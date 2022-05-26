@@ -16859,7 +16859,7 @@ msgstr ""
 msgid "Geo|Resync all"
 msgstr ""
 
-msgid "Geo|Resync all %{all_project_size} projects"
+msgid "Geo|Resync all %{projects_count} projects"
 msgstr ""
 
 msgid "Geo|Resync all %{total}%{replicableType}"
@@ -16877,7 +16877,7 @@ msgstr ""
 msgid "Geo|Reverify all"
 msgstr ""
 
-msgid "Geo|Reverify all %{all_project_size} projects"
+msgid "Geo|Reverify all %{projects_count} projects"
 msgstr ""
 
 msgid "Geo|Reverify project"
