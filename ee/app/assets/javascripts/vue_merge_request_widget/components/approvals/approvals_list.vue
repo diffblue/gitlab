@@ -127,7 +127,7 @@ export default {
               >
                 {{ rule.section }}
               </span>
-              <span :class="rule.nameClass">{{ rule.name }}</span>
+              <span :class="rule.nameClass" :title="rule.name">{{ rule.name }}</span>
             </span>
             <approval-check-rule-popover
               :rule="rule"
