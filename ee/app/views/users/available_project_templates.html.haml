@@ -13,7 +13,7 @@
         .controls.d-flex.align-items-baseline
           %a.btn.gl-button.btn-default.gl-mr-3{ href: project_path(template), rel: 'noopener noreferrer', target: '_blank' }
             = _('Preview')
-          %label.btn.gl-button.btn-success.custom-template-button.choose-template.gl-mb-0{ for: template.name }
+          %label.btn.gl-button.btn-confirm.custom-template-button.choose-template.gl-mb-0{ for: template.name }
             %input{ type: "radio", autocomplete: "off", name: "project[template_project_id]", id: template.name, value: template.id, data: { template_name: template.name } }
             %span{ data: { qa_selector: 'use_template_button' } }
               = _('Use template')
