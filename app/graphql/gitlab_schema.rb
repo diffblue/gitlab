@@ -10,21 +10,17 @@ class GitlabSchema < GraphQL::Schema
   DEFAULT_MAX_DEPTH = 15
   AUTHENTICATED_MAX_DEPTH = 20
 
-  if ENV['DEBUG_GRAPHQL']
-    use Gitlab::Graphql::Timeout, max_seconds: 1200
-  else
-    # Tracers (order is important)
-    use Gitlab::Graphql::Tracers::ApplicationContextTracer
-    use Gitlab::Graphql::Tracers::MetricsTracer
-    use Gitlab::Graphql::Tracers::LoggerTracer
+  # Tracers (order is important)
+  use Gitlab::Graphql::Tracers::ApplicationContextTracer
+  use Gitlab::Graphql::Tracers::MetricsTracer
+  use Gitlab::Graphql::Tracers::LoggerTracer
 
-    # TODO: Old tracer which will be removed eventually
-    #       See https://gitlab.com/gitlab-org/gitlab/-/issues/345396
-    use Gitlab::Graphql::GenericTracing
-    use Gitlab::Graphql::Tracers::TimerTracer
+  # TODO: Old tracer which will be removed eventually
+  #       See https://gitlab.com/gitlab-org/gitlab/-/issues/345396
+  use Gitlab::Graphql::GenericTracing
+  use Gitlab::Graphql::Tracers::TimerTracer
 
-    use Gitlab::Graphql::Timeout, max_seconds: Gitlab.config.gitlab.graphql_timeout
-  end
+  use Gitlab::Graphql::Timeout, max_seconds: Gitlab.config.gitlab.graphql_timeout
 
   use GraphQL::Subscriptions::ActionCableSubscriptions
   use BatchLoader::GraphQL
