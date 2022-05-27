@@ -99,8 +99,8 @@ export default {
       <gl-button
         id="node-save-button"
         data-qa-selector="add_node_button"
-        class="gl-mr-5"
-        variant="info"
+        class="gl-mr-3"
+        variant="confirm"
         :disabled="formHasError"
         @click="saveGeoNode(nodeData)"
         >{{ $options.i18n.saveChanges }}</gl-button
