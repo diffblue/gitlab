@@ -30,12 +30,8 @@ RSpec.describe Gitlab::Graphql::Tracers::LoggerTracer do
     expect(::Gitlab::GraphqlLogger).to receive(:info).with({
       trace_type: "execute_query",
       query_fingerprint: query.fingerprint,
-      duration_s: be > 0,
-      operation_name: 'fooOperation',
       operation_fingerprint: query.operation_fingerprint,
       is_mutation: false,
-      variables: variables.to_s,
-      query_string: query_string,
       "correlation_id" => anything,
       "meta.caller_id" => "caller_a",
       "meta.feature_category" => "feature_a",

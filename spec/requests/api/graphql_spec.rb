@@ -29,14 +29,10 @@ RSpec.describe 'GraphQL' do
           "query_analysis.query_string" => query,
           # query_fingerprint starts with operation name
           query_fingerprint: %r{^anonymous\/},
-          duration_s: kind_of(Numeric),
           trace_type: 'execute_query',
-          operation_name: nil,
           # operation_fingerprint starts with operation name
           operation_fingerprint: %r{^anonymous\/},
-          is_mutation: false,
-          variables: variables.to_s,
-          query_string: query
+          is_mutation: false
         }
       end
 
