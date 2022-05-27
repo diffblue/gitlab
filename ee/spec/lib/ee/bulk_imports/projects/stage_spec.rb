@@ -3,38 +3,6 @@
 require 'spec_helper'
 
 RSpec.describe BulkImports::Projects::Stage do
-  let(:pipelines) do
-    [
-      [0, BulkImports::Projects::Pipelines::ProjectPipeline],
-      [1, BulkImports::Projects::Pipelines::RepositoryPipeline],
-      [1, BulkImports::Projects::Pipelines::ProjectAttributesPipeline],
-      [1, BulkImports::Common::Pipelines::MembersPipeline],
-      [2, BulkImports::Common::Pipelines::LabelsPipeline],
-      [2, BulkImports::Common::Pipelines::MilestonesPipeline],
-      [2, BulkImports::Common::Pipelines::BadgesPipeline],
-      [3, BulkImports::Projects::Pipelines::IssuesPipeline],
-      [3, BulkImports::Projects::Pipelines::SnippetsPipeline],
-      [4, BulkImports::Projects::Pipelines::SnippetsRepositoryPipeline],
-      [4, BulkImports::Common::Pipelines::BoardsPipeline],
-      [4, BulkImports::Projects::Pipelines::MergeRequestsPipeline],
-      [4, BulkImports::Projects::Pipelines::ExternalPullRequestsPipeline],
-      [4, BulkImports::Projects::Pipelines::PushRulePipeline],
-      [4, BulkImports::Projects::Pipelines::ProtectedBranchesPipeline],
-      [4, BulkImports::Projects::Pipelines::ProjectFeaturePipeline],
-      [4, BulkImports::Projects::Pipelines::ContainerExpirationPolicyPipeline],
-      [4, BulkImports::Projects::Pipelines::ServiceDeskSettingPipeline],
-      [4, BulkImports::Projects::Pipelines::ReleasesPipeline],
-      [5, BulkImports::Projects::Pipelines::CiPipelinesPipeline],
-      [5, BulkImports::Common::Pipelines::WikiPipeline],
-      [5, BulkImports::Common::Pipelines::UploadsPipeline],
-      [5, BulkImports::Common::Pipelines::LfsObjectsPipeline],
-      [5, BulkImports::Projects::Pipelines::DesignBundlePipeline],
-      [5, BulkImports::Projects::Pipelines::AutoDevopsPipeline],
-      [5, BulkImports::Projects::Pipelines::PipelineSchedulesPipeline],
-      [6, BulkImports::Common::Pipelines::EntityFinisher]
-    ]
-  end
-
   subject do
     entity = build(:bulk_import_entity)
 
@@ -42,8 +10,8 @@ RSpec.describe BulkImports::Projects::Stage do
   end
 
   describe '#pipelines' do
-    it 'list all the pipelines with their stage number, ordered by stage' do
-      expect(subject.pipelines).to contain_exactly(*pipelines)
+    it 'includes EE pipelines' do
+      expect(subject.pipelines).to include({ stage: 4, pipeline: BulkImports::Projects::Pipelines::PushRulePipeline })
     end
   end
 end

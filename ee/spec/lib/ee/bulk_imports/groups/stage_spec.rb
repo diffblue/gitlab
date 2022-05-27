@@ -3,35 +3,23 @@
 require 'spec_helper'
 
 RSpec.describe BulkImports::Groups::Stage do
-  let(:pipelines) do
-    [
-      [0, BulkImports::Groups::Pipelines::GroupPipeline],
-      [1, BulkImports::Groups::Pipelines::GroupAttributesPipeline],
-      [1, BulkImports::Groups::Pipelines::SubgroupEntitiesPipeline],
-      [1, BulkImports::Groups::Pipelines::NamespaceSettingsPipeline],
-      [1, BulkImports::Common::Pipelines::MembersPipeline],
-      [1, BulkImports::Common::Pipelines::LabelsPipeline],
-      [1, BulkImports::Common::Pipelines::MilestonesPipeline],
-      [1, BulkImports::Common::Pipelines::BadgesPipeline],
-      [1, BulkImports::Groups::Pipelines::IterationsPipeline],
-      [1, BulkImports::Groups::Pipelines::ProjectEntitiesPipeline],
-      [2, BulkImports::Common::Pipelines::BoardsPipeline],
-      [2, BulkImports::Groups::Pipelines::EpicsPipeline],
-      [2, BulkImports::Common::Pipelines::WikiPipeline],
-      [2, BulkImports::Common::Pipelines::UploadsPipeline],
-      [4, BulkImports::Common::Pipelines::EntityFinisher]
-    ]
-  end
-
   subject do
     entity = build(:bulk_import_entity)
 
     described_class.new(entity)
   end
 
-  describe '#each' do
-    it 'iterates over all pipelines with the stage number' do
-      expect(subject.pipelines).to match_array(pipelines)
+  describe '#pipelines' do
+    it 'includes EE pipelines' do
+      expect(subject.pipelines).to include(
+        { stage: 1, pipeline: BulkImports::Groups::Pipelines::IterationsPipeline },
+        { stage: 2, pipeline: BulkImports::Groups::Pipelines::EpicsPipeline },
+        { stage: 2, pipeline: BulkImports::Common::Pipelines::WikiPipeline }
+      )
+    end
+
+    it 'overrides the CE stage value for the EntityFinisher Pipeline' do
+      expect(subject.pipelines.last).to eq({ stage: 4, pipeline: BulkImports::Common::Pipelines::EntityFinisher })
     end
   end
 end
