@@ -11,7 +11,7 @@
         %div= _('A group represents your organization in GitLab. Groups allow you to manage users and collaborate across multiple projects.')
         %div= _('Your %{plan} plan will be applied to your group.' % { plan: plan_title })
 
-      = form_for [:subscriptions, @group], html: { class: 'gl-show-field-errors card w-100 gl-p-5' } do |f|
+      = gitlab_ui_form_for [:subscriptions, @group], html: { class: 'gl-show-field-errors card w-100 gl-p-5' } do |f|
         = hidden_field_tag :new_user, params[:new_user]
         = form_errors(@group, pajamas_alert: true)
         .row
