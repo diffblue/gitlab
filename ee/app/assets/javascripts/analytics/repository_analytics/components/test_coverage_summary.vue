@@ -3,7 +3,7 @@ import chartEmptyStateIllustration from '@gitlab/svgs/dist/illustrations/chart-e
 import {
   GlCard,
   GlSprintf,
-  GlDeprecatedSkeletonLoading as GlSkeletonLoading,
+  GlSkeletonLoader,
   GlSafeHtmlDirective as SafeHtml,
   GlPopover,
 } from '@gitlab/ui';
@@ -24,7 +24,7 @@ export default {
     GlAreaChart,
     GlCard,
     GlSprintf,
-    GlSkeletonLoading,
+    GlSkeletonLoader,
     GlSingleStat,
     GlPopover,
   },
@@ -191,7 +191,7 @@ export default {
     <div
       class="gl-display-flex gl-flex-direction-column gl-md-flex-direction-row gl-my-6 gl-align-items-flex-start"
     >
-      <gl-skeleton-loading v-if="isLoading" />
+      <gl-skeleton-loader v-if="isLoading" />
       <template v-for="metric in metrics" v-else>
         <gl-single-stat
           :id="metric.key"
