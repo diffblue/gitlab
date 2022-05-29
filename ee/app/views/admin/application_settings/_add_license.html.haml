@@ -17,22 +17,15 @@
     - eula_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: eula_url }
 
     %hr
-    = form_for @new_license, url: admin_license_path, html: { name: 'addLicense', multipart: true, class: 'fieldset-form', autocomplete: 'off' } do |f|
+    = gitlab_ui_form_for @new_license, url: admin_license_path, html: { name: 'addLicense', multipart: true, class: 'fieldset-form', autocomplete: 'off' } do |f|
       .form-group
-        .form-check
-          = radio_button_tag :license_type, :file, @new_license.data.blank?, class: 'form-check-input'
-          = label_tag :license_type_file, class: 'form-check-label' do
-            .option-title
-              = _('Upload %{file_name} file').html_safe % { file_name: '<code>.gitlab-license</code>'.html_safe }
+        = f.gitlab_ui_radio_component :license_type, :file, _('Upload %{file_name} file').html_safe % { file_name: '<code>.gitlab-license</code>'.html_safe }, radio_options: { name: 'license_type', checked: @new_license.data.blank? }
 
         .form-group.license-file.gl-mt-4
           #js-license-new-app
 
-        .form-check.gl-my-4
-          = radio_button_tag :license_type, :key, @new_license.data.present?, class: 'form-check-input', data: { qa_selector: 'license_type_key_radio' }
-          = label_tag :license_type_key, class: 'form-check-label' do
-            .option-title
-              = _('Enter license key')
+        .gl-my-4
+          = f.gitlab_ui_radio_component :license_type, :key, _('Enter license key'), radio_options: { checked: @new_license.data.present?, name: 'license_type', data: { qa_selector: 'license_type_key_radio' } }
         .form-group.license-key.hidden
           = f.label :data, _('License key'), class: 'gl-sr-only'
           = f.text_area :data, class: "form-control license-key-field", data: { qa_selector: 'license_key_field' }, rows: 20
