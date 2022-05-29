@@ -93,26 +93,27 @@ describe('License Compliance extension', () => {
     });
 
     it.each`
-      scenario                                                            | response                                                         | message
-      ${'licenseComplianceEmpty'}                                         | ${licenseComplianceEmpty}                                        | ${'License Compliance detected no licenses for the source branch only'}
-      ${'licenseComplianceEmptyExistingLicense'}                          | ${licenseComplianceEmptyExistingLicense}                         | ${'License Compliance detected no new licenses'}
-      ${'licenseComplianceNewLicenses'}                                   | ${licenseComplianceNewLicenses}                                  | ${'License Compliance detected 4 licenses for the source branch only'}
-      ${'licenseComplianceRemovedLicenses'}                               | ${licenseComplianceRemovedLicenses}                              | ${'License Compliance detected no licenses for the source branch only'}
-      ${'licenseComplianceNewAndRemovedLicenses'}                         | ${licenseComplianceNewAndRemovedLicenses}                        | ${'License Compliance detected 2 licenses for the source branch only'}
-      ${'licenseComplianceNewAndRemovedLicensesApprovalRequired'}         | ${licenseComplianceNewAndRemovedLicensesApprovalRequired}        | ${'License Compliance detected 4 licenses and policy violations for the source branch only; approval required'}
-      ${'licenseComplianceNewDeniedLicenses'}                             | ${licenseComplianceNewDeniedLicenses}                            | ${'License Compliance detected 4 licenses and policy violations for the source branch only'}
-      ${'licenseComplianceNewDeniedLicensesAndExisting'}                  | ${licenseComplianceNewDeniedLicensesAndExisting}                 | ${'License Compliance detected 4 new licenses and policy violations'}
-      ${'licenseComplianceNewDeniedLicensesAndExistingApprovalRequired '} | ${licenseComplianceNewDeniedLicensesAndExistingApprovalRequired} | ${'License Compliance detected 4 new licenses and policy violations; approval required'}
-      ${'licenseComplianceExistingAndNewLicenses'}                        | ${licenseComplianceExistingAndNewLicenses}                       | ${'License Compliance detected 6 new licenses'}
+      scenario                                                            | response                                                         | isExpandable | message
+      ${'licenseComplianceEmpty'}                                         | ${licenseComplianceEmpty}                                        | ${false}     | ${'License Compliance detected no licenses for the source branch only'}
+      ${'licenseComplianceEmptyExistingLicense'}                          | ${licenseComplianceEmptyExistingLicense}                         | ${false}     | ${'License Compliance detected no new licenses'}
+      ${'licenseComplianceNewLicenses'}                                   | ${licenseComplianceNewLicenses}                                  | ${true}      | ${'License Compliance detected 4 licenses for the source branch only'}
+      ${'licenseComplianceRemovedLicenses'}                               | ${licenseComplianceRemovedLicenses}                              | ${false}     | ${'License Compliance detected no licenses for the source branch only'}
+      ${'licenseComplianceNewAndRemovedLicenses'}                         | ${licenseComplianceNewAndRemovedLicenses}                        | ${true}      | ${'License Compliance detected 2 licenses for the source branch only'}
+      ${'licenseComplianceNewAndRemovedLicensesApprovalRequired'}         | ${licenseComplianceNewAndRemovedLicensesApprovalRequired}        | ${true}      | ${'License Compliance detected 4 licenses and policy violations for the source branch only; approval required'}
+      ${'licenseComplianceNewDeniedLicenses'}                             | ${licenseComplianceNewDeniedLicenses}                            | ${true}      | ${'License Compliance detected 4 licenses and policy violations for the source branch only'}
+      ${'licenseComplianceNewDeniedLicensesAndExisting'}                  | ${licenseComplianceNewDeniedLicensesAndExisting}                 | ${true}      | ${'License Compliance detected 4 new licenses and policy violations'}
+      ${'licenseComplianceNewDeniedLicensesAndExistingApprovalRequired '} | ${licenseComplianceNewDeniedLicensesAndExistingApprovalRequired} | ${true}      | ${'License Compliance detected 4 new licenses and policy violations; approval required'}
+      ${'licenseComplianceExistingAndNewLicenses'}                        | ${licenseComplianceExistingAndNewLicenses}                       | ${true}      | ${'License Compliance detected 6 new licenses'}
     `(
       'the $scenario scenario expects the message to be "$message"',
-      async ({ response, message }) => {
+      async ({ response, message, isExpandable }) => {
         mockApi(licenseComparisonPathCollapsed, httpStatusCodes.OK, response);
         createComponent();
 
         await waitForPromises();
 
         expect(findSummary().text()).toBe(message);
+        expect(findToggleCollapsedButton().exists()).toBe(isExpandable);
       },
     );
   });
