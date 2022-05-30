@@ -18,9 +18,7 @@ RSpec.describe Clusters::ClusterPresenter do
 
       it do
         is_expected.to include(
-          'metrics-endpoint': clusterable_presenter.metrics_cluster_path(cluster, format: :json),
-          'alerts-endpoint': '/',
-          'prometheus-alerts-available': 'true'
+          'metrics-endpoint': clusterable_presenter.metrics_cluster_path(cluster, format: :json)
         )
       end
 
