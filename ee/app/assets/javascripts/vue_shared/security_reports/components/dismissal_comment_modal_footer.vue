@@ -71,7 +71,6 @@ export default {
       :disabled="isDismissingVulnerability"
       data-qa-selector="add_and_dismiss_button"
       data-testid="add_and_dismiss_button"
-      variant="warning"
       @click="handleSubmit"
     >
       {{ submitLabel }}
