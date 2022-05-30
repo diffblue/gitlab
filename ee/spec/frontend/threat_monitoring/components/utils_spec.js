@@ -4,8 +4,8 @@ import { TEST_HOST } from 'helpers/test_constants';
 describe(getSourceUrl, () => {
   it.each`
     input     | output
-    ${''}     | ${`${TEST_HOST}`}
-    ${'test'} | ${`${TEST_HOST}/test`}
+    ${''}     | ${`${TEST_HOST}/groups/-/security/policies`}
+    ${'test'} | ${`${TEST_HOST}/groups/test/-/security/policies`}
   `('returns `$output` when passed `$input`', ({ input, output }) => {
     expect(getSourceUrl(input)).toBe(output);
   });
