@@ -30,12 +30,14 @@ export const integrationFormSections = {
   CONNECTION: 'connection',
   JIRA_TRIGGER: 'jira_trigger',
   JIRA_ISSUES: 'jira_issues',
+  TRIGGER: 'trigger',
 };
 
 export const integrationFormSectionComponents = {
   [integrationFormSections.CONNECTION]: 'IntegrationSectionConnection',
   [integrationFormSections.JIRA_TRIGGER]: 'IntegrationSectionJiraTrigger',
   [integrationFormSections.JIRA_ISSUES]: 'IntegrationSectionJiraIssues',
+  [integrationFormSections.TRIGGER]: 'IntegrationSectionTrigger',
 };
 
 export const integrationTriggerEvents = {
