@@ -9,13 +9,9 @@ module Resolvers
 
       type Types::CustomerRelations::ContactType, null: true
 
-      argument :name, GraphQL::Types::String,
+      argument :search, GraphQL::Types::String,
                required: false,
-               description: 'Name of the Contact.'
-
-      argument :email, GraphQL::Types::String,
-               required: false,
-               description: 'Email of the Contact.'
+               description: 'Search term to find contacts with.'
 
       def resolve(**args)
         ::Crm::ContactsFinder.new(current_user, { group: group }.merge(args)).execute

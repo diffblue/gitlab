@@ -23,9 +23,8 @@ module Crm
       return CustomerRelations::Contact.none unless root_group
 
       contacts = root_group.contacts
-      contacts = by_name(contacts)
-      contacts = by_email(contacts)
-      contacts.sort { |a, b| [a.first_name, a.last_name].join(' ') <=> [b.first_name, b.last_name].join(' ') }
+      contacts = by_search(contacts)
+      contacts.reorder(:first_name)
     end
 
     private
@@ -40,28 +39,14 @@ module Crm
       end
     end
 
-    def by_name(contacts)
-      return contacts if params[:name].nil?
-      return contacts.none if params[:name].blank?
+    def by_search(contacts)
+      return contacts unless search?
 
-      name = params[:name].downcase
-
-      contacts.select do |contact|
-        contact_name = [contact.first_name, contact.last_name].join(' ').downcase
-        contact_name.include?(name)
-      end
+      contacts.search(params[:search])
     end
 
-    def by_email(contacts)
-      return contacts if params[:email].nil?
-      return contacts.none if params[:email].blank?
-
-      email = params[:email].downcase
-
-      contacts.select do |contact|
-        contact_email = contact.email.downcase
-        contact_email.start_with?(email)
-      end
+    def search?
+      params[:search].present?
     end
   end
 end
