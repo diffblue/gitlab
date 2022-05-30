@@ -27433,7 +27433,7 @@ msgstr ""
 msgid "Pending deletion"
 msgstr ""
 
-msgid "Pending owner approval"
+msgid "Pending owner action"
 msgstr ""
 
 msgid "Pending sync…"
@@ -39527,6 +39527,9 @@ msgid "To keep this project going, create a new merge request"
 msgstr ""
 
 msgid "To learn more about this project, read %{link_to_wiki}"
+msgstr ""
+
+msgid "To manage all members associated with this group and its subgroups and projects, visit the %{link_start}usage quotas page%{link_end}."
 msgstr ""
 
 msgid "To move or copy an entire GitLab project from another GitLab installation to this one, navigate to the original project's settings page, generate an export file, and upload it here."

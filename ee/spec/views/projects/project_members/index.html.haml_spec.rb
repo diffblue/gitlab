@@ -52,6 +52,25 @@ RSpec.describe 'projects/project_members/index', :aggregate_failures do
         end
       end
     end
+
+    context 'when managing members text is present' do
+      let_it_be(:project) { create(:project, group: create(:group)) }
+
+      before do
+        allow(view).to receive(:can?).with(user, :admin_group_member, project.root_ancestor).and_return(true)
+        allow(::Namespaces::FreeUserCap).to receive(:enforce_preview_or_standard?)
+                                              .with(project.root_ancestor).and_return(true)
+      end
+
+      it 'renders as expected' do
+        render
+
+        expect(rendered).to have_content('Project members')
+        expect(rendered).to have_content('You can invite a new member to')
+        expect(rendered).to have_content('To manage all members associated with this group and its subgroups')
+        expect(rendered).to have_link('usage quotas page', href: group_usage_quotas_path(project.root_ancestor))
+      end
+    end
   end
 
   context 'when user can not invite members or group for the project' do
