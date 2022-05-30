@@ -126,6 +126,27 @@ RSpec.shared_examples 'a verifiable replicator' do
     end
   end
 
+  describe '.verification_total_count' do
+    context 'when verification is enabled' do
+      it 'returns the number of verification_not_disabled registry rows' do
+        allow(described_class).to receive(:verification_enabled?).and_return(true)
+        relation = instance_double(ActiveRecord::Relation, count: 123)
+        registry = class_double(Geo::PackageFileRegistry, verification_not_disabled: relation)
+        allow(described_class).to receive(:registry_class).and_return(registry)
+
+        expect(described_class.verification_total_count).to eq(123)
+      end
+    end
+
+    context 'when verification is disabled' do
+      it 'returns nil' do
+        allow(described_class).to receive(:verification_enabled?).and_return(false)
+
+        expect(described_class.verification_total_count).to be_nil
+      end
+    end
+  end
+
   describe '.trigger_background_verification' do
     context 'when verification is enabled' do
       before do
@@ -565,20 +586,20 @@ RSpec.shared_examples 'a verifiable replicator' do
     end
   end
 
-  describe '#will_never_be_checksummed_on_the_primary?' do
-    context 'when the model record is not in available_verifiables' do
+  describe '#primary_verification_succeeded?' do
+    context 'when the model record is verification_succeeded' do
       it 'returns true' do
-        allow(model_record).to receive(:in_available_verifiables?).and_return(false)
+        allow(model_record).to receive(:verification_succeeded?).and_return(true)
 
-        expect(replicator.will_never_be_checksummed_on_the_primary?).to be_truthy
+        expect(replicator.primary_verification_succeeded?).to be_truthy
       end
     end
 
-    context 'when the model record is in available_verifiables' do
+    context 'when the model record is verification_succeeded' do
       it 'returns false' do
-        allow(model_record).to receive(:in_available_verifiables?).and_return(true)
+        allow(model_record).to receive(:verification_succeeded?).and_return(false)
 
-        expect(replicator.will_never_be_checksummed_on_the_primary?).to be_falsey
+        expect(replicator.primary_verification_succeeded?).to be_falsey
       end
     end
   end

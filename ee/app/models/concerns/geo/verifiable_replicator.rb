@@ -194,7 +194,9 @@ module Geo
         # Bonus: This causes the progress bar to be hidden.
         return unless verification_enabled?
 
-        registry_class.available_verifiables.count
+        # Exclude resources where verification is disabled. We need to do
+        # frontend work if we want to show admins verification_disabled things.
+        registry_class.verification_not_disabled.count
       end
     end
 
@@ -262,10 +264,10 @@ module Geo
       Gitlab::Geo.secondary? ? registry : model_record
     end
 
-    # For example, remote stored files are filtered from available_verifiables
-    # because we don't support verification of remote stored files.
-    def will_never_be_checksummed_on_the_primary?
-      !model_record.in_available_verifiables?
+    # For example, remote stored files will never become verification_succeeded
+    # until verification of remote stored files is implemented.
+    def primary_verification_succeeded?
+      model_record.verification_succeeded?
     end
 
     # @abstract
