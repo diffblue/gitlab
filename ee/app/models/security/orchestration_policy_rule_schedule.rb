@@ -14,7 +14,7 @@ module Security
 
     validates :owner, presence: true
     validates :security_orchestration_policy_configuration, presence: true
-    validates :cron, presence: true
+    validates :cron, cron: true, presence: true
     validates :policy_index, presence: true
     validates :rule_index, presence: true
 
@@ -50,8 +50,6 @@ module Security
     def for_agent?
       applicable_agents.present?
     end
-
-    private
 
     def cron_timezone
       Time.zone.name
