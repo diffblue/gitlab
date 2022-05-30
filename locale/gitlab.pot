@@ -16135,6 +16135,9 @@ msgstr ""
 msgid "First seen"
 msgstr ""
 
+msgid "Fixed"
+msgstr ""
+
 msgid "Fixed burndown chart"
 msgstr ""
 
@@ -44384,6 +44387,12 @@ msgstr ""
 msgid "ciReport|%{sameNum} same"
 msgstr ""
 
+msgid "ciReport|%{scanner} detected %{number} new potential %{vulnStr}"
+msgstr ""
+
+msgid "ciReport|%{scanner} detected no new %{vulnStr}"
+msgstr ""
+
 msgid "ciReport|: Loading resulted in an error"
 msgstr ""
 
@@ -44599,10 +44608,16 @@ msgstr ""
 msgid "ciReport|Secret detection"
 msgstr ""
 
+msgid "ciReport|Security reports failed loading results"
+msgstr ""
+
 msgid "ciReport|Security scanning"
 msgstr ""
 
 msgid "ciReport|Security scanning failed loading any results"
+msgstr ""
+
+msgid "ciReport|Security scanning is loading"
 msgstr ""
 
 msgid "ciReport|Showing %{fetchedItems} of %{totalItems} items"
