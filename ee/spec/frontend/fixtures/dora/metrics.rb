@@ -13,15 +13,22 @@ RSpec.describe 'DORA Metrics (JavaScript fixtures)' do
 
   before_all do
     [
-      { date: '2015-06-01', deployment_frequency: 1, lead_time_for_changes_in_seconds: nil },
-      { date: '2015-06-25', deployment_frequency: 1, lead_time_for_changes_in_seconds: nil },
-      { date: '2015-06-30', deployment_frequency: 3, lead_time_for_changes_in_seconds: seconds_in_1_day },
-      { date: '2015-07-01', deployment_frequency: 1, lead_time_for_changes_in_seconds: seconds_in_1_day * 5 },
-      { date: '2015-07-03', deployment_frequency: 1, lead_time_for_changes_in_seconds: seconds_in_1_day * 7 }
+      { date: '2015-06-01', deployment_frequency: 1, lead_time_for_changes_in_seconds: nil,
+        time_to_restore_service_in_seconds: nil, incidents_count: 1 },
+      { date: '2015-06-25', deployment_frequency: 1, lead_time_for_changes_in_seconds: nil,
+        time_to_restore_service_in_seconds: seconds_in_1_day * 5, incidents_count: nil },
+      { date: '2015-06-30', deployment_frequency: 3, lead_time_for_changes_in_seconds: seconds_in_1_day,
+        time_to_restore_service_in_seconds: nil, incidents_count: 2 },
+      { date: '2015-07-01', deployment_frequency: 1, lead_time_for_changes_in_seconds: seconds_in_1_day * 5,
+        time_to_restore_service_in_seconds: seconds_in_1_day * 7, incidents_count: 0 },
+      { date: '2015-07-03', deployment_frequency: 1, lead_time_for_changes_in_seconds: seconds_in_1_day * 7,
+        time_to_restore_service_in_seconds: seconds_in_1_day, incidents_count: nil }
     ].each do |data_point|
       create(:dora_daily_metrics,
              deployment_frequency: data_point[:deployment_frequency],
              lead_time_for_changes_in_seconds: data_point[:lead_time_for_changes_in_seconds],
+             time_to_restore_service_in_seconds: data_point[:time_to_restore_service_in_seconds],
+             incidents_count: data_point[:incidents_count],
              environment: environment,
              date: data_point[:date])
     end
@@ -72,6 +79,14 @@ RSpec.describe 'DORA Metrics (JavaScript fixtures)' do
 
     describe 'lead time' do
       it_behaves_like 'dora metric fixtures', 'lead_time_for_changes'
+    end
+
+    describe 'time to restore service' do
+      it_behaves_like 'dora metric fixtures', 'time_to_restore_service'
+    end
+
+    describe 'change failure rate' do
+      it_behaves_like 'dora metric fixtures', 'change_failure_rate'
     end
   end
 end
