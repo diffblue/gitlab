@@ -58,21 +58,8 @@ module Geo
 
       override :track_checksum_attempt!
       def track_checksum_attempt!(&block)
-        # If this resource will never become checksummed on the primary (because
-        # e.g. it is a remote stored file), then as a bandaid, mark it as
-        # verification succeeded. This will stop the cycle of:
-        # Sync succeeded => Verification failed => Sync failed => Sync succeeded
-        #
-        # A better fix is proposed in
-        # https://gitlab.com/gitlab-org/gitlab/-/issues/299819
-        if will_never_be_checksummed_on_the_primary?
-          # To ensure we avoid transition errors
-          self.verification_started unless self.verification_started?
-
-          # A checksum value is required by a state machine validation rule, so
-          # set it to zeroes
-          self.verification_checksum = '0000000000000000000000000000000000000000'
-          self.verification_succeeded!
+        unless ready_to_verify?
+          self.verification_disabled!
           return
         end
 
@@ -93,29 +80,16 @@ module Geo
 
     override :after_synced
     def after_synced
-      # If this resource will never become checksummed on the primary (because
-      # e.g. it is a remote stored file), then as a bandaid, mark it as
-      # verification succeeded. This will stop the cycle of:
-      # Sync succeeded => Verification failed => Sync failed => Sync succeeded
-      #
-      # A better fix is proposed in
-      # https://gitlab.com/gitlab-org/gitlab/-/issues/299819
-      if will_never_be_checksummed_on_the_primary?
-        # To ensure we avoid transition errors
-        self.verification_started
-
-        # A checksum value is required by a state machine validation rule, so
-        # set it to zeroes
-        self.verification_checksum = '0000000000000000000000000000000000000000'
-        self.verification_succeeded!
+      unless ready_to_verify?
+        self.verification_disabled!
         return
       end
 
       self.verification_pending!
     end
 
-    def will_never_be_checksummed_on_the_primary?
-      replicator.will_never_be_checksummed_on_the_primary?
+    def ready_to_verify?
+      replicator.primary_verification_succeeded?
     end
 
     override :before_verification_failed
