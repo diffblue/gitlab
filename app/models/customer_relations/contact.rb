@@ -41,7 +41,7 @@ class CustomerRelations::Contact < ApplicationRecord
     ']'
   end
 
-  # Searches for contacts with a matching first name, last name or email.
+  # Searches for contacts with a matching first name, last name, email or description.
   #
   # This method uses ILIKE on PostgreSQL
   #
@@ -49,7 +49,15 @@ class CustomerRelations::Contact < ApplicationRecord
   #
   # Returns an ActiveRecord::Relation.
   def self.search(query)
-    fuzzy_search(query, [:first_name, :last_name, :email], use_minimum_char_limit: false)
+    fuzzy_search(query, [:first_name, :last_name, :email, :description], use_minimum_char_limit: false)
+  end
+
+  def self.search_by_state(state)
+    where(state: state)
+  end
+
+  def self.sort_by_name()
+    order("first_name ASC, last_name ASC")
   end
 
   def self.find_ids_by_emails(group, emails)

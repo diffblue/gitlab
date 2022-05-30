@@ -6,11 +6,11 @@ module Types
       graphql_name 'CustomerRelationsContactState'
 
       value 'active',
-            description: "Active customer.",
+            description: "Active contact.",
             value: :active
 
       value 'inactive',
-            description: "Inactive customer.",
+            description: "Inactive contact.",
             value: :inactive
     end
   end

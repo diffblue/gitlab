@@ -34,6 +34,10 @@ class CustomerRelations::Organization < ApplicationRecord
     fuzzy_search(query, [:name], use_minimum_char_limit: false)
   end
 
+  def self.sort_by_name()
+    order(name: :asc)
+  end
+
   def self.find_by_name(group_id, name)
     where(group: group_id)
     .where('LOWER(name) = LOWER(?)', name)

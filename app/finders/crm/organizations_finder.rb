@@ -6,7 +6,7 @@
 #   current_user - user performing the action. Must have the correct permission level for the group.
 #   params:
 #     group: Group, required
-#     name: String, optional
+#     search: String, optional
 module Crm
   class OrganizationsFinder
     include Gitlab::Allowable
@@ -23,9 +23,9 @@ module Crm
       return CustomerRelations::Organization.none unless root_group
 
       organizations = root_group.organizations
-      organizations = by_name(organizations)
+      organizations = by_search(organizations)
       organizations = by_state(organizations)
-      organizations.order_by(:name)
+      organizations.sort_by_name()
     end
 
     private
@@ -40,10 +40,11 @@ module Crm
       end
     end
 
-    def by_name(organizations)
-      return organizations unless name?
+    def by_search(organizations)
+      return organizations unless search?
+      return organizations.none if params[:search].blank?
 
-      organizations.search(params[:name])
+      organizations.search(params[:search])
     end
 
     def by_state(organizations)
@@ -52,8 +53,8 @@ module Crm
       organizations.where(state: params[:state])
     end
 
-    def name?
-      params[:name].present?
+    def search?
+      params[:search].present?
     end
 
     def state?

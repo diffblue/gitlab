@@ -9,9 +9,9 @@ module Resolvers
 
       type Types::CustomerRelations::OrganizationType, null: true
 
-      argument :name, GraphQL::Types::String,
+      argument :search, GraphQL::Types::String,
                required: false,
-               description: 'Name of the Organization.'
+               description: 'Search term used to find organizations with.'
 
       argument :state, Types::CustomerRelations::OrganizationStateEnum,
                required: false,
