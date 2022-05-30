@@ -8,8 +8,8 @@
 - return unless project&.feature_available?(:blocking_merge_requests)
 
 .form-group.row.blocking-merge-requests
-  = form.label :blocking_merge_request_references, _('Merge request dependencies'), class: 'col-form-label col-sm-2'
-  .col-sm-10
+  = form.label :blocking_merge_request_references, _('Merge request dependencies'), class: 'col-12'
+  .col-12
     = text_field_tag 'blocking_merge_request_refs', nil,
                      class: 'form-control',
                      id: 'js-blocking-merge-requests-input',
