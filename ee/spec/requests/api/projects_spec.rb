@@ -1433,4 +1433,46 @@ RSpec.describe API::Projects do
       end
     end
   end
+
+  describe 'POST /projects/:id/import_project_members/:project_id' do
+    let_it_be(:project) { create(:project) }
+    let_it_be(:target_project) { create(:project, group: create(:group)) }
+
+    before_all do
+      project.add_maintainer(another_user)
+      target_project.add_maintainer(another_user)
+    end
+
+    context 'when the target project has locked their membership' do
+      context 'via the parent group' do
+        before do
+          target_project.group.update!(membership_lock: true)
+        end
+
+        it 'returns 403' do
+          expect do
+            post api("/projects/#{target_project.id}/import_project_members/#{project.id}", another_user)
+          end.not_to change { target_project.members.count }
+
+          expect(response).to have_gitlab_http_status(:unprocessable_entity)
+          expect(json_response['message']).to eq('Import failed')
+        end
+      end
+
+      context 'via LDAP' do
+        before do
+          stub_application_setting(lock_memberships_to_ldap: true)
+        end
+
+        it 'returns 403' do
+          expect do
+            post api("/projects/#{target_project.id}/import_project_members/#{project.id}", another_user)
+          end.not_to change { target_project.members.count }
+
+          expect(response).to have_gitlab_http_status(:unprocessable_entity)
+          expect(json_response['message']).to eq('Import failed')
+        end
+      end
+    end
+  end
 end
