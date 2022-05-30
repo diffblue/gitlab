@@ -2,11 +2,7 @@
 
 module QA
   RSpec.describe 'Manage' do
-    describe 'prevent forking outside group', quarantine: {
-      only: { subdomain: %i[staging] },
-      issue: "https://gitlab.com/gitlab-org/gitlab/-/issues/350854",
-      type: :broken
-    } do
+    describe 'prevent forking outside group', except: { subdomain: :staging } do
       let!(:group_for_fork) do
         Resource::Sandbox.fabricate! do |sandbox_group|
           sandbox_group.path = "group_for_fork_#{SecureRandom.hex(8)}"
