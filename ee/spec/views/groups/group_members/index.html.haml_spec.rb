@@ -19,4 +19,22 @@ RSpec.describe 'groups/group_members/index' do
       expect(rendered).to render_template('shared/_free_user_cap_alert')
     end
   end
+
+  context 'when managing members text is present' do
+    before do
+      allow(view).to receive(:can_admin_group_member?).with(group).and_return(true)
+      allow(view).to receive(:can?).with(user, :admin_group_member, group.root_ancestor).and_return(true)
+      allow(::Namespaces::FreeUserCap).to receive(:enforce_preview_or_standard?)
+                                            .with(group.root_ancestor).and_return(true)
+    end
+
+    it 'renders as expected' do
+      render
+
+      expect(rendered).to have_content('Group members')
+      expect(rendered).to have_content('You can invite a new member to')
+      expect(rendered).to have_content('To manage all members associated with this group and its subgroups')
+      expect(rendered).to have_link('usage quotas page', href: group_usage_quotas_path(group.root_ancestor))
+    end
+  end
 end
