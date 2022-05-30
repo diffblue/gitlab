@@ -26,7 +26,7 @@ RSpec.describe Integrations::JiraSerializers::IssueEntity do
 
   let(:jira_issue) do
     double(
-      summary: 'Title',
+      summary: 'Title with <h1>HTML</h1>',
       created: '2020-06-25T15:39:30.000+0000',
       updated: '2020-06-26T15:38:32.000+0000',
       resolutiondate: '2020-06-27T13:23:51.000+0000',
@@ -46,7 +46,8 @@ RSpec.describe Integrations::JiraSerializers::IssueEntity do
   it 'returns the Jira issues attributes' do
     expect(subject).to include(
       project_id: project.id,
-      title: 'Title',
+      title: 'Title with <h1>HTML</h1>',
+      title_html: 'Title with &lt;h1&gt;HTML&lt;/h1&gt;',
       created_at: '2020-06-25T15:39:30.000+0000'.to_datetime.utc,
       updated_at: '2020-06-26T15:38:32.000+0000'.to_datetime.utc,
       closed_at: '2020-06-27T13:23:51.000+0000'.to_datetime.utc,
