@@ -42,7 +42,6 @@ module Crm
 
     def by_search(contacts)
       return contacts unless search?
-      return contacts.none if params[:search].blank?
 
       contacts.search(params[:search])
     end
