@@ -5,6 +5,6 @@ FactoryBot.define do
     association :issue
     link { 'https://gitlab.example.com/zoom_link' }
     link_text { 'Incident zoom link' }
-    link_type { 1 }
+    link_type { :zoom }
   end
 end
