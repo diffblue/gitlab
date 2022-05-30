@@ -225,6 +225,24 @@ RSpec.describe QA::Runtime::Feature do
         end
       end
 
+      context 'when a feature flag is not found via the API and there is no definition file' do
+        before do
+          allow(QA::Runtime::API::Request)
+            .to receive(:new)
+            .with(api_client, "/features")
+            .and_return(request)
+          allow(described_class)
+            .to receive(:get)
+            .and_return(Struct.new(:code, :body).new(200, '[]'))
+          allow(Dir).to receive(:glob).and_return([])
+        end
+
+        it 'raises an error' do
+          expect { described_class.enabled?(feature_flag) }
+            .to raise_error(QA::Runtime::Feature::UnknownFeatureFlagError)
+        end
+      end
+
       context 'with definition files' do
         context 'when no features are found via the API' do
           before do

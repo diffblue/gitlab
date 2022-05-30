@@ -9,6 +9,7 @@ module QA
       AuthorizationError = Class.new(RuntimeError)
       UnknownScopeError = Class.new(RuntimeError)
       UnknownStateError = Class.new(RuntimeError)
+      UnknownFeatureFlagError = Class.new(RuntimeError)
       DefinitionFileError = Class.new(RuntimeError)
 
       class << self
@@ -62,6 +63,9 @@ module QA
               .expand_path(Runtime::Path.qa_root)
               .glob("**/#{key}.yml")
               .first
+
+            raise UnknownFeatureFlagError, "No feature flag found named '#{key}'" unless file
+
             definition = YAML.safe_load(File.read(file))
             definition['default_enabled'].to_s.casecmp('true') == 0
           end
