@@ -4,6 +4,7 @@ require "spec_helper"
 
 RSpec.describe Groups::GroupMembersHelper do
   include MembersPresentation
+  using RSpec::Parameterized::TableSyntax
 
   let_it_be(:group) { create(:group) }
   let_it_be(:current_user) { create(:user) }
@@ -56,6 +57,31 @@ RSpec.describe Groups::GroupMembersHelper do
     it 'adds `can_filter_by_enterprise`' do
       allow(group.root_ancestor).to receive(:saml_enabled?).and_return(true)
       expect(subject[:can_filter_by_enterprise]).to eq(true)
+    end
+  end
+
+  describe '#group_member_header_subtext' do
+    let(:base_subtext) { "You can invite a new member to <strong>#{group.name}</strong>." }
+    let(:standard_subtext) { "^#{base_subtext}$" }
+    let(:enforcement_subtext) { "^#{base_subtext}<br />To manage all members" }
+
+    where(:can_admin_member, :enforce_free_user_cap, :subtext) do
+      true  | true  | ref(:enforcement_subtext)
+      true  | false | ref(:standard_subtext)
+      false | true  | ref(:standard_subtext)
+      false | false | ref(:standard_subtext)
+    end
+
+    before do
+      allow(helper).to receive(:can?).with(current_user, :admin_group_member, group).and_return(can_admin_member)
+      allow(::Namespaces::FreeUserCap).to receive(:enforce_preview_or_standard?)
+                                                      .with(group).and_return(enforce_free_user_cap)
+    end
+
+    with_them do
+      it 'contains expected text' do
+        expect(helper.group_member_header_subtext(group)).to match(subtext)
+      end
     end
   end
 end
