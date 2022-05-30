@@ -1,7 +1,8 @@
 <script>
-import { GlButton, GlIcon } from '@gitlab/ui';
+import { GlButton, GlIcon, GlLink } from '@gitlab/ui';
 import createFlash from '~/flash';
 import { redirectTo } from '~/lib/utils/url_utility';
+import { helpPagePath } from '~/helpers/help_page_helper';
 
 import { addProjectToSlack } from '../api';
 import { i18n } from '../constants';
@@ -11,6 +12,7 @@ export default {
   components: {
     GlButton,
     GlIcon,
+    GlLink,
     ProjectsDropdown,
   },
   props: {
@@ -41,6 +43,9 @@ export default {
     },
   },
   i18n,
+  learnMoreLink: helpPagePath('user/project/integrations/gitlab_slack_application', {
+    anchor: 'configuration',
+  }),
   data() {
     return {
       selectedProject: null,
@@ -69,7 +74,7 @@ export default {
 </script>
 
 <template>
-  <div class="gitlab-slack-body gl-mx-auto gl-mt-11 gl-text-center">
+  <div class="gl-w-max-content gl-mx-auto gl-mt-11 gl-text-center">
     <div v-once class="gl-my-5 gl-display-flex gl-justify-content-center gl-align-items-center">
       <img :src="gitlabLogoPath" :alt="$options.i18n.gitlabLogoAlt" class="gl-h-11 gl-w-11" />
       <gl-icon name="arrow-right" :size="32" class="gl-mx-5 gl-text-gray-200" />
@@ -82,9 +87,9 @@ export default {
 
     <h2>{{ $options.i18n.title }}</h2>
 
-    <div class="gl-mt-6" data-testid="gitlab-slack-content">
+    <div data-testid="gitlab-slack-content">
       <template v-if="isSignedIn">
-        <template v-if="hasProjects">
+        <div v-if="hasProjects" class="gl-mt-6">
           <p>
             {{ $options.i18n.dropdownLabel }}
           </p>
@@ -105,8 +110,17 @@ export default {
               {{ $options.i18n.dropdownButtonText }}
             </gl-button>
           </div>
-        </template>
-        <p v-else>{{ $options.i18n.noProjects }}</p>
+        </div>
+        <div v-else>
+          <p class="gl-mb-0">{{ $options.i18n.noProjects }}</p>
+          <p>
+            <span>{{ $options.i18n.noProjectsDescription }}</span>
+            <gl-link :href="$options.learnMoreLink" target="_blank">{{
+              $options.i18n.learnMore
+            }}</gl-link
+            >.
+          </p>
+        </div>
       </template>
 
       <template v-else>
