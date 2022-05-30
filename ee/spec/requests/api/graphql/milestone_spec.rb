@@ -46,10 +46,10 @@ RSpec.describe 'Querying a Milestone' do
         stub_licensed_features(milestone_charts: false)
       end
 
-      it 'returns an error' do
+      it 'returns nil' do
         post_graphql(query, current_user: current_user)
 
-        expect(graphql_errors).to include(a_hash_including('message' => 'Milestone does not support burnup charts'))
+        expect(graphql_data_at(:milestone, :report)).to be_nil
       end
     end
 
