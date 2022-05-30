@@ -2052,4 +2052,34 @@ RSpec.describe ProjectPolicy do
       expect_disallowed(*owner_permissions)
     end
   end
+
+  context 'importing members from another project' do
+    let(:current_user) { owner }
+
+    context 'for a personal project' do
+      it { is_expected.to be_allowed(:import_project_members_from_another_project) }
+    end
+
+    context 'for a project in a group' do
+      let(:project) { create(:project, group: create(:group)) }
+
+      context 'when the project has locked their membership' do
+        context 'via the parent group' do
+          before do
+            project.group.update!(membership_lock: true)
+          end
+
+          it { is_expected.to be_disallowed(:import_project_members_from_another_project) }
+        end
+
+        context 'via LDAP' do
+          before do
+            stub_application_setting(lock_memberships_to_ldap: true)
+          end
+
+          it { is_expected.to be_disallowed(:import_project_members_from_another_project) }
+        end
+      end
+    end
+  end
 end
