@@ -14560,9 +14560,6 @@ msgstr ""
 msgid "Epics|Assign Epic"
 msgstr ""
 
-msgid "Epics|Enter a title for your epic"
-msgstr ""
-
 msgid "Epics|Leave empty to inherit from milestone dates"
 msgstr ""
 
@@ -39386,6 +39383,9 @@ msgid "Tip: add a %{linkStart}CODEOWNERS%{linkEnd} to automatically add approver
 msgstr ""
 
 msgid "Title"
+msgstr ""
+
+msgid "Title (required)"
 msgstr ""
 
 msgid "Title:"
