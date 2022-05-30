@@ -16832,10 +16832,13 @@ msgstr ""
 msgid "Geo|Resync all"
 msgstr ""
 
-msgid "Geo|Resync all %{replicableType}"
+msgid "Geo|Resync all %{projects_count} projects"
 msgstr ""
 
-msgid "Geo|Resync all projects"
+msgid "Geo|Resync all %{total}%{replicableType}"
+msgstr ""
+
+msgid "Geo|Resync project"
 msgstr ""
 
 msgid "Geo|Retry count"
@@ -16847,7 +16850,10 @@ msgstr ""
 msgid "Geo|Reverify all"
 msgstr ""
 
-msgid "Geo|Reverify all projects"
+msgid "Geo|Reverify all %{projects_count} projects"
+msgstr ""
+
+msgid "Geo|Reverify project"
 msgstr ""
 
 msgid "Geo|Review replication status, and resynchronize and reverify items with the primary site."
