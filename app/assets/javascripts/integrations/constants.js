@@ -38,6 +38,36 @@ export const integrationFormSectionComponents = {
   [integrationFormSections.JIRA_ISSUES]: 'IntegrationSectionJiraIssues',
 };
 
+export const integrationTriggerEvents = {
+  PUSH: 'push_events',
+  ISSUE: 'issues_events',
+  CONFIDENTIAL_ISSUE: 'confidential_issues_events',
+  MERGE_REQUEST: 'merge_requests_events',
+  NOTE: 'note_events',
+  CONFIDENTIAL_NOTE: 'confidential_note_events',
+  TAG_PUSH: 'tag_push_events',
+  PIPELINE: 'pipeline_events',
+  WIKI_PAGE: 'wiki_page_events',
+};
+
+export const integrationTriggerEventTitles = {
+  [integrationTriggerEvents.PUSH]: s__('IntegrationEvents|Push to the repository'),
+  [integrationTriggerEvents.ISSUE]: s__('IntegrationEvents|Issue is created, updated, closed'),
+  [integrationTriggerEvents.CONFIDENTIAL_ISSUE]: s__(
+    'IntegrationEvents|Confidential issue is created/updated/closed',
+  ),
+  [integrationTriggerEvents.MERGE_REQUEST]: s__(
+    'IntegrationEvents|Merge request is created/updated/merged',
+  ),
+  [integrationTriggerEvents.NOTE]: s__('IntegrationEvents|Note, when someone adds a comment'),
+  [integrationTriggerEvents.CONFIDENTIAL_NOTE]: s__(
+    'IntegrationEvents|Confidential Note, when someone adds a comment on a confidential issue',
+  ),
+  [integrationTriggerEvents.TAG_PUSH]: s__('IntegrationEvents|Tag is pushed to the repository'),
+  [integrationTriggerEvents.PIPELINE]: s__('IntegrationEvents|Pipeline status changes'),
+  [integrationTriggerEvents.WIKI_PAGE]: s__('IntegrationEvents|Wiki page is created/updated'),
+};
+
 export const billingPlans = {
   PREMIUM: 'premium',
   ULTIMATE: 'ultimate',
