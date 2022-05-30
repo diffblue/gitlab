@@ -27689,6 +27689,8 @@ CREATE UNIQUE INDEX index_deploy_tokens_on_token_encrypted ON deploy_tokens USIN
 
 CREATE INDEX index_deployment_approvals_on_approval_rule_id ON deployment_approvals USING btree (approval_rule_id);
 
+CREATE INDEX index_deployment_approvals_on_created_at_and_id ON deployment_approvals USING btree (created_at, id);
+
 CREATE UNIQUE INDEX index_deployment_approvals_on_deployment_id_and_user_id ON deployment_approvals USING btree (deployment_id, user_id);
 
 CREATE INDEX index_deployment_approvals_on_user_id ON deployment_approvals USING btree (user_id);
