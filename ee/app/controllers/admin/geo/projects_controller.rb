@@ -25,8 +25,8 @@ class Admin::Geo::ProjectsController < Admin::Geo::ApplicationController
       @registries = @registries.with_search(params[:name])
     end
 
-    @projects_limit_count = finder.all_projects.limit(PROJECTS_LIMIT_COUNT).count
-    @action_buttons = [helpers.resync_all_button(@projects_limit_count, PROJECTS_LIMIT_COUNT), helpers.reverify_all_button(@projects_limit_count, PROJECTS_LIMIT_COUNT)]
+    projects_limit_count = finder.all_projects.limit(PROJECTS_LIMIT_COUNT).count
+    @action_buttons = [helpers.resync_all_button(projects_limit_count, PROJECTS_LIMIT_COUNT), helpers.reverify_all_button(projects_limit_count, PROJECTS_LIMIT_COUNT)]
   end
 
   def destroy
