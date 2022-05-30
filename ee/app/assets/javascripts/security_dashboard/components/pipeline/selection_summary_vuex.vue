@@ -63,12 +63,7 @@ export default {
         class="mx-3 w-auto"
         :options="$options.dismissalReasons"
       />
-      <gl-button
-        type="submit"
-        category="secondary"
-        variant="warning"
-        :disabled="!canDismissVulnerability"
-      >
+      <gl-button type="submit" :disabled="!canDismissVulnerability">
         {{ __('Dismiss selected') }}
       </gl-button>
     </form>
