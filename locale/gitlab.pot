@@ -17183,6 +17183,9 @@ msgstr ""
 msgid "GitLab export"
 msgstr ""
 
+msgid "GitLab for Jira Cloud"
+msgstr ""
+
 msgid "GitLab group: %{source_link}"
 msgstr ""
 
@@ -21621,6 +21624,9 @@ msgstr ""
 msgid "Jira-GitLab user mapping template"
 msgstr ""
 
+msgid "JiraConnect|Configure your Jira Connect Application ID."
+msgstr ""
+
 msgid "JiraConnect|Create branch for Jira issue %{jiraIssue}"
 msgstr ""
 
@@ -21628,6 +21634,12 @@ msgid "JiraConnect|Failed to create branch."
 msgstr ""
 
 msgid "JiraConnect|Failed to create branch. Please try again."
+msgstr ""
+
+msgid "JiraConnect|GitLab for Jira App"
+msgstr ""
+
+msgid "JiraConnect|Jira Connect Application ID"
 msgstr ""
 
 msgid "JiraConnect|New branch was successfully created."
