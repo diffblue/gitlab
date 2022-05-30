@@ -37101,6 +37101,9 @@ msgstr ""
 msgid "Tags:"
 msgstr ""
 
+msgid "TagsPage|After you confirm and select %{strongStart}%{buttonText},%{strongEnd} you cannot recover this tag."
+msgstr ""
+
 msgid "TagsPage|Browse commits"
 msgstr ""
 
@@ -37113,13 +37116,25 @@ msgstr ""
 msgid "TagsPage|Cancel"
 msgstr ""
 
+msgid "TagsPage|Cancel, keep tag"
+msgstr ""
+
 msgid "TagsPage|Create tag"
+msgstr ""
+
+msgid "TagsPage|Delete protected tag"
+msgstr ""
+
+msgid "TagsPage|Delete protected tag. Are you ABSOLUTELY SURE?"
 msgstr ""
 
 msgid "TagsPage|Delete tag"
 msgstr ""
 
-msgid "TagsPage|Deleting the %{tag_name} tag cannot be undone. Are you sure?"
+msgid "TagsPage|Delete tag. Are you ABSOLUTELY SURE?"
+msgstr ""
+
+msgid "TagsPage|Deleting the %{strongStart}%{tagName}%{strongEnd} tag cannot be undone. Are you sure?"
 msgstr ""
 
 msgid "TagsPage|Edit release notes"
@@ -37137,10 +37152,16 @@ msgstr ""
 msgid "TagsPage|New tag"
 msgstr ""
 
+msgid "TagsPage|Only a project maintainer or owner can delete a protected tag"
+msgstr ""
+
 msgid "TagsPage|Optionally, add a message to the tag. Leaving this blank creates a %{link_start}lightweight tag.%{link_end}"
 msgstr ""
 
 msgid "TagsPage|Optionally, create a public Release of your project, based on this tag. Release notes are displayed on the %{releases_page_link_start}Releases%{link_end} page. %{docs_link_start}More information%{link_end}"
+msgstr ""
+
+msgid "TagsPage|Please type the following to confirm:"
 msgstr ""
 
 msgid "TagsPage|Release notes"
@@ -37168,6 +37189,18 @@ msgid "TagsPage|Use git tag command to add a new one:"
 msgstr ""
 
 msgid "TagsPage|Write your release notes or drag files here…"
+msgstr ""
+
+msgid "TagsPage|Yes, delete protected tag"
+msgstr ""
+
+msgid "TagsPage|Yes, delete tag"
+msgstr ""
+
+msgid "TagsPage|You're about to permanently delete the protected tag %{strongStart}%{tagName}.%{strongEnd}"
+msgstr ""
+
+msgid "TagsPage|You're about to permanently delete the tag %{strongStart}%{tagName}.%{strongEnd}"
 msgstr ""
 
 msgid "TagsPage|protected"
