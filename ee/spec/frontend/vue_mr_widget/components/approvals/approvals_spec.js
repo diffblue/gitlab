@@ -371,9 +371,9 @@ describe('EE MRWidget approvals', () => {
 
       it('revoke action is rendered', () => {
         expect(findActionData()).toEqual({
-          variant: 'warning',
+          category: 'primary',
+          variant: 'default',
           text: 'Revoke approval',
-          category: 'secondary',
         });
       });
 
