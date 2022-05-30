@@ -23,6 +23,7 @@ module Crm
       return CustomerRelations::Contact.none unless root_group
 
       contacts = root_group.contacts
+      contacts = by_state(contacts)
       contacts = by_search(contacts)
       contacts.reorder(:first_name)
     end
@@ -45,8 +46,18 @@ module Crm
       contacts.search(params[:search])
     end
 
+    def by_state(contacts)
+      return contacts unless state?
+
+      contacts.where(state: params[:state])
+    end
+
     def search?
       params[:search].present?
+    end
+
+    def state?
+      params[:state].present?
     end
   end
 end

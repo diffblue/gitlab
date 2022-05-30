@@ -24,7 +24,8 @@ module Crm
 
       organizations = root_group.organizations
       organizations = by_name(organizations)
-      organizations.sort_by(&:name)
+      organizations = by_state(organizations)
+      organizations.order_by(:name)
     end
 
     private
@@ -40,15 +41,23 @@ module Crm
     end
 
     def by_name(organizations)
-      return organizations if params[:name].nil?
-      return organizations.none if params[:name].blank?
+      return organizations unless name?
 
-      name = params[:name].downcase
+      organizations.search(params[:name])
+    end
 
-      organizations.select do |org|
-        org_name = org.name.downcase
-        org_name.start_with?(name)
-      end
+    def by_state(organizations)
+      return organizations unless state?
+
+      organizations.where(state: params[:state])
+    end
+
+    def name?
+      params[:name].present?
+    end
+
+    def state?
+      params[:state].present?
     end
   end
 end

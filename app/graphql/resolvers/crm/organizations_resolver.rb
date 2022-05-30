@@ -10,8 +10,12 @@ module Resolvers
       type Types::CustomerRelations::OrganizationType, null: true
 
       argument :name, GraphQL::Types::String,
-              required: false,
-              description: 'Name of the Organization.'
+               required: false,
+               description: 'Name of the Organization.'
+
+      argument :state, Types::CustomerRelations::OrganizationStateEnum,
+               required: false,
+               description: 'State of the organization to search for.'
 
       def resolve(**args)
         ::Crm::OrganizationsFinder.new(current_user, { group: group }.merge(args)).execute
