@@ -44,6 +44,18 @@ module EE
         field :escalation_policy, ::Types::IncidentManagement::EscalationPolicyType, null: true,
           description: 'Escalation policy associated with the issue. Available for issues which support escalation.'
 
+        field :issuable_resource_link,
+              ::Types::IncidentManagement::IssuableResourceLinkType,
+              null: true,
+              description: 'Issuable resource link of the incident issue.',
+              resolver: ::Resolvers::IncidentManagement::IssuableResourceLinksResolver.single
+
+        field :issuable_resource_links,
+              ::Types::IncidentManagement::IssuableResourceLinkType.connection_type,
+              null: true,
+              description: 'Issuable resource links of the incident issue.',
+              resolver: ::Resolvers::IncidentManagement::IssuableResourceLinksResolver
+
         def iteration
           ::Gitlab::Graphql::Loaders::BatchModelLoader.new(::Iteration, object.sprint_id).find
         end
