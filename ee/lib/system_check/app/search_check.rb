@@ -9,15 +9,15 @@ module SystemCheck
       set_check_fail -> { "no (#{self.distribution} #{self.current_version})" }
 
       def self.info
-        @info ||= Gitlab::Elastic::Helper.default.client.info
+        @info ||= Gitlab::Elastic::Helper.default.server_info
       end
 
       def self.distribution
-        info.fetch('distribution', 'elasticsearch')
+        info[:distribution]
       end
 
       def self.current_version
-        Gitlab::VersionInfo.parse(info.dig('version', 'number'))
+        Gitlab::VersionInfo.parse(info[:version])
       end
 
       def skip?
