@@ -3,7 +3,6 @@
 module Security
   class CreateOrchestrationPolicyWorker # rubocop:disable Scalability/IdempotentWorker
     include ApplicationWorker
-    include UpdateOrchestrationPolicyConfiguration
 
     data_consistency :always
     # rubocop:disable Scalability/CronWorkerContext
@@ -16,7 +15,7 @@ module Security
     def perform
       Security::OrchestrationPolicyConfiguration.with_outdated_configuration.each_batch do |configurations|
         configurations.each do |configuration|
-          update_policy_configuration(configuration)
+          Security::SyncScanPoliciesWorker.perform_async(configuration.id)
         end
       end
     end
