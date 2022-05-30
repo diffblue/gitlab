@@ -6490,6 +6490,9 @@ msgstr ""
 msgid "Branch not loaded - %{branchId}"
 msgstr ""
 
+msgid "Branch rules"
+msgstr ""
+
 msgid "Branches"
 msgstr ""
 
@@ -11942,6 +11945,9 @@ msgid "Define environments in the deploy stage(s) in %{code_open}.gitlab-ci.yml%
 msgstr ""
 
 msgid "Define how approval rules are applied to merge requests."
+msgstr ""
+
+msgid "Define rules for who can push, merge, and the required approvals for each branch."
 msgstr ""
 
 msgid "Definition"
