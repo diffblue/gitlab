@@ -27297,6 +27297,8 @@ CREATE UNIQUE INDEX index_ci_job_artifacts_on_job_id_and_file_type ON ci_job_art
 
 CREATE INDEX index_ci_job_artifacts_on_project_id ON ci_job_artifacts USING btree (project_id);
 
+CREATE INDEX index_ci_job_artifacts_on_project_id_and_id ON ci_job_artifacts USING btree (project_id, id);
+
 CREATE INDEX index_ci_job_artifacts_on_project_id_for_security_reports ON ci_job_artifacts USING btree (project_id) WHERE (file_type = ANY (ARRAY[5, 6, 7, 8]));
 
 CREATE INDEX index_ci_job_token_project_scope_links_on_added_by_id ON ci_job_token_project_scope_links USING btree (added_by_id);
