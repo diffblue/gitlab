@@ -34,7 +34,7 @@ exports[`License Compliance extension expanded data with new licenses displays a
               class="gl-flex-wrap gl-display-flex gl-w-full"
             >
               <div
-                class="gl-mr-4 gl-display-flex gl-align-items-center"
+                class="gl-display-flex gl-align-items-center"
               >
                 <p
                   class="gl-m-0"
@@ -53,7 +53,7 @@ exports[`License Compliance extension expanded data with new licenses displays a
             </div>
              
             <div
-              class="gl-ml-auto"
+              class="gl-ml-auto gl-pl-3"
             >
               <!---->
                
@@ -103,14 +103,16 @@ exports[`License Compliance extension expanded data with new licenses displays a
                     class="gl-flex-wrap gl-display-flex gl-w-full"
                   >
                     <div
-                      class="gl-mr-4 gl-display-flex gl-align-items-center"
+                      class="gl-display-flex gl-align-items-center"
                     >
                       <p
                         class="gl-m-0"
                       />
                     </div>
                      
-                    <div>
+                    <div
+                      class="gl-pr-2"
+                    >
                       <a
                         class="gl-link"
                         href="https://opensource.org/licenses/ISC"
@@ -134,7 +136,7 @@ exports[`License Compliance extension expanded data with new licenses displays a
                   </div>
                    
                   <div
-                    class="gl-ml-auto"
+                    class="gl-ml-auto gl-pl-3"
                   >
                     <!---->
                      
@@ -189,7 +191,7 @@ exports[`License Compliance extension expanded data with new licenses displays d
               class="gl-flex-wrap gl-display-flex gl-w-full"
             >
               <div
-                class="gl-mr-4 gl-display-flex gl-align-items-center"
+                class="gl-display-flex gl-align-items-center"
               >
                 <p
                   class="gl-m-0"
@@ -208,7 +210,7 @@ exports[`License Compliance extension expanded data with new licenses displays d
             </div>
              
             <div
-              class="gl-ml-auto"
+              class="gl-ml-auto gl-pl-3"
             >
               <!---->
                
@@ -258,14 +260,16 @@ exports[`License Compliance extension expanded data with new licenses displays d
                     class="gl-flex-wrap gl-display-flex gl-w-full"
                   >
                     <div
-                      class="gl-mr-4 gl-display-flex gl-align-items-center"
+                      class="gl-display-flex gl-align-items-center"
                     >
                       <p
                         class="gl-m-0"
                       />
                     </div>
                      
-                    <div>
+                    <div
+                      class="gl-pr-2"
+                    >
                       <a
                         class="gl-link"
                         href="https://opensource.org/licenses/Apache-2.0"
@@ -289,7 +293,7 @@ exports[`License Compliance extension expanded data with new licenses displays d
                   </div>
                    
                   <div
-                    class="gl-ml-auto"
+                    class="gl-ml-auto gl-pl-3"
                   >
                     <!---->
                      
@@ -344,7 +348,7 @@ exports[`License Compliance extension expanded data with new licenses displays u
               class="gl-flex-wrap gl-display-flex gl-w-full"
             >
               <div
-                class="gl-mr-4 gl-display-flex gl-align-items-center"
+                class="gl-display-flex gl-align-items-center"
               >
                 <p
                   class="gl-m-0"
@@ -363,7 +367,7 @@ exports[`License Compliance extension expanded data with new licenses displays u
             </div>
              
             <div
-              class="gl-ml-auto"
+              class="gl-ml-auto gl-pl-3"
             >
               <!---->
                
@@ -413,14 +417,16 @@ exports[`License Compliance extension expanded data with new licenses displays u
                     class="gl-flex-wrap gl-display-flex gl-w-full"
                   >
                     <div
-                      class="gl-mr-4 gl-display-flex gl-align-items-center"
+                      class="gl-display-flex gl-align-items-center"
                     >
                       <p
                         class="gl-m-0"
                       />
                     </div>
                      
-                    <div>
+                    <div
+                      class="gl-pr-2"
+                    >
                       <a
                         class="gl-link"
                         href="http://opensource.linux-mirror.org/licenses/afl-2.1.txt"
@@ -444,7 +450,7 @@ exports[`License Compliance extension expanded data with new licenses displays u
                   </div>
                    
                   <div
-                    class="gl-ml-auto"
+                    class="gl-ml-auto gl-pl-3"
                   >
                     <!---->
                      
