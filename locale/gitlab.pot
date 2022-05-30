@@ -10474,6 +10474,9 @@ msgstr ""
 msgid "Create confidential merge request and branch"
 msgstr ""
 
+msgid "Create custom type"
+msgstr ""
+
 msgid "Create directory"
 msgstr ""
 
@@ -16832,10 +16835,13 @@ msgstr ""
 msgid "Geo|Resync all"
 msgstr ""
 
-msgid "Geo|Resync all %{replicableType}"
+msgid "Geo|Resync all %{projects_count} projects"
 msgstr ""
 
-msgid "Geo|Resync all projects"
+msgid "Geo|Resync all %{total}%{replicableType}"
+msgstr ""
+
+msgid "Geo|Resync project"
 msgstr ""
 
 msgid "Geo|Retry count"
@@ -16847,7 +16853,10 @@ msgstr ""
 msgid "Geo|Reverify all"
 msgstr ""
 
-msgid "Geo|Reverify all projects"
+msgid "Geo|Reverify all %{projects_count} projects"
+msgstr ""
+
+msgid "Geo|Reverify project"
 msgstr ""
 
 msgid "Geo|Review replication status, and resynchronize and reverify items with the primary site."
@@ -17172,6 +17181,9 @@ msgid "GitLab events trigger webhooks. Use the request details of a webhook to h
 msgstr ""
 
 msgid "GitLab export"
+msgstr ""
+
+msgid "GitLab for Jira Cloud"
 msgstr ""
 
 msgid "GitLab group: %{source_link}"
@@ -21612,6 +21624,9 @@ msgstr ""
 msgid "Jira-GitLab user mapping template"
 msgstr ""
 
+msgid "JiraConnect|Configure your Jira Connect Application ID."
+msgstr ""
+
 msgid "JiraConnect|Create branch for Jira issue %{jiraIssue}"
 msgstr ""
 
@@ -21619,6 +21634,12 @@ msgid "JiraConnect|Failed to create branch."
 msgstr ""
 
 msgid "JiraConnect|Failed to create branch. Please try again."
+msgstr ""
+
+msgid "JiraConnect|GitLab for Jira App"
+msgstr ""
+
+msgid "JiraConnect|Jira Connect Application ID"
 msgstr ""
 
 msgid "JiraConnect|New branch was successfully created."
@@ -22270,6 +22291,9 @@ msgid "Labels|Promoting %{labelTitle} will make it available for all projects in
 msgstr ""
 
 msgid "Language"
+msgstr ""
+
+msgid "Language type"
 msgstr ""
 
 msgid "Large File Storage"
