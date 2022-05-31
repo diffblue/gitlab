@@ -33,7 +33,7 @@ module MergeTrains
         raise ProcessError, 'merge request is not on a merge train'
       end
 
-      unless merge_request.mergeable_state?(skip_ci_check: true, skip_discussions_check: true)
+      if !merge_request.open? || merge_request.broken? || merge_request.draft?
         raise ProcessError, 'merge request is not mergeable'
       end
 
