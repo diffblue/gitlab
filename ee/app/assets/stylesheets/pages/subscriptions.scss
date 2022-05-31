@@ -195,7 +195,6 @@ $subscriptions-full-width-lg: 541px;
       font-weight: $gl-font-weight-normal;
     }
 
-    // stylelint-disable-next-line
     .field_with_errors {
       @include gl-flex-grow-1;
       display: inline;
