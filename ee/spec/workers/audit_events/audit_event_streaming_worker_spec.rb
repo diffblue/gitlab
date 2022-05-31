@@ -11,13 +11,13 @@ RSpec.describe AuditEvents::AuditEventStreamingWorker do
 
   shared_context 'a successful audit event stream' do
     context 'when audit event id is passed' do
-      subject { worker.perform(audit_operation, event.id) }
+      subject { worker.perform('audit_operation', event.id) }
 
       include_context 'audit event stream'
     end
 
     context 'when audit event json is passed' do
-      subject { worker.perform(audit_operation, nil, event.to_json) }
+      subject { worker.perform('audit_operation', nil, event.to_json) }
 
       include_context 'audit event stream'
     end
@@ -66,26 +66,14 @@ RSpec.describe AuditEvents::AuditEventStreamingWorker do
       end
 
       it 'sends the correct verification header' do
-        headers = if audit_operation.present?
-                    { "X-Gitlab-Audit-Event-Type" => "audit_operation", 'X-Gitlab-Event-Streaming-Token' => anything }
-                  else
-                    { 'X-Gitlab-Event-Streaming-Token' => anything }
-                  end
-
-        expect(Gitlab::HTTP).to receive(:post).with(an_instance_of(String), a_hash_including(headers: headers)).once
+        expect(Gitlab::HTTP).to receive(:post).with(an_instance_of(String), a_hash_including(headers: { "X-Gitlab-Audit-Event-Type" => "audit_operation", 'X-Gitlab-Event-Streaming-Token' => anything })).once
 
         subject
       end
 
       context 'sends correct event type in request body' do
         it 'adds event type only when audit operation is present' do
-          if audit_operation.present?
-            expect(Gitlab::HTTP).to receive(:post).with(an_instance_of(String),
-                                                        hash_including(body: a_string_including("\"event_type\":\"#{audit_operation}\"")))
-          else
-            expect(Gitlab::HTTP).to receive(:post).with(an_instance_of(String),
-                                                        hash_excluding(body: a_string_including("event_type")))
-          end
+          expect(Gitlab::HTTP).to receive(:post).with(an_instance_of(String), hash_including(body: a_string_including("\"event_type\":\"audit_operation\"")))
 
           subject
         end
@@ -180,7 +168,6 @@ RSpec.describe AuditEvents::AuditEventStreamingWorker do
     context 'when the entity type is a group' do
       it_behaves_like 'a successful audit event stream' do
         let_it_be(:event) { create(:audit_event, :group_event) }
-        let_it_be(:audit_operation) { 'audit_operation' }
 
         let(:group) { event.entity }
       end
@@ -197,7 +184,6 @@ RSpec.describe AuditEvents::AuditEventStreamingWorker do
         let_it_be(:group) { create(:group) }
         let_it_be(:project) { create(:project, group: group) }
         let_it_be(:event) { create(:audit_event, :project_event, target_project: project) }
-        let_it_be(:audit_operation) { 'audit_operation' }
       end
 
       it_behaves_like 'a error is raised' do
@@ -221,18 +207,6 @@ RSpec.describe AuditEvents::AuditEventStreamingWorker do
       end
 
       it_behaves_like 'no HTTP calls are made'
-    end
-
-    context 'when the worker is invoked with old parameters', :sidekiq_inline do
-      let_it_be(:group) { create(:group) }
-      let_it_be(:project) { create(:project, group: group) }
-      let_it_be(:event) { create(:audit_event, :project_event, target_project: project) }
-      let_it_be(:audit_operation) { nil }
-      let_it_be(:audit_event_id) { nil }
-
-      subject { worker.perform(audit_event_id, event.to_json) }
-
-      include_context 'audit event stream'
     end
   end
 end
