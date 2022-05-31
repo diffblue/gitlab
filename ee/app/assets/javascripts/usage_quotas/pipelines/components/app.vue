@@ -175,7 +175,7 @@ export default {
   <div>
     <section>
       <div>
-        <gl-loading-icon v-if="isLoading" class="gl-mt-5" size="md" />
+        <gl-loading-icon v-if="isLoading" class="gl-mt-5" size="lg" />
         <minutes-usage-charts v-else :ci-minutes-usages="ciMinutesUsages" />
       </div>
       <div v-if="shouldShowBuyAdditionalMinutes" class="gl-display-flex gl-justify-content-end">
@@ -194,7 +194,7 @@ export default {
       </div>
     </section>
     <section class="gl-py-5">
-      <gl-loading-icon v-if="isLoading" class="gl-mt-5" size="md" />
+      <gl-loading-icon v-if="isLoading" class="gl-mt-5" size="lg" />
       <gl-alert v-else-if="error" variant="danger" @dismiss="clearError">
         {{ error }}
       </gl-alert>
