@@ -1,0 +1,8 @@
+---
+name: paginated_mr_discussions
+introduced_by_url:
+rollout_issue_url:
+milestone: '15.1'
+type: development
+group: group::code review
+default_enabled: false
