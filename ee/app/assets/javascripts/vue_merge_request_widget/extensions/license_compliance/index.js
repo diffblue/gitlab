@@ -57,39 +57,58 @@ export default {
         },
       ];
     },
+    hasApprovalRequired() {
+      return Boolean(this.collapsedData[0].approval_required);
+    },
+    summaryTextWithReportItems() {
+      if (this.hasApprovalRequired() && this.hasDeniedLicense()) {
+        if (this.hasBaseReportLicenses()) {
+          return n__(
+            'LicenseCompliance|License Compliance detected %d new license and policy violation; approval required',
+            'LicenseCompliance|License Compliance detected %d new licenses and policy violations; approval required',
+            this.licenseReportCount(),
+          );
+        }
+        return n__(
+          'LicenseCompliance|License Compliance detected %d license and policy violation for the source branch only; approval required',
+          'LicenseCompliance|License Compliance detected %d licenses and policy violations for the source branch only; approval required',
+          this.licenseReportCount(),
+        );
+      }
+
+      if (this.hasBaseReportLicenses() && !this.hasDeniedLicense()) {
+        return n__(
+          'LicenseCompliance|License Compliance detected %d new license',
+          'LicenseCompliance|License Compliance detected %d new licenses',
+          this.licenseReportCount(),
+        );
+      } else if (this.hasBaseReportLicenses() && this.hasDeniedLicense()) {
+        return n__(
+          'LicenseCompliance|License Compliance detected %d new license and policy violation',
+          'LicenseCompliance|License Compliance detected %d new licenses and policy violations',
+          this.licenseReportCount(),
+        );
+      } else if (!this.hasBaseReportLicenses() && this.hasDeniedLicense()) {
+        return n__(
+          'LicenseCompliance|License Compliance detected %d license and policy violation for the source branch only',
+          'LicenseCompliance|License Compliance detected %d licenses and policy violations for the source branch only',
+          this.licenseReportCount(),
+        );
+      }
+      return n__(
+        'LicenseCompliance|License Compliance detected %d license for the source branch only',
+        'LicenseCompliance|License Compliance detected %d licenses for the source branch only',
+        this.licenseReportCount(),
+      );
+    },
     summary() {
       if (this.hasReportItems()) {
-        if (this.hasBaseReportLicenses()) {
-          return this.hasDeniedLicense()
-            ? n__(
-                'LicenseCompliance|License Compliance detected %d new license and policy violation',
-                'LicenseCompliance|License Compliance detected %d new licenses and policy violations',
-                this.licenseReportCount(),
-              )
-            : n__(
-                'LicenseCompliance|License Compliance detected %d new license',
-                'LicenseCompliance|License Compliance detected %d new licenses',
-                this.licenseReportCount(),
-              );
-        }
-
-        return this.hasDeniedLicense()
-          ? n__(
-              'LicenseCompliance|License Compliance detected %d license and policy violation for the source branch only',
-              'LicenseCompliance|License Compliance detected %d licenses and policy violations for the source branch only',
-              this.licenseReportCount(),
-            )
-          : n__(
-              'LicenseCompliance|License Compliance detected %d license for the source branch only',
-              'LicenseCompliance|License Compliance detected %d licenses for the source branch only',
-              this.licenseReportCount(),
-            );
+        return this.summaryTextWithReportItems();
       }
 
       if (this.hasBaseReportLicenses()) {
         return s__('LicenseCompliance|License Compliance detected no new licenses');
       }
-
       return s__(
         'LicenseCompliance|License Compliance detected no licenses for the source branch only',
       );
