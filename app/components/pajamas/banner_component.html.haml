@@ -8,8 +8,16 @@
 
   .gl-banner-content
     %h1.gl-banner-title= title
+
     = content
-    = actions
+
+    - if primary_action?
+      = primary_action
+    - else
+      = link_to @button_text, @button_link, { **@button_options, class: 'btn btn-md btn-confirm gl-button js-close-callout' }
+
+    - actions.each do |action|
+      = action
 
   %button.gl-button.gl-banner-close.btn-sm.btn-icon.js-close{ @close_options, class: close_class, type: 'button' }
     = sprite_icon('close', size: 16, css_class: 'dismiss-icon')

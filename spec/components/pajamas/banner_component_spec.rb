@@ -30,6 +30,14 @@ RSpec.describe Pajamas::BannerComponent, type: :component do
       expect(rendered_component).to have_css "button.gl-banner-close"
     end
 
+    describe 'button_text and button_link' do
+      let(:options) { { button_text: 'Learn more', button_link: '/learn-more' } }
+
+      it 'define the primary action' do
+        expect(rendered_component).to have_css "a.btn-confirm.gl-button[href='/learn-more']", text: 'Learn more'
+      end
+    end
+
     describe 'banner_options' do
       let(:options) { { banner_options: { class: "baz", data: { foo: "bar" } } } }
 
@@ -132,6 +140,29 @@ RSpec.describe Pajamas::BannerComponent, type: :component do
       it 'uses the slot content' do
         expect(rendered_component).to have_css ".gl-banner-illustration svg"
         expect(rendered_component).not_to have_css ".gl-banner-illustration img"
+      end
+    end
+  end
+
+  context 'with primary_action slot' do
+    before do
+      render_inline(subject) do |c|
+        c.title { title }
+        c.primary_action { "<a class='special' href='#'>Special</a>".html_safe }
+        content
+      end
+    end
+
+    it 'renders the slot content as the primary action' do
+      expect(rendered_component).to have_css "a.special", text: 'Special'
+    end
+
+    context 'and conflicting button_text and button_link' do
+      let(:options) { { button_text: 'Not special', button_link: '/' } }
+
+      it 'uses the slot content' do
+        expect(rendered_component).to have_css "a.special[href='#']", text: 'Special'
+        expect(rendered_component).not_to have_css "a.btn[href='/']"
       end
     end
   end
