@@ -31,16 +31,39 @@ RSpec.describe SearchController, :elastic do
         let(:request_params) { { group_id: group.id, scope: 'blobs', search: 'term' } }
         let(:target_event) { 'i_search_paid' }
 
-        context 'on Gitlab.com' do
+        context 'on Gitlab.com', :snowplow do
+          subject(:request) { get :show, params: request_params }
+
           before do
             allow(::Gitlab).to receive(:com?).and_return(true)
             stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
           end
 
           it_behaves_like 'tracking unique hll events' do
-            subject(:request) { get :show, params: request_params }
-
             let(:expected_value) { instance_of(String) }
+          end
+
+          it 'tracks devops_adoption usage Snowplow event' do
+            subject
+
+            expect_snowplow_event(
+              category: described_class.to_s,
+              action: target_event,
+              namespace: group,
+              user: user
+            )
+          end
+
+          context 'when FF route_hll_to_snowplow_phase2 is disabled' do
+            before do
+              stub_feature_flags(route_hll_to_snowplow_phase2: false)
+            end
+
+            it "doesn't track Snowplow event" do
+              subject
+
+              expect_no_snowplow_event
+            end
           end
         end
 
