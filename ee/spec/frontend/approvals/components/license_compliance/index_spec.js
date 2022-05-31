@@ -1,4 +1,4 @@
-import { GlIcon } from '@gitlab/ui';
+import { GlIcon, GlSkeletonLoader } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
@@ -56,7 +56,7 @@ describe('EE Approvals LicenseCompliance', () => {
 
   const findByHrefAttribute = (href) => wrapper.find(`[href="${href}"]`);
   const findOpenModalButton = () => wrapper.find('button');
-  const findLoadingIndicator = () => wrapper.find('[aria-label="loading"]');
+  const findLoadingIndicator = () => wrapper.findComponent(GlSkeletonLoader);
   const findInformationIcon = () => wrapper.findComponent(GlIcon);
   const findLicenseCheckStatus = () => wrapper.find('[data-testid="licenseCheckStatus"]');
 

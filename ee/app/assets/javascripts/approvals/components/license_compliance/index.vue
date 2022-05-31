@@ -1,11 +1,5 @@
 <script>
-import {
-  GlButton,
-  GlIcon,
-  GlLink,
-  GlDeprecatedSkeletonLoading as GlSkeletonLoading,
-  GlSprintf,
-} from '@gitlab/ui';
+import { GlButton, GlIcon, GlLink, GlSkeletonLoader, GlSprintf } from '@gitlab/ui';
 import { mapActions, mapState } from 'vuex';
 import { APPROVALS, APPROVALS_MODAL } from 'ee/approvals/stores/modules/license_compliance';
 import { s__ } from '~/locale';
@@ -16,7 +10,7 @@ export default {
     GlButton,
     GlIcon,
     GlLink,
-    GlSkeletonLoading,
+    GlSkeletonLoader,
     GlSprintf,
     ModalLicenseCompliance,
   },
@@ -59,12 +53,7 @@ export default {
       >{{ s__('LicenseCompliance|Update approvals') }}
     </gl-button>
     <span data-testid="licenseCheckStatus" class="gl-ml-3">
-      <gl-skeleton-loading
-        v-if="isLoading"
-        :aria-label="__('loading')"
-        :lines="1"
-        class="gl-display-inline-flex gl-h-auto gl-align-items-center"
-      />
+      <gl-skeleton-loader v-if="isLoading" :aria-label="__('loading')" :lines="1" />
       <span v-else class="gl-m-0 gl-font-weight-normal">
         <gl-icon name="information-o" :size="12" class="gl-text-blue-600" />
         <gl-sprintf :message="licenseCheckStatusText">
