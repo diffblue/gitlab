@@ -6903,6 +6903,9 @@ msgstr ""
 msgid "CICDAnalytics|Shared Runners Usage"
 msgstr ""
 
+msgid "CICDAnalytics|Shared runner duration is the total runtime of all jobs that ran on shared runners"
+msgstr ""
+
 msgid "CICDAnalytics|Shared runner pipeline minute duration by month"
 msgstr ""
 
@@ -6913,6 +6916,9 @@ msgid "CICDAnalytics|Shared runner usage is the total runtime of all jobs that r
 msgstr ""
 
 msgid "CICDAnalytics|Something went wrong while fetching release statistics"
+msgstr ""
+
+msgid "CICDAnalytics|What is shared runner duration?"
 msgstr ""
 
 msgid "CICDAnalytics|What is shared runner usage?"
@@ -40762,7 +40768,7 @@ msgstr ""
 msgid "UsageQuota|Shared bits of code and text."
 msgstr ""
 
-msgid "UsageQuota|Shared runner usage"
+msgid "UsageQuota|Shared runner duration"
 msgstr ""
 
 msgid "UsageQuota|Snippets"
@@ -40781,6 +40787,12 @@ msgid "UsageQuota|Storage type"
 msgstr ""
 
 msgid "UsageQuota|Storage used"
+msgstr ""
+
+msgid "UsageQuota|The table below shows current period usage"
+msgstr ""
+
+msgid "UsageQuota|The table below shows usage since %{timeElapsed}"
 msgstr ""
 
 msgid "UsageQuota|This is the total amount of storage used across your projects within this namespace."

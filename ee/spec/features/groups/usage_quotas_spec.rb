@@ -216,22 +216,26 @@ RSpec.describe 'Groups > Usage Quotas' do
 
     before do
       allow(Kaminari.config).to receive(:default_per_page).and_return(per_page)
+
+      visit_usage_quotas_page('pipelines-quota-tab')
     end
 
     it 'sorts projects list by CI minutes used in descending order' do
-      visit_usage_quotas_page('pipelines-quota-tab')
-
       page.within('.pipeline-project-metrics') do
         expect(page).to have_content("Project")
-        expect(page).to have_content("Shared runner usage")
+        expect(page).to have_content("Shared runner duration")
         expect(page).to have_content("CI/CD minutes usage")
 
         shared_runner_durations = all('[data-testid="project_shared_runner_duration"]').map(&:text)
-        expect(shared_runner_durations).to eq(%w[1000 80 50 30 10])
+        expect(shared_runner_durations).to eq(%w[17 1 1 1 0])
 
         amounts_used = all('[data-testid="project_amount_used"]').map(&:text)
         expect(amounts_used).to eq(%w[100 8 5 3 1])
       end
+    end
+
+    it 'displays info alert for table' do
+      expect(page).to have_selector '[data-testid="project-usage-info-alert"]'
     end
   end
 
