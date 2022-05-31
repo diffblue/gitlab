@@ -134,66 +134,11 @@ RSpec.describe Groups::SyncService do
           it 'removes the matching user' do
             sync
 
-            expect(group2.members).not_to include(user)
+            expect(group2.members.pluck(:user_id)).not_to include(user.id)
           end
 
           it 'returns sync stats as payload' do
             expect(sync.payload).to include({ added: 2, removed: 1, updated: 0 })
-          end
-        end
-
-        context 'when manage_group_ids is present' do
-          let_it_be(:manage_group_ids) { [group2.id] }
-
-          include_examples 'removes the member'
-        end
-
-        context 'when manage_group_ids is empty' do
-          let_it_be(:manage_group_ids) { [] }
-
-          include_examples 'removes the member'
-        end
-
-        context 'when manage_groups_ids is nil' do
-          let_it_be(:manage_group_ids) { nil }
-
-          include_examples 'removes the member'
-        end
-      end
-
-      context 'in a group that is not managed' do
-        let_it_be(:manage_group_ids) { [top_level_group.id, group1.id] }
-
-        before do
-          group2.add_user(user, ::Gitlab::Access::REPORTER)
-        end
-
-        it 'does not change the group member count' do
-          expect { sync }.not_to change { group2.members.count }
-        end
-
-        it 'retains the correct access level' do
-          sync
-
-          expect(group2.members.find_by(user_id: user.id).access_level)
-            .to eq(::Gitlab::Access::REPORTER)
-        end
-      end
-
-      context 'but should no longer be a member' do
-        shared_examples 'removes the member' do
-          before do
-            group2.add_user(user, ::Gitlab::Access::DEVELOPER)
-          end
-
-          it 'reduces group member count by 1' do
-            expect { sync }.to change { group2.members.count }.by(-1)
-          end
-
-          it 'removes the matching user' do
-            sync
-
-            expect(group2.members.pluck(:user_id)).not_to include(user.id)
           end
         end
 
