@@ -53,7 +53,7 @@ RSpec.describe 'Admin updates EE-only settings' do
     expect(page).to have_content 'Application settings saved successfully'
   end
 
-  context 'Elasticsearch settings' do
+  context 'Elasticsearch settings', :elastic_delete_by_query do
     let(:elastic_search_license) { true }
 
     before do
