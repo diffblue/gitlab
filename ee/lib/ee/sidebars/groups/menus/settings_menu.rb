@@ -12,10 +12,10 @@ module EE
           def configure_menu_items
             return false unless super
 
+            insert_item_after(:integrations, webhooks_menu_item)
             add_item(ldap_sync_menu_item)
             add_item(saml_sso_menu_item)
             add_item(saml_group_links_menu_item)
-            add_item(webhooks_menu_item)
             add_item(usage_quotas_menu_item)
             add_item(billing_menu_item)
 
