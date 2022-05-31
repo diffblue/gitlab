@@ -30,7 +30,7 @@ module AuditEvents
         headers[EVENT_TYPE_HEADER_KEY] = audit_operation if audit_operation.present?
 
         Gitlab::HTTP.post(destination.destination_url,
-                          body: Gitlab::Json::LimitedEncoder.encode(audit_event.as_json, limit: REQUEST_BODY_SIZE_LIMIT),
+                          body: request_body(audit_event, audit_operation),
                           use_read_total_timeout: true,
                           headers: headers)
       rescue URI::InvalidURIError => e
@@ -60,6 +60,12 @@ module AuditEvents
     end
 
     private
+
+    def request_body(audit_event, audit_operation)
+      body = audit_event.as_json
+      body[:event_type] = audit_operation if audit_operation.present?
+      Gitlab::Json::LimitedEncoder.encode(body, limit: REQUEST_BODY_SIZE_LIMIT)
+    end
 
     # Fetches audit event from database if audit_event_id is present
     # Or parses audit event json into instance of AuditEvent if audit_event_json is present
