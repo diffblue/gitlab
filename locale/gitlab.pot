@@ -31823,9 +31823,6 @@ msgstr ""
 msgid "Reply…"
 msgstr ""
 
-msgid "Repo by URL"
-msgstr ""
-
 msgid "Report abuse"
 msgstr ""
 
@@ -32099,6 +32096,9 @@ msgid "Repository Settings"
 msgstr ""
 
 msgid "Repository already read-only"
+msgstr ""
+
+msgid "Repository by URL"
 msgstr ""
 
 msgid "Repository check"
