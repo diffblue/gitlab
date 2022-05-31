@@ -20,7 +20,7 @@ RSpec.describe Gitlab::Graphql::Tracers::LoggerTracer do
     end
   end
 
-  it "logs every query", :aggregate_failures do
+  it "logs every query", :aggregate_failures, :unlimited_max_formatted_output_length do
     variables = { name: "Ada Lovelace" }
     query_string = 'query fooOperation($name: String) { helloWorld(message: $name) }'
 
@@ -28,21 +28,22 @@ RSpec.describe Gitlab::Graphql::Tracers::LoggerTracer do
     query = GraphQL::Query.new(dummy_schema, query_string, variables: variables)
 
     expect(::Gitlab::GraphqlLogger).to receive(:info).with({
-      trace_type: "execute_query",
-      query_fingerprint: query.fingerprint,
-      operation_fingerprint: query.operation_fingerprint,
-      is_mutation: false,
       "correlation_id" => anything,
       "meta.caller_id" => "caller_a",
       "meta.feature_category" => "feature_a",
-      "query_analysis.query_string" => query_string,
-      "query_analysis.variables" => variables.to_s,
       "query_analysis.duration_s" => kind_of(Numeric),
-      "query_analysis.operation_name" => 'fooOperation',
-      "query_analysis.depth" => 1,
       "query_analysis.complexity" => 1,
+      "query_analysis.depth" => 1,
+      "query_analysis.used_deprecated_fields" => [],
       "query_analysis.used_fields" => ["FakeQuery.helloWorld"],
-      "query_analysis.used_deprecated_fields" => []
+      duration_s: be > 0,
+      is_mutation: false,
+      operation_fingerprint: query.operation_fingerprint,
+      operation_name: 'fooOperation',
+      query_fingerprint: query.fingerprint,
+      query_string: query_string,
+      trace_type: "execute_query",
+      variables: variables.to_s
     })
 
     dummy_schema.execute(query_string, variables: variables)

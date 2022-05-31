@@ -24,15 +24,16 @@ RSpec.describe 'GraphQL' do
           "query_analysis.complexity" => 1,
           "query_analysis.used_fields" => ['Query.echo'],
           "query_analysis.used_deprecated_fields" => [],
-          "query_analysis.variables" => variables.to_s,
-          "query_analysis.operation_name" => nil,
-          "query_analysis.query_string" => query,
           # query_fingerprint starts with operation name
           query_fingerprint: %r{^anonymous\/},
+          duration_s: kind_of(Numeric),
           trace_type: 'execute_query',
+          operation_name: nil,
           # operation_fingerprint starts with operation name
           operation_fingerprint: %r{^anonymous\/},
-          is_mutation: false
+          is_mutation: false,
+          variables: variables.to_s,
+          query_string: query
         }
       end
 

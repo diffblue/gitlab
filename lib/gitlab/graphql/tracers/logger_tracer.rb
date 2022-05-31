@@ -32,8 +32,12 @@ module Gitlab
           info = {
             trace_type: 'execute_query',
             query_fingerprint: query.fingerprint,
+            duration_s: duration_s,
+            operation_name: query.operation_name,
             operation_fingerprint: query.operation_fingerprint,
-            is_mutation: query.mutation?
+            is_mutation: query.mutation?,
+            variables: clean_variables(query.provided_variables),
+            query_string: query.query_string
           }
 
           Gitlab::ExceptionLogFormatter.format!(exception, info)

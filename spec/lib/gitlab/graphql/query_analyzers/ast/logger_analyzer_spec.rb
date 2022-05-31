@@ -34,7 +34,6 @@ RSpec.describe Gitlab::Graphql::QueryAnalyzers::AST::LoggerAnalyzer do
       result = GraphQL::Analysis::AST.analyze_query(query, [described_class], multiplex_analyzers: [])
 
       expect(result.first[:duration_s]).to eq monotonic_time_duration
-      expect(result.first[:variables]).to eq '{:body=>"[FILTERED]"}'
       expect(result.first[:depth]).to eq 3
       expect(result.first[:complexity]).to eq 3
       expect(result.first[:used_fields]).to eq ['Note.id', 'CreateNotePayload.note', 'Mutation.createNote']

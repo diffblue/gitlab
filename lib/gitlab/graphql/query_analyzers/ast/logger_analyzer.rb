@@ -15,10 +15,7 @@ module Gitlab
 
             variables = process_variables(query.provided_variables)
             @results = default_initial_values(query).merge({
-              operation_name: query.operation_name,
-              query_string: query.query_string,
-              time_started: Gitlab::Metrics::System.monotonic_time,
-              variables: variables
+              time_started: Gitlab::Metrics::System.monotonic_time
             })
           rescue StandardError => e
             Gitlab::ErrorTracking.track_and_raise_for_dev_exception(e)
@@ -33,7 +30,7 @@ module Gitlab
             results[:complexity] = complexity
             # This duration is not the execution time of the
             # query but the execution time of the analyzer.
-            results[:duration_s] = duration(results[:time_started]).round(1)
+            results[:duration_s] = duration(results[:time_started])
             results[:used_fields] = field_usages[:used_fields]
             results[:used_deprecated_fields] = field_usages[:used_deprecated_fields]
 
@@ -68,9 +65,6 @@ module Gitlab
           def default_initial_values(query)
             {
               time_started: Gitlab::Metrics::System.monotonic_time,
-              query_string: nil,
-              query: query,
-              variables: nil,
               duration_s: nil
             }
           end
