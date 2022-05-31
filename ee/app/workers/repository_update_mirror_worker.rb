@@ -6,7 +6,7 @@ class RepositoryUpdateMirrorWorker
   include ApplicationWorker
 
   idempotent!
-  data_consistency :sticky, feature_flag: :delayed_repository_update_mirror_worker
+  data_consistency :sticky
   include ProjectStartImport
 
   feature_category :source_code_management

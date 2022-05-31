@@ -16,7 +16,6 @@ RSpec.describe RepositoryUpdateMirrorWorker do
 
     it_behaves_like 'worker with data consistency',
                     described_class,
-                    feature_flag: :delayed_repository_update_mirror_worker,
                     data_consistency: :sticky
 
     it 'sets status as finished when update mirror service executes successfully' do
