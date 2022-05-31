@@ -76,6 +76,20 @@ RSpec.describe AuditEvents::AuditEventStreamingWorker do
 
         subject
       end
+
+      context 'sends correct event type in request body' do
+        it 'adds event type only when audit operation is present' do
+          if audit_operation.present?
+            expect(Gitlab::HTTP).to receive(:post).with(an_instance_of(String),
+                                                        hash_including(body: a_string_including("\"event_type\":\"#{audit_operation}\"")))
+          else
+            expect(Gitlab::HTTP).to receive(:post).with(an_instance_of(String),
+                                                        hash_excluding(body: a_string_including("event_type")))
+          end
+
+          subject
+        end
+      end
     end
 
     context 'when the group has several destinations' do
