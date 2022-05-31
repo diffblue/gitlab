@@ -104,7 +104,7 @@ describe('HandRaiseLeadButton', () => {
     it('has the correct modal props', () => {
       expect(findModal().props('actionPrimary')).toStrictEqual({
         text: PQL_MODAL_PRIMARY,
-        attributes: [{ variant: 'success' }, { disabled: true }],
+        attributes: [{ variant: 'confirm' }, { disabled: true }],
       });
       expect(findModal().props('actionCancel')).toStrictEqual({
         text: PQL_MODAL_CANCEL,
@@ -230,7 +230,7 @@ describe('HandRaiseLeadButton', () => {
 
       expect(findModal().props('actionPrimary')).toStrictEqual({
         text: PQL_MODAL_PRIMARY,
-        attributes: [{ variant: 'success' }, { disabled: false }],
+        attributes: [{ variant: 'confirm' }, { disabled: false }],
       });
     });
   });

@@ -32,7 +32,9 @@ module EE
 
         after_transition started: :failed do |state, _|
           if state.mirror? && state.retry_limit_exceeded?
-            ::NotificationService.new.mirror_was_hard_failed(state.project)
+            state.run_after_commit do
+              ::NotificationService.new.mirror_was_hard_failed(state.project)
+            end
           end
         end
 
