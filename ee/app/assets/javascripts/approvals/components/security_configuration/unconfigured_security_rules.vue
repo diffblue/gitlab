@@ -1,5 +1,5 @@
 <script>
-import { GlDeprecatedSkeletonLoading as GlSkeletonLoading } from '@gitlab/ui';
+import { GlSkeletonLoader } from '@gitlab/ui';
 import { mapState, mapActions } from 'vuex';
 import { LICENSE_CHECK_NAME, COVERAGE_CHECK_NAME } from 'ee/approvals/constants';
 import { s__ } from '~/locale';
@@ -8,7 +8,7 @@ import UnconfiguredSecurityRule from './unconfigured_security_rule.vue';
 export default {
   components: {
     UnconfiguredSecurityRule,
-    GlSkeletonLoading,
+    GlSkeletonLoader,
   },
   inject: {
     licenseCheckHelpPagePath: {
@@ -77,7 +77,7 @@ export default {
     <tbody>
       <tr v-if="isRulesLoading">
         <td colspan="3">
-          <gl-skeleton-loading :lines="3" />
+          <gl-skeleton-loader :lines="3" />
         </td>
       </tr>
 
