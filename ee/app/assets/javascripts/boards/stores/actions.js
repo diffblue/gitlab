@@ -13,12 +13,14 @@ import projectBoardMembersQuery from '~/boards/graphql/project_board_members.que
 import actionsCE from '~/boards/stores/actions';
 import * as typesCE from '~/boards/stores/mutation_types';
 import { TYPE_ITERATIONS_CADENCE } from '~/graphql_shared/constants';
+
 import { getIdFromGraphQLId, convertToGraphQLId } from '~/graphql_shared/utils';
 import { historyPushState, convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import { mergeUrlParams, removeParams, queryToObject } from '~/lib/utils/url_utility';
 import { s__ } from '~/locale';
 import searchIterationQuery from 'ee/issues/list/queries/search_iterations.query.graphql';
 import searchIterationCadencesQuery from 'ee/issues/list/queries/search_iteration_cadences.query.graphql';
+import epicBoardListQuery from 'ee/boards/graphql/epic_board_lists_deferred.query.graphql';
 import {
   fullEpicBoardId,
   formatEpic,
@@ -530,7 +532,7 @@ export default {
       moveAfterId,
     });
 
-    const { boardId } = state;
+    const { boardId, filterParams } = state;
 
     gqlClient
       .mutate({
@@ -542,6 +544,70 @@ export default {
           toListId,
           moveBeforeId,
           moveAfterId,
+        },
+        update(cache) {
+          if (fromListId === toListId) return;
+
+          const updateFromList = () => {
+            const fromEpicList = cache.readQuery({
+              query: epicBoardListQuery,
+              variables: { id: fromListId, filters: filterParams },
+            });
+
+            const updatedFromList = {
+              epicBoardList: {
+                __typename: 'EpicList',
+                id: fromEpicList.epicBoardList.id,
+                metadata: {
+                  __typename: 'EpicListMetadata',
+                  totalWeight:
+                    fromEpicList.epicBoardList.metadata.totalWeight -
+                    Number(
+                      originalEpic.descendantWeightSum.openedIssues +
+                        originalEpic.descendantWeightSum.closedIssues,
+                    ),
+                },
+              },
+            };
+
+            cache.writeQuery({
+              query: epicBoardListQuery,
+              variables: { id: fromListId, filters: filterParams },
+              data: updatedFromList,
+            });
+          };
+
+          const updateToList = () => {
+            const toEpicList = cache.readQuery({
+              query: epicBoardListQuery,
+              variables: { id: toListId, filters: filterParams },
+            });
+
+            const updatedToList = {
+              epicBoardList: {
+                __typename: 'EpicList',
+                id: toEpicList.epicBoardList.id,
+                metadata: {
+                  __typename: 'EpicListMetadata',
+                  totalWeight:
+                    toEpicList.epicBoardList.metadata.totalWeight +
+                    Number(
+                      originalEpic.descendantWeightSum.openedIssues +
+                        originalEpic.descendantWeightSum.closedIssues,
+                    ),
+                },
+              },
+            };
+
+            cache.writeQuery({
+              query: epicBoardListQuery,
+              variables: { id: toListId, filters: filterParams },
+              data: updatedToList,
+            });
+          };
+
+          updateFromList();
+          updateToList();
         },
       })
       .then(({ data }) => {

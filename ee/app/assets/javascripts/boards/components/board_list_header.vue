@@ -6,6 +6,7 @@ import { mapGetters } from 'vuex';
 import BoardListHeaderFoss from '~/boards/components/board_list_header.vue';
 import { n__, __, sprintf } from '~/locale';
 import listQuery from 'ee_else_ce/boards/graphql/board_lists_deferred.query.graphql';
+import epicListQuery from 'ee/boards/graphql/epic_board_lists_deferred.query.graphql';
 
 export default {
   extends: BoardListHeaderFoss,
@@ -21,6 +22,18 @@ export default {
       },
       skip() {
         return this.isEpicBoard;
+      },
+    },
+    epicBoardList: {
+      query: epicListQuery,
+      variables() {
+        return {
+          id: this.list.id,
+          filters: this.filterParams,
+        };
+      },
+      skip() {
+        return !this.isEpicBoard || !this.glFeatures.epicBoardTotalWeight;
       },
     },
   },
@@ -46,13 +59,32 @@ export default {
         : n__(`%d issue`, `%d issues`, this.itemsCount);
     },
     weightCountToolTip() {
-      const { totalWeight } = this.boardList;
-
-      if (this.weightFeatureAvailable) {
-        return sprintf(__('%{totalWeight} total weight'), { totalWeight });
+      if (!this.weightFeatureAvailable) {
+        return null;
       }
 
-      return null;
+      return sprintf(__('%{totalWeight} total weight'), { totalWeight: this.totalWeight });
+    },
+    isEpicBoardListLoading() {
+      return this.$apollo.queries.epicBoardList.loading;
+    },
+    totalWeight() {
+      if (this.isEpicBoard && this.glFeatures.epicBoardTotalWeight) {
+        return this.epicBoardList?.metadata?.totalWeight || 0;
+      }
+
+      return this.boardList?.totalWeight;
+    },
+    canShowTotalWeight() {
+      if (!this.weightFeatureAvailable) {
+        return false;
+      }
+
+      if (this.isEpicBoard) {
+        return this.glFeatures.epicBoardTotalWeight && !this.isEpicBoardListLoading;
+      }
+
+      return !this.isLoading;
     },
   },
 };
