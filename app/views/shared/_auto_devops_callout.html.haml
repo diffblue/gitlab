@@ -1,10 +1,8 @@
-= render Pajamas::BannerComponent.new(banner_options: { class: 'js-autodevops-banner', data: { uid: 'auto_devops_settings_dismissed', project_path: project_path(@project) } },
+= render Pajamas::BannerComponent.new(svg_path: 'illustrations/autodevops.svg',
+  banner_options: { class: 'js-autodevops-banner', data: { uid: 'auto_devops_settings_dismissed', project_path: project_path(@project) } },
   close_options: { 'aria-label' => s_('AutoDevOps|Dismiss Auto DevOps box'), class: 'js-close-callout' }) do |c|
   - c.title do
     = s_('AutoDevOps|Auto DevOps')
-
-  - c.illustration do
-    = image_tag('illustrations/autodevops.svg')
 
   %p= s_('AutoDevOps|It will automatically build, test, and deploy your application based on a predefined CI/CD configuration.')
   %p

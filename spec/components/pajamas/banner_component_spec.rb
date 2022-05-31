@@ -102,10 +102,18 @@ RSpec.describe Pajamas::BannerComponent, type: :component do
       it 'has none by default' do
         expect(rendered_component).not_to have_css ".gl-banner-illustration"
       end
+
+      context 'with svg_path' do
+        let(:options) { { svg_path: 'logo.svg' } }
+
+        it 'renders an image as illustration' do
+          expect(rendered_component).to have_css ".gl-banner-illustration img"
+        end
+      end
     end
   end
 
-  context 'with illustration' do
+  context 'with illustration slot' do
     before do
       render_inline(subject) do |c|
         c.title { title }
@@ -114,8 +122,17 @@ RSpec.describe Pajamas::BannerComponent, type: :component do
       end
     end
 
-    it 'renders an illustration image' do
+    it 'renders the slot content as illustration' do
       expect(rendered_component).to have_css ".gl-banner-illustration svg"
+    end
+
+    context 'and conflicting svg_path' do
+      let(:options) { { svg_path: 'logo.svg' } }
+
+      it 'uses the slot content' do
+        expect(rendered_component).to have_css ".gl-banner-illustration svg"
+        expect(rendered_component).not_to have_css ".gl-banner-illustration img"
+      end
     end
   end
 end

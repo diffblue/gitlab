@@ -2,6 +2,9 @@
   - if illustration?
     .gl-banner-illustration
       = illustration
+  - elsif @svg_path.present?
+    .gl-banner-illustration
+      = image_tag @svg_path, alt: ""
 
   .gl-banner-content
     %h1.gl-banner-title= title

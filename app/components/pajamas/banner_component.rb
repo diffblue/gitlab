@@ -4,16 +4,19 @@ module Pajamas
   class BannerComponent < Pajamas::Component
     # @param [Boolean] embedded
     # @param [Symbol] variant
+    # @param [String] svg_path
     # @param [Hash] banner_options
     # @param [Hash] close_options
     def initialize(
       embedded: false,
       variant: :promotion,
+      svg_path: nil,
       banner_options: {},
       close_options: {}
     )
       @embedded = embedded
       @variant = variant.to_sym
+      @svg_path = svg_path.to_s
       @banner_options = banner_options
       @close_options = close_options
     end
