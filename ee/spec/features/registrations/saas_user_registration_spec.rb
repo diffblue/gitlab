@@ -11,10 +11,6 @@ RSpec.describe "User registration", :js, :saas do
 
   before do
     stub_feature_flags(
-      # This is an "experiment" that's not been cleaned up and is over a year old:
-      # https://gitlab.com/gitlab-org/gitlab/-/issues/255170
-      user_other_role_details: true,
-
       # This is an experiment that we want to clean up, but can't yet because of
       # query limit concerns:
       # https://gitlab.com/gitlab-org/gitlab/-/issues/350754
@@ -46,9 +42,6 @@ RSpec.describe "User registration", :js, :saas do
   end
 
   def fill_in_welcome_form
-    select 'Other', from: 'user_role'
-    fill_in 'What is your job title? (optional)', with: 'My role' # behind the user_other_role_details feature flag.
-
     select 'A different reason', from: 'user_registration_objective'
     fill_in 'Why are you signing up? (optional)', with: 'My reason'
   end
@@ -218,8 +211,7 @@ RSpec.describe "User registration", :js, :saas do
                 website_url: 'https://gitlab.com',
                 trial: 'true',
                 # these are the passed through params
-                role: 'other',
-                other_role: 'My role',
+                role: 'software_developer',
                 registration_objective: 'other',
                 jobs_to_be_done_other: 'My reason'
               ).permit!
@@ -256,8 +248,7 @@ RSpec.describe "User registration", :js, :saas do
               params: hash_including(
                 trial: 'false',
                 # these are the passed through params
-                role: 'other',
-                other_role: 'My role',
+                role: 'software_developer',
                 registration_objective: 'other',
                 jobs_to_be_done_other: 'My reason'
               )
