@@ -1,8 +1,4 @@
-import {
-  GlLink,
-  GlDeprecatedSkeletonLoading as GlSkeletonLoading,
-  GlLoadingIcon,
-} from '@gitlab/ui';
+import { GlLink, GlSkeletonLoader, GlLoadingIcon } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
 import { capitalize } from 'lodash';
 import StatusText from 'ee/vulnerabilities/components/status_description.vue';
@@ -26,7 +22,7 @@ describe('Vulnerability status description component', () => {
   const pipelineLink = () => wrapper.findComponent(GlLink);
   const userAvatar = () => wrapper.findComponent(UserAvatarLink);
   const userLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
-  const skeletonLoader = () => wrapper.findComponent(GlSkeletonLoading);
+  const skeletonLoader = () => wrapper.findComponent(GlSkeletonLoader);
   const statusEl = () => wrapper.find('[data-testid="status"]');
 
   // Create a date using the passed-in string, or just use the current time if nothing was passed in.
