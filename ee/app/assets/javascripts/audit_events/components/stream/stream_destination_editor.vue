@@ -73,7 +73,7 @@ export default {
           :loading="loading"
           :name="$options.i18n.ADD_BUTTON_NAME"
           class="gl-mr-3"
-          variant="info"
+          variant="confirm"
           type="submit"
           data-testid="stream-destination-add-button"
           >{{ $options.i18n.ADD_BUTTON_TEXT }}</gl-button

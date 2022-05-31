@@ -33,6 +33,8 @@
     - if Feature.enabled?(:usage_quotas_pipelines_vue, @group)
       #js-pipeline-usage-app{ data: pipeline_usage_app_data(@group) }
     - else
+      = render "namespaces/pipelines_quota/ci_minutes_report",
+        locals: { namespace: @group, projects_usage: @projects_usage }
       #js-ci-minutes-usage-group{ data: { namespace_id: @group.id } }
       = render "namespaces/pipelines_quota/list",
         locals: { namespace: @group, projects_usage: @projects_usage }

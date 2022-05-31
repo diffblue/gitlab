@@ -11,7 +11,7 @@ export const NO_CI_MINUTES_MSG = s__('UsageQuota|No CI minutes usage data availa
 export const USAGE_BY_MONTH_HEADER = s__('UsageQuota|Usage by month');
 export const USAGE_BY_PROJECT_HEADER = s__('UsageQuota|Usage by project');
 export const CI_CD_MINUTES_USAGE = s__('UsageQuota|CI/CD minutes usage');
-export const SHARED_RUNNER_USAGE = s__('UsageQuota|Shared runner usage');
+export const SHARED_RUNNER_USAGE = s__('UsageQuota|Shared runner duration');
 
 export const X_AXIS_CATEGORY = 'category';
 export const formatWithUtc = true;
@@ -20,7 +20,7 @@ export const SHARED_RUNNER_POPOVER_OPTIONS = {
   triggers: 'hover',
   placement: 'top',
   content: s__(
-    'CICDAnalytics|Shared runner usage is the total runtime of all jobs that ran on shared runners',
+    'CICDAnalytics|Shared runner duration is the total runtime of all jobs that ran on shared runners',
   ),
-  title: s__('CICDAnalytics|What is shared runner usage?'),
+  title: s__('CICDAnalytics|What is shared runner duration?'),
 };

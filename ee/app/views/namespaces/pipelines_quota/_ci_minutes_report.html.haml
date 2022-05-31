@@ -1,0 +1,38 @@
+- namespace = locals.fetch(:namespace)
+- minutes_usage = namespace.ci_minutes_usage
+- minutes_usage_presenter = Ci::Minutes::UsagePresenter.new(minutes_usage)
+
+.pipeline-quota.container-fluid
+  .row
+    .col-sm-6.offset-sm-6
+      - if ::Gitlab.com?
+        = link_to s_('UsageQuota|Buy additional minutes'),
+        buy_additional_minutes_path(namespace),
+        target: buy_addon_target_attr(namespace),
+        class: 'gl-button btn btn-confirm float-right js-buy-additional-minutes',
+        data: { track_action: 'click_buy_ci_minutes', track_label: namespace.actual_plan_name, track_property: 'pipeline_quota_page' }
+
+  .row
+    .col-sm-6
+      %strong
+        - last_reset = minutes_usage.reset_date
+        - if last_reset
+          = sprintf(s_('UsageQuota|CI/CD minutes usage since %{timeElapsed}'), { timeElapsed: last_reset.strftime('%b %d, %Y') })
+        - else
+          = s_('UsageQuota|Current period usage')
+      %div{ data: { qa_selector: "plan_ci_minutes" } }
+        = ci_minutes_report(minutes_usage_presenter.monthly_minutes_report)
+        minutes
+        = link_to sprite_icon('question-o'), help_page_path('ci/pipelines/cicd_minutes'), target: '_blank', 'aria-label': _('Shared runners help link')
+
+    .col-sm-6.right
+      - if minutes_usage_presenter.display_minutes_available_data?
+        #{minutes_usage_presenter.monthly_percent_used}% used
+      - elsif !minutes_usage_presenter.any_project_enabled?
+        0% used
+      - else
+        = s_('UsageQuota|Unlimited')
+
+      = ci_minutes_progress_bar(minutes_usage_presenter.monthly_percent_used)
+
+  = render 'namespaces/pipelines_quota/extra_shared_runners_minutes_quota', namespace: namespace
