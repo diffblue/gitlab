@@ -57,7 +57,7 @@ characteristics of pipeline data. It can be implemented in many different ways,
 but using partitioning to implement time-decay might be especially beneficial.
 When implementing a time decay we usually mark data as archived, and migrate it
 out of a database to a different place when data is no longer relevant or
-needed.  Our dataset is extremely large (tens of terabytes), so moving such a
+needed. Our dataset is extremely large (tens of terabytes), so moving such a
 high volume of data is challenging. When time-decay is implemented using
 partitioning, we can archive the entire partition (or set of partitions) by
 simply updating a single record in one of our database tables. It is one of the
@@ -170,7 +170,7 @@ partitions used will still be stored in a single table.
 
 Physical partitioning and logical partitioning will be separated, and a
 strategy will be determined when we implement partitioning for the respective
-database tables.  Using `RANGE` partitioning works similarly to using `LIST`
+database tables. Using `RANGE` partitioning works similarly to using `LIST`
 partitioning in database tables other than `ci_pipelines`, but because we can
 guarantee continuity of `partition_id` values, using `RANGE` partitioning might
 be a better strategy.
