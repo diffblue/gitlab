@@ -23,7 +23,7 @@ class CustomerRelations::Organization < ApplicationRecord
   validates :description, length: { maximum: 1024 }
   validate :validate_root_group
 
-  # Searches for organizations with a matching name.
+  # Searches for organizations with a matching name or description.
   #
   # This method uses ILIKE on PostgreSQL
   #
@@ -31,7 +31,7 @@ class CustomerRelations::Organization < ApplicationRecord
   #
   # Returns an ActiveRecord::Relation.
   def self.search(query)
-    fuzzy_search(query, [:name], use_minimum_char_limit: false)
+    fuzzy_search(query, [:name, :description], use_minimum_char_limit: false)
   end
 
   def self.search_by_state(state)

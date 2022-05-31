@@ -75,6 +75,7 @@ RSpec.describe Crm::OrganizationsFinder do
           :organization,
           group: search_test_group,
           name: "DEF",
+          description: "ghi_st",
           state: "inactive"
         )
       end
@@ -83,7 +84,8 @@ RSpec.describe Crm::OrganizationsFinder do
         create(
           :organization,
           group: search_test_group,
-          name: "ABC",
+          name: "ABC_st",
+          description: "JKL",
           state: "active"
         )
       end
@@ -101,8 +103,18 @@ RSpec.describe Crm::OrganizationsFinder do
 
       context 'when search term is not empty' do
         it 'searches for name' do
-          finder = described_class.new(user, group: search_test_group, search: "abc")
+          finder = described_class.new(user, group: search_test_group, search: "aBc")
           expect(finder.execute).to match_array([search_test_b])
+        end
+
+        it 'searches for description' do
+          finder = described_class.new(user, group: search_test_group, search: "ghI")
+          expect(finder.execute).to match_array([search_test_a])
+        end
+
+        it 'searches for name and description' do
+          finder = described_class.new(user, group: search_test_group, search: "_st")
+          expect(finder.execute).to eq([search_test_b, search_test_a])
         end
       end
 
