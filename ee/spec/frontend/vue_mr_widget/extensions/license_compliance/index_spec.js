@@ -8,11 +8,17 @@ import actions from '~/vue_merge_request_widget/components/extensions/actions.vu
 import licenseComplianceExtension from 'ee/vue_merge_request_widget/extensions/license_compliance';
 import httpStatusCodes from '~/lib/utils/http_status';
 import {
-  licenseComplianceSuccess,
+  licenseComplianceNewLicenses,
   licenseComplianceSuccessExpanded,
   licenseComplianceRemovedLicenses,
   licenseComplianceNewAndRemovedLicenses,
+  licenseComplianceNewDeniedLicenses,
+  licenseComplianceNewDeniedLicensesAndExisting,
+  licenseComplianceNewAndRemovedLicensesApprovalRequired,
+  licenseComplianceNewDeniedLicensesAndExistingApprovalRequired,
   licenseComplianceEmpty,
+  licenseComplianceEmptyExistingLicense,
+  licenseComplianceExistingAndNewLicenses,
 } from './mock_data';
 
 describe('License Compliance extension', () => {
@@ -70,7 +76,7 @@ describe('License Compliance extension', () => {
 
   describe('summary', () => {
     it('displays loading text', () => {
-      mockApi(licenseComparisonPathCollapsed, httpStatusCodes.OK, licenseComplianceSuccess);
+      mockApi(licenseComparisonPathCollapsed, httpStatusCodes.OK, licenseComplianceNewLicenses);
 
       createComponent();
 
@@ -86,62 +92,34 @@ describe('License Compliance extension', () => {
       expect(findSummary().text()).toBe('License Compliance failed loading results');
     });
 
-    it('displays no licenses', async () => {
-      mockApi(licenseComparisonPathCollapsed, httpStatusCodes.OK, licenseComplianceEmpty);
+    it.each`
+      scenario                                                            | response                                                         | message
+      ${'licenseComplianceEmpty'}                                         | ${licenseComplianceEmpty}                                        | ${'License Compliance detected no licenses for the source branch only'}
+      ${'licenseComplianceEmptyExistingLicense'}                          | ${licenseComplianceEmptyExistingLicense}                         | ${'License Compliance detected no new licenses'}
+      ${'licenseComplianceNewLicenses'}                                   | ${licenseComplianceNewLicenses}                                  | ${'License Compliance detected 4 licenses for the source branch only'}
+      ${'licenseComplianceRemovedLicenses'}                               | ${licenseComplianceRemovedLicenses}                              | ${'License Compliance detected no licenses for the source branch only'}
+      ${'licenseComplianceNewAndRemovedLicenses'}                         | ${licenseComplianceNewAndRemovedLicenses}                        | ${'License Compliance detected 2 licenses for the source branch only'}
+      ${'licenseComplianceNewAndRemovedLicensesApprovalRequired'}         | ${licenseComplianceNewAndRemovedLicensesApprovalRequired}        | ${'License Compliance detected 4 licenses and policy violations for the source branch only; approval required'}
+      ${'licenseComplianceNewDeniedLicenses'}                             | ${licenseComplianceNewDeniedLicenses}                            | ${'License Compliance detected 4 licenses and policy violations for the source branch only'}
+      ${'licenseComplianceNewDeniedLicensesAndExisting'}                  | ${licenseComplianceNewDeniedLicensesAndExisting}                 | ${'License Compliance detected 4 new licenses and policy violations'}
+      ${'licenseComplianceNewDeniedLicensesAndExistingApprovalRequired '} | ${licenseComplianceNewDeniedLicensesAndExistingApprovalRequired} | ${'License Compliance detected 4 new licenses and policy violations; approval required'}
+      ${'licenseComplianceExistingAndNewLicenses'}                        | ${licenseComplianceExistingAndNewLicenses}                       | ${'License Compliance detected 6 new licenses'}
+    `(
+      'the $scenario scenario expects the message to be "$message"',
+      async ({ response, message }) => {
+        mockApi(licenseComparisonPathCollapsed, httpStatusCodes.OK, response);
+        createComponent();
 
-      createComponent();
+        await waitForPromises();
 
-      await waitForPromises();
-
-      expect(findSummary().text()).toBe(
-        'License Compliance detected no licenses for the source branch only',
-      );
-    });
-
-    it('displays new licenses count', async () => {
-      mockApi(licenseComparisonPathCollapsed, httpStatusCodes.OK, licenseComplianceSuccess);
-
-      createComponent();
-
-      await waitForPromises();
-
-      expect(findSummary().text()).toBe(
-        'License Compliance detected 3 licenses for the source branch only',
-      );
-    });
-
-    it('displays removed licenses count', async () => {
-      mockApi(licenseComparisonPathCollapsed, httpStatusCodes.OK, licenseComplianceRemovedLicenses);
-
-      createComponent();
-
-      await waitForPromises();
-
-      expect(findSummary().text()).toBe(
-        'License Compliance detected no licenses for the source branch only',
-      );
-    });
-
-    it('displays new and removed licenses count', async () => {
-      mockApi(
-        licenseComparisonPathCollapsed,
-        httpStatusCodes.OK,
-        licenseComplianceNewAndRemovedLicenses,
-      );
-
-      createComponent();
-
-      await waitForPromises();
-
-      expect(findSummary().text()).toBe(
-        'License Compliance detected 3 licenses for the source branch only',
-      );
-    });
+        expect(findSummary().text()).toBe(message);
+      },
+    );
   });
 
   describe('actions buttons', () => {
     it('displays manage licenses and full report links', async () => {
-      mockApi(licenseComparisonPathCollapsed, httpStatusCodes.OK, licenseComplianceSuccess);
+      mockApi(licenseComparisonPathCollapsed, httpStatusCodes.OK, licenseComplianceNewLicenses);
 
       createComponent();
 
@@ -160,7 +138,7 @@ describe('License Compliance extension', () => {
   describe('expanded data', () => {
     describe('with new licenses', () => {
       beforeEach(async () => {
-        mockApi(licenseComparisonPathCollapsed, httpStatusCodes.OK, licenseComplianceSuccess);
+        mockApi(licenseComparisonPathCollapsed, httpStatusCodes.OK, licenseComplianceNewLicenses);
         mockApi(licenseComparisonPath, httpStatusCodes.OK, licenseComplianceSuccessExpanded);
 
         createComponent();

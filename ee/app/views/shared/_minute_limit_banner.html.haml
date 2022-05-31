@@ -1,16 +1,13 @@
 - if show_minute_limit_banner?(namespace)
   .container-fluid
     .row
-      = render Pajamas::AlertComponent.new(title: s_("Changes to GitLab Free tier public projects"),
+      = render Pajamas::AlertComponent.new(title: s_("Changes to free tier open source projects"),
         alert_class: 'gl-mt-5 js-minute-limit-banner',
         alert_data: { feature_id: ::Users::CalloutsHelper::MINUTE_LIMIT_BANNER, dismiss_endpoint: callouts_path }) do |c|
         = c.body do
-          - minutes_quota_link = external_link("included in the CI/CD quota of 400 minutes per month", "https://about.gitlab.com/blog/2021/11/11/public-project-minute-limits")
           - enrollment_link = external_link("enroll in the GitLab for Open Source Program", "https://about.gitlab.com/blog/2022/02/04/ultimate-perks-for-open-source-projects")
           - faq_link = external_link("FAQ", "https://about.gitlab.com/pricing/faq-efficient-free-tier/#public-projects-on-gitlab-saas-free-tier")
-          = s_("1. Effective June 1, 2022, all GitLab Free tier public projects will be %{minutes_quota_link}.").html_safe % { minutes_quota_link: minutes_quota_link }
-          %br
-          = s_("2. Before July 1, 2022, all GitLab Free tier public open source projects must %{enrollment_link} to continue to receive GitLab Ultimate benefits.").html_safe % { enrollment_link: enrollment_link }
+          = s_("Before July 1, 2022, all free tier public open source projects must %{enrollment_link} to continue to receive GitLab Ultimate benefits.").html_safe % { enrollment_link: enrollment_link }
           %br
           %br
           = s_("For more information, see the %{faq_link}.").html_safe % { faq_link: faq_link }

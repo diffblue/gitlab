@@ -15,6 +15,8 @@ module Members
       return error(_('No group provided')) unless group
       return error(_('No user provided')) unless user
       return error(_('You do not have permission to set a member awaiting')) unless allowed?
+      return error(_('The last owner cannot be set to awaiting')) if group.last_owner?(user)
+      return error(_('You cannot set yourself to awaiting')) if current_user == user
 
       set_memberships_to_awaiting
     end
@@ -24,14 +26,14 @@ module Members
     attr_reader :group, :current_user, :user
 
     def set_memberships_to_awaiting
-      memberships_found = false
+      # rubocop: disable CodeReuse/ActiveRecord
+      affected_memberships = Member.where(id: memberships)
+        .update_all(state: ::Member::STATE_AWAITING, updated_at: Time.current)
+      # rubocop: enable CodeReuse/ActiveRecord
 
-      memberships.find_each do |member|
-        memberships_found = true
-        member.wait
-      end
+      if affected_memberships > 0
+        UserProjectAccessChangedService.new(user.id).execute(blocking: false)
 
-      if memberships_found
         log_audit_event
         ServiceResponse.success
       else
