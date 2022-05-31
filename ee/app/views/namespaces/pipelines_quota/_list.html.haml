@@ -2,43 +2,16 @@
 - projects_usage = locals.fetch(:projects_usage)
 - minutes_usage = namespace.ci_minutes_usage
 - minutes_usage_presenter = Ci::Minutes::UsagePresenter.new(minutes_usage)
+- last_reset = minutes_usage.reset_date
 
-.pipeline-quota.container-fluid
-  .row
-    .col-sm-6.offset-sm-6
-      - if ::Gitlab.com?
-        = link_to s_('UsageQuota|Buy additional minutes'),
-        buy_additional_minutes_path(namespace),
-        target: buy_addon_target_attr(namespace),
-        class: 'gl-button btn btn-confirm float-right js-buy-additional-minutes',
-        data: { track_action: 'click_buy_ci_minutes', track_label: namespace.actual_plan_name, track_property: 'pipeline_quota_page' }
-
-  .row
-    .col-sm-6
-      %strong
-        - last_reset = minutes_usage.reset_date
-        - if last_reset
-          = sprintf(s_('UsageQuota|CI/CD minutes usage since %{timeElapsed}'), { timeElapsed: last_reset.strftime('%b %d, %Y') })
-        - else
-          = s_('UsageQuota|Current period usage')
-      %div{ data: { qa_selector: "plan_ci_minutes" } }
-        = ci_minutes_report(minutes_usage_presenter.monthly_minutes_report)
-        minutes
-        = link_to sprite_icon('question-o'), help_page_path('ci/pipelines/cicd_minutes'), target: '_blank', 'aria-label': _('Shared runners help link')
-
-    .col-sm-6.right
-      - if minutes_usage_presenter.display_minutes_available_data?
-        #{minutes_usage_presenter.monthly_percent_used}% used
-      - elsif !minutes_usage_presenter.any_project_enabled?
-        0% used
-      - else
-        = s_('UsageQuota|Unlimited')
-
-      = ci_minutes_progress_bar(minutes_usage_presenter.monthly_percent_used)
-
-  = render 'namespaces/pipelines_quota/extra_shared_runners_minutes_quota', namespace: namespace
-
-.js-ci-minutes-usage
+= render Pajamas::AlertComponent.new(variant: :info, dismissible: false,
+  alert_class: 'gl-mt-6 gl-mb-3',
+  alert_data: { testid: 'project-usage-info-alert' }) do |c|
+  = c.body do
+    - if last_reset
+      = sprintf(s_('UsageQuota|The table below shows usage since %{timeElapsed}'), { timeElapsed: last_reset.strftime('%b %d, %Y') })
+    - else
+      = s_('UsageQuota|The table below shows current period usage')
 
 %table.table.pipeline-project-metrics
   %thead
@@ -46,14 +19,14 @@
       %th
         = _('Project')
       %th
-        = s_('UsageQuota|Shared runner usage')
+        = s_('UsageQuota|Shared runner duration')
       %th
         = s_('UsageQuota|CI/CD minutes usage')
 
   %tbody
     - if !minutes_usage_presenter.any_project_enabled?
       %tr
-        %td{ colspan: 2 }
+        %td{ colspan: 3 }
           .nothing-here-block
             - runners_doc_path = help_page_path('ci/runners/index.md')
             - help_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: runners_doc_path }
@@ -67,16 +40,16 @@
             %strong{ data: {testid: "pipelines-quota-tab-project-name" } }
               = link_to project_usage.project.full_name, project_usage.project
           %td{ 'data-testid': 'project_shared_runner_duration' }
-            = project_usage.shared_runners_duration
+            = project_usage.shared_runners_duration.seconds.in_minutes.round
           %td{ 'data-testid': 'project_amount_used' }
             = project_usage.amount_used.to_i
       - if projects_usage.blank?
         %tr
-          %td{ colspan: 2 }
+          %td{ colspan: 3 }
             .nothing-here-block
               = s_('UsageQuota|This namespace has no projects which used shared runners in the current period')
       %tr
-        %td{ colspan: 2 }
+        %td{ colspan: 3 }
           .col-sm-12.center
             = s_('UsageQuota|This table omits projects that used 0 CI/CD minutes or 0 shared runners duration')
 
