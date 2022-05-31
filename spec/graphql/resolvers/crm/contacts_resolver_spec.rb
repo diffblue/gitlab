@@ -34,16 +34,18 @@ RSpec.describe Resolvers::Crm::ContactsResolver do
 
   describe '#resolve' do
     context 'with unauthorized user' do
-      it 'returns no contacts' do
+      it 'does not rise an error and returns no contacts' do
+        expect { resolve_contacts(group) }.not_to raise_error
         expect(resolve_contacts(group)).to be_empty
       end
     end
 
     context 'with authorized user' do
-      it 'returns no contacts' do
-        group.add_guest(user)
+      it 'does not rise an error and returns all contacts' do
+        group.add_reporter(user)
 
         expect { resolve_contacts(group) }.not_to raise_error
+        expect(resolve_contacts(group)).to eq([contact_a, contact_b])
       end
     end
 

@@ -28,16 +28,18 @@ RSpec.describe Resolvers::Crm::OrganizationsResolver do
 
   describe '#resolve' do
     context 'with unauthorized user' do
-      it 'returns no organizations' do
+      it 'does not rise an error and returns no organizations' do
+        expect { resolve_organizations(group) }.not_to raise_error
         expect(resolve_organizations(group)).to be_empty
       end
     end
 
     context 'with authorized user' do
-      it 'returns no organizations' do
-        group.add_guest(user)
+      it 'does not rise an error and returns all organizations' do
+        group.add_reporter(user)
 
         expect { resolve_organizations(group) }.not_to raise_error
+        expect(resolve_organizations(group)).to eq([organization_a, organization_b])
       end
     end
 

@@ -101,18 +101,18 @@ RSpec.describe Crm::ContactsFinder do
       context 'when search term is empty' do
         it 'returns all group contacts alphabetically ordered' do
           finder = described_class.new(user, group: search_test_group, search: "")
-          expect(finder.execute).to match_array([search_test_a, search_test_b])
+          expect(finder.execute).to eq([search_test_a, search_test_b])
         end
       end
 
       context 'when search term is not empty' do
-        it 'searches for first name' do
-          finder = described_class.new(user, group: search_test_group, search: "abc")
+        it 'searches for first name ignoring casing' do
+          finder = described_class.new(user, group: search_test_group, search: "aBc")
           expect(finder.execute).to match_array([search_test_a])
         end
 
-        it 'searches for last name' do
-          finder = described_class.new(user, group: search_test_group, search: "STU")
+        it 'searches for last name ignoring casing' do
+          finder = described_class.new(user, group: search_test_group, search: "StU")
           expect(finder.execute).to match_array([search_test_b])
         end
 
@@ -121,9 +121,14 @@ RSpec.describe Crm::ContactsFinder do
           expect(finder.execute).to match_array([search_test_a])
         end
 
-        it 'searches for description' do
-          finder = described_class.new(user, group: search_test_group, search: "YZ")
+        it 'searches for description ignoring casing' do
+          finder = described_class.new(user, group: search_test_group, search: "Yz")
           expect(finder.execute).to match_array([search_test_b])
+        end
+
+        it 'fuzzy searches for email and last name' do
+          finder = described_class.new(user, group: search_test_group, search: "s")
+          expect(finder.execute).to match_array([search_test_a, search_test_b])
         end
       end
 

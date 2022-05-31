@@ -95,7 +95,7 @@ RSpec.describe Crm::OrganizationsFinder do
       context 'when search term is empty' do
         it 'returns all group organizations alphabetically ordered' do
           finder = described_class.new(user, group: search_test_group, search: "")
-          expect(finder.execute).to match_array([search_test_b, search_test_a])
+          expect(finder.execute).to eq([search_test_b, search_test_a])
         end
       end
 
