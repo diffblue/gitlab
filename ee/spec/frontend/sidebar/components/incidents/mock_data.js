@@ -1,3 +1,5 @@
+import { STATUS_TRIGGERED, STATUS_ACKNOWLEDGED } from '~/sidebar/components/incidents/constants';
+
 export const mockEscalationPolicy1 = {
   __typename: 'EscalationPolicyType',
   id: 'gid://gitlab/IncidentManagement::EscalationPolicy/1',
@@ -32,7 +34,7 @@ export const mockCurrentEscalationPolicyResponse = {
         __typename: 'Issue',
         id: 'gid://gitlab/Issue/1',
         attribute: mockEscalationPolicy1,
-        escalationStatus: 'ACKNOWLEDGED',
+        escalationStatus: STATUS_ACKNOWLEDGED,
       },
     },
   },
@@ -47,8 +49,26 @@ export const mockNullEscalationPolicyResponse = {
         __typename: 'Issue',
         id: 'gid://gitlab/Issue/1',
         attribute: null,
-        escalationStatus: 'TRIGGERED',
+        escalationStatus: STATUS_TRIGGERED,
       },
     },
   },
 };
+
+// -------- Core methods & overrides ---------------------
+
+export const mutationData = {
+  issueSetEscalationStatus: {
+    __typename: 'IssueSetEscalationStatusPayload',
+    errors: [],
+    clientMutationId: null,
+    issue: {
+      __typename: 'Issue',
+      id: 'gid://gitlab/Issue/4',
+      escalationStatus: STATUS_ACKNOWLEDGED,
+      escalationPolicy: null,
+    },
+  },
+};
+
+export { fetchData, fetchError, mutationError } from 'jest/sidebar/components/incidents/mock_data';

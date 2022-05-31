@@ -15135,6 +15135,9 @@ msgstr ""
 msgid "Everything you need to create a GitLab Pages site using Middleman"
 msgstr ""
 
+msgid "Everything you need to create a GitLab Pages site using Pelican"
+msgstr ""
+
 msgid "Everything you need to create a GitLab Pages site using plain HTML"
 msgstr ""
 
@@ -30143,6 +30146,9 @@ msgid "ProjectTemplates|Pages/Jekyll"
 msgstr ""
 
 msgid "ProjectTemplates|Pages/Middleman"
+msgstr ""
+
+msgid "ProjectTemplates|Pages/Pelican"
 msgstr ""
 
 msgid "ProjectTemplates|Pages/Plain HTML"

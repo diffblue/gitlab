@@ -1,0 +1,9 @@
+#import "./escalation_policy.fragment.graphql"
+
+fragment EscalationStatusFragment on Issue {
+  id
+  escalationStatus
+  escalationPolicy {
+    ...EscalationPolicyFragment
+  }
+}
