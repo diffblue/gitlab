@@ -34,7 +34,11 @@ class CustomerRelations::Organization < ApplicationRecord
     fuzzy_search(query, [:name], use_minimum_char_limit: false)
   end
 
-  def self.sort_by_name()
+  def self.search_by_state(state)
+    where(state: state)
+  end
+
+  def self.sort_by_name
     order(name: :asc)
   end
 

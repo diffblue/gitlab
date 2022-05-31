@@ -25,7 +25,7 @@ module Crm
       organizations = root_group.organizations
       organizations = by_search(organizations)
       organizations = by_state(organizations)
-      organizations.sort_by_name()
+      organizations.sort_by_name
     end
 
     private
@@ -42,7 +42,6 @@ module Crm
 
     def by_search(organizations)
       return organizations unless search?
-      return organizations.none if params[:search].blank?
 
       organizations.search(params[:search])
     end
@@ -50,7 +49,7 @@ module Crm
     def by_state(organizations)
       return organizations unless state?
 
-      organizations.where(state: params[:state])
+      organizations.search_by_state(params[:state])
     end
 
     def search?

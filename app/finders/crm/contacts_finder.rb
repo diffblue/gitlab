@@ -25,7 +25,7 @@ module Crm
       contacts = root_group.contacts
       contacts = by_state(contacts)
       contacts = by_search(contacts)
-      contacts.sort_by_name()
+      contacts.sort_by_name
     end
 
     private

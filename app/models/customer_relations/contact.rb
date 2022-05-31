@@ -56,7 +56,7 @@ class CustomerRelations::Contact < ApplicationRecord
     where(state: state)
   end
 
-  def self.sort_by_name()
+  def self.sort_by_name
     order("first_name ASC, last_name ASC")
   end
 
