@@ -43,7 +43,7 @@ module AuditEvents
 
     def request_body(audit_event, audit_operation)
       body = audit_event.as_json
-      body[:event_type] = audit_operation if audit_operation.present?
+      body[:event_type] = audit_operation
       Gitlab::Json::LimitedEncoder.encode(body, limit: REQUEST_BODY_SIZE_LIMIT)
     end
 
