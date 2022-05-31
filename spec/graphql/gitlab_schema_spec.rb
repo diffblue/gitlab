@@ -4,6 +4,7 @@ require 'spec_helper'
 
 RSpec.describe GitlabSchema do
   let_it_be(:connections) { GitlabSchema.connections.all_wrappers }
+  let_it_be(:tracers) { described_class.tracers }
 
   let(:user) { build :user }
 
@@ -309,13 +310,5 @@ RSpec.describe GitlabSchema do
         end
       end
     end
-  end
-
-  def field_instrumenters
-    described_class.instrumenters[:field] + described_class.instrumenters[:field_after_built_ins]
-  end
-
-  def tracers
-    described_class.tracers
   end
 end

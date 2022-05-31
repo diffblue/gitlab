@@ -12,6 +12,7 @@ module Types
     DESC
 
     def self.coerce_input(value, ctx)
+      # arguments can be nil, so don't raise an error
       return if value.nil?
 
       Time.parse(value)
