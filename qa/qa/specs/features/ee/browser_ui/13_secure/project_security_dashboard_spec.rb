@@ -1,7 +1,10 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Secure', :runner do
+  RSpec.describe 'Secure', :runner, quarantine: {
+    issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/363808',
+    type: :stale
+  } do
     describe 'Security Dashboard in a Project' do
       let(:vulnerability_name) { "CVE-2017-18269 in glibc" }
       let(:vulnerability_description) { "Short description to match in specs" }
