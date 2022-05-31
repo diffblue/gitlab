@@ -73,32 +73,76 @@ export const licenses = [
   },
 ];
 
-export const licenseComplianceSuccess = {
-  new_licenses: licenses.length,
-  existing_licenses: 0,
-  removed_licenses: 0,
-};
-
 export const licenseComplianceSuccessExpanded = {
   new_licenses: licenses,
   existing_licenses: 0,
   removed_licenses: 0,
 };
 
-export const licenseComplianceNewAndRemovedLicenses = {
-  new_licenses: licenses.length,
+export const licenseComplianceNewLicenses = {
+  new_licenses: 4,
   existing_licenses: 0,
-  removed_licenses: licenses.length,
+  removed_licenses: 0,
+};
+
+export const licenseComplianceNewAndRemovedLicenses = {
+  new_licenses: 2,
+  existing_licenses: 0,
+  removed_licenses: 1,
+};
+
+export const licenseComplianceNewDeniedLicenses = {
+  new_licenses: 4,
+  existing_licenses: 0,
+  removed_licenses: 0,
+  denied_licenses: 2,
+};
+
+export const licenseComplianceNewDeniedLicensesAndExisting = {
+  new_licenses: 4,
+  existing_licenses: 2,
+  removed_licenses: 0,
+  denied_licenses: 2,
+};
+
+export const licenseComplianceNewDeniedLicensesAndExistingApprovalRequired = {
+  new_licenses: 4,
+  existing_licenses: 2,
+  removed_licenses: 1,
+  denied_licenses: 2,
+  approval_required: true,
+};
+
+export const licenseComplianceNewAndRemovedLicensesApprovalRequired = {
+  new_licenses: 4,
+  existing_licenses: 0,
+  removed_licenses: 1,
+  denied_licenses: 2,
+  approval_required: true,
 };
 
 export const licenseComplianceRemovedLicenses = {
   new_licenses: 0,
   existing_licenses: 0,
-  removed_licenses: licenses.length,
+  removed_licenses: 2,
 };
 
 export const licenseComplianceEmpty = {
   new_licenses: 0,
   existing_licenses: 0,
   removed_licenses: 0,
+};
+
+export const licenseComplianceEmptyExistingLicense = {
+  new_licenses: 0,
+  existing_licenses: 1,
+  removed_licenses: 0,
+};
+
+export const licenseComplianceExistingAndNewLicenses = {
+  new_licenses: 6,
+  existing_licenses: 2,
+  removed_licenses: 1,
+  denied_licenses: 0,
+  approval_required: false,
 };
