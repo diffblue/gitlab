@@ -57,7 +57,8 @@ RSpec.describe Emails::NamespaceStorageUsageMailer do
     it 'creates an email message for a subgroup' do
       mail = described_class.notify_limit_warning(subgroup, recipients, 25, 1.25.gigabytes)
 
-      expect(mail).to have_subject "Action required: Approximately 25% of namespace storage remains for #{subgroup.name}"
+      expect(mail)
+        .to have_subject "Action required: Approximately 25% of namespace storage remains for #{subgroup.name}"
       expect(mail).to bcc_to recipients
       expect(mail).to have_body_text "#{usage_quotas_url(group, anchor: 'storage-quota-tab')}"
       expect(mail).to have_body_text "has approximately 25% (1.25 GB) namespace storage space remaining"

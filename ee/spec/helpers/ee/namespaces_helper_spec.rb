@@ -253,7 +253,6 @@ RSpec.describe EE::NamespacesHelper do
     end
   end
 
-
   describe '#buy_addon_target_attr' do
     subject { helper.buy_addon_target_attr(namespace) }
 
