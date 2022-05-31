@@ -11,26 +11,6 @@ RSpec.describe Groups::UsageQuotasController do
     group.add_owner(user)
   end
 
-  describe 'Pushing the `updateStorageUsageDesign` feature flag to the frontend' do
-    context 'when update_storage_usage_design is false' do
-      it 'is disabled' do
-        stub_feature_flags(update_storage_usage_design: false)
-        get :index, params: { group_id: group }
-
-        expect(Gon.features).not_to include('updateStorageUsageDesign' => true)
-      end
-    end
-
-    context 'when update_storage_usage_design is true' do
-      it 'is enabled' do
-        stub_feature_flags(update_storage_usage_design: true)
-        get :index, params: { group_id: group }
-
-        expect(Gon.features).to include('updateStorageUsageDesign' => true)
-      end
-    end
-  end
-
   describe 'GET #pending_members' do
     let(:feature_available) { true }
 

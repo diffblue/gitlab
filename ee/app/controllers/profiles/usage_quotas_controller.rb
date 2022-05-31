@@ -21,7 +21,6 @@ class Profiles::UsageQuotasController < Profiles::ApplicationController
 
   def push_feature_flags
     push_frontend_feature_flag(:gitlab_gtm_datalayer, type: :ops)
-    push_frontend_feature_flag(:update_storage_usage_design, current_user)
     push_frontend_feature_flag(:usage_quotas_pipelines_vue, @group)
   end
 end

@@ -45,7 +45,6 @@ describe('NamespaceStorageApp', () => {
     namespace = {},
     dependencyProxyTotalSize = '',
     isFreeNamespace = false,
-    glFeatures = {},
   } = {}) => {
     $apollo = {
       queries: {
@@ -64,7 +63,6 @@ describe('NamespaceStorageApp', () => {
         GlModalDirective: createMockDirective(),
       },
       provide: {
-        glFeatures,
         ...defaultNamespaceProvideValues,
         ...provide,
       },
@@ -184,7 +182,9 @@ describe('NamespaceStorageApp', () => {
     it('should hide the container registry usage component', () => {
       createComponent({
         namespace: withRootStorageStatistics,
-        glFeatures: { containerRegistryNamespaceStatistics: false },
+        provide: {
+          glFeatures: { containerRegistryNamespaceStatistics: false },
+        },
       });
 
       expect(findContainerRegistry().exists()).toBe(false);
@@ -193,7 +193,9 @@ describe('NamespaceStorageApp', () => {
     it('should show the container registry usage component', () => {
       createComponent({
         namespace: withRootStorageStatistics,
-        glFeatures: { containerRegistryNamespaceStatistics: true },
+        provide: {
+          glFeatures: { containerRegistryNamespaceStatistics: true },
+        },
       });
 
       expect(findContainerRegistry().exists()).toBe(true);
@@ -352,24 +354,10 @@ describe('NamespaceStorageApp', () => {
   });
 
   describe('new storage statistics usage design', () => {
-    describe('when updateStorageUsageDesign feature flag is false', () => {
-      it('does not render the new storage design', () => {
-        createComponent({
-          additionalRepoStorageByNamespace: true,
-          namespace: withRootStorageStatistics,
-          isFreeNamespace: true,
-          glFeatures: { updateStorageUsageDesign: false },
-        });
-
-        expect(findStorageUsageStatistics().exists()).toBe(false);
-      });
-    });
-
-    describe('when updateStorageUsageDesign feature flag is true', () => {
+    describe('when namespace is on free plan', () => {
       beforeEach(() => {
         createComponent({
           additionalRepoStorageByNamespace: true,
-          glFeatures: { updateStorageUsageDesign: true },
           namespace: withRootStorageStatistics,
           storageLimitEnforced: true,
           isFreeNamespace: true,
@@ -391,11 +379,10 @@ describe('NamespaceStorageApp', () => {
       });
     });
 
-    describe('when updateStorageUsageDesign feature flag is true and namespace is not on free plan', () => {
+    describe('when namespace is not on free plan', () => {
       beforeEach(() => {
         createComponent({
           additionalRepoStorageByNamespace: true,
-          glFeatures: { updateStorageUsageDesign: true },
           namespace: withRootStorageStatistics,
           storageLimitEnforced: true,
           isFreeNamespace: false,

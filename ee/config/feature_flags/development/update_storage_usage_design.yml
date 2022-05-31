@@ -1,8 +1,0 @@
----
-name: update_storage_usage_design
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/84698
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/358296
-milestone: '14.10'
-type: development
-group: group::utilization
-default_enabled: false
