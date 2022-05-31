@@ -24,7 +24,9 @@ const createComponent = ({ initialConfig = {} } = {}) => {
 
 describe('RelatedItemsTree', () => {
   describe('RelatedItemsRoadmapApp', () => {
-    describe('template', () => {
+    // https://gitlab.com/gitlab-org/gitlab/-/issues/363214
+    // eslint-disable-next-line jest/no-disabled-tests
+    describe.skip('template', () => {
       let wrapper = null;
       beforeEach(() => {
         wrapper = createComponent();
