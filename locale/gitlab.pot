@@ -34563,6 +34563,12 @@ msgstr ""
 msgid "Selected commits"
 msgstr ""
 
+msgid "Selected for all items."
+msgstr ""
+
+msgid "Selected for some items."
+msgstr ""
+
 msgid "Selected levels cannot be used by non-admin users for groups, projects or snippets. If the public level is restricted, user profiles are only visible to logged in users."
 msgstr ""
 

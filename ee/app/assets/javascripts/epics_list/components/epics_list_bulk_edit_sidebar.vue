@@ -1,6 +1,6 @@
 <script>
 import { GlForm, GlFormGroup } from '@gitlab/ui';
-import { uniqBy } from 'lodash';
+import { intersectionBy, xorBy, unionBy } from 'lodash';
 import LabelsSelectWidget from '~/vue_shared/components/sidebar/labels_select_vue/labels_select_root.vue';
 import { DropdownVariant } from '~/vue_shared/components/sidebar/labels_select_vue/constants';
 import csrf from '~/lib/utils/csrf';
@@ -30,37 +30,74 @@ export default {
   },
   computed: {
     /**
-     * This prop returns a unique list of labels
-     * applied on all the selected epics while
-     * also making sure that `id` is numeri
+     * This prop returns a list of labels which
+     * are applied on all the selected epics while
+     * also making sure that `id` is numeric
      * instead of GraphQL ID string.
+     *
+     * If any epic selected has no labels, or
+     * has labels which are not present in rest
+     * of the selection, list returned will be empty.
      */
     existingSelectedLabels() {
       if (!this.checkedEpics.length) {
         return [];
       }
 
-      return uniqBy(
-        this.checkedEpics.reduce((labels, epic) => {
-          if (epic.labels.nodes.length) {
-            const labelsForEpic = epic.labels.nodes.map((label) => ({
-              ...label,
-              id: getIdFromGraphQLId(label.id),
-            }));
-            labels.push(...labelsForEpic);
-          }
-          return labels;
-        }, []),
-        'id',
+      const transformLabelFn = (label, extras) => ({
+        ...label,
+        ...extras,
+        id: getIdFromGraphQLId(label.id),
+      });
+
+      const labelsPerEpic = [...this.checkedEpics.map((epic) => epic.labels.nodes)];
+      const allLabels = unionBy(...labelsPerEpic, 'id');
+      const hasEpicWithNoLabels = labelsPerEpic.some((labels) => !labels.length);
+
+      // Collect all the labels which are present in all the selected epics
+      // and make them `set` (show '✓' on UI)
+      const commonLabels = intersectionBy(...labelsPerEpic, 'id').map((label) =>
+        transformLabelFn(label, { set: true }),
       );
+
+      // Collect all the labels which are not present in more than one selected epic
+      // and make them `indeterminate` (show '-' on UI)
+      const uncommonLabels = xorBy(...labelsPerEpic, 'id').map((label) =>
+        transformLabelFn(label, { indeterminate: true }),
+      );
+
+      if (commonLabels.length === allLabels.length) {
+        // Selected epics have same set of labels
+        return commonLabels;
+      } else if (uncommonLabels.length === allLabels.length) {
+        // Selected epics have distinct set of labels
+        return uncommonLabels;
+      } else if (commonLabels.length || uncommonLabels.length) {
+        // Selected epics have only some labels in common
+        return commonLabels.concat(
+          xorBy(commonLabels, allLabels, 'id').map((label) =>
+            transformLabelFn(label, { indeterminate: true }),
+          ),
+        );
+      } else if (hasEpicWithNoLabels || !commonLabels.length || !uncommonLabels.length) {
+        // Selected epics have no label in common
+        return allLabels.map((label) => transformLabelFn(label, { indeterminate: true }));
+      }
+
+      // Selected epics have labels that can be categorised
+      // in two groups; common and uncommon.
+      return unionBy(uncommonLabels, commonLabels, 'id');
     },
   },
   methods: {
-    handleSelectedLabels(labels) {
-      this.selectedLabelIds = [...labels].map((label) => label.id);
-      this.removedLabelIds = this.existingSelectedLabels
-        .filter((label) => !this.selectedLabelIds.includes(label.id))
-        .map((label) => label.id);
+    handleSelectedLabels(touchedLabels) {
+      if (touchedLabels.length) {
+        this.selectedLabelIds = touchedLabels.filter((label) => label.set).map((label) => label.id);
+        this.removedLabelIds = touchedLabels.filter((label) => !label.set).map((label) => label.id);
+      } else {
+        this.selectedLabelIds = [];
+        this.removedLabelIds = this.existingSelectedLabels.map((label) => label.id);
+      }
     },
     handleFormSubmitted() {
       const bulkUpdateData = {
@@ -86,7 +123,7 @@ export default {
         :labels-fetch-path="labelsFetchPath"
         :labels-manage-path="labelsManagePath"
         :variant="$options.DropdownVariant.Embedded"
-        @updateSelectedLabels="handleSelectedLabels"
+        @onDropdownClose="handleSelectedLabels"
       />
     </gl-form-group>
   </gl-form>
