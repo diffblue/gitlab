@@ -27,6 +27,26 @@ RSpec.describe 'Load balancer behavior with errors inside a transaction', :redis
     SQL
   end
 
+  def execute(conn)
+    conn.execute("insert into #{test_table_name} (value) VALUES (1)")
+    backend_pid = conn.execute("select pg_backend_pid() as pid").to_a.first['pid']
+
+    # This will result in a PG error, which is not raised.
+    # Instead, we retry the statement on a fresh connection (where the pid is different and it does nothing)
+    # and the load balancer continues with a fresh connection and no transaction if a transaction was open previously
+    conn.execute(<<~SQL)
+    SELECT CASE
+    WHEN pg_backend_pid() = #{backend_pid} THEN
+      pg_terminate_backend(#{backend_pid})
+    END
+    SQL
+
+
+    # This statement will execute on a new connection, and violate transaction semantics
+    # if we were in a transaction before
+    conn.execute("insert into #{test_table_name} (value) VALUES (2)")
+  end
+
   it 'logs a warning when violating transaction semantics with writes' do
     conn = model.connection
 
@@ -34,17 +54,28 @@ RSpec.describe 'Load balancer behavior with errors inside a transaction', :redis
 
     conn.transaction do
       expect(conn).to be_transaction_open
-      conn.execute("insert into #{test_table_name} (value) VALUES (1)")
-      conn.execute("set local idle_in_transaction_session_timeout='100ms'")
-      sleep(0.2) # transaction times out
 
-      # This will run into a PG error, which is not raised.
-      # Instead, we retry the insert on a fresh connection
-      # and hence this violates transaction semantics.
-      conn.execute("insert into #{test_table_name} (value) VALUES (2)")
+      execute(conn)
+
       expect(conn).not_to be_transaction_open
     end
+
     values = conn.execute("select value from #{test_table_name}").to_a.map { |row| row['value'] }
     expect(values).to contain_exactly(2) # Does not include 1 because the transaction was aborted and leaked
   end
+
+  it 'does not log a warning when no transaction is open to be leaked' do
+    conn = model.connection
+
+    expect(::Gitlab::Database::LoadBalancing::Logger).not_to receive(:warn).with(hash_including(event: :transaction_leak))
+    expect(conn).not_to be_transaction_open
+
+    execute(conn)
+
+    expect(conn).not_to be_transaction_open
+
+    values = conn.execute("select value from #{test_table_name}").to_a.map { |row| row['value'] }
+    expect(values).to contain_exactly(1, 2) # Includes both rows because there was no transaction to roll back
+  end
+
 end
