@@ -69,22 +69,6 @@ module EE
       klass
     end
 
-    def toggle_node_button(node)
-      btn_class, title, data =
-        if node.enabled?
-          ['warning', 'Disable', { confirm: 'Disabling a node stops the sync process. Are you sure?' }]
-        else
-          %w[success Enable]
-        end
-
-      link_to title,
-              toggle_admin_geo_node_path(node),
-              method: :post,
-              class: "btn btn-sm btn-#{btn_class}",
-              title: title,
-              data: data
-    end
-
     def geo_registry_status(registry)
       status_type = case registry.synchronization_state
                     when :failed then
