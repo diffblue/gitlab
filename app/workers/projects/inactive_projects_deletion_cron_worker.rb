@@ -21,7 +21,7 @@ module Projects
     def perform
       return unless ::Gitlab::CurrentSettings.delete_inactive_projects?
 
-      @start_time = Time.current.utc
+      @start_time ||= ::Gitlab::Metrics::System.monotonic_time
       admin_user = User.admins.active.first
 
       return unless admin_user
@@ -88,7 +88,7 @@ module Projects
     end
 
     def over_time?
-      (Time.current.utc - @start_time) > MAX_RUN_TIME
+      (::Gitlab::Metrics::System.monotonic_time - @start_time) > MAX_RUN_TIME
     end
 
     def save_last_processed_project_id(project_id)

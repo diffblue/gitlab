@@ -132,8 +132,7 @@ RSpec.describe Projects::InactiveProjectsDeletionCronWorker do
 
         context 'when the worker is running for more than 4 minutes' do
           before do
-            # only mock the current time once
-            allow(Time).to receive(:current).and_return(5.minutes.ago, Time.current)
+            subject.instance_variable_set(:@start_time, ::Gitlab::Metrics::System.monotonic_time - 5.minutes)
           end
 
           it 'stores the last processed inactive project_id in redis cache' do
