@@ -21,6 +21,7 @@ module Types
             description: 'Title for the action, for example: Retry.'
 
       def id(parent:)
+        # parent is a SimpleDelegator
         "#{parent.subject.class.name}-#{parent.id}"
       end
 
