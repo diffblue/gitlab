@@ -1,4 +1,4 @@
-import { GlLink, GlLoadingIcon } from '@gitlab/ui';
+import { GlLink } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
@@ -17,6 +17,20 @@ import {
 } from '../../mock_data';
 
 Vue.use(VueApollo);
+
+const SecurityDashboardCard = {
+  props: ['isLoading'],
+  template: `
+    <div>
+    <h4><slot name="title" /></h4>
+      <p data-testid="timeInfo">
+        <slot name="help-text" />
+      </p>
+      <slot name="controls" />
+      <slot />
+    </div>
+  `,
+};
 
 describe('Vulnerability Severity component', () => {
   let wrapper;
@@ -38,12 +52,14 @@ describe('Vulnerability Severity component', () => {
       },
       provide: { groupFullPath: undefined, ...provide },
       stubs: {
+        SecurityDashboardCard,
         Accordion,
         AccordionItem,
       },
     });
   };
 
+  const findSecurityDashboardCard = () => wrapper.findComponent(SecurityDashboardCard);
   const findHelpLink = () => wrapper.findComponent(GlLink);
   const findHeader = () => wrapper.find('h4');
   const findDescription = () => wrapper.find('p');
@@ -174,16 +190,13 @@ describe('Vulnerability Severity component', () => {
   );
 
   describe('when query is loading', () => {
-    it('only shows the header and loading icon', () => {
+    it("sets the card's loading prop to `true`", () => {
       wrapper = createComponent({
         query: instanceVulnerabilityGradesQuery,
         mockData: mockInstanceVulnerabilityGrades(),
       });
 
-      expect(wrapper.findComponent(GlLoadingIcon).exists()).toBe(true);
-      expect(findHeader().exists()).toBe(true);
-      expect(findDescription().exists()).toBe(false);
-      expect(wrapper.findComponent(Accordion).exists()).toBe(false);
+      expect(findSecurityDashboardCard().props('isLoading')).toBe(true);
     });
   });
 });
