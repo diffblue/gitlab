@@ -29731,6 +29731,9 @@ msgstr ""
 msgid "ProjectSettings|%{link_start}What variables can I use?%{link_end}"
 msgstr ""
 
+msgid "ProjectSettings|Additional options"
+msgstr ""
+
 msgid "ProjectSettings|Additional settings that influence how and when merges are done."
 msgstr ""
 
@@ -29944,6 +29947,9 @@ msgstr ""
 msgid "ProjectSettings|Pipelines must succeed"
 msgstr ""
 
+msgid "ProjectSettings|Prevents direct linking to potentially sensitive media files"
+msgstr ""
+
 msgid "ProjectSettings|Private"
 msgstr ""
 
@@ -29960,6 +29966,9 @@ msgid "ProjectSettings|Require"
 msgstr ""
 
 msgid "ProjectSettings|Require an associated issue from Jira"
+msgstr ""
+
+msgid "ProjectSettings|Require authentication to view media files"
 msgstr ""
 
 msgid "ProjectSettings|Requirements"
