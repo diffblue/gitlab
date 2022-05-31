@@ -37941,6 +37941,9 @@ msgstr ""
 msgid "The issue was successfully promoted to an epic. Redirecting to epic..."
 msgstr ""
 
+msgid "The last owner cannot be set to awaiting"
+msgstr ""
+
 msgid "The latest artifacts created by jobs in the most recent successful pipeline will be stored."
 msgstr ""
 
@@ -38311,6 +38314,9 @@ msgid "There is no data available."
 msgstr ""
 
 msgid "There is no data available. Please change your selection."
+msgstr ""
+
+msgid "There is no seat left to activate the member"
 msgstr ""
 
 msgid "There is no table data available."
@@ -43457,6 +43463,9 @@ msgstr ""
 msgid "You cannot access the raw file. Please wait a minute."
 msgstr ""
 
+msgid "You cannot approve all pending members on a free plan"
+msgstr ""
+
 msgid "You cannot approve your own deployment."
 msgstr ""
 
@@ -43479,6 +43488,9 @@ msgid "You cannot play this scheduled pipeline at the moment. Please wait a minu
 msgstr ""
 
 msgid "You cannot rename an environment after it's created."
+msgstr ""
+
+msgid "You cannot set yourself to awaiting"
 msgstr ""
 
 msgid "You cannot write to a read-only secondary GitLab Geo instance. Please use %{link_to_primary_node} instead."

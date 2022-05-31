@@ -161,14 +161,7 @@ module EE
     end
 
     def has_capacity_left?
-      return true unless source.root_ancestor.apply_user_cap?
-      return true if any_existing_active_membership?
-
-      !source.root_ancestor.user_limit_reached?
-    end
-
-    def any_existing_active_membership?
-      user && ::Member.in_hierarchy(source).with_user(user).with_state(:active).any?
+      source.root_ancestor.capacity_left_for_user?(user)
     end
   end
 end

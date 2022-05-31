@@ -1826,6 +1826,39 @@ RSpec.describe Namespace do
     end
   end
 
+  describe '#capacity_left_for_user?' do
+    let(:namespace) { create(:group) }
+    let(:user) { create(:user) }
+
+    where(:apply_user_cap, :user_limit_reached, :existing_membership, :result) do
+      false           | false              | false               | true
+      false           | false              | true                | true
+      false           | true               | true                | true
+      true            | false              | false               | true
+      true            | false              | true                | true
+      true            | true               | true                | true
+      true            | true               | false               | false
+    end
+
+    subject { namespace.capacity_left_for_user?(user) }
+
+    with_them do
+      before do
+        create(:group_member, group: namespace, user: user) if existing_membership
+
+        free_user_cap = instance_double(
+          Namespaces::FreeUserCap::Standard,
+          enforce_cap?: apply_user_cap,
+          reached_limit?: user_limit_reached
+        )
+
+        allow(namespace).to receive(:free_user_cap).and_return(free_user_cap)
+      end
+
+      it { is_expected.to eq(result) }
+    end
+  end
+
   describe '#has_free_or_no_subscription?', :saas do
     it 'returns true with a free plan' do
       namespace = create(:group_with_plan, plan: :free_plan)

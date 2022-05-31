@@ -468,6 +468,13 @@ module EE
       free_user_cap.reached_limit?
     end
 
+    def capacity_left_for_user?(user)
+      return true unless apply_user_cap?
+      return true if ::Member.in_hierarchy(root_ancestor).with_user(user).with_state(:active).exists?
+
+      !user_limit_reached?
+    end
+
     def free_plan_user_ids
       strong_memoize(:free_plan_user_ids) do
         billed_users.pluck(:id)
