@@ -1,4 +1,4 @@
-import { GlTable, GlDeprecatedSkeletonLoading as GlSkeletonLoading } from '@gitlab/ui';
+import { GlTable, GlSkeletonLoader } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
@@ -47,7 +47,7 @@ describe('SAML providers members app', () => {
     });
 
     it('renders loader', () => {
-      expect(wrapper.findComponent(GlSkeletonLoading).exists()).toBe(true);
+      expect(wrapper.findComponent(GlSkeletonLoader).exists()).toBe(true);
     });
   });
 
@@ -59,7 +59,7 @@ describe('SAML providers members app', () => {
     });
 
     it('does not render loader', () => {
-      expect(wrapper.findComponent(GlSkeletonLoading).exists()).toBe(false);
+      expect(wrapper.findComponent(GlSkeletonLoader).exists()).toBe(false);
     });
 
     it('renders table', () => {
