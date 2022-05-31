@@ -54,14 +54,12 @@ export default {
   },
   computed: {
     dataSeries() {
-      let name;
+      const name = s__('BurndownChartLabel|Remaining');
       let data;
 
       if (this.issuesSelected) {
-        name = s__('BurndownChartLabel|Open issues');
         data = this.openIssuesCount;
       } else {
-        name = s__('BurndownChartLabel|Open issue weight');
         data = this.openIssuesWeight;
       }
 
@@ -118,9 +116,9 @@ export default {
       this.tooltip.title = dateFormat(params.value, 'dd mmm yyyy');
 
       if (this.issuesSelected) {
-        this.tooltip.content = n__('%d open issue', '%d open issues', seriesData.value[1]);
+        this.tooltip.content = n__('%d remaining', '%d remaining', seriesData.value[1]);
       } else {
-        this.tooltip.content = sprintf(__('%{total} open issue weight'), {
+        this.tooltip.content = sprintf(__('%{total} remaining issue weight'), {
           total: seriesData.value[1],
         });
       }
