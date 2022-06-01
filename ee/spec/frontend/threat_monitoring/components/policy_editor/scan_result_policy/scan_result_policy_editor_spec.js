@@ -1,7 +1,7 @@
 import Vuex from 'vuex';
 import { shallowMount } from '@vue/test-utils';
-import { GlEmptyState, GlAlert, GlFormInput, GlFormTextarea, GlToggle } from '@gitlab/ui';
-import Vue from 'vue';
+import { GlEmptyState, GlAlert, GlFormInput, GlFormTextarea, GlFormRadioGroup } from '@gitlab/ui';
+import Vue, { nextTick } from 'vue';
 import MockAdapter from 'axios-mock-adapter';
 import waitForPromises from 'helpers/wait_for_promises';
 import PolicyEditorLayout from 'ee/threat_monitoring/components/policy_editor/policy_editor_layout.vue';
@@ -85,7 +85,7 @@ describe('ScanResultPolicyEditor', () => {
         ...provide,
       },
     });
-    Vue.nextTick();
+    nextTick();
   };
 
   const factoryWithExistingPolicy = (policy = {}) => {
@@ -106,7 +106,7 @@ describe('ScanResultPolicyEditor', () => {
   const findAlert = () => wrapper.findComponent(GlAlert);
   const findNameInput = () => wrapper.findComponent(GlFormInput);
   const findDescriptionTextArea = () => wrapper.findComponent(GlFormTextarea);
-  const findEnableToggle = () => wrapper.findComponent(GlToggle);
+  const findEnabledRadioGroup = () => wrapper.findComponent(GlFormRadioGroup);
   const findAllDisabledComponents = () => wrapper.findAllComponents(DimDisableContainer);
   const findYamlPreview = () => wrapper.find('[data-testid="yaml-preview"]');
   const findAllRuleBuilders = () => wrapper.findAllComponents(PolicyRuleBuilder);
@@ -130,7 +130,7 @@ describe('ScanResultPolicyEditor', () => {
       );
 
       findPolicyEditorLayout().vm.$emit('update-yaml', newManifest);
-      await Vue.nextTick();
+      await nextTick();
 
       expect(findPolicyEditorLayout().attributes('yamleditorvalue')).toBe(newManifest);
     });
@@ -148,7 +148,7 @@ describe('ScanResultPolicyEditor', () => {
       expect(findAlert().exists()).toBe(false);
 
       findPolicyEditorLayout().vm.$emit('update-yaml', 'invalid manifest');
-      await Vue.nextTick();
+      await nextTick();
 
       expect(findAlert().exists()).toBe(true);
     });
@@ -157,11 +157,11 @@ describe('ScanResultPolicyEditor', () => {
       await factory();
 
       findPolicyEditorLayout().vm.$emit('update-yaml', 'invalid manifest');
-      await Vue.nextTick();
+      await nextTick();
 
       expect(findNameInput().attributes('disabled')).toBe('true');
       expect(findDescriptionTextArea().attributes('disabled')).toBe('true');
-      expect(findEnableToggle().props('disabled')).toBe(true);
+      expect(findEnabledRadioGroup().attributes('disabled')).toBe('true');
       expect(findAllDisabledComponents().at(0).props('disabled')).toBe(true);
       expect(findAllDisabledComponents().at(1).props('disabled')).toBe(true);
     });
@@ -190,14 +190,13 @@ describe('ScanResultPolicyEditor', () => {
       currentComponent           | newValue                    | event
       ${findNameInput}           | ${'new policy name'}        | ${'input'}
       ${findDescriptionTextArea} | ${'new policy description'} | ${'input'}
-      ${findEnableToggle}        | ${true}                     | ${'change'}
     `('triggering a change on $currentComponent', ({ currentComponent, newValue, event }) => {
       it('updates YAML when switching modes', async () => {
         await factory();
 
         currentComponent().vm.$emit(event, newValue);
         findPolicyEditorLayout().vm.$emit('update-editor-mode', EDITOR_MODE_YAML);
-        await Vue.nextTick();
+        await nextTick();
 
         expect(findPolicyEditorLayout().attributes('yamleditorvalue')).toMatch(newValue.toString());
       });
@@ -206,7 +205,7 @@ describe('ScanResultPolicyEditor', () => {
         await factory();
 
         currentComponent().vm.$emit(event, newValue);
-        await Vue.nextTick();
+        await nextTick();
 
         expect(findYamlPreview().html()).toMatch(newValue.toString());
       });
@@ -245,12 +244,12 @@ describe('ScanResultPolicyEditor', () => {
     it('adds a new rule', async () => {
       const rulesCount = 1;
       factory();
-      await Vue.nextTick();
+      await nextTick();
 
       expect(findAllRuleBuilders().length).toBe(rulesCount);
 
       findAddRuleButton().vm.$emit('click');
-      await Vue.nextTick();
+      await nextTick();
 
       expect(findAllRuleBuilders()).toHaveLength(rulesCount + 1);
     });
@@ -259,7 +258,7 @@ describe('ScanResultPolicyEditor', () => {
       const limit = 5;
       const rule = mockScanResultObject.rules[0];
       factoryWithExistingPolicy({ rules: [rule, rule, rule, rule, rule] });
-      await Vue.nextTick();
+      await nextTick();
 
       expect(findAllRuleBuilders()).toHaveLength(limit);
       expect(findAddRuleButton().exists()).toBe(false);
@@ -275,9 +274,9 @@ describe('ScanResultPolicyEditor', () => {
         vulnerability_states: [],
       };
       factory();
-      await Vue.nextTick();
+      await nextTick();
       findAllRuleBuilders().at(0).vm.$emit('changed', newValue);
-      await Vue.nextTick();
+      await nextTick();
 
       expect(wrapper.vm.policy.rules[0]).toEqual(newValue);
       expect(findYamlPreview().html()).toMatch('vulnerabilities_allowed: 1');
@@ -286,12 +285,12 @@ describe('ScanResultPolicyEditor', () => {
     it('deletes the initial rule', async () => {
       const initialRuleCount = 1;
       factory();
-      await Vue.nextTick();
+      await nextTick();
 
       expect(findAllRuleBuilders()).toHaveLength(initialRuleCount);
 
       findAllRuleBuilders().at(0).vm.$emit('remove', 0);
-      await Vue.nextTick();
+      await nextTick();
 
       expect(findAllRuleBuilders()).toHaveLength(initialRuleCount - 1);
     });
@@ -313,7 +312,7 @@ describe('ScanResultPolicyEditor', () => {
     it('renders a single policy action builder', async () => {
       factory();
 
-      await Vue.nextTick();
+      await nextTick();
 
       expect(findAllPolicyActionBuilders()).toHaveLength(1);
       expect(findPolicyActionBuilder().props('existingApprovers')).toEqual(
@@ -325,9 +324,9 @@ describe('ScanResultPolicyEditor', () => {
       const UPDATED_ACTION = { type: 'required_approval', group_approvers_ids: [1] };
       factory();
 
-      await Vue.nextTick();
+      await nextTick();
       findPolicyActionBuilder().vm.$emit('changed', UPDATED_ACTION);
-      await Vue.nextTick();
+      await nextTick();
 
       expect(findPolicyActionBuilder().props('initAction')).toEqual(UPDATED_ACTION);
     });
