@@ -6,7 +6,7 @@ class SubscriptionsController < ApplicationController
   include InternalRedirect
   include OneTrustCSP
 
-  layout 'checkout'
+  layout 'minimal'
   skip_before_action :authenticate_user!, only: [:new]
 
   before_action :load_eligible_groups, only: :new
