@@ -163,6 +163,7 @@ module EE
           geo_node_allowed_ips: '0.0.0.0/0, ::/0',
           git_two_factor_session_expiry: 15,
           globally_allowed_ips: '',
+          license_usage_data_exported: false,
           lock_memberships_to_ldap: false,
           maintenance_mode: false,
           max_personal_access_token_lifetime: nil,
