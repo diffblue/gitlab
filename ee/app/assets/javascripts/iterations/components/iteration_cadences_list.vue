@@ -17,9 +17,9 @@ export default {
   }),
   i18n: {
     deprecationAlert: {
-      title: s__('Iterations|Some of your cadences need to be updated'),
+      title: s__('Iterations|Your manual cadence can be converted to use automated scheduling'),
       message: s__(
-        'Iterations|Iterations can no longer be scheduled manually. Convert all cadences to automatic scheduling to keep your iterations working as expected.',
+        'Iterations|Manual management of iterations will be deprecated in GitLab 15.6. Convert your manual cadence to use automated scheduling when you are ready.',
       ),
       primaryButtonText: s__('Iterations|Learn more about automatic scheduling'),
     },

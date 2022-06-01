@@ -305,7 +305,9 @@ describe('Iteration cadence form', () => {
 
       await waitForPromises();
 
-      expect(wrapper.text()).not.toContain('This cadence requires an update');
+      expect(wrapper.text()).not.toContain(
+        'This cadence can be converted to use automated scheduling',
+      );
     });
 
     it('does not disable the start date field when the first iteration is upcoming', async () => {
@@ -350,7 +352,9 @@ describe('Iteration cadence form', () => {
       });
 
       it('displays the deprecation message', async () => {
-        expect(wrapper.text()).toContain('This cadence requires an update');
+        expect(wrapper.text()).toContain(
+          'This cadence can be converted to use automated scheduling',
+        );
       });
 
       it('highlights fields required for automatic scheduling', async () => {

@@ -231,7 +231,7 @@ describe('Iteration cadence list item', () => {
       });
 
       expect(findDeprecationBadge().exists()).toBe(true);
-      expect(findDeprecationBadge().text()).toBe('Requires update');
+      expect(findDeprecationBadge().text()).toBe('Can be converted');
     });
   });
 

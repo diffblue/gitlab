@@ -186,7 +186,9 @@ describe('Iteration cadences list', () => {
 
       await waitForPromises();
 
-      expect(wrapper.text()).not.toContain('Some of your cadences need to be updated');
+      expect(wrapper.text()).not.toContain(
+        'Your manual cadence can be converted to use automated scheduling',
+      );
     });
 
     describe('when manual cadence exists', () => {
@@ -215,7 +217,9 @@ describe('Iteration cadences list', () => {
       });
 
       it('displays deprecation alert when manual cadence exists', async () => {
-        expect(wrapper.text()).toContain('Some of your cadences need to be updated');
+        expect(wrapper.text()).toContain(
+          'Your manual cadence can be converted to use automated scheduling',
+        );
       });
 
       it('groups manual cadences (deprecated) and displays them first', async () => {
