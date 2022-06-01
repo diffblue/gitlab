@@ -10,7 +10,7 @@ module EE
       def group_relation
         scope = ::Group.includes(:route, :owners, group_wiki_repository: :shard) # rubocop: disable CodeReuse/ActiveRecord
         scope = scope.id_in(GroupWikiRepository.for_repository_storage(storages).select(:group_id)) if storages.any?
-        scope = scope.none if paths.any?
+        scope = scope.where_full_path_in(paths).self_and_descendants if paths.any?
         scope
       end
 
