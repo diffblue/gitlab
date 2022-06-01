@@ -28,7 +28,7 @@ RSpec.describe 'Resolvers::ComplianceManagement::MergeRequests::ComplianceViolat
   describe '#resolve' do
     let(:args) { {} }
 
-    subject(:resolve_compliance_violations) { resolve(described_class, obj: group, args: args, ctx: { current_user: current_user }) }
+    subject(:resolve_compliance_violations) { resolve(described_class, obj: group, args: args, ctx: { current_user: current_user }, arg_style: :internal_prepared) }
 
     context 'user is unauthorized' do
       it 'returns nil' do
