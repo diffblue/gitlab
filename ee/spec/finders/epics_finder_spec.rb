@@ -428,6 +428,25 @@ RSpec.describe EpicsFinder do
 
             expect(epics(params)).to contain_exactly(epic2)
           end
+
+          context 'when `top_level_hierarchy_only` param is true' do
+            let_it_be(:epic6) { create(:epic, group: group) }
+
+            it 'returns only top level epics' do
+              top_level_epics = epics({ top_level_hierarchy_only: true })
+
+              expect(top_level_epics).to contain_exactly(epic1, epic6)
+              expect(top_level_epics.collect(&:parent_id).any?).to be_falsey
+            end
+
+            context 'when `parent_id` param is present' do
+              it 'ignores top_level_hierarchy_only param and returns direct children of the parent' do
+                params = { top_level_hierarchy_only: true, parent_id: epic1.id }
+
+                expect(epics(params)).to contain_exactly(epic2)
+              end
+            end
+          end
         end
 
         context 'by child' do

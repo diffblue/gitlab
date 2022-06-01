@@ -244,6 +244,26 @@ RSpec.describe 'Epics through GroupQuery' do
         end
       end
 
+      context 'with top_level_hierarchy_only argument' do
+        let_it_be(:child_epic) { create(:epic, group: group, parent: epic2) }
+
+        it 'returns only top level matching epics when set as `true`' do
+          graphql_query = query({ top_level_hierarchy_only: true })
+
+          post_graphql(graphql_query, current_user: user)
+
+          expect_array_response([epic2.to_global_id.to_s, epic.to_global_id.to_s])
+        end
+
+        it 'returns all matching epics when set as `false' do
+          graphql_query = query({ top_level_hierarchy_only: false })
+
+          post_graphql(graphql_query, current_user: user)
+
+          expect_array_response([child_epic.to_global_id.to_s, epic2.to_global_id.to_s, epic.to_global_id.to_s])
+        end
+      end
+
       context 'filter' do
         context 'with search params' do
           it 'returns only matching epics' do
