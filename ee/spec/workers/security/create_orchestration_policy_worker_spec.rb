@@ -11,8 +11,8 @@ RSpec.describe Security::CreateOrchestrationPolicyWorker do
     context 'when newly created' do
       let(:configured_at) { nil }
 
-      it 'calls update_policy_configuration' do
-        expect(worker).to receive(:update_policy_configuration).with(configuration)
+      it 'schedules Security::SyncScanPoliciesWorker job' do
+        expect(Security::SyncScanPoliciesWorker).to receive(:perform_async).with(configuration.id)
 
         worker.perform
       end
@@ -25,8 +25,8 @@ RSpec.describe Security::CreateOrchestrationPolicyWorker do
         allow(configuration.security_policy_management_project).to receive(:last_repository_updated_at) { Time.current }
       end
 
-      it 'does not call update_policy_configuration' do
-        expect(worker).not_to receive(:update_policy_configuration)
+      it 'does not schedules Security::SyncScanPoliciesWorker job' do
+        expect(Security::SyncScanPoliciesWorker).not_to receive(:perform_async)
 
         worker.perform
       end
