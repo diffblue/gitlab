@@ -28,14 +28,11 @@ module Gitlab
 
             private
 
-            # rubocop: disable CodeReuse/ActiveRecord
             def issues_count
               issues = IssuesFinder.new(current_user, finder_params).execute
-              issues = issues.where(projects: { id: options[:projects] }) if options[:projects].present?
-
-              ::Issue.where(id: issues.select(:id)).count
+              issues = issues.of_projects(options[:projects]) if options[:projects].present?
+              issues.count
             end
-            # rubocop: enable CodeReuse/ActiveRecord
 
             def finder_params
               options.dup.tap do |hash|
