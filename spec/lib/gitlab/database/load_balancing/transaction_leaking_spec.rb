@@ -41,7 +41,6 @@ RSpec.describe 'Load balancer behavior with errors inside a transaction', :redis
     END
     SQL
 
-
     # This statement will execute on a new connection, and violate transaction semantics
     # if we were in a transaction before
     conn.execute("insert into #{test_table_name} (value) VALUES (2)")
@@ -67,7 +66,9 @@ RSpec.describe 'Load balancer behavior with errors inside a transaction', :redis
   it 'does not log a warning when no transaction is open to be leaked' do
     conn = model.connection
 
-    expect(::Gitlab::Database::LoadBalancing::Logger).not_to receive(:warn).with(hash_including(event: :transaction_leak))
+    expect(::Gitlab::Database::LoadBalancing::Logger)
+      .not_to receive(:warn).with(hash_including(event: :transaction_leak))
+
     expect(conn).not_to be_transaction_open
 
     execute(conn)
@@ -77,5 +78,4 @@ RSpec.describe 'Load balancer behavior with errors inside a transaction', :redis
     values = conn.execute("select value from #{test_table_name}").to_a.map { |row| row['value'] }
     expect(values).to contain_exactly(1, 2) # Includes both rows because there was no transaction to roll back
   end
-
 end
