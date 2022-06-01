@@ -79,6 +79,43 @@ RSpec.describe 'Jira issues list', :js do
     end
   end
 
+  context 'when title or description contains HTML characters' do
+    let(:html) { '<script>foobar</script>' }
+    let(:escaped_html) { ERB::Util.html_escape(html) }
+    let(:issue) { build_issue(1).deep_merge(fields: { summary: html }) }
+
+    before do
+      stub_licensed_features(jira_issues_integration: true)
+    end
+
+    it 'escapes the HTML on issues#index' do
+      stub_issues([issue])
+
+      visit project_integrations_jira_issues_path(project)
+
+      expect(page).to have_text(html)
+      expect(page).not_to have_css('script', text: 'foobar')
+      expect(page.source).to include(escaped_html)
+    end
+
+    it 'escapes the HTML on issues#show' do
+      issue.deep_merge!(
+        fields: { comment: { comments: [] } },
+        renderedFields: { description: html },
+        duedate: Time.zone.now.to_s
+      )
+
+      stub_request(:get, /\A#{public_url}/)
+        .to_return(headers: { 'Content-Type' => 'application/json' }, body: issue.to_json)
+
+      visit project_integrations_jira_issue_path(project, 1)
+
+      expect(page).to have_text(html)
+      expect(page).not_to have_css('script', text: 'foobar')
+      expect(page.source).to include(escaped_html)
+    end
+  end
+
   private
 
   def all_pages
