@@ -77,6 +77,10 @@ module Resolvers
              required: false,
              description: 'Negated epic arguments.'
 
+    argument :top_level_hierarchy_only, GraphQL::Types::Boolean,
+             required: false,
+             description: 'Filter epics with a top-level hierarchy.'
+
     type Types::EpicType, null: true
 
     def ready?(**args)
