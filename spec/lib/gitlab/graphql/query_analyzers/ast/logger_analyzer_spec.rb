@@ -31,13 +31,21 @@ RSpec.describe Gitlab::Graphql::QueryAnalyzers::AST::LoggerAnalyzer do
     end
 
     it 'returns the complexity, depth, duration, etc' do
-      result = GraphQL::Analysis::AST.analyze_query(query, [described_class], multiplex_analyzers: [])
+      results = GraphQL::Analysis::AST.analyze_query(query, [described_class], multiplex_analyzers: [])
+      result = results.first
 
-      expect(result.first[:duration_s]).to eq monotonic_time_duration
-      expect(result.first[:depth]).to eq 3
-      expect(result.first[:complexity]).to eq 3
-      expect(result.first[:used_fields]).to eq ['Note.id', 'CreateNotePayload.note', 'Mutation.createNote']
-      expect(RequestStore.store[:graphql_logs]).to eq result
+      expect(result[:duration_s]).to eq monotonic_time_duration
+      expect(result[:depth]).to eq 3
+      expect(result[:complexity]).to eq 3
+      expect(result[:used_fields]).to eq ['Note.id', 'CreateNotePayload.note', 'Mutation.createNote']
+      expect(result[:used_deprecated_fields]).to eq []
+
+      request = result.except(:duration_s).merge({
+        operation_name: 'createNote',
+        variables: { body: "[FILTERED]" }.to_s
+      })
+
+      expect(RequestStore.store[:graphql_logs]).to match([request])
     end
   end
 end

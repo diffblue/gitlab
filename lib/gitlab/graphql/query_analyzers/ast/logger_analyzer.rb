@@ -13,7 +13,6 @@ module Gitlab
           def initialize(query)
             super
 
-            variables = process_variables(query.provided_variables)
             @results = default_initial_values(query).merge({
               time_started: Gitlab::Metrics::System.monotonic_time
             })
@@ -34,8 +33,7 @@ module Gitlab
             results[:used_fields] = field_usages[:used_fields]
             results[:used_deprecated_fields] = field_usages[:used_deprecated_fields]
 
-            RequestStore.store[:graphql_logs] ||= []
-            RequestStore.store[:graphql_logs] << results
+            push_to_request_store(results)
 
             # This gl_analysis is included in the tracer log
             query.context[:gl_analysis] = results.except!(:time_started, :query)
@@ -46,6 +44,21 @@ module Gitlab
           private
 
           attr_reader :results
+
+          def push_to_request_store(results)
+            query = @subject
+
+            # TODO: This RequestStore management is used to handle setting request wide metadata
+            # to improve preexisting logging. We should handle this either with ApplicationContext
+            # or in a separate tracer.
+            # https://gitlab.com/gitlab-org/gitlab/-/issues/343802
+
+            RequestStore.store[:graphql_logs] ||= []
+            RequestStore.store[:graphql_logs] << results.except(:time_started, :duration_s).merge({
+              variables: process_variables(query.provided_variables),
+              operation_name: query.operation_name
+            })
+          end
 
           def process_variables(variables)
             filtered_variables = filter_sensitive_variables(variables)
