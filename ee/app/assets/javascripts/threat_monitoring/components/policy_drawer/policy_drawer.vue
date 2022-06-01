@@ -91,7 +91,7 @@ export default {
           class="gl-mt-5"
           data-testid="edit-button"
           category="primary"
-          variant="info"
+          variant="confirm"
           :href="editPolicyPath"
           :disabled="isPolicyInherited"
           >{{ s__('SecurityOrchestration|Edit policy') }}</gl-button
