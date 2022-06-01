@@ -192,6 +192,7 @@ export default {
           v-model="streetAddressLine2Model"
           type="text"
           data-qa-selector="street_address_2"
+          class="gl-mt-3"
         />
       </gl-form-group>
       <gl-form-group :label="$options.i18n.cityLabel" label-size="sm" class="mb-3">
