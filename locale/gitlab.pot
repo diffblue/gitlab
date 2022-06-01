@@ -15540,6 +15540,9 @@ msgstr ""
 msgid "Failed to load groups, users and deploy keys."
 msgstr ""
 
+msgid "Failed to load groups."
+msgstr ""
+
 msgid "Failed to load iteration cadences."
 msgstr ""
 
@@ -30779,6 +30782,9 @@ msgstr ""
 msgid "ProtectedEnvironment|Environment"
 msgstr ""
 
+msgid "ProtectedEnvironment|Only specified groups can execute deployments in protected environments."
+msgstr ""
+
 msgid "ProtectedEnvironment|Only specified users can execute deployments in a protected environment."
 msgstr ""
 
@@ -30795,6 +30801,9 @@ msgid "ProtectedEnvironment|Required approvals"
 msgstr ""
 
 msgid "ProtectedEnvironment|Select an environment"
+msgstr ""
+
+msgid "ProtectedEnvironment|Select groups"
 msgstr ""
 
 msgid "ProtectedEnvironment|Select users"
