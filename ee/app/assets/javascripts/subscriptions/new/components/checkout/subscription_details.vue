@@ -363,7 +363,7 @@ export default {
         </gl-form-group>
       </div>
       <gl-alert
-        class="gl-mt-5 gl-mb-6"
+        class="gl-my-5"
         :dismissible="false"
         variant="info"
         data-testid="qsr-overage-message"
@@ -376,9 +376,9 @@ export default {
       </gl-alert>
     </template>
     <template #summary>
-      <strong ref="summary-line-1">
+      <span ref="summary-line-1" class="gl-font-weight-bold">
         {{ selectedPlanTextLine }}
-      </strong>
+      </span>
       <div v-if="isSetupForCompany" ref="summary-line-2">
         {{ $options.i18n.group }}: {{ organizationName || selectedGroupName }}
       </div>

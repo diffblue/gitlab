@@ -8,14 +8,12 @@ import createFlash from '~/flash';
 import { convertToSnakeCase, dasherize } from '~/lib/utils/text_utility';
 import { GENERAL_ERROR_MESSAGE } from '../constants';
 import StepHeader from './step_header.vue';
-import StepSummary from './step_summary.vue';
 
 export default {
   components: {
     GlFormGroup,
     GlButton,
     StepHeader,
-    StepSummary,
   },
   props: {
     stepId: {
@@ -116,30 +114,26 @@ export default {
 };
 </script>
 <template>
-  <div class="mb-3 mb-lg-5 gl-w-full">
-    <step-header :title="title" :is-finished="isFinished" />
-    <div class="card" :class="dasherizedStep">
-      <div v-show="isActive" @keyup.enter="nextStep">
-        <slot name="body" :active="isActive"></slot>
-        <gl-form-group
-          v-if="nextStepButtonText"
-          :invalid-feedback="errorMessage"
-          :state="isValid"
-          :class="[!isValid && errorMessage ? 'gl-mb-5' : 'gl-mb-0', 'gl-mt-3']"
-        />
-        <gl-button
-          v-if="nextStepButtonText"
-          variant="success"
-          category="primary"
-          :disabled="!isValid"
-          @click="nextStep"
-        >
-          {{ nextStepButtonText }}
-        </gl-button>
-      </div>
-      <step-summary v-if="isFinished" :is-editable="isEditable" :edit="edit">
-        <slot name="summary"></slot>
-      </step-summary>
+  <div class="gl-w-full gl-pb-5 gl-border-b gl-mb-5">
+    <step-header :title="title" :is-finished="isFinished" :is-editable="isEditable" @edit="edit" />
+    <div v-show="isActive" class="gl-mt-5" data-testid="active-step-body" @keyup.enter="nextStep">
+      <slot name="body" :active="isActive"></slot>
+      <gl-form-group
+        v-if="nextStepButtonText && !isValid && errorMessage"
+        :invalid-feedback="errorMessage"
+        :state="isValid"
+        class="gl-mb-5"
+      />
+      <gl-button
+        v-if="nextStepButtonText"
+        variant="confirm"
+        category="primary"
+        :disabled="!isValid"
+        @click="nextStep"
+      >
+        {{ nextStepButtonText }}
+      </gl-button>
     </div>
+    <slot v-if="isFinished" name="summary"></slot>
   </div>
 </template>

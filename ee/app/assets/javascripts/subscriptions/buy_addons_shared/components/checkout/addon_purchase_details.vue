@@ -93,12 +93,12 @@ export default {
       <gl-alert v-if="showAlert && alertText" variant="info" class="gl-mb-3" :dismissible="false">
         {{ alertText }}
       </gl-alert>
-      <label class="gl-mt-3" for="quantity" data-testid="product-label">
+      <label for="quantity" data-testid="product-label">
         {{ productLabel }}
       </label>
       <div
         :class="[
-          { 'gl-mb-6': isValid },
+          { 'gl-mb-5': isValid },
           'gl-display-flex gl-flex-direction-row gl-align-items-center',
         ]"
       >

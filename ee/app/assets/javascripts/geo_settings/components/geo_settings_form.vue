@@ -92,8 +92,8 @@ export default {
       <gl-button
         data-testid="settingsSaveButton"
         data-qa-selector="add_node_button"
-        class="gl-mr-5"
-        variant="info"
+        class="gl-mr-3"
+        variant="confirm"
         :disabled="formHasError"
         @click="updateGeoSettings"
         >{{ $options.i18n.saveChanges }}</gl-button

@@ -41,7 +41,7 @@ export default {
   data: () => ({
     projectsCache: {},
     projects: [],
-    pageInfo: null,
+    pageInfo: { hasNextPage: true },
     searchTerm: '',
     hasDropdownBeenOpened: false,
   }),
@@ -62,10 +62,6 @@ export default {
     isLoadingProjects() {
       return this.$apollo.queries.projects.loading;
     },
-    // Full spinner is when all the dropdown contents are replaced with a spinner.
-    shouldShowFullSpinner() {
-      return this.isLoadingProjects && (this.isSearching || !this.pageInfo);
-    },
     isLoadingProjectsById() {
       return this.$apollo.queries.projectsById.loading;
     },
@@ -78,11 +74,11 @@ export default {
     showSelectedProjectsSection() {
       return Boolean(this.selectedOptions?.length) && !this.isSearching;
     },
-    showAllOption() {
-      return !this.isLoadingProjects && !this.isSearching && !this.isMaxProjectsSelected;
-    },
     isMaxProjectsSelected() {
       return this.selectedOptions?.length >= SELECTED_PROJECTS_MAX_COUNT;
+    },
+    hasNoResults() {
+      return !this.isLoadingProjects && this.projects.length <= 0;
     },
     uncachedIds() {
       const ids = this.querystringIds.includes(this.filter.allOption.id) ? [] : this.querystringIds;
@@ -94,7 +90,7 @@ export default {
         : instanceProjectsQuery;
     },
     shouldShowIntersectionObserver() {
-      return this.pageInfo?.hasNextPage && !this.isLoadingProjects;
+      return this.pageInfo.hasNextPage && !this.isLoadingProjects;
     },
   },
   apollo: {
@@ -157,6 +153,13 @@ export default {
       skip() {
         return !this.hasDropdownBeenOpened || this.isSearchTooShort || this.isMaxProjectsSelected;
       },
+    },
+  },
+  watch: {
+    searchTerm() {
+      // Reset the data state so that the projects query will load the first page of results.
+      this.projects = [];
+      this.pageInfo = { hasNextPage: true };
     },
   },
   methods: {
@@ -223,30 +226,24 @@ export default {
       <gl-dropdown-divider />
     </div>
 
-    <filter-item
-      v-if="showAllOption"
-      :is-checked="isNoOptionsSelected"
-      :text="filter.allOption.name"
-      data-testid="allOption"
-      @click="deselectAllOptions"
-    />
-
-    <gl-loading-icon
-      v-if="shouldShowFullSpinner"
-      size="lg"
-      class="gl-mt-4 gl-mb-3"
-      data-testid="loading-icon-full"
-    />
-    <gl-dropdown-text v-else-if="isMaxProjectsSelected">
+    <gl-dropdown-text v-if="isMaxProjectsSelected">
       {{ $options.i18n.maxProjectsSelected }}
     </gl-dropdown-text>
     <gl-dropdown-text v-else-if="isSearchTooShort">
       {{ $options.i18n.enterMoreCharactersToSearch }}
     </gl-dropdown-text>
-    <gl-dropdown-text v-else-if="!projects.length">
+    <gl-dropdown-text v-else-if="hasNoResults">
       {{ $options.i18n.noMatchingResults }}
     </gl-dropdown-text>
     <template v-else>
+      <filter-item
+        v-if="!isSearching"
+        :is-checked="isNoOptionsSelected"
+        :text="filter.allOption.name"
+        data-testid="allOption"
+        @click="deselectAllOptions"
+      />
+
       <filter-item
         v-for="project in selectableProjects"
         :key="project.id"
@@ -257,7 +254,11 @@ export default {
         <div v-safe-html="highlightSearchTerm(project.name)"></div>
       </filter-item>
       <gl-intersection-observer v-if="shouldShowIntersectionObserver" @appear="fetchNextPage" />
-      <gl-loading-icon v-if="isLoadingProjects" class="gl-my-2" data-testid="loading-icon-paging" />
+      <gl-loading-icon
+        v-if="pageInfo.hasNextPage"
+        :class="{ 'gl-visibility-hidden': !isLoadingProjects }"
+        class="gl-my-2"
+      />
     </template>
   </filter-body>
 </template>

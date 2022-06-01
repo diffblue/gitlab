@@ -42,7 +42,7 @@ export default {
   <div v-if="isActive" class="full-width gl-mb-7">
     <gl-button
       :disabled="isConfirmingOrder"
-      variant="success"
+      variant="confirm"
       category="primary"
       @click="confirmOrder"
     >

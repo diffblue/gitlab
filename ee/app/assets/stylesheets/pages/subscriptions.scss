@@ -1,3 +1,15 @@
+#zuora_payment {
+  margin-right: -8px;
+
+  iframe {
+    // stylelint-disable-next-line
+    background-color: unset;
+    margin: -4px;
+  }
+}
+
+// We can't get rid of these styles yet because there is a section of the registration with subscription flow which is
+// still making use of them. See https://gitlab.com/gitlab-org/gitlab/-/issues/359138 for more details.
 /* Checkout Page */
 $subscriptions-form-group-width: 420px;
 $subscriptions-full-width-md: $subscriptions-form-group-width + $gl-padding * 2 + 2;
