@@ -1626,7 +1626,7 @@ RSpec.describe Project do
 
     context 'github' do
       where(:license_feature, :disabled_integrations) do
-        :github_project_service_integration | %w[github]
+        :github_integration | %w[github]
       end
 
       with_them do

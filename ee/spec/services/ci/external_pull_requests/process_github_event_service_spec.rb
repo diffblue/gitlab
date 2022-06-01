@@ -30,7 +30,7 @@ RSpec.describe Ci::ExternalPullRequests::ProcessGithubEventService do
 
   describe '#execute' do
     before do
-      stub_licensed_features(ci_cd_projects: true, github_project_service_integration: true)
+      stub_licensed_features(ci_cd_projects: true, github_integration: true)
     end
 
     context 'when project is not a mirror' do
@@ -163,7 +163,7 @@ RSpec.describe Ci::ExternalPullRequests::ProcessGithubEventService do
 
       before do
         allow(project).to receive(:mirror?).and_return(true)
-        stub_licensed_features(ci_cd_projects: false, github_project_service_integration: false)
+        stub_licensed_features(ci_cd_projects: false, github_integration: false)
       end
 
       it 'does nothing' do
