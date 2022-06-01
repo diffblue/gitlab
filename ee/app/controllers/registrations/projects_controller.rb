@@ -60,3 +60,5 @@ module Registrations
     end
   end
 end
+
+Registrations::ProjectsController.prepend_mod
