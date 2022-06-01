@@ -1,0 +1,9 @@
+query groupStaleRunnerPruning($fullPath: ID!) {
+  group(fullPath: $fullPath) {
+    id
+    allowStaleRunnerPruning
+    runners(membership: DIRECT, status: STALE) {
+      count
+    }
+  }
+}
