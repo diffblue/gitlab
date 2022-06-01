@@ -37,7 +37,7 @@ export default {
       return {
         text: this.$options.i18n.editPermissions,
         attributes: {
-          variant: 'warning',
+          variant: 'danger',
           loading: this.busy,
         },
       };
