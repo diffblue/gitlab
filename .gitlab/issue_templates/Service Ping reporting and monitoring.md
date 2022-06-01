@@ -1,9 +1,3 @@
-/confidential
-/label ~"group::product intelligence" ~"devops::growth" ~backend ~"section::growth" ~"Category:Service Ping"
-/epic https://gitlab.com/groups/gitlab-org/-/epics/6000
-/weight 5
-/title Monitor and Generate GitLab.com Service Ping
-
 <!-- This issue template is used by https://about.gitlab.com/handbook/engineering/development/growth/product-intelligence/ for tracking effort around Service Ping reporting for GitLab.com -->
 
 The [Product Intelligence group](https://about.gitlab.com/handbook/engineering/development/growth/product-intelligence/) runs manual reporting of ServicePing for GitLab.com on a weekly basis. This issue captures the work required to complete the reporting process, the follow-up tasks that are focused on metrics performance verification, and identifies any potential issues.
@@ -16,7 +10,7 @@ The [Product Intelligence group](https://about.gitlab.com/handbook/engineering/d
 
 Broken metrics issues are marked with the ~"broken metric" label.
 
-# Use a detached screen session to generate Service Ping for GitLab.com 
+# Use a detached screen session to generate Service Ping for GitLab.com
 
 ## Prerequisites
 
@@ -94,7 +88,7 @@ puts UsageData.find(21635202).raw_usage_data.payload.to_json
 Trigger some events from the User Interface.
 
 ```ruby
-Gitlab::UsageDataCounters::HLLRedisCounter.unique_events(event_names: 'event_name', start_date: 28.days.ago, end_date: Date.current) 
+Gitlab::UsageDataCounters::HLLRedisCounter.unique_events(event_names: 'event_name', start_date: 28.days.ago, end_date: Date.current)
 ```
 
 # What to do if you get mentioned
@@ -112,3 +106,10 @@ If you get mentioned, check the failing metric and open an optimization issue.
 | 2022-05-02            |                         |                              |
 | 2022-05-09            |                         |                              |
 | 2022-05-16            |                         |                              |
+
+<!-- Do not edit below this line -->
+/confidential
+/label ~"group::product intelligence" ~"devops::growth" ~backend ~"section::growth" ~"Category:Service Ping"
+/epic https://gitlab.com/groups/gitlab-org/-/epics/6000
+/weight 5
+/title Monitor and Generate GitLab.com Service Ping
