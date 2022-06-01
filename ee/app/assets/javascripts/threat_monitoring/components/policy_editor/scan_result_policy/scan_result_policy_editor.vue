@@ -2,11 +2,11 @@
 import {
   GlEmptyState,
   GlButton,
-  GlToggle,
   GlFormGroup,
   GlFormInput,
   GlFormTextarea,
   GlAlert,
+  GlFormRadioGroup,
 } from '@gitlab/ui';
 import { mapActions, mapState } from 'vuex';
 import { joinPaths, visitUrl, setUrlFragment } from '~/lib/utils/url_utility';
@@ -39,6 +39,10 @@ export default {
   EDITOR_MODE_RULE,
   SHARED_FOR_DISABLED:
     'gl-bg-gray-10 gl-border-solid gl-border-1 gl-border-gray-100 gl-rounded-base',
+  STATUS_OPTIONS: [
+    { value: true, text: __('Enabled') },
+    { value: false, text: __('Disabled') },
+  ],
   i18n: {
     PARSING_ERROR_MESSAGE,
     addRule: s__('SecurityOrchestration|Add rule'),
@@ -57,11 +61,11 @@ export default {
   components: {
     GlEmptyState,
     GlButton,
-    GlToggle,
     GlFormGroup,
     GlFormInput,
     GlFormTextarea,
     GlAlert,
+    GlFormRadioGroup,
     PolicyActionBuilder,
     PolicyRuleBuilder,
     PolicyEditorLayout,
@@ -288,10 +292,14 @@ export default {
         />
       </gl-form-group>
 
-      <gl-form-group :disabled="hasParsingError" data-testid="policy-enable">
-        <gl-toggle
+      <gl-form-group
+        :label="$options.i18n.toggleLabel"
+        :disabled="hasParsingError"
+        data-testid="policy-enable"
+      >
+        <gl-form-radio-group
           v-model="policy.enabled"
-          :label="$options.i18n.toggleLabel"
+          :options="$options.STATUS_OPTIONS"
           :disabled="hasParsingError"
         />
       </gl-form-group>
