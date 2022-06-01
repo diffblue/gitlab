@@ -41,7 +41,7 @@ exports[`Environment matchs the snapshot 1`] = `
         >
           <gl-icon-stub
             name="work"
-            size="16"
+            size="14"
           />
            
           <gl-link-stub

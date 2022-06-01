@@ -139,7 +139,7 @@ export default {
 
         <div class="col-10 col-sm-7 pr-0 pl-5 align-self-center align-middle ci-table">
           <div class="branch-commit">
-            <gl-icon name="work" />
+            <gl-icon name="work" :size="14" />
             <gl-link
               v-if="deployable"
               v-gl-tooltip="jobTooltip"
