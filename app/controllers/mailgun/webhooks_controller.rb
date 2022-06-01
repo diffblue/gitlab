@@ -13,6 +13,7 @@ module Mailgun
     feature_category :team_planning
 
     WEBHOOK_PROCESSORS = [
+      Gitlab::Mailgun::WebhookProcessors::FailureLogger,
       ::Members::Mailgun::ProcessWebhookService
     ].freeze
 
