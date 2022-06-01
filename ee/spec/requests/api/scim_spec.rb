@@ -371,7 +371,6 @@ RSpec.describe API::Scim do
 
         it 'does not call reprovision service when identity is already active' do
           expect(::EE::Gitlab::Scim::ReprovisionService).not_to receive(:new)
-          expect(::Users::UpdateService).to receive(:new).and_call_original
 
           call_patch_api(params)
         end
@@ -394,36 +393,36 @@ RSpec.describe API::Scim do
           end
         end
 
-        context 'name' do
-          before do
-            params = { Operations: [{ 'op': 'Replace', 'path': 'name.formatted', 'value': 'new_name' }] }.to_query
+        context 'user attributes' do
+          context 'name' do
+            before do
+              params = { Operations: [{ 'op': 'Replace', 'path': 'name.formatted', 'value': 'new_name' }] }.to_query
 
-            call_patch_api(params)
+              call_patch_api(params)
+            end
+
+            it 'responds with 204' do
+              expect(response).to have_gitlab_http_status(:no_content)
+            end
+
+            it 'does not update the name' do
+              expect(user.reload.name).not_to eq('new_name')
+            end
+
+            it 'responds with an empty response' do
+              expect(response.body).to eq('')
+            end
           end
 
-          it 'responds with 204' do
-            expect(response).to have_gitlab_http_status(:no_content)
-          end
-
-          it 'updates the name' do
-            expect(user.reload.name).to eq('new_name')
-          end
-
-          it 'responds with an empty response' do
-            expect(response.body).to eq('')
-          end
-        end
-
-        context 'email' do
-          context 'non existent email' do
+          context 'email' do
             before do
               params = { Operations: [{ 'op': 'Replace', 'path': 'emails[type eq "work"].value', 'value': 'new@mail.com' }] }.to_query
 
               call_patch_api(params)
             end
 
-            it 'updates the email' do
-              expect(user.reload.unconfirmed_email).to eq('new@mail.com')
+            it 'does not update the email' do
+              expect(user.reload.unconfirmed_email).not_to eq('new@mail.com')
             end
 
             it 'responds with 204' do
@@ -431,21 +430,23 @@ RSpec.describe API::Scim do
             end
           end
 
-          context 'existent email' do
+          context 'userName' do
             before do
-              create(:user, email: 'new@mail.com')
-
-              params = { Operations: [{ 'op': 'Replace', 'path': 'emails[type eq "work"].value', 'value': 'new@mail.com' }] }.to_query
+              params = { Operations: [{ 'op': 'Replace', 'path': 'userName', 'value': 'new_username' }] }.to_query
 
               call_patch_api(params)
             end
 
-            it 'does not update a duplicated email' do
-              expect(user.reload.unconfirmed_email).not_to eq('new@mail.com')
+            it 'responds with 204' do
+              expect(response).to have_gitlab_http_status(:no_content)
             end
 
-            it 'responds with 209' do
-              expect(response).to have_gitlab_http_status(:conflict)
+            it 'does not update the username' do
+              expect(user.reload.username).not_to eq('new_username')
+            end
+
+            it 'responds with an empty response' do
+              expect(response.body).to eq('')
             end
           end
         end

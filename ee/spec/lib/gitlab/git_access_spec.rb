@@ -30,6 +30,180 @@ RSpec.describe Gitlab::GitAccess do
     end
   end
 
+  describe '#check_project_accessibility!' do
+    let_it_be_with_reload(:group) { create(:group, :public) }
+    let_it_be(:project) { create(:project, :repository, group: group) }
+    let_it_be(:deploy_key) { create(:deploy_key, user: user) }
+    let_it_be(:admin) { create(:admin) }
+
+    let(:deploy_token) { create(:deploy_token, projects: [project]) }
+
+    let(:start_sha) { '6f6d7e7ed97bb5f0054f2b1df789b39ca89b6ff9' }
+    let(:end_sha)   { '570e7b2abdd848b95f2f578043fc23bd6f6fd24d' }
+    let(:changes)   { "#{start_sha} #{end_sha} refs/heads/master" }
+    let(:push_error_message) { Gitlab::GitAccess::ERROR_MESSAGES[:upload] }
+
+    before(:all) do
+      project.add_developer(user)
+      deploy_key.deploy_keys_projects.create!(project: project, can_push: true)
+    end
+
+    context 'with ip restriction' do
+      before do
+        allow(Gitlab::IpAddressState).to receive(:current).and_return('192.168.0.2')
+        stub_licensed_features(group_ip_restriction: true)
+      end
+
+      context 'group with restriction' do
+        before do
+          create(:ip_restriction, group: group, range: range)
+        end
+
+        context 'address is within the range' do
+          let(:range) { '192.168.0.0/24' }
+
+          context 'when actor is a DeployKey with access to project' do
+            let(:actor) { deploy_key }
+
+            it 'allows pull, push access' do
+              aggregate_failures do
+                expect { pull_changes }.not_to raise_error
+                expect { push_changes }.not_to raise_error
+              end
+            end
+          end
+
+          context 'when actor is DeployToken with access to project' do
+            let(:actor) { deploy_token }
+
+            it 'allows pull access' do
+              aggregate_failures do
+                expect { pull_changes }.not_to raise_error
+                expect { push_changes }.to raise_forbidden(push_error_message)
+              end
+            end
+          end
+
+          context 'when actor is user with access to project' do
+            let(:actor) { user }
+
+            it 'allows push, pull access' do
+              aggregate_failures do
+                expect { pull_changes }.not_to raise_error
+                expect { push_changes }.not_to raise_error
+              end
+            end
+          end
+
+          context 'when actor is instance admin', :enable_admin_mode do
+            let(:actor) { admin }
+
+            it 'allows push, pull access' do
+              aggregate_failures do
+                expect { pull_changes }.not_to raise_error
+                expect { push_changes }.not_to raise_error
+              end
+            end
+          end
+        end
+
+        context 'address is outside the range' do
+          let(:range) { '10.0.0.0/8' }
+
+          context 'when actor is a DeployKey with access to project' do
+            let(:actor) { deploy_key }
+
+            it 'blocks pull, push with "not found"' do
+              aggregate_failures do
+                expect { pull_changes }.to raise_not_found
+                expect { push_changes }.to raise_not_found
+              end
+            end
+          end
+
+          context 'when actor is DeployToken with access to project' do
+            let(:actor) { deploy_token }
+
+            it 'blocks pull, push with "not found"' do
+              aggregate_failures do
+                expect { pull_changes }.to raise_not_found
+                expect { push_changes }.to raise_not_found
+              end
+            end
+          end
+
+          context 'when actor is user with access to project' do
+            let(:actor) { user }
+
+            it 'blocks pull, push with "not found"' do
+              aggregate_failures do
+                expect { pull_changes }.to raise_not_found
+                expect { push_changes }.to raise_not_found
+              end
+            end
+          end
+
+          context 'when actor is instance admin', :enable_admin_mode do
+            let(:actor) { admin }
+
+            it 'allows push, pull access' do
+              aggregate_failures do
+                expect { pull_changes }.not_to raise_error
+                expect { push_changes }.not_to raise_error
+              end
+            end
+          end
+        end
+      end
+
+      context 'group without restriction' do
+        context 'when actor is a DeployKey with access to project' do
+          let(:actor) { deploy_key }
+
+          it 'allows pull, push access' do
+            aggregate_failures do
+              expect { pull_changes }.not_to raise_error
+              expect { push_changes }.not_to raise_error
+            end
+          end
+        end
+
+        context 'when actor is DeployToken with access to project' do
+          let(:actor) { deploy_token }
+
+          it 'allows pull access' do
+            aggregate_failures do
+              expect { pull_changes }.not_to raise_error
+              expect { push_changes }.to raise_forbidden(push_error_message)
+            end
+          end
+        end
+
+        context 'when actor is user with access to project' do
+          let(:actor) { user }
+
+          it 'allows push, pull access' do
+            aggregate_failures do
+              expect { pull_changes }.not_to raise_error
+              expect { push_changes }.not_to raise_error
+            end
+          end
+        end
+
+        context 'when actor is instance admin', :enable_admin_mode do
+          let(:actor) { admin }
+
+          it 'allows push, pull access' do
+            aggregate_failures do
+              expect { pull_changes }.not_to raise_error
+              expect { push_changes }.not_to raise_error
+            end
+          end
+        end
+      end
+    end
+  end
+
   context "when in a read-only GitLab instance" do
     before do
       create(:protected_branch, name: 'feature', project: project)
@@ -1084,5 +1258,9 @@ RSpec.describe Gitlab::GitAccess do
 
   def raise_forbidden(message)
     raise_error(Gitlab::GitAccess::ForbiddenError, message)
+  end
+
+  def raise_not_found
+    raise_error(Gitlab::GitAccess::NotFoundError, Gitlab::GitAccess::ERROR_MESSAGES[:project_not_found])
   end
 end
