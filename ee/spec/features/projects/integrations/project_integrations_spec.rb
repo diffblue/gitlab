@@ -8,7 +8,7 @@ RSpec.describe 'Project integrations', :js do
     let(:integrations) { [Integrations::Github.new] }
 
     before do
-      stub_licensed_features(github_project_service_integration: true)
+      stub_licensed_features(github_integration: true)
     end
 
     def navigate_to_integration(integration)
