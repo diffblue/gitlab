@@ -389,7 +389,7 @@ export default {
           <!-- EE start -->
           <template v-if="canShowTotalWeight">
             <gl-tooltip :target="() => $refs.weightTooltip" :title="weightCountToolTip" />
-            <span ref="weightTooltip" class="gl-display-inline-flex gl-ml-3">
+            <span ref="weightTooltip" class="gl-display-inline-flex gl-ml-3" data-testid="weight">
               <gl-icon class="gl-mr-2" name="weight" />
               {{ totalWeight }}
             </span>

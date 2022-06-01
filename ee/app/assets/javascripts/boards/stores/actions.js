@@ -546,6 +546,10 @@ export default {
           moveAfterId,
         },
         update(cache) {
+          if (!window.gon.features.epicBoardTotalWeight) {
+            return;
+          }
+
           if (fromListId === toListId) return;
 
           const updateFromList = () => {

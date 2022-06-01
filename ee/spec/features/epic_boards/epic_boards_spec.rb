@@ -8,7 +8,7 @@ RSpec.describe 'epic boards', :js do
 
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group, :public) }
-
+  let_it_be(:project) { create(:project, group: group) }
   let_it_be(:epic_board) { create(:epic_board, group: group) }
   let_it_be(:label) { create(:group_label, group: group, name: 'Label1') }
   let_it_be(:label2) { create(:group_label, group: group, name: 'Label2') }
@@ -16,9 +16,11 @@ RSpec.describe 'epic boards', :js do
   let_it_be(:backlog_list) { create(:epic_list, epic_board: epic_board, list_type: :backlog) }
   let_it_be(:closed_list) { create(:epic_list, epic_board: epic_board, list_type: :closed) }
 
+  let_it_be(:issue_with_weight) { create(:issue, project: project, weight: 2) }
+
   let_it_be(:epic1) { create(:epic, group: group, labels: [label], author: user, title: 'Epic1') }
   let_it_be(:epic2) { create(:epic, group: group, title: 'Epic2') }
-  let_it_be(:epic3) { create(:epic, group: group, labels: [label2], title: 'Epic3') }
+  let_it_be(:epic3) { create(:epic, group: group, labels: [label2], issues: [issue_with_weight], title: 'Epic3') }
 
   let(:edit_board) { find('.btn', text: 'Edit board') }
   let(:view_scope) { find('.btn', text: 'View scope') }
@@ -26,6 +28,7 @@ RSpec.describe 'epic boards', :js do
   context 'display epics in board' do
     before do
       stub_licensed_features(epics: true)
+      stub_feature_flags(epic_board_total_weight: true)
       group.add_maintainer(user)
       sign_in(user)
       visit_epic_boards_page
@@ -109,6 +112,31 @@ RSpec.describe 'epic boards', :js do
 
       page.within(find_board_list(2)) do
         expect(all('.board-card')[0]).to have_content(epic3.title)
+      end
+    end
+
+    it 'moving updates weight of both lists' do
+      expect(find_board_list(1)).to have_content(epic3.title)
+
+      page.within(find_board_list(1)) do
+        expect(find('[data-testid="board-list-header"] [data-testid="weight"]')).to have_content(issue_with_weight.weight)
+      end
+
+      page.within(find_board_list(2)) do
+        expect(find('[data-testid="board-list-header"] [data-testid="weight"]')).to have_content('0')
+      end
+
+      drag(list_from_index: 0, list_to_index: 1, to_index: 0)
+      wait_for_all_requests
+
+      expect(find_board_list(1)).not_to have_content(epic3.title)
+
+      page.within(find_board_list(2)) do
+        expect(find('[data-testid="board-list-header"] [data-testid="weight"]')).to have_content(issue_with_weight.weight)
+      end
+
+      page.within(find_board_list(1)) do
+        expect(find('[data-testid="board-list-header"] [data-testid="weight"]')).to have_content('0')
       end
     end
 
