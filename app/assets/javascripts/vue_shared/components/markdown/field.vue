@@ -121,6 +121,11 @@ export default {
       required: false,
       default: () => [],
     },
+    forceAutosize: {
+      type: Boolean,
+      required: false,
+      default: true,
+    },
   },
   data() {
     return {
@@ -250,7 +255,7 @@ export default {
         vulnerabilities: this.enableAutocomplete,
         contacts: this.enableAutocomplete && this.glFeatures.contactsAutocomplete,
       },
-      true,
+      this.forceAutosize,
     );
   },
   beforeDestroy() {

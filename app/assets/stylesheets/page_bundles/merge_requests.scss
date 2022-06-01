@@ -754,3 +754,23 @@ $tabs-holder-z-index: 250;
     }
   }
 }
+
+.submit-review-dropdown {
+  .dropdown-menu {
+    width: 650px;
+    max-width: 650px;
+
+    .gl-new-dropdown-inner {
+      max-height: none !important;
+    }
+  }
+
+  .gl-new-dropdown-contents {
+    padding: $gl-spacing-scale-4 !important;
+  }
+
+  .md-preview-holder {
+    max-height: 180px;
+    height: 180px;
+  }
+}
