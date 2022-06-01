@@ -31,7 +31,7 @@ Broken metrics issues are marked with the ~"broken metric" label.
 1. Create a named screen: `screen -S $USER-service-ping-$(date +%F)`.
 1. Connect to the console host: `ssh $USER-rails@console-01-sv-gprd.c.gitlab-production.internal`.
 1. Run: `ServicePing::SubmitService.new.execute`.
-1. Press <kbd>Control</kbd>+<kbd>a</kbd> or <kbd>Control</kbd>+<kbd>d</kbd> to detach from the screen session.
+1. Press <kbd>Control</kbd>+<kbd>a</kbd> followed by <kbd>Control</kbd>+<kbd>d</kbd> to detach from the screen session.
 1. Exit from the bastion: `exit`.
 
 ## Verification (After approximately 30 hours)
