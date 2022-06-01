@@ -94,6 +94,7 @@ export const fetchDiscussions = ({ commit, dispatch }, { path, filter, persistFi
     window.gon?.features?.paginatedIssueDiscussions ||
     window.gon?.features?.paginatedMrDiscussions
   ) {
+    commit(types.SET_FETCHING_DISCUSSIONS, true);
     return dispatch('fetchDiscussionsBatch', { path, config, perPage: 20 });
   }
 
