@@ -38,7 +38,7 @@ const i18n = Object.freeze({
   ),
   modalConfirm: s__('Iterations|Delete cadence'),
   modalCancel: __('Cancel'),
-  deprecationBadgeText: s__('Iterations|Requires update'),
+  deprecationBadgeText: s__('Iterations|Can be converted'),
 });
 
 export default {
@@ -268,7 +268,7 @@ export default {
       >
       <gl-badge
         v-if="!automatic"
-        variant="danger"
+        variant="info"
         class="gl-mr-2 gl-display-none gl-sm-display-inline-block"
       >
         <gl-icon name="warning" />
