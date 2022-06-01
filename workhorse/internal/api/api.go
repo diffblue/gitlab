@@ -3,6 +3,7 @@ package api
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -298,6 +299,32 @@ func (api *API) PreAuthorize(suffix string, r *http.Request) (_ *http.Response, 
 	}
 
 	return httpResponse, authResponse, nil
+}
+
+// PreAuthorizeFixedPath makes an internal Workhorse API call to a fixed
+// path, using the HTTP headers of r.
+func (api *API) PreAuthorizeFixedPath(r *http.Request, method string, path string) (*Response, error) {
+	authReq, err := http.NewRequestWithContext(r.Context(), method, api.URL.String(), nil)
+	if err != nil {
+		return nil, fmt.Errorf("construct auth request: %w", err)
+	}
+	authReq.Header = helper.HeaderClone(r.Header)
+
+	ignoredResponse, apiResponse, err := api.PreAuthorize(path, authReq)
+	if err != nil {
+		return nil, fmt.Errorf("PreAuthorize: %w", err)
+	}
+
+	// We don't need the contents of ignoredResponse but we are responsible
+	// for closing it. Part of the reason PreAuthorizeFixedPath exists is to
+	// hide this awkwardness.
+	ignoredResponse.Body.Close()
+
+	if apiResponse == nil {
+		return nil, errors.New("no api response on fixed path")
+	}
+
+	return apiResponse, nil
 }
 
 func (api *API) PreAuthorizeHandler(next HandleFunc, suffix string) http.Handler {
