@@ -204,6 +204,7 @@ module GitlabSubscriptions
       security_on_demand_scans
       security_orchestration_policies
       ssh_key_expiration_policy
+      stale_runner_cleanup_for_namespace
       status_page
       subepics
       vulnerability_auto_fix
