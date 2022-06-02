@@ -414,7 +414,9 @@ class User < ApplicationRecord
     after_transition any => :deactivated do |user|
       next unless Gitlab::CurrentSettings.user_deactivation_emails_enabled
 
-      NotificationService.new.user_deactivated(user.name, user.notification_email_or_default)
+      user.run_after_commit do
+        NotificationService.new.user_deactivated(user.name, user.notification_email_or_default)
+      end
     end
     # rubocop: enable CodeReuse/ServiceClass
 
@@ -2302,12 +2304,7 @@ class User < ApplicationRecord
       .merge(search_members)
       .shortest_traversal_ids_prefixes
 
-    # Use efficient btree index to perform search
-    if Feature.enabled?(:ci_owned_runners_unnest_index, self)
-      Ci::NamespaceMirror.contains_traversal_ids(traversal_ids)
-    else
-      Ci::NamespaceMirror.contains_any_of_namespaces(traversal_ids.map(&:last))
-    end
+    Ci::NamespaceMirror.contains_traversal_ids(traversal_ids)
   end
 end
 

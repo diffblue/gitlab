@@ -47,7 +47,7 @@ RSpec.describe Projects::InactiveProjectsDeletionCronWorker do
     it 'does not send deletion warning email for inactive projects that are already marked for deletion' do
       inactive_large_project.update!(marked_for_deletion_at: Date.current)
 
-      expect(::Projects::InactiveProjectsDeletionNotificationWorker).not_to receive(:perform_in)
+      expect(::Projects::InactiveProjectsDeletionNotificationWorker).not_to receive(:perform_async)
       expect(::Projects::DestroyService).not_to receive(:new)
       expect(::Projects::MarkForDeletionService).not_to receive(:perform_in)
 
@@ -64,8 +64,8 @@ RSpec.describe Projects::InactiveProjectsDeletionCronWorker do
         expect(redis).to receive(:hset).with('inactive_projects_deletion_warning_email_notified',
                                              "project:#{inactive_large_project.id}", Date.current)
       end
-      expect(::Projects::InactiveProjectsDeletionNotificationWorker).to receive(:perform_in).with(
-        delay, inactive_large_project.id, deletion_date).and_call_original
+      expect(::Projects::InactiveProjectsDeletionNotificationWorker).to receive(:perform_async).with(
+        inactive_large_project.id, deletion_date).and_call_original
       expect(::Projects::DestroyService).not_to receive(:new)
 
       expect { worker.perform }
@@ -86,7 +86,7 @@ RSpec.describe Projects::InactiveProjectsDeletionCronWorker do
                      15.months.ago.to_date.to_s)
         end
 
-        expect(::Projects::InactiveProjectsDeletionNotificationWorker).not_to receive(:perform_in)
+        expect(::Projects::InactiveProjectsDeletionNotificationWorker).not_to receive(:perform_async)
         expect(::Projects::MarkForDeletionService).not_to receive(:perform_in)
         expect(::Projects::DestroyService).to receive(:new).with(inactive_large_project, admin_user, {})
                                                            .at_least(:once).and_call_original
@@ -119,7 +119,7 @@ RSpec.describe Projects::InactiveProjectsDeletionCronWorker do
                        15.months.ago.to_date.to_s)
           end
 
-          expect(::Projects::InactiveProjectsDeletionNotificationWorker).not_to receive(:perform_in)
+          expect(::Projects::InactiveProjectsDeletionNotificationWorker).not_to receive(:perform_async)
           expect(::Projects::MarkForDeletionService).not_to receive(:perform_in)
           expect(::Projects::DestroyService).to receive(:new).with(inactive_large_project, admin_user, {})
                                                              .at_least(:once).and_call_original
@@ -147,7 +147,7 @@ RSpec.describe Projects::InactiveProjectsDeletionCronWorker do
                        15.months.ago.to_date.to_s)
           end
 
-          expect(::Projects::InactiveProjectsDeletionNotificationWorker).not_to receive(:perform_in)
+          expect(::Projects::InactiveProjectsDeletionNotificationWorker).not_to receive(:perform_async)
           expect(::Projects::MarkForDeletionService).to receive(:new).with(inactive_large_project, admin_user, {})
                                                                      .and_call_original
 

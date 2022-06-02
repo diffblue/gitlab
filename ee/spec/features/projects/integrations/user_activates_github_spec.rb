@@ -21,7 +21,7 @@ RSpec.describe 'User activates GitHub integration' do
 
   context 'with valid license', :js do
     before do
-      stub_licensed_features(github_project_service_integration: true)
+      stub_licensed_features(github_integration: true)
 
       visit_project_integration('GitHub')
 

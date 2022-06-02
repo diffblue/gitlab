@@ -46,8 +46,8 @@ export default {
 };
 </script>
 <template>
-  <div class="checkout gl-display-flex gl-flex-direction-column gl-align-items-center">
-    <h2 class="gl-align-self-start gl-mt-6 gl-mb-7 gl-mb-lg-5">{{ $options.i18n.checkout }}</h2>
+  <div>
+    <div class="flash-container"></div>
     <slot name="purchase-details"></slot>
     <billing-address />
     <payment-method />

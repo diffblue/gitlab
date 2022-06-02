@@ -14,6 +14,7 @@ class Groups::GroupMembersController < Groups::ApplicationController
 
   # Authorize
   before_action :authorize_admin_group_member!, except: admin_not_required_endpoints
+  before_action :authorize_read_group_member!, only: :index
 
   skip_before_action :check_two_factor_requirement, only: :leave
   skip_cross_project_access_check :index, :update, :destroy, :request_access,
@@ -27,7 +28,7 @@ class Groups::GroupMembersController < Groups::ApplicationController
     push_frontend_feature_flag(:group_member_inherited_group, @group)
 
     @sort = params[:sort].presence || sort_value_name
-    @include_relations ||= requested_relations
+    @include_relations ||= requested_relations(:groups_with_inherited_permissions)
 
     if can?(current_user, :admin_group_member, @group)
       @invited_members = invited_members

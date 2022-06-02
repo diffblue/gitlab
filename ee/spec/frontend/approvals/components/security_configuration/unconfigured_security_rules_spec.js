@@ -1,4 +1,4 @@
-import { GlDeprecatedSkeletonLoading as GlSkeletonLoading } from '@gitlab/ui';
+import { GlSkeletonLoader } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
@@ -72,7 +72,7 @@ describe('UnconfiguredSecurityRules component', () => {
       });
 
       it(`should ${shouldRender ? '' : 'not'} render the loading skeleton`, () => {
-        expect(wrapper.findComponent(GlSkeletonLoading).exists()).toBe(shouldRender);
+        expect(wrapper.findComponent(GlSkeletonLoader).exists()).toBe(shouldRender);
       });
     },
   );

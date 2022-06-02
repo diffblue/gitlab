@@ -1,3 +1,3 @@
-import initThreatMonitoringApp from 'ee/threat_monitoring';
+import initThreatMonitoringApp from 'ee/security_orchestration';
 
 initThreatMonitoringApp();

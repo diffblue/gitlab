@@ -12,8 +12,9 @@ RSpec.describe Gitlab::UsageData do
   end
 
   describe '.data' do
+    let_it_be(:group) { create(:group) }
     # using Array.new to create a different creator User for each of the projects
-    let_it_be(:projects) { Array.new(3) { create(:project, :repository, creator: create(:user, group_view: :security_dashboard)) } }
+    let_it_be(:projects) { Array.new(3) { create(:project, :repository, group: group, creator: create(:user, group_view: :security_dashboard)) } }
     let(:count_data) { subject[:counts] }
 
     let_it_be(:board) { create(:board, project: projects[0]) }

@@ -3,8 +3,11 @@
 require 'spec_helper'
 
 RSpec.describe IssueSerializer do
-  let(:resource) { create(:issue) }
-  let(:user)     { create(:user) }
+  let_it_be(:group) { create(:group) }
+  let_it_be(:project) { create(:project, group: group) }
+  let_it_be(:resource) { create(:issue, project: project) }
+  let_it_be(:user) { create(:user) }
+
   let(:json_entity) do
     described_class.new(current_user: user)
       .represent(resource, serializer: serializer)
@@ -14,7 +17,7 @@ RSpec.describe IssueSerializer do
   before do
     stub_licensed_features(epics: true)
 
-    create(:epic, :use_fixed_dates).tap do |epic|
+    create(:epic, :use_fixed_dates, group: group).tap do |epic|
       create(:epic_issue, issue: resource, epic: epic)
     end
 

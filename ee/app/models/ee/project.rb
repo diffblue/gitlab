@@ -421,7 +421,7 @@ module EE
     def github_external_pull_request_pipelines_available?
       mirror? &&
         feature_available?(:ci_cd_projects) &&
-        feature_available?(:github_project_service_integration)
+        feature_available?(:github_integration)
     end
 
     override :add_import_job
@@ -894,7 +894,7 @@ module EE
     end
 
     def github_integration_enabled?
-      feature_available?(:github_project_service_integration)
+      feature_available?(:github_integration)
     end
 
     def group_hooks

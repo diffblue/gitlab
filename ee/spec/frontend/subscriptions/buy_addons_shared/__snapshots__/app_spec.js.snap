@@ -1,17 +1,16 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Buy Addons Shared App CI Minutes labels does not show labels if input is invalid 1`] = `
-"Checkout 
-      CI minute packs are only used after you've used your subscription's monthly quota. The additional minutes will roll over month to month and are valid for one year.
+"CI minute packs are only used after you've used your subscription's monthly quota. The additional minutes will roll over month to month and are valid for one year.
      
       CI minute pack
       
             x 1,000 minutes per pack
             
               -1 CI minute packs
-             Total minutes: -1,000     Gitlab Org's CI minutes 
-          -
-         
+             Total minutes: -1,000    Gitlab Org's CI minutes 
+        -
+       
       CI minutes pack
        
       -
@@ -36,17 +35,16 @@ exports[`Buy Addons Shared App CI Minutes labels does not show labels if input i
 `;
 
 exports[`Buy Addons Shared App CI Minutes labels shows labels correctly for 1 pack 1`] = `
-"Checkout 
-      CI minute packs are only used after you've used your subscription's monthly quota. The additional minutes will roll over month to month and are valid for one year.
+"CI minute packs are only used after you've used your subscription's monthly quota. The additional minutes will roll over month to month and are valid for one year.
      
       CI minute pack
       
             x 1,000 minutes per pack =
             1,000 CI minutes
               1 CI minute pack
-             Total minutes: 1,000     Gitlab Org's CI minutes 
-          $10
-         
+             Total minutes: 1,000    Gitlab Org's CI minutes 
+        $10
+       
       CI minutes pack
       (x1) 
       $10
@@ -71,17 +69,16 @@ exports[`Buy Addons Shared App CI Minutes labels shows labels correctly for 1 pa
 `;
 
 exports[`Buy Addons Shared App CI Minutes labels shows labels correctly for 2 packs 1`] = `
-"Checkout 
-      CI minute packs are only used after you've used your subscription's monthly quota. The additional minutes will roll over month to month and are valid for one year.
+"CI minute packs are only used after you've used your subscription's monthly quota. The additional minutes will roll over month to month and are valid for one year.
      
       CI minute pack
       
             x 1,000 minutes per pack =
             2,000 CI minutes
               2 CI minute packs
-             Total minutes: 2,000     Gitlab Org's CI minutes 
-          $20
-         
+             Total minutes: 2,000    Gitlab Org's CI minutes 
+        $20
+       
       CI minutes pack
       (x2) 
       $20
@@ -106,15 +103,14 @@ exports[`Buy Addons Shared App CI Minutes labels shows labels correctly for 2 pa
 `;
 
 exports[`Buy Addons Shared App Storage labels does not show labels if input is invalid 1`] = `
-"Checkout  
-      Storage packs
+"Storage packs
       
             x 10 GB per pack
             
               -1 storage packs
-             Total storage: -10 GB     Gitlab Org's storage subscription 
-          -
-         
+             Total storage: -10 GB    Gitlab Org's storage subscription 
+        -
+       
       Storage pack
        
       -
@@ -143,15 +139,14 @@ exports[`Buy Addons Shared App Storage labels does not show labels if input is i
 `;
 
 exports[`Buy Addons Shared App Storage labels shows labels correctly for 1 pack 1`] = `
-"Checkout  
-      Storage packs
+"Storage packs
       
             x 10 GB per pack =
             10 GB of storage
               1 storage pack
-             Total storage: 10 GB     Gitlab Org's storage subscription 
-          $59.67
-         
+             Total storage: 10 GB    Gitlab Org's storage subscription 
+        $59.67
+       
       Storage pack
       (x1) 
       $59.67
@@ -180,15 +175,14 @@ exports[`Buy Addons Shared App Storage labels shows labels correctly for 1 pack 
 `;
 
 exports[`Buy Addons Shared App Storage labels shows labels correctly for 2 packs 1`] = `
-"Checkout  
-      Storage packs
+"Storage packs
       
             x 10 GB per pack =
             20 GB of storage
               2 storage packs
-             Total storage: 20 GB     Gitlab Org's storage subscription 
-          $59.67
-         
+             Total storage: 20 GB    Gitlab Org's storage subscription 
+        $59.67
+       
       Storage pack
       (x2) 
       $59.67

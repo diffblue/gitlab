@@ -1,5 +1,5 @@
 ---
-stage: Enablement
+stage: Systems
 group: Distribution
 info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://about.gitlab.com/handbook/engineering/ux/technical-writing/#assignments
 ---
@@ -329,7 +329,7 @@ Find where your version sits in the upgrade path below, and upgrade GitLab
 accordingly, while also consulting the
 [version-specific upgrade instructions](#version-specific-upgrading-instructions):
 
-`8.11.Z` -> `8.12.0` -> `8.17.7` -> `9.5.10` -> `10.8.7` -> [`11.11.8`](#1200) -> `12.0.12` -> [`12.1.17`](#1210) -> [`12.10.14`](#12100) -> `13.0.14` -> [`13.1.11`](#1310) -> [`13.8.8`](#1388) -> [`13.12.15`](#13120) -> [`14.0.12`](#1400) -> [`14.9.0`](#1490) -> [latest `14.Y.Z`](https://gitlab.com/gitlab-org/gitlab/-/releases)
+`8.11.Z` -> `8.12.0` -> `8.17.7` -> `9.5.10` -> `10.8.7` -> [`11.11.8`](#1200) -> `12.0.12` -> [`12.1.17`](#1210) -> [`12.10.14`](#12100) -> `13.0.14` -> [`13.1.11`](#1310) -> [`13.8.8`](#1388) -> [`13.12.15`](#13120) -> [`14.0.12`](#1400) -> [`14.9.0`](#1490) -> [`14.10.Z`](#1410) -> [`15.0.Z`](#1500) -> [latest `15.Y.Z`](https://gitlab.com/gitlab-org/gitlab/-/releases)
 
 The following table, while not exhaustive, shows some examples of the supported
 upgrade paths.
@@ -337,7 +337,9 @@ Additional steps between the mentioned versions are possible. We list the minima
 
 | Target version | Your version | Supported upgrade path                                                                               | Note                                                                                                                              |
 | -------------- | ------------ | ---------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| `14.6.2`       | `13.10.2`    | `13.10.2` -> `13.12.15` -> `14.0.12` -> `14.6.2`                                                     | Two intermediate versions are required: `13.12` and `14.0`, then `14.6.2`.                                                      |
+| `15.1.0`       | `14.6.2`     | `14.6.2` -> `14.9.4` -> `14.10.3` -> `15.0.0` -> `15.1.0`                                            | Three intermediate versions are required: `14.9` and `14.10`, `15.0`, then `15.1.0`.                                              |
+| `15.0.0`       | `14.6.2`     | `14.6.2` -> `14.9.4` -> `14.10.3` -> `15.0.0`                                                        | Two intermediate versions are required: `14.9` and `14.10`, then `15.0.0`.                                                        |
+| `14.6.2`       | `13.10.2`    | `13.10.2` -> `13.12.15` -> `14.0.12` -> `14.6.2`                                                     | Two intermediate versions are required: `13.12` and `14.0`, then `14.6.2`.                                                        |
 | `14.1.8`       | `13.9.2`     | `13.9.2` -> `13.12.15` -> `14.0.12` -> `14.1.8`                                                      | Two intermediate versions are required: `13.12` and `14.0`, then `14.1.8`.                                                        |
 | `13.12.15`     | `12.9.2`     | `12.9.2` -> `12.10.14` -> `13.0.14`  -> `13.1.11` -> `13.8.8` -> `13.12.15`                          | Four intermediate versions are required: `12.10`, `13.0`, `13.1` and `13.8.8`, then `13.12.15`.                                   |
 | `13.2.10`      | `11.5.0`     | `11.5.0` -> `11.11.8` -> `12.0.12` -> `12.1.17` -> `12.10.14` -> `13.0.14` -> `13.1.11` -> `13.2.10` | Six intermediate versions are required: `11.11`, `12.0`, `12.1`, `12.10`, `13.0` and `13.1`, then `13.2.10`.                      |
@@ -517,7 +519,8 @@ that may remain stuck permanently in a **pending** state.
   sudo printf "x /tmp/gitaly-%s-*\n" hooks git-exec-path >/etc/tmpfiles.d/gitaly-workaround.conf
   ```
 
-  This issue is fixed in GitLab 14.10 and later.
+  This issue is fixed in GitLab 14.10 and later when using the [Gitaly runtime directory](https://docs.gitlab.com/omnibus/update/gitlab_14_changes.html#gitaly-runtime-directory)
+  to specify a location to store persistent files.
 
 ### 14.6.0
 
@@ -750,6 +753,15 @@ Other issues:
   [Git version provided by Gitaly](../install/installation.md#git).
 
 - See [Maintenance mode issue in GitLab 13.9 to 14.4](#maintenance-mode-issue-in-gitlab-139-to-144).
+
+- GitLab 13.11 includes a faulty background migration ([`RescheduleArtifactExpiryBackfillAgain`](https://gitlab.com/gitlab-org/gitlab/-/blob/ccc70031b843ff8cff1185988c2e472a521c2701/db/post_migrate/20210413132500_reschedule_artifact_expiry_backfill_again.rb))
+  that incorrectly sets the `expire_at` column in the `ci_job_artifacts` database table.
+  Incorrect `expire_at` values can potentially cause data loss.
+
+  To prevent this risk of data loss, you must remove the content of the `RescheduleArtifactExpiryBackfillAgain`
+  migration, which makes it a no-op migration. You can repeat the changes from the
+  [commit that makes the migration no-op in 14.9 and later](https://gitlab.com/gitlab-org/gitlab/-/blob/42c3dfc5a1c8181767bbb5c76e7c5fa6fefbbc2b/db/post_migrate/20210413132500_reschedule_artifact_expiry_backfill_again.rb).
+  For more information, please see [how to disable a data migration](../development/database/deleting_migrations.md#how-to-disable-a-data-migration).
 
 ### 13.10.0
 

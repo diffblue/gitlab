@@ -26,40 +26,26 @@ module AuditEvents
       return unless group.licensed_feature_available?(:external_audit_events)
 
       group.external_audit_event_destinations.each do |destination|
-        headers = { STREAMING_TOKEN_HEADER_KEY => destination.verification_token }
-        headers[EVENT_TYPE_HEADER_KEY] = audit_operation if audit_operation.present?
-
         Gitlab::HTTP.post(destination.destination_url,
-                          body: Gitlab::Json::LimitedEncoder.encode(audit_event.as_json, limit: REQUEST_BODY_SIZE_LIMIT),
+                          body: request_body(audit_event, audit_operation),
                           use_read_total_timeout: true,
-                          headers: headers)
+                          headers: {
+                            STREAMING_TOKEN_HEADER_KEY => destination.verification_token,
+                            EVENT_TYPE_HEADER_KEY => audit_operation
+                          })
       rescue URI::InvalidURIError => e
         Gitlab::ErrorTracking.log_exception(e)
       rescue *Gitlab::HTTP::HTTP_ERRORS
       end
-
-    rescue ActiveRecord::RecordNotFound => e
-      # TODO: Remove this temporary rescue block. Issue - https://gitlab.com/gitlab-org/gitlab/-/issues/361931
-      # These jobs were queued with old args i.e. [audit_event_id, audit_event_json] i.e. before
-      # the MR was deployed https://gitlab.com/gitlab-org/gitlab/-/merge_requests/86881. This MR didn't follow the
-      # correct sidekiq guidelines for adding a new argument to the worker. This led to inconsistencies and thus
-      # the new code maps these args incorrectly as:
-      # Actual args      -> Args received in the new worker code.
-      # audit_event_id   -> audit_operation
-      # audit_event_json -> audit_event_id
-      # N/A              -> audit_event_json
-      # The above incorrect mapping leads to ActiveRecord::RecordNotFound as the worker tries to find an AuditEvent
-      # with id = audit_event_json.
-
-      # Don't re-enqueue the job for genuine errors that are not related to the incompatibility issue
-      return if audit_event_id.instance_of?(Integer)
-
-      Gitlab::ErrorTracking.track_exception(e)
-      # setting audit_operation as nil since we don't have that information.
-      AuditEvents::AuditEventStreamingWorker.perform_async(nil, audit_operation, audit_event_id)
     end
 
     private
+
+    def request_body(audit_event, audit_operation)
+      body = audit_event.as_json
+      body[:event_type] = audit_operation
+      Gitlab::Json::LimitedEncoder.encode(body, limit: REQUEST_BODY_SIZE_LIMIT)
+    end
 
     # Fetches audit event from database if audit_event_id is present
     # Or parses audit event json into instance of AuditEvent if audit_event_json is present

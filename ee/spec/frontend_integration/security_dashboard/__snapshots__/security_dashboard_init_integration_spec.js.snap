@@ -12,62 +12,64 @@ exports[`Security Dashboard default states sets up group-level 1`] = `
       class="security-charts gl-display-grid"
     >
       <section
-        class="gl-border-solid gl-rounded-base gl-border-1 gl-border-gray-100"
+        class="gl-border-solid gl-rounded-base gl-border-1 gl-border-gray-100 gl-display-flex gl-flex-direction-column"
       >
-        <div
+        <header
           class="gl-p-5"
         >
-          <header
-            id="vulnerability-chart-header"
+          <h4
+            class="gl-mt-0 gl-mb-3"
+            data-testid="title"
           >
-            <h4
-              class="gl-my-0"
-            >
-        Vulnerabilities over time
-            </h4>
-            <p
-              class="gl-text-secondary"
-              data-testid="timeInfo"
-            >
-        June 6th to today
-            </p>
-          </header>
+    Vulnerabilities over time
+          </h4>
+          <p
+            class="gl-text-secondary gl-m-0"
+            data-testid="help-text"
+          >
+    June 6th to today
+          </p>
           <div
-            class="gl-display-flex btn-group"
-            role="group"
+            class="gl-mt-5"
+            data-testid="controls"
           >
-            <button
-              class="btn btn-default btn-md gl-button selected"
-              type="button"
+            <div
+              class="gl-display-flex btn-group"
+              role="group"
             >
-              <span
-                class="gl-button-text"
+              <button
+                class="btn btn-default btn-md gl-button selected"
+                type="button"
               >
+                <span
+                  class="gl-button-text"
+                >
     30 Days
-              </span>
-            </button>
-            <button
-              class="btn btn-default btn-md gl-button"
-              type="button"
-            >
-              <span
-                class="gl-button-text"
+                </span>
+              </button>
+              <button
+                class="btn btn-default btn-md gl-button"
+                type="button"
               >
+                <span
+                  class="gl-button-text"
+                >
     60 Days
-              </span>
-            </button>
-            <button
-              class="btn btn-default btn-md gl-button"
-              type="button"
-            >
-              <span
-                class="gl-button-text"
+                </span>
+              </button>
+              <button
+                class="btn btn-default btn-md gl-button"
+                type="button"
               >
+                <span
+                  class="gl-button-text"
+                >
     90 Days
-              </span>
-            </button>
+                </span>
+              </button>
+            </div>
           </div>
-        </div>
+        </header>
         <div
           class="gl-spinner-container gl-my-12"
           role="status"
@@ -79,16 +81,21 @@ exports[`Security Dashboard default states sets up group-level 1`] = `
         </div>
       </section>
       <section
-        class="gl-border-solid gl-border-1 gl-border-gray-100 gl-rounded-base gl-display-flex gl-flex-direction-column"
+        class="gl-border-solid gl-rounded-base gl-border-1 gl-border-gray-100 gl-display-flex gl-flex-direction-column"
       >
         <header
           class="gl-p-5"
         >
           <h4
-            class="gl-my-0"
+            class="gl-mt-0 gl-mb-3"
+            data-testid="title"
           >
-      Project security status
+    Project security status
           </h4>
+          <p
+            class="gl-text-secondary gl-m-0"
+            data-testid="help-text"
+          />
         </header>
         <div
           class="gl-spinner-container gl-my-12"
@@ -117,62 +124,64 @@ exports[`Security Dashboard default states sets up instance-level 1`] = `
       class="security-charts gl-display-grid"
     >
       <section
-        class="gl-border-solid gl-rounded-base gl-border-1 gl-border-gray-100"
+        class="gl-border-solid gl-rounded-base gl-border-1 gl-border-gray-100 gl-display-flex gl-flex-direction-column"
       >
-        <div
+        <header
           class="gl-p-5"
         >
-          <header
-            id="vulnerability-chart-header"
+          <h4
+            class="gl-mt-0 gl-mb-3"
+            data-testid="title"
           >
-            <h4
-              class="gl-my-0"
-            >
-        Vulnerabilities over time
-            </h4>
-            <p
-              class="gl-text-secondary"
-              data-testid="timeInfo"
-            >
-        June 6th to today
-            </p>
-          </header>
+    Vulnerabilities over time
+          </h4>
+          <p
+            class="gl-text-secondary gl-m-0"
+            data-testid="help-text"
+          >
+    June 6th to today
+          </p>
           <div
-            class="gl-display-flex btn-group"
-            role="group"
+            class="gl-mt-5"
+            data-testid="controls"
           >
-            <button
-              class="btn btn-default btn-md gl-button selected"
-              type="button"
+            <div
+              class="gl-display-flex btn-group"
+              role="group"
             >
-              <span
-                class="gl-button-text"
+              <button
+                class="btn btn-default btn-md gl-button selected"
+                type="button"
               >
+                <span
+                  class="gl-button-text"
+                >
     30 Days
-              </span>
-            </button>
-            <button
-              class="btn btn-default btn-md gl-button"
-              type="button"
-            >
-              <span
-                class="gl-button-text"
+                </span>
+              </button>
+              <button
+                class="btn btn-default btn-md gl-button"
+                type="button"
               >
+                <span
+                  class="gl-button-text"
+                >
     60 Days
-              </span>
-            </button>
-            <button
-              class="btn btn-default btn-md gl-button"
-              type="button"
-            >
-              <span
-                class="gl-button-text"
+                </span>
+              </button>
+              <button
+                class="btn btn-default btn-md gl-button"
+                type="button"
               >
+                <span
+                  class="gl-button-text"
+                >
     90 Days
-              </span>
-            </button>
+                </span>
+              </button>
+            </div>
           </div>
-        </div>
+        </header>
         <div
           class="gl-spinner-container gl-my-12"
           role="status"
@@ -184,16 +193,21 @@ exports[`Security Dashboard default states sets up instance-level 1`] = `
         </div>
       </section>
       <section
-        class="gl-border-solid gl-border-1 gl-border-gray-100 gl-rounded-base gl-display-flex gl-flex-direction-column"
+        class="gl-border-solid gl-rounded-base gl-border-1 gl-border-gray-100 gl-display-flex gl-flex-direction-column"
       >
         <header
           class="gl-p-5"
         >
           <h4
-            class="gl-my-0"
+            class="gl-mt-0 gl-mb-3"
+            data-testid="title"
           >
-      Project security status
+    Project security status
           </h4>
+          <p
+            class="gl-text-secondary gl-m-0"
+            data-testid="help-text"
+          />
         </header>
         <div
           class="gl-spinner-container gl-my-12"

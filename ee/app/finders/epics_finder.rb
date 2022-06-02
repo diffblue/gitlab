@@ -28,6 +28,7 @@
 #   starts_with_iid: string (containing a number)
 #   confidential: boolean
 #   hierarchy_order: :desc or :acs, default :acs when searched by child_id
+#   top_level_hierarchy_only: boolean
 
 class EpicsFinder < IssuableFinder
   include TimeFrameFilter
@@ -186,9 +187,13 @@ class EpicsFinder < IssuableFinder
 
   # rubocop: disable CodeReuse/ActiveRecord
   def by_parent(items)
-    return items unless parent_id?
-
-    items.where(parent_id: params[:parent_id])
+    if top_level_only? && !parent_id?
+      items.where(parent_id: nil)
+    elsif parent_id?
+      items.where(parent_id: params[:parent_id])
+    else
+      items
+    end
   end
   # rubocop: enable CodeReuse/ActiveRecord
 
@@ -294,5 +299,9 @@ class EpicsFinder < IssuableFinder
 
   def include_ancestors
     @include_ancestors ||= params.fetch(:include_ancestor_groups, false)
+  end
+
+  def top_level_only?
+    params.fetch(:top_level_hierarchy_only, false)
   end
 end

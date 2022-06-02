@@ -1,16 +1,13 @@
 <template>
-  <div
-    class="row gl-flex-grow-1 gl-flex-direction-column gl-flex-nowrap gl-lg-flex-direction-row gl-xl-flex-direction-row gl-lg-flex-wrap gl-xl-flex-wrap"
-  >
-    <div
-      class="checkout-pane gl-px-3 gl-pt-5 gl-align-items-center gl-bg-gray-10 col-lg-7 gl-display-flex gl-flex-direction-column gl-flex-grow-1"
-    >
-      <slot name="checkout"></slot>
-    </div>
-    <div
-      class="gl-pb-3 gl-px-3 gl-lg-px-7 col-lg-5 gl-display-flex gl-flex-direction-row gl-justify-content-center"
-    >
-      <slot name="order-summary"></slot>
+  <div>
+    <h2 class="gl-lg-mx-12 gl-mt-0 gl-mb-6">{{ s__('Checkout|Checkout') }}</h2>
+    <div class="gl-lg-display-flex gl-flex-direction-row gl-flex-nowrap">
+      <div class="gl-lg-ml-12 gl-lg-mr-10 gl-px-0">
+        <slot name="checkout"></slot>
+      </div>
+      <div class="gl-lg-ml-10 gl-lg-mr-12 gl-px-0">
+        <slot name="order-summary"></slot>
+      </div>
     </div>
   </div>
 </template>

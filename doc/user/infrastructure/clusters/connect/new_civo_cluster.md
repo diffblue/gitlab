@@ -37,7 +37,7 @@ To import the project:
 
 1. On the top bar, select **Menu > Create new project**.
 1. Select **Import project**.
-1. Select **Repo by URL**.
+1. Select **Repository by URL**.
 1. For the **Git repository URL**, enter `https://gitlab.com/civocloud/gitlab-terraform-civo.git`.
 1. Complete the fields and select **Create project**.
 
@@ -64,7 +64,7 @@ Use CI/CD environment variables to configure your project.
 
 1. On the left sidebar, select **Settings > CI/CD**.
 1. Expand **Variables**.
-1. Set the variable `BASE64_CIVO_CREDENTIALS` to the [token](https://www.civo.com/account/security) from your Civo account. 
+1. Set the variable `BASE64_CIVO_CREDENTIALS` to the [token](https://www.civo.com/account/security) from your Civo account.
 1. Set the variable `TF_VAR_agent_token` to the agent token you received in the previous task.
 1. Set the variable `TF_VAR_kas_address` to the agent server address in the previous task.
 

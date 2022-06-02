@@ -28,6 +28,18 @@ RSpec.describe Namespaces::FreeUserCap::DeactivateMembersOverLimitService, :saas
       described_class.new(group).execute
     end
 
+    it 'calls UserProjectAccessChangedService' do
+      expect_next_instance_of(UserProjectAccessChangedService) do |service|
+        expect(service)
+          .to receive(:execute)
+                .with(
+                  blocking: false,
+                  priority: UserProjectAccessChangedService::LOW_PRIORITY)
+      end
+
+      described_class.new(group).execute
+    end
+
     context 'when an error occurs' do
       before do
         allow_next_instance_of(described_class) do |instance|

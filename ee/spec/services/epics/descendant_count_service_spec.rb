@@ -10,7 +10,7 @@ RSpec.describe Epics::DescendantCountService do
   let_it_be(:epic1) { create(:epic, group: subgroup, parent: parent_epic, state: :opened) }
   let_it_be(:epic2) { create(:epic, group: subgroup, parent: parent_epic, state: :closed) }
 
-  let_it_be(:project) { create(:project, :private, group: group)}
+  let_it_be(:project) { create(:project, :private, group: subgroup)}
   let_it_be(:issue1) { create(:issue, project: project, state: :opened, health_status: :on_track) }
   let_it_be(:issue2) { create(:issue, project: project, state: :closed, health_status: :on_track) }
   let_it_be(:issue3) { create(:issue, project: project, state: :opened) }

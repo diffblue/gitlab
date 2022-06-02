@@ -28,11 +28,18 @@ module Namespaces
       def deactivate_memberships
         namespace
           .memberships_to_be_deactivated
-          .pluck(:id)
+          .pluck(:id, :user_id)
           .each_slice(BATCH_SIZE) do |slice|
+          ids = slice.map(&:first)
+          user_ids = slice.map(&:second)
           Member
-            .where(id: slice)
+            .where(id: ids)
             .update_all(state: ::Member::STATE_AWAITING)
+
+          unique_user_ids = user_ids.uniq
+          UserProjectAccessChangedService.new(unique_user_ids)
+            .execute(blocking: false,
+                     priority: UserProjectAccessChangedService::LOW_PRIORITY)
         end
       end
       # rubocop: enable CodeReuse/ActiveRecord

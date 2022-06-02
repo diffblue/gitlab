@@ -663,18 +663,6 @@ module Gitlab
         { compliance_unique_visits: results }
       end
 
-      def search_unique_visits_data
-        events = ::Gitlab::UsageDataCounters::HLLRedisCounter.events_for_category('search')
-        results = events.each_with_object({}) do |event, hash|
-          hash[event] = redis_usage_data { ::Gitlab::UsageDataCounters::HLLRedisCounter.unique_events(event_names: event, **weekly_time_range) }
-        end
-
-        results['search_unique_visits_for_any_target_weekly'] = redis_usage_data { ::Gitlab::UsageDataCounters::HLLRedisCounter.unique_events(event_names: events, **weekly_time_range) }
-        results['search_unique_visits_for_any_target_monthly'] = redis_usage_data { ::Gitlab::UsageDataCounters::HLLRedisCounter.unique_events(event_names: events, **monthly_time_range) }
-
-        { search_unique_visits: results }
-      end
-
       def action_monthly_active_users(time_period)
         date_range = { date_from: time_period[:created_at].first, date_to: time_period[:created_at].last }
 
@@ -724,7 +712,6 @@ module Gitlab
           .merge(usage_activity_by_stage(:usage_activity_by_stage_monthly, monthly_time_range_db_params))
           .merge(analytics_unique_visits_data)
           .merge(compliance_unique_visits_data)
-          .merge(search_unique_visits_data)
           .merge(redis_hll_counters)
           .deep_merge(aggregated_metrics_data)
       end
@@ -828,9 +815,7 @@ module Gitlab
       def total_alert_issues
         # Remove prometheus table queries once they are deprecated
         # To be removed with https://gitlab.com/gitlab-org/gitlab/-/issues/217407.
-        add count(Issue.with_alert_management_alerts, start: minimum_id(Issue), finish: maximum_id(Issue)),
-          count(::Issue.with_self_managed_prometheus_alert_events, start: minimum_id(Issue), finish: maximum_id(Issue)),
-          count(::Issue.with_prometheus_alert_events, start: minimum_id(Issue), finish: maximum_id(Issue))
+        add_metric('IssuesCreatedFromAlertsMetric')
       end
 
       def clear_memoized
@@ -877,7 +862,7 @@ module Gitlab
           gitlab_migration: add_metric('CountBulkImportsEntitiesMetric', time_frame: time_frame, options: { source_type: :project_entity })
         }
 
-        counters[:total] = add(*counters.values)
+        counters[:total] = add_metric('CountImportedProjectsTotalMetric', time_frame: time_frame)
 
         counters
       end

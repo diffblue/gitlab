@@ -1,5 +1,5 @@
 <script>
-import { GlTooltipDirective, GlTableLite, GlLoadingIcon } from '@gitlab/ui';
+import { GlTooltipDirective, GlTableLite } from '@gitlab/ui';
 import { GlSparklineChart } from '@gitlab/ui/dist/charts';
 import { set } from 'lodash';
 import { SEVERITY_LEVELS, DAYS } from 'ee/security_dashboard/store/constants';
@@ -13,6 +13,7 @@ import {
 import { formattedChangeInPercent } from '~/lib/utils/number_utils';
 import { s__, sprintf } from '~/locale';
 import { createAlert } from '~/flash';
+import SecurityDashboardCard from './security_dashboard_card.vue';
 import ChartButtons from './vulnerabilities_over_time_chart_buttons.vue';
 
 const ISO_DATE = 'isoDate';
@@ -29,10 +30,10 @@ const severityLevels = [
 
 export default {
   components: {
+    SecurityDashboardCard,
     ChartButtons,
     GlSparklineChart,
     GlTableLite,
-    GlLoadingIcon,
     SeverityBadge,
   },
   directives: {
@@ -161,26 +162,22 @@ export default {
 </script>
 
 <template>
-  <section class="gl-border-solid gl-rounded-base gl-border-1 gl-border-gray-100">
-    <div class="gl-p-5">
-      <header id="vulnerability-chart-header">
-        <h4 class="gl-my-0">
-          {{ __('Vulnerabilities over time') }}
-        </h4>
-        <p data-testid="timeInfo" class="gl-text-secondary">
-          {{ dateInfo }}
-        </p>
-      </header>
+  <security-dashboard-card :is-loading="isLoadingHistory">
+    <template #title>
+      {{ __('Vulnerabilities over time') }}
+    </template>
+    <template #help-text>
+      {{ dateInfo }}
+    </template>
+    <template #controls>
       <chart-buttons
         :days="$options.days"
         :active-day="selectedDayRange"
         @days-selected="setSelectedDayRange"
       />
-    </div>
+    </template>
 
-    <gl-loading-icon v-if="isLoadingHistory" size="lg" class="gl-my-12" />
     <gl-table-lite
-      v-else
       :fields="$options.fields"
       :items="charts"
       class="js-vulnerabilities-chart-severity-level-breakdown gl-mb-3"
@@ -215,5 +212,5 @@ export default {
         <span ref="currentVulnerabilitiesCount">{{ value }}</span>
       </template>
     </gl-table-lite>
-  </section>
+  </security-dashboard-card>
 </template>

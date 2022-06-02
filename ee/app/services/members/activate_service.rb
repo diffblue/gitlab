@@ -26,14 +26,10 @@ module Members
       return error(_('No group provided')) unless group
       return error(_('You do not have permission to approve a member'), :forbidden) unless allowed?
       return error(_('You can only approve an indivdual user, member, or all members')) unless valid_params?
+      return error(_('You cannot approve all pending members on a free plan')) if activate_all && group.free_plan?
+      return error(_('There is no seat left to activate the member')) unless has_capacity_left?
 
-      if activate_memberships
-        log_event
-
-        success
-      else
-        error(_('No memberships found'), :bad_request)
-      end
+      activate_memberships
     end
 
     private
@@ -45,16 +41,25 @@ module Members
     end
 
     def activate_memberships
-      memberships_found = false
       memberships = activate_all ? awaiting_memberships : scoped_memberships
 
-      memberships.find_each do |member|
-        memberships_found = true
+      affected_user_ids = Set.new
 
-        member.activate
+      memberships.find_each do |member|
+        member.update_columns(state: ::Member::STATE_ACTIVE, updated_at: Time.current)
+
+        affected_user_ids.add(member.user_id)
       end
 
-      memberships_found
+      if !affected_user_ids.empty?
+        UserProjectAccessChangedService.new(affected_user_ids.to_a).execute(blocking: false)
+
+        log_audit_event unless activate_all
+        log_event
+        success
+      else
+        error(_('No memberships found'), :bad_request)
+      end
     end
 
     # rubocop: disable CodeReuse/ActiveRecord
@@ -77,6 +82,12 @@ module Members
       can?(current_user, :admin_group_member, group)
     end
 
+    def has_capacity_left?
+      return true if activate_all && !group.free_plan?
+
+      group.root_ancestor.capacity_left_for_user?(user || member.user)
+    end
+
     def log_event
       log_params = {
         group: group.id,
@@ -88,8 +99,20 @@ module Members
           params[:user] = user.id if user
         end
       end
-
       Gitlab::AppLogger.info(log_params)
+    end
+
+    def log_audit_event
+      target = user || member&.user
+      return unless target
+
+      ::Gitlab::Audit::Auditor.audit(
+        name: 'change_membership_state',
+        author: current_user,
+        scope: group,
+        target: target,
+        message: 'Changed the membership state to active'
+      )
     end
   end
 end

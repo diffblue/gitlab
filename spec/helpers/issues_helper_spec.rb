@@ -302,7 +302,7 @@ RSpec.describe IssuesHelper do
         is_anonymous_search_disabled: 'true',
         is_issue_repositioning_disabled: 'true',
         is_project: 'true',
-        is_public_visibility_restricted: 'false',
+        is_public_visibility_restricted: Gitlab::CurrentSettings.restricted_visibility_levels ? 'false' : '',
         is_signed_in: current_user.present?.to_s,
         jira_integration_path: help_page_url('integration/jira/issues', anchor: 'view-jira-issues'),
         markdown_help_path: help_page_path('user/markdown'),
@@ -337,6 +337,16 @@ RSpec.describe IssuesHelper do
         let(:current_user) { nil }
       end
     end
+
+    context 'when restricted visibility levels is nil' do
+      before do
+        allow(Gitlab::CurrentSettings).to receive(:restricted_visibility_levels).and_return(nil)
+      end
+
+      it_behaves_like 'issues list data' do
+        let(:current_user) { double.as_null_object }
+      end
+    end
   end
 
   describe '#group_issues_list_data' do
@@ -355,12 +365,14 @@ RSpec.describe IssuesHelper do
       expected = {
         autocomplete_award_emojis_path: autocomplete_award_emojis_path,
         calendar_path: '#',
+        can_create_projects: 'true',
         empty_state_svg_path: '#',
         full_path: group.full_path,
         has_any_issues: false.to_s,
         has_any_projects: true.to_s,
         is_signed_in: current_user.present?.to_s,
         jira_integration_path: help_page_url('integration/jira/issues', anchor: 'view-jira-issues'),
+        new_project_path: new_project_path(namespace_id: group.id),
         rss_path: '#',
         sign_in_path: new_user_session_path
       }

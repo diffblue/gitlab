@@ -7,10 +7,16 @@ import BoardListHeader from 'ee/boards/components/board_list_header.vue';
 import defaultGetters from 'ee/boards/stores/getters';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import { boardListQueryResponse, mockList, mockLabelList } from 'jest/boards/mock_data';
+import {
+  boardListQueryResponse,
+  epicBoardListQueryResponse,
+  mockList,
+  mockLabelList,
+} from 'jest/boards/mock_data';
 import { ListType, inactiveId } from '~/boards/constants';
 import boardsEventHub from '~/boards/eventhub';
 import listQuery from 'ee/boards/graphql/board_lists_deferred.query.graphql';
+import epicListQuery from 'ee/boards/graphql/epic_board_lists_deferred.query.graphql';
 import sidebarEventHub from '~/sidebar/event_hub';
 
 Vue.use(VueApollo);
@@ -52,6 +58,7 @@ describe('Board List Header Component', () => {
     weightFeatureAvailable = false,
     canCreateEpic = true,
     listQueryHandler = jest.fn().mockResolvedValue(boardListQueryResponse()),
+    glFeatures = { epicBoardTotalWeight: true },
     currentUserId = 1,
     state = { activeId: inactiveId },
     getters = {},
@@ -71,7 +78,11 @@ describe('Board List Header Component', () => {
       );
     }
 
-    fakeApollo = createMockApollo([[listQuery, listQueryHandler]]);
+    fakeApollo = createMockApollo([
+      [listQuery, listQueryHandler],
+      [epicListQuery, jest.fn().mockResolvedValue(epicBoardListQueryResponse())],
+    ]);
+
     store = new Vuex.Store({
       state,
       getters: {
@@ -95,6 +106,7 @@ describe('Board List Header Component', () => {
         weightFeatureAvailable,
         currentUserId,
         canCreateEpic,
+        glFeatures,
       },
     });
   };
@@ -211,15 +223,24 @@ describe('Board List Header Component', () => {
   });
 
   describe('weightFeatureAvailable', () => {
-    it('weightFeatureAvailable is true', async () => {
-      createComponent({ weightFeatureAvailable: true });
+    describe('weightFeatureAvailable is true', () => {
+      it.each`
+        isEpicBoard | totalWeight
+        ${true}     | ${epicBoardListQueryResponse().data.epicBoardList.metadata.totalWeight}
+        ${false}    | ${boardListQueryResponse().data.boardList.totalWeight}
+      `('isEpicBoard is $isEpicBoard', async ({ isEpicBoard, totalWeight }) => {
+        createComponent({
+          weightFeatureAvailable: true,
+          getters: { isEpicBoard: () => isEpicBoard },
+        });
 
-      await waitForPromises();
+        await waitForPromises();
 
-      const weightTooltip = wrapper.findComponent({ ref: 'weightTooltip' });
+        const weightTooltip = wrapper.findComponent({ ref: 'weightTooltip' });
 
-      expect(weightTooltip.exists()).toBe(true);
-      expect(weightTooltip.text()).toContain(boardListQueryResponse().data.boardList.totalWeight);
+        expect(weightTooltip.exists()).toBe(true);
+        expect(weightTooltip.text()).toContain(totalWeight);
+      });
     });
 
     it('weightFeatureAvailable is false', () => {

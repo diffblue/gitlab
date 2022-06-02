@@ -223,6 +223,8 @@
   - 1
 - - integrations_create_external_cross_reference
   - 1
+- - integrations_execute
+  - 1
 - - invalid_gpg_signature_update
   - 2
 - - irker
@@ -274,8 +276,6 @@
 - - metrics_dashboard_sync_dashboards
   - 1
 - - migrate_external_diffs
-  - 1
-- - namespaceless_project_destroy
   - 1
 - - namespaces_onboarding_issue_created
   - 1
@@ -364,8 +364,6 @@
 - - projects_schedule_bulk_repository_shard_moves
   - 1
 - - projects_update_repository_storage
-  - 1
-- - prometheus_create_default_alerts
   - 1
 - - propagate_integration
   - 1
@@ -460,6 +458,8 @@
 - - web_hook
   - 1
 - - web_hooks_destroy
+  - 1
+- - web_hooks_log_destroy
   - 1
 - - web_hooks_log_execution
   - 1

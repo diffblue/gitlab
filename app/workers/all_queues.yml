@@ -2371,6 +2371,15 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: integrations_execute
+  :worker_name: Integrations::ExecuteWorker
+  :feature_category: :integrations
+  :has_external_dependencies: true
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent:
+  :tags: []
 - :name: invalid_gpg_signature_update
   :worker_name: InvalidGpgSignatureUpdateWorker
   :feature_category: :source_code_management
@@ -2536,15 +2545,6 @@
 - :name: migrate_external_diffs
   :worker_name: MigrateExternalDiffsWorker
   :feature_category: :code_review
-  :has_external_dependencies:
-  :urgency: :low
-  :resource_boundary: :unknown
-  :weight: 1
-  :idempotent:
-  :tags: []
-- :name: namespaceless_project_destroy
-  :worker_name: NamespacelessProjectDestroyWorker
-  :feature_category: :authentication_and_authorization
   :has_external_dependencies:
   :urgency: :low
   :resource_boundary: :unknown
@@ -2821,15 +2821,6 @@
   :weight: 1
   :idempotent: true
   :tags: []
-- :name: prometheus_create_default_alerts
-  :worker_name: Prometheus::CreateDefaultAlertsWorker
-  :feature_category: :incident_management
-  :has_external_dependencies:
-  :urgency: :high
-  :resource_boundary: :unknown
-  :weight: 1
-  :idempotent: true
-  :tags: []
 - :name: propagate_integration
   :worker_name: PropagateIntegrationWorker
   :feature_category: :integrations
@@ -3070,6 +3061,15 @@
   :feature_category: :integrations
   :has_external_dependencies:
   :urgency: :high
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
+- :name: web_hooks_log_destroy
+  :worker_name: WebHooks::LogDestroyWorker
+  :feature_category: :integrations
+  :has_external_dependencies:
+  :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
   :idempotent: true

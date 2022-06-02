@@ -48,7 +48,7 @@ RSpec.describe EpicIssues::ListService do
         group.add_developer(user)
         list_service = described_class.new(epic, user)
 
-        new_group = create(:group, :private)
+        new_group = create(:group, :private, parent: group)
         new_group.add_developer(user)
         new_project = create(:project, namespace: new_group)
         milestone = create(:milestone, project: project)

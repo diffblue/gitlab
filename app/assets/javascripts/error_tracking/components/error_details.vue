@@ -301,7 +301,7 @@ export default {
             <gl-button
               class="ml-2"
               category="secondary"
-              variant="info"
+              variant="confirm"
               :loading="updatingResolveStatus"
               data-testid="update-resolve-status-btn"
               @click="onResolveStatusUpdate"
@@ -313,7 +313,7 @@ export default {
               class="ml-2"
               data-testid="view_issue_button"
               :href="error.gitlabIssuePath"
-              variant="success"
+              variant="confirm"
             >
               {{ __('View issue') }}
             </gl-button>
@@ -364,7 +364,6 @@ export default {
               v-if="error.gitlabIssuePath"
               data-qa-selector="view_issue_button"
               :href="error.gitlabIssuePath"
-              variant="success"
               >{{ __('View issue') }}</gl-dropdown-item
             >
             <gl-dropdown-item

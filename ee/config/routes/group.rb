@@ -159,6 +159,7 @@ constraints(::Constraints::GroupUrlConstrainer.new) do
     end
 
     resources :epic_boards, only: [:index, :show]
+    resources :protected_environments, only: [:create, :update, :destroy]
 
     namespace :security do
       resource :dashboard, only: [:show], controller: :dashboard

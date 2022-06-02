@@ -175,6 +175,8 @@ Use `include:local` instead of symbolic links.
 - The YAML file must have the extension `.yml` or `.yaml`.
 - You can [use `*` and `**` wildcards in the file path](includes.md#use-includelocal-with-wildcard-file-paths).
 
+CI/CD variables [are supported](../variables/where_variables_can_be_used.md#gitlab-ciyml-file).
+
 **Example of `include:local`**:
 
 ```yaml
@@ -208,6 +210,8 @@ use `include:file`. You can use `include:file` in combination with `include:proj
 
 - A full path, relative to the root directory (`/`). The YAML file must have the
   extension `.yml` or `.yaml`.
+
+CI/CD variables [are supported](../variables/where_variables_can_be_used.md#gitlab-ciyml-file).
 
 **Example of `include:file`**:
 
@@ -267,6 +271,8 @@ Use `include:remote` with a full URL to include a file from a different location
 - A public URL accessible by an HTTP/HTTPS `GET` request. Authentication with the
   remote URL is not supported. The YAML file must have the extension `.yml` or `.yaml`.
 
+CI/CD variables [are supported](../variables/where_variables_can_be_used.md#gitlab-ciyml-file).
+
 **Example of `include:remote`**:
 
 ```yaml
@@ -291,6 +297,8 @@ Use `include:template` to include [`.gitlab-ci.yml` templates](https://gitlab.co
 **Possible inputs**:
 
 - [`.gitlab-ci.yml` templates](https://gitlab.com/gitlab-org/gitlab/-/tree/master/lib/gitlab/ci/templates).
+
+CI/CD variables [are supported](../variables/where_variables_can_be_used.md#gitlab-ciyml-file).
 
 **Example of `include:template`**:
 
@@ -503,6 +511,8 @@ Use `after_script` to define an array of commands that run after each job, inclu
 - Single line commands.
 - Long commands [split over multiple lines](script.md#split-long-commands).
 - [YAML anchors](yaml_optimization.md#yaml-anchors-for-scripts).
+
+CI/CD variables [are supported](../variables/where_variables_can_be_used.md#gitlab-ciyml-file).
 
 **Example of `after_script`**:
 
@@ -809,8 +819,8 @@ If not defined, the default name is `artifacts`, which becomes `artifacts.zip` w
 
 **Possible inputs**:
 
-- The name of the artifacts archive. Can use [CI/CD variables](../variables/index.md). Must be combined with
-  [`artifacts:paths`](#artifactspaths).
+- The name of the artifacts archive. CI/CD variables [are supported](../variables/where_variables_can_be_used.md#gitlab-ciyml-file).
+  Must be combined with [`artifacts:paths`](#artifactspaths).
 
 **Example of `artifacts:name`**:
 
@@ -977,7 +987,7 @@ failure.
 - `on_success` (default): Upload artifacts only when the job succeeds.
 - `on_failure`: Upload artifacts only when the job fails.
 - `always`: Always upload artifacts (except when jobs time out). For example, when
-  [uploading artifacts](../unit_test_reports.md#viewing-junit-screenshots-on-gitlab)
+  [uploading artifacts](../testing/unit_test_reports.md#view-junit-screenshots-on-gitlab)
   required to troubleshoot failing tests.
 
 **Example of `artifacts:when`**:
@@ -1001,6 +1011,8 @@ Use `before_script` to define an array of commands that should run before each j
 - Single line commands.
 - Long commands [split over multiple lines](script.md#split-long-commands).
 - [YAML anchors](yaml_optimization.md#yaml-anchors-for-scripts).
+
+CI/CD variables [are supported](../variables/where_variables_can_be_used.md#gitlab-ciyml-file).
 
 **Example of `before_script`**:
 
@@ -1088,7 +1100,7 @@ no `cache:key` share the `default` cache.
 **Possible inputs**:
 
 - A string.
-- A [predefined variables](../variables/index.md).
+- A predefined [CI/CD variable](../variables/where_variables_can_be_used.md#gitlab-ciyml-file).
 - A combination of both.
 
 **Example of `cache:key`**:
@@ -1505,7 +1517,8 @@ Common environment names are `qa`, `staging`, and `production`, but you can use 
 formats:
 
 - Plain text, including letters, digits, spaces, and these characters: `-`, `_`, `/`, `$`, `{`, `}`.
-- CI/CD variables, including predefined, project, group, instance, or variables defined in the
+- [CI/CD variables](../variables/where_variables_can_be_used.md#gitlab-ciyml-file),
+  including predefined, project, group, instance, or variables defined in the
   `.gitlab-ci.yml` file. You can't use variables defined in a `script` section.
 
 **Example of `environment:name`**:
@@ -1527,7 +1540,8 @@ Set a URL for an [environment](../environments/index.md).
 **Possible inputs**: A single URL, in one of these formats:
 
 - Plain text, like `https://prod.example.com`.
-- CI/CD variables, including predefined, project, group, instance, or variables defined in the
+- [CI/CD variables](../variables/where_variables_can_be_used.md#gitlab-ciyml-file),
+  including predefined, project, group, instance, or variables defined in the
   `.gitlab-ci.yml` file. You can't use variables defined in a `script` section.
 
 **Example of `environment:url`**:
@@ -1788,6 +1802,8 @@ Use `image` to specify a Docker image that the job runs in.
 - `<image-name>` (Same as using `<image-name>` with the `latest` tag)
 - `<image-name>:<tag>`
 - `<image-name>@<digest>`
+
+CI/CD variables [are supported](../variables/where_variables_can_be_used.md#gitlab-ciyml-file).
 
 **Example of `image`**:
 
@@ -2170,8 +2186,8 @@ build_job:
 In this example, `build_job` downloads the artifacts from the latest successful `build-1` job
 on the `main` branch in the `group/project-name` project.
 
-In GitLab 13.3 and later, you can use [CI/CD variables](../variables/index.md) in `needs:project`,
-for example:
+In GitLab 13.3 and later, you can use [CI/CD variables](../variables/where_variables_can_be_used.md#gitlab-ciyml-file)
+in `needs:project`, for example:
 
 ```yaml
 build_job:
@@ -2751,7 +2767,9 @@ New tags use the SHA associated with the pipeline.
 
 **Possible inputs**:
 
-- A tag name. Can use [CI/CD variables](../variables/index.md).
+- A tag name.
+
+CI/CD variables [are supported](../variables/where_variables_can_be_used.md#gitlab-ciyml-file).
 
 **Example of `release:tag_name`**:
 
@@ -2900,7 +2918,7 @@ can be deployed to, but only one deployment can occur per device at any given ti
 **Possible inputs**:
 
 - Only letters, digits, `-`, `_`, `/`, `$`, `{`, `}`, `.`, and spaces.
-  It can't start or end with `/`.
+  It can't start or end with `/`. CI/CD variables [are supported](../variables/where_variables_can_be_used.md#gitlab-ciyml-file).
 
 **Example of `resource_group`**:
 
@@ -3178,8 +3196,9 @@ job:
   with the flags `File::FNM_PATHNAME | File::FNM_DOTMATCH | File::FNM_EXTGLOB`.
 - For performance reasons, GitLab matches a maximum of 10,000 `exists` patterns or
   file paths. After the 10,000th check, rules with patterned globs always match.
-  In other words, the `exists` rule always assumes a match in projects with more
-  than 10,000 files.
+  In other words, `exists` always reports `true` if more than 10,000 checks
+  run. Repositories with less than 10,000 files might still be impacted if the `exists`
+  rules are checked more than 10,000 times.
 - `exists` resolves to `true` if any of the listed files are found (an `OR` operation).
 
 #### `rules:allow_failure`
@@ -3262,6 +3281,8 @@ All jobs except [trigger jobs](#trigger) require a `script` keyword.
 - Single line commands.
 - Long commands [split over multiple lines](script.md#split-long-commands).
 - [YAML anchors](yaml_optimization.md#yaml-anchors-for-scripts).
+
+CI/CD variables [are supported](../variables/where_variables_can_be_used.md#gitlab-ciyml-file).
 
 **Example of `script`**:
 
@@ -3396,6 +3417,8 @@ to the image specified in the [`image`](#image) keyword.
 - `<image-name>` (Same as using `<image-name>` with the `latest` tag)
 - `<image-name>:<tag>`
 - `<image-name>@<digest>`
+
+CI/CD variables [are supported](../variables/where_variables_can_be_used.md#gitlab-ciyml-file).
 
 **Example of `services`**:
 
@@ -3567,7 +3590,8 @@ be assigned every tag listed in the job.
 **Possible inputs**:
 
 - An array of tag names.
-- [CI/CD variables](../runners/configure_runners.md#use-cicd-variables-in-tags) in GitLab 14.1 and later.
+- CI/CD variables [are supported](../variables/where_variables_can_be_used.md#gitlab-ciyml-file)
+  in GitLab 14.1 and later.
 
 **Example of `tags`**:
 
@@ -3777,6 +3801,8 @@ variable defined, the [job-level variable takes precedence](../variables/index.m
   the first character must be a letter.
 - The value must be a string.
 
+CI/CD variables [are supported](../variables/where_variables_can_be_used.md#gitlab-ciyml-file).
+
 **Examples of `variables`**:
 
 ```yaml
@@ -3842,18 +3868,18 @@ variables:
 Use `when` to configure the conditions for when jobs run. If not defined in a job,
 the default value is `when: on_success`.
 
-**Keyword type**: Job keyword. You can use it only as part of a job.
+**Keyword type**: Job keyword. You can use it as part of a job. `when: always` and `when: never` can also be used in [`workflow:rules`](#workflow).
 
 **Possible inputs**:
 
 - `on_success` (default): Run the job only when all jobs in earlier stages succeed
   or have `allow_failure: true`.
 - `manual`: Run the job only when [triggered manually](../jobs/job_control.md#create-a-job-that-must-be-run-manually).
-- `always`: Run the job regardless of the status of jobs in earlier stages.
+- `always`: Run the job regardless of the status of jobs in earlier stages. Can also be used in `workflow:rules`.
 - `on_failure`: Run the job only when at least one job in an earlier stage fails.
 - `delayed`: [Delay the execution of a job](../jobs/job_control.md#run-a-job-after-a-delay)
   for a specified duration.
-- `never`: Don't run the job.
+- `never`: Don't run the job. Can only be used in a [`rules`](#rules) section or `workflow: rules`.
 
 **Example of `when`**:
 

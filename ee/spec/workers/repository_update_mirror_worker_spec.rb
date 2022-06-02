@@ -16,7 +16,6 @@ RSpec.describe RepositoryUpdateMirrorWorker do
 
     it_behaves_like 'worker with data consistency',
                     described_class,
-                    feature_flag: :delayed_repository_update_mirror_worker,
                     data_consistency: :sticky
 
     it 'sets status as finished when update mirror service executes successfully' do
@@ -34,6 +33,15 @@ RSpec.describe RepositoryUpdateMirrorWorker do
 
       expect { subject.perform(project.id) }.to raise_error(RepositoryUpdateMirrorWorker::UpdateError, 'error')
       expect(project.reload.import_status).to eq('failed')
+    end
+
+    context 'with association preloading' do
+      it 'loads association before the first write operation' do
+        project = create(:project, :repository, :mirror, :import_started)
+
+        query_count = ActiveRecord::QueryRecorder.new { subject.perform(project.id) }.count
+        expect(query_count).to eq 9
+      end
     end
 
     context 'with another worker already running' do

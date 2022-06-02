@@ -218,7 +218,6 @@ geo_event_log: :gitlab_main
 geo_events: :gitlab_main
 geo_hashed_storage_attachments_events: :gitlab_main
 geo_hashed_storage_migrated_events: :gitlab_main
-geo_lfs_object_deleted_events: :gitlab_main
 geo_node_namespace_links: :gitlab_main
 geo_nodes: :gitlab_main
 geo_node_statuses: :gitlab_main
@@ -267,6 +266,7 @@ integrations: :gitlab_main
 internal_ids: :gitlab_main
 ip_restrictions: :gitlab_main
 issuable_metric_images: :gitlab_main
+issuable_resource_links: :gitlab_main
 issuable_severities: :gitlab_main
 issuable_slas: :gitlab_main
 issue_assignees: :gitlab_main

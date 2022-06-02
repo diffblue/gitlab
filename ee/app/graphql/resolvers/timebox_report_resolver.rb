@@ -18,9 +18,7 @@ module Resolvers
 
       response = TimeboxReportService.new(timebox, project_scopes).execute
 
-      raise GraphQL::ExecutionError, response.message if response.error?
-
-      response.payload
+      response.payload if response.success?
     end
 
     private

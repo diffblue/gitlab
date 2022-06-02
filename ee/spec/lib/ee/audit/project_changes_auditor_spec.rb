@@ -79,8 +79,9 @@ RSpec.describe EE::Audit::ProjectChangesAuditor do
       it 'creates an event when the packages enabled setting changes' do
         project.update!(packages_enabled: false)
 
-        expect { foo_instance.execute }.to change { AuditEvent.count }.by(1)
-        expect(AuditEvent.last.details[:change]).to eq 'packages_enabled'
+        expect { foo_instance.execute }.to change { AuditEvent.count }.by(2)
+        expect(AuditEvent.last(2).map { |e| e.details[:change] })
+          .to eq %w[packages_enabled package_registry_access_level]
       end
 
       it 'creates an event when the merge requests template changes' do

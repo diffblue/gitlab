@@ -81,6 +81,7 @@ module Ci
     has_many :downloadable_artifacts, -> do
       not_expired.or(where_exists(::Ci::Pipeline.artifacts_locked.where('ci_pipelines.id = ci_builds.commit_id'))).downloadable.with_job
     end, through: :latest_builds, source: :job_artifacts
+    has_many :latest_successful_builds, -> { latest.success.with_project_and_metadata }, foreign_key: :commit_id, inverse_of: :pipeline, class_name: 'Ci::Build'
 
     has_many :messages, class_name: 'Ci::PipelineMessage', inverse_of: :pipeline
 
@@ -1308,8 +1309,8 @@ module Ci
     end
 
     def has_expired_test_reports?
-      strong_memoize(:artifacts_expired) do
-        !has_reports?(::Ci::JobArtifact.test_reports.not_expired)
+      strong_memoize(:has_expired_test_reports) do
+        has_reports?(::Ci::JobArtifact.test_reports.expired)
       end
     end
 

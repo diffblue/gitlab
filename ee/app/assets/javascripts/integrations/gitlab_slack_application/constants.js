@@ -7,7 +7,9 @@ export const i18n = {
   title: s__('SlackIntegration|GitLab for Slack'),
   dropdownLabel: s__('SlackIntegration|Select a GitLab project to link with your Slack workspace.'),
   dropdownButtonText: __('Continue'),
-  noProjects: __("You don't have any projects available."),
+  noProjects: __('No projects available.'),
+  noProjectsDescription: __('Make sure you have the correct permissions to link your project.'),
+  learnMore: __('Learn more'),
   signInLabel: s__('JiraService|Sign in to GitLab.com to get started.'),
   signInButtonText: __('Sign in to GitLab'),
 };

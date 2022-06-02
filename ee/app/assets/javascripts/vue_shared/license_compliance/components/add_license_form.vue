@@ -110,8 +110,7 @@ export default {
         class="js-submit"
         :disabled="submitDisabled"
         :loading="loading"
-        category="primary"
-        variant="success"
+        variant="confirm"
         data-qa-selector="add_license_submit_button"
         @click="addLicense"
       >

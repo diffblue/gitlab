@@ -8,37 +8,28 @@ RSpec.describe SystemCheck::App::SearchCheck do
     described_class.instance_variable_set(:@info, nil)
   end
 
-  describe '#info' do
-    it 'returns search client info' do
-      allow(Gitlab::Elastic::Helper).to receive_message_chain(:default, :client, :info)
+  describe '.info' do
+    it 'returns server_info' do
+      allow(Gitlab::Elastic::Helper).to receive_message_chain(:default, :server_info)
         .and_return('the-info')
 
       expect(described_class.info).to eq('the-info')
     end
   end
 
-  describe '#distribution' do
-    context 'opensearch' do
-      it 'returns `opensearch`' do
-        allow(described_class).to receive(:info).and_return({
-          'distribution' => 'opensearch'
-        })
-        expect(described_class.distribution).to eq('opensearch')
-      end
-    end
-
-    context 'elasticsearch' do
-      it 'returns elasticsearch' do
-        allow(described_class).to receive(:info).and_return({}) # no distribution key
-        expect(described_class.distribution).to eq('elasticsearch')
-      end
+  describe '.distribution' do
+    it 'returns #info distribution' do
+      allow(described_class).to receive(:info).and_return({
+        distribution: 'some_distribution'
+      })
+      expect(described_class.distribution).to eq('some_distribution')
     end
   end
 
-  describe '#current_version' do
+  describe '.current_version' do
     it 'returns version from self.info' do
       allow(described_class).to receive(:info).and_return({
-        'version' => { 'number' => '867.53.09' }
+        version: '867.53.09'
       })
 
       expect(described_class.current_version).to eq(Gitlab::VersionInfo.parse('867.53.09'))
@@ -67,7 +58,7 @@ RSpec.describe SystemCheck::App::SearchCheck do
     end
   end
 
-  describe '.check?' do
+  describe '#check?' do
     using RSpec::Parameterized::TableSyntax
 
     subject { described_class.new.check? }
@@ -87,19 +78,20 @@ RSpec.describe SystemCheck::App::SearchCheck do
 
     with_them do
       before do
-        info = { 'version' => { 'number' => version } }
-
-        # Only opensearch includes the distribution key
-        info['distribution'] = 'opensearch' if distribution == 'opensearch'
+        info = { version: version, distribution: distribution }
 
         allow(described_class).to receive(:info).and_return(info)
       end
 
       it { is_expected.to eq(result) }
     end
+
+    it 'returns true for the current ES version', :elastic do
+      is_expected.to be_truthy
+    end
   end
 
-  describe '.show_error' do
+  describe '#show_error' do
     it 'returns the elasticsearch.md page' do
       checker = described_class.new
       error_msg = 'dummy error message'

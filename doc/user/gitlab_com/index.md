@@ -157,9 +157,10 @@ the related documentation.
 | Maximum pipeline schedules in projects                                   | `10` for Free tier, `50` for all paid tiers                                                                               | See [Number of pipeline schedules](../../administration/instance_limits.md#number-of-pipeline-schedules)                                                                                 |
 | Maximum pipelines per schedule                                           | `24` for Free tier, `288` for all paid tiers                                                                              | See [Limit the number of pipelines created by a pipeline schedule per day](../../administration/instance_limits.md#limit-the-number-of-pipelines-created-by-a-pipeline-schedule-per-day) |
 | Scheduled job archiving                                                  | 3 months (from June 22, 2020). Jobs created before that date were archived after September 22, 2020.                      | Never                                                                                                                                                                                    |
-| Maximum test cases per [unit test report](../../ci/unit_test_reports.md) | `500000`                                                                                                                  | Unlimited                                                                                                                                                                                |
+| Maximum test cases per [unit test report](../../ci/testing/unit_test_reports.md) | `500000`                                                                                                                  | Unlimited                                                                                                                                                                                |
 | Maximum registered runners                                               | Free tier: `50` per-group / `50` per-project<br/>All paid tiers: `1000` per-group  / `1000` per-project                   | See [Number of registered runners per scope](../../administration/instance_limits.md#number-of-registered-runners-per-scope)                                                             |
 | Limit of dotenv variables                                                | Free tier: `50` / Premium tier: `100` / Ultimate tier: `150`                                                              | See [Limit dotenv variables](../../administration/instance_limits.md#limit-dotenv-variables)                                                                                             |
+| Authorization token duration (minutes)                                   | `15`                          | To set a custom value, in the Rails console, run `ApplicationSetting.last.update(container_registry_token_expire_delay: <integer>)`, where `<integer>` is the desired number of minutes. |
 
 ## Package registry limits
 
@@ -186,7 +187,7 @@ the default value [is the same as for self-managed instances](../admin_area/sett
 | Setting                       | GitLab.com default |
 |-------------------------------|--------------------|
 | [Repository size including LFS](../admin_area/settings/account_and_limit_settings.md#repository-size-limit) | 10 GB |
-| Maximum import size           | 5 GB               |
+| [Maximum import size](../project/settings/import_export.md#maximum-import-file-size)                        | 5 GB  |
 | Maximum attachment size       | 10 MB              |
 
 If you are near or over the repository size limit, you can either

@@ -147,6 +147,8 @@ constraints(::Constraints::ProjectUrlConstrainer.new) do
             # See MR comment for more detail: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/27059#note_311585356
             post :create_deploy_token, path: 'deploy_token/create'
             post :cleanup
+
+            resources :branch_rules, only: [:index]
           end
 
           resources :access_tokens, only: [:index, :create] do
@@ -520,7 +522,7 @@ constraints(::Constraints::ProjectUrlConstrainer.new) do
       end
 
       namespace :prometheus do
-        resources :alerts, constraints: { id: /\d+/ }, only: [:index, :show] do # rubocop: disable Cop/PutProjectRoutesUnderScope
+        resources :alerts, constraints: { id: /\d+/ }, only: [] do # rubocop: disable Cop/PutProjectRoutesUnderScope
           post :notify, on: :collection # rubocop:todo Cop/PutProjectRoutesUnderScope
           member do
             get :metrics_dashboard # rubocop:todo Cop/PutProjectRoutesUnderScope

@@ -35,7 +35,7 @@ export default {
       <p>{{ $options.i18n.DESCRIPTION_2 }}</p>
     </template>
     <template #actions>
-      <gl-button variant="info" @click="$emit('add')">
+      <gl-button variant="confirm" @click="$emit('add')">
         {{ $options.i18n.ADD_STREAM }}
       </gl-button>
     </template>

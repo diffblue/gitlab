@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 module ProjectsHelper
+  include Gitlab::Utils::StrongMemoize
+
   def project_incident_management_setting
     @project_incident_management_setting ||= @project.incident_management_setting ||
       @project.build_incident_management_setting
@@ -331,22 +333,6 @@ module ProjectsHelper
     false
   end
 
-  def share_project_description(project)
-    share_with_group   = project.allowed_to_share_with_group?
-    share_with_members = !membership_locked?
-
-    description =
-      if share_with_group && share_with_members
-        _("You can invite a new member to %{project_name} or invite another group.")
-      elsif share_with_group
-        _("You can invite another group to %{project_name}.")
-      elsif share_with_members
-        _("You can invite a new member to %{project_name}.")
-      end
-
-    html_escape(description) % { project_name: tag.strong(project.name) }
-  end
-
   def metrics_external_dashboard_url
     @project.metrics_setting_external_dashboard_url
   end
@@ -444,6 +430,18 @@ module ProjectsHelper
 
   def import_from_gitlab_message
     configure_oauth_import_message('GitLab.com', help_page_path("integration/gitlab"))
+  end
+
+  def show_inactive_project_deletion_banner?(project)
+    return false unless project.present? && project.saved?
+    return false unless delete_inactive_projects?
+    return false unless Feature.enabled?(:inactive_projects_deletion, project.root_namespace)
+
+    project.inactive?
+  end
+
+  def inactive_project_deletion_date(project)
+    Gitlab::InactiveProjectsDeletionWarningTracker.new(project.id).scheduled_deletion_date
   end
 
   private
@@ -596,6 +594,7 @@ module ProjectsHelper
     feature = project.project_feature
     {
       packagesEnabled: !!project.packages_enabled,
+      packageRegistryAccessLevel: feature.package_registry_access_level,
       visibilityLevel: project.visibility_level,
       requestAccessEnabled: !!project.request_access_enabled,
       issuesAccessLevel: feature.issues_access_level,
@@ -734,6 +733,12 @@ module ProjectsHelper
 
       push_to_schema_breadcrumb(name, url)
       link_to(name, url)
+    end
+  end
+
+  def delete_inactive_projects?
+    strong_memoize(:delete_inactive_projects_setting) do
+      ::Gitlab::CurrentSettings.delete_inactive_projects?
     end
   end
 end

@@ -203,7 +203,7 @@ module IssuesHelper
       is_anonymous_search_disabled: Feature.enabled?(:disable_anonymous_search, type: :ops).to_s,
       is_issue_repositioning_disabled: issue_repositioning_disabled?.to_s,
       is_public_visibility_restricted:
-        Gitlab::CurrentSettings.restricted_visibility_levels.include?(Gitlab::VisibilityLevel::PUBLIC).to_s,
+        Gitlab::CurrentSettings.restricted_visibility_levels&.include?(Gitlab::VisibilityLevel::PUBLIC).to_s,
       is_signed_in: current_user.present?.to_s,
       jira_integration_path: help_page_url('integration/jira/issues', anchor: 'view-jira-issues'),
       rss_path: url_for(safe_params.merge(rss_url_options)),
@@ -238,10 +238,12 @@ module IssuesHelper
 
   def group_issues_list_data(group, current_user)
     common_issues_list_data(group, current_user).merge(
+      can_create_projects: can?(current_user, :create_projects, group).to_s,
       can_read_crm_contact: can?(current_user, :read_crm_contact, group).to_s,
       can_read_crm_organization: can?(current_user, :read_crm_organization, group).to_s,
       has_any_issues: @has_issues.to_s,
-      has_any_projects: @has_projects.to_s
+      has_any_projects: @has_projects.to_s,
+      new_project_path: new_project_path(namespace_id: group.id)
     )
   end
 

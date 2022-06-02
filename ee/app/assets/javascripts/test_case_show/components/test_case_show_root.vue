@@ -67,9 +67,6 @@ export default {
     statusBadgeText() {
       return this.isTestCaseOpen ? __('Open') : __('Archived');
     },
-    testCaseActionButtonVariant() {
-      return this.isTestCaseOpen ? 'warning' : 'default';
-    },
     testCaseActionTitle() {
       return this.isTestCaseOpen ? __('Archive test case') : __('Reopen test case');
     },
@@ -195,9 +192,7 @@ export default {
         <gl-button
           v-if="canEditTestCase"
           data-testid="archive-test-case"
-          category="secondary"
           class="d-none d-md-inline-block gl-mr-2"
-          :variant="testCaseActionButtonVariant"
           :loading="testCaseStateChangeInProgress"
           @click="handleTestCaseStateChange"
           >{{ testCaseActionTitle }}</gl-button

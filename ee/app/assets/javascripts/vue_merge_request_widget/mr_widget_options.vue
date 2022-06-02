@@ -123,7 +123,6 @@ export default {
     shouldRenderMetricsReport() {
       return Boolean(this.mr?.metricsReportsPath);
     },
-
     browserPerformanceText() {
       const { improved, degraded, same } = this.mr.browserPerformanceMetrics;
       const text = [];
@@ -403,7 +402,7 @@ export default {
       />
 
       <security-reports-app
-        v-if="shouldRenderBaseSecurityReport"
+        v-if="shouldRenderBaseSecurityReport && !shouldShowSecurityExtension"
         :pipeline-id="mr.pipeline.id"
         :project-id="mr.sourceProjectId"
         :security-reports-docs-path="mr.securityReportsDocsPath"
@@ -414,7 +413,7 @@ export default {
         :discover-project-security-path="mr.discoverProjectSecurityPath"
       />
       <grouped-security-reports-app
-        v-else-if="shouldRenderExtendedSecurityReport"
+        v-else-if="shouldRenderExtendedSecurityReport && !shouldShowSecurityExtension"
         :head-blob-path="mr.headBlobPath"
         :source-branch="mr.sourceBranch"
         :target-branch="mr.targetBranch"

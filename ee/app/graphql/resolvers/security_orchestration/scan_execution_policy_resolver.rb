@@ -20,8 +20,7 @@ module Resolvers
                default_value: :direct
 
       def resolve(**args)
-        policies = fetch_scan_execution_policies(args[:relationship])
-        policies = filter_scan_types(policies, args[:action_scan_types]) if args[:action_scan_types]
+        policies = Security::ScanExecutionPoliciesFinder.new(context[:current_user], project, args).execute
         policies.map do |policy|
           {
             name: policy[:name],
@@ -35,15 +34,6 @@ module Resolvers
               inherited: policy[:inherited]
             }
           }
-        end
-      end
-
-      private
-
-      def filter_scan_types(policies, scan_types)
-        policies.filter do |policy|
-          policy_scan_types = policy[:actions].map { |action| action[:scan].to_sym }
-          (scan_types & policy_scan_types).present?
         end
       end
     end

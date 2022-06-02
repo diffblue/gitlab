@@ -2,6 +2,7 @@
 import emptySvg from '@gitlab/svgs/dist/illustrations/security-dashboard-empty-state.svg';
 import { GlEmptyState, GlAlert } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
+import StepOrderApp from 'ee/vue_shared/purchase_flow/components/step_order_app.vue';
 import OrderSummary from 'ee/subscriptions/buy_addons_shared/components/order_summary.vue';
 import { ERROR_FETCHING_DATA_HEADER, ERROR_FETCHING_DATA_DESCRIPTION } from '~/ensure_data';
 import Checkout from 'ee/subscriptions/buy_addons_shared/components/checkout.vue';
@@ -19,6 +20,7 @@ export default {
     GlEmptyState,
     GlAlert,
     OrderSummary,
+    StepOrderApp,
   },
   inject: ['tags', 'i18n'],
   data() {
@@ -114,14 +116,8 @@ export default {
     :title="errorTitle"
     :svg-path="emptySvgPath"
   />
-  <div
-    v-else-if="!$apollo.loading"
-    data-testid="buy-addons-shared"
-    class="row gl-flex-grow-1 gl-flex-direction-column gl-flex-nowrap gl-lg-flex-direction-row gl-xl-flex-direction-row gl-lg-flex-wrap gl-xl-flex-wrap"
-  >
-    <div
-      class="checkout-pane gl-px-3 gl-pt-5 gl-align-items-center gl-bg-gray-10 col-lg-7 gl-display-flex gl-flex-direction-column gl-flex-grow-1"
-    >
+  <step-order-app v-else-if="!$apollo.loading" data-testid="buy-addons-shared">
+    <template #checkout>
       <gl-alert v-if="alertMessage" class="checkout-alert" variant="danger" :dismissible="false">
         {{ alertMessage }}
       </gl-alert>
@@ -148,10 +144,8 @@ export default {
           </addon-purchase-details>
         </template>
       </checkout>
-    </div>
-    <div
-      class="gl-pb-3 gl-px-3 gl-lg-px-7 col-lg-5 gl-display-flex gl-flex-direction-row gl-justify-content-center"
-    >
+    </template>
+    <template #order-summary>
       <order-summary
         :plan="plan"
         :title="i18n.title"
@@ -162,6 +156,6 @@ export default {
           {{ pricePerUnitLabel(price) }}
         </template>
       </order-summary>
-    </div>
-  </div>
+    </template>
+  </step-order-app>
 </template>

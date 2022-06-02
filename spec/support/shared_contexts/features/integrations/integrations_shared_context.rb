@@ -2,7 +2,7 @@
 
 Integration.available_integration_names.each do |integration|
   RSpec.shared_context integration do
-    include JiraServiceHelper if integration == 'jira'
+    include JiraIntegrationHelpers if integration == 'jira'
 
     let(:dashed_integration) { integration.dasherize }
     let(:integration_method) { Project.integration_association_name(integration) }
@@ -44,7 +44,7 @@ Integration.available_integration_names.each do |integration|
 
     let(:licensed_features) do
       {
-        'github' => :github_project_service_integration
+        'github' => :github_integration
       }
     end
 

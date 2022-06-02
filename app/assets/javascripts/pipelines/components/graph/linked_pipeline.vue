@@ -62,6 +62,7 @@ export default {
     return {
       hasActionTooltip: false,
       isActionLoading: false,
+      isExpandBtnFocus: false,
     };
   },
   computed: {
@@ -89,6 +90,9 @@ export default {
         ? ['gl-border-r-0!', ...this.$options.styles.flatRightBorder]
         : ['gl-border-l-0!', ...this.$options.styles.flatLeftBorder];
     },
+    buttonShadowClass() {
+      return this.isExpandBtnFocus ? '' : 'gl-shadow-none!';
+    },
     buttonId() {
       return `js-linked-pipeline-${this.pipeline.id}`;
     },
@@ -102,6 +106,9 @@ export default {
         return this.expanded ? 'angle-right' : 'angle-left';
       }
       return this.expanded ? 'angle-left' : 'angle-right';
+    },
+    expandBtnText() {
+      return this.expanded ? __('Collapse jobs') : __('Expand jobs');
     },
     childPipeline() {
       return this.isDownstream && this.isSameProject;
@@ -157,7 +164,7 @@ export default {
       return Boolean(this.action?.method && this.action?.icon && this.action?.ariaLabel);
     },
     showCardTooltip() {
-      return !this.hasActionTooltip;
+      return !this.hasActionTooltip && !this.isExpandBtnFocus;
     },
     sourceJobName() {
       return this.pipeline.sourceJob?.name ?? '';
@@ -213,6 +220,9 @@ export default {
     },
     setActionTooltip(flag) {
       this.hasActionTooltip = flag;
+    },
+    setExpandBtnActiveState(flag) {
+      this.isExpandBtnFocus = flag;
     },
   },
 };
@@ -277,12 +287,18 @@ export default {
     <div class="gl-display-flex">
       <gl-button
         :id="buttonId"
-        class="gl-border! gl-shadow-none! gl-rounded-lg!"
-        :class="[`js-pipeline-expand-${pipeline.id}`, buttonBorderClasses]"
+        v-gl-tooltip
+        :title="expandBtnText"
+        class="gl-border! gl-rounded-lg!"
+        :class="[`js-pipeline-expand-${pipeline.id}`, buttonBorderClasses, buttonShadowClass]"
         :icon="expandedIcon"
-        :aria-label="__('Expand pipeline')"
+        :aria-label="expandBtnText"
         data-testid="expand-pipeline-button"
         data-qa-selector="expand_linked_pipeline_button"
+        @mouseover="setExpandBtnActiveState(true)"
+        @mouseout="setExpandBtnActiveState(false)"
+        @focus="setExpandBtnActiveState(true)"
+        @blur="setExpandBtnActiveState(false)"
         @click="onClickLinkedPipeline"
       />
     </div>

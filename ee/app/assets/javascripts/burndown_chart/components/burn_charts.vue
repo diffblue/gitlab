@@ -297,7 +297,7 @@ export default {
         <gl-button
           ref="totalIssuesButton"
           :category="issueButtonCategory"
-          variant="info"
+          variant="confirm"
           size="small"
           @click="setIssueSelected(true)"
         >
@@ -306,7 +306,7 @@ export default {
         <gl-button
           ref="totalWeightButton"
           :category="weightButtonCategory"
-          variant="info"
+          variant="confirm"
           size="small"
           data-qa-selector="weight_button"
           @click="setIssueSelected(false)"
@@ -319,7 +319,7 @@ export default {
         <gl-button
           ref="oldBurndown"
           :category="useLegacyBurndown ? 'primary' : 'secondary'"
-          variant="info"
+          variant="confirm"
           size="small"
           @click="toggleLegacyBurndown(true)"
         >
@@ -328,7 +328,7 @@ export default {
         <gl-button
           ref="newBurndown"
           :category="useLegacyBurndown ? 'secondary' : 'primary'"
-          variant="info"
+          variant="confirm"
           size="small"
           @click="toggleLegacyBurndown(false)"
         >

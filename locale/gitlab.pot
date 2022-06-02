@@ -325,11 +325,6 @@ msgid_plural "%d more comments"
 msgstr[0] ""
 msgstr[1] ""
 
-msgid "%d open issue"
-msgid_plural "%d open issues"
-msgstr[0] ""
-msgstr[1] ""
-
 msgid "%d pending comment"
 msgid_plural "%d pending comments"
 msgstr[0] ""
@@ -357,6 +352,11 @@ msgstr[1] ""
 
 msgid "%d project selected"
 msgid_plural "%d projects selected"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "%d remaining"
+msgid_plural "%d remaining"
 msgstr[0] ""
 msgstr[1] ""
 
@@ -1066,7 +1066,7 @@ msgstr ""
 msgid "%{total_warnings} warning(s) found:"
 msgstr ""
 
-msgid "%{total} open issue weight"
+msgid "%{total} remaining issue weight"
 msgstr ""
 
 msgid "%{total} warnings found: showing first %{warningsDisplayed}"
@@ -1455,9 +1455,6 @@ msgstr[1] ""
 msgid "1-9 contributions"
 msgstr ""
 
-msgid "1. Effective June 1, 2022, all GitLab Free tier public projects will be %{minutes_quota_link}."
-msgstr ""
-
 msgid "10-19 contributions"
 msgstr ""
 
@@ -1468,9 +1465,6 @@ msgid "192.168.0.0/24 or 2001:0DB8:1234::/48"
 msgstr ""
 
 msgid "1st contribution!"
-msgstr ""
-
-msgid "2. Before July 1, 2022, all GitLab Free tier public open source projects must %{enrollment_link} to continue to receive GitLab Ultimate benefits."
 msgstr ""
 
 msgid "20-29 contributions"
@@ -5764,6 +5758,9 @@ msgstr ""
 msgid "Be careful. Renaming a project's repository can have unintended side effects."
 msgstr ""
 
+msgid "Before July 1, 2022, all free tier public open source projects must %{enrollment_link} to continue to receive GitLab Ultimate benefits."
+msgstr ""
+
 msgid "Before enabling this integration, create a webhook for the room in Google Chat where you want to receive notifications from this project. %{docs_link}"
 msgstr ""
 
@@ -6490,6 +6487,9 @@ msgstr ""
 msgid "Branch not loaded - %{branchId}"
 msgstr ""
 
+msgid "Branch rules"
+msgstr ""
+
 msgid "Branches"
 msgstr ""
 
@@ -6781,10 +6781,7 @@ msgstr ""
 msgid "Burndown chart"
 msgstr ""
 
-msgid "BurndownChartLabel|Open issue weight"
-msgstr ""
-
-msgid "BurndownChartLabel|Open issues"
+msgid "BurndownChartLabel|Remaining"
 msgstr ""
 
 msgid "Burnup chart"
@@ -6903,6 +6900,9 @@ msgstr ""
 msgid "CICDAnalytics|Shared Runners Usage"
 msgstr ""
 
+msgid "CICDAnalytics|Shared runner duration is the total runtime of all jobs that ran on shared runners"
+msgstr ""
+
 msgid "CICDAnalytics|Shared runner pipeline minute duration by month"
 msgstr ""
 
@@ -6913,6 +6913,9 @@ msgid "CICDAnalytics|Shared runner usage is the total runtime of all jobs that r
 msgstr ""
 
 msgid "CICDAnalytics|Something went wrong while fetching release statistics"
+msgstr ""
+
+msgid "CICDAnalytics|What is shared runner duration?"
 msgstr ""
 
 msgid "CICDAnalytics|What is shared runner usage?"
@@ -7170,6 +7173,9 @@ msgstr ""
 msgid "Cannot assign a confidential epic to a non-confidential issue. Make the issue confidential and try again"
 msgstr ""
 
+msgid "Cannot assign an issue that does not belong under the same group (or descendant) as the epic."
+msgstr ""
+
 msgid "Cannot be merged automatically"
 msgstr ""
 
@@ -7407,7 +7413,7 @@ msgstr ""
 msgid "Changes the title to \"%{title_param}\"."
 msgstr ""
 
-msgid "Changes to GitLab Free tier public projects"
+msgid "Changes to free tier open source projects"
 msgstr ""
 
 msgid "Changes to the title have not been saved"
@@ -8972,6 +8978,9 @@ msgstr ""
 msgid "Collapse issues"
 msgstr ""
 
+msgid "Collapse jobs"
+msgstr ""
+
 msgid "Collapse milestones"
 msgstr ""
 
@@ -10471,6 +10480,9 @@ msgstr ""
 msgid "Create confidential merge request and branch"
 msgstr ""
 
+msgid "Create custom type"
+msgstr ""
+
 msgid "Create directory"
 msgstr ""
 
@@ -11187,17 +11199,6 @@ msgstr ""
 msgid "CycleAnalytics|Show"
 msgstr ""
 
-msgid "CycleAnalytics|Showing %{subjectFilterText} and %{selectedLabelsCount} label"
-msgid_plural "CycleAnalytics|Showing %{subjectFilterText} and %{selectedLabelsCount} labels"
-msgstr[0] ""
-msgstr[1] ""
-
-msgid "CycleAnalytics|Showing data for group '%{groupName}' and %{selectedProjectCount} projects from %{createdAfter} to %{createdBefore}"
-msgstr ""
-
-msgid "CycleAnalytics|Showing data for group '%{groupName}' from %{createdAfter} to %{createdBefore}"
-msgstr ""
-
 msgid "CycleAnalytics|Stage time: %{title}"
 msgstr ""
 
@@ -11223,9 +11224,6 @@ msgid "CycleAnalytics|Time to Restore Service"
 msgstr ""
 
 msgid "CycleAnalytics|Total time"
-msgstr ""
-
-msgid "CycleAnalytics|Type of work"
 msgstr ""
 
 msgid "CycleAnalytics|group dropdown filter"
@@ -11942,6 +11940,9 @@ msgid "Define environments in the deploy stage(s) in %{code_open}.gitlab-ci.yml%
 msgstr ""
 
 msgid "Define how approval rules are applied to merge requests."
+msgstr ""
+
+msgid "Define rules for who can push, merge, and the required approvals for each branch."
 msgstr ""
 
 msgid "Definition"
@@ -13534,6 +13535,9 @@ msgstr ""
 msgid "Due to inactivity, the %{project_name} (%{project_link}) project is scheduled to be deleted on %{deletion_date}. To unschedule the deletion of %{project_name}, perform some activity on it. For example:"
 msgstr ""
 
+msgid "Due to inactivity, this project is scheduled to be deleted on %{deletion_date}. %{link_start}Why is this scheduled?%{link_end}"
+msgstr ""
+
 msgid "Duplicate page: %{error_message}"
 msgstr ""
 
@@ -14560,9 +14564,6 @@ msgstr ""
 msgid "Epics|Assign Epic"
 msgstr ""
 
-msgid "Epics|Enter a title for your epic"
-msgstr ""
-
 msgid "Epics|Leave empty to inherit from milestone dates"
 msgstr ""
 
@@ -15126,6 +15127,9 @@ msgstr ""
 msgid "Everything you need to create a GitLab Pages site using Middleman"
 msgstr ""
 
+msgid "Everything you need to create a GitLab Pages site using Pelican"
+msgstr ""
+
 msgid "Everything you need to create a GitLab Pages site using plain HTML"
 msgstr ""
 
@@ -15192,13 +15196,13 @@ msgstr ""
 msgid "Expand issues"
 msgstr ""
 
+msgid "Expand jobs"
+msgstr ""
+
 msgid "Expand milestones"
 msgstr ""
 
 msgid "Expand panel"
-msgstr ""
-
-msgid "Expand pipeline"
 msgstr ""
 
 msgid "Expand settings section"
@@ -16129,6 +16133,9 @@ msgstr ""
 msgid "First seen"
 msgstr ""
 
+msgid "Fixed"
+msgstr ""
+
 msgid "Fixed burndown chart"
 msgstr ""
 
@@ -16829,10 +16836,13 @@ msgstr ""
 msgid "Geo|Resync all"
 msgstr ""
 
-msgid "Geo|Resync all %{replicableType}"
+msgid "Geo|Resync all %{projects_count} projects"
 msgstr ""
 
-msgid "Geo|Resync all projects"
+msgid "Geo|Resync all %{total}%{replicableType}"
+msgstr ""
+
+msgid "Geo|Resync project"
 msgstr ""
 
 msgid "Geo|Retry count"
@@ -16844,7 +16854,10 @@ msgstr ""
 msgid "Geo|Reverify all"
 msgstr ""
 
-msgid "Geo|Reverify all projects"
+msgid "Geo|Reverify all %{projects_count} projects"
+msgstr ""
+
+msgid "Geo|Reverify project"
 msgstr ""
 
 msgid "Geo|Review replication status, and resynchronize and reverify items with the primary site."
@@ -17169,6 +17182,9 @@ msgid "GitLab events trigger webhooks. Use the request details of a webhook to h
 msgstr ""
 
 msgid "GitLab export"
+msgstr ""
+
+msgid "GitLab for Jira Cloud"
 msgstr ""
 
 msgid "GitLab group: %{source_link}"
@@ -21306,6 +21322,9 @@ msgstr ""
 msgid "Issues closed"
 msgstr ""
 
+msgid "Issues exist in projects, so to create an issue, first create a project."
+msgstr ""
+
 msgid "Issues must match this scope to appear in this list."
 msgstr ""
 
@@ -21396,9 +21415,6 @@ msgstr ""
 msgid "Iterations"
 msgstr ""
 
-msgid "Iterations|Add a duration, and number of upcoming iterations in order to convert this cadence to automatic scheduling."
-msgstr ""
-
 msgid "Iterations|Add iteration"
 msgstr ""
 
@@ -21409,6 +21425,9 @@ msgid "Iterations|Cadence configuration is invalid."
 msgstr ""
 
 msgid "Iterations|Cadence name"
+msgstr ""
+
+msgid "Iterations|Can be converted"
 msgstr ""
 
 msgid "Iterations|Cancel"
@@ -21465,10 +21484,10 @@ msgstr ""
 msgid "Iterations|Iterations are a way to track issues over a period of time, allowing teams to also track velocity and volatility metrics."
 msgstr ""
 
-msgid "Iterations|Iterations can no longer be scheduled manually. Convert all cadences to automatic scheduling to keep your iterations working as expected."
+msgid "Iterations|Learn more about automatic scheduling"
 msgstr ""
 
-msgid "Iterations|Learn more about automatic scheduling"
+msgid "Iterations|Manual management of iterations will be deprecated in GitLab 15.6. Convert your manual cadence to use automated scheduling when you are ready."
 msgstr ""
 
 msgid "Iterations|Move incomplete issues to the next iteration."
@@ -21504,9 +21523,6 @@ msgstr ""
 msgid "Iterations|Open"
 msgstr ""
 
-msgid "Iterations|Requires update"
-msgstr ""
-
 msgid "Iterations|Roll over issues"
 msgstr ""
 
@@ -21522,9 +21538,6 @@ msgstr ""
 msgid "Iterations|Select start date"
 msgstr ""
 
-msgid "Iterations|Some of your cadences need to be updated"
-msgstr ""
-
 msgid "Iterations|Start date"
 msgstr ""
 
@@ -21537,7 +21550,7 @@ msgstr ""
 msgid "Iterations|The start date of the first iteration determines when your cadence begins."
 msgstr ""
 
-msgid "Iterations|This cadence requires an update"
+msgid "Iterations|This cadence can be converted to use automated scheduling"
 msgstr ""
 
 msgid "Iterations|This will delete the cadence as well as all of the iterations within it."
@@ -21547,6 +21560,9 @@ msgid "Iterations|This will remove the iteration from any issues that are assign
 msgstr ""
 
 msgid "Iterations|Title"
+msgstr ""
+
+msgid "Iterations|To convert this cadence to automatic scheduling, add a duration and number of upcoming iterations. The upgrade is irreversible."
 msgstr ""
 
 msgid "Iterations|Unable to find iteration cadence."
@@ -21559,6 +21575,9 @@ msgid "Iterations|Unable to save cadence. Please try again."
 msgstr ""
 
 msgid "Iterations|Upcoming iterations"
+msgstr ""
+
+msgid "Iterations|Your manual cadence can be converted to use automated scheduling"
 msgstr ""
 
 msgid "Iteration|Dates cannot overlap with other existing Iterations within this group"
@@ -21609,6 +21628,9 @@ msgstr ""
 msgid "Jira-GitLab user mapping template"
 msgstr ""
 
+msgid "JiraConnect|Configure your Jira Connect Application ID."
+msgstr ""
+
 msgid "JiraConnect|Create branch for Jira issue %{jiraIssue}"
 msgstr ""
 
@@ -21616,6 +21638,12 @@ msgid "JiraConnect|Failed to create branch."
 msgstr ""
 
 msgid "JiraConnect|Failed to create branch. Please try again."
+msgstr ""
+
+msgid "JiraConnect|GitLab for Jira App"
+msgstr ""
+
+msgid "JiraConnect|Jira Connect Application ID"
 msgstr ""
 
 msgid "JiraConnect|New branch was successfully created."
@@ -22017,10 +22045,10 @@ msgstr ""
 msgid "Job|This job failed because the necessary resources were not successfully created."
 msgstr ""
 
-msgid "Job|This job is stuck because the project doesn't have any runners online assigned to it."
+msgid "Job|This job is stuck because of one of the following problems. There are no active runners online, no runners for the %{linkStart}protected branch%{linkEnd}, or no runners that match all of the job's tags:"
 msgstr ""
 
-msgid "Job|This job is stuck because you don't have any active runners online or available with any of these tags assigned to them:"
+msgid "Job|This job is stuck because the project doesn't have any runners online assigned to it."
 msgstr ""
 
 msgid "Job|This job is stuck because you don't have any active runners that can run this job."
@@ -22267,6 +22295,9 @@ msgid "Labels|Promoting %{labelTitle} will make it available for all projects in
 msgstr ""
 
 msgid "Language"
+msgstr ""
+
+msgid "Language type"
 msgstr ""
 
 msgid "Large File Storage"
@@ -23193,6 +23224,9 @@ msgid "Make everyone on your team more productive regardless of their location. 
 msgstr ""
 
 msgid "Make issue confidential"
+msgstr ""
+
+msgid "Make sure you have the correct permissions to link your project."
 msgstr ""
 
 msgid "Make sure you save it - you won't be able to access it again."
@@ -25622,6 +25656,9 @@ msgstr ""
 msgid "No project subscribes to the pipelines in this project."
 msgstr ""
 
+msgid "No projects available."
+msgstr ""
+
 msgid "No projects found"
 msgstr ""
 
@@ -26268,7 +26305,7 @@ msgstr ""
 msgid "OnDemandScans|%{learnMoreLinkStart}Learn more about on-demand scans%{learnMoreLinkEnd}."
 msgstr ""
 
-msgid "OnDemandScans|%{scannerType} profile library"
+msgid "OnDemandScans|%{profileType} profile library"
 msgstr ""
 
 msgid "OnDemandScans|Add a schedule to run this scan at a specified date and time or on a recurring basis. Scheduled scans are automatically saved to scan library."
@@ -26322,7 +26359,7 @@ msgstr ""
 msgid "OnDemandScans|Dynamic Application Security Testing (DAST)"
 msgstr ""
 
-msgid "OnDemandScans|Edit %{scannerType} profile"
+msgid "OnDemandScans|Edit %{profileType} profile"
 msgstr ""
 
 msgid "OnDemandScans|Edit on-demand DAST scan"
@@ -26349,7 +26386,7 @@ msgstr ""
 msgid "OnDemandScans|My daily scan"
 msgstr ""
 
-msgid "OnDemandScans|New %{scannerType} profile"
+msgid "OnDemandScans|New %{profileType} profile"
 msgstr ""
 
 msgid "OnDemandScans|New on-demand DAST scan"
@@ -26364,7 +26401,7 @@ msgstr ""
 msgid "OnDemandScans|New scan"
 msgstr ""
 
-msgid "OnDemandScans|No %{scannerType} profiles found for DAST"
+msgid "OnDemandScans|No %{profileType} profiles found for DAST"
 msgstr ""
 
 msgid "OnDemandScans|No profile yet. In order to create a new scan, you need to have at least one completed scanner profile."
@@ -26519,7 +26556,13 @@ msgstr ""
 msgid "Only Issue ID or merge request ID is required"
 msgstr ""
 
+msgid "Only Issue can be parent of Task."
+msgstr ""
+
 msgid "Only Project Members"
+msgstr ""
+
+msgid "Only Task can be assigned as a child in hierarchy."
 msgstr ""
 
 msgid "Only active projects show up in the search and on the dashboard."
@@ -27274,10 +27317,16 @@ msgstr ""
 msgid "Parent"
 msgstr ""
 
+msgid "Parent already has maximum number of children."
+msgstr ""
+
 msgid "Parent epic doesn't exist."
 msgstr ""
 
 msgid "Parent epic is not present."
+msgstr ""
+
+msgid "Parent must be in the same project as child."
 msgstr ""
 
 msgid "Parsing error for param :embed_json. %{message}"
@@ -27418,7 +27467,7 @@ msgstr ""
 msgid "Pending deletion"
 msgstr ""
 
-msgid "Pending owner approval"
+msgid "Pending owner action"
 msgstr ""
 
 msgid "Pending sync…"
@@ -29680,6 +29729,9 @@ msgstr ""
 msgid "ProjectSettings|%{link_start}What variables can I use?%{link_end}"
 msgstr ""
 
+msgid "ProjectSettings|Additional options"
+msgstr ""
+
 msgid "ProjectSettings|Additional settings that influence how and when merges are done."
 msgstr ""
 
@@ -29756,6 +29808,9 @@ msgid "ProjectSettings|Every merge creates a merge commit."
 msgstr ""
 
 msgid "ProjectSettings|Every project can have its own space to store its Docker images"
+msgstr ""
+
+msgid "ProjectSettings|Every project can have its own space to store its packages."
 msgstr ""
 
 msgid "ProjectSettings|Every project can have its own space to store its packages. Note: The Package Registry is always visible when a project is public."
@@ -29875,6 +29930,9 @@ msgstr ""
 msgid "ProjectSettings|Override user notification preferences for all project members."
 msgstr ""
 
+msgid "ProjectSettings|Package registry"
+msgstr ""
+
 msgid "ProjectSettings|Packages"
 msgstr ""
 
@@ -29885,6 +29943,9 @@ msgid "ProjectSettings|Pages for project documentation."
 msgstr ""
 
 msgid "ProjectSettings|Pipelines must succeed"
+msgstr ""
+
+msgid "ProjectSettings|Prevents direct linking to potentially sensitive media files"
 msgstr ""
 
 msgid "ProjectSettings|Private"
@@ -29903,6 +29964,9 @@ msgid "ProjectSettings|Require"
 msgstr ""
 
 msgid "ProjectSettings|Require an associated issue from Jira"
+msgstr ""
+
+msgid "ProjectSettings|Require authentication to view media files"
 msgstr ""
 
 msgid "ProjectSettings|Requirements"
@@ -30101,6 +30165,9 @@ msgid "ProjectTemplates|Pages/Jekyll"
 msgstr ""
 
 msgid "ProjectTemplates|Pages/Middleman"
+msgstr ""
+
+msgid "ProjectTemplates|Pages/Pelican"
 msgstr ""
 
 msgid "ProjectTemplates|Pages/Plain HTML"
@@ -31775,9 +31842,6 @@ msgstr ""
 msgid "Reply…"
 msgstr ""
 
-msgid "Repo by URL"
-msgstr ""
-
 msgid "Report abuse"
 msgstr ""
 
@@ -32051,6 +32115,9 @@ msgid "Repository Settings"
 msgstr ""
 
 msgid "Repository already read-only"
+msgstr ""
+
+msgid "Repository by URL"
 msgstr ""
 
 msgid "Repository check"
@@ -32605,10 +32672,16 @@ msgstr[1] ""
 msgid "Runners|A capacity of 1 enables warm HA through Auto Scaling group re-spawn. A capacity of 2 enables hot HA because the service is available even when a node is lost. A capacity of 3 or more enables hot HA and manual scaling of runner fleet."
 msgstr ""
 
+msgid "Runners|A periodic background task deletes runners that haven't contacted GitLab in more than %{elapsedTime}. %{linkStart}Can I view how many runners were deleted?%{linkEnd}"
+msgstr ""
+
 msgid "Runners|Active"
 msgstr ""
 
 msgid "Runners|All"
+msgstr ""
+
+msgid "Runners|All group runners that have not contacted GitLab in more than %{elapsedTime} are deleted permanently. This task runs periodically in the background."
 msgstr ""
 
 msgid "Runners|Amazon Linux 2 Docker HA with manual scaling and optional scheduling. %{percentage} spot."
@@ -32695,6 +32768,12 @@ msgid "Runners|Download and install binary"
 msgstr ""
 
 msgid "Runners|Download latest binary"
+msgstr ""
+
+msgid "Runners|Enable stale runner cleanup"
+msgstr ""
+
+msgid "Runners|Enable stale runner cleanup?"
 msgstr ""
 
 msgid "Runners|Enter the number of seconds. This timeout takes precedence over lower timeouts set for the project."
@@ -32939,6 +33018,14 @@ msgstr ""
 msgid "Runners|The runner will be permanently deleted and no longer available for projects or groups in the instance. Are you sure you want to continue?"
 msgstr ""
 
+msgid "Runners|This group currently has 1 stale runner."
+msgid_plural "Runners|This group currently has %d stale runners."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "Runners|This group currently has no stale runners."
+msgstr ""
+
 msgid "Runners|This runner has not run any jobs."
 msgstr ""
 
@@ -32979,6 +33066,9 @@ msgid "Runners|Windows 2019 Shell with manual scaling and optional scheduling. %
 msgstr ""
 
 msgid "Runners|Windows 2019 Shell with manual scaling and optional scheduling. Non-spot."
+msgstr ""
+
+msgid "Runners|Yes, start deleting stale runners"
 msgstr ""
 
 msgid "Runners|You can set up a specific runner to be used by multiple projects but you cannot make this a shared runner."
@@ -34507,6 +34597,12 @@ msgid "Selected"
 msgstr ""
 
 msgid "Selected commits"
+msgstr ""
+
+msgid "Selected for all items."
+msgstr ""
+
+msgid "Selected for some items."
 msgstr ""
 
 msgid "Selected levels cannot be used by non-admin users for groups, projects or snippets. If the public level is restricted, user profiles are only visible to logged in users."
@@ -37065,6 +37161,9 @@ msgstr ""
 msgid "Tags:"
 msgstr ""
 
+msgid "TagsPage|After you confirm and select %{strongStart}%{buttonText},%{strongEnd} you cannot recover this tag."
+msgstr ""
+
 msgid "TagsPage|Browse commits"
 msgstr ""
 
@@ -37077,13 +37176,25 @@ msgstr ""
 msgid "TagsPage|Cancel"
 msgstr ""
 
+msgid "TagsPage|Cancel, keep tag"
+msgstr ""
+
 msgid "TagsPage|Create tag"
+msgstr ""
+
+msgid "TagsPage|Delete protected tag"
+msgstr ""
+
+msgid "TagsPage|Delete protected tag. Are you ABSOLUTELY SURE?"
 msgstr ""
 
 msgid "TagsPage|Delete tag"
 msgstr ""
 
-msgid "TagsPage|Deleting the %{tag_name} tag cannot be undone. Are you sure?"
+msgid "TagsPage|Delete tag. Are you ABSOLUTELY SURE?"
+msgstr ""
+
+msgid "TagsPage|Deleting the %{strongStart}%{tagName}%{strongEnd} tag cannot be undone. Are you sure?"
 msgstr ""
 
 msgid "TagsPage|Edit release notes"
@@ -37101,10 +37212,16 @@ msgstr ""
 msgid "TagsPage|New tag"
 msgstr ""
 
+msgid "TagsPage|Only a project maintainer or owner can delete a protected tag"
+msgstr ""
+
 msgid "TagsPage|Optionally, add a message to the tag. Leaving this blank creates a %{link_start}lightweight tag.%{link_end}"
 msgstr ""
 
 msgid "TagsPage|Optionally, create a public Release of your project, based on this tag. Release notes are displayed on the %{releases_page_link_start}Releases%{link_end} page. %{docs_link_start}More information%{link_end}"
+msgstr ""
+
+msgid "TagsPage|Please type the following to confirm:"
 msgstr ""
 
 msgid "TagsPage|Release notes"
@@ -37132,6 +37249,18 @@ msgid "TagsPage|Use git tag command to add a new one:"
 msgstr ""
 
 msgid "TagsPage|Write your release notes or drag files here…"
+msgstr ""
+
+msgid "TagsPage|Yes, delete protected tag"
+msgstr ""
+
+msgid "TagsPage|Yes, delete tag"
+msgstr ""
+
+msgid "TagsPage|You're about to permanently delete the protected tag %{strongStart}%{tagName}.%{strongEnd}"
+msgstr ""
+
+msgid "TagsPage|You're about to permanently delete the tag %{strongStart}%{tagName}.%{strongEnd}"
 msgstr ""
 
 msgid "TagsPage|protected"
@@ -37842,6 +37971,9 @@ msgstr ""
 msgid "The issue was successfully promoted to an epic. Redirecting to epic..."
 msgstr ""
 
+msgid "The last owner cannot be set to awaiting"
+msgstr ""
+
 msgid "The latest artifacts created by jobs in the most recent successful pipeline will be stored."
 msgstr ""
 
@@ -38212,6 +38344,9 @@ msgid "There is no data available."
 msgstr ""
 
 msgid "There is no data available. Please change your selection."
+msgstr ""
+
+msgid "There is no seat left to activate the member"
 msgstr ""
 
 msgid "There is no table data available."
@@ -39388,6 +39523,9 @@ msgstr ""
 msgid "Title"
 msgstr ""
 
+msgid "Title (required)"
+msgstr ""
+
 msgid "Title:"
 msgstr ""
 
@@ -39503,6 +39641,9 @@ msgid "To keep this project going, create a new merge request"
 msgstr ""
 
 msgid "To learn more about this project, read %{link_to_wiki}"
+msgstr ""
+
+msgid "To manage all members associated with this group and its subgroups and projects, visit the %{link_start}usage quotas page%{link_end}."
 msgstr ""
 
 msgid "To move or copy an entire GitLab project from another GitLab installation to this one, navigate to the original project's settings page, generate an export file, and upload it here."
@@ -40759,7 +40900,7 @@ msgstr ""
 msgid "UsageQuota|Shared bits of code and text."
 msgstr ""
 
-msgid "UsageQuota|Shared runner usage"
+msgid "UsageQuota|Shared runner duration"
 msgstr ""
 
 msgid "UsageQuota|Snippets"
@@ -40778,6 +40919,12 @@ msgid "UsageQuota|Storage type"
 msgstr ""
 
 msgid "UsageQuota|Storage used"
+msgstr ""
+
+msgid "UsageQuota|The table below shows current period usage"
+msgstr ""
+
+msgid "UsageQuota|The table below shows usage since %{timeElapsed}"
 msgstr ""
 
 msgid "UsageQuota|This is the total amount of storage used across your projects within this namespace."
@@ -41485,6 +41632,11 @@ msgstr ""
 msgid "ValueStreamAnalytics|%{stageCount}+ items"
 msgstr ""
 
+msgid "ValueStreamAnalytics|%{subjectFilterText} and %{selectedLabelsCount} label"
+msgid_plural "ValueStreamAnalytics|%{subjectFilterText} and %{selectedLabelsCount} labels"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "ValueStreamAnalytics|%{value}M"
 msgstr ""
 
@@ -41539,13 +41691,22 @@ msgstr ""
 msgid "ValueStreamAnalytics|Percentage of deployments that cause an incident in production."
 msgstr ""
 
+msgid "ValueStreamAnalytics|Shows %{selectedFiltersDescription} for group '%{groupName}' and %{selectedProjectCount} projects from %{createdAfter} to %{createdBefore}"
+msgstr ""
+
+msgid "ValueStreamAnalytics|Shows %{selectedFiltersDescription} for group '%{groupName}' from %{createdAfter} to %{createdBefore}"
+msgstr ""
+
+msgid "ValueStreamAnalytics|Tasks by type"
+msgstr ""
+
 msgid "ValueStreamAnalytics|There was an error while fetching value stream analytics %{requestTypeName} data."
 msgstr ""
 
 msgid "ValueStreamAnalytics|Total number of deploys to production."
 msgstr ""
 
-msgid "ValueStreamAnalytics|Value Stream"
+msgid "ValueStreamAnalytics|Value stream"
 msgstr ""
 
 msgid "ValueStreamEvent|Items in stage"
@@ -43346,6 +43507,9 @@ msgstr ""
 msgid "You cannot access the raw file. Please wait a minute."
 msgstr ""
 
+msgid "You cannot approve all pending members on a free plan"
+msgstr ""
+
 msgid "You cannot approve your own deployment."
 msgstr ""
 
@@ -43368,6 +43532,9 @@ msgid "You cannot play this scheduled pipeline at the moment. Please wait a minu
 msgstr ""
 
 msgid "You cannot rename an environment after it's created."
+msgstr ""
+
+msgid "You cannot set yourself to awaiting"
 msgstr ""
 
 msgid "You cannot write to a read-only secondary GitLab Geo instance. Please use %{link_to_primary_node} instead."
@@ -43434,9 +43601,6 @@ msgid "You don't have any deployments right now."
 msgstr ""
 
 msgid "You don't have any open merge requests"
-msgstr ""
-
-msgid "You don't have any projects available."
 msgstr ""
 
 msgid "You don't have any recent searches"
@@ -44348,6 +44512,12 @@ msgstr ""
 msgid "ciReport|%{sameNum} same"
 msgstr ""
 
+msgid "ciReport|%{scanner} detected %{number} new potential %{vulnStr}"
+msgstr ""
+
+msgid "ciReport|%{scanner} detected no new %{vulnStr}"
+msgstr ""
+
 msgid "ciReport|: Loading resulted in an error"
 msgstr ""
 
@@ -44563,10 +44733,16 @@ msgstr ""
 msgid "ciReport|Secret detection"
 msgstr ""
 
+msgid "ciReport|Security reports failed loading results"
+msgstr ""
+
 msgid "ciReport|Security scanning"
 msgstr ""
 
 msgid "ciReport|Security scanning failed loading any results"
+msgstr ""
+
+msgid "ciReport|Security scanning is loading"
 msgstr ""
 
 msgid "ciReport|Showing %{fetchedItems} of %{totalItems} items"

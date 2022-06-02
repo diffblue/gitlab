@@ -1,5 +1,5 @@
 <script>
-import { GlDeprecatedSkeletonLoading as GlSkeletonLoading } from '@gitlab/ui';
+import { GlSkeletonLoader } from '@gitlab/ui';
 import { GlSingleStat } from '@gitlab/ui/dist/charts';
 import Api from 'ee/api';
 import createFlash from '~/flash';
@@ -8,7 +8,7 @@ import { __, s__ } from '~/locale';
 export default {
   name: 'GroupActivityCard',
   components: {
-    GlSkeletonLoading,
+    GlSkeletonLoader,
     GlSingleStat,
   },
   inject: ['groupFullPath', 'groupName'],
@@ -79,7 +79,7 @@ export default {
       :key="metric.key"
       class="gl-pr-9 gl-my-4 gl-md-mt-0 gl-md-mb-0"
     >
-      <gl-skeleton-loading v-if="isLoading" />
+      <gl-skeleton-loader v-if="isLoading" />
       <gl-single-stat
         v-else
         :value="`${metric.value}`"

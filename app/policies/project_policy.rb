@@ -245,6 +245,7 @@ class ProjectPolicy < BasePolicy
     enable :set_warn_about_potentially_unwanted_characters
 
     enable :register_project_runners
+    enable :manage_owners
   end
 
   rule { can?(:guest_access) }.policy do
@@ -755,6 +756,10 @@ class ProjectPolicy < BasePolicy
 
   rule { ~admin & ~project_runner_registration_allowed }.policy do
     prevent :register_project_runners
+  end
+
+  rule { can?(:admin_project_member) }.policy do
+    enable :import_project_members_from_another_project
   end
 
   private

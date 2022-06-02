@@ -556,7 +556,11 @@ Returns [`Vulnerability`](#vulnerability).
 
 ### `Query.workItem`
 
-Find a work item. Returns `null` if `work_items` feature flag is disabled. The feature is experimental and is subject to change without notice.
+Find a work item. Returns `null` if `work_items` feature flag is disabled.
+
+WARNING:
+**Deprecated** in 15.1.
+This feature is in Alpha, and can be removed or changed at any point.
 
 Returns [`WorkItem`](#workitem).
 
@@ -5365,7 +5369,11 @@ Input type: `VulnerabilityRevertToDetectedInput`
 
 ### `Mutation.workItemCreate`
 
-Creates a work item. Available only when feature flag `work_items` is enabled. The feature is experimental and is subject to change without notice.
+Creates a work item. Available only when feature flag `work_items` is enabled.
+
+WARNING:
+**Deprecated** in 15.1.
+This feature is in Alpha, and can be removed or changed at any point.
 
 Input type: `WorkItemCreateInput`
 
@@ -5389,7 +5397,11 @@ Input type: `WorkItemCreateInput`
 
 ### `Mutation.workItemCreateFromTask`
 
-Creates a work item from a task in another work item's description. Available only when feature flag `work_items` is enabled. This feature is experimental and is subject to change without notice.
+Creates a work item from a task in another work item's description. Available only when feature flag `work_items` is enabled.
+
+WARNING:
+**Deprecated** in 15.1.
+This feature is in Alpha, and can be removed or changed at any point.
 
 Input type: `WorkItemCreateFromTaskInput`
 
@@ -5412,7 +5424,11 @@ Input type: `WorkItemCreateFromTaskInput`
 
 ### `Mutation.workItemDelete`
 
-Deletes a work item. Available only when feature flag `work_items` is enabled. The feature is experimental and is subject to change without notice.
+Deletes a work item. Available only when feature flag `work_items` is enabled.
+
+WARNING:
+**Deprecated** in 15.1.
+This feature is in Alpha, and can be removed or changed at any point.
 
 Input type: `WorkItemDeleteInput`
 
@@ -5433,7 +5449,11 @@ Input type: `WorkItemDeleteInput`
 
 ### `Mutation.workItemDeleteTask`
 
-Deletes a task in a work item's description. Available only when feature flag `work_items` is enabled. This feature is experimental and is subject to change without notice.
+Deletes a task in a work item's description. Available only when feature flag `work_items` is enabled.
+
+WARNING:
+**Deprecated** in 15.1.
+This feature is in Alpha, and can be removed or changed at any point.
 
 Input type: `WorkItemDeleteTaskInput`
 
@@ -5456,7 +5476,11 @@ Input type: `WorkItemDeleteTaskInput`
 
 ### `Mutation.workItemUpdate`
 
-Updates a work item by Global ID. Available only when feature flag `work_items` is enabled. The feature is experimental and is subject to change without notice.
+Updates a work item by Global ID. Available only when feature flag `work_items` is enabled.
+
+WARNING:
+**Deprecated** in 15.1.
+This feature is in Alpha, and can be removed or changed at any point.
 
 Input type: `WorkItemUpdateInput`
 
@@ -5479,7 +5503,11 @@ Input type: `WorkItemUpdateInput`
 
 ### `Mutation.workItemUpdateTask`
 
-Updates a work item's task by Global ID. Available only when feature flag `work_items` is enabled. The feature is experimental and is subject to change without notice.
+Updates a work item's task by Global ID. Available only when feature flag `work_items` is enabled.
+
+WARNING:
+**Deprecated** in 15.1.
+This feature is in Alpha, and can be removed or changed at any point.
 
 Input type: `WorkItemUpdateTaskInput`
 
@@ -9253,6 +9281,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | <a id="boardepicancestorsstartdate"></a>`startDate` **{warning-solid}** | [`Time`](#time) | **Deprecated** in 13.5. Use timeframe.start. |
 | <a id="boardepicancestorsstate"></a>`state` | [`EpicState`](#epicstate) | Filter epics by state. |
 | <a id="boardepicancestorstimeframe"></a>`timeframe` | [`Timeframe`](#timeframe) | List items overlapping the given timeframe. |
+| <a id="boardepicancestorstoplevelhierarchyonly"></a>`topLevelHierarchyOnly` | [`Boolean`](#boolean) | Filter epics with a top-level hierarchy. |
 | <a id="boardepicancestorsupdatedafter"></a>`updatedAfter` | [`Time`](#time) | Epics updated after this date. |
 | <a id="boardepicancestorsupdatedbefore"></a>`updatedBefore` | [`Time`](#time) | Epics updated before this date. |
 
@@ -9290,6 +9319,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | <a id="boardepicchildrenstartdate"></a>`startDate` **{warning-solid}** | [`Time`](#time) | **Deprecated** in 13.5. Use timeframe.start. |
 | <a id="boardepicchildrenstate"></a>`state` | [`EpicState`](#epicstate) | Filter epics by state. |
 | <a id="boardepicchildrentimeframe"></a>`timeframe` | [`Timeframe`](#timeframe) | List items overlapping the given timeframe. |
+| <a id="boardepicchildrentoplevelhierarchyonly"></a>`topLevelHierarchyOnly` | [`Boolean`](#boolean) | Filter epics with a top-level hierarchy. |
 | <a id="boardepicchildrenupdatedafter"></a>`updatedAfter` | [`Time`](#time) | Epics updated after this date. |
 | <a id="boardepicchildrenupdatedbefore"></a>`updatedBefore` | [`Time`](#time) | Epics updated before this date. |
 
@@ -10830,6 +10860,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | <a id="epicancestorsstartdate"></a>`startDate` **{warning-solid}** | [`Time`](#time) | **Deprecated** in 13.5. Use timeframe.start. |
 | <a id="epicancestorsstate"></a>`state` | [`EpicState`](#epicstate) | Filter epics by state. |
 | <a id="epicancestorstimeframe"></a>`timeframe` | [`Timeframe`](#timeframe) | List items overlapping the given timeframe. |
+| <a id="epicancestorstoplevelhierarchyonly"></a>`topLevelHierarchyOnly` | [`Boolean`](#boolean) | Filter epics with a top-level hierarchy. |
 | <a id="epicancestorsupdatedafter"></a>`updatedAfter` | [`Time`](#time) | Epics updated after this date. |
 | <a id="epicancestorsupdatedbefore"></a>`updatedBefore` | [`Time`](#time) | Epics updated before this date. |
 
@@ -10867,6 +10898,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | <a id="epicchildrenstartdate"></a>`startDate` **{warning-solid}** | [`Time`](#time) | **Deprecated** in 13.5. Use timeframe.start. |
 | <a id="epicchildrenstate"></a>`state` | [`EpicState`](#epicstate) | Filter epics by state. |
 | <a id="epicchildrentimeframe"></a>`timeframe` | [`Timeframe`](#timeframe) | List items overlapping the given timeframe. |
+| <a id="epicchildrentoplevelhierarchyonly"></a>`topLevelHierarchyOnly` | [`Boolean`](#boolean) | Filter epics with a top-level hierarchy. |
 | <a id="epicchildrenupdatedafter"></a>`updatedAfter` | [`Time`](#time) | Epics updated after this date. |
 | <a id="epicchildrenupdatedbefore"></a>`updatedBefore` | [`Time`](#time) | Epics updated before this date. |
 
@@ -10984,6 +11016,7 @@ Relationship between an epic and an issue.
 | <a id="epicissueblockedbycount"></a>`blockedByCount` | [`Int`](#int) | Count of issues blocking this issue. |
 | <a id="epicissueblockedbyissues"></a>`blockedByIssues` | [`IssueConnection`](#issueconnection) | Issues blocking this issue. (see [Connections](#connections)) |
 | <a id="epicissueblockingcount"></a>`blockingCount` | [`Int!`](#int) | Count of issues this issue is blocking. |
+| <a id="epicissueclosedasduplicateof"></a>`closedAsDuplicateOf` | [`Issue`](#issue) | Issue this issue was closed as a duplicate of. |
 | <a id="epicissueclosedat"></a>`closedAt` | [`Time`](#time) | Timestamp of when the issue was closed. |
 | <a id="epicissueconfidential"></a>`confidential` | [`Boolean!`](#boolean) | Indicates the issue is confidential. |
 | <a id="epicissuecreatenoteemail"></a>`createNoteEmail` | [`String`](#string) | User specific email address for the issue. |
@@ -11601,6 +11634,7 @@ Returns [`Epic`](#epic).
 | <a id="groupepicstartdate"></a>`startDate` **{warning-solid}** | [`Time`](#time) | **Deprecated** in 13.5. Use timeframe.start. |
 | <a id="groupepicstate"></a>`state` | [`EpicState`](#epicstate) | Filter epics by state. |
 | <a id="groupepictimeframe"></a>`timeframe` | [`Timeframe`](#timeframe) | List items overlapping the given timeframe. |
+| <a id="groupepictoplevelhierarchyonly"></a>`topLevelHierarchyOnly` | [`Boolean`](#boolean) | Filter epics with a top-level hierarchy. |
 | <a id="groupepicupdatedafter"></a>`updatedAfter` | [`Time`](#time) | Epics updated after this date. |
 | <a id="groupepicupdatedbefore"></a>`updatedBefore` | [`Time`](#time) | Epics updated before this date. |
 
@@ -11650,6 +11684,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | <a id="groupepicsstartdate"></a>`startDate` **{warning-solid}** | [`Time`](#time) | **Deprecated** in 13.5. Use timeframe.start. |
 | <a id="groupepicsstate"></a>`state` | [`EpicState`](#epicstate) | Filter epics by state. |
 | <a id="groupepicstimeframe"></a>`timeframe` | [`Timeframe`](#timeframe) | List items overlapping the given timeframe. |
+| <a id="groupepicstoplevelhierarchyonly"></a>`topLevelHierarchyOnly` | [`Boolean`](#boolean) | Filter epics with a top-level hierarchy. |
 | <a id="groupepicsupdatedafter"></a>`updatedAfter` | [`Time`](#time) | Epics updated after this date. |
 | <a id="groupepicsupdatedbefore"></a>`updatedBefore` | [`Time`](#time) | Epics updated before this date. |
 
@@ -12307,6 +12342,7 @@ Returns [`VulnerabilitySeveritiesCount`](#vulnerabilityseveritiescount).
 | <a id="issueblockedbycount"></a>`blockedByCount` | [`Int`](#int) | Count of issues blocking this issue. |
 | <a id="issueblockedbyissues"></a>`blockedByIssues` | [`IssueConnection`](#issueconnection) | Issues blocking this issue. (see [Connections](#connections)) |
 | <a id="issueblockingcount"></a>`blockingCount` | [`Int!`](#int) | Count of issues this issue is blocking. |
+| <a id="issueclosedasduplicateof"></a>`closedAsDuplicateOf` | [`Issue`](#issue) | Issue this issue was closed as a duplicate of. |
 | <a id="issueclosedat"></a>`closedAt` | [`Time`](#time) | Timestamp of when the issue was closed. |
 | <a id="issueconfidential"></a>`confidential` | [`Boolean!`](#boolean) | Indicates the issue is confidential. |
 | <a id="issuecreatenoteemail"></a>`createNoteEmail` | [`String`](#string) | User specific email address for the issue. |
@@ -13854,6 +13890,7 @@ Represents a milestone.
 | <a id="milestoneid"></a>`id` | [`ID!`](#id) | ID of the milestone. |
 | <a id="milestoneiid"></a>`iid` | [`ID!`](#id) | Internal ID of the milestone. |
 | <a id="milestoneprojectmilestone"></a>`projectMilestone` | [`Boolean!`](#boolean) | Indicates if milestone is at project level. |
+| <a id="milestonereleases"></a>`releases` | [`ReleaseConnection`](#releaseconnection) | Releases associated with this milestone. (see [Connections](#connections)) |
 | <a id="milestonestartdate"></a>`startDate` | [`Time`](#time) | Timestamp of the milestone start date. |
 | <a id="milestonestate"></a>`state` | [`MilestoneStateEnum!`](#milestonestateenum) | State of the milestone. |
 | <a id="milestonestats"></a>`stats` | [`MilestoneStats`](#milestonestats) | Milestone statistics. |
@@ -15851,6 +15888,7 @@ Represents a release.
 | <a id="releasedescription"></a>`description` | [`String`](#string) | Description (also known as "release notes") of the release. |
 | <a id="releasedescriptionhtml"></a>`descriptionHtml` | [`String`](#string) | The GitLab Flavored Markdown rendering of `description`. |
 | <a id="releaseevidences"></a>`evidences` | [`ReleaseEvidenceConnection`](#releaseevidenceconnection) | Evidence for the release. (see [Connections](#connections)) |
+| <a id="releaseid"></a>`id` | [`ReleaseID!`](#releaseid) | Global ID of the release. |
 | <a id="releaselinks"></a>`links` | [`ReleaseLinks`](#releaselinks) | Links of the release. |
 | <a id="releasemilestones"></a>`milestones` | [`MilestoneConnection`](#milestoneconnection) | Milestones associated to the release. (see [Connections](#connections)) |
 | <a id="releasename"></a>`name` | [`String`](#string) | Name of the release. |
@@ -20132,6 +20170,12 @@ String or integer.
 A `ProjectID` is a global ID. It is encoded as a string.
 
 An example `ProjectID` is: `"gid://gitlab/Project/1"`.
+
+### `ReleaseID`
+
+A `ReleaseID` is a global ID. It is encoded as a string.
+
+An example `ReleaseID` is: `"gid://gitlab/Release/1"`.
 
 ### `ReleasesLinkID`
 

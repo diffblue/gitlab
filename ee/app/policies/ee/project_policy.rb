@@ -140,6 +140,15 @@ module EE
         ::Gitlab::IncidentManagement.escalation_policies_available?(@subject)
       end
 
+      with_scope :subject
+      condition(:membership_locked_via_parent_group) do
+        @subject.group && (@subject.group.membership_lock? || ::Gitlab::CurrentSettings.lock_memberships_to_ldap?)
+      end
+
+      rule { membership_locked_via_parent_group }.policy do
+        prevent :import_project_members_from_another_project
+      end
+
       rule { visual_review_bot }.policy do
         prevent :read_note
         enable :create_note

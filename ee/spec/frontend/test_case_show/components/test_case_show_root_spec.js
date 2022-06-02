@@ -71,19 +71,12 @@ describe('TestCaseShowRoot', () => {
 
   describe('computed', () => {
     describe.each`
-      state       | isTestCaseOpen | statusIcon              | statusBadgeText | testCaseActionButtonVariant | testCaseActionTitle
-      ${'opened'} | ${true}        | ${'issue-open-m'}       | ${'Open'}       | ${'warning'}                | ${'Archive test case'}
-      ${'closed'} | ${false}       | ${'mobile-issue-close'} | ${'Archived'}   | ${'default'}                | ${'Reopen test case'}
+      state       | isTestCaseOpen | statusIcon              | statusBadgeText | testCaseActionTitle
+      ${'opened'} | ${true}        | ${'issue-open-m'}       | ${'Open'}       | ${'Archive test case'}
+      ${'closed'} | ${false}       | ${'mobile-issue-close'} | ${'Archived'}   | ${'Reopen test case'}
     `(
       'when `testCase.state` is $state',
-      ({
-        state,
-        isTestCaseOpen,
-        statusIcon,
-        statusBadgeText,
-        testCaseActionButtonVariant,
-        testCaseActionTitle,
-      }) => {
+      ({ state, isTestCaseOpen, statusIcon, statusBadgeText, testCaseActionTitle }) => {
         beforeEach(async () => {
           // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
           // eslint-disable-next-line no-restricted-syntax
@@ -98,12 +91,11 @@ describe('TestCaseShowRoot', () => {
         });
 
         it.each`
-          propName                         | propValue
-          ${'isTestCaseOpen'}              | ${isTestCaseOpen}
-          ${'statusIcon'}                  | ${statusIcon}
-          ${'statusBadgeText'}             | ${statusBadgeText}
-          ${'testCaseActionButtonVariant'} | ${testCaseActionButtonVariant}
-          ${'testCaseActionTitle'}         | ${testCaseActionTitle}
+          propName                 | propValue
+          ${'isTestCaseOpen'}      | ${isTestCaseOpen}
+          ${'statusIcon'}          | ${statusIcon}
+          ${'statusBadgeText'}     | ${statusBadgeText}
+          ${'testCaseActionTitle'} | ${testCaseActionTitle}
         `('computed prop $propName returns $propValue', ({ propName, propValue }) => {
           expect(wrapper.vm[propName]).toBe(propValue);
         });

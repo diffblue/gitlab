@@ -13,8 +13,7 @@ module EE
       # track unique paid users (users who already use elasticsearch and users who could use it if they enable elasticsearch integration)
       # for gitlab.com we check if the search uses elasticsearch
       # for self-managed we check if the licensed feature available
-      track_redis_hll_event :show, name: 'i_search_paid',
-        if: :track_search_paid?
+      track_event :show, name: 'i_search_paid', conditions: -> { track_search_paid? }, destinations: [:redis_hll, :snowplow]
 
       rescue_from Elastic::TimeoutError, with: :render_timeout
     end
@@ -40,6 +39,10 @@ module EE
       else
         License.feature_available?(:elastic_search)
       end
+    end
+
+    def tracking_namespace_source
+      search_service.project&.namespace || search_service.group
     end
   end
 end
