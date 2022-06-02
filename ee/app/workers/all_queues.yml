@@ -390,6 +390,15 @@
   :weight: 1
   :idempotent:
   :tags: []
+- :name: cronjob:licenses_reset_submit_license_usage_data_banner
+  :worker_name: Licenses::ResetSubmitLicenseUsageDataBannerWorker
+  :feature_category: :provision
+  :has_external_dependencies:
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent:
+  :tags: []
 - :name: cronjob:namespaces_free_user_cap_remediation
   :worker_name: Namespaces::FreeUserCap::RemediationWorker
   :feature_category: :experimentation_conversion
