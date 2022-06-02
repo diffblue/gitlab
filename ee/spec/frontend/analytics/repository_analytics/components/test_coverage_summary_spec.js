@@ -1,4 +1,4 @@
-import { GlDeprecatedSkeletonLoading as GlSkeletonLoading } from '@gitlab/ui';
+import { GlSkeletonLoader } from '@gitlab/ui';
 import { GlSingleStat } from '@gitlab/ui/dist/charts';
 import { shallowMount } from '@vue/test-utils';
 import TestCoverageSummary from 'ee/analytics/repository_analytics/components/test_coverage_summary.vue';
@@ -14,7 +14,7 @@ describe('Test coverage table component', () => {
   const findGroupCoverageChart = () => wrapper.findByTestId('group-coverage-chart');
   const findChartLoadingState = () => wrapper.findByTestId('group-coverage-chart-loading');
   const findChartEmptyState = () => wrapper.findByTestId('group-coverage-chart-empty');
-  const findLoadingState = () => wrapper.findComponent(GlSkeletonLoading);
+  const findLoadingState = () => wrapper.findComponent(GlSkeletonLoader);
 
   const createComponent = ({ data = {} } = {}) => {
     wrapper = extendedWrapper(
