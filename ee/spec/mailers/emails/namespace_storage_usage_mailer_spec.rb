@@ -6,7 +6,6 @@ RSpec.describe Emails::NamespaceStorageUsageMailer do
   include EmailSpec::Matchers
 
   let_it_be(:group) { create(:group) }
-  let_it_be(:subgroup) { create(:group, parent: group) }
   let_it_be(:namespace) { create(:namespace) }
 
   let(:recipients) { %w(bob@example.com john@example.com) }
@@ -20,16 +19,6 @@ RSpec.describe Emails::NamespaceStorageUsageMailer do
       expect(mail).to have_body_text "#{usage_quotas_url(group, anchor: 'storage-quota-tab')}"
       expect(mail).to have_body_text "has exceeded its namespace storage limit"
       expect(mail).to have_body_text "#{buy_storage_subscriptions_url(selected_group: group.id)}"
-    end
-
-    it 'creates an email message for a subgroup' do
-      mail = described_class.notify_out_of_storage(subgroup, recipients)
-
-      expect(mail).to have_subject "Action required: Storage has been exceeded for #{subgroup.name}"
-      expect(mail).to bcc_to recipients
-      expect(mail).to have_body_text "#{usage_quotas_url(subgroup, anchor: 'storage-quota-tab')}"
-      expect(mail).to have_body_text "has exceeded its namespace storage limit"
-      expect(mail).to have_body_text "#{buy_storage_subscriptions_url(selected_group: subgroup.root_ancestor.id)}"
     end
 
     it 'creates an email message for a namespace' do
@@ -52,17 +41,6 @@ RSpec.describe Emails::NamespaceStorageUsageMailer do
       expect(mail).to have_body_text "#{usage_quotas_url(group, anchor: 'storage-quota-tab')}"
       expect(mail).to have_body_text "has approximately 25% (1.25 GB) namespace storage space remaining"
       expect(mail).to have_body_text "#{buy_storage_subscriptions_url(selected_group: group.id)}"
-    end
-
-    it 'creates an email message for a subgroup' do
-      mail = described_class.notify_limit_warning(subgroup, recipients, 25, 1.25.gigabytes)
-
-      expect(mail)
-        .to have_subject "Action required: Approximately 25% of namespace storage remains for #{subgroup.name}"
-      expect(mail).to bcc_to recipients
-      expect(mail).to have_body_text "#{usage_quotas_url(subgroup, anchor: 'storage-quota-tab')}"
-      expect(mail).to have_body_text "has approximately 25% (1.25 GB) namespace storage space remaining"
-      expect(mail).to have_body_text "#{buy_storage_subscriptions_url(selected_group: subgroup.root_ancestor.id)}"
     end
 
     it 'creates an email message for a namespace' do
