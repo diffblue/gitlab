@@ -20,8 +20,8 @@ module EE
         private
 
         def runners_token
-          if scope.respond_to?(:runners_registration_token)
-            scope.runners_registration_token
+          if scope.is_a?(::ApplicationSetting)
+            ::ApplicationSetting.current_without_cache.runners_registration_token
           else
             scope.runners_token
           end
