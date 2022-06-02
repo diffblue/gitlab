@@ -2,7 +2,7 @@ import * as actions from 'ee/approvals/stores/modules/security_orchestration/act
 import testAction from 'helpers/vuex_action_helper';
 import * as types from 'ee/approvals/stores/modules/security_orchestration/mutation_types';
 import getInitialState from 'ee/approvals/stores/modules/security_orchestration/state';
-import { gqClient } from 'ee/threat_monitoring/utils';
+import { gqClient } from 'ee/security_orchestration/utils';
 
 describe('security orchestration actions', () => {
   describe('fetchScanResultPolicies', () => {

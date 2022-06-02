@@ -3,7 +3,7 @@ import { isEmpty } from 'lodash';
 import { GlDrawer } from '@gitlab/ui';
 import { SCANNER_TYPE } from 'ee/on_demand_scans/constants';
 import DastProfilesLoader from 'ee/security_configuration/dast_profiles/components/dast_profiles_loader.vue';
-import { getContentWrapperHeight } from 'ee/threat_monitoring/utils';
+import { getContentWrapperHeight } from 'ee/security_orchestration/utils';
 import DastProfilesSidebarHeader from './dast_profiles_sidebar_header.vue';
 import DastProfilesSidebarEmptyState from './dast_profiles_sidebar_empty_state.vue';
 import DastProfilesSidebarForm from './dast_profiles_sidebar_form.vue';

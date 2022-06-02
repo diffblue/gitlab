@@ -4,7 +4,7 @@ import { s__ } from '~/locale';
 import {
   humanizeRules,
   humanizeAction,
-} from 'ee/threat_monitoring/components/policy_editor/scan_result_policy/lib/humanize';
+} from 'ee/security_orchestration/components/policy_editor/scan_result_policy/lib/humanize';
 
 export default {
   i18n: {
