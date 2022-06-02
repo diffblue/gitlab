@@ -35,6 +35,8 @@ changes](../contributing/index.md#breaking-changes) to GitLab features.
   [semantic versioning policy](../../policy/maintenance.md).
 - Begins after removal date has passed.
 
+![Deprecation, End of Support, Removal process](/img/deprecation_removal_process.png)
+
 ## When can a feature be deprecated?
 
 Deprecations should be announced on the [Deprecated feature removal schedule](../../update/deprecations.md).
