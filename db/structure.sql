@@ -29819,7 +29819,7 @@ CREATE UNIQUE INDEX index_vulnerability_remediations_on_project_id_and_checksum 
 
 CREATE UNIQUE INDEX index_vulnerability_scanners_on_project_id_and_external_id ON vulnerability_scanners USING btree (project_id, external_id);
 
-CREATE INDEX index_vulnerability_state_transitions_on_vulnerability_id ON vulnerability_state_transitions USING btree (vulnerability_id);
+CREATE INDEX index_vulnerability_state_transitions_id_and_vulnerability_id ON vulnerability_state_transitions USING btree (vulnerability_id, id);
 
 CREATE INDEX index_vulnerability_statistics_on_latest_pipeline_id ON vulnerability_statistics USING btree (latest_pipeline_id);
 
