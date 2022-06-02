@@ -1,13 +1,5 @@
 <script>
-import {
-  GlForm,
-  GlButton,
-  GlFormGroup,
-  GlFormInput,
-  GlFormSelect,
-  GlFormText,
-  GlToggle,
-} from '@gitlab/ui';
+import { GlForm, GlButton, GlFormGroup, GlFormInput, GlFormSelect, GlFormText } from '@gitlab/ui';
 import {
   LEADS_COMPANY_NAME_LABEL,
   LEADS_COMPANY_SIZE_LABEL,
@@ -22,6 +14,7 @@ import {
   TRIAL_PHONE_DESCRIPTION,
   TRIAL_FORM_SUBMIT_TEXT,
 } from 'ee/trials/constants';
+import RegistrationTrialToggle from 'ee/registrations/components/registration_trial_toggle.vue';
 
 export default {
   csrf,
@@ -33,7 +26,7 @@ export default {
     GlFormSelect,
     GlFormText,
     CountryOrRegionSelector,
-    GlToggle,
+    RegistrationTrialToggle,
   },
   inject: ['submitPath'],
   props: {
@@ -51,7 +44,6 @@ export default {
       country: '',
       state: '',
       websiteUrl: '',
-      trialOnboardingFlow: this.trial,
     };
   },
   computed: {
@@ -68,13 +60,6 @@ export default {
       return this.trial
         ? this.$options.i18n.description.trial
         : this.$options.i18n.description.registration;
-    },
-  },
-  methods: {
-    toggleTrial() {
-      this.$emit('changed', {
-        trialOnboardingFlow: this.trialOnboardingFlow,
-      });
     },
   },
   i18n: {
@@ -174,14 +159,7 @@ export default {
       optional
     >
       <gl-form-text class="gl-pb-3">{{ $options.i18n.trialToggleDescription }}</gl-form-text>
-      <gl-toggle
-        v-model="trialOnboardingFlow"
-        name="trial_onboarding_flow"
-        :label="$options.i18n.trialLabel"
-        label-position="hidden"
-        data-testid="trial_onboarding_flow"
-        @change="toggleTrial"
-      />
+      <registration-trial-toggle :active="trial" data-testid="trial" />
     </gl-form-group>
     <gl-button type="submit" variant="confirm" class="gl-w-20">
       {{ $options.i18n.formSubmitText }}

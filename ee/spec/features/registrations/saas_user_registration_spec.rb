@@ -62,120 +62,6 @@ RSpec.describe "User registration", :js, :saas do
     fill_in 'website_url', with: 'https://gitlab.com'
   end
 
-  def fill_in_trial_form(user_attrs)
-    fill_in 'new_user_first_name', with: user_attrs[:first_name]
-    fill_in 'new_user_last_name',  with: user_attrs[:last_name]
-    fill_in 'new_user_username',   with: user_attrs[:username]
-    fill_in 'new_user_email',      with: user_attrs[:email]
-    fill_in 'new_user_password',   with: user_attrs[:password]
-  end
-
-  def company_params_trial_true
-    ActionController::Parameters.new(
-      company_name: 'Test Company',
-      company_size: '1-99',
-      phone_number: '+1234567890',
-      country: 'US',
-      state: 'FL',
-      website_url: 'https://gitlab.com',
-      trial_onboarding_flow: 'true',
-      # these are the passed through params
-      role: 'other',
-      other_role: 'My role',
-      registration_objective: 'other',
-      jobs_to_be_done_other: 'My reason'
-    ).permit!
-  end
-
-  def company_params_trial_false
-    hash_including(
-      trial_onboarding_flow: 'false',
-      # these are the passed through params
-      role: 'other',
-      other_role: 'My role',
-      registration_objective: 'other',
-      jobs_to_be_done_other: 'My reason'
-    )
-  end
-
-  shared_examples 'signs me up for email updates' do
-    it { expect(user.reload).to be_email_opted_in }
-  end
-
-  shared_examples 'creates new group and project' do
-    it do
-      fill_in 'group_name', with: 'Test Group'
-      fill_in 'blank_project_name', with: 'Test Project'
-
-      expect_next(GitlabSubscriptions::ApplyTrialService).to receive(:execute).with({
-        uid: user.id,
-        trial_user: hash_including(
-          namespace_id: anything,
-          gitlab_com_trial: true,
-          sync_to_gl: true
-        )
-      }).and_return(success: true)
-
-      click_on 'Create project'
-
-      expect(page).to have_content 'Get started with GitLab'
-    end
-  end
-
-  shared_examples 'imports my existing project' do
-    it do
-      click_on 'Import'
-      fill_in 'import_group_name', with: 'Test Group'
-      click_on 'GitHub'
-
-      expect(page).to have_content <<~MESSAGE.tr("\n", ' ')
-        To connect GitHub repositories, you first need to authorize
-        GitLab to access the list of your GitHub repositories.
-      MESSAGE
-    end
-  end
-
-  shared_examples 'opting into a trial' do
-    before do
-      expect(GitlabSubscriptions::CreateTrialOrLeadService).to receive(:new).with(
-        user: User.find_by(email: user_attrs[:email]),
-        params: company_params_trial_true
-      ).and_return(service_with_success)
-
-      click_on 'Continue'
-    end
-
-    it_behaves_like 'creates new group and project' do
-      let(:user) { User.find_by(email: user_attrs[:email]) }
-    end
-
-    it_behaves_like 'imports my existing project'
-  end
-
-  shared_examples 'opting out of a trial' do
-    before do
-      click_button class: 'gl-toggle'
-
-      expect(GitlabSubscriptions::CreateTrialOrLeadService).to receive(:new).with(
-        user: User.find_by(email: user_attrs[:email]),
-        params: company_params_trial_false
-      ).and_return(service_with_success)
-
-      click_on 'Continue'
-    end
-
-    it 'creates new group and project' do
-      fill_in 'group_name', with: 'Test Group'
-      fill_in 'blank_project_name', with: 'Test Project'
-
-      click_on 'Create project'
-
-      expect(page).to have_content 'Get started with GitLab'
-    end
-
-    it_behaves_like 'imports my existing project'
-  end
-
   describe "when accepting an invite" do
     let_it_be(:user) { build(:user, name: 'Invited User') }
     let_it_be(:owner) { create(:user, name: 'John Doe') }
@@ -240,7 +126,9 @@ RSpec.describe "User registration", :js, :saas do
           expect(page).to have_content 'This user doesn\'t have any personal projects'
         end
 
-        it_behaves_like 'signs me up for email updates'
+        it "signs me up for email updates" do
+          expect(user.reload).to be_email_opted_in
+        end
       end
 
       context "wanting to create a project" do
@@ -269,7 +157,16 @@ RSpec.describe "User registration", :js, :saas do
           expect(page).to have_content 'Test Group / Learn GitLab'
         end
 
-        it_behaves_like 'imports my existing project'
+        it "imports my existing project without a trial" do
+          click_on 'Import'
+          fill_in 'import_group_name', with: 'Test Group'
+          click_on 'GitHub'
+
+          expect(page).to have_content <<~MESSAGE.tr("\n", ' ')
+            To connect GitHub repositories, you first need to authorize
+            GitLab to access the list of your GitHub repositories.
+          MESSAGE
+        end
       end
     end
 
@@ -312,13 +209,42 @@ RSpec.describe "User registration", :js, :saas do
 
             expect(GitlabSubscriptions::CreateTrialOrLeadService).to receive(:new).with(
               user: user,
-              params: company_params_trial_true
+              params: ActionController::Parameters.new(
+                company_name: 'Test Company',
+                company_size: '1-99',
+                phone_number: '+1234567890',
+                country: 'US',
+                state: 'FL',
+                website_url: 'https://gitlab.com',
+                trial: 'true',
+                # these are the passed through params
+                role: 'other',
+                other_role: 'My role',
+                registration_objective: 'other',
+                jobs_to_be_done_other: 'My reason'
+              ).permit!
             ).and_return(service_with_success)
 
             click_on 'Continue'
           end
 
-          it_behaves_like 'creates new group and project'
+          it "creates my new group and project with a trial" do
+            fill_in 'group_name', with: 'Test Group'
+            fill_in 'blank_project_name', with: 'Test Project'
+
+            expect_next(GitlabSubscriptions::ApplyTrialService).to receive(:execute).with({
+              uid: user.id,
+              trial_user: hash_including(
+                namespace_id: anything,
+                gitlab_com_trial: true,
+                sync_to_gl: true
+              )
+            }).and_return(success: true)
+
+            click_on 'Create project'
+
+            expect(page).to have_content 'Get started with GitLab'
+          end
         end
 
         context "without a trial" do
@@ -327,7 +253,14 @@ RSpec.describe "User registration", :js, :saas do
 
             expect(GitlabSubscriptions::CreateTrialOrLeadService).to receive(:new).with(
               user: user,
-              params: company_params_trial_false
+              params: hash_including(
+                trial: 'false',
+                # these are the passed through params
+                role: 'other',
+                other_role: 'My role',
+                registration_objective: 'other',
+                jobs_to_be_done_other: 'My reason'
+              )
             ).and_return(service_with_success)
 
             click_on 'Continue'
@@ -350,54 +283,6 @@ RSpec.describe "User registration", :js, :saas do
           end
         end
       end
-    end
-  end
-
-  describe "using the trial flow" do
-    let(:user_attrs) { attributes_for(:user, first_name: 'GitLab', last_name: 'GitLab') }
-
-    before do
-      stub_application_setting(send_user_confirmation_email: false)
-      visit new_trial_registration_path
-
-      expect(page).to have_content('Free 30-day trial')
-      fill_in_trial_form(user_attrs)
-
-      click_on 'Continue'
-      fill_in_welcome_form
-    end
-
-    context "just for me" do
-      before do
-        choose 'Just me'
-        check 'I\'d like to receive updates about GitLab via email'
-
-        click_on 'Continue'
-
-        expect(page).to have_content 'About your company'
-        fill_in_company_form
-      end
-
-      it_behaves_like 'signs me up for email updates' do
-        let(:user) { User.find_by(email: user_attrs[:email]) }
-      end
-
-      it_behaves_like 'opting into a trial'
-      it_behaves_like 'opting out of a trial'
-    end
-
-    context "for my company" do
-      before do
-        choose 'My company or team'
-
-        click_on 'Continue'
-
-        expect(page).to have_content 'About your company'
-        fill_in_company_form
-      end
-
-      it_behaves_like 'opting into a trial'
-      it_behaves_like 'opting out of a trial'
     end
   end
 end

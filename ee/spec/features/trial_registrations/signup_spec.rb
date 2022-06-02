@@ -29,8 +29,6 @@ RSpec.describe 'Trial Sign Up' do
 
     context 'with the available username' do
       it 'registers the user and proceeds to the next step' do
-        stub_feature_flags(about_your_company_registration_flow: false)
-
         visit new_trial_registration_path
         click_on 'Continue'
 

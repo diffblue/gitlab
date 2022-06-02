@@ -1,9 +1,10 @@
-import { GlButton, GlForm, GlFormText, GlToggle } from '@gitlab/ui';
+import { GlButton, GlForm, GlFormText } from '@gitlab/ui';
 import { createLocalVue } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import RegistrationForm from 'ee/registrations/components/company_form.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { TRIAL_FORM_SUBMIT_TEXT } from 'ee/trials/constants';
+import RegistrationTrialToggle from 'ee/registrations/components/registration_trial_toggle.vue';
 
 const localVue = createLocalVue();
 
@@ -26,7 +27,6 @@ describe('RegistrationForm', () => {
   const findButton = () => wrapper.findComponent(GlButton);
   const findForm = () => wrapper.findComponent(GlForm);
   const findFormInput = (testId) => wrapper.findByTestId(testId);
-  const findToggle = () => wrapper.findComponent(GlToggle);
 
   beforeEach(() => {
     wrapper = createComponent();
@@ -54,7 +54,7 @@ describe('RegistrationForm', () => {
 
     it('sets the trial value to be true', () => {
       expect(wrapper.props().trial).toBe(true);
-      expect(findToggle().props('value')).toBe(true);
+      expect(wrapper.findComponent(RegistrationTrialToggle).props('active')).toBe(true);
     });
 
     it.each`
@@ -64,7 +64,7 @@ describe('RegistrationForm', () => {
       ${'country'}
       ${'phone_number'}
       ${'website_url'}
-      ${'trial_onboarding_flow'}
+      ${'trial'}
     `('has the correct form input in the form content', ({ testid }) => {
       expect(findFormInput(testid).exists()).toBe(true);
     });

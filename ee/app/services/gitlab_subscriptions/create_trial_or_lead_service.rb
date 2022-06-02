@@ -2,7 +2,7 @@
 module GitlabSubscriptions
   class CreateTrialOrLeadService
     def initialize(user:, params:)
-      @generate_trial = Gitlab::Utils.to_boolean(params[:trial_onboarding_flow])
+      @generate_trial = Gitlab::Utils.to_boolean(params[:trial])
 
       merged_params = params.merge(hardcoded_values).merge(user_values(user))
       @params = remapping_for_api(merged_params)
