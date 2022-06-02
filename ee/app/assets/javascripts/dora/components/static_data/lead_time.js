@@ -1,5 +1,6 @@
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { s__ } from '~/locale';
+import { secondsToDays } from '../util';
 
 export * from './shared';
 
@@ -18,8 +19,7 @@ export const areaChartOptions = {
     minInterval: 1,
     axisLabel: {
       formatter(seconds) {
-        // 86400 = the number of seconds in 1 day
-        return (seconds / 86400).toFixed(1);
+        return secondsToDays(seconds);
       },
     },
   },

@@ -4,6 +4,8 @@ import {
   buildNullSeriesForLeadTimeChart,
   seriesToAverageSeries,
   seriesToMedianSeries,
+  extractTimeSeriesTooltip,
+  secondsToDays,
 } from 'ee/dora/components/util';
 
 describe('ee/dora/components/util.js', () => {
@@ -285,6 +287,28 @@ describe('ee/dora/components/util.js', () => {
           ['Jul 3', 3],
         ],
       });
+    });
+  });
+
+  describe('extractTimeSeriesTooltip', () => {
+    it('displays a humanized version of the time interval in the tooltip', () => {
+      const params = { seriesData: [{ data: ['Apr 7', 5328] }, { data: ['Apr 7', 4000] }, {}] };
+      const { tooltipValue } = extractTimeSeriesTooltip(params, 'cool-chart-title');
+
+      expect(tooltipValue[0].value).toBe('1.5 hours');
+      expect(tooltipValue[1].value).toBe('1.1 hours');
+    });
+  });
+
+  describe('secondsToDays', () => {
+    const seconds = 151000;
+
+    it('defaults to a single decimal', () => {
+      expect(secondsToDays(seconds)).toBe('1.7');
+    });
+
+    it('will format to the specified precision', () => {
+      expect(secondsToDays(seconds, 3)).toBe('1.748');
     });
   });
 });
