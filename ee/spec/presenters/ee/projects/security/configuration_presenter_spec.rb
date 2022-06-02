@@ -21,6 +21,12 @@ RSpec.describe Projects::Security::ConfigurationPresenter do
     it 'reports auto_fix permissions' do
       expect(result[:can_toggle_auto_fix_settings]).to be_truthy
     end
+
+    it 'reports security_training_enabled' do
+      allow(project).to receive(:security_training_available?).and_return(true)
+
+      expect(result[:security_training_enabled]).to be_truthy
+    end
   end
 
   describe '#to_html_data_attribute' do
