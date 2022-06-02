@@ -11373,7 +11373,13 @@ msgstr ""
 msgid "DastConfig|Customize DAST settings to suit your requirements. Configuration changes made here override those provided by GitLab and are excluded from updates. For details of more advanced configuration options, see the %{docsLinkStart}GitLab DAST documentation%{docsLinkEnd}."
 msgstr ""
 
+msgid "DastConfig|DAST CI/CD configuration"
+msgstr ""
+
 msgid "DastConfig|DAST Settings"
+msgstr ""
+
+msgid "DastConfig|Enable DAST to automatically test for vulnerabilities in your project's running application, website, or API, in the CI/CD pipeline. Configuration changes must be applied to your .gitlab-ci.yml file to take effect. For details of all configuration options, see the %{linkStart}GitLab DAST documentation%{linkEnd}."
 msgstr ""
 
 msgid "DastConfig|Generate code snippet"

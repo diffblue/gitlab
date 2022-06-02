@@ -34,9 +34,7 @@ import {
 } from 'ee/on_demand_scans/constants';
 import SectionLayout from '~/vue_shared/security_configuration/components/section_layout.vue';
 import ConfigurationPageLayout from 'ee/security_configuration/components/configuration_page_layout.vue';
-import DastProfilesSidebar from 'ee/security_configuration/dast_profiles/dast_profiles_sidebar/dast_profiles_sidebar.vue';
-import ScannerProfileSelectorNew from 'ee/security_configuration/dast_profiles/dast_profile_selector/scanner_profile_selector.vue';
-import SiteProfileSelectorNew from 'ee/security_configuration/dast_profiles/dast_profile_selector/site_profile_selector.vue';
+import DastProfilesConfigurator from 'ee/security_configuration/dast_profiles/dast_profiles_configurator/dast_profiles_configurator.vue';
 import dastProfileCreateMutation from '../graphql/dast_profile_create.mutation.graphql';
 import dastProfileUpdateMutation from '../graphql/dast_profile_update.mutation.graphql';
 import {
@@ -54,6 +52,11 @@ import ScanSchedule from './scan_schedule.vue';
 
 export const ON_DEMAND_SCANS_STORAGE_KEY = 'on-demand-scans-new-form';
 
+/**
+ * TODO Can be removed after rolling out
+ * dastUiRedesign feature flag
+ * Content was transferred to DastProfilesConfigurator
+ */
 const createProfilesApolloOptions = (name, field, { fetchQuery, fetchError }) => ({
   query: fetchQuery,
   variables() {
@@ -145,9 +148,7 @@ export default {
     LocalStorageSync,
     SectionLayout,
     ConfigurationPageLayout,
-    DastProfilesSidebar,
-    ScannerProfileSelectorNew,
-    SiteProfileSelectorNew,
+    DastProfilesConfigurator,
   },
   directives: {
     SafeHtml: GlSafeHtmlDirective,
@@ -155,6 +156,11 @@ export default {
     validation: validation(),
   },
   mixins: [glFeatureFlagMixin()],
+  /**
+   * TODO Can be removed after rolling out
+   * dastUiRedesign feature flag
+   * Content was transferred to DastProfilesConfigurator
+   */
   apollo: {
     scannerProfiles: createProfilesApolloOptions(
       'scannerProfiles',
@@ -205,15 +211,12 @@ export default {
       errors: [],
       showAlert: false,
       clearStorage: false,
-      isSideDrawerOpen: false,
-      profileType: '',
-      activeProfile: {},
     };
   },
   computed: {
-    hasSiteProfileSelector() {
-      return Boolean(this.selectedSiteProfile);
-    },
+    /**
+     *  TODO remove after dastUiRedesign flag roll out
+     */
     dastScanId() {
       return this.dastScan?.id ?? null;
     },
@@ -236,7 +239,9 @@ export default {
         : null;
     },
     errorMessage() {
-      return ERROR_MESSAGES[this.errorType] || null;
+      return this.glFeatures.dastUiRedesign
+        ? this.errorType
+        : ERROR_MESSAGES[this.errorType] || null;
     },
     isLoadingProfiles() {
       return ['scannerProfiles', 'siteProfiles'].some((name) => this.$apollo.queries[name].loading);
@@ -293,25 +298,6 @@ export default {
     },
     storageKey() {
       return `${this.projectPath}/${ON_DEMAND_SCANS_STORAGE_KEY}`;
-    },
-    selectedProfiles() {
-      return this.profileType === SCANNER_TYPE ? this.scannerProfiles : this.siteProfiles;
-    },
-    savedScannerProfileId() {
-      return this.dastScan?.dastScannerProfile.id;
-    },
-    savedSiteProfileId() {
-      return this.dastScan?.dastSiteProfile.id;
-    },
-    profileIdInUse() {
-      return this.profileType === SCANNER_TYPE
-        ? this.savedScannerProfileId
-        : this.savedSiteProfileId;
-    },
-    selectedProfileId() {
-      return this.profileType === SCANNER_TYPE
-        ? this.selectedScannerProfileId
-        : this.selectedSiteProfileId;
     },
   },
   created() {
@@ -381,28 +367,6 @@ export default {
       this.errors = errors;
       this.showAlert = true;
     },
-    openProfileDrawer(type) {
-      this.isSideDrawerOpen = false;
-      this.profileType = type;
-      this.$nextTick(() => {
-        this.isSideDrawerOpen = true;
-      });
-    },
-    enableEditingMode(type) {
-      this.selectActiveProfile(type);
-      this.openProfileDrawer(type);
-    },
-    isNewProfile(id) {
-      return this.selectedProfiles.every((profile) => profile.id !== id);
-    },
-    selectActiveProfile(type) {
-      this.activeProfile =
-        type === SCANNER_TYPE ? this.selectedScannerProfile : this.selectedSiteProfile;
-    },
-    closeSideDrawer() {
-      this.isSideDrawerOpen = false;
-      this.activeProfile = {};
-    },
     hideErrors() {
       this.errorType = null;
       this.errors = [];
@@ -425,27 +389,6 @@ export default {
       // precedence is given to profile IDs passed from the query params
       this.selectedSiteProfileId = this.selectedSiteProfileId ?? selectedSiteProfileId;
       this.selectedScannerProfileId = this.selectedScannerProfileId ?? selectedScannerProfileId;
-    },
-    updateProfileFromSelector({ profile: { id }, profileType }) {
-      if (profileType === SCANNER_TYPE) {
-        this.selectedScannerProfileId = id;
-      } else {
-        this.selectedSiteProfileId = id;
-      }
-      this.closeSideDrawer();
-    },
-    onScannerProfileCreated({ profile, profileType }) {
-      /**
-       * TODO remove refetch method
-       * after feature is complete
-       * substitute with cache update flow
-       */
-      if (this.isNewProfile(profile.id)) {
-        this.updateProfileFromSelector({ profile, profileType });
-      }
-
-      const type = `${profileType}Profiles`;
-      this.$apollo.queries[type].refetch();
     },
   },
 };
@@ -551,8 +494,16 @@ export default {
         </template>
       </section-layout>
 
+      <template v-if="glFeatures.dastUiRedesign">
+        <dast-profiles-configurator
+          :saved-scanner="dastScan"
+          :full-path="projectPath"
+          @error="showErrors"
+        />
+      </template>
+
       <section-layout
-        v-if="!failedToLoadProfiles"
+        v-if="!failedToLoadProfiles && !glFeatures.dastUiRedesign"
         :heading="$options.i18n.dastConfigurationHeader"
         :is-loading="isLoadingProfiles"
       >
@@ -566,45 +517,23 @@ export default {
           </p>
         </template>
         <template #features>
-          <template v-if="glFeatures.dastUiRedesign">
-            <scanner-profile-selector-new
-              class="gl-mb-6"
-              :profiles="scannerProfiles"
-              :selected-profile="selectedScannerProfile"
-              :profile-id-in-use="savedScannerProfileId"
-              @open-drawer="openProfileDrawer($options.SCANNER_TYPE)"
-              @edit="enableEditingMode($options.SCANNER_TYPE)"
-            />
+          <scanner-profile-selector
+            v-model="selectedScannerProfileId"
+            class="gl-mb-6"
+            :profiles="scannerProfiles"
+            :selected-profile="selectedScannerProfile"
+            :has-conflict="hasProfilesConflict"
+            :dast-scan-id="dastScanId"
+          />
 
-            <site-profile-selector-new
-              class="gl-mb-2"
-              :profiles="scannerProfiles"
-              :selected-profile="selectedSiteProfile"
-              :profile-id-in-use="savedSiteProfileId"
-              @open-drawer="openProfileDrawer($options.SITE_TYPE)"
-              @edit="enableEditingMode($options.SITE_TYPE)"
-            />
-          </template>
-
-          <template v-else>
-            <scanner-profile-selector
-              v-model="selectedScannerProfileId"
-              class="gl-mb-6"
-              :profiles="scannerProfiles"
-              :selected-profile="selectedScannerProfile"
-              :has-conflict="hasProfilesConflict"
-              :dast-scan-id="dastScanId"
-            />
-
-            <site-profile-selector
-              v-model="selectedSiteProfileId"
-              class="gl-mb-2"
-              :profiles="siteProfiles"
-              :selected-profile="selectedSiteProfile"
-              :has-conflict="hasProfilesConflict"
-              :dast-scan-id="dastScanId"
-            />
-          </template>
+          <site-profile-selector
+            v-model="selectedSiteProfileId"
+            class="gl-mb-2"
+            :profiles="siteProfiles"
+            :selected-profile="selectedSiteProfile"
+            :has-conflict="hasProfilesConflict"
+            :dast-scan-id="dastScanId"
+          />
         </template>
       </section-layout>
 
@@ -659,19 +588,5 @@ export default {
         </div>
       </div>
     </gl-form>
-    <dast-profiles-sidebar
-      v-if="glFeatures.dastUiRedesign"
-      :profiles="selectedProfiles"
-      :profile-id-in-use="profileIdInUse"
-      :selected-profile-id="selectedProfileId"
-      :active-profile="activeProfile"
-      :profile-type="profileType"
-      :is-open="isSideDrawerOpen"
-      :is-loading="isLoadingProfiles"
-      @close-drawer="closeSideDrawer"
-      @reopen-drawer="openProfileDrawer"
-      @profile-submitted="onScannerProfileCreated"
-      @select-profile="updateProfileFromSelector"
-    />
   </configuration-page-layout>
 </template>

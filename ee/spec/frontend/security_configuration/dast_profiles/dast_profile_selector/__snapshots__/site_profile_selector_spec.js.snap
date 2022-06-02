@@ -2,6 +2,7 @@
 
 exports[`SiteProfileSelector renders properly with no profiles 1`] = `
 <div
+  profiles=""
   props="[object Object]"
 >
   <div
@@ -43,6 +44,7 @@ exports[`SiteProfileSelector renders properly with no profiles 1`] = `
 
 exports[`SiteProfileSelector renders properly with profiles 1`] = `
 <div
+  profiles=""
   props="[object Object]"
 >
   <div

@@ -31,11 +31,6 @@ export default {
     SiteProfileSummary,
   },
   props: {
-    profiles: {
-      type: Array,
-      required: false,
-      default: () => [],
-    },
     selectedProfile: {
       type: Object,
       required: false,
