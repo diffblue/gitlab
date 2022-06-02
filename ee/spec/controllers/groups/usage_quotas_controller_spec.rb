@@ -31,14 +31,6 @@ RSpec.describe Groups::UsageQuotasController do
     end
   end
 
-  describe 'GET #index' do
-    it_behaves_like 'seat count alert' do
-      subject { get :index, params: { group_id: group } }
-
-      let(:namespace) { group }
-    end
-  end
-
   describe 'GET #pending_members' do
     let(:feature_available) { true }
 
