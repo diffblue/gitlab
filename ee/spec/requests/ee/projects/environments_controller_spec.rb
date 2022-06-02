@@ -12,6 +12,15 @@ RSpec.describe Projects::EnvironmentsController do
 
     before do
       sign_in(project.owner)
+      stub_licensed_features(protected_environments: true)
+
+      create(:protected_environment, project: project, name: environment.name) do |protected_environment|
+        create(:protected_environment_approval_rule, :maintainer_access, protected_environment: protected_environment)
+        create(:protected_environment_approval_rule, user: create(:user),
+               protected_environment: protected_environment)
+        create(:protected_environment_approval_rule, group: create(:group),
+               protected_environment: protected_environment)
+      end
     end
 
     include_examples 'avoids N+1 queries on environment detail page'
@@ -30,7 +39,9 @@ RSpec.describe Projects::EnvironmentsController do
     deployer = create(:user)
     pipeline = create(:ci_pipeline, project: environment.project)
     build = create(:ci_build, environment: environment.name, pipeline: pipeline, user: deployer)
-    create(:deployment, :success, environment: environment, deployable: build, user: deployer,
-           project: project, sha: commit.sha)
+    create(:deployment, :blocked, environment: environment, deployable: build, user: deployer,
+           project: project, sha: commit.sha) do |deployment|
+      create_list(:deployment_approval, 2, deployment: deployment)
+    end
   end
 end
