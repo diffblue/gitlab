@@ -14,7 +14,7 @@ module Mailgun
 
     WEBHOOK_PROCESSORS = [
       Gitlab::Mailgun::WebhookProcessors::FailureLogger,
-      ::Members::Mailgun::ProcessWebhookService
+      Gitlab::Mailgun::WebhookProcessors::MemberInvites
     ].freeze
 
     def process_webhook

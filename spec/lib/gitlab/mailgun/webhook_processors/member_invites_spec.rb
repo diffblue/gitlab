@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Members::Mailgun::ProcessWebhookService do
+RSpec.describe Gitlab::Mailgun::WebhookProcessors::MemberInvites do
   describe '#execute', :aggregate_failures do
     let_it_be(:member) { create(:project_member, :invited) }
 
