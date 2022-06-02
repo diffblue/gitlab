@@ -7,7 +7,7 @@ RSpec.describe Gitlab::Ssh::Signature do
   let(:public_key_text) { "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIELaINtPpdqTHD57qGll7jacPbuzsz5yc3S1KJ9PhCzU" }
   let(:committer_email) { "ssh-commit-test@example.com" }
   let(:user) { create(:user, email: committer_email) }
-  let(:key) { create(:key, key: public_key_text, user: user) }
+  let!(:key) { create(:key, key: public_key_text, user: user) }
 
   let(:signed_text) do
     <<~MSG
@@ -29,9 +29,6 @@ RSpec.describe Gitlab::Ssh::Signature do
   end
 
   subject(:signature) do
-    # Ensure user and key are created prior to initialization
-    key
-
     described_class.new(
       signature_text,
       signed_text,
