@@ -29810,6 +29810,9 @@ msgstr ""
 msgid "ProjectSelect|Select a project"
 msgstr ""
 
+msgid "ProjectSelect|Something went wrong while fetching projects"
+msgstr ""
+
 msgid "ProjectSelect|There was an error fetching the projects. Please try again."
 msgstr ""
 
