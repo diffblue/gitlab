@@ -28,6 +28,7 @@ RSpec.describe IssuablesHelper do
           epicsWebUrl: "/groups/#{@group.full_path}/-/epics",
           fullPath: @group.full_path,
           groupPath: @group.path,
+          hasIssueWeightsFeature: nil,
           state: epic.state,
           initialDescriptionHtml: '<p data-sourcepos="1:1-1:9" dir="auto">epic text</p>',
           initialDescriptionText: 'epic text',
@@ -51,11 +52,16 @@ RSpec.describe IssuablesHelper do
     context 'for an issue' do
       let_it_be(:issue) { create(:issue, author: user, description: 'issue text') }
 
+      before do
+        allow(issue.project).to receive(:licensed_feature_available?).and_return(true)
+      end
+
       it 'returns the correct data' do
         @project = issue.project
 
         expected_data = {
           canAdmin: true,
+          hasIssueWeightsFeature: true,
           publishedIncidentUrl: nil
         }
         expect(helper.issuable_initial_data(issue)).to include(expected_data)
