@@ -65,7 +65,8 @@ RSpec.describe 'Value stream analytics charts', :js do
   end
 
   describe 'Tasks by type chart', :js do
-    filters_selector = '.js-tasks-by-type-chart-filters'
+    let(:filters_selector) { '.js-tasks-by-type-chart-filters' }
+    let(:task_by_type_description_tooltip) { page.find('[data-testid="vsa-task-by-type-description"]') }
 
     before do
       stub_licensed_features(cycle_analytics_for_groups: true, type_of_work_analytics: true)
@@ -90,13 +91,12 @@ RSpec.describe 'Value stream analytics charts', :js do
         end
 
         it 'displays the chart' do
-          expect(page).to have_text(s_('CycleAnalytics|Type of work'))
-
           expect(page).to have_text(s_('CycleAnalytics|Tasks by type'))
         end
 
         it 'has 2 labels selected' do
-          expect(page).to have_text('Showing Issues and 2 labels')
+          task_by_type_description_tooltip.hover
+          expect(page).to have_text('Shows issues and 2 labels')
         end
 
         it 'has chart filters' do
@@ -110,14 +110,16 @@ RSpec.describe 'Value stream analytics charts', :js do
             first_selected_label.click
           end
 
-          expect(page).to have_text('Showing Issues and 1 label')
+          task_by_type_description_tooltip.hover
+          expect(page).to have_text('Shows issues and 1 label')
 
           page.within filters_selector do
             find('.dropdown-toggle').click
             find('[data-testid="type-of-work-filters-subject"] label', text: 'Merge Requests').click
           end
 
-          expect(page).to have_text('Showing Merge Requests and 1 label')
+          task_by_type_description_tooltip.hover
+          expect(page).to have_text('Shows merge requests and 1 label')
         end
       end
 
@@ -127,8 +129,6 @@ RSpec.describe 'Value stream analytics charts', :js do
         end
 
         it 'shows the no data available message' do
-          expect(page).to have_text(s_('CycleAnalytics|Type of work'))
-
           expect(page).to have_text(_('There is no data available. Please change your selection.'))
         end
       end

@@ -67,8 +67,6 @@ describe('TypeOfWorkCharts', () => {
   const findSubjectFilters = (_wrapper) => _wrapper.findComponent(TasksByTypeFilters);
   const findTasksByTypeChart = (_wrapper) => _wrapper.findComponent(TasksByTypeChart);
   const findLoader = (_wrapper) => _wrapper.findComponent(ChartSkeletonLoader);
-  const selectedFilterText =
-    "Type of work Showing data for group 'Gitlab Org' from Dec 11, 2019 to Jan 10, 2020";
 
   afterEach(() => {
     wrapper.destroy();
@@ -84,7 +82,9 @@ describe('TypeOfWorkCharts', () => {
     });
 
     it('renders a description of the current filters', () => {
-      expect(wrapper.text()).toContain(selectedFilterText);
+      expect(wrapper.text()).toContain(
+        "Shows issues and 3 labels for group 'Gitlab Org' from Dec 11, 2019 to Jan 10, 2020",
+      );
     });
 
     it('does not render the loading icon', () => {

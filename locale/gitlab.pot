@@ -11193,17 +11193,6 @@ msgstr ""
 msgid "CycleAnalytics|Show"
 msgstr ""
 
-msgid "CycleAnalytics|Showing %{subjectFilterText} and %{selectedLabelsCount} label"
-msgid_plural "CycleAnalytics|Showing %{subjectFilterText} and %{selectedLabelsCount} labels"
-msgstr[0] ""
-msgstr[1] ""
-
-msgid "CycleAnalytics|Showing data for group '%{groupName}' and %{selectedProjectCount} projects from %{createdAfter} to %{createdBefore}"
-msgstr ""
-
-msgid "CycleAnalytics|Showing data for group '%{groupName}' from %{createdAfter} to %{createdBefore}"
-msgstr ""
-
 msgid "CycleAnalytics|Stage time: %{title}"
 msgstr ""
 
@@ -11229,9 +11218,6 @@ msgid "CycleAnalytics|Time to Restore Service"
 msgstr ""
 
 msgid "CycleAnalytics|Total time"
-msgstr ""
-
-msgid "CycleAnalytics|Type of work"
 msgstr ""
 
 msgid "CycleAnalytics|group dropdown filter"
@@ -41628,6 +41614,11 @@ msgstr ""
 msgid "ValueStreamAnalytics|%{stageCount}+ items"
 msgstr ""
 
+msgid "ValueStreamAnalytics|%{subjectFilterText} and %{selectedLabelsCount} label"
+msgid_plural "ValueStreamAnalytics|%{subjectFilterText} and %{selectedLabelsCount} labels"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "ValueStreamAnalytics|%{value}M"
 msgstr ""
 
@@ -41682,13 +41673,22 @@ msgstr ""
 msgid "ValueStreamAnalytics|Percentage of deployments that cause an incident in production."
 msgstr ""
 
+msgid "ValueStreamAnalytics|Shows %{selectedFiltersDescription} for group '%{groupName}' and %{selectedProjectCount} projects from %{createdAfter} to %{createdBefore}"
+msgstr ""
+
+msgid "ValueStreamAnalytics|Shows %{selectedFiltersDescription} for group '%{groupName}' from %{createdAfter} to %{createdBefore}"
+msgstr ""
+
+msgid "ValueStreamAnalytics|Tasks by type"
+msgstr ""
+
 msgid "ValueStreamAnalytics|There was an error while fetching value stream analytics %{requestTypeName} data."
 msgstr ""
 
 msgid "ValueStreamAnalytics|Total number of deploys to production."
 msgstr ""
 
-msgid "ValueStreamAnalytics|Value Stream"
+msgid "ValueStreamAnalytics|Value stream"
 msgstr ""
 
 msgid "ValueStreamEvent|Items in stage"
