@@ -62,7 +62,7 @@ module SnippetsHelper
             rel: 'noopener noreferrer')
   end
 
-  def embedded_snippet_copy(blob)
+  def embedded_copy_snippet_button(blob)
     return unless blob.rendered_as_text?(ignore_errors: false)
 
     content_tag(:button,
