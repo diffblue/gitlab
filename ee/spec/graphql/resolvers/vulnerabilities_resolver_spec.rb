@@ -6,7 +6,7 @@ RSpec.describe Resolvers::VulnerabilitiesResolver do
   include GraphqlHelpers
 
   describe '#resolve' do
-    subject { resolve(described_class, obj: vulnerable, args: params, ctx: { current_user: current_user }) }
+    subject { resolve(described_class, obj: vulnerable, args: params, ctx: { current_user: current_user }, arg_style: :internal_prepared) }
 
     let_it_be_with_reload(:project) { create(:project) }
     let_it_be(:user) { create(:user, security_dashboard_projects: [project]) }

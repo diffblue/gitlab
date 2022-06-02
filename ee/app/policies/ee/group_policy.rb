@@ -451,6 +451,13 @@ module EE
       super
     end
 
+    override :can_read_group_member?
+    def can_read_group_member?
+      return true if user&.can_read_all_resources?
+
+      super
+    end
+
     def ldap_lock_bypassable?
       return false unless ::Feature.enabled?(:ldap_settings_unlock_groups_by_owners)
       return false unless ::Gitlab::CurrentSettings.allow_group_owners_to_manage_ldap?

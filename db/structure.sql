@@ -11316,6 +11316,7 @@ CREATE TABLE application_settings (
     encrypted_dingtalk_app_key_iv bytea,
     encrypted_dingtalk_app_secret bytea,
     encrypted_dingtalk_app_secret_iv bytea,
+    jira_connect_application_key text,
     globally_allowed_ips text DEFAULT ''::text NOT NULL,
     container_registry_pre_import_tags_rate numeric(6,2) DEFAULT 0.5 NOT NULL,
     CONSTRAINT app_settings_container_reg_cleanup_tags_max_list_size_positive CHECK ((container_registry_cleanup_tags_service_max_list_size >= 0)),
@@ -11349,6 +11350,7 @@ CREATE TABLE application_settings (
     CONSTRAINT check_a5704163cc CHECK ((char_length(secret_detection_revocation_token_types_url) <= 255)),
     CONSTRAINT check_d03919528d CHECK ((char_length(container_registry_vendor) <= 255)),
     CONSTRAINT check_d820146492 CHECK ((char_length(spam_check_endpoint_url) <= 255)),
+    CONSTRAINT check_e2dd6e290a CHECK ((char_length(jira_connect_application_key) <= 255)),
     CONSTRAINT check_e5024c8801 CHECK ((char_length(elasticsearch_username) <= 255)),
     CONSTRAINT check_e5aba18f02 CHECK ((char_length(container_registry_version) <= 255)),
     CONSTRAINT check_ef6176834f CHECK ((char_length(encrypted_cloud_license_auth_token_iv) <= 255)),
@@ -12532,6 +12534,7 @@ CREATE TABLE ci_group_variables (
     masked boolean DEFAULT false NOT NULL,
     variable_type smallint DEFAULT 1 NOT NULL,
     environment_scope text DEFAULT '*'::text NOT NULL,
+    raw boolean DEFAULT true NOT NULL,
     CONSTRAINT check_dfe009485a CHECK ((char_length(environment_scope) <= 255))
 );
 
@@ -12552,6 +12555,7 @@ CREATE TABLE ci_instance_variables (
     key text NOT NULL,
     encrypted_value text,
     encrypted_value_iv text,
+    raw boolean DEFAULT true NOT NULL,
     CONSTRAINT check_07a45a5bcb CHECK ((char_length(encrypted_value_iv) <= 255)),
     CONSTRAINT check_5aede12208 CHECK ((char_length(key) <= 255)),
     CONSTRAINT check_956afd70f1 CHECK ((char_length(encrypted_value) <= 13579))
@@ -12640,7 +12644,8 @@ CREATE TABLE ci_job_variables (
     encrypted_value_iv character varying,
     job_id bigint NOT NULL,
     variable_type smallint DEFAULT 1 NOT NULL,
-    source smallint DEFAULT 0 NOT NULL
+    source smallint DEFAULT 0 NOT NULL,
+    raw boolean DEFAULT true NOT NULL
 );
 
 CREATE SEQUENCE ci_job_variables_id_seq
@@ -12806,7 +12811,8 @@ CREATE TABLE ci_pipeline_schedule_variables (
     pipeline_schedule_id integer NOT NULL,
     created_at timestamp with time zone,
     updated_at timestamp with time zone,
-    variable_type smallint DEFAULT 1 NOT NULL
+    variable_type smallint DEFAULT 1 NOT NULL,
+    raw boolean DEFAULT true NOT NULL
 );
 
 CREATE SEQUENCE ci_pipeline_schedule_variables_id_seq
@@ -12849,7 +12855,8 @@ CREATE TABLE ci_pipeline_variables (
     encrypted_value_salt character varying,
     encrypted_value_iv character varying,
     pipeline_id integer NOT NULL,
-    variable_type smallint DEFAULT 1 NOT NULL
+    variable_type smallint DEFAULT 1 NOT NULL,
+    raw boolean DEFAULT true NOT NULL
 );
 
 CREATE SEQUENCE ci_pipeline_variables_id_seq
@@ -13290,7 +13297,8 @@ CREATE TABLE ci_variables (
     protected boolean DEFAULT false NOT NULL,
     environment_scope character varying DEFAULT '*'::character varying NOT NULL,
     masked boolean DEFAULT false NOT NULL,
-    variable_type smallint DEFAULT 1 NOT NULL
+    variable_type smallint DEFAULT 1 NOT NULL,
+    raw boolean DEFAULT true NOT NULL
 );
 
 CREATE SEQUENCE ci_variables_id_seq
@@ -15247,7 +15255,6 @@ CREATE TABLE geo_event_log (
     repositories_changed_event_id bigint,
     repository_created_event_id bigint,
     hashed_storage_migrated_event_id bigint,
-    lfs_object_deleted_event_id bigint,
     hashed_storage_attachments_event_id bigint,
     reset_checksum_event_id bigint,
     cache_invalidation_event_id bigint,
@@ -15319,22 +15326,6 @@ CREATE SEQUENCE geo_hashed_storage_migrated_events_id_seq
     CACHE 1;
 
 ALTER SEQUENCE geo_hashed_storage_migrated_events_id_seq OWNED BY geo_hashed_storage_migrated_events.id;
-
-CREATE TABLE geo_lfs_object_deleted_events (
-    id bigint NOT NULL,
-    lfs_object_id integer NOT NULL,
-    oid character varying NOT NULL,
-    file_path character varying NOT NULL
-);
-
-CREATE SEQUENCE geo_lfs_object_deleted_events_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-ALTER SEQUENCE geo_lfs_object_deleted_events_id_seq OWNED BY geo_lfs_object_deleted_events.id;
 
 CREATE TABLE geo_node_namespace_links (
     id integer NOT NULL,
@@ -16210,7 +16201,6 @@ CREATE TABLE integrations (
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
     active boolean DEFAULT false NOT NULL,
-    properties text,
     push_events boolean DEFAULT true,
     issues_events boolean DEFAULT true,
     merge_requests_events boolean DEFAULT true,
@@ -16301,6 +16291,27 @@ CREATE SEQUENCE issuable_metric_images_id_seq
     CACHE 1;
 
 ALTER SEQUENCE issuable_metric_images_id_seq OWNED BY issuable_metric_images.id;
+
+CREATE TABLE issuable_resource_links (
+    id bigint NOT NULL,
+    issue_id bigint NOT NULL,
+    link_text text,
+    link text NOT NULL,
+    link_type smallint DEFAULT 0 NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    CONSTRAINT check_67be6729db CHECK ((char_length(link) <= 2200)),
+    CONSTRAINT check_b137147e0b CHECK ((char_length(link_text) <= 255))
+);
+
+CREATE SEQUENCE issuable_resource_links_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE issuable_resource_links_id_seq OWNED BY issuable_resource_links.id;
 
 CREATE TABLE issuable_severities (
     id bigint NOT NULL,
@@ -19150,7 +19161,8 @@ CREATE TABLE project_build_artifacts_size_refreshes (
     state smallint DEFAULT 1 NOT NULL,
     refresh_started_at timestamp with time zone,
     created_at timestamp with time zone NOT NULL,
-    updated_at timestamp with time zone NOT NULL
+    updated_at timestamp with time zone NOT NULL,
+    last_job_artifact_id_on_refresh_start bigint DEFAULT 0
 );
 
 CREATE SEQUENCE project_build_artifacts_size_refreshes_id_seq
@@ -19321,7 +19333,8 @@ CREATE TABLE project_features (
     operations_access_level integer DEFAULT 20 NOT NULL,
     analytics_access_level integer DEFAULT 20 NOT NULL,
     security_and_compliance_access_level integer DEFAULT 10 NOT NULL,
-    container_registry_access_level integer DEFAULT 0 NOT NULL
+    container_registry_access_level integer DEFAULT 0 NOT NULL,
+    package_registry_access_level integer DEFAULT 0 NOT NULL
 );
 
 CREATE SEQUENCE project_features_id_seq
@@ -22877,8 +22890,6 @@ ALTER TABLE ONLY geo_hashed_storage_attachments_events ALTER COLUMN id SET DEFAU
 
 ALTER TABLE ONLY geo_hashed_storage_migrated_events ALTER COLUMN id SET DEFAULT nextval('geo_hashed_storage_migrated_events_id_seq'::regclass);
 
-ALTER TABLE ONLY geo_lfs_object_deleted_events ALTER COLUMN id SET DEFAULT nextval('geo_lfs_object_deleted_events_id_seq'::regclass);
-
 ALTER TABLE ONLY geo_node_namespace_links ALTER COLUMN id SET DEFAULT nextval('geo_node_namespace_links_id_seq'::regclass);
 
 ALTER TABLE ONLY geo_node_statuses ALTER COLUMN id SET DEFAULT nextval('geo_node_statuses_id_seq'::regclass);
@@ -22966,6 +22977,8 @@ ALTER TABLE ONLY internal_ids ALTER COLUMN id SET DEFAULT nextval('internal_ids_
 ALTER TABLE ONLY ip_restrictions ALTER COLUMN id SET DEFAULT nextval('ip_restrictions_id_seq'::regclass);
 
 ALTER TABLE ONLY issuable_metric_images ALTER COLUMN id SET DEFAULT nextval('issuable_metric_images_id_seq'::regclass);
+
+ALTER TABLE ONLY issuable_resource_links ALTER COLUMN id SET DEFAULT nextval('issuable_resource_links_id_seq'::regclass);
 
 ALTER TABLE ONLY issuable_severities ALTER COLUMN id SET DEFAULT nextval('issuable_severities_id_seq'::regclass);
 
@@ -24733,9 +24746,6 @@ ALTER TABLE ONLY geo_hashed_storage_attachments_events
 ALTER TABLE ONLY geo_hashed_storage_migrated_events
     ADD CONSTRAINT geo_hashed_storage_migrated_events_pkey PRIMARY KEY (id);
 
-ALTER TABLE ONLY geo_lfs_object_deleted_events
-    ADD CONSTRAINT geo_lfs_object_deleted_events_pkey PRIMARY KEY (id);
-
 ALTER TABLE ONLY geo_node_namespace_links
     ADD CONSTRAINT geo_node_namespace_links_pkey PRIMARY KEY (id);
 
@@ -24882,6 +24892,9 @@ ALTER TABLE ONLY ip_restrictions
 
 ALTER TABLE ONLY issuable_metric_images
     ADD CONSTRAINT issuable_metric_images_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY issuable_resource_links
+    ADD CONSTRAINT issuable_resource_links_pkey PRIMARY KEY (id);
 
 ALTER TABLE ONLY issuable_severities
     ADD CONSTRAINT issuable_severities_pkey PRIMARY KEY (id);
@@ -27297,6 +27310,8 @@ CREATE UNIQUE INDEX index_ci_job_artifacts_on_job_id_and_file_type ON ci_job_art
 
 CREATE INDEX index_ci_job_artifacts_on_project_id ON ci_job_artifacts USING btree (project_id);
 
+CREATE INDEX index_ci_job_artifacts_on_project_id_and_id ON ci_job_artifacts USING btree (project_id, id);
+
 CREATE INDEX index_ci_job_artifacts_on_project_id_for_security_reports ON ci_job_artifacts USING btree (project_id) WHERE (file_type = ANY (ARRAY[5, 6, 7, 8]));
 
 CREATE INDEX index_ci_job_token_project_scope_links_on_added_by_id ON ci_job_token_project_scope_links USING btree (added_by_id);
@@ -27689,6 +27704,8 @@ CREATE UNIQUE INDEX index_deploy_tokens_on_token_encrypted ON deploy_tokens USIN
 
 CREATE INDEX index_deployment_approvals_on_approval_rule_id ON deployment_approvals USING btree (approval_rule_id);
 
+CREATE INDEX index_deployment_approvals_on_created_at_and_id ON deployment_approvals USING btree (created_at, id);
+
 CREATE UNIQUE INDEX index_deployment_approvals_on_deployment_id_and_user_id ON deployment_approvals USING btree (deployment_id, user_id);
 
 CREATE INDEX index_deployment_approvals_on_user_id ON deployment_approvals USING btree (user_id);
@@ -27953,8 +27970,6 @@ CREATE INDEX index_geo_event_log_on_hashed_storage_attachments_event_id ON geo_e
 
 CREATE INDEX index_geo_event_log_on_hashed_storage_migrated_event_id ON geo_event_log USING btree (hashed_storage_migrated_event_id) WHERE (hashed_storage_migrated_event_id IS NOT NULL);
 
-CREATE INDEX index_geo_event_log_on_lfs_object_deleted_event_id ON geo_event_log USING btree (lfs_object_deleted_event_id) WHERE (lfs_object_deleted_event_id IS NOT NULL);
-
 CREATE INDEX index_geo_event_log_on_repositories_changed_event_id ON geo_event_log USING btree (repositories_changed_event_id) WHERE (repositories_changed_event_id IS NOT NULL);
 
 CREATE INDEX index_geo_event_log_on_repository_created_event_id ON geo_event_log USING btree (repository_created_event_id) WHERE (repository_created_event_id IS NOT NULL);
@@ -27970,8 +27985,6 @@ CREATE INDEX index_geo_event_log_on_reset_checksum_event_id ON geo_event_log USI
 CREATE INDEX index_geo_hashed_storage_attachments_events_on_project_id ON geo_hashed_storage_attachments_events USING btree (project_id);
 
 CREATE INDEX index_geo_hashed_storage_migrated_events_on_project_id ON geo_hashed_storage_migrated_events USING btree (project_id);
-
-CREATE INDEX index_geo_lfs_object_deleted_events_on_lfs_object_id ON geo_lfs_object_deleted_events USING btree (lfs_object_id);
 
 CREATE INDEX index_geo_node_namespace_links_on_geo_node_id ON geo_node_namespace_links USING btree (geo_node_id);
 
@@ -28182,6 +28195,8 @@ CREATE UNIQUE INDEX index_internal_ids_on_usage_and_project_id ON internal_ids U
 CREATE INDEX index_ip_restrictions_on_group_id ON ip_restrictions USING btree (group_id);
 
 CREATE INDEX index_issuable_metric_images_on_issue_id ON issuable_metric_images USING btree (issue_id);
+
+CREATE INDEX index_issuable_resource_links_on_issue_id ON issuable_resource_links USING btree (issue_id);
 
 CREATE UNIQUE INDEX index_issuable_severities_on_issue_id ON issuable_severities USING btree (issue_id);
 
@@ -28590,6 +28605,8 @@ CREATE INDEX index_namespaces_on_shared_and_extra_runners_minutes_limit ON names
 CREATE INDEX index_namespaces_on_traversal_ids ON namespaces USING gin (traversal_ids);
 
 CREATE INDEX index_namespaces_on_traversal_ids_for_groups ON namespaces USING gin (traversal_ids) WHERE ((type)::text = 'Group'::text);
+
+CREATE INDEX index_namespaces_on_traversal_ids_for_groups_btree ON namespaces USING btree (traversal_ids) WHERE ((type)::text = 'Group'::text);
 
 CREATE INDEX index_namespaces_on_type_and_id ON namespaces USING btree (type, id);
 
@@ -29807,7 +29824,7 @@ CREATE UNIQUE INDEX index_vulnerability_remediations_on_project_id_and_checksum 
 
 CREATE UNIQUE INDEX index_vulnerability_scanners_on_project_id_and_external_id ON vulnerability_scanners USING btree (project_id, external_id);
 
-CREATE INDEX index_vulnerability_state_transitions_on_vulnerability_id ON vulnerability_state_transitions USING btree (vulnerability_id);
+CREATE INDEX index_vulnerability_state_transitions_id_and_vulnerability_id ON vulnerability_state_transitions USING btree (vulnerability_id, id);
 
 CREATE INDEX index_vulnerability_statistics_on_latest_pipeline_id ON vulnerability_statistics USING btree (latest_pipeline_id);
 
@@ -29925,6 +29942,8 @@ CREATE UNIQUE INDEX term_agreements_unique_index ON term_agreements USING btree 
 
 CREATE INDEX tmp_idx_container_repos_on_non_migrated ON container_repositories USING btree (project_id, id) WHERE ((migration_state <> 'import_done'::text) AND (created_at < '2022-01-23 00:00:00'::timestamp without time zone));
 
+CREATE INDEX tmp_index_ci_job_artifacts_on_expire_at_where_locked_unknown ON ci_job_artifacts USING btree (expire_at, job_id) WHERE ((locked = 2) AND (expire_at IS NOT NULL));
+
 CREATE INDEX tmp_index_ci_job_artifacts_on_id_where_trace_and_expire_at ON ci_job_artifacts USING btree (id) WHERE ((file_type = 3) AND (expire_at = ANY (ARRAY['2021-04-22 00:00:00+00'::timestamp with time zone, '2021-05-22 00:00:00+00'::timestamp with time zone, '2021-06-22 00:00:00+00'::timestamp with time zone, '2022-01-22 00:00:00+00'::timestamp with time zone, '2022-02-22 00:00:00+00'::timestamp with time zone, '2022-03-22 00:00:00+00'::timestamp with time zone, '2022-04-22 00:00:00+00'::timestamp with time zone])));
 
 CREATE INDEX tmp_index_container_repositories_on_id_migration_state ON container_repositories USING btree (id, migration_state);
@@ -29939,15 +29958,11 @@ CREATE INDEX tmp_index_for_null_project_namespace_id ON projects USING btree (id
 
 CREATE INDEX tmp_index_for_project_namespace_id_migration_on_routes ON routes USING btree (id) WHERE ((namespace_id IS NULL) AND ((source_type)::text = 'Project'::text));
 
-CREATE INDEX tmp_index_integrations_on_id_where_type_droneci_or_teamcity ON integrations USING btree (id) WHERE ((type_new = ANY (ARRAY['Integrations::DroneCi'::text, 'Integrations::Teamcity'::text])) AND (encrypted_properties IS NOT NULL));
-
 CREATE INDEX tmp_index_issues_on_issue_type_and_id ON issues USING btree (issue_type, id);
 
 CREATE INDEX tmp_index_members_on_state ON members USING btree (state) WHERE (state = 2);
 
 CREATE INDEX tmp_index_merge_requests_draft_and_status ON merge_requests USING btree (id) WHERE ((draft = false) AND (state_id = 1) AND ((title)::text ~* '^(\[draft\]|\(draft\)|draft:|draft|\[WIP\]|WIP:|WIP)'::text));
-
-CREATE INDEX tmp_index_notes_on_id_where_discussion_id_is_null ON notes USING btree (id) WHERE (discussion_id IS NULL);
 
 CREATE UNIQUE INDEX tmp_index_on_tmp_project_id_on_namespaces ON namespaces USING btree (tmp_project_id);
 
@@ -32021,9 +32036,6 @@ ALTER TABLE ONLY web_hooks
 ALTER TABLE ONLY ci_sources_pipelines
     ADD CONSTRAINT fk_d4e29af7d7 FOREIGN KEY (source_pipeline_id) REFERENCES ci_pipelines(id) ON DELETE CASCADE;
 
-ALTER TABLE ONLY geo_event_log
-    ADD CONSTRAINT fk_d5af95fcd9 FOREIGN KEY (lfs_object_deleted_event_id) REFERENCES geo_lfs_object_deleted_events(id) ON DELETE CASCADE;
-
 ALTER TABLE ONLY incident_management_timeline_events
     ADD CONSTRAINT fk_d606a2a890 FOREIGN KEY (promoted_from_note_id) REFERENCES notes(id) ON DELETE SET NULL;
 
@@ -32587,6 +32599,9 @@ ALTER TABLE ONLY epic_user_mentions
 
 ALTER TABLE ONLY analytics_cycle_analytics_project_stages
     ADD CONSTRAINT fk_rails_3ec9fd7912 FOREIGN KEY (end_event_label_id) REFERENCES labels(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY issuable_resource_links
+    ADD CONSTRAINT fk_rails_3f0ec6b1cf FOREIGN KEY (issue_id) REFERENCES issues(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY board_assignees
     ADD CONSTRAINT fk_rails_3f6f926bd5 FOREIGN KEY (board_id) REFERENCES boards(id) ON DELETE CASCADE;

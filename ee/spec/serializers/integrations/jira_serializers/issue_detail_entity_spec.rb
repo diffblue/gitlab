@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Integrations::JiraSerializers::IssueDetailEntity do
-  include JiraServiceHelper
+  include JiraIntegrationHelpers
 
   let_it_be(:project) { create(:project) }
   let_it_be(:jira_integration) { create(:jira_integration, project: project, url: 'http://jira.com', api_url: 'http://api.jira.com') }

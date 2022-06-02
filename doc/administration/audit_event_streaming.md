@@ -11,10 +11,9 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 > - [Feature flag `ff_external_audit_events_namespace`](https://gitlab.com/gitlab-org/gitlab/-/issues/349588) removed in GitLab 14.8.
 
 Users can set an HTTP endpoint for a top-level group to receive all audit events about the group, its subgroups, and
-projects as structured JSON. Event streaming is only available for top-level groups.
+projects as structured JSON.
 
-Top-level group owners can manage their audit logs in third-party systems such as Splunk, using the Splunk
-[HTTP Event Collector](https://docs.splunk.com/Documentation/Splunk/8.2.2/Data/UsetheHTTPEventCollector). Any service that can receive
+Top-level group owners can manage their audit logs in third-party systems. Any service that can receive
 structured JSON data can be used as the endpoint.
 
 NOTE:
@@ -176,6 +175,8 @@ To configure streaming audit events for Git operations, see [Add a new event str
 
 ### Headers
 
+> `X-Gitlab-Audit-Event-Type` [introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/86881) in GitLab 15.0.
+
 Headers are formatted as follows:
 
 ```plaintext
@@ -183,6 +184,7 @@ POST /logs HTTP/1.1
 Host: <DESTINATION_HOST>
 Content-Type: application/x-www-form-urlencoded
 X-Gitlab-Event-Streaming-Token: <DESTINATION_TOKEN>
+X-Gitlab-Audit-Event-Type: repository_git_operation
 ```
 
 ### Example payloads for SSH events
@@ -213,7 +215,8 @@ Fetch:
   "target_details": "example-project",
   "created_at": "2022-02-23T06:21:05.283Z",
   "target_type": "Project",
-  "target_id": 29
+  "target_id": 29,
+  "event_type": "repository_git_operation"
 }
 ```
 
@@ -243,7 +246,8 @@ Push:
   "target_details": "example-project",
   "created_at": "2022-02-23T06:23:08.746Z",
   "target_type": "Project",
-  "target_id": 29
+  "target_id": 29,
+  "event_type": "repository_git_operation"
 }
 ```
 
@@ -275,7 +279,8 @@ Fetch:
   "target_details": "example-project",
   "created_at": "2022-02-23T06:25:43.938Z",
   "target_type": "Project",
-  "target_id": 29
+  "target_id": 29,
+  "event_type": "repository_git_operation"
 }
 ```
 
@@ -305,7 +310,8 @@ Push:
   "target_details": "example-project",
   "created_at": "2022-02-23T06:26:29.294Z",
   "target_type": "Project",
-  "target_id": 29
+  "target_id": 29,
+  "event_type": "repository_git_operation"
 }
 ```
 
@@ -334,7 +340,8 @@ Fetch:
   "target_details": "example-group/example-project",
   "created_at": "2022-02-23T06:27:17.873Z",
   "target_type": "Project",
-  "target_id": 29
+  "target_id": 29,
+  "event_type": "repository_git_operation"
 }
 ```
 
@@ -353,6 +360,7 @@ POST /logs HTTP/1.1
 Host: <DESTINATION_HOST>
 Content-Type: application/x-www-form-urlencoded
 X-Gitlab-Event-Streaming-Token: <DESTINATION_TOKEN>
+X-Gitlab-Audit-Event-Type: audit_operation
 ```
 
 ### Example payload
@@ -378,6 +386,7 @@ X-Gitlab-Event-Streaming-Token: <DESTINATION_TOKEN>
   "target_details": "merge request title",
   "created_at": "2022-03-09T06:53:11.181Z",
   "target_type": "MergeRequest",
-  "target_id": 20
+  "target_id": 20,
+  "event_type": "audit_operation"
 }
 ```

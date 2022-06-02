@@ -27,7 +27,7 @@ exports[`StreamEmptyState should render correctly 1`] = `
     category="primary"
     icon=""
     size="medium"
-    variant="info"
+    variant="confirm"
   >
     
       Add stream

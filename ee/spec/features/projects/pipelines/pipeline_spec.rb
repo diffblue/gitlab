@@ -328,30 +328,26 @@ RSpec.describe 'Pipeline', :js do
 
     before do
       allow(Gitlab).to receive(:com?) { true }
-      stub_feature_flags(use_api_for_payment_validation: false)
       create(:gitlab_subscription, :active_trial, namespace: namespace, hosted_plan: ultimate_plan)
     end
 
-    it 'redirects to pipeline page with account validation modal opened' do
-      visit project_pipeline_validate_account_path(project, pipeline)
+    context 'with payment validation via CustomersDot iframe' do
+      before do
+        stub_feature_flags(use_api_for_payment_validation: false)
+      end
 
-      expect(page).to have_current_path(pipeline_path(pipeline))
-
-      account_validation_alert_content = 'User validation required'
-      expect(page).to have_content(account_validation_alert_content)
-
-      expect(page).to have_selector("#credit-card-verification-modal")
-
-      # ensure account validation modal is only opened when redirected from /validate_account
-      visit current_path
-      expect(page).not_to have_selector("#credit-card-verification-modal")
-    end
-
-    context 'with payment validation via api feature flag' do
-      it 'pushes use_api_for_payment_validation feature flag' do
+      it 'redirects to pipeline page with account validation modal opened' do
         visit project_pipeline_validate_account_path(project, pipeline)
 
-        expect(page).to have_pushed_frontend_feature_flags(useApiForPaymentValidation: false)
+        expect(page).to have_current_path(pipeline_path(pipeline))
+
+        expect(page).to have_content('User validation required')
+
+        expect(page).to have_selector("#credit-card-verification-modal")
+
+        # ensure account validation modal is only opened when redirected from /validate_account
+        visit current_path
+        expect(page).not_to have_selector("#credit-card-verification-modal")
       end
     end
   end

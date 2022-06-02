@@ -378,9 +378,9 @@ export default {
     },
     openProfileDrawer(type) {
       this.isSideDrawerOpen = false;
+      this.profileType = type;
       this.$nextTick(() => {
         this.isSideDrawerOpen = true;
-        this.profileType = type;
       });
     },
     enableEditingMode(type) {

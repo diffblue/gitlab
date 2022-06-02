@@ -72,7 +72,7 @@ export default {
             :class="{ 'gl-mr-3': targetBranch, 'gl-mr-0': !targetBranch }"
             :disabled="isLoading"
             category="secondary"
-            variant="info"
+            variant="confirm"
             size="small"
             data-qa-selector="add_approvers_button"
             data-testid="add-approval-rule"

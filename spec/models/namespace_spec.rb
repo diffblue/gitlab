@@ -375,6 +375,14 @@ RSpec.describe Namespace do
 
     context 'linear' do
       it_behaves_like 'namespace traversal scopes'
+
+      context 'without inner join ancestors query' do
+        before do
+          stub_feature_flags(use_traversal_ids_for_ancestor_scopes_with_inner_join: false)
+        end
+
+        it_behaves_like 'namespace traversal scopes'
+      end
     end
 
     shared_examples 'makes recursive queries' do
@@ -973,24 +981,6 @@ RSpec.describe Namespace do
               expect_project_directories_at('parent/renamed', with_pages: false)
             end
           end
-
-          context 'when the project has pages deployed' do
-            before do
-              project.pages_metadatum.update!(deployed: true)
-            end
-
-            it 'correctly moves the repository, uploads and pages', :sidekiq_inline do
-              child.update!(path: 'renamed')
-
-              expect_project_directories_at('parent/renamed')
-            end
-
-            it 'performs the move async of pages async' do
-              expect(PagesTransferWorker).to receive(:perform_async).with('rename_namespace', ['parent/child', 'parent/renamed'])
-
-              child.update!(path: 'renamed')
-            end
-          end
         end
 
         context 'renaming parent' do
@@ -1000,24 +990,6 @@ RSpec.describe Namespace do
               parent.update!(path: 'renamed')
 
               expect_project_directories_at('renamed/child', with_pages: false)
-            end
-          end
-
-          context 'when the project has pages deployed' do
-            before do
-              project.pages_metadatum.update!(deployed: true)
-            end
-
-            it 'correctly moves the repository, uploads and pages', :sidekiq_inline do
-              parent.update!(path: 'renamed')
-
-              expect_project_directories_at('renamed/child')
-            end
-
-            it 'performs the move async of pages async' do
-              expect(PagesTransferWorker).to receive(:perform_async).with('rename_namespace', %w(parent renamed))
-
-              parent.update!(path: 'renamed')
             end
           end
         end
@@ -1031,24 +1003,6 @@ RSpec.describe Namespace do
               expect_project_directories_at('new_parent/child', with_pages: false)
             end
           end
-
-          context 'when the project has pages deployed' do
-            before do
-              project.pages_metadatum.update!(deployed: true)
-            end
-
-            it 'correctly moves the repository, uploads and pages', :sidekiq_inline do
-              child.update!(parent: new_parent)
-
-              expect_project_directories_at('new_parent/child')
-            end
-
-            it 'performs the move async of pages async' do
-              expect(PagesTransferWorker).to receive(:perform_async).with('move_namespace', %w(child parent new_parent))
-
-              child.update!(parent: new_parent)
-            end
-          end
         end
 
         context 'moving from having a parent to root' do
@@ -1060,24 +1014,6 @@ RSpec.describe Namespace do
               expect_project_directories_at('child', with_pages: false)
             end
           end
-
-          context 'when the project has pages deployed' do
-            before do
-              project.pages_metadatum.update!(deployed: true)
-            end
-
-            it 'correctly moves the repository, uploads and pages', :sidekiq_inline do
-              child.update!(parent: nil)
-
-              expect_project_directories_at('child')
-            end
-
-            it 'performs the move async of pages async' do
-              expect(PagesTransferWorker).to receive(:perform_async).with('move_namespace', ['child', 'parent', nil])
-
-              child.update!(parent: nil)
-            end
-          end
         end
 
         context 'moving from root to having a parent' do
@@ -1087,24 +1023,6 @@ RSpec.describe Namespace do
               parent.update!(parent: new_parent)
 
               expect_project_directories_at('new_parent/parent/child', with_pages: false)
-            end
-          end
-
-          context 'when the project has pages deployed' do
-            before do
-              project.pages_metadatum.update!(deployed: true)
-            end
-
-            it 'correctly moves the repository, uploads and pages', :sidekiq_inline do
-              parent.update!(parent: new_parent)
-
-              expect_project_directories_at('new_parent/parent/child')
-            end
-
-            it 'performs the move async of pages async' do
-              expect(PagesTransferWorker).to receive(:perform_async).with('move_namespace', ['parent', nil, 'new_parent'])
-
-              parent.update!(parent: new_parent)
             end
           end
         end

@@ -106,7 +106,7 @@ module GitlabSubscriptions
       geo
       generic_alert_fingerprinting
       git_two_factor_enforcement
-      github_project_service_integration
+      github_integration
       group_allowed_email_domains
       group_coverage_reports
       group_forking_protection
@@ -204,6 +204,7 @@ module GitlabSubscriptions
       security_on_demand_scans
       security_orchestration_policies
       ssh_key_expiration_policy
+      stale_runner_cleanup_for_namespace
       status_page
       subepics
       vulnerability_auto_fix

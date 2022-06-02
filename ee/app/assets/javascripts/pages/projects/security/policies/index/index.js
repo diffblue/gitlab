@@ -1,5 +1,5 @@
-import initSecurityPoliciesList from 'ee/threat_monitoring/security_policies_list';
-import { NAMESPACE_TYPES } from 'ee/threat_monitoring/constants';
+import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
+import initSecurityPoliciesList from 'ee/security_orchestration/security_policies_list';
 
 initSecurityPoliciesList(
   document.getElementById('js-security-policies-list'),

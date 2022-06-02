@@ -169,9 +169,9 @@ export default {
 <template>
   <div>
     <div class="gl-display-flex">
-      <h3 ref="pageTitle" class="page-title">
+      <h1 ref="pageTitle" class="page-title">
         {{ isEditing ? s__('Iterations|Edit iteration') : s__('Iterations|New iteration') }}
-      </h3>
+      </h1>
     </div>
     <hr class="gl-mt-0" />
     <gl-form class="row common-note-form" novalidate>

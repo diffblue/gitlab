@@ -1,4 +1,4 @@
-import { GlDeprecatedSkeletonLoading as GlSkeletonLoading } from '@gitlab/ui';
+import { GlSkeletonLoader } from '@gitlab/ui';
 import { GlSingleStat } from '@gitlab/ui/dist/charts';
 import { mount } from '@vue/test-utils';
 import MockAdapter from 'axios-mock-adapter';
@@ -46,7 +46,7 @@ describe('GroupActivity component', () => {
     mock.restore();
   });
 
-  const findAllSkeletonLoaders = () => wrapper.findAllComponents(GlSkeletonLoading);
+  const findAllSkeletonLoaders = () => wrapper.findAllComponents(GlSkeletonLoader);
   const findAllSingleStats = () => wrapper.findAllComponents(GlSingleStat);
 
   it('fetches the metrics and updates isLoading properly', async () => {

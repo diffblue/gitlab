@@ -1,9 +1,9 @@
 import * as Sentry from '@sentry/browser';
 import { s__ } from '~/locale';
 import createFlash from '~/flash';
-import scanResultPoliciesQuery from 'ee/threat_monitoring/graphql/queries/scan_result_policies.query.graphql';
-import { gqClient } from 'ee/threat_monitoring/utils';
-import { fromYaml } from 'ee/threat_monitoring/components/policy_editor/scan_result_policy/lib/from_yaml';
+import scanResultPoliciesQuery from 'ee/security_orchestration/graphql/queries/scan_result_policies.query.graphql';
+import { gqClient } from 'ee/security_orchestration/utils';
+import { fromYaml } from 'ee/security_orchestration/components/policy_editor/scan_result_policy/lib/from_yaml';
 import * as types from './mutation_types';
 
 export const fetchScanResultPolicies = ({ commit }, projectPath) => {

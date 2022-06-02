@@ -60,6 +60,6 @@ RSpec.describe 'Resolvers::IncidentManagement::OncallRotationsResolver' do
   private
 
   def resolve_oncall_rotations(args = {}, context = { current_user: current_user })
-    resolve(resolver, obj: schedule, args: args, ctx: context)
+    resolve(resolver, obj: schedule, args: args, ctx: context, arg_style: :internal_prepared)
   end
 end

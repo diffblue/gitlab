@@ -1,14 +1,21 @@
 <script>
 import { GlAlert, GlSkeletonLoader } from '@gitlab/ui';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
-import { i18n, WIDGET_TYPE_ASSIGNEE } from '../constants';
+import {
+  i18n,
+  WIDGET_TYPE_ASSIGNEE,
+  WIDGET_TYPE_DESCRIPTION,
+  WIDGET_TYPE_WEIGHT,
+} from '../constants';
 import workItemQuery from '../graphql/work_item.query.graphql';
 import workItemTitleSubscription from '../graphql/work_item_title.subscription.graphql';
 import WorkItemActions from './work_item_actions.vue';
 import WorkItemState from './work_item_state.vue';
 import WorkItemTitle from './work_item_title.vue';
+import WorkItemDescription from './work_item_description.vue';
 import WorkItemLinks from './work_item_links/work_item_links.vue';
 import WorkItemAssignees from './work_item_assignees.vue';
+import WorkItemWeight from './work_item_weight.vue';
 
 export default {
   i18n,
@@ -17,9 +24,11 @@ export default {
     GlSkeletonLoader,
     WorkItemAssignees,
     WorkItemActions,
+    WorkItemDescription,
     WorkItemTitle,
     WorkItemState,
     WorkItemLinks,
+    WorkItemWeight,
   },
   mixins: [glFeatureFlagMixin()],
   props: {
@@ -72,11 +81,17 @@ export default {
     canDelete() {
       return this.workItem?.userPermissions?.deleteWorkItem;
     },
-    workItemAssigneesEnabled() {
-      return this.glFeatures.workItemAssignees;
+    workItemDescription() {
+      return this.workItem?.widgets?.find((widget) => widget.type === WIDGET_TYPE_DESCRIPTION);
+    },
+    workItemsMvc2Enabled() {
+      return this.glFeatures.workItemsMvc2;
     },
     workItemAssignees() {
       return this.workItem?.mockWidgets?.find((widget) => widget.type === WIDGET_TYPE_ASSIGNEE);
+    },
+    workItemWeight() {
+      return this.workItem?.mockWidgets?.find((widget) => widget.type === WIDGET_TYPE_WEIGHT);
     },
   },
 };
@@ -112,12 +127,19 @@ export default {
           @error="error = $event"
         />
       </div>
-      <work-item-assignees
-        v-if="workItemAssigneesEnabled && workItemAssignees"
-        :assignees="workItemAssignees.nodes"
-      />
+      <template v-if="workItemsMvc2Enabled">
+        <work-item-assignees v-if="workItemAssignees" :assignees="workItemAssignees.nodes" />
+        <work-item-weight v-if="workItemWeight" :weight="workItemWeight.weight" />
+      </template>
       <work-item-state
         :work-item="workItem"
+        @error="error = $event"
+        @updated="$emit('workItemUpdated')"
+      />
+      <work-item-description
+        v-if="workItemDescription"
+        :work-item="workItem"
+        :work-item-description="workItemDescription"
         @error="error = $event"
         @updated="$emit('workItemUpdated')"
       />

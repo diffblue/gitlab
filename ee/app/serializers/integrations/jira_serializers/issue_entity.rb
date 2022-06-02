@@ -13,6 +13,10 @@ module Integrations
         jira_issue.summary
       end
 
+      expose :title_html do |jira_issue|
+        html_escape jira_issue.summary
+      end
+
       expose :created_at do |jira_issue|
         jira_issue.created.to_datetime.utc
       end

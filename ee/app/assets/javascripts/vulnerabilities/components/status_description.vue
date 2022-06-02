@@ -1,10 +1,5 @@
 <script>
-import {
-  GlLink,
-  GlSprintf,
-  GlDeprecatedSkeletonLoading as GlSkeletonLoading,
-  GlLoadingIcon,
-} from '@gitlab/ui';
+import { GlLink, GlSprintf, GlSkeletonLoader, GlLoadingIcon } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
 import UserAvatarLink from '~/vue_shared/components/user_avatar/user_avatar_link.vue';
@@ -14,7 +9,7 @@ export default {
     GlLink,
     GlSprintf,
     TimeAgoTooltip,
-    GlSkeletonLoading,
+    GlSkeletonLoader,
     GlLoadingIcon,
     UserAvatarLink,
   },
@@ -84,7 +79,7 @@ export default {
 
 <template>
   <span>
-    <gl-skeleton-loading v-if="isLoadingVulnerability" :lines="2" class="h-auto" />
+    <gl-skeleton-loader v-if="isLoadingVulnerability" :lines="2" class="h-auto" />
     <gl-sprintf v-else :message="statusText">
       <template #status="{ content }">
         <span :class="{ 'gl-font-weight-bold': isStatusBolded }" data-testid="status">

@@ -18,6 +18,7 @@ RSpec.describe Issue do
 
     it { is_expected.to have_one(:requirement) }
     it { is_expected.to have_many(:test_reports) }
+    it { is_expected.to have_many(:issuable_resource_links) }
   end
 
   describe 'modules' do

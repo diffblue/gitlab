@@ -1,0 +1,52 @@
+<script>
+import { SCANNER_TYPE } from 'ee/on_demand_scans/constants';
+import ScannerProfileSummary from 'ee/security_configuration/dast_profiles/dast_profile_selector/scanner_profile_summary.vue';
+import SiteProfileSummary from 'ee/security_configuration/dast_profiles/dast_profile_selector/site_profile_summary.vue';
+import dastProfilesSidebarMixin from './dast_profiles_sidebar_mixin';
+
+export default {
+  name: 'DastProfilesSidebarList',
+  components: {
+    ScannerProfileSummary,
+    SiteProfileSummary,
+  },
+  mixins: [dastProfilesSidebarMixin()],
+  props: {
+    profiles: {
+      type: Array,
+      required: false,
+      default: () => [],
+    },
+    profileIdInUse: {
+      type: String,
+      required: false,
+      default: null,
+    },
+  },
+  computed: {
+    summaryComponent() {
+      return this.profileType === SCANNER_TYPE ? ScannerProfileSummary : SiteProfileSummary;
+    },
+  },
+  methods: {
+    isProfileInUse(profile) {
+      return profile.id === this.profileIdInUse;
+    },
+  },
+};
+</script>
+
+<template>
+  <div>
+    <component
+      :is="summaryComponent"
+      v-for="profile in profiles"
+      :key="profile.id"
+      :profile="profile"
+      :is-profile-in-use="isProfileInUse(profile)"
+      :allow-selection="true"
+      @edit="$emit('edit', profile)"
+      @select-profile="$emit('select-profile', { profile, profileType })"
+    />
+  </div>
+</template>

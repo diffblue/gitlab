@@ -1,5 +1,5 @@
 ---
-stage: Enablement
+stage: Systems
 group: Distribution
 info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://about.gitlab.com/handbook/engineering/ux/technical-writing/#assignments
 type: reference
@@ -163,6 +163,14 @@ This setting limits global search requests.
 |-------------------------|-------------------------------|
 | Authenticated user      | 30 |
 | Unauthenticated user    | 10 |
+
+### Pipeline creation rate limit
+
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/362475) in GitLab 15.0.
+
+This setting limits the request rate to the pipeline creation endpoints.
+
+Read more about [pipeline creation rate limits](../user/admin_area/settings/rate_limit_on_pipelines_creation.md).
 
 ## Gitaly concurrency limit
 
@@ -825,9 +833,9 @@ prevent any more changes from rendering. For more information about these limits
 
 Reports that go over the 20 MB limit aren't loaded. Affected reports:
 
-- [Merge request security reports](../user/project/merge_requests/testing_and_reports_in_merge_requests.md#security-reports)
+- [Merge request security reports](../ci/testing/index.md#security-reports)
 - [CI/CD parameter `artifacts:expose_as`](../ci/yaml/index.md#artifactsexpose_as)
-- [Unit test reports](../ci/unit_test_reports.md)
+- [Unit test reports](../ci/testing/unit_test_reports.md)
 
 ## Advanced Search limits
 

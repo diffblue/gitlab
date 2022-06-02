@@ -25,6 +25,23 @@ module EE
         super
       end
 
+      override :check_project_accessibility!
+      def check_project_accessibility!
+        super
+
+        # Deploy keys and tokens are unique in that we don't check
+        # against the project policy, where IP restrictions normally are
+        # checked. The existence of a project's associated key or
+        # token is enough to authenticate read access. To ensure deploy keys
+        # and tokens honor the IP allow list, we need to force a check here. We
+        # don't want to do this for all Git access because GitLab admin users
+        # aren't subject to this IP restriction, but deploy keys and tokens don't
+        # necessarily have an associated user.
+        return unless deploy_key? || deploy_token?
+
+        raise ::Gitlab::GitAccess::NotFoundError, not_found_message if ip_restricted?
+      end
+
       def group?
         # Strict nil check, to avoid any surprises with Object#present?
         # which can delegate to #empty?
@@ -45,6 +62,10 @@ module EE
       end
 
       private
+
+      def ip_restricted?
+        !::Gitlab::IpRestriction::Enforcer.new(project.group).allows_current_ip? if project.group
+      end
 
       override :check_custom_action
       def check_custom_action

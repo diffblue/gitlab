@@ -86,20 +86,29 @@ RSpec.describe 'Every metric definition' do
   end
 
   describe 'metrics classes' do
-    let(:ignored_classes) do
+    let(:parent_metric_classes) do
       [
         Gitlab::Usage::Metrics::Instrumentations::BaseMetric,
         Gitlab::Usage::Metrics::Instrumentations::GenericMetric,
         Gitlab::Usage::Metrics::Instrumentations::DatabaseMetric,
         Gitlab::Usage::Metrics::Instrumentations::RedisMetric,
-        Gitlab::Usage::Metrics::Instrumentations::RedisHLLMetric
+        Gitlab::Usage::Metrics::Instrumentations::RedisHLLMetric,
+        Gitlab::Usage::Metrics::Instrumentations::NumbersMetric
+      ]
+    end
+
+    let(:ignored_classes) do
+      [
+        Gitlab::Usage::Metrics::Instrumentations::IssuesWithAlertManagementAlertsMetric,
+        Gitlab::Usage::Metrics::Instrumentations::IssuesWithPrometheusAlertEvents,
+        Gitlab::Usage::Metrics::Instrumentations::IssuesWithSelfManagedPrometheusAlertEvents
       ].freeze
     end
 
     def assert_uses_all_nested_classes(parent_module)
       parent_module.constants(false).each do |const_name|
         constant = parent_module.const_get(const_name, false)
-        next if ignored_classes.include?(constant)
+        next if parent_metric_classes.include?(constant) || ignored_classes.include?(constant)
 
         if constant.is_a? Class
           metric_class_instance = instance_double(constant)

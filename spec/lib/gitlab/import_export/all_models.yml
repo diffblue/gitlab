@@ -65,6 +65,7 @@ issues:
 - customer_relations_contacts
 - issue_customer_relations_contacts
 - email
+- issuable_resource_links
 work_item_type:
 - issues
 events:
@@ -274,6 +275,7 @@ ci_pipelines:
 - security_findings
 - daily_build_group_report_results
 - latest_builds
+- latest_successful_builds
 - daily_report_results
 - latest_builds_report_results
 - messages

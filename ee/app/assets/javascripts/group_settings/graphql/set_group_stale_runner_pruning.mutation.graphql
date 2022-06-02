@@ -1,0 +1,8 @@
+mutation setGroupStaleRunnerPruning($input: NamespaceCiCdSettingsUpdateInput!) {
+  namespaceCiCdSettingsUpdate(input: $input) {
+    ciCdSettings {
+      allowStaleRunnerPruning
+    }
+    errors
+  }
+}

@@ -252,7 +252,7 @@ RSpec.describe EE::NamespacesHelper do
         before do
           allow(Gitlab).to receive(:com?).and_return(true)
           stub_feature_flags(show_minute_limit_banner: feature_flag_enabled)
-          allow(project.root_ancestor).to receive(:free_plan?).and_return(free_plan)
+          allow(project.root_ancestor).to receive(:has_free_or_no_subscription?).and_return(free_plan)
           allow(helper).to receive(:user_dismissed?).with('minute_limit_banner').and_return(user_dismissed_banner)
         end
 

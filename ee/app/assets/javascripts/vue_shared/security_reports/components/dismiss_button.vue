@@ -50,8 +50,6 @@ export default {
     <gl-button
       :loading="isDismissing"
       :disabled="isDismissing || disabled"
-      variant="warning"
-      category="secondary"
       class="js-dismiss-btn"
       @click="handleDismissClick"
     >
@@ -62,8 +60,6 @@ export default {
       v-gl-tooltip
       :disabled="disabled"
       :title="s__('vulnerability|Add comment and dismiss')"
-      variant="warning"
-      category="secondary"
       data-qa-selector="dismiss_with_comment_button"
       class="js-dismiss-with-comment"
       :aria-label="s__('vulnerability|Add comment and dismiss')"

@@ -17,6 +17,7 @@ class EpicIssue < ApplicationRecord
   scope :in_epic, ->(epic_id) { where(epic_id: epic_id) }
 
   validate :validate_confidential_epic
+  validate :validate_group_structure
 
   def epic_tree_root?
     false
@@ -30,9 +31,12 @@ class EpicIssue < ApplicationRecord
     select(selection).in_epic(node.parent_ids)
   end
 
-  # TODO add this method to validate records (see https://gitlab.com/gitlab-org/gitlab/-/issues/339514)
-  def epic_and_issue_at_same_group_hierarchy?
-    epic.group.self_and_hierarchy.include?(issue.project.group)
+  def validate_group_structure
+    return unless issue && epic
+    return if issue.project.group&.id == epic.group_id
+    return if issue.project.ancestors.include?(epic.group)
+
+    errors.add :issue, _('Cannot assign an issue that does not belong under the same group (or descendant) as the epic.')
   end
 
   private

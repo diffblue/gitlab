@@ -1,4 +1,4 @@
-import { GlButton } from '@gitlab/ui';
+import { GlButton, GlLink } from '@gitlab/ui';
 
 import { nextTick } from 'vue';
 import GitlabSlackApplication from 'ee/integrations/gitlab_slack_application/components/gitlab_slack_application.vue';
@@ -40,6 +40,7 @@ describe('GitlabSlackApplication', () => {
   });
 
   const findGlButton = () => wrapper.findComponent(GlButton);
+  const findGlLink = () => wrapper.findComponent(GlLink);
   const findProjectsDropdown = () => wrapper.findComponent(ProjectsDropdown);
   const findAppContent = () => wrapper.findByTestId('gitlab-slack-content');
 
@@ -59,7 +60,14 @@ describe('GitlabSlackApplication', () => {
         it('renders empty text', () => {
           createComponent();
 
-          expect(findAppContent().text()).toBe(i18n.noProjects);
+          expect(findAppContent().text()).toContain(i18n.noProjects);
+          expect(findAppContent().text()).toContain(i18n.noProjectsDescription);
+        });
+
+        it('renders "Learn more" link', () => {
+          createComponent();
+
+          expect(findGlLink().text()).toBe(i18n.learnMore);
         });
       });
 

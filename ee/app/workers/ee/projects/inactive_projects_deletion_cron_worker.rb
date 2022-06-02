@@ -23,7 +23,7 @@ module EE
       end
 
       override :send_notification
-      def send_notification(delay, project, user)
+      def send_notification(project, user)
         super
 
         ::AuditEventService.new(

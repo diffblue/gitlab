@@ -64,10 +64,6 @@ function createComponent({ props = {}, mountFn = shallowMount } = {}) {
 describe('TasksByTypeFilters', () => {
   let wrapper = null;
   let mock = null;
-  const selectedFilterText = (count = 1) => {
-    const affix = count > 1 ? 'labels' : 'label';
-    return `Showing Issues and ${count} ${affix}`;
-  };
 
   beforeEach(() => {
     mock = mockGroupLabelsRequest();
@@ -79,31 +75,6 @@ describe('TasksByTypeFilters', () => {
   afterEach(() => {
     mock.restore();
     wrapper.destroy();
-  });
-
-  describe('with data', () => {
-    beforeEach(() => {
-      mock = mockGroupLabelsRequest();
-      wrapper = createComponent({});
-
-      return waitForPromises();
-    });
-
-    it('renders the selectedFiltersText', () => {
-      expect(wrapper.text()).toContain(selectedFilterText());
-    });
-  });
-
-  describe('with no data', () => {
-    beforeEach(() => {
-      mock = mockGroupLabelsRequest();
-      wrapper = createComponent({ props: { hasData: false } });
-
-      return waitForPromises();
-    });
-    it('renders the selectedFiltersText', () => {
-      expect(wrapper.text()).not.toContain(selectedFilterText());
-    });
   });
 
   describe('labels', () => {
@@ -141,10 +112,6 @@ describe('TasksByTypeFilters', () => {
 
       it('should indicate how many labels are selected', () => {
         expect(wrapper.text()).toContain('2 selected (5 max)');
-      });
-
-      it('renders the selectedFiltersText', () => {
-        expect(wrapper.text()).toContain(selectedFilterText(2));
       });
     });
 

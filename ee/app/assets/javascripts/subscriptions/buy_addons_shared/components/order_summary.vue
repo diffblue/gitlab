@@ -1,5 +1,5 @@
 <script>
-import { GlIcon, GlCollapse, GlCollapseToggleDirective } from '@gitlab/ui';
+import { GlCard, GlIcon, GlCollapse, GlCollapseToggleDirective } from '@gitlab/ui';
 import find from 'lodash/find';
 import { logError } from '~/lib/logger';
 
@@ -15,6 +15,7 @@ import SummaryDetails from './order_summary/summary_details.vue';
 export default {
   components: {
     SummaryDetails,
+    GlCard,
     GlIcon,
     GlCollapse,
   },
@@ -84,7 +85,7 @@ export default {
   },
   data() {
     return {
-      isBottomSummaryVisible: false,
+      summaryDetailsAreVisible: false,
       selectedNamespace: {},
       subscription: {},
       endDate: '',
@@ -130,23 +131,23 @@ export default {
 };
 </script>
 <template>
-  <div
-    class="order-summary gl-display-flex gl-flex-direction-column gl-flex-grow-1 gl-mt-2 mt-lg-5"
-  >
+  <gl-card class="order-summary gl-display-flex gl-flex-direction-column gl-flex-grow-1">
     <div class="gl-lg-display-none">
-      <div v-gl-collapse-toggle.summary-details>
-        <div class="gl-display-flex gl-justify-content-between gl-font-lg">
-          <div class="gl-display-flex">
-            <gl-icon v-if="isBottomSummaryVisible" name="chevron-down" />
-            <gl-icon v-else name="chevron-right" />
-            <h4 data-testid="title">{{ titleWithName }}</h4>
-          </div>
-          <p class="gl-ml-3" data-testid="amount">
-            {{ totalAmount ? formatAmount(totalAmount, quantityPresent) : '-' }}
-          </p>
+      <h4
+        v-gl-collapse-toggle.summary-details
+        class="gl-display-flex gl-justify-content-space-between gl-font-lg gl-my-0"
+        :class="{ 'gl-mb-6': summaryDetailsAreVisible }"
+      >
+        <div class="gl-display-flex gl-align-items-center">
+          <gl-icon v-if="summaryDetailsAreVisible" name="chevron-down" />
+          <gl-icon v-else name="chevron-right" />
+          <span data-testid="title">{{ titleWithName }}</span>
         </div>
-      </div>
-      <gl-collapse id="summary-details" v-model="isBottomSummaryVisible">
+        <span class="gl-ml-3" data-testid="amount">
+          {{ totalAmount ? formatAmount(totalAmount, quantityPresent) : '-' }}
+        </span>
+      </h4>
+      <gl-collapse id="summary-details" v-model="summaryDetailsAreVisible">
         <summary-details
           :vat="vat"
           :total-ex-vat="totalExVat"
@@ -166,7 +167,7 @@ export default {
       </gl-collapse>
     </div>
     <div class="gl-display-none gl-lg-display-block">
-      <h4 class="gl-mb-5">
+      <h4 class="gl-mt-0 gl-mb-5">
         {{ titleWithName }}
       </h4>
       <summary-details
@@ -186,5 +187,5 @@ export default {
         </template>
       </summary-details>
     </div>
-  </div>
+  </gl-card>
 </template>

@@ -4,11 +4,15 @@ require 'spec_helper'
 
 RSpec.describe EpicTreeSorting do
   let_it_be(:group) { create(:group) }
+  let_it_be(:project) { create(:project, group: group) }
   let_it_be(:base_epic) { create(:epic, group: group) }
+  let_it_be(:issue1) { create(:issue, project: project) }
+  let_it_be(:issue2) { create(:issue, project: project) }
+  let_it_be(:issue3) { create(:issue, project: project) }
 
-  let!(:epic_issue1) { create(:epic_issue, epic: base_epic, relative_position: 10) }
-  let!(:epic_issue2) { create(:epic_issue, epic: base_epic, relative_position: 500) }
-  let!(:epic_issue3) { create(:epic_issue, epic: base_epic, relative_position: 1002) }
+  let!(:epic_issue1) { create(:epic_issue, epic: base_epic, issue: issue1, relative_position: 10) }
+  let!(:epic_issue2) { create(:epic_issue, epic: base_epic, issue: issue2, relative_position: 500) }
+  let!(:epic_issue3) { create(:epic_issue, epic: base_epic, issue: issue3, relative_position: 1002) }
   let!(:epic1) { create(:epic, parent: base_epic, group: group, relative_position: 100) }
   let!(:epic2) { create(:epic, parent: base_epic, group: group, relative_position: 1000) }
   let!(:epic3) { create(:epic, parent: base_epic, group: group, relative_position: 1001) }
@@ -103,9 +107,9 @@ RSpec.describe EpicTreeSorting do
   end
 
   describe '#move_sequence' do
-    let!(:epic_issue1) { create(:epic_issue, epic: base_epic, relative_position: 1000) }
-    let!(:epic_issue2) { create(:epic_issue, epic: base_epic, relative_position: 1001) }
-    let!(:epic_issue3) { create(:epic_issue, epic: base_epic, relative_position: 1004) }
+    let!(:epic_issue1) { create(:epic_issue, epic: base_epic, issue: issue1, relative_position: 1000) }
+    let!(:epic_issue2) { create(:epic_issue, epic: base_epic, issue: issue2, relative_position: 1001) }
+    let!(:epic_issue3) { create(:epic_issue, epic: base_epic, issue: issue3, relative_position: 1004) }
     let!(:epic1) { create(:epic, parent: base_epic, group: group, relative_position: 1002) }
     let!(:epic2) { create(:epic, parent: base_epic, group: group, relative_position: 1003) }
     let!(:epic3) { create(:epic, parent: base_epic, group: group, relative_position: 1005) }

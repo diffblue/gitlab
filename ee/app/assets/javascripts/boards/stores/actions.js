@@ -13,12 +13,14 @@ import projectBoardMembersQuery from '~/boards/graphql/project_board_members.que
 import actionsCE from '~/boards/stores/actions';
 import * as typesCE from '~/boards/stores/mutation_types';
 import { TYPE_ITERATIONS_CADENCE } from '~/graphql_shared/constants';
+
 import { getIdFromGraphQLId, convertToGraphQLId } from '~/graphql_shared/utils';
 import { historyPushState, convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import { mergeUrlParams, removeParams, queryToObject } from '~/lib/utils/url_utility';
 import { s__ } from '~/locale';
 import searchIterationQuery from 'ee/issues/list/queries/search_iterations.query.graphql';
 import searchIterationCadencesQuery from 'ee/issues/list/queries/search_iteration_cadences.query.graphql';
+import epicBoardListQuery from 'ee/boards/graphql/epic_board_lists_deferred.query.graphql';
 import {
   fullEpicBoardId,
   formatEpic,
@@ -530,7 +532,7 @@ export default {
       moveAfterId,
     });
 
-    const { boardId } = state;
+    const { boardId, filterParams } = state;
 
     gqlClient
       .mutate({
@@ -542,6 +544,45 @@ export default {
           toListId,
           moveBeforeId,
           moveAfterId,
+        },
+        update(cache) {
+          if (!window.gon.features.epicBoardTotalWeight) {
+            return;
+          }
+
+          if (fromListId === toListId) return;
+
+          const updateList = (listId, summationFunction) => {
+            const movingList = cache.readQuery({
+              query: epicBoardListQuery,
+              variables: { id: listId, filters: filterParams },
+            });
+
+            const updatedMovingList = {
+              epicBoardList: {
+                __typename: 'EpicList',
+                id: movingList.epicBoardList.id,
+                metadata: {
+                  __typename: 'EpicListMetadata',
+                  totalWeight: summationFunction(
+                    movingList.epicBoardList.metadata.totalWeight,
+                    Number(
+                      originalEpic.descendantWeightSum.openedIssues +
+                        originalEpic.descendantWeightSum.closedIssues,
+                    ),
+                  ),
+                },
+              },
+            };
+            cache.writeQuery({
+              query: epicBoardListQuery,
+              variables: { id: listId, filters: filterParams },
+              data: updatedMovingList,
+            });
+          };
+
+          updateList(fromListId, (a, b) => a - b);
+          updateList(toListId, (a, b) => a + b);
         },
       })
       .then(({ data }) => {

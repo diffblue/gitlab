@@ -148,12 +148,12 @@ This sync job runs daily around 3AM UTC. If the job fails, it is retried up to 1
 
 The daily job provides **only** the following information to the Customers Portal:
 
-- Company name
-- Licensee name
-- Licensee email
 - Date
 - Timestamp
 - License key
+  - Company name (encrypted within license key)
+  - Licensee name (encrypted within license key)
+  - Licensee email (encrypted within license key)
 - Historical maximum user count
 - Billable users count
 - GitLab version
@@ -429,6 +429,10 @@ before this occurs.
 
 - To resume functionality, activate a new license.
 - To fall back to Free features, delete the expired license.
+
+## Activate a license file or key
+
+If you have a license file or key, you can activate it [in the Admin Area](../../user/admin_area/license_file.md#activate-gitlab-ee-with-a-license-file-or-key).
 
 ## Contact Support
 

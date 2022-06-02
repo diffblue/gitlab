@@ -75,13 +75,10 @@ module API
           elsif parsed_hash[:extern_uid]
             identity.update(parsed_hash.slice(:extern_uid))
           else
-            scim_conflict!(message: 'Email has already been taken') if email_taken?(parsed_hash[:email], identity)
-
-            result = ::Users::UpdateService.new(identity.user,
-                                                parsed_hash.except(:extern_uid, :active)
-                                                  .merge(user: identity.user)).execute
-
-            result[:status] == :success
+            # With 15.0, we no longer allow modifying user attributes.
+            # However, we mark the operation as successful to avoid breaking
+            # existing automations
+            true
           end
         end
 
@@ -89,12 +86,6 @@ module API
           return true if identity.respond_to?(:active) && !identity.active?
 
           false
-        end
-
-        def email_taken?(email, identity)
-          return unless email
-
-          User.by_any_email(email.downcase).where.not(id: identity.user.id).exists?
         end
 
         def find_user_identity(group, extern_uid)

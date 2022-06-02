@@ -211,15 +211,15 @@ RSpec.describe Gitlab::Geo, :geo, :request_store do
       it { is_expected.to be_falsey }
     end
 
-    where(:geo_database_configured, :is_dev, :node_name, :expected_secondary) do
-      true  | true  | ::Gitlab::Geo::DEFAULT_DEV_PRIMARY_NODE_NAME | false
-      true  | true  | 'some-example-node-name'                     | true
-      true  | false | ::Gitlab::Geo::DEFAULT_DEV_PRIMARY_NODE_NAME | true
-      true  | false | 'some-example-node-name'                     | true
-      false | true  | ::Gitlab::Geo::DEFAULT_DEV_PRIMARY_NODE_NAME | false
-      false | true  | 'some-example-node-name'                     | false
-      false | false | ::Gitlab::Geo::DEFAULT_DEV_PRIMARY_NODE_NAME | false
-      false | false | 'some-example-node-name'                     | false
+    where(:geo_database_configured, :is_dev, :is_gdk_geo_secondary, :expected_secondary) do
+      true  | true  | false | false
+      true  | true  | true  | true
+      true  | false | false | true
+      true  | false | true  | true
+      false | true  | false | false
+      false | true  | true  | false
+      false | false | false | false
+      false | false | true  | false
     end
 
     with_them do
@@ -227,11 +227,42 @@ RSpec.describe Gitlab::Geo, :geo, :request_store do
         allow(Rails).to receive_message_chain(:env, :test?).and_return(false)
         allow(Rails).to receive_message_chain(:env, :development?).and_return(is_dev)
         allow(Gitlab::Geo).to receive(:geo_database_configured?) { geo_database_configured }
-
-        stub_current_node_name(node_name)
+        allow(Gitlab::Geo).to receive(:gdk_geo_secondary?) { is_gdk_geo_secondary }
       end
 
       it { is_expected.to be(expected_secondary) }
+    end
+  end
+
+  describe '.gdk_geo_secondary?' do
+    subject { described_class.gdk_geo_secondary? }
+
+    context 'when GDK_GEO_SECONDARY environment variable is not set' do
+      it { is_expected.to be_falsey }
+    end
+
+    context 'when GDK_GEO_SECONDARY environment variable is 1' do
+      before do
+        stub_env('GDK_GEO_SECONDARY', '1')
+      end
+
+      it { is_expected.to be_truthy }
+    end
+
+    context 'when GDK_GEO_SECONDARY environment variable is 0' do
+      before do
+        stub_env('GDK_GEO_SECONDARY', '0')
+      end
+
+      it { is_expected.to be_falsey }
+    end
+
+    context 'when GDK_GEO_SECONDARY environment variable is true' do
+      before do
+        stub_env('GDK_GEO_SECONDARY', 'true')
+      end
+
+      it { is_expected.to be_truthy }
     end
   end
 

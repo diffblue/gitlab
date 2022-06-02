@@ -1,5 +1,4 @@
 import Vue from 'vue';
-import { GlLoadingIcon, GlTableLite } from '@gitlab/ui';
 import VueApollo from 'vue-apollo';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import VulnerabilitiesOverTimeChart from 'ee/security_dashboard/components/shared/vulnerabilities_over_time_chart.vue';
@@ -11,6 +10,19 @@ import { createAlert } from '~/flash';
 
 jest.mock('~/flash');
 Vue.use(VueApollo);
+
+const SecurityDashboardCard = {
+  props: ['isLoading'],
+  template: `
+    <div>
+      <p data-testid="timeInfo">
+        <slot name="help-text" />
+      </p>
+      <slot name="controls" />
+      <slot />
+    </div>
+  `,
+};
 
 describe('Vulnerabilities Over Time Chart Component', () => {
   let wrapper;
@@ -30,9 +42,7 @@ describe('Vulnerabilities Over Time Chart Component', () => {
     },
   });
 
-  const findTitle = () => wrapper.find('h4');
-  const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
-  const findTable = () => wrapper.findComponent(GlTableLite);
+  const findSecurityDashboardCard = () => wrapper.findComponent(SecurityDashboardCard);
   const findTimeInfo = () => wrapper.findByTestId('timeInfo');
   const findChartButtons = () => wrapper.findComponent(ChartButtons);
 
@@ -41,6 +51,9 @@ describe('Vulnerabilities Over Time Chart Component', () => {
       apolloProvider: createMockApollo([[groupVulnerabilityHistoryQuery, requestHandler]]),
       propsData: { query: groupVulnerabilityHistoryQuery },
       provide: { groupFullPath: 'group' },
+      stubs: {
+        SecurityDashboardCard,
+      },
     });
   };
 
@@ -97,12 +110,8 @@ describe('Vulnerabilities Over Time Chart Component', () => {
       return waitForPromises();
     });
 
-    it('shows the expected components', () => {
-      expect(findTitle().exists()).toBe(true);
-      expect(findLoadingIcon().exists()).toBe(false);
-      expect(findTimeInfo().exists()).toBe(true);
-      expect(findChartButtons().exists()).toBe(true);
-      expect(findTable().exists()).toBe(true);
+    it("sets the card's loading prop to `true`", () => {
+      expect(findSecurityDashboardCard().props('isLoading')).toBe(false);
     });
 
     it('should process the data returned from GraphQL properly', () => {
@@ -116,15 +125,11 @@ describe('Vulnerabilities Over Time Chart Component', () => {
   });
 
   describe('vulnerabilities history query', () => {
-    it('starts the query immediately and only shows the header and loading icon when query is loading', () => {
+    it("starts the query immediately and sets the card's loading prop to `true`", () => {
       createComponent();
 
       expect(defaultRequestHandler).toHaveBeenCalledTimes(1);
-      expect(findTitle().exists()).toBe(true);
-      expect(findLoadingIcon().exists()).toBe(true);
-      expect(findTimeInfo().exists()).toBe(true);
-      expect(findChartButtons().exists()).toBe(true);
-      expect(findTable().exists()).toBe(false);
+      expect(findSecurityDashboardCard().props('isLoading')).toBe(true);
     });
 
     it('will show an alert when there is a request error', async () => {

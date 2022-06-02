@@ -12,39 +12,35 @@ RSpec.shared_examples 'a Geo verifiable registry' do
       let(:registry) { create(registry_class_factory, :started, :verification_succeeded) }
 
       it 'marks verification as pending' do
-        # It's likely we will remove will_never_be_checksummed_on_the_primary?
-        # so using `expect` will remind us to remove it here too.
-        expect(registry).to receive(:will_never_be_checksummed_on_the_primary?).and_return(false)
+        allow(registry).to receive(:ready_to_verify?).and_return(true)
 
         registry.synced!
 
         expect(registry.reload).to be_verification_pending
       end
 
-      context 'band-aid for GitLab managed object storage replication verification loop' do
-        context 'when the model_record will never be checksummed on the primary' do
-          before do
-            allow(registry).to receive(:will_never_be_checksummed_on_the_primary?).and_return(true)
+      context 'when the model_record cannot be verified' do
+        before do
+          allow(registry).to receive(:ready_to_verify?).and_return(false)
+        end
+
+        context 'when the registry is already verification_disabled' do
+          let(:registry) { create(registry_class_factory, :started, verification_state: verification_state_value(:verification_disabled)) }
+
+          it 'changes verification to disabled' do
+            registry.synced!
+
+            expect(registry.reload).to be_verification_disabled
           end
+        end
 
-          context 'when the registry is already verification_succeeded' do
-            let(:registry) { create(registry_class_factory, :started, :verification_succeeded) }
+        context 'when the registry is verification_pending' do
+          let(:registry) { create(registry_class_factory, :started) }
 
-            it 'leaves verification as succeeded' do
-              registry.synced!
+          it 'changes verification to disabled' do
+            registry.synced!
 
-              expect(registry.reload).to be_verification_succeeded
-            end
-          end
-
-          context 'when the registry is verification_pending' do
-            let(:registry) { create(registry_class_factory, :started) }
-
-            it 'changes verification to succeeded' do
-              registry.synced!
-
-              expect(registry.reload).to be_verification_succeeded
-            end
+            expect(registry.reload).to be_verification_disabled
           end
         end
       end
@@ -83,6 +79,7 @@ RSpec.shared_examples 'a Geo verifiable registry' do
       create(registry_class_factory, :synced, verification_state: verification_state_value(:verification_failed), verification_failure: 'foo')
       create(registry_class_factory, :synced, verification_state: verification_state_value(:verification_started))
       create(registry_class_factory, :synced, verification_state: verification_state_value(:verification_succeeded), verification_checksum: 'abc123')
+      create(registry_class_factory, :synced, verification_state: verification_state_value(:verification_disabled))
       # rubocop:enable Rails/SaveBang
 
       expect(described_class.verification_pending_batch(batch_size: 4)).to match_array([subject.model_record_id])
@@ -127,6 +124,7 @@ RSpec.shared_examples 'a Geo verifiable registry' do
         create(registry_class_factory, :synced, verification_state: verification_state_value(:verification_pending))
         create(registry_class_factory, :synced, verification_state: verification_state_value(:verification_started))
         create(registry_class_factory, :synced, verification_state: verification_state_value(:verification_succeeded), verification_checksum: 'abc123')
+        create(registry_class_factory, :synced, verification_state: verification_state_value(:verification_disabled))
         # rubocop:enable Rails/SaveBang
 
         expect(described_class.verification_failed_batch(batch_size: 4)).to match_array([subject.model_record_id])
@@ -204,7 +202,7 @@ RSpec.shared_examples 'a Geo verifiable registry' do
   describe '#track_checksum_attempt!', :aggregate_failures do
     context 'when verification was not yet started' do
       it 'starts verification' do
-        allow(subject).to receive(:will_never_be_checksummed_on_the_primary?).and_return(false)
+        allow(subject).to receive(:ready_to_verify?).and_return(true)
 
         expect do
           subject.track_checksum_attempt! do
@@ -213,43 +211,39 @@ RSpec.shared_examples 'a Geo verifiable registry' do
         end.to change { subject.verification_started_at }.from(nil)
       end
 
-      context 'when the model record will never be checksummed on the primary' do
+      context 'when the model record cannot be verified' do
         before do
-          allow(registry).to receive(:will_never_be_checksummed_on_the_primary?).and_return(true)
+          allow(registry).to receive(:ready_to_verify?).and_return(false)
         end
 
-        context 'when the registry is already verification_succeeded' do
-          let(:registry) { create(registry_class_factory, :started, :verification_succeeded) }
+        context 'when the registry is already verification_disabled' do
+          let(:registry) { create(registry_class_factory, :synced, verification_state: verification_state_value(:verification_disabled)) }
 
-          it 'leaves verification as succeeded' do
+          it 'leaves verification as disabled' do
             expect do
               registry.track_checksum_attempt! do
                 ''
               end
-            end.not_to change { registry.verification_succeeded? }
-
-            expect(registry.verification_checksum).to eq('0000000000000000000000000000000000000000')
+            end.not_to change { registry.verification_disabled? }
           end
         end
 
         context 'when the registry is verification_pending' do
-          let(:registry) { create(registry_class_factory, :started) }
+          let(:registry) { create(registry_class_factory, :synced) }
 
-          it 'changes verification to succeeded' do
+          it 'changes verification to disabled' do
             expect do
               registry.track_checksum_attempt! do
                 ''
               end
-            end.to change { registry.verification_succeeded? }.from(false).to(true)
-
-            expect(registry.verification_checksum).to eq('0000000000000000000000000000000000000000')
+            end.to change { registry.verification_disabled? }.from(false).to(true)
           end
         end
       end
 
       context 'when the primary site is expected to checksum the model record' do
         before do
-          allow(replicator).to receive(:will_never_be_checksummed_on_the_primary?).and_return(false)
+          allow(replicator).to receive(:primary_verification_succeeded?).and_return(true)
         end
 
         context 'comparison with primary checksum' do
@@ -299,7 +293,7 @@ RSpec.shared_examples 'a Geo verifiable registry' do
 
     context 'when verification was started' do
       it 'does not update verification_started_at' do
-        allow(subject).to receive(:will_never_be_checksummed_on_the_primary?).and_return(false)
+        allow(subject).to receive(:ready_to_verify?).and_return(true)
 
         subject.verification_started!
         expected = subject.verification_started_at
@@ -313,7 +307,7 @@ RSpec.shared_examples 'a Geo verifiable registry' do
     end
 
     it 'yields to the checksum calculation' do
-      allow(subject).to receive(:will_never_be_checksummed_on_the_primary?).and_return(false)
+      allow(subject).to receive(:ready_to_verify?).and_return(true)
 
       expect do |probe|
         subject.track_checksum_attempt!(&probe)
@@ -322,7 +316,7 @@ RSpec.shared_examples 'a Geo verifiable registry' do
 
     context 'when an error occurs while yielding' do
       it 'sets verification_failed' do
-        allow(subject).to receive(:will_never_be_checksummed_on_the_primary?).and_return(false)
+        allow(subject).to receive(:ready_to_verify?).and_return(true)
 
         subject.track_checksum_attempt! do
           raise 'an error'

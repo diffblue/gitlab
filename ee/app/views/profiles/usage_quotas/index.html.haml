@@ -6,7 +6,7 @@
 - page_title s_("UsageQuota|Usage")
 - @content_class = "limit-container-width" unless fluid_layout
 
-%h3.page-title
+%h1.page-title
   = s_('UsageQuota|Usage Quotas')
 
 .row
@@ -26,6 +26,9 @@
     - if Feature.enabled?(:usage_quotas_pipelines_vue, @group)
       #js-pipeline-usage-app{ data: pipeline_usage_app_data(@namespace) }
     - else
+      = render "namespaces/pipelines_quota/ci_minutes_report",
+        locals: { namespace: @namespace, projects_usage: @projects_usage }
+      .js-ci-minutes-usage
       = render "namespaces/pipelines_quota/list",
         locals: { namespace: @namespace, projects_usage: @projects_usage }
   .tab-pane#storage-quota-tab

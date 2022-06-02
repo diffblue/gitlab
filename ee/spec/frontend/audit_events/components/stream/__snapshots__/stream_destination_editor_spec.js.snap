@@ -84,7 +84,7 @@ exports[`StreamDestinationEditor when initialized should render correctly 1`] = 
       class="gl-display-flex"
     >
       <button
-        class="btn gl-mr-3 btn-info btn-md disabled gl-button"
+        class="btn gl-mr-3 btn-confirm btn-md disabled gl-button"
         data-testid="stream-destination-add-button"
         disabled="disabled"
         name="Add external stream destination"

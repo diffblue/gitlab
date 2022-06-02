@@ -480,6 +480,21 @@ RSpec.describe Geo::VerificationState do
       end
     end
 
+    describe '.verification_not_disabled' do
+      it 'returns available verifiables, excluding verification_disabled' do
+        factory = :geo_package_file_registry
+        pending = create(factory, :synced, verification_state: Geo::PackageFileRegistry.verification_state_value(:verification_pending))
+        started = create(factory, :synced, verification_state: Geo::PackageFileRegistry.verification_state_value(:verification_started))
+        succeeded = create(factory, :synced, verification_state: Geo::PackageFileRegistry.verification_state_value(:verification_succeeded), verification_checksum: 'abc123')
+        failed = create(factory, :synced, verification_state: Geo::PackageFileRegistry.verification_state_value(:verification_failed), verification_failure: 'Foo bar')
+
+        # disabled will not be returned
+        create(factory, :synced, verification_state: Geo::PackageFileRegistry.verification_state_value(:verification_disabled))
+
+        expect(pending.class.verification_not_disabled).to match_array([pending, started, succeeded, failed])
+      end
+    end
+
     describe '#verification_started!' do
       it 'flips the state to started state' do
         registry = create(:geo_package_file_registry)

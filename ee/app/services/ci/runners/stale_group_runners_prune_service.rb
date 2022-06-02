@@ -26,7 +26,12 @@ module Ci
         total_count = 0
 
         namespace_ids.each_batch(of: GROUP_BATCH_SIZE) do |namespace_id_batch|
-          total_count += stale_runners(namespace_id_batch.to_a).delete_all
+          selected_namespace_ids =
+            Namespace.find(namespace_id_batch.ids)
+              .filter { |namespace| Feature.enabled?(:stale_runner_cleanup_for_namespace_development, namespace) }
+              .map(&:id)
+
+          total_count += stale_runners(selected_namespace_ids).delete_all
         end
 
         total_count

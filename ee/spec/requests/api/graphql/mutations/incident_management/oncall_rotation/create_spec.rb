@@ -104,9 +104,7 @@ RSpec.describe 'Creating a new on-call schedule' do
     it 'returns the on-call rotation with errors' do
       post_graphql_mutation(mutation, current_user: current_user)
 
-      expect(graphql_errors).not_to be_empty
-      error = graphql_errors.first.dig('extensions', 'problems', 0, 'explanation')
-      expect(error).to match('Time given is invalid')
+      expect(graphql_errors).to include(a_hash_including('message' => 'Time given is invalid'))
     end
   end
 
@@ -118,9 +116,7 @@ RSpec.describe 'Creating a new on-call schedule' do
     it 'returns the on-call rotation with errors' do
       post_graphql_mutation(mutation, current_user: current_user)
 
-      expect(graphql_errors).not_to be_empty
-      error = graphql_errors.first.dig('extensions', 'problems', 0, 'explanation')
-      expect(error).to match('Date given is invalid')
+      expect(graphql_errors).to include(a_hash_including('message' => 'Date given is invalid'))
     end
   end
 end

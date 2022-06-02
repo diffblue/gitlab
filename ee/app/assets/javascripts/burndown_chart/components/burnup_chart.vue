@@ -101,7 +101,7 @@ export default {
       const count = total.value[1];
       const completedCount = completed.value[1];
 
-      let totalText = n__('%d open issue', '%d open issues', count);
+      let totalText = n__('%d issue', '%d issues', count);
       let completedText = n__('%d completed issue', '%d completed issues', completedCount);
 
       if (!this.issuesSelected) {

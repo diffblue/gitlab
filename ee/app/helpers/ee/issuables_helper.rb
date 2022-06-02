@@ -15,7 +15,8 @@ module EE
     override :issuable_initial_data
     def issuable_initial_data(issuable)
       data = super.merge(
-        canAdmin: can?(current_user, :"admin_#{issuable.to_ability_name}", issuable)
+        canAdmin: can?(current_user, :"admin_#{issuable.to_ability_name}", issuable),
+        hasIssueWeightsFeature: issuable.project&.licensed_feature_available?(:issue_weights)
       )
 
       if parent.is_a?(Group)

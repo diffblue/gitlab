@@ -12,6 +12,7 @@ module EE
                  :snippets_access_level,
                  :builds_access_level,
                  :repository_access_level,
+                 :package_registry_access_level,
                  :pages_access_level,
                  :metrics_dashboard_access_level,
                  :analytics_access_level,

@@ -27,7 +27,7 @@ RSpec.describe Resolvers::IterationsResolver do
       let_it_be(:group) { create(:group, :private) }
 
       def resolve_group_iterations(args = {}, obj = group, context = { current_user: current_user })
-        resolve(described_class, obj: obj, args: args, ctx: context)
+        resolve(described_class, obj: obj, args: args, ctx: context, arg_style: :internal_prepared)
       end
 
       before do
@@ -66,15 +66,14 @@ RSpec.describe Resolvers::IterationsResolver do
 
           context 'with search and in parameters' do
             where(:search, :fields_to_search, :expected_iterations) do
-              ''          | []                       | lazy { all_iterations }
-              ''          | [:title]                 | lazy { all_iterations }
-              ''          | [:title, :cadence_title] | lazy { all_iterations }
-              'iteration' | nil                      | lazy { plan_cadence.iterations }
-              'iteration' | []                       | lazy { plan_cadence.iterations }
-              'iteration' | [:title]                 | lazy { plan_cadence.iterations }
-              'iteration' | [:title, :cadence_title] | lazy { plan_cadence.iterations }
-              'plan'      | []                       | lazy { [] }
-              'plan'      | [:cadence_title]         | lazy { plan_cadence.iterations }
+              ''          | []                         | lazy { all_iterations }
+              ''          | ['TITLE']                  | lazy { all_iterations }
+              ''          | %w[TITLE CADENCE_TITLE]    | lazy { all_iterations }
+              'iteration' | []                         | lazy { plan_cadence.iterations }
+              'iteration' | ['TITLE']                  | lazy { plan_cadence.iterations }
+              'iteration' | %w[TITLE CADENCE_TITLE]    | lazy { plan_cadence.iterations }
+              'plan'      | []                         | lazy { [] }
+              'plan'      | ['CADENCE_TITLE']          | lazy { plan_cadence.iterations }
             end
 
             with_them do
@@ -91,8 +90,8 @@ RSpec.describe Resolvers::IterationsResolver do
           context "with the deprecated argument 'title' (to be deprecated in 15.4)" do
             [
               { search: "foo" },
-              { in: [:title] },
-              { in: [:cadence_title] }
+              { in: ['TITLE'] },
+              { in: ['CADENCE_TITLE'] }
             ].each do |params|
               it "raises an error when 'title' is used with #{params}" do
                 expect_graphql_error_to_be_created(Gitlab::Graphql::Errors::ArgumentError, "'title' is deprecated in favor of 'search'. Please use 'search'.") do

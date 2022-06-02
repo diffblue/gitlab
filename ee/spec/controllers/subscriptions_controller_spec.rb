@@ -30,7 +30,7 @@ RSpec.describe SubscriptionsController do
         sign_in(user)
       end
 
-      it { is_expected.to render_template 'layouts/checkout' }
+      it { is_expected.to render_template 'layouts/minimal' }
       it { is_expected.to render_template :new }
 
       context 'when there are groups eligible for the subscription' do
@@ -125,7 +125,7 @@ RSpec.describe SubscriptionsController do
           end
         end
 
-        it { is_expected.to render_template 'layouts/checkout' }
+        it { is_expected.to render_template 'layouts/minimal' }
         it { is_expected.to render_template :buy_minutes }
 
         it 'assigns the group for the addon' do
@@ -185,7 +185,7 @@ RSpec.describe SubscriptionsController do
           end
         end
 
-        it { is_expected.to render_template 'layouts/checkout' }
+        it { is_expected.to render_template 'layouts/minimal' }
         it { is_expected.to render_template :buy_storage }
 
         it 'assigns the group for the addon' do

@@ -194,7 +194,7 @@ export default {
         class="gl-display-flex gl-flex-direction-column gl-sm-flex-direction-row gl-justify-content-space-between gl-mb-6"
       >
         <div class="gl-display-flex gl-align-items-center gl-xs-mb-3">
-          <label class="gl-m-0 gl-mr-2">{{ s__('ValueStreamAnalytics|Value Stream') }}</label>
+          <label class="gl-m-0 gl-mr-2">{{ s__('ValueStreamAnalytics|Value stream') }}</label>
           <value-stream-select v-if="shouldDisplayCreateMultipleValueStreams" />
         </div>
         <div class="gl-display-flex gl-align-items-center">
@@ -250,9 +250,9 @@ export default {
           :requests="$options.METRICS_REQUESTS"
           :group-by="$options.VSA_METRICS_GROUPS"
         />
-        <div class="gl-mb-6" :class="[isOverviewStageSelected ? 'gl-mt-2' : 'gl-mt-6']">
-          <duration-chart :stages="activeStages" :selected-stage="selectedStage" />
-          <type-of-work-charts v-if="isOverviewStageSelected" />
+        <div :class="[isOverviewStageSelected ? 'gl-mt-2' : 'gl-mt-6']">
+          <duration-chart class="gl-mb-6" :stages="activeStages" :selected-stage="selectedStage" />
+          <type-of-work-charts v-if="isOverviewStageSelected" class="gl-mb-6" />
         </div>
         <stage-table
           v-if="!isOverviewStageSelected"

@@ -88,7 +88,7 @@ export default {
 </script>
 <template>
   <div v-if="isActive" class="full-width gl-mb-7" data-testid="confirm-order-root">
-    <gl-button :disabled="isLoading" variant="success" category="primary" @click="confirmOrder">
+    <gl-button :disabled="isLoading" variant="confirm" category="primary" @click="confirmOrder">
       <gl-loading-icon v-if="isLoading" inline size="sm" />
       {{ isLoading ? $options.i18n.confirming : $options.i18n.confirm }}
     </gl-button>

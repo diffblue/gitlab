@@ -3,10 +3,11 @@
 require 'spec_helper'
 
 RSpec.describe Epics::UpdateDatesService do
-  let(:group) { create(:group, :internal) }
-  let(:user) { create(:user) }
-  let(:project) { create(:project, group: group) }
-  let(:epic) { create(:epic, group: group) }
+  let_it_be(:group) { create(:group, :internal) }
+  let_it_be(:user) { create(:user) }
+  let_it_be(:project) { create(:project, group: group) }
+  let_it_be(:epic) { create(:epic, group: group) }
+  let_it_be(:issue) { create(:issue, project: project) }
 
   describe '#execute' do
     context 'fixed date is set' do
@@ -120,7 +121,7 @@ RSpec.describe Epics::UpdateDatesService do
 
       context 'without milestone' do
         before do
-          create(:epic_issue, epic: epic)
+          create(:epic_issue, epic: epic, issue: issue)
         end
 
         it 'updates to milestone dates' do
@@ -136,8 +137,8 @@ RSpec.describe Epics::UpdateDatesService do
 
       context 'single milestone' do
         before do
-          epic_issue1 = create(:epic_issue, epic: epic)
-          epic_issue1.issue.update!(milestone: milestone1, project: project)
+          create(:epic_issue, epic: epic, issue: issue)
+          issue.update!(milestone: milestone1, project: project)
         end
 
         context 'complete start and due dates' do
@@ -202,9 +203,9 @@ RSpec.describe Epics::UpdateDatesService do
         milestone2 = create(:milestone, due_date: Date.new(2000, 1, 30), group: group)
 
         epics = [
-          create(:epic),
-          create(:epic),
-          create(:epic, :use_fixed_dates)
+          create(:epic, group: group),
+          create(:epic, group: group),
+          create(:epic, :use_fixed_dates, group: group)
         ]
         old_attributes = epics.map(&:attributes)
 

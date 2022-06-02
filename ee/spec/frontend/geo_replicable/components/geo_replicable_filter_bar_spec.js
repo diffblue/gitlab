@@ -1,6 +1,6 @@
 import { GlDropdown, GlDropdownItem, GlSearchBoxByType, GlButton, GlModal } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
 import GeoReplicableFilterBar from 'ee/geo_replicable/components/geo_replicable_filter_bar.vue';
 import { DEFAULT_SEARCH_DELAY, RESYNC_MODAL_ID } from 'ee/geo_replicable/constants';
@@ -117,6 +117,16 @@ describe('GeoReplicableFilterBar', () => {
     describe('GlModal', () => {
       it('renders always', () => {
         expect(findGlModal().exists()).toBe(true);
+      });
+
+      it('updates title', async () => {
+        expect(findGlModal().props('title')).toBe('Resync all designs');
+        wrapper.vm.$store.state.paginationData.total = 1;
+        await nextTick();
+        expect(findGlModal().props('title')).toBe('Resync all designs');
+        wrapper.vm.$store.state.paginationData.total = 15;
+        await nextTick();
+        expect(findGlModal().props('title')).toBe('Resync all 15 designs');
       });
 
       it('calls initiateAllReplicableSyncs when primary action is emitted', () => {

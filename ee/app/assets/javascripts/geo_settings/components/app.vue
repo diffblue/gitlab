@@ -30,7 +30,7 @@ export default {
 
 <template>
   <article data-testid="geoSettingsContainer">
-    <h3 class="page-title">{{ $options.i18n.geoSettingsTitle }}</h3>
+    <h1 class="page-title">{{ $options.i18n.geoSettingsTitle }}</h1>
     <p>{{ $options.i18n.geoSettingsSubtitle }}</p>
     <gl-loading-icon v-if="isLoading" size="xl" />
     <geo-settings-form v-else />
