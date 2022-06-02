@@ -17,11 +17,16 @@ class RepositoryUpdateMirrorWorker
   attr_accessor :project, :repository, :current_user
 
   def perform(project_id)
-    project = Project.find(project_id)
-
-    return unless start_mirror(project)
+    project = Project
+                .with_import_state
+                .inc_routes
+                .with_group
+                .include_project_feature
+                .find(project_id)
 
     @current_user = project.mirror_user || project.creator
+
+    return unless start_mirror(project)
 
     result = Projects::UpdateMirrorService.new(project, @current_user).execute
     raise UpdateError, result[:message] if result[:status] == :error

@@ -35,6 +35,15 @@ RSpec.describe RepositoryUpdateMirrorWorker do
       expect(project.reload.import_status).to eq('failed')
     end
 
+    context 'with association preloading' do
+      it 'loads association before the first write operation' do
+        project = create(:project, :repository, :mirror, :import_started)
+
+        query_count = ActiveRecord::QueryRecorder.new { subject.perform(project.id) }.count
+        expect(query_count).to eq 9
+      end
+    end
+
     context 'with another worker already running' do
       it 'returns nil' do
         mirror = create(:project, :repository, :mirror, :import_started)
