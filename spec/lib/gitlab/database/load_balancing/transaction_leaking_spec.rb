@@ -17,33 +17,33 @@ RSpec.describe 'Load balancer behavior with errors inside a transaction', :redis
     Gitlab::Database::LoadBalancing::Setup.new(ApplicationRecord).setup
 
     model.connection.execute(<<~SQL)
-      create table if not exists #{test_table_name} (id serial primary key, value integer)
+      CREATE TABLE IF NOT EXISTS #{test_table_name} (id SERIAL PRIMARY KEY, value INTEGER)
     SQL
   end
 
   after do
     model.connection.execute(<<~SQL)
-    drop table if exists #{test_table_name}
+      DROP TABLE IF EXISTS #{test_table_name}
     SQL
   end
 
   def execute(conn)
-    conn.execute("insert into #{test_table_name} (value) VALUES (1)")
-    backend_pid = conn.execute("select pg_backend_pid() as pid").to_a.first['pid']
+    conn.execute("INSERT INTO #{test_table_name} (value) VALUES (1)")
+    backend_pid = conn.execute("SELECT pg_backend_pid() AS pid").to_a.first['pid']
 
     # This will result in a PG error, which is not raised.
     # Instead, we retry the statement on a fresh connection (where the pid is different and it does nothing)
     # and the load balancer continues with a fresh connection and no transaction if a transaction was open previously
     conn.execute(<<~SQL)
-    SELECT CASE
-    WHEN pg_backend_pid() = #{backend_pid} THEN
-      pg_terminate_backend(#{backend_pid})
-    END
+      SELECT CASE
+      WHEN pg_backend_pid() = #{backend_pid} THEN
+        pg_terminate_backend(#{backend_pid})
+      END
     SQL
 
     # This statement will execute on a new connection, and violate transaction semantics
     # if we were in a transaction before
-    conn.execute("insert into #{test_table_name} (value) VALUES (2)")
+    conn.execute("INSERT INTO #{test_table_name} (value) VALUES (2)")
   end
 
   it 'logs a warning when violating transaction semantics with writes' do
@@ -59,7 +59,7 @@ RSpec.describe 'Load balancer behavior with errors inside a transaction', :redis
       expect(conn).not_to be_transaction_open
     end
 
-    values = conn.execute("select value from #{test_table_name}").to_a.map { |row| row['value'] }
+    values = conn.execute("SELECT value FROM #{test_table_name}").to_a.map { |row| row['value'] }
     expect(values).to contain_exactly(2) # Does not include 1 because the transaction was aborted and leaked
   end
 
@@ -75,7 +75,7 @@ RSpec.describe 'Load balancer behavior with errors inside a transaction', :redis
 
     expect(conn).not_to be_transaction_open
 
-    values = conn.execute("select value from #{test_table_name}").to_a.map { |row| row['value'] }
+    values = conn.execute("SELECT value FROM #{test_table_name}").to_a.map { |row| row['value'] }
     expect(values).to contain_exactly(1, 2) # Includes both rows because there was no transaction to roll back
   end
 end
