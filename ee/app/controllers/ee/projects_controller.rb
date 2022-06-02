@@ -7,7 +7,6 @@ module EE
 
     prepended do
       include GeoInstrumentation
-      include GitlabSubscriptions::SeatCountAlert
 
       before_action :log_download_export_audit_event, only: [:download_export]
       before_action :log_archive_audit_event, only: [:archive]
@@ -15,10 +14,6 @@ module EE
 
       before_action only: :edit do
         push_frontend_feature_flag(:permit_all_shared_groups_for_approval, project)
-      end
-
-      before_action only: :show do
-        @seat_count_data = generate_seat_count_alert_data(@project)
       end
 
       feature_category :projects, [:restore]

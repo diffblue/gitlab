@@ -9,7 +9,6 @@ module EE
 
     prepended do
       include GeoInstrumentation
-      include GitlabSubscriptions::SeatCountAlert
 
       alias_method :ee_authorize_admin_group!, :authorize_admin_group!
 
@@ -19,10 +18,6 @@ module EE
       before_action do
         push_frontend_feature_flag(:saas_user_caps_auto_approve_pending_users_on_cap_increase, @group)
         push_force_frontend_feature_flag(:iteration_cadences, @group&.iteration_cadences_feature_flag_enabled?)
-      end
-
-      before_action only: :show do
-        @seat_count_data = generate_seat_count_alert_data(@group)
       end
 
       feature_category :subgroups, [:restore]

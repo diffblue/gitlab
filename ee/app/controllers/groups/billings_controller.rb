@@ -1,17 +1,11 @@
 # frozen_string_literal: true
 
 class Groups::BillingsController < Groups::ApplicationController
-  include GitlabSubscriptions::SeatCountAlert
-
   before_action :authorize_admin_group!
   before_action :verify_namespace_plan_check_enabled
 
   before_action only: [:index] do
     push_frontend_feature_flag(:refresh_billings_seats, type: :ops)
-  end
-
-  before_action only: :index do
-    @seat_count_data = generate_seat_count_alert_data(@group)
   end
 
   layout 'group_settings'

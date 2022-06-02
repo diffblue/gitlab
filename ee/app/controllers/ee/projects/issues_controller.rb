@@ -9,7 +9,6 @@ module EE
       prepended do
         include DescriptionDiffActions
         include GeoInstrumentation
-        include GitlabSubscriptions::SeatCountAlert
 
         before_action :disable_query_limiting_ee, only: [:update]
         before_action only: [:new, :create] do
@@ -27,10 +26,6 @@ module EE
             :iteration_cadences,
             project&.group&.iteration_cadences_feature_flag_enabled?
           )
-        end
-
-        before_action only: %i[show index] do
-          @seat_count_data = generate_seat_count_alert_data(@project)
         end
 
         feature_category :team_planning, [:delete_description_version, :description_diff]

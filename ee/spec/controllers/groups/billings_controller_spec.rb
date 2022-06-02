@@ -50,12 +50,6 @@ RSpec.describe Groups::BillingsController, :saas do
         expect(assigns(:plans_data)).to eq(data)
       end
 
-      it_behaves_like 'seat count alert' do
-        subject { get_index }
-
-        let(:namespace) { group }
-      end
-
       context 'when CustomersDot is unavailable' do
         before do
           allow_next_instance_of(GitlabSubscriptions::FetchSubscriptionPlansService) do |instance|

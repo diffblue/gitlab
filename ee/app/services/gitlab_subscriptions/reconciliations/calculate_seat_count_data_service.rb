@@ -26,7 +26,7 @@ module GitlabSubscriptions
 
       def execute
         return unless owner_of_paid_group? && seat_count_threshold_reached?
-        return if max_seats_used_changed_at.nil? || user_dismissed_alert?
+        return if user_dismissed_alert?
         return unless alert_user_overage?
 
         {
