@@ -13,6 +13,8 @@
 # For more information please refer to the handbook documentation here:
 # https://about.gitlab.com/handbook/marketing/blog/release-posts/#deprecations
 #
+# Please delete this line and above before submitting your merge request.
+#
 # REQUIRED FIELDS
 #
 - name: "Feature name"  # (required) The name of the feature to be deprecated
