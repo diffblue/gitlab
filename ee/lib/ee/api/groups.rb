@@ -86,7 +86,7 @@ module EE
 
         resource :groups, requirements: ::API::API::NAMESPACE_OR_PROJECT_REQUIREMENTS do
           desc 'Sync a group with LDAP.'
-          post ":id/ldap_sync", feature_category: :subgroups do
+          post ":id/ldap_sync", feature_category: :authentication_and_authorization do
             not_found! unless ::Gitlab::Auth::Ldap::Config.group_sync_enabled?
 
             group = find_group!(params[:id])
@@ -172,7 +172,7 @@ module EE
             use :pagination
           end
           # rubocop: disable CodeReuse/ActiveRecord
-          get ':id/provisioned_users', feature_category: :subgroups do
+          get ':id/provisioned_users', feature_category: :authentication_and_authorization do
             authorize! :maintainer_access, user_group
 
             finder = ::Auth::ProvisionedUsersFinder.new(
