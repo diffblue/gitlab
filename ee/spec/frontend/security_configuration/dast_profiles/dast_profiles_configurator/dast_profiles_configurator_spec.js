@@ -12,6 +12,8 @@ import SiteProfileSelector from 'ee/security_configuration/dast_profiles/dast_pr
 import ScannerProfileSummary from 'ee/security_configuration/dast_profiles/dast_profile_selector/scanner_profile_summary.vue';
 import SiteProfileSummary from 'ee/security_configuration/dast_profiles/dast_profile_selector/site_profile_summary.vue';
 import DastProfilesSidebar from 'ee/security_configuration/dast_profiles/dast_profiles_sidebar/dast_profiles_sidebar.vue';
+import DastProfilesSidebarList from 'ee/security_configuration/dast_profiles/dast_profiles_sidebar/dast_profiles_sidebar_list.vue';
+import DastProfilesSidebarForm from 'ee/security_configuration/dast_profiles/dast_profiles_sidebar/dast_profiles_sidebar_form.vue';
 import SectionLayout from '~/vue_shared/security_configuration/components/section_layout.vue';
 import SectionLoader from '~/vue_shared/security_configuration/components/section_loader.vue';
 import dastScannerProfilesQuery from 'ee/security_configuration/dast_profiles/graphql/dast_scanner_profiles.query.graphql';
@@ -26,6 +28,7 @@ describe('DastProfilesConfigurator', () => {
   let localVue;
   let wrapper;
   let requestHandlers;
+  const projectPath = 'projectPath';
 
   const createMockApolloProvider = (handlers) => {
     localVue.use(VueApollo);
@@ -42,6 +45,7 @@ describe('DastProfilesConfigurator', () => {
     ]);
   };
 
+  const findByTestId = (testId) => wrapper.find(`[data-testid="${testId}"]`);
   const findSectionLayout = () => wrapper.find(SectionLayout);
   const findSectionLoader = () => wrapper.find(SectionLoader);
   const findScannerProfilesSelector = () => wrapper.find(ScannerProfileSelector);
@@ -49,6 +53,11 @@ describe('DastProfilesConfigurator', () => {
   const findAllScannerProfileSummary = () => wrapper.findAll(ScannerProfileSummary);
   const findAllSiteProfileSummary = () => wrapper.findAll(SiteProfileSummary);
   const findDastProfileSidebar = () => wrapper.find(DastProfilesSidebar);
+  const findNewScanButton = () => findByTestId('new-profile-button');
+  const findOpenDrawerButton = () => findByTestId('select-profile-action-btn');
+  const findCancelButton = () => findByTestId('dast-profile-form-cancel-button');
+  const findDastProfilesSidebarList = () => wrapper.find(DastProfilesSidebarList);
+  const findDastProfilesSidebarForm = () => wrapper.find(DastProfilesSidebarForm);
 
   const createComponentFactory = (mountFn = shallowMount) => (options = {}, withHandlers) => {
     localVue = createLocalVue();
@@ -79,6 +88,9 @@ describe('DastProfilesConfigurator', () => {
             SectionLayout,
             ScannerProfileSelector,
             SiteProfileSelector,
+          },
+          provide: {
+            projectPath,
           },
         },
         { ...options, localVue, apolloProvider },
@@ -186,6 +198,44 @@ describe('DastProfilesConfigurator', () => {
         scannerProfiles[0].profileName,
       );
       expect(findSiteProfilesSelector().find('h3').text()).toContain(siteProfiles[0].profileName);
+    });
+  });
+
+  describe('switching between modes', () => {
+    beforeEach(() => {
+      createComponent();
+    });
+
+    const openDrawer = async () => {
+      findOpenDrawerButton().vm.$emit('click');
+      await nextTick();
+    };
+
+    const expectEditingMode = async () => {
+      findNewScanButton().vm.$emit('click');
+      await nextTick();
+      expect(findDastProfilesSidebarForm().exists()).toBe(true);
+    };
+
+    it('should have reading mode by default', async () => {
+      await openDrawer();
+
+      expect(findDastProfilesSidebarList().exists()).toBe(true);
+    });
+
+    it('should have editing mode by default', async () => {
+      await openDrawer();
+      await expectEditingMode();
+    });
+
+    it('should return from editing mode to reading mode', async () => {
+      await openDrawer();
+      await expectEditingMode();
+
+      findCancelButton().vm.$emit('click');
+      await nextTick();
+
+      expect(findDastProfilesSidebarList().exists()).toBe(true);
     });
   });
 });
