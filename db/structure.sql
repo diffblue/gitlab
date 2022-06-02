@@ -16201,7 +16201,6 @@ CREATE TABLE integrations (
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
     active boolean DEFAULT false NOT NULL,
-    properties text,
     push_events boolean DEFAULT true,
     issues_events boolean DEFAULT true,
     merge_requests_events boolean DEFAULT true,
