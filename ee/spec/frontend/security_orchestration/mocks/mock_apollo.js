@@ -1,38 +1,3 @@
-import { mockAlertDetails, mockAlerts, mockPageInfo } from './mock_data';
-
-export const getAlertsQuerySpy = jest.fn().mockResolvedValue({
-  data: {
-    project: { id: '1', alertManagementAlerts: { nodes: mockAlerts, pageInfo: mockPageInfo } },
-  },
-});
-
-export const emptyGetAlertsQuerySpy = jest.fn().mockResolvedValue({
-  data: {
-    project: {
-      id: '1',
-      alertManagementAlerts: {
-        nodes: [],
-        pageInfo: { endCursor: '', hasNextPage: false, hasPreviousPage: false, startCursor: '' },
-      },
-    },
-  },
-});
-
-export const loadingQuerySpy = jest.fn().mockReturnValue(new Promise(() => {}));
-
-export const apolloFailureResponse = jest.fn().mockRejectedValue();
-
-export const getAlertDetailsQuerySpy = jest.fn().mockResolvedValue({
-  data: { project: { id: '1', alertManagementAlerts: { nodes: [mockAlertDetails] } } },
-});
-
-export const getAlertDetailsQueryErrorMessage =
-  'Variable $fullPath of type ID! was provided invalid value';
-
-export const erroredGetAlertDetailsQuerySpy = jest.fn().mockResolvedValue({
-  errors: [{ message: getAlertDetailsQueryErrorMessage }],
-});
-
 export const projectScanExecutionPolicies = (nodes) =>
   jest.fn().mockResolvedValue({
     data: {
