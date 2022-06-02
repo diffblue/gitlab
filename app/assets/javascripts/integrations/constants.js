@@ -53,21 +53,23 @@ export const integrationTriggerEvents = {
 };
 
 export const integrationTriggerEventTitles = {
-  [integrationTriggerEvents.PUSH]: s__('IntegrationEvents|Push to the repository'),
-  [integrationTriggerEvents.ISSUE]: s__('IntegrationEvents|Issue is created, updated, closed'),
+  [integrationTriggerEvents.PUSH]: s__('IntegrationEvents|A push is made to the repository'),
+  [integrationTriggerEvents.ISSUE]: s__(
+    'IntegrationEvents|An issue is created, updated, or closed',
+  ),
   [integrationTriggerEvents.CONFIDENTIAL_ISSUE]: s__(
-    'IntegrationEvents|Confidential issue is created/updated/closed',
+    'IntegrationEvents|A confidential issue is created, updated, or closed',
   ),
   [integrationTriggerEvents.MERGE_REQUEST]: s__(
-    'IntegrationEvents|Merge request is created/updated/merged',
+    'IntegrationEvents|A merge request is created, updated, or merged',
   ),
-  [integrationTriggerEvents.NOTE]: s__('IntegrationEvents|Note, when someone adds a comment'),
+  [integrationTriggerEvents.NOTE]: s__('IntegrationEvents|A comment is added on an issue'),
   [integrationTriggerEvents.CONFIDENTIAL_NOTE]: s__(
-    'IntegrationEvents|Confidential Note, when someone adds a comment on a confidential issue',
+    'IntegrationEvents|A comment is added on a confidential issue',
   ),
-  [integrationTriggerEvents.TAG_PUSH]: s__('IntegrationEvents|Tag is pushed to the repository'),
-  [integrationTriggerEvents.PIPELINE]: s__('IntegrationEvents|Pipeline status changes'),
-  [integrationTriggerEvents.WIKI_PAGE]: s__('IntegrationEvents|Wiki page is created/updated'),
+  [integrationTriggerEvents.TAG_PUSH]: s__('IntegrationEvents|A tag is pushed to the repository'),
+  [integrationTriggerEvents.PIPELINE]: s__('IntegrationEvents|A pipeline status changes'),
+  [integrationTriggerEvents.WIKI_PAGE]: s__('IntegrationEvents|A wiki page is created or updated'),
 };
 
 export const billingPlans = {
