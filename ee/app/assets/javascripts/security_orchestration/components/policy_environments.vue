@@ -21,7 +21,7 @@ export default {
     <template v-if="nodes.length > 0">
       {{ nodes[0].name }}
       <span v-if="nodes.length > 1" class="gl-text-gray-600">
-        {{ sprintf(s__('SecurityPolicies|+%{count} more'), { count: nodes.length - 1 }) }}
+        {{ sprintf(s__('SecurityOrchestration|+%{count} more'), { count: nodes.length - 1 }) }}
       </span>
     </template>
 

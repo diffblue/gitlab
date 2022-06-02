@@ -33783,6 +33783,9 @@ msgstr ""
 msgid "SecurityOrchestration|%{scanners} %{severities} in an open merge request targeting %{branches}."
 msgstr ""
 
+msgid "SecurityOrchestration|+%{count} more"
+msgstr ""
+
 msgid "SecurityOrchestration|.yaml mode"
 msgstr ""
 
@@ -34114,9 +34117,6 @@ msgid "SecurityOrchestration|vulnerabilities"
 msgstr ""
 
 msgid "SecurityOrchestration|vulnerability"
-msgstr ""
-
-msgid "SecurityPolicies|+%{count} more"
 msgstr ""
 
 msgid "SecurityReports|%{count} Selected"
