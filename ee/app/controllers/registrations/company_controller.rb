@@ -37,12 +37,12 @@ module Registrations
         :other_role,
         :registration_objective,
         :jobs_to_be_done_other,
-        :trial_onboarding_flow
+        :trial
       )
     end
 
     def redirect_param
-      if params[:trial_onboarding_flow] == 'true'
+      if params[:trial] == 'true'
         { trial_onboarding_flow: true }
       else
         { skip_trial: true }

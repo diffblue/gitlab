@@ -28,7 +28,7 @@ RSpec.describe 'Company Information', :js do
         country: 'US',
         state: 'CA',
         website_url: 'gitlab.com',
-        trial_onboarding_flow: 'false'
+        trial: 'false'
       }
     end
 

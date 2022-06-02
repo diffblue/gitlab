@@ -25,10 +25,6 @@ class TrialRegistrationsController < RegistrationsController
   def set_redirect_url
     target_url = new_trial_url(params: request.query_parameters)
 
-    if ::Feature.enabled?(:about_your_company_registration_flow)
-      target_url = new_users_sign_up_company_path(trial: true)
-    end
-
     if user_signed_in?
       redirect_to target_url
     else

@@ -7,7 +7,6 @@ RSpec.describe 'Trial Sign In' do
 
   describe 'on GitLab.com' do
     before do
-      stub_feature_flags(about_your_company_registration_flow: false)
       allow(Gitlab).to receive(:com?).and_return(true).at_least(:once)
     end
 

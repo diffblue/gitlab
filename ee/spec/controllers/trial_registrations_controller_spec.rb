@@ -28,7 +28,6 @@ RSpec.describe TrialRegistrationsController do
     let(:get_params) { {} }
 
     before do
-      stub_feature_flags(about_your_company_registration_flow: false)
       sign_in(logged_in_user) if logged_in_user.present?
       get :new, params: get_params
     end

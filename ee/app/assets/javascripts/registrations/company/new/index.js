@@ -4,8 +4,8 @@ import CompanyForm from 'ee/registrations/components/company_form.vue';
 
 export default () => {
   const el = document.querySelector('#js-registrations-company-form');
-  const { submitPath } = el.dataset;
-  const trial = Boolean(new URLSearchParams(window.location.search).get('trial'));
+
+  const { submitPath, trial } = el.dataset;
 
   return new Vue({
     el,

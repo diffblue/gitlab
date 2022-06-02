@@ -65,7 +65,7 @@ RSpec.describe Registrations::CompanyController do
     end
 
     context 'on success' do
-      where(:trial_onboarding_flow, :redirect_query) do
+      where(:trial, :redirect_query) do
         'true'  | { trial_onboarding_flow: true }
         'false' | { skip_trial: true }
       end
@@ -75,14 +75,12 @@ RSpec.describe Registrations::CompanyController do
           expect_next_instance_of(
             GitlabSubscriptions::CreateTrialOrLeadService,
             user: user,
-            params: ActionController::Parameters.new(params.merge(
-                                                       { trial_onboarding_flow: trial_onboarding_flow }
-                                                     )).permit!
+            params: ActionController::Parameters.new(params.merge({ trial: trial })).permit!
           ) do |service|
             expect(service).to receive(:execute).and_return(ServiceResponse.success)
           end
 
-          post :create, params: params.merge({ trial_onboarding_flow: trial_onboarding_flow })
+          post :create, params: params.merge({ trial: trial })
 
           expect(response).to have_gitlab_http_status(:redirect)
           expect(response).to redirect_to(new_users_sign_up_groups_project_path(redirect_query))
@@ -91,7 +89,7 @@ RSpec.describe Registrations::CompanyController do
     end
 
     context 'on failure' do
-      where(trial_onboarding_flow: %w[true false])
+      where(trial: %w[true false])
 
       with_them do
         it 'renders company page :new' do
@@ -99,7 +97,7 @@ RSpec.describe Registrations::CompanyController do
             expect(service).to receive(:execute).and_return(ServiceResponse.error(message: 'failed'))
           end
 
-          post :create, params: params.merge({ trial_onboarding_flow: trial_onboarding_flow })
+          post :create, params: params.merge({ trial: trial })
 
           expect(response).to have_gitlab_http_status(:ok)
           expect(response).to render_template(:new)
