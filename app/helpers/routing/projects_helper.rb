@@ -37,6 +37,8 @@ module Routing
     def issue_url(entity, *args)
       if use_work_items_path?(entity)
         work_item_url(entity, *args)
+      elsif entity.incident?
+        project_issues_incident_path(entity.project, entity, *args)
       else
         project_issue_url(entity.project, entity, *args)
       end

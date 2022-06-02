@@ -12,7 +12,7 @@ import Poll from '~/lib/utils/poll';
 import { visitUrl } from '~/lib/utils/url_utility';
 import { __, sprintf } from '~/locale';
 import ConfidentialityBadge from '~/vue_shared/components/confidentiality_badge.vue';
-import { ISSUE_TYPE_PATH, INCIDENT_TYPE_PATH, INCIDENT_TYPE, POLLING_DELAY } from '../constants';
+import { INCIDENT_TYPE, POLLING_DELAY } from '../constants';
 import eventHub from '../event_hub';
 import getIssueStateQuery from '../queries/get_issue_state.query.graphql';
 import Service from '../services/index';
@@ -416,11 +416,7 @@ export default {
           }
 
           if (issueState.isDirty) {
-            const URI =
-              issueState.issueType === INCIDENT_TYPE
-                ? data.web_url.replace(ISSUE_TYPE_PATH, INCIDENT_TYPE_PATH)
-                : data.web_url;
-            visitUrl(URI);
+            visitUrl(data.web_url);
           }
         })
         .then(this.updateStoreState)
