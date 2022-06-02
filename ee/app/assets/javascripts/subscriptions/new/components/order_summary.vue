@@ -66,8 +66,8 @@ export default {
         <summary-details />
       </gl-collapse>
     </div>
-    <div class="gl-display-none gl-lg-display-block">
-      <h4 class="gl-mt-0 gl-mb-6">{{ titleWithName }}</h4>
+    <div class="gl-display-none gl-lg-display-block" data-qa-selector="order_summary">
+      <h4 class="gl-mt-0 gl-mb-6" data-qa-selector="title">{{ titleWithName }}</h4>
       <summary-details />
     </div>
   </gl-card>
