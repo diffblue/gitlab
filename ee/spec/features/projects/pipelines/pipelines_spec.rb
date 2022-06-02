@@ -13,6 +13,12 @@ RSpec.describe 'Pipelines', :js do
   end
 
   describe 'GET /:project/-/pipelines' do
+    it 'pushes use_api_for_payment_validation feature flag' do
+      visit project_pipelines_path(project)
+
+      expect(page).to have_pushed_frontend_feature_flags(useApiForPaymentValidation: true)
+    end
+
     describe 'when namespace is over_storage_limit?' do
       it 'does not render Run pipeline and CI lint link' do
         allow_next_found_instance_of(Namespace) do |instance|
