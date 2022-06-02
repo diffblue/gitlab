@@ -44,13 +44,15 @@ export default {
 <template>
   <div>
     <div class="gl-display-flex gl-justify-content-space-between gl-font-weight-bold gl-my-3">
-      <div class="js-selected-plan">
+      <div class="js-selected-plan" data-qa-selector="selected_plan">
         {{ sprintf($options.i18n.selectedPlanText, { selectedPlanText }) }}
-        <span v-if="usersPresent" class="js-number-of-users">{{
+        <span v-if="usersPresent" class="js-number-of-users" data-qa-selector="number_of_users">{{
           sprintf($options.i18n.numberOfUsers, { numberOfUsers })
         }}</span>
       </div>
-      <div class="js-amount">{{ formatAmount(totalExVat, usersPresent) }}</div>
+      <div class="js-amount" data-qa-selector="total">
+        {{ formatAmount(totalExVat, usersPresent) }}
+      </div>
     </div>
     <div class="gl-text-gray-500 js-per-user">
       {{
@@ -94,7 +96,9 @@ export default {
     <div class="gl-border-b-1 gl-border-b-gray-100 gl-border-b-solid gl-mt-3 gl-mb-3"></div>
     <div class="gl-display-flex gl-justify-content-space-between gl-font-lg gl-font-weight-bold">
       <div>{{ $options.i18n.total }}</div>
-      <div class="js-total-amount">{{ formatAmount(totalAmount, usersPresent) }}</div>
+      <div class="js-total-amount" data-qa-selector="total_amount">
+        {{ formatAmount(totalAmount, usersPresent) }}
+      </div>
     </div>
   </div>
 </template>
