@@ -18,7 +18,18 @@ module Gitlab
     end
 
     def signature
-      return unless @commit.has_signature?
+      return @signature if @signature
+
+      cached_signature = lazy_signature&.itself
+
+      return @signature = cached_signature if cached_signature.present?
+
+      @signature = create_cached_signature!
+    end
+
+    def update_signature!(cached_signature)
+      cached_signature.update!(attributes)
+      @signature = cached_signature
     end
 
     def signature_text
@@ -31,6 +42,24 @@ module Gitlab
       strong_memoize(:signed_text) do
         @signature_data.itself ? @signature_data[1] : nil
       end
+    end
+
+    private
+
+    def lazy_signature
+      BatchLoader.for(@commit.sha).batch do |shas, loader|
+        self.class::SIGNATURE_CLASS.by_commit_sha(shas).each do |signature|
+          loader.call(signature.commit_sha, signature)
+        end
+      end
+    end
+
+    def create_cached_signature!
+      return if attributes.nil?
+
+      return self.class::SIGNATURE_CLASS.new(attributes) if Gitlab::Database.read_only?
+
+      self.class::SIGNATURE_CLASS.safe_create!(attributes)
     end
   end
 end
