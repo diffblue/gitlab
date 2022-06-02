@@ -388,7 +388,7 @@ export default {
       this.openProfileDrawer(type);
     },
     isNewProfile(id) {
-      return !this.selectedProfiles.some((profile) => profile.id === id);
+      return this.selectedProfiles.every((profile) => profile.id !== id);
     },
     selectActiveProfile(type) {
       this.activeProfile =

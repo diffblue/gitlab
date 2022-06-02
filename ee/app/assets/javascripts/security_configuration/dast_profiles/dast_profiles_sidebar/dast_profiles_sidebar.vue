@@ -19,6 +19,13 @@ import DastProfilesSidebarList from './dast_profiles_sidebar_list.vue';
  *      /   \      /  \     / \     / \
  *     C     R    C    C   C   R   R   R
  *
+ * New profile or edit existing can be called both from component and parent
+ * When form is opened it can be closed either by submit or cancel
+ * This tree represent behaviour of a drawer.
+ * Bottom level left subtree is after submit right subtree is after cancel
+ *
+ * For example Opened from parent -> new profile -> close after submit or reopen after cancel
+ *
  * C-close
  * R-reopen
  */
@@ -112,7 +119,7 @@ export default {
     },
   },
   methods: {
-    closeSideDrawer() {
+    resetAndEmitCloseEvent() {
       this.resetEditingMode();
       this.$emit('close-drawer');
     },
@@ -130,7 +137,7 @@ export default {
      * reopen even for closing editing layer
      * and opening drawer with profiles list
      */
-    cancelEditingModeWith() {
+    cancelEditingMode() {
       const event = this.referral === REFERRAL.PARENT ? 'close-drawer' : 'reopen-drawer';
 
       this.$emit(event, this.profileType);
@@ -157,7 +164,7 @@ export default {
     :header-height="getDrawerHeaderHeight"
     :open="isOpen"
     :z-index="10"
-    @close="closeSideDrawer"
+    @close="resetAndEmitCloseEvent"
   >
     <template #title>
       <dast-profiles-sidebar-header
@@ -186,7 +193,7 @@ export default {
           v-if="isEditingMode"
           :profile="profileForEditing"
           :profile-type="profileType"
-          @cancel="cancelEditingModeWith"
+          @cancel="cancelEditingMode"
           @created="profileCreated"
           @edited="profileEdited"
         />

@@ -22,8 +22,8 @@ export default {
     },
   },
   methods: {
-    emitEvent(id) {
-      this.$emit(this.successEvent, id);
+    onSuccess(profileId) {
+      this.$emit(this.successEvent, profileId);
     },
   },
 };
@@ -35,7 +35,7 @@ export default {
     :stacked="true"
     :profile="profile"
     :project-full-path="projectPath"
-    @success="emitEvent"
+    @success="onSuccess"
     v-on="$listeners"
   />
 </template>

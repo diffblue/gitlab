@@ -133,14 +133,13 @@ describe('DastProfilesSidebar', () => {
       createComponent({ profileType: SCANNER_TYPE, profiles: scannerProfiles });
 
       findEditButton().vm.$emit('click');
-
       await nextTick();
 
       expect(findNewDastScannerProfileForm().exists()).toBe(true);
 
       findCancelButton().vm.$emit('click');
-
       await nextTick();
+
       expect(findDastProfilesList().exists()).toBe(true);
     });
 
@@ -148,14 +147,13 @@ describe('DastProfilesSidebar', () => {
       createComponent({ profileType: SCANNER_TYPE, profiles: scannerProfiles });
 
       findNewScanButton().vm.$emit('click');
-
       await nextTick();
 
       expect(findNewDastScannerProfileForm().exists()).toBe(true);
 
       findCancelButton().vm.$emit('click');
-
       await nextTick();
+
       expect(findDastProfilesList().exists()).toBe(true);
     });
   });
