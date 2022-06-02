@@ -110,12 +110,12 @@ RSpec.describe Epic do
       let_it_be(:milestone) { create(:milestone, project: project) }
 
       it 'returns epics which have an issue in the milestone' do
-        issue1 = create(:issue, project: project, milestone: milestone)
-        issue2 = create(:issue, project: project, milestone: milestone)
-        other_issue = create(:issue, project: project)
-        epic1 = create(:epic_issue, issue: issue1).epic
-        epic2 = create(:epic_issue, issue: issue2).epic
-        create(:epic_issue, issue: other_issue)
+        epic1 = create(:epic, group: group)
+        epic2 = create(:epic, group: group)
+        epic3 = create(:epic, group: group)
+        create(:issue, project: project, milestone: milestone, epic: epic1)
+        create(:issue, project: project, milestone: milestone, epic: epic2)
+        create(:issue, project: project, epic: epic3)
 
         expect(described_class.in_milestone(milestone.id)).to match_array([epic1, epic2])
       end
@@ -153,16 +153,15 @@ RSpec.describe Epic do
     end
 
     it 'is valid if epic is confidential and has only confidential issues' do
-      issue = create(:issue, :confidential)
-      epic = create(:epic_issue, issue: issue).epic
-
-      epic.confidential = true
+      epic = create(:epic, :confidential, group: group)
+      create(:issue, :confidential, project: project, epic: epic)
 
       expect(epic).to be_valid
     end
 
     it 'is not valid if epic is confidential and has non-confidential issues' do
-      epic = create(:epic_issue).epic
+      epic = create(:epic, group: group)
+      create(:issue, project: project, epic: epic)
 
       epic.confidential = true
 
@@ -700,7 +699,7 @@ RSpec.describe Epic do
     end
 
     it 'has child issues' do
-      create(:epic_issue, epic: epic, issue: create(:issue))
+      create(:epic_issue, epic: epic)
 
       expect(epic.has_issues?).to be_truthy
     end
@@ -756,8 +755,9 @@ RSpec.describe Epic do
   end
 
   context "relative positioning" do
-    let_it_be(:parent) { create(:epic) }
     let_it_be(:group) { create(:group) }
+    let_it_be(:parent) { create(:epic, group: group) }
+    let_it_be(:project) { create(:project, group: group) }
 
     context 'there is no parent' do
       let_it_be(:factory) { :epic }
@@ -783,9 +783,9 @@ RSpec.describe Epic do
     let_it_be(:epic2) { create(:epic, group: group, parent: epic1) }
     let_it_be(:epic3) { create(:epic, group: group, parent: epic2, state: :closed) }
     let_it_be(:epic4) { create(:epic, group: group) }
-    let_it_be(:issue1) { create(:issue, weight: 2) }
-    let_it_be(:issue2) { create(:issue, weight: 3) }
-    let_it_be(:issue3) { create(:issue, state: :closed) }
+    let_it_be(:issue1) { create(:issue, weight: 2, project: project) }
+    let_it_be(:issue2) { create(:issue, weight: 3, project: project) }
+    let_it_be(:issue3) { create(:issue, state: :closed, project: project) }
     let_it_be(:epic_issue1) { create(:epic_issue, epic: epic2, issue: issue1, relative_position: 5) }
     let_it_be(:epic_issue2) { create(:epic_issue, epic: epic2, issue: issue2, relative_position: 2) }
     let_it_be(:epic_issue3) { create(:epic_issue, epic: epic3, issue: issue3) }

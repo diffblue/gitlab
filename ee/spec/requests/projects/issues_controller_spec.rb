@@ -3,9 +3,9 @@
 require 'spec_helper'
 
 RSpec.describe Projects::IssuesController do
-  let_it_be(:issue) { create(:issue) }
   let_it_be(:group) { create(:group) }
-  let_it_be(:project) { issue.project }
+  let_it_be(:project) { create(:project, group: group) }
+  let_it_be(:issue) { create(:issue, project: project) }
   let_it_be(:user) { issue.author }
   let_it_be(:blocking_issue) { create(:issue, project: project) }
   let_it_be(:blocked_by_issue) { create(:issue, project: project) }
@@ -52,6 +52,7 @@ RSpec.describe Projects::IssuesController do
     end
 
     it 'exposes the escalation_policies licensed feature setting' do
+      project.add_guest(user)
       stub_licensed_features(escalation_policies: true)
 
       get_show

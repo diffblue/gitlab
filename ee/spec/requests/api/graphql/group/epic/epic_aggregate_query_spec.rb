@@ -6,8 +6,9 @@ RSpec.describe 'Epic aggregates (count and weight)' do
   include GraphqlHelpers
 
   let_it_be(:current_user) { create(:user) }
-  let_it_be(:group) { create(:group, :public) }
-  let_it_be(:parent_epic) { create(:epic, group: group, title: 'parent epic') }
+  let_it_be(:ancestor) { create(:group, :public)}
+  let_it_be(:group) { create(:group, :public, parent: ancestor) }
+  let_it_be(:parent_epic) { create(:epic, group: ancestor, title: 'parent epic') }
 
   let(:target_epic) { parent_epic }
   let(:query) do
@@ -39,13 +40,11 @@ RSpec.describe 'Epic aggregates (count and weight)' do
     subject { graphql_data.dig('group', 'epics', 'nodes') }
 
     let_it_be(:subgroup) { create(:group, :private, parent: group)}
-    let_it_be(:subsubgroup) { create(:group, :private, parent: subgroup)}
-
     let_it_be(:project) { create(:project, namespace: group) }
 
-    let_it_be(:epic_with_issues) { create(:epic, group: subgroup, parent: parent_epic, title: 'epic with issues') }
-    let_it_be(:epic_without_issues) { create(:epic, :closed, group: subgroup, parent: parent_epic, title: 'epic without issues') }
-    let_it_be(:closed_epic) { create(:epic, :closed, group: subgroup, parent: parent_epic, title: 'closed epic') }
+    let_it_be(:epic_with_issues) { create(:epic, group: group, parent: parent_epic, title: 'epic with issues') }
+    let_it_be(:epic_without_issues) { create(:epic, :closed, group: group, parent: parent_epic, title: 'epic without issues') }
+    let_it_be(:closed_epic) { create(:epic, :closed, group: group, parent: parent_epic, title: 'closed epic') }
 
     let_it_be(:issue1) { create(:issue, project: project, weight: 5, state: :opened) }
     let_it_be(:issue2) { create(:issue, project: project, weight: 7, state: :closed) }
