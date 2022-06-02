@@ -103,6 +103,67 @@ RSpec.describe AutocompleteController do
     end
   end
 
+  describe 'GET group_subgroups' do
+    let_it_be(:group) { create(:group, :private) }
+    let_it_be(:subgroup_1) { create(:group, :private, parent: group) }
+    let_it_be(:subgroup_2) { create(:group, :private, parent: group) }
+    let_it_be(:grandchild_1) { create(:group, :private, parent: subgroup_1) }
+    let_it_be(:member_in_group) { create(:user).tap { |u| group.add_reporter(u) } }
+    let_it_be(:member_in_subgroup) { create(:user).tap { |u| subgroup_1.add_reporter(u) } }
+
+    let(:params) { { group_id: group.id } }
+    let(:current_user) { member_in_group }
+
+    before do
+      sign_in(current_user)
+    end
+
+    subject { get :group_subgroups, params: params }
+
+    it 'returns subgroups', :aggregate_failures do
+      subject
+
+      expect(response).to have_gitlab_http_status(:ok)
+      expect(group_names_in_json_response).to contain_exactly(subgroup_1.name, subgroup_2.name)
+    end
+
+    context 'when requesting to subgroup 1' do
+      let(:params) { { group_id: subgroup_1.id } }
+
+      it 'returns grandchild', :aggregate_failures do
+        subject
+
+        expect(response).to have_gitlab_http_status(:ok)
+        expect(group_names_in_json_response).to contain_exactly(grandchild_1.name)
+      end
+    end
+
+    context 'when requesting to subgroup 2' do
+      let(:params) { { group_id: subgroup_2.id } }
+
+      it 'returns empty', :aggregate_failures do
+        subject
+
+        expect(response).to have_gitlab_http_status(:ok)
+        expect(group_names_in_json_response).to be_empty
+      end
+    end
+
+    context 'when user does not have an access to the group' do
+      let(:current_user) { member_in_subgroup }
+
+      it 'returns not found' do
+        subject
+
+        expect(response).to have_gitlab_http_status(:not_found)
+      end
+    end
+
+    def group_names_in_json_response
+      json_response.map { |res| res['name'] }
+    end
+  end
+
   shared_examples 'has expected results' do
     it 'returns the matching routes', :aggregate_failures do
       expect(json_response).to be_kind_of(Array)
