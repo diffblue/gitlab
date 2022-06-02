@@ -24,7 +24,7 @@ import { itSelectsOnlyAvailableProfile } from '../shared_assertions';
 
 const URL_HOST = 'https://localhost/';
 
-const fullPath = '/project/path';
+const projectPath = '/project/path';
 
 const [passiveScannerProfile, activeScannerProfile] = scannerProfiles;
 
@@ -81,7 +81,7 @@ describe('EE - DAST Profiles Selector', () => {
         {
           mocks: defaultMocks,
           provide: {
-            fullPath,
+            projectPath,
           },
           stubs: {
             GlSprintf,
