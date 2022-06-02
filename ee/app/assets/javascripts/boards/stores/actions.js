@@ -552,66 +552,37 @@ export default {
 
           if (fromListId === toListId) return;
 
-          const updateFromList = () => {
-            const fromEpicList = cache.readQuery({
+          const updateList = (listId, summationFunction) => {
+            const movingList = cache.readQuery({
               query: epicBoardListQuery,
-              variables: { id: fromListId, filters: filterParams },
+              variables: { id: listId, filters: filterParams },
             });
 
-            const updatedFromList = {
+            const updatedMovingList = {
               epicBoardList: {
                 __typename: 'EpicList',
-                id: fromEpicList.epicBoardList.id,
+                id: movingList.epicBoardList.id,
                 metadata: {
                   __typename: 'EpicListMetadata',
-                  totalWeight:
-                    fromEpicList.epicBoardList.metadata.totalWeight -
+                  totalWeight: summationFunction(
+                    movingList.epicBoardList.metadata.totalWeight,
                     Number(
                       originalEpic.descendantWeightSum.openedIssues +
                         originalEpic.descendantWeightSum.closedIssues,
                     ),
+                  ),
                 },
               },
             };
-
             cache.writeQuery({
               query: epicBoardListQuery,
-              variables: { id: fromListId, filters: filterParams },
-              data: updatedFromList,
+              variables: { id: listId, filters: filterParams },
+              data: updatedMovingList,
             });
           };
 
-          const updateToList = () => {
-            const toEpicList = cache.readQuery({
-              query: epicBoardListQuery,
-              variables: { id: toListId, filters: filterParams },
-            });
-
-            const updatedToList = {
-              epicBoardList: {
-                __typename: 'EpicList',
-                id: toEpicList.epicBoardList.id,
-                metadata: {
-                  __typename: 'EpicListMetadata',
-                  totalWeight:
-                    toEpicList.epicBoardList.metadata.totalWeight +
-                    Number(
-                      originalEpic.descendantWeightSum.openedIssues +
-                        originalEpic.descendantWeightSum.closedIssues,
-                    ),
-                },
-              },
-            };
-
-            cache.writeQuery({
-              query: epicBoardListQuery,
-              variables: { id: toListId, filters: filterParams },
-              data: updatedToList,
-            });
-          };
-
-          updateFromList();
-          updateToList();
+          updateList(fromListId, (a, b) => a - b);
+          updateList(toListId, (a, b) => a + b);
         },
       })
       .then(({ data }) => {

@@ -115,7 +115,7 @@ RSpec.describe 'epic boards', :js do
       end
     end
 
-    it 'moving updates weight of both lists' do
+    it 'moving updates weight of both lists', :aggregate_failures do
       expect(find_board_list(1)).to have_content(epic3.title)
 
       page.within(find_board_list(1)) do
