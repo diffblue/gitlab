@@ -14,7 +14,7 @@
 
     .file-actions.d-none.d-sm-block
       .btn-group{ role: "group" }<
-        = embedded_snippet_copy(blob)
+        = embedded_copy_snippet_button(blob)
         = embedded_raw_snippet_button(@snippet, blob)
         = embedded_snippet_download_button(@snippet, blob)
   %figure.file-holder.snippet-file-content{ "aria-label" => _('Code snippet') }
