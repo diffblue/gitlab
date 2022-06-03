@@ -4,6 +4,7 @@ require 'spec_helper'
 RSpec.describe API::Internal::Base do
   include EE::GeoHelpers
   include APIInternalBaseHelpers
+  include NamespaceStorageHelpers
 
   let_it_be(:primary_url) { 'http://primary.example.com' }
   let_it_be(:secondary_url) { 'http://secondary.example.com' }
@@ -281,6 +282,119 @@ RSpec.describe API::Internal::Base do
     context 'git audit streaming event' do
       it_behaves_like 'sends git audit streaming event' do
         subject { pull(key, project) }
+      end
+    end
+
+    context 'with a namespace storage size limit', :saas do
+      let_it_be(:group, refind: true) { create(:group) }
+      let_it_be(:project) { create(:project, :repository, :wiki_repo, group: group) }
+
+      let(:sha_with_2_mb_file) { 'bf12d2567099e26f59692896f73ac819bae45b00' }
+
+      before_all do
+        project.add_developer(user)
+        create(:gitlab_subscription, :ultimate, namespace: group)
+        create(:namespace_root_storage_statistics, namespace: group)
+        set_storage_size_limit(group, megabytes: 4)
+      end
+
+      before do
+        enforce_namespace_storage_limit(group)
+      end
+
+      context 'with a project' do
+        before do
+          project.repository.delete_branch('2-mb-file')
+        end
+
+        context 'requests without changes' do
+          it 'returns ok when the size limit has been exceeded' do
+            set_used_storage(group, megabytes: 6)
+
+            push(key, project, changes: '_any')
+
+            expect(response).to have_gitlab_http_status(:ok)
+            expect(json_response["status"]).to eq(true)
+          end
+
+          it 'returns ok when the size is under the limit' do
+            set_used_storage(group, megabytes: 1)
+
+            push(key, project, changes: '_any')
+
+            expect(response).to have_gitlab_http_status(:ok)
+            expect(json_response["status"]).to eq(true)
+          end
+        end
+
+        context 'requests with changes' do
+          it 'rejects git push when the size limit has been exceeded' do
+            set_used_storage(group, megabytes: 6)
+
+            push(key, project)
+
+            expect(response).to have_gitlab_http_status(:unauthorized)
+            expect(json_response["status"]).to eq(false)
+            expect(json_response["message"]).to eq(
+              'Your push to this repository has been rejected because ' \
+              'the namespace storage limit of 4 MB has been reached. ' \
+              'Reduce your namespace storage or purchase additional storage.'
+            )
+          end
+
+          it 'rejects git push when the push size would exceed the limit' do
+            set_used_storage(group, megabytes: 3)
+
+            push(key, project, changes: "#{Gitlab::Git::BLANK_SHA} #{sha_with_2_mb_file} refs/heads/my_branch_2")
+
+            expect(response).to have_gitlab_http_status(:unauthorized)
+            expect(json_response["status"]).to eq(false)
+            expect(json_response["message"]).to eq(
+              'Your push to this repository has been rejected because ' \
+              'it would exceed the namespace storage limit of 4 MB. ' \
+              'Reduce your namespace storage or purchase additional storage.'
+            )
+          end
+
+          it 'accepts git push when the size is under the limit' do
+            set_used_storage(group, megabytes: 1)
+
+            push(key, project, changes: "#{Gitlab::Git::BLANK_SHA} #{sha_with_2_mb_file} refs/heads/my_branch_2")
+
+            expect(response).to have_gitlab_http_status(:ok)
+            expect(json_response["status"]).to eq(true)
+          end
+        end
+      end
+
+      context 'with a snippet' do
+        let_it_be(:project_snippet) { create(:project_snippet, :repository, author: user, project: project) }
+
+        let(:snippet_changes) { "#{TestEnv::BRANCH_SHA['snippet/single-file']} #{TestEnv::BRANCH_SHA['snippet/edit-file']} refs/heads/snippet/edit-file" }
+
+        it 'rejects git push when the size limit has been exceeded' do
+          set_used_storage(group, megabytes: 6)
+
+          push(key, project_snippet, changes: snippet_changes)
+
+          expect(response).to have_gitlab_http_status(:unauthorized)
+          expect(json_response["status"]).to eq(false)
+          expect(json_response["message"]).to eq("You are not allowed to update this snippet.")
+        end
+      end
+
+      context 'with a wiki' do
+        let_it_be(:wiki) { create(:project_wiki, project: project) }
+
+        it 'rejects git push when the size limit has been exceeded' do
+          set_used_storage(group, megabytes: 6)
+
+          push(key, wiki)
+
+          expect(response).to have_gitlab_http_status(:unauthorized)
+          expect(json_response["status"]).to eq(false)
+          expect(json_response["message"]).to eq("You are not allowed to write to this project's wiki.")
+        end
       end
     end
   end

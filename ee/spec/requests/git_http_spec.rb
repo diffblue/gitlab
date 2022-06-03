@@ -5,6 +5,7 @@ require 'spec_helper'
 RSpec.describe 'Git HTTP requests' do
   include GitHttpHelpers
   include WorkhorseHelpers
+  include NamespaceStorageHelpers
 
   shared_examples_for 'pulls are allowed' do
     specify do
@@ -249,6 +250,36 @@ RSpec.describe 'Git HTTP requests' do
           end
         end
       end
+    end
+  end
+
+  describe 'when namespace storage limits are enforced', :saas do
+    let_it_be(:user) { create(:user) }
+    let_it_be(:group, refind: true) { create(:group) }
+    let_it_be(:project) { create(:project, :repository, :private, group: group) }
+
+    let(:path) { "#{project.full_path}.git" }
+    let(:env) { { user: user.username, password: user.password } }
+
+    before_all do
+      create(:gitlab_subscription, :ultimate, namespace: group)
+      create(:namespace_root_storage_statistics, namespace: group)
+      project.add_developer(user)
+    end
+
+    before do
+      enforce_namespace_storage_limit(group)
+      set_storage_size_limit(group, megabytes: 8)
+    end
+
+    it_behaves_like 'pushes are allowed'
+
+    context 'when the limit has been exceeded' do
+      before do
+        set_used_storage(group, megabytes: 14)
+      end
+
+      it_behaves_like 'pushes are allowed'
     end
   end
 end

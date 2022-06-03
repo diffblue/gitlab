@@ -407,7 +407,9 @@ module EE
       rule { status_page_available & can?(:developer_access) }.enable :publish_status_page
 
       rule { over_storage_limit }.policy do
-        prevent(*readonly_abilities)
+        # We are allowing `push_code` so the `GitAccessProject` can render
+        # an appropriate error message before failing
+        prevent(*(readonly_abilities - [:push_code]))
 
         readonly_features.each do |feature|
           prevent(*create_update_admin(feature))
