@@ -18,8 +18,9 @@ RSpec.describe Nav::TopNavHelper do
     let(:subject) { helper.top_nav_view_model(project: nil, group: nil) }
 
     before do
-      allow(helper).to receive(:current_user) { current_user }
+      stub_application_setting(snowplow_enabled: true)
 
+      allow(helper).to receive(:current_user) { current_user }
       allow(helper).to receive(:header_link?).with(anything) { false }
 
       # Defaulting all `dashboard_nav_link?` calls to false ensures the CE-specific behavior
@@ -40,7 +41,8 @@ RSpec.describe Nav::TopNavHelper do
       it 'has expected :primary' do
         expected_primary = ::Gitlab::Nav::TopNavMenuItem.build(
           data: {
-            qa_selector: 'environment_link'
+            qa_selector: 'environment_link',
+            **menu_data_tracking_attrs('environments')
           },
           href: '/-/operations/environments',
           icon: 'environment',
@@ -57,7 +59,8 @@ RSpec.describe Nav::TopNavHelper do
       it 'has expected :primary' do
         expected_primary = ::Gitlab::Nav::TopNavMenuItem.build(
           data: {
-            qa_selector: 'operations_link'
+            qa_selector: 'operations_link',
+            **menu_data_tracking_attrs('operations')
           },
           href: '/-/operations',
           icon: 'cloud-gear',
@@ -74,7 +77,8 @@ RSpec.describe Nav::TopNavHelper do
       it 'has expected :primary' do
         expected_primary = ::Gitlab::Nav::TopNavMenuItem.build(
           data: {
-            qa_selector: 'security_link'
+            qa_selector: 'security_link',
+            **menu_data_tracking_attrs('security')
           },
           href: '/-/security/dashboard',
           icon: 'shield',
@@ -96,6 +100,11 @@ RSpec.describe Nav::TopNavHelper do
 
       it 'has expected :secondary' do
         expected_secondary = ::Gitlab::Nav::TopNavMenuItem.build(
+          data: {
+            qa_selector: 'menu_item_link',
+            qa_title: 'Go to primary site',
+            **menu_data_tracking_attrs('go_to_primary_site')
+          },
           href: url,
           icon: 'location-dot',
           id: 'geo',
@@ -132,34 +141,72 @@ RSpec.describe Nav::TopNavHelper do
         it 'has expected :linksPrimary' do
           expected_links_primary = [
             ::Gitlab::Nav::TopNavMenuItem.build(
+              data: {
+                qa_selector: 'menu_item_link',
+                qa_title: 'Your projects',
+                **menu_data_tracking_attrs('your_projects')
+              },
               href: '/dashboard/projects',
               id: 'your',
               title: 'Your projects'
             ),
+
             ::Gitlab::Nav::TopNavMenuItem.build(
+              data: {
+                qa_selector: 'menu_item_link',
+                qa_title: 'Starred projects',
+                **menu_data_tracking_attrs('starred_projects')
+              },
               href: '/dashboard/projects/starred',
               id: 'starred',
               title: 'Starred projects'
             ),
+
             ::Gitlab::Nav::TopNavMenuItem.build(
+              data: {
+                qa_selector: 'menu_item_link',
+                qa_title: 'Explore projects',
+                **menu_data_tracking_attrs('explore_projects')
+              },
               href: '/explore',
               id: 'explore',
               title: 'Explore projects'
             ),
+
             ::Gitlab::Nav::TopNavMenuItem.build(
+              data: {
+                qa_selector: 'menu_item_link',
+                qa_title: 'Explore topics',
+                **menu_data_tracking_attrs('explore_topics')
+              },
               href: '/explore/projects/topics',
               id: 'topics',
               title: 'Explore topics'
             ),
+
             ::Gitlab::Nav::TopNavMenuItem.build(
+              data: {
+                qa_selector: 'menu_item_link',
+                qa_title: 'Pending deletion',
+                **menu_data_tracking_attrs('pending_deletion')
+              },
               href: '/dashboard/projects/removed',
               id: 'deleted',
               title: 'Pending deletion'
             )
           ]
+
           expect(projects_view[:linksPrimary]).to eq(expected_links_primary)
         end
       end
     end
+  end
+
+  def menu_data_tracking_attrs(label)
+    {
+      track_label: "menu_#{label}",
+      track_action: 'click_dropdown',
+      track_property: 'navigation'
+    }
   end
 end
