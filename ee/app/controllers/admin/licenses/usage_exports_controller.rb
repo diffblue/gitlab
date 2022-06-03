@@ -10,6 +10,8 @@ module Admin
       feature_category :utilization
       urgency :low
 
+      after_action :set_license_usage_data_exported, only: :show
+
       def show
         respond_to do |format|
           format.csv do
@@ -18,6 +20,14 @@ module Admin
             send_data(csv_data, type: 'text/csv; charset=utf-8', filename: 'license_usage.csv')
           end
         end
+      end
+
+      private
+
+      def set_license_usage_data_exported
+        return unless ::License.current.offline_cloud_license?
+
+        Gitlab::CurrentSettings.update(license_usage_data_exported: true)
       end
     end
   end

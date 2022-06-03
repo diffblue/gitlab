@@ -10,7 +10,15 @@ RSpec.describe Admin::Licenses::UsageExportsController do
   end
 
   describe 'GET show' do
-    subject { get :show, format: :csv }
+    subject(:export_license_usage_file) { get :show, format: :csv }
+
+    shared_examples 'does not update the license usage data exported flag' do
+      it 'does not update the license usage data exported flag' do
+        expect(Gitlab::CurrentSettings).not_to receive(:update)
+
+        export_license_usage_file
+      end
+    end
 
     context 'with no current license' do
       before do
@@ -19,19 +27,22 @@ RSpec.describe Admin::Licenses::UsageExportsController do
       end
 
       it 'redirects the user' do
-        subject
+        export_license_usage_file
 
         expect(response).to have_gitlab_http_status(:redirect)
       end
 
+      include_examples 'does not update the license usage data exported flag'
+
       it 'does not attempt to create the CSV' do
-        subject
+        export_license_usage_file
 
         expect(HistoricalUserData::CsvService).not_to have_received(:new)
       end
     end
 
     context 'with a current license' do
+      let(:license) { build(:license) }
       let(:csv_data) do
         <<~CSV
           Date,Active User Count
@@ -44,21 +55,54 @@ RSpec.describe Admin::Licenses::UsageExportsController do
       let(:historical_data_relation) { :historical_data_relation }
 
       before do
-        license = build(:license)
         allow(License).to receive(:current).and_return(license)
         allow(license).to receive(:historical_data).and_return(historical_data_relation)
         allow(HistoricalUserData::CsvService).to receive(:new).with(historical_data_relation).and_return(csv_service)
       end
 
+      context 'when current license is an offline cloud license' do
+        let(:license) { build(:license, data: build(:gitlab_license, :cloud, :offline_enabled).export) }
+
+        it 'updates the license usage data exported flag' do
+          expect(Gitlab::CurrentSettings).to receive(:update).with(license_usage_data_exported: true).and_call_original
+
+          export_license_usage_file
+        end
+      end
+
+      context 'when current license is an online cloud license' do
+        let(:license) { build(:license, data: build(:gitlab_license, :cloud).export) }
+
+        include_examples 'does not update the license usage data exported flag'
+      end
+
+      context 'when current license is a legacy license' do
+        include_examples 'does not update the license usage data exported flag'
+      end
+
+      context 'when data export fails' do
+        before do
+          allow_next_instance_of(HistoricalUserData::CsvService) do |service|
+            allow(service).to receive(:generate).and_raise('error')
+          end
+        end
+
+        it 'does not update the license usage data exported flag' do
+          expect(Gitlab::CurrentSettings).not_to receive(:update)
+
+          expect { export_license_usage_file }.to raise_error('error')
+        end
+      end
+
       it 'returns a csv file in response' do
-        subject
+        export_license_usage_file
 
         expect(response).to have_gitlab_http_status(:ok)
         expect(response.headers['Content-Type']).to eq('text/csv; charset=utf-8')
       end
 
       it 'returns the expected response body' do
-        subject
+        export_license_usage_file
 
         expect(CSV.parse(response.body)).to eq([
           ['Date', 'Active User Count'],
