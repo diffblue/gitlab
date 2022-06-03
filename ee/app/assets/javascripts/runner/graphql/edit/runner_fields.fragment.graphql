@@ -2,6 +2,7 @@
 
 fragment RunnerFields on CiRunner {
   ...RunnerFieldsShared
+  maintenanceNote
   publicProjectsMinutesCostFactor
   privateProjectsMinutesCostFactor
 }

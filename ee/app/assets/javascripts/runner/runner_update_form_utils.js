@@ -6,17 +6,23 @@ import {
 export const runnerToModel = (runner) => {
   return {
     ...ceRunnerToModel(runner),
+    maintenanceNote: runner?.maintenanceNote,
     privateProjectsMinutesCostFactor: runner?.privateProjectsMinutesCostFactor,
     publicProjectsMinutesCostFactor: runner?.publicProjectsMinutesCostFactor,
   };
 };
 
 export const modelToUpdateMutationVariables = (model) => {
-  const { privateProjectsMinutesCostFactor, publicProjectsMinutesCostFactor } = model;
+  const {
+    privateProjectsMinutesCostFactor,
+    publicProjectsMinutesCostFactor,
+    maintenanceNote,
+  } = model;
 
   return {
     input: {
       ...ceModelToUpdateMutationVariables(model).input,
+      maintenanceNote,
       privateProjectsMinutesCostFactor:
         privateProjectsMinutesCostFactor !== '' ? privateProjectsMinutesCostFactor : null,
       publicProjectsMinutesCostFactor:
