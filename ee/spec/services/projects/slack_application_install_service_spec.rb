@@ -12,9 +12,9 @@ RSpec.describe Projects::SlackApplicationInstallService do
   let(:slack_app_id) { 'A12345' }
   let(:slack_app_secret) { 'secret' }
   let(:oauth_code) { 'code' }
-  let(:params) { { code: oauth_code, v2: 'true' } }
+  let(:params) { { code: oauth_code } }
   let(:exchange_url) { described_class::SLACK_EXCHANGE_TOKEN_URL }
-  let(:redirect_url) { Gitlab::Routing.url_helpers.slack_auth_project_settings_slack_url(project, v2: true) }
+  let(:redirect_url) { Gitlab::Routing.url_helpers.slack_auth_project_settings_slack_url(project) }
 
   subject(:service) { described_class.new(project, user, params) }
 
@@ -31,22 +31,6 @@ RSpec.describe Projects::SlackApplicationInstallService do
     stub_request(:get, exchange_url)
       .with(query: query)
       .to_return(body: response.to_json, headers: { 'Content-Type' => 'application/json' })
-  end
-
-  def expect_slack_integration_has_correct_attributes
-    project.reload
-
-    expect(integration).to be_present
-    expect(installation).to be_present
-    expect(installation).to have_attributes(
-      service_id: integration.id,
-      team_id: 'T12345',
-      team_name: 'Team name',
-      alias: project.full_path,
-      user_id: 'U12345',
-      bot_user_id: params[:v2] ? 'U99999' : nil,
-      bot_access_token: params[:v2] ? 'token-XXXXX' : nil
-    )
   end
 
   context 'Slack responds with an error' do
@@ -84,45 +68,21 @@ RSpec.describe Projects::SlackApplicationInstallService do
         result = service.execute
 
         expect(result).to eq(status: :success)
-        expect_slack_integration_has_correct_attributes
-        expect(ChatName.count).to be_zero
-      end
-    end
-
-    shared_examples 'legacy response' do
-      let(:params) { super().without(:v2) }
-      let(:exchange_url) { described_class::SLACK_EXCHANGE_TOKEN_URL_LEGACY }
-      let(:redirect_url) { super().delete_suffix('?v2=true') }
-      let(:response) do
-        {
-          ok: true,
-          access_token: 'token-XXXXX',
-          user_id: 'U12345',
-          user_name: 'username',
-          team_id: 'T12345',
-          team_name: 'Team name'
-        }
-      end
-
-      it 'uses the legacy endpoint and creates all needed records' do
-        result = service.execute
-
-        expect(result).to eq(status: :success)
-        expect_slack_integration_has_correct_attributes
-
-        expect(user.chat_names.first).to have_attributes(
+        expect(integration).to be_present
+        expect(installation).to be_present
+        expect(installation).to have_attributes(
           service_id: integration.id,
           team_id: 'T12345',
-          team_domain: 'Team name',
-          chat_id: 'U12345',
-          chat_name: 'username',
-          user: user
+          team_name: 'Team name',
+          alias: project.full_path,
+          user_id: 'U12345',
+          bot_user_id: 'U99999',
+          bot_access_token: 'token-XXXXX'
         )
       end
     end
 
     it_behaves_like 'success response'
-    it_behaves_like 'legacy response'
 
     context 'when integration record already exists' do
       before do
@@ -144,17 +104,7 @@ RSpec.describe Projects::SlackApplicationInstallService do
         end
 
         it_behaves_like 'success response'
-        it_behaves_like 'legacy response'
       end
-    end
-
-    context 'when the FF :slack_app_use_v2_flow is disabled' do
-      before do
-        stub_feature_flags(slack_app_use_v2_flow: false)
-      end
-
-      it_behaves_like 'success response'
-      it_behaves_like 'legacy response'
     end
   end
 end

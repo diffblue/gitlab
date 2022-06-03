@@ -90,22 +90,9 @@ RSpec.describe EE::IntegrationsHelper do
       expect(query).to include(
         'scope' => 'commands',
         'client_id' => 'A12345',
-        'redirect_uri' => subject.slack_auth_project_settings_slack_url(project) + '?v2=true',
+        'redirect_uri' => subject.slack_auth_project_settings_slack_url(project),
         'state' => 'a token'
       )
-    end
-
-    context 'when the FF :slack_app_use_v2_flow is disabled' do
-      before do
-        stub_feature_flags(slack_app_use_v2_flow: false)
-      end
-
-      it 'returns the URL for the legacy endpoint' do
-        expect(slack_link).to start_with(Projects::SlackApplicationInstallService::SLACK_AUTHORIZE_URL_LEGACY)
-        expect(query).to include(
-          'redirect_uri' => subject.slack_auth_project_settings_slack_url(project)
-        )
-      end
     end
   end
 

@@ -35,14 +35,7 @@ module EE
         state: form_authenticity_token
       }
 
-      if ::Projects::SlackApplicationInstallService.use_v2_flow?
-        authorize_url = ::Projects::SlackApplicationInstallService::SLACK_AUTHORIZE_URL
-        query[:redirect_uri] += '?v2=true'
-      else
-        authorize_url = ::Projects::SlackApplicationInstallService::SLACK_AUTHORIZE_URL_LEGACY
-      end
-
-      "#{authorize_url}?#{query.to_query}"
+      "#{::Projects::SlackApplicationInstallService::SLACK_AUTHORIZE_URL}?#{query.to_query}"
     end
 
     def gitlab_slack_application_data(projects)
