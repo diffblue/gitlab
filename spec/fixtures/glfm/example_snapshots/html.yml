@@ -1141,8 +1141,8 @@
   static: |-
     &#x000A;*foo*
   wysiwyg: |-
-    Error - check implementation:
-    Cannot read properties of undefined (reading 'wrapTextInParagraph')
+    <p>
+    *foo*</p>
 04_06__leaf_blocks__html_blocks__005:
   canonical: |
     <DIV CLASS="foo">
@@ -1244,8 +1244,9 @@
   static: |-
     <a href="foo">&#x000A;*bar*&#x000A;</a>
   wysiwyg: |-
-    Error - check implementation:
-    Cannot read properties of undefined (reading 'wrapTextInParagraph')
+    <p><a target="_blank" rel="noopener noreferrer nofollow" href="foo">
+    *bar*
+    </a></p>
 04_06__leaf_blocks__html_blocks__016:
   canonical: |
     <Warning>
@@ -1264,8 +1265,9 @@
   static: |-
     <i>&#x000A;*bar*&#x000A;</i>
   wysiwyg: |-
-    Error - check implementation:
-    Cannot read properties of undefined (reading 'wrapTextInParagraph')
+    <p><em>
+    *bar*
+    </em></p>
 04_06__leaf_blocks__html_blocks__018:
   canonical: |
     </ins>
@@ -1273,8 +1275,8 @@
   static: |-
     &#x000A;*bar*
   wysiwyg: |-
-    Error - check implementation:
-    Cannot read properties of undefined (reading 'wrapTextInParagraph')
+    <p>
+    *bar*</p>
 04_06__leaf_blocks__html_blocks__019:
   canonical: |
     <del>
@@ -1283,8 +1285,9 @@
   static: |-
     <del>&#x000A;*foo*&#x000A;</del>
   wysiwyg: |-
-    Error - check implementation:
-    Hast node of type "del" not supported by this converter. Please, provide an specification.
+    <p><s>
+    *foo*
+    </s></p>
 04_06__leaf_blocks__html_blocks__020:
   canonical: |
     <del>
@@ -1294,15 +1297,14 @@
     <del>&#x000A;<p data-sourcepos="3:1-3:5"><em>foo</em></p>&#x000A;</del>
   wysiwyg: |-
     Error - check implementation:
-    Hast node of type "del" not supported by this converter. Please, provide an specification.
+    Cannot destructure property 'type' of 'this.stack.pop(...)' as it is undefined.
 04_06__leaf_blocks__html_blocks__021:
   canonical: |
     <p><del><em>foo</em></del></p>
   static: |-
     <p data-sourcepos="1:1-1:16" dir="auto"><del><em>foo</em></del></p>
   wysiwyg: |-
-    Error - check implementation:
-    Hast node of type "del" not supported by this converter. Please, provide an specification.
+    <p><em><s>foo</s></em></p>
 04_06__leaf_blocks__html_blocks__022:
   canonical: |
     <pre language="haskell"><code>
@@ -1889,9 +1891,8 @@
   static: |-
     <table data-sourcepos="1:1-3:13" dir="auto">&#x000A;<thead>&#x000A;<tr data-sourcepos="1:1-1:13">&#x000A;<th data-sourcepos="1:2-1:6">foo</th>&#x000A;<th data-sourcepos="1:8-1:12">bar</th>&#x000A;</tr>&#x000A;</thead>&#x000A;<tbody>&#x000A;<tr data-sourcepos="3:1-3:13">&#x000A;<td data-sourcepos="3:2-3:6">baz</td>&#x000A;<td data-sourcepos="3:8-3:12">bim</td>&#x000A;</tr>&#x000A;</tbody>&#x000A;</table>
   wysiwyg: |-
-    <p>| foo | bar |
-    | --- | --- |
-    | baz | bim |</p>
+    Error - check implementation:
+    Hast node of type "table" not supported by this converter. Please, provide an specification.
 04_10__leaf_blocks__tables_extension__002:
   canonical: |
     <table>
@@ -1911,9 +1912,8 @@
   static: |-
     <table data-sourcepos="1:1-3:9" dir="auto">&#x000A;<thead>&#x000A;<tr data-sourcepos="1:1-1:16">&#x000A;<th align="center" data-sourcepos="1:2-1:6">abc</th>&#x000A;<th align="right" data-sourcepos="1:8-1:15">defghi</th>&#x000A;</tr>&#x000A;</thead>&#x000A;<tbody>&#x000A;<tr data-sourcepos="3:1-3:9">&#x000A;<td align="center" data-sourcepos="3:1-3:4">bar</td>&#x000A;<td align="right" data-sourcepos="3:6-3:9">baz</td>&#x000A;</tr>&#x000A;</tbody>&#x000A;</table>
   wysiwyg: |-
-    <p>| abc | defghi |
-    :-: | -----------:
-    bar | baz</p>
+    Error - check implementation:
+    Hast node of type "table" not supported by this converter. Please, provide an specification.
 04_10__leaf_blocks__tables_extension__003:
   canonical: |
     <table>
@@ -1934,10 +1934,8 @@
   static: |-
     <table data-sourcepos="1:1-4:15" dir="auto">&#x000A;<thead>&#x000A;<tr data-sourcepos="1:1-1:10">&#x000A;<th data-sourcepos="1:2-1:9">f|oo</th>&#x000A;</tr>&#x000A;</thead>&#x000A;<tbody>&#x000A;<tr data-sourcepos="3:1-3:13">&#x000A;<td data-sourcepos="3:2-3:12">b <code>|</code> az</td>&#x000A;</tr>&#x000A;<tr data-sourcepos="4:1-4:15">&#x000A;<td data-sourcepos="4:2-4:14">b <strong>|</strong> im</td>&#x000A;</tr>&#x000A;</tbody>&#x000A;</table>
   wysiwyg: |-
-    <p>| f|oo  |
-    | ------ |
-    | b <code>\|</code> az |
-    | b <strong>|</strong> im |</p>
+    Error - check implementation:
+    Hast node of type "table" not supported by this converter. Please, provide an specification.
 04_10__leaf_blocks__tables_extension__004:
   canonical: |
     <table>
@@ -1960,9 +1958,8 @@
   static: |-
     <table data-sourcepos="1:1-3:13" dir="auto">&#x000A;<thead>&#x000A;<tr data-sourcepos="1:1-1:13">&#x000A;<th data-sourcepos="1:2-1:6">abc</th>&#x000A;<th data-sourcepos="1:8-1:12">def</th>&#x000A;</tr>&#x000A;</thead>&#x000A;<tbody>&#x000A;<tr data-sourcepos="3:1-3:13">&#x000A;<td data-sourcepos="3:2-3:6">bar</td>&#x000A;<td data-sourcepos="3:8-3:12">baz</td>&#x000A;</tr>&#x000A;</tbody>&#x000A;</table>&#x000A;<blockquote data-sourcepos="4:1-4:5" dir="auto">&#x000A;<p data-sourcepos="4:3-4:5">bar</p>&#x000A;</blockquote>
   wysiwyg: |-
-    <p>| abc | def |
-    | --- | --- |
-    | bar | baz |</p>
+    Error - check implementation:
+    Hast node of type "table" not supported by this converter. Please, provide an specification.
 04_10__leaf_blocks__tables_extension__005:
   canonical: |
     <table>
@@ -1987,10 +1984,8 @@
   static: |-
     <table data-sourcepos="1:1-4:3" dir="auto">&#x000A;<thead>&#x000A;<tr data-sourcepos="1:1-1:13">&#x000A;<th data-sourcepos="1:2-1:6">abc</th>&#x000A;<th data-sourcepos="1:8-1:12">def</th>&#x000A;</tr>&#x000A;</thead>&#x000A;<tbody>&#x000A;<tr data-sourcepos="3:1-3:13">&#x000A;<td data-sourcepos="3:2-3:6">bar</td>&#x000A;<td data-sourcepos="3:8-3:12">baz</td>&#x000A;</tr>&#x000A;<tr data-sourcepos="4:1-4:3">&#x000A;<td data-sourcepos="4:1-4:3">bar</td>&#x000A;<td data-sourcepos="4:0-4:0"></td>&#x000A;</tr>&#x000A;</tbody>&#x000A;</table>&#x000A;<p data-sourcepos="6:1-6:3" dir="auto">bar</p>
   wysiwyg: |-
-    <p>| abc | def |
-    | --- | --- |
-    | bar | baz |
-    bar</p>
+    Error - check implementation:
+    Hast node of type "table" not supported by this converter. Please, provide an specification.
 04_10__leaf_blocks__tables_extension__006:
   canonical: |
     <p>| abc | def |
@@ -2025,10 +2020,8 @@
   static: |-
     <table data-sourcepos="1:1-4:19" dir="auto">&#x000A;<thead>&#x000A;<tr data-sourcepos="1:1-1:13">&#x000A;<th data-sourcepos="1:2-1:6">abc</th>&#x000A;<th data-sourcepos="1:8-1:12">def</th>&#x000A;</tr>&#x000A;</thead>&#x000A;<tbody>&#x000A;<tr data-sourcepos="3:1-3:7">&#x000A;<td data-sourcepos="3:2-3:6">bar</td>&#x000A;<td data-sourcepos="3:0-3:0"></td>&#x000A;</tr>&#x000A;<tr data-sourcepos="4:1-4:19">&#x000A;<td data-sourcepos="4:2-4:6">bar</td>&#x000A;<td data-sourcepos="4:8-4:12">baz</td>&#x000A;</tr>&#x000A;</tbody>&#x000A;</table>
   wysiwyg: |-
-    <p>| abc | def |
-    | --- | --- |
-    | bar |
-    | bar | baz | boo |</p>
+    Error - check implementation:
+    Hast node of type "table" not supported by this converter. Please, provide an specification.
 04_10__leaf_blocks__tables_extension__008:
   canonical: |
     <table>
@@ -2042,8 +2035,8 @@
   static: |-
     <table data-sourcepos="1:1-2:13" dir="auto">&#x000A;<thead>&#x000A;<tr data-sourcepos="1:1-1:13">&#x000A;<th data-sourcepos="1:2-1:6">abc</th>&#x000A;<th data-sourcepos="1:8-1:12">def</th>&#x000A;</tr>&#x000A;</thead>&#x000A;</table>
   wysiwyg: |-
-    <p>| abc | def |
-    | --- | --- |</p>
+    Error - check implementation:
+    Hast node of type "table" not supported by this converter. Please, provide an specification.
 05_01__container_blocks__block_quotes__001:
   canonical: |
     <blockquote>
@@ -2989,8 +2982,8 @@
   static: |-
     <ul data-sourcepos="1:1-8:5" class="task-list" dir="auto">&#x000A;<li data-sourcepos="1:1-1:9" class="task-list-item">&#x000A;<task-button></task-button><input type="checkbox" class="task-list-item-checkbox" disabled> foo</li>&#x000A;<li data-sourcepos="2:1-2:9" class="task-list-item">&#x000A;<task-button></task-button><input type="checkbox" class="task-list-item-checkbox" checked disabled> bar</li>&#x000A;<li data-sourcepos="3:1-5:11" class="task-list-item">&#x000A;<task-button></task-button><input type="checkbox" class="task-list-item-checkbox" checked disabled> foo&#x000A;<ul data-sourcepos="4:3-5:11" class="task-list">&#x000A;<li data-sourcepos="4:3-4:11" class="task-list-item">&#x000A;<task-button></task-button><input type="checkbox" class="task-list-item-checkbox" disabled> bar</li>&#x000A;<li data-sourcepos="5:3-5:11" class="task-list-item">&#x000A;<task-button></task-button><input type="checkbox" class="task-list-item-checkbox" checked disabled> baz</li>&#x000A;</ul>&#x000A;</li>&#x000A;<li data-sourcepos="6:1-6:9" class="task-list-item">&#x000A;<task-button></task-button><input type="checkbox" class="task-list-item-checkbox" disabled> bim</li>&#x000A;<li data-sourcepos="7:1-7:5">foo</li>&#x000A;<li data-sourcepos="8:1-8:5">bar</li>&#x000A;</ul>&#x000A;<ul data-sourcepos="9:1-9:5" dir="auto">&#x000A;<li data-sourcepos="9:1-9:5">baz</li>&#x000A;</ul>
   wysiwyg: |-
-    <ul bullet="*"><li><p>[ ] foo</p></li><li><p>[x] bar</p></li><li><p>[x] foo
-    </p><ul bullet="*"><li><p>[ ] bar</p></li><li><p>[x] baz</p></li></ul></li><li><p>[ ] bim</p></li><li><p>foo</p></li><li><p>bar</p></li></ul>
+    Error - check implementation:
+    Hast node of type "input" not supported by this converter. Please, provide an specification.
 05_02__container_blocks__list_items__motivation__task_list_items_extension__lists__050:
   canonical: |
     <ol>
@@ -4721,7 +4714,7 @@
   static: |-
     <p data-sourcepos="1:1-1:20" dir="auto"><del>Hi</del> Hello, world!</p>
   wysiwyg: |-
-    <p>~~Hi~~ Hello, world!</p>
+    <p><s>Hi</s> Hello, world!</p>
 06_06__inlines__strikethrough_extension__002:
   canonical: |
     <p>This ~~has a</p>
@@ -5586,7 +5579,7 @@
   static: |-
     <p data-sourcepos="1:1-1:24" dir="auto">&lt;<a href="http://foo.bar/baz" rel="nofollow noreferrer noopener" target="_blank">http://foo.bar/baz</a> bim&gt;</p>
   wysiwyg: |-
-    <p>&lt;http://foo.bar/baz bim&gt;</p>
+    <p>&lt;<a target="_blank" rel="noopener noreferrer nofollow" href="http://foo.bar/baz">http://foo.bar/baz</a> bim&gt;</p>
 06_09__inlines__autolinks__010:
   canonical: |
     <p><a href="http://example.com/%5C%5B%5C">http://example.com/\[\</a></p>
@@ -5614,7 +5607,8 @@
   static: |-
     <p data-sourcepos="1:1-1:23" dir="auto">&lt;<a href="mailto:foo+@bar.example.com">foo+@bar.example.com</a>&gt;</p>
   wysiwyg: |-
-    <p>&lt;foo+@bar.example.com&gt;</p>
+    Error - check implementation:
+    Cannot read properties of undefined (reading 'end')
 06_09__inlines__autolinks__014:
   canonical: |
     <p>&lt;&gt;</p>
@@ -5628,7 +5622,7 @@
   static: |-
     <p data-sourcepos="1:1-1:18" dir="auto">&lt; <a href="http://foo.bar" rel="nofollow noreferrer noopener" target="_blank">http://foo.bar</a> &gt;</p>
   wysiwyg: |-
-    <p>&lt; http://foo.bar &gt;</p>
+    <p>&lt; <a target="_blank" rel="noopener noreferrer nofollow" href="http://foo.bar">http://foo.bar</a> &gt;</p>
 06_09__inlines__autolinks__016:
   canonical: |
     <p>&lt;m:abc&gt;</p>
@@ -5649,28 +5643,28 @@
   static: |-
     <p data-sourcepos="1:1-1:18" dir="auto"><a href="http://example.com" rel="nofollow noreferrer noopener" target="_blank">http://example.com</a></p>
   wysiwyg: |-
-    <p>http://example.com</p>
+    <p><a target="_blank" rel="noopener noreferrer nofollow" href="http://example.com">http://example.com</a></p>
 06_09__inlines__autolinks__019:
   canonical: |
     <p>foo@bar.example.com</p>
   static: |-
     <p data-sourcepos="1:1-1:19" dir="auto"><a href="mailto:foo@bar.example.com">foo@bar.example.com</a></p>
   wysiwyg: |-
-    <p>foo@bar.example.com</p>
+    <p><a target="_blank" rel="noopener noreferrer nofollow" href="mailto:foo@bar.example.com">foo@bar.example.com</a></p>
 06_10__inlines__autolinks_extension__001:
   canonical: |
     <p><a href="http://www.commonmark.org">www.commonmark.org</a></p>
   static: |-
     <p data-sourcepos="1:1-1:18" dir="auto"><a href="http://www.commonmark.org" rel="nofollow noreferrer noopener" target="_blank">www.commonmark.org</a></p>
   wysiwyg: |-
-    <p>www.commonmark.org</p>
+    <p><a target="_blank" rel="noopener noreferrer nofollow" href="http://www.commonmark.org">www.commonmark.org</a></p>
 06_10__inlines__autolinks_extension__002:
   canonical: |
     <p>Visit <a href="http://www.commonmark.org/help">www.commonmark.org/help</a> for more information.</p>
   static: |-
     <p data-sourcepos="1:1-1:51" dir="auto">Visit <a href="http://www.commonmark.org/help" rel="nofollow noreferrer noopener" target="_blank">www.commonmark.org/help</a> for more information.</p>
   wysiwyg: |-
-    <p>Visit www.commonmark.org/help for more information.</p>
+    <p>Visit <a target="_blank" rel="noopener noreferrer nofollow" href="http://www.commonmark.org/help">www.commonmark.org/help</a> for more information.</p>
 06_10__inlines__autolinks_extension__003:
   canonical: |
     <p>Visit <a href="http://www.commonmark.org">www.commonmark.org</a>.</p>
@@ -5678,7 +5672,7 @@
   static: |-
     <p data-sourcepos="1:1-1:25" dir="auto">Visit <a href="http://www.commonmark.org" rel="nofollow noreferrer noopener" target="_blank">www.commonmark.org</a>.</p>&#x000A;<p data-sourcepos="3:1-3:29" dir="auto">Visit <a href="http://www.commonmark.org/a.b" rel="nofollow noreferrer noopener" target="_blank">www.commonmark.org/a.b</a>.</p>
   wysiwyg: |-
-    <p>Visit www.commonmark.org.</p>
+    <p>Visit <a target="_blank" rel="noopener noreferrer nofollow" href="http://www.commonmark.org">www.commonmark.org</a>.</p>
 06_10__inlines__autolinks_extension__004:
   canonical: |
     <p><a href="http://www.google.com/search?q=Markup+(business)">www.google.com/search?q=Markup+(business)</a></p>
@@ -5688,14 +5682,14 @@
   static: |-
     <p data-sourcepos="1:1-1:41" dir="auto"><a href="http://www.google.com/search?q=Markup+(business)" rel="nofollow noreferrer noopener" target="_blank">www.google.com/search?q=Markup+(business)</a></p>&#x000A;<p data-sourcepos="3:1-3:43" dir="auto"><a href="http://www.google.com/search?q=Markup+(business)" rel="nofollow noreferrer noopener" target="_blank">www.google.com/search?q=Markup+(business)</a>))</p>&#x000A;<p data-sourcepos="5:1-5:43" dir="auto">(<a href="http://www.google.com/search?q=Markup+(business)" rel="nofollow noreferrer noopener" target="_blank">www.google.com/search?q=Markup+(business)</a>)</p>&#x000A;<p data-sourcepos="7:1-7:42" dir="auto">(<a href="http://www.google.com/search?q=Markup+(business)" rel="nofollow noreferrer noopener" target="_blank">www.google.com/search?q=Markup+(business)</a></p>
   wysiwyg: |-
-    <p>www.google.com/search?q=Markup+(business)</p>
+    <p><a target="_blank" rel="noopener noreferrer nofollow" href="http://www.google.com/search?q=Markup+(business)">www.google.com/search?q=Markup+(business)</a></p>
 06_10__inlines__autolinks_extension__005:
   canonical: |
     <p><a href="http://www.google.com/search?q=(business))+ok">www.google.com/search?q=(business))+ok</a></p>
   static: |-
     <p data-sourcepos="1:1-1:38" dir="auto"><a href="http://www.google.com/search?q=(business))+ok" rel="nofollow noreferrer noopener" target="_blank">www.google.com/search?q=(business))+ok</a></p>
   wysiwyg: |-
-    <p>www.google.com/search?q=(business))+ok</p>
+    <p><a target="_blank" rel="noopener noreferrer nofollow" href="http://www.google.com/search?q=(business))+ok">www.google.com/search?q=(business))+ok</a></p>
 06_10__inlines__autolinks_extension__006:
   canonical: |
     <p><a href="http://www.google.com/search?q=commonmark&amp;hl=en">www.google.com/search?q=commonmark&amp;hl=en</a></p>
@@ -5703,14 +5697,14 @@
   static: |-
     <p data-sourcepos="1:1-1:40" dir="auto"><a href="http://www.google.com/search?q=commonmark&amp;hl=en" rel="nofollow noreferrer noopener" target="_blank">www.google.com/search?q=commonmark&amp;hl=en</a></p>&#x000A;<p data-sourcepos="3:1-3:38" dir="auto"><a href="http://www.google.com/search?q=commonmark" rel="nofollow noreferrer noopener" target="_blank">www.google.com/search?q=commonmark</a>&amp;hl;</p>
   wysiwyg: |-
-    <p>www.google.com/search?q=commonmark&amp;hl=en</p>
+    <p><a target="_blank" rel="noopener noreferrer nofollow" href="http://www.google.com/search?q=commonmark&amp;hl=en">www.google.com/search?q=commonmark&amp;hl=en</a></p>
 06_10__inlines__autolinks_extension__007:
   canonical: |
     <p><a href="http://www.commonmark.org/he">www.commonmark.org/he</a>&lt;lp</p>
   static: |-
     <p data-sourcepos="1:1-1:24" dir="auto"><a href="http://www.commonmark.org/he" rel="nofollow noreferrer noopener" target="_blank">www.commonmark.org/he</a>&lt;lp</p>
   wysiwyg: |-
-    <p>www.commonmark.org/he&lt;lp</p>
+    <p><a target="_blank" rel="noopener noreferrer nofollow" href="http://www.commonmark.org/he">www.commonmark.org/he</a>&lt;lp</p>
 06_10__inlines__autolinks_extension__008:
   canonical: |
     <p><a href="http://commonmark.org">http://commonmark.org</a></p>
@@ -5719,21 +5713,21 @@
   static: |-
     <p data-sourcepos="1:1-1:21" dir="auto"><a href="http://commonmark.org" rel="nofollow noreferrer noopener" target="_blank">http://commonmark.org</a></p>&#x000A;<p data-sourcepos="3:1-3:63" dir="auto">(Visit <a href="https://encrypted.google.com/search?q=Markup+(business)" rel="nofollow noreferrer noopener" target="_blank">https://encrypted.google.com/search?q=Markup+(business)</a>)</p>&#x000A;<p data-sourcepos="5:1-5:48" dir="auto">Anonymous FTP is available at <a href="ftp://foo.bar.baz/">ftp://foo.bar.baz</a>.</p>
   wysiwyg: |-
-    <p>http://commonmark.org</p>
+    <p><a target="_blank" rel="noopener noreferrer nofollow" href="http://commonmark.org">http://commonmark.org</a></p>
 06_10__inlines__autolinks_extension__009:
   canonical: |
     <p><a href="mailto:foo@bar.baz">foo@bar.baz</a></p>
   static: |-
     <p data-sourcepos="1:1-1:11" dir="auto"><a href="mailto:foo@bar.baz">foo@bar.baz</a></p>
   wysiwyg: |-
-    <p>foo@bar.baz</p>
+    <p><a target="_blank" rel="noopener noreferrer nofollow" href="mailto:foo@bar.baz">foo@bar.baz</a></p>
 06_10__inlines__autolinks_extension__010:
   canonical: |
     <p>hello@mail+xyz.example isn't valid, but <a href="mailto:hello+xyz@mail.example">hello+xyz@mail.example</a> is.</p>
   static: |-
     <p data-sourcepos="1:1-1:66" dir="auto">hello@mail+xyz.example isn't valid, but <a href="mailto:hello+xyz@mail.example">hello+xyz@mail.example</a> is.</p>
   wysiwyg: |-
-    <p>hello@mail+xyz.example isn't valid, but hello+xyz@mail.example is.</p>
+    <p>hello@mail+xyz.example isn't valid, but <a target="_blank" rel="noopener noreferrer nofollow" href="mailto:hello+xyz@mail.example">hello+xyz@mail.example</a> is.</p>
 06_10__inlines__autolinks_extension__011:
   canonical: |
     <p><a href="mailto:a.b-c_d@a.b">a.b-c_d@a.b</a></p>
@@ -5743,7 +5737,7 @@
   static: |-
     <p data-sourcepos="1:1-1:11" dir="auto"><a href="mailto:a.b-c_d@a.b">a.b-c_d@a.b</a></p>&#x000A;<p data-sourcepos="3:1-3:12" dir="auto"><a href="mailto:a.b-c_d@a.b">a.b-c_d@a.b</a>.</p>&#x000A;<p data-sourcepos="5:1-5:12" dir="auto">a.b-c_d@a.b-</p>&#x000A;<p data-sourcepos="7:1-7:12" dir="auto">a.b-c_d@a.b_</p>
   wysiwyg: |-
-    <p>a.b-c_d@a.b</p>
+    <p><a target="_blank" rel="noopener noreferrer nofollow" href="mailto:a.b-c_d@a.b">a.b-c_d@a.b</a></p>
 06_11__inlines__raw_html__001:
   canonical: |
     <p><a><bab><c2c></p>
@@ -6093,5 +6087,6 @@
   static: |-
     <strong>&#x000A;bold&#x000A;</strong>
   wysiwyg: |-
-    Error - check implementation:
-    Cannot read properties of undefined (reading 'wrapTextInParagraph')
+    <p><strong>
+    bold
+    </strong></p>
