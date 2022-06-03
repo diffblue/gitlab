@@ -68,7 +68,7 @@ RSpec.describe SnippetsHelper do
     let(:blob) { snippet.blobs.first }
     let(:ref) { blob.repository.root_ref }
 
-    subject { embedded_snippet_copy(blob) }
+    subject { embedded_copy_snippet_button(blob) }
 
     context 'for Personal Snippets' do
       let(:snippet) { public_personal_snippet }
