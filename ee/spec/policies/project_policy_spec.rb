@@ -1568,6 +1568,7 @@ RSpec.describe ProjectPolicy do
         :owner      | nil   | true
         :admin      | false | false
         :admin      | true  | true
+        :auditor    | false | true
       end
 
       before do
@@ -1601,6 +1602,7 @@ RSpec.describe ProjectPolicy do
         :owner      | nil   | true
         :admin      | false | false
         :admin      | true  | true
+        :auditor    | false | false
       end
 
       before do
