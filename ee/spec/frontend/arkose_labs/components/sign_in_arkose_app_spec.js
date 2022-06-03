@@ -124,17 +124,22 @@ describe('SignInArkoseApp', () => {
     it('triggers a request to the captcha_check API', async () => {
       initArkoseLabs(MOCK_USERNAME);
 
-      expect(axiosMock.history.get).toHaveLength(0);
+      expect(axiosMock.history.post).toHaveLength(0);
 
       await waitForPromises();
 
-      expect(axiosMock.history.get).toHaveLength(1);
-      expect(axiosMock.history.get[0].url).toMatch(`/users/${MOCK_USERNAME}/captcha_check`);
+      expect(axiosMock.history.post).toHaveLength(1);
+      expect(axiosMock.history.post[0]).toMatchObject({
+        url: expect.stringContaining('/users/captcha_check'),
+        data: JSON.stringify({
+          username: MOCK_USERNAME,
+        }),
+      });
     });
 
     describe('if the challenge is not needed', () => {
       beforeEach(async () => {
-        axiosMock.onGet().reply(200, { result: false });
+        axiosMock.onPost().reply(200, { result: false });
         initArkoseLabs(MOCK_USERNAME);
         await waitForPromises();
       });
@@ -155,7 +160,7 @@ describe('SignInArkoseApp', () => {
 
       describe('if the challenge becomes needed', () => {
         beforeEach(async () => {
-          axiosMock.onGet().reply(200, { result: true });
+          axiosMock.onPost().reply(200, { result: true });
           setUsername(`malicious-${MOCK_USERNAME}`);
           await waitForPromises();
         });
@@ -168,17 +173,17 @@ describe('SignInArkoseApp', () => {
       beforeEach(() => {
         initArkoseLabs();
         jest.spyOn(findSignInForm(), 'submit');
-        axiosMock.onGet().reply(200, { result: false });
+        axiosMock.onPost().reply(200, { result: false });
         findUsernameInput().value = `noblur-${MOCK_USERNAME}`;
       });
 
       it('triggers a username check', async () => {
-        expect(axiosMock.history.get).toHaveLength(0);
+        expect(axiosMock.history.post).toHaveLength(0);
 
         submitForm();
         await waitForPromises();
 
-        expect(axiosMock.history.get).toHaveLength(1);
+        expect(axiosMock.history.post).toHaveLength(1);
       });
 
       it("proceeds with the form's submission if the challenge still isn't needed", async () => {
@@ -190,7 +195,7 @@ describe('SignInArkoseApp', () => {
 
       describe('when the challenge becomes needed', () => {
         beforeEach(() => {
-          axiosMock.onGet().reply(200, { result: true });
+          axiosMock.onPost().reply(200, { result: true });
           submitForm();
           return waitForPromises();
         });
@@ -209,7 +214,7 @@ describe('SignInArkoseApp', () => {
 
     describe('if the challenge is needed', () => {
       beforeEach(async () => {
-        axiosMock.onGet().reply(200, { result: true });
+        axiosMock.onPost().reply(200, { result: true });
         initArkoseLabs(MOCK_USERNAME);
         await waitForPromises();
       });
@@ -282,7 +287,7 @@ describe('SignInArkoseApp', () => {
 
   describe('when the username check fails', () => {
     it('with a 404, nothing happens', async () => {
-      axiosMock.onGet().reply(404);
+      axiosMock.onPost().reply(404);
       initArkoseLabs(MOCK_USERNAME);
       await waitForPromises();
 
@@ -291,7 +296,7 @@ describe('SignInArkoseApp', () => {
     });
 
     it('with some other HTTP error, the challenge is initialized', async () => {
-      axiosMock.onGet().reply(500);
+      axiosMock.onPost().reply(500);
       initArkoseLabs(MOCK_USERNAME);
       await waitForPromises();
 
@@ -304,7 +309,7 @@ describe('SignInArkoseApp', () => {
       initArkoseLabsScript.mockImplementation(() => {
         throw new Error();
       });
-      axiosMock.onGet().reply(200, { result: true });
+      axiosMock.onPost().reply(200, { result: true });
       initArkoseLabs(MOCK_USERNAME);
       await waitForPromises();
 
