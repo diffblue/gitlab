@@ -107,6 +107,7 @@ RSpec.describe PgFullTextSearchable do
         with_url.update_search_data!
 
         expect(model_class.pg_full_text_search('https://gitlab.com/gitlab-org/gitlab')).to contain_exactly(with_url)
+        expect(model_class.pg_full_text_search('gopher://gitlab.com/gitlab-org/gitlab')).to contain_exactly(with_url)
       end
     end
   end
