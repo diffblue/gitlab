@@ -224,7 +224,7 @@ actors.
 Feature.enabled?(:some_feature, group)
 ```
 
-Multiple actors can be passed together in a comma-separated form.
+Multiple actors can be passed together in a comma-separated form:
 
 ```shell
 /chatops run feature set --project=gitlab-org/gitlab,example-org/example-project some_feature true
