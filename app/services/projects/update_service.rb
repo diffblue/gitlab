@@ -93,7 +93,7 @@ module Projects
 
       return if operations_access_level.nil?
 
-      [:monitor_access_level, :deployments_access_level, :infrastructure_access_level].each do |key|
+      [:monitor_access_level, :infrastructure_access_level, :feature_flags_access_level, :environments_flags_access_level].each do |key|
         params[:project_feature_attributes][key] = operations_access_level
       end
     end

@@ -21,8 +21,10 @@ module EE
                  :security_and_compliance_access_level,
                  :container_registry_access_level,
                  :monitor_access_level,
-                 :deployments_access_level,
-                 :infrastructure_access_level].freeze
+                 :infrastructure_access_level,
+                 :feature_flags_access_level,
+                 :environments_flags_access_level,
+                 :releases_flags_access_level].freeze
 
       def initialize(current_user, model, project)
         @project = project

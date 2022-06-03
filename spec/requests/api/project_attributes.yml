@@ -126,7 +126,9 @@ project_feature:
     - package_registry_access_level
     - monitor_access_level
     - infrastructure_access_level
-    - deployments_access_level
+    - feature_flags_access_level
+    - environments_flags_access_level
+    - releases_flags_access_level
     - project_id
     - updated_at
   computed_attributes:

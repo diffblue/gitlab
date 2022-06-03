@@ -18,8 +18,9 @@ module Gitlab
       def perform
         ProjectFeature.where(batch_column => start_id..end_id).each_batch(of: sub_batch_size) do |batch|
           batch.update_all('monitor_access_level=operations_access_level,' \
-            ' deployments_access_level=operations_access_level,' \
-            'infrastructure_access_level=operations_access_level')
+            'infrastructure_access_level=operations_access_level,' \
+            ' feature_flags_access_level=operations_access_level,'\
+            ' environments_flags_access_level=operations_access_level')
         end
 
         mark_job_as_succeeded(start_id, end_id)
