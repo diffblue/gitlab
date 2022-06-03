@@ -4,7 +4,7 @@ key_path: usage_activity_by_stage.secure.user_license_management_jobs
 description: Total number of users running License Scanning jobs
 product_section: sec
 product_stage: secure
-product_group: group::composition analysis
+product_group: composition analysis
 product_category: license_compliance
 value_type: number
 status: active

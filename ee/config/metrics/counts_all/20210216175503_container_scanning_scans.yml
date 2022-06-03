@@ -4,7 +4,7 @@ key_path: usage_activity_by_stage.secure.container_scanning_scans
 description: Counts container scanning jobs
 product_section: sec
 product_stage: protect
-product_group: group::container security
+product_group: container security
 product_category: container_scanning
 value_type: number
 status: active

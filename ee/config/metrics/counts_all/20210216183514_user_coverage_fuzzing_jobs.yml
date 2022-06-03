@@ -4,7 +4,7 @@ key_path: usage_activity_by_stage.secure.user_coverage_fuzzing_jobs
 description: Usage count of coverage-guided fuzz testing jobs
 product_section: sec
 product_stage: secure
-product_group: group::dynamic analysis
+product_group: dynamic analysis
 product_category: fuzz-testing
 value_type: number
 status: active

@@ -4,7 +4,7 @@ description: Counts of Pipelines that have at least 1 coverage-guided Fuzz Testi
   job
 product_section: sec
 product_stage: secure
-product_group: group::dynamic analysis
+product_group: dynamic analysis
 product_category: fuzz-testing
 value_type: number
 status: active

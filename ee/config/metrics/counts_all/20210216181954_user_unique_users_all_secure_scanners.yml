@@ -4,7 +4,7 @@ key_path: usage_activity_by_stage.secure.user_unique_users_all_secure_scanners
 description: Count of users creating secure scanners ci builds
 product_section: sec
 product_stage: secure
-product_group: "group::static analysis"
+product_group: "static analysis"
 product_category: static analysis
 value_type: number
 status: active

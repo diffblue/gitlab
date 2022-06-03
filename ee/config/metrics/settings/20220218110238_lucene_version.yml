@@ -2,7 +2,7 @@ key_path: advanced_search.lucene_version
 description: Advanced Search search engine lucene version
 product_section: enablement
 product_stage: enablement
-product_group: group::global search
+product_group: global search
 value_type: string
 status: active
 milestone: "14.9"

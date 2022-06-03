@@ -7,7 +7,7 @@ key_path: redis_hll_counters.epics_usage.g_project_management_users_creating_epi
 description: Counts of WAU adding epic notes
 product_section: dev
 product_stage: plan
-product_group: group::product planning
+product_group: product planning
 product_category: epics
 value_type: number
 status: active

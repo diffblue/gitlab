@@ -3,7 +3,7 @@ key_path: license_trial_ends_on
 description: Date the trial license ends on
 product_section: fulfillment
 product_stage: fulfillment
-product_group: group::license
+product_group: license
 product_category: license
 value_type: string
 status: active

@@ -4,7 +4,7 @@ key_path: usage_activity_by_stage_monthly.secure.user_api_fuzzing_jobs
 description: Count of distinct users creating API Fuzzing jobs.
 product_section: sec
 product_stage: secure
-product_group: group::dynamic analysis
+product_group: dynamic analysis
 product_category: fuzz-testing
 value_type: number
 status: active

@@ -3,7 +3,7 @@ key_path: license_md5
 description: The MD5 hash of license key of the GitLab instance
 product_section: fulfillment
 product_stage: fulfillment
-product_group: group::license
+product_group: license
 product_category: license
 value_type: string
 status: active

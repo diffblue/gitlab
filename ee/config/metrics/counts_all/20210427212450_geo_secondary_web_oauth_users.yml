@@ -4,7 +4,7 @@ key_path: usage_activity_by_stage.enablement.geo_secondary_web_oauth_users
 description: Number of distinct owner ids from secodary geo nodes oauth access grants
 product_section: enablement
 product_stage: enablement
-product_group: group::geo
+product_group: geo
 product_category:
 value_type: number
 status: active

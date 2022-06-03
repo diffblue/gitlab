@@ -7,7 +7,7 @@ key_path: redis_hll_counters.epics_usage.g_project_management_epic_reopened_week
 description: Counts of WAU re-opening epics
 product_section: dev
 product_stage: plan
-product_group: group::product planning
+product_group: product planning
 product_category: epics
 value_type: number
 status: active

@@ -4,7 +4,7 @@ key_path: usage_activity_by_stage_monthly.secure.container_scanning_pipeline
 description: Pipelines containing a Container Scanning job
 product_section: sec
 product_stage: protect
-product_group: group::container security
+product_group: container security
 product_category: container_scanning
 value_type: number
 status: active

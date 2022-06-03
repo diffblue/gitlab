@@ -20,7 +20,7 @@
     },
     "product_group": {
       "type": "string",
-      "pattern": "^group::[a-z ]+$"
+      "pattern": "^$|^([a-z]+_)*[a-z]+$"
     },
     "product_category": {
       "type": ["string", "null"]

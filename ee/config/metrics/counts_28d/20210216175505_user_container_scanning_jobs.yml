@@ -4,7 +4,7 @@ key_path: usage_activity_by_stage_monthly.secure.user_container_scanning_jobs
 description: Distinct count per user of Container Scanning jobs run monthly
 product_section: sec
 product_stage: protect
-product_group: group::container security
+product_group: container security
 product_category: container_scanning
 value_type: number
 status: active

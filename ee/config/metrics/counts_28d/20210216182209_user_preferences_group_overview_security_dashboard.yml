@@ -5,7 +5,7 @@ description: Users who set personal preference to see Security Dashboard on Grou
   information page
 product_section: sec
 product_stage: secure
-product_group: group::threat insights
+product_group: threat insights
 product_category: vulnerability_management
 value_type: number
 status: active
