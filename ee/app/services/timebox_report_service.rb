@@ -21,19 +21,18 @@ class TimeboxReportService
   def initialize(timebox, scoped_projects = nil)
     @timebox = timebox
     @scoped_projects = scoped_projects
+    @issue_states = {}
+    @chart_data = []
   end
 
   def execute
     # There is no data to return for fake timeboxes like
     # Milestone::None, Milestone::Any, Milestone::Started, Milestone::Upcoming,
     # Iteration::None, Iteration::Any, Iteration::Current
-    return ServiceResponse.success(payload: { burnup_time_series: {}, stats: {} }) if timebox.is_a?(::Timebox::TimeboxStruct)
-    return ServiceResponse.error(message: _('%{timebox_type} does not support burnup charts' % { timebox_type: timebox_type })) unless timebox.supports_timebox_charts?
-    return ServiceResponse.error(message: _('%{timebox_type} must have a start and due date' % { timebox_type: timebox_type })) if timebox.start_date.blank? || timebox.due_date.blank?
-    return ServiceResponse.error(message: _('Burnup chart could not be generated due to too many events')) if resource_events.num_tuples > EVENT_COUNT_LIMIT
-
-    @issue_states = {}
-    @chart_data = []
+    return success if timebox.is_a?(::Timebox::TimeboxStruct)
+    return error(:unsupported_type) unless timebox.supports_timebox_charts?
+    return error(:missing_dates) if timebox.start_date.blank? || timebox.due_date.blank?
+    return error(:too_many_events) if resource_events.num_tuples > EVENT_COUNT_LIMIT
 
     resource_events.each do |event|
       case event['event_type']
@@ -46,15 +45,29 @@ class TimeboxReportService
       end
     end
 
+    success
+  end
+
+  private
+
+  attr_reader :timebox, :issue_states, :chart_data
+
+  def success
     ServiceResponse.success(payload: {
       burnup_time_series: chart_data,
       stats: build_stats
     })
   end
 
-  private
+  def error(code)
+    message = case code
+              when :unsupported_type then _('%{timebox_type} does not support burnup charts' % { timebox_type: timebox_type })
+              when :missing_dates    then _('%{timebox_type} must have a start and due date' % { timebox_type: timebox_type })
+              when :too_many_events  then _('Burnup chart could not be generated due to too many events')
+              end
 
-  attr_reader :timebox, :issue_states, :chart_data
+    ServiceResponse.error(message: message, payload: { code: code })
+  end
 
   def handle_resource_timebox_event(event)
     issue_state = find_issue_state(event['issue_id'])
