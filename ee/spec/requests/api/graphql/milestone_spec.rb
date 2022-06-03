@@ -24,6 +24,7 @@ RSpec.describe 'Querying a Milestone' do
     let(:fields) do
       <<~FIELDS
       report {
+        error { code message }
         burnupTimeSeries {
           date
           scopeCount
@@ -49,7 +50,35 @@ RSpec.describe 'Querying a Milestone' do
       it 'returns nil' do
         post_graphql(query, current_user: current_user)
 
-        expect(graphql_data_at(:milestone, :report)).to be_nil
+        expect(graphql_data_at(:milestone, :report, :error, :code)).to eq 'UNSUPPORTED'
+        expect(graphql_data_at(:milestone, :report, :error, :message)).to include('does not support burnup charts')
+        expect(graphql_data_at(:milestone, :report, :burnup_time_series)).to be_nil
+      end
+    end
+
+    context 'when missing dates' do
+      let!(:milestone) { create(:milestone, project: project) }
+
+      it 'explains why the report cannot be generated' do
+        post_graphql(query, current_user: current_user)
+
+        expect(graphql_data_at(:milestone, :report, :error, :code)).to eq 'MISSING_DATES'
+        expect(graphql_data_at(:milestone, :report, :error, :message)).to include('must have a start and due date')
+        expect(graphql_data_at(:milestone, :report, :burnup_time_series)).to be_nil
+      end
+    end
+
+    context 'when there are too many events' do
+      before do
+        stub_const('TimeboxReportService::EVENT_COUNT_LIMIT', 0)
+      end
+
+      it 'explains why the report cannot be generated' do
+        post_graphql(query, current_user: current_user)
+
+        expect(graphql_data_at(:milestone, :report, :error, :code)).to eq 'TOO_MANY_EVENTS'
+        expect(graphql_data_at(:milestone, :report, :error, :message)).to include('too many')
+        expect(graphql_data_at(:milestone, :report, :burnup_time_series)).to be_nil
       end
     end
 
@@ -63,6 +92,7 @@ RSpec.describe 'Querying a Milestone' do
 
         expect(subject).to eq({
           'report' => {
+            'error' => nil,
             'burnupTimeSeries' => [
               {
                 'date' => '2020-01-05',

@@ -11,8 +11,9 @@ RSpec.shared_examples 'timebox chart' do |timebox_type|
     end
 
     it 'returns an error message' do
-      expect(response.error?).to eq(true)
-      expect(response.message).to eq("#{timebox_type.capitalize} does not support burnup charts")
+      expect(response)
+        .to be_error
+        .and have_attributes(message: eq("#{timebox_type.capitalize} does not support burnup charts"), payload: { code: :unsupported_type })
     end
   end
 
@@ -25,8 +26,9 @@ RSpec.shared_examples 'timebox chart' do |timebox_type|
       let(:timebox) { timebox_without_dates }
 
       it 'returns an error message' do
-        expect(response.error?).to eq(true)
-        expect(response.message).to eq("#{timebox_type.capitalize} must have a start and due date")
+        expect(response)
+          .to be_error
+          .and have_attributes(message: eq("#{timebox_type.capitalize} must have a start and due date"), payload: { code: :missing_dates })
       end
     end
 
@@ -36,8 +38,9 @@ RSpec.shared_examples 'timebox chart' do |timebox_type|
       create(:"resource_#{timebox_type}_event", issue: issues[0], "#{timebox_type}" => timebox, action: :add, created_at: timebox_start_date - 21.days)
       create(:"resource_#{timebox_type}_event", issue: issues[1], "#{timebox_type}" => timebox, action: :add, created_at: timebox_start_date - 20.days)
 
-      expect(response.error?).to eq(true)
-      expect(response.message).to eq('Burnup chart could not be generated due to too many events')
+      expect(response)
+        .to be_error
+        .and have_attributes(message: 'Burnup chart could not be generated due to too many events', payload: { code: :too_many_events })
     end
 
     it 'aggregates events before the start date to the start date' do
@@ -344,9 +347,9 @@ RSpec.shared_examples 'timebox chart' do |timebox_type|
 
         with_them do
           it 'returns an empty response' do
-            expect(response.success?).to eq(true)
-            expect(response.payload[:stats]).to eq(nil)
-            expect(response.payload[:burnup_time_series]).to eq([])
+            expect(response)
+              .to be_success
+              .and have_attributes(payload: match(stats: be_nil, burnup_time_series: be_empty))
           end
         end
       end

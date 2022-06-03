@@ -18,7 +18,11 @@ module Resolvers
 
       response = TimeboxReportService.new(timebox, project_scopes).execute
 
-      response.payload if response.success?
+      if response.error?
+        { error: response.payload.merge(message: response.message) }
+      else
+        response.payload
+      end
     end
 
     private

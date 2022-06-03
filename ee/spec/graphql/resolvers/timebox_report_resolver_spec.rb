@@ -35,13 +35,13 @@ RSpec.describe Resolvers::TimeboxReportResolver do
   RSpec.shared_examples 'timebox time series' do
     using RSpec::Parameterized::TableSyntax
 
-    subject { resolve(described_class, obj: timebox, ctx: { current_user: current_user }) }
+    subject(:result) { resolve(described_class, obj: timebox, ctx: { current_user: current_user }) }
 
     context 'when authorized to view "project"' do
       let(:current_user) { group_member }
 
       it 'returns burnup chart data' do
-        expect(subject).to eq(
+        expect(result).to eq(
           stats: {
             complete: { count: 0, weight: 0 },
             incomplete: { count: 2, weight: 0 },
@@ -70,7 +70,12 @@ RSpec.describe Resolvers::TimeboxReportResolver do
           stub_const('TimeboxReportService::EVENT_COUNT_LIMIT', 1)
         end
 
-        it { is_expected.to be_nil }
+        let(:error_message) { 'Burnup chart could not be generated due to too many events' }
+        let(:code) { :too_many_events }
+
+        it 'returns error information' do
+          expect(result).to eq(error: { message: error_message, code: code })
+        end
       end
     end
 
