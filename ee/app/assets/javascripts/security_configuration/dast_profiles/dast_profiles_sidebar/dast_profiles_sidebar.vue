@@ -2,12 +2,33 @@
 import { isEmpty } from 'lodash';
 import { GlDrawer } from '@gitlab/ui';
 import { SCANNER_TYPE } from 'ee/on_demand_scans/constants';
+import { REFERRAL } from 'ee/security_configuration/dast_profiles/dast_scanner_profiles/constants';
 import DastProfilesLoader from 'ee/security_configuration/dast_profiles/components/dast_profiles_loader.vue';
 import { getContentWrapperHeight } from 'ee/security_orchestration/utils';
 import DastProfilesSidebarHeader from './dast_profiles_sidebar_header.vue';
 import DastProfilesSidebarEmptyState from './dast_profiles_sidebar_empty_state.vue';
 import DastProfilesSidebarForm from './dast_profiles_sidebar_form.vue';
 import DastProfilesSidebarList from './dast_profiles_sidebar_list.vue';
+
+/**
+ *                   Referral
+ *                  /        \
+ *            Parent          Self
+ *           /      \        /    \
+ *        New      Edit     New     Edit
+ *      /   \      /  \     / \     / \
+ *     C     R    C    C   C   R   R   R
+ *
+ * New profile or edit existing can be called both from component and parent
+ * When form is opened it can be closed either by submit or cancel
+ * This tree represent behaviour of a drawer.
+ * Bottom level left subtree is after submit right subtree is after cancel
+ *
+ * For example Opened from parent -> new profile -> close after submit or reopen after cancel
+ *
+ * C-close
+ * R-reopen
+ */
 
 export default {
   components: {
@@ -65,6 +86,7 @@ export default {
     return {
       editingMode: false,
       profileForEditing: {},
+      referral: REFERRAL.SELF,
     };
   },
   computed: {
@@ -91,11 +113,21 @@ export default {
   watch: {
     activeProfile(newVal) {
       if (!isEmpty(newVal)) {
+        this.referral = REFERRAL.PARENT;
         this.enableEditingMode(this.activeProfile);
       }
     },
   },
   methods: {
+    resetAndEmitCloseEvent() {
+      this.resetEditingMode();
+      this.$emit('close-drawer');
+    },
+    resetEditingMode() {
+      this.editingMode = false;
+      this.profileForEditing = {};
+      this.referral = REFERRAL.SELF;
+    },
     enableEditingMode(profile = {}) {
       this.editingMode = true;
       this.profileForEditing = profile;
@@ -105,10 +137,23 @@ export default {
      * reopen even for closing editing layer
      * and opening drawer with profiles list
      */
-    exitEditingModeWith(event) {
-      this.editingMode = false;
-      this.profileForEditing = {};
+    cancelEditingMode() {
+      const event = this.referral === REFERRAL.PARENT ? 'close-drawer' : 'reopen-drawer';
+
       this.$emit(event, this.profileType);
+      this.resetEditingMode();
+    },
+    profileCreated(profile) {
+      this.$emit('profile-submitted', { profile, profileType: this.profileType });
+      this.$emit('close-drawer', this.profileType);
+      this.resetEditingMode();
+    },
+    profileEdited(profile) {
+      this.$emit('profile-submitted', { profile, profileType: this.profileType });
+
+      const secondaryEvent = this.referral === REFERRAL.PARENT ? 'close-drawer' : 'reopen-drawer';
+      this.$emit(secondaryEvent, this.profileType);
+      this.resetEditingMode();
     },
   },
 };
@@ -119,7 +164,7 @@ export default {
     :header-height="getDrawerHeaderHeight"
     :open="isOpen"
     :z-index="10"
-    @close="exitEditingModeWith('close-drawer')"
+    @close="resetAndEmitCloseEvent"
   >
     <template #title>
       <dast-profiles-sidebar-header
@@ -148,8 +193,9 @@ export default {
           v-if="isEditingMode"
           :profile="profileForEditing"
           :profile-type="profileType"
-          @cancel="exitEditingModeWith('reopen-drawer')"
-          @success="exitEditingModeWith('profile-submitted')"
+          @cancel="cancelEditingMode"
+          @created="profileCreated"
+          @edited="profileEdited"
         />
 
         <!-- Profile list - reading mode -->

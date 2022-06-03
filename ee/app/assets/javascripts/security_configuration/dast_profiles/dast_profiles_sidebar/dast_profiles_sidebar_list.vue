@@ -37,7 +37,7 @@ export default {
 </script>
 
 <template>
-  <div>
+  <div data-testid="dast-profiles-sidebar list">
     <component
       :is="summaryComponent"
       v-for="profile in profiles"
