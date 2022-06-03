@@ -103,7 +103,7 @@ describe('Repository table component', () => {
   it('shows loading icon', () => {
     factory({ path: '/', isLoading: true });
 
-    expect(vm.find(GlSkeletonLoader).exists()).toBe(true);
+    expect(vm.findComponent(GlSkeletonLoader).exists()).toBe(true);
   });
 
   it('renders table rows', () => {

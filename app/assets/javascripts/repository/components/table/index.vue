@@ -162,7 +162,11 @@ export default {
               <td class="gl-display-none gl-sm-display-block">
                 <gl-skeleton-loader :lines="1" />
               </td>
-              <td><gl-skeleton-loader :lines="1" /></td>
+              <td>
+                <div class="gl-display-flex gl-lg-justify-content-end">
+                  <gl-skeleton-loader :equal-width-lines="true" :lines="1" />
+                </div>
+              </td>
             </tr>
           </template>
           <template v-if="hasMore">
