@@ -1,11 +1,5 @@
 <script>
-import {
-  GlButton,
-  GlFormCheckbox,
-  GlDeprecatedSkeletonLoading as GlSkeletonLoading,
-  GlSprintf,
-  GlIcon,
-} from '@gitlab/ui';
+import { GlButton, GlFormCheckbox, GlSkeletonLoader, GlSprintf, GlIcon } from '@gitlab/ui';
 import { mapActions, mapState } from 'vuex';
 import { VULNERABILITY_MODAL_ID } from 'ee/vue_shared/security_reports/components/constants';
 import SeverityBadge from 'ee/vue_shared/security_reports/components/severity_badge.vue';
@@ -20,7 +14,7 @@ export default {
   components: {
     GlButton,
     GlFormCheckbox,
-    GlSkeletonLoading,
+    GlSkeletonLoader,
     GlSprintf,
     GlIcon,
     SeverityBadge,
@@ -141,7 +135,7 @@ export default {
         class="table-mobile-content gl-white-space-normal"
         data-qa-selector="vulnerability_info_content"
       >
-        <gl-skeleton-loading v-if="isLoading" class="mt-2 js-skeleton-loader" :lines="2" />
+        <gl-skeleton-loader v-if="isLoading" :lines="2" />
         <template v-else>
           <gl-button
             ref="vulnerability-title"

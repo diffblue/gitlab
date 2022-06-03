@@ -1,4 +1,4 @@
-import { GlFormCheckbox } from '@gitlab/ui';
+import { GlFormCheckbox, GlSkeletonLoader } from '@gitlab/ui';
 import { mount, shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
@@ -37,7 +37,7 @@ describe('Security Dashboard Table Row', () => {
     wrapper = null;
   });
 
-  const findLoader = () => wrapper.find('.js-skeleton-loader');
+  const findLoader = () => wrapper.findComponent(GlSkeletonLoader);
   const findContent = (i) => wrapper.findAll('.table-mobile-content').at(i);
   const findAllIssueCreated = () => wrapper.findAll('[data-testid="issues-icon"]');
   const hasSelectedClass = () => wrapper.classes('gl-bg-blue-50');
