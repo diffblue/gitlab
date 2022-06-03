@@ -62,20 +62,4 @@ RSpec.describe Issues::ExportCsvService do
       it_behaves_like 'including issues with epics'
     end
   end
-
-  context 'when epic issue is not valid' do
-    let(:epic) { create(:epic, group: group) }
-
-    before do
-      create(:epic_issue, issue: issue, epic: epic)
-
-      allow_next_instance_of(EpicIssue) do |epic_issue|
-        allow(epic_issue).to receive(:valid?).and_return(false)
-      end
-    end
-
-    it 'does not include epics information' do
-      expect(csv[0]).not_to have_key('Epic ID')
-    end
-  end
 end
