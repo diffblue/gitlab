@@ -31,14 +31,14 @@ export default {
     },
   },
   mounted() {
-    this.value = this.event.value;
+    this.value = this.event.value || false;
   },
 };
 </script>
 
 <template>
   <div>
-    <input :name="name" type="hidden" :value="value || false" />
+    <input :name="name" type="hidden" :value="value" />
     <gl-form-checkbox v-model="value" :disabled="isInheriting">
       {{ title }}
     </gl-form-checkbox>
