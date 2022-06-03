@@ -110,15 +110,13 @@ RSpec.describe EE::Issuable do
   end
 
   describe '#escalation_policies_available?' do
-    where(:issuable_type, :incident_escalations_enabled, :oncall_schedules_enabled, :escalation_policies_enabled, :available) do
+    where(:issuable_type, :oncall_schedules_enabled, :escalation_policies_enabled, :available) do
       [
-        [:issue, true, true, true, false],
-        [:incident, false, false, false, false],
-        [:incident, false, true, true, false],
-        [:incident, true, false, false, false],
-        [:incident, true, true, false, false],
-        [:incident, true, false, true, false],
-        [:incident, true, true, true, true]
+        [:issue, true, true, false],
+        [:incident, false, false, false],
+        [:incident, true, false, false],
+        [:incident, false, true, false],
+        [:incident, true, true, true]
       ]
     end
 
@@ -126,7 +124,6 @@ RSpec.describe EE::Issuable do
       let(:issuable) { build_stubbed(issuable_type) }
 
       before do
-        stub_feature_flags(incident_escalations: incident_escalations_enabled)
         stub_licensed_features(oncall_schedules: oncall_schedules_enabled, escalation_policies: escalation_policies_enabled)
       end
 

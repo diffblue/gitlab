@@ -55,16 +55,6 @@ RSpec.describe Mutations::Issues::SetEscalationPolicy do
           end
         end
 
-        context 'with feature disabled' do
-          before do
-            stub_feature_flags(incident_escalations: false)
-          end
-
-          it 'raises an error' do
-            expect { result }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable, 'Feature unavailable for provided issue')
-          end
-        end
-
         context 'when passing escalation_policy_id as nil' do
           let(:args) { { escalation_policy: nil } }
 

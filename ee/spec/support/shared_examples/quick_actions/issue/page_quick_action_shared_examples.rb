@@ -11,20 +11,6 @@ RSpec.shared_examples 'page quick action' do
     let_it_be(:incident, reload: true) { create(:incident, project: project) }
     let_it_be(:escalation_status, reload: true) { create(:incident_management_issuable_escalation_status, issue: incident) }
 
-    context 'when feature flag is disabled' do
-      before do
-        stub_feature_flags(incident_escalations: false)
-        visit project_issue_path(project, incident)
-        wait_for_all_requests
-      end
-
-      it 'does not escalate issue' do
-        add_note('/page spec policy')
-
-        expect(page).to have_content('Could not apply page command')
-      end
-    end
-
     context 'when licensed features are disabled' do
       before do
         visit project_issue_path(project, incident)

@@ -87,15 +87,5 @@ RSpec.describe EE::IssueSidebarBasicEntity do
         expect(entity[:current_user][:can_update_escalation_policy]).to be(false)
       end
     end
-
-    context 'with :incident_escalations feature flag disabled' do
-      before do
-        stub_feature_flags(incident_escalations: false)
-      end
-
-      it 'is not present' do
-        expect(entity[:current_user]).not_to include(:can_update_escalation_policy)
-      end
-    end
   end
 end
