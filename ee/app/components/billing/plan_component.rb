@@ -85,7 +85,7 @@ module Billing
         track_label: 'plan_cta',
         track_property: plan.code,
         track_experiment: :promote_premium_billing_page
-      }
+      }.merge(plan.cta_data)
     end
 
     def features
@@ -125,6 +125,7 @@ module Billing
           "free": true,
           "cta_text": s_("BillingPlans|Learn more"),
           "cta_classes": " btn-confirm-secondary",
+          "cta_data": {},
           "purchase_link": {
             "href": "https://about.gitlab.com/pricing/gitlab-com/feature-comparison/"
           }
@@ -163,7 +164,10 @@ module Billing
           ],
           "free": false,
           "cta_text": s_("BillingPlans|Upgrade to Premium"),
-          "cta_classes": "btn-purple"
+          "cta_classes": "btn-purple",
+          "cta_data": {
+            "qa_selector": "upgrade_to_premium"
+          }
         },
         'ultimate' => {
           "card_border_classes": "",
@@ -198,7 +202,10 @@ module Billing
           ],
           "free": false,
           "cta_text": s_("BillingPlans|Upgrade to Ultimate"),
-          "cta_classes": "btn-confirm-secondary"
+          "cta_classes": "btn-confirm-secondary",
+          "cta_data": {
+            "qa_selector": "upgrade_to_ultimate"
+          }
         }
       }
     end

@@ -15,7 +15,7 @@
   = link_to s_("BillingPlans|Start a free Ultimate trial"),
         new_trial_path,
         class: ["gl-mb-6 btn gl-button btn-confirm-secondary"],
-        data: { track_action: 'click_button', track_label: 'start_trial', track_experiment: :promote_premium_billing_page }
+        data: start_free_trial_data.merge({ track_experiment: :promote_premium_billing_page })
   .billing-plan-divider.gl-m-auto.gl-border-b.gl-mb-7
   - image_alt = s_('InProductMarketing|Team members collaborating')
   = image_tag 'marketing/free-trial-team-members.png', alt: image_alt, title: image_alt, width: 280, height: 125, class: 'gl-mb-6'
