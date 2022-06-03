@@ -26,17 +26,20 @@ describe('RunnerUpdateForm', () => {
 
   const findForm = () => wrapper.findComponent(GlForm);
 
+  const findMaintenanceNote = () => wrapper.findByTestId('runner-field-maintenance-note');
   const findPrivateProjectsCostFactor = () =>
     wrapper.findByTestId('runner-field-private-projects-cost-factor');
   const findPublicProjectsCostFactor = () =>
     wrapper.findByTestId('runner-field-public-projects-cost-factor');
+
+  const findMaintenanceNoteTextarea = () => findMaintenanceNote().find('textarea');
   const findPrivateProjectsCostFactorInput = () => findPrivateProjectsCostFactor().find('input');
   const findPublicProjectsCostFactorInput = () => findPublicProjectsCostFactor().find('input');
 
   const submitForm = () => findForm().trigger('submit');
   const submitFormAndWait = () => submitForm().then(waitForPromises);
 
-  const createComponent = ({ props } = {}) => {
+  const createComponent = ({ props, ...options } = {}) => {
     wrapper = extendedWrapper(
       mount(RunnerUpdateForm, {
         propsData: {
@@ -45,6 +48,7 @@ describe('RunnerUpdateForm', () => {
           ...props,
         },
         apolloProvider: createMockApollo([[runnerUpdateMutation, runnerUpdateHandler]]),
+        ...options,
       }),
     );
   };
@@ -84,50 +88,85 @@ describe('RunnerUpdateForm', () => {
     wrapper.destroy();
   });
 
-  describe('When on .com', () => {
-    beforeEach(() => {
-      gon.dot_com = true;
+  describe('Cost factor fields', () => {
+    describe('When on .com', () => {
+      beforeEach(() => {
+        gon.dot_com = true;
 
-      createComponent();
-    });
+        createComponent();
+      });
 
-    it('the form contains CI minute cost factors', () => {
-      expect(findPrivateProjectsCostFactor().exists()).toBe(true);
-      expect(findPublicProjectsCostFactor().exists()).toBe(true);
-    });
+      it('the form contains CI minute cost factors', () => {
+        expect(findPrivateProjectsCostFactor().exists()).toBe(true);
+        expect(findPublicProjectsCostFactor().exists()).toBe(true);
+      });
 
-    describe('On submit, runner gets updated', () => {
-      it.each`
-        test                         | initialValue                               | findInput                             | value    | submitted
-        ${'private minutes'}         | ${{ privateProjectsMinutesCostFactor: 1 }} | ${findPrivateProjectsCostFactorInput} | ${'1.5'} | ${{ privateProjectsMinutesCostFactor: 1.5 }}
-        ${'private minutes to null'} | ${{ privateProjectsMinutesCostFactor: 1 }} | ${findPrivateProjectsCostFactorInput} | ${''}    | ${{ privateProjectsMinutesCostFactor: null }}
-        ${'public minutes'}          | ${{ publicProjectsMinutesCostFactor: 0 }}  | ${findPublicProjectsCostFactorInput}  | ${'0.5'} | ${{ publicProjectsMinutesCostFactor: 0.5 }}
-        ${'public minutes to null'}  | ${{ publicProjectsMinutesCostFactor: 0 }}  | ${findPublicProjectsCostFactorInput}  | ${''}    | ${{ publicProjectsMinutesCostFactor: null }}
-      `("Field updates runner's $test", async ({ initialValue, findInput, value, submitted }) => {
-        const runner = { ...mockRunner, ...initialValue };
-        createComponent({ props: { runner } });
+      describe('On submit, runner gets updated', () => {
+        it.each`
+          test                         | initialValue                               | findInput                             | value    | submitted
+          ${'private minutes'}         | ${{ privateProjectsMinutesCostFactor: 1 }} | ${findPrivateProjectsCostFactorInput} | ${'1.5'} | ${{ privateProjectsMinutesCostFactor: 1.5 }}
+          ${'private minutes to null'} | ${{ privateProjectsMinutesCostFactor: 1 }} | ${findPrivateProjectsCostFactorInput} | ${''}    | ${{ privateProjectsMinutesCostFactor: null }}
+          ${'public minutes'}          | ${{ publicProjectsMinutesCostFactor: 0 }}  | ${findPublicProjectsCostFactorInput}  | ${'0.5'} | ${{ publicProjectsMinutesCostFactor: 0.5 }}
+          ${'public minutes to null'}  | ${{ publicProjectsMinutesCostFactor: 0 }}  | ${findPublicProjectsCostFactorInput}  | ${''}    | ${{ publicProjectsMinutesCostFactor: null }}
+        `("Field updates runner's $test", async ({ initialValue, findInput, value, submitted }) => {
+          const runner = { ...mockRunner, ...initialValue };
+          createComponent({ props: { runner } });
 
-        await findInput().setValue(value);
-        await submitFormAndWait();
+          await findInput().setValue(value);
+          await submitFormAndWait();
 
-        expectToHaveSubmittedRunnerContaining({
-          id: runner.id,
-          ...submitted,
+          expectToHaveSubmittedRunnerContaining({
+            id: runner.id,
+            ...submitted,
+          });
         });
+      });
+    });
+
+    describe('When not on .com', () => {
+      beforeEach(() => {
+        gon.dot_com = false;
+
+        createComponent();
+      });
+
+      it('the form does not contain CI minute cost factors', () => {
+        expect(findPrivateProjectsCostFactor().exists()).toBe(false);
+        expect(findPublicProjectsCostFactor().exists()).toBe(false);
       });
     });
   });
 
-  describe('When not on .com', () => {
-    beforeEach(() => {
-      gon.dot_com = false;
+  describe('Maintenance note field', () => {
+    const value = 'Note';
+    const runner = { ...mockRunner, maintenanceNote: value };
 
-      createComponent();
+    beforeEach(() => {
+      createComponent({
+        props: { runner },
+        provide: {
+          glFeatures: {
+            runnerMaintenanceNote: true,
+          },
+        },
+      });
     });
 
-    it('the form does not contain CI minute cost factors', () => {
-      expect(findPrivateProjectsCostFactor().exists()).toBe(false);
-      expect(findPublicProjectsCostFactor().exists()).toBe(false);
+    it('shows maintenance note field', () => {
+      expect(findMaintenanceNote().exists()).toBe(true);
+      expect(findMaintenanceNoteTextarea().element.value).toBe(value);
+    });
+
+    it('submits value', async () => {
+      const newValue = 'New note';
+
+      await findMaintenanceNoteTextarea().setValue(newValue);
+      await submitFormAndWait();
+
+      expectToHaveSubmittedRunnerContaining({
+        id: runner.id,
+        maintenanceNote: newValue,
+      });
     });
   });
 });

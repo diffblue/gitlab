@@ -30,6 +30,7 @@ module GitlabSubscriptions
       project_aliases
       repository_size_limit
       required_ci_templates
+      runner_maintenance_note
       seat_link
       usage_quotas
     ].freeze
@@ -194,6 +195,7 @@ module GitlabSubscriptions
       report_approver_rules
       required_ci_templates
       requirements
+      runner_maintenance_note
       sast
       sast_iac
       sast_custom_rulesets
