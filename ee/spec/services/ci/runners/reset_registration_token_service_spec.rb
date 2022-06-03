@@ -53,8 +53,8 @@ RSpec.describe ::Ci::Runners::ResetRegistrationTokenService, '#execute' do
     end
   end
 
-  context 'with instance scope', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/363136' do
-    let_it_be(:scope) { create(:application_setting) }
+  context 'with instance scope' do
+    let_it_be(:scope) { build(:application_setting) }
 
     before do
       allow(ApplicationSetting).to receive(:current).and_return(scope)
