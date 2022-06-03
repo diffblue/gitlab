@@ -47,12 +47,12 @@ class DastSiteProfile < ApplicationRecord
     collection = ::Gitlab::Ci::Variables::Collection.new.tap do |variables|
       if target_type == 'website'
         variables.append(key: 'DAST_WEBSITE', value: url)
+        variables.append(key: 'DAST_EXCLUDE_URLS', value: excluded_urls.join(',')) unless excluded_urls.empty?
       else
         variables.append(key: 'DAST_API_OPENAPI', value: url)
         variables.append(key: 'DAST_API_HOST_OVERRIDE', value: URI(url).host)
+        variables.append(key: 'DAST_API_EXCLUDE_URLS', value: excluded_urls.join(',')) unless excluded_urls.empty?
       end
-
-      variables.append(key: 'DAST_EXCLUDE_URLS', value: excluded_urls.join(',')) unless excluded_urls.empty?
 
       if auth_enabled
         variables.append(key: 'DAST_AUTH_URL', value: auth_url)
