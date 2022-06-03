@@ -55,6 +55,12 @@ module EE
       ::Feature.enabled?(:enforce_storage_limit_for_free, root_namespace)
     end
 
+    alias_method :enabled?, :enforce_limit?
+
+    def error_message
+      @error_message_object ||= ::EE::Gitlab::NamespaceStorageSizeErrorMessage.new(self)
+    end
+
     def exceeded_size(change_size = 0)
       size = current_size + change_size - limit
 

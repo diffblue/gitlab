@@ -6,6 +6,7 @@ RSpec.describe Gitlab::GitAccess do
   include GitHelpers
   include EE::GeoHelpers
   include AdminModeHelper
+  include NamespaceStorageHelpers
 
   let_it_be(:user) { create(:user) }
 
@@ -362,6 +363,7 @@ RSpec.describe Gitlab::GitAccess do
   end
 
   describe 'repository size restrictions' do
+    let(:namespace) { project.namespace }
     # SHA for the 2-mb-file branch
     let(:sha_with_2_mb_file) { 'bf12d2567099e26f59692896f73ac819bae45b00' }
     # SHA for the wip branch
@@ -374,7 +376,7 @@ RSpec.describe Gitlab::GitAccess do
       repository.delete_branch('wip')
 
       project.update_attribute(:repository_size_limit, repository_size_limit)
-      allow(project.repository_size_checker).to receive_messages(current_size: repository_size)
+      project.statistics.update!(repository_size: repository_size)
     end
 
     shared_examples_for 'a push to repository over the limit' do
@@ -431,6 +433,17 @@ RSpec.describe Gitlab::GitAccess do
         let(:repository_size_limit) { 1.megabyte }
 
         it_behaves_like 'a push to repository over the limit'
+
+        context 'when namespace storage size is below the limit', :saas do
+          before do
+            create(:gitlab_subscription, :ultimate, namespace: namespace)
+            create(:namespace_root_storage_statistics, namespace: namespace)
+            set_storage_size_limit(namespace, megabytes: 100)
+            set_used_storage(namespace, megabytes: 20)
+          end
+
+          it_behaves_like 'a push to repository over the limit'
+        end
       end
 
       context 'when repository size is below the limit' do
@@ -456,6 +469,17 @@ RSpec.describe Gitlab::GitAccess do
             end.not_to raise_error
           end
         end
+
+        context 'when namespace storage size is over the limit', :saas do
+          before do
+            create(:gitlab_subscription, :ultimate, namespace: namespace)
+            create(:namespace_root_storage_statistics, namespace: namespace)
+            set_storage_size_limit(namespace, megabytes: 100)
+            set_used_storage(namespace, megabytes: 101)
+          end
+
+          it_behaves_like 'a push to repository below the limit'
+        end
       end
     end
 
@@ -465,6 +489,17 @@ RSpec.describe Gitlab::GitAccess do
         let(:repository_size_limit) { 1.megabyte }
 
         it_behaves_like 'a push to repository over the limit'
+
+        context 'when namespace storage size is below the limit', :saas do
+          before do
+            create(:gitlab_subscription, :ultimate, namespace: namespace)
+            create(:namespace_root_storage_statistics, namespace: namespace)
+            set_storage_size_limit(namespace, megabytes: 100)
+            set_used_storage(namespace, megabytes: 20)
+          end
+
+          it_behaves_like 'a push to repository over the limit'
+        end
       end
 
       context 'when repository size is below the limit' do
@@ -491,6 +526,17 @@ RSpec.describe Gitlab::GitAccess do
               push_changes("#{Gitlab::Git::BLANK_SHA} #{sha_with_smallest_changes} refs/heads/my_branch_3")
             end.not_to raise_error
           end
+        end
+
+        context 'when namespace storage size is over the limit', :saas do
+          before do
+            create(:gitlab_subscription, :ultimate, namespace: namespace)
+            create(:namespace_root_storage_statistics, namespace: namespace)
+            set_storage_size_limit(namespace, megabytes: 100)
+            set_used_storage(namespace, megabytes: 101)
+          end
+
+          it_behaves_like 'a push to repository below the limit'
         end
       end
     end
