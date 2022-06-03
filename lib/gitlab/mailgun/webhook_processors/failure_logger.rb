@@ -5,18 +5,23 @@ module Gitlab
     module WebhookProcessors
       class FailureLogger < Base
         def execute
-          log_failure if payload['severity'] == 'permanent' ||
-            Gitlab::ApplicationRateLimiter.throttled?(:temporary_email_failure, scope: payload['recipient'])
+          log_failure if permanent_failure? || temporary_failure_over_threshold?
         end
 
-        def should_process?
-          payload['event'] == 'failed'
+        def permanent_failure?
+          payload['event'] == 'failed' && payload['severity'] == 'permanent'
+        end
+
+        def temporary_failure_over_threshold?
+          payload['event'] == 'failed' && payload['severity'] == 'temporary' &&
+            Gitlab::ApplicationRateLimiter.throttled?(:temporary_email_failure, scope: payload['recipient'])
         end
 
         private
 
         def log_failure
           Gitlab::ErrorTracking::Logger.error(
+            event: 'email_delivery_failure',
             mailgun_event_id: payload['id'],
             recipient: payload['recipient'],
             failure_type: payload['severity'],

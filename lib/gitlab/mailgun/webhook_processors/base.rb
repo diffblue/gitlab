@@ -5,15 +5,10 @@ module Gitlab
     module WebhookProcessors
       class Base
         def initialize(payload)
-          @payload = payload
+          @payload = payload || {}
         end
 
         def execute
-          raise NotImplementedError
-        end
-
-        def should_process?
-          raise NotImplementedError
         end
 
         private

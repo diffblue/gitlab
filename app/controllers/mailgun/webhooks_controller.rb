@@ -19,8 +19,7 @@ module Mailgun
 
     def process_webhook
       WEBHOOK_PROCESSORS.each do |processor_class|
-        processor = processor_class.new(params['event-data'] || {})
-        processor.execute if processor.should_process?
+        processor_class.new(params['event-data']).execute
       end
 
       head :ok
