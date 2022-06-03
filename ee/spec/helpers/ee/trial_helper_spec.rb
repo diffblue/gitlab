@@ -61,7 +61,6 @@ RSpec.describe EE::TrialHelper do
       {
         trial: 'true',
         role: '_params_role_',
-        other_role: '_params_other_role_',
         registration_objective: '_params_registration_objective_',
         jobs_to_be_done_other: '_params_jobs_to_be_done_other'
       }
