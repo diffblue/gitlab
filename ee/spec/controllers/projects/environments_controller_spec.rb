@@ -37,35 +37,6 @@ RSpec.describe Projects::EnvironmentsController do
         end
       end
     end
-
-    context 'queries' do
-      before do
-        create(:protected_environment, project: project, name: environment.name) do |protected_environment|
-          create(:protected_environment_approval_rule, :maintainer_access, protected_environment: protected_environment)
-          create(:protected_environment_approval_rule, user: create(:user),
-                 protected_environment: protected_environment)
-          create(:protected_environment_approval_rule, group: create(:group),
-                 protected_environment: protected_environment)
-        end
-
-        stub_licensed_features(protected_environments: true)
-      end
-
-      it_behaves_like 'avoids N+1 queries on environment detail page'
-
-      def create_deployment_with_associations(sequence:)
-        commit = project.commit("HEAD~#{sequence}")
-        create(:user, email: commit.author_email)
-
-        deployer = create(:user)
-        build = create(:ci_build, environment: environment.name,
-                       pipeline: create(:ci_pipeline, project: environment.project), user: deployer)
-        create(:deployment, :blocked, environment: environment, deployable: build, user: deployer, project: project,
-               sha: commit.sha) do |deployment|
-          create_list(:deployment_approval, 2, deployment: deployment)
-        end
-      end
-    end
   end
 
   describe '#GET terminal' do
