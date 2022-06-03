@@ -1,8 +1,9 @@
 import { GlSkeletonLoader } from '@gitlab/ui';
 import { GlSingleStat } from '@gitlab/ui/dist/charts';
-import { shallowMount } from '@vue/test-utils';
+import { shallowMount, mount } from '@vue/test-utils';
 import TestCoverageSummary from 'ee/analytics/repository_analytics/components/test_coverage_summary.vue';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
+import { nDaysBefore, formatDate } from '~/lib/utils/datetime_utility';
 
 describe('Test coverage table component', () => {
   let wrapper;
@@ -14,11 +15,13 @@ describe('Test coverage table component', () => {
   const findGroupCoverageChart = () => wrapper.findByTestId('group-coverage-chart');
   const findChartLoadingState = () => wrapper.findByTestId('group-coverage-chart-loading');
   const findChartEmptyState = () => wrapper.findByTestId('group-coverage-chart-empty');
+  const findCoverageHeader = () => wrapper.findByTestId('test-coverage-header');
+  const findLastUpdated = () => wrapper.findByTestId('test-coverage-last-updated');
   const findLoadingState = () => wrapper.findComponent(GlSkeletonLoader);
 
-  const createComponent = ({ data = {} } = {}) => {
+  const createComponent = ({ data = {}, mountFn = shallowMount } = {}) => {
     wrapper = extendedWrapper(
-      shallowMount(TestCoverageSummary, {
+      mountFn(TestCoverageSummary, {
         data() {
           return {
             projectCount: null,
@@ -53,9 +56,31 @@ describe('Test coverage table component', () => {
   it('renders test coverage header', () => {
     createComponent();
 
-    const header = wrapper.find('[data-testid="test-coverage-header"]');
+    expect(findCoverageHeader().exists()).toBe(true);
+  });
 
-    expect(header.exists()).toBe(true);
+  describe('last updated date', () => {
+    it.each([
+      [null, 'Last updated'],
+      [0, 'Last updated today'],
+      [1, 'Last updated 1 day ago'],
+      [730, 'Last updated 2 years ago'],
+    ])('when last updated date is %p days ago, renders heading %p', (daysAgo, expectedText) => {
+      const date =
+        daysAgo === null
+          ? null
+          : formatDate(nDaysBefore(new Date(), daysAgo, { utc: true }), 'yyyy-mm-dd');
+
+      createComponent({
+        mountFn: mount,
+        data: {
+          groupCoverageChartData: [{ name: 'test', data: [[date, 79.6]] }],
+          latestCoverageDate: date,
+        },
+      });
+
+      expect(findLastUpdated().text()).toBe(expectedText);
+    });
   });
 
   describe('when group code coverage is empty', () => {

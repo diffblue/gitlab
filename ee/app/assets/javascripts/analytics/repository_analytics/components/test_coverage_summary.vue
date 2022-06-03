@@ -183,7 +183,7 @@ export default {
       <h4 data-testid="test-coverage-header">
         {{ $options.i18n.codeCoverageHeader }}
       </h4>
-      <strong class="gl-ml-3 gl-text-gray-600">
+      <strong class="gl-ml-3 gl-text-gray-600" data-testid="test-coverage-last-updated">
         <gl-sprintf v-if="!isChartEmpty" :message="$options.i18n.lastUpdated">
           <template #timeAgo>{{ latestCoverageTimeAgo }}</template>
         </gl-sprintf>
