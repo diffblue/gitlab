@@ -25,7 +25,7 @@ module Glfm
       # but it wouldn't save much time. Most of the time is spent loading the Rails environment
       # via `rails runner`. In initial testing, this loop only took ~7 seconds while the entire
       # script took ~20 seconds. Unfortunately, there's no easy way to execute
-      # `ApplicationController.helpers.markdown` without using `rails runner`
+      # `Banzai.render_and_post_process` without using `rails runner`
       static_html_hash = markdown_hash.transform_values do |markdown|
         Banzai.render_and_post_process(markdown, context)
       end
