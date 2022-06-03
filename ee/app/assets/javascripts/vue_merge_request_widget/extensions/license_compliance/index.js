@@ -43,6 +43,9 @@ export default {
     hasDeniedLicense() {
       return this.deniedLicenses() > 0;
     },
+    shouldCollapse() {
+      return this.hasReportItems();
+    },
     tertiaryButtons() {
       return [
         {
