@@ -41,14 +41,15 @@ module EE
     override :issuable_sort_options
     def issuable_sort_options(viewing_issues, viewing_merge_requests)
       options = super
-
-      if viewing_issues && (@project || @group)&.licensed_feature_available?(:issue_weights)
-        options.concat([weight_option])
-      end
-
+      options.concat([weight_option]) if can_sort_by_issue_weight?(viewing_issues)
       options.concat([blocking_option]) if viewing_issues
 
       options
+    end
+
+    override :can_sort_by_issue_weight?
+    def can_sort_by_issue_weight?(viewing_issues)
+      viewing_issues && (@project || @group)&.licensed_feature_available?(:issue_weights)
     end
 
     def weight_option
