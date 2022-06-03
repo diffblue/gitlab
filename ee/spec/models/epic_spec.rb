@@ -1055,4 +1055,53 @@ RSpec.describe Epic do
       expect(related_epics.first.epic_link_type).to eq ::IssuableLink::TYPE_IS_BLOCKED_BY
     end
   end
+
+  describe '#blocked_by_epics_for' do
+    let_it_be(:user) { create(:user) }
+    let_it_be(:group) { create(:group, :private) }
+    let_it_be(:epic) { create(:epic, group: group) }
+    let_it_be(:blocking_epic_1) { create(:epic, group: group) }
+    let_it_be(:other_group_blocking_epic) { create(:epic, group: create(:group, :private)) }
+    let_it_be(:blocking_epic_2) { create(:epic, group: group) }
+    let_it_be(:confidential_blocking_epic) { create(:epic, :confidential, group: group) }
+    let_it_be(:related_epic) { create(:epic, group: group) }
+    let_it_be(:closed_blocking_epic) { create(:epic, group: group, state: :closed) }
+
+    before do
+      stub_licensed_features(epics: true, related_epics: true)
+    end
+
+    before_all do
+      create(:related_epic_link, source: blocking_epic_1, target: epic, link_type: IssuableLink::TYPE_BLOCKS)
+      create(:related_epic_link, source: other_group_blocking_epic, target: epic, link_type: IssuableLink::TYPE_BLOCKS)
+      create(:related_epic_link, source: blocking_epic_2, target: epic, link_type: IssuableLink::TYPE_BLOCKS)
+      create(:related_epic_link, source: confidential_blocking_epic, target: epic, link_type: IssuableLink::TYPE_BLOCKS)
+      create(:related_epic_link, source: epic, target: related_epic, link_type: IssuableLink::TYPE_RELATES_TO)
+      create(:related_epic_link, source: closed_blocking_epic, target: epic, link_type: IssuableLink::TYPE_BLOCKS)
+    end
+
+    context 'when user can read epics' do
+      it 'returns blocked epics' do
+        group.add_developer(user)
+        other_group_blocking_epic.group.add_developer(user)
+
+        expect(epic.blocked_by_epics_for(user)).to match_array([blocking_epic_1, blocking_epic_2, other_group_blocking_epic, confidential_blocking_epic])
+      end
+    end
+
+    context 'when user cannot read epic' do
+      it 'returns empty array' do
+        expect(epic.blocked_by_epics_for(user)).to be_empty
+      end
+    end
+
+    context 'when user cannot read some spics' do
+      it 'returns only epics that user can read' do
+        guest = create(:user)
+        group.add_guest(guest)
+
+        expect(epic.blocked_by_epics_for(guest)).to match_array([blocking_epic_1, blocking_epic_2])
+      end
+    end
+  end
 end

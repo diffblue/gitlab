@@ -9196,6 +9196,10 @@ Represents an epic on an issue board.
 | ---- | ---- | ----------- |
 | <a id="boardepicauthor"></a>`author` | [`UserCore!`](#usercore) | Author of the epic. |
 | <a id="boardepicawardemoji"></a>`awardEmoji` | [`AwardEmojiConnection`](#awardemojiconnection) | List of award emojis associated with the epic. (see [Connections](#connections)) |
+| <a id="boardepicblocked"></a>`blocked` | [`Boolean`](#boolean) | Indicates the epic is blocked. |
+| <a id="boardepicblockedbycount"></a>`blockedByCount` | [`Int`](#int) | Count of epics blocking this epic. |
+| <a id="boardepicblockedbyepics"></a>`blockedByEpics` | [`EpicConnection`](#epicconnection) | Epics blocking this epic. (see [Connections](#connections)) |
+| <a id="boardepicblockingcount"></a>`blockingCount` | [`Int`](#int) | Count of epics that this epic is blocking. |
 | <a id="boardepicclosedat"></a>`closedAt` | [`Time`](#time) | Timestamp of when the epic was closed. |
 | <a id="boardepiccolor"></a>`color` | [`String!`](#string) | Color of the epic. Available only when feature flag `epic_color_highlight` is enabled. This flag is disabled by default, because the feature is experimental and is subject to change without notice. |
 | <a id="boardepicconfidential"></a>`confidential` | [`Boolean`](#boolean) | Indicates if the epic is confidential. |
@@ -10776,6 +10780,10 @@ Represents an epic.
 | ---- | ---- | ----------- |
 | <a id="epicauthor"></a>`author` | [`UserCore!`](#usercore) | Author of the epic. |
 | <a id="epicawardemoji"></a>`awardEmoji` | [`AwardEmojiConnection`](#awardemojiconnection) | List of award emojis associated with the epic. (see [Connections](#connections)) |
+| <a id="epicblocked"></a>`blocked` | [`Boolean`](#boolean) | Indicates the epic is blocked. |
+| <a id="epicblockedbycount"></a>`blockedByCount` | [`Int`](#int) | Count of epics blocking this epic. |
+| <a id="epicblockedbyepics"></a>`blockedByEpics` | [`EpicConnection`](#epicconnection) | Epics blocking this epic. (see [Connections](#connections)) |
+| <a id="epicblockingcount"></a>`blockingCount` | [`Int`](#int) | Count of epics that this epic is blocking. |
 | <a id="epicclosedat"></a>`closedAt` | [`Time`](#time) | Timestamp of when the epic was closed. |
 | <a id="epiccolor"></a>`color` | [`String!`](#string) | Color of the epic. Available only when feature flag `epic_color_highlight` is enabled. This flag is disabled by default, because the feature is experimental and is subject to change without notice. |
 | <a id="epicconfidential"></a>`confidential` | [`Boolean`](#boolean) | Indicates if the epic is confidential. |

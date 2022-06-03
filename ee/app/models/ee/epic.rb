@@ -596,5 +596,14 @@ module EE
 
       self.class.epics_readable_by_user(related_epics, current_user)
     end
+
+    def blocked_by_epics_for(user)
+      blocking_epics_ids = ::Epic::RelatedEpicLink.blocking_issuables_ids_for(self)
+
+      return self.class.none if blocking_epics_ids.empty?
+
+      unfiltered_epics = self.class.where(id: blocking_epics_ids)
+      self.class.epics_readable_by_user(unfiltered_epics, user)
+    end
   end
 end

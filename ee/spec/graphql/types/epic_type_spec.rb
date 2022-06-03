@@ -14,7 +14,8 @@ RSpec.describe GitlabSchema.types['Epic'] do
       notes discussions relative_position subscribed participants
       descendant_counts descendant_weight_sum upvotes downvotes
       user_notes_count user_discussions_count health_status current_user_todos
-      award_emoji events ancestors color text_color
+      award_emoji events ancestors color text_color blocked blocking_count
+      blocked_by_count blocked_by_epics
     ]
   end
 
@@ -33,6 +34,10 @@ RSpec.describe GitlabSchema.types['Epic'] do
   it { expect(described_class).to have_graphql_field(:subscribed, complexity: 5) }
 
   it { expect(described_class).to have_graphql_field(:participants, complexity: 5) }
+
+  it { expect(described_class).to have_graphql_field(:blocking_count, complexity: 5) }
+
+  it { expect(described_class).to have_graphql_field(:blocked_by_epics, complexity: 5) }
 
   it { expect(described_class).to have_graphql_field(:award_emoji) }
 end

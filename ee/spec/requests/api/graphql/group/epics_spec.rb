@@ -340,21 +340,15 @@ RSpec.describe 'Epics through GroupQuery' do
   end
 
   describe 'N+1 query checks' do
-    let(:epic_a) { create(:epic, group: group) }
-    let(:epic_b) { create(:epic, group: group) }
+    let_it_be(:epic_a) { create(:epic, group: group) }
+    let_it_be(:epic_b) { create(:epic, group: group) }
+
     let(:epics) { [epic_a, epic_b] }
     let(:extra_iid_for_second_query) { epic_b.iid.to_s }
     let(:search_params) { { iids: [epic_a.iid.to_s] } }
 
-    def execute_query
-      query = graphql_query_for(
-        :group,
-        { full_path: group.full_path },
-        query_graphql_field(:epics, search_params, [
-          query_graphql_field(:nodes, nil, requested_fields)
-        ])
-      )
-      post_graphql(query, current_user: user)
+    before do
+      stub_licensed_features(epics: true)
     end
 
     context 'when requesting `user_notes_count`' do
@@ -378,6 +372,69 @@ RSpec.describe 'Epics through GroupQuery' do
 
       include_examples 'N+1 query check'
     end
+
+    context 'when requesting related epics fields' do
+      before_all do
+        create(:related_epic_link, link_type: IssuableLink::TYPE_BLOCKS, source: create(:epic, group: group), target: epic_a)
+        create(:related_epic_link, link_type: IssuableLink::TYPE_BLOCKS, source: create(:epic, group: group), target: epic_b)
+        create(:related_epic_link, link_type: IssuableLink::TYPE_BLOCKS, source: epic_a, target: create(:epic, group: group))
+        create(:related_epic_link, link_type: IssuableLink::TYPE_BLOCKS, source: epic_b, target: create(:epic, group: group))
+      end
+
+      context 'when requesting `blocked`' do
+        let(:requested_fields) { [:blocked] }
+
+        include_examples 'N+1 query check'
+      end
+
+      context 'when requesting blocked_by_count' do
+        let(:requested_fields) { [:blocked_by_count] }
+
+        include_examples 'N+1 query check'
+      end
+    end
+  end
+
+  describe 'Get related epic links fields' do
+    let_it_be(:epic_a) { create(:epic, group: group) }
+    let_it_be(:epic_b) { create(:epic, group: group, created_at: 1.hour.ago) }
+
+    let(:search_params) { { iids: [epic_a.iid.to_s, epic_b.iid.to_s], sort: :CREATED_AT_DESC } }
+    let(:requested_fields) { [:id, :blocked, :blocking_count, :blocked_by_count, 'blockedByEpics { nodes { title } }'] }
+
+    before_all do
+      create(:related_epic_link, link_type: IssuableLink::TYPE_BLOCKS, source: create(:epic, title: 'block1', group: group), target: epic_a)
+      create(:related_epic_link, link_type: IssuableLink::TYPE_BLOCKS, source: create(:epic, title: 'block2', group: group), target: epic_a)
+      create(:related_epic_link, link_type: IssuableLink::TYPE_BLOCKS, source: epic_a, target: create(:epic, group: group))
+      create(:related_epic_link, link_type: IssuableLink::TYPE_BLOCKS, source: epic_b, target: create(:epic, group: group))
+      create(:related_epic_link, link_type: IssuableLink::TYPE_BLOCKS, source: epic_b, target: create(:epic, group: group))
+    end
+
+    before do
+      stub_licensed_features(epics: true)
+    end
+
+    it 'returns correct field values', :aggregate_failures do
+      execute_query
+
+      epic_1 = graphql_data_at(:group, :epics, :nodes)[0]
+      epic_2 = graphql_data_at(:group, :epics, :nodes)[1]
+      expect(epic_1).to match(a_hash_including('id' => epic_a.to_global_id.to_s, 'blocked' => true, 'blockingCount' => 1, 'blockedByCount' => 2))
+      expect(epic_1['blockedByEpics']['nodes']).to match_array([{ "title" => "block1" }, { "title" => "block2" }])
+      expect(epic_2).to match(a_hash_including('id' => epic_b.to_global_id.to_s, 'blocked' => false, 'blockingCount' => 2, 'blockedByCount' => 0))
+      expect(epic_2['blockedByEpics']['nodes']).to be_empty
+    end
+  end
+
+  def execute_query
+    query = graphql_query_for(
+      :group,
+      { full_path: group.full_path },
+      query_graphql_field(:epics, search_params, [
+        query_graphql_field(:nodes, nil, requested_fields)
+      ])
+    )
+    post_graphql(query, current_user: user)
   end
 
   def expect_array_response(items)

@@ -169,6 +169,22 @@ module Types
           description: 'Text color generated for the epic.',
           feature_flag: :epic_color_highlight
 
+    field :blocked, GraphQL::Types::Boolean, null: true,
+          description: 'Indicates the epic is blocked.'
+
+    field :blocking_count, GraphQL::Types::Int,
+          null: true,
+          complexity: 5,
+          description: 'Count of epics that this epic is blocking.'
+
+    field :blocked_by_count, GraphQL::Types::Int,
+          null: true,
+          description: 'Count of epics blocking this epic.'
+
+    field :blocked_by_epics, ::Types::EpicType.connection_type, null: true,
+          description: 'Epics blocking this epic.',
+          complexity: 5
+
     markdown_field :title_html, null: true
     markdown_field :description_html, null: true
 
@@ -201,6 +217,26 @@ module Types
 
     def health_status
       ::Epics::DescendantCountService.new(object, context[:current_user])
+    end
+
+    def blocked
+      ::Gitlab::Graphql::Aggregations::Epics::LazyBlockAggregate.new(context, object.id) do |count|
+        (count || 0) > 0
+      end
+    end
+
+    def blocked_by_count
+      ::Gitlab::Graphql::Aggregations::Epics::LazyBlockAggregate.new(context, object.id) do |count|
+        count || 0
+      end
+    end
+
+    def blocking_count
+      ::Epic::RelatedEpicLink.blocking_issuables_count_for(object)
+    end
+
+    def blocked_by_epics
+      object.blocked_by_epics_for(current_user)
     end
   end
 end
