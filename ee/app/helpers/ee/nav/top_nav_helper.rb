@@ -16,7 +16,7 @@ module EE
             id: 'environments',
             title: _('Environments'),
             icon: 'environment',
-            data: { qa_selector: 'environment_link' },
+            data: { qa_selector: 'environment_link', **menu_data_tracking_attrs('environments') },
             href: operations_environments_path
           )
         end
@@ -26,7 +26,7 @@ module EE
             id: 'operations',
             title: _('Operations'),
             icon: 'cloud-gear',
-            data: { qa_selector: 'operations_link' },
+            data: { qa_selector: 'operations_link', **menu_data_tracking_attrs('operations') },
             href: operations_path
           )
         end
@@ -36,16 +36,19 @@ module EE
             id: 'security',
             title: _('Security'),
             icon: 'shield',
-            data: { qa_selector: 'security_link' },
+            data: { qa_selector: 'security_link', **menu_data_tracking_attrs('security') },
             href: security_dashboard_path
           )
         end
 
         if ::Gitlab::Geo.secondary? && ::Gitlab::Geo.primary_node_configured?
+          title = _('Go to primary site')
+
           builder.add_secondary_menu_item(
             id: 'geo',
-            title: _('Go to primary site'),
+            title: title,
             icon: 'location-dot',
+            data: { qa_selector: 'menu_item_link', qa_title: title, **menu_data_tracking_attrs(title) },
             href: ::Gitlab::Geo.primary_node.url
           )
         end
@@ -56,7 +59,14 @@ module EE
         super
 
         if current_user.can?(:list_removable_projects)
-          builder.add_primary_menu_item(id: 'deleted', title: _('Pending deletion'), href: removed_dashboard_projects_path)
+          title = _('Pending deletion')
+
+          builder.add_primary_menu_item(
+            id: 'deleted',
+            title: title,
+            data: { qa_selector: 'menu_item_link', qa_title: title, **menu_data_tracking_attrs(title) },
+            href: removed_dashboard_projects_path
+          )
         end
       end
     end
