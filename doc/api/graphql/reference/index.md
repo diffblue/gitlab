@@ -8811,6 +8811,29 @@ The edge type for [`VulnerabilityScanner`](#vulnerabilityscanner).
 | <a id="vulnerabilityscanneredgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
 | <a id="vulnerabilityscanneredgenode"></a>`node` | [`VulnerabilityScanner`](#vulnerabilityscanner) | The item at the end of the edge. |
 
+#### `WorkItemConnection`
+
+The connection type for [`WorkItem`](#workitem).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="workitemconnectionedges"></a>`edges` | [`[WorkItemEdge]`](#workitemedge) | A list of edges. |
+| <a id="workitemconnectionnodes"></a>`nodes` | [`[WorkItem]`](#workitem) | A list of nodes. |
+| <a id="workitemconnectionpageinfo"></a>`pageInfo` | [`PageInfo!`](#pageinfo) | Information to aid in pagination. |
+
+#### `WorkItemEdge`
+
+The edge type for [`WorkItem`](#workitem).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="workitemedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
+| <a id="workitemedgenode"></a>`node` | [`WorkItem`](#workitem) | The item at the end of the edge. |
+
 #### `WorkItemTypeConnection`
 
 The connection type for [`WorkItemType`](#workitemtype).
@@ -17963,6 +17986,18 @@ Represents a description widget.
 | <a id="workitemwidgetdescriptiondescriptionhtml"></a>`descriptionHtml` | [`String`](#string) | The GitLab Flavored Markdown rendering of `description`. |
 | <a id="workitemwidgetdescriptiontype"></a>`type` | [`WorkItemWidgetType`](#workitemwidgettype) | Widget type. |
 
+### `WorkItemWidgetHierarchy`
+
+Represents a hierarchy widget.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="workitemwidgethierarchychildren"></a>`children` | [`WorkItemConnection`](#workitemconnection) | Child work items. (see [Connections](#connections)) |
+| <a id="workitemwidgethierarchyparent"></a>`parent` | [`WorkItem`](#workitem) | Parent work item. |
+| <a id="workitemwidgethierarchytype"></a>`type` | [`WorkItemWidgetType`](#workitemwidgettype) | Widget type. |
+
 ## Enumeration types
 
 Also called _Enums_, enumeration types are a special kind of scalar that
@@ -19738,6 +19773,7 @@ Type of a work item widget.
 | Value | Description |
 | ----- | ----------- |
 | <a id="workitemwidgettypedescription"></a>`DESCRIPTION` | Description widget. |
+| <a id="workitemwidgettypehierarchy"></a>`HIERARCHY` | Hierarchy widget. |
 
 ## Scalar types
 
@@ -20945,6 +20981,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 Implementations:
 
 - [`WorkItemWidgetDescription`](#workitemwidgetdescription)
+- [`WorkItemWidgetHierarchy`](#workitemwidgethierarchy)
 
 ##### Fields
 
