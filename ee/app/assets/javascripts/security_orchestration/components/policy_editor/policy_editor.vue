@@ -69,7 +69,6 @@ export default {
     groupPolicyMessage: s__(
       'SecurityOrchestration|After enabling a group-level policy, this policy automatically applies to all projects in this group.',
     ),
-    groupPolicyTitle: s__('SecurityOrchestration|Group level policy'),
   },
 };
 </script>
@@ -78,9 +77,7 @@ export default {
   <section class="policy-editor">
     <span
       v-if="namespaceType === $options.NAMESPACE_TYPES.GROUP"
-      :title="$options.i18n.groupPolicyTitle"
       data-testid="group-level-notification"
-      :dismissible="false"
     >
       {{ $options.i18n.groupPolicyMessage }}
     </span>
