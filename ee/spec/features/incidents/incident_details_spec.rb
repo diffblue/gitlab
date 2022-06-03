@@ -66,162 +66,152 @@ RSpec.describe 'Incident details', :js do
         stub_licensed_features(oncall_schedules: true, escalation_policies: true)
       end
 
-      context 'with incident_escalations feature flag enabled' do
-        context 'with escalation policies in the project' do
-          let_it_be(:escalation_policy) { create(:incident_management_escalation_policy, project: project) }
+      context 'with escalation policies in the project' do
+        let_it_be(:escalation_policy) { create(:incident_management_escalation_policy, project: project) }
 
-          let(:edit_policy_widget) { escalation_policy_container.find('[data-testid="escalation-policy-edit"]') }
+        let(:edit_policy_widget) { escalation_policy_container.find('[data-testid="escalation-policy-edit"]') }
 
-          context 'without escalation policy linked to incident' do
-            context 'with only view permissions' do
-              it_behaves_like 'shows empty state for escalation policy'
-              it_behaves_like 'hides the edit button'
+        context 'without escalation policy linked to incident' do
+          context 'with only view permissions' do
+            it_behaves_like 'shows empty state for escalation policy'
+            it_behaves_like 'hides the edit button'
+          end
+
+          context 'with edit permissions' do
+            let(:current_user) { developer }
+
+            it_behaves_like 'shows empty state for escalation policy'
+
+            it 'can set the policy for the incident' do
+              visit_incident_with_expanded_sidebar
+
+              assert_edit_button_exists_and_click
+              assert_policy_in_list.click
+              assert_expanded_policy_values(escalation_policy.name, href: true)
             end
 
-            context 'with edit permissions' do
-              let(:current_user) { developer }
+            it 'can search for policies' do
+              visit_incident_with_expanded_sidebar
+              assert_edit_button_exists_and_click
 
-              it_behaves_like 'shows empty state for escalation policy'
+              # List all
+              assert_policy_in_list
+              assert_null_policy_in_list
 
-              it 'can set the policy for the incident' do
-                visit_incident_with_expanded_sidebar
+              # Filter w/ match
+              search_bar.send_keys escalation_policy.name.first(3)
+              wait_for_requests
+              assert_policy_in_list
 
-                assert_edit_button_exists_and_click
-                assert_policy_in_list.click
-                assert_expanded_policy_values(escalation_policy.name, href: true)
-              end
+              # Filter w/ no match
+              search_bar.send_keys 'Bar'
+              wait_for_requests
+              expect(edit_policy_widget).to have_content 'No escalation policy found'
+            end
 
-              it 'can search for policies' do
-                visit_incident_with_expanded_sidebar
-                assert_edit_button_exists_and_click
+            context 'with associated alert' do
+              let_it_be(:alert) { create(:alert_management_alert, issue: incident, project: project) }
 
-                # List all
-                assert_policy_in_list
-                assert_null_policy_in_list
+              # For incidents created prior to the status feature's availability
+              context 'without escalation status record' do
+                before do
+                  incident.escalation_status.destroy!
+                end
 
-                # Filter w/ match
-                search_bar.send_keys escalation_policy.name.first(3)
-                wait_for_requests
-                assert_policy_in_list
+                it_behaves_like 'shows empty state for escalation policy'
 
-                # Filter w/ no match
-                search_bar.send_keys 'Bar'
-                wait_for_requests
-                expect(edit_policy_widget).to have_content 'No escalation policy found'
-              end
+                it 'retrieves the escalation policy when user sets the status' do
+                  visit_incident_with_expanded_sidebar
 
-              context 'with associated alert' do
-                let_it_be(:alert) { create(:alert_management_alert, issue: incident, project: project) }
+                  click_edit_status
+                  escalation_status_container.first('[data-testid="status-dropdown-item"]').click
+                  wait_for_requests
 
-                # For incidents created prior to the status feature's availability
-                context 'without escalation status record' do
-                  before do
-                    incident.escalation_status.destroy!
-                  end
-
-                  it_behaves_like 'shows empty state for escalation policy'
-
-                  it 'retrieves the escalation policy when user sets the status' do
-                    visit_incident_with_expanded_sidebar
-
-                    click_edit_status
-                    escalation_status_container.first('[data-testid="status-dropdown-item"]').click
-                    wait_for_requests
-
-                    assert_expanded_policy_values(escalation_policy.name, href: true)
-                  end
+                  assert_expanded_policy_values(escalation_policy.name, href: true)
                 end
               end
             end
           end
+        end
 
-          context 'with escalation policy linked to incident' do
-            before do
-              incident.escalation_status.update!(policy: escalation_policy, escalations_started_at: Time.current)
+        context 'with escalation policy linked to incident' do
+          before do
+            incident.escalation_status.update!(policy: escalation_policy, escalations_started_at: Time.current)
+          end
+
+          context 'with only view permissions' do
+            it_behaves_like 'shows attributes of assigned escalation policy'
+            it_behaves_like 'hides the edit button'
+          end
+
+          context 'with edit permissions' do
+            let(:current_user) { developer }
+
+            it_behaves_like 'shows attributes of assigned escalation policy'
+
+            it 'can remove the policy from the incident' do
+              visit_incident_with_expanded_sidebar
+
+              assert_edit_button_exists_and_click
+              assert_null_policy_in_list.click
+              assert_expanded_policy_values('None')
             end
 
-            context 'with only view permissions' do
+            context 'with alert associated with the incident' do
+              let_it_be(:alert) { create(:alert_management_alert, issue: incident) }
+
               it_behaves_like 'shows attributes of assigned escalation policy'
               it_behaves_like 'hides the edit button'
             end
-
-            context 'with edit permissions' do
-              let(:current_user) { developer }
-
-              it_behaves_like 'shows attributes of assigned escalation policy'
-
-              it 'can remove the policy from the incident' do
-                visit_incident_with_expanded_sidebar
-
-                assert_edit_button_exists_and_click
-                assert_null_policy_in_list.click
-                assert_expanded_policy_values('None')
-              end
-
-              context 'with alert associated with the incident' do
-                let_it_be(:alert) { create(:alert_management_alert, issue: incident) }
-
-                it_behaves_like 'shows attributes of assigned escalation policy'
-                it_behaves_like 'hides the edit button'
-              end
-            end
-          end
-
-          private
-
-          def assert_edit_button_exists_and_click
-            expect(edit_policy_widget).to have_button('Edit')
-            edit_button.click
-            wait_for_requests
-          end
-
-          def assert_policy_in_list
-            policy_item = edit_policy_widget.find('[data-testid="escalation-policy-items"]')
-            expect(policy_item).to have_content escalation_policy.name
-
-            policy_item
-          end
-
-          def assert_null_policy_in_list
-            null_policy_item = edit_policy_widget.find('[data-testid="no-escalation-policy-item"]')
-            expect(null_policy_item).to have_content 'No escalation policy'
-
-            null_policy_item
-          end
-
-          def edit_button
-            edit_policy_widget.find('[data-testid="edit-button"]')
-          end
-
-          def search_bar
-            edit_policy_widget.find('.gl-form-input')
           end
         end
 
-        context 'with no escalation policies in the project' do
-          it_behaves_like 'shows empty state for escalation policy'
+        private
 
-          it 'lets users open, view, and close the escalation policy help menu' do
-            visit_incident_with_expanded_sidebar
+        def assert_edit_button_exists_and_click
+          expect(edit_policy_widget).to have_button('Edit')
+          edit_button.click
+          wait_for_requests
+        end
 
-            escalation_policy_container.find('[data-testid="help-button"]').click
+        def assert_policy_in_list
+          policy_item = edit_policy_widget.find('[data-testid="escalation-policy-items"]')
+          expect(policy_item).to have_content escalation_policy.name
 
-            expect(escalation_policy_container).to have_content('Page your team')
-            expect(escalation_policy_container).to have_content('Use escalation policies to automatically page your team')
+          policy_item
+        end
 
-            escalation_policy_container.find('[data-testid="close-help-button"]').click
+        def assert_null_policy_in_list
+          null_policy_item = edit_policy_widget.find('[data-testid="no-escalation-policy-item"]')
+          expect(null_policy_item).to have_content 'No escalation policy'
 
-            expect(escalation_policy_container).not_to have_content('Page your team')
-          end
+          null_policy_item
+        end
+
+        def edit_button
+          edit_policy_widget.find('[data-testid="edit-button"]')
+        end
+
+        def search_bar
+          edit_policy_widget.find('.gl-form-input')
         end
       end
 
-      context 'with incident_escalations feature flag disabled' do
-        before do
-          stub_feature_flags(incident_escalations: false)
-        end
+      context 'with no escalation policies in the project' do
+        it_behaves_like 'shows empty state for escalation policy'
 
-        it_behaves_like 'hides the escalation policy widget'
+        it 'lets users open, view, and close the escalation policy help menu' do
+          visit_incident_with_expanded_sidebar
+
+          escalation_policy_container.find('[data-testid="help-button"]').click
+
+          expect(escalation_policy_container).to have_content('Page your team')
+          expect(escalation_policy_container).to have_content('Use escalation policies to automatically page your team')
+
+          escalation_policy_container.find('[data-testid="close-help-button"]').click
+
+          expect(escalation_policy_container).not_to have_content('Page your team')
+        end
       end
     end
 
