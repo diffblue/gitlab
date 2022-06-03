@@ -21,7 +21,10 @@ module FormHelper
             attribute = error.attribute
             message = error.message
 
-            message = html_escape_once(errors.full_message(attribute, message)).html_safe
+            message = html_escape_once(errors.full_message(attribute, message))
+            help_page_link = help_page_link_from_options(error.options)
+            message << " #{help_page_link}" if help_page_link
+            message = message.html_safe
             message = tag.span(message, class: 'str-truncated-100') if truncate.include?(attribute)
 
             tag.li(message)
@@ -119,6 +122,20 @@ module FormHelper
   end
 
   private
+
+  def help_page_link_from_options(options)
+    help_page_url = options.delete(:help_page_url)
+
+    return unless help_page_url
+
+    help_link_text = options.delete(:help_link_text) || _('Learn more.')
+    link_to(
+      help_link_text,
+      help_page_url,
+      target: '_blank',
+      rel: 'noopener noreferrer'
+    )
+  end
 
   def multiple_assignees_dropdown_options(options)
     new_options = options.dup
