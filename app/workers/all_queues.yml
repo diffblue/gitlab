@@ -45,7 +45,7 @@
   :has_external_dependencies:
   :urgency: :low
   :resource_boundary: :unknown
-  :weight: 1
+  :weight: 2
   :idempotent: true
   :tags: []
 - :name: auto_devops:auto_devops_disable
@@ -2971,7 +2971,7 @@
   :has_external_dependencies:
   :urgency: :high
   :resource_boundary: :unknown
-  :weight: 1
+  :weight: 2
   :idempotent:
   :tags:
   - :needs_own_queue

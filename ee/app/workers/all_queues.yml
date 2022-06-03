@@ -1277,7 +1277,7 @@
   :feature_category: :importers
   :has_external_dependencies:
   :urgency: :low
-  :resource_boundary: :unknown
+  :resource_boundary: :memory
   :weight: 1
   :idempotent:
   :tags: []
