@@ -36,9 +36,5 @@ module Namespaces
         s_("NamespaceStorageSize|Please purchase additional storage to unlock your projects over the free %{free_size_limit} project limit. You can't %{base_message}" % { base_message: base_message, free_size_limit: formatted(root_namespace.actual_size_limit) })
       end
     end
-
-    def formatted(number)
-      number_to_human_size(number, delimiter: ',', precision: 2)
-    end
   end
 end
