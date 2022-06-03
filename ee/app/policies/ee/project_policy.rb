@@ -290,6 +290,10 @@ module EE
         enable :read_vulnerability_scanner
       end
 
+      rule { auditor & oncall_schedules_available }.policy do
+        enable :read_incident_management_oncall_schedule
+      end
+
       rule { auditor & ~developer }.policy do
         prevent :create_vulnerability
         prevent :admin_vulnerability
