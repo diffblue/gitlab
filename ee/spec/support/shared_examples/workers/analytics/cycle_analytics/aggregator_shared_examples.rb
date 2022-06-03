@@ -9,11 +9,14 @@ RSpec.shared_examples 'aggregator worker examples' do
 
   context 'when the FF is disabled' do
     it 'does nothing' do
-      stub_feature_flags(feature_flag => false)
+      if feature_flag
 
-      expect(Analytics::CycleAnalytics::Aggregation).not_to receive(:load_batch)
+        stub_feature_flags(feature_flag => false)
 
-      run_worker
+        expect(Analytics::CycleAnalytics::Aggregation).not_to receive(:load_batch)
+
+        run_worker
+      end
     end
   end
 

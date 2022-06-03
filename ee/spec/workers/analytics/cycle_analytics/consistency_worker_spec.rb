@@ -5,18 +5,6 @@ require 'spec_helper'
 RSpec.describe Analytics::CycleAnalytics::ConsistencyWorker do
   let(:worker) { described_class.new }
 
-  context 'when the vsa_incremental_worker feature flag is off' do
-    before do
-      stub_feature_flags(vsa_consistency_worker: false)
-    end
-
-    it 'does nothing' do
-      expect(Analytics::CycleAnalytics::Aggregation).not_to receive(:load_batch)
-
-      worker.perform
-    end
-  end
-
   context 'when the vsa_consistency_worker feature flag is on' do
     before do
       stub_feature_flags(vsa_consistency_worker: true)
