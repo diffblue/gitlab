@@ -34,6 +34,7 @@ module Registrations
         :website_url,
         # passed through params
         :role,
+        :other_role,
         :registration_objective,
         :jobs_to_be_done_other,
         :trial

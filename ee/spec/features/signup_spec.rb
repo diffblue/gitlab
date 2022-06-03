@@ -75,6 +75,71 @@ RSpec.describe 'Signup on EE' do
       end
     end
 
+    context 'when the user_other_role_details feature flag is disabled' do
+      before do
+        stub_feature_flags(user_other_role_details: false)
+      end
+
+      context 'collects no collect a job title' do
+        it 'proceeds to the next step without collecting other_role' do
+          fill_in_signup_form
+          click_button "Register"
+
+          select 'Other', from: 'user_role'
+          expect(page).not_to have_field('What is your job title? (optional)')
+          choose 'user_setup_for_company_false'
+          click_button 'Continue'
+
+          user = User.find_by_username!(new_user[:username])
+          expect(user.other_role).to be_blank
+        end
+      end
+    end
+
+    context 'when the user selects existing role' do
+      let_it_be(:job_title) { 'Guardian of the galaxy' }
+
+      it 'has the job title box' do
+        expect(page).not_to have_field('What is your job title? (optional)')
+      end
+
+      it 'proceeds to the next step' do
+        fill_in_signup_form
+        click_button "Register"
+
+        select 'Software Developer', from: 'user_role'
+        choose 'user_setup_for_company_false'
+        click_button 'Continue'
+
+        user = User.find_by_username!(new_user[:username])
+        expect(user.other_role).to be_blank
+      end
+    end
+
+    context 'when the user selects other role' do
+      let_it_be(:job_title) { 'Guardian of the galaxy' }
+
+      it 'has the job title box' do
+        expect(page).not_to have_field('What is your job title? (optional)')
+      end
+
+      it 'proceeds to the next step' do
+        fill_in_signup_form
+        click_button "Register"
+
+        select 'Other', from: 'user_role'
+        expect(page).to have_field('What is your job title? (optional)')
+
+        choose 'user_setup_for_company_false'
+        fill_in 'What is your job title? (optional)', with: job_title
+
+        click_button 'Continue'
+
+        user = User.find_by_username!(new_user[:username])
+        expect(user.other_role).to eq(job_title)
+      end
+    end
+
     it 'redirects to step 2 of the signup process when not completed' do
       fill_in_signup_form
       click_button 'Register'

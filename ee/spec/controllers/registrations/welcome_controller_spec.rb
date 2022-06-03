@@ -143,7 +143,8 @@ RSpec.describe Registrations::WelcomeController do
           role: 'software_developer',
           setup_for_company: setup_for_company,
           email_opted_in: email_opted_in,
-          registration_objective: 'code_storage'
+          registration_objective: 'code_storage',
+          other_role: '_other_role_'
         },
         joining_project: joining_project,
         jobs_to_be_done_other: '_jobs_to_be_done_other_'
@@ -285,6 +286,7 @@ RSpec.describe Registrations::WelcomeController do
               {
                 registration_objective: 'code_storage',
                 role: 'software_developer',
+                other_role: '_other_role_',
                 jobs_to_be_done_other: '_jobs_to_be_done_other_'
               }
             end
