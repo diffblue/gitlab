@@ -16,8 +16,8 @@ RSpec.describe MergeRequests::Mergeability::RunChecksService do
     context 'when every check is skipped', :eager_load do
       before do
         MergeRequests::Mergeability::CheckBaseService.subclasses.each do |subclass|
-          expect_next_instance_of(subclass) do |service|
-            expect(service).to receive(:skip?).and_return(true)
+          allow_next_instance_of(subclass) do |service|
+            allow(service).to receive(:skip?).and_return(true)
           end
         end
       end
