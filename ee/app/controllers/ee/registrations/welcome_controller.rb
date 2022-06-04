@@ -123,7 +123,7 @@ module EE
             stored_url&.include?(new_users_sign_up_company_path)
           company_params = update_params.slice(:role, :other_role, :registration_objective)
                             .merge(params.permit(:jobs_to_be_done_other))
-          redirect_uri = Gitlab::Utils.add_url_parameters(stored_url, company_params)
+          redirect_uri = ::Gitlab::Utils.add_url_parameters(stored_url, company_params)
           store_location_for(:user, redirect_uri)
         else
           stored_url || members_activity_path(user.members)
