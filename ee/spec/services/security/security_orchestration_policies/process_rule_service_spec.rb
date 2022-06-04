@@ -39,10 +39,55 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessRuleService do
       end
     end
 
+    context 'when cadence is not valid' do
+      let(:policy) do
+        rules = [
+          { type: 'pipeline', branches: %w[production] },
+          { type: 'schedule', branches: %w[production], cadence: 'invalid cadence' }
+        ]
+
+        build(:scan_execution_policy, rules: rules)
+      end
+
+      it 'only deletes previous schedules' do
+        expect { service.execute }.to change(Security::OrchestrationPolicyRuleSchedule, :count).by(-1)
+      end
+    end
+
+    context 'when cadence is empty' do
+      let(:policy) do
+        rules = [
+          { type: 'pipeline', branches: %w[production] },
+          { type: 'schedule', branches: %w[production], cadence: '' }
+        ]
+
+        build(:scan_execution_policy, rules: rules)
+      end
+
+      it 'only deletes previous schedules' do
+        expect { service.execute }.to change(Security::OrchestrationPolicyRuleSchedule, :count).by(-1)
+      end
+    end
+
+    context 'when cadence is missing' do
+      let(:policy) do
+        rules = [
+          { type: 'pipeline', branches: %w[production] },
+          { type: 'schedule', branches: %w[production], cadence: nil }
+        ]
+
+        build(:scan_execution_policy, rules: rules)
+      end
+
+      it 'only deletes previous schedules' do
+        expect { service.execute }.to change(Security::OrchestrationPolicyRuleSchedule, :count).by(-1)
+      end
+    end
+
     context 'when policy is not of type scheduled' do
       let(:policy) { build(:scan_execution_policy) }
 
-      it 'deletes schedules' do
+      it 'only deletes previous schedules' do
         expect { service.execute }.to change(Security::OrchestrationPolicyRuleSchedule, :count).by(-1)
       end
     end

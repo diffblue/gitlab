@@ -16,6 +16,18 @@ RSpec.describe Security::OrchestrationPolicyRuleSchedule do
     it { is_expected.to validate_presence_of(:cron) }
     it { is_expected.to validate_presence_of(:policy_index) }
     it { is_expected.to validate_presence_of(:rule_index) }
+
+    it 'does not allow invalid cron patterns' do
+      security_orchestration_policy_rule_schedule = build(:security_orchestration_policy_rule_schedule, cron: '0 0 0 * *')
+
+      expect(security_orchestration_policy_rule_schedule).not_to be_valid
+    end
+
+    it 'does not allow invalid cron patterns' do
+      security_orchestration_policy_rule_schedule = build(:security_orchestration_policy_rule_schedule, cron: 'invalid')
+
+      expect(security_orchestration_policy_rule_schedule).not_to be_valid
+    end
   end
 
   describe '.runnable_schedules' do
