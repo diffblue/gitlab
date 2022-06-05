@@ -167,6 +167,9 @@ Regarding the terminology used here:
    they are colocated under the `spec/fixtures` directory with the rest of
    the fixture data for the GitLab Rails application.
 
+See also the section on [normalization](#normalization) below, which is an important concept used
+in the Markdown snapshot testing.
+
 ## Parsing and Rendering
 
 The Markdown dialect used in the GitLab application has a dual requirement for rendering:
@@ -267,6 +270,48 @@ Some of the static or WYSIWYG HTML examples may not be representable as canonica
 HTML. (For example, when they are represented as an image.) In these cases, the Markdown
 conformance test for the example can be skipped by setting `skip_update_example_snapshots: true`
 for the example in `glfm_specification/input/gitlab_flavored_markdown/glfm_example_status.yml`.
+
+### Normalization
+
+Different versions of the rendered HTML and ProseMirror JSON can vary for a number of reasons. There
+are not only differences in styling or HTML structure, but the values of attributes or nodes may
+vary across different test runs or environments as well. Here's some examples:
+
+1. Database record identifiers
+1. Namespace or project identifiers
+1. Portions of URIs
+1. File paths or names
+1. Random values
+
+This means that in order for the [Markdown snapshot testing](#markdown-snapshot-testing) to work
+properly, these differences must be accounted for in a way that ensures the tests are reliable,
+and always behave the same across different test runs or environments.
+
+To account for these differences, there is a process called "**_normalization_**". Normalization
+allows custom regular expressions with
+[_capturing groups_](https://ruby-doc.org/core-3.1.2/Regexp.html#class-Regexp-label-Capturing)
+to be applied to two different versions of HTML or JSON for a given Markdown example,
+and the contents of the captured groups can be replaced with the same fixed values.
+
+Then, the two normalized versions can be compared to each other to ensure all other non-variable
+content is identical.
+
+It is important to note that we don't care about verifying specific attribute values here, so
+it's OK if the normalizations discard and replace these variable values with fixed values. This is
+because different testing levels have different purposes:
+
+1. [Markdown snapshot testing](#markdown-snapshot-testing) is intended to enforce the structure of
+   the rendered HTML/JSON, and to ensure that it conforms to the canonical specification.
+1. Individual unit tests of the implementation for a specific Markdown example are responsible for
+   specific and targeted testing of these variable values.
+
+We also use this same regex capture-and-replace normalization approach for
+[Canonicalization of HTML](#canonicalization-of-html), because it is essentially the same process.
+With canonicalization, instead of just replacing variable values, we are removing non-canonical
+portions of the HTML.
+
+See [`glfm_example_normalizations.yml`](#glfm_example_normalizationsyml) for a detailed explanation
+of how the normalizations are specified.
 
 ## Goals
 
@@ -641,6 +686,63 @@ The following optional entries are supported for each example. They all default 
   skip_running_snapshot_prosemirror_json_tests: 'An explanation of the reason for skipping.'
 ```
 
+##### `glfm_example_normalizations.yml`
+
+[`glfm_specification/input/gitlab_flavored_markdown/glfm_example_normalizations.yml`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/glfm_specification/input/gitlab_flavored_markdown/glfm_example_normalizations.yml)
+controls the [normalization](#normalization) process. It allows one or more `regex`/`replacement` pairs
+to be specified for a Markdown example.
+
+- It is manually updated.
+- It has a nested structure corresponding to the example and type of entry it refers to.
+- It extensively uses [YAML anchors and aliases](https://yaml.org/spec/1.2.2/#692-node-anchors)
+  to avoid duplication of `regex`/`replacement` pairs and allow them to be shared across multiple examples.
+- The YAML anchors use a naming convention based on the index number of the example, in order to
+  ensure unique anchor names and avoid naming conflicts.
+  
+`glfm_specification/input/gitlab_flavored_markdown/glfm_example_normalizations.yml` sample entries:
+
+```yaml
+# NOTE: All YAML anchors which are shared across one or more examples are defined in the `00_shared` section.
+00_shared:
+  00_uri: &00_uri
+    - regex: '(href|data-src)(=")(.*?)(test-file\.(png|zip)")'
+      replacement: '\1\2URI_PREFIX\4'
+01_01__section_one__example_containing_a_uri__001:
+  html:
+    static:
+      canonical:
+        01_01_uri: *00_uri
+      snapshot:
+        01_01_uri: *00_uri
+      wysiwyg:
+        01_01_uri: *00_uri
+  prosemirror_json:
+    01_01_uri: *00_uri
+07_01__gitlab_specific_markdown__footnotes__001:
+  # YAML anchors which are only shared within a single example should be defined within the example 
+  shared:
+    07_01_href: &07_01_href
+      - regex: '(href)(=")(.+?)(")'
+        replacement: '\1\2REF\4'
+    07_01_id: &07_01_id
+      - regex: '(id)(=")(.+?)(")'
+        replacement: '\1\2ID\4'
+  html:
+    static:
+      canonical:
+        07_01_href: *07_01_href
+        07_01_id: *07_01_id
+      snapshot:
+        07_01_href: *07_01_href
+        07_01_id: *07_01_id
+    wysiwyg:
+      07_01_href: *07_01_href
+      07_01_id: *07_01_id
+  prosemirror_json:
+    07_01_href: *07_01_href
+    07_01_id: *07_01_id
+```
+
 #### Output specification files
 
 The `glfm_specification/output` directory contains the CommonMark standard format
@@ -654,7 +756,8 @@ are colocated under the same parent folder `glfm_specification` with the other
 a mix of manually edited and generated files.
 
 In GFM, `spec.txt` is [located in the test dir](https://github.com/github/cmark-gfm/blob/master/test/spec.txt),
-and in CommonMark it's located [in the project root](https://github.com/github/cmark-gfm/blob/master/test/spec.txt). No precedent exists for a standard location. In the future, we may decide to
+and in CommonMark it's located [in the project root](https://github.com/github/cmark-gfm/blob/master/test/spec.txt).
+No precedent exists for a standard location. In the future, we may decide to
 move or copy a hosted version of the rendered HTML `spec.html` version to another location or site.
 
 ##### spec.txt
