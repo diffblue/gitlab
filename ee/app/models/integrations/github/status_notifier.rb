@@ -13,6 +13,10 @@ module Integrations
         client.create_status(@repo_path, ref, state, params)
       end
 
+      def last_client_response
+        client.last_response
+      end
+
       private
 
       def client

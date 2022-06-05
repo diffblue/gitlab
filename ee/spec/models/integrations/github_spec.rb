@@ -134,6 +134,7 @@ RSpec.describe Integrations::Github do
     let(:status_options) { { context: 'security', target_url: 'https://localhost.pipeline.example.com', description: "SAST passed" } }
     let(:status_message) { double(sha: sha, status: :success, status_options: status_options) }
     let(:notifier) { instance_double(Integrations::Github::StatusNotifier) }
+    let(:api_response) { instance_double(Sawyer::Response) }
 
     context 'the integration is invalid' do
       it 'does not notify GitHub of a status change' do
@@ -147,6 +148,7 @@ RSpec.describe Integrations::Github do
 
     it 'notifies GitHub of a status change' do
       expect(notifier).to receive(:notify)
+      expect(notifier).to receive(:last_client_response)
       expect(Integrations::Github::StatusNotifier).to receive(:new).with(token, remote_repo_path, anything)
                                                             .and_return(notifier)
 
@@ -167,6 +169,9 @@ RSpec.describe Integrations::Github do
     describe 'passes StatusMessage values to StatusNotifier' do
       before do
         allow(Integrations::Github::StatusNotifier).to receive(:new).and_return(notifier)
+        allow(api_response).to receive(:status).and_return(201)
+        allow(notifier).to receive(:last_client_response).and_return(api_response)
+        allow(status_message).to receive(:pipeline_id).and_return(pipeline.id)
         allow(Integrations::Github::StatusMessage).to receive(:from_pipeline_data).and_return(status_message)
       end
 
@@ -223,6 +228,7 @@ RSpec.describe Integrations::Github do
 
       it 'hands custom api url to StatusNotifier' do
         allow(notifier).to receive(:notify)
+        allow(notifier).to receive(:last_client_response)
         expect(Integrations::Github::StatusNotifier).to receive(:new).with(anything, anything, api_endpoint: api_url)
                                                               .and_return(notifier)
 
@@ -259,6 +265,22 @@ RSpec.describe Integrations::Github do
 
     context 'when the pipeline is an external pull request pipeline' do
       let(:external_pr) { create(:external_pull_request, project: project) }
+      let(:notifier) { instance_double(Integrations::Github::StatusNotifier) }
+      let(:api_response) { instance_double(Sawyer::Response) }
+      let(:response_result) do
+        {
+          "id": 1234,
+          "node_id": "FOO_BAR",
+          "state": "success",
+          "description": "Pipeline passed on GitLab",
+          "target_url": "https://gitlab.example.com/pipelines/1234",
+          "context": "ci/gitlab/gitlab.example.com",
+          "created_at": "2022-05-20T09:04:21.000Z",
+          "updated_at": "2022-05-20T09:04:22.000Z",
+          "avatar_url": "https://gitlab.example.com/avatar-ignored.png",
+          "creator": { "section_not_to_be_logged": "some_ignored_value" }
+        }
+      end
 
       before do
         pipeline.update!(
@@ -269,6 +291,25 @@ RSpec.describe Integrations::Github do
       it 'sends notification' do
         expect(subject).to receive(:update_status)
         expect(Integrations::Github::StatusMessage).to receive(:from_pipeline_data)
+
+        subject.execute(pipeline_sample_data)
+      end
+
+      it 'logs result of GitHub API call without the "creator" section and "avatar_url" field' do
+        expect(subject).to receive(:notifier).twice.and_return(notifier)
+        expect(notifier).to receive(:notify).once.and_return(response_result)
+        expect(notifier).to receive(:last_client_response).once.and_return(api_response)
+        expect(api_response).to receive(:status).once.and_return(201)
+
+        expect(subject).to receive(:log_info).once.with(
+          "GitHub Commit Status update API call succeeded",
+          {
+            github_response: response_result.except(:creator, :avatar_url),
+            github_response_status: 201,
+            pipeline_id: pipeline.id,
+            pipeline_status: pipeline.status.to_sym
+          }
+        )
 
         subject.execute(pipeline_sample_data)
       end

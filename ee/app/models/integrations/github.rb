@@ -134,13 +134,33 @@ module Integrations
     end
 
     def update_status(status_message)
-      notifier.notify(status_message.sha,
-                      status_message.status,
-                      status_message.status_options)
+      result = notifier.notify(status_message.sha,
+        status_message.status,
+        status_message.status_options)
+
+      # The response result as defined in the documentation
+      # below carries several unnecessary fields so we filter
+      # them using a finite list of fields:
+      # https://docs.github.com/en/rest/commits/statuses#create-a-commit-status
+      log_info(
+        "GitHub Commit Status update API call succeeded",
+        {
+          github_response: result&.try(:to_h)&.try(
+            :slice,
+            :url, :id, :node_id, :state,
+            :description, :target_url, :context,
+            :created_at, :updated_at),
+          github_response_status: notifier.last_client_response&.status,
+          pipeline_id: status_message.pipeline_id,
+          pipeline_status: status_message.status
+        }
+      )
+
+      result
     end
 
     def notifier
-      StatusNotifier.new(token, remote_repo_path, api_endpoint: api_url)
+      @notifier ||= StatusNotifier.new(token, remote_repo_path, api_endpoint: api_url)
     end
 
     def remote_repo_path

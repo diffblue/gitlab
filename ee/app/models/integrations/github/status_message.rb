@@ -5,7 +5,7 @@ module Integrations
     class StatusMessage
       include Gitlab::Routing
 
-      attr_reader :sha
+      attr_reader :sha, :pipeline_id
 
       def initialize(project, service, params)
         @project = project

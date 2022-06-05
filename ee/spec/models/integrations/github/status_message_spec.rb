@@ -114,6 +114,10 @@ RSpec.describe Integrations::Github::StatusMessage do
         expect(subject.status).to eq :pending
       end
 
+      specify 'pipeline_id' do
+        expect(subject.pipeline_id).to eq pipeline.id
+      end
+
       specify 'target_url' do
         expect(subject.target_url).to end_with pipeline_path(pipeline)
       end
