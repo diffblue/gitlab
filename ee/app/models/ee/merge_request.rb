@@ -145,7 +145,7 @@ module EE
     override :mergeability_checks
     def mergeability_checks
       [
-        ::MergeRequests::Mergeability::CheckDeniedPolicies
+        ::MergeRequests::Mergeability::CheckDeniedPoliciesService
       ] + super
     end
 

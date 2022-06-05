@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-RSpec.describe MergeRequests::Mergeability::CheckDeniedPolicies do
+RSpec.describe MergeRequests::Mergeability::CheckDeniedPoliciesService do
   subject(:check_denied_policies) { described_class.new(merge_request: merge_request, params: {}) }
 
   let(:merge_request) { build(:merge_request) }

@@ -2,7 +2,7 @@
 
 module MergeRequests
   module Mergeability
-    class CheckDeniedPolicies < CheckBaseService
+    class CheckDeniedPoliciesService < CheckBaseService
       def execute
         if merge_request.has_denied_policies?
           failure
