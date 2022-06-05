@@ -135,15 +135,12 @@ export default {
         v-if="anyDependencyHasVulnerabilities"
         class="d-none d-md-inline"
         :class="{ invisible: !item.vulnerabilities.length }"
-        variant="link"
+        category="tertiary"
+        size="small"
         :aria-label="s__('Dependencies|Toggle vulnerability list')"
+        :icon="detailsShowing ? 'chevron-up' : 'chevron-down'"
         @click="toggleDetails"
-      >
-        <gl-icon
-          :name="detailsShowing ? 'chevron-up' : 'chevron-down'"
-          class="text-secondary-900"
-        />
-      </gl-button>
+      />
       <span class="bold">{{ item.name }}</span
       >&nbsp;{{ item.version }}
     </template>
