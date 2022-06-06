@@ -2152,4 +2152,18 @@ RSpec.describe GroupPolicy do
       end
     end
   end
+
+  describe 'read wiki' do
+    context 'feature enabled' do
+      before do
+        stub_config(read_wiki: { enabled: true })
+      end
+
+      context 'auditor' do
+        let(:current_user) { auditor }
+
+        it { is_expected.to be_allowed(:read_wiki) }
+      end
+    end
+  end
 end
