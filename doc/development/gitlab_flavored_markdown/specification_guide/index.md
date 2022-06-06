@@ -277,9 +277,9 @@ for the example in `glfm_specification/input/gitlab_flavored_markdown/glfm_examp
 
 ### Normalization
 
-Different versions of the rendered HTML and ProseMirror JSON can vary for a number of reasons. There
-are not only differences in styling or HTML structure, but the values of attributes or nodes may
-vary across different test runs or environments as well. Here's some examples:
+Versions of the rendered HTML and ProseMirror JSON can vary for a number of reasons.
+Differences in styling or HTML structure can occur, but the values of attributes or nodes may
+also vary across different test runs or environments. For example:
 
 1. Database record identifiers
 1. Namespace or project identifiers
@@ -287,11 +287,11 @@ vary across different test runs or environments as well. Here's some examples:
 1. File paths or names
 1. Random values
 
-This means that in order for the [Markdown snapshot testing](#markdown-snapshot-testing) to work
-properly, these differences must be accounted for in a way that ensures the tests are reliable,
+For the [Markdown snapshot testing](#markdown-snapshot-testing) to work
+properly, you must account for these differences in a way that ensures the tests are reliable,
 and always behave the same across different test runs or environments.
 
-To account for these differences, there is a process called "**_normalization_**". Normalization
+To account for these differences, there is a process called **_normalization_**. Normalization
 allows custom regular expressions with
 [_capturing groups_](https://ruby-doc.org/core-3.1.2/Regexp.html#class-Regexp-label-Capturing)
 to be applied to two different versions of HTML or JSON for a given Markdown example,
@@ -300,9 +300,10 @@ and the contents of the captured groups can be replaced with the same fixed valu
 Then, the two normalized versions can be compared to each other to ensure all other non-variable
 content is identical.
 
-It is important to note that we don't care about verifying specific attribute values here, so
-it's OK if the normalizations discard and replace these variable values with fixed values. This is
-because different testing levels have different purposes:
+NOTE:
+We don't care about verifying specific attribute values here, so
+it's OK if the normalizations discard and replace these variable values with fixed values.
+Different testing levels have different purposes:
 
 1. [Markdown snapshot testing](#markdown-snapshot-testing) is intended to enforce the structure of
    the rendered HTML/JSON, and to ensure that it conforms to the canonical specification.
@@ -310,11 +311,11 @@ because different testing levels have different purposes:
    specific and targeted testing of these variable values.
 
 We also use this same regex capture-and-replace normalization approach for
-[Canonicalization of HTML](#canonicalization-of-html), because it is essentially the same process.
+[canonicalization of HTML](#canonicalization-of-html), because it is essentially the same process.
 With canonicalization, instead of just replacing variable values, we are removing non-canonical
 portions of the HTML.
 
-See [`glfm_example_normalizations.yml`](#glfm_example_normalizationsyml) for a detailed explanation
+Refer to [`glfm_example_normalizations.yml`](#glfm_example_normalizationsyml) for a detailed explanation
 of how the normalizations are specified.
 
 ## Goals
@@ -642,7 +643,7 @@ controls the behavior of the [scripts](#scripts) and [tests](#types-of-markdown-
 - The `skip_running_*` control allow Markdown conformance tests or
   Markdown snapshot tests to be skipped for individual examples.
 - This allows control over skipping this processing or testing of various examples when they
-  are unimplemented, partially implemented, broken, or cannot be generated or tested for some reason.
+  are unimplemented, partially implemented, broken, cannot be generated, or cannot be tested for some reason.
 - All entries default to false. They can be set to true by specifying a Ruby
   value which evaluates as truthy. This could be the boolean `true` value, but ideally should
   be a string describing why the example's updating or testing is being skipped.
@@ -700,7 +701,7 @@ to be specified for a Markdown example.
 - It has a nested structure corresponding to the example and type of entry it refers to.
 - It extensively uses [YAML anchors and aliases](https://yaml.org/spec/1.2.2/#692-node-anchors)
   to avoid duplication of `regex`/`replacement` pairs and allow them to be shared across multiple examples.
-- The YAML anchors use a naming convention based on the index number of the example, in order to
+- The YAML anchors use a naming convention based on the index number of the example, to
   ensure unique anchor names and avoid naming conflicts.
 
 `glfm_specification/input/gitlab_flavored_markdown/glfm_example_normalizations.yml` sample entries:
