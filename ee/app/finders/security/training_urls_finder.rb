@@ -19,12 +19,11 @@ module Security
       'cs' => 'csharp'
     }.freeze
 
-    def initialize(project, identifier_external_ids, language = nil, filename = nil)
+    def initialize(project, identifier_external_ids, filename = nil)
       @project = project
       @identifier_external_ids = identifier_external_ids
       @filename = filename
-      @language = language
-      @language ||= language_from_filename
+      @language = language_from_filename
     end
 
     def execute
