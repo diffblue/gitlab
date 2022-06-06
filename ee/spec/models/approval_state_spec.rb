@@ -1586,4 +1586,24 @@ RSpec.describe ApprovalState do
       expect(subject.total_approvals_count).to eq(2)
     end
   end
+
+  describe '#invalid_approvers_rules' do
+    let_it_be(:scan_finding_rule) { create_rule(rule_type: :report_approver, report_type: :scan_finding, users: []) }
+
+    context 'with valid approvers' do
+      before do
+        scan_finding_rule.users << approver1
+      end
+
+      it 'returns an empty array' do
+        expect(subject.invalid_approvers_rules).to be_empty
+      end
+    end
+
+    context 'with invalid approvers' do
+      it 'returns rules with empty approvers' do
+        expect(subject.invalid_approvers_rules.first.approval_rule).to eq(scan_finding_rule)
+      end
+    end
+  end
 end
