@@ -5,22 +5,22 @@ module QA
     context 'Enable Scanning from UI' do
       let(:test_data_sast_string_fields_array) do
         [
-          %w(SECURE_ANALYZERS_PREFIX registry.example.com),
-          %w(SAST_EXCLUDED_PATHS foo,\ bar),
-          %w(SAST_BANDIT_EXCLUDED_PATHS exclude_path_a,\ exclude_path_b)
+          %w[SECURE_ANALYZERS_PREFIX registry.example.com],
+          %w[SAST_EXCLUDED_PATHS foo,\ bar],
+          %w[SAST_BANDIT_EXCLUDED_PATHS exclude_path_a,\ exclude_path_b]
         ]
       end
 
       let(:test_data_int_fields_array) do
         [
-          %w(SEARCH_MAX_DEPTH 42),
-          %w(SAST_BRAKEMAN_LEVEL 43),
-          %w(SAST_GOSEC_LEVEL 7)
+          %w[SEARCH_MAX_DEPTH 42],
+          %w[SAST_BRAKEMAN_LEVEL 43],
+          %w[SAST_GOSEC_LEVEL 7]
         ]
       end
 
       let(:test_data_checkbox_exclude_array) do
-        %w(eslint kubesec nodejs-scan phpcs-security-audit)
+        %w[eslint kubesec nodejs-scan phpcs-security-audit]
       end
 
       let(:test_stage_name) do
@@ -48,7 +48,10 @@ module QA
       end
 
       describe 'enable dependency scanning from configuration' do
-        it 'runs dependency scanning job when enabled from configuration', quarantine: { issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/364141', type: :investigating, only: { pipeline: :nightly } }, testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347621' do
+        it(
+          'runs dependency scanning job when enabled from configuration',
+          testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347621'
+        ) do
           Page::Project::Menu.perform(&:click_on_security_configuration_link)
 
           Page::Project::Secure::ConfigurationForm.perform do |config_form|
@@ -105,7 +108,14 @@ module QA
           expect(current_page).to have_content("SAST_EXCLUDED_ANALYZERS: #{test_data_checkbox_exclude_array.join(', ')}")
         end
 
-        it 'runs sast job when enabled from configuration', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347685' do
+        it(
+          'runs sast job when enabled from configuration',
+          testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347685',
+          quarantine: {
+            issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/364141',
+            type: :bug
+          }
+        ) do
           Page::Project::Menu.perform(&:click_on_security_configuration_link)
 
           Page::Project::Secure::ConfigurationForm.perform do |config_form|
