@@ -187,6 +187,7 @@ module EE
         enable :read_group_cycle_analytics
         enable :read_cluster
         enable :read_dependency_proxy
+        enable :read_wiki
       end
 
       rule { owner | admin }.policy do

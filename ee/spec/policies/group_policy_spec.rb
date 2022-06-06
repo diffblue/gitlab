@@ -2152,4 +2152,32 @@ RSpec.describe GroupPolicy do
       end
     end
   end
+
+  describe 'read wiki' do
+    context 'feature enabled' do
+      before do
+        stub_licensed_features(group_wikis: true)
+      end
+
+      context 'auditor' do
+        let(:current_user) { auditor }
+
+        it { is_expected.to be_allowed(:read_wiki) }
+        it { is_expected.to be_disallowed(:admin_wiki) }
+      end
+    end
+
+    context 'feature disabled' do
+      before do
+        stub_licensed_features(group_wikis: false)
+      end
+
+      context 'auditor' do
+        let(:current_user) { auditor }
+
+        it { is_expected.to be_disallowed(:read_wiki) }
+        it { is_expected.to be_disallowed(:admin_wiki) }
+      end
+    end
+  end
 end
