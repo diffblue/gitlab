@@ -2156,7 +2156,7 @@ RSpec.describe GroupPolicy do
   describe 'read wiki' do
     context 'feature enabled' do
       before do
-        stub_config(read_wiki: { enabled: true })
+        stub_licensed_features(group_wikis: true)
       end
 
       context 'auditor' do
