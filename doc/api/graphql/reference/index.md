@@ -15555,6 +15555,7 @@ Returns [`[SecurityTrainingUrl!]`](#securitytrainingurl).
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
+| <a id="projectsecuritytrainingurlsfilename"></a>`filename` | [`String`](#string) | Filename to filter security training URLs by programming language. |
 | <a id="projectsecuritytrainingurlsidentifierexternalids"></a>`identifierExternalIds` | [`[String!]!`](#string) | List of external IDs of vulnerability identifiers. |
 | <a id="projectsecuritytrainingurlslanguage"></a>`language` | [`String`](#string) | Desired language for training urls. |
 

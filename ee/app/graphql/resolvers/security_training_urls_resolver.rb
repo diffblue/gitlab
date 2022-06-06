@@ -19,10 +19,20 @@ module Resolvers
          required: false,
          description: 'Desired language for training urls.'
 
+    argument :filename,
+         GraphQL::Types::String,
+         required: false,
+         description: 'Filename to filter security training URLs by programming language.'
+
     alias_method :project, :object
 
     def resolve(**args)
-      ::Security::TrainingUrlsFinder.new(project, args[:identifier_external_ids], args[:language]).execute
+      ::Security::TrainingUrlsFinder.new(
+        project,
+        args[:identifier_external_ids],
+        args[:language],
+        args[:filename]
+      ).execute
     end
   end
 end

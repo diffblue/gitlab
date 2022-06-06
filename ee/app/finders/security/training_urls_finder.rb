@@ -2,10 +2,29 @@
 
 module Security
   class TrainingUrlsFinder
-    def initialize(project, identifier_external_ids, language = nil)
+    EXTENSION_LANGUAGE_MAP = {
+      'jsp' => 'java',
+      'jspx' => 'java',
+      'py' => 'python',
+      'scala' => 'scala',
+      'sc' => 'scala',
+      'js' => 'javascript',
+      'ts' => 'typescript',
+      'php' => 'php',
+      'rb' => 'ruby',
+      'go' => 'go',
+      'kt' => 'kotlin',
+      'kts' => 'kotlin',
+      'ktm' => 'kotlin',
+      'cs' => 'csharp'
+    }.freeze
+
+    def initialize(project, identifier_external_ids, language = nil, filename = nil)
       @project = project
       @identifier_external_ids = identifier_external_ids
+      @filename = filename
       @language = language
+      @language ||= language_from_filename
     end
 
     def execute
@@ -16,7 +35,7 @@ module Security
 
     private
 
-    attr_reader :project, :identifier_external_ids, :language
+    attr_reader :project, :identifier_external_ids, :language, :filename
 
     def security_training_urls(identifier_external_ids)
       [].tap do |content_urls|
@@ -32,6 +51,10 @@ module Security
 
     def training_providers
       ::Security::TrainingProvider.for_project(project, only_enabled: true).ordered_by_is_primary_desc
+    end
+
+    def language_from_filename
+      EXTENSION_LANGUAGE_MAP[filename.split(".").last] if filename
     end
   end
 end
