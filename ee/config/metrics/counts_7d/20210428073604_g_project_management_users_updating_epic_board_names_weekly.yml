@@ -6,7 +6,7 @@ key_path: redis_hll_counters.epic_boards_usage.g_project_management_users_updati
 description: Count of WAU updating epic board names
 product_section: dev
 product_stage: plan
-product_group: product planning
+product_group: product_planning
 product_category: epics_boards_usage
 value_type: number
 status: active

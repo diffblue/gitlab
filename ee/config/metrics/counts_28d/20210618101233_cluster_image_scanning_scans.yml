@@ -3,7 +3,7 @@ key_path: usage_activity_by_stage_monthly.secure.cluster_image_scanning_scans
 description: Number of Cluster Image Scanning security scans run
 product_section: sec
 product_stage: protect
-product_group: container security
+product_group: container_security
 product_category: container_scanning
 value_type: number
 status: active

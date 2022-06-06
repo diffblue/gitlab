@@ -3,7 +3,7 @@ key_path: counts.users_visiting_testing_license_compliance_full_report
 description: Total number of clicks on testing_license_compliance_full_report button
 product_section: sec
 product_stage: secure
-product_group: static analysis
+product_group: static_analysis
 product_category: dependency_scanning
 value_type: number
 status: active

@@ -4,7 +4,7 @@ key_path: usage_activity_by_stage.verify.projects_reporting_ci_cd_back_to_github
 description: Projects with a GitHub service pipeline enabled
 product_section: ops
 product_stage: verify
-product_group: pipeline execution
+product_group: pipeline_execution
 product_category: continuous_integration
 value_type: number
 status: active

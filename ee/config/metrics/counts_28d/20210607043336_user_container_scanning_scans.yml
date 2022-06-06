@@ -3,7 +3,7 @@ key_path: usage_activity_by_stage_monthly.secure.user_container_scanning_scans
 description: Number of users who have run a Container Scanning scan
 product_section: sec
 product_stage: secure
-product_group: composition analysis
+product_group: composition_analysis
 product_category: container_scanning
 value_type: number
 status: removed

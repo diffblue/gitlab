@@ -3,7 +3,7 @@ key_path: counts.license_management_jobs
 description: Count of License Scanning jobs run
 product_section: sec
 product_stage: secure
-product_group: composition analysis
+product_group: composition_analysis
 product_category: license_compliance
 value_type: number
 instrumentation_class: LicenseManagementJobsMetric

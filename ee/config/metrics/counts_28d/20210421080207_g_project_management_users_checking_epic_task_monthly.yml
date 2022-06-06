@@ -4,7 +4,7 @@ key_path: redis_hll_counters.epics_usage.project_management_users_checking_epic_
 description: Counts of MAU checking epic task
 product_section: dev
 product_stage: plan
-product_group: product planning
+product_group: product_planning
 product_category: epics
 value_type: number
 status: active

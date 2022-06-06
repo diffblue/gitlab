@@ -4,7 +4,7 @@ key_path: usage_activity_by_stage_monthly.secure.dependency_scanning_pipeline
 description: Count of pipelines with successful Dependency Scanning jobs
 product_section: sec
 product_stage: secure
-product_group: composition analysis
+product_group: composition_analysis
 product_category: dependency_scanning
 value_type: number
 status: active

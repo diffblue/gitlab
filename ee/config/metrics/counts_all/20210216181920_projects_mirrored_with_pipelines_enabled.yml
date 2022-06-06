@@ -4,7 +4,7 @@ key_path: counts.projects_mirrored_with_pipelines_enabled
 description: Projects with repository mirroring enabled
 product_section: ops
 product_stage: verify
-product_group: pipeline execution
+product_group: pipeline_execution
 product_category:
 value_type: number
 status: active

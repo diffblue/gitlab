@@ -4,7 +4,7 @@ key_path: counts.epics_deepest_relationship_level
 description: Count of the deepest relationship level for epics
 product_section: dev
 product_stage: plan
-product_group: product planning
+product_group: product_planning
 product_category: epics
 value_type: number
 status: active

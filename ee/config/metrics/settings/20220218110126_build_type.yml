@@ -2,7 +2,7 @@ key_path: advanced_search.build_type
 description: Advanced Search search engine build_type
 product_section: enablement
 product_stage: enablement
-product_group: global search
+product_group: global_search
 value_type: string
 status: active
 milestone: "14.9"

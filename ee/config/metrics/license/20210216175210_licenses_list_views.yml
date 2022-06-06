@@ -4,7 +4,7 @@ key_path: counts.licenses_list_views
 description: Count to License List page views
 product_section: sec
 product_stage: secure
-product_group: composition analysis
+product_group: composition_analysis
 product_category: license_compliance
 value_type: string
 status: active

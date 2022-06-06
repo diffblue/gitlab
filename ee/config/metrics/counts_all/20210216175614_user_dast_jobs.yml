@@ -3,7 +3,7 @@ key_path: usage_activity_by_stage.secure.user_dast_jobs
 description: Count of DAST jobs
 product_section: sec
 product_stage: secure
-product_group: dynamic analysis
+product_group: dynamic_analysis
 product_category: dynamic_application_security_testing
 value_type: number
 status: active
