@@ -5,10 +5,11 @@ require 'spec_helper'
 RSpec.describe Security::TrainingUrlsFinder do
   let_it_be(:project) { create(:project) }
   let_it_be(:language) { nil }
+  let_it_be(:filename) { nil }
   let_it_be(:vulnerability) { create(:vulnerability, :with_findings, project: project) }
   let_it_be(:identifier) { create(:vulnerabilities_identifier, project: project, external_type: 'cwe', external_id: 2) }
 
-  subject { described_class.new(project, identifier_external_ids, language).execute }
+  subject { described_class.new(project, identifier_external_ids, language, filename).execute }
 
   context 'no identifier with cwe external type' do
     let(:identifier_external_ids) { [] }
@@ -69,6 +70,34 @@ RSpec.describe Security::TrainingUrlsFinder do
             )
           end
         end
+
+        ::Security::TrainingUrlsFinder::EXTENSION_LANGUAGE_MAP.each do |extension, language|
+          context "when a filename with extension .#{extension} is provided" do
+            let_it_be(:filename) { "code.#{extension}" }
+            let_it_be(:training_provider) do
+              ::Security::TrainingProviders::KontraUrlFinder.new(project, identifier.external_id, language)
+            end
+
+            before do
+              allow(::Security::TrainingProviders::KontraUrlFinder).to receive(:new)
+                                                                        .with(project, identifier.external_id, language)
+                                                                        .and_return(training_provider)
+              allow(training_provider).to receive(:response_url).and_return(url: 'http://test.host/test')
+              allow(training_provider).to receive(:execute)
+            end
+
+            it "requests urls with the language #{language}" do
+              is_expected.to match_array(
+                [{
+                  name: 'Kontra',
+                  url: 'http://test.host/test',
+                  status: 'completed',
+                  identifier: identifier.external_id
+                }]
+              )
+            end
+          end
+        end
       end
 
       context 'when training url has not yet been reactively cached' do
@@ -84,6 +113,14 @@ RSpec.describe Security::TrainingUrlsFinder do
 
         context 'when a language is provided' do
           let_it_be(:language) { 'ruby' }
+
+          it 'returns training urls list with status pending' do
+            is_expected.to match_array([{ name: 'Kontra', url: nil, status: 'pending' }])
+          end
+        end
+
+        context 'when a filename is provided' do
+          let_it_be(:filename) { 'code.rb' }
 
           it 'returns training urls list with status pending' do
             is_expected.to match_array([{ name: 'Kontra', url: nil, status: 'pending' }])
