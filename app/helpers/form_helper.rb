@@ -21,11 +21,10 @@ module FormHelper
             attribute = error.attribute
             message = error.message
 
-            message = html_escape_once(errors.full_message(attribute, message))
-            help_page_link = help_page_link_from_options(error.options)
-            message << " #{help_page_link}" if help_page_link
-            message = message.html_safe
+            message = html_escape_once(errors.full_message(attribute, message)).html_safe
             message = tag.span(message, class: 'str-truncated-100') if truncate.include?(attribute)
+            help_page_link = help_page_link_from_options(error.options)
+            message << " #{help_page_link}".html_safe if help_page_link
 
             tag.li(message)
           end
