@@ -84,6 +84,27 @@ RSpec.describe 'view usage quotas' do
       end
     end
 
+    context 'container_registry_namespace_statistics feature flag' do
+      subject { response.body }
+
+      before do
+        stub_feature_flags(container_registry_namespace_statistics: container_registry_namespace_statistics_enabled)
+        send_request
+      end
+
+      context 'when disabled' do
+        let(:container_registry_namespace_statistics_enabled) { false }
+
+        it { is_expected.to have_pushed_frontend_feature_flags(containerRegistryNamespaceStatistics: false)}
+      end
+
+      context 'when enabled' do
+        let(:container_registry_namespace_statistics_enabled) { true }
+
+        it { is_expected.to have_pushed_frontend_feature_flags(containerRegistryNamespaceStatistics: true)}
+      end
+    end
+
     def send_request
       get group_usage_quotas_path(group)
     end
