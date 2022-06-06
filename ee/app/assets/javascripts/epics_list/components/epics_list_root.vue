@@ -314,6 +314,16 @@ export default {
     </template>
     <template #statistics="{ issuable = {} }">
       <li
+        v-if="issuable.blockingCount"
+        v-gl-tooltip
+        class="issuable-upvotes gl-display-none gl-sm-display-block"
+        :title="__('Blocking epics')"
+        data-testid="issuable-blocking-count"
+      >
+        <gl-icon name="entity-blocked" />
+        {{ issuable.blockingCount }}
+      </li>
+      <li
         v-if="issuable.upvotes"
         v-gl-tooltip
         class="issuable-upvotes gl-display-none gl-sm-display-block"
