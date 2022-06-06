@@ -297,7 +297,7 @@ export default {
     seatsAvailableText: s__('Billings|Seats in use / Seats available'),
     seatsTooltipText: s__('Billings|Free groups are limited to %{number} seats.'),
     inASeatLabel: s__('Billings|In a seat'),
-    seatsInUseLink: helpPagePath('subscription/gitlab_com/index', {
+    seatsInUseLink: helpPagePath('subscriptions/gitlab_com/index', {
       anchor: 'how-seat-usage-is-determined',
     }),
     removeLastOwnerSeatRestrictedText: s__(

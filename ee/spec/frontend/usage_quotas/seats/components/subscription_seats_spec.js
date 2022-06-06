@@ -468,7 +468,7 @@ describe('Subscription Seats', () => {
     };
 
     const defaultProps = {
-      helpLink: '/help/subscription/gitlab_com/index#how-seat-usage-is-determined',
+      helpLink: '/help/subscriptions/gitlab_com/index#how-seat-usage-is-determined',
       totalUnit: null,
       usageUnit: null,
     };
