@@ -196,6 +196,12 @@ class ApprovalState
     approvals.size
   end
 
+  def invalid_approvers_rules
+    strong_memoize(:invalid_approvers_rules) do
+      report_approver_rules.select { |rule| rule.approvers.empty? }
+    end
+  end
+
   private
 
   attr_reader :target_branch

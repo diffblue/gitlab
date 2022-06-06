@@ -71,6 +71,8 @@ module EE
         expose :multiple_approval_rules_available do |approval_state|
           approval_state.project.multiple_approval_rules_available?
         end
+
+        expose :invalid_approvers_rules, using: ApprovalRuleShort
       end
     end
   end
