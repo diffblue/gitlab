@@ -167,6 +167,7 @@ export default {
         v-bind="discoverButtonProps"
         category="secondary"
         data-track-label="security-discover-upgrade-cta"
+        data-track-experiment="pql_three_cta_test"
         :data-track-property="slide"
         :href="linkSecondary"
       >
@@ -177,6 +178,7 @@ export default {
         v-bind="discoverButtonProps"
         category="primary"
         data-track-label="security-discover-trial-cta"
+        data-track-experiment="pql_three_cta_test"
         :data-track-property="slide"
         :href="linkMain"
       >

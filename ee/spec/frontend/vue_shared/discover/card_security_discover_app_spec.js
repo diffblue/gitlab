@@ -70,6 +70,7 @@ describe('Card security discover app', () => {
       let spy;
 
       beforeEach(() => {
+        stubExperiments({ pql_three_cta_test: 'candidate' });
         spy = mockTracking('_category_', wrapper.element, jest.spyOn);
       });
 
@@ -79,6 +80,13 @@ describe('Card security discover app', () => {
         expect(spy).toHaveBeenCalledWith('_category_', 'click_button', {
           label: 'security-discover-upgrade-cta',
           property: '0',
+          context: {
+            data: {
+              experiment: 'pql_three_cta_test',
+              variant: 'candidate',
+            },
+            schema: 'iglu:com.gitlab/gitlab_experiment/jsonschema/1-0-0',
+          },
         });
       });
 
@@ -88,6 +96,13 @@ describe('Card security discover app', () => {
         expect(spy).toHaveBeenCalledWith('_category_', 'click_button', {
           label: 'security-discover-trial-cta',
           property: '0',
+          context: {
+            data: {
+              experiment: 'pql_three_cta_test',
+              variant: 'candidate',
+            },
+            schema: 'iglu:com.gitlab/gitlab_experiment/jsonschema/1-0-0',
+          },
         });
       });
 
