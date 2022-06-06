@@ -35234,7 +35234,7 @@ msgstr ""
 msgid "Show whitespace changes"
 msgstr ""
 
-msgid "Showing %{conflict} between %{sourceBranch} and %{targetBranch}"
+msgid "Showing %{conflict}"
 msgstr ""
 
 msgid "Showing %{count} of %{total} projects"
