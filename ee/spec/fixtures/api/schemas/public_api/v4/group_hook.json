@@ -20,7 +20,9 @@
     "job_events",
     "deployment_events",
     "releases_events",
-    "subgroup_events"
+    "subgroup_events",
+    "alert_status",
+    "disabled_until"
   ],
   "properties": {
     "id": { "type": "integer" },
@@ -42,7 +44,9 @@
     "job_events": { "type": "boolean" },
     "deployment_events": { "type": "boolean" },
     "releases_events": { "type": "boolean" },
-    "subgroup_events": { "type": "boolean" }
+    "subgroup_events": { "type": "boolean" },
+    "alert_status": { "type": "string", "enum": ["executable","disabled","temporarily_disabled"] },
+    "disabled_until": { "type": ["string", "null"] }
   },
   "additionalProperties": false
 }
