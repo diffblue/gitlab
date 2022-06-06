@@ -1,6 +1,6 @@
-import { GlSkeletonLoader } from '@gitlab/ui';
+import { GlSkeletonLoader, GlSprintf } from '@gitlab/ui';
 import { GlSingleStat } from '@gitlab/ui/dist/charts';
-import { shallowMount, mount } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
 import TestCoverageSummary from 'ee/analytics/repository_analytics/components/test_coverage_summary.vue';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import { nDaysBefore, formatDate } from '~/lib/utils/datetime_utility';
@@ -19,9 +19,9 @@ describe('Test coverage table component', () => {
   const findLastUpdated = () => wrapper.findByTestId('test-coverage-last-updated');
   const findLoadingState = () => wrapper.findComponent(GlSkeletonLoader);
 
-  const createComponent = ({ data = {}, mountFn = shallowMount } = {}) => {
+  const createComponent = ({ data = {} } = {}) => {
     wrapper = extendedWrapper(
-      mountFn(TestCoverageSummary, {
+      shallowMount(TestCoverageSummary, {
         data() {
           return {
             projectCount: null,
@@ -43,6 +43,7 @@ describe('Test coverage table component', () => {
         },
         stubs: {
           GlSingleStat,
+          GlSprintf,
         },
       }),
     );
@@ -72,7 +73,6 @@ describe('Test coverage table component', () => {
           : formatDate(nDaysBefore(new Date(), daysAgo, { utc: true }), 'yyyy-mm-dd');
 
       createComponent({
-        mountFn: mount,
         data: {
           groupCoverageChartData: [{ name: 'test', data: [[date, 79.6]] }],
           latestCoverageDate: date,
