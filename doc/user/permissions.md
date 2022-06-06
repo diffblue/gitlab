@@ -521,7 +521,7 @@ and the ignore case flag is set (`/regex pattern/i`). Here are some examples:
 - Use `\.internal@domain\.com$` to mark email addresses ending with
   `.internal@domain.com` as internal.
 - Use `^(?:(?!\.ext@domain\.com).)*$\r?` to mark users with email addresses
-  NOT including `.ext@domain.com` as internal.
+  not including `.ext@domain.com` as internal.
 
 WARNING:
 Be aware that this regex could lead to a
