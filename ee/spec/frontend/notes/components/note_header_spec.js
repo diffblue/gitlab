@@ -48,8 +48,8 @@ describe('NoteHeader component', () => {
     },
   );
 
-  it('shows confidential indicator tooltip for group context when isConfidential is true for epics', () => {
-    createComponent({ isConfidential: true, noteableType: 'epic' });
+  it('shows internal note badge tooltip for group context when isInternalNote is true for epics', () => {
+    createComponent({ isInternalNote: true, noteableType: 'epic' });
 
     expect(wrapper.findByTestId('internalNoteIndicator').attributes('title')).toBe(
       'This internal note will always remain confidential',
