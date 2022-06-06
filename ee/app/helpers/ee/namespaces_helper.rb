@@ -52,13 +52,13 @@ module EE
     def buy_storage_path(namespace)
       return EE::SUBSCRIPTIONS_MORE_STORAGE_URL if use_customers_dot_for_addon_path?(namespace)
 
-      buy_storage_subscriptions_path(selected_group: namespace.id)
+      buy_storage_subscriptions_path(selected_group: namespace.root_ancestor.id)
     end
 
     def buy_storage_url(namespace)
       return EE::SUBSCRIPTIONS_MORE_STORAGE_URL if use_customers_dot_for_addon_path?(namespace)
 
-      buy_storage_subscriptions_url(selected_group: namespace.id)
+      buy_storage_subscriptions_url(selected_group: namespace.root_ancestor.id)
     end
 
     def show_minute_limit_banner?(namespace)

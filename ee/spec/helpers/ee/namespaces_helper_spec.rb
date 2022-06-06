@@ -208,12 +208,47 @@ RSpec.describe EE::NamespacesHelper do
 
     it { is_expected.to eq get_buy_storage_path(namespace) }
 
+    context 'when called from a subgroup' do
+      let(:group) { create(:group) }
+      let(:subgroup) { create(:group, parent: group) }
+
+      it 'returns the buy URL with the parent group id' do
+        expect(helper.buy_storage_path(subgroup)).to eq get_buy_storage_path(group)
+      end
+    end
+
     context 'when called for a personal namespace' do
       let(:user) { create(:user) }
       let(:personal_namespace) { build_stubbed(:user_namespace) }
 
       it 'returns the default purchase' do
         expect(helper.buy_storage_path(personal_namespace)).to eq EE::SUBSCRIPTIONS_MORE_STORAGE_URL
+      end
+    end
+  end
+
+  describe '#buy_storage_url' do
+    subject { helper.buy_storage_url(namespace) }
+
+    let(:namespace) { build_stubbed(:group) }
+
+    it { is_expected.to eq get_buy_storage_url(namespace) }
+
+    context 'when called from a subgroup' do
+      let(:group) { create(:group) }
+      let(:subgroup) { create(:group, parent: group) }
+
+      it 'returns the buy URL with the parent group id' do
+        expect(helper.buy_storage_url(subgroup)).to eq get_buy_storage_url(group)
+      end
+    end
+
+    context 'when called for a personal namespace' do
+      let(:user) { create(:user) }
+      let(:personal_namespace) { build_stubbed(:user_namespace) }
+
+      it 'returns the default purchase' do
+        expect(helper.buy_storage_url(personal_namespace)).to eq EE::SUBSCRIPTIONS_MORE_STORAGE_URL
       end
     end
   end
