@@ -7,6 +7,7 @@ module Security
         def execute
           create_new_vulnerabilities
           update_existing_vulnerabilities
+          mark_resolved_vulnerabilties_as_detected
 
           finding_maps
         end
@@ -19,6 +20,10 @@ module Security
 
         def update_existing_vulnerabilities
           IngestVulnerabilities::Update.new(pipeline, partitioned_maps.second).execute
+        end
+
+        def mark_resolved_vulnerabilties_as_detected
+          IngestVulnerabilities::MarkResolvedAsDetected.execute(pipeline, partitioned_maps.second)
         end
 
         def partitioned_maps
