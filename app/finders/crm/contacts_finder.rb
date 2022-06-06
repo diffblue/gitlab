@@ -7,6 +7,7 @@
 #   params:
 #     group: Group, required
 #     search: String, optional
+#     state: CustomerRelations::ContactStateEnum, optional
 module Crm
   class ContactsFinder
     include Gitlab::Allowable

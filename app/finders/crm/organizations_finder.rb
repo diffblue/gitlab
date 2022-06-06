@@ -7,6 +7,7 @@
 #   params:
 #     group: Group, required
 #     search: String, optional
+#     state: CustomerRelations::OrganizationStateEnum, optional
 module Crm
   class OrganizationsFinder
     include Gitlab::Allowable
