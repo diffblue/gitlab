@@ -141,6 +141,8 @@ and the existing GLFM parser and render implementations. They may also be
 manually updated as necessary to test-drive incomplete implementations.
 Regarding the terminology used here:
 
+<!-- vale gitlab.InclusionCultural = NO -->
+
 1. The Markdown snapshot tests can be considered a form of the
    [Golden Master Testing approach](https://www.google.com/search?q=golden+master+testing),
    which is also referred to as Approval Testing or Characterization Testing.
@@ -166,6 +168,8 @@ Regarding the terminology used here:
    as input data to support automated testing. However, fixture files still exist, so
    they are colocated under the `spec/fixtures` directory with the rest of
    the fixture data for the GitLab Rails application.
+
+<!-- vale gitlab.InclusionCultural = YES -->
 
 See also the section on [normalization](#normalization) below, which is an important concept used
 in the Markdown snapshot testing.
@@ -698,7 +702,7 @@ to be specified for a Markdown example.
   to avoid duplication of `regex`/`replacement` pairs and allow them to be shared across multiple examples.
 - The YAML anchors use a naming convention based on the index number of the example, in order to
   ensure unique anchor names and avoid naming conflicts.
-  
+
 `glfm_specification/input/gitlab_flavored_markdown/glfm_example_normalizations.yml` sample entries:
 
 ```yaml
@@ -719,7 +723,7 @@ to be specified for a Markdown example.
   prosemirror_json:
     01_01_uri: *00_uri
 07_01__gitlab_specific_markdown__footnotes__001:
-  # YAML anchors which are only shared within a single example should be defined within the example 
+  # YAML anchors which are only shared within a single example should be defined within the example
   shared:
     07_01_href: &07_01_href
       - regex: '(href)(=")(.+?)(")'
