@@ -118,7 +118,7 @@ RSpec.describe StorageHelper do
             end
 
             it 'returns the banner hash' do
-              expect(helper.storage_enforcement_banner_info(sub_group)[:text]).to eql("From #{storage_enforcement_date} storage limits will apply to this namespace. You are currently using 100 KB of namespace storage. View and manage your usage from <strong>Group settings &gt; Usage quotas</strong>.")
+              expect(helper.storage_enforcement_banner_info(sub_group).keys).to match_array(%i(text variant callouts_feature_name callouts_path learn_more_link))
             end
           end
         end

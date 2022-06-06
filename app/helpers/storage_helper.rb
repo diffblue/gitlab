@@ -29,7 +29,7 @@ module StorageHelper
 
     return unless can?(current_user, :admin_namespace, root_ancestor)
     return if root_ancestor.paid?
-    return unless pre_enforceable_dates?(root_ancestor)
+    return unless future_enforcement_date?(root_ancestor)
     return if user_dismissed_storage_enforcement_banner?(root_ancestor)
 
     {
@@ -72,9 +72,9 @@ module StorageHelper
     end
   end
 
-  def pre_enforceable_dates?(namespace)
+  def future_enforcement_date?(namespace)
     return true if ::Feature.enabled?(:namespace_storage_limit_bypass_date_check, namespace)
 
-    namespace.storage_enforcement_date && namespace.storage_enforcement_date >= Date.today
+    namespace.storage_enforcement_date.present? && namespace.storage_enforcement_date >= Date.today
   end
 end
