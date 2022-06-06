@@ -252,8 +252,8 @@ More details about the permissions for some project-level features follow.
 
 - [Public pipelines](../ci/pipelines/settings.md#change-which-users-can-view-your-pipelines):
   When set to public, gives access to certain CI/CD features to *Guest* project members.
-- [Pipeline visibility](../ci/enable_or_disable_ci.md#enable-cicd-in-a-project): When set to **Everyone with Access**,
-  gives access to certain CI/CD "view" features to *non-project* members.
+- [Pipeline visibility](../ci/pipelines/settings.md#change-pipeline-visibility-for-non-project-members-in-public-projects):
+  When set to **Everyone with Access**, gives access to certain CI/CD "view" features to *non-project* members.
 
 | Action                                                                                                                    | Non-member | Guest   | Reporter | Developer | Maintainer | Owner |
 |---------------------------------------------------------------------------------------------------------------------------|------------|---------|----------|-----------|------------|-------|
