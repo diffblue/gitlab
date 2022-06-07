@@ -316,7 +316,7 @@ RSpec.describe 'Promotions', :js do
       submit_search('chosen')
 
       within('#promote_advanced_search') do
-        find('.close').click
+        find('.js-close').click
       end
 
       visit search_path

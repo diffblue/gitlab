@@ -1,18 +1,15 @@
 - if show_advanced_search_promotion?
-  .user-callout.promotion-callout.promotion-advanced-search.js-mr-approval-callout#promote_advanced_search{ data: { uid: 'promote_advanced_search_dismissed' } }
-    .bordered-box.content-block
-      %button.btn.btn-default-tertiary.btn-icon.btn-sm.close.gl-banner-close.gl-button.js-close-callout{ type: 'button', 'aria-label' => _('Dismiss') }
-        = sprite_icon('close', size: 16, css_class: 'dismiss-icon')
-      .svg-container
-        = custom_icon('icon_search_avatar')
-      .user-callout-copy
-        %h5
-          - if Gitlab::CurrentSettings.should_check_namespace_plan?
-            = s_('Promotions|Upgrade your plan to activate Advanced Search.')
-          - else
-            = s_('Promotions|Improve search with Advanced Search and GitLab Enterprise Edition.')
-        %p
-          = s_('Promotions|The Advanced Search in GitLab is a powerful search service that saves you time. Instead of creating duplicate code and wasting time, you can now search for code within other teams that can help your own project.')
-          = link_to _('Read more'), help_page_path('user/search/advanced_search.md'), target: '_blank', rel: 'noopener noreferrer'
-
-        = render 'shared/promotions/promotion_link_project', location: :advanced_search
+  = render Pajamas::BannerComponent.new(banner_options: {class: 'user-callout', data: {uid: 'promote_advanced_search_dismissed'}, id: 'promote_advanced_search'},
+    close_options: {'aria-label' => _('Dismiss'), class: 'js-close-callout'}) do |c|
+    - c.illustration do
+      = custom_icon('icon_search_avatar')
+    - c.title do
+      - if Gitlab::CurrentSettings.should_check_namespace_plan?
+        = s_('Promotions|Upgrade your plan to activate Advanced Search.')
+      - else
+        = s_('Promotions|Improve search with Advanced Search and GitLab Enterprise Edition.')
+    %p
+      = s_('Promotions|The Advanced Search in GitLab is a powerful search service that saves you time. Instead of creating duplicate code and wasting time, you can now search for code within other teams that can help your own project.')
+      = link_to _('Read more'), help_page_path('user/search/advanced_search.md'), target: '_blank', rel: 'noopener noreferrer'
+    - c.primary_action do
+      = render 'shared/promotions/promotion_link_project', location: :advanced_search
