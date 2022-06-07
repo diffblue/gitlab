@@ -1074,6 +1074,15 @@
   :weight: 1
   :idempotent:
   :tags: []
+- :name: elastic_project_transfer
+  :worker_name: Elastic::ProjectTransferWorker
+  :feature_category: :global_search
+  :has_external_dependencies:
+  :urgency: :throttled
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: epics_new_epic_issue
   :worker_name: Epics::NewEpicIssueWorker
   :feature_category: :portfolio_management

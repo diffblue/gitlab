@@ -65,51 +65,11 @@ RSpec.describe Projects::TransferService do
     end
   end
 
-  describe 'elasticsearch indexing', :elastic, :clean_gitlab_redis_shared_state, :aggregate_failures do
-    before do
-      stub_ee_application_setting(elasticsearch_indexing: true)
-    end
+  describe 'elasticsearch indexing' do
+    it 'delegates transfer to Elastic::ProjectTransferWorker' do
+      expect(::Elastic::ProjectTransferWorker).to receive(:perform_async).with(project.id, project.namespace.id, group.id).once
 
-    context 'when elasticsearch_limit_indexing is on' do
-      before do
-        stub_ee_application_setting(elasticsearch_limit_indexing: true)
-      end
-
-      context 'when transferring between a non-indexed namespace and an indexed namespace' do
-        before do
-          create(:elasticsearch_indexed_namespace, namespace: group)
-        end
-
-        it 'invalidates the cache and indexes the project and all associated data' do
-          expect(Elastic::ProcessInitialBookkeepingService).to receive(:backfill_projects!).with(project)
-          expect(::Gitlab::CurrentSettings).to receive(:invalidate_elasticsearch_indexes_cache_for_project!).with(project.id).and_call_original
-
-          subject.execute(group)
-        end
-      end
-
-      context 'when both namespaces are indexed' do
-        before do
-          create(:elasticsearch_indexed_namespace, namespace: group)
-          create(:elasticsearch_indexed_namespace, namespace: project.namespace)
-        end
-
-        it 'does not invalidate the cache and indexes the project and associated data' do
-          expect(Elastic::ProcessInitialBookkeepingService).to receive(:backfill_projects!).with(project)
-          expect(::Gitlab::CurrentSettings).not_to receive(:invalidate_elasticsearch_indexes_cache_for_project!)
-
-          subject.execute(group)
-        end
-      end
-    end
-
-    context 'when elasticsearch_limit_indexing is off' do
-      it 'does not invalidate the cache and indexes the project and all associated data' do
-        expect(Elastic::ProcessInitialBookkeepingService).to receive(:backfill_projects!).with(project)
-        expect(::Gitlab::CurrentSettings).not_to receive(:invalidate_elasticsearch_indexes_cache_for_project!)
-
-        subject.execute(group)
-      end
+      subject.execute(group)
     end
   end
 
