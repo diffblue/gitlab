@@ -39,16 +39,12 @@ RSpec.describe Gitlab::Ssh::Signature do
   RSpec.shared_examples 'verified signature' do
     it 'reports verified status' do
       expect(signature.verification_status).to eq(:verified)
-      expect(signature.valid?).to eq(true)
-      expect(signature.verified_key).to eq(key)
     end
   end
 
   RSpec.shared_examples 'unverified signature' do
     it 'reports unverified status' do
       expect(signature.verification_status).to eq(:unverified)
-      expect(signature.valid?).to eq(false)
-      expect(signature.verified_key).to be_nil
     end
   end
 
@@ -164,8 +160,6 @@ RSpec.describe Gitlab::Ssh::Signature do
 
       it 'reports unknown_key status' do
         expect(signature.verification_status).to eq(:unknown_key)
-        expect(signature.valid?).to eq(false)
-        expect(signature.verified_key).to be_nil
       end
     end
 
@@ -176,8 +170,6 @@ RSpec.describe Gitlab::Ssh::Signature do
 
       it 'reports other_user status' do
         expect(signature.verification_status).to eq(:other_user)
-        expect(signature.valid?).to eq(false)
-        expect(signature.verified_key).to be_nil
       end
     end
   end

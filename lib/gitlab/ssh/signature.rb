@@ -25,16 +25,6 @@ module Gitlab
         end
       end
 
-      def valid?
-        verification_status == :verified
-      end
-
-      def verified_key
-        return unless valid?
-
-        signed_by_key
-      end
-
       private
 
       # Verifies the signature using the public key embedded in the blob.
