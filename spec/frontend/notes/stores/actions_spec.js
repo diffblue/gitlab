@@ -1424,6 +1424,7 @@ describe('Actions Notes Store', () => {
         null,
         [
           { type: mutationTypes.ADD_OR_UPDATE_DISCUSSIONS, payload: { discussion } },
+          { type: mutationTypes.SET_DONE_FETCHING_BATCH_DISCUSSIONS, payload: true },
           { type: mutationTypes.SET_FETCHING_DISCUSSIONS, payload: false },
         ],
         [{ type: 'updateResolvableDiscussionsCounts' }],

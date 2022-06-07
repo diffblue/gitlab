@@ -388,7 +388,7 @@ export default {
         this.setDiscussions();
 
         if (
-          !this.$store.state.notes.currentlyFetchingDiscussions &&
+          this.$store.state.notes.doneFetchingBatchDiscussions &&
           window.gon?.features?.paginatedMrDiscussions
         ) {
           this.unwatchDiscussions();
