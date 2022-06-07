@@ -308,6 +308,11 @@ export default {
         ? this.savedScannerProfileId
         : this.savedSiteProfileId;
     },
+    selectedProfileId() {
+      return this.profileType === SCANNER_TYPE
+        ? this.selectedScannerProfileId
+        : this.selectedSiteProfileId;
+    },
   },
   created() {
     const params = queryToObject(window.location.search, { legacySpacesDecode: true });
@@ -658,6 +663,7 @@ export default {
       v-if="glFeatures.dastUiRedesign"
       :profiles="selectedProfiles"
       :profile-id-in-use="profileIdInUse"
+      :selected-profile-id="selectedProfileId"
       :active-profile="activeProfile"
       :profile-type="profileType"
       :is-open="isSideDrawerOpen"

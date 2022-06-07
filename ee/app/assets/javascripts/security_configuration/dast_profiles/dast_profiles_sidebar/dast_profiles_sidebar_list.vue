@@ -22,6 +22,11 @@ export default {
       required: false,
       default: null,
     },
+    selectedProfileId: {
+      type: String,
+      required: false,
+      default: null,
+    },
   },
   computed: {
     summaryComponent() {
@@ -31,6 +36,9 @@ export default {
   methods: {
     isProfileInUse(profile) {
       return profile.id === this.profileIdInUse;
+    },
+    isProfileSelected(profile) {
+      return profile.id === this.selectedProfileId;
     },
   },
 };
@@ -44,6 +52,7 @@ export default {
       :key="profile.id"
       :profile="profile"
       :is-profile-in-use="isProfileInUse(profile)"
+      :is-profile-selected="isProfileSelected(profile)"
       :allow-selection="true"
       @edit="$emit('edit', profile)"
       @select-profile="$emit('select-profile', { profile, profileType })"

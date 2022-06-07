@@ -48,6 +48,7 @@ describe('DastProfileSummaryCard', () => {
         propsData: {
           ...propsData,
           isProfileInUse: true,
+          isProfileSelected: true,
         },
       });
     });
@@ -66,6 +67,28 @@ describe('DastProfileSummaryCard', () => {
 
       expect(tooltip).toBeDefined();
       expect(tooltip.value).toBe('Profile is being used by this on-demand scan');
+    });
+  });
+
+  describe('profile select button', () => {
+    it('should not shown when allowSelection is false', () => {
+      createComponent({
+        propsData: {
+          ...propsData,
+          allowSelection: false,
+        },
+      });
+      expect(findProfileSelectBtn().exists()).toBe(false);
+    });
+
+    it('should not be disabled when profile is not selected', () => {
+      createComponent({
+        propsData: {
+          ...propsData,
+          isProfileSelected: false,
+        },
+      });
+      expect(findProfileSelectBtn().props('disabled')).toBe(false);
     });
   });
 });
