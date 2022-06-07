@@ -6640,7 +6640,7 @@ RSpec.describe User do
         active_not_that_long_ago = (described_class::MINIMUM_INACTIVE_DAYS - 1).days.ago.to_date
         active_too_long_ago = described_class::MINIMUM_INACTIVE_DAYS.days.ago.to_date
         created_recently = (described_class::MINIMUM_DAYS_CREATED - 1).days.ago.to_date
-        created_not_recently = (described_class::MINIMUM_DAYS_CREATED + 1).days.ago.to_date
+        created_not_recently = described_class::MINIMUM_DAYS_CREATED.days.ago.to_date
 
         create(:user, :deactivated, last_activity_on: nil)
 
