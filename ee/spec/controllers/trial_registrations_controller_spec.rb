@@ -27,30 +27,51 @@ RSpec.describe TrialRegistrationsController do
     let(:logged_in_user) { nil }
     let(:get_params) { {} }
 
-    before do
-      stub_feature_flags(about_your_company_registration_flow: false)
-      sign_in(logged_in_user) if logged_in_user.present?
-      get :new, params: get_params
-    end
+    context 'a dot-com only feature' do
+      before do
+        sign_in(logged_in_user) if logged_in_user.present?
+        get :new, params: get_params
+      end
 
-    subject { response }
+      subject { response }
 
-    it_behaves_like 'a dot-com only feature'
+      it_behaves_like 'a dot-com only feature'
 
-    context 'when customer is authenticated' do
-      let_it_be(:logged_in_user) { create(:user) }
-
-      it { is_expected.to redirect_to(new_trial_url) }
-
-      context 'when there are additional query params' do
-        let(:get_params) { { glm_source: 'some_source', glm_content: 'some_content' } }
-
-        it { is_expected.to redirect_to(new_trial_url(get_params)) }
+      context 'when customer is not authenticated' do
+        it { is_expected.to render_template(:new) }
       end
     end
 
-    context 'when customer is not authenticated' do
-      it { is_expected.to render_template(:new) }
+    context 'when customer is authenticated' do
+      context 'when about_your_company_registration_flow is disabled' do
+        before do
+          stub_feature_flags(about_your_company_registration_flow: false)
+          sign_in(logged_in_user) if logged_in_user.present?
+          get :new, params: get_params
+        end
+
+        let_it_be(:logged_in_user) { create(:user) }
+
+        it { is_expected.to redirect_to(new_trial_url) }
+
+        context 'when there are additional query params' do
+          let(:get_params) { { glm_source: 'some_source', glm_content: 'some_content' } }
+
+          it { is_expected.to redirect_to(new_trial_url(get_params)) }
+        end
+      end
+
+      context 'when about_your_company_registration_flow is enabled' do
+        before do
+          stub_feature_flags(about_your_company_registration_flow: true)
+          sign_in(logged_in_user) if logged_in_user.present?
+          get :new, params: get_params
+        end
+
+        let_it_be(:logged_in_user) { create(:user) }
+
+        it { is_expected.to redirect_to(new_users_sign_up_company_path(trial: true)) }
+      end
     end
   end
 

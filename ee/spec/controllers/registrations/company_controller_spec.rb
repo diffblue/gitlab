@@ -76,13 +76,13 @@ RSpec.describe Registrations::CompanyController do
             GitlabSubscriptions::CreateTrialOrLeadService,
             user: user,
             params: ActionController::Parameters.new(params.merge(
-                                                       { trial_onboarding_flow: trial_onboarding_flow }
+                                                       trial_onboarding_flow: trial_onboarding_flow
                                                      )).permit!
           ) do |service|
             expect(service).to receive(:execute).and_return(ServiceResponse.success)
           end
 
-          post :create, params: params.merge({ trial_onboarding_flow: trial_onboarding_flow })
+          post :create, params: params.merge(trial_onboarding_flow: trial_onboarding_flow)
 
           expect(response).to have_gitlab_http_status(:redirect)
           expect(response).to redirect_to(new_users_sign_up_groups_project_path(redirect_query))
@@ -99,7 +99,7 @@ RSpec.describe Registrations::CompanyController do
             expect(service).to receive(:execute).and_return(ServiceResponse.error(message: 'failed'))
           end
 
-          post :create, params: params.merge({ trial_onboarding_flow: trial_onboarding_flow })
+          post :create, params: params.merge(trial_onboarding_flow: trial_onboarding_flow)
 
           expect(response).to have_gitlab_http_status(:ok)
           expect(response).to render_template(:new)
