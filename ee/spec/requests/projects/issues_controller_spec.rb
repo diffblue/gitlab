@@ -51,6 +51,16 @@ RSpec.describe Projects::IssuesController do
       end
     end
 
+    it_behaves_like 'seat count alert' do
+      subject { get_show }
+
+      let(:namespace) { project }
+
+      before do
+        project.add_developer(user)
+      end
+    end
+
     it 'exposes the escalation_policies licensed feature setting' do
       project.add_guest(user)
       stub_licensed_features(escalation_policies: true)
@@ -62,8 +72,16 @@ RSpec.describe Projects::IssuesController do
   end
 
   describe 'GET #index' do
-    def get_issues
-      get project_issues_path(project, params: params)
+    context 'when viewing all issues' do
+      include_examples 'seat count alert' do
+        subject { get project_issues_path(project, params: {}) }
+
+        let(:namespace) { project }
+
+        before do
+          project.add_developer(user)
+        end
+      end
     end
 
     context 'when listing epic issues' do
@@ -76,10 +94,8 @@ RSpec.describe Projects::IssuesController do
         get_issues # Warm the cache
       end
 
-      it_behaves_like 'seat count alert' do
-        subject { get_issues }
-
-        let(:namespace) { group }
+      def get_issues
+        get project_issues_path(project, params: params)
       end
 
       it 'does not cause extra queries when there are other subepic issues' do

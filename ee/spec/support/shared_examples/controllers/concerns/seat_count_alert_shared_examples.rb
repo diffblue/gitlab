@@ -1,10 +1,17 @@
 # frozen_string_literal: true
 
 RSpec.shared_examples 'seat count alert' do
+  let(:seat_count_data) do
+    {
+      namespace: namespace.root_ancestor,
+      remaining_seat_count: 1,
+      seats_in_use: 9,
+      total_seat_count: 10
+    }
+  end
+
   context 'when the namespace qualifies for the alert' do
     it 'sets the seat_count_data' do
-      seat_count_data = { namespace: namespace, remaining_seat_count: 1, seats_in_use: 9, total_seat_count: 10 }
-
       allow_next_instance_of(GitlabSubscriptions::Reconciliations::CalculateSeatCountDataService) do |service|
         allow(service).to receive(:execute).and_return(seat_count_data)
       end
@@ -18,8 +25,6 @@ RSpec.shared_examples 'seat count alert' do
   context 'when the feature flag is disabled' do
     it 'sets the seat_count_data to nil' do
       stub_feature_flags(seat_count_alerts: false)
-
-      seat_count_data = { namespace: namespace, remaining_seat_count: 1, seats_in_use: 9, total_seat_count: 10 }
 
       allow_next_instance_of(GitlabSubscriptions::Reconciliations::CalculateSeatCountDataService) do |service|
         allow(service).to receive(:execute).and_return(seat_count_data)
