@@ -1,5 +1,5 @@
 <script>
-import { GlTooltipDirective, GlResizeObserverDirective } from '@gitlab/ui';
+import { GlTooltipDirective, GlResizeObserverDirective, GlButton } from '@gitlab/ui';
 import { mapActions } from 'vuex';
 import { VULNERABILITY_MODAL_ID } from 'ee/vue_shared/security_reports/components/constants';
 import { BV_SHOW_MODAL } from '~/lib/utils/constants';
@@ -8,6 +8,9 @@ export default {
   directives: {
     GlTooltip: GlTooltipDirective,
     GlResizeObserverDirective,
+  },
+  components: {
+    GlButton,
   },
   props: {
     issue: {
@@ -43,14 +46,15 @@ export default {
 };
 </script>
 <template>
-  <button
+  <gl-button
     v-gl-tooltip="{ boundary: 'viewport' }"
     v-gl-resize-observer-directive="updateTooltipTitle"
-    class="btn-link gl-text-truncate"
+    class="gl-text-truncate"
+    variant="link"
     :aria-label="s__('Reports|Vulnerability Name')"
     :title="tooltipTitle"
     @click="handleIssueClick()"
   >
     {{ issue.title }}
-  </button>
+  </gl-button>
 </template>
