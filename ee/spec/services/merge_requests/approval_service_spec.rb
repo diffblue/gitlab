@@ -66,9 +66,15 @@ RSpec.describe MergeRequests::ApprovalService do
       end
 
       it 'sends the audit streaming event' do
-        expect_next_instance_of(AuditEvent) do |instance|
-          expect(instance).to receive(:stream_to_external_destinations).with(use_json: true)
-        end
+        audit_context = {
+          name: 'merge_request_approval_operation',
+          stream_only: true,
+          author: user,
+          scope: merge_request.project,
+          target: merge_request,
+          message: 'Approved merge request'
+        }
+        expect(::Gitlab::Audit::Auditor).to receive(:audit).with(audit_context)
 
         service.execute(merge_request)
       end
