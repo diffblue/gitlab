@@ -1,8 +1,33 @@
 # frozen_string_literal: true
 
+require 'spec_helper'
+
 require_relative '../../../tooling/quality/test_level'
 
 RSpec.describe Quality::TestLevel do
+  describe 'TEST_LEVEL_FOLDERS constant' do
+    it 'all directories it refers to exists', :aggregate_failures do
+      ee_only_directories = %w[
+        lib/ee/gitlab/background_migration
+        elastic
+        elastic_integration
+        replicators
+      ]
+
+      described_class::TEST_LEVEL_FOLDERS.values.flatten.each do |dir|
+        next if ee_only_directories.include?(dir) && !Gitlab.ee?
+
+        spec_directory = if ee_only_directories.include?(dir)
+                           File.join('ee', 'spec', dir)
+                         else
+                           File.join('spec', dir)
+                         end
+
+        expect(File.exist?(spec_directory)).to eq(true), "#{spec_directory} does not exist!"
+      end
+    end
+  end
+
   describe '#pattern' do
     context 'when level is all' do
       it 'returns a pattern' do
@@ -21,7 +46,7 @@ RSpec.describe Quality::TestLevel do
     context 'when level is unit' do
       it 'returns a pattern' do
         expect(subject.pattern(:unit))
-          .to eq("spec/{bin,channels,config,db,dependencies,elastic,elastic_integration,experiments,events,factories,finders,frontend,graphql,haml_lint,helpers,initializers,javascripts,lib,metrics_server,models,policies,presenters,rack_servers,replicators,routing,rubocop,scripts,serializers,services,sidekiq,sidekiq_cluster,spam,support_specs,tasks,uploaders,validators,views,workers,tooling,components}{,/**/}*_spec.rb")
+          .to eq("spec/{bin,channels,config,db,dependencies,elastic,elastic_integration,experiments,events,factories,finders,frontend,graphql,haml_lint,helpers,initializers,lib,metrics_server,models,policies,presenters,rack_servers,replicators,routing,rubocop,scripts,serializers,services,sidekiq,sidekiq_cluster,spam,support_specs,tasks,uploaders,validators,views,workers,tooling,components}{,/**/}*_spec.rb")
       end
     end
 
@@ -96,7 +121,7 @@ RSpec.describe Quality::TestLevel do
     context 'when level is unit' do
       it 'returns a regexp' do
         expect(subject.regexp(:unit))
-          .to eq(%r{spec/(bin|channels|config|db|dependencies|elastic|elastic_integration|experiments|events|factories|finders|frontend|graphql|haml_lint|helpers|initializers|javascripts|lib|metrics_server|models|policies|presenters|rack_servers|replicators|routing|rubocop|scripts|serializers|services|sidekiq|sidekiq_cluster|spam|support_specs|tasks|uploaders|validators|views|workers|tooling|components)})
+          .to eq(%r{spec/(bin|channels|config|db|dependencies|elastic|elastic_integration|experiments|events|factories|finders|frontend|graphql|haml_lint|helpers|initializers|lib|metrics_server|models|policies|presenters|rack_servers|replicators|routing|rubocop|scripts|serializers|services|sidekiq|sidekiq_cluster|spam|support_specs|tasks|uploaders|validators|views|workers|tooling|components)})
       end
     end
 

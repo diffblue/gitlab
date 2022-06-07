@@ -32,7 +32,6 @@ module Quality
         haml_lint
         helpers
         initializers
-        javascripts
         lib
         metrics_server
         models
