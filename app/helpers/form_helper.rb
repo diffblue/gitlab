@@ -132,7 +132,7 @@ module FormHelper
       rel: 'noopener noreferrer'
     )
 
-    message << " #{help_link}".html_safe
+    message + " #{help_link}".html_safe
   end
 
   def multiple_assignees_dropdown_options(options)
