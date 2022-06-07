@@ -9,7 +9,7 @@ class Groups::EpicBoardsController < Groups::ApplicationController
   before_action :redirect_to_recent_board, only: [:index]
   before_action :assign_endpoint_vars
   before_action do
-    push_frontend_feature_flag(:epic_board_total_weight, group)
+    push_frontend_feature_flag(:fe_epic_board_total_weight, group)
   end
 
   before_action do
