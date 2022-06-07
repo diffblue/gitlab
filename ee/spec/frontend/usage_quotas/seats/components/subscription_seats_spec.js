@@ -136,6 +136,7 @@ describe('Subscription Seats', () => {
       disabled: toggle.props().disabled,
       title: toggle.attributes('title'),
       value: toggle.props().value,
+      label: toggle.props().label,
     };
   };
 
@@ -251,6 +252,12 @@ describe('Subscription Seats', () => {
             });
 
             serializedTable = findSerializedTable(findTable());
+          });
+
+          it('sets toggle label correctly', () => {
+            forEachUser((_, serializedRow) => {
+              expect(serializedRow.toggle.label).toBe('In a seat');
+            });
           });
 
           it('sets toggle value correctly for active users', () => {

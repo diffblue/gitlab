@@ -476,8 +476,9 @@ export default {
       <template #cell(membershipState)="{ item: { user } }">
         <gl-toggle
           v-gl-tooltip
-          label="$options.i18n.inASeatLabel"
+          :label="$options.i18n.inASeatLabel"
           label-position="hidden"
+          data-testid="seat-toggle"
           v-bind="toggleProps(user)"
           @change="changeMembershipState(user)"
         />
