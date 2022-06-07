@@ -57,7 +57,7 @@ class CustomerRelations::Contact < ApplicationRecord
   end
 
   def self.sort_by_name
-    order("first_name ASC, last_name ASC")
+    order("last_name ASC, first_name ASC")
   end
 
   def self.find_ids_by_emails(group, emails)
