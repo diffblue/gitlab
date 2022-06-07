@@ -397,7 +397,11 @@ module EE
     def billable_members_count(requested_hosted_plan = nil)
       billable_ids = billed_user_ids(requested_hosted_plan)
 
-      billable_ids[:user_ids].count
+      if ::Namespaces::FreeUserCap.enforce_preview_or_standard?(self)
+        billable_ids[:user_ids].merge(awaiting_user_ids).count
+      else
+        billable_ids[:user_ids].count
+      end
     end
 
     override :free_plan_members_count

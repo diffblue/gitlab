@@ -88,6 +88,22 @@ RSpec.describe GitlabSubscription, :saas do
       expect(gitlab_subscription.calculate_seats_in_use).to eq(1)
     end
 
+    context 'with free_user_cap' do
+      before do
+        group.add_developer(user_1)
+        group.add_developer(user_2)
+        create(:group_member, :awaiting, source: group)
+
+        gitlab_subscription.update!(plan_code: 'free')
+        stub_ee_application_setting(should_check_namespace_plan: true)
+      end
+
+      it 'does not count awaiting members' do
+        expect(group.member_count).to eq(3)
+        expect(gitlab_subscription.calculate_seats_in_use).to eq(2)
+      end
+    end
+
     context 'with guest members' do
       before do
         group.add_guest(user_1)
