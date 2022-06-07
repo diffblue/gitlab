@@ -48,12 +48,16 @@ module EE
 
       override :stream_audit_event
       def stream_audit_event(merge_request)
-        AuditEvents::BuildService.new(
+        audit_context = {
+          name: 'merge_request_approval_operation',
+          stream_only: true,
           author: current_user,
           scope: merge_request.project,
           target: merge_request,
           message: 'Approved merge request'
-        ).execute.stream_to_external_destinations(use_json: true)
+        }
+
+        ::Gitlab::Audit::Auditor.audit(audit_context)
       end
 
       def incorrect_approval_password?(merge_request)
