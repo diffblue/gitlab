@@ -9,8 +9,6 @@ module Gitlab
     class Signature
       include Gitlab::Utils::StrongMemoize
 
-      attr_reader :signature_text, :signed_text
-
       def initialize(signature_text, signed_text, committer_email)
         @signature_text = signature_text
         @signed_text = signed_text
@@ -46,7 +44,7 @@ module Gitlab
       def valid_signature_blob?
         return false unless signature
 
-        signature.verify(signed_text)
+        signature.verify(@signed_text)
       end
 
       def committer
@@ -57,7 +55,7 @@ module Gitlab
 
       def signature
         strong_memoize(:signature) do
-          ::SSHData::Signature.parse_pem(signature_text)
+          ::SSHData::Signature.parse_pem(@signature_text)
         rescue SSHData::DecodeError
           nil
         end
