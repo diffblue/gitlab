@@ -60,7 +60,12 @@
               = feature.title
           %li.gl-p-0.gl-pt-3
             - if plan.about_page_href
-              = link_to s_("BillingPlans|See all %{plan_name} features") % { plan_name: plan.name }, EE::SUBSCRIPTIONS_COMPARISON_URL
+              = link_to s_("BillingPlans|See all %{plan_name} features") % { plan_name: plan.name },
+                EE::SUBSCRIPTIONS_COMPARISON_URL,
+                data: { track_action: 'click_link',
+                        track_label: 'plan_features',
+                        track_property: plan.code,
+                        track_experiment: :promote_premium_billing_page }
 
     .card-footer
       - show_upgrade_button = show_upgrade_button?(purchase_link.action, plan_offer_type)
