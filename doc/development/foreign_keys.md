@@ -15,7 +15,7 @@ class User < ActiveRecord::Base
 end
 ```
 
-Here you need to add a foreign key on column `posts.user_id`. This ensures
+Add a foreign key here on column `posts.user_id`. This ensures
 that data consistency is enforced on database level. Foreign keys also mean that
 the database can very quickly remove associated data (for example, when removing a
 user), instead of Rails having to do this.

@@ -96,7 +96,7 @@ A database **maintainer**'s role is to:
 Review workload is distributed using [reviewer roulette](code_review.md#reviewer-roulette)
 ([example](https://gitlab.com/gitlab-org/gitlab-foss/-/merge_requests/25181#note_147551725)).
 The MR author should request a review from the suggested database
-**reviewer**. When they give their sign-off, they hand over to
+**reviewer**. When they sign off, they hand over to
 the suggested database **maintainer**.
 
 If reviewer roulette didn't suggest a database reviewer & maintainer,
@@ -142,7 +142,7 @@ Include in the MR description:
 - If the migration itself is not reversible, details of how data changes could be reverted in the event of an incident. For example, in the case of a migration that deletes records (an operation that most of the times is not automatically revertable), how _could_ the deleted records be recovered.
 - If the migration deletes data, apply the label `~data-deletion`.
 - Concise descriptions of possible user experience impact of an error; for example, "Issues would unexpectedly go missing from Epics".
-- Relevant data from the [query plans](#query-plans) that indicate the query works as expected; such as the approximate number of records that are modified/deleted.
+- Relevant data from the [query plans](#query-plans) that indicate the query works as expected; such as the approximate number of records that are modified or deleted.
 
 #### Preparation when adding or modifying queries
 

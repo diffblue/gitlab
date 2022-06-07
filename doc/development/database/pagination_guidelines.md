@@ -137,7 +137,7 @@ This is what happens:
 1. The rows at this point are not sorted, so the database sorts the rows.
 1. The database returns the first 20 rows.
 
-In case the project has 10_000 rows, the database reads 10_000 rows and sort them in memory (or on disk). This does not scale well in the long term.
+In case the project has 10,000 rows, the database reads 10,000 rows and sorts them in memory (or on disk). This does not scale well in the long term.
 
 To fix this we need the following index:
 
@@ -154,7 +154,7 @@ Here we're leveraging the ordered property of the b-tree database index. Values 
 
 ##### `COUNT(*)` on a large dataset
 
-Kaminari by default executes a count query to determine the number of pages for rendering the page links. Count queries can be quite expensive for a large table, in an unfortunate scenario the queries simply time out.
+Kaminari by default executes a count query to determine the number of pages for rendering the page links. Count queries can be quite expensive for a large table. In an unfortunate scenario the queries simply time out.
 
 To work around this, we can run Kaminari without invoking the count SQL query.
 

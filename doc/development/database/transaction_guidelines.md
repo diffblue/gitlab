@@ -60,7 +60,7 @@ end
 
 The database tries to acquire the `FOR UPDATE` lock for the referenced `issue` and
 `project` records. In our case, we have two competing transactions for these locks,
-and only one of them successfully acquire them. The other transaction has
+and only one of them successfully acquires them. The other transaction has
 to wait in the lock queue until the first transaction finishes. The execution of the
 second transaction is blocked at this point.
 

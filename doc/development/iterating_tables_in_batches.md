@@ -31,7 +31,7 @@ User.each_batch(of: 10) do |relation|
 end
 ```
 
-This ends up producing queries such as:
+This produces queries such as:
 
 ```plaintext
 User Load (0.7ms)  SELECT  "users"."id" FROM "users" WHERE ("users"."id" >= 41654)  ORDER BY "users"."id" ASC LIMIT 1 OFFSET 1000
@@ -100,7 +100,7 @@ determines the data ranges (slices) and schedules the background jobs uses `each
 ## Efficient usage of `each_batch`
 
 `EachBatch` helps to iterate over large tables. It's important to highlight that `EachBatch`
-does not magically solve all iteration related performance problems and it might not help at
+does not magically solve all iteration-related performance problems, and it might not help at
 all in some scenarios. From the database point of view, correctly configured database indexes are
 also necessary to make `EachBatch` perform well.
 

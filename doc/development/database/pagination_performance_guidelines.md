@@ -110,7 +110,7 @@ This index fully covers the database query and the pagination.
 
 Unfortunately, there is no efficient way to sort and paginate on the group level. The database query execution time increases based on the number of records in the group.
 
-Things get worse when group level actually means group and its subgroups. To load the first page, the database looks up the group hierarchy, finds all projects and then looks up all issues.
+Things get worse when group level actually means group and its subgroups. To load the first page, the database looks up the group hierarchy, finds all projects, and then looks up all issues.
 
 The main reason behind the inefficient queries on the group level is the way our database schema is designed; our core domain models are associated with a project, and projects are associated with groups. This doesn't mean that the database structure is bad, it's just in a well-normalized form that is not optimized for efficient group level queries. We might need to look into denormalization in the long term.
 
@@ -213,7 +213,7 @@ OFFSET 0
 
 We might be tempted to add an index on `project_id`, `confidential`, and `iid` to improve the database query, however, in this case it's probably unnecessary. Based on the data distribution in the table, confidential issues are rare. Filtering them out does not make the database query significantly slower. The database might read a few extra rows, the performance difference might not even be visible to the end-user.
 
-On the other hand, if we would implement a special filter where we only show confidential issues, we surely need the index. Finding 20 confidential issues might require the database to scan hundreds of rows or in the worst case, all issues in the project.
+On the other hand, if we implemented a special filter where we only show confidential issues, we need the index. Finding 20 confidential issues might require the database to scan hundreds of rows or, in the worst case, all issues in the project.
 
 NOTE:
 Be aware of the data distribution and the table access patterns (how features work) when introducing a new database index. Sampling production data might be necessary to make the right decision.
@@ -276,9 +276,9 @@ Running the query in production for the GitLab project produces the following ex
 (13 rows)
 ```
 
-The query looks up the `assignees` first, filtered by the `user_id` (`user_id = 4156052`) and it finds 215 rows. Using that 215 rows, the database looks up the 215 associated issue rows by the primary key. Notice that the filter on the `project_id` column is not backed by an index.
+The query looks up the `assignees` first, filtered by the `user_id` (`user_id = 4156052`) and it finds 215 rows. Using those 215 rows, the database looks up the 215 associated issue rows by the primary key. Notice that the filter on the `project_id` column is not backed by an index.
 
-In most cases, we are lucky that the joined relation does not return too many rows, therefore, we end up with a relatively efficient database query that accesses low number of rows. As the database grows, these queries might start to behave differently. Let's say the number `issue_assignees` records for a particular user is very high (millions), then this join query does not perform well, and it likely times out.
+In most cases, we are lucky that the joined relation does not return too many rows, therefore, we end up with a relatively efficient database query that accesses a small number of rows. As the database grows, these queries might start to behave differently. Let's say the number `issue_assignees` records for a particular user is very high, in the millions. This join query does not perform well, and it likely times out.
 
 A similar problem could be a double join, where the filter exists in the 2nd `JOIN` query. Example: `Issue -> LabelLink -> Label(name=bug)`.
 
