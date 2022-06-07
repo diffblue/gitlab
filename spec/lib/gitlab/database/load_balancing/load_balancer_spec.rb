@@ -210,7 +210,7 @@ RSpec.describe Gitlab::Database::LoadBalancing::LoadBalancer, :request_store do
     end
 
     it 'uses a retry with exponential backoffs' do
-      expect(lb).to receive(:retry_with_backoff).and_yield
+      expect(lb).to receive(:retry_with_backoff).and_yield(0)
 
       lb.read_write { 10 }
     end
@@ -329,6 +329,17 @@ RSpec.describe Gitlab::Database::LoadBalancing::LoadBalancer, :request_store do
       expect(lb).not_to receive(:sleep)
 
       expect { lb.retry_with_backoff { raise } }.to raise_error(RuntimeError)
+    end
+
+    it 'yields the current retry iteration' do
+      allow(lb).to receive(:connection_error?).and_return(true)
+      expect(lb).to receive(:release_primary_connection).exactly(3).times
+      iterations = []
+
+      # time: 0 so that we don't sleep and slow down the test
+      expect { lb.retry_with_backoff(attempts: 3, time: 0) { |i| iterations << i; raise } }.to raise_error(RuntimeError)
+
+      expect(iterations).to eq([1, 2, 3])
     end
   end
 
