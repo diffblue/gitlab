@@ -495,14 +495,13 @@ RSpec.describe GitlabSubscription, :saas do
       end
     end
 
-    it 'gitlab_subscription columns are contained in gitlab_subscription_history columns' do
-      diff_attrs = %w(updated_at seats_in_use seats_owed max_seats_used_changed_at)
-      expect(described_class.attribute_names - GitlabSubscriptionHistory.attribute_names).to eq(diff_attrs)
-    end
-
-    it 'gitlab_subscription_history columns have some extra columns over gitlab_subscription' do
-      diff_attrs = %w(gitlab_subscription_created_at gitlab_subscription_updated_at change_type gitlab_subscription_id)
-      expect(GitlabSubscriptionHistory.attribute_names - described_class.attribute_names).to eq(diff_attrs)
+    it 'has all attributes listed in the subscription history table' do
+      expect(described_class.attribute_names)
+        .to contain_exactly(
+          *GitlabSubscriptionHistory::PREFIXED_ATTRIBUTES,
+          *GitlabSubscriptionHistory::TRACKED_ATTRIBUTES,
+          *GitlabSubscriptionHistory::OMITTED_ATTRIBUTES
+        )
     end
 
     context 'before_update', :freeze_time do
