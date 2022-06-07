@@ -127,7 +127,7 @@ export default {
     <gl-button
       v-gl-modal-directive="'download-csv-modal'"
       category="primary"
-      variant="info"
+      variant="confirm"
       class="gl-xs-w-full"
       data-testid="group-code-coverage-modal-button"
       :aria-label="$options.i18n.downloadCSVButton"
