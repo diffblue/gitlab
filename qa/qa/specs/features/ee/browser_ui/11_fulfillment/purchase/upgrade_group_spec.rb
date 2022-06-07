@@ -76,7 +76,7 @@ module QA
 
             Page::Group::Menu.perform(&:go_to_usage_quotas)
             Gitlab::Page::Group::Settings::UsageQuotas.perform do |usage_quota|
-              usage_quota.pipeline_tab
+              usage_quota.pipelines_tab
 
               expect { usage_quota.additional_ci_minutes? }.to eventually_be_truthy.within(max_duration: 120, max_attempts: 60, reload_page: page)
               aggregate_failures do
