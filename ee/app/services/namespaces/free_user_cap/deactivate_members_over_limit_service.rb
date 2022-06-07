@@ -39,7 +39,7 @@ module Namespaces
           unique_user_ids = user_ids.uniq
           UserProjectAccessChangedService.new(unique_user_ids)
             .execute(blocking: false,
-                     priority: UserProjectAccessChangedService::LOW_PRIORITY)
+                     priority: UserProjectAccessChangedService::MEDIUM_PRIORITY)
         end
       end
       # rubocop: enable CodeReuse/ActiveRecord
