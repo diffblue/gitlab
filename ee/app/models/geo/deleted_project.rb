@@ -31,15 +31,4 @@ class Geo::DeletedProject
   def wiki_path
     wiki.disk_path
   end
-
-  # When we remove project we move the repository to path+deleted.git then
-  # outside the transaction we schedule removal of path+deleted with Sidekiq
-  # through the run_after_commit callback. In a Geo secondary node, we don't
-  # attempt to remove the repositories inside a transaction because we don't
-  # have access to the original model anymore, we just need to perform some
-  # cleanup. This method will run the given block to remove repositories
-  # immediately otherwise will leave us with stalled repositories on disk.
-  def run_after_commit(&block)
-    instance_eval(&block)
-  end
 end

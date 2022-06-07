@@ -73,12 +73,4 @@ RSpec.describe Geo::DeletedProject, :geo, type: :model do
       expect(subject.wiki_path).to eq('root/sample.wiki')
     end
   end
-
-  describe '#run_after_commit' do
-    it 'runs the given block changing self to the caller' do
-      expect(subject).to receive(:repository_storage).once
-
-      subject.run_after_commit { self.repository_storage }
-    end
-  end
 end
