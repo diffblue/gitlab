@@ -32,7 +32,7 @@ describe('RegistrationDropdown', () => {
   const findRegistrationInstructionsDropdownItem = () => wrapper.findComponent(GlDropdownItem);
   const findTokenDropdownItem = () => wrapper.findComponent(GlDropdownForm);
   const findRegistrationToken = () => wrapper.findComponent(RegistrationToken);
-  const findRegistrationTokenInput = () => wrapper.findByTestId('token-value').find('input');
+  const findRegistrationTokenInput = () => wrapper.find('[name=token-value]');
   const findTokenResetDropdownItem = () =>
     wrapper.findComponent(RegistrationTokenResetDropdownItem);
   const findModalContent = () =>
