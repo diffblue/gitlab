@@ -7,11 +7,14 @@ RSpec.describe Gitlab::LegacyGithubImport::ProjectCreator do
   let(:namespace) { create(:group) }
 
   let(:repo) do
-    OpenStruct.new(
+    double(:repo, # rubocop:disable RSpec/VerifiedDoubles
       login: 'vim',
       name: 'vim',
+      description: 'Vim',
       full_name: 'asd/vim',
-      clone_url: 'https://gitlab.com/asd/vim.git'
+      clone_url: 'https://gitlab.com/asd/vim.git',
+      private: false,
+      has_wiki?: false
     )
   end
 
