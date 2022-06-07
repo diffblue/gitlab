@@ -23,8 +23,8 @@
 
   .gl-display-grid.gl-sm-grid-template-columns-2.gl-md-grid-template-columns-3.gl-lg-grid-template-columns-4.gl-gap-6
     - cross_stage_fdm_highlighted_features.each do |value|
-      .gl-card.gl-max-w-50.gl-rounded-lg
-        .gl-card-body
+      = render Pajamas::CardComponent.new(card_options: { class: 'gl-max-w-50 gl-rounded-lg' }) do |c|
+        = c.body do
           .gl-w-7.gl-h-7= image_tag("illustrations/#{value[:icon_name]}.svg", class: 'gl-w-full')
           %h4.gl-mb-3.gl-font-base.gl-line-height-20= value[:title]
           %p.gl-font-sm.gl-text-gray-700.gl-line-height-20= value[:desc]
@@ -37,8 +37,9 @@
 
   .gl-display-grid.gl-sm-grid-template-columns-2.gl-md-grid-template-columns-3.gl-gap-6
     - cross_stage_fdm_value_statements.each do |value|
-      .gl-card.gl-rounded-lg
-        .gl-card-body.gl-p-6
+      = render Pajamas::CardComponent.new(card_options: { class: 'gl-rounded-lg' },
+                                          body_options: { class: 'gl-p-6'}) do |c|
+        = c.body do
           .gl-w-8.gl-h-8= image_tag("illustrations/#{value[:icon_name]}.svg", class: 'gl-w-full')
           %h4.gl-mt-5.gl-mb-3.gl-font-lg.gl-line-height-20= value[:title]
           %p.gl-font-sm.gl-text-gray-700.gl-line-height-20= value[:desc]

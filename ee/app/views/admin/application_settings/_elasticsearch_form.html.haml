@@ -17,8 +17,9 @@
       = form_errors(@application_setting)
 
       %fieldset
-        .gl-card.gl-bg-gray-10.gl-mb-6
-          .gl-card-body
+        - component_params = { card_options: { class: 'gl-bg-gray-10 gl-mb-6' } }
+        = render Pajamas::CardComponent.new(**component_params) do |c|
+          = c.body do
             - halted_migrations = elasticsearch_available && Elastic::DataMigrationService.halted_migrations?
             - if halted_migrations
               = render Pajamas::AlertComponent.new(variant: :warning,
@@ -123,8 +124,8 @@
                 = _('Elasticsearch HTTP client timeout value in seconds.')
                 = _('To use the system\'s default, set this value to 0.')
 
-        .gl-card.gl-bg-gray-10.gl-mb-6
-          .gl-card-body
+        = render Pajamas::CardComponent.new(**component_params) do |c|
+          = c.body do
             %h4= _('Elasticsearch indexing restrictions')
             .form-group
               = f.gitlab_ui_checkbox_component :elasticsearch_limit_indexing, s_('AdminSettings|Limit the number of namespaces and projects that can be indexed.'), checkbox_options: { class: 'js-limit-checkbox' }
@@ -143,8 +144,8 @@
               - else
                 = f.text_field :elasticsearch_project_ids, class: 'js-elasticsearch-projects', value: elasticsearch_project_ids, data: { selected: elasticsearch_objects_options(@application_setting.elasticsearch_limited_projects(true)).to_json }
 
-        .gl-card.gl-bg-gray-10.gl-mb-6
-          .gl-card-body
+        = render Pajamas::CardComponent.new(**component_params) do |c|
+          = c.body do
             %h4= _('Custom analyzers: language support')
             %h5
               = _('Chinese language support using')
@@ -164,8 +165,8 @@
             .form-group
               = f.gitlab_ui_checkbox_component :elasticsearch_analyzers_kuromoji_search, s_('AdminSettings|Enable kuromoji custom analyzer: Search'), checkbox_options: { disabled: !Gitlab::CurrentSettings.elasticsearch_analyzers_kuromoji_enabled? }, help_text: s_('AdminSettings|Only enable search after installing the plugin, enabling indexing, and recreating the index.')
 
-        .gl-card.gl-bg-gray-10.gl-mb-6
-          .gl-card-body
+        = render Pajamas::CardComponent.new(**component_params) do |c|
+          = c.body do
             %h4= _('Elasticsearch AWS IAM credentials')
             .form-group
               = f.gitlab_ui_checkbox_component :elasticsearch_aws, s_('AdminSettings|Use AWS hosted Elasticsearch with IAM credentials')
