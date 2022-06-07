@@ -13,16 +13,14 @@
   .col-sm-6
     = s_('UsageQuota|Usage of resources across your projects').html_safe
 
-.top-area.scrolling-tabs-container.inner-page-scroll-tabs
-  %ul.nav.nav-tabs.nav-links.scrolling-tabs.separator.js-storage-tabs{ role: 'tablist' }
-    %li.nav-item
-      %a.nav-link#pipelines-quota{ data: { toggle: "tab", action: '#pipelines-quota-tab' }, href: '#pipelines-quota-tab', 'aria-controls': '#pipelines-quota-tab', 'aria-selected': true }
-        = s_('UsageQuota|Pipelines')
-    %li.nav-item
-      %a.nav-link#storage-quota{ data: { toggle: "tab", action: '#storage-quota-tab' }, href: '#storage-quota-tab', 'aria-controls': '#storage-quota-tab', 'aria-selected': false }
-        = s_('UsageQuota|Storage')
+= gl_tabs_nav({ class: 'js-storage-tabs' }) do
+  = gl_tab_link_to '#pipelines-quota-tab', item_active: true do
+    =  s_('UsageQuota|Pipelines')
+  = gl_tab_link_to '#storage-quota-tab' do
+    = s_('UsageQuota|Storage')
+
 .tab-content
-  .tab-pane#pipelines-quota-tab
+  .tab-pane.active#pipelines-quota-tab
     - if Feature.enabled?(:usage_quotas_pipelines_vue, @group)
       #js-pipeline-usage-app{ data: pipeline_usage_app_data(@namespace) }
     - else

@@ -3,23 +3,43 @@ import SeatUsageApp from 'ee/usage_quotas/seats';
 import initPipelineUsageApp from 'ee/usage_quotas/pipelines';
 import initNamespaceStorage from 'ee/usage_quotas/storage/init_namespace_storage';
 import initCiMinutesUsageApp from 'ee/usage_quotas/ci_minutes_usage';
-import LinkedTabs from '~/lib/utils/bootstrap_linked_tabs';
+import { GlTabsBehavior, TAB_SHOWN_EVENT } from '~/tabs';
 import { trackAddToCartUsageTab } from '~/google_tag_manager';
+import { historyReplaceState } from '~/lib/utils/common_utils';
 
-const initLinkedTabs = () => {
-  if (!document.querySelector('.js-storage-tabs')) {
-    return false;
-  }
-
-  return new LinkedTabs({
-    defaultAction: '#seats-quota-tab',
-    parentEl: '.js-storage-tabs',
-    hashedTabs: true,
+/**
+ * onTabChange and loadInitialTab are both set to be removed with https://gitlab.com/gitlab-org/gitlab/-/issues/364037.
+ *
+ * These are workaround as part of refactoring LinkedTabs -> GlTabsBehavior.
+ * Currently GlTabsBehavior doesn't support hash manipulation while LinkedTabs did out of the box.
+ * To preserve the behavior during the refactor adding this logic here has been the path of least resistance.
+ * Ideally GlTabsBehavior will handle this logic internally and will be implemented in the above mentioned issue.
+ */
+const onTabChange = (tabsEl) => {
+  tabsEl.addEventListener(TAB_SHOWN_EVENT, (event) => {
+    const tab = event.target;
+    historyReplaceState(tab.getAttribute('href'));
   });
 };
 
+const loadInitialTab = (glTabs) => {
+  const tab = glTabs.tabList.querySelector(`a[href="${window.location.hash}"]`);
+  glTabs.activateTab(tab || glTabs.activeTab);
+};
+
+const initGlTabs = () => {
+  const tabsEl = document.querySelector('.js-storage-tabs');
+  if (!tabsEl) {
+    return;
+  }
+
+  const glTabs = new GlTabsBehavior(tabsEl);
+  onTabChange(tabsEl);
+  loadInitialTab(glTabs);
+};
+
 /**
- * This adds the current URL hash to the pagingation links so that the page
+ * This adds the current URL hash to the pagination links so that the page
  * opens in the correct tab. This happens because rails pagination doesn't add
  * URL hash, and it does a full page load, and then LinkedTabs looses track
  * of the opened page. Once we move pipelines to Vue, we won't need this hotfix.
@@ -31,10 +51,10 @@ const fixPipelinesPagination = () => {
     return;
   }
 
-  const pipelinesQuotaTabLink = document.querySelector('#pipelines-quota');
+  const pipelinesQuotaTabLink = document.querySelector("a[href='#pipelines-quota-tab']");
   const pipelinesQuotaTab = document.querySelector('#pipelines-quota-tab');
 
-  $(document).on('shown.bs.tab', (event) => {
+  $(document).on(TAB_SHOWN_EVENT, (event) => {
     if (event.target.id === pipelinesQuotaTabLink.id) {
       const pageLinks = pipelinesQuotaTab.querySelectorAll('.page-link');
 
@@ -51,5 +71,5 @@ SeatUsageApp();
 initPipelineUsageApp();
 initNamespaceStorage();
 initCiMinutesUsageApp();
-initLinkedTabs();
+initGlTabs();
 trackAddToCartUsageTab();
