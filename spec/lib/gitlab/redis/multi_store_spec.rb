@@ -65,6 +65,7 @@ RSpec.describe Gitlab::Redis::MultiStore do
   context 'when primary_store is not a ::Redis instance' do
     before do
       allow(primary_store).to receive(:is_a?).with(::Redis).and_return(false)
+      allow(primary_store).to receive(:is_a?).with(::Redis::Namespace).and_return(false)
     end
 
     it 'fails with exception' do
@@ -73,14 +74,37 @@ RSpec.describe Gitlab::Redis::MultiStore do
     end
   end
 
+  context 'when primary_store is a ::Redis::Namespace instance' do
+    before do
+      allow(primary_store).to receive(:is_a?).with(::Redis).and_return(false)
+      allow(primary_store).to receive(:is_a?).with(::Redis::Namespace).and_return(true)
+    end
+
+    it 'fails with exception' do
+      expect { described_class.new(primary_store, secondary_store, instance_name) }.not_to raise_error
+    end
+  end
+
   context 'when secondary_store is not a ::Redis instance' do
     before do
       allow(secondary_store).to receive(:is_a?).with(::Redis).and_return(false)
+      allow(secondary_store).to receive(:is_a?).with(::Redis::Namespace).and_return(false)
     end
 
     it 'fails with exception' do
       expect { described_class.new(primary_store, secondary_store, instance_name) }
         .to raise_error(ArgumentError, /invalid secondary_store/)
+    end
+  end
+
+  context 'when secondary_store is a ::Redis::Namespace instance' do
+    before do
+      allow(secondary_store).to receive(:is_a?).with(::Redis).and_return(false)
+      allow(secondary_store).to receive(:is_a?).with(::Redis::Namespace).and_return(true)
+    end
+
+    it 'fails with exception' do
+      expect { described_class.new(primary_store, secondary_store, instance_name) }.not_to raise_error
     end
   end
 
