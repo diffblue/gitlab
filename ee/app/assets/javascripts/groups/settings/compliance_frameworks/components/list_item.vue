@@ -1,6 +1,5 @@
 <script>
 import { GlLabel, GlButton, GlTooltipDirective } from '@gitlab/ui';
-import { SCOPED_LABEL_DELIMITER } from '~/vue_shared/components/sidebar/labels_select_widget/constants';
 import { DELETE_BUTTON_LABEL, EDIT_BUTTON_LABEL } from '../constants';
 
 export default {
@@ -21,11 +20,6 @@ export default {
       required: true,
     },
   },
-  computed: {
-    isScoped() {
-      return this.framework.name.includes(SCOPED_LABEL_DELIMITER);
-    },
-  },
   i18n: {
     editFramework: EDIT_BUTTON_LABEL,
     deleteFramework: DELETE_BUTTON_LABEL,
@@ -41,7 +35,7 @@ export default {
         :target="framework.editPath"
         :background-color="framework.color"
         :title="framework.name"
-        :scoped="isScoped"
+        :description="$options.i18n.editFramework"
         :disabled="loading"
       />
     </div>
