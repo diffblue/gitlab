@@ -4,10 +4,10 @@ require 'spec_helper'
 
 RSpec.describe Gitlab::Ssh::Signature do
   # ssh-keygen -t ed25519
-  let(:public_key_text) { "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIELaINtPpdqTHD57qGll7jacPbuzsz5yc3S1KJ9PhCzU" }
-  let(:committer_email) { "ssh-commit-test@example.com" }
-  let(:user) { create(:user, email: committer_email) }
-  let!(:key) { create(:key, key: public_key_text, user: user) }
+  let_it_be(:committer_email) { 'ssh-commit-test@example.com' }
+  let_it_be(:public_key_text) { 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIELaINtPpdqTHD57qGll7jacPbuzsz5yc3S1KJ9PhCzU' }
+  let_it_be_with_reload(:user) { create(:user, email: committer_email) }
+  let_it_be_with_reload(:key) { create(:key, key: public_key_text, user: user) }
 
   let(:signed_text) do
     <<~MSG
@@ -95,17 +95,23 @@ RSpec.describe Gitlab::Ssh::Signature do
         SIG
       end
 
+      before do
+        key.update!(key: public_key_text)
+      end
+
       it_behaves_like 'verified signature'
     end
 
-    context "when user email is not verified" do
-      let(:user) { create(:user, :unconfirmed, email: committer_email) }
+    context 'when user email is not verified' do
+      before do
+        user.update!(confirmed_at: nil)
+      end
 
       it_behaves_like 'unverified signature'
     end
 
     context 'when no user exists with the committer email' do
-      let(:user) { create(:user, email: "different-email+ssh-commit-test@example.com") }
+      let(:committer_email) { 'different-email+ssh-commit-test@example.com' }
 
       it_behaves_like 'unverified signature'
     end
@@ -151,7 +157,7 @@ RSpec.describe Gitlab::Ssh::Signature do
       it_behaves_like 'unverified signature'
     end
 
-    context "when key doesn't exist in GitLab" do
+    context 'when key does not exist in GitLab' do
       before do
         key.delete
       end
@@ -164,12 +170,9 @@ RSpec.describe Gitlab::Ssh::Signature do
     end
 
     context 'when key belongs to someone other than the committer' do
-      let(:other_user) { create(:user, email: "other-user@example.com") }
+      let_it_be(:other_user) { create(:user, email: 'other-user@example.com') }
 
-      before do
-        key.user = other_user
-        key.save!
-      end
+      let(:committer_email) { other_user.email }
 
       it 'reports other_user status' do
         expect(signature.verification_status).to eq(:other_user)
