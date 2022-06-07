@@ -195,11 +195,11 @@ updating, because their feedback might be limited to code style and syntax.
 Depending on the complexity and impact of a change, assigning the right people
 to review your changes might be very important.
 
-If you don't know who to assign, consult `git blame` or ask in the `#verify`
+If you don't know who to assign, consult `git blame` or ask in the `#s_verify`
 Slack channel (GitLab team members only).
 
-There are two kinds of changes / merge requests that do require additional
-attention from reviews:
+There are two kinds of changes / merge requests that require additional
+attention from reviews and an additional reviewer:
 
 1. Merge requests changing code around pipelines / stages / builds statuses.
 1. Merge requests changing code around authentication / security features.
