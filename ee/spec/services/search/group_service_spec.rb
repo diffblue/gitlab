@@ -49,7 +49,7 @@ RSpec.describe Search::GroupService do
       ensure_elasticsearch_index!
     end
 
-    context 'finding projects by name', :elastic, :clean_gitlab_redis_shared_state, :sidekiq_might_not_need_inline do
+    context 'finding projects by name', :elastic, :clean_gitlab_redis_shared_state do
       subject { results.objects('projects') }
 
       context 'in parent group' do
@@ -73,8 +73,7 @@ RSpec.describe Search::GroupService do
       it 'respects visibility' do
         enable_admin_mode!(user) if admin_mode
         projects.each do |project|
-          project.update!(visibility_level: Gitlab::VisibilityLevel.level_value(project_level.to_s))
-          update_feature_access_level(project, feature_access_level)
+          update_feature_access_level(project, feature_access_level, visibility_level: Gitlab::VisibilityLevel.level_value(project_level.to_s))
         end
         ensure_elasticsearch_index!
 
@@ -117,6 +116,17 @@ RSpec.describe Search::GroupService do
         before do
           project.repository.index_commits_and_blobs
           project2.repository.index_commits_and_blobs
+        end
+
+        context 'populate_commit_permissions_in_main_index migration has not been completed' do
+          before do
+            set_elasticsearch_migration_to(:populate_commit_permissions_in_main_index, including: false)
+          end
+
+          it_behaves_like 'search respects visibility' do
+            let(:scope) { 'commits' }
+            let(:search) { 'initial' }
+          end
         end
 
         it_behaves_like 'search respects visibility' do

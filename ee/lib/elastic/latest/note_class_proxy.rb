@@ -12,6 +12,7 @@ module Elastic
       def elastic_search(query, options: {})
         options[:in] = ['note']
         options[:no_join_project] = true
+        options[:project_id_field] = :project_id
 
         query_hash = basic_query_hash(%w[note], query, options)
 
@@ -118,8 +119,9 @@ module Elastic
             options[:current_user],
             options[:project_ids],
             options[:public_and_internal_projects],
-            options[:features],
-            no_join_project
+            features: options[:features],
+            no_join_project: no_join_project,
+            project_id_field: options[:project_id_field]
           )
         end
 
@@ -170,17 +172,14 @@ module Elastic
       # Appends `noteable_type` (which will be removed in project_ids_filter)
       # for base model filtering.
       override :pick_projects_by_membership
-      def pick_projects_by_membership(project_ids, user, no_join_project, _ = nil)
-        # support for not using project joins in the query
-        project_id_key = no_join_project ? :project_id : :id
-
+      def pick_projects_by_membership(project_ids, user, no_join_project, features: nil, project_id_field: nil)
         noteable_type_to_feature.map do |noteable_type, feature|
           context.name(feature) do
             condition =
               if project_ids == :any
                 { term: { visibility_level: { _name: context.name(:any), value: Project::PRIVATE } } }
               else
-                { terms: { _name: context.name(:membership, :id), project_id_key => filter_ids_by_feature(project_ids, user, feature) } }
+                { terms: { _name: context.name(:membership, :id), project_id_field => filter_ids_by_feature(project_ids, user, feature) } }
               end
 
             limit =

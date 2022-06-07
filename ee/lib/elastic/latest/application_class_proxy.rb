@@ -158,8 +158,9 @@ module Elastic
             options[:current_user],
             options[:project_ids],
             options[:public_and_internal_projects],
-            options[:features],
-            options[:no_join_project]
+            features: options[:features],
+            no_join_project: options[:no_join_project],
+            project_id_field: options[:project_id_field]
           )
 
           query_hash[:query][:bool][:filter] ||= []
@@ -229,14 +230,14 @@ module Elastic
       # If a project feature(s) is specified, it indicates interest in child
       # documents gated by that project feature - e.g., "issues". The feature's
       # visibility level must be taken into account.
-      def project_ids_query(user, project_ids, public_and_internal_projects, features = nil, no_join_project = false)
+      def project_ids_query(user, project_ids, public_and_internal_projects, features: nil, no_join_project: false, project_id_field: nil)
         scoped_project_ids = scoped_project_ids(user, project_ids)
 
         # At least one condition must be present, so pick no projects for
         # anonymous users.
         # Pick private, internal and public projects the user is a member of.
         # Pick all private projects for admins & auditors.
-        conditions = pick_projects_by_membership(scoped_project_ids, user, no_join_project, features)
+        conditions = pick_projects_by_membership(scoped_project_ids, user, no_join_project, features: features, project_id_field: project_id_field)
 
         if public_and_internal_projects
           context.name(:visibility) do
@@ -264,11 +265,16 @@ module Elastic
       # Admins & auditors are given access to all private projects. Access to
       # internal or public projects where the project feature is private is not
       # granted here.
-      def pick_projects_by_membership(project_ids, user, no_join_project, features = nil)
+      def pick_projects_by_membership(project_ids, user, no_join_project, features: nil, project_id_field: nil)
         # This method is used to construct a query on the join as well as query
         # on top level doc. When querying top level doc the project's ID is
-        # `project_id` . When joining it is just `id`.
-        id_field = no_join_project ? :project_id : :id
+        # used from project_id_field with the default value of `project_id`
+        # When joining it is just `id`.
+        id_field = if no_join_project
+                     project_id_field || :project_id
+                   else
+                     :id
+                   end
 
         if features.nil?
           if project_ids == :any
