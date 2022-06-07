@@ -34,7 +34,7 @@ RSpec.describe Namespaces::FreeUserCap::DeactivateMembersOverLimitService, :saas
           .to receive(:execute)
                 .with(
                   blocking: false,
-                  priority: UserProjectAccessChangedService::LOW_PRIORITY)
+                  priority: UserProjectAccessChangedService::MEDIUM_PRIORITY)
       end
 
       described_class.new(group).execute
