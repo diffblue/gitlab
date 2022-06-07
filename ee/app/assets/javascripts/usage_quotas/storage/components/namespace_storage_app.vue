@@ -121,7 +121,7 @@ export default {
       return parseBoolean(this.isTemporaryStorageIncreaseVisible);
     },
     shouldUseNewStorageDesign() {
-      return this.isFreeNamespace && this.glFeatures.updateStorageUsageDesign;
+      return this.isFreeNamespace;
     },
     formattedNamespaceLimit() {
       return formatUsageSize(this.namespace.limit);
