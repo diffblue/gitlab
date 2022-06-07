@@ -80,17 +80,16 @@ export default {
       <h1 class="page-title">{{ s__('TestCases|New Test Case') }}</h1>
     </template>
     <template #actions="issuableMeta">
-      <div class="gl-flex-grow-1">
-        <gl-button
-          data-testid="submit-test-case"
-          category="primary"
-          variant="confirm"
-          :loading="createTestCaseRequestActive"
-          :disabled="!issuableMeta.issuableTitle.length"
-          @click="handleTestCaseSubmitClick(issuableMeta)"
-          >{{ s__('TestCases|Submit test case') }}</gl-button
-        >
-      </div>
+      <gl-button
+        data-testid="submit-test-case"
+        category="primary"
+        variant="confirm"
+        :loading="createTestCaseRequestActive"
+        :disabled="!issuableMeta.issuableTitle.length"
+        class="gl-mr-2"
+        @click="handleTestCaseSubmitClick(issuableMeta)"
+        >{{ s__('TestCases|Submit test case') }}</gl-button
+      >
       <gl-button
         data-testid="cancel-test-case"
         :disabled="createTestCaseRequestActive"
