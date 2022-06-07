@@ -6,10 +6,11 @@ RSpec.describe Backup::Repositories do
   let(:progress) { spy(:stdout) }
   let(:strategy) { spy(:strategy) }
   let(:storages) { [] }
+  let(:paths) { [] }
   let(:destination) { 'repositories' }
   let(:backup_id) { 'backup_id' }
 
-  subject { described_class.new(progress, strategy: strategy, storages: storages) }
+  subject { described_class.new(progress, strategy: strategy, storages: storages, paths: paths) }
 
   describe '#dump' do
     let_it_be(:project) { create(:project, :repository) }
@@ -111,6 +112,19 @@ RSpec.describe Backup::Repositories do
         expect(strategy).to have_received(:start).with(:restore, destination)
         expect(strategy).not_to have_received(:enqueue).with(excluded_group, Gitlab::GlRepository::WIKI)
         expect(strategy).to have_received(:enqueue).with(project, Gitlab::GlRepository::PROJECT)
+        expect(strategy).to have_received(:enqueue).with(group, Gitlab::GlRepository::WIKI)
+        expect(strategy).to have_received(:finish!)
+      end
+    end
+
+    context 'paths' do
+      let(:paths) { [group.full_path] }
+
+      it 'calls enqueue for all descendant repositories on the specified group', :aggregate_failures do
+        subject.restore(destination)
+
+        expect(strategy).to have_received(:start).with(:restore, destination)
+        expect(strategy).not_to have_received(:enqueue).with(project, Gitlab::GlRepository::PROJECT)
         expect(strategy).to have_received(:enqueue).with(group, Gitlab::GlRepository::WIKI)
         expect(strategy).to have_received(:finish!)
       end
