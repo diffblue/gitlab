@@ -5,17 +5,11 @@ import UsageGraph from 'ee/usage_quotas/storage/components/usage_graph.vue';
 let data;
 let wrapper;
 
-function mountComponent(
-  { rootStorageStatistics, limit },
-  { containerRegistryProjectStatistics } = { containerRegistryProjectStatistics: true },
-) {
+function mountComponent({ rootStorageStatistics, limit }) {
   wrapper = shallowMount(UsageGraph, {
     propsData: {
       rootStorageStatistics,
       limit,
-    },
-    provide: {
-      glFeatures: { containerRegistryProjectStatistics },
     },
   });
 }
@@ -47,11 +41,6 @@ describe('Storage Counter usage graph component', () => {
 
   afterEach(() => {
     wrapper.destroy();
-  });
-
-  it(`excludes Container Registry entry if container_registry_project_statistics FF is off`, () => {
-    mountComponent(data, { containerRegistryProjectStatistics: false });
-    expect(wrapper.text()).not.toContain('Container Registry');
   });
 
   it('renders the legend in order', () => {
