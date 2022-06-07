@@ -20,11 +20,18 @@ module EE
         return unless epic_issue = original_entity.epic_issue
         return unless can?(current_user, :update_epic, epic_issue.epic.group)
 
-        updated = epic_issue.update(issue_id: new_entity.id)
-
-        ::Gitlab::UsageDataCounters::IssueActivityUniqueCounter.track_issue_changed_epic_action(author: current_user) if updated
+        return log_error_for(epic_issue) unless epic_issue.update(issue: new_entity)
 
         original_entity.reset
+
+        ::Gitlab::UsageDataCounters::IssueActivityUniqueCounter.track_issue_changed_epic_action(author: current_user)
+      end
+
+      def log_error_for(epic_issue)
+        message = "Cannot create association with epic ID: #{epic_issue.epic.id}. " \
+          "Error: #{epic_issue.errors.full_messages.to_sentence}"
+
+        log_error(message)
       end
 
       def track_epic_issue_moved_from_project
