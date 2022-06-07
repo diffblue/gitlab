@@ -1,7 +1,6 @@
 import { GlSprintf } from '@gitlab/ui';
-import { mount, shallowMount } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
 import MockAdapter from 'axios-mock-adapter';
-import { nextTick } from 'vue';
 import lastWeekData from 'test_fixtures/api/dora/metrics/daily_lead_time_for_changes_for_last_week.json';
 import lastMonthData from 'test_fixtures/api/dora/metrics/daily_lead_time_for_changes_for_last_month.json';
 import last90DaysData from 'test_fixtures/api/dora/metrics/daily_lead_time_for_changes_for_last_90_days.json';
@@ -9,7 +8,6 @@ import { useFixturesFakeDate } from 'helpers/fake_date';
 import createFlash from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 import httpStatus from '~/lib/utils/http_status';
-import CiCdAnalyticsCharts from '~/vue_shared/components/ci_cd_analytics/ci_cd_analytics_charts.vue';
 
 jest.mock('~/flash');
 
@@ -59,9 +57,6 @@ describe('lead_time_charts.vue', () => {
     mock.restore();
   });
 
-  const getTooltipValues = () => wrapper.findAll('[data-testid="tooltip-value"]');
-  const findCiCdAnalyticsCharts = () => wrapper.findComponent(CiCdAnalyticsCharts);
-
   describe('when there are no network errors', () => {
     beforeEach(async () => {
       mock = new MockAdapter(axios);
@@ -94,30 +89,6 @@ describe('lead_time_charts.vue', () => {
 
     it('renders a header', () => {
       expect(wrapper.findComponent(DoraChartHeader).exists()).toBe(true);
-    });
-
-    describe('methods', () => {
-      describe('formatTooltipText', () => {
-        it('displays a humanized version of the time interval in the tooltip', async () => {
-          createComponent({ mountFn: mount });
-
-          await axios.waitForAll();
-
-          const params = { seriesData: [{ data: ['Apr 7', 5328] }, { data: ['Apr 7', 4000] }, {}] };
-
-          // Simulate the child CiCdAnalyticsCharts component calling the
-          // function bound to the `format-tooltip-text`.
-          const formatTooltipText = findCiCdAnalyticsCharts().vm.$attrs['format-tooltip-text'];
-          formatTooltipText(params);
-
-          await nextTick();
-
-          const toolTipValues = getTooltipValues();
-
-          expect(toolTipValues.at(0).text()).toBe('1.5 hours');
-          expect(toolTipValues.at(1).text()).toBe('1.1 hours');
-        });
-      });
     });
   });
 

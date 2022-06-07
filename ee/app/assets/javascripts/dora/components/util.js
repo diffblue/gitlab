@@ -1,7 +1,13 @@
 import { dataVizBlue500, gray300 } from '@gitlab/ui/scss_to_js/scss_variables';
 import dateFormat from 'dateformat';
 import { merge, cloneDeep } from 'lodash';
-import { getDatesInRange, nDaysBefore, getStartOfDay } from '~/lib/utils/datetime_utility';
+import {
+  getDatesInRange,
+  nDaysBefore,
+  getStartOfDay,
+  humanizeTimeInterval,
+  SECONDS_IN_DAY,
+} from '~/lib/utils/datetime_utility';
 import { median } from '~/lib/utils/number_utils';
 import { s__ } from '~/locale';
 
@@ -186,5 +192,58 @@ export const seriesToMedianSeries = (chartSeriesData, seriesName) => {
   return {
     name: seriesName,
     data: chartSeriesData.map((day) => [day[0], medianValue]),
+  };
+};
+
+/**
+ * Converts a time in seconds to number of days, with variable precision
+ *
+ * @param {Number} seconds Time in seconds
+ * @param {Number} precision Specifies the number of digits after the decimal
+ *
+ * @returns {Float} The number of days
+ */
+export const secondsToDays = (seconds, precision = 1) =>
+  (seconds / SECONDS_IN_DAY).toFixed(precision);
+
+/**
+ * Generates the tooltip text and value for time interval series
+ *
+ * @param {Object} params An object containing a time series and median data
+ * @param {String} seriesName The name used to describe the main data series
+ *
+ * @returns {Object} Returns an object containing the tooltipTitle and tooltipValue
+ */
+export const extractTimeSeriesTooltip = (params, seriesName) => {
+  let tooltipTitle = null;
+  let tooltipValue = null;
+  tooltipTitle = params.value;
+
+  const series = params.seriesData[0];
+
+  if (series.data?.length) {
+    const seriesValue = series.data[1];
+    const trendSeries = params.seriesData[1];
+
+    const { seriesName: trendlineName } = trendSeries;
+    const trendSeriesValue = trendSeries.data[1];
+
+    tooltipValue = [
+      {
+        title: seriesName,
+        value: humanizeTimeInterval(seriesValue),
+      },
+      {
+        title: trendlineName,
+        value: humanizeTimeInterval(trendSeriesValue),
+      },
+    ];
+  } else {
+    tooltipValue = null;
+  }
+
+  return {
+    tooltipTitle,
+    tooltipValue,
   };
 };

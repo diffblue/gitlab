@@ -1,10 +1,10 @@
 <script>
 import * as DoraApi from 'ee/api/dora_api';
 import createFlash from '~/flash';
-import { humanizeTimeInterval } from '~/lib/utils/datetime_utility';
 import { s__, sprintf } from '~/locale';
 import CiCdAnalyticsCharts from '~/vue_shared/components/ci_cd_analytics/ci_cd_analytics_charts.vue';
 import DoraChartHeader from './dora_chart_header.vue';
+import DoraChartTooltipText from './dora_chart_tooltip_text.vue';
 import {
   allChartDefinitions,
   areaChartOptions,
@@ -21,6 +21,7 @@ import {
   buildNullSeriesForLeadTimeChart,
   apiDataToChartSeries,
   seriesToMedianSeries,
+  extractTimeSeriesTooltip,
 } from './util';
 
 export default {
@@ -28,6 +29,7 @@ export default {
   components: {
     CiCdAnalyticsCharts,
     DoraChartHeader,
+    DoraChartTooltipText,
   },
   inject: {
     projectPath: {
@@ -114,30 +116,9 @@ export default {
   },
   methods: {
     formatTooltipText(params) {
-      this.tooltipTitle = params.value;
-
-      const leadTimeSeries = params.seriesData[0];
-
-      if (leadTimeSeries.data?.length) {
-        const leadTimeValue = leadTimeSeries.data[1];
-        const medianSeries = params.seriesData[1];
-
-        const { seriesName: medianSeriesName } = medianSeries;
-        const medianSeriesValue = medianSeries.data[1];
-
-        this.tooltipValue = [
-          {
-            title: this.$options.i18n.medianLeadTime,
-            value: humanizeTimeInterval(leadTimeValue),
-          },
-          {
-            title: medianSeriesName,
-            value: humanizeTimeInterval(medianSeriesValue),
-          },
-        ];
-      } else {
-        this.tooltipValue = null;
-      }
+      const { tooltipTitle, tooltipValue } = extractTimeSeriesTooltip(params, this.medianLeadTime);
+      this.tooltipTitle = tooltipTitle;
+      this.tooltipValue = tooltipValue;
     },
     /**
      * Validates that exactly one of [this.projectPath, this.groupPath] has been
@@ -200,19 +181,10 @@ export default {
     >
       <template #tooltip-title> {{ tooltipTitle }} </template>
       <template #tooltip-content>
-        <template v-if="tooltipValue === null">
-          {{ $options.i18n.noMergeRequestsDeployed }}
-        </template>
-        <div v-else class="gl-display-flex gl-flex-direction-column">
-          <div
-            v-for="metric in tooltipValue"
-            :key="metric.title"
-            class="gl-display-flex gl-justify-content-space-between"
-          >
-            <div class="gl-mr-5">{{ metric.title }}</div>
-            <div class="gl-font-weight-bold" data-testid="tooltip-value">{{ metric.value }}</div>
-          </div>
-        </div>
+        <dora-chart-tooltip-text
+          :empty-value-text="$options.i18n.noMergeRequestsDeployed"
+          :tooltip-value="tooltipValue"
+        />
       </template>
     </ci-cd-analytics-charts>
   </div>
