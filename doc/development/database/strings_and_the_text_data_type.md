@@ -8,7 +8,7 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 
 > [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/30453) in GitLab 13.0.
 
-When adding new columns that are used to store strings or other textual information:
+When adding new columns to store strings or other textual information:
 
 1. We always use the `text` data type instead of the `string` data type.
 1. `text` columns should always have a limit set, either by using the `create_table` with
@@ -143,7 +143,7 @@ We first add the limit as a `NOT VALID` check constraint to the table, which enf
 new records are inserted or current records are updated.
 
 In the example above, the existing issues with more than 1024 characters in their title are not
-affected and you are still able to update records in the `issues` table. However, when you'd try
+affected, and you are still able to update records in the `issues` table. However, when you'd try
 to update the `title_html` with a title that has more than 1024 characters, the constraint causes
 a database error.
 
@@ -233,7 +233,7 @@ You can find more information on the guide about [background migrations](backgro
 
 #### Validate the text limit (next release)
 
-Validating the text limit scans the whole table and make sure that each record is correct.
+Validating the text limit scans the whole table, and makes sure that each record is correct.
 
 Still in our example, for the 13.1 milestone (next), we run the `validate_text_limit` migration
 helper in a final post-deployment migration,

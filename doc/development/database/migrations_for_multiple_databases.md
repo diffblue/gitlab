@@ -427,7 +427,7 @@ updating all `ci_pipelines`, you would set
 
 As with all DML migrations, you cannot query another database outside of
 `restrict_gitlab_migration` or `gitlab_shared`. If you need to query another database,
-you need to separate these into two migrations somehow.
+separate the migrations.
 
 Because the actual migration logic (not the queueing step) for background
 migrations runs in a Sidekiq worker, the logic can perform DML queries on

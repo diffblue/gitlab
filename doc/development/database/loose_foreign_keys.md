@@ -532,7 +532,7 @@ several runs.
 
 #### Database decomposition
 
-The `loose_foreign_keys_deleted_records` table exists on both database servers (Ci and Main)
+The `loose_foreign_keys_deleted_records` table exists on both database servers (`ci` and `main`)
 after the [database decomposition](https://gitlab.com/groups/gitlab-org/-/epics/6168). The worker
 ill determine which parent tables belong to which database by reading the
 `lib/gitlab/database/gitlab_schemas.yml` YAML file.
@@ -547,7 +547,7 @@ Example:
   - `ci_builds`
   - `ci_pipelines`
 
-When the worker is invoked for the Ci database, the worker loads deleted records only from the
+When the worker is invoked for the `ci` database, the worker loads deleted records only from the
 `ci_builds` and `ci_pipelines` tables. During the cleanup process, `DELETE` and `UPDATE` queries
 mostly run on tables located in the Main database. In this example, one `UPDATE` query
 nullifies the `merge_requests.head_pipeline_id` column.

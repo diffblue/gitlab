@@ -153,7 +153,7 @@ addresses the root cause. Generally, the timeouts should be put back to
 reasonable defaults after the root cause is resolved.
 
 In this case, the guidance we had from development was to drop `deadlock_timeout`
-or `statement_timeout`, but to leave the third setting at 60s. Setting
+or `statement_timeout`, but to leave the third setting at 60 seconds. Setting
 `idle_in_transaction` protects the database from sessions potentially hanging for
 days. There's more discussion in [the issue relating to introducing this timeout on GitLab.com](https://gitlab.com/gitlab-com/gl-infra/production/-/issues/1053).
 

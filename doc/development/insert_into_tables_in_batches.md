@@ -48,7 +48,7 @@ records = [MyModel.new, ...]
 MyModel.bulk_insert!(records)
 ```
 
-Note that calls to `bulk_insert!` always attempt to insert _new records_. If instead
+Calls to `bulk_insert!` always attempt to insert _new records_. If instead
 you would like to replace existing records with new values, while still inserting those
 that do not already exist, then you can use `bulk_upsert!`:
 
@@ -59,7 +59,7 @@ MyModel.bulk_upsert!(records, unique_by: [:name])
 ```
 
 In this example, `unique_by` specifies the columns by which records are considered to be
-unique and as such would updated if they existed prior to insertion. For example, if
+unique and as such are updated if they existed prior to insertion. For example, if
 `existing_model` has a `name` attribute, and if a record with the same `name` value already
 exists, its fields are updated with those of `existing_model`.
 
@@ -95,7 +95,7 @@ MyModel.bulk_insert!(records, batch_size: 100)
 ```
 
 Assuming the same number of 950 records, this would result in 10 batches being written instead.
-Since this also affects the number of `INSERT`s that occur, make sure you measure the
+Since this also affects the number of `INSERT` statements that occur, make sure you measure the
 performance impact this might have on your code. There is a trade-off between the number of
 `INSERT` statements the database has to process and the size and cost of each `INSERT`.
 
@@ -180,7 +180,7 @@ BulkInsertableAssociations.with_bulk_insert do
 end
 ```
 
-Note that you can still save relations that are not `BulkInsertSafe` in this block; they
+You can still save relations that are not `BulkInsertSafe` in this block; they
 simply are treated as if you had invoked `save` from outside the block.
 
 ## Known limitations

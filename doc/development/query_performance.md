@@ -41,7 +41,7 @@ the difference not only in the timing, but by looking at the output for `Buffers
 by running your explain with `EXPLAIN(analyze, buffers)`. [Database Lab](understanding_explain_plans.md#database-lab-engine)
 automatically includes these options.
 
-If you are making a warm cache query, you only see the `shared hits`.
+If you are making a warm cache query, you see only the `shared hits`.
 
 For example in #database-lab:
 

@@ -232,7 +232,7 @@ number of connections each can consume as per listed above. The total is the sug
 If you are using more than one PgBouncer with an internal Load Balancer, you may be able to divide the
 `default_pool_size` by the number of instances to guarantee an evenly distributed load between them.
 
-The `pgbouncer['max_client_conn']` is the hard-limit of connections PgBouncer can accept. It's unlikely you need
+The `pgbouncer['max_client_conn']` is the hard limit of connections PgBouncer can accept. It's unlikely you need
 to change this. If you are hitting that limit, you may want to consider adding additional PgBouncers with an internal
 Load Balancer.
 
