@@ -66,23 +66,15 @@ describe('ListItem', () => {
     expect(findDescription().text()).toBe('a framework');
   });
 
-  it('displays the label as unscoped', () => {
+  it('displays the label', () => {
     createComponent();
 
-    expect(findLabel().props('title')).toBe('framework');
-    expect(findLabel().props('target')).toBe(framework.editPath);
-    expect(findLabel().props('scoped')).toBe(false);
-  });
-
-  it('displays the label as scoped', () => {
-    createComponent({
-      framework: { ...framework, name: 'scoped::framework' },
+    expect(findLabel().props()).toMatchObject({
+      title: framework.name,
+      target: framework.editPath,
+      disabled: false,
+      description: 'Edit framework',
     });
-
-    expect(findLabel().props('title')).toBe('scoped::framework');
-    expect(findLabel().props('target')).toBe(framework.editPath);
-    expect(findLabel().props('scoped')).toBe(true);
-    expect(findLabel().props('disabled')).toBe(false);
   });
 
   it('displays the edit button', () => {
