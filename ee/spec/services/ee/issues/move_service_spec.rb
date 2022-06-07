@@ -127,15 +127,27 @@ RSpec.describe Issues::MoveService do
       end
 
       context 'when epic is not in the same group hierarchy' do
-        let(:new_group) { create(:group) }
-        let(:new_project) { create(:project, group: new_group) }
+        let_it_be(:new_project) { create(:project, group: create(:group)) }
+
+        before do
+          new_project.group.add_reporter(user)
+          epic_issue.epic.group.add_reporter(user)
+          allow(Gitlab::AppLogger).to receive(:error).and_call_original
+        end
 
         it 'does not rewrite epic' do
-          new_group.add_reporter(user)
-          epic_issue.epic.group.add_reporter(user)
-
           new_issue = move_service.execute(old_issue, new_project)
-          expect(new_issue.epic_issue).to be_nil
+
+          expect(new_issue.reload.epic_issue).to be_nil
+        end
+
+        it 'logs error' do
+          message = "Cannot create association with epic ID: #{epic.id}. " \
+            "Error: Issue Cannot assign an issue that does not belong under "\
+            "the same group (or descendant) as the epic."
+
+          expect(Gitlab::AppLogger).to receive(:error).with(message)
+          move_service.execute(old_issue, new_project)
         end
       end
 
