@@ -26,7 +26,7 @@ RSpec.describe ContainerRegistry::Client do
 
   let(:headers_with_accept_types_with_list) do
     {
-      'Accept' => 'application/vnd.docker.distribution.manifest.v2+json, application/vnd.oci.image.manifest.v1+json, application/vnd.docker.distribution.manifest.list.v2+json',
+      'Accept' => 'application/vnd.docker.distribution.manifest.v2+json, application/vnd.oci.image.manifest.v1+json, application/vnd.docker.distribution.manifest.list.v2+json, application/vnd.oci.image.index.v1+json',
       'Authorization' => 'bearer 12345',
       'User-Agent' => "GitLab/#{Gitlab::VERSION}"
     }

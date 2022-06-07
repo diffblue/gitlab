@@ -8,6 +8,17 @@ module Geo
 
     FOREIGN_MEDIA_TYPE = 'application/vnd.docker.image.rootfs.foreign.diff.tar.gzip'
 
+    # Manifests that reference other manifests (fat manifests)
+    LIST_MANIFESTS = [
+      ContainerRegistry::Client::DOCKER_DISTRIBUTION_MANIFEST_LIST_V2_TYPE,
+      ContainerRegistry::Client::OCI_DISTRIBUTION_INDEX_TYPE
+    ].freeze
+
+    ATOMIC_MANIFESTS = [
+      ContainerRegistry::Client::DOCKER_DISTRIBUTION_MANIFEST_V2_TYPE,
+      ContainerRegistry::Client::OCI_MANIFEST_V1_TYPE
+    ].freeze
+
     attr_reader :repository_path, :container_repository
 
     def initialize(container_repository)
@@ -29,9 +40,9 @@ module Geo
       manifest_parsed = Gitlab::Json.parse(manifest)
 
       case manifest_parsed['mediaType']
-      when ContainerRegistry::Client::DOCKER_DISTRIBUTION_MANIFEST_V2_TYPE
+      when *ATOMIC_MANIFESTS
         push_manifest_blobs(manifest_parsed)
-      when ContainerRegistry::Client::DOCKER_DISTRIBUTION_MANIFEST_LIST_V2_TYPE
+      when *LIST_MANIFESTS
         manifest_parsed['manifests'].each do |submanifest|
           image_info_raw = client.repository_raw_manifest(repository_path, submanifest['digest'])
           image_info = Gitlab::Json.parse(image_info_raw)
