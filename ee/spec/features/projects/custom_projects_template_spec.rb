@@ -124,7 +124,7 @@ RSpec.describe 'Project' do
     end
   end
 
-  describe 'Custom group-level project templates', :js, quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/348710' do
+  describe 'Custom group-level project templates', :js do
     let!(:user) { create(:user) }
     let!(:group) { create(:group, name: 'parent-group') }
     let!(:template_subgroup) { create(:group, parent: group, name: 'template-subgroup') }
@@ -137,7 +137,7 @@ RSpec.describe 'Project' do
       sign_in user
     end
 
-    context 'from default new project path' do
+    context 'from default new project path', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/208500' do
       it 'displays user namespace for default project URL' do
         visit new_project_path
         create_from_template(:group, template.name)
