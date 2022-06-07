@@ -5,25 +5,20 @@ require 'spec_helper'
 RSpec.describe Gitlab::Ssh::Signature do
   # ssh-keygen -t ed25519
   let_it_be(:committer_email) { 'ssh-commit-test@example.com' }
-  let_it_be(:public_key_text) { 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIELaINtPpdqTHD57qGll7jacPbuzsz5yc3S1KJ9PhCzU' }
+  let_it_be(:public_key_text) { 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJKOfqOH0fDde+Ua/1SObkXB1CEDF5M6UfARMpW3F87u' }
   let_it_be_with_reload(:user) { create(:user, email: committer_email) }
   let_it_be_with_reload(:key) { create(:key, key: public_key_text, user: user) }
 
-  let(:signed_text) do
-    <<~MSG
-      This message was signed by an ssh key
-      The pubkey fingerprint is SHA256:Ruhtd6QtIH0Kxx+/x4tCDtJOTsccvAokHfQDDoSc0ww
-    MSG
-  end
+  let(:signed_text) { 'This message was signed by an ssh key' }
 
   let(:signature_text) do
     # ssh-keygen -Y sign -n file -f id_test message.txt
     <<~SIG
       -----BEGIN SSH SIGNATURE-----
-      U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgQtog20+l2pMcPnuoaWXuNpw9u7
-      OzPnJzdLUon0+ELNQAAAAEZmlsZQAAAAAAAAAGc2hhNTEyAAAAUwAAAAtzc2gtZWQyNTUx
-      OQAAAEBwmvXtKb65HbQTJAo2dOL/MQOaWUzS9LNlIM6QUeXjwxljPoNACuZ87108yABIIB
-      hvIGuYkoHlRk0CbSJv5gAK
+      U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgko5+o4fR8N175Rr/VI5uRcHUIQ
+      MXkzpR8BEylbcXzu4AAAAEZmlsZQAAAAAAAAAGc2hhNTEyAAAAUwAAAAtzc2gtZWQyNTUx
+      OQAAAECQa95KgBkgbMwIPNwHRjHu0WYrKvAc5O/FaBXlTDcPWQHi8WRDhbPNN6MqSYLg/S
+      hsei6Y8VYPv85StrEHYdoF
       -----END SSH SIGNATURE-----
     SIG
   end
@@ -56,37 +51,37 @@ RSpec.describe Gitlab::Ssh::Signature do
     context 'when using an RSA key' do
       let(:public_key_text) do
         <<~KEY.delete("\n")
-        ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDjTNX4pLpKHyrqs6Cll+nB1HAQnGGj+b5x
-        wCCpmF4bfWtB7Ei7uSOJBF0twnUiDp1diyuOwQqOBcze4slv2dr8PlssnUE5uq6DMkoYKoau
-        IhKXsrW2jclPY8DEhp2JchSxluFwSa6rxI+5ijMUeb6qrVaZ7rtBNYjokR6qv9fwwK8wOgDL
-        /KldKR45fKCWV6s+3yXZkl9OxlPSbZmv9WaJck9JxOqu/6obwGDfG/VLwed0DaOkW/ciAvmf
-        Eso9PNBj+IzWgn928BgtNGeo5nWmvWbZEwQovRoj7XwPlD7utxT/dInMsiP7VUDW7ElpGgao
-        LxBfKcLxG/couhaxx2H9//d2pYsazZw0Suvv7viODKiMftAF7oH784ulqBbJAAW3iH+wmh6o
-        AGAC57QdVjbOV3lHAujVk7bGzcjgEmmfTP3JO0qRRw/rhXH0IA8IC8o4fT7m37qUEdz6GQhZ
-        G5Q8OifgTkwAA1MJh9DK0vXQRarJT7W/6x4gqjiEh9dy538=
+        ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCr3ucg9tLf87S2TxgeDaO4Cs5Mzv7wwi5w
+        OnSG8hE/Zj7xzf0kXAYns/dHhPilkQMCulMQuGGprGzDJXZ9WrrVDHgBj2+kLB8cc+XYIb29
+        HPsoz5a1T776wWrzs5cw3Vbb0ZEMPG27SfJ+HtIqnIAcgBoRxgP/+I9we7tVxrTuog/9jSzU
+        H1IscwfwgKdUrvN5cyhqqxWspwZVlf6s4jaVjC9sKlF7u9CBCxqM2G7GZRKH2sEV2Tw0mT4z
+        39UQ5uz9+4hxWChosiQChrT9zSJDGWQm3WGn5ubYPeB/xINEKkFxuEupnSK7l8PQxeLAwlcN
+        YHKMkHdO16O6PlpxvcLR1XVy4F12NXCxFjTr8GmFvJTvevf9iuFRmYQpffqm+EMN0shuhPag
+        Z1poVK7ZMO49b4HD6csGwDjXEgNAnyi7oPV1WMHVy+xi2j+yaAgiVk50kgTwp9sGkHTiMTM8
+        YWjCq+Hb+HXLINmqO5V1QChT7PAFYycmQ0Fe2x39eLLMHy0=
         KEY
       end
 
       let(:signature_text) do
         <<~SIG
           -----BEGIN SSH SIGNATURE-----
-          U1NIU0lHAAAAAQAAAZcAAAAHc3NoLXJzYQAAAAMBAAEAAAGBAONM1fikukofKuqzoKWX6c
-          HUcBCcYaP5vnHAIKmYXht9a0HsSLu5I4kEXS3CdSIOnV2LK47BCo4FzN7iyW/Z2vw+Wyyd
-          QTm6roMyShgqhq4iEpeytbaNyU9jwMSGnYlyFLGW4XBJrqvEj7mKMxR5vqqtVpnuu0E1iO
-          iRHqq/1/DArzA6AMv8qV0pHjl8oJZXqz7fJdmSX07GU9Jtma/1ZolyT0nE6q7/qhvAYN8b
-          9UvB53QNo6Rb9yIC+Z8Syj080GP4jNaCf3bwGC00Z6jmdaa9ZtkTBCi9GiPtfA+UPu63FP
-          90icyyI/tVQNbsSWkaBqgvEF8pwvEb9yi6FrHHYf3/93alixrNnDRK6+/u+I4MqIx+0AXu
-          gfvzi6WoFskABbeIf7CaHqgAYALntB1WNs5XeUcC6NWTtsbNyOASaZ9M/ck7SpFHD+uFcf
-          QgDwgLyjh9PubfupQR3PoZCFkblDw6J+BOTAADUwmH0MrS9dBFqslPtb/rHiCqOISH13Ln
-          fwAAAARmaWxlAAAAAAAAAAZzaGE1MTIAAAGUAAAADHJzYS1zaGEyLTUxMgAAAYBtEPh9YE
-          K6DvY9hVWwiry5bJQcoZ8B/jneGcCq4SK4lbqZf+Es2t6VYgXdSn/Yb/M8Ka6zOmHxaqED
-          AL0A8ZGMNGcklM4fNdYqy6SlivZKTTdppT+KyBQeoYOAmNWkvds4QhI3fWIrKWFNSgIAt5
-          bgAfwCdRMpSmvRT0AmNxpPxTCwKFzpbHJis2g6cFBVkq5Uglyxc2Td9IhzAL3ByILrxFZk
-          5EhrYOkRQ0osrOyaJQvST3KIbHZRfmWl9mgw0vCqJOm14xqftYVbwBkYqPuwqkke5/Cd4E
-          90oFCHRi1nFmJeO/nqk09Mmu2jHvx+u8S6Kb557i4ELaqETK0ytkLfoXcnMSyUXx+kbnQd
-          ERikCESJvfPPqEJbf45hSurBVNJMlSza0xIkuQpyCUFJ4QeqTO2uz4GfM+itU4tLugcYSI
-          U2rN+mPCr4xJv9tAgPp93Tx/TVa12bpaZIhoOHCIt34V7pLL0cozVJ+fVtUiQtPcqmDjko
-          t1U0t1Nt6DGtfIg=
+          U1NIU0lHAAAAAQAAAZcAAAAHc3NoLXJzYQAAAAMBAAEAAAGBAKve5yD20t/ztLZPGB4No7
+          gKzkzO/vDCLnA6dIbyET9mPvHN/SRcBiez90eE+KWRAwK6UxC4YamsbMMldn1autUMeAGP
+          b6QsHxxz5dghvb0c+yjPlrVPvvrBavOzlzDdVtvRkQw8bbtJ8n4e0iqcgByAGhHGA//4j3
+          B7u1XGtO6iD/2NLNQfUixzB/CAp1Su83lzKGqrFaynBlWV/qziNpWML2wqUXu70IELGozY
+          bsZlEofawRXZPDSZPjPf1RDm7P37iHFYKGiyJAKGtP3NIkMZZCbdYafm5tg94H/Eg0QqQX
+          G4S6mdIruXw9DF4sDCVw1gcoyQd07Xo7o+WnG9wtHVdXLgXXY1cLEWNOvwaYW8lO969/2K
+          4VGZhCl9+qb4Qw3SyG6E9qBnWmhUrtkw7j1vgcPpywbAONcSA0CfKLug9XVYwdXL7GLaP7
+          JoCCJWTnSSBPCn2waQdOIxMzxhaMKr4dv4dcsg2ao7lXVAKFPs8AVjJyZDQV7bHf14sswf
+          LQAAAARmaWxlAAAAAAAAAAZzaGE1MTIAAAGUAAAADHJzYS1zaGEyLTUxMgAAAYAXgXpXWw
+          A1fYHTUON+e1yrTw8AKB4ymfqpR9Zr1OUmYUKJ9xXvvyNCfKHL6XD14CkMu1Tx8Z3TTPG9
+          C6uAXBniKRwwaLVOKffZMshf5sbjcy65KkqBPC7n/cDiCAeoJ8Y05trEDV62+pOpB2lLdv
+          pwwg2o0JaoLbdRcKCD0pw1u0O7VDDngTKFZ4ghHrEslxwlFruht1h9hs3rmdITlT0RMNuU
+          PHGAIB56u4E4UeoMd3D5rga+4Boj0s6551VgP3vCmcz9ZojPHhTCQdUZU1yHdEBTadYTq6
+          UWHhQwDCUDkSNKCRxWo6EyKZQeTakedAt4qkdSpSUCKOJGWKmPOfAm2/sDEmSxffRdxRRg
+          QUe8lklyFTZd6U/ZkJ/y7VR46fcSkEqLSLd9jAZT/3HJXbZfULpwsTcvcLcJLkCuzHEaU1
+          LRyJBsanLCYHTv7ep5PvIuAngUWrXK2eb7oacVs94mWXfs1PG482Ym4+bZA5u0QliGTVaC
+          M2EMhRTf0cqFuA4=
           -----END SSH SIGNATURE-----
         SIG
       end
@@ -96,6 +91,46 @@ RSpec.describe Gitlab::Ssh::Signature do
       end
 
       it_behaves_like 'verified signature'
+    end
+
+    context 'with an empty string message' do
+      let(:signed_text) { '' }
+      let(:signature_text) do
+        <<~SIG
+          -----BEGIN SSH SIGNATURE-----
+          U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgko5+o4fR8N175Rr/VI5uRcHUIQ
+          MXkzpR8BEylbcXzu4AAAAEZmlsZQAAAAAAAAAGc2hhNTEyAAAAUwAAAAtzc2gtZWQyNTUx
+          OQAAAEC1y2I7o3KqKFlnM+MLkhIo+uRX3YQOYCqycfibyfvmkZTcwqMxgNBInBM9pY3VvS
+          sbW2iEdgz34agHbi+1BHIM
+          -----END SSH SIGNATURE-----
+        SIG
+      end
+
+      it_behaves_like 'verified signature'
+    end
+
+    context 'when committer_email is empty' do
+      let(:committer_email) { '' }
+
+      it_behaves_like 'unverified signature'
+    end
+
+    context 'when committer_email is nil' do
+      let(:committer_email) { nil }
+
+      it_behaves_like 'unverified signature'
+    end
+
+    context 'when signature_text is empty' do
+      let(:signature_text) { '' }
+
+      it_behaves_like 'unverified signature'
+    end
+
+    context 'when signature_text is nil' do
+      let(:signature_text) { nil }
+
+      it_behaves_like 'unverified signature'
     end
 
     context 'when user email is not verified' do
@@ -117,9 +152,9 @@ RSpec.describe Gitlab::Ssh::Signature do
         # truncated base64
         <<~SIG
           -----BEGIN SSH SIGNATURE-----
-          U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgQtog20+l2pMcPnuoaWXuNpw9u7
-          OzPnJzdLUon0+ELNQAAAAEZmlsZQAAAAAAAAAGc2hhNTEyAAAAUwAAAAtzc2gtZWQyNTUx
-          OQAAAEBwmvXtKb65HbQTJAo2dOL/MQOaWUzS9LNlIM6QUeXjwxljPoNACuZ87108yABIIB
+          U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgko5+o4fR8N175Rr/VI5uRcHUIQ
+          MXkzpR8BEylbcXzu4AAAAEZmlsZQAAAAAAAAAGc2hhNTEyAAAAUwAAAAtzc2gtZWQyNTUx
+          OQAAAECQa95KgBkgbMwIPNwHRjHu0WYrKvAc5O/FaBXlTDcPWQHi8WRDhbPNN6MqSYLg/S
           -----END SSH SIGNATURE-----
         SIG
       end

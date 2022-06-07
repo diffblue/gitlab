@@ -17,6 +17,7 @@ module Gitlab
 
       def verification_status
         strong_memoize(:verification_status) do
+          next :unverified unless all_attributes_present?
           next :unverified unless valid_signature_blob? && committer
           next :unknown_key unless signed_by_key
           next :other_user unless signed_by_key.user == committer
@@ -26,6 +27,12 @@ module Gitlab
       end
 
       private
+
+      def all_attributes_present?
+        # Signing an empty string is valid, but signature_text and committer_email
+        # must be non-empty.
+        @signed_text && @signature_text.present? && @committer_email.present?
+      end
 
       # Verifies the signature using the public key embedded in the blob.
       # This proves that the signed_text was signed by the private key
