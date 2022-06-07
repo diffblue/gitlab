@@ -157,8 +157,7 @@ module Gitlab
       def log_error(exception, command_name, extra = {})
         Gitlab::ErrorTracking.log_exception(
           exception,
-          command_name: command_name,
-          extra: extra.merge(instance_name: instance_name))
+          extra.merge(command_name: command_name, instance_name: instance_name))
       end
 
       private

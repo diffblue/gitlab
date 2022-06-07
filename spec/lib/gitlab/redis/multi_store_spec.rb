@@ -169,7 +169,7 @@ RSpec.describe Gitlab::Redis::MultiStore do
       it 'logs the ReadFromPrimaryError' do
         expect(Gitlab::ErrorTracking).to receive(:log_exception).with(
           an_instance_of(Gitlab::Redis::MultiStore::ReadFromPrimaryError),
-          hash_including(command_name: name, extra: hash_including(instance_name: instance_name))
+          hash_including(command_name: name, instance_name: instance_name)
         )
 
         subject
@@ -246,8 +246,7 @@ RSpec.describe Gitlab::Redis::MultiStore do
 
             it 'logs the exception' do
               expect(Gitlab::ErrorTracking).to receive(:log_exception).with(an_instance_of(StandardError),
-                hash_including(extra: hash_including(:multi_store_error_message, instance_name: instance_name),
-                               command_name: name))
+                hash_including(:multi_store_error_message, instance_name: instance_name, command_name: name))
 
               subject
             end
@@ -428,7 +427,7 @@ RSpec.describe Gitlab::Redis::MultiStore do
 
             it 'logs the exception and execute on secondary instance', :aggregate_errors do
               expect(Gitlab::ErrorTracking).to receive(:log_exception).with(an_instance_of(StandardError),
-                hash_including(extra: hash_including(:multi_store_error_message), command_name: name))
+                hash_including(:multi_store_error_message, command_name: name, instance_name: instance_name))
               expect(secondary_store).to receive(name).with(*expected_args).and_call_original
 
               subject
@@ -549,7 +548,7 @@ RSpec.describe Gitlab::Redis::MultiStore do
 
           it 'logs the exception and execute on secondary instance', :aggregate_errors do
             expect(Gitlab::ErrorTracking).to receive(:log_exception).with(an_instance_of(StandardError),
-              hash_including(extra: hash_including(:multi_store_error_message), command_name: name))
+              hash_including(:multi_store_error_message, command_name: name))
             expect(secondary_store).to receive(name).and_call_original
 
             subject
@@ -587,7 +586,7 @@ RSpec.describe Gitlab::Redis::MultiStore do
             it 'returns the value from the secondary store, logging an error' do
               expect(Gitlab::ErrorTracking).to receive(:log_exception).with(
                 an_instance_of(Gitlab::Redis::MultiStore::PipelinedDiffError),
-                hash_including(command_name: name, extra: hash_including(instance_name: instance_name))
+                hash_including(command_name: name, instance_name: instance_name)
               ).and_call_original
               expect(counter).to receive(:increment).with(command: name, instance_name: instance_name)
 
@@ -603,7 +602,7 @@ RSpec.describe Gitlab::Redis::MultiStore do
             it 'returns the value from the secondary store, logging an error' do
               expect(Gitlab::ErrorTracking).to receive(:log_exception).with(
                 an_instance_of(Gitlab::Redis::MultiStore::PipelinedDiffError),
-                hash_including(command_name: name, extra: hash_including(instance_name: instance_name))
+                hash_including(command_name: name, instance_name: instance_name)
               )
               expect(counter).to receive(:increment).with(command: name, instance_name: instance_name)
 
@@ -697,7 +696,7 @@ RSpec.describe Gitlab::Redis::MultiStore do
       it 'logs MethodMissingError' do
         expect(Gitlab::ErrorTracking).to receive(:log_exception).with(
           an_instance_of(Gitlab::Redis::MultiStore::MethodMissingError),
-          hash_including(command_name: :incr, extra: hash_including(instance_name: instance_name))
+          hash_including(command_name: :incr, instance_name: instance_name)
         )
 
         subject
