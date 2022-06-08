@@ -1,7 +1,10 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Manage' do
+  RSpec.describe 'Manage', feature_flag: {
+    name: 'bootstrap_confirmation_modals',
+    scope: :global
+  } do
     shared_examples 'audit event' do |expected_events|
       it 'logs audit events for UI operations' do
         Page::Project::Menu.perform(&:go_to_audit_events_settings)
@@ -19,11 +22,14 @@ module QA
         end
       end
 
-      before do
-        sign_in
+      let(:user) do
+        Resource::User.fabricate_or_use(Runtime::Env.gitlab_qa_username_1, Runtime::Env.gitlab_qa_password_1)
       end
 
-      let(:user) { Resource::User.fabricate_or_use(Runtime::Env.gitlab_qa_username_1, Runtime::Env.gitlab_qa_password_1) }
+      before do
+        Runtime::Feature.enable(:bootstrap_confirmation_modals)
+        sign_in
+      end
 
       context "Add project",
               testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347904' do
@@ -118,24 +124,20 @@ module QA
 
           # Project archive
           Page::Project::Menu.perform(&:go_to_general_settings)
-          Page::Project::Settings::Main.perform do |settings|
-            settings.expand_advanced_settings(&:archive_project)
-          end
+          Page::Project::Settings::Main.perform(&:expand_advanced_settings)
+          Page::Project::Settings::Advanced.perform(&:archive_project)
 
           # Project unarchived
           Page::Project::Menu.perform(&:go_to_general_settings)
-          Page::Project::Settings::Main.perform do |settings|
-            settings.expand_advanced_settings(&:unarchive_project)
-          end
+          Page::Project::Settings::Main.perform(&:expand_advanced_settings)
+          Page::Project::Settings::Advanced.perform(&:unarchive_project)
         end
 
         it_behaves_like 'audit event', ["Project archived", "Project unarchived"]
       end
 
       def sign_in
-        unless Page::Main::Menu.perform { |p| p.has_personal_area?(wait: 0) }
-          Flow::Login.sign_in
-        end
+        Flow::Login.sign_in unless Page::Main::Menu.perform { |p| p.has_personal_area?(wait: 0) }
       end
     end
   end

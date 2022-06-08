@@ -2,7 +2,10 @@
 
 module QA
   # Issue to enable this test in live environments: https://gitlab.com/gitlab-org/quality/team-tasks/-/issues/614
-  RSpec.describe 'Manage', :skip_live_env do
+  RSpec.describe 'Manage', :skip_live_env, feature_flag: {
+    name: 'bootstrap_confirmation_modals',
+    scope: :global
+  } do
     shared_examples 'audit event' do |expected_events|
       it 'logs audit events for UI operations' do
         sign_in
@@ -18,6 +21,10 @@ module QA
     end
 
     describe 'Instance', :requires_admin do
+      before do
+        Runtime::Feature.enable(:bootstrap_confirmation_modals)
+      end
+
       context 'Failed sign in', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347913' do
         before do
           Runtime::Browser.visit(:gitlab, Page::Main::Login)
@@ -63,7 +70,9 @@ module QA
       context 'Add and delete email', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347918' do
         before do
           sign_in
-          new_email_address = 'new_email@example.com'
+
+          new_email_address = Resource::User.new.email
+
           Page::Main::Menu.perform(&:click_edit_profile_link)
           Page::Profile::Menu.perform(&:click_emails)
           Support::Retrier.retry_until(sleep_interval: 3) do
@@ -71,6 +80,7 @@ module QA
               emails.add_email_address(new_email_address)
               expect(emails).to have_text(new_email_address)
               emails.delete_email_address(new_email_address)
+              expect(emails).not_to have_text(new_email_address)
             end
           end
         end
