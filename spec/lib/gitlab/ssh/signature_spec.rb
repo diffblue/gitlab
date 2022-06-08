@@ -31,13 +31,13 @@ RSpec.describe Gitlab::Ssh::Signature do
     )
   end
 
-  RSpec.shared_examples 'verified signature' do
+  shared_examples 'verified signature' do
     it 'reports verified status' do
       expect(signature.verification_status).to eq(:verified)
     end
   end
 
-  RSpec.shared_examples 'unverified signature' do
+  shared_examples 'unverified signature' do
     it 'reports unverified status' do
       expect(signature.verification_status).to eq(:unverified)
     end
@@ -93,7 +93,7 @@ RSpec.describe Gitlab::Ssh::Signature do
       it_behaves_like 'verified signature'
     end
 
-    context 'with an empty string message' do
+    context 'when signed text is an empty string' do
       let(:signed_text) { '' }
       let(:signature_text) do
         <<~SIG
@@ -107,6 +107,22 @@ RSpec.describe Gitlab::Ssh::Signature do
       end
 
       it_behaves_like 'verified signature'
+    end
+
+    context 'when signed text is nil' do
+      let(:signed_text) { nil }
+      let(:signature_text) do
+        <<~SIG
+          -----BEGIN SSH SIGNATURE-----
+          U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgko5+o4fR8N175Rr/VI5uRcHUIQ
+          MXkzpR8BEylbcXzu4AAAAEZmlsZQAAAAAAAAAGc2hhNTEyAAAAUwAAAAtzc2gtZWQyNTUx
+          OQAAAEC1y2I7o3KqKFlnM+MLkhIo+uRX3YQOYCqycfibyfvmkZTcwqMxgNBInBM9pY3VvS
+          sbW2iEdgz34agHbi+1BHIM
+          -----END SSH SIGNATURE-----
+        SIG
+      end
+
+      it_behaves_like 'unverified signature'
     end
 
     context 'when committer_email is empty' do
