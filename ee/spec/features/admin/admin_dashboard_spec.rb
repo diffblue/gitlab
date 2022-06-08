@@ -109,6 +109,5 @@ RSpec.describe 'Admin Dashboard' do
     end
   end
 
-  include_examples 'manual renewal banner', path_to_visit: :admin_subscription_path
   include_examples 'manual quarterly co-term banner', path_to_visit: :admin_subscription_path
 end

@@ -39670,9 +39670,6 @@ msgstr ""
 msgid "To reactivate your account, sign in to GitLab at %{gitlab_url}."
 msgstr ""
 
-msgid "To renew, export your license usage file and email it to %{renewal_service_email}. A new license will be emailed to the email address registered in the %{customers_dot}. You can add this license to your instance."
-msgstr ""
-
 msgid "To resolve this, try to:"
 msgstr ""
 
@@ -43881,12 +43878,6 @@ msgstr ""
 msgid "Your %{host} account was signed in to from a new location"
 msgstr ""
 
-msgid "Your %{plan} subscription expired on %{expiry_date}"
-msgstr ""
-
-msgid "Your %{plan} subscription expires on %{expiry_date}"
-msgstr ""
-
 msgid "Your %{spammable_entity_type} has been recognized as spam and has been discarded."
 msgstr ""
 
@@ -44188,9 +44179,6 @@ msgid "Your subscription expired!"
 msgstr ""
 
 msgid "Your subscription has %{remaining_seats_count} out of %{total_seats_count} seats remaining. Even if you reach the number of seats in your subscription, you can continue to add users, and GitLab will bill you for the overage."
-msgstr ""
-
-msgid "Your subscription is now expired. To renew, export your license usage file and email it to %{renewal_service_email}. A new license will be emailed to the email address registered in the %{customers_dot}. You can add this license to your instance. To use Free tier, remove your current license."
 msgstr ""
 
 msgid "Your subscription will expire in %{remaining_days} day."

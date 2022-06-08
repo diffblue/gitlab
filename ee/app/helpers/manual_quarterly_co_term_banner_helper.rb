@@ -6,6 +6,6 @@ module ManualQuarterlyCoTermBannerHelper
 
     upcoming_reconciliation = GitlabSubscriptions::UpcomingReconciliation.next
 
-    Gitlab::ManualQuarterlyCoTermBanner.new(actionable: upcoming_reconciliation)
+    Gitlab::ManualQuarterlyCoTermBanner.new(upcoming_reconciliation)
   end
 end
