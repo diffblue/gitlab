@@ -112,7 +112,7 @@ describe('ExportRequirementsModal', () => {
 
   describe('template', () => {
     it('GlModal open click emits export event', () => {
-      wrapper.findComponent(GlModal).vm.$emit('ok');
+      wrapper.findComponent(GlModal).vm.$emit('primary');
 
       const emitted = wrapper.emitted('export');
 
