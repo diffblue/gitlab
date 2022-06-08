@@ -74,8 +74,7 @@ RSpec.describe "User registration", :js, :saas do
       website_url: 'https://gitlab.com',
       trial_onboarding_flow: 'true',
       # these are the passed through params
-      role: 'other',
-      other_role: 'My role',
+      role: 'software_developer',
       registration_objective: 'other',
       jobs_to_be_done_other: 'My reason'
     ).permit!
@@ -85,8 +84,7 @@ RSpec.describe "User registration", :js, :saas do
     hash_including(
       trial_onboarding_flow: 'false',
       # these are the passed through params
-      role: 'other',
-      other_role: 'My role',
+      role: 'software_developer',
       registration_objective: 'other',
       jobs_to_be_done_other: 'My reason'
     )
