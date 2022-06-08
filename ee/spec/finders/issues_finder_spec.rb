@@ -44,7 +44,7 @@ RSpec.describe IssuesFinder do
           end
 
           it 'does not return any results' do
-            expect(issues).to be_empty
+            expect(items).to be_empty
           end
         end
 
@@ -52,7 +52,7 @@ RSpec.describe IssuesFinder do
           let(:params) { { label_name: 'devops::*' } }
 
           it 'does not return any results' do
-            expect(issues).to be_empty
+            expect(items).to be_empty
           end
         end
 
@@ -60,7 +60,7 @@ RSpec.describe IssuesFinder do
           let(:params) { base_params.merge(label_name: 'devops::*') }
 
           it 'returns issues that have labels that match the wildcard' do
-            expect(issues).to contain_exactly(devops_plan_be_in_dev_issue, devops_create_issue)
+            expect(items).to contain_exactly(devops_plan_be_in_dev_issue, devops_create_issue)
           end
         end
 
@@ -68,7 +68,7 @@ RSpec.describe IssuesFinder do
           let(:params) { base_params.merge(label_name: ['devops::*', 'workflow::backend::*']) }
 
           it 'returns issues that have labels that match both wildcards' do
-            expect(issues).to contain_exactly(devops_plan_be_in_dev_issue)
+            expect(items).to contain_exactly(devops_plan_be_in_dev_issue)
           end
         end
 
@@ -76,7 +76,7 @@ RSpec.describe IssuesFinder do
           let(:params) { base_params.merge(label_name: [project_label.name, 'workflow::frontend::*']) }
 
           it 'returns issues that have labels that match the wildcard and the regular label' do
-            expect(issues).to contain_exactly(project_fe_in_dev_issue, project_fe_in_review_issue)
+            expect(items).to contain_exactly(project_fe_in_dev_issue, project_fe_in_review_issue)
           end
         end
 
@@ -84,7 +84,7 @@ RSpec.describe IssuesFinder do
           let(:params) { base_params.merge(label_name: 'workflow::*') }
 
           it 'returns issues that have labels that match the prefix' do
-            expect(issues).to contain_exactly(devops_plan_be_in_dev_issue, be_in_dev_issue, project_fe_in_dev_issue, project_fe_in_review_issue)
+            expect(items).to contain_exactly(devops_plan_be_in_dev_issue, be_in_dev_issue, project_fe_in_dev_issue, project_fe_in_review_issue)
           end
         end
 
@@ -92,7 +92,7 @@ RSpec.describe IssuesFinder do
           let(:params) { base_params.merge(label_name: ['workflow::*', 'workflow::backend::*']) }
 
           it 'returns issues that have labels that match both prefixes' do
-            expect(issues).to contain_exactly(devops_plan_be_in_dev_issue, be_in_dev_issue)
+            expect(items).to contain_exactly(devops_plan_be_in_dev_issue, be_in_dev_issue)
           end
         end
 
@@ -100,7 +100,7 @@ RSpec.describe IssuesFinder do
           let(:params) { base_params.merge(not: { label_name: 'devops::*' }) }
 
           it 'returns issues that do not have labels that match the wildcard' do
-            expect(issues).to contain_exactly(issue4, project_fe_in_dev_issue, project_fe_in_review_issue, be_in_dev_issue)
+            expect(items).to contain_exactly(item4, project_fe_in_dev_issue, project_fe_in_review_issue, be_in_dev_issue)
           end
         end
       end
@@ -113,7 +113,7 @@ RSpec.describe IssuesFinder do
           let(:params) { { weight: Issue::WEIGHT_NONE } }
 
           it 'returns all issues' do
-            expect(issues).to contain_exactly(issue1, issue2, issue3, issue4, issue5)
+            expect(items).to contain_exactly(item1, item2, item3, item4, item5)
           end
         end
 
@@ -121,7 +121,7 @@ RSpec.describe IssuesFinder do
           let(:params) { { weight: Issue::WEIGHT_ANY } }
 
           it 'returns all issues' do
-            expect(issues).to contain_exactly(issue_with_weight_1, issue_with_weight_42)
+            expect(items).to contain_exactly(issue_with_weight_1, issue_with_weight_42)
           end
         end
 
@@ -129,7 +129,7 @@ RSpec.describe IssuesFinder do
           let(:params) { { weight: 42 } }
 
           it 'returns all issues' do
-            expect(issues).to contain_exactly(issue_with_weight_42)
+            expect(items).to contain_exactly(issue_with_weight_42)
           end
         end
 
@@ -137,7 +137,7 @@ RSpec.describe IssuesFinder do
           let(:params) { { not: { weight: 1 } } }
 
           it 'filters out issues with the specified weight' do
-            expect(issues).to contain_exactly(issue1, issue2, issue3, issue4, issue5, issue_with_weight_42)
+            expect(items).to contain_exactly(item1, item2, item3, item4, item5, issue_with_weight_42)
           end
         end
       end
@@ -150,33 +150,33 @@ RSpec.describe IssuesFinder do
         before do
           project2.add_developer(user3)
 
-          issue3.assignees = [user2, user3]
+          item3.assignees = [user2, user3]
         end
 
         it 'returns issues assigned to those users' do
-          expect(issues).to contain_exactly(issue3)
+          expect(items).to contain_exactly(item3)
         end
       end
 
       context 'filter by username' do
         let_it_be(:user3) { create(:user) }
 
-        let(:issuables) { issues }
+        let(:issuables) { items }
 
         before do
           project2.add_developer(user3)
-          issue2.assignees = [user, user2]
-          issue3.assignees = [user2, user3]
+          item2.assignees = [user, user2]
+          item3.assignees = [user2, user3]
         end
 
         it_behaves_like 'assignee username filter' do
           let(:params) { { assignee_username: [user2.username, user3.username] } }
-          let(:expected_issuables) { [issue3] }
+          let(:expected_issuables) { [item3] }
         end
 
         it_behaves_like 'assignee NOT username filter' do
           let(:params) { { not: { assignee_username: [user.username, user2.username] } } }
-          let(:expected_issuables) { [issue4] }
+          let(:expected_issuables) { [item4] }
         end
       end
 
@@ -193,7 +193,7 @@ RSpec.describe IssuesFinder do
           let(:params) { { epic_id: ::IssuableFinder::Params::FILTER_NONE } }
 
           it 'returns filtered issues' do
-            expect(issues).to contain_exactly(issue1, issue2, issue3, issue4, issue5)
+            expect(items).to contain_exactly(item1, item2, item3, item4, item5)
           end
         end
 
@@ -202,7 +202,7 @@ RSpec.describe IssuesFinder do
 
           context 'when include_subepics param is not included' do
             it 'returns all issues in the epic, subepic issues excluded' do
-              expect(issues).to contain_exactly(issue_1)
+              expect(items).to contain_exactly(issue_1)
             end
           end
 
@@ -212,7 +212,7 @@ RSpec.describe IssuesFinder do
             end
 
             it 'returns all issues in the epic including subepic issues' do
-              expect(issues).to contain_exactly(issue_1, issue_subepic)
+              expect(items).to contain_exactly(issue_1, issue_subepic)
             end
           end
         end
@@ -221,7 +221,7 @@ RSpec.describe IssuesFinder do
           let(:params) { { epic_id: ::IssuableFinder::Params::FILTER_ANY } }
 
           it 'returns filtered issues' do
-            expect(issues).to contain_exactly(issue_1, issue_2, issue_subepic)
+            expect(items).to contain_exactly(issue_1, issue_2, issue_subepic)
           end
         end
 
@@ -229,7 +229,7 @@ RSpec.describe IssuesFinder do
           let(:params) { { not: { epic_id: epic_1.id } } }
 
           it 'returns issues not assigned to the epic' do
-            expect(issues).to contain_exactly(issue1, issue2, issue3, issue4, issue5, issue_2, issue_subepic)
+            expect(items).to contain_exactly(item1, item2, item3, item4, item5, issue_2, issue_subepic)
           end
         end
       end
@@ -245,7 +245,7 @@ RSpec.describe IssuesFinder do
           let(:params) { { iteration_id: ::IssuableFinder::Params::FILTER_NONE } }
 
           it 'returns all issues without iterations' do
-            expect(issues).to contain_exactly(issue1, issue2, issue3, issue4, issue5)
+            expect(items).to contain_exactly(item1, item2, item3, item4, item5)
           end
         end
 
@@ -253,7 +253,7 @@ RSpec.describe IssuesFinder do
           let(:params) { { iteration_id: ::IssuableFinder::Params::FILTER_ANY } }
 
           it 'returns filtered issues' do
-            expect(issues).to contain_exactly(iteration_1_issue, iteration_2_issue)
+            expect(items).to contain_exactly(iteration_1_issue, iteration_2_issue)
           end
         end
 
@@ -264,7 +264,7 @@ RSpec.describe IssuesFinder do
 
           context 'when no current iteration is found' do
             it 'returns no issues' do
-              expect(issues).to be_empty
+              expect(items).to be_empty
             end
           end
 
@@ -272,14 +272,14 @@ RSpec.describe IssuesFinder do
             let(:current_iteration) { create(:iteration, :current, group: group, start_date: Date.yesterday, due_date: 1.day.from_now) }
 
             it 'returns filtered issues' do
-              expect(issues).to contain_exactly(current_iteration_issue)
+              expect(items).to contain_exactly(current_iteration_issue)
             end
 
             context 'filter by negated current iteration' do
               let(:params) { { group_id: group, not: { iteration_id: ::Iteration::Predefined::Current.title } } }
 
               it 'returns filtered issues' do
-                expect(issues).to contain_exactly(issue1, issue5, iteration_1_issue, iteration_2_issue)
+                expect(items).to contain_exactly(item1, item5, iteration_1_issue, iteration_2_issue)
               end
             end
           end
@@ -289,7 +289,7 @@ RSpec.describe IssuesFinder do
           let(:params) { { iteration_id: iteration_1.id } }
 
           it 'returns all issues with the iteration' do
-            expect(issues).to contain_exactly(iteration_1_issue)
+            expect(items).to contain_exactly(iteration_1_issue)
           end
         end
 
@@ -297,7 +297,7 @@ RSpec.describe IssuesFinder do
           let(:params) { { iteration_id: [iteration_1.id, iteration_2.id] } }
 
           it 'returns all issues with the iteration' do
-            expect(issues).to contain_exactly(iteration_1_issue, iteration_2_issue)
+            expect(items).to contain_exactly(iteration_1_issue, iteration_2_issue)
           end
         end
 
@@ -305,7 +305,7 @@ RSpec.describe IssuesFinder do
           let(:params) { { iteration_title: iteration_1.title } }
 
           it 'returns all issues with the iteration title' do
-            expect(issues).to contain_exactly(iteration_1_issue)
+            expect(items).to contain_exactly(iteration_1_issue)
           end
         end
 
@@ -313,7 +313,7 @@ RSpec.describe IssuesFinder do
           let(:params) { { not: { iteration_title: iteration_1.title } } }
 
           it 'returns all issues that do not match the iteration title' do
-            expect(issues).to contain_exactly(issue1, issue2, issue3, issue4, issue5, iteration_2_issue)
+            expect(items).to contain_exactly(item1, item2, item3, item4, item5, iteration_2_issue)
           end
         end
 
@@ -321,7 +321,7 @@ RSpec.describe IssuesFinder do
           let(:params) { { iteration_id: nil } }
 
           it 'returns unfiltered issues' do
-            expect(issues).to contain_exactly(issue1, issue2, issue3, issue4, issue5, iteration_1_issue, iteration_2_issue)
+            expect(items).to contain_exactly(item1, item2, item3, item4, item5, iteration_1_issue, iteration_2_issue)
           end
         end
       end
