@@ -298,4 +298,8 @@ RSpec.describe Security::OrchestrationPolicyRuleSchedule do
       let(:cron_worker_next_run_at) { schedule.send(:cron_worker_next_run_from, Time.zone.now) }
     end
   end
+
+  it_behaves_like 'includes Limitable concern' do
+    subject { build(:security_orchestration_policy_rule_schedule, security_orchestration_policy_configuration: create(:security_orchestration_policy_configuration)) }
+  end
 end

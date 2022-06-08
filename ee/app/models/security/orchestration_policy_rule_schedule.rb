@@ -2,10 +2,14 @@
 
 module Security
   class OrchestrationPolicyRuleSchedule < ApplicationRecord
+    include Limitable
     include CronSchedulable
     include Gitlab::Utils::StrongMemoize
 
     self.table_name = 'security_orchestration_policy_rule_schedules'
+
+    self.limit_name = 'security_policy_scan_execution_schedules'
+    self.limit_scope = :security_orchestration_policy_configuration
 
     belongs_to :owner, class_name: 'User', foreign_key: 'user_id'
     belongs_to :security_orchestration_policy_configuration,

@@ -29,7 +29,7 @@ module Security
             cron: rule[:cadence],
             owner: policy_configuration.policy_last_updated_by)
 
-          next unless rule_schedule.valid?
+          next if rule_schedule.exceeds_limits? || !rule_schedule.valid?
 
           rule_schedule.save!
         end
