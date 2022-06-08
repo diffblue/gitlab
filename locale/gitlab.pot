@@ -10918,6 +10918,9 @@ msgstr ""
 msgid "CsvParser|Unable to auto-detect delimiter; defaulted to \",\""
 msgstr ""
 
+msgid "Cue dramatic background music..."
+msgstr ""
+
 msgid "Current"
 msgstr ""
 
@@ -23047,6 +23050,9 @@ msgid "Loading snippet"
 msgstr ""
 
 msgid "Loading the GitLab IDE..."
+msgstr ""
+
+msgid "Loading, please wait."
 msgstr ""
 
 msgid "Loading..."
