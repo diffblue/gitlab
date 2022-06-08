@@ -100,7 +100,7 @@ class a {
 
 ## Converting Strings to Integers
 
-When converting strings to integers, `parseInt` has a slight performance advantage over `Number`, but `Number` is semantic and can be more readable. Both are allowable, but `Number` has a slight maintainability advantage.
+When converting strings to integers, `Number` is semantic and can be more readable. Both are allowable, but `Number` has a slight maintainability advantage.
 
 **WARNING:** `parseInt` **must** include the [radix argument](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/parseInt).
 
