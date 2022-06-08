@@ -9,18 +9,6 @@
   border-color: var(--gray-100, $gray-100);
 }
 
-.epic-tabs-content {
-  overflow: visible;
-
-  .roadmap-container {
-    min-height: 600px;
-
-    .empty-state {
-      margin-top: 0;
-    }
-  }
-}
-
 @include media-breakpoint-down(xs) {
   .epic-page-container {
     .detail-page-header {
