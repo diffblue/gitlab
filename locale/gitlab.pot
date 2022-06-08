@@ -44607,10 +44607,10 @@ msgstr ""
 msgid "ciReport|%{sameNum} same"
 msgstr ""
 
-msgid "ciReport|%{scanner} detected %{number} new potential %{vulnStr}"
+msgid "ciReport|%{scanner} detected %{strong_start}%{number}%{strong_end} new potential %{vulnStr}"
 msgstr ""
 
-msgid "ciReport|%{scanner} detected no new %{vulnStr}"
+msgid "ciReport|%{scanner} detected no %{strong_start}new%{strong_end} %{vulnStr}"
 msgstr ""
 
 msgid "ciReport|: Loading resulted in an error"
