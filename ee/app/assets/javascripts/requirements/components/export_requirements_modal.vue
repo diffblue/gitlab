@@ -6,7 +6,20 @@ import { __, sprintf } from '~/locale';
 export default {
   i18n: {
     modalTitle: __('Export %{requirementsCount} requirements?'),
-    exportRequirements: __('Export requirements'),
+  },
+  modal: {
+    actionPrimary: {
+      text: __('Export requirements'),
+      attributes: {
+        variant: 'confirm',
+      },
+    },
+    actionSecondary: {
+      text: __('Cancel'),
+      attributes: {
+        variant: 'default',
+      },
+    },
   },
   components: {
     GlModal,
@@ -114,10 +127,9 @@ export default {
     modal-id="export-requirements"
     dialog-class="gl-mx-5"
     :title="modalTitle"
-    :ok-title="$options.i18n.exportRequirements"
-    ok-variant="info"
-    ok-only
-    @ok="handleExport"
+    :action-primary="$options.modal.actionPrimary"
+    :action-secondary="$options.modal.actionSecondary"
+    @primary="handleExport"
   >
     <p>
       <gl-alert :dismissible="false">
