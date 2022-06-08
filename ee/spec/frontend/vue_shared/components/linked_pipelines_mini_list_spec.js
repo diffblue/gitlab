@@ -1,146 +1,191 @@
-import Vue from 'vue';
+import { mount } from '@vue/test-utils';
 import LinkedPipelinesMiniList from 'ee/vue_shared/components/linked_pipelines_mini_list.vue';
+import CiIcon from '~/vue_shared/components/ci_icon.vue';
 import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
 import mockData from './linked_pipelines_mock_data';
 
-const ListComponent = Vue.extend(LinkedPipelinesMiniList);
-
 describe('Linked pipeline mini list', () => {
-  let component;
+  let wrapper;
+
+  const findArrowIcon = () => wrapper.find('[data-testid="long-arrow-icon"]');
+  const findCiIcon = () => wrapper.findComponent(CiIcon);
+  const findCiIcons = () => wrapper.findAllComponents(CiIcon);
+  const findLinkedPipelineCounter = () => wrapper.find('[data-testid="linked-pipeline-counter"]');
+  const findLinkedPipelineMiniItem = () =>
+    wrapper.find('[data-testid="linked-pipeline-mini-item"]');
+  const findLinkedPipelineMiniItems = () =>
+    wrapper.findAll('[data-testid="linked-pipeline-mini-item"]');
+  const findLinkedPipelineMiniList = () => wrapper.findComponent(LinkedPipelinesMiniList);
+
+  const createComponent = (props = {}) => {
+    wrapper = mount(LinkedPipelinesMiniList, {
+      directives: {
+        GlTooltip: createMockDirective(),
+      },
+      propsData: {
+        ...props,
+      },
+    });
+  };
 
   describe('when passed an upstream pipeline as prop', () => {
     beforeEach(() => {
-      component = new ListComponent({
-        propsData: {
-          triggeredBy: [mockData.triggered_by],
-        },
-        directives: {
-          GlTooltip: createMockDirective(),
-        },
-      }).$mount();
+      createComponent({
+        triggeredBy: [mockData.triggered_by],
+      });
+    });
+
+    afterEach(() => {
+      wrapper.destroy();
+      wrapper = null;
     });
 
     it('should render one linked pipeline item', () => {
-      expect(component.$el.querySelectorAll('.linked-pipeline-mini-item').length).toBe(1);
+      expect(findLinkedPipelineMiniItem().exists()).toBe(true);
     });
 
     it('should render a linked pipeline with the correct href', () => {
-      const linkElement = component.$el.querySelector('.linked-pipeline-mini-item');
+      expect(findLinkedPipelineMiniItem().exists()).toBe(true);
 
-      expect(linkElement.getAttribute('href')).toBe('/gitlab-org/gitlab-foss/-/pipelines/129');
+      expect(findLinkedPipelineMiniItem().attributes('href')).toBe(
+        '/gitlab-org/gitlab-foss/-/pipelines/129',
+      );
     });
 
     it('should render one ci status icon', () => {
-      expect(component.$el.querySelectorAll('.linked-pipeline-mini-item svg').length).toBe(1);
+      expect(findCiIcon().exists()).toBe(true);
+    });
+
+    it('should render a borderless ci-icon', () => {
+      expect(findCiIcon().exists()).toBe(true);
+
+      expect(findCiIcon().props('isBorderless')).toBe(true);
+      expect(findCiIcon().classes('borderless')).toBe(true);
+    });
+
+    it('should render a ci-icon with a custom border class', () => {
+      expect(findCiIcon().exists()).toBe(true);
+
+      expect(findCiIcon().classes('gl-border')).toBe(true);
     });
 
     it('should render the correct ci status icon', () => {
-      const iconElement = component.$el.querySelector('.linked-pipeline-mini-item');
-
-      expect(iconElement.classList.contains('ci-status-icon-running')).toBe(true);
-      expect(iconElement.innerHTML).toContain('<svg');
+      expect(findCiIcon().classes('ci-status-icon-running')).toBe(true);
     });
 
     it('should render an arrow icon', () => {
-      const iconElement = component.$el.querySelector('.arrow-icon');
+      expect(findArrowIcon().exists()).toBe(true);
 
-      expect(iconElement).not.toBeNull();
-      expect(iconElement.innerHTML).toContain('long-arrow');
+      expect(findArrowIcon().props('name')).toBe('long-arrow');
+      expect(findArrowIcon().classes('arrow-icon')).toBe(true);
     });
 
     it('should have an activated tooltip', () => {
-      const itemElement = component.$el.querySelector('.linked-pipeline-mini-item');
-      const tooltip = getBinding(itemElement, 'gl-tooltip');
+      expect(findLinkedPipelineMiniItem().exists()).toBe(true);
+      const tooltip = getBinding(findLinkedPipelineMiniItem().element, 'gl-tooltip');
 
       expect(tooltip.value.title).toBe('GitLabCE - running');
     });
 
     it('should correctly set is-upstream', () => {
-      expect(component.$el.classList.contains('is-upstream')).toBe(true);
+      expect(findLinkedPipelineMiniList().exists()).toBe(true);
+
+      expect(findLinkedPipelineMiniList().classes('is-upstream')).toBe(true);
     });
 
     it('should correctly compute shouldRenderCounter', () => {
-      expect(component.shouldRenderCounter).toBe(false);
+      expect(findLinkedPipelineMiniList().vm.shouldRenderCounter).toBe(false);
     });
 
     it('should not render the pipeline counter', () => {
-      expect(component.$el.querySelector('.linked-pipelines-counter')).toBeNull();
+      expect(findLinkedPipelineCounter().exists()).toBe(false);
     });
   });
 
   describe('when passed downstream pipelines as props', () => {
     beforeEach(() => {
-      component = new ListComponent({
-        propsData: {
-          triggered: mockData.triggered,
-          pipelinePath: 'my/pipeline/path',
-        },
-        directives: {
-          GlTooltip: createMockDirective(),
-        },
-      }).$mount();
+      createComponent({
+        triggered: mockData.triggered,
+        pipelinePath: 'my/pipeline/path',
+      });
     });
 
-    it('should render one linked pipeline item', () => {
-      expect(
-        component.$el.querySelectorAll('.linked-pipeline-mini-item:not(.linked-pipelines-counter)')
-          .length,
-      ).toBe(3);
+    afterEach(() => {
+      wrapper.destroy();
+      wrapper = null;
+    });
+
+    it('should render three linked pipeline items', () => {
+      expect(findLinkedPipelineMiniItems().exists()).toBe(true);
+      expect(findLinkedPipelineMiniItems().length).toBe(3);
     });
 
     it('should render three ci status icons', () => {
-      expect(component.$el.querySelectorAll('.linked-pipeline-mini-item svg').length).toBe(3);
+      expect(findCiIcons().exists()).toBe(true);
+      expect(findCiIcons().length).toBe(3);
     });
 
     it('should render the correct ci status icon', () => {
-      const iconElement = component.$el.querySelector('.linked-pipeline-mini-item');
-
-      expect(iconElement.classList.contains('ci-status-icon-running')).toBe(true);
-      expect(iconElement.innerHTML).toContain('<svg');
+      expect(findCiIcon().classes('ci-status-icon-running')).toBe(true);
     });
 
     it('should render an arrow icon', () => {
-      const iconElement = component.$el.querySelector('.arrow-icon');
+      expect(findArrowIcon().exists()).toBe(true);
 
-      expect(iconElement).not.toBeNull();
-      expect(iconElement.innerHTML).toContain('long-arrow');
+      expect(findArrowIcon().props('name')).toBe('long-arrow');
+      expect(findArrowIcon().classes('arrow-icon')).toBe(true);
     });
 
-    it('should have prepped tooltips', () => {
-      const itemElement = component.$el.querySelectorAll('.linked-pipeline-mini-item')[2];
-      const tooltip = getBinding(itemElement, 'gl-tooltip');
+    it('should have an activated tooltip', () => {
+      expect(findLinkedPipelineMiniItem().exists()).toBe(true);
+      const tooltip = getBinding(findLinkedPipelineMiniItem().element, 'gl-tooltip');
 
       expect(tooltip.value.title).toBe('GitLabCE - running');
     });
 
     it('should correctly set is-downstream', () => {
-      expect(component.$el.classList.contains('is-downstream')).toBe(true);
+      expect(findLinkedPipelineMiniList().exists()).toBe(true);
+
+      expect(findLinkedPipelineMiniList().classes('is-downstream')).toBe(true);
     });
 
-    it('should correctly compute shouldRenderCounter', () => {
-      expect(component.shouldRenderCounter).toBe(true);
+    it('should render a borderless ci-icon', () => {
+      expect(findCiIcon().exists()).toBe(true);
+
+      expect(findCiIcon().props('isBorderless')).toBe(true);
+      expect(findCiIcon().classes('borderless')).toBe(true);
     });
 
-    it('should correctly trim linkedPipelines', () => {
-      expect(component.triggered.length).toBe(6);
-      expect(component.linkedPipelinesTrimmed.length).toBe(3);
+    it('should render a ci-icon with a custom border class', () => {
+      expect(findCiIcon().exists()).toBe(true);
+
+      expect(findCiIcon().classes('gl-border')).toBe(true);
     });
 
     it('should render the pipeline counter', () => {
-      expect(component.$el.querySelector('.linked-pipelines-counter')).not.toBeNull();
+      expect(findLinkedPipelineCounter().exists()).toBe(true);
+    });
+
+    it('should correctly compute shouldRenderCounter', () => {
+      expect(findLinkedPipelineMiniList().vm.shouldRenderCounter).toBe(true);
+    });
+
+    it('should correctly trim linkedPipelines', () => {
+      expect(findLinkedPipelineMiniList().props('triggered').length).toBe(6);
+      expect(findLinkedPipelineMiniList().vm.linkedPipelinesTrimmed.length).toBe(3);
     });
 
     it('should set the correct pipeline path', () => {
-      expect(component.$el.querySelector('.linked-pipelines-counter').getAttribute('href')).toBe(
-        'my/pipeline/path',
-      );
+      expect(findLinkedPipelineCounter().exists()).toBe(true);
+
+      expect(findLinkedPipelineCounter().attributes('href')).toBe('my/pipeline/path');
     });
 
     it('should render the correct counterTooltipText', () => {
-      const counter = component.$el.querySelector('.linked-pipelines-counter');
-      const tooltip = getBinding(counter, 'gl-tooltip');
+      expect(findLinkedPipelineCounter().exists()).toBe(true);
+      const tooltip = getBinding(findLinkedPipelineCounter().element, 'gl-tooltip');
 
-      expect(tooltip.value.title).toBe(component.counterTooltipText);
+      expect(tooltip.value.title).toBe(findLinkedPipelineMiniList().vm.counterTooltipText);
     });
   });
 });
