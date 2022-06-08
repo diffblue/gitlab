@@ -4,6 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Security::SecurityOrchestrationPolicies::ProcessRuleService do
   describe '#execute' do
+    let_it_be(:plan_limits) { create(:plan_limits, :default_plan, security_policy_scan_execution_schedules: 1) }
     let_it_be(:policy_configuration) { create(:security_orchestration_policy_configuration) }
     let_it_be(:owner) { create(:user) }
     let_it_be(:schedule) do
@@ -36,6 +37,25 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessRuleService do
         expect(new_schedule.id).not_to eq(schedule.id)
         expect(new_schedule.rule_index).to eq(1)
         expect(new_schedule.next_run_at).to be > schedule.next_run_at
+      end
+
+      context 'when limits are exceeded' do
+        let(:policy) do
+          rules = [
+            { type: 'pipeline', branches: %w[production] },
+            { type: 'schedule', branches: %w[production], cadence: '*/15 * * * *' },
+            { type: 'schedule', branches: %w[production], cadence: '2 * * * *' },
+            { type: 'schedule', branches: %w[production], cadence: '4 * * * *' }
+          ]
+
+          build(:scan_execution_policy, rules: rules)
+        end
+
+        it 'creates schedules only to a configured limit' do
+          service.execute
+
+          expect(Security::OrchestrationPolicyRuleSchedule.count).to eq(1)
+        end
       end
     end
 
