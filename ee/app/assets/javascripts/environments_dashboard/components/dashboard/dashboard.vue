@@ -195,7 +195,7 @@ export default {
       />
     </gl-modal>
     <div class="page-title-holder flex-fill d-flex align-items-center">
-      <h1 class="js-dashboard-title page-title text-nowrap flex-fill">
+      <h1 class="js-dashboard-title page-title gl-font-size-h-display text-nowrap flex-fill">
         {{ $options.dashboardHeader }}
       </h1>
       <gl-button v-gl-modal="$options.modalId" class="js-add-projects-button" variant="confirm">

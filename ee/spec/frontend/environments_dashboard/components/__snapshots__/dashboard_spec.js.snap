@@ -40,7 +40,7 @@ exports[`dashboard should match the snapshot 1`] = `
     class="page-title-holder flex-fill d-flex align-items-center"
   >
     <h1
-      class="js-dashboard-title page-title text-nowrap flex-fill"
+      class="js-dashboard-title page-title gl-font-size-h-display text-nowrap flex-fill"
     >
       
       Environments Dashboard

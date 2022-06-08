@@ -169,7 +169,7 @@ export default {
 <template>
   <div>
     <div class="gl-display-flex">
-      <h1 ref="pageTitle" class="page-title">
+      <h1 ref="pageTitle" class="page-title gl-font-size-h-display">
         {{ isEditing ? s__('Iterations|Edit iteration') : s__('Iterations|New iteration') }}
       </h1>
     </div>
