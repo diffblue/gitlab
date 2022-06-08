@@ -756,8 +756,8 @@ $tabs-holder-z-index: 250;
 }
 
 .submit-review-dropdown {
-  .dropdown-menu {
-    width: 650px;
+  &.show .dropdown-menu {
+    width: calc(100vw - 20px);
     max-width: 650px;
 
     .gl-new-dropdown-inner {
