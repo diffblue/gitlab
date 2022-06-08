@@ -12,6 +12,7 @@ import { truncateSha } from '~/lib/utils/text_utility';
 import TimelineEntryItem from '~/vue_shared/components/notes/timeline_entry_item.vue';
 import { __, s__, sprintf } from '~/locale';
 import userAvatarLink from '~/vue_shared/components/user_avatar/user_avatar_link.vue';
+import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import eventHub from '../event_hub';
 import noteable from '../mixins/noteable';
 import resolvable from '../mixins/resolvable';
@@ -40,7 +41,7 @@ export default {
   directives: {
     SafeHtml,
   },
-  mixins: [noteable, resolvable],
+  mixins: [noteable, resolvable, glFeatureFlagMixin()],
   props: {
     note: {
       type: Object,
@@ -196,13 +197,11 @@ export default {
 
       return fileResolvedFromAvailableSource || null;
     },
-    avatarSize() {
-      // Use a different size if shown on a Merge Request Diff
-      if (this.line && !this.isOverviewTab) {
-        return 24;
-      }
-
-      return 40;
+    isMRDiffView() {
+      return this.line && !this.isOverviewTab;
+    },
+    authorAvatarAdaptiveSize() {
+      return { default: 24, md: 32 };
     },
   },
   created() {
@@ -428,19 +427,68 @@ export default {
         </template>
       </gl-sprintf>
     </div>
-    <div class="timeline-icon">
-      <user-avatar-link
-        :link-href="author.path"
-        :img-src="author.avatar_url"
-        :img-alt="author.name"
-        :img-size="avatarSize"
-        lazy
-      >
-        <template #avatar-badge>
-          <slot name="avatar-badge"></slot>
-        </template>
-      </user-avatar-link>
-    </div>
+
+    <template v-if="glFeatures.glAvatarForAllUserAvatars">
+      <div v-if="isMRDiffView" class="gl-float-left gl-mt-n1 gl-mr-3">
+        <user-avatar-link
+          :link-href="author.path"
+          :img-src="author.avatar_url"
+          :img-alt="author.name"
+          :img-size="24"
+          lazy
+        >
+          <template #avatar-badge>
+            <slot name="avatar-badge"></slot>
+          </template>
+        </user-avatar-link>
+      </div>
+
+      <div v-else class="gl-float-left gl-pl-3 gl-mr-3 gl-md-pl-2 gl-md-pr-2">
+        <user-avatar-link
+          :link-href="author.path"
+          :img-src="author.avatar_url"
+          :img-alt="author.name"
+          :img-size="authorAvatarAdaptiveSize"
+          lazy
+        >
+          <template #avatar-badge>
+            <slot name="avatar-badge"></slot>
+          </template>
+        </user-avatar-link>
+      </div>
+    </template>
+
+    <!-- NOTE: this section is needed only while we migrate user-avatar-image to GlAvatar (https://gitlab.com/groups/gitlab-org/-/epics/7731) -->
+    <template v-else>
+      <div v-if="isMRDiffView" class="timeline-icon">
+        <user-avatar-link
+          :link-href="author.path"
+          :img-src="author.avatar_url"
+          :img-alt="author.name"
+          :img-size="24"
+          lazy
+        >
+          <template #avatar-badge>
+            <slot name="avatar-badge"></slot>
+          </template>
+        </user-avatar-link>
+      </div>
+
+      <div v-else class="timeline-icon gl-pl-3 gl-md-pl-2 gl-md-pr-2">
+        <user-avatar-link
+          :link-href="author.path"
+          :img-src="author.avatar_url"
+          :img-alt="author.name"
+          :img-size="32"
+          lazy
+        >
+          <template #avatar-badge>
+            <slot name="avatar-badge"></slot>
+          </template>
+        </user-avatar-link>
+      </div>
+    </template>
+
     <div class="timeline-content">
       <div class="note-header">
         <note-header

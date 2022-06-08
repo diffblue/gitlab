@@ -217,7 +217,7 @@ describe('issue_note', () => {
       expect(avatarProps.linkHref).toBe(author.path);
       expect(avatarProps.imgSrc).toBe(author.avatar_url);
       expect(avatarProps.imgAlt).toBe(author.name);
-      expect(avatarProps.imgSize).toBe(40);
+      expect(avatarProps.imgSize).toBe(32);
     });
 
     it('should render note header content', () => {
