@@ -400,7 +400,7 @@ module Gitlab
           resource oauth_path,
             headers: %w(Authorization),
             credentials: false,
-            methods: %i(post)
+            methods: %i(post options)
         end
       end
 
