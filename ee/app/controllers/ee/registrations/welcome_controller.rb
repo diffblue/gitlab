@@ -98,7 +98,7 @@ module EE
       end
 
       def passed_through_params
-        update_params.slice(:role, :other_role, :registration_objective).merge(params.permit(:jobs_to_be_done_other))
+        update_params.slice(:role, :registration_objective).merge(params.permit(:jobs_to_be_done_other))
       end
 
       override :update_success_path
