@@ -19037,6 +19037,9 @@ msgstr ""
 msgid "IDE|Review"
 msgstr ""
 
+msgid "IDE|Start a new merge request"
+msgstr ""
+
 msgid "IDE|Successful commit"
 msgstr ""
 
@@ -36194,9 +36197,6 @@ msgid "Start a Free Ultimate Trial"
 msgstr ""
 
 msgid "Start a new discussion…"
-msgstr ""
-
-msgid "Start a new merge request"
 msgstr ""
 
 msgid "Start a new merge request with these changes"
