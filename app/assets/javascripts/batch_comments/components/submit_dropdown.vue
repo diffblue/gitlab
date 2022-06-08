@@ -45,7 +45,7 @@ export default {
       {{ __('Finish review') }}
       <gl-icon class="dropdown-chevron" name="chevron-up" />
     </template>
-    <form @submit.prevent="submitReview">
+    <form data-testid="submit-form" @submit.prevent="submitReview">
       <label for="review-note-body" class="gl-font-weight-bold gl-mb-3">
         {{ __('Summary comment (optional)') }}
       </label>
@@ -74,6 +74,7 @@ export default {
                 name="review[note]"
                 class="note-textarea js-gfm-input markdown-area"
                 data-supports-quick-actions="true"
+                data-testid="comment-textarea"
                 :aria-label="__('Comment')"
                 :placeholder="__('Write a comment or drag your files here…')"
                 @keydown.meta.enter="submitReview"
@@ -89,6 +90,7 @@ export default {
           variant="info"
           type="submit"
           class="gl-ml-auto js-no-auto-disable"
+          data-testid="submit-review-button"
         >
           {{ __('Submit review') }}
         </gl-button>
