@@ -112,14 +112,13 @@ html.group-epics-roadmap-html {
 
 .roadmap-timeline-section .timeline-header-blank::after,
 .epics-list-section .epic-details-cell::after,
-.milestones-list-section .milestones-list-title::after,
-.skeleton-loader::after {
+.milestones-list-section .milestones-list-title::after {
   content: '';
-  position: absolute;
+  @include gl-absolute;
   top: 0;
   right: -$grid-size;
   width: $grid-size;
-  pointer-events: none;
+  @include gl-pointer-events-none;
   background: $column-right-gradient;
 }
 
