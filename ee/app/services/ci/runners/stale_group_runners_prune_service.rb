@@ -26,10 +26,17 @@ module Ci
         total_count = 0
 
         namespace_ids.each_batch(of: GROUP_BATCH_SIZE) do |namespace_id_batch|
-          selected_namespace_ids =
-            Namespace.find(namespace_id_batch.ids)
-              .filter { |namespace| Feature.enabled?(:stale_runner_cleanup_for_namespace_development, namespace) }
-              .map(&:id)
+          selected_namespaces = Namespace.find(namespace_id_batch.ids).filter do |namespace|
+            Feature.enabled?(:stale_runner_cleanup_for_namespace_development, namespace)
+          end
+
+          if ::Gitlab::CurrentSettings.should_check_namespace_plan?
+            ::Gitlab::GroupPlansPreloader.new.preload(selected_namespaces)
+          end
+
+          selected_namespace_ids = selected_namespaces
+            .filter { |namespace| namespace.licensed_feature_available?(:stale_runner_cleanup_for_namespace) }
+            .map(&:id)
 
           total_count += stale_runners(selected_namespace_ids).delete_all
         end

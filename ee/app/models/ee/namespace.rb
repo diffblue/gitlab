@@ -163,7 +163,7 @@ module EE
       project.full_path.sub(/\A#{Regexp.escape(full_path)}/, full_path_before_last_save)
     end
 
-    # Checks features (i.e. https://about.gitlab.com/pricing/) availabily
+    # Checks features (i.e. https://about.gitlab.com/pricing/) availability
     # for a given Namespace plan. This method should consider ancestor groups
     # being licensed.
     override :licensed_feature_available?
