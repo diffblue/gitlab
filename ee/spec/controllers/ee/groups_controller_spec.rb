@@ -17,7 +17,15 @@ RSpec.describe GroupsController do
 
     subject { get :show, params: { id: group.to_param } }
 
+    before do
+      namespace.add_owner(user)
+
+      sign_in(user)
+    end
+
     it_behaves_like 'namespace storage limit alert'
+
+    it_behaves_like 'seat count alert'
   end
 
   describe 'GET #activity' do

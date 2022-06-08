@@ -104,6 +104,8 @@ RSpec.describe ProjectsController do
       end
 
       it_behaves_like 'namespace storage limit alert'
+
+      it_behaves_like 'seat count alert'
     end
   end
 
