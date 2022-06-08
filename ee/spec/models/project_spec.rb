@@ -2226,7 +2226,7 @@ RSpec.describe Project do
           project.add_import_job
         end
 
-        context 'with feature flag is on' do
+        context 'with :use_status_for_repository_update_mirror feature flag disabled' do
           before do
             stub_feature_flags(use_status_for_repository_update_mirror: false)
           end
