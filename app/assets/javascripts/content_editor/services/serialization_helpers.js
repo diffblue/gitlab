@@ -484,6 +484,8 @@ const linkType = (sourceMarkdown) => {
 
 const removeUrlProtocol = (url) => url.replace(/^\w+:\/?\/?/, '');
 
+const normalizeUrl = (url) => decodeURIComponent(removeUrlProtocol(url));
+
 /**
  * Validates that the provided URL is well-formed
  *
@@ -535,7 +537,7 @@ const isAutoLink = (linkMark, parent) => {
     !child ||
     !child.isText ||
     !isValidUrl(href) ||
-    removeUrlProtocol(child.text) !== removeUrlProtocol(href)
+    normalizeUrl(child.text) !== normalizeUrl(href)
   ) {
     return false;
   }
@@ -544,33 +546,15 @@ const isAutoLink = (linkMark, parent) => {
 };
 
 /**
- * Determines if a autolink can be bracketless. A bracketless
- * autolink should be preceded by a whitespace or it should be
- * at the start of a line or surrounded by the characters *, _
- * , ~, and (. We don’t test for the first three characters
- * because those are converted to marks by the Markdown parser.
- *
- * https://github.github.com/gfm/#autolinks-extension-
- *
+ * Returns true if the user used brackets to the define
+ * the autolink in the original markdown source
  */
-const isBracketlessAutoLink = (linkMark, parent, sourceMarkdown) => {
-  if (/^<.+?>$/.test(sourceMarkdown)) {
-    return false;
-  }
-
-  const { index, child } = findChildWithMark(linkMark, parent);
-  const prevSibling = parent.maybeChild(index - 1);
-
-  return (
-    parent.firstChild === child ||
-    (prevSibling && prevSibling.isText && /(\s+|\()$/.test(prevSibling.text))
-  );
-};
+const isBracketAutoLink = (sourceMarkdown) => /^<.+?>$/.test(sourceMarkdown);
 
 export const link = {
   open(state, mark, parent) {
     if (isAutoLink(mark, parent)) {
-      return isBracketlessAutoLink(mark, parent, mark.attrs.sourceMarkdown) ? '' : '<';
+      return isBracketAutoLink(mark.attrs.sourceMarkdown) ? '<' : '';
     }
 
     const { canonicalSrc, href, title, sourceMarkdown } = mark.attrs;
@@ -589,7 +573,7 @@ export const link = {
   },
   close(state, mark, parent) {
     if (isAutoLink(mark, parent)) {
-      return isBracketlessAutoLink(mark, parent, mark.attrs.sourceMarkdown) ? '' : '>';
+      return isBracketAutoLink(mark.attrs.sourceMarkdown) ? '>' : '';
     }
 
     const { canonicalSrc, href, title, sourceMarkdown } = mark.attrs;

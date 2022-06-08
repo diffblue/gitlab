@@ -1169,36 +1169,40 @@ Oranges are orange [^1]
   };
 
   it.each`
-    mark          | content                                    | modifiedContent                                     | editAction
-    ${'bold'}     | ${'**bold**'}                              | ${'**bold modified**'}                              | ${defaultEditAction}
-    ${'bold'}     | ${'__bold__'}                              | ${'__bold modified__'}                              | ${defaultEditAction}
-    ${'bold'}     | ${'<strong>bold</strong>'}                 | ${'<strong>bold modified</strong>'}                 | ${defaultEditAction}
-    ${'bold'}     | ${'<b>bold</b>'}                           | ${'<b>bold modified</b>'}                           | ${defaultEditAction}
-    ${'italic'}   | ${'_italic_'}                              | ${'_italic modified_'}                              | ${defaultEditAction}
-    ${'italic'}   | ${'*italic*'}                              | ${'*italic modified*'}                              | ${defaultEditAction}
-    ${'italic'}   | ${'<em>italic</em>'}                       | ${'<em>italic modified</em>'}                       | ${defaultEditAction}
-    ${'italic'}   | ${'<i>italic</i>'}                         | ${'<i>italic modified</i>'}                         | ${defaultEditAction}
-    ${'link'}     | ${'[gitlab](https://gitlab.com)'}          | ${'[gitlab modified](https://gitlab.com)'}          | ${defaultEditAction}
-    ${'link'}     | ${'<a href="https://gitlab.com">link</a>'} | ${'<a href="https://gitlab.com">link modified</a>'} | ${defaultEditAction}
-    ${'link'}     | ${'link www.gitlab.com'}                   | ${'modified link www.gitlab.com'}                   | ${prependContentEditAction}
-    ${'link'}     | ${'link https://www.gitlab.com'}           | ${'modified link https://www.gitlab.com'}           | ${prependContentEditAction}
-    ${'link'}     | ${'link(https://www.gitlab.com)'}          | ${'modified link(https://www.gitlab.com)'}          | ${prependContentEditAction}
-    ${'link'}     | ${'link(engineering@gitlab.com)'}          | ${'modified link(engineering@gitlab.com)'}          | ${prependContentEditAction}
-    ${'link'}     | ${'link <https://www.gitlab.com>'}         | ${'modified link <https://www.gitlab.com>'}         | ${prependContentEditAction}
-    ${'code'}     | ${'`code`'}                                | ${'`code modified`'}                                | ${defaultEditAction}
-    ${'code'}     | ${'<code>code</code>'}                     | ${'<code>code modified</code>'}                     | ${defaultEditAction}
-    ${'strike'}   | ${'~~striked~~'}                           | ${'~~striked modified~~'}                           | ${defaultEditAction}
-    ${'strike'}   | ${'<del>striked</del>'}                    | ${'<del>striked modified</del>'}                    | ${defaultEditAction}
-    ${'strike'}   | ${'<strike>striked</strike>'}              | ${'<strike>striked modified</strike>'}              | ${defaultEditAction}
-    ${'strike'}   | ${'<s>striked</s>'}                        | ${'<s>striked modified</s>'}                        | ${defaultEditAction}
-    ${'list'}     | ${'- list item'}                           | ${'- list item modified'}                           | ${defaultEditAction}
-    ${'list'}     | ${'* list item'}                           | ${'* list item modified'}                           | ${defaultEditAction}
-    ${'list'}     | ${'+ list item'}                           | ${'+ list item modified'}                           | ${defaultEditAction}
-    ${'list'}     | ${'- list item 1\n- list item 2'}          | ${'- list item 1\n- list item 2 modified'}          | ${defaultEditAction}
-    ${'list'}     | ${'2) list item'}                          | ${'2) list item modified'}                          | ${defaultEditAction}
-    ${'list'}     | ${'1. list item'}                          | ${'1. list item modified'}                          | ${defaultEditAction}
-    ${'taskList'} | ${'2) [ ] task list item'}                 | ${'2) [ ] task list item modified'}                 | ${defaultEditAction}
-    ${'taskList'} | ${'2) [x] task list item'}                 | ${'2) [x] task list item modified'}                 | ${defaultEditAction}
+    mark          | content                                    | modifiedContent                                                               | editAction
+    ${'bold'}     | ${'**bold**'}                              | ${'**bold modified**'}                                                        | ${defaultEditAction}
+    ${'bold'}     | ${'__bold__'}                              | ${'__bold modified__'}                                                        | ${defaultEditAction}
+    ${'bold'}     | ${'<strong>bold</strong>'}                 | ${'<strong>bold modified</strong>'}                                           | ${defaultEditAction}
+    ${'bold'}     | ${'<b>bold</b>'}                           | ${'<b>bold modified</b>'}                                                     | ${defaultEditAction}
+    ${'italic'}   | ${'_italic_'}                              | ${'_italic modified_'}                                                        | ${defaultEditAction}
+    ${'italic'}   | ${'*italic*'}                              | ${'*italic modified*'}                                                        | ${defaultEditAction}
+    ${'italic'}   | ${'<em>italic</em>'}                       | ${'<em>italic modified</em>'}                                                 | ${defaultEditAction}
+    ${'italic'}   | ${'<i>italic</i>'}                         | ${'<i>italic modified</i>'}                                                   | ${defaultEditAction}
+    ${'link'}     | ${'[gitlab](https://gitlab.com)'}          | ${'[gitlab modified](https://gitlab.com)'}                                    | ${defaultEditAction}
+    ${'link'}     | ${'<a href="https://gitlab.com">link</a>'} | ${'<a href="https://gitlab.com">link modified</a>'}                           | ${defaultEditAction}
+    ${'link'}     | ${'link www.gitlab.com'}                   | ${'modified link www.gitlab.com'}                                             | ${prependContentEditAction}
+    ${'link'}     | ${'link https://www.gitlab.com'}           | ${'modified link https://www.gitlab.com'}                                     | ${prependContentEditAction}
+    ${'link'}     | ${'link(https://www.gitlab.com)'}          | ${'modified link(https://www.gitlab.com)'}                                    | ${prependContentEditAction}
+    ${'link'}     | ${'link(engineering@gitlab.com)'}          | ${'modified link(engineering@gitlab.com)'}                                    | ${prependContentEditAction}
+    ${'link'}     | ${'link <https://www.gitlab.com>'}         | ${'modified link <https://www.gitlab.com>'}                                   | ${prependContentEditAction}
+    ${'link'}     | ${'link [https://www.gitlab.com>'}         | ${'modified link \\[https://www.gitlab.com>'}                                 | ${prependContentEditAction}
+    ${'link'}     | ${'link <https://www.gitlab.com'}          | ${'modified link <https://www.gitlab.com'}                                    | ${prependContentEditAction}
+    ${'link'}     | ${'link https://www.gitlab.com>'}          | ${'modified link https://www.gitlab.com>'}                                    | ${prependContentEditAction}
+    ${'link'}     | ${'link **https://www.gitlab.com]**'}      | ${'modified link [**https://www.gitlab.com\\]**](https://www.gitlab.com%5D)'} | ${prependContentEditAction}
+    ${'code'}     | ${'`code`'}                                | ${'`code modified`'}                                                          | ${defaultEditAction}
+    ${'code'}     | ${'<code>code</code>'}                     | ${'<code>code modified</code>'}                                               | ${defaultEditAction}
+    ${'strike'}   | ${'~~striked~~'}                           | ${'~~striked modified~~'}                                                     | ${defaultEditAction}
+    ${'strike'}   | ${'<del>striked</del>'}                    | ${'<del>striked modified</del>'}                                              | ${defaultEditAction}
+    ${'strike'}   | ${'<strike>striked</strike>'}              | ${'<strike>striked modified</strike>'}                                        | ${defaultEditAction}
+    ${'strike'}   | ${'<s>striked</s>'}                        | ${'<s>striked modified</s>'}                                                  | ${defaultEditAction}
+    ${'list'}     | ${'- list item'}                           | ${'- list item modified'}                                                     | ${defaultEditAction}
+    ${'list'}     | ${'* list item'}                           | ${'* list item modified'}                                                     | ${defaultEditAction}
+    ${'list'}     | ${'+ list item'}                           | ${'+ list item modified'}                                                     | ${defaultEditAction}
+    ${'list'}     | ${'- list item 1\n- list item 2'}          | ${'- list item 1\n- list item 2 modified'}                                    | ${defaultEditAction}
+    ${'list'}     | ${'2) list item'}                          | ${'2) list item modified'}                                                    | ${defaultEditAction}
+    ${'list'}     | ${'1. list item'}                          | ${'1. list item modified'}                                                    | ${defaultEditAction}
+    ${'taskList'} | ${'2) [ ] task list item'}                 | ${'2) [ ] task list item modified'}                                           | ${defaultEditAction}
+    ${'taskList'} | ${'2) [x] task list item'}                 | ${'2) [x] task list item modified'}                                           | ${defaultEditAction}
   `(
     'preserves original $mark syntax when sourceMarkdown is available for $content',
     async ({ content, modifiedContent, editAction }) => {

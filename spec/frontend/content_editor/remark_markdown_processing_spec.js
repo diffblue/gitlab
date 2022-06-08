@@ -362,6 +362,24 @@ describe('Client side Markdown processing', () => {
       ),
     },
     {
+      only: true,
+      markdown: '[https://gitlab.com>',
+      expectedDoc: doc(
+        paragraph(
+          sourceAttrs('0:20', '[https://gitlab.com>'),
+          '[',
+          link(
+            {
+              ...sourceAttrs(),
+              href: 'https://gitlab.com',
+            },
+            'https://gitlab.com',
+          ),
+          '>',
+        ),
+      ),
+    },
+    {
       markdown: `
 This is a paragraph with a\\
 hard line break`,
