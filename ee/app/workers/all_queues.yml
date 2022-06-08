@@ -6,7 +6,7 @@
 - :name: auto_merge:merge_trains_refresh
   :worker_name: MergeTrains::RefreshWorker
   :feature_category: :continuous_integration
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :cpu
   :weight: 3
@@ -15,34 +15,34 @@
 - :name: cronjob:active_user_count_threshold
   :worker_name: ActiveUserCountThresholdWorker
   :feature_category: :provision
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: cronjob:adjourned_group_deletion
   :worker_name: AdjournedGroupDeletionWorker
   :feature_category: :compliance_management
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: cronjob:adjourned_projects_deletion_cron
   :worker_name: AdjournedProjectsDeletionCronWorker
   :feature_category: :compliance_management
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: cronjob:analytics_cycle_analytics_consistency
   :worker_name: Analytics::CycleAnalytics::ConsistencyWorker
   :feature_category: :value_stream_management
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
@@ -51,7 +51,7 @@
 - :name: cronjob:analytics_cycle_analytics_incremental
   :worker_name: Analytics::CycleAnalytics::IncrementalWorker
   :feature_category: :value_stream_management
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
@@ -60,7 +60,7 @@
 - :name: cronjob:analytics_cycle_analytics_reaggregation
   :worker_name: Analytics::CycleAnalytics::ReaggregationWorker
   :feature_category: :value_stream_management
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
@@ -69,7 +69,7 @@
 - :name: cronjob:analytics_devops_adoption_create_all_snapshots
   :worker_name: Analytics::DevopsAdoption::CreateAllSnapshotsWorker
   :feature_category: :devops_reports
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
@@ -78,7 +78,7 @@
 - :name: cronjob:app_sec_dast_profile_schedule
   :worker_name: AppSec::Dast::ProfileScheduleWorker
   :feature_category: :dynamic_application_security_testing
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
@@ -87,7 +87,7 @@
 - :name: cronjob:arkose_blocked_users_report
   :worker_name: Arkose::BlockedUsersReportWorker
   :feature_category: :authentication_and_authorization
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
@@ -96,7 +96,7 @@
 - :name: cronjob:ci_runners_stale_group_runners_prune_cron
   :worker_name: Ci::Runners::StaleGroupRunnersPruneCronWorker
   :feature_category: :runner_fleet
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
@@ -105,16 +105,16 @@
 - :name: cronjob:clear_shared_runners_minutes
   :worker_name: ClearSharedRunnersMinutesWorker
   :feature_category: :continuous_integration
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: cronjob:elastic_cluster_reindexing_cron
   :worker_name: ElasticClusterReindexingCronWorker
   :feature_category: :global_search
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :throttled
   :resource_boundary: :unknown
   :weight: 1
@@ -123,25 +123,25 @@
 - :name: cronjob:elastic_index_bulk_cron
   :worker_name: ElasticIndexBulkCronWorker
   :feature_category: :global_search
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :throttled
   :resource_boundary: :cpu
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: cronjob:elastic_index_initial_bulk_cron
   :worker_name: ElasticIndexInitialBulkCronWorker
   :feature_category: :global_search
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :throttled
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: cronjob:elastic_migration
   :worker_name: Elastic::MigrationWorker
   :feature_category: :global_search
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :throttled
   :resource_boundary: :unknown
   :weight: 1
@@ -150,7 +150,7 @@
 - :name: cronjob:elastic_remove_expired_namespace_subscriptions_from_index_cron
   :worker_name: ElasticRemoveExpiredNamespaceSubscriptionsFromIndexCronWorker
   :feature_category: :global_search
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
@@ -159,34 +159,34 @@
 - :name: cronjob:geo_container_repository_sync_dispatch
   :worker_name: Geo::ContainerRepositorySyncDispatchWorker
   :feature_category: :geo_replication
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: cronjob:geo_metrics_update
   :worker_name: Geo::MetricsUpdateWorker
   :feature_category: :geo_replication
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: cronjob:geo_prune_event_log
   :worker_name: Geo::PruneEventLogWorker
   :feature_category: :geo_replication
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: cronjob:geo_registry_sync
   :worker_name: Geo::RegistrySyncWorker
   :feature_category: :geo_replication
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
@@ -195,70 +195,70 @@
 - :name: cronjob:geo_repository_sync
   :worker_name: Geo::RepositorySyncWorker
   :feature_category: :geo_replication
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: cronjob:geo_repository_verification_primary_batch
   :worker_name: Geo::RepositoryVerification::Primary::BatchWorker
   :feature_category: :geo_replication
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: cronjob:geo_repository_verification_secondary_scheduler
   :worker_name: Geo::RepositoryVerification::Secondary::SchedulerWorker
   :feature_category: :geo_replication
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: cronjob:geo_repository_verification_secondary_shard
   :worker_name: Geo::RepositoryVerification::Secondary::ShardWorker
   :feature_category: :geo_replication
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: cronjob:geo_scheduler_per_shard_scheduler
   :worker_name: Geo::Scheduler::PerShardSchedulerWorker
   :feature_category: :geo_replication
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: cronjob:geo_scheduler_primary_per_shard_scheduler
   :worker_name: Geo::Scheduler::Primary::PerShardSchedulerWorker
   :feature_category: :geo_replication
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: cronjob:geo_scheduler_secondary_per_shard_scheduler
   :worker_name: Geo::Scheduler::Secondary::PerShardSchedulerWorker
   :feature_category: :geo_replication
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: cronjob:geo_secondary_registry_consistency
   :worker_name: Geo::Secondary::RegistryConsistencyWorker
   :feature_category: :geo_replication
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
@@ -267,25 +267,25 @@
 - :name: cronjob:geo_secondary_usage_data_cron
   :worker_name: Geo::SecondaryUsageDataCronWorker
   :feature_category: :geo_replication
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: cronjob:geo_sidekiq_cron_config
   :worker_name: Geo::SidekiqCronConfigWorker
   :feature_category: :geo_replication
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :cpu
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: cronjob:geo_sync_timeout_cron
   :worker_name: Geo::SyncTimeoutCronWorker
   :feature_category: :geo_replication
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
@@ -294,7 +294,7 @@
 - :name: cronjob:geo_verification_cron
   :worker_name: Geo::VerificationCronWorker
   :feature_category: :geo_replication
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
@@ -303,25 +303,25 @@
 - :name: cronjob:historical_data
   :worker_name: HistoricalDataWorker
   :feature_category: :utilization
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: cronjob:import_software_licenses
   :worker_name: ImportSoftwareLicensesWorker
   :feature_category: :license_compliance
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: cronjob:incident_management_incident_sla_exceeded_check
   :worker_name: IncidentManagement::IncidentSlaExceededCheckWorker
   :feature_category: :incident_management
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :cpu
   :weight: 1
@@ -330,7 +330,7 @@
 - :name: cronjob:incident_management_oncall_rotations_persist_all_rotations_shifts_job
   :worker_name: IncidentManagement::OncallRotations::PersistAllRotationsShiftsJob
   :feature_category: :incident_management
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :cpu
   :weight: 1
@@ -339,7 +339,7 @@
 - :name: cronjob:incident_management_pending_escalations_schedule_check_cron
   :worker_name: IncidentManagement::PendingEscalations::ScheduleCheckCronWorker
   :feature_category: :incident_management
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
@@ -348,7 +348,7 @@
 - :name: cronjob:iterations_cadences_create_iterations
   :worker_name: Iterations::Cadences::CreateIterationsWorker
   :feature_category: :team_planning
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
@@ -357,7 +357,7 @@
 - :name: cronjob:iterations_cadences_schedule_create_iterations
   :worker_name: Iterations::Cadences::ScheduleCreateIterationsWorker
   :feature_category: :team_planning
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
@@ -366,7 +366,7 @@
 - :name: cronjob:iterations_update_status
   :worker_name: IterationsUpdateStatusWorker
   :feature_category: :team_planning
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
@@ -379,7 +379,7 @@
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: cronjob:ldap_sync
   :worker_name: LdapSyncWorker
@@ -388,21 +388,21 @@
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: cronjob:licenses_reset_submit_license_usage_data_banner
   :worker_name: Licenses::ResetSubmitLicenseUsageDataBannerWorker
   :feature_category: :provision
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: cronjob:namespaces_free_user_cap_remediation
   :worker_name: Namespaces::FreeUserCap::RemediationWorker
   :feature_category: :experimentation_conversion
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :cpu
   :weight: 1
@@ -411,16 +411,16 @@
 - :name: cronjob:security_create_orchestration_policy
   :worker_name: Security::CreateOrchestrationPolicyWorker
   :feature_category: :security_orchestration
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: cronjob:security_findings_cleanup
   :worker_name: Security::Findings::CleanupWorker
   :feature_category: :vulnerability_management
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
@@ -429,61 +429,61 @@
 - :name: cronjob:security_orchestration_policy_rule_schedule
   :worker_name: Security::OrchestrationPolicyRuleScheduleWorker
   :feature_category: :security_orchestration
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: cronjob:sync_seat_link
   :worker_name: SyncSeatLinkWorker
   :feature_category: :provision
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: cronjob:update_all_mirrors
   :worker_name: UpdateAllMirrorsWorker
   :feature_category: :source_code_management
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: cronjob:update_max_seats_used_for_gitlab_com_subscriptions
   :worker_name: UpdateMaxSeatsUsedForGitlabComSubscriptionsWorker
   :feature_category: :utilization
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :cpu
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: cronjob:vulnerabilities_historical_statistics_deletion
   :worker_name: Vulnerabilities::HistoricalStatistics::DeletionWorker
   :feature_category: :vulnerability_management
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: cronjob:vulnerabilities_statistics_schedule
   :worker_name: Vulnerabilities::Statistics::ScheduleWorker
   :feature_category: :vulnerability_management
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: deployment:deployments_auto_rollback
   :worker_name: Deployments::AutoRollbackWorker
   :feature_category: :continuous_delivery
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 3
@@ -492,7 +492,7 @@
 - :name: dora_metrics:dora_daily_metrics_refresh
   :worker_name: Dora::DailyMetrics::RefreshWorker
   :feature_category: :continuous_delivery
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
@@ -501,16 +501,16 @@
 - :name: epics:epics_update_epics_dates
   :worker_name: Epics::UpdateEpicsDatesWorker
   :feature_category: :portfolio_management
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 2
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: geo:geo_batch_event_create
   :worker_name: Geo::BatchEventCreateWorker
   :feature_category: :geo_replication
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
@@ -519,34 +519,34 @@
 - :name: geo:geo_batch_project_registry
   :worker_name: Geo::Batch::ProjectRegistryWorker
   :feature_category: :geo_replication
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: geo:geo_batch_project_registry_scheduler
   :worker_name: Geo::Batch::ProjectRegistrySchedulerWorker
   :feature_category: :geo_replication
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: geo:geo_container_repository_sync
   :worker_name: Geo::ContainerRepositorySyncWorker
   :feature_category: :geo_replication
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: geo:geo_create_repository_updated_event
   :worker_name: Geo::CreateRepositoryUpdatedEventWorker
   :feature_category: :geo_replication
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
@@ -555,25 +555,25 @@
 - :name: geo:geo_design_repository_shard_sync
   :worker_name: Geo::DesignRepositoryShardSyncWorker
   :feature_category: :geo_replication
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: geo:geo_design_repository_sync
   :worker_name: Geo::DesignRepositorySyncWorker
   :feature_category: :geo_replication
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: geo:geo_destroy
   :worker_name: Geo::DestroyWorker
   :feature_category: :geo_replication
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
@@ -582,133 +582,133 @@
 - :name: geo:geo_event
   :worker_name: Geo::EventWorker
   :feature_category: :geo_replication
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: geo:geo_file_registry_removal
   :worker_name: Geo::FileRegistryRemovalWorker
   :feature_category: :geo_replication
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: geo:geo_file_removal
   :worker_name: Geo::FileRemovalWorker
   :feature_category: :geo_replication
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: geo:geo_hashed_storage_attachments_migration
   :worker_name: Geo::HashedStorageAttachmentsMigrationWorker
   :feature_category: :geo_replication
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: geo:geo_hashed_storage_migration
   :worker_name: Geo::HashedStorageMigrationWorker
   :feature_category: :geo_replication
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: geo:geo_project_sync
   :worker_name: Geo::ProjectSyncWorker
   :feature_category: :geo_replication
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: geo:geo_rename_repository
   :worker_name: Geo::RenameRepositoryWorker
   :feature_category: :geo_replication
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: geo:geo_repositories_clean_up
   :worker_name: Geo::RepositoriesCleanUpWorker
   :feature_category: :geo_replication
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: geo:geo_repository_cleanup
   :worker_name: Geo::RepositoryCleanupWorker
   :feature_category: :geo_replication
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: geo:geo_repository_destroy
   :worker_name: GeoRepositoryDestroyWorker
   :feature_category: :geo_replication
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: geo:geo_repository_shard_sync
   :worker_name: Geo::RepositoryShardSyncWorker
   :feature_category: :geo_replication
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: geo:geo_repository_verification_primary_shard
   :worker_name: Geo::RepositoryVerification::Primary::ShardWorker
   :feature_category: :geo_replication
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: geo:geo_repository_verification_primary_single
   :worker_name: Geo::RepositoryVerification::Primary::SingleWorker
   :feature_category: :geo_replication
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: geo:geo_repository_verification_secondary_single
   :worker_name: Geo::RepositoryVerification::Secondary::SingleWorker
   :feature_category: :geo_replication
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: geo:geo_reverification_batch
   :worker_name: Geo::ReverificationBatchWorker
   :feature_category: :geo_replication
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
@@ -717,34 +717,34 @@
 - :name: geo:geo_scheduler_primary_scheduler
   :worker_name: Geo::Scheduler::Primary::SchedulerWorker
   :feature_category: :geo_replication
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: geo:geo_scheduler_scheduler
   :worker_name: Geo::Scheduler::SchedulerWorker
   :feature_category: :geo_replication
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: geo:geo_scheduler_secondary_scheduler
   :worker_name: Geo::Scheduler::Secondary::SchedulerWorker
   :feature_category: :geo_replication
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: geo:geo_verification
   :worker_name: Geo::VerificationWorker
   :feature_category: :geo_replication
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
@@ -753,7 +753,7 @@
 - :name: geo:geo_verification_batch
   :worker_name: Geo::VerificationBatchWorker
   :feature_category: :geo_replication
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
@@ -762,16 +762,16 @@
 - :name: geo:geo_verification_state_backfill
   :worker_name: Geo::VerificationStateBackfillWorker
   :feature_category: :geo_replication
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: geo:geo_verification_timeout
   :worker_name: Geo::VerificationTimeoutWorker
   :feature_category: :geo_replication
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
@@ -780,7 +780,7 @@
 - :name: iterations:iterations_roll_over_issues
   :worker_name: Iterations::RollOverIssuesWorker
   :feature_category: :team_planning
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
@@ -789,7 +789,7 @@
 - :name: personal_access_tokens:personal_access_tokens_groups_policy
   :worker_name: PersonalAccessTokens::Groups::PolicyWorker
   :feature_category: :authentication_and_authorization
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
@@ -798,16 +798,16 @@
 - :name: personal_access_tokens:personal_access_tokens_instance_policy
   :worker_name: PersonalAccessTokens::Instance::PolicyWorker
   :feature_category: :authentication_and_authorization
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: pipeline_background:ci_minutes_refresh_cached_data
   :worker_name: Ci::Minutes::RefreshCachedDataWorker
   :feature_category: :continuous_integration
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
@@ -816,29 +816,29 @@
 - :name: pipeline_background:ci_minutes_update_project_and_namespace_usage
   :worker_name: Ci::Minutes::UpdateProjectAndNamespaceUsageWorker
   :feature_category: :continuous_integration
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: pipeline_background:ci_sync_reports_to_report_approval_rules
   :worker_name: Ci::SyncReportsToReportApprovalRulesWorker
   :feature_category: :continuous_integration
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :high
   :resource_boundary: :cpu
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: pipeline_default:ci_trigger_downstream_subscriptions
   :worker_name: Ci::TriggerDownstreamSubscriptionsWorker
   :feature_category: :continuous_integration
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :cpu
   :weight: 3
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: security_scans:scan_security_report_secrets
   :worker_name: ScanSecurityReportSecretsWorker
@@ -852,61 +852,61 @@
 - :name: security_scans:security_store_scans
   :worker_name: Security::StoreScansWorker
   :feature_category: :vulnerability_management
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :cpu
   :weight: 2
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: security_scans:security_track_secure_scans
   :worker_name: Security::TrackSecureScansWorker
   :feature_category: :vulnerability_management
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :cpu
   :weight: 2
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: security_scans:store_security_reports
   :worker_name: StoreSecurityReportsWorker
   :feature_category: :vulnerability_management
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :cpu
   :weight: 2
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: todos_destroyer:todos_destroyer_confidential_epic
   :worker_name: TodosDestroyer::ConfidentialEpicWorker
   :feature_category: :portfolio_management
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: adjourned_project_deletion
   :worker_name: AdjournedProjectDeletionWorker
   :feature_category: :compliance_management
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: admin_emails
   :worker_name: AdminEmailsWorker
   :feature_category: :team_planning
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: analytics_code_review_metrics
   :worker_name: Analytics::CodeReviewMetricsWorker
   :feature_category: :value_stream_management
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
@@ -915,7 +915,7 @@
 - :name: analytics_devops_adoption_create_snapshot
   :worker_name: Analytics::DevopsAdoption::CreateSnapshotWorker
   :feature_category: :devops_reports
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
@@ -924,7 +924,7 @@
 - :name: app_sec_dast_scanner_profiles_builds_consistency
   :worker_name: AppSec::Dast::ScannerProfilesBuilds::ConsistencyWorker
   :feature_category: :dynamic_application_security_testing
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
@@ -933,7 +933,7 @@
 - :name: app_sec_dast_scans_consistency
   :worker_name: AppSec::Dast::Scans::ConsistencyWorker
   :feature_category: :dynamic_application_security_testing
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
@@ -942,7 +942,7 @@
 - :name: app_sec_dast_site_profiles_builds_consistency
   :worker_name: AppSec::Dast::SiteProfilesBuilds::ConsistencyWorker
   :feature_category: :dynamic_application_security_testing
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
@@ -951,7 +951,7 @@
 - :name: approval_rules_external_approval_rule_payload
   :worker_name: ApprovalRules::ExternalApprovalRulePayloadWorker
   :feature_category: :source_code_management
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
@@ -969,16 +969,16 @@
 - :name: audit_events_user_impersonation_event_create
   :worker_name: AuditEvents::UserImpersonationEventCreateWorker
   :feature_category: :audit_events
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: auth_saml_group_sync
   :worker_name: Auth::SamlGroupSyncWorker
   :feature_category: :authentication_and_authorization
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
@@ -987,7 +987,7 @@
 - :name: ci_batch_reset_minutes
   :worker_name: Ci::BatchResetMinutesWorker
   :feature_category: :continuous_integration
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
@@ -996,7 +996,7 @@
 - :name: ci_upstream_projects_subscriptions_cleanup
   :worker_name: Ci::UpstreamProjectsSubscriptionsCleanupWorker
   :feature_category: :continuous_integration
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
@@ -1005,7 +1005,7 @@
 - :name: compliance_management_merge_requests_compliance_violations
   :worker_name: ComplianceManagement::MergeRequests::ComplianceViolationsWorker
   :feature_category: :compliance_management
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
@@ -1018,21 +1018,21 @@
   :urgency: :low
   :resource_boundary: :cpu
   :weight: 2
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: elastic_association_indexer
   :worker_name: ElasticAssociationIndexerWorker
   :feature_category: :global_search
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :cpu
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: elastic_commit_indexer
   :worker_name: ElasticCommitIndexerWorker
   :feature_category: :global_search
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :throttled
   :resource_boundary: :unknown
   :weight: 1
@@ -1041,7 +1041,7 @@
 - :name: elastic_delete_project
   :worker_name: ElasticDeleteProjectWorker
   :feature_category: :global_search
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :throttled
   :resource_boundary: :unknown
   :weight: 1
@@ -1050,16 +1050,16 @@
 - :name: elastic_full_index
   :worker_name: ElasticFullIndexWorker
   :feature_category: :global_search
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: elastic_indexing_control
   :worker_name: ElasticIndexingControlWorker
   :feature_category: :global_search
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
@@ -1068,25 +1068,25 @@
 - :name: elastic_namespace_indexer
   :worker_name: ElasticNamespaceIndexerWorker
   :feature_category: :global_search
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :cpu
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: elastic_namespace_rollout
   :worker_name: ElasticNamespaceRolloutWorker
   :feature_category: :global_search
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: elastic_project_transfer
   :worker_name: Elastic::ProjectTransferWorker
   :feature_category: :global_search
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :throttled
   :resource_boundary: :unknown
   :weight: 1
@@ -1095,11 +1095,11 @@
 - :name: epics_new_epic_issue
   :worker_name: Epics::NewEpicIssueWorker
   :feature_category: :portfolio_management
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: gitlab_subscriptions_notify_seats_exceeded
   :worker_name: GitlabSubscriptions::NotifySeatsExceededWorker
@@ -1113,7 +1113,7 @@
 - :name: group_saml_group_sync
   :worker_name: GroupSamlGroupSyncWorker
   :feature_category: :authentication_and_authorization
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
@@ -1122,16 +1122,16 @@
 - :name: group_wikis_git_garbage_collect
   :worker_name: GroupWikis::GitGarbageCollectWorker
   :feature_category: :gitaly
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: groups_create_event
   :worker_name: Groups::CreateEventWorker
   :feature_category: :onboarding
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :throttled
   :resource_boundary: :unknown
   :weight: 1
@@ -1140,16 +1140,16 @@
 - :name: groups_export_memberships
   :worker_name: Groups::ExportMembershipsWorker
   :feature_category: :compliance_management
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: groups_schedule_bulk_repository_shard_moves
   :worker_name: Groups::ScheduleBulkRepositoryShardMovesWorker
   :feature_category: :gitaly
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :throttled
   :resource_boundary: :unknown
   :weight: 1
@@ -1158,7 +1158,7 @@
 - :name: groups_update_repository_storage
   :worker_name: Groups::UpdateRepositoryStorageWorker
   :feature_category: :gitaly
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :throttled
   :resource_boundary: :unknown
   :weight: 1
@@ -1167,7 +1167,7 @@
 - :name: incident_management_apply_incident_sla_exceeded_label
   :worker_name: IncidentManagement::ApplyIncidentSlaExceededLabelWorker
   :feature_category: :incident_management
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
@@ -1176,7 +1176,7 @@
 - :name: incident_management_oncall_rotations_persist_shifts_job
   :worker_name: IncidentManagement::OncallRotations::PersistShiftsJob
   :feature_category: :incident_management
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
@@ -1185,7 +1185,7 @@
 - :name: incident_management_pending_escalations_alert_check
   :worker_name: IncidentManagement::PendingEscalations::AlertCheckWorker
   :feature_category: :incident_management
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :high
   :resource_boundary: :cpu
   :weight: 1
@@ -1194,7 +1194,7 @@
 - :name: incident_management_pending_escalations_alert_create
   :worker_name: IncidentManagement::PendingEscalations::AlertCreateWorker
   :feature_category: :incident_management
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :high
   :resource_boundary: :cpu
   :weight: 1
@@ -1203,7 +1203,7 @@
 - :name: incident_management_pending_escalations_issue_check
   :worker_name: IncidentManagement::PendingEscalations::IssueCheckWorker
   :feature_category: :incident_management
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :high
   :resource_boundary: :cpu
   :weight: 1
@@ -1212,7 +1212,7 @@
 - :name: incident_management_pending_escalations_issue_create
   :worker_name: IncidentManagement::PendingEscalations::IssueCreateWorker
   :feature_category: :incident_management
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :high
   :resource_boundary: :cpu
   :weight: 1
@@ -1225,21 +1225,21 @@
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 2
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: merge_request_reset_approvals
   :worker_name: MergeRequestResetApprovalsWorker
   :feature_category: :source_code_management
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :high
   :resource_boundary: :cpu
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: merge_requests_sync_code_owner_approval_rules
   :worker_name: MergeRequests::SyncCodeOwnerApprovalRulesWorker
   :feature_category: :source_code_management
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :high
   :resource_boundary: :unknown
   :weight: 1
@@ -1257,16 +1257,16 @@
 - :name: new_epic
   :worker_name: NewEpicWorker
   :feature_category: :portfolio_management
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :cpu
   :weight: 2
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: project_import_schedule
   :worker_name: ProjectImportScheduleWorker
   :feature_category: :source_code_management
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
@@ -1275,25 +1275,25 @@
 - :name: project_template_export
   :worker_name: ProjectTemplateExportWorker
   :feature_category: :importers
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :memory
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: refresh_license_compliance_checks
   :worker_name: RefreshLicenseComplianceChecksWorker
   :feature_category: :license_compliance
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 2
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: repository_update_mirror
   :worker_name: RepositoryUpdateMirrorWorker
   :feature_category: :source_code_management
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
@@ -1302,7 +1302,7 @@
 - :name: requirements_management_import_requirements_csv
   :worker_name: RequirementsManagement::ImportRequirementsCsvWorker
   :feature_category: :requirements_management
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
@@ -1311,7 +1311,7 @@
 - :name: requirements_management_process_requirements_reports
   :worker_name: RequirementsManagement::ProcessRequirementsReportsWorker
   :feature_category: :requirements_management
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
@@ -1320,7 +1320,7 @@
 - :name: security_auto_fix
   :worker_name: Security::AutoFixWorker
   :feature_category: :dependency_scanning
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
@@ -1329,7 +1329,7 @@
 - :name: security_findings_delete_by_job_id
   :worker_name: Security::Findings::DeleteByJobIdWorker
   :feature_category: :vulnerability_management
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :cpu
   :weight: 1
@@ -1338,7 +1338,7 @@
 - :name: security_generate_scan_finding_rules
   :worker_name: Security::GenerateScanFindingRulesWorker
   :feature_category: :security_orchestration
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
@@ -1347,7 +1347,7 @@
 - :name: security_orchestration_policy_rule_schedule_namespace
   :worker_name: Security::OrchestrationPolicyRuleScheduleNamespaceWorker
   :feature_category: :security_orchestration
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
@@ -1356,7 +1356,7 @@
 - :name: security_sync_scan_policies
   :worker_name: Security::SyncScanPoliciesWorker
   :feature_category: :security_orchestration
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
@@ -1365,7 +1365,7 @@
 - :name: set_user_status_based_on_user_cap_setting
   :worker_name: SetUserStatusBasedOnUserCapSettingWorker
   :feature_category: :users
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
@@ -1392,16 +1392,16 @@
 - :name: vulnerabilities_statistics_adjustment
   :worker_name: Vulnerabilities::Statistics::AdjustmentWorker
   :feature_category: :vulnerability_management
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: false
   :tags: []
 - :name: vulnerability_exports_export
   :worker_name: VulnerabilityExports::ExportWorker
   :feature_category: :vulnerability_management
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :cpu
   :weight: 1
@@ -1410,7 +1410,7 @@
 - :name: vulnerability_exports_export_deletion
   :worker_name: VulnerabilityExports::ExportDeletionWorker
   :feature_category: :vulnerability_management
-  :has_external_dependencies:
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1

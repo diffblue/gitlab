@@ -119,7 +119,7 @@ module WorkerAttributes
     # See doc/development/sidekiq_style_guide.md#jobs-with-external-dependencies
     # for details
     def worker_has_external_dependencies?
-      get_class_attribute(:external_dependencies)
+      !!get_class_attribute(:external_dependencies)
     end
 
     def worker_resource_boundary(boundary)
@@ -137,7 +137,7 @@ module WorkerAttributes
     end
 
     def idempotent?
-      get_class_attribute(:idempotent)
+      !!get_class_attribute(:idempotent)
     end
 
     def weight(value)
@@ -183,7 +183,7 @@ module WorkerAttributes
     end
 
     def big_payload?
-      get_class_attribute(:big_payload)
+      !!get_class_attribute(:big_payload)
     end
   end
 end

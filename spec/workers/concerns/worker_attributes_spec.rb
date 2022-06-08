@@ -34,9 +34,9 @@ RSpec.describe WorkerAttributes do
       :get_tags                          | :tags                              | []               | [:foo, :bar]                       | [:foo, :bar]
       :get_deduplicate_strategy          | :deduplicate                       | :until_executing | [:none]                            | :none
       :get_deduplication_options         | :deduplicate                       | {}               | [:none, including_scheduled: true] | { including_scheduled: true }
-      :worker_has_external_dependencies? | :worker_has_external_dependencies! | nil              | []                                 | true
-      :idempotent?                       | :idempotent!                       | nil              | []                                 | true
-      :big_payload?                      | :big_payload!                      | nil              | []                                 | true
+      :worker_has_external_dependencies? | :worker_has_external_dependencies! | false            | []                                 | true
+      :idempotent?                       | :idempotent!                       | false            | []                                 | true
+      :big_payload?                      | :big_payload!                      | false            | []                                 | true
     end
     # rubocop: enable Layout/LineLength
 
