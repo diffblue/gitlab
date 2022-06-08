@@ -83,6 +83,8 @@ populate-qa-tests-var:
       - ${CHANGES_FILE}
       - ${ONLY_QA_CHANGES_FILE}
       - qa_tests_var.env
+  extends:
+    - .qa:rules:package-and-qa
   variables:
     CHANGES_FILE: tmp/changed_files.txt
     ONLY_QA_CHANGES_FILE: tmp/qa_only_changed_files.txt
