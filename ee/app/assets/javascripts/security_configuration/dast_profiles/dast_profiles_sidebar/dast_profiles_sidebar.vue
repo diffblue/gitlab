@@ -55,6 +55,11 @@ export default {
       required: false,
       default: null,
     },
+    selectedProfileId: {
+      type: String,
+      required: false,
+      default: null,
+    },
     /**
      * String type in case
      * there will be more types
@@ -204,6 +209,7 @@ export default {
           class="gl-p-1!"
           :profiles="profiles"
           :profile-id-in-use="profileIdInUse"
+          :selected-profile-id="selectedProfileId"
           :profile-type="profileType"
           @edit="enableEditingMode"
           v-on="$listeners"

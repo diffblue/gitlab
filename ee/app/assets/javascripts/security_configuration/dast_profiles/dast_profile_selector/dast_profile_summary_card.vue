@@ -28,6 +28,11 @@ export default {
       required: false,
       default: false,
     },
+    isProfileSelected: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   i18n: {
     editTitle: __('Edit Profile'),
@@ -35,6 +40,11 @@ export default {
     selectBtnText: __('Select'),
     selectedProfileLabel: __('In use'),
     selectedProfileTooltip: s__('DastProfiles|Profile is being used by this on-demand scan'),
+  },
+  computed: {
+    disableSelectButton() {
+      return !this.allowSelection || this.isProfileSelected;
+    },
   },
 };
 </script>
@@ -65,7 +75,7 @@ export default {
             variant="confirm"
             size="small"
             category="secondary"
-            :disabled="isProfileInUse"
+            :disabled="disableSelectButton"
             :title="$options.i18n.selectTitle"
             @click="$emit('select-profile')"
             >{{ $options.i18n.selectBtnText }}</gl-button
