@@ -168,8 +168,6 @@ describe('Batch comments store actions', () => {
       rootGetters = { discussionsStructuredByLineCode: 'discussions' };
     });
 
-    afterEach(() => jest.clearAllMocks());
-
     it('dispatches actions & commits', () => {
       mock.onAny().reply(200);
 
@@ -182,13 +180,12 @@ describe('Batch comments store actions', () => {
     });
 
     it('calls service with notes data', () => {
-      service.publish = jest.fn();
-      service.publish.mockResolvedValue({});
+      jest.spyOn(axios, 'post');
 
       return actions
         .publishReview({ dispatch, commit, getters, rootGetters }, { note: 'test' })
         .then(() => {
-          expect(service.publish).toHaveBeenCalledWith('http://test.host', { note: 'test' });
+          expect(axios.post.mock.calls[0]).toEqual(['http://test.host', { note: 'test' }]);
         });
     });
 
