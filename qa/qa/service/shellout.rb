@@ -70,7 +70,7 @@ module QA
       end
 
       def mask_secrets_on_string(str, secrets)
-        secrets.each_with_object(str) { |secret, s| s.gsub!(secret, '****') }
+        secrets.reduce(str) { |s, secret| s.gsub(secret, '****') }
       end
     end
   end
