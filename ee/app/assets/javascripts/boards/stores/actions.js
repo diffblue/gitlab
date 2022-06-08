@@ -546,7 +546,7 @@ export default {
           moveAfterId,
         },
         update(cache) {
-          if (!window.gon.features.epicBoardTotalWeight) {
+          if (!window.gon.features.feEpicBoardTotalWeight) {
             return;
           }
 

@@ -33,7 +33,7 @@ export default {
         };
       },
       skip() {
-        return !this.isEpicBoard || !this.glFeatures.epicBoardTotalWeight;
+        return !this.isEpicBoard || !this.glFeatures.feEpicBoardTotalWeight;
       },
     },
   },
@@ -69,7 +69,7 @@ export default {
       return this.$apollo.queries.epicBoardList.loading;
     },
     totalWeight() {
-      if (this.isEpicBoard && this.glFeatures.epicBoardTotalWeight) {
+      if (this.isEpicBoard && this.glFeatures.feEpicBoardTotalWeight) {
         return this.epicBoardList?.metadata?.totalWeight || 0;
       }
 
@@ -81,7 +81,7 @@ export default {
       }
 
       if (this.isEpicBoard) {
-        return this.glFeatures.epicBoardTotalWeight && !this.isEpicBoardListLoading;
+        return this.glFeatures.feEpicBoardTotalWeight && !this.isEpicBoardListLoading;
       }
 
       return !this.isLoading;

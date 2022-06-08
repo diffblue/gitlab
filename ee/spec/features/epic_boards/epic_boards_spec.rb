@@ -28,7 +28,7 @@ RSpec.describe 'epic boards', :js do
   context 'display epics in board' do
     before do
       stub_licensed_features(epics: true)
-      stub_feature_flags(epic_board_total_weight: true)
+      stub_feature_flags(fe_epic_board_total_weight: true, epic_board_total_weight: true)
       group.add_maintainer(user)
       sign_in(user)
       visit_epic_boards_page
