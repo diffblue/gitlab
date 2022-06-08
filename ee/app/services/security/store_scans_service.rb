@@ -11,6 +11,8 @@ module Security
     end
 
     def execute
+      return if already_purged?
+
       grouped_report_artifacts.each { |artifacts| StoreGroupedScansService.execute(artifacts) }
 
       schedule_store_reports_worker
@@ -21,6 +23,10 @@ module Security
     attr_reader :pipeline
 
     delegate :project, to: :pipeline, private: true
+
+    def already_purged?
+      pipeline.security_scans.purged.any?
+    end
 
     def grouped_report_artifacts
       pipeline.job_artifacts
