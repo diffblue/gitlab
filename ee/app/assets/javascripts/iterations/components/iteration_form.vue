@@ -264,7 +264,7 @@ export default {
 <template>
   <div>
     <div class="gl-display-flex">
-      <h1 ref="pageTitle" class="page-title">
+      <h1 ref="pageTitle" class="page-title gl-font-size-h-display">
         {{ isEditing ? $options.i18n.title.edit : $options.i18n.title.new }}
       </h1>
     </div>

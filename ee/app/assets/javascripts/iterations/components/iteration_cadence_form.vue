@@ -327,7 +327,7 @@ export default {
 <template>
   <article>
     <div class="gl-display-flex">
-      <h1 ref="pageTitle" class="page-title">
+      <h1 ref="pageTitle" class="page-title gl-font-size-h-display">
         {{ i18n[page].title }}
       </h1>
     </div>

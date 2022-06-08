@@ -137,7 +137,7 @@ export default {
 
 <template>
   <div>
-    <h1 class="page-title gl-pb-5">
+    <h1 class="page-title gl-font-size-h-display gl-pb-5">
       {{ __('New Epic') }}
     </h1>
     <gl-form class="common-note-form new-epic-form" @submit.prevent="save">
