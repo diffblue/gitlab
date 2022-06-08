@@ -435,7 +435,12 @@ module EE
 
       if mirror?
         ::Gitlab::Metrics.add_event(:mirrors_scheduled)
-        job_id = RepositoryUpdateMirrorWorker.perform_async(self.id)
+
+        job_id = if ::Feature.enabled?(:use_status_for_repository_update_mirror, self)
+                   RepositoryUpdateMirrorWorker.with_status.perform_async(self.id)
+                 else
+                   RepositoryUpdateMirrorWorker.perform_async(self.id)
+                 end
 
         log_import_activity(job_id, type: :mirror)
 
