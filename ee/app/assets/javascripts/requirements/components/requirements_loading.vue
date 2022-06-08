@@ -1,11 +1,11 @@
 <script>
-import { GlDeprecatedSkeletonLoading as GlSkeletonLoading, GlLoadingIcon } from '@gitlab/ui';
+import { GlSkeletonLoader, GlLoadingIcon } from '@gitlab/ui';
 
 import { DEFAULT_PAGE_SIZE, FilterState } from '../constants';
 
 export default {
   components: {
-    GlSkeletonLoading,
+    GlSkeletonLoader,
     GlLoadingIcon,
   },
   props: {
@@ -43,12 +43,9 @@ export default {
 </script>
 
 <template>
-  <ul
-    v-if="totalRequirements && currentTabCount"
-    class="content-list issuable-list issues-list requirements-list-loading"
-  >
+  <ul v-if="totalRequirements && currentTabCount" class="content-list issuable-list issues-list">
     <li v-for="(i, index) in Array(loaderCount).fill()" :key="index" class="issue requirement">
-      <gl-skeleton-loading :lines="2" class="pt-2" />
+      <gl-skeleton-loader :lines="2" :width="800" :height="24" preserveAspectRatio="none" />
     </li>
   </ul>
   <gl-loading-icon v-else size="lg" class="mt-3" />
