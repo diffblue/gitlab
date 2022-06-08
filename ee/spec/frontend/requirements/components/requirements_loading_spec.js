@@ -1,4 +1,4 @@
-import { GlDeprecatedSkeletonLoading as GlSkeletonLoading, GlLoadingIcon } from '@gitlab/ui';
+import { GlSkeletonLoader, GlLoadingIcon } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 
 import { nextTick } from 'vue';
@@ -78,12 +78,10 @@ describe('RequirementsLoading', () => {
 
   describe('template', () => {
     it('renders gl-skeleton-loading component project has some requirements and current tab has requirements to show', () => {
-      const loaders = wrapper
-        .find('.requirements-list-loading')
-        .findAllComponents(GlSkeletonLoading);
+      const loaders = wrapper.findAllComponents(GlSkeletonLoader);
 
       expect(loaders).toHaveLength(2);
-      expect(loaders.at(0).props('lines')).toBe(2);
+      expect(loaders.at(0).attributes('lines')).toBe('2');
     });
 
     it('renders gl-loading-icon component project has no requirements and current tab has nothing to show', async () => {
@@ -96,7 +94,7 @@ describe('RequirementsLoading', () => {
       });
 
       await nextTick();
-      expect(wrapper.find('.requirements-list-loading').exists()).toBe(false);
+      expect(wrapper.findAllComponents(GlSkeletonLoader)).toHaveLength(0);
       expect(wrapper.findComponent(GlLoadingIcon).exists()).toBe(true);
     });
   });

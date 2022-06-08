@@ -70,23 +70,6 @@
       }
     }
   }
-
-  .requirements-list-loading {
-    .animation-container {
-      // This absolute height ensures that
-      // animation container takes up average height
-      // similar to a rendered requirement item.
-      height: 51px;
-
-      .skeleton-line-1 {
-        width: 70%;
-      }
-
-      .skeleton-line-2 {
-        width: 60%;
-      }
-    }
-  }
 }
 
 .requirement-status-tooltip {

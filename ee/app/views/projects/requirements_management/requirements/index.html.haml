@@ -6,17 +6,8 @@
 -# We'd prefer to have following declarations be part of
 -# helpers in some way but given that they're very frontend-centeric,
 -# keeping them in HAML view makes more sense.
-- page_size = 20
 - requirements_count = Hash.new(0).merge(@project.requirements.counts_by_state)
 - total_requirements = requirements_count['opened'] + requirements_count['archived']
-- is_open_tab = params[:state].nil? || params[:state] == 'opened'
-
-- if is_open_tab
-  - current_tab_count = requirements_count['opened'] > page_size ? page_size : requirements_count['opened']
-- elsif params[:state] == 'archived'
-  - current_tab_count = requirements_count['archived'] > page_size ? page_size : requirements_count['archived']
-- else
-  - current_tab_count = total_requirements > page_size ? page_size : total_requirements
 
 #js-requirements-app{ data: { filter_by: params[:state],
   page: params[:page],
@@ -37,17 +28,4 @@
   description_help_path: help_page_path('user/markdown'),
   empty_state_path: image_path('illustrations/empty-state/empty-requirements-lg.svg'),
   requirements_import_csv_path: import_csv_project_requirements_management_requirements_path(@project) } }
-  - if current_tab_count == 0
-    -# Show regular spinner only when there will be no
-    -# requirements to show for current tab
-    = gl_loading_icon(css_class: 'gl-mt-3', size: 'md')
-  - else
-    -# Following block shows skeleton loading same as mounted Vue app so while
-    -# app is being loaded and initialized, user continues to see skeleton loading.
-    .requirements-list-container
-      %ul.content-list.issuable-list.issues-list.requirements-list-loading
-        - Array.new(current_tab_count).each do |i|
-          %li.issue.requirement
-            .animation-container.pt-2
-              .skeleton-line-1
-              .skeleton-line-2
+  = gl_loading_icon(css_class: 'gl-mt-3', size: 'md')
