@@ -71,3 +71,17 @@ To view the lead time for changes chart:
 1. Select the **Lead time** tab.
 
 ![Lead time](img/lead_time_chart_v13_11.png)
+
+## View time to restore service chart **(ULTIMATE)**
+
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/356959) in GitLab 15.1
+
+The time to restore service chart shows information about the median time an incident was open in a production environment. This chart is available for groups and projects.
+
+To view the time to restore service chart:
+
+1. On the top bar, select **Menu > Projects** and find your project.
+1. On the left sidebar, select **Analytics > CI/CD Analytics**.
+1. Select the **Time to restore service** tab.
+
+![Lead time](img/time_to_restore_service_charts_v15_1.png)
