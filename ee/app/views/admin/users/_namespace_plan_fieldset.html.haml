@@ -1,5 +1,5 @@
 - if Gitlab::CurrentSettings.should_check_namespace_plan?
   = f.fields_for :namespace do |namespace_form|
     %fieldset
-      %legend= _('Licensed Features')
+      %legend.gl-border-bottom-0= _('Licensed Features')
       = render 'admin/namespace_plan', f: namespace_form

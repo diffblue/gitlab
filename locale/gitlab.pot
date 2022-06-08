@@ -45894,9 +45894,6 @@ msgstr ""
 msgid "repository:"
 msgstr ""
 
-msgid "required"
-msgstr ""
-
 msgid "satisfied"
 msgstr ""
 
