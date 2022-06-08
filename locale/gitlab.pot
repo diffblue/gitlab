@@ -10921,9 +10921,6 @@ msgstr ""
 msgid "CsvParser|Unable to auto-detect delimiter; defaulted to \",\""
 msgstr ""
 
-msgid "Cue dramatic background music..."
-msgstr ""
-
 msgid "Current"
 msgstr ""
 
