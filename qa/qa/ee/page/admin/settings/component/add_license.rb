@@ -19,7 +19,7 @@ module QA
                 raise 'License key empty!' if key.to_s.strip.empty?
 
                 click_element(:expand_add_license_button)
-                choose_element(:license_type_key_radio)
+                choose_element(:license_type_key_radio, true)
                 fill_element(:license_key_field, key.strip)
                 check_element(:accept_eula_checkbox)
                 click_element(:license_upload_button)
