@@ -39874,9 +39874,6 @@ msgstr ""
 msgid "Total cores (CPUs)"
 msgstr ""
 
-msgid "Total issues"
-msgstr ""
-
 msgid "Total memory (GB)"
 msgstr ""
 
