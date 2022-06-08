@@ -22,16 +22,22 @@ module ExceedQueryLimitHelpers
       reject_groups_with_different_parameters(reject_suffixes_with_identical_counts(suffs))
     end
 
-    # reject when count in LHS is the same as count in RHS
     def reject_suffixes_with_identical_counts(suffs)
       suffs.reject { |_k, counts| counts.first == counts.second }
     end
 
-    # Reject common case of N queries on LHS and N on right, but with different parameters
-    # accepts as equivalent if a == [0, 1] and b == [1, 0], for example
+    # Eliminates groups that differ only in parameters,
+    # to make it easier to debug the output.
+    #
+    # For example, if we have a group `SELECT * FROM users...`,
+    # with the following suffixes
+    #      `WHERE id = 1` (counts: N, 0)
+    #      `WHERE id = 2` (counts: 0, N)
     def reject_groups_with_different_parameters(suffs)
-      keys = suffs.keys
-      return {} if keys.size == 2 && suffs[keys.first] == suffs[keys.second].reverse
+      return suffs if suffs.size != 2
+
+      a, b = suffs.values
+      return {} if a == b.reverse && a.include?(0)
 
       suffs
     end
