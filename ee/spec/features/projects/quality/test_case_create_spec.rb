@@ -29,7 +29,7 @@ RSpec.describe 'Test Cases', :js do
       end
 
       page.within('.issuable-create-container form') do
-        form_fields = page.find_all('.form-group.row')
+        form_fields = page.find_all('.row')
 
         expect(form_fields[0].find('label')).to have_content('Title')
         expect(form_fields[0]).to have_selector('input#issuable-title')
@@ -65,7 +65,7 @@ RSpec.describe 'Test Cases', :js do
       description = 'Sample _test case_ description.'
 
       page.within('.issuable-create-container form') do
-        form_fields = page.find_all('.form-group.row')
+        form_fields = page.find_all('.row')
 
         form_fields[0].find('input#issuable-title').native.send_keys title
         form_fields[1].find('textarea#issuable-description').native.send_keys description
