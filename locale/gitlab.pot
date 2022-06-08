@@ -7966,9 +7966,6 @@ msgstr ""
 msgid "Clean up after running %{link_start}git filter-repo%{link_end} on the repository."
 msgstr ""
 
-msgid "Clean up image tags"
-msgstr ""
-
 msgid "Cleanup policies are executed by background workers. This setting defines the maximum number of workers that can run concurrently. Set it to 0 to remove all workers and not execute the cleanup policies."
 msgstr ""
 
@@ -9647,6 +9644,9 @@ msgstr ""
 msgid "ContainerRegistry|CLI Commands"
 msgstr ""
 
+msgid "ContainerRegistry|Clean up image tags"
+msgstr ""
+
 msgid "ContainerRegistry|Cleanup disabled"
 msgstr ""
 
@@ -9821,6 +9821,9 @@ msgid "ContainerRegistry|Root image"
 msgstr ""
 
 msgid "ContainerRegistry|Run cleanup:"
+msgstr ""
+
+msgid "ContainerRegistry|Save storage space by automatically deleting tags from the container registry and keeping the ones you want. %{linkStart}How does cleanup work?%{linkEnd}"
 msgstr ""
 
 msgid "ContainerRegistry|Set up cleanup"
@@ -33216,9 +33219,6 @@ msgid "Save password"
 msgstr ""
 
 msgid "Save pipeline schedule"
-msgstr ""
-
-msgid "Save storage space by automatically deleting tags from the container registry and keeping the ones you want. %{linkStart}How does cleanup work?%{linkEnd}"
 msgstr ""
 
 msgid "Saving"
