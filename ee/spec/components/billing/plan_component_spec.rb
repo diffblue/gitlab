@@ -43,6 +43,12 @@ RSpec.describe Billing::PlanComponent, :aggregate_failures, type: :component do
                                               href: "https://about.gitlab.com/pricing/gitlab-com/feature-comparison/")
     end
 
+    it 'does not add qa selector to cta link' do
+      css = "[data-track-label='plan_cta'][data-qa-selector]" # rubocop:disable QA/SelectorUsage
+
+      expect(rendered_component).not_to have_css(css)
+    end
+
     it_behaves_like 'plan tracking'
   end
 
@@ -63,6 +69,12 @@ RSpec.describe Billing::PlanComponent, :aggregate_failures, type: :component do
       expect(rendered_component).to have_link('Upgrade to Premium', href: '_purchase_url_')
     end
 
+    it 'adds qa selector to cta link' do
+      css = "[data-track-label='plan_cta'][data-qa-selector='upgrade_to_#{plan_name}']" # rubocop:disable QA/SelectorUsage
+
+      expect(rendered_component).to have_css(css)
+    end
+
     it_behaves_like 'plan tracking'
   end
 
@@ -80,6 +92,12 @@ RSpec.describe Billing::PlanComponent, :aggregate_failures, type: :component do
 
     it 'has expected cta_link' do
       expect(rendered_component).to have_link('Upgrade to Ultimate', href: '_purchase_url_')
+    end
+
+    it 'adds qa selector to cta link' do
+      css = "[data-track-label='plan_cta'][data-qa-selector='upgrade_to_#{plan_name}']" # rubocop:disable QA/SelectorUsage
+
+      expect(rendered_component).to have_css(css)
     end
 
     it_behaves_like 'plan tracking'

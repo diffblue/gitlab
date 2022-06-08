@@ -47,7 +47,12 @@ module QA
     context 'free tier group namespace' do
       it(
         'displays correct information in billing settings',
-        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/361076'
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/361076',
+        quarantine: {
+          only: { subdomain: :staging },
+          type: :test_environment,
+          issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/364229'
+        }
       ) do
         Gitlab::Page::Group::Settings::Billing.perform do |billing|
           billing.refresh_subscription_seats
