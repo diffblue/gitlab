@@ -46,15 +46,14 @@ export default {
       <gl-icon class="dropdown-chevron" name="chevron-up" />
     </template>
     <form @submit.prevent="submitReview">
-      <label for="review-note-body" class="gl-font-weight-bold gl-mb-3">{{
-        __('Summary comment (optional)')
-      }}</label>
+      <label for="review-note-body" class="gl-font-weight-bold gl-mb-3">
+        {{ __('Summary comment (optional)') }}
+      </label>
       <div class="common-note-form gfm-form">
         <div
           class="comment-warning-wrapper gl-border-solid gl-border-1 gl-rounded-base gl-border-gray-100"
         >
           <markdown-field
-            ref="markdownField"
             :is-submitting="isSubmitting"
             :add-spacing-classes="false"
             :textarea-value="note"
@@ -63,6 +62,7 @@ export default {
             :quick-actions-docs-path="getNotesData.quickActionsDocsPath"
             :restricted-tool-bar-items="$options.restrictedToolbarItems"
             :force-autosize="false"
+            class="js-no-autosize"
           >
             <template #textarea>
               <textarea
