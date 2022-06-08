@@ -98,7 +98,7 @@ export default {
           max: this.dueDate,
         },
         yAxis: {
-          name: this.issuesSelected ? __('Total issues') : __('Total weight'),
+          name: this.issuesSelected ? __('Issues') : __('Weight'),
         },
       });
     },

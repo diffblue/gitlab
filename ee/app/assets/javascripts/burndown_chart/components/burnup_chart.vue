@@ -76,7 +76,7 @@ export default {
           max: this.dueDate,
         },
         yAxis: {
-          name: __('Total issues'),
+          name: this.issuesSelected ? __('Issues') : __('Weight'),
         },
       });
     },
