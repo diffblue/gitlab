@@ -110,13 +110,15 @@ export default {
       :href="pipeline.path"
       :class="triggerButtonClass(pipeline)"
       class="linked-pipeline-mini-item gl-display-inline-block gl-h-6 gl-mr-2 gl-my-2 gl-rounded-full gl-vertical-align-middle"
+      data-testid="linked-pipeline-mini-item"
     >
       <ci-icon
+        is-borderless
         is-interactive
         css-classes="gl-rounded-full"
         :size="24"
         :status="pipelineStatus(pipeline)"
-        class="gl-align-items-center gl-display-inline-flex"
+        class="gl-align-items-center gl-border gl-display-inline-flex"
       />
     </a>
 
@@ -126,6 +128,7 @@ export default {
       :title="counterTooltipText"
       :href="pipelinePath"
       class="gl-align-items-center gl-bg-gray-50 gl-display-inline-flex gl-font-sm gl-h-6 gl-justify-content-center gl-rounded-pill gl-text-decoration-none gl-text-gray-500 gl-w-7 linked-pipelines-counter linked-pipeline-mini-item"
+      data-testid="linked-pipeline-counter"
     >
       {{ counterLabel }}
     </a>
