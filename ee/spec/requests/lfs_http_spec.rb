@@ -7,6 +7,7 @@ RSpec.describe 'Git LFS API and storage' do
   include WorkhorseHelpers
   include WorkhorseLfsHelpers
   include EE::GeoHelpers
+  include NamespaceStorageHelpers
 
   let(:user) { create(:user) }
   let!(:lfs_object) { create(:lfs_object, :with_file) }
@@ -54,6 +55,7 @@ RSpec.describe 'Git LFS API and storage' do
 
     describe 'upload' do
       let(:project) { create(:project, :public) }
+      let(:namespace) { project.namespace }
       let(:body) do
         {
           'operation' => 'upload',
@@ -68,7 +70,7 @@ RSpec.describe 'Git LFS API and storage' do
         let(:sample_size) { 150.megabytes }
         let(:sample_oid) { '91eff75a492a3ed0dfcb544d7f31326bc4014c8551849c192fd1e48d4dd2c897' }
 
-        context 'and project is above the limit' do
+        context 'and project is above the repository size limit' do
           before do
             allow_next_instance_of(Gitlab::RepositorySizeChecker) do |checker|
               allow(checker).to receive_messages(
@@ -87,7 +89,7 @@ RSpec.describe 'Git LFS API and storage' do
           end
         end
 
-        context 'and project will go over the limit' do
+        context 'and project will go over the repository size limit' do
           before do
             allow_next_instance_of(Gitlab::RepositorySizeChecker) do |checker|
               allow(checker).to receive_messages(
@@ -106,6 +108,40 @@ RSpec.describe 'Git LFS API and storage' do
             expect(json_response['message']).to eql('Your push has been rejected, because this repository has exceeded its size limit of 300 MB by 50 MB. Please contact your GitLab administrator for more information.')
           end
         end
+
+        context 'when the namespace storage limit is exceeded', :saas do
+          before do
+            create(:gitlab_subscription, :ultimate, namespace: namespace)
+            create(:namespace_root_storage_statistics, namespace: namespace)
+            enforce_namespace_storage_limit(namespace)
+            set_storage_size_limit(namespace, megabytes: 100)
+            set_used_storage(namespace, megabytes: 140)
+          end
+
+          it 'responds with status 406' do
+            batch_request
+
+            expect(response).to have_gitlab_http_status(:not_acceptable)
+            expect(json_response['message']).to eql('Your push to this repository has been rejected because the namespace storage limit of 100 MB has been reached. Reduce your namespace storage or purchase additional storage.')
+          end
+        end
+
+        context 'when the push size would exceed the namespace storage limit', :saas do
+          before do
+            create(:gitlab_subscription, :ultimate, namespace: namespace)
+            create(:namespace_root_storage_statistics, namespace: namespace)
+            enforce_namespace_storage_limit(namespace)
+            set_storage_size_limit(namespace, megabytes: 200)
+            set_used_storage(namespace, megabytes: 100)
+          end
+
+          it 'responds with status 406' do
+            batch_request
+
+            expect(response).to have_gitlab_http_status(:not_acceptable)
+            expect(json_response['message']).to eql('Your push to this repository has been rejected because the namespace storage limit of 200 MB has been reached. Reduce your namespace storage or purchase additional storage.')
+          end
+        end
       end
 
       describe 'when request is authenticated' do
@@ -118,6 +154,31 @@ RSpec.describe 'Git LFS API and storage' do
 
           context 'when pushing a lfs object that does not exist' do
             it_behaves_like 'pushes new LFS objects'
+          end
+
+          context 'when pushing to a subgroup project' do
+            let(:sample_size) { 150.megabytes }
+            let(:sample_oid) { '91eff75a492a3ed0dfcb544d7f31326bc4014c8551849c192fd1e48d4dd2c897' }
+            let(:group) { create(:group) }
+            let(:subgroup) { create(:group, parent: group) }
+            let(:project) { create(:project, group: subgroup) }
+
+            context 'when the namespace storage limit is exceeded', :saas do
+              before do
+                create(:gitlab_subscription, :ultimate, namespace: group)
+                create(:namespace_root_storage_statistics, namespace: group)
+                enforce_namespace_storage_limit(group)
+                set_storage_size_limit(group, megabytes: 70)
+                set_used_storage(group, megabytes: 80)
+              end
+
+              it 'responds with status 406' do
+                batch_request
+
+                expect(response).to have_gitlab_http_status(:not_acceptable)
+                expect(json_response['message']).to eql('Your push to this repository has been rejected because the namespace storage limit of 70 MB has been reached. Reduce your namespace storage or purchase additional storage.')
+              end
+            end
           end
 
           context 'when Geo is not enabled' do
@@ -196,6 +257,7 @@ RSpec.describe 'Git LFS API and storage' do
 
     describe 'to one project' do
       let(:project) { create(:project) }
+      let(:namespace) { project.namespace }
 
       context 'when user is authenticated' do
         let(:authorization) { authorize_user }
@@ -206,16 +268,32 @@ RSpec.describe 'Git LFS API and storage' do
             project.add_developer(user)
           end
 
-          context 'and project has limit enabled but will stay under the limit' do
+          context 'when project has repository size limit enabled' do
             before do
               allow_next_instance_of(Gitlab::RepositorySizeChecker) do |checker|
                 allow(checker).to receive_messages(limit: 200, enabled?: true)
               end
-
-              put_finalize
             end
 
-            it 'responds with status 200' do
+            it 'responds with status 200 when the push will stay under the limit' do
+              put_finalize
+
+              expect(response).to have_gitlab_http_status(:ok)
+            end
+          end
+
+          context 'when namespace storage limits are enabled', :saas do
+            before do
+              create(:gitlab_subscription, :ultimate, namespace: namespace)
+              create(:namespace_root_storage_statistics, namespace: namespace)
+              enforce_namespace_storage_limit(namespace)
+              set_storage_size_limit(namespace, megabytes: 50)
+              set_used_storage(namespace, megabytes: 8)
+            end
+
+            it 'responds with status 200 when the push is under the limit' do
+              put_finalize
+
               expect(response).to have_gitlab_http_status(:ok)
             end
           end
