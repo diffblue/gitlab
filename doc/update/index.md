@@ -662,12 +662,12 @@ for how to proceed.
   sudo -u git -H bundle exec rake db:migrate RAILS_ENV=production
   ```
 
-- After upgrading to 14.3, ensure that `MigrateMergeRequestDiffCommitUsers` background
-  migration jobs are complete before continuing upgrade to GitLab 14.5, or above.
+- After upgrading to 14.3, ensure that all the `MigrateMergeRequestDiffCommitUsers` background
+  migration jobs have completed before continuing with upgrading to GitLab 14.5, or above.
   This is especially important if your GitLab instance has a large
   `merge_request_diff_commits` table. Any pending
   `MigrateMergeRequestDiffCommitUsers` background migration jobs will be
-  foregrounded in GitLab 14.5, and may take a long time.
+  foregrounded in GitLab 14.5, and may take a long time to complete.
   You can check the count of pending jobs for
   `MigrateMergeRequestDiffCommitUsers` by using the PostgreSQL console (or `sudo
   gitlab-psql`):
