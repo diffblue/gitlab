@@ -521,6 +521,7 @@ and [Helm Chart deployments](https://docs.gitlab.com/charts/). They come with ap
     puts Gitlab::Database::BackgroundMigrationJob.mark_all_as_succeeded("ResetDuplicateCiRunnersTokenValuesOnProjects", job.arguments)
   end
   ```
+
 - If you run external PostgreSQL, particularly AWS RDS,
   [check you have a PostgreSQL bug fix](#postgresql-segmentation-fault-issue)
   to avoid the database crashing.

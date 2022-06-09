@@ -309,7 +309,7 @@ curl --silent "https://packages.gitlab.com/gpg.key" | apt-key add -
 apt-get update
 ```
 
-### Mixlib::ShellOut::CommandTimeout: rails_migration[gitlab-rails] [..] Command timed out after 3600s
+### `Mixlib::ShellOut::CommandTimeout: rails_migration[gitlab-rails] [..] Command timed out after 3600s`
 
 If database schema and data changes (database migrations) need to take more than one hour to run,
 an upgrade will fail with `timed out` error:
