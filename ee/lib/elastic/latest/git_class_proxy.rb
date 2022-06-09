@@ -73,12 +73,16 @@ module Elastic
         { filter: filters }
       end
 
+      # rubocop:disable Metrics/AbcSize
       def search_commit(query, page: 1, per: 20, options: {})
         page ||= 1
         fields = %w(message^10 sha^5 author.name^2 author.email^2 committer.name committer.email).map {|i| "commit.#{i}"}
         query_with_prefix = query.split(/\s+/).map { |s| s.gsub(SHA_REGEX) { |sha| "#{sha}*" } }.join(' ')
 
         bool_expr = ::Gitlab::Elastic::BoolExpr.new
+
+        options[:no_join_project] = Elastic::DataMigrationService.migration_has_finished?(:populate_commit_permissions_in_main_index)
+        options[:project_id_field] = 'commit.rid'
 
         query_hash = {
           query: { bool: bool_expr },
@@ -242,6 +246,7 @@ module Elastic
           total_count: res.size
         }
       end
+      # rubocop:enable Metrics/AbcSize
 
       # Wrap returned results into GitLab model objects and paginate
       #
