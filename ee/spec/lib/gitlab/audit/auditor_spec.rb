@@ -154,6 +154,40 @@ RSpec.describe Gitlab::Audit::Auditor do
         end
       end
 
+      context 'when overriding the additional_details' do
+        additional_details = { action: :custom }
+        let(:context) do
+          { name: name,
+            author: author,
+            scope: scope,
+            target: target,
+            created_at: Time.zone.now,
+            additional_details: additional_details }
+        end
+
+        it 'logs audit events to database' do
+          freeze_time do
+            audit!
+
+            expect(AuditEvent.last.details).to include(additional_details)
+          end
+        end
+
+        it 'logs audit events to file' do
+          freeze_time do
+            expect(::Gitlab::AuditJsonLogger).to receive(:build).and_return(logger)
+
+            audit!
+
+            expect(logger).to have_received(:info).exactly(2).times.with(
+              hash_including(
+                'details' => hash_including('action' => 'custom')
+              )
+            )
+          end
+        end
+      end
+
       context 'when event is only streamed' do
         let(:context) do
           { name: name, author: author, scope: scope, target: target, created_at: 3.weeks.ago, stream_only: true }

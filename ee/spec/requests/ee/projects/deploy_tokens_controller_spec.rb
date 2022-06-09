@@ -3,7 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Projects::DeployTokensController do
-  let_it_be(:project) { create(:project) }
+  let_it_be(:group) { create(:group) }
+  let_it_be(:project) { create(:project, group: group) }
   let_it_be(:user) { create(:user) }
   let_it_be(:deploy_token) { create(:deploy_token, projects: [project]) }
   let_it_be(:params) do
@@ -32,6 +33,19 @@ RSpec.describe Projects::DeployTokensController do
       MESSAGE
 
       expect(AuditEvent.last.details[:custom_message]).to eq(expected_message)
+      expect(AuditEvent.last.details).to include({
+                                                   custom_message: expected_message,
+                                                   action: :custom
+                                                 })
+    end
+
+    before do
+      stub_licensed_features(external_audit_events: true)
+      group.external_audit_event_destinations.create!(destination_url: 'http://example.com')
+    end
+
+    it_behaves_like 'sends correct event type in audit event stream' do
+      let_it_be(:event_type) { "deploy_token_revoked" }
     end
   end
 end

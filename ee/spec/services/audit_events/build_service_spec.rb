@@ -9,13 +9,15 @@ RSpec.describe AuditEvents::BuildService do
   let(:target) { build_stubbed(:project) }
   let(:ip_address) { '192.168.8.8' }
   let(:message) { 'Added an interesting field from project Gotham' }
+  let(:additional_details) { { action: :custom } }
 
   subject(:service) do
     described_class.new(
       author: author,
       scope: scope,
       target: target,
-      message: message
+      message: message,
+      additional_details: additional_details
     )
   end
 
@@ -47,7 +49,8 @@ RSpec.describe AuditEvents::BuildService do
             target_details: target.name,
             custom_message: message,
             ip_address: ip_address,
-            entity_path: scope.full_path
+            entity_path: scope.full_path,
+            action: :custom
           )
 
           expect(event.ip_address).to eq(ip_address)
@@ -122,7 +125,8 @@ RSpec.describe AuditEvents::BuildService do
             target_id: target.id,
             target_type: target.class.name,
             target_details: target.name,
-            custom_message: message
+            custom_message: message,
+            action: :custom
           )
 
           expect(event.ip_address).to be_nil

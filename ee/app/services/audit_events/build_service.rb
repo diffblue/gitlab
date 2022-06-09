@@ -8,7 +8,7 @@ module AuditEvents
     # @raise [MissingAttributeError] when required attributes are blank
     #
     # @return [BuildService]
-    def initialize(author:, scope:, target:, message:, created_at: DateTime.current)
+    def initialize(author:, scope:, target:, message:, created_at: DateTime.current, additional_details: {})
       raise MissingAttributeError if missing_attribute?(author, scope, target, message)
 
       @author = build_author(author)
@@ -17,6 +17,7 @@ module AuditEvents
       @ip_address = build_ip_address
       @message = build_message(message)
       @created_at = created_at
+      @additional_details = additional_details
     end
 
     # Create an instance of AuditEvent
@@ -64,7 +65,7 @@ module AuditEvents
         target_type: @target.type,
         target_details: @target.details,
         custom_message: @message
-      }
+      }.merge(@additional_details)
     end
 
     def build_author(author)
