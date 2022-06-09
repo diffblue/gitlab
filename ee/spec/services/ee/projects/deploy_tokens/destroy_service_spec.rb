@@ -3,7 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Projects::DeployTokens::DestroyService do
-  let_it_be(:entity) { create(:project) }
+  let_it_be(:group) { create :group }
+  let_it_be(:entity) { create(:project, group: group) }
   let_it_be(:deploy_token) { create(:deploy_token, projects: [entity]) }
   let_it_be(:user) { create(:user) }
   let_it_be(:deploy_token_params) { { token_id: deploy_token.id } }
@@ -24,7 +25,19 @@ RSpec.describe Projects::DeployTokens::DestroyService do
         with token_id: #{deploy_token.id} with scopes: #{deploy_token.scopes}.
       MESSAGE
 
-      expect(AuditEvent.last.details[:custom_message]).to eq(expected_message)
+      expect(AuditEvent.last.details).to include({
+                                                   custom_message: expected_message,
+                                                   action: :custom
+                                                 })
+    end
+
+    before do
+      stub_licensed_features(external_audit_events: true)
+      group.external_audit_event_destinations.create!(destination_url: 'http://example.com')
+    end
+
+    it_behaves_like 'sends correct event type in audit event stream' do
+      let_it_be(:event_type) { "deploy_token_destroyed" }
     end
   end
 end

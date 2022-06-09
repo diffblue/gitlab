@@ -11,6 +11,7 @@ module Gitlab
       # @option context [User, Project, Group] :scope the scope which audit event belongs to
       # @option context [Object] :target the target object being audited
       # @option context [String] :message the message describing the action
+      # @option context [Hash] :additional_details the additional details we want to merge into audit event details.
       # @option context [Time] :created_at the time that the event occurred (defaults to the current time)
       #
       # @example Using block (useful when events are emitted deep in the call stack)
@@ -60,6 +61,7 @@ module Gitlab
         @target = @context.fetch(:target)
         @created_at = @context.fetch(:created_at, DateTime.current)
         @message = @context.fetch(:message, '')
+        @additional_details = @context.fetch(:additional_details, {})
       end
 
       def multiple_audit
@@ -98,7 +100,8 @@ module Gitlab
           scope: @scope,
           target: @target,
           created_at: @created_at,
-          message: message
+          message: message,
+          additional_details: @additional_details
         ).execute
       end
 
