@@ -2,10 +2,7 @@
 
 module QA
   # Issue to enable this test in live environments: https://gitlab.com/gitlab-org/quality/team-tasks/-/issues/614
-  RSpec.describe 'Manage', :skip_live_env, feature_flag: {
-    name: 'bootstrap_confirmation_modals',
-    scope: :global
-  } do
+  RSpec.describe 'Manage', :skip_live_env do
     shared_examples 'audit event' do |expected_events|
       it 'logs audit events for UI operations' do
         sign_in
@@ -21,10 +18,6 @@ module QA
     end
 
     describe 'Instance', :requires_admin do
-      before do
-        Runtime::Feature.enable(:bootstrap_confirmation_modals)
-      end
-
       context 'Failed sign in', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347913' do
         before do
           Runtime::Browser.visit(:gitlab, Page::Main::Login)
