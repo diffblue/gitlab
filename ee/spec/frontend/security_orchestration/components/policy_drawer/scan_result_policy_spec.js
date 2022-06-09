@@ -1,6 +1,7 @@
 import ScanResultPolicy from 'ee/security_orchestration/components/policy_drawer/scan_result_policy.vue';
 import PolicyDrawerLayout from 'ee/security_orchestration/components/policy_drawer/policy_drawer_layout.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import { mockScanResultPolicy } from '../../mocks/mock_data';
 
 describe('ScanResultPolicy component', () => {
@@ -11,6 +12,7 @@ describe('ScanResultPolicy component', () => {
   const factory = ({ propsData } = {}) => {
     wrapper = shallowMountExtended(ScanResultPolicy, {
       propsData,
+      provide: { namespaceType: NAMESPACE_TYPES.PROJECT },
       stubs: {
         PolicyDrawerLayout,
       },

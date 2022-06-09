@@ -34068,6 +34068,15 @@ msgstr ""
 msgid "SecurityOrchestration|This group"
 msgstr ""
 
+msgid "SecurityOrchestration|This is a group-level policy"
+msgstr ""
+
+msgid "SecurityOrchestration|This is a project-level policy"
+msgstr ""
+
+msgid "SecurityOrchestration|This policy is inherited from %{namespace}"
+msgstr ""
+
 msgid "SecurityOrchestration|This policy is inherited from the %{linkStart}namespace%{linkEnd} and must be edited there"
 msgstr ""
 

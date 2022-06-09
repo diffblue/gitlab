@@ -34,6 +34,18 @@ exports[`PolicyDrawerLayout component enabled policy matches the snapshots 1`] =
   </policy-info-row-stub>
    
   <policy-info-row-stub
+    label="Source"
+  >
+    <div
+      data-testid="policy-source"
+    >
+      <span>
+        This is a project-level policy
+      </span>
+    </div>
+  </policy-info-row-stub>
+   
+  <policy-info-row-stub
     label="Status"
   >
     <div
@@ -83,6 +95,18 @@ exports[`PolicyDrawerLayout component not enabled policy matches the snapshots 1
       
       No description
     
+    </div>
+  </policy-info-row-stub>
+   
+  <policy-info-row-stub
+    label="Source"
+  >
+    <div
+      data-testid="policy-source"
+    >
+      <span>
+        This is a project-level policy
+      </span>
     </div>
   </policy-info-row-stub>
    

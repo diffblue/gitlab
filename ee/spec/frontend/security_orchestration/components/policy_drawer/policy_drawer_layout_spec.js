@@ -1,11 +1,20 @@
+import { GlSprintf, GlLink } from '@gitlab/ui';
+import { getSourceUrl } from 'ee/security_orchestration/components/utils';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import PolicyDrawerLayout from 'ee/security_orchestration/components/policy_drawer/policy_drawer_layout.vue';
 import {
   DEFAULT_DESCRIPTION_LABEL,
   ENABLED_LABEL,
+  GROUP_TYPE_LABEL,
+  INHERITED_LABEL,
   NOT_ENABLED_LABEL,
+  PROJECT_TYPE_LABEL,
 } from 'ee/security_orchestration/components/policy_drawer/constants';
-import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import { mockProjectScanExecutionPolicy } from '../../mocks/mock_data';
+import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
+import {
+  mockGroupScanExecutionPolicy,
+  mockProjectScanExecutionPolicy,
+} from '../../mocks/mock_data';
 
 describe('PolicyDrawerLayout component', () => {
   let wrapper;
@@ -17,17 +26,24 @@ describe('PolicyDrawerLayout component', () => {
   const findDefaultDescription = () => wrapper.findByTestId('default-description-text');
   const findEnabledText = () => wrapper.findByTestId('enabled-status-text');
   const findNotEnabledText = () => wrapper.findByTestId('not-enabled-status-text');
+  const findSourceSection = () => wrapper.findByTestId('policy-source');
+  const findSprintf = () => wrapper.findComponent(GlSprintf);
+  const findLink = () => wrapper.findComponent(GlLink);
 
   const componentStatusText = (status) => (status ? 'does' : 'does not');
 
-  const factory = (propsData = {}) => {
+  const factory = ({ propsData = {}, provide = { namespaceType: NAMESPACE_TYPES.PROJECT } }) => {
     wrapper = shallowMountExtended(PolicyDrawerLayout, {
+      provide,
       propsData: {
         type: TYPE,
         ...propsData,
       },
       scopedSlots: {
         summary: `<span data-testid="summary-text">Summary</span>`,
+      },
+      stubs: {
+        GlSprintf,
       },
     });
   };
@@ -37,12 +53,12 @@ describe('PolicyDrawerLayout component', () => {
   });
 
   describe.each`
-    context                 | props                                                                   | enabled  | hasDescription
+    context                 | propsData                                                               | enabled  | hasDescription
     ${'enabled policy'}     | ${{ policy: mockProjectScanExecutionPolicy, description: DESCRIPTION }} | ${true}  | ${true}
     ${'not enabled policy'} | ${{ policy: { ...mockProjectScanExecutionPolicy, enabled: false } }}    | ${false} | ${false}
-  `('$context', ({ enabled, hasDescription, props }) => {
+  `('$context', ({ enabled, hasDescription, propsData }) => {
     beforeEach(() => {
-      factory(props);
+      factory({ propsData });
     });
 
     it.each`
@@ -61,6 +77,29 @@ describe('PolicyDrawerLayout component', () => {
 
     it('matches the snapshots', () => {
       expect(wrapper.element).toMatchSnapshot();
+    });
+  });
+
+  describe('source field', () => {
+    it('displays correctly for a project-level policy being displayed on a project', () => {
+      factory({ propsData: { policy: mockProjectScanExecutionPolicy } });
+      expect(findSourceSection().text()).toBe(PROJECT_TYPE_LABEL);
+    });
+
+    it('displays correctly for a group-level policy being displayed on a project', () => {
+      factory({ propsData: { policy: mockGroupScanExecutionPolicy } });
+      expect(findSprintf().text()).toMatchInterpolatedText(INHERITED_LABEL);
+      expect(findLink().attributes('href')).toBe(
+        getSourceUrl(mockGroupScanExecutionPolicy.source.namespace.fullPath),
+      );
+    });
+
+    it('displays correctly for a group-level policy being displayed on a group', () => {
+      factory({
+        propsData: { policy: mockProjectScanExecutionPolicy },
+        provide: { namespaceType: NAMESPACE_TYPES.GROUP },
+      });
+      expect(findSourceSection().text()).toBe(GROUP_TYPE_LABEL);
     });
   });
 });
