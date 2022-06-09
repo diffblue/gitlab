@@ -88,6 +88,7 @@ export const removeBillableMember = ({ dispatch, state }) => {
 
 export const removeBillableMemberSuccess = ({ dispatch, commit }) => {
   dispatch('fetchBillableMembersList');
+  dispatch('fetchGitlabSubscription');
 
   createAlert({
     message: s__('Billing|User was successfully removed'),
