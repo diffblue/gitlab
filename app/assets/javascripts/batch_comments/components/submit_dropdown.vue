@@ -2,6 +2,7 @@
 import { GlDropdown, GlButton, GlIcon } from '@gitlab/ui';
 import { mapGetters, mapActions } from 'vuex';
 import MarkdownField from '~/vue_shared/components/markdown/field.vue';
+import { scrollToElement } from '~/lib/utils/common_utils';
 
 export default {
   components: {
@@ -17,7 +18,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['getNotesData', 'getNoteableData', 'noteableType']),
+    ...mapGetters(['getNotesData', 'getNoteableData', 'noteableType', 'getCurrentUserLastNote']),
   },
   methods: {
     ...mapActions('batchComments', ['publishReview']),
@@ -32,6 +33,15 @@ export default {
 
       await this.publishReview(noteData);
 
+      if (window.mrTabs && this.note) {
+        window.location.hash = `note_${this.getCurrentUserLastNote.id}`;
+        window.mrTabs.tabShown('show');
+
+        setTimeout(() =>
+          scrollToElement(document.getElementById(`note_${this.getCurrentUserLastNote.id}`)),
+        );
+      }
+
       this.isSubmitting = false;
     },
   },
@@ -40,13 +50,13 @@ export default {
 </script>
 
 <template>
-  <gl-dropdown right class="submit-review-dropdown" variant="info">
+  <gl-dropdown right class="submit-review-dropdown" variant="info" category="secondary">
     <template #button-content>
       {{ __('Finish review') }}
       <gl-icon class="dropdown-chevron" name="chevron-up" />
     </template>
     <form data-testid="submit-form" @submit.prevent="submitReview">
-      <label for="review-note-body" class="gl-font-weight-bold gl-mb-3">
+      <label for="review-note-body" class="gl-font-weight-bold gl-mb-4">
         {{ __('Summary comment (optional)') }}
       </label>
       <div class="common-note-form gfm-form">
