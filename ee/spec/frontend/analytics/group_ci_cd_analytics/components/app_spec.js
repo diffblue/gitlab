@@ -50,11 +50,12 @@ describe('ee/analytics/group_ci_cd_analytics/components/app.vue', () => {
 
       it('renders tabs in the correct order', () => {
         expect(findGlTabs().exists()).toBe(true);
-        expect(findAllGlTabs().length).toBe(4);
+        expect(findAllGlTabs()).toHaveLength(5);
         expect(findGlTabAtIndex(0).attributes('title')).toBe('Release statistics');
         expect(findGlTabAtIndex(1).attributes('title')).toBe('Deployment frequency');
         expect(findGlTabAtIndex(2).attributes('title')).toBe('Lead time');
-        expect(findGlTabAtIndex(3).attributes('title')).toBe('Shared runner usage');
+        expect(findGlTabAtIndex(3).attributes('title')).toBe('Time to restore service');
+        expect(findGlTabAtIndex(4).attributes('title')).toBe('Shared runner usage');
       });
     });
 
@@ -105,12 +106,13 @@ describe('ee/analytics/group_ci_cd_analytics/components/app.vue', () => {
 
   describe('when provided with a query param', () => {
     it.each`
-      tab                       | index
-      ${'release-statistics'}   | ${'0'}
-      ${'deployment-frequency'} | ${'1'}
-      ${'lead-time'}            | ${'2'}
-      ${'fake'}                 | ${'0'}
-      ${''}                     | ${'0'}
+      tab                          | index
+      ${'release-statistics'}      | ${'0'}
+      ${'deployment-frequency'}    | ${'1'}
+      ${'lead-time'}               | ${'2'}
+      ${'time-to-restore-service'} | ${'3'}
+      ${'fake'}                    | ${'0'}
+      ${''}                        | ${'0'}
     `('shows the correct tab for URL parameter "$tab"', ({ tab, index }) => {
       setWindowLocation(`${TEST_HOST}/groups/gitlab-org/gitlab/-/analytics/ci_cd?tab=${tab}`);
       getParameterValues.mockImplementation((name) => {
