@@ -5,6 +5,7 @@ export const STAT_LOADER_HEIGHT = 46;
 export const PER_PAGE = 20;
 export const ASSIGNEES_VISIBLE = 2;
 export const AVATAR_SIZE = 24;
+export const EXCLUDED_DATA_KEYS = ['__typename'];
 
 export const THROUGHPUT_CHART_STRINGS = {
   CHART_TITLE: __('Throughput'),

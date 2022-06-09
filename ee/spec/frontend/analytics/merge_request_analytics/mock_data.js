@@ -15,9 +15,9 @@ export const throughputChartData = {
 };
 
 export const throughputChartNoData = {
-  May_2020: { count: 0, __typename: 'MergeRequestConnection' },
-  Jun_2020: { count: 0, __typename: 'MergeRequestConnection' },
-  Jul_2020: { count: 0, __typename: 'MergeRequestConnection' },
+  May_2020: { count: 0, totalTimeToMerge: 0, __typename: 'MergeRequestConnection' },
+  Jun_2020: { count: 0, totalTimeToMerge: 0, __typename: 'MergeRequestConnection' },
+  Jul_2020: { count: 0, totalTimeToMerge: 0, __typename: 'MergeRequestConnection' },
   __typename: 'Project',
 };
 
@@ -34,7 +34,13 @@ export const formattedThroughputChartData = [
 
 export const formattedMttmData = {
   title: 'Mean time to merge',
-  value: '9',
+  value: 9,
+  unit: 'days',
+};
+
+export const formattedMttmNoData = {
+  title: 'Mean time to merge',
+  value: '-',
   unit: 'days',
 };
 
