@@ -5,14 +5,14 @@
   = render Pajamas::AlertComponent.new(variant: :warning,
       title: title,
       dismissible: false,
-      alert_class: "#{'gl-mb-3' unless secondary_description}") do |c|
+      alert_options: { class: "#{'gl-mb-3' unless secondary_description}" }) do |c|
     - if description
       = c.body do
         = description
 
 - if secondary_description
   = render Pajamas::AlertComponent.new(dismissible: false,
-    alert_class: 'gl-mb-3') do |c|
+    alert_options: { class: 'gl-mb-3' }) do |c|
     = c.body do
       = secondary_description
     = c.actions do

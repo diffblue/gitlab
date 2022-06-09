@@ -15,7 +15,11 @@
     - show_storage_banner_actions = purchase_link || usage_link
 
     .gl-py-5
-      = render Pajamas::AlertComponent.new(variant: style, dismissible: alert_level != :error, title: payload[:usage_message], alert_class: 'js-namespace-storage-alert', close_button_class: 'js-namespace-storage-alert-dismiss', close_button_data: { id: root_namespace.id, level: alert_level }) do |c|
+      = render Pajamas::AlertComponent.new(variant: style,
+        dismissible: alert_level != :error,
+        title: payload[:usage_message],
+        alert_options: { class: 'js-namespace-storage-alert' },
+        close_button_options: { class: 'js-namespace-storage-alert-dismiss', data: { id: root_namespace.id, level: alert_level }}) do |c|
         = c.body do
           = sprite_icon(icon, css_class: "gl-icon gl-alert-icon")
           = payload[:explanation_message]
