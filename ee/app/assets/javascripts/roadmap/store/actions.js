@@ -4,6 +4,7 @@ import { s__ } from '~/locale';
 import { ROADMAP_PAGE_SIZE } from '../constants';
 import epicChildEpics from '../queries/epic_child_epics.query.graphql';
 import groupEpics from '../queries/group_epics.query.graphql';
+import groupEpicsWithColor from '../queries/group_epics_with_color.query.graphql';
 import groupMilestones from '../queries/group_milestones.query.graphql';
 import * as epicUtils from '../utils/epic_utils';
 import * as roadmapItemUtils from '../utils/roadmap_item_utils';
@@ -38,7 +39,7 @@ const fetchGroupEpics = (
     query = epicChildEpics;
     variables.iid = epicIid;
   } else {
-    query = groupEpics;
+    query = gon?.features?.epicColorHighlight ? groupEpicsWithColor : groupEpics;
     variables = {
       ...variables,
       ...transformedFilterParams,

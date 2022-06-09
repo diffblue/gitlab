@@ -169,6 +169,13 @@ export default {
         )}`;
       }
 
+      if (roadmapItem.color) {
+        // eslint-disable-next-line @gitlab/require-i18n-strings
+        barStyles += `; --epic-color: ${roadmapItem.color}`;
+        // eslint-disable-next-line @gitlab/require-i18n-strings
+        barStyles += `; --epic-text-color: ${roadmapItem.textColor}`;
+      }
+
       return barStyles;
     },
   },
