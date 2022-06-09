@@ -171,10 +171,10 @@ Users can also be deactivated using the [GitLab API](../../api/users.md#deactiva
 
 > [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/320875) in GitLab 14.0.
 
-Administrators can enable automatic deactivation of users who:
+Administrators can enable automatic deactivation of users who either:
 
-- Were created a week ago and have not signed in, **or** 
-- Have no activity in the last 90 days
+- Were created a week ago and have not signed in.
+- Have no activity in the last 90 days.
 
 To do this:
 
