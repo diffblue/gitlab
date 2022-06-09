@@ -308,10 +308,6 @@ module Gitlab
           timeout: GitalyClient.long_timeout
         )
 
-        if response.git_error.presence
-          raise Gitlab::Git::Repository::GitError, response.git_error
-        end
-
         response.squash_sha
       rescue GRPC::BadStatus => e
         detailed_error = decode_detailed_error(e)

@@ -635,21 +635,6 @@ RSpec.describe Gitlab::GitalyClient::OperationService do
       expect(subject).to eq(squash_sha)
     end
 
-    context "when git_error is present" do
-      let(:response) do
-        Gitaly::UserSquashResponse.new(git_error: "something failed")
-      end
-
-      it "raises a GitError exception" do
-        expect_any_instance_of(Gitaly::OperationService::Stub)
-          .to receive(:user_squash).with(request, kind_of(Hash))
-          .and_return(response)
-
-        expect { subject }.to raise_error(
-          Gitlab::Git::Repository::GitError, "something failed")
-      end
-    end
-
     shared_examples '#user_squash with an error' do
       it 'raises a GitError exception' do
         expect_any_instance_of(Gitaly::OperationService::Stub)
