@@ -374,7 +374,7 @@ export default {
         :codequality-help-path="mr.codequalityHelpPath"
       />
       <grouped-browser-performance-reports-app
-        v-if="shouldRenderBrowserPerformance"
+        v-if="shouldRenderBrowserPerformance && !shouldShowExtension"
         :status="browserPerformanceStatus"
         :loading-text="translateText('browser-performance').loading"
         :error-text="translateText('browser-performance').error"
@@ -396,7 +396,7 @@ export default {
         :has-issues="hasLoadPerformanceMetrics"
       />
       <grouped-metrics-reports-app
-        v-if="mr.metricsReportsPath"
+        v-if="mr.metricsReportsPath && !shouldShowExtension"
         :endpoint="mr.metricsReportsPath"
         class="js-metrics-reports-container"
       />
