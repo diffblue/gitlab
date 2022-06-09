@@ -249,6 +249,8 @@ RSpec.describe Registrations::WelcomeController do
       describe 'redirection' do
         context 'when signup_onboarding is not enabled' do
           before do
+            stub_feature_flags(about_your_company_registration_flow: false)
+
             allow(controller.helpers).to receive(:signup_onboarding_enabled?).and_return(false)
           end
 
@@ -261,6 +263,10 @@ RSpec.describe Registrations::WelcomeController do
           end
 
           context 'when joining_project is "true"', :experiment do
+            before do
+              stub_feature_flags(about_your_company_registration_flow: false)
+            end
+
             let(:joining_project) { 'true' }
 
             it { is_expected.to redirect_to dashboard_projects_path }

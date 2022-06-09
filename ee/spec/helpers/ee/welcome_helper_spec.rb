@@ -22,8 +22,13 @@ RSpec.describe EE::WelcomeHelper do
   end
 
   describe '#in_trial_flow?' do
+    before do
+      stub_feature_flags(about_your_company_registration_flow: true)
+    end
+
     where(:user_return_to_path, :expected_result) do
       '/-/trials/new?glm_content=free-trial&glm_source=about.gitlab.com' | true
+      '/users/sign_up/company/new?trial=true'                            | true
       '/foo'                                                             | false
       nil                                                                | false
     end
