@@ -206,6 +206,15 @@ RSpec.describe Gitlab::UrlBuilder do
       end
     end
 
+    context 'when passing an incident' do
+      it 'returns only path' do
+        incident = create(:incident)
+
+        expect(subject.build(incident, only_path: true)).to eq("/#{incident.project.full_path}/-/issues/incident/#{incident.iid}")
+        expect(subject.build(incident)).to eq("/#{incident.project.full_path}/-/issues/incident/#{incident.iid}")
+      end
+    end
+
     context 'when passing an unsupported class' do
       let(:object) { Object.new }
 
