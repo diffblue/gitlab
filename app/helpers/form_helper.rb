@@ -26,7 +26,7 @@ module FormHelper
     end.join.html_safe
 
     if pajamas_alert
-      render Pajamas::AlertComponent.new(variant: :danger, title: headline, dismissible: false, alert_options: {id: 'error_explanation'}) do |c|
+      render Pajamas::AlertComponent.new(variant: :danger, title: headline, dismissible: false, alert_class: 'gl-mb-5', alert_options: {id: 'error_explanation'}) do |c|
         c.body do
           tag.ul(class: 'gl-pl-5 gl-mb-0') do
             messages
