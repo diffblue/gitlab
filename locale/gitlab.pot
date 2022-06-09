@@ -8987,6 +8987,18 @@ msgstr ""
 msgid "Collector hostname"
 msgstr ""
 
+msgid "ColorWidget|An error occurred while updating color."
+msgstr ""
+
+msgid "ColorWidget|Assign epic color"
+msgstr ""
+
+msgid "ColorWidget|Color"
+msgstr ""
+
+msgid "ColorWidget|Error fetching epic color."
+msgstr ""
+
 msgid "Colorize messages"
 msgstr ""
 
@@ -36823,6 +36835,9 @@ msgstr ""
 msgid "SuggestedColors|Gray"
 msgstr ""
 
+msgid "SuggestedColors|Green"
+msgstr ""
+
 msgid "SuggestedColors|Green screen"
 msgstr ""
 
@@ -36839,6 +36854,9 @@ msgid "SuggestedColors|Medium sea green"
 msgstr ""
 
 msgid "SuggestedColors|Orange"
+msgstr ""
+
+msgid "SuggestedColors|Purple"
 msgstr ""
 
 msgid "SuggestedColors|Red"
