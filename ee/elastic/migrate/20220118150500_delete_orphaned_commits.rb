@@ -77,6 +77,11 @@ class DeleteOrphanedCommits < Elastic::Migration
                   match_all: {}
                 }
               }
+            },
+            {
+              exists: {
+                field: "visibility_level"
+              }
             }
           ]
         }

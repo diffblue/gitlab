@@ -209,6 +209,14 @@ class PopulateCommitPermissionsInMainIndex < Elastic::Migration
                 value: "commit"
               }
             }
+          },
+          {
+            has_parent: {
+              parent_type: "project",
+              query: {
+                match_all: {}
+              }
+            }
           }
         ],
         must_not: [
