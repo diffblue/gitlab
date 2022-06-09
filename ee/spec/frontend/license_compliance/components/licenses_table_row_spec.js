@@ -1,9 +1,4 @@
-import {
-  GlLink,
-  GlDeprecatedSkeletonLoading as GlSkeletonLoading,
-  GlBadge,
-  GlFriendlyWrap,
-} from '@gitlab/ui';
+import { GlLink, GlSkeletonLoader, GlBadge, GlFriendlyWrap } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import LicenseComponentLinks from 'ee/license_compliance/components/license_component_links.vue';
 import LicensesTableRow from 'ee/license_compliance/components/licenses_table_row.vue';
@@ -20,7 +15,7 @@ describe('LicensesTableRow component', () => {
     });
   };
 
-  const findLoading = () => wrapper.findComponent(GlSkeletonLoading);
+  const findLoading = () => wrapper.findComponent(GlSkeletonLoader);
   const findContent = () => wrapper.find('.js-license-row');
   const findNameSection = () => findContent().find('.section-30');
   const findComponentSection = () => findContent().find('.section-70');
@@ -45,9 +40,8 @@ describe('LicensesTableRow component', () => {
 
     it('shows the skeleton loading component', () => {
       const loading = findLoading();
-
       expect(loading.exists()).toBe(true);
-      expect(loading.props('lines')).toEqual(1);
+      expect(loading.attributes('lines')).toEqual('1');
     });
 
     it('does not show the content', () => {
