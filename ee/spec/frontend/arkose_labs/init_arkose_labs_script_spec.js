@@ -37,7 +37,7 @@ describe('initArkoseLabsScript', () => {
     expect(scriptTag.getAttribute('src')).toBe(
       `https://${TEST_DOMAIN}/v2/${TEST_PUBLIC_KEY}/api.js`,
     );
-    expect(scriptTag.getAttribute('data-callback')).toBe(EXPECTED_CALLBACK_NAME);
+    expect(scriptTag.dataset.callback).toBe(EXPECTED_CALLBACK_NAME);
   });
 
   it('when callback is called, cleans up the global object and resolves the Promise', () => {

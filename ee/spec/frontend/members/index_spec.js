@@ -14,7 +14,7 @@ describe('initMembersApp', () => {
 
   beforeEach(() => {
     el = document.createElement('div');
-    el.setAttribute('data-members-data', dataAttribute);
+    el.dataset.membersData = dataAttribute;
   });
 
   afterEach(() => {
