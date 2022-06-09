@@ -173,7 +173,7 @@ Users can also be deactivated using the [GitLab API](../../api/users.md#deactiva
 
 Administrators can enable automatic deactivation of users who either:
 
-- Were created a week ago and have not signed in.
+- Were created more than a week ago and have not signed in.
 - Have no activity in the last 90 days.
 
 To do this:

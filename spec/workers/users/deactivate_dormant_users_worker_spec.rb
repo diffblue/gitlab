@@ -8,6 +8,7 @@ RSpec.describe Users::DeactivateDormantUsersWorker do
   describe '#perform' do
     let_it_be(:dormant) { create(:user, last_activity_on: User::MINIMUM_INACTIVE_DAYS.days.ago.to_date) }
     let_it_be(:inactive) { create(:user, last_activity_on: nil, created_at: User::MINIMUM_DAYS_CREATED.days.ago.to_date) }
+    let_it_be(:inactive_recently_created) { create(:user, last_activity_on: nil, created_at: (User::MINIMUM_DAYS_CREATED - 1).days.ago.to_date) }
 
     subject(:worker) { described_class.new }
 
