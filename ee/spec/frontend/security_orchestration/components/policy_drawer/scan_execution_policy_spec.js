@@ -1,5 +1,6 @@
 import ScanExecutionPolicy from 'ee/security_orchestration/components/policy_drawer/scan_execution_policy.vue';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
+import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import {
   mockProjectScanExecutionPolicy,
   mockScanExecutionManifestNoActions,
@@ -14,6 +15,7 @@ describe('ScanExecutionPolicy component', () => {
   const factory = ({ propsData } = {}) => {
     wrapper = mountExtended(ScanExecutionPolicy, {
       propsData,
+      provide: { namespaceType: NAMESPACE_TYPES.PROJECT },
     });
   };
 
