@@ -1335,15 +1335,6 @@
   :weight: 1
   :idempotent: true
   :tags: []
-- :name: security_generate_scan_finding_rules
-  :worker_name: Security::GenerateScanFindingRulesWorker
-  :feature_category: :security_orchestration
-  :has_external_dependencies: false
-  :urgency: :low
-  :resource_boundary: :unknown
-  :weight: 1
-  :idempotent: true
-  :tags: []
 - :name: security_orchestration_policy_rule_schedule_namespace
   :worker_name: Security::OrchestrationPolicyRuleScheduleNamespaceWorker
   :feature_category: :security_orchestration
