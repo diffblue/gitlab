@@ -41,7 +41,7 @@ module Projects
     rescue InvalidStateError => e
       error(e.message)
     rescue WrongUploadedDeploymentSizeError => e
-      error(e.message)
+      error("Uploading artifacts to pages storage failed")
       raise e
     rescue StandardError => e
       error(e.message)
