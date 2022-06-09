@@ -17256,6 +17256,9 @@ msgstr ""
 msgid "GitLabPages|Are you sure?"
 msgstr ""
 
+msgid "GitLabPages|Can be overridden per project. For no limit, enter 0. To inherit the value, leave empty."
+msgstr ""
+
 msgid "GitLabPages|Certificate: %{subject}"
 msgstr ""
 
@@ -17277,7 +17280,7 @@ msgstr ""
 msgid "GitLabPages|GitLab Pages are disabled for this project. You can enable them on your project's %{strong_start}Settings &gt; General &gt; Visibility%{strong_end} page."
 msgstr ""
 
-msgid "GitLabPages|Maximum size of pages (MB)"
+msgid "GitLabPages|Maximum size (MB)"
 msgstr ""
 
 msgid "GitLabPages|New Domain"
@@ -17311,9 +17314,6 @@ msgid "GitLabPages|Something went wrong while obtaining the Let's Encrypt certif
 msgstr ""
 
 msgid "GitLabPages|Support for domains and certificates is disabled. Ask your system's administrator to enable it."
-msgstr ""
-
-msgid "GitLabPages|The total size of deployed static content will be limited to this size. 0 for unlimited. Leave empty to inherit the global value."
 msgstr ""
 
 msgid "GitLabPages|Unverified"
@@ -18288,10 +18288,10 @@ msgstr ""
 msgid "GroupSettings|Select the project that contains your custom Insights file."
 msgstr ""
 
-msgid "GroupSettings|Set the initial name and protections for the default branch of new repositories created in the group."
+msgid "GroupSettings|Set a size limit for all content in each Pages site in this group. %{link_start}Learn more.%{link_end}"
 msgstr ""
 
-msgid "GroupSettings|Set the maximum size of GitLab Pages for this group. %{link_start}Learn more.%{link_end}"
+msgid "GroupSettings|Set the initial name and protections for the default branch of new repositories created in the group."
 msgstr ""
 
 msgid "GroupSettings|The Auto DevOps pipeline runs if no alternative CI configuration file is found."
