@@ -6,7 +6,12 @@ import {
   getDayDifference,
   secondsToDays,
 } from '~/lib/utils/datetime_utility';
-import { THROUGHPUT_CHART_STRINGS, DEFAULT_NUMBER_OF_DAYS, UNITS } from './constants';
+import {
+  THROUGHPUT_CHART_STRINGS,
+  DEFAULT_NUMBER_OF_DAYS,
+  UNITS,
+  EXCLUDED_DATA_KEYS,
+} from './constants';
 
 /**
  * A utility function which accepts a date range and returns
@@ -60,10 +65,9 @@ export const computeMonthRangeData = (startDate, endDate, format = dateFormats.i
  */
 export const formatThroughputChartData = (chartData) => {
   if (!chartData) return [];
-
   const data = Object.keys(chartData)
-    .slice(0, -1) // Remove the __typeName key
-    .map((value) => [value.split('_').join(' '), chartData[value].count]); // key: Aug_2020 => Aug 2020
+    .filter((key) => !EXCLUDED_DATA_KEYS.includes(key.toLowerCase()))
+    .map((key) => [key.split('_').join(' '), chartData[key].count]); // key: Aug_2020 => Aug 2020
 
   return [
     {
@@ -100,12 +104,14 @@ export const computeMttmData = (rawData) => {
       },
     );
 
-  // GlSingleStat expects a String for the 'value' prop
-  // https://gitlab.com/gitlab-org/gitlab-ui/-/issues/1152
+  const value =
+    mttmData.totalTimeToMerge && mttmData.count
+      ? secondsToDays(mttmData.totalTimeToMerge / mttmData.count)
+      : '-';
   return {
     title: THROUGHPUT_CHART_STRINGS.MTTM,
-    value: `${secondsToDays(mttmData.totalTimeToMerge / mttmData.count)}`,
     unit: UNITS.DAYS,
+    value,
   };
 };
 

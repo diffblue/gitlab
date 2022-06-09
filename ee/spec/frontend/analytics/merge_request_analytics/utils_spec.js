@@ -1,10 +1,13 @@
 import * as utils from 'ee/analytics/merge_request_analytics/utils';
+import { EXCLUDED_DATA_KEYS } from 'ee/analytics/merge_request_analytics/constants';
 import { useFakeDate } from 'helpers/fake_date';
 import {
   expectedMonthData,
   throughputChartData,
   formattedThroughputChartData,
+  throughputChartNoData,
   formattedMttmData,
+  formattedMttmNoData,
 } from './mock_data';
 
 describe('computeMonthRangeData', () => {
@@ -36,6 +39,14 @@ describe('formatThroughputChartData', () => {
 
     expect(chartData).toStrictEqual([]);
   });
+
+  it('excludes items in `EXCLUDED_DATA_KEYS`', () => {
+    const [chartData] = utils.formatThroughputChartData(throughputChartData);
+
+    chartData.data.forEach((item) => {
+      expect(EXCLUDED_DATA_KEYS).not.toContain(item[0].trim());
+    });
+  });
 });
 
 describe('computeMttmData', () => {
@@ -43,6 +54,12 @@ describe('computeMttmData', () => {
     const mttmData = utils.computeMttmData(throughputChartData);
 
     expect(mttmData).toStrictEqual(formattedMttmData);
+  });
+
+  it('with no time to merge data', () => {
+    const mttmData = utils.computeMttmData(throughputChartNoData);
+
+    expect(mttmData).toStrictEqual(formattedMttmNoData);
   });
 });
 
