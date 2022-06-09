@@ -18,6 +18,7 @@ module Types
     field :name,
           type: GraphQL::Types::String,
           null: true,
+          deprecated: { reason: 'Use `title`', milestone: '15.1' },
           description: 'Name of the vulnerability finding.'
 
     field :title,
