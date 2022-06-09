@@ -61,7 +61,7 @@ RSpec.describe PopulateCommitPermissionsInMainIndex do
       stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
 
       # ensure Projects are created and indexed
-      projects.each { |p| ElasticCommitIndexerWorker.new.perform(p.id) }
+      projects.each { |p| p.repository.index_commits_and_blobs }
 
       ensure_elasticsearch_index!
     end
@@ -269,20 +269,34 @@ RSpec.describe PopulateCommitPermissionsInMainIndex do
     end
   end
 
-  describe '.completed?' do
+  describe '.completed?', :elastic, :sidekiq_inline do
+    let(:project) { create(:project, :repository) }
+
+    before do
+      stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
+
+      project.repository.index_commits_and_blobs
+      ensure_elasticsearch_index!
+    end
+
     context 'when there are commits missing permissions' do
       before do
-        allow(migration).to receive(:count_of_commits_without_permissions).and_return 10
+        remove_visibility_level_for_commits(raw_commits_for_project(project))
       end
 
       specify { expect(migration).not_to be_completed }
+
+      context 'and the project is missing from the index' do
+        before do
+          client.delete(index: migration.index_name, id: "project_#{project.id}", refresh: true) # remove parent project
+        end
+
+        specify { expect(migration).to be_completed }
+      end
     end
 
+    # no commit will be missing permissions due to how the migrations work for specs
     context 'when there are NO commits missing permissions' do
-      before do
-        allow(migration).to receive(:count_of_commits_without_permissions).and_return 0
-      end
-
       specify { expect(migration).to be_completed }
     end
   end
