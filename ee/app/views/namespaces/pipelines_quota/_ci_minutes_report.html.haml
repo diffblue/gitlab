@@ -10,7 +10,7 @@
         buy_additional_minutes_path(namespace),
         target: buy_addon_target_attr(namespace),
         class: 'gl-button btn btn-confirm float-right js-buy-additional-minutes',
-        data: { track_action: 'click_buy_ci_minutes', track_label: namespace.actual_plan_name, track_property: 'pipeline_quota_page' }
+        data: { track_action: 'click_buy_ci_minutes', track_label: namespace.actual_plan_name, track_property: 'pipeline_quota_page', qa_selector: 'buy_ci_minutes' }
 
   .row
     .col-sm-6

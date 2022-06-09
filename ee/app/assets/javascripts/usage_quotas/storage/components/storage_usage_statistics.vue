@@ -117,7 +117,13 @@ export default {
       class="gl-w-half"
     >
       <template #actions>
-        <gl-button :href="purchaseStorageUrl" target="_blank" category="primary" variant="confirm">
+        <gl-button
+          :href="purchaseStorageUrl"
+          target="_blank"
+          category="primary"
+          variant="confirm"
+          data-qa-selector="purchase_storage"
+        >
           {{ $options.i18n.purchaseButtonText }}
         </gl-button>
       </template>
