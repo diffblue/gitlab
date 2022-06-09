@@ -12,12 +12,18 @@ RSpec.describe Security::Ingestion::Tasks::IngestVulnerabilities do
                                                 resolved_on_default_branch: true, present_on_default_branch: false)
     end
 
-    let(:finding_maps) { create_list(:finding_map, 4) }
+    let_it_be(:resolved_vulnerability) do
+      create(:vulnerability, :resolved, :with_finding, resolved_on_default_branch: true, present_on_default_branch:
+        false)
+    end
+
+    let(:finding_maps) { create_list(:finding_map, 5) }
 
     subject(:ingest_vulnerabilities) { described_class.new(pipeline, finding_maps).execute }
 
     before do
       finding_maps.first.vulnerability_id = existing_vulnerability.id
+      finding_maps.second.vulnerability_id = resolved_vulnerability.id
 
       finding_maps.each { |finding_map| finding_map.identifier_ids << identifier.id }
     end
@@ -37,6 +43,17 @@ RSpec.describe Security::Ingestion::Tasks::IngestVulnerabilities do
 
     it 'updates present_on_default_branch to true for existing vulnerabilities' do
       expect { ingest_vulnerabilities }.to change { existing_vulnerability.reload.present_on_default_branch }.to(true)
+    end
+
+    context 'when a resolved Vulnerability shows up in a subsequent scan' do
+      let(:existing_vulnerabilities) { finding_maps.select(&:vulnerability_id) }
+
+      it 'changes the state to detected' do
+        expect(described_class::MarkResolvedAsDetected).to receive(:execute)
+          .with(pipeline, existing_vulnerabilities)
+
+        ingest_vulnerabilities
+      end
     end
 
     context 'when `deprecate_vulnerabilities_feedback` feature flag is disabled' do
