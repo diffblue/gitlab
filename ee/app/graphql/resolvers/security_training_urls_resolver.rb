@@ -14,11 +14,6 @@ module Resolvers
          required: true,
          description: 'List of external IDs of vulnerability identifiers.'
 
-    argument :language,
-         GraphQL::Types::String,
-         required: false,
-         description: 'Desired language for training urls.'
-
     argument :filename,
          GraphQL::Types::String,
          required: false,
@@ -30,7 +25,6 @@ module Resolvers
       ::Security::TrainingUrlsFinder.new(
         project,
         args[:identifier_external_ids],
-        args[:language],
         args[:filename]
       ).execute
     end
