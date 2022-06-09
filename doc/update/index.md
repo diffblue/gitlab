@@ -465,9 +465,22 @@ and [Helm Chart deployments](https://docs.gitlab.com/charts/). They come with ap
   The upgrade to GitLab 14.10 executes a [concurrent index drop](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/84308) of unneeded
   entries from the `ci_job_artifacts` database table. This could potentially run for multiple minutes, especially if the table has a lot of
   traffic and the migration is unable to acquire a lock. It is advised to let this process finish as restarting may result in data loss.
+
 - If you run external PostgreSQL, particularly AWS RDS,
   [check you have a PostgreSQL bug fix](#postgresql-segmentation-fault-issue)
   to avoid the database crashing.
+
+- Upgrading to patch level 14.10.3 or higher might encounter a one hour timeout owing to a long running database data change
+  if it was not completed while running GitLab 14.9.
+
+  ```plaintext
+  FATAL: Mixlib::ShellOut::CommandTimeout: rails_migration[gitlab-rails]
+  (gitlab::database_migrations line 51) had an error:
+  [..]
+  Mixlib::ShellOut::CommandTimeout: Command timed out after 3600s:
+  ```
+
+  [There is a workaround to complete the data change and the upgrade manually](package/index.md#mixlibshelloutcommandtimeout-rails_migrationgitlab-rails-command-timed-out-after-3600s)
 
 ### 14.9.0
 
@@ -623,6 +636,18 @@ or [init scripts](upgrading_from_source.md#configure-sysv-init-script) by [follo
           puts Gitlab::Database::BackgroundMigrationJob.mark_all_as_succeeded("UpdateVulnerabilityOccurrencesLocation", job.arguments)
         end
     ```
+
+- Upgrading to 14.5 (or later) [might encounter a one hour timeout](https://gitlab.com/gitlab-org/gitlab/-/issues/354211)
+  owing to a long running database data change.
+
+  ```plaintext
+  FATAL: Mixlib::ShellOut::CommandTimeout: rails_migration[gitlab-rails]
+  (gitlab::database_migrations line 51) had an error:
+  [..]
+  Mixlib::ShellOut::CommandTimeout: Command timed out after 3600s:
+  ```
+
+  [There is a workaround to complete the data change and the upgrade manually](package/index.md#mixlibshelloutcommandtimeout-rails_migrationgitlab-rails-command-timed-out-after-3600s)
 
 ### 14.4.4
 
