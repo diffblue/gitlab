@@ -32,7 +32,12 @@ module EE
     end
 
     def size_checker
-      project.repository_size_checker
+      root_namespace = project.namespace.root_ancestor
+      if ::Namespaces::Storage::EnforcementCheckService.enforce_limit?(root_namespace)
+        EE::Namespace::RootStorageSize.new(root_namespace)
+      else
+        project.repository_size_checker
+      end
     end
 
     def lfs_push_size
