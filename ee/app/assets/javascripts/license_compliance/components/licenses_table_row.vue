@@ -1,10 +1,5 @@
 <script>
-import {
-  GlLink,
-  GlDeprecatedSkeletonLoading as GlSkeletonLoading,
-  GlBadge,
-  GlFriendlyWrap,
-} from '@gitlab/ui';
+import { GlLink, GlSkeletonLoader, GlBadge, GlFriendlyWrap } from '@gitlab/ui';
 import { LICENSE_APPROVAL_CLASSIFICATION } from 'ee/vue_shared/license_compliance/constants';
 import LicenseComponentLinks from './license_component_links.vue';
 
@@ -13,7 +8,7 @@ export default {
   components: {
     LicenseComponentLinks,
     GlLink,
-    GlSkeletonLoading,
+    GlSkeletonLoader,
     GlBadge,
     GlFriendlyWrap,
   },
@@ -42,11 +37,7 @@ export default {
 
 <template>
   <div class="gl-responsive-table-row flex-md-column align-items-md-stretch px-2">
-    <gl-skeleton-loading
-      v-if="isLoading"
-      :lines="1"
-      class="d-flex flex-column justify-content-center h-auto"
-    />
+    <gl-skeleton-loader v-if="isLoading" :lines="1" />
 
     <div
       v-else
