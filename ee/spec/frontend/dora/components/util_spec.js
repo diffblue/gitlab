@@ -1,12 +1,14 @@
 import lastWeekData from 'test_fixtures/api/dora/metrics/daily_lead_time_for_changes_for_last_week.json';
 import {
   apiDataToChartSeries,
-  buildNullSeriesForLeadTimeChart,
+  buildNullSeries,
   seriesToAverageSeries,
   seriesToMedianSeries,
   extractTimeSeriesTooltip,
   secondsToDays,
 } from 'ee/dora/components/util';
+
+const NO_DATA_MESSAGE = 'No data available';
 
 describe('ee/dora/components/util.js', () => {
   describe('apiDataToChartSeries', () => {
@@ -44,7 +46,7 @@ describe('ee/dora/components/util.js', () => {
     });
   });
 
-  describe('buildNullSeriesForLeadTimeChart', () => {
+  describe('buildNullSeries', () => {
     it('returns series data with the expected styles and text', () => {
       const inputSeries = [
         {
@@ -55,7 +57,7 @@ describe('ee/dora/components/util.js', () => {
 
       const expectedSeries = [
         {
-          name: 'No merge requests were deployed during this period',
+          name: NO_DATA_MESSAGE,
           data: expect.any(Array),
           lineStyle: {
             color: expect.any(String),
@@ -87,7 +89,7 @@ describe('ee/dora/components/util.js', () => {
         },
       ];
 
-      expect(buildNullSeriesForLeadTimeChart(inputSeries)).toEqual(expectedSeries);
+      expect(buildNullSeries(inputSeries, NO_DATA_MESSAGE)).toEqual(expectedSeries);
     });
 
     describe('series data', () => {
@@ -104,7 +106,7 @@ describe('ee/dora/components/util.js', () => {
             },
           ];
 
-          const actualSeries = buildNullSeriesForLeadTimeChart(inputSeries);
+          const actualSeries = buildNullSeries(inputSeries, NO_DATA_MESSAGE);
 
           expect(actualSeries[1]).toMatchObject(inputSeries[0]);
         });
@@ -112,9 +114,10 @@ describe('ee/dora/components/util.js', () => {
 
       describe('empty series', () => {
         const compareSeriesData = (inputSeriesData, expectedEmptySeriesData) => {
-          const actualEmptySeriesData = buildNullSeriesForLeadTimeChart([
-            { data: inputSeriesData },
-          ])[0].data;
+          const actualEmptySeriesData = buildNullSeries(
+            [{ data: inputSeriesData }],
+            NO_DATA_MESSAGE,
+          )[0].data;
 
           expect(actualEmptySeriesData).toEqual(expectedEmptySeriesData);
         };
@@ -204,7 +207,7 @@ describe('ee/dora/components/util.js', () => {
 
   describe('lead time data', () => {
     it('returns the correct lead time chart data after all processing of the API response', () => {
-      const chartData = buildNullSeriesForLeadTimeChart(
+      const chartData = buildNullSeries(
         apiDataToChartSeries(
           lastWeekData,
           new Date(2015, 5, 27, 10),
@@ -212,6 +215,7 @@ describe('ee/dora/components/util.js', () => {
           'Lead time',
           null,
         ),
+        NO_DATA_MESSAGE,
       );
 
       expect(chartData).toMatchSnapshot();

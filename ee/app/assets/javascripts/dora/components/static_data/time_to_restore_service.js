@@ -4,11 +4,9 @@ import { secondsToDays } from '../util';
 
 export * from './shared';
 
-export const CHART_TITLE = s__('DORA4Metrics|Lead time for changes');
-export const NO_DATA_MESSAGE = s__(
-  'DORA4Metrics|No merge requests were deployed during this period',
-);
-export const medianSeriesTitle = s__('DORA4Metrics|Median (last %{days}d)');
+export const medianSeriesName = s__('DORA4Metrics|Median time (last %{days}d)');
+
+export const CHART_TITLE = s__('DORA4Metrics|Time to restore service');
 
 export const areaChartOptions = {
   xAxis: {
@@ -16,7 +14,7 @@ export const areaChartOptions = {
     type: 'category',
   },
   yAxis: {
-    name: s__('DORA4Metrics|Days from merge to deploy'),
+    name: s__('DORA4Metrics|Days for an open incident'),
     type: 'value',
     minInterval: 1,
     axisLabel: {
@@ -28,9 +26,9 @@ export const areaChartOptions = {
 };
 
 export const chartDescriptionText = s__(
-  'DORA4Metrics|The chart displays the median time between a merge request being merged and deployed to production environment(s) that are based on the %{linkStart}deployment_tier%{linkEnd} value.',
+  'DORA4Metrics|Median time an incident was open in a production environment over the given time period.',
 );
 
 export const chartDocumentationHref = helpPagePath('user/analytics/ci_cd_analytics.html', {
-  anchor: 'lead-time-charts',
+  anchor: 'time-to-restore-service-charts',
 });

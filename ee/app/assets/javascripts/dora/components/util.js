@@ -9,7 +9,6 @@ import {
   SECONDS_IN_DAY,
 } from '~/lib/utils/datetime_utility';
 import { median } from '~/lib/utils/number_utils';
-import { s__ } from '~/locale';
 
 /**
  * Converts the raw data fetched from the
@@ -79,7 +78,7 @@ const lerp = (valueAtT0, valueAtT1, t) => {
  * by the `apiDataToChartSeries` function above.
  * @returns {Array} A new series Array
  */
-export const buildNullSeriesForLeadTimeChart = (seriesData) => {
+export const buildNullSeries = (seriesData, nullSeriesTitle) => {
   const nonNullSeries = cloneDeep(seriesData[0]);
 
   // Loop through the series data and build a list of all the "gaps". A "gap" is
@@ -139,7 +138,7 @@ export const buildNullSeriesForLeadTimeChart = (seriesData) => {
   });
 
   const nullSeries = {
-    name: s__('DORA4Metrics|No merge requests were deployed during this period'),
+    name: nullSeriesTitle,
     data: nullSeriesData,
     lineStyle: {
       type: 'dashed',

@@ -3,9 +3,11 @@ import axios from '~/lib/utils/axios_utils';
 
 export const DEPLOYMENT_FREQUENCY_METRIC_TYPE = 'deployment_frequency';
 export const LEAD_TIME_FOR_CHANGES = 'lead_time_for_changes';
+export const TIME_TO_RESTORE_SERVICE = 'time_to_restore_service';
 export const ALL_METRIC_TYPES = Object.freeze([
   DEPLOYMENT_FREQUENCY_METRIC_TYPE,
   LEAD_TIME_FOR_CHANGES,
+  TIME_TO_RESTORE_SERVICE,
 ]);
 
 export const PROJECTS_DORA_METRICS_PATH = '/api/:version/projects/:id/dora/metrics';

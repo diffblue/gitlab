@@ -16,9 +16,10 @@ import {
   LAST_MONTH,
   LAST_90_DAYS,
   CHART_TITLE,
+  NO_DATA_MESSAGE,
 } from './static_data/lead_time';
 import {
-  buildNullSeriesForLeadTimeChart,
+  buildNullSeries,
   apiDataToChartSeries,
   seriesToMedianSeries,
   extractTimeSeriesTooltip,
@@ -85,7 +86,7 @@ export default {
             );
 
         const seriesData = apiDataToChartSeries(apiData, startDate, endDate, CHART_TITLE, null);
-        const nullSeries = buildNullSeriesForLeadTimeChart(seriesData);
+        const nullSeries = buildNullSeries(seriesData, this.$options.i18n.noMergeRequestsDeployed);
 
         const { data } = seriesData[0];
         const medianSeries = {
@@ -158,7 +159,7 @@ export default {
     flashMessage: s__('DORA4Metrics|Something went wrong while getting lead time data.'),
     chartHeaderText: CHART_TITLE,
     medianLeadTime: CHART_TITLE,
-    noMergeRequestsDeployed: s__('DORA4Metrics|No merge requests were deployed during this period'),
+    noMergeRequestsDeployed: NO_DATA_MESSAGE,
   },
 };
 </script>
