@@ -663,10 +663,10 @@ for how to proceed.
   ```
 
 - After upgrading to 14.3, ensure that all the `MigrateMergeRequestDiffCommitUsers` background
-  migration jobs have completed before continuing with upgrading to GitLab 14.5, or above.
+  migration jobs have completed before continuing with upgrading to GitLab 14.5 or later.
   This is especially important if your GitLab instance has a large
   `merge_request_diff_commits` table. Any pending
-  `MigrateMergeRequestDiffCommitUsers` background migration jobs will be
+  `MigrateMergeRequestDiffCommitUsers` background migration jobs are
   foregrounded in GitLab 14.5, and may take a long time to complete.
   You can check the count of pending jobs for
   `MigrateMergeRequestDiffCommitUsers` by using the PostgreSQL console (or `sudo
