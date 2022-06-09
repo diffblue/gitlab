@@ -43,7 +43,7 @@ export default {
 </script>
 <template>
   <div>
-    <div class="gl-display-flex gl-justify-content-space-between gl-font-weight-bold gl-my-3">
+    <div class="gl-display-flex gl-justify-content-space-between gl-font-weight-bold gl-mb-3">
       <div class="js-selected-plan" data-qa-selector="selected_plan">
         {{ sprintf($options.i18n.selectedPlanText, { selectedPlanText }) }}
         <span v-if="usersPresent" class="js-number-of-users" data-qa-selector="number_of_users">{{
@@ -70,8 +70,8 @@ export default {
       }}
     </div>
     <div>
-      <div class="border-bottom gl-mt-3 gl-mb-3"></div>
-      <div class="gl-display-flex gl-justify-content-space-between gl-text-gray-500">
+      <div class="gl-border-b-1 gl-border-b-gray-100 gl-border-b-solid gl-my-5"></div>
+      <div class="gl-display-flex gl-justify-content-space-between gl-text-gray-500 gl-mb-2">
         <div>{{ $options.i18n.subtotal }}</div>
         <div class="js-total-ex-vat">{{ formatAmount(totalExVat, usersPresent) }}</div>
       </div>
@@ -93,7 +93,7 @@ export default {
         <div class="js-vat">{{ taxAmount }}</div>
       </div>
     </div>
-    <div class="gl-border-b-1 gl-border-b-gray-100 gl-border-b-solid gl-mt-3 gl-mb-3"></div>
+    <div class="gl-border-b-1 gl-border-b-gray-100 gl-border-b-solid gl-my-5"></div>
     <div class="gl-display-flex gl-justify-content-space-between gl-font-lg gl-font-weight-bold">
       <div>{{ $options.i18n.total }}</div>
       <div class="js-total-amount" data-qa-selector="total_amount">

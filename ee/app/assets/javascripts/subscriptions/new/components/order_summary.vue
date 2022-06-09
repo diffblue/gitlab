@@ -52,23 +52,22 @@ export default {
     <div class="gl-lg-display-none">
       <h4
         v-gl-collapse-toggle.summary-details
-        class="gl-display-flex gl-justify-content-space-between gl-font-lg gl-mt-0 gl-mb-0"
-        :class="{ 'gl-mb-6': summaryDetailsAreVisible }"
+        class="gl-display-flex gl-justify-content-space-between gl-align-items-center gl-font-lg gl-my-0"
       >
         <div class="gl-display-flex gl-align-items-center">
-          <gl-icon v-if="summaryDetailsAreVisible" name="chevron-down" />
-          <gl-icon v-else name="chevron-right" />
-          <span>{{ titleWithName }}</span>
+          <gl-icon v-if="summaryDetailsAreVisible" name="chevron-down" class="gl-flex-shrink-0" />
+          <gl-icon v-else name="chevron-right" class="gl-flex-shrink-0" />
+          <span class="gl-ml-2">{{ titleWithName }}</span>
         </div>
         <span class="gl-ml-3">{{ formatAmount(totalAmount, usersPresent) }}</span>
       </h4>
       <gl-collapse id="summary-details" v-model="summaryDetailsAreVisible">
-        <summary-details />
+        <summary-details class="gl-mt-6" />
       </gl-collapse>
     </div>
     <div class="gl-display-none gl-lg-display-block" data-qa-selector="order_summary">
-      <h4 class="gl-mt-0 gl-mb-6" data-qa-selector="title">{{ titleWithName }}</h4>
-      <summary-details />
+      <h4 class="gl-my-0 gl-font-lg" data-qa-selector="title">{{ titleWithName }}</h4>
+      <summary-details class="gl-mt-6" />
     </div>
   </gl-card>
 </template>
