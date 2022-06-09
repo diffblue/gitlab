@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe Ci::Sources::Project do
   describe 'Relations' do
     it { is_expected.to belong_to(:pipeline).required }
-    it { is_expected.to belong_to(:source_project).required }
+    it { is_expected.to belong_to(:source_project).required.class_name('::Project') }
   end
 
   describe 'Validations' do
