@@ -3413,4 +3413,54 @@ RSpec.describe Project do
                         paid_small_active_project, paid_small_inactive_project, paid_large_inactive_project)
     end
   end
+
+  describe '#security_training_available?' do
+    let(:namespace) { build(:namespace) }
+    let(:project) { build(:project, namespace: namespace) }
+
+    subject { project.security_training_available? }
+
+    context 'when check_namespace_plan application setting is true' do
+      before do
+        stub_application_setting(check_namespace_plan: true)
+        allow(namespace).to receive(:plans) { [plan_license] }
+      end
+
+      context 'when plan is not ultimate' do
+        let(:plan_license) { build(:starter_plan) }
+
+        it { is_expected.to eq false }
+      end
+
+      context 'when plan is ultimate' do
+        let(:plan_license) { build(:ultimate_plan) }
+
+        context 'when security_training feature is not available' do
+          it { is_expected.to eq false }
+        end
+
+        context 'when security_training feature is available' do
+          before do
+            stub_licensed_features(security_training: true)
+          end
+
+          it { is_expected.to eq true }
+        end
+      end
+    end
+
+    context 'when check_namespace_plan application setting is false' do
+      context 'when security_training feature is not available' do
+        it { is_expected.to eq false }
+      end
+
+      context 'when security_training feature is available' do
+        before do
+          stub_licensed_features(security_training: true)
+        end
+
+        it { is_expected.to eq true }
+      end
+    end
+  end
 end

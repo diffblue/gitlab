@@ -205,6 +205,7 @@ module GitlabSubscriptions
       security_dashboard
       security_on_demand_scans
       security_orchestration_policies
+      security_training
       ssh_key_expiration_policy
       stale_runner_cleanup_for_namespace
       status_page
