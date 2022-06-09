@@ -2217,12 +2217,25 @@ RSpec.describe Project do
         end
 
         it 'does trigger mirror update' do
+          expect(RepositoryUpdateMirrorWorker).to receive(:with_status).and_return(RepositoryUpdateMirrorWorker)
           expect(RepositoryUpdateMirrorWorker).to receive(:perform_async)
           expect(Gitlab::JiraImport::Stage::StartImportWorker).not_to receive(:perform_async)
           expect(project.mirror).to be true
           expect(project.jira_import?).to be true
 
           project.add_import_job
+        end
+
+        context 'with :use_status_for_repository_update_mirror feature flag disabled' do
+          before do
+            stub_feature_flags(use_status_for_repository_update_mirror: false)
+          end
+
+          it 'does not define status' do
+            expect(RepositoryUpdateMirrorWorker).not_to receive(:with_status)
+
+            project.add_import_job
+          end
         end
       end
     end
@@ -2682,6 +2695,7 @@ RSpec.describe Project do
         it 'schedules RepositoryUpdateMirrorWorker' do
           project = create(:project, :mirror, :repository)
 
+          expect(RepositoryUpdateMirrorWorker).to receive(:with_status).and_return(RepositoryUpdateMirrorWorker)
           expect(RepositoryUpdateMirrorWorker).to receive(:perform_async).with(project.id).and_return(import_jid)
           expect(project.add_import_job).to eq(import_jid)
         end
