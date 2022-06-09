@@ -36,7 +36,7 @@ function factory() {
 
 const findCommentTextarea = () => wrapper.findByTestId('comment-textarea');
 const findSubmitButton = () => wrapper.findByTestId('submit-review-button');
-const findForm = () => wrapper.findByTestId('submit-form');
+const findForm = () => wrapper.findByTestId('submit-gl-form');
 
 describe('Batch comments submit dropdown', () => {
   afterEach(() => {
@@ -48,7 +48,7 @@ describe('Batch comments submit dropdown', () => {
 
     findCommentTextarea().setValue('Hello world');
 
-    await findForm().trigger('submit');
+    await findForm().vm.$emit('submit', { preventDefault: jest.fn() });
 
     expect(publishReview).toHaveBeenCalledWith(expect.anything(), {
       noteable_type: 'merge_request',
@@ -62,7 +62,7 @@ describe('Batch comments submit dropdown', () => {
 
     findCommentTextarea().setValue('Hello world');
 
-    await findForm().trigger('submit');
+    await findForm().vm.$emit('submit', { preventDefault: jest.fn() });
 
     expect(findSubmitButton().props('loading')).toBe(true);
   });
