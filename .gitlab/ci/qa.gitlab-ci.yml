@@ -68,6 +68,8 @@ update-qa-cache:
     - echo "Cache has been updated and ready to be uploaded."
 
 populate-qa-tests-var:
+  extends:
+    - .qa:rules:package-and-qa
   image: ${GITLAB_DEPENDENCY_PROXY}ruby:2.7-alpine
   stage: prepare
   script:
@@ -83,8 +85,6 @@ populate-qa-tests-var:
       - ${CHANGES_FILE}
       - ${ONLY_QA_CHANGES_FILE}
       - qa_tests_var.env
-  extends:
-    - .qa:rules:package-and-qa
   variables:
     CHANGES_FILE: tmp/changed_files.txt
     ONLY_QA_CHANGES_FILE: tmp/qa_only_changed_files.txt
