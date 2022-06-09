@@ -72,6 +72,12 @@ RSpec.describe Users::DeactivateDormantUsersWorker do
         expect(human_user.reload.state).to eq('blocked')
         expect(service_user.reload.state).to eq('blocked')
       end
+
+      it 'does not deactivate recently created users' do
+        worker.perform
+
+        expect(inactive_recently_created.reload.state).to eq('active')
+      end
     end
 
     context 'when automatic deactivation of dormant users is disabled' do
