@@ -36,8 +36,8 @@ module ExceedQueryLimitHelpers
     def reject_groups_with_different_parameters(suffs)
       return suffs if suffs.size != 2
 
-      a, b = suffs.values
-      return {} if a == b.reverse && a.include?(0)
+      counts_a, counts_b = suffs.values
+      return {} if counts_a == counts_b.reverse && counts_a.include?(0)
 
       suffs
     end
