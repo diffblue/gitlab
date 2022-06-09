@@ -446,9 +446,18 @@ NOTE:
 Specific information that follow related to Ruby and Git versions do not apply to [Omnibus installations](https://docs.gitlab.com/omnibus/)
 and [Helm Chart deployments](https://docs.gitlab.com/charts/). They come with appropriate Ruby and Git versions and are not using system binaries for Ruby and Git. There is no need to install Ruby or Git when utilizing these two approaches.
 
+### 15.1.0
+
+- If you run external PostgreSQL, particularly AWS RDS,
+  [check you have a PostgreSQL bug fix](#postgresql-segmentation-fault-issue)
+  to avoid the database crashing.
+
 ### 15.0.0
 
 - Elasticsearch 6.8 [is no longer supported](../integration/elasticsearch.md#version-requirements). Before you upgrade to GitLab 15.0, [update Elasticsearch to any 7.x version](../integration/elasticsearch.md#upgrade-to-a-new-elasticsearch-major-version).
+- If you run external PostgreSQL, particularly AWS RDS,
+  [check you have a PostgreSQL bug fix](#postgresql-segmentation-fault-issue)
+  to avoid the database crashing.
 
 ### 14.10.0
 
@@ -456,6 +465,9 @@ and [Helm Chart deployments](https://docs.gitlab.com/charts/). They come with ap
   The upgrade to GitLab 14.10 executes a [concurrent index drop](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/84308) of unneeded
   entries from the `ci_job_artifacts` database table. This could potentially run for multiple minutes, especially if the table has a lot of
   traffic and the migration is unable to acquire a lock. It is advised to let this process finish as restarting may result in data loss.
+- If you run external PostgreSQL, particularly AWS RDS,
+  [check you have a PostgreSQL bug fix](#postgresql-segmentation-fault-issue)
+  to avoid the database crashing.
 
 ### 14.9.0
 
@@ -496,6 +508,9 @@ and [Helm Chart deployments](https://docs.gitlab.com/charts/). They come with ap
     puts Gitlab::Database::BackgroundMigrationJob.mark_all_as_succeeded("ResetDuplicateCiRunnersTokenValuesOnProjects", job.arguments)
   end
   ```
+- If you run external PostgreSQL, particularly AWS RDS,
+  [check you have a PostgreSQL bug fix](#postgresql-segmentation-fault-issue)
+  to avoid the database crashing.
 
 ### 14.8.0
 
@@ -539,6 +554,9 @@ that may remain stuck permanently in a **pending** state.
   [batched migration](../user/admin_area/monitoring/background_migrations.md) named
   `BackfillNamespaceIdForNamespaceRoute`. You can [ignore](https://gitlab.com/gitlab-org/gitlab/-/issues/357822)
   this. Retry it after you upgrade to version 14.9.x.
+- If you run external PostgreSQL, particularly AWS RDS,
+  [check you have a PostgreSQL bug fix](#postgresql-segmentation-fault-issue)
+  to avoid the database crashing.
 
 ### 14.7.0
 
@@ -1026,6 +1044,20 @@ Users who were signed in before Maintenance mode was enabled will continue to be
 When Geo is enabled, LFS objects fail to be saved for imported or mirrored projects.
 
 [This bug](https://gitlab.com/gitlab-org/gitlab/-/issues/352368) was fixed in GitLab 14.8.0 and backported into 14.7.3.
+
+### PostgreSQL segmentation fault issue
+
+If you run GitLab with external PostgreSQL, particularly AWS RDS, ensure you upgrade PostgreSQL
+to patch levels to a minimnum of 12.10 or 13.3 before upgrading to GitLab 14.8 or later.
+
+[In 14.8](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/75511)
+for GitLab Enterprise Edition and [in 15.1](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/87983)
+for GitLab Community Edition a GitLab feature called Loose Foreign Keys was enabled.
+
+Since then, we have had reports of unplanned PostgreSQL restarts caused
+by a database engine bug that causes a segmentation fault.
+
+Read more [in the issue](https://gitlab.com/gitlab-org/gitlab/-/issues/364763).
 
 ## Miscellaneous
 
