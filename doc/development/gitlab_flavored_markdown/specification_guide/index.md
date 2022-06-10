@@ -907,12 +907,12 @@ Any exceptions or failures which occur when generating HTML are replaced with an
 
 ```yaml
 06_04_inlines_emphasis_and_strong_emphasis_1:
- canonical: |
-   <p><em>foo bar</em></p>
- static: |
-   <p data-sourcepos="1:1-1:9" dir="auto"><strong>foo bar</strong></p>
- wysiwyg: |
-   <p><strong>foo bar</strong></p>
+  canonical: |
+    <p><em>foo bar</em></p>
+  static: |
+    <p data-sourcepos="1:1-1:9" dir="auto"><strong>foo bar</strong></p>
+  wysiwyg: |
+    <p><strong>foo bar</strong></p>
 ```
 
 NOTE:
