@@ -8,6 +8,7 @@ module EE
   module Ci::JobArtifact
     include ::Gitlab::Utils::StrongMemoize
     extend ActiveSupport::Concern
+    extend ::Gitlab::Utils::Override
 
     SECURITY_REPORT_FILE_TYPES = %w[sast secret_detection dependency_scanning container_scanning cluster_image_scanning dast coverage_fuzzing api_fuzzing].freeze
 
@@ -80,7 +81,7 @@ module EE
 
       delegate :validate_schema?, to: :job
 
-      after_save :save_verification_details
+      skip_callback :commit, :after, :geo_create_event!, if: :store_after_commit?
     end
 
     class_methods do
@@ -98,6 +99,24 @@ module EE
       def verification_state_table_class
         ::Geo::JobArtifactState
       end
+    end
+
+    override :file_stored_after_transaction_hooks
+    def file_stored_after_transaction_hooks
+      super
+
+      is_being_created = previous_changes.key?(:id) && previous_changes[:id].first.nil?
+
+      geo_create_event! if is_being_created
+
+      save_verification_details
+    end
+
+    override :file_stored_in_transaction_hooks
+    def file_stored_in_transaction_hooks
+      super
+
+      save_verification_details
     end
 
     def job_artifact_state
