@@ -6,7 +6,7 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 
 # CI/CD analytics **(FREE)**
 
-Use the CI/CD analytics page to view pipeline success rates and duration, and the history of [DORA metrics](https://docs.gitlab.com/ee/user/analytics/#devops-research-and-assessment-dora-key-metrics) over time.
+Use the CI/CD analytics page to view pipeline success rates and duration, and the history of [DORA metrics](index.md#devops-research-and-assessment-dora-key-metrics) over time.
 
 ## Pipeline success and duration charts
 
@@ -44,7 +44,7 @@ frequency to the `production` environment. The environment must be part of the
 [production deployment tier](../../ci/environments/index.md#deployment-tier-of-environments)
 for its deployment information to appear on the graphs.
 
-  Deployment frequency is one of the four [DORA metrics](https://docs.gitlab.com/ee/user/analytics/#devops-research-and-assessment-dora-key-metrics) that DevOps teams use for measuring excellence in software delivery.
+  Deployment frequency is one of the four [DORA metrics](index.md#devops-research-and-assessment-dora-key-metrics) that DevOps teams use for measuring excellence in software delivery.
   
 The deployment frequency chart is available for groups and projects.
 
@@ -68,7 +68,7 @@ merge requests to be deployed to a production environment. This chart is availab
 - For time periods in which no merge requests were deployed, the charts render a
   red, dashed line.
 
-  lead time for changes is one of the four [DORA metrics](https://docs.gitlab.com/ee/user/analytics/#devops-research-and-assessment-dora-key-metrics) that DevOps teams use for measuring excellence in software delivery.
+  lead time for changes is one of the four [DORA metrics](index.md#devops-research-and-assessment-dora-key-metrics) that DevOps teams use for measuring excellence in software delivery.
 
 To view the lead time for changes chart:
 
@@ -84,7 +84,7 @@ To view the lead time for changes chart:
 
 The time to restore service chart shows information about the median time an incident was open in a production environment. This chart is available for groups and projects.
 
-Time to restore service is one of the four [DORA metrics](https://docs.gitlab.com/ee/user/analytics/#devops-research-and-assessment-dora-key-metrics) that DevOps teams use for measuring excellence in software delivery.
+Time to restore service is one of the four [DORA metrics](index.md#devops-research-and-assessment-dora-key-metrics) that DevOps teams use for measuring excellence in software delivery.
 
 To view the time to restore service chart:
 
