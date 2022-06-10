@@ -151,11 +151,12 @@ To remove all resources:
       - init
       - validate
       - build
+      - test
       - deploy
       - cleanup
 
     destroy:
-      extends: .destroy
+      extends: .terraform:destroy
       needs: []
     ```
 
