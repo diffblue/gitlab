@@ -3,6 +3,10 @@
 module EE
   module NamespaceUserCapReachedAlertHelper
     def display_namespace_user_cap_reached_alert?(namespace)
+      # On pages that are not under a namespace like the group creation page,
+      # we only receive a non-persisted Namespace record as default.
+      return false unless namespace&.persisted?
+
       root_namespace = namespace.root_ancestor
 
       return false unless root_namespace.user_cap_available?
