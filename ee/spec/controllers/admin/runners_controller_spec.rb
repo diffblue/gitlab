@@ -3,16 +3,24 @@
 require 'spec_helper'
 
 RSpec.describe Admin::RunnersController do
+  let_it_be(:runner) { create(:ci_runner) }
   let_it_be(:admin) { create(:admin) }
 
   before do
     sign_in(admin)
   end
 
-  describe '#show' do
-    let(:runner) { create(:ci_runner) }
+  describe '#index' do
+    it 'enables runner_upgrade_management licensed feature' do
+      is_expected.to receive(:push_licensed_feature).with(:runner_upgrade_management)
 
-    it 'enables runner_maintenance_note licensed feature' do
+      get :index
+    end
+  end
+
+  describe '#show' do
+    it 'enables runner_upgrade_management, runner_maintenance_note licensed features' do
+      is_expected.to receive(:push_licensed_feature).with(:runner_upgrade_management)
       is_expected.to receive(:push_licensed_feature).with(:runner_maintenance_note)
 
       get :show, params: { id: runner }
@@ -20,8 +28,6 @@ RSpec.describe Admin::RunnersController do
   end
 
   describe '#edit' do
-    let(:runner) { create(:ci_runner) }
-
     it 'enables runner_maintenance_note licensed feature' do
       is_expected.to receive(:push_licensed_feature).with(:runner_maintenance_note)
 
