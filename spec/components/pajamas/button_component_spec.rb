@@ -218,11 +218,15 @@ RSpec.describe Pajamas::ButtonComponent, type: :component do
         end
       end
 
-      context 'when set to reset' do
-        let(:options) { { type: :reset } }
+      context 'when set to known type' do
+        where(:type) { [:button, :reset, :submit] }
 
-        it 'has type "reset"' do
-          expect(rendered_component).to have_css "button[type='reset']"
+        let(:options) { { type: type } }
+
+        with_them do
+          it 'has the correct type' do
+            expect(rendered_component).to have_css "button[type='#{type}']"
+          end
         end
       end
 
