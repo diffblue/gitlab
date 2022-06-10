@@ -203,6 +203,12 @@ module EE
               null: true,
               description: 'Security training URLs for the enabled training providers of the project.',
               resolver: ::Resolvers::SecurityTrainingUrlsResolver
+
+        field :vulnerability_images,
+              type: ::Types::Vulnerabilities::ContainerImageType.connection_type,
+              null: true,
+              description: 'Container images reported on the project vulnerabilities.',
+              resolver: ::Resolvers::Vulnerabilities::ContainerImagesResolver
       end
 
       def api_fuzzing_ci_configuration

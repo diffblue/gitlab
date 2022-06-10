@@ -575,7 +575,11 @@ FactoryBot.define do
     end
 
     trait :with_cluster_image_scanning_scanning_metadata do
-      after(:build) do |finding, _|
+      transient do
+        location_image { "alpine:3.7" }
+      end
+
+      after(:build) do |finding, evaluator|
         finding.report_type = "cluster_image_scanning"
         finding.name = "CVE-2017-16997 in libc"
         finding.metadata_version = "2.3"
@@ -587,7 +591,7 @@ FactoryBot.define do
             "version": "2.24-11+deb9u3"
           },
           "operating_system": "alpine 3.7",
-          "image": "alpine:3.7",
+          "image": evaluator.location_image,
           "kubernetes_resource": {
             "cluster_id": "1",
             "agent_id": "46357"

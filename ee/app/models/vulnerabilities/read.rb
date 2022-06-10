@@ -62,5 +62,29 @@ module Vulnerabilities
         order_severity_desc
       end
     end
+
+    def self.container_images
+      # This method should be used only with pagination. When used without a specific limit, it might try to process an
+      # unreasonable amount of records leading to a statement timeout.
+
+      # We are enforcing keyset order here to make sure `primary_key` will not be automatically applied when returning
+      # `ordered_items` from Gitlab::Graphql::Pagination::Keyset::Connection in GraphQL API. `distinct` option must be
+      # set to true in `Gitlab::Pagination::Keyset::ColumnOrderDefinition` to return the collection in proper order.
+
+      keyset_order = Gitlab::Pagination::Keyset::Order.build([
+        Gitlab::Pagination::Keyset::ColumnOrderDefinition.new(
+          attribute_name: :location_image,
+          column_expression: arel_table[:location_image],
+          order_expression: arel_table[:location_image].asc,
+          distinct: true
+        )
+      ])
+
+      where(report_type: [:container_scanning, :cluster_image_scanning])
+        .where.not(location_image: nil)
+        .reorder(keyset_order)
+        .select(:location_image)
+        .distinct
+    end
   end
 end
