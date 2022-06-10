@@ -21,7 +21,7 @@ RSpec.describe Milestones::DestroyService do
       let!(:merge_request) { create(:merge_request, source_project: project, milestone: milestone) }
 
       it 'manually queues MergeRequests::SyncCodeOwnerApprovalRulesWorker jobs' do
-        expect(::MergeRequests::SyncCodeOwnerApprovalRulesWorker).to receive(:perform_async)
+        expect(::MergeRequests::SyncCodeOwnerApprovalRulesWorker).to receive(:perform_async).with(merge_request.id)
 
         service.execute(milestone)
       end
