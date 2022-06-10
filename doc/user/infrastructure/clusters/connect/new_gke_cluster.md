@@ -70,9 +70,6 @@ To create a GitLab agent for Kubernetes:
 
 To set up your project to communicate to GCP and the GitLab API:
 
-1. Create a [GitLab personal access token](../../../profile/personal_access_tokens.md) with
-   `api` scope. The Terraform script uses it to connect the cluster to your GitLab group. Take note of the generated token. You will
-   need it when you [configure your project](#configure-your-project).
 1. To authenticate GCP with GitLab, create a [GCP service account](https://cloud.google.com/docs/authentication/getting-started)
 with following roles: `Compute Network Viewer`, `Kubernetes Engine Admin`, `Service Account User`, and `Service Account Admin`. Both User and Admin
 service accounts are necessary. The User role impersonates the [default service account](https://cloud.google.com/compute/docs/access/service-accounts#default_service_account)
