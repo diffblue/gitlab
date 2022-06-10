@@ -26,7 +26,7 @@ module Gitlab
             query,
             page: (page || 1).to_i,
             per: per_page,
-            options: { count_only: count_only },
+            options: base_options.merge(count_only: count_only),
             preload_method: preload_method
           )
         end
@@ -41,21 +41,14 @@ module Gitlab
             query,
             page: (page || 1).to_i,
             per: per_page,
-            options: { count_only: count_only }
+            options: base_options.merge(count_only: count_only)
           )
         end
       end
 
       def notes(count_only: false)
         strong_memoize(memoize_key(:notes, count_only: count_only)) do
-          opt = {
-            project_ids: limit_project_ids,
-            current_user: @current_user,
-            public_and_internal_projects: @public_and_internal_projects,
-            count_only: count_only
-          }
-
-          Note.elastic_search(query, options: opt)
+          Note.elastic_search(query, options: base_options.merge(count_only: count_only))
         end
       end
 
@@ -69,7 +62,7 @@ module Gitlab
             page: (page || 1).to_i,
             per_page: per_page,
             preload_method: preload_method,
-            options: { count_only: count_only }
+            options: base_options.merge(count_only: count_only)
           )
         end
       end

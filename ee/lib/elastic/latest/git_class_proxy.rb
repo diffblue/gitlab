@@ -37,9 +37,7 @@ module Elastic
       end
 
       def blob_aggregations
-        return @aggregations if defined?(@aggregations) # rubocop:disable Gitlab/ModuleWithInstanceVariables
-
-        []
+        @aggregations # rubocop:disable Gitlab/ModuleWithInstanceVariables
       end
 
       private
@@ -261,7 +259,7 @@ module Elastic
         )[type.pluralize.to_sym][:results]
 
         # Retrieve aggregations for blob type queries
-        @aggregations ||= ::Gitlab::Search::AggregationParser.call(response.response.aggregations) if include_aggregations?(type, options[:count_only], options[:current_user]) # rubocop:disable Gitlab/ModuleWithInstanceVariables
+        @aggregations = ::Gitlab::Search::AggregationParser.call(response.response.aggregations) # rubocop:disable Gitlab/ModuleWithInstanceVariables
 
         items, total_count = yield_each_search_result(response, type, preload_method, &blk)
 
