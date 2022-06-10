@@ -61,7 +61,7 @@ Some of these services have their own environment variables to override the log 
 | GitLab Export        | `INFO`    | `EXPORT_DEBUG`       |
 | GitLab Geo           | `INFO`    |                      |
 | GitLab Import        | `INFO`    | `IMPORT_DEBUG`       |
-| GitLab QA Runtime    | `ERROR`   | `QA_DEBUG`           |
+| GitLab QA Runtime    | `INFO`    | `QA_LOG_LEVEL`       |
 | Google APIs          | `INFO`    |                      |
 | Rack Timeout         | `ERROR`   |                      |
 | Sidekiq (server)     | `INFO`    |                      |
