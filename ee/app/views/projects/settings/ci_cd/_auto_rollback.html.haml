@@ -3,7 +3,7 @@
     .settings-header
       %h4.settings-title.js-settings-toggle.js-settings-toggle-trigger-only
         = _("Automatic deployment rollbacks")
-      %button.gl-button.btn-default.btn.js-settings-toggle{ type: 'button' }
+      = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
         = expanded ? _('Collapse') : _('Expand')
       %p
         = s_('AutoRollback|Automatically roll back to the last successful deployment when a critical problem is detected.')
