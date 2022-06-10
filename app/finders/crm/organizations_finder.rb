@@ -1,15 +1,15 @@
 # frozen_string_literal: true
 
-# Finder for retrieving contacts scoped to a group
+# Finder for retrieving organizations scoped to a group
 #
 # Arguments:
 #   current_user - user performing the action. Must have the correct permission level for the group.
 #   params:
 #     group: Group, required
 #     search: String, optional
-#     state: CustomerRelations::ContactStateEnum, optional
+#     state: CustomerRelations::OrganizationStateEnum, optional
 module Crm
-  class ContactsFinder
+  class OrganizationsFinder
     include Gitlab::Allowable
     include Gitlab::Utils::StrongMemoize
 
@@ -21,12 +21,12 @@ module Crm
     end
 
     def execute
-      return CustomerRelations::Contact.none unless root_group
+      return CustomerRelations::Organization.none unless root_group
 
-      contacts = root_group.contacts
-      contacts = by_state(contacts)
-      contacts = by_search(contacts)
-      contacts.sort_by_name
+      organizations = root_group.organizations
+      organizations = by_search(organizations)
+      organizations = by_state(organizations)
+      organizations.sort_by_name
     end
 
     private
@@ -35,22 +35,22 @@ module Crm
       strong_memoize(:root_group) do
         group = params[:group]&.root_ancestor
 
-        next unless can?(@current_user, :read_crm_contact, group)
+        next unless can?(@current_user, :read_crm_organization, group)
 
         group
       end
     end
 
-    def by_search(contacts)
-      return contacts unless search?
+    def by_search(organizations)
+      return organizations unless search?
 
-      contacts.search(params[:search])
+      organizations.search(params[:search])
     end
 
-    def by_state(contacts)
-      return contacts unless state?
+    def by_state(organizations)
+      return organizations unless state?
 
-      contacts.search_by_state(params[:state])
+      organizations.search_by_state(params[:state])
     end
 
     def search?
