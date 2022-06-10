@@ -74,4 +74,26 @@ RSpec.describe 'admin/application_settings/general.html.haml' do
       expect(rendered).to have_css('#js-add-license-toggle')
     end
   end
+
+  describe 'sign-up restrictions' do
+    it 'does not render complexity setting attributes' do
+      render
+
+      expect(rendered).to match 'id="js-signup-form"'
+      expect(rendered).not_to match 'data-password-lowercase-required'
+    end
+
+    context 'when password_complexity license is available' do
+      before do
+        stub_licensed_features(password_complexity: true)
+      end
+
+      it 'renders complexity setting attributes' do
+        render
+
+        expect(rendered).to match ' data-password-lowercase-required='
+        expect(rendered).to match ' data-password-number-required='
+      end
+    end
+  end
 end

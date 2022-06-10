@@ -95,7 +95,9 @@ module EE
     end
 
     def self.possible_licensed_attributes
-      repository_mirror_attributes + merge_request_appovers_rules_attributes +
+      repository_mirror_attributes +
+      merge_request_appovers_rules_attributes +
+      password_complexity_attributes +
        %i[
         email_additional_text
         file_template_project_id
@@ -122,9 +124,30 @@ module EE
       ]
     end
 
+    def self.password_complexity_attributes
+      %i[
+        password_number_required
+        password_symbol_required
+        password_uppercase_required
+        password_lowercase_required
+      ]
+    end
+
     override :registration_features_can_be_prompted?
     def registration_features_can_be_prompted?
       !::Gitlab::CurrentSettings.usage_ping_enabled? && !License.current.present?
+    end
+
+    override :signup_form_data
+    def signup_form_data
+      return super unless ::License.feature_available?(:password_complexity)
+
+      super.merge({
+        password_uppercase_required: @application_setting[:password_uppercase_required].to_s,
+        password_lowercase_required: @application_setting[:password_lowercase_required].to_s,
+        password_number_required: @application_setting[:password_number_required].to_s,
+        password_symbol_required: @application_setting[:password_symbol_required].to_s
+      })
     end
   end
 end

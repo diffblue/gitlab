@@ -286,4 +286,19 @@ RSpec.describe API::Settings, 'EE Settings' do
 
     it_behaves_like 'settings for licensed features'
   end
+
+  context 'password complexity settings' do
+    let(:settings) do
+      {
+        password_number_required: true,
+        password_symbol_required: true,
+        password_uppercase_required: true,
+        password_lowercase_required: true
+      }
+    end
+
+    let(:feature) { :password_complexity }
+
+    it_behaves_like 'settings for licensed features'
+  end
 end

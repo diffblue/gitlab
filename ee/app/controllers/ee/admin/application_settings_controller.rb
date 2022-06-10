@@ -11,6 +11,7 @@ module EE
         before_action :elasticsearch_index_settings, only: [:advanced_search]
         before_action :elasticsearch_warn_if_not_using_aliases, only: [:advanced_search]
         before_action :search_error_if_version_incompatible, only: [:advanced_search]
+        before_action :push_password_complexity_feature, only: [:general]
 
         feature_category :provision, [:seat_link_payload]
         feature_category :source_code_management, [:templates]
@@ -82,6 +83,10 @@ module EE
           attrs += EE::ApplicationSettingsHelper.merge_request_appovers_rules_attributes
         end
 
+        if License.feature_available?(:password_complexity)
+          attrs += EE::ApplicationSettingsHelper.password_complexity_attributes
+        end
+
         if License.feature_available?(:elastic_search)
           attrs += [
             elasticsearch_shards: {},
@@ -117,6 +122,10 @@ module EE
       override :valid_setting_panels
       def valid_setting_panels
         super + EE_VALID_SETTING_PANELS
+      end
+
+      def push_password_complexity_feature
+        push_licensed_feature(:password_complexity)
       end
     end
   end
