@@ -51,5 +51,5 @@
 
         .row
           .form-group.col-sm-12.gl-mb-0
-            = button_tag class: %w[btn gl-button btn-confirm gl-w-full!] do
-              = _('Create group')
+            = render Pajamas::ButtonComponent.new(variant: :confirm, button_options: { type: 'submit', class: 'gl-w-full' }) do
+              = _('Create group') 
