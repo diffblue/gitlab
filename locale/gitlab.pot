@@ -25698,9 +25698,6 @@ msgstr ""
 msgid "No runner executable"
 msgstr ""
 
-msgid "No runners found"
-msgstr ""
-
 msgid "No schedules"
 msgstr ""
 
@@ -32788,6 +32785,9 @@ msgstr ""
 msgid "Runners|Download latest binary"
 msgstr ""
 
+msgid "Runners|Edit your search and try again"
+msgstr ""
+
 msgid "Runners|Enable stale runner cleanup"
 msgstr ""
 
@@ -32798,6 +32798,9 @@ msgid "Runners|Enter the number of seconds. This timeout takes precedence over l
 msgstr ""
 
 msgid "Runners|Executor"
+msgstr ""
+
+msgid "Runners|Get started with runners"
 msgstr ""
 
 msgid "Runners|Group"
@@ -32846,6 +32849,9 @@ msgid "Runners|New group runners view"
 msgstr ""
 
 msgid "Runners|New registration token generated!"
+msgstr ""
+
+msgid "Runners|No results found"
 msgstr ""
 
 msgid "Runners|No spot. Default choice for Windows Shell executor."
@@ -32989,6 +32995,9 @@ msgid "Runners|Runner unassigned from project."
 msgstr ""
 
 msgid "Runners|Runners"
+msgstr ""
+
+msgid "Runners|Runners are the agents that run your CI/CD jobs. Follow the %{linkStart}installation and registration instructions%{linkEnd} to set up a runner."
 msgstr ""
 
 msgid "Runners|Runs untagged jobs"
