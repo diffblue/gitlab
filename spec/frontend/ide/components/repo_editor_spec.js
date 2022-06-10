@@ -1,3 +1,4 @@
+import { GlTab } from '@gitlab/ui';
 import MockAdapter from 'axios-mock-adapter';
 import { editor as monacoEditor, Range } from 'monaco-editor';
 import Vue, { nextTick } from 'vue';
@@ -116,6 +117,9 @@ describe('RepoEditor', () => {
       mocks: {
         ContentViewer,
       },
+      stubs: {
+        GlTab,
+      },
     });
     await waitForPromises();
     vm = wrapper.vm;
@@ -125,7 +129,7 @@ describe('RepoEditor', () => {
   };
 
   const findEditor = () => wrapper.find('[data-testid="editor-container"]');
-  const findTabs = () => wrapper.findAll('.ide-mode-tabs .nav-links li');
+  const findTabs = () => wrapper.findAllComponents(GlTab);
   const findPreviewTab = () => wrapper.find('[data-testid="preview-tab"]');
 
   beforeEach(() => {
@@ -206,7 +210,7 @@ describe('RepoEditor', () => {
       });
 
       it('renders markdown for tempFile', async () => {
-        findPreviewTab().trigger('click');
+        findPreviewTab().vm.$emit('click');
         await waitForPromises();
         expect(wrapper.find(ContentViewer).html()).toContain(dummyFile.text.content);
       });
