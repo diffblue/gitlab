@@ -76,6 +76,41 @@ RSpec.shared_examples 'timebox chart' do |timebox_type|
       ])
     end
 
+    context 'when events have the same timestamp for created_at', :aggregate_failures do
+      let_it_be(:event1) { create(:"resource_#{timebox_type}_event", issue: issues[0], "#{timebox_type}" => another_timebox, action: :add, created_at: timebox_start_date) }
+      let_it_be(:event2) { create(:"resource_#{timebox_type}_event", issue: issues[0], "#{timebox_type}" => another_timebox, action: :remove, created_at: timebox_start_date) }
+      let_it_be(:event3) { create(:"resource_#{timebox_type}_event", issue: issues[0], "#{timebox_type}" => timebox, action: :add, created_at: timebox_start_date) }
+
+      subject { described_class.new(timebox, scoped_projects) }
+
+      it 'fetches events ordered by created_at and id' do
+        query = subject.send(:resource_events_query)
+        result = subject.send(:resource_events)
+
+        expect(query).to include("ORDER BY created_at, id")
+        expect(result.pluck("id")).to eq([event1.id, event2.id, event3.id])
+      end
+
+      it 'handles events for the same issue with exactly the same timestamp' do
+        expect(response.success?).to eq(true)
+        expect(response.payload[:stats]).to eq({
+          complete: { count: 0, weight: 0 },
+          incomplete: { count: 1, weight: 0 },
+          total: { count: 1, weight: 0 }
+        })
+
+        expect(response.payload[:burnup_time_series]).to eq([
+          {
+            date: timebox_start_date,
+            scope_count: 1,
+            scope_weight: 0,
+            completed_count: 0,
+            completed_weight: 0
+          }
+        ])
+      end
+    end
+
     it 'updates counts and weight when the milestone is added or removed' do
       # Add milestone to an open issue with no weight.
       create(:"resource_#{timebox_type}_event", issue: issues[0], "#{timebox_type}" => timebox, action: :add, created_at: timebox_start_date + 4.days + 3.hours)
