@@ -30210,9 +30210,13 @@ CREATE INDEX tmp_index_members_on_state ON members USING btree (state) WHERE (st
 
 CREATE INDEX tmp_index_merge_requests_draft_and_status ON merge_requests USING btree (id) WHERE ((draft = false) AND (state_id = 1) AND ((title)::text ~* '^(\[draft\]|\(draft\)|draft:|draft|\[WIP\]|WIP:|WIP)'::text));
 
+CREATE INDEX tmp_index_migrated_container_registries ON container_repositories USING btree (project_id) WHERE ((migration_state = 'import_done'::text) OR (created_at >= '2022-01-23 00:00:00'::timestamp without time zone));
+
 CREATE UNIQUE INDEX tmp_index_on_tmp_project_id_on_namespaces ON namespaces USING btree (tmp_project_id);
 
 CREATE INDEX tmp_index_on_vulnerabilities_non_dismissed ON vulnerabilities USING btree (id) WHERE (state <> 2);
+
+CREATE INDEX tmp_index_project_statistics_cont_registry_size ON project_statistics USING btree (project_id) WHERE (container_registry_size = 0);
 
 CREATE UNIQUE INDEX uniq_pkgs_deb_grp_architectures_on_distribution_id_and_name ON packages_debian_group_architectures USING btree (distribution_id, name);
 
