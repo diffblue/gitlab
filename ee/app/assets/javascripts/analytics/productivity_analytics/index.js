@@ -123,14 +123,14 @@ export default () => {
         const labelsEndpoint = getLabelsEndpoint(groupNamespace, projectNamespace);
         const milestonesEndpoint = getMilestonesEndpoint(groupNamespace, projectNamespace);
 
-        filteredSearchInput.dataset.groupId = groupId;
+        filteredSearchInput.setAttribute('data-group-id', groupId);
 
         if (projectId) {
-          filteredSearchInput.dataset.projectId = projectId;
+          filteredSearchInput.setAttribute('data-project-id', projectId);
         }
 
-        filteredSearchInput.dataset.labelsEndpoint = labelsEndpoint;
-        filteredSearchInput.dataset.milestonesEndpoint = milestonesEndpoint;
+        filteredSearchInput.setAttribute('data-labels-endpoint', labelsEndpoint);
+        filteredSearchInput.setAttribute('data-milestones-endpoint', milestonesEndpoint);
         filterManager = new FilteredSearchProductivityAnalytics({ isGroup: false });
         filterManager.setup();
       },
