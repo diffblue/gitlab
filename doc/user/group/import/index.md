@@ -14,7 +14,7 @@ On self-managed GitLab, by default this feature is available. To hide the featur
 [disable the feature flag](../../../administration/feature_flags.md) named `bulk_import`. On GitLab.com, this feature is
 available.
 
-You can migrate your existing top-level groups to any of the following:
+Users with the Owner role on a top-level group can migrate it to:
 
 - Another top-level group.
 - The subgroup of any existing top-level group.
