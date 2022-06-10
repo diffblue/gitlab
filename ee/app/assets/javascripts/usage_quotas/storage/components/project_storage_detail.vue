@@ -1,7 +1,7 @@
 <script>
 import { GlIcon, GlLink, GlSprintf, GlTableLite } from '@gitlab/ui';
 import { numberToHumanSize } from '~/lib/utils/number_utils';
-import { thWidthClass } from '~/lib/utils/table_utility';
+import { thWidthPercent } from '~/lib/utils/table_utility';
 import { sprintf } from '~/locale';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import {
@@ -53,12 +53,12 @@ export default {
     {
       key: 'storageType',
       label: PROJECT_TABLE_LABEL_STORAGE_TYPE,
-      thClass: thWidthClass(90),
+      thClass: thWidthPercent(90),
     },
     {
       key: 'value',
       label: PROJECT_TABLE_LABEL_USAGE,
-      thClass: thWidthClass(10),
+      thClass: thWidthPercent(10),
       formatter: (value) => {
         return numberToHumanSize(value, 1);
       },
