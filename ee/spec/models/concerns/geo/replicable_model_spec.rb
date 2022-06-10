@@ -34,7 +34,7 @@ RSpec.describe Geo::ReplicableModel do
     let(:replicator_class) { Geo::DummyReplicator }
   end
 
-  describe 'after_create_commit hook' do
+  describe '#geo_create_event!' do
     context 'when the replicator raises an error' do
       let(:error) { StandardError.new("testing error") }
 
