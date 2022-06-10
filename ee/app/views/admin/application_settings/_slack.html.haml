@@ -5,7 +5,7 @@
   .settings-header
     %h4
       = _('Slack application')
-    %button.btn.gl-button.btn-default.js-settings-toggle{ type: 'button' }
+    = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
       = expanded ? _('Collapse') : _('Expand')
     %p
       = _('Slack integration allows you to interact with GitLab via slash commands in a chat window.')

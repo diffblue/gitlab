@@ -3,7 +3,7 @@
     .settings-header
       %h4
         = _('Incident Management Limits')
-      %button.btn.gl-button.btn-default.js-settings-toggle{ type: 'button' }
+      = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
         = expanded_by_default? ? _('Collapse') : _('Expand')
       %p
         = _('Limit the number of inbound incident management alerts that can be sent to a project.')
