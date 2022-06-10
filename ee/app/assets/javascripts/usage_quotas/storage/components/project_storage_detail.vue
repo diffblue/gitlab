@@ -30,16 +30,7 @@ export default {
   },
   computed: {
     sizeSortedStorageTypes() {
-      return (
-        [...this.storageTypes]
-          // NOTE: this should be removed when related FF is rolled out (https://gitlab.com/gitlab-org/gitlab/-/issues/359852)
-          .filter(
-            (data) =>
-              data.storageType.id !== 'containerRegistrySize' ||
-              this.glFeatures.containerRegistryProjectStatistics,
-          )
-          .sort(descendingStorageUsageSort('value'))
-      );
+      return [...this.storageTypes].sort(descendingStorageUsageSort('value'));
     },
   },
   methods: {
