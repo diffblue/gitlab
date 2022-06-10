@@ -6,6 +6,8 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 
 # Packages API **(FREE)**
 
+> Support for [GitLab CI/CD job token](../ci/jobs/ci_job_token.md) authentication for the project-level API [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/349418) in GitLab 15.2.
+
 This is the API documentation of [GitLab Packages](../administration/packages/index.md).
 
 ## List packages

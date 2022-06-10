@@ -116,6 +116,14 @@ RSpec.describe API::ProjectPackages do
             end
           end
         end
+
+        context 'with JOB-TOKEN auth' do
+          let(:job) { create(:ci_build, :running, user: user) }
+
+          subject { get api(url, job_token: job.token) }
+
+          it_behaves_like 'returns packages', :project, :maintainer
+        end
       end
 
       context 'with pagination params' do
@@ -273,6 +281,19 @@ RSpec.describe API::ProjectPackages do
           it_behaves_like 'destroy url'
         end
 
+        context 'with JOB-TOKEN auth' do
+          let(:job) { create(:ci_build, :running, user: user) }
+
+          it 'returns 200 and the package information' do
+            project.add_developer(user)
+
+            get api(package_url, job_token: job.token)
+
+            expect(response).to have_gitlab_http_status(:ok)
+            expect(response).to match_response_schema('public_api/v4/packages/package')
+          end
+        end
+
         context 'with pipeline' do
           let!(:package1) { create(:npm_package, :with_build, project: project) }
 
@@ -354,6 +375,18 @@ RSpec.describe API::ProjectPackages do
           expect { delete api(package_url, user) }.to change { ::Packages::Package.pending_destruction.count }.by(1)
 
           expect(response).to have_gitlab_http_status(:no_content)
+        end
+
+        context 'with JOB-TOKEN auth' do
+          let(:job) { create(:ci_build, :running, user: user) }
+
+          it 'returns 204' do
+            project.add_maintainer(user)
+
+            expect { delete api(package_url, job_token: job.token) }.to change { ::Packages::Package.pending_destruction.count }.by(1)
+
+            expect(response).to have_gitlab_http_status(:no_content)
+          end
         end
       end
 
