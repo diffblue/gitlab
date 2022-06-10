@@ -118,7 +118,7 @@ RSpec.describe ApprovalProjectRule do
 
     context "when there is a project rule for each report type" do
       with_them do
-        subject { create(:approval_project_rule, report_type, :requires_approval, project: project, orchestration_policy_idx: 1) }
+        subject { create(:approval_project_rule, report_type, :requires_approval, project: project, orchestration_policy_idx: 1, scanners: [:sast], severity_levels: [:high], vulnerability_states: [:confirmed], vulnerabilities_allowed: 2) }
 
         let!(:result) { subject.apply_report_approver_rules_to(merge_request) }
 
@@ -129,6 +129,10 @@ RSpec.describe ApprovalProjectRule do
         specify { expect(result.rule_type).to be(:report_approver) }
         specify { expect(result.report_type).to be(:report_type) }
         specify { expect(result.orchestration_policy_idx).to be 1 }
+        specify { expect(result.scanners).to be match_array([:sast]) }
+        specify { expect(result.severity_levels).to be match_array([:high]) }
+        specify { expect(result.vulnerability_states).to match_array([:confirmed]) }
+        specify { expect(result.vulnerabilities_allowed).to be 2 }
       end
     end
   end

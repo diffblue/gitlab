@@ -7,7 +7,6 @@ class ApprovalProjectRule < ApplicationRecord
   UNSUPPORTED_SCANNER = 'cluster_image_scanning'
   SUPPORTED_SCANNERS = (::Ci::JobArtifact::SECURITY_REPORT_FILE_TYPES - [UNSUPPORTED_SCANNER]).freeze
   DEFAULT_SEVERITIES = %w[unknown high critical].freeze
-  NEWLY_DETECTED = 'newly_detected'
   NEWLY_DETECTED_STATE = { NEWLY_DETECTED.to_sym => 0 }.freeze
   APPROVAL_VULNERABILITY_STATES = ::Enums::Vulnerability.vulnerability_states.merge(NEWLY_DETECTED_STATE).freeze
 
@@ -91,7 +90,7 @@ class ApprovalProjectRule < ApplicationRecord
 
   def report_approver_attributes
     attributes
-      .slice('approvals_required', 'name', 'orchestration_policy_idx')
+      .slice('approvals_required', 'name', 'orchestration_policy_idx', 'scanners', 'severity_levels', 'vulnerability_states', 'vulnerabilities_allowed')
       .merge(
         users: users,
         groups: groups,

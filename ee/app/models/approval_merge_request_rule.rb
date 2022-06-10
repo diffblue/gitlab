@@ -131,6 +131,12 @@ class ApprovalMergeRequestRule < ApplicationRecord
     where(id: approval_rules).update_all(approvals_required: 0)
   end
 
+  def vulnerability_states_for_branch
+    return self.vulnerability_states if merge_request.target_default_branch?
+
+    vulnerability_states.include?(NEWLY_DETECTED) ? [NEWLY_DETECTED] : []
+  end
+
   private
 
   def compare_with_project_rule
