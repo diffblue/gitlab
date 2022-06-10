@@ -32765,6 +32765,9 @@ msgstr[1] ""
 msgid "Runners|A capacity of 1 enables warm HA through Auto Scaling group re-spawn. A capacity of 2 enables hot HA because the service is available even when a node is lost. A capacity of 3 or more enables hot HA and manual scaling of runner fleet."
 msgstr ""
 
+msgid "Runners|A new version is available"
+msgstr ""
+
 msgid "Runners|A periodic background task deletes runners that haven't contacted GitLab in more than %{elapsedTime}. %{linkStart}Can I view how many runners were deleted?%{linkEnd}"
 msgstr ""
 
@@ -33134,6 +33137,9 @@ msgstr ""
 msgid "Runners|This runner is available to all projects and subgroups in a group."
 msgstr ""
 
+msgid "Runners|This runner is outdated, an upgrade is recommended"
+msgstr ""
+
 msgid "Runners|To install Runner in Kubernetes follow the instructions described in the GitLab documentation."
 msgstr ""
 
@@ -33201,6 +33207,12 @@ msgid "Runners|specific"
 msgstr ""
 
 msgid "Runners|stale"
+msgstr ""
+
+msgid "Runners|upgrade available"
+msgstr ""
+
+msgid "Runners|upgrade recommended"
 msgstr ""
 
 msgid "Running"

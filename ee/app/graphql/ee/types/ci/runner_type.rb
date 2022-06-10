@@ -25,7 +25,7 @@ module EE
           private
 
           def upgrade_status_available?
-            current_user&.has_paid_namespace?
+            License.feature_available?(:runner_upgrade_management) || current_user&.has_paid_namespace?
           end
         end
       end

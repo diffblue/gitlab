@@ -18,6 +18,13 @@ RSpec.describe 'Query.runner(id)' do
       ]
     end
 
+    before do
+      allow(::Gitlab::Ci::RunnerUpgradeCheck.instance)
+        .to receive(:check_runner_upgrade_status)
+        .and_return(upgrade_status)
+        .once
+    end
+
     it 'retrieves expected fields' do
       post_graphql(query, current_user: current_user)
 
@@ -45,6 +52,35 @@ RSpec.describe 'Query.runner(id)' do
       end
     end
 
+    context 'requested on an instance with runner_upgrade_management' do
+      let(:current_user) { admin }
+
+      before do
+        stub_licensed_features(runner_upgrade_management: true)
+      end
+
+      context 'with RunnerUpgradeCheck returning :not_available' do
+        let(:upgrade_status) { :not_available }
+        let(:expected_upgrade_status) { 'NOT_AVAILABLE' }
+
+        it_behaves_like('runner details fetch operation returning expected upgradeStatus')
+      end
+
+      context 'with RunnerUpgradeCheck returning :available' do
+        let(:upgrade_status) { :available }
+        let(:expected_upgrade_status) { 'AVAILABLE' }
+
+        it_behaves_like('runner details fetch operation returning expected upgradeStatus')
+      end
+
+      context 'with RunnerUpgradeCheck returning :recommended' do
+        let(:upgrade_status) { :recommended }
+        let(:expected_upgrade_status) { 'RECOMMENDED' }
+
+        it_behaves_like('runner details fetch operation returning expected upgradeStatus')
+      end
+    end
+
     context 'requested by paid user' do
       let_it_be(:ultimate_group) { create(:group_with_plan, plan: :ultimate_plan) }
       let_it_be(:user) { create(:user, :admin, namespace: create(:user_namespace)) }
@@ -53,10 +89,6 @@ RSpec.describe 'Query.runner(id)' do
 
       before do
         ultimate_group.add_reporter(user)
-
-        expect(::Gitlab::Ci::RunnerUpgradeCheck.instance).to receive(:check_runner_upgrade_status)
-          .and_return(upgrade_status)
-          .once
       end
 
       context 'with RunnerUpgradeCheck returning :not_available' do
