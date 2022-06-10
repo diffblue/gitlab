@@ -17232,7 +17232,7 @@ msgstr ""
 msgid "GitLab is open source software to collaborate on code."
 msgstr ""
 
-msgid "GitLab is undergoing maintenance and is operating in read-only mode."
+msgid "GitLab is undergoing maintenance"
 msgstr ""
 
 msgid "GitLab logo"
@@ -38767,9 +38767,6 @@ msgid "This GitLab instance does not provide any shared runners yet. Instance ad
 msgstr ""
 
 msgid "This GitLab instance is licensed at the %{insufficient_license} tier. Geo is only available for users who have at least a Premium license."
-msgstr ""
-
-msgid "This GitLab instance is undergoing maintenance and is operating in read-only mode."
 msgstr ""
 
 msgid "This PDF is too large to display. Please download to view."

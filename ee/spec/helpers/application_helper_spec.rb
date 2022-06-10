@@ -6,13 +6,13 @@ RSpec.describe ApplicationHelper do
   include EE::GeoHelpers
 
   describe '#read_only_message', :geo do
-    let(:default_maintenance_mode_message) { 'This GitLab instance is undergoing maintenance and is operating in read-only mode.' }
+    let(:default_maintenance_mode_message) { 'GitLab is undergoing maintenance' }
 
     context 'when not in a Geo secondary' do
-      it 'returns a fallback message if database is readonly' do
+      it 'returns a fallback message if database is readonly', :aggregate_failures do
         expect(Gitlab::Database).to receive(:read_only?) { true }
 
-        expect(helper.read_only_message).to match('You are on a read-only GitLab instance')
+        expect(helper.read_only_message).to match('You are on a read-only GitLab instance.')
       end
 
       it 'returns nil when database is not read_only' do
@@ -35,35 +35,16 @@ RSpec.describe ApplicationHelper do
 
             expect(helper.read_only_message).to match(/#{custom_message}/)
           end
-
-          context 'when database is read-only' do
-            it 'stacks read-only and maintenance mode messages' do
-              expect(Gitlab::Database).to receive(:read_only?).twice { true }
-
-              expect(helper.read_only_message).to match('You are on a read-only GitLab instance')
-              expect(helper.read_only_message).to match(/#{default_maintenance_mode_message}/)
-            end
-          end
         end
 
         context 'disabled' do
-          it 'returns nil' do
+          before do
             stub_maintenance_mode_setting(false)
+          end
 
+          it 'returns nil' do
             expect(helper.read_only_message).to be_nil
           end
-        end
-      end
-    end
-
-    context 'on a geo secondary' do
-      context 'maintenance mode on' do
-        it 'returns messages for both' do
-          expect(Gitlab::Geo).to receive(:secondary?).twice { true }
-          stub_maintenance_mode_setting(true)
-
-          expect(helper.read_only_message).to match(/you must visit the primary site/)
-          expect(helper.read_only_message).to match(/#{default_maintenance_mode_message}/)
         end
       end
     end
@@ -75,65 +56,177 @@ RSpec.describe ApplicationHelper do
         stub_current_geo_node(create(:geo_node))
       end
 
-      it 'includes button to visit primary node' do
-        expect(helper.read_only_message).to match(/Go to the primary site/)
-        expect(helper.read_only_message).to include(geo_primary.url)
+      context 'maintenance mode' do
+        context 'enabled' do
+          before do
+            stub_maintenance_mode_setting(true)
+          end
+
+          it 'returns default message' do
+            expect(helper.read_only_message).to match(default_maintenance_mode_message)
+          end
+
+          it 'returns user set custom maintenance mode message' do
+            custom_message = 'Maintenance window ends at 00:00.'
+            stub_application_setting(maintenance_mode_message: custom_message)
+
+            expect(helper.read_only_message).to match(/#{custom_message}/)
+          end
+        end
+
+        context 'disabled' do
+          before do
+            stub_maintenance_mode_setting(false)
+          end
+
+          it 'returns nil' do
+            expect(helper.read_only_message).to be_nil
+          end
+        end
+      end
+    end
+  end
+
+  describe '#read_only_description', :geo do
+    context 'when not in a Geo secondary' do
+      context 'maintenance mode' do
+        context 'enabled' do
+          before do
+            stub_maintenance_mode_setting(true)
+          end
+
+          it 'returns read-only message' do
+            expect(helper.read_only_description).to match('You are on a read-only GitLab instance.')
+          end
+        end
+
+        context 'disabled' do
+          before do
+            stub_maintenance_mode_setting(false)
+          end
+
+          it 'returns nil' do
+            expect(helper.read_only_description).to be_nil
+          end
+        end
+      end
+    end
+
+    context 'when in a Geo Secondary' do
+      let_it_be(:geo_primary) { create(:geo_node, :primary) }
+
+      before do
+        stub_current_geo_node(create(:geo_node))
       end
 
-      it 'returns a read-only Geo message with a link to primary node' do
-        expect(helper.read_only_message).to match(/If you want to make changes, you must visit the primary site./)
-        expect(helper.read_only_message).to include(geo_primary.url)
+      context 'maintenance mode' do
+        context 'enabled' do
+          before do
+            stub_maintenance_mode_setting(true)
+          end
+
+          it 'returns nil' do
+            expect(helper.read_only_description).to be_nil
+          end
+        end
+
+        context 'disabled' do
+          before do
+            stub_maintenance_mode_setting(false)
+          end
+
+          it 'returns nil' do
+            expect(helper.read_only_description).to be_nil
+          end
+        end
+      end
+    end
+  end
+
+  describe '#geo_secondary_read_only_description', :geo do
+    context 'when not in a Geo secondary' do
+      it 'returns nil' do
+        expect(helper.geo_secondary_read_only_description).to be_nil
+      end
+
+      context 'maintenance mode' do
+        context 'enabled' do
+          before do
+            stub_maintenance_mode_setting(true)
+          end
+
+          it 'returns nil' do
+            expect(helper.geo_secondary_read_only_description).to be_nil
+          end
+        end
+
+        context 'disabled' do
+          before do
+            stub_maintenance_mode_setting(false)
+          end
+
+          it 'returns nil' do
+            expect(helper.geo_secondary_read_only_description).to be_nil
+          end
+        end
+      end
+    end
+
+    context 'when in a Geo Secondary' do
+      let_it_be(:geo_primary) { create(:geo_node, :primary) }
+
+      before do
+        stub_current_geo_node(create(:geo_node))
+      end
+
+      it 'returns a read-only Geo message', :aggregate_failures do
+        expect(helper.geo_secondary_read_only_description).to match(/You are on a secondary/)
+        expect(helper.geo_secondary_read_only_description).to match(/If you want to make changes, you must visit the primary site./)
       end
 
       it 'returns a limited actions message when @limited_actions_message is true' do
         assign(:limited_actions_message, true)
 
-        expect(helper.read_only_message).to match(/You may be able to make a limited amount of changes or perform a limited amount of actions on this page/)
-        expect(helper.read_only_message).to include(geo_primary.url)
+        expect(helper.geo_secondary_read_only_description).to match(/You may be able to make a limited amount of changes or perform a limited amount of actions on this page/)
       end
 
-      it 'includes a warning about database lag' do
+      it 'includes a warning about database lag', :aggregate_failures do
         allow_any_instance_of(::Gitlab::Geo::HealthCheck).to receive(:db_replication_lag_seconds).and_return(120)
 
-        expect(helper.read_only_message).to match(/If you want to make changes, you must visit the primary site./)
-        expect(helper.read_only_message).to match(/The database is currently 2 minutes behind the primary site/)
-        expect(helper.read_only_message).to include(geo_primary.url)
+        expect(helper.geo_secondary_read_only_description).to match(/If you want to make changes, you must visit the primary site./)
+        expect(helper.geo_secondary_read_only_description).to match(/The database is currently 2 minutes behind the primary site/)
       end
 
       context 'event lag' do
-        it 'includes a lag warning about a node lag' do
+        it 'includes a lag warning about a node lag', :aggregate_failures do
           event_log = create(:geo_event_log, created_at: 4.minutes.ago)
           create(:geo_event_log, created_at: 3.minutes.ago)
           create(:geo_event_log_state, event_id: event_log.id)
 
-          expect(helper.read_only_message).to match(/If you want to make changes, you must visit the primary site./)
-          expect(helper.read_only_message).to match(/The site is currently 3 minutes behind the primary/)
-          expect(helper.read_only_message).to include(geo_primary.url)
+          expect(helper.geo_secondary_read_only_description).to match(/If you want to make changes, you must visit the primary site./)
+          expect(helper.geo_secondary_read_only_description).to match(/The site is currently 3 minutes behind the primary/)
         end
 
-        it 'does not include a lag warning because the last event is too fresh' do
+        it 'does not include a lag warning because the last event is too fresh', :aggregate_failures do
           event_log = create(:geo_event_log, created_at: 3.minutes.ago)
           create(:geo_event_log)
           create(:geo_event_log_state, event_id: event_log.id)
 
-          expect(helper.read_only_message).to match(/If you want to make changes, you must visit the primary site./)
-          expect(helper.read_only_message).not_to match(/The site is currently 3 minutes behind the primary/)
-          expect(helper.read_only_message).to include(geo_primary.url)
+          expect(helper.geo_secondary_read_only_description).to match(/If you want to make changes, you must visit the primary site./)
+          expect(helper.geo_secondary_read_only_description).not_to match(/The site is currently 3 minutes behind the primary/)
         end
 
-        it 'does not include a lag warning because the last event is processed' do
+        it 'does not include a lag warning because the last event is processed', :aggregate_failures do
           event_log = create(:geo_event_log, created_at: 3.minutes.ago)
           create(:geo_event_log_state, event_id: event_log.id)
 
-          expect(helper.read_only_message).to match(/If you want to make changes, you must visit the primary site./)
-          expect(helper.read_only_message).not_to match(/The site is currently 3 minutes behind the primary/)
-          expect(helper.read_only_message).to include(geo_primary.url)
+          expect(helper.geo_secondary_read_only_description).to match(/If you want to make changes, you must visit the primary site./)
+          expect(helper.geo_secondary_read_only_description).not_to match(/The site is currently 3 minutes behind the primary/)
         end
 
-        it 'does not include a lag warning because there are no events yet' do
-          expect(helper.read_only_message).to match(/If you want to make changes, you must visit the primary site./)
-          expect(helper.read_only_message).not_to match(/minutes behind the primary/)
-          expect(helper.read_only_message).to include(geo_primary.url)
+        it 'does not include a lag warning because there are no events yet', :aggregate_failures do
+          expect(helper.geo_secondary_read_only_description).to match(/If you want to make changes, you must visit the primary site./)
+          expect(helper.geo_secondary_read_only_description).not_to match(/minutes behind the primary/)
         end
       end
     end
@@ -152,7 +245,7 @@ RSpec.describe ApplicationHelper do
       let(:object) { create(:group) }
       let(:noteable_type) { Epic }
 
-      it 'returns paths for autocomplete_sources_controller' do
+      it 'returns paths for autocomplete_sources_controller', :aggregate_failures do
         expect_autocomplete_data_sources(object, noteable_type, [:members, :issues, :mergeRequests, :labels, :epics, :commands, :milestones])
       end
 
@@ -161,7 +254,7 @@ RSpec.describe ApplicationHelper do
           stub_licensed_features(security_dashboard: true)
         end
 
-        it 'returns paths for autocomplete_sources_controller with vulnerabilities' do
+        it 'returns paths for autocomplete_sources_controller with vulnerabilities', :aggregate_failures do
           expect_autocomplete_data_sources(object, noteable_type, [:members, :issues, :mergeRequests, :labels, :epics, :vulnerabilities, :commands, :milestones])
         end
       end
@@ -223,7 +316,7 @@ RSpec.describe ApplicationHelper do
         "app/views/#{File.dirname(view)}/#{File.basename(view)}.html.haml"
       end
 
-      it 'finds the CE partial' do
+      it 'finds the CE partial', :aggregate_failures do
         ce_partial = helper.find_ce_template(partial)
 
         expect(ce_partial.short_identifier).to eq(expected_partial_path)
@@ -233,7 +326,7 @@ RSpec.describe ApplicationHelper do
         expect(ee_partial.short_identifier).to eq("ee/#{expected_partial_path}")
       end
 
-      it 'finds the CE view' do
+      it 'finds the CE view', :aggregate_failures do
         ce_view = helper.find_ce_template(view)
 
         expect(ce_view.short_identifier).to eq(expected_view_path)

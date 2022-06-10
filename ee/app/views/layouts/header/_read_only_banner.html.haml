@@ -1,7 +1,20 @@
-- message = read_only_message
-- if message
-  .flash-container.flash-container-page
-    .flash-notice.flash-notice-persistent
-      %div{ class: container_class }
-        %span
-          = message
+- title = read_only_message
+- description = read_only_description
+- secondary_description = geo_secondary_read_only_description
+- if title
+  = render Pajamas::AlertComponent.new(variant: :warning,
+      title: title,
+      dismissible: false,
+      alert_class: "#{'gl-mb-3' unless secondary_description}") do |c|
+    - if description
+      = c.body do
+        = description
+
+- if secondary_description
+  = render Pajamas::AlertComponent.new(dismissible: false,
+    alert_class: 'gl-mb-3') do |c|
+    = c.body do
+      = secondary_description
+    = c.actions do
+      - if ::Gitlab::Geo.primary_node.present?
+        = link_to s_('Geo|Go to the primary site'), ::Gitlab::Geo.primary_node.url, class: "btn gl-alert-action btn-default btn-md gl-button btn-default-secondary"

@@ -11,9 +11,7 @@ export default {
     toggleHelpText: __(
       'Non-admin users are restricted to read-only access, in both GitLab UI and API.',
     ),
-    bannerMessagePlaceholder: __(
-      'GitLab is undergoing maintenance and is operating in read-only mode.',
-    ),
+    bannerMessagePlaceholder: __('GitLab is undergoing maintenance'),
     buttonText: __('Save changes'),
     bannerLabel: __('Banner message'),
   },
