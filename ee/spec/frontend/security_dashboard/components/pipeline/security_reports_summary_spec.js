@@ -1,6 +1,6 @@
 import { GlSprintf } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
 import { nextTick } from 'vue';
+import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import SecurityReportsSummary from 'ee/security_dashboard/components/pipeline/security_reports_summary.vue';
 import Modal from 'ee/vue_shared/security_reports/components/dast_modal.vue';
 import { mockPipelineJobs } from 'ee_jest/security_dashboard/mock_data/jobs';
@@ -8,14 +8,15 @@ import { useLocalStorageSpy } from 'helpers/local_storage_helper';
 import { trimText } from 'helpers/text_helper';
 import AccessorUtilities from '~/lib/utils/accessor';
 import SecurityReportDownloadDropdown from '~/vue_shared/security_reports/components/security_report_download_dropdown.vue';
+import { pipelineSecurityReportSummary } from './mock_data';
 
 describe('Security reports summary component', () => {
   useLocalStorageSpy();
 
   let wrapper;
 
-  const createWrapper = (options) => {
-    wrapper = shallowMount(SecurityReportsSummary, {
+  const createWrapper = (options, mountFunc = shallowMountExtended) => {
+    wrapper = mountFunc(SecurityReportsSummary, {
       propsData: {
         summary: {},
         ...options?.propsData,
@@ -29,9 +30,13 @@ describe('Security reports summary component', () => {
     });
   };
 
-  const findToggleButton = () => wrapper.find('[data-testid="collapse-button"]');
-  const findModalButton = () => wrapper.find('[data-testid="modal-button"]');
+  const findToggleButton = () => wrapper.findByTestId('collapse-button');
+  const findModalButton = () => wrapper.findByTestId('modal-button');
   const findDownloadDropdown = () => wrapper.findComponent(SecurityReportDownloadDropdown);
+  const findDownloadDropdownForScanType = (scanType) =>
+    wrapper
+      .findByTestId(`artifact-download-${scanType}`)
+      .findComponent(SecurityReportDownloadDropdown);
 
   beforeEach(() => {
     jest.spyOn(AccessorUtilities, 'canUseLocalStorage').mockReturnValue(true);
@@ -255,6 +260,33 @@ describe('Security reports summary component', () => {
 
     it('should contain a artifact download dropdown', () => {
       expect(findDownloadDropdown().exists()).toBe(true);
+    });
+  });
+
+  describe('with artifact download dropdowns', () => {
+    beforeEach(() => {
+      createWrapper(
+        {
+          propsData: {
+            summary: pipelineSecurityReportSummary.data.project.pipeline.securityReportSummary,
+            jobs: pipelineSecurityReportSummary.data.project.pipeline.jobs.nodes,
+          },
+        },
+        mountExtended,
+      );
+    });
+
+    it.each`
+      analyzer                    | downloadReportType
+      ${'API Fuzzing'}            | ${'api_fuzzing'}
+      ${'Cluster Image Scanning'} | ${'cluster_image_scanning'}
+      ${'Coverage Fuzzing'}       | ${'coverage_fuzzing'}
+      ${'DAST'}                   | ${'dast'}
+      ${'Dependency Scanning'}    | ${'dependency_scanning'}
+      ${'SAST'}                   | ${'sast'}
+    `('renders the dropdown for the $analyzer results', ({ downloadReportType }) => {
+      const artifacts = findDownloadDropdownForScanType(downloadReportType).props('artifacts');
+      expect(artifacts.every((artifact) => artifact.reportType === downloadReportType)).toBe(true);
     });
   });
 });

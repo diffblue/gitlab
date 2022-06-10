@@ -71,7 +71,7 @@ export const pipelineSecurityReportSummary = {
           nodes: [
             {
               id: 'job-1',
-              name: 'api_fuzzing',
+              name: 'api-fuzzing',
               artifacts: {
                 nodes: [
                   {
@@ -89,7 +89,7 @@ export const pipelineSecurityReportSummary = {
             },
             {
               id: 'job-2',
-              name: 'coverage_fuzzing',
+              name: 'coverage-fuzzing',
               artifacts: {
                 nodes: [
                   {
@@ -209,6 +209,60 @@ export const pipelineSecurityReportSummary = {
                     downloadPath:
                       '/security/security-reports/-/jobs/1031/artifacts/download?file_type=secret_detection',
                     fileType: 'SECRET_DETECTION',
+                  },
+                ],
+              },
+            },
+            {
+              id: 'job-9',
+              name: 'dast',
+              artifacts: {
+                nodes: [
+                  {
+                    downloadPath:
+                      '/security/security-reports/-/jobs/1037/artifacts/download?file_type=trace',
+                    fileType: 'TRACE',
+                  },
+                  {
+                    downloadPath:
+                      '/security/security-reports/-/jobs/1037/artifacts/download?file_type=dast',
+                    fileType: 'DAST',
+                  },
+                ],
+              },
+            },
+            {
+              id: 'job-10',
+              name: 'dependency-scanning',
+              artifacts: {
+                nodes: [
+                  {
+                    downloadPath:
+                      '/security/security-reports/-/jobs/1039/artifacts/download?file_type=trace',
+                    fileType: 'TRACE',
+                  },
+                  {
+                    downloadPath:
+                      '/security/security-reports/-/jobs/1039/artifacts/download?file_type=dependency_scanning',
+                    fileType: 'DEPENDENCY_SCANNING',
+                  },
+                ],
+              },
+            },
+            {
+              id: 'job-11',
+              name: 'cluster-image-scanning',
+              artifacts: {
+                nodes: [
+                  {
+                    downloadPath:
+                      '/security/security-reports/-/jobs/1040/artifacts/download?file_type=trace',
+                    fileType: 'TRACE',
+                  },
+                  {
+                    downloadPath:
+                      '/security/security-reports/-/jobs/1040/artifacts/download?file_type=cluster_image_scanning',
+                    fileType: 'CLUSTER_IMAGE_SCANNING',
                   },
                 ],
               },

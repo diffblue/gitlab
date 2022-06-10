@@ -91,18 +91,21 @@ export default {
     hasScannedResources(scanSummary) {
       return scanSummary.scannedResources?.nodes?.length > 0;
     },
-    hasDastArtifactDownload(scanSummary) {
+    hasDastArtifactDownload(scanType, scanSummary) {
       return (
-        Boolean(scanSummary.scannedResourcesCsvPath) ||
-        this.findArtifacts(SECURITY_REPORT_TYPE_ENUM_DAST).length > 0
+        scanType === SECURITY_REPORT_TYPE_ENUM_DAST &&
+        (Boolean(scanSummary.scannedResourcesCsvPath) ||
+          this.findArtifacts(SECURITY_REPORT_TYPE_ENUM_DAST).length > 0)
       );
     },
     downloadLink(scanSummary) {
       return scanSummary.scannedResourcesCsvPath || '';
     },
+    normalizeScanType(scanType) {
+      return convertToSnakeCase(scanType.toLowerCase());
+    },
     findArtifacts(scanType) {
-      const snakeCase = convertToSnakeCase(scanType.toLowerCase());
-      return extractSecurityReportArtifacts([snakeCase], this.jobs);
+      return extractSecurityReportArtifacts([this.normalizeScanType(scanType)], this.jobs);
     },
     buildDastArtifacts(scanSummary) {
       const csvArtifact = {
@@ -134,7 +137,12 @@ export default {
         </div>
       </div>
     </template>
-    <gl-collapse id="security-reports-summary-details" v-model="isVisible" class="gl-pb-3">
+    <gl-collapse
+      id="security-reports-summary-details"
+      v-model="isVisible"
+      data-testid="security-reports-summary-details"
+      class="gl-pb-3"
+    >
       <div v-for="[scanType, scanSummary] in formattedSummary" :key="scanType" class="row gl-my-3">
         <div class="col-4">
           {{ scanType }}
@@ -142,7 +150,7 @@ export default {
         <div class="col-4">
           <gl-sprintf :message="$options.i18n.vulnerabilities(scanSummary.vulnerabilitiesCount)" />
         </div>
-        <div class="col-4">
+        <div class="col-4" :data-testid="`artifact-download-${normalizeScanType(scanType)}`">
           <template v-if="scanSummary.scannedResourcesCount !== undefined">
             <gl-button
               v-if="hasScannedResources(scanSummary)"
@@ -168,7 +176,7 @@ export default {
             />
           </template>
 
-          <template v-else-if="hasDastArtifactDownload(scanSummary)">
+          <template v-else-if="hasDastArtifactDownload(scanType, scanSummary)">
             <security-report-download-dropdown
               :text="$options.i18n.downloadResults"
               :artifacts="buildDastArtifacts(scanSummary)"
