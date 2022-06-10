@@ -99,7 +99,7 @@ describe('EEInviteModalBase', () => {
 
   describe('default', () => {
     beforeEach(() => {
-      createComponent();
+      createComponent({ props: { invalidFeedbackMessage: 'error appeared' } });
     });
 
     it('passes attrs to CE base', () => {
@@ -107,6 +107,7 @@ describe('EEInviteModalBase', () => {
         ...propsDataCE,
         currentSlot: 'default',
         extraSlots: EEInviteModalBase.EXTRA_SLOTS,
+        invalidFeedbackMessage: 'error appeared',
       });
     });
 
@@ -273,6 +274,31 @@ describe('EEInviteModalBase', () => {
 
     it("doesn't show the overage content", () => {
       expect(findOverageModalContent().isVisible()).toBe(false);
+    });
+  });
+
+  describe('integration', () => {
+    it('sets overage and actual feedback message if invalidFeedbackMessage prop is passed', async () => {
+      createComponent({
+        glFeatures: { overageMembersModal: true },
+      });
+
+      // shows initial modal
+      expect(findModal().props('title')).toBe(propsDataCE.modalTitle);
+      expect(findCEBase().props('invalidFeedbackMessage')).toBe('');
+
+      clickInviteButton();
+      await waitForPromises();
+
+      // shows overage modal
+      expect(findModal().props('title')).toBe(OVERAGE_MODAL_TITLE);
+
+      wrapper.setProps({ invalidFeedbackMessage: 'invalid message' });
+      await nextTick();
+
+      // shows initial modal again
+      expect(findModal().props('title')).toBe(propsDataCE.modalTitle);
+      expect(findCEBase().props('invalidFeedbackMessage')).toBe('invalid message');
     });
   });
 });
