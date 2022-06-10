@@ -3,7 +3,8 @@
   %section.settings.issues-feature.no-animate#js-issue-settings{ class: [('expanded' if expanded), ('hidden' if @project.project_feature.send(:issues_access_level) == 0)], data: { qa_selector: 'issue_template_settings_content' } }
     .settings-header
       %h4.settings-title.js-settings-toggle.js-settings-toggle-trigger-only= _('Default description template for issues')
-      %button.gl-button.btn.btn-default.js-settings-toggle{ type: 'button' }= expanded ? _('Collapse') : _('Expand')
+      = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
+        = expanded ? _('Collapse') : _('Expand')
       - link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: help_page_path('user/project/description_templates', anchor: 'set-a-default-template-for-merge-requests-and-issues') }
       %p#issue-settings-default-template-label= _('Set a default description template to be used for new issues. %{link_start}What are description templates?%{link_end}').html_safe % { link_start: link_start, link_end: '</a>'.html_safe }
 
