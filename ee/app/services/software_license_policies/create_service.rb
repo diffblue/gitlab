@@ -24,7 +24,7 @@ module SoftwareLicensePolicies
       policy = SoftwareLicense.create_policy_for!(
         project: project,
         name: params[:name],
-        classification: SoftwareLicensePolicy.to_classification(params[:approval_status])
+        classification: params[:approval_status]
       )
       RefreshLicenseComplianceChecksWorker.perform_async(project.id)
       policy

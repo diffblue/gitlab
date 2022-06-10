@@ -12,7 +12,6 @@ module EE
           push_frontend_feature_flag(:pipeline_security_dashboard_graphql, project, type: :development)
           push_frontend_feature_flag(:graphql_code_quality_full_report, project, type: :development)
           push_frontend_feature_flag(:use_api_for_payment_validation, project)
-          push_frontend_feature_flag(:lc_remove_legacy_approval_status, project)
         end
 
         feature_category :license_compliance, [:licenses]

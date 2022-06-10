@@ -5,11 +5,6 @@
 # For use in the License Management feature.
 class SoftwareLicensePolicy < ApplicationRecord
   include Presentable
-  # Mapping from old classification names to new names
-  LEGACY_CLASSIFICATION_STATUS = {
-    'approved' => 'allowed',
-    'blacklisted' => 'denied'
-  }.freeze
 
   # Only allows modification of the approval status
   FORM_EDITABLE = %i[approval_status].freeze
@@ -50,26 +45,10 @@ class SoftwareLicensePolicy < ApplicationRecord
   delegate :name, :spdx_identifier, to: :software_license
 
   def self.approval_status_values
-    if ::Feature.enabled?(:lc_remove_legacy_approval_status)
-      %w(allowed denied)
-    else
-      %w(allowed denied approved blacklisted)
-    end
+    %w(allowed denied)
   end
 
   def approval_status
-    if Feature.enabled?(:lc_remove_legacy_approval_status, project)
-      classification
-    else
-      legacy_approval_status
-    end
-  end
-
-  def legacy_approval_status
-    LEGACY_CLASSIFICATION_STATUS.key(classification)
-  end
-
-  def self.to_classification(approval_status)
-    LEGACY_CLASSIFICATION_STATUS.fetch(approval_status, approval_status)
+    classification
   end
 end

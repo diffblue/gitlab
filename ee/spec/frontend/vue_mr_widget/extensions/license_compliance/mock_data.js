@@ -43,7 +43,7 @@ export const licenses = [
     classification: {
       id: null,
       name: 'Apache License 2.0',
-      approval_status: 'blacklisted',
+      approval_status: 'denied',
     },
     count: 3,
   },
@@ -67,7 +67,7 @@ export const licenses = [
     classification: {
       id: 4,
       name: 'ISC License',
-      approval_status: 'approved',
+      approval_status: 'allowed',
     },
     count: 2,
   },
