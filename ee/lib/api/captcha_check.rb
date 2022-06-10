@@ -12,23 +12,6 @@ module API
     default_format :json
 
     resource :users do
-      desc 'Get captcha check result for ArkoseLabs'
-      get ':username/captcha_check', requirements: { username: %r{[^/]+} } do
-        not_found! 'User' unless Feature.enabled?(:arkose_labs_login_challenge)
-
-        rate_limit_reached = false
-        check_rate_limit!(:search_rate_limit_unauthenticated, scope: [ip_address]) do
-          rate_limit_reached = true
-        end
-
-        if rate_limit_reached
-          present({ result: true }, with: Entities::CaptchaCheck)
-        else
-          user = ::User.by_login(params[:username])
-          present(::Users::CaptchaChallengeService.new(user).execute, with: Entities::CaptchaCheck)
-        end
-      end
-
       desc 'Post captcha check result for ArkoseLabs'
       post '/captcha_check' do
         not_found! 'User' unless Feature.enabled?(:arkose_labs_login_challenge)
