@@ -103,7 +103,7 @@ module Ci
         base_reports = merge_request.base_pipeline&.security_reports
         scan_finding_rules = merge_request.approval_rules.scan_finding
         selected_rules = scan_finding_rules.reject do |rule|
-          violates_default_policy?(rule.source_rule, base_reports)
+          violates_default_policy?(rule, base_reports)
         end
         scan_finding_rules.remove_required_approved(selected_rules)
       end
@@ -115,8 +115,9 @@ module Ci
       end
     end
 
-    def violates_default_policy?(source_rule, base_reports)
-      policy_rule_reports.violates_default_policy_against?(base_reports, source_rule.vulnerabilities_allowed, source_rule.severity_levels, source_rule.vulnerability_states_for_branch, source_rule.scanners)
+    def violates_default_policy?(rule, base_reports)
+      rule = rule.source_rule if rule.source_rule # to be removed whenever merge request and project levels approval rules are aligned
+      policy_rule_reports.violates_default_policy_against?(base_reports, rule.vulnerabilities_allowed, rule.severity_levels, rule.vulnerability_states_for_branch, rule.scanners)
     end
   end
 end

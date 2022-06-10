@@ -380,4 +380,35 @@ RSpec.describe ApprovalMergeRequestRule, factory_default: :keep do
       end
     end
   end
+
+  describe '#vulnerability_states_for_branch' do
+    let(:vulnerability_states) { [:detected, :newly_detected] }
+    let(:approval_rule) { create(:approval_merge_request_rule, :scan_finding, vulnerability_states: vulnerability_states, merge_request: merge_request) }
+
+    subject { approval_rule.vulnerability_states_for_branch }
+
+    context 'with target branch equal to project default branch' do
+      before do
+        allow(merge_request).to receive(:target_branch).and_return("master")
+      end
+
+      it 'returns all vulnerability states' do
+        expect(subject).to contain_exactly('detected', described_class::NEWLY_DETECTED)
+      end
+    end
+
+    context 'with target branch different from project default branch' do
+      it 'returns only newly detected' do
+        expect(subject).to contain_exactly(described_class::NEWLY_DETECTED)
+      end
+
+      context 'without newly_detected' do
+        let(:vulnerability_states) { [:detected, :confirmed] }
+
+        it 'returns empty array' do
+          expect(subject).to be_blank
+        end
+      end
+    end
+  end
 end

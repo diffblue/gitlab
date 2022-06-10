@@ -8,6 +8,7 @@ module ApprovalRuleLike
   DEFAULT_NAME_FOR_COVERAGE = 'Coverage-Check'
   APPROVALS_REQUIRED_MAX = 100
   ALL_MEMBERS = 'All Members'
+  NEWLY_DETECTED = 'newly_detected'
 
   included do
     has_and_belongs_to_many :users,
