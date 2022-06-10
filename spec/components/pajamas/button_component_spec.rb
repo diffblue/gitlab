@@ -219,6 +219,42 @@ RSpec.describe Pajamas::ButtonComponent, type: :component do
       end
     end
 
+    describe 'type' do
+      context 'by default (without href)' do
+        it 'has type "button"' do
+          expect(rendered_component).to have_css "button[type='button']"
+        end
+      end
+
+      context 'when set to known type' do
+        where(:type) { [:button, :reset, :submit] }
+
+        let(:options) { { type: type } }
+
+        with_them do
+          it 'has the correct type' do
+            expect(rendered_component).to have_css "button[type='#{type}']"
+          end
+        end
+      end
+
+      context 'when set to unkown type' do
+        let(:options) { { type: :madeup } }
+
+        it 'has type "button"' do
+          expect(rendered_component).to have_css "button[type='button']"
+        end
+      end
+
+      context 'for links (with href)' do
+        let(:options) { { href: 'https://example.com', type: :reset } }
+
+        it 'ignores type' do
+          expect(rendered_component).not_to have_css "[type]"
+        end
+      end
+    end
+
     describe 'link button' do
       it 'renders a button tag with type="button" when "href" is not set' do
         expect(rendered_component).to have_css "button[type='button']"
