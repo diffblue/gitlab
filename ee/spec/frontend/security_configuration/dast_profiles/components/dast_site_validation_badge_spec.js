@@ -18,13 +18,13 @@ describe('EE - DastSiteValidationBadge', () => {
   });
 
   it.each`
-    status               | variant
-    ${STATUS.NONE}       | ${'neutral'}
-    ${STATUS.INPROGRESS} | ${'info'}
-    ${STATUS.PENDING}    | ${'info'}
-    ${STATUS.FAILED}     | ${'warning'}
-    ${STATUS.PASSED}     | ${'success'}
-  `('renders a $variant badge for $status status', ({ status, variant }) => {
+    status               | variant      | label
+    ${STATUS.NONE}       | ${'neutral'} | ${'Not validated'}
+    ${STATUS.INPROGRESS} | ${'info'}    | ${'Validating...'}
+    ${STATUS.PENDING}    | ${'info'}    | ${'Validating...'}
+    ${STATUS.FAILED}     | ${'warning'} | ${'Validation failed'}
+    ${STATUS.PASSED}     | ${'success'} | ${'Validated'}
+  `('renders a $variant badge for $status status', ({ status, variant, label }) => {
     createComponent({
       propsData: {
         status,
@@ -32,5 +32,6 @@ describe('EE - DastSiteValidationBadge', () => {
     });
 
     expect(findBadge().props('variant')).toBe(variant);
+    expect(findBadge().text()).toBe(label);
   });
 });

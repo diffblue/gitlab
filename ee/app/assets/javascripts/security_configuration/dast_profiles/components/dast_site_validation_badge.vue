@@ -22,6 +22,7 @@ export default {
     status: {
       type: String,
       required: true,
+      validator: (value) => Object.values(STATUS).includes(value),
     },
   },
   computed: {
@@ -29,7 +30,7 @@ export default {
       return validationStatusToBadgeVariantMap[this.status];
     },
     label() {
-      return DAST_SITE_VALIDATION_STATUS_PROPS[this.status].labelText;
+      return DAST_SITE_VALIDATION_STATUS_PROPS[this.status]?.labelText;
     },
   },
 };
