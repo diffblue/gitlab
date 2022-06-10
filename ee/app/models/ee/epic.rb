@@ -72,6 +72,13 @@ module EE
       validate :validate_confidential_issues_and_subepics
       validate :validate_confidential_parent
 
+      validates :total_opened_issue_weight,
+                :total_closed_issue_weight,
+                :total_opened_issue_count,
+                :total_closed_issue_count,
+                presence: true,
+                numericality: { only_integer: true }
+
       alias_attribute :parent_ids, :parent_id
       alias_method :issuing_parent, :group
 
