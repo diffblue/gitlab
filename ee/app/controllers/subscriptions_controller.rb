@@ -167,7 +167,7 @@ class SubscriptionsController < ApplicationController
   end
 
   def find_group(plan_id:)
-    selected_group = current_user.manageable_groups.top_most.find(params[:selected_group])
+    selected_group = current_user.owned_groups.top_most.find(params[:selected_group])
 
     result = GitlabSubscriptions::FetchPurchaseEligibleNamespacesService
       .new(user: current_user, plan_id: plan_id, namespaces: Array(selected_group))
@@ -221,7 +221,8 @@ class SubscriptionsController < ApplicationController
   end
 
   def fetch_eligible_groups
-    candidate_groups = current_user.manageable_groups.top_most.with_counts(archived: false)
+    candidate_groups = current_user.owned_groups.top_most.with_counts(archived: false)
+
     result = GitlabSubscriptions::FetchPurchaseEligibleNamespacesService
                .new(user: current_user, namespaces: candidate_groups, any_self_service_plan: true)
                .execute
