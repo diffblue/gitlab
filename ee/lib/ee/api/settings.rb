@@ -44,6 +44,10 @@ module EE
               attrs = attrs.except(:npm_package_requests_forwarding, :pypi_package_requests_forwarding)
             end
 
+            unless License.feature_available?(:password_complexity)
+              attrs = attrs.except(*EE::ApplicationSettingsHelper.password_complexity_attributes)
+            end
+
             unless License.feature_available?(:default_branch_protection_restriction_in_groups)
               attrs = attrs.except(:group_owners_can_manage_default_branch_protection)
             end

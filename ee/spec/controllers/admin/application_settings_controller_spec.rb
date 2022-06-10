@@ -121,6 +121,19 @@ RSpec.describe Admin::ApplicationSettingsController do
       it_behaves_like 'settings for licensed features'
     end
 
+    context 'updating password complexity settings' do
+      let(:settings) do
+        { password_number_required: true,
+          password_symbol_required: true,
+          password_uppercase_required: true,
+          password_lowercase_required: true }
+      end
+
+      let(:feature) { :password_complexity }
+
+      it_behaves_like 'settings for licensed features'
+    end
+
     context 'updating pypi packages request forwarding setting' do
       let(:settings) { { pypi_package_requests_forwarding: true } }
       let(:feature) { :package_forwarding }
