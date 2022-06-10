@@ -11,39 +11,26 @@ module EE
 
     override :read_only_message
     def read_only_message
-      message = ::Gitlab::Geo.secondary? ? geo_secondary_read_only_message : super
+      return custom_maintenance_mode_message if ::Gitlab.maintenance_mode?
 
-      return message unless ::Gitlab.maintenance_mode?
-      return maintenance_mode_message.concat(message) if message
-
-      maintenance_mode_message
+      return super unless ::Gitlab::Geo.secondary?
     end
 
-    def maintenance_mode_message
-      tag.div do
-        tag.p(class: 'gl-mb-3') do
-          concat(sprite_icon('information-o', css_class: 'gl-icon gl-mr-3'))
-          concat(custom_maintenance_mode_message)
-        end
-      end
+    def read_only_description
+      s_('You are on a read-only GitLab instance.') if ::Gitlab.maintenance_mode? && !::Gitlab::Geo.secondary?
     end
 
-    def geo_secondary_read_only_message
+    def geo_secondary_read_only_description
+      return unless ::Gitlab::Geo.secondary?
+
       message = @limited_actions_message ? s_('Geo|You may be able to make a limited amount of changes or perform a limited amount of actions on this page.') : s_('Geo|If you want to make changes, you must visit the primary site.')
 
       message = "#{message} #{lag_message}".html_safe if lag_message
 
-      html = tag.div do
-        tag.p(class: 'gl-mb-3') do
-          concat(sprite_icon('information-o', css_class: 'gl-icon gl-mr-3'))
-          concat(s_('Geo|You are on a secondary, %{b_open}read-only%{b_close} Geo site.').html_safe % { b_open: '<b>'.html_safe, b_close: '</b>'.html_safe })
-          concat(" #{message}")
-        end
+      tag.span do
+        concat(s_('Geo|You are on a secondary, %{b_open}read-only%{b_close} Geo site.').html_safe % { b_open: '<b>'.html_safe, b_close: '</b>'.html_safe })
+        concat(" #{message}")
       end
-
-      html.concat(tag.a(s_('Geo|Go to the primary site'), class: 'btn', href: ::Gitlab::Geo.primary_node.url, target: '_blank')) if ::Gitlab::Geo.primary_node.present?
-
-      html
     end
 
     def lag_message
@@ -124,7 +111,7 @@ module EE
 
     def custom_maintenance_mode_message
       ::Gitlab::CurrentSettings.maintenance_mode_message&.html_safe ||
-        s_('This GitLab instance is undergoing maintenance and is operating in read-only mode.')
+        s_('GitLab is undergoing maintenance')
     end
 
     def db_lag
