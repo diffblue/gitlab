@@ -38,6 +38,14 @@ RSpec.describe Pajamas::ButtonComponent, type: :component do
           expect(rendered_component).to have_css '.gl-button.btn-danger.btn-danger-tertiary.custom-class'
         end
       end
+
+      context 'overriding base attributes' do
+        let(:options) { { button_options: { type: 'submit' } } }
+
+        it 'overrides type' do
+          expect(rendered_component).to have_css '[type="submit"]'
+        end
+      end
     end
 
     describe 'button_text_classes' do
