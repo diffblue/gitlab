@@ -4,6 +4,12 @@ require 'spec_helper'
 
 RSpec.describe Gitlab::Usage::Metrics::Instrumentations::CountImportedProjectsMetric do
   let_it_be(:user) { create(:user) }
+
+  # Project records have to be created chronologically, because of
+  # metric SQL query optimizations that rely on the fact that `id`s
+  # increment monotonically over time.
+  #
+  # See https://gitlab.com/gitlab-org/gitlab/-/merge_requests/89701
   let_it_be(:old_import) { create(:project, import_type: 'gitea', creator_id: user.id, created_at: 2.months.ago) }
   let_it_be(:gitea_import_1) { create(:project, import_type: 'gitea', creator_id: user.id, created_at: 3.weeks.ago) }
 
