@@ -265,18 +265,14 @@ RSpec.describe Vulnerabilities::Read, type: :model do
   describe '.with_container_image' do
     let_it_be(:vulnerability) { create(:vulnerability, project: project, report_type: 'cluster_image_scanning') }
     let_it_be(:finding) { create(:vulnerabilities_finding, :with_cluster_image_scanning_scanning_metadata, project: project, vulnerability: vulnerability) }
-    let_it_be(:image) { finding.location['image'] }
 
-    before do
-      finding_with_different_image = create(
-        :vulnerabilities_finding,
-        :with_cluster_image_scanning_scanning_metadata,
-        project: project,
-        vulnerability: create(:vulnerability, report_type: 'cluster_image_scanning')
-      )
-      finding_with_different_image.location['image'] = 'alpine:latest'
-      finding_with_different_image.save!
+    let_it_be(:vulnerability_with_different_image) { create(:vulnerability, project: project, report_type: 'cluster_image_scanning') }
+    let_it_be(:finding_with_different_image) do
+      create(:vulnerabilities_finding, :with_cluster_image_scanning_scanning_metadata,
+        project: project, vulnerability: vulnerability_with_different_image, location_image: 'alpine:latest')
     end
+
+    let_it_be(:image) { finding.location['image'] }
 
     subject(:cluster_vulnerabilities) { described_class.with_container_image(image) }
 
@@ -425,6 +421,23 @@ RSpec.describe Vulnerabilities::Read, type: :model do
       it 'returns vulnerabilities ordered by created_at' do
         is_expected.to match_array([new_vulnerability.vulnerability_read, old_vulnerability.vulnerability_read])
       end
+    end
+  end
+
+  describe '.container_images' do
+    let_it_be(:vulnerability) { create(:vulnerability, project: project, report_type: 'cluster_image_scanning') }
+    let_it_be(:finding) { create(:vulnerabilities_finding, :with_cluster_image_scanning_scanning_metadata, project: project, vulnerability: vulnerability) }
+
+    let_it_be(:vulnerability_with_different_image) { create(:vulnerability, project: project, report_type: 'cluster_image_scanning') }
+    let_it_be(:finding_with_different_image) do
+      create(:vulnerabilities_finding, :with_cluster_image_scanning_scanning_metadata,
+        project: project, vulnerability: vulnerability_with_different_image, location_image: 'alpine:latest')
+    end
+
+    subject(:container_images) { described_class.all.container_images }
+
+    it 'returns container images for vulnerabilities' do
+      expect(container_images.map(&:location_image)).to match_array(['alpine:3.7', 'alpine:latest'])
     end
   end
 
