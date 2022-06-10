@@ -2,20 +2,20 @@
 
 require 'spec_helper'
 
-RSpec.describe ServiceFieldEntity do
-  let(:request) { double('request') }
+RSpec.describe Integrations::FieldEntity do
+  let(:request) { EntityRequest.new(integration: integration) }
 
-  subject { described_class.new(field, request: request, service: integration).as_json }
+  subject { described_class.new(field, request: request, integration: integration).as_json }
 
   before do
-    allow(request).to receive(:service).and_return(integration)
+    allow(request).to receive(:integration).and_return(integration)
   end
 
   describe '#as_json' do
-    context 'GitHub Service' do
+    context 'with GitHub integration' do
       let(:integration) { create(:github_integration) }
 
-      context 'field with type checkbox' do
+      context 'with field with type checkbox' do
         let(:field) { integration_field('static_context') }
 
         it 'exposes correct attributes and casts value to Boolean' do

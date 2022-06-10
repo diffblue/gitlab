@@ -5895,7 +5895,6 @@ Layout/LineLength:
     - 'spec/serializers/paginated_diff_entity_spec.rb'
     - 'spec/serializers/pipeline_serializer_spec.rb'
     - 'spec/serializers/review_app_setup_entity_spec.rb'
-    - 'spec/serializers/service_field_entity_spec.rb'
     - 'spec/services/alert_management/alerts/update_service_spec.rb'
     - 'spec/services/alert_management/create_alert_issue_service_spec.rb'
     - 'spec/services/alert_management/http_integrations/create_service_spec.rb'
