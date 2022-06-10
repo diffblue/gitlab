@@ -41,10 +41,10 @@ RSpec.describe 'Pending group memberships', :js do
       visit group_path(group)
 
       expect(page).to have_content "Group ID: #{group.id}"
-      expect(page).to have_content "A group is a collection of several projects"
-      expect(page).to have_content "No groups or projects matched your search"
-      expect(page).not_to have_content "New project"
-      expect(page).not_to have_content "Recent activity"
+      expect(page).to have_content s_('GroupsEmptyState|You do not have necessary permissions to create a subgroup or' \
+        ' project in this group. Please contact an owner of this group to create a new subgroup or project.')
+      expect(page).not_to have_content _('New project')
+      expect(page).not_to have_content s_('GroupActivityMetrics|Recent activity')
     end
 
     it 'a pending group member gets a 404 for a private project in the group' do
