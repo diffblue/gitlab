@@ -213,6 +213,80 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
           expect(security_orchestration_policy_configuration.policy_configuration_valid?(valid_policy)).to be_truthy
         end
       end
+
+      context 'for schedule policy rule' do
+        using RSpec::Parameterized::TableSyntax
+
+        let_it_be(:schedule_policy) { { scan_execution_policy: [build(:scan_execution_policy, :with_schedule)] } }
+
+        subject { security_orchestration_policy_configuration.policy_configuration_valid?(schedule_policy) }
+
+        where(:cadence, :is_valid) do
+          "@weekly"           | true
+          "@yearly"           | true
+          "@annually"         | true
+          "@monthly"          | true
+          "@weekly"           | true
+          "@daily"            | true
+          "@midnight"         | true
+          "@noon"             | true
+          "@hourly"           | true
+          "* * * * *"         | true
+          "0 0 2 3 *"         | true
+          "* * L * *"         | true
+          "* * -6 * *"        | true
+          "* * -3 * *"        | true
+          "* * 12 * *"        | true
+          "0 9 -4 * *"        | true
+          "0 0 -8 * *"        | true
+          "7 10 * * *"        | true
+          "00 07 * * *"       | true
+          "* * * * tue"       | true
+          "* * * * TUE"       | true
+          "12 10 0 * *"       | true
+          "52 20 * * 2"       | true
+          "* * last * *"      | true
+          "0 2 last * *"      | true
+          "52 9 2-5 * 2"      | true
+          "0 0 27 3 1,5"      | true
+          "0 0 11 * 3-6"      | true
+          "0 0 -7-L * *"      | true
+          "0 0 -1,-2 * *"     | true
+          "10/30 * * * *"     | true
+          "21 37 4,12 * 3"    | true
+          "02 07 21 jan *"    | true
+          "02 07 21 JAN *"    | true
+          "0 1 L * wed-fri"   | true
+          "0 1 L * wed-FRI"   | true
+          "0 1 L * WED-fri"   | true
+          "0 1 L * WED-FRI"   | true
+          "0 0 21 4 sat,sun"  | true
+          "0 0 21 4 SAT,SUN"  | true
+          "10-30/30 * * * *"  | true
+
+          ""                  | false
+          "1"                 | false
+          "2 3 4"             | false
+          "invalid"           | false
+          "@WEEKLY"           | false
+          "@YEARLY"           | false
+          "@ANNUALLY"         | false
+          "@MONTHLY"          | false
+          "@WEEKLY"           | false
+          "@DAILY"            | false
+          "@MIDNIGHT"         | false
+          "@NOON"             | false
+          "@HOURLY"           | false
+        end
+
+        with_them do
+          before do
+            schedule_policy[:scan_execution_policy][0][:rules][0][:cadence] = cadence
+          end
+
+          it { is_expected.to eq(is_valid) }
+        end
+      end
     end
 
     context 'with scan result policies' do
@@ -263,15 +337,17 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
 
     context 'when policy is passed as argument' do
       let_it_be(:policy_yaml) { nil }
-      let_it_be(:policy) { { scan_execution_policy: [build(:scan_execution_policy)] } }
+      let_it_be(:policy) { { scan_execution_policy: [build(:scan_execution_policy, :with_schedule)] } }
 
       context 'when scan type is secret_detection' do
         it 'returns false if extra fields are present' do
           invalid_policy = policy.deep_dup
           invalid_policy[:scan_execution_policy][0][:actions][0][:scan] = 'secret_detection'
+          invalid_policy[:scan_execution_policy][0][:rules][0][:cadence] = 'invalid * * * *'
 
-          expect(security_orchestration_policy_configuration.policy_configuration_validation_errors(invalid_policy)).to eq(
-            ["property '/scan_execution_policy/0/actions/0' is invalid: error_type=maxProperties"]
+          expect(security_orchestration_policy_configuration.policy_configuration_validation_errors(invalid_policy)).to contain_exactly(
+            "property '/scan_execution_policy/0/actions/0' is invalid: error_type=maxProperties",
+            "property '/scan_execution_policy/0/rules/0/cadence' does not match pattern: (@(yearly|annually|monthly|weekly|daily|midnight|noon|hourly))|(?i)(((\\*|(\\-?\\d+\\,?)+)(\\/\\d+)?|last|L|(sun|mon|tue|wed|thu|fri|sat|\\-|\\,)+|(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec|\\-|\\,)+)\\s?){5,6}"
           )
         end
 

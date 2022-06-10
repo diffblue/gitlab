@@ -62,7 +62,8 @@
                 },
                 "cadence": {
                   "description": "Specifies when this policy should schedule a new pipeline with enforced `actions`. Uses cron expression as a format (ie. `0 22 * * 1-5`). Supported only when `type` is set to `schedule`.",
-                  "type": "string"
+                  "type": "string",
+                  "pattern": "(@(yearly|annually|monthly|weekly|daily|midnight|noon|hourly))|(?i)(((\\*|(\\-?\\d+\\,?)+)(\\/\\d+)?|last|L|(sun|mon|tue|wed|thu|fri|sat|\\-|\\,)+|(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec|\\-|\\,)+)\\s?){5,6}"
                 },
                 "agents": {
                   "type": "object",
