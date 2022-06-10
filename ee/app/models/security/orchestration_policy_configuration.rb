@@ -13,6 +13,7 @@ module Security
     POLICY_SCHEMA_PATH = 'ee/app/validators/json_schemas/security_orchestration_policy.json'
     POLICY_SCHEMA = JSONSchemer.schema(Rails.root.join(POLICY_SCHEMA_PATH))
     AVAILABLE_POLICY_TYPES = %i{scan_execution_policy scan_result_policy}.freeze
+    JSON_SCHEMA_VALIDATION_TIMEOUT = 5.seconds
 
     belongs_to :project, inverse_of: :security_orchestration_policy_configuration, optional: true
     belongs_to :namespace, inverse_of: :security_orchestration_policy_configuration, optional: true
@@ -54,13 +55,17 @@ module Security
     end
 
     def policy_configuration_valid?(policy = policy_hash)
-      POLICY_SCHEMA.valid?(policy.to_h.deep_stringify_keys)
+      Timeout.timeout(JSON_SCHEMA_VALIDATION_TIMEOUT) do
+        POLICY_SCHEMA.valid?(policy.to_h.deep_stringify_keys)
+      end
     end
 
     def policy_configuration_validation_errors(policy = policy_hash)
-      POLICY_SCHEMA
-        .validate(policy.to_h.deep_stringify_keys)
-        .map { |error| JSONSchemer::Errors.pretty(error) }
+      Timeout.timeout(JSON_SCHEMA_VALIDATION_TIMEOUT) do
+        POLICY_SCHEMA
+          .validate(policy.to_h.deep_stringify_keys)
+          .map { |error| JSONSchemer::Errors.pretty(error) }
+      end
     end
 
     def policy_last_updated_by
