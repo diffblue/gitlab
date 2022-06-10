@@ -13,7 +13,7 @@
 
       = form_for [:subscriptions, @group], html: { class: 'gl-show-field-errors card w-100 gl-p-5' } do |f|
         = hidden_field_tag :new_user, params[:new_user]
-        = form_errors(@group)
+        = form_errors(@group, pajamas_alert: true)
         .row
           .form-group.group-name-holder.col-sm-12
             = f.label :name, class: 'label-bold' do
