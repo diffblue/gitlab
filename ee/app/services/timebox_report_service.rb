@@ -204,34 +204,39 @@ class TimeboxReportService
   # rubocop: enable CodeReuse/ActiveRecord
 
   # rubocop: disable CodeReuse/ActiveRecord
-  def resource_events
-    strong_memoize(:resource_events) do
-      union = Gitlab::SQL::Union.new([resource_timebox_events, state_events, weight_events]) # rubocop: disable Gitlab/Union
-      query = Arel::SelectManager.new
-        .with(materialized_ctes)
-        .project(Arel.star)
-        .from("((#{union.to_sql}) ORDER BY created_at LIMIT #{EVENT_COUNT_LIMIT + 1}) resource_events_union").to_sql
+  def resource_events_query
+    # This service requires the fetched events to be ordered by created_at and id.
+    # See the description in https://gitlab.com/gitlab-org/gitlab/-/merge_requests/89476.
+    union = Gitlab::SQL::Union.new([resource_timebox_events, state_events, weight_events]) # rubocop: disable Gitlab/Union
 
-      ApplicationRecord.connection.execute(query)
-    end
+    Arel::SelectManager.new
+      .with(materialized_ctes)
+      .project(Arel.star)
+      .from("((#{union.to_sql}) ORDER BY created_at, id LIMIT #{EVENT_COUNT_LIMIT + 1}) resource_events_union").to_sql
   end
   # rubocop: enable CodeReuse/ActiveRecord
 
+  def resource_events
+    strong_memoize(:resource_events) do
+      ApplicationRecord.connection.execute(resource_events_query)
+    end
+  end
+
   def resource_timebox_events
     resource_timebox_event_class.by_created_at_earlier_or_equal_to(end_time).by_issue_ids(in_scoped_issue_ids)
-      .select("'timebox' AS event_type", "created_at", "#{timebox_fk} AS value", "action", "issue_id")
+      .select("'timebox' AS event_type", "id", "created_at", "#{timebox_fk} AS value", "action", "issue_id")
       .limit(SINGLE_EVENT_COUNT_LIMIT)
   end
 
   def state_events
     ResourceStateEvent.by_created_at_earlier_or_equal_to(end_time).by_issue_ids(in_scoped_issue_ids)
-      .select("'state' AS event_type", "created_at", "state AS value", "NULL AS action", "issue_id")
+      .select("'state' AS event_type", "id", "created_at", "state AS value", "NULL AS action", "issue_id")
       .limit(SINGLE_EVENT_COUNT_LIMIT)
   end
 
   def weight_events
     ResourceWeightEvent.by_created_at_earlier_or_equal_to(end_time).by_issue_ids(in_scoped_issue_ids)
-      .select("'weight' AS event_type", "created_at", "weight AS value", "NULL AS action", "issue_id")
+      .select("'weight' AS event_type", "id", "created_at", "weight AS value", "NULL AS action", "issue_id")
       .limit(SINGLE_EVENT_COUNT_LIMIT)
   end
 
