@@ -55,7 +55,7 @@ _GitHub_ Flavored Markdown may be referred to with variable or constant names li
 `ghfm_` to avoid confusion. For example, we use the `ghfm` acronym for the
 [`ghfm_spec_v_0.29.txt` GitHub Flavored Markdown specification file](#github-flavored-markdown-specification)
 which is committed to the `gitlab` repo and used as input to the
-[`update_specification.rb` script](#update-specificationrb-script)
+[`update_specification.rb` script](#update-specificationrb-script).
 
 The original CommonMark specification is referred to as _CommonMark_ (no acronym).
 
@@ -583,7 +583,7 @@ is the official latest [GFM `spec.txt`](https://github.com/github/cmark-gfm/blob
 
 NOTE:
 This file uses the `ghfm` acronym instead of `gfm`, as
-[explained in the "Acronyms" section](#acronyms-glfm-ghfm-gfm-commonmark)
+explained in the [Acronyms section](#acronyms-glfm-ghfm-gfm-commonmark).
 
 ##### `glfm_intro.txt`
 
