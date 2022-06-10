@@ -2,7 +2,8 @@
 
 module Analytics
   class GroupActivityCalculator
-    DURATION = 90.days
+    RECENT_DURATION = 90.days
+    CACHE_OPTIONS = { raw: false, expires_in: 24.hours }.freeze
 
     def initialize(group, current_user)
       @group = group
@@ -10,45 +11,46 @@ module Analytics
     end
 
     def issues_count
-      @issues_count ||=
-        IssuesFinder.new(@current_user, params).execute.count
+      @issues_count ||= fetch_cached(:issues) do
+        IssuesFinder.new(@current_user, issuable_params).execute.count
+      end
     end
 
     def merge_requests_count
-      @merge_requests_count ||=
-        # We want to make sure the load of the following query
-        # lands on the read replica instead of the primary db
-        current_load_balancing_session.use_replicas_for_read_queries do
-          count_service.new(@group, @current_user, params).count
-        end
+      @merge_requests_count ||= fetch_cached(:merge_requests) do
+        MergeRequestsFinder.new(@current_user, issuable_params).execute.count
+      end
     end
 
     def new_members_count
-      @new_members_count ||=
+      @new_members_count ||= fetch_cached(:new_members) do
         GroupMembersFinder.new(
           @group,
           @current_user,
-          params: { created_after: DURATION.ago }
+          params: { created_after: RECENT_DURATION.ago }
         ).execute(include_relations: [:direct, :descendants]).count
+      end
     end
 
     private
 
-    def params
+    def issuable_params
       { group_id: @group.id,
         state: 'all',
-        created_after: DURATION.ago,
+        created_after: RECENT_DURATION.ago,
         include_subgroups: true,
         attempt_group_search_optimizations: true,
         attempt_project_search_optimizations: true }
     end
 
-    def current_load_balancing_session
-      ::Gitlab::Database::LoadBalancing::Session.current
+    def fetch_cached(type, &block)
+      Rails.cache.fetch(cache_key(type), CACHE_OPTIONS) do
+        ::Gitlab::Database::LoadBalancing::Session.current.use_replicas_for_read_queries(&block)
+      end.to_i
     end
 
-    def count_service
-      Groups::RecentMergeRequestsCountService
+    def cache_key(type)
+      ['groups', "recent_#{type}_count", @group.id, @current_user.id]
     end
   end
 end
