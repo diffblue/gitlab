@@ -61,7 +61,7 @@ RSpec.describe 'Promotions', :js do
       visit project_settings_repository_path(project)
 
       within('#promote_repository_features') do
-        find('.close').click
+        find('.js-close').click
       end
 
       visit project_settings_repository_path(project)
