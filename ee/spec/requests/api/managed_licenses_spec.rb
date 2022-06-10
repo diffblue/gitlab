@@ -163,28 +163,6 @@ RSpec.describe API::ManagedLicenses do
 
         expect(response).to have_gitlab_http_status(:bad_request)
       end
-
-      context 'with feature flag turned off' do
-        before do
-          stub_feature_flags(lc_remove_legacy_approval_status: false)
-        end
-
-        it 'creates managed license from deprecated approval status value' do
-          expect do
-            post api("/projects/#{project.id}/managed_licenses", maintainer_user),
-                 params: {
-                   name: 'NEW_LICENSE_NAME',
-                   approval_status: 'approved'
-                 }
-          end.to change {project.software_license_policies.count}.by(1)
-
-          expect(response).to have_gitlab_http_status(:created)
-          expect(response).to match_response_schema('software_license_policy', dir: 'ee')
-          expect(json_response).to have_key('id')
-          expect(json_response['name']).to eq('NEW_LICENSE_NAME')
-          expect(json_response['approval_status']).to eq('approved')
-        end
-      end
     end
 
     context 'authorized user with read permissions' do
@@ -257,32 +235,6 @@ RSpec.describe API::ManagedLicenses do
         patch api("/projects/#{project.id}/managed_licenses/#{non_existing_record_id}", maintainer_user)
 
         expect(response).to have_gitlab_http_status(:not_found)
-      end
-
-      context 'with feature flag turned off' do
-        before do
-          stub_feature_flags(lc_remove_legacy_approval_status: false)
-        end
-
-        it 'updates managed license data with deprecated approval status' do
-          initial_license = project.software_license_policies.first
-          initial_id = initial_license.id
-          patch api("/projects/#{project.id}/managed_licenses/#{software_license_policy.id}", maintainer_user),
-                params: { approval_status: 'blacklisted' }
-
-          updated_software_license_policy = project.software_license_policies.reload.first
-
-          expect(response).to have_gitlab_http_status(:ok)
-          expect(response).to match_response_schema('software_license_policy', dir: 'ee')
-
-          # Check that response is equal to the updated object
-          expect(json_response['id']).to eq(initial_id)
-          expect(json_response['name']).to eq(updated_software_license_policy.name)
-          expect(json_response['approval_status']).to eq('blacklisted')
-
-          # Check that the approval status was updated
-          expect(updated_software_license_policy).to be_denied
-        end
       end
     end
 

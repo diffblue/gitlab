@@ -20,7 +20,6 @@ module EE
           push_frontend_feature_flag(:refactor_mr_widget_test_summary, @project)
           push_frontend_feature_flag(:refactor_mr_widgets_extensions_user, current_user)
           push_frontend_feature_flag(:refactor_license_compliance_extension, @project)
-          push_frontend_feature_flag(:lc_remove_legacy_approval_status, @project)
         end
 
         before_action :authorize_read_pipeline!, only: [:container_scanning_reports, :dependency_scanning_reports,

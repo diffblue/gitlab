@@ -122,21 +122,7 @@ RSpec.describe Projects::PipelinesController do
         context 'approval_status' do
           subject(:status) { payload.find { |l| l['name'] == 'MIT' }.dig('classification', 'approval_status') }
 
-          context 'using legacy name' do
-            before do
-              stub_feature_flags(lc_remove_legacy_approval_status: false)
-            end
-
-            it { is_expected.to eq('approved') }
-          end
-
-          context 'using classification' do
-            before do
-              stub_feature_flags(lc_remove_legacy_approval_status: true)
-            end
-
-            it { is_expected.to eq('allowed') }
-          end
+          it { is_expected.to eq('allowed') }
         end
 
         it 'will return sorted by name' do

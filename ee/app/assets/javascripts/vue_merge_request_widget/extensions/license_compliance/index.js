@@ -6,9 +6,7 @@ import { parseDependencies } from './utils';
 // TODO: Clean up both status versions as part of https://gitlab.com/gitlab-org/gitlab/-/issues/356206
 const APPROVAL_STATUS_TO_ICON = {
   allowed: EXTENSION_ICONS.success,
-  approved: EXTENSION_ICONS.success,
   denied: EXTENSION_ICONS.failed,
-  blacklisted: EXTENSION_ICONS.failed,
   unclassified: EXTENSION_ICONS.notice,
 };
 
@@ -163,7 +161,7 @@ export default {
 
         // TODO: Clean up both status versions as part of https://gitlab.com/gitlab-org/gitlab/-/issues/356206
         const licenseSections = [
-          ...(groupedLicenses.denied?.length > 0 || groupedLicenses.blacklisted?.length > 0
+          ...(groupedLicenses.denied?.length > 0
             ? [
                 {
                   header: s__('LicenseCompliance|Denied'),
@@ -183,7 +181,7 @@ export default {
                 },
               ]
             : []),
-          ...(groupedLicenses.allowed?.length > 0 || groupedLicenses.approved?.length > 0
+          ...(groupedLicenses.allowed?.length > 0
             ? [
                 {
                   header: s__('LicenseCompliance|Allowed'),
