@@ -929,7 +929,7 @@ module EE
     def open_source_license_granted?
       public? &&
         namespace.public? &&
-        project_setting.legacy_open_source_license_available?
+        (!::Gitlab.com? || project_setting.legacy_open_source_license_available?)
     end
 
     def user_defined_rules

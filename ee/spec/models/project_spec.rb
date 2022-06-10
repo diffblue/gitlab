@@ -1202,19 +1202,21 @@ RSpec.describe Project do
       context 'public projects' do
         let(:project) { build(:project, :public, namespace: namespace) }
 
-        context 'when legacy_open_source_license_available feature flag is enabled' do
-          it 'allows ultimate features' do
-            is_expected.to eq(true)
-          end
+        where(:gitlab_dot_com?, :legacy_open_source_license_available_ff, :ultimate_features) do
+          true  | true  | true
+          true  | false | false
+          false | true  | true
+          false | false | true
         end
 
-        context 'when legacy_open_source_license_available feature flag is disabled' do
+        with_them do
           before do
-            stub_feature_flags(legacy_open_source_license_available: false)
+            allow(Gitlab).to receive(:com?).and_return(gitlab_dot_com?)
+            stub_feature_flags(legacy_open_source_license_available: legacy_open_source_license_available_ff)
           end
 
-          it 'prevent ultimate features' do
-            is_expected.to eq(false)
+          it 'offers ultimate features' do
+            is_expected.to eq(ultimate_features)
           end
         end
       end

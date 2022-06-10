@@ -25,6 +25,10 @@ module EE
         mirror_user_setting
         compliance_framework_setting
 
+        if params[:visibility_level].present? && project.visibility_level != params[:visibility_level].to_i
+          project.project_setting.legacy_open_source_license_available = false
+        end
+
         return update_failed! if project.errors.any?
 
         result = super do
