@@ -77,6 +77,12 @@ RSpec.describe Resolvers::Crm::ContactsResolver do
           expect(resolve_contacts(group, { state: :inactive })).to match_array([contact_a])
         end
       end
+
+      context 'when ids are provided' do
+        it 'returns the correct contacts' do
+          expect(resolve_contacts(group, { ids: [contact_a.to_global_id.to_s] })).to match_array([contact_a])
+        end
+      end
     end
   end
 

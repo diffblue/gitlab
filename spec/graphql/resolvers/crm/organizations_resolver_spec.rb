@@ -71,6 +71,14 @@ RSpec.describe Resolvers::Crm::OrganizationsResolver do
           expect(resolve_organizations(group, { state: :inactive })).to match_array([organization_a])
         end
       end
+
+      context 'when ids are provided' do
+        it 'returns the correct organizations' do
+          expect(resolve_organizations(group, {
+            ids: [organization_b.to_global_id.to_s]
+          })).to match_array([organization_b])
+        end
+      end
     end
   end
 

@@ -38,6 +38,10 @@ class CustomerRelations::Organization < ApplicationRecord
     where(state: state)
   end
 
+  def self.search_by_ids(ids)
+    where(id: ids)
+  end
+
   def self.sort_by_name
     order(name: :asc)
   end

@@ -56,6 +56,10 @@ class CustomerRelations::Contact < ApplicationRecord
     where(state: state)
   end
 
+  def self.search_by_ids(ids)
+    where(id: ids)
+  end
+
   def self.sort_by_name
     order("last_name ASC, first_name ASC")
   end
