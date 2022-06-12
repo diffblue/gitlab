@@ -94,17 +94,7 @@ RSpec.describe MergeRequests::CreatePipelineService, :clean_gitlab_redis_shared_
         merge_request.update!(title: merge_request.draft_title)
       end
 
-      context 'when remove_mergeable_state_check is true' do
-        it_behaves_like 'merged result pipeline'
-      end
-
-      context 'when remove_mergeable_state_check is false' do
-        before do
-          stub_feature_flags(remove_mergeable_state_check: false)
-        end
-
-        it_behaves_like 'detached merge request pipeline'
-      end
+      it_behaves_like 'merged result pipeline'
     end
 
     context 'when merge request requires an approval' do
@@ -113,9 +103,7 @@ RSpec.describe MergeRequests::CreatePipelineService, :clean_gitlab_redis_shared_
                approvals_required: 1)
       end
 
-      context 'when remove_mergeable_state_check is true' do
-        it_behaves_like 'merged result pipeline'
-      end
+      it_behaves_like 'merged result pipeline'
     end
 
     context 'when project setting for merge request pipelines is disabled' do
