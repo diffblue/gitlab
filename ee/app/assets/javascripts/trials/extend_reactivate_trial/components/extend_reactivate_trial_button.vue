@@ -85,7 +85,7 @@ export default {
 
 <template>
   <div>
-    <gl-button v-gl-modal.extend-trial :loading="isLoading" category="primary" variant="info">
+    <gl-button v-gl-modal.extend-trial :loading="isLoading" category="primary" variant="confirm">
       {{ i18nContext.buttonText }}
     </gl-button>
     <gl-modal
