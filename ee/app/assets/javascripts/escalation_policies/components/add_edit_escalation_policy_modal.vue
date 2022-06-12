@@ -67,7 +67,7 @@ export default {
         primary: {
           text: this.primaryBtnText,
           attributes: [
-            { variant: 'info' },
+            { variant: 'confirm' },
             { loading: this.loading },
             { disabled: !this.isFormValid || !this.isFormDirty },
           ],
