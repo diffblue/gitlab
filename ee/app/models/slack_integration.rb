@@ -10,6 +10,8 @@ class SlackIntegration < ApplicationRecord
     encode: false,
     encode_iv: false
 
+  scope :with_bot, -> { where.not(bot_user_id: nil) }
+
   validates :team_id, presence: true
   validates :team_name, presence: true
   validates :alias, presence: true,
