@@ -1,9 +1,0 @@
-= render 'admin/geo/shared/replication_nav'
-= render 'admin/geo/shared/filter_nav', replicable_name: _('uploads'), replicable_controller: 'admin/geo/uploads'
-- if @registries.any?
-  - @registries.each do |upload_registry|
-    = render partial: 'registry', locals: { upload_registry: upload_registry }
-
-  = paginate @registries, theme: 'gitlab'
-- else
-  = render 'shared/empty_states/geo_replication', replicable_type: _('uploads')

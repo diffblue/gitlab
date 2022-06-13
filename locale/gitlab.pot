@@ -16800,9 +16800,6 @@ msgstr ""
 msgid "Geo|Primary site"
 msgstr ""
 
-msgid "Geo|Project"
-msgstr ""
-
 msgid "Geo|Project (ID: %{project_id}) no longer exists on the primary. It is safe to remove this entry, as this will not remove any data on disk."
 msgstr ""
 
@@ -16948,9 +16945,6 @@ msgid "Geo|Storage config"
 msgstr ""
 
 msgid "Geo|Synced"
-msgstr ""
-
-msgid "Geo|Synced at"
 msgstr ""
 
 msgid "Geo|Synchronization"
