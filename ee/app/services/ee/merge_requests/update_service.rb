@@ -40,7 +40,7 @@ module EE
         super
 
         merge_request.run_after_commit do
-          ::MergeRequests::SyncCodeOwnerApprovalRulesWorker.perform_async(merge_request)
+          ::MergeRequests::SyncCodeOwnerApprovalRulesWorker.perform_async(merge_request.id)
         end
       end
 
