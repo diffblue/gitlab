@@ -4979,4 +4979,24 @@ RSpec.describe Ci::Pipeline, :mailer, factory_default: :keep do
       end
     end
   end
+
+  describe '#age_in_minutes' do
+    let(:pipeline) { build(:ci_pipeline) }
+
+    context 'when pipeline has not been persisted' do
+      it 'returns zero' do
+        expect(pipeline.age_in_minutes).to eq 0
+      end
+    end
+
+    context 'when pipeline has been saved' do
+      it 'returns pipeline age in minutes' do
+        pipeline.save!
+
+        travel_to(pipeline.created_at + 2.hours) do
+          expect(pipeline.age_in_minutes).to eq 120
+        end
+      end
+    end
+  end
 end

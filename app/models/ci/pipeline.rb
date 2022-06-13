@@ -131,6 +131,7 @@ module Ci
     validates :source, exclusion: { in: %w(unknown), unless: :importing? }, on: :create
 
     after_create :keep_around_commits, unless: :importing?
+    after_initialize :observe_age_in_minutes, unless: :importing?
 
     use_fast_destroy :job_artifacts
     use_fast_destroy :build_trace_chunks
@@ -1322,6 +1323,12 @@ module Ci
       end
     end
 
+    def age_in_minutes
+      return 0 if !persisted? || created_at.nil?
+
+      (Time.current - created_at).ceil / 60
+    end
+
     private
 
     def add_message(severity, content)
@@ -1370,6 +1377,12 @@ module Ci
       return unless project
 
       project.repository.keep_around(self.sha, self.before_sha)
+    end
+
+    def observe_age_in_minutes
+      ::Gitlab::Ci::Pipeline::Metrics
+        .pipeline_age_histogram
+        .observe({}, age_in_minutes)
     end
 
     # Without using `unscoped`, caller scope is also included into the query.
