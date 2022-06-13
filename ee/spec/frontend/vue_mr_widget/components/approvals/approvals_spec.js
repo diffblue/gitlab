@@ -202,7 +202,7 @@ describe('EE MRWidget approvals', () => {
 
         it('approve action is rendered', () => {
           expect(findActionData()).toEqual({
-            variant: 'info',
+            variant: 'confirm',
             text: 'Approve',
             category: 'primary',
           });
@@ -224,7 +224,7 @@ describe('EE MRWidget approvals', () => {
 
           it('approve action (with inverted style) is rendered', () => {
             expect(findActionData()).toEqual({
-              variant: 'info',
+              variant: 'confirm',
               text: 'Approve',
               category: 'secondary',
             });
@@ -241,7 +241,7 @@ describe('EE MRWidget approvals', () => {
 
           it('approve additionally action is rendered', () => {
             expect(findActionData()).toEqual({
-              variant: 'info',
+              variant: 'confirm',
               text: 'Approve additionally',
               category: 'secondary',
             });
