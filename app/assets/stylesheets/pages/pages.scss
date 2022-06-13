@@ -1,25 +1,3 @@
-.pages-domain-list {
-  &-item {
-    align-items: center;
-
-    .domain-status {
-      display: inline-flex;
-      left: $gl-padding;
-      position: absolute;
-    }
-
-    .domain-name {
-      flex-grow: 1;
-    }
-
-  }
-
-  &.has-verification-status > li {
-    padding-left: 3 * $gl-padding;
-  }
-
-}
-
 .status-badge {
 
   display: inline-flex;
