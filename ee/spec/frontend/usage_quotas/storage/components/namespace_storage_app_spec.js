@@ -179,23 +179,9 @@ describe('NamespaceStorageApp', () => {
   });
 
   describe('Container registry usage', () => {
-    it('should hide the container registry usage component', () => {
-      createComponent({
-        namespace: withRootStorageStatistics,
-        provide: {
-          glFeatures: { containerRegistryNamespaceStatistics: false },
-        },
-      });
-
-      expect(findContainerRegistry().exists()).toBe(false);
-    });
-
     it('should show the container registry usage component', () => {
       createComponent({
         namespace: withRootStorageStatistics,
-        provide: {
-          glFeatures: { containerRegistryNamespaceStatistics: true },
-        },
       });
 
       expect(findContainerRegistry().exists()).toBe(true);
