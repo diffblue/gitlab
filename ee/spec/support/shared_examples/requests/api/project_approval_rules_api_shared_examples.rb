@@ -61,6 +61,20 @@ RSpec.shared_examples 'an API endpoint for creating project approval rule' do
       end
     end
 
+    context 'when applies_to_all_protected_branches param is present' do
+      let(:protected_branches) { create_list(:protected_branch, 2, project: project) }
+
+      before do
+        stub_licensed_features(multiple_approval_rules: true)
+        post api(url, current_user), params: params.merge(applies_to_all_protected_branches: true)
+      end
+
+      it 'returns a list of project protected branches in the response' do
+        expect(json_response['protected_branches']).to contain_exactly(*project.protected_branches)
+        expect(json_response['applies_to_all_protected_branches']).to eq(true)
+      end
+    end
+
     context 'with rule_type set to report_approver' do
       before do
         params.merge!(rule_type: :report_approver)
@@ -135,10 +149,26 @@ RSpec.shared_examples 'an API endpoint for creating project approval rule' do
 end
 
 RSpec.shared_examples 'an API endpoint for updating project approval rule' do
+  let(:params) { {} }
+
   shared_examples 'a user with access' do
     before do
       project.add_developer(approver)
       project.add_developer(other_approver)
+    end
+
+    context 'when applies_to_all_protected_branches param is present' do
+      let(:protected_branches) { create_list(:protected_branch, 2, project: project) }
+
+      before do
+        stub_licensed_features(multiple_approval_rules: true)
+        put api(url, current_user), params: params.merge(applies_to_all_protected_branches: true)
+      end
+
+      it 'returns a list of project protected branches in the response' do
+        expect(json_response['protected_branches']).to contain_exactly(*project.protected_branches)
+        expect(json_response['applies_to_all_protected_branches']).to eq(true)
+      end
     end
 
     context 'when protected_branch_ids param is present' do
