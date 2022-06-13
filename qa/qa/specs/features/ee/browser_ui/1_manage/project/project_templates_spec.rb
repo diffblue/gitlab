@@ -68,7 +68,11 @@ module QA
         end
       end
 
-      context 'instance level', :requires_admin do
+      context 'instance level', :requires_admin, quarantine: {
+        issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/364742',
+        type: :investigating,
+        only: { subdomain: :staging }
+      } do
         before do
           Flow::Login.sign_in_as_admin
 
