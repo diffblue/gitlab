@@ -58,4 +58,5 @@
   .form-text.text-muted
     = s_('PushRules|Reject file sizes equal to or greater than this size. If set to 0, files of any size are allowed. This rule does not apply to files tracked by Git LFS.')
 
-= f.submit s_("PushRules|Save push rules"), class: "btn gl-button btn-confirm", data: { qa_selector: 'submit_settings_button' }
+= render Pajamas::ButtonComponent.new(type: :submit, variant: :confirm, button_options: { data: { qa_selector: 'submit_settings_button' }}) do
+  = s_('PushRules|Save push rules')

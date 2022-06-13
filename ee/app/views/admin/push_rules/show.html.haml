@@ -6,7 +6,7 @@
   .settings-header
     %h4
       = _('Push Rules')
-    %button.btn.gl-button.btn-default.js-settings-toggle{ type: 'button' }
+    = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
       = expanded_by_default? ? _('Collapse') : _('Expand')
     %p
       = _('Rules that define what git pushes are accepted for a project. All newly created projects will use these settings.')
