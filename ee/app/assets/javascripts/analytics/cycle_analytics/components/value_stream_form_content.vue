@@ -147,7 +147,7 @@ export default {
     secondaryProps() {
       return {
         text: this.$options.i18n.BTN_ADD_ANOTHER_STAGE,
-        attributes: [{ category: 'secondary' }, { variant: 'info' }, { class: '' }],
+        attributes: [{ category: 'secondary' }, { variant: 'confirm' }, { class: '' }],
       };
     },
     hasFormErrors() {
