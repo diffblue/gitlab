@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Plan' do
+  RSpec.describe 'Plan', :reliable do
     describe 'Default issue templates' do
       let(:default_template_project) do
         Resource::Project.fabricate_via_api! do |project|
