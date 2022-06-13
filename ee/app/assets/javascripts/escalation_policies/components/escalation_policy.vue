@@ -82,10 +82,10 @@ export default {
     };
   },
   computed: {
-    policyVisibleAngleIcon() {
-      return this.isPolicyVisible ? 'angle-down' : 'angle-right';
+    policyVisibleChevronIcon() {
+      return this.isPolicyVisible ? 'chevron-lg-down' : 'chevron-lg-right';
     },
-    policyVisibleAngleIconLabel() {
+    policyVisibleChevronIconLabel() {
       return this.isPolicyVisible ? __('Collapse') : __('Expand');
     },
     editPolicyModalId() {
@@ -140,12 +140,12 @@ export default {
           <gl-button
             v-gl-tooltip
             class="gl-mr-2 gl-p-0!"
-            :title="policyVisibleAngleIconLabel"
-            :aria-label="policyVisibleAngleIconLabel"
+            :title="policyVisibleChevronIconLabel"
+            :aria-label="policyVisibleChevronIconLabel"
             category="tertiary"
             @click="isPolicyVisible = !isPolicyVisible"
           >
-            <gl-icon :size="12" :name="policyVisibleAngleIcon" />
+            <gl-icon :size="12" :name="policyVisibleChevronIcon" />
           </gl-button>
 
           <h3 class="gl-font-weight-bold gl-font-lg gl-m-0">{{ policy.name }}</h3>
