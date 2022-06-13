@@ -74,37 +74,17 @@ RSpec.describe Ci::Runners::StaleGroupRunnersPruneService do
       stub_application_setting(check_namespace_plan: false)
     end
 
+    it_behaves_like 'perform on empty groups relation does not prune any runners'
+
     context 'when stale_runner_cleanup_for_namespace licensed feature is available' do
       before do
         stub_licensed_features(stale_runner_cleanup_for_namespace: true)
       end
 
-      context 'with :stale_runner_cleanup_for_namespace_development FF enabled' do
-        before do
-          stub_feature_flags(stale_runner_cleanup_for_namespace_development: true)
-        end
-
-        it_behaves_like 'perform on empty groups relation does not prune any runners'
-      end
-
       context 'with some stale group runners on group1' do
         include_context 'with some stale group runners on group1'
 
-        context 'with :stale_runner_cleanup_for_namespace_development FF enabled' do
-          before do
-            stub_feature_flags(stale_runner_cleanup_for_namespace_development: [group1, group2])
-          end
-
-          it_behaves_like 'pruning is executed on stale runners'
-        end
-
-        context 'with :stale_runner_cleanup_for_namespace_development FF disabled for group1' do
-          before do
-            stub_feature_flags(stale_runner_cleanup_for_namespace_development: [group2])
-          end
-
-          it_behaves_like 'pruning is not executed on stale runners'
-        end
+        it_behaves_like 'pruning is executed on stale runners'
       end
     end
 
@@ -116,13 +96,7 @@ RSpec.describe Ci::Runners::StaleGroupRunnersPruneService do
       context 'with some stale group runners on group1' do
         include_context 'with some stale group runners on group1'
 
-        context 'with :stale_runner_cleanup_for_namespace_development FF enabled' do
-          before do
-            stub_feature_flags(stale_runner_cleanup_for_namespace_development: true)
-          end
-
-          it_behaves_like 'pruning is not executed on stale runners'
-        end
+        it_behaves_like 'pruning is not executed on stale runners'
       end
     end
   end
@@ -136,35 +110,15 @@ RSpec.describe Ci::Runners::StaleGroupRunnersPruneService do
       stub_licensed_features(stale_runner_cleanup_for_namespace: true)
     end
 
-    context 'with :stale_runner_cleanup_for_namespace_development FF enabled' do
-      before do
-        stub_feature_flags(stale_runner_cleanup_for_namespace_development: true)
-      end
-
-      it_behaves_like 'perform on empty groups relation does not prune any runners'
-    end
+    it_behaves_like 'perform on empty groups relation does not prune any runners'
 
     context 'with some stale group runners on group1' do
       include_context 'with some stale group runners on group1'
 
-      context 'with :stale_runner_cleanup_for_namespace_development FF enabled' do
-        before do
-          stub_feature_flags(stale_runner_cleanup_for_namespace_development: [group1, group2])
-        end
+      it_behaves_like 'pruning is executed on stale runners'
 
-        it_behaves_like 'pruning is executed on stale runners'
-
-        context 'with premium plan' do
-          let(:namespace_plan) { :premium_plan }
-
-          it_behaves_like 'pruning is not executed on stale runners'
-        end
-      end
-
-      context 'with :stale_runner_cleanup_for_namespace_development FF disabled for group1' do
-        before do
-          stub_feature_flags(stale_runner_cleanup_for_namespace_development: [group2])
-        end
+      context 'with premium plan' do
+        let(:namespace_plan) { :premium_plan }
 
         it_behaves_like 'pruning is not executed on stale runners'
       end

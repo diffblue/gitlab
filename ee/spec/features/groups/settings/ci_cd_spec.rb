@@ -24,65 +24,46 @@ RSpec.describe 'Group CI/CD settings' do
       end
     end
 
+    shared_examples 'clicks on toggle to enable stale runners cleanup' do
+      it 'clicks on toggle to enable setting', :js do
+        modal_ok_msg = s_('Runners|Yes, start deleting stale runners')
+
+        page.find('[data-testid="stale-runner-cleanup-toggle"] button').click
+
+        wait_for(page.find_button(modal_ok_msg)) do
+          click_button(modal_ok_msg)
+          wait_for_requests
+
+          expect(page).to have_selector('[data-testid="stale-runner-cleanup-toggle"] button.is-checked')
+          expect(group.reload.ci_cd_settings.allow_stale_runner_pruning?).to be(true)
+        end
+      end
+    end
+
     before do
       group.ci_cd_settings.update!(allow_stale_runner_pruning: false)
     end
 
-    context 'when stale_runner_cleanup_for_namespace_development feature flag is enabled' do
+    context 'when stale_runner_cleanup_for_namespace licensed feature is available' do
       before do
-        stub_feature_flags(stale_runner_cleanup_for_namespace_development: true)
+        stub_licensed_features(stale_runner_cleanup_for_namespace: true)
+
+        visit group_settings_ci_cd_path(group)
+        wait_for_requests
       end
 
-      context 'when stale_runner_cleanup_for_namespace licensed feature is available' do
-        before do
-          stub_licensed_features(stale_runner_cleanup_for_namespace: true)
-
-          visit group_settings_ci_cd_path(group)
-          wait_for_requests
-        end
-
-        it 'clicks on toggle to enable setting', :js do
-          modal_ok_msg = s_('Runners|Yes, start deleting stale runners')
-
-          page.find('[data-testid="stale-runner-cleanup-toggle"] button').click
-
-          wait_for(page.find_button(modal_ok_msg)) do
-            click_button(modal_ok_msg)
-            wait_for_requests
-
-            expect(page).to have_selector('[data-testid="stale-runner-cleanup-toggle"] button.is-checked')
-            expect(group.reload.ci_cd_settings.allow_stale_runner_pruning?).to be(true)
-          end
-        end
-      end
-
-      context 'when stale_runner_cleanup_for_namespace licensed feature is not available' do
-        before do
-          stub_licensed_features(stale_runner_cleanup_for_namespace: false)
-
-          visit group_settings_ci_cd_path(group)
-          wait_for_requests
-        end
-
-        it_behaves_like 'does not show stale runners cleanup'
-      end
+      it_behaves_like 'clicks on toggle to enable stale runners cleanup'
     end
 
-    context 'when stale_runner_cleanup_for_namespace_development feature flag is disabled' do
+    context 'when stale_runner_cleanup_for_namespace licensed feature is not available' do
       before do
-        stub_feature_flags(stale_runner_cleanup_for_namespace_development: false)
+        stub_licensed_features(stale_runner_cleanup_for_namespace: false)
+
+        visit group_settings_ci_cd_path(group)
+        wait_for_requests
       end
 
-      context 'when stale_runner_cleanup_for_namespace licensed feature is available' do
-        before do
-          stub_licensed_features(stale_runner_cleanup_for_namespace: true)
-
-          visit group_settings_ci_cd_path(group)
-          wait_for_requests
-        end
-
-        it_behaves_like 'does not show stale runners cleanup'
-      end
+      it_behaves_like 'does not show stale runners cleanup'
     end
   end
 end
