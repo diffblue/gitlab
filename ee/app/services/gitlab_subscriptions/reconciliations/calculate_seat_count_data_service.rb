@@ -57,7 +57,11 @@ module GitlabSubscriptions
       end
 
       def current_subscription
-        namespace.gitlab_subscription
+        strong_memoize(:current_subscription) do
+          subscription = namespace.gitlab_subscription
+
+          subscription if subscription&.has_a_paid_hosted_plan? && !subscription.expired?
+        end
       end
 
       def current_seat_count_threshold
