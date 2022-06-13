@@ -242,9 +242,7 @@ export default {
             >
           </div>
 
-          <div
-            class="item-meta gl-display-flex gl-flex-wrap mt-xl-0 gl-align-items-center gl-pt-2 gl-ml-6"
-          >
+          <div class="item-meta gl-display-flex gl-flex-wrap mt-xl-0 gl-align-items-center gl-ml-6">
             <span class="gl-mr-5 gl-mb-3">{{ itemHierarchy }}</span>
             <gl-tooltip v-if="isEpic" :target="() => $refs.countBadge">
               <p v-if="allowSubEpics" class="gl-font-weight-bold gl-m-0">
