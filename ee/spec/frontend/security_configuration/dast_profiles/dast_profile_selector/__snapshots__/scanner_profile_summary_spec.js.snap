@@ -10,8 +10,11 @@ exports[`DastScannerProfileSummary renders properly 1`] = `
   <summary-cell-stub
     class=""
     label="Scan mode"
-    value="Passive"
-  />
+  >
+    <scan-type-badge-stub
+      scantype="PASSIVE"
+    />
+  </summary-cell-stub>
    
   <summary-cell-stub
     label="Spider timeout"

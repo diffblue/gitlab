@@ -1,5 +1,6 @@
 <script>
 import { SCAN_TYPE_LABEL } from 'ee/security_configuration/dast_profiles/dast_scanner_profiles/constants';
+import ScanTypeBadge from 'ee/security_configuration/dast_profiles/components/dast_scan_type_badge.vue';
 import DastProfileSummaryCard from './dast_profile_summary_card.vue';
 import SummaryCell from './summary_cell.vue';
 
@@ -8,6 +9,7 @@ export default {
   components: {
     DastProfileSummaryCard,
     SummaryCell,
+    ScanTypeBadge,
   },
   props: {
     profile: {
@@ -33,8 +35,8 @@ export default {
       <summary-cell
         :class="{ 'gl-text-red-500': hasConflict }"
         :label="s__('DastProfiles|Scan mode')"
-        :value="$options.SCAN_TYPE_LABEL[profile.scanType]"
-      />
+        ><scan-type-badge :scan-type="profile.scanType"
+      /></summary-cell>
       <summary-cell
         :label="s__('DastProfiles|Spider timeout')"
         :value="n__('%d minute', '%d minutes', profile.spiderTimeout || 0)"
