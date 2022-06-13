@@ -1353,14 +1353,20 @@ RSpec.describe API::Projects do
           expect(json_response["message"]).to eq(message)
         end
 
-        context 'when instance setting is set to 0 days' do
-          it 'deletes project right away' do
-            allow(Gitlab::CurrentSettings).to receive(:deletion_adjourned_period).and_return(0)
-            delete api("/projects/#{project.id}", user)
-
-            expect(response).to have_gitlab_http_status(:accepted)
-            expect(project.reload.pending_delete).to eq(true)
+        context 'when delayed project deletion is disabled on the application' do
+          before do
+            stub_application_setting(lock_delayed_project_removal: true, delayed_project_removal: false)
           end
+
+          it_behaves_like 'deletes project immediately'
+        end
+
+        context 'when deletion adjourned period is 0' do
+          before do
+            stub_application_setting(deletion_adjourned_period: 0)
+          end
+
+          it_behaves_like 'deletes project immediately'
         end
       end
 

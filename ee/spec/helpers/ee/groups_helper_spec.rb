@@ -120,26 +120,21 @@ RSpec.describe GroupsHelper do
           stub_application_setting(delayed_group_deletion: true)
         end
 
-        context 'when adjourned deletion period is > 0' do
-          before do
-            stub_application_setting(deletion_adjourned_period: 1)
-          end
-
-          it_behaves_like 'delayed deletion message'
-        end
-
-        context 'when adjourned deletion period = 0' do
-          before do
-            stub_application_setting(deletion_adjourned_period: 0)
-          end
-
-          it_behaves_like 'permanent deletion message'
-        end
+        it_behaves_like 'delayed deletion message'
       end
 
       context 'when group delay deletion is disabled' do
         before do
           stub_application_setting(delayed_group_deletion: false)
+        end
+
+        it_behaves_like 'permanent deletion message'
+      end
+
+      context 'when group delay deletion is enabled and adjourned deletion period is 0' do
+        before do
+          stub_application_setting(delayed_group_deletion: true)
+          stub_application_setting(deletion_adjourned_period: 0)
         end
 
         it_behaves_like 'permanent deletion message'

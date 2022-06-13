@@ -890,81 +890,76 @@ RSpec.describe API::Groups do
         stub_licensed_features(adjourned_deletion_for_projects_and_groups: true)
       end
 
-      context 'period for delayed deletion is greater than 0' do
+      context 'when delayed group deletion is enabled' do
         before do
-          stub_application_setting(deletion_adjourned_period: 1)
+          stub_application_setting(delayed_group_deletion: true)
         end
 
-        context 'when delayed group deletion is enabled' do
-          before do
-            stub_application_setting(delayed_group_deletion: true)
+        context 'success' do
+          it 'marks the group for delayed deletion' do
+            subject
+            group.reload
+
+            expect(response).to have_gitlab_http_status(:accepted)
+            expect(group.marked_for_deletion_on).to eq(Date.current)
+            expect(group.deleting_user).to eq(user)
           end
 
-          context 'success' do
-            it 'marks the group for delayed deletion' do
-              subject
-              group.reload
-
-              expect(response).to have_gitlab_http_status(:accepted)
-              expect(group.marked_for_deletion_on).to eq(Date.current)
-              expect(group.deleting_user).to eq(user)
-            end
-
-            it 'does not immediately enqueue the job to delete the group' do
-              expect { subject }.not_to change(GroupDestroyWorker.jobs, :size)
-            end
+          it 'does not immediately enqueue the job to delete the group' do
+            expect { subject }.not_to change(GroupDestroyWorker.jobs, :size)
           end
         end
-        context 'when delayed group deletion is disabled' do
+
+        context 'when deletion adjourned period is 0' do
           before do
-            stub_application_setting(delayed_group_deletion: false)
+            stub_application_setting(deletion_adjourned_period: 0)
           end
 
           it_behaves_like 'immediately enqueues the job to delete the group'
         end
-
-        context 'failure' do
-          before do
-            allow(::Groups::MarkForDeletionService).to receive_message_chain(:new, :execute).and_return({ status: :error, message: 'error' })
-          end
-
-          it 'returns error' do
-            subject
-
-            expect(response).to have_gitlab_http_status(:bad_request)
-            expect(json_response['message']).to eq('error')
-          end
-        end
-
-        it 'does not mark the group for deletion when the group has a paid gitlab.com subscription', :saas do
-          create(:gitlab_subscription, :ultimate, namespace: group)
-
-          subject
-
-          expect(response).to have_gitlab_http_status(:bad_request)
-          expect(json_response['message']).to eq("This group can't be removed because it is linked to a subscription.")
-          expect(group.marked_for_deletion_on).to be_nil
-          expect(group.deleting_user).to be_nil
-        end
-
-        it 'marks for deletion a subgroup of a group with a paid gitlab.com subscription', :saas do
-          create(:gitlab_subscription, :ultimate, namespace: group)
-          subgroup = create(:group, parent: group)
-
-          delete api("/groups/#{subgroup.id}", user)
-
-          expect(response).to have_gitlab_http_status(:accepted)
-          expect(subgroup.marked_for_deletion_on).to eq(Date.current)
-          expect(subgroup.deleting_user).to eq(user)
-        end
       end
 
-      context 'period of delayed deletion is set to 0' do
+      context 'when delayed group deletion is disabled' do
         before do
-          stub_application_setting(deletion_adjourned_period: 0)
+          stub_application_setting(delayed_group_deletion: false)
         end
 
         it_behaves_like 'immediately enqueues the job to delete the group'
+      end
+
+      context 'failure' do
+        before do
+          allow(::Groups::MarkForDeletionService).to receive_message_chain(:new, :execute).and_return({ status: :error, message: 'error' })
+        end
+
+        it 'returns error' do
+          subject
+
+          expect(response).to have_gitlab_http_status(:bad_request)
+          expect(json_response['message']).to eq('error')
+        end
+      end
+
+      it 'does not mark the group for deletion when the group has a paid gitlab.com subscription', :saas do
+        create(:gitlab_subscription, :ultimate, namespace: group)
+
+        subject
+
+        expect(response).to have_gitlab_http_status(:bad_request)
+        expect(json_response['message']).to eq("This group can't be removed because it is linked to a subscription.")
+        expect(group.marked_for_deletion_on).to be_nil
+        expect(group.deleting_user).to be_nil
+      end
+
+      it 'marks for deletion a subgroup of a group with a paid gitlab.com subscription', :saas do
+        create(:gitlab_subscription, :ultimate, namespace: group)
+        subgroup = create(:group, parent: group)
+
+        delete api("/groups/#{subgroup.id}", user)
+
+        expect(response).to have_gitlab_http_status(:accepted)
+        expect(subgroup.marked_for_deletion_on).to eq(Date.current)
+        expect(subgroup.deleting_user).to eq(user)
       end
     end
 

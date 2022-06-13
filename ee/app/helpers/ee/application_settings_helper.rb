@@ -149,5 +149,13 @@ module EE
         password_symbol_required: @application_setting[:password_symbol_required].to_s
       })
     end
+
+    def deletion_protection_data
+      {
+        deletion_adjourned_period: @application_setting[:deletion_adjourned_period],
+        delayed_group_deletion: @application_setting[:delayed_group_deletion].to_s,
+        delayed_project_deletion: @application_setting[:delayed_project_deletion].to_s
+      }
+    end
   end
 end
