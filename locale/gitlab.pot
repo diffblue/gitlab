@@ -25207,10 +25207,10 @@ msgstr ""
 msgid "NavigationTheme|Blue"
 msgstr ""
 
-msgid "NavigationTheme|Dark"
+msgid "NavigationTheme|Dark Mode (alpha)"
 msgstr ""
 
-msgid "NavigationTheme|Dark Mode (alpha)"
+msgid "NavigationTheme|Gray"
 msgstr ""
 
 msgid "NavigationTheme|Green"
@@ -25219,10 +25219,10 @@ msgstr ""
 msgid "NavigationTheme|Indigo"
 msgstr ""
 
-msgid "NavigationTheme|Light"
+msgid "NavigationTheme|Light Blue"
 msgstr ""
 
-msgid "NavigationTheme|Light Blue"
+msgid "NavigationTheme|Light Gray"
 msgstr ""
 
 msgid "NavigationTheme|Light Green"
