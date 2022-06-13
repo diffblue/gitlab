@@ -411,4 +411,32 @@ RSpec.describe ApprovalMergeRequestRule, factory_default: :keep do
       end
     end
   end
+
+  describe '#track_approvers_for_report_approver' do
+    context 'with rule_type other than report_approver' do
+      it 'does not call track_invalid_approvers' do
+        expect(Gitlab::UsageDataCounters::MergeRequestActivityUniqueCounter).not_to receive(:track_invalid_approvers)
+
+        subject
+      end
+    end
+
+    context 'with report_approver as rule_type' do
+      it 'calls track_invalid_approvers' do
+        expect(Gitlab::UsageDataCounters::MergeRequestActivityUniqueCounter).to receive(:track_invalid_approvers).with(merge_request: merge_request)
+
+        create(:report_approver_rule, merge_request: merge_request)
+      end
+
+      context 'with approvers' do
+        it 'does not call track_invalid_approvers' do
+          rule = create(:report_approver_rule, merge_request: merge_request)
+
+          expect(Gitlab::UsageDataCounters::MergeRequestActivityUniqueCounter).not_to receive(:track_invalid_approvers)
+
+          rule.users << project.first_owner
+        end
+      end
+    end
+  end
 end
