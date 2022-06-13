@@ -180,7 +180,7 @@ export default {
             :data-testid="button.testId"
             category="secondary"
             target="_blank"
-            variant="info"
+            variant="confirm"
             >{{ button.text }}</gl-button
           >
           <gl-button
@@ -189,7 +189,7 @@ export default {
             data-testid="refresh-seats-button"
             data-qa-selector="refresh_seats"
             category="secondary"
-            variant="info"
+            variant="confirm"
             @click="refreshSeats"
             >{{ s__('SubscriptionTable|Refresh Seats') }}</gl-button
           >
