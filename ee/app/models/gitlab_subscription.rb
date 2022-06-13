@@ -148,23 +148,12 @@ class GitlabSubscription < ApplicationRecord
 
   def log_previous_state_for_update
     attrs = self.attributes.merge(self.attributes_in_database)
-    log_previous_state_to_history(:gitlab_subscription_updated, attrs)
+
+    GitlabSubscriptionHistory.create_from_change(:gitlab_subscription_updated, attrs)
   end
 
   def log_previous_state_for_destroy
-    attrs = self.attributes
-    log_previous_state_to_history(:gitlab_subscription_destroyed, attrs)
-  end
-
-  def log_previous_state_to_history(change_type, attrs = {})
-    attrs['gitlab_subscription_created_at'] = attrs['created_at']
-    attrs['gitlab_subscription_updated_at'] = attrs['updated_at']
-    attrs['gitlab_subscription_id'] = self.id
-    attrs['change_type'] = change_type
-
-    omitted_attrs = %w(id created_at updated_at seats_in_use seats_owed max_seats_used_changed_at)
-
-    GitlabSubscriptionHistory.create(attrs.except(*omitted_attrs))
+    GitlabSubscriptionHistory.create_from_change(:gitlab_subscription_destroyed, self.attributes)
   end
 
   def automatically_index_in_elasticsearch?
