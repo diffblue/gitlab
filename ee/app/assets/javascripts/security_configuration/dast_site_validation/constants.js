@@ -36,6 +36,14 @@ export const DAST_SITE_VALIDATION_STATUS = {
   FAILED: 'FAILED_VALIDATION',
 };
 
+export const VALIDATION_STATUS_TO_BADGE_VARIANT_MAP = {
+  [DAST_SITE_VALIDATION_STATUS.NONE]: 'neutral',
+  [DAST_SITE_VALIDATION_STATUS.INPROGRESS]: 'info',
+  [DAST_SITE_VALIDATION_STATUS.PENDING]: 'info',
+  [DAST_SITE_VALIDATION_STATUS.FAILED]: 'warning',
+  [DAST_SITE_VALIDATION_STATUS.PASSED]: 'success',
+};
+
 const INPROGRESS_VALIDATION_PROPS = {
   labelText: s__('DastSiteValidation|Validating...'),
   name: 'status-running',
