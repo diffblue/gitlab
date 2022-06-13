@@ -71,7 +71,7 @@ export default {
       return {
         text: this.$options.i18n.downloadCSVModalButton,
         attributes: [
-          { variant: 'info' },
+          { variant: 'confirm' },
           { href: this.csvReportPath },
           { rel: 'nofollow' },
           { download: '' },
