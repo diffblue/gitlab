@@ -15,7 +15,7 @@ const createProfilesApolloOptions = (name, field, { fetchQuery, fetchError }) =>
   query: fetchQuery,
   variables() {
     return {
-      projectPath: this.projectPath,
+      fullPath: this.fullPath,
     };
   },
   update(data) {
@@ -40,7 +40,7 @@ export default {
     ScannerProfileSelector,
     SiteProfileSelector,
   },
-  inject: ['projectPath'],
+  inject: ['fullPath'],
   apollo: {
     scannerProfiles: createProfilesApolloOptions(
       'scannerProfiles',

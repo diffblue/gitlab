@@ -1,4 +1,5 @@
 import { merge } from 'lodash';
+import { GlLink } from '@gitlab/ui';
 import VueApollo from 'vue-apollo';
 import { nextTick } from 'vue';
 import { createLocalVue, mount, shallowMount } from '@vue/test-utils';
@@ -15,17 +16,11 @@ import SectionLayout from '~/vue_shared/security_configuration/components/sectio
 import SectionLoader from '~/vue_shared/security_configuration/components/section_loader.vue';
 import dastScannerProfilesQuery from 'ee/security_configuration/dast_profiles/graphql/dast_scanner_profiles.query.graphql';
 import dastSiteProfilesQuery from 'ee/security_configuration/dast_profiles/graphql/dast_site_profiles.query.graphql';
-import { useLocalStorageSpy } from 'helpers/local_storage_helper';
 import createApolloProvider from 'helpers/mock_apollo_helper';
 import {
   siteProfiles,
   scannerProfiles,
-  validatedSiteProfile,
 } from 'ee_jest/security_configuration/dast_profiles/mocks/mock_data';
-
-const [passiveScannerProfile] = scannerProfiles;
-useLocalStorageSpy();
-const LOCAL_STORAGE_KEY = '/on-demand-scans-new-form';
 
 describe('DastProfilesConfigurator', () => {
   let localVue;
@@ -47,24 +42,15 @@ describe('DastProfilesConfigurator', () => {
     ]);
   };
 
-  const findByTestId = (testId) => wrapper.find(`[data-testid="${testId}"]`);
   const findSectionLayout = () => wrapper.find(SectionLayout);
   const findSectionLoader = () => wrapper.find(SectionLoader);
   const findScannerProfilesSelector = () => wrapper.find(ScannerProfileSelector);
   const findSiteProfilesSelector = () => wrapper.find(SiteProfileSelector);
-  const findScannerProfileSummary = () => wrapper.find(ScannerProfileSummary);
   const findAllScannerProfileSummary = () => wrapper.findAll(ScannerProfileSummary);
-  const findSiteProfileSummary = () => wrapper.find(SiteProfileSummary);
   const findAllSiteProfileSummary = () => wrapper.findAll(SiteProfileSummary);
   const findDastProfileSidebar = () => wrapper.find(DastProfilesSidebar);
-  const findSelectProfileButton = () => findByTestId('select-profile-action-btn');
-  const findSelectProfileSummaryButton = () => findByTestId('profile-select-btn');
 
-  const createComponentFactory = (mountFn = shallowMount) => (
-    options = {},
-    withHandlers,
-    glFeatures = {},
-  ) => {
+  const createComponentFactory = (mountFn = shallowMount) => (options = {}, withHandlers) => {
     localVue = createLocalVue();
     let defaultMocks = {
       $apollo: {
@@ -86,12 +72,9 @@ describe('DastProfilesConfigurator', () => {
         {},
         {
           propsData: {
-            ...options.props,
+            ...options,
           },
           mocks: defaultMocks,
-          provide: {
-            ...glFeatures,
-          },
           stubs: {
             SectionLayout,
             ScannerProfileSelector,
@@ -116,25 +99,9 @@ describe('DastProfilesConfigurator', () => {
   const createComponent = createComponentFactory(mount);
   const createShallowComponent = createComponentFactory();
 
-  const selectScannerProfile = async () => {
-    findSelectProfileButton().vm.$emit('click');
-    await nextTick();
-    findSelectProfileSummaryButton().vm.$emit('click');
-    await nextTick();
-  };
-
-  const hasSelectedProfilesAttributes = () => {
-    expect(findScannerProfileSummary().exists()).toBe(true);
-    expect(findSiteProfileSummary().exists()).toBe(true);
-    expect(findScannerProfilesSelector().find('h4').text()).toContain('Scanner Profile');
-    expect(findSiteProfilesSelector().find('h4').text()).toContain('Site Profile');
-    expect(wrapper.emitted('profiles-selected')).toBeTruthy();
-  };
-
   afterEach(() => {
     wrapper.destroy();
     wrapper = null;
-    localStorage.clear();
   });
 
   describe('when default state', () => {
@@ -149,7 +116,7 @@ describe('DastProfilesConfigurator', () => {
 
     it('renders a link to the docs', () => {
       createComponent();
-      const link = findSectionLayout().find('a');
+      const link = findSectionLayout().find(GlLink);
 
       expect(link.exists()).toBe(true);
       expect(link.attributes('href')).toBe(
@@ -182,44 +149,6 @@ describe('DastProfilesConfigurator', () => {
     );
   });
 
-  describe('local storage', () => {
-    const dastScan = {
-      dastScannerProfile: { id: passiveScannerProfile.id },
-      dastSiteProfile: { id: validatedSiteProfile.id },
-    };
-
-    it('get updated when scanner profile is selected', async () => {
-      createComponent();
-
-      await selectScannerProfile();
-
-      expect(localStorage.setItem.mock.calls).toEqual([
-        [
-          LOCAL_STORAGE_KEY,
-          JSON.stringify({
-            selectedScannerProfileId: passiveScannerProfile.id,
-            selectedSiteProfileId: null,
-          }),
-        ],
-      ]);
-    });
-
-    it('reload the selected scanner data when available', async () => {
-      localStorage.setItem(
-        LOCAL_STORAGE_KEY,
-        JSON.stringify({
-          selectedScannerProfileId: dastScan.dastScannerProfile.id,
-          selectedSiteProfileId: dastScan.dastSiteProfile.id,
-        }),
-      );
-
-      createComponent();
-      await nextTick();
-
-      hasSelectedProfilesAttributes();
-    });
-  });
-
   describe('profile drawer', () => {
     beforeEach(() => {
       createComponent();
@@ -241,6 +170,22 @@ describe('DastProfilesConfigurator', () => {
 
       expect(findDastProfileSidebar().exists()).toBe(true);
       expect(findAllSiteProfileSummary()).toHaveLength(siteProfiles.length);
+    });
+  });
+
+  describe('saved profiles', () => {
+    const savedProfiles = {
+      dastScannerProfile: { id: scannerProfiles[0].id },
+      dastSiteProfile: { id: siteProfiles[0].id },
+    };
+
+    it('should have profiles selected if saved profiles exist', () => {
+      createComponent({ savedProfiles });
+
+      expect(findScannerProfilesSelector().find('h3').text()).toContain(
+        scannerProfiles[0].profileName,
+      );
+      expect(findSiteProfilesSelector().find('h3').text()).toContain(siteProfiles[0].profileName);
     });
   });
 });

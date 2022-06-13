@@ -13,7 +13,6 @@ import {
   SCANNER_TYPE,
   SITE_TYPE,
 } from 'ee/on_demand_scans/constants';
-import LocalStorageSync from '~/vue_shared/components/local_storage_sync.vue';
 import SectionLayout from '~/vue_shared/security_configuration/components/section_layout.vue';
 import {
   ERROR_MESSAGES,
@@ -22,8 +21,6 @@ import {
   SCANNER_PROFILES_QUERY,
   SITE_PROFILES_QUERY,
 } from 'ee/on_demand_scans_form/settings';
-
-export const ON_DEMAND_SCANS_STORAGE_KEY = 'on-demand-scans-new-form';
 
 const createProfilesApolloOptions = (name, field, { fetchQuery, fetchError }) => ({
   query: fetchQuery,
@@ -61,7 +58,6 @@ export default {
     GlLink,
     GlSprintf,
     DastProfilesSidebar,
-    LocalStorageSync,
     ScannerProfileSelector,
     SiteProfileSelector,
     SectionLayout,
@@ -84,7 +80,7 @@ export default {
       required: false,
       default: '',
     },
-    savedScanner: {
+    savedProfiles: {
       type: Object,
       required: false,
       default: null,
@@ -94,23 +90,17 @@ export default {
       required: false,
       default: '',
     },
-    storageKey: {
-      type: String,
-      required: false,
-      default: ON_DEMAND_SCANS_STORAGE_KEY,
-    },
   },
   data() {
     return {
-      clearStorage: false,
       scannerProfiles: [],
       siteProfiles: [],
       errorType: null,
       isSideDrawerOpen: false,
       profileType: '',
       activeProfile: {},
-      selectedScannerProfileId: this.savedScanner?.dastScannerProfile.id || null,
-      selectedSiteProfileId: this.savedScanner?.dastSiteProfile.id || null,
+      selectedScannerProfileId: this.savedProfiles?.dastScannerProfile.id || null,
+      selectedSiteProfileId: this.savedProfiles?.dastSiteProfile.id || null,
     };
   },
   computed: {
@@ -119,9 +109,6 @@ export default {
     },
     failedToLoadProfiles() {
       return [ERROR_FETCH_SCANNER_PROFILES, ERROR_FETCH_SITE_PROFILES].includes(this.errorType);
-    },
-    isEdit() {
-      return Boolean(this.savedScanner?.id);
     },
     isLoadingProfiles() {
       return ['scannerProfiles', 'siteProfiles'].some((name) => this.$apollo.queries[name].loading);
@@ -132,10 +119,10 @@ export default {
         : this.savedSiteProfileId;
     },
     savedScannerProfileId() {
-      return this.savedScanner?.dastScannerProfile.id;
+      return this.savedProfiles?.dastScannerProfile.id;
     },
     savedSiteProfileId() {
-      return this.savedScanner?.dastSiteProfile.id;
+      return this.savedProfiles?.dastSiteProfile.id;
     },
     selectedScannerProfile() {
       return this.selectedScannerProfileId
@@ -154,16 +141,6 @@ export default {
     },
     selectedProfiles() {
       return this.profileType === SCANNER_TYPE ? this.scannerProfiles : this.siteProfiles;
-    },
-    storageKeyFullName() {
-      return `${this.fullPath}/${this.storageKey}`;
-    },
-    formFieldValues() {
-      const { selectedScannerProfileId, selectedSiteProfileId } = this;
-      return {
-        selectedScannerProfileId,
-        selectedSiteProfileId,
-      };
     },
   },
   watch: {
@@ -221,12 +198,6 @@ export default {
       }
       this.closeProfileDrawer();
     },
-    updateFromStorage(val) {
-      const { selectedSiteProfileId, selectedScannerProfileId } = val;
-
-      this.selectedSiteProfileId = this.selectedSiteProfileId ?? selectedSiteProfileId;
-      this.selectedScannerProfileId = this.selectedScannerProfileId ?? selectedScannerProfileId;
-    },
     onScannerProfileCreated({ profile, profileType }) {
       /**
        * TODO remove refetch method
@@ -246,14 +217,6 @@ export default {
 
 <template>
   <div>
-    <local-storage-sync
-      v-if="!isEdit"
-      :storage-key="storageKeyFullName"
-      :clear="clearStorage"
-      :value="formFieldValues"
-      @input="updateFromStorage"
-    />
-
     <section-layout
       v-if="!failedToLoadProfiles"
       :heading="configurationHeader || $options.i18n.dastConfigurationHeader"

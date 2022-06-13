@@ -31,7 +31,7 @@ export default function init() {
     apolloProvider,
     provide: {
       securityConfigurationPath,
-      projectPath: fullPath,
+      fullPath,
       gitlabCiYamlEditPath,
       siteProfilesLibraryPath,
       scannerProfilesLibraryPath,

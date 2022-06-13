@@ -372,6 +372,10 @@ export default {
       this.errors = [];
       this.showAlert = false;
     },
+    selectProfiles({ scannerProfile, siteProfile }) {
+      this.selectedSiteProfileId = siteProfile?.id;
+      this.selectedScannerProfileId = scannerProfile?.id;
+    },
     updateFromStorage(val) {
       const {
         selectedSiteProfileId,
@@ -494,13 +498,13 @@ export default {
         </template>
       </section-layout>
 
-      <template v-if="glFeatures.dastUiRedesign">
-        <dast-profiles-configurator
-          :saved-scanner="dastScan"
-          :full-path="projectPath"
-          @error="showErrors"
-        />
-      </template>
+      <dast-profiles-configurator
+        v-if="glFeatures.dastUiRedesign"
+        :saved-profiles="dastScan"
+        :full-path="projectPath"
+        @error="showErrors"
+        @profiles-selected="selectProfiles"
+      />
 
       <section-layout
         v-if="!failedToLoadProfiles && !glFeatures.dastUiRedesign"
