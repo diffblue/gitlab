@@ -26,7 +26,7 @@ describe('TableHeaderComponent', () => {
   describe('data', () => {
     it('returns data with columnIconMeta prop initialized', () => {
       defaultColumns.forEach((column) => {
-        expect(vm.columnIconMeta[column.name].sortIcon).toBe('angle-up');
+        expect(vm.columnIconMeta[column.name].sortIcon).toBe('chevron-lg-up');
         expect(vm.columnIconMeta[column.name].iconTooltip).toBe('Ascending');
       });
     });
@@ -36,24 +36,24 @@ describe('TableHeaderComponent', () => {
     const columnName = 'fullname';
 
     describe('getColumnIconMeta', () => {
-      it('returns `angle-up` and `Ascending` for sortIcon and iconTooltip respectively when provided columnName in sortOrders has value greater than 0', () => {
+      it('returns `chevron-lg-up` and `Ascending` for sortIcon and iconTooltip respectively when provided columnName in sortOrders has value greater than 0', () => {
         const iconMeta = vm.getColumnIconMeta(columnName, { fullname: 1 });
 
-        expect(iconMeta.sortIcon).toBe('angle-up');
+        expect(iconMeta.sortIcon).toBe('chevron-lg-up');
         expect(iconMeta.iconTooltip).toBe('Ascending');
       });
 
-      it('returns `angle-down` and `Descending` for sortIcon and iconTooltip respectively when provided columnName in sortOrders has value less than 0', () => {
+      it('returns `chevron-lg-down` and `Descending` for sortIcon and iconTooltip respectively when provided columnName in sortOrders has value less than 0', () => {
         const iconMeta = vm.getColumnIconMeta(columnName, { fullname: -1 });
 
-        expect(iconMeta.sortIcon).toBe('angle-down');
+        expect(iconMeta.sortIcon).toBe('chevron-lg-down');
         expect(iconMeta.iconTooltip).toBe('Descending');
       });
     });
 
     describe('getColumnSortIcon', () => {
       it('returns value of sortIcon for provided columnName', () => {
-        expect(vm.getColumnSortIcon(columnName)).toBe('angle-up');
+        expect(vm.getColumnSortIcon(columnName)).toBe('chevron-lg-up');
       });
     });
 
@@ -86,7 +86,9 @@ describe('TableHeaderComponent', () => {
 
       expect(headerItemEl).not.toBeNull();
       expect(headerItemEl.innerText.trim()).toBe('Name');
-      expect(headerItemEl.querySelector('svg').getAttribute('data-testid')).toBe('angle-up-icon');
+      expect(headerItemEl.querySelector('svg').getAttribute('data-testid')).toBe(
+        'chevron-lg-up-icon',
+      );
     });
   });
 });

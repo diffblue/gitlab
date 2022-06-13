@@ -31,7 +31,7 @@ export default {
     getColumnIconMeta(columnName, sortOrders) {
       const isAsc = sortOrders[columnName] > 0;
       return {
-        sortIcon: isAsc ? 'angle-up' : 'angle-down',
+        sortIcon: isAsc ? 'chevron-lg-up' : 'chevron-lg-down',
         iconTooltip: isAsc ? __('Ascending') : __('Descending'),
       };
     },
