@@ -33,17 +33,25 @@ export default {
       const vulnStr = n__('vulnerability', 'vulnerabilities', number);
 
       if (!number) {
-        return sprintf(s__('ciReport|%{scanner} detected no new %{vulnStr}'), {
-          vulnStr,
-          scanner,
-        });
+        return sprintf(
+          s__('ciReport|%{scanner} detected no %{strong_start}new%{strong_end} %{vulnStr}'),
+          {
+            vulnStr,
+            scanner,
+          },
+        );
       }
 
-      return sprintf(s__('ciReport|%{scanner} detected %{number} new potential %{vulnStr}'), {
-        vulnStr,
-        scanner,
-        number,
-      });
+      return sprintf(
+        s__(
+          'ciReport|%{scanner} detected %{strong_start}%{number}%{strong_end} new potential %{vulnStr}',
+        ),
+        {
+          vulnStr,
+          scanner,
+          number,
+        },
+      );
     },
     error: s__('ciReport|Security reports failed loading results'),
   },

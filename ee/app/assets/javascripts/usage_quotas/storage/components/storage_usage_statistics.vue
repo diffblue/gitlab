@@ -122,7 +122,7 @@ export default {
           target="_blank"
           category="primary"
           variant="confirm"
-          data-qa-selector="purchase_storage"
+          data-qa-selector="buy_storage"
         >
           {{ $options.i18n.purchaseButtonText }}
         </gl-button>

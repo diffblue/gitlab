@@ -19,13 +19,13 @@ describe('createComplianceFrameworksFormApp', () => {
 
   const setUpDocument = (id = null) => {
     el = document.createElement('div');
-    el.dataset.groupEditPath = groupEditPath;
-    el.dataset.groupPath = groupPath;
-    el.dataset.pipelineConfigurationFullPathEnabled = 'true';
+    el.setAttribute('data-group-edit-path', groupEditPath);
+    el.setAttribute('data-group-path', groupPath);
+    el.setAttribute('data-pipeline-configuration-full-path-enabled', 'true');
 
     if (id) {
-      el.dataset.graphqlFieldName = graphqlFieldName;
-      el.dataset.frameworkId = id;
+      el.setAttribute('data-graphql-field-name', graphqlFieldName);
+      el.setAttribute('data-framework-id', id);
     }
 
     document.body.appendChild(el);

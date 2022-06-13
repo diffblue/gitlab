@@ -5,7 +5,7 @@
   .settings-header
     %h4.settings-title.js-settings-toggle.js-settings-toggle-trigger-only
       = s_('PushRule|Push rules')
-    %button.gl-button.btn.btn-default.js-settings-toggle
+    = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
       = expanded ? _('Collapse') : _('Expand')
     %p
       = s_('PushRules|Restrict push operations for this project.')

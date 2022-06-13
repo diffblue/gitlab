@@ -17,7 +17,7 @@ gem 'view_component', '~> 2.50.0'
 gem 'default_value_for', '~> 3.4.0'
 
 # Supported DBs
-gem 'pg', '~> 1.1'
+gem 'pg', '~> 1.3.0'
 
 gem 'rugged', '~> 1.2'
 gem 'grape-path-helpers', '~> 1.7.0'
@@ -311,7 +311,7 @@ gem 'sentry-sidekiq', '~> 5.1.1'
 
 # PostgreSQL query parsing
 #
-gem 'pg_query', '~> 2.1'
+gem 'pg_query', '~> 2.1.0'
 
 gem 'premailer-rails', '~> 1.10.3'
 
@@ -485,7 +485,7 @@ gem 'ssh_data', '~> 1.2'
 gem 'spamcheck', '~> 0.1.0'
 
 # Gitaly GRPC protocol definitions
-gem 'gitaly', '~> 15.0.0-rc3'
+gem 'gitaly', '~> 15.1.0-rc1'
 
 # KAS GRPC protocol definitions
 gem 'kas-grpc', '~> 0.0.2'

@@ -4,7 +4,7 @@
   .settings-header
     %h4
       = s_('AdminSettings|Required pipeline configuration')
-    %button.btn.gl-button.btn-default.js-settings-toggle{ type: 'button' }
+    = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
       = expanded ? _('Collapse') : _('Expand')
     %p
       - config_link_start = '<a href="%{url}">'.html_safe % { url: help_page_path('user/admin_area/settings/continuous_integration', anchor: 'required-pipeline-configuration') }

@@ -2,11 +2,12 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Elastic::SearchResults, :elastic, :clean_gitlab_redis_shared_state, :sidekiq_might_not_need_inline do
+RSpec.describe Gitlab::Elastic::SearchResults, :elastic do
   before do
     stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
   end
 
+  let(:query) { 'hello world' }
   let(:user) { create(:user) }
   let(:project_1) { create(:project, :public, :repository, :wiki_repo) }
   let(:project_2) { create(:project, :public, :repository, :wiki_repo) }
@@ -15,7 +16,7 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic, :clean_gitlab_redis_sha
   describe '#highlight_map' do
     using RSpec::Parameterized::TableSyntax
 
-    let(:results) { described_class.new(user, 'hello world', limit_project_ids) }
+    let(:results) { described_class.new(user, query, limit_project_ids) }
 
     where(:scope, :results_method, :expected) do
       'projects'       | :projects       | { 1 => 'test <span class="gl-text-gray-900 gl-font-weight-bold">highlight</span>' }
@@ -41,7 +42,7 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic, :clean_gitlab_redis_sha
   describe '#formatted_count' do
     using RSpec::Parameterized::TableSyntax
 
-    let(:results) { described_class.new(user, 'hello world', limit_project_ids) }
+    let(:results) { described_class.new(user, query, limit_project_ids) }
 
     where(:scope, :count_method, :value, :expected) do
       'projects'       | :projects_count       | 0     | '0'
@@ -66,33 +67,53 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic, :clean_gitlab_redis_sha
   describe '#aggregations' do
     using RSpec::Parameterized::TableSyntax
 
-    subject { described_class.new(user, query, limit_project_ids).aggregations(scope) }
+    let(:results) { described_class.new(user, query, limit_project_ids) }
 
-    where(:scope, :expected) do
-      'projects'       | []
-      'milestones'     | []
-      'notes'          | []
-      'issues'         | []
-      'merge_requests' | []
-      'wiki_blobs'     | []
-      'commits'        | []
-      'users'          | []
-      'epics'          | []
-      'unknown'        | []
-      'blobs'          | [::Gitlab::Search::Aggregation.new('language', nil)]
+    subject(:aggregations) { results.aggregations(scope) }
+
+    where(:scope, :should_return_aggregations) do
+      'projects'       | false
+      'milestones'     | false
+      'notes'          | false
+      'issues'         | false
+      'merge_requests' | false
+      'wiki_blobs'     | false
+      'commits'        | false
+      'users'          | false
+      'epics'          | false
+      'unknown'        | false
+      'blobs'          | true
     end
 
     with_them do
-      before do
-        allow(Repository.__elasticsearch__).to receive(:blob_aggregations).and_return(expected) if scope == 'blobs'
+      context 'when feature flag is enabled for user' do
+        before do
+          stub_feature_flags(search_blobs_language_aggregation: user)
+          results.objects(scope) # run search to populate aggregations
+        end
+
+        it_behaves_like 'loads aggregations'
       end
 
-      it_behaves_like 'loads aggregations'
+      context 'when feature flag is disabled for user' do
+        before do
+          stub_feature_flags(search_blobs_language_aggregation: false)
+          results.objects(scope) # run search to populate aggregations
+        end
+
+        it_behaves_like 'does not load aggregations'
+      end
+    end
+
+    context 'when search has not been run' do
+      let(:scope) { 'blobs' }
+
+      it { is_expected.to be_nil }
     end
   end
 
   shared_examples_for 'a paginated object' do |object_type|
-    let(:results) { described_class.new(user, 'hello world', limit_project_ids) }
+    let(:results) { described_class.new(user, query, limit_project_ids) }
 
     it 'does not explode when given a page as a string' do
       expect { results.objects(object_type, page: "2") }.not_to raise_error
@@ -243,7 +264,7 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic, :clean_gitlab_redis_sha
     it_behaves_like 'a paginated object', 'issues'
 
     it 'lists found issues' do
-      results = described_class.new(user, 'hello world', limit_project_ids)
+      results = described_class.new(user, query, limit_project_ids)
       issues = results.objects('issues')
 
       expect(issues).to contain_exactly(issue_1, issue_2)
@@ -301,7 +322,7 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic, :clean_gitlab_redis_sha
     end
 
     it 'executes count only queries' do
-      results = described_class.new(user, 'hello world', limit_project_ids)
+      results = described_class.new(user, query, limit_project_ids)
       expect(results).to receive(:issues).with(count_only: true).and_call_original
 
       count = results.issues_count
@@ -668,7 +689,7 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic, :clean_gitlab_redis_sha
     it_behaves_like 'a paginated object', 'merge_requests'
 
     it 'lists found merge requests' do
-      results = described_class.new(user, 'hello world', limit_project_ids, public_and_internal_projects: false)
+      results = described_class.new(user, query, limit_project_ids, public_and_internal_projects: false)
       merge_requests = results.objects('merge_requests')
 
       expect(merge_requests).to contain_exactly(@merge_request_1, @merge_request_2)
@@ -785,7 +806,7 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic, :clean_gitlab_redis_sha
     end
   end
 
-  describe 'blobs' do
+  describe 'blobs', :sidekiq_inline do
     before do
       project_1.repository.index_commits_and_blobs
 
@@ -995,7 +1016,7 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic, :clean_gitlab_redis_sha
     end
   end
 
-  describe 'wikis' do
+  describe 'wikis', :sidekiq_inline do
     let(:results) { described_class.new(user, 'term', limit_project_ids) }
 
     subject(:wiki_blobs) { results.objects('wiki_blobs') }
@@ -1082,7 +1103,7 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic, :clean_gitlab_redis_sha
     end
   end
 
-  describe 'commits' do
+  describe 'commits', :sidekiq_inline do
     before do
       project_1.repository.index_commits_and_blobs
       ensure_elasticsearch_index!
@@ -1344,7 +1365,7 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic, :clean_gitlab_redis_sha
       end
     end
 
-    context 'wikis' do
+    context 'wikis', :sidekiq_inline do
       before do
         [public_project, internal_project, private_project1, private_project2].each do |project|
           project.wiki.create_page('index_page', 'term')
@@ -1371,7 +1392,7 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic, :clean_gitlab_redis_sha
       end
     end
 
-    context 'commits' do
+    context 'commits', :sidekiq_inline do
       it 'finds right set of commits' do
         [internal_project, private_project1, private_project2, public_project].each do |project|
           project.repository.create_file(
@@ -1403,7 +1424,7 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic, :clean_gitlab_redis_sha
       end
     end
 
-    context 'blobs' do
+    context 'blobs', :sidekiq_inline do
       it 'finds right set of blobs' do
         [internal_project, private_project1, private_project2, public_project].each do |project|
           project.repository.create_file(
@@ -1437,7 +1458,7 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic, :clean_gitlab_redis_sha
   end
 
   context 'query performance' do
-    let(:results) { described_class.new(user, 'hello world', limit_project_ids) }
+    let(:results) { described_class.new(user, query, limit_project_ids) }
 
     include_examples 'does not hit Elasticsearch twice for objects and counts', %w[projects notes blobs wiki_blobs commits issues merge_requests milestones]
     include_examples 'does not load results for count only queries', %w[projects notes blobs wiki_blobs commits issues merge_requests milestones]

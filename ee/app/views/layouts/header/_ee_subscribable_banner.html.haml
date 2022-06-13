@@ -13,5 +13,5 @@
           = link_to_button_style(path: upgrade_subscription_path, track_property: 'upgrade')
         - else
           = link_to_button_style(path: renew_subscription_path, track_property: 'renew')
-          %button{ type: 'button', data: { track_event: 'click_text', track_label: 'subscribable_action', track_property: 'thats_ok' }, 'aria-label' => 'Dismiss', class: 'btn gl-button btn-default js-close gl-mb-2' }
+          = render Pajamas::ButtonComponent.new(category: :secondary, button_options: { class: 'js-close gl-mb-2', 'aria-label': _('Dismiss'), data: { track_event: 'click_text', track_label: 'subscribable_action', track_property: 'thats_ok' } }) do
             = _("That's OK, I don't want to renew")

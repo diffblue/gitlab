@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Elastic::ProjectSearchResults, :elastic, :clean_gitlab_redis_shared_state do
+RSpec.describe Gitlab::Elastic::ProjectSearchResults, :elastic do
   let_it_be(:user) { create(:user) }
   let_it_be(:project) { create(:project, :public, :repository) }
 
@@ -128,26 +128,40 @@ RSpec.describe Gitlab::Elastic::ProjectSearchResults, :elastic, :clean_gitlab_re
   describe '#aggregations' do
     using RSpec::Parameterized::TableSyntax
 
-    subject { described_class.new(user, query, project: project).aggregations(scope) }
+    let(:results) { described_class.new(user, query, project: project) }
 
-    where(:scope, :expected) do
-      'milestones'     | []
-      'notes'          | []
-      'issues'         | []
-      'merge_requests' | []
-      'wiki_blobs'     | []
-      'commits'        | []
-      'users'          | []
-      'unknown'        | []
-      'blobs'          | [::Gitlab::Search::Aggregation.new('language', nil)]
+    subject(:aggregations) { results.aggregations(scope) }
+
+    where(:scope, :should_return_aggregations) do
+      'milestones'     | false
+      'notes'          | false
+      'issues'         | false
+      'merge_requests' | false
+      'wiki_blobs'     | false
+      'commits'        | false
+      'users'          | false
+      'unknown'        | false
+      'blobs'          | true
     end
 
     with_them do
-      before do
-        allow(project.repository.__elasticsearch__).to receive(:blob_aggregations).and_return(expected) if scope == 'blobs'
+      context 'when feature flag is enabled for user' do
+        before do
+          stub_feature_flags(search_blobs_language_aggregation: user)
+          results.objects(scope) # run search to populate aggregations
+        end
+
+        it_behaves_like 'loads aggregations'
       end
 
-      it_behaves_like 'loads aggregations'
+      context 'when feature flag is disabled for user' do
+        before do
+          stub_feature_flags(search_blobs_language_aggregation: false)
+          results.objects(scope) # run search to populate aggregations
+        end
+
+        it_behaves_like 'does not load aggregations'
+      end
     end
 
     context 'project search specific gates for blob scope' do
@@ -175,6 +189,10 @@ RSpec.describe Gitlab::Elastic::ProjectSearchResults, :elastic, :clean_gitlab_re
 
           expect(subject).to match_array([])
         end
+      end
+
+      context 'when search has not been run' do
+        it { is_expected.to be_nil }
       end
     end
   end

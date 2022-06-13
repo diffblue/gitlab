@@ -53,14 +53,26 @@ RSpec.shared_examples 'loads aggregations' do
   let(:query) { 'hello world' }
 
   it 'returns the expected aggregations' do
-    expect(subject).to match_array(expected)
+    expect(aggregations).to be_kind_of(Array)
+
+    if should_return_aggregations
+      expect(aggregations.size).to eq(1)
+      expect(aggregations.first.name).to eq('language')
+    else
+      expect(aggregations).to be_empty
+    end
   end
 
   context 'when query is blank' do
     let(:query) { nil }
 
-    it 'returns an empty array' do
-      expect(subject).to match_array([])
-    end
+    it_behaves_like 'does not load aggregations'
+  end
+end
+
+RSpec.shared_examples 'does not load aggregations' do
+  it 'returns an empty array' do
+    expect(aggregations).to be_kind_of(Array)
+    expect(aggregations).to be_empty
   end
 end

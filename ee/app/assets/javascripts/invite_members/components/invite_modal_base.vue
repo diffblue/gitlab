@@ -72,6 +72,11 @@ export default {
       required: false,
       default: false,
     },
+    invalidFeedbackMessage: {
+      type: String,
+      required: false,
+      default: '',
+    },
   },
   data() {
     return {
@@ -81,6 +86,7 @@ export default {
       namespaceId: parseInt(this.rootGroupId, 10),
       eligibleForSeatUsageAlerts: false,
       isLoading: false,
+      actualFeedbackMessage: this.invalidFeedbackMessage,
     };
   },
   computed: {
@@ -93,7 +99,7 @@ export default {
       return undefined;
     },
     showOverageModal() {
-      return this.hasOverage && this.enabledOverageCheck;
+      return this.hasOverage && this.enabledOverageCheck && !this.actualFeedbackMessage;
     },
     submitDisabledEE() {
       if (this.showOverageModal) {
@@ -130,6 +136,12 @@ export default {
       return {};
     },
   },
+  watch: {
+    invalidFeedbackMessage(newValue) {
+      this.hasOverage = false;
+      this.actualFeedbackMessage = newValue;
+    },
+  },
   methods: {
     getPassthroughListeners() {
       // This gets the listeners we don't manually handle here
@@ -141,6 +153,7 @@ export default {
     onReset() {
       // don't reopen the overage modal
       this.hasOverage = false;
+      this.actualFeedbackMessage = '';
 
       this.$emit('reset');
     },
@@ -148,6 +161,7 @@ export default {
       if (this.reachedLimit) return;
 
       if (this.enabledOverageCheck && !this.hasOverage) {
+        this.actualFeedbackMessage = '';
         this.checkEligibility(args);
       } else {
         this.emitSubmit(args);
@@ -254,6 +268,7 @@ export default {
     :prevent-cancel-default="showOverageModal"
     :reached-limit="reachedLimit"
     :is-loading="isLoading"
+    :invalid-feedback-message="actualFeedbackMessage"
     @reset="onReset"
     @submit="onSubmit"
     @cancel="onCancel"

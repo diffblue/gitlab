@@ -3,7 +3,7 @@
     .settings-header
       %h4
         = _('Custom project templates')
-      %button.btn.gl-button.btn-default.js-settings-toggle{ type: 'button' }
+      = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
         = expanded ? _('Collapse') : _('Expand')
       %p
         = s_('AdminSettings|Select a group to use as the source for instance-level project templates.')
