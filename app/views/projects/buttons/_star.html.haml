@@ -1,11 +1,11 @@
 - if current_user
   .count-badge.d-inline-flex.align-item-stretch.gl-mr-3.btn-group
-    %button.gl-button.btn.btn-default.btn-sm.star-btn.toggle-star{ type: "button", data: { endpoint: toggle_star_project_path(@project, :json) } }
+    = render Pajamas::ButtonComponent.new(button_options: { class: 'btn-sm star-btn toggle-star', data: { endpoint: toggle_star_project_path(@project, :json) } }) do
       - if current_user.starred?(@project)
-        = sprite_icon('star', css_class: 'icon')
+        = sprite_icon('star', css_class: 'icon gl-mr-0!')
         %span.starred= s_('ProjectOverview|Unstar')
       - else
-        = sprite_icon('star-o', css_class: 'icon')
+        = sprite_icon('star-o', css_class: 'icon gl-mr-0!')
         %span= s_('ProjectOverview|Star')
     = link_to project_starrers_path(@project), title: n_(s_('ProjectOverview|Starrer'), s_('ProjectOverview|Starrers'), @project.star_count), class: 'gl-button btn btn-default btn-sm has-tooltip star-count count' do
       = @project.star_count
