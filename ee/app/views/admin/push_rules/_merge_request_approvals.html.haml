@@ -3,7 +3,7 @@
   .settings-header
     %h4
       = _('Merge request approvals')
-    %button.btn.gl-button.btn-default.js-settings-toggle{ type: 'button' }
+    = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
       = expanded_by_default? ? _('Collapse') : _('Expand')
     %p
       - duties_link_url = help_page_path('user/compliance/compliance_report/index', anchor: 'separation-of-duties')
