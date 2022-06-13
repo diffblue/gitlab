@@ -4,7 +4,7 @@
   .settings-header
     %h4
       = _('Maintenance mode')
-    %button.btn.gl-button.btn-default.js-settings-toggle{ type: 'button' }
+    = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
       = expanded_by_default? ? _('Collapse') : _('Expand')
     %p
       = _('Prevent users from performing write operations while GitLab maintenance is in progress.')
