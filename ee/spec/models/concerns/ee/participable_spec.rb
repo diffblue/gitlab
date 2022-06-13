@@ -20,7 +20,7 @@ RSpec.describe EE::Participable do
       it 'returns the list of participants' do
         expect(instance).to receive(:foo).and_return(user2)
         expect(instance).to receive(:bar).and_return(user3)
-        expect(instance).to receive(:group).and_return(group)
+        expect(instance).to receive(:group).thrice.and_return(group)
 
         participants = instance.participants(user1)
         expect(participants).to contain_exactly(user2, user3)
