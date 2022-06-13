@@ -13,7 +13,7 @@ import BurnCharts from 'ee/burndown_chart/components/burn_charts.vue';
 import { TYPE_ITERATION } from '~/graphql_shared/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { formatDate } from '~/lib/utils/datetime_utility';
-import { s__ } from '~/locale';
+import { s__, __ } from '~/locale';
 import { Namespace } from '../constants';
 import deleteIteration from '../queries/destroy_iteration.mutation.graphql';
 import query from '../queries/iteration.query.graphql';
@@ -67,6 +67,20 @@ export default {
     'noIssuesSvgPath',
     'labelsFetchPath',
   ],
+  modal: {
+    actionPrimary: {
+      text: __('Delete'),
+      attributes: {
+        variant: 'danger',
+      },
+    },
+    actionCancel: {
+      text: __('Cancel'),
+      attributes: {
+        variant: 'default',
+      },
+    },
+  },
   data() {
     return {
       error: '',
@@ -175,10 +189,10 @@ export default {
           ref="modal"
           :modal-id="`${iteration.id}-delete-modal`"
           :title="s__('Iterations|Delete iteration?')"
-          :ok-title="__('Delete')"
-          ok-variant="danger"
+          :action-primary="$options.modal.actionPrimary"
+          :action-cancel="$options.modal.actionCancel"
           @hidden="focusMenu"
-          @ok="deleteIteration"
+          @primary="deleteIteration"
         >
           {{
             s__(
