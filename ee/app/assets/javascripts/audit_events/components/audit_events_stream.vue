@@ -32,7 +32,7 @@ export default {
   },
   computed: {
     shouldShowEmptyMode() {
-      return !this.externalAuditEventDestinations?.length && !this.isEditing;
+      return !this.destinationsCount && !this.isEditing;
     },
     destinationsCount() {
       return this.externalAuditEventDestinations?.length ?? 0;
@@ -84,25 +84,20 @@ export default {
 </script>
 
 <template>
-  <div class="gl-bg-gray-10 gl-rounded-base gl-border">
-    <div class="gl-display-flex gl-align-items-center gl-pl-5 gl-py-3 gl-border-b gl-h-9">
+  <stream-empty-state v-if="shouldShowEmptyMode" @add="setEditMode(true)" />
+  <div v-else>
+    <div v-if="destinationsCount" class="gl-display-flex gl-align-items-center gl-pl-5 gl-py-3">
       <img
         :alt="$options.i18n.STREAM_COUNT_ICON_ALT"
         :src="streamsIconSvgPath"
         class="gl-mr-2 gl-h-5 gl-w-5"
       />
       <span class="gl-mr-4">{{ destinationsCount }}</span>
-      <gl-button
-        v-if="destinationsCount"
-        :aria-label="$options.i18n.ADD_STREAM"
-        icon="plus"
-        @click="setEditMode(true)"
-      />
+      <gl-button :aria-label="$options.i18n.ADD_STREAM" icon="plus" @click="setEditMode(true)" />
     </div>
-    <div v-if="isEditing" class="gl-p-4 gl-bg-gray-10">
+    <div v-if="isEditing" class="gl-p-4">
       <stream-destination-editor @added="onAddedDestinationUrl" @cancel="setEditMode(false)" />
     </div>
-    <stream-empty-state v-if="shouldShowEmptyMode" @add="setEditMode(true)" />
     <div v-if="destinationsCount" class="gl-p-4">
       <label class="gl-mb-3">{{ $options.i18n.ACTIVE_STREAM }}</label>
       <ul class="content-list bordered-box gl-bg-white">

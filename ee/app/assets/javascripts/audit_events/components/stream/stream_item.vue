@@ -66,7 +66,7 @@ export default {
 <template>
   <li class="list-item py-0">
     <div
-      class="gl-display-flex gl-align-items-center gl-justify-content-space-between gl-px-5 gl-py-3 gl-rounded-base"
+      class="gl-display-flex gl-align-items-center gl-justify-content-space-between gl-pl-5 gl-pr-3 gl-py-3 gl-rounded-base"
     >
       <div class="gl-h-4">{{ item.destinationUrl }}</div>
       <div class="actions-button">
