@@ -52,7 +52,7 @@ export default {
       class="gl-display-inline-flex gl-align-items-center gl-font-size-h3 gl-cursor-pointer"
       @click="toggleShowSection"
     >
-      <gl-icon name="angle-right" class="gl-mr-2" :class="{ 'gl-rotate-90': showSection }" />
+      <gl-icon name="chevron-lg-right" class="gl-mr-2" :class="{ 'gl-rotate-90': showSection }" />
       <h3 class="gl-my-0! gl-font-lg">
         {{ $options.i18n.heading }}
       </h3>
