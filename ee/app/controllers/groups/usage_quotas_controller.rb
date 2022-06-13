@@ -8,7 +8,6 @@ class Groups::UsageQuotasController < Groups::ApplicationController
   before_action :verify_usage_quotas_enabled!
   before_action :push_free_user_cap_feature_flags, only: :index
   before_action :push_usage_quotas_pipelines_vue, only: :index
-  before_action :push_usage_quotas_namespace_statistics, only: :index
 
   before_action only: [:index] do
     @seat_count_data = generate_seat_count_alert_data(@group)
@@ -46,9 +45,5 @@ class Groups::UsageQuotasController < Groups::ApplicationController
 
   def push_usage_quotas_pipelines_vue
     push_frontend_feature_flag(:usage_quotas_pipelines_vue, @group)
-  end
-
-  def push_usage_quotas_namespace_statistics
-    push_frontend_feature_flag(:container_registry_namespace_statistics, @group)
   end
 end
