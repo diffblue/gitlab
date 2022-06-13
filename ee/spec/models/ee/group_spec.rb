@@ -2022,38 +2022,21 @@ RSpec.describe Group do
     end
 
     context 'delayed deletion feature is available' do
-      before do
-        stub_licensed_features(adjourned_deletion_for_projects_and_groups: true)
+      where(:adjourned_period, :delayed_group_deletion, :expected) do
+        0 | true  | false
+        0 | false | false
+        1 | true  | true
+        1 | false | false
       end
 
-      context 'when delayed deletion period is set to more than 0' do
+      with_them do
         before do
-          stub_application_setting(deletion_adjourned_period: 1)
+          stub_licensed_features(adjourned_deletion_for_projects_and_groups: true)
+          stub_application_setting(deletion_adjourned_period: adjourned_period)
+          stub_application_setting(delayed_group_deletion: delayed_group_deletion)
         end
 
-        context 'when delayed group deletion is enabled' do
-          before do
-            stub_application_setting(delayed_group_deletion: true)
-          end
-
-          it_behaves_like 'returns true'
-        end
-
-        context 'when delayed group deletion is disabled' do
-          before do
-            stub_application_setting(delayed_group_deletion: false)
-          end
-
-          it_behaves_like 'returns false'
-        end
-      end
-
-      context 'when delayed deletion period is set to 0' do
-        before do
-          stub_application_setting(deletion_adjourned_period: 0)
-        end
-
-        it_behaves_like 'returns false'
+        it { is_expected.to expected ? be_truthy : be_falsey }
       end
     end
 
@@ -2064,15 +2047,7 @@ RSpec.describe Group do
 
       context 'when delayed deletion period is set to more than 0' do
         before do
-          stub_application_setting(deletion_adjourned_period: 1)
-        end
-
-        it_behaves_like 'returns false'
-      end
-
-      context 'when delayed deletion period is set to 0' do
-        before do
-          stub_application_setting(deletion_adjourned_period: 0)
+          stub_application_setting(delayed_group_deletion: false)
         end
 
         it_behaves_like 'returns false'

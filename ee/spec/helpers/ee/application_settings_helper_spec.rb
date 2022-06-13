@@ -58,4 +58,20 @@ RSpec.describe EE::ApplicationSettingsHelper do
       end
     end
   end
+
+  describe '.deletion_protection_data' do
+    let_it_be(:application_setting) { build(:application_setting) }
+
+    before do
+      application_setting.deletion_adjourned_period = 1
+      application_setting.delayed_group_deletion = false
+      application_setting.delayed_project_deletion = false
+
+      helper.instance_variable_set(:@application_setting, application_setting)
+    end
+
+    subject { helper.deletion_protection_data }
+
+    it { is_expected.to eq({ deletion_adjourned_period: 1, delayed_group_deletion: 'false', delayed_project_deletion: 'false' }) }
+  end
 end

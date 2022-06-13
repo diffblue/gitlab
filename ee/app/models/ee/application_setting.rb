@@ -16,6 +16,8 @@ module EE
 
       belongs_to :file_template_project, class_name: "Project"
 
+      before_validation :disable_delayed_deletion_with_allowed_period, if: ->(setting) { setting.deletion_adjourned_period == 0 }
+
       validates :shared_runners_minutes,
                 numericality: { greater_than_or_equal_to: 0 }
 
@@ -39,7 +41,7 @@ module EE
 
       validates :deletion_adjourned_period,
                 presence: true,
-                numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: 90 }
+                numericality: { only_integer: true, greater_than: 0, less_than_or_equal_to: 90 }
 
       validates :elasticsearch_max_bulk_size_mb,
                 presence: true,
@@ -123,9 +125,13 @@ module EE
                 allow_blank: true,
                 numericality: { only_integer: true, greater_than: 0, less_than_or_equal_to: 365 }
 
+      validates :delayed_project_removal,
+                exclusion: { in: [true], message: -> (object, data) { _("can't be enabled when delayed group deletion is disabled") } },
+                if: ->(setting) { !setting.delayed_group_deletion? }
+
       alias_attribute :delayed_project_deletion, :delayed_project_removal
 
-      before_save :update_delayed_group_deletion, if: :deletion_adjourned_period_changed?
+      before_save :update_lock_delayed_project_removal, if: :delayed_group_deletion_changed?
       after_commit :update_personal_access_tokens_lifetime, if: :saved_change_to_max_personal_access_token_lifetime?
       after_commit :resume_elasticsearch_indexing
 
@@ -462,8 +468,18 @@ module EE
       errors.add(:elasticsearch_url, "only supports valid HTTP(S) URLs.")
     end
 
-    def update_delayed_group_deletion
-      self.delayed_group_deletion = self.deletion_adjourned_period > 0
+    def update_lock_delayed_project_removal
+      # This is the only way to update lock_delayed_project_removal and it is used to
+      # enforce the cascading setting when delayed deletion is disabled on a instance.
+      self.lock_delayed_project_removal = !self.delayed_group_deletion
+    end
+
+    # TODO: Remove once the migration is added in the following milestone.
+    # https://gitlab.com/gitlab-org/gitlab/-/issues/363858
+    def disable_delayed_deletion_with_allowed_period
+      self.deletion_adjourned_period = 1
+      self.delayed_group_deletion = false
+      self.delayed_project_removal = false
     end
   end
 end

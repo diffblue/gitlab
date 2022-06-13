@@ -3,5 +3,6 @@
 - f = local_assigns.fetch(:form)
 
 .form-group
-  = f.label _('Default project deletion protection'), class: 'label-bold'
-  = f.gitlab_ui_checkbox_component :default_project_deletion_protection, _('Only admins can delete project')
+  = f.label _('Allowed to delete projects'), class: 'label-bold'
+  = f.gitlab_ui_radio_component :default_project_deletion_protection, false, _('Owners and administrators')
+  = f.gitlab_ui_radio_component :default_project_deletion_protection, true, _('Administrators')
