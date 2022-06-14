@@ -19,13 +19,11 @@
           .import-buttons
             %div
               - if github_import_enabled?
-                = link_to new_import_github_path(ci_cd_only: true), class: 'btn gl-button btn-default js-import-github', data: { track_label: "#{track_label}", track_property: 'github', track_action: "click_button", track_value: "" } do
-                  = sprite_icon('github', css_class: 'gl-button-icon')
-                  GitHub
+                = render Pajamas::ButtonComponent.new( href: new_import_github_path(ci_cd_only: true), icon: 'github', button_options: { class: 'js-import-github', data: { track_label: "#{track_label}", track_property: 'github', track_action: "click_button", track_value: "" } }) do
+                  = GitHub
             %div
               - if git_import_enabled?
-                %button.btn.gl-button.btn-default.btn-svg.js-toggle-button.js-import-git-toggle-button{ type: "button", data: { toggle_open_class: 'active', track_label: "#{track_label}", track_property: 'repo_url', track_action: "click_button", track_value: "" } }
-                  = sprite_icon('link', css_class: 'gl-button-icon')
+                = render Pajamas::ButtonComponent.new( icon: 'link', button_options: { class: 'js-toggle-button js-import-git-toggle-button', data: { toggle_open_class: 'active', track_label: "#{track_label}", track_property: 'repo_url', track_action: "click_button", track_value: "" } } ) do
                   = _('Repository by URL')
       .col-lg-12
         .js-toggle-content.toggle-import-form
