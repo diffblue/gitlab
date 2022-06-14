@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe AuditEvents::ExternalAuditEventDestination do
-  subject { create(:external_audit_event_destination) }
+  subject(:destination) { create(:external_audit_event_destination) }
 
   let_it_be(:group) { create(:group) }
 
@@ -17,6 +17,37 @@ RSpec.describe AuditEvents::ExternalAuditEventDestination do
     it { is_expected.to validate_length_of(:destination_url).is_at_most(255) }
     it { is_expected.to validate_presence_of(:destination_url) }
     it { is_expected.to have_db_column(:verification_token).of_type(:text) }
+    it { is_expected.to have_many(:headers).class_name('AuditEvents::Streaming::Header') }
+
+    it 'can have 20 headers' do
+      create_list(:audit_events_streaming_header, 20, external_audit_event_destination: subject)
+
+      expect(subject).to be_valid
+    end
+
+    it 'can have no more than 20 headers' do
+      create_list(:audit_events_streaming_header, 21, external_audit_event_destination: subject)
+
+      expect(subject).not_to be_valid
+      expect(subject.errors.full_messages).to contain_exactly('Headers are limited to 20 per destination')
+    end
+  end
+
+  describe '#headers_hash' do
+    subject { destination.headers_hash }
+
+    context "destination has 2 headers" do
+      before do
+        create(:audit_events_streaming_header, external_audit_event_destination: destination, key: 'X-GitLab-Hello')
+        create(:audit_events_streaming_header, external_audit_event_destination: destination, key: 'X-GitLab-World' )
+      end
+
+      it do
+        is_expected.to eq({ 'X-GitLab-Hello' => 'bar',
+                            'X-GitLab-World' => 'bar',
+                            'X-Gitlab-Event-Streaming-Token' => destination.verification_token })
+      end
+    end
 
     it 'must have a unique destination_url' do
       create(:external_audit_event_destination, destination_url: 'https://example.com/1', group: group)

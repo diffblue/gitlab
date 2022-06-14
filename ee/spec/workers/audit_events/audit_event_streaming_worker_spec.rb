@@ -78,6 +78,23 @@ RSpec.describe AuditEvents::AuditEventStreamingWorker do
           subject
         end
       end
+
+      context 'when the destination has custom headers' do
+        it 'sends the headers with the payload' do
+          create_list(:audit_events_streaming_header, 2, external_audit_event_destination: group.external_audit_event_destinations.last)
+
+          # rubocop:disable Lint/DuplicateHashKey
+          expected_hash = {
+            /key-\d/ => "bar",
+            /key-\d/ => "bar"
+          }
+          # rubocop:enable Lint/DuplicateHashKey
+
+          expect(Gitlab::HTTP).to receive(:post).with(an_instance_of(String), a_hash_including(headers: a_hash_including(expected_hash))).once
+
+          subject
+        end
+      end
     end
 
     context 'when the group has several destinations' do
