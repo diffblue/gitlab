@@ -11,14 +11,14 @@ RSpec.describe Gitlab::Usage::Metrics::Instrumentations::CountImportedProjectsMe
   #
   # See https://gitlab.com/gitlab-org/gitlab/-/merge_requests/89701
   let_it_be(:old_import) { create(:project, import_type: 'gitea', creator_id: user.id, created_at: 2.months.ago) }
-  let_it_be(:gitea_import_1) { create(:project, import_type: 'gitea', creator_id: user.id, created_at: 3.weeks.ago) }
+  let_it_be(:gitea_import_1) { create(:project, import_type: 'gitea', creator_id: user.id, created_at: 21.days.ago) }
 
   let_it_be(:gitea_import_2) do
-    create(:project, import_type: 'gitea', creator_id: user.id, created_at: 3.weeks.ago + 1.day)
+    create(:project, import_type: 'gitea', creator_id: user.id, created_at: 20.days.ago)
   end
 
   let_it_be(:gitea_import_3) do
-    create(:project, import_type: 'gitea', creator_id: user.id, created_at: 3.weeks.ago + 2.days)
+    create(:project, import_type: 'gitea', creator_id: user.id, created_at: 19.days.ago)
   end
 
   let_it_be(:bitbucket_import_1) do
