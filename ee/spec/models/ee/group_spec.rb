@@ -1495,6 +1495,28 @@ RSpec.describe Group do
         end
       end
     end
+
+    context 'for free group' do
+      before do
+        allow(::Namespaces::FreeUserCap).to receive(:enforce_preview_or_standard?).with(group).and_return(free_user_cap_enabled)
+      end
+
+      context 'when free_user_cap is enabled' do
+        let(:free_user_cap_enabled) { true }
+
+        it 'includes awaiting members' do
+          expect(group.billable_members_count).to eq(3)
+        end
+      end
+
+      context 'when free_user_cap is disabled' do
+        let(:free_user_cap_enabled) { false }
+
+        it 'does not include awaiting members' do
+          expect(group.billable_members_count).to eq(2)
+        end
+      end
+    end
   end
 
   describe '#exclude_guests?', :saas do
