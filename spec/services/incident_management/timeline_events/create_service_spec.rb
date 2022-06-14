@@ -132,6 +132,34 @@ RSpec.describe IncidentManagement::TimelineEvents::CreateService do
       it 'creates a system note' do
         expect { execute }.to change { incident.notes.reload.count }.by(1)
       end
+
+      context 'with skip_notification param' do
+        let(:args) do
+          {
+            note: 'note',
+            occurred_at: Time.current,
+            action: 'new comment',
+            promoted_from_note: comment,
+            skip_notifications: skip_notifications
+          }
+        end
+
+        context 'when skip_notifications is true' do
+          let(:skip_notifications) { true }
+
+          it 'does not create a system note' do
+            expect { execute }.not_to change { incident.notes.reload.count }
+          end
+        end
+
+        context 'when skip_notifications is false' do
+          let(:skip_notifications) { false }
+
+          it 'creates a system note' do
+            expect { execute }.to change { incident.notes.reload.count }.by(1)
+          end
+        end
+      end
     end
 
     context 'when incident_timeline feature flag is disabled' do

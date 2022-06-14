@@ -4,6 +4,7 @@ module IncidentManagement
   module TimelineEvents
     DEFAULT_ACTION = 'comment'
     DEFAULT_EDITABLE = false
+    DEFAULT_SKIP_NOTIFICATIONS = false
 
     class CreateService < TimelineEvents::BaseService
       def initialize(incident, user, params)
@@ -11,6 +12,7 @@ module IncidentManagement
         @incident = incident
         @user = user
         @params = params
+        @skip_notifications = !!params.fetch(:skip_notifications, DEFAULT_SKIP_NOTIFICATIONS)
       end
 
       def execute
@@ -42,9 +44,10 @@ module IncidentManagement
 
       private
 
-      attr_reader :project, :user, :incident, :params
+      attr_reader :project, :user, :incident, :params, :skip_notifications
 
       def add_system_note(timeline_event)
+        return if skip_notifications
         return unless Feature.enabled?(:incident_timeline, project)
 
         SystemNoteService.add_timeline_event(timeline_event)
