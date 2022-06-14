@@ -37,7 +37,13 @@ class SubscriptionsController < ApplicationController
 
   def new
     if current_user
-      @namespace = current_user.namespace
+      @namespace =
+        if params[:namespace_id]
+          namespace_id = params[:namespace_id].to_i
+          @eligible_groups.find { |n| n.id == namespace_id }
+        else
+          current_user.namespace
+        end
 
       experiment(:cart_abandonment_modal,
         namespace: @namespace,
