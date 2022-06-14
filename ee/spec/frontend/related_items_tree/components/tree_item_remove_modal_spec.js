@@ -119,8 +119,14 @@ describe('RelatedItemsTree', () => {
 
         expect(modal.isVisible()).toBe(true);
         expect(modal.attributes('modalid')).toBe('item-remove-confirmation');
-        expect(modal.attributes('ok-title')).toBe('Remove');
-        expect(modal.attributes('ok-variant')).toBe('danger');
+        expect(modal.props('actionPrimary')).toEqual({
+          text: 'Remove',
+          attributes: { variant: 'danger' },
+        });
+        expect(modal.props('actionCancel')).toEqual({
+          text: 'Cancel',
+          attributes: { variant: 'default' },
+        });
       });
     });
   });
