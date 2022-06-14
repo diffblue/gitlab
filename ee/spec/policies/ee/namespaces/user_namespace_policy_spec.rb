@@ -6,7 +6,7 @@ RSpec.describe Namespaces::UserNamespacePolicy do
   let(:owner) { build_stubbed(:user) }
   let(:namespace) { build_stubbed(:namespace, owner: owner) }
   let(:admin) { build_stubbed(:admin) }
-  let(:owner_permissions) { [:create_projects, :admin_namespace, :read_namespace] }
+  let(:owner_permissions) { [:create_projects, :admin_namespace, :read_namespace, :read_billable_member] }
 
   subject { described_class.new(current_user, namespace) }
 
@@ -20,6 +20,18 @@ RSpec.describe Namespaces::UserNamespacePolicy do
     end
 
     context 'non-owner' do
+      it { is_expected.to be_disallowed(*owner_permissions) }
+    end
+  end
+
+  context 'admin' do
+    let(:current_user) { admin }
+
+    context 'when admin mode is enabled', :enable_admin_mode do
+      it { is_expected.to be_allowed(*owner_permissions) }
+    end
+
+    context 'when admin mode is disabled' do
       it { is_expected.to be_disallowed(*owner_permissions) }
     end
   end

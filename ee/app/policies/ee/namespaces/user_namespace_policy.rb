@@ -16,6 +16,11 @@ module EE
         rule { read_only }.policy do
           prevent :create_projects
         end
+
+        rule { owner | admin }.policy do
+          enable :read_billable_member
+        end
+
         rule { can?(:owner_access) & compliance_framework_available }.enable :admin_compliance_framework
       end
     end
