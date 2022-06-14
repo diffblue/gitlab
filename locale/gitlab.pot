@@ -9035,6 +9035,9 @@ msgstr ""
 msgid "Collector hostname"
 msgstr ""
 
+msgid "Color"
+msgstr ""
+
 msgid "ColorWidget|An error occurred while updating color."
 msgstr ""
 
@@ -34764,6 +34767,9 @@ msgid "Select a branch"
 msgstr ""
 
 msgid "Select a branch to compare"
+msgstr ""
+
+msgid "Select a color"
 msgstr ""
 
 msgid "Select a compliance framework to apply to this project. %{linkStart}How are these added?%{linkEnd}"

@@ -16,25 +16,31 @@ import { visitUrl } from '~/lib/utils/url_utility';
 import { s__ } from '~/locale';
 import MarkdownField from '~/vue_shared/components/markdown/field.vue';
 import LabelsSelectWidget from '~/vue_shared/components/sidebar/labels_select_widget/labels_select_root.vue';
+import ColorSelectDropdown from '~/vue_shared/components/color_select_dropdown/color_select_root.vue';
 import { LabelType } from '~/vue_shared/components/sidebar/labels_select_widget/constants';
+import { DEFAULT_COLOR } from '~/vue_shared/components/color_select_dropdown/constants';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import createEpic from '../queries/create_epic.mutation.graphql';
 
 export default {
   components: {
+    ColorSelectDropdown,
     GlButton,
     GlDatepicker,
     GlForm,
     GlFormCheckbox,
-    GlFormInput,
     GlFormGroup,
-    MarkdownField,
+    GlFormInput,
     LabelsSelectWidget,
+    MarkdownField,
   },
+  mixins: [glFeatureFlagsMixin()],
   inject: ['groupPath', 'groupEpicsPath', 'markdownPreviewPath', 'markdownDocsPath'],
   data() {
     return {
       title: '',
       description: '',
+      color: DEFAULT_COLOR,
       confidential: false,
       labels: [],
       startDateFixed: null,
@@ -46,6 +52,9 @@ export default {
   computed: {
     labelIds() {
       return this.labels.map((label) => label.id);
+    },
+    isEpicColorEnabled() {
+      return this.glFeatures.epicColorHighlight;
     },
   },
   i18n: {
@@ -83,24 +92,26 @@ export default {
     save() {
       this.loading = true;
 
+      const input = {
+        addLabelIds: this.labelIds,
+        groupPath: this.groupPath,
+        title: this.title,
+        description: this.description,
+        confidential: this.confidential,
+        startDateFixed: this.startDateFixed ? formatDate(this.startDateFixed, 'yyyy-mm-dd') : null,
+        startDateIsFixed: Boolean(this.startDateFixed),
+        dueDateFixed: this.dueDateFixed ? formatDate(this.dueDateFixed, 'yyyy-mm-dd') : null,
+        dueDateIsFixed: Boolean(this.dueDateFixed),
+      };
+
+      if (this.isEpicColorEnabled && this.color?.color !== '') {
+        input.color = this.color.color;
+      }
+
       return this.$apollo
         .mutate({
           mutation: createEpic,
-          variables: {
-            input: {
-              addLabelIds: this.labelIds,
-              groupPath: this.groupPath,
-              title: this.title,
-              description: this.description,
-              confidential: this.confidential,
-              startDateFixed: this.startDateFixed
-                ? formatDate(this.startDateFixed, 'yyyy-mm-dd')
-                : null,
-              startDateIsFixed: Boolean(this.startDateFixed),
-              dueDateFixed: this.dueDateFixed ? formatDate(this.dueDateFixed, 'yyyy-mm-dd') : null,
-              dueDateIsFixed: Boolean(this.dueDateFixed),
-            },
-          },
+          variables: { input },
         })
         .then(({ data }) => {
           const { errors, epic } = data.createEpic;
@@ -130,6 +141,9 @@ export default {
     },
     handleUpdateSelectedLabels(labels) {
       this.labels = labels.map((label) => ({ ...label, id: getIdFromGraphQLId(label.id) }));
+    },
+    handleUpdateSelectedColor(color) {
+      this.color = color;
     },
   },
 };
@@ -189,6 +203,7 @@ export default {
           >{{ $options.i18n.confidentialityLabel }}</gl-form-checkbox
         >
       </gl-form-group>
+
       <gl-form-group :label="__('Labels')">
         <labels-select-widget
           class="block labels js-labels-block"
@@ -220,11 +235,7 @@ export default {
           >{{ __('Clear start date') }}</gl-button
         >
       </gl-form-group>
-      <gl-form-group
-        class="gl-pb-4"
-        :label="__('Due date')"
-        :description="$options.i18n.epicDatesHint"
-      >
+      <gl-form-group :label="__('Due date')" :description="$options.i18n.epicDatesHint">
         <div class="gl-display-inline-block gl-mr-2">
           <gl-datepicker v-model="dueDateFixed" data-testid="epic-due-date" />
         </div>
@@ -238,7 +249,23 @@ export default {
         >
       </gl-form-group>
 
-      <div class="footer-block">
+      <gl-form-group v-if="isEpicColorEnabled" :label="__('Color')" label-for="epic-color">
+        <color-select-dropdown
+          class="block colors js-colors-block"
+          :full-path="groupPath"
+          :attr-workspace-path="groupPath"
+          workspace-type="group"
+          :label-create-type="LabelType.group"
+          :default-color="color"
+          issuable-type="epic"
+          variant="embedded"
+          @updateSelectedColor="handleUpdateSelectedColor($event.color)"
+        >
+          {{ __('Select a color') }}
+        </color-select-dropdown>
+      </gl-form-group>
+
+      <div class="footer-block gl-pt-4">
         <gl-button
           type="submit"
           variant="confirm"
