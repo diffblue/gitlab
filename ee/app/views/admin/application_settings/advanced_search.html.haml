@@ -2,7 +2,7 @@
 - page_title _("Advanced Search")
 
 - @content_class = "limit-container-width" unless fluid_layout
-- help_link_start = "<a class='gl-link' href='#{help_page_path('integration/elasticsearch')}#%{anchor}' target='_blank' rel='noopener noreferrer'>"
+- help_link_start = "<a class='gl-link' href='#{help_page_path('integration/advanced_search/elasticsearch')}#%{anchor}' target='_blank' rel='noopener noreferrer'>"
 - help_zero_downtime_reindexing_link_start = help_link_start.html_safe % { anchor: "zero-downtime-reindexing" }
 - help_advanced_search_migrations_link_start = help_link_start.html_safe % { anchor: "advanced-search-migrations" }
 - help_recreate_index_link_start = help_link_start.html_safe % { anchor: "last-resort-to-recreate-an-index" }
@@ -15,7 +15,7 @@
         variant: :danger) do |c|
         = c.body do
           = _('Pause indexing and upgrade Elasticsearch to a supported version.')
-          = link_to _('Learn more.'), help_page_path('integration/elasticsearch', anchor: 'version-requirements')
+          = link_to _('Learn more.'), help_page_path('integration/advanced_search/elasticsearch', anchor: 'version-requirements')
 
 - if @elasticsearch_warn_if_not_using_aliases
   - content_for :page_level_alert do

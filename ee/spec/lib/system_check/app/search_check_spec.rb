@@ -96,7 +96,9 @@ RSpec.describe SystemCheck::App::SearchCheck do
       checker = described_class.new
       error_msg = 'dummy error message'
 
-      expect(checker).to receive(:for_more_information).with('doc/integration/elasticsearch.md').and_return(error_msg)
+      expect(checker).to receive(:for_more_information)
+        .with('doc/integration/advanced_search/elasticsearch.md')
+        .and_return(error_msg)
       expect(checker.show_error).to eq(error_msg)
     end
   end
