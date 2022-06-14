@@ -67,7 +67,7 @@ module EE
 
       def project_key_required?
         strong_memoize(:project_key_required) do
-          issues_enabled || vulnerabilities_enabled
+          active? && issues_enabled || vulnerabilities_enabled
         end
       end
 
