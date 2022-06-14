@@ -68,6 +68,10 @@ module Types
     field :project_fingerprint,
           type: GraphQL::Types::String,
           null: true,
+          deprecated: {
+            reason: 'The `project_fingerprint` attribute is being deprecated. Use `uuid` to identify findings',
+            milestone: '15.1'
+          },
           description: 'Name of the vulnerability finding.'
 
     field :uuid,
