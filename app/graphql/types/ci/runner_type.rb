@@ -147,6 +147,8 @@ module Types
             .select(:runner_id, column_name)
             .where(runner_id: runner_ids)
             .pluck(:runner_id, column_name)
+          # In plucked_runner_and_owner_ids, first() represents the runner ID, and second() the owner ID,
+          # so let's group the owner IDs by runner ID
           runner_owner_ids_by_runner_id = plucked_runner_and_owner_ids
             .group_by(&:first)
             .transform_values { |runner_and_owner_id| runner_and_owner_id.map(&:second) }
