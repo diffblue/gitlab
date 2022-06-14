@@ -34605,6 +34605,9 @@ msgstr ""
 msgid "Select a branch"
 msgstr ""
 
+msgid "Select a branch to compare"
+msgstr ""
+
 msgid "Select a compliance framework to apply to this project. %{linkStart}How are these added?%{linkEnd}"
 msgstr ""
 
@@ -34719,6 +34722,9 @@ msgstr ""
 msgid "Select source branch"
 msgstr ""
 
+msgid "Select source project"
+msgstr ""
+
 msgid "Select start date"
 msgstr ""
 
@@ -34738,6 +34744,9 @@ msgid "Select target branch"
 msgstr ""
 
 msgid "Select target branch or tag"
+msgstr ""
+
+msgid "Select target project"
 msgstr ""
 
 msgid "Select timezone"
