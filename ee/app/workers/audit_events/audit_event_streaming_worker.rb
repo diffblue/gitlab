@@ -4,7 +4,6 @@ module AuditEvents
   class AuditEventStreamingWorker
     include ApplicationWorker
 
-    STREAMING_TOKEN_HEADER_KEY = "X-Gitlab-Event-Streaming-Token"
     EVENT_TYPE_HEADER_KEY = "X-Gitlab-Audit-Event-Type"
     REQUEST_BODY_SIZE_LIMIT = 25.megabytes
 
@@ -26,13 +25,13 @@ module AuditEvents
       return unless group.licensed_feature_available?(:external_audit_events)
 
       group.external_audit_event_destinations.each do |destination|
+        headers = destination.headers_hash
+        headers[EVENT_TYPE_HEADER_KEY] = audit_operation if audit_operation.present?
+
         Gitlab::HTTP.post(destination.destination_url,
                           body: request_body(audit_event, audit_operation),
                           use_read_total_timeout: true,
-                          headers: {
-                            STREAMING_TOKEN_HEADER_KEY => destination.verification_token,
-                            EVENT_TYPE_HEADER_KEY => audit_operation
-                          })
+                          headers: headers)
       rescue URI::InvalidURIError => e
         Gitlab::ErrorTracking.log_exception(e)
       rescue *Gitlab::HTTP::HTTP_ERRORS

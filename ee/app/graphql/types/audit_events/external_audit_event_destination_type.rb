@@ -22,6 +22,11 @@ module Types
       field :verification_token, GraphQL::Types::String,
             null: false,
             description: 'Verification token to validate source of event.'
+
+      field :headers, ::Types::AuditEvents::Streaming::HeaderType.connection_type,
+            null: false,
+            description: 'List of additional HTTP headers sent with each event.',
+            feature_flag: :streaming_audit_event_headers
     end
   end
 end
