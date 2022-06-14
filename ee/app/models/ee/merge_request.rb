@@ -121,7 +121,7 @@ module EE
       if ::Feature.disabled?(:change_response_code_merge_status, self.project)
         return false unless approved?
 
-        unless Feature.enabled?(:improved_mergeability_checks, self.project)
+        unless ::Feature.enabled?(:improved_mergeability_checks, self.project)
           return false if has_denied_policies?
         end
 
