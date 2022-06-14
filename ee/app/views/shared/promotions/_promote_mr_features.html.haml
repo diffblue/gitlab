@@ -1,19 +1,16 @@
 - if show_promotions? && show_callout?('promote_mr_features_dismissed') && !@project.feature_available?(:merge_request_approvers)
-  .user-callout.promotion-callout.append-bottom-20.js-mr-approval-callout#promote_mr_features{ data: { uid: 'promote_mr_features_dismissed' } }
-    .bordered-box.content-block
-      %button.gl-button.btn.btn-default-tertiary.close.js-close-callout{ type: 'button', 'aria-label' => _('Dismiss merge request promotion') }
-        = sprite_icon('close', size: 16, css_class: 'dismiss-icon')
-      .user-callout-copy
-        %h4
-          - if Gitlab::CurrentSettings.should_check_namespace_plan?
-            = s_('Promotions|Upgrade your plan to improve merge requests.')
-          - else
-            = s_('Promotions|Improve merge requests and customer support with GitLab Enterprise Edition.')
-        %ul
-          - unless @project.feature_available?(:merge_request_approvers)
-            %li
-              = link_to s_('Promotions|Merge request approvals'), help_page_path('user/project/merge_requests/approvals/index.md'), target: '_blank', rel: 'noopener noreferrer'
-              %p
-                = s_('Promotions|Set the number of necessary approvals and define a list of approvers needed for every merge request in a project.')
-
-        = render 'shared/promotions/promotion_link_project', location: :mr_features
+  = render Pajamas::BannerComponent.new(banner_options: { class: 'user-callout promotion-callout js-mr-approval-callout gl-mb-6!', data: { uid: 'promote_mr_features_dismissed' }, id: 'promote_mr_features' },
+    close_options: { 'aria-label' => _('Dismiss merge request promotion'), class: 'js-close-callout' }) do |c|
+    - c.title do
+      - if Gitlab::CurrentSettings.should_check_namespace_plan?
+        = s_('Promotions|Upgrade your plan to improve merge requests.')
+      - else
+        = s_('Promotions|Improve merge requests and customer support with GitLab Enterprise Edition.')
+    %ul
+      - unless @project.feature_available?(:merge_request_approvers)
+        %li
+          = link_to s_('Promotions|Merge request approvals'), help_page_path('user/project/merge_requests/approvals/index.md'), target: '_blank', rel: 'noopener noreferrer'
+          %p
+            = s_('Promotions|Set the number of necessary approvals and define a list of approvers needed for every merge request in a project.')
+    - c.primary_action do
+      = render 'shared/promotions/promotion_link_project', location: :mr_features
