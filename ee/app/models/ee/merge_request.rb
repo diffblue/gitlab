@@ -118,9 +118,22 @@ module EE
 
     override :mergeable?
     def mergeable?(skip_ci_check: false, skip_discussions_check: false)
-      return false unless approved?
-      return false if has_denied_policies?
-      return false if merge_blocked_by_other_mrs?
+      if ::Feature.disabled?(:change_response_code_merge_status, self.project)
+        return false unless approved?
+        return false if has_denied_policies?
+        return false if merge_blocked_by_other_mrs?
+      end
+
+      super
+    end
+
+    override :mergeable_state?
+    def mergeable_state?(skip_ci_check: false, skip_discussions_check: false)
+      if ::Feature.enabled?(:change_response_code_merge_status, self.project)
+        return false unless approved?
+        return false if has_denied_policies?
+        return false if merge_blocked_by_other_mrs?
+      end
 
       super
     end

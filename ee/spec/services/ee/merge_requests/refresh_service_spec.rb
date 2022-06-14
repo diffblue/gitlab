@@ -263,6 +263,7 @@ RSpec.describe MergeRequests::RefreshService do
 
     describe 'Pipelines for merge requests', :sidekiq_inline do
       let(:service) { described_class.new(project: project, current_user: current_user) }
+      let(:project) { create(:project, :repository, namespace: group, reset_approvals_on_push: true) }
       let(:current_user) { merge_request.author }
 
       let(:config) do
