@@ -42,7 +42,6 @@ export default {
         ? ErrorMessages.fetchEpicsError
         : ErrorMessages.fetchIssueError;
     Vue.set(state.listsFlags, listId, { isLoading: false, isLoadingMore: false });
-    Vue.set(state.boardItemsByListId, listId, state.backupItemsList);
   },
 
   [mutationTypes.REQUEST_ISSUES_FOR_EPIC]: (state, epicId) => {
