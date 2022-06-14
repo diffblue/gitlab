@@ -4998,5 +4998,15 @@ RSpec.describe Ci::Pipeline, :mailer, factory_default: :keep do
         end
       end
     end
+
+    context 'when pipeline has been loaded without all attributes' do
+      it 'raises an exception' do
+        pipeline.save!
+
+        pipeline_id = Ci::Pipeline.where(id: pipeline.id).select(:id).first
+
+        expect { pipeline_id.age_in_minutes }.to raise_error(ArgumentError)
+      end
+    end
   end
 end

@@ -1324,7 +1324,11 @@ module Ci
     end
 
     def age_in_minutes
-      return 0 if !persisted? || created_at.nil?
+      return 0 unless persisted?
+
+      unless has_attribute?(:created_at)
+        raise ArgumentError, 'pipeline not fully loaded'
+      end
 
       (Time.current - created_at).ceil / 60
     end
@@ -1380,7 +1384,7 @@ module Ci
     end
 
     def observe_age_in_minutes
-      return unless persisted?
+      return unless persisted? && has_attribute?(:created_at)
 
       ::Gitlab::Ci::Pipeline::Metrics
         .pipeline_age_histogram
