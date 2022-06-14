@@ -3,8 +3,8 @@
 require "spec_helper"
 
 RSpec.describe Projects::RepositoriesController do
-  let(:group) { create(:group) }
-  let(:project) { create(:project, :repository, namespace: group) }
+  let_it_be(:group) { create(:group) }
+  let_it_be(:project) { create(:project, :repository, namespace: group) }
 
   describe "GET archive" do
     subject(:get_archive) do
@@ -19,21 +19,42 @@ RSpec.describe Projects::RepositoriesController do
     shared_examples 'logs the audit event' do
       it 'logs the audit event' do
         expect { get_archive }.to change { AuditEvent.count }.by(1)
+        expect(AuditEvent.last.details).to include({
+                                                     author_name: user_name,
+                                                     custom_message: "Repository Download Started",
+                                                     target_id: project.id,
+                                                     target_type: "Project"
+                                                   })
+      end
+    end
+
+    shared_examples 'sends the streaming audit event' do
+      it 'sends the streaming event with audit event type' do
+        expect(AuditEvents::AuditEventStreamingWorker).to receive(:perform_async).with(
+          event_type,
+          nil,
+          a_string_including("author_name\":\"#{user_name}",
+                             "custom_message\":\"Repository Download Started"))
+
+        get_archive
       end
     end
 
     context 'when unauthenticated', 'for a public project' do
       it_behaves_like 'logs the audit event' do
-        let(:project) { create(:project, :repository, :public) }
+        let_it_be(:project) { create(:project, :repository, :public) }
+        let_it_be(:user_name) { "An unauthenticated user" }
       end
 
       context 'when group sets event destination' do
         before do
           set_group_destination
         end
-        it "doesn't send the streaming audit event" do
-          expect(AuditEvents::AuditEventStreamingWorker).not_to receive(:perform_async)
-          get_archive
+
+        it_behaves_like 'sends the streaming audit event' do
+          let_it_be(:project) { create(:project, :repository, :public, namespace: group) }
+          let_it_be(:event_type) { "repository_download_operation" }
+          let_it_be(:user_name) { "An unauthenticated user" }
         end
       end
     end
@@ -45,18 +66,20 @@ RSpec.describe Projects::RepositoriesController do
       end
 
       it_behaves_like 'logs the audit event' do
-        let(:user) { create(:user) }
+        let_it_be(:user) { create(:user) }
+        let_it_be(:user_name) { user.name }
       end
 
       context 'when group sets event destination' do
-        let(:user) { create(:user) }
+        let_it_be(:user) { create(:user) }
 
         before do
           set_group_destination
         end
-        it "sends the streaming audit event" do
-          expect(AuditEvents::AuditEventStreamingWorker).to receive(:perform_async)
-          get_archive
+
+        it_behaves_like 'sends the streaming audit event' do
+          let(:event_type) { "repository_download_operation" }
+          let_it_be(:user_name) { user.name }
         end
       end
     end

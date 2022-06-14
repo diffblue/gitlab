@@ -62,6 +62,7 @@ module Gitlab
         @created_at = @context.fetch(:created_at, DateTime.current)
         @message = @context.fetch(:message, '')
         @additional_details = @context.fetch(:additional_details, {})
+        @ip_address = @context[:ip_address]
       end
 
       def multiple_audit
@@ -101,7 +102,8 @@ module Gitlab
           target: @target,
           created_at: @created_at,
           message: message,
-          additional_details: @additional_details
+          additional_details: @additional_details,
+          ip_address: @ip_address
         ).execute
       end
 
