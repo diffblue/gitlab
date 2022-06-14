@@ -21,7 +21,7 @@
 
         = saml_link _('Sign in with Single Sign-On'), @group_path, html_class: 'btn btn-confirm btn-md gl-button btn-block qa-saml-sso-signin-button', redirect: @redirect_path
       - else
-        = render Pajamas::AlertComponent.new(variant: :warning, dismissible: false, alert_class: 'gl-mb-5 gl-word-break-word') do |c|
+        = render Pajamas::AlertComponent.new(variant: :warning, dismissible: false, alert_options: { class: 'gl-mb-5 gl-word-break-word' }) do |c|
           = c.body do
             = _("Only proceed if you trust %{idp_url} to control your GitLab account sign in.") % { idp_url: @idp_url }
 

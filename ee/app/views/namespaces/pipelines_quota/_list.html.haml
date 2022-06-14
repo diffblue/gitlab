@@ -5,8 +5,8 @@
 - last_reset = minutes_usage.reset_date
 
 = render Pajamas::AlertComponent.new(variant: :info, dismissible: false,
-  alert_class: 'gl-mt-6 gl-mb-3',
-  alert_data: { testid: 'project-usage-info-alert' }) do |c|
+  alert_options: { class: 'gl-mt-6 gl-mb-3',
+                   data: { testid: 'project-usage-info-alert' }}) do |c|
   = c.body do
     - if last_reset
       = sprintf(s_('UsageQuota|The table below shows usage since %{timeElapsed}'), { timeElapsed: last_reset.strftime('%b %d, %Y') })

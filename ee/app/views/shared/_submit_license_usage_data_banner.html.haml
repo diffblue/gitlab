@@ -5,8 +5,9 @@
   %div{ class: [container_class, @content_class, 'gl-pt-5!'] }
     = render Pajamas::AlertComponent.new(title: payload.title,
       variant: :warning,
-      alert_class: 'js-submit-license-usage-data-banner gl-my-5',
-      alert_data: { feature_id: payload.class::SUBMIT_LICENSE_USAGE_DATA_BANNER, dismiss_endpoint: callouts_path },
+      alert_options: { class: 'js-submit-license-usage-data-banner gl-my-5',
+                       data: { feature_id: payload.class::SUBMIT_LICENSE_USAGE_DATA_BANNER,
+                               dismiss_endpoint: callouts_path }},
       dismissible: payload.dismissable?) do |c|
       = c.body do
         = payload.body

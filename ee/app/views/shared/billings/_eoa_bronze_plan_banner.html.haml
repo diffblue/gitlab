@@ -1,9 +1,9 @@
 - if show_eoa_bronze_plan_banner?(namespace)
   .container-fluid.container-limited.pt-3
     = render Pajamas::AlertComponent.new(title: s_("BillingPlans|End of availability for the Bronze Plan"),
-      alert_class: 'gl-mt-5 js-eoa-bronze-plan-banner',
-      alert_data: { feature_id: ::EE::Users::CalloutsHelper::EOA_BRONZE_PLAN_BANNER,
-                    dismiss_endpoint: callouts_path }) do |c|
+      alert_options: { class: 'gl-mt-5 js-eoa-bronze-plan-banner',
+                       data: { feature_id: ::EE::Users::CalloutsHelper::EOA_BRONZE_PLAN_BANNER,
+                               dismiss_endpoint: callouts_path }}) do |c|
       = c.body do
         - announcement_link = external_link("announcement blog", "https://about.gitlab.com/blog/2021/01/26/new-gitlab-product-subscription-model")
         = s_("BillingPlans|While GitLab is ending availability of the Bronze plan, you can still renew your Bronze subscription one additional time before %{eoa_bronze_plan_end_date}. We are also offering a limited time free upgrade to our Premium Plan (up to 25 users)! Learn more about the changes and offers in our %{announcement_link}.").html_safe % { announcement_link: announcement_link, eoa_bronze_plan_end_date: eoa_bronze_plan_end_date.in_time_zone.to_date.to_s(:medium) }
