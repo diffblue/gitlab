@@ -17,7 +17,8 @@ RSpec.describe AuditEvents::BuildService do
       scope: scope,
       target: target,
       message: message,
-      additional_details: additional_details
+      additional_details: additional_details,
+      ip_address: ip_address
     )
   end
 
@@ -39,8 +40,7 @@ RSpec.describe AuditEvents::BuildService do
             author_id: author.id,
             author_name: author.name,
             entity_id: scope.id,
-            entity_type: scope.class.name
-          )
+            entity_type: scope.class.name)
 
           expect(event.details).to eq(
             author_name: author.name,
@@ -50,8 +50,7 @@ RSpec.describe AuditEvents::BuildService do
             custom_message: message,
             ip_address: ip_address,
             entity_path: scope.full_path,
-            action: :custom
-          )
+            action: :custom)
 
           expect(event.ip_address).to eq(ip_address)
           expect(event.created_at).to eq(DateTime.current)
@@ -104,6 +103,22 @@ RSpec.describe AuditEvents::BuildService do
           expect(event.author_name).to eq(deploy_token.name)
         end
       end
+
+      context 'when author is passed as UnauthenticatedAuthor' do
+        let(:service) do
+          described_class.new(
+            author: ::Gitlab::Audit::UnauthenticatedAuthor.new,
+            scope: scope,
+            target: target,
+            message: message
+          )
+        end
+
+        it 'sets author as unauthenticated user' do
+          expect(event.author).to be_an_instance_of(::Gitlab::Audit::UnauthenticatedAuthor)
+          expect(event.author_name).to eq('An unauthenticated user')
+        end
+      end
     end
 
     context 'when not licensed' do
@@ -117,8 +132,7 @@ RSpec.describe AuditEvents::BuildService do
             author_id: author.id,
             author_name: author.name,
             entity_id: scope.id,
-            entity_type: scope.class.name
-          )
+            entity_type: scope.class.name)
 
           expect(event.details).to eq(
             author_name: author.name,
@@ -126,8 +140,7 @@ RSpec.describe AuditEvents::BuildService do
             target_type: target.class.name,
             target_details: target.name,
             custom_message: message,
-            action: :custom
-          )
+            action: :custom)
 
           expect(event.ip_address).to be_nil
           expect(event.created_at).to eq(DateTime.current)
