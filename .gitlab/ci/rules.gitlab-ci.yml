@@ -1377,6 +1377,8 @@
   rules:
     - <<: *if-not-ee
       when: never
+    - <<: *if-merge-request-labels-pipeline-revert
+      when: never
     - <<: *if-merge-request-labels-skip-undercoverage
       when: never
     - <<: *if-merge-request-labels-run-all-rspec
