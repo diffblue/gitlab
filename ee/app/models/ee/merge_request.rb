@@ -140,7 +140,7 @@ module EE
       end
 
       super
-
+    end
 
     override :mergeability_checks
     def mergeability_checks
