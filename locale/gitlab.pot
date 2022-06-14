@@ -43202,6 +43202,9 @@ msgstr ""
 msgid "WorkItem|Child items"
 msgstr ""
 
+msgid "WorkItem|Closed"
+msgstr ""
+
 msgid "WorkItem|Collapse child items"
 msgstr ""
 
@@ -43221,6 +43224,9 @@ msgid "WorkItem|New Task"
 msgstr ""
 
 msgid "WorkItem|No child items are currently assigned. Use child items to prioritize tasks that your team should complete in order to accomplish your goals!"
+msgstr ""
+
+msgid "WorkItem|Open"
 msgstr ""
 
 msgid "WorkItem|Select type"
