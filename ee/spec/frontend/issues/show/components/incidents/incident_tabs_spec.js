@@ -29,6 +29,7 @@ describe('Incident Tabs component', () => {
             fullPath: '',
             iid: '',
             projectId: '',
+            issuableId: '',
             uploadMetricsFeatureAvailable: true,
           },
           data() {
