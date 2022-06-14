@@ -56,6 +56,22 @@ RSpec.describe SubscriptionsController do
 
           expect(assigns(:eligible_groups)).to eq [group]
         end
+
+        context 'and request specify which group to use' do
+          it 'assign requested group' do
+            get :new, params: { namespace_id: group.id }
+
+            expect(assigns(:namespace)).to eq(group)
+          end
+        end
+
+        context 'request does not specify namespace' do
+          it 'falls back to users namespace' do
+            get_new
+
+            expect(assigns(:namespace)).to eq(user.namespace)
+          end
+        end
       end
 
       context 'when there are no eligible groups for the subscription' do
