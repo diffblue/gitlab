@@ -14,8 +14,9 @@
         dom_id: dom_id(label), type: label.type } }
         %button.add-priority.btn.gl-button.btn-default-tertiary.btn-sm.has-tooltip{ title: _('Prioritize'), type: 'button', data: { placement: 'bottom' }, aria_label: _('Prioritize label') }
           = sprite_icon('star-o')
-        %button.remove-priority.btn.gl-button.btn-default-tertiary.btn-sm.has-tooltip{ title: _('Remove priority'), type: 'button', data: { placement: 'bottom' }, aria_label: _('Deprioritize label') }
-          = sprite_icon('star')
+        = render Pajamas::ButtonComponent.new(category: :tertiary,
+          icon: 'star',
+          button_options: { class: 'remove-priority has-tooltip', 'title': _('Remove priority'), 'aria_label': _('Deprioritize label'), data: { placement: 'bottom' } })
     - if can?(current_user, :admin_label, label)
       %li.gl-display-inline-block
         = link_to label.edit_path, class: 'btn gl-button btn-default-tertiary btn-sm edit has-tooltip', title: _('Edit'), data: { placement: 'bottom' }, aria_label: _('Edit') do
