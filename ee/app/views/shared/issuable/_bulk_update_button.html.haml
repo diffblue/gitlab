@@ -1,3 +1,4 @@
 - type = local_assigns.fetch(:type)
 
-= button_tag _("Edit %{issuable}") % {issuable: type.to_s.humanize(capitalize: false)}, class: 'btn btn-default gl-button gl-mr-3 js-bulk-update-toggle'
+= render Pajamas::ButtonComponent.new(button_options: { class: 'gl-mr-3 js-bulk-update-toggle' }) do
+  = _("Edit %{issuable}") % {issuable: type.to_s.humanize(capitalize: false)}
