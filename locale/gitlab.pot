@@ -13640,9 +13640,6 @@ msgstr ""
 msgid "Edit"
 msgstr ""
 
-msgid "Edit %{issuable}"
-msgstr ""
-
 msgid "Edit %{name}"
 msgstr ""
 
