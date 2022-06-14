@@ -27,7 +27,7 @@
                 alert_options: { class: 'gl-my-3' }) do |c|
                 = c.body do
                   = html_escape(_('Check the %{code_open}elasticsearch.log%{code_close} file to debug why the migration halted and make any changes before retrying the migration. When you fix the cause of the failure, select %{strong_open}Retry migration%{strong_close}, and the migration is scheduled to retry in the background.')) % { strong_open: '<strong>'.html_safe, strong_close: '</strong>'.html_safe, code_open: '<code>'.html_safe, code_close: '</code>'.html_safe }
-                  = link_to _('Learn more.'), help_page_path('integration/elasticsearch', anchor: 'advanced-search-migrations')
+                  = link_to _('Learn more.'), help_page_path('integration/advanced_search/elasticsearch', anchor: 'advanced-search-migrations')
                 = c.actions do
                   - migration = Elastic::DataMigrationService.halted_migration
                   = link_to _('Retry migration'), admin_elasticsearch_retry_migration_path(version: migration.version), class: 'btn gl-alert-action btn-confirm gl-button', disabled: @last_elasticsearch_reindexing_task&.in_progress?, data: { confirm: _('Are you sure you want to retry this migration?') }, method: :post
@@ -85,9 +85,9 @@
                       = f.number_field :elasticsearch_replicas, name: "application_setting[elasticsearch_replicas][#{setting.alias_name}]", value: setting.number_of_replicas, class: 'form-control gl-form-input', id: "application_setting_elasticsearch_replicas[#{setting.alias_name}]"
             .form-group
               .form-text.gl-text-gray-600.gl-mt-0
-                - configuration_link_url = help_page_url('integration/elasticsearch.md', anchor: 'advanced-search-configuration')
+                - configuration_link_url = help_page_url('integration/advanced_search/elasticsearch.md', anchor: 'advanced-search-configuration')
                 - configuration_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: configuration_link_url }
-                - recreated_link_url = help_page_url('integration/elasticsearch.md', anchor: 'zero-downtime-reindexing')
+                - recreated_link_url = help_page_url('integration/advanced_search/elasticsearch.md', anchor: 'zero-downtime-reindexing')
                 - recreated_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: recreated_link_url }
                 = html_escape(_("Learn more about shards and replicas in the %{configuration_link_start}Advanced Search configuration%{configuration_link_end} documentation. Changes don\'t take place until you %{recreated_link_start}recreate%{recreated_link_end} the index.")) % { configuration_link_start: configuration_link_start, configuration_link_end: '</a>'.html_safe, recreated_link_start: recreated_link_start, recreated_link_end: '</a>'.html_safe }
 
@@ -207,7 +207,7 @@
           = f.label :slice_multiplier, _('Slice multiplier'), class: 'label-bold'
           = f.number_field :elasticsearch_slice_multiplier, class: 'form-control gl-form-input', value: @elasticsearch_reindexing_task.slice_multiplier
           .form-text.gl-text-gray-600.gl-mt-0
-            - slice_multiplier_link_url = help_page_path('integration/elasticsearch.md', anchor: 'slice-multiplier')
+            - slice_multiplier_link_url = help_page_path('integration/advanced_search/elasticsearch.md', anchor: 'slice-multiplier')
             - slice_multiplier_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: slice_multiplier_link_url }
             = html_escape(_('Calculate the number of slices during reindexing. The multiplier is applied to the number of shards per index. Learn more about %{slice_multiplier_link_start}slice multiplier configuration%{slice_multiplier_link_end}.')) % { slice_multiplier_link_start: slice_multiplier_link_start, slice_multiplier_link_end: '</a>'.html_safe }
 
@@ -215,7 +215,7 @@
           = f.label :max_slices_running, _('Maximum running slices'), class: 'label-bold'
           = f.number_field :elasticsearch_max_slices_running, class: 'form-control gl-form-input', value: @elasticsearch_reindexing_task.max_slices_running
           .form-text.gl-text-gray-600.gl-mt-0
-            - max_slices_running_link_url = help_page_path('integration/elasticsearch.md', anchor: 'maximum-running-slices')
+            - max_slices_running_link_url = help_page_path('integration/advanced_search/elasticsearch.md', anchor: 'maximum-running-slices')
             - max_slices_running_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: max_slices_running_link_url }
             = html_escape(_('Set the maximum number of slices allowed to run concurrently during Elasticsearch reindexing. Learn more about %{max_slices_running_link_start}maximum running slices configuration%{max_slices_link_end}.')) % { max_slices_running_link_start: max_slices_running_link_start, max_slices_link_end: '</a>'.html_safe }
 
