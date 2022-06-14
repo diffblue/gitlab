@@ -33,7 +33,7 @@ RSpec.describe 'epic boards', :js do
 
     it 'switches current epic board' do
       in_boards_switcher_dropdown do
-        click_link epic_board2.name
+        click_button epic_board2.name
       end
 
       wait_for_requests
