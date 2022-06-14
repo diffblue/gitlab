@@ -1,19 +1,24 @@
 ---
 data_category: optional
-key_path: analytics_unique_visits.g_analytics_contribution
-description: Unique visitors to /groups/:group/-/contribution_analytics
+key_path: analytics_unique_visits.i_analytics_instance_statistics
+description: Unique visitors to/admin/usage_trends
 product_section: dev
 product_stage: manage
 product_group: group::optimize
 product_category:
 value_type: number
 status: active
-time_frame: all
+time_frame: 7d
 data_source: redis_hll
+instrumentation_class: RedisHLLMetric
+options:
+  events:
+  - i_analytics_instance_statistics
 distribution:
+- ce
 - ee
 tier:
+- free
 - premium
 - ultimate
-performance_indicator_type: []
 milestone: "<13.9"
