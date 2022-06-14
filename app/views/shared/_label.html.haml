@@ -23,8 +23,9 @@
     - if can?(current_user, :admin_label, label)
       %li.gl-display-inline-block
         .dropdown
-          %button{ type: 'button', class: 'btn gl-button btn-default-tertiary btn-sm js-label-options-dropdown', data: { toggle: 'dropdown' }, aria_label: _('Label actions dropdown') }
-            = sprite_icon('ellipsis_v')
+          = render Pajamas::ButtonComponent.new(category: :tertiary,
+            icon: 'ellipsis_v',
+            button_options: { class: 'js-label-options-dropdown', 'aria_label': _('Label actions dropdown'), data: { toggle: 'dropdown' } })
           .dropdown-menu.dropdown-open-left
             %ul
               - if label.project_label? && label.project.group && can?(current_user, :admin_label, label.project.group)
