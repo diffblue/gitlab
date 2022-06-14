@@ -1045,6 +1045,9 @@ msgstr ""
 msgid "%{timebox_type} must have a start and due date"
 msgstr ""
 
+msgid "%{time} UTC"
+msgstr ""
+
 msgid "%{title} %{operator} %{threshold}"
 msgstr ""
 
@@ -20261,9 +20264,6 @@ msgstr ""
 msgid "Incidents|Must start with http or https"
 msgstr ""
 
-msgid "Incident|Add new timeline event"
-msgstr ""
-
 msgid "Incident|Alert details"
 msgstr ""
 
@@ -20286,6 +20286,9 @@ msgid "Incident|Metrics"
 msgstr ""
 
 msgid "Incident|No timeline items have been added yet."
+msgstr ""
+
+msgid "Incident|Something went wrong while fetching incident timeline events."
 msgstr ""
 
 msgid "Incident|Summary"
