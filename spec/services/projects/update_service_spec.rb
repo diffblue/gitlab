@@ -302,7 +302,7 @@ RSpec.describe Projects::UpdateService do
         expect(feature.monitor_access_level).not_to eq(ProjectFeature::DISABLED)
         expect(feature.infrastructure_access_level).not_to eq(ProjectFeature::DISABLED)
         expect(feature.feature_flags_access_level).not_to eq(ProjectFeature::DISABLED)
-        expect(feature.environments_flags_access_level).not_to eq(ProjectFeature::DISABLED)
+        expect(feature.environments_access_level).not_to eq(ProjectFeature::DISABLED)
       end
 
       context 'when split_operations_visibility_permissions feature is disabled' do
@@ -320,7 +320,7 @@ RSpec.describe Projects::UpdateService do
           expect(feature.monitor_access_level).to eq(ProjectFeature::DISABLED)
           expect(feature.infrastructure_access_level).to eq(ProjectFeature::DISABLED)
           expect(feature.feature_flags_access_level).to eq(ProjectFeature::DISABLED)
-          expect(feature.environments_flags_access_level).to eq(ProjectFeature::DISABLED)
+          expect(feature.environments_access_level).to eq(ProjectFeature::DISABLED)
         end
       end
     end

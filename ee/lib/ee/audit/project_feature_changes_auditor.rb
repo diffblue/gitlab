@@ -23,8 +23,8 @@ module EE
                  :monitor_access_level,
                  :infrastructure_access_level,
                  :feature_flags_access_level,
-                 :environments_flags_access_level,
-                 :releases_flags_access_level].freeze
+                 :environments_access_level,
+                 :releases_access_level].freeze
 
       def initialize(current_user, model, project)
         @project = project

@@ -65,7 +65,7 @@ RSpec.describe Gitlab::BackgroundMigration::PopulateOperationVisibilityPermissio
     expect(record.monitor_access_level).to eq(record.operations_access_level)
     expect(record.infrastructure_access_level).to eq(record.operations_access_level)
     expect(record.feature_flags_access_level).to eq(record.operations_access_level)
-    expect(record.environments_flags_access_level).to eq(record.operations_access_level)
+    expect(record.environments_access_level).to eq(record.operations_access_level)
   end
 
   def create_project(proj_name, proj_namespace)
