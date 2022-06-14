@@ -98,6 +98,7 @@ module EE
       repository_mirror_attributes +
       merge_request_appovers_rules_attributes +
       password_complexity_attributes +
+      git_abuse_rate_limit_attributes +
        %i[
         email_additional_text
         file_template_project_id
@@ -130,6 +131,13 @@ module EE
         password_symbol_required
         password_uppercase_required
         password_lowercase_required
+      ]
+    end
+
+    def self.git_abuse_rate_limit_attributes
+      %i[
+        max_number_of_repository_downloads
+        max_number_of_repository_downloads_within_time_period
       ]
     end
 

@@ -10,6 +10,7 @@ module EE
           extend ::Gitlab::Utils::Override
 
           # rubocop:disable Metrics/CyclomaticComplexity
+          # rubocop:disable Metrics/PerceivedComplexity
           override :filter_attributes_using_license
           def filter_attributes_using_license(attrs)
             unless ::License.feature_available?(:repository_mirrors)
@@ -60,9 +61,15 @@ module EE
               attrs = attrs.except(:maintenance_mode, :maintenance_mode_message)
             end
 
+            unless License.feature_available?(:git_abuse_rate_limit) &&
+              ::Feature.enabled?(:git_abuse_rate_limit_feature_flag)
+              attrs = attrs.except(*EE::ApplicationSettingsHelper.git_abuse_rate_limit_attributes)
+            end
+
             attrs
           end
           # rubocop:enable Metrics/CyclomaticComplexity
+          # rubocop:enable Metrics/PerceivedComplexity
         end
       end
     end

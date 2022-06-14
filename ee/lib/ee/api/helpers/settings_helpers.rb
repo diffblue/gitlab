@@ -55,6 +55,8 @@ module EE
             optional :maintenance_mode, type: Grape::API::Boolean, desc: 'When instance is in maintenance mode, non-admin users can sign in with read-only access and make read-only API requests'
             optional :maintenance_mode_message, type: String, desc: 'Message displayed when instance is in maintenance mode'
             optional :git_two_factor_session_expiry, type: Integer, desc: 'Maximum duration (in minutes) of a session for Git operations when 2FA is enabled'
+            optional :max_number_of_repository_downloads, type: Integer, desc: 'Maximum number of unique repositories a user can download in the specified time period before they are banned'
+            optional :max_number_of_repository_downloads_within_time_period, type: Integer, desc: 'Reporting time period (in seconds)'
           end
         end
 

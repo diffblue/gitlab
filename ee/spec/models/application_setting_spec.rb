@@ -100,6 +100,9 @@ RSpec.describe ApplicationSetting do
     it { is_expected.not_to allow_value(0).for(:git_two_factor_session_expiry) }
     it { is_expected.not_to allow_value(10081).for(:git_two_factor_session_expiry) }
 
+    it { is_expected.to validate_numericality_of(:max_number_of_repository_downloads).is_greater_than_or_equal_to(0).is_less_than_or_equal_to(10000) }
+    it { is_expected.to validate_numericality_of(:max_number_of_repository_downloads_within_time_period).is_greater_than_or_equal_to(0).is_less_than_or_equal_to(864000) }
+
     it { is_expected.to validate_numericality_of(:max_ssh_key_lifetime).is_greater_than(0).is_less_than_or_equal_to(365).allow_nil }
 
     # TODO: Replace with validate_numericality_of once the before_validation hook is removed.
