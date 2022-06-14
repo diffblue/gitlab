@@ -1380,6 +1380,8 @@ module Ci
     end
 
     def observe_age_in_minutes
+      return unless persisted?
+
       ::Gitlab::Ci::Pipeline::Metrics
         .pipeline_age_histogram
         .observe({}, age_in_minutes)
