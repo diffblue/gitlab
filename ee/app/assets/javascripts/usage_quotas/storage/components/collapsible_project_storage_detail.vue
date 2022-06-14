@@ -34,7 +34,7 @@ export default {
       return numberToHumanSize(this.project.statistics.storageSize);
     },
     iconName() {
-      return this.isOpen ? 'angle-down' : 'angle-right';
+      return this.isOpen ? 'chevron-down' : 'chevron-right';
     },
     projectStorageTypes() {
       return getStorageTypesFromProjectStatistics(this.project.statistics, this.helpLinks);
