@@ -47,10 +47,9 @@
           %button.js-unsubscribe-button.gl-button.btn.btn-default.gl-w-full{ class: ('hidden' if status.unsubscribed?), data: { url: toggle_subscription_path, toggle: 'tooltip' }, title: tooltip_title }
             %span.gl-button-text= _('Unsubscribe')
           .dropdown.dropdown-group-label{ class: ('hidden' unless status.unsubscribed?) }
-            %button.gl-button.btn.btn-default.gl-w-full{ data: { toggle: 'dropdown' } }
-              %span.gl-button-text
-                = _('Subscribe')
-                = sprite_icon('chevron-down')
+            = render Pajamas::ButtonComponent.new(button_options: { class: 'gl-w-full', data: { toggle: 'dropdown' } }) do
+              = _('Subscribe')
+              = sprite_icon('chevron-down')
             .dropdown-menu.dropdown-open-left
               %ul
                 %li
