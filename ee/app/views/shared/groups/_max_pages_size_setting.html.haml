@@ -5,7 +5,7 @@
   .settings-header
     %h4.settings-title.js-settings-toggle.js-settings-toggle-trigger-only{ role: 'button' }
       = _('Pages')
-    %button.btn.gl-button.js-settings-toggle{ type: 'button' }
+    = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
       = expanded ? _('Collapse') : _('Expand')
     - pages_link_url = help_page_path('administration/pages/index', anchor: 'set-maximum-size-of-each-gitlab-pages-site-in-a-group')
     - pages_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: pages_link_url }
