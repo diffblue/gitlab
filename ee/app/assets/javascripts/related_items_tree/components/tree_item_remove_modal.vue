@@ -3,7 +3,7 @@ import { GlModal, GlSafeHtmlDirective } from '@gitlab/ui';
 import { escape } from 'lodash';
 import { mapState, mapActions } from 'vuex';
 
-import { sprintf } from '~/locale';
+import { sprintf, __ } from '~/locale';
 
 import { ChildType, RemoveItemModalProps, itemRemoveModalId } from '../constants';
 
@@ -48,6 +48,20 @@ export default {
       return '';
     },
   },
+  modal: {
+    actionPrimary: {
+      text: __('Remove'),
+      attributes: {
+        variant: 'danger',
+      },
+    },
+    actionCancel: {
+      text: __('Cancel'),
+      attributes: {
+        variant: 'default',
+      },
+    },
+  },
   methods: {
     ...mapActions(['removeItem']),
   },
@@ -58,10 +72,10 @@ export default {
   <gl-modal
     :modal-id="$options.itemRemoveModalId"
     :title="modalTitle"
-    :ok-title="__('Remove')"
-    ok-variant="danger"
     no-fade
-    @ok="
+    :action-primary="$options.modal.actionPrimary"
+    :action-cancel="$options.modal.actionCancel"
+    @primary="
       removeItem({
         parentItem: removeItemModalProps.parentItem,
         item: removeItemModalProps.item,
