@@ -13,6 +13,7 @@ RSpec.describe 'Update Epic', :js do
     This is a task list:
 
     - [ ] Incomplete entry 1
+    - [ ] Incomplete entry 2
     MARKDOWN
   end
 
@@ -158,12 +159,20 @@ RSpec.describe 'Update Epic', :js do
 
     it 'updates the tasklist' do
       expect(page).to have_selector('ul.task-list',      count: 1)
-      expect(page).to have_selector('li.task-list-item', count: 1)
+      expect(page).to have_selector('li.task-list-item', count: 2)
       expect(page).to have_selector('ul input[checked]', count: 0)
 
       find('.task-list .task-list-item', text: 'Incomplete entry 1').find('input').click
 
       expect(page).to have_selector('ul input[checked]', count: 1)
+    end
+
+    it 'shows drag icons on hover of list item' do
+      expect(page).to have_selector('.drag-icon', visible: false)
+
+      first('li.task-list-item').hover
+
+      expect(page).to have_selector('.drag-icon', visible: true)
     end
   end
 
