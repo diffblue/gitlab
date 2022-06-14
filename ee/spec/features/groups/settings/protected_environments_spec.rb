@@ -42,13 +42,72 @@ RSpec.describe 'Protected Environments', :js do
       click_on('Protect')
     end
 
-    wait_for_requests
+    within('.js-protected-environments-list') do
+      expect(page).to have_content('staging')
+      click_button('1 group')
 
-    # TODO: When the editable list view is added, replace these internal data assertions by frontend component matching.
-    created_protected_environment = organization.reload.protected_environments.first
-    expect(organization.protected_environments.count).to eq(1)
-    expect(created_protected_environment.name).to eq('staging')
-    expect(created_protected_environment.deploy_access_levels.map(&:group)).to contain_exactly(operator_group)
+      within('.gl-new-dropdown-contents li:nth-child(2)') do
+        expect(page).to have_selector('.gl-new-dropdown-item-check-icon', visible: true)
+        expect(page).to have_content('operator-group')
+      end
+      within('.gl-new-dropdown-contents li:nth-child(3)') do
+        expect(page).to have_selector('.gl-new-dropdown-item-check-icon', visible: false)
+        expect(page).to have_content('developer-group')
+      end
+    end
+  end
+
+  context 'when protected environments already exist' do
+    before do
+      deploy_access_level = build(:protected_environment_deploy_access_level, group: operator_group)
+
+      create(:protected_environment, :group_level, name: 'production', group: organization,
+        deploy_access_levels: [deploy_access_level])
+
+      visit group_settings_ci_cd_path(organization)
+    end
+
+    it 'allows user to change the allowed groups' do
+      within('.js-protected-environments-list') do
+        expect(page).to have_content('production')
+        click_button('1 group')
+
+        within('.gl-new-dropdown-contents') do
+          click_button('operator-group')                  # Unselect operator-group
+          click_button('developer-group')                 # Select developer-group
+        end
+
+        find('.js-protected-environment-edit-form').click # Close the access level dropdown to update
+      end
+
+      visit group_settings_ci_cd_path(organization)       # Reload
+
+      within('.js-protected-environments-list') do
+        expect(page).to have_content('production')
+        click_button('1 group')
+
+        within('.gl-new-dropdown-contents li:nth-child(2)') do
+          expect(page).to have_selector('.gl-new-dropdown-item-check-icon', visible: false)
+          expect(page).to have_content('operator-group')
+        end
+        within('.gl-new-dropdown-contents li:nth-child(3)') do
+          expect(page).to have_selector('.gl-new-dropdown-item-check-icon', visible: true)
+          expect(page).to have_content('developer-group')
+        end
+      end
+    end
+
+    it 'allows user to destroy the entry' do
+      within('.js-protected-environment-edit-form') do
+        click_on('Unprotect')
+      end
+
+      find('.js-modal-action-primary').click
+
+      within('.js-protected-environments-list') do
+        expect(page).not_to have_content('production')
+      end
+    end
   end
 
   context 'when license does not exist' do

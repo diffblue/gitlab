@@ -1,0 +1,7 @@
+%tr.js-protected-environment-edit-form{ data: { url: group_protected_environment_path(@group, protected_environment) } }
+  %td
+    %span.ref-name= protected_environment.name
+  %td
+    = render partial: 'groups/protected_environments/update_deploy_access_level_dropdown', locals: { protected_environment: protected_environment, access_levels: protected_environment.deploy_access_levels }
+  %td
+    = link_to s_('ProtectedEnvironment|Unprotect'), [@group, protected_environment], data: { confirm: s_('ProtectedEnvironment|%{environment_name} will be writable for developers. Are you sure?') % { environment_name: protected_environment.name } }, method: :delete, class: 'btn gl-button btn-warning'

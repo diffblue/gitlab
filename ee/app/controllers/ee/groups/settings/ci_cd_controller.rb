@@ -22,6 +22,7 @@ module EE
 
         # rubocop:disable Gitlab/ModuleWithInstanceVariables
         def define_protected_env_variables
+          @protected_environments = @group.protected_environments.sorted_by_name
           @protected_environment = ProtectedEnvironment.new(group: @group)
         end
         # rubocop:enable Gitlab/ModuleWithInstanceVariables
