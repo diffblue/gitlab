@@ -18,8 +18,6 @@ module Analytics
       MAX_RUNTIME = 250.seconds
 
       def perform
-        return if Feature.disabled?(:vsa_consistency_worker)
-
         current_time = Time.current
         runtime_limiter = Analytics::CycleAnalytics::RuntimeLimiter.new(MAX_RUNTIME)
         over_time = false
