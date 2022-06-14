@@ -5277,6 +5277,9 @@ msgstr ""
 msgid "AuditLogs|User Events"
 msgstr ""
 
+msgid "AuditStreams|A header with this name already exists."
+msgstr ""
+
 msgid "AuditStreams|Active"
 msgstr ""
 
@@ -5301,6 +5304,9 @@ msgstr ""
 msgid "AuditStreams|Cancel editing"
 msgstr ""
 
+msgid "AuditStreams|Custom HTTP headers"
+msgstr ""
+
 msgid "AuditStreams|Delete %{link}"
 msgstr ""
 
@@ -5308,6 +5314,12 @@ msgid "AuditStreams|Destination URL"
 msgstr ""
 
 msgid "AuditStreams|Destinations receive all audit event data"
+msgstr ""
+
+msgid "AuditStreams|Header"
+msgstr ""
+
+msgid "AuditStreams|Maximum of %{number} HTTP headers has been reached."
 msgstr ""
 
 msgid "AuditStreams|Setup streaming for audit events"
@@ -5323,6 +5335,9 @@ msgid "AuditStreams|This could include sensitive information. Make sure you trus
 msgstr ""
 
 msgid "AuditStreams|This is great for keeping everything one place."
+msgstr ""
+
+msgid "AuditStreams|Value"
 msgstr ""
 
 msgid "Aug"
