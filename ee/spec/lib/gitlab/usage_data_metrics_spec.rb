@@ -24,6 +24,10 @@ RSpec.describe Gitlab::UsageDataMetrics do
         expect(subject).to include(:license_subscription_id)
       end
 
+      it 'includes counts keys' do
+        expect(subject[:counts]).to include(:saml_group_links)
+      end
+
       describe 'Redis_HLL_counters' do
         let(:metric_files_key_paths) do
           Gitlab::Usage::MetricDefinition
