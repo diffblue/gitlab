@@ -2154,6 +2154,9 @@ msgstr ""
 msgid "Add approvers"
 msgstr ""
 
+msgid "Add assignees"
+msgstr ""
+
 msgid "Add attention request"
 msgstr ""
 
