@@ -258,7 +258,12 @@ module EE
     def compare_license_scanning_reports_collapsed(current_user)
       return missing_report_error("license scanning") unless actual_head_pipeline&.license_scan_completed?
 
-      compare_reports(::Ci::CompareLicenseScanningReportsCollapsedService, current_user)
+      compare_reports(
+        ::Ci::CompareLicenseScanningReportsCollapsedService,
+        current_user,
+        'license_scanning',
+        additional_params: { license_check: approval_rules.license_compliance.any? }
+      )
     end
 
     def has_metrics_reports?
