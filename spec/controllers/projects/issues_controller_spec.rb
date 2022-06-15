@@ -166,26 +166,12 @@ RSpec.describe Projects::IssuesController do
     context 'when issue is of type task' do
       let_it_be(:task) { create(:issue, :task, project: project) }
 
-      context 'when work_items feature flag is enabled' do
-        it 'redirects to the work items route' do
-          get :show, params: { namespace_id: project.namespace, project_id: project, id: task.iid, query: 'any' }
+      it 'redirects to the work items route' do
+        get :show, params: { namespace_id: project.namespace, project_id: project, id: task.iid, query: 'any' }
 
-          expect(response).to redirect_to(
-            project_work_items_path(project, task.id, query: 'any')
-          )
-        end
-      end
-
-      context 'when work_items feature flag is disabled' do
-        before do
-          stub_feature_flags(work_items: false)
-        end
-
-        it 'does not redirect to the work items route' do
-          get :show, params: { namespace_id: project.namespace, project_id: project, id: task.iid }
-
-          expect(response).to render_template(:show)
-        end
+        expect(response).to redirect_to(
+          project_work_items_path(project, task.id, query: 'any')
+        )
       end
     end
   end
