@@ -39,8 +39,9 @@ module Members
 
     private_class_method :new
 
-    def execute(current_user:)
+    def execute(current_user:, skip_authorization: false)
       @current_user = current_user
+      @skip_authorization = skip_authorization
 
       return error(_('You do not have permission to approve a member'), :forbidden) unless allowed?
       return error(_('There is no seat left to activate the member')) unless has_capacity_left?
@@ -56,7 +57,7 @@ module Members
 
     private
 
-    attr_reader :group, :memberships, :current_user, :affected_members
+    attr_reader :group, :memberships, :current_user, :affected_members, :skip_authorization
 
     def activate_memberships
       @affected_members = memberships.to_a
@@ -65,6 +66,8 @@ module Members
     end
 
     def allowed?
+      return true if skip_authorization
+
       can?(current_user, :admin_group_member, group)
     end
 
