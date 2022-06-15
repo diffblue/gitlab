@@ -42,13 +42,16 @@ class SearchController < ApplicationController
     @sort = params[:sort] || default_sort
 
     @search_service = Gitlab::View::Presenter::Factory.new(search_service, current_user: current_user).fabricate!
-    @scope = @search_service.scope
-    @without_count = @search_service.without_count?
-    @show_snippets = @search_service.show_snippets?
-    @search_results = @search_service.search_results
-    @search_objects = @search_service.search_objects
-    @search_highlight = @search_service.search_highlight
-    @aggregations = @search_service.search_aggregations
+
+    Gitlab::Metrics.measure("global_search_#{search_type}_#{@search_service.level}_#{@search_service.scope}".to_sym) do
+      @scope = @search_service.scope
+      @without_count = @search_service.without_count?
+      @show_snippets = @search_service.show_snippets?
+      @search_results = @search_service.search_results
+      @search_objects = @search_service.search_objects
+      @search_highlight = @search_service.search_highlight
+      @aggregations = @search_service.search_aggregations
+    end
 
     increment_search_counters
   end
@@ -206,6 +209,10 @@ class SearchController < ApplicationController
 
   def tracking_namespace_source
     search_service.project&.namespace || search_service.group
+  end
+
+  def search_type
+    'basic'
   end
 end
 
