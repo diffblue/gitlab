@@ -40189,9 +40189,6 @@ msgstr ""
 msgid "Trial|Please select a country"
 msgstr ""
 
-msgid "Trial|Successful trial activation image"
-msgstr ""
-
 msgid "Trial|Telephone number"
 msgstr ""
 
