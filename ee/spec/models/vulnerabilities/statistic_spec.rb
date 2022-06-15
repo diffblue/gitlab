@@ -21,7 +21,10 @@ RSpec.describe Vulnerabilities::Statistic do
 
   describe '.before_save' do
     describe '#assign_letter_grade' do
-      let(:statistic) { build(:vulnerability_statistic, letter_grade: nil, critical: 5) }
+      let_it_be(:pipeline) { create(:ci_pipeline) }
+      let_it_be(:project) { pipeline.project }
+
+      let(:statistic) { build(:vulnerability_statistic, letter_grade: nil, critical: 5, project: project) }
 
       subject(:save_statistic) { statistic.save! }
 

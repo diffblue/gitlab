@@ -274,7 +274,7 @@ module EE
     end
 
     def security_dashboard_pipeline_data(project)
-      pipeline = project.latest_pipeline_with_security_reports
+      pipeline = project.latest_ingested_security_pipeline
       return {} unless pipeline
 
       {

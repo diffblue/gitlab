@@ -21,6 +21,7 @@ RSpec.describe Vulnerabilities::FindingDismissService do
 
   context 'with an authorized user with proper permissions' do
     before do
+      create(:vulnerability_statistic, project: project, pipeline: pipeline)
       project.add_developer(user)
     end
 
