@@ -1,5 +1,5 @@
 import { nextTick } from 'vue';
-import { GlButton, GlBadge } from '@gitlab/ui';
+import { GlBadge } from '@gitlab/ui';
 import { getByRole } from '@testing-library/dom';
 import { shallowMount } from '@vue/test-utils';
 import { stubComponent } from 'helpers/stub_component';
@@ -31,7 +31,6 @@ describe('Batch comments draft note component', () => {
 
   const getList = () => getByRole(wrapper.element, 'list');
   const findSubmitReviewButton = () => wrapper.findComponent(PublishButton);
-  const findAddCommentButton = () => wrapper.findComponent(GlButton);
 
   const createComponent = (propsData = { draft }) => {
     wrapper = shallowMount(DraftNote, {
@@ -62,40 +61,6 @@ describe('Batch comments draft note component', () => {
 
     expect(note.exists()).toBe(true);
     expect(note.props().note).toEqual(draft);
-  });
-
-  describe('add comment now', () => {
-    it('dispatches publishSingleDraft when clicking', () => {
-      createComponent();
-      const publishNowButton = findAddCommentButton();
-      publishNowButton.vm.$emit('click');
-
-      expect(wrapper.vm.$store.dispatch).toHaveBeenCalledWith(
-        'batchComments/publishSingleDraft',
-        1,
-      );
-    });
-
-    it('sets as loading when draft is publishing', async () => {
-      createComponent();
-      wrapper.vm.$store.state.batchComments.currentlyPublishingDrafts.push(1);
-
-      await nextTick();
-      const publishNowButton = findAddCommentButton();
-
-      expect(publishNowButton.props().loading).toBe(true);
-    });
-
-    it('sets as disabled when review is publishing', async () => {
-      createComponent();
-      wrapper.vm.$store.state.batchComments.isPublishing = true;
-
-      await nextTick();
-      const publishNowButton = findAddCommentButton();
-
-      expect(publishNowButton.props().disabled).toBe(true);
-      expect(publishNowButton.props().loading).toBe(false);
-    });
   });
 
   describe('submit review', () => {

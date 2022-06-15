@@ -1,5 +1,5 @@
 <script>
-import { GlButton, GlSafeHtmlDirective, GlBadge } from '@gitlab/ui';
+import { GlSafeHtmlDirective, GlBadge } from '@gitlab/ui';
 import { mapActions, mapGetters, mapState } from 'vuex';
 import NoteableNote from '~/notes/components/noteable_note.vue';
 import PublishButton from './publish_button.vue';
@@ -8,7 +8,6 @@ export default {
   components: {
     NoteableNote,
     PublishButton,
-    GlButton,
     GlBadge,
   },
   directives: {
@@ -120,14 +119,6 @@ export default {
           category="secondary"
           :disabled="isPublishingDraft(draft.id)"
         />
-        <gl-button
-          :disabled="isPublishing"
-          :loading="isPublishingDraft(draft.id)"
-          class="gl-ml-3"
-          @click="publishNow"
-        >
-          {{ __('Add comment now') }}
-        </gl-button>
       </p>
     </template>
   </article>
