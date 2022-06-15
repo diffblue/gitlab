@@ -305,6 +305,8 @@
       "version": "2.1.4"
     },
     "type": "container_scanning",
-    "status": "success"
+    "status": "success",
+    "start_time": "2022-02-22T22:20:22",
+    "end_time": "2022-02-22T22:22:22"
   }
 }

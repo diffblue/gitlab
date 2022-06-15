@@ -222,7 +222,7 @@ module Vulnerabilities
     end
 
     def remediations
-      return metadata.dig('remediations') unless super.present?
+      return metadata.dig('remediations') unless Feature.enabled?(:enable_vulnerability_remediations_from_records) && super.present?
 
       super.as_json(only: [:summary], methods: [:diff])
     end
