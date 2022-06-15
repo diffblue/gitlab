@@ -22,6 +22,10 @@ module QA
                 view 'app/assets/javascripts/vue_shared/components/dropdown/dropdown_widget/dropdown_widget.vue' do
                   element :labels_dropdown_content
                 end
+
+                view 'app/assets/javascripts/vue_shared/components/sidebar/labels_select_widget/dropdown_header.vue' do
+                  element :close_labels_dropdown_button
+                end
               end
             end
 
@@ -38,8 +42,7 @@ module QA
               end
 
               find_element(:labels_dropdown_content).find('li', text: label).click
-              # Clicking the edit button again closes the dropdown and allows the save button to be clicked
-              click_element(:labels_edit_button)
+              click_element(:close_labels_dropdown_button)
               click_element(:save_changes_button)
               wait_boards_list_finish_loading
             end
