@@ -33072,9 +33072,6 @@ msgstr ""
 msgid "Runners|Revision"
 msgstr ""
 
-msgid "Runners|Rocket launch illustration"
-msgstr ""
-
 msgid "Runners|Runner"
 msgstr ""
 
