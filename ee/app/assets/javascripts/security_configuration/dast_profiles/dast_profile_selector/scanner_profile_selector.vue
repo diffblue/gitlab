@@ -31,11 +31,6 @@ export default {
     ScannerProfileSummary,
   },
   props: {
-    profiles: {
-      type: Array,
-      required: false,
-      default: () => [],
-    },
     selectedProfile: {
       type: Object,
       required: false,

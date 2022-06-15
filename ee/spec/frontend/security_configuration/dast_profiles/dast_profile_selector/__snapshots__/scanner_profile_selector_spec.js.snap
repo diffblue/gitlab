@@ -2,6 +2,7 @@
 
 exports[`ScannerProfileSelector renders properly with no profiles 1`] = `
 <div
+  profiles=""
   props="[object Object]"
 >
   <div
@@ -43,6 +44,7 @@ exports[`ScannerProfileSelector renders properly with no profiles 1`] = `
 
 exports[`ScannerProfileSelector renders properly with profiles 1`] = `
 <div
+  profiles=""
   props="[object Object]"
 >
   <div
