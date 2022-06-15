@@ -78,4 +78,90 @@ RSpec.describe CustomerRelations::Organization, type: :model do
       expect(contact2.reload.organization_id).to eq(dupe_organization1.id)
     end
   end
+
+  describe '#self.search' do
+    let_it_be(:organization_a) do
+      create(
+        :organization,
+        group: group,
+        name: "DEF",
+        description: "ghi_st",
+        state: "inactive"
+      )
+    end
+
+    let_it_be(:organization_b) do
+      create(
+        :organization,
+        group: group,
+        name: "ABC_st",
+        description: "JKL",
+        state: "active"
+      )
+    end
+
+    context 'when search term is empty' do
+      it 'returns all group organizations' do
+        expect(group.organizations.search("")).to contain_exactly(organization_a, organization_b)
+      end
+    end
+
+    context 'when search term is not empty' do
+      it 'searches for name' do
+        expect(group.organizations.search("aBc")).to contain_exactly(organization_b)
+      end
+
+      it 'searches for description' do
+        expect(group.organizations.search("ghI")).to contain_exactly(organization_a)
+      end
+
+      it 'searches for name and description' do
+        expect(group.organizations.search("_st")).to contain_exactly(organization_a, organization_b)
+      end
+    end
+  end
+
+  describe '#self.search_by_state' do
+    let_it_be(:organization_a) { create(:organization, group: group, state: "inactive") }
+    let_it_be(:organization_b) { create(:organization, group: group, state: "active") }
+
+    context 'when searching for organizations state' do
+      it 'returns only inactive organizations' do
+        expect(group.organizations.search_by_state(:inactive)).to contain_exactly(organization_a)
+      end
+
+      it 'returns only active organizations' do
+        expect(group.organizations.search_by_state(:active)).to contain_exactly(organization_b)
+      end
+    end
+  end
+
+  describe '#self.search_by_ids' do
+    let_it_be(:organization_a) { create(:organization, group: group) }
+    let_it_be(:organization_b) { create(:organization, group: group) }
+
+    context 'when ids array is empty' do
+      it 'returns no organizations' do
+        expect(group.organizations.search_by_ids([])).to be_empty
+      end
+    end
+
+    context 'when ids array has data' do
+      it 'returns only the requested organizations' do
+        expect(group.organizations.search_by_ids([organization_b.id])).to contain_exactly(organization_b)
+      end
+    end
+  end
+
+  describe '#self.sort_by_name' do
+    let_it_be(:organization_a) { create(:organization, group: group, name: "c") }
+    let_it_be(:organization_b) { create(:organization, group: group, name: "a") }
+    let_it_be(:organization_c) { create(:organization, group: group, name: "b") }
+
+    context 'when sorting the organizations' do
+      it 'sorts them by name in ascendent order' do
+        expect(group.organizations.sort_by_name).to eq([organization_b, organization_c, organization_a])
+      end
+    end
+  end
 end

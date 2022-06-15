@@ -142,4 +142,102 @@ RSpec.describe CustomerRelations::Contact, type: :model do
       expect(issue_contact2.reload.contact_id).to eq(dupe_contact1.id)
     end
   end
+
+  describe '#self.search' do
+    let_it_be(:contact_a) do
+      create(
+        :contact,
+        group: group,
+        first_name: "ABC",
+        last_name: "DEF",
+        email: "ghi@test.com",
+        description: "LMNO",
+        state: "inactive"
+      )
+    end
+
+    let_it_be(:contact_b) do
+      create(
+        :contact,
+        group: group,
+        first_name: "PQR",
+        last_name: "STU",
+        email: "vwx@test.com",
+        description: "YZ",
+        state: "active"
+      )
+    end
+
+    context 'when search term is empty' do
+      it 'returns all group contacts' do
+        expect(group.contacts.search("")).to contain_exactly(contact_a, contact_b)
+      end
+    end
+
+    context 'when search term is not empty' do
+      it 'searches for first name ignoring casing' do
+        expect(group.contacts.search("aBc")).to contain_exactly(contact_a)
+      end
+
+      it 'searches for last name ignoring casing' do
+        expect(group.contacts.search("StU")).to contain_exactly(contact_b)
+      end
+
+      it 'searches for email' do
+        expect(group.contacts.search("ghi")).to contain_exactly(contact_a)
+      end
+
+      it 'searches for description ignoring casing' do
+        expect(group.contacts.search("Yz")).to contain_exactly(contact_b)
+      end
+
+      it 'fuzzy searches for email and last name' do
+        expect(group.contacts.search("s")).to contain_exactly(contact_a, contact_b)
+      end
+    end
+  end
+
+  describe '#self.search_by_state' do
+    let_it_be(:contact_a) { create(:contact, group: group, state: "inactive") }
+    let_it_be(:contact_b) { create(:contact, group: group, state: "active") }
+
+    context 'when searching for contacts state' do
+      it 'returns only inactive contacts' do
+        expect(group.contacts.search_by_state(:inactive)).to contain_exactly(contact_a)
+      end
+
+      it 'returns only active contacts' do
+        expect(group.contacts.search_by_state(:active)).to contain_exactly(contact_b)
+      end
+    end
+  end
+
+  describe '#self.search_by_ids' do
+    let_it_be(:contact_a) { create(:contact, group: group) }
+    let_it_be(:contact_b) { create(:contact, group: group) }
+
+    context 'when ids array is empty' do
+      it 'returns no contacts' do
+        expect(group.contacts.search_by_ids([])).to be_empty
+      end
+    end
+
+    context 'when ids array has data' do
+      it 'returns only the requested contacts' do
+        expect(group.contacts.search_by_ids([contact_b.id])).to contain_exactly(contact_b)
+      end
+    end
+  end
+
+  describe '#self.sort_by_name' do
+    let_it_be(:contact_a) { create(:contact, group: group, first_name: "c", last_name: "d") }
+    let_it_be(:contact_b) { create(:contact, group: group, first_name: "a", last_name: "b") }
+    let_it_be(:contact_c) { create(:contact, group: group, first_name: "e", last_name: "d") }
+
+    context 'when sorting the contacts' do
+      it 'sorts them by last name then first name in ascendent order' do
+        expect(group.contacts.sort_by_name).to eq([contact_b, contact_a, contact_c])
+      end
+    end
+  end
 end
