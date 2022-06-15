@@ -43223,6 +43223,9 @@ msgstr ""
 msgid "WorkItem|Add a child"
 msgstr ""
 
+msgid "WorkItem|Are you sure you want to cancel editing?"
+msgstr ""
+
 msgid "WorkItem|Are you sure you want to delete the work item? This action cannot be reversed."
 msgstr ""
 
