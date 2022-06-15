@@ -8,8 +8,16 @@ product_group: group::compliance
 product_category: compliance_management
 value_type: number
 status: active
-time_frame: all
-data_source: redis
+time_frame: 7d
+data_source: redis_hll
+instrumentation_class: RedisHLLMetric
+options:
+  events:
+  - g_compliance_dashboard
+  - g_compliance_audit_events
+  - i_compliance_audit_events
+  - i_compliance_credential_inventory
+  - a_compliance_audit_events_api
 distribution:
 - ee
 tier:

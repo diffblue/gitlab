@@ -27,7 +27,6 @@ module Gitlab
         project_maximum_id
         user_minimum_id
         user_maximum_id
-        unique_visit_service
         deployment_minimum_id
         deployment_maximum_id
         auth_providers
@@ -647,16 +646,6 @@ module Gitlab
         }
       end
 
-      def compliance_unique_visits_data
-        results = ::Gitlab::Analytics::UniqueVisits.compliance_events.each_with_object({}) do |target, hash|
-          hash[target] = redis_usage_data { unique_visit_service.unique_visits_for(targets: target) }
-        end
-        results['compliance_unique_visits_for_any_target'] = redis_usage_data { unique_visit_service.unique_visits_for(targets: :compliance) }
-        results['compliance_unique_visits_for_any_target_monthly'] = redis_usage_data { unique_visit_service.unique_visits_for(targets: :compliance, **monthly_time_range) }
-
-        { compliance_unique_visits: results }
-      end
-
       def action_monthly_active_users(time_period)
         date_range = { date_from: time_period[:created_at].first, date_to: time_period[:created_at].last }
 
@@ -704,7 +693,6 @@ module Gitlab
           .merge(topology_usage_data)
           .merge(usage_activity_by_stage)
           .merge(usage_activity_by_stage(:usage_activity_by_stage_monthly, monthly_time_range_db_params))
-          .merge(compliance_unique_visits_data)
           .merge(redis_hll_counters)
           .deep_merge(aggregated_metrics_data)
       end
@@ -805,12 +793,6 @@ module Gitlab
       def clicked_in_product_marketing_email_count(clicked_emails, track, series)
         # When there is an error with the query and it's not the Hash we expect, we return what we got from `count`.
         clicked_emails.is_a?(Hash) ? clicked_emails.fetch([track, series], 0) : clicked_emails
-      end
-
-      def unique_visit_service
-        strong_memoize(:unique_visit_service) do
-          ::Gitlab::Analytics::UniqueVisits.new
-        end
       end
 
       def total_alert_issues
