@@ -27863,6 +27863,21 @@ msgstr ""
 msgid "PipelineEditorTutorial|🚀 Run your first pipeline"
 msgstr ""
 
+msgid "PipelineEditor|Current content in the Edit tab will be used for the simulation."
+msgstr ""
+
+msgid "PipelineEditor|Git push event to the default branch"
+msgstr ""
+
+msgid "PipelineEditor|Other pipeline sources are not available yet."
+msgstr ""
+
+msgid "PipelineEditor|Pipeline Source"
+msgstr ""
+
+msgid "PipelineEditor|Pipeline behavior will be simulated including the %{codeStart}rules%{codeEnd} %{codeStart}only%{codeEnd} %{codeStart}except%{codeEnd} and %{codeStart}needs%{codeEnd} job dependencies."
+msgstr ""
+
 msgid "PipelineEditor|The CI/CD configuration is continuously validated. Errors and warnings are displayed when the CI/CD configuration file is not empty."
 msgstr ""
 
@@ -27873,6 +27888,12 @@ msgid "PipelineEditor|The pipeline visualization is displayed when the CI/CD con
 msgstr ""
 
 msgid "PipelineEditor|This tab will be usable when the CI/CD configuration file is populated with valid syntax."
+msgstr ""
+
+msgid "PipelineEditor|Validate pipeline"
+msgstr ""
+
+msgid "PipelineEditor|Validate pipeline under selected conditions"
 msgstr ""
 
 msgid "PipelineScheduleIntervalPattern|Custom (%{linkStart}Cron syntax%{linkEnd})"
@@ -28239,6 +28260,9 @@ msgid "Pipelines|Use a template based on your project's language or framework to
 msgstr ""
 
 msgid "Pipelines|Use template"
+msgstr ""
+
+msgid "Pipelines|Validate"
 msgstr ""
 
 msgid "Pipelines|Validating GitLab CI configuration…"
