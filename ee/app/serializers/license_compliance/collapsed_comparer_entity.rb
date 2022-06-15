@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 module LicenseCompliance
   class CollapsedComparerEntity < Grape::Entity
+    include RequestAwareEntity
+
     expose :new_licenses do |comparer|
       comparer.new_licenses.count
     end
@@ -11,6 +13,10 @@ module LicenseCompliance
 
     expose :removed_licenses do |comparer|
       comparer.removed_licenses.count
+    end
+
+    expose :approval_required do |_|
+      request.approval_required
     end
   end
 end

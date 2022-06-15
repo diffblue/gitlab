@@ -926,6 +926,8 @@ RSpec.describe Projects::MergeRequestsController do
         allow(merge_request).to receive(:compare_reports)
                                   .with(::Ci::CompareLicenseScanningReportsService, viewer)
                                   .and_return(comparison_status)
+
+        allow(merge_request).to receive(:has_denied_policies?).and_return(false)
       end
     end
 
@@ -937,6 +939,7 @@ RSpec.describe Projects::MergeRequestsController do
     let_it_be_with_reload(:merge_request) { create(:ee_merge_request, :with_license_scanning_reports, source_project: project, author: author) }
 
     let(:comparison_status) { { status: :parsed, data: { new_licenses: 0, existing_licenses: 0, removed_licenses: 0 } } }
+    let(:comparison_status_extended) { { status: :parsed, data: { new_licenses: [], existing_licenses: [], removed_licenses: [] } } }
     let(:expected_response) { { "new_licenses" => 0, "existing_licenses" => 0, "removed_licenses" => 0 } }
 
     let(:params) do
@@ -954,8 +957,15 @@ RSpec.describe Projects::MergeRequestsController do
 
       allow_next_found_instance_of(::MergeRequest) do |merge_request|
         allow(merge_request).to receive(:compare_reports)
-                                  .with(::Ci::CompareLicenseScanningReportsCollapsedService, viewer)
+                                  .with(
+                                    ::Ci::CompareLicenseScanningReportsCollapsedService,
+                                    viewer,
+                                    'license_scanning',
+                                    { additional_params: { license_check: false } }
+                                  )
                                   .and_return(comparison_status)
+
+        allow(merge_request).to receive(:has_denied_policies?).and_return(false)
       end
     end
 

@@ -7,7 +7,16 @@ RSpec.describe Ci::CompareLicenseScanningReportsCollapsedService do
 
   let_it_be(:project) { create(:project, :repository) }
 
-  let(:service) { described_class.new(project, nil) }
+  let(:service) do
+    described_class.new(
+      project,
+      nil,
+      report_type: 'license_scanning',
+      additional_params: { license_check: license_check }
+    )
+  end
+
+  let(:license_check) { false }
 
   before do
     stub_licensed_features(license_scanning: true)
@@ -25,6 +34,29 @@ RSpec.describe Ci::CompareLicenseScanningReportsCollapsedService do
         expect(subject[:data]['new_licenses']).to eq(1)
         expect(subject[:data]['existing_licenses']).to eq(1)
         expect(subject[:data]['removed_licenses']).to eq(3)
+        expect(subject[:data]['approval_required']).to eq(false)
+      end
+
+      context 'when license_check enabled' do
+        let(:license_check) { true }
+
+        context 'with denied licenses' do
+          before do
+            allow_next_instance_of(::SCA::LicensePolicy) do |license|
+              allow(license).to receive(:approval_status).and_return('denied')
+            end
+          end
+
+          it 'exposes approval as required' do
+            expect(subject[:data]['approval_required']).to eq(true)
+          end
+        end
+
+        context 'without denied licenses' do
+          it 'exposes approval as not required' do
+            expect(subject[:data]['approval_required']).to eq(false)
+          end
+        end
       end
     end
 
@@ -37,6 +69,7 @@ RSpec.describe Ci::CompareLicenseScanningReportsCollapsedService do
         expect(subject[:data]['new_licenses']).to eq(0)
         expect(subject[:data]['existing_licenses']).to eq(0)
         expect(subject[:data]['removed_licenses']).to eq(0)
+        expect(subject[:data]['approval_required']).to eq(false)
       end
 
       context "when the base pipeline is nil" do
@@ -47,6 +80,7 @@ RSpec.describe Ci::CompareLicenseScanningReportsCollapsedService do
           expect(subject[:data]['new_licenses']).to eq(0)
           expect(subject[:data]['existing_licenses']).to eq(0)
           expect(subject[:data]['removed_licenses']).to eq(0)
+          expect(subject[:data]['approval_required']).to eq(false)
         end
       end
     end
