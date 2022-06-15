@@ -1,6 +1,6 @@
 <script>
 import { GlPopover, GlIcon } from '@gitlab/ui';
-import { __, s__ } from '~/locale';
+import { s__ } from '~/locale';
 import CodequalityIssueBody from '~/reports/codequality_report/components/codequality_issue_body.vue';
 import { SEVERITY_CLASSES, SEVERITY_ICONS } from '~/reports/codequality_report/constants';
 
@@ -9,10 +9,6 @@ export default {
     GlIcon,
     GlPopover,
     CodequalityIssueBody,
-  },
-  modalCloseButton: {
-    text: __('Close'),
-    attributes: [{ variant: 'info' }],
   },
   i18n: {
     popoverTitle: s__('CodeQuality|New code quality degradations on this line'),
