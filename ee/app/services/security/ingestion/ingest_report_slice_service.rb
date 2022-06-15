@@ -21,6 +21,7 @@ module Security
         IngestIssueLinks
         IngestVulnerabilityStatistics
         IngestRemediations
+        HooksExecution
       ].freeze
 
       def self.execute(pipeline, finding_maps)
