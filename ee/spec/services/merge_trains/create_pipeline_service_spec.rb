@@ -11,7 +11,6 @@ RSpec.describe MergeTrains::CreatePipelineService do
 
   before do
     project.add_maintainer(maintainer)
-    stub_feature_flags(ci_disallow_to_create_merge_request_pipelines_in_target_project: false)
     stub_feature_flags(disable_merge_trains: false)
     stub_licensed_features(merge_pipelines: true, merge_trains: true)
     project.update!(merge_pipelines_enabled: true, merge_trains_enabled: true) unless project.merge_pipelines_enabled == true && project.merge_trains_enabled == true
@@ -65,19 +64,6 @@ RSpec.describe MergeTrains::CreatePipelineService do
 
       it_behaves_like 'returns an error' do
         let(:expected_reason) { 'merge request is not on a merge train' }
-      end
-    end
-
-    context 'when merge request is submitted from a forked project' do
-      context 'when ci_disallow_to_create_merge_request_pipelines_in_target_project feature flag is enabled' do
-        before do
-          stub_feature_flags(ci_disallow_to_create_merge_request_pipelines_in_target_project: true)
-          allow(merge_request).to receive(:for_same_project?) { false }
-        end
-
-        it_behaves_like 'returns an error' do
-          let(:expected_reason) { 'this merge request cannot be added to merge train' }
-        end
       end
     end
 
