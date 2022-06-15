@@ -99,13 +99,13 @@ See the [experiment issue](https://gitlab.com/gitlab-org/quality/team-tasks/-/is
 
 ## Faster feedback when reverting merge requests
 
-In order to provide accelerated feedback when reverting merge requests, you can add the `~pipeline:revert` label to your merge request.
+When you need to revert a merge request, to get accelerated feedback, you can add the `~pipeline:revert` label to your merge request.
 
-This label will skip the following steps of the CI/CD pipeline:
+When this label is assigned, the following steps of the CI/CD pipeline are skipped:
 
-- the `package-and-qa` job
-- the `rspec:undercoverage` job
-- the entire [Review Apps process](testing_guide/review_apps.md)
+- The `package-and-qa` job.
+- The `rspec:undercoverage` job.
+- The entire [Review Apps process](testing_guide/review_apps.md).
 
 Apply the label to the merge request, and run a new pipeline for the MR.
 
