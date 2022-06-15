@@ -3,13 +3,13 @@
 require 'spec_helper'
 
 RSpec.describe 'Path Locks', :js do
+  include Spec::Support::Helpers::ModalHelpers
+
   let(:user) { create(:user) }
   let(:project) { create(:project, :repository, namespace: user.namespace) }
   let(:tree_path) { project_tree_path(project, project.repository.root_ref) }
 
   before do
-    stub_feature_flags(bootstrap_confirmation_modals: false)
-
     project.add_maintainer(user)
     sign_in(user)
 
@@ -26,12 +26,7 @@ RSpec.describe 'Path Locks', :js do
     find('.js-path-lock').click
     wait_for_requests
 
-    page.within '.modal' do
-      expect(page).to have_selector('.modal-body', visible: true)
-      expect(page).to have_css('.modal-body', text: 'Are you sure you want to lock this directory?')
-
-      click_button "OK"
-    end
+    accept_gl_confirm('Are you sure you want to lock this directory?')
 
     expect(page).to have_link('Unlock')
   end
@@ -47,11 +42,7 @@ RSpec.describe 'Path Locks', :js do
       click_button "Lock"
     end
 
-    page.within '.modal' do
-      expect(page).to have_css('.modal-body', text: 'Are you sure you want to lock VERSION?')
-
-      click_button "Okay"
-    end
+    accept_gl_confirm('Are you sure you want to lock VERSION?', button_text: 'Okay')
 
     expect(page).to have_button('Unlock')
   end
@@ -65,21 +56,17 @@ RSpec.describe 'Path Locks', :js do
       click_button "Lock"
     end
 
-    page.within '.modal' do
-      click_button "Okay"
-    end
+    accept_gl_confirm('Are you sure you want to lock VERSION?', button_text: 'Okay')
+
+    expect(page).to have_button('Unlock')
 
     within '.file-actions' do
       click_button "Unlock"
     end
 
-    page.within '.modal' do
-      expect(page).to have_css('.modal-body', text: 'Are you sure you want to unlock VERSION?')
+    accept_gl_confirm('Are you sure you want to unlock VERSION?', button_text: 'Okay')
 
-      click_button "Okay"
-    end
-
-    expect(page).to have_button('Lock')
+    expect(page).to have_link('Lock')
   end
 
   it 'managing of lock list' do
@@ -89,10 +76,12 @@ RSpec.describe 'Path Locks', :js do
 
     within '.locks' do
       expect(page).to have_content('encoding')
-
-      accept_confirm(text: 'Are you sure you want to unlock encoding?') { click_link "Unlock" }
-
-      expect(page).not_to have_content('encoding')
     end
+
+    click_link "Unlock"
+
+    accept_gl_confirm('Are you sure you want to unlock encoding?')
+
+    expect(page).not_to have_content('encoding')
   end
 end
