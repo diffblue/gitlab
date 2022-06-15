@@ -1,19 +1,30 @@
 - return unless show_delayed_project_removal_setting?(group)
 
 - setting_locked = cascading_namespace_setting_locked?(:delayed_project_removal, group)
+- delay_enabled = group.namespace_settings.delayed_project_removal?
+- learn_more_link = help_page_path('user/group/index.md', anchor: 'enable-delayed-project-deletion')
 
-.form-group{ data: { testid: 'delayed-project-removal-form-group' } }
-  .gl-form-checkbox.custom-control.custom-checkbox
-    = f.check_box :delayed_project_removal, checked: group.namespace_settings.delayed_project_removal?, disabled: setting_locked, class: 'custom-control-input', data: { testid: 'delayed-project-removal-checkbox' }
-    = render 'shared/namespaces/cascading_settings/setting_label_checkbox', attribute: :delayed_project_removal,
+.form-group.gl-mb-2{ data: { testid: 'delayed-project-removal-form-group' } }
+  %label.gl-mb-0
+    = s_('DeletionSettings|Deletion protection')
+  - if setting_locked
+    = render 'shared/namespaces/cascading_settings/lock_icon', attribute: :delayed_project_removal,
         group: group,
-        form: f,
-        setting_locked: setting_locked,
         settings_path_helper: -> (locked_ancestor) { edit_group_path(locked_ancestor, anchor: 'js-permissions-settings') },
-        help_text: delayed_project_removal_help_text do
-      = s_('GroupSettings|Enable delayed project deletion')
+        class_list: 'gl-relative!'
+  %span.form-text.text-muted.gl-pb-4
+    = delayed_project_removal_help_text
+    - if delayed_deletion_disabled
+      = s_('DeletionSettings|All projects are deleted immediately.')
+    = link_to _('Learn more.'), learn_more_link, target: '_blank', rel: 'noopener noreferrer'
+
+  - if !delayed_deletion_disabled
+    = f.gitlab_ui_radio_component :delayed_project_removal, true, keep_deleted_option_label, radio_options: { checked: delay_enabled, disabled: setting_locked, data: { testid: 'delayed-project-removal-radio-button' } }
+    = f.gitlab_ui_radio_component :delayed_project_removal, false, s_('DeletionSettings|None, delete immediately'), radio_options: { checked: !delay_enabled, disabled: setting_locked }
     = render 'shared/namespaces/cascading_settings/enforcement_checkbox',
         attribute: :delayed_project_removal,
+        label: s_('CascadingSettings|Enforce deletion protection for all subgroups'),
+        help_text: nil,
         group: group,
         form: f,
         setting_locked: setting_locked
