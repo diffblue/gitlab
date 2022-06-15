@@ -14,4 +14,11 @@ class GroupMergeRequestApprovalSetting < ApplicationRecord
             inclusion: { in: [true, false], message: _('must be a boolean value') }
 
   scope :find_or_initialize_by_group, ->(group) { find_or_initialize_by(group: group) }
+
+  AUDIT_LOG_ALLOWLIST = { allow_author_approval: 'prevent merge request approval from authors',
+                          allow_committer_approval: 'prevent merge request approval from committers',
+                          allow_overrides_to_approver_list_per_merge_request:
+                            'prevent users from modifying MR approval rules in merge requests',
+                          retain_approvals_on_push: 'require new approvals when new commits are added to an MR',
+                          require_password_to_approve: 'require user password for approvals' }.freeze
 end

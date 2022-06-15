@@ -55,6 +55,15 @@ RSpec.describe MergeRequestApprovalSettings::UpdateService do
   describe 'execute with a Group as container' do
     let(:container) { group }
 
+    shared_examples 'call audit changes service' do
+      it 'executes GroupMergeRequestApprovalSettingChangesAuditor' do
+        expect(Audit::GroupMergeRequestApprovalSettingChangesAuditor).to receive(:new).with(user,
+                           instance_of(GroupMergeRequestApprovalSetting), params).and_call_original
+
+        subject.execute
+      end
+    end
+
     context 'user does not have permissions' do
       before do
         allow(service).to receive(:can?).with(user, :admin_merge_request_approval_settings, group).and_return(false)
@@ -86,6 +95,8 @@ RSpec.describe MergeRequestApprovalSettings::UpdateService do
         expect(response.payload.allow_author_approval).to be(false)
       end
 
+      it_behaves_like 'call audit changes service'
+
       context 'when group has an existing setting' do
         let_it_be(:group) { create(:group) }
         let_it_be(:existing_setting) { create(:group_merge_request_approval_setting, group: group) }
@@ -100,6 +111,8 @@ RSpec.describe MergeRequestApprovalSettings::UpdateService do
           expect(response).to be_success
           expect(response.payload.allow_author_approval).to be(false)
         end
+
+        it_behaves_like 'call audit changes service'
       end
 
       context 'when saving fails' do
