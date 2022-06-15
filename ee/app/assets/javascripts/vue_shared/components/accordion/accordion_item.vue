@@ -105,7 +105,7 @@ export default {
           <div class="d-flex align-items-center p-2">
             <gl-icon
               :size="16"
-              class="mr-2 gl-text-gray-900"
+              class="gl-mr-3 gl-text-gray-900"
               :name="isExpanded ? 'chevron-lg-down' : 'chevron-lg-right'"
             />
             <span
