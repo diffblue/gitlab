@@ -91,11 +91,13 @@ export default {
     hasScannedResources(scanSummary) {
       return scanSummary.scannedResources?.nodes?.length > 0;
     },
+    hasDastArtifacts() {
+      return this.findArtifacts(SECURITY_REPORT_TYPE_ENUM_DAST).length > 0;
+    },
     hasDastArtifactDownload(scanType, scanSummary) {
       return (
         scanType === SECURITY_REPORT_TYPE_ENUM_DAST &&
-        (Boolean(scanSummary.scannedResourcesCsvPath) ||
-          this.findArtifacts(SECURITY_REPORT_TYPE_ENUM_DAST).length > 0)
+        (Boolean(this.downloadLink(scanSummary)) || this.hasDastArtifacts)
       );
     },
     downloadLink(scanSummary) {
