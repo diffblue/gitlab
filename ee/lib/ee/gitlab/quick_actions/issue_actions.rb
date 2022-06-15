@@ -8,8 +8,8 @@ module EE
         include ::Gitlab::QuickActions::Dsl
 
         included do
-          desc _('Add to epic')
-          explanation _('Adds an issue to an epic.')
+          desc { _('Add to epic') }
+          explanation { _('Adds an issue to an epic.') }
           types Issue
           condition do
             quick_action_target.supports_epic? &&
@@ -37,9 +37,9 @@ module EE
             @execution_message[:epic] = message
           end
 
-          desc _('Remove from epic')
-          explanation _('Removes an issue from an epic.')
-          execution_message _('Removed an issue from an epic.')
+          desc { _('Remove from epic') }
+          explanation { _('Removes an issue from an epic.') }
+          execution_message { _('Removed an issue from an epic.') }
           types Issue
           condition do
             quick_action_target.persisted? &&
@@ -51,12 +51,8 @@ module EE
             @updates[:epic] = nil
           end
 
-          promote_message = _('Promote issue to an epic')
-
-          desc do
-            promote_message
-          end
-          explanation promote_message
+          desc { _('Promote issue to an epic') }
+          explanation { _('Promote issue to an epic') }
           icon 'confidential'
           types Issue
           condition do
@@ -68,7 +64,7 @@ module EE
             @execution_message[:promote] = _('Promoted issue to an epic.')
           end
 
-          desc _('Set iteration')
+          desc { _('Set iteration') }
           explanation do |iteration|
             _("Sets the iteration to %{iteration_reference}.") % { iteration_reference: iteration.to_reference } if iteration
           end
@@ -91,7 +87,7 @@ module EE
             @updates[:iteration] = iteration if iteration
           end
 
-          desc _('Remove iteration')
+          desc { _('Remove iteration') }
           explanation do
             _("Removes %{iteration_reference} iteration.") % { iteration_reference: quick_action_target.iteration.to_reference(format: :name) }
           end
@@ -122,8 +118,8 @@ module EE
             ::IterationsFinder.new(current_user, params.merge(parent_params)).execute
           end
 
-          desc _('Publish to status page')
-          explanation _('Publishes this issue to the associated status page.')
+          desc { _('Publish to status page') }
+          explanation { _('Publishes this issue to the associated status page.') }
           types Issue
           condition do
             StatusPage::MarkForPublicationService.publishable?(project, current_user, quick_action_target)
@@ -137,7 +133,7 @@ module EE
             end
           end
 
-          desc _('Set health status')
+          desc { _('Set health status') }
           explanation do |health_status|
             _("Sets health status to %{health_status}.") % { health_status: health_status } if health_status
           end
@@ -158,9 +154,9 @@ module EE
             end
           end
 
-          desc _('Clear health status')
-          explanation _('Clears health status.')
-          execution_message _('Cleared health status.')
+          desc { _('Clear health status') }
+          explanation { _('Clears health status.') }
+          execution_message { _('Cleared health status.') }
           types Issue
           condition do
             quick_action_target.persisted? &&
@@ -172,8 +168,8 @@ module EE
             @updates[:health_status] = nil
           end
 
-          desc _('Escalate this incident')
-          explanation _('Starts escalations for this incident')
+          desc { _('Escalate this incident') }
+          explanation { _('Starts escalations for this incident') }
           params '<policy name>'
           types Issue
           condition do
