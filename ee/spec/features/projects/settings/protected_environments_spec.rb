@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe 'Protected Environments' do
+  include Spec::Support::Helpers::ModalHelpers
+
   let(:project) { create(:project, :repository) }
   let(:user) { create(:user) }
   let(:environments) { %w(production development staging test) }
@@ -34,7 +36,6 @@ RSpec.describe 'Protected Environments' do
 
   context 'logged in as a maintainer' do
     before do
-      stub_feature_flags(bootstrap_confirmation_modals: false)
       project.add_maintainer(user)
 
       visit project_settings_ci_cd_path(project)
@@ -85,8 +86,10 @@ RSpec.describe 'Protected Environments' do
 
     it 'allows unprotecting an environment', :js do
       within('.protected-branches-list tr', text: 'production') do
-        accept_alert { click_on('Unprotect') }
+        click_on('Unprotect')
       end
+
+      accept_gl_confirm
 
       wait_for_requests
 

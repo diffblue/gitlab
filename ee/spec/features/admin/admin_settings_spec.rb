@@ -4,9 +4,9 @@ require 'spec_helper'
 
 RSpec.describe 'Admin updates EE-only settings' do
   include StubENV
+  include Spec::Support::Helpers::ModalHelpers
 
   before do
-    stub_feature_flags(bootstrap_confirmation_modals: false)
     stub_env('IN_MEMORY_APPLICATION_SETTINGS', 'false')
     admin = create(:admin)
     sign_in(admin)
@@ -188,9 +188,7 @@ RSpec.describe 'Admin updates EE-only settings' do
         click_button 'Trigger cluster reindexing'
       end
 
-      text = page.driver.browser.switch_to.alert.text
-      expect(text).to eq 'Are you sure you want to reindex?'
-      page.driver.browser.switch_to.alert.accept
+      accept_gl_confirm('Are you sure you want to reindex?')
     end
 
     context 'when not licensed' do

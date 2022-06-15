@@ -4,6 +4,7 @@ require 'spec_helper'
 
 RSpec.describe 'Groups > Members > Leave group' do
   include Spec::Support::Helpers::Features::MembersHelpers
+  include Spec::Support::Helpers::ModalHelpers
 
   let_it_be(:other_user) { create(:user) }
   let_it_be(:group) { create(:group) }
@@ -13,7 +14,6 @@ RSpec.describe 'Groups > Members > Leave group' do
   before do
     user.update!(provisioned_by_group: group)
     sign_in(user)
-    stub_feature_flags(bootstrap_confirmation_modals: false)
   end
 
   context 'with block_password_auth_for_saml_users feature flag switched on' do
@@ -34,7 +34,7 @@ RSpec.describe 'Groups > Members > Leave group' do
 
       visit group_path(group, leave: 1)
 
-      page.accept_confirm
+      accept_gl_confirm(button_text: 'Leave group')
 
       wait_for_all_requests
       expect(page).to have_current_path(new_user_session_path, ignore_query: true)
@@ -53,7 +53,7 @@ RSpec.describe 'Groups > Members > Leave group' do
 
       visit group_path(group, leave: 1)
 
-      page.accept_confirm
+      accept_gl_confirm(button_text: 'Leave group')
 
       wait_for_all_requests
       expect(page).to have_current_path(dashboard_groups_path, ignore_query: true)
