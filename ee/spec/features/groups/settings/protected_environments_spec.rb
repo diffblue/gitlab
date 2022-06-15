@@ -122,18 +122,6 @@ RSpec.describe 'Protected Environments', :js do
     end
   end
 
-  context 'when group_level_protected_environment feature flag is disabled' do
-    before do
-      stub_feature_flags(group_level_protected_environment: false)
-
-      visit group_settings_ci_cd_path(organization)
-    end
-
-    it 'does not show the Protected Environments settings' do
-      expect(page).not_to have_selector(".protected-environments-settings")
-    end
-  end
-
   context 'when the user has maintainer role' do
     let(:current_user) { organization_maintainer }
 

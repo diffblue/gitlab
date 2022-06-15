@@ -3,7 +3,6 @@
 module Groups
   class ProtectedEnvironmentsController < Groups::ApplicationController
     before_action :authorize_admin_protected_environment!
-    before_action :check_feature_flag!
     before_action :protected_environment, except: [:create]
 
     feature_category :continuous_delivery
@@ -61,10 +60,6 @@ module Groups
 
     def deploy_access_level_attributes
       %i(id _destroy group_id)
-    end
-
-    def check_feature_flag!
-      not_found unless ::Feature.enabled?(:group_level_protected_environment, @group)
     end
 
     def authorize_admin_protected_environment!
