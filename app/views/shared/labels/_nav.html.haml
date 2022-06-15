@@ -17,5 +17,5 @@
       = render Pajamas::ButtonComponent.new(variant: :confirm, href: new_project_label_path(@project), button_options: { class: 'qa-label-create-new' }) do
         = _('New label')
     - if labels_or_filters && can_admin_label && @group
-      = render Pajamas::ButtonComponent.new(variant: :confirm, href: new_group_label_path(@group), button_options: { class: 'qa-label-create-new' } ) do
+      = render Pajamas::ButtonComponent.new(variant: :confirm, href: new_group_label_path(@group), button_options: { class: 'qa-label-create-new' }) do
         = _('New label')
