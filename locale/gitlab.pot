@@ -11370,16 +11370,10 @@ msgstr ""
 msgid "DastConfig|DAST CI/CD configuration"
 msgstr ""
 
-msgid "DastConfig|DAST Settings"
-msgstr ""
-
 msgid "DastConfig|Enable DAST to automatically test for vulnerabilities in your project's running application, website, or API, in the CI/CD pipeline. Configuration changes must be applied to your .gitlab-ci.yml file to take effect. For details of all configuration options, see the %{linkStart}GitLab DAST documentation%{linkEnd}."
 msgstr ""
 
 msgid "DastConfig|Generate code snippet"
-msgstr ""
-
-msgid "DastConfig|Scan Configuration"
 msgstr ""
 
 msgid "DastProfiles|A passive scan monitors all HTTP messages (requests and responses) sent to the target. An active scan attacks the target to find potential vulnerabilities."
