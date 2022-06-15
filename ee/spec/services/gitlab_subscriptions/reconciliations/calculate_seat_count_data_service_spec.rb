@@ -41,6 +41,46 @@ RSpec.describe GitlabSubscriptions::Reconciliations::CalculateSeatCountDataServi
       end
     end
 
+    context 'when the subscription has expired' do
+      let_it_be(:root_ancestor) { create(:group) }
+
+      it 'returns nil' do
+        create(
+          :gitlab_subscription,
+          :expired,
+          namespace: root_ancestor,
+          plan_code: Plan::ULTIMATE,
+          seats: 10,
+          max_seats_used: 9,
+          max_seats_used_changed_at: 1.day.ago
+        )
+
+        root_ancestor.add_owner(user)
+
+        expect(execute_service).to be_nil
+      end
+    end
+
+    context 'when the subscription is a trial' do
+      let_it_be(:root_ancestor) { create(:group) }
+
+      it 'returns nil' do
+        create(
+          :gitlab_subscription,
+          :active_trial,
+          namespace: root_ancestor,
+          plan_code: Plan::ULTIMATE_TRIAL,
+          seats: 10,
+          max_seats_used: 9,
+          max_seats_used_changed_at: 1.day.ago
+        )
+
+        root_ancestor.add_owner(user)
+
+        expect(execute_service).to be_nil
+      end
+    end
+
     context 'when conditions are not met' do
       let(:max_seats_used) { 9 }
 

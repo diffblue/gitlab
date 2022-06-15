@@ -45,7 +45,7 @@ module GitlabSubscriptions
       end
 
       def eligible_for_seat_usage_alerts
-        cache.fetch(cache_key, skip_nil: true, expires_in: 1.day) { eligible_for_seat_usage_alerts_request } || false
+        cache.fetch(cache_key, expires_in: 1.day) { eligible_for_seat_usage_alerts_request } || false
       end
     end
   end
