@@ -304,10 +304,10 @@ export default {
               v-if="showMergeRequestTable"
               class="d-flex flex-column flex-md-row align-items-md-center"
             >
-              <strong class="mr-2">{{ __('Sort by') }}</strong>
+              <strong class="gl-mr-3">{{ __('Sort by') }}</strong>
               <div class="d-flex">
                 <gl-dropdown
-                  class="mr-2 flex-grow"
+                  class="gl-mr-3 flex-grow"
                   toggle-class="dropdown-menu-toggle"
                   :text="sortFieldDropdownLabel"
                 >
