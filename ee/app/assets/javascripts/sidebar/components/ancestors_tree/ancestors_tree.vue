@@ -69,7 +69,9 @@ export default {
   <div class="ancestor-tree">
     <div ref="sidebarIcon" class="sidebar-collapsed-icon">
       <div><gl-icon name="epic" /></div>
-      <span v-if="!isFetching" class="collapse-truncated-title">{{ tooltipText }}</span>
+      <span v-if="!isFetching" class="collapse-truncated-title gl-pt-2 gl-px-3 gl-font-sm">{{
+        tooltipText
+      }}</span>
     </div>
 
     <gl-tooltip :target="() => $refs.sidebarIcon" placement="left" boundary="viewport">
@@ -89,7 +91,7 @@ export default {
     </ul>
 
     <div v-if="!isFetching && !ancestors.length" class="value hide-collapsed">
-      <span class="no-value gl-text-gray-500">{{ __('None') }}</span>
+      <span class="no-value">{{ __('None') }}</span>
     </div>
 
     <gl-loading-icon v-if="isFetching" size="sm" />

@@ -24,6 +24,6 @@ export default {
     class="sidebar-collapsed-icon"
   >
     <gl-icon name="epic" />
-    <span class="collapse-truncated-title mt-1">{{ epic.title }}</span>
+    <span class="collapse-truncated-title gl-pt-2 gl-px-3 gl-font-sm mt-1">{{ epic.title }}</span>
   </div>
 </template>
