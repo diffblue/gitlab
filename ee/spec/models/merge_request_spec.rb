@@ -1374,7 +1374,7 @@ RSpec.describe MergeRequest do
           project.add_developer(user)
         end
 
-        context 'when no approved' do
+        context 'when not approved' do
           it 'is mergeable' do
             is_expected.to be_truthy
           end
