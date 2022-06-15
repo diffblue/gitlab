@@ -28757,7 +28757,7 @@ msgstr ""
 msgid "Preferences|Customize integrations with third party services."
 msgstr ""
 
-msgid "Preferences|Customize the appearance of the application header and navigation sidebar."
+msgid "Preferences|Customize the appearance of the application header."
 msgstr ""
 
 msgid "Preferences|Customize the colors of removed and added lines in diffs."
