@@ -168,31 +168,45 @@ RSpec.describe CustomerRelations::Contact, type: :model do
       )
     end
 
+    subject(:found_contacts) { group.contacts.search(search_term) }
+
     context 'when search term is empty' do
+      let(:search_term) { "" }
+
       it 'returns all group contacts' do
-        expect(group.contacts.search("")).to contain_exactly(contact_a, contact_b)
+        expect(found_contacts).to contain_exactly(contact_a, contact_b)
       end
     end
 
     context 'when search term is not empty' do
-      it 'searches for first name ignoring casing' do
-        expect(group.contacts.search("aBc")).to contain_exactly(contact_a)
+      context 'when searching for first name ignoring casing' do
+        let(:search_term) { "aBc" }
+
+        it { is_expected.to contain_exactly(contact_a) }
       end
 
-      it 'searches for last name ignoring casing' do
-        expect(group.contacts.search("StU")).to contain_exactly(contact_b)
+      context 'when searching for last name ignoring casing' do
+        let(:search_term) { "StU" }
+
+        it { is_expected.to contain_exactly(contact_b) }
       end
 
-      it 'searches for email' do
-        expect(group.contacts.search("ghi")).to contain_exactly(contact_a)
+      context 'when searching for email' do
+        let(:search_term) { "ghi" }
+
+        it { is_expected.to contain_exactly(contact_a) }
       end
 
-      it 'searches for description ignoring casing' do
-        expect(group.contacts.search("Yz")).to contain_exactly(contact_b)
+      context 'when searching description ignoring casing' do
+        let(:search_term) { "Yz" }
+
+        it { is_expected.to contain_exactly(contact_b) }
       end
 
-      it 'fuzzy searches for email and last name' do
-        expect(group.contacts.search("s")).to contain_exactly(contact_a, contact_b)
+      context 'when fuzzy searching for email and last name' do
+        let(:search_term) { "s" }
+
+        it { is_expected.to contain_exactly(contact_a, contact_b) }
       end
     end
   end

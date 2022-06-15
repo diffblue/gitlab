@@ -100,23 +100,33 @@ RSpec.describe CustomerRelations::Organization, type: :model do
       )
     end
 
+    subject(:found_organizations) { group.organizations.search(search_term) }
+
     context 'when search term is empty' do
+      let(:search_term) { "" }
+
       it 'returns all group organizations' do
-        expect(group.organizations.search("")).to contain_exactly(organization_a, organization_b)
+        expect(found_organizations).to contain_exactly(organization_a, organization_b)
       end
     end
 
     context 'when search term is not empty' do
-      it 'searches for name' do
-        expect(group.organizations.search("aBc")).to contain_exactly(organization_b)
+      context 'when searching for name' do
+        let(:search_term) { "aBc" }
+
+        it { is_expected.to contain_exactly(organization_b) }
       end
 
-      it 'searches for description' do
-        expect(group.organizations.search("ghI")).to contain_exactly(organization_a)
+      context 'when searching for description' do
+        let(:search_term) { "ghI" }
+
+        it { is_expected.to contain_exactly(organization_a) }
       end
 
-      it 'searches for name and description' do
-        expect(group.organizations.search("_st")).to contain_exactly(organization_a, organization_b)
+      context 'when searching for name and description' do
+        let(:search_term) { "_st" }
+
+        it { is_expected.to contain_exactly(organization_a, organization_b) }
       end
     end
   end
