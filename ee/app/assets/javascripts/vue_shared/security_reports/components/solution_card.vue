@@ -1,4 +1,6 @@
 <script>
+import { s__ } from '~/locale';
+
 export default {
   props: {
     solution: {
@@ -30,20 +32,23 @@ export default {
       return !this.hasMr && Boolean(this.remediation) && this.hasDownload;
     },
   },
+  i18n: {
+    createMergeRequestMsg: s__(
+      'ciReport|Create a merge request to implement this solution, or download and apply the patch manually.',
+    ),
+  },
 };
 </script>
 <template>
   <div v-if="solutionText" class="md my-4">
     <h3>{{ s__('ciReport|Solution') }}</h3>
     <div ref="solution-text">
-      {{ solutionText }}
-      <template v-if="showCreateMergeRequestMsg">
-        {{
-          s__(
-            'ciReport|Create a merge request to implement this solution, or download and apply the patch manually.',
-          )
-        }}
-      </template>
+      <p>
+        {{ solutionText }}
+      </p>
+      <p v-if="showCreateMergeRequestMsg" class="gl-font-style-italic">
+        {{ $options.i18n.createMergeRequestMsg }}
+      </p>
     </div>
   </div>
 </template>
