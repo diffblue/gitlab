@@ -1,7 +1,7 @@
 - if @project.feature_available?(:code_owner_approval_required)
   .form-group.row
-    = f.label :code_owner_approval_required, s_("ProtectedBranch|Require approval from code owners:"), class: 'col-md-2 text-left text-md-right'
-    .col-md-10
+    = f.label :code_owner_approval_required, s_("ProtectedBranch|Require approval from code owners:"), class: 'col-sm-12'
+    .col-sm-12
       = render Pajamas::ToggleComponent.new(classes: 'js-code-owner-toggle',
         label: s_("ProtectedBranch|Toggle code owner approval"),
         is_checked: true,
