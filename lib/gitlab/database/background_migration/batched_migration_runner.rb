@@ -29,7 +29,7 @@ module Gitlab
           if next_batched_job = find_or_create_next_batched_job(active_migration)
             migration_wrapper.perform(next_batched_job)
 
-            if Feature.enabled?(:adapt_batched_migrations, type: :development, default_enabled: :yaml)
+            if Feature.enabled?(:adapt_batched_migrations, type: :development)
               active_migration.adapt!
             else
               active_migration.optimize!

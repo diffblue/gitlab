@@ -28,7 +28,7 @@ module Gitlab
           private
 
           def enabled?
-            Feature.enabled?(:batched_migrations_adapt_on_autovacuum, type: :ops, default_enabled: :yaml)
+            Feature.enabled?(:batched_migrations_adapt_on_autovacuum, type: :ops)
           end
 
           def active_autovacuums_for(tables)
