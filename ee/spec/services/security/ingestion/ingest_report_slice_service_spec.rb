@@ -11,6 +11,7 @@ RSpec.describe Security::Ingestion::IngestReportSliceService do
     subject(:ingest_report_slice) { service_object.execute }
 
     before do
+      allow(Security::Ingestion::Tasks::UpdateVulnerabilityUuids).to receive(:execute)
       described_class::TASKS.each do |task_name|
         task = Object.const_get("Security::Ingestion::Tasks::#{task_name}", false)
 
@@ -21,6 +22,7 @@ RSpec.describe Security::Ingestion::IngestReportSliceService do
     it 'runs the series of tasks in correct order' do
       ingest_report_slice
 
+      expect(Security::Ingestion::Tasks::UpdateVulnerabilityUuids).to have_received(:execute).ordered.with(pipeline, finding_maps)
       expect(Security::Ingestion::Tasks::IngestIdentifiers).to have_received(:execute).ordered.with(pipeline, finding_maps)
       expect(Security::Ingestion::Tasks::IngestFindings).to have_received(:execute).ordered.with(pipeline, finding_maps)
       expect(Security::Ingestion::Tasks::IngestVulnerabilities).to have_received(:execute).ordered.with(pipeline, finding_maps)

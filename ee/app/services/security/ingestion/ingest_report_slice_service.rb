@@ -34,6 +34,8 @@ module Security
       end
 
       def execute
+        Security::Ingestion::Tasks::UpdateVulnerabilityUuids.execute(@pipeline, @finding_maps)
+
         ApplicationRecord.transaction do
           TASKS.each { |task| execute_task(task) }
         end
