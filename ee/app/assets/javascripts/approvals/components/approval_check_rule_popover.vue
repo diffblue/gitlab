@@ -38,6 +38,9 @@ export default {
       }
       return '';
     },
+    popoverTriggerId() {
+      return `reportInfo-${this.rule.name}`;
+    },
   },
 };
 </script>
@@ -45,6 +48,7 @@ export default {
 <template>
   <approval-check-popover
     v-if="showApprovalCheckPopover"
+    :popover-id="popoverTriggerId"
     :title="approvalRuleConfig.title"
     :text="approvalRuleConfig.popoverText"
     :documentation-link="documentationLink"

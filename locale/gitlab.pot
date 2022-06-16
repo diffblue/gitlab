@@ -20875,6 +20875,9 @@ msgstr ""
 msgid "Introducing Your DevOps Reports"
 msgstr ""
 
+msgid "Invalid"
+msgstr ""
+
 msgid "Invalid Insights config file detected"
 msgstr ""
 
@@ -20948,6 +20951,9 @@ msgid "Invalid repository bundle for snippet with id %{snippet_id}"
 msgstr ""
 
 msgid "Invalid repository path"
+msgstr ""
+
+msgid "Invalid rule"
 msgstr ""
 
 msgid "Invalid search parameter"
@@ -45579,6 +45585,12 @@ msgstr ""
 msgid "mrWidget|Approval password is invalid."
 msgstr ""
 
+msgid "mrWidget|Approval rule %{rules} is invalid. GitLab has approved this rule automatically to unblock the merge request. %{link}"
+msgstr ""
+
+msgid "mrWidget|Approval rules %{rules} are invalid. GitLab has approved these rules automatically to unblock the merge request. %{link}"
+msgstr ""
+
 msgid "mrWidget|Approve"
 msgstr ""
 
@@ -45746,6 +45758,9 @@ msgid "mrWidget|Merging! We're almost there…"
 msgstr ""
 
 msgid "mrWidget|More information"
+msgstr ""
+
+msgid "mrWidget|No users match the rule's criteria."
 msgstr ""
 
 msgid "mrWidget|Please restore it or use a different %{type} branch."
