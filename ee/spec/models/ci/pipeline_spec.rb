@@ -6,7 +6,7 @@ RSpec.describe Ci::Pipeline do
   using RSpec::Parameterized::TableSyntax
 
   let(:user) { create(:user) }
-  let_it_be(:project) { create(:project) }
+  let_it_be(:project) { create(:project, :repository) }
 
   let(:pipeline) do
     create(:ci_empty_pipeline, status: :created, project: project)
@@ -458,6 +458,34 @@ RSpec.describe Ci::Pipeline do
       let(:ref) { 'refs/merge-requests/1/merge' }
 
       it { is_expected.to be_falsy }
+    end
+  end
+
+  describe '#ensure_persistent_ref', :geo do
+    subject(:ensure_persistent_ref) { pipeline.ensure_persistent_ref }
+
+    let(:pipeline) { create(:ci_pipeline, project: project) }
+    let(:replicator) { pipeline.replicator }
+
+    context 'when the persistent ref does not exist' do
+      it 'logs a pipeline ref created event' do
+        expect(replicator).to receive(:log_geo_pipeline_ref_created_event)
+
+        ensure_persistent_ref
+      end
+    end
+
+    context 'when the persistent ref exists' do
+      before do
+        pipeline.persistent_ref.create # rubocop:disable Rails/SaveBang
+        pipeline.reload
+      end
+
+      it 'does not log a pipeline ref created event' do
+        expect(replicator).not_to receive(:log_geo_pipeline_ref_created_event)
+
+        ensure_persistent_ref
+      end
     end
   end
 

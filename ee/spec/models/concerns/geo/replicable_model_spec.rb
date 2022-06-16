@@ -92,27 +92,6 @@ RSpec.describe Geo::ReplicableModel do
     end
   end
 
-  describe '#replicator' do
-    it 'adds replicator method to the model' do
-      expect(subject).to respond_to(:replicator)
-    end
-
-    it 'instantiates a replicator into the model' do
-      expect(subject.replicator).to be_a(Geo::DummyReplicator)
-    end
-
-    context 'when replicator is not defined in inheriting class' do
-      before do
-        stub_const('DummyModel', Class.new(ApplicationRecord))
-        DummyModel.class_eval { include ::Geo::ReplicableModel }
-      end
-
-      it 'raises NotImplementedError' do
-        expect { DummyModel.new.replicator }.to raise_error(NotImplementedError)
-      end
-    end
-  end
-
   describe '#in_replicables_for_current_secondary?' do
     it 'reuses replicables_for_current_secondary' do
       expect(DummyModel).to receive(:replicables_for_current_secondary).once.with(subject).and_call_original
