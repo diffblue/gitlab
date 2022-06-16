@@ -20,26 +20,6 @@ RSpec.describe 'Admin Groups' do
     stub_application_setting(default_group_visibility: internal)
   end
 
-  it "renders relative time", :js do
-    expire_time = Time.current + 2.days
-    current_user.update!(time_display_relative: true)
-    group.add_users([user], Gitlab::Access::REPORTER, expires_at: expire_time)
-
-    visit admin_group_path(group)
-
-    expect(page).to have_content(/Expires in \d day/)
-  end
-
-  it "renders absolute time", :js do
-    expire_time = Time.current.tomorrow.middle_of_day
-    current_user.update!(time_display_relative: false)
-    group.add_users([user], Gitlab::Access::REPORTER, expires_at: expire_time)
-
-    visit admin_group_path(group)
-
-    expect(page).to have_content("Expires on #{expire_time.strftime('%b %-d')}")
-  end
-
   describe 'list' do
     it 'renders groups' do
       visit admin_groups_path
@@ -250,6 +230,28 @@ RSpec.describe 'Admin Groups' do
 
     it_behaves_like 'adds user into a group' do
       let(:user_selector) { user.email }
+    end
+
+    context 'when membership is set to expire' do
+      it 'renders relative time' do
+        expire_time = Time.current + 2.days
+        current_user.update!(time_display_relative: true)
+        group.add_user(user, Gitlab::Access::REPORTER, expires_at: expire_time)
+
+        visit admin_group_path(group)
+
+        expect(page).to have_content(/Expires in \d day/)
+      end
+
+      it 'renders absolute time' do
+        expire_time = Time.current.tomorrow.middle_of_day
+        current_user.update!(time_display_relative: false)
+        group.add_user(user, Gitlab::Access::REPORTER, expires_at: expire_time)
+
+        visit admin_group_path(group)
+
+        expect(page).to have_content("Expires on #{expire_time.strftime('%b %-d')}")
+      end
     end
   end
 

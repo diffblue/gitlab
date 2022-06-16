@@ -16,24 +16,26 @@ RSpec.describe "Admin::Projects" do
     gitlab_enable_admin_mode_sign_in(current_user)
   end
 
-  it "renders relative time", :js do
-    expire_time = Time.current + 2.days
-    current_user.update!(time_display_relative: true)
-    project.add_users([user], Gitlab::Access::REPORTER, expires_at: expire_time)
+  describe 'when membership is set to expire', :js do
+    it 'renders relative time' do
+      expire_time = Time.current + 2.days
+      current_user.update!(time_display_relative: true)
+      project.add_user(user, Gitlab::Access::REPORTER, expires_at: expire_time)
 
-    visit admin_project_path(project)
+      visit admin_project_path(project)
 
-    expect(page).to have_content(/Expires in \d day/)
-  end
+      expect(page).to have_content(/Expires in \d day/)
+    end
 
-  it "renders absolute time", :js do
-    expire_time = Time.current.tomorrow.middle_of_day
-    current_user.update!(time_display_relative: false)
-    project.add_users([user], Gitlab::Access::REPORTER, expires_at: expire_time)
+    it 'renders absolute time' do
+      expire_time = Time.current.tomorrow.middle_of_day
+      current_user.update!(time_display_relative: false)
+      project.add_user(user, Gitlab::Access::REPORTER, expires_at: expire_time)
 
-    visit admin_project_path(project)
+      visit admin_project_path(project)
 
-    expect(page).to have_content("Expires on #{expire_time.strftime('%b %-d')}")
+      expect(page).to have_content("Expires on #{expire_time.strftime('%b %-d')}")
+    end
   end
 
   describe "GET /admin/projects" do
