@@ -8,6 +8,8 @@ import createRouter from './router';
 import { DASHBOARD_TYPES } from './store/constants';
 import { LOADING_VULNERABILITIES_ERROR_CODES } from './store/modules/vulnerabilities/constants';
 
+// This can be removed when the migration to GraphQL is completed.
+// Though, if we complete the pipeline tabs migration first, we will be removing this whole file.
 Vue.use(Vuex);
 
 export default () => {
