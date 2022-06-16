@@ -3,6 +3,7 @@
 - @content_class = 'project-test-cases'
 
 #js-test-cases-list{ data: { can_create_test_case: can?(current_user, :create_test_case, @project).to_s,
+  has_scoped_labels_feature: @project.feature_available?(:scoped_labels).to_s,
   initial_state: params[:state],
   page: params[:page],
   prev: params[:prev],

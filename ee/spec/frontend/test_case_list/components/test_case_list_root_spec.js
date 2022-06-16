@@ -16,6 +16,7 @@ jest.mock('ee/test_case_list/constants', () => ({
 
 const mockProvide = {
   canCreateTestCase: true,
+  hasScopedLabelsFeature: true,
   initialState: 'opened',
   page: 1,
   prev: '',

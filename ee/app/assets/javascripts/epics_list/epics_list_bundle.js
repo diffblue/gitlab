@@ -29,6 +29,7 @@ export default function initEpicsList({ mountPointSelector }) {
     initialSortBy = 'start_date_desc',
     canCreateEpic,
     canBulkEditEpics,
+    hasScopedLabelsFeature,
     epicsCountOpened,
     epicsCountClosed,
     epicsCountAll,
@@ -66,6 +67,7 @@ export default function initEpicsList({ mountPointSelector }) {
       page: parseInt(page, 10),
       canCreateEpic: parseBoolean(canCreateEpic),
       canBulkEditEpics: parseBoolean(canBulkEditEpics),
+      hasScopedLabelsFeature: parseBoolean(hasScopedLabelsFeature),
       epicsCount: {
         [IssuableStates.Opened]: parseInt(epicsCountOpened, 10),
         [IssuableStates.Closed]: parseInt(epicsCountClosed, 10),
