@@ -1,7 +1,6 @@
 import { GlEmptyState, GlButton } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
-import Vuex from 'vuex';
 import VueApollo from 'vue-apollo';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -27,14 +26,10 @@ import {
   pipelineSecurityReportSummaryEmpty,
 } from './mock_data';
 
-Vue.use(Vuex);
-
+const projectId = 5678;
 const emptyStateSvgPath = '/svgs/empty/svg';
 const pipelineId = 1234;
 const pipelineIid = 4321;
-const projectId = 5678;
-const sourceBranch = 'feature-branch-1';
-const jobsPath = 'my-jobs-path';
 const vulnerabilitiesEndpoint = '/vulnerabilities';
 const loadingErrorIllustrations = {
   401: '/401.svg',
@@ -51,25 +46,6 @@ describe('Pipeline Security Dashboard component', () => {
   const findReportStatusAlert = () => wrapper.findComponent(ReportStatusAlert);
 
   const factory = ({ stubs, provide, apolloProvider } = {}) => {
-    store = new Vuex.Store({
-      modules: {
-        vulnerabilities: {
-          namespaced: true,
-          actions: {
-            setSourceBranch() {},
-          },
-        },
-        pipelineJobs: {
-          namespaced: true,
-          actions: {
-            setPipelineJobsPath() {},
-            setProjectId() {},
-          },
-        },
-      },
-    });
-    jest.spyOn(store, 'dispatch').mockImplementation();
-
     wrapper = shallowMount(PipelineSecurityDashboard, {
       apolloProvider,
       store,
@@ -80,8 +56,6 @@ describe('Pipeline Security Dashboard component', () => {
         pipeline: {
           id: pipelineId,
           iid: pipelineIid,
-          jobsPath,
-          sourceBranch,
         },
         vulnerabilitiesEndpoint,
         loadingErrorIllustrations,
@@ -104,14 +78,6 @@ describe('Pipeline Security Dashboard component', () => {
   describe('on creation', () => {
     beforeEach(() => {
       factory();
-    });
-
-    it('dispatches the expected actions', () => {
-      expect(store.dispatch.mock.calls).toEqual([
-        ['vulnerabilities/setSourceBranch', sourceBranch],
-        ['pipelineJobs/setPipelineJobsPath', jobsPath],
-        ['pipelineJobs/setProjectId', 5678],
-      ]);
     });
 
     it('renders the security dashboard', () => {

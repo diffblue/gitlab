@@ -1,8 +1,12 @@
-import createStore from 'ee/security_dashboard/store/index';
+import Vue from 'vue';
+import Vuex from 'vuex';
+import { setupStore } from 'ee/security_dashboard/store/index';
 import {
   SET_FILTER,
   SET_HIDE_DISMISSED,
 } from 'ee/security_dashboard/store/modules/filters/mutation_types';
+
+Vue.use(Vuex);
 
 function expectRefreshDispatches(store, payload) {
   expect(store.dispatch).toHaveBeenCalledTimes(1);
@@ -13,7 +17,8 @@ describe('mediator', () => {
   let store;
 
   beforeEach(() => {
-    store = createStore();
+    store = new Vuex.Store();
+    setupStore(store);
     jest.spyOn(store, 'dispatch').mockImplementation(() => {});
   });
 
