@@ -407,6 +407,11 @@ module EE
       billable_ids[:user_ids].count
     end
 
+    override :expire_free_plan_members_count_cache
+    def expire_free_plan_members_count_cache
+      clear_memoization(:billed_user_ids_including_guests)
+    end
+
     # For now, we are not billing for members with a Guest role for subscriptions
     # with a Gold/Ultimate plan. The other plans will treat Guest members as a regular member
     # for billing purposes.

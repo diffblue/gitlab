@@ -65,9 +65,9 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProjectCreateService do
         project.add_maintainer(maintainer)
 
         errors = ActiveModel::Errors.new(ProjectMember.new).tap { |e| e.add(:source, "cannot be nil") }
-        allow_next_instance_of(ProjectMember) do |instance|
-          allow(instance).to receive(:errors).and_return(errors)
-        end
+        error_member = ProjectMember.new
+        allow(error_member).to receive(:errors).and_return(errors)
+        allow(service).to receive(:add_members).and_return([error_member])
       end
 
       it 'returns error' do
