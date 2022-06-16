@@ -8,9 +8,16 @@ RSpec.describe Gitlab::Graphql::Aggregations::Epics::LazyBlockAggregate do
 
     let(:issuable_link_class) { Epic::RelatedEpicLink }
 
-    let(:fake_data) do
+    let(:fake_blocked_data) do
       [
           { blocked_epic_id: 135, count: 1.0 },
+          nil # nil for unblocked issuables
+      ]
+    end
+
+    let(:fake_blocking_data) do
+      [
+          { blocking_epic_id: 135, count: 1.0 },
           nil # nil for unblocked issuables
       ]
     end

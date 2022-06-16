@@ -232,7 +232,9 @@ module Types
     end
 
     def blocking_count
-      ::Epic::RelatedEpicLink.blocking_issuables_count_for(object)
+      ::Gitlab::Graphql::Aggregations::Epics::LazyBlockAggregate.new(context, object.id, link_type: :blocking) do |count|
+        count || 0
+      end
     end
 
     def blocked_by_epics
