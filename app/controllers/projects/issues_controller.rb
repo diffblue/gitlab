@@ -406,6 +406,7 @@ class Projects::IssuesController < Projects::ApplicationController
   def create_vulnerability_issue_feedback(issue); end
 
   def redirect_if_task
+    return render_404 if issue.task? && !issue&.project&.work_items_feature_flag_enabled?
     return unless issue.task?
 
     redirect_to project_work_items_path(issue.project, issue.id, params: request.query_parameters)
