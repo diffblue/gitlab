@@ -2355,9 +2355,6 @@ msgstr ""
 msgid "Adding new applications is disabled in your GitLab instance. Please contact your GitLab administrator to get the permission"
 msgstr ""
 
-msgid "Additional Metadata"
-msgstr ""
-
 msgid "Additional minutes"
 msgstr ""
 
@@ -27069,6 +27066,9 @@ msgstr ""
 msgid "PackageRegistry|Add composer registry"
 msgstr ""
 
+msgid "PackageRegistry|Additional metadata"
+msgstr ""
+
 msgid "PackageRegistry|Allow duplicates"
 msgstr ""
 
@@ -27333,6 +27333,9 @@ msgid "PackageRegistry|Something went wrong while deleting the package."
 msgstr ""
 
 msgid "PackageRegistry|Something went wrong while fetching the package history."
+msgstr ""
+
+msgid "PackageRegistry|Something went wrong while fetching the package metadata."
 msgstr ""
 
 msgid "PackageRegistry|Sorry, your filter produced no results"
