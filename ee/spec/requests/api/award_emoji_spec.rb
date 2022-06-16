@@ -92,10 +92,10 @@ RSpec.describe API::AwardEmoji do
         expect(response).to have_gitlab_http_status(:bad_request)
       end
 
-      it "returns a 401 unauthorized error if the user is not authenticated" do
+      it "returns a 404 if the user is not authenticated" do
         post api("/groups/#{group.id}/epics/#{epic.iid}/award_emoji"), params: { name: 'thumbsup' }
 
-        expect(response).to have_gitlab_http_status(:unauthorized)
+        expect(response).to have_gitlab_http_status(:not_found)
       end
 
       it "normalizes +1 as thumbsup award" do
