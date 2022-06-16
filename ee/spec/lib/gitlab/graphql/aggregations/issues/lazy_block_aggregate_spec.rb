@@ -8,9 +8,16 @@ RSpec.describe Gitlab::Graphql::Aggregations::Issues::LazyBlockAggregate do
 
     let(:issuable_link_class) { IssueLink }
 
-    let(:fake_data) do
+    let(:fake_blocked_data) do
       [
           { blocked_issue_id: 1745, count: 1.0 },
+          nil # nil for unblocked issuables
+      ]
+    end
+
+    let(:fake_blocking_data) do
+      [
+          { blocking_issue_id: 1745, count: 1.0 },
           nil # nil for unblocked issuables
       ]
     end
