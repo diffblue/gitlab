@@ -21,9 +21,10 @@ export default {
         errors: {
           name: '',
           file: '',
-          __typename: 'LocalUploadStateErrors',
+          /* eslint-disable-next-line @gitlab/require-i18n-strings */
+          __typename: 'Errors',
         },
-        __typename: 'LocalUploadState',
+        __typename: 'UploadState',
       };
     },
   },

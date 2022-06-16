@@ -7,7 +7,7 @@ query jiraIssues(
   $labels: String
   $sort: String
   $state: String
-  $page: Int
+  $page: Integer
 ) {
   externalIssues(
     issuesFetchPath: $issuesFetchPath
