@@ -149,7 +149,9 @@ export default {
       <gl-icon name="status-health" :size="14" />
 
       <gl-loading-icon v-if="isFetching" size="sm" />
-      <p v-else class="collapse-truncated-title gl-px-2">{{ statusText }}</p>
+      <p v-else class="collapse-truncated-title gl-pt-2 gl-px-3 gl-font-sm gl-px-2">
+        {{ statusText }}
+      </p>
     </div>
 
     <div class="hide-collapsed">

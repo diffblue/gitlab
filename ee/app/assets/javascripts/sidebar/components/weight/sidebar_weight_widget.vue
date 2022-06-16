@@ -208,7 +208,10 @@ export default {
       >
         <gl-icon :size="16" name="weight" />
         <gl-loading-icon v-if="isLoading" class="js-weight-collapsed-loading-icon" />
-        <span v-else class="js-weight-collapsed-weight-label">
+        <span
+          v-else
+          class="js-weight-collapsed-weight-label collapse-truncated-title gl-pt-2 gl-px-3 gl-font-sm"
+        >
           {{ collapsedWeightLabel }}
           <template v-if="weight > $options.maxDisplayWeight">&hellip;</template>
         </span>
