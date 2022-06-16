@@ -39,11 +39,6 @@ class GroupHook < WebHook
     super.merge(namespace: group)
   end
 
-  override :rate_limit
-  def rate_limit
-    group.actual_limits.limit_for(:web_hook_calls)
-  end
-
   override :parent
   def parent
     group
