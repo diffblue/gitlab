@@ -1,4 +1,4 @@
-fragment UploadState on UploadState {
+fragment UploadState on LocalUploadState {
   isUploading
   progress
   cancelSource

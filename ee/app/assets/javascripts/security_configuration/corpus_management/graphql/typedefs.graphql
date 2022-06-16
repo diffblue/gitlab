@@ -1,0 +1,16 @@
+type LocalUploadStateErrors {
+  name: String
+  file: String
+}
+
+type LocalUploadState {
+  isUploading: Boolean
+  progress: Int
+  cancelSource: String
+  uploadedPackageId: ID
+  errors: LocalUploadStateErrors
+}
+
+extend type Query {
+  uploadState: LocalUploadState
+}

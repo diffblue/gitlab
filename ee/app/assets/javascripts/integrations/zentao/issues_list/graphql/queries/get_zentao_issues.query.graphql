@@ -7,7 +7,7 @@ query zentaoIssues(
   $labels: String
   $sort: String
   $state: String
-  $page: Integer
+  $page: Int
 ) {
   externalIssues(
     issuesFetchPath: $issuesFetchPath
