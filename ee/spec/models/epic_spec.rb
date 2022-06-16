@@ -1104,4 +1104,24 @@ RSpec.describe Epic do
       end
     end
   end
+
+  context 'order by closed_at' do
+    let!(:epic_a) { create(:epic, closed_at: 1.day.ago) }
+    let!(:epic_b) { create(:epic, closed_at: 5.days.ago) }
+    let!(:epic_c_nil) { create(:epic, closed_at: nil) }
+    let!(:epic_d) { create(:epic, closed_at: 3.days.ago) }
+    let!(:epic_e_nil) { create(:epic, closed_at: nil) }
+
+    describe '.order_closed_at_asc' do
+      it 'orders on closed at' do
+        expect(described_class.order_closed_at_asc.to_a).to eq([epic_b, epic_d, epic_a, epic_c_nil, epic_e_nil])
+      end
+    end
+
+    describe '.order_closed_at_desc' do
+      it 'orders on closed at' do
+        expect(described_class.order_closed_at_desc.to_a).to eq([epic_a, epic_d, epic_b, epic_c_nil, epic_e_nil])
+      end
+    end
+  end
 end

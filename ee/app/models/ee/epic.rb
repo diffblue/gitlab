@@ -121,7 +121,8 @@ module EE
         reorder(keyset_order)
       end
 
-      scope :order_closed_date_desc, -> { reorder(closed_at: :desc) }
+      scope :order_closed_at_asc, -> { reorder(arel_table[:closed_at].asc.nulls_last) }
+      scope :order_closed_at_desc, -> { reorder(arel_table[:closed_at].desc.nulls_last) }
 
       scope :order_relative_position, -> do
         reorder('relative_position ASC', 'id DESC')
