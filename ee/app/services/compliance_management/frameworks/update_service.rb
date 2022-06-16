@@ -37,6 +37,8 @@ module ComplianceManagement
 
       def audit_changes
         framework.previous_changes.each do |attribute, changes|
+          next if attribute.eql?('updated_at')
+
           audit_context = {
             name: 'update_compliance_framework',
             author: current_user,

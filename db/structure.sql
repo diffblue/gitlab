@@ -13795,6 +13795,8 @@ CREATE TABLE compliance_management_frameworks (
     color text NOT NULL,
     namespace_id integer NOT NULL,
     pipeline_configuration_full_path text,
+    created_at timestamp with time zone,
+    updated_at timestamp with time zone,
     CONSTRAINT check_08cd34b2c2 CHECK ((char_length(color) <= 10)),
     CONSTRAINT check_1617e0b87e CHECK ((char_length(description) <= 255)),
     CONSTRAINT check_ab00bc2193 CHECK ((char_length(name) <= 255)),
@@ -26768,6 +26770,8 @@ CREATE INDEX finding_links_on_vulnerability_occurrence_id ON vulnerability_findi
 CREATE INDEX i_batched_background_migration_job_transition_logs_on_job_id ON ONLY batched_background_migration_job_transition_logs USING btree (batched_background_migration_job_id);
 
 CREATE UNIQUE INDEX i_ci_job_token_project_scope_links_on_source_and_target_project ON ci_job_token_project_scope_links USING btree (source_project_id, target_project_id);
+
+CREATE INDEX i_compliance_frameworks_on_id_and_created_at ON compliance_management_frameworks USING btree (id, created_at, pipeline_configuration_full_path);
 
 CREATE INDEX idx_analytics_devops_adoption_segments_on_namespace_id ON analytics_devops_adoption_segments USING btree (namespace_id);
 
