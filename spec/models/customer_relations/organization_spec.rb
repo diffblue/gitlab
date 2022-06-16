@@ -79,7 +79,7 @@ RSpec.describe CustomerRelations::Organization, type: :model do
     end
   end
 
-  describe '#self.search' do
+  describe '.search' do
     let_it_be(:organization_a) do
       create(
         :organization,
@@ -131,7 +131,7 @@ RSpec.describe CustomerRelations::Organization, type: :model do
     end
   end
 
-  describe '#self.search_by_state' do
+  describe '.search_by_state' do
     let_it_be(:organization_a) { create(:organization, group: group, state: "inactive") }
     let_it_be(:organization_b) { create(:organization, group: group, state: "active") }
 
@@ -146,24 +146,24 @@ RSpec.describe CustomerRelations::Organization, type: :model do
     end
   end
 
-  describe '#self.search_by_ids' do
+  describe '.id_in' do
     let_it_be(:organization_a) { create(:organization, group: group) }
     let_it_be(:organization_b) { create(:organization, group: group) }
 
     context 'when ids array is empty' do
       it 'returns no organizations' do
-        expect(group.organizations.search_by_ids([])).to be_empty
+        expect(group.organizations.id_in([])).to be_empty
       end
     end
 
     context 'when ids array has data' do
       it 'returns only the requested organizations' do
-        expect(group.organizations.search_by_ids([organization_b.id])).to contain_exactly(organization_b)
+        expect(group.organizations.id_in([organization_b.id])).to contain_exactly(organization_b)
       end
     end
   end
 
-  describe '#self.sort_by_name' do
+  describe '.sort_by_name' do
     let_it_be(:organization_a) { create(:organization, group: group, name: "c") }
     let_it_be(:organization_b) { create(:organization, group: group, name: "a") }
     let_it_be(:organization_c) { create(:organization, group: group, name: "b") }

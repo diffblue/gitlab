@@ -58,7 +58,7 @@ module Crm
     def by_ids(organizations)
       return organizations unless ids?
 
-      organizations.search_by_ids(params[:ids])
+      organizations.id_in(params[:ids])
     end
 
     def search?

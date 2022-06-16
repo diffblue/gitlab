@@ -4,6 +4,7 @@ module Resolvers
   module Crm
     class ContactsResolver < BaseResolver
       include Gitlab::Graphql::Authorize::AuthorizeResource
+      include ResolvesIds
 
       authorize :read_crm_contact
 
@@ -17,24 +18,18 @@ module Resolvers
                required: false,
                description: 'State of the contacts to search for.'
 
-      argument :ids, [GraphQL::Types::ID],
+      argument :ids, [::Types::GlobalIDType[CustomerRelations::Contact]],
                required: false,
                description: 'Filter contacts by IDs.'
 
       def resolve(**args)
-        args[:ids] = parse_gids(args.delete(:ids))
+        args[:ids] = resolve_ids(args.delete(:ids))
 
         ::Crm::ContactsFinder.new(current_user, { group: group }.merge(args)).execute
       end
 
       def group
         object.respond_to?(:sync) ? object.sync : object
-      end
-
-      private
-
-      def parse_gids(gids)
-        gids&.map { |gid| GitlabSchema.parse_gid(gid, expected_type: CustomerRelations::Contact).model_id }
       end
     end
   end

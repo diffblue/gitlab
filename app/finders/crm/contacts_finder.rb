@@ -58,7 +58,7 @@ module Crm
     def by_ids(contacts)
       return contacts unless ids?
 
-      contacts.search_by_ids(params[:ids])
+      contacts.id_in(params[:ids])
     end
 
     def search?
