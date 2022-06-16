@@ -27116,6 +27116,8 @@ CREATE INDEX idx_pkgs_debian_project_distribution_keys_on_distribution_id ON pac
 
 CREATE UNIQUE INDEX idx_pkgs_dep_links_on_pkg_id_dependency_id_dependency_type ON packages_dependency_links USING btree (package_id, dependency_id, dependency_type);
 
+CREATE INDEX idx_pkgs_installable_package_files_on_package_id_id_file_name ON packages_package_files USING btree (package_id, id, file_name) WHERE (status = 0);
+
 CREATE INDEX idx_proj_feat_usg_on_jira_dvcs_cloud_last_sync_at_and_proj_id ON project_feature_usages USING btree (jira_dvcs_cloud_last_sync_at, project_id) WHERE (jira_dvcs_cloud_last_sync_at IS NOT NULL);
 
 CREATE INDEX idx_proj_feat_usg_on_jira_dvcs_server_last_sync_at_and_proj_id ON project_feature_usages USING btree (jira_dvcs_server_last_sync_at, project_id) WHERE (jira_dvcs_server_last_sync_at IS NOT NULL);
@@ -29096,7 +29098,7 @@ CREATE INDEX index_packages_packages_on_project_id_and_created_at ON packages_pa
 
 CREATE INDEX index_packages_packages_on_project_id_and_package_type ON packages_packages USING btree (project_id, package_type);
 
-CREATE INDEX index_packages_packages_on_project_id_and_status ON packages_packages USING btree (project_id, status);
+CREATE INDEX index_packages_packages_on_project_id_and_status_and_id ON packages_packages USING btree (project_id, status, id);
 
 CREATE INDEX index_packages_packages_on_project_id_and_version ON packages_packages USING btree (project_id, version);
 
