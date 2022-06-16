@@ -4,6 +4,7 @@ import { mount } from '@vue/test-utils';
 import axios from '~/lib/utils/axios_utils';
 import SecureFilesList from '~/ci_secure_files/components/secure_files_list.vue';
 import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
+import { mockTracking, unmockTracking } from 'helpers/tracking_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 
 import { secureFiles } from '../mock_data';
@@ -22,15 +23,18 @@ const expectedUrl = `${dummyUrlRoot}/api/${dummyApiVersion}/projects/${dummyProj
 describe('SecureFilesList', () => {
   let wrapper;
   let mock;
+  let trackingSpy = null;
 
   beforeEach(() => {
     originalGon = window.gon;
+    trackingSpy = mockTracking(undefined, undefined, jest.spyOn);
     window.gon = { ...dummyGon };
   });
 
   afterEach(() => {
     wrapper.destroy();
     mock.restore();
+    unmockTracking();
     window.gon = originalGon;
   });
 
@@ -77,6 +81,10 @@ describe('SecureFilesList', () => {
 
       expect(findCell(0, 0).text()).toBe(secureFile.name);
       expect(findCell(0, 1).find(TimeAgoTooltip).props('time')).toBe(secureFile.created_at);
+    });
+
+    it('sends tracking information', () => {
+      expect(trackingSpy).toHaveBeenCalledWith(undefined, 'render_secure_files_list', {});
     });
   });
 
