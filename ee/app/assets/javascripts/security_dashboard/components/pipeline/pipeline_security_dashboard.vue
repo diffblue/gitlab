@@ -1,6 +1,5 @@
 <script>
 import { GlEmptyState, GlButton } from '@gitlab/ui';
-import { mapActions } from 'vuex';
 import pipelineSecurityReportSummaryQuery from 'ee/security_dashboard/graphql/queries/pipeline_security_report_summary.query.graphql';
 import { reportTypeToSecurityReportTypeEnum } from 'ee/vue_shared/security_reports/constants';
 import { fetchPolicies } from '~/lib/graphql';
@@ -8,7 +7,6 @@ import { s__ } from '~/locale';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { DOC_PATH_SECURITY_CONFIGURATION } from 'ee/security_dashboard/constants';
-import { setupStore } from '../../store';
 import ScanAlerts, { TYPE_ERRORS, TYPE_WARNINGS } from './scan_alerts.vue';
 import ReportStatusAlert, { STATUS_PURGED } from './report_status_alert.vue';
 import SecurityDashboard from './security_dashboard_vuex.vue';
@@ -115,16 +113,6 @@ export default {
     showScanWarnings() {
       return this.scansWithWarnings.length > 0 && !this.hasPurgedScans;
     },
-  },
-  created() {
-    setupStore(this.$store);
-    this.setSourceBranch(this.pipeline.sourceBranch);
-    this.setPipelineJobsPath(this.pipeline.jobsPath);
-    this.setProjectId(this.projectId);
-  },
-  methods: {
-    ...mapActions('vulnerabilities', ['setSourceBranch']),
-    ...mapActions('pipelineJobs', ['setPipelineJobsPath', 'setProjectId']),
   },
   i18n: {
     parsingErrorAlertTitle: s__('SecurityReports|Error parsing security reports'),
