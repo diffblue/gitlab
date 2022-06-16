@@ -62,8 +62,8 @@ export default {
 <template>
   <div>
     <filter-bar :project-path="projectPath" />
-    <div class="mt-2">
-      <gl-loading-icon v-show="isLoading" size="lg" class="mt-3" />
+    <div class="gl-mt-3">
+      <gl-loading-icon v-show="isLoading" size="lg" class="gl-mt-5" />
       <template v-if="!isLoading">
         <gl-empty-state
           v-if="!totalItems"
@@ -73,7 +73,7 @@ export default {
           :svg-path="emptyStateSvgPath"
         >
           <template #description>
-            <div class="text-center">
+            <div class="gl-text-center">
               <p>
                 {{
                   __(
@@ -86,7 +86,7 @@ export default {
         </gl-empty-state>
         <template v-else>
           <div>
-            <span class="font-weight-bold">{{ __('Merge Requests in Review') }}</span>
+            <span class="gl-font-weight-bold">{{ __('Merge Requests in Review') }}</span>
             <gl-badge size="sm">{{ totalItems }}</gl-badge>
           </div>
           <merge-request-table />
