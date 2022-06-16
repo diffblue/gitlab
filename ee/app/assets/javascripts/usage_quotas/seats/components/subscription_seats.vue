@@ -428,7 +428,7 @@ export default {
             @click="toggleDetails"
           >
             <gl-icon
-              :name="detailsShowing ? 'angle-down' : 'angle-right'"
+              :name="detailsShowing ? 'chevron-lg-down' : 'chevron-lg-right'"
               class="text-secondary-900"
             />
           </gl-button>
