@@ -43256,9 +43256,6 @@ msgstr ""
 msgid "WorkItem|Expand child items"
 msgstr ""
 
-msgid "WorkItem|New Task"
-msgstr ""
-
 msgid "WorkItem|No child items are currently assigned. Use child items to prioritize tasks that your team should complete in order to accomplish your goals!"
 msgstr ""
 
