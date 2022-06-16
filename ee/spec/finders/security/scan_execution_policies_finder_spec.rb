@@ -37,9 +37,9 @@ RSpec.describe Security::ScanExecutionPoliciesFinder do
     }
   end
 
-  let(:current_user) { policy_management_project.first_owner }
+  let(:actor) { policy_management_project.first_owner }
 
-  subject { described_class.new(current_user, object, params).execute }
+  subject { described_class.new(actor, object, params).execute }
 
   describe '#execute' do
     context 'when feature is not licensed' do
@@ -147,7 +147,7 @@ RSpec.describe Security::ScanExecutionPoliciesFinder do
       end
 
       context 'when user is unauthorized' do
-        let(:current_user) { create(:user) }
+        let(:actor) { create(:user) }
 
         it 'returns empty collection' do
           is_expected.to be_empty
@@ -193,6 +193,34 @@ RSpec.describe Security::ScanExecutionPoliciesFinder do
 
       context 'when there are no matching policies' do
         let(:action_scan_types) { [::Types::Security::ReportTypeEnum.values['CONTAINER_SCANNING'].value] }
+
+        it 'returns empty response' do
+          is_expected.to be_empty
+        end
+      end
+    end
+
+    context 'when actor is Clusters::Agent' do
+      before do
+        stub_licensed_features(security_orchestration_policies: true)
+      end
+
+      context 'when agent project has security_orchestration_policy project' do
+        let(:actor) { create(:cluster_agent, project: object) }
+
+        it 'returns policy matching the given scan type' do
+          is_expected.to match_array([policy.merge(
+            {
+              config: policy_configuration,
+              project: object,
+              namespace: nil,
+              inherited: false
+            })])
+        end
+      end
+
+      context 'when agent project is different from security_orchestration_policy project' do
+        let(:actor) { create(:cluster_agent, project: create(:project)) }
 
         it 'returns empty response' do
           is_expected.to be_empty
