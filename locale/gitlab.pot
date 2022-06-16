@@ -25270,10 +25270,10 @@ msgstr ""
 msgid "NavigationTheme|Blue"
 msgstr ""
 
-msgid "NavigationTheme|Dark"
+msgid "NavigationTheme|Dark Mode (alpha)"
 msgstr ""
 
-msgid "NavigationTheme|Dark Mode (alpha)"
+msgid "NavigationTheme|Gray"
 msgstr ""
 
 msgid "NavigationTheme|Green"
@@ -25282,10 +25282,10 @@ msgstr ""
 msgid "NavigationTheme|Indigo"
 msgstr ""
 
-msgid "NavigationTheme|Light"
+msgid "NavigationTheme|Light Blue"
 msgstr ""
 
-msgid "NavigationTheme|Light Blue"
+msgid "NavigationTheme|Light Gray"
 msgstr ""
 
 msgid "NavigationTheme|Light Green"
@@ -28853,13 +28853,16 @@ msgstr ""
 msgid "Preferences|Color for removed lines"
 msgstr ""
 
+msgid "Preferences|Color theme"
+msgstr ""
+
 msgid "Preferences|Configure how dates and times display for you."
 msgstr ""
 
 msgid "Preferences|Customize integrations with third party services."
 msgstr ""
 
-msgid "Preferences|Customize the appearance of the application header and navigation sidebar."
+msgid "Preferences|Customize the color of GitLab."
 msgstr ""
 
 msgid "Preferences|Customize the colors of removed and added lines in diffs."
@@ -28899,9 +28902,6 @@ msgid "Preferences|Layout width"
 msgstr ""
 
 msgid "Preferences|Must be a number between %{min} and %{max}"
-msgstr ""
-
-msgid "Preferences|Navigation theme"
 msgstr ""
 
 msgid "Preferences|Preview"
