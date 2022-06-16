@@ -49,14 +49,6 @@ export default {
       skip() {
         return !this.issuableId;
       },
-      error(error) {
-        // This is a workaround to silently hide the widget to avoid the
-        // multi-version compatibility issue with Backend.
-        // TODO: Remove in 15.2.
-        if (error?.toString()?.includes('No such type WorkItemWidgetHierarchy')) {
-          this.hideWidget = true;
-        }
-      },
     },
   },
   data() {
@@ -64,7 +56,6 @@ export default {
       isShownAddForm: false,
       isOpen: true,
       children: [],
-      hideWidget: false,
     };
   },
   computed: {
@@ -85,11 +76,6 @@ export default {
     },
     isLoading() {
       return this.$apollo.queries.children.loading;
-    },
-    shouldRenderAddForm() {
-      // FIXME: This is a placeholder to avoid rendering Add Form
-      // since it's still a WIP.
-      return false;
     },
   },
   methods: {
@@ -116,10 +102,7 @@ export default {
 </script>
 
 <template>
-  <div
-    v-if="!hideWidget"
-    class="gl-rounded-base gl-border-1 gl-border-solid gl-border-gray-100 gl-bg-gray-10"
-  >
+  <div class="gl-rounded-base gl-border-1 gl-border-solid gl-border-gray-100 gl-bg-gray-10">
     <div
       class="gl-p-4 gl-display-flex gl-justify-content-space-between"
       :class="{ 'gl-border-b-1 gl-border-b-solid gl-border-b-gray-100': isOpen }"
@@ -147,32 +130,34 @@ export default {
           <p>
             {{ $options.i18n.emptyStateMessage }}
           </p>
-          <template v-if="shouldRenderAddForm">
-            <gl-button
-              v-if="!isShownAddForm"
-              category="secondary"
-              variant="confirm"
-              data-testid="toggle-add-form"
-              @click="toggleAddForm"
-            >
-              {{ $options.i18n.addChildButtonLabel }}
-            </gl-button>
-            <work-item-links-form v-else data-testid="add-links-form" @cancel="toggleAddForm" />
-          </template>
+          <gl-button
+            v-if="!isShownAddForm"
+            category="secondary"
+            variant="confirm"
+            data-testid="toggle-add-form"
+            @click="toggleAddForm"
+          >
+            {{ $options.i18n.addChildButtonLabel }}
+          </gl-button>
+          <work-item-links-form v-else data-testid="add-links-form" @cancel="toggleAddForm" />
         </div>
         <div
           v-for="child in children"
           :key="child.id"
-          class="gl-relative gl-display-flex gl-flex-direction-row gl-overflow-break-word gl-min-w-0 gl-bg-white gl-mb-3 gl-py-3 gl-px-4 gl-align-items-center gl-border gl-border-gray-100 gl-rounded-base"
+          class="gl-relative gl-display-flex gl-flex-direction-column gl-sm-flex-direction-row gl-overflow-break-word gl-min-w-0 gl-bg-white gl-mb-3 gl-py-3 gl-px-4 gl-border gl-border-gray-100 gl-rounded-base"
           data-testid="links-child"
         >
-          <gl-icon :name="$options.WIDGET_TYPE_TASK_ICON" class="gl-mr-3 gl-text-gray-700" />
-          <div>{{ child.title }}</div>
-          <gl-badge class="gl-ml-auto" :variant="badgeVariant(child.state)">
-            <span class="gl-display-none gl-sm-display-block">{{
-              $options.WORK_ITEM_STATUS_TEXT[child.state]
-            }}</span>
-          </gl-badge>
+          <div>
+            <gl-icon :name="$options.WIDGET_TYPE_TASK_ICON" class="gl-mr-3 gl-text-gray-700" />
+            <span class="gl-word-break-all">{{ child.title }}</span>
+          </div>
+          <div class="gl-ml-0 gl-sm-ml-auto! gl-mt-3 gl-sm-mt-0">
+            <gl-badge :variant="badgeVariant(child.state)">
+              <span class="gl-sm-display-block">{{
+                $options.WORK_ITEM_STATUS_TEXT[child.state]
+              }}</span>
+            </gl-badge>
+          </div>
         </div>
       </template>
     </div>

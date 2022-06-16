@@ -60,8 +60,7 @@ describe('WorkItemLinks', () => {
       expect(findEmptyState().exists()).toBe(true);
     });
 
-    // eslint-disable-next-line jest/no-disabled-tests
-    describe.skip('add link form', () => {
+    describe('add link form', () => {
       it('displays form on click add button and hides form on cancel', async () => {
         expect(findEmptyState().exists()).toBe(true);
 
@@ -78,8 +77,7 @@ describe('WorkItemLinks', () => {
     });
   });
 
-  // eslint-disable-next-line jest/no-disabled-tests
-  it.skip('renders all hierarchy widget children', () => {
+  it('renders all hierarchy widget children', () => {
     expect(findLinksBody().exists()).toBe(true);
 
     const children = wrapper.findAll('[data-testid="links-child"]');
