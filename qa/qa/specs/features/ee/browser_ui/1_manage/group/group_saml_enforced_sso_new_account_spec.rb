@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Manage', :group_saml, :orchestrated, requires_admin: 'for various user admin functions',
-                 feature_flag: { name: %w[group_administration_nav_item bootstrap_confirmation_modals], scope: :global } do
+  RSpec.describe 'Manage', :group_saml, :orchestrated, requires_admin: 'for various user admin functions', feature_flag: {
+    name: :group_administration_nav_item,
+    scope: :global
+  } do
     describe 'Group SAML SSO - Enforced SSO' do
       include Support::API
 
@@ -29,8 +31,6 @@ module QA
       let!(:group_sso_url) { Flow::Saml.enable_saml_sso(group, saml_idp_service, enforce_sso: true) }
 
       before do
-        Runtime::Feature.enable(:bootstrap_confirmation_modals)
-
         Page::Main::Menu.perform(&:sign_out_if_signed_in)
 
         Flow::Saml.logout_from_idp(saml_idp_service)
@@ -125,7 +125,7 @@ module QA
     end
 
     def visit_group_sso_url
-      Runtime::Logger.debug(%Q[Visiting managed_group_url at "#{group_sso_url}"])
+      Runtime::Logger.debug(%(Visiting managed_group_url at "#{group_sso_url}"))
 
       page.visit group_sso_url
       Support::Waiter.wait_until { current_url == group_sso_url }

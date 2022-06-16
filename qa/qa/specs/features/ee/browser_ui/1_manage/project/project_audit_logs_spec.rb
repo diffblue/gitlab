@@ -1,10 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Manage', feature_flag: {
-    name: 'bootstrap_confirmation_modals',
-    scope: :global
-  } do
+  RSpec.describe 'Manage' do
     shared_examples 'audit event' do |expected_events|
       it 'logs audit events for UI operations' do
         Page::Project::Menu.perform(&:go_to_audit_events_settings)
@@ -27,7 +24,6 @@ module QA
       end
 
       before do
-        Runtime::Feature.enable(:bootstrap_confirmation_modals)
         sign_in
       end
 
