@@ -2103,9 +2103,6 @@ msgstr ""
 msgid "Add a homepage to your wiki that contains information about your project and GitLab will display it here instead of this message."
 msgstr ""
 
-msgid "Add a horizontal rule"
-msgstr ""
-
 msgid "Add a new issue"
 msgstr ""
 
@@ -13173,6 +13170,9 @@ msgstr ""
 msgid "DevopsReport|Your usage"
 msgstr ""
 
+msgid "Diagram (%{language})"
+msgstr ""
+
 msgid "Did not delete the source branch."
 msgstr ""
 
@@ -18992,6 +18992,9 @@ msgstr ""
 msgid "Hook was successfully updated."
 msgstr ""
 
+msgid "Horizontal rule"
+msgstr ""
+
 msgid "Hostname"
 msgstr ""
 
@@ -24301,6 +24304,9 @@ msgstr ""
 msgid "Merging immediately isn't recommended as it may negatively impact the existing merge train. Read the %{docsLinkStart}documentation%{docsLinkEnd} for more information."
 msgstr ""
 
+msgid "Mermaid diagram"
+msgstr ""
+
 msgid "Message"
 msgstr ""
 
@@ -28520,6 +28526,9 @@ msgstr ""
 msgid "PlantUML URL"
 msgstr ""
 
+msgid "PlantUML diagram"
+msgstr ""
+
 msgid "Play"
 msgstr ""
 
@@ -28941,6 +28950,9 @@ msgid "Preview Markdown"
 msgstr ""
 
 msgid "Preview changes"
+msgstr ""
+
+msgid "Preview diagram"
 msgstr ""
 
 msgid "Preview payload"
