@@ -1,8 +1,0 @@
-input LocalPlanTagInput {
-  id: ID
-  isAddon: Boolean
-}
-
-input LocalUpdateStateInput {
-  selectedPlan: LocalPlanTagInput
-}
