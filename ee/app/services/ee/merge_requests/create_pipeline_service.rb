@@ -19,12 +19,7 @@ module EE
 
         result = ::MergeRequests::MergeabilityCheckService.new(merge_request).execute(recheck: true)
 
-        if result.success? &&
-            (
-              ::Feature.enabled?(:remove_mergeable_state_check, merge_request.target_project) ||
-              merge_request.mergeable_state?(skip_ci_check: true, skip_discussions_check: true)
-            )
-
+        if result.success?
           ref_payload = result.payload.fetch(:merge_ref_head)
 
           ::Ci::CreatePipelineService
