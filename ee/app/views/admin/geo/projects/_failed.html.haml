@@ -9,7 +9,7 @@
             %strong.text-truncate.flex-fill
               = link_to project_registry.project.full_name, admin_namespace_project_path(project_registry.project.namespace, project_registry.project)
             - if project_registry.candidate_for_redownload?
-              = link_to(force_redownload_admin_geo_project_path(project_registry), method: :post, class: 'gl-button btn btn-default btn-sm mr-2') do
+              = link_to(force_redownload_admin_geo_project_path(project_registry), method: :post, class: 'gl-button btn btn-default btn-sm gl-mr-3') do
                 = s_('Geo|Redownload')
             = link_to(resync_admin_geo_project_path(project_registry), method: :post, class: 'gl-button btn btn-default-primary btn-sm') do
               = s_('Geo|Resync')
