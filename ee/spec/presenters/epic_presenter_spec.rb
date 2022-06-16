@@ -60,18 +60,8 @@ RSpec.describe EpicPresenter do
       expect { presenter.show_data }.not_to exceed_query_limit(control_count)
     end
 
-    context 'when omit_epic_subscribed feature flag is enabled' do
-      it 'does not include subscribed in initial data' do
-        expect(Gitlab::Json.parse(presenter.show_data[:initial])).not_to include('subscribed')
-      end
-    end
-
-    context 'when omit_epic_subscribed feature flag is disabled' do
-      it 'includes subscribed in initial data' do
-        stub_feature_flags(omit_epic_subscribed: false)
-
-        expect(Gitlab::Json.parse(presenter.show_data[:initial])).to include('subscribed')
-      end
+    it 'does not include subscribed in initial data' do
+      expect(Gitlab::Json.parse(presenter.show_data[:initial])).not_to include('subscribed')
     end
   end
 
