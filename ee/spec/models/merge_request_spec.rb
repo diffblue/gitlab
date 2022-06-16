@@ -1392,23 +1392,55 @@ RSpec.describe MergeRequest do
       end
 
       context 'when running license_scanning ci job' do
-        context 'when merge request has denied policies' do
+        context 'when improved_mergeability_checks is disabled' do
           before do
-            allow(merge_request).to receive(:has_denied_policies?).and_return(true)
+            stub_feature_flags(improved_mergeability_checks: false)
           end
 
-          it 'is mergeable' do
-            is_expected.to be_truthy
+          context 'when merge request has denied policies' do
+            before do
+              allow(merge_request).to receive(:has_denied_policies?).and_return(true)
+            end
+
+            it 'is mergeable' do
+              is_expected.to be_truthy
+            end
+          end
+
+          context 'when merge request has no denied policies' do
+            before do
+              allow(merge_request).to receive(:has_denied_policies?).and_return(false)
+            end
+
+            it 'is mergeable' do
+              is_expected.to be_truthy
+            end
           end
         end
 
-        context 'when merge request has no denied policies' do
+        context 'when improved_mergeability_checks is enabled' do
           before do
-            allow(merge_request).to receive(:has_denied_policies?).and_return(false)
+            stub_feature_flags(improved_mergeability_checks: true)
           end
 
-          it 'is mergeable' do
-            is_expected.to be_truthy
+          context 'when merge request has denied policies' do
+            before do
+              allow(merge_request).to receive(:has_denied_policies?).and_return(true)
+            end
+
+            it 'is not mergeable' do
+              is_expected.to be_falsey
+            end
+          end
+
+          context 'when merge request has no denied policies' do
+            before do
+              allow(merge_request).to receive(:has_denied_policies?).and_return(false)
+            end
+
+            it 'is mergeable' do
+              is_expected.to be_truthy
+            end
           end
         end
       end
