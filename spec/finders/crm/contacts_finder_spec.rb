@@ -147,6 +147,7 @@ RSpec.describe Crm::ContactsFinder do
       context 'when searching for contacts ids' do
         it 'returns the expected contacts' do
           finder = described_class.new(user, group: search_test_group, ids: [search_test_b.id])
+
           expect(finder.execute).to match_array([search_test_b])
         end
       end

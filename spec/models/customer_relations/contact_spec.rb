@@ -226,23 +226,6 @@ RSpec.describe CustomerRelations::Contact, type: :model do
     end
   end
 
-  describe '.id_in' do
-    let_it_be(:contact_a) { create(:contact, group: group) }
-    let_it_be(:contact_b) { create(:contact, group: group) }
-
-    context 'when ids array is empty' do
-      it 'returns no contacts' do
-        expect(group.contacts.id_in([])).to be_empty
-      end
-    end
-
-    context 'when ids array has data' do
-      it 'returns only the requested contacts' do
-        expect(group.contacts.id_in([contact_b.id])).to contain_exactly(contact_b)
-      end
-    end
-  end
-
   describe '.sort_by_name' do
     let_it_be(:contact_a) { create(:contact, group: group, first_name: "c", last_name: "d") }
     let_it_be(:contact_b) { create(:contact, group: group, first_name: "a", last_name: "b") }

@@ -146,23 +146,6 @@ RSpec.describe CustomerRelations::Organization, type: :model do
     end
   end
 
-  describe '.id_in' do
-    let_it_be(:organization_a) { create(:organization, group: group) }
-    let_it_be(:organization_b) { create(:organization, group: group) }
-
-    context 'when ids array is empty' do
-      it 'returns no organizations' do
-        expect(group.organizations.id_in([])).to be_empty
-      end
-    end
-
-    context 'when ids array has data' do
-      it 'returns only the requested organizations' do
-        expect(group.organizations.id_in([organization_b.id])).to contain_exactly(organization_b)
-      end
-    end
-  end
-
   describe '.sort_by_name' do
     let_it_be(:organization_a) { create(:organization, group: group, name: "c") }
     let_it_be(:organization_b) { create(:organization, group: group, name: "a") }
