@@ -13346,6 +13346,7 @@ CREATE TABLE cluster_agents (
     project_id bigint NOT NULL,
     name text NOT NULL,
     created_by_user_id bigint,
+    has_vulnerabilities boolean DEFAULT false NOT NULL,
     CONSTRAINT check_3498369510 CHECK ((char_length(name) <= 255))
 );
 
@@ -27542,6 +27543,8 @@ CREATE INDEX index_cluster_agent_tokens_on_created_by_user_id ON cluster_agent_t
 CREATE UNIQUE INDEX index_cluster_agent_tokens_on_token_encrypted ON cluster_agent_tokens USING btree (token_encrypted);
 
 CREATE INDEX index_cluster_agents_on_created_by_user_id ON cluster_agents USING btree (created_by_user_id);
+
+CREATE INDEX index_cluster_agents_on_project_id_and_has_vulnerabilities ON cluster_agents USING btree (project_id, has_vulnerabilities);
 
 CREATE UNIQUE INDEX index_cluster_agents_on_project_id_and_name ON cluster_agents USING btree (project_id, name);
 
