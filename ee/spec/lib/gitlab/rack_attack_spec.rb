@@ -9,7 +9,7 @@ RSpec.describe Gitlab::RackAttack, :aggregate_failures do
     let(:fake_cache) { instance_double("Rack::Attack::Cache") }
 
     before do
-      allow(fake_rack_attack).to receive(:throttled_response=)
+      allow(fake_rack_attack).to receive(:throttled_responder=)
       allow(fake_rack_attack).to receive(:throttle)
       allow(fake_rack_attack).to receive(:track)
       allow(fake_rack_attack).to receive(:safelist)
