@@ -11,7 +11,10 @@ RSpec.describe Resolvers::PathLocksResolver do
   let(:user) { project.first_owner }
 
   describe '#resolve' do
-    subject(:resolve_path_locks) { resolve(described_class, obj: project, lookahead: positive_lookahead, ctx: { current_user: user }) }
+    subject(:resolve_path_locks) do
+      resolve(described_class, obj: project, lookahead: positive_lookahead, ctx: { current_user: user },
+              arg_style: :internal)
+    end
 
     context 'feature is not licensed' do
       before do

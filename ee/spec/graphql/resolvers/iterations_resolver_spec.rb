@@ -27,7 +27,7 @@ RSpec.describe Resolvers::IterationsResolver do
       let_it_be(:group) { create(:group, :private) }
 
       def resolve_group_iterations(args = {}, obj = group, context = { current_user: current_user })
-        resolve(described_class, obj: obj, args: args, ctx: context, arg_style: :internal_prepared)
+        resolve(described_class, obj: obj, args: args, ctx: context)
       end
 
       before do

@@ -239,6 +239,6 @@ RSpec.describe Resolvers::DoraMetricsResolver, time_travel_to: '2021-05-01' do
 
   def resolve_metrics
     context = { current_user: current_user }
-    resolve(described_class, obj: obj, args: args, ctx: context)
+    resolve(described_class, obj: obj, args: args, ctx: context, arg_style: :internal)
   end
 end

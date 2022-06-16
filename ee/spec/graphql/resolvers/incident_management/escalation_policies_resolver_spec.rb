@@ -68,6 +68,6 @@ RSpec.describe 'Resolvers::IncidentManagement::EscalationPoliciesResolver' do
   private
 
   def resolve_escalation_policies(args = {}, context = { current_user: current_user })
-    resolve(resolver, obj: project, args: args, ctx: context, arg_style: :internal_prepared)
+    resolve(resolver, obj: project, args: args, ctx: context)
   end
 end
