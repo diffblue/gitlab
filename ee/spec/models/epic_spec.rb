@@ -140,6 +140,16 @@ RSpec.describe Epic do
     it { is_expected.to validate_presence_of(:author) }
     it { is_expected.to validate_presence_of(:title) }
 
+    it { is_expected.to validate_presence_of(:total_opened_issue_weight) }
+    it { is_expected.to validate_presence_of(:total_closed_issue_weight) }
+    it { is_expected.to validate_presence_of(:total_opened_issue_count) }
+    it { is_expected.to validate_presence_of(:total_closed_issue_count) }
+
+    it { is_expected.to validate_numericality_of(:total_opened_issue_weight).only_integer }
+    it { is_expected.to validate_numericality_of(:total_closed_issue_weight).only_integer }
+    it { is_expected.to validate_numericality_of(:total_opened_issue_count).only_integer }
+    it { is_expected.to validate_numericality_of(:total_closed_issue_count).only_integer }
+
     it 'is valid with a valid parent' do
       epic = build(:epic, group: group, parent: create(:epic, group: group))
 
