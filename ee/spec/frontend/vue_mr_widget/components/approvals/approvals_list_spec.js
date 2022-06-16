@@ -2,6 +2,7 @@ import { shallowMount } from '@vue/test-utils';
 import ApprovalsList from 'ee/vue_merge_request_widget/components/approvals/approvals_list.vue';
 import ApprovedIcon from 'ee/vue_merge_request_widget/components/approvals/approved_icon.vue';
 import UserAvatarList from '~/vue_shared/components/user_avatar/user_avatar_list.vue';
+import NumberOfApprovals from 'ee/vue_merge_request_widget/components/approvals/number_of_approvals.vue';
 
 const testApprovers = () => Array.from({ length: 11 }, (_, i) => i).map((id) => ({ id }));
 const testRuleApproved = () => ({
@@ -55,13 +56,14 @@ const testRuleCodeOwner = () => ({
   section: 'Frontend',
 });
 const testRules = () => [testRuleApproved(), testRuleUnapproved(), testRuleOptional()];
+const testInvalidRules = () => testRules().slice(0, 1);
 
 describe('EE MRWidget approvals list', () => {
   let wrapper;
 
   const createComponent = (props = {}) => {
     wrapper = shallowMount(ApprovalsList, {
-      propsData: props,
+      propsData: { invalidApproversRules: testInvalidRules(), ...props },
     });
   };
 
@@ -151,10 +153,12 @@ describe('EE MRWidget approvals list', () => {
       );
     });
 
-    it('renders pending text', () => {
-      const pendingText = findRowElement(row, 'pending').text();
+    it('renders pending object (instance of NumberOfApprovals)', () => {
+      const pendingObject = findRowElement(row, 'pending');
+      const numberOfApprovals = pendingObject.find(NumberOfApprovals);
 
-      expect(pendingText).toEqual(`${rule.approved_by.length} of ${rule.approvals_required}`);
+      expect(numberOfApprovals.exists()).toBe(true);
+      expect(numberOfApprovals.props('invalidApproversRules')).toEqual(testInvalidRules());
     });
 
     it('renders approved_by user avatar list', () => {
@@ -275,10 +279,10 @@ describe('EE MRWidget approvals list', () => {
       );
     });
 
-    it('renders optional pending text', () => {
-      const pending = findRowElement(row, 'pending');
+    it('renders pending object (instance of NumberOfApprovals)', () => {
+      const pendingObject = findRowElement(row, 'pending');
 
-      expect(pending.text()).toEqual('Optional');
+      expect(pendingObject.find(NumberOfApprovals).exists()).toBe(true);
     });
 
     it('renders optional summary text', () => {
