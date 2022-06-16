@@ -39,16 +39,13 @@ export default {
     };
   },
   computed: {
-    options() {
-      return this.clusterAgents;
-    },
     filterObject() {
       // This is passed to the vulnerability list's GraphQL query as a variable.
       return { clusterAgentId: this.selectedOptions.map((x) => x.gid) };
     },
   },
   watch: {
-    options() {
+    clusterAgents() {
       this.processQuerystringIds();
     },
   },
@@ -68,7 +65,7 @@ export default {
       @click="deselectAllOptions"
     />
     <filter-item
-      v-for="option in options"
+      v-for="option in clusterAgents"
       :key="option.id"
       :is-checked="isSelected(option)"
       :text="option.id"

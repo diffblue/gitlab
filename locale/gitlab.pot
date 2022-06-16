@@ -34113,9 +34113,6 @@ msgstr ""
 msgid "SecurityOrchestration|Failed to load cluster agents."
 msgstr ""
 
-msgid "SecurityOrchestration|Group level policy"
-msgstr ""
-
 msgid "SecurityOrchestration|If any scanner finds a newly detected critical vulnerability in an open merge request targeting the master branch, then require two approvals from any member of App security."
 msgstr ""
 
