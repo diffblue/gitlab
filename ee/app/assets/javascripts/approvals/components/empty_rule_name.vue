@@ -18,9 +18,9 @@ export default {
 </script>
 
 <template>
-  <div class="d-flex align-items-center">
-    <span class="mt-n1">{{ __('Eligible users') }}</span>
-    <span id="popovercontainer" class="ml-2 align-self-end">
+  <div class="gl-display-flex gl-align-items-center">
+    <span class="gl-mt-n2">{{ __('Eligible users') }}</span>
+    <span id="popovercontainer" class="gl-ml-3 gl-align-self-end">
       <gl-icon
         id="pop-approver"
         tabindex="0"
@@ -31,7 +31,7 @@ export default {
       />
       <gl-popover target="pop-approver" container="popovercontainer" placement="top">
         <template #title>{{ __('Who can approve?') }}</template>
-        <ul class="pl-3">
+        <ul class="gl-pl-5">
           <li>
             {{ __('Any member with at least Developer permissions on the project.') }}
           </li>
