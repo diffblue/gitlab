@@ -73,6 +73,16 @@ class ProjectMember < Member
       truncate_teams [project.id]
     end
 
+    # For those who get to see a modal with a role dropdown, here are the options presented
+    def permissible_access_level_roles(current_user, project)
+      # This method is a stopgap in preparation for https://gitlab.com/gitlab-org/gitlab/-/issues/364087
+      if Ability.allowed?(current_user, :manage_owners, project)
+        Gitlab::Access.options_with_owner
+      else
+        ProjectMember.access_level_roles
+      end
+    end
+
     def access_level_roles
       Gitlab::Access.options
     end
