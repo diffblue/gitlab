@@ -113,7 +113,7 @@ export default {
           <li>{{ getTimeAgoString(items.item.created_at) }}</li>
           <li v-if="items.item.milestone">
             <span class="d-flex align-items-center">
-              <gl-icon name="clock" class="mr-2" />
+              <gl-icon name="clock" class="gl-mr-2" />
               {{ items.item.milestone.title }}
             </span>
           </li>
