@@ -2,7 +2,7 @@
 
 %section.settings#js-add-license-toggle{ class: ('expanded' if expanded_by_default?) }
   .settings-header{ data: { testid: 'expand_add_license_header' } }
-    %h4
+    %h4.settings-title.js-settings-toggle.js-settings-toggle-trigger-only
       = _('Add License')
     = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle', data: { qa_selector: 'expand_add_license_button' } }) do
       = expanded_by_default? ? 'Collapse' : 'Expand'
