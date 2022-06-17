@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Database::BackgroundMigration::Adapt::AutovacuumActiveOnTable do
+RSpec.describe Gitlab::Database::BackgroundMigration::HealthStatus::Indicators::AutovacuumActiveOnTable do
   include Database::DatabaseHelpers
 
   let(:connection) { Gitlab::Database.database_base_models[:main].connection }
@@ -20,13 +20,13 @@ RSpec.describe Gitlab::Database::BackgroundMigration::Adapt::AutovacuumActiveOnT
       swapout_view_for_table(:postgres_autovacuum_activity)
     end
 
-    let(:context) { Gitlab::Database::BackgroundMigration::Adapt::Context.new(tables) }
+    let(:context) { Gitlab::Database::BackgroundMigration::HealthStatus::Context.new(tables) }
     let(:tables) { [table] }
     let(:table) { 'users' }
 
     context 'without autovacuum activity' do
       it 'returns Normal signal' do
-        expect(subject).to be_a(Gitlab::Database::BackgroundMigration::Adapt::NormalSignal)
+        expect(subject).to be_a(Gitlab::Database::BackgroundMigration::HealthStatus::Signals::Normal)
       end
 
       it 'remembers the indicator class' do
@@ -40,7 +40,7 @@ RSpec.describe Gitlab::Database::BackgroundMigration::Adapt::AutovacuumActiveOnT
       end
 
       it 'returns Stop signal' do
-        expect(subject).to be_a(Gitlab::Database::BackgroundMigration::Adapt::StopSignal)
+        expect(subject).to be_a(Gitlab::Database::BackgroundMigration::HealthStatus::Signals::Stop)
       end
 
       it 'explains why' do
@@ -52,9 +52,9 @@ RSpec.describe Gitlab::Database::BackgroundMigration::Adapt::AutovacuumActiveOnT
       end
 
       it 'returns NoSignal signal in case the feature flag is disabled' do
-        stub_feature_flags(batched_migrations_adapt_on_autovacuum: false)
+        stub_feature_flags(batched_migrations_health_status_autovacuum: false)
 
-        expect(subject).to be_a(Gitlab::Database::BackgroundMigration::Adapt::NoSignal)
+        expect(subject).to be_a(Gitlab::Database::BackgroundMigration::HealthStatus::Signals::NotAvailable)
       end
     end
   end

@@ -29,11 +29,7 @@ module Gitlab
           if next_batched_job = find_or_create_next_batched_job(active_migration)
             migration_wrapper.perform(next_batched_job)
 
-            if Feature.enabled?(:adapt_batched_migrations, type: :development)
-              active_migration.adapt!
-            else
-              active_migration.optimize!
-            end
+            adjust_migration(active_migration)
 
             active_migration.failure! if next_batched_job.failed? && active_migration.should_stop?
           else
@@ -142,6 +138,15 @@ module Gitlab
             run_migration_job(migration)
 
             migration.reload_last_job
+          end
+        end
+
+        def adjust_migration(active_migration)
+          case HealthStatus.evaluate(active_migration)
+          when HealthStatus::Signals::Stop
+            active_migration.hold!
+          when HealthStatus::Signals::Normal, HealthStatus::Signals::NotAvailable
+            active_migration.optimize!
           end
         end
       end

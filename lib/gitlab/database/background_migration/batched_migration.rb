@@ -199,19 +199,14 @@ module Gitlab
           BatchOptimizer.new(self).optimize!
         end
 
-        # Adapt migration parameters to prevailing system state
-        def adapt!
-          Adapt.adapt!(self)
-        end
-
-        def adapt_context
-          Adapt::Context.new([table_name])
+        def health_context
+          HealthStatus::Context.new([table_name])
         end
 
         def hold!(until_time: 10.minutes.from_now)
           duration_s = (until_time - Time.current).round
           Gitlab::AppLogger.info(
-            message: "Batched migration #{id} put on hold until #{until_time}",
+            message: "#{self} put on hold until #{until_time}",
             migration_id: id,
             duration_s: duration_s
           )

@@ -15,7 +15,8 @@ RSpec.describe Gitlab::Database::BackgroundMigration::BatchedMigrationRunner do
   end
 
   before do
-    allow(Gitlab::Database::BackgroundMigration::Adapt).to receive(:adapt!)
+    allow(Gitlab::Database::BackgroundMigration::HealthStatus).to receive(:evaluate)
+      .and_return(Gitlab::Database::BackgroundMigration::HealthStatus::Signals::Normal)
   end
 
   describe '#run_migration_job' do
@@ -63,33 +64,47 @@ RSpec.describe Gitlab::Database::BackgroundMigration::BatchedMigrationRunner do
             sub_batch_size: migration.sub_batch_size)
         end
 
-        context 'with adapt_batched_migrations enabled' do
+        context 'migration health' do
+          let(:health_status) { Gitlab::Database::BackgroundMigration::HealthStatus }
+          let(:stop_signal) { health_status::Signals::Stop.new(:indicator, reason: 'Take a break') }
+          let(:normal_signal) { health_status::Signals::Normal.new(:indicator, reason: 'All good') }
+          let(:not_available_signal) { health_status::Signals::NotAvailable.new(:indicator, reason: 'Indicator is disabled') }
+          let(:unknown_signal) { health_status::Signals::Unknown.new(:indicator, reason: 'Something went wrong') }
+
           before do
-            stub_feature_flags(adapt_batched_migrations: true)
-          end
-
-          it 'runs the adapt framework after executing the job' do
             migration.update!(min_value: event1.id, max_value: event2.id)
-
-            expect(migration_wrapper).to receive(:perform).ordered
-            expect(migration).to receive(:adapt!).ordered
-
-            runner.run_migration_job(migration)
-          end
-        end
-
-        context 'without adapt_batched_migrations enabled' do
-          before do
-            stub_feature_flags(adapt_batched_migrations: false)
+            expect(migration_wrapper).to receive(:perform)
           end
 
-          it 'runs optimizes after executing the job' do
-            migration.update!(min_value: event1.id, max_value: event2.id)
+          it 'puts migration on hold on stop signal' do
+            expect(health_status).to receive(:evaluate).and_return(stop_signal)
 
-            expect(migration_wrapper).to receive(:perform).ordered
-            expect(migration).to receive(:optimize!).ordered
+            expect { runner.run_migration_job(migration) }.to change { migration.on_hold? }
+              .from(false).to(true)
+          end
 
-            runner.run_migration_job(migration)
+          it 'optimizes migration on normal signal' do
+            expect(health_status).to receive(:evaluate).and_return(normal_signal)
+
+            expect(migration).to receive(:optimize!)
+
+            expect { runner.run_migration_job(migration) }.not_to change { migration.on_hold? }
+          end
+
+          it 'optimizes migration on no signal' do
+            expect(health_status).to receive(:evaluate).and_return(not_available_signal)
+
+            expect(migration).to receive(:optimize!)
+
+            expect { runner.run_migration_job(migration) }.not_to change { migration.on_hold? }
+          end
+
+          it 'does nothing on unknown signal' do
+            expect(health_status).to receive(:evaluate).and_return(unknown_signal)
+
+            expect(migration).not_to receive(:optimize!)
+
+            expect { runner.run_migration_job(migration) }.not_to change { migration.on_hold? }
           end
         end
       end
