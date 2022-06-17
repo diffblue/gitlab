@@ -42,6 +42,7 @@ const mockEpics = new Array(5)
 const mockProvide = {
   canCreateEpic: true,
   canBulkEditEpics: true,
+  hasScopedLabelsFeature: true,
   page: 1,
   prev: '',
   next: '',

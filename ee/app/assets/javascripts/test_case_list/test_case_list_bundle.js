@@ -24,6 +24,7 @@ const initTestCaseList = ({ mountPointSelector }) => {
 
   const {
     canCreateTestCase,
+    hasScopedLabelsFeature,
     page = 1,
     prev = '',
     next = '',
@@ -46,6 +47,7 @@ const initTestCaseList = ({ mountPointSelector }) => {
     provide: {
       ...mountPointEl.dataset,
       canCreateTestCase: parseBoolean(canCreateTestCase),
+      hasScopedLabelsFeature: parseBoolean(hasScopedLabelsFeature),
       page: parseInt(page, 10),
       prev,
       next,
