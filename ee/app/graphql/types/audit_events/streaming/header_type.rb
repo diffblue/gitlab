@@ -2,14 +2,14 @@
 
 # Headers are only available through destinations
 # which are already authorized.
-#
-# rubocop:disable Graphql/AuthorizeTypes
 module Types
   module AuditEvents
     module Streaming
       class HeaderType < ::Types::BaseObject
         graphql_name 'AuditEventStreamingHeader'
         description 'Represents a HTTP header key/value that belongs to an audit streaming destination.'
+
+        authorize :admin_external_audit_events
 
         field :id, GraphQL::Types::ID,
               null: false,
@@ -26,4 +26,3 @@ module Types
     end
   end
 end
-# rubocop:enable Graphql/AuthorizeTypes
