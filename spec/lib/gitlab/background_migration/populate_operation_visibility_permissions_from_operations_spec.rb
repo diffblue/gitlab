@@ -51,13 +51,6 @@ RSpec.describe Gitlab::BackgroundMigration::PopulateOperationVisibilityPermissio
     expect_project_features_match_operations_access_level(record3)
   end
 
-  it 'marks the job as succeeded' do
-    expect(Gitlab::Database::BackgroundMigrationJob).to receive(:mark_all_as_succeeded)
-      .with('PopulateOperationVisibilityPermissionsFromOperations', [record1.id, record3.id])
-
-    perform
-  end
-
   private
 
   def expect_project_features_match_operations_access_level(record)

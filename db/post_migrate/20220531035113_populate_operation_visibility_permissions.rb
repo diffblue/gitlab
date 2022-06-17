@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 class PopulateOperationVisibilityPermissions < Gitlab::Database::Migration[2.0]
-  BATCH_SIZE = 100_000
-  MAX_BATCH_SIZE = 100_000
-  SUB_BATCH_SIZE = 20_000
+  BATCH_SIZE = 50_000
+  MAX_BATCH_SIZE = 50_000
+  SUB_BATCH_SIZE = 1_000
   INTERVAL = 2.minutes
   MIGRATION = 'PopulateOperationVisibilityPermissionsFromOperations'
 

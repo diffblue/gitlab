@@ -3,6 +3,8 @@
 class AddOperationsAccessLevelsToProjectFeature < Gitlab::Database::Migration[2.0]
   OPERATIONS_DEFAULT_VALUE = 20
 
+  enable_lock_retries!
+
   # rubocop:disable Layout/LineLength
   def up
     add_column :project_features, :monitor_access_level, :integer, null: false, default: OPERATIONS_DEFAULT_VALUE
