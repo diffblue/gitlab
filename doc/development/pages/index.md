@@ -187,22 +187,20 @@ GitLab Pages access control is disabled by default. To enable it:
 
 ### Enabling object storage
 
-GitLab Pages support the use of object storage for storing artifacts.
+GitLab Pages support using object storage for storing artifacts, but object storage
+is disabled by default. You can enable it in the GDK:
 
-Object storage is disabled by default. To enable it:
+1. Edit `gdk.yml` to enable the object storage in GitLab itself:
 
-1. Enable the object storage in GitLab itself, which can be done by:
-   - Editing `gdk.yml` if you're using GDK:
+   ```yaml
+   # $GDK_ROOT/gdk.yml
+   object_store:
+     enabled: true
+   ```
 
-     ```yaml
-     # $GDK_ROOT/gdk.yml
-     object_store:
-       enabled: true
-     ```
+1. Reconfigure and restart GitLab by running the commands `gdk reconfigure` and `gdk restart`.
 
-1. Reconfigure and restart GitLab (if running through the GDK, run `gdk reconfigure` and `gdk restart`).
-
-For more information check GDK [documentation](https://gitlab.com/gitlab-org/gitlab-development-kit/-/blob/main/doc/configuration.md#object-storage-configuration).
+For more information, refer to the [GDK documentation](https://gitlab.com/gitlab-org/gitlab-development-kit/-/blob/main/doc/configuration.md#object-storage-configuration).
 
 ## Linting
 
