@@ -3,10 +3,8 @@
 module QA
   RSpec.describe 'Manage' do
     describe 'Project templates' do
-      include Support::API
-
-      before(:all) do
-        @files = [
+      let(:files) do
+        [
           {
             name: 'file.txt',
             content: 'foo'
@@ -16,22 +14,28 @@ module QA
             content: 'bar'
           }
         ]
+      end
 
-        @template_container_group_name = "instance-template-container-group-#{SecureRandom.hex(8)}"
+      let(:template_container_group_name) { "instance-template-container-group-#{SecureRandom.hex(8)}" }
 
-        template_container_group = QA::Resource::Group.fabricate_via_api! do |group|
-          group.path = @template_container_group_name
+      let(:template_container_group) do
+        QA::Resource::Group.fabricate_via_api! do |group|
+          group.path = template_container_group_name
           group.description = 'Instance template container group'
         end
+      end
 
-        @template_project = Resource::Project.fabricate_via_api! do |project|
+      let(:template_project) do
+        Resource::Project.fabricate_via_api! do |project|
           project.name = 'template-project-1'
           project.group = template_container_group
         end
+      end
 
+      before do
         Resource::Repository::ProjectPush.fabricate! do |push|
-          push.project = @template_project
-          push.files = @files
+          push.project = template_project
+          push.files = files
           push.commit_message = 'Add test files'
         end
       end
@@ -39,14 +43,12 @@ module QA
       context 'built-in', :requires_admin do
         before do
           Flow::Login.sign_in_as_admin
-
-          @group = Resource::Group.fabricate_via_api!
         end
 
         it 'successfully imports the project using template', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347932' do
           built_in = 'Ruby on Rails'
 
-          @group.visit!
+          Resource::Group.fabricate_via_api!.visit!
           Page::Group::Show.perform(&:go_to_new_project)
 
           QA::Flow::Project.go_to_create_project_from_template
@@ -81,13 +83,13 @@ module QA
             Page::Admin::Menu.perform(&:go_to_template_settings)
 
             EE::Page::Admin::Settings::Templates.perform do |templates|
-              templates.choose_custom_project_template("#{@template_container_group_name}")
+              templates.choose_custom_project_template("#{template_container_group_name}")
             end
 
             Page::Admin::Menu.perform(&:go_to_template_settings)
 
             EE::Page::Admin::Settings::Templates.perform do |templates|
-              Support::Waiter.wait_until(max_duration: 10) { templates.current_custom_project_template.include? @template_container_group_name }
+              Support::Waiter.wait_until(max_duration: 10) { templates.current_custom_project_template.include? template_container_group_name }
             end
           end
 
@@ -104,18 +106,18 @@ module QA
             new_page.retry_until(reload: true) do
               new_page.go_to_create_from_template_instance_tab
               expect(new_page.instance_template_tab_badge_text).to eq "1"
-              new_page.has_text?(@template_project.name)
+              new_page.has_text?(template_project.name)
             end
           end
 
           create_project_using_template(project_name: 'Project using instance level project template',
             namespace: Runtime::Namespace.path,
-            template_name: @template_project.name)
+            template_name: template_project.name)
 
           Page::Project::Show.perform do |project|
             project.wait_for_import_success
 
-            @files.each do |file|
+            files.each do |file|
               expect(project).to have_file(file[:name])
             end
           end
@@ -132,13 +134,13 @@ module QA
           Page::Group::Menu.perform(&:click_settings)
 
           Page::Group::Settings::General.perform do |settings|
-            settings.choose_custom_project_template("#{@template_container_group_name}")
+            settings.choose_custom_project_template("#{template_container_group_name}")
           end
 
           Page::Group::Menu.perform(&:click_settings)
 
           Page::Group::Settings::General.perform do |settings|
-            expect(settings.current_custom_project_template).to include @template_container_group_name
+            expect(settings.current_custom_project_template).to include template_container_group_name
           end
 
           group = Resource::Group.fabricate_via_api!
@@ -156,27 +158,21 @@ module QA
         it 'successfully imports the project using template', except: :production, testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347933' do
           Page::Project::New.perform do |new_page|
             expect(new_page.group_template_tab_badge_text).to eq "1"
-            expect(new_page).to have_text(@template_container_group_name)
-            expect(new_page).to have_text(@template_project.name)
+            expect(new_page).to have_text(template_container_group_name)
+            expect(new_page).to have_text(template_project.name)
           end
 
           create_project_using_template(project_name: 'Project using group level project template',
             namespace: Runtime::Namespace.sandbox_name,
-            template_name: @template_project.name)
+            template_name: template_project.name)
 
           Page::Project::Show.perform do |project|
             project.wait_for_import_success
-            @project_id = project.project_id
 
-            @files.each do |file|
+            files.each do |file|
               expect(project).to have_file(file[:name])
             end
           end
-        end
-
-        after do
-          api_client = Runtime::API::Client.new(:gitlab)
-          delete Runtime::API::Request.new(api_client, "/projects/#{@project_id}").url
         end
       end
 
