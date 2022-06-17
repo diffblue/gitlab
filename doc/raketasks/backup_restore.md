@@ -753,3 +753,190 @@ If this happens, examine the following:
 - Confirm there is sufficient disk space for the Gzip operation.
 - If NFS is being used, check if the mount option `timeout` is set. The
   default is `600`, and changing this to smaller values results in this error.
+
+### `gitaly-backup` for repository backup and restore
+
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/333034) in GitLab 14.2.
+> - [Deployed behind a feature flag](../user/feature_flags.md), enabled by default.
+> - [Generally available](https://gitlab.com/gitlab-org/gitlab/-/issues/333034) in GitLab 14.10. [Feature flag `gitaly_backup`](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/83254) removed.
+
+The `gitaly-backup` binary is used by the backup Rake task to create and restore repository backups from Gitaly.
+`gitaly-backup` replaces the previous backup method that directly calls RPCs on Gitaly from GitLab.
+
+The backup Rake task must be able to find this executable. In most cases, you don't need to change
+the path to the binary as it should work fine with the default path `/opt/gitlab/embedded/bin/gitaly-backup`.
+If you have a specific reason to change the path, it can be configured in Omnibus GitLab packages:
+
+1. Add the following to `/etc/gitlab/gitlab.rb`:
+
+   ```ruby
+   gitlab_rails['backup_gitaly_backup_path'] = '/path/to/gitaly-backup'
+   ```
+
+1. [Reconfigure GitLab](../administration/restart_gitlab.md#omnibus-gitlab-reconfigure)
+   for the changes to take effect
+
+### Backup fails with `File name too long` error
+
+During backup, you can get the `File name too long` error ([issue #354984](https://gitlab.com/gitlab-org/gitlab/-/issues/354984)). For example:
+
+```plaintext
+Problem: <class 'OSError: [Errno 36] File name too long: '/srv/gitlab/tmp/uploads/@hashed/71/ee/71ee45a3c0db9a9865f7313dd3372cf60dca6479d46261f3542eb9346e4a04d6/028acbe35bbe90de09dc21d3d4159916/.s3cmd.9lj_ex2h.tmp' -> b'/srv/gitlab/tmp/uploads/@hashed/71/ee/71ee45a3c0db9a9865f7313dd3372cf60dca6479d46261f3542eb9346e4a04d6/028acbe35bbe90de09dc21d3d4159916/url_sa_i_url_https_3A_2F_2Fwww.latintimes.com_2Fburn-notice-series-finale-spoilers-how-did-it-all-end-and-which-characters-survived-explosive-finale_psig_AOvVaw2d2_5UBy4dGKayGeDAmyhT_ust_1622228720698000_source_images_cd_vfe_ved_0CAIQjRxqFwoTCODh84vH6vACFQAAAAAdAAAAABAD'
+```
+
+To fix this problem, you will need to truncate the filenames (a maximum of 246 characters might work)
+in the following places:
+
+- In the `uploads` table.
+- In the references found.
+- On the filesystem.
+
+To truncate the filenames causing the problem:
+
+1. As a prior step, you need to cleanup all remote uploaded files that are in the storage but not persisted in the `uploads` table. The following task will show you all the object store upload files that could be moved to a lost and found directory.
+    if they don't exist in the GitLab database.
+
+    ```shell
+    bundle exec rake gitlab:cleanup:remote_upload_files RAILS_ENV=production
+    ```
+
+**WARNING: If you are sure to delete these files and remove all non-referenced uploaded files, then run the following:**
+
+   ```shell
+   bundle exec rake gitlab:cleanup:remote_upload_files RAILS_ENV=production DRY_RUN=false
+   ```
+
+1. Truncate the filenames in the `uploads` table
+   1. Enter the database console:
+
+      For Omnibus GitLab 14.1 and earlier:
+
+      ```shell
+      sudo gitlab-rails dbconsole
+      ```
+
+      For Omnibus GitLab 14.2 and later:
+
+      ```shell
+      sudo gitlab-rails dbconsole --database main
+      ```
+
+      For installations from source, GitLab 14.1 and earlier:
+
+      ```shell
+      sudo -u git -H bundle exec rails dbconsole -e production
+      ```
+
+      For installations from source, GitLab 14.2 and later:
+
+      ```shell
+      sudo -u git -H bundle exec rails dbconsole -e production --database main
+      ```
+
+   1. Search on the `uploads` table for filenames longer than 250 characters:
+
+       ```sql
+         WITH uploads_with_long_filenames AS (
+            SELECT * FROM uploads AS u
+            WHERE LENGTH((regexp_match(u.path, '[^\\/:*?"<>|\r\n]+$'))[1]) > 250
+         )
+         SELECT
+            u.id,
+            u.path,
+            -- Current filename
+            (regexp_match(u.path, '[^\\/:*?"<>|\r\n]+$'))[1] AS current_filename,
+            -- New filename
+            CONCAT(
+               LEFT(SPLIT_PART((regexp_match(u.path, '[^\\/:*?"<>|\r\n]+$'))[1], '.', 1), 242),
+               COALESCE(SUBSTRING((regexp_match(u.path, '[^\\/:*?"<>|\r\n]+$'))[1] FROM '\.(?:.(?!\.))+$'))
+            ) AS new_filename,
+            -- New path
+            CONCAT(
+               COALESCE((regexp_match(u.path, '(.*\/).*'))[1], ''),
+               CONCAT(
+                  LEFT(SPLIT_PART((regexp_match(u.path, '[^\\/:*?"<>|\r\n]+$'))[1], '.', 1), 242),
+                  COALESCE(SUBSTRING((regexp_match(u.path, '[^\\/:*?"<>|\r\n]+$'))[1] FROM '\.(?:.(?!\.))+$'))
+               )
+            ) AS new_path
+         FROM (SELECT * FROM uploads_with_long_filenames) AS u;
+       ```
+
+       Where:
+
+       - `current_filename`: a filename that is currently more than 250 characters long.
+       - `new_filename`: a filename that has been truncated to 246 characters maximum.
+       - `new_path`: new path considering the new_filename (truncated).
+
+   1. Rename the `uploads` found from long filenames to new filenames truncated.
+
+      The following query will rollback the update so you can check the results within a transaction wrapper safely:
+
+      ```sql
+      BEGIN;
+      WITH uploads_with_long_filenames AS (
+         SELECT * FROM uploads AS u
+         WHERE LENGTH((regexp_match(u.path, '[^\\/:*?"<>|\r\n]+$'))[1]) > 250),
+      updated_uploads AS (
+         UPDATE uploads
+         SET
+            path =
+            CONCAT(
+               COALESCE((regexp_match(updatable_uploads.path, '(.*\/).*'))[1], ''),
+               CONCAT(
+                  LEFT(SPLIT_PART((regexp_match(updatable_uploads.path, '[^\\/:*?"<>|\r\n]+$'))[1], '.', 1), 242),
+                  COALESCE(SUBSTRING((regexp_match(updatable_uploads.path, '[^\\/:*?"<>|\r\n]+$'))[1] FROM '\.(?:.(?!\.))+$'))
+               )
+            )
+         FROM
+            uploads_with_long_filenames AS updatable_uploads
+         WHERE
+            uploads.id = updatable_uploads.id
+         RETURNING uploads.*
+      )
+      SELECT id, path FROM updated_uploads;
+      ROLLBACK;
+      ```
+
+      WARNING: The following command truncates the records found from the previous step to 246 characters maximum. Validate that the new filenames from the last query are the expected ones first.
+
+      ```sql
+      WITH uploads_with_long_filenames AS (
+         SELECT * FROM uploads AS u
+         WHERE LENGTH((regexp_match(u.path, '[^\\/:*?"<>|\r\n]+$'))[1]) > 250
+      )
+      UPDATE uploads
+      SET path =
+         CONCAT(
+            COALESCE((regexp_match(updatable_uploads.path, '(.*\/).*'))[1], ''),
+            CONCAT(
+               LEFT(SPLIT_PART((regexp_match(updatable_uploads.path, '[^\\/:*?"<>|\r\n]+$'))[1], '.', 1), 242),
+               COALESCE(SUBSTRING((regexp_match(updatable_uploads.path, '[^\\/:*?"<>|\r\n]+$'))[1] FROM '\.(?:.(?!\.))+$'))
+            )
+         )
+      FROM uploads_with_long_filenames AS updatable_uploads
+      WHERE uploads.id = updatable_uploads.id;
+      ```
+
+1. Truncate the filenames in the references found.
+   1. Check if those records are referenced somewhere:
+
+      An easy way of doing this is to dump the database and search for the parent directory name + filename.
+      For dumping your database, you can use the following command as an example:
+
+      ```shell
+       pg_dump -h /var/opt/gitlab/postgresql/ -d gitlabhq_production > gitlab-dump.tmp
+      ```
+
+      Then you can search for the references using the `grep` command. Combining the parent directory and the filename
+      can be a good idea, for example:
+
+      ```shell
+        grep public/alongfilenamehere.txt gitlab-dump.tmp
+      ```
+
+   1. Replace those long filenames using the new filenames from the query output from step 4.
+
+1. Truncate the filenames on the filesystem.
+   1. In this step, you will need to manually change in your filesystem the new filenames using the query provided in step 4.
+
+1. Re-run the backup task.
