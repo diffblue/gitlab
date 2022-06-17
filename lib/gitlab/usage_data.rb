@@ -67,13 +67,17 @@ module Gitlab
       # rubocop: disable Metrics/AbcSize
       # rubocop: disable CodeReuse/ActiveRecord
       def system_usage_data
-        issues_created_manually_from_alerts = count(Issue.with_alert_management_alerts.not_authored_by(::User.alert_bot), start: minimum_id(Issue), finish: maximum_id(Issue))
+        issues_created_manually_from_alerts = if Gitlab.com?
+                                                FALLBACK
+                                              else
+                                                count(Issue.with_alert_management_alerts.not_authored_by(::User.alert_bot), start: minimum_id(Issue), finish: maximum_id(Issue))
+                                              end
 
         {
           counts: {
             assignee_lists: count(List.assignee),
             ci_builds: count(::Ci::Build),
-            ci_internal_pipelines: count(::Ci::Pipeline.internal),
+            ci_internal_pipelines: Gitlab.com? ? FALLBACK : count(::Ci::Pipeline.internal),
             ci_external_pipelines: count(::Ci::Pipeline.external),
             ci_pipeline_config_auto_devops: count(::Ci::Pipeline.auto_devops_source),
             ci_pipeline_config_repository: count(::Ci::Pipeline.repository_source),
