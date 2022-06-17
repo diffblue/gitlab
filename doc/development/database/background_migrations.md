@@ -65,7 +65,7 @@ and idempotent.
 See [Sidekiq best practices guidelines](https://github.com/mperham/sidekiq/wiki/Best-Practices)
 for more details.
 
-Make sure that in case that your migration job is retried data
+Make sure that in case that your migration job is retried, data
 integrity is guaranteed.
 
 ## Background migrations for EE-only features
@@ -254,7 +254,7 @@ class ScheduleExtractIntegrationsUrl < Gitlab::Database::Migration[1.0]
 end
 ```
 
-Once deployed our application continues using the data as before but at the
+After deployed our application continues using the data as before, but at the
 same time ensures that both existing and new data is migrated.
 
 In the next release we can remove the `after_commit` hooks and related code. We
@@ -292,7 +292,7 @@ If the application does not depend on the data being 100% migrated (for
 instance, the data is advisory, and not mission-critical), then this final step
 can be skipped.
 
-This migration then processes any jobs for the ExtractIntegrationsUrl migration
+This migration then processes any jobs for the `ExtractIntegrationsUrl` migration
 and continue once all jobs have been processed. Once done you can safely remove
 the `integrations.properties` column.
 

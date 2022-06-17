@@ -615,7 +615,7 @@ using the following steps:
 1. Create a new partition, where the `VALUE` for the partition is `CURRENT_PARTITION + 1`.
 1. Update the default value of the `partition` column to `CURRENT_PARTITION + 1`.
 
-With these steps, new `INSERT`-s via the triggers end up in the new partition. At this point,
+With these steps, all new `INSERT` queries via the triggers end up in the new partition. At this point,
 the database table has two partitions.
 
 The `detach_partition_if` callback determines if the old partitions can be detached from the table.
