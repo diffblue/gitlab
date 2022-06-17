@@ -1,0 +1,8 @@
+---
+name: incident_resource_links_widget
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/88826
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/364755
+milestone: '15.1'
+type: development
+group: group::respond
+default_enabled: false

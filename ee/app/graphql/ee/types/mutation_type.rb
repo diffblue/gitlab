@@ -76,6 +76,7 @@ module EE
         mount_mutation ::Mutations::IncidentManagement::EscalationPolicy::Create
         mount_mutation ::Mutations::IncidentManagement::EscalationPolicy::Update
         mount_mutation ::Mutations::IncidentManagement::EscalationPolicy::Destroy
+        mount_mutation ::Mutations::IncidentManagement::IssuableResourceLink::Create
         mount_mutation ::Mutations::AppSec::Fuzzing::Coverage::Corpus::Create
         mount_mutation ::Mutations::Projects::SetComplianceFramework
         mount_mutation ::Mutations::SecurityPolicy::CommitScanExecutionPolicy
