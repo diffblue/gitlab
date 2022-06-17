@@ -1,22 +1,26 @@
 <script>
 import { GlEmptyState } from '@gitlab/ui';
+import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { joinPaths, visitUrl, setUrlFragment } from '~/lib/utils/url_utility';
 import { __, s__ } from '~/locale';
 import {
   EDITOR_MODES,
+  EDITOR_MODE_RULE,
   EDITOR_MODE_YAML,
-  SECURITY_POLICY_ACTIONS,
   GRAPHQL_ERROR_MESSAGE,
+  PARSING_ERROR_MESSAGE,
+  SECURITY_POLICY_ACTIONS,
 } from '../constants';
 import PolicyEditorLayout from '../policy_editor_layout.vue';
 import { assignSecurityPolicyProject, modifyPolicy } from '../utils';
 import { DEFAULT_SCAN_EXECUTION_POLICY, fromYaml, toYaml } from './lib';
 
 export default {
+  EDITOR_MODE_RULE,
+  EDITOR_MODE_YAML,
   SECURITY_POLICY_ACTIONS,
-  DEFAULT_EDITOR_MODE: EDITOR_MODE_YAML,
-  EDITOR_MODES: [EDITOR_MODES[1]],
   i18n: {
+    PARSING_ERROR_MESSAGE,
     createMergeRequest: __('Configure with a merge request'),
     notOwnerButtonText: __('Learn more'),
     notOwnerDescription: s__(
@@ -27,6 +31,7 @@ export default {
     GlEmptyState,
     PolicyEditorLayout,
   },
+  mixins: [glFeatureFlagMixin()],
   inject: [
     'disableScanPolicyUpdate',
     'policyEditorEmptyStateSvgPath',
@@ -60,6 +65,7 @@ export default {
       isRemovingPolicy: false,
       newlyCreatedPolicyProject: null,
       policy: fromYaml(yamlEditorValue),
+      yamlEditorError: null,
       yamlEditorValue,
       documentationPath: setUrlFragment(
         this.scanPolicyDocumentationPath,
@@ -71,14 +77,40 @@ export default {
     originalName() {
       return this.existingPolicy?.name;
     },
+    defaultEditorMode() {
+      if (this.glFeatures.scanExecutionRuleMode) {
+        return undefined;
+      }
+      return EDITOR_MODE_YAML;
+    },
+    editorModes() {
+      if (this.glFeatures.scanExecutionRuleMode) {
+        return undefined;
+      }
+      return [EDITOR_MODES[1]];
+    },
+    hasParsingError() {
+      return Boolean(this.yamlEditorError);
+    },
+    policyYaml() {
+      return this.hasParsingError ? '' : toYaml(this.policy);
+    },
   },
   methods: {
+    changeEditorMode(mode) {
+      if (mode === EDITOR_MODE_YAML && !this.hasParsingError) {
+        this.yamlEditorValue = toYaml(this.policy);
+      }
+    },
     handleError(error) {
       if (error.message.toLowerCase().includes('graphql')) {
         this.$emit('error', GRAPHQL_ERROR_MESSAGE);
       } else {
         this.$emit('error', error.message);
       }
+    },
+    handleSetPolicyProperty(property, value) {
+      this.policy[property] = value;
     },
     async getSecurityPolicyProject() {
       if (!this.newlyCreatedPolicyProject && !this.assignedPolicyProject.fullPath) {
@@ -133,6 +165,17 @@ export default {
     },
     updateYaml(manifest) {
       this.yamlEditorValue = manifest;
+      this.yamlEditorError = null;
+
+      try {
+        const newPolicy = fromYaml(manifest);
+        if (newPolicy.error) {
+          throw new Error(newPolicy.error);
+        }
+        this.policy = { ...this.policy, ...newPolicy };
+      } catch (error) {
+        this.yamlEditorError = error;
+      }
     },
   },
 };
@@ -142,16 +185,21 @@ export default {
   <policy-editor-layout
     v-if="!disableScanPolicyUpdate"
     :custom-save-button-text="$options.i18n.createMergeRequest"
-    :default-editor-mode="$options.DEFAULT_EDITOR_MODE"
-    :editor-modes="$options.EDITOR_MODES"
+    :default-editor-mode="defaultEditorMode"
+    :editor-modes="editorModes"
+    :has-parsing-error="hasParsingError"
     :is-editing="isEditing"
     :is-removing-policy="isRemovingPolicy"
     :is-updating-policy="isCreatingMR"
-    :policy-name="policy.name"
+    :parsing-error="$options.i18n.PARSING_ERROR_MESSAGE"
+    :policy="policy"
+    :policy-yaml="policyYaml"
     :yaml-editor-value="yamlEditorValue"
     @remove-policy="handleModifyPolicy($options.SECURITY_POLICY_ACTIONS.REMOVE)"
     @save-policy="handleModifyPolicy()"
+    @set-policy-property="handleSetPolicyProperty"
     @update-yaml="updateYaml"
+    @update-editor-mode="changeEditorMode"
   />
   <gl-empty-state
     v-else
