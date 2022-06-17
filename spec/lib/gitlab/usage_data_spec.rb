@@ -1423,4 +1423,20 @@ RSpec.describe Gitlab::UsageData, :aggregate_failures do
       end
     end
   end
+
+  context 'on Gitlab.com' do
+    before do
+      allow(Gitlab).to receive(:com?).and_return(true)
+    end
+
+    describe '.system_usage_data' do
+      subject { described_class.system_usage_data }
+
+      it 'returns fallback value for disabled metrics' do
+        expect(subject[:counts][:ci_internal_pipelines]).to eq(Gitlab::Utils::UsageData::FALLBACK)
+        expect(subject[:counts][:issues_created_gitlab_alerts]).to eq(Gitlab::Utils::UsageData::FALLBACK)
+        expect(subject[:counts][:issues_created_manually_from_alerts]).to eq(Gitlab::Utils::UsageData::FALLBACK)
+      end
+    end
+  end
 end
