@@ -43,9 +43,7 @@ class EpicPresenter < Gitlab::View::Presenter::Delegated
   private
 
   def initial_data
-    { labels: epic.labels }.tap do |data|
-      data[:subscribed] = subscribed? unless Feature.enabled?(:omit_epic_subscribed, group)
-    end
+    { labels: epic.labels }
   end
 
   def meta_data(author_icon)
