@@ -16,7 +16,12 @@ import {
 import { visitUrl } from '~/lib/utils/url_utility';
 
 import { modifyPolicy } from 'ee/security_orchestration/components/policy_editor/utils';
-import { SECURITY_POLICY_ACTIONS } from 'ee/security_orchestration/components/policy_editor/constants';
+import {
+  EDITOR_MODES,
+  EDITOR_MODE_RULE,
+  EDITOR_MODE_YAML,
+  SECURITY_POLICY_ACTIONS,
+} from 'ee/security_orchestration/components/policy_editor/constants';
 
 jest.mock('~/lib/utils/url_utility', () => ({
   joinPaths: jest.requireActual('~/lib/utils/url_utility').joinPaths,
@@ -73,6 +78,9 @@ describe('ScanExecutionPolicyEditor', () => {
         policyEditorEmptyStateSvgPath,
         namespacePath: defaultProjectPath,
         scanPolicyDocumentationPath,
+        glFeatures: {
+          scanExecutionRuleMode: false,
+        },
         ...provide,
       },
     });
@@ -96,6 +104,20 @@ describe('ScanExecutionPolicyEditor', () => {
   });
 
   describe('default', () => {
+    it('displays the correct modes', async () => {
+      factory();
+      await nextTick();
+
+      expect(findPolicyEditorLayout().attributes('editormodes')).toBe(EDITOR_MODES[1].toString());
+    });
+
+    it('defaults to yaml mode', async () => {
+      factory();
+      await nextTick();
+
+      expect(findPolicyEditorLayout().attributes('defaulteditormode')).toBe(EDITOR_MODE_YAML);
+    });
+
     it('updates the policy yaml when "update-yaml" is emitted', async () => {
       factory();
       await nextTick();
@@ -148,6 +170,52 @@ describe('ScanExecutionPolicyEditor', () => {
       expect(emptyState.props('primaryButtonLink')).toMatch(scanPolicyDocumentationPath);
       expect(emptyState.props('primaryButtonLink')).toMatch('scan-execution-policy-editor');
       expect(emptyState.props('svgPath')).toBe(policyEditorEmptyStateSvgPath);
+    });
+  });
+
+  describe('scan execution rule mode feature flag', () => {
+    beforeEach(() => {
+      factory({ provide: { glFeatures: { scanExecutionRuleMode: true } } });
+    });
+
+    it('displays the correct modes', () => {
+      expect(findPolicyEditorLayout().attributes('editormodes')).toBe(EDITOR_MODES.toString());
+    });
+
+    it('defaults to rule mode', () => {
+      expect(findPolicyEditorLayout().attributes('defaulteditormode')).toBe(EDITOR_MODE_RULE);
+    });
+
+    it('updates the policy yaml when "update-yaml" is emitted', async () => {
+      const newManifest = 'new yaml!';
+      factory();
+      await nextTick();
+
+      expect(findPolicyEditorLayout().attributes('yamleditorvalue')).toBe(
+        DEFAULT_SCAN_EXECUTION_POLICY,
+      );
+
+      findPolicyEditorLayout().vm.$emit('update-yaml', newManifest);
+      await nextTick();
+
+      expect(findPolicyEditorLayout().attributes('yamleditorvalue')).toBe(newManifest);
+    });
+
+    it.each`
+      component        | oldValue | newValue
+      ${'name'}        | ${null}  | ${'new policy name'}
+      ${'description'} | ${''}    | ${'new description'}
+      ${'enabled'}     | ${false} | ${true}
+    `('triggers a change on $component', async ({ component, newValue, oldValue }) => {
+      factory();
+      await nextTick();
+
+      expect(findPolicyEditorLayout().props('policy')[component]).toBe(oldValue);
+
+      findPolicyEditorLayout().vm.$emit('set-policy-property', component, newValue);
+      await nextTick();
+
+      expect(findPolicyEditorLayout().props('policy')[component]).toBe(newValue);
     });
   });
 });

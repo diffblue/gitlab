@@ -1,13 +1,5 @@
 <script>
-import {
-  GlEmptyState,
-  GlButton,
-  GlFormGroup,
-  GlFormInput,
-  GlFormTextarea,
-  GlAlert,
-  GlFormRadioGroup,
-} from '@gitlab/ui';
+import { GlEmptyState, GlButton } from '@gitlab/ui';
 import { mapActions, mapState } from 'vuex';
 import { joinPaths, visitUrl, setUrlFragment } from '~/lib/utils/url_utility';
 import { __, s__ } from '~/locale';
@@ -39,16 +31,9 @@ export default {
   EDITOR_MODE_RULE,
   SHARED_FOR_DISABLED:
     'gl-bg-gray-10 gl-border-solid gl-border-1 gl-border-gray-100 gl-rounded-base',
-  STATUS_OPTIONS: [
-    { value: true, text: __('Enabled') },
-    { value: false, text: __('Disabled') },
-  ],
   i18n: {
     PARSING_ERROR_MESSAGE,
     addRule: s__('SecurityOrchestration|Add rule'),
-    description: __('Description'),
-    name: __('Name'),
-    toggleLabel: s__('SecurityOrchestration|Policy status'),
     rules: s__('SecurityOrchestration|Rules'),
     createMergeRequest: __('Configure with a merge request'),
     notOwnerButtonText: __('Learn more'),
@@ -61,11 +46,6 @@ export default {
   components: {
     GlEmptyState,
     GlButton,
-    GlFormGroup,
-    GlFormInput,
-    GlFormTextarea,
-    GlAlert,
-    GlFormRadioGroup,
     PolicyActionBuilder,
     PolicyRuleBuilder,
     PolicyEditorLayout,
@@ -204,6 +184,9 @@ export default {
         this.isCreatingMR = val;
       }
     },
+    handleSetPolicyProperty(property, value) {
+      this.policy[property] = value;
+    },
     redirectToMergeRequest({ mergeRequest, assignedPolicyProject }) {
       visitUrl(
         joinPaths(
@@ -260,50 +243,21 @@ export default {
   <policy-editor-layout
     v-if="!disableScanPolicyUpdate"
     :custom-save-button-text="$options.i18n.createMergeRequest"
+    :has-parsing-error="hasParsingError"
     :is-editing="isEditing"
     :is-removing-policy="isRemovingPolicy"
     :is-updating-policy="isCreatingMR"
-    :policy-name="policy.name"
+    :parsing-error="$options.i18n.PARSING_ERROR_MESSAGE"
+    :policy="policy"
+    :policy-yaml="policyYaml"
     :yaml-editor-value="yamlEditorValue"
     @remove-policy="handleModifyPolicy($options.SECURITY_POLICY_ACTIONS.REMOVE)"
     @save-policy="handleModifyPolicy()"
+    @set-policy-property="handleSetPolicyProperty"
     @update-yaml="updateYaml"
     @update-editor-mode="changeEditorMode"
   >
-    <template #rule-editor>
-      <gl-alert
-        v-if="hasParsingError"
-        data-testid="parsing-alert"
-        class="gl-mb-5"
-        :dismissible="false"
-      >
-        {{ $options.i18n.PARSING_ERROR_MESSAGE }}
-      </gl-alert>
-
-      <gl-form-group :label="$options.i18n.name" label-for="policyName">
-        <gl-form-input id="policyName" v-model="policy.name" :disabled="hasParsingError" />
-      </gl-form-group>
-
-      <gl-form-group :label="$options.i18n.description" label-for="policyDescription">
-        <gl-form-textarea
-          id="policyDescription"
-          v-model="policy.description"
-          :disabled="hasParsingError"
-        />
-      </gl-form-group>
-
-      <gl-form-group
-        :label="$options.i18n.toggleLabel"
-        :disabled="hasParsingError"
-        data-testid="policy-enable"
-      >
-        <gl-form-radio-group
-          v-model="policy.enabled"
-          :options="$options.STATUS_OPTIONS"
-          :disabled="hasParsingError"
-        />
-      </gl-form-group>
-
+    <template #rules>
       <dim-disable-container data-testid="rule-builder-container" :disabled="hasParsingError">
         <template #title>
           <h4>{{ $options.i18n.rules }}</h4>
@@ -328,7 +282,8 @@ export default {
           </gl-button>
         </div>
       </dim-disable-container>
-
+    </template>
+    <template #actions>
       <dim-disable-container data-testid="action-container" :disabled="hasParsingError">
         <template #title>
           <h4>{{ $options.i18n.actions }}</h4>
@@ -348,16 +303,6 @@ export default {
           @approversUpdated="updatePolicyApprovers"
         />
       </dim-disable-container>
-    </template>
-
-    <template #rule-editor-preview>
-      <h5>{{ $options.i18n.yamlPreview }}</h5>
-      <pre
-        data-testid="yaml-preview"
-        class="gl-bg-white gl-border-none gl-p-0"
-        :class="{ 'gl-opacity-5': hasParsingError }"
-        >{{ policyYaml || yamlEditorValue }}</pre
-      >
     </template>
   </policy-editor-layout>
   <gl-empty-state

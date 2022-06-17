@@ -1,16 +1,40 @@
 <script>
-import { GlButtonGroup, GlButton, GlModal, GlModalDirective, GlTooltipDirective } from '@gitlab/ui';
-import { s__, sprintf } from '~/locale';
+import {
+  GlAlert,
+  GlButton,
+  GlButtonGroup,
+  GlFormGroup,
+  GlFormInput,
+  GlFormRadioGroup,
+  GlFormTextarea,
+  GlModal,
+  GlModalDirective,
+  GlTooltipDirective,
+} from '@gitlab/ui';
+import { __, s__, sprintf } from '~/locale';
 import { DELETE_MODAL_CONFIG, EDITOR_MODES, EDITOR_MODE_RULE, EDITOR_MODE_YAML } from './constants';
 
 export default {
   i18n: {
     DELETE_MODAL_CONFIG,
+    description: __('Description'),
+    name: __('Name'),
+    toggleLabel: s__('SecurityOrchestration|Policy status'),
+    yamlPreview: s__('SecurityOrchestration|.yaml preview'),
   },
+  STATUS_OPTIONS: [
+    { value: true, text: __('Enabled') },
+    { value: false, text: __('Disabled') },
+  ],
   components: {
+    GlAlert,
     GlButton,
-    GlModal,
     GlButtonGroup,
+    GlFormGroup,
+    GlFormInput,
+    GlFormTextarea,
+    GlFormRadioGroup,
+    GlModal,
     PolicyYamlEditor: () =>
       import(/* webpackChunkName: 'policy_yaml_editor' */ '../policy_yaml_editor.vue'),
   },
@@ -47,6 +71,11 @@ export default {
       required: false,
       default: () => EDITOR_MODES,
     },
+    hasParsingError: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
     isEditing: {
       type: Boolean,
       required: false,
@@ -62,10 +91,22 @@ export default {
       required: false,
       default: false,
     },
-    policyName: {
+    parsingError: {
       type: String,
       required: false,
       default: '',
+    },
+    policy: {
+      type: Object,
+      required: true,
+      validator: (policy) => {
+        // TODO add name validation right before defaulting on the scan_execution_rule_mode feature flag: https://gitlab.com/gitlab-org/gitlab/-/issues/359883
+        return ['enabled'].every((value) => value in policy);
+      },
+    },
+    policyYaml: {
+      type: String,
+      required: true,
     },
     yamlEditorValue: {
       type: String,
@@ -81,7 +122,7 @@ export default {
   computed: {
     deleteModalTitle() {
       return sprintf(s__('SecurityOrchestration|Delete policy: %{policy}'), {
-        policy: this.policyName,
+        policy: this.policy.name,
       });
     },
     saveTooltipText() {
@@ -140,7 +181,48 @@ export default {
       <div class="gl-display-flex gl-flex-direction-column gl-lg-flex-direction-row">
         <section class="gl-w-full gl-mr-7">
           <div v-if="shouldShowRuleEditor" data-testid="rule-editor">
-            <slot name="rule-editor"></slot>
+            <gl-alert
+              v-if="hasParsingError"
+              data-testid="parsing-alert"
+              class="gl-mb-5"
+              :dismissible="false"
+            >
+              {{ parsingError }}
+            </gl-alert>
+
+            <gl-form-group :label="$options.i18n.name" label-for="policyName">
+              <gl-form-input
+                id="policyName"
+                :disabled="hasParsingError"
+                :value="policy.name"
+                @input="$emit('set-policy-property', 'name', $event)"
+              />
+            </gl-form-group>
+
+            <gl-form-group :label="$options.i18n.description" label-for="policyDescription">
+              <gl-form-textarea
+                id="policyDescription"
+                :disabled="hasParsingError"
+                :value="policy.description"
+                @input="$emit('set-policy-property', 'description', $event)"
+              />
+            </gl-form-group>
+
+            <gl-form-group
+              :label="$options.i18n.toggleLabel"
+              :disabled="hasParsingError"
+              data-testid="policy-enable"
+            >
+              <gl-form-radio-group
+                :options="$options.STATUS_OPTIONS"
+                :disabled="hasParsingError"
+                :checked="policy.enabled"
+                @change="$emit('set-policy-property', 'enabled', $event)"
+              />
+            </gl-form-group>
+
+            <slot name="rules"></slot>
+            <slot name="actions"></slot>
           </div>
           <policy-yaml-editor
             v-if="shouldShowYamlEditor"
@@ -155,7 +237,14 @@ export default {
           class="gl-md-w-50p gl-md-max-w-30p gl-p-5 gl-bg-gray-10 gl-ml-11 gl-align-self-start"
           data-testid="rule-editor-preview"
         >
-          <slot name="rule-editor-preview"></slot>
+          <h5>{{ $options.i18n.yamlPreview }}</h5>
+          <pre
+            data-testid="yaml-preview"
+            class="gl-border-none gl-p-0"
+            :class="{ 'gl-opacity-5': hasParsingError }"
+          >
+            {{ policyYaml || yamlEditorValue }}
+          </pre>
         </section>
       </div>
     </div>

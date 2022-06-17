@@ -1,13 +1,28 @@
 import { nextTick } from 'vue';
-import { GlModal, GlButtonGroup } from '@gitlab/ui';
+import {
+  GlAlert,
+  GlButtonGroup,
+  GlFormInput,
+  GlFormRadioGroup,
+  GlFormTextarea,
+  GlModal,
+} from '@gitlab/ui';
 import { EDITOR_MODE_YAML } from 'ee/security_orchestration/components/policy_editor/constants';
 import PolicyEditorLayout from 'ee/security_orchestration/components/policy_editor/policy_editor_layout.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import {
+  mockDastScanExecutionManifest,
+  mockProjectScanExecutionPolicy,
+} from '../../mocks/mock_data';
 
 describe('PolicyEditorLayout component', () => {
   let wrapper;
   let glTooltipDirectiveMock;
   const policiesPath = '/threat-monitoring';
+  const defaultProps = {
+    policy: mockProjectScanExecutionPolicy,
+    policyYaml: mockDastScanExecutionManifest,
+  };
 
   const factory = ({ propsData = {} } = {}) => {
     glTooltipDirectiveMock = jest.fn();
@@ -16,6 +31,7 @@ describe('PolicyEditorLayout component', () => {
         GlTooltip: glTooltipDirectiveMock,
       },
       propsData: {
+        ...defaultProps,
         ...propsData,
       },
       provide: {
@@ -25,6 +41,10 @@ describe('PolicyEditorLayout component', () => {
     });
   };
 
+  const findAlert = () => wrapper.findComponent(GlAlert);
+  const findNameInput = () => wrapper.findComponent(GlFormInput);
+  const findDescriptionTextArea = () => wrapper.findComponent(GlFormTextarea);
+  const findEnabledRadioGroup = () => wrapper.findComponent(GlFormRadioGroup);
   const findDeletePolicyButton = () => wrapper.findByTestId('delete-policy');
   const findDeletePolicyModal = () => wrapper.findComponent(GlModal);
   const findEditorModeToggle = () => wrapper.findComponent(GlButtonGroup);
@@ -88,6 +108,25 @@ describe('PolicyEditorLayout component', () => {
       factory({ propsData: { isEditing: true } });
     });
 
+    it.each`
+      component        | emit        | findFn                     | value
+      ${'name'}        | ${'input'}  | ${findNameInput}           | ${'new name'}
+      ${'description'} | ${'input'}  | ${findDescriptionTextArea} | ${'new description'}
+      ${'enabled'}     | ${'change'} | ${findEnabledRadioGroup}   | ${true}
+    `(
+      'emits properly when $component input is updated',
+      async ({ component, emit, findFn, value }) => {
+        const vueComponent = findFn();
+        expect(vueComponent.exists()).toBe(true);
+        expect(wrapper.emitted('set-policy-property')).toBeUndefined();
+
+        vueComponent.vm.$emit(emit, value);
+        await nextTick();
+
+        expect(wrapper.emitted('set-policy-property')).toEqual([[component, value]]);
+      },
+    );
+
     it('does not emit when the delete button is clicked', () => {
       findDeletePolicyButton().vm.$emit('click');
       expect(wrapper.emitted('remove-policy')).toStrictEqual(undefined);
@@ -96,6 +135,10 @@ describe('PolicyEditorLayout component', () => {
     it('emits properly when the delete modal is closed', () => {
       findDeletePolicyModal().vm.$emit('secondary');
       expect(wrapper.emitted('remove-policy')).toStrictEqual([[]]);
+    });
+
+    it('does not display the error alert', () => {
+      expect(findAlert().exists()).toBe(false);
     });
   });
 
@@ -132,6 +175,25 @@ describe('PolicyEditorLayout component', () => {
       const newManifest = 'new yaml!';
       findYamlModeSection().vm.$emit('input', newManifest);
       expect(wrapper.emitted('update-yaml')).toStrictEqual([[newManifest]]);
+    });
+  });
+
+  describe('parsing error', () => {
+    beforeEach(() => {
+      factory({ propsData: { hasParsingError: true } });
+    });
+
+    it('displays the alert', async () => {
+      expect(findAlert().exists()).toBe(true);
+    });
+
+    it.each`
+      component                  | findFn
+      ${'name input'}            | ${findNameInput}
+      ${'description text area'} | ${findDescriptionTextArea}
+      ${'enabled radio group'}   | ${findEnabledRadioGroup}
+    `('disables the $component', ({ findFn }) => {
+      expect(findFn().attributes('disabled')).toBe('true');
     });
   });
 
