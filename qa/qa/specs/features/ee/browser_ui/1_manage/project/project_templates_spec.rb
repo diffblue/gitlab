@@ -124,7 +124,7 @@ module QA
         end
       end
 
-      context 'group level', quarantine: { issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/350279', type: :bug } do
+      context 'group level' do
         before do
           Flow::Login.sign_in
 
@@ -153,9 +153,7 @@ module QA
           Page::Project::New.perform(&:go_to_create_from_template_group_tab)
         end
 
-        # Skip this test in production until the number of subgroups is back to normal
-        # See https://gitlab.com/gitlab-org/gitlab/-/issues/341930
-        it 'successfully imports the project using template', except: :production, testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347933' do
+        it 'successfully imports the project using template', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347933' do
           Page::Project::New.perform do |new_page|
             expect(new_page.group_template_tab_badge_text).to eq "1"
             expect(new_page).to have_text(template_container_group_name)
