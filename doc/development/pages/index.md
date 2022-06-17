@@ -190,6 +190,9 @@ GitLab Pages access control is disabled by default. To enable it:
 ```shell
 # Run the linter locally
 make lint
+
+# Run linter and fix issues (if supported by the linter)
+make format
 ```
 
 ## Testing
