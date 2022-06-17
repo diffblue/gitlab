@@ -34,19 +34,24 @@ RSpec.describe SubscriptionsController do
       it { is_expected.to render_template :new }
 
       context 'when there are groups eligible for the subscription' do
-        let_it_be(:group) { create(:group) }
+        let_it_be(:owned_group) { create(:group) }
+        let_it_be(:sub_group) { create(:group, parent: owned_group) }
+        let_it_be(:maintainer_group) { create(:group) }
+        let_it_be(:developer_group) { create(:group) }
 
         before do
-          group.add_owner(user)
+          owned_group.add_owner(user)
+          maintainer_group.add_maintainer(user)
+          developer_group.add_developer(user)
 
           allow_next_instance_of(
             GitlabSubscriptions::FetchPurchaseEligibleNamespacesService,
             user: user,
-            namespaces: [group],
+            namespaces: [owned_group],
             any_self_service_plan: true
           ) do |instance|
             allow(instance).to receive(:execute).and_return(
-              instance_double(ServiceResponse, success?: true, payload: [{ namespace: group, account_id: nil }])
+              instance_double(ServiceResponse, success?: true, payload: [{ namespace: owned_group, account_id: nil }])
             )
           end
         end
@@ -54,14 +59,14 @@ RSpec.describe SubscriptionsController do
         it 'assigns the eligible groups for the subscription' do
           get_new
 
-          expect(assigns(:eligible_groups)).to eq [group]
+          expect(assigns(:eligible_groups)).to match_array [owned_group]
         end
 
         context 'and request specify which group to use' do
           it 'assign requested group' do
-            get :new, params: { namespace_id: group.id }
+            get :new, params: { namespace_id: owned_group.id }
 
-            expect(assigns(:namespace)).to eq(group)
+            expect(assigns(:namespace)).to eq(owned_group)
           end
         end
 
@@ -75,16 +80,26 @@ RSpec.describe SubscriptionsController do
       end
 
       context 'when there are no eligible groups for the subscription' do
-        it 'assigns eligible groups as an empty array' do
-          allow_next_instance_of(
+        let_it_be(:group) { create(:group) }
+
+        it 'assigns eligible groups as an empty array if CustomerDot returns empty payload' do
+          group.add_owner(user)
+
+          expect_next_instance_of(
             GitlabSubscriptions::FetchPurchaseEligibleNamespacesService,
             user: user,
-            namespaces: [],
+            namespaces: [group],
             any_self_service_plan: true
           ) do |instance|
             allow(instance).to receive(:execute).and_return(instance_double(ServiceResponse, success?: true, payload: []))
           end
 
+          get_new
+
+          expect(assigns(:eligible_groups)).to eq []
+        end
+
+        it 'assigns eligible groups as an empty array if user is not owner of any groups' do
           get_new
 
           expect(assigns(:eligible_groups)).to eq []
@@ -551,6 +566,18 @@ RSpec.describe SubscriptionsController do
         let(:params) do
           {
             selected_group: non_existing_record_id,
+            customer: { country: 'NL' },
+            subscription: { plan_id: 'x', quantity: 1, source: 'new_source' }
+          }
+        end
+
+        it { is_expected.to have_gitlab_http_status(:not_found) }
+      end
+
+      context 'when selecting a group without owner role' do
+        let(:params) do
+          {
+            selected_group: create(:group).id,
             customer: { country: 'NL' },
             subscription: { plan_id: 'x', quantity: 1, source: 'new_source' }
           }
