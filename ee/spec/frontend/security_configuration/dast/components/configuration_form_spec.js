@@ -18,7 +18,7 @@ const [siteProfile] = siteProfiles;
 
 const securityConfigurationPath = '/security/configuration';
 const gitlabCiYamlEditPath = '/ci/editor';
-const fullPath = '/project/path';
+const projectPath = '/project/path';
 
 const selectedScannerProfileName = 'My Scan profile';
 const selectedSiteProfileName = 'My site profile';
@@ -48,7 +48,14 @@ describe('EE - DAST Configuration Form', () => {
   const findDastProfilesSelector = () => wrapper.findComponent(DastProfilesSelector);
   const findAlert = () => wrapper.findByTestId('dast-configuration-error');
 
-  const createComponentFactory = (mountFn = shallowMount) => (options = {}) => {
+  const createComponentFactory = (mountFn = shallowMount) => (
+    options = {},
+    glFeatures = {
+      glFeatures: {
+        dastUiRedesign: false,
+      },
+    },
+  ) => {
     const defaultMocks = {
       $apollo: {
         queries: {
@@ -68,7 +75,8 @@ describe('EE - DAST Configuration Form', () => {
             provide: {
               securityConfigurationPath,
               gitlabCiYamlEditPath,
-              fullPath,
+              projectPath,
+              ...glFeatures,
             },
             stubs: {
               GlSprintf,
