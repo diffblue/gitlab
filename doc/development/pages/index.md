@@ -207,6 +207,9 @@ For more information, refer to the [GDK documentation](https://gitlab.com/gitlab
 ```shell
 # Run the linter locally
 make lint
+
+# Run linter and fix issues (if supported by the linter)
+make format
 ```
 
 ## Testing
