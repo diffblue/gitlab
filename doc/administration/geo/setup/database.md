@@ -478,7 +478,7 @@ data before running `pg_basebackup`.
    ```shell
    gitlab-ctl replicate-geo-database \
       --slot-name=<secondary_node_name> \
-      --host=<primary_node_ip>
+      --host=<primary_node_ip> \
       --sslmode=verify-ca
    ```
 
