@@ -3,13 +3,10 @@
 module ComplianceManagement
   class Framework < ApplicationRecord
     include StripAttribute
-    include IgnorableColumns
 
     self.table_name = 'compliance_management_frameworks'
 
     strip_attributes! :name, :color
-
-    ignore_column :regulated, remove_with: '15.2', remove_after: '2022-07-22'
 
     belongs_to :namespace
     has_many :project_settings, class_name: 'ComplianceManagement::ComplianceFramework::ProjectSettings'
