@@ -23631,9 +23631,6 @@ msgstr ""
 msgid "Makes this issue confidential."
 msgstr ""
 
-msgid "Manage"
-msgstr ""
-
 msgid "Manage %{workspace} labels"
 msgstr ""
 
@@ -39012,6 +39009,9 @@ msgstr ""
 msgid "There are no projects shared with this group yet"
 msgstr ""
 
+msgid "There are no secure files yet."
+msgstr ""
+
 msgid "There are no topics to show."
 msgstr ""
 
@@ -41365,7 +41365,7 @@ msgstr ""
 msgid "Upload object map"
 msgstr ""
 
-msgid "Uploaded"
+msgid "Uploaded date"
 msgstr ""
 
 msgid "Uploading changes to terminal"
