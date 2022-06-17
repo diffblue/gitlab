@@ -6051,10 +6051,23 @@ The connection type for [`CiJob`](#cijob).
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="cijobconnectioncount"></a>`count` | [`Int!`](#int) | Total count of collection. |
 | <a id="cijobconnectionedges"></a>`edges` | [`[CiJobEdge]`](#cijobedge) | A list of edges. |
 | <a id="cijobconnectionnodes"></a>`nodes` | [`[CiJob]`](#cijob) | A list of nodes. |
 | <a id="cijobconnectionpageinfo"></a>`pageInfo` | [`PageInfo!`](#pageinfo) | Information to aid in pagination. |
+
+##### Fields with arguments
+
+###### `CiJobConnection.count`
+
+Limited count of collection. Returns limit + 1 for counts greater than the limit.
+
+Returns [`Int!`](#int).
+
+####### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="cijobconnectioncountlimit"></a>`limit` | [`Int`](#int) | Limit value to be applied to the count query. Default is 1000. |
 
 #### `CiJobEdge`
 
