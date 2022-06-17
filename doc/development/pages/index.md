@@ -201,7 +201,7 @@ Object storage is disabled by default. To enable it:
      ```
 
 1. Reconfigure and restart GitLab (if running through the GDK, run `gdk reconfigure` and `gdk restart`).
-
+For more information check GDK [documentation](https://gitlab.com/gitlab-org/gitlab-development-kit/-/blob/main/doc/configuration.md#object-storage-configuration).
 ## Linting
 
 ```shell
