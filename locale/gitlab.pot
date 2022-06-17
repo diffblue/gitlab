@@ -25527,9 +25527,6 @@ msgstr ""
 msgid "New! Suggest changes directly"
 msgstr ""
 
-msgid "New..."
-msgstr ""
-
 msgid "Newest first"
 msgstr ""
 
