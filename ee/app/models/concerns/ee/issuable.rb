@@ -39,11 +39,20 @@ module EE
       supports_metric_images?
     end
 
+    def issuable_resource_links_available?
+      supports_resource_links? &&
+      ::Gitlab::IncidentManagement.issuable_resource_links_available?(project)
+    end
+
     def supports_sla?
       incident?
     end
 
     def supports_metric_images?
+      incident?
+    end
+
+    def supports_resource_links?
       incident?
     end
 

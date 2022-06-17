@@ -48,4 +48,30 @@ RSpec.describe Gitlab::IncidentManagement do
       it { is_expected.to be_falsey }
     end
   end
+
+  describe '.issuable_resource_links_available?' do
+    subject { described_class.issuable_resource_links_available?(project) }
+
+    before do
+      stub_licensed_features(issuable_resource_links: true)
+    end
+
+    it { is_expected.to be_truthy }
+
+    context 'when feature flag is disabled' do
+      before do
+        stub_feature_flags(incident_resource_links_widget: false)
+      end
+
+      it { is_expected.to be_falsey }
+    end
+
+    context 'when feature is not avaiable' do
+      before do
+        stub_licensed_features(issuable_resource_links: false)
+      end
+
+      it { is_expected.to be_falsey }
+    end
+  end
 end
