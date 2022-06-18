@@ -1,5 +1,7 @@
 import { GlCard, GlIcon } from '@gitlab/ui';
+import { __ } from '~/locale';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import { SCANNER_TYPE, SITE_TYPE } from 'ee/on_demand_scans/constants';
 import DastProfileSummaryCard from 'ee/security_configuration/dast_profiles/dast_profile_selector/dast_profile_summary_card.vue';
 import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
 
@@ -23,6 +25,7 @@ describe('DastProfileSummaryCard', () => {
   };
 
   const findProfileSelectBtn = () => wrapper.findByTestId('profile-select-btn');
+  const findProfileEditBtn = () => wrapper.findByTestId('profile-edit-btn');
   const findInUseLabel = () => wrapper.findByTestId('in-use-label');
 
   beforeEach(() => {
@@ -89,6 +92,25 @@ describe('DastProfileSummaryCard', () => {
         },
       });
       expect(findProfileSelectBtn().props('disabled')).toBe(false);
+    });
+  });
+
+  describe.each`
+    profileType     | expectedResult
+    ${SCANNER_TYPE} | ${__('Edit scanner profile')}
+    ${SITE_TYPE}    | ${__('Edit site profile')}
+  `('Edit button title', ({ profileType, expectedResult }) => {
+    beforeEach(() => {
+      createComponent({
+        propsData: {
+          ...propsData,
+          profileType,
+        },
+      });
+    });
+
+    it('should render correct header based on mode', () => {
+      expect(findProfileEditBtn().attributes('title')).toEqual(expectedResult);
     });
   });
 });

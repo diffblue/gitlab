@@ -34,13 +34,13 @@ exports[`DastProfileSummaryCard renders properly 1`] = `
         </gl-button-stub>
          
         <gl-button-stub
-          aria-label="Edit Profile"
+          aria-label="Edit %{profileType} profile"
           buttontextclasses=""
           category="primary"
           data-testid="profile-edit-btn"
           icon="pencil"
           size="small"
-          title="Edit Profile"
+          title="Edit scanner profile"
           variant="default"
         />
       </div>

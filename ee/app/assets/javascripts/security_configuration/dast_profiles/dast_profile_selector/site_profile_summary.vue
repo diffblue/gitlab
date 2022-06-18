@@ -5,11 +5,13 @@ import {
   TARGET_TYPES,
 } from 'ee/security_configuration/dast_profiles/dast_site_profiles/constants';
 import { DAST_SITE_VALIDATION_STATUS } from 'ee/security_configuration/dast_site_validation/constants';
+import { SITE_TYPE } from 'ee/on_demand_scans/constants';
 import { s__ } from '~/locale';
 import DastProfileSummaryCard from './dast_profile_summary_card.vue';
 import SummaryCell from './summary_cell.vue';
 
 export default {
+  SITE_TYPE,
   name: 'DastSiteProfileSummary',
   components: {
     DastProfileSummaryCard,
@@ -72,7 +74,7 @@ export default {
 </script>
 
 <template>
-  <dast-profile-summary-card v-bind="$attrs" v-on="$listeners">
+  <dast-profile-summary-card :profile-type="$options.SITE_TYPE" v-bind="$attrs" v-on="$listeners">
     <template #title>
       {{ profile.profileName }}
     </template>

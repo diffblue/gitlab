@@ -19,6 +19,7 @@ import SectionLoader from '~/vue_shared/security_configuration/components/sectio
 import dastScannerProfilesQuery from 'ee/security_configuration/dast_profiles/graphql/dast_scanner_profiles.query.graphql';
 import dastSiteProfilesQuery from 'ee/security_configuration/dast_profiles/graphql/dast_site_profiles.query.graphql';
 import createApolloProvider from 'helpers/mock_apollo_helper';
+import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import {
   siteProfiles,
   scannerProfiles,
@@ -45,19 +46,18 @@ describe('DastProfilesConfigurator', () => {
     ]);
   };
 
-  const findByTestId = (testId) => wrapper.find(`[data-testid="${testId}"]`);
-  const findSectionLayout = () => wrapper.find(SectionLayout);
-  const findSectionLoader = () => wrapper.find(SectionLoader);
-  const findScannerProfilesSelector = () => wrapper.find(ScannerProfileSelector);
-  const findSiteProfilesSelector = () => wrapper.find(SiteProfileSelector);
-  const findAllScannerProfileSummary = () => wrapper.findAll(ScannerProfileSummary);
-  const findAllSiteProfileSummary = () => wrapper.findAll(SiteProfileSummary);
-  const findDastProfileSidebar = () => wrapper.find(DastProfilesSidebar);
-  const findNewScanButton = () => findByTestId('new-profile-button');
-  const findOpenDrawerButton = () => findByTestId('select-profile-action-btn');
-  const findCancelButton = () => findByTestId('dast-profile-form-cancel-button');
-  const findDastProfilesSidebarList = () => wrapper.find(DastProfilesSidebarList);
-  const findDastProfilesSidebarForm = () => wrapper.find(DastProfilesSidebarForm);
+  const findNewScanButton = () => wrapper.findByTestId('new-profile-button');
+  const findOpenDrawerButton = () => wrapper.findByTestId('select-profile-action-btn');
+  const findCancelButton = () => wrapper.findByTestId('dast-profile-form-cancel-button');
+  const findSectionLayout = () => wrapper.findComponent(SectionLayout);
+  const findSectionLoader = () => wrapper.findComponent(SectionLoader);
+  const findScannerProfilesSelector = () => wrapper.findComponent(ScannerProfileSelector);
+  const findSiteProfilesSelector = () => wrapper.findComponent(SiteProfileSelector);
+  const findAllScannerProfileSummary = () => wrapper.findAllComponents(ScannerProfileSummary);
+  const findAllSiteProfileSummary = () => wrapper.findAllComponents(SiteProfileSummary);
+  const findDastProfileSidebar = () => wrapper.findComponent(DastProfilesSidebar);
+  const findDastProfilesSidebarList = () => wrapper.findComponent(DastProfilesSidebarList);
+  const findDastProfilesSidebarForm = () => wrapper.findComponent(DastProfilesSidebarForm);
 
   const createComponentFactory = (mountFn = shallowMount) => (options = {}, withHandlers) => {
     localVue = createLocalVue();
@@ -75,35 +75,37 @@ describe('DastProfilesConfigurator', () => {
       apolloProvider = createMockApolloProvider(withHandlers);
       defaultMocks = {};
     }
-    wrapper = mountFn(
-      DastProfilesConfigurator,
-      merge(
-        {},
-        {
-          propsData: {
-            ...options,
+    wrapper = extendedWrapper(
+      mountFn(
+        DastProfilesConfigurator,
+        merge(
+          {},
+          {
+            propsData: {
+              ...options,
+            },
+            mocks: defaultMocks,
+            stubs: {
+              SectionLayout,
+              ScannerProfileSelector,
+              SiteProfileSelector,
+            },
+            provide: {
+              projectPath,
+            },
           },
-          mocks: defaultMocks,
-          stubs: {
-            SectionLayout,
-            ScannerProfileSelector,
-            SiteProfileSelector,
-          },
-          provide: {
-            projectPath,
-          },
-        },
-        { ...options, localVue, apolloProvider },
+          { ...options, localVue, apolloProvider },
 
-        {
-          data() {
-            return {
-              scannerProfiles,
-              siteProfiles,
-              ...options.data,
-            };
+          {
+            data() {
+              return {
+                scannerProfiles,
+                siteProfiles,
+                ...options.data,
+              };
+            },
           },
-        },
+        ),
       ),
     );
     return wrapper;

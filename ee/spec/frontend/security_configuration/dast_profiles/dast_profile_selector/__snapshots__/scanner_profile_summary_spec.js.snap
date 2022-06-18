@@ -3,6 +3,7 @@
 exports[`DastScannerProfileSummary renders properly 1`] = `
 <dast-profile-summary-card-stub
   iseditable="true"
+  profiletype="scanner"
 >
   
     Passive scanner

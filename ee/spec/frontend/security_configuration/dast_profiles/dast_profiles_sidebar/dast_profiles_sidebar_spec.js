@@ -35,18 +35,15 @@ describe('DastProfilesSidebar', () => {
     wrapper.destroy();
   });
 
-  it('should show empty state when no scanner profiles exist', () => {
-    createComponent({ profileType: 'scanner' });
+  describe.each`
+    scannerType     | header       | expectedResult
+    ${SCANNER_TYPE} | ${'Scanner'} | ${SCANNER_TYPE}
+    ${SITE_TYPE}    | ${'Site'}    | ${SITE_TYPE}
+  `('should emit correct event', ({ scannerType, header, expectedResult }) => {
+    createComponent({ profileType: scannerType });
     expect(findEmptyStateHeader().exists()).toBe(true);
-    expect(findEmptyStateHeader().text()).toContain('No scanner profiles found for DAST');
-    expect(findSidebarHeader().text()).toContain('Scanner profile library');
-  });
-
-  it('should show empty state when no site profiles exist', () => {
-    createComponent({ profileType: 'site' });
-    expect(findEmptyStateHeader().exists()).toBe(true);
-    expect(findEmptyStateHeader().text()).toContain('No site profiles found for DAST');
-    expect(findSidebarHeader().text()).toContain('Site profile library');
+    expect(findEmptyStateHeader().text()).toContain(`No ${expectedResult} profiles found for DAST`);
+    expect(findSidebarHeader().text()).toContain(`${header} profile library`);
   });
 
   it('should render new scan button when profiles exists', () => {
@@ -74,26 +71,16 @@ describe('DastProfilesSidebar', () => {
   });
 
   describe('new profile form', () => {
-    it('should emit correct event when new profile form', async () => {
-      createComponent({ profileType: SCANNER_TYPE });
+    describe.each`
+      scannerType     | expectedResult
+      ${SCANNER_TYPE} | ${SCANNER_TYPE}
+      ${SITE_TYPE}    | ${SITE_TYPE}
+    `('should emit correct event', ({ scannerType, expectedResult }) => {
+      createComponent({ profileType: scannerType });
       findEmptyNewScanButton().vm.$emit('click');
 
-      await nextTick();
-
       expect(wrapper.emitted()).toEqual({
-        'reopen-drawer': [[{ mode: SIDEBAR_VIEW_MODE.EDITING_MODE, profileType: SCANNER_TYPE }]],
-      });
-      expect(findNewScanButton().exists()).toBe(false);
-    });
-
-    it('should show new site profile form', async () => {
-      createComponent({ profileType: SITE_TYPE });
-      findEmptyNewScanButton().vm.$emit('click');
-
-      await nextTick();
-
-      expect(wrapper.emitted()).toEqual({
-        'reopen-drawer': [[{ mode: SIDEBAR_VIEW_MODE.EDITING_MODE, profileType: SITE_TYPE }]],
+        'reopen-drawer': [[{ mode: SIDEBAR_VIEW_MODE.EDITING_MODE, profileType: expectedResult }]],
       });
       expect(findNewScanButton().exists()).toBe(false);
     });
