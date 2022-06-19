@@ -302,10 +302,9 @@ describe('Batch comments store actions', () => {
 
       actions.scrollToDraft({ dispatch, rootGetters }, draft);
 
-      expect(dispatch.mock.calls[0]).toEqual([
-        'expandDiscussion',
-        { discussionId: '1' },
-        { root: true },
+      expect(dispatch.mock.calls).toEqual([
+        ['diffs/expandDiff', { draft }, { root: true }],
+        ['expandDiscussion', { discussionId: '1' }, { root: true }],
       ]);
 
       expect(window.mrTabs.tabShown).toHaveBeenCalledWith('diffs');

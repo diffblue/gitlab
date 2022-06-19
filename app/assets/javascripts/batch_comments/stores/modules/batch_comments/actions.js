@@ -138,6 +138,8 @@ export const scrollToDraft = ({ dispatch, rootGetters }, draft) => {
     window.mrTabs.tabShown(tab);
   }
 
+  dispatch('diffs/expandDiff', { draft }, { root: true });
+
   if (discussion) {
     dispatch('expandDiscussion', { discussionId: discussion.id }, { root: true });
   }
