@@ -18,8 +18,6 @@ RSpec.describe "Admin add license", :js do
   context 'default state' do
     before do
       visit(general_admin_application_settings_path)
-      add_license_area = find('#js-add-license-toggle')
-      add_license_area.click_button('Expand') if add_license_area.has_button?('Expand')
     end
 
     it 'has the correct headline' do
@@ -50,8 +48,6 @@ RSpec.describe "Admin add license", :js do
   context "uploading license" do
     before do
       visit(general_admin_application_settings_path)
-      add_license_area = find('#js-add-license-toggle')
-      add_license_area.click_button('Expand') if add_license_area.has_button?('Expand')
 
       File.write(path, new_license.export)
     end
