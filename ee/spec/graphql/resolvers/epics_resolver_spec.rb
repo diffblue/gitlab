@@ -415,6 +415,6 @@ RSpec.describe Resolvers::EpicsResolver do
   end
 
   def resolve_epics(args = {}, obj = group, context = { current_user: current_user })
-    resolve(described_class, obj: obj, args: args, ctx: context)
+    resolve(described_class, obj: obj, args: args, ctx: context, arg_style: :internal)
   end
 end

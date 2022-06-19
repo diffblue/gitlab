@@ -102,6 +102,7 @@ RSpec.describe Resolvers::NamespaceProjectsResolver do
       has_code_coverage: has_code_coverage
     }
 
-    resolve(described_class, obj: group, args: args, ctx: { current_user: current_user })
+    resolve(described_class, obj: group, args: args, ctx: { current_user: current_user },
+            arg_style: :internal)
   end
 end

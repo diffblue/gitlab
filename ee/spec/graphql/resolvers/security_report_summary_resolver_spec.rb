@@ -84,7 +84,8 @@ RSpec.describe Resolvers::SecurityReportSummaryResolver do
   end
 
   def resolve_security_report_summary
-    resolve(described_class, obj: pipeline, lookahead: lookahead, ctx: { current_user: user })
+    resolve(described_class, obj: pipeline, lookahead: lookahead, ctx: { current_user: user },
+            arg_style: :internal)
   end
 end
 
