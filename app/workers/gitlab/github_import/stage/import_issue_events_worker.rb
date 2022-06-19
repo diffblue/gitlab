@@ -16,14 +16,30 @@ module Gitlab
         # project - An instance of Project.
         def import(client, project)
           importer = ::Gitlab::GithubImport::Importer::SingleEndpointIssueEventsImporter
+          return skip_to_next_stage(project, importer) if feature_disabled?(project)
+
+          start_importer(project, importer, client)
+        end
+
+        private
+
+        def start_importer(project, importer, client)
           info(project.id, message: "starting importer", importer: importer.name)
           waiter = importer.new(project, client).execute
+          move_to_next_stage(project, waiter.key => waiter.jobs_remaining)
+        end
 
-          AdvanceStageWorker.perform_async(
-            project.id,
-            { waiter.key => waiter.jobs_remaining },
-            :notes
-          )
+        def skip_to_next_stage(project, importer)
+          info(project.id, message: "skipping importer", importer: importer.name)
+          move_to_next_stage(project)
+        end
+
+        def move_to_next_stage(project, waiters = {})
+          AdvanceStageWorker.perform_async(project.id, waiters, :notes)
+        end
+
+        def feature_disabled?(project)
+          Feature.disabled?(:github_importer_issue_events_import, project.group, type: :ops)
         end
       end
     end
