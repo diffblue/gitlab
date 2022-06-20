@@ -220,19 +220,19 @@ module Types
     end
 
     def blocked
-      ::Gitlab::Graphql::Aggregations::Epics::LazyBlockAggregate.new(context, object.id) do |count|
+      ::Gitlab::Graphql::Aggregations::Epics::LazyLinksAggregate.new(context, object.id) do |count|
         (count || 0) > 0
       end
     end
 
     def blocked_by_count
-      ::Gitlab::Graphql::Aggregations::Epics::LazyBlockAggregate.new(context, object.id) do |count|
+      ::Gitlab::Graphql::Aggregations::Epics::LazyLinksAggregate.new(context, object.id) do |count|
         count || 0
       end
     end
 
     def blocking_count
-      ::Gitlab::Graphql::Aggregations::Epics::LazyBlockAggregate.new(context, object.id, link_type: :blocking) do |count|
+      ::Gitlab::Graphql::Aggregations::Epics::LazyLinksAggregate.new(context, object.id, link_type: :blocking) do |count|
         count || 0
       end
     end

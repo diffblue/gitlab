@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Graphql::Aggregations::Issuables::LazyBlockAggregate do
+RSpec.describe Gitlab::Graphql::Aggregations::Issuables::LazyLinksAggregate do
   let(:fake_class) do
     Class.new(described_class) do
       def fake_call

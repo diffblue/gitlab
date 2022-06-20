@@ -3,10 +3,10 @@
 module Gitlab
   module Graphql
     module Aggregations
-      module Issues
-        class LazyBlockAggregate < ::Gitlab::Graphql::Aggregations::Issuables::LazyBlockAggregate
+      module Epics
+        class LazyLinksAggregate < ::Gitlab::Graphql::Aggregations::Issuables::LazyLinksAggregate
           def link_class
-            IssueLink
+            Epic::RelatedEpicLink
           end
         end
       end

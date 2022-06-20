@@ -2,8 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Graphql::Aggregations::Epics::LazyBlockAggregate do
-  it_behaves_like 'issuable lazy block aggregate' do
+RSpec.describe Gitlab::Graphql::Aggregations::Epics::LazyLinksAggregate do
+  it_behaves_like 'issuable lazy links aggregate' do
     let(:issuable_id) { 40 }
 
     let(:issuable_link_class) { Epic::RelatedEpicLink }

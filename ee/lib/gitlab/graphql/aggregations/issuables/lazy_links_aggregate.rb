@@ -4,7 +4,7 @@ module Gitlab
   module Graphql
     module Aggregations
       module Issuables
-        class LazyBlockAggregate
+        class LazyLinksAggregate
           include ::Gitlab::Graphql::Deferred
 
           attr_reader :issuable_id, :lazy_state, :link_type
@@ -16,7 +16,7 @@ module Gitlab
 
             # Initialize the loading state for this query,
             # or get the previously-initiated state
-            @lazy_state = query_ctx[:lazy_block_aggregate] ||= {
+            @lazy_state = query_ctx[:lazy_links_aggregate] ||= {
               pending_ids: { 'blocked' => Set.new, 'blocking' => Set.new },
               loaded_objects: { 'blocked' => {}, 'blocking' => {} }
             }
@@ -26,7 +26,7 @@ module Gitlab
           end
 
           # Return the loaded record, hitting the database if needed
-          def block_aggregate
+          def links_aggregate
             # Check if the record was already loaded
             if @lazy_state[:pending_ids][link_type].present?
               load_records_into_loaded_objects
@@ -39,7 +39,7 @@ module Gitlab
             result
           end
 
-          alias_method :execute, :block_aggregate
+          alias_method :execute, :links_aggregate
 
           private
 
