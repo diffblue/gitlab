@@ -3,4 +3,5 @@
 fragment RunnerDetails on CiRunner {
   ...RunnerDetailsShared
   maintenanceNoteHtml
+  upgradeStatus
 }
