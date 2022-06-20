@@ -261,7 +261,7 @@ RSpec.describe 'Global elastic search', :elastic, :sidekiq_inline do
       select_search_scope('Commits')
 
       expect(page).to have_selector('.commit-row-description')
-      expect(page).to have_selector('.project-namespace')
+      expect(page).to have_text project.full_name
     end
 
     it 'shows proper page 2 results' do
