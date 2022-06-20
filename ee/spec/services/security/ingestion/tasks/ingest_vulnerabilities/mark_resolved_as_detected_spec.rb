@@ -37,4 +37,11 @@ RSpec.describe Security::Ingestion::Tasks::IngestVulnerabilities::MarkResolvedAs
       .and not_change { existing_vulnerability.reload.state }
       .from("detected")
   end
+
+  it 'creates state transiotion entry for each vulnerability' do
+    expect { mark_resolved_as_detected }.to change { ::Vulnerabilities::StateTransition.count }
+      .from(0)
+      .to(1)
+    expect(::Vulnerabilities::StateTransition.last.vulnerability_id).to eq(resolved_vulnerability.id)
+  end
 end
