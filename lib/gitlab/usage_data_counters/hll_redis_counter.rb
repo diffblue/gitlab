@@ -40,6 +40,15 @@ module Gitlab
         error_tracking
         ide_edit
         testing
+        source_code
+        incident_management_alerts
+        snippets
+        terraform
+        pipeline_authoring
+        secure
+        work_items
+        importer
+        ci_users
       ].freeze
 
       # Track event on entity_id
