@@ -4,11 +4,14 @@
   .settings-header
     %h4
       = _('Insights')
-    %button.btn.gl-button.js-settings-toggle{ type: 'button' }
+    = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
       = expanded ? _('Collapse') : _('Expand')
     %p
-      = s_('GroupSettings|Select the project that contains your custom Insights file.')
-      = link_to _('Learn more.'), help_page_path('user/group/insights/index.md'), target: '_blank', rel: 'noopener noreferrer'
+      - insights_help_link_url = help_page_path('user/group/insights/index.md')
+      - insights_help_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: insights_help_link_url }
+      - insights_help_link_end = '</a>'.html_safe
+      = s_('GroupSettings|Select the project containing your custom Insights file. %{help_link_start}What is Insights?%{help_link_end}').html_safe % { help_link_start: insights_help_link_start, help_link_end: insights_help_link_end }
+
   .settings-content
     = form_for @group, html: { class: 'fieldset-form' } do |form|
       = form_errors(@group)
@@ -19,8 +22,7 @@
           = form.fields_for :insight_attributes, insight do |insight_form|
             = insight_form.hidden_field :id
             = insight_form.label :project_id, class: 'label-light' do
-              .form-text.text-muted
-                = html_escape(s_('GroupSettings|Select a project with the %{code_start}.gitlab/insights.yml%{code_end} file')) % { code_start: '<code>'.html_safe, code_end: '</code>'.html_safe }
+              = html_escape(s_('GroupSettings|Select the project containing the %{code_start}.gitlab/insights.yml%{code_end} file')) % { code_start: '<code>'.html_safe, code_end: '</code>'.html_safe }
             = project_select_tag('group[insight_attributes][project_id]', class: 'project-item-select hidden-filter-value', toggle_class: 'js-project-search js-project-filter js-filter-submit', dropdown_class: 'dropdown-menu-selectable dropdown-menu-project js-filter-submit',
               placeholder: _('Search projects'), idAttribute: 'id', data: { order_by: 'last_activity_at', idattribute: 'id', simple_filter: true, allow_clear: true, include_projects_in_subgroups: true }, value: insight.project_id)
       = form.submit _('Save changes'), class: "btn gl-button btn-confirm"

@@ -79,7 +79,7 @@ RSpec.describe StoreSecurityReportsWorker do
     context 'when running SAST analyzers that produce duplicate vulnerabilities' do
       where(vulnerability_finding_signatures_enabled: [true, false])
       with_them do
-        context 'and properly dedupe vulnerabilities' do
+        context 'and prefers original analyzer over semgrep when deduplicating' do
           let(:artifact_bandit1) { create(:ee_ci_job_artifact, :sast_bandit, job: bandit1_build) }
           let(:bandit1_build) { create(:ci_build, :sast, :success, user: project.creator, pipeline: pipeline, project: project) }
 
@@ -121,45 +121,91 @@ RSpec.describe StoreSecurityReportsWorker do
           end
         end
 
-        context 'and improperly dedupe vulnerabilities' do
-          let(:artifact_gosec1) { create(:ee_ci_job_artifact, :sast_gosec, job: gosec1_build) }
-          let(:gosec1_build) { create(:ci_build, :sast, :success, user: project.creator, pipeline: pipeline, project: project) }
+        context 'and prefers semgrep over original analyzer when deduplicating' do
+          context 'when update_vuln_identifiers_flag is on' do
+            let(:artifact_gosec1) { create(:ee_ci_job_artifact, :sast_gosec, job: gosec1_build) }
+            let(:gosec1_build) { create(:ci_build, :sast, :success, user: project.creator, pipeline: pipeline, project: project) }
 
-          let(:artifact_gosec2) { create(:ee_ci_job_artifact, :sast_gosec, job: gosec2_build) }
-          let(:artifact_semgrep) { create(:ee_ci_job_artifact, :sast_semgrep_for_gosec, job: semgrep_build) }
-          let(:pipeline2) { create(:ee_ci_pipeline, ref: 'master', project: project) }
-          let(:gosec2_build) { create(:ci_build, :sast, :success, user: project.creator, pipeline: pipeline2, project: project) }
-          let(:semgrep_build) { create(:ci_build, :sast, :success, user: project.creator, pipeline: pipeline2, project: project) }
+            let(:artifact_gosec2) { create(:ee_ci_job_artifact, :sast_gosec, job: gosec2_build) }
+            let(:artifact_semgrep) { create(:ee_ci_job_artifact, :sast_semgrep_for_gosec, job: semgrep_build) }
+            let(:pipeline2) { create(:ee_ci_pipeline, ref: 'master', project: project) }
+            let(:gosec2_build) { create(:ci_build, :sast, :success, user: project.creator, pipeline: pipeline2, project: project) }
+            let(:semgrep_build) { create(:ci_build, :sast, :success, user: project.creator, pipeline: pipeline2, project: project) }
 
-          before do
-            stub_licensed_features(
-              sast: true,
-              vulnerability_finding_signatures: vulnerability_finding_signatures_enabled
-            )
-            pipeline.update!(user: gosec1_build.user)
-            pipeline2.update!(user: gosec2_build.user)
+            before do
+              stub_licensed_features(
+                sast: true,
+                vulnerability_finding_signatures: vulnerability_finding_signatures_enabled
+              )
+              stub_feature_flags(update_vuln_identifiers_flag: true)
+              pipeline.update!(user: gosec1_build.user)
+              pipeline2.update!(user: gosec2_build.user)
+            end
+
+            it 'does not duplicate vulnerabilities' do
+              expect do
+                Security::StoreGroupedScansService.execute([artifact_gosec1])
+              end.to change { Security::Finding.count }.by(1)
+                .and change { Security::Scan.count }.by(1)
+
+              expect do
+                described_class.new.perform(pipeline.id)
+              end.to change { Vulnerabilities::Finding.count }.by(1)
+                .and change { Vulnerability.count }.by(1)
+
+              expect do
+                Security::StoreGroupedScansService.execute([artifact_gosec2, artifact_semgrep])
+              end.to change { Security::Finding.count }.by(2)
+                .and change { Security::Scan.count }.by(2)
+
+              expect do
+                described_class.new.perform(pipeline2.id)
+              end.to change { Vulnerabilities::Finding.count }.by(0)
+                .and change { Vulnerability.count }.by(0)
+            end
           end
 
-          it 'duplicates vulnerabilities' do
-            expect do
-              Security::StoreGroupedScansService.execute([artifact_gosec1])
-            end.to change { Security::Finding.count }.by(1)
-              .and change { Security::Scan.count }.by(1)
+          context 'when update_vuln_identifiers_flag is off' do
+            let(:artifact_gosec1) { create(:ee_ci_job_artifact, :sast_gosec, job: gosec1_build) }
+            let(:gosec1_build) { create(:ci_build, :sast, :success, user: project.creator, pipeline: pipeline, project: project) }
 
-            expect do
-              described_class.new.perform(pipeline.id)
-            end.to change { Vulnerabilities::Finding.count }.by(1)
-              .and change { Vulnerability.count }.by(1)
+            let(:artifact_gosec2) { create(:ee_ci_job_artifact, :sast_gosec, job: gosec2_build) }
+            let(:artifact_semgrep) { create(:ee_ci_job_artifact, :sast_semgrep_for_gosec, job: semgrep_build) }
+            let(:pipeline2) { create(:ee_ci_pipeline, ref: 'master', project: project) }
+            let(:gosec2_build) { create(:ci_build, :sast, :success, user: project.creator, pipeline: pipeline2, project: project) }
+            let(:semgrep_build) { create(:ci_build, :sast, :success, user: project.creator, pipeline: pipeline2, project: project) }
 
-            expect do
-              Security::StoreGroupedScansService.execute([artifact_gosec2, artifact_semgrep])
-            end.to change { Security::Finding.count }.by(2)
-              .and change { Security::Scan.count }.by(2)
+            before do
+              stub_licensed_features(
+                sast: true,
+                vulnerability_finding_signatures: vulnerability_finding_signatures_enabled
+              )
+              stub_feature_flags(update_vuln_identifiers_flag: false)
+              pipeline.update!(user: gosec1_build.user)
+              pipeline2.update!(user: gosec2_build.user)
+            end
 
-            expect do
-              described_class.new.perform(pipeline2.id)
-            end.to change { Vulnerabilities::Finding.count }.by(1)
-              .and change { Vulnerability.count }.by(1)
+            it 'duplicates vulnerabilities' do
+              expect do
+                Security::StoreGroupedScansService.execute([artifact_gosec1])
+              end.to change { Security::Finding.count }.by(1)
+                .and change { Security::Scan.count }.by(1)
+
+              expect do
+                described_class.new.perform(pipeline.id)
+              end.to change { Vulnerabilities::Finding.count }.by(1)
+                .and change { Vulnerability.count }.by(1)
+
+              expect do
+                Security::StoreGroupedScansService.execute([artifact_gosec2, artifact_semgrep])
+              end.to change { Security::Finding.count }.by(2)
+                .and change { Security::Scan.count }.by(2)
+
+              expect do
+                described_class.new.perform(pipeline2.id)
+              end.to change { Vulnerabilities::Finding.count }.by(1)
+                .and change { Vulnerability.count }.by(1)
+            end
           end
         end
       end

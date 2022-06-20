@@ -77,6 +77,7 @@ export default {
     },
     updateQuerystring() {
       const options = this.selectedOptionsOrAll.map((x) => x.id);
+
       // To avoid a console error, don't update the querystring if it's the same as the current one.
       if (!this.$router || isEqual(this.querystringIds, options)) {
         return;

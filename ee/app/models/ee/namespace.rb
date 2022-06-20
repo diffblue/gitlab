@@ -481,6 +481,10 @@ module EE
       end
     end
 
+    def expire_free_plan_members_count_cache
+      clear_memoization(:free_plan_user_ids)
+    end
+
     def trimmable_user_ids
       strong_memoize(:trimmable_user_ids) do
         active_members = ::Member.in_hierarchy(self).active_state

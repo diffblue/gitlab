@@ -2,8 +2,8 @@
 
 module Security
   class ScanExecutionPoliciesFinder
-    def initialize(current_user, object, params = {})
-      @current_user = current_user
+    def initialize(actor, object, params = {})
+      @actor = actor
       @object = object
       @params = params
     end
@@ -17,7 +17,7 @@ module Security
 
     private
 
-    attr_reader :current_user, :object, :params
+    attr_reader :actor, :object, :params
 
     def fetch_scan_execution_policies
       fetch_policy_configurations
@@ -58,7 +58,9 @@ module Security
     end
 
     def authorized_to_read_policy_configuration?(config)
-      Ability.allowed?(current_user, :read_security_orchestration_policies, config.security_policy_management_project)
+      return actor.has_access_to?(policy_configuration.project) if actor.is_a? Clusters::Agent
+
+      Ability.allowed?(actor, :read_security_orchestration_policies, config.security_policy_management_project)
     end
   end
 end

@@ -24,6 +24,7 @@ import listsIssuesQuery from '~/boards/graphql/lists_issues.query.graphql';
 import issueCreateMutation from '~/boards/graphql/issue_create.mutation.graphql';
 import * as typesCE from '~/boards/stores/mutation_types';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
+import { fetchPolicies } from '~/lib/graphql';
 import * as commonUtils from '~/lib/utils/common_utils';
 import { mergeUrlParams, removeParams } from '~/lib/utils/url_utility';
 import { __ } from '~/locale';
@@ -76,14 +77,8 @@ describe('fetchEpicBoard', () => {
     await testAction({
       action: actions.fetchEpicBoard,
       payload,
-      expectedMutations: [
-        { type: types.REQUEST_CURRENT_BOARD },
-        {
-          type: types.RECEIVE_BOARD_SUCCESS,
-          payload: mockEpicBoard,
-        },
-      ],
-      expectedActions: [{ type: 'setBoardConfig', payload: mockEpicBoard }],
+      expectedMutations: [{ type: types.REQUEST_CURRENT_BOARD }],
+      expectedActions: [{ type: 'setBoard', payload: mockEpicBoard }, { type: 'fetchLists' }],
     });
   });
 
@@ -452,6 +447,7 @@ describe('fetchItemsForList', () => {
         after: undefined,
         first: 10,
       },
+      fetchPolicy: fetchPolicies.NO_CACHE,
       context: {
         isSingleRequest: true,
       },

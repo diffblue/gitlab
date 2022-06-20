@@ -1,0 +1,53 @@
+#import "~/graphql_shared/fragments/page_info.fragment.graphql"
+#import "./epic.fragment.graphql"
+
+query roadmapGroupEpicsWithColor(
+  $fullPath: ID!
+  $state: EpicState
+  $sort: EpicSort
+  $iid: ID
+  $timeframe: Timeframe
+  $labelName: [String!] = []
+  $authorUsername: String = ""
+  $milestoneTitle: String = ""
+  $myReactionEmoji: String
+  $confidential: Boolean
+  $search: String = ""
+  $first: Int = 50
+  $not: NegatedEpicFilterInput
+  $endCursor: String = ""
+) {
+  group(fullPath: $fullPath) {
+    id
+    name
+    epics(
+      iid: $iid
+      state: $state
+      sort: $sort
+      labelName: $labelName
+      authorUsername: $authorUsername
+      milestoneTitle: $milestoneTitle
+      myReactionEmoji: $myReactionEmoji
+      confidential: $confidential
+      search: $search
+      first: $first
+      timeframe: $timeframe
+      not: $not
+      after: $endCursor
+    ) {
+      edges {
+        node {
+          ...BaseEpic
+          color
+          textColor
+          parent {
+            id
+          }
+        }
+      }
+      pageInfo {
+        ...PageInfo
+      }
+    }
+  }
+}

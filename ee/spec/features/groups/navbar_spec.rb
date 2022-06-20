@@ -14,7 +14,6 @@ RSpec.describe 'Group navbar' do
 
   before do
     group.add_maintainer(user)
-    stub_feature_flags(customer_relations: false)
     stub_group_wikis(false)
     stub_feature_flags(harbor_registry_integration: false)
     sign_in(user)
@@ -192,11 +191,10 @@ RSpec.describe 'Group navbar' do
       it_behaves_like 'verified navigation bar'
     end
 
-    context 'when customer relations feature and flag is enabled' do
+    context 'when customer relations feature is enabled' do
       let(:group) { create(:group, :crm_enabled) }
 
       before do
-        stub_feature_flags(customer_relations: true)
         insert_customer_relations_nav(_('Analytics'))
 
         visit group_path(group)
@@ -205,12 +203,10 @@ RSpec.describe 'Group navbar' do
       it_behaves_like 'verified navigation bar'
     end
 
-    context 'when customer relations feature and flag is enabled but subgroup' do
+    context 'when customer relations feature enabled but subgroup' do
       let(:group) { create(:group, :crm_enabled, parent: create(:group)) }
 
       before do
-        stub_feature_flags(customer_relations: true)
-
         visit group_path(group)
       end
 

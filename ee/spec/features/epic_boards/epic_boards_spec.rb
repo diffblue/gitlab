@@ -143,8 +143,6 @@ RSpec.describe 'epic boards', :js do
     context 'lists' do
       let_it_be(:label_list2) { create(:epic_list, epic_board: epic_board, label: label2, position: 1) }
 
-      stub_feature_flags(bootstrap_confirmation_modals: false)
-
       it 'changes position of list' do
         expect(find_board_list(2)).to have_content(label.title)
         expect(find_board_list(3)).to have_content(label2.title)

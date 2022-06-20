@@ -72,6 +72,13 @@ module EE
       validate :validate_confidential_issues_and_subepics
       validate :validate_confidential_parent
 
+      validates :total_opened_issue_weight,
+                :total_closed_issue_weight,
+                :total_opened_issue_count,
+                :total_closed_issue_count,
+                presence: true,
+                numericality: { only_integer: true }
+
       alias_attribute :parent_ids, :parent_id
       alias_method :issuing_parent, :group
 
@@ -121,7 +128,8 @@ module EE
         reorder(keyset_order)
       end
 
-      scope :order_closed_date_desc, -> { reorder(closed_at: :desc) }
+      scope :order_closed_at_asc, -> { reorder(arel_table[:closed_at].asc.nulls_last) }
+      scope :order_closed_at_desc, -> { reorder(arel_table[:closed_at].desc.nulls_last) }
 
       scope :order_relative_position, -> do
         reorder('relative_position ASC', 'id DESC')

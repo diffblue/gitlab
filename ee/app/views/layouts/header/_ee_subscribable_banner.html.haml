@@ -5,7 +5,7 @@
   .js-gitlab-ee-license-banner.hidden{ class: [container_class, @content_class, 'gl-pt-5!'] }
     = render Pajamas::AlertComponent.new(variant: :danger,
       title: message,
-      alert_data: { license_expiry: subscribable.expires_at, defer_links: "true" }) do |c|
+      alert_options: { data: { license_expiry: subscribable.expires_at, defer_links: "true" }}) do |c|
       = c.body do
         - if subscribable.block_changes?
           = link_to_button_style(path: renew_subscription_path, track_property: 'renew')

@@ -53,13 +53,13 @@ module EE
         end
 
         def blocked
-          ::Gitlab::Graphql::Aggregations::Issues::LazyBlockAggregate.new(context, object.id) do |count|
+          ::Gitlab::Graphql::Aggregations::Issues::LazyLinksAggregate.new(context, object.id) do |count|
             (count || 0) > 0
           end
         end
 
         def blocked_by_count
-          ::Gitlab::Graphql::Aggregations::Issues::LazyBlockAggregate.new(context, object.id) do |count|
+          ::Gitlab::Graphql::Aggregations::Issues::LazyLinksAggregate.new(context, object.id) do |count|
             count || 0
           end
         end

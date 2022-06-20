@@ -140,6 +140,16 @@ RSpec.describe Epic do
     it { is_expected.to validate_presence_of(:author) }
     it { is_expected.to validate_presence_of(:title) }
 
+    it { is_expected.to validate_presence_of(:total_opened_issue_weight) }
+    it { is_expected.to validate_presence_of(:total_closed_issue_weight) }
+    it { is_expected.to validate_presence_of(:total_opened_issue_count) }
+    it { is_expected.to validate_presence_of(:total_closed_issue_count) }
+
+    it { is_expected.to validate_numericality_of(:total_opened_issue_weight).only_integer }
+    it { is_expected.to validate_numericality_of(:total_closed_issue_weight).only_integer }
+    it { is_expected.to validate_numericality_of(:total_opened_issue_count).only_integer }
+    it { is_expected.to validate_numericality_of(:total_closed_issue_count).only_integer }
+
     it 'is valid with a valid parent' do
       epic = build(:epic, group: group, parent: create(:epic, group: group))
 
@@ -1101,6 +1111,26 @@ RSpec.describe Epic do
         group.add_guest(guest)
 
         expect(epic.blocked_by_epics_for(guest)).to match_array([blocking_epic_1, blocking_epic_2])
+      end
+    end
+  end
+
+  context 'order by closed_at' do
+    let!(:epic_a) { create(:epic, closed_at: 1.day.ago) }
+    let!(:epic_b) { create(:epic, closed_at: 5.days.ago) }
+    let!(:epic_c_nil) { create(:epic, closed_at: nil) }
+    let!(:epic_d) { create(:epic, closed_at: 3.days.ago) }
+    let!(:epic_e_nil) { create(:epic, closed_at: nil) }
+
+    describe '.order_closed_at_asc' do
+      it 'orders on closed at' do
+        expect(described_class.order_closed_at_asc.to_a).to eq([epic_b, epic_d, epic_a, epic_c_nil, epic_e_nil])
+      end
+    end
+
+    describe '.order_closed_at_desc' do
+      it 'orders on closed at' do
+        expect(described_class.order_closed_at_desc.to_a).to eq([epic_a, epic_d, epic_b, epic_c_nil, epic_e_nil])
       end
     end
   end

@@ -3,10 +3,11 @@
 require 'spec_helper'
 
 RSpec.describe 'Admin views Subscription', :js do
+  include Spec::Support::Helpers::ModalHelpers
+
   let_it_be(:admin) { create(:admin) }
 
   before do
-    stub_feature_flags(bootstrap_confirmation_modals: false)
     sign_in(admin)
     gitlab_enable_admin_mode_sign_in(admin)
   end
@@ -20,9 +21,7 @@ RSpec.describe 'Admin views Subscription', :js do
   shared_examples 'license removal' do
     context 'when removing a license file' do
       before do
-        accept_alert do
-          click_on 'Remove license'
-        end
+        accept_gl_confirm(button_text: 'Remove license') { click_on 'Remove license' }
       end
 
       it 'shows a message saying the license was correctly removed' do
@@ -254,7 +253,6 @@ RSpec.describe 'Admin views Subscription', :js do
     end
   end
 
-  include_examples 'manual renewal banner', path_to_visit: :admin_subscription_path
   include_examples 'manual quarterly co-term banner', path_to_visit: :admin_subscription_path
 
   private

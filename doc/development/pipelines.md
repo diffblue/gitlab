@@ -97,6 +97,18 @@ label is set on the MR. The goal is to reduce the CI/CD minutes consumed by fork
 
 See the [experiment issue](https://gitlab.com/gitlab-org/quality/team-tasks/-/issues/1170).
 
+## Faster feedback when reverting merge requests
+
+When you need to revert a merge request, to get accelerated feedback, you can add the `~pipeline:revert` label to your merge request.
+
+When this label is assigned, the following steps of the CI/CD pipeline are skipped:
+
+- The `package-and-qa` job.
+- The `rspec:undercoverage` job.
+- The entire [Review Apps process](testing_guide/review_apps.md).
+
+Apply the label to the merge request, and run a new pipeline for the MR.
+
 ## Fail-fast job in merge request pipelines
 
 To provide faster feedback when a merge request breaks existing tests, we are experimenting with a
@@ -276,6 +288,24 @@ job.
 In the event of an emergency, or false positive from this job, add the
 `pipeline:skip-undercoverage` label to the merge request to allow this job to
 fail.
+
+### Troubleshooting `rspec:undercoverage` failures
+
+The `rspec:undercoverage` job has [known bugs](https://gitlab.com/groups/gitlab-org/-/epics/8254)
+that can cause false positive failures. You can locally test coverage locally to determine if it's
+safe to apply `~"pipeline:skip-undercoverage"`. For example, using `<spec>` as the name of the
+test causing the failure:
+
+1. Run `SIMPLECOV=1 bundle exec rspec <spec>`.
+1. Run `scripts/undercoverage`.
+
+If these commands return `undercover: ✅ No coverage is missing in latest changes` then you can apply `~"pipeline:skip-undercoverage"` to bypass pipeline failures. 
+
+## Ruby versions testing
+
+Our test suite runs against Ruby 2 in merge requests and default branch pipelines.
+
+We do run our test suite against Ruby 3 on 2-hourly scheduled pipelines, as GitLab.com will soon run on Ruby 3.
 
 ## PostgreSQL versions testing
 

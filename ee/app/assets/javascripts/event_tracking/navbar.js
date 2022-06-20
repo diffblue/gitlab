@@ -33,7 +33,7 @@ export default function trackNavbarEvents() {
       const parentDropdown = e.currentTarget.closest('li.dropdown');
 
       Tracking.event(TRACKING_CATEGORY, 'activate_form_input', {
-        label: `${parentDropdown.getAttribute('data-track-label')}_search`,
+        label: `${parentDropdown.dataset.trackLabel}_search`,
         property: '',
         value: '',
       });

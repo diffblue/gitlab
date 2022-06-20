@@ -348,7 +348,13 @@ namespace :gitlab do
       Rake::Task['db:drop'].invoke
       Rake::Task['db:create'].invoke
       ActiveRecord::Base.configurations.configs_for(env_name: ActiveRecord::Tasks::DatabaseTasks.env).each do |db_config|
-        ActiveRecord::Base.establish_connection(db_config.configuration_hash.merge(username: username)) # rubocop: disable Database/EstablishConnection
+        config = ActiveRecord::DatabaseConfigurations::HashConfig.new(
+          db_config.env_name,
+          db_config.name,
+          db_config.configuration_hash.merge(username: username)
+        )
+
+        ActiveRecord::Base.establish_connection(config) # rubocop: disable Database/EstablishConnection
         Gitlab::Database.check_for_non_superuser
         Rake::Task['db:migrate'].invoke
       end
@@ -359,6 +365,69 @@ namespace :gitlab do
     Rake::Task['db:migrate'].enhance do
       if Rails.env.development? && Gitlab::Database::BackgroundMigration::BatchedMigration.table_exists?
         Rake::Task['gitlab:db:execute_batched_migrations'].invoke
+      end
+    end
+
+    namespace :dictionary do
+      DB_DOCS_PATH = File.join(Rails.root, 'db', 'docs')
+
+      desc 'Generate database docs yaml'
+      task generate: :environment do
+        FileUtils.mkdir_p(DB_DOCS_PATH) unless Dir.exist?(DB_DOCS_PATH)
+
+        Rails.application.eager_load!
+
+        tables = Gitlab::Database.database_base_models.flat_map { |_, m| m.connection.tables }
+        classes = tables.to_h { |t| [t, []] }
+
+        Gitlab::Database.database_base_models.each do |_, model_class|
+          model_class
+            .descendants
+            .reject(&:abstract_class)
+            .reject { |c| c.name =~ /^(?:EE::)?Gitlab::(?:BackgroundMigration|DatabaseImporters)::/ }
+            .reject { |c| c.name =~ /^HABTM_/ }
+            .each { |c| classes[c.table_name] << c.name if classes.has_key?(c.table_name) }
+        end
+
+        version = Gem::Version.new(File.read('VERSION'))
+        milestone = version.release.segments[0..1].join('.')
+
+        tables.each do |table_name|
+          file = File.join(DB_DOCS_PATH, "#{table_name}.yml")
+
+          table_metadata = {
+            'table_name' => table_name,
+            'classes' => classes[table_name]&.sort&.uniq,
+            'feature_categories' => [],
+            'description' => nil,
+            'introduced_by_url' => nil,
+            'milestone' => milestone
+          }
+
+          if File.exist?(file)
+            outdated = false
+
+            existing_metadata = YAML.safe_load(File.read(file))
+
+            if existing_metadata['table_name'] != table_metadata['table_name']
+              existing_metadata['table_name'] = table_metadata['table_name']
+              outdated = true
+            end
+
+            if existing_metadata['classes'].difference(table_metadata['classes']).any?
+              existing_metadata['classes'] = table_metadata['classes']
+              outdated = true
+            end
+
+            File.write(file, existing_metadata.to_yaml) if outdated
+          else
+            File.write(file, table_metadata.to_yaml)
+          end
+        end
+      end
+
+      Rake::Task['db:migrate'].enhance do
+        Rake::Task['gitlab:db:dictionary:generate'].invoke if Rails.env.development?
       end
     end
   end

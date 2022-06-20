@@ -4,11 +4,17 @@ module EE
   module Groups
     module SettingsHelper
       def delayed_project_removal_help_text
-        html_escape(delayed_project_removal_i18n_string) % {
-          waiting_period: ::Gitlab::CurrentSettings.deletion_adjourned_period,
-          link_start: '<a href="%{url}">'.html_safe % { url: general_admin_application_settings_path(anchor: 'js-visibility-settings') },
-          link_end: '</a>'.html_safe
-        }
+        if ::Gitlab::CurrentSettings.default_project_deletion_protection
+          s_('DeletionSettings|Only administrators can delete projects.')
+        else
+          s_('DeletionSettings|Owners and administrators can delete projects.')
+        end
+      end
+
+      def keep_deleted_option_label
+        number = ::Gitlab::CurrentSettings.deletion_adjourned_period
+
+        n_(s_("DeletionSettings|Keep deleted projects for 1 day"), s_("DeletionSettings|Keep deleted projects for %{number} days"), number) % { number: number }
       end
 
       def saas_user_caps_help_text(group)
@@ -18,15 +24,11 @@ module EE
         html_escape(saas_user_caps_i18n_string(group)) % { user_cap_docs_link_start: user_cap_docs_link_start, user_cap_docs_link_end: '</a>'.html_safe }
       end
 
-      private
-
-      def delayed_project_removal_i18n_string
-        if current_user&.can_admin_all_resources?
-          s_('GroupSettings|Projects will be permanently deleted after a %{waiting_period}-day delay. This delay can be %{link_start}customized by an admin%{link_end} in instance settings. Inherited by subgroups.')
-        else
-          s_('GroupSettings|Projects will be permanently deleted after a %{waiting_period}-day delay. Inherited by subgroups.')
-        end
+      def delayed_deletion_disabled
+        ::Gitlab::CurrentSettings.delayed_group_deletion == false
       end
+
+      private
 
       def saas_user_caps_i18n_string(group)
         if ::Feature.enabled?(:saas_user_caps_auto_approve_pending_users_on_cap_increase, group.root_ancestor)

@@ -622,6 +622,11 @@ To enable Mutual TLS:
 
 These CI/CD variables are specific to DAST. They can be used to customize the behavior of DAST to your requirements.
 
+WARNING:
+All customization of GitLab security scanning tools should be tested in a merge request before
+merging these changes to the default branch. Failure to do so can give unexpected results,
+including a large number of false positives.
+
 | CI/CD variable                                   | Type          | Description                   |
 |:-------------------------------------------------|:--------------|:------------------------------|
 | `DAST_ADVERTISE_SCAN`                            | boolean       | Set to `true` to add a `Via` header to every request sent, advertising that the request was sent as part of a GitLab DAST scan. [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/334947) in GitLab 14.1. |
@@ -1400,17 +1405,19 @@ and DAST site profiles are included in the [audit log](../../../administration/a
 
 ## Reports
 
-The DAST tool outputs a report file in JSON format by default. However, this tool can also generate reports in
-Markdown, HTML, and XML. For more information, see the [schema for DAST reports](https://gitlab.com/gitlab-org/security-products/security-report-schemas/-/blob/master/dist/dast-report-format.json).
+The DAST tool outputs a `gl-dast-report.json` report file containing details of the scan and its results.
+This file is included in the job's artifacts. JSON is the default format, but
+you can output the report in Markdown, HTML, and XML formats. To specify an alternative
+format, use a [CI/CD variable](#available-cicd-variables). You can also use a CI/CD variable
+to configure the job to output the `gl-dast-debug-auth-report.html` file which helps when debugging
+authentication issues.
 
-### JSON
+For details of the report's schema, see the [schema for DAST reports](https://gitlab.com/gitlab-org/security-products/security-report-schemas/-/blob/master/dist/dast-report-format.json). Example reports can be found in the
+[DAST repository](https://gitlab.com/gitlab-org/security-products/dast/-/tree/main/test/end-to-end/expect).
 
 WARNING:
-The JSON report artifacts are not a public API of DAST and their format is expected to change in the future.
-
-The DAST tool always emits a JSON report file called `gl-dast-report.json` and
-sample reports can be found in the
-[DAST repository](https://gitlab.com/gitlab-org/security-products/dast/-/tree/main/test/end-to-end/expect).
+The JSON report artifacts are not a public API of DAST and their format is expected to change in the
+future.
 
 ## Optimizing DAST
 

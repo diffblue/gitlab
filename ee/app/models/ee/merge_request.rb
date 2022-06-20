@@ -118,11 +118,39 @@ module EE
 
     override :mergeable?
     def mergeable?(skip_ci_check: false, skip_discussions_check: false)
-      return false unless approved?
-      return false if has_denied_policies?
-      return false if merge_blocked_by_other_mrs?
+      if ::Feature.disabled?(:change_response_code_merge_status, self.project)
+        return false unless approved?
+
+        unless ::Feature.enabled?(:improved_mergeability_checks, self.project)
+          return false if has_denied_policies?
+        end
+
+        return false if merge_blocked_by_other_mrs?
+      end
 
       super
+    end
+
+    override :mergeable_state?
+    def mergeable_state?(skip_ci_check: false, skip_discussions_check: false)
+      if ::Feature.enabled?(:change_response_code_merge_status, self.project)
+        return false unless approved?
+
+        unless ::Feature.enabled?(:improved_mergeability_checks, self.project)
+          return false if has_denied_policies?
+        end
+
+        return false if merge_blocked_by_other_mrs?
+      end
+
+      super
+    end
+
+    override :mergeability_checks
+    def mergeability_checks
+      [
+        ::MergeRequests::Mergeability::CheckDeniedPoliciesService
+      ] + super
     end
 
     def merge_blocked_by_other_mrs?
@@ -245,7 +273,12 @@ module EE
     def compare_license_scanning_reports_collapsed(current_user)
       return missing_report_error("license scanning") unless actual_head_pipeline&.license_scan_completed?
 
-      compare_reports(::Ci::CompareLicenseScanningReportsCollapsedService, current_user)
+      compare_reports(
+        ::Ci::CompareLicenseScanningReportsCollapsedService,
+        current_user,
+        'license_scanning',
+        additional_params: { license_check: approval_rules.license_compliance.any? }
+      )
     end
 
     def has_metrics_reports?

@@ -3,10 +3,10 @@
 
 = content_for :page_level_alert do
   %div{ class: [container_class, @content_class, 'gl-pt-5!'] }
-    = render Pajamas::AlertComponent.new(title: payload.subject,
+    = render Pajamas::AlertComponent.new(title: payload.title,
       variant: payload.display_error_version? ? :danger : :warning,
-      alert_class: 'gl-my-5',
-      alert_data: { testid: 'manual-quarterly-co-term-banner' },
+      alert_options: { class: 'gl-my-5',
+                       data: { testid: 'manual-quarterly-co-term-banner' }},
       dismissible: false) do |c|
       = c.body do
         = payload.body

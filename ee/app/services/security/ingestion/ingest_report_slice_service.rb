@@ -21,6 +21,7 @@ module Security
         IngestIssueLinks
         IngestVulnerabilityStatistics
         IngestRemediations
+        HooksExecution
       ].freeze
 
       def self.execute(pipeline, finding_maps)
@@ -33,6 +34,8 @@ module Security
       end
 
       def execute
+        Security::Ingestion::Tasks::UpdateVulnerabilityUuids.execute(@pipeline, @finding_maps)
+
         ApplicationRecord.transaction do
           TASKS.each { |task| execute_task(task) }
         end

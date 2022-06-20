@@ -30,7 +30,7 @@ module SystemCheck
 
       def show_error
         for_more_information(
-          'doc/integration/elasticsearch.md'
+          'doc/integration/advanced_search/elasticsearch.md'
         )
       end
 

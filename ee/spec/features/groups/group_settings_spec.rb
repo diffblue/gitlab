@@ -153,20 +153,57 @@ RSpec.describe 'Edit group settings' do
     end
   end
 
-  context 'enable delayed project deletion' do
+  context 'delayed project deletion' do
+    let(:form_group_selector) { '[data-testid="delayed-project-removal-form-group"]' }
+
     before do
       stub_licensed_features(adjourned_deletion_for_projects_and_groups: true)
     end
 
     it_behaves_like 'a cascading setting' do
       let_it_be(:subgroup) { create(:group, parent: group) }
-
-      let(:form_group_selector) { '[data-testid="delayed-project-removal-form-group"]' }
-      let(:setting_field_selector) { '[data-testid="delayed-project-removal-checkbox"]' }
+      let(:setting_field_selector) { '[data-testid="delayed-project-removal-radio-button"]' }
       let(:setting_path) { edit_group_path(group, anchor: 'js-permissions-settings') }
       let(:group_path) { edit_group_path(group) }
       let(:subgroup_path) { edit_group_path(subgroup) }
       let(:click_save_button) { save_permissions_group }
+      let(:enable_setting) { -> { choose 'group_delayed_project_removal_true' } }
+    end
+
+    context 'delayed deletion is disabled by an admin', :js do
+      let_it_be(:user) { create(:admin) }
+
+      before do
+        stub_env('IN_MEMORY_APPLICATION_SETTINGS', 'false')
+        gitlab_enable_admin_mode_sign_in(user)
+
+        visit general_admin_application_settings_path
+
+        page.within '#js-visibility-settings' do
+          choose 'None, delete immediately'
+          click_button 'Save changes'
+        end
+      end
+
+      it 'does not render the group delayed deletion inputs' do
+        visit edit_group_path(group)
+
+        page.within form_group_selector do
+          expect(page).not_to have_selector('input')
+        end
+      end
+
+      it 'displays lock icon with popover' do
+        visit edit_group_path(group)
+
+        page.within form_group_selector do
+          find('[data-testid="cascading-settings-lock-icon"]').click
+        end
+
+        page.within '[data-testid="cascading-settings-lock-popover"]' do
+          expect(page).to have_text 'This setting has been enforced by an instance admin.'
+        end
+      end
     end
 
     describe 'immediately deleting a project marked for deletion', :js do

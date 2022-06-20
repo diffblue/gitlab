@@ -3,6 +3,7 @@
  *
  */
 $tabs-holder-z-index: 250;
+$comparison-empty-state-height: 62px;
 
 .space-children {
   @include clearfix;
@@ -68,6 +69,10 @@ $tabs-holder-z-index: 250;
       background: none;
     }
   }
+}
+
+.compare-commit-empty {
+  min-height: $comparison-empty-state-height;
 }
 
 .commits-empty {
@@ -200,11 +205,6 @@ $tabs-holder-z-index: 250;
   }
 }
 
-.assign-to-me-link {
-  padding-left: 12px;
-  white-space: nowrap;
-}
-
 .table-holder {
   .ci-table {
     th {
@@ -252,13 +252,6 @@ $tabs-holder-z-index: 250;
   }
 }
 
-.merge-request-tabs {
-  display: flex;
-  flex-wrap: nowrap;
-  margin-bottom: 0;
-  padding: 0;
-}
-
 .limit-container-width {
   .merge-request-tabs-container {
     max-width: $limited-layout-width;
@@ -274,9 +267,6 @@ $tabs-holder-z-index: 250;
 }
 
 .merge-request-tabs-container {
-  display: flex;
-  justify-content: space-between;
-
   @include media-breakpoint-down(xs) {
     .discussion-filter-container {
       margin-bottom: $gl-padding-4;

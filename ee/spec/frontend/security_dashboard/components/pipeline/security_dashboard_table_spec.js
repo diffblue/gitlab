@@ -4,7 +4,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import SecurityDashboardTable from 'ee/security_dashboard/components/pipeline/security_dashboard_table.vue';
 import SecurityDashboardTableRow from 'ee/security_dashboard/components/pipeline/security_dashboard_table_row.vue';
-import createStore from 'ee/security_dashboard/store';
+import { setupStore } from 'ee/security_dashboard/store';
 import {
   RECEIVE_VULNERABILITIES_ERROR,
   RECEIVE_VULNERABILITIES_SUCCESS,
@@ -21,7 +21,8 @@ describe('Security Dashboard Table', () => {
   let wrapper;
 
   beforeEach(() => {
-    store = createStore();
+    store = new Vuex.Store();
+    setupStore(store);
     wrapper = shallowMountExtended(SecurityDashboardTable, {
       store,
     });

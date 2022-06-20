@@ -1,12 +1,16 @@
 import Vue from 'vue';
+import Vuex from 'vuex';
 import { parseBoolean } from '~/lib/utils/common_utils';
 import findingsQuery from 'ee/security_dashboard/graphql/queries/pipeline_findings.query.graphql';
 import PipelineSecurityDashboard from './components/pipeline/pipeline_security_dashboard.vue';
 import apolloProvider from './graphql/provider';
 import createRouter from './router';
-import createStore from './store';
 import { DASHBOARD_TYPES } from './store/constants';
 import { LOADING_VULNERABILITIES_ERROR_CODES } from './store/modules/vulnerabilities/constants';
+
+// This can be removed when the migration to GraphQL is completed.
+// Though, if we complete the pipeline tabs migration first, we will be removing this whole file.
+Vue.use(Vuex);
 
 export default () => {
   const el = document.getElementById('js-security-report-app');
@@ -40,7 +44,7 @@ export default () => {
     el,
     apolloProvider,
     router: createRouter(),
-    store: createStore(),
+    store: new Vuex.Store(),
     provide: {
       dashboardType: DASHBOARD_TYPES.PIPELINE,
       projectId: parseInt(projectId, 10),

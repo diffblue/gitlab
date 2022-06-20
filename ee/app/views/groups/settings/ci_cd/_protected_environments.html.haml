@@ -11,3 +11,5 @@
         = s_('ProtectedEnvironment|Only specified groups can execute deployments in protected environments.')
     .settings-content
       = render 'groups/protected_environments/form'
+    .settings-content
+      = render partial: 'groups/protected_environments/environments_list'

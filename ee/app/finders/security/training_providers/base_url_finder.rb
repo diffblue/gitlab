@@ -27,12 +27,12 @@ module Security
       end
 
       def self.from_cache(id)
-        project_id, provider_id, identifier_external_id = id.split('-')
+        project_id, provider_id, identifier_external_id, language = id.split('-')
 
         project = Project.find(project_id)
         provider = ::Security::TrainingProvider.find(provider_id)
 
-        new(project, provider, identifier_external_id)
+        new(project, provider, identifier_external_id, language)
       end
 
       private

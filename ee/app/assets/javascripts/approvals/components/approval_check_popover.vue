@@ -28,10 +28,14 @@ export default {
       required: false,
       default: '',
     },
-  },
-  computed: {
-    popoverTriggerId() {
-      return `reportInfo-${this.title}`;
+    popoverId: {
+      type: String,
+      required: true,
+    },
+    iconName: {
+      type: String,
+      required: false,
+      default: 'question',
     },
   },
 };
@@ -40,14 +44,14 @@ export default {
 <template>
   <span class="vertical-align-middle text-muted js-help ml-2">
     <gl-icon
-      :id="popoverTriggerId"
-      name="question"
+      :id="popoverId"
+      :name="iconName"
       class="author-link gl-cursor-help"
       :aria-label="__('help')"
       :size="14"
       data-testid="icon2"
     />
-    <gl-popover :target="popoverTriggerId" placement="top" :title="title">
+    <gl-popover :target="popoverId" placement="top" :title="title">
       <div class="mb-2">{{ text }}</div>
       <gl-link v-if="documentationLink" target="_blank" :href="documentationLink">
         <span class="vertical-align-middle">{{ documentationText }}</span>

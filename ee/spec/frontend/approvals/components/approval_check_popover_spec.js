@@ -8,11 +8,16 @@ describe('Approval Check Popover', () => {
   let wrapper;
 
   const title = 'Title';
+  const popoverId = 'reportInfo-Title';
+
+  const createComponent = (props = {}) => {
+    wrapper = shallowMount(component, {
+      propsData: { title, popoverId, ...props },
+    });
+  };
 
   beforeEach(() => {
-    wrapper = shallowMount(component, {
-      propsData: { title },
-    });
+    createComponent();
   });
 
   describe('with a documentation link', () => {
@@ -48,6 +53,22 @@ describe('Approval Check Popover', () => {
       title,
       target: `reportInfo-${title}`,
       placement: 'top',
+    });
+  });
+
+  it('renders the default icon', () => {
+    expect(wrapper.findComponent(GlIcon).props('name')).toBe('question');
+  });
+
+  describe('with a name for icon', () => {
+    const expectedIconName = 'question-o';
+
+    beforeEach(() => {
+      createComponent({ iconName: expectedIconName });
+    });
+
+    it('renders icon with correct props', () => {
+      expect(wrapper.findComponent(GlIcon).props('name')).toBe(expectedIconName);
     });
   });
 });

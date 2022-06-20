@@ -49,7 +49,7 @@ export default {
           text: s__('DastSiteValidation|Revoke validation'),
           attributes: [
             { loading: this.isLoading },
-            { variant: 'info' },
+            { variant: 'confirm' },
             { category: 'primary' },
             { 'data-testid': 'revoke-validation-button' },
           ],

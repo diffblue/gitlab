@@ -29,11 +29,7 @@ class ProjectPolicy < BasePolicy
     owner_of_personal_namespace = project.owner.present? && project.owner == @user
 
     unless owner_of_personal_namespace
-      group_or_project_owner = if Feature.enabled?(:faster_owner_access)
-                                 team_access_level >= Gitlab::Access::OWNER
-                               else
-                                 project.group&.has_owner?(@user)
-                               end
+      group_or_project_owner = team_access_level >= Gitlab::Access::OWNER
     end
 
     owner_of_personal_namespace || group_or_project_owner
@@ -205,6 +201,10 @@ class ProjectPolicy < BasePolicy
 
   condition(:project_runner_registration_allowed) do
     Feature.disabled?(:runner_registration_control) || Gitlab::CurrentSettings.valid_runner_registrars.include?('project')
+  end
+
+  condition :registry_enabled do
+    Gitlab.config.registry.enabled
   end
 
   # `:read_project` may be prevented in EE, but `:read_project_for_iids` should
@@ -762,6 +762,10 @@ class ProjectPolicy < BasePolicy
 
   rule { can?(:admin_project_member) }.policy do
     enable :import_project_members_from_another_project
+  end
+
+  rule { registry_enabled & can?(:admin_container_image) }.policy do
+    enable :view_package_registry_project_settings
   end
 
   private

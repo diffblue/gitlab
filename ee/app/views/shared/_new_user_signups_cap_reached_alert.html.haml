@@ -7,10 +7,10 @@
 %div{ class: [container_class, @content_class, 'gl-pt-5!'] }
   = render Pajamas::AlertComponent.new(variant: :warning,
     title: s_('Admin|Your instance has reached its user cap'),
-    alert_class: 'js-new-user-signups-cap-reached',
-    alert_data: { feature_id: ::EE::Users::CalloutsHelper::NEW_USER_SIGNUPS_CAP_REACHED,
-                  dismiss_endpoint: callouts_path,
-                  defer_links: "true" }) do |c|
+    alert_options: { class: 'js-new-user-signups-cap-reached',
+                     data: { feature_id: ::EE::Users::CalloutsHelper::NEW_USER_SIGNUPS_CAP_REACHED,
+                             dismiss_endpoint: callouts_path,
+                             defer_links: "true" }}) do |c|
     = c.body do
       = s_('Admin|Additional users must be reviewed and approved by a system administrator. Learn more about %{help_link_start}usage caps%{help_link_end}.').html_safe % { help_link_start: help_link_start, help_link_end: help_link_end }
     - if User.blocked_pending_approval.count > 0

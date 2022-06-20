@@ -1,18 +1,21 @@
 import { shallowMount } from '@vue/test-utils';
 import MockAdapter from 'axios-mock-adapter';
-import { merge } from 'lodash';
-import { nextTick } from 'vue';
+import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
 import LoadingError from 'ee/security_dashboard/components/pipeline/loading_error.vue';
 import SecurityDashboardTable from 'ee/security_dashboard/components/pipeline/security_dashboard_table.vue';
 import SecurityDashboard from 'ee/security_dashboard/components/pipeline/security_dashboard_vuex.vue';
-import { getStoreConfig } from 'ee/security_dashboard/store';
 import { VULNERABILITY_MODAL_ID } from 'ee/vue_shared/security_reports/components/constants';
 import IssueModal from 'ee/vue_shared/security_reports/components/modal.vue';
 import { TEST_HOST } from 'helpers/test_constants';
 import axios from '~/lib/utils/axios_utils';
 import { BV_HIDE_MODAL } from '~/lib/utils/constants';
 
+Vue.use(Vuex);
+
+const projectId = 5678;
+const sourceBranch = 'feature-branch-1';
+const jobsPath = 'my-jobs-path';
 const pipelineId = 123;
 const pipelineIid = 12;
 const vulnerabilitiesEndpoint = `${TEST_HOST}/vulnerabilities`;
@@ -22,26 +25,25 @@ jest.mock('~/flash');
 describe('Security Dashboard component', () => {
   let wrapper;
   let mock;
-  let setPipelineIdSpy;
-  let fetchPipelineJobsSpy;
   let store;
 
   const createComponent = ({ props } = {}) => {
-    setPipelineIdSpy = jest.fn();
-    fetchPipelineJobsSpy = jest.fn();
-
-    const { actions, ...storeConfig } = getStoreConfig();
-    store = new Vuex.Store(
-      merge(storeConfig, {
-        modules: {
-          vulnerabilities: { actions: { setPipelineId: setPipelineIdSpy } },
-          pipelineJobs: { actions: { fetchPipelineJobs: fetchPipelineJobsSpy } },
-        },
-      }),
-    );
+    store = new Vuex.Store();
+    jest.spyOn(store, 'dispatch');
 
     wrapper = shallowMount(SecurityDashboard, {
       store,
+      provide: {
+        projectId,
+        projectFullPath: 'my-path',
+        pipeline: {
+          id: pipelineId,
+          iid: pipelineIid,
+          jobsPath,
+          sourceBranch,
+        },
+        vulnerabilitiesEndpoint,
+      },
       propsData: {
         projectFullPath: '/path',
         vulnerabilitiesEndpoint,
@@ -71,12 +73,24 @@ describe('Security Dashboard component', () => {
       expect(wrapper.findComponent(SecurityDashboardTable).exists()).toBe(true);
     });
 
-    it('sets the pipeline id', () => {
-      expect(setPipelineIdSpy).toHaveBeenCalledWith(expect.any(Object), pipelineId);
+    it('sets the source branch', () => {
+      expect(store.dispatch).toHaveBeenCalledWith('vulnerabilities/setSourceBranch', sourceBranch);
     });
 
-    it('fetchs the pipeline jobs', () => {
-      expect(fetchPipelineJobsSpy).toHaveBeenCalledWith(expect.any(Object), undefined);
+    it('sets the pipeline jobs path', () => {
+      expect(store.dispatch).toHaveBeenCalledWith('pipelineJobs/setPipelineJobsPath', jobsPath);
+    });
+
+    it('sets the project id', () => {
+      expect(store.dispatch).toHaveBeenCalledWith('pipelineJobs/setProjectId', projectId);
+    });
+
+    it('sets the pipeline id', () => {
+      expect(store.dispatch).toHaveBeenCalledWith('vulnerabilities/setPipelineId', pipelineId);
+    });
+
+    it('fetches the pipeline jobs', () => {
+      expect(store.dispatch).toHaveBeenCalledWith('pipelineJobs/fetchPipelineJobs', undefined);
     });
 
     it('renders the issue modal', () => {

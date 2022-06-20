@@ -16,6 +16,7 @@ query instanceVulnerabilities(
   $hasIssues: Boolean
   $hasResolution: Boolean
   $vetEnabled: Boolean = false
+  $clusterAgentId: [ClustersAgentID!]
 ) {
   vulnerabilities(
     before: $before
@@ -31,6 +32,7 @@ query instanceVulnerabilities(
     sort: $sort
     hasIssues: $hasIssues
     hasResolution: $hasResolution
+    clusterAgentId: $clusterAgentId
   ) {
     nodes {
       ...VulnerabilityFragment

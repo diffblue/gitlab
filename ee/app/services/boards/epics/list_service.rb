@@ -53,7 +53,7 @@ module Boards
       def order(items)
         items = items.join_board_position(board.id) if needs_board_position?
 
-        return items.order_closed_date_desc if list&.closed?
+        return items.order_closed_at_desc if list&.closed?
 
         items.order_relative_position_on_board(board.id)
       end

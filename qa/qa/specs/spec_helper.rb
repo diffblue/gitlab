@@ -38,6 +38,8 @@ RSpec.configure do |config|
     QA::Runtime::Logger.info("Starting test: #{Rainbow(example.full_description).bright}")
     QA::Runtime::Example.current = example
 
+    visit(QA::Runtime::Scenario.gitlab_address) if QA::Runtime::Env.remote_mobile_device_name
+
     # Reset fabrication counters tracked in resource base
     Thread.current[:api_fabrication] = 0
     Thread.current[:browser_ui_fabrication] = 0
@@ -46,6 +48,15 @@ RSpec.configure do |config|
   config.after do
     # If a .netrc file was created during the test, delete it so that subsequent tests don't try to use the same logins
     QA::Git::Repository.new.delete_netrc
+  end
+
+  config.prepend_after do |example|
+    if example.exception
+      page = Capybara.page
+
+      QA::Support::PageErrorChecker.log_request_errors(page)
+      QA::Support::PageErrorChecker.check_page_for_error_code(page)
+    end
   end
 
   # Add fabrication time to spec metadata

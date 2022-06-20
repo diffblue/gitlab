@@ -791,7 +791,23 @@ RSpec.describe ProjectsController do
       context 'for projects in user namespace' do
         let(:project) { create(:project, namespace: user.namespace) }
 
-        it_behaves_like 'deletes project right away'
+        context 'when feature is enabled at instance level' do
+          before do
+            stub_application_setting(deletion_adjourned_period: 7)
+            stub_application_setting(delayed_project_removal: true)
+          end
+
+          it_behaves_like 'marks project for deletion'
+        end
+
+        context 'when feature is not enabled at instance level' do
+          before do
+            stub_application_setting(deletion_adjourned_period: 0)
+            stub_application_setting(delayed_project_removal: false)
+          end
+
+          it_behaves_like 'deletes project right away'
+        end
       end
     end
 

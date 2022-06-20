@@ -91,20 +91,15 @@ RSpec.describe EE::SecurityOrchestrationHelper do
       let(:owner) { project.first_owner }
       let(:policy) { nil }
       let(:policy_type) { 'scan_execution_policy' }
-      let(:environment) { nil }
       let(:base_data) do
         {
           assigned_policy_project: nil.to_json,
-          default_environment_id: -1,
           disable_scan_policy_update: 'false',
           create_agent_help_path: kind_of(String),
-          environments_endpoint: kind_of(String),
           namespace_id: project.id,
           namespace_path: kind_of(String),
-          network_documentation_path: kind_of(String),
           policy_editor_empty_state_svg_path: kind_of(String),
           policies_path: kind_of(String),
-          environment_id: environment&.id,
           policy: policy&.to_json,
           policy_type: policy_type,
           scan_policy_documentation_path: kind_of(String),
@@ -117,7 +112,7 @@ RSpec.describe EE::SecurityOrchestrationHelper do
         allow(helper).to receive(:can?).with(owner, :update_security_orchestration_policy_project, project) { true }
       end
 
-      subject { helper.orchestration_policy_data(project, policy_type, policy, environment, approvers) }
+      subject { helper.orchestration_policy_data(project, policy_type, policy, approvers) }
 
       context 'when a new policy is being created' do
         let(:policy) { nil }
@@ -128,11 +123,9 @@ RSpec.describe EE::SecurityOrchestrationHelper do
       end
 
       context 'when an existing policy is being edited' do
-        let_it_be(:environment) { create(:environment, project: project) }
-
         let(:policy) { build(:scan_execution_policy, name: 'Run DAST in every pipeline') }
 
-        it { is_expected.to match(base_data.merge(default_environment_id: project.default_environment.id)) }
+        it { is_expected.to match(base_data) }
       end
 
       context 'when scan policy update is disabled' do
@@ -165,7 +158,6 @@ RSpec.describe EE::SecurityOrchestrationHelper do
     end
 
     context 'for namespace' do
-      let(:environment) { nil }
       let(:approvers) { %w(approver1 approver2) }
       let(:owner) { namespace.first_owner }
       let(:policy) { nil }
@@ -189,7 +181,7 @@ RSpec.describe EE::SecurityOrchestrationHelper do
         allow(helper).to receive(:can?).with(owner, :update_security_orchestration_policy_project, namespace) { true }
       end
 
-      subject { helper.orchestration_policy_data(namespace, policy_type, policy, environment, approvers) }
+      subject { helper.orchestration_policy_data(namespace, policy_type, policy, approvers) }
 
       context 'when a new policy is being created' do
         let(:policy) { nil }

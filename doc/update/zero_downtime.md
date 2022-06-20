@@ -17,13 +17,18 @@ there are the following requirements:
 - You are using PostgreSQL. Starting from GitLab 12.1, MySQL is not supported.
 - You have set up a multi-node GitLab instance. Single-node instances do not support zero-downtime upgrades.
 
+If you want to upgrade multiple releases or do not meet the other requirements:
+
+- [Upgrade a single node with downtime](package/index.md).
+- [Upgrade a multi-node instance with downtime](with_downtime.md).
+
 If you meet all the requirements above, follow these instructions in order. There are three sets of steps, depending on your deployment type:
 
 | Deployment type                                                 | Description                                       |
 | --------------------------------------------------------------- | ------------------------------------------------  |
 | [Gitaly or Gitaly Cluster](#gitaly-or-gitaly-cluster)           | GitLab CE/EE using HA architecture for Gitaly or Gitaly Cluster |
-| [Multi-node / PostgreSQL HA](#use-postgresql-ha)                | GitLab CE/EE using HA architecture for PostgreSQL |
-| [Multi-node / Redis HA](#use-redis-ha-using-sentinel)           | GitLab CE/EE using HA architecture for Redis |
+| [Multi-node / PostgreSQL HA](#postgresql)                | GitLab CE/EE using HA architecture for PostgreSQL |
+| [Multi-node / Redis HA](#redis-ha-using-sentinel)           | GitLab CE/EE using HA architecture for Redis |
 | [Geo](#geo-deployment)                                          | GitLab EE with Geo enabled                        |
 | [Multi-node / HA with Geo](#multi-node--ha-deployment-with-geo) | GitLab CE/EE on multiple nodes                    |
 
@@ -255,7 +260,7 @@ node first and run database migrations.
       sudo gitlab-ctl reconfigure
       ```
 
-### Use PostgreSQL HA
+### PostgreSQL
 
 Pick a node to be the `Deploy Node`. It can be any application node, but it must be the same
 node throughout the process.
@@ -272,7 +277,7 @@ node throughout the process.
 
 - To prevent `reconfigure` from automatically running database migrations, ensure that `gitlab_rails['auto_migrate'] = false` is set in `/etc/gitlab/gitlab.rb`.
 
-**Gitaly only nodes**
+**Postgres only nodes**
 
 - Update the GitLab package
 
@@ -308,7 +313,7 @@ node throughout the process.
 
 - If you're using PgBouncer:
 
-  You need to bypass PgBouncer and connect directly to the database master
+  You need to bypass PgBouncer and connect directly to the database leader
   before running migrations.
 
   Rails uses an advisory lock when attempting to run a migration to prevent
@@ -317,7 +322,7 @@ node throughout the process.
   and other issues when running database migrations using PgBouncer in transaction
   pooling mode.
 
-  To find the master node, run the following on a database node:
+  To find the leader node, run the following on a database node:
 
   ```shell
   sudo gitlab-ctl patroni members
@@ -325,7 +330,7 @@ node throughout the process.
 
   Then, in your `gitlab.rb` file on the deploy node, update
   `gitlab_rails['db_host']` and `gitlab_rails['db_port']` with the database
-  master's host and port.
+  leader's host and port.
 
 - To get the regular database migrations and latest code in place, run
 
@@ -380,7 +385,7 @@ sure you remove `/etc/gitlab/skip-auto-reconfigure` and revert
 setting `gitlab_rails['auto_migrate'] = false` in
 `/etc/gitlab/gitlab.rb` after you've completed these steps.
 
-### Use Redis HA (using Sentinel) **(PREMIUM SELF)**
+### Redis HA (using Sentinel) **(PREMIUM SELF)**
 
 Package upgrades may involve version updates to the bundled Redis service. On
 instances using [Redis for scaling](../administration/redis/index.md),
@@ -421,6 +426,8 @@ following command to get address of current Redis primary
      ```
 
 #### In the Redis secondary nodes
+
+1. Set `gitlab_rails['rake_cache_clear'] = false` in `gitlab.rb` if you haven't already. If not, you might receive the error `Redis::CommandError: READONLY You can't write against a read only replica.` during the reconfigure post installation of new package.
 
 1. Install package for new version.
 
@@ -691,7 +698,7 @@ sudo touch /etc/gitlab/skip-auto-reconfigure
 
 1. If you're using PgBouncer:
 
-   You need to bypass PgBouncer and connect directly to the database master
+   You need to bypass PgBouncer and connect directly to the database leader
    before running migrations.
 
    Rails uses an advisory lock when attempting to run a migration to prevent
@@ -700,7 +707,7 @@ sudo touch /etc/gitlab/skip-auto-reconfigure
    and other issues when running database migrations using PgBouncer in transaction
    pooling mode.
 
-   To find the master node, run the following on a database node:
+   To find the leader node, run the following on a database node:
 
    ```shell
    sudo gitlab-ctl patroni members
@@ -708,7 +715,7 @@ sudo touch /etc/gitlab/skip-auto-reconfigure
 
    Then, in your `gitlab.rb` file on the deploy node, update
    `gitlab_rails['db_host']` and `gitlab_rails['db_port']` with the database
-   master's host and port.
+   leader's host and port.
 
 1. To get the regular database migrations and latest code in place, run
 

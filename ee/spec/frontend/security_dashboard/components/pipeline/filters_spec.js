@@ -4,7 +4,7 @@ import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
 import Filters from 'ee/security_dashboard/components/pipeline/filters.vue';
 import { simpleScannerFilter } from 'ee/security_dashboard/helpers';
-import createStore from 'ee/security_dashboard/store';
+import { setupStore } from 'ee/security_dashboard/store';
 import state from 'ee/security_dashboard/store/modules/filters/state';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 
@@ -26,7 +26,8 @@ describe('Filter component', () => {
   };
 
   beforeEach(() => {
-    store = createStore();
+    store = new Vuex.Store();
+    setupStore(store);
   });
 
   afterEach(() => {

@@ -73,7 +73,7 @@ module QA
       let(:source_commits) { source_project.commits(auto_paginate: true).map { |c| c[:id] } }
       let(:source_labels) { source_project.labels(auto_paginate: true).map { |l| l.except(:id) } }
       let(:source_milestones) { source_project.milestones(auto_paginate: true).map { |ms| ms.except(:id, :web_url, :project_id) } }
-      let(:source_pipelines) { source_project.pipelines.map { |pp| pp.except(:id, :web_url, :project_id) } }
+      let(:source_pipelines) { source_project.pipelines(auto_paginate: true).map { |pp| pp.except(:id, :web_url, :project_id) } }
       let(:source_mrs) { fetch_mrs(source_project, source_api_client) }
       let(:source_issues) { fetch_issues(source_project, source_api_client) }
 
@@ -146,7 +146,7 @@ module QA
                 issue_comments: issues.sum { |_k, v| v[:comments].length }
               }
             },
-            not_imported: {
+            diff: {
               mrs: @mr_diff,
               issues: @issue_diff
             }
@@ -256,11 +256,12 @@ module QA
         count_msg = "Expected to contain same amount of #{type}s. Source: #{expected.length}, Target: #{actual.length}"
         expect(actual.length).to eq(expected.length), count_msg
 
-        missing_comments = verify_comments(type, actual, expected)
+        comment_diff = verify_comments(type, actual, expected)
 
         {
-          "#{type}s": (expected.keys - actual.keys).map { |it| actual[it].slice(:title, :url) },
-          "#{type}_comments": missing_comments
+          "missing_#{type}s": (expected.keys - actual.keys).map { |it| actual[it]&.slice(:title, :url) }.compact,
+          "extra_#{type}s": (actual.keys - expected.keys).map { |it| expected[it]&.slice(:title, :url) }.compact,
+          "#{type}_comments": comment_diff
         }
       end
 
@@ -271,7 +272,7 @@ module QA
       # @param [Hash] expected
       # @return [Hash]
       def verify_comments(type, actual, expected)
-        actual.each_with_object([]) do |(key, actual_item), missing_comments|
+        actual.each_with_object([]) do |(key, actual_item), diff|
           expected_item = expected[key]
           title = actual_item[:title]
           msg = "expected #{type} with title '#{title}' to have"
@@ -305,16 +306,18 @@ module QA
           expect(actual_comments.length).to eq(expected_comments.length), comment_count_msg
           expect(actual_comments).to match_array(expected_comments)
 
-          # Save missing comments
+          # Save comment diff
           #
-          comment_diff = expected_comments - actual_comments
-          next if comment_diff.empty?
+          missing_comments = expected_comments - actual_comments
+          extra_comments = actual_comments - expected_comments
+          next if missing_comments.empty? && extra_comments.empty?
 
-          missing_comments << {
+          diff << {
             title: title,
             target_url: actual_item[:url],
             source_url: expected_item[:url],
-            missing_comments: comment_diff
+            missing_comments: missing_comments,
+            extra_comments: extra_comments
           }
         end
       end

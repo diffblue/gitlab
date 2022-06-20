@@ -143,6 +143,43 @@ Destination is deleted if:
 - The returned `errors` object is empty.
 - The API responds with `200 OK`.
 
+## Custom HTTP header values
+
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/361216) in GitLab 15.1 [with a flag](feature_flags.md) named `streaming_audit_event_headers`. Disabled by default.
+
+FLAG:
+On self-managed GitLab, by default this feature is not available. To make it available per group, ask an administrator to [enable the feature flag](../administration/feature_flags.md) named `streaming_audit_event_headers`.
+On GitLab.com, this feature is not available.
+The feature is not ready for production use.
+
+Each streaming destination can have up to 20 custom HTTP headers included with each streamed event.
+
+### Add with the API
+
+Group owners can add a HTTP header using the GraphQL `auditEventsStreamingHeadersCreate` mutation.
+
+```graphql
+mutation {
+  auditEventsStreamingHeadersCreate(input: { destinationId: "gid://gitlab/AuditEvents::ExternalAuditEventDestination/24601", key: "foo", value: "bar" }) {
+    errors
+  }
+}
+```
+
+### Delete with the API
+
+Group owners can remove a HTTP header using the GraphQL `auditEventsStreamingHeadersDestroy` mutation.
+
+```graphql
+mutation {
+  auditEventsStreamingHeadersDestroy(input: { headerId: "gid://gitlab/AuditEvents::ExternalAuditEventDestination/24601" }) {
+    errors
+  }
+}
+```
+
+The header is created if the returned `errors` object is empty.
+
 ## Verify event authenticity
 
 > [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/345424) in GitLab 14.8.

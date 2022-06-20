@@ -1,6 +1,5 @@
 <script>
 import { GlEmptyState, GlButton } from '@gitlab/ui';
-import { mapActions } from 'vuex';
 import pipelineSecurityReportSummaryQuery from 'ee/security_dashboard/graphql/queries/pipeline_security_report_summary.query.graphql';
 import { reportTypeToSecurityReportTypeEnum } from 'ee/vue_shared/security_reports/constants';
 import { fetchPolicies } from '~/lib/graphql';
@@ -114,15 +113,6 @@ export default {
     showScanWarnings() {
       return this.scansWithWarnings.length > 0 && !this.hasPurgedScans;
     },
-  },
-  created() {
-    this.setSourceBranch(this.pipeline.sourceBranch);
-    this.setPipelineJobsPath(this.pipeline.jobsPath);
-    this.setProjectId(this.projectId);
-  },
-  methods: {
-    ...mapActions('vulnerabilities', ['setSourceBranch']),
-    ...mapActions('pipelineJobs', ['setPipelineJobsPath', 'setProjectId']),
   },
   i18n: {
     parsingErrorAlertTitle: s__('SecurityReports|Error parsing security reports'),

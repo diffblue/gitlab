@@ -1,32 +1,28 @@
 # frozen_string_literal: true
 
 module Gitlab
-  class ManualQuarterlyCoTermBanner < Gitlab::ManualBanner
+  class ManualQuarterlyCoTermBanner
     include ::Gitlab::Utils::StrongMemoize
 
-    def display_error_version?
-      actionable.next_reconciliation_date < Date.current
+    REMINDER_DAYS = 14.days
+
+    def initialize(upcoming_reconciliation)
+      @upcoming_reconciliation = upcoming_reconciliation
     end
 
-    private
+    def display?
+      return false if Gitlab::CurrentSettings.should_check_namespace_plan?
+      return false unless Feature.enabled?(:automated_email_provision)
+      return false unless ::License.current&.offline_cloud_license?
 
-    def require_notification?
-      return false unless actionable
-
-      (actionable.next_reconciliation_date - REMINDER_DAYS) <= Date.current
+      require_notification?
     end
 
-    def formatted_date
-      strong_memoize(:formatted_date) do
-        actionable.next_reconciliation_date.strftime('%Y-%m-%d')
-      end
-    end
-
-    def banner_subject
+    def title
       _('A quarterly reconciliation is due on %{date}') % { date: formatted_date }
     end
 
-    def banner_body
+    def body
       if display_error_version?
         _(
           'You have more active users than are allowed by your license. GitLab must now reconcile your ' \
@@ -42,6 +38,47 @@ module Gitlab
             'the %{customers_dot}. You can add this license to your instance.'
         ).html_safe % { date: formatted_date, renewal_service_email: renewal_service_email, customers_dot: customers_dot_url }
       end
+    end
+
+    def display_error_version?
+      next_reconciliation_date < current_date
+    end
+
+    private
+
+    attr_reader :upcoming_reconciliation
+
+    def require_notification?
+      return false unless upcoming_reconciliation
+
+      (next_reconciliation_date - REMINDER_DAYS) <= current_date
+    end
+
+    def next_reconciliation_date
+      strong_memoize(:next_reconciliation_date) do
+        upcoming_reconciliation.next_reconciliation_date
+      end
+    end
+
+    def current_date
+      strong_memoize(:current_date) do
+        Date.current
+      end
+    end
+
+    def formatted_date
+      strong_memoize(:formatted_date) do
+        next_reconciliation_date.strftime('%Y-%m-%d')
+      end
+    end
+
+    def renewal_service_email
+      email = Gitlab::SubscriptionPortal::RENEWAL_SERVICE_EMAIL
+      "<a href='mailto:#{email}'>#{email}</a>".html_safe
+    end
+
+    def customers_dot_url
+      "<a href='#{EE::SUBSCRIPTIONS_EDIT_ACCOUNT_URL}'>Customers Portal</a>".html_safe
     end
   end
 end

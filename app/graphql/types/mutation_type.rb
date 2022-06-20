@@ -136,6 +136,7 @@ module Types
     mount_mutation Mutations::UserPreferences::Update
     mount_mutation Mutations::Packages::Destroy
     mount_mutation Mutations::Packages::DestroyFile
+    mount_mutation Mutations::Packages::DestroyFiles
     mount_mutation Mutations::Packages::Cleanup::Policy::Update
     mount_mutation Mutations::Echo
     mount_mutation Mutations::WorkItems::Create, deprecated: { milestone: '15.1', reason: :alpha }
@@ -143,6 +144,7 @@ module Types
     mount_mutation Mutations::WorkItems::Delete, deprecated: { milestone: '15.1', reason: :alpha }
     mount_mutation Mutations::WorkItems::DeleteTask, deprecated: { milestone: '15.1', reason: :alpha }
     mount_mutation Mutations::WorkItems::Update, deprecated: { milestone: '15.1', reason: :alpha }
+    mount_mutation Mutations::WorkItems::UpdateWidgets, deprecated: { milestone: '15.1', reason: :alpha }
     mount_mutation Mutations::WorkItems::UpdateTask, deprecated: { milestone: '15.1', reason: :alpha }
     mount_mutation Mutations::SavedReplies::Create
     mount_mutation Mutations::SavedReplies::Update

@@ -38,6 +38,7 @@ export default {
   inject: [
     'canCreateEpic',
     'canBulkEditEpics',
+    'hasScopedLabelsFeature',
     'page',
     'prev',
     'next',
@@ -247,6 +248,7 @@ export default {
       }) /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */
     "
     :sort-options="$options.EpicsSortOptions"
+    :has-scoped-labels-feature="hasScopedLabelsFeature"
     :initial-filter-value="getFilteredSearchValue()"
     :initial-sort-by="sortedBy"
     :issuables="epics.list"

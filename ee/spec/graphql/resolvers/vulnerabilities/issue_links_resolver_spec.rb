@@ -8,7 +8,10 @@ RSpec.describe Resolvers::Vulnerabilities::IssueLinksResolver do
   let_it_be(:user) { create(:user) }
   let_it_be(:vulnerability) { create(:vulnerability) }
 
-  subject { resolve(described_class, obj: vulnerability, args: filters, ctx: { current_user: user }) }
+  subject do
+    resolve(described_class, obj: vulnerability, args: filters, ctx: { current_user: user },
+            arg_style: :internal)
+  end
 
   describe '#ready?' do
     context 'when the link_type filter is given but is not `CREATED` or `RELATED` ' do

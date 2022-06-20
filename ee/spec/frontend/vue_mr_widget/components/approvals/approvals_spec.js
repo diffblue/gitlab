@@ -30,6 +30,7 @@ const testApprovals = () => ({
   user_can_approve: true,
   user_has_approved: true,
   require_password_to_approve: false,
+  invalid_approvers_rules: [],
 });
 const testApprovalRulesResponse = () => ({ rules: [{ id: 2 }] });
 

@@ -1,8 +1,7 @@
 <script>
 import { GlTable } from '@gitlab/ui';
 import { mapState } from 'vuex';
-import { DEFAULT_TH_CLASSES } from '~/lib/utils/constants';
-import { thWidthClass } from '~/lib/utils/table_utility';
+import { thWidthPercent } from '~/lib/utils/table_utility';
 import { __, s__ } from '~/locale';
 import { EMPTY_STATUS_CHECK } from '../constants';
 import Actions from './actions.vue';
@@ -50,22 +49,21 @@ export default {
     {
       key: 'name',
       label: i18n.nameHeader,
-      thClass: thWidthClass(20),
+      thClass: thWidthPercent(20),
     },
     {
       key: 'externalUrl',
       label: i18n.apiHeader,
-      thClass: thWidthClass(40),
+      thClass: thWidthPercent(40),
     },
     {
       key: 'protectedBranches',
       label: i18n.branchHeader,
-      thClass: thWidthClass(20),
+      thClass: thWidthPercent(20),
     },
     {
       key: 'actions',
       label: '',
-      thClass: DEFAULT_TH_CLASSES,
       tdClass: 'gl-text-right',
     },
   ],

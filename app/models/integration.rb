@@ -144,7 +144,7 @@ class Integration < ApplicationRecord
 
   # :nocov: Tested on subclasses.
   def self.field(name, storage: field_storage, **attrs)
-    fields << ::Integrations::Field.new(name: name, **attrs)
+    fields << ::Integrations::Field.new(name: name, integration_class: self, **attrs)
 
     case storage
     when :properties
@@ -499,10 +499,7 @@ class Integration < ApplicationRecord
   end
 
   def api_field_names
-    fields
-      .reject { _1[:type] == 'password' }
-      .pluck(:name)
-      .grep_v(/password|token|key/)
+    fields.reject { _1[:type] == 'password' }.pluck(:name)
   end
 
   def global_fields

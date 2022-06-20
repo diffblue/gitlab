@@ -155,6 +155,7 @@ RSpec.describe 'Compliance Dashboard', :js do
       wait_for_requests
 
       find('.dropdown-item').click
+      find('.dropdown-toggle').click
     end
 
     page.find('body').click

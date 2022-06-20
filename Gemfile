@@ -55,7 +55,7 @@ gem 'omniauth-authentiq', '~> 0.3.3'
 gem 'gitlab-omniauth-openid-connect', '~> 0.9.0', require: 'omniauth_openid_connect'
 gem 'omniauth-salesforce', '~> 1.0.5'
 gem 'omniauth-atlassian-oauth2', '~> 0.2.0'
-gem 'rack-oauth2', '~> 1.16.0'
+gem 'rack-oauth2', '~> 1.19.0'
 gem 'jwt', '~> 2.1.0'
 
 # Kerberos authentication. EE-only
@@ -97,7 +97,7 @@ gem 'net-ldap', '~> 0.16.3'
 # API
 gem 'grape', '~> 1.5.2'
 gem 'grape-entity', '~> 0.10.0'
-gem 'rack-cors', '~> 1.0.6', require: 'rack/cors'
+gem 'rack-cors', '~> 1.1.0', require: 'rack/cors'
 
 # GraphQL API
 gem 'graphql', '~> 1.13.12'
@@ -167,10 +167,10 @@ gem 'asciidoctor', '~> 2.0.10'
 gem 'asciidoctor-include-ext', '~> 0.4.0', require: false
 gem 'asciidoctor-plantuml', '~> 0.0.12'
 gem 'asciidoctor-kroki', '~> 0.5.0', require: false
-gem 'rouge', '~> 3.27.0'
+gem 'rouge', '~> 3.29.0'
 gem 'truncato', '~> 0.7.11'
 gem 'bootstrap_form', '~> 4.2.0'
-gem 'nokogiri', '~> 1.12'
+gem 'nokogiri', '~> 1.13.6'
 gem 'escape_utils', '~> 1.1'
 
 # Calendar rendering
@@ -181,7 +181,7 @@ gem 'diffy', '~> 3.3'
 gem 'diff_match_patch', '~> 0.1.0'
 
 # Application server
-gem 'rack', '~> 2.2.3'
+gem 'rack', '~> 2.2.3.0'
 # https://github.com/zombocom/rack-timeout/blob/master/README.md#rails-apps-manually
 gem 'rack-timeout', '~> 0.6.0', require: 'rack/timeout/base'
 
@@ -301,7 +301,7 @@ gem 'base32', '~> 0.3.0'
 gem 'gitlab-license', '~> 2.1.0'
 
 # Protect against bruteforcing
-gem 'rack-attack', '~> 6.3.0'
+gem 'rack-attack', '~> 6.6.0'
 
 # Sentry integration
 gem 'sentry-raven', '~> 3.1'
@@ -316,14 +316,14 @@ gem 'pg_query', '~> 2.1.0'
 gem 'premailer-rails', '~> 1.10.3'
 
 # LabKit: Tracing and Correlation
-gem 'gitlab-labkit', '~> 0.22.0'
+gem 'gitlab-labkit', '~> 0.23.0'
 # Thrift is a dependency of gitlab-labkit, we want a version higher than 0.14.0
 # because of https://gitlab.com/gitlab-org/gitlab/-/issues/321900
 gem 'thrift', '>= 0.14.0'
 
 # I18n
 gem 'ruby_parser', '~> 3.15', require: false
-gem 'rails-i18n', '~> 6.0'
+gem 'rails-i18n', '~> 7.0'
 gem 'gettext_i18n_rails', '~> 1.8.0'
 gem 'gettext_i18n_rails_js', '~> 1.3'
 gem 'gettext', '~> 3.3', require: false, group: :development
@@ -344,7 +344,7 @@ gem 'prometheus-client-mmap', '~> 0.15.0', require: 'prometheus/client'
 gem 'warning', '~> 1.2.0'
 
 group :development do
-  gem 'lefthook', '~> 0.8.0', require: false
+  gem 'lefthook', '~> 1.0.1', require: false
   gem 'rubocop'
   gem 'solargraph', '~> 0.44.3', require: false
 
@@ -407,7 +407,7 @@ group :development, :test do
 end
 
 group :development, :test, :danger do
-  gem 'gitlab-dangerfiles', '~> 3.1.0', require: false
+  gem 'gitlab-dangerfiles', '~> 3.3.0', require: false
 end
 
 group :development, :test, :coverage do
@@ -479,7 +479,7 @@ gem 'sys-filesystem', '~> 1.4.3'
 gem 'net-ntp'
 
 # SSH keys support
-gem 'ssh_data', '~> 1.2'
+gem 'ssh_data', '~> 1.3'
 
 # Spamcheck GRPC protocol definitions
 gem 'spamcheck', '~> 0.1.0'
@@ -547,3 +547,5 @@ gem 'ipaddress', '~> 0.8.3'
 gem 'parslet', '~> 1.8'
 
 gem 'ipynbdiff', '0.4.7'
+
+gem 'ed25519', '~> 1.3.0'

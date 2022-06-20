@@ -287,6 +287,11 @@ Rails/HelperInstanceVariable:
     - app/helpers/**/*.rb
     - ee/app/helpers/**/*.rb
 
+Rails/MailerName:
+  Exclude:
+    # See for the context on why it's excluded https://gitlab.com/gitlab-org/gitlab/-/issues/239356#note_956419227
+    - 'app/mailers/notify.rb'
+
 # GitLab ###################################################################
 
 Gitlab/ModuleWithInstanceVariables:
@@ -774,3 +779,6 @@ Migration/BackgroundMigrationBaseClass:
 
 Style/ClassAndModuleChildren:
   Enabled: true
+
+Fips/OpenSSL:
+  Enabled: false

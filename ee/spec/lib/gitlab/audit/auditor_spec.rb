@@ -188,6 +188,59 @@ RSpec.describe Gitlab::Audit::Auditor do
         end
       end
 
+      context 'when overriding the ip address' do
+        ip_address = '192.168.8.8'
+        let(:context) { { name: name, author: author, scope: scope, target: target, ip_address: ip_address } }
+
+        context 'when :admin_audit_log feature is available it logs ip address' do
+          before do
+            stub_licensed_features(admin_audit_log: true)
+          end
+          it 'logs audit events to database' do
+            audit!
+
+            expect(AuditEvent.last.ip_address).to eq(ip_address)
+          end
+
+          it 'logs audit events to file' do
+            expect(::Gitlab::AuditJsonLogger).to receive(:build).and_return(logger)
+
+            audit!
+
+            expect(logger).to have_received(:info).exactly(2).times.with(
+              hash_including('ip_address' => ip_address)
+            )
+          end
+
+          context 'when :admin_audit_log feature is not available it does not log ip address' do
+            before do
+              stub_licensed_features(admin_audit_log: false)
+            end
+            it 'does not log audit event to database' do
+              freeze_time do
+                audit!
+
+                expect(AuditEvent.last.ip_address).to be(nil)
+              end
+            end
+
+            it 'does not log audit events to file' do
+              freeze_time do
+                expect(::Gitlab::AuditJsonLogger).to receive(:build).and_return(logger)
+
+                audit!
+
+                expect(logger).to have_received(:info).exactly(2).times.with(
+                  hash_excluding(
+                    'ip_address' => ip_address
+                  )
+                )
+              end
+            end
+          end
+        end
+      end
+
       context 'when event is only streamed' do
         let(:context) do
           { name: name, author: author, scope: scope, target: target, created_at: 3.weeks.ago, stream_only: true }

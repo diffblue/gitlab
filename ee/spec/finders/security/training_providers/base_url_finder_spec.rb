@@ -79,13 +79,24 @@ RSpec.describe Security::TrainingProviders::BaseUrlFinder do
   end
 
   describe '.from_cache' do
-    it 'returns instance of finder object' do
-      expect(described_class.from_cache("#{identifier.project.id}-#{provider.id}-#{identifier.external_id}")).to be_an_instance_of(described_class)
+    subject { described_class.from_cache("#{identifier.project.id}-#{provider.id}-#{identifier.external_id}") }
+
+    it 'returns instance of finder object with expected attributes' do
+      expect(subject).to be_an_instance_of(described_class)
+      expect(subject.send(:project)).to eq(identifier.project)
+      expect(subject.send(:provider)).to eq(provider)
+      expect(subject.send(:identifier_external_id)).to eq(identifier.external_id)
     end
 
     context 'when a language is used on the finder' do
-      it 'returns instance of finder object' do
-        expect(described_class.from_cache("#{identifier.project.id}-#{provider.id}-#{identifier.external_id}-#{language}")).to be_an_instance_of(described_class)
+      subject { described_class.from_cache("#{identifier.project.id}-#{provider.id}-#{identifier.external_id}-#{language}") }
+
+      it 'returns instance of finder object with expected attributes' do
+        expect(subject).to be_an_instance_of(described_class)
+        expect(subject.send(:project)).to eq(identifier.project)
+        expect(subject.send(:provider)).to eq(provider)
+        expect(subject.send(:identifier_external_id)).to eq(identifier.external_id)
+        expect(subject.send(:language)).to eq(language)
       end
     end
   end

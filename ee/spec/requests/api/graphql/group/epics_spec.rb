@@ -392,6 +392,12 @@ RSpec.describe 'Epics through GroupQuery' do
 
         include_examples 'N+1 query check'
       end
+
+      context 'when requesting blocking_count' do
+        let(:requested_fields) { [:blocking_count] }
+
+        include_examples 'N+1 query check'
+      end
     end
   end
 

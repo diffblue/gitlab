@@ -28,6 +28,7 @@ export default {
   },
   inject: [
     'canCreateTestCase',
+    'hasScopedLabelsFeature',
     'initialState',
     'page',
     'prev',
@@ -322,6 +323,7 @@ export default {
     :search-input-placeholder="s__('TestCases|Search test cases')"
     :search-tokens="getFilteredSearchTokens()"
     :sort-options="$options.AvailableSortOptions"
+    :has-scoped-labels-feature="hasScopedLabelsFeature"
     :initial-filter-value="getFilteredSearchValue()"
     :initial-sort-by="sortedBy"
     :issuables="testCases.list"

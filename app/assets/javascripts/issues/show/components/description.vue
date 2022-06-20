@@ -174,9 +174,7 @@ export default {
 
         this.removeAllPointerEventListeners();
 
-        if (this.issuableType === IssuableType.Issue) {
-          this.renderSortableLists();
-        }
+        this.renderSortableLists();
 
         if (this.workItemsEnabled) {
           this.renderTaskActions();
@@ -184,7 +182,10 @@ export default {
       }
     },
     renderSortableLists() {
-      const lists = document.querySelectorAll('.description ul, .description ol');
+      // We exclude GLFM table of contents which have a `section-nav` class on the root `ul`.
+      const lists = document.querySelectorAll(
+        '.description .md > ul:not(.section-nav), .description .md > ul:not(.section-nav) ul, .description ol',
+      );
       lists.forEach((list) => {
         if (list.children.length <= 1) {
           return;
@@ -378,7 +379,7 @@ export default {
     },
     setActiveTask(el) {
       const { parentElement } = el;
-      const lineNumbers = parentElement.getAttribute('data-sourcepos').match(/\b\d+(?=:)/g);
+      const lineNumbers = parentElement.dataset.sourcepos.match(/\b\d+(?=:)/g);
       this.activeTask = {
         title: parentElement.innerText,
         lineNumberStart: lineNumbers[0],
@@ -452,13 +453,7 @@ export default {
     >
     </textarea>
 
-    <gl-modal
-      ref="modal"
-      modal-id="create-task-modal"
-      :title="s__('WorkItem|New Task')"
-      hide-footer
-      body-class="gl-p-0!"
-    >
+    <gl-modal ref="modal" size="lg" modal-id="create-task-modal" hide-footer body-class="gl-p-0!">
       <create-work-item
         is-modal
         :initial-title="activeTask.title"

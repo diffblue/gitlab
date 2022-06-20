@@ -4,7 +4,7 @@ key_path: usage_activity_by_stage.manage.ldap_servers
 description: Number of [LDAP servers configured for the instance](https://docs.gitlab.com/ee/administration/auth/ldap/#multiple-ldap-servers)
 product_section: dev
 product_stage: manage
-product_group: group::access
+product_group: group::authentication and authorization
 product_category: authentication_and_authorization
 value_type: number
 status: active

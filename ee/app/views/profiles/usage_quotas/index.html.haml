@@ -14,9 +14,9 @@
     = s_('UsageQuota|Usage of resources across your projects').html_safe
 
 = gl_tabs_nav({ class: 'js-storage-tabs' }) do
-  = gl_tab_link_to '#pipelines-quota-tab', item_active: true do
+  = gl_tab_link_to '#pipelines-quota-tab', item_active: true, data: { qa_selector: 'pipelines_tab' } do
     =  s_('UsageQuota|Pipelines')
-  = gl_tab_link_to '#storage-quota-tab' do
+  = gl_tab_link_to '#storage-quota-tab', data: { qa_selector: 'storage_tab' } do
     = s_('UsageQuota|Storage')
 
 .tab-content

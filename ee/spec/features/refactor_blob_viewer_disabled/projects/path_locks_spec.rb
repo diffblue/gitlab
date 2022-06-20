@@ -3,13 +3,14 @@
 require 'spec_helper'
 
 RSpec.describe 'Path Locks', :js do
+  include Spec::Support::Helpers::ModalHelpers
+
   let(:user) { create(:user) }
   let(:project) { create(:project, :repository, namespace: user.namespace) }
   let(:tree_path) { project_tree_path(project, project.repository.root_ref) }
 
   before do
     allow(project).to receive(:feature_available?).with(:file_locks) { true }
-    stub_feature_flags(bootstrap_confirmation_modals: false)
     stub_feature_flags(refactor_blob_viewer: false)
 
     project.add_maintainer(user)
@@ -28,12 +29,7 @@ RSpec.describe 'Path Locks', :js do
     find('.js-path-lock').click
     wait_for_requests
 
-    page.within '.modal' do
-      expect(page).to have_selector('.modal-body', visible: true)
-      expect(page).to have_css('.modal-body', text: 'Are you sure you want to lock this directory?')
-
-      click_button "OK"
-    end
+    accept_gl_confirm('Are you sure you want to lock this directory?')
 
     expect(page).to have_link('Unlock')
   end
@@ -49,10 +45,7 @@ RSpec.describe 'Path Locks', :js do
       click_link "Lock"
     end
 
-    page.within '.modal' do
-      expect(page).to have_css('.modal-body', text: 'Are you sure you want to lock VERSION?')
-      click_button "OK"
-    end
+    accept_gl_confirm('Are you sure you want to lock VERSION?')
 
     expect(page).to have_link('Unlock')
   end
@@ -68,10 +61,7 @@ RSpec.describe 'Path Locks', :js do
       click_link "Lock"
     end
 
-    page.within '.modal' do
-      expect(page).to have_css('.modal-body', text: 'Are you sure you want to lock VERSION?')
-      click_button "OK"
-    end
+    accept_gl_confirm('Are you sure you want to lock VERSION?')
 
     expect(page).to have_link('Lock')
   end
@@ -84,8 +74,12 @@ RSpec.describe 'Path Locks', :js do
     within '.locks' do
       expect(page).to have_content('encoding')
 
-      accept_confirm(text: 'Are you sure you want to unlock encoding?') { click_link "Unlock" }
+      click_link "Unlock"
+    end
 
+    accept_gl_confirm('Are you sure you want to unlock encoding?')
+
+    within '.locks' do
       expect(page).not_to have_content('encoding')
     end
   end

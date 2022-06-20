@@ -39,6 +39,10 @@ export default {
       required: false,
       default: '',
     },
+    invalidApproversRules: {
+      type: Array,
+      required: true,
+    },
   },
   computed: {
     isCollapsed() {
@@ -107,6 +111,7 @@ export default {
     <div v-if="!isCollapsed && approvalRules.length" class="border-top">
       <approvals-list
         :approval-rules="approvalRules"
+        :invalid-approvers-rules="invalidApproversRules"
         :security-approvals-help-page-path="securityApprovalsHelpPagePath"
         :eligible-approvers-docs-path="eligibleApproversDocsPath"
       />

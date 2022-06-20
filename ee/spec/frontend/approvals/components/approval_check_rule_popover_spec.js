@@ -7,17 +7,21 @@ import { TEST_HOST } from 'helpers/test_constants';
 describe('Approval Check Popover', () => {
   let wrapper;
 
-  beforeEach(() => {
+  const createComponent = (props = {}) => {
     wrapper = shallowMount(component, {
-      propsData: { rule: {} },
+      propsData: { rule: {}, ...props },
     });
+  };
+
+  beforeEach(() => {
+    createComponent();
   });
 
   describe('computed props', () => {
     const securityApprovalsHelpPagePath = `${TEST_HOST}/documentation`;
 
     beforeEach(async () => {
-      wrapper.setProps({ securityApprovalsHelpPagePath });
+      createComponent({ securityApprovalsHelpPagePath });
       await nextTick();
     });
 
@@ -66,6 +70,18 @@ describe('Approval Check Popover', () => {
         wrapper.setProps({ rule: { name: 'FooRule' } });
         await nextTick();
         expect(wrapper.vm.documentationLink).toBe(text);
+      });
+    });
+
+    describe('popoverTriggerId', () => {
+      beforeEach(() => {
+        createComponent({ rule: { name: 'rule-title' } });
+      });
+
+      it('returns popover id', () => {
+        const expectedPopoverTriggerId = 'reportInfo-rule-title';
+
+        expect(wrapper.vm.popoverTriggerId).toBe(expectedPopoverTriggerId);
       });
     });
   });

@@ -34,14 +34,14 @@ RSpec.describe GitlabSubscriptions::Reconciliations::CheckSeatUsageAlertsEligibi
       end
 
       it 'caches the query response' do
-        expect(Rails.cache).to receive(:fetch).with(cache_key, skip_nil: true, expires_in: 1.day).and_call_original
+        expect(Rails.cache).to receive(:fetch).with(cache_key, expires_in: 1.day).and_call_original
 
         execute_service
       end
     end
 
     context 'with an unsuccessful CustomersDot query' do
-      it 'assumes no future renewal' do
+      it 'assumes the subscription is ineligible' do
         allow(Gitlab::SubscriptionPortal::Client).to receive(:subscription_seat_usage_alerts_eligibility).and_return({
           success: false
         })

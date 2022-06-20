@@ -114,6 +114,11 @@ While you cannot directly customize Auto DevOps, you can [include the Auto DevOp
 To enable all GitLab security scanning tools, with the option of customizing settings, add the
 GitLab CI/CD templates to your `.gitlab-ci.yml` file.
 
+WARNING:
+All customization of GitLab security scanning tools should be tested in a merge request before
+merging these changes to the default branch. Failure to do so can give unexpected results,
+including a large number of false positives.
+
 To enable Static Application Security Testing, Dependency Scanning, License Scanning, and Secret
 Detection, add:
 
@@ -139,8 +144,13 @@ variables:
 ### Override the default registry base address
 
 By default, GitLab security scanners use `registry.gitlab.com/security-products` as the
-base address for Docker images. You can override this globally by setting the CI/CD variable
+base address for Docker images. You can override this for most scanners by setting the CI/CD variable
 `SECURE_ANALYZERS_PREFIX` to another location. Note that this affects all scanners at once.
+
+The [Container Scanning](container_scanning/index.md) analyzer is an exception, and it
+does not use the `SECURE_ANALYZERS_PREFIX` variable. To override its Docker image, see
+the instructions for [Running container scanning in an offline
+environment](container_scanning/index.md#running-container-scanning-in-an-offline-environment).
 
 ### Use security scanning tools with merge request pipelines
 

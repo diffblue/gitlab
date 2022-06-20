@@ -19,7 +19,7 @@ module Security
       return unless pipeline
 
       @build ||= pipeline.builds.latest
-                   .with_reports(artifact)
+                   .with_artifacts(artifact)
                    .last
     end
 

@@ -3,7 +3,6 @@ package api
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -157,8 +156,6 @@ type Response struct {
 	ShowAllRefs bool
 	// Detects whether an artifact is used for code intelligence
 	ProcessLsif bool
-	// Detects whether LSIF artifact will be parsed with references
-	ProcessLsifReferences bool
 	// The maximum accepted size in bytes of the upload
 	MaximumSize int64
 }
@@ -310,18 +307,18 @@ func (api *API) PreAuthorizeFixedPath(r *http.Request, method string, path strin
 	}
 	authReq.Header = helper.HeaderClone(r.Header)
 
-	ignoredResponse, apiResponse, err := api.PreAuthorize(path, authReq)
+	failureResponse, apiResponse, err := api.PreAuthorize(path, authReq)
 	if err != nil {
 		return nil, fmt.Errorf("PreAuthorize: %w", err)
 	}
 
-	// We don't need the contents of ignoredResponse but we are responsible
+	// We don't need the contents of failureResponse but we are responsible
 	// for closing it. Part of the reason PreAuthorizeFixedPath exists is to
 	// hide this awkwardness.
-	ignoredResponse.Body.Close()
+	failureResponse.Body.Close()
 
 	if apiResponse == nil {
-		return nil, errors.New("no api response on fixed path")
+		return nil, fmt.Errorf("no api response: status %d", failureResponse.StatusCode)
 	}
 
 	return apiResponse, nil

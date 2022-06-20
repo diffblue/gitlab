@@ -10,6 +10,7 @@ module MergeRequestApprovalSettings
         setting.assign_attributes(params)
 
         if setting.save
+          log_audit_event(setting)
           ServiceResponse.success(payload: setting)
         else
           ServiceResponse.error(message: setting.errors.messages)
@@ -36,6 +37,10 @@ module MergeRequestApprovalSettings
 
     def allowed?
       can?(current_user, :admin_merge_request_approval_settings, container)
+    end
+
+    def log_audit_event(setting)
+      Audit::GroupMergeRequestApprovalSettingChangesAuditor.new(current_user, setting, params).execute
     end
   end
 end

@@ -11,7 +11,8 @@ class Groups::Epics::NotesController < Groups::ApplicationController
   before_action :authorize_create_note!, only: [:create]
 
   feature_category :portfolio_management
-  urgency :default
+  urgency :default, [:create, :update, :destroy]
+  urgency :low, [:index]
 
   private
 

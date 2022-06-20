@@ -286,15 +286,18 @@ html.group-epics-roadmap-html {
 }
 
 .epic-bar {
+  background-color: var(--epic-color, $blue-600);
+  border: 1px solid var($black);
+  color: var(--epic-text-color, $white);
+  height: 40px;
   position: absolute;
   top: 5px;
-  height: 40px;
-  background-color: var(--blue-600, $blue-600);
   will-change: width, left;
   z-index: 5;
 
   &:hover {
-    background-color: var(--blue-700, $blue-700);
+    color: var(--epic-text-color, $white);
+    filter: brightness(120%);
   }
 }
 
@@ -302,7 +305,6 @@ html.group-epics-roadmap-html {
   position: sticky;
   position: -webkit-sticky;
   left: $details-cell-width;
-  color: var(--white, $white);
 }
 
 .epic-bar-title {
@@ -310,41 +312,12 @@ html.group-epics-roadmap-html {
 }
 
 .epic-bar-progress {
-  background-color: var(--blue-300, $blue-300);
+  background-color: var(--epic-text-color, $white);
+  border: 2px solid var(--epic-text-color, $white);
+  height: 7px;
 
   .progress-bar {
-    background-color: var(--white, $white);
-  }
-}
-
-.epic-bar-child-epic {
-  background-color: var(--white, $white);
-  border: 1px solid var(--blue-600, $blue-600);
-
-  &:hover {
-    background-color: var(--white, $white);
-    border: 1px solid var(--blue-700, $blue-700);
-    text-decoration: none;
-
-    .epic-bar-progress .progress-bar {
-      background-color: var(--blue-700, $blue-700);
-    }
-  }
-
-  .epic-bar-inner {
-    color: var(--blue-600, $blue-600);
-
-    &:hover {
-      color: var(--blue-700, $blue-700);
-    }
-  }
-
-  .epic-bar-progress {
-    background-color: var(--blue-200, $blue-200);
-
-    .progress-bar {
-      background-color: var(--blue-600, $blue-600);
-    }
+    background-color: var(--epic-color, $blue-600);
   }
 }
 

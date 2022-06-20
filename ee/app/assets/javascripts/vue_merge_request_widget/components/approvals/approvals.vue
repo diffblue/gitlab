@@ -54,6 +54,9 @@ export default {
     requirePasswordToApprove() {
       return !this.isBasic && this.approvals.require_password_to_approve;
     },
+    invalidRules() {
+      return this.approvals.invalid_approvers_rules || [];
+    },
   },
   watch: {
     isExpanded(val) {
@@ -110,6 +113,7 @@ export default {
         v-if="hasFooter"
         v-model="isExpanded"
         :suggested-approvers="approvals.suggested_approvers"
+        :invalid-approvers-rules="invalidRules"
         :approval-rules="mr.approvalRules"
         :is-loading-rules="isLoadingRules"
         :security-approvals-help-page-path="mr.securityApprovalsHelpPagePath"

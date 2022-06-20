@@ -70,18 +70,6 @@ RSpec.describe Groups::ProtectedEnvironmentsController do
         expect(response).to have_gitlab_http_status(:not_found)
       end
     end
-
-    context 'when feature flag is disabled' do
-      before do
-        stub_feature_flags(group_level_protected_environment: false)
-      end
-
-      it 'renders 404' do
-        subject
-
-        expect(response).to have_gitlab_http_status(:not_found)
-      end
-    end
   end
 
   describe '#PUT update' do

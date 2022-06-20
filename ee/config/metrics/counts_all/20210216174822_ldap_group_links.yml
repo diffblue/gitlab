@@ -4,7 +4,7 @@ key_path: counts.ldap_group_links
 description: Number of groups that are synced via LDAP group sync `https://docs.gitlab.com/ee/user/group/index.html#manage-group-memberships-via-ldap`
 product_section: dev
 product_stage: manage
-product_group: group::access
+product_group: group::authentication and authorization
 product_category: authentication_and_authorization
 value_type: number
 status: active

@@ -13,7 +13,6 @@ import WorkItemActions from './work_item_actions.vue';
 import WorkItemState from './work_item_state.vue';
 import WorkItemTitle from './work_item_title.vue';
 import WorkItemDescription from './work_item_description.vue';
-import WorkItemLinks from './work_item_links/work_item_links.vue';
 import WorkItemAssignees from './work_item_assignees.vue';
 import WorkItemWeight from './work_item_weight.vue';
 
@@ -27,7 +26,6 @@ export default {
     WorkItemDescription,
     WorkItemTitle,
     WorkItemState,
-    WorkItemLinks,
     WorkItemWeight,
   },
   mixins: [glFeatureFlagMixin()],
@@ -86,11 +84,11 @@ export default {
     canDelete() {
       return this.workItem?.userPermissions?.deleteWorkItem;
     },
-    workItemDescription() {
-      return this.workItem?.widgets?.find((widget) => widget.type === WIDGET_TYPE_DESCRIPTION);
-    },
     workItemsMvc2Enabled() {
       return this.glFeatures.workItemsMvc2;
+    },
+    hasDescriptionWidget() {
+      return this.workItem?.widgets?.find((widget) => widget.type === WIDGET_TYPE_DESCRIPTION);
     },
     workItemAssignees() {
       return this.workItem?.mockWidgets?.find((widget) => widget.type === WIDGET_TYPE_ASSIGNEE);
@@ -115,7 +113,7 @@ export default {
       </gl-skeleton-loader>
     </div>
     <template v-else>
-      <div class="gl-display-flex">
+      <div class="gl-display-flex gl-align-items-start">
         <work-item-title
           :work-item-id="workItem.id"
           :work-item-title="workItem.title"
@@ -127,13 +125,17 @@ export default {
         <work-item-actions
           :work-item-id="workItem.id"
           :can-delete="canDelete"
-          class="gl-ml-auto gl-mt-5"
+          class="gl-ml-auto gl-mt-6"
           @deleteWorkItem="$emit('deleteWorkItem')"
           @error="error = $event"
         />
       </div>
       <template v-if="workItemsMvc2Enabled">
-        <work-item-assignees v-if="workItemAssignees" :assignees="workItemAssignees.nodes" />
+        <work-item-assignees
+          v-if="workItemAssignees"
+          :work-item-id="workItem.id"
+          :assignees="workItemAssignees.nodes"
+        />
         <work-item-weight v-if="workItemWeight" :weight="workItemWeight.weight" />
       </template>
       <work-item-state
@@ -142,13 +144,10 @@ export default {
         @error="error = $event"
       />
       <work-item-description
-        v-if="workItemDescription"
-        :work-item="workItem"
-        :work-item-description="workItemDescription"
+        v-if="hasDescriptionWidget"
+        :work-item-id="workItem.id"
         @error="error = $event"
-        @updated="$emit('workItemUpdated')"
       />
-      <work-item-links v-if="glFeatures.workItemsHierarchy" :work-item-id="workItem.id" />
     </template>
   </section>
 </template>

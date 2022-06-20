@@ -16,6 +16,7 @@ Object {
   "error": "",
   "hasNextPage": false,
   "hasPreviousPage": false,
+  "hasScopedLabelsFeature": false,
   "initialFilterValue": Array [],
   "initialSortBy": "created_desc",
   "isManualOrdering": false,

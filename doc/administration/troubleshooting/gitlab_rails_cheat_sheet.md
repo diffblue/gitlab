@@ -1275,11 +1275,16 @@ project = Project.find_by_full_path('<group/project>')
 Geo::RepositorySyncService.new(project).execute
 ```
 
-### Blob types newer than uploads/artifacts/LFS
+### Blob types
 
-- `Packages::PackageFile`
-- `Terraform::StateVersion`
+- `Ci::JobArtifact`
+- `Ci::PipelineArtifact`
+- `LfsObject`
 - `MergeRequestDiff`
+- `Packages::PackageFile`
+- `PagesDeployment`
+- `Terraform::StateVersion`
+- `Upload`
 
 `Packages::PackageFile` is used in the following examples, but things generally work the same for the other Blob types.
 
@@ -1446,7 +1451,7 @@ Open the rails console (`gitlab rails c`) and run the following command to see a
 ApplicationSetting.last.attributes
 ```
 
-Among other attributes, the output contains all the settings available in the [Elasticsearch Integration page](../../integration/elasticsearch.md), such as `elasticsearch_indexing`, `elasticsearch_url`, `elasticsearch_replicas`, and `elasticsearch_pause_indexing`.
+Among other attributes, the output contains all the settings available in the [Elasticsearch Integration page](../../integration/advanced_search/elasticsearch.md), such as `elasticsearch_indexing`, `elasticsearch_url`, `elasticsearch_replicas`, and `elasticsearch_pause_indexing`.
 
 #### Setting attributes
 
@@ -1462,7 +1467,7 @@ ApplicationSetting.last.update(elasticsearch_indexing: false)
 
 #### Getting attributes
 
-You can then check if the settings have been set in the [Elasticsearch Integration page](../../integration/elasticsearch.md) or in the rails console by issuing:
+You can then check if the settings have been set in the [Elasticsearch Integration page](../../integration/advanced_search/elasticsearch.md) or in the rails console by issuing:
 
 ```ruby
 Gitlab::CurrentSettings.elasticsearch_url

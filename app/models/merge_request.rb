@@ -1153,6 +1153,19 @@ class MergeRequest < ApplicationRecord
     can_be_merged? && !should_be_rebased?
   end
 
+  def mergeability_checks
+    # We want to have the cheapest checks first in the list, that way we can
+    #   fail fast before running the more expensive ones.
+    #
+    [
+      ::MergeRequests::Mergeability::CheckOpenStatusService,
+      ::MergeRequests::Mergeability::CheckDraftStatusService,
+      ::MergeRequests::Mergeability::CheckBrokenStatusService,
+      ::MergeRequests::Mergeability::CheckDiscussionsStatusService,
+      ::MergeRequests::Mergeability::CheckCiStatusService
+    ]
+  end
+
   # rubocop: disable CodeReuse/ServiceClass
   def mergeable_state?(skip_ci_check: false, skip_discussions_check: false)
     if Feature.enabled?(:improved_mergeability_checks, self.project)
@@ -1657,9 +1670,9 @@ class MergeRequest < ApplicationRecord
   # TODO: consider renaming this as with exposed artifacts we generate reports,
   # not always compare
   # issue: https://gitlab.com/gitlab-org/gitlab/issues/34224
-  def compare_reports(service_class, current_user = nil, report_type = nil )
+  def compare_reports(service_class, current_user = nil, report_type = nil, additional_params = {} )
     with_reactive_cache(service_class.name, current_user&.id, report_type) do |data|
-      unless service_class.new(project, current_user, id: id, report_type: report_type)
+      unless service_class.new(project, current_user, id: id, report_type: report_type, additional_params: additional_params)
         .latest?(comparison_base_pipeline(service_class.name), actual_head_pipeline, data)
         raise InvalidateReactiveCache
       end

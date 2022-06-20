@@ -26,16 +26,6 @@ RSpec.describe Crm::OrganizationsFinder do
           root_group.add_developer(user)
         end
 
-        context 'when feature flag is disabled' do
-          before do
-            stub_feature_flags(customer_relations: false)
-          end
-
-          it 'returns an empty array' do
-            expect(subject).to be_empty
-          end
-        end
-
         context 'when feature flag is enabled' do
           it 'returns all group organizations' do
             expect(subject).to match_array([organization_1, organization_2])
@@ -127,6 +117,14 @@ RSpec.describe Crm::OrganizationsFinder do
         it 'returns only active organizations' do
           finder = described_class.new(user, group: search_test_group, state: :active)
           expect(finder.execute).to match_array([search_test_b])
+        end
+      end
+
+      context 'when searching for organizations ids' do
+        it 'returns the expected organizations' do
+          finder = described_class.new(user, group: search_test_group, ids: [search_test_a.id])
+
+          expect(finder.execute).to match_array([search_test_a])
         end
       end
     end

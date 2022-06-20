@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.shared_examples "protected branches > access control > EE" do
+  include Spec::Support::Helpers::ModalHelpers
+
   %w[merge push].each do |git_operation|
     # Need to set a default for the `git_operation` access level that _isn't_ being tested
     other_git_operation = git_operation == 'merge' ? 'push' : 'merge'
@@ -173,7 +175,6 @@ RSpec.shared_examples "protected branches > access control > EE" do
     let!(:protected_branch) { create(:protected_branch, project: project) }
 
     before do
-      stub_feature_flags(bootstrap_confirmation_modals: false)
       stub_licensed_features(unprotection_restrictions: true)
     end
 
@@ -181,7 +182,7 @@ RSpec.shared_examples "protected branches > access control > EE" do
       visit project_protected_branches_path(project)
 
       expect(page).to have_selector('.qa-protected-branch') # rubocop:disable QA/SelectorUsage
-      accept_alert { click_on 'Unprotect' }
+      accept_gl_confirm(button_text: 'Unprotect branch') { click_on 'Unprotect' }
       expect(page).not_to have_selector('.qa-protected-branch') # rubocop:disable QA/SelectorUsage
     end
 

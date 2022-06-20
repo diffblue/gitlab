@@ -6,7 +6,7 @@
     .settings-header
       %h4
         = s_('GroupSettings|Compliance frameworks')
-      %button.btn.gl-button.js-settings-toggle{ type: 'button' }
+      = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
         = expanded ? _('Collapse') : _('Expand')
       %p
         = html_escape(s_('GroupSettings|Configure compliance frameworks to make them available to projects in this group. %{linkStart}Learn more.%{linkEnd}')) % { linkStart: compliance_framework_doc_link, linkEnd: '</a>'.html_safe }

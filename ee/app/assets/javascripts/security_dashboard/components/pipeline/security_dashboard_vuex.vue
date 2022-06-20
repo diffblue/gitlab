@@ -2,6 +2,7 @@
 import { mapActions, mapState, mapGetters } from 'vuex';
 import IssueModal from 'ee/vue_shared/security_reports/components/modal.vue';
 import { vulnerabilityModalMixin } from 'ee/vue_shared/security_reports/mixins/vulnerability_modal_mixin';
+import { setupStore } from '../../store';
 import VulnerabilityReportLayout from '../shared/vulnerability_report_layout.vue';
 import Filters from './filters.vue';
 import LoadingError from './loading_error.vue';
@@ -16,6 +17,7 @@ export default {
     LoadingError,
   },
   mixins: [vulnerabilityModalMixin('vulnerabilities')],
+  inject: ['pipeline', 'projectId'],
   props: {
     vulnerabilitiesEndpoint: {
       type: String,
@@ -68,12 +70,17 @@ export default {
     },
   },
   created() {
+    setupStore(this.$store);
+    this.setSourceBranch(this.pipeline.sourceBranch);
+    this.setPipelineJobsPath(this.pipeline.jobsPath);
+    this.setProjectId(this.projectId);
     this.setPipelineId(this.pipelineId);
     this.setVulnerabilitiesEndpoint(this.vulnerabilitiesEndpoint);
     this.fetchPipelineJobs();
   },
   methods: {
     ...mapActions('vulnerabilities', [
+      'setSourceBranch',
       'closeDismissalCommentBox',
       'createIssue',
       'createMergeRequest',
@@ -84,7 +91,7 @@ export default {
       'hideDismissalDeleteButtons',
       'downloadPatch',
     ]),
-    ...mapActions('pipelineJobs', ['fetchPipelineJobs']),
+    ...mapActions('pipelineJobs', ['setPipelineJobsPath', 'setProjectId', 'fetchPipelineJobs']),
     ...mapActions('filters', ['lockFilter', 'setHideDismissedToggleInitialState']),
   },
 };

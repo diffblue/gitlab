@@ -5,6 +5,7 @@
 
 #js-epics-list{ data: { can_create_epic: can?(current_user, :create_epic, @group).to_s,
   can_bulk_edit_epics: @can_bulk_update.to_s,
+  has_scoped_labels_feature: @group.feature_available?(:scoped_labels).to_s,
   page: params[:page],
   prev: params[:prev],
   next: params[:next],

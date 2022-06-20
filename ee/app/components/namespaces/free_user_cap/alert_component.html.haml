@@ -1,9 +1,8 @@
 .container-fluid.container-limited{ class: "gl-pb-2! gl-pt-6! #{content_class}" }
-  = render Pajamas::AlertComponent.new(alert_class: 'js-user-over-limit-free-plan-alert',
-        variant: variant,
-        alert_data: alert_data,
+  = render Pajamas::AlertComponent.new(variant: variant,
+        alert_options: { class: 'js-user-over-limit-free-plan-alert', data: alert_data },
         title: alert_attributes[:title],
-        close_button_data: close_button_data) do |c|
+        close_button_options: { data: close_button_data }) do |c|
     = c.body do
       = alert_attributes[:body]
     = c.actions do

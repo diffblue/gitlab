@@ -124,6 +124,10 @@ Finally, your AWS ECS service is updated with the new revision of the
 task definition, making the cluster pull the newest version of your
 application.
 
+NOTE:
+ECS deploy jobs wait for the rollout to complete before exiting. To disable this behavior,
+set `CI_AWS_ECS_WAIT_FOR_ROLLOUT_COMPLETE_DISABLED` to a non-empty value.
+
 WARNING:
 The [`AWS/Deploy-ECS.gitlab-ci.yml`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/AWS/Deploy-ECS.gitlab-ci.yml)
 template includes two templates: [`Jobs/Build.gitlab-ci.yml`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Jobs/Build.gitlab-ci.yml)
@@ -211,38 +215,3 @@ To deploy to EC2, complete the following steps.
    - Your built application is pushed to your S3 bucket then and deployed to your EC2 instance, based
      on the related JSON object's content. The deployment job finishes when the deployment to EC2
      is done or has failed.
-
-## Use Auto DevOps to deploy to EC2
-
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/216008) in GitLab 13.6.
-
-To use [Auto DevOps](../../topics/autodevops/index.md) to deploy to EC2:
-
-1. Define [your AWS credentials as CI/CD variables](#authenticate-gitlab-with-aws).
-1. In your `.gitlab-ci.yml` file, reference the `Auto-Devops.gitlab-ci.yml` template.
-1. Define a job for the `build` stage named `build_artifact`. For example:
-
-   ```yaml
-   # .gitlab-ci.yml
-
-   include:
-     - template: Auto-DevOps.gitlab-ci.yml
-
-   variables:
-     AUTO_DEVOPS_PLATFORM_TARGET: EC2
-
-   build_artifact:
-     stage: build
-     script:
-       - <your build script goes here>
-     artifacts:
-       paths:
-         - <built artifact>
-   ```
-
-<i class="fa fa-youtube-play youtube" aria-hidden="true"></i>
-For a video walkthrough of this process, view [Auto Deploy to EC2](https://www.youtube.com/watch?v=4B-qSwKnacA).
-
-## Use Auto DevOps to deploy to EKS
-
-- [Deploy your application to a GitLab-managed Amazon EKS cluster with Auto DevOps](https://about.gitlab.com/blog/2020/05/05/deploying-application-eks/)

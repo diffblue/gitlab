@@ -121,7 +121,7 @@ export default {
         <div class="d-flex float-left align-items-center align-self-start">
           <input
             v-if="isSelectable"
-            class="mr-2"
+            class="gl-mr-3"
             type="checkbox"
             :checked="checked"
             @change="$emit('handleCheckboxChange', $event.target.checked)"
@@ -134,7 +134,9 @@ export default {
             class="avatar-cell d-none d-sm-block"
           />
         </div>
-        <div class="commit-detail flex-list">
+        <div
+          class="commit-detail flex-list gl-display-flex gl-justify-content-space-between gl-align-items-flex-start gl-flex-grow-1 gl-min-w-0"
+        >
           <div class="commit-content" data-qa-selector="commit_content">
             <a
               v-safe-html:[$options.safeHtmlConfig]="commit.title_html"

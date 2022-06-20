@@ -90,7 +90,52 @@
       ]
     }
   ],
-  "remediations": [],
+  "remediations": [
+    {
+      "fixes": [
+        {
+          "cve": "CVE-2022-22576",
+          "id": "857114844e8ac6cf5c9946ac4d40ab73eccf35df"
+        },
+        {
+          "cve": "CVE-2022-27774",
+          "id": "09675f15e9a285de79a477f12d03bcc08dda8d80"
+        },
+        {
+          "cve": "CVE-2022-27775",
+          "id": "7c07e0b19de5536323882ffb492ec7d3fdf5d029"
+        },
+        {
+          "cve": "CVE-2022-27776",
+          "id": "be0740fbe8024b6041fad1af45062e2acaefb169"
+        }
+      ],
+      "summary": "Upgrade curl to 7.79.1-2.amzn2.0.1",
+      "diff": "ZGlmZiAtLWdpdCBhL0RvY2tlcmZpbGUgYi9Eb2NrZXJmaWxlCmluZGV4IDdkNjMzZDkuLjQxYzdhYTQgMTAwNjQ0Ci0tLSBhL0RvY2tlcmZpbGUKKysrIGIvRG9ja2VyZmlsZQpAQCAtMSArMSwyIEBACiBGUk9NIGRlYmlhbjpsYXRlc3QKK1JVTiB5dW0gLXkgY2hlY2stdXBkYXRlIHx8IHsgcmM9JD87IFsgJHJjIC1uZXEgMTAwIF0gJiYgZXhpdCAkcmM7IHl1bSB1cGRhdGUgLXkgY3VybDsgfSAmJiB5dW0gY2xlYW4gYWxs"
+    },
+    {
+      "fixes": [
+        {
+          "cve": "CVE-2022-22576",
+          "id": "8fbba0e54af83852316315f695164063df348cdf"
+        },
+        {
+          "cve": "CVE-2022-27774",
+          "id": "b5de6ed3b0d1683db14d8d8f10e88bcf8aa9772a"
+        },
+        {
+          "cve": "CVE-2022-27775",
+          "id": "32d836aba4d317bf9f5541255f694d6377103dd0"
+        },
+        {
+          "cve": "CVE-2022-27776",
+          "id": "e7589f575ec9f631ead7b8ecd51c37262ea011a0"
+        }
+      ],
+      "summary": "Upgrade libcurl to 7.79.1-2.amzn2.0.1",
+      "diff": "ZGlmZiAtLWdpdCBhL0RvY2tlcmZpbGUgYi9Eb2NrZXJmaWxlCmluZGV4IDdkNjMzZDkuLmY1ZmExM2IgMTAwNjQ0Ci0tLSBhL0RvY2tlcmZpbGUKKysrIGIvRG9ja2VyZmlsZQpAQCAtMSArMSwzIEBACiBGUk9NIGRlYmlhbjpsYXRlc3QKK1JVTiB5dW0gLXkgY2hlY2stdXBkYXRlIHx8IHsgcmM9JD87IFsgJHJjIC1uZXEgMTAwIF0gJiYgZXhpdCAkcmM7IHl1bSB1cGRhdGUgLXkgbGliY3VybDsgfSAmJiB5dW0gY2xlYW4gYWxsCitSVU4geXVtIC15IGNoZWNrLXVwZGF0ZSB8fCB7IHJjPSQ/OyBbICRyYyAtbmVxIDEwMCBdICYmIGV4aXQgJHJjOyB5dW0gdXBkYXRlIC15IGN1cmw7IH0gJiYgeXVtIGNsZWFuIGFsbA=="
+    }
+  ],
   "scan": {
     "scanner": {
       "id": "starboard",

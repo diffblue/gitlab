@@ -34,6 +34,7 @@ module Security
 
         Vulnerability.id_in(missing_ids)
                      .with_resolution(false)
+                     .not_generic
                      .update_all(resolved_on_default_branch: true)
       end
     end

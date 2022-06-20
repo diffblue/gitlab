@@ -330,7 +330,11 @@ describe('seats actions', () => {
       await testAction({
         action: actions.removeBillableMemberSuccess,
         state,
-        expectedActions: [{ type: 'fetchBillableMembersList' }],
+        expectedActions: [
+          { type: 'fetchBillableMembersList' },
+          { type: 'fetchGitlabSubscription' },
+        ],
+
         expectedMutations: [{ type: types.REMOVE_BILLABLE_MEMBER_SUCCESS }],
       });
 

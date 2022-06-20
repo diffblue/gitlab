@@ -1,6 +1,7 @@
 <script>
-import { GlPopover, GlIcon } from '@gitlab/ui';
-import { __, s__ } from '~/locale';
+import { GlPopover, GlIcon, GlTooltip } from '@gitlab/ui';
+import { s__, n__ } from '~/locale';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import CodequalityIssueBody from '~/reports/codequality_report/components/codequality_issue_body.vue';
 import { SEVERITY_CLASSES, SEVERITY_ICONS } from '~/reports/codequality_report/constants';
 
@@ -9,14 +10,12 @@ export default {
     GlIcon,
     GlPopover,
     CodequalityIssueBody,
-  },
-  modalCloseButton: {
-    text: __('Close'),
-    attributes: [{ variant: 'info' }],
+    GlTooltip,
   },
   i18n: {
     popoverTitle: s__('CodeQuality|New code quality degradations on this line'),
   },
+  mixins: [glFeatureFlagsMixin()],
   props: {
     filePath: {
       type: String,
@@ -29,6 +28,9 @@ export default {
     },
   },
   computed: {
+    tooltipText() {
+      return n__('1 Code quality finding', '%d Code quality findings', this.codequality.length);
+    },
     severity() {
       return this.codequality[0].severity;
     },
@@ -54,7 +56,24 @@ export default {
 </script>
 
 <template>
-  <div>
+  <div
+    v-if="glFeatures.refactorCodeQualityInlineFindings"
+    @click="$emit('showCodeQualityFindings')"
+  >
+    <span ref="codeQualityIcon">
+      <gl-icon
+        :id="`codequality-${filePath}:${line}`"
+        :size="12"
+        :name="severityIcon"
+        :class="severityClass"
+        class="gl-hover-cursor-pointer codequality-severity-icon"
+      />
+    </span>
+    <gl-tooltip data-testid="codeQualityTooltip" :target="() => $refs.codeQualityIcon">
+      {{ tooltipText }}
+    </gl-tooltip>
+  </div>
+  <div v-else>
     <gl-icon
       :id="`codequality-${filePath}:${line}`"
       :size="12"

@@ -26,6 +26,20 @@ RSpec.describe Geo::ContainerRepositorySync, :geo do
     "}"
   end
 
+  let(:oci_manifest) do
+    %Q(
+      {
+        "schemaVersion":2,
+        "mediaType":"application/vnd.oci.image.manifest.v1+json",
+        "layers":[
+          {"mediaType":"application/vnd.oci.image.layer.v1.tar+gzip","size":3333,"digest":"sha256:3333"},
+          {"mediaType":"application/vnd.oci.image.layer.v1.tar+gzip","size":4444,"digest":"sha256:4444"},
+          {"mediaType":"application/vnd.docker.image.rootfs.foreign.diff.tar.gzip","size":5555,"digest":"sha256:5555","urls":["https://foo.bar/v2/zoo/blobs/sha256:5555"]}
+        ]
+     }
+    )
+  end
+
   let(:manifest_list) do
     %Q(
       {
@@ -42,8 +56,28 @@ RSpec.describe Geo::ContainerRepositorySync, :geo do
               }
           }
         ]
-       }
-       )
+      }
+    )
+  end
+
+  let(:oci_manifest_list) do
+    %Q(
+      {
+        "schemaVersion":2,
+        "mediaType":"application/vnd.oci.image.index.v1+json",
+        "manifests":[
+          {
+            "mediaType":"application/vnd.oci.image.manifest.v1+json",
+            "size":6666,
+            "digest":"sha256:6666",
+            "platform":
+              {
+                "architecture":"arm64","os":"linux"
+              }
+          }
+        ]
+      }
+    )
   end
 
   before do
@@ -147,6 +181,24 @@ RSpec.describe Geo::ContainerRepositorySync, :geo do
         stub_secondary_repository_tags_requests(secondary_repository_url, {})
         stub_primary_raw_manifest_list_request(primary_repository_url, 'tag-to-sync', manifest_list)
         stub_primary_raw_manifest_request(primary_repository_url, 'sha256:6666', manifest)
+        stub_secondary_raw_manifest_request(secondary_repository_url, 'sha256:6666', manifest)
+        stub_missing_blobs_requests(primary_repository_url, secondary_repository_url, { 'sha256:3333' => true, 'sha256:4444' => false })
+
+        expect(container_repository).to receive(:push_blob).with('sha256:3333', anything)
+        expect(container_repository).to receive(:push_manifest).with('sha256:6666', anything, anything)
+        expect(container_repository).to receive(:push_manifest).with('tag-to-sync', anything, anything)
+        expect(container_repository).to receive(:delete_tag_by_digest).with('sha256:2222')
+
+        subject.execute
+      end
+    end
+
+    context 'oci manifest list' do
+      it 'pushes the correct blobs and manifests' do
+        stub_primary_repository_tags_requests(primary_repository_url, { 'tag-to-sync' => 'sha256:1111' })
+        stub_secondary_repository_tags_requests(secondary_repository_url, {})
+        stub_primary_raw_manifest_list_request(primary_repository_url, 'tag-to-sync', oci_manifest_list)
+        stub_primary_raw_manifest_request(primary_repository_url, 'sha256:6666', oci_manifest)
         stub_secondary_raw_manifest_request(secondary_repository_url, 'sha256:6666', manifest)
         stub_missing_blobs_requests(primary_repository_url, secondary_repository_url, { 'sha256:3333' => true, 'sha256:4444' => false })
 

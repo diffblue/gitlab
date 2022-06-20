@@ -26,16 +26,6 @@ RSpec.describe Crm::ContactsFinder do
           root_group.add_developer(user)
         end
 
-        context 'when feature flag is disabled' do
-          before do
-            stub_feature_flags(customer_relations: false)
-          end
-
-          it 'returns an empty array' do
-            expect(subject).to be_empty
-          end
-        end
-
         context 'when feature flag is enabled' do
           it 'returns all group contacts' do
             expect(subject).to match_array([contact_1, contact_2])
@@ -140,6 +130,14 @@ RSpec.describe Crm::ContactsFinder do
 
         it 'returns only active contacts' do
           finder = described_class.new(user, group: search_test_group, state: :active)
+          expect(finder.execute).to match_array([search_test_b])
+        end
+      end
+
+      context 'when searching for contacts ids' do
+        it 'returns the expected contacts' do
+          finder = described_class.new(user, group: search_test_group, ids: [search_test_b.id])
+
           expect(finder.execute).to match_array([search_test_b])
         end
       end

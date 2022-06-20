@@ -32,6 +32,7 @@ export {
   moveItemListHelper,
   getMoveData,
   filterVariables,
+  fullBoardId,
 } from '~/boards/boards_util';
 
 export function getMilestone({ milestone }) {

@@ -157,6 +157,7 @@ module GitlabSubscriptions
       export_user_permissions
       zentao_issues_integration
       coverage_check_approval_rule
+      issuable_resource_links
     ].freeze
 
     ULTIMATE_FEATURES = %i[

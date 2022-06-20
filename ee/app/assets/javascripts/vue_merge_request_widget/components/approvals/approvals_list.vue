@@ -7,6 +7,10 @@ import { sprintf, __, s__ } from '~/locale';
 import UserAvatarList from '~/vue_shared/components/user_avatar/user_avatar_list.vue';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import ApprovedIcon from './approved_icon.vue';
+import NumberOfApprovals from './number_of_approvals.vue';
+
+const INCLUDE_APPROVERS = 1;
+const DO_NOT_INCLUDE_APPROVERS = 2;
 
 export default {
   components: {
@@ -14,10 +18,15 @@ export default {
     ApprovedIcon,
     ApprovalCheckRulePopover,
     EmptyRuleName,
+    NumberOfApprovals,
   },
   mixins: [glFeatureFlagsMixin()],
   props: {
     approvalRules: {
+      type: Array,
+      required: true,
+    },
+    invalidApproversRules: {
       type: Array,
       required: true,
     },
@@ -55,16 +64,6 @@ export default {
     },
   },
   methods: {
-    pendingApprovalsText(rule) {
-      if (!rule.approvals_required) {
-        return __('Optional');
-      }
-
-      return sprintf(__('%{count} of %{total}'), {
-        count: rule.approved_by.length,
-        total: rule.approvals_required,
-      });
-    },
     summaryText(rule) {
       return rule.approvals_required === 0
         ? this.summaryOptionalText(rule)
@@ -85,6 +84,11 @@ export default {
     },
     sectionNameLabel(rule) {
       return sprintf(s__('Approvals|Section: %section'), { section: rule.section });
+    },
+    numberOfColumns(rule) {
+      return rule.rule_type === this.$options.ruleTypeAnyApprover
+        ? DO_NOT_INCLUDE_APPROVERS
+        : INCLUDE_APPROVERS;
     },
   },
   ruleTypeAnyApprover: RULE_TYPE_ANY_APPROVER,
@@ -112,7 +116,7 @@ export default {
       </tr>
       <tr v-for="rule in rules" :key="rule.id">
         <td class="w-0 gl-pr-4!"><approved-icon class="gl-pl-2" :is-approved="rule.approved" /></td>
-        <td :colspan="rule.rule_type === $options.ruleTypeAnyApprover ? 2 : 1" class="gl-pl-0!">
+        <td :colspan="numberOfColumns(rule)" class="gl-pl-0! gl-vertical-align-middle!">
           <div class="d-md-flex d-none js-name align-items-center">
             <empty-rule-name
               v-if="rule.rule_type === $options.ruleTypeAnyApprover"
@@ -172,7 +176,7 @@ export default {
           <div><user-avatar-list :items="rule.approvers" :img-size="24" empty-text="" /></div>
         </td>
         <td class="d-md-table-cell w-0 d-none text-nowrap js-pending">
-          {{ pendingApprovalsText(rule) }}
+          <number-of-approvals :rule="rule" :invalid-approvers-rules="invalidApproversRules" />
         </td>
         <td class="d-md-table-cell d-none js-commented-by">
           <user-avatar-list :items="rule.commented_by" :img-size="24" empty-text="" />

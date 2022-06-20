@@ -140,7 +140,9 @@ module EE
         }
       }
 
-      button_tag(s_("Geo|Resync all"), type: "button", class: 'gl-button btn btn-default gl-mr-3 js-confirm-modal-button', data: resync_all_projects_modal_data)
+      render Pajamas::ButtonComponent.new(button_options: { class: 'js-confirm-modal-button gl-mr-3', data: resync_all_projects_modal_data }) do
+        s_("Geo|Resync all")
+      end
     end
 
     def reverify_all_button(projects_count, limit)
@@ -158,7 +160,9 @@ module EE
         }
       }
 
-      button_tag(s_("Geo|Reverify all"), type: "button", class: 'gl-button btn btn-default gl-mr-3 js-confirm-modal-button', data: reverify_all_projects_modal_data)
+      render Pajamas::ButtonComponent.new(button_options: { class: 'js-confirm-modal-button gl-mr-3', data: reverify_all_projects_modal_data }) do
+        s_("Geo|Reverify all")
+      end
     end
 
     def format_project_count(projects_count, limit)

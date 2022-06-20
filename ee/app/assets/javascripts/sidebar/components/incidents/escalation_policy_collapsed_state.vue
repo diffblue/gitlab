@@ -38,7 +38,7 @@ export default {
     data-testid="sidebar-collapsed-attribute-title"
   >
     <gl-icon :aria-label="$options.i18n.title" name="mobile" />
-    <span class="collapse-truncated-title">
+    <span class="collapse-truncated-title gl-pt-2 gl-px-3 gl-font-sm">
       {{ policyText }}
     </span>
   </div>

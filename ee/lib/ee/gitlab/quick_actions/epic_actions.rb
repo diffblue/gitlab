@@ -8,7 +8,7 @@ module EE
         include ::Gitlab::QuickActions::Dsl
 
         included do
-          desc _('Add child epic to an epic')
+          desc { _('Add child epic to an epic') }
           explanation do |epic_param|
             child_epic = extract_epic(epic_param)
 
@@ -23,7 +23,7 @@ module EE
             @execution_message[:child_epic] = set_child_epic_update(quick_action_target, child_epic)
           end
 
-          desc _('Remove child epic from an epic')
+          desc { _('Remove child epic from an epic') }
           explanation do |epic_param|
             child_epic = extract_epic(epic_param)
 
@@ -45,7 +45,7 @@ module EE
               end
           end
 
-          desc _('Set parent epic to an epic')
+          desc { _('Set parent epic to an epic') }
           explanation do |epic_param|
             parent_epic = extract_epic(epic_param)
 
@@ -60,7 +60,7 @@ module EE
             @execution_message[:parent_epic] = set_parent_epic_update(quick_action_target, parent_epic)
           end
 
-          desc _('Remove parent epic from an epic')
+          desc { _('Remove parent epic from an epic') }
           explanation do
             parent_epic = quick_action_target.parent
 

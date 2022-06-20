@@ -1,5 +1,5 @@
 import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
-import { thWidthClass } from '~/lib/utils/table_utility';
+import { thWidthPercent } from '~/lib/utils/table_utility';
 import { __, s__ } from '~/locale';
 
 // Billable Seats HTTP headers
@@ -11,27 +11,27 @@ const ALL_FIELDS = [
   {
     key: 'user',
     label: __('User'),
-    thClass: thWidthClass(30),
+    thClass: thWidthPercent(30),
   },
   {
     key: 'email',
     label: __('Email'),
-    thClass: thWidthClass(20),
+    thClass: thWidthPercent(20),
   },
   {
     key: 'lastActivityTime',
     label: __('Last activity'),
-    thClass: thWidthClass(20),
+    thClass: thWidthPercent(20),
   },
   {
     key: 'membershipState',
     label: __('In a seat'),
-    thClass: thWidthClass(10),
+    thClass: thWidthPercent(10),
   },
   {
     key: 'actions',
     label: '',
-    thClass: thWidthClass(20),
+    thClass: thWidthPercent(20),
     tdClass: 'text-right',
   },
 ];
@@ -40,10 +40,14 @@ export const STANDARD_FIELDS = ALL_FIELDS.filter(({ key }) => key !== 'membershi
 export const FIELDS_WITH_MEMBERSHIP_TOGGLE = ALL_FIELDS;
 
 export const DETAILS_FIELDS = [
-  { key: 'source_full_name', label: s__('Billing|Direct memberships'), thClass: thWidthClass(40) },
-  { key: 'created_at', label: __('Access granted'), thClass: thWidthClass(40) },
-  { key: 'expires_at', label: __('Access expires'), thClass: thWidthClass(40) },
-  { key: 'role', label: __('Role'), thClass: thWidthClass(40) },
+  {
+    key: 'source_full_name',
+    label: s__('Billing|Direct memberships'),
+    thClass: thWidthPercent(40),
+  },
+  { key: 'created_at', label: __('Access granted'), thClass: thWidthPercent(40) },
+  { key: 'expires_at', label: __('Access expires'), thClass: thWidthPercent(40) },
+  { key: 'role', label: __('Role'), thClass: thWidthPercent(40) },
 ];
 
 export const CANNOT_REMOVE_BILLABLE_MEMBER_MODAL_ID = 'cannot-remove-member-modal';

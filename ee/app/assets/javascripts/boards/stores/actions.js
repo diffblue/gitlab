@@ -6,6 +6,7 @@ import {
   filterVariables,
 } from '~/boards/boards_util';
 import { BoardType } from '~/boards/constants';
+import eventHub from '~/boards/eventhub';
 import { gqlClient } from '~/boards/graphql';
 import groupBoardMembersQuery from '~/boards/graphql/group_board_members.query.graphql';
 import listsIssuesQuery from '~/boards/graphql/lists_issues.query.graphql';
@@ -15,6 +16,7 @@ import * as typesCE from '~/boards/stores/mutation_types';
 import { TYPE_ITERATIONS_CADENCE } from '~/graphql_shared/constants';
 
 import { getIdFromGraphQLId, convertToGraphQLId } from '~/graphql_shared/utils';
+import { fetchPolicies } from '~/lib/graphql';
 import { historyPushState, convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import { mergeUrlParams, removeParams, queryToObject } from '~/lib/utils/url_utility';
 import { s__ } from '~/locale';
@@ -44,7 +46,7 @@ import updateBoardEpicUserPreferencesMutation from '../graphql/update_board_epic
 
 import * as types from './mutation_types';
 
-const fetchAndFormatListIssues = (state, extraVariables) => {
+const fetchAndFormatListIssues = (state, { fetchPolicy, ...extraVariables }) => {
   const { fullPath, boardId, boardType, filterParams } = state;
 
   const variables = {
@@ -63,6 +65,7 @@ const fetchAndFormatListIssues = (state, extraVariables) => {
         isSingleRequest: true,
       },
       variables,
+      fetchPolicy,
     })
     .then(({ data }) => {
       const { lists } = data[boardType].board;
@@ -70,7 +73,7 @@ const fetchAndFormatListIssues = (state, extraVariables) => {
     });
 };
 
-const fetchAndFormatListEpics = (state, extraVariables) => {
+const fetchAndFormatListEpics = (state, { fetchPolicy, ...extraVariables }) => {
   const { fullPath, boardId, filterParams } = state;
 
   const variables = {
@@ -87,6 +90,7 @@ const fetchAndFormatListEpics = (state, extraVariables) => {
         isSingleRequest: true,
       },
       variables,
+      fetchPolicy,
     })
     .then(({ data }) => {
       const { lists } = data.group.epicBoard;
@@ -117,9 +121,12 @@ export default {
           commit(types.RECEIVE_BOARD_FAILURE);
         } else {
           const board = data.workspace?.board;
-          commit(types.RECEIVE_BOARD_SUCCESS, board);
-          dispatch('setBoardConfig', board);
+          dispatch('setBoard', board);
         }
+      })
+      .then(() => {
+        dispatch('fetchLists');
+        eventHub.$emit('updateTokens');
       })
       .catch(() => commit(types.RECEIVE_BOARD_FAILURE));
   },
@@ -400,9 +407,6 @@ export default {
   ) => {
     if (!listId) return null;
 
-    if (!fetchNext && !state.isShowingEpicsSwimlanes) {
-      commit(types.RESET_ITEMS_FOR_LIST, listId);
-    }
     commit(types.REQUEST_ITEMS_FOR_LIST, { listId, fetchNext });
 
     const { epicId, ...filterParams } = state.filterParams;
@@ -418,6 +422,7 @@ export default {
         : { ...filterParams, epicId },
       after: fetchNext ? state.pageInfoByListId[listId].endCursor : undefined,
       first: 10,
+      ...(!fetchNext ? { fetchPolicy: fetchPolicies.NO_CACHE } : {}),
     };
 
     if (getters.isEpicBoard) {

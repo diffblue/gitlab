@@ -3,20 +3,23 @@
   canonical: "<pre><code>foo\tbaz\t\tbim\n</code></pre>\n"
   static: "<div class=\"gl-relative markdown-code-block js-markdown-code\">\n<pre
     data-sourcepos=\"1:2-1:13\" class=\"code highlight js-syntax-highlight language-plaintext\"
-    lang=\"plaintext\" v-pre=\"true\"><code><span id=\"LC1\" class=\"line\" lang=\"plaintext\">foo\tbaz\t\tbim</span></code></pre>\n<copy-code></copy-code>\n</div>"
+    lang=\"plaintext\" data-canonical-lang=\"\" v-pre=\"true\"><code><span id=\"LC1\"
+    class=\"line\" lang=\"plaintext\">foo\tbaz\t\tbim</span></code></pre>\n<copy-code></copy-code>\n</div>"
   wysiwyg: "<pre class=\"content-editor-code-block undefined code highlight\"><code>foo\tbaz\t\tbim</code></pre>"
 02_01__preliminaries__tabs__002:
   canonical: "<pre><code>foo\tbaz\t\tbim\n</code></pre>\n"
   static: "<div class=\"gl-relative markdown-code-block js-markdown-code\">\n<pre
     data-sourcepos=\"1:4-1:15\" class=\"code highlight js-syntax-highlight language-plaintext\"
-    lang=\"plaintext\" v-pre=\"true\"><code><span id=\"LC1\" class=\"line\" lang=\"plaintext\">foo\tbaz\t\tbim</span></code></pre>\n<copy-code></copy-code>\n</div>"
+    lang=\"plaintext\" data-canonical-lang=\"\" v-pre=\"true\"><code><span id=\"LC1\"
+    class=\"line\" lang=\"plaintext\">foo\tbaz\t\tbim</span></code></pre>\n<copy-code></copy-code>\n</div>"
   wysiwyg: "<pre class=\"content-editor-code-block undefined code highlight\"><code>foo\tbaz\t\tbim</code></pre>"
 02_01__preliminaries__tabs__003:
   canonical: "<pre><code>a\ta\nὐ\ta\n</code></pre>\n"
   static: "<div class=\"gl-relative markdown-code-block js-markdown-code\">\n<pre
     data-sourcepos=\"1:5-2:9\" class=\"code highlight js-syntax-highlight language-plaintext\"
-    lang=\"plaintext\" v-pre=\"true\"><code><span id=\"LC1\" class=\"line\" lang=\"plaintext\">a\ta</span>\n<span
-    id=\"LC2\" class=\"line\" lang=\"plaintext\">ὐ\ta</span></code></pre>\n<copy-code></copy-code>\n</div>"
+    lang=\"plaintext\" data-canonical-lang=\"\" v-pre=\"true\"><code><span id=\"LC1\"
+    class=\"line\" lang=\"plaintext\">a\ta</span>\n<span id=\"LC2\" class=\"line\"
+    lang=\"plaintext\">ὐ\ta</span></code></pre>\n<copy-code></copy-code>\n</div>"
   wysiwyg: "<pre class=\"content-editor-code-block undefined code highlight\"><code>a\ta\nὐ\ta</code></pre>"
 02_01__preliminaries__tabs__004:
   canonical: |
@@ -49,7 +52,7 @@
     <li data-sourcepos="1:1-3:5">
     <p data-sourcepos="1:3-1:5">foo</p>
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="3:2-3:5" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">  bar</span></code></pre>
+    <pre data-sourcepos="3:2-3:5" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">  bar</span></code></pre>
     <copy-code></copy-code>
     </div>
     </li>
@@ -65,7 +68,7 @@
   static: |-
     <blockquote data-sourcepos="1:1-1:6" dir="auto">
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="1:3-1:6" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">  foo</span></code></pre>
+    <pre data-sourcepos="1:3-1:6" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">  foo</span></code></pre>
     <copy-code></copy-code>
     </div>
     </blockquote>
@@ -83,7 +86,7 @@
     <ul data-sourcepos="1:1-1:6" dir="auto">
     <li data-sourcepos="1:1-1:6">
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="1:3-1:6" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">  foo</span></code></pre>
+    <pre data-sourcepos="1:3-1:6" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">  foo</span></code></pre>
     <copy-code></copy-code>
     </div>
     </li>
@@ -97,7 +100,7 @@
     </code></pre>
   static: |-
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="1:5-2:4" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">foo</span>
+    <pre data-sourcepos="1:5-2:4" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">foo</span>
     <span id="LC2" class="line" lang="plaintext">bar</span></code></pre>
     <copy-code></copy-code>
     </div>
@@ -214,7 +217,7 @@
     </code></pre>
   static: |-
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="1:5-1:7" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">***</span></code></pre>
+    <pre data-sourcepos="1:5-1:7" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">***</span></code></pre>
     <copy-code></copy-code>
     </div>
   wysiwyg: |-
@@ -440,7 +443,7 @@
     </code></pre>
   static: |-
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="1:5-1:9" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext"># foo</span></code></pre>
+    <pre data-sourcepos="1:5-1:9" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext"># foo</span></code></pre>
     <copy-code></copy-code>
     </div>
   wysiwyg: |-
@@ -623,7 +626,7 @@
     <hr />
   static: |-
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="1:5-4:7" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">Foo</span>
+    <pre data-sourcepos="1:5-4:7" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">Foo</span>
     <span id="LC2" class="line" lang="plaintext">---</span>
     <span id="LC3" class="line" lang="plaintext"></span>
     <span id="LC4" class="line" lang="plaintext">Foo</span></code></pre>
@@ -806,7 +809,7 @@
     <hr />
   static: |-
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="1:5-1:7" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">foo</span></code></pre>
+    <pre data-sourcepos="1:5-1:7" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">foo</span></code></pre>
     <copy-code></copy-code>
     </div>
     <hr data-sourcepos="2:1-2:3">
@@ -896,7 +899,7 @@
     </code></pre>
   static: |-
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="1:5-2:25" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">a simple</span>
+    <pre data-sourcepos="1:5-2:25" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">a simple</span>
     <span id="LC2" class="line" lang="plaintext">  indented code block</span></code></pre>
     <copy-code></copy-code>
     </div>
@@ -950,7 +953,7 @@
     </code></pre>
   static: |-
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="1:5-4:9" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">&lt;a/&gt;</span>
+    <pre data-sourcepos="1:5-4:9" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">&lt;a/&gt;</span>
     <span id="LC2" class="line" lang="plaintext">*hi*</span>
     <span id="LC3" class="line" lang="plaintext"></span>
     <span id="LC4" class="line" lang="plaintext">- one</span></code></pre>
@@ -973,7 +976,7 @@
     </code></pre>
   static: |-
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="1:5-7:10" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">chunk1</span>
+    <pre data-sourcepos="1:5-7:10" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">chunk1</span>
     <span id="LC2" class="line" lang="plaintext"></span>
     <span id="LC3" class="line" lang="plaintext">chunk2</span>
     <span id="LC4" class="line" lang="plaintext"></span>
@@ -994,7 +997,7 @@
   canonical: "<pre><code>chunk1\n  \n  chunk2\n</code></pre>\n"
   static: |-
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="1:5-3:12" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">chunk1</span>
+    <pre data-sourcepos="1:5-3:12" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">chunk1</span>
     <span id="LC2" class="line" lang="plaintext">  </span>
     <span id="LC3" class="line" lang="plaintext">  chunk2</span></code></pre>
     <copy-code></copy-code>
@@ -1018,7 +1021,7 @@
     <p>bar</p>
   static: |-
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="1:5-1:7" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">foo</span></code></pre>
+    <pre data-sourcepos="1:5-1:7" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">foo</span></code></pre>
     <copy-code></copy-code>
     </div>
     <p data-sourcepos="2:1-2:3" dir="auto">bar</p>
@@ -1037,13 +1040,13 @@
     <h1 data-sourcepos="1:1-1:9" dir="auto">
     <a id="user-content-heading" class="anchor" href="#heading" aria-hidden="true"></a>Heading</h1>
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="2:5-2:7" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">foo</span></code></pre>
+    <pre data-sourcepos="2:5-2:7" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">foo</span></code></pre>
     <copy-code></copy-code>
     </div>
     <h2 data-sourcepos="3:1-5:7" dir="auto">
     <a id="user-content-heading-1" class="anchor" href="#heading-1" aria-hidden="true"></a>Heading</h2>
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="5:5-5:7" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">foo</span></code></pre>
+    <pre data-sourcepos="5:5-5:7" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">foo</span></code></pre>
     <copy-code></copy-code>
     </div>
     <hr data-sourcepos="6:1-6:4">
@@ -1056,7 +1059,7 @@
     </code></pre>
   static: |-
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="1:5-2:7" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">    foo</span>
+    <pre data-sourcepos="1:5-2:7" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">    foo</span>
     <span id="LC2" class="line" lang="plaintext">bar</span></code></pre>
     <copy-code></copy-code>
     </div>
@@ -1069,7 +1072,7 @@
     </code></pre>
   static: |-
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="3:5-5:0" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">foo</span></code></pre>
+    <pre data-sourcepos="3:5-5:0" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">foo</span></code></pre>
     <copy-code></copy-code>
     </div>
   wysiwyg: |-
@@ -1078,7 +1081,7 @@
   canonical: "<pre><code>foo  \n</code></pre>\n"
   static: |-
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="1:5-1:9" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">foo  </span></code></pre>
+    <pre data-sourcepos="1:5-1:9" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">foo  </span></code></pre>
     <copy-code></copy-code>
     </div>
   wysiwyg: |-
@@ -1090,7 +1093,7 @@
     </code></pre>
   static: |-
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="1:1-4:3" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">&lt;</span>
+    <pre data-sourcepos="1:1-4:3" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">&lt;</span>
     <span id="LC2" class="line" lang="plaintext"> &gt;</span></code></pre>
     <copy-code></copy-code>
     </div>
@@ -1104,7 +1107,7 @@
     </code></pre>
   static: |-
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="1:1-4:3" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">&lt;</span>
+    <pre data-sourcepos="1:1-4:3" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">&lt;</span>
     <span id="LC2" class="line" lang="plaintext"> &gt;</span></code></pre>
     <copy-code></copy-code>
     </div>
@@ -1125,7 +1128,7 @@
     </code></pre>
   static: |-
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="1:1-4:3" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">aaa</span>
+    <pre data-sourcepos="1:1-4:3" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">aaa</span>
     <span id="LC2" class="line" lang="plaintext">~~~</span></code></pre>
     <copy-code></copy-code>
     </div>
@@ -1139,7 +1142,7 @@
     </code></pre>
   static: |-
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="1:1-4:3" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">aaa</span>
+    <pre data-sourcepos="1:1-4:3" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">aaa</span>
     <span id="LC2" class="line" lang="plaintext">```</span></code></pre>
     <copy-code></copy-code>
     </div>
@@ -1153,7 +1156,7 @@
     </code></pre>
   static: |-
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="1:1-4:6" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">aaa</span>
+    <pre data-sourcepos="1:1-4:6" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">aaa</span>
     <span id="LC2" class="line" lang="plaintext">```</span></code></pre>
     <copy-code></copy-code>
     </div>
@@ -1167,7 +1170,7 @@
     </code></pre>
   static: |-
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="1:1-4:4" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">aaa</span>
+    <pre data-sourcepos="1:1-4:4" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">aaa</span>
     <span id="LC2" class="line" lang="plaintext">~~~</span></code></pre>
     <copy-code></copy-code>
     </div>
@@ -1179,7 +1182,7 @@
     <pre><code></code></pre>
   static: |-
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="1:1-1:3" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code></code></pre>
+    <pre data-sourcepos="1:1-1:3" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code></code></pre>
     <copy-code></copy-code>
     </div>
   wysiwyg: |-
@@ -1192,7 +1195,7 @@
     </code></pre>
   static: |-
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="1:1-4:3" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext"></span>
+    <pre data-sourcepos="1:1-4:3" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext"></span>
     <span id="LC2" class="line" lang="plaintext">```</span>
     <span id="LC3" class="line" lang="plaintext">aaa</span></code></pre>
     <copy-code></copy-code>
@@ -1211,7 +1214,7 @@
   static: |-
     <blockquote data-sourcepos="1:1-2:5" dir="auto">
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="1:3-3:0" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">aaa</span></code></pre>
+    <pre data-sourcepos="1:3-3:0" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">aaa</span></code></pre>
     <copy-code></copy-code>
     </div>
     </blockquote>
@@ -1222,7 +1225,7 @@
   canonical: "<pre><code>\n  \n</code></pre>\n"
   static: |-
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="1:1-4:3" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext"></span>
+    <pre data-sourcepos="1:1-4:3" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext"></span>
     <span id="LC2" class="line" lang="plaintext">  </span></code></pre>
     <copy-code></copy-code>
     </div>
@@ -1234,7 +1237,7 @@
     <pre><code></code></pre>
   static: |-
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="1:1-2:3" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code></code></pre>
+    <pre data-sourcepos="1:1-2:3" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code></code></pre>
     <copy-code></copy-code>
     </div>
   wysiwyg: |-
@@ -1246,7 +1249,7 @@
     </code></pre>
   static: |-
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="1:2-4:3" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">aaa</span>
+    <pre data-sourcepos="1:2-4:3" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">aaa</span>
     <span id="LC2" class="line" lang="plaintext">aaa</span></code></pre>
     <copy-code></copy-code>
     </div>
@@ -1261,7 +1264,7 @@
     </code></pre>
   static: |-
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="1:3-5:5" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">aaa</span>
+    <pre data-sourcepos="1:3-5:5" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">aaa</span>
     <span id="LC2" class="line" lang="plaintext">aaa</span>
     <span id="LC3" class="line" lang="plaintext">aaa</span></code></pre>
     <copy-code></copy-code>
@@ -1278,7 +1281,7 @@
     </code></pre>
   static: |-
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="1:4-5:6" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">aaa</span>
+    <pre data-sourcepos="1:4-5:6" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">aaa</span>
     <span id="LC2" class="line" lang="plaintext"> aaa</span>
     <span id="LC3" class="line" lang="plaintext">aaa</span></code></pre>
     <copy-code></copy-code>
@@ -1295,7 +1298,7 @@
     </code></pre>
   static: |-
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="1:5-3:7" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">```</span>
+    <pre data-sourcepos="1:5-3:7" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">```</span>
     <span id="LC2" class="line" lang="plaintext">aaa</span>
     <span id="LC3" class="line" lang="plaintext">```</span></code></pre>
     <copy-code></copy-code>
@@ -1310,7 +1313,7 @@
     </code></pre>
   static: |-
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="1:1-3:5" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">aaa</span></code></pre>
+    <pre data-sourcepos="1:1-3:5" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">aaa</span></code></pre>
     <copy-code></copy-code>
     </div>
   wysiwyg: |-
@@ -1321,7 +1324,7 @@
     </code></pre>
   static: |-
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="1:4-3:5" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">aaa</span></code></pre>
+    <pre data-sourcepos="1:4-3:5" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">aaa</span></code></pre>
     <copy-code></copy-code>
     </div>
   wysiwyg: |-
@@ -1333,7 +1336,7 @@
     </code></pre>
   static: |-
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="1:1-3:7" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">aaa</span>
+    <pre data-sourcepos="1:1-3:7" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">aaa</span>
     <span id="LC2" class="line" lang="plaintext">    ```</span></code></pre>
     <copy-code></copy-code>
     </div>
@@ -1357,7 +1360,7 @@
     </code></pre>
   static: |-
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="1:1-3:6" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">aaa</span>
+    <pre data-sourcepos="1:1-3:6" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">aaa</span>
     <span id="LC2" class="line" lang="plaintext">~~~ ~~</span></code></pre>
     <copy-code></copy-code>
     </div>
@@ -1373,7 +1376,7 @@
   static: |-
     <p data-sourcepos="1:1-1:3" dir="auto">foo</p>
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="2:1-4:3" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">bar</span></code></pre>
+    <pre data-sourcepos="2:1-4:3" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">bar</span></code></pre>
     <copy-code></copy-code>
     </div>
     <p data-sourcepos="5:1-5:3" dir="auto">baz</p>
@@ -1389,7 +1392,7 @@
     <h2 data-sourcepos="1:1-3:3" dir="auto">
     <a id="user-content-foo" class="anchor" href="#foo" aria-hidden="true"></a>foo</h2>
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="3:1-5:3" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">bar</span></code></pre>
+    <pre data-sourcepos="3:1-5:3" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">bar</span></code></pre>
     <copy-code></copy-code>
     </div>
     <h1 data-sourcepos="6:1-6:5" dir="auto">
@@ -1435,7 +1438,7 @@
     <pre><code class="language-;"></code></pre>
   static: |-
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="1:1-2:4" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code></code></pre>
+    <pre data-sourcepos="1:1-2:4" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang=";" v-pre="true"><code></code></pre>
     <copy-code></copy-code>
     </div>
   wysiwyg: |-
@@ -1456,7 +1459,7 @@
     </code></pre>
   static: |-
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="1:1-3:3" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">foo</span></code></pre>
+    <pre data-sourcepos="1:1-3:3" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="aa" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">foo</span></code></pre>
     <copy-code></copy-code>
     </div>
   wysiwyg: |-
@@ -1467,7 +1470,7 @@
     </code></pre>
   static: |-
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="1:1-3:3" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">``` aaa</span></code></pre>
+    <pre data-sourcepos="1:1-3:3" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">``` aaa</span></code></pre>
     <copy-code></copy-code>
     </div>
   wysiwyg: |-
@@ -1489,7 +1492,7 @@
     </td></tr></table>
   wysiwyg: |-
     Error - check implementation:
-    Hast node of type "table" not supported by this converter. Please, provide an specification.
+    Cannot read properties of undefined (reading 'className')
 04_06__leaf_blocks__html_blocks__002:
   canonical: |
     <table>
@@ -1510,8 +1513,9 @@
     </table>
     <p data-sourcepos="9:1-9:5" dir="auto">okay.</p>
   wysiwyg: |-
-    Error - check implementation:
-    Hast node of type "table" not supported by this converter. Please, provide an specification.
+    <table><tbody><tr><td colspan="1" rowspan="1"><p>
+               hi
+        </p></td></tr></tbody></table>
 04_06__leaf_blocks__html_blocks__003:
   canonical: |2
      <div>
@@ -1624,8 +1628,9 @@
     foo
     </td></tr></table>
   wysiwyg: |-
-    Error - check implementation:
-    Hast node of type "table" not supported by this converter. Please, provide an specification.
+    <table><tbody><tr><td colspan="1" rowspan="1"><p>
+    foo
+    </p></td></tr></tbody></table>
 04_06__leaf_blocks__html_blocks__014:
   canonical: |
     <div></div>
@@ -1730,7 +1735,7 @@
     <p>okay</p>
   static: |-
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext"></span>
+    <pre class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext"></span>
     <span id="LC2" class="line" lang="plaintext">import Text.HTML.TagSoup</span>
     <span id="LC3" class="line" lang="plaintext"></span>
     <span id="LC4" class="line" lang="plaintext">main :: IO ()</span>
@@ -1847,7 +1852,7 @@
     <p data-sourcepos="2:1-2:5" dir="auto"><em>baz</em></p>
   wysiwyg: |-
     Error - check implementation:
-    Cannot destructure property 'className' of 'hastNode.properties' as it is undefined.
+    Cannot read properties of undefined (reading 'wrapper')
 04_06__leaf_blocks__html_blocks__030:
   canonical: |
     <script>
@@ -1886,7 +1891,7 @@
     <p data-sourcepos="6:1-6:4" dir="auto">okay</p>
   wysiwyg: |-
     Error - check implementation:
-    Cannot destructure property 'className' of 'hastNode.properties' as it is undefined.
+    Cannot read properties of undefined (reading 'wrapper')
 04_06__leaf_blocks__html_blocks__033:
   canonical: |
     <!DOCTYPE html>
@@ -1908,8 +1913,19 @@
     }
     ]]>
     <p>okay</p>
-  static: |2-
+  static: |-
+    &lt;![CDATA[
+    function matchwo(a,b)
+    {
+      if (a &lt; b &amp;&amp; a &lt; 0) then {
+        return 1;
 
+      } else {
+
+        return 0;
+      }
+    }
+    ]]&gt;
     <p data-sourcepos="13:1-13:4" dir="auto">okay</p>
   wysiwyg: |-
     Error - check implementation:
@@ -1921,8 +1937,8 @@
     </code></pre>
   static: "  \n<div class=\"gl-relative markdown-code-block js-markdown-code\">\n<pre
     data-sourcepos=\"3:5-3:16\" class=\"code highlight js-syntax-highlight language-plaintext\"
-    lang=\"plaintext\" v-pre=\"true\"><code><span id=\"LC1\" class=\"line\" lang=\"plaintext\">&lt;!--
-    foo --&gt;</span></code></pre>\n<copy-code></copy-code>\n</div>"
+    lang=\"plaintext\" data-canonical-lang=\"\" v-pre=\"true\"><code><span id=\"LC1\"
+    class=\"line\" lang=\"plaintext\">&lt;!-- foo --&gt;</span></code></pre>\n<copy-code></copy-code>\n</div>"
   wysiwyg: |-
     Error - check implementation:
     Cannot destructure property 'className' of 'hastNode.properties' as it is undefined.
@@ -1934,7 +1950,7 @@
   static: |2-
       <div>
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="3:5-3:9" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">&lt;div&gt;</span></code></pre>
+    <pre data-sourcepos="3:5-3:9" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">&lt;div&gt;</span></code></pre>
     <copy-code></copy-code>
     </div>
     </div>
@@ -2024,8 +2040,9 @@
     </tr>
     </table>
   wysiwyg: |-
-    Error - check implementation:
-    Hast node of type "table" not supported by this converter. Please, provide an specification.
+    <table><tbody><tr><td colspan="1" rowspan="1"><p>
+    Hi
+    </p></td></tr></tbody></table>
 04_06__leaf_blocks__html_blocks__043:
   canonical: |
     <table>
@@ -2040,7 +2057,7 @@
     <table dir="auto">
       <tr>
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="5:5-8:0" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">&lt;td&gt;</span>
+    <pre data-sourcepos="5:5-8:0" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">&lt;td&gt;</span>
     <span id="LC2" class="line" lang="plaintext">  Hi</span>
     <span id="LC3" class="line" lang="plaintext">&lt;/td&gt;</span></code></pre>
     <copy-code></copy-code>
@@ -2048,8 +2065,9 @@
       </tr>
     </table>
   wysiwyg: |-
-    Error - check implementation:
-    Hast node of type "table" not supported by this converter. Please, provide an specification.
+    <pre class="content-editor-code-block undefined code highlight"><code>&lt;td&gt;
+      Hi
+    &lt;/td&gt;</code></pre>
 04_07__leaf_blocks__link_reference_definitions__001:
   canonical: |
     <p><a href="/url" title="title">foo</a></p>
@@ -2209,7 +2227,7 @@
     <p>[foo]</p>
   static: |-
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="1:5-2:0" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">[foo]: /url "title"</span></code></pre>
+    <pre data-sourcepos="1:5-2:0" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">[foo]: /url "title"</span></code></pre>
     <copy-code></copy-code>
     </div>
     <p data-sourcepos="3:1-3:5" dir="auto">[foo]</p>
@@ -2222,7 +2240,7 @@
     <p>[foo]</p>
   static: |-
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="1:1-3:3" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">[foo]: /url</span></code></pre>
+    <pre data-sourcepos="1:1-3:3" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">[foo]: /url</span></code></pre>
     <copy-code></copy-code>
     </div>
     <p data-sourcepos="5:1-5:5" dir="auto">[foo]</p>
@@ -2376,7 +2394,7 @@
     <p>bbb</p>
   static: |-
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="1:5-1:7" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">aaa</span></code></pre>
+    <pre data-sourcepos="1:5-1:7" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">aaa</span></code></pre>
     <copy-code></copy-code>
     </div>
     <p data-sourcepos="2:1-2:3" dir="auto">bbb</p>
@@ -2434,8 +2452,7 @@
     </tbody>
     </table>
   wysiwyg: |-
-    Error - check implementation:
-    Hast node of type "table" not supported by this converter. Please, provide an specification.
+    <table><tbody><tr><th colspan="1" rowspan="1"><p>foo</p></th><th colspan="1" rowspan="1"><p>bar</p></th></tr><tr><td colspan="1" rowspan="1"><p>baz</p></td><td colspan="1" rowspan="1"><p>bim</p></td></tr></tbody></table>
 04_10__leaf_blocks__tables_extension__002:
   canonical: |
     <table>
@@ -2468,8 +2485,7 @@
     </tbody>
     </table>
   wysiwyg: |-
-    Error - check implementation:
-    Hast node of type "table" not supported by this converter. Please, provide an specification.
+    <table><tbody><tr><th colspan="1" rowspan="1"><p>abc</p></th><th colspan="1" rowspan="1"><p>defghi</p></th></tr><tr><td colspan="1" rowspan="1"><p>bar</p></td><td colspan="1" rowspan="1"><p>baz</p></td></tr></tbody></table>
 04_10__leaf_blocks__tables_extension__003:
   canonical: |
     <table>
@@ -2504,8 +2520,7 @@
     </tbody>
     </table>
   wysiwyg: |-
-    Error - check implementation:
-    Hast node of type "table" not supported by this converter. Please, provide an specification.
+    <table><tbody><tr><th colspan="1" rowspan="1"><p>f|oo</p></th></tr><tr><td colspan="1" rowspan="1"><p>b <code>|</code> az</p></td></tr><tr><td colspan="1" rowspan="1"><p>b <strong>|</strong> im</p></td></tr></tbody></table>
 04_10__leaf_blocks__tables_extension__004:
   canonical: |
     <table>
@@ -2544,8 +2559,7 @@
     <p data-sourcepos="4:3-4:5">bar</p>
     </blockquote>
   wysiwyg: |-
-    Error - check implementation:
-    Hast node of type "table" not supported by this converter. Please, provide an specification.
+    <table><tbody><tr><th colspan="1" rowspan="1"><p>abc</p></th><th colspan="1" rowspan="1"><p>def</p></th></tr><tr><td colspan="1" rowspan="1"><p>bar</p></td><td colspan="1" rowspan="1"><p>baz</p></td></tr></tbody></table>
 04_10__leaf_blocks__tables_extension__005:
   canonical: |
     <table>
@@ -2588,8 +2602,7 @@
     </table>
     <p data-sourcepos="6:1-6:3" dir="auto">bar</p>
   wysiwyg: |-
-    Error - check implementation:
-    Hast node of type "table" not supported by this converter. Please, provide an specification.
+    <table><tbody><tr><th colspan="1" rowspan="1"><p>abc</p></th><th colspan="1" rowspan="1"><p>def</p></th></tr><tr><td colspan="1" rowspan="1"><p>bar</p></td><td colspan="1" rowspan="1"><p>baz</p></td></tr><tr><td colspan="1" rowspan="1"><p>bar</p></td><td colspan="1" rowspan="1"><p></p></td></tr></tbody></table>
 04_10__leaf_blocks__tables_extension__006:
   canonical: |
     <p>| abc | def |
@@ -2643,8 +2656,7 @@
     </tbody>
     </table>
   wysiwyg: |-
-    Error - check implementation:
-    Hast node of type "table" not supported by this converter. Please, provide an specification.
+    <table><tbody><tr><th colspan="1" rowspan="1"><p>abc</p></th><th colspan="1" rowspan="1"><p>def</p></th></tr><tr><td colspan="1" rowspan="1"><p>bar</p></td><td colspan="1" rowspan="1"><p></p></td></tr><tr><td colspan="1" rowspan="1"><p>bar</p></td><td colspan="1" rowspan="1"><p>baz</p></td></tr></tbody></table>
 04_10__leaf_blocks__tables_extension__008:
   canonical: |
     <table>
@@ -2665,8 +2677,7 @@
     </thead>
     </table>
   wysiwyg: |-
-    Error - check implementation:
-    Hast node of type "table" not supported by this converter. Please, provide an specification.
+    <table><tbody><tr><th colspan="1" rowspan="1"><p>abc</p></th><th colspan="1" rowspan="1"><p>def</p></th></tr></tbody></table>
 05_01__container_blocks__block_quotes__001:
   canonical: |
     <blockquote>
@@ -2726,7 +2737,7 @@
     </code></pre>
   static: |-
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="1:5-3:9" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">&gt; # Foo</span>
+    <pre data-sourcepos="1:5-3:9" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">&gt; # Foo</span>
     <span id="LC2" class="line" lang="plaintext">&gt; bar</span>
     <span id="LC3" class="line" lang="plaintext">&gt; baz</span></code></pre>
     <copy-code></copy-code>
@@ -2814,12 +2825,12 @@
   static: |-
     <blockquote data-sourcepos="1:1-1:9" dir="auto">
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="1:7-1:9" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">foo</span></code></pre>
+    <pre data-sourcepos="1:7-1:9" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">foo</span></code></pre>
     <copy-code></copy-code>
     </div>
     </blockquote>
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="2:5-2:7" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">bar</span></code></pre>
+    <pre data-sourcepos="2:5-2:7" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">bar</span></code></pre>
     <copy-code></copy-code>
     </div>
   wysiwyg: |-
@@ -2834,13 +2845,13 @@
   static: |-
     <blockquote data-sourcepos="1:1-1:5" dir="auto">
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="1:3-2:3" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code></code></pre>
+    <pre data-sourcepos="1:3-2:3" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code></code></pre>
     <copy-code></copy-code>
     </div>
     </blockquote>
     <p data-sourcepos="2:1-2:3" dir="auto">foo</p>
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="3:1-3:3" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code></code></pre>
+    <pre data-sourcepos="3:1-3:3" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code></code></pre>
     <copy-code></copy-code>
     </div>
   wysiwyg: |-
@@ -3063,7 +3074,7 @@
   static: |-
     <blockquote data-sourcepos="1:1-1:10" dir="auto">
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="1:7-1:10" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">code</span></code></pre>
+    <pre data-sourcepos="1:7-1:10" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">code</span></code></pre>
     <copy-code></copy-code>
     </div>
     </blockquote>
@@ -3085,7 +3096,7 @@
     <p data-sourcepos="1:1-2:15" dir="auto">A paragraph
     with two lines.</p>
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="4:5-5:0" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">indented code</span></code></pre>
+    <pre data-sourcepos="4:5-5:0" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">indented code</span></code></pre>
     <copy-code></copy-code>
     </div>
     <blockquote data-sourcepos="6:1-6:16" dir="auto">
@@ -3113,7 +3124,7 @@
     <p data-sourcepos="1:5-2:19">A paragraph
     with two lines.</p>
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="4:9-5:0" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">indented code</span></code></pre>
+    <pre data-sourcepos="4:9-5:0" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">indented code</span></code></pre>
     <copy-code></copy-code>
     </div>
     <blockquote data-sourcepos="6:5-6:20">
@@ -3166,7 +3177,7 @@
     <li data-sourcepos="1:2-2:0">one</li>
     </ul>
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="3:5-3:8" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext"> two</span></code></pre>
+    <pre data-sourcepos="3:5-3:8" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext"> two</span></code></pre>
     <copy-code></copy-code>
     </div>
   wysiwyg: |-
@@ -3278,7 +3289,7 @@
     <li data-sourcepos="1:1-9:9">
     <p data-sourcepos="1:5-1:7">foo</p>
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="3:5-5:7" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">bar</span></code></pre>
+    <pre data-sourcepos="3:5-5:7" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">bar</span></code></pre>
     <copy-code></copy-code>
     </div>
     <p data-sourcepos="7:5-7:7">baz</p>
@@ -3306,7 +3317,7 @@
     <li data-sourcepos="1:1-6:9">
     <p data-sourcepos="1:3-1:5">Foo</p>
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="3:7-6:9" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">bar</span>
+    <pre data-sourcepos="3:7-6:9" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">bar</span>
     <span id="LC2" class="line" lang="plaintext"></span>
     <span id="LC3" class="line" lang="plaintext"></span>
     <span id="LC4" class="line" lang="plaintext">baz</span></code></pre>
@@ -3380,7 +3391,7 @@
     <li data-sourcepos="1:1-3:9">
     <p data-sourcepos="1:3-1:5">foo</p>
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="3:7-3:9" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">bar</span></code></pre>
+    <pre data-sourcepos="3:7-3:9" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">bar</span></code></pre>
     <copy-code></copy-code>
     </div>
     </li>
@@ -3401,7 +3412,7 @@
     <li data-sourcepos="1:3-3:14">
     <p data-sourcepos="1:8-1:10">foo</p>
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="3:12-3:14" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">bar</span></code></pre>
+    <pre data-sourcepos="3:12-3:14" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">bar</span></code></pre>
     <copy-code></copy-code>
     </div>
     </li>
@@ -3417,12 +3428,12 @@
     </code></pre>
   static: |-
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="1:5-2:0" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">indented code</span></code></pre>
+    <pre data-sourcepos="1:5-2:0" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">indented code</span></code></pre>
     <copy-code></copy-code>
     </div>
     <p data-sourcepos="3:1-3:9" dir="auto">paragraph</p>
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="5:5-5:13" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">more code</span></code></pre>
+    <pre data-sourcepos="5:5-5:13" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">more code</span></code></pre>
     <copy-code></copy-code>
     </div>
   wysiwyg: |-
@@ -3442,12 +3453,12 @@
     <ol data-sourcepos="1:1-5:16" dir="auto">
     <li data-sourcepos="1:1-5:16">
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="1:8-2:0" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">indented code</span></code></pre>
+    <pre data-sourcepos="1:8-2:0" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">indented code</span></code></pre>
     <copy-code></copy-code>
     </div>
     <p data-sourcepos="3:4-3:12">paragraph</p>
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="5:8-5:16" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">more code</span></code></pre>
+    <pre data-sourcepos="5:8-5:16" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">more code</span></code></pre>
     <copy-code></copy-code>
     </div>
     </li>
@@ -3469,12 +3480,12 @@
     <ol data-sourcepos="1:1-5:16" dir="auto">
     <li data-sourcepos="1:1-5:16">
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="1:8-2:0" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext"> indented code</span></code></pre>
+    <pre data-sourcepos="1:8-2:0" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext"> indented code</span></code></pre>
     <copy-code></copy-code>
     </div>
     <p data-sourcepos="3:4-3:12">paragraph</p>
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="5:8-5:16" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">more code</span></code></pre>
+    <pre data-sourcepos="5:8-5:16" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">more code</span></code></pre>
     <copy-code></copy-code>
     </div>
     </li>
@@ -3538,13 +3549,13 @@
     <li data-sourcepos="1:1-2:5">foo</li>
     <li data-sourcepos="3:1-6:5">
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="4:3-6:5" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">bar</span></code></pre>
+    <pre data-sourcepos="4:3-6:5" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">bar</span></code></pre>
     <copy-code></copy-code>
     </div>
     </li>
     <li data-sourcepos="7:1-8:9">
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="8:7-8:9" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">baz</span></code></pre>
+    <pre data-sourcepos="8:7-8:9" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">baz</span></code></pre>
     <copy-code></copy-code>
     </div>
     </li>
@@ -3669,7 +3680,7 @@
     <p data-sourcepos="1:6-2:20">A paragraph
     with two lines.</p>
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="4:10-5:0" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">indented code</span></code></pre>
+    <pre data-sourcepos="4:10-5:0" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">indented code</span></code></pre>
     <copy-code></copy-code>
     </div>
     <blockquote data-sourcepos="6:6-6:21">
@@ -3699,7 +3710,7 @@
     <p data-sourcepos="1:7-2:21">A paragraph
     with two lines.</p>
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="4:11-5:0" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">indented code</span></code></pre>
+    <pre data-sourcepos="4:11-5:0" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">indented code</span></code></pre>
     <copy-code></copy-code>
     </div>
     <blockquote data-sourcepos="6:7-6:22">
@@ -3729,7 +3740,7 @@
     <p data-sourcepos="1:8-2:22">A paragraph
     with two lines.</p>
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="4:12-5:0" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">indented code</span></code></pre>
+    <pre data-sourcepos="4:12-5:0" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">indented code</span></code></pre>
     <copy-code></copy-code>
     </div>
     <blockquote data-sourcepos="6:8-6:23">
@@ -3751,7 +3762,7 @@
     </code></pre>
   static: |-
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="1:5-6:24" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">1.  A paragraph</span>
+    <pre data-sourcepos="1:5-6:24" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">1.  A paragraph</span>
     <span id="LC2" class="line" lang="plaintext">    with two lines.</span>
     <span id="LC3" class="line" lang="plaintext"></span>
     <span id="LC4" class="line" lang="plaintext">        indented code</span>
@@ -3785,7 +3796,7 @@
     <p data-sourcepos="1:7-2:15">A paragraph
     with two lines.</p>
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="4:11-5:0" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">indented code</span></code></pre>
+    <pre data-sourcepos="4:11-5:0" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">indented code</span></code></pre>
     <copy-code></copy-code>
     </div>
     <blockquote data-sourcepos="6:7-6:22">
@@ -4018,8 +4029,8 @@
     baz</li>
     </ul>
   wysiwyg: |-
-    <ul bullet="*"><li><p></p><h1>Foo</h1></li><li><p></p><h2>Bar
-    baz</h2></li></ul>
+    <ul bullet="*"><li><p></p><h1>Foo</h1></li><li><p></p><h2>Bar</h2><p>
+    baz</p></li></ul>
 05_02__container_blocks__list_items__motivation__task_list_items_extension__lists__049:
   canonical: |
     <ul>
@@ -4066,7 +4077,8 @@
     <li data-sourcepos="9:1-9:5">baz</li>
     </ul>
   wysiwyg: |-
-    <ul bullet="*"><li><p>baz</p></li></ul>
+    Error - check implementation:
+    Cannot read properties of undefined (reading 'start')
 05_02__container_blocks__list_items__motivation__task_list_items_extension__lists__050:
   canonical: |
     <ol>
@@ -4234,7 +4246,7 @@
     </ul>
 
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="9:5-9:8" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">code</span></code></pre>
+    <pre data-sourcepos="9:5-9:8" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">code</span></code></pre>
     <copy-code></copy-code>
     </div>
   wysiwyg: |-
@@ -4332,7 +4344,7 @@
     </li>
     </ol>
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="5:5-5:8" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">3. c</span></code></pre>
+    <pre data-sourcepos="5:5-5:8" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">3. c</span></code></pre>
     <copy-code></copy-code>
     </div>
   wysiwyg: |-
@@ -4461,7 +4473,7 @@
     <li data-sourcepos="1:1-1:3">a</li>
     <li data-sourcepos="2:1-6:5">
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="2:3-6:5" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">b</span>
+    <pre data-sourcepos="2:3-6:5" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">b</span>
     <span id="LC2" class="line" lang="plaintext"></span>
     <span id="LC3" class="line" lang="plaintext"></span></code></pre>
     <copy-code></copy-code>
@@ -4540,7 +4552,7 @@
     <p data-sourcepos="2:5-2:5">b</p>
     </blockquote>
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="3:3-5:5" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">c</span></code></pre>
+    <pre data-sourcepos="3:3-5:5" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">c</span></code></pre>
     <copy-code></copy-code>
     </div>
     </li>
@@ -4591,7 +4603,7 @@
     <ol data-sourcepos="1:1-5:6" dir="auto">
     <li data-sourcepos="1:1-5:6">
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="1:4-3:6" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">foo</span></code></pre>
+    <pre data-sourcepos="1:4-3:6" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">foo</span></code></pre>
     <copy-code></copy-code>
     </div>
     <p data-sourcepos="5:4-5:6">bar</p>
@@ -4738,7 +4750,7 @@
     </code></pre>
   static: |-
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="1:5-1:8" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">\[\]</span></code></pre>
+    <pre data-sourcepos="1:5-1:8" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">\[\]</span></code></pre>
     <copy-code></copy-code>
     </div>
   wysiwyg: |-
@@ -4749,7 +4761,7 @@
     </code></pre>
   static: |-
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="1:1-3:3" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">\[\]</span></code></pre>
+    <pre data-sourcepos="1:1-3:3" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">\[\]</span></code></pre>
     <copy-code></copy-code>
     </div>
   wysiwyg: |-
@@ -4788,7 +4800,7 @@
     </code></pre>
   static: |-
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="1:1-3:3" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">foo</span></code></pre>
+    <pre data-sourcepos="1:1-3:3" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="foo+bar" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">foo</span></code></pre>
     <copy-code></copy-code>
     </div>
   wysiwyg: |-
@@ -4877,7 +4889,7 @@
     </code></pre>
   static: |-
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="1:1-3:3" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">foo</span></code></pre>
+    <pre data-sourcepos="1:1-3:3" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="föö" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">foo</span></code></pre>
     <copy-code></copy-code>
     </div>
   wysiwyg: |-
@@ -4895,7 +4907,7 @@
     </code></pre>
   static: |-
     <div class="gl-relative markdown-code-block js-markdown-code">
-    <pre data-sourcepos="1:5-1:18" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">f&amp;ouml;f&amp;ouml;</span></code></pre>
+    <pre data-sourcepos="1:5-1:18" class="code highlight js-syntax-highlight language-plaintext" lang="plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext">f&amp;ouml;f&amp;ouml;</span></code></pre>
     <copy-code></copy-code>
     </div>
   wysiwyg: |-
@@ -6956,8 +6968,7 @@
   static: |-
     <p data-sourcepos="1:1-1:23" dir="auto">&lt;<a href="mailto:foo+@bar.example.com">foo+@bar.example.com</a>&gt;</p>
   wysiwyg: |-
-    Error - check implementation:
-    Cannot read properties of undefined (reading 'end')
+    <p>&lt;<a target="_blank" rel="noopener noreferrer nofollow" href="mailto:foo+@bar.example.com">foo+@bar.example.com</a>&gt;</p>
 06_09__inlines__autolinks__014:
   canonical: |
     <p>&lt;&gt;</p>
@@ -7233,7 +7244,7 @@
   canonical: |
     <p>foo <!ELEMENT br EMPTY></p>
   static: |-
-    <p data-sourcepos="1:1-1:23" dir="auto">foo </p>
+    <p data-sourcepos="1:1-1:23" dir="auto">foo &lt;!ELEMENT br EMPTY&gt;</p>
   wysiwyg: |-
     Error - check implementation:
     Cannot destructure property 'className' of 'hastNode.properties' as it is undefined.
@@ -7241,7 +7252,7 @@
   canonical: |
     <p>foo <![CDATA[>&<]]></p>
   static: |-
-    <p data-sourcepos="1:1-1:19" dir="auto">foo &amp;</p>
+    <p data-sourcepos="1:1-1:19" dir="auto">foo &lt;![CDATA[&gt;&amp;&lt;]]&gt;</p>
   wysiwyg: |-
     Error - check implementation:
     Cannot destructure property 'className' of 'hastNode.properties' as it is undefined.
@@ -7452,14 +7463,13 @@
 07_01__gitlab_specific_markdown__footnotes__001:
   canonical: ""
   static: |-
-    <p data-sourcepos="1:1-1:27" dir="auto">footnote reference tag <sup class="footnote-ref"><a href="#fn-1-2118" id="fnref-1-2118" data-footnote-ref>1</a></sup></p>
+    <p data-sourcepos="1:1-1:27" dir="auto">footnote reference tag <sup class="footnote-ref"><a href="#fn-1-5616" id="fnref-1-5616" data-footnote-ref>1</a></sup></p>
     <section data-footnotes class="footnotes">
     <ol>
-    <li id="fn-1-2118">
-    <p data-sourcepos="3:7-3:19">footnote text <a href="#fnref-1-2118" data-footnote-backref aria-label="Back to content" class="footnote-backref"><gl-emoji title="leftwards arrow with hook" data-name="leftwards_arrow_with_hook" data-unicode-version="1.1">↩</gl-emoji></a></p>
+    <li id="fn-1-5616">
+    <p data-sourcepos="3:7-3:19">footnote text <a href="#fnref-1-5616" data-footnote-backref aria-label="Back to content" class="footnote-backref"><gl-emoji title="leftwards arrow with hook" data-name="leftwards_arrow_with_hook" data-unicode-version="1.1">↩</gl-emoji></a></p>
     </li>
     </ol>
     </section>
   wysiwyg: |-
-    Error - check implementation:
-    Hast node of type "sup" not supported by this converter. Please, provide an specification.
+    <p>footnote reference tag <sup identifier="1">1</sup></p>

@@ -19,7 +19,7 @@ module EE::SecurityOrchestrationHelper
     }
   end
 
-  def orchestration_policy_data(container, policy_type = nil, policy = nil, environment = nil, approvers = nil)
+  def orchestration_policy_data(container, policy_type = nil, policy = nil, approvers = nil)
     return unless container
 
     disable_scan_policy_update = !can_update_security_orchestration_policy_project?(container)
@@ -29,20 +29,16 @@ module EE::SecurityOrchestrationHelper
       disable_scan_policy_update: disable_scan_policy_update.to_s,
       namespace_id: container.id,
       namespace_path: container.full_path,
+      policies_path: security_policies_path(container),
       policy: policy&.to_json,
       policy_editor_empty_state_svg_path: image_path('illustrations/monitoring/unable_to_connect.svg'),
       policy_type: policy_type,
-      policies_path: security_policies_path(container),
       scan_policy_documentation_path: help_page_path('user/application_security/policies/index')
     }
 
     if container.is_a?(::Project)
       policy_data.merge(
-        default_environment_id: container.default_environment&.id || -1,
         create_agent_help_path: help_page_url('user/clusters/agent/install/index'),
-        network_documentation_path: help_page_path('user/application_security/policies/index'),
-        environments_endpoint: project_environments_path(container),
-        environment_id: environment&.id,
         scan_result_approvers: approvers&.to_json
       )
     else

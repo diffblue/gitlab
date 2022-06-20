@@ -41,7 +41,7 @@ cd /home/git/gitlab
 sudo -u git -H bundle exec rake gitlab:backup:create RAILS_ENV=production
 ```
 
-For installations using MySQL, this may require granting "LOCK TABLES"
+For installations using MySQL, this may require granting `LOCK TABLES`
 privileges to the GitLab user on the database version.
 
 ### 1. Stop server
@@ -88,7 +88,7 @@ sudo -u git -H bundle exec rake cache:clear RAILS_ENV=production
 
 ### 4. Install `gitlab-elasticsearch-indexer` **(PREMIUM SELF)**
 
-Please follow the [install instruction](../integration/elasticsearch.md#install-elasticsearch).
+Please follow the [install instruction](../integration/advanced_search/elasticsearch.md#install-elasticsearch).
 
 ### 5. Start application
 

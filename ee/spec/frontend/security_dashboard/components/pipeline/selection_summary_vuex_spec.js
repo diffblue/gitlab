@@ -5,7 +5,7 @@ import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import Vuex from 'vuex';
 import SelectionSummary from 'ee/security_dashboard/components/pipeline/selection_summary_vuex.vue';
-import createStore from 'ee/security_dashboard/store/index';
+import { setupStore } from 'ee/security_dashboard/store/index';
 import {
   SELECT_VULNERABILITY,
   RECEIVE_VULNERABILITIES_SUCCESS,
@@ -24,7 +24,8 @@ describe('Selection Summary', () => {
   let mock;
 
   const createComponent = () => {
-    store = createStore();
+    store = new Vuex.Store();
+    setupStore(store);
     wrapper = mount(SelectionSummary, {
       store,
     });
