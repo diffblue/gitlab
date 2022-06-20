@@ -77,7 +77,7 @@ Commit the configuration changes and inspect the agent service logs:
 kubectl logs -f -l=app=gitlab-agent -n gitlab-agent
 ```
 
-More tips are available in the [troubleshooting documentation](troubleshooting.md).
+For more information about debugging, see [troubleshooting documentation](troubleshooting.md).
 
 ## Reset the agent token
 
