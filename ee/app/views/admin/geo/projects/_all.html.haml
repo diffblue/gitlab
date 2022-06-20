@@ -9,7 +9,7 @@
             %strong.text-truncate.flex-fill
               = link_to project_registry.project.full_name, admin_namespace_project_path(project_registry.project.namespace, project_registry.project)
             - unless project_registry.pending_verification?
-              = link_to(reverify_admin_geo_project_path(project_registry), method: :post, class: 'gl-button btn btn-default btn-sm mr-2') do
+              = link_to(reverify_admin_geo_project_path(project_registry), method: :post, class: 'gl-button btn btn-default btn-sm gl-mr-3') do
                 = s_('Geo|Reverify')
             - unless project_registry.resync_repository?
               = link_to(resync_admin_geo_project_path(project_registry), method: :post, class: 'gl-button btn btn-default-primary btn-sm') do
