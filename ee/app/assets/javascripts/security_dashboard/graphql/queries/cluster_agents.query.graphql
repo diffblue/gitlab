@@ -1,0 +1,11 @@
+query clusterAgents($projectPath: ID!) {
+  project(fullPath: $projectPath) {
+    id
+    clusterAgents {
+      nodes {
+        id
+        name
+      }
+    }
+  }
+}

@@ -99,6 +99,14 @@ export const projectFilter = {
   defaultOptions: [],
 };
 
+export const clusterFilter = {
+  name: s__('SecurityReports|Cluster'),
+  id: 'cluster',
+  options: [],
+  allOption: { name: s__('ciReport|All clusters') },
+  defaultOptions: [],
+};
+
 /**
  * Provided a security reports summary from the GraphQL API, this returns an array of arrays
  * representing a properly formatted report ready to be displayed in the UI. Each sub-array consists

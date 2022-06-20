@@ -1,3 +1,22 @@
+export const projectClusters = {
+  data: {
+    project: {
+      id: 'gid://gitlab/Project/5000207',
+      clusterAgents: {
+        nodes: [
+          {
+            id: 'gid://gitlab/Clusters::Agent/2',
+            name: 'primary-agent',
+            __typename: 'ClusterAgentConnection',
+          },
+        ],
+        __typename: 'ClusterAgentConnection',
+      },
+      __typename: 'Project',
+    },
+  },
+};
+
 export const clusterImageScanningVulnerability = {
   hasSolutions: null,
   mergeRequest: null,
