@@ -470,6 +470,7 @@ and [Helm Chart deployments](https://docs.gitlab.com/charts/). They come with ap
 - If you run external PostgreSQL, particularly AWS RDS,
   [check you have a PostgreSQL bug fix](#postgresql-segmentation-fault-issue)
   to avoid the database crashing.
+- The use of encrypted S3 buckets with storage-specific configuration is no longer supported after [removing support for using `background_upload`](removals.md#background-upload-for-object-storage).
 
 ### 14.10.0
 
