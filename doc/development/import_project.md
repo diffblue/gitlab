@@ -138,11 +138,14 @@ project files on disk.
 Check [exceptions_json.log](../administration/logs.md#exceptions_jsonlog). 
 You might see the error like `N is out of range for ActiveModel::Type::Integer with limit 4 bytes` where N is the integer exceeding the 4-byte integer limit. If that's the case, you are likely hitting the issue with rebalancing of `relative_position` field of the issues.
 
-The feature flag to enable the rebalance automatically was enabled on GitLab.com but [it is disabled on self-managed instances](https://gitlab.com/gitlab-org/gitlab/-/issues/343368).
+The feature flag to enable the rebalance automatically was enabled on GitLab.com. It will be enabled by default on self-managed instances when the issue [Rebalance issues FF rollout](https://gitlab.com/gitlab-org/gitlab/-/issues/343368) is implemented.
 
-As a workaround, run the following commands in the [Rails console](../administration/operations/rails_console.md). Make sure to replace the ID with the ID of your project you were trying to import:
+If the feature is not enabled by default on your GitLab version, run the following commands in the [Rails console](../administration/operations/rails_console.md) as a workaround. Make sure to replace the ID with the ID of your project you were trying to import:
 
   ```ruby
+  # Check if the feature is enabled on your instance. If it is, rebalance should work automatically on your instance
+  Feature.enabled?(:rebalance_issues,Project.find(ID).root_namespace)
+  
   # Check the current maximum value of relative_position
   Issue.where(project_id: Project.find(ID).root_namespace.all_projects).maximum(:relative_position)
   
