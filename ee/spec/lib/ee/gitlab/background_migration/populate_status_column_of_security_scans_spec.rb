@@ -2,7 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::BackgroundMigration::PopulateStatusColumnOfSecurityScans, schema: 20211007155221 do
+RSpec.describe Gitlab::BackgroundMigration::PopulateStatusColumnOfSecurityScans,
+               :suppress_gitlab_schemas_validate_connection, schema: 20211007155221 do
   let(:namespaces) { table(:namespaces) }
   let(:projects) { table(:projects) }
   let(:pipelines) { table(:ci_pipelines) }
