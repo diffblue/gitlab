@@ -329,16 +329,6 @@ export const renderFileForDiscussionId = ({ commit, rootState, state }, discussi
   }
 };
 
-export const expandDiff = ({ commit }, data) => {
-  if (data?.draft?.file_path) {
-    commit(types.SET_FILE_COLLAPSED, {
-      filePath: data.draft.file_path,
-      collapsed: false,
-      trigger: DIFF_FILE_AUTOMATIC_COLLAPSE,
-    });
-  }
-};
-
 export const startRenderDiffsQueue = ({ state, commit }) => {
   const diffFilesToRender = state.diffFiles.filter(
     (file) =>
@@ -752,6 +742,10 @@ export function switchToFullDiffFromRenamedFile({ commit, dispatch }, { diffFile
 
 export const setFileCollapsedByUser = ({ commit }, { filePath, collapsed }) => {
   commit(types.SET_FILE_COLLAPSED, { filePath, collapsed, trigger: DIFF_FILE_MANUAL_COLLAPSE });
+};
+
+export const setFileCollapsedAutomatically = ({ commit }, { filePath, collapsed }) => {
+  commit(types.SET_FILE_COLLAPSED, { filePath, collapsed, trigger: DIFF_FILE_AUTOMATIC_COLLAPSE });
 };
 
 export const setSuggestPopoverDismissed = ({ commit, state }) =>

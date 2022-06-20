@@ -138,7 +138,11 @@ export const scrollToDraft = ({ dispatch, rootGetters }, draft) => {
     window.mrTabs.tabShown(tab);
   }
 
-  dispatch('diffs/expandDiff', { draft }, { root: true });
+  const { file_path: filePath } = draft;
+
+  if (filePath) {
+    dispatch('diffs/setFileCollapsedAutomatically', { filePath, collapsed: false }, { root: true });
+  }
 
   if (discussion) {
     dispatch('expandDiscussion', { discussionId: discussion.id }, { root: true });

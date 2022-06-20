@@ -298,12 +298,17 @@ describe('Batch comments store actions', () => {
       const draft = {
         discussion_id: '1',
         id: '2',
+        file_path: 'lib/example.js',
       };
 
       actions.scrollToDraft({ dispatch, rootGetters }, draft);
 
       expect(dispatch.mock.calls).toEqual([
-        ['diffs/expandDiff', { draft }, { root: true }],
+        [
+          'diffs/setFileCollapsedAutomatically',
+          { filePath: draft.file_path, collapsed: false },
+          { root: true },
+        ],
         ['expandDiscussion', { discussionId: '1' }, { root: true }],
       ]);
 
