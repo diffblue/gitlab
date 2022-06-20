@@ -7,19 +7,6 @@ RSpec.shared_examples 'aggregator worker examples' do
 
   it_behaves_like 'an idempotent worker'
 
-  context 'when the FF is disabled' do
-    it 'does nothing' do
-      if feature_flag
-
-        stub_feature_flags(feature_flag => false)
-
-        expect(Analytics::CycleAnalytics::Aggregation).not_to receive(:load_batch)
-
-        run_worker
-      end
-    end
-  end
-
   context 'when the loaded batch is empty' do
     it 'does nothing' do
       expect(Analytics::CycleAnalytics::AggregatorService).not_to receive(:new)
