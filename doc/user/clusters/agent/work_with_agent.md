@@ -63,7 +63,7 @@ level according to the available options:
 - `debug`
 
 The log level defaults to `info`. You can change it by using a top-level `observability`
-section in the [agent configuration file](install/index.md##configure-your-agent), for example setting the level to `debug`:
+section in the [agent configuration file](install/index.md#configure-your-agent), for example setting the level to `debug`:
 
 ```yaml
 observability:
