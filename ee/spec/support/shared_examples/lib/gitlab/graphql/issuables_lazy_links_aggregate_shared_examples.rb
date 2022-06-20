@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.shared_examples 'issuable lazy block aggregate' do
+RSpec.shared_examples 'issuable lazy links aggregate' do
   let(:query_ctx) do
     {}
   end
@@ -14,7 +14,7 @@ RSpec.shared_examples 'issuable lazy block aggregate' do
     end
   end
 
-  describe '#block_aggregate' do
+  describe '#links_aggregate' do
     subject { described_class.new(query_ctx, issuable_id, link_type: link_type) }
 
     let(:fake_state) do
@@ -38,7 +38,7 @@ RSpec.shared_examples 'issuable lazy block aggregate' do
       it 'calls the block' do
         expect(fake_state[:loaded_objects][link_type][issuable_id]).to receive(:do_thing)
 
-        subject.block_aggregate
+        subject.links_aggregate
       end
     end
 
@@ -46,7 +46,7 @@ RSpec.shared_examples 'issuable lazy block aggregate' do
       it 'does not make the query again' do
         expect(issuable_link_class).not_to receive(:"#{link_type}_issuables_for_collection")
 
-        subject.block_aggregate
+        subject.links_aggregate
       end
     end
 
@@ -58,7 +58,7 @@ RSpec.shared_examples 'issuable lazy block aggregate' do
       end
 
       it 'clears the pending IDs' do
-        subject.block_aggregate
+        subject.links_aggregate
 
         expect(subject.lazy_state[:pending_ids][link_type]).to be_empty
       end

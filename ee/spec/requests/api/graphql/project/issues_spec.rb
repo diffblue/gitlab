@@ -91,8 +91,8 @@ RSpec.describe 'getting an issue list for a project' do
       it_behaves_like 'a working graphql query'
     end
 
-    it 'uses the LazyBlockAggregate service' do
-      expect(::Gitlab::Graphql::Aggregations::Issues::LazyBlockAggregate).to receive(:new)
+    it 'uses the LazyLinksAggregate service' do
+      expect(::Gitlab::Graphql::Aggregations::Issues::LazyLinksAggregate).to receive(:new)
 
       post_graphql(single_issue_query, current_user: current_user)
     end
