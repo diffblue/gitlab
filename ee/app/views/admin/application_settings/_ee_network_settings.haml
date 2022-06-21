@@ -1,7 +1,7 @@
 - if License.feature_available?(:incident_management)
   %section.settings.as-incident-management-alerts.no-animate#js-incident-management-settings{ class: ('expanded' if expanded_by_default?) }
     .settings-header
-      %h4
+      %h4.settings-title.js-settings-toggle.js-settings-toggle-trigger-only
         = _('Incident Management Limits')
       = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
         = expanded_by_default? ? _('Collapse') : _('Expand')
