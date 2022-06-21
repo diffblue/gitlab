@@ -12,15 +12,15 @@ export default {
 </script>
 
 <template>
-  <div class="d-flex align-items-center">
-    <div class="square s24 d-flex-center mr-2 text-tertiary">
+  <div class="gl-display-flex gl-align-items-center">
+    <div class="square s24 gl-align-items-center gl-justify-content-center gl-mr-3 text-tertiary">
       <gl-icon name="folder-o" :size="16" data-testid="folder-icon" />
     </div>
     <span>{{ __('Private group(s)') }}</span>
     <gl-icon
       v-gl-tooltip
       :title="__('One or more groups that you don\'t have access to.')"
-      class="ml-1 gl-text-gray-500"
+      class="gl-ml-2 gl-text-gray-500"
       name="question-o"
       :size="16"
       data-testid="help-icon"
