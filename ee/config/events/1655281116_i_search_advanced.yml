@@ -1,0 +1,24 @@
+---
+description: Triggered from backend layer when Elasticsearch is used
+category: "EE:SearchController"
+action: i_search_advanced
+label_description:
+property_description:
+value_description:
+extra_properties:
+identifiers:
+  - project
+  - user
+  - namespace
+product_section: enablement
+product_stage: enablement
+product_group: group::global search
+product_category: global_search
+milestone: "15.1"
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/90224
+distributions:
+  - ee
+tiers:
+  - free
+  - premium
+  - ultimate

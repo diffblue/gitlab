@@ -7,8 +7,7 @@ module EE
 
     prepended do
       # track unique users of advanced global search
-      track_redis_hll_event :show, name: 'i_search_advanced',
-        if: :track_search_advanced?
+      track_event :show, name: 'i_search_advanced', conditions: -> { track_search_advanced? }, destinations: [:redis_hll, :snowplow]
 
       # track unique paid users (users who already use elasticsearch and users who could use it if they enable elasticsearch integration)
       # for gitlab.com we check if the search uses elasticsearch
@@ -39,10 +38,6 @@ module EE
       else
         License.feature_available?(:elastic_search)
       end
-    end
-
-    def tracking_namespace_source
-      search_service.project&.namespace || search_service.group
     end
   end
 end
