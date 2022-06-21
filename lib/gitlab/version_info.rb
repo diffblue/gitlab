@@ -60,5 +60,9 @@ module Gitlab
     def eql?(other)
       (self <=> other) == 0
     end
+
+    def without_patch
+      self.class.new(@major, @minor, 0)
+    end
   end
 end

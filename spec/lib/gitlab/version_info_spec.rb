@@ -85,4 +85,10 @@ RSpec.describe 'Gitlab::VersionInfo' do
     it { expect(@v1_0_0.eql?(@v1_0_0)).to be_truthy }
     it { expect([@v1_0_0, @v1_1_0, @v1_0_0].uniq).to eq [@v1_0_0, @v1_1_0] }
   end
+
+  describe '.without_patch' do
+    it { expect(@v0_1_0.without_patch).to eq(@v0_1_0) }
+    it { expect(@v1_0_0.without_patch).to eq(@v1_0_0) }
+    it { expect(@v1_0_1.without_patch).to eq(@v1_0_0) }
+  end
 end
