@@ -2,4 +2,8 @@
 - page_title _("Security Dashboard")
 - add_page_specific_style 'page_bundles/security_discover'
 
-#js-security-discover-app{ data: project_security_discover_data(@project) }
+- experiment(:showcase_free_security_features, actor: current_user, group: @project.root_ancestor, stick_to: @project.root_ancestor) do |e|
+  - e.control do
+    #js-security-discover-app{ data: project_security_discover_data(@project) }
+  - e.candidate do
+    #js-security-showcase-app{ data: project_security_showcase_data(@project) }
