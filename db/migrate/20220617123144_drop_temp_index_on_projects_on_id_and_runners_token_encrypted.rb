@@ -6,6 +6,8 @@ class DropTempIndexOnProjectsOnIdAndRunnersTokenEncrypted < Gitlab::Database::Mi
   TEMP_INDEX_NAME = 'tmp_index_projects_on_id_and_runners_token_encrypted'
 
   def up
+    finalize_background_migration 'ResetDuplicateCiRunnersTokenEncryptedValuesOnProjects'
+
     remove_concurrent_index_by_name :projects, TEMP_INDEX_NAME
   end
 
