@@ -6789,6 +6789,9 @@ msgstr ""
 msgid "BulkImport|must be a group"
 msgstr ""
 
+msgid "Bullet list"
+msgstr ""
+
 msgid "Burndown chart"
 msgstr ""
 
@@ -8936,6 +8939,9 @@ msgid "Code Review"
 msgstr ""
 
 msgid "Code Review Analytics displays a table of open merge requests considered to be in code review. There are currently no merge requests in review for this project and/or filters."
+msgstr ""
+
+msgid "Code block"
 msgstr ""
 
 msgid "Code coverage statistics for %{ref} %{start_date} - %{end_date}"
@@ -12975,6 +12981,9 @@ msgid "Details"
 msgstr ""
 
 msgid "Details (default)"
+msgstr ""
+
+msgid "Details block"
 msgstr ""
 
 msgid "Detect host keys"
@@ -20455,9 +20464,6 @@ msgstr ""
 msgid "Insert a %{rows}x%{cols} table."
 msgstr ""
 
-msgid "Insert a code block"
-msgstr ""
-
 msgid "Insert a quote"
 msgstr ""
 
@@ -26886,6 +26892,9 @@ msgid "Options"
 msgstr ""
 
 msgid "Or you can choose one of the suggested colors below"
+msgstr ""
+
+msgid "Ordered list"
 msgstr ""
 
 msgid "Organizations"
@@ -37647,6 +37656,9 @@ msgid "Task"
 msgstr ""
 
 msgid "Task ID: %{elastic_task}"
+msgstr ""
+
+msgid "Task list"
 msgstr ""
 
 msgid "TasksToBeDone|Create/import code into a project (repository)"
