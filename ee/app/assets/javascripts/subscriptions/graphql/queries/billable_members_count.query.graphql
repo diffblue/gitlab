@@ -2,5 +2,6 @@ query getBillableMembersCount($fullPath: ID!, $requestedHostedPlan: String) {
   group(fullPath: $fullPath) {
     id
     billableMembersCount(requestedHostedPlan: $requestedHostedPlan)
+    enforceFreeUserCap
   }
 }

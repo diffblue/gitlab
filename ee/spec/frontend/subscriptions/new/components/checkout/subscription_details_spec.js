@@ -33,6 +33,16 @@ const createDefaultInitialStoreData = (initialData) => ({
   ...initialData,
 });
 
+const defaultBillableMembersCountMock = jest.fn().mockResolvedValue({
+  data: {
+    group: {
+      id: secondGroup.id,
+      enforceFreeUserCap: false,
+      billableMembersCount: 3,
+    },
+  },
+});
+
 describe('Subscription Details', () => {
   Vue.use(Vuex);
   Vue.use(VueApollo);
@@ -40,7 +50,10 @@ describe('Subscription Details', () => {
   let wrapper;
 
   function createComponent(options = {}) {
-    const { apolloProvider, store } = options;
+    const { store, billableMembersCountMock } = options;
+    const mockHandler = billableMembersCountMock || defaultBillableMembersCountMock;
+    const handlers = [[getBillableMembersCountQuery, mockHandler]];
+    const apolloProvider = createMockApolloProvider(STEPS, 1, {}, handlers);
 
     wrapper = mountExtended(Component, {
       store,
@@ -89,11 +102,10 @@ describe('Subscription Details', () => {
 
   describe('A new user for which we do not have setupForCompany info', () => {
     beforeEach(() => {
-      const mockApollo = createMockApolloProvider(STEPS, 1, {}, []);
       const store = createStore(
         createDefaultInitialStoreData({ newUser: 'true', setupForCompany: '' }),
       );
-      return createComponent({ apolloProvider: mockApollo, store });
+      return createComponent({ store });
     });
 
     it('should not display an input field for the company or group name', () => {
@@ -119,11 +131,10 @@ describe('Subscription Details', () => {
 
   describe('A new user setting up for personal use', () => {
     beforeEach(() => {
-      const mockApollo = createMockApolloProvider(STEPS, 1, {}, []);
       const store = createStore(
         createDefaultInitialStoreData({ newUser: 'true', setupForCompany: 'false' }),
       );
-      return createComponent({ apolloProvider: mockApollo, store });
+      return createComponent({ store });
     });
 
     it('should not display an input field for the company or group name', () => {
@@ -153,7 +164,6 @@ describe('Subscription Details', () => {
 
   describe('A new user setting up for a company or group', () => {
     beforeEach(() => {
-      const mockApollo = createMockApolloProvider(STEPS, 1, {}, []);
       const store = createStore(
         createDefaultInitialStoreData({
           newUser: 'true',
@@ -161,7 +171,7 @@ describe('Subscription Details', () => {
           setupForCompany: 'true',
         }),
       );
-      return createComponent({ apolloProvider: mockApollo, store });
+      return createComponent({ store });
     });
 
     it('should display an input field for the company or group name', () => {
@@ -191,7 +201,6 @@ describe('Subscription Details', () => {
 
   describe('An existing user without any groups', () => {
     beforeEach(() => {
-      const mockApollo = createMockApolloProvider(STEPS, 1, {}, []);
       const store = createStore(
         createDefaultInitialStoreData({
           newUser: 'false',
@@ -199,7 +208,7 @@ describe('Subscription Details', () => {
           setupForCompany: 'true',
         }),
       );
-      return createComponent({ apolloProvider: mockApollo, store });
+      return createComponent({ store });
     });
 
     it('should display an input field for the company or group name', () => {
@@ -231,18 +240,23 @@ describe('Subscription Details', () => {
     let store;
 
     beforeEach(() => {
-      const billableMembersCountMock = jest
-        .fn()
-        .mockResolvedValue({ data: { group: { id: secondGroup.id, billableMembersCount: 12 } } });
-      const handlers = [[getBillableMembersCountQuery, billableMembersCountMock]];
-      const mockApollo = createMockApolloProvider(STEPS, 1, {}, handlers);
+      const billableMembersCountMock = jest.fn().mockResolvedValue({
+        data: {
+          group: {
+            id: secondGroup.id,
+            enforceFreeUserCap: false,
+            billableMembersCount: 12,
+          },
+        },
+      });
+
       store = createStore(
         createDefaultInitialStoreData({
           newUser: 'false',
           setupForCompany: 'true',
         }),
       );
-      return createComponent({ apolloProvider: mockApollo, store });
+      return createComponent({ store, billableMembersCountMock });
     });
 
     it('should not display an input field for the company or group name', () => {
@@ -286,7 +300,38 @@ describe('Subscription Details', () => {
 
       it('should set the label description with minimum number of users', () => {
         expect(findNumberOfUsersFormGroup().props().labelDescription).toBe(
-          'This number must be 12 (your seats in use) or more.',
+          'Must be 12 (your seats in use) or more.',
+        );
+      });
+    });
+
+    describe('when enforceFreeUserCap is true ', () => {
+      beforeEach(async () => {
+        const billableMembersCountMock = jest.fn().mockResolvedValue({
+          data: {
+            group: {
+              id: secondGroup.id,
+              enforceFreeUserCap: true,
+              billableMembersCount: 12,
+            },
+          },
+        });
+
+        store = createStore(
+          createDefaultInitialStoreData({
+            newUser: 'false',
+            setupForCompany: 'true',
+          }),
+        );
+        createComponent({ store, billableMembersCountMock });
+
+        store.commit(types.UPDATE_SELECTED_GROUP, secondGroup.id);
+        return nextTick();
+      });
+
+      it('should set the label description ', () => {
+        expect(findNumberOfUsersFormGroup().props().labelDescription).toBe(
+          'Must be 12 (your seats in use, plus all over limit members) or more. To buy fewer seats, remove members from the group.',
         );
       });
     });
@@ -320,10 +365,8 @@ describe('Subscription Details', () => {
 
     beforeEach(() => {
       billableMembersCountMock.mockResolvedValue({
-        data: { group: { id: firstGroup.id, billableMembersCount: 3 } },
+        data: { group: { id: firstGroup.id, billableMembersCount: 3, enforceFreeUserCap: false } },
       });
-      const handlers = [[getBillableMembersCountQuery, billableMembersCountMock]];
-      const mockApollo = createMockApolloProvider(STEPS, 1, {}, handlers);
       store = createStore(
         createDefaultInitialStoreData({
           isNewUser: 'false',
@@ -331,7 +374,7 @@ describe('Subscription Details', () => {
           setupForCompany: '',
         }),
       );
-      return createComponent({ apolloProvider: mockApollo, store });
+      return createComponent({ store, billableMembersCountMock });
     });
 
     it('should not display an input field for the company or group name', () => {
@@ -352,7 +395,7 @@ describe('Subscription Details', () => {
 
     it('should set the label description with minimum number of users', () => {
       expect(findNumberOfUsersFormGroup().props().labelDescription).toBe(
-        'This number must be 3 (your seats in use) or more.',
+        'Must be 3 (your seats in use) or more.',
       );
     });
 
@@ -374,7 +417,9 @@ describe('Subscription Details', () => {
     describe('selecting an existing group', () => {
       beforeEach(() => {
         billableMembersCountMock.mockResolvedValue({
-          data: { group: { id: secondGroup.id, billableMembersCount: 12 } },
+          data: {
+            group: { id: secondGroup.id, billableMembersCount: 12, enforceFreeUserCap: false },
+          },
         });
         store.commit(types.UPDATE_SELECTED_GROUP, secondGroup.id);
         return waitForPromises();
@@ -390,7 +435,7 @@ describe('Subscription Details', () => {
 
       it('should set the label description with minimum number of users', () => {
         expect(findNumberOfUsersFormGroup().props().labelDescription).toBe(
-          'This number must be 12 (your seats in use) or more.',
+          'Must be 12 (your seats in use) or more.',
         );
       });
 
@@ -404,11 +449,6 @@ describe('Subscription Details', () => {
     let store;
 
     beforeEach(() => {
-      const billableMembersCountMock = jest
-        .fn()
-        .mockResolvedValue({ data: { group: { id: firstGroup.id, billableMembersCount: 3 } } });
-      const handlers = [[getBillableMembersCountQuery, billableMembersCountMock]];
-      const mockApollo = createMockApolloProvider(STEPS, 1, {}, handlers);
       store = createStore(
         createDefaultInitialStoreData({
           isNewUser: 'false',
@@ -416,7 +456,7 @@ describe('Subscription Details', () => {
           setupForCompany: 'false',
         }),
       );
-      return createComponent({ apolloProvider: mockApollo, store });
+      return createComponent({ store });
     });
 
     it('should not display an input field for the company or group name', () => {
@@ -433,7 +473,7 @@ describe('Subscription Details', () => {
 
     it('should set the label description with minimum number of users', () => {
       expect(findNumberOfUsersFormGroup().props().labelDescription).toBe(
-        'This number must be 3 (your seats in use) or more.',
+        'Must be 3 (your seats in use) or more.',
       );
     });
 
@@ -446,11 +486,6 @@ describe('Subscription Details', () => {
     let store;
 
     beforeEach(async () => {
-      const billableMembersCountMock = jest
-        .fn()
-        .mockResolvedValue({ data: { group: { id: firstGroup.id, billableMembersCount: 3 } } });
-      const handlers = [[getBillableMembersCountQuery, billableMembersCountMock]];
-      const mockApollo = createMockApolloProvider(STEPS, 1, {}, handlers);
       store = createStore(
         createDefaultInitialStoreData({
           isNewUser: 'false',
@@ -458,7 +493,7 @@ describe('Subscription Details', () => {
           setupForCompany: 'false',
         }),
       );
-      await createComponent({ apolloProvider: mockApollo, store });
+      await createComponent({ store });
       store.commit(types.UPDATE_NUMBER_OF_USERS, 13);
     });
 
@@ -504,11 +539,11 @@ describe('Subscription Details', () => {
 
     describe('when setting up for a company', () => {
       beforeEach(async () => {
-        const billableMembersCountMock = jest
-          .fn()
-          .mockResolvedValue({ data: { group: { id: secondGroup.id, billableMembersCount: 12 } } });
-        const handlers = [[getBillableMembersCountQuery, billableMembersCountMock]];
-        const mockApollo = createMockApolloProvider(STEPS, 1, {}, handlers);
+        const billableMembersCountMock = jest.fn().mockResolvedValue({
+          data: {
+            group: { id: secondGroup.id, billableMembersCount: 12, enforceFreeUserCap: false },
+          },
+        });
         store = createStore(
           createDefaultInitialStoreData({
             namespaceId: secondGroup.id,
@@ -516,7 +551,7 @@ describe('Subscription Details', () => {
             setupForCompany: 'true',
           }),
         );
-        await createComponent({ apolloProvider: mockApollo, store });
+        await createComponent({ store, billableMembersCountMock });
         store.commit(types.UPDATE_ORGANIZATION_NAME, 'Organization name');
         store.commit(types.UPDATE_NUMBER_OF_USERS, 14);
         await nextTick();
@@ -585,9 +620,11 @@ describe('Subscription Details', () => {
 
     describe('when not setting up for a company and not a new user', () => {
       beforeEach(async () => {
-        const billableMembersCountMock = jest
-          .fn()
-          .mockResolvedValue({ data: { group: { id: firstGroup.id, billableMembersCount: 3 } } });
+        const billableMembersCountMock = jest.fn().mockResolvedValue({
+          data: {
+            group: { id: firstGroup.id, billableMembersCount: 3, enforceFreeUserCap: false },
+          },
+        });
         const handlers = [[getBillableMembersCountQuery, billableMembersCountMock]];
         const mockApollo = createMockApolloProvider(STEPS, 1, {}, handlers);
         store = createStore(
@@ -640,17 +677,12 @@ describe('Subscription Details', () => {
     let store;
 
     beforeEach(() => {
-      const billableMembersCountMock = jest
-        .fn()
-        .mockResolvedValue({ data: { group: { id: firstGroup.id, billableMembersCount: 3 } } });
-      const handlers = [[getBillableMembersCountQuery, billableMembersCountMock]];
-      const mockApollo = createMockApolloProvider(STEPS, 1, {}, handlers);
       store = createStore(createDefaultInitialStoreData());
       store.commit(types.UPDATE_IS_SETUP_FOR_COMPANY, true);
       store.commit(types.UPDATE_SELECTED_PLAN, 'firstPlanId');
       store.commit(types.UPDATE_ORGANIZATION_NAME, 'My Organization');
       store.commit(types.UPDATE_NUMBER_OF_USERS, 25);
-      return createComponent({ apolloProvider: mockApollo, store });
+      return createComponent({ store });
     });
 
     it('should show the selected plan', () => {
@@ -688,11 +720,9 @@ describe('Subscription Details', () => {
     beforeEach(() => {
       const mockError = new Error(errorMessage);
       const billableMembersCountMock = jest.fn().mockRejectedValue(mockError);
-      const handlers = [[getBillableMembersCountQuery, billableMembersCountMock]];
-      const mockApollo = createMockApolloProvider(STEPS, 1, {}, handlers);
       const store = createStore(createDefaultInitialStoreData());
       store.commit(types.UPDATE_SELECTED_GROUP, secondGroup.id);
-      return createComponent({ apolloProvider: mockApollo, store });
+      return createComponent({ store, billableMembersCountMock });
     });
 
     it('should show an alert with the error message', () => {
@@ -721,12 +751,10 @@ describe('Subscription Details', () => {
   describe('when is loading', () => {
     beforeEach(() => {
       const billableMembersCountMock = jest.fn().mockImplementation(() => new Promise(() => {}));
-      const handlers = [[getBillableMembersCountQuery, billableMembersCountMock]];
-      const mockApollo = createMockApolloProvider(STEPS, 1, {}, handlers);
       const store = createStore(createDefaultInitialStoreData());
       store.commit(types.UPDATE_SELECTED_GROUP, secondGroup.id);
 
-      return createComponent({ apolloProvider: mockApollo, store });
+      return createComponent({ store, billableMembersCountMock });
     });
 
     it('should show loading step', () => {

@@ -35,7 +35,7 @@ export default {
   },
   mixins: [Tracking.mixin()],
   apollo: {
-    billableMembersMin: {
+    billableData: {
       query: getBillableMembersCountQuery,
       loadingKey: 'isLoading',
       variables() {
@@ -47,7 +47,10 @@ export default {
       update(data) {
         this.resetError();
 
-        return data.group.billableMembersCount || 1;
+        return {
+          minimumSeats: data.group.billableMembersCount || 1,
+          enforceFreeUserCap: data.group.enforceFreeUserCap,
+        };
       },
       skip() {
         return this.shouldSkipQuery;
@@ -59,7 +62,7 @@ export default {
   },
   data() {
     return {
-      billableMembersMin: 1,
+      billableData: { minimumSeats: 1, enforceFreeUserCap: false },
       errorMessage: '',
       isLoading: 0,
       showError: false,
@@ -136,8 +139,12 @@ export default {
         return null;
       }
 
-      return sprintf(this.$options.i18n.numberOfUsersLabelDescription, {
-        minimumNumberOfUsers: this.billableMembersMin,
+      const translation = this.billableData.enforceFreeUserCap
+        ? this.$options.i18n.numberOfUsersLabelDescriptionFreeUserCap
+        : this.$options.i18n.numberOfUsersLabelDescription;
+
+      return sprintf(translation, {
+        minimumNumberOfUsers: this.billableData.minimumSeats,
       });
     },
     hasAtLeastOneUser() {
@@ -156,7 +163,7 @@ export default {
       return true;
     },
     isSelectedUsersEqualOrGreaterThanGroupUsers() {
-      return this.numberOfUsers >= this.billableMembersMin;
+      return this.numberOfUsers >= this.billableData.minimumSeats;
     },
     isValid() {
       return (
@@ -195,12 +202,15 @@ export default {
     },
   },
   watch: {
-    billableMembersMin(val) {
-      this.updateNumberOfUsers(val);
+    billableData: {
+      deep: true,
+      handler(data) {
+        this.updateNumberOfUsers(data.minimumSeats);
+      },
     },
     isSelectedGroupPresent(isSelectedGroupPresent) {
       if (!isSelectedGroupPresent) {
-        this.billableMembersMin = 1;
+        this.billableData.minimumSeats = 1;
       }
     },
   },
@@ -251,7 +261,10 @@ export default {
     organizationNameLabel: s__('Checkout|Name of company or organization using GitLab'),
     numberOfUsersLabel: s__('Checkout|Number of users'),
     numberOfUsersLabelDescription: s__(
-      'Checkout|This number must be %{minimumNumberOfUsers} (your seats in use) or more.',
+      'Checkout|Must be %{minimumNumberOfUsers} (your seats in use) or more.',
+    ),
+    numberOfUsersLabelDescriptionFreeUserCap: s__(
+      'Checkout|Must be %{minimumNumberOfUsers} (your seats in use, plus all over limit members) or more. To buy fewer seats, remove members from the group.',
     ),
     loadingText: s__('Checkout|Calculating your subscription...'),
     needMoreUsersLink: s__('Checkout|Need more users? Purchase GitLab for your %{company}.'),
@@ -345,7 +358,7 @@ export default {
             v-model.number="numberOfUsersModel"
             class="number"
             type="number"
-            :min="billableMembersMin"
+            :min="billableData.minimumSeats"
             :disabled="shouldDisableNumberOfUsers"
             data-qa-selector="number_of_users"
           />
