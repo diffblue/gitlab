@@ -14,6 +14,8 @@ module Projects::Security::DastConfigurationHelper
 
     config.merge!(yml_config_data(project, current_user))
 
+    config.merge!(pipeline_data(project, current_user))
+
     config
   end
 
@@ -27,5 +29,31 @@ module Projects::Security::DastConfigurationHelper
     return {} unless service_response.success?
 
     service_response.payload
+  end
+
+  def pipeline_data(project, current_user)
+    service_response = AppSec::Dast::Pipelines::FindLatestService.new(
+      project: project, current_user: current_user
+    ).execute
+
+    return {} unless service_response.success?
+
+    latest_pipeline = service_response.payload[:latest_pipeline]
+
+    pipeline_data = {
+      dast_enabled: !!latest_pipeline
+    }
+
+    if latest_pipeline
+      pipeline_data.merge!(
+        {
+          pipeline_id: latest_pipeline.id,
+          pipeline_started_at: latest_pipeline.started_at,
+          pipeline_path: project_pipeline_path(project, latest_pipeline)
+        }
+      )
+    end
+
+    pipeline_data
   end
 end
