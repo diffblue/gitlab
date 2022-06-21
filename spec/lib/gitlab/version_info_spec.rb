@@ -70,4 +70,19 @@ RSpec.describe 'Gitlab::VersionInfo' do
     it { expect(@v1_0_0.to_s).to eq("1.0.0") }
     it { expect(@unknown.to_s).to eq("Unknown") }
   end
+
+  describe '.hash' do
+    it { expect(Gitlab::VersionInfo.parse("1.0.0").hash).to eq(@v1_0_0.hash) }
+    it { expect(Gitlab::VersionInfo.parse("1.0.0.1").hash).to eq(@v1_0_0.hash) }
+    it { expect(Gitlab::VersionInfo.parse("1.0.1b1").hash).to eq(@v1_0_1.hash) }
+  end
+
+  describe '.eql?' do
+    it { expect(Gitlab::VersionInfo.parse("1.0.0").eql?(@v1_0_0)).to be_truthy }
+    it { expect(Gitlab::VersionInfo.parse("1.0.0.1").eql?(@v1_0_0)).to be_truthy }
+    it { expect(@v1_0_1.eql?(@v1_0_0)).to be_falsey }
+    it { expect(@v1_1_0.eql?(@v1_0_0)).to be_falsey }
+    it { expect(@v1_0_0.eql?(@v1_0_0)).to be_truthy }
+    it { expect([@v1_0_0, @v1_1_0, @v1_0_0].uniq).to eq [@v1_0_0, @v1_1_0] }
+  end
 end

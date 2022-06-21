@@ -52,5 +52,13 @@ module Gitlab
     def valid?
       @major >= 0 && @minor >= 0 && @patch >= 0 && @major + @minor + @patch > 0
     end
+
+    def hash
+      [self.class, to_s].hash
+    end
+
+    def eql?(other)
+      (self <=> other) == 0
+    end
   end
 end
