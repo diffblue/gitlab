@@ -70,117 +70,60 @@ RSpec.describe Gitlab::Ci::Minutes::CostFactor do
     end
   end
 
-  describe '#for_project' do
+  describe '#for_project', :saas do
     subject(:for_project) { cost_factor.for_project(project) }
 
-    context 'before the public project cost factor release date' do
-      where(:runner_type, :visibility_level, :public_cost_factor, :private_cost_factor, :namespace_limit, :instance_limit, :result) do
-        :project  | Gitlab::VisibilityLevel::PRIVATE  | 1 | 1 | nil | 400 | 0
-        :project  | Gitlab::VisibilityLevel::INTERNAL | 1 | 1 | nil | 400 | 0
-        :project  | Gitlab::VisibilityLevel::PUBLIC   | 1 | 1 | nil | 400 | 0
-        :project  | Gitlab::VisibilityLevel::PUBLIC   | 1 | 1 | 0   | 0   | 0
-        :project  | Gitlab::VisibilityLevel::PUBLIC   | 1 | 1 | nil | nil | 0
+    where(:runner_type, :visibility_level, :public_cost_factor, :private_cost_factor, :namespace_limit, :instance_limit, :result) do
+      :project  | Gitlab::VisibilityLevel::PRIVATE  | 1 | 1 | nil | 400 | 0
+      :project  | Gitlab::VisibilityLevel::INTERNAL | 1 | 1 | nil | 400 | 0
+      :project  | Gitlab::VisibilityLevel::PUBLIC   | 1 | 1 | nil | 400 | 0
+      :project  | Gitlab::VisibilityLevel::PUBLIC   | 1 | 1 | 0   | 0   | 0
+      :project  | Gitlab::VisibilityLevel::PUBLIC   | 1 | 1 | nil | nil | 0
 
-        :group    | Gitlab::VisibilityLevel::PRIVATE  | 1 | 1 | nil | 400 | 0
-        :group    | Gitlab::VisibilityLevel::INTERNAL | 1 | 1 | nil | 400 | 0
-        :group    | Gitlab::VisibilityLevel::PUBLIC   | 1 | 1 | nil | 400 | 0
-        :group    | Gitlab::VisibilityLevel::PUBLIC   | 1 | 1 | 0   | 0   | 0
-        :group    | Gitlab::VisibilityLevel::PUBLIC   | 1 | 1 | nil | nil | 0
+      :group    | Gitlab::VisibilityLevel::PRIVATE  | 1 | 1 | nil | 400 | 0
+      :group    | Gitlab::VisibilityLevel::INTERNAL | 1 | 1 | nil | 400 | 0
+      :group    | Gitlab::VisibilityLevel::PUBLIC   | 1 | 1 | nil | 400 | 0
+      :group    | Gitlab::VisibilityLevel::PUBLIC   | 1 | 1 | 0   | 0   | 0
+      :group    | Gitlab::VisibilityLevel::PUBLIC   | 1 | 1 | nil | nil | 0
 
-        :instance | Gitlab::VisibilityLevel::PUBLIC   | 0 | 5 | nil | 400 | 0
-        :instance | Gitlab::VisibilityLevel::PUBLIC   | 0 | 5 | nil | 0   | 0
-        :instance | Gitlab::VisibilityLevel::PUBLIC   | 0 | 5 | nil | nil | 0
-        :instance | Gitlab::VisibilityLevel::PUBLIC   | 0 | 5 | 0   | 400 | 0
-        :instance | Gitlab::VisibilityLevel::PUBLIC   | 0 | 5 | 400 | 0   | 0
-        :instance | Gitlab::VisibilityLevel::PUBLIC   | 2 | 5 | 400 | 0   | 2
-        :instance | Gitlab::VisibilityLevel::PUBLIC   | 2 | 5 | nil | 400 | 2
-        :instance | Gitlab::VisibilityLevel::PUBLIC   | 2 | 5 | nil | 0   | 0
+      :instance | Gitlab::VisibilityLevel::PUBLIC   | 0 | 5 | nil | 400 | 0
+      :instance | Gitlab::VisibilityLevel::PUBLIC   | 0 | 5 | nil | nil | 0
+      :instance | Gitlab::VisibilityLevel::PUBLIC   | 0 | 5 | nil | 0   | 0
+      :instance | Gitlab::VisibilityLevel::PUBLIC   | 0 | 5 | 0   | 400 | 0
+      :instance | Gitlab::VisibilityLevel::PUBLIC   | 0 | 5 | 400 | 0   | 0
+      :instance | Gitlab::VisibilityLevel::PUBLIC   | 2 | 5 | 400 | 0   | 2
+      :instance | Gitlab::VisibilityLevel::PUBLIC   | 2 | 5 | nil | 400 | 2
+      :instance | Gitlab::VisibilityLevel::PUBLIC   | 2 | 5 | nil | 0   | 0
 
-        :instance | Gitlab::VisibilityLevel::INTERNAL | 0 | 5 | nil | 400 | 5
-        :instance | Gitlab::VisibilityLevel::INTERNAL | 0 | 5 | nil | nil | 0
-        :instance | Gitlab::VisibilityLevel::INTERNAL | 0 | 5 | nil | 0   | 0
-        :instance | Gitlab::VisibilityLevel::INTERNAL | 0 | 5 | 0   | 400 | 0
-        :instance | Gitlab::VisibilityLevel::INTERNAL | 0 | 5 | 400 | 0   | 5
-        :instance | Gitlab::VisibilityLevel::INTERNAL | 0 | 0 | 400 | 0   | 0
+      :instance | Gitlab::VisibilityLevel::INTERNAL | 0 | 5 | nil | 400 | 5
+      :instance | Gitlab::VisibilityLevel::INTERNAL | 0 | 5 | nil | nil | 0
+      :instance | Gitlab::VisibilityLevel::INTERNAL | 0 | 5 | nil | 0   | 0
+      :instance | Gitlab::VisibilityLevel::INTERNAL | 0 | 5 | 0   | 400 | 0
+      :instance | Gitlab::VisibilityLevel::INTERNAL | 0 | 5 | 400 | 0   | 5
+      :instance | Gitlab::VisibilityLevel::INTERNAL | 0 | 0 | 400 | 0   | 0
 
-        :instance | Gitlab::VisibilityLevel::PRIVATE  | 0 | 5 | nil | 400 | 5
-        :instance | Gitlab::VisibilityLevel::PRIVATE  | 0 | 5 | nil | nil | 0
-        :instance | Gitlab::VisibilityLevel::PRIVATE  | 0 | 5 | nil | 0   | 0
-        :instance | Gitlab::VisibilityLevel::PRIVATE  | 0 | 5 | 0   | 400 | 0
-        :instance | Gitlab::VisibilityLevel::PRIVATE  | 0 | 5 | 400 | 0   | 5
-        :instance | Gitlab::VisibilityLevel::PRIVATE  | 0 | 0 | 400 | 0   | 0
-      end
-
-      with_them do
-        let(:namespace) do
-          create(:group, created_at: Date.new(2021, 7, 16), shared_runners_minutes_limit: namespace_limit)
-        end
-
-        let(:project) do
-          create(:project, namespace: namespace, visibility_level: visibility_level)
-        end
-
-        before do
-          allow(Gitlab::CurrentSettings).to receive(:shared_runners_minutes) { instance_limit }
-        end
-
-        it { is_expected.to eq(result) }
-      end
+      :instance | Gitlab::VisibilityLevel::PRIVATE  | 0 | 5 | nil | 400 | 5
+      :instance | Gitlab::VisibilityLevel::PRIVATE  | 0 | 5 | nil | nil | 0
+      :instance | Gitlab::VisibilityLevel::PRIVATE  | 0 | 5 | nil | 0   | 0
+      :instance | Gitlab::VisibilityLevel::PRIVATE  | 0 | 5 | 0   | 400 | 0
+      :instance | Gitlab::VisibilityLevel::PRIVATE  | 0 | 5 | 400 | 0   | 5
+      :instance | Gitlab::VisibilityLevel::PRIVATE  | 0 | 0 | 400 | 0   | 0
     end
 
-    context 'after the public project cost factor release date', :saas do
-      where(:runner_type, :visibility_level, :public_cost_factor, :private_cost_factor, :namespace_limit, :instance_limit, :result) do
-        :project  | Gitlab::VisibilityLevel::PRIVATE  | 1 | 1 | nil | 400 | 0
-        :project  | Gitlab::VisibilityLevel::INTERNAL | 1 | 1 | nil | 400 | 0
-        :project  | Gitlab::VisibilityLevel::PUBLIC   | 1 | 1 | nil | 400 | 0
-        :project  | Gitlab::VisibilityLevel::PUBLIC   | 1 | 1 | 0   | 0   | 0
-        :project  | Gitlab::VisibilityLevel::PUBLIC   | 1 | 1 | nil | nil | 0
-
-        :group    | Gitlab::VisibilityLevel::PRIVATE  | 1 | 1 | nil | 400 | 0
-        :group    | Gitlab::VisibilityLevel::INTERNAL | 1 | 1 | nil | 400 | 0
-        :group    | Gitlab::VisibilityLevel::PUBLIC   | 1 | 1 | nil | 400 | 0
-        :group    | Gitlab::VisibilityLevel::PUBLIC   | 1 | 1 | 0   | 0   | 0
-        :group    | Gitlab::VisibilityLevel::PUBLIC   | 1 | 1 | nil | nil | 0
-
-        :instance | Gitlab::VisibilityLevel::PUBLIC   | 0 | 5 | nil | 400 | 0.008
-        :instance | Gitlab::VisibilityLevel::PUBLIC   | 0 | 5 | nil | nil | 0
-        :instance | Gitlab::VisibilityLevel::PUBLIC   | 0 | 5 | nil | 0   | 0
-        :instance | Gitlab::VisibilityLevel::PUBLIC   | 0 | 5 | 0   | 400 | 0
-        :instance | Gitlab::VisibilityLevel::PUBLIC   | 0 | 5 | 400 | 0   | 0.008
-        :instance | Gitlab::VisibilityLevel::PUBLIC   | 2 | 5 | 400 | 0   | 2
-        :instance | Gitlab::VisibilityLevel::PUBLIC   | 2 | 5 | nil | 400 | 2
-        :instance | Gitlab::VisibilityLevel::PUBLIC   | 2 | 5 | nil | 0   | 0
-
-        :instance | Gitlab::VisibilityLevel::INTERNAL | 0 | 5 | nil | 400 | 5
-        :instance | Gitlab::VisibilityLevel::INTERNAL | 0 | 5 | nil | nil | 0
-        :instance | Gitlab::VisibilityLevel::INTERNAL | 0 | 5 | nil | 0   | 0
-        :instance | Gitlab::VisibilityLevel::INTERNAL | 0 | 5 | 0   | 400 | 0
-        :instance | Gitlab::VisibilityLevel::INTERNAL | 0 | 5 | 400 | 0   | 5
-        :instance | Gitlab::VisibilityLevel::INTERNAL | 0 | 0 | 400 | 0   | 0
-
-        :instance | Gitlab::VisibilityLevel::PRIVATE  | 0 | 5 | nil | 400 | 5
-        :instance | Gitlab::VisibilityLevel::PRIVATE  | 0 | 5 | nil | nil | 0
-        :instance | Gitlab::VisibilityLevel::PRIVATE  | 0 | 5 | nil | 0   | 0
-        :instance | Gitlab::VisibilityLevel::PRIVATE  | 0 | 5 | 0   | 400 | 0
-        :instance | Gitlab::VisibilityLevel::PRIVATE  | 0 | 5 | 400 | 0   | 5
-        :instance | Gitlab::VisibilityLevel::PRIVATE  | 0 | 0 | 400 | 0   | 0
+    with_them do
+      let(:namespace) do
+        create(:group, shared_runners_minutes_limit: namespace_limit)
       end
 
-      with_them do
-        let(:namespace) do
-          create(:group, created_at: Date.new(2021, 7, 17), shared_runners_minutes_limit: namespace_limit)
-        end
-
-        let(:project) do
-          create(:project, namespace: namespace, visibility_level: visibility_level)
-        end
-
-        before do
-          allow(Gitlab::CurrentSettings).to receive(:shared_runners_minutes) { instance_limit }
-        end
-
-        it { is_expected.to eq(result) }
+      let(:project) do
+        create(:project, namespace: namespace, visibility_level: visibility_level)
       end
+
+      before do
+        allow(Gitlab::CurrentSettings).to receive(:shared_runners_minutes) { instance_limit }
+      end
+
+      it { is_expected.to eq(result) }
     end
 
     context 'plan based cost factor', :saas do

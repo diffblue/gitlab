@@ -8,8 +8,6 @@ module EE
       prepended do
         def self.any_shared_runners_with_enabled_cost_factor?(project)
           if project.public?
-            return true if project.force_cost_factor?
-
             instance_type.where('public_projects_minutes_cost_factor > 0').exists?
           else
             instance_type.where('private_projects_minutes_cost_factor > 0').exists?
