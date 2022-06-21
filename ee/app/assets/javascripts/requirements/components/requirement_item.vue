@@ -90,13 +90,18 @@ export default {
     @click="$emit('show-click', requirement)"
   >
     <div class="issuable-info-container">
-      <span class="issuable-reference text-muted d-none d-sm-block mr-2">{{ reference }}</span>
+      <span
+        class="issuable-reference gl-text-gray-600 gl-display-none gl-sm-display-block! gl-mr-3"
+        >{{ reference }}</span
+      >
       <div class="issuable-main-info">
-        <span class="issuable-reference text-muted d-block d-sm-none">{{ reference }}</span>
+        <span class="issuable-reference gl-text-gray-600 gl-display-block gl-sm-display-none!">{{
+          reference
+        }}</span>
         <div class="issue-title title">
           <span class="issue-title-text">{{ requirement.title }}</span>
         </div>
-        <div class="issuable-info d-none d-sm-inline-block">
+        <div class="issuable-info gl-display-none gl-sm-display-inline-block!">
           <span class="issuable-authored">
             <span
               v-gl-tooltip:tooltipcontainer.bottom
@@ -119,19 +124,22 @@ export default {
           v-if="testReport"
           :test-report="testReport"
           :last-test-report-manually-created="requirement.lastTestReportManuallyCreated"
-          class="d-block d-sm-none"
+          class="gl-display-block gl-sm-display-none!"
         />
       </div>
       <div class="d-flex">
-        <ul v-if="showIssuableMetaActions" class="controls flex-column flex-sm-row">
+        <ul
+          v-if="showIssuableMetaActions"
+          class="controls gl-flex-direction-column gl-sm-flex-direction-row!"
+        >
           <requirement-status-badge
             v-if="testReport"
             :test-report="testReport"
             :last-test-report-manually-created="requirement.lastTestReportManuallyCreated"
             element-type="li"
-            class="d-none d-sm-block"
+            class="gl-display-none gl-sm-display-block!"
           />
-          <li v-if="canUpdate && !isArchived" class="requirement-edit d-sm-block">
+          <li v-if="canUpdate && !isArchived" class="requirement-edit gl-sm-display-block!">
             <gl-button
               v-gl-tooltip
               icon="pencil"
@@ -140,7 +148,7 @@ export default {
               @click="$emit('edit-click', requirement)"
             />
           </li>
-          <li v-if="canArchive && !isArchived" class="requirement-archive d-sm-block">
+          <li v-if="canArchive && !isArchived" class="requirement-archive gl-sm-display-block!">
             <gl-button
               v-if="!stateChangeRequestActive"
               v-gl-tooltip
@@ -151,7 +159,7 @@ export default {
               @click.stop="handleArchiveClick"
             />
           </li>
-          <li v-if="canArchive && isArchived" class="requirement-reopen d-sm-block">
+          <li v-if="canArchive && isArchived" class="requirement-reopen gl-sm-display-block!">
             <gl-button :loading="stateChangeRequestActive" @click="handleReopenClick">{{
               __('Reopen')
             }}</gl-button>
