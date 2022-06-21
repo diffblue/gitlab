@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-# rubocop:disable Layout/LineLength
 class PopulateCommitPermissionsInMainIndex < Elastic::Migration
   # This migration works by taking all possible combinations of visibility levels
   # in the PERMISSIONS_MATRIX and updating BATCH_SIZE amount of commits to reflect
@@ -15,7 +14,8 @@ class PopulateCommitPermissionsInMainIndex < Elastic::Migration
   #   - 2.B: if task is completed but there are more commits included in current permutation, repeat Step 1.
   #   - 2.C: if task is completed and all commits within permutation are updated, increment the permutation_idx.
   #
-  # Note that one `migrate` is to launch the task and another `migrate` is required to handle the completion of that task.
+  # Note that one `migrate` is to launch the task and
+  # another `migrate` is required to handle the completion of that task.
   #
   # The number of times this migration will need to be run to complete a single permutation can
   # be denoted like this mathematically:
@@ -23,7 +23,7 @@ class PopulateCommitPermissionsInMainIndex < Elastic::Migration
   # fx(num_commits_in_permutation) = (num_commits_in_permutation / batch_size) * 2
   #
   batched!
-  batch_size 200_000
+  batch_size 100_000
   throttle_delay 1.minute
 
   MAX_ATTEMPTS_PER_IDX = 30
@@ -43,35 +43,28 @@ class PopulateCommitPermissionsInMainIndex < Elastic::Migration
     launch_task
     :started
   rescue StandardError => e
-    log "Update failed, error: #{e.message} increasing migration_state for permutation_idx: (#{permutation_idx}/#{LAST_PERMUTATION_IDX}) | retry_attempt: #{retry_attempt}"
+    log "Update failed, error: #{e.message} increasing migration_state for " \
+        "permutation_idx: (#{permutation_idx}/#{LAST_PERMUTATION_IDX}) | retry_attempt: #{retry_attempt}"
 
     set_migration_state(
       permutation_idx: permutation_idx,
       task_id: nil,
       retry_attempt: retry_attempt + 1,
-      documents_remaining: documents_remaining
+      documents_remaining: documents_remaining,
+      documents_remaining_for_permutation: documents_remaining_for_permutation
     )
 
     raise e
   end
 
   def completed?
-    # Returns true if all commit documents have permission levels
     doc_count = documents_remaining
     log "Checking if there are commits without visibility_level field: #{doc_count} documents left"
     doc_count == 0
   end
 
-  def documents_remaining
-    count_of_commits_without_permissions(any_commits_missing_visibility_level)
-  end
-
   def permutation_completed?
-    # Returns true if all commit documents in current permutation have permission levels
-    filter = commits_missing_project_access_levels(
-      visibility_level: visibility_level, repository_access_level: repository_access_level
-    )
-    count_of_commits_without_permissions(filter) == 0
+    documents_remaining_for_permutation == 0
   end
 
   def task_completed?(task_id:)
@@ -100,23 +93,34 @@ class PopulateCommitPermissionsInMainIndex < Elastic::Migration
     permutation[1]
   end
 
-  def index_name
-    helper.target_name
-  end
-
   def task_id
     migration_state[:task_id]
+  end
+
+  private
+
+  def batch_num
+    migration_state[:batch_num].to_i
+  end
+
+  def index_name
+    helper.target_name
   end
 
   def retry_attempt
     migration_state[:retry_attempt].to_i
   end
 
-  def batch_num
-    migration_state[:batch_num].to_i
+  def documents_remaining
+    count_of_commits_without_permissions(any_commits_missing_visibility_level)
   end
 
-  private
+  def documents_remaining_for_permutation
+    filter = commits_missing_project_access_levels(
+      visibility_level: visibility_level, repository_access_level: repository_access_level
+    )
+    count_of_commits_without_permissions(filter)
+  end
 
   def failed?
     retry_attempt >= MAX_ATTEMPTS_PER_IDX
@@ -131,6 +135,8 @@ class PopulateCommitPermissionsInMainIndex < Elastic::Migration
   end
 
   def setup
+    # do not include documents_remaining_for_permutation on setup to avoid nil error when
+    # pulling visibility_level and repository_access_level for the current permutation
     set_migration_state(
       retry_attempt:        0,
       permutation_idx:      0,
@@ -146,7 +152,8 @@ class PopulateCommitPermissionsInMainIndex < Elastic::Migration
       batch_num: 0,
       task_id: nil,
       retry_attempt: 0, # We reset retry_attempt since task completed
-      documents_remaining: documents_remaining
+      documents_remaining: documents_remaining,
+      documents_remaining_for_permutation: documents_remaining_for_permutation
     )
 
     :permutation_completed
@@ -154,32 +161,38 @@ class PopulateCommitPermissionsInMainIndex < Elastic::Migration
 
   def handle_ongoing_task
     if task_completed?(task_id: task_id)
-      log "Update is completed for permutation_idx: (#{permutation_idx}/#{LAST_PERMUTATION_IDX}) | retry_attempt: #{retry_attempt} | task_id: #{task_id}"
+      log "Update is completed for permutation_idx: (#{permutation_idx}/#{LAST_PERMUTATION_IDX}) | " \
+          "retry_attempt: #{retry_attempt} | task_id: #{task_id}"
 
       set_migration_state(
         task_id: nil,
         retry_attempt: 0, # We reset retry_attempt since task completed
         batch_num: batch_num + 1,
-        documents_remaining: documents_remaining
+        documents_remaining: documents_remaining,
+        documents_remaining_for_permutation: documents_remaining_for_permutation
       )
 
       :task_completed
     else
-      log "Update is still in progress for permutation_idx: (#{permutation_idx}/#{LAST_PERMUTATION_IDX}) | retry_attempt: #{retry_attempt} | task_id: #{task_id}"
+      log "Update is still in progress for permutation_idx: (#{permutation_idx}/#{LAST_PERMUTATION_IDX}) | " \
+          "retry_attempt: #{retry_attempt} | task_id: #{task_id}"
       :in_progress
     end
   end
 
   def launch_task
-    log "Launching update_by_query for permutation_idx: (#{permutation_idx}/#{LAST_PERMUTATION_IDX}) | retry_attempt: #{retry_attempt}"
+    log "Launching update_by_query for permutation_idx: (#{permutation_idx}/#{LAST_PERMUTATION_IDX}) | " \
+        "retry_attempt: #{retry_attempt}"
     new_task_id = update_by_query(visibility_level: visibility_level, repository_access_level: repository_access_level)
 
-    log "Task has started for permutation_idx: (#{permutation_idx}/#{LAST_PERMUTATION_IDX}) | retry_attempt: #{retry_attempt} | task_id: #{new_task_id}"
+    log "Task has started for permutation_idx: (#{permutation_idx}/#{LAST_PERMUTATION_IDX}) | " \
+        "retry_attempt: #{retry_attempt} | task_id: #{new_task_id}"
 
     set_migration_state(
       permutation_idx: permutation_idx,
       task_id: new_task_id,
-      documents_remaining: documents_remaining
+      documents_remaining: documents_remaining,
+      documents_remaining_for_permutation: documents_remaining_for_permutation
     )
   end
 
@@ -232,7 +245,7 @@ class PopulateCommitPermissionsInMainIndex < Elastic::Migration
 
   def update_by_query(visibility_level:, repository_access_level:)
     query = {
-      query: commits_with_project_access_levels(
+      query: commits_missing_project_access_levels(
         visibility_level: visibility_level, repository_access_level: repository_access_level
       ),
       script: {
@@ -253,9 +266,16 @@ class PopulateCommitPermissionsInMainIndex < Elastic::Migration
     response['task']
   end
 
-  def commits_with_project_access_levels(visibility_level:, repository_access_level:)
+  def commits_missing_project_access_levels(visibility_level:, repository_access_level:)
     {
       bool: {
+        must_not: [
+          {
+            exists: {
+              field: "visibility_level"
+            }
+          }
+        ],
         must: [
           {
             term: {
@@ -293,15 +313,4 @@ class PopulateCommitPermissionsInMainIndex < Elastic::Migration
       }
     }
   end
-
-  def commits_missing_project_access_levels(**kwargs)
-    commits_with_project_access_levels(**kwargs).tap do |query|
-      query[:bool][:must_not] = [{
-        exists: {
-          field: "visibility_level"
-        }
-      }]
-    end
-  end
 end
-# rubocop:enable Layout/LineLength
