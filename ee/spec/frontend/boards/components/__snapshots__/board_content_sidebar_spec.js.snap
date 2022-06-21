@@ -137,14 +137,14 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
        
       <div
         class="dropdown b-dropdown gl-new-dropdown gl-display-none"
-        id="__BVID__39"
+        id="__BVID__40"
       >
         <!---->
         <button
           aria-expanded="false"
           aria-haspopup="true"
           class="btn dropdown-toggle btn-default btn-md btn-block dropdown-menu-toggle gl-mb-2 gl-button gl-dropdown-toggle"
-          id="__BVID__39__BV_toggle_"
+          id="__BVID__40__BV_toggle_"
           type="button"
         >
           <!---->
@@ -169,7 +169,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
           </svg>
         </button>
         <ul
-          aria-labelledby="__BVID__39__BV_toggle_"
+          aria-labelledby="__BVID__40__BV_toggle_"
           class="dropdown-menu"
           role="menu"
           tabindex="-1"

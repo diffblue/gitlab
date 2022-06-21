@@ -24126,10 +24126,16 @@ msgstr ""
 msgid "Merge request events"
 msgstr ""
 
+msgid "Merge request locked."
+msgstr ""
+
 msgid "Merge request not merged"
 msgstr ""
 
 msgid "Merge request reports"
+msgstr ""
+
+msgid "Merge request unlocked."
 msgstr ""
 
 msgid "Merge request was scheduled to merge after pipeline succeeds"
@@ -26152,6 +26158,12 @@ msgid "Notifications off"
 msgstr ""
 
 msgid "Notifications on"
+msgstr ""
+
+msgid "Notifications turned off."
+msgstr ""
+
+msgid "Notifications turned on."
 msgstr ""
 
 msgid "Notify users by email when sign-in location is not recognized."
