@@ -124,7 +124,11 @@ module QA
         end
       end
 
-      context 'group level' do
+      context 'group level', quarantine: {
+        issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/364742',
+        type: :investigating,
+        only: { subdomain: :staging }
+      } do
         before do
           Flow::Login.sign_in
 
