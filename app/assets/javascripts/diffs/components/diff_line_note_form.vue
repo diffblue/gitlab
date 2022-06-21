@@ -216,7 +216,6 @@ export default {
   <div class="content discussion-form discussion-form-container discussion-notes">
     <div class="gl-mb-3 gl-text-gray-500 gl-pb-3">
       <multiline-comment-form
-        v-model="commentLineStart"
         :line="line"
         :line-range="lines"
         :comment-line-options="commentLineOptions"
