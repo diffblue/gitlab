@@ -12,7 +12,9 @@ module QA
       end
 
       let(:group) do
-        group = Resource::Group.fabricate_via_api!
+        group = Resource::Group.fabricate_via_api! do |group|
+          group.api_client = admin_api_client
+        end
         group.sandbox.add_member(user_with_minimal_access, Resource::Members::AccessLevel::MINIMAL_ACCESS)
         group
       end
@@ -21,6 +23,7 @@ module QA
         Resource::Project.fabricate_via_api! do |project|
           project.group = group
           project.name = "project-for-minimal-access"
+          project.api_client = admin_api_client
           project.initialize_with_readme = true
         end
       end
@@ -39,10 +42,10 @@ module QA
       end
 
       after do
-        user_with_minimal_access.remove_via_api!
-        project.remove_via_api!
+        user_with_minimal_access&.remove_via_api!
+        project&.remove_via_api!
         begin
-          group.remove_via_api!
+          group&.remove_via_api!
         rescue Resource::ApiFabricator::ResourceNotDeletedError
           # It is ok if the group is already marked for deletion by another test
         end
