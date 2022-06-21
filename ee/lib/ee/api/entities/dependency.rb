@@ -8,12 +8,17 @@ module EE
         expose :dependency_file_path do |dependency|
           dependency[:location][:path]
         end
-        expose :vulnerabilities, using: Dependency::Vulnerability, if: ->(_, opts) { can_read_vulnerabilities?(opts[:user], opts[:project]) }
+        expose :vulnerabilities, using: DependencyEntity::VulnerabilityEntity, if: ->(_, opts) { can_read_vulnerabilities?(opts[:user], opts[:project]) }
+        expose :licenses, using: DependencyEntity::LicenseEntity, if: ->(_, opts) { can_read_licenses?(opts[:user], opts[:project]) }
 
         private
 
         def can_read_vulnerabilities?(user, project)
           Ability.allowed?(user, :read_security_resource, project)
+        end
+
+        def can_read_licenses?(user, project)
+          Ability.allowed?(user, :read_licenses, project)
         end
       end
     end
