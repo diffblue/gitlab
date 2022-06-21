@@ -39,6 +39,8 @@ module Security
     def fetch_policy_configurations
       if params[:relationship] == :inherited
         object.all_security_orchestration_policy_configurations
+      elsif params[:relationship] == :inherited_only
+        object.all_inherited_security_orchestration_policy_configurations
       else
         Array
           .wrap(policy_configuration)

@@ -548,13 +548,23 @@ module EE
     def all_security_orchestration_policy_configurations
       return Array.wrap(security_orchestration_policy_configuration) if self_and_ancestor_ids.blank?
 
-      ::Security::OrchestrationPolicyConfiguration
-        .for_namespace(self_and_ancestor_ids)
-        .with_project_and_namespace
-        .select { |configuration| configuration&.policy_configuration_valid? }
+      security_orchestration_policies_for_namespaces(self_and_ancestor_ids)
+    end
+
+    def all_inherited_security_orchestration_policy_configurations
+      return [] if ancestor_ids.blank?
+
+      security_orchestration_policies_for_namespaces(ancestor_ids)
     end
 
     private
+
+    def security_orchestration_policies_for_namespaces(namespace_ids)
+      ::Security::OrchestrationPolicyConfiguration
+        .for_namespace(namespace_ids)
+        .with_project_and_namespace
+        .select { |configuration| configuration&.policy_configuration_valid? }
+    end
 
     def free_user_cap
       @free_user_cap ||= ::Namespaces::FreeUserCap::Standard.new(self)

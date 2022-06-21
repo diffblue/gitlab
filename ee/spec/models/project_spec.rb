@@ -3336,6 +3336,53 @@ RSpec.describe Project do
     end
   end
 
+  describe '#all_inherited_security_orchestration_policy_configurations' do
+    subject { project.all_inherited_security_orchestration_policy_configurations }
+
+    let_it_be(:parent_group) { create(:group) }
+    let_it_be(:child_group) { create(:group, parent: parent_group) }
+    let_it_be(:child_group_2) { create(:group, parent: child_group) }
+    let_it_be(:project) { create(:project, group: child_group_2) }
+
+    let_it_be(:parent_security_orchestration_policy_configuration) { create(:security_orchestration_policy_configuration, :namespace, namespace: parent_group) }
+    let_it_be(:child_security_orchestration_policy_configuration) { create(:security_orchestration_policy_configuration, :namespace, namespace: child_group) }
+    let_it_be(:child_security_orchestration_policy_configuration_2) { create(:security_orchestration_policy_configuration, :namespace, namespace: child_group_2) }
+
+    let_it_be(:project_security_orchestration_policy_configuration) do
+      create(:security_orchestration_policy_configuration, project: project)
+    end
+
+    context 'when configuration is invalid' do
+      before do
+        allow_next_found_instances_of(Security::OrchestrationPolicyConfiguration, 4) do |configuration|
+          allow(configuration).to receive(:policy_configuration_valid?).and_return(false)
+        end
+      end
+
+      it 'returns security policy configurations for all valid parent groups and project' do
+        expect(subject).to be_empty
+      end
+    end
+
+    context 'when configuration is valid' do
+      before do
+        allow_next_found_instances_of(Security::OrchestrationPolicyConfiguration, 4) do |configuration|
+          allow(configuration).to receive(:policy_configuration_valid?).and_return(true)
+        end
+      end
+
+      it 'returns security policy configurations for all valid parent groups only' do
+        expect(subject).to match_array(
+          [
+            parent_security_orchestration_policy_configuration,
+            child_security_orchestration_policy_configuration,
+            child_security_orchestration_policy_configuration_2
+          ]
+        )
+      end
+    end
+  end
+
   describe '#inactive?' do
     context 'when Gitlab.com', :saas do
       context 'when project belongs to paid namespace' do

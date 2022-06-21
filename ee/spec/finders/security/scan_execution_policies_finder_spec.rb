@@ -144,6 +144,20 @@ RSpec.describe Security::ScanExecutionPoliciesFinder do
             ])
           end
         end
+
+        context 'when relationship argument is provided as INHERITED_ONLY' do
+          let(:relationship) { :inherited_only }
+
+          it 'returns scan execution policies defined for namespace onlt' do
+            is_expected.to match_array([policy.merge(
+              {
+                config: group_policy_configuration,
+                project: nil,
+                namespace: group,
+                inherited: true
+              })])
+          end
+        end
       end
 
       context 'when user is unauthorized' do
