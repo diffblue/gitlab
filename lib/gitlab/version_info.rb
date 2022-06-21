@@ -61,6 +61,10 @@ module Gitlab
       (self <=> other) == 0
     end
 
+    def same_minor_version?(other)
+      @major == other.major && @minor == other.minor
+    end
+
     def without_patch
       self.class.new(@major, @minor, 0)
     end

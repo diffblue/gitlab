@@ -28,15 +28,13 @@ module Gitlab
         gitlab_minor_version = @gitlab_version.without_patch
 
         available_releases = releases
-            .reject { |release| release.major > @gitlab_version.major }
-            .reject do |release|
-              release_minor_version = release.without_patch
+          .reject { |release| release.major > @gitlab_version.major }
+          .reject do |release|
+            # Do not reject a patch update, even if the runner is ahead of the instance version
+            next false if release.same_minor_version?(runner_version)
 
-              # Do not reject a patch update, even if the runner is ahead of the instance version
-              next false if runner_version.without_patch == release_minor_version
-
-              release_minor_version > gitlab_minor_version
-            end
+            release.without_patch > gitlab_minor_version
+          end
 
         return :recommended if available_releases.any? { |available_rel| patch_update?(available_rel, runner_version) }
         return :recommended if outside_backport_window?(runner_version, releases)
