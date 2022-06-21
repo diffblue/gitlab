@@ -215,7 +215,7 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql do
       GQL
     end
 
-    it 'returns success when a valid license key is specified' do
+    it 'returns success when the subscription can be found' do
       expected_args = {
         query: query,
         variables: {
@@ -241,7 +241,7 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql do
       expect(result).to eq({ success: true, eligible_for_seat_usage_alerts: true })
     end
 
-    it 'returns failure when license_key is invalid' do
+    it 'returns failure when the subscription cannot be found' do
       error = "some error"
       expect(client).to receive(:execute_graphql_query).and_return(
         {
@@ -263,6 +263,17 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql do
 
         expect(client.subscription_seat_usage_alerts_eligibility(nil))
           .to eq({ success: false, errors: 'Must provide a namespace ID' })
+      end
+    end
+
+    context 'when there is a network connectivity error' do
+      it 'returns an error response' do
+        allow(client).to receive(:execute_graphql_query).and_raise(HTTParty::Error)
+        expect(Gitlab::ErrorTracking).to receive(:log_exception).with(kind_of(HTTParty::Error))
+
+        request = client.subscription_seat_usage_alerts_eligibility('namespace-id')
+
+        expect(request).to eq({ success: false, errors: "CONNECTIVITY_ERROR" })
       end
     end
   end

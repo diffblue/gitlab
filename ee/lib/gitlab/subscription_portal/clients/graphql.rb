@@ -108,6 +108,10 @@ module Gitlab
             else
               error(response.dig(:data, :errors))
             end
+          rescue *RESCUABLE_HTTP_ERRORS => e
+            Gitlab::ErrorTracking.log_exception(e)
+
+            error(CONNECTIVITY_ERROR)
           end
 
           def subscription_last_term(namespace_id)
