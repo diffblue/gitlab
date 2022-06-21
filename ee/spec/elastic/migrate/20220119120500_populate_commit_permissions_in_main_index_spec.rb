@@ -9,19 +9,10 @@ RSpec.describe PopulateCommitPermissionsInMainIndex do
   let(:client) { Project.__elasticsearch__.client }
   let(:permissions_matrix) { described_class::PERMISSIONS_MATRIX }
 
-  let(:projects) do
-    described_class::PERMISSIONS_MATRIX.map do |visibility_level, repository_access_level|
-      create(:project,
-             :repository,
-             visibility_level: visibility_level,
-             repository_access_level: repository_access_level)
-    end
-  end
-
   describe 'migration_options' do
     it 'has migration options set', :aggregate_failures do
       expect(migration).to be_batched
-      expect(migration.batch_size).to eq(200_000)
+      expect(migration.batch_size).to eq(100_000)
       expect(migration.throttle_delay).to eq(1.minute)
     end
   end
@@ -57,6 +48,15 @@ RSpec.describe PopulateCommitPermissionsInMainIndex do
   end
 
   describe 'integration test', :elastic, :sidekiq_inline do
+    let(:projects) do
+      described_class::PERMISSIONS_MATRIX.map do |visibility_level, repository_access_level|
+        create(:project,
+               :repository,
+               visibility_level: visibility_level,
+               repository_access_level: repository_access_level)
+      end
+    end
+
     before do
       stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
 
@@ -76,64 +76,48 @@ RSpec.describe PopulateCommitPermissionsInMainIndex do
           remove_visibility_level_for_commits(raw_commits_for_project(p))
         end
 
-        # NOTE adding multiple expectations here to avoid setup/teardown time of indices on each test.
-        permissions_matrix.each.with_index do |(visibility_level, repository_access_level), permutation_idx|
-          expect(migration.permutation_idx).to eq(permutation_idx)
-          project = projects[permutation_idx]
+        # use a small batch size to verify batching processes documents properly
+        described_class.batch_size(10)
 
-          # Set up first half of test so only a subset of commits within the permutation
-          # are included in batch size.
-          first_batch_size = 10
-          num_commits = raw_commits_for_project(project).length
-          second_batch_size = num_commits - first_batch_size
-          expect(second_batch_size).to be > 0 # Ensures that first batch size is not too big
-          described_class.batch_size(first_batch_size)
-          expect(migration.batch_size).to eq(first_batch_size)
+        # adding multiple expectations here to avoid setup/teardown time of indices on each test.
+        permissions_matrix.each.with_index do |(_visibility_level, _repository_access_level), permutation_idx|
+          expect(migration.permutation_idx).to eq(permutation_idx)
           expect(migration).not_to be_completed
 
-          # Since there are more commits than the batch size, migrating should not change
-          # the permutation index. This migration launches the update_by_query task.
-          expect { migration.migrate }.not_to change { migration.permutation_idx }
+          # Since there are more commits than the batch size, migrating should not change the permutation_idx
+          # This migration launches the update_by_query task
+          expect { migration.migrate }.to not_change { migration.permutation_idx }
+
           wait_for_migration_task_to_complete(migration)
 
-          # This migration handles the completion of the update_by_query task
-          expect { migration.migrate }.not_to change { migration.permutation_idx }
+          # Since there are more commits than the batch size, migrating should not change the permutation_idx
+          # This migration handles completion of update_by_query task
+          expect { migration.migrate }.to not_change { migration.permutation_idx }
 
-          # Only commits within the first batch should be updated
-          commits = raw_commits_for_project(project)
-          updated_commits = commits.select { |c| c.key?("visibility_level") && c.key?("repository_access_level") }
-          expect(updated_commits.length).to eq(first_batch_size)
-          expect(updated_commits).to all(
-            include("visibility_level" => visibility_level,
-                    "repository_access_level" => repository_access_level)
-          )
+          # Calculate how many migrations need to be run to fully complete the permutation
+          # We do not need to add one to the calculation to handle a final batch (remainder) which is less
+          # than the batch_size because a full migration was run once above
+          project = projects[permutation_idx]
+          num_commits = raw_commits_for_project(project).length
+          batches_to_complete_permutation = num_commits / migration.batch_size
 
-          # Set up second half of test to have batch size include remaining commits
-          described_class.batch_size(second_batch_size)
-          expect(migration.batch_size).to eq(second_batch_size)
+          batches_to_complete_permutation.times do |batch|
+            migration.migrate # handle launch of update_by_query task
+            wait_for_migration_task_to_complete(migration) # wait for migration to complete
 
-          # Because there are more commits to update in permutation, the
-          # permutation should not be considered complete
-          expect(migration).not_to be_permutation_completed
-
-          # Running migration a second time should launch an update_by_query task
-          # that will pick up the second batch but won't change permutation index
-          # until the update_by_query task is complete.
-          expect { migration.migrate }.not_to change { migration.permutation_idx }
-          wait_for_migration_task_to_complete(migration)
-
-          # Now all commits in permutation should be successfully updated
-          expect(migration).to be_permutation_completed
+            # The migration will be permutation complete when the last batch is migrated
+            # this needs to be checked before completion of the update_by_query task because the permutation_idx is
+            # updated at that point
+            expect(migration).to be_permutation_completed if batch == (batches_to_complete_permutation - 1)
+            migration.migrate # handle completion of update_by_query task
+          end
 
           if migration.completed?
             # The migration should be completed after the very last batch in the
             # very last permutation is run and complete.
-            expect { migration.migrate }
-              .not_to change { migration.permutation_idx }
+            expect(migration.permutation_idx).to eq(permutation_idx)
           else
-            # Running migration when permutation_completed increments the permutation index
-            expect { migration.migrate }
-              .to change { migration.permutation_idx }.from(permutation_idx).to(permutation_idx + 1)
+            expect(migration.permutation_idx).to eq(permutation_idx + 1)
           end
         end
 
@@ -175,7 +159,8 @@ RSpec.describe PopulateCommitPermissionsInMainIndex do
     let(:task_id) { "task_id" }
     let(:permutation_idx) { 1 }
     let(:retry_attempt) { 2 }
-    let(:documents_remaining) { 2 }
+    let(:documents_remaining) { 20 }
+    let(:documents_remaining_for_permutation) { 4 }
     let(:permutation_completed) { false }
     let(:migrate) { migration.migrate }
 
@@ -183,6 +168,7 @@ RSpec.describe PopulateCommitPermissionsInMainIndex do
       allow(migration).to receive(:migration_state).and_return(state)
       allow(migration).to receive(:update_by_query).and_return(task_id)
       allow(migration).to receive(:documents_remaining).and_return(documents_remaining)
+      allow(migration).to receive(:documents_remaining_for_permutation).and_return(documents_remaining_for_permutation)
       allow(migration).to receive(:permutation_completed?).and_return(permutation_completed)
     end
 
@@ -207,7 +193,8 @@ RSpec.describe PopulateCommitPermissionsInMainIndex do
         expect(migration).to receive(:set_migration_state).with(
           permutation_idx: permutation_idx,
           task_id: task_id,
-          documents_remaining: documents_remaining
+          documents_remaining: documents_remaining,
+          documents_remaining_for_permutation: documents_remaining_for_permutation
         )
         migrate
       end
@@ -225,7 +212,8 @@ RSpec.describe PopulateCommitPermissionsInMainIndex do
             batch_num: 0,
             task_id: nil,
             retry_attempt: 0,
-            documents_remaining: documents_remaining
+            documents_remaining: documents_remaining,
+            documents_remaining_for_permutation: documents_remaining_for_permutation
           )
           migrate
         end
@@ -251,7 +239,8 @@ RSpec.describe PopulateCommitPermissionsInMainIndex do
           permutation_idx: permutation_idx,
           task_id: nil,
           retry_attempt: retry_attempt + 1,
-          documents_remaining: documents_remaining
+          documents_remaining: documents_remaining,
+          documents_remaining_for_permutation: documents_remaining_for_permutation
         )
 
         expect { migrate }.to raise_error(KeyError)
@@ -288,7 +277,7 @@ RSpec.describe PopulateCommitPermissionsInMainIndex do
 
       context 'and the project is missing from the index' do
         before do
-          client.delete(index: migration.index_name, id: "project_#{project.id}", refresh: true) # remove parent project
+          client.delete(index: index_name, id: "project_#{project.id}", refresh: true) # remove parent project
         end
 
         specify { expect(migration).to be_completed }
@@ -368,12 +357,16 @@ RSpec.describe PopulateCommitPermissionsInMainIndex do
 
   private
 
+  def index_name
+    Repository.__elasticsearch__.index_name
+  end
+
   def raw_commits_for_project(project)
     query = {
       term: { 'commit.rid' => project.id }
     }
 
-    client.search(index: migration.index_name, body: { size: 1000, query: query }).dig('hits', 'hits').map do |doc|
+    client.search(index: index_name, body: { size: 1000, query: query }).dig('hits', 'hits').map do |doc|
       doc.dig('_source')
     end
   end
@@ -388,7 +381,7 @@ RSpec.describe PopulateCommitPermissionsInMainIndex do
 
   def update_by_query(commit_docs, script)
     client.update_by_query({
-      index: migration.index_name,
+      index: index_name,
       wait_for_completion: true,
       refresh: true,
       body: {
@@ -420,6 +413,6 @@ RSpec.describe PopulateCommitPermissionsInMainIndex do
     50.times.each do |attempt| # 5 second timeout duration
       migration.task_completed?(task_id: task_id) ? break : sleep(0.1)
     end
-    es_helper.refresh_index(index_name: migration.index_name)
+    es_helper.refresh_index(index_name: index_name)
   end
 end
