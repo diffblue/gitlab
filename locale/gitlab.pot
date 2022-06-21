@@ -38266,7 +38266,7 @@ msgstr ""
 msgid "The download link will expire in 24 hours."
 msgstr ""
 
-msgid "The environment tier must be one of %{environment_tiers}."
+msgid "The environment tiers must be from %{environment_tiers}."
 msgstr ""
 
 msgid "The errors we encountered were:"

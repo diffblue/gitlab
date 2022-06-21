@@ -210,14 +210,31 @@ RSpec.describe Resolvers::DoraMetricsResolver, time_travel_to: '2021-05-01' do
         end
       end
 
-      context 'with environment_tier: "staging"' do
+      context 'with multiple environment_tiers' do
+        let(:args) { { metric: 'deployment_frequency', environment_tiers: %w[production staging] } }
+
+        it 'returns metrics for all environments combined' do
+          expect(resolve_metrics).to eq([
+            { 'date' => '2021-03-01', 'value' => 18 },
+            { 'date' => '2021-04-01', 'value' => 27 },
+            { 'date' => '2021-04-02', 'value' => 16 },
+            { 'date' => '2021-04-03', 'value' => 15 },
+            { 'date' => '2021-04-04', 'value' => 14 },
+            { 'date' => '2021-04-05', 'value' => 13 },
+            { 'date' => '2021-04-06', 'value' => 12 },
+            { 'date' => '2021-04-07', 'value' => nil }
+          ])
+        end
+      end
+
+      context 'backwards compatibility for environment_tier' do
         let(:args) { { metric: 'deployment_frequency', environment_tier: 'staging' } }
 
         it 'returns metrics for the staging environment' do
           expect(resolve_metrics).to eq([
-            { 'date' => '2021-04-01', 'value' => 10 },
-            { 'date' => '2021-04-02', 'value' => nil }
-          ])
+                                          { 'date' => '2021-04-01', 'value' => 10 },
+                                          { 'date' => '2021-04-02', 'value' => nil }
+                                        ])
         end
       end
     end

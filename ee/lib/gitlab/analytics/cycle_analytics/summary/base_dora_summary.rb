@@ -41,7 +41,7 @@ module Gitlab
               start_date: from,
               end_date: to,
               interval: 'all',
-              environment_tier: 'production',
+              environment_tiers: %w[production],
               metric: metric_key
             }
 

@@ -68,11 +68,11 @@ RSpec.describe Dora::AggregateMetricsService do
         end
       end
 
-      context 'when environment tier is invalid' do
-        let(:extra_params) { { environment_tier: 'unknown' } }
+      context 'when environment tiers are invalid' do
+        let(:extra_params) { { environment_tiers: ['unknown'] } }
 
         it_behaves_like 'request failure' do
-          let(:message) { "The environment tier must be one of #{Environment.tiers.keys.join(',')}." }
+          let(:message) { "The environment tiers must be from #{Environment.tiers.keys.join(', ')}." }
           let(:http_status) { :bad_request }
         end
       end
@@ -136,8 +136,8 @@ RSpec.describe Dora::AggregateMetricsService do
         end
       end
 
-      context 'when environment tier is changed' do
-        let(:extra_params) { { environment_tier: 'staging' } }
+      context 'when environment tiers are changed' do
+        let(:extra_params) { { environment_tiers: ['staging'] } }
 
         it 'returns the aggregated data' do
           expect(subject[:status]).to eq(:success)
@@ -232,7 +232,7 @@ RSpec.describe Dora::AggregateMetricsService do
     context 'runs the service without authorization' do
       subject { service.execute_without_authorization }
 
-      context 'when passign a non-ultimate group' do
+      context 'when passing a non-ultimate group' do
         let_it_be(:group) { create(:group) }
         let_it_be(:project) { create(:project, group: group) }
         let_it_be(:production) { create(:environment, :production, project: project) }
@@ -240,7 +240,7 @@ RSpec.describe Dora::AggregateMetricsService do
 
         let(:container) { group }
         let(:user) { maintainer }
-        let(:params) { { environment_tier: 'production', interval: 'all', metric: 'deployment_frequency' } }
+        let(:params) { { environment_tiers: ['production'], interval: 'all', metric: 'deployment_frequency' } }
 
         before do
           group.add_maintainer(maintainer)
