@@ -41,11 +41,11 @@ RSpec.describe EE::Ci::Runner do
         create(:ci_runner,
                :instance,
                private_projects_minutes_cost_factor: 1.1,
-               public_projects_minutes_cost_factor: 0)
+               public_projects_minutes_cost_factor: 0.008)
       end
 
       context 'with private visibility level' do
-        let(:project) { create(:project, visibility_level: ::Gitlab::VisibilityLevel::PRIVATE) }
+        let(:project) { create(:project, :private) }
 
         it { is_expected.to eq(1.1) }
 
@@ -57,31 +57,13 @@ RSpec.describe EE::Ci::Runner do
       end
 
       context 'with public visibility level' do
-        let(:project) { create(:project, namespace: namespace, visibility_level: ::Gitlab::VisibilityLevel::PUBLIC) }
+        let(:project) { create(:project, :public) }
 
-        context 'after the release date for public project cost factors' do
-          let(:namespace) do
-            create(:group, created_at: Date.new(2021, 7, 17))
-          end
-
-          before do
-            allow(Gitlab).to receive(:com?).and_return(true)
-          end
-
-          it { is_expected.to eq(0.008) }
-        end
-
-        context 'before the release date for public project cost factors' do
-          let(:namespace) do
-            create(:group, created_at: Date.new(2021, 7, 16))
-          end
-
-          it { is_expected.to eq(0.0) }
-        end
+        it { is_expected.to eq(0.008) }
       end
 
       context 'with internal visibility level' do
-        let(:project) { create(:project, visibility_level: ::Gitlab::VisibilityLevel::INTERNAL) }
+        let(:project) { create(:project, :internal) }
 
         it { is_expected.to eq(1.1) }
       end
@@ -188,12 +170,12 @@ RSpec.describe EE::Ci::Runner do
     let_it_be(:namespace) { create(:group) }
 
     context 'when project is public' do
-      let_it_be(:project) { create(:project, namespace: namespace, visibility_level: ::Gitlab::VisibilityLevel::PUBLIC) }
+      let_it_be(:project) { create(:project, :public, namespace: namespace) }
       let_it_be(:runner) { create(:ci_runner, :instance, public_projects_minutes_cost_factor: 0.0) }
 
-      context 'when cost factor is forced' do
+      context 'when public cost factor is greater than zero' do
         before do
-          allow(project).to receive(:force_cost_factor?).and_return(true)
+          runner.update!(public_projects_minutes_cost_factor: 0.008)
         end
 
         it 'returns true' do
@@ -201,27 +183,15 @@ RSpec.describe EE::Ci::Runner do
         end
       end
 
-      context 'when cost factor is not forced' do
-        context 'when public cost factor is greater than zero' do
-          before do
-            runner.update!(public_projects_minutes_cost_factor: 1.0)
-          end
-
-          it 'returns true' do
-            expect(runners).to be_truthy
-          end
-        end
-
-        context 'when public cost factor is zero' do
-          it 'returns false' do
-            expect(runners).to be_falsey
-          end
+      context 'when public cost factor is zero' do
+        it 'returns false' do
+          expect(runners).to be_falsey
         end
       end
     end
 
     context 'when project is private' do
-      let_it_be(:project) { create(:project, namespace: namespace, visibility_level: ::Gitlab::VisibilityLevel::PRIVATE) }
+      let_it_be(:project) { create(:project, :private, namespace: namespace) }
       let_it_be(:runner) { create(:ci_runner, :instance, private_projects_minutes_cost_factor: 1.0) }
 
       context 'when private cost factor is greater than zero' do
