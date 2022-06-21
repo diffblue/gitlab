@@ -122,6 +122,13 @@ module EE
               description: 'Cluster agents associated with projects in the group and its subgroups.',
               resolver: ::Resolvers::Clusters::AgentsResolver
 
+        field :enforce_free_user_cap,
+              ::GraphQL::Types::Boolean,
+              null: true,
+              authorize: :owner_access,
+              description: 'Indicates whether the group has limited users for a free plan.',
+              method: :enforce_free_user_cap?
+
         def billable_members_count(requested_hosted_plan: nil)
           object.billable_members_count(requested_hosted_plan)
         end

@@ -1826,6 +1826,27 @@ RSpec.describe Namespace do
     end
   end
 
+  describe '#enforce_free_user_cap?' do
+    let(:namespace) { build(:namespace) }
+
+    where(:enforce_free_cap, :result) do
+      false | false
+      true  | true
+    end
+
+    subject { namespace.enforce_free_user_cap? }
+
+    with_them do
+      before do
+        expect_next_instance_of(Namespaces::FreeUserCap::Standard, namespace) do |instance|
+          expect(instance).to receive(:enforce_cap?).and_return(enforce_free_cap)
+        end
+      end
+
+      it { is_expected.to eq(result) }
+    end
+  end
+
   describe '#capacity_left_for_user?' do
     let(:namespace) { create(:group) }
     let(:user) { create(:user) }
