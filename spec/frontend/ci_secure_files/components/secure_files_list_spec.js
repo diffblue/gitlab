@@ -1,4 +1,4 @@
-import { GlLoadingIcon } from '@gitlab/ui';
+import { GlLoadingIcon, GlModal } from '@gitlab/ui';
 import MockAdapter from 'axios-mock-adapter';
 import { mount } from '@vue/test-utils';
 import axios from '~/lib/utils/axios_utils';
@@ -6,6 +6,7 @@ import SecureFilesList from '~/ci_secure_files/components/secure_files_list.vue'
 import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
 import { mockTracking, unmockTracking } from 'helpers/tracking_helper';
 import waitForPromises from 'helpers/wait_for_promises';
+import Api from '~/api';
 
 import { secureFiles } from '../mock_data';
 
@@ -23,7 +24,7 @@ const expectedUrl = `${dummyUrlRoot}/api/${dummyApiVersion}/projects/${dummyProj
 describe('SecureFilesList', () => {
   let wrapper;
   let mock;
-  let trackingSpy = null;
+  let trackingSpy;
 
   beforeEach(() => {
     originalGon = window.gon;
@@ -56,6 +57,8 @@ describe('SecureFilesList', () => {
   const findPagination = () => wrapper.findAll('ul.pagination');
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const findUploadButton = () => wrapper.findAll('span.gl-button-text');
+  const findDeleteModal = () => wrapper.findComponent(GlModal);
+  const findUploadInput = () => wrapper.findAll('input[type="file"]').at(0);
   const findDeleteButton = () => wrapper.findAll('tbody tr td button.btn-danger');
 
   describe('when secure files exist in a project', () => {
@@ -83,8 +86,28 @@ describe('SecureFilesList', () => {
       expect(findCell(0, 1).find(TimeAgoTooltip).props('time')).toBe(secureFile.created_at);
     });
 
-    it('sends tracking information', () => {
-      expect(trackingSpy).toHaveBeenCalledWith(undefined, 'render_secure_files_list', {});
+    describe('event tracking', () => {
+      it('sends tracking information on list load', () => {
+        expect(trackingSpy).toHaveBeenCalledWith(undefined, 'render_secure_files_list', {});
+      });
+
+      it('sends tracking information on file upload', async () => {
+        Api.uploadProjectSecureFile = jest.fn().mockResolvedValue();
+        Object.defineProperty(findUploadInput().element, 'files', { value: [{}] });
+        findUploadInput().trigger('change');
+
+        await waitForPromises();
+
+        expect(trackingSpy).toHaveBeenCalledWith(undefined, 'upload_secure_file', {});
+      });
+
+      it('sends tracking information on file deletion', async () => {
+        Api.deleteProjectSecureFile = jest.fn().mockResolvedValue();
+        findDeleteModal().vm.$emit('ok');
+        await waitForPromises();
+
+        expect(trackingSpy).toHaveBeenCalledWith(undefined, 'delete_secure_file', {});
+      });
     });
   });
 
