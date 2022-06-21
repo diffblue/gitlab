@@ -50,7 +50,7 @@ module Gitlab
         end
 
         def parent_collection
-          project.issues.where.not(iid: already_imported_parents) # rubocop: disable CodeReuse/ActiveRecord
+          project.issues.where.not(iid: already_imported_parents).select(:id, :iid) # rubocop: disable CodeReuse/ActiveRecord
         end
 
         def parent_imported_cache_key
