@@ -5,6 +5,10 @@ import apolloProvider from 'ee/subscriptions/buy_addons_shared/graphql';
 
 export default () => {
   const securityTab = document.getElementById('js-security-discover-app');
+  if (!securityTab) {
+    return null;
+  }
+
   const {
     groupId,
     groupName,

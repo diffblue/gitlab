@@ -108,6 +108,29 @@ RSpec.describe Groups::SecurityFeaturesHelper do
     end
   end
 
+  describe '#group_security_showcase_data' do
+    let_it_be(:group) { create(:group) }
+
+    subject(:group_security_showcase_data) do
+      helper.group_security_showcase_data(group)
+    end
+
+    # rubocop: disable Layout/LineLength
+    it 'builds correct hash' do
+      expect(group_security_showcase_data)
+        .to eq({
+                 billing_container_scanning: group_billings_path(group, glm_content: 'security-showcase-container-scanning', glm_source: 'gitlab.com'),
+                 billing_dast: group_billings_path(group, glm_content: 'security-showcase-dast', glm_source: 'gitlab.com'),
+                 billing_dependency_scanning: group_billings_path(group, glm_content: 'security-showcase-dependency-scanning', glm_source: 'gitlab.com'),
+                 billing_vulnerability_management: group_billings_path(group, glm_content: 'security-showcase-vulnerability-management', glm_source: 'gitlab.com'),
+                 trial_vulnerability_management: new_trial_registration_path(group, glm_content: 'security-showcase-vulnerability-management', glm_source: 'gitlab.com'),
+                 trial_dependency_scanning: new_trial_registration_path(group, glm_content: 'security-showcase-dependency-scanning', glm_source: 'gitlab.com'),
+                 trial_dast: new_trial_registration_path(group, glm_content: 'security-showcase-dast', glm_source: 'gitlab.com'),
+                 trial_container_scanning: new_trial_registration_path(group, glm_content: 'security-showcase-container-scanning', glm_source: 'gitlab.com')
+               })
+    end
+  end
+
   describe '#group_security_discover_data' do
     let_it_be(:group) { create(:group) }
 
