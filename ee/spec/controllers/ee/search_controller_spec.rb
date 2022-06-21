@@ -16,12 +16,22 @@ RSpec.describe SearchController, :elastic do
         allow(Gitlab::UsageDataCounters::HLLRedisCounter).to receive(:track_event)
       end
 
-      context 'i_search_advanced' do
-        it_behaves_like 'tracking unique hll events' do
-          subject(:request) { get :show, params: { scope: 'projects', search: 'term' } }
+      context 'i_search_advanced', :snowplow do
+        let_it_be(:group) { create(:group) }
 
-          let(:target_event) { 'i_search_advanced' }
+        let(:target_event) { 'i_search_advanced' }
+
+        subject(:request) { get :show, params: { group_id: group.id, scope: 'projects', search: 'term' } }
+
+        it_behaves_like 'tracking unique hll events' do
           let(:expected_value) { instance_of(String) }
+        end
+
+        it_behaves_like 'Snowplow event tracking' do
+          let(:category) { described_class.to_s }
+          let(:action) { target_event }
+          let(:namespace) { group }
+          let(:feature_flag_name) { :route_hll_to_snowplow_phase2 }
         end
       end
 
@@ -43,27 +53,11 @@ RSpec.describe SearchController, :elastic do
             let(:expected_value) { instance_of(String) }
           end
 
-          it 'tracks devops_adoption usage Snowplow event' do
-            subject
-
-            expect_snowplow_event(
-              category: described_class.to_s,
-              action: target_event,
-              namespace: group,
-              user: user
-            )
-          end
-
-          context 'when FF route_hll_to_snowplow_phase2 is disabled' do
-            before do
-              stub_feature_flags(route_hll_to_snowplow_phase2: false)
-            end
-
-            it "doesn't track Snowplow event" do
-              subject
-
-              expect_no_snowplow_event
-            end
+          it_behaves_like 'Snowplow event tracking' do
+            let(:category) { described_class.to_s }
+            let(:action) { target_event }
+            let(:namespace) { group }
+            let(:feature_flag_name) { :route_hll_to_snowplow_phase2 }
           end
         end
 
