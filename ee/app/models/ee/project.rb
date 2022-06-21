@@ -436,8 +436,9 @@ module EE
       if mirror?
         ::Gitlab::Metrics.add_event(:mirrors_scheduled)
 
-        job_id = if ::Feature.enabled?(:use_status_for_repository_update_mirror, self)
-                   RepositoryUpdateMirrorWorker.with_status.perform_async(self.id)
+        job_id = if ::Feature.enabled?(:delay_for_repository_update_mirror, self)
+                   # Delay won't be necessary when https://gitlab.com/gitlab-org/gitlab/-/issues/364799 is resolved
+                   RepositoryUpdateMirrorWorker.perform_in(1.minute, self.id)
                  else
                    RepositoryUpdateMirrorWorker.perform_async(self.id)
                  end
