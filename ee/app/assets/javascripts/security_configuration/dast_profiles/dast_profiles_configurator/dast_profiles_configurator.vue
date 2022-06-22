@@ -92,6 +92,16 @@ export default {
       required: false,
       default: '',
     },
+    siteProfilesLibraryPath: {
+      type: String,
+      required: false,
+      default: '',
+    },
+    scannerProfilesLibraryPath: {
+      type: String,
+      required: false,
+      default: '',
+    },
   },
   data() {
     return {
@@ -144,6 +154,11 @@ export default {
     },
     selectedProfiles() {
       return this.profileType === SCANNER_TYPE ? this.scannerProfiles : this.siteProfiles;
+    },
+    libraryLink() {
+      return this.profileType === SCANNER_TYPE
+        ? this.scannerProfilesLibraryPath
+        : this.siteProfilesLibraryPath;
     },
   },
   watch: {
@@ -269,6 +284,7 @@ export default {
       :profiles="selectedProfiles"
       :profile-id-in-use="profileIdInUse"
       :active-profile="activeProfile"
+      :library-link="libraryLink"
       :profile-type="profileType"
       :is-open="isSideDrawerOpen"
       :is-loading="isLoadingProfiles"
