@@ -1,8 +1,8 @@
 ---
-name: do_not_allow_inline_project_authorizations_refresh
+name: async_only_project_authorizations_refresh
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/90495
 rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/365585
-milestone: '15.1'
+milestone: '15.2'
 type: development
 group: group::workspace
 default_enabled: false
