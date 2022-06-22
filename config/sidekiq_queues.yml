@@ -241,8 +241,6 @@
   - 1
 - - invalid_gpg_signature_update
   - 2
-- - irker
-  - 1
 - - issuable_export_csv
   - 1
 - - issuable_label_links_destroy
@@ -356,8 +354,6 @@
 - - project_export
   - 1
 - - project_import_schedule
-  - 1
-- - project_service
   - 1
 - - project_template_export
   - 1
