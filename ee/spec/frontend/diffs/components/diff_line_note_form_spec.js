@@ -1,7 +1,7 @@
 import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
-import diffFileMockData from 'jest/diffs/mock_data/diff_file';
+import { getDiffFileMock } from 'jest/diffs/mock_data/diff_file';
 import note from 'jest/notes/mock_data';
 import DiffLineNoteForm from '~/diffs/components/diff_line_note_form.vue';
 import NoteForm from '~/notes/components/note_form.vue';
@@ -53,8 +53,7 @@ describe('EE DiffLineNoteForm', () => {
   const createComponent = (props = {}) => {
     const store = new Vuex.Store(storeOptions);
 
-    // deep clone the mock data
-    const diffFile = JSON.parse(JSON.stringify(diffFileMockData));
+    const diffFile = getDiffFileMock();
     const diffLines = diffFile.highlighted_diff_lines;
 
     wrapper = shallowMount(DiffLineNoteForm, {

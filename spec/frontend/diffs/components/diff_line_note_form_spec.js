@@ -8,7 +8,7 @@ import NoteForm from '~/notes/components/note_form.vue';
 import MultilineCommentForm from '~/notes/components/multiline_comment_form.vue';
 import { confirmAction } from '~/lib/utils/confirm_via_gl_modal/confirm_via_gl_modal';
 import { noteableDataMock } from 'jest/notes/mock_data';
-import diffFileMockData from '../mock_data/diff_file';
+import { getDiffFileMock } from '../mock_data/diff_file';
 
 jest.mock('~/lib/utils/confirm_via_gl_modal/confirm_via_gl_modal');
 jest.mock('~/autosave');
@@ -20,7 +20,6 @@ describe('DiffLineNoteForm', () => {
   let actions;
   let store;
 
-  const getDiffFileMock = () => ({ ...diffFileMockData });
   const getSelectedLine = () => {
     const lineCode = diffLines[1].line_code;
     return diffFile.highlighted_diff_lines.find((l) => l.line_code === lineCode);
