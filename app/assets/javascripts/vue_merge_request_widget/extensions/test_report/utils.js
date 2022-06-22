@@ -65,6 +65,9 @@ export const reportSubTextBuilder = ({ suite_errors, summary }) => {
 };
 
 export const countRecentlyFailedTests = (subject) => {
+  // return 0 count if subject is [], null, or undefined
+  if ((Array.isArray(subject) && subject.length === 0) || !subject) return 0;
+
   // handle either a single report or an array of reports
   const reports = !subject.length ? [subject] : subject;
 
@@ -75,7 +78,7 @@ export const countRecentlyFailedTests = (subject) => {
           // only count tests which have failed more than once
           .map(
             (failureArray) =>
-              failureArray.filter((failure) => failure.recent_failures?.count > 1).length,
+              failureArray?.filter((failure) => failure.recent_failures?.count > 1).length,
           )
           .reduce((total, count) => total + count, 0)
       );
