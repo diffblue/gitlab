@@ -1,9 +1,8 @@
-import { GlAvatarLabeled, GlAvatarLink } from '@gitlab/ui';
+import { GlAvatarLabeled, GlAvatarLink, GlLabel } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Project from 'ee/compliance_dashboard/components/drawer_sections/project.vue';
 import DrawerSectionHeader from 'ee/compliance_dashboard/components/shared/drawer_section_header.vue';
-import ComplianceFrameworkLabel from 'ee/vue_shared/components/compliance_framework_label/compliance_framework_label.vue';
-import { complianceFramework } from 'ee_jest/vue_shared/components/compliance_framework_label/mock_data';
+import { complianceFramework } from '../../mock_data';
 
 describe('Project component', () => {
   let wrapper;
@@ -14,7 +13,7 @@ describe('Project component', () => {
   const findSectionHeader = () => wrapper.findComponent(DrawerSectionHeader);
   const findAvatarLink = () => wrapper.findComponent(GlAvatarLink);
   const findAvatarLabel = () => wrapper.findComponent(GlAvatarLabeled);
-  const findComplianceFrameworkLabel = () => wrapper.findComponent(ComplianceFrameworkLabel);
+  const findComplianceFrameworkLabel = () => wrapper.findComponent(GlLabel);
 
   const createComponent = (props) => {
     return shallowMount(Project, {
@@ -86,10 +85,11 @@ describe('Project component', () => {
     it('renders the compliance framework label', () => {
       const { color, description, name } = complianceFramework;
 
-      expect(findComplianceFrameworkLabel().props()).toStrictEqual({
-        color,
+      expect(findComplianceFrameworkLabel().props()).toMatchObject({
+        backgroundColor: color,
         description,
-        name,
+        title: name,
+        size: 'sm',
       });
     });
   });

@@ -1,5 +1,5 @@
 <script>
-import { GlLabel, GlButton, GlTooltipDirective } from '@gitlab/ui';
+import { GlButton, GlTooltipDirective, GlLabel } from '@gitlab/ui';
 import { DELETE_BUTTON_LABEL, EDIT_BUTTON_LABEL } from '../constants';
 
 export default {
@@ -32,11 +32,11 @@ export default {
   >
     <div class="gl-w-quarter gl-mr-3 gl-flex-shrink-0">
       <gl-label
-        :target="framework.editPath"
         :background-color="framework.color"
-        :title="framework.name"
         :description="$options.i18n.editFramework"
         :disabled="loading"
+        :title="framework.name"
+        :target="framework.editPath"
       />
     </div>
     <p class="gl-w-full gl-m-0!" data-testid="compliance-framework-description">
