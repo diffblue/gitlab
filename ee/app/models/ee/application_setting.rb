@@ -126,10 +126,15 @@ module EE
                 numericality: { only_integer: true, greater_than: 0, less_than_or_equal_to: 365 }
 
       validates :max_number_of_repository_downloads,
-                numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: 10000 }
+                numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: 10_000 }
 
       validates :max_number_of_repository_downloads_within_time_period,
-                numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: 864000 }
+                numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: 10.days.to_i }
+
+      validates :git_rate_limit_users_allowlist,
+                length: { maximum: 100 },
+                allow_nil: false
+      validate :check_git_rate_limit_users_allowlist
 
       validates :delayed_project_removal,
                 exclusion: { in: [true], message: -> (object, data) { _("can't be enabled when delayed group deletion is disabled") } },
@@ -194,7 +199,8 @@ module EE
           slack_app_signing_secret: nil,
           slack_app_verification_token: nil,
           max_number_of_repository_downloads: 0,
-          max_number_of_repository_downloads_within_time_period: 0
+          max_number_of_repository_downloads_within_time_period: 0,
+          git_rate_limit_users_allowlist: []
         )
       end
     end
@@ -474,6 +480,19 @@ module EE
       end
     rescue ::Gitlab::UrlBlocker::BlockedUrlError
       errors.add(:elasticsearch_url, "only supports valid HTTP(S) URLs.")
+    end
+
+    def check_git_rate_limit_users_allowlist
+      return if git_rate_limit_users_allowlist.blank?
+
+      invalid = git_rate_limit_users_allowlist - ::User.where(username: git_rate_limit_users_allowlist).pluck(:username)
+
+      return if invalid.empty?
+
+      errors.add(
+        :git_rate_limit_users_allowlist,
+        _("should be an array of existing usernames. %{invalid} does not exist") % { invalid: invalid.join(", ") }
+      )
     end
 
     def update_lock_delayed_project_removal

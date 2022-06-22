@@ -138,6 +138,7 @@ module EE
       %i[
         max_number_of_repository_downloads
         max_number_of_repository_downloads_within_time_period
+        git_rate_limit_users_allowlist
       ]
     end
 

@@ -303,6 +303,8 @@ RSpec.describe API::Settings, 'EE Settings' do
   end
 
   context 'git abuse rate limit settings' do
+    let(:user) { create(:user) }
+
     before do
       stub_feature_flags(git_abuse_rate_limit_feature_flag: true)
     end
@@ -310,7 +312,8 @@ RSpec.describe API::Settings, 'EE Settings' do
     let(:settings) do
       {
         max_number_of_repository_downloads: 5,
-        max_number_of_repository_downloads_within_time_period: 60
+        max_number_of_repository_downloads_within_time_period: 60,
+        git_rate_limit_users_allowlist: [user.username]
       }
     end
 
