@@ -118,6 +118,9 @@ organizations using the GraphQL API.
 
 ## Issues
 
+If you use [Service Desk](../project/service_desk.md) and create issues from emails,
+issues are linked to contacts matching the email addresses in the sender and CC of the email.
+
 ### View issues linked to a contact
 
 To view a contact's issues, select a contact from the issue sidebar, or:
