@@ -16,19 +16,9 @@ module Mutations
                required: true,
                description: 'Global ID of the work item.'
 
-      ::WorkItems::Type.available_widgets.each do |widget_class|
-        input_type_class = begin
-          "::Types::WorkItems::Widgets::#{widget_class.type.to_s.titleize}InputType".constantize
-        rescue NameError
-          nil
-        end
-
-        next unless input_type_class
-
-        argument widget_class.api_symbol, input_type_class,
-                 required: false,
-                 description: "Input for #{widget_class.type} widget."
-      end
+      argument :description_widget, ::Types::WorkItems::Widgets::DescriptionInputType,
+               required: false,
+               description: 'Input for description widget.'
 
       field :work_item, Types::WorkItemType,
             null: true,
