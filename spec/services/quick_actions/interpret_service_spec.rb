@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe QuickActions::InterpretService do
+  include AfterNextHelpers
+
   let_it_be(:group) { create(:group, :crm_enabled) }
   let_it_be(:public_project) { create(:project, :public, group: group) }
   let_it_be(:repository_project) { create(:project, :repository) }
@@ -702,6 +704,37 @@ RSpec.describe QuickActions::InterpretService do
 
         expect(updates).to be_blank
         expect(message).to include('Failed to find users')
+      end
+
+      context 'when there are too many references' do
+        before do
+          stub_const('Gitlab::QuickActions::UsersExtractor::MAX_QUICK_ACTION_USERS', 2)
+        end
+
+        it 'says what went wrong' do
+          cmd = '/assign her and you, me and them'
+
+          _, updates, message = service.execute(cmd, issuable)
+
+          expect(updates).to be_blank
+          expect(message).to include('Too many references. Quick actions are limited to at most 2 user references')
+        end
+      end
+
+      context 'when the user extractor raises an uninticipated error' do
+        before do
+          allow_next(Gitlab::QuickActions::UsersExtractor)
+            .to receive(:execute).and_raise(Gitlab::QuickActions::UsersExtractor::Error)
+        end
+
+        it 'tracks the exception in dev, and reports a generic message in production' do
+          expect(Gitlab::ErrorTracking).to receive(:track_and_raise_for_dev_exception).twice
+
+          _, updates, message = service.execute('/assign some text', issuable)
+
+          expect(updates).to be_blank
+          expect(message).to include('Something went wrong')
+        end
       end
 
       it 'assigns to users with escaped underscores' do

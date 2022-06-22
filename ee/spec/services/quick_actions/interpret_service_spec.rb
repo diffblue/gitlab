@@ -107,16 +107,33 @@ RSpec.describe QuickActions::InterpretService do
     let(:merge_request) { create(:merge_request, source_project: project) }
 
     context 'assign command' do
-      it 'assigns to group members' do
-        grp = create(:group)
-        grp.add_developer(user2)
-        grp.add_developer(user3)
+      context 'there is a group' do
+        let(:group) { create(:group) }
 
-        cmd = "/assign #{grp.to_reference}"
+        before do
+          group.add_developer(user)
+          group.add_developer(user2)
+          group.add_developer(user3)
+        end
 
-        _, updates, _ = service.execute(cmd, issue)
+        it 'assigns to group members' do
+          cmd = "/assign #{group.to_reference}"
 
-        expect(updates).to include(assignee_ids: [user2.id, user3.id])
+          _, updates, _ = service.execute(cmd, issue)
+
+          expect(updates).to include(assignee_ids: match_array([user.id, user2.id, user3.id]))
+        end
+
+        it 'does not assign to more than QuickActions::UsersFinder::MAX_QUICK_ACTION_USERS' do
+          stub_const('Gitlab::QuickActions::UsersExtractor::MAX_QUICK_ACTION_USERS', 2)
+
+          cmd = "/assign #{group.to_reference}"
+
+          _, updates, messages = service.execute(cmd, issue)
+
+          expect(updates).to be_blank
+          expect(messages).to include('Too many users')
+        end
       end
 
       context 'Issue' do

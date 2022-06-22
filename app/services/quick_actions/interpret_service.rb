@@ -69,46 +69,32 @@ module QuickActions
       Gitlab::QuickActions::Extractor.new(self.class.command_definitions)
     end
 
-    MAX_QUICK_ACTION_USERS = 100
-
     # Find users for commands like /assign
     #
     # eg. /assign me and @jane and jack
     def extract_users(params)
-      return [] if params.blank?
+      Gitlab::QuickActions::UsersExtractor
+        .new(current_user, project: project, group: group, target: quick_action_target, text: params)
+        .execute
 
-      args = params.split(/\s|,/).map(&:strip).select(&:present?).uniq - ['and']
-      # nb: 'me' is special cased to refer to the current user
-      references = args - ['me']
-      # nb: underscores may be passed in escaped to protect them from markdown rendering
-      references.map! { _1.gsub(/\\_/, '_') }
+    rescue Gitlab::QuickActions::UsersExtractor::Error => err
+      extract_users_failed(err)
+    end
 
-      users = args.include?('me') ? [current_user] : []
-
-      if quick_action_target.allows_multiple_assignees?
-        # Find users, and also expand group references
-        users += extract_references(params, :user)
-        users += User.by_username(references).to_a
+    def extract_users_failed(err)
+      case err
+      when Gitlab::QuickActions::UsersExtractor::MissingError
+        failed_parse(format(_("Failed to find users for %{missing}"), missing: err.message))
+      when Gitlab::QuickActions::UsersExtractor::TooManyRefsError
+        failed_parse(format(_('Too many references. Quick actions are limited to at most %{max_count} user references'),
+                 max_count: err.limit))
+      when Gitlab::QuickActions::UsersExtractor::TooManyFoundError
+        failed_parse(format(_("Too many users found. Quick actions are limited to at most %{max_count} users"),
+                 max_count: err.limit))
       else
-        # Only look for users
-        users += User.by_username(references.map { _1.delete_prefix('@') })
+        Gitlab::ErrorTracking.track_and_raise_for_dev_exception(err)
+        failed_parse(_('Something went wrong'))
       end
-
-      found_names = users.map(&:username).map(&:downcase).to_set
-
-      if quick_action_target.allows_multiple_assignees?
-        groups = Group.where_full_path_in(references.map { _1.delete_prefix('@') })
-
-        found_names += groups.map(&:full_path).map(&:downcase)
-      end
-
-      missing = references.reject { |arg| found_names.include?(arg.downcase.delete_prefix('@')) }
-                              .map { "'#{_1}'" }
-
-      failed_parse(format(_("Failed to find users for %{missing}"), missing: missing.to_sentence)) if missing.present?
-      failed_parse(_("Too many users found")) if users.size > MAX_QUICK_ACTION_USERS
-
-      users
     end
 
     def find_milestones(project, params = {})
