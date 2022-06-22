@@ -29,11 +29,17 @@ export default {
 </script>
 
 <template>
-  <gl-tabs v-if="showTabs" content-class="gl-pt-5">
-    <gl-tab :title="$options.i18n.LOG">
+  <gl-tabs v-if="showTabs" content-class="gl-pt-5" :sync-active-tab-with-query-params="true">
+    <gl-tab :title="$options.i18n.LOG" query-param-value="log">
       <audit-events-log />
     </gl-tab>
-    <gl-tab :title="$options.i18n.STREAM" lazy data-testid="streams-tab" @click="onTabClick">
+    <gl-tab
+      :title="$options.i18n.STREAM"
+      query-param-value="streams"
+      lazy
+      data-testid="streams-tab"
+      @click="onTabClick"
+    >
       <audit-events-stream />
     </gl-tab>
   </gl-tabs>

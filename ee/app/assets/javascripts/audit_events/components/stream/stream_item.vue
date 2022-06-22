@@ -1,6 +1,6 @@
 <script>
 import { GlButton, GlTooltipDirective as GlTooltip } from '@gitlab/ui';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { sprintf, s__ } from '~/locale';
 import deleteExternalDestination from '../../graphql/delete_external_destination.mutation.graphql';
 import { AUDIT_STREAMS_NETWORK_ERRORS } from '../../constants';
@@ -44,15 +44,17 @@ export default {
 
         const { errors } = data.externalAuditEventDestinationDestroy;
         if (errors.length > 0) {
-          createFlash({
+          createAlert({
             message: errors[0],
           });
         } else {
           this.$emit('delete');
         }
-      } catch (e) {
-        createFlash({
+      } catch (error) {
+        createAlert({
           message: AUDIT_STREAMS_NETWORK_ERRORS.DELETING_ERROR,
+          captureError: true,
+          error,
         });
       } finally {
         this.isDeleting = false;
