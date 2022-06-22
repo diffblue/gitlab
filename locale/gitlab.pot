@@ -8597,9 +8597,6 @@ msgstr ""
 msgid "ClusterIntegration|Allow GitLab to manage namespaces and service accounts for this cluster."
 msgstr ""
 
-msgid "ClusterIntegration|Allows GitLab to query a specifically configured in-cluster Elasticsearch for pod logs."
-msgstr ""
-
 msgid "ClusterIntegration|Allows GitLab to query a specifically configured in-cluster Prometheus for metrics."
 msgstr ""
 
@@ -8682,9 +8679,6 @@ msgid "ClusterIntegration|Did you know?"
 msgstr ""
 
 msgid "ClusterIntegration|Elastic Kubernetes Service"
-msgstr ""
-
-msgid "ClusterIntegration|Enable Elastic Stack integration"
 msgstr ""
 
 msgid "ClusterIntegration|Enable Prometheus integration"
@@ -8873,7 +8867,7 @@ msgstr ""
 msgid "ClusterIntegration|The certificate-based method to connect clusters to GitLab was %{linkStart}deprecated%{linkEnd} in GitLab 14.5."
 msgstr ""
 
-msgid "ClusterIntegration|The namespace associated with your project. This will be used for deploy boards, logs, and Web terminals."
+msgid "ClusterIntegration|The namespace associated with your project. This will be used for deploy boards, and Web terminals."
 msgstr ""
 
 msgid "ClusterIntegration|There was a problem authenticating with your cluster. Please ensure your CA Certificate and Token are valid."
