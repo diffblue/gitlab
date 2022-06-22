@@ -85,8 +85,6 @@ export const projectData = {
           id: 'buildArtifactsSize',
           name: 'Artifacts',
           description: 'Pipeline artifacts and job artifacts, created with CI/CD.',
-          warningMessage:
-            'Because of a known issue, the artifact total for some projects may be incorrect. For more details, read %{warningLinkStart}the epic%{warningLinkEnd}.',
           helpPath: '/build-artifacts',
         },
         value: 400000,

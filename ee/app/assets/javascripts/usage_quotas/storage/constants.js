@@ -27,10 +27,6 @@ export const PROJECT_STORAGE_TYPES = [
     id: 'buildArtifactsSize',
     name: s__('UsageQuota|Artifacts'),
     description: s__('UsageQuota|Pipeline artifacts and job artifacts, created with CI/CD.'),
-    warningMessage: s__(
-      'UsageQuota|Because of a known issue, the artifact total for some projects may be incorrect. For more details, read %{warningLinkStart}the epic%{warningLinkEnd}.',
-    ),
-    warningLink: 'https://gitlab.com/groups/gitlab-org/-/epics/5380',
     tooltip: s__('UsageQuota|Artifacts is a sum of build and pipeline artifacts.'),
   },
   {
