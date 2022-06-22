@@ -3065,15 +3065,6 @@
   :weight: 1
   :idempotent: false
   :tags: []
-- :name: web_hooks_destroy
-  :worker_name: WebHooks::DestroyWorker
-  :feature_category: :integrations
-  :has_external_dependencies: false
-  :urgency: :high
-  :resource_boundary: :unknown
-  :weight: 1
-  :idempotent: true
-  :tags: []
 - :name: web_hooks_log_destroy
   :worker_name: WebHooks::LogDestroyWorker
   :feature_category: :integrations
