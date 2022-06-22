@@ -10,7 +10,7 @@ import {
   GlLink,
   GlSprintf,
   GlSafeHtmlDirective,
-  GlTooltipDirective,
+  GlPopover,
 } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
 import { SCAN_TYPE } from 'ee/security_configuration/dast_profiles/dast_scanner_profiles/constants';
@@ -149,10 +149,10 @@ export default {
     SectionLayout,
     ConfigurationPageLayout,
     DastProfilesConfigurator,
+    GlPopover,
   },
   directives: {
     SafeHtml: GlSafeHtmlDirective,
-    GlTooltip: GlTooltipDirective,
     validation: validation(),
   },
   mixins: [glFeatureFlagMixin()],
@@ -473,10 +473,13 @@ export default {
           <gl-form-group class="gl-mb-6" :label="$options.i18n.scanTypeHeader">
             <span>{{ $options.i18n.scanTypeText }}</span>
             <gl-icon
-              v-gl-tooltip="$options.i18n.scanTypeTooltip"
+              id="scan-type-info"
               name="question-o"
               class="gl-ml-2 gl-link gl-cursor-pointer"
             />
+            <gl-popover target="scan-type-info" placement="top" triggers="focus hover">
+              <span>{{ $options.i18n.scanTypeTooltip }}</span>
+            </gl-popover>
           </gl-form-group>
 
           <gl-form-group class="gl-mb-3" :label="__('Branch')">
