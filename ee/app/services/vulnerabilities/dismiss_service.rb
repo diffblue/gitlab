@@ -52,10 +52,12 @@ module Vulnerabilities
     end
 
     def dismiss_vulnerability_findings
-      @vulnerability.findings.each do |finding|
-        result = feedback_service_for(finding).execute
+      unless Feature.enabled?(:deprecate_vulnerabilities_feedback, @project)
+        @vulnerability.findings.each do |finding|
+          result = feedback_service_for(finding).execute
 
-        return FindingsDismissResult.new(false, finding, result[:message]) if result[:status] == :error
+          return FindingsDismissResult.new(false, finding, result[:message]) if result[:status] == :error
+        end
       end
 
       FindingsDismissResult.new(true)
