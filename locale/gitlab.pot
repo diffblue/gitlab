@@ -13997,9 +13997,6 @@ msgstr ""
 msgid "Embed"
 msgstr ""
 
-msgid "Embed an image of your existing Jaeger server in GitLab."
-msgstr ""
-
 msgid "Empty file"
 msgstr ""
 
@@ -21718,9 +21715,6 @@ msgstr ""
 msgid "Iteration|cannot be more than 500 years in the future"
 msgstr ""
 
-msgid "Jaeger URL"
-msgstr ""
-
 msgid "Jan"
 msgstr ""
 
@@ -22630,9 +22624,6 @@ msgid "Learn how to %{no_packages_link_start}publish and share your packages%{no
 msgstr ""
 
 msgid "Learn more"
-msgstr ""
-
-msgid "Learn more about %{link_start_tag}Jaeger configuration%{link_end_tag}."
 msgstr ""
 
 msgid "Learn more about %{username}"

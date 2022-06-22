@@ -23,14 +23,6 @@ module EE
           def sla_feature_available?
             ::IncidentManagement::IncidentSla.available_for?(@project)
           end
-
-          def track_tracing_external_url
-            external_url_previous_change = project&.tracing_setting&.external_url_previous_change
-            return unless external_url_previous_change
-            return unless external_url_previous_change[0].blank? && external_url_previous_change[1].present?
-
-            ::Gitlab::Tracking.event('project:operations:tracing', "external_url_populated", user: current_user, project: project, namespace: project.namespace)
-          end
         end
 
         override :permitted_project_params
@@ -55,13 +47,6 @@ module EE
 
         def sla_timer_params
           [:sla_timer, :sla_timer_minutes]
-        end
-
-        override :track_events
-        def track_events(result)
-          super
-
-          track_tracing_external_url if result[:status] == :success
         end
       end
     end
