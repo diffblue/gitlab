@@ -20558,6 +20558,25 @@ CREATE SEQUENCE sbom_components_id_seq
 
 ALTER SEQUENCE sbom_components_id_seq OWNED BY sbom_components.id;
 
+CREATE TABLE sbom_sources (
+    id bigint NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    source_type smallint NOT NULL,
+    source jsonb DEFAULT '{}'::jsonb NOT NULL,
+    fingerprint text NOT NULL,
+    CONSTRAINT check_74f01d3506 CHECK ((char_length(fingerprint) <= 255))
+);
+
+CREATE SEQUENCE sbom_sources_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE sbom_sources_id_seq OWNED BY sbom_sources.id;
+
 CREATE TABLE schema_migrations (
     version character varying NOT NULL,
     finished_at timestamp with time zone DEFAULT now()
@@ -23464,6 +23483,8 @@ ALTER TABLE ONLY sbom_component_versions ALTER COLUMN id SET DEFAULT nextval('sb
 
 ALTER TABLE ONLY sbom_components ALTER COLUMN id SET DEFAULT nextval('sbom_components_id_seq'::regclass);
 
+ALTER TABLE ONLY sbom_sources ALTER COLUMN id SET DEFAULT nextval('sbom_sources_id_seq'::regclass);
+
 ALTER TABLE ONLY scim_identities ALTER COLUMN id SET DEFAULT nextval('scim_identities_id_seq'::regclass);
 
 ALTER TABLE ONLY scim_oauth_access_tokens ALTER COLUMN id SET DEFAULT nextval('scim_oauth_access_tokens_id_seq'::regclass);
@@ -25662,6 +25683,9 @@ ALTER TABLE ONLY sbom_component_versions
 
 ALTER TABLE ONLY sbom_components
     ADD CONSTRAINT sbom_components_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY sbom_sources
+    ADD CONSTRAINT sbom_sources_pkey PRIMARY KEY (id);
 
 ALTER TABLE ONLY schema_migrations
     ADD CONSTRAINT schema_migrations_pkey PRIMARY KEY (version);

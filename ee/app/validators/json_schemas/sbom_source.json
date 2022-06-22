@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "Information about where an sbom component originated from",
+  "type": "object",
+  "properties": {
+    "dependency_file": { "type": "string" },
+    "package_manager_name": { "type": "string" },
+    "language": { "type": "string" }
+  },
+  "required": [
+    "dependency_file"
+  ],
+  "additionalProperties": false
+}
