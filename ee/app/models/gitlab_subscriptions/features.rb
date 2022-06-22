@@ -21,6 +21,7 @@ module GitlabSubscriptions
       extended_audit_events
       external_authorization_service_api_management
       geo
+      git_abuse_rate_limit
       ldap_group_sync
       ldap_group_sync_filter
       multiple_ldap_servers
@@ -176,6 +177,7 @@ module GitlabSubscriptions
       environment_alerts
       evaluate_group_level_compliance_pipeline
       external_audit_events
+      git_abuse_rate_limit
       group_ci_cd_analytics
       group_level_compliance_dashboard
       group_level_devops_adoption

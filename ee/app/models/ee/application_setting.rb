@@ -125,6 +125,12 @@ module EE
                 allow_blank: true,
                 numericality: { only_integer: true, greater_than: 0, less_than_or_equal_to: 365 }
 
+      validates :max_number_of_repository_downloads,
+                numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: 10000 }
+
+      validates :max_number_of_repository_downloads_within_time_period,
+                numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: 864000 }
+
       validates :delayed_project_removal,
                 exclusion: { in: [true], message: -> (object, data) { _("can't be enabled when delayed group deletion is disabled") } },
                 if: ->(setting) { !setting.delayed_group_deletion? }
@@ -186,7 +192,9 @@ module EE
           slack_app_id: nil,
           slack_app_secret: nil,
           slack_app_signing_secret: nil,
-          slack_app_verification_token: nil
+          slack_app_verification_token: nil,
+          max_number_of_repository_downloads: 0,
+          max_number_of_repository_downloads_within_time_period: 0
         )
       end
     end

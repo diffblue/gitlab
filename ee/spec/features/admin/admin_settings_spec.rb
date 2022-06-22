@@ -407,6 +407,95 @@ RSpec.describe 'Admin updates EE-only settings' do
     end
   end
 
+  describe 'Git abuse rate limit settings' do
+    let(:git_abuse_flag) { true }
+    let(:license_allows) { true }
+
+    before do
+      stub_feature_flags(git_abuse_rate_limit_feature_flag: git_abuse_flag)
+      stub_licensed_features(git_abuse_rate_limit: license_allows)
+
+      visit reporting_admin_application_settings_path
+    end
+
+    context 'when license does not allow' do
+      let(:license_allows) { false }
+
+      it 'does not show the Git abuse rate limit section' do
+        expect(page).not_to have_selector('[data-testid="git-abuse-rate-limit-settings"]')
+      end
+    end
+
+    context 'when license allows' do
+      it 'shows the Git abuse rate limit mode section' do
+        expect(page).to have_selector('[data-testid="git-abuse-rate-limit-settings"]')
+      end
+    end
+
+    context 'when feature-flag is disabled' do
+      let(:git_abuse_flag) { false }
+
+      it 'does not show the Git abuse rate limit section' do
+        expect(page).not_to have_selector('[data-testid="git-abuse-rate-limit-settings"]')
+      end
+    end
+
+    context 'when feature-flag is enabled' do
+      it 'shows the Git abuse rate limit section' do
+        expect(page).to have_selector('[data-testid="git-abuse-rate-limit-settings"]')
+      end
+
+      it 'shows the input fields' do
+        expect(page).to have_field(s_('AdminSettings|Number of repositories'))
+        expect(page).to have_field(s_('AdminSettings|Reporting time period (seconds)'))
+      end
+
+      it 'saves the settings' do
+        page.within(find('[data-testid="git-abuse-rate-limit-settings"]')) do
+          fill_in(s_('AdminSettings|Number of repositories'), with: 5)
+          fill_in(s_('AdminSettings|Reporting time period (seconds)'), with: 300)
+          click_button 'Save changes'
+        end
+
+        expect(page).to have_field(s_('AdminSettings|Number of repositories'), with: 5)
+        expect(page).to have_field(s_('AdminSettings|Reporting time period (seconds)'), with: 300)
+      end
+
+      it 'shows form errors when the input type is invalid' do
+        page.within(find('[data-testid="git-abuse-rate-limit-settings"]')) do
+          fill_in(s_('AdminSettings|Number of repositories'), with: '')
+          fill_in(s_('AdminSettings|Reporting time period (seconds)'), with: '')
+          click_button 'Save changes'
+        end
+
+        expect(page).to have_content(s_('AdminSettings|Max number of repository downloads is not a number'))
+        expect(page).to have_content(s_('AdminSettings|Max number of repository downloads within time period is not a number'))
+      end
+
+      it 'shows form errors when the input value is less than 0' do
+        page.within(find('[data-testid="git-abuse-rate-limit-settings"]')) do
+          fill_in(s_('AdminSettings|Number of repositories'), with: -1)
+          fill_in(s_('AdminSettings|Reporting time period (seconds)'), with: -1)
+          click_button 'Save changes'
+        end
+
+        expect(page).to have_content(s_('AdminSettings|Max number of repository downloads must be greater than or equal to 0'))
+        expect(page).to have_content(s_('AdminSettings|Max number of repository downloads within time period must be greater than or equal to 0'))
+      end
+
+      it 'shows form errors when the input value is greater than max' do
+        page.within(find('[data-testid="git-abuse-rate-limit-settings"]')) do
+          fill_in(s_('AdminSettings|Number of repositories'), with: 10001)
+          fill_in(s_('AdminSettings|Reporting time period (seconds)'), with: 864001)
+          click_button 'Save changes'
+        end
+
+        expect(page).to have_content(s_('AdminSettings|Max number of repository downloads must be less than or equal to 10000'))
+        expect(page).to have_content(s_('AdminSettings|Max number of repository downloads within time period must be less than or equal to 864000'))
+      end
+    end
+  end
+
   def current_settings
     ApplicationSetting.current_without_cache
   end
