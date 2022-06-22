@@ -1,5 +1,5 @@
 import { shallowMount } from '@vue/test-utils';
-import ComplianceFrameworkLabel from 'ee_component/vue_shared/components/compliance_framework_label/compliance_framework_label.vue';
+import { GlLabel } from '@gitlab/ui';
 import waitForPromises from 'helpers/wait_for_promises';
 import GroupFolder from '~/groups/components/group_folder.vue';
 import GroupItem from '~/groups/components/group_item.vue';
@@ -18,7 +18,7 @@ const createComponent = (props = {}) => {
 describe('GroupItemComponent', () => {
   let wrapper;
 
-  const findComplianceFrameworkLabel = () => wrapper.findComponent(ComplianceFrameworkLabel);
+  const findComplianceFrameworkLabel = () => wrapper.findComponent(GlLabel);
 
   afterEach(() => {
     wrapper.destroy();
@@ -38,10 +38,11 @@ describe('GroupItemComponent', () => {
       wrapper = createComponent({ group: mockChildren[1] });
       await waitForPromises();
 
-      expect(findComplianceFrameworkLabel().props()).toStrictEqual({
-        color,
+      expect(findComplianceFrameworkLabel().props()).toMatchObject({
+        backgroundColor: color,
         description,
-        name,
+        title: name,
+        size: 'sm',
       });
     });
   });

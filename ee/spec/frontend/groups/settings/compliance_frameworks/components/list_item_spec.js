@@ -1,6 +1,5 @@
-import { GlLabel } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-
+import { GlLabel } from '@gitlab/ui';
 import ListItem from 'ee/groups/settings/compliance_frameworks/components/list_item.vue';
 import {
   DELETE_BUTTON_LABEL,
@@ -71,6 +70,7 @@ describe('ListItem', () => {
 
     expect(findLabel().props()).toMatchObject({
       title: framework.name,
+      backgroundColor: framework.color,
       target: framework.editPath,
       disabled: false,
       description: 'Edit framework',
