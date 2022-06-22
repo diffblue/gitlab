@@ -27,13 +27,13 @@ RSpec.describe 'Group' do
       let(:group_wiki_licensed_feature) { false }
 
       it 'does not show the wiki settings menu' do
-        expect(page).not_to have_content('Disable the group-level wiki')
+        expect(page).not_to have_content('Group-level wiki is disabled.')
       end
     end
 
     context 'wiki_access_level setting' do
       it 'saves new settings', :aggregate_failures do
-        expect(page).to have_content('Disable the group-level wiki')
+        expect(page).to have_content('Group-level wiki is disabled.')
 
         [Featurable::PRIVATE, Featurable::DISABLED, Featurable::ENABLED].each do |wiki_access_level|
           find(
