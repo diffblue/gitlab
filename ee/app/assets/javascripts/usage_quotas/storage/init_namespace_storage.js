@@ -23,6 +23,7 @@ export default () => {
     storageLimitEnforced,
     additionalRepoStorageByNamespace,
     isFreeNamespace,
+    isPersonalNamespace,
   } = el.dataset;
 
   const apolloProvider = new VueApollo({
@@ -47,6 +48,7 @@ export default () => {
           storageLimitEnforced: parseBoolean(storageLimitEnforced),
           isAdditionalStorageFlagEnabled: parseBoolean(additionalRepoStorageByNamespace),
           isFreeNamespace: parseBoolean(isFreeNamespace),
+          isPersonalNamespace,
         },
       });
     },

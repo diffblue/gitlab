@@ -99,7 +99,8 @@ module EE
         is_temporary_storage_increase_visible: temporary_storage_increase_visible?(namespace).to_s,
         default_per_page: page_size,
         additional_repo_storage_by_namespace: current_user.namespace.additional_repo_storage_by_namespace_enabled?.to_s,
-        is_free_namespace: (!current_user.namespace.paid?).to_s
+        is_free_namespace: (!current_user.namespace.paid?).to_s,
+        is_personal_namespace: true
       }
 
       if purchase_storage_link_enabled?(namespace)
