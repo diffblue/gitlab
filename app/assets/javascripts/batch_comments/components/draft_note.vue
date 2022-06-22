@@ -94,6 +94,7 @@ export default {
         :note="draft"
         :line="line"
         :discussion-root="true"
+        :class="{ 'gl-mb-0!': glFeatures.mrReviewSubmitComment }"
         class="draft-note"
         @handleEdit="handleEditing"
         @cancelForm="handleNotEditing"
