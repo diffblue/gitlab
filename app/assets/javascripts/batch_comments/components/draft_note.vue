@@ -1,6 +1,7 @@
 <script>
-import { GlSafeHtmlDirective, GlBadge } from '@gitlab/ui';
+import { GlButton, GlSafeHtmlDirective, GlBadge } from '@gitlab/ui';
 import { mapActions, mapGetters, mapState } from 'vuex';
+import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import NoteableNote from '~/notes/components/noteable_note.vue';
 import PublishButton from './publish_button.vue';
 
@@ -8,11 +9,13 @@ export default {
   components: {
     NoteableNote,
     PublishButton,
+    GlButton,
     GlBadge,
   },
   directives: {
     SafeHtml: GlSafeHtmlDirective,
   },
+  mixins: [glFeatureFlagMixin()],
   props: {
     draft: {
       type: Object,
@@ -112,13 +115,25 @@ export default {
         class="referenced-commands draft-note-commands"
       ></div>
 
-      <p class="draft-note-actions d-flex" data-qa-selector="draft_note_content">
+      <p
+        v-if="!glFeatures.mrReviewSubmitComment"
+        class="draft-note-actions d-flex"
+        data-qa-selector="draft_note_content"
+      >
         <publish-button
           :show-count="true"
           :should-publish="false"
           category="secondary"
           :disabled="isPublishingDraft(draft.id)"
         />
+        <gl-button
+          :disabled="isPublishing"
+          :loading="isPublishingDraft(draft.id)"
+          class="gl-ml-3"
+          @click="publishNow"
+        >
+          {{ __('Add comment now') }}
+        </gl-button>
       </p>
     </template>
   </article>
