@@ -3,8 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Groups::HooksController do
-  let(:user)  { create(:user) }
-  let(:group) { create(:group) }
+  let_it_be(:user)  { create(:user) }
+  let_it_be(:group) { create(:group) }
 
   before do
     group.add_owner(user)
@@ -44,14 +44,30 @@ RSpec.describe Groups::HooksController do
           enable_ssl_verification: true,
           token: 'TEST TOKEN',
           url: 'http://example.com',
-          push_events_branch_filter: 'filter-branch'
+          push_events_branch_filter: 'filter-branch',
+          url_variables: [
+            { key: 'token', value: 'shh-secret!' }
+          ]
         }
 
         post :create, params: { group_id: group.to_param, hook: hook_params }
 
         expect(response).to have_gitlab_http_status(:found)
         expect(group.hooks.size).to eq(1)
-        expect(group.hooks.first).to have_attributes(hook_params)
+        expect(group.hooks.first).to have_attributes(hook_params.except(:url_variables))
+        expect(group.hooks.first.url_variables).to eq('token' => 'shh-secret!')
+      end
+
+      it 'alerts the user if the new hook is invalid' do
+        hook_params = {
+          token: "TEST\nTOKEN",
+          url: "http://example.com"
+        }
+
+        post :create, params: { group_id: group.to_param, hook: hook_params }
+
+        expect(flash[:alert]).to be_present
+        expect(group.hooks.count).to eq(0)
       end
     end
 
@@ -68,7 +84,7 @@ RSpec.describe Groups::HooksController do
     end
 
     describe 'PATCH #update' do
-      let(:hook) { create(:group_hook, group: group) }
+      let_it_be(:hook) { create(:group_hook, group: group) }
 
       context 'valid params' do
         let(:hook_params) do
@@ -88,17 +104,28 @@ RSpec.describe Groups::HooksController do
             deployment_events: true,
             releases_events: true,
             member_events: true,
-            subgroup_events: true
+            subgroup_events: true,
+            url_variables: [
+              { key: 'a', value: 'alpha' },
+              { key: 'b', value: nil },
+              { key: 'c', value: 'gamma' }
+            ]
           }
         end
 
-        it 'is successfull' do
+        it 'is successful' do
+          hook.update!(url_variables: { 'a' => 'x', 'b' => 'z' })
+
           patch :update, params: { group_id: group.to_param, id: hook, hook: hook_params }
 
           expect(response).to have_gitlab_http_status(:found)
           expect(response).to redirect_to(group_hooks_path(group))
           expect(group.hooks.size).to eq(1)
-          expect(group.hooks.first).to have_attributes(hook_params)
+          expect(hook.reload).to have_attributes(hook_params.except(:url_variables))
+          expect(hook.url_variables).to eq(
+            'a' => 'alpha',
+            'c' => 'gamma'
+          )
         end
       end
 
@@ -113,6 +140,7 @@ RSpec.describe Groups::HooksController do
           patch :update, params: { group_id: group.to_param, id: hook, hook: hook_params }
 
           expect(response).to have_gitlab_http_status(:ok)
+          expect(flash[:notice]).to be_nil
           expect(response).to render_template(:edit)
           expect(group.hooks.size).to eq(1)
           expect(group.hooks.first).not_to have_attributes(hook_params)
@@ -120,7 +148,7 @@ RSpec.describe Groups::HooksController do
       end
     end
 
-    describe 'POST #test' do
+    describe 'POST #test', :clean_gitlab_redis_shared_state do
       let(:hook) { create(:group_hook, group: group) }
 
       context 'when group does not have a project' do
