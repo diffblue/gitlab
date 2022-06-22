@@ -6,7 +6,7 @@
 - elsif can?(current_user, :update_name, user)
   = form.text_field :name, class: 'gl-form-input form-control', required: true, title: s_("Profiles|Using emojis in names seems fun, but please try to set a status message instead")
   %small.form-text.text-gl-muted
-    = s_("Profiles|Enter your name, so people you know can recognize you")
+    = s_("Profiles|Enter your name, so people you know can recognize you.")
 - else
   = form.text_field :name, class: 'gl-form-input form-control', required: true, readonly: true
   %small.form-text.text-gl-muted
