@@ -76,7 +76,7 @@ RSpec.describe 'Edit group settings' do
       it 'is not visible' do
         visit edit_group_path(group)
 
-        expect(page).not_to have_content('Prevent adding new members to projects within this group')
+        expect(page).not_to have_content('Users cannot be added to projects in this group')
       end
     end
 
@@ -84,7 +84,7 @@ RSpec.describe 'Edit group settings' do
       it 'is visible' do
         visit edit_group_path(group)
 
-        expect(page).to have_content('Prevent adding new members to projects within this group')
+        expect(page).to have_content('Users cannot be added to projects in this group')
       end
 
       context 'when current user is not the Owner' do
