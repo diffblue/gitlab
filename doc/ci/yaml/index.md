@@ -2519,8 +2519,8 @@ job2:
   job2:
     script: echo "test"
     only:
-    - branches
-    - tags
+      - branches
+      - tags
   ```
 
 #### `only:variables` / `except:variables`
