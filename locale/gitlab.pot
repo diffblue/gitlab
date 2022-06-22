@@ -26193,6 +26193,12 @@ msgstr ""
 msgid "Notify|%{author_link}'s issue %{issue_reference_link} is due soon."
 msgstr ""
 
+msgid "Notify|Assignee changed from %{fromNames} to %{toNames}"
+msgstr ""
+
+msgid "Notify|Assignee changed to %{toNames}"
+msgstr ""
+
 msgid "Notify|Author: %{author_name}"
 msgstr ""
 
