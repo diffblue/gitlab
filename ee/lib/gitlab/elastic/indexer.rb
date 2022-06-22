@@ -125,8 +125,8 @@ module Gitlab
           'FROM_SHA'                => from_sha,
           'TO_SHA'                  => to_sha,
           'CORRELATION_ID'          => Labkit::Correlation::CorrelationId.current_id,
-          'SSL_CERT_FILE'           => OpenSSL::X509::DEFAULT_CERT_FILE,
-          'SSL_CERT_DIR'            => OpenSSL::X509::DEFAULT_CERT_DIR
+          'SSL_CERT_FILE'           => Gitlab::X509::Certificate.default_cert_file,
+          'SSL_CERT_DIR'            => Gitlab::X509::Certificate.default_cert_dir
         }
 
         # Set AWS environment variables for IAM role authentication if present
