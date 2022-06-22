@@ -1,5 +1,5 @@
 import { mount, shallowMount, createLocalVue } from '@vue/test-utils';
-import { GlBreadcrumb, GlIcon, GlSkeletonLoader } from '@gitlab/ui';
+import { GlBreadcrumb, GlSkeletonLoader } from '@gitlab/ui';
 import VueApollo from 'vue-apollo';
 import IterationBreadcrumb from 'ee/iterations/components/iteration_breadcrumb.vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
@@ -98,10 +98,10 @@ describe('Iteration Breadcrumb', () => {
   });
 
   describe('when not fetching cadence', () => {
-    it('finds GlIcon', () => {
+    it('does not render the GlSkeletonLoader', () => {
       mountComponent(shallowMount);
 
-      expect(findBreadcrumb().findComponent(GlIcon).exists()).toBe(true);
+      expect(wrapper.findComponent(GlSkeletonLoader).exists()).toBe(false);
     });
   });
 

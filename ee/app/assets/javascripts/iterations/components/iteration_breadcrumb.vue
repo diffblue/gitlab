@@ -1,7 +1,7 @@
 <script>
 // We are using gl-breadcrumb only at the last child of the handwritten breadcrumb
 // until this gitlab-ui issue is resolved: https://gitlab.com/gitlab-org/gitlab-ui/-/issues/1079
-import { GlBreadcrumb, GlIcon, GlSkeletonLoader } from '@gitlab/ui';
+import { GlBreadcrumb, GlSkeletonLoader } from '@gitlab/ui';
 import { TYPE_ITERATIONS_CADENCE } from '~/graphql_shared/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import readCadence from '../queries/iteration_cadence.query.graphql';
@@ -11,7 +11,6 @@ const cadencePath = '/:cadenceId';
 export default {
   components: {
     GlBreadcrumb,
-    GlIcon,
     GlSkeletonLoader,
   },
   inject: ['groupPath'],
@@ -83,9 +82,5 @@ export default {
     :lines="1"
     class="gl-mx-3"
   />
-  <gl-breadcrumb v-else :items="allBreadcrumbs" class="gl-p-0 gl-shadow-none">
-    <template #separator>
-      <gl-icon name="angle-right" :size="8" />
-    </template>
-  </gl-breadcrumb>
+  <gl-breadcrumb v-else :items="allBreadcrumbs" class="gl-p-0 gl-shadow-none" />
 </template>
