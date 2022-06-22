@@ -84,7 +84,7 @@ module BillingPlansHelper
     end
   end
 
-  def show_trial_banner?(namespace)
+  def show_trial_alert?(namespace)
     return false unless params[:trial]
 
     root = namespace.has_parent? ? namespace.root_ancestor : namespace
