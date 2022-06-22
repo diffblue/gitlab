@@ -17,8 +17,9 @@ RSpec.describe QuickActions::InterpretService do
 
   let(:milestone) { create(:milestone, project: project, title: '9.10') }
   let(:commit) { create(:commit, project: project) }
+  let(:current_user) { developer }
 
-  subject(:service) { described_class.new(project, developer) }
+  subject(:service) { described_class.new(project, current_user) }
 
   before_all do
     public_project.add_developer(developer)
@@ -682,6 +683,27 @@ RSpec.describe QuickActions::InterpretService do
     end
 
     shared_examples 'assign command' do
+      it 'assigns to me' do
+        cmd = '/assign me'
+
+        _, updates, _ = service.execute(cmd, issuable)
+
+        expect(updates).to eq(assignee_ids: [current_user.id])
+      end
+
+      it 'does not assign to group members' do
+        grp = create(:group)
+        grp.add_developer(developer)
+        grp.add_developer(developer2)
+
+        cmd = "/assign #{grp.to_reference}"
+
+        _, updates, message = service.execute(cmd, issuable)
+
+        expect(updates).to be_blank
+        expect(message).to include('Failed to find users')
+      end
+
       it 'assigns to users with escaped underscores' do
         user = create(:user)
         base = user.username

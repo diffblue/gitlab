@@ -69,28 +69,46 @@ module QuickActions
       Gitlab::QuickActions::Extractor.new(self.class.command_definitions)
     end
 
+    MAX_QUICK_ACTION_USERS = 100
+
+    # Find users for commands like /assign
+    #
+    # eg. /assign me and @jane and jack
     def extract_users(params)
       return [] if params.blank?
 
-      # We are using the a simple User.by_username query here rather than a ReferenceExtractor
-      # because the needs here are much simpler: we only deal in usernames, and
-      # want to also handle bare usernames. The ReferenceExtractor also has
-      # different behaviour, and will return all group members for groups named
-      # using a user-style reference, which is not in scope here.
-      #
+      args = params.split(/\s|,/).map(&:strip).select(&:present?).uniq - ['and']
+      # nb: 'me' is special cased to refer to the current user
+      references = args - ['me']
       # nb: underscores may be passed in escaped to protect them from markdown rendering
-      args        = params.split(/\s|,/).select(&:present?).uniq - ['and']
-      args.map! { _1.gsub(/\\_/, '_') }
-      usernames   = (args - ['me']).map { _1.delete_prefix('@') }
-      found       = User.by_username(usernames).to_a.select { can?(:read_user, _1) }
-      found_names = found.map(&:username).map(&:downcase).to_set
-      missing     = args.reject do |arg|
-        arg == 'me' || found_names.include?(arg.downcase.delete_prefix('@'))
-      end.map { "'#{_1}'" }
+      references.map! { _1.gsub(/\\_/, '_') }
+
+      users = args.include?('me') ? [current_user] : []
+
+      if quick_action_target.allows_multiple_assignees?
+        # Find users, and also expand group references
+        users += extract_references(params, :user)
+        users += User.by_username(references).to_a
+      else
+        # Only look for users
+        users += User.by_username(references.map { _1.delete_prefix('@') })
+      end
+
+      found_names = users.map(&:username).map(&:downcase).to_set
+
+      if quick_action_target.allows_multiple_assignees?
+        groups = Group.where_full_path_in(references.map { _1.delete_prefix('@') })
+
+        found_names += groups.map(&:full_path).map(&:downcase)
+      end
+
+      missing = references.reject { |arg| found_names.include?(arg.downcase.delete_prefix('@')) }
+                              .map { "'#{_1}'" }
 
       failed_parse(format(_("Failed to find users for %{missing}"), missing: missing.to_sentence)) if missing.present?
+      failed_parse(_("Too many users found")) if users.size > MAX_QUICK_ACTION_USERS
 
-      found + [current_user].select { args.include?('me') }
+      users
     end
 
     def find_milestones(project, params = {})

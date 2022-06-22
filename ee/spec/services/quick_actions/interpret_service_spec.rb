@@ -107,6 +107,18 @@ RSpec.describe QuickActions::InterpretService do
     let(:merge_request) { create(:merge_request, source_project: project) }
 
     context 'assign command' do
+      it 'assigns to group members' do
+        grp = create(:group)
+        grp.add_developer(user2)
+        grp.add_developer(user3)
+
+        cmd = "/assign #{grp.to_reference}"
+
+        _, updates, _ = service.execute(cmd, issue)
+
+        expect(updates).to include(assignee_ids: [user2.id, user3.id])
+      end
+
       context 'Issue' do
         it 'fetches assignees and populates them if content contains /assign' do
           issue.update!(assignee_ids: [user.id, user2.id])
@@ -158,12 +170,12 @@ RSpec.describe QuickActions::InterpretService do
             group_members.each { group.add_developer(_1) }
           end
 
-          it 'ignores group members' do
+          it 'adds group members' do
             merge_request.update!(assignee_ids: [user.id])
 
             _, updates = service.execute(command, merge_request)
 
-            expect(updates[:assignee_ids]).to be_nil
+            expect(updates[:assignee_ids]).to match_array [user.id, *group_members.map(&:id)]
           end
         end
 
