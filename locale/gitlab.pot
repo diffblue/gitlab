@@ -13709,6 +13709,9 @@ msgstr ""
 msgid "Edit %{name}"
 msgstr ""
 
+msgid "Edit %{profileType} profile"
+msgstr ""
+
 msgid "Edit Comment"
 msgstr ""
 
@@ -13734,9 +13737,6 @@ msgid "Edit Password"
 msgstr ""
 
 msgid "Edit Pipeline Schedule"
-msgstr ""
-
-msgid "Edit Profile"
 msgstr ""
 
 msgid "Edit Release"

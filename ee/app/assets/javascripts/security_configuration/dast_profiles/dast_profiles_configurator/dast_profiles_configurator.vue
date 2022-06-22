@@ -12,6 +12,7 @@ import {
   DAST_CONFIGURATION_HELP_PATH,
   SCANNER_TYPE,
   SITE_TYPE,
+  SIDEBAR_VIEW_MODE,
 } from 'ee/on_demand_scans/constants';
 import SectionLayout from '~/vue_shared/security_configuration/components/section_layout.vue';
 import {
@@ -46,6 +47,7 @@ const createProfilesApolloOptions = (name, field, { fetchQuery, fetchError }) =>
 export default {
   SCANNER_TYPE,
   SITE_TYPE,
+  SIDEBAR_VIEW_MODE,
   dastConfigurationHelpPath: DAST_CONFIGURATION_HELP_PATH,
   name: 'DastProfilesConfigurator',
   i18n: {
@@ -95,6 +97,7 @@ export default {
     return {
       scannerProfiles: [],
       siteProfiles: [],
+      sidebarViewMode: SIDEBAR_VIEW_MODE.READING_MODE,
       errorType: null,
       isSideDrawerOpen: false,
       profileType: '',
@@ -160,11 +163,12 @@ export default {
   methods: {
     enableEditingMode(type) {
       this.selectActiveProfile(type);
-      this.openProfileDrawer(type);
+      this.openProfileDrawer({ profileType: type, mode: SIDEBAR_VIEW_MODE.EDITING_MODE });
     },
-    openProfileDrawer(type) {
+    openProfileDrawer({ profileType, mode }) {
       this.isSideDrawerOpen = false;
-      this.profileType = type;
+      this.sidebarViewMode = mode;
+      this.profileType = profileType;
       this.$nextTick(() => {
         this.isSideDrawerOpen = true;
       });
@@ -172,6 +176,7 @@ export default {
     closeProfileDrawer() {
       this.isSideDrawerOpen = false;
       this.activeProfile = {};
+      this.sidebarViewMode = SIDEBAR_VIEW_MODE.READING_MODE;
     },
     selectActiveProfile(type) {
       this.activeProfile =
@@ -236,7 +241,12 @@ export default {
           class="gl-mb-6"
           :selected-profile="selectedScannerProfile"
           :profile-id-in-use="savedScannerProfileId"
-          @open-drawer="openProfileDrawer($options.SCANNER_TYPE)"
+          @open-drawer="
+            openProfileDrawer({
+              profileType: $options.SCANNER_TYPE,
+              mode: $options.SIDEBAR_VIEW_MODE.READING_MODE,
+            })
+          "
           @edit="enableEditingMode($options.SCANNER_TYPE)"
         />
 
@@ -244,7 +254,12 @@ export default {
           class="gl-mb-2"
           :selected-profile="selectedSiteProfile"
           :profile-id-in-use="savedSiteProfileId"
-          @open-drawer="openProfileDrawer($options.SITE_TYPE)"
+          @open-drawer="
+            openProfileDrawer({
+              profileType: $options.SITE_TYPE,
+              mode: $options.SIDEBAR_VIEW_MODE.READING_MODE,
+            })
+          "
           @edit="enableEditingMode($options.SITE_TYPE)"
         />
       </template>
@@ -258,6 +273,7 @@ export default {
       :is-open="isSideDrawerOpen"
       :is-loading="isLoadingProfiles"
       :selected-profile-id="selectedProfileId"
+      :sidebar-view-mode="sidebarViewMode"
       @close-drawer="closeProfileDrawer"
       @reopen-drawer="openProfileDrawer"
       @select-profile="selectProfile"

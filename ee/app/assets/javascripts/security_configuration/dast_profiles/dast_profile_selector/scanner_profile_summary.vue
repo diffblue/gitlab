@@ -1,5 +1,6 @@
 <script>
 import { SCAN_TYPE_LABEL } from 'ee/security_configuration/dast_profiles/dast_scanner_profiles/constants';
+import { SCANNER_TYPE } from 'ee/on_demand_scans/constants';
 import ScanTypeBadge from 'ee/security_configuration/dast_profiles/components/dast_scan_type_badge.vue';
 import DastProfileSummaryCard from './dast_profile_summary_card.vue';
 import SummaryCell from './summary_cell.vue';
@@ -23,11 +24,16 @@ export default {
     },
   },
   SCAN_TYPE_LABEL,
+  SCANNER_TYPE,
 };
 </script>
 
 <template>
-  <dast-profile-summary-card v-bind="$attrs" v-on="$listeners">
+  <dast-profile-summary-card
+    :profile-type="$options.SCANNER_TYPE"
+    v-bind="$attrs"
+    v-on="$listeners"
+  >
     <template #title>
       {{ profile.profileName }}
     </template>

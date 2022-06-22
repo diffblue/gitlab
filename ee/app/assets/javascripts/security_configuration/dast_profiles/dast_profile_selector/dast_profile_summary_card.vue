@@ -1,6 +1,7 @@
 <script>
 import { GlCard, GlButton, GlIcon, GlTooltipDirective as GlTooltip } from '@gitlab/ui';
-import { __, s__ } from '~/locale';
+import { __, s__, sprintf } from '~/locale';
+import { SCANNER_TYPE } from 'ee/on_demand_scans/constants';
 
 export default {
   name: 'DastProfileSummaryCard',
@@ -33,9 +34,14 @@ export default {
       required: false,
       default: false,
     },
+    profileType: {
+      type: String,
+      required: false,
+      default: SCANNER_TYPE,
+    },
   },
   i18n: {
-    editTitle: __('Edit Profile'),
+    editTitle: __('Edit %{profileType} profile'),
     selectTitle: __('Select Profile'),
     selectBtnText: __('Select'),
     selectedProfileLabel: __('In use'),
@@ -44,6 +50,11 @@ export default {
   computed: {
     disableSelectButton() {
       return !this.allowSelection || this.isProfileSelected;
+    },
+    editButtonTitle() {
+      return sprintf(this.$options.i18n.editTitle, {
+        profileType: this.profileType,
+      });
     },
   },
 };
@@ -82,12 +93,12 @@ export default {
           >
           <gl-button
             v-if="isEditable"
-            v-gl-tooltip
+            v-gl-tooltip.hover
             data-testid="profile-edit-btn"
             category="primary"
             size="small"
             icon="pencil"
-            :title="$options.i18n.editTitle"
+            :title="editButtonTitle"
             :aria-label="$options.i18n.editTitle"
             @click="$emit('edit')"
           />

@@ -1,7 +1,7 @@
 <script>
 import { isEmpty } from 'lodash';
 import { GlDrawer } from '@gitlab/ui';
-import { SCANNER_TYPE } from 'ee/on_demand_scans/constants';
+import { SCANNER_TYPE, SIDEBAR_VIEW_MODE } from 'ee/on_demand_scans/constants';
 import { REFERRAL } from 'ee/security_configuration/dast_profiles/dast_scanner_profiles/constants';
 import DastProfilesLoader from 'ee/security_configuration/dast_profiles/components/dast_profiles_loader.vue';
 import { getContentWrapperHeight } from 'ee/security_orchestration/utils';
@@ -31,6 +31,7 @@ import DastProfilesSidebarList from './dast_profiles_sidebar_list.vue';
  */
 
 export default {
+  SIDEBAR_VIEW_MODE,
   components: {
     GlDrawer,
     DastProfilesLoader,
@@ -86,10 +87,14 @@ export default {
       required: false,
       default: () => ({}),
     },
+    sidebarViewMode: {
+      type: String,
+      required: false,
+      default: SIDEBAR_VIEW_MODE.READING_MODE,
+    },
   },
   data() {
     return {
-      editingMode: false,
       profileForEditing: {},
       referral: REFERRAL.SELF,
     };
@@ -102,13 +107,13 @@ export default {
       return this.profiles.length > 0;
     },
     isEmptyStateMode() {
-      return !this.hasProfiles && !this.editingMode;
+      return !this.hasProfiles && !this.isEditingMode;
     },
     isReadingMode() {
-      return this.hasProfiles && !this.editingMode;
+      return this.hasProfiles && this.sidebarViewMode === SIDEBAR_VIEW_MODE.READING_MODE;
     },
     isEditingMode() {
-      return this.editingMode;
+      return this.sidebarViewMode === SIDEBAR_VIEW_MODE.EDITING_MODE;
     },
   },
   /**
@@ -119,7 +124,10 @@ export default {
     activeProfile(newVal) {
       if (!isEmpty(newVal)) {
         this.referral = REFERRAL.PARENT;
-        this.enableEditingMode(this.activeProfile);
+        this.enableEditingMode({
+          profile: this.activeProfile,
+          mode: SIDEBAR_VIEW_MODE.EDITING_MODE,
+        });
       }
     },
   },
@@ -129,14 +137,12 @@ export default {
       this.$emit('close-drawer');
     },
     resetEditingMode() {
-      this.editingMode = false;
       this.profileForEditing = {};
       this.referral = REFERRAL.SELF;
     },
-    enableEditingMode(profile = {}) {
-      this.editingMode = true;
+    enableEditingMode({ profile = {}, mode }) {
       this.profileForEditing = profile;
-      this.$emit('reopen-drawer', this.profileType);
+      this.$emit('reopen-drawer', { profileType: this.profileType, mode });
     },
     /**
      * reopen even for closing editing layer
@@ -145,19 +151,25 @@ export default {
     cancelEditingMode() {
       const event = this.referral === REFERRAL.PARENT ? 'close-drawer' : 'reopen-drawer';
 
-      this.$emit(event, this.profileType);
+      this.$emit(event, { profileType: this.profileType, mode: SIDEBAR_VIEW_MODE.READING_MODE });
       this.resetEditingMode();
     },
     profileCreated(profile) {
       this.$emit('profile-submitted', { profile, profileType: this.profileType });
-      this.$emit('close-drawer', this.profileType);
+      this.$emit('close-drawer', {
+        profileType: this.profileType,
+        mode: SIDEBAR_VIEW_MODE.READING_MODE,
+      });
       this.resetEditingMode();
     },
     profileEdited(profile) {
       this.$emit('profile-submitted', { profile, profileType: this.profileType });
 
       const secondaryEvent = this.referral === REFERRAL.PARENT ? 'close-drawer' : 'reopen-drawer';
-      this.$emit(secondaryEvent, this.profileType);
+      this.$emit(secondaryEvent, {
+        profileType: this.profileType,
+        mode: SIDEBAR_VIEW_MODE.READING_MODE,
+      });
       this.resetEditingMode();
     },
   },
@@ -177,7 +189,7 @@ export default {
         :is-editing-mode="isEditingMode"
         :profile-type="profileType"
         :profile="profileForEditing"
-        @click="enableEditingMode"
+        @click="enableEditingMode({ mode: $options.SIDEBAR_VIEW_MODE.EDITING_MODE })"
       />
     </template>
     <template #default>
@@ -190,7 +202,7 @@ export default {
           v-if="isEmptyStateMode"
           class="gl-mt-11"
           :profile-type="profileType"
-          @click="enableEditingMode"
+          @click="enableEditingMode({ mode: $options.SIDEBAR_VIEW_MODE.EDITING_MODE })"
         />
 
         <!-- Create or Edit profile - editing mode -->
@@ -211,7 +223,9 @@ export default {
           :profile-id-in-use="profileIdInUse"
           :selected-profile-id="selectedProfileId"
           :profile-type="profileType"
-          @edit="enableEditingMode"
+          @edit="
+            enableEditingMode({ profile: $event, mode: $options.SIDEBAR_VIEW_MODE.EDITING_MODE })
+          "
           v-on="$listeners"
         />
       </template>

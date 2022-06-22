@@ -34,6 +34,12 @@ export const PIPELINES_GROUP_SUCCESS = 'success';
 export const SCANNER_TYPE = 'scanner';
 export const SITE_TYPE = 'site';
 
+// dast sidebar mode
+export const SIDEBAR_VIEW_MODE = {
+  EDITING_MODE: 'editing_mode',
+  READING_MODE: 'reading_mode',
+};
+
 const STATUS_COLUMN = {
   label: __('Status'),
   key: 'status',
