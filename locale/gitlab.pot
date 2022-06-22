@@ -22411,6 +22411,11 @@ msgstr ""
 msgid "Label actions dropdown"
 msgstr ""
 
+msgid "Label added: %{labels}"
+msgid_plural "Labels added: %{labels}"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "Label priority"
 msgstr ""
 
