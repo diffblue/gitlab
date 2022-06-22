@@ -2076,9 +2076,6 @@ msgstr ""
 msgid "Add a GPG key for secure access to GitLab. %{help_link_start}Learn more.%{help_link_end}"
 msgstr ""
 
-msgid "Add a Jaeger URL to replace this page with a link to your Jaeger server. You first need to %{link_start_tag}install Jaeger%{link_end_tag}."
-msgstr ""
-
 msgid "Add a Terms of Service agreement and Privacy Policy for users of this GitLab instance."
 msgstr ""
 
@@ -12808,9 +12805,6 @@ msgstr ""
 msgid "Deprecations|The logs and tracing features were deprecated in GitLab 14.7 and are %{epicStart} scheduled for removal %{epicEnd} in GitLab 15.0."
 msgstr ""
 
-msgid "Deprecations|The logs and tracing features were deprecated in GitLab 14.7, and are %{removal_link_start} scheduled for removal %{link_end} in GitLab 15.0. For information on a possible replacement, %{opstrace_link_start} learn more about Opstrace %{link_end}."
-msgstr ""
-
 msgid "Deprecations|The metrics feature was deprecated in GitLab 14.7."
 msgstr ""
 
@@ -17317,9 +17311,6 @@ msgid "GitLab single sign-on URL"
 msgstr ""
 
 msgid "GitLab username"
-msgstr ""
-
-msgid "GitLab uses %{jaeger_link} to monitor distributed systems."
 msgstr ""
 
 msgid "GitLab uses %{linkStart}Sidekiq%{linkEnd} to process background jobs"
@@ -40257,9 +40248,6 @@ msgstr ""
 msgid "TotalRefCountIndicator|1000+"
 msgstr ""
 
-msgid "Tracing"
-msgstr ""
-
 msgid "Track groups of issues that share a theme, across projects and milestones"
 msgstr ""
 
@@ -40480,9 +40468,6 @@ msgid "Trigger|Trigger user has insufficient permissions to project"
 msgstr ""
 
 msgid "Trigger|invalid"
-msgstr ""
-
-msgid "Troubleshoot and monitor your application with tracing"
 msgstr ""
 
 msgid "Trusted"
@@ -44445,9 +44430,6 @@ msgid "Your new access token has been created."
 msgstr ""
 
 msgid "Your new comment"
-msgstr ""
-
-msgid "Your password isn't required to view this page. If a password or any other personal details are requested, please contact your administrator to report abuse."
 msgstr ""
 
 msgid "Your password reset token has expired."
