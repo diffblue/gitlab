@@ -206,6 +206,7 @@ export default {
       );
     },
     updateStartLine(line) {
+      this.commentLineStart = line;
       this.lines.start = line;
     },
   },
