@@ -1,3 +1,4 @@
+import { GlDrawer } from '@gitlab/ui';
 import { nextTick } from 'vue';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import DastProfilesSidebar from 'ee/security_configuration/dast_profiles/dast_profiles_sidebar/dast_profiles_sidebar.vue';
@@ -30,6 +31,7 @@ describe('DastProfilesSidebar', () => {
   const findNewDastScannerProfileForm = () => wrapper.findByTestId('dast-scanner-parent-group');
   const findCancelButton = () => wrapper.findByTestId('dast-profile-form-cancel-button');
   const findSkeletonLoader = () => wrapper.findComponent(DastProfilesLoader);
+  const findGlDrawer = () => wrapper.findComponent(GlDrawer);
 
   afterEach(() => {
     wrapper.destroy();
@@ -118,6 +120,14 @@ describe('DastProfilesSidebar', () => {
       expect(findNewDastScannerProfileForm().exists()).toBe(true);
       expect(findNewScanButton().exists()).toBe(false);
       expect(findSidebarHeader().text()).toContain('Edit scanner profile');
+    });
+  });
+
+  describe('sticky header', () => {
+    it('should have sticky header always enabled', () => {
+      createComponent();
+
+      expect(findGlDrawer().props('headerSticky')).toEqual(true);
     });
   });
 });

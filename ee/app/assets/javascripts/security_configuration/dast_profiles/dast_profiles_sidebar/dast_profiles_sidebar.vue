@@ -179,6 +179,7 @@ export default {
 <template>
   <gl-drawer
     :header-height="getDrawerHeaderHeight"
+    :header-sticky="true"
     :open="isOpen"
     :z-index="10"
     @close="resetAndEmitCloseEvent"
