@@ -10,7 +10,7 @@
     "merge_requests_events",
     "repository_update_events",
     "enable_ssl_verification",
-    "group_id",
+    "project_id",
     "issues_events",
     "confidential_issues_events",
     "note_events",
@@ -20,14 +20,13 @@
     "job_events",
     "deployment_events",
     "releases_events",
-    "subgroup_events",
     "alert_status",
     "disabled_until",
     "url_variables"
   ],
   "properties": {
     "id": { "type": "integer" },
-    "group_id": { "type": "integer" },
+    "project_id": { "type": "integer" },
     "url": { "type": "string" },
     "created_at": { "type": "string", "format": "date-time" },
     "push_events": { "type": "boolean" },
@@ -45,7 +44,6 @@
     "job_events": { "type": "boolean" },
     "deployment_events": { "type": "boolean" },
     "releases_events": { "type": "boolean" },
-    "subgroup_events": { "type": "boolean" },
     "alert_status": { "type": "string", "enum": ["executable","disabled","temporarily_disabled"] },
     "disabled_until": { "type": ["string", "null"] },
     "url_variables": {

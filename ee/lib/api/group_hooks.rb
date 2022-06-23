@@ -9,9 +9,14 @@ module API
     before { authenticate! }
     before { authorize! :admin_group, user_group }
 
+    helpers ::API::Helpers::WebHooksHelpers
+
     helpers do
+      def hook_scope
+        user_group.hooks
+      end
+
       params :group_hook_properties do
-        requires :url, type: String, desc: "The URL to send the request to"
         optional :push_events, type: Boolean, desc: "Trigger hook on push events"
         optional :push_events_branch_filter, type: String, desc: "Respond to push events only on branches that match this filter"
         optional :issues_events, type: Boolean, desc: "Trigger hook on issues events"
@@ -28,6 +33,7 @@ module API
         optional :subgroup_events, type: Boolean, desc: "Trigger hook on subgroup events"
         optional :enable_ssl_verification, type: Boolean, desc: "Do SSL verification when triggering the hook"
         optional :token, type: String, desc: "Secret token to validate received payloads; this will not be returned in the response"
+        use :url_variables
       end
     end
 
@@ -52,7 +58,8 @@ module API
         requires :hook_id, type: Integer, desc: 'The ID of a group hook'
       end
       get ":id/hooks/:hook_id" do
-        hook = user_group.hooks.find(params[:hook_id])
+        hook = find_hook
+
         present hook, with: EE::API::Entities::GroupHook
       end
 
@@ -60,20 +67,14 @@ module API
         success EE::API::Entities::GroupHook
       end
       params do
+        use :requires_url
         use :group_hook_properties
       end
       post ":id/hooks" do
-        hook_params = declared_params(include_missing: false)
-
+        hook_params = create_hook_params
         hook = user_group.hooks.new(hook_params)
 
-        if hook.save
-          present hook, with: EE::API::Entities::GroupHook
-        else
-          error!("Invalid url given", 422) if hook.errors[:url].present?
-
-          render_api_error!("Group hook #{hook.errors.messages}", 422)
-        end
+        save_hook(hook, EE::API::Entities::GroupHook)
       end
 
       desc 'Update an existing group hook' do
@@ -81,20 +82,11 @@ module API
       end
       params do
         requires :hook_id, type: Integer, desc: "The ID of the hook to update"
+        use :optional_url
         use :group_hook_properties
       end
       put ":id/hooks/:hook_id" do
-        hook = user_group.hooks.find(params.delete(:hook_id))
-
-        update_params = declared_params(include_missing: false)
-
-        if hook.update(update_params)
-          present hook, with: EE::API::Entities::GroupHook
-        else
-          error!("Invalid url given", 422) if hook.errors[:url].present?
-
-          render_api_error!("Group hook #{hook.errors.messages}", 422)
-        end
+        update_hook(entity: EE::API::Entities::GroupHook)
       end
 
       desc 'Deletes group hook' do
@@ -104,11 +96,15 @@ module API
         requires :hook_id, type: Integer, desc: 'The ID of the hook to delete'
       end
       delete ":id/hooks/:hook_id" do
-        hook = user_group.hooks.find(params.delete(:hook_id))
+        hook = find_hook
 
         destroy_conditionally!(hook) do
           WebHooks::DestroyService.new(current_user).execute(hook)
         end
+      end
+
+      namespace ':id/hooks' do
+        mount ::API::Hooks::UrlVariables
       end
     end
   end
