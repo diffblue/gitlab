@@ -32,7 +32,7 @@ module Namespaces
       end
 
       def move_url
-        help_page_path('user/project/settings/index', anchor: 'transferring-an-existing-project-into-another-namespace')
+        help_page_path('user/project/settings/index', anchor: 'transfer-a-project-to-another-namespace')
       end
     end
   end
