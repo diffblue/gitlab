@@ -55,6 +55,8 @@ RSpec.describe 'group epic roadmap', :js do
     let!(:epic_with_bug) { create(:labeled_epic, group: group, start_date: end_of_quarter - 10.days, end_date: end_of_quarter - 1.day, labels: [bug_label]) }
     let!(:epic_with_critical) { create(:labeled_epic, group: group, start_date: end_of_quarter - 20.days, end_date: end_of_quarter - 2.days, labels: [critical_label]) }
     let!(:closed_epic) { create(:epic, :closed, group: group, start_date: end_of_quarter - 20.days, end_date: end_of_quarter - 2.days) }
+    let!(:sub_epic) { create(:epic, group: group, parent: epic_with_bug) }
+    let!(:sub_epic2) { create(:epic, group: group, parent: sub_epic, start_date: end_of_quarter - 20.days, end_date: end_of_quarter - 2.days) }
     let!(:milestone) { create(:milestone, :with_dates, group: group, start_date: end_of_quarter - 10.days, due_date: end_of_quarter - 1.day) }
     let!(:milestone_subgroup) { create(:milestone, :with_dates, group: subgroup, start_date: end_of_quarter - 10.days, due_date: end_of_quarter - 1.day) }
     let!(:milestone_project) { create(:milestone, :with_dates, project: project, start_date: end_of_quarter - 10.days, due_date: end_of_quarter - 1.day) }
@@ -149,6 +151,14 @@ RSpec.describe 'group epic roadmap', :js do
 
           page.within('.roadmap-container .epics-list-section') do
             expect(page).to have_selector('.epics-list-item .epic-title', count: 2)
+          end
+        end
+
+        it 'renders top level epics only' do
+          page.within('.roadmap-container .epics-list-section') do
+            expect(page).to have_content(epic_with_bug.title)
+            expect(page).not_to have_content(sub_epic.title)
+            expect(page).not_to have_content(sub_epic2.title)
           end
         end
       end
@@ -345,7 +355,7 @@ RSpec.describe 'group epic roadmap', :js do
             epic_with_critical.title
           ])
 
-          expand_epic_at(1)
+          expand_epic_at(2)
 
           expect(page).to have_selector('.epics-list-item .epic-title', count: 7)
           epic_titles = page.all('.epics-list-item .epic-title').collect(&:text)
