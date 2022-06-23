@@ -126,7 +126,7 @@ RSpec.describe 'Project' do
 
   describe 'Custom group-level project templates', :js do
     let!(:user) { create(:user) }
-    let!(:group) { create(:group, name: 'parent-group') }
+    let!(:group) { create(:group, name: 'long-parent-group') }
     let!(:template_subgroup) { create(:group, parent: group, name: 'template-subgroup') }
     let!(:template) { create(:project, namespace: template_subgroup) }
 
@@ -147,13 +147,13 @@ RSpec.describe 'Project' do
     end
 
     context 'from subgroup new project path' do
-      let!(:other_subgroup) { create(:group, parent: group, name: 'other-subgroup') }
+      let!(:other_subgroup) { create(:group, parent: group, name: 'long-other-subgroup') }
 
       it 'displays subgroup namespace for default project URL' do
         visit new_project_path(namespace_id: other_subgroup.id)
         create_from_template(:group, template.name)
 
-        expect(page).to have_button("#{group.name}/#{other_subgroup.name}", exact: true)
+        expect(page).to have_button("#{group.name}/#{other_subgroup.name}")
       end
     end
   end
