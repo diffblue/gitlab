@@ -606,15 +606,19 @@ rspec:undercoverage:
   extends:
     - .coverage-base
     - .rails:rules:rspec-undercoverage
-  variables:
-    GIT_DEPTH: 200
   stage: post-test
   needs: ["rspec:coverage"]
   script:
+    - if [ -n "$CI_MERGE_REQUEST_TARGET_BRANCH_SHA" ]; then
+        echo "HEAD is $(git rev-parse HEAD). \$CI_MERGE_REQUEST_TARGET_BRANCH_SHA is ${CI_MERGE_REQUEST_TARGET_BRANCH_SHA}";
+      else
+        echo "HEAD is $(git rev-parse HEAD). \$CI_MERGE_REQUEST_DIFF_BASE_SHA is ${CI_MERGE_REQUEST_DIFF_BASE_SHA}";
+      fi;
     - UNDERCOVERAGE_COMPARE="${CI_MERGE_REQUEST_TARGET_BRANCH_SHA:-$CI_MERGE_REQUEST_DIFF_BASE_SHA}"
-    - echo "Undercoverage comparing with ${UNDERCOVERAGE_COMPARE}"
+    - git diff ${UNDERCOVERAGE_COMPARE} --stat
+    - echo "Undercoverage comparing with ${UNDERCOVERAGE_COMPARE}."
     - if [ -f scripts/undercoverage ]; then
-        run_timed_command "scripts/undercoverage ${UNDERCOVERAGE_COMPARE}";
+        run_timed_command "bundle exec scripts/undercoverage ${UNDERCOVERAGE_COMPARE}";
       fi;
 
 rspec:feature-flags:
