@@ -220,6 +220,12 @@ RSpec.describe Gitlab::Database::BackgroundMigration::BatchedJob, type: :model d
         expect(described_class.created_since(fixed_time)).to contain_exactly(stuck_job, failed_job, max_attempts_failed_job)
       end
     end
+
+    describe '.max_attempts_reached' do
+      it 'returns blocked jobs' do
+        expect(described_class.max_attempts_reached).to contain_exactly(max_attempts_failed_job)
+      end
+    end
   end
 
   describe 'delegated batched_migration attributes' do
@@ -254,6 +260,14 @@ RSpec.describe Gitlab::Database::BackgroundMigration::BatchedJob, type: :model d
       it 'returns the migration job_class_name' do
         expect(batched_job.migration_job_class_name).to eq(batched_migration.job_class_name)
       end
+    end
+  end
+
+  describe '#reset_attempts!' do
+    let(:job) { create(:batched_background_migration_job, attempts: 5) }
+
+    it 'sets the number of attempts to zero' do
+      expect { job.reset_attempts! }.to change { job.attempts }.from(5).to(0)
     end
   end
 

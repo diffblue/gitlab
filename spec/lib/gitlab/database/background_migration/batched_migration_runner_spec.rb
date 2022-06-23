@@ -362,6 +362,8 @@ RSpec.describe Gitlab::Database::BackgroundMigration::BatchedMigrationRunner do
           .with(gitlab_schemas, 'CopyColumnUsingBackgroundMigrationJob', table_name, column_name, job_arguments)
           .and_return(batched_migration)
 
+        expect(batched_migration).to receive(:reset_attemps!).and_call_original
+
         expect(batched_migration).to receive(:finalize!).and_call_original
 
         expect do

@@ -157,6 +157,27 @@ RSpec.describe Gitlab::Database::BackgroundMigration::BatchedMigration, type: :m
     end
   end
 
+  describe '#reset_attempts!' do
+    let!(:migration) { create(:batched_background_migration) }
+    let(:max_attempts) { Gitlab::Database::BackgroundMigration::BatchedJob::MAX_ATTEMPTS }
+
+    before do
+      create(:batched_background_migration_job, attempts: 2, batched_migration: migration)
+      create(:batched_background_migration_job, attempts: 4, batched_migration: migration)
+      create(:batched_background_migration_job, attempts: 4, batched_migration: migration)
+    end
+
+    it 'sets the number of attempts to zero' do
+      migration.reset_attempts!
+
+      expect(migration.batched_jobs.size).to eq(3)
+
+      migration.batched_jobs.each do |job|
+        expect(job.attempts).to be < max_attempts
+      end
+    end
+  end
+
   describe '#interval_elapsed?' do
     context 'when the migration has no last_job' do
       let(:batched_migration) { build(:batched_background_migration) }
