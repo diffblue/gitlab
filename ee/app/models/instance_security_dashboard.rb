@@ -51,6 +51,12 @@ class InstanceSecurityDashboard
     projects.count > 0
   end
 
+  def cluster_agents
+    return Clusters::Agent.none if projects.empty?
+
+    Clusters::Agent.for_projects(projects)
+  end
+
   private
 
   attr_reader :project_ids, :user

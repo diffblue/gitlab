@@ -115,6 +115,13 @@ module EE
               description: 'Indicates whether to regularly prune stale group runners. Defaults to false.',
               method: :allow_stale_runner_pruning?
 
+        field :cluster_agents,
+              ::Types::Clusters::AgentType.connection_type,
+              extras: [:lookahead],
+              null: true,
+              description: 'Cluster agents associated with projects in the group and its subgroups.',
+              resolver: ::Resolvers::Clusters::AgentsResolver
+
         def billable_members_count(requested_hosted_plan: nil)
           object.billable_members_count(requested_hosted_plan)
         end

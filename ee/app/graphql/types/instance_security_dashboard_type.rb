@@ -27,6 +27,13 @@ module Types
           null: false,
           description: 'Represents vulnerable project counts for each grade.'
 
+    field :cluster_agents,
+          ::Types::Clusters::AgentType.connection_type,
+          extras: [:lookahead],
+          null: true,
+          description: 'Cluster agents associated with projects selected in the Instance Security Dashboard.',
+          resolver: ::Resolvers::Clusters::AgentsResolver
+
     def vulnerability_grades
       ::Gitlab::Graphql::Aggregations::VulnerabilityStatistics::LazyAggregate.new(
         context,

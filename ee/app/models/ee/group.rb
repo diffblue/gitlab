@@ -630,6 +630,10 @@ module EE
       end
     end
 
+    def cluster_agents
+      ::Clusters::Agent.for_projects(all_projects)
+    end
+
     private
 
     override :post_create_hook

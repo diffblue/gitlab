@@ -217,6 +217,23 @@ RSpec.describe InstanceSecurityDashboard do
     end
   end
 
+  describe '#cluster_agents' do
+    let_it_be(:cluster_agent_for_project_1) { create(:cluster_agent, project: project1) }
+    let_it_be(:cluster_agent_for_project_3) { create(:cluster_agent, project: project3) }
+
+    context 'when instance security dashboard has projects added' do
+      it { expect(instance_dashboard.cluster_agents).to contain_exactly(cluster_agent_for_project_1) }
+    end
+
+    context 'when instance security dashboard does not have any projects added' do
+      let_it_be(:other_user) { create(:user) }
+
+      subject(:instance_dashboard) { described_class.new(other_user, project_ids: []) }
+
+      it { expect(instance_dashboard.cluster_agents).to be_empty }
+    end
+  end
+
   describe '#full_path' do
     let(:user) { create(:user) }
 
