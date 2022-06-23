@@ -156,6 +156,14 @@ describe('Commit box pipeline mini graph', () => {
   });
 
   describe('polling', () => {
+    it('polling interval is set for linked pipelines', () => {
+      createComponent();
+
+      const expectedInterval = wrapper.vm.$apollo.queries.pipeline.options.pollInterval;
+
+      expect(expectedInterval).toBe(COMMIT_BOX_POLL_INTERVAL);
+    });
+
     it('polling interval is set for pipeline stages', () => {
       createComponent();
 
@@ -164,25 +172,28 @@ describe('Commit box pipeline mini graph', () => {
       expect(expectedInterval).toBe(COMMIT_BOX_POLL_INTERVAL);
     });
 
-    it('polls for stages', async () => {
+    it('polls for stages and linked pipelines', async () => {
       createComponent();
 
       await waitForPromises();
 
       expect(stagesHandler).toHaveBeenCalledTimes(1);
+      expect(downstreamHandler).toHaveBeenCalledTimes(1);
 
       advanceToNextFetch();
       await waitForPromises();
 
       expect(stagesHandler).toHaveBeenCalledTimes(2);
+      expect(downstreamHandler).toHaveBeenCalledTimes(2);
 
       advanceToNextFetch();
       await waitForPromises();
 
       expect(stagesHandler).toHaveBeenCalledTimes(3);
+      expect(downstreamHandler).toHaveBeenCalledTimes(3);
     });
 
-    it('toggles pipelineStages polling with visibility check', async () => {
+    it('toggles query polling with visibility check', async () => {
       jest.spyOn(graphQlUtils, 'toggleQueryPollingByVisibility');
 
       createComponent();
@@ -191,6 +202,9 @@ describe('Commit box pipeline mini graph', () => {
 
       expect(graphQlUtils.toggleQueryPollingByVisibility).toHaveBeenCalledWith(
         wrapper.vm.$apollo.queries.pipelineStages,
+      );
+      expect(graphQlUtils.toggleQueryPollingByVisibility).toHaveBeenCalledWith(
+        wrapper.vm.$apollo.queries.pipeline,
       );
     });
   });
