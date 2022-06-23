@@ -186,7 +186,7 @@ module BillingPlansHelper
     link_end = '</a>'.html_safe
 
     move_link_url = help_page_path 'user/project/settings/index',
-                                   anchor: "transferring-an-existing-project-into-another-namespace"
+                                   anchor: "transfer-a-project-to-another-namespace"
 
     move_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: move_link_url }
 
