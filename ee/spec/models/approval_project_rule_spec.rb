@@ -62,14 +62,14 @@ RSpec.describe ApprovalProjectRule do
   describe '#protected_branches' do
     let_it_be(:project) { create(:project) }
     let_it_be(:rule_protected_branch) { create(:protected_branch) }
-    let_it_be(:rule) { create(:approval_project_rule, protected_branches: [rule_protected_branch]) }
+    let_it_be(:rule) { create(:approval_project_rule, protected_branches: [rule_protected_branch], project: project) }
     let_it_be(:protected_branches) { create_list(:protected_branch, 3, project: project) }
 
     subject { rule.protected_branches }
 
     context 'when applies_to_all_protected_branches is true' do
       before do
-        rule.update!(applies_to_all_protected_branches: true, project: project)
+        rule.update!(applies_to_all_protected_branches: true)
       end
 
       it 'returns a collection of all protected branches belonging to the project' do
@@ -130,7 +130,7 @@ RSpec.describe ApprovalProjectRule do
       end
 
       it 'returns true when the branch name is a protected branch' do
-        expect(rule.applies_to_branch?('protected_branch_1')).to be true
+        expect(rule.reload.applies_to_branch?('protected_branch_1')).to be true
       end
 
       it 'returns false when the branch name is an unprotected branch' do

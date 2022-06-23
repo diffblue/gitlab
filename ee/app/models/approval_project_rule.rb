@@ -47,7 +47,6 @@ class ApprovalProjectRule < ApplicationRecord
   validates :vulnerability_states, inclusion: { in: APPROVAL_VULNERABILITY_STATES.keys }
 
   def applies_to_branch?(branch)
-    return project.protected_branches.map(&:name).include?(branch) if applies_to_all_protected_branches?
     return true if protected_branches.empty?
 
     protected_branches.matching(branch).any?
