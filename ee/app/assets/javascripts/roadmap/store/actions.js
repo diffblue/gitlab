@@ -44,6 +44,7 @@ const fetchGroupEpics = (
       ...variables,
       ...transformedFilterParams,
       first: ROADMAP_PAGE_SIZE,
+      topLevelHierarchyOnly: true,
     };
 
     if (transformedFilterParams?.epicIid) {
