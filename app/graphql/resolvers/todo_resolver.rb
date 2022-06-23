@@ -2,13 +2,13 @@
 
 module Resolvers
   class TodoResolver < BaseResolver
-    description 'Retrieve a single todo'
+    description 'Retrieve a single to-do item'
 
     type Types::TodoType, null: true
 
     argument :id, Types::GlobalIDType[Todo],
              required: true,
-             description: 'ID of the Todo.'
+             description: 'ID of the to-do item.'
 
     def resolve(id:)
       GitlabSchema.find_by_gid(id)

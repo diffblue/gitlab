@@ -433,7 +433,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 
 ### `Query.todo`
 
-Retrieve a single todo.
+Retrieve a single to-do item.
 
 Returns [`Todo`](#todo).
 
@@ -441,7 +441,7 @@ Returns [`Todo`](#todo).
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="querytodoid"></a>`id` | [`TodoID!`](#todoid) | ID of the Todo. |
+| <a id="querytodoid"></a>`id` | [`TodoID!`](#todoid) | ID of the to-do item. |
 
 ### `Query.topics`
 
