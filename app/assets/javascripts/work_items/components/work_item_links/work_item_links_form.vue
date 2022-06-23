@@ -17,6 +17,7 @@ export default {
       variables() {
         return {
           projectPath: this.projectPath,
+          searchTerm: this.search,
         };
       },
       update(data) {
