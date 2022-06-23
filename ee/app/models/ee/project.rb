@@ -327,11 +327,8 @@ module EE
       namespace.store_security_reports_available? || public?
     end
 
-    # The `only_successful` flag is wrong here and will be addressed by
-    # https://gitlab.com/gitlab-org/gitlab/-/issues/331950
-    # We will also remove the fallback to `latest_not_ingested_security_pipeline` method with that issue.
-    def latest_pipeline_with_security_reports(only_successful: false)
-      (!only_successful && latest_ingested_security_pipeline) || latest_not_ingested_security_pipeline(only_successful)
+    def latest_ingested_security_pipeline
+      vulnerability_statistic&.pipeline
     end
 
     def latest_pipeline_with_reports(reports)
@@ -339,7 +336,7 @@ module EE
     end
 
     def security_reports_up_to_date_for_ref?(ref)
-      latest_pipeline_with_security_reports(only_successful: true) == ci_pipelines.newest_first(ref: ref).take
+      latest_ingested_security_pipeline == ci_pipelines.newest_first(ref: ref).take
     end
 
     def ensure_external_webhook_token
@@ -967,18 +964,6 @@ module EE
       else
         false
       end
-    end
-
-    def latest_ingested_security_pipeline
-      vulnerability_statistic&.pipeline
-    end
-
-    def latest_not_ingested_security_pipeline(only_successful)
-      pipeline_scope = all_pipelines.newest_first(ref: default_branch)
-      pipeline_scope = pipeline_scope.success if only_successful
-
-      pipeline_scope.with_reports(::Ci::JobArtifact.security_reports).first ||
-        pipeline_scope.with_legacy_security_reports.first
     end
 
     # If the project is inside a fork network, the mirror URL must

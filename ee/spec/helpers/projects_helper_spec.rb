@@ -214,7 +214,7 @@ RSpec.describe ProjectsHelper do
 
       context 'without pipeline' do
         before do
-          allow(project).to receive(:latest_pipeline_with_security_reports).and_return(nil)
+          allow(project).to receive(:latest_ingested_security_pipeline).and_return(nil)
         end
 
         it { is_expected.to match(base_values) }
@@ -240,7 +240,7 @@ RSpec.describe ProjectsHelper do
         end
 
         before do
-          allow(project).to receive(:latest_pipeline_with_security_reports).and_return(pipeline)
+          allow(project).to receive(:latest_ingested_security_pipeline).and_return(pipeline)
         end
 
         it { is_expected.to match(base_values.merge!(pipeline_values)) }

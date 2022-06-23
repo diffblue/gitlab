@@ -12,8 +12,7 @@ RSpec.describe Vulnerabilities::DismissService do
   let_it_be(:user) { create(:user) }
 
   let(:project) { create(:project) } # cannot use let_it_be here: caching causes problems with permission-related tests
-  let!(:pipeline) { create(:ci_pipeline, :success, project: project) }
-  let!(:build) { create(:ee_ci_build, :sast, pipeline: pipeline) }
+  let!(:pipeline) { create(:ee_ci_pipeline, :with_dast_report, :success, project: project) }
   let(:vulnerability) { create(:vulnerability, :with_findings, project: project) }
   let(:dismiss_findings) { true }
   let(:service) { described_class.new(user, vulnerability, dismiss_findings: dismiss_findings) }

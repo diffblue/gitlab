@@ -8,6 +8,7 @@ FactoryBot.define do
 
         after(:build) do |pipeline, evaluator|
           pipeline.builds << build(:ee_ci_build, report_type, :success, pipeline: pipeline, project: pipeline.project)
+          create(:vulnerability_statistic, project: pipeline.project, pipeline: pipeline)
         end
       end
     end
