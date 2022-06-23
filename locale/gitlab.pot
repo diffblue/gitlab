@@ -12352,13 +12352,13 @@ msgstr ""
 msgid "DependencyProxy|Enable Dependency Proxy"
 msgstr ""
 
+msgid "DependencyProxy|Enable the Dependency Proxy and settings for clearing the cache."
+msgstr ""
+
 msgid "DependencyProxy|Image list"
 msgstr ""
 
 msgid "DependencyProxy|Scheduled for deletion"
-msgstr ""
-
-msgid "DependencyProxy|Storage settings"
 msgstr ""
 
 msgid "DependencyProxy|There are no images in the cache"
