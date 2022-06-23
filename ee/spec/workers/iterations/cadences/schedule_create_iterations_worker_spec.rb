@@ -2,24 +2,49 @@
 
 require 'spec_helper'
 
-RSpec.describe Iterations::Cadences::ScheduleCreateIterationsWorker do
+RSpec.describe Iterations::Cadences::ScheduleCreateIterationsWorker, :freeze_time do
   let_it_be(:group) { create(:group) }
-  let_it_be(:start_date) { 3.weeks.ago }
-  let_it_be(:iteration_cadences) { create_list(:iterations_cadence, 2, group: group, automatic: true, start_date: start_date, duration_in_weeks: 1, iterations_in_advance: 2) }
 
   subject(:worker) { described_class.new }
 
   describe '#perform' do
     context 'in batches' do
+      let_it_be(:iteration_cadences) { create_list(:iterations_cadence, 2, group: group, start_date: 3.weeks.ago, duration_in_weeks: 1, iterations_in_advance: 2) }
+
       before do
         stub_const("#{described_class}::BATCH_SIZE", 1)
       end
 
       it 'run in batches' do
         expect(Iterations::Cadences::CreateIterationsWorker).to receive(:perform_async).twice
-        expect(Iterations::Cadence).to receive(:for_automated_iterations).and_call_original.once
+        expect(Iterations::Cadence).to receive(:next_to_auto_schedule).and_call_original.once
 
         worker.perform
+      end
+    end
+
+    context 'when cadences need to be scheduled' do
+      let_it_be(:common_args) { { group: group, start_date: Date.current, duration_in_weeks: 1, iterations_in_advance: 2 }}
+      let_it_be(:scheduled_cadence) { create(:iterations_cadence, **common_args, last_run_date: Date.current + 5.days) }
+
+      shared_examples 'CreateIterationsWorker is scheduled on the correct cadence' do
+        it 'schedules CreateIterationsWorker on the correct cadence' do
+          expect(Iterations::Cadences::CreateIterationsWorker).to receive(:perform_async).with(next_cadence.id).once
+
+          worker.perform
+        end
+      end
+
+      context 'when cadence with NULL last_run_date exists' do
+        let_it_be(:next_cadence) { create(:iterations_cadence, **common_args, last_run_date: nil) }
+
+        it_behaves_like 'CreateIterationsWorker is scheduled on the correct cadence'
+      end
+
+      context 'when cadence with last_run_date < CURRENT_DATE exists' do
+        let_it_be(:next_cadence) { create(:iterations_cadence, group: group, **common_args, last_run_date: Date.current - 5.days) }
+
+        it_behaves_like 'CreateIterationsWorker is scheduled on the correct cadence'
       end
     end
   end

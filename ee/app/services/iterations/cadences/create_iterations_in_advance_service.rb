@@ -21,7 +21,7 @@ module Iterations
           cadence.update_iteration_sequences
         end
 
-        cadence.update!(last_run_date: compute_last_run_date)
+        cadence.update!(last_run_date: compute_next_run_date)
 
         ::ServiceResponse.success
       end
@@ -103,9 +103,9 @@ module Iterations
         end
       end
 
-      def compute_last_run_date
+      def compute_next_run_date
         reloaded_last_iteration = cadence_iterations.last
-        run_date = reloaded_last_iteration.due_date - ((cadence.iterations_in_advance - 1) * cadence.duration_in_weeks).weeks if reloaded_last_iteration
+        run_date = reloaded_last_iteration.start_date - ((cadence.iterations_in_advance - 1) * cadence.duration_in_weeks).weeks if reloaded_last_iteration
         run_date ||= Date.today
 
         run_date
