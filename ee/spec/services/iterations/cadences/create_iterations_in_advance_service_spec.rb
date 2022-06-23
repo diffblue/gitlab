@@ -13,7 +13,7 @@ RSpec.describe Iterations::Cadences::CreateIterationsInAdvanceService do
   let(:ordered_sequences) { ordered_iterations.map(&:sequence) }
   let(:ordered_dates) { ordered_iterations.map { |i| [i.start_date, i.due_date] } }
   let(:ordered_states) { ordered_iterations.map(&:state) }
-  let(:expected_last_run_date) { cadence.iterations.with_start_date_after(today).last(cadence.iterations_in_advance).first.due_date }
+  let(:expected_next_run_date) { cadence.iterations.with_start_date_after(today).last(cadence.iterations_in_advance).first.start_date }
   let(:expected_states) { expected_iterations.map { |i| i[:state] } }
 
   subject { described_class.new(user, cadence).execute }
@@ -64,7 +64,7 @@ RSpec.describe Iterations::Cadences::CreateIterationsInAdvanceService do
                 expect(ordered_sequences).to eq(sequences)
                 expect(ordered_states).to eq(expected_states)
                 expect(ordered_dates).to eq(expected_iterations.map { |i| [i[:start_date], i[:due_date]] })
-                expect(cadence.last_run_date).to eq(expected_last_run_date)
+                expect(cadence.last_run_date).to eq(expected_next_run_date)
               end
             end
 
@@ -189,7 +189,7 @@ RSpec.describe Iterations::Cadences::CreateIterationsInAdvanceService do
               expect(days_of_week.first).to be(cadence.start_date.wday)
 
               expect(ordered_dates).to eq(expected_dates)
-              expect(cadence.last_run_date).to eq(expected_last_run_date)
+              expect(cadence.last_run_date).to eq(expected_next_run_date)
             end
           end
 
@@ -226,61 +226,99 @@ RSpec.describe Iterations::Cadences::CreateIterationsInAdvanceService do
           end
 
           context 'when cadence starts on a past date' do
-            let(:initial_schedule_date) { Date.new(2022, 4, 1) }
-            let(:initial_cadence_params) { { start_date: Date.new(2022, 3, 28), iterations_in_advance: 4, duration_in_weeks: 1 } }
-            let(:expected_initial_iterations) do
-              [
-                { start_date: Date.new(2022, 3, 28), duration: 1.week, state: 'current' },
-                { start_date: Date.new(2022, 3, 28) + 1.week, duration: 1.week, state: 'upcoming' },
-                { start_date: Date.new(2022, 3, 28) + 2.weeks, duration: 1.week, state: 'upcoming' },
-                { start_date: Date.new(2022, 3, 28) + 3.weeks, duration: 1.week, state: 'upcoming' },
-                { start_date: Date.new(2022, 3, 28) + 4.weeks, duration: 1.week, state: 'upcoming' }
-              ]
+            context 'when the cadence start date was a day ago' do
+              let(:initial_schedule_date) { Date.new(2022, 4, 1) }
+              let(:initial_cadence_params) { { start_date: Date.new(2022, 3, 31), iterations_in_advance: 4, duration_in_weeks: 1 } }
+              let(:expected_initial_iterations) do
+                [
+                  { start_date: Date.new(2022, 3, 31), duration: 1.week, state: 'current' },
+                  { start_date: Date.new(2022, 3, 31) + 1.week, duration: 1.week, state: 'upcoming' },
+                  { start_date: Date.new(2022, 3, 31) + 2.weeks, duration: 1.week, state: 'upcoming' },
+                  { start_date: Date.new(2022, 3, 31) + 3.weeks, duration: 1.week, state: 'upcoming' },
+                  { start_date: Date.new(2022, 3, 31) + 4.weeks, duration: 1.week, state: 'upcoming' }
+                ]
+              end
+
+              it_behaves_like 'iterations are scheduled on an initial run'
+
+              context "when re-executed with a smaller 'iterations_in_advance' value on a future date" do
+                let(:next_schedule_date) { initial_schedule_date + 1.week } # initial_schedule_date is now in the past.
+                let(:cadence_params) { initial_cadence_params.merge({ iterations_in_advance: 2 }) }
+                # No change should occur. There are still 3 upcoming iterations because we never remove existing iterations.
+                let(:expected_final_iterations) { expected_initial_iterations }
+
+                it_behaves_like 'iterations are scheduled on a subsequent run'
+              end
             end
 
-            it_behaves_like 'iterations are scheduled on an initial run'
+            context 'when the cadence start date was more than a week ago (duration_in_weeks)' do
+              let(:initial_schedule_date) { Date.new(2022, 4, 1) }
+              let(:initial_cadence_params) { { start_date: Date.new(2022, 3, 20), iterations_in_advance: 4, duration_in_weeks: 1 } }
+              let(:expected_initial_iterations) do
+                [
+                  { start_date: Date.new(2022, 3, 20), duration: 1.week, state: 'closed' },
+                  { start_date: Date.new(2022, 3, 20) + 1.week, duration: 1.week, state: 'current' },
+                  { start_date: Date.new(2022, 3, 20) + 2.weeks, duration: 1.week, state: 'upcoming' },
+                  { start_date: Date.new(2022, 3, 20) + 3.weeks, duration: 1.week, state: 'upcoming' },
+                  { start_date: Date.new(2022, 3, 20) + 4.weeks, duration: 1.week, state: 'upcoming' },
+                  { start_date: Date.new(2022, 3, 20) + 5.weeks, duration: 1.week, state: 'upcoming' }
+                ]
+              end
 
-            context "when re-executed with a smaller 'iterations_in_advance' value on a future date" do
-              let(:next_schedule_date) { initial_schedule_date + 1.week } # initial_schedule_date is now in the past.
-              let(:cadence_params) { initial_cadence_params.merge({ iterations_in_advance: 2 }) }
-              # No change should occur. There are still 3 upcoming iterations because we never remove existing iterations.
-              let(:expected_final_iterations) { expected_initial_iterations }
+              it_behaves_like 'iterations are scheduled on an initial run'
 
-              it_behaves_like 'iterations are scheduled on a subsequent run'
+              context "when re-executed with a smaller 'iterations_in_advance' value on a future date" do
+                let(:next_schedule_date) { initial_schedule_date + 1.week } # initial_schedule_date is now in the past.
+                let(:cadence_params) { initial_cadence_params.merge({ iterations_in_advance: 2 }) }
+                # No change should occur. There are still 3 upcoming iterations because we never remove existing iterations.
+                let(:expected_final_iterations) { expected_initial_iterations }
+
+                it_behaves_like 'iterations are scheduled on a subsequent run'
+              end
             end
           end
 
           context 'when cadence starts on a future date' do
-            let(:initial_schedule_date) { Date.new(2022, 4, 1) }
-            let(:initial_cadence_params) { { start_date: Date.new(2022, 4, 5), iterations_in_advance: 1, duration_in_weeks: 1 } }
-            let(:expected_initial_iterations) { [{ start_date: Date.new(2022, 4, 5), duration: 1.week, state: 'upcoming' }] }
+            context 'when the cadence start date is the next day' do
+              let(:initial_schedule_date) { Date.new(2022, 4, 1) }
+              let(:initial_cadence_params) { { start_date: Date.new(2022, 4, 2), iterations_in_advance: 1, duration_in_weeks: 1 } }
+              let(:expected_initial_iterations) { [{ start_date: Date.new(2022, 4, 2), duration: 1.week, state: 'upcoming' }] }
 
-            it_behaves_like 'iterations are scheduled on an initial run'
+              it_behaves_like 'iterations are scheduled on an initial run'
 
-            context 'when re-executed on a future date to start in the past' do
-              let(:next_schedule_date) { initial_schedule_date + 2.days } # initial_schedule_date is now in the past.
-              let(:cadence_params) { initial_cadence_params.merge({ start_date: initial_schedule_date }) }
-              let(:expected_final_iterations) do
-                [
-                  { start_date: initial_schedule_date, duration: 1.week },
-                  { start_date: initial_schedule_date + 1.week, duration: 1.week }
-                ]
+              context 'when re-executed on a future date to start in the past' do
+                let(:next_schedule_date) { initial_schedule_date } # initial_schedule_date is the current date.
+                let(:cadence_params) { initial_cadence_params.merge({ start_date: initial_schedule_date }) }
+                let(:expected_final_iterations) do
+                  [
+                    { start_date: initial_schedule_date, duration: 1.week },
+                    { start_date: initial_schedule_date + 1.week, duration: 1.week }
+                  ]
+                end
+
+                it_behaves_like 'iterations are scheduled on a subsequent run'
               end
 
-              it_behaves_like 'iterations are scheduled on a subsequent run'
+              context 'when re-executed on the same date with updated cadence params' do
+                let(:next_schedule_date) { initial_schedule_date }
+                let(:cadence_params) { initial_cadence_params.merge({ iterations_in_advance: 2, duration_in_weeks: 2 }) }
+                let(:expected_final_iterations) do
+                  [
+                    { start_date: Date.new(2022, 4, 2), duration: 2.weeks },
+                    { start_date: Date.new(2022, 4, 2) + 2.weeks, duration: 2.weeks }
+                  ]
+                end
+
+                it_behaves_like 'iterations are scheduled on a subsequent run'
+              end
             end
 
-            context 'when re-executed on the same date with updated cadence params' do
-              let(:next_schedule_date) { initial_schedule_date }
-              let(:cadence_params) { initial_cadence_params.merge({ iterations_in_advance: 2, duration_in_weeks: 2 }) }
-              let(:expected_final_iterations) do
-                [
-                  { start_date: Date.new(2022, 4, 5), duration: 2.weeks },
-                  { start_date: Date.new(2022, 4, 5) + 2.weeks, duration: 2.weeks }
-                ]
-              end
+            context 'when the cadence start date is a week later (duration_in_weeks)' do
+              let(:initial_schedule_date) { Date.new(2022, 4, 1) }
+              let(:initial_cadence_params) { { start_date: Date.new(2022, 4, 8), iterations_in_advance: 1, duration_in_weeks: 1 } }
+              let(:expected_initial_iterations) { [{ start_date: Date.new(2022, 4, 8), duration: 1.week, state: 'upcoming' }] }
 
-              it_behaves_like 'iterations are scheduled on a subsequent run'
+              it_behaves_like 'iterations are scheduled on an initial run'
             end
           end
 

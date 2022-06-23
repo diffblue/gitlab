@@ -16,7 +16,7 @@ module Iterations
       feature_category :team_planning
 
       def perform
-        Iterations::Cadence.for_automated_iterations.each_batch(of: BATCH_SIZE) do |cadences|
+        Iterations::Cadence.next_to_auto_schedule.each_batch(of: BATCH_SIZE) do |cadences|
           cadences.each do |cadence|
             Iterations::Cadences::CreateIterationsWorker.perform_async(cadence.id)
           end

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ::Iterations::Cadence do
+RSpec.describe ::Iterations::Cadence, :freeze_time do
   describe 'associations' do
     subject { build(:iterations_cadence) }
 
@@ -87,7 +87,7 @@ RSpec.describe ::Iterations::Cadence do
       end
     end
 
-    describe '#cadence_has_not_started', :freeze_time do
+    describe '#cadence_has_not_started' do
       context 'when updating an automatic cadence that has started' do
         let(:cadence) { create(:iterations_cadence, start_date: Date.current) }
 
@@ -115,7 +115,7 @@ RSpec.describe ::Iterations::Cadence do
 
   describe 'callbacks' do
     describe 'before_validation :set_to_first_start_date' do
-      context 'when manual cadence is updated to use automated scheduling', :freeze_time do
+      context 'when manual cadence is updated to use automated scheduling' do
         let(:cadence_start_date) { Date.new(2022, 4, 1) }
         let(:iteration_start_date) { cadence_start_date - 1.month }
         let(:cadence) { build(:iterations_cadence, start_date: cadence_start_date, automatic: false).tap { |cadence| cadence.save!(validate: false) } }
@@ -143,7 +143,23 @@ RSpec.describe ::Iterations::Cadence do
     end
   end
 
-  describe '#next_schedule_date_and_count', :freeze_time do
+  describe 'scopes' do
+    describe 'next_to_auto_schedule' do
+      let_it_be(:current_date) { Time.zone.now.to_date }
+      let_it_be(:group) { create(:group) }
+      let_it_be(:cadence1) { create(:iterations_cadence, group: group, last_run_date: current_date) }
+      let_it_be(:cadence2) { create(:iterations_cadence, group: group, last_run_date: current_date - 1.day) }
+      let_it_be(:cadence3) { create(:iterations_cadence, group: group, last_run_date: nil) } # a newly created cadence would have nil as last_run_date.
+      let_it_be(:cadence4) { create(:iterations_cadence, group: group, last_run_date: current_date + 1.day) }
+      let_it_be(:manual_cadence) { build(:iterations_cadence, group: group, automatic: false).tap { |cadence| cadence.save!(validate: false) } }
+
+      it "returns automatic cadences with 'last_run_date' set in the past or to the current date" do
+        expect(described_class.next_to_auto_schedule).to match_array([cadence1, cadence2, cadence3])
+      end
+    end
+  end
+
+  describe '#next_schedule_date_and_count' do
     let_it_be(:group) { create(:group) }
 
     let(:cadence_start_date) { Date.new(2022, 4, 1) }
@@ -236,7 +252,7 @@ RSpec.describe ::Iterations::Cadence do
     end
   end
 
-  describe '#next_open_iteration_start_date', :time_freeze do
+  describe '#next_open_iteration_start_date' do
     let_it_be(:group) { create(:group) }
 
     let(:today) { Date.new(2022, 4, 1) }
