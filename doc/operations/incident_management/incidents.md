@@ -54,7 +54,7 @@ GitLab to create incident automatically whenever an alert is triggered:
 1. Check the **Create an incident** checkbox.
 1. To customize the incident, select an
    [issue template](../../user/project/description_templates.md#create-an-issue-template),
-   which will be included in the [incident summary](#summary).
+   to include in the [incident summary](#summary).
 1. To send [an email notification](paging.md#email-notifications-for-alerts) to users
    with the Developer role, select
    **Send a separate email notification to Developers**. Email notifications are
@@ -172,9 +172,9 @@ Beneath the highlight bar, GitLab displays a summary that includes the following
 The incident summary can be further customized using
 [GitLab Flavored Markdown](../../user/markdown.md). If the corresponding alert
 [provided Markdown for the incident](../metrics/alerts.md#trigger-actions-from-alerts),
-then that will be appended to the summary after the above alert fields. If an
+then the Markdown is appended to the summary after the above alert fields. If an
 [incident template](#create-incidents-automatically) is configured for the
-project, then the template content will be appended at the end.
+project, then the template content is appended at the end.
 
 Comments are displayed in threads, but can be displayed chronologically
 [by toggling on the recent updates view](#recent-updates-view).
