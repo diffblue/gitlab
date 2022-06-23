@@ -6,7 +6,7 @@ module QA
       include Runtime::Fixtures
       let(:project_name) { 'testing_elasticsearch_indexing' }
       let(:project_file_name) { 'elasticsearch.rb' }
-      let(:project_file_content) { 'elasticsearch: true' }
+      let(:project_file_content) { "Some file content #{SecureRandom.hex(8)}" }
       let(:project) do
         Resource::Project.fabricate_via_api! do |project|
           project.name = project_name
