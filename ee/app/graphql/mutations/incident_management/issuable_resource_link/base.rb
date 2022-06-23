@@ -19,10 +19,6 @@ module Mutations
             errors: result.errors
           }
         end
-
-        def find_object(id:)
-          GitlabSchema.object_from_id(id, expected_type: ::Issue).sync
-        end
       end
     end
   end

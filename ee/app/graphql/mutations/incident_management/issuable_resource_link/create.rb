@@ -27,6 +27,12 @@ module Mutations
 
           response ::IncidentManagement::IssuableResourceLinks::CreateService.new(incident, current_user, args).execute
         end
+
+        private
+
+        def find_object(id:)
+          GitlabSchema.object_from_id(id, expected_type: ::Issue).sync
+        end
       end
     end
   end
