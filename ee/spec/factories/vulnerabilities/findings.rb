@@ -577,6 +577,7 @@ FactoryBot.define do
     trait :with_cluster_image_scanning_scanning_metadata do
       transient do
         location_image { "alpine:3.7" }
+        agent_id { '46357' }
       end
 
       after(:build) do |finding, evaluator|
@@ -594,7 +595,7 @@ FactoryBot.define do
           "image": evaluator.location_image,
           "kubernetes_resource": {
             "cluster_id": "1",
-            "agent_id": "46357"
+            "agent_id": evaluator.agent_id
           }
         }
         finding.raw_metadata = {
