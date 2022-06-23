@@ -11553,6 +11553,9 @@ msgstr ""
 msgid "DastProfiles|Include debug messages in the DAST console output."
 msgstr ""
 
+msgid "DastProfiles|Manage %{profileType} profiles"
+msgstr ""
+
 msgid "DastProfiles|Manage profiles"
 msgstr ""
 

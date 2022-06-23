@@ -10,6 +10,7 @@ import { SCANNER_TYPE, SITE_TYPE, SIDEBAR_VIEW_MODE } from 'ee/on_demand_scans/c
 describe('DastProfilesSidebar', () => {
   let wrapper;
   const projectPath = 'projectPath';
+  const libraryLink = 'libraryLink';
 
   const createComponent = (options = {}) => {
     wrapper = mountExtended(DastProfilesSidebar, {
@@ -133,15 +134,16 @@ describe('DastProfilesSidebar', () => {
     });
   });
 
-  describe.each`
-    profileType     | expectedResult
-    ${SCANNER_TYPE} | ${__(`Manage ${SCANNER_TYPE} profiles`)}
-    ${SITE_TYPE}    | ${__(`Manage ${SITE_TYPE} profiles`)}
-  `('sticky footer', ({ profileType, expectedResult }) => {
-    const libraryLink = 'libraryLink';
-    createComponent({ profileType, libraryLink });
+  describe('sticky footer', () => {
+    it.each`
+      profileType     | expectedResult
+      ${SCANNER_TYPE} | ${__(`Manage ${SCANNER_TYPE} profiles`)}
+      ${SITE_TYPE}    | ${__(`Manage ${SITE_TYPE} profiles`)}
+    `('renders correctly for $profileType profiles', ({ profileType, expectedResult }) => {
+      createComponent({ profileType, libraryLink });
 
-    expect(findFooterLink().text()).toBe(expectedResult);
-    expect(findFooterLink().attributes('href')).toEqual(libraryLink);
+      expect(findFooterLink().text()).toBe(expectedResult);
+      expect(findFooterLink().attributes('href')).toEqual(libraryLink);
+    });
   });
 });
