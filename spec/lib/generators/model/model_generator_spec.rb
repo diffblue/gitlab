@@ -2,14 +2,13 @@
 
 require 'spec_helper'
 
-# RSpec.describe Model::ModelGenerator, :silence_stdout do
 RSpec.describe Model::ModelGenerator do
   let(:args) { ['ModelGeneratorTestFoo'] }
   let(:options) { { 'migration' => true, 'timestamps' => true, 'indexes' => true, 'test_framework' => :rspec } }
   let(:temp_dir) { Dir.mktmpdir }
-  let(:migration_file_path) { Dir.glob(File.join(temp_dir, '**/*create_model_generator_test_foos.rb')).first }
-  let(:model_file_path) { Dir.glob(File.join(temp_dir, '**/*model_generator_test_foo.rb')).first }
-  let(:spec_file_path) { Dir.glob(File.join(temp_dir, '**/*model_generator_test_foo_spec.rb')).first }
+  let(:migration_file_path) { Dir.glob(File.join(temp_dir, 'db/migrate/*create_model_generator_test_foos.rb')).first }
+  let(:model_file_path) { File.join(temp_dir, 'app/models/model_generator_test_foo.rb') }
+  let(:spec_file_path) { File.join(temp_dir, 'spec/models/model_generator_test_foo_spec.rb') }
 
   subject { described_class.new(args, options, { destination_root: temp_dir }) }
 
