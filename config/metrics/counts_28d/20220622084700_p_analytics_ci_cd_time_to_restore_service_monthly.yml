@@ -14,7 +14,7 @@ time_frame: 28d
 data_source: redis_hll
 data_category: operational
 instrumentation_class: RedisHLLMetric
-performance_indicator_type:
+performance_indicator_type: []
 distribution:
 - ce
 - ee

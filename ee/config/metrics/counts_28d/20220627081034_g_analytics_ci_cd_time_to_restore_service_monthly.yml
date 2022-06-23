@@ -1,7 +1,7 @@
 ---
-key_path: redis_hll_counters.analytics.p_analytics_ci_cd_time_to_restore_service_weekly
-name: p_analytics_ci_cd_time_to_restore_service_weekly
-description: Count of unique visits to the project level CI/CD Analytics Time to restore service tab
+key_path: redis_hll_counters.analytics.g_analytics_ci_cd_time_to_restore_service_monthly
+name: g_analytics_ci_cd_time_to_restore_service_monthly
+description: Count of unique visits to the group level CI/CD Analytics Time to restore service tab
 product_section: dev
 product_stage: manage
 product_group: group::optimize
@@ -10,13 +10,12 @@ value_type: number
 status: active
 milestone: "15.2"
 introduced_by_url:
-time_frame: 7d
+time_frame: 28d
 data_source: redis_hll
 data_category: operational
 instrumentation_class: RedisHLLMetric
 performance_indicator_type: []
 distribution:
-- ce
 - ee
 tier:
 - premium

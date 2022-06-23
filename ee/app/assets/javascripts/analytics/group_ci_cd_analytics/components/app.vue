@@ -4,6 +4,7 @@ import DeploymentFrequencyCharts from 'ee/dora/components/deployment_frequency_c
 import LeadTimeCharts from 'ee/dora/components/lead_time_charts.vue';
 import TimeToRestoreServiceCharts from 'ee/dora/components/time_to_restore_service_charts.vue';
 import { mergeUrlParams, updateHistory, getParameterValues } from '~/lib/utils/url_utility';
+import API from '~/api';
 import ReleaseStatsCard from './release_stats_card.vue';
 import SharedRunnersUsage from './shared_runner_usage.vue';
 
@@ -19,6 +20,7 @@ export default {
     TimeToRestoreServiceCharts,
     SharedRunnersUsage,
   },
+  timeToRestoreServiceTabEvent: 'g_analytics_ci_cd_time_to_restore_service',
   inject: {
     shouldRenderDoraCharts: {
       type: Boolean,
@@ -71,6 +73,9 @@ export default {
         updateHistory({ url: path, title: window.title });
       }
     },
+    trackTabClick(tab) {
+      API.trackRedisHllUserEvent(tab);
+    },
   },
 };
 </script>
@@ -87,7 +92,11 @@ export default {
         <gl-tab :title="s__('CICDAnalytics|Lead time')">
           <lead-time-charts />
         </gl-tab>
-        <gl-tab :title="s__('CICDAnalytics|Time to restore service')">
+        <gl-tab
+          :title="s__('CICDAnalytics|Time to restore service')"
+          data-testid="time-to-restore-service-tab"
+          @click="trackTabClick($options.timeToRestoreServiceTabEvent)"
+        >
           <time-to-restore-service-charts />
         </gl-tab>
       </template>
