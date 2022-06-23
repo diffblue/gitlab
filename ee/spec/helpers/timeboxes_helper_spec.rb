@@ -116,6 +116,46 @@ RSpec.describe TimeboxesHelper do
     end
   end
 
+  describe "#recent_releases_with_counts" do
+    before do
+      stub_licensed_features(group_milestone_project_releases: true)
+    end
+
+    let_it_be(:group) { create(:group, :public) }
+    let_it_be(:milestone) { create(:milestone, group: group) }
+    let_it_be(:public_project) { create(:project, :public, namespace: group) }
+    let_it_be(:private_project) { create(:project, namespace: group) }
+    let_it_be(:user) { create(:user) }
+
+    # can't use let_it_be because can't stub group_milestone_project_releases outside of example
+    let!(:public_release) { create(:release, project: public_project, milestones: [milestone]) }
+    let!(:private_release) { create(:release, project: private_project, milestones: [milestone]) }
+
+    subject { helper.recent_releases_with_counts(milestone, user) }
+
+    it "hides private release" do
+      is_expected.to eq([[public_release], 2, 1])
+    end
+
+    context "when user is nil" do
+      let(:user) { nil }
+
+      it "hides private release" do
+        is_expected.to eq([[public_release], 2, 1])
+      end
+    end
+
+    context "when user has access to the project" do
+      before do
+        private_project.add_developer(user)
+      end
+
+      it "returns both releases" do
+        is_expected.to match([match_array([public_release, private_release]), 2, 0])
+      end
+    end
+  end
+
   def create_resource_state_event(created_at = Date.current)
     create(:resource_state_event, created_at: created_at)
   end
