@@ -36,7 +36,7 @@ RSpec.describe IssuablePolicy, models: true do
         expect(permissions(non_member, issue)).to be_disallowed(:admin_issuable_resource_link)
         expect(permissions(guest, issue)).to be_disallowed(:admin_issuable_resource_link)
         expect(permissions(developer, issue)).to be_disallowed(:admin_issuable_resource_link)
-        expect(permissions(reporter, issue)).to be_allowed(:admin_issuable_resource_link)
+        expect(permissions(reporter, issue)).to be_disallowed(:admin_issuable_resource_link)
       end
     end
 
