@@ -6,16 +6,22 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 
 # ViewComponent
 
-ViewComponent is a framework for creating reusable, testable & encapsulated view components with Ruby on Rails, without the need for a JavaScript framework like Vue.
+ViewComponent is a framework for creating reusable, testable & encapsulated view
+components with Ruby on Rails, without the need for a JavaScript framework like Vue.
 They are rendered server-side and can be seamlessly used with template languages like [Haml](haml.md).
 
-See the official [documentation](https://viewcomponent.org/) to learn more or watch this [introduction video](https://youtu.be/akRhUbvtnmo).
+Refer to the official [documentation](https://viewcomponent.org/) to learn more or
+watch this [introduction video](https://youtu.be/akRhUbvtnmo).
 
 ## Pajamas components
 
-Some of the components of our [Pajamas](https://design.gitlab.com) design system are available as a ViewComponent in `app/components/pajamas`.
+Some of the components of our [Pajamas](https://design.gitlab.com) design system are
+available as a ViewComponent in `app/components/pajamas`.
 
-> This is still a small but growing number of components. Reach out to the [Foundations team](https://about.gitlab.com/handbook/engineering/development/dev/ecosystem/foundations/) if the component you are looking for is not yet available.
+NOTE:
+We have a small but growing number of Pajamas components. Reach out to the
+[Foundations team](https://about.gitlab.com/handbook/engineering/development/dev/ecosystem/foundations/)
+if the component you are looking for is not yet available.
 
 ### Available components
 
@@ -40,7 +46,8 @@ You can set variant, hide the icons and more:
   show_icon: false)
 ```
 
-For the full list of options, see its [source](https://gitlab.com/gitlab-org/gitlab/-/blob/master/app/components/pajamas/alert_component.rb).
+For the full list of options, see its
+[source](https://gitlab.com/gitlab-org/gitlab/-/blob/master/app/components/pajamas/alert_component.rb).
 
 #### Banner
 
@@ -57,7 +64,8 @@ In its simplest form the banner component looks like this:
   %p Content of your banner goes here...
 ```
 
-If you have a need for more control, you can also use the `illustration` slot instead of `svg_path` and the `primary_action` slot instead of `button_text` and `button_link`:
+If you have a need for more control, you can also use the `illustration` slot
+instead of `svg_path` and the `primary_action` slot instead of `button_text` and `button_link`:
 
 ```haml
 = render Pajamas::BannerComponent.new do |c|
@@ -69,7 +77,8 @@ If you have a need for more control, you can also use the `illustration` slot in
     = render 'my_button_in_a_partial'
 ```
 
-For the full list of options, see its [source](https://gitlab.com/gitlab-org/gitlab/-/blob/master/app/components/pajamas/banner_component.rb).
+For the full list of options, see its
+[source](https://gitlab.com/gitlab-org/gitlab/-/blob/master/app/components/pajamas/banner_component.rb).
 
 #### Button
 
@@ -77,7 +86,8 @@ The `Pajamas::ButtonComponent` follows the [Pajamas Button](https://design.gitla
 
 **Examples:**
 
-The button component has a lot of options but all of them have good defaults, so the simplest button looks like this:
+The button component has a lot of options but all of them have good defaults,
+so the simplest button looks like this:
 
 ```haml
 = render Pajamas::ButtonComponent.new do |c|
@@ -104,7 +114,8 @@ You can also create button-like looking `<a>` tags, like this:
   Go home
 ```
 
-For the full list of options, see its [source](https://gitlab.com/gitlab-org/gitlab/-/blob/master/app/components/pajamas/button_component.rb).
+For the full list of options, see its
+[source](https://gitlab.com/gitlab-org/gitlab/-/blob/master/app/components/pajamas/button_component.rb).
 
 #### Card
 
@@ -133,7 +144,8 @@ If you want to add custom attributes to any of these or the card itself, use the
 
 `header_options` and `footer_options` are available, too.
 
-For the full list of options, see its [source](https://gitlab.com/gitlab-org/gitlab/-/blob/master/app/components/pajamas/card_component.rb).
+For the full list of options, see its
+[source](https://gitlab.com/gitlab-org/gitlab/-/blob/master/app/components/pajamas/card_component.rb).
 
 #### Toggle
 
@@ -147,11 +159,16 @@ The `Pajamas::ToggleComponent` follows the [Pajamas Toggle](https://design.gitla
   Leverage this block to render a rich help text. To render a plain text help text, prefer the `help` parameter.
 ```
 
-> **The toggle ViewComponent is special as it depends on the Vue.js component.** To actually initialize this component, make sure to call the `initToggle` helper from `~/toggles`.
+NOTE:
+**The toggle ViewComponent is special as it depends on the Vue.js component.**
+To actually initialize this component, make sure to call the `initToggle` helper from `~/toggles`.
 
-For the full list of options, see its [source](https://gitlab.com/gitlab-org/gitlab/-/blob/master/app/components/pajamas/toggle_component.rb).
+For the full list of options, see its
+[source](https://gitlab.com/gitlab-org/gitlab/-/blob/master/app/components/pajamas/toggle_component.rb).
 
 ### Best practices
 
-- If you are about to create a new view in Haml, use the available components over creating plain Haml tags with CSS classes.
-- If you are making changes to an existing Haml view and see, for example, a button that is still implemented with plain Haml, consider migrating it to use a ViewComponent.
+- If you are about to create a new view in Haml, use the available components
+  over creating plain Haml tags with CSS classes.
+- If you are making changes to an existing Haml view and see, for example, a
+  button that is still implemented with plain Haml, consider migrating it to use a ViewComponent.
