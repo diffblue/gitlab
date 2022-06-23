@@ -7,7 +7,8 @@ RSpec.describe 'Group wikis', :js do
 
   let_it_be(:user) { create(:user) }
 
-  let(:wiki) { create(:group_wiki, user: user) }
+  let(:group) { create(:group) }
+  let(:wiki) { create(:group_wiki, user: user, group: group) }
 
   before do
     stub_group_wikis(true)
