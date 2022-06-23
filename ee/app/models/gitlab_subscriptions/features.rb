@@ -216,6 +216,7 @@ module GitlabSubscriptions
       stale_runner_cleanup_for_namespace
       status_page
       subepics
+      unique_project_download_limit
       vulnerability_auto_fix
       vulnerability_finding_signatures
     ].freeze

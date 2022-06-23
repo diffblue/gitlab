@@ -5,6 +5,13 @@ module EE
     extend ActiveSupport::Concern
 
     prepended do
+      validates :unique_project_download_limit,
+        numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: 10_000 },
+        presence: true
+      validates :unique_project_download_limit_interval,
+        numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: 10.days.to_i },
+        presence: true
+
       validate :user_cap_allowed, if: -> { enabling_user_cap? }
 
       before_save :set_prevent_sharing_groups_outside_hierarchy, if: -> { user_cap_enabled? }
@@ -44,6 +51,24 @@ module EE
 
       def user_cap_enabled?
         new_user_signups_cap.present? && namespace.root?
+      end
+    end
+
+    class_methods do
+      extend ::Gitlab::Utils::Override
+
+      override :parameters
+      def parameters
+        super + unique_project_download_limit_attributes
+      end
+
+      private
+
+      def unique_project_download_limit_attributes
+        %i[
+          unique_project_download_limit
+          unique_project_download_limit_interval
+        ].freeze
       end
     end
   end

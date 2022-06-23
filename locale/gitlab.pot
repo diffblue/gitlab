@@ -18443,6 +18443,9 @@ msgstr ""
 msgid "GroupSettings|Auto DevOps pipeline was updated for the group"
 msgstr ""
 
+msgid "GroupSettings|Automatically ban users who download more than the specified number of projects within the specified interval."
+msgstr ""
+
 msgid "GroupSettings|Available only on the top-level group. Applies to all subgroups. Groups already shared with a group outside %{group} are still shared unless removed manually."
 msgstr ""
 
@@ -18521,7 +18524,13 @@ msgstr ""
 msgid "GroupSettings|Prevent forking setting was not saved"
 msgstr ""
 
+msgid "GroupSettings|Project download rate limit"
+msgstr ""
+
 msgid "GroupSettings|Projects in %{group} cannot be shared with other groups"
+msgstr ""
+
+msgid "GroupSettings|Reporting"
 msgstr ""
 
 msgid "GroupSettings|Select a subgroup to use as the source for custom project templates for this group."
@@ -18545,6 +18554,9 @@ msgstr ""
 msgid "GroupSettings|The Auto DevOps pipeline runs if no alternative CI configuration file is found."
 msgstr ""
 
+msgid "GroupSettings|The maximum number of unique projects a user can download within the specified interval before they're banned."
+msgstr ""
+
 msgid "GroupSettings|The projects in this subgroup can be selected as templates for new projects created in the group. %{link_start}Learn more.%{link_end}"
 msgstr ""
 
@@ -18564,6 +18576,12 @@ msgid "GroupSettings|This setting is applied on %{ancestor_group}. You can overr
 msgstr ""
 
 msgid "GroupSettings|Transfer group"
+msgstr ""
+
+msgid "GroupSettings|Unique project download limit"
+msgstr ""
+
+msgid "GroupSettings|Unique project download limit interval in seconds"
 msgstr ""
 
 msgid "GroupSettings|Users can create %{link_start_project}project access tokens%{link_end} and %{link_start_group}group access tokens%{link_end} in this group"

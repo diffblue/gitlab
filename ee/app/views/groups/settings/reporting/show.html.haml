@@ -1,0 +1,23 @@
+- title = s_("GroupSettings|Reporting")
+- breadcrumb_title title
+- page_title title
+
+%h4.settings-title
+  = s_('GroupSettings|Project download rate limit')
+%p
+  = s_('GroupSettings|Automatically ban users who download more than the specified number of projects within the specified interval.')
+
+= form_errors(@group.namespace_settings)
+
+= gitlab_ui_form_for @group, url: group_settings_reporting_path(@group) do |f|
+  .form-group
+    = f.label :unique_project_download_limit, s_('GroupSettings|Unique project download limit'), class: 'label-bold'
+    = f.number_field :unique_project_download_limit, value: @group.namespace_settings&.unique_project_download_limit, class: 'form-control gl-form-input'
+    .form-text.text-muted
+      = s_("GroupSettings|The maximum number of unique projects a user can download within the specified interval before they're banned.")
+
+  .form-group
+    = f.label :unique_project_download_limit_interval, s_('GroupSettings|Unique project download limit interval in seconds'), class: 'label-bold'
+    = f.number_field :unique_project_download_limit_interval, value: @group.namespace_settings&.unique_project_download_limit_interval, class: 'form-control gl-form-input'
+
+  = f.submit _('Save changes'), class: 'btn gl-button btn-confirm mt-4'
