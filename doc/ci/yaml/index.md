@@ -675,6 +675,45 @@ artifacts are restored after [caches](#cache).
 
 [Read more about artifacts](../pipelines/job_artifacts.md).
 
+#### `artifacts:paths`
+
+Paths are relative to the project directory (`$CI_PROJECT_DIR`) and can't directly
+link outside it.
+
+**Keyword type**: Job keyword. You can use it only as part of a job or in the
+[`default` section](#default).
+
+**Possible inputs**:
+
+- An array of file paths, relative to the project directory.
+- You can use Wildcards that use [glob](https://en.wikipedia.org/wiki/Glob_(programming))
+  patterns and:
+  - In [GitLab Runner 13.0 and later](https://gitlab.com/gitlab-org/gitlab-runner/-/issues/2620),
+    [`doublestar.Glob`](https://pkg.go.dev/github.com/bmatcuk/doublestar@v1.2.2?tab=doc#Match).
+  - In GitLab Runner 12.10 and earlier, [`filepath.Match`](https://pkg.go.dev/path/filepath#Match).
+
+**Example of `artifacts:paths`**:
+
+```yaml
+job:
+  artifacts:
+    paths:
+      - binaries/
+      - .config
+```
+
+This example creates an artifact with `.config` and all the files in the `binaries` directory.
+
+**Additional details**:
+
+- If not used with [`artifacts:name`](#artifactsname), the artifacts file
+  is named `artifacts`, which becomes `artifacts.zip` when downloaded.
+
+**Related topics**:
+
+- To restrict which jobs a specific job fetches artifacts from, see [`dependencies`](#dependencies).
+- [Create job artifacts](../pipelines/job_artifacts.md#create-job-artifacts).
+
 #### `artifacts:exclude`
 
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/15122) in GitLab 13.1
@@ -843,45 +882,6 @@ job:
 
 - [Use CI/CD variables to define the artifacts name](../pipelines/job_artifacts.md#use-cicd-variables-to-define-the-artifacts-name).
 
-#### `artifacts:paths`
-
-Paths are relative to the project directory (`$CI_PROJECT_DIR`) and can't directly
-link outside it.
-
-**Keyword type**: Job keyword. You can use it only as part of a job or in the
-[`default` section](#default).
-
-**Possible inputs**:
-
-- An array of file paths, relative to the project directory.
-- You can use Wildcards that use [glob](https://en.wikipedia.org/wiki/Glob_(programming))
-  patterns and:
-  - In [GitLab Runner 13.0 and later](https://gitlab.com/gitlab-org/gitlab-runner/-/issues/2620),
-    [`doublestar.Glob`](https://pkg.go.dev/github.com/bmatcuk/doublestar@v1.2.2?tab=doc#Match).
-  - In GitLab Runner 12.10 and earlier, [`filepath.Match`](https://pkg.go.dev/path/filepath#Match).
-
-**Example of `artifacts:paths`**:
-
-```yaml
-job:
-  artifacts:
-    paths:
-      - binaries/
-      - .config
-```
-
-This example creates an artifact with `.config` and all the files in the `binaries` directory.
-
-**Additional details**:
-
-- If not used with [`artifacts:name`](#artifactsname) defined, the artifacts file
-  is named `artifacts`, which becomes `artifacts.zip` when downloaded.
-
-**Related topics**:
-
-- To restrict which jobs a specific job fetches artifacts from, see [`dependencies`](#dependencies).
-- [Create job artifacts](../pipelines/job_artifacts.md#create-job-artifacts).
-
 #### `artifacts:public`
 
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/49775) in GitLab 13.8
@@ -910,7 +910,7 @@ pipelines, set `artifacts:public` to `false`:
 
 - `true` (default if not defined) or `false`.
 
-**Example of `artifacts:paths`**:
+**Example of `artifacts:public`**:
 
 ```yaml
 job:
