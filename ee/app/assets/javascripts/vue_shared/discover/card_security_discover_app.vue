@@ -7,6 +7,7 @@ import {
   GlSprintf,
   GlLink,
 } from '@gitlab/ui';
+import { DISCOVER_PLANS_MORE_INFO_LINK } from 'jh_else_ee/vue_shared/discover/constants';
 import securityDashboardImageUrl from 'ee_images/promotions/security-dashboard.png';
 import securityDependencyImageUrl from 'ee_images/promotions/security-dependencies.png';
 import securityScanningImageUrl from 'ee_images/promotions/security-scanning.png';
@@ -16,6 +17,7 @@ import GitlabExperiment from '~/experimentation/components/gitlab_experiment.vue
 import HandRaiseLeadButton from 'ee/hand_raise_leads/hand_raise_lead/components/hand_raise_lead_button.vue';
 
 export default {
+  DISCOVER_PLANS_MORE_INFO_LINK,
   directives: {
     GlTooltip: GlTooltipDirective,
   },
@@ -143,10 +145,7 @@ export default {
         <p class="gl-text-gray-900 gl-text-center mb-7">
           <gl-sprintf :message="$options.i18n.discoverPlanCaption">
             <template #link="{ content }">
-              <gl-link
-                href="https://about.gitlab.com/pricing/saas/feature-comparison/"
-                target="_blank"
-              >
+              <gl-link :href="$options.DISCOVER_PLANS_MORE_INFO_LINK" target="_blank">
                 {{ content }}
               </gl-link>
             </template>
