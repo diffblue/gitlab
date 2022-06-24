@@ -15,7 +15,6 @@ RSpec.describe Users::Abuse::ExcessiveProjectsDownloadBanService, :clean_gitlab_
     before do
       stub_application_setting(max_number_of_repository_downloads: limit)
       stub_application_setting(max_number_of_repository_downloads_within_time_period: time_period_in_seconds)
-      stub_feature_flags(auto_ban_user_on_excessive_projects_download: true)
     end
 
     it 'counts repeated downloads of a project only once' do

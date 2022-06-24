@@ -37,7 +37,7 @@ RSpec.describe Gitlab::ApplicationRateLimiter::IncrementPerAction, :freeze_time,
     end
 
     it 'returns 0 when there is no data' do
-      expect(counter.read(cache_key)).to eq 0
+      expect(read).to eq 0
     end
 
     it 'returns the correct value', :aggregate_failures do
