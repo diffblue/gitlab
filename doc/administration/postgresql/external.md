@@ -55,7 +55,7 @@ If you use a cloud-managed service, or provide your own PostgreSQL instance:
 
 When using an external PostgreSQL instance, you may see an error like:
 
-```
+```shell
 pg_dump: error: Error message from server: SSL SYSCALL error: EOF detected
 ```
 
