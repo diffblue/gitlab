@@ -411,9 +411,10 @@ RSpec.describe 'Admin updates EE-only settings' do
     end
   end
 
-  describe 'Git abuse rate limit settings' do
+  describe 'git abuse rate limit settings', :js do
     let(:git_abuse_flag) { true }
     let(:license_allows) { true }
+    let(:user) { create(:user, name: 'John Doe') }
 
     before do
       stub_feature_flags(git_abuse_rate_limit_feature_flag: git_abuse_flag)
@@ -450,52 +451,57 @@ RSpec.describe 'Admin updates EE-only settings' do
       end
 
       it 'shows the input fields' do
-        expect(page).to have_field(s_('AdminSettings|Number of repositories'))
-        expect(page).to have_field(s_('AdminSettings|Reporting time period (seconds)'))
+        expect(page).to have_field(s_('GitAbuse|Number of repositories'))
+        expect(page).to have_field(s_('GitAbuse|Reporting time period (seconds)'))
+        expect(page).to have_field(s_('GitAbuse|Excluded users'))
       end
 
       it 'saves the settings' do
         page.within(find('[data-testid="git-abuse-rate-limit-settings"]')) do
-          fill_in(s_('AdminSettings|Number of repositories'), with: 5)
-          fill_in(s_('AdminSettings|Reporting time period (seconds)'), with: 300)
-          click_button 'Save changes'
+          fill_in(s_('GitAbuse|Number of repositories'), with: 5)
+          fill_in(s_('GitAbuse|Reporting time period (seconds)'), with: 300)
+          fill_in(s_('GitAbuse|Excluded users'), with: user.name)
+
+          wait_for_requests
+          click_button user.name
+
+          click_button _('Save changes')
         end
 
-        expect(page).to have_field(s_('AdminSettings|Number of repositories'), with: 5)
-        expect(page).to have_field(s_('AdminSettings|Reporting time period (seconds)'), with: 300)
+        expect(page).to have_field(s_('GitAbuse|Number of repositories'), with: 5)
+        expect(page).to have_field(s_('GitAbuse|Reporting time period (seconds)'), with: 300)
+        expect(page).to have_content(user.name)
       end
 
-      it 'shows form errors when the input type is invalid' do
+      it 'shows form errors when the input value is blank' do
         page.within(find('[data-testid="git-abuse-rate-limit-settings"]')) do
-          fill_in(s_('AdminSettings|Number of repositories'), with: '')
-          fill_in(s_('AdminSettings|Reporting time period (seconds)'), with: '')
-          click_button 'Save changes'
+          fill_in(s_('GitAbuse|Number of repositories'), with: '')
+          fill_in(s_('GitAbuse|Reporting time period (seconds)'), with: '')
+          find('#reporting-time-period').native.send_keys :tab
         end
 
-        expect(page).to have_content(s_('AdminSettings|Max number of repository downloads is not a number'))
-        expect(page).to have_content(s_('AdminSettings|Max number of repository downloads within time period is not a number'))
-      end
-
-      it 'shows form errors when the input value is less than 0' do
-        page.within(find('[data-testid="git-abuse-rate-limit-settings"]')) do
-          fill_in(s_('AdminSettings|Number of repositories'), with: -1)
-          fill_in(s_('AdminSettings|Reporting time period (seconds)'), with: -1)
-          click_button 'Save changes'
-        end
-
-        expect(page).to have_content(s_('AdminSettings|Max number of repository downloads must be greater than or equal to 0'))
-        expect(page).to have_content(s_('AdminSettings|Max number of repository downloads within time period must be greater than or equal to 0'))
+        expect(page).to have_content(s_("GitAbuse|Number of repositories can't be blank. Set to 0 for no limit."))
+        expect(page).to have_content(s_("GitAbuse|Reporting time period can't be blank. Set to 0 for no limit."))
+        expect(page).to have_button _('Save changes'), disabled: true
       end
 
       it 'shows form errors when the input value is greater than max' do
         page.within(find('[data-testid="git-abuse-rate-limit-settings"]')) do
-          fill_in(s_('AdminSettings|Number of repositories'), with: 10001)
-          fill_in(s_('AdminSettings|Reporting time period (seconds)'), with: 864001)
-          click_button 'Save changes'
+          fill_in(s_('GitAbuse|Number of repositories'), with: 10001)
+          fill_in(s_('GitAbuse|Reporting time period (seconds)'), with: 864001)
+          find('#reporting-time-period').native.send_keys :tab
         end
 
-        expect(page).to have_content(s_('AdminSettings|Max number of repository downloads must be less than or equal to 10000'))
-        expect(page).to have_content(s_('AdminSettings|Max number of repository downloads within time period must be less than or equal to 864000'))
+        expect(page).to have_content(
+          s_('GitAbuse|Number of repositories should be between %{minNumRepos}-%{maxNumRepos}.') %
+          { minNumRepos: 0, maxNumRepos: 10000 }
+        )
+
+        expect(page).to have_content(
+          s_('GitAbuse|Reporting time period should be between %{minTimePeriod}-%{maxTimePeriod} seconds.') %
+          { minTimePeriod: 0, maxTimePeriod: 864000 }
+        )
+        expect(page).to have_button _('Save changes'), disabled: true
       end
     end
   end

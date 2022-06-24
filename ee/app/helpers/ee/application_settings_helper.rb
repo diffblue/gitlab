@@ -166,5 +166,13 @@ module EE
         delayed_project_deletion: @application_setting[:delayed_project_deletion].to_s
       }
     end
+
+    def git_abuse_rate_limit_data
+      {
+        max_number_of_repository_downloads: @application_setting[:max_number_of_repository_downloads].to_i,
+        max_number_of_repository_downloads_within_time_period: @application_setting[:max_number_of_repository_downloads_within_time_period].to_i,
+        git_rate_limit_users_allowlist: @application_setting[:git_rate_limit_users_allowlist].to_a
+      }
+    end
   end
 end

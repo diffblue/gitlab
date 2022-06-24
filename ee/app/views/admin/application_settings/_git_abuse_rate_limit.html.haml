@@ -10,19 +10,5 @@
     %p
       = s_('AdminSettings|Automatically ban users who download more than a specified number of repositories in a given time.')
   .settings-content
-    = gitlab_ui_form_for @application_setting, url: reporting_admin_application_settings_path(anchor: 'js-git-abuse-rate-limit-settings'), html: { class: 'fieldset-form' } do |f|
-      = form_errors(@application_setting, pajamas_alert: true)
+    #js-git-abuse-rate-limit-settings-form{ data: git_abuse_rate_limit_data }
 
-      %fieldset
-        .form-group
-          = f.label :max_number_of_repository_downloads, s_('AdminSettings|Number of repositories'), class: 'label-bold'
-          = f.number_field :max_number_of_repository_downloads, class: 'form-control gl-form-input'
-          .form-text.text-muted
-            = s_("AdminSettings|The maximum number of unique repositories a user can download in the specified time period before they're banned.")
-
-        .form-group
-          = f.label :max_number_of_repository_downloads_within_time_period, s_('AdminSettings|Reporting time period (seconds)'), class: 'label-bold'
-          = f.number_field :max_number_of_repository_downloads_within_time_period, class: 'form-control gl-form-input'
-
-      = render Pajamas::ButtonComponent.new(type: :submit, variant: :confirm) do
-        = _('Save changes')
