@@ -98,6 +98,7 @@ module Gitlab
           finder.klass.arel_table
         end
 
+        # TODO: could be do this by title instead
         def labels_by_id
           @labels_by_id = labels.index_by(&:id)
         end

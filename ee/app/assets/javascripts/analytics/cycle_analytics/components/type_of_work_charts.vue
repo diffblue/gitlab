@@ -29,25 +29,29 @@ export default {
       'errorMessage',
       'topRankedLabels',
     ]),
-    ...mapGetters('typeOfWork', ['selectedTasksByTypeFilters', 'tasksByTypeChartData']),
+    ...mapGetters('typeOfWork', [
+      'selectedTasksByTypeFilters',
+      'tasksByTypeChartData',
+      'selectedLabelIds',
+    ]),
     hasData() {
       return Boolean(this.tasksByTypeChartData?.data.length);
     },
     isLoading() {
       return Boolean(this.isLoadingTasksByTypeChart || this.isLoadingTasksByTypeChartTopLabels);
     },
-    selectedLabelsCount() {
-      return this.selectedLabelIdsFilter.length;
-    },
     selectedFiltersDescription() {
-      const { selectedLabelsCount, selectedSubjectFilterText } = this;
+      const { selectedLabelIds, selectedSubjectFilterText } = this;
       return sprintf(
         n__(
-          'ValueStreamAnalytics|%{subjectFilterText} and %{selectedLabelsCount} label',
-          'ValueStreamAnalytics|%{subjectFilterText} and %{selectedLabelsCount} labels',
-          selectedLabelsCount,
+          'ValueStreamAnalytics|%{subjectFilterText} and %{selectedLabelIds} label',
+          'ValueStreamAnalytics|%{subjectFilterText} and %{selectedLabelIds} labels',
+          selectedLabelIds,
         ),
-        { subjectFilterText: selectedSubjectFilterText.toLowerCase(), selectedLabelsCount },
+        {
+          subjectFilterText: selectedSubjectFilterText.toLowerCase(),
+          selectedLabelIds: selectedLabelIds.length,
+        },
       );
     },
     tooltipText() {
@@ -80,9 +84,6 @@ export default {
         selectedTasksByTypeFilters: { subject },
       } = this;
       return subject || TASKS_BY_TYPE_SUBJECT_ISSUE;
-    },
-    selectedLabelIdsFilter() {
-      return this.selectedTasksByTypeFilters?.selectedLabelIds || [];
     },
     selectedSubjectFilterText() {
       const { selectedSubjectFilter } = this;
@@ -124,7 +125,7 @@ export default {
         </h4>
         <tasks-by-type-filters
           :default-group-labels="initialGroupLabels"
-          :selected-label-ids="selectedLabelIdsFilter"
+          :selected-label-ids="selectedLabelIds"
           :subject-filter="selectedSubjectFilter"
           @update-filter="onUpdateFilter"
         />

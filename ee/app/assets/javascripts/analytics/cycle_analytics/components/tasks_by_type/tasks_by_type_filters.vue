@@ -1,5 +1,12 @@
 <script>
-import { GlDropdownDivider, GlSegmentedControl, GlIcon, GlSprintf } from '@gitlab/ui';
+import {
+  GlDropdown,
+  GlDropdownItem,
+  GlDropdownDivider,
+  GlSegmentedControl,
+  GlIcon,
+  GlSprintf,
+} from '@gitlab/ui';
 import { removeFlash } from '~/analytics/shared/utils';
 import createFlash from '~/flash';
 import { s__, sprintf } from '~/locale';
@@ -13,6 +20,8 @@ import LabelsSelector from '../labels_selector.vue';
 export default {
   name: 'TasksByTypeFilters',
   components: {
+    GlDropdown,
+    GlDropdownItem,
     GlSegmentedControl,
     GlDropdownDivider,
     GlIcon,
@@ -58,6 +67,7 @@ export default {
       // we can always remove a filter
       return this.selectedLabelIds.includes(value) || !this.maxLabelsSelected;
     },
+    // TODO: not sure if we still need this
     handleLabelSelected(value) {
       removeFlash('notice');
       if (this.canUpdateLabelFilters(value)) {
@@ -80,7 +90,8 @@ export default {
 </script>
 <template>
   <div class="js-tasks-by-type-chart-filters">
-    <labels-selector
+    <!-- TODO: replace label selector with GlDropdown -->
+    <!-- <labels-selector
       data-testid="type-of-work-filters-label"
       :initial-data="defaultGroupLabels"
       :max-labels="maxLabels"
@@ -90,14 +101,15 @@ export default {
       multiselect
       right
       @select-label="handleLabelSelected"
-    >
-      <template #label-dropdown-button>
+    > -->
+    <gl-dropdown icon="settings" text="Settings" :text-sr-only="true" right no-caret>
+      <template #button-text>
         <gl-icon class="vertical-align-top" name="settings" />
         <gl-icon name="chevron-down" />
       </template>
-      <template #label-dropdown-list-header>
-        <div class="mb-3 px-3">
-          <p class="font-weight-bold text-left mb-2">{{ s__('CycleAnalytics|Show') }}</p>
+      <gl-dropdown-item class="gl-m-0 gl-p-0">
+        <div class="gl-mb-5 gl-px-5">
+          <p class="gl-font-weight-bold gl-text-left gl-mb-3">{{ s__('CycleAnalytics|Show') }}</p>
           <gl-segmented-control
             data-testid="type-of-work-filters-subject"
             :checked="subjectFilter"
@@ -108,21 +120,8 @@ export default {
             "
           />
         </div>
-        <gl-dropdown-divider />
-        <div class="mb-3 px-3">
-          <p class="font-weight-bold text-left my-2">
-            {{ s__('CycleAnalytics|Select labels') }}
-            <br /><small>
-              <gl-sprintf
-                :message="s__('CycleAnalytics|%{selectedLabelsCount} selected (%{maxLabels} max)')"
-              >
-                <template #selectedLabelsCount>{{ selectedLabelsCount }}</template>
-                <template #maxLabels>{{ maxLabels }}</template>
-              </gl-sprintf>
-            </small>
-          </p>
-        </div>
-      </template>
-    </labels-selector>
+      </gl-dropdown-item>
+    </gl-dropdown>
+    <!-- </labels-selector> -->
   </div>
 </template>

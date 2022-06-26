@@ -24,3 +24,17 @@ export const tasksByTypeChartData = ({ data = [] } = {}, _, rootState = {}) => {
     ? getTasksByTypeData({ data, createdAfter, createdBefore })
     : { groupBy: [], data: [] };
 };
+
+export const topRankedLabelsIds = (state) => {
+  const { topRankedLabels } = state;
+  console.log('topRankedLabels', topRankedLabels);
+  return topRankedLabels.map(({ id }) => id);
+};
+
+export const selectedLabelIds = (state, getters, _, rootGetters) => {
+  console.log('selectedLabelIds::rootGetters.selectedLabelIds', rootGetters.selectedLabelIds);
+  console.log('selectedLabelIds::getters.topRankedLabelsIds', getters.topRankedLabelsIds);
+  return rootGetters.selectedLabelIds.length
+    ? rootGetters.selectedLabelIds
+    : getters.topRankedLabelsIds;
+};
