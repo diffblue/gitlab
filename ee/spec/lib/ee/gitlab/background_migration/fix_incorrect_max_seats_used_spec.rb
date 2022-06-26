@@ -53,7 +53,7 @@ RSpec.describe Gitlab::BackgroundMigration::FixIncorrectMaxSeatsUsed, :saas do
     end
 
     shared_examples 'does not reset max_seats_used and seats_owed' do
-      it 'does not reset max_seats_used and seats_owed' do
+      it 'does not reset max_seats_used and seats_owed', migration: false do
         expect do
           perform_and_reload
         end.to not_change(gitlab_subscription, :max_seats_used)
@@ -63,7 +63,7 @@ RSpec.describe Gitlab::BackgroundMigration::FixIncorrectMaxSeatsUsed, :saas do
     end
 
     shared_examples 'resets max_seats_used and seats_owed' do
-      it 'resets max_seats_used and seats_owed' do
+      it 'resets max_seats_used and seats_owed', migration: false do
         gs_before_reset = gitlab_subscription.clone
 
         expect(Gitlab::BackgroundMigration::FixIncorrectMaxSeatsUsed::FixIncorrectMaxSeatsUsedJsonLogger).to receive(:build).and_return(logger)
@@ -249,15 +249,15 @@ RSpec.describe Gitlab::BackgroundMigration::FixIncorrectMaxSeatsUsed::FixIncorre
   let(:hash_message) { { 'message' => 'Message', 'project_id' => '123' } }
   let(:string_message) { 'Information' }
 
-  it 'logs a hash as a JSON' do
+  it 'logs a hash as a JSON', migration: false do
     expect(Gitlab::Json.parse(subject.format_message('INFO', Time.current, nil, hash_message))).to include(hash_message)
   end
 
-  it 'logs a string as a JSON' do
+  it 'logs a string as a JSON', migration: false do
     expect(Gitlab::Json.parse(subject.format_message('INFO', Time.current, nil, string_message))).to include('message' => string_message)
   end
 
-  it 'logs into the expected file' do
+  it 'logs into the expected file', migration: false do
     expect(described_class.file_name).to eq('fix_incorrect_max_seats_used_json.log')
   end
 end
