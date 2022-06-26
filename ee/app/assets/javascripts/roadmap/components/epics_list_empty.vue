@@ -18,7 +18,7 @@ export default {
     SafeHtml: GlSafeHtmlDirective,
   },
   mixins: [CommonMixin],
-  inject: ['newEpicPath', 'listEpicsPath', 'epicsDocsPath'],
+  inject: ['newEpicPath', 'listEpicsPath', 'epicsDocsPath', 'canCreateEpic'],
   props: {
     presetType: {
       type: String,
@@ -142,7 +142,7 @@ export default {
 
         <div class="gl-text-center">
           <gl-button
-            v-if="!hasFiltersApplied"
+            v-if="canCreateEpic && !hasFiltersApplied"
             :href="newEpicPath"
             variant="confirm"
             class="gl-mt-3 gl-sm-mt-0! gl-w-full gl-sm-w-auto!"

@@ -31,6 +31,7 @@ describe('ee/roadmap/components/epics_list_empty.vue', () => {
   const createWrapper = ({
     isChildEpics = false,
     hasFiltersApplied = false,
+    canCreateEpic = true,
     presetType = PRESET_TYPES.MONTHS,
     timeframeStart = mockTimeframeMonths[0],
     timeframeEnd = mockTimeframeMonths[mockTimeframeMonths.length - 1],
@@ -49,6 +50,7 @@ describe('ee/roadmap/components/epics_list_empty.vue', () => {
           newEpicPath: TEST_NEW_EPIC_PATH,
           listEpicsPath: TEST_EPICS_PATH,
           epicsDocsPath: TEST_HOST,
+          canCreateEpic,
         },
       }),
     );
@@ -183,6 +185,12 @@ describe('ee/roadmap/components/epics_list_empty.vue', () => {
 
   it('does not render new epic button element when `hasFiltersApplied` prop is true', () => {
     createWrapper({ hasFiltersApplied: true });
+
+    expect(findNewEpicButton().exists()).toBe(false);
+  });
+
+  it('does not render new epic button element when `canCreateEpic` is false', () => {
+    createWrapper({ canCreateEpic: false });
 
     expect(findNewEpicButton().exists()).toBe(false);
   });

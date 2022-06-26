@@ -60,6 +60,7 @@ export default () => {
         groupFullPath: dataset.fullPath,
         groupLabelsPath: dataset.groupLabelsEndpoint,
         groupMilestonesPath: dataset.groupMilestonesEndpoint,
+        canCreateEpic: parseBoolean(dataset.canCreateEpic),
       };
     },
     data() {
