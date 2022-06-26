@@ -7,8 +7,12 @@ module Vulnerabilities
     def execute
       raise Gitlab::Access::AccessDeniedError unless authorized?
 
-      update_vulnerability_with(state: Vulnerability.states[:resolved], resolved_by: @user, resolved_at: Time.current) do
-        DestroyDismissalFeedbackService.new(@user, @vulnerability).execute
+      if Feature.enabled?(:deprecate_vulnerabilities_feedback, @vulnerability.project)
+        update_vulnerability_with(state: Vulnerability.states[:resolved], resolved_by: @user, resolved_at: Time.current)
+      else
+        update_vulnerability_with(state: Vulnerability.states[:resolved], resolved_by: @user, resolved_at: Time.current) do
+          DestroyDismissalFeedbackService.new(@user, @vulnerability).execute
+        end
       end
 
       @vulnerability
