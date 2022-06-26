@@ -19,7 +19,7 @@ module API
         success EE::API::Entities::AuditEvent
       end
       params do
-        optional :entity_type, type: String, desc: 'Return list of audit events for the specified entity type', values: AuditLogFinder::VALID_ENTITY_TYPES
+        optional :entity_type, type: String, desc: 'Return list of audit events for the specified entity type', values: AuditEventFinder::VALID_ENTITY_TYPES
         optional :entity_id, type: Integer
         given :entity_id do
           requires :entity_type, type: String
@@ -31,7 +31,7 @@ module API
       end
       get do
         level = ::Gitlab::Audit::Levels::Instance.new
-        audit_events = AuditLogFinder.new(level: level, params: params).execute
+        audit_events = AuditEventFinder.new(level: level, params: params).execute
 
         present paginate(audit_events), with: EE::API::Entities::AuditEvent
       end
@@ -46,7 +46,7 @@ module API
         level = ::Gitlab::Audit::Levels::Instance.new
         # rubocop: disable CodeReuse/ActiveRecord
         # This is not `find_by!` from ActiveRecord
-        audit_event = AuditLogFinder.new(level: level).find(params[:id])
+        audit_event = AuditEventFinder.new(level: level).find(params[:id])
         # rubocop: enable CodeReuse/ActiveRecord
 
         present audit_event, with: EE::API::Entities::AuditEvent

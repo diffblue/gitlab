@@ -28,14 +28,14 @@ RSpec.describe Projects::AuditEventsController do
         stub_licensed_features(audit_events: true)
 
         allow(Gitlab::Audit::Levels::Project).to receive(:new).and_return(level)
-        allow(AuditLogFinder).to receive(:new).and_call_original
+        allow(AuditEventFinder).to receive(:new).and_call_original
       end
 
-      shared_examples 'AuditLogFinder params' do
+      shared_examples 'AuditEventFinder params' do
         it 'has the correct params' do
           request
 
-          expect(AuditLogFinder).to have_received(:new).with(
+          expect(AuditEventFinder).to have_received(:new).with(
             level: level, params: audit_events_params
           )
         end
@@ -48,13 +48,13 @@ RSpec.describe Projects::AuditEventsController do
         expect(response).to render_template(:index)
       end
 
-      context 'invokes AuditLogFinder with correct arguments' do
-        it_behaves_like 'AuditLogFinder params'
+      context 'invokes AuditEventFinder with correct arguments' do
+        it_behaves_like 'AuditEventFinder params'
       end
 
       context 'author' do
         context 'when no author entity type is specified' do
-          it_behaves_like 'AuditLogFinder params'
+          it_behaves_like 'AuditEventFinder params'
         end
 
         context 'when the author entity type is specified' do
@@ -62,7 +62,7 @@ RSpec.describe Projects::AuditEventsController do
           let(:entity_id) { 1 }
           let(:audit_events_params) { ActionController::Parameters.new(sort: '', author_id: '1', created_after: Date.current.beginning_of_month, created_before: Date.current.end_of_day).permit! }
 
-          it_behaves_like 'AuditLogFinder params'
+          it_behaves_like 'AuditEventFinder params'
         end
       end
 
