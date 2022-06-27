@@ -1,6 +1,7 @@
 <script>
 import { isEmpty } from 'lodash';
-import { GlDrawer } from '@gitlab/ui';
+import { GlDrawer, GlLink } from '@gitlab/ui';
+import { s__, sprintf } from '~/locale';
 import { SCANNER_TYPE, SIDEBAR_VIEW_MODE } from 'ee/on_demand_scans/constants';
 import { REFERRAL } from 'ee/security_configuration/dast_profiles/dast_scanner_profiles/constants';
 import DastProfilesLoader from 'ee/security_configuration/dast_profiles/components/dast_profiles_loader.vue';
@@ -32,8 +33,12 @@ import DastProfilesSidebarList from './dast_profiles_sidebar_list.vue';
 
 export default {
   SIDEBAR_VIEW_MODE,
+  i18n: {
+    footerLinkText: s__('DastProfiles|Manage %{profileType} profiles'),
+  },
   components: {
     GlDrawer,
+    GlLink,
     DastProfilesLoader,
     DastProfilesSidebarHeader,
     DastProfilesSidebarEmptyState,
@@ -92,6 +97,11 @@ export default {
       required: false,
       default: SIDEBAR_VIEW_MODE.READING_MODE,
     },
+    libraryLink: {
+      type: String,
+      required: false,
+      default: null,
+    },
   },
   data() {
     return {
@@ -114,6 +124,11 @@ export default {
     },
     isEditingMode() {
       return this.sidebarViewMode === SIDEBAR_VIEW_MODE.EDITING_MODE;
+    },
+    footerLinkText() {
+      return sprintf(this.$options.i18n.footerLinkText, {
+        profileType: this.profileType,
+      });
     },
   },
   /**
@@ -230,6 +245,13 @@ export default {
           v-on="$listeners"
         />
       </template>
+    </template>
+    <template v-if="libraryLink" #footer>
+      <div class="gl-w-full gl-text-center">
+        <gl-link :href="libraryLink">
+          {{ footerLinkText }}
+        </gl-link>
+      </div>
     </template>
   </gl-drawer>
 </template>

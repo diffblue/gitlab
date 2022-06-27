@@ -92,6 +92,16 @@ export default {
       required: false,
       default: '',
     },
+    siteProfilesLibraryPath: {
+      type: String,
+      required: false,
+      default: '',
+    },
+    scannerProfilesLibraryPath: {
+      type: String,
+      required: false,
+      default: '',
+    },
   },
   data() {
     return {
@@ -116,10 +126,11 @@ export default {
     isLoadingProfiles() {
       return ['scannerProfiles', 'siteProfiles'].some((name) => this.$apollo.queries[name].loading);
     },
+    isScannerProfile() {
+      return this.profileType === SCANNER_TYPE;
+    },
     profileIdInUse() {
-      return this.profileType === SCANNER_TYPE
-        ? this.savedScannerProfileId
-        : this.savedSiteProfileId;
+      return this.isScannerProfile ? this.savedScannerProfileId : this.savedSiteProfileId;
     },
     savedScannerProfileId() {
       return this.savedProfiles?.dastScannerProfile.id;
@@ -138,12 +149,13 @@ export default {
         : null;
     },
     selectedProfileId() {
-      return this.profileType === SCANNER_TYPE
-        ? this.selectedScannerProfileId
-        : this.selectedSiteProfileId;
+      return this.isScannerProfile ? this.selectedScannerProfileId : this.selectedSiteProfileId;
     },
     selectedProfiles() {
-      return this.profileType === SCANNER_TYPE ? this.scannerProfiles : this.siteProfiles;
+      return this.isScannerProfile ? this.scannerProfiles : this.siteProfiles;
+    },
+    libraryLink() {
+      return this.isScannerProfile ? this.scannerProfilesLibraryPath : this.siteProfilesLibraryPath;
     },
   },
   watch: {
@@ -269,6 +281,7 @@ export default {
       :profiles="selectedProfiles"
       :profile-id-in-use="profileIdInUse"
       :active-profile="activeProfile"
+      :library-link="libraryLink"
       :profile-type="profileType"
       :is-open="isSideDrawerOpen"
       :is-loading="isLoadingProfiles"

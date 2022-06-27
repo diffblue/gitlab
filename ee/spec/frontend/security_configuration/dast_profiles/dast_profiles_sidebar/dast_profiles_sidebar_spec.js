@@ -1,5 +1,6 @@
-import { GlDrawer } from '@gitlab/ui';
+import { GlDrawer, GlLink } from '@gitlab/ui';
 import { nextTick } from 'vue';
+import { __ } from '~/locale';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import DastProfilesSidebar from 'ee/security_configuration/dast_profiles/dast_profiles_sidebar/dast_profiles_sidebar.vue';
 import DastProfilesLoader from 'ee/security_configuration/dast_profiles/components/dast_profiles_loader.vue';
@@ -9,6 +10,7 @@ import { SCANNER_TYPE, SITE_TYPE, SIDEBAR_VIEW_MODE } from 'ee/on_demand_scans/c
 describe('DastProfilesSidebar', () => {
   let wrapper;
   const projectPath = 'projectPath';
+  const libraryLink = 'libraryLink';
 
   const createComponent = (options = {}) => {
     wrapper = mountExtended(DastProfilesSidebar, {
@@ -27,6 +29,7 @@ describe('DastProfilesSidebar', () => {
   const findSidebarHeader = () => wrapper.findByTestId('sidebar-header');
   const findEmptyStateHeader = () => wrapper.findByTestId('empty-state-header');
   const findNewScanButton = () => wrapper.findByTestId('new-profile-button');
+  const findFooterLink = () => wrapper.findComponent(GlLink);
   const findEmptyNewScanButton = () => wrapper.findByTestId('new-empty-profile-button');
   const findNewDastScannerProfileForm = () => wrapper.findByTestId('dast-scanner-parent-group');
   const findCancelButton = () => wrapper.findByTestId('dast-profile-form-cancel-button');
@@ -128,6 +131,19 @@ describe('DastProfilesSidebar', () => {
       createComponent();
 
       expect(findGlDrawer().props('headerSticky')).toEqual(true);
+    });
+  });
+
+  describe('sticky footer', () => {
+    it.each`
+      profileType     | expectedResult
+      ${SCANNER_TYPE} | ${__(`Manage ${SCANNER_TYPE} profiles`)}
+      ${SITE_TYPE}    | ${__(`Manage ${SITE_TYPE} profiles`)}
+    `('renders correctly for $profileType profiles', ({ profileType, expectedResult }) => {
+      createComponent({ profileType, libraryLink });
+
+      expect(findFooterLink().text()).toBe(expectedResult);
+      expect(findFooterLink().attributes('href')).toEqual(libraryLink);
     });
   });
 });
