@@ -134,7 +134,6 @@ export const mockRawChildren = [
       description: 'General Data Protection Regulation',
       color: '#009966',
       pipeline_configuration_full_path: null,
-      regulated: true,
     },
   },
 ];
