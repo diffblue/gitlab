@@ -53,7 +53,7 @@ export default {
   },
   computed: {
     formattedTrialEndDate() {
-      return formatDate(this.trialEndDate, trialEndDateFormatString);
+      return formatDate(this.trialEndDate, trialEndDateFormatString, true);
     },
     planNameWithoutTrial() {
       return removeTrialSuffix(this.planName);
