@@ -12,12 +12,22 @@ module API
           optional :start_date, type: Date, desc: 'Date range to start from.'
           optional :end_date, type: Date, desc: 'Date range to end at.'
           optional :interval, type: String, desc: "The bucketing interval."
-          optional :environment_tier, type: String, desc: "The tier of the environment."
+          optional :environment_tier,
+                   type: String,
+                   desc: "The tier of the environment. Planned for deprecation: please use `environment_tiers` param."
+          optional :environment_tiers, type: Array[String], desc: "Filter by environment tiers."
         end
 
         def fetch!(container)
+          # Backwards compatibility until %16.0
+          params = declared_params(include_missing: false)
+          if params[:environment_tier]
+            params[:environment_tiers] ||= []
+            params[:environment_tiers] |= [params[:environment_tier]]
+          end
+
           result = ::Dora::AggregateMetricsService
-            .new(container: container, current_user: current_user, params: declared_params(include_missing: false))
+            .new(container: container, current_user: current_user, params: params)
             .execute
 
           if result[:status] == :success

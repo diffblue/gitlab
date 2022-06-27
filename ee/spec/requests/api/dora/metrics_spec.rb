@@ -6,6 +6,7 @@ RSpec.describe API::Dora::Metrics do
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project, group: group) }
   let_it_be(:production) { create(:environment, :production, project: project) }
+  let_it_be(:staging) { create(:environment, :staging, project: project) }
   let_it_be(:maintainer) { create(:user) }
   let_it_be(:guest) { create(:user) }
 
@@ -35,6 +36,13 @@ RSpec.describe API::Dora::Metrics do
              incidents_count: 8,
              environment: production,
              date: '2021-01-02')
+      create(:dora_daily_metrics,
+             deployment_frequency: 100,
+             lead_time_for_changes_in_seconds: 200,
+             time_to_restore_service_in_seconds: 300,
+             incidents_count: 400,
+             environment: staging,
+             date: '2021-01-02')
     end
 
     before do
@@ -57,6 +65,29 @@ RSpec.describe API::Dora::Metrics do
         expect(response).to have_gitlab_http_status(:ok)
         expect(json_response).to match_array([{ 'date' => '2021-01-01', 'value' => value1 },
                                               { 'date' => '2021-01-02', 'value' => value2 }])
+      end
+    end
+
+    context 'with multiple metrics' do
+      let(:params) { { metric: 'deployment_frequency', environment_tiers: %w[production staging] } }
+
+      it 'returns combined data' do
+        subject
+
+        expect(response).to have_gitlab_http_status(:ok)
+        expect(json_response).to match_array([{ 'date' => '2021-01-01', 'value' => 1 },
+                                              { 'date' => '2021-01-02', 'value' => 102 }])
+      end
+    end
+
+    context 'backwards compatibility for environment_tier' do
+      let(:params) { { metric: 'deployment_frequency', environment_tier: 'staging' } }
+
+      it 'returns combined data' do
+        subject
+
+        expect(response).to have_gitlab_http_status(:ok)
+        expect(json_response).to match_array([{ 'date' => '2021-01-02', 'value' => 100 }])
       end
     end
 

@@ -41,7 +41,7 @@ module Gitlab
                 start_date: options[:from].to_date,
                 end_date: (options[:to] || Date.today).to_date,
                 interval: 'all',
-                environment_tier: 'production',
+                environment_tiers: %w[production],
                 metric: 'deployment_frequency'
               }
 
