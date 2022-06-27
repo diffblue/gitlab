@@ -45,6 +45,12 @@ RSpec.describe 'Epic show', :js do
     end
   end
 
+  def open_colors_dropdown
+    page.within('aside.right-sidebar [data-testid="colors-select"]') do
+      click_button 'Edit'
+    end
+  end
+
   describe 'when sub-epics feature is available' do
     before do
       visit group_epic_path(group, epic)
@@ -298,6 +304,56 @@ RSpec.describe 'Epic show', :js do
             wait_for_requests
 
             expect(page).to have_selector('.js-labels-list')
+          end
+        end
+      end
+    end
+
+    describe 'Colors select' do
+      context 'when feature flag is disabled' do
+        before do
+          stub_feature_flags(epic_color_highlight: false)
+          visit group_epic_path(group, epic)
+        end
+
+        it 'does not show the color select dropdown' do
+          expect(page).not_to have_selector('[data-testid="colors-select"]')
+        end
+      end
+
+      context 'when feature flag is enabled' do
+        it 'shows the color select dropdown' do
+          expect(page).to have_selector('[data-testid="colors-select"]')
+        end
+
+        it 'opens dropdown when `Edit` is clicked' do
+          open_colors_dropdown
+
+          expect(page).to have_css('.js-colors-block .js-colors-list')
+        end
+
+        context 'when dropdown is open' do
+          before do
+            open_colors_dropdown
+          end
+
+          it 'shows colors within the color dropdown' do
+            page.within('.js-colors-list [data-testid="dropdown-content"]') do
+              expect(page).to have_selector('li', count: 5)
+            end
+          end
+
+          it 'shows checkmark next to color after a new color has been selected' do
+            page.within('.js-colors-list [data-testid="dropdown-content"]') do
+              find('li', text: 'Green').click
+              wait_for_all_requests
+            end
+
+            open_colors_dropdown
+
+            page.within('.js-colors-list [data-testid="dropdown-content"]') do
+              expect(find('li', text: 'Green')).to have_selector('.gl-icon', visible: true)
+            end
           end
         end
       end
