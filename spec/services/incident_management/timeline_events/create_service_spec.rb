@@ -133,27 +133,33 @@ RSpec.describe IncidentManagement::TimelineEvents::CreateService do
         expect { execute }.to change { incident.notes.reload.count }.by(1)
       end
 
-      context 'with skip_notification param' do
+      context 'with auto_created param' do
         let(:args) do
           {
             note: 'note',
             occurred_at: Time.current,
             action: 'new comment',
             promoted_from_note: comment,
-            skip_notifications: skip_notifications
+            auto_created: auto_created
           }
         end
 
-        context 'when skip_notifications is true' do
-          let(:skip_notifications) { true }
+        context 'when auto_created is true' do
+          let(:auto_created) { true }
 
           it 'does not create a system note' do
             expect { execute }.not_to change { incident.notes.reload.count }
           end
+
+          context 'when user does not have permissions' do
+            let(:current_user) { user_without_permissions }
+
+            it_behaves_like 'success response'
+          end
         end
 
-        context 'when skip_notifications is false' do
-          let(:skip_notifications) { false }
+        context 'when auto_created is false' do
+          let(:auto_created) { false }
 
           it 'creates a system note' do
             expect { execute }.to change { incident.notes.reload.count }.by(1)

@@ -4,7 +4,7 @@ module IncidentManagement
   module TimelineEvents
     DEFAULT_ACTION = 'comment'
     DEFAULT_EDITABLE = false
-    DEFAULT_SKIP_NOTIFICATIONS = false
+    DEFAULT_AUTO_CREATED = false
 
     class CreateService < TimelineEvents::BaseService
       def initialize(incident, user, params)
@@ -12,7 +12,7 @@ module IncidentManagement
         @incident = incident
         @user = user
         @params = params
-        @skip_notifications = !!params.fetch(:skip_notifications, DEFAULT_SKIP_NOTIFICATIONS)
+        @auto_created = !!params.fetch(:auto_created, DEFAULT_AUTO_CREATED)
       end
 
       class << self
@@ -21,7 +21,7 @@ module IncidentManagement
           occurred_at = incident.created_at
           action = 'issues'
 
-          new(incident, user, note: note, occurred_at: occurred_at, action: action, skip_notifications: true).execute
+          new(incident, user, note: note, occurred_at: occurred_at, action: action, auto_created: true).execute
         end
 
         def reopen_incident(incident, user)
@@ -29,7 +29,7 @@ module IncidentManagement
           occurred_at = incident.updated_at
           action = 'issues'
 
-          new(incident, user, note: note, occurred_at: occurred_at, action: action, skip_notifications: true).execute
+          new(incident, user, note: note, occurred_at: occurred_at, action: action, auto_created: true).execute
         end
 
         def resolve_incident(incident, user)
@@ -37,7 +37,7 @@ module IncidentManagement
           occurred_at = incident.updated_at
           action = 'status'
 
-          new(incident, user, note: note, occurred_at: occurred_at, action: action, skip_notifications: true).execute
+          new(incident, user, note: note, occurred_at: occurred_at, action: action, auto_created: true).execute
         end
 
         def change_incident_status(incident, user, escalation_status)
@@ -46,7 +46,7 @@ module IncidentManagement
           occurred_at = incident.updated_at
           action = 'status'
 
-          new(incident, user, note: note, occurred_at: occurred_at, action: action, skip_notifications: true).execute
+          new(incident, user, note: note, occurred_at: occurred_at, action: action, auto_created: true).execute
         end
       end
 
@@ -79,10 +79,16 @@ module IncidentManagement
 
       private
 
-      attr_reader :project, :user, :incident, :params, :skip_notifications
+      attr_reader :project, :user, :incident, :params, :auto_created
+
+      def allowed?
+        return true if auto_created
+
+        super
+      end
 
       def add_system_note(timeline_event)
-        return if skip_notifications
+        return if auto_created
         return unless Feature.enabled?(:incident_timeline, project)
 
         SystemNoteService.add_timeline_event(timeline_event)

@@ -135,6 +135,14 @@ RSpec.describe Issues::CreateService do
             issue
           end
 
+          it 'calls IncidentManagement::TimelineEvents::CreateService.create_incident' do
+            expect(IncidentManagement::TimelineEvents::CreateService)
+              .to receive(:create_incident)
+              .with(a_kind_of(Issue), reporter)
+
+            issue
+          end
+
           context 'when invalid' do
             before do
               opts.merge!(title: '')
@@ -143,26 +151,6 @@ RSpec.describe Issues::CreateService do
             it 'does not apply an incident label prematurely' do
               expect { subject }.to not_change(LabelLink, :count).and not_change(Issue, :count)
             end
-          end
-        end
-
-        context 'as developer' do
-          let_it_be(:developer) { create(:user) }
-
-          let(:user) { developer }
-
-          before_all do
-            project.add_developer(developer)
-          end
-
-          it_behaves_like 'incident issue'
-
-          it 'calls IncidentManagement::TimelineEvents::CreateService.create_incident' do
-            expect(IncidentManagement::TimelineEvents::CreateService)
-              .to receive(:create_incident)
-              .with(a_kind_of(Issue), developer)
-
-            issue
           end
         end
 
