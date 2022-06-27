@@ -16,6 +16,7 @@ describe('StorageUsageStatistics', () => {
         totalRepositorySizeExcess: withRootStorageStatistics.totalRepositorySizeExcess,
         additionalPurchasedStorageSize: withRootStorageStatistics.additionalPurchasedStorageSize,
         storageLimitEnforced: true,
+        loading: false,
         ...props,
       },
       provide: {
@@ -51,6 +52,7 @@ describe('StorageUsageStatistics', () => {
       createComponent();
 
       expect(findNamespaceStorageCard().props()).toEqual({
+        loading: false,
         showProgressBar: true,
         totalStorage: withRootStorageStatistics.totalRepositorySize,
         usedStorage: withRootStorageStatistics.actualRepositorySizeLimit,
@@ -61,6 +63,7 @@ describe('StorageUsageStatistics', () => {
       createComponent({ props: { storageLimitEnforced: true } });
 
       expect(findNamespaceStorageCard().props()).toEqual({
+        loading: false,
         showProgressBar: true,
         totalStorage: withRootStorageStatistics.totalRepositorySize,
         usedStorage: withRootStorageStatistics.totalRepositorySize,
@@ -71,6 +74,7 @@ describe('StorageUsageStatistics', () => {
       createComponent({ props: { storageLimitEnforced: false } });
 
       expect(findNamespaceStorageCard().props()).toEqual({
+        loading: false,
         showProgressBar: false,
         totalStorage: null,
         usedStorage: withRootStorageStatistics.totalRepositorySize,
@@ -101,6 +105,7 @@ describe('StorageUsageStatistics', () => {
     it('passes the correct props when storageLimitEnforced is true', () => {
       createComponent({ props: { storageLimitEnforced: true } });
       expect(findPurchasedStorageCard().props()).toEqual({
+        loading: false,
         showProgressBar: true,
         totalStorage: withRootStorageStatistics.additionalPurchasedStorageSize,
         usedStorage: withRootStorageStatistics.totalRepositorySizeExcess,
@@ -109,6 +114,7 @@ describe('StorageUsageStatistics', () => {
     it('passes the correct props when storageLimitEnforced is false', () => {
       createComponent({ props: { storageLimitEnforced: false } });
       expect(findPurchasedStorageCard().props()).toEqual({
+        loading: false,
         showProgressBar: false,
         totalStorage: withRootStorageStatistics.additionalPurchasedStorageSize,
         usedStorage: withRootStorageStatistics.totalRepositorySizeExcess,

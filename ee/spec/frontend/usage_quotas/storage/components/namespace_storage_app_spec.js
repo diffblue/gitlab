@@ -1,64 +1,96 @@
-import { mount } from '@vue/test-utils';
+import { GlAlert } from '@gitlab/ui';
+import VueApollo from 'vue-apollo';
+import Vue from 'vue';
+import { mountExtended } from 'helpers/vue_test_utils_helper';
+import waitForPromises from 'helpers/wait_for_promises';
+import { captureException } from '~/runner/sentry_utils';
 import NamespaceStorageApp from 'ee/usage_quotas/storage/components/namespace_storage_app.vue';
 import CollapsibleProjectStorageDetail from 'ee/usage_quotas/storage/components/collapsible_project_storage_detail.vue';
-import ProjectList from 'ee/usage_quotas/storage/components/project_list.vue';
-import StorageInlineAlert from 'ee/usage_quotas/storage/components/storage_inline_alert.vue';
-import TemporaryStorageIncreaseModal from 'ee/usage_quotas/storage/components/temporary_storage_increase_modal.vue';
+import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
+import getNamespaceStorageQuery from 'ee/usage_quotas/storage/queries/namespace_storage.query.graphql';
+import getDependencyProxyTotalSizeQuery from 'ee/usage_quotas/storage/queries/dependency_proxy_usage.query.graphql';
+import createMockApollo from 'helpers/mock_apollo_helper';
+import { formatUsageSize } from 'ee/usage_quotas/storage/utils';
+import { numberToHumanSize } from '~/lib/utils/number_utils';
+import UsageGraph from 'ee/usage_quotas/storage/components/usage_graph.vue';
 import UsageStatistics from 'ee/usage_quotas/storage/components/usage_statistics.vue';
 import StorageUsageStatistics from 'ee/usage_quotas/storage/components/storage_usage_statistics.vue';
-import UsageGraph from 'ee/usage_quotas/storage/components/usage_graph.vue';
+import StorageInlineAlert from 'ee/usage_quotas/storage/components/storage_inline_alert.vue';
 import DependencyProxyUsage from 'ee/usage_quotas/storage/components/dependency_proxy_usage.vue';
 import ContainerRegistryUsage from 'ee/usage_quotas/storage/components/container_registry_usage.vue';
-import { formatUsageSize } from 'ee/usage_quotas/storage/utils';
-import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
+import ProjectList from 'ee/usage_quotas/storage/components/project_list.vue';
+import TemporaryStorageIncreaseModal from 'ee/usage_quotas/storage/components/temporary_storage_increase_modal.vue';
 import {
-  namespaceData,
-  withRootStorageStatistics,
   defaultNamespaceProvideValues,
+  mockedNamespaceStorageResponse,
+  mockDependencyProxyResponse,
 } from '../mock_data';
 
 const TEST_LIMIT = 1000;
 
+jest.mock('~/flash');
+jest.mock('~/runner/sentry_utils');
+
+Vue.use(VueApollo);
+
 describe('NamespaceStorageApp', () => {
   let wrapper;
-  let $apollo;
 
-  const findTotalUsage = () => wrapper.find("[data-testid='total-usage']");
-  const findPurchaseStorageLink = () => wrapper.find("[data-testid='purchase-storage-link']");
-  const findTemporaryStorageIncreaseButton = () =>
-    wrapper.find("[data-testid='temporary-storage-increase-button']");
+  function createMockApolloProvider(response = mockedNamespaceStorageResponse) {
+    const successHandler = jest.fn().mockResolvedValue(response);
+    const requestHandlers = [
+      [getNamespaceStorageQuery, successHandler],
+      [getDependencyProxyTotalSizeQuery, jest.fn().mockResolvedValue(mockDependencyProxyResponse)],
+    ];
+
+    return createMockApollo(requestHandlers);
+  }
+
+  function createPendingMockApolloProvider() {
+    const successHandler = new Promise(() => {});
+    const requestHandlers = [
+      [getNamespaceStorageQuery, successHandler],
+      [getDependencyProxyTotalSizeQuery, jest.fn().mockResolvedValue(mockDependencyProxyResponse)],
+    ];
+
+    return createMockApollo(requestHandlers);
+  }
+
+  function createFailedMockApolloProvider() {
+    const failedHandler = jest.fn().mockRejectedValue(new Error('Network error!'));
+    const requestHandlers = [
+      [getNamespaceStorageQuery, failedHandler],
+      [getDependencyProxyTotalSizeQuery, jest.fn().mockResolvedValue(mockDependencyProxyResponse)],
+    ];
+
+    return createMockApollo(requestHandlers);
+  }
+
+  const findTotalUsage = () => wrapper.findByTestId('total-usage');
   const findUsageGraph = () => wrapper.findComponent(UsageGraph);
   const findUsageStatistics = () => wrapper.findComponent(UsageStatistics);
-  const findStorageUsageStatistics = () => wrapper.findComponent(StorageUsageStatistics);
   const findStorageInlineAlert = () => wrapper.findComponent(StorageInlineAlert);
+  const findPurchaseStorageLink = () => wrapper.find("[data-testid='purchase-storage-link']");
+  const findDependencyProxy = () => wrapper.findComponent(DependencyProxyUsage);
+  const findStorageUsageStatistics = () => wrapper.findComponent(StorageUsageStatistics);
+  const findTemporaryStorageIncreaseButton = () =>
+    wrapper.find("[data-testid='temporary-storage-increase-button']");
   const findProjectList = () => wrapper.findComponent(ProjectList);
   const findPrevButton = () => wrapper.find('[data-testid="prevButton"]');
   const findNextButton = () => wrapper.find('[data-testid="nextButton"]');
-  const findDependencyProxy = () => wrapper.findComponent(DependencyProxyUsage);
   const findContainerRegistry = () => wrapper.findComponent(ContainerRegistryUsage);
+  const findAlert = () => wrapper.findComponent(GlAlert);
 
   const createComponent = ({
     provide = {},
     storageLimitEnforced = false,
-    loading = false,
     additionalRepoStorageByNamespace = false,
-    namespace = {},
     dependencyProxyTotalSize = '',
     isFreeNamespace = false,
+    mockApollo = {},
   } = {}) => {
-    $apollo = {
-      queries: {
-        namespace: {
-          loading,
-        },
-        dependencyProxyTotalSize: {
-          loading,
-        },
-      },
-    };
-
-    wrapper = mount(NamespaceStorageApp, {
-      mocks: { $apollo },
+    wrapper = mountExtended(NamespaceStorageApp, {
+      apolloProvider: mockApollo,
       directives: {
         GlModalDirective: createMockDirective(),
       },
@@ -73,104 +105,84 @@ describe('NamespaceStorageApp', () => {
       },
       data() {
         return {
-          namespace,
           dependencyProxyTotalSize,
         };
       },
     });
   };
 
-  beforeEach(() => {
-    createComponent({
-      namespace: namespaceData,
-    });
-  });
+  let mockApollo;
 
   afterEach(() => {
     wrapper.destroy();
   });
 
-  it('renders the 2 projects', async () => {
-    expect(wrapper.findAllComponents(CollapsibleProjectStorageDetail)).toHaveLength(3);
-  });
-
-  describe('limit', () => {
-    it('when limit is set it renders limit information', async () => {
-      expect(wrapper.text()).toContain(formatUsageSize(namespaceData.limit));
+  describe('project list', () => {
+    beforeEach(async () => {
+      mockApollo = createMockApolloProvider();
+      createComponent({ mockApollo });
+      await waitForPromises();
     });
 
-    it('when limit is 0 it does not render limit information', async () => {
-      createComponent({
-        namespace: { ...namespaceData, limit: 0 },
-      });
+    it('renders the 2 projects', () => {
+      expect(wrapper.findAllComponents(CollapsibleProjectStorageDetail)).toHaveLength(2);
+    });
+  });
+
+  describe('size limit', () => {
+    it('does not render limit information when storageSizeLimit is 0', async () => {
+      const namespaceWithZeroLimit = { ...mockedNamespaceStorageResponse };
+      namespaceWithZeroLimit.data.namespace.storageSizeLimit = 0;
+      mockApollo = createMockApolloProvider(namespaceWithZeroLimit);
+      createComponent({ mockApollo });
+      await waitForPromises();
 
       expect(wrapper.text()).not.toContain(formatUsageSize(0));
     });
-  });
 
-  it('renders Not applicable for totalUsage when no rootStorageStatistics is provided', async () => {
-    expect(findTotalUsage().text()).toContain('Not applicable.');
-  });
+    it('renders limit information when storageSizeLimit is set to other numbers', async () => {
+      const namespaceWithLimit = { ...mockedNamespaceStorageResponse };
+      namespaceWithLimit.data.namespace.storageSizeLimit = TEST_LIMIT;
+      mockApollo = createMockApolloProvider(namespaceWithLimit);
+      createComponent({ mockApollo });
+      await waitForPromises();
 
-  describe('with rootStorageStatistics information', () => {
-    beforeEach(() => {
-      createComponent({
-        namespace: withRootStorageStatistics,
-      });
-    });
-
-    it('renders total usage', async () => {
-      expect(findTotalUsage().text()).toContain(withRootStorageStatistics.totalUsage);
-    });
-
-    describe('with additional_repo_storage_by_namespace feature', () => {
-      it('usage_graph component hidden is when feature is false', async () => {
-        expect(findUsageGraph().exists()).toBe(true);
-        expect(findUsageStatistics().exists()).toBe(false);
-        expect(findStorageInlineAlert().exists()).toBe(false);
-      });
-
-      it('usage_statistics component is rendered when feature is true', async () => {
-        createComponent({
-          additionalRepoStorageByNamespace: true,
-          namespace: withRootStorageStatistics,
-        });
-
-        expect(findUsageStatistics().exists()).toBe(true);
-        expect(findUsageGraph().exists()).toBe(false);
-        expect(findStorageInlineAlert().exists()).toBe(true);
-      });
+      expect(wrapper.text()).toContain(
+        formatUsageSize(namespaceWithLimit.data.namespace.storageSizeLimit),
+      );
     });
   });
 
   describe('purchase storage link', () => {
-    describe('when purchaseStorageUrl is not set', () => {
-      it('does not render an additional link', () => {
-        expect(findPurchaseStorageLink().exists()).toBe(false);
-      });
+    it('does not render an additional link when purchaseStorageUrl is not set', async () => {
+      mockApollo = createMockApolloProvider();
+      createComponent({ mockApollo });
+      await waitForPromises();
+
+      expect(findPurchaseStorageLink().exists()).toBe(false);
     });
 
-    describe('when purchaseStorageUrl is set', () => {
-      beforeEach(() => {
-        createComponent({ provide: { purchaseStorageUrl: 'customers.gitlab.com' } });
-      });
+    it('does render link when purchaseStorageUrl is set', async () => {
+      mockApollo = createMockApolloProvider();
+      createComponent({ mockApollo, provide: { purchaseStorageUrl: 'customers.gitlab.com' } });
+      await waitForPromises();
 
-      it('does render link', () => {
-        const link = findPurchaseStorageLink();
+      const link = findPurchaseStorageLink();
 
-        expect(link.exists()).toBe(true);
-        expect(link.attributes('href')).toBe('customers.gitlab.com');
-      });
+      expect(link.exists()).toBe(true);
+      expect(link.attributes('href')).toBe('customers.gitlab.com');
     });
   });
 
   describe('Dependency proxy usage', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
+      mockApollo = createMockApolloProvider();
       createComponent({
+        mockApollo,
         additionalRepoStorageByNamespace: true,
-        namespace: withRootStorageStatistics,
         dependencyProxyTotalSize: '512 bytes',
       });
+      await waitForPromises();
     });
 
     it('should show the dependency proxy usage component', () => {
@@ -179,20 +191,28 @@ describe('NamespaceStorageApp', () => {
   });
 
   describe('Container registry usage', () => {
-    it('should show the container registry usage component', () => {
+    it('should show the container registry usage component', async () => {
+      mockApollo = createMockApolloProvider();
       createComponent({
-        namespace: withRootStorageStatistics,
+        mockApollo,
+        additionalRepoStorageByNamespace: true,
+        dependencyProxyTotalSize: '512 bytes',
       });
+      await waitForPromises();
 
       expect(findContainerRegistry().exists()).toBe(true);
       expect(findContainerRegistry().props()).toEqual({
         containerRegistrySize:
-          withRootStorageStatistics.rootStorageStatistics.containerRegistrySize,
+          mockedNamespaceStorageResponse.data.namespace.rootStorageStatistics.containerRegistrySize,
       });
     });
   });
 
   describe('temporary storage increase', () => {
+    const namespaceWithLimit = { ...mockedNamespaceStorageResponse };
+    namespaceWithLimit.data.namespace.storageSizeLimit = TEST_LIMIT;
+    mockApollo = createMockApolloProvider(namespaceWithLimit);
+
     describe.each`
       provide                                           | isVisible
       ${{}}                                             | ${false}
@@ -200,7 +220,7 @@ describe('NamespaceStorageApp', () => {
       ${{ isTemporaryStorageIncreaseVisible: 'true' }}  | ${true}
     `('with $provide', ({ provide, isVisible }) => {
       beforeEach(() => {
-        createComponent({ provide });
+        createComponent({ mockApollo, provide });
       });
 
       it(`renders button = ${isVisible}`, () => {
@@ -209,14 +229,14 @@ describe('NamespaceStorageApp', () => {
     });
 
     describe('when temporary storage increase is visible', () => {
-      beforeEach(() => {
+      beforeEach(async () => {
+        namespaceWithLimit.data.namespace.storageSizeLimit = TEST_LIMIT;
+        mockApollo = createMockApolloProvider(namespaceWithLimit);
         createComponent({
+          mockApollo,
           provide: { isTemporaryStorageIncreaseVisible: 'true' },
-          namespace: {
-            ...namespaceData,
-            limit: TEST_LIMIT,
-          },
         });
+        await waitForPromises();
       });
 
       it('binds button to modal', () => {
@@ -241,9 +261,10 @@ describe('NamespaceStorageApp', () => {
 
   describe('filtering projects', () => {
     beforeEach(() => {
+      mockApollo = createMockApolloProvider();
       createComponent({
+        mockApollo,
         additionalRepoStorageByNamespace: true,
-        namespace: withRootStorageStatistics,
       });
     });
 
@@ -282,22 +303,13 @@ describe('NamespaceStorageApp', () => {
   });
 
   describe('projects table pagination component', () => {
-    const namespaceWithPageInfo = (
-      pageInfo = {
-        hasPreviousPage: false,
-        hasNextPage: true,
-      },
-    ) => ({
-      namespace: {
-        ...withRootStorageStatistics,
-        projects: {
-          ...withRootStorageStatistics.projects,
-          pageInfo,
-        },
-      },
-    });
-    beforeEach(() => {
-      createComponent(namespaceWithPageInfo());
+    const namespaceWithPageInfo = { ...mockedNamespaceStorageResponse };
+    namespaceWithPageInfo.data.namespace.projects.pageInfo.hasNextPage = true;
+
+    beforeEach(async () => {
+      mockApollo = createMockApolloProvider(namespaceWithPageInfo);
+      createComponent({ mockApollo });
+      await waitForPromises();
     });
 
     it('has "Prev" button disabled', () => {
@@ -309,19 +321,22 @@ describe('NamespaceStorageApp', () => {
     });
 
     describe('apollo calls', () => {
-      beforeEach(() => {
-        createComponent(
-          namespaceWithPageInfo({
-            hasPreviousPage: true,
-            hasNextPage: true,
-          }),
-        );
-        $apollo.queries.namespace.fetchMore = jest.fn().mockResolvedValue();
+      beforeEach(async () => {
+        namespaceWithPageInfo.data.namespace.projects.pageInfo.hasPreviousPage = true;
+        namespaceWithPageInfo.data.namespace.projects.pageInfo.hasNextPage = true;
+        mockApollo = createMockApolloProvider(namespaceWithPageInfo);
+        createComponent({ mockApollo });
+
+        jest
+          .spyOn(wrapper.vm.$apollo.queries.namespace, 'fetchMore')
+          .mockImplementation(jest.fn().mockResolvedValue({}));
+
+        await waitForPromises();
       });
 
-      it('contains correct `first` and `last` values when clicking "Prev" button', () => {
+      it('contains correct `first` and `last` values when clicking "Prev" button', async () => {
         findPrevButton().trigger('click');
-        expect($apollo.queries.namespace.fetchMore).toHaveBeenCalledWith(
+        expect(wrapper.vm.$apollo.queries.namespace.fetchMore).toHaveBeenCalledWith(
           expect.objectContaining({
             variables: expect.objectContaining({ first: undefined, last: expect.any(Number) }),
           }),
@@ -330,24 +345,46 @@ describe('NamespaceStorageApp', () => {
 
       it('contains `first` value when clicking "Next" button', () => {
         findNextButton().trigger('click');
-        expect($apollo.queries.namespace.fetchMore).toHaveBeenCalledWith(
+        expect(wrapper.vm.$apollo.queries.namespace.fetchMore).toHaveBeenCalledWith(
           expect.objectContaining({
             variables: expect.objectContaining({ first: expect.any(Number) }),
           }),
         );
       });
     });
+
+    describe('handling failed apollo requests', () => {
+      beforeEach(async () => {
+        mockApollo = createFailedMockApolloProvider();
+        createComponent({ mockApollo });
+
+        await waitForPromises();
+      });
+
+      it('shows gl-alert with error message', () => {
+        expect(findAlert().exists()).toBe(true);
+        expect(findAlert().text()).toBe('Something went wrong while loading usage details');
+      });
+
+      it('captures the exception in Sentry', async () => {
+        await Vue.nextTick();
+        expect(captureException).toHaveBeenCalledTimes(1);
+      });
+    });
   });
 
   describe('new storage statistics usage design', () => {
     describe('when namespace is on free plan', () => {
-      beforeEach(() => {
+      beforeEach(async () => {
+        mockApollo = createMockApolloProvider();
+
         createComponent({
           additionalRepoStorageByNamespace: true,
-          namespace: withRootStorageStatistics,
           storageLimitEnforced: true,
           isFreeNamespace: true,
+          mockApollo,
         });
+        await waitForPromises();
       });
 
       it('renders the new storage design', () => {
@@ -360,24 +397,123 @@ describe('NamespaceStorageApp', () => {
 
       it('passes storageSize as totalRepositorySize', () => {
         expect(findStorageUsageStatistics().props('totalRepositorySize')).toBe(
-          withRootStorageStatistics.rootStorageStatistics.storageSize,
+          mockedNamespaceStorageResponse.data.namespace.rootStorageStatistics.storageSize,
+        );
+      });
+
+      describe('loading', () => {
+        it.each`
+          loadingError | queryLoading | expectedValue
+          ${true}      | ${false}     | ${true}
+          ${false}     | ${true}      | ${true}
+          ${false}     | ${false}     | ${false}
+        `(
+          'pass loading prop as $expectedValue if loadingError is $loadingError and queryLoading is $queryLoading',
+          async ({ loadingError, queryLoading, expectedValue }) => {
+            // change mockApollo provider based on loadingError and queryLoading
+            if (loadingError) {
+              mockApollo = createFailedMockApolloProvider();
+            } else if (queryLoading) {
+              mockApollo = createPendingMockApolloProvider();
+            } else {
+              mockApollo = createMockApolloProvider();
+            }
+
+            createComponent({
+              additionalRepoStorageByNamespace: true,
+              storageLimitEnforced: true,
+              isFreeNamespace: true,
+              mockApollo,
+            });
+
+            await waitForPromises();
+
+            expect(findStorageUsageStatistics().props('loading')).toBe(expectedValue);
+          },
         );
       });
     });
 
     describe('when namespace is not on free plan', () => {
-      beforeEach(() => {
+      beforeEach(async () => {
         createComponent({
           additionalRepoStorageByNamespace: true,
-          namespace: withRootStorageStatistics,
+          mockApollo,
           storageLimitEnforced: true,
           isFreeNamespace: false,
         });
+        await waitForPromises();
       });
 
       it('does not render the new storage design', () => {
         expect(findStorageUsageStatistics().exists()).toBe(false);
       });
+    });
+  });
+
+  describe('with rootStorageStatistics available on namespace', () => {
+    beforeEach(async () => {
+      mockApollo = createMockApolloProvider();
+      createComponent({ mockApollo });
+      await waitForPromises();
+    });
+
+    it('renders total usage', async () => {
+      expect(findTotalUsage().text()).toContain(
+        numberToHumanSize(
+          mockedNamespaceStorageResponse.data.namespace.rootStorageStatistics.storageSize,
+        ),
+      );
+    });
+
+    describe('with additional_repo_storage_by_namespace feature', () => {
+      it('usage_graph component hidden is when feature is false', async () => {
+        expect(findUsageGraph().exists()).toBe(true);
+        expect(findUsageStatistics().exists()).toBe(false);
+        expect(findStorageInlineAlert().exists()).toBe(false);
+      });
+
+      it('usage_statistics component is rendered when feature is true', async () => {
+        mockApollo = createMockApolloProvider();
+
+        createComponent({
+          mockApollo,
+          additionalRepoStorageByNamespace: true,
+        });
+        await waitForPromises();
+
+        expect(findUsageStatistics().exists()).toBe(true);
+        expect(findUsageGraph().exists()).toBe(false);
+        expect(findStorageInlineAlert().exists()).toBe(true);
+      });
+    });
+
+    describe('findStorageInlineAlert', () => {
+      it('does not show storage inline alert if namespace is empty', async () => {
+        // creating failed mock provider will make namespace = {}
+        mockApollo = createFailedMockApolloProvider();
+        createComponent({
+          additionalRepoStorageByNamespace: true,
+          storageLimitEnforced: true,
+          isFreeNamespace: true,
+          mockApollo,
+        });
+
+        await waitForPromises();
+        expect(findStorageInlineAlert().exists()).toBe(false);
+      });
+    });
+  });
+
+  describe('without rootStorageStatistics available on namespace', () => {
+    it('renders Not applicable for totalUsage when no rootStorageStatistics is provided', async () => {
+      const namespaceWithoutStatistics = { ...mockedNamespaceStorageResponse };
+      namespaceWithoutStatistics.data.namespace.rootStorageStatistics = null;
+      mockApollo = createMockApolloProvider(namespaceWithoutStatistics);
+      createComponent({ mockApollo });
+      await waitForPromises();
+
+      expect(findTotalUsage().text()).toContain('Not applicable');
     });
   });
 });

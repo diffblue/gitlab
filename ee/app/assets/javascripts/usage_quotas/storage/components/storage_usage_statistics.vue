@@ -44,6 +44,10 @@ export default {
       required: false,
       default: false,
     },
+    loading: {
+      type: Boolean,
+      required: true,
+    },
   },
   i18n: {
     purchasedUsageHelpLink: projectHelpPaths.usageQuotas,
@@ -91,6 +95,7 @@ export default {
       :used-storage="usedStorageAmount"
       :total-storage="storageLimitEnforced ? repositorySizeLimit : null"
       :show-progress-bar="storageLimitEnforced"
+      :loading="loading"
       data-testid="namespace-usage-card"
       class="gl-w-half gl-md-mr-5"
     >
@@ -113,6 +118,7 @@ export default {
       :used-storage="purchasedUsedStorage"
       :total-storage="purchasedTotalStorage"
       :show-progress-bar="storageLimitEnforced"
+      :loading="loading"
       data-testid="purchased-usage-card"
       class="gl-w-half"
     >

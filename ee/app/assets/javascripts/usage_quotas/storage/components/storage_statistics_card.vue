@@ -1,10 +1,10 @@
 <script>
-import { GlProgressBar } from '@gitlab/ui';
+import { GlProgressBar, GlSkeletonLoader } from '@gitlab/ui';
 import { formatSizeAndSplit } from 'ee/usage_quotas/storage/utils';
 
 export default {
   name: 'StorageStatisticsCard',
-  components: { GlProgressBar },
+  components: { GlProgressBar, GlSkeletonLoader },
   props: {
     totalStorage: {
       type: Number,
@@ -20,6 +20,10 @@ export default {
       type: Boolean,
       required: false,
       default: false,
+    },
+    loading: {
+      type: Boolean,
+      required: true,
     },
   },
   computed: {
@@ -71,24 +75,32 @@ export default {
     class="gl-bg-white gl-border-1 gl-border-gray-100 gl-border-solid gl-p-5 gl-rounded-base"
     data-testid="container"
   >
-    <div class="gl-display-flex gl-justify-content-space-between">
-      <p class="gl-font-size-h-display gl-font-weight-bold gl-mb-3" data-testid="denominator">
-        {{ usageValue }}
-        <span class="gl-font-lg">{{ usageUnit }}</span>
-        <span v-if="shouldRenderTotalBlock" data-testid="denominator-total">
-          /
-          {{ totalValue }}
-          <span class="gl-font-lg">{{ totalUnit }}</span>
-        </span>
-      </p>
+    <gl-skeleton-loader v-if="loading" :height="64">
+      <rect width="140" height="30" x="5" y="0" rx="4" />
+      <rect width="240" height="10" x="5" y="40" rx="4" />
+      <rect width="340" height="10" x="5" y="54" rx="4" />
+    </gl-skeleton-loader>
 
-      <div data-testid="actions">
-        <slot name="actions"></slot>
+    <div v-else>
+      <div class="gl-display-flex gl-justify-content-space-between">
+        <p class="gl-font-size-h-display gl-font-weight-bold gl-mb-3" data-testid="denominator">
+          {{ usageValue }}
+          <span class="gl-font-lg">{{ usageUnit }}</span>
+          <span v-if="shouldRenderTotalBlock" data-testid="denominator-total">
+            /
+            {{ totalValue }}
+            <span class="gl-font-lg">{{ totalUnit }}</span>
+          </span>
+        </p>
+
+        <div data-testid="actions">
+          <slot name="actions"></slot>
+        </div>
       </div>
+      <p class="gl-font-weight-bold" data-testid="description">
+        <slot name="description"></slot>
+      </p>
+      <gl-progress-bar v-if="shouldShowProgressBar" :value="percentage" />
     </div>
-    <p class="gl-font-weight-bold" data-testid="description">
-      <slot name="description"></slot>
-    </p>
-    <gl-progress-bar v-if="shouldShowProgressBar" :value="percentage" />
   </div>
 </template>

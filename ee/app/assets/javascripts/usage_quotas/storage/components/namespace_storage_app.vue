@@ -1,5 +1,6 @@
 <script>
 import {
+  GlAlert,
   GlLink,
   GlSprintf,
   GlModalDirective,
@@ -7,7 +8,9 @@ import {
   GlIcon,
   GlKeysetPagination,
 } from '@gitlab/ui';
-import * as Sentry from '@sentry/browser';
+import { isEmpty } from 'lodash';
+import { s__ } from '~/locale';
+import { captureException } from '~/runner/sentry_utils';
 import { parseBoolean } from '~/lib/utils/common_utils';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { PROJECT_TABLE_LABEL_STORAGE_USAGE } from '../constants';
@@ -26,6 +29,7 @@ import ContainerRegistryUsage from './container_registry_usage.vue';
 export default {
   name: 'NamespaceStorageApp',
   components: {
+    GlAlert,
     GlLink,
     GlIcon,
     GlButton,
@@ -66,6 +70,10 @@ export default {
       result() {
         this.firstFetch = false;
       },
+      error(error) {
+        this.loadingError = true;
+        captureException({ error, component: this.$options.name });
+      },
     },
     dependencyProxyTotalSize: {
       query: GetDependencyProxyTotalSizeQuery,
@@ -78,10 +86,7 @@ export default {
         return group?.dependencyProxyTotalSize;
       },
       error(error) {
-        Sentry.withScope((scope) => {
-          scope.setTag('component', this.$options.name);
-          Sentry.captureException(error);
-        });
+        captureException({ error, component: this.$options.name });
       },
     },
   },
@@ -104,6 +109,7 @@ export default {
   },
   i18n: {
     PROJECT_TABLE_LABEL_STORAGE_USAGE,
+    errorMessageText: s__('UsageQuota|Something went wrong while loading usage details'),
   },
   data() {
     return {
@@ -111,6 +117,7 @@ export default {
       searchTerm: '',
       firstFetch: true,
       dependencyProxyTotalSize: '',
+      loadingError: false,
     };
   },
   computed: {
@@ -148,6 +155,10 @@ export default {
       return this.namespace.projects?.pageInfo ?? {};
     },
     shouldShowStorageInlineAlert() {
+      if (isEmpty(this.namespace)) {
+        return false;
+      }
+
       if (this.firstFetch) {
         // for initial load check if the data fetch is done (isQueryLoading)
         return this.isAdditionalStorageFlagEnabled && !this.isQueryLoading;
@@ -159,6 +170,9 @@ export default {
     },
     showPagination() {
       return Boolean(this.pageInfo?.hasPreviousPage || this.pageInfo?.hasNextPage);
+    },
+    isStorageUsageStatisticsLoading() {
+      return this.loadingError || this.isQueryLoading;
     },
   },
   methods: {
@@ -196,6 +210,9 @@ export default {
 </script>
 <template>
   <div>
+    <gl-alert v-if="loadingError" variant="danger" :dismissible="false" class="gl-mt-4">
+      {{ $options.i18n.errorMessageText }}
+    </gl-alert>
     <storage-inline-alert
       v-if="shouldShowStorageInlineAlert"
       :contains-locked-projects="namespace.containsLockedProjects"
@@ -213,6 +230,7 @@ export default {
         :actual-repository-size-limit="storageStatistics.actualRepositorySizeLimit"
         :total-repository-size="storageStatistics.totalRepositorySize"
         :total-repository-size-excess="storageStatistics.totalRepositorySizeExcess"
+        :loading="isStorageUsageStatisticsLoading"
       />
       <usage-statistics v-else :root-storage-statistics="storageStatistics" />
     </div>
