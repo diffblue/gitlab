@@ -69,4 +69,55 @@ RSpec.describe Groups::Analytics::CycleAnalytics::SummaryController do
       expect(response).to be_successful
     end
   end
+
+  describe 'time series endpoints' do
+    let(:params) { { group_id: group.full_path, created_after: 15.days.ago.to_date } }
+
+    let_it_be(:created_at1) { 5.days.ago }
+    let_it_be(:created_at2) { 10.days.ago }
+    let_it_be(:project) { create(:project, group: group) }
+    let_it_be(:issue1) { create(:issue, project: project, created_at: created_at1, closed_at: created_at1 + 3.days) }
+    let_it_be(:issue2) { create(:issue, project: project, created_at: created_at2, closed_at: created_at2 + 8.days) }
+
+    before(:context) do
+      issue1.metrics.update!(first_mentioned_in_commit_at: created_at1 + 2.days)
+      issue2.metrics.update!(first_mentioned_in_commit_at: created_at2 + 7.days)
+    end
+
+    before do
+      Analytics::CycleAnalytics::DataLoaderService.new(group: group, model: Issue).execute
+    end
+
+    describe 'GET "lead_times"' do
+      subject { get :lead_times, params: params }
+
+      it_behaves_like 'summary endpoint'
+
+      it 'returns the daily average durations' do
+        subject
+
+        # duration between created_at and closed_at
+        expect(json_response).to eq([{
+          'average_duration_in_seconds' => (3.days.seconds + 8.days.seconds).fdiv(2),
+          'date' => issue1.closed_at.to_date.to_s
+        }])
+      end
+    end
+
+    describe 'GET "cycle_times"' do
+      subject { get :cycle_times, params: params }
+
+      it_behaves_like 'summary endpoint'
+
+      it 'returns the daily average durations' do
+        subject
+
+        # duration between first_mentioned_in_commit_at and closed_at
+        expect(json_response).to eq([{
+          'average_duration_in_seconds' => 2.days.seconds.fdiv(2),
+          'date' => issue1.closed_at.to_date.to_s
+        }])
+      end
+    end
+  end
 end
