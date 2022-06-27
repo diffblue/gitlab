@@ -2180,4 +2180,30 @@ RSpec.describe GroupPolicy do
       end
     end
   end
+
+  describe 'group level compliance dashboard' do
+    context 'feature enabled' do
+      before do
+        stub_licensed_features(group_level_compliance_dashboard: true)
+      end
+
+      context 'auditor' do
+        let(:current_user) { auditor }
+
+        it { is_expected.to be_allowed(:read_group_compliance_dashboard) }
+      end
+    end
+
+    context 'feature disabled' do
+      before do
+        stub_licensed_features(group_level_compliance_dashboard: false)
+      end
+
+      context 'auditor' do
+        let(:current_user) { auditor }
+
+        it { is_expected.to be_disallowed(:read_group_compliance_dashboard) }
+      end
+    end
+  end
 end
