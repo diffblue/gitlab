@@ -176,7 +176,9 @@ module API
       mount ::API::Applications
       mount ::API::Avatar
       mount ::API::AwardEmoji
+      mount ::API::BackgroundMigrations
       mount ::API::Badges
+      mount ::API::BatchedBackgroundMigrations
       mount ::API::Boards
       mount ::API::Branches
       mount ::API::BroadcastMessages

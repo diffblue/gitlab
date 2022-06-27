@@ -23,12 +23,16 @@ module Gitlab
         validate :validate_batched_jobs_status, if: -> { status_changed? && finished? }
 
         scope :queue_order, -> { order(id: :asc) }
+        scope :list_order, -> { order(id: :desc) }
+        scope :active, -> { with_status(:active) }
         scope :queued, -> { with_statuses(:active, :paused) }
 
         # on_hold_until is a temporary runtime status which puts execution "on hold"
         scope :executable, -> { with_status(:active).where('on_hold_until IS NULL OR on_hold_until < NOW()') }
 
         scope :created_after, ->(time) { where('created_at > ?', time) }
+
+        scope :for_job_class_name, ->(job_class_name) { where(job_class_name: job_class_name) }
 
         scope :for_configuration, ->(gitlab_schema, job_class_name, table_name, column_name, job_arguments) do
           relation = where(job_class_name: job_class_name, table_name: table_name, column_name: column_name)
