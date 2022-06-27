@@ -89,7 +89,7 @@ module Projects
     def mirror_operations_access_level_changes
       return if Feature.enabled?(:split_operations_visibility_permissions, project)
 
-      operations_access_level = params[:project_feature_attributes][:operations_access_level]
+      operations_access_level = params.dig(:project_feature_attributes, :operations_access_level)
 
       return if operations_access_level.nil?
 
