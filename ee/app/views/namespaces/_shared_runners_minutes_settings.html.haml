@@ -5,6 +5,4 @@
 
 = render 'namespaces/shared_runners_minutes_setting', form: form
 - unless group.new_record?
-  .form-group.row
-    .offset-sm-2.col-sm-10
-      #pipeline-minutes-vue{ data: { reset_minutes_path: admin_group_reset_runners_minutes_path(group) } }
+  #js-pipeline-minutes-vue{ data: { reset_minutes_path: admin_group_reset_runners_minutes_path(group) } }

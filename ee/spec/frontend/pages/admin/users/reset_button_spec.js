@@ -1,5 +1,6 @@
+import { nextTick } from 'vue';
 import { GlButton } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
 import MockAdapter from 'axios-mock-adapter';
 import ResetButton from 'ee/pages/admin/users/pipeline_minutes/reset_button.vue';
 import axios from '~/lib/utils/axios_utils';
@@ -15,7 +16,7 @@ describe('Reset pipeline minutes button', () => {
   let mock;
 
   beforeEach(() => {
-    wrapper = shallowMount(ResetButton, {
+    wrapper = mount(ResetButton, {
       provide: {
         ...defaultProps,
       },
@@ -51,17 +52,21 @@ describe('Reset pipeline minutes button', () => {
       mock.restore();
     });
 
-    it('should create a network request when the reset button is clicked', () => {
+    it('should create a network request when the reset button is clicked', async () => {
       const axiosSpy = jest.spyOn(axios, 'post');
 
       const button = findResetButton();
 
       button.vm.$emit('click');
+      await nextTick();
 
-      return axios.waitForAll().then(() => {
-        expect(axiosSpy).toHaveBeenCalled();
-        expect($toast.show).toHaveBeenCalledWith('User pipeline minutes were successfully reset.');
-      });
+      expect(button.props('loading')).toBe(true);
+
+      await axios.waitForAll();
+
+      expect(axiosSpy).toHaveBeenCalled();
+      expect($toast.show).toHaveBeenCalledWith('User pipeline minutes were successfully reset.');
+      expect(button.props('loading')).toBe(false);
     });
   });
 
@@ -76,19 +81,19 @@ describe('Reset pipeline minutes button', () => {
       mock.restore();
     });
 
-    it('should show a toast error message', () => {
+    it('should show a toast error message', async () => {
       const axiosSpy = jest.spyOn(axios, 'post');
 
       const button = findResetButton();
 
       button.vm.$emit('click');
 
-      return axios.waitForAll().then(() => {
-        expect(axiosSpy).toHaveBeenCalled();
-        expect($toast.show).toHaveBeenCalledWith(
-          'There was an error resetting user pipeline minutes.',
-        );
-      });
+      await axios.waitForAll();
+
+      expect(axiosSpy).toHaveBeenCalled();
+      expect($toast.show).toHaveBeenCalledWith(
+        'There was an error resetting user pipeline minutes.',
+      );
     });
   });
 });
