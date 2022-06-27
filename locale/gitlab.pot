@@ -27125,12 +27125,6 @@ msgstr ""
 msgid "Package type must be RubyGems"
 msgstr ""
 
-msgid "PackageRegistry|%{boldStart}Allow duplicates%{boldEnd} - Accept packages with the same name and version."
-msgstr ""
-
-msgid "PackageRegistry|%{boldStart}Do not allow duplicates%{boldEnd} - Reject packages with the same name and version."
-msgstr ""
-
 msgid "PackageRegistry|%{name} version %{version} was first created %{datetime}"
 msgstr ""
 
@@ -27152,7 +27146,7 @@ msgstr ""
 msgid "PackageRegistry|Additional metadata"
 msgstr ""
 
-msgid "PackageRegistry|Allow duplicates"
+msgid "PackageRegistry|Allow packages with the same name and version to be uploaded to the registry. The newest version of a package is always used when installing."
 msgstr ""
 
 msgid "PackageRegistry|App group: %{group}"
@@ -27258,6 +27252,9 @@ msgid "PackageRegistry|Delete package"
 msgstr ""
 
 msgid "PackageRegistry|Delete this package"
+msgstr ""
+
+msgid "PackageRegistry|Duplicate packages"
 msgstr ""
 
 msgid "PackageRegistry|Error publishing"
@@ -27376,6 +27373,9 @@ msgstr ""
 msgid "PackageRegistry|Registry setup"
 msgstr ""
 
+msgid "PackageRegistry|Reject packages with the same name and version"
+msgstr ""
+
 msgid "PackageRegistry|Remove package"
 msgstr ""
 
@@ -27458,9 +27458,6 @@ msgid "PackageRegistry|Unable to fetch package version information."
 msgstr ""
 
 msgid "PackageRegistry|Unable to load package"
-msgstr ""
-
-msgid "PackageRegistry|Use GitLab as a private registry for common package formats. %{linkStart}Learn more.%{linkEnd}"
 msgstr ""
 
 msgid "PackageRegistry|You are about to delete %{filename}. This is a destructive action that may render your package unusable. Are you sure?"
