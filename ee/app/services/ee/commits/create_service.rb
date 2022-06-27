@@ -15,10 +15,18 @@ module EE
       end
 
       def validate_repository_size!
-        size_checker = project.repository_size_checker
-
         if size_checker.above_size_limit?
           raise_error(size_checker.error_message.commit_error)
+        end
+      end
+
+      def size_checker
+        root_namespace = project.namespace.root_ancestor
+
+        if ::Namespaces::Storage::EnforcementCheckService.enforce_limit?(root_namespace)
+          ::EE::Namespace::RootStorageSize.new(root_namespace)
+        else
+          project.repository_size_checker
         end
       end
 
