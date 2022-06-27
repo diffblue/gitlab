@@ -4,7 +4,7 @@ key_path: geo_enabled
 description: Is Geo enabled?
 product_section: enablement
 product_stage: enablement
-product_group: group::geo
+product_group: geo
 product_category: geo_replication
 value_type: boolean
 status: active

@@ -869,7 +869,7 @@ Support for group-level settings for merge request approval rules is tracked in 
 - [Lock the sharing with group feature](#prevent-a-project-from-being-shared-with-groups).
 - [Enforce two-factor authentication (2FA)](../../security/two_factor_authentication.md#enforce-2fa-for-all-users-in-a-group): Enforce 2FA
   for all group members.
-- Namespaces [API](../../api/namespaces.md) and [Rake tasks](../../raketasks/features.md).
+- Namespaces [API](../../api/namespaces.md) and [Rake tasks](../../raketasks/index.md).
 - [Control access and visibility](../admin_area/settings/visibility_and_access_controls.md).
 
 ## Troubleshooting

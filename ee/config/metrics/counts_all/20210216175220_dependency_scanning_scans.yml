@@ -4,7 +4,7 @@ key_path: usage_activity_by_stage.secure.dependency_scanning_scans
 description: Total count of Dependency Scanning security scans run
 product_section: sec
 product_stage: secure
-product_group: group::composition analysis
+product_group: composition_analysis
 product_category: dependency_scanning
 value_type: number
 status: active

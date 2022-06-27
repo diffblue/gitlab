@@ -4,7 +4,7 @@ key_path: counts.requirements_created
 description: Count of requirements created
 product_section: dev
 product_stage: plan
-product_group: group::certify
+product_group: certify
 product_category: requirements_management
 value_type: number
 status: active

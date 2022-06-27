@@ -3,7 +3,7 @@ key_path: recording_ee_finished_at
 description: When the EE-specific features were computed
 product_section: growth
 product_stage: growth
-product_group: group::product intelligence
+product_group: product_intelligence
 product_category: collection
 value_type: string
 status: active

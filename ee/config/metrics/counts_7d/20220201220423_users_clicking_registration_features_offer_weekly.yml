@@ -3,7 +3,7 @@ key_path: redis_hll_counters.growth.users_clicking_registration_features_offer_w
 description: The number of unique users who clicked the settings link in the Registration Features offer CTA
 product_section: growth
 product_stage: growth
-product_group: group::product intelligence
+product_group: product_intelligence
 product_category:
 value_type: number
 status: active

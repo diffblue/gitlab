@@ -4,7 +4,7 @@ description: Monthly number of distinct clusters with network policies using the
   policies UI
 product_section: sec
 product_stage: protect
-product_group: group::container security
+product_group: container_security
 product_category: container_network_security
 value_type: number
 status: active

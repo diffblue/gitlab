@@ -5,7 +5,7 @@ description: Count of users who set personal preference to see Security Dashboar
   on Group information page
 product_section: sec
 product_stage: secure
-product_group: group::threat insights
+product_group: threat_insights
 product_category: vulnerability_management
 value_type: number
 status: active

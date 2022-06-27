@@ -3,7 +3,7 @@ key_path: usage_activity_by_stage.secure.user_dependency_scanning_scans
 description: Number of users who have run a Dependency Scanning scan
 product_section: sec
 product_stage: secure
-product_group: group::composition analysis
+product_group: composition_analysis
 product_category: dependency_scanning
 value_type: number
 status: removed

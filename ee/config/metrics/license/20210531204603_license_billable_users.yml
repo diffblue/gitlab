@@ -5,7 +5,7 @@ name: billable_users
 description: Number of all billable users (active users excluding bots and guests).
 product_section: growth
 product_stage: growth
-product_group: group::product intelligence
+product_group: product_intelligence
 product_category: collection
 value_type: number
 status: active

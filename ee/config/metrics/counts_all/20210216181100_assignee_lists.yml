@@ -4,7 +4,7 @@ key_path: counts.assignee_lists
 description: Count of assignee lists created on Boards
 product_section: dev
 product_stage: plan
-product_group: group::project management
+product_group: project_management
 product_category: boards
 value_type: number
 status: active

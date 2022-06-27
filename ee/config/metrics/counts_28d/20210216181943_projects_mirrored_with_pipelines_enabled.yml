@@ -4,7 +4,7 @@ key_path: usage_activity_by_stage_monthly.release.projects_mirrored_with_pipelin
 description: Count creator_id from projects with repository mirroring enabled.
 product_section: ops
 product_stage: verify
-product_group: group::pipeline execution
+product_group: pipeline_execution
 product_category:
 value_type: number
 status: active

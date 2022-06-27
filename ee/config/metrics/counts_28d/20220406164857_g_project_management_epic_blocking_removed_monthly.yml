@@ -3,7 +3,7 @@ key_path: redis_hll_counters.epics_usage.g_project_management_epic_blocking_remo
 description: Count of MAU removing blocking epics
 product_section: dev
 product_stage: plan
-product_group: group::product planning
+product_group: product_planning
 product_category: epics_usage
 value_type: number
 status: active

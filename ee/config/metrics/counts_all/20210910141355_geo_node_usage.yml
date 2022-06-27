@@ -4,7 +4,7 @@ name: geo_node_usage
 description: Usage data for geo nodes
 product_section: enablement
 product_stage: enablement
-product_group: group::geo
+product_group: geo
 product_category: geo_replication
 value_type: object
 status: active
