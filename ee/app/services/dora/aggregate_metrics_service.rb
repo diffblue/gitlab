@@ -4,7 +4,7 @@ module Dora
   class AggregateMetricsService < ::BaseContainerService
     MAX_RANGE = Gitlab::Analytics::CycleAnalytics::RequestParams::MAX_RANGE_DAYS # same range as Value Stream Analytics
 
-    DEFAULT_ENVIRONMENT_TIER = 'production'
+    DEFAULT_ENVIRONMENT_TIERS = %w[production].freeze
     DEFAULT_INTERVAL = Dora::DailyMetrics::INTERVAL_DAILY
 
     def execute
@@ -76,8 +76,8 @@ module Dora
                      :bad_request)
       end
 
-      unless Environment.tiers[environment_tier]
-        return error(_("The environment tier must be one of %{environment_tiers}.") % { environment_tiers: Environment.tiers.keys.join(',') },
+      unless environment_tiers.all? { |tier| Environment.tiers[tier] }
+        return error(_("The environment tiers must be from %{environment_tiers}.") % { environment_tiers: Environment.tiers.keys.join(', ') },
                      :bad_request)
       end
 
@@ -85,7 +85,7 @@ module Dora
     end
 
     def environments
-      Environment.for_project(target_projects).for_tier(environment_tier)
+      Environment.for_project(target_projects).for_tier(environment_tiers)
     end
 
     def target_projects
@@ -121,8 +121,8 @@ module Dora
       params[:end_date] || Time.current.to_date
     end
 
-    def environment_tier
-      params[:environment_tier] || DEFAULT_ENVIRONMENT_TIER
+    def environment_tiers
+      params[:environment_tiers] || DEFAULT_ENVIRONMENT_TIERS
     end
 
     def interval

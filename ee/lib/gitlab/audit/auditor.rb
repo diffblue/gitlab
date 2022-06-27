@@ -116,7 +116,20 @@ module Gitlab
       def log_to_file(events)
         file_logger = ::Gitlab::AuditJsonLogger.build
 
-        events.each { |event| file_logger.info(event.as_json) }
+        events.each { |event| file_logger.info(log_payload(event)) }
+      end
+
+      private
+
+      def log_payload(event)
+        payload = event.as_json
+        details = formatted_details(event.details)
+        payload["details"] = details
+        payload.merge!(details).as_json
+      end
+
+      def formatted_details(details)
+        details.merge(details.slice(:from, :to).transform_values(&:to_s))
       end
     end
   end

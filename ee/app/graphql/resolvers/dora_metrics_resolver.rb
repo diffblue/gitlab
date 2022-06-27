@@ -27,9 +27,19 @@ module Resolvers
 
     argument :environment_tier, Types::DeploymentTierEnum,
              required: false,
-             description: 'Deployment tier of the environments to return. Defaults to `PRODUCTION`.'
+             description: 'Deployment tier of the environments to return. Planned for deprecation: please update to `environment_tiers` param.'
+
+    argument :environment_tiers, [Types::DeploymentTierEnum],
+             required: false,
+             description: 'Deployment tiers of the environments to return. Defaults to [`PRODUCTION`].'
 
     def resolve(params)
+      # Backwards compatibility until %16.0
+      if params[:environment_tier]
+        params[:environment_tiers] ||= []
+        params[:environment_tiers] |= [params[:environment_tier]]
+      end
+
       result = ::Dora::AggregateMetricsService
         .new(container: container, current_user: current_user, params: params)
         .execute
