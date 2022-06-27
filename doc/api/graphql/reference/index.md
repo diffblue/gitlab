@@ -19169,6 +19169,7 @@ Issue type.
 | <a id="issuetypeincident"></a>`INCIDENT` | Incident issue type. |
 | <a id="issuetypeissue"></a>`ISSUE` | Issue issue type. |
 | <a id="issuetyperequirement"></a>`REQUIREMENT` | Requirement issue type. |
+| <a id="issuetypetask"></a>`TASK` **{warning-solid}** | **Introduced** in 15.2. This feature is in Alpha. It can be changed or removed at any time. |
 | <a id="issuetypetest_case"></a>`TEST_CASE` | Test Case issue type. |
 
 ### `IterationSearchableField`
