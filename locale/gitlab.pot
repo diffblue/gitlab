@@ -2931,13 +2931,16 @@ msgstr ""
 msgid "AdminUsers|2FA Enabled"
 msgstr ""
 
-msgid "AdminUsers|A user can validate themselves by inputting a credit/debit card, or an admin can manually validate a user."
+msgid "AdminUsers|A user can validate themselves by inputting a credit/debit card, or an admin can manually validate a user. Validated users can use free CI minutes on shared runners."
 msgstr ""
 
 msgid "AdminUsers|Access"
 msgstr ""
 
 msgid "AdminUsers|Access Git repositories"
+msgstr ""
+
+msgid "AdminUsers|Access level"
 msgstr ""
 
 msgid "AdminUsers|Access the API"
@@ -2982,6 +2985,9 @@ msgstr ""
 msgid "AdminUsers|Automatically marked as default internal user"
 msgstr ""
 
+msgid "AdminUsers|Avatar"
+msgstr ""
+
 msgid "AdminUsers|Ban user"
 msgstr ""
 
@@ -3007,6 +3013,9 @@ msgid "AdminUsers|Blocked"
 msgstr ""
 
 msgid "AdminUsers|Blocking user has the following effects:"
+msgstr ""
+
+msgid "AdminUsers|Can create group"
 msgstr ""
 
 msgid "AdminUsers|Cannot sign in or access instance information"
@@ -3084,6 +3093,12 @@ msgstr ""
 msgid "AdminUsers|Learn more about %{link_start}banned users.%{link_end}"
 msgstr ""
 
+msgid "AdminUsers|Limits"
+msgstr ""
+
+msgid "AdminUsers|Linkedin"
+msgstr ""
+
 msgid "AdminUsers|Locked"
 msgstr ""
 
@@ -3111,6 +3126,9 @@ msgstr ""
 msgid "AdminUsers|Personal projects, group and user history will be left intact"
 msgstr ""
 
+msgid "AdminUsers|Quota of CI/CD minutes"
+msgstr ""
+
 msgid "AdminUsers|Reactivating a user will:"
 msgstr ""
 
@@ -3129,6 +3147,9 @@ msgstr ""
 msgid "AdminUsers|Rejected users:"
 msgstr ""
 
+msgid "AdminUsers|Reset link will be generated and sent to the user. User will be forced to set the password on first sign in."
+msgstr ""
+
 msgid "AdminUsers|Restore user access to the account, including web, Git and API."
 msgstr ""
 
@@ -3141,7 +3162,13 @@ msgstr ""
 msgid "AdminUsers|Send email to users"
 msgstr ""
 
+msgid "AdminUsers|Skype"
+msgstr ""
+
 msgid "AdminUsers|Sort by"
+msgstr ""
+
+msgid "AdminUsers|The maximum number of CI/CD minutes on shared runners that a group can use each month. Set 0 for unlimited. Set empty to inherit the global setting of %{minutes}"
 msgstr ""
 
 msgid "AdminUsers|The user can't access git repositories."
@@ -3192,9 +3219,6 @@ msgstr ""
 msgid "AdminUsers|User administration"
 msgstr ""
 
-msgid "AdminUsers|User is validated and can use free CI minutes on shared runners."
-msgstr ""
-
 msgid "AdminUsers|User will not be able to access git repositories"
 msgstr ""
 
@@ -3211,6 +3235,9 @@ msgid "AdminUsers|Validate user account"
 msgstr ""
 
 msgid "AdminUsers|View pending member requests"
+msgstr ""
+
+msgid "AdminUsers|Website URL"
 msgstr ""
 
 msgid "AdminUsers|What can I do?"
@@ -32627,9 +32654,6 @@ msgstr ""
 msgid "Reset health check access token"
 msgstr ""
 
-msgid "Reset link will be generated and sent to the user. %{break} User will be forced to set the password on first sign in."
-msgstr ""
-
 msgid "Reset password"
 msgstr ""
 
@@ -40612,6 +40636,9 @@ msgid "Two-factor authentication"
 msgstr ""
 
 msgid "Two-factor authentication disabled"
+msgstr ""
+
+msgid "Two-factor authentication grace period"
 msgstr ""
 
 msgid "Two-factor authentication has been disabled for this user"

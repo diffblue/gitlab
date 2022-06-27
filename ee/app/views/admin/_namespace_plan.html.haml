@@ -1,11 +1,9 @@
 -# rubocop: disable CodeReuse/ActiveRecord
 - return unless Gitlab::CurrentSettings.should_check_namespace_plan?
 
-.form-group.row
-  .col-12
-    = f.label :plan
-  .col-12
-    = f.fields_for :gitlab_subscription do |f|
-      = f.select :hosted_plan_id, Plan.pluck(:title, :id),
-        { include_blank: _('No plan') },
-        class: 'form-control', data: { qa_selector: 'plan_dropdown' }
+.form-group.gl-form-group{ role: 'group' }
+  = f.label :plan, class: 'gl-display-block col-form-label'
+  = f.fields_for :gitlab_subscription do |f|
+    = f.select :hosted_plan_id, Plan.pluck(:title, :id),
+      { include_blank: _('No plan') },
+      class: 'gl-form-select custom-select', data: { qa_selector: 'plan_dropdown' }
