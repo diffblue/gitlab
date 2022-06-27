@@ -119,7 +119,7 @@ RSpec.describe API::Experiments do
 
             # Yes, we really do want to test this and the only way to get here
             # is by calling a private method.
-            expect(Gitlab::Tracking.send(:snowplow)).to receive(:event).with(
+            expect(Gitlab::Tracking.send(:tracker)).to receive(:event).with(
               'null_hypothesis',
               'assignment',
               label: nil,
