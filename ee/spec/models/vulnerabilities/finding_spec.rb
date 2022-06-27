@@ -1119,4 +1119,14 @@ RSpec.describe Vulnerabilities::Finding do
 
     it { is_expected.to contain_exactly(finding) }
   end
+
+  describe '.excluding_uuids' do
+    let(:finding_1) { create(:vulnerabilities_finding) }
+    let(:finding_2) { create(:vulnerabilities_finding) }
+    let(:finding_3) { create(:vulnerabilities_finding) }
+
+    subject { described_class.excluding_uuids([finding_1.uuid, finding_3.uuid]) }
+
+    it { is_expected.to contain_exactly(finding_2) }
+  end
 end
