@@ -24,6 +24,9 @@ RSpec.describe RepositoryUpdateMirrorWorker do
         expect(instance).to receive(:execute).and_return(status: :success)
       end
 
+      allow(Gitlab::AppLogger).to receive(:info).and_call_original
+      expect(Gitlab::AppLogger).to receive(:info).with(message: /successfully finished/, jid: jid)
+
       expect { subject.perform(project.id) }.to change { import_state.reload.status }.to('finished')
     end
 
@@ -32,6 +35,7 @@ RSpec.describe RepositoryUpdateMirrorWorker do
         allow(instance).to receive(:execute).and_return(status: :error, message: 'error')
       end
 
+      expect(Gitlab::AppLogger).to receive(:error).with(message: /failed/, jid: jid)
       expect { subject.perform(project.id) }.to raise_error(RepositoryUpdateMirrorWorker::UpdateError, 'error')
       expect(project.reload.import_status).to eq('failed')
     end
@@ -49,6 +53,7 @@ RSpec.describe RepositoryUpdateMirrorWorker do
       it 'returns nil' do
         mirror = create(:project, :repository, :mirror, :import_started)
 
+        expect(Gitlab::AppLogger).to receive(:info).with(message: /inconsistent state/, jid: jid)
         expect(subject.perform(mirror.id)).to be nil
       end
     end
