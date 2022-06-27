@@ -32,7 +32,7 @@ module Security
               author_id: pipeline.user_id,
               project_id: pipeline.project_id,
               title: report_finding.name.to_s.truncate(::Issuable::TITLE_LENGTH_MAX),
-              state: :detected,
+              state: vulnerability_state(feedback),
               severity: report_finding.severity,
               confidence: report_finding.confidence,
               report_type: report_finding.report_type,
@@ -53,6 +53,10 @@ module Security
 
           def finding_uuids
             finding_maps.map(&:uuid)
+          end
+
+          def vulnerability_state(feedback)
+            feedback ? :dismissed : :detected
           end
         end
       end
