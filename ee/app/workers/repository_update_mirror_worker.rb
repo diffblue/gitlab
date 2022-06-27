@@ -48,26 +48,26 @@ class RepositoryUpdateMirrorWorker
     import_state = project.import_state
 
     if start(import_state)
-      Gitlab::AppLogger.info("Mirror update for #{project.full_path} started. Waiting duration: #{import_state.mirror_waiting_duration}")
+      Gitlab::AppLogger.info(message: "Mirror update for #{project.full_path} started. Waiting duration: #{import_state.mirror_waiting_duration}", jid: jid)
       metric_mirror_waiting_duration_seconds.observe({}, import_state.mirror_waiting_duration)
 
       true
     else
-      Gitlab::AppLogger.info("Project #{project.full_path} was in inconsistent state: #{import_state.status}")
+      Gitlab::AppLogger.info(message: "Project #{project.full_path} was in inconsistent state: #{import_state.status}.", jid: jid)
       false
     end
   end
 
   def fail_mirror(project, message)
     project.import_state.mark_as_failed(message)
-    Gitlab::AppLogger.error("Mirror update for #{project.full_path} failed with the following message: #{message}")
+    Gitlab::AppLogger.error(message: "Mirror update for #{project.full_path} failed with the following message: #{message}.", jid: jid)
   end
 
   def finish_mirror(project)
     import_state = project.import_state
     import_state.finish
 
-    Gitlab::AppLogger.info("Mirror update for #{project.full_path} successfully finished. Update duration: #{import_state.mirror_update_duration}.")
+    Gitlab::AppLogger.info(message: "Mirror update for #{project.full_path} successfully finished. Update duration: #{import_state.mirror_update_duration}", jid: jid)
     metric_mirror_update_duration_seconds.observe({}, import_state.mirror_update_duration)
   end
 
