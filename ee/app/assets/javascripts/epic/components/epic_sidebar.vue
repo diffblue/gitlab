@@ -15,6 +15,7 @@ import SidebarSubscriptionsWidget from '~/sidebar/components/subscriptions/sideb
 import SidebarTodoWidget from '~/sidebar/components/todo_toggle/sidebar_todo_widget.vue';
 import sidebarEventHub from '~/sidebar/event_hub';
 import LabelsSelectWidget from '~/vue_shared/components/sidebar/labels_select_widget/labels_select_root.vue';
+import ColorSelectDropdown from '~/vue_shared/components/color_select_dropdown/color_select_root.vue';
 import { LabelType } from '~/vue_shared/components/sidebar/labels_select_widget/constants';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 
@@ -34,6 +35,7 @@ export default {
     SidebarReferenceWidget,
     SidebarTodoWidget,
     LabelsSelectWidget,
+    ColorSelectDropdown,
   },
   mixins: [glFeatureFlagMixin()],
   inject: ['iid'],
@@ -86,6 +88,9 @@ export default {
         this.sidebarExpandedOnClick = false;
         this.toggleSidebar({ sidebarCollapsed: false });
       }
+    },
+    isEpicColorEnabled() {
+      return this.glFeatures.epicColorHighlight;
     },
   },
 };
@@ -145,6 +150,20 @@ export default {
       >
         {{ __('None') }}
       </labels-select-widget>
+
+      <color-select-dropdown
+        v-if="isEpicColorEnabled()"
+        class="block colors js-colors-block"
+        :allow-edit="canUpdate"
+        :iid="String(iid)"
+        :full-path="fullPath"
+        workspace-type="group"
+        issuable-type="epic"
+        variant="sidebar"
+        data-testid="colors-select"
+      >
+        {{ __('None') }}
+      </color-select-dropdown>
       <sidebar-confidentiality-widget
         :iid="String(iid)"
         :full-path="fullPath"
