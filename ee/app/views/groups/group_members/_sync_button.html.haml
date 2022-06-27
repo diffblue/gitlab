@@ -1,14 +1,11 @@
 - if @group.ldap_sync_started?
-  %span.btn.gl-button.disabled
-    = sprite_icon("retry", css_class: 'spin gl-mr-2')
+  = render Pajamas::ButtonComponent.new(icon: 'retry', icon_classes: 'gl-spin', button_options: { class: 'gl-mr-3', disabled: true }) do
     = _('Syncing…')
 - elsif @group.ldap_sync_pending?
-  %span.btn.gl-button.disabled
-    = sprite_icon("retry", css_class: 'spin gl-mr-2')
+  = render Pajamas::ButtonComponent.new(icon: 'retry', icon_classes: 'gl-spin', button_options: { class: 'gl-mr-3', disabled: true }) do
     = _('Pending sync…')
 - else
-  %button.js-ldap-sync-now-button.btn.btn-default.gl-button.qa-sync-now-button{ data: ldap_sync_now_button_data(@group) }
-    = sprite_icon("retry", css_class: "gl-mr-2")
+  = render Pajamas::ButtonComponent.new(icon: 'retry', button_options: { class: 'gl-mr-3 js-ldap-sync-now-button qa-sync-now-button', data: ldap_sync_now_button_data(@group) }) do
     = _('Sync now')
 - if @group.ldap_sync_ready? && @group.ldap_sync_last_successful_update_at
   %p.inline.gl-ml-3

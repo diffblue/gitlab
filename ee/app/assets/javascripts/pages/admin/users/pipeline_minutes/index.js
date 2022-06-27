@@ -5,7 +5,7 @@ import ResetButton from './reset_button.vue';
 Vue.use(GlToast);
 
 export function pipelineMinutes() {
-  const el = document.getElementById('pipeline-minutes-vue');
+  const el = document.getElementById('js-pipeline-minutes-vue');
 
   if (el) {
     const { resetMinutesPath } = el.dataset;
