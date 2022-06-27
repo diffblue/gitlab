@@ -39,7 +39,7 @@ module QA
             EE::Page::Group::SamlSSOSignIn.perform(&:click_sign_in)
             Flow::Saml.login_to_idp_if_required('user3', 'user3pass')
 
-            expect(page).to have_content("SAML for #{@group.path} was added to your connected accounts")
+            expect(page).to have_content("Your organization's SSO has been connected to your GitLab account")
 
             member_details = @group.list_members.find { |item| item['username'] == user.username }
 
@@ -58,7 +58,7 @@ module QA
 
           Flow::Saml.login_to_idp_if_required('user1', 'user1pass')
 
-          expect(page).to have_content("SAML for #{@group.path} was added to your connected accounts")
+          expect(page).to have_content("Your organization's SSO has been connected to your GitLab account")
 
           page.visit managed_group_url
 

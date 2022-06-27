@@ -222,7 +222,7 @@ RSpec.describe 'Login' do
       it 'shows U2F prompt after SAML' do
         visit sso_group_saml_providers_path(group, token: group.saml_discovery_token)
 
-        click_link 'Sign in with Single Sign-On'
+        click_link 'Sign in'
 
         expect(page).to have_content('Trying to communicate with your device')
         expect(page).to have_link('Sign in via 2FA code')
@@ -243,7 +243,7 @@ RSpec.describe 'Login' do
       it 'shows WebAuthn prompt after SAML' do
         visit sso_group_saml_providers_path(group, token: group.saml_discovery_token)
 
-        click_link 'Sign in with Single Sign-On'
+        click_link 'Sign in'
 
         # Mock the webauthn procedure to neither reject or resolve, just do nothing
         # Using the built-in credentials.get functionality would result in an SecurityError

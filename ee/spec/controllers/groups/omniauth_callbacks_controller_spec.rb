@@ -145,7 +145,7 @@ RSpec.describe Groups::OmniauthCallbacksController do
       it "displays a flash message verifying group sign in" do
         post provider, params: { group_id: group }
 
-        expect(flash[:notice]).to eq('Login to a GitLab account to link with your SAML identity')
+        expect(flash[:notice]).to eq(s_("SAML|Sign in to GitLab to connect your organization's account"))
       end
 
       it 'does not add linked identity' do
@@ -213,7 +213,7 @@ RSpec.describe Groups::OmniauthCallbacksController do
         it "displays a flash indicating the account has been linked" do
           post provider, params: { group_id: group }
 
-          expect(flash[:notice]).to match(/SAML for .* was added/)
+          expect(flash[:notice]).to eq(s_("SAML|Your organization's SSO has been connected to your GitLab account"))
         end
 
         it 'logs group audit event for being added to the group' do
@@ -268,7 +268,7 @@ RSpec.describe Groups::OmniauthCallbacksController do
             post provider, params: { group_id: group }
 
             expect(response).to redirect_to(new_user_session_path)
-            expect(flash[:notice]).to start_with("Login to a GitLab account to link with your SAML identity")
+            expect(flash[:notice]).to eq(s_("SAML|Sign in to GitLab to connect your organization's account"))
           end
         end
 
