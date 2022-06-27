@@ -106,6 +106,11 @@ export default {
       required: false,
       default: false,
     },
+    isPersonalNamespace: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   i18n: {
     PROJECT_TABLE_LABEL_STORAGE_USAGE,
@@ -291,6 +296,7 @@ export default {
     </div>
 
     <dependency-proxy-usage
+      v-if="!isPersonalNamespace"
       :dependency-proxy-total-size="dependencyProxyTotalSize"
       :loading="isDependencyProxyStorageQueryLoading"
     />
