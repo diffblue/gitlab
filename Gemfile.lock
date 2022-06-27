@@ -749,7 +749,7 @@ GEM
       activesupport (>= 4)
       railties (>= 4)
       request_store (~> 1.0)
-    loofah (2.16.0)
+    loofah (2.18.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
     lru_redux (1.1.0)
@@ -1591,7 +1591,7 @@ DEPENDENCIES
   licensee (~> 9.14.1)
   lockbox (~> 0.6.2)
   lograge (~> 0.5)
-  loofah (~> 2.2)
+  loofah (~> 2.18.0)
   lru_redux
   mail (= 2.7.1)
   mail-smtp_pool (~> 0.1.0)!
