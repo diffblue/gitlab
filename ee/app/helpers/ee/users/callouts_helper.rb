@@ -148,10 +148,6 @@ module EE
       def show_ultimate_trial_suitable_env?
         ::Gitlab.com? && !::Gitlab::Database.read_only?
       end
-
-      def callouts_trials_link_url
-        new_trial_registration_path(glm_source: 'gitlab.com', glm_content: 'gold-callout')
-      end
     end
   end
 end
