@@ -339,4 +339,81 @@ RSpec.describe Gitlab::GitAccessProject do
       .to receive(:object_directory_size)
       .and_return(size)
   end
+
+  describe '#check_download_access!' do
+    let_it_be(:user) { create(:user) }
+    let_it_be(:project) { create(:project, :repository) }
+
+    let(:container) { project }
+    let(:actor) { user }
+    let(:project_path) { project.path }
+    let(:namespace_path) { project&.namespace&.path }
+    let(:repository_path) { "#{namespace_path}/#{project_path}.git" }
+    let(:protocol) { 'ssh' }
+    let(:authentication_abilities) { %i[download_code] }
+    let(:access) do
+      described_class.new(actor, container, protocol,
+                          authentication_abilities: authentication_abilities,
+                          repository_path: repository_path)
+    end
+
+    let(:changes) { Gitlab::GitAccess::ANY }
+
+    before do
+      project.add_maintainer(user)
+      stub_licensed_features(git_abuse_rate_limit: true)
+    end
+
+    subject(:pull_access_check) { access.check('git-upload-pack', changes) }
+
+    describe 'excessive projects download restriction' do
+      it 'executes Users::Abuse::ExcessiveProjectsDownloadBanService on the user and project' do
+        expect(Users::Abuse::ExcessiveProjectsDownloadBanService).to receive(:execute)
+          .with(user, project) { { banned: false } }
+
+        pull_access_check
+      end
+
+      context 'when Users::Abuse::ExcessiveProjectsDownloadBanService bans the user' do
+        before do
+          allow(Users::Abuse::ExcessiveProjectsDownloadBanService).to receive(:execute) { { banned: true } }
+        end
+
+        it { expect { pull_access_check }.to raise_error(Gitlab::GitAccess::ForbiddenError) }
+      end
+
+      context 'when feature flag is disabled' do
+        before do
+          stub_feature_flags(git_abuse_rate_limit_feature_flag: false)
+        end
+
+        it 'does not execute Users::Abuse::ExcessiveProjectsDownloadBanService' do
+          expect(Users::Abuse::ExcessiveProjectsDownloadBanService).not_to receive(:execute)
+
+          pull_access_check
+        end
+      end
+
+      context 'when current license is not ultimate' do
+        before do
+          stub_licensed_features(git_abuse_rate_limit: false)
+        end
+
+        it 'does not execute Users::Abuse::ExcessiveProjectsDownloadBanService' do
+          expect(Users::Abuse::ExcessiveProjectsDownloadBanService).not_to receive(:execute)
+
+          pull_access_check
+        end
+      end
+
+      context 'when there is no user' do
+        let(:actor) { :ci }
+
+        it 'does not execute Users::Abuse::ExcessiveProjectsDownloadBanService' do
+          expect(Users::Abuse::ExcessiveProjectsDownloadBanService).not_to receive(:execute)
+          expect { pull_access_check }.to raise_error(Gitlab::GitAccess::ForbiddenError)
+        end
+      end
+    end
+  end
 end
