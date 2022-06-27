@@ -197,7 +197,7 @@ module EE
       rule { group_level_compliance_dashboard_enabled & auditor }.policy do
         enable :read_group_compliance_dashboard
       end
-      
+
       rule { owner | admin }.policy do
         enable :owner_access
       end
