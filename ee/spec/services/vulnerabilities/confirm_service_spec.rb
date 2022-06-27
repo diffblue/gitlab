@@ -23,7 +23,14 @@ RSpec.describe Vulnerabilities::ConfirmService do
     end
 
     it_behaves_like 'calls vulnerability statistics utility services in order'
-    it_behaves_like 'removes dismissal feedback from associated findings'
+
+    context 'when feature flag deprecate_vulnerabilities_feedback is disabled' do
+      before do
+        stub_feature_flags(deprecate_vulnerabilities_feedback: false)
+      end
+
+      it_behaves_like 'removes dismissal feedback from associated findings'
+    end
 
     it 'confirms a vulnerability' do
       freeze_time do
@@ -36,6 +43,12 @@ RSpec.describe Vulnerabilities::ConfirmService do
 
     it 'creates note' do
       expect(SystemNoteService).to receive(:change_vulnerability_state).with(vulnerability, user)
+
+      confirm_vulnerability
+    end
+
+    it 'does not remove the feedback from associated findings' do
+      expect(Vulnerabilities::DestroyDismissalFeedbackService).not_to receive(:new).with(user, vulnerability)
 
       confirm_vulnerability
     end
