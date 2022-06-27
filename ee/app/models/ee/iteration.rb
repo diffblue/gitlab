@@ -37,6 +37,7 @@ module EE
       belongs_to :iterations_cadence, class_name: '::Iterations::Cadence', foreign_key: :iterations_cadence_id, inverse_of: :iterations
 
       has_many :issues, foreign_key: 'sprint_id'
+      has_many :labels, -> { distinct.reorder('labels.title') }, through: :issues
       has_many :merge_requests, foreign_key: 'sprint_id'
 
       has_internal_id :iid, scope: :project
