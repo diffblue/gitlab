@@ -3,6 +3,8 @@
 require "spec_helper"
 
 RSpec.describe API::Commits do
+  include NamespaceStorageHelpers
+
   let_it_be(:user) { create(:user) }
   let_it_be(:project) { create(:project, :repository, creator: user, path: "my.project") }
 
@@ -170,6 +172,29 @@ RSpec.describe API::Commits do
         it_behaves_like "handling the codeowners interaction"
       end
     end
+
+    context 'with an exceeded namespace storage limit', :saas do
+      let(:namespace) { project.namespace }
+
+      before do
+        create(:gitlab_subscription, :ultimate, namespace: namespace)
+        create(:namespace_root_storage_statistics, namespace: namespace)
+        enforce_namespace_storage_limit(namespace)
+        set_storage_size_limit(namespace, megabytes: 5)
+        set_used_storage(namespace, megabytes: 6)
+      end
+
+      it "rejects the request" do
+        post api(route, user), params: { branch: branch }
+
+        expect(response).to have_gitlab_http_status(:bad_request)
+        expect(json_response['message']).to eq(
+          'Your push to this repository has been rejected because the ' \
+          'namespace storage limit of 5 MB has been reached. ' \
+          'Reduce your namespace storage or purchase additional storage.'
+        )
+      end
+    end
   end
 
   describe "POST :id/repository/commits/:sha/revert" do
@@ -202,6 +227,29 @@ RSpec.describe API::Commits do
         let(:paths) { commit.raw_deltas.flat_map { |diff| [diff.new_path, diff.old_path] }.uniq }
 
         it_behaves_like "handling the codeowners interaction"
+      end
+    end
+
+    context 'with an exceeded namespace storage limit', :saas do
+      let(:namespace) { project.namespace }
+
+      before do
+        create(:gitlab_subscription, :ultimate, namespace: namespace)
+        create(:namespace_root_storage_statistics, namespace: namespace)
+        enforce_namespace_storage_limit(namespace)
+        set_storage_size_limit(namespace, megabytes: 5)
+        set_used_storage(namespace, megabytes: 6)
+      end
+
+      it "rejects the request" do
+        post api(route, user), params: { branch: branch }
+
+        expect(response).to have_gitlab_http_status(:bad_request)
+        expect(json_response['message']).to eq(
+          'Your push to this repository has been rejected because the ' \
+          'namespace storage limit of 5 MB has been reached. ' \
+          'Reduce your namespace storage or purchase additional storage.'
+        )
       end
     end
   end
