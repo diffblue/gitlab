@@ -11,13 +11,16 @@ export const initProtectedEnvironmentEditList = () => {
 
   if (envEditFormEls?.length) {
     envEditFormEls.forEach((el) => {
-      const accessDropdownEl = el.querySelector('.js-allowed-to-deploy');
-      if (!accessDropdownEl) {
-        return false;
-      }
-
-      const { url } = el.dataset;
-      const { label, disabled, preselectedItems } = accessDropdownEl.dataset;
+      const {
+        url,
+        label,
+        disabled,
+        preselectedItems,
+        requiredApprovalCount,
+        environmentName,
+        environmentLink,
+        deleteProtectedEnvironmentLink,
+      } = el.dataset;
 
       let preselected = [];
       try {
@@ -26,7 +29,7 @@ export const initProtectedEnvironmentEditList = () => {
         Sentry.captureException(e);
       }
       return new Vue({
-        el: accessDropdownEl,
+        el,
         render(createElement) {
           return createElement(ProtectedEnvironmentEdit, {
             props: {
@@ -35,6 +38,10 @@ export const initProtectedEnvironmentEditList = () => {
               url,
               label,
               disabled,
+              requiredApprovalCount: parseInt(requiredApprovalCount, 10),
+              environmentName,
+              environmentLink,
+              deleteProtectedEnvironmentLink,
             },
           });
         },

@@ -1,5 +1,5 @@
 import MockAdapter from 'axios-mock-adapter';
-import { shallowMount } from '@vue/test-utils';
+import { mountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import axios from '~/lib/utils/axios_utils';
 import AccessDropdown from '~/projects/settings/components/access_dropdown.vue';
@@ -41,14 +41,24 @@ describe('Protected Environment Edit', () => {
     wrapper.destroy();
   });
 
-  const createComponent = ({ preselectedItems = [], disabled = false, label = '' } = {}) => {
-    wrapper = shallowMount(ProtectedEnvironmentEdit, {
+  const createComponent = ({
+    preselectedItems = [],
+    disabled = false,
+    environmentName = '',
+    environmentLink = '',
+    deleteProtectedEnvironmentLink = '',
+    requiredApprovalCount = 0,
+  } = {}) => {
+    wrapper = mountExtended(ProtectedEnvironmentEdit, {
       propsData: {
         parentContainer,
         url,
         disabled,
-        label,
         preselectedItems,
+        environmentName,
+        environmentLink,
+        deleteProtectedEnvironmentLink,
+        requiredApprovalCount,
       },
       mocks: {
         $toast,
@@ -58,13 +68,13 @@ describe('Protected Environment Edit', () => {
 
   const findAccessDropdown = () => wrapper.findComponent(AccessDropdown);
 
+  const findRequiredCountSelect = () => wrapper.findByRole('combobox');
+
   it('renders AccessDropdown and passes down the props', () => {
-    const label = 'Update permissions';
     const disabled = true;
     const preselectedItems = [1, 2, 3];
 
     createComponent({
-      label,
       disabled,
       preselectedItems,
     });
@@ -73,9 +83,44 @@ describe('Protected Environment Edit', () => {
     expect(dropdown.props()).toMatchObject({
       accessLevel: ACCESS_LEVELS.DEPLOY,
       disabled,
-      label,
       preselectedItems,
+      label: i18n.label,
     });
+  });
+
+  it('renders the environment name', () => {
+    const environmentName = 'staging';
+    createComponent({
+      environmentName,
+    });
+
+    const name = wrapper.findByText(environmentName);
+
+    expect(name.exists()).toBe(true);
+  });
+
+  it('renders a link to the environment if it exists', () => {
+    const environmentName = 'staging';
+    const environmentLink = '/staging';
+    createComponent({
+      environmentName,
+      environmentLink,
+    });
+
+    const name = wrapper.findByRole('link', { name: environmentName });
+
+    expect(name.attributes('href')).toBe(environmentLink);
+  });
+
+  it('renders a select for the required approval count', () => {
+    const requiredApprovalCount = 3;
+    createComponent({
+      requiredApprovalCount,
+    });
+
+    const count = findRequiredCountSelect();
+
+    expect(count.element.value).toBe(requiredApprovalCount.toString());
   });
 
   it('should NOT make a request if updated permissions are the same as preselected', () => {
@@ -134,6 +179,42 @@ describe('Protected Environment Edit', () => {
 
     it('should show error message', async () => {
       findAccessDropdown().vm.$emit('hidden', [{ user_id: 1 }]);
+      await waitForPromises();
+      expect(createFlash).toHaveBeenCalledWith({
+        message: i18n.failureMessage,
+        parent: parentContainer,
+      });
+    });
+  });
+
+  describe('on count update success', () => {
+    let updatedCount = 5;
+
+    beforeEach(async () => {
+      createComponent();
+      updatedCount = 5;
+      mockAxios.onPatch().replyOnce(httpStatusCodes.OK, { required_approval_count: updatedCount });
+      findRequiredCountSelect().setValue(updatedCount);
+      await waitForPromises();
+    });
+
+    it('should show a toast with success message', () => {
+      expect($toast.show).toHaveBeenCalledWith(i18n.successMessage);
+    });
+
+    it('should update count', () => {
+      expect(findRequiredCountSelect().element.value).toBe(updatedCount.toString());
+    });
+  });
+
+  describe('on count update failure', () => {
+    beforeEach(() => {
+      mockAxios.onPatch().replyOnce(httpStatusCodes.BAD_REQUEST, {});
+      createComponent();
+    });
+
+    it('should show error message', async () => {
+      findRequiredCountSelect().setValue(5);
       await waitForPromises();
       expect(createFlash).toHaveBeenCalledWith({
         message: i18n.failureMessage,

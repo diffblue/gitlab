@@ -45,7 +45,7 @@ RSpec.describe 'Protected Environments' do
       expect(page).to have_gitlab_http_status(:ok)
     end
 
-    it 'allows seeing a list of protected environments' do
+    it 'allows seeing a list of protected environments', :js do
       within('.protected-branches-list') do
         expect(page).to have_content('production')
         expect(page).to have_content('removed environment')
