@@ -21,3 +21,6 @@ distribution:
 tier:
 - premium
 - ultimate
+options:
+  events:
+    - p_analytics_ci_cd_time_to_restore_service

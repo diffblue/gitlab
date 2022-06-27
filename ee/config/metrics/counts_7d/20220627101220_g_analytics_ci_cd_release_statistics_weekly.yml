@@ -20,3 +20,6 @@ distribution:
 tier:
 - premium
 - ultimate
+options:
+  events:
+    - g_analytics_ci_cd_release_statistics
