@@ -1,19 +1,7 @@
 <script>
-import {
-  GlFormGroup,
-  GlFormSelect,
-  GlFormCheckbox,
-  GlLink,
-  GlBadge,
-  GlIcon,
-  GlPopover,
-} from '@gitlab/ui';
+import { GlFormGroup, GlFormSelect, GlFormCheckbox, GlLink, GlIcon, GlPopover } from '@gitlab/ui';
 import { s__, __ } from '~/locale';
-import {
-  SELECTIVE_SYNC_MORE_INFO,
-  OBJECT_STORAGE_MORE_INFO,
-  OBJECT_STORAGE_BETA,
-} from '../constants';
+import { SELECTIVE_SYNC_MORE_INFO, OBJECT_STORAGE_MORE_INFO } from '../constants';
 import GeoNodeFormNamespaces from './geo_node_form_namespaces.vue';
 import GeoNodeFormShards from './geo_node_form_shards.vue';
 
@@ -40,7 +28,6 @@ export default {
     objectStorageCheckboxLabel: s__(
       'Geo|Allow this secondary site to replicate content on Object Storage',
     ),
-    beta: s__('Geo|Beta'),
   },
   components: {
     GlFormGroup,
@@ -49,7 +36,6 @@ export default {
     GeoNodeFormShards,
     GlFormCheckbox,
     GlLink,
-    GlBadge,
     GlIcon,
     GlPopover,
   },
@@ -85,7 +71,6 @@ export default {
   },
   SELECTIVE_SYNC_MORE_INFO,
   OBJECT_STORAGE_MORE_INFO,
-  OBJECT_STORAGE_BETA,
 };
 </script>
 
@@ -170,19 +155,11 @@ export default {
           <label for="node-object-storage-field" class="gl-mb-0">{{
             $options.i18n.objectStorageFieldLabel
           }}</label>
-          <gl-badge
-            class="gl-mx-2"
-            variant="info"
-            size="sm"
-            :href="$options.OBJECT_STORAGE_BETA"
-            target="_blank"
-            >{{ $options.i18n.beta }}</gl-badge
-          >
           <gl-icon
             ref="objectStoragePopover"
             tabindex="0"
             name="question-o"
-            class="gl-text-blue-600 gl-cursor-pointer"
+            class="gl-text-blue-600 gl-cursor-pointer gl-ml-2"
           />
           <gl-popover
             :target="() => $refs.objectStoragePopover.$el"

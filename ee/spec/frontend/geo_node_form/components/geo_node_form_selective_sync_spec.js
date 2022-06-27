@@ -1,13 +1,9 @@
-import { GlFormGroup, GlSprintf, GlBadge, GlIcon, GlPopover, GlLink } from '@gitlab/ui';
+import { GlFormGroup, GlSprintf, GlIcon, GlPopover, GlLink } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import GeoNodeFormNamespaces from 'ee/geo_node_form/components/geo_node_form_namespaces.vue';
 import GeoNodeFormSelectiveSync from 'ee/geo_node_form/components/geo_node_form_selective_sync.vue';
 import GeoNodeFormShards from 'ee/geo_node_form/components/geo_node_form_shards.vue';
-import {
-  SELECTIVE_SYNC_MORE_INFO,
-  OBJECT_STORAGE_MORE_INFO,
-  OBJECT_STORAGE_BETA,
-} from 'ee/geo_node_form/constants';
+import { SELECTIVE_SYNC_MORE_INFO, OBJECT_STORAGE_MORE_INFO } from 'ee/geo_node_form/constants';
 import { MOCK_NODE, MOCK_SELECTIVE_SYNC_TYPES, MOCK_SYNC_SHARDS } from '../mock_data';
 
 describe('GeoNodeFormSelectiveSync', () => {
@@ -57,7 +53,6 @@ describe('GeoNodeFormSelectiveSync', () => {
   const findGeoNodeFormNamespacesField = () => wrapper.findComponent(GeoNodeFormNamespaces);
   const findGeoNodeFormShardsField = () => wrapper.findComponent(GeoNodeFormShards);
   const findGeoNodeObjectStorageField = () => wrapper.find('#node-object-storage-field');
-  const findGeoNodeObjectStorageBetaBadge = () => wrapper.findComponent(GlBadge);
 
   describe('template', () => {
     beforeEach(() => {
@@ -74,10 +69,6 @@ describe('GeoNodeFormSelectiveSync', () => {
 
     it('renders Geo Node Object Storage Field', () => {
       expect(findGeoNodeObjectStorageField().exists()).toBe(true);
-    });
-
-    it('renders Geo Node Form Object Beta Badge link correctly', () => {
-      expect(findGeoNodeObjectStorageBetaBadge().attributes('href')).toBe(OBJECT_STORAGE_BETA);
     });
 
     describe('selective sync type popover', () => {
