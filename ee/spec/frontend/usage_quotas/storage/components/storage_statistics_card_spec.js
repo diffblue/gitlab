@@ -1,4 +1,4 @@
-import { GlProgressBar } from '@gitlab/ui';
+import { GlProgressBar, GlSkeletonLoader } from '@gitlab/ui';
 import StorageStatisticsCard from 'ee/usage_quotas/storage/components/storage_statistics_card.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { statisticsCardDefaultProps } from '../mock_data';
@@ -21,6 +21,11 @@ describe('StorageStatisticsCard', () => {
   const findDescriptionBlock = () => wrapper.findByTestId('description');
   const findActionsBlock = () => wrapper.findByTestId('actions');
   const findProgressBar = () => wrapper.findComponent(GlProgressBar);
+  const findSkeletonLoader = () => wrapper.findComponent(GlSkeletonLoader);
+
+  afterEach(() => {
+    wrapper.destroy();
+  });
 
   describe('denominator block', () => {
     it('renders denominator block with all elements when all props are passed', () => {
@@ -95,6 +100,18 @@ describe('StorageStatisticsCard', () => {
       createComponent({ totalStorage: 10, usedStorage: 5, showProgressBar: true });
 
       expect(findProgressBar().attributes('value')).toBe(String(50));
+    });
+  });
+
+  describe('skeleton loader', () => {
+    it('renders skeleton loader when loading prop is true', () => {
+      createComponent({ loading: true });
+      expect(findSkeletonLoader().exists()).toBe(true);
+    });
+
+    it('does not render skeleton loader when loading prop is false', () => {
+      createComponent({ loading: false });
+      expect(findSkeletonLoader().exists()).toBe(false);
     });
   });
 });
