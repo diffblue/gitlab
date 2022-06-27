@@ -34,14 +34,6 @@ RSpec.describe IncidentManagement::IssuableResourceLinksFinder do
           is_expected.to eq([issuable_resource_link_1, issuable_resource_link_2])
         end
 
-        context 'when filtering by ID' do
-          let(:params) { { id: issuable_resource_link_1 } }
-
-          it 'returns only matched resource link' do
-            is_expected.to contain_exactly(issuable_resource_link_1)
-          end
-        end
-
         context 'when incident is nil' do
           let_it_be(:incident) { nil }
 

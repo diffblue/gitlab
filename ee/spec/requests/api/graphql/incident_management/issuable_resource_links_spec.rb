@@ -65,35 +65,6 @@ RSpec.describe 'Getting issuable resource links' do
       end
     end
 
-    context 'when filtering by id' do
-      let(:params) { { incident_id: incident.to_global_id.to_s, id: issuable_resource_link_2.to_global_id.to_s } }
-
-      let(:query) do
-        graphql_query_for(
-          'issue',
-          { 'id' => global_id_of(incident) },
-          query_graphql_field('issuableResourceLink', params, 'id issue { id title } link linkType linkText ')
-        )
-      end
-
-      it_behaves_like 'a working graphql query'
-
-      it 'returns a single resource link', :aggregate_failures do
-        resource_link = graphql_data.dig('issue', 'issuableResourceLink')
-
-        expect(resource_link).to include(
-          'id' => issuable_resource_link_2.to_global_id.to_s,
-          'issue' => {
-            'id' => incident.to_global_id.to_s,
-            'title' => incident.title
-          },
-          'link' => issuable_resource_link_2.link,
-          'linkType' => issuable_resource_link_2.link_type.to_s,
-          'linkText' => issuable_resource_link_2.link_text
-        )
-      end
-    end
-
     context 'when user does not have permission' do
       before do
         project.add_guest(current_user)

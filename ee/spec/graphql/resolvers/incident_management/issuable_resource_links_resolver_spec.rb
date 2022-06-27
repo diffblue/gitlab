@@ -54,22 +54,6 @@ RSpec.describe Resolvers::IncidentManagement::IssuableResourceLinksResolver do
     end
   end
 
-  context 'when resolving a single item' do
-    let(:resolver) { described_class.single }
-
-    subject(:resolved_issuable_resource_link) do
-      sync(resolve_issuable_resource_link(args, current_user: current_user))
-    end
-
-    context 'when id is given' do
-      let(:args) { { incident_id: incident.to_global_id, id: first_issuable_resource_link.to_global_id } }
-
-      it 'returns the resource link' do
-        expect(resolved_issuable_resource_link).to eq(first_issuable_resource_link)
-      end
-    end
-  end
-
   private
 
   def resolve_issuable_resource_link(args = {}, context = { current_user: current_user })

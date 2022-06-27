@@ -12,7 +12,6 @@ module IncidentManagement
       return ::IncidentManagement::IssuableResourceLink.none unless allowed?
 
       collection = incident.issuable_resource_links
-      collection = by_id(collection)
       sort(collection)
     end
 
@@ -21,13 +20,7 @@ module IncidentManagement
     attr_reader :user, :incident, :params
 
     def allowed?
-      Ability.allowed?(user, :admin_issuable_resource_link, incident)
-    end
-
-    def by_id(collection)
-      return collection unless params[:id]
-
-      collection.id_in(params[:id])
+      Ability.allowed?(user, :read_issuable_resource_link, incident)
     end
 
     def sort(collection)

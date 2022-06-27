@@ -12,14 +12,6 @@ module Resolvers
                required: true,
                description: 'ID of the incident.'
 
-      when_single do
-        argument :id,
-                 ::Types::GlobalIDType[::IncidentManagement::IssuableResourceLink],
-                 required: true,
-                 description: 'ID of the issuable resource link.',
-                 prepare: ->(id, ctx) { id.model_id }
-      end
-
       def resolve(**args)
         incident = args[:incident_id].find
 
