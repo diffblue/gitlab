@@ -2,15 +2,13 @@ import { mount } from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
 
-import diffFileMockDataReadable from 'jest/diffs/mock_data/diff_file';
+import { getDiffFileMock } from 'jest/diffs/mock_data/diff_file';
 import DiffViewComponent from '~/diffs/components/diff_view.vue';
 
 import createDiffsStore from '~/diffs/store/modules';
 
-const getReadableFile = () => JSON.parse(JSON.stringify(diffFileMockDataReadable));
-
 function createComponent({ withCodequality = true, provide = {} }) {
-  const diffFile = getReadableFile();
+  const diffFile = getDiffFileMock();
 
   Vue.use(Vuex);
 
