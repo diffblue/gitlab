@@ -3,7 +3,7 @@ key_path: historical_max_users
 description: The peak active user count. Active is defined in UsersStatistics model.
 product_section: fulfillment
 product_stage: fulfillment
-product_group: group::license
+product_group: license
 product_category: license
 value_type: number
 status: active

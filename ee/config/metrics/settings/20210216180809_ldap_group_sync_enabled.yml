@@ -4,7 +4,7 @@ key_path: usage_activity_by_stage.manage.ldap_group_sync_enabled
 description: Has the instance configured [LDAP Group Sync](https://docs.gitlab.com/ee/administration/auth/ldap/#group-sync)
 product_section: dev
 product_stage: manage
-product_group: group::authentication and authorization
+product_group: authentication_and_authorization
 product_category: authentication_and_authorization
 value_type: boolean
 status: active

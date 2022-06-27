@@ -3,7 +3,7 @@ key_path: redis_hll_counters.geo.g_geo_proxied_requests_monthly
 description: Unique signed in users through Geo proxied requests
 product_section: enablement
 product_stage: enablement
-product_group: group::geo
+product_group: geo
 product_category: geo_replication
 value_type: number
 status: active

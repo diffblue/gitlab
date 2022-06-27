@@ -4,7 +4,7 @@ key_path: usage_activity_by_stage.configure.projects_slack_notifications_active
 description: Unique projects with Slack webhook enabled
 product_section: ops
 product_stage: configure
-product_group: group::configure
+product_group: configure
 product_category: chatops
 value_type: number
 status: active

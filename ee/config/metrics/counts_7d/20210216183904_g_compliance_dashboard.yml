@@ -4,7 +4,7 @@ key_path: compliance_unique_visits.g_compliance_dashboard
 description: Number of unique visitors to the compliance dashboard.
 product_section: dev
 product_stage: manage
-product_group: group::compliance
+product_group: compliance
 product_category: compliance_management
 value_type: number
 status: active

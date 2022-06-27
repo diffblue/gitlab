@@ -4,7 +4,7 @@ key_path: usage_activity_by_stage.secure.user_dependency_scanning_jobs
 description: Total number of users running Dependency Scanning jobs
 product_section: sec
 product_stage: secure
-product_group: group::composition analysis
+product_group: composition_analysis
 product_category: dependency_scanning
 value_type: number
 status: active

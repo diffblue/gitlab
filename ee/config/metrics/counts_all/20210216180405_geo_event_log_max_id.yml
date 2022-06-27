@@ -4,7 +4,7 @@ key_path: counts.geo_event_log_max_id
 description: Number of replication events on a Geo primary
 product_section: enablement
 product_stage: enablement
-product_group: group::geo
+product_group: geo
 product_category: disaster_recovery
 value_type: number
 status: active

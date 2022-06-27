@@ -4,7 +4,7 @@ key_path: counts.dependency_list_usages_total
 description: Count to Dependency List page views
 product_section: sec
 product_stage: secure
-product_group: group::composition analysis
+product_group: composition_analysis
 product_category: dependency_scanning
 value_type: number
 status: removed

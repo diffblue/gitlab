@@ -4,7 +4,7 @@ key_path: counts.requirement_test_reports_manual
 description: Count of requirement test reports created manually
 product_section: dev
 product_stage: plan
-product_group: group::certify
+product_group: certify
 product_category: requirements_management
 value_type: number
 status: active

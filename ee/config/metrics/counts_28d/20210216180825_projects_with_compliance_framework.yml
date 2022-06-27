@@ -4,7 +4,7 @@ key_path: usage_activity_by_stage_monthly.manage.projects_with_compliance_framew
 description: Number of projects labeled with a compliance framework label
 product_section: dev
 product_stage: manage
-product_group: group::compliance
+product_group: compliance
 product_category: compliance_management
 value_type: number
 status: active
