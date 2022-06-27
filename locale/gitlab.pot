@@ -30331,6 +30331,9 @@ msgstr ""
 msgid "ProjectSettings|What are merge trains?"
 msgstr ""
 
+msgid "ProjectSettings|What is squashing?"
+msgstr ""
+
 msgid "ProjectSettings|When merge request pipelines are enabled in the CI/CD configuration file, pipelines validate the combined results of the source and target branches. %{link_start}How to configure merge request pipelines?%{link_end}"
 msgstr ""
 
