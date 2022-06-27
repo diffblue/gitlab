@@ -95,7 +95,7 @@ module QA
         Flow::Pipeline.wait_for_latest_pipeline(status: 'passed')
       end
 
-      it 'manage licenses from the merge request', :reliable,
+      it 'manage licenses from the merge request',
          testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348039' do
         @merge_request.visit!
 
