@@ -397,7 +397,8 @@ RSpec.describe EE::NamespacesHelper do
           default_per_page: 20,
           namespace_path: namespace.full_path,
           is_temporary_storage_increase_visible: "false",
-          is_free_namespace: "true"
+          is_free_namespace: "true",
+          is_personal_namespace: true
         })
       end
     end
@@ -415,7 +416,8 @@ RSpec.describe EE::NamespacesHelper do
           default_per_page: 20,
           namespace_path: namespace.full_path,
           is_temporary_storage_increase_visible: "false",
-          is_free_namespace: "true"
+          is_free_namespace: "true",
+          is_personal_namespace: true
         })
       end
     end

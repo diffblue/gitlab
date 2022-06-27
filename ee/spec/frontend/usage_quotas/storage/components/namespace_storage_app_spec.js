@@ -88,6 +88,7 @@ describe('NamespaceStorageApp', () => {
     dependencyProxyTotalSize = '',
     isFreeNamespace = false,
     mockApollo = {},
+    isPersonalNamespace = false,
   } = {}) => {
     wrapper = mountExtended(NamespaceStorageApp, {
       apolloProvider: mockApollo,
@@ -102,6 +103,7 @@ describe('NamespaceStorageApp', () => {
         storageLimitEnforced,
         isAdditionalStorageFlagEnabled: additionalRepoStorageByNamespace,
         isFreeNamespace,
+        isPersonalNamespace,
       },
       data() {
         return {
@@ -177,16 +179,29 @@ describe('NamespaceStorageApp', () => {
   describe('Dependency proxy usage', () => {
     beforeEach(async () => {
       mockApollo = createMockApolloProvider();
+    });
+
+    it('shows the dependency proxy usage component', async () => {
       createComponent({
         mockApollo,
         additionalRepoStorageByNamespace: true,
         dependencyProxyTotalSize: '512 bytes',
+        isPersonalNamespace: false,
       });
       await waitForPromises();
+
+      expect(findDependencyProxy().exists()).toBe(true);
     });
 
-    it('should show the dependency proxy usage component', () => {
-      expect(findDependencyProxy().exists()).toBe(true);
+    it('does not display the dependency proxy for personal namespaces', () => {
+      createComponent({
+        mockApollo,
+        additionalRepoStorageByNamespace: true,
+        dependencyProxyTotalSize: '512 bytes',
+        isPersonalNamespace: true,
+      });
+
+      expect(findDependencyProxy().exists()).toBe(false);
     });
   });
 
