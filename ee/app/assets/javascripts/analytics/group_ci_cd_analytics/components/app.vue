@@ -20,6 +20,9 @@ export default {
     TimeToRestoreServiceCharts,
     SharedRunnersUsage,
   },
+  releaseStatisticsTabEvent: 'g_analytics_ci_cd_release_statistics',
+  deploymentFrequencyTabEvent: 'g_analytics_ci_cd_deployment_frequency',
+  leadTimeTabEvent: 'g_analytics_ci_cd_lead_time',
   timeToRestoreServiceTabEvent: 'g_analytics_ci_cd_time_to_restore_service',
   inject: {
     shouldRenderDoraCharts: {
@@ -82,14 +85,26 @@ export default {
 <template>
   <div>
     <gl-tabs v-if="tabs.length > 1" :value="selectedTabIndex" @input="onTabChange">
-      <gl-tab :title="s__('CICDAnalytics|Release statistics')">
+      <gl-tab
+        :title="s__('CICDAnalytics|Release statistics')"
+        data-testid="release-statistics-tab"
+        @click="trackTabClick($options.releaseStatisticsTabEvent)"
+      >
         <release-stats-card :class="releaseStatsCardClasses" />
       </gl-tab>
       <template v-if="shouldRenderDoraCharts">
-        <gl-tab :title="s__('CICDAnalytics|Deployment frequency')">
+        <gl-tab
+          :title="s__('CICDAnalytics|Deployment frequency')"
+          data-testid="deployment-frequency-tab"
+          @click="trackTabClick($options.deploymentFrequencyTabEvent)"
+        >
           <deployment-frequency-charts />
         </gl-tab>
-        <gl-tab :title="s__('CICDAnalytics|Lead time')">
+        <gl-tab
+          :title="s__('CICDAnalytics|Lead time')"
+          data-testid="lead-time-tab"
+          @click="trackTabClick($options.leadTimeTabEvent)"
+        >
           <lead-time-charts />
         </gl-tab>
         <gl-tab

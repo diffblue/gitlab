@@ -1,0 +1,22 @@
+---
+key_path: redis_hll_counters.analytics.g_analytics_ci_cd_lead_time_weekly
+name: g_analytics_ci_cd_lead_time_weekly
+description: Count of unique visits to the group level CI/CD Analytics Lead Time tab
+product_section: dev
+product_stage: manage
+product_group: group::optimize
+product_category:
+value_type: number
+status: active
+milestone: "15.2"
+introduced_by_url:
+time_frame: 7d
+data_source: redis_hll
+data_category: operational
+instrumentation_class: RedisHLLMetric
+performance_indicator_type: []
+distribution:
+- ee
+tier:
+- premium
+- ultimate

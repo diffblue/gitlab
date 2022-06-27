@@ -60,16 +60,24 @@ describe('ee/analytics/group_ci_cd_analytics/components/app.vue', () => {
       });
 
       describe('event tracking', () => {
-        it('tracks visits to Time to restore service tab', () => {
-          jest.spyOn(API, 'trackRedisHllUserEvent');
+        [
+          'release statistics',
+          'deployment frequency',
+          'lead time',
+          'time to restore service',
+        ].forEach((tabName) => {
+          it(`tracks visits to ${tabName} tab`, () => {
+            const testId = `${tabName.replace(/\s/g, '-')}-tab`;
+            const eventName = `g_analytics_ci_cd_${tabName.replace(/\s/g, '_')}`;
 
-          expect(API.trackRedisHllUserEvent).not.toHaveBeenCalled();
+            jest.spyOn(API, 'trackRedisHllUserEvent');
 
-          wrapper.findByTestId('time-to-restore-service-tab').vm.$emit('click');
+            expect(API.trackRedisHllUserEvent).not.toHaveBeenCalled();
 
-          expect(API.trackRedisHllUserEvent).toHaveBeenCalledWith(
-            'g_analytics_ci_cd_time_to_restore_service',
-          );
+            wrapper.findByTestId(testId).vm.$emit('click');
+
+            expect(API.trackRedisHllUserEvent).toHaveBeenCalledWith(eventName);
+          });
         });
       });
     });

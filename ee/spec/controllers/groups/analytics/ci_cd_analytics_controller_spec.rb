@@ -71,5 +71,33 @@ RSpec.describe Groups::Analytics::CiCdAnalyticsController do
 
       it_behaves_like 'returns a 403'
     end
+
+    [
+      {
+        tab_param: '',
+        event: 'g_analytics_ci_cd_release_statistics'
+      },
+      {
+        tab_param: 'release-statistics',
+        event: 'g_analytics_ci_cd_release_statistics'
+      },
+      {
+        tab_param: 'deployment-frequency',
+        event: 'g_analytics_ci_cd_deployment_frequency'
+      },
+      {
+        tab_param: 'lead-time',
+        event: 'g_analytics_ci_cd_lead_time'
+      },
+      {
+        tab_param: 'time-to-restore-service',
+        event: 'g_analytics_ci_cd_time_to_restore_service'
+      }
+    ].each do |tab|
+      it_behaves_like 'tracking unique visits', :show do
+        let(:request_params) { { group_id: group.to_param, tab: tab[:tab_param] } }
+        let(:target_id) { tab[:event] }
+      end
+    end
   end
 end
