@@ -478,6 +478,7 @@ RSpec.describe ProjectPolicy do
           it { is_expected.to be_allowed(:read_merge_request) }
           it { is_expected.to be_allowed(:read_milestone) }
           it { is_expected.to be_allowed(:read_container_image) }
+          it { is_expected.to be_allowed(:create_container_image) }
         end
 
         context 'address is outside the range' do
@@ -488,6 +489,7 @@ RSpec.describe ProjectPolicy do
           it { is_expected.to be_disallowed(:read_merge_request) }
           it { is_expected.to be_disallowed(:read_milestone) }
           it { is_expected.to be_disallowed(:read_container_image) }
+          it { is_expected.to be_disallowed(:create_container_image) }
 
           context 'with admin enabled', :enable_admin_mode do
             it { is_expected.to be_allowed(:read_project) }
@@ -495,6 +497,7 @@ RSpec.describe ProjectPolicy do
             it { is_expected.to be_allowed(:read_merge_request) }
             it { is_expected.to be_allowed(:read_milestone) }
             it { is_expected.to be_allowed(:read_container_image) }
+            it { is_expected.to be_allowed(:create_container_image) }
           end
 
           context 'with admin disabled' do
@@ -503,6 +506,7 @@ RSpec.describe ProjectPolicy do
             it { is_expected.to be_disallowed(:read_merge_request) }
             it { is_expected.to be_disallowed(:read_milestone) }
             it { is_expected.to be_disallowed(:read_container_image) }
+            it { is_expected.to be_disallowed(:create_container_image) }
           end
 
           context 'with auditor' do
@@ -513,6 +517,7 @@ RSpec.describe ProjectPolicy do
             it { is_expected.to be_allowed(:read_merge_request) }
             it { is_expected.to be_allowed(:read_milestone) }
             it { is_expected.to be_allowed(:read_container_image) }
+            it { is_expected.to be_allowed(:create_container_image) }
           end
         end
       end

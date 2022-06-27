@@ -152,6 +152,10 @@ module EE
         @subject.feature_available?(:security_orchestration_policies)
       end
 
+      condition(:group_level_compliance_dashboard_enabled) do
+        @subject.feature_available?(:group_level_compliance_dashboard)
+      end
+
       rule { public_group | logged_in_viewable }.policy do
         enable :read_wiki
         enable :download_wiki_code
@@ -188,6 +192,10 @@ module EE
         enable :read_cluster
         enable :read_dependency_proxy
         enable :read_wiki
+      end
+
+      rule { group_level_compliance_dashboard_enabled & auditor }.policy do
+        enable :read_group_compliance_dashboard
       end
 
       rule { owner | admin }.policy do

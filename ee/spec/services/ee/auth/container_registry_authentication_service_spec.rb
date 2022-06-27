@@ -5,6 +5,83 @@ require 'spec_helper'
 RSpec.describe Auth::ContainerRegistryAuthenticationService do
   include AdminModeHelper
 
+  describe 'with deploy keys' do
+    include_context 'container registry auth service context'
+
+    let_it_be_with_reload(:group) { create(:group, :public) }
+    let_it_be(:current_user) { nil }
+    let_it_be(:project) { create(:project, group: group) }
+
+    let(:deploy_token) { create(:deploy_token, projects: [project], read_registry: true, write_registry: true) }
+
+    before do
+      # TODO : to remove along with container_registry_legacy_authentication_for_deploy_tokens
+      stub_feature_flags(container_registry_legacy_authentication_for_deploy_tokens: false)
+    end
+
+    context 'with IP restriction' do
+      before do
+        allow(Gitlab::IpAddressState).to receive(:current).and_return('192.168.0.2')
+        stub_licensed_features(group_ip_restriction: true)
+      end
+
+      context 'group with restriction' do
+        before do
+          create(:ip_restriction, group: group, range: range)
+        end
+
+        context 'address is within the range' do
+          let(:range) { '192.168.0.0/24' }
+
+          it_behaves_like 'a container registry auth service'
+        end
+
+        context 'address is outside the range' do
+          let(:range) { '10.0.0.0/8' }
+          let(:current_params) do
+            { scopes: ["repository:#{project.full_path}:push,pull"], deploy_token: deploy_token }
+          end
+
+          context 'when actor is a deploy token with read access' do
+            it_behaves_like 'an inaccessible'
+            it_behaves_like 'not a container repository factory'
+            it_behaves_like 'logs an auth warning', %w(push pull)
+
+            # TODO : to remove along with container_registry_legacy_authentication_for_deploy_tokens
+            context 'when the root group is in the feature flag' do
+              before do
+                stub_feature_flags(container_registry_legacy_authentication_for_deploy_tokens: group)
+              end
+
+              it_behaves_like 'an accessible' do
+                let(:actions) { %w[push pull] }
+              end
+
+              it_behaves_like 'container repository factory'
+
+              it 'logs the ip restriction' do
+                logger_parameters = {
+                  class: described_class.name,
+                  message: 'IP restriction violation',
+                  deploy_token_id: deploy_token.id,
+                  project_id: project.id,
+                  project_path: project.full_path,
+                  ip: '192.168.0.2'
+                }
+
+                expect(Gitlab::AuthLogger).to receive(:warn).at_least(:once).with(logger_parameters)
+
+                subject
+              end
+
+              it_behaves_like 'a container registry auth service'
+            end
+          end
+        end
+      end
+    end
+  end
+
   context 'in maintenance mode' do
     include_context 'container registry auth service context'
 
