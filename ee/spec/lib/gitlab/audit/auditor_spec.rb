@@ -155,7 +155,7 @@ RSpec.describe Gitlab::Audit::Auditor do
       end
 
       context 'when overriding the additional_details' do
-        additional_details = { action: :custom }
+        additional_details = { action: :custom, from: false, to: true }
         let(:context) do
           { name: name,
             author: author,
@@ -181,7 +181,10 @@ RSpec.describe Gitlab::Audit::Auditor do
 
             expect(logger).to have_received(:info).exactly(2).times.with(
               hash_including(
-                'details' => hash_including('action' => 'custom')
+                'details' => hash_including('action' => 'custom', 'from' => 'false', 'to' => 'true'),
+                'action' => 'custom',
+                'from' => 'false',
+                'to' => 'true'
               )
             )
           end
@@ -283,7 +286,8 @@ RSpec.describe Gitlab::Audit::Auditor do
             'author_name' => author.name,
             'entity_id' => scope.id,
             'entity_type' => scope.class.name,
-            'details' => kind_of(Hash)
+            'details' => kind_of(Hash),
+            'custom_message' => 'Project has been deleted'
           )
         )
       end
