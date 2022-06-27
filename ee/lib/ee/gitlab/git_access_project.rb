@@ -14,6 +14,27 @@ module EE
           container.repository_size_checker
         end
       end
+
+      private
+
+      override :check_download_access!
+      def check_download_access!
+        if user_exceeded_download_limit?
+          raise ::Gitlab::GitAccess::ForbiddenError, download_forbidden_message
+        end
+
+        super
+      end
+
+      def user_exceeded_download_limit?
+        return unless user
+        return unless ::Feature.enabled?(:git_abuse_rate_limit_feature_flag, user)
+        return unless License.feature_available?(:git_abuse_rate_limit)
+
+        result = ::Users::Abuse::ExcessiveProjectsDownloadBanService.execute(user, project)
+
+        result[:banned]
+      end
     end
   end
 end
