@@ -11364,19 +11364,6 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | ---- | ---- | ----------- |
 | <a id="epicissuecurrentusertodosstate"></a>`state` | [`TodoStateEnum`](#todostateenum) | State of the to-do items. |
 
-##### `EpicIssue.issuableResourceLink`
-
-Issuable resource link of the incident issue.
-
-Returns [`IssuableResourceLink`](#issuableresourcelink).
-
-###### Arguments
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| <a id="epicissueissuableresourcelinkid"></a>`id` | [`IncidentManagementIssuableResourceLinkID!`](#incidentmanagementissuableresourcelinkid) | ID of the issuable resource link. |
-| <a id="epicissueissuableresourcelinkincidentid"></a>`incidentId` | [`IssueID!`](#issueid) | ID of the incident. |
-
 ##### `EpicIssue.issuableResourceLinks`
 
 Issuable resource links of the incident issue.
@@ -12765,19 +12752,6 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="issuecurrentusertodosstate"></a>`state` | [`TodoStateEnum`](#todostateenum) | State of the to-do items. |
-
-##### `Issue.issuableResourceLink`
-
-Issuable resource link of the incident issue.
-
-Returns [`IssuableResourceLink`](#issuableresourcelink).
-
-###### Arguments
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| <a id="issueissuableresourcelinkid"></a>`id` | [`IncidentManagementIssuableResourceLinkID!`](#incidentmanagementissuableresourcelinkid) | ID of the issuable resource link. |
-| <a id="issueissuableresourcelinkincidentid"></a>`incidentId` | [`IssueID!`](#issueid) | ID of the incident. |
 
 ##### `Issue.issuableResourceLinks`
 
