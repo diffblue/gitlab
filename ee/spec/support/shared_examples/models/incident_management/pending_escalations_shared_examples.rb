@@ -34,6 +34,25 @@ RSpec.shared_examples 'IncidentManagement::PendingEscalation model' do
 
       it { is_expected.to match_array [three_weeks_ago_escalation, three_days_ago_escalation] }
     end
+
+    describe '.for_target' do
+      let_it_be(:other_escalation) { create_escalation }
+
+      subject { described_class.for_target(other_escalation.target) }
+
+      it { is_expected.to contain_exactly(other_escalation) }
+    end
+  end
+
+  describe '.delete_by_target' do
+    let_it_be(:removeable_escalation) { create_escalation }
+
+    subject { described_class.delete_by_target(removeable_escalation.target) }
+
+    it 'removes the escalations for the provided target(s)' do
+      expect { subject }.to change(described_class, :count).by(-1)
+      expect { removeable_escalation.reload }.to raise_error(ActiveRecord::RecordNotFound)
+    end
   end
 
   private

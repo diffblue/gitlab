@@ -40,8 +40,7 @@ module EE
       end
 
       def delete_pending_escalations
-        # We use :delete_all here to avoid null constraint errors. (the default is :nullify).
-        alert.pending_escalations.delete_all(:delete_all)
+        ::IncidentManagement::PendingEscalations::Alert.delete_by_target(alert)
       end
 
       def create_pending_escalations
