@@ -431,6 +431,18 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | <a id="querytimelogsstarttime"></a>`startTime` | [`Time`](#time) | List timelogs within a time range where the logged time is equal to or after startTime. |
 | <a id="querytimelogsusername"></a>`username` | [`String`](#string) | List timelogs for a user. |
 
+### `Query.todo`
+
+Retrieve a single to-do item.
+
+Returns [`Todo`](#todo).
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="querytodoid"></a>`id` | [`TodoID!`](#todoid) | ID of the to-do item. |
+
 ### `Query.topics`
 
 Find project topics.
