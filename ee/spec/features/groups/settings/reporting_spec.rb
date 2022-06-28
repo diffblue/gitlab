@@ -34,8 +34,8 @@ RSpec.describe 'Group reporting settings' do
   end
 
   it 'updates the settings' do
-    limit_label = s_('GroupSettings|Unique project download limit')
-    interval_label = s_('GroupSettings|Unique project download limit interval in seconds')
+    limit_label = s_('GroupSettings|Number of projects')
+    interval_label = s_('GroupSettings|Interval (seconds)')
 
     expect(page).to have_field(limit_label, with: current_limit)
     expect(page).to have_field(interval_label, with: current_interval)
@@ -58,12 +58,12 @@ RSpec.describe 'Group reporting settings' do
   end
 
   it 'displays validation errors' do
-    fill_in s_('GroupSettings|Unique project download limit'), with: -1
-    fill_in s_('GroupSettings|Unique project download limit interval in seconds'), with: -1
+    fill_in s_('GroupSettings|Number of projects'), with: -1
+    fill_in s_('GroupSettings|Interval (seconds)'), with: -1
 
     click_button 'Save changes'
 
-    expect(page).to have_content('Unique project download limit must be greater than or equal to 0')
-    expect(page).to have_content('Unique project download limit interval must be greater than or equal to 0')
+    expect(page).to have_content('Number of projects must be greater than or equal to 0')
+    expect(page).to have_content('Interval (seconds) must be greater than or equal to 0')
   end
 end

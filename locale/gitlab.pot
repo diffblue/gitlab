@@ -18503,7 +18503,13 @@ msgstr ""
 msgid "GroupSettings|If the parent group's visibility is lower than the group's current visibility, visibility levels for subgroups and projects will be changed to match the new parent group's visibility."
 msgstr ""
 
+msgid "GroupSettings|Interval (seconds)"
+msgstr ""
+
 msgid "GroupSettings|Members cannot invite groups outside of %{group} and its subgroups"
+msgstr ""
+
+msgid "GroupSettings|Number of projects"
 msgstr ""
 
 msgid "GroupSettings|Organizations and contacts can be created and associated with issues."
@@ -18576,12 +18582,6 @@ msgid "GroupSettings|This setting is applied on %{ancestor_group}. You can overr
 msgstr ""
 
 msgid "GroupSettings|Transfer group"
-msgstr ""
-
-msgid "GroupSettings|Unique project download limit"
-msgstr ""
-
-msgid "GroupSettings|Unique project download limit interval in seconds"
 msgstr ""
 
 msgid "GroupSettings|Users can create %{link_start_project}project access tokens%{link_end} and %{link_start_group}group access tokens%{link_end} in this group"
