@@ -2,6 +2,8 @@
 
 module Ci
   class CompareLicenseScanningReportsCollapsedService < ::Ci::CompareLicenseScanningReportsService
+    include ::Gitlab::Utils::StrongMemoize
+
     def serializer_class
       ::LicenseCompliance::CollapsedComparerSerializer
     end
@@ -19,12 +21,14 @@ module Ci
     end
 
     def has_denied_licenses?
-      licenses = comparer_entity.new_licenses
+      strong_memoize(:has_denied_licenses) do
+        licenses = comparer_entity.new_licenses
 
-      return false if licenses.nil? || licenses.empty?
+        next false if licenses.nil? || licenses.empty?
 
-      licenses.any? do |l|
-        'denied' == l.approval_status
+        licenses.any? do |l|
+          'denied' == l.approval_status
+        end
       end
     end
 
@@ -32,7 +36,8 @@ module Ci
       {
         project: project,
         current_user: current_user,
-        approval_required: approval_required
+        approval_required: approval_required,
+        has_denied_licenses: has_denied_licenses?
       }
     end
   end

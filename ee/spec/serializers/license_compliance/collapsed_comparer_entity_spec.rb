@@ -22,7 +22,7 @@ RSpec.describe LicenseCompliance::CollapsedComparerEntity do
     create(:ci_pipeline, :success, project: project, builds: [create(:ee_ci_build, :success)])
   end
 
-  let(:request) { EntityRequest.new(approval_required: false) }
+  let(:request) { EntityRequest.new(approval_required: false, has_denied_licenses: false) }
 
   describe '#as_json' do
     subject { entity.as_json }
@@ -32,6 +32,7 @@ RSpec.describe LicenseCompliance::CollapsedComparerEntity do
       expect(subject).to have_key(:existing_licenses)
       expect(subject).to have_key(:removed_licenses)
       expect(subject).to have_key(:approval_required)
+      expect(subject).to have_key(:has_denied_licenses)
     end
   end
 end

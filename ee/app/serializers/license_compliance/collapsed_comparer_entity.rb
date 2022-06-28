@@ -18,5 +18,9 @@ module LicenseCompliance
     expose :approval_required do |_|
       request.approval_required
     end
+
+    expose :has_denied_licenses do |_|
+      request.has_denied_licenses
+    end
   end
 end
