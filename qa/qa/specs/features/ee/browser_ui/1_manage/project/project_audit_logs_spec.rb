@@ -4,7 +4,9 @@ module QA
   RSpec.describe 'Manage' do
     shared_examples 'audit event' do |expected_events|
       it 'logs audit events for UI operations' do
-        Page::Project::Menu.perform(&:go_to_audit_events_settings)
+        QA::Support::Retrier.retry_on_exception do
+          Page::Project::Menu.perform(&:go_to_audit_events_settings)
+        end
         expected_events.each do |expected_event|
           expect(page).to have_text(expected_event)
         end
@@ -28,7 +30,7 @@ module QA
       end
 
       context "Add project",
-              testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347904' do
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347904' do
         before do
           Resource::Project.fabricate_via_browser_ui! do |project|
             project.name = 'audit-add-project-via-ui'
@@ -118,12 +120,13 @@ module QA
         before do
           project.visit!
 
-          # Project archive
+          # Archive project
           Page::Project::Menu.perform(&:go_to_general_settings)
           Page::Project::Settings::Main.perform(&:expand_advanced_settings)
           Page::Project::Settings::Advanced.perform(&:archive_project)
+          Support::Waiter.wait_until { page.has_text?('Archived project!') }
 
-          # Project unarchived
+          # Unarchive project
           Page::Project::Menu.perform(&:go_to_general_settings)
           Page::Project::Settings::Main.perform(&:expand_advanced_settings)
           Page::Project::Settings::Advanced.perform(&:unarchive_project)
