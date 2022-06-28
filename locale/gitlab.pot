@@ -4965,6 +4965,9 @@ msgstr ""
 msgid "Are you sure you want to remove %{group_name}?"
 msgstr ""
 
+msgid "Are you sure you want to remove %{topic_name}?"
+msgstr ""
+
 msgid "Are you sure you want to remove the attachment?"
 msgstr ""
 
@@ -40270,6 +40273,9 @@ msgid "TopNav|Go back"
 msgstr ""
 
 msgid "Topic %{topic_name} was successfully created."
+msgstr ""
+
+msgid "Topic %{topic_name} was successfully removed."
 msgstr ""
 
 msgid "Topic avatar"
