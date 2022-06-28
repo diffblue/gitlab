@@ -11,22 +11,6 @@ module API
       expose :last_deployment, using: Entities::Deployment, if: { last_deployment: true }
       expose :state
 
-      expose :enable_advanced_logs_querying, if: -> (*) { can_read_pod_logs? } do |environment|
-        environment.elastic_stack_available?
-      end
-
-      expose :logs_api_path, if: -> (*) { can_read_pod_logs? } do |environment|
-        if environment.elastic_stack_available?
-          elasticsearch_project_logs_path(environment.project, environment_name: environment.name, format: :json)
-        else
-          k8s_project_logs_path(environment.project, environment_name: environment.name, format: :json)
-        end
-      end
-
-      expose :gitlab_managed_apps_logs_path, if: -> (*) { can_read_pod_logs? && cluster } do |environment|
-        ::Clusters::ClusterPresenter.new(cluster, current_user: current_user).gitlab_managed_apps_logs_path # rubocop: disable CodeReuse/Presenter
-      end
-
       private
 
       alias_method :environment, :object
