@@ -45,7 +45,7 @@ RSpec.describe ProjectMirrorEntity do
     context 'SSH public-key authentication' do
       before do
         project.import_url = "ssh://example.com"
-        import_data.update!(auth_method: 'ssh_public_key', ssh_known_hosts: "example.com #{SSHData::PrivateKey::RSA.generate(2048).public_key.openssh}")
+        import_data.update!(auth_method: 'ssh_public_key', ssh_known_hosts: "example.com #{SSHData::PrivateKey::RSA.generate(3072).public_key.openssh}")
       end
 
       it 'represents the pull mirror' do

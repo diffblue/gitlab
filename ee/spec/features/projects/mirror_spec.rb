@@ -202,7 +202,7 @@ RSpec.describe 'Project mirror', :js do
     end
 
     describe 'host key management', :use_clean_rails_memory_store_caching do
-      let(:key) { Gitlab::SSHPublicKey.new(SSHData::PrivateKey::RSA.generate(2048).public_key.openssh) }
+      let(:key) { Gitlab::SSHPublicKey.new(SSHData::PrivateKey::RSA.generate(3072).public_key.openssh) }
       let(:cache) { SshHostKey.new(project: project, url: "ssh://example.com:22") }
 
       it 'fills fingerprints and host keys when detecting' do

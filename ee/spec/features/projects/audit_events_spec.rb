@@ -80,13 +80,15 @@ RSpec.describe 'Projects > Audit Events', :js do
   end
 
   describe 'adding an SSH key' do
+    let(:ssh_key) { Gitlab::SSHPublicKey.new(SSHData::PrivateKey::RSA.generate(3072).public_key.openssh).key_text }
+
     it "appears in the project's audit events" do
       stub_licensed_features(audit_events: true)
 
       visit new_project_deploy_key_path(project)
 
       fill_in 'deploy_key_title', with: 'laptop'
-      fill_in 'deploy_key_key', with: 'ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAzrEJUIR6Y03TCE9rIJ+GqTBvgb8t1jI9h5UBzCLuK4VawOmkLornPqLDrGbm6tcwM/wBrrLvVOqi2HwmkKEIecVO0a64A4rIYScVsXIniHRS6w5twyn1MD3sIbN+socBDcaldECQa2u1dI3tnNVcs8wi77fiRe7RSxePsJceGoheRQgC8AZ510UdIlO+9rjIHUdVN7LLyz512auAfYsgx1OfablkQ/XJcdEwDNgi9imI6nAXhmoKUm1IPLT2yKajTIC64AjLOnE0YyCh6+7RFMpiMyu1qiOCpdjYwTgBRiciNRZCH8xIedyCoAmiUgkUT40XYHwLuwiPJICpkAzp7Q== user@laptop'
+      fill_in 'deploy_key_key', with: "#{ssh_key} user@laptop"
 
       click_button 'Add key'
 
