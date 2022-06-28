@@ -1,14 +1,14 @@
 import { shallowMount } from '@vue/test-utils';
+import LinkedPipelinesMiniList from 'ee/vue_shared/components/linked_pipelines_mini_list.vue';
 import mockData from 'ee_jest/vue_mr_widget/mock_data';
 import MrWidgetPipeline from '~/vue_merge_request_widget/components/mr_widget_pipeline.vue';
-import PipelineMiniGraph from '~/pipelines/components/pipelines_list/pipeline_mini_graph.vue';
 import mockLinkedPipelines from '../vue_shared/components/linked_pipelines_mock_data';
 
 describe('MRWidgetPipeline', () => {
   let wrapper;
 
   const findPipelineInfoContainer = () => wrapper.find('[data-testid="pipeline-info-container"');
-  const findPipelineMiniGraph = () => wrapper.findComponent(PipelineMiniGraph);
+  const findPipelinesMiniList = () => wrapper.findComponent(LinkedPipelinesMiniList);
 
   const createWrapper = (props) => {
     wrapper = shallowMount(MrWidgetPipeline, {
@@ -75,14 +75,20 @@ describe('MRWidgetPipeline', () => {
         createWrapper({ pipeline });
       });
 
-      it('should render the pipeline mini graph', () => {
-        expect(findPipelineMiniGraph().exists()).toBe(true);
+      it('should render the linked pipelines mini list', () => {
+        expect(findPipelinesMiniList().exists()).toBe(true);
       });
 
-      it('should send upstream pipeline', () => {
-        const upstreamPipeline = findPipelineMiniGraph().props('upstreamPipeline');
+      it('should render the linked pipelines mini list as an upstream list', () => {
+        expect(findPipelinesMiniList().classes('is-upstream')).toBe(true);
+      });
 
-        expect(upstreamPipeline).toBe(mockLinkedPipelines.triggered_by);
+      it('should add a single triggeredBy into an array', () => {
+        const triggeredBy = findPipelinesMiniList().props('triggeredBy');
+
+        expect(triggeredBy).toEqual(expect.any(Array));
+        expect(triggeredBy).toHaveLength(1);
+        expect(triggeredBy[0]).toBe(mockLinkedPipelines.triggered_by);
       });
     });
 
@@ -93,14 +99,18 @@ describe('MRWidgetPipeline', () => {
         createWrapper({ pipeline });
       });
 
-      it('should render the pipeline mini graph', () => {
-        expect(findPipelineMiniGraph().exists()).toBe(true);
+      it('should render the linked pipelines mini list', () => {
+        expect(findPipelinesMiniList().exists()).toBe(true);
       });
 
       it('should render the linked pipelines mini list as a downstream list', () => {
-        const downstreamPipelines = findPipelineMiniGraph().props('downstreamPipelines');
+        expect(findPipelinesMiniList().classes('is-downstream')).toBe(true);
+      });
 
-        expect(downstreamPipelines).toBe(mockLinkedPipelines.triggered);
+      it('should pass the triggered pipelines', () => {
+        const triggered = findPipelinesMiniList().props('triggered');
+
+        expect(triggered).toBe(mockLinkedPipelines.triggered);
       });
     });
   });
