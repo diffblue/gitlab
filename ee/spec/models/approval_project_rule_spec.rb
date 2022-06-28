@@ -122,15 +122,26 @@ RSpec.describe ApprovalProjectRule do
     end
 
     context 'when rule applies to all protected branches' do
+      let_it_be(:wildcard_protected_branch) { create(:protected_branch, name: "stable-*") }
+
       let(:project) { rule.project }
 
       before do
         rule.update!(applies_to_all_protected_branches: true)
         project.protected_branches << protected_branch
+        project.protected_branches << wildcard_protected_branch
       end
 
       it 'returns true when the branch name is a protected branch' do
         expect(rule.reload.applies_to_branch?('protected_branch_1')).to be true
+      end
+
+      it 'returns true when the branch name is a wildcard protected branch' do
+        expect(rule.reload.applies_to_branch?('stable-12')).to be true
+      end
+
+      it 'returns false when the branch name does not match a wildcard protected branch' do
+        expect(rule.reload.applies_to_branch?('unstable1-12')).to be false
       end
 
       it 'returns false when the branch name is an unprotected branch' do
