@@ -44725,6 +44725,9 @@ msgstr ""
 msgid "allowed to fail"
 msgstr ""
 
+msgid "already banned from namespace"
+msgstr ""
+
 msgid "already being used for another group or project %{timebox_name}."
 msgstr ""
 

@@ -35,6 +35,7 @@ RSpec.describe User do
     it { is_expected.to have_many(:escalation_policies).class_name('IncidentManagement::EscalationPolicy').through(:escalation_rules) }
     it { is_expected.to have_many(:epic_board_recent_visits).inverse_of(:user) }
     it { is_expected.to have_many(:deployment_approvals) }
+    it { is_expected.to have_many(:namespace_bans).class_name('Namespaces::NamespaceBan') }
   end
 
   describe 'nested attributes' do
