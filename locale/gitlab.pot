@@ -8220,6 +8220,9 @@ msgstr ""
 msgid "Closed MRs"
 msgstr ""
 
+msgid "Closed date"
+msgstr ""
+
 msgid "Closed issues"
 msgstr ""
 
@@ -45214,6 +45217,9 @@ msgid "ciReport|is loading, errors when loading results"
 msgstr ""
 
 msgid "closed"
+msgstr ""
+
+msgid "closed %{timeago}"
 msgstr ""
 
 msgid "closed issue"
