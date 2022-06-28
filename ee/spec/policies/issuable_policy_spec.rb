@@ -26,10 +26,12 @@ RSpec.describe IssuablePolicy, models: true do
     shared_examples 'issuable resource links access' do
       it 'disallows non members' do
         expect(permissions(non_member, incident_issue)).to be_disallowed(:admin_issuable_resource_link)
+        expect(permissions(non_member, incident_issue)).to be_disallowed(:read_issuable_resource_link)
       end
 
       it 'disallows guests' do
         expect(permissions(guest, incident_issue)).to be_disallowed(:admin_issuable_resource_link)
+        expect(permissions(guest, incident_issue)).to be_disallowed(:read_issuable_resource_link)
       end
 
       it 'disallows all on non-incident issue type' do
@@ -37,6 +39,10 @@ RSpec.describe IssuablePolicy, models: true do
         expect(permissions(guest, issue)).to be_disallowed(:admin_issuable_resource_link)
         expect(permissions(developer, issue)).to be_disallowed(:admin_issuable_resource_link)
         expect(permissions(reporter, issue)).to be_disallowed(:admin_issuable_resource_link)
+        expect(permissions(non_member, issue)).to be_disallowed(:read_issuable_resource_link)
+        expect(permissions(guest, issue)).to be_disallowed(:read_issuable_resource_link)
+        expect(permissions(developer, issue)).to be_disallowed(:read_issuable_resource_link)
+        expect(permissions(reporter, issue)).to be_disallowed(:read_issuable_resource_link)
       end
     end
 
@@ -71,10 +77,12 @@ RSpec.describe IssuablePolicy, models: true do
 
           it 'allows developers' do
             expect(permissions(developer, incident_issue)).to be_allowed(:admin_issuable_resource_link)
+            expect(permissions(developer, incident_issue)).to be_allowed(:read_issuable_resource_link)
           end
 
           it 'allows reporters' do
             expect(permissions(reporter, incident_issue)).to be_allowed(:admin_issuable_resource_link)
+            expect(permissions(reporter, incident_issue)).to be_allowed(:read_issuable_resource_link)
           end
         end
 
@@ -87,10 +95,12 @@ RSpec.describe IssuablePolicy, models: true do
 
           it 'disallows developers' do
             expect(permissions(developer, incident_issue)).to be_disallowed(:admin_issuable_resource_link)
+            expect(permissions(developer, incident_issue)).to be_disallowed(:read_issuable_resource_link)
           end
 
           it 'disallows reporters' do
             expect(permissions(reporter, incident_issue)).to be_disallowed(:admin_issuable_resource_link)
+            expect(permissions(reporter, incident_issue)).to be_disallowed(:read_issuable_resource_link)
           end
         end
       end
@@ -126,10 +136,12 @@ RSpec.describe IssuablePolicy, models: true do
 
           it 'allows developers' do
             expect(permissions(developer, incident_issue)).to be_allowed(:admin_issuable_resource_link)
+            expect(permissions(developer, incident_issue)).to be_allowed(:read_issuable_resource_link)
           end
 
           it 'allows reporters' do
             expect(permissions(reporter, incident_issue)).to be_allowed(:admin_issuable_resource_link)
+            expect(permissions(reporter, incident_issue)).to be_allowed(:read_issuable_resource_link)
           end
         end
       end
