@@ -4,16 +4,6 @@ module EE
   module EnvironmentsHelper
     extend ::Gitlab::Utils::Override
 
-    override :project_metrics_data
-    def project_metrics_data(project)
-      super
-    end
-
-    override :project_and_environment_metrics_data
-    def project_and_environment_metrics_data(project, environment)
-      super
-    end
-
     def deployment_approval_data(deployment)
       { pending_approval_count: deployment.pending_approval_count,
         iid: deployment.iid,
