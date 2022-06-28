@@ -45401,6 +45401,11 @@ msgstr ""
 msgid "groups only"
 msgstr ""
 
+msgid "had %{count} failed job"
+msgid_plural "had %{count} failed jobs"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "has already been linked to another vulnerability"
 msgstr ""
 
