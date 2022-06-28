@@ -1,3 +1,4 @@
+import { isEmpty } from 'lodash';
 import { s__, n__ } from '~/locale';
 import axios from '~/lib/utils/axios_utils';
 import { EXTENSION_ICONS } from '~/vue_merge_request_widget/constants';
@@ -19,15 +20,17 @@ export default {
   },
   expandEvent: 'i_testing_license_compliance_widget_total',
   props: ['licenseCompliance'],
+  enablePolling: true,
+  enableExpandedPolling: true,
   computed: {
     newLicenses() {
-      return this.collapsedData[0].new_licenses || 0;
+      return this.collapsedData.new_licenses || 0;
     },
     existingLicenses() {
-      return this.collapsedData[0].existing_licenses || 0;
+      return this.collapsedData.existing_licenses || 0;
     },
     deniedLicenses() {
-      return this.collapsedData[0].denied_licenses || 0;
+      return this.collapsedData.denied_licenses || 0;
     },
     licenseReportCount() {
       return this.newLicenses();
@@ -59,7 +62,7 @@ export default {
       ];
     },
     hasApprovalRequired() {
-      return Boolean(this.collapsedData[0].approval_required);
+      return Boolean(this.collapsedData.approval_required);
     },
     summaryTextWithReportItems() {
       if (this.hasApprovalRequired() && this.hasDeniedLicense()) {
@@ -125,17 +128,19 @@ export default {
     fetchCollapsedData() {
       const { license_scanning_comparison_collapsed_path } = this.licenseCompliance;
 
-      return Promise.all([this.fetchReport(license_scanning_comparison_collapsed_path)]).then(
-        (values) => {
-          return values;
-        },
-      );
+      return this.fetchReport(license_scanning_comparison_collapsed_path);
     },
     fetchFullData() {
       const { license_scanning_comparison_path } = this.licenseCompliance;
 
-      return Promise.all([this.fetchReport(license_scanning_comparison_path)]).then((values) => {
-        let newLicenses = values[0].new_licenses;
+      return this.fetchReport(license_scanning_comparison_path).then((res) => {
+        const { data = {} } = res;
+
+        if (isEmpty(data)) {
+          return { ...res, data };
+        }
+
+        let newLicenses = data.new_licenses;
 
         newLicenses = newLicenses.map((e) => ({
           status: e.classification.approval_status,
@@ -192,12 +197,11 @@ export default {
               ]
             : []),
         ];
-
-        return licenseSections;
+        return { ...res, data: licenseSections };
       });
     },
     fetchReport(endpoint) {
-      return axios.get(endpoint).then((res) => res.data);
+      return axios.get(endpoint);
     },
   },
 };
