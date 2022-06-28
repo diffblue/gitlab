@@ -25,6 +25,7 @@
           "name": {
             "description": "Name for the policy.",
             "minLength": 1,
+            "maxLength": 255,
             "type": "string"
           },
           "description": {
@@ -268,6 +269,7 @@
           "name": {
             "description": "Name for the policy.",
             "minLength": 1,
+            "maxLength": 255,
             "type": "string"
           },
           "description": {

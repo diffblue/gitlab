@@ -190,6 +190,16 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
       it { is_expected.to eq(false) }
     end
 
+    context 'when file has invalid name' do
+      let(:invalid_name) { 'a' * 256 }
+      let(:policy_yaml) do
+        build(:orchestration_policy_yaml, scan_execution_policy:
+        [build(:scan_execution_policy, name: invalid_name)])
+      end
+
+      it { is_expected.to be false }
+    end
+
     context 'when file is valid' do
       it { is_expected.to eq(true) }
     end
