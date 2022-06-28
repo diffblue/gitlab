@@ -24,6 +24,7 @@ RSpec.describe GitlabSchema.types['Group'] do
   it { expect(described_class).to have_graphql_field(:merge_request_violations) }
   it { expect(described_class).to have_graphql_field(:allow_stale_runner_pruning) }
   it { expect(described_class).to have_graphql_field(:cluster_agents) }
+  it { expect(described_class).to have_graphql_field(:enforce_free_user_cap) }
 
   describe 'vulnerabilities' do
     let_it_be(:group) { create(:group) }
