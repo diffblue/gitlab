@@ -12,10 +12,6 @@ module Clusters
       project_environment_path(environment.project, environment)
     end
 
-    expose :logs_path, if: -> (*) { can_read_pod_logs? } do |environment|
-      project_logs_path(environment.project, environment_name: environment.name)
-    end
-
     expose :rollout_status, if: -> (*) { can_read_cluster_deployments? }, using: ::RolloutStatusEntity
 
     expose :updated_at
@@ -30,10 +26,6 @@ module Clusters
 
     def can_read_cluster_deployments?
       can?(current_user, :read_cluster_environments, request.cluster)
-    end
-
-    def can_read_pod_logs?
-      can?(current_user, :read_pod_logs, environment.project)
     end
   end
 end
