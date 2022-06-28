@@ -161,13 +161,15 @@ module Types
           resolver: ::Resolvers::EpicAncestorsResolver,
           description: 'Ancestors (parents) of the epic.'
 
-    field :color, GraphQL::Types::String, null: false,
-          description: 'Color of the epic.',
-          feature_flag: :epic_color_highlight
+    field :color, GraphQL::Types::String,
+          null: true,
+          description: 'Color of the epic. Returns `null` ' \
+                        'if `epic_color_highlight` feature flag is disabled'
 
-    field :text_color, GraphQL::Types::String, null: false,
-          description: 'Text color generated for the epic.',
-          feature_flag: :epic_color_highlight
+    field :text_color, GraphQL::Types::String,
+          null: true,
+          description: 'Text color generated for the epic. Returns `null` ' \
+                        'if `epic_color_highlight` feature flag is disabled'
 
     field :blocked, GraphQL::Types::Boolean, null: true,
           description: 'Indicates the epic is blocked.'
@@ -239,6 +241,14 @@ module Types
 
     def blocked_by_epics
       object.blocked_by_epics_for(current_user)
+    end
+
+    def color
+      object.color if Feature.enabled?(:epic_color_highlight, object.group)
+    end
+
+    def text_color
+      object.text_color if Feature.enabled?(:epic_color_highlight, object.group)
     end
   end
 end
