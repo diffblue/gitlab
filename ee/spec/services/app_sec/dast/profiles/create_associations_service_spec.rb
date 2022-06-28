@@ -13,7 +13,7 @@ RSpec.describe AppSec::Dast::Profiles::CreateAssociationsService do
   let(:dast_scanner_profile_name) { dast_scanner_profile.name }
 
   let!(:pipeline) { create(:ci_pipeline, project: project, user: user) }
-  let!(:stage) { create(:ci_stage_entity, project: project, pipeline: pipeline, name: :dast) }
+  let!(:stage) { create(:ci_stage, project: project, pipeline: pipeline, name: :dast) }
 
   let!(:dast_build) do
     create(:ci_build, project: project, user: user, pipeline: pipeline, stage_id: stage.id,
