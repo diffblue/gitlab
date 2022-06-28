@@ -461,7 +461,11 @@ module EE
     end
 
     def apply_user_cap?
-      user_cap_available? || free_user_cap.enforce_cap?
+      user_cap_available? || enforce_free_user_cap?
+    end
+
+    def enforce_free_user_cap?
+      free_user_cap.enforce_cap?
     end
 
     def user_limit_reached?(use_cache: false)
