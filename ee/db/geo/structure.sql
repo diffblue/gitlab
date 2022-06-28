@@ -5,6 +5,37 @@ CREATE TABLE ar_internal_metadata (
     updated_at timestamp(6) without time zone NOT NULL
 );
 
+CREATE TABLE ci_secure_file_registry (
+    id bigint NOT NULL,
+    ci_secure_file_id bigint NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    last_synced_at timestamp with time zone,
+    retry_at timestamp with time zone,
+    verified_at timestamp with time zone,
+    verification_started_at timestamp with time zone,
+    verification_retry_at timestamp with time zone,
+    state smallint DEFAULT 0 NOT NULL,
+    verification_state smallint DEFAULT 0 NOT NULL,
+    retry_count smallint DEFAULT 0 NOT NULL,
+    verification_retry_count smallint DEFAULT 0 NOT NULL,
+    checksum_mismatch boolean DEFAULT false NOT NULL,
+    verification_checksum bytea,
+    verification_checksum_mismatched bytea,
+    verification_failure text,
+    last_sync_failure text,
+    CONSTRAINT check_17bd5fc9fa CHECK ((char_length(last_sync_failure) <= 255)),
+    CONSTRAINT check_420f14e38c CHECK ((char_length(verification_failure) <= 255))
+);
+
+CREATE SEQUENCE ci_secure_file_registry_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE ci_secure_file_registry_id_seq OWNED BY ci_secure_file_registry.id;
+
 CREATE TABLE container_repository_registry (
     id integer NOT NULL,
     container_repository_id integer NOT NULL,
@@ -433,6 +464,8 @@ CREATE SEQUENCE terraform_state_version_registry_id_seq
 
 ALTER SEQUENCE terraform_state_version_registry_id_seq OWNED BY terraform_state_version_registry.id;
 
+ALTER TABLE ONLY ci_secure_file_registry ALTER COLUMN id SET DEFAULT nextval('ci_secure_file_registry_id_seq'::regclass);
+
 ALTER TABLE ONLY container_repository_registry ALTER COLUMN id SET DEFAULT nextval('container_repository_registry_id_seq'::regclass);
 
 ALTER TABLE ONLY design_registry ALTER COLUMN id SET DEFAULT nextval('design_registry_id_seq'::regclass);
@@ -465,6 +498,9 @@ ALTER TABLE ONLY terraform_state_version_registry ALTER COLUMN id SET DEFAULT ne
 
 ALTER TABLE ONLY ar_internal_metadata
     ADD CONSTRAINT ar_internal_metadata_pkey PRIMARY KEY (key);
+
+ALTER TABLE ONLY ci_secure_file_registry
+    ADD CONSTRAINT ci_secure_file_registry_pkey PRIMARY KEY (id);
 
 ALTER TABLE ONLY container_repository_registry
     ADD CONSTRAINT container_repository_registry_pkey PRIMARY KEY (id);
@@ -514,6 +550,12 @@ ALTER TABLE ONLY snippet_repository_registry
 ALTER TABLE ONLY terraform_state_version_registry
     ADD CONSTRAINT terraform_state_version_registry_pkey PRIMARY KEY (id);
 
+CREATE INDEX ci_secure_file_registry_failed_verification ON ci_secure_file_registry USING btree (verification_retry_at NULLS FIRST) WHERE ((state = 2) AND (verification_state = 3));
+
+CREATE INDEX ci_secure_file_registry_needs_verification ON ci_secure_file_registry USING btree (verification_state) WHERE ((state = 2) AND (verification_state = ANY (ARRAY[0, 3])));
+
+CREATE INDEX ci_secure_file_registry_pending_verification ON ci_secure_file_registry USING btree (verified_at NULLS FIRST) WHERE ((state = 2) AND (verification_state = 0));
+
 CREATE INDEX file_registry_failed_verification ON file_registry USING btree (verification_retry_at NULLS FIRST) WHERE ((state = 2) AND (verification_state = 3));
 
 CREATE INDEX file_registry_needs_verification ON file_registry USING btree (verification_state) WHERE ((state = 2) AND (verification_state = ANY (ARRAY[0, 3])));
@@ -541,6 +583,12 @@ CREATE INDEX idx_project_registry_synced_repositories_partial ON project_registr
 CREATE INDEX idx_repository_checksum_mismatch ON project_registry USING btree (project_id) WHERE (repository_checksum_mismatch = true);
 
 CREATE INDEX idx_wiki_checksum_mismatch ON project_registry USING btree (project_id) WHERE (wiki_checksum_mismatch = true);
+
+CREATE UNIQUE INDEX index_ci_secure_file_registry_on_ci_secure_file_id ON ci_secure_file_registry USING btree (ci_secure_file_id);
+
+CREATE INDEX index_ci_secure_file_registry_on_retry_at ON ci_secure_file_registry USING btree (retry_at);
+
+CREATE INDEX index_ci_secure_file_registry_on_state ON ci_secure_file_registry USING btree (state);
 
 CREATE INDEX index_container_repository_registry_on_retry_at ON container_repository_registry USING btree (retry_at);
 
