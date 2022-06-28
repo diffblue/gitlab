@@ -35,6 +35,7 @@ module EE
 
       rule { can?(:read_issue) & can?(:reporter_access) & issuable_resource_links_available }.policy do
         enable :admin_issuable_resource_link
+        enable :read_issuable_resource_link
       end
     end
   end
