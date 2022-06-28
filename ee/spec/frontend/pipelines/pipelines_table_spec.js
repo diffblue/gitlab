@@ -2,6 +2,7 @@ import { mount } from '@vue/test-utils';
 import fixture from 'test_fixtures/pipelines/pipelines.json';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import PipelinesTable from '~/pipelines/components/pipelines_list/pipelines_table.vue';
+import PipelineMiniGraph from '~/pipelines/components/pipelines_list/pipeline_mini_graph.vue';
 import { PipelineKeyOptions } from '~/pipelines/constants';
 
 import { triggeredBy, triggered } from './mock_data';
@@ -35,8 +36,7 @@ describe('Pipelines Table', () => {
     );
   };
 
-  const findUpstream = () => wrapper.findByTestId('mini-graph-upstream');
-  const findDownstream = () => wrapper.findByTestId('mini-graph-downstream');
+  const findPipelineMiniGraph = () => wrapper.findComponent(PipelineMiniGraph);
 
   beforeEach(() => {
     pipeline = createMockPipeline();
@@ -47,6 +47,19 @@ describe('Pipelines Table', () => {
   });
 
   describe('Pipelines Table', () => {
+    describe('pipeline mini graph', () => {
+      beforeEach(() => {
+        pipeline = createMockPipeline();
+        pipeline.triggered_by = triggeredBy;
+
+        createComponent({ pipelines: [pipeline] });
+      });
+
+      it('should render a pipeline mini graph', () => {
+        expect(findPipelineMiniGraph().exists()).toBe(true);
+      });
+    });
+
     describe('upstream linked pipelines', () => {
       beforeEach(() => {
         pipeline = createMockPipeline();
@@ -56,16 +69,17 @@ describe('Pipelines Table', () => {
       });
 
       it('should render only a upstream pipeline', () => {
-        expect(findUpstream().exists()).toBe(true);
-        expect(findDownstream().exists()).toBe(false);
+        const upstreamPipeline = findPipelineMiniGraph().props('upstreamPipeline');
+        const downstreamPipelines = findPipelineMiniGraph().props('downstreamPipelines');
+
+        expect(upstreamPipeline).toEqual(expect.any(Object));
+        expect(downstreamPipelines).toHaveLength(0);
       });
 
-      it('should pass an array of the correct data to the linked pipeline component', () => {
-        const triggeredByProps = findUpstream().props('triggeredBy');
+      it('should pass an object of the correct data to the linked pipeline component', () => {
+        const upstreamPipeline = findPipelineMiniGraph().props('upstreamPipeline');
 
-        expect(triggeredByProps).toEqual(expect.any(Array));
-        expect(triggeredByProps).toHaveLength(1);
-        expect(triggeredByProps[0]).toBe(triggeredBy);
+        expect(upstreamPipeline).toBe(triggeredBy);
       });
     });
 
@@ -78,12 +92,22 @@ describe('Pipelines Table', () => {
       });
 
       it('should pass the pipeline path prop for the counter badge', () => {
-        expect(findDownstream().props('pipelinePath')).toBe(pipeline.path);
+        const pipelinePath = findPipelineMiniGraph().props('pipelinePath');
+        expect(pipelinePath).toBe(pipeline.path);
       });
 
       it('should render only a downstream pipeline', () => {
-        expect(findDownstream().exists()).toBe(true);
-        expect(findUpstream().exists()).toBe(false);
+        const upstreamPipeline = findPipelineMiniGraph().props('upstreamPipeline');
+        const downstreamPipelines = findPipelineMiniGraph().props('downstreamPipelines');
+
+        expect(downstreamPipelines).toEqual(expect.any(Array));
+        expect(upstreamPipeline).toEqual(null);
+      });
+
+      it('should pass an array of the correct data to the linked pipeline component', () => {
+        const downstreamPipelines = findPipelineMiniGraph().props('downstreamPipelines');
+
+        expect(downstreamPipelines).toEqual(triggered);
       });
     });
 
@@ -97,8 +121,11 @@ describe('Pipelines Table', () => {
       });
 
       it('should render both downstream and upstream pipelines', () => {
-        expect(findDownstream().exists()).toBe(true);
-        expect(findUpstream().exists()).toBe(true);
+        const upstreamPipeline = findPipelineMiniGraph().props('upstreamPipeline');
+        const downstreamPipelines = findPipelineMiniGraph().props('downstreamPipelines');
+
+        expect(downstreamPipelines).toEqual(triggered);
+        expect(upstreamPipeline).toEqual(triggeredBy);
       });
     });
   });
