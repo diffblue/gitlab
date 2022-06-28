@@ -109,7 +109,7 @@ RSpec.describe 'SAML access enforcement' do
     it 'shows loading screen and link used for auto-redirect' do
       visit group_path(group)
 
-      click_link 'Sign in with Single Sign-On'
+      click_link 'Sign in'
 
       days_after_timeout = Gitlab::Auth::GroupSaml::SsoEnforcer::DEFAULT_SESSION_TIMEOUT + 2.days
       travel_to(days_after_timeout.from_now) do
@@ -129,7 +129,7 @@ RSpec.describe 'SAML access enforcement' do
 
         expect(current_url).to include("redirect=#{CGI.escape(resource_path)}")
 
-        click_link 'Sign in with Single Sign-On'
+        click_link 'Sign in'
 
         # Capybara's have_current_path matcher checks the path and query string
         expect(page).to have_current_path(resource_path)
