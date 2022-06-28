@@ -13,7 +13,7 @@ module Groups
 
     # show roadmap for a group
     def show
-      push_frontend_feature_flag(:epic_color_highlight)
+      push_frontend_feature_flag(:epic_color_highlight, @group)
 
       # Used to persist the order and show the correct sorting dropdown on UI.
       @sort = set_sort_order
