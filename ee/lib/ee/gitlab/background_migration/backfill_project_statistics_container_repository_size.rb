@@ -65,11 +65,12 @@ module EE
           alias_method :parent, :namespace
           alias_attribute :parent_id, :namespace_id
 
+          # rubocop:disable Layout/LineLength
           has_many :container_repositories,
-          class_name: '::EE::Gitlab::BackgroundMigration::BackfillProjectStatisticsContainerRepositorySize::ContainerRepository' # rubocop:disable Layout/LineLength
+          class_name: '::EE::Gitlab::BackgroundMigration::BackfillProjectStatisticsContainerRepositorySize::ContainerRepository'
 
           has_one :statistics,
-          class_name: '::EE::Gitlab::BackgroundMigration::BackfillProjectStatisticsContainerRepositorySize::ProjectStatistics' # rubocop:disable Layout/LineLength
+          class_name: '::EE::Gitlab::BackgroundMigration::BackfillProjectStatisticsContainerRepositorySize::ProjectStatistics'
 
           def container_repositories_size
             strong_memoize(:container_repositories_size) do
@@ -101,39 +102,24 @@ module EE
 
         class ProjectStatistics < ::ApplicationRecord
           include LogUtils
-          include ::AfterCommitQueue
 
           self.table_name = 'project_statistics'
 
           belongs_to :project
 
           def refresh_container_registry_size!
-            return if ::Gitlab::Database.read_only?
-
-            update_container_registry_size
-            schedule_namespace_aggregation_worker
-
-            save!
-          end
-
-          def update_container_registry_size
             self.container_registry_size = project.container_repositories_size || 0
             log_info(
               'Got ContainerRegistrySize for project_id',
               project_id: project.id,
               container_registry_size: self.container_registry_size
             )
-
-            self.container_registry_size
-          end
-
-          def schedule_namespace_aggregation_worker
             return if self.container_registry_size == 0
 
-            run_after_commit do
-              ::Namespaces::ScheduleAggregationWorker.perform_async(project.namespace_id)
-              log_info('Scheduled Namespaces::ScheduleAggregationWorker', namespace_id: project.namespace_id)
-            end
+            save!
+
+            ::Namespaces::ScheduleAggregationWorker.perform_async(project.namespace_id)
+            log_info('Scheduled Namespaces::ScheduleAggregationWorker', namespace_id: project.namespace_id)
           end
         end
 
@@ -149,7 +135,6 @@ module EE
               ).select(:project_id).distinct
             }
           ) do |sub_batch|
-            log_info('Starting SubBatch')
             stats = ProjectStatistics.where(project_id: sub_batch).where(container_registry_size: 0)
             stats.each do |stat|
               # Should trigger an API hit to get the actual `container_registry_size` for the project, via
@@ -157,7 +142,6 @@ module EE
               # Should schedule a worker to do the same for `RootNamespaceStatistic`
               stat.refresh_container_registry_size!
             end
-            log_info('Ending SubBatch')
           end
         end
       end

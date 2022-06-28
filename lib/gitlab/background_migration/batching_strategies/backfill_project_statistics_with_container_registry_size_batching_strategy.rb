@@ -10,7 +10,7 @@ module Gitlab
       class BackfillProjectStatisticsWithContainerRegistrySizeBatchingStrategy < PrimaryKeyBatchingStrategy
         MIGRATION_PHASE_1_ENDED_AT = Date.new(2022, 01, 23).freeze
 
-        def apply_additional_filters(relation, job_arguments: [])
+        def apply_additional_filters(relation, job_arguments: [], job_class: nil)
           relation.where(created_at: MIGRATION_PHASE_1_ENDED_AT..).or(
             relation.where(migration_state: 'import_done')
           ).select(:project_id).distinct

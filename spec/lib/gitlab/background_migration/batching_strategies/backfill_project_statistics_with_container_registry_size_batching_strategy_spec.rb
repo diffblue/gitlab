@@ -8,7 +8,7 @@ RSpec.describe Gitlab::BackgroundMigration::BatchingStrategies::BackfillProjectS
   let(:project) { table(:projects) }
   let(:container_repositories) { table(:container_repositories) }
 
-  let!(:namespace1) do
+  let!(:group) do
     namespace.create!(
       name: 'namespace1', type: 'Group', path: 'space1'
     )
@@ -16,37 +16,37 @@ RSpec.describe Gitlab::BackgroundMigration::BatchingStrategies::BackfillProjectS
 
   let!(:proj_namespace1) do
     namespace.create!(
-      name: 'proj1', path: 'proj1', type: 'Project', parent_id: namespace1.id
+      name: 'proj1', path: 'proj1', type: 'Project', parent_id: group.id
     )
   end
 
   let!(:proj_namespace2) do
     namespace.create!(
-      name: 'proj2', path: 'proj2', type: 'Project', parent_id: namespace1.id
+      name: 'proj2', path: 'proj2', type: 'Project', parent_id: group.id
     )
   end
 
   let!(:proj_namespace3) do
     namespace.create!(
-      name: 'proj3', path: 'proj3', type: 'Project', parent_id: namespace1.id
+      name: 'proj3', path: 'proj3', type: 'Project', parent_id: group.id
     )
   end
 
   let!(:proj1) do
     project.create!(
-      name: 'proj1', path: 'proj1', namespace_id: namespace1.id, project_namespace_id: proj_namespace1.id
+      name: 'proj1', path: 'proj1', namespace_id: group.id, project_namespace_id: proj_namespace1.id
     )
   end
 
   let!(:proj2) do
     project.create!(
-      name: 'proj2', path: 'proj2', namespace_id: namespace1.id, project_namespace_id: proj_namespace2.id
+      name: 'proj2', path: 'proj2', namespace_id: group.id, project_namespace_id: proj_namespace2.id
     )
   end
 
   let!(:proj3) do
     project.create!(
-      name: 'proj3', path: 'proj3', namespace_id: namespace1.id, project_namespace_id: proj_namespace3.id
+      name: 'proj3', path: 'proj3', namespace_id: group.id, project_namespace_id: proj_namespace3.id
     )
   end
 

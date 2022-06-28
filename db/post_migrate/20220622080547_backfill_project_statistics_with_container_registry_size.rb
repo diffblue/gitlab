@@ -12,7 +12,7 @@ class BackfillProjectStatisticsWithContainerRegistrySize < Gitlab::Database::Mig
   disable_ddl_transaction!
 
   def up
-    return unless Gitlab.com?
+    return unless Gitlab.dev_or_test_env? || Gitlab.com?
 
     queue_batched_background_migration(
       MIGRATION_CLASS,
@@ -26,7 +26,7 @@ class BackfillProjectStatisticsWithContainerRegistrySize < Gitlab::Database::Mig
   end
 
   def down
-    return unless Gitlab.com?
+    return unless Gitlab.dev_or_test_env? || Gitlab.com?
 
     delete_batched_background_migration(MIGRATION_CLASS, :container_repositories, :project_id, [])
   end

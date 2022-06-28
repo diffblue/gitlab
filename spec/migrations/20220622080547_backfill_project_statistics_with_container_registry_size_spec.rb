@@ -8,6 +8,7 @@ RSpec.describe BackfillProjectStatisticsWithContainerRegistrySize do
 
   it 'does not schedule background jobs when Gitlab.com is false' do
     allow(Gitlab).to receive(:com?).and_return(false)
+    allow(Gitlab).to receive(:dev_or_test_env?).and_return(false)
 
     reversible_migration do |migration|
       migration.before -> {
