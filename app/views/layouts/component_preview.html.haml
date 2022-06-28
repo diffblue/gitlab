@@ -1,4 +1,4 @@
 %head
   = stylesheet_link_tag "application"
-%body
+%body{ style: "background-color: #{params.dig(:lookbook, :display, :bg_color) || 'white'}" }
   .container.mt-4= yield
