@@ -44,7 +44,9 @@ module QA
         activate_license
       end
 
-      it 'shows correct billable user on subscription page', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/364830' do
+      it 'shows correct billable user on subscription page',
+         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/364830',
+         quarantine: { issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/366093', type: :flaky } do
         Gitlab::Page::Admin::Subscription.perform do |subscription|
           # `root` admin user also shows as billable user by default
           expect(subscription.billable_users.to_i).to eq(billable_user_count + 1)
