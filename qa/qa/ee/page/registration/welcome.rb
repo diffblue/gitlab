@@ -21,9 +21,8 @@ module QA
             end
           end
 
-          # setup_for_company_radio is only shown in development environment and .com
           def choose_setup_for_company_if_available
-            choose_element(:setup_for_company_radio) if QA::Runtime::Env.running_on_dev_or_dot_com?
+            choose_element(:setup_for_company_radio) if has_element?(:setup_for_company_radio, wait: 1)
           end
         end
       end
