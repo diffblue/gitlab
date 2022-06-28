@@ -16,6 +16,29 @@ RSpec.describe SearchController, :elastic do
         allow(Gitlab::UsageDataCounters::HLLRedisCounter).to receive(:track_event)
       end
 
+      describe 'Snowplow event tracking', :snowplow do
+        let(:category) { described_class.to_s }
+        let(:namespace) { create(:group) }
+
+        subject { get :show, params: { group_id: namespace.id, scope: 'blobs', search: 'term' } }
+
+        it 'is not sending events if FF is disabled' do
+          stub_feature_flags(route_hll_to_snowplow_phase2: false)
+
+          subject
+
+          expect_no_snowplow_event
+        end
+
+        it 'emits all search events' do
+          subject
+
+          expect_snowplow_event(category: category, action: 'i_search_total', namespace: namespace, user: user)
+          expect_snowplow_event(category: category, action: 'i_search_paid', namespace: namespace, user: user)
+          expect_snowplow_event(category: category, action: 'i_search_advanced', namespace: namespace, user: user)
+        end
+      end
+
       context 'i_search_advanced', :snowplow do
         let_it_be(:group) { create(:group) }
 
@@ -25,13 +48,6 @@ RSpec.describe SearchController, :elastic do
 
         it_behaves_like 'tracking unique hll events' do
           let(:expected_value) { instance_of(String) }
-        end
-
-        it_behaves_like 'Snowplow event tracking' do
-          let(:category) { described_class.to_s }
-          let(:action) { target_event }
-          let(:namespace) { group }
-          let(:feature_flag_name) { :route_hll_to_snowplow_phase2 }
         end
       end
 
@@ -51,13 +67,6 @@ RSpec.describe SearchController, :elastic do
 
           it_behaves_like 'tracking unique hll events' do
             let(:expected_value) { instance_of(String) }
-          end
-
-          it_behaves_like 'Snowplow event tracking' do
-            let(:category) { described_class.to_s }
-            let(:action) { target_event }
-            let(:namespace) { group }
-            let(:feature_flag_name) { :route_hll_to_snowplow_phase2 }
           end
         end
 
