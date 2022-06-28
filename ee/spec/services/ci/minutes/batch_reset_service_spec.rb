@@ -46,8 +46,8 @@ RSpec.describe Ci::Minutes::BatchResetService do
       let(:namespaces_exceeding_minutes) { [namespace_1, namespace_2, namespace_3] }
 
       it 'resets minutes in batches for the given range and ignores project namespaces' do
-        expect(service).to receive(:reset_ci_minutes!).with([namespace_1, namespace_2, namespace_3])
-        expect(service).to receive(:reset_ci_minutes!).with([namespace_4, namespace_5])
+        expect(service).to receive(:reset_ci_minutes!).with(match_array([namespace_1, namespace_2, namespace_3]))
+        expect(service).to receive(:reset_ci_minutes!).with(match_array([namespace_4, namespace_5]))
 
         subject
       end
@@ -75,8 +75,8 @@ RSpec.describe Ci::Minutes::BatchResetService do
         end
 
         it 'continues its progress and raises exception at the end' do
-          expect(service).to receive(:reset_ci_minutes!).with([namespace_1, namespace_2, namespace_3]).and_call_original
-          expect(service).to receive(:reset_ci_minutes!).with([namespace_4, namespace_5]).and_call_original
+          expect(service).to receive(:reset_ci_minutes!).with(match_array([namespace_1, namespace_2, namespace_3])).and_call_original
+          expect(service).to receive(:reset_ci_minutes!).with(match_array([namespace_4, namespace_5])).and_call_original
 
           expect { subject }
             .to raise_error(described_class::BatchNotResetError) do |error|
