@@ -227,7 +227,6 @@ RSpec.describe 'SAML provider settings' do
 
           expect(page).to have_content('SAML SSO')
           expect(page).to have_content("Sign in to \"#{group.full_name}\"")
-          expect(page).to have_content('Sign in with Single Sign-On')
         end
       end
 
@@ -240,7 +239,6 @@ RSpec.describe 'SAML provider settings' do
           visit sso_group_saml_providers_path(group)
 
           expect(page).to have_content(/Allow .* to sign you in/)
-          expect(page).to have_content(saml_provider.sso_url)
           expect(page).to have_content('Authorize')
         end
 
@@ -251,7 +249,7 @@ RSpec.describe 'SAML provider settings' do
 
           click_link 'Authorize'
 
-          expect(page).to have_content(/SAML for .* was added to your connected accounts/)
+          expect(page).to have_content("Your organization's SSO has been connected to your GitLab account")
           expect(user.identities.last.extern_uid).to eq external_uid
         end
 
@@ -282,7 +280,7 @@ RSpec.describe 'SAML provider settings' do
         it 'warns user that their account is locked' do
           visit sso_group_saml_providers_path(group)
 
-          click_link 'Sign in with Single Sign-On'
+          click_link 'Sign in'
 
           expect(page).to have_content('Your account is locked.')
         end
@@ -295,7 +293,7 @@ RSpec.describe 'SAML provider settings' do
           it 'warns user their account is locked' do
             visit sso_group_saml_providers_path(group)
 
-            click_link 'Sign in with Single Sign-On'
+            click_link 'Sign in'
 
             expect(page).to have_content('Your account is locked.')
             expect(page).to have_current_path sso_group_saml_providers_path(group), ignore_query: true

@@ -72,7 +72,7 @@ module QA
 
           Flow::Saml.login_to_idp_if_required(idp_user.username, idp_user.password)
 
-          expect(page).to have_text("Login to a GitLab account to link with your SAML identity")
+          expect(page).to have_text("Sign in to GitLab to connect your organization's account")
 
           Flow::Saml.logout_from_idp(saml_idp_service)
 

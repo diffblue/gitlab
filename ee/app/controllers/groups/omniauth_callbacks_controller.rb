@@ -31,7 +31,7 @@ class Groups::OmniauthCallbacksController < OmniauthCallbacksController
 
   override :redirect_identity_linked
   def redirect_identity_linked
-    flash[:notice] = "SAML for #{@unauthenticated_group.name} was added to your connected accounts"
+    flash[:notice] = s_("SAML|Your organization's SSO has been connected to your GitLab account")
 
     redirect_to after_sign_in_path_for(current_user)
   end
@@ -116,7 +116,7 @@ class Groups::OmniauthCallbacksController < OmniauthCallbacksController
   end
 
   def redirect_to_login_or_register
-    notice = "Login to a GitLab account to link with your SAML identity"
+    notice = s_("SAML|Sign in to GitLab to connect your organization's account")
 
     after_gitlab_sign_in = sso_group_saml_providers_path(@unauthenticated_group)
 
