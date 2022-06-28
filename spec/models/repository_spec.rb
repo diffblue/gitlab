@@ -2776,8 +2776,7 @@ RSpec.describe Repository do
   end
 
   def create_remote_branch(remote_name, branch_name, target)
-    rugged = rugged_repo(repository)
-    rugged.references.create("refs/remotes/#{remote_name}/#{branch_name}", target.id)
+    repository.write_ref("refs/remotes/#{remote_name}/#{branch_name}", target.id)
   end
 
   shared_examples '#ancestor?' do
