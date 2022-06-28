@@ -30,7 +30,13 @@ export default {
     DastProfilesConfigurator,
   },
   mixins: [glFeatureFlagMixin()],
-  inject: ['gitlabCiYamlEditPath', 'securityConfigurationPath', 'projectPath'],
+  inject: [
+    'gitlabCiYamlEditPath',
+    'securityConfigurationPath',
+    'projectPath',
+    'siteProfilesLibraryPath',
+    'scannerProfilesLibraryPath',
+  ],
   i18n: {
     dastConfigurationHeader: s__('DastConfig|DAST CI/CD configuration'),
     dastConfigurationDescription: s__(
@@ -88,6 +94,8 @@ export default {
       :configuration-header="$options.i18n.dastConfigurationHeader"
       class="gl-mb-6"
       :full-path="projectPath"
+      :scanner-profiles-library-path="scannerProfilesLibraryPath"
+      :site-profiles-library-path="siteProfilesLibraryPath"
       @error="showErrors"
       @profiles-selected="updateProfiles"
     >

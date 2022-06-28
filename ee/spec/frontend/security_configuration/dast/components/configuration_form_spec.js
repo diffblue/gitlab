@@ -19,6 +19,8 @@ const [siteProfile] = siteProfiles;
 const securityConfigurationPath = '/security/configuration';
 const gitlabCiYamlEditPath = '/ci/editor';
 const projectPath = '/project/path';
+const siteProfilesLibraryPath = 'siteProfilesLibraryPath';
+const scannerProfilesLibraryPath = 'scannerProfilesLibraryPath';
 
 const selectedScannerProfileName = 'My Scan profile';
 const selectedSiteProfileName = 'My site profile';
@@ -75,6 +77,8 @@ describe('EE - DAST Configuration Form', () => {
             provide: {
               securityConfigurationPath,
               gitlabCiYamlEditPath,
+              scannerProfilesLibraryPath,
+              siteProfilesLibraryPath,
               projectPath,
               ...glFeatures,
             },

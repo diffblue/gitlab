@@ -173,7 +173,12 @@ export default {
       SITE_PROFILES_QUERY,
     ),
   },
-  inject: ['projectPath', 'onDemandScansPath'],
+  inject: [
+    'projectPath',
+    'onDemandScansPath',
+    'siteProfilesLibraryPath',
+    'scannerProfilesLibraryPath',
+  ],
   props: {
     defaultBranch: {
       type: String,
@@ -505,6 +510,8 @@ export default {
         v-if="glFeatures.dastUiRedesign"
         :saved-profiles="dastScan"
         :full-path="projectPath"
+        :scanner-profiles-library-path="scannerProfilesLibraryPath"
+        :site-profiles-library-path="siteProfilesLibraryPath"
         @error="showErrors"
         @profiles-selected="selectProfiles"
       />
