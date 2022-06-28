@@ -10,6 +10,9 @@ module QA
     let(:plan) { ULTIMATE_SELF_MANAGED }
 
     before do
+      # Ensure the Gitlab instance does not already have an active license
+      EE::Resource::License.delete_all
+
       Flow::Login.sign_in_as_admin
       Gitlab::Page::Admin::Subscription.perform do |subscription|
         subscription.visit
@@ -19,7 +22,7 @@ module QA
     end
 
     after do
-      remove_license if Gitlab::Page::Admin::Subscription.perform(&:subscription_details?)
+      EE::Resource::License.delete_all
     end
 
     context 'Cloud activation code' do
@@ -48,8 +51,7 @@ module QA
          testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/364830',
          quarantine: { issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/366093', type: :flaky } do
         Gitlab::Page::Admin::Subscription.perform do |subscription|
-          # `root` admin user also shows as billable user by default
-          expect(subscription.billable_users.to_i).to eq(billable_user_count + 1)
+          expect(subscription.billable_users.to_i).to eq(billable_user_count)
         end
       end
     end
@@ -60,9 +62,11 @@ module QA
       end
 
       it 'successfully removes a cloud activation and shows flash notice', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/364831' do
-        remove_license
-
         Gitlab::Page::Admin::Subscription.perform do |subscription|
+          subscription.remove_license
+          subscription.confirm_ok_button
+
+          expect { subscription.no_valid_license_alert? }.to eventually_be_truthy.within(max_duration: 60, max_attempts: 30)
           expect { subscription.no_active_subscription_title? }.to eventually_be_truthy.within(max_duration: 60, max_attempts: 30, reload_page: page)
         end
       end
@@ -79,15 +83,6 @@ module QA
         subscription.activation_code = Runtime::Env.ee_activation_code
         subscription.accept_terms
         subscription.activate
-      end
-    end
-
-    def remove_license
-      Gitlab::Page::Admin::Subscription.perform do |subscription|
-        subscription.remove_license
-        subscription.confirm_ok_button
-
-        expect { subscription.no_valid_license_alert? }.to eventually_be_truthy.within(max_duration: 60, max_attempts: 30)
       end
     end
   end
