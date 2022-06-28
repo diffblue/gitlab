@@ -221,9 +221,9 @@ RSpec.describe Gitlab::Database::BackgroundMigration::BatchedJob, type: :model d
       end
     end
 
-    describe '.max_attempts_reached' do
+    describe '.blocked_by_max_attempts' do
       it 'returns blocked jobs' do
-        expect(described_class.max_attempts_reached).to contain_exactly(max_attempts_failed_job)
+        expect(described_class.blocked_by_max_attempts).to contain_exactly(max_attempts_failed_job)
       end
     end
   end

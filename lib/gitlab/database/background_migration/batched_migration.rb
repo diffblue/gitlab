@@ -105,7 +105,7 @@ module Gitlab
         end
 
         def reset_attempts!
-          batched_jobs.max_attempts_reached.each_batch(of: 100) do |batch|
+          batched_jobs.blocked_by_max_attempts.each_batch(of: 100) do |batch|
             batch.each(&:reset_attempts!)
           end
         end

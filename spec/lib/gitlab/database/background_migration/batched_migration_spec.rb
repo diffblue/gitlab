@@ -167,13 +167,13 @@ RSpec.describe Gitlab::Database::BackgroundMigration::BatchedMigration, type: :m
       create(:batched_background_migration_job, attempts: 4, batched_migration: migration)
     end
 
-    it 'sets the number of attempts to zero' do
+    it 'sets the number of attempts to zero for blocked jobs' do
       migration.reset_attempts!
 
       expect(migration.batched_jobs.size).to eq(3)
 
-      migration.batched_jobs.each do |job|
-        expect(job.attempts).to be < max_attempts
+      migration.batched_jobs.blocked_by_max_attempts.each do |job|
+        expect(job.attempts).to be_zero
       end
     end
   end
