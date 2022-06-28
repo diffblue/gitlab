@@ -44,27 +44,27 @@ RSpec.describe Gitlab::BackgroundMigration::BackfillProjectStatisticsContainerRe
     )
   end
 
-  let_it_be(:proj11) do
+  let_it_be(:proj1) do
     project.create!(
-      name: 'proj11', path: 'proj11', namespace_id: namespace1.id, project_namespace_id: proj_namespace1.id
+      name: 'proj1', path: 'proj1', namespace_id: namespace1.id, project_namespace_id: proj_namespace1.id
     )
   end
 
-  let_it_be(:proj12) do
+  let_it_be(:proj2) do
     project.create!(
-      name: 'proj12', path: 'proj12', namespace_id: namespace1.id, project_namespace_id: proj_namespace2.id
+      name: 'proj2', path: 'proj2', namespace_id: namespace1.id, project_namespace_id: proj_namespace2.id
     )
   end
 
-  let_it_be(:proj21) do
+  let_it_be(:proj3) do
     project.create!(
-      name: 'proj21', path: 'proj21', namespace_id: namespace2.id, project_namespace_id: proj_namespace3.id
+      name: 'proj3', path: 'proj3', namespace_id: namespace2.id, project_namespace_id: proj_namespace3.id
     )
   end
 
-  let_it_be(:proj22) do
+  let_it_be(:proj4) do
     project.create!(
-      name: 'proj22', path: 'proj22', namespace_id: namespace2.id, project_namespace_id: proj_namespace4.id
+      name: 'proj4', path: 'proj4', namespace_id: namespace2.id, project_namespace_id: proj_namespace4.id
     )
   end
 
@@ -72,10 +72,10 @@ RSpec.describe Gitlab::BackgroundMigration::BackfillProjectStatisticsContainerRe
     stub_const('DATE_BEFORE_PHASE_1', Date.new(2022, 01, 20).freeze)
     stub_const('DATE_AFTER_PHASE_1', Date.new(2022, 02, 20).freeze)
 
-    add_container_registries_and_project_statistics(proj11.id, 2, 'import_done', DATE_BEFORE_PHASE_1, namespace1.id)
-    add_container_registries_and_project_statistics(proj12.id, 3, 'import_done', DATE_BEFORE_PHASE_1, namespace1.id)
-    add_container_registries_and_project_statistics(proj21.id, 1, 'import_done', DATE_BEFORE_PHASE_1, namespace2.id)
-    add_container_registries_and_project_statistics(proj22.id, 2, 'default', DATE_AFTER_PHASE_1, namespace2.id)
+    add_container_registries_and_project_statistics(proj1.id, 2, 'import_done', DATE_BEFORE_PHASE_1, namespace1.id)
+    add_container_registries_and_project_statistics(proj2.id, 3, 'import_done', DATE_BEFORE_PHASE_1, namespace1.id)
+    add_container_registries_and_project_statistics(proj3.id, 1, 'import_done', DATE_BEFORE_PHASE_1, namespace2.id)
+    add_container_registries_and_project_statistics(proj4.id, 2, 'default', DATE_AFTER_PHASE_1, namespace2.id)
   end
 
   it 'backfills container_registry_size for unique project_ids', :aggregate_failures do

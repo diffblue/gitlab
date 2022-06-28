@@ -152,9 +152,9 @@ module EE
             log_info('Starting SubBatch')
             stats = ProjectStatistics.where(project_id: sub_batch).where(container_registry_size: 0)
             stats.each do |stat|
-              # Should trigger an API hit to get the actual container_registry_size for the project, via
-              # "project.container_repositories_size"
-              # Should schedule a worker to do the same for RootNamespaceStatistic\
+              # Should trigger an API hit to get the actual `container_registry_size` for the project, via
+              # `project.container_repositories_size`
+              # Should schedule a worker to do the same for `RootNamespaceStatistic`
               stat.refresh_container_registry_size!
             end
             log_info('Ending SubBatch')
