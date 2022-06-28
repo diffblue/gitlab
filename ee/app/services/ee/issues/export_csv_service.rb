@@ -26,9 +26,7 @@ module EE
       def epic_issue_safe(attribute)
         lambda do |issue|
           epic = issue.epic
-
           next if epic.nil?
-          next unless issue.epic_issue.valid? # TODO This check can be removed with https://gitlab.com/gitlab-org/gitlab/-/issues/339514
 
           epic[attribute]
         end
