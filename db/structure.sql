@@ -16572,6 +16572,7 @@ CREATE TABLE issues (
     blocking_issues_count integer DEFAULT 0 NOT NULL,
     upvotes_count integer DEFAULT 0 NOT NULL,
     work_item_type_id bigint,
+    namespace_id bigint,
     CONSTRAINT check_fba63f706d CHECK ((lock_version IS NOT NULL))
 );
 
@@ -28464,6 +28465,8 @@ CREATE INDEX index_issues_on_milestone_id ON issues USING btree (milestone_id);
 
 CREATE INDEX index_issues_on_moved_to_id ON issues USING btree (moved_to_id) WHERE (moved_to_id IS NOT NULL);
 
+CREATE INDEX index_issues_on_namespace_id ON issues USING btree (namespace_id);
+
 CREATE INDEX index_issues_on_project_id_and_created_at_issue_type_incident ON issues USING btree (project_id, created_at) WHERE (issue_type = 1);
 
 CREATE UNIQUE INDEX index_issues_on_project_id_and_external_key ON issues USING btree (project_id, external_key) WHERE (external_key IS NOT NULL);
@@ -31872,6 +31875,9 @@ ALTER TABLE ONLY projects
 
 ALTER TABLE ONLY dast_profile_schedules
     ADD CONSTRAINT fk_6cca0d8800 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY issues
+    ADD CONSTRAINT fk_6e10d4d38a FOREIGN KEY (namespace_id) REFERENCES namespaces(id) ON DELETE SET NULL;
 
 ALTER TABLE ONLY projects
     ADD CONSTRAINT fk_6e5c14658a FOREIGN KEY (pool_repository_id) REFERENCES pool_repositories(id) ON DELETE SET NULL;

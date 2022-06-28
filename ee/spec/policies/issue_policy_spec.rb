@@ -12,7 +12,8 @@ RSpec.describe IssuePolicy do
 
   before do
     namespace.add_owner(owner)
-    allow(issue).to receive(:namespace).and_return namespace
+    allow(issue).to receive(:project).and_return(project)
+    allow(project).to receive(:namespace).and_return(namespace)
     allow(project).to receive(:design_management_enabled?).and_return true
   end
 
