@@ -436,6 +436,11 @@ module EE
       private_profile? && name.match?(/\Aghost-\d+-\d+\z/)
     end
 
+    def banned_from_namespace?(namespace)
+      # Always load the entire collection to allow preloading and avoiding N+1 queries.
+      namespace_bans.any? { |namespace_ban| namespace_ban.namespace == namespace }
+    end
+
     protected
 
     override :password_required?

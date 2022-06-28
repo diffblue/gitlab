@@ -156,6 +156,19 @@ module EE
         @subject.feature_available?(:group_level_compliance_dashboard)
       end
 
+      condition(:user_banned_from_group) do
+        next unless @user.is_a?(User)
+
+        root_namespace = @subject.root_ancestor
+        next unless ::Feature.enabled?(:limit_unique_project_downloads_per_namespace_user, root_namespace)
+
+        @user.banned_from_namespace?(root_namespace)
+      end
+
+      rule { ~public_group & ~can?(:owner_access) & user_banned_from_group }.policy do
+        prevent :read_group
+      end
+
       rule { public_group | logged_in_viewable }.policy do
         enable :read_wiki
         enable :download_wiki_code

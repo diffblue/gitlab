@@ -2206,4 +2206,66 @@ RSpec.describe GroupPolicy do
       end
     end
   end
+
+  describe 'users banned from groups' do
+    let(:user) { create(:user) }
+
+    let_it_be(:group) { create(:group, :private) }
+
+    before do
+      group.add_developer(user)
+    end
+
+    subject { described_class.new(user, group) }
+
+    context 'user is not banned' do
+      it { is_expected.to be_allowed(:read_group) }
+    end
+
+    context 'user is banned' do
+      before do
+        create(:namespace_ban, user: user, namespace: group.root_ancestor)
+      end
+
+      it { is_expected.to be_disallowed(:read_group) }
+
+      context 'group is a subgroup' do
+        let_it_be(:group) { create(:group, :private, :nested) }
+
+        it { is_expected.to be_disallowed(:read_group) }
+      end
+
+      context 'feature flag is disabled' do
+        before do
+          stub_feature_flags(limit_unique_project_downloads_per_namespace_user: false)
+        end
+
+        it { is_expected.to be_allowed(:read_group) }
+      end
+
+      context 'group is public' do
+        let_it_be(:group) { create(:group, :public) }
+
+        it { is_expected.to be_allowed(:read_group) }
+      end
+
+      context 'user is a group owner' do
+        before do
+          group.add_owner(user)
+        end
+
+        it { is_expected.to be_allowed(:read_group) }
+      end
+
+      context 'user is an admin' do
+        let(:user) { create(:user, :admin) }
+
+        before do
+          enable_admin_mode!(user)
+        end
+
+        it { is_expected.to be_allowed(:read_group) }
+      end
+    end
+  end
 end
