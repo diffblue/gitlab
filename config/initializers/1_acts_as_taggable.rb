@@ -16,8 +16,9 @@ raise "Counter cache is not disabled" if
   model.singleton_class.delegate :connection, :sticking, to: '::Ci::ApplicationRecord'
 end
 
-# Can be removed once https://github.com/mbleigh/acts-as-taggable-on/pull/1081
-# is merged
+# Modified from https://github.com/mbleigh/acts-as-taggable-on/pull/1081
+# with insert_all, which is not supported in MySQL
+# See https://gitlab.com/gitlab-org/gitlab/-/issues/338346#note_996969960
 module ActsAsTaggableOnTagPatch
   def find_or_create_all_with_like_by_name(*list)
     list = Array(list).flatten
@@ -25,21 +26,24 @@ module ActsAsTaggableOnTagPatch
     return [] if list.empty?
 
     existing_tags = named_any(list)
-    list.map do |tag_name|
-      tries ||= 3
-      comparable_tag_name = comparable_name(tag_name)
-      existing_tag = existing_tags.find { |tag| comparable_name(tag.name) == comparable_tag_name }
-      next existing_tag if existing_tag
 
-      transaction(requires_new: true) { create(name: tag_name) }
-    rescue ActiveRecord::RecordNotUnique
-      if (tries -= 1).positive? # rubocop:disable Style/NumericPredicate
-        existing_tags = named_any(list)
-        retry
+    missing = list.reject do |tag_name|
+      comparable_tag_name = comparable_name(tag_name)
+      existing_tags.find { |tag| comparable_name(tag.name) == comparable_tag_name }
+    end
+
+    if missing.empty?
+      new_tags = []
+    else
+      attributes_to_add = missing.map do |tag_name|
+        { name: tag_name }
       end
 
-      raise ::ActsAsTaggableOn::DuplicateTagError, "'#{tag_name}' has already been taken"
+      insert_all(attributes_to_add, unique_by: :name)
+      new_tags = named_any(missing)
     end
+
+    existing_tags + new_tags
   end
 end
 
