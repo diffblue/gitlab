@@ -18366,6 +18366,18 @@ Check permissions for the current user on a work item.
 | <a id="workitemtypeid"></a>`id` | [`WorkItemsTypeID!`](#workitemstypeid) | Global ID of the work item type. |
 | <a id="workitemtypename"></a>`name` | [`String!`](#string) | Name of the work item type. |
 
+### `WorkItemWidgetAssignees`
+
+Represents an assignees widget.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="workitemwidgetassigneesallowsmultipleassignees"></a>`allowsMultipleAssignees` | [`Boolean`](#boolean) | Indicates whether multiple assignees are allowed. |
+| <a id="workitemwidgetassigneesassignees"></a>`assignees` | [`UserCoreConnection`](#usercoreconnection) | Assignees of the work item. (see [Connections](#connections)) |
+| <a id="workitemwidgetassigneestype"></a>`type` | [`WorkItemWidgetType`](#workitemwidgettype) | Widget type. |
+
 ### `WorkItemWidgetDescription`
 
 Represents a description widget.
@@ -20234,6 +20246,7 @@ Type of a work item widget.
 
 | Value | Description |
 | ----- | ----------- |
+| <a id="workitemwidgettypeassignees"></a>`ASSIGNEES` | Assignees widget. |
 | <a id="workitemwidgettypedescription"></a>`DESCRIPTION` | Description widget. |
 | <a id="workitemwidgettypehierarchy"></a>`HIERARCHY` | Hierarchy widget. |
 
@@ -21454,6 +21467,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 
 Implementations:
 
+- [`WorkItemWidgetAssignees`](#workitemwidgetassignees)
 - [`WorkItemWidgetDescription`](#workitemwidgetdescription)
 - [`WorkItemWidgetHierarchy`](#workitemwidgethierarchy)
 
