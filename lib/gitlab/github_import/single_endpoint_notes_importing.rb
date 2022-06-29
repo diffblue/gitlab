@@ -3,11 +3,11 @@
 # This module is used in:
 #  - SingleEndpointDiffNotesImporter
 #  - SingleEndpointIssueNotesImporter
-#  - SingleEndpointIssueEventsImporter
 #  - SingleEndpointMergeRequestNotesImporter
+# if `github_importer_single_endpoint_notes_import` feature flag is on.
 #
-# `github_importer_single_endpoint_notes_import`
-# feature flag is on.
+# - SingleEndpointIssueEventsImporter
+# if `github_importer_issue_events_import` feature flag is on.
 #
 # Fetches associated objects page by page to each item of parent collection.
 # Currently `associated` is note or event.
