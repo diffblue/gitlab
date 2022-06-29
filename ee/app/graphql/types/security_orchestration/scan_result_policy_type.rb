@@ -10,6 +10,9 @@ module Types
       description 'Represents the scan result policy'
 
       implements OrchestrationPolicyType
+
+      field :group_approvers, ['::Types::GroupType'], null: true, description: 'Approvers of the group type.'
+      field :user_approvers, [::Types::UserType], null: true, description: 'Approvers of the user type.'
     end
     # rubocop: enable Graphql/AuthorizeTypes
   end

@@ -16,7 +16,9 @@ RSpec.describe Resolvers::SecurityOrchestration::ScanResultPolicyResolver do
         description: 'This policy considers only container scanning and critical severities',
         enabled: true,
         yaml: YAML.dump(policy.deep_stringify_keys),
-        updated_at: policy_last_updated_at
+        updated_at: policy_last_updated_at,
+        user_approvers: [],
+        group_approvers: []
       }
     ]
   end
