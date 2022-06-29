@@ -17,6 +17,12 @@ module Vulnerabilities
       raise Gitlab::Access::AccessDeniedError unless authorized?
 
       update_vulnerability_with(state: Vulnerability.states[:dismissed], dismissed_by: @user, dismissed_at: Time.current) do
+        Vulnerabilities::StateTransition.create(
+          vulnerability: @vulnerability,
+          from_state: @vulnerability.state,
+          to_state: Vulnerability.states[:dismissed]
+        )
+
         if dismiss_findings && Feature.disabled?(:deprecate_vulnerabilities_feedback, @vulnerability.project)
           result = dismiss_vulnerability_findings
 
@@ -52,12 +58,10 @@ module Vulnerabilities
     end
 
     def dismiss_vulnerability_findings
-      unless Feature.enabled?(:deprecate_vulnerabilities_feedback, @project)
-        @vulnerability.findings.each do |finding|
-          result = feedback_service_for(finding).execute
+      @vulnerability.findings.each do |finding|
+        result = feedback_service_for(finding).execute
 
-          return FindingsDismissResult.new(false, finding, result[:message]) if result[:status] == :error
-        end
+        return FindingsDismissResult.new(false, finding, result[:message]) if result[:status] == :error
       end
 
       FindingsDismissResult.new(true)

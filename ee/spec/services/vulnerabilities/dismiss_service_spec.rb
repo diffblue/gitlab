@@ -6,6 +6,12 @@ RSpec.describe Vulnerabilities::DismissService do
   include AccessMatchersGeneric
 
   before do
+    allow(Vulnerabilities::StateTransition).to receive(:create).with(
+      vulnerability: instance_of(Vulnerability),
+      from_state: vulnerability.state,
+      to_state: Vulnerability.states[:dismissed]
+    )
+
     stub_licensed_features(security_dashboard: true)
   end
 
@@ -13,7 +19,8 @@ RSpec.describe Vulnerabilities::DismissService do
 
   let(:project) { create(:project) } # cannot use let_it_be here: caching causes problems with permission-related tests
   let!(:pipeline) { create(:ee_ci_pipeline, :with_dast_report, :success, project: project) }
-  let(:vulnerability) { create(:vulnerability, :with_findings, project: project) }
+  let!(:build) { create(:ee_ci_build, :sast, pipeline: pipeline) }
+  let(:vulnerability) { create(:vulnerability, :detected, :with_findings, project: project) }
   let(:dismiss_findings) { true }
   let(:service) { described_class.new(user, vulnerability, dismiss_findings: dismiss_findings) }
 
@@ -30,6 +37,16 @@ RSpec.describe Vulnerabilities::DismissService do
       end
 
       it_behaves_like 'calls vulnerability statistics utility services in order'
+
+      it 'creates a vulnerability state transition record' do
+        dismiss_vulnerability
+
+        expect(Vulnerabilities::StateTransition).to have_received(:create).with(
+          vulnerability: instance_of(Vulnerability),
+          from_state: "detected",
+          to_state: Vulnerability.states[:dismissed]
+        )
+      end
 
       context 'when the `dismiss_findings` argument is false' do
         let(:dismiss_findings) { false }
@@ -97,15 +114,11 @@ RSpec.describe Vulnerabilities::DismissService do
 
       context 'when there is a finding dismissal error' do
         before do
-          allow(service).to receive(:dismiss_vulnerability_findings).and_return(
-            described_class::FindingsDismissResult.new(false, broken_finding, 'something went wrong'))
+          allow(service).to receive(:dismiss_vulnerability_findings)
         end
 
-        let(:broken_finding) { vulnerability.findings.first }
-
-        it 'responds with error' do
-          expect(dismiss_vulnerability.errors.messages).to eq(
-            base: ["failed to dismiss associated finding(id=#{broken_finding.id}): something went wrong"])
+        it 'does not dismiss vulnerability findings' do
+          expect(service).not_to have_received(:dismiss_vulnerability_findings)
         end
       end
 
@@ -132,6 +145,16 @@ RSpec.describe Vulnerabilities::DismissService do
       end
 
       it_behaves_like 'calls vulnerability statistics utility services in order'
+
+      it 'creates a vulnerability state transition record' do
+        dismiss_vulnerability
+
+        expect(Vulnerabilities::StateTransition).to have_received(:create).with(
+          vulnerability: instance_of(Vulnerability),
+          from_state: "detected",
+          to_state: Vulnerability.states[:dismissed]
+        )
+      end
 
       context 'when the `dismiss_findings` argument is false' do
         let(:dismiss_findings) { false }
