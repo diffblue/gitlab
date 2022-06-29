@@ -7,7 +7,13 @@ module API
     feature_category :team_planning
     urgency :low
 
+    before do
+      adjust_deprecated_state
+    end
+
     helpers do
+      include ::API::Helpers::IterationsHelper
+
       params :list_params do
         optional :state,
           type: String, values: %w[opened upcoming started current closed all],

@@ -97,10 +97,6 @@ class IterationsFinder
   def by_state(items)
     return items unless params[:state].present?
 
-    # `started` was deprecated in 14.1 in favor of `current`. Support for `started`
-    # will be removed in 14.6 https://gitlab.com/gitlab-org/gitlab/-/issues/334018
-    params[:state] = 'current' if params[:state] == 'started'
-
     Iteration.filter_by_state(items, params[:state])
   end
 

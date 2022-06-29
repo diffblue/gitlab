@@ -109,10 +109,16 @@ RSpec.describe IterationsFinder, feature_category: :team_planning do
         expect(subject).to contain_exactly(root_closed_iteration, root_group_iteration, closed_iteration, started_group_iteration, upcoming_group_iteration)
       end
 
-      it 'filters by started state' do
+      it 'filters by current state' do
         params[:state] = 'current'
 
         expect(subject).to contain_exactly(root_group_iteration, started_group_iteration)
+      end
+
+      it 'filters by invalid state' do
+        params[:state] = 'started'
+
+        expect { subject }.to raise_error(ArgumentError, "Unknown state filter: started")
       end
 
       it 'filters by opened state' do

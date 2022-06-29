@@ -152,8 +152,10 @@ RSpec.describe Iteration, feature_category: :team_planning do
     end
 
     context 'filtering by nonexistent filter' do
-      it 'raises ArgumentError' do
-        expect { described_class.filter_by_state(Iteration.none, 'unknown') }.to raise_error(ArgumentError, 'Unknown state filter: unknown')
+      it 'returns no results' do
+        expect do
+          described_class.filter_by_state(Iteration.all, 'unknown')
+        end.to raise_error(ArgumentError, "Unknown state filter: unknown")
       end
     end
   end
