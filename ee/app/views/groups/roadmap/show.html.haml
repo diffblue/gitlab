@@ -26,4 +26,5 @@
   preset_type: roadmap_layout,
   epics_state: @epics_state,
   sorted_by: @sort,
-  allow_sub_epics: allow_sub_epics } }
+  allow_sub_epics: allow_sub_epics,
+  can_create_epic: can?(current_user, :create_epic, @group).to_s } }
