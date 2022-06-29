@@ -17,7 +17,7 @@ module Vulnerabilities
       raise Gitlab::Access::AccessDeniedError unless authorized?
 
       update_vulnerability_with(state: Vulnerability.states[:dismissed], dismissed_by: @user, dismissed_at: Time.current) do
-        if dismiss_findings
+        if dismiss_findings && Feature.disabled?(:deprecate_vulnerabilities_feedback, @vulnerability.project)
           result = dismiss_vulnerability_findings
 
           unless result.ok?
