@@ -85,6 +85,8 @@ RSpec.describe Vulnerabilities::Read, type: :model do
     end
 
     describe 'trigger on vulnerability_occurrences location update' do
+      let!(:cluster_agent) { create(:cluster_agent, project: project) }
+
       context 'when image is updated' do
         it 'updates location_image in vulnerability_reads' do
           finding = create_finding(vulnerability: vulnerability, report_type: 7, location: { "image" => "alpine:3.4" })
@@ -100,8 +102,8 @@ RSpec.describe Vulnerabilities::Read, type: :model do
           finding = create_finding(vulnerability: vulnerability, report_type: 7, location: { "image" => "alpine:3.4" })
 
           expect do
-            finding.update!(location: { "kubernetes_resource" => { "agent_id" => "1234" } })
-          end.to change { Vulnerabilities::Read.first.cluster_agent_id }.from(nil).to("1234")
+            finding.update!(location: { "kubernetes_resource" => { "agent_id" => cluster_agent.id.to_s } })
+          end.to change { Vulnerabilities::Read.first.cluster_agent_id }.from(nil).to(cluster_agent.id.to_s)
         end
       end
 
@@ -110,7 +112,7 @@ RSpec.describe Vulnerabilities::Read, type: :model do
           finding = create_finding(
             vulnerability: vulnerability,
             report_type: 7,
-            location: { "image" => "alpine:3.4", "kubernetes_resource" => { "agent_id" => "1234" } }
+            location: { "image" => "alpine:3.4", "kubernetes_resource" => { "agent_id" => cluster_agent.id.to_s } }
           )
 
           expect do

@@ -183,7 +183,7 @@ RSpec.describe 'Query.vulnerabilities.location' do
             name: "nginx-deployment",
             container_name: "nginx",
             cluster_id: "1",
-            agent_id: agent.id
+            agent_id: agent.id.to_s
           }
         }
       }
