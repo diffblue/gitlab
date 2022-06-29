@@ -54,16 +54,13 @@ export default {
   methods: {
     fetchCollapsedData() {
       return axios.get(this.testResultsPath).then((response) => {
-        const {
-          status,
-          data,
-          data: { suites = [], summary = {} },
-        } = response;
+        const { data = {}, status } = response;
+        const { suites = [], summary = {} } = data;
 
         return {
           ...response,
           data: {
-            hasSuiteError: suites?.some((suite) => suite.status === ERROR_STATUS),
+            hasSuiteError: suites.some((suite) => suite.status === ERROR_STATUS),
             parsingInProgress: status === 204,
             ...data,
             summary: {
