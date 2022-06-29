@@ -1,4 +1,4 @@
-.container-fluid.container-limited{ class: "gl-pb-2! gl-pt-6! #{content_class}" }
+%div{ class: "#{container_class}" }
   = render Pajamas::AlertComponent.new(variant: variant,
         alert_options: { class: 'js-user-over-limit-free-plan-alert', data: alert_data },
         title: alert_attributes[:title],

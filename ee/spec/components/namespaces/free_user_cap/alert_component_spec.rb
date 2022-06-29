@@ -24,10 +24,13 @@ RSpec.describe Namespaces::FreeUserCap::AlertComponent, :saas, :aggregate_failur
       it 'has content for the alert' do
         render_inline(component)
 
-        expect(rendered_component).to have_selector(".#{content_class}")
         expect(rendered_component).to have_content(title)
         expect(rendered_component).to have_link('Manage members', href: group_usage_quotas_path(namespace))
         expect(rendered_component).to have_link('Explore paid plans', href: group_billings_path(namespace))
+
+        expect(rendered_component)
+          .to match("container-fluid container-limited gl-pb-2! gl-pt-6! #{content_class}")
+
         expect(rendered_component)
           .to have_css("[data-testid='user-over-limit-free-plan-alert']" \
                          "[data-dismiss-endpoint='#{group_callouts_path}']" \
