@@ -20,6 +20,7 @@ exports[`Alert integration settings form should match the default snapshot 1`] =
     <gl-form-checkbox-stub
       checked="true"
       class="gl-my-4"
+      id="2"
     >
       <span>
         Activate "time to SLA" countdown timer

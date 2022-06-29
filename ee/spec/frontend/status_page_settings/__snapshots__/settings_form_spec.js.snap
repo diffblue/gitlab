@@ -49,7 +49,9 @@ exports[`Status Page settings form default state should match the default snapsh
         labeldescription=""
         optionaltext="(optional)"
       >
-        <gl-form-checkbox-stub>
+        <gl-form-checkbox-stub
+          id="2"
+        >
           <span
             class="bold"
           >
