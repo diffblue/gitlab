@@ -212,8 +212,9 @@ RSpec.describe Resolvers::VulnerabilitiesResolver do
     end
 
     context 'when cluster_id is given' do
+      let_it_be(:cluster_agent) { create(:cluster_agent, project: project) }
       let_it_be(:cluster_vulnerability) { create(:vulnerability, :cluster_image_scanning, project: project) }
-      let_it_be(:cluster_finding) { create(:vulnerabilities_finding, :with_cluster_image_scanning_scanning_metadata, vulnerability: cluster_vulnerability, project: project) }
+      let_it_be(:cluster_finding) { create(:vulnerabilities_finding, :with_cluster_image_scanning_scanning_metadata, agent_id: cluster_agent.id.to_s, vulnerability: cluster_vulnerability, project: project) }
       let_it_be(:cluster_gid) { ::Gitlab::GlobalId.as_global_id(cluster_finding.location['kubernetes_resource']['cluster_id'].to_i, model_name: 'Clusters::Cluster') }
 
       let(:params) { { cluster_id: [Gitlab::GlobalId.build(nil, model_name: 'Clusters::Cluster', id: non_existing_record_id)] } }
@@ -224,8 +225,9 @@ RSpec.describe Resolvers::VulnerabilitiesResolver do
     end
 
     context 'when cluster_agent_id is given' do
+      let_it_be(:cluster_agent) { create(:cluster_agent, project: project) }
       let_it_be(:cluster_vulnerability) { create(:vulnerability, :cluster_image_scanning, project: project) }
-      let_it_be(:cluster_finding) { create(:vulnerabilities_finding, :with_cluster_image_scanning_scanning_metadata, project: project, vulnerability: cluster_vulnerability) }
+      let_it_be(:cluster_finding) { create(:vulnerabilities_finding, :with_cluster_image_scanning_scanning_metadata, agent_id: cluster_agent.id.to_s, project: project, vulnerability: cluster_vulnerability) }
       let_it_be(:cluster_gid) { ::Gitlab::GlobalId.as_global_id(cluster_finding.location['kubernetes_resource']['agent_id'].to_i, model_name: 'Clusters::Agent') }
 
       let(:params) { { cluster_agent_id: [cluster_gid] } }
