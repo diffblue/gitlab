@@ -357,18 +357,13 @@ RSpec.describe Vulnerabilities::Finding do
 
     describe '.by_location_cluster_agent' do
       let_it_be(:vulnerability) { create(:vulnerability, report_type: 'cluster_image_scanning') }
-      let_it_be(:finding) { create(:vulnerabilities_finding, :with_cluster_image_scanning_scanning_metadata, vulnerability: vulnerability) }
+      let_it_be(:cluster_agent) { create(:cluster_agent, project: vulnerability.project) }
+      let_it_be(:other_cluster_agent) { create(:cluster_agent, project: vulnerability.project) }
+      let_it_be(:finding) { create(:vulnerabilities_finding, :with_cluster_image_scanning_scanning_metadata, agent_id: cluster_agent.id.to_s, vulnerability: vulnerability) }
+      let_it_be(:finding_with_different_agent_id) { create(:vulnerabilities_finding, :with_cluster_image_scanning_scanning_metadata, agent_id: other_cluster_agent.id.to_s, vulnerability: vulnerability) }
       let_it_be(:agent_ids) { [finding.location['kubernetes_resource']['agent_id']] }
 
       before do
-        finding_with_different_agent_id = create(
-          :vulnerabilities_finding,
-          :with_cluster_image_scanning_scanning_metadata,
-          vulnerability: create(:vulnerability, report_type: 'cluster_image_scanning')
-        )
-        finding_with_different_agent_id.location['kubernetes_resource']['agent_id'] = '2'
-        finding_with_different_agent_id.save!
-
         create(:vulnerabilities_finding, report_type: :dast)
       end
 

@@ -173,6 +173,7 @@ RSpec.describe API::Internal::Kubernetes do
   describe 'PUT /internal/kubernetes/modules/starboard_vulnerability' do
     let(:method) { :put }
     let(:api_url) { '/internal/kubernetes/modules/starboard_vulnerability' }
+    let(:cluster_agent) { create(:cluster_agent, project: project) }
 
     include_examples 'authorization'
     include_examples 'agent authentication'
@@ -196,7 +197,7 @@ RSpec.describe API::Internal::Kubernetes do
                 kind: 'deployment',
                 name: 'nginx-ingress',
                 container_name: 'nginx',
-                agent_id: '1'
+                agent_id: cluster_agent.id.to_s
               },
               dependency: {
                 package: {
