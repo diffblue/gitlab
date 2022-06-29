@@ -120,7 +120,13 @@ export const requestEpicTodoToggleFailure = ({ commit, state }, data) => {
   }
 };
 export const triggerTodoToggleEvent = (_, { count }) => {
-  epicUtils.triggerDocumentEvent('todo:toggle', count);
+  const event = new CustomEvent('todo:toggle', {
+    detail: {
+      count,
+    },
+  });
+
+  document.dispatchEvent(event);
 };
 export const toggleTodo = ({ state, dispatch }) => {
   let reqPromise;
