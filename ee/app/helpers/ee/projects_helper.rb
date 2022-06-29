@@ -282,6 +282,8 @@ module EE
           id: pipeline.id,
           path: pipeline_path(pipeline),
           created_at: pipeline.created_at.to_s(:iso8601),
+          has_warnings: pipeline.has_security_report_ingestion_warnings?,
+          has_errors: pipeline.has_security_report_ingestion_errors?,
           security_builds: {
             failed: {
               count: pipeline.latest_failed_security_builds.count,

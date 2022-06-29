@@ -229,6 +229,8 @@ RSpec.describe ProjectsHelper do
               id: pipeline.id,
               path: "/#{project.full_path}/-/pipelines/#{pipeline.id}",
               created_at: pipeline_created_at,
+              has_warnings: true,
+              has_errors: false,
               security_builds: {
                 failed: {
                   count: 0,
@@ -241,6 +243,8 @@ RSpec.describe ProjectsHelper do
 
         before do
           allow(project).to receive(:latest_ingested_security_pipeline).and_return(pipeline)
+          allow(pipeline).to receive_messages(has_security_report_ingestion_warnings?: true,
+                                              has_security_report_ingestion_errors?: false)
         end
 
         it { is_expected.to match(base_values.merge!(pipeline_values)) }

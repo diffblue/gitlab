@@ -188,6 +188,14 @@ module EE
         super
       end
 
+      def has_security_report_ingestion_warnings?
+        security_scans.with_warnings.exists?
+      end
+
+      def has_security_report_ingestion_errors?
+        security_scans.with_errors.exists?
+      end
+
       private
 
       def has_security_reports?

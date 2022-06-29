@@ -231,8 +231,8 @@ RSpec.describe Security::Scan do
   end
 
   describe '.without_errors' do
-    let(:scan_1) { create(:security_scan, :with_error) }
-    let(:scan_2) { create(:security_scan) }
+    let!(:scan_1) { create(:security_scan, :with_error) }
+    let!(:scan_2) { create(:security_scan) }
 
     subject { described_class.without_errors }
 
@@ -265,6 +265,24 @@ RSpec.describe Security::Scan do
     end
 
     it { is_expected.to match_array([stale_succeeded_scan, stale_failed_scan]) }
+  end
+
+  describe '.with_warnings' do
+    let!(:scan_1) { create(:security_scan) }
+    let!(:scan_2) { create(:security_scan, :with_warning) }
+
+    subject { described_class.with_warnings }
+
+    it { is_expected.to contain_exactly(scan_2) }
+  end
+
+  describe '.with_errors' do
+    let!(:scan_1) { create(:security_scan, :with_error) }
+    let!(:scan_2) { create(:security_scan) }
+
+    subject { described_class.with_errors }
+
+    it { is_expected.to contain_exactly(scan_1) }
   end
 
   describe '#report_findings' do
