@@ -2630,7 +2630,7 @@ RSpec.describe Project do
         it 'schedules RepositoryUpdateMirrorWorker' do
           project = create(:project, :mirror, :repository)
 
-          expect(RepositoryUpdateMirrorWorker).to receive(:perform_in).with(1.minute, project.id).and_return(import_jid)
+          expect(RepositoryUpdateMirrorWorker).to receive(:perform_in).with(20.seconds, project.id).and_return(import_jid)
           expect(project.add_import_job).to eq(import_jid)
         end
       end
