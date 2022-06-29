@@ -34,7 +34,6 @@ RSpec.describe Vulnerabilities::RevertToDetectedService do
     end
 
     it_behaves_like 'calls vulnerability statistics utility services in order'
-    it_behaves_like 'removes dismissal feedback from associated findings'
   end
 
   context 'with an authorized user with proper permissions' do
@@ -46,18 +45,42 @@ RSpec.describe Vulnerabilities::RevertToDetectedService do
       let(:vulnerability) { create(:vulnerability, :dismissed, :with_findings, project: project) }
 
       include_examples 'reverts vulnerability'
+
+      context 'when feature flag deprecate_vulnerabilities_feedback is disabled' do
+        before do
+          stub_feature_flags(deprecate_vulnerabilities_feedback: false)
+        end
+
+        it_behaves_like 'removes dismissal feedback from associated findings'
+      end
     end
 
     context 'when vulnerability is confirmed' do
       let(:vulnerability) { create(:vulnerability, :confirmed, :with_findings, project: project) }
 
       include_examples 'reverts vulnerability'
+
+      context 'when feature flag deprecate_vulnerabilities_feedback is disabled' do
+        before do
+          stub_feature_flags(deprecate_vulnerabilities_feedback: false)
+        end
+
+        it_behaves_like 'removes dismissal feedback from associated findings'
+      end
     end
 
     context 'when vulnerability is resolved' do
       let(:vulnerability) { create(:vulnerability, :resolved, :with_findings, project: project) }
 
       include_examples 'reverts vulnerability'
+
+      context 'when feature flag deprecate_vulnerabilities_feedback is disabled' do
+        before do
+          stub_feature_flags(deprecate_vulnerabilities_feedback: false)
+        end
+
+        it_behaves_like 'removes dismissal feedback from associated findings'
+      end
     end
 
     context 'when security dashboard feature is disabled' do
