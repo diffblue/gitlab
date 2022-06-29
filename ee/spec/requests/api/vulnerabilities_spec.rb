@@ -196,16 +196,34 @@ RSpec.describe API::Vulnerabilities do
         project.add_developer(user)
       end
 
-      it 'dismisses a vulnerability and its associated findings' do
+      context 'when feature flag deprecate_vulnerabilities_feedback is disabled' do
+        before do
+          stub_feature_flags(deprecate_vulnerabilities_feedback: false)
+        end
+
+        it 'dismisses a vulnerability and its associated findings' do
+          freeze_time do
+            dismiss_vulnerability
+
+            expect(response).to have_gitlab_http_status(:created)
+            expect(response).to match_response_schema('public_api/v4/vulnerability', dir: 'ee')
+
+            expect(vulnerability.reload).to(
+              have_attributes(state: 'dismissed', dismissed_by: user, dismissed_at: be_like_time(Time.current)))
+            expect(vulnerability.findings).to all have_vulnerability_dismissal_feedback
+          end
+        end
+      end
+
+      it 'dismisses a vulnerability' do
         freeze_time do
           dismiss_vulnerability
 
           expect(response).to have_gitlab_http_status(:created)
           expect(response).to match_response_schema('public_api/v4/vulnerability', dir: 'ee')
 
-          expect(vulnerability.reload).to(
-            have_attributes(state: 'dismissed', dismissed_by: user, dismissed_at: be_like_time(Time.current)))
-          expect(vulnerability.findings).to all have_vulnerability_dismissal_feedback
+          expect(vulnerability.reload).to(have_attributes(state: 'dismissed', dismissed_by: user,
+                                                          dismissed_at: be_like_time(Time.current)))
         end
       end
 
