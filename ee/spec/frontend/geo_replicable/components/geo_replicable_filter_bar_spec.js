@@ -103,14 +103,24 @@ describe('GeoReplicableFilterBar', () => {
     });
 
     describe('Re-sync all button', () => {
-      it('renders always', () => {
-        expect(findGlButton().exists()).toBe(true);
+      it('does not render', () => {
+        expect(findGlButton().exists()).toBe(false);
       });
 
-      it('triggers GlModal', () => {
-        const binding = getBinding(findGlButton().element, 'gl-modal-directive');
+      describe('when there are results', () => {
+        beforeEach(() => {
+          wrapper.vm.$store.state.paginationData.total = 1;
+        });
 
-        expect(binding.value).toBe(RESYNC_MODAL_ID);
+        it('renders', () => {
+          expect(findGlButton().exists()).toBe(true);
+        });
+
+        it('triggers GlModal', () => {
+          const binding = getBinding(findGlButton().element, 'gl-modal-directive');
+
+          expect(binding.value).toBe(RESYNC_MODAL_ID);
+        });
       });
     });
 
@@ -120,7 +130,6 @@ describe('GeoReplicableFilterBar', () => {
       });
 
       it('updates title', async () => {
-        expect(findGlModal().props('title')).toBe('Resync all designs');
         wrapper.vm.$store.state.paginationData.total = 1;
         await nextTick();
         expect(findGlModal().props('title')).toBe('Resync all designs');
