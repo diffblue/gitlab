@@ -21,7 +21,6 @@ require (
 	github.com/jpillora/backoff v1.0.0
 	github.com/mitchellh/copystructure v1.0.0
 	github.com/prometheus/client_golang v1.12.1
-	github.com/rafaeljusto/redigomock v2.4.0+incompatible
 	github.com/rafaeljusto/redigomock/v3 v3.1.1
 	github.com/sebest/xff v0.0.0-20210106013422-671bd2870b3a
 	github.com/sirupsen/logrus v1.8.1
