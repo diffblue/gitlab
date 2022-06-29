@@ -42,6 +42,7 @@ RSpec.describe 'Jobs (JavaScript fixtures)' do
 
     fixtures_path = 'graphql/jobs/'
     get_jobs_query = 'get_jobs.query.graphql'
+    full_path = 'frontend-fixtures/builds-project'
 
     let_it_be(:query) do
       get_graphql_query_as_string("jobs/components/table/graphql/queries/#{get_jobs_query}")
@@ -49,7 +50,7 @@ RSpec.describe 'Jobs (JavaScript fixtures)' do
 
     it "#{fixtures_path}#{get_jobs_query}.json" do
       post_graphql(query, current_user: user, variables: {
-        fullPath: 'frontend-fixtures/builds-project'
+        fullPath: full_path
       })
 
       expect_graphql_errors_to_be_empty
@@ -60,7 +61,25 @@ RSpec.describe 'Jobs (JavaScript fixtures)' do
       project.add_guest(guest)
 
       post_graphql(query, current_user: guest, variables: {
-        fullPath: 'frontend-fixtures/builds-project'
+        fullPath: full_path
+      })
+
+      expect_graphql_errors_to_be_empty
+    end
+
+    it "#{fixtures_path}#{get_jobs_query}.paginated.json" do
+      post_graphql(query, current_user: user, variables: {
+        fullPath: full_path,
+        first: 2
+      })
+
+      expect_graphql_errors_to_be_empty
+    end
+
+    it "#{fixtures_path}#{get_jobs_query}.empty.json" do
+      post_graphql(query, current_user: user, variables: {
+        fullPath: full_path,
+        first: 0
       })
 
       expect_graphql_errors_to_be_empty
