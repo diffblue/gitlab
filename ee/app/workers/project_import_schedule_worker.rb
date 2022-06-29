@@ -4,7 +4,6 @@ class ProjectImportScheduleWorker
   include ApplicationWorker
 
   data_consistency :delayed, feature_flag: :delayed_project_import_schedule_worker
-  prepend WaitableWorker
 
   idempotent!
   deduplicate :until_executing, ttl: 5.minutes
