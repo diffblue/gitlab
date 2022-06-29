@@ -103,7 +103,7 @@ gem 'rack-cors', '~> 1.1.0', require: 'rack/cors'
 gem 'graphql', '~> 1.13.12'
 gem 'graphiql-rails', '~> 1.8'
 gem 'apollo_upload_server', '~> 2.1.0'
-gem 'graphql-docs', '~> 1.6.0', group: [:development, :test]
+gem 'graphql-docs', '~> 2.1.0', group: [:development, :test]
 gem 'graphlient', '~> 0.5.0' # Used by BulkImport feature (group::import)
 
 gem 'hashie'
