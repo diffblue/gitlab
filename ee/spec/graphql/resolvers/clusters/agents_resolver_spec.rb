@@ -18,8 +18,8 @@ RSpec.describe Resolvers::Clusters::AgentsResolver do
     let_it_be(:maintainer) { create(:user, developer_projects: [project]) }
     let_it_be(:reporter) { create(:user) }
 
-    let_it_be(:agent_1) { create(:cluster_agent, project: project) }
-    let_it_be(:agent_2) { create(:cluster_agent, project: project) }
+    let_it_be(:agent_with_vulnerabilities) { create(:cluster_agent, project: project, has_vulnerabilities: true) }
+    let_it_be(:agent_without_vulnerabilities) { create(:cluster_agent, project: project, has_vulnerabilities: false) }
 
     before do
       project.add_reporter(reporter)
@@ -34,7 +34,27 @@ RSpec.describe Resolvers::Clusters::AgentsResolver do
       let(:current_user) { maintainer }
 
       it 'finds all agents' do
-        expect(subject).to contain_exactly(agent_1, agent_2)
+        expect(subject).to contain_exactly(agent_with_vulnerabilities, agent_without_vulnerabilities)
+      end
+
+      context 'when has_vulnerabilities argument is provided' do
+        let(:params) { { has_vulnerabilities: has_vulnerabilities } }
+
+        context 'when has_vulnerabilities is set to true' do
+          let(:has_vulnerabilities) { true }
+
+          it 'returns only agents with vulnerabilities' do
+            expect(subject).to contain_exactly(agent_with_vulnerabilities)
+          end
+        end
+
+        context 'when has_vulnerabilities is set to false' do
+          let(:has_vulnerabilities) { false }
+
+          it 'returns only agents without vulnerabilities' do
+            expect(subject).to contain_exactly(agent_without_vulnerabilities)
+          end
+        end
       end
     end
 
