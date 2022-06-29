@@ -31171,6 +31171,9 @@ msgstr ""
 msgid "ProjectSettings|Merging is only allowed when the source branch is up-to-date with its target."
 msgstr ""
 
+msgid "ProjectSettings|Monitor"
+msgstr ""
+
 msgid "ProjectSettings|No merge commits are created."
 msgstr ""
 
