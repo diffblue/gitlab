@@ -26,7 +26,11 @@ RSpec.describe Projects::DestroyService, :aggregate_failures, :event_store_publi
     end
 
     it 'publishes a ProjectDeleted event with project id and namespace id' do
-      expected_data = { project_id: project.id, namespace_id: project.namespace_id }
+      expected_data = {
+        project_id: project.id,
+        namespace_id: project.namespace_id,
+        root_namespace_id: project.root_namespace.id
+      }
 
       expect { destroy_project(project, user, {}) }.to publish_event(Projects::ProjectDeletedEvent).with(expected_data)
     end
