@@ -9,7 +9,7 @@ export * from './humanize';
 export const DEFAULT_SCAN_RESULT_POLICY = `type: scan_result_policy
 name: ''
 description: ''
-enabled: false
+enabled: true
 rules:
   - type: scan_finding
     branches: []

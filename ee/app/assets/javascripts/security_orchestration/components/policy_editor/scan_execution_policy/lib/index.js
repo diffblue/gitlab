@@ -5,7 +5,7 @@ export * from './humanize';
 export const DEFAULT_SCAN_EXECUTION_POLICY = `type: scan_execution_policy
 name: # name is mandatory
 description: ''
-enabled: false
+enabled: true
 rules:
   - type: pipeline
     branches:

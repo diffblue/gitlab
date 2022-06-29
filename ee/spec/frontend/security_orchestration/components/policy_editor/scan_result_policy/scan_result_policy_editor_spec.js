@@ -193,7 +193,7 @@ describe('ScanResultPolicyEditor', () => {
       component        | oldValue | newValue
       ${'name'}        | ${''}    | ${'new policy name'}
       ${'description'} | ${''}    | ${'new description'}
-      ${'enabled'}     | ${false} | ${true}
+      ${'enabled'}     | ${true}  | ${false}
     `('triggers a change on $component', async ({ component, newValue, oldValue }) => {
       factory();
       await nextTick();
