@@ -21,7 +21,7 @@ RSpec.describe Analytics::GroupActivityCalculator, :use_clean_rails_memory_store
   context 'with issues' do
     before_all do
       create(:issue, project: project)
-      create(:issue, project: project, created_at: 100.days.ago)
+      create(:issue, project: project, created_at: 40.days.ago)
     end
 
     it 'only returns the count of recent issues' do
@@ -55,7 +55,7 @@ RSpec.describe Analytics::GroupActivityCalculator, :use_clean_rails_memory_store
       create(:merge_request,
              source_project: project,
              source_branch: "my-personal-branch-2",
-             created_at: 100.days.ago)
+             created_at: 40.days.ago)
     end
 
     it 'only returns the count of recent MRs' do
@@ -89,8 +89,8 @@ RSpec.describe Analytics::GroupActivityCalculator, :use_clean_rails_memory_store
 
     context 'when there is a member who was not added recently' do
       before do
-        travel_to(100.days.ago) do
-          subgroup.add_developer create(:user, created_at: 102.days.ago)
+        travel_to(40.days.ago) do
+          subgroup.add_developer create(:user, created_at: 2.days.ago)
         end
       end
 

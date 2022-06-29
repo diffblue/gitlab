@@ -18041,7 +18041,7 @@ msgstr ""
 msgid "GroupActivityMetrics|Issues created"
 msgstr ""
 
-msgid "GroupActivityMetrics|Last 90 days"
+msgid "GroupActivityMetrics|Last 30 days"
 msgstr ""
 
 msgid "GroupActivityMetrics|Members added"

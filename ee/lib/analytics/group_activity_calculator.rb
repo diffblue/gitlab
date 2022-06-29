@@ -2,7 +2,7 @@
 
 module Analytics
   class GroupActivityCalculator
-    RECENT_DURATION = 90.days
+    RECENT_DURATION = 30.days
     CACHE_OPTIONS = { raw: false, expires_in: 24.hours }.freeze
 
     def initialize(group, current_user)
@@ -50,7 +50,7 @@ module Analytics
     end
 
     def cache_key(type)
-      ['groups', "recent_#{type}_count", @group.id, @current_user.id]
+      ['groups', "recent_30d_#{type}_count", @group.id, @current_user.id]
     end
   end
 end
