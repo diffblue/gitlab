@@ -10812,6 +10812,9 @@ msgstr ""
 msgid "Create new project"
 msgstr ""
 
+msgid "Create new..."
+msgstr ""
+
 msgid "Create one"
 msgstr ""
 
