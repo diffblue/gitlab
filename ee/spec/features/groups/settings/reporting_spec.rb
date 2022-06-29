@@ -21,7 +21,7 @@ RSpec.describe 'Group reporting settings' do
 
     group.namespace_settings.update!(
       unique_project_download_limit: current_limit,
-      unique_project_download_limit_interval: current_interval
+      unique_project_download_limit_interval_in_seconds: current_interval
     )
 
     visit group_settings_reporting_path(group)
@@ -51,7 +51,7 @@ RSpec.describe 'Group reporting settings' do
     group.reload
 
     expect(group.namespace_settings.unique_project_download_limit).to eq new_limit
-    expect(group.namespace_settings.unique_project_download_limit_interval).to eq new_interval
+    expect(group.namespace_settings.unique_project_download_limit_interval_in_seconds).to eq new_interval
 
     expect(page).to have_field(limit_label, with: new_limit)
     expect(page).to have_field(interval_label, with: new_interval)

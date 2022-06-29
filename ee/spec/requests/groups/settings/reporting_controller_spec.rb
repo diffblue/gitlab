@@ -107,7 +107,7 @@ RSpec.describe Groups::Settings::ReportingController, type: :request do
         request
 
         expect(response).to redirect_to(group_settings_reporting_path(group))
-        expect(flash[:notice]).to include("Group '#{group.name}' was successfully updated.")
+        expect(flash[:notice]).to include("Group \"#{group.name}\" was successfully updated.")
       end
 
       context 'update failed' do

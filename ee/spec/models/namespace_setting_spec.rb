@@ -10,7 +10,7 @@ RSpec.describe NamespaceSetting do
     subject(:settings) { group.namespace_settings }
 
     it { is_expected.to validate_presence_of(:unique_project_download_limit) }
-    it { is_expected.to validate_presence_of(:unique_project_download_limit_interval) }
+    it { is_expected.to validate_presence_of(:unique_project_download_limit_interval_in_seconds) }
     it {
       is_expected.to validate_numericality_of(:unique_project_download_limit)
         .only_integer
@@ -18,7 +18,7 @@ RSpec.describe NamespaceSetting do
         .is_less_than_or_equal_to(10_000)
     }
     it {
-      is_expected.to validate_numericality_of(:unique_project_download_limit_interval)
+      is_expected.to validate_numericality_of(:unique_project_download_limit_interval_in_seconds)
         .only_integer
         .is_greater_than_or_equal_to(0)
         .is_less_than_or_equal_to(10.days.to_i)
@@ -242,9 +242,9 @@ RSpec.describe NamespaceSetting do
 
   describe '.parameters' do
     it 'includes attributes used for limiting unique project downloads' do
-      expect(described_class.parameters).to include(*%i[
+      expect(described_class.allowed_namespace_settings_params).to include(*%i[
         unique_project_download_limit
-        unique_project_download_limit_interval
+        unique_project_download_limit_interval_in_seconds
       ])
     end
   end

@@ -136,17 +136,15 @@ module EE
           end
 
           def reporting_menu_item
-            id = :reporting
-
             unless context.group.unique_project_download_limit_enabled?
-              return ::Sidebars::NilMenuItem.new(item_id: id)
+              return ::Sidebars::NilMenuItem.new(item_id: :reporting)
             end
 
             ::Sidebars::MenuItem.new(
               title: s_('GroupSettings|Reporting'),
               link: group_settings_reporting_path(context.group),
               active_routes: { path: 'reporting#show' },
-              item_id: id
+              item_id: :reporting
             )
           end
         end

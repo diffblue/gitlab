@@ -16,7 +16,7 @@ module Groups
 
       def update
         if Groups::UpdateService.new(@group, current_user, group_params).execute
-          notice = "Group '#{@group.name}' was successfully updated."
+          notice = _('Group "%{group_name}" was successfully updated.' % { group_name: @group.name })
 
           redirect_to group_settings_reporting_path(@group), notice: notice
         else
@@ -29,7 +29,7 @@ module Groups
       def group_params
         params.require(:group).permit(%i[
           unique_project_download_limit
-          unique_project_download_limit_interval
+          unique_project_download_limit_interval_in_seconds
         ])
       end
 

@@ -6,7 +6,7 @@ class AddUniqueProjectDownloadLimitSettingsToNamespaceSettings < Gitlab::Databas
   def change
     add_column :namespace_settings, :unique_project_download_limit, :smallint,
       default: 0, null: false
-    add_column :namespace_settings, :unique_project_download_limit_interval, :integer,
+    add_column :namespace_settings, :unique_project_download_limit_interval_in_seconds, :integer,
       default: 0, null: false
   end
 end

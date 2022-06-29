@@ -18005,6 +18005,9 @@ msgstr ""
 msgid "Group"
 msgstr ""
 
+msgid "Group \"%{group_name}\" was successfully updated."
+msgstr ""
+
 msgid "Group %{group_name} couldn't be exported."
 msgstr ""
 
@@ -18557,10 +18560,13 @@ msgstr ""
 msgid "GroupSettings|Set the initial name and protections for the default branch of new repositories created in the group."
 msgstr ""
 
+msgid "GroupSettings|Set to 0 to disable limiting."
+msgstr ""
+
 msgid "GroupSettings|The Auto DevOps pipeline runs if no alternative CI configuration file is found."
 msgstr ""
 
-msgid "GroupSettings|The maximum number of unique projects a user can download within the specified interval before they're banned."
+msgid "GroupSettings|The maximum number of unique projects a user can download within the specified interval before they're banned. Set to 0 to disable limiting."
 msgstr ""
 
 msgid "GroupSettings|The projects in this subgroup can be selected as templates for new projects created in the group. %{link_start}Learn more.%{link_end}"

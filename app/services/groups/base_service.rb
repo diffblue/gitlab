@@ -13,11 +13,11 @@ module Groups
     private
 
     def handle_namespace_settings
-      settings_params = params.slice(*::NamespaceSetting.parameters)
+      settings_params = params.slice(*::NamespaceSetting.allowed_namespace_settings_params)
 
       return if settings_params.empty?
 
-      ::NamespaceSetting.parameters.each do |nsp|
+      ::NamespaceSetting.allowed_namespace_settings_params.each do |nsp|
         params.delete(nsp)
       end
 

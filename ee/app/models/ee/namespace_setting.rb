@@ -8,7 +8,7 @@ module EE
       validates :unique_project_download_limit,
         numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: 10_000 },
         presence: true
-      validates :unique_project_download_limit_interval,
+      validates :unique_project_download_limit_interval_in_seconds,
         numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: 10.days.to_i },
         presence: true
 
@@ -57,18 +57,14 @@ module EE
     class_methods do
       extend ::Gitlab::Utils::Override
 
-      override :parameters
-      def parameters
-        super + unique_project_download_limit_attributes
-      end
+      EE_NAMESPACE_SETTINGS_PARAMS = %i[
+        unique_project_download_limit
+        unique_project_download_limit_interval_in_seconds
+      ].freeze
 
-      private
-
-      def unique_project_download_limit_attributes
-        %i[
-          unique_project_download_limit
-          unique_project_download_limit_interval
-        ].freeze
+      override :allowed_namespace_settings_params
+      def allowed_namespace_settings_params
+        super + EE_NAMESPACE_SETTINGS_PARAMS
       end
     end
   end
