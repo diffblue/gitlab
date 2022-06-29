@@ -12,9 +12,8 @@ Gem::Specification.new do |gem|
   gem.summary       = 'This is the strategy for authenticating to your GitLab service'
   gem.homepage      = 'https://github.com/linchus/omniauth-gitlab'
 
-  gem.files         = `git ls-files`.split($/)
-  gem.executables   = gem.files.grep(%r{^bin/}).map { |f| File.basename(f) }
-  gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
+  gem.files         = Dir['lib/**/*.rb']
+  gem.test_files    = Dir['spec/**/*.rb']
   gem.require_paths = ['lib']
 
   gem.add_dependency 'omniauth', '~> 1.0'
