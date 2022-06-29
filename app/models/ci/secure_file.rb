@@ -46,3 +46,5 @@ module Ci
     end
   end
 end
+
+Ci::SecureFile.prepend_mod_with('Ci::SecureFile')

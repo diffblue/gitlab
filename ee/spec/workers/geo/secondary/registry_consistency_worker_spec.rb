@@ -88,6 +88,7 @@ RSpec.describe Geo::Secondary::RegistryConsistencyWorker, :geo do
       pipeline_artifact = create(:ci_pipeline_artifact)
       upload = create(:upload)
       pages_deployment = create(:pages_deployment)
+      ci_secure_file = create(:ci_secure_file)
 
       expect(Geo::ContainerRepositoryRegistry.where(container_repository_id: container_repository.id).count).to eq(0)
       expect(Geo::DesignRegistry.where(project_id: project.id).count).to eq(0)
@@ -101,6 +102,7 @@ RSpec.describe Geo::Secondary::RegistryConsistencyWorker, :geo do
       expect(Geo::UploadRegistry.where(file_id: upload.id).count).to eq(0)
       expect(Geo::PagesDeploymentRegistry.where(pages_deployment: pages_deployment.id).count).to eq(0)
       expect(Geo::JobArtifactRegistry.where(job_artifact: job_artifact.id).count).to eq(0)
+      expect(Geo::CiSecureFileRegistry.where(ci_secure_file: ci_secure_file.id).count).to eq(0)
 
       subject.perform
 
@@ -116,6 +118,7 @@ RSpec.describe Geo::Secondary::RegistryConsistencyWorker, :geo do
       expect(Geo::UploadRegistry.where(file_id: upload.id).count).to eq(1)
       expect(Geo::PagesDeploymentRegistry.where(pages_deployment: pages_deployment.id).count).to eq(1)
       expect(Geo::JobArtifactRegistry.where(job_artifact: job_artifact.id).count).to eq(1)
+      expect(Geo::CiSecureFileRegistry.where(ci_secure_file: ci_secure_file.id).count).to eq(1)
     end
 
     context 'when the current Geo node is disabled or primary' do

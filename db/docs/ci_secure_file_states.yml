@@ -1,7 +1,7 @@
 ---
 table_name: ci_secure_file_states
 classes:
-- Geo::CiSecureFileState
+- Geo::SecureFileState
 feature_categories:
 - pipeline_authoring
 description: Stores verification state for Geo replicated Project-level Secure Files.

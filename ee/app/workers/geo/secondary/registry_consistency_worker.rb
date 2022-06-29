@@ -31,7 +31,8 @@ module Geo
         Geo::UploadRegistry,
         Geo::SnippetRepositoryRegistry,
         Geo::GroupWikiRepositoryRegistry,
-        Geo::PagesDeploymentRegistry
+        Geo::PagesDeploymentRegistry,
+        Geo::CiSecureFileRegistry
       ].freeze
 
       BATCH_SIZE = 10000
