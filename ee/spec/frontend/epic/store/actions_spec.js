@@ -405,12 +405,12 @@ describe('Epic Store Actions', () => {
 
   describe('triggerTodoToggleEvent', () => {
     it('Calls `triggerDocumentEvent` with event `todo:toggle` and passes `count` as param', () => {
-      jest.spyOn(epicUtils, 'triggerDocumentEvent').mockReturnValue(false);
+      jest.spyOn(document, 'dispatchEvent').mockReturnValue(false);
 
       const data = { count: 5 };
       actions.triggerTodoToggleEvent({}, data);
 
-      expect(epicUtils.triggerDocumentEvent).toHaveBeenCalledWith('todo:toggle', data.count);
+      expect(document.dispatchEvent).toHaveBeenCalledWith(new CustomEvent('todo:toggle'));
     });
   });
 
