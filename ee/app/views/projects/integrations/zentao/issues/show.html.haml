@@ -1,6 +1,6 @@
 - add_to_breadcrumbs s_('ZentaoIntegration|ZenTao issues'), project_integrations_zentao_issues_path(@project)
 - if @issue_json.present?
   - breadcrumb_title zentao_issue_breadcrumb_link(@issue_json)
-  - page_title html_escape(@issue_json[:title])
+  - page_title @issue_json[:title]
 
 .js-zentao-issues-show-app{ data: zentao_issues_show_data }
