@@ -388,7 +388,9 @@ RSpec.describe Gitlab::Database::BackgroundMigration::BatchedMigrationRunner do
         end
 
         it 'raises an error' do
-          allow(migration_wrapper).to receive(:perform).and_return( batched_migration.batched_jobs.last.failure! )
+          allow(Gitlab::Database::BackgroundMigration::BatchedMigration).to receive(:find_for_configuration).and_return(batched_migration)
+
+          allow(batched_migration).to receive(:finished?).and_return(false)
 
           expect do
             runner.finalize(
