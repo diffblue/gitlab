@@ -5,7 +5,8 @@
     "name": { "type": "string" },
     "approvals_required": { "type": "integer" },
     "contains_hidden_groups": { "type": "boolean" },
-    "rule_type": { "type": "tring" },
+    "applies_to_all_protected_branches": { "type":  "boolean" },
+    "rule_type": { "type": "string" },
     "eligible_approvers": {
       "type": "array",
       "items": {
