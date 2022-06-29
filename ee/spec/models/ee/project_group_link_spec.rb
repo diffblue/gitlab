@@ -86,4 +86,83 @@ RSpec.describe ProjectGroupLink do
       end
     end
   end
+
+  describe '#group_with_allowed_email_domains' do
+    let(:shared_project) { create(:project, group: shared_project_group) }
+
+    subject do
+      build(:project_group_link, project: shared_project, group: shared_with_group)
+    end
+
+    shared_examples 'restricted membership by email domain' do
+      context 'shared project group has membership restricted by allowed email domains' do
+        before do
+          create(:allowed_email_domain, group: shared_project_group.root_ancestor, domain: 'gitlab.com')
+          create(:allowed_email_domain, group: shared_project_group.root_ancestor, domain: 'gitlab.cn')
+        end
+
+        context 'shared with group with a subset of allowed email domains' do
+          before do
+            create(:allowed_email_domain, group: shared_with_group.root_ancestor, domain: 'gitlab.com')
+          end
+
+          it { is_expected.to be_valid }
+        end
+
+        context 'shared with group containing domains outside the shared group allowed email domains' do
+          before do
+            create(:allowed_email_domain, group: shared_with_group.root_ancestor, domain: 'example.com')
+          end
+
+          it { is_expected.to be_invalid }
+        end
+
+        context 'shared with group does not have membership restricted by allowed domains' do
+          it { is_expected.to be_invalid }
+        end
+      end
+
+      context 'shared project group does not have membership restricted by allowed domains' do
+        context 'shared with group has membership restricted by allowed email domains' do
+          before do
+            create(:allowed_email_domain, group: shared_with_group.root_ancestor, domain: 'example.com')
+          end
+
+          it { is_expected.to be_valid }
+        end
+
+        context 'shared with group does not have membership restricted by allowed domains' do
+          it { is_expected.to be_valid }
+        end
+      end
+    end
+
+    context 'shared project group is the root ancestor' do
+      let_it_be(:shared_project_group) { create(:group) }
+      let_it_be(:shared_with_group) { create(:group) }
+
+      it_behaves_like 'restricted membership by email domain'
+    end
+
+    context 'shared project group is a subgroup' do
+      let_it_be(:shared_project_group) { create(:group, parent: create(:group)) }
+      let_it_be(:shared_with_group) { create(:group) }
+
+      it_behaves_like 'restricted membership by email domain'
+    end
+
+    context 'shared with group is a subgroup' do
+      let_it_be(:shared_project_group) { create(:group) }
+      let_it_be(:shared_with_group) { create(:group, parent: create(:group)) }
+
+      it_behaves_like 'restricted membership by email domain'
+    end
+
+    context 'shared project group and shared with group are subgroups' do
+      let_it_be(:shared_project_group) { create(:group, parent: create(:group)) }
+      let_it_be(:shared_with_group) { create(:group, parent: create(:group)) }
+
+      it_behaves_like 'restricted membership by email domain'
+    end
+  end
 end
