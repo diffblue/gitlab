@@ -69,5 +69,43 @@ module EE
 
       super
     end
+
+    def jira_issue_breadcrumb_link(issue_reference)
+      external_issue_breadcrumb_link('illustrations/logos/jira.svg', issue_reference, '')
+    end
+
+    def zentao_issue_breadcrumb_link(issue)
+      external_issue_breadcrumb_link('logos/zentao.svg', issue[:id], issue[:web_url], target: '_blank')
+    end
+
+    def zentao_issues_show_data
+      {
+        issues_show_path: project_integrations_zentao_issue_path(@project, params[:id], format: :json),
+        issues_list_path: project_integrations_zentao_issues_path(@project)
+      }
+    end
+
+    private
+
+    # Use this method when dealing with issue data from external services
+    # (like Jira or ZenTao).
+    # Returns a sanitized `ActiveSupport::SafeBuffer` link.
+    def external_issue_breadcrumb_link(img, text, href, options = {})
+      icon = image_tag image_path(img), width: 15, height: 15, class: 'gl-mr-2'
+      link = sanitize(
+        link_to(
+          strip_tags(text),
+          strip_tags(href),
+          options.merge(
+            rel: 'noopener noreferrer',
+            class: 'gl-display-flex gl-align-items-center gl-white-space-nowrap'
+          )
+        ),
+        tags: %w(a img),
+        attributes: %w(target href src loading rel class width height)
+      )
+
+      [icon, link].join.html_safe
+    end
   end
 end
