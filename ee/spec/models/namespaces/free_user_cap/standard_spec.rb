@@ -11,6 +11,44 @@ RSpec.describe Namespaces::FreeUserCap::Standard, :saas do
     stub_ee_application_setting(should_check_namespace_plan: should_check_namespace_plan)
   end
 
+  describe '#under_limit?' do
+    let(:free_plan_members_count) { Namespaces::FreeUserCap::FREE_USER_LIMIT }
+
+    subject(:reached_limit?) { described_class.new(namespace).under_limit? }
+
+    before do
+      allow(namespace).to receive(:free_plan_members_count).and_return(free_plan_members_count)
+    end
+
+    context 'when :free_user_cap is disabled' do
+      before do
+        stub_feature_flags(free_user_cap: false)
+      end
+
+      it { is_expected.to be false }
+    end
+
+    context 'when :free_user_cap is enabled' do
+      before do
+        stub_feature_flags(free_user_cap: true)
+      end
+
+      it { is_expected.to be true }
+
+      context 'when under the number of free users limit' do
+        let(:free_plan_members_count) { Namespaces::FreeUserCap::FREE_USER_LIMIT - 1 }
+
+        it { is_expected.to be true }
+      end
+
+      context 'when over the number of free users limit' do
+        let(:free_plan_members_count) { Namespaces::FreeUserCap::FREE_USER_LIMIT + 1 }
+
+        it { is_expected.to be false }
+      end
+    end
+  end
+
   describe '#reached_limit?' do
     let(:free_plan_members_count) { Namespaces::FreeUserCap::FREE_USER_LIMIT + 1 }
 

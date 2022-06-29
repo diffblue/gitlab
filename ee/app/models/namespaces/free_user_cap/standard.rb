@@ -7,6 +7,12 @@ module Namespaces
         @root_namespace = root_namespace.root_ancestor # just in case the true root isn't passed
       end
 
+      def under_limit?
+        return false unless feature_enabled?
+
+        !users_count_over_free_user_limit?
+      end
+
       def reached_limit?
         return false unless enforce_cap?
 
@@ -33,6 +39,10 @@ module Namespaces
 
       def enforceable_subscription?
         ::Gitlab::CurrentSettings.should_check_namespace_plan? && root_namespace.has_free_or_no_subscription?
+      end
+
+      def users_count_over_free_user_limit?
+        users_count > FREE_USER_LIMIT
       end
     end
   end
