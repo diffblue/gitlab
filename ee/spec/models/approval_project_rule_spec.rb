@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe ApprovalProjectRule do
-  subject { create(:approval_project_rule) }
+  subject(:rule) { create(:approval_project_rule) }
 
   describe 'validations' do
     it 'is invalid when name not unique within rule type and project' do
@@ -56,6 +56,101 @@ RSpec.describe ApprovalProjectRule do
       create_list(:approval_project_rule, 2)
 
       expect(described_class.code_owner).to be_empty
+    end
+  end
+
+  describe '#protected_branches' do
+    let_it_be(:project) { create(:project) }
+    let_it_be(:rule_protected_branch) { create(:protected_branch) }
+    let_it_be(:rule) { create(:approval_project_rule, protected_branches: [rule_protected_branch], project: project) }
+    let_it_be(:protected_branches) { create_list(:protected_branch, 3, project: project) }
+
+    subject { rule.protected_branches }
+
+    context 'when applies_to_all_protected_branches is true' do
+      before do
+        rule.update!(applies_to_all_protected_branches: true)
+      end
+
+      it 'returns a collection of all protected branches belonging to the project' do
+        expect(subject).to contain_exactly(*protected_branches)
+      end
+
+      context 'when project_approval_rule_all_protected_branches flag is disabled' do
+        before do
+          stub_feature_flags(project_approval_rule_all_protected_branches: false)
+        end
+
+        it 'returns a collection of all protected branches belonging to the rule' do
+          expect(subject).to contain_exactly(rule_protected_branch)
+        end
+      end
+    end
+
+    context 'when applies_to_all_protected_branches is false' do
+      before do
+        rule.update!(applies_to_all_protected_branches: false)
+      end
+
+      it 'returns a collection of all protected branches belonging to the rule' do
+        expect(subject).to contain_exactly(rule_protected_branch)
+      end
+    end
+  end
+
+  describe '#applies_to_branch?' do
+    let_it_be(:protected_branch) { create(:protected_branch) }
+
+    context 'when rule has no specific branches' do
+      it 'returns true' do
+        expect(subject.applies_to_branch?('branch_name')).to be true
+      end
+    end
+
+    context 'when rule has specific branches' do
+      before do
+        rule.protected_branches << protected_branch
+      end
+
+      it 'returns true when the branch name matches' do
+        expect(rule.applies_to_branch?(protected_branch.name)).to be true
+      end
+
+      it 'returns false when the branch name does not match' do
+        expect(rule.applies_to_branch?('random-branch-name')).to be false
+      end
+    end
+
+    context 'when rule applies to all protected branches' do
+      let_it_be(:wildcard_protected_branch) { create(:protected_branch, name: "stable-*") }
+
+      let(:project) { rule.project }
+
+      before do
+        rule.update!(applies_to_all_protected_branches: true)
+        project.protected_branches << protected_branch
+        project.protected_branches << wildcard_protected_branch
+      end
+
+      it 'returns true when the branch name is a protected branch' do
+        expect(rule.reload.applies_to_branch?('protected_branch_1')).to be true
+      end
+
+      it 'returns true when the branch name is a wildcard protected branch' do
+        expect(rule.reload.applies_to_branch?('stable-12')).to be true
+      end
+
+      it 'returns false when the branch name does not match a wildcard protected branch' do
+        expect(rule.reload.applies_to_branch?('unstable1-12')).to be false
+      end
+
+      it 'returns false when the branch name is an unprotected branch' do
+        expect(rule.applies_to_branch?('add-balsamiq-file')).to be false
+      end
+
+      it 'returns false when the branch name does not exist' do
+        expect(rule.applies_to_branch?('this-is-not-a-real-branch')).to be false
+      end
     end
   end
 

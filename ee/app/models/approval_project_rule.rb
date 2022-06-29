@@ -52,6 +52,15 @@ class ApprovalProjectRule < ApplicationRecord
     protected_branches.matching(branch).any?
   end
 
+  def protected_branches
+    if applies_to_all_protected_branches? &&
+      ::Feature.enabled?(:project_approval_rule_all_protected_branches, project.group)
+      return project.protected_branches
+    end
+
+    super
+  end
+
   def source_rule
     nil
   end
