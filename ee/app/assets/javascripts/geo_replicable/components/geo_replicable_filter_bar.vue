@@ -46,6 +46,9 @@ export default {
         this.fetchReplicableItems();
       },
     },
+    hasReplicableItems() {
+      return this.paginationData.total > 0;
+    },
     resyncText() {
       return sprintf(this.$options.i18n.resyncAllReplicables, {
         replicableType: this.replicableTypeName,
@@ -100,7 +103,10 @@ export default {
           />
         </div>
       </div>
-      <div class="col col-sm-5 d-flex justify-content-end my-1 my-sm-0 w-100">
+      <div
+        v-if="hasReplicableItems"
+        class="col col-sm-5 d-flex justify-content-end my-1 my-sm-0 w-100"
+      >
         <gl-button v-gl-modal-directive="$options.RESYNC_MODAL_ID">{{
           $options.i18n.resyncAll
         }}</gl-button>
