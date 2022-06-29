@@ -5,7 +5,7 @@
 
 %section.settings.as-elasticsearch.no-animate#js-elasticsearch-settings{ class: ('expanded' if expanded_by_default?), data: { qa_selector: 'elasticsearch_tab' } }
   .settings-header
-    %h4
+    %h4.settings-title.js-settings-toggle.js-settings-toggle-trigger-only
       = _('Advanced Search')
     = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle', data: { qa_selector: 'expand_advanced_search_button' } }) do
       = expanded_by_default? ? _('Collapse') : _('Expand')
@@ -193,7 +193,7 @@
 
 %section.settings.as-elasticsearch-reindexing.no-animate#js-elasticsearch-reindexing{ class: ('expanded' if expanded_by_default?) }
   .settings-header
-    %h4
+    %h4.settings-title.js-settings-toggle.js-settings-toggle-trigger-only
       = _('Elasticsearch zero-downtime reindexing')
     = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
       = expanded_by_default? ? _('Collapse') : _('Expand')
