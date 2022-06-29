@@ -7,7 +7,6 @@ import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import createFlash from '~/flash';
 import CommitBoxPipelineMiniGraph from '~/projects/commit_box/info/components/commit_box_pipeline_mini_graph.vue';
-import PipelineMiniGraph from '~/pipelines/components/pipelines_list/pipeline_mini_graph.vue';
 import { COMMIT_BOX_POLL_INTERVAL } from '~/projects/commit_box/info/constants';
 import getLinkedPipelinesQuery from '~/projects/commit_box/info/graphql/queries/get_linked_pipelines.query.graphql';
 import getPipelineStagesQuery from '~/projects/commit_box/info/graphql/queries/get_pipeline_stages.query.graphql';
@@ -38,7 +37,9 @@ describe('Commit box pipeline mini graph', () => {
   const stagesHandler = jest.fn().mockResolvedValue(mockPipelineStagesQueryResponse);
 
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
-  const findPipelineMiniGraph = () => wrapper.findComponent(PipelineMiniGraph);
+  const findMiniGraph = () => wrapper.findByTestId('commit-box-mini-graph');
+  const findUpstream = () => wrapper.findByTestId('commit-box-mini-graph-upstream');
+  const findDownstream = () => wrapper.findByTestId('commit-box-mini-graph-downstream');
 
   const advanceToNextFetch = () => {
     jest.advanceTimersByTime(COMMIT_BOX_POLL_INTERVAL);
@@ -79,25 +80,18 @@ describe('Commit box pipeline mini graph', () => {
       createComponent();
 
       expect(findLoadingIcon().exists()).toBe(true);
-      expect(findPipelineMiniGraph().exists()).toBe(false);
+      expect(findMiniGraph().exists()).toBe(false);
     });
   });
 
   describe('loaded state', () => {
-    const samplePipeline = {
-      id: expect.any(String),
-      path: expect.any(String),
-      project: expect.any(Object),
-      detailedStatus: expect.any(Object),
-    };
-
     it('should not display loading state after the query is resolved', async () => {
       createComponent();
 
       await waitForPromises();
 
       expect(findLoadingIcon().exists()).toBe(false);
-      expect(findPipelineMiniGraph().exists()).toBe(true);
+      expect(findMiniGraph().exists()).toBe(true);
     });
 
     it('should pass the pipeline path prop for the counter badge', async () => {
@@ -106,45 +100,24 @@ describe('Commit box pipeline mini graph', () => {
       await waitForPromises();
 
       const expectedPath = mockDownstreamQueryResponse.data.project.pipeline.path;
-      const pipelinePath = findPipelineMiniGraph().props('pipelinePath');
 
-      expect(pipelinePath).toBe(expectedPath);
+      expect(findDownstream().props('pipelinePath')).toBe(expectedPath);
     });
 
-    it('should render a downstream pipeline only', async () => {
-      createComponent(downstreamHandler);
+    describe.each`
+      handler                      | downstreamRenders | upstreamRenders
+      ${downstreamHandler}         | ${true}           | ${false}
+      ${upstreamHandler}           | ${false}          | ${true}
+      ${upstreamDownstreamHandler} | ${true}           | ${true}
+    `('given a linked pipeline', ({ handler, downstreamRenders, upstreamRenders }) => {
+      it('should render the correct linked pipelines', async () => {
+        createComponent(handler);
 
-      await waitForPromises();
+        await waitForPromises();
 
-      const downstreamPipelines = findPipelineMiniGraph().props('downstreamPipelines');
-      const upstreamPipeline = findPipelineMiniGraph().props('upstreamPipeline');
-
-      expect(downstreamPipelines).toEqual(expect.any(Array));
-      expect(upstreamPipeline).toEqual(null);
-    });
-
-    it('should render an upstream pipeline only', async () => {
-      createComponent(upstreamHandler);
-
-      await waitForPromises();
-
-      const downstreamPipelines = findPipelineMiniGraph().props('downstreamPipelines');
-      const upstreamPipeline = findPipelineMiniGraph().props('upstreamPipeline');
-
-      expect(upstreamPipeline).toEqual(samplePipeline);
-      expect(downstreamPipelines).toHaveLength(0);
-    });
-
-    it('should render downstream and upstream pipelines', async () => {
-      createComponent(upstreamDownstreamHandler);
-
-      await waitForPromises();
-
-      const downstreamPipelines = findPipelineMiniGraph().props('downstreamPipelines');
-      const upstreamPipeline = findPipelineMiniGraph().props('upstreamPipeline');
-
-      expect(upstreamPipeline).toEqual(samplePipeline);
-      expect(downstreamPipelines).toEqual(expect.arrayContaining([samplePipeline]));
+        expect(findDownstream().exists()).toBe(downstreamRenders);
+        expect(findUpstream().exists()).toBe(upstreamRenders);
+      });
     });
 
     it('formatted stages should be passed to the pipeline mini graph', async () => {
@@ -166,7 +139,7 @@ describe('Commit box pipeline mini graph', () => {
 
       await waitForPromises();
 
-      expect(findPipelineMiniGraph().props('stages')).toEqual(expectedStages);
+      expect(findMiniGraph().props('stages')).toEqual(expectedStages);
     });
   });
 

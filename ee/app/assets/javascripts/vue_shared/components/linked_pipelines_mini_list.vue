@@ -1,18 +1,20 @@
 <script>
-import { GlTooltipDirective } from '@gitlab/ui';
+import { GlIcon, GlTooltipDirective } from '@gitlab/ui';
 import { sprintf, s__ } from '~/locale';
 import CiIcon from '~/vue_shared/components/ci_icon.vue';
 import { accessValue } from '../accessors/linked_pipelines_accessors';
-/**
- * Renders the upstream/downstream portions of the pipeline mini graph.
- */
+
 export default {
   directives: {
     GlTooltip: GlTooltipDirective,
   },
   components: {
     CiIcon,
+    GlIcon,
   },
+  arrowStyles: [
+    'arrow-icon gl-display-inline-block gl-mx-1 gl-text-gray-500 gl-vertical-align-middle!',
+  ],
   inject: {
     dataMethod: {
       default: 'rest',
@@ -99,6 +101,8 @@ export default {
     }"
     class="linked-pipeline-mini-list gl-display-inline gl-vertical-align-middle"
   >
+    <gl-icon v-if="isDownstream" :class="$options.arrowStyles" name="long-arrow" />
+
     <a
       v-for="pipeline in linkedPipelinesTrimmed"
       :key="pipeline.id"
@@ -128,5 +132,7 @@ export default {
     >
       {{ counterLabel }}
     </a>
+
+    <gl-icon v-if="isUpstream" :class="$options.arrowStyles" name="long-arrow" />
   </span>
 </template>
