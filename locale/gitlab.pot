@@ -43524,7 +43524,7 @@ msgstr ""
 msgid "WorkItem|Collapse child items"
 msgstr ""
 
-msgid "WorkItem|Convert to work item"
+msgid "WorkItem|Create task"
 msgstr ""
 
 msgid "WorkItem|Create work item"
