@@ -28,7 +28,9 @@ RSpec.describe API::AuditEvents do
       it 'tracks 3 separate events' do
         expect(Gitlab::UsageDataCounters::HLLRedisCounter).to receive(:track_event).exactly(3).times
                                                                   .with('a_compliance_audit_events_api', values: current_user.id)
-
+        # user activity tracking is also recorded
+        expect(Gitlab::UsageDataCounters::HLLRedisCounter).to receive(:track_event)
+                                                                  .with('unique_active_user', values: current_user.id)
         subject
       end
 
