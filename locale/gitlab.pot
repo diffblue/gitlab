@@ -363,6 +363,11 @@ msgid_plural "%d remaining"
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "%d reply"
+msgid_plural "%d replies"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "%d second"
 msgid_plural "%d seconds"
 msgstr[0] ""
@@ -26077,7 +26082,13 @@ msgstr ""
 msgid "Notes|Collapse replies"
 msgstr ""
 
+msgid "Notes|Expand replies"
+msgstr ""
+
 msgid "Notes|Internal notes are only visible to the author, assignees, and members with the role of Reporter or higher"
+msgstr ""
+
+msgid "Notes|Last reply by %{name}"
 msgstr ""
 
 msgid "Notes|Make this an internal note"
