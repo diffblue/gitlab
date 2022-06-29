@@ -14555,16 +14555,13 @@ msgstr ""
 msgid "Environments|Pod name"
 msgstr ""
 
-msgid "Environments|Re-deploy"
+msgid "Environments|Re-deploy environment"
 msgstr ""
 
 msgid "Environments|Re-deploy environment %{name}?"
 msgstr ""
 
 msgid "Environments|Re-deploy to environment"
-msgstr ""
-
-msgid "Environments|Rollback"
 msgstr ""
 
 msgid "Environments|Rollback environment"
@@ -14594,10 +14591,10 @@ msgstr ""
 msgid "Environments|There was an error fetching the logs. Please try again."
 msgstr ""
 
-msgid "Environments|This action will relaunch the job for commit %{linkStart}%{commitId}%{linkEnd}, putting the environment in a previous version. Are you sure you want to continue?"
+msgid "Environments|This action will %{docsStart}retry the latest deployment%{docsEnd} with the commit %{commitId}, for this environment. Are you sure you want to continue?"
 msgstr ""
 
-msgid "Environments|This action will run the job defined by %{name} for commit %{linkStart}%{commitId}%{linkEnd} putting the environment in a previous version. You can revert it by re-deploying the latest version of your application. Are you sure you want to continue?"
+msgid "Environments|This action will %{docsStart}roll back this environment%{docsEnd} to a previously successful deployment for commit %{commitId}. Are you sure you want to continue?"
 msgstr ""
 
 msgid "Environments|Upcoming"
