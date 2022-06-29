@@ -1,9 +1,9 @@
 import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
+import waitForPromises from 'helpers/wait_for_promises';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import PipelineEditorMiniGraph from '~/pipeline_editor/components/header/pipeline_editor_mini_graph.vue';
-import PipelineMiniGraph from '~/pipelines/components/pipelines_list/pipeline_mini_graph.vue';
 import getLinkedPipelinesQuery from '~/projects/commit_box/info/graphql/queries/get_linked_pipelines.query.graphql';
 import { mockLinkedPipelines, mockProjectFullPath, mockProjectPipeline } from '../../mock_data';
 
@@ -39,7 +39,9 @@ describe('Pipeline Status', () => {
     });
   };
 
-  const findPipelineMiniGraph = () => wrapper.findComponent(PipelineMiniGraph);
+  const findUpstream = () => wrapper.find('[data-testid="pipeline-editor-mini-graph-upstream"]');
+  const findDownstream = () =>
+    wrapper.find('[data-testid="pipeline-editor-mini-graph-downstream"]');
 
   beforeEach(() => {
     mockLinkedPipelinesQuery = jest.fn();
@@ -50,31 +52,33 @@ describe('Pipeline Status', () => {
     wrapper.destroy();
   });
 
-  describe('when querying pipeline stages', () => {
-    describe('when query returns data', () => {
+  describe('when querying upstream and downstream pipelines', () => {
+    describe('when query succeeds', () => {
       beforeEach(() => {
         mockLinkedPipelinesQuery.mockResolvedValue(mockLinkedPipelines());
         createComponentWithApollo();
       });
 
-      describe('pipeline mini graph rendering based on given data', () => {
-        it('renders pipeline mini graph', () => {
-          expect(findPipelineMiniGraph().exists()).toBe(true);
-        });
-      });
-    });
+      describe('linked pipeline rendering based on given data', () => {
+        it.each`
+          hasDownstream | hasUpstream | downstreamRenderAction | upstreamRenderAction
+          ${true}       | ${true}     | ${'renders'}           | ${'renders'}
+          ${true}       | ${false}    | ${'renders'}           | ${'hides'}
+          ${false}      | ${true}     | ${'hides'}             | ${'renders'}
+          ${false}      | ${false}    | ${'hides'}             | ${'hides'}
+        `(
+          '$downstreamRenderAction downstream and $upstreamRenderAction upstream',
+          async ({ hasDownstream, hasUpstream }) => {
+            mockLinkedPipelinesQuery.mockResolvedValue(
+              mockLinkedPipelines({ hasDownstream, hasUpstream }),
+            );
+            createComponentWithApollo();
+            await waitForPromises();
 
-    describe('when query returns no data', () => {
-      beforeEach(() => {
-        mockLinkedPipelinesQuery.mockResolvedValue(mockLinkedPipelines());
-        const hasStages = false;
-        createComponentWithApollo(hasStages);
-      });
-
-      describe('pipeline mini graph rendering based on given data', () => {
-        it('does not render pipeline mini graph', () => {
-          expect(findPipelineMiniGraph().exists()).toBe(false);
-        });
+            expect(findUpstream().exists()).toBe(hasUpstream);
+            expect(findDownstream().exists()).toBe(hasDownstream);
+          },
+        );
       });
     });
   });
