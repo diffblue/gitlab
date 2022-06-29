@@ -35,6 +35,18 @@ module Gitlab
         associated.id
       end
 
+      def parent_collection
+        raise NotImplementedError
+      end
+
+      def parent_imported_cache_key
+        raise NotImplementedError
+      end
+
+      def page_counter_id(parent)
+        raise NotImplementedError
+      end
+
       private
 
       # Sometimes we need to add some extra info from parent
@@ -80,18 +92,6 @@ module Gitlab
 
       def already_imported_parents
         Gitlab::Cache::Import::Caching.values_from_set(parent_imported_cache_key)
-      end
-
-      def parent_collection
-        raise NotImplementedError
-      end
-
-      def parent_imported_cache_key
-        raise NotImplementedError
-      end
-
-      def page_counter_id(parent)
-        raise NotImplementedError
       end
     end
   end
