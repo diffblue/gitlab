@@ -38,7 +38,14 @@ RSpec.describe Projects::ProjectMembersHelper do
     end
 
     def call_project_members_app_data_json
-      helper.project_members_app_data_json(project, members: preloaded_members, group_links: [], invited: [], access_requests: [])
+      helper.project_members_app_data_json(
+        project,
+        members: preloaded_members,
+        invited: [],
+        access_requests: [],
+        include_relations: [:inherited, :direct],
+        search: nil
+      )
     end
 
     # Simulates the behaviour in ProjectMembersController
