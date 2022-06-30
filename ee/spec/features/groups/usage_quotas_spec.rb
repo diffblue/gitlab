@@ -397,25 +397,6 @@ RSpec.describe 'Groups > Usage Quotas' do
         end
       end
 
-      context 'when on a paid expired plan and over limit' do
-        let_it_be(:gitlab_subscription) { create(:gitlab_subscription, :expired, namespace: group) }
-
-        let_it_be(:active_members) do
-          create_list(:group_member, ::Namespaces::FreeUserCap::FREE_USER_LIMIT + 1, source: group)
-        end
-
-        it 'shows usage quota alert' do
-          expect(page).to have_content('Your free group is now limited to')
-          expect(page).to have_link('upgrade')
-
-          page.find("[data-testid='free-group-limited-dismiss']").click
-          expect(page).not_to have_content('Your free group is now limited to')
-
-          page.refresh
-          expect(page).not_to have_content('Your free group is now limited to')
-        end
-      end
-
       context 'when on a trial' do
         let_it_be(:gitlab_subscription) { create(:gitlab_subscription, :active_trial, seats_in_use: 4, seats: 10, namespace: group) }
 

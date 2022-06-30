@@ -1134,4 +1134,13 @@ RSpec.describe Epic do
       end
     end
   end
+
+  describe '#participants' do
+    it_behaves_like 'issuable participants' do
+      let_it_be(:issuable_parent) { create(:group, :public) }
+      let_it_be_with_refind(:issuable) { create(:epic, group: issuable_parent) }
+
+      let(:params) { { noteable: issuable } }
+    end
+  end
 end

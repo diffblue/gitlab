@@ -109,10 +109,6 @@ module Namespaces
       def link_end
         '</a>'.html_safe
       end
-
-      def container_class
-        "container-fluid container-limited gl-pb-2! gl-pt-6! #{content_class}"
-      end
     end
   end
 end

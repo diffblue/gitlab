@@ -7,7 +7,7 @@ module Namespaces
       def over_limit?
         return false unless enforce_cap?
 
-        users_count_over_free_user_limit?
+        users_count > FREE_USER_LIMIT
       end
 
       private
