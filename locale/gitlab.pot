@@ -6969,9 +6969,6 @@ msgstr ""
 msgid "CICDAnalytics|All time"
 msgstr ""
 
-msgid "CICDAnalytics|Change failure rate"
-msgstr ""
-
 msgid "CICDAnalytics|Deployment frequency"
 msgstr ""
 
