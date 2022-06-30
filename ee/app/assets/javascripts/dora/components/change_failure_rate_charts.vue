@@ -174,7 +174,7 @@ export default {
 };
 </script>
 <template>
-  <div>
+  <div data-testid="change-failure-rate-charts">
     <dora-chart-header
       :header-text="s__('DORA4Metrics|Change failure rate')"
       :chart-description-text="$options.chartDescriptionText"
