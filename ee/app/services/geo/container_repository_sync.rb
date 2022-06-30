@@ -41,30 +41,48 @@ module Geo
 
       case manifest_parsed['mediaType']
       when *ATOMIC_MANIFESTS
-        push_manifest_blobs(manifest_parsed)
+        sync_manifest_blobs(manifest_parsed)
       when *LIST_MANIFESTS
-        manifest_parsed['manifests'].each do |submanifest|
-          image_info_raw = client.repository_raw_manifest(repository_path, submanifest['digest'])
-          image_info = Gitlab::Json.parse(image_info_raw)
-          push_manifest_blobs(image_info)
-          container_repository.push_manifest(submanifest['digest'], image_info_raw, image_info['mediaType'])
+        if buildkit_oci_incompatible_index?(manifest_parsed['manifests'])
+          sync_manifest_blobs(manifest_parsed)
+        else
+          manifest_parsed['manifests'].each do |submanifest|
+            image_info_raw = client.repository_raw_manifest(repository_path, submanifest['digest'])
+            image_info = Gitlab::Json.parse(image_info_raw)
+            sync_manifest_blobs(image_info)
+            container_repository.push_manifest(submanifest['digest'], image_info_raw, image_info['mediaType'])
+          end
         end
       else
         raise "Unexpected mediaType: #{manifest_parsed['mediaType']}"
       end
+
       container_repository.push_manifest(tag[:name], manifest, manifest_parsed['mediaType'])
     end
 
-    def push_manifest_blobs(manifest)
-      list_blobs(manifest).each do |digest|
-        next if container_repository.blob_exists?(digest)
+    # Buildkit-cache images have special oci-spec-invalid structure where fat manifests reference
+    # blobs directly. Normal OCI fat manifest only references other manifests
+    # Issue https://github.com/moby/buildkit/issues/2251
+    def buildkit_oci_incompatible_index?(manifests)
+      manifests.any? do |manifest|
+        manifest['mediaType'].include?('application/vnd.buildkit.cacheconfig')
+      end
+    end
 
-        file = client.pull_blob(repository_path, digest)
-        begin
-          container_repository.push_blob(digest, file.path)
-        ensure
-          file.unlink
-        end
+    def sync_manifest_blobs(manifest)
+      list_blobs(manifest).each do |digest|
+        sync_blob(digest)
+      end
+    end
+
+    def sync_blob(digest)
+      return if container_repository.blob_exists?(digest)
+
+      file = client.pull_blob(repository_path, digest)
+      begin
+        container_repository.push_blob(digest, file.path)
+      ensure
+        file.unlink
       end
     end
 
@@ -72,8 +90,11 @@ module Geo
       container_repository.delete_tag_by_digest(tag[:digest])
     end
 
+    # Normally "layers" is the only reference to blobs related to particular manifest
+    # This method is also used for build cache images where fat manifest references blobs directly
+    # in this case "manifests" attribute is a way of refering to them.
     def list_blobs(manifest)
-      layers = manifest['layers'].filter_map do |layer|
+      layers = (manifest['layers'] || manifest['manifests']).filter_map do |layer|
         layer['digest'] unless foreign_layer?(layer)
       end
 
