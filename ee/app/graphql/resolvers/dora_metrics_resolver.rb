@@ -27,7 +27,7 @@ module Resolvers
 
     argument :environment_tier, Types::DeploymentTierEnum,
              required: false,
-             description: 'Deployment tier of the environments to return. Planned for deprecation: please update to `environment_tiers` param.'
+             description: 'Deployment tier of the environments to return. Deprecated, please update to `environment_tiers` param.'
 
     argument :environment_tiers, [Types::DeploymentTierEnum],
              required: false,
