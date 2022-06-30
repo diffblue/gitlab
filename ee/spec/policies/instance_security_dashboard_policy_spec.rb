@@ -37,4 +37,16 @@ RSpec.describe InstanceSecurityDashboardPolicy do
       it { is_expected.to be_allowed(:create_vulnerability_export) }
     end
   end
+
+  describe 'read_cluster' do
+    context 'when the user is not logged in' do
+      let(:current_user) { nil }
+
+      it { is_expected.not_to be_allowed(:read_cluster) }
+    end
+
+    context 'when the user is logged in' do
+      it { is_expected.to be_allowed(:read_cluster) }
+    end
+  end
 end
