@@ -465,6 +465,26 @@ RSpec.describe API::Members do
           end
         end
 
+        context 'when sorting users with same last_activity_on' do
+          let(:sort_group) { create :group }
+          let(:user1) { create(:user, last_activity_on: Date.today) }
+          let(:users) { create_list(:user, 4, last_activity_on: Date.today) }
+          let(:params) { { sort: 'last_activity_on_desc', per_page: 1, page: 2 } }
+          let(:url) { "/groups/#{sort_group.id}/billable_members" }
+          let(:owner) { user1 }
+
+          before do
+            sort_group.add_owner(user1)
+            users.each { |user| sort_group.add_developer(user) }
+          end
+
+          it 'returns paginated users in deterministic order to avoid duplicates and flaky behavior' do
+            get_billable_members
+
+            expect_paginated_array_response(users[0].id)
+          end
+        end
+
         context 'with include_awaiting_members is true' do
           let(:params) { { include_awaiting_members: true } }
 
