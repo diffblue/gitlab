@@ -2902,6 +2902,10 @@ class Project < ApplicationRecord
     build_artifacts_size_refresh&.started?
   end
 
+  def group_group_links
+    group&.shared_with_group_links&.of_ancestors_and_self || GroupGroupLink.none
+  end
+
   def security_training_available?
     licensed_feature_available?(:security_training)
   end
