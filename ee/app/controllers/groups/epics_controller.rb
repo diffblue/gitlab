@@ -30,17 +30,6 @@ class Groups::EpicsController < Groups::ApplicationController
     @noteable = Epic.new
   end
 
-  def index
-    respond_to do |format|
-      format.html
-      format.json do
-        set_issuables_index
-
-        render json: serializer.represent(@issuables)
-      end
-    end
-  end
-
   def create
     @epic = ::Epics::CreateService.new(group: @group, current_user: current_user, params: epic_params).execute
 
@@ -54,10 +43,6 @@ class Groups::EpicsController < Groups::ApplicationController
   end
 
   private
-
-  def pagination_disabled?
-    request.format.json?
-  end
 
   # rubocop: disable CodeReuse/ActiveRecord
   def epic
@@ -114,10 +99,6 @@ class Groups::EpicsController < Groups::ApplicationController
 
   def sorting_field
     :epics_sort
-  end
-
-  def preload_for_collection
-    @preload_for_collection ||= [:group, :author, :labels]
   end
 
   def log_epic_show
