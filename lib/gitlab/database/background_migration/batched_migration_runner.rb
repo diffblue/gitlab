@@ -142,10 +142,11 @@ module Gitlab
         end
 
         def adjust_migration(active_migration)
-          case HealthStatus.evaluate(active_migration)
-          when HealthStatus::Signals::Stop
+          signal = HealthStatus.evaluate(active_migration)
+
+          if signal.is_a?(HealthStatus::Signals::Stop)
             active_migration.hold!
-          when HealthStatus::Signals::Normal, HealthStatus::Signals::NotAvailable
+          else
             active_migration.optimize!
           end
         end

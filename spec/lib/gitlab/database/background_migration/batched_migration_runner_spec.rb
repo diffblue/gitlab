@@ -99,10 +99,10 @@ RSpec.describe Gitlab::Database::BackgroundMigration::BatchedMigrationRunner do
             expect { runner.run_migration_job(migration) }.not_to change { migration.on_hold? }
           end
 
-          it 'does nothing on unknown signal' do
+          it 'optimizes migration on unknown signal' do
             expect(health_status).to receive(:evaluate).and_return(unknown_signal)
 
-            expect(migration).not_to receive(:optimize!)
+            expect(migration).to receive(:optimize!)
 
             expect { runner.run_migration_job(migration) }.not_to change { migration.on_hold? }
           end

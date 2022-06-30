@@ -61,12 +61,14 @@ RSpec.describe Gitlab::Database::BackgroundMigration::HealthStatus do
         expect { evaluate }.not_to raise_error
       end
 
-      it 'returns Unknow signal' do
+      it 'returns Unknown signal' do
         expect(evaluate).to be_an_instance_of(Gitlab::Database::BackgroundMigration::HealthStatus::Signals::Unknown)
+        expect(evaluate.reason).to eq("unexpected error: everything broken (RuntimeError)")
       end
 
       it 'reports the exception to error tracking' do
-        expect(Gitlab::ErrorTracking).to receive(:track_exception).with(error, migration_id: migration.id)
+        expect(Gitlab::ErrorTracking).to receive(:track_exception)
+          .with(error, migration_id: migration.id, job_class_name: migration.job_class_name)
 
         evaluate
       end

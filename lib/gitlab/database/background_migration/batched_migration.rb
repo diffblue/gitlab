@@ -208,6 +208,7 @@ module Gitlab
           Gitlab::AppLogger.info(
             message: "#{self} put on hold until #{until_time}",
             migration_id: id,
+            job_class_name: job_class_name,
             duration_s: duration_s
           )
 

@@ -6,8 +6,6 @@ module Gitlab
       module HealthStatus
         module Indicators
           class AutovacuumActiveOnTable
-            attr_reader :context
-
             def initialize(context)
               @context = context
             end
@@ -25,6 +23,8 @@ module Gitlab
             end
 
             private
+
+            attr_reader :context
 
             def enabled?
               Feature.enabled?(:batched_migrations_health_status_autovacuum, type: :ops)
