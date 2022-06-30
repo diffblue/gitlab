@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe EE::Ci::Runner do
+RSpec.describe Ci::Runner do
   let(:shared_runners_minutes) { 400 }
 
   before do
