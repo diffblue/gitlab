@@ -64,66 +64,6 @@ RSpec.describe Groups::EpicsController do
 
         expect(response).to have_gitlab_http_status(:ok)
       end
-
-      context 'when format is JSON' do
-        before do
-          allow(Kaminari.config).to receive(:default_per_page).and_return(1)
-        end
-
-        def list_epics
-          get :index, params: { group_id: group }, format: :json
-        end
-
-        it 'returns a list of epics' do
-          list_epics
-
-          expect(json_response).to be_an Array
-        end
-
-        it 'does not use pagination' do
-          list_epics
-
-          expect(json_response.size).to eq(2)
-        end
-
-        it 'returns correct epic attributes' do
-          list_epics
-          item = json_response.first
-          epic = Epic.find(item['id'])
-
-          expect(item['group_id']).to eq(group.id)
-          expect(item['start_date']).to eq(epic.start_date)
-          expect(item['end_date']).to eq(epic.end_date)
-          expect(item['web_url']).to eq(group_epic_path(group, epic))
-        end
-
-        context 'with parent_id filter' do
-          let(:parent_epic) { create(:epic, group: group) }
-
-          it 'returns child epics of the given parent' do
-            child_epics = create_list(:epic, 2, group: group, parent: parent_epic)
-            # descendant epic that should not be included
-            create(:epic, group: group, parent: child_epics.first)
-
-            get :index, params: { group_id: group, parent_id: parent_epic.id }, format: :json
-
-            expect(json_response.size).to eq(2)
-            expect(json_response.map { |e| e['id'] }).to match_array(child_epics.map(&:id))
-          end
-        end
-
-        context 'using label_name filter' do
-          let(:label) { create(:group_label, group: group) }
-          let!(:labeled_epic) { create(:labeled_epic, group: group, labels: [label]) }
-
-          it 'returns all epics with given label' do
-            get :index, params: { group_id: group, label_name: label.title }, format: :json
-
-            expect(json_response.size).to eq(1)
-            expect(json_response.first['id']).to eq(labeled_epic.id)
-          end
-        end
-      end
     end
 
     describe 'GET #discussions' do
