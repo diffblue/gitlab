@@ -20,6 +20,6 @@
     = f.label :unique_project_download_limit_interval_in_seconds, s_('GroupSettings|Interval (seconds)'), class: 'label-bold'
     = f.number_field :unique_project_download_limit_interval_in_seconds, value: @group.namespace_settings&.unique_project_download_limit_interval_in_seconds, class: 'form-control gl-form-input'
     .form-text.text-muted
-      = s_("GroupSettings|Set to 0 to disable limiting.")
+      = s_('GroupSettings|Set to 0 to disable limiting.')
 
   = f.submit _('Save changes'), class: 'btn gl-button btn-confirm gl-mt-4'
