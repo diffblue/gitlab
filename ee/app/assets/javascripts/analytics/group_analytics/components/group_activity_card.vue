@@ -72,7 +72,7 @@ export default {
   >
     <div class="gl-display-flex gl-flex-direction-column gl-pr-9 gl-flex-shrink-0">
       <span class="gl-font-weight-bold">{{ s__('GroupActivityMetrics|Recent activity') }}</span>
-      <span>{{ s__('GroupActivityMetrics|Last 90 days') }}</span>
+      <span>{{ s__('GroupActivityMetrics|Last 30 days') }}</span>
     </div>
     <div
       v-for="metric in metricsArray"
