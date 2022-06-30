@@ -1,8 +1,8 @@
 ---
 name: namespace_storage_limit
-introduced_by_url: 
-rollout_issue_url: 
-milestone: 
+introduced_by_url:
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/362340
+milestone:
 type: development
 group: group::fulfillment
 default_enabled: false
