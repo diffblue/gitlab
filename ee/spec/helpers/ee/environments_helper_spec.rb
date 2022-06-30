@@ -3,9 +3,10 @@
 require 'spec_helper'
 
 RSpec.describe EnvironmentsHelper do
-  let(:environment) { create(:environment) }
-  let(:project) { environment.project }
-  let(:user) { create(:user) }
+  let_it_be_with_refind(:environment) { create(:environment) }
+  let_it_be_with_refind(:deployment) { create(:deployment, :blocked, project: project, environment: environment) }
+  let_it_be(:user) { create(:user) }
+  let_it_be(:project) { environment.project }
 
   describe '#environment_logs_data' do
     subject { helper.environment_logs_data(project, environment) }
@@ -24,14 +25,12 @@ RSpec.describe EnvironmentsHelper do
     end
   end
 
-  describe 'deployment_approval_data' do
-    let(:deployment) { create(:deployment, :blocked, project: project, environment: environment) }
-
+  describe '#deployment_approval_data' do
     subject { helper.deployment_approval_data(deployment) }
 
     before do
       stub_licensed_features(protected_environments: true)
-      create(:protected_environment, name: environment.name, project: project, required_approval_count: 3)
+
       allow(helper).to receive(:current_user).and_return(user)
       allow(helper).to receive(:can?)
         .with(user, :update_deployment, deployment)
@@ -54,21 +53,44 @@ RSpec.describe EnvironmentsHelper do
     end
   end
 
-  describe 'show_deployment_approval?' do
-    let(:deployment) { create(:deployment, :blocked, project: project, environment: environment) }
-
+  describe '#show_deployment_approval?' do
     subject { helper.show_deployment_approval?(deployment) }
+
+    context 'can approve deployment' do
+      before do
+        allow(helper).to receive(:can_approve_deployment?)
+          .and_return(true)
+      end
+
+      it 'returns true' do
+        expect(subject).to eq(true)
+      end
+    end
+
+    context 'cannot approve deployment' do
+      before do
+        allow(helper).to receive(:can_approve_deployment?)
+          .and_return(false)
+      end
+
+      it 'returns false' do
+        expect(subject).to eq(false)
+      end
+    end
+  end
+
+  describe '#can_approve_deployment?' do
+    let_it_be(:protected_environment) { create(:protected_environment, name: environment.name, project: project) }
+
+    subject { helper.can_approve_deployment?(deployment) }
 
     before do
       stub_licensed_features(protected_environments: true)
+
+      allow(helper).to receive(:current_user).and_return(user)
     end
 
-    context 'with a required approval count' do
-      before do
-        create(:protected_environment, name: environment.name, project: project, required_approval_count: 3)
-        allow(helper).to receive(:current_user).and_return(user)
-      end
-
+    context 'when environment has a unified approval setting' do
       context 'user has access' do
         before do
           allow(helper).to receive(:can?)
@@ -76,8 +98,20 @@ RSpec.describe EnvironmentsHelper do
             .and_return(true)
         end
 
-        it 'returns true' do
-          expect(subject).to be(true)
+        context 'with required approvals count = 0' do
+          it 'returns false' do
+            expect(subject).to be(false)
+          end
+        end
+
+        context 'with required approvals count > 0' do
+          before do
+            protected_environment.update!(required_approval_count: 2)
+          end
+
+          it 'returns true' do
+            expect(subject).to be(true)
+          end
         end
       end
 
@@ -94,16 +128,57 @@ RSpec.describe EnvironmentsHelper do
       end
     end
 
-    context 'without a required approval count' do
+    context 'when environment has multiple approval rules' do
+      let_it_be(:qa_group) { create(:group, name: 'QA') }
+      let_it_be(:security_group) { create(:group, name: 'Security') }
+
       before do
-        allow(helper).to receive(:current_user).and_return(user)
-        allow(helper).to receive(:can?)
-          .with(user, :update_deployment, deployment)
-          .and_return(true)
+        # rubocop:disable Layout/LineLength
+        create(:protected_environment_approval_rule, group_id: qa_group.id, protected_environment: protected_environment)
+        create(:protected_environment_approval_rule, group_id: security_group.id, protected_environment: protected_environment)
+        # rubocop:enable Layout/LineLength
       end
 
-      it 'returns false' do
-        expect(subject).to be(false)
+      context 'user has access' do
+        before do
+          qa_group.add_developer(user)
+
+          allow(helper).to receive(:can?)
+            .with(user, :read_deployment, deployment)
+            .and_return(true)
+        end
+
+        it 'returns true' do
+          expect(subject).to be(true)
+        end
+      end
+
+      context 'user does not have access' do
+        context 'with no matching approval rules' do
+          before do
+            allow(helper).to receive(:can?)
+              .with(user, :read_deployment, deployment)
+              .and_return(true)
+          end
+
+          it 'returns false' do
+            expect(subject).to be(false)
+          end
+        end
+
+        context 'when cannot read deployment' do
+          before do
+            qa_group.add_developer(user)
+
+            allow(helper).to receive(:can?)
+              .with(user, :read_deployment, deployment)
+              .and_return(false)
+          end
+
+          it 'returns false' do
+            expect(subject).to be(false)
+          end
+        end
       end
     end
   end
