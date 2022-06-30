@@ -4,6 +4,6 @@
   = link_to _('Geo'), admin_geo_nodes_path
   %span.float-right
     - if Gitlab::Geo.current_node
-      = Gitlab::Geo.current_node.primary ? s_('Geo|Primary node') : s_('Geo|Secondary node')
+      = Gitlab::Geo.current_node.primary ? s_('Geo|Primary site') : s_('Geo|Secondary site')
     - else
       = s_('Geo|Undefined')

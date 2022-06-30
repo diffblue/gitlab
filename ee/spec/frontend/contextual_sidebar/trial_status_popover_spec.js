@@ -2,6 +2,7 @@ import { GlPopover } from '@gitlab/ui';
 import { GlBreakpointInstance } from '@gitlab/ui/dist/utils';
 import { mount, shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
+import timezoneMock from 'timezone-mock';
 import { POPOVER } from 'ee/contextual_sidebar/components/constants';
 import TrialStatusPopover from 'ee/contextual_sidebar/components/trial_status_popover.vue';
 import { mockTracking, unmockTracking } from 'helpers/tracking_helper';
@@ -35,7 +36,7 @@ describe('TrialStatusPopover component', () => {
           plansHref: 'billing/path-for/group',
           purchaseHref: 'transactions/new',
           targetId: 'target-element-identifier',
-          trialEndDate: new Date('2021-02-28'),
+          trialEndDate: new Date('2021-02-21'),
           user: {
             namespaceId: 'namespaceId',
             userName: 'userName',
@@ -82,6 +83,24 @@ describe('TrialStatusPopover component', () => {
 
     expect(popoverText).toContain('We hope you’re enjoying the features of GitLab Ultimate.');
     expect(popoverText).toMatch(/Upgrade Some Test Group to Ultimate(?! Trial)/);
+  });
+
+  describe('correct date in different timezone', () => {
+    beforeEach(() => {
+      timezoneMock.register('US/Pacific');
+    });
+
+    afterEach(() => {
+      timezoneMock.unregister();
+    });
+
+    it('converts date correctly to UTC', () => {
+      wrapper = createComponent({ providers: { planName: 'Ultimate Trial' }, mountFn: mount });
+
+      const popoverText = wrapper.text();
+
+      expect(popoverText).toContain('February 21');
+    });
   });
 
   describe('group_contact_sales experiment', () => {
