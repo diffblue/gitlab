@@ -16889,9 +16889,6 @@ msgstr ""
 msgid "Geo|Primary"
 msgstr ""
 
-msgid "Geo|Primary node"
-msgstr ""
-
 msgid "Geo|Primary site"
 msgstr ""
 
@@ -16989,9 +16986,6 @@ msgid "Geo|Review replication status, and resynchronize and reverify items with 
 msgstr ""
 
 msgid "Geo|Secondary"
-msgstr ""
-
-msgid "Geo|Secondary node"
 msgstr ""
 
 msgid "Geo|Secondary site"
