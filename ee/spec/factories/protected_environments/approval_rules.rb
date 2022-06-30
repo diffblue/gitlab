@@ -8,5 +8,9 @@ FactoryBot.define do
     trait :maintainer_access do
       access_level { Gitlab::Access::MAINTAINER }
     end
+
+    trait :developer_access do
+      access_level { Gitlab::Access::DEVELOPER }
+    end
   end
 end
