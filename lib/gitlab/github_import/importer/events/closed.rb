@@ -37,7 +37,7 @@ module Gitlab
               user_id: user_id,
               issue_id: issue_event.issue_db_id,
               source_commit: issue_event.commit_id,
-              state: ResourceStateEvent.states[:closed],
+              state: 'closed',
               close_after_error_tracking_resolve: false,
               close_auto_resolve_prometheus_alert: false,
               created_at: issue_event.created_at
