@@ -12,7 +12,7 @@ RSpec.describe MemberUserEntity do
   let(:source) { nil }
 
   it 'matches json schema' do
-    expect(entity.to_json).to match_schema('entities/member_user')
+    expect(entity.to_json).to match_schema('entities/member_user_default')
   end
 
   context 'when using on-call management' do

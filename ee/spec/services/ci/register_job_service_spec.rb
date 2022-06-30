@@ -400,4 +400,72 @@ RSpec.describe Ci::RegisterJobService, '#execute' do
       end
     end
   end
+
+  describe 'when group has IP address restrictions' do
+    let(:group) { create(:group) }
+    let(:project) { create :project, shared_runners_enabled: true, group: group }
+    let(:group_ip_restriction) { true }
+
+    before do
+      allow(Gitlab::IpAddressState).to receive(:current).and_return('192.168.0.2')
+      stub_licensed_features(group_ip_restriction: group_ip_restriction)
+
+      create(:ip_restriction, group: group, range: range)
+    end
+
+    subject(:result) { described_class.new(shared_runner).execute.build }
+
+    shared_examples 'drops the build' do
+      it 'does not pick the build', :aggregate_failures do
+        expect(result).to be_nil
+        expect(pending_build.reload).to be_failed
+        expect(pending_build.failure_reason).to eq('ip_restriction_failure')
+      end
+    end
+
+    shared_examples 'does not drop the build' do
+      it 'picks the build', :aggregate_failures do
+        expect(result).to be_kind_of(Ci::Build)
+        expect(result).to be_running
+      end
+    end
+
+    context 'address is within the range' do
+      let(:range) { '192.168.0.0/24' }
+
+      it_behaves_like 'does not drop the build'
+
+      context 'when group is subgroup' do
+        let(:sub_group) { create(:group, parent: group) }
+        let(:project) { create :project, shared_runners_enabled: true, group: sub_group }
+
+        it_behaves_like 'does not drop the build'
+      end
+
+      context 'when group_ip_restriction is not available' do
+        let(:group_ip_restriction) { false }
+
+        it_behaves_like 'does not drop the build'
+      end
+    end
+
+    context 'address is outside the range' do
+      let(:range) { '10.0.0.0/8' }
+
+      it_behaves_like 'drops the build'
+
+      context 'when group is subgroup' do
+        let(:sub_group) { create(:group, parent: group) }
+        let(:project) { create :project, shared_runners_enabled: true, group: sub_group }
+
+        it_behaves_like 'drops the build'
+      end
+
+      context 'when group_ip_restriction is not available' do
+        let(:group_ip_restriction) { false }
+
+        it_behaves_like 'does not drop the build'
+      end
+    end
+  end
 end
