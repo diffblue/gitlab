@@ -20766,7 +20766,7 @@ msgstr ""
 msgid "Integrations|Connection details"
 msgstr ""
 
-msgid "Integrations|Connection failed. Please check your settings."
+msgid "Integrations|Connection failed. Check your integration settings."
 msgstr ""
 
 msgid "Integrations|Connection successful."
