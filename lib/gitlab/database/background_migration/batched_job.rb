@@ -101,10 +101,6 @@ module Gitlab
 
         attribute :pause_ms, :integer, default: 100
 
-        def reset_attempts!
-          update!(attempts: 0)
-        end
-
         def time_efficiency
           return unless succeeded?
           return unless finished_at && started_at

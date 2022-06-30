@@ -263,14 +263,6 @@ RSpec.describe Gitlab::Database::BackgroundMigration::BatchedJob, type: :model d
     end
   end
 
-  describe '#reset_attempts!' do
-    let(:job) { create(:batched_background_migration_job, attempts: 5) }
-
-    it 'sets the number of attempts to zero' do
-      expect { job.reset_attempts! }.to change { job.attempts }.from(5).to(0)
-    end
-  end
-
   describe '#can_split?' do
     subject { job.can_split?(exception) }
 
