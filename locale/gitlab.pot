@@ -8381,9 +8381,6 @@ msgstr ""
 msgid "Cluster cache cleared."
 msgstr ""
 
-msgid "Cluster does not exist"
-msgstr ""
-
 msgid "Cluster is required for Stages::ClusterEndpointInserter"
 msgstr ""
 
@@ -9817,9 +9814,6 @@ msgid "Container Registry"
 msgstr ""
 
 msgid "Container Scanning"
-msgstr ""
-
-msgid "Container does not exist"
 msgstr ""
 
 msgid "Container must be a project or a group."
@@ -14035,9 +14029,6 @@ msgstr ""
 msgid "Elasticsearch reindexing was not started: %{errors}"
 msgstr ""
 
-msgid "Elasticsearch returned status code: %{status_code}"
-msgstr ""
-
 msgid "Elasticsearch zero-downtime reindexing"
 msgstr ""
 
@@ -14492,9 +14483,6 @@ msgid "Enterprise"
 msgstr ""
 
 msgid "Environment"
-msgstr ""
-
-msgid "Environment does not have deployments"
 msgstr ""
 
 msgid "Environment is required for Stages::MetricEndpointInserter"
@@ -21042,15 +21030,6 @@ msgstr ""
 msgid "Invalid URL: %{url}"
 msgstr ""
 
-msgid "Invalid container_name"
-msgstr ""
-
-msgid "Invalid cursor parameter"
-msgstr ""
-
-msgid "Invalid cursor value provided"
-msgstr ""
-
 msgid "Invalid date"
 msgstr ""
 
@@ -21093,9 +21072,6 @@ msgstr ""
 msgid "Invalid pin code."
 msgstr ""
 
-msgid "Invalid pod_name"
-msgstr ""
-
 msgid "Invalid policy type"
 msgstr ""
 
@@ -21108,13 +21084,7 @@ msgstr ""
 msgid "Invalid rule"
 msgstr ""
 
-msgid "Invalid search parameter"
-msgstr ""
-
 msgid "Invalid server response"
-msgstr ""
-
-msgid "Invalid start or end time format"
 msgstr ""
 
 msgid "Invalid status"
@@ -22477,9 +22447,6 @@ msgid "Kroki"
 msgstr ""
 
 msgid "Kubernetes"
-msgstr ""
-
-msgid "Kubernetes API returned status code: %{error_code}"
 msgstr ""
 
 msgid "Kubernetes Cluster"
@@ -25365,9 +25332,6 @@ msgstr ""
 msgid "Namespace ID:"
 msgstr ""
 
-msgid "Namespace is empty"
-msgstr ""
-
 msgid "Namespace:"
 msgstr ""
 
@@ -25840,9 +25804,6 @@ msgstr ""
 msgid "No connection could be made to a Gitaly Server, please check your logs!"
 msgstr ""
 
-msgid "No containers available"
-msgstr ""
-
 msgid "No contributions"
 msgstr ""
 
@@ -25976,9 +25937,6 @@ msgid "No parent group"
 msgstr ""
 
 msgid "No plan"
-msgstr ""
-
-msgid "No pods available"
 msgstr ""
 
 msgid "No policy matches this license"
@@ -28987,12 +28945,6 @@ msgid "Please wait while we connect to your repository. Refresh at will."
 msgstr ""
 
 msgid "Please wait while we import the repository for you. Refresh at will."
-msgstr ""
-
-msgid "Pod does not exist"
-msgstr ""
-
-msgid "Pod not found"
 msgstr ""
 
 msgid "Pods in use"
@@ -40883,9 +40835,6 @@ msgstr ""
 msgid "Unable to collect memory info"
 msgstr ""
 
-msgid "Unable to connect to Elasticsearch"
-msgstr ""
-
 msgid "Unable to connect to Prometheus server"
 msgstr ""
 
@@ -40893,9 +40842,6 @@ msgid "Unable to connect to server: %{error}"
 msgstr ""
 
 msgid "Unable to connect to the Jira instance. Please check your Jira integration configuration."
-msgstr ""
-
-msgid "Unable to convert Kubernetes logs encoding to UTF-8"
 msgstr ""
 
 msgid "Unable to create link to vulnerability"
@@ -41034,9 +40980,6 @@ msgid "Unknown"
 msgstr ""
 
 msgid "Unknown Error"
-msgstr ""
-
-msgid "Unknown cache key"
 msgstr ""
 
 msgid "Unknown encryption strategy: %{encrypted_strategy}!"
@@ -45394,12 +45337,6 @@ msgstr ""
 msgid "container registry images"
 msgstr ""
 
-msgid "container_name can contain only lowercase letters, digits, '-', and '.' and must start and end with an alphanumeric character"
-msgstr ""
-
-msgid "container_name cannot be larger than %{max_length} chars"
-msgstr ""
-
 msgid "contains URLs that exceed the 1024 character limit (%{urls})"
 msgstr ""
 
@@ -46388,12 +46325,6 @@ msgid "pipelineEditorWalkthrough|Use the %{boldStart}commit changes%{boldEnd} bu
 msgstr ""
 
 msgid "pipelineEditorWalkthrough|You can use the file tree to view your pipeline configuration files. %{linkStart}Learn more%{linkEnd}"
-msgstr ""
-
-msgid "pod_name can contain only lowercase letters, digits, '-', and '.' and must start and end with an alphanumeric character"
-msgstr ""
-
-msgid "pod_name cannot be larger than %{max_length} chars"
 msgstr ""
 
 msgid "point"
