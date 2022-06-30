@@ -36098,6 +36098,9 @@ msgstr ""
 msgid "Snowplow"
 msgstr ""
 
+msgid "Solid"
+msgstr ""
+
 msgid "Solution"
 msgstr ""
 
@@ -43549,6 +43552,9 @@ msgid "Will be mapped to"
 msgstr ""
 
 msgid "Will deploy to"
+msgstr ""
+
+msgid "Wireframe"
 msgstr ""
 
 msgid "With requirements, you can set criteria to check your products against."
