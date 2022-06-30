@@ -49,7 +49,7 @@ export default {
     refreshDestinations() {
       return this.$apollo.queries.externalAuditEventDestinations.refetch();
     },
-    async onAddedDestinationUrl() {
+    async onAddedDestination() {
       await this.refreshDestinations();
       this.setEditMode(false);
     },
@@ -101,7 +101,7 @@ export default {
       <gl-button :aria-label="$options.i18n.ADD_STREAM" icon="plus" @click="setEditMode(true)" />
     </div>
     <div v-if="isEditing" class="gl-p-4">
-      <stream-destination-editor @added="onAddedDestinationUrl" @cancel="setEditMode(false)" />
+      <stream-destination-editor @added="onAddedDestination" @cancel="setEditMode(false)" />
     </div>
     <div v-if="destinationsCount" class="gl-p-4">
       <label class="gl-mb-3">{{ $options.i18n.ACTIVE_STREAM }}</label>
