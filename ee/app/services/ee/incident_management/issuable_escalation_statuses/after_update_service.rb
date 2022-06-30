@@ -51,7 +51,7 @@ module EE
         end
 
         def delete_escalations
-          issuable.pending_escalations.delete_all(:delete_all)
+          ::IncidentManagement::PendingEscalations::Issue.delete_by_target(issuable)
         end
 
         def create_escalations

@@ -21,7 +21,7 @@ module EE
         private
 
         def delete_pending_escalations
-          alert.pending_escalations.delete_all(:delete_all)
+          ::IncidentManagement::PendingEscalations::Alert.delete_by_target(alert)
         end
 
         def create_pending_escalations

@@ -29,6 +29,10 @@ module IncidentManagement
 
       delegate :project, to: :target
 
+      def self.delete_by_target(targets)
+        for_target(targets).delete_all
+      end
+
       def self.class_for_check_worker
         raise NotImplementedError
       end

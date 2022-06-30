@@ -13,6 +13,8 @@ module IncidentManagement
 
       validates :rule_id, uniqueness: { scope: [:issue_id] }
 
+      scope :for_target, ->(issues) { where(issue_id: issues) }
+
       def self.class_for_check_worker
         IssueCheckWorker
       end
