@@ -18,7 +18,7 @@ RSpec.describe Groups::AuditEventsController do
 
     shared_context 'when audit_events feature is available' do
       let(:level) { Gitlab::Audit::Levels::Group.new(group: group) }
-      let(:audit_logs_params) { ActionController::Parameters.new(sort: '', entity_type: '', entity_id: '', created_after: Date.current.beginning_of_month, created_before: Date.current.end_of_day).permit! }
+      let(:audit_events_params) { ActionController::Parameters.new(sort: '', entity_type: '', entity_id: '', created_after: Date.current.beginning_of_month, created_before: Date.current.end_of_day).permit! }
 
       before do
         stub_licensed_features(audit_events: true)
@@ -32,7 +32,7 @@ RSpec.describe Groups::AuditEventsController do
           request
 
           expect(AuditLogFinder).to have_received(:new).with(
-            level: level, params: audit_logs_params
+            level: level, params: audit_events_params
           )
         end
       end
@@ -56,7 +56,7 @@ RSpec.describe Groups::AuditEventsController do
         context 'when the author entity type is specified' do
           let(:entity_type) { 'Author' }
           let(:entity_id) { 1 }
-          let(:audit_logs_params) { ActionController::Parameters.new(sort: '', author_id: '1', created_after: Date.current.beginning_of_month, created_before: Date.current.end_of_day).permit! }
+          let(:audit_events_params) { ActionController::Parameters.new(sort: '', author_id: '1', created_after: Date.current.beginning_of_month, created_before: Date.current.end_of_day).permit! }
 
           it_behaves_like 'AuditLogFinder params'
         end
@@ -204,7 +204,7 @@ RSpec.describe Groups::AuditEventsController do
     context 'authorized as user without admin group permission' do
       let_it_be(:developer) { create(:user) }
 
-      let(:audit_logs_params) do
+      let(:audit_events_params) do
         {
           group_id: group.to_param, sort: sort,
           entity_type: entity_type, entity_id: entity_id,
@@ -213,7 +213,7 @@ RSpec.describe Groups::AuditEventsController do
       end
 
       let(:request) do
-        get :index, params: audit_logs_params
+        get :index, params: audit_events_params
       end
 
       before do
