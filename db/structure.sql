@@ -20564,8 +20564,7 @@ CREATE TABLE sbom_sources (
     updated_at timestamp with time zone NOT NULL,
     source_type smallint NOT NULL,
     source jsonb DEFAULT '{}'::jsonb NOT NULL,
-    fingerprint text NOT NULL,
-    CONSTRAINT check_74f01d3506 CHECK ((char_length(fingerprint) <= 255))
+    fingerprint bytea NOT NULL
 );
 
 CREATE SEQUENCE sbom_sources_id_seq

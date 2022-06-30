@@ -6,7 +6,7 @@ class CreateSbomSources < Gitlab::Database::Migration[2.0]
       t.timestamps_with_timezone
       t.integer :source_type, null: false, limit: 2
       t.jsonb :source, null: false, default: {}
-      t.text :fingerprint, null: false, limit: 255
+      t.binary :fingerprint, null: false
     end
   end
 end

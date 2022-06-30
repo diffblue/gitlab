@@ -9,6 +9,6 @@ module Sbom
 
     validates :source_type, presence: true
     validates :source, presence: true, json_schema: { filename: 'sbom_source' }
-    validates :fingerprint, presence: true, length: { maximum: 255 }
+    validates :fingerprint, presence: true
   end
 end

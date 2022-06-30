@@ -13,7 +13,6 @@ RSpec.describe Sbom::Source, type: :model do
     it { is_expected.to validate_presence_of(:source_type) }
     it { is_expected.to validate_presence_of(:source) }
     it { is_expected.to validate_presence_of(:fingerprint) }
-    it { is_expected.to validate_length_of(:fingerprint).is_at_most(255) }
   end
 
   describe 'source validation' do
