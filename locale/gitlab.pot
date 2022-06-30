@@ -8797,6 +8797,9 @@ msgstr ""
 msgid "ClusterIntegration|Choose which of your environments will use this cluster."
 msgstr ""
 
+msgid "ClusterIntegration|Civo Kubernetes"
+msgstr ""
+
 msgid "ClusterIntegration|Clear cluster cache"
 msgstr ""
 
