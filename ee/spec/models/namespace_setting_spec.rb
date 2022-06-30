@@ -240,7 +240,7 @@ RSpec.describe NamespaceSetting do
     end
   end
 
-  describe '.parameters' do
+  describe '.allowed_namespace_settings_params' do
     it 'includes attributes used for limiting unique project downloads' do
       expect(described_class.allowed_namespace_settings_params).to include(*%i[
         unique_project_download_limit
