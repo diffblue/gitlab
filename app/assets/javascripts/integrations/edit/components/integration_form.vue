@@ -140,15 +140,24 @@ export default {
       this.isTesting = true;
 
       testIntegrationSettings(this.propsSource.testPath, this.getFormData())
-        .then(({ data: { error, message = I18N_FETCH_TEST_SETTINGS_DEFAULT_ERROR_MESSAGE } }) => {
-          if (error) {
-            this.setIsValidated();
-            this.$toast.show(message);
-            return;
-          }
+        .then(
+          ({
+            data: {
+              error,
+              message = I18N_FETCH_TEST_SETTINGS_DEFAULT_ERROR_MESSAGE,
+              service_response: serviceResponse,
+            },
+          }) => {
+            if (error) {
+              const errorMessage = serviceResponse ? [message, serviceResponse].join(' ') : message;
+              this.setIsValidated();
+              this.$toast.show(errorMessage);
+              return;
+            }
 
-          this.$toast.show(I18N_SUCCESSFUL_CONNECTION_MESSAGE);
-        })
+            this.$toast.show(I18N_SUCCESSFUL_CONNECTION_MESSAGE);
+          },
+        )
         .catch((error) => {
           this.$toast.show(I18N_DEFAULT_ERROR_MESSAGE);
           Sentry.captureException(error);
