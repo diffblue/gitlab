@@ -179,6 +179,29 @@ RSpec.describe 'Query.instanceSecurityDashboard.projects' do
         end
       end
     end
+
+    context 'requesting clusterAgents in the dashboard' do
+      let_it_be(:other_project_without_access) { create(:project) }
+
+      let_it_be(:cluster_agent) { create(:cluster_agent, project: project) }
+      let_it_be(:cluster_agent_for_other_agent) { create(:cluster_agent, project: other_project_without_access) }
+
+      let(:dashboard_fields) { query_graphql_path(%i[clusterAgents nodes], 'id') }
+
+      subject(:cluster_agents) { graphql_data_at(:instance_security_dashboard, :cluster_agents, :nodes) }
+
+      it_behaves_like 'a working graphql query' do
+        before do
+          user.security_dashboard_projects << other_project_without_access
+
+          post_graphql(query, current_user: current_user)
+        end
+
+        it 'finds only projects that were added to instance security dashboard' do
+          expect(cluster_agents).to contain_exactly(a_graphql_entity_for(cluster_agent))
+        end
+      end
+    end
   end
 
   context 'with no user' do
