@@ -708,6 +708,9 @@ msgstr ""
 msgid "%{labelStart}Crash Address:%{labelEnd} %{crash_address}"
 msgstr ""
 
+msgid "%{labelStart}Crash State:%{labelEnd} %{crash_state}"
+msgstr ""
+
 msgid "%{labelStart}Crash State:%{labelEnd} %{stacktrace_snippet}"
 msgstr ""
 
