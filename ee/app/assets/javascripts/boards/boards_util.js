@@ -140,7 +140,7 @@ export function formatEpicInput(epicInput, boardConfig) {
   const { labelIds = [], ...restEpicInput } = epicInput;
   return {
     ...restEpicInput,
-    addLabelIds: [...labelIds, ...boardConfig.labelIds],
+    addLabelIds: [...labelIds, ...boardConfig.labelIds.map((id) => getIdFromGraphQLId(id))],
   };
 }
 

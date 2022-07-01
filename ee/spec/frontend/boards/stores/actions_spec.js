@@ -1008,7 +1008,7 @@ describe('addListNewEpic', () => {
           ...mockEpic,
           groupPath: state.fullPath,
           id: 'gid://gitlab/Epic/41',
-          addLabelIds: ['gid://gitlab/GroupLabel/23'],
+          addLabelIds: [23],
         },
       },
     });
@@ -1017,7 +1017,7 @@ describe('addListNewEpic', () => {
   it('should add board scope by merging attributes to the epic being created', async () => {
     const epic = {
       ...mockEpic,
-      labelIds: ['gid://gitlab/GroupLabel/4'],
+      labelIds: [4],
     };
 
     jest.spyOn(gqlClient, 'mutate').mockResolvedValue({
@@ -1031,7 +1031,7 @@ describe('addListNewEpic', () => {
 
     const payload = {
       ...mockEpic,
-      addLabelIds: [...epic.labelIds, 'gid://gitlab/GroupLabel/23'],
+      addLabelIds: [...epic.labelIds, 23],
     };
 
     await actions.addListNewEpic(
@@ -1048,10 +1048,7 @@ describe('addListNewEpic', () => {
         },
       },
     });
-    expect(payload.addLabelIds).toEqual([
-      'gid://gitlab/GroupLabel/4',
-      'gid://gitlab/GroupLabel/23',
-    ]);
+    expect(payload.addLabelIds).toEqual([4, 23]);
   });
 
   describe('when issue creation mutation request succeeds', () => {
