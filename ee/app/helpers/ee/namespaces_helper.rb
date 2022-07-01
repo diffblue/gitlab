@@ -62,7 +62,9 @@ module EE
     end
 
     def show_minute_limit_banner?(namespace)
-      return false unless ::Gitlab.com? && ::Feature.enabled?(:show_minute_limit_banner, namespace.root_ancestor) # rubocop:disable Layout/LineLength
+      return false unless ::Gitlab.com? &&
+        ::Feature.enabled?(:show_minute_limit_banner, namespace.root_ancestor) &&
+        current_user&.can?(:guest_access, namespace.root_ancestor)
 
       namespace.root_ancestor.has_free_or_no_subscription? && !minute_limit_banner_dismissed?
     end
