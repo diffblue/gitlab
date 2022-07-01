@@ -10,7 +10,7 @@ RSpec.describe Gitlab::Elastic::GroupSearchResults, :elastic do
   let(:filters) { {} }
   let(:query) { '*' }
 
-  subject(:results) { described_class.new(user, query, Project.all.pluck_primary_key, group: group, filters: filters) }
+  subject(:results) { described_class.new(user, query, group.projects.pluck_primary_key, group: group, filters: filters) }
 
   before do
     stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
@@ -48,6 +48,12 @@ RSpec.describe Gitlab::Elastic::GroupSearchResults, :elastic do
         ensure_elasticsearch_index!
       end
     end
+  end
+
+  context 'blobs' do
+    let!(:project) { create(:project, :public, :repository, group: group) }
+
+    it_behaves_like 'search results filtered by language'
   end
 
   context 'query performance' do

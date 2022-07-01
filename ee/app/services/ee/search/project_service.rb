@@ -13,26 +13,31 @@ module EE
         return super if project.respond_to?(:archived?) && project.archived?
         return super unless use_elasticsearch? && use_default_branch?
 
+        search = params[:search]
+        order_by = params[:order_by]
+        sort = params[:sort]
+        filters = { confidential: params[:confidential], state: params[:state], language: params[:language] }
+
         if project.is_a?(Array)
           project_ids = Array(project).map(&:id)
           ::Gitlab::Elastic::SearchResults.new(
             current_user,
-            params[:search],
+            search,
             project_ids,
             public_and_internal_projects: false,
-            order_by: params[:order_by],
-            sort: params[:sort],
-            filters: { confidential: params[:confidential], state: params[:state] }
+            order_by: order_by,
+            sort: sort,
+            filters: filters
           )
         else
           ::Gitlab::Elastic::ProjectSearchResults.new(
             current_user,
-            params[:search],
+            search,
             project: project,
             repository_ref: repository_ref,
-            order_by: params[:order_by],
-            sort: params[:sort],
-            filters: { confidential: params[:confidential], state: params[:state] }
+            order_by: order_by,
+            sort: sort,
+            filters: filters
           )
         end
       end

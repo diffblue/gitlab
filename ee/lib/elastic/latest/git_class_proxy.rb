@@ -57,7 +57,7 @@ module Elastic
           }
         end
 
-        if languages.any?
+        if type == :blob && languages.any? && allow_aggregations?(type.to_s, options[:count_only], options[:current_user])
           filters << {
             terms: {
               _name: context.name(type, :match, :languages),
@@ -215,7 +215,7 @@ module Elastic
           }
         end
 
-        if include_aggregations?(type, options[:count_only], options[:current_user])
+        if allow_aggregations?(type, options[:count_only], options[:current_user])
           query_hash[:aggs] = {
             language: {
               composite: {
@@ -320,7 +320,7 @@ module Elastic
         end
       end
 
-      def include_aggregations?(type, count_only, current_user)
+      def allow_aggregations?(type, count_only, current_user)
         type == 'blob' && !count_only && ::Feature.enabled?(:search_blobs_language_aggregation, current_user)
       end
     end
