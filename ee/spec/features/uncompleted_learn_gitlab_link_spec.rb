@@ -31,8 +31,10 @@ RSpec.describe 'Uncompleted learn gitlab link', :feature, :js do
       sign_in(user)
       visit namespace_project_learn_gitlab_path(namespace, project)
 
-      expect_completed_section('Set up CI/CD')
-      expect_completed_section('Submit a merge request')
+      expect_completed_section('Create an issue')
+      expect_completed_section('Create a repository')
+      expect_completed_section("Set up your first project's CI/CD")
+      expect_completed_section('Submit a merge request (MR)')
       expect_completed_section('Invite your colleagues')
       expect_completed_section('Run a Security scan using CI/CD')
     end
@@ -49,10 +51,13 @@ RSpec.describe 'Uncompleted learn gitlab link', :feature, :js do
       issue_link = find_link('Create an issue')
 
       expect_correct_candidate_link(issue_link, project_issues_path(project))
-      expect_correct_candidate_link(find_link('Create or import a repository'), project_path(project))
-      expect_correct_candidate_link(find_link('Set up CI/CD'), project_issues_path(project, 7))
-      expect_correct_candidate_link(find_link('Submit a merge request'), project_merge_requests_path(project))
+      expect_correct_candidate_link(find_link('Create a repository'), project_path(project))
       expect_correct_candidate_link(find_link('Invite your colleagues'), URI(project_members_url(project)).path)
+      expect_correct_candidate_link(find_link("Set up your first project's CI/CD"), project_issues_path(project, 7))
+      expect_correct_candidate_link(find_link('Start a free trial of GitLab Ultimate'), project_issues_path(project, 2))
+      expect_correct_candidate_link(find_link('Add code owners'), project_issues_path(project, 10))
+      expect_correct_candidate_link(find_link('Enable require merge approvals'), project_issues_path(project, 11))
+      expect_correct_candidate_link(find_link('Submit a merge request (MR)'), project_merge_requests_path(project))
       expect_correct_candidate_link(find_link('Run a Security scan using CI/CD'), project_security_configuration_path(project))
 
       issue_link.click
