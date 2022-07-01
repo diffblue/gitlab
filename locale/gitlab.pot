@@ -23428,9 +23428,6 @@ msgstr ""
 msgid "Logs"
 msgstr ""
 
-msgid "Logs|To see the logs, deploy your code to an environment."
-msgstr ""
-
 msgid "Looks like you've reached your %{free_limit} member limit for %{strong_start}%{namespace_name}%{strong_end}"
 msgstr ""
 
