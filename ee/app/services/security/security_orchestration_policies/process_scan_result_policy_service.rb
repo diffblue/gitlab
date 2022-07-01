@@ -3,8 +3,6 @@
 module Security
   module SecurityOrchestrationPolicies
     class ProcessScanResultPolicyService
-      MAX_LENGTH = 25
-
       def initialize(policy_configuration:, policy:, policy_index:)
         @policy_configuration = policy_configuration
         @policy = policy
@@ -50,10 +48,9 @@ module Security
       end
 
       def rule_name(policy_name, rule_index)
-        truncated = policy_name.truncate(MAX_LENGTH)
-        return truncated if rule_index == 0
+        return policy_name if rule_index == 0
 
-        "#{truncated} #{rule_index + 1}"
+        "#{policy_name} #{rule_index + 1}"
       end
 
       def users_ids(user_ids, user_names)
