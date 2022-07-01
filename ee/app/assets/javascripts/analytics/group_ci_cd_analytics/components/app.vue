@@ -4,6 +4,7 @@ import DeploymentFrequencyCharts from 'ee/dora/components/deployment_frequency_c
 import LeadTimeCharts from 'ee/dora/components/lead_time_charts.vue';
 import TimeToRestoreServiceCharts from 'ee/dora/components/time_to_restore_service_charts.vue';
 import { mergeUrlParams, updateHistory, getParameterValues } from '~/lib/utils/url_utility';
+import API from '~/api';
 import ReleaseStatsCard from './release_stats_card.vue';
 import SharedRunnersUsage from './shared_runner_usage.vue';
 
@@ -19,6 +20,10 @@ export default {
     TimeToRestoreServiceCharts,
     SharedRunnersUsage,
   },
+  releaseStatisticsTabEvent: 'g_analytics_ci_cd_release_statistics',
+  deploymentFrequencyTabEvent: 'g_analytics_ci_cd_deployment_frequency',
+  leadTimeTabEvent: 'g_analytics_ci_cd_lead_time',
+  timeToRestoreServiceTabEvent: 'g_analytics_ci_cd_time_to_restore_service',
   inject: {
     shouldRenderDoraCharts: {
       type: Boolean,
@@ -71,23 +76,42 @@ export default {
         updateHistory({ url: path, title: window.title });
       }
     },
+    trackTabClick(tab) {
+      API.trackRedisHllUserEvent(tab);
+    },
   },
 };
 </script>
 <template>
   <div>
     <gl-tabs v-if="tabs.length > 1" :value="selectedTabIndex" @input="onTabChange">
-      <gl-tab :title="s__('CICDAnalytics|Release statistics')">
+      <gl-tab
+        :title="s__('CICDAnalytics|Release statistics')"
+        data-testid="release-statistics-tab"
+        @click="trackTabClick($options.releaseStatisticsTabEvent)"
+      >
         <release-stats-card :class="releaseStatsCardClasses" />
       </gl-tab>
       <template v-if="shouldRenderDoraCharts">
-        <gl-tab :title="s__('CICDAnalytics|Deployment frequency')">
+        <gl-tab
+          :title="s__('CICDAnalytics|Deployment frequency')"
+          data-testid="deployment-frequency-tab"
+          @click="trackTabClick($options.deploymentFrequencyTabEvent)"
+        >
           <deployment-frequency-charts />
         </gl-tab>
-        <gl-tab :title="s__('CICDAnalytics|Lead time')">
+        <gl-tab
+          :title="s__('CICDAnalytics|Lead time')"
+          data-testid="lead-time-tab"
+          @click="trackTabClick($options.leadTimeTabEvent)"
+        >
           <lead-time-charts />
         </gl-tab>
-        <gl-tab :title="s__('CICDAnalytics|Time to restore service')">
+        <gl-tab
+          :title="s__('CICDAnalytics|Time to restore service')"
+          data-testid="time-to-restore-service-tab"
+          @click="trackTabClick($options.timeToRestoreServiceTabEvent)"
+        >
           <time-to-restore-service-charts />
         </gl-tab>
       </template>

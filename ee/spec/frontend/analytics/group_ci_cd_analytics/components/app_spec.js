@@ -1,6 +1,6 @@
 import { GlTabs, GlTab, GlLink } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
 import { merge } from 'lodash';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import CiCdAnalyticsApp from 'ee/analytics/group_ci_cd_analytics/components/app.vue';
 import ReleaseStatsCard from 'ee/analytics/group_ci_cd_analytics/components/release_stats_card.vue';
 import SharedRunnersUsage from 'ee/analytics/group_ci_cd_analytics/components/shared_runner_usage.vue';
@@ -9,6 +9,7 @@ import LeadTimeCharts from 'ee/dora/components/lead_time_charts.vue';
 import setWindowLocation from 'helpers/set_window_location_helper';
 import { TEST_HOST } from 'helpers/test_constants';
 import { getParameterValues } from '~/lib/utils/url_utility';
+import API from '~/api';
 
 jest.mock('~/lib/utils/url_utility');
 
@@ -22,7 +23,7 @@ describe('ee/analytics/group_ci_cd_analytics/components/app.vue', () => {
   const quotaPath = '/groups/my-awesome-group/-/usage_quotas#pipelines-quota-tab';
 
   const createComponent = (mountOptions = {}, canView = true) => {
-    wrapper = shallowMount(
+    wrapper = shallowMountExtended(
       CiCdAnalyticsApp,
       merge(
         {
@@ -56,6 +57,28 @@ describe('ee/analytics/group_ci_cd_analytics/components/app.vue', () => {
         expect(findGlTabAtIndex(2).attributes('title')).toBe('Lead time');
         expect(findGlTabAtIndex(3).attributes('title')).toBe('Time to restore service');
         expect(findGlTabAtIndex(4).attributes('title')).toBe('Shared runner usage');
+      });
+
+      describe('event tracking', () => {
+        [
+          'release statistics',
+          'deployment frequency',
+          'lead time',
+          'time to restore service',
+        ].forEach((tabName) => {
+          it(`tracks visits to ${tabName} tab`, () => {
+            const testId = `${tabName.replace(/\s/g, '-')}-tab`;
+            const eventName = `g_analytics_ci_cd_${tabName.replace(/\s/g, '_')}`;
+
+            jest.spyOn(API, 'trackRedisHllUserEvent');
+
+            expect(API.trackRedisHllUserEvent).not.toHaveBeenCalled();
+
+            wrapper.findByTestId(testId).vm.$emit('click');
+
+            expect(API.trackRedisHllUserEvent).toHaveBeenCalledWith(eventName);
+          });
+        });
       });
     });
 
