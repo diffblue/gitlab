@@ -97,7 +97,7 @@ export default {
       this.idState.dragStart = line;
     },
     parseCodeQuality(line) {
-      return line.left?.codequality ?? line.right.codequality;
+      return (line.left ?? line.right)?.codequality;
     },
 
     hideCodeQualityFindings(line) {
