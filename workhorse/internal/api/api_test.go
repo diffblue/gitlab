@@ -9,8 +9,6 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"gitlab.com/gitlab-org/labkit/log"
-
 	"gitlab.com/gitlab-org/gitlab/workhorse/internal/helper"
 	"gitlab.com/gitlab-org/gitlab/workhorse/internal/secret"
 	"gitlab.com/gitlab-org/gitlab/workhorse/internal/testhelper"
@@ -72,15 +70,6 @@ func testRailsServer(url *regexp.Regexp, code int, body string) *httptest.Server
 		}
 
 		w.Header().Set("Content-Type", ResponseContentType)
-
-		logEntry := log.WithFields(log.Fields{
-			"method": r.Method,
-			"url":    r.URL,
-		})
-		logEntryWithCode := logEntry.WithField("code", code)
-
-		// Write pure string
-		logEntryWithCode.Info("UPSTREAM")
 
 		w.WriteHeader(code)
 		fmt.Fprint(w, body)
