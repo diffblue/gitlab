@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'CI minutes', :js do
+RSpec.describe 'CI minutes', :js, time_travel_to: '2022-06-05' do
   let_it_be(:user) { create(:user) }
   let_it_be(:project) { create(:project, name: 'Project 1', namespace: user.namespace) }
 
