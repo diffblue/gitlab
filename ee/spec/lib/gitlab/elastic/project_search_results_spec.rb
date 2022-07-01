@@ -70,7 +70,7 @@ RSpec.describe Gitlab::Elastic::ProjectSearchResults, :elastic do
     end
 
     context 'filtering' do
-      let!(:project) { create(:project, :public) }
+      let!(:project) { create(:project, :public, :repository) }
       let(:query) { 'foo' }
 
       context 'issues' do
@@ -99,6 +99,10 @@ RSpec.describe Gitlab::Elastic::ProjectSearchResults, :elastic do
         end
 
         include_examples 'search results filtered by state'
+      end
+
+      context 'blobs' do
+        it_behaves_like 'search results filtered by language'
       end
     end
   end

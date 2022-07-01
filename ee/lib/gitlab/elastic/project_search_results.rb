@@ -26,7 +26,7 @@ module Gitlab
             query,
             page: (page || 1).to_i,
             per: per_page,
-            options: base_options.merge(count_only: count_only),
+            options: base_options.merge(count_only: count_only).merge(filters.slice(:language)),
             preload_method: preload_method
           )
         end

@@ -32,7 +32,7 @@ module EE
           public_and_internal_projects: elastic_global,
           order_by: params[:order_by],
           sort: params[:sort],
-          filters: { confidential: params[:confidential], state: params[:state] }
+          filters: { confidential: params[:confidential], state: params[:state], language: params[:language] }
         )
       end
 

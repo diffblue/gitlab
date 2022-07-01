@@ -770,7 +770,7 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic do
     end
   end
 
-  describe 'project scoping' do
+  describe 'projects' do
     it "returns items for project" do
       project = create :project, :repository, name: "term"
       project.add_developer(user)
@@ -1013,6 +1013,13 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic do
       it 'finds a ruby method call with numbers' do
         expect(search_for('ruby_call_method_123')).to include(file_name)
       end
+    end
+
+    context 'filtering' do
+      let(:project) { project_1 }
+      let(:results) { described_class.new(user, query, [project.id], filters: filters) }
+
+      it_behaves_like 'search results filtered by language'
     end
   end
 
