@@ -2,6 +2,8 @@
 
 module Vulnerabilities
   class Read < ApplicationRecord
+    include UnnestedInFilters::Dsl
+
     self.table_name = "vulnerability_reads"
     self.primary_key = :vulnerability_id
 
