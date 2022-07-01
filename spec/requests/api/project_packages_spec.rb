@@ -86,6 +86,18 @@ RSpec.describe API::ProjectPackages do
             expect(json_response).to include(a_hash_including('_links' => a_hash_including('web_path' => include(nested_project.namespace.full_path))))
           end
         end
+
+        context 'with JOB-TOKEN auth' do
+          let(:job) { create(:ci_build, :running, user: user) }
+
+          subject { get api(url, job_token: job.token) }
+
+          it_behaves_like 'returns packages', :project, :maintainer
+          it_behaves_like 'returns packages', :project, :developer
+          it_behaves_like 'returns packages', :project, :reporter
+          it_behaves_like 'returns packages', :project, :no_type
+          it_behaves_like 'returns packages', :project, :guest
+        end
       end
 
       context 'project is private' do
@@ -123,6 +135,10 @@ RSpec.describe API::ProjectPackages do
           subject { get api(url, job_token: job.token) }
 
           it_behaves_like 'returns packages', :project, :maintainer
+          it_behaves_like 'returns packages', :project, :developer
+          it_behaves_like 'returns packages', :project, :reporter
+          it_behaves_like 'rejects packages access', :project, :no_type, :not_found
+          it_behaves_like 'rejects packages access', :project, :guest, :not_found
         end
       end
 
@@ -185,6 +201,8 @@ RSpec.describe API::ProjectPackages do
   end
 
   describe 'GET /projects/:id/packages/:package_id' do
+    let(:single_package_schema) { 'public_api/v4/packages/package' }
+
     subject { get api(package_url, user) }
 
     shared_examples 'no destroy url' do
@@ -225,7 +243,7 @@ RSpec.describe API::ProjectPackages do
           subject
 
           expect(response).to have_gitlab_http_status(:ok)
-          expect(response).to match_response_schema('public_api/v4/packages/package')
+          expect(response).to match_response_schema(single_package_schema)
         end
 
         it 'returns 404 when the package does not exist' do
@@ -241,6 +259,18 @@ RSpec.describe API::ProjectPackages do
         end
 
         it_behaves_like 'no destroy url'
+
+        context 'with JOB-TOKEN auth' do
+          let(:job) { create(:ci_build, :running, user: user) }
+
+          subject { get api(package_url, job_token: job.token) }
+
+          it_behaves_like 'returns package', :project, :maintainer
+          it_behaves_like 'returns package', :project, :developer
+          it_behaves_like 'returns package', :project, :reporter
+          it_behaves_like 'returns package', :project, :no_type
+          it_behaves_like 'returns package', :project, :guest
+        end
       end
 
       context 'project is private' do
@@ -267,7 +297,7 @@ RSpec.describe API::ProjectPackages do
             subject
 
             expect(response).to have_gitlab_http_status(:ok)
-            expect(response).to match_response_schema('public_api/v4/packages/package')
+            expect(response).to match_response_schema(single_package_schema)
           end
 
           it_behaves_like 'no destroy url'
@@ -284,14 +314,13 @@ RSpec.describe API::ProjectPackages do
         context 'with JOB-TOKEN auth' do
           let(:job) { create(:ci_build, :running, user: user) }
 
-          it 'returns 200 and the package information' do
-            project.add_developer(user)
+          subject { get api(package_url, job_token: job.token) }
 
-            get api(package_url, job_token: job.token)
-
-            expect(response).to have_gitlab_http_status(:ok)
-            expect(response).to match_response_schema('public_api/v4/packages/package')
-          end
+          it_behaves_like 'returns package', :project, :maintainer
+          it_behaves_like 'returns package', :project, :developer
+          it_behaves_like 'returns package', :project, :reporter
+          it_behaves_like 'rejects packages access', :project, :guest, :not_found
+          it_behaves_like 'rejects packages access', :project, :no_type, :not_found
         end
 
         context 'with pipeline' do
@@ -379,6 +408,14 @@ RSpec.describe API::ProjectPackages do
 
         context 'with JOB-TOKEN auth' do
           let(:job) { create(:ci_build, :running, user: user) }
+
+          it 'returns 403 for a user without enough permissions' do
+            project.add_developer(user)
+
+            expect { delete api(package_url, job_token: job.token) }.not_to change { ::Packages::Package.pending_destruction.count }
+
+            expect(response).to have_gitlab_http_status(:forbidden)
+          end
 
           it 'returns 204' do
             project.add_maintainer(user)
