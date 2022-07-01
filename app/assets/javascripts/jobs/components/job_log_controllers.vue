@@ -151,14 +151,6 @@ export default {
 
     <div class="controllers gl-float-right">
       <template v-if="showJobLogSearch">
-        <help-popover class="gl-mr-3">
-          <template #title>{{ $options.i18n.searchPopoverTitle }}</template>
-
-          <p class="gl-mb-0">
-            {{ $options.i18n.searchPopoverDescription }}
-          </p>
-        </help-popover>
-
         <gl-search-box-by-click
           v-model="searchTerm"
           class="gl-mr-3"
@@ -167,6 +159,14 @@ export default {
           @clear="$emit('searchResults', [])"
           @submit="searchJobLog"
         />
+
+        <help-popover class="gl-mr-3">
+          <template #title>{{ $options.i18n.searchPopoverTitle }}</template>
+
+          <p class="gl-mb-0">
+            {{ $options.i18n.searchPopoverDescription }}
+          </p>
+        </help-popover>
       </template>
 
       <!-- links -->
