@@ -2,7 +2,7 @@ import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import createDefaultClient from '~/lib/graphql';
 import { convertObjectPropsToCamelCase, parseBoolean } from '~/lib/utils/common_utils';
-
+import { MAX_HEADERS } from './constants';
 import AuditEventsApp from './components/audit_events_app.vue';
 import createStore from './store';
 
@@ -17,6 +17,7 @@ export default (selector) => {
     exportUrl = '',
     showFilter,
     showStreams,
+    showStreamsHeaders,
     groupPath,
     emptyStateSvgPath,
     streamsIconSvgPath,
@@ -40,7 +41,9 @@ export default (selector) => {
       filterTokenOptions: parsedFilterTokenOptions,
       exportUrl,
       showFilter: parseBoolean(showFilter) || true,
-      showStreams: parseBoolean(showStreams),
+      showStreams: parseBoolean(showStreams) || false,
+      showStreamsHeaders: parseBoolean(showStreamsHeaders) || false,
+      maxHeaders: MAX_HEADERS,
       groupPath,
       // group level and project level are mutually exclusive.
       isProject: !groupPath,

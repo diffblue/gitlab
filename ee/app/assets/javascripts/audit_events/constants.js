@@ -78,9 +78,16 @@ export const ADD_STREAM_EDITOR_I18N = {
   WARNING_CONTENT: s__(
     'AuditStreams|This could include sensitive information. Make sure you trust the destination endpoint.',
   ),
-  // This is intended since this is used for input.placeholder
-  PLACEHOLDER: 'https://api.gitlab.com',
   DESTINATION_URL_LABEL: s__('AuditStreams|Destination URL'),
+  DESTINATION_URL_PLACEHOLDER: 'https://api.gitlab.com',
+  HEADERS_LABEL: s__('AuditStreams|Custom HTTP headers'),
+  TABLE_COLUMN_NAME_LABEL: s__('AuditStreams|Header'),
+  TABLE_COLUMN_VALUE_LABEL: s__('AuditStreams|Value'),
+  TABLE_COLUMN_ACTIVE_LABEL: s__('AuditStreams|Active'),
+  HEADER_INPUT_PLACEHOLDER: s__('AuditStreams|Header'),
+  HEADER_INPUT_DUPLICATE_ERROR: s__('AuditStreams|A header with this name already exists.'),
+  VALUE_INPUT_PLACEHOLDER: s__('AuditStreams|Value'),
+  MAXIMUM_HEADERS_TEXT: s__('AuditStreams|Maximum of %{number} HTTP headers has been reached.'),
   ADD_BUTTON_TEXT: __('Add'),
   ADD_BUTTON_NAME: s__('AuditStreams|Add external stream destination'),
   CANCEL_BUTTON_TEXT: __('Cancel'),
@@ -106,3 +113,14 @@ export const AUDIT_STREAMS_NETWORK_ERRORS = {
     'AuditStreams|An error occurred when deleting external audit event stream destination. Please try it again.',
   ),
 };
+
+export const MAX_HEADERS = 20;
+export const createBlankHeader = () => ({
+  id: null,
+  name: '',
+  value: '',
+  active: true,
+  disabled: false,
+  deletionDisabled: true,
+  validationErrors: { name: '' },
+});

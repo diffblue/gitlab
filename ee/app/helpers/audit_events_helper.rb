@@ -41,4 +41,10 @@ module AuditEventsHelper
 
     can?(current_user, :admin_external_audit_events, group)
   end
+
+  def show_streams_headers?(group)
+    return false unless show_streams_for_group?(group)
+
+    Feature.enabled?(:custom_headers_streaming_audit_events_ui, group)
+  end
 end

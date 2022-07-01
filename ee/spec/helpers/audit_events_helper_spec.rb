@@ -65,4 +65,36 @@ RSpec.describe AuditEventsHelper do
       end
     end
   end
+
+  describe '#show_streams_headers?' do
+    let_it_be(:group) { build(:group) }
+    let_it_be(:subgroup) { build(:group, :nested) }
+    let_it_be(:current_user) { build(:user) }
+
+    it 'returns false if the group is a subgroup' do
+      expect(helper.show_streams_for_group?(subgroup)).to eq(false)
+    end
+
+    where(:has_permission?, :feature_enabled?, :result) do
+      false | false | false
+      true | false | false
+      false | true | false
+      true | true | true
+    end
+
+    with_them do
+      before do
+        allow(helper).to receive(:current_user).and_return(current_user)
+        allow(helper)
+          .to receive(:can?)
+                .with(current_user, :admin_external_audit_events, group)
+                .and_return(has_permission?)
+        stub_feature_flags(custom_headers_streaming_audit_events_ui: feature_enabled?)
+      end
+
+      it "returns #{params[:result]}" do
+        expect(helper.show_streams_headers?(group)).to eq(result)
+      end
+    end
+  end
 end
