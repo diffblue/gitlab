@@ -27,6 +27,15 @@ module EE
             event.attributes.except('id').merge('issue_id' => new_entity.id)
           end
         end
+
+        override :group
+        def group
+          if new_entity.respond_to?(:group) && new_entity.group
+            new_entity.group
+          else
+            super
+          end
+        end
       end
     end
   end

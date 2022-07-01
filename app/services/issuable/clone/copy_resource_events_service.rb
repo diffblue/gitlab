@@ -2,7 +2,9 @@
 
 module Issuable
   module Clone
-    class CopyResourceEventsService < ::Issuable::Clone::BaseService
+    class CopyResourceEventsService
+      attr_reader :current_user, :original_entity, :new_entity
+
       def initialize(current_user, original_entity, new_entity)
         @current_user = current_user
         @original_entity = original_entity
@@ -98,6 +100,12 @@ module Issuable
 
         milestones = MilestonesFinder.new(params).execute
         milestones.first
+      end
+
+      def group
+        if new_entity.project&.group && current_user.can?(:read_group, new_entity.project.group)
+          new_entity.project.group
+        end
       end
     end
   end

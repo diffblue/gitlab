@@ -41,7 +41,6 @@ module Issues
     def update_new_entity
       # we don't call `super` because we want to be able to decide whether or not to copy all comments over.
       update_new_entity_description
-      update_new_entity_attributes
       copy_award_emoji
 
       if with_notes
@@ -66,7 +65,9 @@ module Issues
       }
 
       new_params = original_entity.serializable_hash.symbolize_keys.merge(new_params)
+      new_params = new_params.merge(rewritten_old_entity_attributes)
       new_params.delete(:created_at)
+      new_params.delete(:updated_at)
 
       # spam checking is not necessary, as no new content is being created. Passing nil for
       # spam_params will cause SpamActionService to skip checking and return a success response.

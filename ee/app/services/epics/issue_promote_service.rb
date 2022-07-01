@@ -57,7 +57,9 @@ module Epics
         title: original_entity.title,
         parent: issue_epic,
         confidential: issue.confidential
-      }
+      }.merge(
+        rewritten_old_entity_attributes(include_milestone: false)
+      )
     end
 
     def issue_epic

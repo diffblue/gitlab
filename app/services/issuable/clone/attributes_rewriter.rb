@@ -2,44 +2,60 @@
 
 module Issuable
   module Clone
-    class AttributesRewriter < ::Issuable::Clone::BaseService
-      def initialize(current_user, original_entity, new_entity)
+    class AttributesRewriter
+      attr_reader :current_user, :original_entity, :target_parent
+
+      def initialize(current_user, original_entity, target_parent)
         @current_user = current_user
         @original_entity = original_entity
-        @new_entity = new_entity
+        @target_parent = target_parent
       end
 
-      def execute
-        update_attributes = { labels: cloneable_labels }
+      def execute(include_milestone: true)
+        attributes = { label_ids: cloneable_labels.pluck_primary_key }
 
-        milestone = matching_milestone(original_entity.milestone&.title)
-        update_attributes[:milestone] = milestone if milestone.present?
+        if include_milestone
+          milestone = matching_milestone(original_entity.milestone&.title)
+          attributes[:milestone_id] = milestone.id if milestone.present?
+        end
 
-        new_entity.update(update_attributes)
+        attributes
       end
 
       private
 
       def cloneable_labels
         params = {
-          project_id: new_entity.project&.id,
+          project_id: project&.id,
           group_id: group&.id,
           title: original_entity.labels.select(:title),
           include_ancestor_groups: true
         }
 
-        params[:only_group_labels] = true if new_parent.is_a?(Group)
+        params[:only_group_labels] = true if target_parent.is_a?(Group)
 
         LabelsFinder.new(current_user, params).execute
       end
 
       def matching_milestone(title)
-        return if title.blank? || !new_entity.supports_milestone?
+        return if title.blank?
 
-        params = { title: title, project_ids: new_entity.project&.id, group_ids: group&.id }
+        params = { title: title, project_ids: project&.id, group_ids: group&.id }
 
         milestones = MilestonesFinder.new(params).execute
         milestones.first
+      end
+
+      def project
+        target_parent if target_parent.is_a?(Project)
+      end
+
+      def group
+        if target_parent.is_a?(Group)
+          target_parent
+        elsif target_parent&.group && current_user.can?(:read_group, target_parent.group)
+          target_parent.group
+        end
       end
     end
   end

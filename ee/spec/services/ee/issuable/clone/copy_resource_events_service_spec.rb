@@ -6,7 +6,25 @@ RSpec.describe Issuable::Clone::CopyResourceEventsService do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project, :public, group: group) }
+  let_it_be(:project2) { create(:project, :public, group: group) }
   let_it_be(:original_issue) { create(:issue, project: project) }
+  let_it_be(:new_issue) { create(:issue, project: project2) }
+
+  subject { described_class.new(user, original_issue, new_issue) }
+
+  context 'resource weight events' do
+    before do
+      create(:resource_weight_event, issue: original_issue, weight: 1)
+      create(:resource_weight_event, issue: original_issue, weight: 42)
+      create(:resource_weight_event, issue: original_issue, weight: 5)
+    end
+
+    it 'creates expected resource weight events' do
+      subject.execute
+
+      expect(new_issue.resource_weight_events.map(&:weight)).to contain_exactly(1, 42, 5)
+    end
+  end
 
   context 'when a new object is a group entity' do
     context 'when entity is an epic' do

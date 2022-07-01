@@ -34,20 +34,6 @@ RSpec.describe Issues::CloneService do
       end
     end
 
-    context 'resource weight events' do
-      let_it_be(:old_issue) { create(:issue, project: old_project, author: user, weight: 5) }
-      let_it_be(:event1) { create(:resource_weight_event, issue: old_issue, weight: 1) }
-      let_it_be(:event2) { create(:resource_weight_event, issue: old_issue, weight: 42) }
-      let_it_be(:event3) { create(:resource_weight_event, issue: old_issue, weight: 5) }
-
-      let_it_be(:another_old_issue) { create(:issue, project: new_project, author: user) }
-      let_it_be(:event4) { create(:resource_weight_event, issue: another_old_issue, weight: 2) }
-
-      it 'creates expected resource weight events' do
-        expect(subject.resource_weight_events.map(&:weight)).to contain_exactly(1, 42, 5)
-      end
-    end
-
     context 'when it is not allowed to clone issues of given type' do
       it 'throws error' do
         requirement_issue = create(:issue, issue_type: :requirement, project: old_project)

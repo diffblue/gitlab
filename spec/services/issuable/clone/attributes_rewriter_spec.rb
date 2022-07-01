@@ -3,14 +3,13 @@
 require 'spec_helper'
 
 RSpec.describe Issuable::Clone::AttributesRewriter do
-  let(:user) { create(:user) }
-  let(:group) { create(:group) }
-  let(:project1) { create(:project, :public, group: group) }
-  let(:project2) { create(:project, :public, group: group) }
-  let(:original_issue) { create(:issue, project: project1) }
-  let(:new_issue) { create(:issue, project: project2) }
+  let_it_be(:user) { create(:user) }
+  let_it_be(:group) { create(:group) }
+  let_it_be(:project1) { create(:project, :public, group: group) }
+  let_it_be(:project2) { create(:project, :public, group: group) }
+  let_it_be(:original_issue) { create(:issue, project: project1) }
 
-  subject { described_class.new(user, original_issue, new_issue) }
+  let(:new_attributes) { described_class.new(user, original_issue, project2).execute }
 
   context 'setting labels' do
     it 'sets labels present in the new project and group labels' do
@@ -22,15 +21,11 @@ RSpec.describe Issuable::Clone::AttributesRewriter do
 
       original_issue.update!(labels: [project1_label_1, project1_label_2, group_label])
 
-      subject.execute
-
-      expect(new_issue.reload.labels).to match_array([project2_label_1, group_label])
+      expect(new_attributes[:label_ids]).to match_array([project2_label_1.id, group_label.id])
     end
 
     it 'does not set any labels when not used on the original issue' do
-      subject.execute
-
-      expect(new_issue.reload.labels).to be_empty
+      expect(new_attributes[:label_ids]).to be_empty
     end
   end
 
@@ -40,9 +35,7 @@ RSpec.describe Issuable::Clone::AttributesRewriter do
 
       original_issue.update!(milestone: milestone)
 
-      subject.execute
-
-      expect(new_issue.reload.milestone).to be_nil
+      expect(new_attributes[:milestone_id]).to be_nil
     end
 
     it 'copies the milestone when old issue milestone title is in the new project' do
@@ -51,9 +44,7 @@ RSpec.describe Issuable::Clone::AttributesRewriter do
 
       original_issue.update!(milestone: milestone_project1)
 
-      subject.execute
-
-      expect(new_issue.reload.milestone).to eq(milestone_project2)
+      expect(new_attributes[:milestone_id]).to eq(milestone_project2.id)
     end
 
     it 'copies the milestone when old issue milestone is a group milestone' do
@@ -61,9 +52,36 @@ RSpec.describe Issuable::Clone::AttributesRewriter do
 
       original_issue.update!(milestone: milestone)
 
-      subject.execute
+      expect(new_attributes[:milestone_id]).to eq(milestone.id)
+    end
 
-      expect(new_issue.reload.milestone).to eq(milestone)
+    context 'when include_milestone is false' do
+      let(:new_attributes) { described_class.new(user, original_issue, project2).execute(include_milestone: false) }
+
+      it 'does not return any milestone' do
+        milestone = create(:milestone, title: 'milestone', group: group)
+
+        original_issue.update!(milestone: milestone)
+
+        expect(new_attributes[:milestone_id]).to be_nil
+      end
+    end
+  end
+
+  context 'when target parent is a group' do
+    let(:new_attributes) { described_class.new(user, original_issue, group).execute }
+
+    context 'setting labels' do
+      let(:project_label1) { create(:label, title: 'label1', project: project1) }
+      let!(:project_label2) { create(:label, title: 'label2', project: project1) }
+      let(:group_label1) { create(:group_label, title: 'group_label', group: group) }
+      let!(:group_label2) { create(:group_label, title: 'label2', group: group) }
+
+      it 'keeps group labels and merges project labels where possible' do
+        original_issue.update!(labels: [project_label1, project_label2, group_label1])
+
+        expect(new_attributes[:label_ids]).to match_array([group_label1.id, group_label2.id])
+      end
     end
   end
 end

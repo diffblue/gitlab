@@ -144,14 +144,27 @@ RSpec.describe Issues::CloneService do
           create(:issue, title: title, description: description, project: old_project, author: author, milestone: milestone)
         end
 
-        before do
-          create(:resource_milestone_event, issue: old_issue, milestone: milestone, action: :add)
-        end
-
-        it 'does not create extra milestone events' do
+        it 'copies the milestone and creates a resource_milestone_event' do
           new_issue = clone_service.execute(old_issue, new_project)
 
-          expect(new_issue.resource_milestone_events.count).to eq(old_issue.resource_milestone_events.count)
+          expect(new_issue.milestone).to eq(milestone)
+          expect(new_issue.resource_milestone_events.count).to eq(1)
+        end
+      end
+
+      context 'issue with label' do
+        let(:label) { create(:group_label, group: sub_group_1) }
+        let(:new_project) { create(:project, namespace: sub_group_1) }
+
+        let(:old_issue) do
+          create(:issue, project: old_project, labels: [label])
+        end
+
+        it 'copies the label and creates a resource_label_event' do
+          new_issue = clone_service.execute(old_issue, new_project)
+
+          expect(new_issue.labels).to contain_exactly(label)
+          expect(new_issue.resource_label_events.count).to eq(1)
         end
       end
 
