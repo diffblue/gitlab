@@ -16,7 +16,8 @@ module Gitlab
       ES_SEPARATE_CLASSES = [
         Issue,
         Note,
-        MergeRequest
+        MergeRequest,
+        Commit
       ].freeze
 
       attr_reader :version, :client

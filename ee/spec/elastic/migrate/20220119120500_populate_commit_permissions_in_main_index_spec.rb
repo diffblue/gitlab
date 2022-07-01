@@ -9,6 +9,15 @@ RSpec.describe PopulateCommitPermissionsInMainIndex do
   let(:client) { Project.__elasticsearch__.client }
   let(:permissions_matrix) { described_class::PERMISSIONS_MATRIX }
 
+  let(:projects) do
+    permissions_matrix.map do |visibility_level, repository_access_level|
+      create(:project,
+             :repository,
+             visibility_level: visibility_level,
+             repository_access_level: repository_access_level)
+    end
+  end
+
   describe 'migration_options' do
     it 'has migration options set', :aggregate_failures do
       expect(migration).to be_batched
@@ -48,17 +57,9 @@ RSpec.describe PopulateCommitPermissionsInMainIndex do
   end
 
   describe 'integration test', :elastic, :sidekiq_inline do
-    let(:projects) do
-      described_class::PERMISSIONS_MATRIX.map do |visibility_level, repository_access_level|
-        create(:project,
-               :repository,
-               visibility_level: visibility_level,
-               repository_access_level: repository_access_level)
-      end
-    end
-
     before do
       stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
+      set_elasticsearch_migration_to :populate_commit_permissions_in_main_index, including: false
 
       # ensure Projects are created and indexed
       projects.each { |p| p.repository.index_commits_and_blobs }
@@ -263,6 +264,7 @@ RSpec.describe PopulateCommitPermissionsInMainIndex do
 
     before do
       stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
+      set_elasticsearch_migration_to :populate_commit_permissions_in_main_index, including: false
 
       project.repository.index_commits_and_blobs
       ensure_elasticsearch_index!

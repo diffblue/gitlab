@@ -174,7 +174,7 @@ RSpec.describe Gitlab::Elastic::Indexer do
           )[:commits][:results].response
 
           commits.map do |commit|
-            commit['_source']['commit']['sha']
+            commit['_source']['sha']
           end
         end
 
@@ -455,7 +455,8 @@ RSpec.describe Gitlab::Elastic::Indexer do
 
   def elasticsearch_config
     Gitlab::CurrentSettings.elasticsearch_config.merge(
-      index_name: 'gitlab-test'
+      index_name: 'gitlab-test',
+      index_name_commits: 'gitlab-test-commits'
     ).tap do |config|
       config[:url] = config[:url].map { |u| ::Gitlab::Elastic::Helper.url_string(u) }
     end

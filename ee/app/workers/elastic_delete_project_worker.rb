@@ -22,7 +22,7 @@ class ElasticDeleteProjectWorker
   def indices
     helper = Gitlab::Elastic::Helper.default
 
-    [helper.target_name] + helper.standalone_indices_proxies(target_classes: [Issue, Note, MergeRequest]).map(&:index_name)
+    [helper.target_name] + helper.standalone_indices_proxies.map(&:index_name)
   end
 
   def remove_project_and_children_documents(project_id, es_id)
@@ -47,6 +47,11 @@ class ElasticDeleteProjectWorker
                 term: {
                   # We never set `project_id` for commits instead they have a nested rid which is the project_id
                   "commit.rid" => project_id
+                }
+              },
+              {
+                term: {
+                  "rid" => project_id
                 }
               },
               {

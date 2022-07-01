@@ -74,6 +74,8 @@ RSpec.describe 'Admin updates EE-only settings' do
         fill_in 'application_setting_elasticsearch_replicas[gitlab-test-notes]', with: '4'
         fill_in 'application_setting_elasticsearch_shards[gitlab-test-merge_requests]', with: '15'
         fill_in 'application_setting_elasticsearch_replicas[gitlab-test-merge_requests]', with: '5'
+        fill_in 'application_setting_elasticsearch_shards[gitlab-test-commits]', with: '25'
+        fill_in 'application_setting_elasticsearch_replicas[gitlab-test-commits]', with: '6'
 
         fill_in 'Maximum file size indexed (KiB)', with: '5000'
         fill_in 'Maximum field length', with: '100000'
@@ -98,6 +100,8 @@ RSpec.describe 'Admin updates EE-only settings' do
         expect(Elastic::IndexSetting['gitlab-test-notes'].number_of_replicas).to eq(4)
         expect(Elastic::IndexSetting['gitlab-test-merge_requests'].number_of_shards).to eq(15)
         expect(Elastic::IndexSetting['gitlab-test-merge_requests'].number_of_replicas).to eq(5)
+        expect(Elastic::IndexSetting['gitlab-test-commits'].number_of_shards).to eq(25)
+        expect(Elastic::IndexSetting['gitlab-test-commits'].number_of_replicas).to eq(6)
 
         expect(current_settings.elasticsearch_indexed_file_size_limit_kb).to eq(5000)
         expect(current_settings.elasticsearch_indexed_field_length_limit).to eq(100000)
