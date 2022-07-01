@@ -177,19 +177,15 @@ RSpec.describe 'Dependency-Scanning.gitlab-ci.yml' do
         end
       end
 
-      context 'by default' do
+      context 'by default', fips_mode: false do
         let(:expected_image_suffix) { "" }
 
         include_examples 'language detection'
         include_examples 'PIP_REQUIREMENTS_FILE support'
       end
 
-      context 'when FIPS mode is enabled' do
+      context 'when FIPS mode is enabled', :fips_mode do
         let(:expected_image_suffix) { "-fips" }
-
-        before do
-          create(:ci_variable, project: project, key: 'CI_GITLAB_FIPS_MODE', value: 'true')
-        end
 
         include_examples 'language detection'
         include_examples 'PIP_REQUIREMENTS_FILE support'
