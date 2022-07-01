@@ -15,7 +15,7 @@ product_stage: create
 product_group: source_code
 product_category: source_code_management
 milestone: "15.2"
-introduced_by_url: 'TOD0'
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/91605
 distributions:
 - ce
 - ee
