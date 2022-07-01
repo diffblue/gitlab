@@ -179,7 +179,6 @@ RSpec.describe Projects::UpdateMirrorService do
     context 'when tags on mirror are modified' do
       let(:mirror_project) { create(:project, :repository)}
       let(:mirror_path) { File.join(TestEnv.repos_path, mirror_project.repository.relative_path) }
-      let(:mirror_rugged) { Rugged::Repository.new(mirror_path) }
       let!(:mirror_modified_tag_sha) { modify_tag(mirror_project.repository, 'v1.0.0') }
       let!(:mirror_modified_branch_sha) { modify_branch(mirror_project.repository, 'feature') }
       let(:project) do
@@ -478,51 +477,48 @@ RSpec.describe Projects::UpdateMirrorService do
   end
 
   def fetch_mirror(repository, tags_changed: true)
-    rugged = rugged_repo(repository)
     masterrev = repository.find_branch("master").dereferenced_target.id
 
     parentrev = repository.commit(masterrev).parent_id
-    rugged.references.create("refs/heads/existing-branch", parentrev)
+    repository.write_ref("refs/heads/existing-branch", parentrev)
 
     repository.expire_branches_cache
     repository.branches
 
     # New branch
-    rugged.references.create('refs/remotes/upstream/new-branch', masterrev)
+    repository.write_ref('refs/remotes/upstream/new-branch', masterrev)
 
     # Updated existing branch
-    rugged.references.create('refs/remotes/upstream/existing-branch', masterrev)
+    repository.write_ref('refs/remotes/upstream/existing-branch', masterrev)
 
     # Diverged branch
-    rugged.references.create('refs/remotes/upstream/markdown', masterrev)
+    repository.write_ref('refs/remotes/upstream/markdown', masterrev)
 
     # New tag
-    rugged.references.create('refs/tags/new-tag', masterrev)
+    repository.write_ref('refs/tags/new-tag', masterrev)
 
     # Protected tag
-    rugged.references.create('refs/tags/protected-tag', masterrev)
+    repository.write_ref('refs/tags/protected-tag', masterrev)
 
     # New tag that point to a blob
-    rugged.references.create('refs/tags/new-tag-on-blob', 'c74175afd117781cbc983664339a0f599b5bb34e')
+    repository.write_ref('refs/tags/new-tag-on-blob', 'c74175afd117781cbc983664339a0f599b5bb34e')
 
     Gitaly::FetchRemoteResponse.new(tags_changed: tags_changed)
   end
 
   def modify_tag(repository, tag_name)
-    rugged = rugged_repo(repository)
     masterrev = repository.find_branch('master').dereferenced_target.id
 
     # Modify tag
-    rugged.references.update("refs/tags/#{tag_name}", masterrev)
+    repository.write_ref("refs/tags/#{tag_name}", masterrev)
     repository.find_tag(tag_name).dereferenced_target.id
   end
 
   def modify_branch(repository, branch_name)
-    rugged = rugged_repo(repository)
     masterrev = repository.find_branch('master').dereferenced_target.id
 
     # Modify branch
-    rugged.references.update("refs/heads/#{branch_name}", masterrev)
+    repository.write_ref("refs/heads/#{branch_name}", masterrev)
     repository.find_branch(branch_name).dereferenced_target.id
   end
 end
