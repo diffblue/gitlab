@@ -187,6 +187,10 @@ module Gitlab
           index_name: target.index_name
         )
 
+        if ::Elastic::DataMigrationService.migration_has_finished?(:migrate_commits_to_separate_index)
+          config[:index_name_commits] = ::Elastic::Latest::CommitConfig.index_name
+        end
+
         # We need to pass a percent encoded URL string instead of a hash
         # to the go indexer because it passes authentication credentials
         # embedded in the url.

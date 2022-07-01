@@ -40,6 +40,26 @@ module Elastic
             %w[commit blob]
           end
 
+        if types.include?('commit')
+          client.delete_by_query(
+            index: ::Elastic::Latest::CommitConfig.index_name,
+            routing: es_parent,
+            body: {
+              query: {
+                bool: {
+                  filter: [
+                    {
+                      term: {
+                        rid: project_id
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          )
+        end
+
         client.delete_by_query(
           index: index_name,
           routing: es_parent,

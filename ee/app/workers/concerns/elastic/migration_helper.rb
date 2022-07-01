@@ -56,8 +56,8 @@ module Elastic
       helper.delete_index(index_name: new_index_name) if helper.index_exists?(index_name: new_index_name)
     end
 
-    def reindex(slice:, max_slices:)
-      body = reindex_query(slice: slice, max_slices: max_slices)
+    def reindex(slice:, max_slices:, script: nil)
+      body = reindex_query(slice: slice, max_slices: max_slices, script: script)
 
       response = client.reindex(body: body, wait_for_completion: false)
 
@@ -82,8 +82,8 @@ module Elastic
       true
     end
 
-    def reindex_query(slice:, max_slices:)
-      {
+    def reindex_query(slice:, max_slices:, script: nil)
+      query = {
         source: {
           index: default_index_name,
           _source: document_type_fields,
@@ -101,6 +101,15 @@ module Elastic
           index: new_index_name
         }
       }
+
+      if script
+        query[:script] = {
+          lang: 'painless',
+          source: script
+        }
+      end
+
+      query
     end
   end
 end

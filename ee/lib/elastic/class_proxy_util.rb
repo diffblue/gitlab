@@ -12,7 +12,9 @@ module Elastic
       super(target)
 
       const_name = if use_separate_indices
-                     if target.superclass.abstract_class?
+                     # This check is needed to load custom mappings for AR and non-AR classes
+                     # For example, Issue and Commit
+                     if target.superclass == Object || target.superclass.abstract_class?
                        "#{target.name}Config"
                      else
                        "#{target.superclass.name}Config"

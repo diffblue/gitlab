@@ -4,6 +4,8 @@ require 'spec_helper'
 require File.expand_path('ee/elastic/migrate/20220118150500_delete_orphaned_commits.rb')
 
 RSpec.describe DeleteOrphanedCommits do
+  include ElasticsearchHelpers
+
   let(:version) { 20220118150500 }
   let(:migration) { described_class.new(version) }
   let(:helper) { Gitlab::Elastic::Helper.default }
@@ -11,6 +13,7 @@ RSpec.describe DeleteOrphanedCommits do
 
   before do
     stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
+    set_elasticsearch_migration_to :delete_orphaned_commits, including: false
   end
 
   describe 'migration_options' do

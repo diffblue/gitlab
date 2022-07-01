@@ -52,7 +52,7 @@ module Elastic
           filters << {
             terms: {
               _name: context.name(type, :related, :repositories),
-              "#{type}.rid" => repository_ids
+              (options[:project_id_field] || "#{type}.rid") => repository_ids
             }
           }
         end
@@ -74,13 +74,20 @@ module Elastic
       # rubocop:disable Metrics/AbcSize
       def search_commit(query, page: 1, per: 20, options: {})
         page ||= 1
-        fields = %w(message^10 sha^5 author.name^2 author.email^2 committer.name committer.email).map {|i| "commit.#{i}"}
+        fields = %w(message^10 sha^5 author.name^2 author.email^2 committer.name committer.email)
         query_with_prefix = query.split(/\s+/).map { |s| s.gsub(SHA_REGEX) { |sha| "#{sha}*" } }.join(' ')
 
         bool_expr = ::Gitlab::Elastic::BoolExpr.new
 
         options[:no_join_project] = Elastic::DataMigrationService.migration_has_finished?(:populate_commit_permissions_in_main_index)
-        options[:project_id_field] = 'commit.rid'
+
+        if Elastic::DataMigrationService.migration_has_finished?(:migrate_commits_to_separate_index)
+          options[:index_name] = Elastic::Latest::CommitConfig.index_name
+          options[:project_id_field] = 'rid'
+        else
+          fields = fields.map {|i| "commit.#{i}"}
+          options[:project_id_field] = 'commit.rid'
+        end
 
         query_hash = {
           query: { bool: bool_expr },
@@ -95,18 +102,13 @@ module Elastic
         # Note that `:current_user` might be `nil` for a anonymous user
         query_hash = context.name(:commit, :authorized) { project_ids_filter(query_hash, options) } if options.key?(:current_user)
 
-        if query.blank?
-          bool_expr[:must] = { match_all: {} }
-          query_hash[:track_scores] = true
-        else
-          bool_expr = apply_simple_query_string(
-            name: context.name(:commit, :match, :search_terms),
-            fields: fields,
-            query: query_with_prefix,
-            bool_expr: bool_expr,
-            count_only: options[:count_only]
-          )
-        end
+        bool_expr = apply_simple_query_string(
+          name: context.name(:commit, :match, :search_terms),
+          fields: fields,
+          query: query_with_prefix,
+          bool_expr: bool_expr,
+          count_only: options[:count_only]
+        )
 
         # add the document type filter
         bool_expr[:filter] << {
@@ -296,7 +298,7 @@ module Elastic
 
       # Indexed commit does not include project_id
       def project_id_for_commit_or_blob(result, type)
-        result.dig('_source', 'project_id') || result.dig('_source', type, 'rid').to_i
+        (result.dig('_source', 'project_id') || result.dig('_source', type, 'rid') || result.dig('_source', 'rid')).to_i
       end
 
       def apply_simple_query_string(name:, fields:, query:, bool_expr:, count_only:)
