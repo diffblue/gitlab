@@ -1,6 +1,6 @@
 import '~/pages/sessions/new/index';
 
-if (gon.features.arkoseLabsLoginChallenge) {
+if (gon.features?.arkoseLabsLoginChallenge) {
   import('ee/arkose_labs')
     .then(({ setupArkoseLabs }) => {
       setupArkoseLabs();
