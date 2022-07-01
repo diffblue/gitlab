@@ -453,6 +453,16 @@ RSpec.describe API::Issues, :mailer, :aggregate_failures do
 
       it_behaves_like 'exposes epic'
     end
+
+    context 'when specificied issue is of type task' do
+      let(:task) { create(:issue, :task, project: project) }
+
+      it 'returns a not found status code' do
+        get api("/projects/#{project.id}/issues/#{task.iid}", user)
+
+        expect(response).to have_gitlab_http_status(:not_found)
+      end
+    end
   end
 
   shared_examples 'with epic parameter' do
