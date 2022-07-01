@@ -82,8 +82,14 @@ RSpec.describe Issues::CloneService do
           expect(new_issue.iid).to be_present
         end
 
-        it 'preserves create time' do
-          expect(old_issue.created_at.strftime('%D')).to eq new_issue.created_at.strftime('%D')
+        it 'sets created_at of new issue to the time of clone' do
+          future_time = 5.days.from_now
+
+          travel_to(future_time) do
+            new_issue = clone_service.execute(old_issue, new_project, with_notes: with_notes)
+
+            expect(new_issue.created_at).to be_like_time(future_time)
+          end
         end
 
         it 'does not copy system notes' do

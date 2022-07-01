@@ -62,6 +62,7 @@ module Issues
       }
 
       new_params = original_entity.serializable_hash.symbolize_keys.merge(new_params)
+      new_params.delete(:created_at)
 
       # spam checking is not necessary, as no new content is being created. Passing nil for
       # spam_params will cause SpamActionService to skip checking and return a success response.
