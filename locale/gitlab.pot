@@ -938,9 +938,6 @@ msgstr ""
 msgid "%{scope} results for term '%{term}'"
 msgstr ""
 
-msgid "%{search} %{description} %{scope}"
-msgstr ""
-
 msgid "%{seconds}s"
 msgstr ""
 
@@ -17690,7 +17687,13 @@ msgstr ""
 msgid "Global notification settings"
 msgstr ""
 
+msgid "GlobalSearch| %{search} %{description} %{scope}"
+msgstr ""
+
 msgid "GlobalSearch|%{count} default results provided. Use the up and down arrow keys to navigate search results list."
+msgstr ""
+
+msgid "GlobalSearch|Groups"
 msgstr ""
 
 msgid "GlobalSearch|Issues I've created"
@@ -17706,6 +17709,9 @@ msgid "GlobalSearch|Merge requests assigned to me"
 msgstr ""
 
 msgid "GlobalSearch|Merge requests that I'm a reviewer"
+msgstr ""
+
+msgid "GlobalSearch|Projects"
 msgstr ""
 
 msgid "GlobalSearch|Results updated. %{count} results available. Use the up and down arrow keys to navigate search results list, or ENTER to submit."
@@ -17732,13 +17738,16 @@ msgstr ""
 msgid "GlobalSearch|What are you searching for?"
 msgstr ""
 
-msgid "GlobalSearch|in all GitLab"
+msgid "GlobalSearch|all GitLab"
 msgstr ""
 
-msgid "GlobalSearch|in group"
+msgid "GlobalSearch|group"
 msgstr ""
 
-msgid "GlobalSearch|in project"
+msgid "GlobalSearch|in %{scope}"
+msgstr ""
+
+msgid "GlobalSearch|project"
 msgstr ""
 
 msgid "Globally-allowed IP ranges"
