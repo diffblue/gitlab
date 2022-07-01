@@ -14,6 +14,7 @@ jest.mock('~/lib/utils/url_utility');
 const DeploymentFrequencyChartsStub = { name: 'DeploymentFrequencyCharts', render: () => {} };
 const LeadTimeChartsStub = { name: 'LeadTimeCharts', render: () => {} };
 const TimeToRestoreServiceChartsStub = { name: 'TimeToRestoreServiceCharts', render: () => {} };
+const ChangeFailureRateChartsStub = { name: 'ChangeFailureRateCharts', render: () => {} };
 const ProjectQualitySummaryStub = { name: 'ProjectQualitySummary', render: () => {} };
 
 describe('ProjectsPipelinesChartsApp', () => {
@@ -33,6 +34,7 @@ describe('ProjectsPipelinesChartsApp', () => {
             DeploymentFrequencyCharts: DeploymentFrequencyChartsStub,
             LeadTimeCharts: LeadTimeChartsStub,
             TimeToRestoreServiceCharts: TimeToRestoreServiceChartsStub,
+            ChangeFailureRateCharts: ChangeFailureRateChartsStub,
             ProjectQualitySummary: ProjectQualitySummaryStub,
           },
         },
@@ -50,6 +52,7 @@ describe('ProjectsPipelinesChartsApp', () => {
   const findGlTabAtIndex = (index) => findAllGlTabs().at(index);
   const findLeadTimeCharts = () => wrapper.find(LeadTimeChartsStub);
   const findTimeToRestoreServiceCharts = () => wrapper.find(TimeToRestoreServiceChartsStub);
+  const findChangeFailureRateCharts = () => wrapper.find(ChangeFailureRateChartsStub);
   const findDeploymentFrequencyCharts = () => wrapper.find(DeploymentFrequencyChartsStub);
   const findPipelineCharts = () => wrapper.find(PipelineCharts);
   const findProjectQualitySummary = () => wrapper.find(ProjectQualitySummaryStub);
@@ -66,6 +69,7 @@ describe('ProjectsPipelinesChartsApp', () => {
       expect(findGlTabAtIndex(1).attributes('title')).toBe('Deployment frequency');
       expect(findGlTabAtIndex(2).attributes('title')).toBe('Lead time');
       expect(findGlTabAtIndex(3).attributes('title')).toBe('Time to restore service');
+      expect(findGlTabAtIndex(4).attributes('title')).toBe('Change failure rate');
     });
 
     it('renders the pipeline charts', () => {
@@ -82,6 +86,10 @@ describe('ProjectsPipelinesChartsApp', () => {
 
     it('renders the time to restore service charts', () => {
       expect(findTimeToRestoreServiceCharts().exists()).toBe(true);
+    });
+
+    it('renders the change failure rate charts', () => {
+      expect(findChangeFailureRateCharts().exists()).toBe(true);
     });
 
     it('renders the project quality summary', () => {
@@ -136,6 +144,7 @@ describe('ProjectsPipelinesChartsApp', () => {
         ${'deployment-frequency-tab'}    | ${'p_analytics_ci_cd_deployment_frequency'}
         ${'lead-time-tab'}               | ${'p_analytics_ci_cd_lead_time'}
         ${'time-to-restore-service-tab'} | ${'p_analytics_ci_cd_time_to_restore_service'}
+        ${'change-failure-rate-tab'}     | ${'p_analytics_ci_cd_change_failure_rate'}
       `('tracks the $event event when clicked', ({ testId, event }) => {
         jest.spyOn(API, 'trackRedisHllUserEvent');
 
@@ -151,6 +160,7 @@ describe('ProjectsPipelinesChartsApp', () => {
   describe('when provided with a query param', () => {
     it.each`
       chart                        | tab
+      ${'change-failure-rate'}     | ${'4'}
       ${'time-to-restore-service'} | ${'3'}
       ${'lead-time'}               | ${'2'}
       ${'deployment-frequency'}    | ${'1'}

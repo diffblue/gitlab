@@ -3,6 +3,7 @@ import { GlTabs, GlTab, GlLink } from '@gitlab/ui';
 import DeploymentFrequencyCharts from 'ee/dora/components/deployment_frequency_charts.vue';
 import LeadTimeCharts from 'ee/dora/components/lead_time_charts.vue';
 import TimeToRestoreServiceCharts from 'ee/dora/components/time_to_restore_service_charts.vue';
+import ChangeFailureRateCharts from 'ee/dora/components/change_failure_rate_charts.vue';
 import { mergeUrlParams, updateHistory, getParameterValues } from '~/lib/utils/url_utility';
 import API from '~/api';
 import ReleaseStatsCard from './release_stats_card.vue';
@@ -18,12 +19,14 @@ export default {
     DeploymentFrequencyCharts,
     LeadTimeCharts,
     TimeToRestoreServiceCharts,
+    ChangeFailureRateCharts,
     SharedRunnersUsage,
   },
   releaseStatisticsTabEvent: 'g_analytics_ci_cd_release_statistics',
   deploymentFrequencyTabEvent: 'g_analytics_ci_cd_deployment_frequency',
   leadTimeTabEvent: 'g_analytics_ci_cd_lead_time',
   timeToRestoreServiceTabEvent: 'g_analytics_ci_cd_time_to_restore_service',
+  changeFailureRateTabEvent: 'g_analytics_ci_cd_change_failure_rate_service',
   inject: {
     shouldRenderDoraCharts: {
       type: Boolean,
@@ -48,7 +51,12 @@ export default {
       const tabsToShow = ['release-statistics'];
 
       if (this.shouldRenderDoraCharts) {
-        tabsToShow.push('deployment-frequency', 'lead-time', 'time-to-restore-service');
+        tabsToShow.push(
+          'deployment-frequency',
+          'lead-time',
+          'time-to-restore-service',
+          'change-failure-rate',
+        );
       }
 
       tabsToShow.push('shared-runner-usage');
@@ -113,6 +121,13 @@ export default {
           @click="trackTabClick($options.timeToRestoreServiceTabEvent)"
         >
           <time-to-restore-service-charts />
+        </gl-tab>
+        <gl-tab
+          :title="s__('CICDAnalytics|Change failure rate')"
+          data-testid="change-failure-rate-service-tab"
+          @click="trackTabClick($options.changeFailureRateTabEvent)"
+        >
+          <change-failure-rate-charts />
         </gl-tab>
       </template>
       <gl-tab :title="s__('CICDAnalytics|Shared runner usage')">

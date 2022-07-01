@@ -6,6 +6,8 @@ import ReleaseStatsCard from 'ee/analytics/group_ci_cd_analytics/components/rele
 import SharedRunnersUsage from 'ee/analytics/group_ci_cd_analytics/components/shared_runner_usage.vue';
 import DeploymentFrequencyCharts from 'ee/dora/components/deployment_frequency_charts.vue';
 import LeadTimeCharts from 'ee/dora/components/lead_time_charts.vue';
+import TimeToRestoreServiceCharts from 'ee/dora/components/time_to_restore_service_charts.vue';
+import ChangeFailureRateCharts from 'ee/dora/components/change_failure_rate_charts.vue';
 import setWindowLocation from 'helpers/set_window_location_helper';
 import { TEST_HOST } from 'helpers/test_constants';
 import { getParameterValues } from '~/lib/utils/url_utility';
@@ -51,12 +53,13 @@ describe('ee/analytics/group_ci_cd_analytics/components/app.vue', () => {
 
       it('renders tabs in the correct order', () => {
         expect(findGlTabs().exists()).toBe(true);
-        expect(findAllGlTabs()).toHaveLength(5);
+        expect(findAllGlTabs()).toHaveLength(6);
         expect(findGlTabAtIndex(0).attributes('title')).toBe('Release statistics');
         expect(findGlTabAtIndex(1).attributes('title')).toBe('Deployment frequency');
         expect(findGlTabAtIndex(2).attributes('title')).toBe('Lead time');
         expect(findGlTabAtIndex(3).attributes('title')).toBe('Time to restore service');
-        expect(findGlTabAtIndex(4).attributes('title')).toBe('Shared runner usage');
+        expect(findGlTabAtIndex(4).attributes('title')).toBe('Change failure rate');
+        expect(findGlTabAtIndex(5).attributes('title')).toBe('Shared runner usage');
       });
 
       describe('event tracking', () => {
@@ -94,6 +97,13 @@ describe('ee/analytics/group_ci_cd_analytics/components/app.vue', () => {
       it('renders the shared runner usage component', () => {
         expect(wrapper.findComponent(SharedRunnersUsage).exists()).toBe(true);
       });
+
+      it('does not render the DORA chart components', () => {
+        expect(wrapper.findComponent(DeploymentFrequencyCharts).exists()).toBe(false);
+        expect(wrapper.findComponent(LeadTimeCharts).exists()).toBe(false);
+        expect(wrapper.findComponent(TimeToRestoreServiceCharts).exists()).toBe(false);
+        expect(wrapper.findComponent(ChangeFailureRateCharts).exists()).toBe(false);
+      });
     });
   });
 
@@ -127,6 +137,26 @@ describe('ee/analytics/group_ci_cd_analytics/components/app.vue', () => {
     });
   });
 
+  describe('time to restore service', () => {
+    beforeEach(() => {
+      createComponent();
+    });
+
+    it('renders the time to restore service component inside the fourth tab', () => {
+      expect(findGlTabAtIndex(3).findComponent(TimeToRestoreServiceCharts).exists()).toBe(true);
+    });
+  });
+
+  describe('change failure rate', () => {
+    beforeEach(() => {
+      createComponent();
+    });
+
+    it('renders the change failure rate inside the fifth tab', () => {
+      expect(findGlTabAtIndex(4).findComponent(ChangeFailureRateCharts).exists()).toBe(true);
+    });
+  });
+
   describe('when provided with a query param', () => {
     it.each`
       tab                          | index
@@ -134,6 +164,7 @@ describe('ee/analytics/group_ci_cd_analytics/components/app.vue', () => {
       ${'deployment-frequency'}    | ${'1'}
       ${'lead-time'}               | ${'2'}
       ${'time-to-restore-service'} | ${'3'}
+      ${'change-failure-rate'}     | ${'4'}
       ${'fake'}                    | ${'0'}
       ${''}                        | ${'0'}
     `('shows the correct tab for URL parameter "$tab"', ({ tab, index }) => {
