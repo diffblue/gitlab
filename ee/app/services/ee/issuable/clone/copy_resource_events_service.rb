@@ -3,7 +3,7 @@
 module EE
   module Issuable
     module Clone
-      module AttributesRewriter
+      module CopyResourceEventsService
         extend ::Gitlab::Utils::Override
 
         override :execute

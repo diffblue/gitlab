@@ -92,10 +92,6 @@ RSpec.describe Issues::CloneService do
           end
         end
 
-        it 'does not copy system notes' do
-          expect(new_issue.notes.count).to eq(1)
-        end
-
         it 'does not set moved_issue' do
           expect(old_issue.moved?).to eq(false)
         end
@@ -108,6 +104,24 @@ RSpec.describe Issues::CloneService do
 
             expect(new_issue.notes.count).to eq(old_issue.notes.count)
           end
+        end
+      end
+
+      context 'issue with system notes and resource events' do
+        before do
+          create(:note, :system, noteable: old_issue, project: old_project)
+          create(:resource_label_event, label: create(:label, project: old_project), issue: old_issue)
+          create(:resource_state_event, issue: old_issue, state: :reopened)
+          create(:resource_milestone_event, issue: old_issue, action: 'remove', milestone_id: nil)
+        end
+
+        it 'does not copy system notes and resource events' do
+          new_issue = clone_service.execute(old_issue, new_project)
+
+          # 1 here is for the "cloned from" system note
+          expect(new_issue.notes.count).to eq(1)
+          expect(new_issue.resource_state_events).to be_empty
+          expect(new_issue.resource_milestone_events).to be_empty
         end
       end
 

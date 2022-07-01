@@ -25,19 +25,12 @@ module Issuable
 
       private
 
-      def copy_award_emoji
-        AwardEmojis::CopyService.new(original_entity, new_entity).execute
-      end
-
-      def copy_notes
-        Notes::CopyService.new(current_user, original_entity, new_entity).execute
-      end
-
       def update_new_entity
         update_new_entity_description
         update_new_entity_attributes
         copy_award_emoji
         copy_notes
+        copy_resource_events
       end
 
       def update_new_entity_description
@@ -54,6 +47,18 @@ module Issuable
 
       def update_new_entity_attributes
         AttributesRewriter.new(current_user, original_entity, new_entity).execute
+      end
+
+      def copy_award_emoji
+        AwardEmojis::CopyService.new(original_entity, new_entity).execute
+      end
+
+      def copy_notes
+        Notes::CopyService.new(current_user, original_entity, new_entity).execute
+      end
+
+      def copy_resource_events
+        CopyResourceEventsService.new(current_user, original_entity, new_entity).execute
       end
 
       def update_old_entity
