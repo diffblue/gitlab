@@ -276,17 +276,27 @@ RSpec.describe EE::NamespacesHelper do
     context 'on dot com' do
       using RSpec::Parameterized::TableSyntax
 
-      where(:feature_flag_enabled, :free_plan, :user_dismissed_banner, :should_show_banner) do
-        true  | true  | false | true
-        true  | true  | true  | false
-        true  | false | false | false
-        false | true  | false | false
+      where(:feature_flag_enabled, :has_guest_access, :free_plan, :user_dismissed_banner, :should_show_banner) do
+        true  | true  | true  | false | true
+        false | true  | true  | true  | false
+        false | false | true  | true  | false
+        false | false | false | true  | false
+        false | false | false | false | false
+        false | true  | false | true  | false
+        false | false | false | true  | false
+        true  | true  | true  | true  | false
+        true  | true  | false | false | false
+        true  | false | false | false | false
+        true  | true  | false | true  | false
+        true  | false | false | true  | false
       end
 
       with_them do
         before do
           allow(Gitlab).to receive(:com?).and_return(true)
           stub_feature_flags(show_minute_limit_banner: feature_flag_enabled)
+          allow(helper).to receive(:current_user).and_return(user)
+          allow(user).to receive(:can?).with(:guest_access, project.root_ancestor).and_return(has_guest_access)
           allow(project.root_ancestor).to receive(:has_free_or_no_subscription?).and_return(free_plan)
           allow(helper).to receive(:user_dismissed?).with('minute_limit_banner').and_return(user_dismissed_banner)
         end
