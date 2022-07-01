@@ -471,6 +471,28 @@ RSpec.describe API::Geo do
   describe 'GET /geo/proxy' do
     subject { get api('/geo/proxy'), headers: workhorse_headers }
 
+    let(:non_proxy_response_schema) do
+      {
+        'type' => 'object',
+        'additionalProperties' => false,
+        'required' => %w(geo_enabled),
+        'properties' => {
+          'geo_enabled' => { 'type' => 'boolean' }
+        }
+      }
+    end
+
+    let(:proxy_response_schema) do
+      non_proxy_response_schema.merge({
+        'required' => %w(geo_enabled geo_proxy_url geo_proxy_extra_data),
+        'properties' => {
+          'geo_enabled' => { 'type' => 'boolean' },
+          'geo_proxy_url' => { 'type' => 'string' },
+          'geo_proxy_extra_data' => { 'type' => 'string' }
+        }
+      })
+    end
+
     include_context 'workhorse headers'
 
     context 'with valid auth' do
@@ -481,7 +503,8 @@ RSpec.describe API::Geo do
           subject
 
           expect(response).to have_gitlab_http_status(:ok)
-          expect(json_response).to be_empty
+          expect(json_response).to match_schema(non_proxy_response_schema)
+          expect(json_response['geo_enabled']).to be_falsey
         end
       end
 
@@ -492,7 +515,8 @@ RSpec.describe API::Geo do
           subject
 
           expect(response).to have_gitlab_http_status(:ok)
-          expect(json_response).to be_empty
+          expect(json_response).to match_schema(non_proxy_response_schema)
+          expect(json_response['geo_enabled']).to be_truthy
         end
       end
 
@@ -508,6 +532,8 @@ RSpec.describe API::Geo do
             subject
 
             expect(response).to have_gitlab_http_status(:ok)
+            expect(json_response).to match_schema(proxy_response_schema)
+            expect(json_response['geo_enabled']).to be_truthy
             expect(json_response['geo_proxy_url']).to match(primary_node.internal_url)
 
             proxy_extra_data = json_response['geo_proxy_extra_data']
@@ -526,7 +552,8 @@ RSpec.describe API::Geo do
             subject
 
             expect(response).to have_gitlab_http_status(:ok)
-            expect(json_response).to be_empty
+            expect(json_response).to match_schema(non_proxy_response_schema)
+            expect(json_response['geo_enabled']).to be_truthy
           end
         end
       end
@@ -543,7 +570,8 @@ RSpec.describe API::Geo do
             subject
 
             expect(response).to have_gitlab_http_status(:ok)
-            expect(json_response).to be_empty
+            expect(json_response).to match_schema(non_proxy_response_schema)
+            expect(json_response['geo_enabled']).to be_truthy
           end
         end
 
@@ -556,7 +584,8 @@ RSpec.describe API::Geo do
             subject
 
             expect(response).to have_gitlab_http_status(:ok)
-            expect(json_response).to be_empty
+            expect(json_response).to match_schema(non_proxy_response_schema)
+            expect(json_response['geo_enabled']).to be_truthy
           end
         end
 
@@ -565,6 +594,8 @@ RSpec.describe API::Geo do
             subject
 
             expect(response).to have_gitlab_http_status(:ok)
+            expect(json_response).to match_schema(proxy_response_schema)
+            expect(json_response['geo_enabled']).to be_truthy
             expect(json_response['geo_proxy_url']).to match(primary_node.internal_url)
 
             proxy_extra_data = json_response['geo_proxy_extra_data']

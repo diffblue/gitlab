@@ -38,13 +38,17 @@ module EE
             #
             # The cached values are invalidated when changed.
             #
-            return super unless ::Gitlab::Geo.secondary_with_primary?
+            non_proxy_response = super.merge({ geo_enabled: ::Gitlab::Geo.enabled? })
 
-            if ::Gitlab::Geo.secondary_with_unified_url? || ::Feature.enabled?(:geo_secondary_proxy_separate_urls)
-              { geo_proxy_url: ::Gitlab::Geo.primary_node.internal_url, geo_proxy_extra_data: ::Gitlab::Geo.proxy_extra_data }
-            else
-              super
-            end
+            return non_proxy_response unless ::Gitlab::Geo.secondary_with_primary?
+
+            return non_proxy_response unless ::Gitlab::Geo.secondary_with_unified_url? ||
+                                             ::Feature.enabled?(:geo_secondary_proxy_separate_urls)
+
+            non_proxy_response.merge({
+              geo_proxy_url: ::Gitlab::Geo.primary_node.internal_url,
+              geo_proxy_extra_data: ::Gitlab::Geo.proxy_extra_data
+            })
           end
         end
 
