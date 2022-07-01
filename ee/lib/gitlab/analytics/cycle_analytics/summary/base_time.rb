@@ -7,6 +7,8 @@ module Gitlab
         class BaseTime
           include Gitlab::CycleAnalytics::Summary::Defaults
 
+          attr_reader :stage
+
           def initialize(stage:, current_user:, options:)
             @stage = stage
             @current_user = current_user

@@ -21,6 +21,16 @@ module Groups
           render json: group_level.time_summary
         end
 
+        def lead_times
+          data_collector = data_collector_for(::Gitlab::Analytics::CycleAnalytics::Summary::LeadTime)
+          render json: ::Analytics::CycleAnalytics::DurationChartAverageItemEntity.represent(data_collector.duration_chart_average_data)
+        end
+
+        def cycle_times
+          data_collector = data_collector_for(::Gitlab::Analytics::CycleAnalytics::Summary::CycleTime)
+          render json: ::Analytics::CycleAnalytics::DurationChartAverageItemEntity.represent(data_collector.duration_chart_average_data)
+        end
+
         private
 
         def group_level
@@ -34,6 +44,17 @@ module Groups
         override :all_cycle_analytics_params
         def all_cycle_analytics_params
           super.merge({ group: @group })
+        end
+
+        def data_collector_for(summary_class)
+          group_stage = ::Analytics::CycleAnalytics::GroupStage.new(group: @group)
+          all_params = request_params.to_data_collector_params
+          group_stage_with_metadata = summary_class.new(stage: group_stage, current_user: current_user, options: all_params).stage
+
+          Gitlab::Analytics::CycleAnalytics::DataCollector.new(
+            stage: group_stage_with_metadata,
+            params: all_params
+          )
         end
       end
     end
