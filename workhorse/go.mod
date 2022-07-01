@@ -17,7 +17,7 @@ require (
 	github.com/gorilla/websocket v1.4.1
 	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0
 	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0
-	github.com/johannesboyne/gofakes3 v0.0.0-20200510090907-02d71f533bec
+	github.com/johannesboyne/gofakes3 v0.0.0-20220627085814-c3ac35da23b2
 	github.com/jpillora/backoff v1.0.0
 	github.com/mitchellh/copystructure v1.0.0
 	github.com/prometheus/client_golang v1.12.1
