@@ -14,7 +14,11 @@ import deleteCorpusMutation from 'ee/security_configuration/corpus_management/gr
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 
-import { getCorpusesQueryResponse, deleteCorpusMutationResponse } from './mock_data';
+import {
+  getCorpusesQueryResponse,
+  deleteCorpusMutationResponse,
+  getCorpusesBigListQueryResponse,
+} from './mock_data';
 
 const TEST_PROJECT_FULL_PATH = '/namespace/project';
 const TEST_CORPUS_HELP_PATH = '/docs/corpus-management';
@@ -57,6 +61,11 @@ describe('EE - CorpusManagement', () => {
   };
 
   const findPagination = () => wrapper.findComponent(GlKeysetPagination);
+  const findCorpusTable = () => wrapper.findComponent(CorpusTable);
+  const findEmptyState = () => wrapper.findComponent(EmptyState);
+  const findCorpusUpload = () => wrapper.findComponent(CorpusUpload);
+  const findCorpusManagement = () => wrapper.findComponent(CorpusManagement);
+  const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
 
   const nextPage = async (cursor) => {
     findPagination().vm.$emit('next', cursor);
@@ -92,17 +101,17 @@ describe('EE - CorpusManagement', () => {
         createComponent();
         await waitForPromises();
 
-        expect(wrapper.findComponent(CorpusManagement).exists()).toBe(true);
-        expect(wrapper.findComponent(CorpusTable).exists()).toBe(true);
-        expect(wrapper.findComponent(CorpusUpload).exists()).toBe(true);
-        expect(wrapper.findComponent(GlLoadingIcon).exists()).toBe(false);
+        expect(findCorpusManagement().exists()).toBe(true);
+        expect(findCorpusTable().exists()).toBe(true);
+        expect(findCorpusUpload().exists()).toBe(true);
+        expect(findLoadingIcon().exists()).toBe(false);
       });
 
       it('renders the correct header', async () => {
         createComponent();
         await waitForPromises();
 
-        const header = wrapper.findComponent(CorpusManagement).find('header');
+        const header = findCorpusManagement().find('header');
         expect(header.element).toMatchSnapshot();
       });
 
@@ -193,15 +202,16 @@ describe('EE - CorpusManagement', () => {
       });
 
       describe('corpus deletion', () => {
+        const deleteCorpusMutationHandler = jest
+          .fn()
+          .mockResolvedValue(deleteCorpusMutationResponse);
+
         it('deletes the corpus', async () => {
           const mutationVars = { input: { id: 1 } };
 
           const getCorpusesQueryRequestHandler = jest
             .fn()
             .mockResolvedValue(getCorpusesQueryResponse);
-          const deleteCorpusMutationHandler = jest
-            .fn()
-            .mockResolvedValue(deleteCorpusMutationResponse);
 
           createComponent({
             apolloProvider: createMockApolloProvider({
@@ -213,7 +223,7 @@ describe('EE - CorpusManagement', () => {
 
           expect(getCorpusesQueryRequestHandler).toHaveBeenCalledTimes(1);
 
-          const corpusTable = wrapper.findComponent(CorpusTable);
+          const corpusTable = findCorpusTable();
           corpusTable.vm.$emit('delete', mutationVars.input.id);
           await waitForPromises();
 
@@ -228,6 +238,37 @@ describe('EE - CorpusManagement', () => {
             projectPath: '/namespace/project',
           });
         });
+
+        it('deletes last item on page and returns to previous page', async () => {
+          const getCorpusesQueryRequestHandler = jest
+            .fn()
+            .mockResolvedValue(getCorpusesBigListQueryResponse);
+
+          createComponent({
+            apolloProvider: createMockApolloProvider({
+              getCorpusesQueryRequestHandler,
+              deleteCorpusMutationHandler,
+            }),
+          });
+
+          await waitForPromises();
+          await nextPage();
+          await waitForPromises();
+
+          const lastItemInListId =
+            getCorpusesBigListQueryResponse.data.project.corpuses.nodes[10].id;
+
+          findCorpusTable().vm.$emit('delete', lastItemInListId);
+
+          await waitForPromises();
+
+          expect(getCorpusesQueryRequestHandler).toHaveBeenCalledTimes(3);
+          expect(deleteCorpusMutationHandler).toHaveBeenCalledWith({
+            input: { id: lastItemInListId },
+          });
+          expect(findCorpusTable().exists()).toBe(true);
+          expect(findEmptyState().exists()).toBe(false);
+        });
       });
     });
 
@@ -235,10 +276,10 @@ describe('EE - CorpusManagement', () => {
       it('shows loading state when loading', () => {
         createComponent();
 
-        expect(wrapper.findComponent(CorpusManagement).exists()).toBe(true);
-        expect(wrapper.findComponent(CorpusUpload).exists()).toBe(false);
-        expect(wrapper.findComponent(GlLoadingIcon).exists()).toBe(true);
-        expect(wrapper.findComponent(CorpusTable).exists()).toBe(false);
+        expect(findCorpusManagement().exists()).toBe(true);
+        expect(findCorpusUpload().exists()).toBe(false);
+        expect(findLoadingIcon().exists()).toBe(true);
+        expect(findCorpusTable().exists()).toBe(false);
       });
     });
 
@@ -258,7 +299,7 @@ describe('EE - CorpusManagement', () => {
           }),
         });
         await waitForPromises();
-        expect(wrapper.findComponent(EmptyState).exists()).toBe(true);
+        expect(findEmptyState().exists()).toBe(true);
       });
     });
   });

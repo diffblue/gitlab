@@ -69,6 +69,9 @@ export default {
     isLoading() {
       return this.$apollo.loading;
     },
+    previousPageHasNodes() {
+      return this.corpuses.length === 0 && this.pageInfo.hasPreviousPage;
+    },
     queryVariables() {
       return {
         projectPath: this.projectFullPath,
@@ -102,8 +105,18 @@ export default {
             },
           },
         })
+        .then(() => this.$apollo.queries.states.refetch())
         .then(() => {
-          this.$apollo.queries.states.refetch();
+          /**
+           * this is an edge case
+           * when we delete last item on the page
+           * and previous page has nodes we need to
+           * change page to previous, otherwise
+           * we see empty state
+           */
+          if (this.previousPageHasNodes) {
+            this.prevPage();
+          }
         });
     },
     nextPage() {

@@ -1,3 +1,5 @@
+const pageSize = 10;
+
 const pipelines = {
   nodes: [
     {
@@ -98,12 +100,42 @@ export const corpuses = [
   },
 ];
 
+export const generateCorpusesList = (quantity = pageSize) =>
+  [...Array(quantity).keys()].map((index) => ({
+    id: `gid://gitlab/AppSec::Fuzzing::Coverage::Corpus/${index + 1}`,
+    package: {
+      id: `gid://gitlab/Packages::Package/${index + 1}`,
+      name: `Corpus-sample-${index + 1}-13830-23932`,
+      updatedAt: new Date(2021, 2, 12).toString(),
+      pipelines,
+      packageFiles,
+    },
+  }));
+
 export const getCorpusesQueryResponse = {
   data: {
     project: {
       id: 'gid://gitlab/Project/8',
       corpuses: {
         nodes: corpuses,
+        pageInfo: {
+          __typename: 'PageInfo',
+          hasNextPage: true,
+          hasPreviousPage: true,
+          startCursor: 'start-cursor',
+          endCursor: 'end-cursor',
+        },
+      },
+    },
+  },
+};
+
+export const getCorpusesBigListQueryResponse = {
+  data: {
+    project: {
+      id: 'gid://gitlab/Project/8',
+      corpuses: {
+        nodes: generateCorpusesList(pageSize + 1),
         pageInfo: {
           __typename: 'PageInfo',
           hasNextPage: true,
