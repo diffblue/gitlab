@@ -29,7 +29,8 @@ module EE
                 {
                   project_id: project.id,
                   gitaly_info: gitaly_info(project),
-                  gitaly_repository: gitaly_repository(project)
+                  gitaly_repository: gitaly_repository(project),
+                  default_branch: project.default_branch_or_main
                 }
               end
 

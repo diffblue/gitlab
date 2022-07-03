@@ -102,7 +102,8 @@ RSpec.describe API::Internal::Kubernetes do
                 'relative_path' => project.disk_path + '.git',
                 'gl_repository' => "project-#{project.id}",
                 'gl_project_path' => project.full_path
-              )
+              ),
+              'default_branch' => project.default_branch_or_main
             )
           )
         end
