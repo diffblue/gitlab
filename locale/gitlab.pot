@@ -8318,6 +8318,9 @@ msgstr ""
 msgid "CloudSeed|CloudSQL Instance"
 msgstr ""
 
+msgid "CloudSeed|Configuration"
+msgstr ""
+
 msgid "CloudSeed|Create cluster"
 msgstr ""
 
@@ -8334,6 +8337,12 @@ msgid "CloudSeed|Database instances associated with this project"
 msgstr ""
 
 msgid "CloudSeed|Database version"
+msgstr ""
+
+msgid "CloudSeed|Databases"
+msgstr ""
+
+msgid "CloudSeed|Deployments"
 msgstr ""
 
 msgid "CloudSeed|Description"
@@ -10662,9 +10671,6 @@ msgstr ""
 msgid "Create %{workspace} label"
 msgstr ""
 
-msgid "Create Google Cloud project"
-msgstr ""
-
 msgid "Create New Directory"
 msgstr ""
 
@@ -12044,6 +12050,9 @@ msgid "Data type"
 msgstr ""
 
 msgid "Database update failed"
+msgstr ""
+
+msgid "Databases"
 msgstr ""
 
 msgid "DatadogIntegration|%{linkOpen}API key%{linkClose} used for authentication with Datadog."
@@ -17494,9 +17503,6 @@ msgstr ""
 msgid "GitLab account request rejected"
 msgstr ""
 
-msgid "GitLab and Google Cloud configuration seems to be incomplete. This probably can be fixed by your GitLab administration team. You may share these logs with them:"
-msgstr ""
-
 msgid "GitLab commit"
 msgstr ""
 
@@ -17987,12 +17993,6 @@ msgid "Google Cloud Project"
 msgstr ""
 
 msgid "Google Cloud authorizations required"
-msgstr ""
-
-msgid "Google Cloud project misconfigured"
-msgstr ""
-
-msgid "Google Cloud project required"
 msgstr ""
 
 msgid "GoogleCloud|Cancel"
@@ -35588,9 +35588,6 @@ msgstr ""
 msgid "ServicePing|Turn on service ping to review instance-level analytics."
 msgstr ""
 
-msgid "Services"
-msgstr ""
-
 msgid "Session ID"
 msgstr ""
 
@@ -41343,9 +41340,6 @@ msgstr ""
 msgid "Unknown response text"
 msgstr ""
 
-msgid "Unknown screen"
-msgstr ""
-
 msgid "Unknown user"
 msgstr ""
 
@@ -44415,9 +44409,6 @@ msgid "You could not create a new trigger."
 msgstr ""
 
 msgid "You currently have more than %{free_limit} members across all your personal projects. From June 22, 2022, the %{free_limit} most recently active members will remain active, and the remaining members will get a %{link_start}status of Over limit%{link_end} and lose access. To view and manage members, check the members page for each project in your namespace. We recommend you %{move_link_start}move your project to a group%{move_link_end} so you can easily manage users and features."
-msgstr ""
-
-msgid "You do not have any Google Cloud projects. Please create a Google Cloud project and then reload this page."
 msgstr ""
 
 msgid "You do not have any subscriptions yet"

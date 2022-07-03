@@ -3,18 +3,9 @@ import { GlAlert, GlLink, GlSprintf } from '@gitlab/ui';
 
 export default {
   components: { GlAlert, GlLink, GlSprintf },
-  props: {
-    shareFeedbackUrl: {
-      required: true,
-      type: String,
-    },
-    reportBugUrl: {
-      required: true,
-      type: String,
-    },
-    featureRequestUrl: {
-      required: true,
-      type: String,
+  methods: {
+    feedbackUrl(template) {
+      return `https://gitlab.com/gitlab-org/incubation-engineering/five-minute-production/feedback/-/issues/new?issuable_template=${template}`;
     },
   },
 };
@@ -31,13 +22,13 @@ export default {
       "
     >
       <template #featureLink="{ content }">
-        <gl-link :href="featureRequestUrl">{{ content }}</gl-link>
+        <gl-link :href="feedbackUrl('feature_request')">{{ content }}</gl-link>
       </template>
       <template #bugLink="{ content }">
-        <gl-link :href="reportBugUrl">{{ content }}</gl-link>
+        <gl-link :href="feedbackUrl('report_bug')">{{ content }}</gl-link>
       </template>
       <template #feedbackLink="{ content }">
-        <gl-link :href="shareFeedbackUrl">{{ content }}</gl-link>
+        <gl-link :href="feedbackUrl('general_feedback')">{{ content }}</gl-link>
       </template>
     </gl-sprintf>
   </gl-alert>
