@@ -57,6 +57,22 @@ RSpec.describe 'Protected Environments', :js do
     end
   end
 
+  context 'when no subgroups exist' do
+    let(:public_organization) { create(:group) }
+
+    before do
+      public_organization.add_owner(current_user)
+    end
+
+    it 'shows search box without throwing an error' do
+      visit group_settings_ci_cd_path(public_organization)
+
+      click_button('Select groups')
+
+      within('.gl-new-dropdown-inner') { find('.gl-search-box-by-type') }
+    end
+  end
+
   context 'when protected environments already exist' do
     before do
       deploy_access_level = build(:protected_environment_deploy_access_level, group: operator_group)
