@@ -32,7 +32,8 @@ RSpec.describe EE::Audit::ProtectedBranchesChangesAuditor, :request_store do
           expect { service.execute }.to change { AuditEvent.count }.by(1)
 
           event = AuditEvent.last
-          expect(event.details).to eq({ change: "#{setting}".humanize(capitalize: false),
+          change_text = setting.to_s.humanize(capitalize: false)
+          expect(event.details).to eq({ change: change_text,
                                         author_name: author.name,
                                         target_id: protected_branch.id,
                                         entity_path: entity.full_path,
@@ -40,7 +41,8 @@ RSpec.describe EE::Audit::ProtectedBranchesChangesAuditor, :request_store do
                                         target_details: protected_branch.name,
                                         from: false,
                                         to: true,
-                                        ip_address: ip_address })
+                                        ip_address: ip_address,
+                                        custom_message: "Changed #{change_text} to true" })
 
           expect(event.author_id).to eq(author.id)
           expect(event.entity_id).to eq(entity.id)

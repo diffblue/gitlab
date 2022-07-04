@@ -40,7 +40,8 @@ RSpec.describe Groups::UpdateService, '#execute' do
             param[:details].merge!(
               change: 'visibility',
               from: 'Public',
-              to: 'Private'
+              to: 'Private',
+              custom_message: "Changed visibility from Public to Private"
             )
           end
         end

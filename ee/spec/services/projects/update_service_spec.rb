@@ -152,7 +152,8 @@ RSpec.describe Projects::UpdateService, '#execute' do
             param[:details].merge!(
               change: 'name',
               from: old_name,
-              to: project.full_name
+              to: project.full_name,
+              custom_message: "Changed name from #{old_name} to #{project.full_name}"
             )
           end
         end
@@ -171,7 +172,8 @@ RSpec.describe Projects::UpdateService, '#execute' do
             param[:details].merge!(
               change: 'path',
               from: project.old_path_with_namespace,
-              to: project.full_path
+              to: project.full_path,
+              custom_message: "Changed path from #{project.old_path_with_namespace} to #{project.full_path}"
             )
           end
         end
@@ -212,7 +214,8 @@ RSpec.describe Projects::UpdateService, '#execute' do
             param[:details].merge!(
               change: 'visibility',
               from: 'Private',
-              to: 'Internal'
+              to: 'Internal',
+              custom_message: "Changed visibility from Private to Internal"
             )
           end
         end

@@ -10,7 +10,7 @@ module Audit
     # @option options [User, Project, Group] :target_model scope the event belongs to
     # @option options [Object] :model object being audited
     # @option options [Boolean] :skip_changes whether to record from/to values
-    #
+    # @option options [String] :event_type adds event type in streaming audit event headers and payload
     # @return [AuditEvent, nil] the resulting object or nil if there is no
     #   change detected
     def audit_changes(column, options = {})
@@ -66,8 +66,41 @@ module Audit
     end
 
     def audit_event(options)
-      ::AuditEventService.new(@current_user, entity, options) # rubocop:disable Gitlab/ModuleWithInstanceVariables
-        .for_changes(model).security_event
+      return unless audit_enabled?
+
+      name = options.fetch(:event_type, 'audit_operation')
+      details = additional_details(options)
+      audit_context = {
+        name: name,
+        author: @current_user, # rubocop:disable Gitlab/ModuleWithInstanceVariables
+        scope: entity,
+        target: model,
+        message: build_message(details),
+        additional_details: details,
+        target_details: options[:target_details]
+      }
+
+      ::Gitlab::Audit::Auditor.audit(audit_context)
+    end
+
+    def additional_details(options)
+      { change: options[:as] || options[:column] }.merge(options.slice(:from, :to, :target_details))
+    end
+
+    def build_message(details)
+      message = ["Changed #{details[:change]}"]
+      message << "from #{details[:from]}" unless details[:from].blank?
+      message << "to #{details[:to]}" unless details[:to].blank?
+      message.join(' ')
+    end
+
+    # TODO: Remove this once we implement license feature checks in Auditor.
+    # issue link: https://gitlab.com/gitlab-org/gitlab/-/issues/365441
+    def audit_enabled?
+      return true if ::License.feature_available?(:admin_audit_log)
+      return true if ::License.feature_available?(:extended_audit_events)
+
+      entity.respond_to?(:feature_available?) && entity.licensed_feature_available?(:audit_events)
     end
   end
 end
