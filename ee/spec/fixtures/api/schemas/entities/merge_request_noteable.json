@@ -35,7 +35,8 @@
     "is_project_archived": { "type":  "boolean" },
     "locked_discussion_docs_path": { "type":  "string" },
     "archived_project_docs_path": { "type":  "string" },
-    "project_id": { "type": "integer"}
+    "project_id": { "type": "integer"},
+    "require_password_to_approve": { "type": "boolean" }
   },
   "additionalProperties": false
 }

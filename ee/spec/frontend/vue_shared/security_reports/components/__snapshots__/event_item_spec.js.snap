@@ -32,7 +32,6 @@ exports[`Event Item with action buttons renders the action buttons 1`] = `
         class="author-name-link js-user-link"
         data-username="gitlab"
       >
-         
         <span
           class="note-header-author-name gl-font-weight-bold"
         >
@@ -57,7 +56,7 @@ exports[`Event Item with action buttons renders the action buttons 1`] = `
             @gitlab
           </span>
         </a>
-         
+          
         <!---->
       </span>
        
