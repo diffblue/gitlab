@@ -40,7 +40,7 @@ class Admin::AuditLogsController < Admin::ApplicationController
   def events
     strong_memoize(:events) do
       level = Gitlab::Audit::Levels::Instance.new
-      events = AuditLogFinder
+      events = AuditEventFinder
         .new(level: level, params: audit_logs_params)
         .execute
         .page(params[:page])

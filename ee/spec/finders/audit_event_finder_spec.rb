@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe AuditLogFinder do
+RSpec.describe AuditEventFinder do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
   let_it_be(:subgroup) { create(:group, parent: group) }

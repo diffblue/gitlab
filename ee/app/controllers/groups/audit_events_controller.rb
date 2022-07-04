@@ -33,7 +33,7 @@ class Groups::AuditEventsController < Groups::ApplicationController
   def events
     strong_memoize(:events) do
       level = Gitlab::Audit::Levels::Group.new(group: group)
-      events = AuditLogFinder
+      events = AuditEventFinder
         .new(level: level, params: audit_params)
         .execute
         .page(params[:page])

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class AuditLogFinder
+class AuditEventFinder
   include CreatedAtFilter
   include FinderMethods
 
@@ -18,7 +18,7 @@ class AuditLogFinder
   # @option params [DateTime] :created_before to created_at date
   # @option params [String] :sort order by field_direction (e.g. created_asc)
   #
-  # @return [AuditLogFinder]
+  # @return [AuditEventFinder]
   def initialize(level:, params: {})
     @level = level
     @params = params
