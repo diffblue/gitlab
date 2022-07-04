@@ -58,13 +58,13 @@ module Mutations
                description: 'Color of the epic. Available only when feature flag `epic_color_highlight` is enabled. This flag is disabled by default, because the feature is experimental and is subject to change without notice.'
     end
 
-    def validate_arguments!(args)
+    def validate_arguments!(args, group)
+      args.delete(:color) unless Feature.enabled?(:epic_color_highlight, group)
+
       if args.empty?
         raise Gitlab::Graphql::Errors::ArgumentError,
           'The list of epic attributes is empty'
       end
-
-      args.delete(:color) unless Feature.enabled?(:epic_color_highlight)
     end
   end
 end
