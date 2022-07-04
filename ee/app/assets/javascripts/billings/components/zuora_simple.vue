@@ -18,7 +18,6 @@ const parseJson = (data) => {
   return {};
 };
 
-export const DEFAULT_IFRAME_BOTTOM_HEIGHT = 55;
 export const DEFAULT_IFRAME_CONTAINER_MIN_HEIGHT = '200px';
 export const ZUORA_EVENT_CATEGORY = 'Zuora_cc';
 export const INVALID_SECURITY = 'Invalid_Security';
@@ -107,14 +106,11 @@ export default {
     };
   },
   computed: {
-    iframeCalculatedHeight() {
-      return this.iframeHeight - DEFAULT_IFRAME_BOTTOM_HEIGHT;
-    },
     iFrameStyle() {
       if (!this.zuoraLoaded) {
         return { height: DEFAULT_IFRAME_CONTAINER_MIN_HEIGHT };
       }
-      const height = Math.max(0, this.iframeCalculatedHeight);
+      const height = Math.max(0, this.iframeHeight);
       return { height: `${height}px`, minHeight: DEFAULT_IFRAME_CONTAINER_MIN_HEIGHT };
     },
     renderParams() {
@@ -288,7 +284,6 @@ export default {
     <div
       id="zuora_payment"
       :style="iFrameStyle"
-      class="gl-overflow-hidden"
       :class="{ 'gl-visibility-hidden': !shouldShowZuoraFrame }"
     ></div>
   </div>
