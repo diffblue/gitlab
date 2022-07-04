@@ -44,6 +44,7 @@ RSpec.describe Gitlab::Ci::Pipeline::Chain::Validate::AfterConfig do
 
         it 'logs the event' do
           allow(Gitlab).to receive(:com?).and_return(true).at_least(:once)
+          allow(Gitlab::AppLogger).to receive(:info)
 
           expect(Gitlab::AppLogger).to receive(:info).with(
             message: 'Credit card required to be on file in order to create a pipeline',
