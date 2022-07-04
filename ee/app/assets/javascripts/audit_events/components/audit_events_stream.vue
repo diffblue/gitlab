@@ -100,7 +100,7 @@ export default {
       <span class="gl-mr-4">{{ destinationsCount }}</span>
       <gl-button :aria-label="$options.i18n.ADD_STREAM" icon="plus" @click="setEditMode(true)" />
     </div>
-    <div v-if="isEditing" class="gl-p-4">
+    <div v-if="isEditing" class="gl-p-6 gl-border gl-rounded-base">
       <stream-destination-editor @added="onAddedDestination" @cancel="setEditMode(false)" />
     </div>
     <div v-if="destinationsCount" class="gl-p-4">
@@ -111,6 +111,7 @@ export default {
           :key="item.id"
           :item="item"
           @delete="refreshDestinations"
+          @updated="onAddedDestination"
         />
       </ul>
     </div>

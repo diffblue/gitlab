@@ -9,6 +9,7 @@ import {
   GlSprintf,
   GlTableLite,
 } from '@gitlab/ui';
+import { isEmpty } from 'lodash';
 import * as Sentry from '@sentry/browser';
 import { thWidthPercent } from '~/lib/utils/table_utility';
 import externalAuditEventDestinationCreate from '../../graphql/create_external_destination.mutation.graphql';
@@ -19,6 +20,7 @@ import {
   createBlankHeader,
 } from '../../constants';
 import deleteExternalDestination from '../../graphql/delete_external_destination.mutation.graphql';
+import { mapItemHeadersToFormData } from '../../utils';
 
 const { CREATING_ERROR } = AUDIT_STREAMS_NETWORK_ERRORS;
 
@@ -37,6 +39,13 @@ export default {
     GlTableLite,
   },
   inject: ['groupPath', 'showStreamsHeaders', 'maxHeaders'],
+  props: {
+    item: {
+      type: Object,
+      required: false,
+      default: () => ({}),
+    },
+  },
   data() {
     return {
       destinationUrl: '',
@@ -63,8 +72,37 @@ export default {
       return this.headers.some((header) => this.isHeaderFilled(header));
     },
     isSubmitButtonDisabled() {
-      return !this.destinationUrl || this.hasHeaderValidationErrors || this.hasMissingKeyValuePairs;
+      return (
+        this.isEditing ||
+        !this.destinationUrl ||
+        this.hasHeaderValidationErrors ||
+        this.hasMissingKeyValuePairs
+      );
     },
+    isEditing() {
+      return !isEmpty(this.item);
+    },
+    addButtonName() {
+      return this.isEditing
+        ? ADD_STREAM_EDITOR_I18N.SAVE_BUTTON_NAME
+        : ADD_STREAM_EDITOR_I18N.ADD_BUTTON_NAME;
+    },
+    addButtonText() {
+      return this.isEditing
+        ? ADD_STREAM_EDITOR_I18N.SAVE_BUTTON_TEXT
+        : ADD_STREAM_EDITOR_I18N.ADD_BUTTON_TEXT;
+    },
+  },
+  mounted() {
+    const existingHeaders = mapItemHeadersToFormData(this.item, { disabled: true });
+
+    if (existingHeaders.length > 0) {
+      this.headers = existingHeaders;
+    } else if (this.isEditing) {
+      this.$set(this.headers, 0, { ...this.headers[0], disabled: true });
+    }
+
+    this.destinationUrl = this.item.destinationUrl;
   },
   methods: {
     clearError(index) {
@@ -237,7 +275,7 @@ export default {
     {
       key: 'active',
       label: ADD_STREAM_EDITOR_I18N.TABLE_COLUMN_ACTIVE_LABEL,
-      thClass: `${thClasses} ${thWidthPercent(5)}`,
+      thClass: `${thClasses} ${thWidthPercent(10)}`,
       tdClass: tdClasses,
     },
     {
@@ -251,7 +289,7 @@ export default {
 </script>
 
 <template>
-  <div class="gl-p-4 gl-bg-white gl-border gl-rounded-base">
+  <div class="gl-bg-white">
     <gl-alert
       :title="$options.i18n.WARNING_TITLE"
       :dismissible="false"
@@ -282,6 +320,7 @@ export default {
         <gl-form-input
           v-model="destinationUrl"
           :placeholder="$options.i18n.DESTINATION_URL_PLACEHOLDER"
+          :disabled="isEditing"
           data-testid="destination-url"
         />
       </gl-form-group>
@@ -359,12 +398,12 @@ export default {
         <gl-button
           :disabled="isSubmitButtonDisabled"
           :loading="loading"
-          :name="$options.i18n.ADD_BUTTON_NAME"
+          :name="addButtonName"
           class="gl-mr-3"
           variant="confirm"
           type="submit"
           data-testid="stream-destination-add-button"
-          >{{ $options.i18n.ADD_BUTTON_TEXT }}</gl-button
+          >{{ addButtonText }}</gl-button
         >
         <gl-button
           :name="$options.i18n.CANCEL_BUTTON_NAME"

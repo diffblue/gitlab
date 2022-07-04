@@ -20,6 +20,8 @@ import {
   destinationDeleteMutationPopulator,
   destinationHeaderCreateMutationPopulator,
   groupPath,
+  mockExternalDestinations,
+  mockExternalDestinationHeader,
 } from '../../mock_data';
 
 const localVue = createLocalVue();
@@ -33,6 +35,7 @@ describe('StreamDestinationEditor', () => {
   const createComponent = (
     mountFn = shallowMountExtended,
     provide = {},
+    propsData = {},
     apolloHandlers = [
       [
         externalAuditEventDestinationCreate,
@@ -48,6 +51,7 @@ describe('StreamDestinationEditor', () => {
         maxHeaders,
         ...provide,
       },
+      propsData,
       apolloProvider: mockApollo,
       localVue,
     });
@@ -100,6 +104,7 @@ describe('StreamDestinationEditor', () => {
 
       it('should render the destination URL input', () => {
         expect(findDestinationUrlFormGroup().exists()).toBe(true);
+        expect(findDestinationUrl().props('disabled')).toBe(undefined);
         expect(findDestinationUrl().attributes('placeholder')).toBe(
           ADD_STREAM_EDITOR_I18N.DESTINATION_URL_PLACEHOLDER,
         );
@@ -139,7 +144,7 @@ describe('StreamDestinationEditor', () => {
 
   describe('add destination event without headers', () => {
     it('should emit add event after destination added', async () => {
-      createComponent(shallowMountExtended, {}, [
+      createComponent(shallowMountExtended, {}, {}, [
         [
           externalAuditEventDestinationCreate,
           jest.fn().mockResolvedValue(destinationCreateMutationPopulator()),
@@ -156,7 +161,7 @@ describe('StreamDestinationEditor', () => {
 
     it('should not emit add destination event and reports error when server returns error', async () => {
       const errorMsg = 'Destination hosts limit exceeded';
-      createComponent(shallowMountExtended, {}, [
+      createComponent(shallowMountExtended, {}, {}, [
         [
           externalAuditEventDestinationCreate,
           jest.fn().mockResolvedValue(destinationCreateMutationPopulator([errorMsg])),
@@ -175,7 +180,7 @@ describe('StreamDestinationEditor', () => {
     it('should not emit add destination event and reports error when network error occurs', async () => {
       const sentryError = new Error('Network error');
       const sentryCaptureExceptionSpy = jest.spyOn(Sentry, 'captureException');
-      createComponent(shallowMountExtended, {}, [
+      createComponent(shallowMountExtended, {}, {}, [
         [externalAuditEventDestinationCreate, jest.fn().mockRejectedValue(sentryError)],
       ]);
 
@@ -192,7 +197,7 @@ describe('StreamDestinationEditor', () => {
 
   describe('add destination event with headers', () => {
     it('should emit add event after destination and headers are added', async () => {
-      createComponent(mountExtended, { showStreamsHeaders: true }, [
+      createComponent(mountExtended, { showStreamsHeaders: true }, {}, [
         [
           externalAuditEventDestinationCreate,
           jest.fn().mockResolvedValue(destinationCreateMutationPopulator()),
@@ -218,7 +223,7 @@ describe('StreamDestinationEditor', () => {
         .fn()
         .mockResolvedValue(destinationHeaderCreateMutationPopulator());
 
-      createComponent(mountExtended, { showStreamsHeaders: true }, [
+      createComponent(mountExtended, { showStreamsHeaders: true }, {}, [
         [
           externalAuditEventDestinationCreate,
           jest.fn().mockResolvedValue(destinationCreateMutationPopulator()),
@@ -244,7 +249,7 @@ describe('StreamDestinationEditor', () => {
 
     it('should not emit add destination event and reports error when server returns error while adding headers', async () => {
       const errorMsg = 'Destination hosts limit exceeded';
-      createComponent(mountExtended, { showStreamsHeaders: true }, [
+      createComponent(mountExtended, { showStreamsHeaders: true }, {}, [
         [
           externalAuditEventDestinationCreate,
           jest.fn().mockResolvedValue(destinationCreateMutationPopulator()),
@@ -276,7 +281,7 @@ describe('StreamDestinationEditor', () => {
     it('should not emit add destination event and reports error when network error occurs while adding headers', async () => {
       const sentryError = new Error('Network error');
       const sentryCaptureExceptionSpy = jest.spyOn(Sentry, 'captureException');
-      createComponent(mountExtended, { showStreamsHeaders: true }, [
+      createComponent(mountExtended, { showStreamsHeaders: true }, {}, [
         [
           externalAuditEventDestinationCreate,
           jest.fn().mockResolvedValue(destinationCreateMutationPopulator()),
@@ -423,6 +428,41 @@ describe('StreamDestinationEditor', () => {
       expect(findMaximumHeadersText()).toMatchInterpolatedText(
         sprintf(ADD_STREAM_EDITOR_I18N.MAXIMUM_HEADERS_TEXT, { number: maxHeaders }),
       );
+    });
+  });
+
+  describe('when editing an existing destination', () => {
+    const item = {
+      ...mockExternalDestinations[0],
+      headers: { nodes: [mockExternalDestinationHeader(), mockExternalDestinationHeader()] },
+    };
+
+    beforeEach(() => {
+      createComponent(mountExtended, { showStreamsHeaders: true }, { item });
+    });
+
+    it('disables the destination URL field', () => {
+      expect(findDestinationUrl().element.value).toBe(mockExternalDestinations[0].destinationUrl);
+      expect(findDestinationUrl().attributes('disabled')).toBe('disabled');
+    });
+
+    it('disables the save button', () => {
+      expect(findAddBtn().attributes('disabled')).toBe('disabled');
+    });
+
+    it('changes the save button text', () => {
+      expect(findAddBtn().attributes('name')).toBe(ADD_STREAM_EDITOR_I18N.SAVE_BUTTON_NAME);
+      expect(findAddBtn().text()).toBe(ADD_STREAM_EDITOR_I18N.SAVE_BUTTON_TEXT);
+    });
+
+    it.each([0, 1])('disables the header inputs for row %i', (i) => {
+      expect(findHeaderNameInput(i).attributes('disabled')).toBe('disabled');
+      expect(findHeaderValueInput(i).attributes('disabled')).toBe('disabled');
+    });
+
+    it.each([0, 1])('sets the header input values for row %i', (i) => {
+      expect(findHeaderNameInput(i).element.value).toBe(item.headers.nodes[i].key);
+      expect(findHeaderValueInput(i).element.value).toBe(item.headers.nodes[i].value);
     });
   });
 });

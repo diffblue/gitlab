@@ -3,7 +3,9 @@ import {
   getEntityTypeFromType,
   parseAuditEventSearchQuery,
   createAuditEventSearchQuery,
+  mapItemHeadersToFormData,
 } from 'ee/audit_events/utils';
+import { mockExternalDestinationHeader } from './mock_data';
 
 describe('Audit Event Utils', () => {
   describe('getTypeFromEntityType', () => {
@@ -73,5 +75,100 @@ describe('Audit Event Utils', () => {
         });
       },
     );
+  });
+
+  describe('mapItemHeadersToFormData', () => {
+    const header1 = mockExternalDestinationHeader();
+    const header2 = mockExternalDestinationHeader();
+    const header3 = mockExternalDestinationHeader();
+
+    it.each([{}, { headers: {} }, { headers: { nodes: [] } }])(
+      'returns an empty array when there are no headers',
+      (item) => {
+        expect(mapItemHeadersToFormData(item)).toEqual([]);
+      },
+    );
+
+    it('returns the formatted headers', () => {
+      expect(mapItemHeadersToFormData({ headers: { nodes: [header1, header2] } })).toStrictEqual([
+        {
+          id: header1.id,
+          name: header1.key,
+          value: header1.value,
+          active: true,
+          disabled: false,
+          deletionDisabled: true,
+          validationErrors: { name: '' },
+        },
+        {
+          id: header2.id,
+          name: header2.key,
+          value: header2.value,
+          active: true,
+          disabled: false,
+          deletionDisabled: true,
+          validationErrors: { name: '' },
+        },
+      ]);
+    });
+
+    it('applies the settings to each header when given', () => {
+      expect(
+        mapItemHeadersToFormData({ headers: { nodes: [header1, header2] } }, { disabled: true }),
+      ).toStrictEqual([
+        {
+          id: header1.id,
+          name: header1.key,
+          value: header1.value,
+          active: true,
+          disabled: true,
+          deletionDisabled: true,
+          validationErrors: { name: '' },
+        },
+        {
+          id: header2.id,
+          name: header2.key,
+          value: header2.value,
+          active: true,
+          disabled: true,
+          deletionDisabled: true,
+          validationErrors: { name: '' },
+        },
+      ]);
+    });
+
+    it('sorts the headers by their ID', () => {
+      expect(
+        mapItemHeadersToFormData({ headers: { nodes: [header3, header1, header2] } }),
+      ).toStrictEqual([
+        {
+          id: header1.id,
+          name: header1.key,
+          value: header1.value,
+          active: true,
+          disabled: false,
+          deletionDisabled: true,
+          validationErrors: { name: '' },
+        },
+        {
+          id: header2.id,
+          name: header2.key,
+          value: header2.value,
+          active: true,
+          disabled: false,
+          deletionDisabled: true,
+          validationErrors: { name: '' },
+        },
+        {
+          id: header3.id,
+          name: header3.key,
+          value: header3.value,
+          active: true,
+          disabled: false,
+          deletionDisabled: true,
+          validationErrors: { name: '' },
+        },
+      ]);
+    });
   });
 });

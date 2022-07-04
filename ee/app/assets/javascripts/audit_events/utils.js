@@ -1,5 +1,11 @@
 import { parsePikadayDate, pikadayToString } from '~/lib/utils/datetime_utility';
-import { AVAILABLE_TOKEN_TYPES, AUDIT_FILTER_CONFIGS, ENTITY_TYPES } from './constants';
+import { getIdFromGraphQLId } from '~/graphql_shared/utils';
+import {
+  AVAILABLE_TOKEN_TYPES,
+  AUDIT_FILTER_CONFIGS,
+  ENTITY_TYPES,
+  createBlankHeader,
+} from './constants';
 import { parseUsername, displayUsername } from './token_utils';
 
 export const getTypeFromEntityType = (entityType) => {
@@ -57,4 +63,22 @@ export const createAuditEventSearchQuery = ({ filterValue, startDate, endDate, s
   }
 
   return params;
+};
+
+export const mapItemHeadersToFormData = (item, settings = {}) => {
+  const headers = item?.headers?.nodes || [];
+
+  return (
+    headers
+      .map(({ id, key, value }) => ({
+        ...createBlankHeader(),
+        id,
+        name: key,
+        value,
+        ...settings,
+      }))
+      // Sort the headers so they appear in the order they were created
+      // The GraphQL endpoint returns them in the reverse order of this
+      .sort((a, b) => getIdFromGraphQLId(a.id) - getIdFromGraphQLId(b.id))
+  );
 };
