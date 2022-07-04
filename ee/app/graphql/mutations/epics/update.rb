@@ -18,9 +18,10 @@ module Mutations
         group_path = args.delete(:group_path)
         epic_iid = args.delete(:iid)
 
-        validate_arguments!(args)
-
         epic = authorized_find!(group_path: group_path, iid: epic_iid)
+
+        validate_arguments!(args, epic.group)
+
         epic = ::Epics::UpdateService.new(group: epic.group, current_user: current_user, params: args).execute(epic)
 
         {
