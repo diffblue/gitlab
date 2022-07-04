@@ -43,8 +43,20 @@ RSpec.describe Gitlab::WebHooks::RateLimiter, :saas, :clean_gitlab_redis_rate_li
   end
 
   describe '#rate_limit!' do
+    before do
+      stub_feature_flags(web_hooks_no_rate_limit: false)
+    end
+
     def rate_limit!
       described_class.new(hook).rate_limit!
+    end
+
+    shared_examples 'can never be rate-limited' do
+      it 'can never be rate-limited' do
+        expect(Gitlab::ApplicationRateLimiter).not_to receive(:throttled?)
+
+        rate_limit!
+      end
     end
 
     context 'when there is no GitLab subscription' do
@@ -56,14 +68,21 @@ RSpec.describe Gitlab::WebHooks::RateLimiter, :saas, :clean_gitlab_redis_rate_li
         root_namespace.reload
       end
 
-      it 'can never be rate-limited' do
-        expect(Gitlab::ApplicationRateLimiter).not_to receive(:throttled?)
-
-        rate_limit!
-      end
+      include_examples 'can never be rate-limited'
     end
 
-    context 'when there is a GitLab subscription' do
+    context 'when the `web_hooks_no_rate_limit` flag has been enabled for the root_namespace' do
+      let(:hook) { project_hook_with_premium_plan }
+      let(:root_namespace) { hook.parent.root_namespace }
+
+      before do
+        stub_feature_flags(web_hooks_no_rate_limit: root_namespace)
+      end
+
+      include_examples 'can never be rate-limited'
+    end
+
+    context 'when there are no reasons preventing the rate limit' do
       let(:hook) { project_hook_with_premium_plan }
 
       it 'can be rate limited' do
@@ -125,57 +144,18 @@ RSpec.describe Gitlab::WebHooks::RateLimiter, :saas, :clean_gitlab_redis_rate_li
           allow(root_namespace.gitlab_subscription).to receive(:seats).and_return(seats)
         end
 
-        it 'does not log when webhook is under the rate limit' do
+        it 'rate limits correctly' do
           expect(Gitlab::ApplicationRateLimiter).to receive(:throttled?)
-            .exactly(limit).times
+            .exactly(limit + 1).times
             .with(
               rate_limit_name,
               scope: [root_namespace],
               threshold: limit
             ).and_call_original
-          expect(Gitlab::AppLogger).not_to receive(:info)
 
           limit.times { expect(rate_limit!).to eq(false) }
-        end
 
-        it 'logs when rate-limited with an ExclusiveLease protection, but does not enforce limits' do
-          # This test will execute the hook `limit + 2` times.
-          #
-          # Executing `limit` times, the webhook will still be
-          # under the limit.
-          # Executing twice more will assert that our logging is protected
-          # by an exclusive lease. We receive a single log message, but the lease
-          # is called twice.
-          execution_count = limit + 2
-
-          expect(Gitlab::ApplicationRateLimiter).to receive(:throttled?)
-            .exactly(execution_count).times
-            .with(
-              rate_limit_name,
-              scope: [root_namespace],
-              threshold: limit
-            ).and_call_original
-
-          expect(Gitlab::ExclusiveLease).to receive(:throttle)
-            .twice
-            .with(
-              root_namespace.id,
-              period: 1.minute
-            ).and_call_original
-
-          expect(Gitlab::AppLogger).to receive(:info)
-            .once
-            .with(
-              message: 'Webhook rate limit would be exceeded',
-              hook_id: hook.id,
-              hook_type: hook.type,
-              root_namespace: root_namespace.full_path_components.first,
-              plan: root_namespace.actual_plan.name,
-              limit: limit,
-              limit_name: rate_limit_name
-            )
-
-          execution_count.times { expect(rate_limit!).to eq(false) }
+          expect(rate_limit!).to eq(true)
         end
       end
     end
