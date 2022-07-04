@@ -7,6 +7,7 @@ RSpec.describe Users::Abuse::ExcessiveProjectsDownloadBanService, :clean_gitlab_
     let_it_be(:admin) { create(:user, :admin) }
 
     let(:user) { create(:user) }
+    let(:allowlisted_user) { create(:user) }
     let(:limit) { 3 }
     let(:time_period_in_seconds) { 60 }
 
@@ -127,6 +128,31 @@ RSpec.describe Users::Abuse::ExcessiveProjectsDownloadBanService, :clean_gitlab_
       expect(Notify).not_to receive(:user_auto_banned_email)
 
       execute
+    end
+
+    context 'when allowlisted user exceeds the download limit within the set time period' do
+      before do
+        limit.times { described_class.execute(allowlisted_user, create(:project)) }
+      end
+
+      it { is_expected.to include(banned: false) }
+
+      it 'does not ban the user' do
+        expect(allowlisted_user).not_to receive(:ban!)
+
+        execute
+      end
+
+      it 'does not log a ban event' do
+        expect(Gitlab::AppLogger).not_to receive(:info).with(
+          message: "User ban",
+          user: allowlisted_user.username,
+          email: allowlisted_user.email,
+          ban_by: described_class.name
+        )
+
+        execute
+      end
     end
   end
 end

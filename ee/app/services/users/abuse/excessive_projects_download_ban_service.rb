@@ -35,7 +35,8 @@ module Users
           :unique_project_downloads,
           scope: current_user,
           resource: project,
-          peek: peek
+          peek: peek,
+          users_allowlist: users_allowlist
         )
       end
 
@@ -90,6 +91,10 @@ module Users
 
       def time_period
         @time_period ||= settings.max_number_of_repository_downloads_within_time_period
+      end
+
+      def users_allowlist
+        @git_rate_limit_users_allowlist ||= settings.git_rate_limit_users_allowlist
       end
 
       def settings
