@@ -12969,9 +12969,6 @@ msgstr ""
 msgid "Deprecations|The logs and tracing features were also deprecated in GitLab 14.7, and are %{removal_link_start} scheduled for removal %{link_end} in GitLab 15.0."
 msgstr ""
 
-msgid "Deprecations|The logs and tracing features were deprecated in GitLab 14.7 and are %{epicStart} scheduled for removal %{epicEnd} in GitLab 15.0."
-msgstr ""
-
 msgid "Deprecations|The metrics feature was deprecated in GitLab 14.7."
 msgstr ""
 
@@ -14596,12 +14593,6 @@ msgstr ""
 msgid "Environments|Commit"
 msgstr ""
 
-msgid "Environments|Currently showing %{fetched} results."
-msgstr ""
-
-msgid "Environments|Currently showing all results."
-msgstr ""
-
 msgid "Environments|Delete"
 msgstr ""
 
@@ -14638,9 +14629,6 @@ msgstr ""
 msgid "Environments|How do I create an environment?"
 msgstr ""
 
-msgid "Environments|Install Elastic Stack on your cluster to enable advanced querying capabilities such as full text search."
-msgstr ""
-
 msgid "Environments|Job"
 msgstr ""
 
@@ -14648,9 +14636,6 @@ msgid "Environments|Learn about environments"
 msgstr ""
 
 msgid "Environments|Learn more about stopping environments"
-msgstr ""
-
-msgid "Environments|Logs from %{start} to %{end}."
 msgstr ""
 
 msgid "Environments|New environment"
@@ -14675,9 +14660,6 @@ msgid "Environments|Open"
 msgstr ""
 
 msgid "Environments|Open live environment"
-msgstr ""
-
-msgid "Environments|Pod name"
 msgstr ""
 
 msgid "Environments|Re-deploy environment"
@@ -14711,9 +14693,6 @@ msgid "Environments|Stopping %{environmentName}"
 msgstr ""
 
 msgid "Environments|There are no deployments for this environment yet. %{linkStart}Learn more about setting up deployments.%{linkEnd}"
-msgstr ""
-
-msgid "Environments|There was an error fetching the logs. Please try again."
 msgstr ""
 
 msgid "Environments|This action will %{docsStart}retry the latest deployment%{docsEnd} with the commit %{commitId}, for this environment. Are you sure you want to continue?"
@@ -42373,9 +42352,6 @@ msgid "VersionCheck|Update available"
 msgstr ""
 
 msgid "VersionCheck|Your GitLab Version"
-msgstr ""
-
-msgid "View Documentation"
 msgstr ""
 
 msgid "View Stage: %{title}"
