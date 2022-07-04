@@ -130,6 +130,9 @@ export default {
         profileType: this.profileType,
       });
     },
+    showFooter() {
+      return Boolean(this.libraryLink) && !this.isEditingMode;
+    },
   },
   /**
    * Only if activeProfile is passed from parent
@@ -246,8 +249,8 @@ export default {
         />
       </template>
     </template>
-    <template v-if="libraryLink" #footer>
-      <div class="gl-w-full gl-text-center">
+    <template #footer>
+      <div v-if="showFooter" class="gl-w-full gl-text-center">
         <gl-link :href="libraryLink">
           {{ footerLinkText }}
         </gl-link>
