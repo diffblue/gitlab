@@ -83,7 +83,12 @@ export default {
     <template v-else>
       <external-issue-alert issue-tracker-name="Jira" :issue-url="issue.webUrl" />
 
-      <issuable-show :issuable="issue" :enable-edit="false" :status-icon="statusIcon">
+      <issuable-show
+        :issuable="issue"
+        :enable-edit="false"
+        :status-icon="statusIcon"
+        status-icon-class="gl-sm-display-none"
+      >
         <template #status-badge>{{ statusBadgeText }}</template>
 
         <template #right-sidebar-items="{ sidebarExpanded, toggleSidebar }">
