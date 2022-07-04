@@ -139,6 +139,52 @@ RSpec.describe 'Groups > Members > Manage members', :saas, :js do
     it_behaves_like "adding one user with a given role doesn't trigger an overage modal", 'Developer'
   end
 
+  describe 'banned members' do
+    let(:licensed_feature_available) { true }
+
+    before do
+      stub_licensed_features(unique_project_download_limit: licensed_feature_available)
+
+      create(:gitlab_subscription, namespace: group, hosted_plan: ultimate_plan)
+      create(:namespace_ban, namespace: group, user: user2)
+
+      group.add_owner(user1)
+      group.add_developer(user2)
+    end
+
+    it 'owner can see banned users' do
+      visit group_group_members_path(group)
+
+      click_on 'Banned'
+
+      page.within(first_row) do
+        expect(page).to have_content(user2.name)
+      end
+    end
+
+    context 'when feature flag is disabled' do
+      before do
+        stub_feature_flags(limit_unique_project_downloads_per_namespace_user: false)
+      end
+
+      it 'owner cannot see banned users' do
+        visit group_group_members_path(group)
+
+        expect(page).not_to have_content('Banned')
+      end
+    end
+
+    context 'when licensed feature is not available' do
+      let(:licensed_feature_available) { false }
+
+      it 'owner cannot see banned users' do
+        visit group_group_members_path(group)
+
+        expect(page).not_to have_content('Banned')
+      end
+    end
+  end
+
   def add_user_by_name(name, role)
     visit group_group_members_path(group)
 

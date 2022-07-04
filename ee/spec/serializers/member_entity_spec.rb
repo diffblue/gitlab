@@ -43,6 +43,12 @@ RSpec.describe MemberEntity do
 
       expect(entity_hash[:provisioned_by_this_group]).to be(true)
     end
+
+    it 'correctly exposes `banned`' do
+      allow(member.user).to receive(:banned_from_namespace?).with(group).and_return(true)
+
+      expect(entity_hash[:banned]).to be(true)
+    end
   end
 
   context 'group member' do

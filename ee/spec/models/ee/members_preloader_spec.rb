@@ -32,6 +32,7 @@ RSpec.describe EE::MembersPreloader do
         member.user.oncall_schedules.any?
         member.user.escalation_policies.any?
         member.user.user_detail
+        member.user.namespace_bans.any?
       end
     end
 
@@ -39,6 +40,7 @@ RSpec.describe EE::MembersPreloader do
       create(:group_saml_identity, user: member.user, saml_provider: saml_provider)
       create_schedule_with_user(project, member.user)
       create(:incident_management_escalation_rule, :with_user, policy: escalation_policy, user: member.user)
+      create(:namespace_ban, namespace: group, user: member.user)
       member.user.user_detail.save!
       member.reload
     end

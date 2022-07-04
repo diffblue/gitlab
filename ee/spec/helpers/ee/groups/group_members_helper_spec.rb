@@ -24,12 +24,15 @@ RSpec.describe Groups::GroupMembersHelper do
   end
 
   describe '#group_members_app_data' do
+    let(:banned) { present_members(create_list(:group_member, 2, group: group, created_by: current_user)) }
+
     subject do
       helper.group_members_app_data(
         group,
         members: [],
         invited: [],
         access_requests: [],
+        banned: banned,
         include_relations: [:inherited, :direct],
         search: nil
       )
@@ -57,6 +60,24 @@ RSpec.describe Groups::GroupMembersHelper do
     it 'adds `can_filter_by_enterprise`' do
       allow(group.root_ancestor).to receive(:saml_enabled?).and_return(true)
       expect(subject[:can_filter_by_enterprise]).to eq(true)
+    end
+
+    context 'banned members' do
+      it 'returns `members` property that matches json schema' do
+        expect(subject[:banned][:members].to_json).to match_schema('members')
+      end
+
+      it 'sets `member_path` property' do
+        expect(subject[:banned][:member_path]).to eq('/groups/foo-bar/-/group_members/:id')
+      end
+
+      context 'when banned arg is nil' do
+        let(:banned) { nil }
+
+        it 'is nil' do
+          expect(subject[:banned]).to be_nil
+        end
+      end
     end
   end
 
