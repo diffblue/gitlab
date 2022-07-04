@@ -10,7 +10,7 @@ module AuditEvents
     # @return [BuildService]
     def initialize(
       author:, scope:, target:, message:,
-      created_at: DateTime.current, additional_details: {}, ip_address: nil)
+      created_at: DateTime.current, additional_details: {}, ip_address: nil, target_details: nil)
       raise MissingAttributeError if missing_attribute?(author, scope, target, message)
 
       @author = build_author(author)
@@ -20,6 +20,7 @@ module AuditEvents
       @message = build_message(message)
       @created_at = created_at
       @additional_details = additional_details
+      @target_details = target_details
     end
 
     # Create an instance of AuditEvent
@@ -61,13 +62,13 @@ module AuditEvents
     end
 
     def base_details_payload
-      {
+      @additional_details.merge({
         author_name: @author.name,
         target_id: @target.id,
         target_type: @target.type,
-        target_details: @target.details,
+        target_details: @target_details || @target.details,
         custom_message: @message
-      }.merge(@additional_details)
+      })
     end
 
     def build_author(author)

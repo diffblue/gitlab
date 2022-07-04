@@ -39,42 +39,44 @@ RSpec.describe Audit::Changes do
     end
 
     describe 'audit changes' do
-      let(:audit_event_service) { instance_spy(AuditEventService) }
+      let(:options) { { model: user, event_type: 'audit_operation' } }
 
-      before do
-        allow(AuditEventService).to receive(:new).and_return(audit_event_service)
+      it 'calls the auditor' do
+        user.update!(name: 'Scrooge McDuck')
+
+        expect(::Gitlab::Audit::Auditor).to receive(:audit).with(
+          { additional_details: { change: :name,
+                                  from: "Donald Duck",
+                                  to: "Scrooge McDuck" },
+            name: 'audit_operation',
+            author: current_user,
+            scope: user,
+            target: user,
+            message: "Changed name from Donald Duck to Scrooge McDuck",
+            target_details: nil }
+        )
+
+        audit!
       end
 
-      it 'calls the audit event service' do
+      it 'creates audit event with correct attributes', :aggregate_failure do
         user.update!(name: 'Scrooge McDuck')
 
         audit!
 
-        aggregate_failures 'audit event service interactions' do
-          expect(AuditEventService).to have_received(:new)
-            .with(
-              current_user, user,
-              model: user,
-              action: :update, column: :name,
-              from: 'Donald Duck', to: 'Scrooge McDuck'
-            )
-          expect(audit_event_service).to have_received(:for_changes)
-          expect(audit_event_service).to have_received(:security_event)
-        end
-      end
+        audit_event = AuditEvent.last
 
-      context 'when entity is provided' do
-        let(:project) { Project.new }
-        let(:options) { { model: user, entity: project } }
-
-        it 'instantiates audit event service with the given entity' do
-          user.update!(name: 'Scrooge McDuck')
-
-          audit!
-
-          expect(AuditEventService).to have_received(:new)
-            .with(anything, project, anything)
-        end
+        expect(audit_event.author_id).to eq(current_user.id)
+        expect(audit_event.entity_id).to eq(user.id)
+        expect(audit_event.entity_type).to eq(user.class.name)
+        expect(audit_event.details).to eq({ change: :name,
+                                            author_name: current_user.name,
+                                            from: "Donald Duck",
+                                            to: "Scrooge McDuck",
+                                            target_details: user.name,
+                                            target_id: user.id,
+                                            target_type: user.class.name,
+                                            custom_message: "Changed name from Donald Duck to Scrooge McDuck" })
       end
     end
   end

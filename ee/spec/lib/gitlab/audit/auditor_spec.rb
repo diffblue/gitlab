@@ -191,6 +191,43 @@ RSpec.describe Gitlab::Audit::Auditor do
         end
       end
 
+      context 'when overriding the target_details' do
+        target_details = "this is my target details"
+        let(:context) do
+          { name: name,
+            author: author,
+            scope: scope,
+            target: target,
+            created_at: Time.zone.now,
+            target_details: target_details }
+        end
+
+        it 'logs audit events to database' do
+          freeze_time do
+            audit!
+
+            audit_event = AuditEvent.last
+            expect(audit_event.details).to include({ target_details: target_details })
+            expect(audit_event.target_details).to eq(target_details)
+          end
+        end
+
+        it 'logs audit events to file' do
+          freeze_time do
+            expect(::Gitlab::AuditJsonLogger).to receive(:build).and_return(logger)
+
+            audit!
+
+            expect(logger).to have_received(:info).exactly(2).times.with(
+              hash_including(
+                'details' => hash_including('target_details' => target_details),
+                'target_details' => target_details
+              )
+            )
+          end
+        end
+      end
+
       context 'when overriding the ip address' do
         ip_address = '192.168.8.8'
         let(:context) { { name: name, author: author, scope: scope, target: target, ip_address: ip_address } }

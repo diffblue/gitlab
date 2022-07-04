@@ -48,7 +48,8 @@ RSpec.describe Projects::TransferService do
              author_name: user.name,
              target_id: project.id,
              target_type: 'Project',
-             target_details: project.full_path
+             target_details: project.full_path,
+             custom_message: "Changed namespace from #{project.old_path_with_namespace} to #{project.full_path}"
            }
          }
       end
