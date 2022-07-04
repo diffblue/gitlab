@@ -145,5 +145,18 @@ describe('DastProfilesSidebar', () => {
       expect(findFooterLink().text()).toBe(expectedResult);
       expect(findFooterLink().attributes('href')).toEqual(libraryLink);
     });
+
+    it.each`
+      sidebarViewMode                   | expectedResult
+      ${SIDEBAR_VIEW_MODE.READING_MODE} | ${true}
+      ${SIDEBAR_VIEW_MODE.EDITING_MODE} | ${false}
+    `(
+      'should set footer visibility as $expectedResult for $sidebarViewMode mode',
+      ({ sidebarViewMode, expectedResult }) => {
+        createComponent({ profiles: scannerProfiles, sidebarViewMode, libraryLink });
+
+        expect(findFooterLink().exists()).toBe(expectedResult);
+      },
+    );
   });
 });
