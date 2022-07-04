@@ -480,21 +480,17 @@ export default {
 
 <template>
   <div id="ide" class="blob-viewer-container blob-editor-container">
-    <gl-tabs v-if="showTabs">
+    <gl-tabs v-if="showTabs" content-class="gl-display-none">
       <gl-tab
-        title="Edit"
+        :title="__('Edit')"
         data-testid="edit-tab"
         @click="updateEditor({ viewMode: $options.FILE_VIEW_MODE_EDITOR })"
-      >
-        {{ __('Edit') }}
-      </gl-tab>
+      />
       <gl-tab
         :title="previewMode.previewTitle"
         data-testid="preview-tab"
         @click="updateEditor({ viewMode: $options.FILE_VIEW_MODE_PREVIEW })"
-      >
-        {{ previewMode.previewTitle }}
-      </gl-tab>
+      />
     </gl-tabs>
     <file-alert v-if="alertKey" :alert-key="alertKey" />
     <file-templates-bar v-else-if="showFileTemplatesBar(file.name)" />

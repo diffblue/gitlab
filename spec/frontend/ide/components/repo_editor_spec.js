@@ -117,9 +117,9 @@ describe('RepoEditor', () => {
       mocks: {
         ContentViewer,
       },
-      stubs: {
-        GlTab,
-      },
+      // stubs: {
+      //   GlTab,
+      // },
     });
     await waitForPromises();
     vm = wrapper.vm;
@@ -205,8 +205,8 @@ describe('RepoEditor', () => {
         const tabs = findTabs();
 
         expect(tabs).toHaveLength(2);
-        expect(tabs.at(0).text()).toBe('Edit');
-        expect(tabs.at(1).text()).toBe('Preview Markdown');
+        expect(tabs.at(0).element.dataset.testid).toBe('edit-tab');
+        expect(tabs.at(1).element.dataset.testid).toBe('preview-tab');
       });
 
       it('renders markdown for tempFile', async () => {
