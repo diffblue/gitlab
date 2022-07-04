@@ -36,6 +36,28 @@ system. If you installed GitLab:
   sudo yum install rsync
   ```
 
+### `gitaly-backup` for repository backup and restore
+
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/333034) in GitLab 14.2.
+> - [Deployed behind a feature flag](../user/feature_flags.md), enabled by default.
+> - [Generally available](https://gitlab.com/gitlab-org/gitlab/-/issues/333034) in GitLab 14.10. [Feature flag `gitaly_backup`](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/83254) removed.
+
+The `gitaly-backup` binary is used by the backup Rake task to create and restore repository backups from Gitaly.
+`gitaly-backup` replaces the previous backup method that directly calls RPCs on Gitaly from GitLab.
+
+The backup Rake task must be able to find this executable. In most cases, you don't need to change
+the path to the binary as it should work fine with the default path `/opt/gitlab/embedded/bin/gitaly-backup`.
+If you have a specific reason to change the path, it can be configured in Omnibus GitLab packages:
+
+1. Add the following to `/etc/gitlab/gitlab.rb`:
+
+   ```ruby
+   gitlab_rails['backup_gitaly_backup_path'] = '/path/to/gitaly-backup'
+   ```
+
+1. [Reconfigure GitLab](../administration/restart_gitlab.md#omnibus-gitlab-reconfigure)
+   for the changes to take effect.
+
 ## Backup timestamp
 
 The backup archive is saved in `backup_path`, which is specified in the
@@ -731,25 +753,3 @@ If this happens, examine the following:
 - Confirm there is sufficient disk space for the Gzip operation.
 - If NFS is being used, check if the mount option `timeout` is set. The
   default is `600`, and changing this to smaller values results in this error.
-
-### `gitaly-backup` for repository backup and restore
-
-> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/333034) in GitLab 14.2.
-> - [Deployed behind a feature flag](../user/feature_flags.md), enabled by default.
-> - [Generally available](https://gitlab.com/gitlab-org/gitlab/-/issues/333034) in GitLab 14.10. [Feature flag `gitaly_backup`](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/83254) removed.
-
-The `gitaly-backup` binary is used by the backup Rake task to create and restore repository backups from Gitaly.
-`gitaly-backup` replaces the previous backup method that directly calls RPCs on Gitaly from GitLab.
-
-The backup Rake task must be able to find this executable. In most cases, you don't need to change
-the path to the binary as it should work fine with the default path `/opt/gitlab/embedded/bin/gitaly-backup`.
-If you have a specific reason to change the path, it can be configured in Omnibus GitLab packages:
-
-1. Add the following to `/etc/gitlab/gitlab.rb`:
-
-   ```ruby
-   gitlab_rails['backup_gitaly_backup_path'] = '/path/to/gitaly-backup'
-   ```
-
-1. [Reconfigure GitLab](../administration/restart_gitlab.md#omnibus-gitlab-reconfigure)
-   for the changes to take effect
