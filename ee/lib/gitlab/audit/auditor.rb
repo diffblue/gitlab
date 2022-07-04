@@ -44,6 +44,8 @@ module Gitlab
       def self.audit(context, &block)
         auditor = new(context)
 
+        return unless auditor.audit_enabled?
+
         if block
           auditor.multiple_audit(&block)
         else
@@ -119,6 +121,13 @@ module Gitlab
         file_logger = ::Gitlab::AuditJsonLogger.build
 
         events.each { |event| file_logger.info(log_payload(event)) }
+      end
+
+      def audit_enabled?
+        return true if ::License.feature_available?(:admin_audit_log)
+        return true if ::License.feature_available?(:extended_audit_events)
+
+        @scope.respond_to?(:feature_available?) && @scope.licensed_feature_available?(:audit_events)
       end
 
       private

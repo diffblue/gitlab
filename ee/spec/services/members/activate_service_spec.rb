@@ -217,14 +217,32 @@ RSpec.describe Members::ActivateService do
         execute
       end
 
-      it 'tracks an audit event' do
-        execute
+      context 'audit events' do
+        context 'when licensed' do
+          before do
+            stub_licensed_features(admin_audit_log: true, audit_events: true, extended_audit_events: true)
+          end
 
-        audit_event = AuditEvent.find_by(author_id: current_user)
-        expect(audit_event.author).to eq(current_user)
-        expect(audit_event.entity).to eq(group)
-        expect(audit_event.target_id).to eq(user.id)
-        expect(audit_event.details[:custom_message]).to eq('Changed the membership state to active')
+          it 'tracks an audit event' do
+            execute
+
+            audit_event = AuditEvent.find_by(author_id: current_user)
+            expect(audit_event.author).to eq(current_user)
+            expect(audit_event.entity).to eq(group)
+            expect(audit_event.target_id).to eq(user.id)
+            expect(audit_event.details[:custom_message]).to eq('Changed the membership state to active')
+          end
+        end
+
+        context 'when unlicensed' do
+          before do
+            stub_licensed_features(admin_audit_log: false, audit_events: false, extended_audit_events: false)
+          end
+
+          it 'does not track audit event' do
+            expect { execute }.not_to change { AuditEvent.count }
+          end
+        end
       end
     end
 
