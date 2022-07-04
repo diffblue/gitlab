@@ -1,3 +1,9 @@
+// Filtered search parameter names
+// - Used for URL params names
+// - GlFilteredSearch tokens type
+
+export const PARAM_KEY_UPGRADE_STATUS = 'upgrade_status';
+
 // CiRunnerUpgradeStatusType
 
 export const UPGRADE_STATUS_AVAILABLE = 'AVAILABLE';
