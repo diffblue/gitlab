@@ -1,8 +1,6 @@
 import { GlDropdown, GlDropdownItem } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import PageSizeSelector, {
-  PAGE_SIZES,
-} from 'ee/security_dashboard/components/shared/vulnerability_report/page_size_selector.vue';
+import PageSizeSelector, { PAGE_SIZES } from '~/vue_shared/components/page_size_selector.vue';
 
 describe('Page size selector component', () => {
   let wrapper;
