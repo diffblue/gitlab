@@ -14,7 +14,7 @@ module API
           optional :interval, type: String, desc: "The bucketing interval."
           optional :environment_tier,
                    type: String,
-                   desc: "The tier of the environment. Planned for deprecation: please use `environment_tiers` param."
+                   desc: "The tier of the environment. Deprecated, please use `environment_tiers` param."
           optional :environment_tiers, type: Array[String], desc: "Filter by environment tiers."
         end
 
