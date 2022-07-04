@@ -35882,9 +35882,6 @@ msgstr ""
 msgid "Showing all issues"
 msgstr ""
 
-msgid "Showing data for group '%{group_name}' from Nov 1, 2019 to Dec 31, 2019"
-msgstr ""
-
 msgid "Showing data for workflow items created in this date range. Date range limited to %{maxDateRange} days."
 msgstr ""
 
@@ -35898,6 +35895,9 @@ msgid "Showing latest version"
 msgstr ""
 
 msgid "Showing version #%{versionNumber}"
+msgstr ""
+
+msgid "Shows issues and %{labels_count} labels for group '%{group_name}' from Nov 1, 2019 to Dec 31, 2019"
 msgstr ""
 
 msgid "Side-by-side"

@@ -66,114 +66,6 @@ RSpec.describe 'Group value stream analytics filters and data', :js do
     end
   end
 
-  shared_examples 'empty value stream stage' do
-    it 'displays an empty state' do
-      element = page.find('.empty-state')
-
-      expect(element).to have_content(_("We don't have enough data to show this stage."))
-      expect(element.find('.svg-content img')['src']).to have_content('illustrations/analytics/cycle-analytics-empty-chart')
-    end
-  end
-
-  shared_examples 'no group available' do
-    it 'displays empty text' do
-      [
-        'Value Stream Analytics can help you determine your team’s velocity',
-        'Filter parameters are not valid. Make sure that the end date is after the start date.'
-      ].each do |content|
-        expect(page).to have_content(content)
-      end
-    end
-  end
-
-  shared_examples 'has overview metrics' do
-    before do
-      wait_for_requests
-    end
-
-    it 'displays the recent activity' do
-      deploys_count = page.all(card_metric_selector)[4]
-
-      expect(deploys_count).to have_content(n_('Deploy', 'Deploys', 0))
-      expect(deploys_count).to have_content('-')
-
-      deployment_frequency = page.all(card_metric_selector).last
-
-      expect(deployment_frequency).to have_content(_('Deployment Frequency'))
-      expect(deployment_frequency).to have_content('-')
-
-      issue_count = page.all(card_metric_selector)[3]
-
-      expect(issue_count).to have_content(n_('New Issue', 'New Issues', 4))
-    end
-
-    it 'displays time metrics' do
-      lead_time = page.all(card_metric_selector).first
-
-      expect(lead_time).to have_content(_('Lead Time'))
-      expect(lead_time).to have_content('-')
-
-      cycle_time = page.all(card_metric_selector)[1]
-
-      expect(cycle_time).to have_content(_('Cycle Time'))
-      expect(cycle_time).to have_content('-')
-
-      median_lead_time_for_changes = page.all(card_metric_selector)[2]
-
-      expect(median_lead_time_for_changes).to have_content(s_('CycleAnalytics|Lead Time for Changes'))
-      expect(median_lead_time_for_changes).to have_content('-')
-    end
-  end
-
-  shared_examples 'group value stream analytics' do
-    context 'stage table' do
-      before do
-        select_stage("Issue")
-      end
-
-      it 'displays the stage table' do
-        expect(page).to have_selector('[data-testid="vsa-stage-table"]')
-      end
-    end
-
-    context 'navigation' do
-      it 'shows the path navigation' do
-        expect(page).to have_selector(path_nav_selector)
-      end
-
-      it 'each stage will have median values' do
-        stage_medians = page.all('.gl-path-button span').collect(&:text)
-
-        expect(stage_medians).to match_array(["-"] * 4)
-      end
-
-      it 'displays the default list of stages' do
-        path_nav = page.find(path_nav_selector)
-
-        expect(path_nav).to have_content(_("Overview"))
-
-        ['Issue', 'Code', 'Milestone Plan'].each do |item|
-          string_id = "CycleAnalytics|#{item}"
-          expect(path_nav).to have_content(s_(string_id))
-        end
-      end
-    end
-  end
-
-  shared_examples 'has default filters' do
-    it 'shows the projects filter' do
-      expect(page).to have_selector('.dropdown-projects', visible: true)
-    end
-
-    it 'shows the date filter' do
-      expect(page).to have_selector('.js-daterange-picker', visible: true)
-    end
-
-    it 'shows the filter bar' do
-      expect(page).to have_selector(filter_bar_selector, visible: false)
-    end
-  end
-
   context 'with no value streams' do
     before do
       select_group(group, empty_state_selector)
@@ -182,7 +74,7 @@ RSpec.describe 'Group value stream analytics filters and data', :js do
     it_behaves_like 'empty state'
   end
 
-  context 'with value streams', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/360168' do
+  context 'with value streams' do
     def vsa_stages(selected_group)
       [
         create(:cycle_analytics_group_stage, group: selected_group, name: "Issue", relative_position: 1, start_event_identifier: :issue_created, end_event_identifier: :issue_closed),
@@ -196,6 +88,103 @@ RSpec.describe 'Group value stream analytics filters and data', :js do
 
     let_it_be(:subgroup_value_stream) { create(:cycle_analytics_group_value_stream, group: sub_group, name: 'First subgroup value stream', stages: vsa_stages(sub_group)) }
 
+    shared_examples 'has overview metrics' do
+      before do
+        wait_for_requests
+      end
+
+      it 'displays key metrics', :aggregate_failures do
+        lead_time = page.all(card_metric_selector).first
+
+        expect(lead_time).to have_content(_('Lead Time'))
+        expect(lead_time).to have_content('-')
+
+        cycle_time = page.all(card_metric_selector)[1]
+
+        expect(cycle_time).to have_content(_('Cycle Time'))
+        expect(cycle_time).to have_content('-')
+
+        issue_count = page.all(card_metric_selector)[2]
+        expect(issue_count).to have_content(n_('New Issue', 'New Issues', 4))
+
+        deploys_count = page.all(card_metric_selector)[3]
+
+        expect(deploys_count).to have_content(n_('Deploy', 'Deploys', 0))
+        expect(deploys_count).to have_content('-')
+      end
+
+      it 'displays DORA metrics', :aggregate_failures do
+        deployment_frequency = page.all(card_metric_selector)[4]
+
+        expect(deployment_frequency).to have_content(_('Deployment Frequency'))
+        expect(deployment_frequency).to have_content('-')
+
+        lead_time_for_changes = page.all(card_metric_selector)[5]
+
+        expect(lead_time_for_changes).to have_content(s_('CycleAnalytics|Lead Time for Changes'))
+        expect(lead_time_for_changes).to have_content('-')
+
+        time_to_restore_service = page.all(card_metric_selector)[6]
+
+        expect(time_to_restore_service).to have_content(s_('CycleAnalytics|Time to Restore Service'))
+        expect(time_to_restore_service).to have_content('-')
+
+        change_failure_rate = page.all(card_metric_selector)[7]
+
+        expect(change_failure_rate).to have_content(s_('CycleAnalytics|Change Failure Rate'))
+        expect(change_failure_rate).to have_content('0')
+      end
+    end
+
+    shared_examples 'has default filters' do
+      it 'shows the projects filter' do
+        expect(page).to have_selector('.dropdown-projects', visible: true)
+      end
+
+      it 'shows the date filter' do
+        expect(page).to have_selector('.js-daterange-picker', visible: true)
+      end
+
+      it 'shows the filter bar' do
+        expect(page).to have_selector(filter_bar_selector, visible: false)
+      end
+    end
+
+    shared_examples 'group value stream analytics' do
+      context 'stage table' do
+        before do
+          select_stage("Issue")
+        end
+
+        it 'displays the stage table' do
+          expect(page).to have_selector('[data-testid="vsa-stage-table"]')
+        end
+      end
+
+      context 'navigation' do
+        it 'shows the path navigation' do
+          expect(page).to have_selector(path_nav_selector)
+        end
+
+        it 'each stage will have median values' do
+          stage_medians = page.all('.gl-path-button span').collect(&:text)
+
+          expect(stage_medians).to match_array(["-"] * 4)
+        end
+
+        it 'displays the default list of stages' do
+          path_nav = page.find(path_nav_selector)
+
+          expect(path_nav).to have_content(_("Overview"))
+
+          ['Issue', 'Code', 'Milestone Plan'].each do |item|
+            string_id = "CycleAnalytics|#{item}"
+            expect(path_nav).to have_content(s_(string_id))
+          end
+        end
+      end
+    end
+
     context 'without valid query parameters set' do
       before do
         create_value_stream_group_aggregation(group)
@@ -206,7 +195,14 @@ RSpec.describe 'Group value stream analytics filters and data', :js do
           visit "#{group_analytics_cycle_analytics_path(group)}?created_after=2019-12-31&created_before=2019-11-01"
         end
 
-        it_behaves_like 'no group available'
+        it 'displays empty text' do
+          [
+            'Value Stream Analytics can help you determine your team’s velocity',
+            'Filter parameters are not valid. Make sure that the end date is after the start date.'
+          ].each do |content|
+            expect(page).to have_content(content)
+          end
+        end
       end
 
       context 'with fake parameters' do
@@ -218,7 +214,12 @@ RSpec.describe 'Group value stream analytics filters and data', :js do
           select_stage("Issue")
         end
 
-        it_behaves_like 'empty value stream stage'
+        it 'displays an empty state' do
+          element = page.find('.empty-state')
+
+          expect(element).to have_content(_("We don't have enough data to show this stage."))
+          expect(element.find('.svg-content img')['src']).to have_content('illustrations/analytics/cycle-analytics-empty-chart')
+        end
       end
     end
 
@@ -252,7 +253,10 @@ RSpec.describe 'Group value stream analytics filters and data', :js do
 
           expect(element.find('.js-daterange-picker-from input').value).to eq '2019-11-01'
           expect(element.find('.js-daterange-picker-to input').value).to eq '2019-12-31'
-          expect(page.find('.js-tasks-by-type-chart')).to have_text(_("Showing data for group '%{group_name}' from Nov 1, 2019 to Dec 31, 2019") % { group_name: group.name })
+
+          page.find('[data-testid="vsa-task-by-type-description"]').hover
+
+          expect(page.find('.tooltip')).to have_text(_("Shows issues and %{labels_count} labels for group '%{group_name}' from Nov 1, 2019 to Dec 31, 2019") % { group_name: group.name, labels_count: 0 })
         end
       end
     end
@@ -321,7 +325,9 @@ RSpec.describe 'Group value stream analytics filters and data', :js do
         stages_with_data.each do |stage|
           select_stage(stage[:title])
           expect(page).to have_selector('[data-testid="vsa-stage-table"]')
-          expect(page.all('[data-testid="vsa-stage-event"]').length).to eq(stage[:events_count])
+          expect(page.all('[data-testid="vsa-stage-event"]').length)
+            .to(eq(stage[:events_count]),
+                "expected #{stage[:title]} stage to have #{stage[:events_count]}, got #{page.all('[data-testid="vsa-stage-event"]').length}")
         end
       end
     end
