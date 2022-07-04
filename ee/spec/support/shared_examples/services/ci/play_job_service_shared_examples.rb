@@ -20,6 +20,7 @@ RSpec.shared_examples 'prevents playing job when credit card is required' do
 
   context 'when user does not have required credit card' do
     before do
+      allow(::Gitlab::AppLogger).to receive(:info)
       allow(user)
         .to receive(:has_required_credit_card_to_run_pipelines?)
         .with(project)
