@@ -1946,18 +1946,24 @@ RSpec.describe ProjectPolicy do
     let(:policy) { :build_read_project }
 
     where(:role, :project_visibility, :allowed) do
-      :guest      | 'public'  | true
-      :reporter   | 'public'  | true
-      :developer  | 'public'  | true
-      :maintainer | 'public'  | true
-      :owner      | 'public'  | true
-      :admin      | 'public'  | true
-      :guest      | 'private' | false
-      :reporter   | 'private' | true
-      :developer  | 'private' | true
-      :maintainer | 'private' | true
-      :owner      | 'private' | true
-      :admin      | 'private' | false
+      :guest      | 'public'   | true
+      :reporter   | 'public'   | true
+      :developer  | 'public'   | true
+      :maintainer | 'public'   | true
+      :owner      | 'public'   | true
+      :admin      | 'public'   | true
+      :guest      | 'internal' | true
+      :reporter   | 'internal' | true
+      :developer  | 'internal' | true
+      :maintainer | 'internal' | true
+      :owner      | 'internal' | true
+      :admin      | 'internal' | true
+      :guest      | 'private'  | false
+      :reporter   | 'private'  | true
+      :developer  | 'private'  | true
+      :maintainer | 'private'  | true
+      :owner      | 'private'  | true
+      :admin      | 'private'  | false
     end
 
     with_them do

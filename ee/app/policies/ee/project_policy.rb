@@ -331,7 +331,7 @@ module EE
 
       rule { ~commit_committer_check_available }.prevent :change_commit_committer_check
 
-      rule { owner | reporter | public_project }.enable :build_read_project
+      rule { owner | reporter | internal_access | public_project }.enable :build_read_project
 
       rule { ~admin & owner & owner_cannot_destroy_project }.prevent :remove_project
 
