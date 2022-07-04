@@ -9,20 +9,38 @@ RSpec.describe GpgKeys::CreateService do
 
   subject { described_class.new(user, params) }
 
-  it 'creates an audit event', :aggregate_failures do
-    expect { subject.execute }.to change(GpgKey, :count).by(1)
-                              .and change(AuditEvent, :count).by(1)
+  describe '.audit' do
+    context 'when licensed' do
+      before do
+        stub_licensed_features(admin_audit_log: true, audit_events: true, extended_audit_events: true)
+      end
 
-    key = user.gpg_keys.last
+      it 'creates an audit event', :aggregate_failures do
+        expect { subject.execute }.to change(GpgKey, :count).by(1)
+                                                            .and change(AuditEvent, :count).by(1)
 
-    expect(AuditEvent.last).to have_attributes(
-      author: user,
-      entity_id: key.user.id,
-      target_id: key.id,
-      target_type: key.class.name,
-      target_details: key.user.name,
-      details: include(custom_message: 'Added GPG key')
-    )
+        key = user.gpg_keys.last
+
+        expect(AuditEvent.last).to have_attributes(
+          author: user,
+          entity_id: key.user.id,
+          target_id: key.id,
+          target_type: key.class.name,
+          target_details: key.user.name,
+          details: include(custom_message: 'Added GPG key')
+        )
+      end
+    end
+    context 'when unlicensed' do
+      before do
+        stub_licensed_features(admin_audit_log: false, audit_events: false, extended_audit_events: false)
+      end
+
+      it 'creates an audit event' do
+        expect { subject.execute }.to change(GpgKey, :count).by(1)
+                                                            .and not_change(AuditEvent, :count)
+      end
+    end
   end
 
   it 'returns the correct value' do

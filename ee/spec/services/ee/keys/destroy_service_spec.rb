@@ -14,19 +14,39 @@ RSpec.describe Keys::DestroyService do
     expect(key).not_to be_destroyed
   end
 
-  it 'creates an audit event', :aggregate_failures do
-    key = create(:personal_key)
+  context 'audit events' do
+    context 'when licensed' do
+      before do
+        stub_licensed_features(admin_audit_log: true, audit_events: true, extended_audit_events: true)
+      end
 
-    expect { subject.execute(key) }.to change(AuditEvent, :count).by(1)
+      it 'creates an audit event', :aggregate_failures do
+        key = create(:personal_key)
 
-    expect(AuditEvent.last).to have_attributes(
-      author: user,
-      entity_id: key.user.id,
-      target_id: key.id,
-      target_type: key.class.name,
-      target_details: key.title,
-      details: include(custom_message: 'Removed SSH key')
-    )
+        expect { subject.execute(key) }.to change(AuditEvent, :count).by(1)
+
+        expect(AuditEvent.last).to have_attributes(
+          author: user,
+          entity_id: key.user.id,
+          target_id: key.id,
+          target_type: key.class.name,
+          target_details: key.title,
+          details: include(custom_message: 'Removed SSH key')
+        )
+      end
+
+      context 'when unlicensed' do
+        before do
+          stub_licensed_features(admin_audit_log: false, audit_events: false, extended_audit_events: false)
+        end
+
+        it 'does not track audit event' do
+          key = create(:personal_key)
+
+          expect { subject.execute(key) }.not_to change { AuditEvent.count }
+        end
+      end
+    end
   end
 
   it 'returns the correct value' do
