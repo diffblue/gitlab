@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Plan', :reliable, feature_flag: { name: 'iteration_cadences', scope: :group } do
+  RSpec.describe 'Plan', feature_flag: { name: 'iteration_cadences', scope: :group } do
     describe 'Assign Iterations' do
       include Support::Dates
 
