@@ -7,7 +7,6 @@ module Ci
     MEMOIZATIONS = %i(
       policy_configuration
       policy_rule_reports
-      policy_rule_scanners
     ).freeze
 
     def initialize(pipeline)
@@ -65,13 +64,7 @@ module Ci
 
     def policy_rule_reports
       strong_memoize(:policy_rule_reports) do
-        policy_rule_scanners ? pipeline.security_reports(report_types: policy_rule_scanners) : []
-      end
-    end
-
-    def policy_rule_scanners
-      strong_memoize(:policy_rule_scanners) do
-        policy_configuration&.uniq_scanners
+        pipeline.security_reports
       end
     end
 

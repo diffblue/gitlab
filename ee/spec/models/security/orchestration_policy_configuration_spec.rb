@@ -580,35 +580,6 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
     end
   end
 
-  describe '#uniq_scanners' do
-    let(:project) { security_orchestration_policy_configuration.project }
-
-    subject { security_orchestration_policy_configuration.uniq_scanners }
-
-    context 'with approval rules' do
-      context 'when policy configuration is configured for project' do
-        before do
-          create(:approval_project_rule, :scan_finding, scanners: %w(dast sast), project: project)
-          create(:approval_project_rule, :scan_finding, scanners: %w(dast container_scanning), project: project)
-        end
-
-        it { is_expected.to contain_exactly('dast', 'sast', 'container_scanning') }
-      end
-
-      context 'when policy configuration is configured for namespace' do
-        let(:security_orchestration_policy_configuration) do
-          create(:security_orchestration_policy_configuration, :namespace, security_policy_management_project: security_policy_management_project)
-        end
-
-        it { is_expected.to be_empty }
-      end
-    end
-
-    context 'without approval rules' do
-      it { is_expected.to be_empty }
-    end
-  end
-
   describe '#project?' do
     subject { security_orchestration_policy_configuration.project? }
 
