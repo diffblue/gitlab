@@ -9,7 +9,7 @@ import {
   GlSprintf,
   GlTableLite,
 } from '@gitlab/ui';
-import createFlash from '~/flash';
+import * as Sentry from '@sentry/browser';
 import { thWidthPercent } from '~/lib/utils/table_utility';
 import externalAuditEventDestinationCreate from '../../graphql/create_external_destination.mutation.graphql';
 import {
@@ -38,6 +38,7 @@ export default {
   data() {
     return {
       destinationUrl: '',
+      errors: [],
       loading: false,
       headers: [createBlankHeader()],
     };
@@ -62,6 +63,7 @@ export default {
   },
   methods: {
     async addDestinationUrl() {
+      this.errors = [];
       this.loading = true;
       try {
         const { data } = await this.$apollo.mutate({
@@ -78,16 +80,13 @@ export default {
         const { errors } = data.externalAuditEventDestinationCreate;
 
         if (errors.length > 0) {
-          createFlash({
-            message: errors[0],
-          });
+          this.errors.push(errors[0]);
         } else {
           this.$emit('added');
         }
       } catch (e) {
-        createFlash({
-          message: CREATING_ERROR,
-        });
+        Sentry.captureException(e);
+        this.errors.push(CREATING_ERROR);
       } finally {
         this.loading = false;
       }
@@ -183,9 +182,21 @@ export default {
       :title="$options.i18n.WARNING_TITLE"
       :dismissible="false"
       class="gl-mb-5"
+      data-testid="data-warning"
       variant="warning"
     >
       {{ $options.i18n.WARNING_CONTENT }}
+    </gl-alert>
+
+    <gl-alert
+      v-for="(error, index) in errors"
+      :key="index"
+      :dismissible="true"
+      class="gl-mb-5"
+      data-testid="alert-errors"
+      variant="danger"
+    >
+      {{ error }}
     </gl-alert>
 
     <gl-form @submit.prevent="addDestinationUrl">

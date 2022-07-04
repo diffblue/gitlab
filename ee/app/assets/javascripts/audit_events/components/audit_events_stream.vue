@@ -1,6 +1,6 @@
 <script>
-import { GlButton, GlSafeHtmlDirective as SafeHtml } from '@gitlab/ui';
-import createFlash from '~/flash';
+import { GlButton, GlLoadingIcon, GlSafeHtmlDirective as SafeHtml } from '@gitlab/ui';
+import { createAlert } from '~/flash';
 import {
   ACTIVE_STREAM,
   ADD_STREAM,
@@ -16,6 +16,7 @@ const { FETCHING_ERROR } = AUDIT_STREAMS_NETWORK_ERRORS;
 export default {
   components: {
     GlButton,
+    GlLoadingIcon,
     StreamDestinationEditor,
     StreamEmptyState,
     StreamItem,
@@ -31,6 +32,9 @@ export default {
     };
   },
   computed: {
+    isLoading() {
+      return this.$apollo.queries.externalAuditEventDestinations.loading;
+    },
     shouldShowEmptyMode() {
       return !this.destinationsCount && !this.isEditing;
     },
@@ -68,7 +72,7 @@ export default {
         return data.group.externalAuditEventDestinations.nodes;
       },
       error() {
-        createFlash({
+        createAlert({
           message: FETCHING_ERROR,
         });
       },
@@ -84,7 +88,8 @@ export default {
 </script>
 
 <template>
-  <stream-empty-state v-if="shouldShowEmptyMode" @add="setEditMode(true)" />
+  <gl-loading-icon v-if="isLoading" size="lg" />
+  <stream-empty-state v-else-if="shouldShowEmptyMode" @add="setEditMode(true)" />
   <div v-else>
     <div v-if="destinationsCount" class="gl-display-flex gl-align-items-center gl-pl-5 gl-py-3">
       <img

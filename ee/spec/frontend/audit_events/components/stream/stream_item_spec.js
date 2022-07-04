@@ -1,7 +1,7 @@
 import VueApollo from 'vue-apollo';
 import { createLocalVue } from '@vue/test-utils';
 import { GlButton } from '@gitlab/ui';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -44,7 +44,7 @@ describe('StreamItem', () => {
 
   afterEach(() => {
     wrapper.destroy();
-    createFlash.mockClear();
+    createAlert.mockClear();
   });
 
   describe('render', () => {
@@ -67,7 +67,7 @@ describe('StreamItem', () => {
 
       expect(wrapper.emitted('delete')).toBeDefined();
       expect(button.props('loading')).toBe(false);
-      expect(createFlash).not.toHaveBeenCalled();
+      expect(createAlert).not.toHaveBeenCalled();
     });
 
     it('should not emit delete when backend error occurs', async () => {
@@ -89,19 +89,14 @@ describe('StreamItem', () => {
 
       expect(wrapper.emitted('delete')).not.toBeDefined();
       expect(button.props('loading')).toBe(false);
-      expect(createFlash).toHaveBeenCalledWith({
+      expect(createAlert).toHaveBeenCalledWith({
         message: errorMsg,
       });
     });
 
     it('should not emit delete when network error occurs', async () => {
-      const deleteExternalDestinationErrorSpy = jest.fn().mockRejectedValue({
-        data: {
-          externalAuditEventDestinationDestroy: {
-            errors: [],
-          },
-        },
-      });
+      const error = new Error('Network error');
+      const deleteExternalDestinationErrorSpy = jest.fn().mockRejectedValue(error);
       createComponent(deleteExternalDestinationErrorSpy);
       const button = findButton();
       await button.trigger('click');
@@ -112,8 +107,10 @@ describe('StreamItem', () => {
 
       expect(wrapper.emitted('delete')).not.toBeDefined();
       expect(button.props('loading')).toBe(false);
-      expect(createFlash).toHaveBeenCalledWith({
+      expect(createAlert).toHaveBeenCalledWith({
         message: AUDIT_STREAMS_NETWORK_ERRORS.DELETING_ERROR,
+        captureError: true,
+        error,
       });
     });
   });

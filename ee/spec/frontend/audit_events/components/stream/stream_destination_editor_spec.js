@@ -1,7 +1,7 @@
 import VueApollo from 'vue-apollo';
 import { createLocalVue } from '@vue/test-utils';
-import { GlAlert, GlButton, GlFormCheckbox, GlForm, GlTableLite } from '@gitlab/ui';
-import createFlash from '~/flash';
+import { GlButton, GlFormCheckbox, GlForm, GlTableLite } from '@gitlab/ui';
+import * as Sentry from '@sentry/browser';
 import { sprintf } from '~/locale';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -15,7 +15,6 @@ import StreamDestinationEditor from 'ee/audit_events/components/stream/stream_de
 import { AUDIT_STREAMS_NETWORK_ERRORS, ADD_STREAM_EDITOR_I18N } from 'ee/audit_events/constants';
 import { destinationCreateMutationPopulator, groupPath } from '../../mock_data';
 
-jest.mock('~/flash');
 const localVue = createLocalVue();
 localVue.use(VueApollo);
 const externalAuditEventDestinationCreateSpy = jest
@@ -47,7 +46,8 @@ describe('StreamDestinationEditor', () => {
     });
   };
 
-  const findWarningMessage = () => wrapper.findComponent(GlAlert);
+  const findWarningMessage = () => wrapper.findByTestId('data-warning');
+  const findAlertErrors = () => wrapper.findAllByTestId('alert-errors');
   const findDestinationForm = () => wrapper.findComponent(GlForm);
   const findHeadersTable = () => wrapper.findComponent(GlTableLite);
   const findMaximumHeadersText = () => wrapper.findByTestId('maximum-headers').text();
@@ -79,7 +79,6 @@ describe('StreamDestinationEditor', () => {
   afterEach(() => {
     wrapper.destroy();
     externalAuditEventDestinationCreateSpy.mockClear();
-    createFlash.mockClear();
   });
 
   describe('when initialized', () => {
@@ -144,7 +143,7 @@ describe('StreamDestinationEditor', () => {
       findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
       await waitForPromises();
 
-      expect(createFlash).not.toHaveBeenCalled();
+      expect(findAlertErrors()).toHaveLength(0);
       expect(wrapper.emitted('added')).toBeDefined();
     });
 
@@ -160,22 +159,23 @@ describe('StreamDestinationEditor', () => {
       findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
       await waitForPromises();
 
-      expect(createFlash).toHaveBeenCalledWith({
-        message: errorMsg,
-      });
+      expect(findAlertErrors()).toHaveLength(1);
+      expect(findAlertErrors().at(0).text()).toBe(errorMsg);
       expect(wrapper.emitted('added')).not.toBeDefined();
     });
 
     it('should not emit add destination event and reports error when network error occurs', async () => {
-      createComponent(shallowMountExtended, {}, jest.fn().mockRejectedValue({}));
+      const sentryError = new Error('Network error');
+      const sentryCaptureExceptionSpy = jest.spyOn(Sentry, 'captureException');
+      createComponent(shallowMountExtended, {}, jest.fn().mockRejectedValue(sentryError));
 
       findDestinationUrl().vm.$emit('input', 'https://example.test');
       findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
       await waitForPromises();
 
-      expect(createFlash).toHaveBeenCalledWith({
-        message: AUDIT_STREAMS_NETWORK_ERRORS.CREATING_ERROR,
-      });
+      expect(findAlertErrors()).toHaveLength(1);
+      expect(findAlertErrors().at(0).text()).toBe(AUDIT_STREAMS_NETWORK_ERRORS.CREATING_ERROR);
+      expect(sentryCaptureExceptionSpy).toHaveBeenCalledWith(sentryError);
       expect(wrapper.emitted('added')).not.toBeDefined();
     });
   });

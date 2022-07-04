@@ -1,7 +1,7 @@
 import VueApollo from 'vue-apollo';
-import { GlButton } from '@gitlab/ui';
+import { GlButton, GlLoadingIcon } from '@gitlab/ui';
 import { createLocalVue } from '@vue/test-utils';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -41,25 +41,30 @@ describe('AuditEventsStream', () => {
   };
 
   const findAddDestinationButton = () => wrapper.findComponent(GlButton);
+  const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const findStreamDestinationEditor = () => wrapper.findComponent(StreamDestinationEditor);
   const findStreamEmptyState = () => wrapper.findComponent(StreamEmptyState);
 
-  beforeEach(() => {
-    createComponent();
-  });
-
   afterEach(() => {
     wrapper.destroy();
-    createFlash.mockClear();
+    createAlert.mockClear();
     externalDestinationsQuerySpy.mockClear();
   });
 
   describe('when initialized', () => {
+    it('should render the loading icon while waiting for data to be returned', () => {
+      const destinationQuerySpy = jest.fn();
+      createComponent(destinationQuerySpy);
+
+      expect(findLoadingIcon().exists()).toBe(true);
+    });
+
     it('should render empty state when no data is returned', async () => {
       const destinationQuerySpy = jest.fn().mockResolvedValue(destinationDataPopulator([]));
       createComponent(destinationQuerySpy);
       await waitForPromises();
 
+      expect(findLoadingIcon().exists()).toBe(false);
       expect(findStreamEmptyState().exists()).toBe(true);
     });
 
@@ -68,16 +73,22 @@ describe('AuditEventsStream', () => {
       createComponent(destinationQuerySpy);
       await waitForPromises();
 
-      expect(createFlash).toHaveBeenCalledWith({
+      expect(findLoadingIcon().exists()).toBe(false);
+      expect(createAlert).toHaveBeenCalledWith({
         message: AUDIT_STREAMS_NETWORK_ERRORS.FETCHING_ERROR,
       });
     });
   });
 
   describe('when edit mode entered', () => {
+    beforeEach(() => {
+      createComponent();
+    });
+
     it('shows destination editor', async () => {
       await waitForPromises();
 
+      expect(findLoadingIcon().exists()).toBe(false);
       expect(findStreamDestinationEditor().exists()).toBe(false);
 
       await findAddDestinationButton().vm.$emit('click');
@@ -88,6 +99,7 @@ describe('AuditEventsStream', () => {
     it('refreshes the query and exit edit mode when external destination url added', async () => {
       await waitForPromises();
 
+      expect(findLoadingIcon().exists()).toBe(false);
       expect(externalDestinationsQuerySpy).toHaveBeenCalledTimes(1);
       expect(findStreamDestinationEditor().exists()).toBe(false);
 
