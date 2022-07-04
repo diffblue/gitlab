@@ -75,6 +75,7 @@ RSpec.describe Gitlab::UsageData do
         license_subscription_id
         licensee
         license_md5
+        license_sha256
         license_id
         elasticsearch_enabled
         geo_enabled
@@ -177,6 +178,7 @@ RSpec.describe Gitlab::UsageData do
       expect(subject[:license_billable_users]).to eq(license.daily_billable_users_count)
       expect(subject[:licensee]).to eq(license.licensee)
       expect(subject[:license_md5]).to eq(Digest::MD5.hexdigest(license.data))
+      expect(subject[:license_sha256]).to eq(Digest::SHA256.hexdigest(license.data))
       expect(subject[:historical_max_users]).to eq(license.historical_max)
     end
   end

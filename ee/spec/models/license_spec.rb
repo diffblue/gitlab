@@ -813,6 +813,26 @@ RSpec.describe License do
     end
   end
 
+  describe "#sha256" do
+    it "returns the same SHA256 for licenses with carriage returns and those without" do
+      other_license = build(:license, data: license.data.gsub("\n", "\r\n"))
+
+      expect(other_license.sha256).to eq(license.sha256)
+    end
+
+    it "returns the same SHA256 for licenses with trailing newlines and those without" do
+      other_license = build(:license, data: license.data.chomp)
+
+      expect(other_license.sha256).to eq(license.sha256)
+    end
+
+    it "returns the same SHA256 for licenses with multiple trailing newlines and those with a single trailing newline" do
+      other_license = build(:license, data: "#{license.data}\n\n\n")
+
+      expect(other_license.sha256).to eq(license.sha256)
+    end
+  end
+
   describe "#license" do
     context "when no data is provided" do
       before do
