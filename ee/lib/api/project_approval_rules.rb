@@ -2,6 +2,8 @@
 
 module API
   class ProjectApprovalRules < ::API::Base
+    include PaginationParams
+
     before { authenticate! }
 
     helpers ::API::Helpers::ProjectApprovalRulesHelpers
@@ -16,10 +18,17 @@ module API
         desc 'Get all project approval rules' do
           success EE::API::Entities::ProjectApprovalRule
         end
+        params do
+          use :pagination
+        end
         get do
           authorize_read_project_approval_rule!
 
-          present user_project.visible_approval_rules, with: EE::API::Entities::ProjectApprovalRule, current_user: current_user
+          if Feature.enabled?(:approval_rules_pagination, user_project)
+            present paginate(::Kaminari.paginate_array(user_project.visible_approval_rules)), with: EE::API::Entities::ProjectApprovalRule, current_user: current_user
+          else
+            present user_project.visible_approval_rules, with: EE::API::Entities::ProjectApprovalRule, current_user: current_user
+          end
         end
 
         desc 'Create new project approval rule' do
