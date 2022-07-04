@@ -84,9 +84,9 @@ RSpec.describe Gitlab::UsageDataCounters::MergeRequestActivityUniqueCounter, :cl
   describe '.track_approve_mr_action' do
     include ProjectForksHelper
 
-    let(:merge_request) { create :merge_request, target_project: target_project, source_project: source_project }
+    let(:merge_request) { create(:merge_request, target_project: target_project, source_project: source_project) }
     let(:source_project) { fork_project(target_project) }
-    let(:target_project) { create :project }
+    let(:target_project) { create(:project) }
 
     subject { described_class.track_approve_mr_action(user: user, merge_request: merge_request) }
 

@@ -84,7 +84,7 @@ module Gitlab
 
           Gitlab::Tracking.event(
             'merge_requests',
-            'i_code_review_user_approve_mr',
+            MR_APPROVE_ACTION,
             project: project,
             namespace: project.namespace,
             user: user
