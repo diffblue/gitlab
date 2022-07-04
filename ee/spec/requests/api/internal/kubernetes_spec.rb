@@ -291,7 +291,7 @@ RSpec.describe API::Internal::Kubernetes do
     let_it_be(:agent) { agent_token.agent }
     let_it_be(:project) { agent.project }
 
-    let_it_be(:existing_vulnerabilities) { create_list(:vulnerability, 4, :detected, :with_finding, project: project, report_type: :cluster_image_scanning) }
+    let_it_be(:existing_vulnerabilities) { create_list(:vulnerability, 4, :detected, :with_cluster_image_scanning_finding, agent_id: agent.id.to_s, project: project, report_type: :cluster_image_scanning) }
     let_it_be(:detected_vulnerabilities) { existing_vulnerabilities.first(2) }
     let_it_be(:undetected_vulnerabilities) { existing_vulnerabilities - detected_vulnerabilities }
     let_it_be(:payload) { { uuids: detected_vulnerabilities.map { |vuln| vuln.finding.uuid } } }

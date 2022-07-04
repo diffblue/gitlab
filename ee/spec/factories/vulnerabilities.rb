@@ -99,6 +99,26 @@ FactoryBot.define do
       end
     end
 
+    trait :with_cluster_image_scanning_finding do
+      transient do
+        agent_id { '46357' }
+      end
+
+      after(:build) do |vulnerability, evaluator|
+        finding = build(
+          :vulnerabilities_finding,
+          :identifier,
+          :with_cluster_image_scanning_scanning_metadata,
+          agent_id: evaluator.agent_id,
+          vulnerability: vulnerability,
+          report_type: :cluster_image_scanning,
+          project: vulnerability.project
+        )
+
+        vulnerability.findings = [finding]
+      end
+    end
+
     trait :with_remediation do
       after(:build) do |vulnerability|
         finding = build(
