@@ -390,7 +390,7 @@ RSpec.describe 'Scoped issue boards', :js do
 
               expect(page).to have_selector('.board-card', count: 0)
 
-              expect(page).not_to have_selector('.gl-alert-body')
+              expect(page).not_to have_text('Unable to save your changes. Please try again.')
             end
           end
 
@@ -422,7 +422,7 @@ RSpec.describe 'Scoped issue boards', :js do
               update_board_scope('current_iteration', false)
 
               expect(page).to have_selector('.board-card', count: 3)
-              expect(page).not_to have_selector('.gl-alert-body')
+              expect(page).not_to have_text('Unable to save your changes. Please try again.')
             end
           end
         end
@@ -439,7 +439,7 @@ RSpec.describe 'Scoped issue boards', :js do
 
             click_button 'Save changes'
 
-            expect(page).to have_selector('.gl-alert-body')
+            expect(page).to have_text('Unable to save your changes. Please try again.')
           end
         end
       end
