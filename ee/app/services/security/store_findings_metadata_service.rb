@@ -46,7 +46,13 @@ module Security
     end
 
     def import_batch(report_finding_data)
-      Security::Finding.insert_all(report_finding_data)
+      Security::Finding.insert_all(report_finding_data, unique_by: findings_unique_by)
+    end
+
+    # This will force the ActiveRecord to use the `security_findings_pk`
+    # and don't do UPSERT.
+    def findings_unique_by
+      Security::Finding.connection.schema_cache.primary_keys(Security::Finding.table_name)
     end
 
     def finding_data(report_finding)
