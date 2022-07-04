@@ -177,6 +177,12 @@ module EE
       def repository_read_only?
         !!namespace_settings&.repository_read_only?
       end
+
+      def unique_project_download_limit_enabled?
+        root? &&
+          ::Feature.enabled?(:limit_unique_project_downloads_per_namespace_user, self) &&
+          licensed_feature_available?(:unique_project_download_limit)
+      end
     end
 
     class_methods do

@@ -7,6 +7,10 @@ constraints(::Constraints::GroupUrlConstrainer.new) do
         constraints: { group_id: Gitlab::PathRegex.full_namespace_route_regex }) do
     draw :wiki
 
+    namespace :settings do
+      resource :reporting, only: [:show, :update], controller: 'reporting'
+    end
+
     resources :group_members, only: [], concerns: :access_requestable do
       patch :override, on: :member
 

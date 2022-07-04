@@ -183,5 +183,22 @@ RSpec.describe Sidebars::Groups::Menus::SettingsMenu do
         specify { is_expected.to be_nil }
       end
     end
+
+    describe 'Reporting menu' do
+      let(:item_id) { :reporting }
+      let(:feature_enabled) { true }
+
+      before do
+        allow(group).to receive(:unique_project_download_limit_enabled?) { feature_enabled }
+      end
+
+      it { is_expected.to be_present }
+
+      context 'when feature is not enabled' do
+        let(:feature_enabled) { false }
+
+        it { is_expected.to be_nil }
+      end
+    end
   end
 end

@@ -18,6 +18,7 @@ module EE
             add_item(saml_group_links_menu_item)
             add_item(usage_quotas_menu_item)
             add_item(billing_menu_item)
+            add_item(reporting_menu_item)
 
             true
           end
@@ -132,6 +133,19 @@ module EE
             strong_memoize(:administration_nav_item_disabled) do
               ::Feature.disabled?(:group_administration_nav_item, context.group)
             end
+          end
+
+          def reporting_menu_item
+            unless context.group.unique_project_download_limit_enabled?
+              return ::Sidebars::NilMenuItem.new(item_id: :reporting)
+            end
+
+            ::Sidebars::MenuItem.new(
+              title: s_('GroupSettings|Reporting'),
+              link: group_settings_reporting_path(context.group),
+              active_routes: { path: 'reporting#show' },
+              item_id: :reporting
+            )
           end
         end
       end

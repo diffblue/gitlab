@@ -6,6 +6,25 @@ RSpec.describe NamespaceSetting do
   let(:group) { create(:group) }
   let(:setting) { group.namespace_settings }
 
+  describe 'validations' do
+    subject(:settings) { group.namespace_settings }
+
+    it { is_expected.to validate_presence_of(:unique_project_download_limit) }
+    it { is_expected.to validate_presence_of(:unique_project_download_limit_interval_in_seconds) }
+    it {
+      is_expected.to validate_numericality_of(:unique_project_download_limit)
+        .only_integer
+        .is_greater_than_or_equal_to(0)
+        .is_less_than_or_equal_to(10_000)
+    }
+    it {
+      is_expected.to validate_numericality_of(:unique_project_download_limit_interval_in_seconds)
+        .only_integer
+        .is_greater_than_or_equal_to(0)
+        .is_less_than_or_equal_to(10.days.to_i)
+    }
+  end
+
   describe '#prevent_forking_outside_group?' do
     context 'with feature available' do
       before do
@@ -218,6 +237,15 @@ RSpec.describe NamespaceSetting do
         expect(group.reload.share_with_group_lock).to be_truthy
         expect(settings.reload.prevent_sharing_groups_outside_hierarchy).to be_truthy
       end
+    end
+  end
+
+  describe '.allowed_namespace_settings_params' do
+    it 'includes attributes used for limiting unique project downloads' do
+      expect(described_class.allowed_namespace_settings_params).to include(*%i[
+        unique_project_download_limit
+        unique_project_download_limit_interval_in_seconds
+      ])
     end
   end
 end
