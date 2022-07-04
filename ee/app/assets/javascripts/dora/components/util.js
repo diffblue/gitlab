@@ -210,10 +210,11 @@ export const secondsToDays = (seconds, precision = 1) =>
  *
  * @param {Object} params An object containing a time series and median data
  * @param {String} seriesName The name used to describe the main data series
+ * @param {Function} formatter Optional function used to format each value in the data series
  *
  * @returns {Object} Returns an object containing the tooltipTitle and tooltipValue
  */
-export const extractTimeSeriesTooltip = (params, seriesName) => {
+export const extractTimeSeriesTooltip = (params, seriesName, formatter = humanizeTimeInterval) => {
   let tooltipTitle = null;
   let tooltipValue = null;
   tooltipTitle = params.value;
@@ -230,11 +231,11 @@ export const extractTimeSeriesTooltip = (params, seriesName) => {
     tooltipValue = [
       {
         title: seriesName,
-        value: humanizeTimeInterval(seriesValue),
+        value: formatter(seriesValue),
       },
       {
         title: trendlineName,
-        value: humanizeTimeInterval(trendSeriesValue),
+        value: formatter(trendSeriesValue),
       },
     ];
   } else {
@@ -245,4 +246,17 @@ export const extractTimeSeriesTooltip = (params, seriesName) => {
     tooltipTitle,
     tooltipValue,
   };
+};
+
+/**
+ * Formats any valid number as percentage
+ *
+ * @param {number|string} decimalValue Decimal value between 0 and 1 to be converted to a percentage
+ * @param {number} precision The number of decimal places to round to
+ *
+ * @returns {string} Returns a formatted string multiplied by 100
+ */
+export const formatAsPercentage = (decimalValue = 0, precision = 1) => {
+  const parsed = Number.isNaN(Number(decimalValue)) ? 0 : decimalValue;
+  return `${(parsed * 100).toFixed(precision)}%`;
 };
