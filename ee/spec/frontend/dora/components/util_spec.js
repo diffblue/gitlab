@@ -6,6 +6,7 @@ import {
   seriesToMedianSeries,
   extractTimeSeriesTooltip,
   secondsToDays,
+  formatAsPercentage,
 } from 'ee/dora/components/util';
 
 const NO_DATA_MESSAGE = 'No data available';
@@ -295,12 +296,21 @@ describe('ee/dora/components/util.js', () => {
   });
 
   describe('extractTimeSeriesTooltip', () => {
+    const fakeChartTitle = 'cool-chart-title';
+    const params = { seriesData: [{ data: ['Apr 7', 5328] }, { data: ['Apr 7', 4000] }, {}] };
+
     it('displays a humanized version of the time interval in the tooltip', () => {
-      const params = { seriesData: [{ data: ['Apr 7', 5328] }, { data: ['Apr 7', 4000] }, {}] };
-      const { tooltipValue } = extractTimeSeriesTooltip(params, 'cool-chart-title');
+      const { tooltipValue } = extractTimeSeriesTooltip(params, fakeChartTitle);
 
       expect(tooltipValue[0].value).toBe('1.5 hours');
       expect(tooltipValue[1].value).toBe('1.1 hours');
+    });
+
+    it('will apply a custom formatter when supplied', () => {
+      const formatter = jest.fn();
+
+      extractTimeSeriesTooltip(params, fakeChartTitle, formatter);
+      expect(formatter).toHaveBeenCalledTimes(2);
     });
   });
 
@@ -313,6 +323,18 @@ describe('ee/dora/components/util.js', () => {
 
     it('will format to the specified precision', () => {
       expect(secondsToDays(seconds, 3)).toBe('1.748');
+    });
+  });
+
+  describe('formatAsPercentage', () => {
+    it('returns 0 if given NaN', () => {
+      expect(formatAsPercentage(null)).toBe('0.0%');
+      expect(formatAsPercentage('a')).toBe('0.0%');
+    });
+
+    it('formats valid values', () => {
+      expect(formatAsPercentage(0.25)).toBe('25.0%');
+      expect(formatAsPercentage('1.86', 0)).toBe('186%');
     });
   });
 });

@@ -11484,6 +11484,9 @@ msgstr ""
 msgid "DORA4Metrics|Average (last %{days}d)"
 msgstr ""
 
+msgid "DORA4Metrics|Change failure rate"
+msgstr ""
+
 msgid "DORA4Metrics|Date"
 msgstr ""
 
@@ -11515,6 +11518,15 @@ msgid "DORA4Metrics|No merge requests were deployed during this period"
 msgstr ""
 
 msgid "DORA4Metrics|Number of deployments"
+msgstr ""
+
+msgid "DORA4Metrics|Number of incidents divided by the number of deployments to a production environment in the given time period."
+msgstr ""
+
+msgid "DORA4Metrics|Percentage of failed deployments"
+msgstr ""
+
+msgid "DORA4Metrics|Something went wrong while getting change failure rate data."
 msgstr ""
 
 msgid "DORA4Metrics|Something went wrong while getting deployment frequency data."
