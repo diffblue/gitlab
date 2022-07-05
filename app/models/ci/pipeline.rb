@@ -131,7 +131,7 @@ module Ci
     validates :source, exclusion: { in: %w(unknown), unless: :importing? }, on: :create
 
     after_create :keep_around_commits, unless: :importing?
-    after_initialize :observe_age_in_minutes, unless: :importing?
+    after_find :observe_age_in_minutes, unless: :importing?
 
     use_fast_destroy :job_artifacts
     use_fast_destroy :build_trace_chunks
