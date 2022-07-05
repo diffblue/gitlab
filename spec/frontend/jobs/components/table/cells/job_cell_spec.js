@@ -2,9 +2,9 @@ import { shallowMount } from '@vue/test-utils';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import JobCell from '~/jobs/components/table/cells/job_cell.vue';
-import { mockJobsInTable, mockJobsAsGuestInTable } from '../../../mock_data';
+import { mockJobsNodes, mockJobsNodesAsGuest } from '../../../mock_data';
 
-const getMockJob = (name) => mockJobsInTable.find((job) => job.name === name);
+const getMockJob = (name) => mockJobsNodes.find((job) => job.name === name);
 
 describe('Job Cell', () => {
   let wrapper;
@@ -48,7 +48,7 @@ describe('Job Cell', () => {
     });
 
     it('display the job id with no link', () => {
-      const mockJobAsGuest = mockJobsAsGuestInTable[0];
+      const mockJobAsGuest = mockJobsNodesAsGuest[0];
 
       createComponent(mockJobAsGuest);
 

@@ -1,3 +1,5 @@
+import mockJobsEmpty from 'test_fixtures/graphql/jobs/get_jobs.query.graphql.empty.json';
+import mockJobsPaginated from 'test_fixtures/graphql/jobs/get_jobs.query.graphql.paginated.json';
 import mockJobs from 'test_fixtures/graphql/jobs/get_jobs.query.graphql.json';
 import mockJobsAsGuest from 'test_fixtures/graphql/jobs/get_jobs.query.graphql.as_guest.json';
 import { TEST_HOST } from 'spec/test_constants';
@@ -6,8 +8,10 @@ const threeWeeksAgo = new Date();
 threeWeeksAgo.setDate(threeWeeksAgo.getDate() - 21);
 
 // Fixtures generated at spec/frontend/fixtures/jobs.rb
-export const mockJobsInTable = mockJobs.data.project.jobs.nodes;
-export const mockJobsAsGuestInTable = mockJobsAsGuest.data.project.jobs.nodes;
+export const mockJobsResponsePaginated = mockJobsPaginated;
+export const mockJobsResponseEmpty = mockJobsEmpty;
+export const mockJobsNodes = mockJobs.data.project.jobs.nodes;
+export const mockJobsNodesAsGuest = mockJobsAsGuest.data.project.jobs.nodes;
 
 export const stages = [
   {
@@ -1286,124 +1290,6 @@ export const mockPipelineDetached = {
   },
   ref: {
     name: 'test-branch',
-  },
-};
-
-export const mockJobsQueryResponse = {
-  data: {
-    project: {
-      id: '1',
-      jobs: {
-        count: 1,
-        pageInfo: {
-          endCursor: 'eyJpZCI6IjIzMTcifQ',
-          hasNextPage: true,
-          hasPreviousPage: false,
-          startCursor: 'eyJpZCI6IjIzMzYifQ',
-          __typename: 'PageInfo',
-        },
-        nodes: [
-          {
-            artifacts: {
-              nodes: [
-                {
-                  downloadPath: '/root/ci-project/-/jobs/2336/artifacts/download?file_type=trace',
-                  fileType: 'TRACE',
-                  __typename: 'CiJobArtifact',
-                },
-                {
-                  downloadPath:
-                    '/root/ci-project/-/jobs/2336/artifacts/download?file_type=metadata',
-                  fileType: 'METADATA',
-                  __typename: 'CiJobArtifact',
-                },
-                {
-                  downloadPath: '/root/ci-project/-/jobs/2336/artifacts/download?file_type=archive',
-                  fileType: 'ARCHIVE',
-                  __typename: 'CiJobArtifact',
-                },
-              ],
-              __typename: 'CiJobArtifactConnection',
-            },
-            allowFailure: false,
-            status: 'SUCCESS',
-            scheduledAt: null,
-            manualJob: false,
-            triggered: null,
-            createdByTag: false,
-            detailedStatus: {
-              id: 'status-1',
-              detailsPath: '/root/ci-project/-/jobs/2336',
-              group: 'success',
-              icon: 'status_success',
-              label: 'passed',
-              text: 'passed',
-              tooltip: 'passed',
-              action: {
-                id: 'action-1',
-                buttonTitle: 'Retry this job',
-                icon: 'retry',
-                method: 'post',
-                path: '/root/ci-project/-/jobs/2336/retry',
-                title: 'Retry',
-                __typename: 'StatusAction',
-              },
-              __typename: 'DetailedStatus',
-            },
-            id: 'gid://gitlab/Ci::Build/2336',
-            refName: 'main',
-            refPath: '/root/ci-project/-/commits/main',
-            tags: [],
-            shortSha: '4408fa2a',
-            commitPath: '/root/ci-project/-/commit/4408fa2a27aaadfdf42d8dda3d6a9c01ce6cad78',
-            pipeline: {
-              id: 'gid://gitlab/Ci::Pipeline/473',
-              path: '/root/ci-project/-/pipelines/473',
-              user: {
-                id: 'user-1',
-                webPath: '/root',
-                avatarUrl:
-                  'https://www.gravatar.com/avatar/e64c7d89f26bd1972efa854d13d7dd61?s=80&d=identicon',
-                __typename: 'UserCore',
-              },
-              __typename: 'Pipeline',
-            },
-            stage: {
-              id: 'stage-1',
-              name: 'deploy',
-              __typename: 'CiStage',
-            },
-            name: 'artifact_job',
-            duration: 3,
-            finishedAt: '2021-04-29T14:19:50Z',
-            coverage: null,
-            retryable: true,
-            playable: false,
-            cancelable: false,
-            active: false,
-            stuck: false,
-            userPermissions: {
-              readBuild: true,
-              readJobArtifacts: true,
-              updateBuild: true,
-              __typename: 'JobPermissions',
-            },
-            __typename: 'CiJob',
-          },
-        ],
-        __typename: 'CiJobConnection',
-      },
-      __typename: 'Project',
-    },
-  },
-};
-
-export const mockJobsQueryEmptyResponse = {
-  data: {
-    project: {
-      id: '1',
-      jobs: [],
-    },
   },
 };
 
