@@ -22,7 +22,7 @@ module EE
         private
 
         def add_member
-          group.add_user(user, default_membership_role)
+          group.add_member(user, default_membership_role)
         end
 
         def default_membership_role

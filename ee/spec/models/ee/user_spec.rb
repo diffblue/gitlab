@@ -1275,7 +1275,7 @@ RSpec.describe User do
     let_it_be(:project) { create(:project, group: project_group) }
 
     before do
-      private_group.add_user(user, Gitlab::Access::MAINTAINER)
+      private_group.add_member(user, Gitlab::Access::MAINTAINER)
       project.add_maintainer(user)
       create(:group_member, :minimal_access, user: user, source: minimal_access_group)
     end
@@ -1434,7 +1434,7 @@ RSpec.describe User do
           let(:user) { create(:user) }
 
           before do
-            gitlab_group.add_user(user, Gitlab::Access::DEVELOPER)
+            gitlab_group.add_member(user, Gitlab::Access::DEVELOPER)
           end
 
           it { is_expected.to be expected_result }
@@ -1451,7 +1451,7 @@ RSpec.describe User do
           let(:user) { create(:user) }
 
           before do
-            random_group.add_user(user, Gitlab::Access::DEVELOPER)
+            random_group.add_member(user, Gitlab::Access::DEVELOPER)
           end
 
           it { is_expected.to be expected_result }
@@ -1462,7 +1462,7 @@ RSpec.describe User do
     context 'based on user type' do
       before do
         allow(Gitlab).to receive(:com?).and_return(true)
-        gitlab_group.add_user(user, Gitlab::Access::DEVELOPER)
+        gitlab_group.add_member(user, Gitlab::Access::DEVELOPER)
       end
 
       context 'when user is a bot' do
@@ -1491,7 +1491,7 @@ RSpec.describe User do
 
         before do
           allow(Gitlab).to receive(:com?).and_return(true)
-          gitlab_group.add_user(user, Gitlab::Access::DEVELOPER)
+          gitlab_group.add_member(user, Gitlab::Access::DEVELOPER)
         end
 
         it { is_expected.to be true }
@@ -1502,7 +1502,7 @@ RSpec.describe User do
 
         before do
           allow(Gitlab).to receive(:com?).and_return(true)
-          random_group.add_user(user, Gitlab::Access::DEVELOPER)
+          random_group.add_member(user, Gitlab::Access::DEVELOPER)
         end
 
         it { is_expected.to be false }
@@ -1512,7 +1512,7 @@ RSpec.describe User do
     context 'based on user type' do
       before do
         allow(Gitlab).to receive(:com?).and_return(true)
-        gitlab_group.add_user(user, Gitlab::Access::DEVELOPER)
+        gitlab_group.add_member(user, Gitlab::Access::DEVELOPER)
       end
 
       context 'when user is a bot' do
@@ -1547,7 +1547,7 @@ RSpec.describe User do
 
         before do
           allow(Gitlab).to receive(:com?).and_return(true)
-          gitlab_group.add_user(user, Gitlab::Access::DEVELOPER)
+          gitlab_group.add_member(user, Gitlab::Access::DEVELOPER)
         end
 
         it { is_expected.to be true }
@@ -1558,7 +1558,7 @@ RSpec.describe User do
 
         before do
           allow(Gitlab).to receive(:com?).and_return(true)
-          random_group.add_user(user, Gitlab::Access::DEVELOPER)
+          random_group.add_member(user, Gitlab::Access::DEVELOPER)
         end
 
         it { is_expected.to be false }
@@ -1586,7 +1586,7 @@ RSpec.describe User do
 
         let(:user) do
           user = create(:user, user_type: user_type)
-          gitlab_group.add_user(user, Gitlab::Access::DEVELOPER)
+          gitlab_group.add_member(user, Gitlab::Access::DEVELOPER)
           user
         end
 

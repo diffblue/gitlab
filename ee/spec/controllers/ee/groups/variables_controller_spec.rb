@@ -9,7 +9,7 @@ RSpec.describe Groups::VariablesController do
 
   before do
     sign_in(user)
-    group.add_user(user, :owner)
+    group.add_member(user, :owner)
   end
 
   describe 'PATCH #update' do

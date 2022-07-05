@@ -29,7 +29,7 @@ RSpec.describe Groups::Memberships::ExportService do
     context 'when licensed' do
       before do
         stub_licensed_features(export_user_permissions: true)
-        group.add_user(current_user, Gitlab::Access::OWNER)
+        group.add_member(current_user, Gitlab::Access::OWNER)
       end
 
       it 'is successful' do

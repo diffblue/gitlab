@@ -40,7 +40,7 @@ RSpec.describe ProtectedBranchPolicy do
 
       context "and access levels grant the user control" do
         before do
-          allowed_group.add_user(user, :guest)
+          allowed_group.add_member(user, :guest)
         end
 
         it 'users can manage protections' do
@@ -66,7 +66,7 @@ RSpec.describe ProtectedBranchPolicy do
 
     context 'when the user can remove the restriction' do
       before do
-        allowed_group.add_user(user, :guest)
+        allowed_group.add_member(user, :guest)
       end
 
       it "is allowed" do

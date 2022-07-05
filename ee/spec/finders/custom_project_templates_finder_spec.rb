@@ -58,9 +58,9 @@ RSpec.describe CustomProjectTemplatesFinder do
 
           it "returns #{params[:available_templates].join(', ')} projects to users with #{params[:minimal_user_access]} to the project" do
             unless minimal_user_access == :no_access
-              public_project.add_user(user, minimal_user_access)
-              internal_project.add_user(user, minimal_user_access)
-              private_project.add_user(user, minimal_user_access)
+              public_project.add_member(user, minimal_user_access)
+              internal_project.add_member(user, minimal_user_access)
+              private_project.add_member(user, minimal_user_access)
             end
 
             expect(subject.execute.pluck(:name)).to match_array(available_templates)
@@ -68,7 +68,7 @@ RSpec.describe CustomProjectTemplatesFinder do
 
           it "returns #{params[:available_templates].join(', ')} projects to users with #{params[:minimal_user_access]} to the group" do
             unless minimal_user_access == :no_access
-              group.add_user(user, minimal_user_access)
+              group.add_member(user, minimal_user_access)
             end
 
             expect(subject.execute.pluck(:name)).to match_array(available_templates)

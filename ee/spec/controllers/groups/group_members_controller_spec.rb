@@ -293,7 +293,7 @@ RSpec.describe Groups::GroupMembersController do
         let_it_be(:maintainer) { create(:user) }
 
         before do
-          group.add_user(maintainer, Gitlab::Access::MAINTAINER)
+          group.add_member(maintainer, Gitlab::Access::MAINTAINER)
         end
 
         it 'returns a 404' do
@@ -307,7 +307,7 @@ RSpec.describe Groups::GroupMembersController do
         let_it_be(:maintainer) { create(:user) }
 
         before do
-          group.add_user(maintainer, Gitlab::Access::DEVELOPER)
+          group.add_member(maintainer, Gitlab::Access::DEVELOPER)
         end
 
         it 'returns a 404' do
@@ -321,7 +321,7 @@ RSpec.describe Groups::GroupMembersController do
         let_it_be(:maintainer) { create(:user) }
 
         before do
-          group.add_user(maintainer, Gitlab::Access::GUEST)
+          group.add_member(maintainer, Gitlab::Access::GUEST)
         end
 
         it 'returns a 404' do

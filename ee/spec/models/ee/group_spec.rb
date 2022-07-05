@@ -333,7 +333,7 @@ RSpec.describe Group do
 
       context 'when user has minimal access to group' do
         before do
-          public_group.add_user(user, Gitlab::Access::MINIMAL_ACCESS)
+          public_group.add_member(user, Gitlab::Access::MINIMAL_ACCESS)
         end
 
         it_behaves_like 'a filter for permissioned groups' do

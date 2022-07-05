@@ -1308,7 +1308,7 @@ RSpec.describe API::Projects do
     let(:project) { create(:project, group: group)}
 
     before do
-      group.add_user(user, Gitlab::Access::OWNER)
+      group.add_member(user, Gitlab::Access::OWNER)
     end
 
     shared_examples 'deletes project immediately' do

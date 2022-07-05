@@ -264,7 +264,7 @@ module EE
               else
                 # If you pass the user object, instead of just user ID,
                 # it saves an extra user database query.
-                group.add_user(
+                group.add_member(
                   user,
                   access,
                   current_user: current_user,

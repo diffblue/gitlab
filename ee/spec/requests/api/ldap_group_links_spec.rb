@@ -22,7 +22,7 @@ RSpec.describe API::LdapGroupLinks, api: true do
 
   before do
     group_with_ldap_links.add_owner owner
-    group_with_ldap_links.add_user user, Gitlab::Access::DEVELOPER
+    group_with_ldap_links.add_member user, Gitlab::Access::DEVELOPER
     group_with_no_ldap_links.add_owner owner
   end
 

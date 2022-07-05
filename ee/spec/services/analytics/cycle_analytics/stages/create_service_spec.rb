@@ -17,7 +17,7 @@ RSpec.describe Analytics::CycleAnalytics::Stages::CreateService do
   end
 
   before_all do
-    group.add_user(user, :reporter)
+    group.add_member(user, :reporter)
   end
 
   before do

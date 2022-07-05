@@ -66,8 +66,8 @@ RSpec.describe Search::SnippetService do
         let_it_be(:group)   { create(:group) }
         let_it_be(:project, refind: true) do
           create(:project, :public, namespace: group).tap do |p|
-            p.add_user(reporter, :reporter)
-            p.add_user(guest, :guest)
+            p.add_member(reporter, :reporter)
+            p.add_member(guest, :guest)
           end
         end
 

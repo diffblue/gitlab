@@ -3,7 +3,7 @@
 RSpec.shared_examples 'permission check for Value Stream Analytics Stage services' do |required_license|
   context 'when user has no access' do
     before do
-      group.add_user(user, :guest)
+      group.add_member(user, :guest)
     end
 
     it { expect(subject).to be_error }

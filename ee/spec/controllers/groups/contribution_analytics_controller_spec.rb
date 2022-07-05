@@ -30,8 +30,8 @@ RSpec.describe Groups::ContributionAnalyticsController do
 
   before do
     group.add_owner(user)
-    group.add_user(user2, GroupMember::DEVELOPER)
-    group.add_user(user3, GroupMember::MAINTAINER)
+    group.add_member(user2, GroupMember::DEVELOPER)
+    group.add_member(user3, GroupMember::MAINTAINER)
   end
 
   describe '#authorize_read_contribution_analytics!' do
@@ -56,7 +56,7 @@ RSpec.describe Groups::ContributionAnalyticsController do
 
       context 'when user has access to the group' do
         before do
-          group.add_user(guest_user, GroupMember::GUEST)
+          group.add_member(guest_user, GroupMember::GUEST)
           sign_in(guest_user)
 
           allow(Ability).to receive(:allowed?).and_call_original
@@ -89,7 +89,7 @@ RSpec.describe Groups::ContributionAnalyticsController do
 
     describe '#check_contribution_analytics_available!' do
       before do
-        group.add_user(guest_user, GroupMember::GUEST)
+        group.add_member(guest_user, GroupMember::GUEST)
         sign_in(guest_user)
       end
 
@@ -191,7 +191,7 @@ RSpec.describe Groups::ContributionAnalyticsController do
 
       controller.instance_variable_set(:@group, nil)
       user4 = create(:user)
-      group.add_user(user4, GroupMember::DEVELOPER)
+      group.add_member(user4, GroupMember::DEVELOPER)
 
       expect { get :show, params: { group_id: group.path }, format: :json }
         .not_to exceed_query_limit(control_count)

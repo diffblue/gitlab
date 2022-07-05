@@ -24,7 +24,7 @@ RSpec.describe API::StatusChecks do
     context 'when current_user has access' do
       before do
         stub_licensed_features(external_status_checks: true)
-        project.add_user(user, :maintainer)
+        project.add_member(user, :maintainer)
       end
 
       context 'when merge request has received status check responses' do
@@ -77,9 +77,9 @@ RSpec.describe API::StatusChecks do
           stub_licensed_features(external_status_checks: true)
 
           if applies_to_target_project
-            project.add_user(user, user_permissions)
+            project.add_member(user, user_permissions)
           else
-            another_project.add_user(user, user_permissions)
+            another_project.add_member(user, user_permissions)
           end
         end
 
@@ -94,7 +94,7 @@ RSpec.describe API::StatusChecks do
     context 'when user has access' do
       before do
         stub_licensed_features(external_status_checks: true)
-        project.add_user(user, :maintainer) if user
+        project.add_member(user, :maintainer) if user
       end
 
       context 'when external status check ID does not belong to the requested project' do

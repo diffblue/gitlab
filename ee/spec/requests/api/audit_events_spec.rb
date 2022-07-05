@@ -9,7 +9,7 @@ RSpec.describe API::AuditEvents do
     let_it_be(:project) { create(:project) }
 
     before do
-      project.add_user(current_user, :maintainer)
+      project.add_member(current_user, :maintainer)
     end
 
     context 'after calling all audit_events APIs as a single licensed user' do

@@ -216,7 +216,7 @@ RSpec.describe EE::Gitlab::Auth::Ldap::Sync::Group do
 
         it 'downgrades existing member access' do
           # Create user with higher access
-          group.add_user(user, Gitlab::Access::MAINTAINER)
+          group.add_member(user, Gitlab::Access::MAINTAINER)
 
           sync_group.update_permissions
 
@@ -226,7 +226,7 @@ RSpec.describe EE::Gitlab::Auth::Ldap::Sync::Group do
 
         it 'upgrades existing member access' do
           # Create user with lower access
-          group.add_user(user, Gitlab::Access::GUEST)
+          group.add_member(user, Gitlab::Access::GUEST)
 
           sync_group.update_permissions
 
@@ -235,7 +235,7 @@ RSpec.describe EE::Gitlab::Auth::Ldap::Sync::Group do
         end
 
         it 'sets an existing member ldap attribute to true' do
-          group.add_users(
+          group.add_members(
             [user],
             ::Gitlab::Access::DEVELOPER
           )
@@ -266,7 +266,7 @@ RSpec.describe EE::Gitlab::Auth::Ldap::Sync::Group do
         end
 
         it 'removes the user from the group' do
-          group.add_user(user, Gitlab::Access::MAINTAINER)
+          group.add_member(user, Gitlab::Access::MAINTAINER)
 
           sync_group.update_permissions
 
@@ -274,7 +274,7 @@ RSpec.describe EE::Gitlab::Auth::Ldap::Sync::Group do
         end
 
         it 'refuses to delete the last owner' do
-          group.add_user(user, Gitlab::Access::OWNER)
+          group.add_member(user, Gitlab::Access::OWNER)
 
           sync_group.update_permissions
 
@@ -284,7 +284,7 @@ RSpec.describe EE::Gitlab::Auth::Ldap::Sync::Group do
 
         it 'updates projects authorizations', :sidekiq_inline do
           project = create(:project, namespace: group)
-          group.add_user(user, Gitlab::Access::MAINTAINER)
+          group.add_member(user, Gitlab::Access::MAINTAINER)
 
           sync_group.update_permissions
 
@@ -302,7 +302,7 @@ RSpec.describe EE::Gitlab::Auth::Ldap::Sync::Group do
         it 'downgrades one user but not the other' do
           create(:identity, user: user1, extern_uid: user_dn(user1.username))
           create(:identity, user: user2, extern_uid: user_dn(user2.username))
-          group.add_users([user1, user2], Gitlab::Access::OWNER)
+          group.add_members([user1, user2], Gitlab::Access::OWNER)
 
           sync_group.update_permissions
 
@@ -328,7 +328,7 @@ RSpec.describe EE::Gitlab::Auth::Ldap::Sync::Group do
         end
 
         it "upgrades existing member to the inherited higher permission" do
-          group.add_user(user, Gitlab::Access::DEVELOPER)
+          group.add_member(user, Gitlab::Access::DEVELOPER)
 
           sync_group.update_permissions
 
@@ -368,7 +368,7 @@ RSpec.describe EE::Gitlab::Auth::Ldap::Sync::Group do
         end
 
         it "downgrades existing member access to the ldap group link's access level" do
-          group.add_user(user, Gitlab::Access::MAINTAINER)
+          group.add_member(user, Gitlab::Access::MAINTAINER)
 
           sync_group.update_permissions
 
@@ -428,7 +428,7 @@ RSpec.describe EE::Gitlab::Auth::Ldap::Sync::Group do
         end
 
         it "removes existing member" do
-          group.add_user(user, Gitlab::Access::MAINTAINER)
+          group.add_member(user, Gitlab::Access::MAINTAINER)
 
           sync_group.update_permissions
 

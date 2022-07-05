@@ -665,7 +665,7 @@ RSpec.describe ProjectsController do
     let(:project) { create(:project, group: group) }
 
     before do
-      group.add_user(user, Gitlab::Access::OWNER)
+      group.add_member(user, Gitlab::Access::OWNER)
       controller.instance_variable_set(:@project, project)
       sign_in(user)
     end

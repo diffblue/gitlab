@@ -12,7 +12,7 @@ RSpec.describe LdapGroupResetService do
   before do
     group.add_owner(user)
     group.add_owner(ldap_user)
-    group.add_user(ldap_user_2, Gitlab::Access::REPORTER)
+    group.add_member(ldap_user_2, Gitlab::Access::REPORTER)
     group.ldap_group_links.create! cn: 'developers', group_access: Gitlab::Access::DEVELOPER
   end
 

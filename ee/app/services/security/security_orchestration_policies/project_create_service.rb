@@ -27,7 +27,7 @@ module Security
 
       def add_members(policy_project)
         members_to_add = developers_and_maintainers - policy_project.team.members
-        policy_project.add_users(members_to_add, :developer) || []
+        policy_project.add_members(members_to_add, :developer) || []
       end
 
       def developers_and_maintainers

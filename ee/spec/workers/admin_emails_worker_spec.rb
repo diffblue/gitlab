@@ -10,16 +10,16 @@ RSpec.describe AdminEmailsWorker do
     before do
       2.times do
         user = create(:user)
-        group.add_user(user, Gitlab::Access::DEVELOPER)
-        project.add_user(user, Gitlab::Access::DEVELOPER)
+        group.add_member(user, Gitlab::Access::DEVELOPER)
+        project.add_member(user, Gitlab::Access::DEVELOPER)
       end
       unsubscribed_user = create(:user, admin_email_unsubscribed_at: 5.days.ago)
-      group.add_user(unsubscribed_user, Gitlab::Access::DEVELOPER)
-      project.add_user(unsubscribed_user, Gitlab::Access::DEVELOPER)
+      group.add_member(unsubscribed_user, Gitlab::Access::DEVELOPER)
+      project.add_member(unsubscribed_user, Gitlab::Access::DEVELOPER)
 
       blocked_user = create(:user, state: :blocked)
-      group.add_user(blocked_user, Gitlab::Access::DEVELOPER)
-      project.add_user(blocked_user, Gitlab::Access::DEVELOPER)
+      group.add_member(blocked_user, Gitlab::Access::DEVELOPER)
+      project.add_member(blocked_user, Gitlab::Access::DEVELOPER)
       ActionMailer::Base.deliveries = []
     end
 
