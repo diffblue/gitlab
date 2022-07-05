@@ -134,6 +134,7 @@ Object {
     },
   ],
   "showBulkEditSidebar": false,
+  "showPageSizeChangeControls": false,
   "showPaginationControls": true,
   "sortOptions": Array [
     Object {
