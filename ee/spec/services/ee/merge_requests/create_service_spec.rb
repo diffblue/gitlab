@@ -52,6 +52,20 @@ RSpec.describe MergeRequests::CreateService do
     it_behaves_like 'service with multiple reviewers' do
       let(:execute) { service.execute }
     end
+
+    it 'sends the audit streaming event' do
+      audit_context = {
+        name: 'merge_request_create',
+        stream_only: true,
+        author: user,
+        scope: project,
+        message: 'Added merge request'
+      }
+
+      expect(::Gitlab::Audit::Auditor).to receive(:audit).with(hash_including(audit_context))
+
+      service.execute
+    end
   end
 
   describe '#execute with blocking merge requests', :clean_gitlab_redis_shared_state do
