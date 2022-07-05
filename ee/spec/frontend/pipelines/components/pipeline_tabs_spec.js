@@ -4,7 +4,7 @@ import BasePipelineTabs from '~/pipelines/components/pipeline_tabs.vue';
 import PipelineTabs from 'ee/pipelines/components/pipeline_tabs.vue';
 import CodequalityReportApp from 'ee/codequality_report/codequality_report.vue';
 import CodequalityReportAppGraphql from 'ee/codequality_report/codequality_report_graphql.vue';
-import LicenseComplianceApp from 'ee/license_compliance/components/app.vue';
+import LicenseReportApp from 'ee/vue_shared/license_compliance/mr_widget_license_report.vue';
 import PipelineSecurityDashboard from 'ee/security_dashboard/components/pipeline/pipeline_security_dashboard.vue';
 
 describe('The Pipeline Tabs', () => {
@@ -21,7 +21,7 @@ describe('The Pipeline Tabs', () => {
 
   const findCodeQualityApp = () => wrapper.findComponent(CodequalityReportApp);
   const findCodeQualityAppGraphql = () => wrapper.findComponent(CodequalityReportAppGraphql);
-  const findLicenseApp = () => wrapper.findComponent(LicenseComplianceApp);
+  const findLicenseApp = () => wrapper.findComponent(LicenseReportApp);
   const findSecurityApp = () => wrapper.findComponent(PipelineSecurityDashboard);
 
   const defaultProvide = {
@@ -30,6 +30,10 @@ describe('The Pipeline Tabs', () => {
     defaultTabValue: '',
     exposeSecurityDashboard: false,
     exposeLicenseScanningData: false,
+    apiUrl: '',
+    licensesApiPath: '',
+    licenseManagementSettingsPath: '',
+    canManageLicenses: true,
     failedJobsCount: 1,
     failedJobsSummary: [],
     totalJobCount: 10,

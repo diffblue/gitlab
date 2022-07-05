@@ -1,12 +1,12 @@
 <script>
-import { GlTab } from '@gitlab/ui';
+import { GlTab, GlBadge } from '@gitlab/ui';
 import BasePipelineTabs from '~/pipelines/components/pipeline_tabs.vue';
 import { codeQualityTabName, licensesTabName, securityTabName } from '~/pipelines/constants';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { __ } from '~/locale';
 import CodequalityReportApp from 'ee/codequality_report/codequality_report.vue';
 import CodequalityReportAppGraphql from 'ee/codequality_report/codequality_report_graphql.vue';
-import LicenseComplianceApp from 'ee/license_compliance/components/app.vue';
+import LicenseReportApp from 'ee/vue_shared/license_compliance/mr_widget_license_report.vue';
 import PipelineSecurityDashboard from 'ee/security_dashboard/components/pipeline/pipeline_security_dashboard.vue';
 
 export default {
@@ -15,6 +15,7 @@ export default {
       securityTitle: __('Security'),
       licenseTitle: __('Licenses'),
       codeQualityTitle: __('Code Quality'),
+      licensesTitle: __('Licenses'),
     },
   },
   tabNames: {
@@ -27,7 +28,8 @@ export default {
     CodequalityReportApp,
     CodequalityReportAppGraphql,
     GlTab,
-    LicenseComplianceApp,
+    GlBadge,
+    LicenseReportApp,
     PipelineSecurityDashboard,
   },
   mixins: [glFeatureFlagMixin()],
@@ -37,7 +39,14 @@ export default {
     'defaultTabValue',
     'exposeSecurityDashboard',
     'exposeLicenseScanningData',
+    'apiUrl',
+    'licensesApiPath',
+    'licenseManagementSettingsPath',
+    'canManageLicenses',
   ],
+  data() {
+    return { licenseCount: 0 };
+  },
   computed: {
     isGraphqlCodeQuality() {
       return this.glFeatures.graphqlCodeQualityFullReport;
@@ -55,6 +64,9 @@ export default {
   methods: {
     isActive(tabName) {
       return tabName === this.defaultTabValue;
+    },
+    updateLicenseCount(count) {
+      this.licenseCount = count;
     },
   },
 };
@@ -76,7 +88,20 @@ export default {
       :active="isActive($options.tabNames.licenses)"
       data-testid="license-tab"
     >
-      <license-compliance-app />
+      <template #title>
+        <span class="gl-mr-2">{{ $options.i18n.tabs.licensesTitle }}</span>
+        <gl-badge size="sm" data-testid="license-counter">{{ licenseCount }}</gl-badge>
+      </template>
+
+      <license-report-app
+        :api-url="apiUrl"
+        :licenses-api-path="licensesApiPath"
+        :license-management-settings-path="licenseManagementSettingsPath"
+        :can-manage-licenses="canManageLicenses"
+        :always-open="true"
+        report-section-class="split-report-section"
+        @updateBadgeCount="updateLicenseCount"
+      />
     </gl-tab>
     <gl-tab
       v-if="showCodeQualityTab"
