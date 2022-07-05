@@ -724,6 +724,9 @@ msgstr ""
 msgid "%{labelStart}Crash State:%{labelEnd} %{stacktrace_snippet}"
 msgstr ""
 
+msgid "%{labelStart}Crash Type:%{labelEnd} %{crash_type}"
+msgstr ""
+
 msgid "%{labelStart}Evidence:%{labelEnd} %{evidence}"
 msgstr ""
 
