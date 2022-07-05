@@ -1,13 +1,13 @@
 import { GlForm } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import { nextTick } from 'vue';
-import { ApolloMutation } from 'vue-apollo';
 import EpicForm from 'ee/epic/components/epic_form.vue';
 import createEpic from 'ee/epic/queries/create_epic.mutation.graphql';
 import { TEST_HOST } from 'helpers/test_constants';
 import Autosave from '~/autosave';
 import { visitUrl } from '~/lib/utils/url_utility';
 import LabelsSelectWidget from '~/vue_shared/components/sidebar/labels_select_widget/labels_select_root.vue';
+import ColorSelectDropdown from '~/vue_shared/components/color_select_dropdown/color_select_root.vue';
 
 jest.mock('~/lib/utils/url_utility', () => ({
   visitUrl: jest.fn(),
@@ -29,9 +29,11 @@ describe('ee/epic/components/epic_form.vue', () => {
         labelsManagePath: TEST_HOST,
         markdownPreviewPath: TEST_HOST,
         markdownDocsPath: TEST_HOST,
+        glFeatures: {
+          epicColorHighlight: true,
+        },
       },
       stubs: {
-        ApolloMutation,
         MarkdownField: { template: '<div><slot name="textarea"></slot></div>' },
       },
       mocks: {
@@ -49,6 +51,7 @@ describe('ee/epic/components/epic_form.vue', () => {
 
   const findForm = () => wrapper.findComponent(GlForm);
   const findLabels = () => wrapper.findComponent(LabelsSelectWidget);
+  const findColor = () => wrapper.findComponent(ColorSelectDropdown);
   const findTitle = () => wrapper.find('[data-testid="epic-title"]');
   const findDescription = () => wrapper.find('[data-testid="epic-description"]');
   const findConfidentialityCheck = () => wrapper.find('[data-testid="epic-confidentiality"]');
@@ -117,6 +120,11 @@ describe('ee/epic/components/epic_form.vue', () => {
     `(
       'requests mutation with correct data with all start and due date configurations',
       async ({ startDateFixed, dueDateFixed, startDateIsFixed, dueDateIsFixed }) => {
+        const epicColor = {
+          color: '#217645',
+          title: 'Green',
+        };
+
         createWrapper();
 
         findTitle().vm.$emit('input', title);
@@ -125,6 +133,7 @@ describe('ee/epic/components/epic_form.vue', () => {
         findLabels().vm.$emit('updateSelectedLabels', {
           labels: [{ id: 'gid://gitlab/GroupLabel/1' }],
         });
+        findColor().vm.$emit('updateSelectedColor', epicColor);
 
         // Make sure the submitted values for start and due dates are date strings without timezone info.
         // (Datepicker emits a Date object but the submitted value must be a date string).
@@ -146,6 +155,7 @@ describe('ee/epic/components/epic_form.vue', () => {
               startDateIsFixed,
               dueDateFixed,
               dueDateIsFixed,
+              color: epicColor.color,
             },
           },
         });
