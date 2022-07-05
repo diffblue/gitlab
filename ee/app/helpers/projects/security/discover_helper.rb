@@ -28,7 +28,8 @@ module Projects::Security::DiscoverHelper
     data = {
       project: {
         id: project.id,
-        name: project.name
+        name: project.name,
+        personal: project.personal?.to_s
       },
       link: {
         main: new_trial_registration_path(glm_source: 'gitlab.com', glm_content: content),

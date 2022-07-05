@@ -1,11 +1,13 @@
-import { shallowMount, mount } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { stubExperiments } from 'helpers/experimentation_helper';
 
 import { getExperimentData } from '~/experimentation/utils';
 import CardSecurityDiscoverApp from 'ee/vue_shared/discover/card_security_discover_app.vue';
 import HandRaiseLeadButton from 'ee/hand_raise_leads/hand_raise_lead/components/hand_raise_lead_button.vue';
+import MovePersonalProjectToGroupModal from 'ee/projects/components/move_personal_project_to_group_modal.vue';
 import { mockTracking } from 'helpers/tracking_helper';
 import createMockApollo from 'helpers/mock_apollo_helper';
 
@@ -13,15 +15,17 @@ Vue.use(VueApollo);
 
 describe('Card security discover app', () => {
   let wrapper;
+  const project = {
+    id: 1,
+    name: 'Awesome Project',
+  };
 
-  const createComponent = ({ mountFn = shallowMount } = {}) => {
+  const createComponent = ({ extraPropsData = {}, mountFn = shallowMountExtended } = {}) => {
     const propsData = {
-      project: {
-        id: 1,
-        name: 'Awesome Project',
-      },
+      project,
       linkMain: '/link/main',
       linkSecondary: '/link/secondary',
+      ...extraPropsData,
     };
     wrapper = mountFn(CardSecurityDiscoverApp, {
       propsData,
@@ -52,6 +56,10 @@ describe('Card security discover app', () => {
       expect(wrapper.findComponent(CardSecurityDiscoverApp).exists()).toBe(true);
     });
 
+    it('does not render the MovePersonalProjectToGroupModal', () => {
+      expect(wrapper.findComponent(MovePersonalProjectToGroupModal).exists()).toBe(false);
+    });
+
     it('renders discover title properly', () => {
       expect(wrapper.find('.discover-title').html()).toContain(
         'Security capabilities, integrated into your development lifecycle',
@@ -59,11 +67,17 @@ describe('Card security discover app', () => {
     });
 
     it('renders discover upgrade links properly', () => {
-      expect(wrapper.find('.discover-button-upgrade').html()).toContain('Upgrade now');
+      expect(wrapper.findByTestId('discover-button-upgrade').html()).toContain('Upgrade now');
+      expect(wrapper.findByTestId('discover-button-upgrade').attributes('href')).toBe(
+        wrapper.props().linkSecondary,
+      );
     });
 
     it('renders discover trial links properly', () => {
-      expect(wrapper.find('.discover-button-trial').html()).toContain('Start a free trial');
+      expect(wrapper.findByTestId('discover-button-trial').html()).toContain('Start a free trial');
+      expect(wrapper.findByTestId('discover-button-trial').attributes('href')).toBe(
+        wrapper.props().linkMain,
+      );
     });
 
     describe('Tracking', () => {
@@ -75,7 +89,7 @@ describe('Card security discover app', () => {
       });
 
       it('tracks an event when clicked on upgrade', () => {
-        wrapper.find('.discover-button-upgrade').trigger('click');
+        wrapper.findByTestId('discover-button-upgrade').trigger('click');
 
         expect(spy).toHaveBeenCalledWith('_category_', 'click_button', {
           label: 'security-discover-upgrade-cta',
@@ -91,7 +105,7 @@ describe('Card security discover app', () => {
       });
 
       it('tracks an event when clicked on trial', () => {
-        wrapper.find('.discover-button-trial').trigger('click');
+        wrapper.findByTestId('discover-button-trial').trigger('click');
 
         expect(spy).toHaveBeenCalledWith('_category_', 'click_button', {
           label: 'security-discover-trial-cta',
@@ -119,6 +133,29 @@ describe('Card security discover app', () => {
       });
     });
   });
+
+  describe('Personal Project', () => {
+    beforeEach(() => {
+      createComponent({ extraPropsData: { project: { ...project, isPersonal: true } } });
+    });
+
+    afterEach(() => {
+      wrapper.destroy();
+    });
+
+    it('renders the MovePersonalProjectToGroupModal properly', () => {
+      expect(wrapper.findComponent(MovePersonalProjectToGroupModal).exists()).toBe(true);
+    });
+
+    it('renders discover upgrade links properly', () => {
+      expect(wrapper.findByTestId('discover-button-upgrade').html()).toContain('Upgrade now');
+    });
+
+    it('renders discover trial links properly', () => {
+      expect(wrapper.findByTestId('discover-button-trial').html()).toContain('Start a free trial');
+    });
+  });
+
   describe('Experiment pql_three_cta_test', () => {
     const originalObjects = [];
 
