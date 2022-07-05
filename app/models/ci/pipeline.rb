@@ -1384,12 +1384,18 @@ module Ci
     end
 
     def observe_age_in_minutes
-      return unless ::Feature.enabled?(:ci_pipeline_age_histogram, type: :ops)
+      return unless age_metric_enabled?
       return unless persisted? && has_attribute?(:created_at)
 
       ::Gitlab::Ci::Pipeline::Metrics
         .pipeline_age_histogram
         .observe({}, age_in_minutes)
+    end
+
+    def age_metric_enabled?
+      ::Gitlab::SafeRequestStore.fetch(:age_metric_enabled) do
+        ::Feature.enabled?(:ci_pipeline_age_histogram, type: :ops)
+      end
     end
 
     # Without using `unscoped`, caller scope is also included into the query.
