@@ -266,7 +266,7 @@ RSpec.describe API::MergeRequests do
       end
     end
 
-    context 'filter merge requests by approval IDs' do
+    shared_examples 'filter merge requests by approved_by_x' do
       let_it_be(:user3) { create(:user) }
       let_it_be(:merge_request_with_approval) do
         create(:merge_request, author: user, source_project: project, target_project: project, source_branch: 'other-branch').tap do |mr|
@@ -282,20 +282,20 @@ RSpec.describe API::MergeRequests do
       end
 
       before do
-        get api('/merge_requests', user), params: { approved_by_ids: approvals_param, scope: :all }
+        get api('/merge_requests', user), params: params
       end
 
-      context 'with specified approved_by id' do
-        let(:approvals_param) { [user2.id] }
+      context 'with specified approved_by param' do
+        let(:approvals_param) { [user_attribute.call(user2)] }
 
         it 'returns an array of merge requests which have specified the user as an approver' do
           expect_response_contain_exactly(merge_request_with_approval.id, merge_request_with_multiple_approvals.id)
         end
       end
 
-      context 'with multiple specified approved_by ids' do
+      context 'with multiple specified approved_by params' do
         context 'when approved by all users' do
-          let(:approvals_param) { [user2.id, user3.id] }
+          let(:approvals_param) { [user_attribute.call(user2), user_attribute.call(user3)] }
 
           it 'returns an array of merge requests which have specified the user as an approver' do
             expect_response_contain_exactly(merge_request_with_multiple_approvals.id)
@@ -303,7 +303,7 @@ RSpec.describe API::MergeRequests do
         end
 
         context 'when not approved by all users' do
-          let(:approvals_param) { [user.id, user2.id] }
+          let(:approvals_param) { [user_attribute.call(user), user_attribute.call(user2)] }
 
           it 'does not return any merge request' do
             expect_empty_array_response
@@ -332,9 +332,25 @@ RSpec.describe API::MergeRequests do
 
         it 'returns a validation error' do
           expect(response).to have_gitlab_http_status(:bad_request)
-          expect(json_response['error']).to eq("approved_by_ids should be an array, 'None' or 'Any'")
+          expect(json_response['error']).to eq(error)
         end
       end
+    end
+
+    context 'filter merge requests by approved_by_ids' do
+      let(:params) { { approved_by_ids: approvals_param, scope: :all } }
+      let(:error) { "approved_by_ids should be an array, 'None' or 'Any'" }
+      let(:user_attribute) { ->(user) { user.id } }
+
+      it_behaves_like 'filter merge requests by approved_by_x'
+    end
+
+    context 'filter merge requests by approved_by_usernames' do
+      let(:params) { { approved_by_usernames: approvals_param, scope: :all } }
+      let(:error) { "approved_by_usernames should be an array, 'None' or 'Any'" }
+      let(:user_attribute) { ->(user) { user.username } }
+
+      it_behaves_like 'filter merge requests by approved_by_x'
     end
   end
 end
