@@ -63,7 +63,9 @@ export default {
         };
       },
       result() {
-        this.switchViewer(this.hasRichViewer ? RICH_BLOB_VIEWER : SIMPLE_BLOB_VIEWER);
+        if (this.$route?.query?.plain !== '1') {
+          this.switchViewer(this.hasRichViewer ? RICH_BLOB_VIEWER : SIMPLE_BLOB_VIEWER);
+        }
       },
       error() {
         this.displayError();
@@ -221,6 +223,13 @@ export default {
 
       if (!this.blobViewer) {
         this.loadLegacyViewer();
+      }
+
+      if (this.$router && this.$route?.path) {
+        this.$router.push({
+          path: this.$route.path,
+          query: { plain: this.activeViewerType === SIMPLE_BLOB_VIEWER ? '1' : '0' },
+        });
       }
     },
     editBlob(target) {
