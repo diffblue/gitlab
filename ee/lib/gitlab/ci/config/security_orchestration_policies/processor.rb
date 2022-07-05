@@ -67,21 +67,25 @@ module Gitlab
 
           def merge_on_demand_scan_template(merged_config, defined_stages)
             on_demand_scan_template = prepare_on_demand_scans_template
+            on_demand_scan_job_names = on_demand_scan_template.keys
+
             if on_demand_scan_template.present?
               defined_stages << DEFAULT_ON_DEMAND_STAGE
-              merged_config.deep_merge!(on_demand_scan_template)
+              merged_config.except!(*on_demand_scan_job_names).deep_merge!(on_demand_scan_template)
             end
           end
 
           def merge_pipeline_scan_template(merged_config, defined_stages)
             pipeline_scan_template = prepare_pipeline_scans_template
+            pipeline_scan_job_names = prepare_pipeline_scans_template.keys
+
             if pipeline_scan_template.present?
               unless defined_stages.include?(DEFAULT_SECURITY_JOB_STAGE)
                 insert_scan_policy_stage_after_build_stage_or_first(defined_stages)
                 pipeline_scan_template = pipeline_scan_template.transform_values { |job_config| job_config.merge(stage: DEFAULT_SCAN_POLICY_STAGE) }
               end
 
-              merged_config.deep_merge!(pipeline_scan_template)
+              merged_config.except!(*pipeline_scan_job_names).deep_merge!(pipeline_scan_template)
             end
           end
 

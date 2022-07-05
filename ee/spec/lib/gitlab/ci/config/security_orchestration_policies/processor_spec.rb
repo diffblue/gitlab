@@ -56,6 +56,36 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor do
   end
 
   shared_examples 'with different scan type' do
+    context 'when config already have jobs with names provided by policies' do
+      let(:config) do
+        {
+          stages: %w[build test release],
+          image: 'image:1.0.0',
+          'dast-on-demand-0': {
+            rules: [{ if: '$CI_COMMIT_BRANCH == "develop"' }],
+            needs: [{ job: 'build-job', artifacts: true }]
+          },
+          'sast-0': {
+            rules: [{ if: '$CI_COMMIT_BRANCH == "develop"' }],
+            needs: [{ job: 'build-job', artifacts: true }]
+          },
+          'secret-detection-1': {
+            rules: [{ if: '$CI_COMMIT_BRANCH == "develop"' }],
+            needs: [{ job: 'build-job', artifacts: true }]
+          }
+        }
+      end
+
+      it 'extends config with additional jobs without overriden values', :aggregate_failures do
+        expect(subject.keys).to include(expected_jobs)
+        expect(subject.values).to include(expected_configuration)
+        expect(subject[extended_job]).not_to include(
+          rules: [{ if: '$CI_COMMIT_BRANCH == "develop"' }],
+          needs: [{ job: 'build-job', artifacts: true }]
+        )
+      end
+    end
+
     context 'when test stage is available' do
       let(:config) { { stages: %w[build test release], image: 'image:1.0.0' } }
 
@@ -161,6 +191,7 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor do
         let_it_be(:dast_site_profile) { create(:dast_site_profile, project: project, name: 'Site Profile') }
 
         it_behaves_like 'with different scan type' do
+          let(:extended_job) { :'dast-on-demand-0' }
           let(:expected_jobs) { starting_with('dast-on-demand-') }
           let(:expected_configuration) do
             {
@@ -194,6 +225,7 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor do
 
       context 'when scan type is secret_detection' do
         it_behaves_like 'with different scan type' do
+          let(:extended_job) { :'secret-detection-1' }
           let(:expected_jobs) { starting_with('secret-detection-') }
           let(:expected_configuration) do
             hash_including(
@@ -222,6 +254,7 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor do
 
       context 'when scan type is sast is configured for namespace policy project' do
         it_behaves_like 'with different scan type' do
+          let(:extended_job) { :'sast-0' }
           let(:expected_jobs) { starting_with('sast-') }
           let(:expected_configuration) do
             hash_including(
