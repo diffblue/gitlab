@@ -19,7 +19,6 @@ RSpec.describe AutoMerge::AddToMergeTrainWhenPipelineSucceedsService do
   before do
     project.add_maintainer(user)
     project.update!(merge_pipelines_enabled: true, merge_trains_enabled: true)
-    stub_feature_flags(ci_disallow_to_create_merge_request_pipelines_in_target_project: false)
     stub_feature_flags(disable_merge_trains: false)
     stub_licensed_features(merge_trains: true, merge_pipelines: true)
     allow(AutoMergeProcessWorker).to receive(:perform_async) { }
@@ -137,17 +136,6 @@ RSpec.describe AutoMerge::AddToMergeTrainWhenPipelineSucceedsService do
       end
 
       it { is_expected.to eq(false) }
-    end
-
-    context 'when merge request is submitted from a forked project' do
-      context 'when ci_disallow_to_create_merge_request_pipelines_in_target_project feature flag is enabled' do
-        before do
-          stub_feature_flags(ci_disallow_to_create_merge_request_pipelines_in_target_project: true)
-          allow(merge_request).to receive(:for_same_project?) { false }
-        end
-
-        it { is_expected.to eq(false) }
-      end
     end
 
     context 'when the latest pipeline in the merge request is not active' do

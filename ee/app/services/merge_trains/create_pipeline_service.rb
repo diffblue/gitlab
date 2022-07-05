@@ -16,7 +16,6 @@ module MergeTrains
     def validate(merge_request)
       return error('merge trains is disabled') unless merge_request.project.merge_trains_enabled?
       return error('merge request is not on a merge train') unless merge_request.on_train?
-      return error('this merge request cannot be added to merge train') unless can_add_to_merge_train?(merge_request)
 
       success
     end
@@ -49,10 +48,6 @@ module MergeTrains
       return error(response.message) if response.error? && !response.payload.persisted?
 
       success(pipeline: response.payload)
-    end
-
-    def can_add_to_merge_train?(merge_request)
-      AutoMerge::BaseService.can_add_to_merge_train?(merge_request)
     end
   end
 end
