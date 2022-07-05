@@ -239,7 +239,7 @@ module EE
       return if event.is_a?(AuthenticationEvent)
 
       if event.entity_is_group_or_project?
-        event.run_after_commit_or_now { event.stream_to_external_destinations }
+        event.run_after_commit_or_now { event.stream_to_external_destinations(use_json: !!event.entity&.destroyed?) }
       end
     end
 
@@ -248,6 +248,13 @@ module EE
       super.tap do |payload|
         payload[:ip_address] = ip_address if admin_audit_event_enabled?
       end
+    end
+
+    override :build_event
+    def build_event
+      event = super
+      event.entity = @entity
+      event
     end
 
     def for_custom_model(model:, target_details:, target_id:)

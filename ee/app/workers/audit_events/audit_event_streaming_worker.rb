@@ -20,7 +20,7 @@ module AuditEvents
       audit_event = audit_event(audit_event_id, audit_event_json)
       return if audit_event.nil?
 
-      group = group_entity(audit_event)
+      group = audit_event.root_group_entity
       return if group.nil? # Do nothing if the event can't be resolved to a single group.
       return unless group.licensed_feature_available?(:external_audit_events)
 
@@ -59,22 +59,6 @@ module AuditEvents
       # We want to have created_at as unique id for deduplication if audit_event id is not present
       audit_event.id = audit_event.created_at.to_i if audit_event.id.blank?
       audit_event
-    end
-
-    def group_entity(audit_event)
-      entity = audit_event.entity
-      return if entity.nil?
-
-      case audit_event.entity_type
-      when 'Group'
-        entity
-      when 'Project'
-        # Project events should be sent to the root ancestor's streaming destinations
-        # Projects without a group root ancestor should be ignored.
-        entity.group&.root_ancestor
-      else
-        nil
-      end
     end
   end
 end

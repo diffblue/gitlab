@@ -224,6 +224,20 @@ RSpec.describe AuditEvents::AuditEventStreamingWorker do
       end
 
       it_behaves_like 'no HTTP calls are made'
+
+      context 'when root_group_entity_id is passed in audit event json' do
+        let(:group) { create(:group) }
+        let(:project) { create(:project, group: group) }
+        let(:event) { create(:audit_event, :project_event, target_project: project) }
+
+        before do
+          event.root_group_entity_id = group.id
+        end
+
+        subject { worker.perform('audit_operation', nil, event.to_json(methods: [:root_group_entity_id])) }
+
+        include_context 'audit event stream'
+      end
     end
   end
 end

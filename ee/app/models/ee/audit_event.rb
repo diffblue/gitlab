@@ -4,6 +4,7 @@ module EE
   module AuditEvent
     extend ActiveSupport::Concern
     extend ::Gitlab::Utils::Override
+    include ::Gitlab::Utils::StrongMemoize
 
     TRUNCATED_FIELDS = {
       entity_path: 5_500,
@@ -16,8 +17,34 @@ module EE
       before_validation :truncate_fields
     end
 
+    attr_writer :entity
+    attr_accessor :root_group_entity_id
+
     def entity
-      lazy_entity
+      strong_memoize(:entity) { lazy_entity }
+    end
+
+    def root_group_entity
+      strong_memoize(:root_group_entity) do
+        next ::Group.find_by(id: root_group_entity_id) if root_group_entity_id.present?
+        next if entity.nil?
+
+        root_group_entity =
+          case entity_type
+          when 'Group'
+            # Sub group events should be sent to the root ancestor's streaming destinations
+            entity.root_ancestor
+          when 'Project'
+            # Project events should be sent to the root ancestor's streaming destinations
+            # Projects without a group root ancestor should be ignored.
+            entity.group&.root_ancestor
+          else
+            nil
+          end
+
+        self.root_group_entity_id = root_group_entity&.id
+        root_group_entity
+      end
     end
 
     def entity_path
@@ -57,7 +84,7 @@ module EE
     def stream_to_external_destinations(use_json: false, event_name: 'audit_operation')
       return unless can_stream_to_external_destination?
 
-      perform_params = use_json ? [event_name, nil, self.to_json] : [event_name, id, nil]
+      perform_params = use_json ? [event_name, nil, streaming_json] : [event_name, id, nil]
       AuditEvents::AuditEventStreamingWorker.perform_async(*perform_params)
     end
 
@@ -70,24 +97,11 @@ module EE
     def can_stream_to_external_destination?
       return false if entity.nil?
 
-      group = group_entity
+      group = root_group_entity
       return false if group.nil?
       return false unless group.licensed_feature_available?(:external_audit_events)
 
       group.external_audit_event_destinations.exists?
-    end
-
-    def group_entity
-      case entity_type
-      when 'Group'
-        entity
-      when 'Project'
-        # Project events should be sent to the root ancestor's streaming destinations
-        # Projects without a group root ancestor should be ignored.
-        entity.group&.root_ancestor
-      else
-        nil
-      end
     end
 
     def truncate_fields
@@ -97,6 +111,10 @@ module EE
 
         self[name] = self.details[name] = String(original).truncate(limit)
       end
+    end
+
+    def streaming_json
+      ::Gitlab::Json.generate(self, methods: [:root_group_entity_id])
     end
   end
 end

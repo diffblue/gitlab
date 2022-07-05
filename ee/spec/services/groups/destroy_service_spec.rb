@@ -33,6 +33,28 @@ RSpec.describe Groups::DestroyService do
     end
   end
 
+  context 'streaming audit event for sub group' do
+    let(:parent_group) { create :group }
+    let(:group) { create :group, parent: parent_group }
+
+    subject { described_class.new(group, user, {}).execute }
+
+    before do
+      parent_group.add_owner(user)
+      stub_licensed_features(external_audit_events: true)
+      parent_group.external_audit_event_destinations.create!(destination_url: 'http://example.com')
+    end
+
+    it 'sends the audit streaming event with json format' do
+      expect(AuditEvents::AuditEventStreamingWorker).to receive(:perform_async).with(
+        'audit_operation',
+        nil,
+        a_string_including("group_entity_id\":#{parent_group.id}"))
+
+      subject
+    end
+  end
+
   context 'dependency_proxy_blobs' do
     let_it_be(:blob) { create(:dependency_proxy_blob) }
     let_it_be(:group) { blob.group }

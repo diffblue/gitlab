@@ -252,6 +252,47 @@ RSpec.describe AuditEvent, type: :model do
     end
   end
 
+  describe '#root_group_entity' do
+    let_it_be(:root_group) { create(:group) }
+    let_it_be(:group) { create(:group, parent: root_group) }
+    let_it_be(:project) { create(:project, group: group) }
+
+    context 'when root_group_entity_id is set' do
+      subject(:event) { described_class.new(root_group_entity_id: root_group.id) }
+
+      it "return root_group_entity through root_group_entity_id" do
+        expect(event.root_group_entity).to eq(root_group)
+      end
+    end
+
+    context "when entity is nil" do
+      subject(:event) { described_class.new(entity: nil) }
+
+      it "return nil" do
+        expect(event.root_group_entity).to eq(nil)
+      end
+    end
+
+    context "when entity is a group" do
+      subject(:event) { described_class.new(entity_id: group.id, entity_type: "Group") }
+
+      it "return root_group and set root_group_entity_id" do
+        expect(event.entity).to eq(group)
+        expect(event.root_group_entity).to eq(root_group)
+        expect(event.root_group_entity_id).to eq(root_group.id)
+      end
+    end
+
+    context "when entity is a project" do
+      subject(:event) { described_class.new(entity_id: project.id, entity_type: "Project") }
+
+      it "return root_group and set root_group_entity_id" do
+        expect(event.root_group_entity).to eq(root_group)
+        expect(event.root_group_entity_id).to eq(root_group.id)
+      end
+    end
+  end
+
   describe '#ip_address' do
     context 'when ip_address exists in both details hash and ip_address column' do
       subject(:event) do

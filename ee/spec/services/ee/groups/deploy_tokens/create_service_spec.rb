@@ -22,6 +22,19 @@ RSpec.describe Groups::DeployTokens::CreateService do
 
         expect(AuditEvent.last.details[:custom_message]).to eq(expected_message)
       end
+
+      context 'when group is a sub-group' do
+        let_it_be(:parent_group) { create :group }
+        let_it_be(:group) { create :group, parent: parent_group }
+
+        subject { described_class.new(group, user, deploy_token_params).execute }
+
+        before do
+          group.add_owner(user)
+        end
+
+        include_examples 'sends streaming audit event'
+      end
     end
 
     context 'when the deploy token is invalid' do
