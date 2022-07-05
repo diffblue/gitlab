@@ -6,62 +6,38 @@ RSpec.describe EE::NamespaceStorageLimitAlertHelper do
 
   let!(:admin) { create(:admin) }
 
-  describe '#display_namespace_storage_limit_alert!' do
-    it 'sets @display_namespace_storage_limit_alert to true' do
-      expect(helper.instance_variable_get(:@display_namespace_storage_limit_alert)).to be nil
-
-      helper.display_namespace_storage_limit_alert!
-
-      expect(helper.instance_variable_get(:@display_namespace_storage_limit_alert)).to be true
-    end
-  end
-
   describe '#display_namespace_storage_limit_alert?' do
     let_it_be(:namespace) { build_stubbed(:namespace) }
 
     before do
-      assign(:display_namespace_storage_limit_alert, display_namespace_storage_limit_alert)
+      stub_ee_application_setting(should_check_namespace_plan: true)
       allow(helper).to receive(:current_user).and_return(admin)
       allow(helper).to receive(:can?).with(anything, :admin_namespace, namespace.root_ancestor).and_return(false)
       allow(helper).to receive(:can?).with(admin, :admin_namespace, namespace.root_ancestor).and_return(true)
     end
 
-    context 'when display_namespace_storage_limit_alert is true' do
-      let(:display_namespace_storage_limit_alert) { true }
+    it 'returns false when in profile usage quota path' do
+      allow(helper.request).to receive(:path) { profile_usage_quotas_path }
 
-      it 'returns false when in profile usage quota path' do
-        allow(@request).to receive(:path) { profile_usage_quotas_path }
-
-        expect(helper.display_namespace_storage_limit_alert?(namespace)).to eq(false)
-      end
-
-      it 'returns false when in namespace usage quota path' do
-        allow(@request).to receive(:path) { group_usage_quotas_path(namespace) }
-
-        expect(helper.display_namespace_storage_limit_alert?(namespace)).to eq(false)
-      end
-
-      it 'returns true when in other namespace path' do
-        allow(@request).to receive(:path) { group_path(namespace) }
-
-        expect(helper.display_namespace_storage_limit_alert?(namespace)).to eq(true)
-      end
-
-      it 'returns false when user is not an admin' do
-        allow(helper).to receive(:can?).with(admin, :admin_namespace, namespace.root_ancestor).and_return(false)
-
-        expect(helper.display_namespace_storage_limit_alert?(namespace)).to eq(false)
-      end
+      expect(helper.display_namespace_storage_limit_alert?(namespace)).to eq(false)
     end
 
-    context 'when display_namespace_storage_limit_alert is false' do
-      let(:display_namespace_storage_limit_alert) { false }
+    it 'returns false when in namespace usage quota path' do
+      allow(helper.request).to receive(:path) { group_usage_quotas_path(namespace) }
 
-      it 'returns false' do
-        allow(@request).to receive(:path) { group_path(namespace) }
+      expect(helper.display_namespace_storage_limit_alert?(namespace)).to eq(false)
+    end
 
-        expect(helper.display_namespace_storage_limit_alert?(namespace)).to eq(false)
-      end
+    it 'returns true when in other namespace path' do
+      allow(helper.request).to receive(:path) { group_path(namespace) }
+
+      expect(helper.display_namespace_storage_limit_alert?(namespace)).to eq(true)
+    end
+
+    it 'returns false when user is not an admin' do
+      allow(helper).to receive(:can?).with(admin, :admin_namespace, namespace.root_ancestor).and_return(false)
+
+      expect(helper.display_namespace_storage_limit_alert?(namespace)).to eq(false)
     end
   end
 

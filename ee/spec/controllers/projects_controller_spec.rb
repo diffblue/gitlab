@@ -24,6 +24,7 @@ RSpec.describe ProjectsController do
       let(:namespace) { public_project.namespace }
 
       before do
+        stub_ee_application_setting(should_check_namespace_plan: true)
         allow_next_instance_of(EE::Namespace::RootExcessStorageSize) do |root_storage|
           allow(root_storage).to receive(:usage_ratio).and_return(0.5)
           allow(root_storage).to receive(:above_size_limit?).and_return(true)
@@ -35,7 +36,7 @@ RSpec.describe ProjectsController do
 
       context 'when automatic_purchased_storage_allocation setting is enabled' do
         before do
-          stub_application_setting(automatic_purchased_storage_allocation: true)
+          stub_ee_application_setting(automatic_purchased_storage_allocation: true)
         end
 
         it 'includes the CTA for additional purchased storage' do
@@ -47,7 +48,7 @@ RSpec.describe ProjectsController do
 
       context 'when automatic_purchased_storage_allocation setting is disabled' do
         before do
-          stub_application_setting(automatic_purchased_storage_allocation: false)
+          stub_ee_application_setting(automatic_purchased_storage_allocation: false)
         end
 
         it 'does not include the CTA for additional purchased storage' do
@@ -60,7 +61,7 @@ RSpec.describe ProjectsController do
 
     context 'with automatic_purchased_storage_allocation set to true' do
       before do
-        stub_application_setting(automatic_purchased_storage_allocation: true)
+        stub_ee_application_setting(automatic_purchased_storage_allocation: true)
       end
 
       it 'does not show over size limit warning when above_size_limit' do
@@ -76,7 +77,7 @@ RSpec.describe ProjectsController do
 
     context 'with automatic_purchased_storage_allocation set to false' do
       before do
-        stub_application_setting(automatic_purchased_storage_allocation: false)
+        stub_ee_application_setting(automatic_purchased_storage_allocation: false)
       end
 
       it 'shows the over size limit warning message if above_size_limit' do
@@ -98,10 +99,6 @@ RSpec.describe ProjectsController do
 
     context 'namespace storage limit' do
       let(:namespace) { public_project.namespace }
-
-      before do
-        allow(controller).to receive(:current_user).and_return(user)
-      end
 
       it_behaves_like 'namespace storage limit alert'
 
@@ -597,7 +594,7 @@ RSpec.describe ProjectsController do
 
     context 'when project export is disabled' do
       before do
-        stub_application_setting(project_export_enabled?: false)
+        stub_ee_application_setting(project_export_enabled?: false)
       end
 
       it 'does not log an audit event' do
@@ -729,7 +726,7 @@ RSpec.describe ProjectsController do
 
         context 'when instance setting is set to 0 days' do
           it 'deletes project right away' do
-            stub_application_setting(deletion_adjourned_period: 0)
+            stub_ee_application_setting(deletion_adjourned_period: 0)
 
             delete :destroy, params: { namespace_id: project.namespace, id: project }
 
