@@ -13080,9 +13080,6 @@ msgstr ""
 msgid "DesignManagement|Comment"
 msgstr ""
 
-msgid "DesignManagement|Comments you resolve can be viewed and unresolved by going to the \"Resolved Comments\" section below"
-msgstr ""
-
 msgid "DesignManagement|Could not add a new comment. Please try again."
 msgstr ""
 
@@ -13123,9 +13120,6 @@ msgid "DesignManagement|Keep changes"
 msgstr ""
 
 msgid "DesignManagement|Keep comment"
-msgstr ""
-
-msgid "DesignManagement|Learn more about resolving comments"
 msgstr ""
 
 msgid "DesignManagement|Requested design version does not exist. Showing latest version instead"
