@@ -12242,9 +12242,6 @@ msgstr ""
 msgid "Delete File"
 msgstr ""
 
-msgid "Delete Internal Note"
-msgstr ""
-
 msgid "Delete Key"
 msgstr ""
 
@@ -12288,6 +12285,9 @@ msgid "Delete image"
 msgstr ""
 
 msgid "Delete image repository"
+msgstr ""
+
+msgid "Delete internal note"
 msgstr ""
 
 msgid "Delete label"
