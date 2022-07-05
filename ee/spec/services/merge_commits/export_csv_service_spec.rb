@@ -21,7 +21,7 @@ RSpec.describe MergeCommits::ExportCsvService do
   it { expect(service.csv_data).to be_success }
 
   it 'includes the appropriate headers' do
-    expect(csv.headers).to eq(['Merge Commit', 'Author', 'Merge Request', 'Merged By', 'Pipeline', 'Group', 'Project', 'Approver(s)'])
+    expect(csv.headers).to eq(['Merge Commit', 'Author', 'Merge Request', 'Merged By', 'Date Merged', 'Pipeline', 'Group', 'Project', 'Approver(s)'])
   end
 
   context 'data verification' do
@@ -39,6 +39,10 @@ RSpec.describe MergeCommits::ExportCsvService do
 
     specify 'Merged By' do
       expect(csv[0]['Merged By']).to eq 'Brock Lesnar'
+    end
+
+    specify 'Date Merged' do
+      expect(csv[0]['Date Merged']).to eq merge_request.merged_at.to_s
     end
 
     specify 'Pipeline' do
