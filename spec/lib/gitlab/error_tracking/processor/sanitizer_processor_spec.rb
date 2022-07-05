@@ -72,7 +72,7 @@ RSpec.describe Gitlab::ErrorTracking::Processor::SanitizerProcessor, :sentry do
       end
     end
 
-    context 'when request headers contains sensitive information' do
+    context 'when request contains sensitive information' do
       let(:exception) { RuntimeError.new }
       let(:data) { {} }
 
@@ -80,7 +80,12 @@ RSpec.describe Gitlab::ErrorTracking::Processor::SanitizerProcessor, :sentry do
         event.rack_env = {
           'HTTP_AUTHORIZATION' => 'Bearer 123456',
           'HTTP_PRIVATE_TOKEN' => 'abcdef',
-          'HTTP_GITLAB_WORKHORSE_PROXY_START' => 123456
+          'HTTP_JOB_TOKEN' => 'secret123',
+          'HTTP_GITLAB_WORKHORSE_PROXY_START' => 123456,
+          'HTTP_COOKIE' => 'yummy_cookie=choco; tasty_cookie=strawberry',
+          'QUERY_STRING' => 'token=secret&access_token=secret&job_token=secret&private_token=secret',
+          'Content-Type' => 'application/json',
+          'rack.input' => StringIO.new('{"name":"new_project", "some_token":"value"}')
         }
       end
 
@@ -88,8 +93,21 @@ RSpec.describe Gitlab::ErrorTracking::Processor::SanitizerProcessor, :sentry do
         expect(result_hash[:request][:headers]).to include(
           'Authorization' => '[FILTERED]',
           'Private-Token' => '[FILTERED]',
+          'Job-Token' => '[FILTERED]',
           'Gitlab-Workhorse-Proxy-Start' => '123456'
         )
+      end
+
+      it 'filters query string parameters' do
+        expect(result_hash[:request][:query_string]).not_to include('secret')
+      end
+
+      it 'removes cookies' do
+        expect(result_hash[:request][:cookies]).to be_empty
+      end
+
+      it 'removes data' do
+        expect(result_hash[:request][:data]).to be_empty
       end
     end
   end
