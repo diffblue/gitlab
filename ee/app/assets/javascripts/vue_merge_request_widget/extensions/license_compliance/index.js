@@ -29,9 +29,6 @@ export default {
     existingLicenses() {
       return this.collapsedData.existing_licenses || 0;
     },
-    deniedLicenses() {
-      return this.collapsedData.denied_licenses || 0;
-    },
     licenseReportCount() {
       return this.newLicenses();
     },
@@ -42,7 +39,7 @@ export default {
       return this.existingLicenses() > 0;
     },
     hasDeniedLicense() {
-      return this.deniedLicenses() > 0;
+      return this.collapsedData.has_denied_licenses;
     },
     shouldCollapse() {
       return this.hasReportItems();

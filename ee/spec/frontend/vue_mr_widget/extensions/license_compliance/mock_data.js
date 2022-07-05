@@ -95,21 +95,21 @@ export const licenseComplianceNewDeniedLicenses = {
   new_licenses: 4,
   existing_licenses: 0,
   removed_licenses: 0,
-  denied_licenses: 2,
+  has_denied_licenses: true,
 };
 
 export const licenseComplianceNewDeniedLicensesAndExisting = {
   new_licenses: 4,
   existing_licenses: 2,
   removed_licenses: 0,
-  denied_licenses: 2,
+  has_denied_licenses: true,
 };
 
 export const licenseComplianceNewDeniedLicensesAndExistingApprovalRequired = {
   new_licenses: 4,
   existing_licenses: 2,
   removed_licenses: 1,
-  denied_licenses: 2,
+  has_denied_licenses: true,
   approval_required: true,
 };
 
@@ -117,7 +117,7 @@ export const licenseComplianceNewAndRemovedLicensesApprovalRequired = {
   new_licenses: 4,
   existing_licenses: 0,
   removed_licenses: 1,
-  denied_licenses: 2,
+  has_denied_licenses: true,
   approval_required: true,
 };
 
@@ -143,6 +143,6 @@ export const licenseComplianceExistingAndNewLicenses = {
   new_licenses: 6,
   existing_licenses: 2,
   removed_licenses: 1,
-  denied_licenses: 0,
+  has_denied_licenses: false,
   approval_required: false,
 };
