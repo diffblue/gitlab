@@ -28,8 +28,8 @@
         .tab-content.gitlab-tab-content.gl-bg-white.js-group-project-tab-contents
           #blank-project-pane.tab-pane.js-toggle-container.active{ role: 'tabpanel' }
             = form_tag users_sign_up_groups_projects_path(form_params), class: 'gl-show-field-errors gl-w-full gl-p-4 js-groups-projects-form' do
-              = form_errors(@group, type: "Group")
-              = form_errors(@project, type: "Project")
+              = form_errors(@group, type: "Group", pajamas_alert: true)
+              = form_errors(@project, type: "Project", pajamas_alert: true)
               = render 'layouts/flash'
 
               = fields_for :group do |gf|
@@ -80,7 +80,7 @@
           #import-project-pane.tab-pane.import-project-pane.js-toggle-container{ role: 'tabpanel' }
             - if import_sources_enabled?
               = form_tag import_users_sign_up_groups_projects_path, class: 'gl-show-field-errors gl-w-full gl-p-4 js-import-project-form' do
-                = form_errors(@group, type: "Group")
+                = form_errors(@group, type: "Group", pajamas_alert: true)
                 = render 'layouts/flash'
 
                 = fields_for :group do |gf|
