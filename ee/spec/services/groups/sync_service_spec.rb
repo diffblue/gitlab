@@ -56,7 +56,7 @@ RSpec.describe Groups::SyncService do
     context 'when the user is already a member' do
       context 'with the correct access level' do
         before do
-          group1.add_user(user, ::Gitlab::Access::DEVELOPER)
+          group1.add_member(user, ::Gitlab::Access::DEVELOPER)
         end
 
         it 'does not change group member count' do
@@ -80,7 +80,7 @@ RSpec.describe Groups::SyncService do
       context 'with a different access level' do
         context 'when the user is not the last owner' do
           before do
-            top_level_group.add_user(user, ::Gitlab::Access::MAINTAINER)
+            top_level_group.add_member(user, ::Gitlab::Access::MAINTAINER)
           end
 
           it 'does not change the group member count' do
@@ -101,7 +101,7 @@ RSpec.describe Groups::SyncService do
 
         context 'when the user is the last owner' do
           before do
-            top_level_group.add_user(user, ::Gitlab::Access::OWNER)
+            top_level_group.add_member(user, ::Gitlab::Access::OWNER)
           end
 
           it 'does not change the group member count' do
@@ -124,7 +124,7 @@ RSpec.describe Groups::SyncService do
       context 'but should no longer be a member' do
         shared_examples 'removes the member' do
           before do
-            group2.add_user(user, ::Gitlab::Access::DEVELOPER)
+            group2.add_member(user, ::Gitlab::Access::DEVELOPER)
           end
 
           it 'reduces group member count by 1' do
@@ -165,7 +165,7 @@ RSpec.describe Groups::SyncService do
         let_it_be(:manage_group_ids) { [top_level_group.id, group1.id] }
 
         before do
-          group2.add_user(user, ::Gitlab::Access::REPORTER)
+          group2.add_member(user, ::Gitlab::Access::REPORTER)
         end
 
         it 'does not change the group member count' do

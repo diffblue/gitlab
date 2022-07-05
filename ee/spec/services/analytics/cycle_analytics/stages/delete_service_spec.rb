@@ -13,7 +13,7 @@ RSpec.describe Analytics::CycleAnalytics::Stages::DeleteService do
   subject { described_class.new(parent: group, params: params, current_user: user).execute }
 
   before_all do
-    group.add_user(user, :reporter)
+    group.add_member(user, :reporter)
   end
 
   before do

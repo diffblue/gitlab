@@ -80,7 +80,7 @@ module Groups
     end
 
     def add_member(group, access_level, existing_member)
-      member = group.add_user(current_user, access_level)
+      member = group.add_member(current_user, access_level)
 
       return member unless member.persisted? && member.access_level == access_level
 

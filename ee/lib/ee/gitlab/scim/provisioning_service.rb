@@ -130,7 +130,7 @@ module EE
           strong_memoize(:member) do
             next @group.member(user) if existing_member?(user)
 
-            @group.add_user(user, default_membership_role) if user.valid?
+            @group.add_member(user, default_membership_role) if user.valid?
           end
         end
 

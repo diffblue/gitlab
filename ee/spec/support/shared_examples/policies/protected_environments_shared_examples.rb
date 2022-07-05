@@ -124,7 +124,7 @@ RSpec.shared_examples 'protected environments access' do |developer_access: true
       user.update_attribute(:admin, true)
       enable_admin_mode!(user)
     elsif access_level.present?
-      project.add_user(user, access_level)
+      project.add_member(user, access_level)
     end
   end
 

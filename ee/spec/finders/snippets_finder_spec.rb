@@ -110,7 +110,7 @@ RSpec.describe SnippetsFinder do
     context 'when the user is a member of a group' do
       [:guest, :reporter, :developer, :maintainer].each do |role|
         it 'returns all the authorized project snippets and authored personal ones' do
-          group.add_user(user, role)
+          group.add_member(user, role)
 
           expect(subject)
             .to contain_exactly(

@@ -22,7 +22,7 @@ RSpec.describe ProtectedBranches::CreateService do
     subject(:service) { described_class.new(target_project, user, params) }
 
     before do
-      target_project.add_user(user, :developer)
+      target_project.add_member(user, :developer)
     end
 
     context "code_owner_approval_required" do

@@ -6,7 +6,7 @@ RSpec.describe ProjectTeam do
   let(:group) { create(:group) }
   let(:project) { create(:project, group: group) }
 
-  describe '#add_users' do
+  describe '#add_members' do
     let(:user1) { create(:user) }
     let(:user2) { create(:user) }
 
@@ -16,7 +16,7 @@ RSpec.describe ProjectTeam do
       end
 
       it 'does not add the given users to the team' do
-        project.team.add_users([user1, user2], :reporter)
+        project.team.add_members([user1, user2], :reporter)
 
         expect(project.team.reporter?(user1)).to be(false)
         expect(project.team.reporter?(user2)).to be(false)
@@ -24,7 +24,7 @@ RSpec.describe ProjectTeam do
     end
   end
 
-  describe '#add_user' do
+  describe '#add_member' do
     let(:user) { create(:user) }
 
     context 'when group membership is locked' do
@@ -33,7 +33,7 @@ RSpec.describe ProjectTeam do
       end
 
       it 'does not add the given user to the team' do
-        project.team.add_user(user, :reporter)
+        project.team.add_member(user, :reporter)
 
         expect(project.members.map(&:user)).not_to include(user)
       end
@@ -42,7 +42,7 @@ RSpec.describe ProjectTeam do
         let_it_be(:project_bot) { create(:user, :project_bot) }
 
         it 'adds the project bot user to the team' do
-          project.team.add_user(project_bot, :maintainer)
+          project.team.add_member(project_bot, :maintainer)
 
           expect(project.members.map(&:user)).to include(project_bot)
         end

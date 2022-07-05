@@ -60,7 +60,7 @@ RSpec.describe AppSec::Dast::Profiles::UpdateService do
 
       context 'when the user can run a DAST scan' do
         before do
-          project.add_users([user, scheduler_owner], :developer)
+          project.add_members([user, scheduler_owner], :developer)
         end
 
         context 'without dast_profile_schedule param' do

@@ -45,7 +45,7 @@ RSpec.describe 'Project', :js do
     before do
       stub_application_setting(deletion_adjourned_period: 7)
       stub_licensed_features(adjourned_deletion_for_projects_and_groups: feature_available_on_instance)
-      group.add_user(user, Gitlab::Access::OWNER)
+      group.add_member(user, Gitlab::Access::OWNER)
 
       sign_in user
       visit edit_project_path(project)

@@ -20,7 +20,7 @@ RSpec.describe ApproverGroup do
 
     context 'when user has access to private group' do
       before do
-        private_group.add_user(user, Gitlab::Access::DEVELOPER)
+        private_group.add_member(user, Gitlab::Access::DEVELOPER)
       end
 
       it { is_expected.to match_array([public_approver_group, private_approver_group]) }

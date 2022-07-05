@@ -14,20 +14,20 @@ RSpec.shared_examples 'member validations' do
         end
 
         it 'allows adding a user linked to the SAML account as member' do
-          member = entity.add_user(user, Member::DEVELOPER)
+          member = entity.add_member(user, Member::DEVELOPER)
 
           expect(member).to be_valid
         end
 
         it 'does not allow adding a user not linked to the SAML account as member' do
-          member = entity.add_user(create(:user), Member::DEVELOPER)
+          member = entity.add_member(create(:user), Member::DEVELOPER)
 
           expect(member).not_to be_valid
           expect(member.errors.messages[:user]).to eq(['is not linked to a SAML account'])
         end
 
         it 'allows adding a project bot as member' do
-          member = entity.add_user(create(:user, :project_bot), Member::DEVELOPER)
+          member = entity.add_member(create(:user, :project_bot), Member::DEVELOPER)
 
           expect(member).to be_valid
         end
@@ -40,7 +40,7 @@ RSpec.shared_examples 'member validations' do
           end
 
           it 'does not allow adding a group member with SSO enforced on subgroup' do
-            member = entity.add_user(create(:user), ProjectMember::DEVELOPER)
+            member = entity.add_member(create(:user), ProjectMember::DEVELOPER)
 
             expect(member).not_to be_valid
             expect(member.errors.messages[:user]).to eq(['is not linked to a SAML account'])
@@ -50,7 +50,7 @@ RSpec.shared_examples 'member validations' do
 
       context 'enforced SSO disabled' do
         it 'allows adding the group member' do
-          member = entity.add_user(user, Member::DEVELOPER)
+          member = entity.add_member(user, Member::DEVELOPER)
 
           expect(member).to be_valid
         end

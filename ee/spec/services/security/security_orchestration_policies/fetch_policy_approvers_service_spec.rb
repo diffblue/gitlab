@@ -16,7 +16,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::FetchPolicyApproversServ
     end
 
     before do
-      group.add_user(user, :owner)
+      group.add_member(user, :owner)
     end
 
     context 'with group outside of the scope' do

@@ -55,7 +55,7 @@ RSpec.describe GroupSamlGroupSyncWorker do
         context 'default membership' do
           context 'when group link ids do not include the top level group' do
             it 'does not pass the top level group to the sync service as group to manage' do
-              top_level_group.add_user(user, saml_provider.default_membership_role)
+              top_level_group.add_member(user, saml_provider.default_membership_role)
 
               expect_sync_service_call(group_links: [group_link], manage_group_ids: [group.id])
 
@@ -75,7 +75,7 @@ RSpec.describe GroupSamlGroupSyncWorker do
               end
 
               it 'passes the top level group to the sync service as group to manage' do
-                top_level_group.add_user(user, saml_provider.default_membership_role)
+                top_level_group.add_member(user, saml_provider.default_membership_role)
 
                 expect_sync_service_call(group_links: [group_link], manage_group_ids: [top_level_group.id, group.id])
 
@@ -91,7 +91,7 @@ RSpec.describe GroupSamlGroupSyncWorker do
 
             context 'when the membership role deviates from the default' do
               before do
-                top_level_group.add_user(user, Gitlab::Access::MAINTAINER)
+                top_level_group.add_member(user, Gitlab::Access::MAINTAINER)
               end
 
               it 'reverts to the default membership role' do
@@ -116,7 +116,7 @@ RSpec.describe GroupSamlGroupSyncWorker do
             end
 
             it 'does not update the membership role when it does not deviate from the default' do
-              top_level_group.add_user(user, top_level_group.saml_provider.default_membership_role)
+              top_level_group.add_member(user, top_level_group.saml_provider.default_membership_role)
 
               expect_metadata_logging_call({ added: 1, updated: 0, removed: 0 })
               expect(top_level_group).not_to receive(:add_user)
@@ -183,7 +183,7 @@ RSpec.describe GroupSamlGroupSyncWorker do
 
         context 'when the worker receives no group link ids' do
           before do
-            group.add_user(user, Gitlab::Access::MAINTAINER)
+            group.add_member(user, Gitlab::Access::MAINTAINER)
           end
 
           it 'calls the sync service, updates default membership and removes existing users' do

@@ -222,7 +222,7 @@ RSpec.describe Projects::IssuesController do
       shared_examples 'user can see confidential issue' do |access_level|
         context "when a user is a #{access_level}" do
           before do
-            project.add_user(user, access_level)
+            project.add_member(user, access_level)
           end
 
           it 'displays related notes' do
@@ -240,7 +240,7 @@ RSpec.describe Projects::IssuesController do
       shared_examples 'user cannot see confidential issue' do |access_level|
         context "when a user is a #{access_level}" do
           before do
-            project.add_user(user, access_level)
+            project.add_member(user, access_level)
           end
 
           it 'redacts note related to a confidential issue' do

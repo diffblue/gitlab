@@ -108,7 +108,7 @@ RSpec.describe ApprovalState do
   shared_context 'project members' do
     def create_project_member(role, user_attrs = {})
       user = create(:user, user_attrs)
-      project.add_user(user, role)
+      project.add_member(user, role)
       user
     end
 

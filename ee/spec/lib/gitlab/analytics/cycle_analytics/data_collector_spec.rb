@@ -531,7 +531,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::DataCollector do
       end
 
       before_all do
-        project.add_user(user, Gitlab::Access::DEVELOPER)
+        project.add_member(user, Gitlab::Access::DEVELOPER)
       end
     end
   end
@@ -566,7 +566,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::DataCollector do
       end
 
       before_all do
-        group.add_user(user, GroupMember::MAINTAINER)
+        group.add_member(user, GroupMember::MAINTAINER)
       end
     end
 
@@ -599,7 +599,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::DataCollector do
       end
 
       before do
-        group.add_user(user, GroupMember::MAINTAINER)
+        group.add_member(user, GroupMember::MAINTAINER)
 
         travel_to(Time.new(2019, 6, 1))
         mr = create(:merge_request, source_project: project1)
@@ -748,7 +748,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::DataCollector do
       merge_requests = create_list(:merge_request, 3, :unique_branches, target_project: project, source_project: project)
       merge_requests.each { |mr| mr.metrics.update!(merged_at: 10.days.from_now) }
 
-      project.add_user(user, Gitlab::Access::DEVELOPER)
+      project.add_member(user, Gitlab::Access::DEVELOPER)
     end
 
     subject(:count) do

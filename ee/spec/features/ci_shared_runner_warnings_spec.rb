@@ -14,7 +14,7 @@ RSpec.describe 'CI shared runner limits' do
   let!(:job) { create(:ci_build, pipeline: pipeline) }
 
   before do
-    group.add_user(user, membership_level)
+    group.add_member(user, membership_level)
     sign_in(user)
   end
 
@@ -31,7 +31,7 @@ RSpec.describe 'CI shared runner limits' do
       end
 
       before do
-        group.add_user(user, membership_level)
+        group.add_member(user, membership_level)
       end
 
       where(:case_name, :percent_threshold, :minutes_limit, :minutes_used) do

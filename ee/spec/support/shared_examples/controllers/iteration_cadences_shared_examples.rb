@@ -8,7 +8,7 @@ RSpec.shared_examples 'accessing iteration cadences' do
 
   before do
     stub_feature_flags(iteration_cadences: feature_flag_available)
-    group.add_user(user, role) unless role == :none
+    group.add_member(user, role) unless role == :none
     sign_in(user)
   end
 

@@ -28,7 +28,7 @@ module Gitlab
         def add_default_membership
           return if group.member?(user)
 
-          member = group.add_user(user, default_membership_role, blocking_refresh: false)
+          member = group.add_member(user, default_membership_role, blocking_refresh: false)
 
           log_audit_event(member: member)
         end
