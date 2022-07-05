@@ -61,6 +61,7 @@ RSpec.describe API::ProjectApprovalRules do
         get api(url, developer)
 
         expect(response).to have_gitlab_http_status(:ok)
+        expect(response).to include_pagination_headers
         expect(response).to match_response_schema('public_api/v4/project_approval_rules', dir: 'ee')
 
         json = json_response
@@ -71,6 +72,19 @@ RSpec.describe API::ProjectApprovalRules do
 
         expect(rule['approvals_required']).to eq(7)
         expect(rule['name']).to eq('vulnerability')
+      end
+
+      context 'when pagination FF is off' do
+        before do
+          stub_feature_flags(approval_rules_pagination: false)
+        end
+
+        it 'does not support pagination' do
+          get api(url, developer)
+
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(response).not_to include_pagination_headers
+        end
       end
 
       context 'private group filtering' do

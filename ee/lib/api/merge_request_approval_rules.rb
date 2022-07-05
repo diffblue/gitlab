@@ -2,6 +2,8 @@
 
 module API
   class MergeRequestApprovalRules < ::API::Base
+    include PaginationParams
+
     before { authenticate_non_get! }
 
     feature_category :source_code_management
@@ -21,10 +23,17 @@ module API
         desc 'Get all merge request approval rules' do
           success EE::API::Entities::MergeRequestApprovalRule
         end
+        params do
+          use :pagination
+        end
         get '/', urgency: :low do
           merge_request = find_merge_request_with_access(params[:merge_request_iid])
 
-          present merge_request.approval_rules, with: EE::API::Entities::MergeRequestApprovalRule, current_user: current_user
+          if Feature.enabled?(:approval_rules_pagination, user_project)
+            present paginate(merge_request.approval_rules), with: EE::API::Entities::MergeRequestApprovalRule, current_user: current_user
+          else
+            present merge_request.approval_rules, with: EE::API::Entities::MergeRequestApprovalRule, current_user: current_user
+          end
         end
 
         desc 'Create new merge request approval rules' do

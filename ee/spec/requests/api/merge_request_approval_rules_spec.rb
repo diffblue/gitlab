@@ -162,17 +162,29 @@ RSpec.describe API::MergeRequestApprovalRules do
     it_behaves_like 'getting approval rule/s'
 
     context 'use can read merge request' do
+      let(:pagination_ff) { true }
+
       before do
         group.add_developer(approver)
         merge_request.approvals.create!(user: approver)
 
+        stub_feature_flags(approval_rules_pagination: pagination_ff)
         get api(url, current_user)
       end
 
       it 'returns the correct amount of rules' do
         rules = json_response
 
+        expect(response).to include_pagination_headers
         expect(rules.size).to eq(1)
+      end
+
+      context 'when pagination FF is off' do
+        let(:pagination_ff) { false }
+
+        it 'does not support pagination' do
+          expect(response).not_to include_pagination_headers
+        end
       end
     end
   end
