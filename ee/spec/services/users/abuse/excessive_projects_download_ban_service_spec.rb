@@ -54,19 +54,19 @@ RSpec.describe Users::Abuse::ExcessiveProjectsDownloadBanService, :clean_gitlab_
       end
 
       it 'logs the event', :aggregate_failures do
-        expect(Gitlab::AppLogger).to receive(:info).with(
+        expect(Gitlab::AppLogger).to receive(:info).with({
           message: "User exceeded max projects download within set time period",
           username: user.username,
           max_project_downloads: limit,
           time_period_s: time_period_in_seconds
-        )
+        })
 
-        expect(Gitlab::AppLogger).to receive(:info).with(
+        expect(Gitlab::AppLogger).to receive(:info).with({
           message: "User ban",
           user: user.username,
           email: user.email,
           ban_by: described_class.name
-        )
+        })
 
         execute
       end
