@@ -25,8 +25,8 @@ backups with your object storage provider, if desired.
 To be able to back up and restore, ensure that Rsync is installed on your
 system. If you installed GitLab:
 
-- _Using the Omnibus package_, you're all set.
-- _From source_, you need to determine if `rsync` is installed. For example:
+- _Using the Omnibus package_, Rsync is already installed.
+- _From source_, check if `rsync` is installed. If Rsync is not installed, install it. For example:
 
   ```shell
   # Debian/Ubuntu
