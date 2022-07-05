@@ -130,9 +130,7 @@ export const getBaseRoute = (url = window.location.pathname) =>
   url.replace(/^\/-\/ide/, '').replace(/\/-\/.*$/, '');
 
 export const clickPreviewMarkdown = () => {
-  // We know there's going to be 2 elements with the text
-  // based on the way `gl-tabs` is rendered
-  screen.getAllByText('Preview Markdown').click();
+  screen.getByText('Preview Markdown').click();
 };
 
 export const openFile = async (path) => {

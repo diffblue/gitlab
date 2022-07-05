@@ -117,9 +117,6 @@ describe('RepoEditor', () => {
       mocks: {
         ContentViewer,
       },
-      // stubs: {
-      //   GlTab,
-      // },
     });
     await waitForPromises();
     vm = wrapper.vm;
