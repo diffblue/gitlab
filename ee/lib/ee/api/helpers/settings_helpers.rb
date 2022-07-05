@@ -57,6 +57,7 @@ module EE
             optional :git_two_factor_session_expiry, type: Integer, desc: 'Maximum duration (in minutes) of a session for Git operations when 2FA is enabled'
             optional :max_number_of_repository_downloads, type: Integer, desc: 'Maximum number of unique repositories a user can download in the specified time period before they are banned'
             optional :max_number_of_repository_downloads_within_time_period, type: Integer, desc: 'Reporting time period (in seconds)'
+            optional :git_rate_limit_users_allowlist, type: Array[String], coerce_with: ::API::Validations::Types::CommaSeparatedToArray.coerce, desc: 'List of usernames excluded from Git anti-abuse rate limits'
           end
         end
 

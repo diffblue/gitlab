@@ -100,9 +100,6 @@ RSpec.describe ApplicationSetting do
     it { is_expected.not_to allow_value(0).for(:git_two_factor_session_expiry) }
     it { is_expected.not_to allow_value(10081).for(:git_two_factor_session_expiry) }
 
-    it { is_expected.to validate_numericality_of(:max_number_of_repository_downloads).is_greater_than_or_equal_to(0).is_less_than_or_equal_to(10000) }
-    it { is_expected.to validate_numericality_of(:max_number_of_repository_downloads_within_time_period).is_greater_than_or_equal_to(0).is_less_than_or_equal_to(864000) }
-
     it { is_expected.to validate_numericality_of(:max_ssh_key_lifetime).is_greater_than(0).is_less_than_or_equal_to(365).allow_nil }
 
     # TODO: Replace with validate_numericality_of once the before_validation hook is removed.
@@ -238,6 +235,38 @@ RSpec.describe ApplicationSetting do
         it { is_expected.to allow_value(nil).for(:sentry_dsn) }
         it { is_expected.to allow_value(nil).for(:sentry_clientside_dsn) }
         it { is_expected.to allow_value(nil).for(:sentry_environment) }
+      end
+    end
+
+    def many_usernames(num = 100)
+      Array.new(num) { |i| "user#{i}" }
+    end
+
+    context 'git abuse rate limit validations' do
+      context 'number of repositories' do
+        it { is_expected.to validate_numericality_of(:max_number_of_repository_downloads).is_greater_than_or_equal_to(0).is_less_than_or_equal_to(10_000) }
+      end
+
+      context 'reporting time period' do
+        it { is_expected.to validate_numericality_of(:max_number_of_repository_downloads_within_time_period).is_greater_than_or_equal_to(0).is_less_than_or_equal_to(10.days.to_i) }
+      end
+
+      context 'users allowlist' do
+        before do
+          101.times { |i| create(:user, username: "user#{i}") }
+        end
+
+        it { is_expected.to allow_value(many_usernames(100)).for(:git_rate_limit_users_allowlist) }
+        it { is_expected.not_to allow_value(many_usernames(101)).for(:git_rate_limit_users_allowlist) }
+        it { is_expected.not_to allow_value(nil).for(:git_rate_limit_users_allowlist) }
+        it { is_expected.to allow_value([]).for(:git_rate_limit_users_allowlist) }
+
+        it 'rejects users that do not exist' do
+          setting.git_rate_limit_users_allowlist = %w[unknown_user]
+
+          expect(setting).not_to be_valid
+          expect(setting.errors[:git_rate_limit_users_allowlist]).to include("should be an array of existing usernames. unknown_user does not exist")
+        end
       end
     end
   end
