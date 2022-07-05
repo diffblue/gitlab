@@ -7,6 +7,9 @@ module Ci
     class NamespaceMonthlyUsage < Ci::ApplicationRecord
       include Ci::NamespacedModelName
       include AfterCommitQueue
+      include IgnorableColumns
+
+      ignore_column :additional_amount_available, remove_with: '15.4', remove_after: '2022-09-01'
 
       belongs_to :namespace
 
