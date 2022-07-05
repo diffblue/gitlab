@@ -23,7 +23,7 @@ RSpec.describe AuditEvents::RegisterRunnerAuditEventService do
     }
   end
 
-  shared_examples 'expected audit log' do
+  shared_examples 'expected audit event' do
     it 'returns audit event attributes' do
       travel_to(timestamp) do
         expect(subject.attributes).to eq(attrs.stringify_keys)
@@ -97,7 +97,7 @@ RSpec.describe AuditEvents::RegisterRunnerAuditEventService do
           { details: { custom_message: 'Registered instance CI runner' } }
         end
 
-        it_behaves_like 'expected audit log'
+        it_behaves_like 'expected audit event'
 
         context 'with registration token prefixed with RUNNERS_TOKEN_PREFIX' do
           let(:author) { "#{::RunnersTokenPrefixable::RUNNERS_TOKEN_PREFIX}b6bce79c3a" }
@@ -110,7 +110,7 @@ RSpec.describe AuditEvents::RegisterRunnerAuditEventService do
             }
           end
 
-          it_behaves_like 'expected audit log'
+          it_behaves_like 'expected audit event'
         end
       end
     end
@@ -172,7 +172,7 @@ RSpec.describe AuditEvents::RegisterRunnerAuditEventService do
           { details: { custom_message: 'Registered group CI runner' } }
         end
 
-        it_behaves_like 'expected audit log'
+        it_behaves_like 'expected audit event'
       end
 
       context 'for project runner' do
@@ -231,7 +231,7 @@ RSpec.describe AuditEvents::RegisterRunnerAuditEventService do
             { details: { custom_message: 'Registered project CI runner' } }
           end
 
-          it_behaves_like 'expected audit log'
+          it_behaves_like 'expected audit event'
         end
       end
     end

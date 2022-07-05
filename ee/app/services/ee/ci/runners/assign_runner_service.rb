@@ -11,7 +11,7 @@ module EE
         def execute
           result = super
 
-          audit_log_event if result
+          audit_event if result
 
           result
         end
@@ -20,7 +20,7 @@ module EE
 
         AUDIT_MESSAGE = 'Assigned CI runner to project'
 
-        def audit_log_event
+        def audit_event
           ::AuditEvents::RunnerCustomAuditEventService.new(runner, user, project, AUDIT_MESSAGE).track_event
         end
       end

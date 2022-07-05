@@ -15,7 +15,7 @@ module EE
 
           result = super
 
-          audit_log_event(scopes)
+          audit_event(scopes)
 
           result
         end
@@ -33,7 +33,7 @@ module EE
           end
         end
 
-        def audit_log_event(scopes)
+        def audit_event(scopes)
           scopes.each do |scope|
             ::AuditEvents::UnregisterRunnerAuditEventService.new(runner, author, scope)
               .track_event

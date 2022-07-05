@@ -9,7 +9,7 @@ class Admin::AuditLogsController < Admin::ApplicationController
   include Gitlab::Tracking
   include RedisTracking
 
-  before_action :check_license_admin_audit_log_available!
+  before_action :check_license_admin_audit_event_available!
 
   track_redis_hll_event :index, name: 'i_compliance_audit_events'
 
@@ -51,7 +51,7 @@ class Admin::AuditLogsController < Admin::ApplicationController
     end
   end
 
-  def check_license_admin_audit_log_available!
+  def check_license_admin_audit_event_available!
     render_404 unless License.feature_available?(:admin_audit_log)
   end
 

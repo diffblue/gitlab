@@ -12,7 +12,7 @@ module EE
           previous_registration_token = runners_token
           new_registration_token = super
 
-          audit_log_event(previous_registration_token, new_registration_token) if new_registration_token
+          audit_event(previous_registration_token, new_registration_token) if new_registration_token
 
           new_registration_token
         end
@@ -27,7 +27,7 @@ module EE
           end
         end
 
-        def audit_log_event(previous_registration_token, new_registration_token)
+        def audit_event(previous_registration_token, new_registration_token)
           ::AuditEvents::RunnersTokenAuditEventService.new(
             user,
             scope,

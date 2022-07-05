@@ -149,7 +149,7 @@ module EE
         details: @details
       }
 
-      payload[:ip_address] = ip_address if admin_audit_log_enabled?
+      payload[:ip_address] = ip_address if admin_audit_event_enabled?
 
       ::AuditEvent.create(payload)
     end
@@ -204,7 +204,7 @@ module EE
     end
 
     def enabled?
-      admin_audit_log_enabled? ||
+      admin_audit_event_enabled? ||
         audit_events_enabled? ||
         entity_audit_events_enabled?
     end
@@ -218,7 +218,7 @@ module EE
       @details[:with] || License.feature_available?(:extended_audit_events)
     end
 
-    def admin_audit_log_enabled?
+    def admin_audit_event_enabled?
       License.feature_available?(:admin_audit_log)
     end
 
@@ -246,7 +246,7 @@ module EE
     override :base_payload
     def base_payload
       super.tap do |payload|
-        payload[:ip_address] = ip_address if admin_audit_log_enabled?
+        payload[:ip_address] = ip_address if admin_audit_event_enabled?
       end
     end
 
@@ -287,7 +287,7 @@ module EE
     end
 
     def add_security_event_admin_details!
-      return unless admin_audit_log_enabled?
+      return unless admin_audit_event_enabled?
 
       @details.merge!(
         ip_address: ip_address,
@@ -296,7 +296,7 @@ module EE
     end
 
     def add_impersonation_details!
-      return unless admin_audit_log_enabled?
+      return unless admin_audit_event_enabled?
 
       if @author.is_a?(::Gitlab::Audit::ImpersonatedAuthor)
         @details.merge!(impersonated_by: @author.impersonated_by)
