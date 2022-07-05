@@ -153,3 +153,34 @@ export const getPipelineDefaultTab = (url) => {
 
   return null;
 };
+
+export const calculateLongestQueuedJob = (jobs) => {
+  const jobNodes = [...jobs.nodes];
+
+  const sortedByQueuedDuration = jobNodes.sort((a, b) => {
+    return b.queuedDuration - a.queuedDuration;
+  });
+
+  return sortedByQueuedDuration[0];
+};
+
+export const calculateLastExecutedJob = (jobs) => {
+  const jobNodes = [...jobs.nodes];
+
+  const sortedByStartedAt = jobNodes.sort((a, b) => {
+    return b.startedAt - a.startedAt;
+  });
+
+  return sortedByStartedAt[0];
+};
+
+export const calculateSlowestFiveJobs = (jobs) => {
+  const jobNodes = [...jobs.nodes];
+  const limit = 5;
+
+  return jobNodes
+    .sort((a, b) => {
+      return b.duration - a.duration;
+    })
+    .slice(0, limit);
+};
