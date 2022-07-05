@@ -10,7 +10,7 @@ import base from '~/vue_merge_request_widget/mixins/ready_to_merge';
 import { MERGE_TRAIN_BUTTON_TEXT } from '~/vue_merge_request_widget/i18n';
 
 export const MERGE_DISABLED_TEXT_UNAPPROVED = s__(
-  'mrWidget|Merge blocked: this merge request must be approved.',
+  'mrWidget|Merge blocked: all required approvals must be given.',
 );
 export const PIPELINE_MUST_SUCCEED_CONFLICT_TEXT = __(
   'A CI/CD pipeline must run and be successful before merge.',
