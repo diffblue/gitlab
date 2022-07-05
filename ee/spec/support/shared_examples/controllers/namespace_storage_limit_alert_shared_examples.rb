@@ -4,6 +4,7 @@ RSpec.shared_examples 'namespace storage limit alert' do
   let(:alert_level) { :info }
 
   before do
+    stub_ee_application_setting(should_check_namespace_plan: true)
     allow_next_instance_of(Namespaces::CheckStorageSizeService, namespace, user) do |check_storage_size_service|
       expect(check_storage_size_service).to receive(:execute).and_return(
         ServiceResponse.success(

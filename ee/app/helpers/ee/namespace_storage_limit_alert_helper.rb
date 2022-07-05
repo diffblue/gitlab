@@ -4,13 +4,8 @@ module EE
   module NamespaceStorageLimitAlertHelper
     extend ::Gitlab::Utils::Override
 
-    override :display_namespace_storage_limit_alert!
-    def display_namespace_storage_limit_alert!
-      @display_namespace_storage_limit_alert = true
-    end
-
     def display_namespace_storage_limit_alert?(namespace)
-      @display_namespace_storage_limit_alert &&
+      ::Gitlab::CurrentSettings.should_check_namespace_plan? &&
         !usage_quota_page?(namespace) &&
         can?(current_user, :admin_namespace, namespace.root_ancestor)
     end
