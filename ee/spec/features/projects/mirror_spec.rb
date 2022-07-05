@@ -217,7 +217,7 @@ RSpec.describe 'Project mirror', :js do
 
           wait_for_requests
 
-          expect(page).to have_content(key.fingerprint)
+          expect(page).to have_content(key.fingerprint_sha256)
 
           click_on 'Input host keys manually'
 
@@ -256,7 +256,7 @@ RSpec.describe 'Project mirror', :js do
           fill_in 'Git repository URL', with: 'ssh://example.com'
           select('Pull', from: 'Mirror direction')
 
-          expect(page).to have_content(key.fingerprint)
+          expect(page).to have_content(key.fingerprint_sha256)
           expect(page).to have_content("Verified by #{h(user.name)} less than a minute ago")
         end
       end
