@@ -118,6 +118,38 @@ RSpec.describe Ci::Pipeline, :mailer, factory_default: :keep do
     end
   end
 
+  describe 'pipeline age metric' do
+    let_it_be(:pipeline) { create(:ci_empty_pipeline, :created) }
+
+    let(:pipeline_age_histogram) do
+      ::Gitlab::Ci::Pipeline::Metrics.pipeline_age_histogram
+    end
+
+    context 'when pipeline age histogram is enabled' do
+      before do
+        stub_feature_flags(ci_pipeline_age_histogram: true)
+      end
+
+      it 'observes pipeline age' do
+        expect(pipeline_age_histogram).to receive(:observe)
+
+        described_class.find(pipeline.id)
+      end
+    end
+
+    context 'when pipeline age histogram is disabled' do
+      before do
+        stub_feature_flags(ci_pipeline_age_histogram: false)
+      end
+
+      it 'observes pipeline age' do
+        expect(pipeline_age_histogram).not_to receive(:observe)
+
+        described_class.find(pipeline.id)
+      end
+    end
+  end
+
   describe '#set_status' do
     let(:pipeline) { build(:ci_empty_pipeline, :created) }
 

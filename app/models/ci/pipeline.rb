@@ -1384,6 +1384,7 @@ module Ci
     end
 
     def observe_age_in_minutes
+      return unless ::Feature.enabled?(:ci_pipeline_age_histogram, type: :ops)
       return unless persisted? && has_attribute?(:created_at)
 
       ::Gitlab::Ci::Pipeline::Metrics
