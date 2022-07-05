@@ -67,7 +67,7 @@ export default {
   NAMESPACE_TYPES,
   i18n: {
     groupPolicyMessage: s__(
-      'SecurityOrchestration|After enabling a group-level policy, this policy automatically applies to all projects in this group.',
+      'SecurityOrchestration|After enabling a group-level policy, this policy automatically applies to all projects and sub-groups in this group.',
     ),
   },
 };
