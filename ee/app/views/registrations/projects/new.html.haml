@@ -15,7 +15,7 @@
         #progress-bar
       %h2.gl-text-center= _('Create/import your first project')
       %p
-        .gl-text-center= html_escape(_('This project will live in your group %{strong_open}%{namespace}%{strong_close}. A project is where you house your files (repository), plan your work (issues), publish your documentation (wiki), and so much more.')) % { namespace: html_escape(@project.namespace.name), strong_open: '<strong>'.html_safe, strong_close: '</strong>'.html_safe }
+        .gl-text-center= html_escape(_('This project will live in your group %{strong_open}%{namespace}%{strong_close}. A project is where you store your files (repository), plan your work (issues), publish your documentation (wiki), and so much more.')) % { namespace: html_escape(@project.namespace.name), strong_open: '<strong>'.html_safe, strong_close: '</strong>'.html_safe }
 
       .js-toggle-container.gl-w-full
         %ul.nav.nav-tabs.nav-links.gitlab-tabs{ role: 'tablist' }
