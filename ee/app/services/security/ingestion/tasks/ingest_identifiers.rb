@@ -6,7 +6,7 @@ module Security
       # UPSERTs the identifiers for the given findings and
       # sets the identifier IDs for each `finding_map`.
       class IngestIdentifiers < AbstractTask
-        include BulkInsertableTask
+        include Gitlab::Ingestion::BulkInsertableTask
 
         self.model = Vulnerabilities::Identifier
         self.unique_by = %i[project_id fingerprint]

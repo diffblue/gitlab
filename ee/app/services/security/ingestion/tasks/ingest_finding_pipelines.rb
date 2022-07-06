@@ -6,7 +6,7 @@ module Security
       # Links findings with pipelines by creating the
       # `Vulnerabilities::FindingPipeline` records.
       class IngestFindingPipelines < AbstractTask
-        include BulkInsertableTask
+        include Gitlab::Ingestion::BulkInsertableTask
 
         self.model = Vulnerabilities::FindingPipeline
 

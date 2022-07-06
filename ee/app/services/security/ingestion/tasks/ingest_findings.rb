@@ -4,7 +4,7 @@ module Security
   module Ingestion
     module Tasks
       class IngestFindings < AbstractTask
-        include BulkInsertableTask
+        include Gitlab::Ingestion::BulkInsertableTask
 
         self.model = Vulnerabilities::Finding
         self.unique_by = :uuid

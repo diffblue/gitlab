@@ -5,7 +5,7 @@ module Security
     module Tasks
       # Creates new `Vulnerabilities::FindingLink` records.
       class IngestFindingLinks < AbstractTask
-        include BulkInsertableTask
+        include Gitlab::Ingestion::BulkInsertableTask
 
         self.model = Vulnerabilities::FindingLink
 

@@ -5,7 +5,7 @@ module Security
     module Tasks
       # Creates new `Vulnerabilities::Finding::Evidence` records.
       class IngestFindingEvidence < AbstractTask
-        include BulkInsertableTask
+        include Gitlab::Ingestion::BulkInsertableTask
 
         self.model = Vulnerabilities::Finding::Evidence
         self.unique_by = :vulnerability_occurrence_id

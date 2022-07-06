@@ -6,7 +6,7 @@ module Security
       # Creates Vulnerabilities::Remediation records for the new remediations
       # and updates the Vulnerabilities::FindingRemediation records.
       class IngestRemediations < AbstractTask
-        include BulkInsertableTask
+        include Gitlab::Ingestion::BulkInsertableTask
 
         self.model = Vulnerabilities::FindingRemediation
         self.unique_by = %i[vulnerability_occurrence_id vulnerability_remediation_id]

@@ -5,7 +5,7 @@ module Security
     module Tasks
       # Updates the `vulnerability_id` attribute of finding records.
       class AttachFindingsToVulnerabilities < AbstractTask
-        include BulkUpdatableTask
+        include Gitlab::Ingestion::BulkUpdatableTask
 
         self.model = Vulnerabilities::Finding
 

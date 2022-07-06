@@ -4,7 +4,7 @@ module Security
   module Ingestion
     module Tasks
       class IngestIssueLinks < AbstractTask
-        include BulkInsertableTask
+        include Gitlab::Ingestion::BulkInsertableTask
 
         self.model = Vulnerabilities::IssueLink
 

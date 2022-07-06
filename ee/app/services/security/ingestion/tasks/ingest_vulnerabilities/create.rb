@@ -7,7 +7,7 @@ module Security
         # Creates new vulnerability records in database for the given
         # findings map by using a single database query.
         class Create < AbstractTask
-          include BulkInsertableTask
+          include Gitlab::Ingestion::BulkInsertableTask
 
           self.model = Vulnerability
           self.uses = :id
