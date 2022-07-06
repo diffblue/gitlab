@@ -217,47 +217,102 @@ RSpec.describe Projects::Integrations::Jira::IssuesController do
     end
 
     context 'when jira_issues_integration licensed feature is available' do
-      let(:jira_issue) { { 'from' => 'jira' } }
+      let(:jira_response_status) { 200 }
+      let(:title) { 'Title' }
+      let(:key) { '123' }
       let(:issue_json) { { 'from' => 'backend' } }
+      let(:jira_response_body) do
+        {
+          key: key,
+          renderedFields: {
+            description: 'A description'
+          },
+          fields: {
+            resolutiondate: nil,
+            created: '2022-06-30T11:34:39.236+0200',
+            labels: [],
+            updated: '2022-06-30T11:34:39.236+0200',
+            status: {
+              name: 'Backlog'
+            },
+            summary: title,
+            reporter: {
+              accountId: '123',
+              avatarUrls: {
+                  '48x48' => 'https://secure.gravatar.com/avatar/123.png'
+              },
+              displayName: 'John'
+            },
+            duedate: nil,
+            comment: {
+              comments: []
+            }
+          }
+        }.to_json
+      end
 
       before do
         stub_licensed_features(jira_issues_integration: true)
 
-        allow_next_found_instance_of(Integrations::Jira) do |service|
-          allow(service).to receive(:find_issue).with('1', rendered_fields: true).and_return(jira_issue)
-        end
-
-        allow_next_instance_of(Integrations::JiraSerializers::IssueDetailSerializer) do |serializer|
-          allow(serializer).to receive(:represent).with(jira_issue, project: project).and_return(issue_json)
-        end
+        stub_request(:get, "https://jira.example.com/rest/api/2/issue/1?expand=renderedFields")
+          .to_return(status: jira_response_status, body: jira_response_body, headers: {})
       end
 
-      it 'renders `show` template' do
+      it 'renders `show` template', :aggregate_failures do
         get :show, params: { namespace_id: project.namespace, project_id: project, id: 1 }
 
-        expect(assigns(:issue_json)).to eq(issue_json)
         expect(response).to have_gitlab_http_status(:ok)
         expect(response).to render_template(:show)
       end
 
       it 'returns JSON response' do
+        allow_next_instance_of(Integrations::JiraSerializers::IssueDetailSerializer) do |serializer|
+          allow(serializer).to receive(:represent).and_return(issue_json)
+        end
+
         get :show, params: { namespace_id: project.namespace, project_id: project, id: 1, format: :json }
 
-        expect(json_response).to eq(issue_json)
+        expect(json_response).to eq(issue_json.as_json)
       end
 
       context 'when the JSON fetched from Jira contains HTML' do
         let(:payload) { "<script>alert('XSS')</script>" }
-        let(:issue_json) { { title: payload, references: { relative: payload } } }
+        let(:title) { payload }
+        let(:key) { payload }
 
         render_views
 
-        it 'escapes the HTML in issue titles and references' do
+        it 'escapes the HTML in issue titles and references', :aggregate_failures do
           get :show, params: { namespace_id: project.namespace, project_id: project, id: 1 }
 
           expect(response).to have_gitlab_http_status(:ok)
           expect(response.body).not_to include(payload)
           expect(response.body).to include(html_escape(payload))
+        end
+      end
+
+      context 'when issue was not found' do
+        let(:jira_response_status) { 404 }
+        let(:jira_response_body) do
+          {
+            "errorMessages" => [
+              "Issue does not exist or you do not have permission to see it."
+            ],
+            "errors" => {}
+          }.to_json
+        end
+
+        it 'returns 404 status' do
+          get :show, params: { namespace_id: project.namespace, project_id: project, id: 1 }
+
+          expect(response).to have_gitlab_http_status(:not_found)
+        end
+
+        it 'returns 404 JSON response', :aggregate_failures do
+          get :show, params: { namespace_id: project.namespace, project_id: project, id: 1, format: :json }
+
+          expect(response.body).to eq('')
+          expect(response).to have_gitlab_http_status(:not_found)
         end
       end
     end

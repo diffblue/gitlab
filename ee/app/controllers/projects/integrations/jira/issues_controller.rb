@@ -30,9 +30,11 @@ module Projects
         end
 
         def show
+          return render_404 if issue_json.nil?
+
           respond_to do |format|
             format.html do
-              @issue_json = issue_json
+              issue_json
             end
             format.json do
               render json: issue_json
@@ -59,8 +61,9 @@ module Projects
         end
 
         def issue_json
-          ::Integrations::JiraSerializers::IssueDetailSerializer.new
-            .represent(project.jira_integration.find_issue(params[:id], rendered_fields: true), project: project)
+          @issue_json ||=
+            ::Integrations::JiraSerializers::IssueDetailSerializer.new
+              .represent(jira_integration.find_issue(params[:id], rendered_fields: true), project: project)
         end
 
         def finder
