@@ -58,8 +58,8 @@ RSpec.describe Analytics::CycleAnalytics::ConsistencyCheckService, :aggregate_fa
             last_processed_event = initial_events[i]
 
             expect(response.payload[:cursor]).to eq({
-              'start_event_timestamp' => last_processed_event.start_event_timestamp.strftime('%Y-%m-%d %H:%M:%S.%N %Z'),
-              'end_event_timestamp' => last_processed_event.end_event_timestamp.strftime('%Y-%m-%d %H:%M:%S.%N %Z'),
+              'start_event_timestamp' => last_processed_event.start_event_timestamp.to_s(:inspect),
+              'end_event_timestamp' => last_processed_event.end_event_timestamp.to_s(:inspect),
               "#{event_model.issuable_id_column}" => last_processed_event[event_model.issuable_id_column].to_s
             })
 
