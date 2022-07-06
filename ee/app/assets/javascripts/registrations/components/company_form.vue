@@ -168,6 +168,7 @@ export default {
       />
     </gl-form-group>
     <gl-form-group
+      v-if="!trial"
       :label="$options.i18n.trialLabel"
       label-size="sm"
       :optional-text="$options.i18n.optional"
