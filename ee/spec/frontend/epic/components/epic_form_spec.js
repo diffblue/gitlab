@@ -133,7 +133,7 @@ describe('ee/epic/components/epic_form.vue', () => {
         findLabels().vm.$emit('updateSelectedLabels', {
           labels: [{ id: 'gid://gitlab/GroupLabel/1' }],
         });
-        findColor().vm.$emit('updateSelectedColor', epicColor);
+        findColor().vm.$emit('updateSelectedColor', { color: epicColor });
 
         // Make sure the submitted values for start and due dates are date strings without timezone info.
         // (Datepicker emits a Date object but the submitted value must be a date string).

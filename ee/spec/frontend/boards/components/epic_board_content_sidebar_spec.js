@@ -14,6 +14,7 @@ import SidebarParticipantsWidget from '~/sidebar/components/participants/sidebar
 import SidebarSubscriptionsWidget from '~/sidebar/components/subscriptions/sidebar_subscriptions_widget.vue';
 import SidebarTodoWidget from '~/sidebar/components/todo_toggle/sidebar_todo_widget.vue';
 import LabelsSelectWidget from '~/vue_shared/components/sidebar/labels_select_widget/labels_select_root.vue';
+import ColorSelectDropdown from '~/vue_shared/components/color_select_dropdown/color_select_root.vue';
 import { mockFormattedBoardEpic } from '../mock_data';
 
 Vue.use(Vuex);
@@ -42,13 +43,14 @@ describe('EpicBoardContentSidebar', () => {
     });
   };
 
-  const createComponent = () => {
+  const createComponent = ({ glFeatures = {} } = {}) => {
     wrapper = shallowMount(EpicBoardContentSidebar, {
       provide: {
         canUpdate: true,
         rootPath: '/',
         groupId: 1,
         labelsFilterBasePath: '',
+        glFeatures,
       },
       store,
       stubs: {
@@ -100,6 +102,19 @@ describe('EpicBoardContentSidebar', () => {
 
   it('renders LabelsSelectWidget', () => {
     expect(wrapper.findComponent(LabelsSelectWidget).exists()).toBe(true);
+  });
+
+  it('renders ColorDropdownSelect when epic_color_highlight is enabled', () => {
+    createComponent({
+      glFeatures: {
+        epicColorHighlight: true,
+      },
+    });
+    expect(wrapper.findComponent(ColorSelectDropdown).exists()).toBe(true);
+  });
+
+  it('does not render ColorDropdownSelect when epic_color_highlight is disabled', () => {
+    expect(wrapper.findComponent(ColorSelectDropdown).exists()).toBe(false);
   });
 
   it('renders BoardSidebarTitle', () => {

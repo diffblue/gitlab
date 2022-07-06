@@ -10,6 +10,7 @@ class Groups::EpicBoardsController < Groups::ApplicationController
   before_action :assign_endpoint_vars
   before_action do
     push_frontend_feature_flag(:fe_epic_board_total_weight, group)
+    push_frontend_feature_flag(:epic_color_highlight, group)
   end
 
   before_action do
