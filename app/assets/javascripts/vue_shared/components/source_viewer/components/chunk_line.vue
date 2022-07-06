@@ -63,6 +63,7 @@ export default {
         :class="firstLineClass"
         :href="`#L${number}`"
         :data-line-number="number"
+        data-testid="line-number-anchor"
       >
         {{ number }}
       </a>
