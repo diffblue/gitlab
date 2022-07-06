@@ -683,23 +683,23 @@ describe('RelatedItemsTree', () => {
         });
       });
 
-      describe(types.RECIEVE_PROJECTS_SUCCESS, () => {
+      describe(types.RECEIVE_PROJECTS_SUCCESS, () => {
         it('should set `projectsFetchInProgress` to false and provided `projects` param as it is within the state', () => {
           const projects = [
             { id: 1, name: 'foo' },
             { id: 2, name: 'bar' },
           ];
 
-          mutations[types.RECIEVE_PROJECTS_SUCCESS](state, projects);
+          mutations[types.RECEIVE_PROJECTS_SUCCESS](state, projects);
 
           expect(state.projects).toBe(projects);
           expect(state.projectsFetchInProgress).toBe(false);
         });
       });
 
-      describe(types.RECIEVE_PROJECTS_FAILURE, () => {
+      describe(types.RECEIVE_PROJECTS_FAILURE, () => {
         it('should set `projectsFetchInProgress` to false within state', () => {
-          mutations[types.RECIEVE_PROJECTS_FAILURE](state);
+          mutations[types.RECEIVE_PROJECTS_FAILURE](state);
 
           expect(state.projectsFetchInProgress).toBe(false);
         });
