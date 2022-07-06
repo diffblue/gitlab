@@ -13,6 +13,10 @@ module Users
 
     before_action :terms
 
+    before_action only: [:index] do
+      push_frontend_feature_flag(:gitlab_gtm_datalayer, type: :ops)
+    end
+
     layout 'terms'
 
     feature_category :user_management
