@@ -106,20 +106,21 @@ RSpec.describe PostReceiveService, :geo do
   describe 'storage size limit alerts' do
     using RSpec::Parameterized::TableSyntax
 
-    let(:check_storage_size_response) { ServiceResponse.success }
+    let(:storage_notification_payload) { {} }
+    let(:alert_level) { :none }
 
-    where(:additional_repo_storage_by_namespace_enabled, :service_class_name) do
-      true  | Namespaces::CheckExcessStorageSizeService
-      false | Namespaces::CheckStorageSizeService
-    end
+    where(additional_repo_storage_by_namespace_enabled: [false, true])
 
     with_them do
       before do
+        stub_ee_application_setting(should_check_namespace_plan: true)
         allow(project.namespace).to receive(:additional_repo_storage_by_namespace_enabled?)
           .and_return(additional_repo_storage_by_namespace_enabled)
 
-        allow_next_instance_of(service_class_name, project.namespace, user) do |service|
-          expect(service).to receive(:execute).and_return(check_storage_size_response)
+        allow(user).to receive(:can?).with(:admin_namespace, project.namespace.root_ancestor).and_return(true)
+        allow_next_instance_of(EE::Namespace::Storage::Notification, project.namespace, user) do |notification|
+          allow(notification).to receive(:payload).and_return(storage_notification_payload)
+          allow(notification).to receive(:alert_level).and_return(alert_level)
         end
       end
 
@@ -130,14 +131,14 @@ RSpec.describe PostReceiveService, :geo do
       end
 
       context 'when there is payload' do
-        let(:check_storage_size_response) do
-          ServiceResponse.success(
-            payload: {
-              alert_level: :info,
-              usage_message: "Usage",
-              explanation_message: "Explanation"
-            }
-          )
+        let(:alert_level) { :info }
+        let(:storage_notification_payload) do
+          {
+            alert_level: alert_level,
+            usage_message: "Usage",
+            explanation_message: "Explanation",
+            root_namespace: project.namespace.root_ancestor
+          }
         end
 
         it 'adds an alert' do

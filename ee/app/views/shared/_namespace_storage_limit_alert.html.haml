@@ -1,7 +1,6 @@
 - return unless current_user
 - namespace = @project&.namespace || @group
 - return unless namespace.present?
-- return unless display_namespace_storage_limit_alert?(namespace)
 
 = cache([namespace, number_of_hidden_storage_alert_banners], expires_in: 1.minute) do
   - payload = namespace_storage_alert(namespace)

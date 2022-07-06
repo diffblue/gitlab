@@ -2,20 +2,11 @@
 
 module EE
   module NamespaceStorageLimitAlertHelper
-    extend ::Gitlab::Utils::Override
-
-    def display_namespace_storage_limit_alert?(namespace)
-      ::Gitlab::CurrentSettings.should_check_namespace_plan? &&
-        !usage_quota_page?(namespace) &&
-        can?(current_user, :admin_namespace, namespace.root_ancestor)
-    end
-
     def namespace_storage_alert(namespace)
-      return {} unless can?(current_user, :admin_namespace, namespace.root_ancestor)
+      storage_notification = EE::Namespace::Storage::Notification.new(namespace, current_user)
+      return {} unless storage_notification.show?
 
-      payload = check_storage_size_service(namespace).execute.payload
-
-      return {} if payload.empty?
+      payload = storage_notification.payload
 
       alert_level = payload[:alert_level]
       root_namespace = payload[:root_namespace]
@@ -59,14 +50,6 @@ module EE
 
     def usage_quota_page?(namespace)
       current_page?(group_usage_quotas_path(namespace)) || current_page?(profile_usage_quotas_path)
-    end
-
-    def check_storage_size_service(namespace)
-      if namespace.additional_repo_storage_by_namespace_enabled?
-        ::Namespaces::CheckExcessStorageSizeService.new(namespace, current_user)
-      else
-        ::Namespaces::CheckStorageSizeService.new(namespace, current_user)
-      end
     end
   end
 end

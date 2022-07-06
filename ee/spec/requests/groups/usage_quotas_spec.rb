@@ -20,17 +20,13 @@ RSpec.describe 'view usage quotas' do
       let(:usage_message) { FFaker::Lorem.sentence }
 
       before do
-        allow_next_instance_of(Namespaces::CheckStorageSizeService) do |service|
-          allow(service).to receive(:execute).and_return(
-            ServiceResponse.success(
-              payload: {
-                alert_level: :info,
-                usage_message: usage_message,
-                explanation_message: "Explanation",
-                root_namespace: group
-              }
-            )
-          )
+        allow_next_instance_of(EE::Namespace::Storage::Notification, group, user) do |notification|
+          allow(notification).to receive(:payload).and_return({
+            alert_level: :info,
+            usage_message: usage_message,
+            explanation_message: "Explanation",
+            root_namespace: group.root_ancestor
+          })
         end
       end
 
