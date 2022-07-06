@@ -11,6 +11,10 @@ FactoryBot.define do
       info { { errors: [{ type: 'ParsingError', message: 'Unknown error happened' }] } }
     end
 
+    trait :with_warning do
+      info { { warnings: [{ type: 'Deprecation Warning', message: 'Schema is deprecated' }] } }
+    end
+
     trait :latest_successful do
       latest { true }
       status { :succeeded }

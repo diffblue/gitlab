@@ -669,4 +669,36 @@ RSpec.describe Ci::Pipeline do
       it { is_expected.to eq(true) }
     end
   end
+
+  describe '#has_security_report_ingestion_warnings?' do
+    subject { pipeline.has_security_report_ingestion_warnings? }
+
+    context 'when there are no associated security scans with warnings' do
+      it { is_expected.to be_falsey }
+    end
+
+    context 'when there is an associated security scan with warnings' do
+      before do
+        create(:security_scan, :with_warning, pipeline: pipeline)
+      end
+
+      it { is_expected.to be_truthy }
+    end
+  end
+
+  describe '#has_security_report_ingestion_errors?' do
+    subject { pipeline.has_security_report_ingestion_errors? }
+
+    context 'when there are no associated security scans with errors' do
+      it { is_expected.to be_falsey }
+    end
+
+    context 'when there is an associated security scan with errors' do
+      before do
+        create(:security_scan, :with_error, pipeline: pipeline)
+      end
+
+      it { is_expected.to be_truthy }
+    end
+  end
 end
