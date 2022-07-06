@@ -32,12 +32,7 @@ module QA
       end
 
       it 'tests reindexing after push', retry: 3,
-         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348040',
-         quarantine: {
-           issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/365091',
-           type: :investigating,
-           only: { pipeline: [:nightly, :main] }
-         } do
+         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348040' do
         expect { Runtime::Search.find_code(project_file_name, project_file_content) }.not_to raise_error
 
         QA::Page::Main::Menu.perform do |menu|
