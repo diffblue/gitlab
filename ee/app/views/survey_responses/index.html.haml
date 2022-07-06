@@ -4,7 +4,7 @@
 !!! 5
 %html{ lang: I18n.locale }
   = render 'layouts/head'
-  %body.ui-indigo.gl-display-flex
+  %body.gl-display-flex{ class: user_application_theme }
     = render 'layouts/header/logo_with_title'
     .container.gl-pt-8.gl-max-w-full.gl-text-center
       - if @invite_link
