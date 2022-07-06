@@ -259,7 +259,7 @@ export default {
           :default-color="color"
           issuable-type="epic"
           variant="embedded"
-          @updateSelectedColor="handleUpdateSelectedColor($event.color)"
+          @updateSelectedColor="handleUpdateSelectedColor($event)"
         >
           {{ __('Select a color') }}
         </color-select-dropdown>
