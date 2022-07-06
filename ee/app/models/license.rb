@@ -140,6 +140,8 @@ class License < ApplicationRecord
   end
 
   def md5
+    return if Gitlab::FIPS.enabled?
+
     Digest::MD5.hexdigest(normalized_data)
   end
 

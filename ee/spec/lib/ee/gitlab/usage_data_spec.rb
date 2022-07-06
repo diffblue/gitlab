@@ -63,7 +63,7 @@ RSpec.describe Gitlab::UsageData do
 
     subject { described_class.data }
 
-    it 'gathers usage data' do
+    it 'gathers usage data', :fips_mode do
       expect(subject.keys).to include(*%i(
         historical_max_users
         license_add_ons
@@ -82,6 +82,15 @@ RSpec.describe Gitlab::UsageData do
         license_trial_ends_on
         license_billable_users
       ))
+
+      expect(subject[:license_md5]).to eq(nil)
+    end
+
+    context 'when not in FIPS mode', fips_mode: false do
+      it 'includes MD5' do
+        expect(subject.keys).to include(:license_md5)
+        expect(subject[:license_md5]).to be_present
+      end
     end
 
     it 'gathers usage counts', :aggregate_failures do
@@ -165,7 +174,7 @@ RSpec.describe Gitlab::UsageData do
   describe '.license_usage_data' do
     subject { described_class.license_usage_data }
 
-    it 'gathers license data' do
+    it 'gathers license data', :fips_mode do
       license = ::License.current
 
       expect(subject[:license_id]).to eq(license.license_id)
@@ -177,9 +186,17 @@ RSpec.describe Gitlab::UsageData do
       expect(subject[:license_subscription_id]).to eq(license.subscription_id)
       expect(subject[:license_billable_users]).to eq(license.daily_billable_users_count)
       expect(subject[:licensee]).to eq(license.licensee)
-      expect(subject[:license_md5]).to eq(Digest::MD5.hexdigest(license.data))
+      expect(subject[:license_md5]).to eq(nil)
       expect(subject[:license_sha256]).to eq(Digest::SHA256.hexdigest(license.data))
       expect(subject[:historical_max_users]).to eq(license.historical_max)
+    end
+
+    context 'when not in FIPS mode', fips_mode: false do
+      it 'includes MD5' do
+        license = ::License.current
+
+        expect(subject[:license_md5]).to eq(Digest::MD5.hexdigest(license.data))
+      end
     end
   end
 
