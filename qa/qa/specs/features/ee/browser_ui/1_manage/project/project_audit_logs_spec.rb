@@ -53,7 +53,7 @@ module QA
         it_behaves_like 'audit event', ["Added user access as Guest"]
       end
 
-      context "Add deploy key", :skip_fips_env, testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347907' do
+      context "Add deploy key", testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347907' do
         before do
           key = Runtime::Key::RSA.new
           deploy_key_title = 'deploy key title'
