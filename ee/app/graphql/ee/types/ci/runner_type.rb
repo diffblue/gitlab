@@ -19,7 +19,8 @@ module EE
           def upgrade_status
             return :unknown unless upgrade_status_available?
 
-            ::Gitlab::Ci::RunnerUpgradeCheck.instance.check_runner_upgrade_status(runner.version)
+            status = ::Gitlab::Ci::RunnerUpgradeCheck.instance.check_runner_upgrade_status(runner.version)
+            status == :error ? :unknown : status
           end
 
           private

@@ -59,6 +59,13 @@ RSpec.describe 'Query.runner(id)' do
         stub_licensed_features(runner_upgrade_management: true)
       end
 
+      context 'with RunnerUpgradeCheck returning :error' do
+        let(:upgrade_status) { :error }
+        let(:expected_upgrade_status) { 'UNKNOWN' }
+
+        it_behaves_like('runner details fetch operation returning expected upgradeStatus')
+      end
+
       context 'with RunnerUpgradeCheck returning :not_available' do
         let(:upgrade_status) { :not_available }
         let(:expected_upgrade_status) { 'NOT_AVAILABLE' }
