@@ -3,8 +3,8 @@ data_category: subscription
 key_path: license_billable_users
 name: billable_users
 description: Number of all billable users (active users excluding bots and guests).
-product_section: growth
-product_stage: growth
+product_section: analytics
+product_stage: analytics
 product_group: product_intelligence
 product_category: collection
 value_type: number
