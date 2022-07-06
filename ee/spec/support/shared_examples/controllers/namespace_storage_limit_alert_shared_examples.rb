@@ -5,17 +5,14 @@ RSpec.shared_examples 'namespace storage limit alert' do
 
   before do
     stub_ee_application_setting(should_check_namespace_plan: true)
-    allow_next_instance_of(Namespaces::CheckStorageSizeService, namespace, user) do |check_storage_size_service|
-      expect(check_storage_size_service).to receive(:execute).and_return(
-        ServiceResponse.success(
-          payload: {
-            alert_level: alert_level,
-            usage_message: "Usage",
-            explanation_message: "Explanation",
-            root_namespace: namespace
-          }
-        )
-      )
+    allow_next_instance_of(EE::Namespace::Storage::Notification, namespace, user) do |notification|
+      allow(notification).to receive(:payload).and_return({
+        alert_level: alert_level,
+        usage_message: "Usage",
+        explanation_message: "Explanation",
+        root_namespace: namespace.root_ancestor
+      })
+      allow(notification).to receive(:alert_level).and_return(:alert_level)
     end
 
     allow(controller).to receive(:current_user).and_return(user)

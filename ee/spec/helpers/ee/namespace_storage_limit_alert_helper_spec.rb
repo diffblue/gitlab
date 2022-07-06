@@ -6,41 +6,6 @@ RSpec.describe EE::NamespaceStorageLimitAlertHelper do
 
   let!(:admin) { create(:admin) }
 
-  describe '#display_namespace_storage_limit_alert?' do
-    let_it_be(:namespace) { build_stubbed(:namespace) }
-
-    before do
-      stub_ee_application_setting(should_check_namespace_plan: true)
-      allow(helper).to receive(:current_user).and_return(admin)
-      allow(helper).to receive(:can?).with(anything, :admin_namespace, namespace.root_ancestor).and_return(false)
-      allow(helper).to receive(:can?).with(admin, :admin_namespace, namespace.root_ancestor).and_return(true)
-    end
-
-    it 'returns false when in profile usage quota path' do
-      allow(helper.request).to receive(:path) { profile_usage_quotas_path }
-
-      expect(helper.display_namespace_storage_limit_alert?(namespace)).to eq(false)
-    end
-
-    it 'returns false when in namespace usage quota path' do
-      allow(helper.request).to receive(:path) { group_usage_quotas_path(namespace) }
-
-      expect(helper.display_namespace_storage_limit_alert?(namespace)).to eq(false)
-    end
-
-    it 'returns true when in other namespace path' do
-      allow(helper.request).to receive(:path) { group_path(namespace) }
-
-      expect(helper.display_namespace_storage_limit_alert?(namespace)).to eq(true)
-    end
-
-    it 'returns false when user is not an admin' do
-      allow(helper).to receive(:can?).with(admin, :admin_namespace, namespace.root_ancestor).and_return(false)
-
-      expect(helper.display_namespace_storage_limit_alert?(namespace)).to eq(false)
-    end
-  end
-
   describe '#purchase_storage_url' do
     subject { helper.purchase_storage_url }
 
@@ -57,27 +22,24 @@ RSpec.describe EE::NamespaceStorageLimitAlertHelper do
         alert_level: :info,
         usage_message: "Usage",
         explanation_message: "Explanation",
-        root_namespace: namespace
+        root_namespace: namespace.root_ancestor
       }
     end
 
-    where(:additional_repo_storage_by_namespace_enabled, :service_class_name) do
-      false | Namespaces::CheckStorageSizeService
-      true  | Namespaces::CheckExcessStorageSizeService
-    end
+    where(additional_repo_storage_by_namespace_enabled: [false, true])
 
     with_them do
       before do
+        stub_ee_application_setting(should_check_namespace_plan: true)
         allow(namespace).to receive(:additional_repo_storage_by_namespace_enabled?)
           .and_return(additional_repo_storage_by_namespace_enabled)
 
         allow(helper).to receive(:current_user).and_return(admin)
-        allow_next_instance_of(service_class_name, namespace, admin) do |service|
-          expect(service).to receive(:execute).and_return(ServiceResponse.success(payload: payload))
+        allow(admin).to receive(:can?).with(:admin_namespace, namespace.root_ancestor).and_return(true)
+        allow_next_instance_of(EE::Namespace::Storage::Notification) do |notification|
+          allow(notification).to receive(:payload).and_return(payload)
+          allow(notification).to receive(:alert_level).and_return(payload[:alert_level])
         end
-
-        allow(helper).to receive(:can?).with(nil, :admin_namespace, namespace.root_ancestor).and_return(false)
-        allow(helper).to receive(:can?).with(admin, :admin_namespace, namespace.root_ancestor).and_return(true)
       end
 
       context 'when payload is not empty and no cookie is set' do
@@ -94,29 +56,13 @@ RSpec.describe EE::NamespaceStorageLimitAlertHelper do
 
       context 'when current_user is not an admin of the namespace' do
         before do
-          allow(helper).to receive(:can?).with(admin, :admin_namespace, namespace.root_ancestor).and_return(false)
+          allow(admin).to receive(:can?).with(:admin_namespace, namespace.root_ancestor).and_return(false)
         end
-
-        it { is_expected.to eq({}) }
-      end
-
-      context 'when payload is empty' do
-        let(:payload) { {} }
 
         it { is_expected.to eq({}) }
       end
 
       context 'when cookie is set' do
-        before do
-          helper.request.cookies["hide_storage_limit_alert_#{namespace.id}_info"] = 'true'
-        end
-
-        it { is_expected.to eq({}) }
-      end
-
-      context 'when payload is empty and cookie is set' do
-        let(:payload) { {} }
-
         before do
           helper.request.cookies["hide_storage_limit_alert_#{namespace.id}_info"] = 'true'
         end
