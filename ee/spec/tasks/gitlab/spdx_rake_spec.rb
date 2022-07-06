@@ -30,7 +30,7 @@ RSpec.describe 'gitlab:rake tasks', :silence_stdout do
       end
 
       it 'raises parsing failure' do
-        expect { subject }.to output(/Import of SPDX catalogue failed: unexpected colon \(\)/).to_stdout
+        expect { subject }.to output(/Import of SPDX catalogue failed: unexpected colon \(after \)/).to_stdout
       end
     end
 
