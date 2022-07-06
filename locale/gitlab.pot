@@ -40990,9 +40990,6 @@ msgstr ""
 msgid "Unable to fetch upstream and downstream pipelines."
 msgstr ""
 
-msgid "Unable to fetch vulnerable projects"
-msgstr ""
-
 msgid "Unable to find Jira project to import data from."
 msgstr ""
 
