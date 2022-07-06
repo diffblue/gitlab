@@ -11,14 +11,14 @@ module EE
         def execute(registration_token, attributes)
           runner = super(registration_token, attributes)
 
-          audit_log_event(runner, registration_token) if runner
+          audit_event(runner, registration_token) if runner
 
           runner
         end
 
         private
 
-        def audit_log_event(runner, registration_token)
+        def audit_event(runner, registration_token)
           ::AuditEvents::RegisterRunnerAuditEventService.new(runner, registration_token, token_scope)
             .track_event
         end

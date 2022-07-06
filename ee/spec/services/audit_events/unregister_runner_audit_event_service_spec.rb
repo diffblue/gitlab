@@ -22,7 +22,7 @@ RSpec.describe AuditEvents::UnregisterRunnerAuditEventService do
     }
   end
 
-  shared_examples 'expected audit log' do
+  shared_examples 'expected audit event' do
     it 'returns audit event attributes' do
       travel_to(timestamp) do
         expect(subject.attributes).to eq(attrs.stringify_keys)
@@ -62,7 +62,7 @@ RSpec.describe AuditEvents::UnregisterRunnerAuditEventService do
         }
       end
 
-      it_behaves_like 'expected audit log'
+      it_behaves_like 'expected audit event'
     end
 
     context 'with User author' do
@@ -75,7 +75,7 @@ RSpec.describe AuditEvents::UnregisterRunnerAuditEventService do
         }
       end
 
-      it_behaves_like 'expected audit log'
+      it_behaves_like 'expected audit event'
     end
   end
 
@@ -121,7 +121,7 @@ RSpec.describe AuditEvents::UnregisterRunnerAuditEventService do
           }
         end
 
-        it_behaves_like 'expected audit log'
+        it_behaves_like 'expected audit event'
       end
 
       context 'with User author' do
@@ -131,7 +131,7 @@ RSpec.describe AuditEvents::UnregisterRunnerAuditEventService do
           { author_id: author.id }
         end
 
-        it_behaves_like 'expected audit log'
+        it_behaves_like 'expected audit event'
       end
     end
 

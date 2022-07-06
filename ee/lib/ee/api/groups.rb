@@ -58,7 +58,7 @@ module EE
             forbidden! unless group.licensed_feature_available?(:audit_events)
           end
 
-          def audit_log_finder_params
+          def audit_event_finder_params
             params
               .slice(:created_after, :created_before)
               .then { |params| filter_by_author(params) }
@@ -119,7 +119,7 @@ module EE
               level = ::Gitlab::Audit::Levels::Group.new(group: user_group)
               audit_events = AuditEventFinder.new(
                 level: level,
-                params: audit_log_finder_params
+                params: audit_event_finder_params
               ).execute
 
               present paginate(audit_events), with: EE::API::Entities::AuditEvent
@@ -135,7 +135,7 @@ module EE
               level = ::Gitlab::Audit::Levels::Group.new(group: user_group)
               # rubocop: disable CodeReuse/ActiveRecord, Rails/FindById
               # This is not `find_by!` from ActiveRecord
-              audit_event = AuditEventFinder.new(level: level, params: audit_log_finder_params)
+              audit_event = AuditEventFinder.new(level: level, params: audit_event_finder_params)
                 .find_by!(id: params[:audit_event_id])
               # rubocop: enable CodeReuse/ActiveRecord, Rails/FindById
 
