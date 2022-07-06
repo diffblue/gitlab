@@ -114,6 +114,8 @@ RSpec.describe PostReceiveService, :geo do
     with_them do
       before do
         stub_ee_application_setting(should_check_namespace_plan: true)
+        stub_ee_application_setting(enforce_namespace_storage_limit: true)
+        stub_ee_application_setting(automatic_purchased_storage_allocation: true)
         allow(project.namespace).to receive(:additional_repo_storage_by_namespace_enabled?)
           .and_return(additional_repo_storage_by_namespace_enabled)
 

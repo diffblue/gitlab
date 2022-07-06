@@ -5,6 +5,8 @@ RSpec.shared_examples 'namespace storage limit alert' do
 
   before do
     stub_ee_application_setting(should_check_namespace_plan: true)
+    stub_ee_application_setting(enforce_namespace_storage_limit: true)
+    stub_ee_application_setting(automatic_purchased_storage_allocation: true)
     allow_next_instance_of(EE::Namespace::Storage::Notification, namespace, user) do |notification|
       allow(notification).to receive(:payload).and_return({
         alert_level: alert_level,

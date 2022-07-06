@@ -5,8 +5,6 @@ module EE
     CURRENT_SIZE_CACHE_KEY = 'root_storage_current_size'
     LIMIT_CACHE_KEY = 'root_storage_size_limit'
     EXPIRATION_TIME = 10.minutes
-    EFFECTIVE_DATE = 99.years.from_now.to_date
-    ENFORCEMENT_DATE = 100.years.from_now.to_date
 
     def initialize(root_namespace)
       @root_namespace = root_namespace
@@ -47,12 +45,10 @@ module EE
     end
 
     def enforce_limit?
-      return false unless enforceable_dates?
-      return false if root_namespace.opensource_plan?
-
-      return ::Feature.enabled?(:enforce_storage_limit_for_paid, root_namespace) if root_namespace.paid?
-
-      ::Feature.enabled?(:enforce_storage_limit_for_free, root_namespace)
+      # Refactor in https://gitlab.com/gitlab-org/gitlab/-/issues/366938
+      # rubocop:disable CodeReuse/ServiceClass
+      ::Namespaces::Storage::EnforcementCheckService.enforce_limit?(root_namespace)
+      # rubocop:enable CodeReuse/ServiceClass
     end
 
     alias_method :enabled?, :enforce_limit?
@@ -72,11 +68,6 @@ module EE
     end
 
     private
-
-    def enforceable_dates?
-      ::Feature.enabled?(:namespace_storage_limit_bypass_date_check, root_namespace) ||
-        (Date.current >= ENFORCEMENT_DATE && gitlab_subscription.start_date >= EFFECTIVE_DATE)
-    end
 
     attr_reader :root_namespace
 

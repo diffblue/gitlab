@@ -13,6 +13,8 @@ RSpec.describe EE::Namespace::Storage::Notification do
     before do
       group.add_owner(user)
       stub_ee_application_setting(should_check_namespace_plan: true)
+      stub_ee_application_setting(enforce_namespace_storage_limit: true)
+      stub_ee_application_setting(automatic_purchased_storage_allocation: true)
       allow_next_instance_of(EE::Namespace::Storage::Notification) do |notification|
         allow(notification).to receive(:alert_level).and_return(alert_level)
       end
