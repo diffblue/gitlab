@@ -2,20 +2,26 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :clean_gitlab_redis_shared_state do
+RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, :clean_gitlab_redis_shared_state do
   let_it_be(:user1) { build(:user, id: 1) }
   let_it_be(:user2) { build(:user, id: 2) }
+  let_it_be(:namespace) { build(:group) }
+  let_it_be(:category) { described_class::EPIC_CATEGORY }
+  let_it_be(:event_action) { described_class::EPIC_ACTION }
+  let_it_be(:event_label) { described_class::EPIC_LABEL }
+
+  let(:event_property) { action }
 
   context 'for epic created event' do
     def track_action(params)
       described_class.track_epic_created_action(**params)
     end
 
-    it_behaves_like 'a daily tracked issuable event' do
+    it_behaves_like 'a daily tracked issuable snowplow and service ping events with namespace' do
       let(:action) { described_class::EPIC_CREATED }
     end
 
-    it_behaves_like 'does not track when feature flag is disabled', :track_epics_activity
+    it_behaves_like 'does not track with namespace when feature flag is disabled', :track_epics_activity
   end
 
   context 'for epic title changed event' do
@@ -23,11 +29,11 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :clean_gitl
       described_class.track_epic_title_changed_action(**params)
     end
 
-    it_behaves_like 'a daily tracked issuable event' do
+    it_behaves_like 'a daily tracked issuable snowplow and service ping events with namespace' do
       let(:action) { described_class::EPIC_TITLE_CHANGED }
     end
 
-    it_behaves_like 'does not track when feature flag is disabled', :track_epics_activity
+    it_behaves_like 'does not track with namespace when feature flag is disabled', :track_epics_activity
   end
 
   context 'for epic description changed event' do
@@ -35,11 +41,11 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :clean_gitl
       described_class.track_epic_description_changed_action(**params)
     end
 
-    it_behaves_like 'a daily tracked issuable event' do
+    it_behaves_like 'a daily tracked issuable snowplow and service ping events with namespace' do
       let(:action) { described_class::EPIC_DESCRIPTION_CHANGED }
     end
 
-    it_behaves_like 'does not track when feature flag is disabled', :track_epics_activity
+    it_behaves_like 'does not track with namespace when feature flag is disabled', :track_epics_activity
   end
 
   context 'for epic note created event' do

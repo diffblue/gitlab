@@ -849,9 +849,9 @@ RSpec.describe Epic do
 
   describe '#usage_ping_record_epic_creation' do
     it 'records epic creation after saving' do
-      expect(::Gitlab::UsageDataCounters::EpicActivityUniqueCounter).to receive(:track_epic_created_action)
+      expect(::Gitlab::UsageDataCounters::EpicActivityUniqueCounter).to receive(:track_epic_created_action).with(author: user, namespace: group)
 
-      create(:epic)
+      create(:epic, author_id: user.id, group: group)
     end
   end
 

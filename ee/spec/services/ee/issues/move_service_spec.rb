@@ -90,7 +90,7 @@ RSpec.describe Issues::MoveService do
   describe '#rewrite_epic_issue' do
     context 'issue assigned to epic' do
       let(:epic) { create(:epic, group: group) }
-      let!(:epic_issue) { create(:epic_issue, issue: old_issue, epic: epic) }
+      let(:epic_issue) { create(:epic_issue, issue: old_issue, epic: epic) }
 
       before do
         stub_licensed_features(epics: true)
@@ -105,10 +105,10 @@ RSpec.describe Issues::MoveService do
       end
 
       describe 'events tracking', :snowplow do
-        subject(:issue_move) { move_service.execute(old_issue, new_project) }
-
-        before do
+        subject(:issue_move) do
+          # epic creation has to happen in the subject block to not trigger additional snowplow events when the FF is off
           epic_issue.epic.group.add_reporter(user)
+          move_service.execute(old_issue, new_project)
         end
 
         it 'tracks usage data for changed epic action' do
@@ -126,6 +126,7 @@ RSpec.describe Issues::MoveService do
           let(:feature_flag_name) { :route_hll_to_snowplow_phase2 }
         end
       end
+
       context 'user can not update the epic' do
         it 'ignores epic issue reference' do
           new_issue = move_service.execute(old_issue, new_project)

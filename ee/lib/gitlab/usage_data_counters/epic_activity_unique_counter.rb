@@ -7,9 +7,13 @@ module Gitlab
       # on epic event names, because they are persisted at the same
       # slot of issue events to allow data aggregation.
       # More information in: https://gitlab.com/gitlab-org/gitlab/-/issues/322405
+      EPIC_CATEGORY = 'epics_action'
+      EPIC_ACTION = 'perform_epics_action'
+      EPIC_LABEL = 'redis_hll_counters.epics_usage.epics_usage_total_unique_counts_monthly'
+
       EPIC_CREATED = 'g_project_management_epic_created'
-      EPIC_TITLE_CHANGED = 'g_project_management_users_updating_epic_titles'
       EPIC_DESCRIPTION_CHANGED = 'g_project_management_users_updating_epic_descriptions'
+      EPIC_TITLE_CHANGED = 'g_project_management_users_updating_epic_titles'
       EPIC_NOTE_CREATED = 'g_project_management_users_creating_epic_notes'
       EPIC_NOTE_UPDATED = 'g_project_management_users_updating_epic_notes'
       EPIC_NOTE_DESTROYED = 'g_project_management_users_destroying_epic_notes'
@@ -43,15 +47,18 @@ module Gitlab
       EPIC_BLOCKED_REMOVED = 'g_project_management_epic_blocked_removed'
 
       class << self
-        def track_epic_created_action(author:)
+        def track_epic_created_action(author:, namespace:)
+          track_snowplow_action(EPIC_CREATED, author, namespace)
           track_unique_action(EPIC_CREATED, author)
         end
 
-        def track_epic_title_changed_action(author:)
+        def track_epic_title_changed_action(author:, namespace:)
+          track_snowplow_action(EPIC_TITLE_CHANGED, author, namespace)
           track_unique_action(EPIC_TITLE_CHANGED, author)
         end
 
-        def track_epic_description_changed_action(author:)
+        def track_epic_description_changed_action(author:, namespace:)
+          track_snowplow_action(EPIC_DESCRIPTION_CHANGED, author, namespace)
           track_unique_action(EPIC_DESCRIPTION_CHANGED, author)
         end
 
@@ -186,6 +193,20 @@ module Gitlab
           return unless author
 
           Gitlab::UsageDataCounters::HLLRedisCounter.track_event(action, values: author.id)
+        end
+
+        def track_snowplow_action(action, author, namespace)
+          return unless Feature.enabled?(:route_hll_to_snowplow_phase2, namespace)
+          return unless author
+
+          Gitlab::Tracking.event(
+            EPIC_CATEGORY,
+            EPIC_ACTION,
+            label: EPIC_LABEL,
+            property: action,
+            namespace: namespace,
+            user: author
+          )
         end
       end
     end

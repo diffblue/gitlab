@@ -159,11 +159,11 @@ module Epics
 
     def track_changes(epic)
       if epic.saved_change_to_attribute?(:title)
-        ::Gitlab::UsageDataCounters::EpicActivityUniqueCounter.track_epic_title_changed_action(author: current_user)
+        ::Gitlab::UsageDataCounters::EpicActivityUniqueCounter.track_epic_title_changed_action(author: current_user, namespace: epic.group)
       end
 
       if epic.saved_change_to_attribute?(:description)
-        ::Gitlab::UsageDataCounters::EpicActivityUniqueCounter.track_epic_description_changed_action(author: current_user)
+        ::Gitlab::UsageDataCounters::EpicActivityUniqueCounter.track_epic_description_changed_action(author: current_user, namespace: epic.group)
         track_task_changes(epic)
       end
     end
