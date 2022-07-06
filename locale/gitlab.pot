@@ -23628,9 +23628,6 @@ msgstr ""
 msgid "Manage access"
 msgstr ""
 
-msgid "Manage all notifications"
-msgstr ""
-
 msgid "Manage applications that can use GitLab as an OAuth provider, and applications that you've authorized to use your account."
 msgstr ""
 
@@ -44492,16 +44489,34 @@ msgstr ""
 msgid "You're receiving this email because of your account on %{host}."
 msgstr ""
 
-msgid "You're receiving this email because of your account on %{host}. %{manage_notifications_link} &middot; %{help_link}"
+msgid "You're receiving this email because of your account on %{host}. %{manage_label_subscriptions_link_start}Manage label subscriptions%{manage_label_subscriptions_link_end} &middot; %{help_link_start}Help%{help_link_end}"
+msgstr ""
+
+msgid "You're receiving this email because of your account on %{host}. %{manage_notifications_link_start}Manage all notifications%{manage_notifications_link_end} &middot; %{help_link_start}Help%{help_link_end}"
+msgstr ""
+
+msgid "You're receiving this email because of your account on %{host}. %{unsubscribe_link_start}Unsubscribe%{unsubscribe_link_end} from this thread &middot; %{manage_notifications_link_start}Manage all notifications%{manage_notifications_link_end} &middot; %{help_link_start}Help%{help_link_end}"
 msgstr ""
 
 msgid "You're receiving this email because of your activity on %{host}."
 msgstr ""
 
+msgid "You're receiving this email because of your activity on %{host}. %{unsubscribe_link_start}Unsubscribe%{unsubscribe_link_end} from this thread &middot; %{manage_notifications_link_start}Manage all notifications%{manage_notifications_link_end} &middot; %{help_link_start}Help%{help_link_end}"
+msgstr ""
+
 msgid "You're receiving this email because you have been assigned an item on %{host}."
 msgstr ""
 
+msgid "You're receiving this email because you have been assigned an item on %{host}. %{unsubscribe_link_start}Unsubscribe%{unsubscribe_link_end} from this thread &middot; %{manage_notifications_link_start}Manage all notifications%{manage_notifications_link_end} &middot; %{help_link_start}Help%{help_link_end}"
+msgstr ""
+
 msgid "You're receiving this email because you have been mentioned on %{host}."
+msgstr ""
+
+msgid "You're receiving this email because you have been mentioned on %{host}. %{manage_notifications_link_start}Manage all notifications%{manage_notifications_link_end} &middot; %{help_link_start}Help%{help_link_end}"
+msgstr ""
+
+msgid "You're receiving this email because you have been mentioned on %{host}. %{unsubscribe_link_start}Unsubscribe%{unsubscribe_link_end} from this thread &middot; %{manage_notifications_link_start}Manage all notifications%{manage_notifications_link_end} &middot; %{help_link_start}Help%{help_link_end}"
 msgstr ""
 
 msgid "You've already enabled two-factor authentication using one time password authenticators. In order to register a different device, you must first disable two-factor authentication."
