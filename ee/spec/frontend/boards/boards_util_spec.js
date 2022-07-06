@@ -4,6 +4,7 @@ import {
   formatEpicListsPageInfo,
   transformBoardConfig,
   formatIssueInput,
+  formatEpicInput,
 } from 'ee/boards/boards_util';
 import { IterationIDs } from 'ee/boards/constants';
 import setWindowLocation from 'helpers/set_window_location_helper';
@@ -222,5 +223,32 @@ describe('transformBoardConfig', () => {
     const result = transformBoardConfig(boardConfigWithCadence);
 
     expect(result).toBe('iteration_id=Current&iteration_cadence_id=1');
+  });
+});
+
+describe('formatEpicInput', () => {
+  const epicInput = {
+    groupPath: 'gitlab-org',
+    id: 'gid://gitlab/Epic/11',
+    title: 'Epic',
+    labelIds: [6],
+  };
+  const expected = {
+    groupPath: 'gitlab-org',
+    id: 'gid://gitlab/Epic/11',
+    title: 'Epic',
+  };
+
+  const boardConfig = {
+    labelIds: ['gid://gitlab/GroupLabel/5'],
+  };
+
+  it('adds labelsIds to input', () => {
+    const result = formatEpicInput(epicInput, boardConfig);
+
+    expect(result).toEqual({
+      addLabelIds: [6, 5],
+      ...expected,
+    });
   });
 });
