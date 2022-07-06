@@ -82,6 +82,8 @@ module EE
       has_many :escalation_rules, -> { not_removed }, class_name: 'IncidentManagement::EscalationRule', inverse_of: :user
       has_many :escalation_policies, -> { distinct }, class_name: 'IncidentManagement::EscalationPolicy', through: :escalation_rules, source: :policy
 
+      has_many :namespace_bans, class_name: 'Namespaces::NamespaceBan'
+
       scope :not_managed, ->(group: nil) {
         scope = where(managing_group_id: nil)
         scope = scope.or(where.not(managing_group_id: group.id)) if group
