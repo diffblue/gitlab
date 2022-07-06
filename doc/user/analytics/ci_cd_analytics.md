@@ -98,7 +98,7 @@ To view the time to restore service chart:
 
 > [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/357072) in GitLab 15.2
 
-The change failure rate chart shows information about the percentage of deployments that cause and incident in a production environment. This chart is available for groups and projects.
+The change failure rate chart shows information about the percentage of deployments that cause an incident in a production environment. This chart is available for groups and projects.
 
 Change failure rate is one of the four [DORA metrics](index.md#devops-research-and-assessment-dora-key-metrics) that DevOps teams use for measuring excellence in software delivery.
 

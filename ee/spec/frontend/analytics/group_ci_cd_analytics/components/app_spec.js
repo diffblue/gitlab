@@ -52,14 +52,16 @@ describe('ee/analytics/group_ci_cd_analytics/components/app.vue', () => {
       });
 
       it('renders tabs in the correct order', () => {
-        expect(findGlTabs().exists()).toBe(true);
-        expect(findAllGlTabs()).toHaveLength(6);
-        expect(findGlTabAtIndex(0).attributes('title')).toBe('Release statistics');
-        expect(findGlTabAtIndex(1).attributes('title')).toBe('Deployment frequency');
-        expect(findGlTabAtIndex(2).attributes('title')).toBe('Lead time');
-        expect(findGlTabAtIndex(3).attributes('title')).toBe('Time to restore service');
-        expect(findGlTabAtIndex(4).attributes('title')).toBe('Change failure rate');
-        expect(findGlTabAtIndex(5).attributes('title')).toBe('Shared runner usage');
+        [
+          'Release statistics',
+          'Deployment frequency',
+          'Lead time',
+          'Time to restore service',
+          'Change failure rate',
+          'Shared runner usage',
+        ].forEach((tabName, index) => {
+          expect(findGlTabAtIndex(index).attributes('title')).toBe(tabName);
+        });
       });
 
       describe('event tracking', () => {
