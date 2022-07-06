@@ -28,7 +28,7 @@ RSpec.describe 'Subscriptions Content Security Policy' do
     it { is_expected.to be_blank }
   end
 
-  context 'when a global CSP config exists' do
+  context 'when a global CSP config exists', :do_not_stub_snowplow_by_default do
     let(:csp) do
       ActionDispatch::ContentSecurityPolicy.new do |p|
         p.script_src(*default_csp_values.split)
