@@ -28,6 +28,8 @@ RSpec.describe Ci::Build, :saas do
     }
   end
 
+  it_behaves_like 'has secrets', :ci_build
+
   describe '.license_scan' do
     subject(:build) { described_class.license_scan.first }
 

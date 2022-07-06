@@ -17,6 +17,8 @@ RSpec.describe Ci::Bridge do
     { trigger: { project: 'my/project', branch: 'master' } }
   end
 
+  it_behaves_like 'has secrets', :ci_bridge
+
   it 'belongs to an upstream pipeline' do
     expect(bridge).to belong_to(:upstream_pipeline)
   end
