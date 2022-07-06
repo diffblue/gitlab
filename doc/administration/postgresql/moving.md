@@ -7,7 +7,7 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 # Moving GitLab databases to a different PostgreSQL instance **(FREE SELF)**
 
 Sometimes it is necessary to move your databases from one PostgreSQL instance to
-another. For instance if you are using AWS Aurora and you are preparing to
+another. For example, if you are using AWS Aurora and are preparing to
 enable Database Load Balancing, you will need to move your databases to
 RDS for PostgreSQL.
 
