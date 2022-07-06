@@ -44,7 +44,7 @@ describe('RegistrationForm', () => {
     });
 
     it('hides trial toggle', async () => {
-      expect(findToggle().exists()).toBe(false);
+      expect(findToggle()).not.toBeVisible();
     });
   });
 
