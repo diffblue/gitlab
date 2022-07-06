@@ -4,5 +4,5 @@ introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/75148
 rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/346176
 milestone: '14.6'
 type: experiment
-group: group::conversion
+group: group::acquisition
 default_enabled: false

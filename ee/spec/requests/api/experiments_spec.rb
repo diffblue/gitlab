@@ -62,7 +62,7 @@ RSpec.describe API::Experiments do
               rollout_issue_url: nil,
               milestone: '13.7',
               type: 'experiment',
-              group: 'group::adoption',
+              group: 'group::acquisition',
               default_enabled: false,
               log_state_changes: nil
             },
