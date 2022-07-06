@@ -598,6 +598,7 @@ class ApplicationSetting < ApplicationRecord
     inclusion: { in: [true, false], message: _('must be a boolean value') }
   validates :error_tracking_api_url,
     presence: true,
+    addressable_url: true,
     length: { maximum: 255 },
     if: :error_tracking_enabled?
 
