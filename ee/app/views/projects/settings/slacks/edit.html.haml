@@ -7,7 +7,7 @@
 
     %p= s_('Integrations|You can use this alias in your Slack commands')
   .col-lg-9
-    = form_errors(@slack_integration)
+    = form_errors(@slack_integration, pajamas_alert: true)
     = form_for(@slack_integration, url: project_settings_slack_path(@project), method: :put, html: { class: 'gl-show-field-errors js-integration-settings-form'}) do |form|
       .form-group.row
         = form.label :alias, s_('Integrations|Enter your alias'), class: 'col-form-label'
