@@ -26461,6 +26461,9 @@ msgstr ""
 msgid "Notify|Merge request URL: %{merge_request_url}"
 msgstr ""
 
+msgid "Notify|Milestone changed to %{milestone}"
+msgstr ""
+
 msgid "Notify|New issue: %{project_issue_url}"
 msgstr ""
 
