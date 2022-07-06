@@ -13,8 +13,14 @@ module Mutations
 
       argument :id,
                ::Types::GlobalIDType[::Vulnerabilities::Finding],
-               required: true,
+               required: false,
+               deprecated: { reason: 'Use `uuid`', milestone: '15.2' },
                description: 'ID of the finding to be dismissed.'
+
+      argument :uuid,
+               GraphQL::Types::String,
+               required: false,
+               description: 'UUID of the finding to be dismissed.'
 
       argument :comment,
                GraphQL::Types::String,
@@ -26,8 +32,12 @@ module Mutations
                required: false,
                description: 'Reason why finding should be dismissed.'
 
-      def resolve(id:, comment: nil, dismissal_reason: nil)
-        finding = authorized_find!(id: id)
+      def resolve(id: nil, uuid: nil, comment: nil, dismissal_reason: nil)
+        unless id || uuid
+          raise ::Gitlab::Graphql::Errors::ArgumentError, "Must provide either uuid (preferred) or id argument"
+        end
+
+        finding = authorized_find!(id: id, uuid: uuid)
         result = dismiss_finding(finding, comment, dismissal_reason)
 
         {
@@ -47,8 +57,8 @@ module Mutations
         ).execute
       end
 
-      def find_object(id:)
-        GitlabSchema.find_by_gid(id)
+      def find_object(id:, uuid:)
+        uuid ? ::Vulnerabilities::Finding.find_by_uuid(uuid) : GitlabSchema.find_by_gid(id)
       end
     end
   end
