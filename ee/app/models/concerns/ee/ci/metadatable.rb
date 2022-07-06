@@ -6,7 +6,11 @@ module EE
       extend ActiveSupport::Concern
 
       prepended do
-        delegate :secrets?, :secrets, to: :metadata, prefix: false, allow_nil: true
+        delegate :secrets, to: :metadata, allow_nil: true
+      end
+
+      def secrets?
+        !!metadata&.secrets?
       end
 
       def secrets=(value)
