@@ -11,7 +11,7 @@ another. For instance if you are using AWS Aurora and you are preparing to
 enable Database Load Balancing, you will need to move your databases to
 RDS for PostgreSQL.
 
-In order to move databases from one instance to another:
+To move databases from one instance to another:
 
 1. Gather the source and destination PostgreSQL endpoint information:
 
