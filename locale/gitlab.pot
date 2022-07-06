@@ -26446,6 +26446,9 @@ msgstr ""
 msgid "Notify|Merge request %{merge_request} was merged"
 msgstr ""
 
+msgid "Notify|Merge request %{mr_link} was closed by %{closed_by}"
+msgstr ""
+
 msgid "Notify|Merge request URL: %{merge_request_url}"
 msgstr ""
 
