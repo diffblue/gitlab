@@ -48,5 +48,9 @@ RSpec.describe 'Group CI/CD Analytics', :js do
     it_behaves_like 'a DORA chart', '[data-testid="deployment-frequency-charts"]', 'Deployment frequency'
 
     it_behaves_like 'a DORA chart', '[data-testid="lead-time-charts"]', 'Lead time'
+
+    it_behaves_like 'a DORA chart', '[data-testid="time-to-restore-service-charts"]', 'Time to restore service'
+
+    it_behaves_like 'a DORA chart', '[data-testid="change-failure-rate-charts"]', 'Change failure rate'
   end
 end
