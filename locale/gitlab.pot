@@ -32982,12 +32982,6 @@ msgstr ""
 msgid "Retry migration"
 msgstr ""
 
-msgid "Retry the downstream pipeline"
-msgstr ""
-
-msgid "Retry the trigger job"
-msgstr ""
-
 msgid "Retry this job"
 msgstr ""
 
@@ -39678,9 +39672,6 @@ msgstr ""
 msgid "This job requires manual intervention to start. Before starting this job, you can add variables below for last-minute configuration changes."
 msgstr ""
 
-msgid "This job triggers a downstream pipeline"
-msgstr ""
-
 msgid "This job will automatically run after its timer finishes. Often they are used for incremental roll-out deploys to production environments. When unscheduled it converts into a manual action."
 msgstr ""
 
@@ -42465,9 +42456,6 @@ msgid "View details: %{details_url}"
 msgstr ""
 
 msgid "View documentation"
-msgstr ""
-
-msgid "View downstream pipeline"
 msgstr ""
 
 msgid "View eligible approvers"
