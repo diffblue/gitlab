@@ -27,6 +27,7 @@ import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import httpStatusCodes from '~/lib/utils/http_status';
 import LineHighlighter from '~/blob/line_highlighter';
 import { LEGACY_FILE_TYPES } from '~/repository/constants';
+import { SIMPLE_BLOB_VIEWER, RICH_BLOB_VIEWER } from '~/blob/components/constants';
 import {
   simpleViewerMock,
   richViewerMock,
@@ -53,7 +54,12 @@ const mockAxios = new MockAdapter(axios);
 const createMockStore = () =>
   new Vuex.Store({ actions: { fetchData: jest.fn, setInitialData: jest.fn() } });
 
-const createComponent = async (mockData = {}, mountFn = shallowMount) => {
+const mockRouterPush = jest.fn();
+const mockRouter = {
+  push: mockRouterPush,
+};
+
+const createComponent = async (mockData = {}, mountFn = shallowMount, mockRoute = {}) => {
   Vue.use(VueApollo);
 
   const {
@@ -106,6 +112,10 @@ const createComponent = async (mockData = {}, mountFn = shallowMount) => {
       apolloProvider: fakeApollo,
       propsData: propsMock,
       mixins: [{ data: () => ({ ref: refMock }) }],
+      mocks: {
+        $route: mockRoute,
+        $router: mockRouter,
+      },
       provide: {
         targetBranch: 'test',
         originalBranch: 'default-ref',
@@ -158,7 +168,7 @@ describe('Blob content viewer component', () => {
     it('renders a BlobHeader component', async () => {
       await createComponent();
 
-      expect(findBlobHeader().props('activeViewerType')).toEqual('simple');
+      expect(findBlobHeader().props('activeViewerType')).toEqual(SIMPLE_BLOB_VIEWER);
       expect(findBlobHeader().props('hasRenderError')).toEqual(false);
       expect(findBlobHeader().props('hideViewerSwitcher')).toEqual(true);
       expect(findBlobHeader().props('blob')).toEqual(simpleViewerMock);
@@ -179,7 +189,7 @@ describe('Blob content viewer component', () => {
       expect(findBlobContent().props('activeViewer')).toEqual({
         fileType: 'text',
         tooLarge: false,
-        type: 'simple',
+        type: SIMPLE_BLOB_VIEWER,
         renderError: null,
       });
     });
@@ -247,7 +257,7 @@ describe('Blob content viewer component', () => {
     it('renders a BlobHeader component', async () => {
       await createComponent({ blob: richViewerMock });
 
-      expect(findBlobHeader().props('activeViewerType')).toEqual('rich');
+      expect(findBlobHeader().props('activeViewerType')).toEqual(RICH_BLOB_VIEWER);
       expect(findBlobHeader().props('hasRenderError')).toEqual(false);
       expect(findBlobHeader().props('hideViewerSwitcher')).toEqual(false);
       expect(findBlobHeader().props('blob')).toEqual(richViewerMock);
@@ -260,30 +270,36 @@ describe('Blob content viewer component', () => {
       expect(findBlobContent().props('activeViewer')).toEqual({
         fileType: 'markup',
         tooLarge: false,
-        type: 'rich',
+        type: RICH_BLOB_VIEWER,
         renderError: null,
       });
     });
 
     it('updates viewer type when viewer changed is clicked', async () => {
-      await createComponent({ blob: richViewerMock });
+      await createComponent({ blob: richViewerMock }, shallowMount, { path: '/mock_path' });
 
       expect(findBlobContent().props('activeViewer')).toEqual(
         expect.objectContaining({
-          type: 'rich',
+          type: RICH_BLOB_VIEWER,
         }),
       );
-      expect(findBlobHeader().props('activeViewerType')).toEqual('rich');
+      expect(findBlobHeader().props('activeViewerType')).toEqual(RICH_BLOB_VIEWER);
 
-      findBlobHeader().vm.$emit('viewer-changed', 'simple');
+      findBlobHeader().vm.$emit('viewer-changed', SIMPLE_BLOB_VIEWER);
       await nextTick();
 
-      expect(findBlobHeader().props('activeViewerType')).toEqual('simple');
+      expect(findBlobHeader().props('activeViewerType')).toEqual(SIMPLE_BLOB_VIEWER);
       expect(findBlobContent().props('activeViewer')).toEqual(
         expect.objectContaining({
-          type: 'simple',
+          type: SIMPLE_BLOB_VIEWER,
         }),
       );
+      expect(mockRouterPush).toHaveBeenCalledWith({
+        path: '/mock_path',
+        query: {
+          plain: '1',
+        },
+      });
     });
   });
 
@@ -540,6 +556,34 @@ describe('Blob content viewer component', () => {
         await nextTick();
 
         expect(findForkSuggestion().exists()).toBe(showForkSuggestion);
+      },
+    );
+  });
+
+  describe('active viewer based on plain attribute', () => {
+    it.each`
+      hasRichViewer | plain  | activeViewerType
+      ${true}       | ${'0'} | ${RICH_BLOB_VIEWER}
+      ${true}       | ${'1'} | ${SIMPLE_BLOB_VIEWER}
+      ${false}      | ${'0'} | ${SIMPLE_BLOB_VIEWER}
+      ${false}      | ${'1'} | ${SIMPLE_BLOB_VIEWER}
+    `(
+      'activeViewerType is `$activeViewerType` when hasRichViewer is $hasRichViewer and plain is set to $plain',
+      async ({ hasRichViewer, plain, activeViewerType }) => {
+        await createComponent(
+          { blob: hasRichViewer ? richViewerMock : simpleViewerMock },
+          shallowMount,
+          { query: { plain } },
+        );
+
+        await nextTick();
+
+        expect(findBlobContent().props('activeViewer')).toEqual(
+          expect.objectContaining({
+            type: activeViewerType,
+          }),
+        );
+        expect(findBlobHeader().props('activeViewerType')).toEqual(activeViewerType);
       },
     );
   });

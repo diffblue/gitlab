@@ -64,7 +64,7 @@ export default {
       },
       result() {
         if (this.$route?.query?.plain !== '1') {
-          this.switchViewer(this.hasRichViewer ? RICH_BLOB_VIEWER : SIMPLE_BLOB_VIEWER);
+          this.switchViewer(this.hasRichViewer ? RICH_BLOB_VIEWER : SIMPLE_BLOB_VIEWER, true);
         }
       },
       error() {
@@ -175,6 +175,18 @@ export default {
       return this.blobInfo.storedExternally && this.blobInfo.externalStorage === LFS_STORAGE;
     },
   },
+  watch: {
+    '$route.query.plain': {
+      handler(plainValue) {
+        this.switchViewer(
+          this.hasRichViewer && (plainValue === undefined || plainValue === '0')
+            ? RICH_BLOB_VIEWER
+            : SIMPLE_BLOB_VIEWER,
+          plainValue === undefined,
+        );
+      },
+    },
+  },
   methods: {
     onError() {
       this.useFallback = true;
@@ -218,17 +230,24 @@ export default {
     displayError() {
       createFlash({ message: __('An error occurred while loading the file. Please try again.') });
     },
-    switchViewer(newViewer) {
+    switchViewer(newViewer, preventPlainUpdate) {
       this.activeViewerType = newViewer || SIMPLE_BLOB_VIEWER;
 
       if (!this.blobViewer) {
         this.loadLegacyViewer();
       }
 
-      if (this.$router && this.$route?.path) {
+      const plain = this.activeViewerType === SIMPLE_BLOB_VIEWER ? '1' : '0';
+
+      if (
+        !preventPlainUpdate &&
+        this.$router &&
+        this.$route?.path &&
+        this.$route?.query?.plain !== plain
+      ) {
         this.$router.push({
           path: this.$route.path,
-          query: { plain: this.activeViewerType === SIMPLE_BLOB_VIEWER ? '1' : '0' },
+          query: { plain },
         });
       }
     },
