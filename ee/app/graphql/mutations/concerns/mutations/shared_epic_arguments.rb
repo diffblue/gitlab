@@ -52,6 +52,11 @@ module Mutations
                required: false,
                description: 'IDs of labels to be removed from the epic.'
 
+      argument :add_labels,
+               [GraphQL::Types::String],
+               required: false,
+               description: 'Array of labels to be added to the epic.'
+
       argument :color,
                ::Types::ColorType,
                required: false,

@@ -104,7 +104,6 @@ RSpec.describe Mutations::Epics::Update do
       end
 
       context 'when changing labels of the epic' do
-        let(:attributes) { { add_label_ids: [label_1.id, label_3.id], remove_label_ids: label_2.id } }
         let(:mutation) do
           graphql_mutation(:update_epic, params) do
             <<~QL
@@ -120,22 +119,49 @@ RSpec.describe Mutations::Epics::Update do
           end
         end
 
-        it 'adds and removes labels correctly' do
-          post_graphql_mutation(mutation, current_user: current_user)
+        context 'by ID' do
+          let(:attributes) { { add_label_ids: [label_1.id, label_3.id], remove_label_ids: label_2.id } }
 
-          expect(epic.reload.labels).to match_array([label_1, label_3])
-        end
-
-        context 'when labels are added' do
-          let(:attributes) { { add_label_ids: [label_1.id, label_3.id] } }
-
-          it 'adds labels correctly and keeps the title ordering' do
+          it 'adds and removes labels correctly' do
             post_graphql_mutation(mutation, current_user: current_user)
 
-            labels_ids = mutation_response['epic']['labels']['nodes'].map { |l| l['id'] }
-            expected_label_ids = [label_1, label_2, label_3].map { |l| l.to_global_id.to_s }
+            expect(epic.reload.labels).to match_array([label_1, label_3])
+          end
 
-            expect(labels_ids).to eq(expected_label_ids)
+          context 'when labels are added' do
+            let(:attributes) { { add_label_ids: [label_1.id, label_3.id] } }
+
+            it 'adds labels correctly and keeps the title ordering' do
+              post_graphql_mutation(mutation, current_user: current_user)
+
+              labels_ids = mutation_response['epic']['labels']['nodes'].map { |l| l['id'] }
+              expected_label_ids = [label_1, label_2, label_3].map { |l| l.to_global_id.to_s }
+
+              expect(labels_ids).to eq(expected_label_ids)
+            end
+          end
+        end
+
+        context 'by title' do
+          let(:attributes) { { add_labels: [label_1.title, label_3.title], remove_labels: label_2.title } }
+
+          it 'adds and removes labels correctly' do
+            post_graphql_mutation(mutation, current_user: current_user)
+
+            expect(epic.reload.labels).to match_array([label_1, label_3])
+          end
+
+          context 'when labels are added' do
+            let(:attributes) { { add_labels: [label_1.title, label_3.title] } }
+
+            it 'adds labels correctly and keeps the title ordering' do
+              post_graphql_mutation(mutation, current_user: current_user)
+
+              labels_ids = mutation_response['epic']['labels']['nodes'].map { |l| l['id'] }
+              expected_label_ids = [label_1, label_2, label_3].map { |l| l.to_global_id.to_s }
+
+              expect(labels_ids).to eq(expected_label_ids)
+            end
           end
         end
       end
