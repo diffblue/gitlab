@@ -18,7 +18,7 @@ RSpec.describe 'Project > Members > Invite group and members' do
 
     expect(page).to have_selector('.js-invite-members-trigger')
     expect(page).to have_selector('.js-invite-group-trigger')
-    expect(page).to have_selector('.js-import-a-project-modal')
+    expect(page).to have_selector('.js-import-project-members-trigger')
   end
 
   describe 'Share group lock' do

@@ -20,7 +20,7 @@ RSpec.describe "User manages members" do
 
     it { expect(page).to have_selector(".js-invite-members-trigger") }
     it { expect(page).to have_selector(".js-invite-group-trigger") }
-    it { expect(page).to have_selector(".js-import-a-project-modal") }
+    it { expect(page).to have_selector(".js-import-project-members-trigger") }
   end
 
   shared_examples "when group membership is locked" do
