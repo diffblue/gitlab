@@ -15,7 +15,7 @@ export default {
     noResults: s__('Job|No search results found'),
     searchPopoverTitle: s__('Job|Job log search'),
     searchPopoverDescription: s__(
-      'Job|Search for substrings in your job log output. Currenlty search is only supported for the visible job log output, not for any log output that is truncated due to size.',
+      'Job|Search for substrings in your job log output. Currently search is only supported for the visible job log output, not for any log output that is truncated due to size.',
     ),
     logLineNumberNotFound: s__('Job|We could not find this element'),
   },

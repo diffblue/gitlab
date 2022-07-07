@@ -22418,7 +22418,7 @@ msgstr ""
 msgid "Job|Scroll to top"
 msgstr ""
 
-msgid "Job|Search for substrings in your job log output. Currenlty search is only supported for the visible job log output, not for any log output that is truncated due to size."
+msgid "Job|Search for substrings in your job log output. Currently search is only supported for the visible job log output, not for any log output that is truncated due to size."
 msgstr ""
 
 msgid "Job|Search job log"
