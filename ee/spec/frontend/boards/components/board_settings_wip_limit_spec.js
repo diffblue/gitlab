@@ -113,7 +113,7 @@ describe('BoardSettingsWipLimit', () => {
     });
 
     it('sets wipLimit to be the value of list.maxIssueCount', () => {
-      expect(findInput().attributes('value')).toBe(String(maxIssueCount));
+      expect(findInput().attributes('value')).toBe(maxIssueCount.toString());
     });
   });
 
@@ -133,7 +133,7 @@ describe('BoardSettingsWipLimit', () => {
       });
 
       it('resets wipLimit to 0', async () => {
-        expect(findWipLimit().text()).toContain(4);
+        expect(findWipLimit().text()).toContain('4');
 
         findRemoveWipLimit().vm.$emit('click');
 
@@ -244,7 +244,7 @@ describe('BoardSettingsWipLimit', () => {
           });
 
           it('sets activeWipLimit to new maxIssueCount value', () => {
-            expect(findWipLimit().text()).toContain(maxIssueCount);
+            expect(findWipLimit().text()).toContain(maxIssueCount.toString());
           });
 
           it('toggles GlFormInput on blur', () => {

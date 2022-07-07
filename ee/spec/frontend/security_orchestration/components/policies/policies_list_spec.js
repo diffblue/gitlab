@@ -87,17 +87,17 @@ describe('PoliciesList component', () => {
   });
 
   describe('initial state', () => {
-    beforeEach(() => {
-      mountShallowWrapper({});
-    });
-
     it('renders closed editor drawer', () => {
+      mountShallowWrapper({});
+
       const editorDrawer = findPolicyDrawer();
       expect(editorDrawer.exists()).toBe(true);
       expect(editorDrawer.props('open')).toBe(false);
     });
 
     it('fetches policies', () => {
+      mountShallowWrapper({});
+
       expect(requestHandlers.projectScanExecutionPolicies).toHaveBeenCalledWith({
         fullPath: namespacePath,
       });
@@ -108,6 +108,8 @@ describe('PoliciesList component', () => {
     });
 
     it("sets table's loading state", () => {
+      mountShallowWrapper({});
+
       expect(findPoliciesTable().attributes('busy')).toBe('true');
     });
   });

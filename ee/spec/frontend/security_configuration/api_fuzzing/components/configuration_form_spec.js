@@ -134,14 +134,14 @@ describe('EE - ApiFuzzingConfigurationForm', () => {
 
     it('authentication section becomes visible once checkbox is checked', async () => {
       createWrapper();
-      await findEnableAuthenticationCheckbox().trigger('click');
+      await findEnableAuthenticationCheckbox().setChecked(true);
 
       expect(findAuthenticationNotice().exists()).toBe(true);
     });
 
     it('sees the the proper notice as a maintainer', async () => {
       createWrapper();
-      await findEnableAuthenticationCheckbox().trigger('click');
+      await findEnableAuthenticationCheckbox().setChecked(true);
 
       expect(findAuthenticationNotice().text()).toMatchInterpolatedText(
         'Make sure your credentials are secured To prevent a security leak, authentication info must be added as a CI variable. As a user with maintainer access rights, you can manage CI variables in the Settings area.',
@@ -154,7 +154,7 @@ describe('EE - ApiFuzzingConfigurationForm', () => {
           canSetProjectCiVariables: false,
         },
       });
-      await findEnableAuthenticationCheckbox().trigger('click');
+      await findEnableAuthenticationCheckbox().setChecked(true);
 
       expect(findAuthenticationNotice().text()).toMatchInterpolatedText(
         "You may need a maintainer's help to secure your credentials. To prevent a security leak, authentication info must be added as a CI variable. A user with maintainer access rights can manage CI variables in the Settings area. We detected that you are not a maintainer. Commit your changes and assign them to a maintainer to update the credentials before merging.",
@@ -205,7 +205,7 @@ describe('EE - ApiFuzzingConfigurationForm', () => {
 
       expect(findSubmitButton().props('disabled')).toBe(false);
 
-      await findEnableAuthenticationCheckbox().trigger('click');
+      await findEnableAuthenticationCheckbox().setChecked(true);
 
       expect(findSubmitButton().props('disabled')).toBe(true);
 

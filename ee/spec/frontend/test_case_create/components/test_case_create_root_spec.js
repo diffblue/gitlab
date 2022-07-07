@@ -1,4 +1,4 @@
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 
 import TestCaseCreateRoot from 'ee/test_case_create/components/test_case_create_root.vue';
@@ -92,12 +92,10 @@ describe('TestCaseCreateRoot', () => {
   });
 
   describe('when creating new case', () => {
-    beforeEach(() => {
+    it('calls mutation on submit button click', () => {
       createComponent({ title: 'Test title' });
       findSubmitButton().vm.$emit('click');
-    });
 
-    it('calls mutation on submit button click', () => {
       expect(mutationSuccessHandler).toHaveBeenCalledWith({
         createTestCaseInput: {
           description: 'Test description',
@@ -108,15 +106,26 @@ describe('TestCaseCreateRoot', () => {
       });
     });
 
-    it('shows loading state on submit button', () => {
+    it('shows loading state on submit button', async () => {
+      createComponent({ title: 'Test title' });
+      findSubmitButton().vm.$emit('click');
+      await nextTick();
+
       expect(findSubmitButton().props('loading')).toBe(true);
     });
 
-    it('disables cancel button', () => {
+    it('disables cancel button', async () => {
+      createComponent({ title: 'Test title' });
+      findSubmitButton().vm.$emit('click');
+      await nextTick();
+
       expect(findCancelButton().props('disabled')).toBe(true);
     });
 
     it('redirects after successful mutation', async () => {
+      createComponent({ title: 'Test title' });
+      findSubmitButton().vm.$emit('click');
+
       await waitForPromises();
 
       expect(redirectTo).toHaveBeenCalledWith(mockProvide.projectTestCasesPath);

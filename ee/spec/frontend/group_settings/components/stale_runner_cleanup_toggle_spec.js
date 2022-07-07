@@ -148,25 +148,30 @@ describe('StaleRunnerCleanupToggle', () => {
     const currentValue = false;
     const newValue = true;
 
-    beforeEach(async () => {
-      mockPruningQueryHandler({ value: false });
-      mockPruningMutationHandler({ newValue });
-
-      createComponent();
-      await waitForPromises();
-    });
-
     describe('when user confirms', () => {
-      beforeEach(() => {
+      const confirmByUser = async () => {
+        mockPruningQueryHandler({ value: false });
+        mockPruningMutationHandler({ newValue });
+
+        createComponent();
+      };
+
+      it('shows loading state', async () => {
+        await confirmByUser();
+
         mockConfirmAction({ confirmed: true });
         findToggle().vm.$emit('change', newValue);
-      });
 
-      it('shows loading state', () => {
         expect(findToggle().props('isLoading')).toBe(true);
       });
 
       it('saves the new setting', async () => {
+        await confirmByUser();
+        await waitForPromises();
+
+        mockConfirmAction({ confirmed: true });
+        findToggle().vm.$emit('change', newValue);
+
         await waitForPromises();
         expect(findToggle().props('isLoading')).toBe(false);
         expect(pruningMutationHandler).toHaveBeenCalledTimes(1);
@@ -181,7 +186,13 @@ describe('StaleRunnerCleanupToggle', () => {
     });
 
     describe('when user does not confirm', () => {
-      beforeEach(() => {
+      beforeEach(async () => {
+        mockPruningQueryHandler({ value: false });
+        mockPruningMutationHandler({ newValue });
+
+        createComponent();
+        await waitForPromises();
+
         mockConfirmAction({ confirmed: false });
         findToggle().vm.$emit('change', newValue);
       });

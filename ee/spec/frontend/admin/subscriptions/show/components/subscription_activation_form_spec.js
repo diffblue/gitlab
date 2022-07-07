@@ -35,7 +35,6 @@ describe('SubscriptionActivationForm', () => {
 
   const findActivateButton = () => wrapper.findByTestId('activate-button');
   const findAgreementCheckbox = () => wrapper.findComponent(GlFormCheckbox);
-  const findAgreementCheckboxInput = () => findAgreementCheckbox().find('input');
   const findAgreementCheckboxFormGroup = () => wrapper.findByTestId('form-group-terms');
   const findAgreementCheckboxFormGroupSpan = () => findAgreementCheckboxFormGroup().find('span');
   const findActivationCodeFormGroup = () => wrapper.findByTestId('form-group-activation-code');
@@ -108,7 +107,7 @@ describe('SubscriptionActivationForm', () => {
     const mutationMock = jest.fn().mockRejectedValue({});
     beforeEach(async () => {
       createComponentWithApollo({ mutationMock, mountMethod: mount });
-      await findAgreementCheckbox().vm.$emit('input', false);
+      await findAgreementCheckbox().find('input').setChecked(false);
       findActivateSubscriptionForm().vm.$emit('submit', createFakeEvent());
     });
 
@@ -147,7 +146,7 @@ describe('SubscriptionActivationForm', () => {
       describe('corrects fields to be valid', () => {
         beforeEach(async () => {
           await findActivationCodeInput().vm.$emit('input', fakeActivationCode);
-          await findAgreementCheckboxInput().trigger('click');
+          await findAgreementCheckbox().find('input').setChecked(true);
         });
 
         it('hides the help text field', () => {
@@ -177,10 +176,11 @@ describe('SubscriptionActivationForm', () => {
   describe('activate the subscription', () => {
     describe('when submitting the mutation is successful', () => {
       const mutationMock = jest.fn().mockResolvedValue(activateLicenseMutationResponse.SUCCESS);
+
       beforeEach(async () => {
         createComponentWithApollo({ mutationMock, mountMethod: mount });
         await findActivationCodeInput().vm.$emit('input', fakeActivationCode);
-        await findAgreementCheckboxInput().trigger('click');
+        await findAgreementCheckbox().find('input').setChecked(true);
         findActivateSubscriptionForm().vm.$emit('submit', createFakeEvent());
       });
 
@@ -188,7 +188,7 @@ describe('SubscriptionActivationForm', () => {
         expect(preventDefault).toHaveBeenCalled();
       });
 
-      it('calls mutate with the correct variables', () => {
+      it('calls mutate with the correct variables', async () => {
         expect(mutationMock).toHaveBeenCalledWith({
           gitlabSubscriptionActivateInput: {
             activationCode: fakeActivationCodeTrimmed,
@@ -222,17 +222,16 @@ describe('SubscriptionActivationForm', () => {
     });
 
     describe('when the mutation is not successful with connectivity error', () => {
-      const mutationMock = jest
-        .fn()
-        .mockResolvedValue(activateLicenseMutationResponse.CONNECTIVITY_ERROR);
-      beforeEach(async () => {
+      it('emits an failure event with a connectivity error payload', async () => {
+        const mutationMock = jest
+          .fn()
+          .mockResolvedValue(activateLicenseMutationResponse.CONNECTIVITY_ERROR);
         createComponentWithApollo({ mutationMock, mountMethod: mount });
         await findActivationCodeInput().vm.$emit('input', fakeActivationCode);
-        await findAgreementCheckboxInput().trigger('click');
+        await findAgreementCheckbox().find('input').setChecked(true);
         findActivateSubscriptionForm().vm.$emit('submit', createFakeEvent());
-      });
+        await waitForPromises();
 
-      it('emits an failure event with a connectivity error payload', () => {
         expect(wrapper.emitted(SUBSCRIPTION_ACTIVATION_FAILURE_EVENT)).toEqual([
           [CONNECTIVITY_ERROR],
         ]);
@@ -240,17 +239,16 @@ describe('SubscriptionActivationForm', () => {
     });
 
     describe('when the mutation is not successful with invalid activation code error', () => {
-      const mutationMock = jest
-        .fn()
-        .mockResolvedValue(activateLicenseMutationResponse.INVALID_CODE_ERROR);
-      beforeEach(async () => {
+      it('emits an failure event with a connectivity error payload', async () => {
+        const mutationMock = jest
+          .fn()
+          .mockResolvedValue(activateLicenseMutationResponse.INVALID_CODE_ERROR);
         createComponentWithApollo({ mutationMock, mountMethod: mount });
         await findActivationCodeInput().vm.$emit('input', fakeActivationCode);
-        await findAgreementCheckboxInput().trigger('click');
+        await findAgreementCheckbox().find('input').setChecked(true);
         findActivateSubscriptionForm().vm.$emit('submit', createFakeEvent());
-      });
+        await waitForPromises();
 
-      it('emits an failure event with a connectivity error payload', () => {
         expect(wrapper.emitted(SUBSCRIPTION_ACTIVATION_FAILURE_EVENT)).toEqual([
           [INVALID_CODE_ERROR],
         ]);

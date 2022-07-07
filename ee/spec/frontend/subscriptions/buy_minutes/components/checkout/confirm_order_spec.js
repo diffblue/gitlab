@@ -43,6 +43,10 @@ describe('Confirm Order', () => {
     describe('when receiving proper step data', () => {
       beforeEach(() => {
         mockApolloProvider = createMockApolloProvider(STEPS, 3);
+        mockApolloProvider.clients.defaultClient.cache.writeQuery({
+          query: stateQuery,
+          data: { ...initialStateData, stepList: STEPS, activeStep: STEPS[3] },
+        });
         createComponent({ apolloProvider: mockApolloProvider });
       });
 

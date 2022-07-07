@@ -78,7 +78,7 @@ describe('EpicLane', () => {
     });
 
     it('displays count of issues in epic which belong to board', () => {
-      expect(wrapper.findByTestId('epic-lane-issue-count').text()).toContain(2);
+      expect(wrapper.findByTestId('epic-lane-issue-count').text()).toContain('2');
     });
 
     it('displays 1 icon', () => {

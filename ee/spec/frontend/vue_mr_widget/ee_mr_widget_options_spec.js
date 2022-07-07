@@ -1204,7 +1204,9 @@ describe('ee merge request widget options', () => {
     ${undefined}     | ${'readyToMerge'}   | ${false}
     ${undefined}     | ${'nothingToMerge'} | ${false}
   `('status checks widget', ({ path, mergeState, shouldRender }) => {
-    beforeEach(() => {
+    it(`${
+      shouldRender ? 'renders' : 'does not render'
+    } when the path is '${path}' and the merge state is '${mergeState}'`, async () => {
       createComponent({
         propsData: {
           mrData: {
@@ -1214,11 +1216,8 @@ describe('ee merge request widget options', () => {
         },
       });
       wrapper.vm.mr.state = mergeState;
-    });
+      await nextTick();
 
-    it(`${
-      shouldRender ? 'renders' : 'does not render'
-    } when the path is '${path}' and the merge state is '${mergeState}'`, () => {
       expect(findStatusChecksReport().exists()).toBe(shouldRender);
     });
   });

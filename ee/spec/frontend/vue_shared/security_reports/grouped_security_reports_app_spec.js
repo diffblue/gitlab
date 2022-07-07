@@ -189,7 +189,7 @@ describe('Grouped security reports app', () => {
     });
 
     describe('while loading', () => {
-      beforeEach(() => {
+      it('renders loading summary text + spinner', () => {
         mock.onGet(PIPELINE_JOBS_ENDPOINT).reply(200, {});
         mock.onGet(CONTAINER_SCANNING_DIFF_ENDPOINT).reply(200, {});
         mock.onGet(DEPENDENCY_SCANNING_DIFF_ENDPOINT).reply(200, {});
@@ -200,9 +200,7 @@ describe('Grouped security reports app', () => {
         mock.onGet(API_FUZZING_DIFF_ENDPOINT).reply(200, {});
 
         createWrapper(allReportProps);
-      });
 
-      it('renders loading summary text + spinner', () => {
         expect(findSpinner().exists()).toBe(true);
         expect(findReportSummary().text()).toEqual('Security scanning is loading');
 

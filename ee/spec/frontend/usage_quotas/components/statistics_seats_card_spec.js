@@ -32,7 +32,7 @@ describe('StatisticsSeatsCard', () => {
       const seatsUsedBlock = findSeatsUsedBlock();
 
       expect(seatsUsedBlock.exists()).toBe(true);
-      expect(seatsUsedBlock.text()).toContain(20);
+      expect(seatsUsedBlock.text()).toContain('20');
       expect(seatsUsedBlock.findComponent(GlLink).exists()).toBe(true);
     });
 
@@ -50,7 +50,7 @@ describe('StatisticsSeatsCard', () => {
       const seatsOwedBlock = findSeatsOwedBlock();
 
       expect(seatsOwedBlock.exists()).toBe(true);
-      expect(seatsOwedBlock.text()).toContain(5);
+      expect(seatsOwedBlock.text()).toContain('5');
       expect(seatsOwedBlock.findComponent(GlLink).exists()).toBe(true);
     });
 

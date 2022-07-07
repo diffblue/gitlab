@@ -20,7 +20,7 @@ describe('IssueCardWeight', () => {
         weight: 0,
       });
 
-      expect(wrapper.find('.board-card-info-text').text()).toContain(0);
+      expect(wrapper.find('.board-card-info-text').text()).toContain('0');
     });
 
     it('shows 5 when weight is 5', () => {
