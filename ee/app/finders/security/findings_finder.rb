@@ -16,6 +16,8 @@
 
 module Security
   class FindingsFinder
+    include ::VulnerabilityFindingHelpers
+
     ResultSet = Struct.new(:relation, :findings) do
       delegate :current_page, :limit_value, :total_pages, :total_count, :next_page, :prev_page, to: :relation
     end
@@ -44,38 +46,6 @@ module Security
       security_findings.map(&method(:build_vulnerability_finding))
     end
 
-    def build_vulnerability_finding(security_finding)
-      report_finding = report_finding_for(security_finding)
-      return Vulnerabilities::Finding.new unless report_finding
-
-      finding_data = report_finding.to_hash.except(:compare_key, :identifiers, :location, :scanner, :links, :signatures, :flags, :evidence)
-      identifiers = report_finding.identifiers.map do |identifier|
-        Vulnerabilities::Identifier.new(identifier.to_hash)
-      end
-      signatures = report_finding.signatures.map do |signature|
-        Vulnerabilities::FindingSignature.new(signature.to_hash)
-      end
-      evidence = Vulnerabilities::Finding::Evidence.new(data: report_finding.evidence.data) if report_finding.evidence
-
-      Vulnerabilities::Finding.new(finding_data).tap do |finding|
-        finding.location_fingerprint = report_finding.location.fingerprint
-        finding.vulnerability = vulnerability_for(security_finding.uuid)
-        finding.project = project
-        finding.sha = pipeline.sha
-        finding.scanner = security_finding.scanner
-        finding.finding_evidence = evidence
-
-        if calculate_false_positive?
-          finding.vulnerability_flags = report_finding.flags.map do |flag|
-            Vulnerabilities::Flag.new(flag)
-          end
-        end
-
-        finding.identifiers = identifiers
-        finding.signatures = signatures
-      end
-    end
-
     def report_finding_for(security_finding)
       lookup_uuid = security_finding.overridden_uuid || security_finding.uuid
 
@@ -84,10 +54,6 @@ module Security
 
     def vulnerability_for(finding_uuid)
       existing_vulnerabilities[finding_uuid]
-    end
-
-    def calculate_false_positive?
-      project.licensed_feature_available?(:sast_fp_reduction)
     end
 
     def existing_vulnerabilities
