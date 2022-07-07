@@ -6,6 +6,7 @@ module Registrations
     include Registrations::CreateGroup
     include Registrations::ApplyTrial
     include OneTrustCSP
+    include GoogleAnalyticsCSP
 
     skip_before_action :require_verification, only: :new
     before_action :set_requires_verification, only: :new, if: -> { helpers.require_verification_experiment.candidate? }

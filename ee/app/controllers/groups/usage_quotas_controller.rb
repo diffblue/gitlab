@@ -2,6 +2,7 @@
 
 class Groups::UsageQuotasController < Groups::ApplicationController
   include OneTrustCSP
+  include GoogleAnalyticsCSP
   include GitlabSubscriptions::SeatCountAlert
 
   before_action :authorize_admin_group!

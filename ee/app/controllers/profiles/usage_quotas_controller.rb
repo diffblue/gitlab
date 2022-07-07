@@ -2,6 +2,7 @@
 
 class Profiles::UsageQuotasController < Profiles::ApplicationController
   include OneTrustCSP
+  include GoogleAnalyticsCSP
 
   feature_category :purchase
   urgency :low

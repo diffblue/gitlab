@@ -6,6 +6,7 @@ module Registrations
     include Registrations::ApplyTrial
     include ::Gitlab::Utils::StrongMemoize
     include OneTrustCSP
+    include GoogleAnalyticsCSP
 
     layout 'minimal'
 

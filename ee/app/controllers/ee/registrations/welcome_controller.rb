@@ -11,6 +11,7 @@ module EE
 
       prepended do
         include OneTrustCSP
+        include GoogleAnalyticsCSP
 
         before_action :authorized_for_trial_onboarding!,
                       only: [

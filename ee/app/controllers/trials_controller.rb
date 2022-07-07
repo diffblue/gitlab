@@ -5,6 +5,7 @@
 class TrialsController < ApplicationController
   include ActionView::Helpers::SanitizeHelper
   include OneTrustCSP
+  include GoogleAnalyticsCSP
 
   layout 'minimal'
 

@@ -4,6 +4,7 @@ module Registrations
   class ProjectsController < ApplicationController
     include Registrations::CreateProject
     include OneTrustCSP
+    include GoogleAnalyticsCSP
 
     layout 'minimal'
 

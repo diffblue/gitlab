@@ -5,6 +5,7 @@
 class TrialRegistrationsController < RegistrationsController
   include OneTrustCSP
   include BizibleCSP
+  include GoogleAnalyticsCSP
 
   layout 'minimal'
 
