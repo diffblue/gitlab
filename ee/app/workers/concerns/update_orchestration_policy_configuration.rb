@@ -23,6 +23,10 @@ module UpdateOrchestrationPolicyConfiguration
             .new(policy_configuration: configuration, policy: policy, policy_index: policy_index)
             .execute
         end
+
+        Security::SecurityOrchestrationPolicies::SyncOpenedMergeRequestsService
+          .new(policy_configuration: configuration)
+          .execute
       end
     end
 
