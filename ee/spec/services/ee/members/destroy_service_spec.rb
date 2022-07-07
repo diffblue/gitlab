@@ -58,6 +58,12 @@ RSpec.describe Members::DestroyService do
       end
     end
 
+    context 'streaming audit event' do
+      subject { described_class.new(current_user).execute(member, skip_authorization: true) }
+
+      include_examples 'sends streaming audit event'
+    end
+
     context 'group deletion schedule' do
       context 'when member user has a scheduled deletion for the group' do
         let!(:group_deletion_schedule) { create(:group_deletion_schedule, group: group, user_id: member_user.id, marked_for_deletion_on: 2.days.ago) }

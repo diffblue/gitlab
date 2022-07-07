@@ -36,6 +36,18 @@ RSpec.describe Groups::CreateService, '#execute' do
     end
   end
 
+  context 'when created group is a sub-group' do
+    let(:group) { create :group }
+
+    subject(:execute) { create_group(user, group_params.merge(parent_id: group.id)) }
+
+    before do
+      group.add_owner(user)
+    end
+
+    include_examples 'sends streaming audit event'
+  end
+
   context 'repository_size_limit assignment as Bytes' do
     let(:admin_user) { create(:user, admin: true) }
 

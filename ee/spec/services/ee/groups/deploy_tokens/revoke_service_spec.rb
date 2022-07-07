@@ -21,5 +21,20 @@ RSpec.describe Groups::DeployTokens::RevokeService do
 
       expect(AuditEvent.last.details[:custom_message]).to eq(expected_message)
     end
+
+    context 'when group is a sub-group' do
+      let_it_be(:parent_group) { create :group }
+      let_it_be(:group) { create :group, parent: parent_group }
+      let_it_be(:deploy_token) { create(:deploy_token, :group, groups: [group]) }
+      let_it_be(:deploy_token_params) { { id: deploy_token.id } }
+
+      subject { described_class.new(group, user, deploy_token_params).execute }
+
+      before do
+        group.add_owner(user)
+      end
+
+      include_examples 'sends streaming audit event'
+    end
   end
 end

@@ -86,6 +86,28 @@ RSpec.describe Projects::DestroyService do
     end
   end
 
+  context 'streaming audit event' do
+    let(:group) { create :group }
+    let(:project) { create :project, namespace: group }
+
+    subject { described_class.new(project, user, {}).execute }
+
+    before do
+      group.add_owner(user)
+      stub_licensed_features(external_audit_events: true)
+      group.external_audit_event_destinations.create!(destination_url: 'http://example.com')
+    end
+
+    it 'sends the audit streaming event with json format' do
+      expect(AuditEvents::AuditEventStreamingWorker).to receive(:perform_async).with(
+        'audit_operation',
+        nil,
+        a_string_including("root_group_entity_id\":#{group.id}"))
+
+      subject
+    end
+  end
+
   context 'system hooks exception' do
     before do
       allow_any_instance_of(SystemHooksService).to receive(:execute_hooks_for).and_raise('something went wrong')

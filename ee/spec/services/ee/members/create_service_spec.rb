@@ -159,4 +159,17 @@ RSpec.describe Members::CreateService do
       end
     end
   end
+
+  context 'streaming audit event' do
+    let(:group) { root_ancestor }
+    let(:params) do
+      {
+        user_id: project_users.first.id,
+        access_level: Gitlab::Access::GUEST,
+        invite_source: '_invite_source_'
+      }
+    end
+
+    include_examples 'sends streaming audit event'
+  end
 end

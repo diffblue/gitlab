@@ -75,6 +75,19 @@ RSpec.describe Groups::UpdateService, '#execute' do
     end
   end
 
+  context 'sub group' do
+    let(:parent_group) { create :group }
+    let(:group) { create :group, parent: parent_group }
+
+    subject { update_group(group, user, { name: 'new_sub_group_name' }) }
+
+    before do
+      parent_group.add_owner(user)
+    end
+
+    include_examples 'sends streaming audit event'
+  end
+
   describe 'changing file_template_project_id' do
     let(:group) { create(:group) }
     let(:valid_project) { create(:project, namespace: group) }
