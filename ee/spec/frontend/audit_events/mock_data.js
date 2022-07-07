@@ -104,6 +104,14 @@ export const destinationCreateMutationPopulator = (errors = []) => {
   };
 };
 
+export const destinationDeleteMutationPopulator = (errors = []) => ({
+  data: {
+    externalAuditEventDestinationDestroy: {
+      errors,
+    },
+  },
+});
+
 export const destinationHeaderCreateMutationPopulator = (errors = []) => ({
   data: {
     auditEventsStreamingHeadersCreate: {
@@ -113,10 +121,20 @@ export const destinationHeaderCreateMutationPopulator = (errors = []) => ({
   },
 });
 
-export const destinationDeleteMutationPopulator = (errors = []) => ({
+export const destinationHeaderUpdateMutationPopulator = (errors = []) => ({
   data: {
-    externalAuditEventDestinationDestroy: {
+    auditEventsStreamingHeadersUpdate: {
       errors,
+      clientMutationId: uniqueId(),
+    },
+  },
+});
+
+export const destinationHeaderDeleteMutationPopulator = (errors = []) => ({
+  data: {
+    auditEventsStreamingHeadersDestroy: {
+      errors,
+      clientMutationId: uniqueId(),
     },
   },
 });

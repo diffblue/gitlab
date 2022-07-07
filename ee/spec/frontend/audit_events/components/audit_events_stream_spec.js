@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
+import { nextTick } from 'vue';
 import { GlButton, GlLoadingIcon } from '@gitlab/ui';
 import { createAlert } from '~/flash';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
@@ -9,6 +10,7 @@ import externalDestinationsQuery from 'ee/audit_events/graphql/get_external_dest
 import { AUDIT_STREAMS_NETWORK_ERRORS } from 'ee/audit_events/constants';
 import AuditEventsStream from 'ee/audit_events/components/audit_events_stream.vue';
 import StreamDestinationEditor from 'ee/audit_events/components/stream/stream_destination_editor.vue';
+import StreamItem from 'ee/audit_events/components/stream/stream_item.vue';
 import StreamEmptyState from 'ee/audit_events/components/stream/stream_empty_state.vue';
 import {
   mockExternalDestinations,
@@ -42,6 +44,7 @@ describe('AuditEventsStream', () => {
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const findStreamDestinationEditor = () => wrapper.findComponent(StreamDestinationEditor);
   const findStreamEmptyState = () => wrapper.findComponent(StreamEmptyState);
+  const findStreamItems = () => wrapper.findAllComponents(StreamItem);
 
   afterEach(() => {
     wrapper.destroy();
@@ -81,32 +84,72 @@ describe('AuditEventsStream', () => {
   describe('when edit mode entered', () => {
     beforeEach(() => {
       createComponent();
+
+      return waitForPromises();
     });
 
     it('shows destination editor', async () => {
-      await waitForPromises();
-
       expect(findLoadingIcon().exists()).toBe(false);
       expect(findStreamDestinationEditor().exists()).toBe(false);
 
-      await findAddDestinationButton().vm.$emit('click');
+      findAddDestinationButton().vm.$emit('click');
+      await nextTick();
 
       expect(findStreamDestinationEditor().exists()).toBe(true);
     });
 
-    it('refreshes the query and exit edit mode when external destination url added', async () => {
-      await waitForPromises();
-
+    it('refreshes the query and exits edit mode when an external destination is added', async () => {
       expect(findLoadingIcon().exists()).toBe(false);
       expect(externalDestinationsQuerySpy).toHaveBeenCalledTimes(1);
       expect(findStreamDestinationEditor().exists()).toBe(false);
 
-      await findAddDestinationButton().vm.$emit('click');
+      findAddDestinationButton().vm.$emit('click');
+      await nextTick();
+
       const streamDestinationEditorComponent = findStreamDestinationEditor();
 
       expect(streamDestinationEditorComponent.exists()).toBe(true);
 
-      await streamDestinationEditorComponent.vm.$emit('added');
+      streamDestinationEditorComponent.vm.$emit('added');
+      await waitForPromises();
+
+      expect(externalDestinationsQuerySpy).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  describe('Streaming items', () => {
+    beforeEach(() => {
+      createComponent();
+
+      return waitForPromises();
+    });
+
+    it('shows the items', () => {
+      expect(findStreamItems()).toHaveLength(2);
+
+      expect(findStreamItems().at(0).props('item')).toStrictEqual(mockExternalDestinations[0]);
+      expect(findStreamItems().at(1).props('item')).toStrictEqual(mockExternalDestinations[1]);
+    });
+
+    it('refreshes the query when an external destination is updated', async () => {
+      await waitForPromises();
+
+      expect(findLoadingIcon().exists()).toBe(false);
+      expect(externalDestinationsQuerySpy).toHaveBeenCalledTimes(1);
+
+      findStreamItems().at(0).vm.$emit('updated');
+      await waitForPromises();
+
+      expect(externalDestinationsQuerySpy).toHaveBeenCalledTimes(2);
+    });
+
+    it('refreshes the query when an external destination is deleted', async () => {
+      await waitForPromises();
+
+      expect(findLoadingIcon().exists()).toBe(false);
+      expect(externalDestinationsQuerySpy).toHaveBeenCalledTimes(1);
+
+      findStreamItems().at(0).vm.$emit('deleted');
       await waitForPromises();
 
       expect(externalDestinationsQuerySpy).toHaveBeenCalledTimes(2);

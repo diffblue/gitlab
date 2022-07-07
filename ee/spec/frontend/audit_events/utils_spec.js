@@ -3,9 +3,10 @@ import {
   getEntityTypeFromType,
   parseAuditEventSearchQuery,
   createAuditEventSearchQuery,
+  mapAllMutationErrors,
   mapItemHeadersToFormData,
 } from 'ee/audit_events/utils';
-import { mockExternalDestinationHeader } from './mock_data';
+import { destinationDeleteMutationPopulator, mockExternalDestinationHeader } from './mock_data';
 
 describe('Audit Event Utils', () => {
   describe('getTypeFromEntityType', () => {
@@ -169,6 +170,43 @@ describe('Audit Event Utils', () => {
           validationErrors: { name: '' },
         },
       ]);
+    });
+  });
+
+  describe('mapAllMutationErrors', () => {
+    it('returns an empty array when there are no errors', async () => {
+      const mutations = [
+        Promise.resolve(destinationDeleteMutationPopulator()),
+        Promise.resolve(destinationDeleteMutationPopulator()),
+      ];
+
+      await expect(
+        mapAllMutationErrors(mutations, 'externalAuditEventDestinationDestroy'),
+      ).resolves.toStrictEqual([]);
+    });
+
+    it('throws any rejected errors', async () => {
+      const error = new Error('rejected error');
+      const mutations = [
+        Promise.reject(error),
+        Promise.resolve(destinationDeleteMutationPopulator()),
+      ];
+
+      await expect(
+        mapAllMutationErrors(mutations, 'externalAuditEventDestinationDestroy'),
+      ).rejects.toThrow(error);
+    });
+
+    it('returns the errors found within each mutations errors property', async () => {
+      const errors = ['Validation error 1', 'Validation error 2', 'Validation error 3'];
+      const mutations = [
+        Promise.resolve(destinationDeleteMutationPopulator(errors)),
+        Promise.resolve(destinationDeleteMutationPopulator()),
+      ];
+
+      await expect(
+        mapAllMutationErrors(mutations, 'externalAuditEventDestinationDestroy'),
+      ).resolves.toStrictEqual(errors);
     });
   });
 });

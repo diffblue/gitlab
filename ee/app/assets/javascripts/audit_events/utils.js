@@ -82,3 +82,19 @@ export const mapItemHeadersToFormData = (item, settings = {}) => {
       .sort((a, b) => getIdFromGraphQLId(a.id) - getIdFromGraphQLId(b.id))
   );
 };
+
+export const mapAllMutationErrors = (mutations, name) => {
+  return Promise.allSettled(mutations).then((results) => {
+    const rejected = results.filter((r) => r.status === 'rejected').map((r) => r.reason);
+
+    if (rejected.length > 0) {
+      throw rejected[0];
+    }
+
+    return results
+      .filter((r) => r.status === 'fulfilled')
+      .map((r) => r.value.data[name].errors)
+      .reduce((r, errors) => r.concat(errors), [])
+      .filter(Boolean);
+  });
+};
