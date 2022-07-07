@@ -65,7 +65,7 @@ const bindEvents = () => {
       const targetGroupFullPath = $(this).data('target-group-full-path');
       eventHub.$emit(
         'select-template',
-        targetGroupFullPath ? groupId : subgroupId,
+        targetGroupFullPath ? groupId : null,
         targetGroupFullPath || subgroupFullPath,
       );
 
@@ -137,6 +137,10 @@ const bindEvents = () => {
 
   $(document).on('click', '.js-template-group-options', function toggleExpandedClass() {
     $(this).toggleClass('expanded');
+  });
+
+  document.querySelector('.js-create-project-button').addEventListener('click', (e) => {
+    projectNew.validateGroupNamespaceDropdown(e);
   });
 };
 
