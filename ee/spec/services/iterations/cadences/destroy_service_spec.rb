@@ -14,7 +14,7 @@ RSpec.describe Iterations::Cadences::DestroyService do
   let_it_be(:iteration_event, refind: true) { create(:resource_iteration_event, iteration: iteration) }
   let_it_be(:board, refind: true) { create(:board, iteration: iteration, iteration_cadence: iteration_cadence, group: group) }
   let_it_be(:board2, refind: true) { create(:board, iteration: iteration, group: group) }
-  let_it_be(:issue) { create(:issue, namespace: group, iteration: iteration) }
+  let_it_be(:issue) { create(:issue, project: project, iteration: iteration) }
   let_it_be(:merge_request) { create(:merge_request, source_project: project, iteration: iteration) }
 
   RSpec.shared_examples 'cadence destroy fails with message' do |message:|

@@ -5,7 +5,7 @@ module EE
     extend ActiveSupport::Concern
 
     prepended do
-      condition(:over_storage_limit, scope: :subject) { @subject.namespace.over_storage_limit? }
+      condition(:over_storage_limit, scope: :subject) { @subject.project.namespace.over_storage_limit? }
 
       rule { over_storage_limit }.policy do
         prevent :create_issue
