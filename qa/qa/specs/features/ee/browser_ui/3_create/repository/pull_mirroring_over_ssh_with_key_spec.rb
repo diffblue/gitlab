@@ -2,7 +2,7 @@
 
 module QA
   RSpec.describe 'Create' do
-    describe 'Pull mirror a repository over SSH with a private key', :skip_fips_env do
+    describe 'Pull mirror a repository over SSH with a private key' do
       let(:source) do
         Resource::Repository::ProjectPush.fabricate! do |project_push|
           project_push.project_name = 'pull-mirror-source-project'
