@@ -152,7 +152,6 @@ export default {
               :tooltip-text="instance.tooltip"
               :pod-name="instance.pod_name"
               :stable="instance.stable"
-              :logs-path="row.item.logsPath"
             />
           </template>
         </div>
