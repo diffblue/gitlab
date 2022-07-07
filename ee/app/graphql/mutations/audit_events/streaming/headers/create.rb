@@ -18,21 +18,29 @@ module Mutations
 
           argument :destination_id, ::Types::GlobalIDType[::AuditEvents::ExternalAuditEventDestination],
                    required: true,
-                description: 'Destination to associate header with.'
+                   description: 'Destination to associate header with.'
 
           field :header, ::Types::AuditEvents::Streaming::HeaderType,
                 null: true,
                 description: 'Created header.'
 
           def resolve(destination_id:, key:, value:)
-            destination = authorized_find!(destination_id)
-            unless Feature.enabled?(:streaming_audit_event_headers, destination.group)
-              raise Gitlab::Graphql::Errors::ResourceNotAvailable, 'feature disabled'
+            params = {
+              destination: authorized_find!(destination_id),
+              key: key,
+              value: value
+            }
+
+            response = ::AuditEvents::Streaming::Headers::CreateService.new(
+              group: params[:destination]&.group,
+              params: params
+            ).execute
+
+            if response.success?
+              { header: response.payload[:header], errors: [] }
+            else
+              { header: nil, errors: response.errors }
             end
-
-            header = destination.headers.new(key: key, value: value)
-
-            { header: (header if header.save), errors: Array(header.errors) }
           end
 
           private
