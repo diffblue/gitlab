@@ -15,7 +15,7 @@
           %p
             %span= _('Try all GitLab has to offer for 30 days.')
             %span.d-none.d-sm-inline= _('No credit card required.')
-          = link_to _('Start your free trial'), new_trial_path, class: "btn btn-confirm gl-button mt-2 mt-sm-0 #{button_css_class}", target: '_blank', rel: 'noopener noreferrer', data: { track_action: 'click_button', track_label: 'start_your_trial', track_property: banner_title }
+          = link_to _('Start your free trial'), new_trial_path(glm_source: 'gitlab.com', glm_content: 'gold-callout'), class: "btn btn-confirm gl-button mt-2 mt-sm-0 #{button_css_class}", target: '_blank', rel: 'noopener noreferrer', data: { track_action: 'click_button', track_label: 'start_your_trial', track_property: banner_title }
         - if is_dismissable
           = render Pajamas::ButtonComponent.new(category: :tertiary,
             icon: 'close',
