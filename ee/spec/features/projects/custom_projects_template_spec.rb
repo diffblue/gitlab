@@ -137,23 +137,23 @@ RSpec.describe 'Project' do
       sign_in user
     end
 
-    context 'from default new project path', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/208500' do
-      it 'displays user namespace for default project URL' do
+    context 'from default new project path' do
+      it 'displays empty namespace for default project URL' do
         visit new_project_path
         create_from_template(:group, template.name)
 
-        expect(page).to have_button(user.username, exact: true)
+        expect(page).to have_button(s_('ProjectsNew|Pick a group or namespace'))
       end
     end
 
     context 'from subgroup new project path' do
       let!(:other_subgroup) { create(:group, parent: group, name: 'long-other-subgroup') }
 
-      it 'displays subgroup namespace for default project URL' do
-        visit new_project_path(namespace_id: other_subgroup.id)
+      it 'displays empty namespace for default project URL' do
+        visit new_project_path
         create_from_template(:group, template.name)
 
-        expect(page).to have_button("#{group.name}/#{other_subgroup.name}")
+        expect(page).to have_button(s_('ProjectsNew|Pick a group or namespace'))
       end
     end
   end

@@ -267,7 +267,7 @@ RSpec.describe 'New project', :js do
           end
 
           # Open Project URL dropdown
-          click_button group1.name
+          click_button button_text
         end
 
         context 'when template is selected' do
@@ -288,8 +288,6 @@ RSpec.describe 'New project', :js do
         end
 
         context 'when user changes template' do
-          let(:url) { new_project_path }
-
           before do
             page.within('#create-from-template-pane') do
               click_button 'Change template'
@@ -299,7 +297,7 @@ RSpec.describe 'New project', :js do
             end
 
             # Open Project URL dropdown
-            click_button group1.name
+            click_button button_text
           end
 
           it 'list the appropriate groups' do
@@ -343,7 +341,9 @@ RSpec.describe 'New project', :js do
             let(:template_number) { 5 }
           end
 
-          it_behaves_like 'template selected'
+          it_behaves_like 'template selected' do
+            let(:button_text) { 'Pick a group or namespace' }
+          end
         end
 
         context 'when namespace context' do
@@ -353,7 +353,9 @@ RSpec.describe 'New project', :js do
             let(:template_number) { 2 }
           end
 
-          it_behaves_like 'template selected'
+          it_behaves_like 'template selected' do
+            let(:button_text) { group1.full_path }
+          end
         end
 
         context 'when creating project from subgroup when template set on top-level group' do
@@ -363,7 +365,9 @@ RSpec.describe 'New project', :js do
             let(:template_number) { 2 }
           end
 
-          it_behaves_like 'template selected'
+          it_behaves_like 'template selected' do
+            let(:button_text) { subgroup1.full_path }
+          end
         end
 
         context 'when creating project from top-level group when template set on a sub-subgroup' do
