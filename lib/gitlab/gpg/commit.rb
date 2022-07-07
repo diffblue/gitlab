@@ -3,8 +3,6 @@
 module Gitlab
   module Gpg
     class Commit < Gitlab::SignedCommit
-      SIGNATURE_CLASS = CommitSignatures::GpgSignature
-
       def update_signature!(cached_signature)
         using_keychain do |gpg_key|
           cached_signature.update!(attributes(gpg_key))
@@ -13,6 +11,10 @@ module Gitlab
       end
 
       private
+
+      def signature_class
+        CommitSignatures::GpgSignature
+      end
 
       def using_keychain
         Gitlab::Gpg.using_tmp_keychain do

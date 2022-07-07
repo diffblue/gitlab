@@ -46,9 +46,13 @@ module Gitlab
 
     private
 
+    def signature_class
+      raise NotImplementedError, '`signature_class` must be implmented by subclass`'
+    end
+
     def lazy_signature
       BatchLoader.for(@commit.sha).batch do |shas, loader|
-        self.class::SIGNATURE_CLASS.by_commit_sha(shas).each do |signature|
+        signature_class.by_commit_sha(shas).each do |signature|
           loader.call(signature.commit_sha, signature)
         end
       end
@@ -57,9 +61,9 @@ module Gitlab
     def create_cached_signature!
       return if attributes.nil?
 
-      return self.class::SIGNATURE_CLASS.new(attributes) if Gitlab::Database.read_only?
+      return signature_class.new(attributes) if Gitlab::Database.read_only?
 
-      self.class::SIGNATURE_CLASS.safe_create!(attributes)
+      signature_class.safe_create!(attributes)
     end
   end
 end

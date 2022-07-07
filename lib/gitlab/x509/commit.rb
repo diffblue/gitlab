@@ -5,9 +5,11 @@ require 'digest'
 module Gitlab
   module X509
     class Commit < Gitlab::SignedCommit
-      SIGNATURE_CLASS = CommitSignatures::X509CommitSignature
-
       private
+
+      def signature_class
+        CommitSignatures::X509CommitSignature
+      end
 
       def attributes
         return if @commit.sha.nil? || @commit.project.nil?
