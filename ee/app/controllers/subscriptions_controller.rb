@@ -6,6 +6,7 @@ class SubscriptionsController < ApplicationController
   include InternalRedirect
   include OneTrustCSP
   include ZuoraCSP
+  include GoogleAnalyticsCSP
 
   layout 'minimal'
   skip_before_action :authenticate_user!, only: [:new]
