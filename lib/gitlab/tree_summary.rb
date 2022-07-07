@@ -31,10 +31,9 @@ module Gitlab
     #
     #     - An Array of Hashes containing the following keys:
     #         - file_name:   The full path of the tree entry
-    #         - type:        One of :blob, :tree, or :submodule
     #         - commit:      The last ::Commit to touch this entry in the tree
     #         - commit_path: URI of the commit in the web interface
-    #     - An Array of the unique ::Commit objects in the first value
+    #         - commit_title_html: Rendered commit title
     def summarize
       commits_hsh = fetch_last_cached_commits_list
       prerender_commit_full_titles!(commits_hsh.values)
