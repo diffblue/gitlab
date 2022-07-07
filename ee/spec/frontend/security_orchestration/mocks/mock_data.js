@@ -190,6 +190,8 @@ export const mockScanResultPolicy = {
   updatedAt: new Date('2021-06-07T00:00:00.000Z'),
   yaml: mockScanResultManifest,
   enabled: false,
+  userApprovers: [],
+  groupApprovers: [],
 };
 
 export const mockScanResultPolicySecond = {
@@ -198,6 +200,8 @@ export const mockScanResultPolicySecond = {
   updatedAt: new Date('2021-06-07T00:00:00.000Z'),
   yaml: mockScanResultManifestSecond,
   enabled: true,
+  userApprovers: [],
+  groupApprovers: [],
 };
 
 export const mockScanExecutionPoliciesResponse = [
@@ -206,3 +210,24 @@ export const mockScanExecutionPoliciesResponse = [
 ];
 
 export const mockScanResultPoliciesResponse = [mockScanResultPolicy];
+
+export const createRequiredApprovers = (count) => {
+  const approvers = [];
+  for (let i = 0; i < count; i += 1) {
+    const id = i + 1;
+    const approver = { webUrl: `webUrl${id}` };
+    if (i % 2) {
+      // eslint-disable-next-line no-underscore-dangle
+      approver.__typename = 'UserCore';
+      approver.name = `username${id}`;
+      approver.id = `gid://gitlab/User/${id}`;
+    } else {
+      // eslint-disable-next-line no-underscore-dangle
+      approver.__typename = 'Group';
+      approver.fullPath = `grouppath${id}`;
+      approver.id = `gid://gitlab/Group/${id}`;
+    }
+    approvers.push(approver);
+  }
+  return approvers;
+};

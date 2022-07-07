@@ -1,4 +1,4 @@
-import { sprintf, s__, n__ } from '~/locale';
+import { sprintf, s__ } from '~/locale';
 import { NO_RULE_MESSAGE, INVALID_BRANCHES } from '../../constants';
 import { convertScannersToTitleCase } from '../../utils';
 
@@ -103,80 +103,6 @@ const humanizeScanners = (scanners) => {
       plural: s__('SecurityOrchestration|scanners find'),
     }),
   });
-};
-
-/**
- * Create a human-readable string, adding the necessary punctuation and conjunctions
- * @param {Object} action containing or not arrays of string and integers representing approvers
- * @returns {String}
- */
-const humanizeApprovers = (action) => {
-  const userApprovers = humanizeItems({ items: action.user_approvers, singular: '', plural: '' });
-  const userApproversIds = humanizeItems({
-    items: action.user_approvers_ids,
-    singular: s__('SecurityOrchestration|user with id'),
-    plural: s__('SecurityOrchestration|users with ids'),
-    hasArticle: false,
-    hasTextBeforeItems: true,
-  });
-  const groupApprovers = humanizeItems({
-    items: action.group_approvers,
-    singular: s__('SecurityOrchestration|members of the group'),
-    plural: s__('SecurityOrchestration|members of groups'),
-    hasArticle: false,
-    hasTextBeforeItems: true,
-  });
-  const groupApproversIds = humanizeItems({
-    items: action.group_approvers_ids,
-    singular: s__('SecurityOrchestration|members of the group with id'),
-    plural: s__('SecurityOrchestration|members of groups with ids'),
-    hasArticle: false,
-    hasTextBeforeItems: true,
-  });
-
-  const conjunctionOr = s__('SecurityOrchestration| or ');
-
-  let finalSentence = userApprovers;
-
-  if (finalSentence && userApproversIds) {
-    finalSentence += conjunctionOr;
-  }
-
-  finalSentence += userApproversIds;
-
-  if (finalSentence && groupApprovers) {
-    finalSentence += conjunctionOr;
-  }
-
-  finalSentence += groupApprovers;
-
-  if (finalSentence && groupApproversIds) {
-    finalSentence += conjunctionOr;
-  }
-
-  finalSentence += groupApproversIds;
-
-  return finalSentence;
-};
-
-/**
- * Create a human-readable version of the action
- * @param {Object} action {type: 'require_approval', approvals_required: 1, approvers: Array(1)}
- * @returns {String}
- */
-export const humanizeAction = (action) => {
-  const plural = n__('approval', 'approvals', action.approvals_required);
-
-  return sprintf(
-    s__(
-      'SecurityOrchestration|Require %{approvals} %{plural} from %{approvers} if any of the following occur:',
-    ),
-    {
-      approvals: action.approvals_required,
-      plural,
-      approvers: humanizeApprovers(action),
-    },
-  );
 };
 
 /**
