@@ -2,7 +2,7 @@ import { GlDropdownItem, GlSegmentedControl, GlSprintf } from '@gitlab/ui';
 import { shallowMount, mount } from '@vue/test-utils';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import Vue, { nextTick } from 'vue';
+import Vue from 'vue';
 import Vuex from 'vuex';
 import LabelsSelector from 'ee/analytics/cycle_analytics/components/labels_selector.vue';
 import TasksByTypeFilters from 'ee/analytics/cycle_analytics/components/tasks_by_type/tasks_by_type_filters.vue';
@@ -158,9 +158,12 @@ describe('TasksByTypeFilters', () => {
       wrapper = createComponent({ mountFn: mount });
       expect(wrapper.emitted('update-filter')).toBeUndefined();
 
-      findSubjectFilters(wrapper).findAll('label:not(.active)').at(0).trigger('click');
+      await findSubjectFilters(wrapper)
+        .findAll('label:not(.active)')
+        .at(0)
+        .find('input')
+        .trigger('change');
 
-      await nextTick();
       expect(wrapper.emitted('update-filter')).toBeDefined();
       expect(wrapper.emitted('update-filter')[0]).toEqual([
         {

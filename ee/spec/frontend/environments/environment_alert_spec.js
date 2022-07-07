@@ -5,7 +5,6 @@ import EnvironmentAlert from 'ee/environments/components/environment_alert.vue';
 import alertQuery from 'ee/environments/graphql/queries/environment.query.graphql';
 import SeverityBadge from 'ee/vue_shared/security_reports/components/severity_badge.vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
-import waitForPromises from 'helpers/wait_for_promises';
 
 Vue.use(VueApollo);
 
@@ -31,8 +30,6 @@ describe('Environment Alert', () => {
         ...provide,
       },
     });
-
-    await waitForPromises();
   };
 
   const findSeverityBadge = () => wrapper.findComponent(SeverityBadge);
@@ -43,7 +40,6 @@ describe('Environment Alert', () => {
 
   afterEach(() => {
     wrapper.destroy();
-    wrapper = null;
   });
 
   describe('has alert', () => {
@@ -69,7 +65,7 @@ describe('Environment Alert', () => {
       await factory();
     });
 
-    it('should display the alert details', async () => {
+    it('displays the alert details', async () => {
       const text = wrapper.text();
       expect(text).toContain('Critical');
       expect(text).toContain('alert title >0.1% jest.');
@@ -77,13 +73,13 @@ describe('Environment Alert', () => {
       expect(text).toContain('just now');
     });
 
-    it('should link to the details of the alert', () => {
+    it('links to the details of the alert', () => {
       const link = wrapper.find('[data-testid="alert-link"]');
       expect(link.text()).toBe('View Details');
       expect(link.attributes('href')).toBe('/alert/details');
     });
 
-    it('should show a severity badge with the correct severity', () => {
+    it('shows a severity badge with the correct severity', () => {
       const badge = findSeverityBadge();
       expect(badge.exists()).toBe(true);
       expect(badge.props('severity')).toBe('CRITICAL');
@@ -106,7 +102,7 @@ describe('Environment Alert', () => {
       await factory();
     });
 
-    it('should display nothing', () => {
+    it('displays nothing', () => {
       expect(wrapper.find('[data-testid="alert"]').exists()).toBe(false);
       expect(findSeverityBadge().exists()).toBe(false);
     });

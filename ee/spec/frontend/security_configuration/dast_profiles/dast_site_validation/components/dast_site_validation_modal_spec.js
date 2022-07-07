@@ -81,8 +81,8 @@ describe('DastSiteValidationModal', () => {
     withinComponent().queryByRole('radio', {
       name: new RegExp(`${validationMethod} validation`, 'i'),
     });
-  const enableValidationMethod = (validationMethod) =>
-    createWrapper(findRadioInputForValidationMethod(validationMethod)).trigger('click');
+  const enableValidationMethod = async (validationMethod) =>
+    createWrapper(findRadioInputForValidationMethod(validationMethod)).setChecked(true);
 
   afterEach(() => {
     wrapper.destroy();
@@ -207,7 +207,7 @@ describe('DastSiteValidationModal', () => {
             });
             await waitForPromises();
 
-            enableValidationMethod(validationMethod);
+            await enableValidationMethod(validationMethod);
           });
 
           const expectedValue =
@@ -255,7 +255,7 @@ describe('DastSiteValidationModal', () => {
 
         await waitForPromises();
 
-        enableValidationMethod('header');
+        await enableValidationMethod('header');
       });
 
       it.each([
@@ -285,22 +285,26 @@ describe('DastSiteValidationModal', () => {
     });
 
     describe('meta tag validation', () => {
-      beforeEach(async () => {
+      it.each([
+        /step 2 - add the following meta tag to your site./i,
+        /step 3 - confirm meta tag location./i,
+      ])('shows the correct descriptions', async (descriptionText) => {
         createFullComponent();
 
         await waitForPromises();
 
-        enableValidationMethod('meta tag');
-      });
+        await enableValidationMethod('meta tag');
 
-      it.each([
-        /step 2 - add the following meta tag to your site./i,
-        /step 3 - confirm meta tag location./i,
-      ])('shows the correct descriptions', (descriptionText) => {
         expect(withinComponent().getByText(descriptionText)).not.toBe(null);
       });
 
-      it('shows a code block containing the meta key with the given token', () => {
+      it('shows a code block containing the meta key with the given token', async () => {
+        createFullComponent();
+
+        await waitForPromises();
+
+        await enableValidationMethod('meta tag');
+
         expect(
           withinComponent().getByText(`<meta name="gitlab-dast-validation" content="${token}">`, {
             selector: 'code',
@@ -308,7 +312,13 @@ describe('DastSiteValidationModal', () => {
         ).not.toBe(null);
       });
 
-      it('shows a button that copies the meta tag to the clipboard', () => {
+      it('shows a button that copies the meta tag to the clipboard', async () => {
+        createFullComponent();
+
+        await waitForPromises();
+
+        await enableValidationMethod('meta tag');
+
         const clipboardButton = wrapper.findComponent(ModalCopyButton);
 
         expect(clipboardButton.exists()).toBe(true);
@@ -327,8 +337,8 @@ describe('DastSiteValidationModal', () => {
     });
 
     describe('passed', () => {
-      beforeEach(() => {
-        enableValidationMethod(validationMethod);
+      beforeEach(async () => {
+        await enableValidationMethod(validationMethod);
       });
 
       it('triggers the dastSiteValidationCreate GraphQL mutation', () => {

@@ -239,7 +239,7 @@ describe('Board List Header Component', () => {
         const weightTooltip = wrapper.findComponent({ ref: 'weightTooltip' });
 
         expect(weightTooltip.exists()).toBe(true);
-        expect(weightTooltip.text()).toContain(totalWeight);
+        expect(weightTooltip.text()).toContain(totalWeight.toString());
       });
     });
 

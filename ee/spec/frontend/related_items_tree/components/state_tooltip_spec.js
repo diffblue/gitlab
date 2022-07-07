@@ -82,13 +82,13 @@ describe('RelatedItemsTree', () => {
 
       describe('createdAtTimestamp', () => {
         it('returns string containing date timestamp for `createdAt` prop', () => {
-          expect(wrapper.vm.createdAtTimestamp).toContain(mockCreatedAtYear);
+          expect(wrapper.vm.createdAtTimestamp).toContain(mockCreatedAtYear.toString());
         });
       });
 
       describe('closedAtTimestamp', () => {
         it('returns string containing date timestamp for `closedAt` prop', () => {
-          expect(wrapper.vm.closedAtTimestamp).toContain(mockClosedAtYear);
+          expect(wrapper.vm.closedAtTimestamp).toContain(mockClosedAtYear.toString());
         });
       });
 
@@ -119,7 +119,7 @@ describe('RelatedItemsTree', () => {
           });
 
           await nextTick();
-          expect(wrapper.vm.stateTimestamp).toContain(mockCreatedAtYear);
+          expect(wrapper.vm.stateTimestamp).toContain(mockCreatedAtYear.toString());
         });
 
         it('returns string using `closedAtInWords` prop when `isOpen` is false', async () => {
@@ -128,7 +128,7 @@ describe('RelatedItemsTree', () => {
           });
 
           await nextTick();
-          expect(wrapper.vm.stateTimestamp).toContain(mockClosedAtYear);
+          expect(wrapper.vm.stateTimestamp).toContain(mockClosedAtYear.toString());
         });
       });
     });
@@ -136,7 +136,7 @@ describe('RelatedItemsTree', () => {
     describe('methods', () => {
       describe('getTimestamp', () => {
         it('returns timestamp string from rawTimestamp', () => {
-          expect(wrapper.vm.getTimestamp(mockClosedAt)).toContain(mockClosedAtYear);
+          expect(wrapper.vm.getTimestamp(mockClosedAt)).toContain(mockClosedAtYear.toString());
         });
       });
 
@@ -166,7 +166,7 @@ describe('RelatedItemsTree', () => {
 
       it('renders stateTimestamp in muted', () => {
         expect(wrapper.findComponent({ ref: 'stateTimestamp' }).text().trim()).toContain(
-          mockClosedAtYear,
+          mockClosedAtYear.toString(),
         );
       });
     });

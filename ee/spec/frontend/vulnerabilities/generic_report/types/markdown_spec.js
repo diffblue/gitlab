@@ -46,8 +46,6 @@ describe('ee/vulnerabilities/components/generic_report/types/markdown.vue', () =
     mock = new MockAdapter(axios);
 
     setUpMockMarkdown();
-
-    wrapper = createWrapper();
   });
 
   afterEach(() => {
@@ -57,12 +55,16 @@ describe('ee/vulnerabilities/components/generic_report/types/markdown.vue', () =
 
   describe('when loading', () => {
     it('shows the loading icon', () => {
+      wrapper = createWrapper();
+
       expect(findSkeletonLoader().exists()).toBe(true);
     });
   });
 
   describe('when loaded', () => {
     it('shows markdown', async () => {
+      wrapper = createWrapper();
+
       await axios.waitForAll();
       expect(findSkeletonLoader().exists()).toBe(false);
       expect(findMarkdown().element.innerHTML).toBe(HTML_SAFE_RENDERED_MARKDOWN);

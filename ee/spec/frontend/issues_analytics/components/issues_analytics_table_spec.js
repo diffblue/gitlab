@@ -45,19 +45,18 @@ describe('IssuesAnalyticsTable', () => {
   afterEach(() => {
     mock.restore();
     wrapper.destroy();
-    wrapper = null;
   });
 
   describe('while fetching data', () => {
-    beforeEach(() => {
-      wrapper = createComponent();
-    });
-
     it('displays a loading icon', () => {
+      wrapper = createComponent();
+
       expect(wrapper.findComponent(GlLoadingIcon).exists()).toBe(true);
     });
 
     it('does not display the table', () => {
+      wrapper = createComponent();
+
       expect(findTable().exists()).toBe(false);
     });
   });

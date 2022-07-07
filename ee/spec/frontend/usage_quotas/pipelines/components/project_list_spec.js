@@ -35,7 +35,7 @@ describe('ProjectCIMinutesList', () => {
       defaultProjectListProps.projects[0].project.nameWithNamespace,
     );
     expect(firstProjectColumns.at(1).text()).toContain(
-      defaultProjectListProps.projects[0].ci_minutes,
+      defaultProjectListProps.projects[0].ci_minutes.toString(),
     );
   });
 

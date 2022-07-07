@@ -130,7 +130,7 @@ describe('Order Summary', () => {
     });
 
     describe('calls api that returns no data', () => {
-      beforeEach(() => {
+      it('does not render amount', () => {
         jest.spyOn(console, 'error').mockImplementation(() => {});
         const orderPreviewQueryMock = jest.fn().mockResolvedValue({ data: null });
         const apolloProvider = createMockApolloProvider(
@@ -138,9 +138,7 @@ describe('Order Summary', () => {
           orderPreviewQueryMock,
         );
         createComponent(apolloProvider, { purchaseHasExpiration: true });
-      });
 
-      it('does not render amount', () => {
         expect(findAmount().text()).toBe('-');
       });
     });

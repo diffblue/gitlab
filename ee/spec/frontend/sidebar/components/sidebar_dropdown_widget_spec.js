@@ -1,10 +1,4 @@
-import {
-  GlDropdown,
-  GlDropdownItem,
-  GlDropdownText,
-  GlSearchBoxByType,
-  GlFormInput,
-} from '@gitlab/ui';
+import { GlDropdown, GlDropdownItem, GlFormInput } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
 import { mount } from '@vue/test-utils';
 import Vue from 'vue';
@@ -19,7 +13,6 @@ import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import createFlash from '~/flash';
 import { IssuableType } from '~/issues/constants';
-import SidebarEditableItem from '~/sidebar/components/sidebar_editable_item.vue';
 import { clickEdit, search } from '../helpers';
 
 import {
@@ -37,23 +30,11 @@ describe('SidebarDropdownWidget', () => {
   let wrapper;
   let mockApollo;
 
-  const promiseData = { issuableSetAttribute: { issue: { attribute: { id: '123' } } } };
-
-  const mutationSuccess = () => jest.fn().mockResolvedValue({ data: promiseData });
-
   const findDropdown = () => wrapper.findComponent(GlDropdown);
-  const findDropdownText = () => wrapper.findComponent(GlDropdownText);
   const findAllDropdownItems = () => wrapper.findAll(GlDropdownItem);
   const findDropdownItemWithText = (text) =>
     findAllDropdownItems().wrappers.find((x) => x.text() === text);
   const findSelectedAttribute = () => wrapper.findByTestId('select-epic');
-
-  // Used with createComponent which shallow mounts components
-  const toggleDropdown = async () => {
-    wrapper.findComponent(SidebarEditableItem).vm.$emit('open');
-
-    await waitForPromises();
-  };
 
   const createComponentWithApollo = async ({
     requestHandlers = [],
@@ -86,64 +67,8 @@ describe('SidebarDropdownWidget', () => {
     await waitForPromises();
   };
 
-  const createComponent = ({
-    data = {},
-    issuableAttribute = IssuableAttributeType.Epic,
-    mutationPromise = mutationSuccess,
-    queries = {},
-  } = {}) => {
-    wrapper = extendedWrapper(
-      mount(SidebarDropdownWidget, {
-        provide: { canUpdate: true },
-        data() {
-          return data;
-        },
-        propsData: {
-          workspacePath: '',
-          attrWorkspacePath: '',
-          iid: '',
-          issuableType: IssuableType.Issue,
-          issuableAttribute,
-        },
-        mocks: {
-          $apollo: {
-            mutate: mutationPromise(),
-            queries: {
-              currentAttribute: { loading: false },
-              attributesList: { loading: false },
-              ...queries,
-            },
-          },
-        },
-        stubs: {
-          SidebarEditableItem,
-          GlSearchBoxByType,
-          GlDropdown,
-        },
-      }),
-    );
-
-    // We need to mock out `showDropdown` which
-    // invokes `show` method of BDropdown used inside GlDropdown.
-  };
-
   afterEach(() => {
     wrapper.destroy();
-    wrapper = null;
-  });
-
-  describe('when a user is searching', () => {
-    describe('when search result is not found', () => {
-      it('renders "No open iteration found"', async () => {
-        createComponent({ issuableAttribute: IssuableAttributeType.Iteration });
-
-        await toggleDropdown();
-
-        await search(wrapper, 'non existing epics');
-
-        expect(findDropdownText().text()).toBe('No open iteration found');
-      });
-    });
   });
 
   describe('with mock apollo', () => {

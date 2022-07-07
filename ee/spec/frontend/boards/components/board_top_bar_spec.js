@@ -107,10 +107,10 @@ describe('BoardTopBar', () => {
           isSignedIn: true,
         },
       });
+    });
 
-      it('renders ToggleEpicsSwimlanes component', () => {
-        expect(wrapper.findComponent(ToggleEpicsSwimlanes).exists()).toBe(true);
-      });
+    it('renders ToggleEpicsSwimlanes component', () => {
+      expect(wrapper.findComponent(ToggleEpicsSwimlanes).exists()).toBe(true);
     });
   });
 });

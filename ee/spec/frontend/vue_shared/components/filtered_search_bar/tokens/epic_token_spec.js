@@ -72,18 +72,6 @@ describe('EpicToken', () => {
     wrapper.destroy();
   });
 
-  describe('computed', () => {
-    beforeEach(async () => {
-      wrapper = createComponent({
-        data: {
-          epics: mockEpics,
-        },
-      });
-
-      await nextTick();
-    });
-  });
-
   describe('methods', () => {
     describe('fetchEpicsBySearchTerm', () => {
       it('calls fetchEpics with provided searchTerm param', () => {

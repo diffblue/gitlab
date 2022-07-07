@@ -15,7 +15,6 @@ import SidebarTodoWidget from '~/sidebar/components/todo_toggle/sidebar_todo_wid
 import { mockEpicMeta, mockEpicData } from '../mock_data';
 
 describe('EpicSidebarComponent', () => {
-  const originalUserId = gon.current_user_id;
   let wrapper;
   let store;
 
@@ -54,7 +53,7 @@ describe('EpicSidebarComponent', () => {
     });
 
     afterAll(() => {
-      gon.current_user_id = originalUserId;
+      gon.current_user_id = null;
     });
 
     it('renders component container element with classes `right-sidebar-expanded`, `right-sidebar` & `epic-sidebar`', async () => {

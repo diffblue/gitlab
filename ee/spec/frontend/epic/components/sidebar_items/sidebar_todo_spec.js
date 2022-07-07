@@ -1,5 +1,4 @@
 import { mount } from '@vue/test-utils';
-import { nextTick } from 'vue';
 
 import SidebarTodo from 'ee/epic/components/sidebar_items/sidebar_todo.vue';
 import createStore from 'ee/epic/store';
@@ -7,46 +6,47 @@ import createStore from 'ee/epic/store';
 import { mockEpicMeta, mockEpicData } from '../../mock_data';
 
 describe('SidebarTodoComponent', () => {
-  const originalUserId = gon.current_user_id;
   let wrapper;
-  let store;
 
-  beforeEach(() => {
-    gon.current_user_id = 1;
-
-    store = createStore();
+  const createComponent = (propsData = {}) => {
+    const store = createStore();
     store.dispatch('setEpicMeta', mockEpicMeta);
     store.dispatch('setEpicData', mockEpicData);
 
-    wrapper = mount(SidebarTodo, {
+    return mount(SidebarTodo, {
       store,
-      props: { sidebarCollapsed: false },
+      propsData: { sidebarCollapsed: false, ...propsData },
     });
+  };
+
+  beforeEach(() => {
+    gon.current_user_id = 1;
   });
 
   afterEach(() => {
-    gon.current_user_id = originalUserId;
+    gon.current_user_id = null;
     wrapper.destroy();
   });
 
-  describe('template', () => {
-    it('renders component container element with classes `block` & `todo` when `isUserSignedIn` & `sidebarCollapsed` is `true`', async () => {
-      wrapper.setProps({ sidebarCollapsed: true });
+  describe('when `isUserSignedIn` & `sidebarCollapsed` is `true`', () => {
+    it('renders component container element with classes `block` & `todo`', async () => {
+      wrapper = createComponent({ sidebarCollapsed: true });
 
-      await nextTick();
       expect(wrapper.classes('block')).toBe(true);
       expect(wrapper.classes('todo')).toBe(true);
     });
+  });
 
-    it('renders Todo toggle button element', () => {
-      const buttonWrapper = wrapper.find('button.btn-todo');
+  it('renders Todo toggle button element', async () => {
+    wrapper = createComponent();
 
-      expect(buttonWrapper.exists()).toBe(true);
-      expect(buttonWrapper.attributes()).toMatchObject({
-        'aria-label': 'Add a to do',
-        'data-issuable-id': '1',
-        'data-issuable-type': 'epic',
-      });
+    const buttonWrapper = wrapper.find('button.btn-todo');
+
+    expect(buttonWrapper.exists()).toBe(true);
+    expect(buttonWrapper.attributes()).toMatchObject({
+      'aria-label': 'Add a to do',
+      'data-issuable-id': '1',
+      'data-issuable-type': 'epic',
     });
   });
 });

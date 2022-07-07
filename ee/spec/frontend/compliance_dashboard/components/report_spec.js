@@ -324,31 +324,45 @@ describe('ComplianceReport component', () => {
     describe('when the filters changed', () => {
       const query = { mergedAfter, mergedBefore, projectIds: [1, 2, 3] };
 
-      beforeEach(() => {
-        return findViolationFilter().vm.$emit('filters-changed', query);
-      });
+      const changeFilters = async () => {
+        wrapper = createComponent(mount, {}, mockGraphQlSuccess);
 
-      it('updates the URL query', () => {
+        await waitForPromises();
+
+        return findViolationFilter().vm.$emit('filters-changed', query);
+      };
+
+      it('updates the URL query', async () => {
+        await changeFilters();
+
         expect(findUrlSync().props('query')).toMatchObject(query);
       });
 
-      it('shows the table loading icon', () => {
+      it('shows the table loading icon', async () => {
+        await changeFilters();
+
         expect(findTableLoadingIcon().exists()).toBe(true);
       });
 
-      it('sets the pagination component to disabled', () => {
+      it('sets the pagination component to disabled', async () => {
+        await changeFilters();
+
         expect(findPagination().props('disabled')).toBe(true);
       });
 
       it('clears the project URL query param if the project array is empty', async () => {
+        await changeFilters();
+
         await findViolationFilter().vm.$emit('filters-changed', { ...query, projectIds: [] });
 
         expect(findUrlSync().props('query')).toMatchObject({ ...query, projectIds: null });
       });
 
       it('fetches the filtered violations', async () => {
-        expect(mockGraphQlSuccess).toHaveBeenCalledTimes(2);
-        expect(mockGraphQlSuccess).toHaveBeenNthCalledWith(2, {
+        await changeFilters();
+
+        expect(mockGraphQlSuccess).toHaveBeenCalledTimes(3);
+        expect(mockGraphQlSuccess).toHaveBeenNthCalledWith(3, {
           fullPath: groupPath,
           filters: parseViolationsQueryFilter(query),
           sort: DEFAULT_SORT,
@@ -360,23 +374,32 @@ describe('ComplianceReport component', () => {
     describe('when the table sort changes', () => {
       const sortState = { sortBy: 'mergedAt', sortDesc: true };
 
-      beforeEach(async () => {
-        await findViolationsTable().vm.$emit('sort-changed', sortState);
-      });
+      const changeTableSort = async () => {
+        wrapper = createComponent(mount, {}, mockGraphQlSuccess);
 
-      it('updates the URL query', () => {
+        await waitForPromises();
+        await findViolationsTable().vm.$emit('sort-changed', sortState);
+      };
+
+      it('updates the URL query', async () => {
+        await changeTableSort();
+
         expect(findUrlSync().props('query')).toMatchObject({
           sort: sortObjectToString(sortState),
         });
       });
 
-      it('shows the table loading icon', () => {
+      it('shows the table loading icon', async () => {
+        await changeTableSort();
+
         expect(findTableLoadingIcon().exists()).toBe(true);
       });
 
       it('fetches the sorted violations', async () => {
-        expect(mockGraphQlSuccess).toHaveBeenCalledTimes(2);
-        expect(mockGraphQlSuccess).toHaveBeenNthCalledWith(2, {
+        await changeTableSort();
+
+        expect(mockGraphQlSuccess).toHaveBeenCalledTimes(3);
+        expect(mockGraphQlSuccess).toHaveBeenNthCalledWith(3, {
           fullPath: groupPath,
           filters: parseViolationsQueryFilter(defaultFilterParams),
           sort: sortObjectToString(sortState),

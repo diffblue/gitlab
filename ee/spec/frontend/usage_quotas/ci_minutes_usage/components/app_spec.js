@@ -42,7 +42,6 @@ describe('CI minutes usage app groups', () => {
 
   beforeEach(() => {
     queryHandlerSpy = jest.fn().mockResolvedValue(ciMinutesUsageMockData);
-    createComponent();
   });
 
   afterEach(() => {
@@ -50,38 +49,53 @@ describe('CI minutes usage app groups', () => {
   });
 
   it('calls query with namespaceId variable', () => {
+    createComponent();
+
     expect(queryHandlerSpy).toHaveBeenCalledWith({ namespaceId: 'gid://gitlab/Group/1' });
   });
 
   it('should display loading icon while query is fetching', () => {
+    createComponent();
+
     expect(findLoadingIcon().exists()).toBe(true);
   });
 
   describe('after query finishes', () => {
-    beforeEach(async () => {
+    it('should display the correct number of tabs', async () => {
+      createComponent();
       await waitForPromises();
       await nextTick();
-    });
 
-    it('should display the correct number of tabs', () => {
       expect(findAllTabs()).toHaveLength(4);
     });
 
-    it('should render minutes usage month chart', () => {
+    it('should render minutes usage month chart', async () => {
+      createComponent();
+      await waitForPromises();
+      await nextTick();
+
       expect(findMinutesUsageMonthChart().props()).toEqual({
         ciMinutesUsage: ciMinutesUsageMockData.data.ciMinutesUsage.nodes,
       });
       expect(findLoadingIcon().exists()).toBe(false);
     });
 
-    it('should render shared runner usage month chart', () => {
+    it('should render shared runner usage month chart', async () => {
+      createComponent();
+      await waitForPromises();
+      await nextTick();
+
       expect(findSharedRunnerUsageMonthChart().props()).toEqual({
         ciMinutesUsage: ciMinutesUsageMockData.data.ciMinutesUsage.nodes,
       });
       expect(findLoadingIcon().exists()).toBe(false);
     });
 
-    it('should render minutes usage project chart', () => {
+    it('should render minutes usage project chart', async () => {
+      createComponent();
+      await waitForPromises();
+      await nextTick();
+
       expect(findMinutesUsageProjectChart().props()).toEqual({
         minutesUsageData: ciMinutesUsageMockData.data.ciMinutesUsage.nodes,
         displaySharedRunnerData: false,
@@ -89,7 +103,11 @@ describe('CI minutes usage app groups', () => {
       expect(findLoadingIcon().exists()).toBe(false);
     });
 
-    it('should render shared runner usage project chart', () => {
+    it('should render shared runner usage project chart', async () => {
+      createComponent();
+      await waitForPromises();
+      await nextTick();
+
       expect(findSharedRunnerUsageProjectChart().props()).toEqual({
         minutesUsageData: ciMinutesUsageMockData.data.ciMinutesUsage.nodes,
         displaySharedRunnerData: true,

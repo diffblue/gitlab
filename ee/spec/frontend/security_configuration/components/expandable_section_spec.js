@@ -1,8 +1,6 @@
 import { mount, shallowMount } from '@vue/test-utils';
-import { nextTick } from 'vue';
 import ExpandableSection from 'ee/security_configuration/components/expandable_section.vue';
 import { stubTransition } from 'helpers/stub_transition';
-import waitForPromises from 'helpers/wait_for_promises';
 
 describe('ExpandableSection component', () => {
   let wrapper;
@@ -14,7 +12,6 @@ describe('ExpandableSection component', () => {
     });
   };
 
-  const findButton = () => wrapper.find('button');
   const findHeading = () => wrapper.find('[data-testid="heading"]');
   const findSubHeading = () => wrapper.find('[data-testid="sub-heading"]');
   const findContent = () => wrapper.find('[data-testid="content"]');
@@ -78,34 +75,10 @@ describe('ExpandableSection component', () => {
   });
 
   describe('expand/collapse behavior', () => {
-    beforeEach(() => {
-      createComponent({}, mount);
-    });
-
     it('hides the content by default', async () => {
-      await nextTick();
+      createComponent({}, mount);
+
       expect(findContent().isVisible()).toBe(false);
-    });
-
-    it('shows an expand button', () => {
-      expect(findButton().text()).toBe('Expand');
-    });
-
-    describe('clicking the expand button', () => {
-      beforeEach(async () => {
-        await waitForPromises();
-        const button = findButton();
-        button.trigger('click');
-        await nextTick();
-      });
-
-      it('shows the content', () => {
-        expect(findContent().isVisible()).toBe(true);
-      });
-
-      it('shows a collapse button', () => {
-        expect(findButton().text()).toBe('Collapse');
-      });
     });
   });
 });

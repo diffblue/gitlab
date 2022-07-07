@@ -64,7 +64,7 @@ describe('Zuora', () => {
   });
 
   describe('when active', () => {
-    beforeEach(async () => {
+    beforeEach(() => {
       createComponent({}, { isLoading: false });
     });
 
@@ -79,7 +79,6 @@ describe('Zuora', () => {
     describe('when toggling the loading indicator', () => {
       beforeEach(() => {
         createComponent({}, { isLoading: true });
-        wrapper.vm.zuoraScriptEl.onload();
       });
 
       it('shows the loading icon', () => {

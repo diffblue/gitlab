@@ -5,7 +5,7 @@ describe('ee/vulnerabilities/components/generic_report/types/value.vue', () => {
   let wrapper;
 
   describe.each`
-    field type   | value
+    fieldType    | value
     ${'string'}  | ${'some string'}
     ${'number'}  | ${8}
     ${'boolean'} | ${true}
