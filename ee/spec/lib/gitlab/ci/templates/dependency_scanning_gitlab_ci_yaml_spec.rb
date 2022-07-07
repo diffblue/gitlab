@@ -96,6 +96,17 @@ RSpec.shared_examples 'predefined image suffix' do
   end
 end
 
+RSpec.shared_examples 'DS_REMEDIATE default value' do |expected|
+  context 'project supported by gemnasium analyzer' do
+    let(:project) { create(:project, :custom_repo, files: { 'yarn.lock' => '' }) }
+
+    it 'sets default value for DS_REMEDIATE' do
+      build = pipeline.builds.first
+      expect(String(build.variables.to_hash['DS_REMEDIATE'])).to eql(expected)
+    end
+  end
+end
+
 RSpec.describe 'Dependency-Scanning.gitlab-ci.yml' do
   subject(:template) { Gitlab::Template::GitlabCiYmlTemplate.find('Dependency-Scanning') }
 
@@ -182,6 +193,7 @@ RSpec.describe 'Dependency-Scanning.gitlab-ci.yml' do
 
         include_examples 'language detection'
         include_examples 'PIP_REQUIREMENTS_FILE support'
+        include_examples 'DS_REMEDIATE default value', ""
       end
 
       context 'when FIPS mode is enabled', :fips_mode do
@@ -189,6 +201,7 @@ RSpec.describe 'Dependency-Scanning.gitlab-ci.yml' do
 
         include_examples 'language detection'
         include_examples 'PIP_REQUIREMENTS_FILE support'
+        include_examples 'DS_REMEDIATE default value', "false"
       end
     end
   end
