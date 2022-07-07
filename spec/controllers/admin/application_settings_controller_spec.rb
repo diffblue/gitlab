@@ -396,7 +396,7 @@ RSpec.describe Admin::ApplicationSettingsController, :do_not_mock_admin_mode_set
     it 'redirects the user to application settings page' do
       subject
 
-      expect(response).to redirect_to(admin_application_settings_path)
+      expect(response).to redirect_to(general_admin_application_settings_path)
     end
   end
 
