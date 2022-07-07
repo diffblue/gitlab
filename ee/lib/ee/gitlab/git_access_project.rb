@@ -8,7 +8,7 @@ module EE
       override :size_checker
       def size_checker
         root_namespace = container.namespace.root_ancestor
-        if ::Namespaces::Storage::EnforcementCheckService.enforce_limit?(root_namespace)
+        if ::EE::Gitlab::Namespaces::Storage::Enforcement.enforce_limit?(root_namespace)
           ::EE::Namespace::RootStorageSize.new(root_namespace)
         else
           container.repository_size_checker
