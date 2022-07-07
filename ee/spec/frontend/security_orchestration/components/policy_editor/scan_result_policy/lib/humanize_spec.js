@@ -1,6 +1,5 @@
 import {
   humanizeRules,
-  humanizeAction,
   humanizeInvalidBranchesError,
 } from 'ee/security_orchestration/components/policy_editor/scan_result_policy/lib';
 import { NO_RULE_MESSAGE } from 'ee/security_orchestration/components/policy_editor/constants';
@@ -12,33 +11,6 @@ jest.mock('~/locale', () => ({
   n__: jest.requireActual('~/locale').n__, // eslint-disable-line no-underscore-dangle
   __: jest.requireActual('~/locale').__,
 }));
-
-const mockActions = [
-  { type: 'require_approval', approvals_required: 2, user_approvers: ['o.leticia.conner'] },
-  {
-    type: 'require_approval',
-    approvals_required: 2,
-    group_approvers: ['security_group/all_members'],
-  },
-  {
-    type: 'require_approval',
-    approvals_required: 2,
-    group_approvers_ids: [10],
-  },
-  {
-    type: 'require_approval',
-    approvals_required: 2,
-    user_approvers_ids: [5],
-  },
-  {
-    type: 'require_approval',
-    approvals_required: 2,
-    user_approvers: ['o.leticia.conner'],
-    group_approvers: ['security_group/all_members'],
-    group_approvers_ids: [10],
-    user_approvers_ids: [5],
-  },
-];
 
 const mockRules = [
   {
@@ -108,54 +80,22 @@ describe('humanizeRules', () => {
   });
 });
 
-describe('humanizeAction', () => {
-  it('returns a single action as a human-readable string for user approvers only', () => {
-    expect(humanizeAction(mockActions[0])).toEqual(
-      'Require 2 approvals from o.leticia.conner if any of the following occur:',
+describe('humanizeInvalidBranchesError', () => {
+  it('returns message without any branch name for an empty array', () => {
+    expect(humanizeInvalidBranchesError([])).toEqual(
+      'The following branches do not exist on this development project: . Please review all branches to ensure the values are accurate before updating this policy.',
     );
   });
 
-  it('returns a single action as a human-readable string for group approvers only', () => {
-    expect(humanizeAction(mockActions[1])).toEqual(
-      'Require 2 approvals from members of the group security_group/all_members if any of the following occur:',
+  it('returns message with a single branch name for an array with single element', () => {
+    expect(humanizeInvalidBranchesError(['main'])).toEqual(
+      'The following branches do not exist on this development project: main. Please review all branches to ensure the values are accurate before updating this policy.',
     );
   });
 
-  it('returns a single action as a human-readable string for group approvers ids only', () => {
-    expect(humanizeAction(mockActions[2])).toEqual(
-      'Require 2 approvals from members of the group with id 10 if any of the following occur:',
+  it('returns message with multiple branch names for array with multiple elements', () => {
+    expect(humanizeInvalidBranchesError(['main', 'protected', 'master'])).toEqual(
+      'The following branches do not exist on this development project: main, protected and master. Please review all branches to ensure the values are accurate before updating this policy.',
     );
-  });
-
-  it('returns a single action as a human-readable string for user approvers ids only', () => {
-    expect(humanizeAction(mockActions[3])).toEqual(
-      'Require 2 approvals from user with id 5 if any of the following occur:',
-    );
-  });
-
-  it('returns a single action as a human-readable string with all approvers types', () => {
-    expect(humanizeAction(mockActions[4])).toEqual(
-      'Require 2 approvals from o.leticia.conner or user with id 5 or members of the group security_group/all_members or members of the group with id 10 if any of the following occur:',
-    );
-  });
-
-  describe('humanizeInvalidBranchesError', () => {
-    it('returns message without any branch name for an empty array', () => {
-      expect(humanizeInvalidBranchesError([])).toEqual(
-        'The following branches do not exist on this development project: . Please review all branches to ensure the values are accurate before updating this policy.',
-      );
-    });
-
-    it('returns message with a single branch name for an array with single element', () => {
-      expect(humanizeInvalidBranchesError(['main'])).toEqual(
-        'The following branches do not exist on this development project: main. Please review all branches to ensure the values are accurate before updating this policy.',
-      );
-    });
-
-    it('returns message with multiple branch names for array with multiple elements', () => {
-      expect(humanizeInvalidBranchesError(['main', 'protected', 'master'])).toEqual(
-        'The following branches do not exist on this development project: main, protected and master. Please review all branches to ensure the values are accurate before updating this policy.',
-      );
-    });
   });
 });

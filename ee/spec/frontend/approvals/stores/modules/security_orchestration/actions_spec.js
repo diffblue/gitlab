@@ -19,8 +19,17 @@ describe('security orchestration actions', () => {
     });
 
     it('sets SCAN_RESULT_POLICIES_FAILED when succeeding', () => {
-      const policies = [{ name: 'policyName', yaml: 'name: policyName' }];
-      const expectedPolicies = [{ name: 'policyName', isSelected: false }];
+      const policies = [
+        {
+          name: 'policyName',
+          yaml: 'name: policyName',
+          userApprovers: [{ id: 1, name: 'username' }],
+          groupApprovers: [],
+        },
+      ];
+      const expectedPolicies = [
+        { name: 'policyName', isSelected: false, approvers: [{ id: 1, name: 'username' }] },
+      ];
       const queryResponse = { data: { project: { scanResultPolicies: { nodes: policies } } } };
 
       jest.spyOn(gqClient, 'query').mockResolvedValue(queryResponse);

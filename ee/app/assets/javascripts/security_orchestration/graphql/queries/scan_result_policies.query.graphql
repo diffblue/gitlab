@@ -7,6 +7,16 @@ query scanResultPolicies($fullPath: ID!) {
         yaml
         enabled
         updatedAt
+        userApprovers {
+          id
+          name
+          webUrl
+        }
+        groupApprovers {
+          id
+          fullPath
+          webUrl
+        }
       }
     }
   }

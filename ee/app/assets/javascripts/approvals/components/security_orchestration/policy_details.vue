@@ -1,10 +1,9 @@
 <script>
 import { GlLink } from '@gitlab/ui';
 import { s__ } from '~/locale';
-import {
-  humanizeRules,
-  humanizeAction,
-} from 'ee/security_orchestration/components/policy_editor/scan_result_policy/lib/humanize';
+import { humanizeRules } from 'ee/security_orchestration/components/policy_editor/scan_result_policy/lib/humanize';
+
+import RequireApprovals from 'ee/security_orchestration/components/policy_drawer/require_approvals.vue';
 
 export default {
   i18n: {
@@ -12,6 +11,7 @@ export default {
   },
   components: {
     GlLink,
+    RequireApprovals,
   },
   inject: ['securityPoliciesPath'],
   props: {
@@ -27,13 +27,13 @@ export default {
     humanizedRules() {
       return humanizeRules(this.policy.rules);
     },
-    humanizedAction() {
-      return humanizeAction(this.policyAction);
-    },
     policyEditPath() {
       return `${this.securityPoliciesPath}/${encodeURIComponent(
         this.policy.name,
       )}/edit?type=scan_result_policy`;
+    },
+    approvers() {
+      return this.policy.approvers;
     },
   },
 };
@@ -44,7 +44,7 @@ export default {
     <tr v-if="policy.isSelected">
       <td colspan="4" class="gl-border-top-0!">
         <div class="gl-px-5! gl-pb-4">
-          <p>{{ humanizedAction }}</p>
+          <require-approvals :action="policyAction" :approvers="approvers" />
           <ul>
             <li v-for="(rule, idx) in humanizedRules" :key="idx">
               {{ rule }}

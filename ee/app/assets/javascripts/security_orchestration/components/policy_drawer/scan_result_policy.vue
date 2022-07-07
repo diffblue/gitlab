@@ -1,9 +1,10 @@
 <script>
 import { s__ } from '~/locale';
-import { fromYaml, humanizeRules, humanizeAction } from '../policy_editor/scan_result_policy/lib';
+import { fromYaml, humanizeRules } from '../policy_editor/scan_result_policy/lib';
 import { SUMMARY_TITLE } from './constants';
 import PolicyDrawerLayout from './policy_drawer_layout.vue';
 import PolicyInfoRow from './policy_info_row.vue';
+import RequireApprovals from './require_approvals.vue';
 
 export default {
   i18n: {
@@ -13,6 +14,7 @@ export default {
   components: {
     PolicyDrawerLayout,
     PolicyInfoRow,
+    RequireApprovals,
   },
   props: {
     policy: {
@@ -24,9 +26,6 @@ export default {
     humanizedRules() {
       return humanizeRules(this.parsedYaml.rules);
     },
-    humanizedAction() {
-      return humanizeAction(this.requireApproval(this.parsedYaml.actions));
-    },
     parsedYaml() {
       try {
         return fromYaml(this.policy.yaml);
@@ -34,10 +33,11 @@ export default {
         return null;
       }
     },
-  },
-  methods: {
-    requireApproval(actions) {
-      return actions.find((action) => action.type === 'require_approval');
+    requireApproval() {
+      return this.parsedYaml.actions.find((action) => action.type === 'require_approval');
+    },
+    approvers() {
+      return [...this.policy.userApprovers, ...this.policy.groupApprovers];
     },
   },
 };
@@ -52,7 +52,7 @@ export default {
   >
     <template v-if="parsedYaml" #summary>
       <policy-info-row data-testid="policy-summary" :label="$options.i18n.summary">
-        <p>{{ humanizedAction }}</p>
+        <require-approvals :action="requireApproval" :approvers="approvers" />
         <ul>
           <li v-for="(rule, idx) in humanizedRules" :key="idx">
             {{ rule }}

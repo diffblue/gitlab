@@ -2,12 +2,14 @@ import ScanResultPolicy from 'ee/security_orchestration/components/policy_drawer
 import PolicyDrawerLayout from 'ee/security_orchestration/components/policy_drawer/policy_drawer_layout.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
+import RequireApprovals from 'ee/security_orchestration/components/policy_drawer/require_approvals.vue';
 import { mockScanResultPolicy } from '../../mocks/mock_data';
 
 describe('ScanResultPolicy component', () => {
   let wrapper;
 
   const findSummary = () => wrapper.findByTestId('policy-summary');
+  const findRequireApprovals = () => wrapper.findComponent(RequireApprovals);
 
   const factory = ({ propsData } = {}) => {
     wrapper = shallowMountExtended(ScanResultPolicy, {
@@ -29,6 +31,7 @@ describe('ScanResultPolicy component', () => {
     });
 
     it('does render the policy summary', () => {
+      expect(findRequireApprovals().exists()).toBe(true);
       expect(findSummary().exists()).toBe(true);
     });
   });
