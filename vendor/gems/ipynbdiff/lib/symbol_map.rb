@@ -3,15 +3,52 @@
 module IpynbDiff
   require 'oj'
 
-  # Creates a symbol map for a ipynb file (JSON format)
+  # Creates a map from a symbol to the line number it appears in a Json file
+  #
+  # Example:
+  #
+  # Input:
+  #
+  # 1. {
+  # 2.   'obj1': [
+  # 3.     {
+  # 4.       'obj2': 5
+  # 5.     },
+  # 6.     3,
+  # 7.     {
+  # 8.       'obj3': {
+  # 9.         'obj4': 'b'
+  # 10.      }
+  # 11.    }
+  # 12.  ]
+  # 13.}
+  #
+  # Output:
+  #
+  # Symbol                Line Number
+  # .obj1              -> 2
+  # .obj1.0            -> 3
+  # .obj1.0            -> 3
+  # .obj1.0.obj2       -> 4
+  # .obj1.1            -> 6
+  # .obj1.2            -> 7
+  # .obj1.2.obj3       -> 8
+  # .obj1.2.obj3.obj4  -> 9
+  #
   class SymbolMap
     class << self
+      def handler
+        @handler ||= SymbolMap.new
+      end
+
       def parser
-        @parser ||= SymbolMap.new.tap { |p| Oj::Parser.saj.handler = p }
+        @parser ||= Oj::Parser.new(:saj).tap { |p| p.handler = handler }
       end
 
       def parse(notebook, *args)
+        handler.reset
         parser.parse(notebook)
+        handler.symbols
       end
     end
 
@@ -42,14 +79,6 @@ module IpynbDiff
       @current_path.pop
     end
 
-    def parse(notebook)
-      reset
-      Oj::Parser.saj.parse(notebook)
-      symbols
-    end
-
-    private
-
     def add_symbol(symbol, line)
       @symbols[@current_path.append(symbol).join('.')] = line if symbol
     end
@@ -71,7 +100,6 @@ module IpynbDiff
 
     def reset
       @current_path = []
-      @current_path_line_starts = []
       @symbols = {}
       @current_array_index = []
     end
