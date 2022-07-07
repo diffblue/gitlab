@@ -9145,6 +9145,9 @@ msgstr ""
 msgid "Code block"
 msgstr ""
 
+msgid "Code can be imported from enabled sources during project creation. OmniAuth must be configured for GitHub"
+msgstr ""
+
 msgid "Code coverage statistics for %{ref} %{start_date} - %{end_date}"
 msgstr ""
 
@@ -14402,9 +14405,6 @@ msgid "Enabled Git access protocols"
 msgstr ""
 
 msgid "Enabled OAuth authentication sources"
-msgstr ""
-
-msgid "Enabled sources for code import during project creation. OmniAuth must be configured for GitHub"
 msgstr ""
 
 msgid "Encountered an error while rendering: %{err}"
@@ -29957,7 +29957,7 @@ msgstr ""
 msgid "Project URL"
 msgstr ""
 
-msgid "Project access must be granted explicitly to each user. If this project is part of a group, access will be granted to members of the group."
+msgid "Project access must be granted explicitly to each user. If this project is part of a group, access is granted to members of the group."
 msgstr ""
 
 msgid "Project access token creation is disabled in this group. You can still use and manage existing tokens. %{link_start}Learn more.%{link_end}"
@@ -35481,9 +35481,6 @@ msgstr ""
 msgid "Set any rate limit to %{code_open}0%{code_close} to disable the limit."
 msgstr ""
 
-msgid "Set default and restrict visibility levels. Configure import sources and git access protocol."
-msgstr ""
-
 msgid "Set due date"
 msgstr ""
 
@@ -35602,6 +35599,9 @@ msgid "Set up new password"
 msgstr ""
 
 msgid "Set up your project to automatically push and/or pull changes to/from another repository. Branches, tags, and commits will be synced automatically."
+msgstr ""
+
+msgid "Set visibility of project contents. Configure import sources and Git access protocols."
 msgstr ""
 
 msgid "Set weight"
