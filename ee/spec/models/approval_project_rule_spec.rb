@@ -347,44 +347,4 @@ RSpec.describe ApprovalProjectRule do
       end
     end
   end
-
-  describe '.distinct_scanners scope' do
-    subject { described_class.distinct_scanners }
-
-    before do
-      create(:approval_project_rule, type, scanners: ['dast'])
-    end
-
-    context 'with scan_finding approval rules' do
-      let(:type) { :scan_finding }
-
-      it { is_expected.to be_present }
-
-      context 'with duplicated scanners' do
-        before do
-          create(:approval_project_rule, :scan_finding, scanners: ['dast'])
-        end
-
-        it 'returns only one record' do
-          expect(subject.count).to be 1
-        end
-      end
-
-      context 'without duplicated scanners' do
-        before do
-          create(:approval_project_rule, :scan_finding, scanners: ['sast'])
-        end
-
-        it 'returns both records' do
-          expect(subject.count).to be 2
-        end
-      end
-    end
-
-    context 'without scan_finding approval rules' do
-      let(:type) { :license_scanning }
-
-      it { is_expected.to be_empty }
-    end
-  end
 end
