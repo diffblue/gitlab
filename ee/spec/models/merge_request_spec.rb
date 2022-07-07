@@ -1230,19 +1230,43 @@ RSpec.describe MergeRequest do
           project.add_developer(user)
         end
 
-        context 'when not approved' do
-          it 'is not mergeable' do
-            is_expected.to be_falsey
+        context 'when improved_mergeability_checks is enabled' do
+          context 'when not approved' do
+            it 'is not mergeable' do
+              is_expected.to be_falsey
+            end
+          end
+
+          context 'when approved' do
+            before do
+              merge_request.approvals.create!(user: user)
+            end
+
+            it 'is mergeable' do
+              is_expected.to be_truthy
+            end
           end
         end
 
-        context 'when approved' do
+        context 'when improved_mergeability_checks is disabled' do
           before do
-            merge_request.approvals.create!(user: user)
+            stub_feature_flags(improved_mergeability_checks: false)
           end
 
-          it 'is mergeable' do
-            is_expected.to be_truthy
+          context 'when not approved' do
+            it 'is not mergeable' do
+              is_expected.to be_falsey
+            end
+          end
+
+          context 'when approved' do
+            before do
+              merge_request.approvals.create!(user: user)
+            end
+
+            it 'is mergeable' do
+              is_expected.to be_truthy
+            end
           end
         end
       end
@@ -1374,19 +1398,43 @@ RSpec.describe MergeRequest do
           project.add_developer(user)
         end
 
-        context 'when not approved' do
-          it 'is mergeable' do
-            is_expected.to be_truthy
+        context 'when improved_mergeability_checks is enabled' do
+          context 'when not approved' do
+            it 'is not mergeable' do
+              is_expected.to be_falsey
+            end
+          end
+
+          context 'when approved' do
+            before do
+              merge_request.approvals.create!(user: user)
+            end
+
+            it 'is mergeable' do
+              is_expected.to be_truthy
+            end
           end
         end
 
-        context 'when approved' do
+        context 'when improved_mergeability_checks is disabled' do
           before do
-            merge_request.approvals.create!(user: user)
+            stub_feature_flags(improved_mergeability_checks: false)
           end
 
-          it 'is mergeable' do
-            is_expected.to be_truthy
+          context 'when not approved' do
+            it 'is mergeable' do
+              is_expected.to be_truthy
+            end
+          end
+
+          context 'when approved' do
+            before do
+              merge_request.approvals.create!(user: user)
+            end
+
+            it 'is mergeable' do
+              is_expected.to be_truthy
+            end
           end
         end
       end
