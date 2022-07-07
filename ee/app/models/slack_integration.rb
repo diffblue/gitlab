@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class SlackIntegration < ApplicationRecord
-  belongs_to :integration, foreign_key: :service_id
+  belongs_to :integration
 
   attr_encrypted :bot_access_token,
     mode: :per_attribute_iv,
