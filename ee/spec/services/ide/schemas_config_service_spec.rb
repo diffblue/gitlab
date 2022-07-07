@@ -104,7 +104,7 @@ RSpec.describe Ide::SchemasConfigService do
         it 'returns schema successfully' do
           expect(Gitlab::HTTP).to receive(:get).with("https://someurl.com")
           expect(subject[:status]).to eq(:error)
-          expect(subject[:message]).to include('unexpected character () at line 1, column 1')
+          expect(subject[:message]).to include('unexpected character (after ) at line 1, column 1')
         end
       end
 
