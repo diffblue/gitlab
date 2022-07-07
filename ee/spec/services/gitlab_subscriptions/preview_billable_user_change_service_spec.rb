@@ -3,18 +3,13 @@
 require 'spec_helper'
 
 RSpec.describe ::GitlabSubscriptions::PreviewBillableUserChangeService do
-  before do
-    allow(Gitlab).to receive(:com?).and_return(true)
-  end
-
   describe '#execute' do
     let_it_be(:current_user) { create(:user) }
     let_it_be(:role) { :developer }
 
-    context 'when target group exists' do
+    context 'when target group exists', :saas do
       let_it_be(:existing_user) { create(:user) }
-
-      let(:target_group) { create(:group_with_plan) }
+      let_it_be(:target_group) { create(:group_with_plan) }
 
       before do
         target_group.add_developer(existing_user)
