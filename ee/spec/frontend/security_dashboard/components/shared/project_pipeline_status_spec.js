@@ -1,9 +1,11 @@
 import { GlLink } from '@gitlab/ui';
+import { merge } from 'lodash';
 import { shallowMount } from '@vue/test-utils';
 import PipelineStatusBadge from 'ee/security_dashboard/components/shared/pipeline_status_badge.vue';
 import ProjectPipelineStatus from 'ee/security_dashboard/components/shared/project_pipeline_status.vue';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
+import { s__ } from '~/locale';
 
 const defaultPipeline = {
   createdAt: '2020-10-06T20:08:07Z',
@@ -17,24 +19,30 @@ describe('Project Pipeline Status Component', () => {
   const findPipelineStatusBadge = () => wrapper.findComponent(PipelineStatusBadge);
   const findTimeAgoTooltip = () => wrapper.findComponent(TimeAgoTooltip);
   const findLink = () => wrapper.findComponent(GlLink);
+  const findParsingStatusNotice = () => wrapper.findByTestId('parsing-status-notice');
   const findAutoFixMrsLink = () => wrapper.findByTestId('auto-fix-mrs-link');
 
   const createWrapper = (options = {}) => {
-    return extendedWrapper(
-      shallowMount(ProjectPipelineStatus, {
-        propsData: {
-          pipeline: defaultPipeline,
-        },
-        provide: {
-          projectFullPath: '/group/project',
-          glFeatures: { securityAutoFix: true },
-          autoFixMrsPath: '/merge_requests?label_name=GitLab-auto-fix',
-        },
-        data() {
-          return { autoFixMrsCount: 0 };
-        },
-        ...options,
-      }),
+    wrapper = extendedWrapper(
+      shallowMount(
+        ProjectPipelineStatus,
+        merge(
+          {
+            propsData: {
+              pipeline: defaultPipeline,
+            },
+            provide: {
+              projectFullPath: '/group/project',
+              glFeatures: { securityAutoFix: true },
+              autoFixMrsPath: '/merge_requests?label_name=GitLab-auto-fix',
+            },
+            data() {
+              return { autoFixMrsCount: 0 };
+            },
+          },
+          options,
+        ),
+      ),
     );
   };
 
@@ -44,7 +52,7 @@ describe('Project Pipeline Status Component', () => {
 
   describe('default state', () => {
     beforeEach(() => {
-      wrapper = createWrapper();
+      createWrapper();
     });
 
     it('should show the timeAgoTooltip component', () => {
@@ -69,10 +77,38 @@ describe('Project Pipeline Status Component', () => {
     });
   });
 
+  describe('parsing errors', () => {
+    it('does not show a notice if there are no parsing errors', () => {
+      createWrapper();
+
+      expect(findParsingStatusNotice().exists()).toBe(false);
+    });
+
+    it.each`
+      hasParsingErrors | hasParsingWarnings | expectedMessage
+      ${true}          | ${true}            | ${s__('SecurityReports|Parsing errors and warnings in pipeline')}
+      ${true}          | ${false}           | ${s__('SecurityReports|Parsing errors in pipeline')}
+      ${false}         | ${true}            | ${s__('SecurityReports|Parsing warnings in pipeline')}
+    `(
+      'shows a notice if there are parsing errors',
+      ({ hasParsingErrors, hasParsingWarnings, expectedMessage }) => {
+        createWrapper({
+          propsData: {
+            pipeline: { hasParsingErrors, hasParsingWarnings },
+          },
+        });
+        const parsingStatus = findParsingStatusNotice();
+
+        expect(parsingStatus.exists()).toBe(true);
+        expect(parsingStatus.text()).toBe(expectedMessage);
+      },
+    );
+  });
+
   describe('auto-fix MRs', () => {
     describe('when there are auto-fix MRs', () => {
       beforeEach(() => {
-        wrapper = createWrapper({
+        createWrapper({
           data() {
             return { autoFixMrsCount: 12 };
           },
@@ -91,7 +127,7 @@ describe('Project Pipeline Status Component', () => {
     });
 
     it('does not render the link if there are no open auto-fix MRs', () => {
-      wrapper = createWrapper();
+      createWrapper();
 
       expect(findAutoFixMrsLink().exists()).toBe(false);
     });
