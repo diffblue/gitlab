@@ -793,7 +793,7 @@ RSpec.describe License do
     end
   end
 
-  describe "#md5" do
+  describe "#md5", fips_mode: false do
     it "returns the same MD5 for licenses with carriage returns and those without" do
       other_license = build(:license, data: license.data.gsub("\n", "\r\n"))
 
@@ -810,6 +810,12 @@ RSpec.describe License do
       other_license = build(:license, data: "#{license.data}\n\n\n")
 
       expect(other_license.md5).to eq(license.md5)
+    end
+
+    context 'when in FIPS mode', :fips_mode do
+      it "returns nil" do
+        expect(license.md5).to eq(nil)
+      end
     end
   end
 

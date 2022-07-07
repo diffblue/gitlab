@@ -86,7 +86,13 @@ module EE
             end
 
           if license
-            usage_data[:license_md5] = add_metric("LicenseMetric", options: { attribute: 'md5' })
+            usage_data[:license_md5] =
+              if ::Gitlab::FIPS.enabled? # rubocop:disable UsageData/LargeTable
+                nil
+              else
+                add_metric("LicenseMetric", options: { attribute: 'md5' })
+              end
+
             usage_data[:license_sha256] = add_metric("LicenseMetric", options: { attribute: 'sha256' })
             usage_data[:license_id] = license.license_id
             # rubocop: disable UsageData/LargeTable
