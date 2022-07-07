@@ -61,5 +61,15 @@ RSpec.describe Gitlab::GroupPlansPreloader, :saas do
 
       it_behaves_like 'preloading cases'
     end
+
+    context 'when Group relation is empty' do
+      let(:pristine_groups) { Group.none }
+
+      it 'does not make any requests' do
+        amount = ActiveRecord::QueryRecorder.new { preloaded_groups }.count
+
+        expect(amount).to be_zero
+      end
+    end
   end
 end
