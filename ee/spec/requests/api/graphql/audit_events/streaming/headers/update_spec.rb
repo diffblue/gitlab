@@ -6,7 +6,10 @@ RSpec.describe 'Update an external audit event destination header' do
   include GraphqlHelpers
 
   let_it_be(:destination) { create(:external_audit_event_destination) }
-  let_it_be(:header) { create(:audit_events_streaming_header, external_audit_event_destination: destination) }
+  let_it_be(:header) do
+    create(:audit_events_streaming_header, key: 'key-1', external_audit_event_destination: destination)
+  end
+
   let_it_be(:owner) { create(:user) }
 
   let(:current_user) { owner }
