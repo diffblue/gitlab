@@ -1,0 +1,23 @@
+---
+key_path: license_sha256
+description: The SHA256 hash of license key of the GitLab instance, for identification purpose
+product_section: fulfillment
+product_stage: fulfillment
+product_group: provision
+product_category: provision
+value_type: string
+status: active
+time_frame: none
+data_source: license
+instrumentation_class: LicenseMetric
+options:
+  attribute: sha256
+data_category: standard
+distribution:
+  - ee
+tier:
+  - premium
+  - ultimate
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/91335
+performance_indicator_type: []
+milestone: "15.2"

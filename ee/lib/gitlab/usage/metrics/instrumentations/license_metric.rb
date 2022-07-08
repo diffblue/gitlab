@@ -14,6 +14,7 @@ module Gitlab
           # end
 
           ALLOWED_ATTRIBUTES = %w(md5
+                                  sha256
                                   license_id
                                   plan
                                   trial?

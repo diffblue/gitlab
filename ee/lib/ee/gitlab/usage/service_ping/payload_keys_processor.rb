@@ -11,6 +11,7 @@ module EE
           # TODO: Provide more generic and robust conditional availability method https://gitlab.com/gitlab-org/gitlab/-/issues/352875
           METRICS_WITH_CONDITIONAL_AVAILABILITY = %w[
             license_md5
+            license_sha256
             license_id
             historical_max_users
             licensee

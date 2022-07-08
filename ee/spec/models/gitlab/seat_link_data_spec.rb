@@ -93,8 +93,7 @@ RSpec.describe Gitlab::SeatLinkData do
           max_historical_user_count: max_users,
           billable_users_count: billable_users_count,
           hostname: Gitlab.config.gitlab.host,
-          instance_id: instance_id,
-          license_md5: ::License.current.md5
+          instance_id: instance_id
         }.to_json
       )
     end
@@ -111,8 +110,7 @@ RSpec.describe Gitlab::SeatLinkData do
             max_historical_user_count: max_users,
             billable_users_count: billable_users_count,
             hostname: Gitlab.config.gitlab.host,
-            instance_id: instance_id,
-            license_md5: nil
+            instance_id: instance_id
           }.to_json
         )
       end
