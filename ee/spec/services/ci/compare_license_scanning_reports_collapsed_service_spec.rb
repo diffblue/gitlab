@@ -6,17 +6,16 @@ RSpec.describe Ci::CompareLicenseScanningReportsCollapsedService do
   include ProjectForksHelper
 
   let_it_be(:project) { create(:project, :repository) }
+  let_it_be(:merge_request) { create(:ee_merge_request, :with_dependency_scanning_reports, source_project: project) }
 
   let(:service) do
     described_class.new(
       project,
       nil,
       report_type: 'license_scanning',
-      additional_params: { license_check: license_check }
+      id: merge_request.id
     )
   end
-
-  let(:license_check) { false }
 
   before do
     stub_licensed_features(license_scanning: true)
@@ -46,7 +45,7 @@ RSpec.describe Ci::CompareLicenseScanningReportsCollapsedService do
         end
 
         context 'when license_check enabled' do
-          let(:license_check) { true }
+          let_it_be(:license_check) { create(:report_approver_rule, :license_scanning, merge_request: merge_request) }
 
           it 'exposes approval as required' do
             expect(subject[:data]['approval_required']).to eq(true)
