@@ -133,10 +133,13 @@ RSpec.describe EnvironmentsHelper do
       let_it_be(:security_group) { create(:group, name: 'Security') }
 
       before do
-        # rubocop:disable Layout/LineLength
-        create(:protected_environment_approval_rule, group_id: qa_group.id, protected_environment: protected_environment)
-        create(:protected_environment_approval_rule, group_id: security_group.id, protected_environment: protected_environment)
-        # rubocop:enable Layout/LineLength
+        create(:protected_environment_approval_rule,
+          group_id: qa_group.id,
+          protected_environment: protected_environment)
+
+        create(:protected_environment_approval_rule,
+          group_id: security_group.id,
+          protected_environment: protected_environment)
       end
 
       context 'user has access' do
