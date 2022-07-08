@@ -14,6 +14,7 @@ class Groups::EpicBoardsController < Groups::ApplicationController
 
   before_action do
     push_frontend_feature_flag(:realtime_labels, group)
+    push_frontend_feature_flag(:epic_color_highlight, group)
   end
 
   track_redis_hll_event :index, :show, name: 'g_project_management_users_viewing_epic_boards'

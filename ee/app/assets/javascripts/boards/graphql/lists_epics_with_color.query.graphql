@@ -1,0 +1,55 @@
+#import "ee/graphql_shared/fragments/epic.fragment.graphql"
+#import "~/graphql_shared/fragments/label.fragment.graphql"
+
+query epicBoardListEpicsWithColor(
+  $fullPath: ID!
+  $boardId: BoardsEpicBoardID!
+  $id: BoardsEpicListID
+  $filters: EpicFilters
+  $after: String
+  $first: Int
+) {
+  group(fullPath: $fullPath) {
+    id
+    epicBoard(id: $boardId) {
+      id
+      lists(id: $id) {
+        nodes {
+          id
+          epics(first: $first, after: $after, filters: $filters) {
+            edges {
+              node {
+                ...EpicNode
+                relativePosition
+                referencePath: reference(full: true)
+                confidential
+                subscribed
+                labels {
+                  nodes {
+                    ...Label
+                  }
+                }
+                hasIssues
+                descendantCounts {
+                  closedEpics
+                  closedIssues
+                  openedEpics
+                  openedIssues
+                }
+                descendantWeightSum {
+                  closedIssues
+                  openedIssues
+                }
+                color
+              }
+            }
+            pageInfo {
+              endCursor
+              hasNextPage
+            }
+          }
+        }
+      }
+    }
+  }
+}
