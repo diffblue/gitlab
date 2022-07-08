@@ -455,7 +455,9 @@ module EE
     def block_auto_created_users?
       if ldap_user?
         provider = ldap_identity.provider
+
         return false unless provider
+        return false unless ::Gitlab::Auth::Ldap::Config.enabled?
 
         ::Gitlab::Auth::Ldap::Config.new(provider).block_auto_created_users
       else

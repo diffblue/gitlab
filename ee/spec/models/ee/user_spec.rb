@@ -1880,6 +1880,12 @@ RSpec.describe User do
   end
 
   describe '#blocked_auto_created_oauth_ldap_user?' do
+    include LdapHelpers
+
+    before do
+      stub_ldap_setting(enabled: true)
+    end
+
     context 'when the auto-creation of an omniauth user is blocked' do
       before do
         stub_omniauth_setting(block_auto_created_users: true)
@@ -1903,18 +1909,15 @@ RSpec.describe User do
 
       context 'when the config for auto-creation of LDAP user is set' do
         let(:ldap_user) { create(:omniauth_user, :ldap) }
+        let(:ldap_auto_create_blocked) { true }
 
         before do
-          allow_next_instance_of(::Gitlab::Auth::Ldap::Config) do |config|
-            allow(config).to receive_messages(block_auto_created_users: ldap_auto_create_blocked)
-          end
+          stub_ldap_config(block_auto_created_users: ldap_auto_create_blocked)
         end
 
         subject(:blocked_user?) { ldap_user.blocked_auto_created_oauth_ldap_user? }
 
         context 'when it blocks the creation of a LDAP user' do
-          let(:ldap_auto_create_blocked) { true }
-
           it { is_expected.to be_truthy }
 
           context 'when no provider is linked to the user' do
@@ -1926,6 +1929,14 @@ RSpec.describe User do
 
         context 'when it does not block the creation of a LDAP user' do
           let(:ldap_auto_create_blocked) { false }
+
+          it { is_expected.to be_falsey }
+        end
+
+        context 'when LDAP is disabled' do
+          before do
+            stub_ldap_setting(enabled: false)
+          end
 
           it { is_expected.to be_falsey }
         end

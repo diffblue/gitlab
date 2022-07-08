@@ -27,6 +27,7 @@ RSpec.describe Gitlab::Auth::Ldap::User do
   before do
     allow(fake_proxy).to receive(:dns_for_group_cn).with(group_cn).and_return(group_member_dns)
     stub_ldap_config(external_groups: external_groups)
+    stub_ldap_setting(enabled: true)
   end
 
   it 'includes the EE module' do
