@@ -58,13 +58,22 @@ module Gitlab
       end
 
       def backoff_active?
-        return unless @backoff_expire_time
+        return false unless @backoff_expire_time
 
         Time.now.utc < @backoff_expire_time
       end
 
       def extract_releases(response)
-        response.parsed_response.map { |release| parse_runner_release(release) }.sort!
+        return unless response.parsed_response.is_a?(Array)
+
+        releases = response.parsed_response
+          .map { |release| parse_runner_release(release) }
+          .select(&:valid?)
+          .sort!
+
+        return if releases.empty? && response.parsed_response.present?
+
+        releases
       end
 
       def parse_runner_release(release)

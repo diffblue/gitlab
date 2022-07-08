@@ -112,6 +112,18 @@ RSpec.describe Gitlab::Ci::RunnerReleases do
 
       it_behaves_like 'requests that follow cache status', 1.day
     end
+
+    context 'when response contains unexpected input type' do
+      let(:response) { 'error' }
+
+      it { expect(releases).to be_nil }
+    end
+
+    context 'when response contains unexpected input array' do
+      let(:response) { ['error'] }
+
+      it { expect(releases).to be_nil }
+    end
   end
 
   describe '#expired?', :use_clean_rails_memory_store_caching do
