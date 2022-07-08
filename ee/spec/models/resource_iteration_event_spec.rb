@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ResourceIterationEvent, type: :model do
+RSpec.describe ResourceIterationEvent, :snowplow, type: :model do
   it_behaves_like 'a resource event'
   it_behaves_like 'a resource event for issues'
   it_behaves_like 'a resource event for merge requests'
@@ -11,6 +11,22 @@ RSpec.describe ResourceIterationEvent, type: :model do
   it_behaves_like 'timebox resource event validations'
   it_behaves_like 'timebox resource event actions'
   it_behaves_like 'timebox resource tracks issue metrics', :iteration
+
+  # Move inside timebox_resource_tracks_issue_metrics when milestone is migrated
+  # from https://gitlab.com/gitlab-org/gitlab/-/issues/365960
+  describe 'when creating an issue' do
+    let(:issue) { create(:issue) }
+    let(:subject) { create(described_class.name.underscore.to_sym, issue: issue) }
+
+    it_behaves_like 'Snowplow event tracking' do
+      let(:user) { issue.author }
+      let(:category) { 'issues_edit' }
+      let(:action) { 'g_project_management_issue_iteration_changed' }
+      let(:project) { issue.project }
+      let(:namespace) { project.namespace }
+      let(:feature_flag_name) { :route_hll_to_snowplow_phase2 }
+    end
+  end
 
   describe 'associations' do
     it { is_expected.to belong_to(:iteration) }

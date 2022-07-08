@@ -40,10 +40,21 @@ RSpec.describe ::SystemNotes::IssuablesService do
       end
     end
 
-    it 'tracks the issue event in usage ping' do
-      expect(Gitlab::UsageDataCounters::IssueActivityUniqueCounter).to receive(:track_issue_health_status_changed_action).with(author: author)
+    describe 'events tracking', :snowplow do
+      it 'tracks the issue event in usage ping' do
+        expect(Gitlab::UsageDataCounters::IssueActivityUniqueCounter).to receive(:track_issue_health_status_changed_action)
+                                                                           .with(author: author, project: project)
 
-      subject
+        subject
+      end
+
+      it_behaves_like 'Snowplow event tracking' do
+        let(:category) { 'issues_edit' }
+        let(:action) { 'g_project_management_issue_health_status_changed' }
+        let(:namespace) { project.namespace}
+        let(:user) { author }
+        let(:feature_flag_name) { :route_hll_to_snowplow_phase2 }
+      end
     end
   end
 

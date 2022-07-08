@@ -305,10 +305,20 @@ RSpec.describe Issues::UpdateService do
             subject
           end
 
-          it 'tracks usage data for added to epic action' do
-            expect(Gitlab::UsageDataCounters::IssueActivityUniqueCounter).to receive(:track_issue_added_to_epic_action).with(author: user)
+          describe 'events tracking', :snowplow do
+            it 'tracks usage data for added to epic action' do
+              expect(Gitlab::UsageDataCounters::IssueActivityUniqueCounter).to receive(:track_issue_added_to_epic_action)
+                                                                                 .with(author: user, project: project)
 
-            subject
+              subject
+            end
+
+            it_behaves_like 'Snowplow event tracking' do
+              let(:category) { 'issues_edit' }
+              let(:action) { 'g_project_management_issue_added_to_epic' }
+              let(:namespace) { project.namespace}
+              let(:feature_flag_name) { :route_hll_to_snowplow_phase2 }
+            end
           end
         end
 
@@ -333,10 +343,21 @@ RSpec.describe Issues::UpdateService do
             subject
           end
 
-          it 'tracks usage data for changed epic action' do
-            expect(Gitlab::UsageDataCounters::IssueActivityUniqueCounter).to receive(:track_issue_changed_epic_action).with(author: user)
+          describe 'events tracking', :snowplow do
+            it 'tracks usage data for changed epic action' do
+              expect(Gitlab::UsageDataCounters::IssueActivityUniqueCounter).to receive(:track_issue_changed_epic_action).with(author: user,
+                                                                                                                              project: issue.project)
 
-            subject
+              subject
+            end
+
+            it_behaves_like 'Snowplow event tracking' do
+              let(:category) { 'issues_edit' }
+              let(:action) { 'g_project_management_issue_changed_epic' }
+              let(:namespace) { issue.project.namespace}
+              let(:project) { issue.project }
+              let(:feature_flag_name) { :route_hll_to_snowplow_phase2 }
+            end
           end
         end
 
@@ -405,10 +426,18 @@ RSpec.describe Issues::UpdateService do
             expect { subject }.not_to change { issue.reload.epic }
           end
 
-          it 'does not send usage data for removed epic action' do
-            expect(Gitlab::UsageDataCounters::IssueActivityUniqueCounter).not_to receive(:track_issue_removed_from_epic_action)
+          describe 'events tracking', :snowplow do
+            it 'does not send usage data for removed epic action' do
+              expect(Gitlab::UsageDataCounters::IssueActivityUniqueCounter).not_to receive(:track_issue_removed_from_epic_action)
 
-            subject
+              subject
+            end
+
+            it 'does not send a Snowplow event' do
+              subject
+
+              expect_no_snowplow_event
+            end
           end
         end
 
@@ -429,10 +458,20 @@ RSpec.describe Issues::UpdateService do
             subject
           end
 
-          it 'tracks usage data for removed from epic action' do
-            expect(Gitlab::UsageDataCounters::IssueActivityUniqueCounter).to receive(:track_issue_removed_from_epic_action).with(author: user)
+          describe 'events tracking', :snowplow do
+            it 'tracks usage data for removed from epic action' do
+              expect(Gitlab::UsageDataCounters::IssueActivityUniqueCounter).to receive(:track_issue_removed_from_epic_action)
+                                                                                 .with(author: user, project: project)
 
-            subject
+              subject
+            end
+
+            it_behaves_like 'Snowplow event tracking' do
+              let(:category) { 'issues_edit' }
+              let(:action) { 'g_project_management_issue_removed_from_epic' }
+              let(:namespace) { project.namespace}
+              let(:feature_flag_name) { :route_hll_to_snowplow_phase2 }
+            end
           end
 
           context 'but EpicIssues::DestroyService returns failure', :aggregate_failures do

@@ -66,10 +66,20 @@ RSpec.shared_examples 'issue with epic_id parameter' do
         execute
       end
 
-      it 'tracks usage data for added to epic action' do
-        expect(Gitlab::UsageDataCounters::IssueActivityUniqueCounter).to receive(:track_issue_added_to_epic_action).with(author: user)
+      describe 'events tracking', :snowplow do
+        it 'tracks usage data for added to epic action' do
+          expect(Gitlab::UsageDataCounters::IssueActivityUniqueCounter).to receive(:track_issue_added_to_epic_action)
+                                                                             .with(author: user, project: project)
+          execute
+        end
 
-        execute
+        it_behaves_like 'Snowplow event tracking' do
+          let(:subject) { execute }
+          let(:category) { 'issues_edit' }
+          let(:action) { 'g_project_management_issue_added_to_epic' }
+          let(:namespace) { project.namespace}
+          let(:feature_flag_name) { :route_hll_to_snowplow_phase2 }
+        end
       end
     end
 
@@ -112,10 +122,20 @@ RSpec.shared_examples 'issue with epic_id parameter' do
         expect(issue.epic).to eq(epic)
       end
 
-      it 'tracks usage data for added to epic action' do
-        expect(Gitlab::UsageDataCounters::IssueActivityUniqueCounter).to receive(:track_issue_added_to_epic_action).with(author: user)
+      describe 'events tracking', :snowplow do
+        it 'tracks usage data for added to epic action' do
+          expect(Gitlab::UsageDataCounters::IssueActivityUniqueCounter).to receive(:track_issue_added_to_epic_action)
+                                                                             .with(author: user, project: project)
+          execute
+        end
 
-        execute
+        it_behaves_like 'Snowplow event tracking' do
+          let(:subject) { execute }
+          let(:category) { 'issues_edit' }
+          let(:action) { 'g_project_management_issue_added_to_epic' }
+          let(:namespace) { project.namespace}
+          let(:feature_flag_name) { :route_hll_to_snowplow_phase2 }
+        end
       end
     end
   end

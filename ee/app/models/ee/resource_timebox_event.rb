@@ -12,7 +12,8 @@ module EE
 
       case self
       when ResourceIterationEvent
-        ::Gitlab::UsageDataCounters::IssueActivityUniqueCounter.track_issue_iteration_changed_action(author: user)
+        ::Gitlab::UsageDataCounters::IssueActivityUniqueCounter
+          .track_issue_iteration_changed_action(author: user, project: issue.project)
       else
         super
       end

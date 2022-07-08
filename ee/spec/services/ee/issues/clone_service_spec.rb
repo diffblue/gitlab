@@ -70,10 +70,21 @@ RSpec.describe Issues::CloneService do
           expect(subject.epic).to eq(epic)
         end
 
-        it 'tracks usage data for changed epic action' do
-          expect(Gitlab::UsageDataCounters::IssueActivityUniqueCounter).to receive(:track_issue_changed_epic_action).with(author: user)
+        describe 'events tracking', :snowplow do
+          it 'tracks usage data for changed epic action' do
+            expect(Gitlab::UsageDataCounters::IssueActivityUniqueCounter).to receive(:track_issue_changed_epic_action).with(author: user,
+                                                                                                                            project: new_project)
 
-          subject
+            subject
+          end
+
+          it_behaves_like 'Snowplow event tracking' do
+            let(:category) { 'issues_edit' }
+            let(:action) { 'g_project_management_issue_changed_epic' }
+            let(:namespace) { new_project.namespace}
+            let(:project) { new_project }
+            let(:feature_flag_name) { :route_hll_to_snowplow_phase2 }
+          end
         end
 
         context 'user can not update the epic' do

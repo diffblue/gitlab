@@ -28,9 +28,9 @@ module EE
           next unless result[:status] == :success
 
           if had_epic
-            ::Gitlab::UsageDataCounters::IssueActivityUniqueCounter.track_issue_changed_epic_action(author: current_user)
+            ::Gitlab::UsageDataCounters::IssueActivityUniqueCounter.track_issue_changed_epic_action(author: current_user, project: project)
           else
-            ::Gitlab::UsageDataCounters::IssueActivityUniqueCounter.track_issue_added_to_epic_action(author: current_user)
+            ::Gitlab::UsageDataCounters::IssueActivityUniqueCounter.track_issue_added_to_epic_action(author: current_user, project: project)
           end
         end
       end
@@ -42,7 +42,8 @@ module EE
         EpicIssues::DestroyService.new(link, current_user).execute.tap do |result|
           next unless result[:status] == :success
 
-          ::Gitlab::UsageDataCounters::IssueActivityUniqueCounter.track_issue_removed_from_epic_action(author: current_user)
+          ::Gitlab::UsageDataCounters::IssueActivityUniqueCounter.track_issue_removed_from_epic_action(author: current_user,
+                                                                                                       project: project)
         end
       end
 
