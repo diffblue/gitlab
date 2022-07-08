@@ -12,7 +12,7 @@
       .row
         .col-lg-12
           = gitlab_ui_form_for @project, url: project_settings_ci_cd_path(@project, anchor: 'auto-rollback-settings') do |f|
-            = form_errors(@project)
+            = form_errors(@project, pajamas_alert: true)
             %fieldset.builds-feature
               .gl-form-group.form-group
                 .card
