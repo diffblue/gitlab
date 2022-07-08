@@ -168,6 +168,32 @@ RSpec.describe Namespaces::FreeUserCap::Standard, :saas do
     end
   end
 
+  describe '#remaining_seats' do
+    subject(:remaining_seats) { described_class.new(namespace).remaining_seats }
+
+    before do
+      allow(namespace).to receive(:free_plan_members_count).and_return(free_plan_members_count)
+    end
+
+    context 'when under the number of free users limit' do
+      let(:free_plan_members_count) { Namespaces::FreeUserCap::FREE_USER_LIMIT - 1 }
+
+      it { is_expected.to eq(1) }
+    end
+
+    context 'when at the number of free users limit' do
+      let(:free_plan_members_count) { Namespaces::FreeUserCap::FREE_USER_LIMIT }
+
+      it { is_expected.to eq(0) }
+    end
+
+    context 'when over the number of free users limit' do
+      let(:free_plan_members_count) { Namespaces::FreeUserCap::FREE_USER_LIMIT + 1 }
+
+      it { is_expected.to eq(0) }
+    end
+  end
+
   describe '#enforce_cap?' do
     subject(:enforce_cap?) { described_class.new(namespace).enforce_cap? }
 

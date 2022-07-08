@@ -14,68 +14,54 @@ module Members
   class ActivateService
     include BaseServiceUtility
 
-    def initialize(group, user: nil, member: nil, activate_all: false, current_user:)
-      @group = group
-      @member = member
-      @user = user
-      @current_user = current_user
-      @activate_all = activate_all
+    def self.for_invite(group, invite_email:)
+      memberships = ::Member.in_hierarchy(group).awaiting.invite.where(invite_email: invite_email) # rubocop: disable CodeReuse/ActiveRecord
+
+      new(group, memberships: memberships)
     end
 
-    def execute
-      return error(_('No group provided')) unless group
+    def self.for_users(group, users:)
+      memberships = ::Member.in_hierarchy(group).awaiting.with_user(users)
+
+      new(group, memberships: memberships)
+    end
+
+    def self.for_group(group)
+      memberships = ::Member.in_hierarchy(group).awaiting
+
+      new(group, memberships: memberships)
+    end
+
+    def initialize(group, memberships:)
+      @group = group
+      @memberships = memberships
+    end
+
+    private_class_method :new
+
+    def execute(current_user:)
+      @current_user = current_user
+
       return error(_('You do not have permission to approve a member'), :forbidden) unless allowed?
-      return error(_('You can only approve an indivdual user, member, or all members')) unless valid_params?
-      return error(_('You cannot approve all pending members on a free plan')) if activate_all && group.free_plan?
       return error(_('There is no seat left to activate the member')) unless has_capacity_left?
+      return error(_('No memberships found'), :bad_request) if memberships.empty?
 
       activate_memberships
+      update_user_project_access
+      log_audit_event
+      log_event
+
+      success
     end
 
     private
 
-    attr_reader :current_user, :group, :member, :activate_all, :user
-
-    def valid_params?
-      [user, member, activate_all].count { |v| !!v } == 1
-    end
+    attr_reader :group, :memberships, :current_user, :affected_members
 
     def activate_memberships
-      memberships = activate_all ? awaiting_memberships : scoped_memberships
+      @affected_members = memberships.to_a
 
-      affected_user_ids = Set.new
-
-      memberships.find_each do |member|
-        member.update_columns(state: ::Member::STATE_ACTIVE, updated_at: Time.current)
-
-        affected_user_ids.add(member.user_id)
-      end
-
-      if !affected_user_ids.empty?
-        UserProjectAccessChangedService.new(affected_user_ids.to_a).execute(blocking: false)
-
-        log_audit_event unless activate_all
-        log_event
-        success
-      else
-        error(_('No memberships found'), :bad_request)
-      end
-    end
-
-    # rubocop: disable CodeReuse/ActiveRecord
-    def scoped_memberships
-      return awaiting_memberships.where(user: user) if user
-
-      if member.invite?
-        awaiting_memberships.where(invite_email: member.invite_email)
-      else
-        awaiting_memberships.where(user_id: member.user_id)
-      end
-    end
-    # rubocop: enable CodeReuse/ActiveRecord
-
-    def awaiting_memberships
-      ::Member.in_hierarchy(group).awaiting
+      ::Member.where(id: memberships).update_all(state: ::Member::STATE_ACTIVE, updated_at: Time.current) # rubocop: disable CodeReuse/ActiveRecord
     end
 
     def allowed?
@@ -83,36 +69,50 @@ module Members
     end
 
     def has_capacity_left?
-      return true if activate_all && !group.free_plan?
+      return true unless free_user_cap.enforce_cap?
 
-      group.root_ancestor.capacity_left_for_user?(user || member.user)
+      # A user could have an active and awaiting memberships at the same time.
+      # If there is at least one active membership for a user, a seat is already in use.
+      # We therefore can only count users towards the seat limit if there is no active membership.
+      # rubocop: disable CodeReuse/ActiveRecord
+      active_user_ids = ::Member.in_hierarchy(group).active_state.select(:user_id).distinct
+      to_activate_count = memberships.excluding_users(active_user_ids).distinct.count(:user_id)
+      # rubocop: enable CodeReuse/ActiveRecord
+
+      to_activate_count <= free_user_cap.remaining_seats
+    end
+
+    def free_user_cap
+      @free_user_cap ||= Namespaces::FreeUserCap::Standard.new(group)
+    end
+
+    def update_user_project_access
+      affected_user_ids = affected_members.map(&:user_id).compact.uniq
+
+      UserProjectAccessChangedService.new(affected_user_ids).execute(blocking: false)
     end
 
     def log_event
       log_params = {
         group: group.id,
-        approved_by: current_user.id
-      }.tap do |params|
-        params[:message] = activate_all ? 'Approved all pending group members' : 'Group member access approved'
-        unless activate_all
-          params[:member] = member.id if member
-          params[:user] = user.id if user
-        end
-      end
+        approved_by: current_user.id,
+        message: 'Group member access approved',
+        members: affected_members.map(&:id)
+      }
+
       Gitlab::AppLogger.info(log_params)
     end
 
     def log_audit_event
-      target = user || member&.user
-      return unless target
-
-      ::Gitlab::Audit::Auditor.audit(
-        name: 'change_membership_state',
-        author: current_user,
-        scope: group,
-        target: target,
-        message: 'Changed the membership state to active'
-      )
+      affected_members.each do |member|
+        ::Gitlab::Audit::Auditor.audit(
+          name: 'change_membership_state',
+          author: current_user,
+          scope: group,
+          target: member,
+          message: 'Changed the membership state to active'
+        )
+      end
     end
   end
 end

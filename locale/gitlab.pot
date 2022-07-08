@@ -44115,9 +44115,6 @@ msgstr ""
 msgid "You can only add up to %{max_contacts} contacts at one time"
 msgstr ""
 
-msgid "You can only approve an indivdual user, member, or all members"
-msgstr ""
-
 msgid "You can only edit files when you are on a branch"
 msgstr ""
 
@@ -44155,9 +44152,6 @@ msgid "You cannot %{action} %{state} users."
 msgstr ""
 
 msgid "You cannot access the raw file. Please wait a minute."
-msgstr ""
-
-msgid "You cannot approve all pending members on a free plan"
 msgstr ""
 
 msgid "You cannot approve your own deployment."
