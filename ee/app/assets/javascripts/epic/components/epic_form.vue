@@ -63,6 +63,9 @@ export default {
       and should only be visible to team members with at least Reporter access.
     `),
     epicDatesHint: s__('Epics|Leave empty to inherit from milestone dates'),
+    colorHelp: s__(
+      `Epics|The color for the epic when it's visualized, such as on roadmap timeline bars.`,
+    ),
   },
   mounted() {
     this.initAutosave();
@@ -249,7 +252,12 @@ export default {
         >
       </gl-form-group>
 
-      <gl-form-group v-if="isEpicColorEnabled" :label="__('Color')" label-for="epic-color">
+      <gl-form-group
+        v-if="isEpicColorEnabled"
+        label-for="epic-color"
+        :description="$options.i18n.colorHelp"
+        :label="__('Color')"
+      >
         <color-select-dropdown
           class="block colors js-colors-block"
           :full-path="groupPath"
