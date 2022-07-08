@@ -40,6 +40,7 @@ import epicMoveListMutation from '../graphql/epic_move_list.mutation.graphql';
 import epicsSwimlanesQuery from '../graphql/epics_swimlanes.query.graphql';
 import listUpdateLimitMetricsMutation from '../graphql/list_update_limit_metrics.mutation.graphql';
 import listsEpicsQuery from '../graphql/lists_epics.query.graphql';
+import listsEpicsWithColorQuery from '../graphql/lists_epics_with_color.query.graphql';
 import subGroupsQuery from '../graphql/sub_groups.query.graphql';
 import currentIterationQuery from '../graphql/board_current_iteration.query.graphql';
 import updateBoardEpicUserPreferencesMutation from '../graphql/update_board_epic_user_preferences.mutation.graphql';
@@ -83,9 +84,11 @@ const fetchAndFormatListEpics = (state, { fetchPolicy, ...extraVariables }) => {
     ...extraVariables,
   };
 
+  const query = gon?.features?.epicColorHighlight ? listsEpicsWithColorQuery : listsEpicsQuery;
+
   return gqlClient
     .query({
-      query: listsEpicsQuery,
+      query,
       context: {
         isSingleRequest: true,
       },
