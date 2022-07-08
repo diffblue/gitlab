@@ -8,7 +8,7 @@ module EE
       override :protected_branch_params
       def protected_branch_params
         super.tap do |hash|
-          hash[:unprotect_access_levels_attributes] = ::ProtectedBranches::AccessLevelParams.new(:unprotect, params).access_levels
+          hash[:unprotect_access_levels_attributes] = ::ProtectedRefs::AccessLevelParams.new(:unprotect, params).access_levels
           hash[:code_owner_approval_required] = code_owner_approval_required?
         end
       end
