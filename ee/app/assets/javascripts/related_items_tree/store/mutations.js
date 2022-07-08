@@ -269,11 +269,11 @@ export default {
   [types.REQUEST_PROJECTS](state) {
     state.projectsFetchInProgress = true;
   },
-  [types.RECIEVE_PROJECTS_SUCCESS](state, projects) {
+  [types.RECEIVE_PROJECTS_SUCCESS](state, projects) {
     state.projects = projects;
     state.projectsFetchInProgress = false;
   },
-  [types.RECIEVE_PROJECTS_FAILURE](state) {
+  [types.RECEIVE_PROJECTS_FAILURE](state) {
     state.projectsFetchInProgress = false;
   },
 

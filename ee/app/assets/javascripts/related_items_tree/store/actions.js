@@ -582,9 +582,9 @@ export const createNewIssue = ({ state, dispatch }, { issuesEndpoint, title }) =
 
 export const requestProjects = ({ commit }) => commit(types.REQUEST_PROJECTS);
 export const receiveProjectsSuccess = ({ commit }, data) =>
-  commit(types.RECIEVE_PROJECTS_SUCCESS, data);
+  commit(types.RECEIVE_PROJECTS_SUCCESS, data);
 export const receiveProjectsFailure = ({ commit }) => {
-  commit(types.RECIEVE_PROJECTS_FAILURE);
+  commit(types.RECEIVE_PROJECTS_FAILURE);
   createFlash({
     message: __('Something went wrong while fetching projects.'),
   });

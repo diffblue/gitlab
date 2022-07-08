@@ -1676,7 +1676,7 @@ describe('RelatedItemTree', () => {
             actions.receiveProjectsSuccess,
             mockProjects,
             {},
-            [{ type: types.RECIEVE_PROJECTS_SUCCESS, payload: mockProjects }],
+            [{ type: types.RECEIVE_PROJECTS_SUCCESS, payload: mockProjects }],
             [],
           );
         });
@@ -1688,7 +1688,7 @@ describe('RelatedItemTree', () => {
             actions.receiveProjectsFailure,
             {},
             {},
-            [{ type: types.RECIEVE_PROJECTS_FAILURE }],
+            [{ type: types.RECEIVE_PROJECTS_FAILURE }],
             [],
           );
         });

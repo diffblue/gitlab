@@ -210,7 +210,7 @@
 
 ## 9.3.4 (2017-07-03)
 
-- Update gitlab-shell to 5.1.1 to fix Post Recieve errors
+- Update gitlab-shell to 5.1.1 to fix Post Receive errors
 
 ## 9.3.3 (2017-06-30)
 
