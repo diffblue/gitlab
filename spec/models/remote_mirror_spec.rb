@@ -5,6 +5,10 @@ require 'spec_helper'
 RSpec.describe RemoteMirror, :mailer do
   include GitHelpers
 
+  before do
+    stub_feature_flags(remote_mirror_no_delay: false)
+  end
+
   describe 'URL validation' do
     context 'with a valid URL' do
       it 'is valid' do

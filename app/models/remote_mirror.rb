@@ -128,6 +128,10 @@ class RemoteMirror < ApplicationRecord
   def sync
     return unless sync?
 
+    if Feature.enabled?(:remote_mirror_no_delay, project, type: :ops)
+      return RepositoryUpdateRemoteMirrorWorker.perform_async(self.id, Time.current)
+    end
+
     if recently_scheduled?
       RepositoryUpdateRemoteMirrorWorker.perform_in(backoff_delay, self.id, Time.current)
     else
