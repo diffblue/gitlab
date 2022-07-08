@@ -30,7 +30,7 @@ module IpynbDiff
       return notebook_json if notebook_json.key?('cells')
 
       raise InvalidNotebookError
-    rescue EncodingError, Oj::ParseError
+    rescue EncodingError, Oj::ParseError, JSON::ParserError
       raise InvalidNotebookError
     end
 
