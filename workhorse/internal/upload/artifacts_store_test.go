@@ -206,9 +206,10 @@ func TestUploadHandlerSendingToExternalStorageAndItReturnsAnError(t *testing.T) 
 }
 
 func TestUploadHandlerSendingToExternalStorageAndSupportRequestTimeout(t *testing.T) {
+	shutdown := make(chan struct{})
 	storeServerMux := http.NewServeMux()
 	storeServerMux.HandleFunc("/url/put", func(w http.ResponseWriter, r *http.Request) {
-		time.Sleep(10 * time.Second)
+		<-shutdown
 	})
 
 	responseProcessor := func(w http.ResponseWriter, r *http.Request) {
@@ -216,13 +217,16 @@ func TestUploadHandlerSendingToExternalStorageAndSupportRequestTimeout(t *testin
 	}
 
 	storeServer := httptest.NewServer(storeServerMux)
-	defer storeServer.Close()
+	defer func() {
+		close(shutdown)
+		storeServer.Close()
+	}()
 
 	authResponse := &api.Response{
 		RemoteObject: api.RemoteObject{
 			StoreURL: storeServer.URL + "/url/put",
 			ID:       "store-id",
-			Timeout:  1,
+			Timeout:  0.001,
 		},
 	}
 
