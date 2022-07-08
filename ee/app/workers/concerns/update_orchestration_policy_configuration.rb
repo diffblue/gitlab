@@ -18,6 +18,8 @@ module UpdateOrchestrationPolicyConfiguration
     if configuration.project?
       configuration.transaction do
         configuration.approval_rules.scan_finding.delete_all
+        configuration.project.approval_merge_request_rules.scan_finding.delete_all
+
         configuration.active_scan_result_policies.each_with_index do |policy, policy_index|
           Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyService
             .new(policy_configuration: configuration, policy: policy, policy_index: policy_index)

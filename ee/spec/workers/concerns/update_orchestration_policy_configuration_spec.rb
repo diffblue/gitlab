@@ -98,7 +98,11 @@ RSpec.describe UpdateOrchestrationPolicyConfiguration do
       end
 
       context 'with existing project approval rules' do
+        let(:mr) { create(:merge_request, :opened, source_project: configuration.project) }
+
         let!(:approval_rule) { create(:approval_project_rule, :scan_finding, project: configuration.project )}
+        let!(:scan_finding_mr_rule) { create(:report_approver_rule, :scan_finding, merge_request: mr) }
+        let!(:code_coverage_mr_rule) { create(:report_approver_rule, :code_coverage, merge_request: mr) }
 
         before do
           allow_next_instance_of(Security::SecurityOrchestrationPolicies::ProcessRuleService) do |service|
@@ -107,10 +111,17 @@ RSpec.describe UpdateOrchestrationPolicyConfiguration do
           allow_next_instance_of(Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyService) do |service|
             allow(service).to receive(:execute)
           end
+          allow_next_instance_of(Security::SecurityOrchestrationPolicies::SyncOpenedMergeRequestsService) do |service|
+            allow(service).to receive(:execute)
+          end
         end
 
-        it 'deletes all approval_rules' do
+        it 'deletes all project scan_finding approval_rules' do
           expect { subject }.to change(configuration.approval_rules, :count).by(-1)
+        end
+
+        it 'deletes all merge request scan_finding approval_rules' do
+          expect { subject }.to change(configuration.project.approval_merge_request_rules, :count).by(-1)
         end
       end
 
