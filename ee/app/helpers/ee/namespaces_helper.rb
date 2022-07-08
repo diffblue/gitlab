@@ -61,14 +61,6 @@ module EE
       buy_storage_subscriptions_url(selected_group: namespace.root_ancestor.id)
     end
 
-    def show_minute_limit_banner?(namespace)
-      return false unless ::Gitlab.com? &&
-        ::Feature.enabled?(:show_minute_limit_banner, namespace.root_ancestor) &&
-        current_user&.can?(:guest_access, namespace.root_ancestor)
-
-      namespace.root_ancestor.has_free_or_no_subscription? && !minute_limit_banner_dismissed?
-    end
-
     override :pipeline_usage_app_data
     def pipeline_usage_app_data(namespace)
       return super unless ::Gitlab::CurrentSettings.should_check_namespace_plan?
