@@ -71,8 +71,8 @@ export default {
 </script>
 
 <template>
-  <div class="col-lg-3 gl-p-0 gl-mb-5">
-    <gl-card class="gl-mr-5">
+  <div class="gl-p-0 gl-mb-5 gl-mr-5 col-xs-12 col-md-5 col-lg-3 showcase-box-container">
+    <gl-card class="showcase-box">
       <div class="gl-flex-direction-row">
         <div class="gl-mb-3">
           <strong class="gl-text-gray-800 gl-mb-2">
@@ -84,10 +84,10 @@ export default {
         </p>
       </div>
 
-      <div class="gl-bottom-0">
+      <div class="gl-bottom-0 gl-display-flex">
         <gl-button
           v-if="primaryAction"
-          class="gl-mr-2"
+          class="gl-mr-2 gl-mb-2"
           category="primary"
           variant="confirm"
           :href="primaryLink"
@@ -105,7 +105,7 @@ export default {
 
         <gl-button
           v-if="secondaryAction"
-          class="gl-mr-2"
+          class="gl-mr-2 gl-mb-2"
           category="secondary"
           variant="confirm"
           :href="secondaryLink"

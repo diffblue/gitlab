@@ -2,11 +2,11 @@
 
 exports[`Card Showcase component renders correctly 1`] = `
 <div
-  class="col-lg-3 gl-p-0 gl-mb-5"
+  class="gl-p-0 gl-mb-5 gl-mr-5 col-xs-12 col-md-5 col-lg-3 showcase-box-container"
 >
   <gl-card-stub
     bodyclass=""
-    class="gl-mr-5"
+    class="showcase-box"
     footerclass=""
     headerclass=""
   >
@@ -35,12 +35,12 @@ exports[`Card Showcase component renders correctly 1`] = `
     </div>
      
     <div
-      class="gl-bottom-0"
+      class="gl-bottom-0 gl-display-flex"
     >
       <gl-button-stub
         buttontextclasses=""
         category="primary"
-        class="gl-mr-2"
+        class="gl-mr-2 gl-mb-2"
         data-testid="primary-button"
         data-track-="showcase_free_security_features"
         data-track-action="click_button"
@@ -65,7 +65,7 @@ exports[`Card Showcase component renders correctly 1`] = `
       <gl-button-stub
         buttontextclasses=""
         category="secondary"
-        class="gl-mr-2"
+        class="gl-mr-2 gl-mb-2"
         data-testid="secondary-button"
         data-track-action="click_button"
         data-track-experiment="showcase_free_security_features"
