@@ -17,7 +17,11 @@ module Ci
     end
 
     def approval_required
-      !!params.dig(:additional_params, :license_check) && has_denied_licenses?
+      merge_request = project.merge_requests.find(params[:id])
+
+      return false unless merge_request
+
+      merge_request.approval_rules.license_compliance.any? && has_denied_licenses?
     end
 
     def has_denied_licenses?
