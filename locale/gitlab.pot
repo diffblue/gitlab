@@ -26497,6 +26497,9 @@ msgstr ""
 msgid "Notify|You don't have access to the project."
 msgstr ""
 
+msgid "Notify|Your request to join the %{target_to_join} %{target_type} has been %{denied_tag}."
+msgstr ""
+
 msgid "Notify|successfully completed %{jobs} in %{stages}."
 msgstr ""
 
@@ -45555,6 +45558,9 @@ msgid "default branch"
 msgstr ""
 
 msgid "deleted"
+msgstr ""
+
+msgid "denied"
 msgstr ""
 
 msgid "deploy"
