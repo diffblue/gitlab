@@ -65,7 +65,7 @@ func (o *Object) Upload(ctx context.Context, r io.Reader) error {
 
 	resp, err := httpClient.Do(req)
 	if err != nil {
-		return fmt.Errorf("PUT request %q: %v", mask.URL(o.putURL), err)
+		return fmt.Errorf("PUT request %q: %w", mask.URL(o.putURL), err)
 	}
 	defer resp.Body.Close()
 

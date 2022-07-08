@@ -206,14 +206,9 @@ func TestUploadHandlerSendingToExternalStorageAndItReturnsAnError(t *testing.T) 
 }
 
 func TestUploadHandlerSendingToExternalStorageAndSupportRequestTimeout(t *testing.T) {
-	putCalledTimes := 0
-
 	storeServerMux := http.NewServeMux()
 	storeServerMux.HandleFunc("/url/put", func(w http.ResponseWriter, r *http.Request) {
-		putCalledTimes++
-		require.Equal(t, "PUT", r.Method)
 		time.Sleep(10 * time.Second)
-		w.WriteHeader(510)
 	})
 
 	responseProcessor := func(w http.ResponseWriter, r *http.Request) {
@@ -235,8 +230,8 @@ func TestUploadHandlerSendingToExternalStorageAndSupportRequestTimeout(t *testin
 	defer ts.Close()
 
 	response := testUploadArtifactsFromTestZip(t, ts)
-	require.Equal(t, http.StatusInternalServerError, response.Code)
-	require.Equal(t, 1, putCalledTimes, "upload should be called only once")
+	// HTTP status 504 (gateway timeout) proves that the timeout was enforced
+	require.Equal(t, http.StatusGatewayTimeout, response.Code)
 }
 
 func TestUploadHandlerMultipartUploadSizeLimit(t *testing.T) {
