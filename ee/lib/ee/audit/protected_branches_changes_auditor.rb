@@ -10,8 +10,10 @@ module EE
       end
 
       def execute
-        audit_changes(:allow_force_push, as: 'allow force push', entity: model.project, model: model)
-        audit_changes(:code_owner_approval_required, as: 'code owner approval required', entity: model.project, model: model)
+        audit_changes(:allow_force_push, as: 'allow force push', entity: model.project,
+                      model: model, event_type: event_type)
+        audit_changes(:code_owner_approval_required, as: 'code owner approval required',
+                      entity: model.project, model: model, event_type: event_type)
         audit_access_levels
       end
 
@@ -23,15 +25,22 @@ module EE
 
         access_inputs.each do |change, old_access_levels, new_access_levels|
           unless old_access_levels == new_access_levels
-            details = {
-              change: change,
-              from: old_access_levels.map(&:humanize),
-              to: new_access_levels.map(&:humanize),
-              target_id: model.id,
-              target_type: model.class.name,
-              target_details: model.name
+            from = old_access_levels.map(&:humanize)
+            to = new_access_levels.map(&:humanize)
+            audit_context = {
+              author: @current_user,
+              scope: model.project,
+              target: model,
+              message: "Changed #{change} from #{from} to #{to}",
+              name: event_type,
+              additional_details: {
+                change: change,
+                from: from,
+                to: to
+              }
             }
-            ::AuditEventService.new(@current_user, model.project, details).security_event
+
+            ::Gitlab::Audit::Auditor.audit(audit_context)
           end
         end
       end
@@ -44,6 +53,12 @@ module EE
           from: old,
           to: new
         }
+      end
+
+      private
+
+      def event_type
+        'protected_branch_updated'
       end
     end
   end
