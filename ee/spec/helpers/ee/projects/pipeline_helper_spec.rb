@@ -11,10 +11,14 @@ RSpec.describe Projects::PipelineHelper do
   let_it_be(:pipeline) { Ci::PipelinePresenter.new(raw_pipeline, current_user: user)}
 
   describe '#js_pipeline_tabs_data' do
-    subject(:pipeline_tabs_data) { helper.js_pipeline_tabs_data(project, pipeline) }
+    before do
+      project.add_developer(user)
+    end
+
+    subject(:pipeline_tabs_data) { helper.js_pipeline_tabs_data(project, pipeline, user) }
 
     it 'returns pipeline tabs data' do
-      expect(pipeline_tabs_data).to eq({
+      expect(pipeline_tabs_data).to include({
         can_generate_codequality_reports: pipeline.can_generate_codequality_reports?.to_json,
         codequality_report_download_path: helper.codequality_report_download_path(project, pipeline),
         expose_license_scanning_data: pipeline.expose_license_scanning_data?.to_json,
@@ -27,6 +31,22 @@ RSpec.describe Projects::PipelineHelper do
         pipeline_iid: pipeline.iid,
         pipeline_project_path: project.full_path,
         total_job_count: pipeline.total_size
+      })
+      expect(Gitlab::Json.parse(pipeline_tabs_data[:vulnerability_report_data])).to include({
+        "empty_state_svg_path" => match_asset_path("illustrations/user-not-logged-in.svg"),
+        "pipeline_id" => pipeline.id,
+        "pipeline_iid" => pipeline.iid,
+        "project_id" => project.id,
+        "source_branch" => pipeline.source_ref,
+        "pipeline_jobs_path" => "/api/v4/projects/#{project.id}/pipelines/#{pipeline.id}/jobs",
+        "vulnerabilities_endpoint" => "/api/v4/projects/#{project.id}/vulnerability_findings?pipeline_id=#{pipeline.id}",
+        "vulnerability_exports_endpoint" => "/api/v4/security/projects/#{project.id}/vulnerability_exports",
+        "empty_state_unauthorized_svg_path" => match_asset_path("illustrations/user-not-logged-in.svg"),
+        "empty_state_forbidden_svg_path" => match_asset_path("illustrations/lock_promotion.svg"),
+        "project_full_path" => project.path_with_namespace,
+        "commit_path_template" => "/#{project.path_with_namespace}/-/commit/$COMMIT_SHA",
+        "can_admin_vulnerability" => 'false',
+        "can_view_false_positive" => 'false'
       })
     end
   end
@@ -75,14 +95,13 @@ RSpec.describe Projects::PipelineHelper do
   describe 'vulnerability_report_data' do
     before do
       project.add_developer(user)
-      allow(helper).to receive(:can?).and_return(true)
     end
 
     subject(:vulnerability_report_data) { helper.vulnerability_report_data(project, pipeline, user) }
 
     it "returns the vulnerability report's data" do
-      expect(vulnerability_report_data).to match({
-        empty_state_svg_path: match_asset_path('/assets/illustrations/security-dashboard-empty-state.svg'),
+      expect(vulnerability_report_data).to include({
+        empty_state_svg_path: match_asset_path("illustrations/user-not-logged-in.svg"),
         pipeline_id: pipeline.id,
         pipeline_iid: pipeline.iid,
         project_id: project.id,
@@ -90,11 +109,11 @@ RSpec.describe Projects::PipelineHelper do
         pipeline_jobs_path: "/api/v4/projects/#{project.id}/pipelines/#{pipeline.id}/jobs",
         vulnerabilities_endpoint: "/api/v4/projects/#{project.id}/vulnerability_findings?pipeline_id=#{pipeline.id}",
         vulnerability_exports_endpoint: "/api/v4/security/projects/#{project.id}/vulnerability_exports",
-        empty_state_unauthorized_svg_path: match_asset_path('/assets/illustrations/user-not-logged-in.svg'),
-        empty_state_forbidden_svg_path: match_asset_path('/assets/illustrations/lock_promotion.svg'),
+        empty_state_unauthorized_svg_path: match_asset_path("illustrations/user-not-logged-in.svg"),
+        empty_state_forbidden_svg_path: match_asset_path("illustrations/lock_promotion.svg"),
         project_full_path: project.path_with_namespace,
         commit_path_template: "/#{project.path_with_namespace}/-/commit/$COMMIT_SHA",
-        can_admin_vulnerability: 'true',
+        can_admin_vulnerability: 'false',
         can_view_false_positive: 'false'
       })
     end
