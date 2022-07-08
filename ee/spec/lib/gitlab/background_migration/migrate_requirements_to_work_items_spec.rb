@@ -3,6 +3,9 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::BackgroundMigration::MigrateRequirementsToWorkItems do
+  let_it_be(:issue_base_type_enum) { 0 }
+  let_it_be(:issue_type_id) { table(:work_item_types).find_by(base_type: issue_base_type_enum).id }
+
   let(:issues) { table(:issues) }
   let(:requirements) { table(:requirements) }
   let(:namespaces) { table(:namespaces) }
@@ -17,7 +20,7 @@ RSpec.describe Gitlab::BackgroundMigration::MigrateRequirementsToWorkItems do
   let(:project2) { projects.create!(namespace_id: group.id, name: 'gitlab2', path: 'gitlab2', project_namespace_id: project_namespace_2.id) }
   let(:user1) { users.create!(email: 'author@example.com', notification_email: 'author@example.com', name: 'author', username: 'author', projects_limit: 10, state: 'active') }
   let(:user2) { users.create!(email: 'author2@example.com', notification_email: 'author2@example.com', name: 'author2', username: 'author2', projects_limit: 10, state: 'active') }
-  let(:issue) { issues.create!(iid: 5, state_id: 1, project_id: project2.id) }
+  let(:issue) { issues.create!(iid: 5, state_id: 1, project_id: project2.id, work_item_type_id: issue_type_id) }
 
   let!(:requirement_1) { create_requirement(iid: 1, project_id: project.id, author_id: user1.id, title: 'r 1', state: 1, created_at: 2.days.ago, updated_at: 1.day.ago) }
 

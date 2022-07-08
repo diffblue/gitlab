@@ -3,6 +3,9 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::BackgroundMigration::DeleteInvalidEpicIssues do
+  let_it_be(:issue_base_type_enum) { 0 }
+  let_it_be(:issue_type_id) { table(:work_item_types).find_by(base_type: issue_base_type_enum).id }
+
   # rubocop:disable RSpec/MultipleMemoizedHelpers
   let!(:users) { table(:users) }
   let!(:namespaces) { table(:namespaces) }
@@ -89,19 +92,19 @@ RSpec.describe Gitlab::BackgroundMigration::DeleteInvalidEpicIssues do
                     group_id: group.id, author_id: user.id)
     end
 
-    let!(:issue) { issues.create!(iid: 1, project_id: project.id, title: 'issue 1', author_id: user.id) }
-    let!(:issue2) { issues.create!(iid: 2, project_id: project.id, title: 'issue 2', author_id: user.id) }
-    let!(:issue3) { issues.create!(iid: 3, project_id: project.id, title: 'issue 3', author_id: user.id) }
-    let!(:issue4) { issues.create!(iid: 4, project_id: project.id, title: 'issue 4', author_id: user.id) }
-    let!(:issue5) { issues.create!(iid: 5, project_id: project.id, title: 'issue 5', author_id: user.id) }
-    let!(:issue_root) { issues.create!(iid: 6, project_id: project_root.id, title: 'issue_root', author_id: user.id) }
-    let!(:issue_sub) { issues.create!(iid: 7, project_id: project_sub.id, title: 'issue_sub', author_id: user.id) }
-    let!(:issue_sub2) { issues.create!(iid: 8, project_id: project_sub.id, title: 'issue_sub 2', author_id: user.id) }
-    let!(:issue_sub3) { issues.create!(iid: 9, project_id: project_sub.id, title: 'issue_sub 3', author_id: user.id) }
-    let!(:issue_other) { issues.create!(iid: 10, project_id: project_other.id, title: 'other', author_id: user.id) }
-    let!(:issue_other_2) { issues.create!(iid: 11, project_id: project_other.id, title: 'other 2', author_id: user.id) }
-    let!(:issue_other_3) { issues.create!(iid: 12, project_id: project_other.id, title: 'other 3', author_id: user.id) }
-    let!(:issue_other_4) { issues.create!(iid: 13, project_id: project_other.id, title: 'other 4', author_id: user.id) }
+    let!(:issue) { create_issue(iid: 1, project: project, title: 'issue 1', author: user) }
+    let!(:issue2) { create_issue(iid: 2, project: project, title: 'issue 2', author: user) }
+    let!(:issue3) { create_issue(iid: 3, project: project, title: 'issue 3', author: user) }
+    let!(:issue4) { create_issue(iid: 4, project: project, title: 'issue 4', author: user) }
+    let!(:issue5) { create_issue(iid: 5, project: project, title: 'issue 5', author: user) }
+    let!(:issue_root) { create_issue(iid: 6, project: project_root, title: 'issue_root', author: user) }
+    let!(:issue_sub) { create_issue(iid: 7, project: project_sub, title: 'issue_sub', author: user) }
+    let!(:issue_sub2) { create_issue(iid: 8, project: project_sub, title: 'issue_sub 2', author: user) }
+    let!(:issue_sub3) { create_issue(iid: 9, project: project_sub, title: 'issue_sub 3', author: user) }
+    let!(:issue_other) { create_issue(iid: 10, project: project_other, title: 'other', author: user) }
+    let!(:issue_other_2) { create_issue(iid: 11, project: project_other, title: 'other 2', author: user) }
+    let!(:issue_other_3) { create_issue(iid: 12, project: project_other, title: 'other 3', author: user) }
+    let!(:issue_other_4) { create_issue(iid: 13, project: project_other, title: 'other 4', author: user) }
 
     let!(:valid_and_invalid_epic_issues) do
       invalid_epic_issues = []
@@ -175,12 +178,18 @@ RSpec.describe Gitlab::BackgroundMigration::DeleteInvalidEpicIssues do
       epic_issues.create!(issue_id: issue5.id, epic_id: epic_other.id)
 
       # create new records to delete
-      issue6 = issues.create!(iid: 14, project_id: project.id, title: 'issue 6', author_id: user.id)
-      issue7 = issues.create!(iid: 15, project_id: project.id, title: 'issue 7', author_id: user.id)
+      issue6 = create_issue(iid: 14, title: 'issue 6', author: user, project: project)
+      issue7 = create_issue(iid: 15, title: 'issue 7', author: user, project: project)
       epic_issues.create!(issue_id: issue6.id, epic_id: epic_other.id)
       epic_issues.create!(issue_id: issue7.id, epic_id: epic_other.id)
 
       expect { subject }.not_to exceed_all_query_limit(control)
     end
+  end
+
+  def create_issue(iid:, title:, author:, project:)
+    issues.create!(
+      iid: iid, project_id: project.id, title: title, author_id: author.id, work_item_type_id: issue_type_id
+    )
   end
 end
