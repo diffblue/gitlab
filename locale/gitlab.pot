@@ -22355,6 +22355,9 @@ msgstr ""
 msgid "Job|%{boldStart}Pipeline%{boldEnd} %{id} for %{ref}"
 msgstr ""
 
+msgid "Job|%{searchLength} results found for %{searchTerm}"
+msgstr ""
+
 msgid "Job|Are you sure you want to erase this job log and artifacts?"
 msgstr ""
 
@@ -22394,10 +22397,16 @@ msgstr ""
 msgid "Job|Job has been erased by %{userLink}"
 msgstr ""
 
+msgid "Job|Job log search"
+msgstr ""
+
 msgid "Job|Keep"
 msgstr ""
 
 msgid "Job|Manual"
+msgstr ""
+
+msgid "Job|No search results found"
 msgstr ""
 
 msgid "Job|Passed"
@@ -22422,6 +22431,12 @@ msgid "Job|Scroll to bottom"
 msgstr ""
 
 msgid "Job|Scroll to top"
+msgstr ""
+
+msgid "Job|Search for substrings in your job log output. Currently search is only supported for the visible job log output, not for any log output that is truncated due to size."
+msgstr ""
+
+msgid "Job|Search job log"
 msgstr ""
 
 msgid "Job|Show complete raw"
@@ -22458,6 +22473,9 @@ msgid "Job|This job is stuck because you don't have any active runners that can 
 msgstr ""
 
 msgid "Job|Waiting for resource"
+msgstr ""
+
+msgid "Job|We could not find this element"
 msgstr ""
 
 msgid "Job|allowed to fail"
