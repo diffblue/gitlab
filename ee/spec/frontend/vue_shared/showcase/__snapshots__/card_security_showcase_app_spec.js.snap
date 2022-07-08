@@ -2,10 +2,10 @@
 
 exports[`Card Security Showcase App renders correctly 1`] = `
 <div
-  class="gl-m-5"
+  class="gl-my-5"
 >
   <div
-    class="row gl-mb-4 col-lg-6 col-xs-12 gl-p-0"
+    class="gl-mb-4 col-lg-6 col-xs-12 gl-p-0"
   >
     <h2
       class="gl-col-12 gl-font-size-h2 gl-text-gray-900"
@@ -25,7 +25,7 @@ exports[`Card Security Showcase App renders correctly 1`] = `
   </div>
    
   <div
-    class="row gl-mb-8"
+    class="gl-display-flex gl-w-full gl-flex-flow-row-wrap"
   >
     <card-showcase-stub
       description="Scan your source code using GitLab CI/CD and uncover vulnerabilities before deploying."
@@ -59,7 +59,7 @@ exports[`Card Security Showcase App renders correctly 1`] = `
   </div>
    
   <div
-    class="row gl-mb-4 col-lg-6 col-xs-12 gl-p-0"
+    class="gl-mb-4 col-lg-6 col-xs-12 gl-p-0"
   >
     <h2
       class="gl-col-12 gl-font-size-h2 gl-text-gray-900"
@@ -79,7 +79,7 @@ exports[`Card Security Showcase App renders correctly 1`] = `
   </div>
    
   <div
-    class="row gl-mb-8"
+    class="gl-display-flex gl-w-full gl-flex-flow-row-wrap"
   >
     <card-showcase-stub
       description="Access a dedicated area for vulnerability management. This includes a security dashboard, vulnerability report, and settings."

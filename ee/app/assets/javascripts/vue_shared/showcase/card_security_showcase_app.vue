@@ -31,8 +31,8 @@ export default {
 </script>
 
 <template>
-  <div class="gl-m-5">
-    <div class="row gl-mb-4 col-lg-6 col-xs-12 gl-p-0">
+  <div class="gl-my-5">
+    <div class="gl-mb-4 col-lg-6 col-xs-12 gl-p-0">
       <h2 class="gl-col-12 gl-font-size-h2 gl-text-gray-900">
         {{ $options.i18n.identify.title }}
       </h2>
@@ -41,7 +41,7 @@ export default {
       </p>
     </div>
 
-    <div class="row gl-mb-8">
+    <div class="gl-display-flex gl-w-full gl-flex-flow-row-wrap">
       <card-showcase
         :title="$options.i18n.sast.title"
         :description="$options.i18n.sast.description"
@@ -60,7 +60,7 @@ export default {
       />
     </div>
 
-    <div class="row gl-mb-4 col-lg-6 col-xs-12 gl-p-0">
+    <div class="gl-mb-4 col-lg-6 col-xs-12 gl-p-0">
       <h2 class="gl-col-12 gl-font-size-h2 gl-text-gray-900">
         {{ $options.i18n.takeNextLevel.title }}
       </h2>
@@ -69,7 +69,7 @@ export default {
       </p>
     </div>
 
-    <div class="row gl-mb-8">
+    <div class="gl-display-flex gl-w-full gl-flex-flow-row-wrap">
       <card-showcase
         :title="$options.i18n.vulnerability_management.title"
         :description="$options.i18n.vulnerability_management.description"
