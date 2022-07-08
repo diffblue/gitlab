@@ -387,6 +387,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | <a id="queryrunnersstatus"></a>`status` | [`CiRunnerStatus`](#cirunnerstatus) | Filter runners by status. |
 | <a id="queryrunnerstaglist"></a>`tagList` | [`[String!]`](#string) | Filter by tags associated with the runner (comma-separated or array). |
 | <a id="queryrunnerstype"></a>`type` | [`CiRunnerType`](#cirunnertype) | Filter runners by type. |
+| <a id="queryrunnersupgradestatus"></a>`upgradeStatus` | [`CiRunnerUpgradeStatusType`](#cirunnerupgradestatustype) | Filter by upgrade status. |
 
 ### `Query.snippets`
 
@@ -12398,6 +12399,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | <a id="grouprunnersstatus"></a>`status` | [`CiRunnerStatus`](#cirunnerstatus) | Filter runners by status. |
 | <a id="grouprunnerstaglist"></a>`tagList` | [`[String!]`](#string) | Filter by tags associated with the runner (comma-separated or array). |
 | <a id="grouprunnerstype"></a>`type` | [`CiRunnerType`](#cirunnertype) | Filter runners by type. |
+| <a id="grouprunnersupgradestatus"></a>`upgradeStatus` | [`CiRunnerUpgradeStatusType`](#cirunnerupgradestatustype) | Filter by upgrade status. |
 
 ##### `Group.scanExecutionPolicies`
 
