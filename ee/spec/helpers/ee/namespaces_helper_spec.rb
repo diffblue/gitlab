@@ -270,58 +270,6 @@ RSpec.describe EE::NamespacesHelper do
     end
   end
 
-  describe '#show_minute_limit_banner?' do
-    let(:project) { create(:project) }
-
-    context 'on dot com' do
-      using RSpec::Parameterized::TableSyntax
-
-      where(:feature_flag_enabled, :has_guest_access, :free_plan, :user_dismissed_banner, :should_show_banner) do
-        true  | true  | true  | false | true
-        false | true  | true  | true  | false
-        false | false | true  | true  | false
-        false | false | false | true  | false
-        false | false | false | false | false
-        false | true  | false | true  | false
-        false | false | false | true  | false
-        true  | true  | true  | true  | false
-        true  | true  | false | false | false
-        true  | false | false | false | false
-        true  | true  | false | true  | false
-        true  | false | false | true  | false
-      end
-
-      with_them do
-        before do
-          allow(Gitlab).to receive(:com?).and_return(true)
-          stub_feature_flags(show_minute_limit_banner: feature_flag_enabled)
-          allow(helper).to receive(:current_user).and_return(user)
-          allow(user).to receive(:can?).with(:guest_access, project.root_ancestor).and_return(has_guest_access)
-          allow(project.root_ancestor).to receive(:has_free_or_no_subscription?).and_return(free_plan)
-          allow(helper).to receive(:user_dismissed?).with('minute_limit_banner').and_return(user_dismissed_banner)
-        end
-
-        it 'shows the banner if required' do
-          expect(helper.show_minute_limit_banner?(project)).to eq(should_show_banner)
-        end
-      end
-    end
-
-    context 'not dot com' do
-      context 'when feature flag is enabled for a free project and user has not dismissed callout' do
-        before do
-          stub_feature_flags(show_minute_limit_banner: true)
-          allow(project.root_ancestor).to receive(:free_plan?).and_return(true)
-          allow(helper).to receive(:user_dismissed?).with('minute_limit_banner').and_return(false)
-        end
-
-        it 'does not show banner' do
-          expect(helper.show_minute_limit_banner?(project)).to eq(false)
-        end
-      end
-    end
-  end
-
   describe '#pipeline_usage_app_data' do
     context 'when gitlab sass', :saas do
       let(:minutes_usage) { user_group.ci_minutes_usage }
