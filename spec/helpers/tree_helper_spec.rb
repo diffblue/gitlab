@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe TreeHelper do
-  let(:project) { create(:project, :repository) }
+  let_it_be(:project) { create(:project, :repository) }
   let(:repository) { project.repository }
   let(:sha) { 'c1c67abbaf91f624347bb3ae96eabe3a1b742478' }
 
@@ -112,6 +112,7 @@ RSpec.describe TreeHelper do
     context 'user does not have write access but a personal fork exists' do
       include ProjectForksHelper
 
+      let(:project) { create(:project, :repository) }
       let(:forked_project) { create(:project, :repository, namespace: user.namespace) }
 
       before do
