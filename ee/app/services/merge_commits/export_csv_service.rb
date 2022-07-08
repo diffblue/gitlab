@@ -49,6 +49,7 @@ module MergeCommits
         'Author' => -> (merge_request) { merge_request.author&.name },
         'Merge Request' => 'id',
         'Merged By' => -> (merge_request) { merge_request.metrics&.merged_by&.name },
+        'Date Merged' => -> (merge_request) { merge_request.merged_at },
         'Pipeline' => -> (merge_request) { merge_request.metrics&.pipeline_id },
         'Group' => -> (merge_request) { merge_request.project&.namespace&.name },
         'Project' => -> (merge_request) { merge_request.project&.name },
