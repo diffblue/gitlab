@@ -103,7 +103,7 @@ export default {
       compactedLog.forEach((line) => {
         const lineText = line.content[0].text;
 
-        if (lineText.toLowerCase().includes(this.searchTerm.toLowerCase())) {
+        if (lineText.toLocaleLowerCase().includes(this.searchTerm.toLocaleLowerCase())) {
           this.searchResults.push(line);
         }
       });
@@ -118,7 +118,12 @@ export default {
         if (logLine) {
           setTimeout(() => scrollToElement(logLine));
 
-          this.$toast.show(`${this.searchResults.length} results found for ${this.searchTerm}`);
+          const message = sprintf(s__('Job|%{searchLength} results found for %{searchTerm}'), {
+            searchLength: this.searchResults.length,
+            searchTerm: this.searchTerm,
+          });
+
+          this.$toast.show(message);
         } else {
           this.$toast.show(this.$options.i18n.logLineNumberNotFound);
         }
