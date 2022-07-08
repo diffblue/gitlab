@@ -63,6 +63,33 @@ RSpec.describe 'devise/sessions/new' do
     end
   end
 
+  describe 'Google Tag Manager' do
+    subject { rendered }
+
+    before do
+      stub_devise
+      disable_captcha
+    end
+
+    describe 'when Google Tag Manager is enabled' do
+      before do
+        enable_gtm
+        render
+      end
+
+      it { is_expected.to match /www.googletagmanager.com/ }
+    end
+
+    describe 'when Google Tag Manager is disabled' do
+      before do
+        disable_gtm
+        render
+      end
+
+      it { is_expected.not_to match /www.googletagmanager.com/ }
+    end
+  end
+
   def disable_other_signin_methods
     allow(view).to receive(:password_authentication_enabled_for_web?).and_return(false)
     allow(view).to receive(:omniauth_enabled?).and_return(false)
@@ -93,5 +120,13 @@ RSpec.describe 'devise/sessions/new' do
   def disable_captcha
     allow(view).to receive(:captcha_enabled?).and_return(false)
     allow(view).to receive(:captcha_on_login_required?).and_return(false)
+  end
+
+  def disable_gtm
+    allow(view).to receive(:google_tag_manager_enabled?).and_return(false)
+  end
+
+  def enable_gtm
+    allow(view).to receive(:google_tag_manager_enabled?).and_return(true)
   end
 end
