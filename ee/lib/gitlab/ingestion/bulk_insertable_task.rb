@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Security
+module Gitlab
   module Ingestion
     #
     # Provides a DSL to define bulk insertable ingestion tasks.

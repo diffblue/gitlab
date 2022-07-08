@@ -7,7 +7,7 @@ module Security
         # Updates the existing vulnerability records
         # by using a single database query.
         class Update < AbstractTask
-          include BulkUpdatableTask
+          include Gitlab::Ingestion::BulkUpdatableTask
 
           self.model = Vulnerability
 

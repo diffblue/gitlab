@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Security
+module Gitlab
   module Ingestion
     #
     # Provides a DSL to define bulk updatable ingestion tasks.
@@ -44,10 +44,18 @@ module Security
       private
 
       delegate :model, to: :'self.class', private: true
-      delegate :table_name, :primary_key, :column_for_attribute, :type_for_attribute, :connection, to: :model, private: true
+      delegate :table_name, :primary_key, :column_for_attribute, :type_for_attribute, :connection,
+        to: :model, private: true
 
       def update_sql
-        format(SQL_TEMPLATE, table_name: table_name, set_values: set_values, values: values, primary_key: primary_key, map_schema: map_schema)
+        format(
+          SQL_TEMPLATE,
+          table_name: table_name,
+          set_values: set_values,
+          values: values,
+          primary_key: primary_key,
+          map_schema: map_schema
+        )
       end
 
       def set_values

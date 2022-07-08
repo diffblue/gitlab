@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::Ingestion::BulkInsertableTask do
+RSpec.describe Gitlab::Ingestion::BulkInsertableTask do
   describe '.unique_by' do
     let(:pipeline) { create(:ci_pipeline) }
     let(:identifier_1) { create(:vulnerabilities_identifier) }
@@ -12,7 +12,7 @@ RSpec.describe Security::Ingestion::BulkInsertableTask do
     let(:finding_map) { create(:finding_map, finding: finding, identifier_ids: identifier_ids) }
     let(:task) do
       Class.new(Security::Ingestion::AbstractTask) do
-        include Security::Ingestion::BulkInsertableTask
+        include Gitlab::Ingestion::BulkInsertableTask
 
         self.model = Class.new(ApplicationRecord) { self.table_name = 'vulnerability_occurrence_identifiers' }
         self.unique_by = %i[occurrence_id identifier_id].freeze

@@ -6,7 +6,7 @@ module Security
       # Links findings with identifiers by creating the
       # `Vulnerabilities::FindingIdentifier` records.
       class IngestFindingIdentifiers < AbstractTask
-        include BulkInsertableTask
+        include Gitlab::Ingestion::BulkInsertableTask
 
         self.model = Vulnerabilities::FindingIdentifier
         self.unique_by = %i[occurrence_id identifier_id].freeze

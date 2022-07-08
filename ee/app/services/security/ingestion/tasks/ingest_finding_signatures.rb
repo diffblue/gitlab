@@ -4,7 +4,7 @@ module Security
   module Ingestion
     module Tasks
       class IngestFindingSignatures < AbstractTask
-        include BulkInsertableTask
+        include Gitlab::Ingestion::BulkInsertableTask
 
         self.model = Vulnerabilities::FindingSignature
         self.unique_by = %i[finding_id algorithm_type signature_sha].freeze
