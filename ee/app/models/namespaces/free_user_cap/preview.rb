@@ -4,12 +4,6 @@
 module Namespaces
   module FreeUserCap
     class Preview < Standard
-      def over_limit?
-        return false unless enforce_cap?
-
-        users_count > FREE_USER_LIMIT
-      end
-
       private
 
       def feature_enabled?
