@@ -41,7 +41,8 @@ module Security
         training_providers.each do |provider|
           identifier_external_ids.each do |identifier_external_id|
             class_name = "::Security::TrainingProviders::#{provider.name.delete(' ')}UrlFinder".safe_constantize
-            content_url = class_name.new(project, provider, identifier_external_id, language).execute if class_name
+            external_id = identifier_external_id[1..-2].split(']-[').last
+            content_url = class_name.new(project, provider, external_id, language).execute if class_name
             content_urls << content_url if content_url
           end
         end
