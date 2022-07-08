@@ -7,6 +7,12 @@ module Namespaces
         @root_namespace = root_namespace.root_ancestor # just in case the true root isn't passed
       end
 
+      def over_limit?
+        return false unless enforce_cap?
+
+        users_count > FREE_USER_LIMIT
+      end
+
       def reached_limit?
         return false unless enforce_cap?
 

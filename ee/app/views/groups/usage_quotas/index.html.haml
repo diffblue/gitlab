@@ -25,6 +25,10 @@
 
 .tab-content
   .tab-pane.active#seats-quota-tab
+    = render Namespaces::FreeUserCap::UsageQuotaAlertComponent.new(namespace: @group.root_ancestor,
+      user: current_user,
+      content_class: 'gl-my-3')
+
     #js-seat-usage-app{ data: group_seats_usage_quota_app_data(@group) }
   .tab-pane#pipelines-quota-tab
     - if Feature.enabled?(:usage_quotas_pipelines_vue, @group)
