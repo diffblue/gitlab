@@ -1728,4 +1728,24 @@ RSpec.describe MergeRequest do
       expect(merge_request.audit_details).to eq(merge_request.title)
     end
   end
+
+  describe '#latest_pipeline_for_target_branch' do
+    context 'without pipeline' do
+      it 'return nil' do
+        expect(merge_request.latest_pipeline_for_target_branch).to be_nil
+      end
+    end
+
+    context 'with existing pipeline' do
+      let!(:target_branch_pipeline) do
+        create(:ee_ci_pipeline,
+                project: project,
+                ref: merge_request.target_branch)
+      end
+
+      it 'returns the pipeline related to the target branch' do
+        expect(merge_request.latest_pipeline_for_target_branch).to eq(target_branch_pipeline)
+      end
+    end
+  end
 end

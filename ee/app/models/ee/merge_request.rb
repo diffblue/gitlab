@@ -338,6 +338,12 @@ module EE
       title
     end
 
+    def latest_pipeline_for_target_branch
+      @latest_pipeline ||= project.ci_pipelines
+          .order(id: :desc)
+          .find_by(ref: target_branch)
+    end
+
     private
 
     def has_approved_license_check?

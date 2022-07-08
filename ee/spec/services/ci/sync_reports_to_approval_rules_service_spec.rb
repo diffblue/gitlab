@@ -404,6 +404,18 @@ RSpec.describe Ci::SyncReportsToApprovalRulesService, '#execute' do
               .to change { report_approver_rule.reload.approvals_required }.from(2).to(0)
             end
           end
+
+          context 'with a recent pipeline related to the default branch' do
+            before do
+              latest_pipeline = create(:ee_ci_pipeline, :success, project: project, ref: merge_request.target_branch)
+              create(:ee_ci_build, :success, :dependency_scanning, name: 'ds_job', pipeline: latest_pipeline, project: project)
+            end
+
+            it "lowers approval_required count" do
+              expect { subject }
+              .to change { report_approver_rule.reload.approvals_required }.from(2).to(0)
+            end
+          end
         end
       end
     end

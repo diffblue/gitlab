@@ -93,7 +93,7 @@ module Ci
 
     def remove_required_approvals_for_scan_finding(merge_requests)
       merge_requests.each do |merge_request|
-        base_reports = merge_request.base_pipeline&.security_reports
+        base_reports = merge_request.latest_pipeline_for_target_branch&.security_reports
         scan_finding_rules = merge_request.approval_rules.scan_finding
         selected_rules = scan_finding_rules.reject do |rule|
           violates_default_policy?(rule, base_reports)
