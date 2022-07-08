@@ -87,7 +87,7 @@ module EE
       return 0 unless protected?
 
       if has_approval_rules?
-        associated_approval_rules.sum(:required_approvals)
+        associated_approval_rules.sum(&:required_approvals)
       else
         associated_protected_environments.map(&:required_approval_count).max
       end
@@ -107,8 +107,10 @@ module EE
 
     def associated_approval_rules
       strong_memoize(:associated_approval_rules) do
+        # Return Array instead of AR relationship, otherwise `associated_approval_rules.any?`
+        # and `associated_approval_rules.sum(:required_approvals)` executes a new query
         ::ProtectedEnvironments::ApprovalRule
-          .where(protected_environment: associated_protected_environments)
+          .where(protected_environment: associated_protected_environments).to_a
       end
     end
 
