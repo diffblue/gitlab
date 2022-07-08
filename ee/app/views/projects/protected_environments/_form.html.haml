@@ -17,9 +17,8 @@
 
       .form-group
         = f.label :required_approval_count, s_('ProtectedEnvironment|Required approvals'), class: 'label-bold gl-display-block'
-        .dropdown.b-dropdown.gl-new-dropdown.gl-min-w-20.btn-group
-          = f.select :required_approval_count, (0..5).map { |num| [num.to_s, num] }, {}, class: 'dropdown-menu-toggle select-control'
-          = sprite_icon('chevron-down', css_class: 'gl-absolute gl-top-3 gl-right-3 gl-text-gray-500')
+        .gl-min-w-20
+          = f.select :required_approval_count, (0..5).map { |num| [num.to_s, num] }, {}, class: 'gl-form-select custom-select gl-form-input-xs'
 
     .card-footer
       = f.submit s_('ProtectedEnvironment|Protect'), class: 'gl-button btn btn-confirm', disabled: true

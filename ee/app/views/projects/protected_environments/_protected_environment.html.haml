@@ -1,14 +1,12 @@
-%tr.js-protected-environment-edit-form{ data: { url: namespace_project_protected_environment_path(@project.namespace, @project, protected_environment) } }
-  %td
-    - if protected_environment.environment_id?
-      %span.ref-name= link_to protected_environment.name, namespace_project_environment_path(@project.namespace, @project, protected_environment.environment_id)
-    - else
-      %span.ref-name= protected_environment.name
-  %td
-    = render partial: 'projects/protected_environments/update_deploy_access_level_dropdown', locals: { protected_environment: protected_environment, access_levels: protected_environment.deploy_access_levels, disabled: !can_admin_project }
-  %td.gl-min-w-20
-    = protected_environment.required_approval_count
+- access_levels = protected_environment.deploy_access_levels
+- url = namespace_project_protected_environment_path(@project.namespace, @project, protected_environment)
+- environment_link = protected_environment.environment_id? && namespace_project_environment_path(@project.namespace, @project, protected_environment.environment_id)
+- delete_protected_environment_link = namespace_project_protected_environment_path(@project.namespace, @project, protected_environment)
 
-  - if can_admin_project
-    %td
-      = link_to s_('ProtectedEnvironment|Unprotect'), [@project, protected_environment], disabled: local_assigns[:disabled], data: { confirm: s_('ProtectedEnvironment|%{environment_name} will be writable for developers. Are you sure?') % { environment_name: protected_environment.name } }, method: :delete, class: 'btn gl-button btn-danger'
+%tr.js-protected-environment-edit-form{ data: { url: url,
+                                       disabled: !can_admin_project,
+                                       preselected_items: access_levels_data(access_levels).to_json,
+                                       required_approval_count: protected_environment.required_approval_count,
+                                       environment_name: protected_environment.name,
+                                       environment_link: environment_link,
+                                       delete_protected_environment_link: delete_protected_environment_link } }

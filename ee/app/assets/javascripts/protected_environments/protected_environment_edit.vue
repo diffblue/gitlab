@@ -1,13 +1,15 @@
 <script>
+import { GlButton, GlLink, GlFormSelect } from '@gitlab/ui';
 import AccessDropdown from '~/projects/settings/components/access_dropdown.vue';
 import createFlash from '~/flash';
 import axios from '~/lib/utils/axios_utils';
-import { __ } from '~/locale';
+import { __, s__, sprintf } from '~/locale';
 import { ACCESS_LEVELS, LEVEL_TYPES } from './constants';
 
 export const i18n = {
   successMessage: __('Successfully updated the environment.'),
   failureMessage: __('Failed to update environment!'),
+  label: __('Select'),
 };
 
 export default {
@@ -16,6 +18,9 @@ export default {
   accessLevelsData: gon?.deploy_access_levels?.roles ?? [],
   components: {
     AccessDropdown,
+    GlButton,
+    GlLink,
+    GlFormSelect,
   },
   props: {
     parentContainer: {
@@ -25,11 +30,6 @@ export default {
     url: {
       type: String,
       required: true,
-    },
-    label: {
-      type: String,
-      required: false,
-      default: i18n.selectUsers,
     },
     disabled: {
       type: Boolean,
@@ -41,16 +41,44 @@ export default {
       required: false,
       default: () => [],
     },
+    requiredApprovalCount: {
+      type: Number,
+      required: false,
+      default: 0,
+    },
+    environmentName: {
+      type: String,
+      required: true,
+    },
+    environmentLink: {
+      type: String,
+      required: false,
+      default: '',
+    },
+    deleteProtectedEnvironmentLink: {
+      type: String,
+      required: false,
+      default: '',
+    },
   },
   data() {
     return {
       preselected: this.preselectedItems,
       selected: null,
+      count: this.requiredApprovalCount,
     };
   },
   computed: {
     hasChanges() {
       return this.selected.some(({ id, _destroy }) => id === undefined || _destroy);
+    },
+    confirmUnprotectText() {
+      return sprintf(
+        s__(
+          'ProtectedEnvironment|%{environment_name} will be writable for developers. Are you sure?',
+        ),
+        { environment_name: this.environmentName },
+      );
     },
   },
   methods: {
@@ -61,20 +89,44 @@ export default {
         return;
       }
 
-      axios
-        .patch(this.url, {
-          protected_environment: { [`${ACCESS_LEVELS.DEPLOY}_attributes`]: permissions },
-        })
-        .then(({ data }) => {
-          this.$toast.show(i18n.successMessage);
-          this.updatePreselected(data);
+      this.patchEnvironment({
+        protected_environment: { [`${ACCESS_LEVELS.DEPLOY}_attributes`]: permissions },
+      })
+        .then(({ data } = {}) => {
+          if (data) {
+            this.updatePreselected(data);
+          }
         })
         .catch(() => {
-          createFlash({
-            message: i18n.failureMessage,
-            parent: this.parentContainer,
-          });
+          this.flash();
         });
+    },
+    updateApprovalCount(count) {
+      this.count = count;
+
+      this.patchEnvironment({
+        protected_environment: { required_approval_count: count },
+      })
+        .then(({ data: { required_approval_count: newCount } } = { data: {} }) => {
+          if (newCount) {
+            this.count = newCount;
+          }
+        })
+        .catch(() => {
+          this.flash();
+        });
+    },
+    patchEnvironment(data) {
+      return axios.patch(this.url, data).then((response) => {
+        this.$toast.show(i18n.successMessage);
+        return response;
+      });
+    },
+    flash() {
+      createFlash({
+        message: i18n.failureMessage,
+        parent: this.parentContainer,
+      });
     },
     updatePreselected(items = []) {
       this.preselected = items[ACCESS_LEVELS.DEPLOY].map(
@@ -104,16 +156,45 @@ export default {
       );
     },
   },
+  APPROVAL_COUNT_OPTIONS: [1, 2, 3, 4, 5],
 };
 </script>
 
 <template>
-  <access-dropdown
-    :access-levels-data="$options.accessLevelsData"
-    :access-level="$options.ACCESS_LEVELS.DEPLOY"
-    :label="label"
-    :disabled="disabled"
-    :preselected-items="preselected"
-    @hidden="updatePermissions"
-  />
+  <tr>
+    <td>
+      <span class="ref-name">
+        <gl-link v-if="environmentLink" :href="environmentLink">{{ environmentName }}</gl-link>
+        <template v-else>{{ environmentName }}</template>
+      </span>
+    </td>
+    <td>
+      <access-dropdown
+        :access-levels-data="$options.accessLevelsData"
+        :access-level="$options.ACCESS_LEVELS.DEPLOY"
+        :label="$options.i18n.label"
+        :disabled="disabled"
+        :preselected-items="preselected"
+        @hidden="updatePermissions"
+      />
+    </td>
+    <td class="gl-min-w-20">
+      <gl-form-select
+        :value="count"
+        :options="$options.APPROVAL_COUNT_OPTIONS"
+        class="gl-form-input-xs"
+        @change="updateApprovalCount"
+      />
+    </td>
+    <td v-if="deleteProtectedEnvironmentLink">
+      <gl-button
+        :href="deleteProtectedEnvironmentLink"
+        variant="danger"
+        data-method="delete"
+        :data-confirm="confirmUnprotectText"
+      >
+        {{ s__('ProtectedEnvironment|Unprotect') }}
+      </gl-button>
+    </td>
+  </tr>
 </template>
