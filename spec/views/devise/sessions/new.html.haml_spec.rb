@@ -64,11 +64,14 @@ RSpec.describe 'devise/sessions/new' do
   end
 
   describe 'Google Tag Manager' do
+    let!(:gtm_id) { 'GTM-WWKMTWS'}
+
     subject { rendered }
 
     before do
       stub_devise
       disable_captcha
+      stub_config(extra: { google_tag_manager_id: gtm_id, google_tag_manager_nonce_id: gtm_id })
     end
 
     describe 'when Google Tag Manager is enabled' do
