@@ -13,8 +13,20 @@ describe IpynbDiff::SymbolMap do
   describe '#parse' do
     subject { IpynbDiff::SymbolMap.parse(JSON.pretty_generate(source)) }
 
+    context 'Object with blank key' do
+      let(:source) { { "": { "": 5 } }}
+
+      it { is_expected.to match_array(res([".", 2], ["..", 3])) }
+    end
+
     context 'Empty object' do
       let(:source) { {} }
+
+      it { is_expected.to be_empty }
+    end
+
+    context 'Empty array' do
+      let(:source) { [] }
 
       it { is_expected.to be_empty }
     end

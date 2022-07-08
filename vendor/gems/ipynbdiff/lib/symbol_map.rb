@@ -84,7 +84,7 @@ module IpynbDiff
     end
 
     def key_or_index(key)
-      if key.nil? || key.empty? # value in an array
+      if key.nil? # value in an array
         if @current_path.empty?
           @current_path = ['']
           return nil
