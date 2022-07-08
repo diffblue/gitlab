@@ -234,17 +234,16 @@ export default {
         </section>
         <section
           v-if="shouldShowRuleEditor"
-          class="gl-md-w-50p gl-md-max-w-30p gl-p-5 gl-bg-gray-10 gl-ml-11 gl-align-self-start"
+          class="gl-md-w-50p gl-md-max-w-30p gl-px-5 gl-pb-5 gl-bg-gray-10 gl-ml-11 gl-align-self-start"
           data-testid="rule-editor-preview"
         >
           <h5>{{ $options.i18n.yamlPreview }}</h5>
           <pre
             data-testid="yaml-preview"
-            class="gl-border-none gl-p-0"
+            class="gl-bg-gray-10 gl-border-none gl-p-0"
             :class="{ 'gl-opacity-5': hasParsingError }"
+            >{{ policyYaml || yamlEditorValue }}</pre
           >
-            {{ policyYaml || yamlEditorValue }}
-          </pre>
         </section>
       </div>
     </div>
