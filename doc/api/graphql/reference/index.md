@@ -5546,6 +5546,7 @@ Input type: `WorkItemCreateInput`
 | ---- | ---- | ----------- |
 | <a id="mutationworkitemcreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationworkitemcreatedescription"></a>`description` | [`String`](#string) | Description of the work item. |
+| <a id="mutationworkitemcreatehierarchywidget"></a>`hierarchyWidget` | [`WorkItemWidgetHierarchyCreateInput`](#workitemwidgethierarchycreateinput) | Input for hierarchy widget. |
 | <a id="mutationworkitemcreateprojectpath"></a>`projectPath` | [`ID!`](#id) | Full path of the project the work item is associated with. |
 | <a id="mutationworkitemcreatetitle"></a>`title` | [`String!`](#string) | Title of the work item. |
 | <a id="mutationworkitemcreateworkitemtypeid"></a>`workItemTypeId` | [`WorkItemsTypeID!`](#workitemstypeid) | Global ID of a work item type. |
@@ -22109,6 +22110,14 @@ A time-frame defined as a closed inclusive range of two dates.
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="workitemwidgetdescriptioninputdescription"></a>`description` | [`String!`](#string) | Description of the work item. |
+
+### `WorkItemWidgetHierarchyCreateInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="workitemwidgethierarchycreateinputparentid"></a>`parentId` | [`WorkItemID`](#workitemid) | Global ID of the parent work item. |
 
 ### `WorkItemWidgetHierarchyUpdateInput`
 
