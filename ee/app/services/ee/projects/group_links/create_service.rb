@@ -19,6 +19,7 @@ module EE
           super
 
           log_audit_event
+          project_stream_audit_event
         end
 
         def allowed_to_be_shared_with?
@@ -44,6 +45,19 @@ module EE
             link.group,
             action: :create
           ).for_project_group_link(link).security_event
+        end
+
+        def project_stream_audit_event
+          audit_context = {
+            name: 'project_group_link_create',
+            stream_only: true,
+            author: current_user,
+            scope: project,
+            target: link.group,
+            message: "Added project group link"
+          }
+
+          ::Gitlab::Audit::Auditor.audit(audit_context)
         end
       end
     end

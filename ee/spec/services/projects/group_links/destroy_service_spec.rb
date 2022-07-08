@@ -33,5 +33,19 @@ RSpec.describe Projects::GroupLinks::DestroyService do
          }
       end
     end
+
+    it 'sends the audit streaming event' do
+      audit_context = {
+        name: 'project_group_link_destroy',
+        stream_only: true,
+        author: user,
+        scope: project,
+        target: group,
+        message: "Removed project group link"
+      }
+      expect(::Gitlab::Audit::Auditor).to receive(:audit).with(audit_context)
+
+      subject.execute(group_link)
+    end
   end
 end
