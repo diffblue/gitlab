@@ -66,9 +66,12 @@ module EE
             bad_request! unless group.root?
             bad_request! unless can?(current_user, :admin_group_member, group)
 
-            result = ::Members::ActivateService
-              .new(group, member: member, current_user: current_user)
-              .execute
+            result =
+              if member.invite?
+                ::Members::ActivateService.for_invite(group, invite_email: member.invite_email).execute(current_user: current_user)
+              else
+                ::Members::ActivateService.for_users(group, users: [member.user]).execute(current_user: current_user)
+              end
 
             if result[:status] == :success
               no_content!
@@ -84,9 +87,7 @@ module EE
             bad_request! unless group.root?
             bad_request! unless can?(current_user, :admin_group_member, group)
 
-            result = ::Members::ActivateService
-              .new(group, activate_all: true, current_user: current_user)
-              .execute
+            result = ::Members::ActivateService.for_group(group).execute(current_user: current_user)
 
             if result[:status] == :success
               no_content!
@@ -157,9 +158,12 @@ module EE
             bad_request! unless group.root?
             bad_request! unless can?(current_user, :admin_group_member, group)
 
-            service = params[:state] == 'active' ? ::Members::ActivateService : ::Members::AwaitService
-
-            result = service.new(group, current_user: current_user, user: user).execute
+            result =
+              if params[:state] == 'active'
+                ::Members::ActivateService.for_users(group, users: [user]).execute(current_user: current_user)
+              else
+                ::Members::AwaitService.new(group, user: user, current_user: current_user).execute
+              end
 
             if result[:status] == :success
               { success: true }

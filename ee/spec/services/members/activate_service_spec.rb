@@ -3,127 +3,168 @@
 require 'spec_helper'
 
 RSpec.describe Members::ActivateService do
+  let_it_be(:root_group) { create(:group) }
+  let_it_be(:sub_group) { create(:group, parent: root_group) }
+  let_it_be(:project) { create(:project, group: root_group) }
+  let_it_be(:user) { create(:user) }
+  let_it_be(:non_awaiting_membership) { create(:group_member, group: root_group) }
+
+  shared_examples 'successful member activation' do
+    it 'activates the member and sets updated_at', :freeze_time do
+      expect(execute[:status]).to eq :success
+
+      members.each do |member|
+        expect(member.reload).to be_active
+        expect(member.updated_at).to eq(Time.current)
+      end
+    end
+
+    it 'calls UserProjectAccessChangedService' do
+      expect_next_instance_of(UserProjectAccessChangedService, match_array(members.map(&:user_id).uniq)) do |service|
+        expect(service).to receive(:execute).with(blocking: false)
+      end
+
+      execute
+    end
+
+    it 'logs the approval in application logs' do
+      expected_params = {
+        message: "Group member access approved",
+        group: root_group.id,
+        approved_by: current_user.id,
+        members: match_array(members.map(&:id))
+      }
+
+      expect(Gitlab::AppLogger).to receive(:info).with(expected_params)
+
+      execute
+    end
+
+    context 'audit events' do
+      context 'when licensed' do
+        before do
+          stub_licensed_features(admin_audit_log: true, audit_events: true, extended_audit_events: true)
+        end
+
+        it 'tracks an audit event' do
+          execute
+
+          members.each do |member|
+            audit_event = AuditEvent.find_by(target_id: member.id)
+            expect(audit_event.author).to eq(current_user)
+            expect(audit_event.entity).to eq(root_group)
+            expect(audit_event.details[:custom_message]).to eq('Changed the membership state to active')
+          end
+        end
+      end
+
+      context 'when unlicensed' do
+        before do
+          stub_licensed_features(admin_audit_log: false, audit_events: false, extended_audit_events: false)
+        end
+
+        it 'does not track audit event' do
+          expect { execute }.not_to change { AuditEvent.count }
+        end
+      end
+    end
+  end
+
+  shared_examples 'returns an error' do |error_message|
+    it do
+      result = execute
+
+      expect(result[:status]).to eq :error
+      expect(result[:message]).to eq error_message
+    end
+  end
+
   shared_examples 'handles free user cap' do
     context 'check if free user cap has been reached', :saas do
-      let_it_be_with_reload(:root_group) { create(:group_with_plan, plan: :free_plan) }
-      let_it_be_with_reload(:sub_group) { create(:group, parent: root_group) }
-      let_it_be_with_reload(:project) { create(:project, namespace: root_group) }
+      context 'when group is a group with paid plan' do
+        let_it_be(:root_group) { create(:group_with_plan, plan: :ultimate_plan) }
+        let_it_be(:members) { [create(:group_member, :awaiting, group: root_group, user: user)] }
 
-      before do
-        allow(group).to receive(:user_cap_available?).and_return(false)
-        stub_ee_application_setting(should_check_namespace_plan: true)
+        it_behaves_like 'successful member activation'
       end
 
-      context 'when the :free_user_cap feature flag is disabled' do
+      context 'when group is on a free plan' do
         before do
-          stub_feature_flags(free_user_cap: false)
-        end
-
-        it_behaves_like 'successful member activation' do
-          let(:member) { create(:group_member, :awaiting, group: group, user: user) }
-        end
-      end
-
-      context 'when the :free_user_cap feature flag is enabled' do
-        before do
-          stub_feature_flags(free_user_cap: true)
-        end
-
-        context 'when the free user cap has not been reached' do
-          it_behaves_like 'successful member activation' do
-            let(:member) { create(:group_member, :awaiting, group: root_group, user: user) }
-          end
-
-          it_behaves_like 'successful member activation' do
-            let(:member) { create(:group_member, :awaiting, group: sub_group, user: user) }
-          end
-
-          it_behaves_like 'successful member activation' do
-            let(:member) { create(:project_member, :awaiting, project: project, user: user) }
+          allow_next_instance_of(::Namespaces::FreeUserCap::Standard) do |free_user_cap|
+            allow(free_user_cap).to receive(:enforce_cap?).and_return(enforce_cap)
+            allow(free_user_cap).to receive(:remaining_seats).and_return(remaining_seats)
           end
         end
 
-        context 'when the free user cap has been reached' do
-          before do
-            stub_const('::Namespaces::FreeUserCap::FREE_USER_LIMIT', 1)
+        let_it_be(:root_group) { create(:group_with_plan, plan: :free_plan) }
+        let_it_be(:sub_group) { create(:group, parent: root_group) }
+        let_it_be(:project) { create(:project, namespace: root_group) }
+
+        let_it_be(:root_group_member) { create(:group_member, :awaiting, :invited, group: root_group, user: user) }
+        let_it_be(:sub_group_member) { create(:group_member, :awaiting, :invited, group: sub_group, user: user) }
+        let_it_be(:project_member) { create(:project_member, :awaiting, :invited, :owner, project: project, user: user) }
+
+        context 'when free_user_cap is not enforced' do
+          let(:remaining_seats) { 1 }
+          let(:enforce_cap) { false }
+
+          let_it_be(:members) { [root_group_member, sub_group_member, project_member] }
+
+          it_behaves_like 'successful member activation'
+        end
+
+        context 'when free_user_cap is enforced' do
+          let(:enforce_cap) { true }
+
+          let_it_be(:members) { [root_group_member, sub_group_member, project_member] }
+
+          context 'when the free user cap has not been reached' do
+            let(:remaining_seats) { 1 }
+
+            it_behaves_like 'successful member activation'
           end
 
-          context 'when group member' do
-            let(:member) { create(:group_member, :awaiting, group: root_group, user: user) }
+          context 'when the free user cap has been reached' do
+            let(:remaining_seats) { 0 }
 
-            it 'keeps the member awaiting' do
-              expect(member).to be_awaiting
-
+            it 'keeps the members awaiting' do
               result = execute
 
               expect(result[:status]).to eq :error
               expect(result[:message]).to eq 'There is no seat left to activate the member'
-              expect(member.reload).to be_awaiting
-            end
-          end
 
-          context 'when sub-group member' do
-            let(:member) { create(:group_member, :awaiting, group: sub_group, user: user) }
-
-            it 'keeps the member awaiting' do
-              expect(member).to be_awaiting
-
-              result = execute
-
-              expect(result[:status]).to eq :error
-              expect(result[:message]).to eq 'There is no seat left to activate the member'
-              expect(member.reload).to be_awaiting
-            end
-          end
-
-          context 'when project member' do
-            let(:member) { create(:project_member, :awaiting, project: project, user: user) }
-
-            it 'keeps the member awaiting' do
-              expect(member).to be_awaiting
-
-              result = execute
-
-              expect(result[:status]).to eq :error
-              expect(result[:message]).to eq 'There is no seat left to activate the member'
-              expect(member.reload).to be_awaiting
-            end
-          end
-
-          context 'when there is already an active membership' do
-            before do
-              stub_const('::Namespaces::FreeUserCap::FREE_USER_LIMIT', 2)
+              expect(root_group_member.reload).to be_awaiting
+              expect(sub_group_member.reload).to be_awaiting
+              expect(project_member.reload).to be_awaiting
             end
 
-            context 'when active group membership' do
-              let(:member) { create(:group_member, :awaiting, group: sub_group, user: user) }
+            context 'when there is already an active membership for the user' do
+              context 'when active group membership' do
+                before do
+                  create(:group_member, :active, group: create(:group, parent: root_group), user: user)
+                end
 
-              before do
-                create(:group_member, :active, group: group, user: user)
+                it 'sets the members to active' do
+                  execute
+
+                  expect(root_group_member.reload).to be_active
+                  expect(sub_group_member.reload).to be_active
+                  expect(project_member.reload).to be_active
+                end
               end
 
-              it 'sets the group member to active' do
-                expect(member).to be_awaiting
+              context 'when active project membership' do
+                before do
+                  create(:project_member, :active, :owner, project: create(:project, group: root_group), user: user)
+                end
 
-                execute
+                it 'sets the members to active' do
+                  execute
 
-                expect(member.reload).to be_active
-              end
-            end
-
-            context 'when active project membership' do
-              let(:member) { create(:group_member, :awaiting, group: group, user: user) }
-
-              before do
-                create(:project_member, :active, project: project, user: user)
-              end
-
-              it 'sets the group member to active' do
-                expect(member).to be_awaiting
-
-                execute
-
-                expect(member.reload).to be_active
+                  expect(root_group_member.reload).to be_active
+                  expect(sub_group_member.reload).to be_active
+                  expect(project_member.reload).to be_active
+                end
               end
             end
           end
@@ -135,7 +176,7 @@ RSpec.describe Members::ActivateService do
   # There is a bug where member records are not valid when the membership to the sub-group
   # has a lower access level than the membership to the parent group.
   # https://gitlab.com/gitlab-org/gitlab/-/issues/362091
-  shared_examples 'when user has multiple memberships with invalid access levels' do
+  shared_examples 'when a user has memberships with invalid access levels' do
     let_it_be(:member) { create(:group_member, :awaiting, :developer, group: sub_group, user: user) }
     let_it_be(:parent_membership) { create(:group_member, :awaiting, :maintainer, group: root_group, user: user) }
 
@@ -147,342 +188,170 @@ RSpec.describe Members::ActivateService do
     end
   end
 
+  describe '.for_invite' do
+    let_it_be(:other_membership) { create(:group_member, :awaiting, :invited, group: root_group, invite_email: 'other@example.com') }
+    let_it_be(:invite_email) { 'test@example.com' }
+    let_it_be(:expected_members) do
+      [
+        create(:group_member, :awaiting, :invited, group: root_group, invite_email: invite_email),
+        create(:group_member, :awaiting, :invited, group: sub_group, invite_email: invite_email),
+        create(:project_member, :awaiting, :invited, project: project, invite_email: invite_email)
+      ]
+    end
+
+    it 'creates a new instance with the correct members' do
+      expect(described_class).to receive(:new).with(root_group, memberships: match_array(expected_members))
+
+      described_class.for_invite(root_group, invite_email: invite_email)
+    end
+  end
+
+  describe '.for_users' do
+    let_it_be(:user2) { create(:user) }
+    let_it_be(:user_without_membership) { create(:user) }
+    let_it_be(:expected_members) do
+      [
+        create(:group_member, :awaiting, group: root_group, user: user),
+        create(:group_member, :awaiting, group: root_group, user: user2),
+        create(:group_member, :awaiting, group: sub_group, user: user),
+        create(:group_member, :awaiting, group: sub_group, user: user2),
+        create(:project_member, :awaiting, :owner, project: project, user: user),
+        create(:project_member, :awaiting, :owner, project: project, user: user2)
+      ]
+    end
+
+    it 'creates a new instance with the correct members' do
+      expect(described_class).to receive(:new).with(root_group, memberships: match_array(expected_members))
+
+      described_class.for_users(root_group, users: [user, user2, user_without_membership])
+    end
+  end
+
+  describe '.for_group' do
+    let_it_be(:expected_members) do
+      [
+        create(:group_member, :awaiting, group: root_group),
+        create(:group_member, :awaiting, group: sub_group),
+        create(:project_member, :awaiting, project: project)
+      ]
+    end
+
+    it 'creates a new instance with the correct members' do
+      expect(described_class).to receive(:new).with(root_group, memberships: match_array(expected_members))
+
+      described_class.for_group(root_group)
+    end
+  end
+
   describe '#execute' do
     let_it_be(:current_user) { create(:user) }
-    let_it_be(:user) { create(:user) }
-    let_it_be(:root_group) { create(:group) }
-    let_it_be(:project) { create(:project, group: root_group) }
-    let_it_be(:sub_group) { create(:group, parent: root_group) }
 
-    let(:member) { nil }
-    let(:group) { root_group }
-    let(:params) { { member: member } }
-
-    subject(:execute) { described_class.new(group, current_user: current_user, **params).execute }
+    subject(:execute) { described_class.for_group(root_group).execute(current_user: current_user) }
 
     context 'when unauthorized' do
-      it 'returns an access error' do
-        result = execute
-
-        expect(result[:status]).to eq :error
-        expect(result[:message]).to eq 'You do not have permission to approve a member'
-      end
-    end
-
-    context 'when no group is provided' do
-      let(:group) { nil }
-
-      it 'returns an error' do
-        result = execute
-
-        expect(result[:status]).to eq :error
-        expect(result[:message]).to eq 'No group provided'
-      end
-    end
-
-    shared_examples 'successful member activation' do
-      before do
-        expect(member.awaiting?).to be true
-      end
-
-      it 'activates the member and sets updated_at', :freeze_time do
-        expect(execute[:status]).to eq :success
-        expect(member.reload.active?).to be true
-        expect(member.updated_at).to eq(Time.current)
-      end
-
-      it 'calls UserProjectAccessChangedService' do
-        expect_next_instance_of(UserProjectAccessChangedService, [user.id]) do |service|
-          expect(service).to receive(:execute).with(blocking: false)
-        end
-
-        execute
-      end
-
-      it 'logs the approval in application logs' do
-        expected_params = {
-          message: "Group member access approved",
-          group: group.id,
-          approved_by: current_user.id
-        }
-
-        if params[:member]
-          expected_params[:member] = member.id
-        elsif params[:user]
-          expected_params[:user] = user.id
-        end
-
-        expect(Gitlab::AppLogger).to receive(:info).with(expected_params)
-
-        execute
-      end
-
-      context 'audit events' do
-        context 'when licensed' do
-          before do
-            stub_licensed_features(admin_audit_log: true, audit_events: true, extended_audit_events: true)
-          end
-
-          it 'tracks an audit event' do
-            execute
-
-            audit_event = AuditEvent.find_by(author_id: current_user)
-            expect(audit_event.author).to eq(current_user)
-            expect(audit_event.entity).to eq(group)
-            expect(audit_event.target_id).to eq(user.id)
-            expect(audit_event.details[:custom_message]).to eq('Changed the membership state to active')
-          end
-        end
-
-        context 'when unlicensed' do
-          before do
-            stub_licensed_features(admin_audit_log: false, audit_events: false, extended_audit_events: false)
-          end
-
-          it 'does not track audit event' do
-            expect { execute }.not_to change { AuditEvent.count }
-          end
-        end
-      end
+      it_behaves_like 'returns an error', 'You do not have permission to approve a member'
     end
 
     context 'when authorized' do
       before do
-        group.add_owner(current_user)
+        root_group.add_owner(current_user)
       end
 
-      context 'when member, user or activate_all is not mutual exclusive' do
-        let(:params) { { member: member, user: user, activate_all: true } }
-
-        it 'returns an error' do
-          result = execute
-
-          expect(result[:status]).to eq :error
-          expect(result[:message]).to eq 'You can only approve an indivdual user, member, or all members'
+      context 'when there are awaiting members' do
+        let_it_be(:members) do
+          [
+            create(:group_member, :awaiting, group: root_group),
+            create(:group_member, :awaiting, group: sub_group),
+            create(:project_member, :awaiting, project: project)
+          ]
         end
+
+        it_behaves_like 'successful member activation'
       end
 
-      context 'when no member, no user or activate_all is provided' do
-        let(:params) { {} }
+      context 'when there are other awaiting members' do
+        let_it_be(:other_group) { create(:group) }
 
-        it 'returns an error' do
-          result = execute
+        context 'with .for_invite' do
+          subject(:execute) { described_class.for_invite(root_group, invite_email: invite_email).execute(current_user: current_user) }
 
-          expect(result[:status]).to eq :error
-          expect(result[:message]).to eq 'You can only approve an indivdual user, member, or all members'
-        end
-      end
+          let_it_be(:invite_email) { 'test@example.com' }
+          let_it_be(:member) { create(:group_member, :awaiting, :invited, group: root_group, invite_email: invite_email) }
+          let_it_be(:other_awaiting_member) { create(:group_member, :awaiting, :invited, group: other_group, invite_email: invite_email) }
 
-      context 'when activating an individual member' do
-        let(:params) { { member: member } }
-
-        context 'when member is an awaiting member of a root group' do
-          it_behaves_like 'successful member activation' do
-            let(:member) { create(:group_member, :awaiting, group: root_group, user: user) }
-          end
-        end
-
-        context 'when member is an awaiting member of a sub-group' do
-          let(:group) { sub_group }
-
-          it_behaves_like 'successful member activation' do
-            let(:member) { create(:group_member, :awaiting, group: sub_group, user: user) }
-          end
-        end
-
-        context 'when member is an awaiting member of a project' do
-          it_behaves_like 'successful member activation' do
-            let(:member) { create(:project_member, :awaiting, project: project, user: user) }
-          end
-        end
-
-        context 'when member is not an awaiting member' do
-          let(:member) { create(:group_member, group: root_group, user: user) }
-
-          it 'returns an error' do
+          it 'activates only provided invite' do
             result = execute
 
-            expect(result[:status]).to eq :error
-            expect(result[:message]).to eq 'No memberships found'
+            expect(result[:status]).to eq(:success)
+            expect(member.reload).to be_active
+            expect(other_awaiting_member.reload).to be_awaiting
           end
         end
 
-        context 'when there are multiple awaiting member records in the hierarchy' do
-          context 'for existing members' do
-            let_it_be(:member) { create(:group_member, :awaiting, group: root_group, user: user) }
-            let_it_be(:sub_member) { create(:group_member, :awaiting, group: sub_group, user: user) }
+        context 'with .for_users' do
+          subject(:execute) { described_class.for_users(root_group, users: [user]).execute(current_user: current_user) }
 
-            it 'activates the members' do
-              expect(execute[:status]).to eq :success
-              expect(member.reload.active?).to be true
-              expect(sub_member.reload.active?).to be true
-            end
-          end
-
-          context 'for invited members' do
-            let_it_be(:member) { create(:group_member, :awaiting, :invited, group: root_group) }
-            let_it_be(:sub_member) { create(:group_member, :awaiting, :invited, group: sub_group, invite_email: member.invite_email) }
-
-            it 'activates the members' do
-              expect(execute[:status]).to eq :success
-              expect(member.reload.active?).to be true
-              expect(sub_member.reload.active?).to be true
-            end
-          end
-        end
-
-        context 'when member is not member of the group' do
-          let_it_be(:member) { create(:group_member, :awaiting, group: create(:group), user: user) }
-
-          it 'returns an error' do
-            result = execute
-
-            expect(result[:status]).to eq :error
-            expect(result[:message]).to eq 'No memberships found'
-          end
-        end
-
-        it_behaves_like 'handles free user cap'
-        it_behaves_like 'when user has multiple memberships with invalid access levels'
-      end
-
-      context 'when activating a user' do
-        let(:params) { { user: user } }
-
-        context 'when user is an awaiting member of a root group' do
-          it_behaves_like 'successful member activation' do
-            let(:member) { create(:group_member, :awaiting, group: root_group, user: user) }
-          end
-        end
-
-        context 'when user is an awaiting member of a sub-group' do
-          let(:group) { sub_group }
-
-          it_behaves_like 'successful member activation' do
-            let(:member) { create(:group_member, :awaiting, group: sub_group, user: user) }
-          end
-        end
-
-        context 'when user is an awaiting member of a project' do
-          it_behaves_like 'successful member activation' do
-            let(:member) { create(:project_member, :awaiting, project: project, user: user) }
-          end
-        end
-
-        context 'when user is not an awaiting member' do
-          let(:member) { create(:group_member, group: root_group, user: user) }
-
-          it 'returns an error' do
-            result = execute
-
-            expect(result[:status]).to eq :error
-            expect(result[:message]).to eq 'No memberships found'
-          end
-        end
-
-        context 'when there are multiple awaiting member records in the hierarchy for the user' do
           let_it_be(:member) { create(:group_member, :awaiting, group: root_group, user: user) }
-          let_it_be(:sub_member) { create(:group_member, :awaiting, group: sub_group, user: user) }
+          let_it_be(:other_awaiting_member) { create(:group_member, :awaiting, group: other_group, user: user) }
 
-          it 'activates the members' do
-            expect(execute[:status]).to eq :success
-            expect(member.reload.active?).to be true
-            expect(sub_member.reload.active?).to be true
-          end
-        end
-
-        context 'when user is not member of the group' do
-          let_it_be(:member) { create(:group_member, :awaiting, group: create(:group), user: user) }
-
-          it 'returns an error' do
+          it 'activates only provided invite' do
             result = execute
 
-            expect(result[:status]).to eq :error
-            expect(result[:message]).to eq 'No memberships found'
+            expect(result[:status]).to eq(:success)
+            expect(member.reload).to be_active
+            expect(other_awaiting_member.reload).to be_awaiting
           end
         end
 
-        it_behaves_like 'handles free user cap'
-        it_behaves_like 'when user has multiple memberships with invalid access levels'
-      end
+        context 'with .for_group' do
+          subject(:execute) { described_class.for_group(root_group).execute(current_user: current_user) }
 
-      context 'when activating all awaiting members' do
-        let!(:group_members)   { create_list(:group_member, 5, :awaiting, group: group) }
-        let!(:sub_group_members) { create_list(:group_member, 5, :awaiting, group: sub_group) }
-        let!(:project_members) { create_list(:project_member, 5, :awaiting, project: project) }
+          let_it_be(:member) { create(:group_member, :awaiting, group: root_group, user: user) }
+          let_it_be(:other_awaiting_member) { create(:group_member, :awaiting, group: other_group, user: user) }
 
-        let(:member) { nil }
-        let(:params) { { activate_all: true } }
+          it 'activates only provided invite' do
+            result = execute
 
-        it 'activates all awaiting group members' do
-          execute
-
-          group_members.each do |member|
-            expect(member.reload.active?).to be true
-          end
-        end
-
-        it 'activates all awaiting sub_group members' do
-          execute
-
-          sub_group_members.each do |member|
-            expect(member.reload.active?).to be true
-          end
-        end
-
-        it 'activates all awaiting project members' do
-          execute
-
-          project_members.each do |member|
-            expect(member.reload.active?).to be true
-          end
-        end
-
-        it 'logs the approval in application logs' do
-          expect(Gitlab::AppLogger).to receive(:info).with(
-            {
-              message: "Approved all pending group members",
-              group: group.id,
-              approved_by: current_user.id
-            }
-          )
-
-          execute
-        end
-
-        it 'calls UserProjectAccessChangedService' do
-          double = instance_double(UserProjectAccessChangedService, :execute)
-          user_ids = [group_members, sub_group_members, project_members].flatten.map { |m| m.user_id }
-
-          expect(UserProjectAccessChangedService).to receive(:new).with(match_array(user_ids)).and_return(double)
-          expect(double).to receive(:execute).with(blocking: false)
-
-          execute
-        end
-
-        context 'when on saas', :saas do
-          context 'when group is a group with paid plan' do
-            let_it_be_with_reload(:root_group) { create(:group_with_plan, plan: :premium_plan) }
-
-            it 'is successful' do
-              result = execute
-
-              expect(result[:status]).to eq :success
-            end
-          end
-
-          context 'when group is a group with a free plan' do
-            let_it_be_with_reload(:root_group) { create(:group_with_plan, plan: :free_plan) }
-
-            it 'returns an error' do
-              result = execute
-
-              expect(result[:status]).to eq :error
-              expect(result[:message]).to eq 'You cannot approve all pending members on a free plan'
-            end
+            expect(result[:status]).to eq(:success)
+            expect(member.reload).to be_active
+            expect(other_awaiting_member.reload).to be_awaiting
           end
         end
       end
+
+      context 'when there are other awaiting members for invite' do
+        let_it_be(:invite_email) { 'test@example.com' }
+        subject(:execute) { described_class.for_invite(root_group, invite_email: invite_email).execute(current_user: current_user) }
+
+        let_it_be(:member) { create(:group_member, :awaiting, :invited, group: root_group, invite_email: invite_email) }
+        let_it_be(:other_awaiting_member) { create(:group_member, :awaiting, group: root_group) }
+
+        it 'activates only provided members' do
+          result = execute
+
+          expect(result[:status]).to eq(:success)
+          expect(other_awaiting_member.reload).to be_awaiting
+        end
+      end
+
+      context 'when users are no awaiting members' do
+        let_it_be(:members) { [create(:group_member, group: root_group, user: user)] }
+
+        it_behaves_like 'returns an error', 'No memberships found'
+      end
+
+      context 'when the members are only invites' do
+        let_it_be(:members) { [create(:group_member, :invited, group: root_group)] }
+
+        it 'does not call UserProjectAccessChangedService' do
+          expect(UserProjectAccessChangedService).not_to receive(:new)
+
+          execute
+        end
+      end
+
+      it_behaves_like 'handles free user cap'
+      it_behaves_like 'when a user has memberships with invalid access levels'
     end
   end
 end
