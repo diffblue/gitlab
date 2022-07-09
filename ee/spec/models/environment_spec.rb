@@ -319,24 +319,42 @@ RSpec.describe Environment, :use_clean_rails_memory_store_caching do
         it { is_expected.to eq(0) }
       end
 
-      context 'with one associated protected environment' do
-        before do
-          create(:protected_environment, name: environment.name, project: project, required_approval_count: 3)
+      context 'with unified approval setting' do
+        context 'with one associated protected environment' do
+          before do
+            create(:protected_environment, name: environment.name, project: project, required_approval_count: 3)
+          end
+
+          it 'returns the required_approval_count of the protected environment' do
+            expect(subject).to eq(3)
+          end
         end
 
-        it 'returns the required_approval_count of the protected environment' do
-          expect(subject).to eq(3)
+        context 'with multiple associated protected environments' do
+          before do
+            create(:protected_environment, name: environment.name, project: project, required_approval_count: 3)
+            create(:protected_environment, name: environment.tier, project: nil, group: project.group, required_approval_count: 5)
+          end
+
+          it 'returns the highest required_approval_count of the protected environments' do
+            expect(subject).to eq(5)
+          end
         end
       end
 
-      context 'with multiple associated protected environments' do
+      context 'with multiple approval rules' do
+        let_it_be(:qa_group) { create(:group, name: 'QA') }
+        let_it_be(:security_group) { create(:group, name: 'Security') }
+
+        let_it_be(:protected_environment) { create(:protected_environment, name: environment.name, project: project) }
+
         before do
-          create(:protected_environment, name: environment.name, project: project, required_approval_count: 3)
-          create(:protected_environment, name: environment.tier, project: nil, group: project.group, required_approval_count: 5)
+          create(:protected_environment_approval_rule, group_id: qa_group.id, protected_environment: protected_environment)
+          create(:protected_environment_approval_rule, group_id: security_group.id, required_approvals: 2, protected_environment: protected_environment)
         end
 
-        it 'returns the highest required_approval_count of the protected environments' do
-          expect(subject).to eq(5)
+        it 'returns the sum of required approvals for all approval rules' do
+          expect(subject).to eq(3)
         end
       end
     end
