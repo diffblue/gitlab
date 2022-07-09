@@ -28,6 +28,10 @@ module EE
           def upgrade_status_available?
             License.feature_available?(:runner_upgrade_management) || current_user&.has_paid_namespace?
           end
+
+          def preload_projects_namespaces(projects)
+            ActiveRecord::Associations::Preloader.new.preload(projects, :namespace) # rubocop:disable CodeReuse/ActiveRecord
+          end
         end
       end
     end

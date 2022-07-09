@@ -2086,4 +2086,23 @@ RSpec.describe User do
       end
     end
   end
+
+  describe '.banned_from_namespace?' do
+    let(:user) { build(:user) }
+    let(:namespace) { build(:group) }
+
+    subject { user.banned_from_namespace?(namespace) }
+
+    context 'when namespace ban does not exist' do
+      it { is_expected.to eq(false) }
+    end
+
+    context 'when namespace ban exists' do
+      before do
+        create(:namespace_ban, namespace: namespace, user: user)
+      end
+
+      it { is_expected.to eq(true) }
+    end
+  end
 end

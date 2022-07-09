@@ -2122,4 +2122,74 @@ RSpec.describe ProjectPolicy do
       end
     end
   end
+
+  describe 'users banned from projects' do
+    let(:user) { create(:user) }
+
+    let_it_be(:group) { create(:group, :private) }
+    let_it_be(:project) { create(:project, :private, group: group) }
+
+    before do
+      group.add_developer(user)
+    end
+
+    subject { described_class.new(user, project) }
+
+    context 'user is not banned' do
+      it { is_expected.to be_allowed(:read_project) }
+    end
+
+    context 'user is banned' do
+      before do
+        create(:namespace_ban, user: user, namespace: group.root_ancestor)
+      end
+
+      it { is_expected.to be_disallowed(:read_project) }
+
+      context 'group is a subgroup' do
+        let_it_be(:group) { create(:group, :private, :nested) }
+
+        it { is_expected.to be_disallowed(:read_project) }
+      end
+
+      context 'feature flag is disabled' do
+        before do
+          stub_feature_flags(limit_unique_project_downloads_per_namespace_user: false)
+        end
+
+        it { is_expected.to be_allowed(:read_project) }
+      end
+
+      context 'project is public' do
+        let_it_be(:group) { create(:group, :public) }
+        let_it_be(:project) { create(:project, :public, group: group) }
+
+        it { is_expected.to be_allowed(:read_project) }
+
+        context 'group is a subgroup' do
+          let_it_be(:group) { create(:group, :public, :nested) }
+
+          it { is_expected.to be_allowed(:read_project) }
+        end
+      end
+
+      context 'user is a project owner' do
+        before do
+          project.add_owner(user)
+        end
+
+        it { is_expected.to be_allowed(:read_project) }
+      end
+
+      context 'user is an admin' do
+        let(:user) { create(:user, :admin) }
+
+        before do
+          enable_admin_mode!(user)
+        end
+
+        it { is_expected.to be_allowed(:read_project) }
+      end
+    end
+  end
 end

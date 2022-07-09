@@ -149,6 +149,19 @@ module EE
         prevent :import_project_members_from_another_project
       end
 
+      condition(:user_banned_from_project) do
+        next unless @user.is_a?(User)
+
+        root_namespace = @subject.root_ancestor
+        next unless ::Feature.enabled?(:limit_unique_project_downloads_per_namespace_user, root_namespace)
+
+        @user.banned_from_namespace?(root_namespace)
+      end
+
+      rule { ~public_project & ~can?(:owner_access) & user_banned_from_project }.policy do
+        prevent :read_project
+      end
+
       rule { visual_review_bot }.policy do
         prevent :read_note
         enable :create_note
