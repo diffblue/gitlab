@@ -15,8 +15,6 @@ import (
 	"github.com/stretchr/testify/require"
 	"gocloud.dev/blob"
 
-	"gitlab.com/gitlab-org/labkit/fips"
-
 	"gitlab.com/gitlab-org/gitlab/workhorse/internal/config"
 	"gitlab.com/gitlab-org/gitlab/workhorse/internal/testhelper"
 	"gitlab.com/gitlab-org/gitlab/workhorse/internal/upload/destination"
@@ -208,7 +206,7 @@ func TestUpload(t *testing.T) {
 			}
 
 			require.Equal(t, test.ObjectSize, fh.Size)
-			if fips.Enabled() {
+			if destination.FIPSEnabled() {
 				require.Empty(t, fh.MD5())
 			} else {
 				require.Equal(t, test.ObjectMD5, fh.MD5())
@@ -484,7 +482,7 @@ func checkFileHandlerWithFields(t *testing.T, fh *destination.FileHandler, field
 	require.Equal(t, fh.RemoteURL, fields[key("remote_url")])
 	require.Equal(t, fh.RemoteID, fields[key("remote_id")])
 	require.Equal(t, strconv.FormatInt(test.ObjectSize, 10), fields[key("size")])
-	if fips.Enabled() {
+	if destination.FIPSEnabled() {
 		require.Empty(t, fields[key("md5")])
 	} else {
 		require.Equal(t, test.ObjectMD5, fields[key("md5")])

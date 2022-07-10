@@ -8,6 +8,7 @@ import (
 	"encoding/hex"
 	"hash"
 	"io"
+	"os"
 
 	"gitlab.com/gitlab-org/labkit/fips"
 )
@@ -26,11 +27,19 @@ var fipsHashFactories = map[string](func() hash.Hash){
 }
 
 func factories() map[string](func() hash.Hash) {
-	if fips.Enabled() {
+	if FIPSEnabled() {
 		return fipsHashFactories
 	}
 
 	return hashFactories
+}
+
+func FIPSEnabled() bool {
+	if fips.Enabled() {
+		return true
+	}
+
+	return os.Getenv("WORKHORSE_TEST_FIPS_ENABLED") == "1"
 }
 
 type multiHash struct {
