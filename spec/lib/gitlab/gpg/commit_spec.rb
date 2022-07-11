@@ -316,4 +316,21 @@ RSpec.describe Gitlab::Gpg::Commit do
       end
     end
   end
+
+  describe '#update_signature!' do
+    let!(:gpg_key) { nil }
+
+    let(:signature) { described_class.new(commit).signature }
+
+    it 'updates signature record' do
+      signature
+
+      create(:gpg_key, key: public_key, user: user)
+
+      stored_signature = CommitSignatures::GpgSignature.find_by_commit_sha(commit_sha)
+      expect { described_class.new(commit).update_signature!(stored_signature) }.to(
+        change { signature.reload.verification_status }.from('unknown_key').to('verified')
+      )
+    end
+  end
 end
