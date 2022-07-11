@@ -78,7 +78,9 @@ function mountSidebarToDoWidget() {
               : convertToGraphQLId(TYPE_MERGE_REQUEST, id),
           issuableIid: iid,
           issuableType:
-            isInIssuePage() || isInIncidentPage() || isInDesignPage() ? IssuableType.Issue : IssuableType.MergeRequest,
+            isInIssuePage() || isInIncidentPage() || isInDesignPage()
+              ? IssuableType.Issue
+              : IssuableType.MergeRequest,
         },
       }),
   });
