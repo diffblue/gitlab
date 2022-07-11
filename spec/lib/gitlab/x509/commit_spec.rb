@@ -30,9 +30,9 @@ RSpec.describe Gitlab::X509::Commit do
     end
 
     context 'unsigned commit' do
-      let!(:project) { create :project, :repository, path: X509Helpers::User1.path }
-      let!(:commit_sha) { X509Helpers::User1.commit }
-      let!(:commit) { create :commit, project: project, sha: commit_sha }
+      let(:project) { create :project, :repository, path: X509Helpers::User1.path }
+      let(:commit_sha) { X509Helpers::User1.commit }
+      let(:commit) { create :commit, project: project, sha: commit_sha }
 
       it 'returns nil' do
         expect(signature).to be_nil
