@@ -832,11 +832,16 @@ Truncate the filenames in the `uploads` table:
 
 1. Search the `uploads` table for filenames longer than 246 characters:
 
+   The following query selects the `uploads` records with filenames longer than 246 characters in batches of 0 to 10000. This improves the performance on large GitLab instances with tables having thousand of records.
+
       ```sql
-      WITH uploads_with_long_filenames AS (
-         SELECT * FROM uploads AS u
-         WHERE LENGTH((regexp_match(u.path, '[^\\/:*?"<>|\r\n]+$'))[1]) > 246
-      )
+      CREATE TEMP TABLE uploads_with_long_filenames AS
+      SELECT ROW_NUMBER() OVER(ORDER BY id) row_id, id, path
+      FROM uploads AS u
+      WHERE LENGTH((regexp_match(u.path, '[^\\/:*?"<>|\r\n]+$'))[1]) > 246;
+
+      CREATE INDEX ON uploads_with_long_filenames(row_id);
+
       SELECT
          u.id,
          u.path,
@@ -855,7 +860,8 @@ Truncate the filenames in the `uploads` table:
                COALESCE(SUBSTRING((regexp_match(u.path, '[^\\/:*?"<>|\r\n]+$'))[1] FROM '\.(?:.(?!\.))+$'))
             )
          ) AS new_path
-      FROM (SELECT * FROM uploads_with_long_filenames) AS u;
+      FROM uploads_with_long_filenames AS u
+      WHERE u.row_id > 0 AND u.row_id <= 10000;
       ```
 
       Output example:
@@ -875,14 +881,20 @@ Truncate the filenames in the `uploads` table:
       - `new_filename`: a filename that has been truncated to 246 characters maximum.
       - `new_path`: new path considering the new_filename (truncated).
 
+   Once you validate the batch results, you must change the batch size (`row_id`) using the following sequence of numbers (10000 to 20000). Repeat this process until you reach the last record in the `uploads` table.
+
 1. Rename the files found in the `uploads` table from long filenames to new truncated filenames. The following query rolls back the update so you can check the results safely within a transaction wrapper:
 
    ```sql
+   CREATE TEMP TABLE uploads_with_long_filenames AS
+   SELECT ROW_NUMBER() OVER(ORDER BY id) row_id, path, id
+   FROM uploads AS u
+   WHERE LENGTH((regexp_match(u.path, '[^\\/:*?"<>|\r\n]+$'))[1]) > 246;
+
+   CREATE INDEX ON uploads_with_long_filenames(row_id);
+
    BEGIN;
-   WITH uploads_with_long_filenames AS (
-      SELECT * FROM uploads AS u
-      WHERE LENGTH((regexp_match(u.path, '[^\\/:*?"<>|\r\n]+$'))[1]) > 246),
-   updated_uploads AS (
+   WITH updated_uploads AS (
       UPDATE uploads
       SET
          path =
@@ -897,11 +909,14 @@ Truncate the filenames in the `uploads` table:
          uploads_with_long_filenames AS updatable_uploads
       WHERE
          uploads.id = updatable_uploads.id
+      AND updatable_uploads.row_id > 0 AND updatable_uploads.row_id  <= 10000
       RETURNING uploads.*
    )
    SELECT id, path FROM updated_uploads;
    ROLLBACK;
    ```
+
+   Once you validate the batch update results, you must change the batch size (`row_id`) using the following sequence of numbers (10000 to 20000). Repeat this process until you reach the last record in the `uploads` table.
 
 1. Validate that the new filenames from the previous query are the expected ones. If you are sure you want to truncate the records found in the previous step to 246 characters, run the following:
 
@@ -909,22 +924,31 @@ Truncate the filenames in the `uploads` table:
    The following action is **irreversible**.
 
    ```sql
-   WITH uploads_with_long_filenames AS (
-      SELECT * FROM uploads AS u
-      WHERE LENGTH((regexp_match(u.path, '[^\\/:*?"<>|\r\n]+$'))[1]) > 246
-      )
+   CREATE TEMP TABLE uploads_with_long_filenames AS
+   SELECT ROW_NUMBER() OVER(ORDER BY id) row_id, path, id
+   FROM uploads AS u
+   WHERE LENGTH((regexp_match(u.path, '[^\\/:*?"<>|\r\n]+$'))[1]) > 246;
+
+   CREATE INDEX ON uploads_with_long_filenames(row_id);
+
    UPDATE uploads
-   SET path =
+   SET
+   path =
       CONCAT(
          COALESCE((regexp_match(updatable_uploads.path, '(.*\/).*'))[1], ''),
          CONCAT(
             LEFT(SPLIT_PART((regexp_match(updatable_uploads.path, '[^\\/:*?"<>|\r\n]+$'))[1], '.', 1), 242),
             COALESCE(SUBSTRING((regexp_match(updatable_uploads.path, '[^\\/:*?"<>|\r\n]+$'))[1] FROM '\.(?:.(?!\.))+$'))
          )
-         )
-   FROM uploads_with_long_filenames AS updatable_uploads
-   WHERE uploads.id = updatable_uploads.id;
+      )
+   FROM
+   uploads_with_long_filenames AS updatable_uploads
+   WHERE
+   uploads.id = updatable_uploads.id
+   AND updatable_uploads.row_id > 0 AND updatable_uploads.row_id  <= 10000;
    ```
+
+   Once you finish the batch update, you must change the batch size (`updatable_uploads.row_id`) using the following sequence of numbers (10000 to 20000). Repeat this process until you reach the last record in the `uploads` table.
 
 Truncate the filenames in the references found:
 
