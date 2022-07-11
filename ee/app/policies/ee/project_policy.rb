@@ -13,7 +13,7 @@ module EE
       condition(:repository_mirrors_enabled) { @subject.feature_available?(:repository_mirrors) }
 
       with_scope :subject
-      condition(:iterations_available) { @subject.feature_available?(:iterations) }
+      condition(:iterations_available) { @subject.group&.licensed_feature_available?(:iterations) }
 
       with_scope :subject
       condition(:requirements_available) { @subject.feature_available?(:requirements) & access_allowed_to?(:requirements) }
