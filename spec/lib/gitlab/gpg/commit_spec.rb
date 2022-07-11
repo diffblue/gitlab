@@ -7,12 +7,13 @@ RSpec.describe Gitlab::Gpg::Commit do
   let(:committer_email) { GpgHelpers::User1.emails.first }
   let(:user_email) { committer_email }
   let(:public_key) { GpgHelpers::User1.public_key }
-  let!(:project) { create(:project, :repository, path: 'sample-project') }
-  let!(:user) { create(:user, email: user_email) }
-  let!(:gpg_key) { create(:gpg_key, key: public_key, user: user) }
-  let!(:commit) { create(:commit, project: project, sha: commit_sha, committer_email: committer_email) }
+  let(:project) { create(:project, :repository, path: 'sample-project') }
+  let(:user) { create(:user, email: user_email) }
+  let(:commit) { create(:commit, project: project, sha: commit_sha, committer_email: committer_email) }
   let(:crypto) { instance_double(GPGME::Crypto) }
   let(:mock_signature_data?) { true }
+  # gpg_keys must be pre-loaded so that they can be found during signature verification.
+  let!(:gpg_key) { create(:gpg_key, key: public_key, user: user) }
 
   let(:signature_data) do
     [
@@ -207,7 +208,7 @@ RSpec.describe Gitlab::Gpg::Commit do
         context 'user email does not match the committer email, but is the same user' do
           let(:committer_email) { GpgHelpers::User2.emails.first }
 
-          let!(:user) do
+          let(:user) do
             create(:user, email: GpgHelpers::User1.emails.first).tap do |user|
               create :email, user: user, email: GpgHelpers::User2.emails.first
             end
