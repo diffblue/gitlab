@@ -3,11 +3,12 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Gpg::Commit do
+  let_it_be(:project) { create(:project, :repository, path: 'sample-project') }
+
   let(:commit_sha) { '0beec7b5ea3f0fdbc95d0dd47f3c5bc275da8a33' }
   let(:committer_email) { GpgHelpers::User1.emails.first }
   let(:user_email) { committer_email }
   let(:public_key) { GpgHelpers::User1.public_key }
-  let(:project) { create(:project, :repository, path: 'sample-project') }
   let(:user) { create(:user, email: user_email) }
   let(:commit) { create(:commit, project: project, sha: commit_sha, committer_email: committer_email) }
   let(:crypto) { instance_double(GPGME::Crypto) }
@@ -183,12 +184,12 @@ RSpec.describe Gitlab::Gpg::Commit do
             gpg_key.subkeys.find_by(fingerprint: GpgHelpers::User3.subkey_fingerprints.last)
           end
 
-          let(:signature_data) {
+          let(:signature_data) do
             [
               GpgHelpers::User3.signed_commit_signature,
               GpgHelpers::User3.signed_commit_base_data
             ]
-          }
+          end
 
           it 'returns a valid signature' do
             expect(described_class.new(commit).signature).to have_attributes(
