@@ -1,5 +1,7 @@
-import { __ } from '~/locale';
+import { s__ } from '~/locale';
 
-export const LINKED_RESOURCES_HEADER_TEXT = __('Linked resources');
-export const LINKED_RESOURCES_HELP_TEXT = __('Read more about linked resources');
-export const LINKED_RESOURCES_ADD_BUTTON_TEXT = __('Add a resource link');
+export const resourceLinksI18n = Object.freeze({
+  headerText: s__('Linked resources|Linked resources'),
+  helpText: s__('Linked resources|Read more about linked resources'),
+  addButtonText: s__('Linked resources|Add a resource link'),
+});

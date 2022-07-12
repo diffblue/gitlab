@@ -2147,9 +2147,6 @@ msgstr ""
 msgid "Add a related issue"
 msgstr ""
 
-msgid "Add a resource link"
-msgstr ""
-
 msgid "Add a suffix to Service Desk email address. %{linkStart}Learn more.%{linkEnd}"
 msgstr ""
 
@@ -23456,7 +23453,13 @@ msgstr ""
 msgid "Linked issues"
 msgstr ""
 
-msgid "Linked resources"
+msgid "Linked resources|Add a resource link"
+msgstr ""
+
+msgid "Linked resources|Linked resources"
+msgstr ""
+
+msgid "Linked resources|Read more about linked resources"
 msgstr ""
 
 msgid "LinkedIn"
@@ -31757,9 +31760,6 @@ msgid "Read more"
 msgstr ""
 
 msgid "Read more about GitLab at %{link_to_promo}."
-msgstr ""
-
-msgid "Read more about linked resources"
 msgstr ""
 
 msgid "Read more about project permissions %{help_link_open}here%{help_link_close}"
