@@ -122,9 +122,8 @@ module EE
         unless ::Feature.enabled?(:improved_mergeability_checks, self.project)
           return false unless approved?
           return false if has_denied_policies?
+          return false if merge_blocked_by_other_mrs?
         end
-
-        return false if merge_blocked_by_other_mrs?
       end
 
       super
@@ -136,9 +135,8 @@ module EE
         unless ::Feature.enabled?(:improved_mergeability_checks, self.project)
           return false unless approved?
           return false if has_denied_policies?
+          return false if merge_blocked_by_other_mrs?
         end
-
-        return false if merge_blocked_by_other_mrs?
       end
 
       super
@@ -148,7 +146,8 @@ module EE
     def mergeability_checks
       [
         ::MergeRequests::Mergeability::CheckApprovedService,
-        ::MergeRequests::Mergeability::CheckDeniedPoliciesService
+        ::MergeRequests::Mergeability::CheckDeniedPoliciesService,
+        ::MergeRequests::Mergeability::CheckBlockedByOtherMrsService
       ] + super
     end
 
