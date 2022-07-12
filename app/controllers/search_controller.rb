@@ -43,7 +43,7 @@ class SearchController < ApplicationController
 
     @search_service = Gitlab::View::Presenter::Factory.new(search_service, current_user: current_user).fabricate!
 
-    Gitlab::Metrics.measure("global_search_#{search_type}_#{@search_service.level}_#{@search_service.scope}".to_sym) do
+    @search_time = Benchmark.realtime do
       @scope = @search_service.scope
       @without_count = @search_service.without_count?
       @show_snippets = @search_service.show_snippets?
@@ -88,6 +88,10 @@ class SearchController < ApplicationController
   end
 
   private
+
+  def search_time_label
+    "global_search_web_#{search_type}_#{@search_service.level}_#{@search_service.scope}".to_sym
+  end
 
   # overridden in EE
   def default_sort
@@ -152,6 +156,10 @@ class SearchController < ApplicationController
     if search_service.abuse_detected?
       payload[:metadata]['abuse.confidence'] = Gitlab::Abuse.confidence(:certain)
       payload[:metadata]['abuse.messages'] = search_service.abuse_messages
+    end
+
+    if @search_time.present?
+      payload[search_time_label] = @search_time
     end
   end
 

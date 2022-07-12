@@ -423,6 +423,16 @@ RSpec.describe SearchController do
 
         get :show, params: { search: 'hello world', group_id: '123', project_id: '456' }
       end
+
+      it 'appends the search time based on the search' do
+        expect(controller).to receive(:append_info_to_payload).and_wrap_original do |method, payload|
+          method.call(payload)
+
+          expect(payload[:global_search_web_basic_global_projects]).to be_a_kind_of(Numeric)
+        end
+
+        get :show, params: { search: 'hello world', group_id: '123', project_id: '456' }
+      end
     end
 
     context 'abusive searches', :aggregate_failures do
