@@ -10,7 +10,6 @@ const mockData = [
     commit_path: `https://test.com`,
     commit_title_html: 'testing message',
     file_name: 'index.js',
-    type: 'blob',
     lock_label: 'Locked',
   },
 ];
@@ -25,7 +24,6 @@ describe('normalizeData', () => {
         commitPath: 'https://test.com',
         fileName: 'index.js',
         filePath: '/index.js',
-        type: 'blob',
         lockLabel: 'Locked',
         titleHtml: 'testing message',
         __typename: 'LogTreeCommit',
@@ -45,7 +43,6 @@ describe('normalizeData', () => {
         commitPath: 'https://test.com',
         fileName: 'index.js',
         filePath: '/index.js',
-        type: 'blob',
         lockLabel: false,
         titleHtml: 'testing message',
         __typename: 'LogTreeCommit',

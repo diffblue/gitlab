@@ -9,7 +9,7 @@ RSpec.describe Gitlab::TreeSummary do
 
   let(:commit) { project.repository.head_commit }
 
-  subject { described_class.new(commit, project, user).summarize.first }
+  subject { described_class.new(commit, project, user).summarize }
 
   describe '#summarize (entries)' do
     it 'includes path locks in entries' do

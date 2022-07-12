@@ -9,10 +9,7 @@ module EE
 
       override :summarize
       def summarize
-        summary, commits = super
-        summary.tap { |summary| fill_path_locks!(summary) }
-
-        [summary, commits]
+        super.tap { |summary| fill_path_locks!(summary) }
       end
 
       private
@@ -30,6 +27,10 @@ module EE
 
           entry[:lock_label] = path_lock && text_label_for_lock(path_lock, path)
         end
+      end
+
+      def entry_path(entry)
+        File.join(*[path, entry[:file_name]].compact).force_encoding(Encoding::ASCII_8BIT)
       end
     end
   end
