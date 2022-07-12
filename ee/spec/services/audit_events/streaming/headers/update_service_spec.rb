@@ -3,7 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe AuditEvents::Streaming::Headers::UpdateService do
-  let(:header) { create(:audit_events_streaming_header, key: 'old', value: 'old') }
+  let_it_be(:header) { create(:audit_events_streaming_header, key: 'old', value: 'old') }
+
   let(:destination) { header.external_audit_event_destination }
   let(:params) do
     {
@@ -28,7 +29,7 @@ RSpec.describe AuditEvents::Streaming::Headers::UpdateService do
       let(:params) { super().merge( header: nil) }
 
       it 'does not update the header' do
-        expect(header.reload.key).to eq 'old'
+        expect { subject }.not_to change { header.reload.key }
         expect(header.value).to eq 'old'
       end
 

@@ -24,10 +24,6 @@ module AuditEvents
           Feature.enabled?(:streaming_audit_event_headers, group)
         end
 
-        # authorization not handled by this service
-        def allowed?
-          true
-        end
       end
     end
   end
