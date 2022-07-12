@@ -1445,6 +1445,26 @@ RSpec.describe MergeRequest do
             stub_feature_flags(improved_mergeability_checks: false)
           end
 
+          context 'when blocking merge requests' do
+            before do
+              stub_licensed_features(blocking_merge_requests: true)
+            end
+
+            context 'when the merge request is blocked' do
+              let(:merge_request) { create(:merge_request, :blocked, source_project: project, target_project: project) }
+
+              it 'is mergeable' do
+                is_expected.to be_truthy
+              end
+            end
+
+            context 'when merge request is not blocked' do
+              it 'is mergeable' do
+                is_expected.to be_truthy
+              end
+            end
+          end
+
           context 'when merge request has denied policies' do
             before do
               allow(merge_request).to receive(:has_denied_policies?).and_return(true)
@@ -1471,6 +1491,26 @@ RSpec.describe MergeRequest do
             stub_feature_flags(improved_mergeability_checks: true)
           end
 
+          context 'when blocking merge requests' do
+            before do
+              stub_licensed_features(blocking_merge_requests: true)
+            end
+
+            context 'when the merge request is blocked' do
+              let(:merge_request) { create(:merge_request, :blocked, source_project: project, target_project: project) }
+
+              it 'is not mergeable' do
+                is_expected.to be_falsey
+              end
+            end
+
+            context 'when merge request is not blocked' do
+              it 'is mergeable' do
+                is_expected.to be_truthy
+              end
+            end
+          end
+
           context 'when merge request has denied policies' do
             before do
               allow(merge_request).to receive(:has_denied_policies?).and_return(true)
@@ -1489,26 +1529,6 @@ RSpec.describe MergeRequest do
             it 'is mergeable' do
               is_expected.to be_truthy
             end
-          end
-        end
-      end
-
-      context 'when blocking merge requests' do
-        before do
-          stub_licensed_features(blocking_merge_requests: true)
-        end
-
-        context 'when the merge request is blocked' do
-          let(:merge_request) { create(:merge_request, :blocked, source_project: project, target_project: project) }
-
-          it 'is mergeable' do
-            is_expected.to be_truthy
-          end
-        end
-
-        context 'when merge request is not blocked' do
-          it 'is mergeable' do
-            is_expected.to be_truthy
           end
         end
       end
