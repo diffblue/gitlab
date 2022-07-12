@@ -131,8 +131,34 @@ module Gitlab
 
       private
 
-      # rubocop: disable CodeReuse/ActiveRecord
       def base_query
+        if Feature.enabled?(:contribution_analytics_optimized_base_query)
+          base_query_optimized
+        else
+          base_query_unoptimized
+        end
+      end
+
+      # rubocop: disable CodeReuse/ActiveRecord
+      def base_query_optimized
+        cte = Gitlab::SQL::CTE.new(:project_ids,
+          ::Route
+            .where(source_type: 'Project')
+            .where(::Route.arel_table[:path].matches("#{::Route.sanitize_sql_like(group.full_path)}/%", nil, true))
+            .select('source_id AS id'))
+        cte_condition = 'project_id IN (SELECT id FROM project_ids)'
+
+        events_from_date = ::Event.where(cte_condition).where(Event.arel_table[:created_at].gteq(from))
+
+        ::Event.with(cte.to_arel).from_union([
+          events_from_date.where(action: :pushed, target_type: nil),
+          events_from_date.where(action: [:created, :closed, :merged, :approved], target_type: [::MergeRequest.name, ::Issue.name])
+        ], remove_duplicates: false)
+      end
+      # rubocop: enable CodeReuse/ActiveRecord
+
+      # rubocop: disable CodeReuse/ActiveRecord
+      def base_query_unoptimized
         Event
           .where(action: :pushed).or(
             Event.where(target_type: [::MergeRequest.name, ::Issue.name], action: [:created, :closed, :merged, :approved])
