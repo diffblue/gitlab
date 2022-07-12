@@ -19,6 +19,47 @@ RSpec.describe Ldap::OmniauthCallbacksController do
     expect(flash[:notice]).to eq nil
   end
 
+  context 'multiple ldap providers configured' do
+    let(:ldap_server_config) do
+      {
+        main: ldap_config_defaults(:main),
+        secondary: ldap_config_defaults(:secondary)
+      }
+    end
+
+    let(:other_provider) { 'ldapsecondary' }
+
+    context 'multiple ldap servers licensed feature available' do
+      let(:multiple_ldap_servers_license_available) { true }
+
+      it 'allows sign in to first provider' do
+        post provider
+
+        expect(request.env['warden']).to be_authenticated
+      end
+
+      it 'allows sign in to other provider' do
+        post other_provider
+
+        expect(request.env['warden']).to be_authenticated
+      end
+    end
+
+    context 'multiple ldap servers licensed feature not available' do
+      let(:multiple_ldap_servers_license_available) { false }
+
+      it 'allows sign in' do
+        post provider
+
+        expect(request.env['warden']).to be_authenticated
+      end
+
+      it 'does not allow sign in for other providers' do
+        expect { post other_provider }.to raise_error(ActionController::UrlGenerationError)
+      end
+    end
+  end
+
   context 'access denied' do
     let(:valid_login?) { false }
 
