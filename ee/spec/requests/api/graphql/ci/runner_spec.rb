@@ -86,6 +86,13 @@ RSpec.describe 'Query.runner(id)' do
 
         it_behaves_like('runner details fetch operation returning expected upgradeStatus')
       end
+
+      context 'with RunnerUpgradeCheck returning :invalid_version' do
+        let(:upgrade_status) { :invalid_version }
+        let(:expected_upgrade_status) { 'INVALID' }
+
+        it_behaves_like('runner details fetch operation returning expected upgradeStatus')
+      end
     end
 
     context 'requested by paid user' do
