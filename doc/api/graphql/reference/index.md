@@ -18498,6 +18498,7 @@ Represents an assignees widget.
 | ---- | ---- | ----------- |
 | <a id="workitemwidgetassigneesallowsmultipleassignees"></a>`allowsMultipleAssignees` | [`Boolean`](#boolean) | Indicates whether multiple assignees are allowed. |
 | <a id="workitemwidgetassigneesassignees"></a>`assignees` | [`UserCoreConnection`](#usercoreconnection) | Assignees of the work item. (see [Connections](#connections)) |
+| <a id="workitemwidgetassigneescaninvitemembers"></a>`canInviteMembers` | [`Boolean!`](#boolean) | Indicates whether the current user can invite members to the work item's project. |
 | <a id="workitemwidgetassigneestype"></a>`type` | [`WorkItemWidgetType`](#workitemwidgettype) | Widget type. |
 
 ### `WorkItemWidgetDescription`
