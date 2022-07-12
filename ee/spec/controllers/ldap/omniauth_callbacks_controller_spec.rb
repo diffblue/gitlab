@@ -55,7 +55,7 @@ RSpec.describe Ldap::OmniauthCallbacksController do
       end
 
       it 'does not allow sign in for other providers' do
-        expect { post other_provider }.to raise_error(ActionController::UrlGenerationError)
+        expect { post other_provider }.to raise_error(AbstractController::ActionNotFound)
       end
     end
   end
