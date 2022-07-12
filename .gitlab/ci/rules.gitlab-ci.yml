@@ -1657,6 +1657,7 @@
       when: manual
       allow_failure: true
     - <<: *if-dot-com-gitlab-org-schedule
+      allow_failure: true
       variables:
         KNAPSACK_GENERATE_REPORT: "true"
 
