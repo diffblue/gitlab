@@ -15,6 +15,8 @@ module Gitlab
     # plans.
     # rubocop: disable CodeReuse/ActiveRecord
     def preload(groups)
+      return groups if groups.is_a?(ActiveRecord::NullRelation)
+
       groups_and_ancestors = groups_and_ancestors_for(
         activerecord_relation(groups)
       )
