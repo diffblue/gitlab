@@ -38,7 +38,7 @@ module QA
               find('button', text: 'Add an existing issue').click
               fill_element :add_issue_field, issue_url
               # Clicking the title blurs the input
-              click_element :title
+              click_element :title_content
               click_element :add_issue_button
             end
 
@@ -46,10 +46,6 @@ module QA
               click_element :remove_issue_button
               # Capybara code is used below due to the modal being defined in the @gitlab/ui project
               find('#item-remove-confirmation___BV_modal_footer_ .btn-danger').click
-            end
-
-            def click_edit_button
-              click_element :edit_button
             end
 
             def close_reopen_epic
