@@ -45,11 +45,11 @@
                       .input-group-text
                         #{group_url(@project.namespace)}/
                     = f.text_field :path, class: 'form-control', required: true
-
-              = f.label :visibility_level, class: 'gl-font-weight-bold' do
-                = s_('ProjectsNew|Visibility Level')
-                = link_to sprite_icon('question-o'), help_page_path('user/public_access'), aria: { label: 'Documentation for Visibility Level' }, target: '_blank', rel: 'noopener noreferrer'
-              = render 'shared/visibility_level', f: f, visibility_level: visibility_level.to_i, can_change_visibility_level: true, form_model: @project, with_label: false
+              .form-group.gl-form-group
+                = f.label :visibility_level, class: 'gl-font-weight-bold' do
+                  = s_('ProjectsNew|Visibility Level')
+                  = link_to sprite_icon('question-o'), help_page_path('user/public_access'), aria: { label: 'Documentation for Visibility Level' }, target: '_blank', rel: 'noopener noreferrer'
+                = render 'shared/visibility_level', f: f, visibility_level: visibility_level.to_i, can_change_visibility_level: true, form_model: @project, with_label: false
 
               = f.submit _('Create project'), class: 'btn gl-button btn-confirm btn-block', data: { track_label: 'blank_project', track_action: 'click_button', track_property: 'create_project', track_value: '' }
 

@@ -2,6 +2,6 @@
 
 .form-group.gl-form-group{ role: 'group' }
   = form.label :repository_size_limit, _('Repository size limit (MB)'), class: 'gl-display-block col-form-label'
-  = form.number_field :repository_size_limit, value: form.object.repository_size_limit.try(:to_mb), class: 'form-control', min: 0
+  = form.number_field :repository_size_limit, value: form.object.repository_size_limit.try(:to_mb), class: 'form-control gl-form-input-sm', min: 0
   %small.form-text.text-gl-muted
     = size_limit_message_for_group(@group)
