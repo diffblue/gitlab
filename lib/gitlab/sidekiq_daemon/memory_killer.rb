@@ -135,6 +135,9 @@ module Gitlab
           # RSS go above hard limit should trigger forcible shutdown right away
           break if @current_rss > @hard_limit_rss
 
+          # RSS go below the soft limit
+          return true if @current_rss < @soft_limit_rss
+
           # RSS did not go below the soft limit within deadline, restart
           break if Gitlab::Metrics::System.monotonic_time > deadline
 
