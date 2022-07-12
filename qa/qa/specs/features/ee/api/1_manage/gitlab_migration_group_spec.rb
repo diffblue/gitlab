@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Manage', :requires_admin do
+  RSpec.describe 'Manage', :reliable, requires_admin: 'creates a user via API' do
     describe 'Gitlab migration' do
       let(:admin_api_client) { Runtime::API::Client.as_admin }
       let(:api_client) { Runtime::API::Client.new(user: user) }
