@@ -4,11 +4,11 @@ require 'spec_helper'
 
 RSpec.describe AuditEvents::Streaming::Headers::CreateService do
   let(:destination) { create(:external_audit_event_destination) }
-  let(:params) { {  destination: destination } }
+  let(:params) { {} }
 
   subject(:service) do
     described_class.new(
-      group: destination&.group,
+      destination: destination,
       params: params
     )
   end

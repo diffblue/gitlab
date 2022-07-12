@@ -25,15 +25,9 @@ module Mutations
                 description: 'Created header.'
 
           def resolve(destination_id:, key:, value:)
-            params = {
-              destination: authorized_find!(destination_id),
-              key: key,
-              value: value
-            }
-
             response = ::AuditEvents::Streaming::Headers::CreateService.new(
-              group: params[:destination]&.group,
-              params: params
+              destination: authorized_find!(destination_id),
+              params: { key: key, value: value }
             ).execute
 
             if response.success?

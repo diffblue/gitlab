@@ -6,12 +6,7 @@ RSpec.describe AuditEvents::Streaming::Headers::Base do
   let(:header) { build_stubbed(:audit_events_streaming_header) }
   let(:destination) { header.external_audit_event_destination }
 
-  subject(:service) do
-    described_class.new(
-      group: destination&.group,
-      params: { destination: destination }
-    )
-  end
+  subject(:service) { described_class.new( destination: destination) }
 
   describe '#execute' do
     subject(:response) { service.execute }

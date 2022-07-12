@@ -7,12 +7,7 @@ RSpec.describe AuditEvents::Streaming::Headers::DestroyService do
   let(:destination) { header.external_audit_event_destination }
   let(:params) { {  destination: destination, header: header } }
 
-  subject(:service) do
-    described_class.new(
-      group: destination&.group,
-      params: params
-    )
-  end
+  subject(:service) { described_class.new(destination: destination, params: params ) }
 
   describe '#execute' do
     context 'when no header is provided' do

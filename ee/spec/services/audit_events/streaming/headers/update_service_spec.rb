@@ -8,19 +8,13 @@ RSpec.describe AuditEvents::Streaming::Headers::UpdateService do
   let(:destination) { header.external_audit_event_destination }
   let(:params) do
     {
-      destination: destination,
       header: header,
       key: 'new',
       value: 'new'
     }
   end
 
-  subject(:service) do
-    described_class.new(
-      group: destination&.group,
-      params: params
-    )
-  end
+  subject(:service) { described_class.new(destination: destination, params: params) }
 
   describe '#execute' do
     subject(:response) { service.execute }

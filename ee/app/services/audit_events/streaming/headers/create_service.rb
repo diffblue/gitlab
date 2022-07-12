@@ -6,7 +6,7 @@ module AuditEvents
         def execute
           super
 
-          header = destination.headers.new(key: params[:key], value: **value**)
+          header = destination.headers.new(key: params[:key], value: params[:value])
 
           if header.save
             ServiceResponse.success(payload: { header: header, errors: [] })

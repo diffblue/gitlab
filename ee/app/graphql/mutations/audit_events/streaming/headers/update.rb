@@ -26,16 +26,10 @@ module Mutations
 
           def resolve(header_id:, key:, value:)
             header = authorized_find!(id: header_id)
-            params = {
-              header: header,
-              destination: header.external_audit_event_destination,
-              key: key,
-              value: value
-            }
 
             response = ::AuditEvents::Streaming::Headers::UpdateService.new(
-              group: params[:destination]&.group,
-              params: params
+              destination: header.external_audit_event_destination,
+              params: { header: header, key: key, value: value }
             ).execute
 
             if response.success?

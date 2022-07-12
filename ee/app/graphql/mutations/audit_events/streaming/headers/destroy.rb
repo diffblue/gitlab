@@ -14,14 +14,10 @@ module Mutations
 
           def resolve(header_id:)
             header = authorized_find!(id: header_id)
-            params = {
-              header: header,
-              destination: header.external_audit_event_destination
-            }
 
             response = ::AuditEvents::Streaming::Headers::DestroyService.new(
-              group: params[:destination]&.group,
-              params: params
+              destination: header.external_audit_event_destination,
+              params: { header: header }
             ).execute
 
             if response.success?
