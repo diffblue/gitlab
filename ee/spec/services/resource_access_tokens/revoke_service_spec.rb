@@ -10,6 +10,11 @@ RSpec.describe ResourceAccessTokens::RevokeService do
 
   let(:access_token) { create(:personal_access_token, user: resource_bot) }
 
+  before do
+    stub_licensed_features(audit_events: true)
+    stub_licensed_features(external_audit_events: true)
+  end
+
   shared_examples 'audit event details' do
     it 'creates an audit event' do
       expect { subject }.to change { AuditEvent.count }.from(0).to(1)
@@ -26,7 +31,9 @@ RSpec.describe ResourceAccessTokens::RevokeService do
   end
 
   context 'project access token audit events' do
-    let(:resource) { create(:project) }
+    let(:group) { create(:group) }
+    let!(:destination) { create(:external_audit_event_destination, group: group) }
+    let(:resource) { create(:project, group: group) }
 
     context 'when project access token is successfully revoked' do
       before do
@@ -47,6 +54,10 @@ RSpec.describe ResourceAccessTokens::RevokeService do
           target_type: access_token.class.name,
           target_details: access_token.user.name
         )
+      end
+
+      it_behaves_like 'sends correct event type in audit event stream' do
+        let_it_be(:event_type) { "project_access_token_deleted" }
       end
     end
 
@@ -74,6 +85,10 @@ RSpec.describe ResourceAccessTokens::RevokeService do
             target_details: access_token.user.name
           )
         end
+
+        it_behaves_like 'sends correct event type in audit event stream' do
+          let_it_be(:event_type) { "project_access_token_deletion_failed" }
+        end
       end
 
       context 'with inadequate permissions' do
@@ -99,6 +114,10 @@ RSpec.describe ResourceAccessTokens::RevokeService do
             target_type: access_token.class.name,
             target_details: access_token.user.name
           )
+        end
+
+        it_behaves_like 'sends correct event type in audit event stream' do
+          let_it_be(:event_type) { "project_access_token_deletion_failed" }
         end
       end
     end

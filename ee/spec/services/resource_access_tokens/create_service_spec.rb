@@ -7,6 +7,11 @@ RSpec.describe ResourceAccessTokens::CreateService do
 
   let_it_be(:user) { create(:user) }
 
+  before do
+    stub_licensed_features(audit_events: true)
+    stub_licensed_features(external_audit_events: true)
+  end
+
   shared_examples 'token creation succeeds' do
     let(:resource) { create(:project, group: group)}
 
@@ -71,7 +76,9 @@ RSpec.describe ResourceAccessTokens::CreateService do
     end
 
     context 'project access token audit events' do
-      let(:resource) { create(:project) }
+      let(:group) { create(:group) }
+      let!(:destination) { create(:external_audit_event_destination, group: group) }
+      let(:resource) { create(:project, group: group) }
 
       context 'when project access token is successfully created' do
         before do
@@ -95,6 +102,10 @@ RSpec.describe ResourceAccessTokens::CreateService do
             target_type: access_token.class.name,
             target_details: access_token.user.name
           )
+        end
+
+        it_behaves_like 'sends correct event type in audit event stream' do
+          let_it_be(:event_type) { "project_access_token_created" }
         end
       end
 
@@ -121,6 +132,10 @@ RSpec.describe ResourceAccessTokens::CreateService do
               target_type: nil,
               target_details: nil
             )
+          end
+
+          it_behaves_like 'sends correct event type in audit event stream' do
+            let_it_be(:event_type) { "project_access_token_creation_failed" }
           end
         end
 
@@ -155,6 +170,10 @@ RSpec.describe ResourceAccessTokens::CreateService do
               target_type: nil,
               target_details: nil
             )
+          end
+
+          it_behaves_like 'sends correct event type in audit event stream' do
+            let_it_be(:event_type) { "project_access_token_creation_failed" }
           end
         end
       end
