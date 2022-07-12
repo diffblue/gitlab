@@ -38,6 +38,7 @@ export default {
 </script>
 <template>
   <gl-alert
+    class="gl-mb-5"
     variant="info"
     :title="s__('SharedRunnersMinutesSettings|Reset used pipeline minutes')"
     :dismissible="false"
