@@ -179,8 +179,8 @@ namespace :gitlab do
 
     desc "GitLab | Elasticsearch | Mark last reindexing job as failed"
     task mark_reindex_failed: :environment do
-      if Elastic::ReindexingTask.running?
-        Elastic::ReindexingTask.current.failure!
+      if ::Elastic::ReindexingTask.running?
+        ::Elastic::ReindexingTask.current.failure!
         puts 'Marked the current reindexing job as failed.'.color(:green)
       else
         puts 'Did not find the current running reindexing job.'
@@ -240,6 +240,82 @@ namespace :gitlab do
       end
     end
 
+    desc "GitLab | Elasticsearch | List information about Advanced Search integration"
+    task info: :environment do
+      helper = Gitlab::Elastic::Helper.default
+      setting = ApplicationSetting.current
+
+      puts ""
+      puts "Advanced Search".color(:yellow)
+      puts "Server version:\t\t#{helper.server_info[:version] || "unknown".color(:red)}"
+      puts "Server distribution:\t#{helper.server_info[:distribution] || "unknown".color(:red)}"
+      puts "Indexing enabled:\t#{setting.elasticsearch_indexing ? "yes".color(:green) : "no"}"
+      puts "Search enabled:\t\t#{setting.elasticsearch_search? ? "yes".color(:green) : "no"}"
+      puts "Pause indexing:\t\t#{setting.elasticsearch_pause_indexing? ? "yes".color(:yellow) : "no"}"
+      puts "File size limit:\t#{setting.elasticsearch_indexed_file_size_limit_kb} KiB"
+
+      puts ""
+      puts "Indexing Queues".color(:yellow)
+      puts "Initial queue:\t\t#{::Elastic::ProcessInitialBookkeepingService.queue_size}"
+      puts "Incremental queue:\t#{::Elastic::ProcessBookkeepingService.queue_size}"
+
+      check_handler do
+        pending_migrations = ::Elastic::DataMigrationService.pending_migrations
+
+        if pending_migrations.any?
+          puts ""
+          puts "Pending Migrations".color(:yellow)
+          pending_migrations.each do |migration|
+            puts migration.name
+          end
+        end
+      end
+
+      check_handler do
+        current_migration = ::Elastic::MigrationRecord.current_migration
+
+        if current_migration
+          current_state = current_migration.load_state
+
+          puts ""
+          puts "Current Migration".color(:yellow)
+          puts "Name:\t\t\t#{current_migration.name}"
+          puts "Started:\t\t#{current_migration.started? ? "yes".color(:green) : "no"}"
+          puts "Halted:\t\t\t#{current_migration.halted? ? "yes".color(:red) : "no".color(:green)}"
+          puts "Failed:\t\t\t#{current_migration.failed? ? "yes".color(:red) : "no".color(:green)}"
+          puts "Current state:\t\t#{current_state.to_json}" if current_state.present?
+        end
+      end
+
+      puts ""
+      puts "Indices".color(:yellow)
+      ::Elastic::IndexSetting.order(:alias_name).each do |index_setting|
+        setting = begin
+          helper.client.indices.get_settings(index: index_setting.alias_name)
+        rescue StandardError
+          puts "  - failed to load indices for #{index_setting.alias_name}".color(:red)
+          {}
+        end
+
+        setting.sort.each do |index_name, hash|
+          puts "- #{index_name}:"
+          puts "  number_of_shards: #{hash.dig('settings', 'index', 'number_of_shards')}"
+          puts "  number_of_replicas: #{hash.dig('settings', 'index', 'number_of_replicas')}"
+          (hash.dig('settings', 'index', 'blocks') || {}).each do |block, value|
+            next unless value == 'true'
+
+            puts "  blocks.#{block}: yes".color(:red)
+          end
+        end
+      end
+    end
+
+    def check_handler(&blk)
+      yield
+    rescue StandardError => e
+      puts "An exception occurred during the retrieval of the data: #{e.class}: #{e.message}".color(:red)
+    end
+
     def project_id_batches(&blk)
       relation = Project.all
 
@@ -263,9 +339,9 @@ namespace :gitlab do
     end
 
     def trigger_cluster_reindexing
-      Elastic::ReindexingTask.create!
+      ::Elastic::ReindexingTask.create!
 
-      ElasticClusterReindexingCronWorker.perform_async
+      ::ElasticClusterReindexingCronWorker.perform_async
 
       puts 'Reindexing job was successfully scheduled'.color(:green)
     rescue PG::UniqueViolation, ActiveRecord::RecordNotUnique

@@ -383,4 +383,106 @@ RSpec.describe 'gitlab:elastic namespace rake tasks', :elastic, :silence_stdout 
       end
     end
   end
+
+  describe 'info' do
+    subject { run_rake_task('gitlab:elastic:info') }
+
+    let(:settings) { ::Gitlab::CurrentSettings }
+
+    before do
+      settings.update!(elasticsearch_search: true, elasticsearch_indexing: true)
+    end
+
+    it 'outputs server version' do
+      expect { subject }.to output(/Server version:\s+\d+.\d+.\d+/).to_stdout
+    end
+
+    it 'outputs server distribution' do
+      expect { subject }.to output(/Server distribution:\s+\w+/).to_stdout
+    end
+
+    it 'outputs indexing and search settings' do
+      expect { subject }.to output(/Indexing enabled:\syes\s+Search enabled:\s+yes/).to_stdout
+    end
+
+    it 'outputs queue sizes' do
+      allow(Elastic::ProcessInitialBookkeepingService).to receive(:queue_size).and_return(100)
+      allow(Elastic::ProcessBookkeepingService).to receive(:queue_size).and_return(200)
+
+      expect { subject }.to output(/Initial queue:\s+100\s+Incremental queue:\s+200/).to_stdout
+    end
+
+    it 'outputs pending migrations' do
+      migration = instance_double(
+        Elastic::MigrationRecord,
+        name: 'TestMigration',
+        started?: true,
+        halted?: false,
+        failed?: false,
+        load_state: { test: 'value' }
+      )
+
+      allow(::Elastic::DataMigrationService).to receive(:pending_migrations).and_return([migration])
+
+      expect { subject }.to output(
+        /Pending Migrations\s+#{migration.name}/
+      ).to_stdout
+    end
+
+    it 'outputs current migration' do
+      migration = instance_double(
+        Elastic::MigrationRecord,
+        name: 'TestMigration',
+        started?: true,
+        halted?: false,
+        failed?: false,
+        load_state: { test: 'value' }
+      )
+      allow(Elastic::MigrationRecord).to receive(:current_migration).and_return(migration)
+
+      expect { subject }.to output(
+        /Name:\s+TestMigration\s+Started:\s+yes\s+Halted:\s+no\s+Failed:\s+no\s+Current state:\s+{"test":"value"}/
+      ).to_stdout
+    end
+
+    context 'with index settings' do
+      let(:setting) do
+        Elastic::IndexSetting.new(number_of_replicas: 1, number_of_shards: 8, alias_name: 'gitlab-development')
+      end
+
+      before do
+        allow(Elastic::IndexSetting).to receive(:order).and_return([setting])
+      end
+
+      it 'outputs failed index setting' do
+        allow(es_helper.client).to receive(:indices).and_raise(Timeout::Error)
+
+        expect { subject }.to output(
+          /failed to load indices for gitlab-development/
+        ).to_stdout
+      end
+
+      it 'outputs index settings' do
+        indices = instance_double(Elasticsearch::API::Indices::IndicesClient)
+        allow(es_helper.client).to receive(:indices).and_return(indices)
+        allow(indices).to receive(:get_settings).with(index: setting.alias_name).and_return({
+          setting.alias_name => {
+            "settings" => {
+              "index" => {
+                "number_of_shards" => 5,
+                "number_of_replicas" => 1,
+                "blocks" => {
+                  "write" => 'true'
+                }
+              }
+            }
+          }
+        })
+
+        expect { subject }.to output(
+          /#{setting.alias_name}:\s+number_of_shards: 5\s+number_of_replicas: 1\s+blocks\.write: yes/
+        ).to_stdout
+      end
+    end
+  end
 end
