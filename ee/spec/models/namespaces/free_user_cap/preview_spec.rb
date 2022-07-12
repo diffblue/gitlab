@@ -26,14 +26,14 @@ RSpec.describe Namespaces::FreeUserCap::Preview, :saas do
         stub_feature_flags(preview_free_user_cap: true)
       end
 
-      it { is_expected.to be true }
+      it { is_expected.to be false }
 
-      context 'when excluded from free user cap' do
+      context 'when included for free user cap preview' do
         before do
-          namespace.namespace_settings.update_column(:exclude_from_free_user_cap, true)
+          namespace.namespace_settings.update_column(:include_for_free_user_cap_preview, true)
         end
 
-        it { is_expected.to be false }
+        it { is_expected.to be true }
       end
     end
   end

@@ -34,7 +34,7 @@ export default ({
   addSeatsHref,
   maxFreeNamespaceSeats,
   explorePlansPath,
-  hasLimitedFreePlan: hasNoSubscription && freeUserCapEnabled,
+  hasLimitedFreePlan: freeUserCapEnabled,
   hasReachedFreePlanLimit: null,
-  previewFreeUserCap: hasNoSubscription && previewFreeUserCap,
+  previewFreeUserCap,
 });

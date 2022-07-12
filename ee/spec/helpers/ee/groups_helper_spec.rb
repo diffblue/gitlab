@@ -271,6 +271,9 @@ RSpec.describe GroupsHelper do
   describe '#group_seats_usage_quota_app_data' do
     subject(:group_seats_usage_quota_app_data) { helper.group_seats_usage_quota_app_data(group) }
 
+    let(:user_cap_applied) { true }
+    let(:enforce_free_user_cap) { false }
+    let(:preview_free_user_cap) { false }
     let(:data) do
       {
         namespace_id: group.id,
@@ -281,17 +284,25 @@ RSpec.describe GroupsHelper do
         add_seats_href: ::Gitlab::SubscriptionPortal.add_extra_seats_url(group.id),
         has_no_subscription: group.has_free_or_no_subscription?.to_s,
         max_free_namespace_seats: 10,
-        explore_plans_path: group_billings_path(group)
+        explore_plans_path: group_billings_path(group),
+        free_user_cap_enabled: 'false',
+        preview_free_user_cap: 'false'
       }
     end
 
     before do
       stub_const("::Namespaces::FreeUserCap::FREE_USER_LIMIT", 10)
       expect(group).to receive(:apply_user_cap?).and_return(user_cap_applied)
+
+      expect_next_instance_of(::Namespaces::FreeUserCap::Standard, group) do |instance|
+        expect(instance).to receive(:enforce_cap?).and_return(enforce_free_user_cap)
+      end
+      expect_next_instance_of(::Namespaces::FreeUserCap::Preview, group) do |instance|
+        expect(instance).to receive(:enforce_cap?).and_return(preview_free_user_cap)
+      end
     end
 
     context 'when user cap is applied' do
-      let(:user_cap_applied) { true }
       let(:expected_data) { data.merge({ pending_members_page_path: pending_members_group_usage_quotas_path(group) }) }
 
       it { is_expected.to eql(expected_data) }
@@ -300,6 +311,20 @@ RSpec.describe GroupsHelper do
     context 'when user cap is not applied' do
       let(:user_cap_applied) { false }
       let(:expected_data) { data.merge({ pending_members_page_path: nil }) }
+
+      it { is_expected.to eql(expected_data) }
+    end
+
+    context 'when free user cap is enforced' do
+      let(:enforce_free_user_cap) { true }
+      let(:expected_data) { data.merge({ free_user_cap_enabled: 'true' }) }
+
+      it { is_expected.to eql(expected_data) }
+    end
+
+    context 'when preview free user cap is enabled' do
+      let(:preview_free_user_cap) { true }
+      let(:expected_data) { data.merge({ preview_free_user_cap: 'true' }) }
 
       it { is_expected.to eql(expected_data) }
     end
