@@ -6,6 +6,11 @@ module EE
       module RunnerType
         extend ActiveSupport::Concern
 
+        RUNNER_UPGRADE_STATUS_TRANSLATIONS = {
+          error: :unknown,
+          invalid_version: :invalid
+        }.freeze
+
         prepended do
           field :public_projects_minutes_cost_factor, GraphQL::Types::Float, null: true,
                 description: 'Public projects\' "minutes cost factor" associated with the runner (GitLab.com only).'
@@ -20,7 +25,7 @@ module EE
             return :unknown unless upgrade_status_available?
 
             status = ::Gitlab::Ci::RunnerUpgradeCheck.instance.check_runner_upgrade_status(runner.version)
-            status == :error ? :unknown : status
+            RUNNER_UPGRADE_STATUS_TRANSLATIONS.fetch(status, status)
           end
 
           private
