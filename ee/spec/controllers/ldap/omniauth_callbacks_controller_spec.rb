@@ -55,7 +55,9 @@ RSpec.describe Ldap::OmniauthCallbacksController do
       end
 
       it 'does not allow sign in for other providers' do
-        expect { post other_provider }.to raise_error(AbstractController::ActionNotFound)
+        post other_provider
+
+        expect(response).to have_gitlab_http_status(:not_found)
       end
     end
   end
