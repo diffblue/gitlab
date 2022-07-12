@@ -19,60 +19,7 @@ module EE
 
         # rubocop: disable CodeReuse/ActiveRecord
         def enforce_minutes_based_on_cost_factors(relation)
-          if strategy.use_denormalized_data_strategy?
-            strategy.enforce_minutes_limit(relation)
-          else
-            enforce_minutes_using_legacy_data(relation)
-          end
-        end
-
-        def enforce_minutes_using_legacy_data(relation)
-          if strategy.use_denormalized_data_strategy?
-            # If shared runners information is denormalized then the query does not include the join
-            # with `projects` anymore, so we need to add it until we use denormalized ci minutes
-
-            relation = relation.joins('INNER JOIN projects ON ci_pending_builds.project_id = projects.id')
-          end
-
-          visibility_relation = ::CommitStatus.where(
-            projects: { visibility_level: runner.visibility_levels_without_minutes_usage })
-
-          enforce_limits_relation = ::CommitStatus.where('EXISTS (?)', builds_check_limit)
-
-          relation.merge(visibility_relation.or(enforce_limits_relation))
-        end
-
-        def builds_check_limit
-          all_namespaces
-            .joins('LEFT JOIN namespace_statistics ON namespace_statistics.namespace_id = namespaces.id')
-            .where('COALESCE(namespaces.shared_runners_minutes_limit, ?, 0) = 0 OR ' \
-                   'COALESCE(namespace_statistics.shared_runners_seconds, 0) < ' \
-                   'COALESCE('\
-                     '(namespaces.shared_runners_minutes_limit + COALESCE(namespaces.extra_shared_runners_minutes_limit, 0)), ' \
-                     '(? + COALESCE(namespaces.extra_shared_runners_minutes_limit, 0)), ' \
-                    '0) * 60',
-                  application_shared_runners_minutes, application_shared_runners_minutes)
-            .select('1')
-        end
-
-        def all_namespaces
-          if traversal_ids_enabled?
-            ::Namespace
-              .where('namespaces.id = project_namespaces.traversal_ids[1]')
-              .joins('INNER JOIN namespaces as project_namespaces ON project_namespaces.id = projects.namespace_id')
-          else
-            namespaces = ::Namespace.reorder(nil).where('namespaces.id = projects.namespace_id')
-            ::Gitlab::ObjectHierarchy.new(namespaces).roots
-          end
-        end
-        # rubocop: enable CodeReuse/ActiveRecord
-
-        def application_shared_runners_minutes
-          ::Gitlab::CurrentSettings.shared_runners_minutes
-        end
-
-        def traversal_ids_enabled?
-          ::Feature.enabled?(:traversal_ids_for_quota_calculation, type: :development)
+          strategy.enforce_minutes_limit(relation)
         end
       end
     end

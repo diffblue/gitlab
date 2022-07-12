@@ -21,51 +21,13 @@ RSpec.describe Ci::RegisterJobService, '#execute' do
           set_ci_minutes_used(project.namespace, runners_minutes_used)
         end
 
-        context 'with traversal_ids enabled' do
-          before do
-            stub_feature_flags(traversal_ids_for_quota_calculation: true)
-          end
-
-          it { is_expected.to be_kind_of(Ci::Build) }
-        end
-
-        context 'with traversal_ids disabled' do
-          before do
-            stub_feature_flags(traversal_ids_for_quota_calculation: false)
-          end
-
-          it { is_expected.to be_kind_of(Ci::Build) }
-        end
-
         it 'when in disaster recovery it ignores quota and returns anyway' do
           stub_feature_flags(ci_queueing_disaster_recovery_disable_quota: true)
 
           is_expected.to be_kind_of(Ci::Build)
         end
 
-        context 'with ci_queuing_use_denormalized_data_strategy enabled' do
-          before do
-            stub_feature_flags(ci_queuing_use_denormalized_data_strategy: true)
-          end
-
-          it { is_expected.to be_kind_of(Ci::Build) }
-        end
-
-        context 'with ci_queuing_use_denormalized_data_strategy disabled' do
-          before do
-            skip_if_multiple_databases_are_setup
-
-            stub_feature_flags(ci_queuing_use_denormalized_data_strategy: false)
-          end
-
-          around do |example|
-            allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/332952') do
-              example.run
-            end
-          end
-
-          it { is_expected.to be_kind_of(Ci::Build) }
-        end
+        it { is_expected.to be_kind_of(Ci::Build) }
       end
 
       shared_examples 'does not return a build' do |runners_minutes_used|
@@ -75,51 +37,13 @@ RSpec.describe Ci::RegisterJobService, '#execute' do
           pending_build.create_queuing_entry!
         end
 
-        context 'with traversal_ids enabled' do
-          before do
-            stub_feature_flags(traversal_ids_for_quota_calculation: true)
-          end
-
-          it { is_expected.to be_nil }
-        end
-
-        context 'with traversal_ids disabled' do
-          before do
-            stub_feature_flags(traversal_ids_for_quota_calculation: false)
-          end
-
-          it { is_expected.to be_nil }
-        end
-
         it 'when in disaster recovery it ignores quota and returns anyway' do
           stub_feature_flags(ci_queueing_disaster_recovery_disable_quota: true)
 
           is_expected.to be_kind_of(Ci::Build)
         end
 
-        context 'with ci_queuing_use_denormalized_data_strategy enabled' do
-          before do
-            stub_feature_flags(ci_queuing_use_denormalized_data_strategy: true)
-          end
-
-          it { is_expected.to be_nil }
-        end
-
-        context 'with ci_queuing_use_denormalized_data_strategy disabled' do
-          before do
-            skip_if_multiple_databases_are_setup
-
-            stub_feature_flags(ci_queuing_use_denormalized_data_strategy: false)
-          end
-
-          around do |example|
-            allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/332952') do
-              example.run
-            end
-          end
-
-          it { is_expected.to be_nil }
-        end
+        it { is_expected.to be_nil }
       end
 
       context 'when limit set at global level' do
@@ -316,50 +240,12 @@ RSpec.describe Ci::RegisterJobService, '#execute' do
     end
   end
 
-  context 'when legacy queuing is being used' do
-    before do
-      skip_if_multiple_databases_are_setup
-
-      stub_feature_flags(ci_pending_builds_queue_source: false)
-    end
-
-    around do |example|
-      allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/332952') do
-        example.run
-      end
-    end
-
-    include_examples 'namespace minutes quota'
-  end
-
   context 'when new pending builds table is used' do
     before do
       stub_feature_flags(ci_pending_builds_queue_source: true)
     end
 
-    context 'with ci_queuing_use_denormalized_data_strategy enabled' do
-      before do
-        stub_feature_flags(ci_queuing_use_denormalized_data_strategy: true)
-      end
-
-      include_examples 'namespace minutes quota'
-    end
-
-    context 'with ci_queuing_use_denormalized_data_strategy disabled' do
-      before do
-        skip_if_multiple_databases_are_setup
-
-        stub_feature_flags(ci_queuing_use_denormalized_data_strategy: false)
-      end
-
-      around do |example|
-        allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/332952') do
-          example.run
-        end
-      end
-
-      include_examples 'namespace minutes quota'
-    end
+    include_examples 'namespace minutes quota'
   end
 
   describe 'ensure plan limitation', :saas do

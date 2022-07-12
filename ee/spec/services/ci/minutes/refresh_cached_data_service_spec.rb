@@ -61,19 +61,6 @@ RSpec.describe Ci::Minutes::RefreshCachedDataService do
         end
       end
 
-      context 'when ci_pending_builds_maintain_denormalized_data is disabled' do
-        before do
-          stub_feature_flags(ci_pending_builds_maintain_denormalized_data: false)
-        end
-
-        it 'does not update pending builds' do
-          subject
-
-          expect(pending_build_1.reload.minutes_exceeded).to be_truthy
-          expect(pending_build_2.reload.minutes_exceeded).to be_truthy
-        end
-      end
-
       it 'expires the CachedQuota' do
         expect_next(::Gitlab::Ci::Minutes::CachedQuota).to receive(:expire!)
 

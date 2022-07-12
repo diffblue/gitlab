@@ -14,8 +14,6 @@ module EE
 
         override :args_from_build
         def args_from_build(build)
-          return super unless maintain_denormalized_data?
-
           super.merge(minutes_exceeded: minutes_exceeded?(build.project))
         end
 

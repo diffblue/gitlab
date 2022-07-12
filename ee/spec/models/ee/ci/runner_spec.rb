@@ -113,57 +113,6 @@ RSpec.describe Ci::Runner do
     end
   end
 
-  describe '#visibility_levels_without_minutes_usage' do
-    subject { runner.visibility_levels_without_minutes_usage }
-
-    context 'with group type runner' do
-      let(:runner) { create(:ci_runner, :group) }
-
-      it { is_expected.to match(::Gitlab::VisibilityLevel.options.values) }
-    end
-
-    context 'with project type runner' do
-      let(:runner) { create(:ci_runner, :project) }
-
-      it { is_expected.to match(::Gitlab::VisibilityLevel.options.values) }
-    end
-
-    context 'with instance type runner' do
-      context 'with both public and private cost factor being positive' do
-        let(:runner) do
-          create(:ci_runner,
-                :instance,
-                private_projects_minutes_cost_factor: 1.1,
-                public_projects_minutes_cost_factor: 2.2)
-        end
-
-        it { is_expected.to eq([]) }
-      end
-
-      context 'with both public and private cost factor being zero' do
-        let(:runner) do
-          create(:ci_runner,
-                :instance,
-                private_projects_minutes_cost_factor: 0.0,
-                public_projects_minutes_cost_factor: 0.0)
-        end
-
-        it { is_expected.to match(::Gitlab::VisibilityLevel.options.values) }
-      end
-
-      context 'with only private cost factor being positive' do
-        let(:runner) do
-          create(:ci_runner,
-                :instance,
-                private_projects_minutes_cost_factor: 1.0,
-                public_projects_minutes_cost_factor: 0.0)
-        end
-
-        it { is_expected.to match([::Gitlab::VisibilityLevel::PUBLIC]) }
-      end
-    end
-  end
-
   describe '.any_shared_runners_with_enabled_cost_factor' do
     subject(:runners) { Ci::Runner.any_shared_runners_with_enabled_cost_factor?(project) }
 

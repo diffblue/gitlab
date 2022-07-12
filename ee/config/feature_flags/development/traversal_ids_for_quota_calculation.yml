@@ -1,8 +1,0 @@
----
-name: traversal_ids_for_quota_calculation
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/56760
-rollout_issue_url:
-milestone: "13.11"
-type: development
-group: group::pipeline execution
-default_enabled: false
