@@ -1,6 +1,6 @@
 <script>
 import { GlEmptyState } from '@gitlab/ui';
-import { s__ } from '~/locale';
+import { sprintf, s__ } from '~/locale';
 import { NEW_POLICY_BUTTON_TEXT } from '../constants';
 
 export default {
@@ -13,16 +13,23 @@ export default {
       'SecurityOrchestration|To widen your search, change filters above or select a different security policy project.',
     ),
     emptyStateDescription: s__(
-      'SecurityOrchestration|This project does not contain any security policies.',
+      'SecurityOrchestration|This %{namespaceType} does not contain any security policies.',
     ),
     newPolicyButtonText: NEW_POLICY_BUTTON_TEXT,
   },
-  inject: ['emptyFilterSvgPath', 'emptyListSvgPath', 'newPolicyPath'],
+  inject: ['emptyFilterSvgPath', 'emptyListSvgPath', 'namespaceType', 'newPolicyPath'],
   props: {
     hasExistingPolicies: {
       type: Boolean,
       required: false,
       default: false,
+    },
+  },
+  computed: {
+    description() {
+      return sprintf(this.$options.i18n.emptyStateDescription, {
+        namespaceType: this.namespaceType,
+      });
     },
   },
 };
@@ -47,7 +54,7 @@ export default {
   >
     <template #description>
       <p class="gl-font-weight-bold">
-        {{ $options.i18n.emptyStateDescription }}
+        {{ description }}
       </p>
     </template>
   </gl-empty-state>
