@@ -128,7 +128,6 @@ module Gitlab
 
       def rss_within_range?
         refresh_state(:running)
-
         deadline = Gitlab::Metrics::System.monotonic_time + GRACE_BALLOON_SECONDS.seconds
         loop do
           return true unless enabled?
@@ -136,15 +135,14 @@ module Gitlab
           # RSS go above hard limit should trigger forcible shutdown right away
           break if @current_rss > @hard_limit_rss
 
-          # RSS go below the soft limit
-          return true if @current_rss < @soft_limit_rss
-
           # RSS did not go below the soft limit within deadline, restart
           break if Gitlab::Metrics::System.monotonic_time > deadline
 
           sleep(CHECK_INTERVAL_SECONDS)
 
           refresh_state(:above_soft_limit)
+
+          log_rss_out_of_range(false)
         end
 
         # There are two chances to break from loop:
@@ -153,28 +151,49 @@ module Gitlab
         # When `above hard limit`, it immediately go to `stop_fetching_new_jobs`
         # So ignore `above hard limit` and always set `above_soft_limit` here
         refresh_state(:above_soft_limit)
-        log_rss_out_of_range(@current_rss, @hard_limit_rss, @soft_limit_rss)
+        log_rss_out_of_range
 
         false
       end
 
-      def log_rss_out_of_range(current_rss, hard_limit_rss, soft_limit_rss)
+      def log_rss_out_of_range(deadline_exceeded = true)
+        reason = out_of_range_description(@current_rss,
+                   @hard_limit_rss,
+                   @soft_limit_rss,
+                   deadline_exceeded)
+
         Sidekiq.logger.warn(
           class: self.class.to_s,
           pid: pid,
           message: 'Sidekiq worker RSS out of range',
-          current_rss: current_rss,
-          hard_limit_rss: hard_limit_rss,
-          soft_limit_rss: soft_limit_rss,
-          reason: out_of_range_description(current_rss, hard_limit_rss, soft_limit_rss)
-        )
+          current_rss: @current_rss,
+          soft_limit_rss: @soft_limit_rss,
+          hard_limit_rss: @hard_limit_rss,
+          reason: reason,
+          running_jobs: running_jobs)
       end
 
-      def out_of_range_description(rss, hard_limit, soft_limit)
+      def running_jobs
+        jobs = []
+        Gitlab::SidekiqDaemon::Monitor.instance.jobs_mutex.synchronize do
+          jobs = Gitlab::SidekiqDaemon::Monitor.instance.jobs.map do |jid, job|
+            {
+              jid: jid,
+              worker_class: job[:worker_class].name
+            }
+          end
+        end
+
+        jobs
+      end
+
+      def out_of_range_description(rss, hard_limit, soft_limit, dedaline_exeeded)
         if rss > hard_limit
           "current_rss(#{rss}) > hard_limit_rss(#{hard_limit})"
-        else
+        elsif dedaline_exeeded
           "current_rss(#{rss}) > soft_limit_rss(#{soft_limit}) longer than GRACE_BALLOON_SECONDS(#{GRACE_BALLOON_SECONDS})"
+        else
+          "current_rss(#{rss}) > soft_limit_rss(#{soft_limit})"
         end
       end
 
