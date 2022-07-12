@@ -48,10 +48,22 @@ RSpec.describe Vulnerabilities::Read, type: :model do
 
     describe 'trigger on vulnerability_occurrences insert' do
       context 'when vulnerability_id is set' do
-        it 'creates a new vulnerability_reads row' do
-          expect do
-            create_finding(vulnerability: vulnerability2)
-          end.to change { Vulnerabilities::Read.count }.from(0).to(1)
+        subject(:create_finding_record) { create_finding(vulnerability: vulnerability2) }
+
+        context 'when the related vulnerability record is not marked as `present_on_default_branch`' do
+          before do
+            vulnerability2.update_column(:present_on_default_branch, false)
+          end
+
+          it 'does not create a new vulnerability_reads row' do
+            expect { create_finding_record }.not_to change { Vulnerabilities::Read.count }
+          end
+        end
+
+        context 'when the related vulnerability record is marked as `present_on_default_branch`' do
+          it 'creates a new vulnerability_reads row' do
+            expect { create_finding_record }.to change { Vulnerabilities::Read.count }.from(0).to(1)
+          end
         end
       end
 
@@ -127,19 +139,57 @@ RSpec.describe Vulnerabilities::Read, type: :model do
         create_finding(vulnerability: vulnerability, report_type: 7)
       end
 
-      context 'when vulnerability attributes are updated' do
-        it 'updates vulnerability attributes in vulnerability_reads' do
-          expect do
-            vulnerability.update!(severity: 6)
-          end.to change { Vulnerabilities::Read.first.severity }.from("critical").to("high")
+      context 'when the vulnerability is not marked as `present_on_default_branch`' do
+        before do
+          vulnerability.update_column(:present_on_default_branch, false)
+        end
+
+        it 'does not update vulnerability attributes in vulnerability_reads' do
+          expect { vulnerability.update!(severity: :high) }.not_to change { Vulnerabilities::Read.first.severity }.from('critical')
         end
       end
 
-      context 'when vulnerability attributes are not updated' do
-        it 'does not update vulnerability attributes in vulnerability_reads' do
-          expect do
-            vulnerability.update!(title: "New vulnerability")
-          end.not_to change { Vulnerabilities::Read.first }
+      context 'when the vulnerability is marked as `present_on_default_branch`' do
+        context 'when vulnerability attributes are updated' do
+          it 'updates vulnerability attributes in vulnerability_reads' do
+            expect do
+              vulnerability.update!(severity: :high)
+            end.to change { Vulnerabilities::Read.first.severity }.from("critical").to("high")
+          end
+        end
+
+        context 'when vulnerability attributes are not updated' do
+          it 'does not update vulnerability attributes in vulnerability_reads' do
+            expect do
+              vulnerability.update!(title: "New vulnerability")
+            end.not_to change { Vulnerabilities::Read.first }
+          end
+        end
+      end
+    end
+
+    describe 'trigger_insert_vulnerability_reads_from_vulnerability' do
+      subject(:update_vulnerability) { vulnerability.update!(new_vulnerability_params) }
+
+      before do
+        vulnerability.update_column(:present_on_default_branch, false)
+
+        create_finding(vulnerability: vulnerability)
+      end
+
+      context 'when the vulnerability does not get marked as `present_on_default_branch`' do
+        let(:new_vulnerability_params) { { updated_at: Time.zone.now } }
+
+        it 'does not create a new `vulnerability_reads` record' do
+          expect { update_vulnerability }.not_to change { Vulnerabilities::Read.count }
+        end
+      end
+
+      context 'when the vulnerability gets marked as `present_on_default_branch`' do
+        let(:new_vulnerability_params) { { present_on_default_branch: true } }
+
+        it 'creates a new `vulnerability_reads` record' do
+          expect { update_vulnerability }.to change { Vulnerabilities::Read.count }.by(1)
         end
       end
     end
