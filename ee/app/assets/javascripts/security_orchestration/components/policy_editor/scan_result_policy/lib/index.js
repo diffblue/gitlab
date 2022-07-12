@@ -13,8 +13,7 @@ enabled: true
 rules:
   - type: scan_finding
     branches: []
-    scanners:
-      - container_scanning
+    scanners: []
     vulnerabilities_allowed: 0
     severity_levels:
       - critical
