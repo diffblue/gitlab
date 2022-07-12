@@ -27,6 +27,7 @@ RSpec.describe Namespaces::FreeUserCap::AlertComponent, :saas, :aggregate_failur
         expect(rendered_component).to have_content(title)
         expect(rendered_component).to have_link('Manage members', href: group_usage_quotas_path(namespace))
         expect(rendered_component).to have_link('Explore paid plans', href: group_billings_path(namespace))
+        expect(rendered_component).to have_css('.gl-alert-actions')
 
         expect(rendered_component)
           .to match("container-fluid container-limited gl-pb-2! gl-pt-6! #{content_class}")
