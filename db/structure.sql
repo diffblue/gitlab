@@ -17905,7 +17905,8 @@ CREATE TABLE operations_feature_flags (
 CREATE TABLE operations_feature_flags_clients (
     id bigint NOT NULL,
     project_id integer NOT NULL,
-    token_encrypted character varying
+    token_encrypted character varying,
+    last_feature_flag_updated_at timestamp with time zone
 );
 
 CREATE SEQUENCE operations_feature_flags_clients_id_seq
