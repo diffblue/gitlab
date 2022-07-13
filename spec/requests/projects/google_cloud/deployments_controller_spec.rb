@@ -9,10 +9,9 @@ RSpec.describe Projects::GoogleCloud::DeploymentsController do
   let_it_be(:user_guest) { create(:user) }
   let_it_be(:user_developer) { create(:user) }
   let_it_be(:user_maintainer) { create(:user) }
-  let_it_be(:user_creator) { project.creator }
 
   let_it_be(:unauthorized_members) { [user_guest, user_developer] }
-  let_it_be(:authorized_members) { [user_maintainer, user_creator] }
+  let_it_be(:authorized_members) { [user_maintainer] }
 
   let_it_be(:urls_list) { %W[#{project_google_cloud_deployments_cloud_run_path(project)} #{project_google_cloud_deployments_cloud_storage_path(project)}] }
 

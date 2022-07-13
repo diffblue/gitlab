@@ -41,7 +41,7 @@ class Projects::GoogleCloud::DeploymentsController < Projects::GoogleCloud::Base
     end
   rescue Google::Apis::ClientError, Google::Apis::ServerError, Google::Apis::AuthorizationError => error
     track_event('deployments#cloud_run', 'error_gcp', error)
-    flash[:warning] = "Google Cloud Error - #{error}"
+    flash[:warning] = _('Google Cloud Error - %{error}') % { error: error }
     redirect_to project_google_cloud_deployments_path(project)
   end
 

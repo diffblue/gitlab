@@ -8,15 +8,15 @@ RSpec.describe Projects::GoogleCloud::ServiceAccountsController do
   describe 'GET index', :snowplow do
     let_it_be(:url) { "#{project_google_cloud_service_accounts_path(project)}" }
 
-    let(:user_guest) { create(:user) }
-    let(:user_developer) { create(:user) }
-    let(:user_maintainer) { create(:user) }
-    let(:user_creator) { project.creator }
+    let_it_be(:user_guest) { create(:user) }
+    let_it_be(:user_developer) { create(:user) }
+    let_it_be(:user_maintainer) { create(:user) }
+    let_it_be(:user_creator) { project.creator }
 
-    let(:unauthorized_members) { [user_guest, user_developer] }
-    let(:authorized_members) { [user_maintainer, user_creator] }
+    let_it_be(:unauthorized_members) { [user_guest, user_developer] }
+    let_it_be(:authorized_members) { [user_maintainer, user_creator] }
 
-    let(:google_client_error) { Google::Apis::ClientError.new('client-error') }
+    let_it_be(:google_client_error) { Google::Apis::ClientError.new('client-error') }
 
     before do
       project.add_guest(user_guest)

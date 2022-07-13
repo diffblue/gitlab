@@ -6,8 +6,8 @@ RSpec.describe Projects::GoogleCloud::GcpRegionsController do
   let_it_be(:project) { create(:project, :public, :repository) }
   let_it_be(:repository) { project.repository }
 
-  let(:user_guest) { create(:user) }
-  let(:user_maintainer) { create(:user) }
+  let_it_be(:user_guest) { create(:user) }
+  let_it_be(:user_maintainer) { create(:user) }
 
   RSpec.shared_examples "should track not_found event" do
     it "tracks event" do
