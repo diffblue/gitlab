@@ -3,6 +3,7 @@ import MockAdapter from 'axios-mock-adapter';
 
 import Vue from 'vue';
 import Vuex from 'vuex';
+import { stubPerformanceWebAPI } from 'helpers/performance';
 import createDiffsStore from 'jest/diffs/create_diffs_store';
 import { TEST_HOST } from 'spec/test_constants';
 import App from '~/diffs/components/app.vue';
@@ -44,6 +45,8 @@ describe('diffs/components/app', () => {
   }
 
   beforeEach(() => {
+    stubPerformanceWebAPI();
+
     mock = new MockAdapter(axios);
     mock.onGet(TEST_ENDPOINT).reply(200, {});
   });
