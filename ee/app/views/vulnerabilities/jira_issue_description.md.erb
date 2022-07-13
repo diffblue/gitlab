@@ -15,8 +15,12 @@ h3. <%= _("Description") %>:
 <% if vulnerability.try(:location_text) && vulnerability.try(:location_link) %>
 * <%= _("Location") %>: [<%= vulnerability.try(:location_text) %>|<%= vulnerability.try(:location_link) %>]
 <% end %>
+<% if vulnerability.try(:evidence_issue_description) %>
 
+<%= vulnerability.evidence_issue_description %>
+<% end %>
 <% if vulnerability.solution.present? && vulnerability.is_a?(Vulnerability) %>
+
 ### <%= _("Solution") %>:
 
 <%= _("See vulnerability %{vulnerability_link} for any Solution details.".html_safe) % { vulnerability_link: "[#{vulnerability.id}|#{vulnerability_url(vulnerability)}]" } %>
