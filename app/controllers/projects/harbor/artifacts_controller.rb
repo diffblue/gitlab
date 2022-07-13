@@ -2,8 +2,8 @@
 
 module Projects
   module Harbor
-    class RepositoriesController < ::Projects::Harbor::ApplicationController
-      include ::Harbor::Repository
+    class ArtifactsController < ::Projects::Harbor::ApplicationController
+      include ::Harbor::Artifact
 
       private
 
