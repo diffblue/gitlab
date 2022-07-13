@@ -70,7 +70,8 @@ RSpec.describe 'Query.project(fullPath).dastSiteValidations' do
     end
 
     it_behaves_like 'sorted paginated query' do
-      let(:sort_param) { nil }
+      include_context 'no sort argument'
+
       let(:first_param) { 3 }
 
       let(:all_records) do

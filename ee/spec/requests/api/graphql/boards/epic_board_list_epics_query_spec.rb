@@ -46,9 +46,8 @@ RSpec.describe 'get list of epics for an epic  board list' do
     let(:all_records) { [epic2.to_global_id.to_s, epic1.to_global_id.to_s, epic3.to_global_id.to_s] }
 
     it_behaves_like 'sorted paginated query' do
-      # currently we don't support custom sorting for epic lists,
-      # nil value will be ignored by ::Graphql::Arguments
-      let(:sort_param) { nil }
+      include_context 'no sort argument'
+
       let(:first_param) { 2 }
     end
   end
