@@ -86,8 +86,9 @@ RSpec.describe 'Getting issues for an epic' do
         end
 
         it_behaves_like 'sorted paginated query' do
+          include_context 'no sort argument'
+
           let(:current_user) { user }
-          let(:sort_param) { }
           let(:first_param) { 1 }
           let(:all_records) { [issue, confidential_issue].map { |i| global_id_of(i).to_s } }
         end

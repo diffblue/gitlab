@@ -51,9 +51,8 @@ RSpec.describe 'get list of epic boards' do
       end
 
       it_behaves_like 'sorted paginated query' do
-        # currently we don't support custom sorting for epic lists,
-        # nil value will be ignored by ::Graphql::Arguments
-        let(:sort_param) { nil }
+        include_context 'no sort argument'
+
         let(:first_param) { 2 }
       end
     end

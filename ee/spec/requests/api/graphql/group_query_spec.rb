@@ -364,8 +364,9 @@ RSpec.describe 'getting group information' do
       let(:start_date) { 5.weeks.ago.to_date.to_s }
 
       it_behaves_like 'sorted paginated query' do
+        include_context 'no sort argument'
+
         let(:node_path) { ['averageCoverage'] }
-        let(:sort_param) { }
         let(:first_param) { 2 }
         let(:all_records) { [cov_1, cov_2, cov_3, cov_4, cov_5].reverse.map(&:coverage) }
       end
