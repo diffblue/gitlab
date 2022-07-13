@@ -2,8 +2,8 @@
 
 module Groups
   module Harbor
-    class RepositoriesController < ::Groups::Harbor::ApplicationController
-      include ::Harbor::Repository
+    class ArtifactsController < ::Groups::Harbor::ApplicationController
+      include ::Harbor::Artifact
 
       private
 
