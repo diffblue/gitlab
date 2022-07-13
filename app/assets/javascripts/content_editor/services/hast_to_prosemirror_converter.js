@@ -263,7 +263,7 @@ class HastToProseMirrorConverterState {
       doesn’t conform with the document schema. We are handling the most likely scenario here that happens
       when a paragraph is inside another paragraph.
 
-      This scenario happens when the converter encounters a Mark wrapping one or more paragraphs.
+      This scenario happens when the converter encounters a mark wrapping one or more paragraphs.
       In this case, the converter will wrap the mark in a paragraph as well because ProseMirror does
       not allow marks wrapping block nodes or being direct children of certain nodes like the root nodes
       or list items.
