@@ -1,0 +1,140 @@
+---
+stage: none
+group: unassigned
+comments: false
+description: 'Next Rate Limiting Architecture'
+---
+
+# Next Rate Limiting Architecture
+
+## Summary
+
+Introducing reasonable application limits is a very important step in any SaaS
+platform scaling strategy. The more users a SaaS platform has, the more
+important it is to introduce sensible rate limiting and policies enforcement
+that will help to achieve availability goals, will reduce the problem of noisy
+neighbours for users and will ensure that they can keep using a platform
+successfully.
+
+This especially true for GitLab.com. Our goal is to have a reasonable and
+transparent strategy for enforcing application limits, which will become a
+definition of a responsible usage, to help us with keeping our availability and
+user satisfaction at a desired level.
+
+We've been introducing various application limits for many years already, but
+we've never had a consistent strategy for doing it. A consistent framework used
+by engineers and product managers, across entire application stack, to define,
+expose and enforce limits and policies, is something we want to build now.
+
+Lack of consistency in defining limits, not being able to expose them to our
+users, support engineers and satellite services, has negative impact on our
+productivity, makes it difficult to introduce new limits and eventually
+prevents us from enforcing responsible usage on all layers of our application
+stack.
+
+This blueprint has been written to consolidate our limits and to describe the
+vision of our next rate limiting and policies enforcement architecture.
+
+_Disclaimer: The following contains information related to upcoming products,
+features, and functionality._
+
+_It is important to note that the information presented is for informational
+purposes only. Please do not rely on this information for purchasing or
+planning purposes._
+
+_As with all projects, the items mentioned in this document and linked pages are
+subject to change or delay. The development, release and timing of any
+products, features, or functionality remain at the sole discretion of GitLab
+Inc._
+
+## Goals
+
+**Implement a next architecture for rate limiting and policies definition.**
+
+## Challenges
+
+* We have many ways to define application limits, in many different places.
+* It is difficult to understand what limits have been applied to a request.
+* It is difficult to introduce new limits even even more to define policies.
+* Finding what limits are defined requires performing a codebase audit.
+* We don't have a good way to expose limits to satellite services like Registry.
+* We need to build external services to enforce policies (Pipeline Validation Service).
+* There is not standardized way to define policies in a way consistent with defining limits.
+* It is difficult to understand when a user is approach a limit threshold.
+* There is no way to automatically notify a user when they are approaching thresholds.
+* There is no single way to change limits for a namespace / project / user / customer.
+* There is no single way to monitor limits through real-time metrics.
+
+## Opportunity
+
+
+<!-- markdownlint-disable MD029 -->
+
+1. Build a framework to define and enforce limits in GitLab Rails.
+2. Build an API to consume limits in satellite service and expose them to users.
+3. Build a GitLab Policy Service in place of the Pipeline Validation Service.
+
+<!-- markdownlint-enable MD029 -->
+
+### Framework to define and enforce limits
+
+
+### API to expose limits and policies
+
+
+### GitLab Policy Service
+
+
+## Principles
+
+
+## Iterations
+
+
+## Status
+
+Request For Comments.
+
+## Timeline
+
+- 2022-04-27: [Rate Limit Architecture Working Group](https://about.gitlab.com/company/team/structure/working-groups/rate-limit-architecture/) started.
+- 2022-06-07: Working Group members [started submitting technical proposals](https://gitlab.com/gitlab-org/gitlab/-/issues/364524) for the next rate limiting architecture.
+- 2022-06-15: We started [scoring proposals](https://docs.google.com/spreadsheets/d/1DFHU1kSdTnpydwM5P2RK8NhVBNWgEHvzT72eOhB8F9E) submitted by Working Group members.
+- 2022-07-06: A fourth, [consolidated proposal](https://gitlab.com/gitlab-org/gitlab/-/issues/364524#note_1017640650), has been submitted.
+- 2022-07-12: Started working on the design document following [Architecture Evolution Workflow](https://about.gitlab.com/handbook/engineering/architecture/workflow/).
+
+## Who
+
+Proposal:
+
+<!-- vale gitlab.Spelling = NO -->
+
+| Role                         | Who
+|------------------------------|-------------------------|
+| Author                       | Grzegorz Bizon          |
+| Author                       | Fabio Pitino            |
+| Author                       | Marshall Cottrell       |
+| Author                       | Hayley Swimelar         |
+| Engineering Leader           | Sam Goldstein           |
+| Product Manager              |                         |
+| Architecture Evolution Coach |                         |
+| Recommender                  |                         |
+| Recommender                  |                         |
+| Recommender                  |                         |
+| Recommender                  |                         |
+
+DRIs:
+
+| Role                         | Who
+|------------------------------|------------------------|
+| Leadership                   |                        |
+| Product                      |                        |
+| Engineering                  |                        |
+
+Domain experts:
+
+| Area                         | Who
+|------------------------------|------------------------|
+|                              |                        |
+
+<!-- vale gitlab.Spelling = YES -->
