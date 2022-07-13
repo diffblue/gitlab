@@ -244,10 +244,25 @@ RSpec.describe UpdateAllMirrorsWorker do
           it 'schedules all available mirrors' do
             schedule_mirrors!(capacity: 4)
 
-            expect_import_not_scheduled(*unlicensed_projects)
-            expect_import_scheduled(licensed_project1, licensed_project2, public_project)
+            expect_import_not_scheduled(*unlicensed_projects, public_project)
+            expect_import_scheduled(licensed_project1, licensed_project2)
 
-            expect_mirror_scheduling_tracked([licensed_project1, licensed_project2, public_project])
+            expect_mirror_scheduling_tracked([licensed_project1, licensed_project2])
+          end
+
+          context 'when skip_scheduling_mirrors_for_free is disabled' do
+            before do
+              stub_feature_flags(skip_scheduling_mirrors_for_free: false)
+            end
+
+            it 'schedules all available mirrors including public projects' do
+              schedule_mirrors!(capacity: 4)
+
+              expect_import_not_scheduled(*unlicensed_projects)
+              expect_import_scheduled(licensed_project1, licensed_project2, public_project)
+
+              expect_mirror_scheduling_tracked([licensed_project1, licensed_project2, public_project])
+            end
           end
         end
 
