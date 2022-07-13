@@ -83,6 +83,30 @@ RSpec.describe Groups::GroupMembersController do
     end
   end
 
+  describe 'PUT /groups/*group_id/-/group_members/:id/unban' do
+    let(:banned_member) { create(:group_member, group: group) }
+    let!(:namespace_ban) { create(:namespace_ban, namespace: group, user: banned_member.user) }
+
+    subject(:request) do
+      put unban_group_group_member_path(group_id: group, id: banned_member)
+    end
+
+    it 'unbans the user' do
+      expect_next_instance_of(::Users::Abuse::NamespaceBans::DestroyService, namespace_ban, user) do |service|
+        expect(service).to receive(:execute)
+      end
+
+      subject
+    end
+
+    it 'redirects back to group members page' do
+      subject
+
+      expect(response).to redirect_to(group_group_members_path(group))
+      expect(flash[:notice]).to eq "User was successfully unbanned."
+    end
+  end
+
   describe 'PUT /groups/*group_id/-/group_members/:id' do
     context 'when group has email domain feature enabled' do
       let(:email) { 'test@gitlab.com' }

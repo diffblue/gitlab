@@ -98,4 +98,22 @@ RSpec.describe GroupMemberPresenter do
       end
     end
   end
+
+  describe '#can_unban?' do
+    before do
+      allow(presenter).to receive(:can?).with(user, :admin_group_member, presenter) { can_admin_group_member }
+    end
+
+    context 'when user can admin_group_member' do
+      let(:can_admin_group_member) { true }
+
+      it { expect(presenter.can_unban?).to eq(true) }
+    end
+
+    context 'when user cannot admin_group_member' do
+      let(:can_admin_group_member) { false }
+
+      it { expect(presenter.can_unban?).to eq(false) }
+    end
+  end
 end

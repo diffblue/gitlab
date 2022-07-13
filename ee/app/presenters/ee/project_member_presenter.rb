@@ -10,6 +10,10 @@ module EE
       false
     end
 
+    def can_unban?
+      false
+    end
+
     private
 
     def override_member_permission

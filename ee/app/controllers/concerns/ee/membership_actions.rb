@@ -12,5 +12,16 @@ module EE
         sign_out current_user
       end
     end
+
+    def unban
+      member = membershipable_members.find(params[:id])
+
+      namespace = member.member_namespace
+      ban = member.user.namespace_ban_for(namespace)
+
+      ::Users::Abuse::NamespaceBans::DestroyService.new(ban, current_user).execute
+
+      redirect_to members_page_url, notice: _("User was successfully unbanned.")
+    end
   end
 end
