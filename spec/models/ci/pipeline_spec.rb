@@ -4853,13 +4853,13 @@ RSpec.describe Ci::Pipeline, :mailer, factory_default: :keep do
     end
   end
 
-  describe '#has_expired_test_reports?' do
-    subject { pipeline.has_expired_test_reports? }
+  describe '#has_test_reports?' do
+    subject { pipeline.has_test_reports? }
 
     let(:pipeline) { create(:ci_pipeline, :success, :with_test_reports) }
 
     context 'when artifacts are not expired' do
-      it { is_expected.to be_falsey }
+      it { is_expected.to be_truthy }
     end
 
     context 'when artifacts are expired' do
@@ -4868,6 +4868,14 @@ RSpec.describe Ci::Pipeline, :mailer, factory_default: :keep do
       end
 
       it { is_expected.to be_truthy }
+    end
+
+    context 'when artifacts are removed' do
+      before do
+        pipeline.job_artifacts.each(&:destroy)
+      end
+
+      it { is_expected.to be_falsey }
     end
 
     context 'when the pipeline is still running' do
