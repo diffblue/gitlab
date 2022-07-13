@@ -40,6 +40,8 @@ unless system("git diff --quiet")
   raise "There are uncommitted changes. Commit to continue."
 end
 
+$files_affected = []
+
 puts "Re-creating current test database"
 ActiveRecord::Tasks::DatabaseTasks.drop_current
 ActiveRecord::Tasks::DatabaseTasks.create_current
@@ -70,6 +72,18 @@ def exec_cmd(*args, fail: nil)
   puts ">> #{command}"
   puts "--------------------------------------------------"
   false
+end
+
+def write_file(file_path, content)
+  $files_affected << file_path
+  File.write(file_path, content)
+end
+
+def print_files_affected
+  puts "The following files have been generated/modified:"
+  $files_affected.each do |filepath|
+    puts filepath
+  end
 end
 
 def has_lfk?(definition)
@@ -133,7 +147,7 @@ def add_definition_to_yaml(definition)
   end
 
   # emulate existing formatting
-  File.write(
+  write_file(
     Rails.root.join('config/gitlab_loose_foreign_keys.yml'),
     content.to_yaml.gsub(/^([- ] )/, '  \1')
   )
@@ -169,7 +183,7 @@ def generate_migration(definition)
     end
   EOF
 
-  File.write(migration_name, content)
+  write_file(migration_name, content)
 
   exec_cmd("bin/rails", "db:migrate", fail: "Failed to run db:migrate.")
 end
@@ -213,7 +227,7 @@ def add_test_to_specs(definition)
   lines = File.readlines(spec_path)
   insert_line = lines.count - 1
   lines.insert(insert_line, "\n", *spec_test.lines)
-  File.write(spec_path, lines.join(""))
+  write_file(spec_path, lines.join(""))
 end
 
 def update_no_cross_db_foreign_keys_spec(definition)
@@ -229,7 +243,7 @@ def update_no_cross_db_foreign_keys_spec(definition)
     return
   end
 
-  File.write(spec_path, updated.join(""))
+  write_file(spec_path, updated.join(""))
 end
 
 all_foreign_keys = ActiveRecord::Base.connection.tables.flat_map do |table|
@@ -287,4 +301,7 @@ all_foreign_keys.each_with_index do |definition, idx|
   add_test_to_specs(definition)
   update_no_cross_db_foreign_keys_spec(definition)
 end
+
+print_files_affected
+
 puts
