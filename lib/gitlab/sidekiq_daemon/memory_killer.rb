@@ -190,10 +190,10 @@ module Gitlab
         jobs
       end
 
-      def out_of_range_description(rss, hard_limit, soft_limit, dedaline_exeeded)
+      def out_of_range_description(rss, hard_limit, soft_limit, deadline_exceeded)
         if rss > hard_limit
           "current_rss(#{rss}) > hard_limit_rss(#{hard_limit})"
-        elsif dedaline_exeeded
+        elsif deadline_exceeded
           "current_rss(#{rss}) > soft_limit_rss(#{soft_limit}) longer than GRACE_BALLOON_SECONDS(#{GRACE_BALLOON_SECONDS})"
         else
           "current_rss(#{rss}) > soft_limit_rss(#{soft_limit})"
