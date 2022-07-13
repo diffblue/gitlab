@@ -1,7 +1,8 @@
 import { isEmpty } from 'lodash';
-import { s__, n__ } from '~/locale';
+import { sprintf, s__, n__ } from '~/locale';
 import axios from '~/lib/utils/axios_utils';
 import { EXTENSION_ICONS } from '~/vue_merge_request_widget/constants';
+import { LICENSE_APPROVAL_STATUS } from 'ee/vue_shared/license_compliance/constants';
 import { parseDependencies } from './utils';
 
 // TODO: Clean up both status versions as part of https://gitlab.com/gitlab-org/gitlab/-/issues/356206
@@ -139,19 +140,41 @@ export default {
 
         let newLicenses = data.new_licenses;
 
-        newLicenses = newLicenses.map((e) => ({
-          status: e.classification.approval_status,
-          icon: {
-            name: APPROVAL_STATUS_TO_ICON[e.classification.approval_status],
-          },
-          link: {
-            href: e.url,
-            text: e.name,
-          },
-          supportingText: `${s__('License Compliance| Used by')} ${parseDependencies(
-            e.dependencies,
-          )}`,
-        }));
+        newLicenses = newLicenses.map((e) => {
+          let supportingText; let actions;
+
+          if (
+            e.classification.approval_status === LICENSE_APPROVAL_STATUS.ALLOWED ||
+            e.classification.approval_status === LICENSE_APPROVAL_STATUS.UNCLASSIFIED
+          ) {
+            actions = [
+              {
+                text: n__('Used by %d package', 'Used by %d packages', e.dependencies.length),
+                href: this.licenseCompliance.license_scanning.full_report_path,
+              },
+            ];
+          } else {
+            supportingText =
+              e.dependencies.length > 0
+                ? sprintf(s__('License Compliance| Used by %{dependencies}'), {
+                    dependencies: parseDependencies(e.dependencies),
+                  })
+                : '';
+          }
+
+          return {
+            status: e.classification.approval_status,
+            icon: {
+              name: APPROVAL_STATUS_TO_ICON[e.classification.approval_status],
+            },
+            link: {
+              href: e.url,
+              text: e.name,
+            },
+            supportingText,
+            actions,
+          };
+        });
 
         const groupedLicenses = newLicenses.reduce(
           (licenses, license) => ({
@@ -161,7 +184,6 @@ export default {
           {},
         );
 
-        // TODO: Clean up both status versions as part of https://gitlab.com/gitlab-org/gitlab/-/issues/356206
         const licenseSections = [
           ...(groupedLicenses.denied?.length > 0
             ? [
@@ -170,7 +192,7 @@ export default {
                   text: s__(
                     "LicenseCompliance|Out-of-compliance with the project's policies and should be removed",
                   ),
-                  children: groupedLicenses.denied || groupedLicenses.blacklisted,
+                  children: groupedLicenses.denied,
                 },
               ]
             : []),
@@ -189,7 +211,7 @@ export default {
                   header: s__('LicenseCompliance|Allowed'),
                   text: s__('LicenseCompliance|Acceptable for use in this project'),
 
-                  children: groupedLicenses.allowed || groupedLicenses.approved,
+                  children: groupedLicenses.allowed,
                 },
               ]
             : []),

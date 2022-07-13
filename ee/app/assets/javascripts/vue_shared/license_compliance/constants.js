@@ -5,6 +5,7 @@ import { STATUS_FAILED, STATUS_NEUTRAL, STATUS_SUCCESS } from '~/reports/constan
 const STATUSES = {
   ALLOWED: 'allowed',
   DENIED: 'denied',
+  UNCLASSIFIED: 'unclassified',
 };
 
 export const LICENSE_APPROVAL_STATUS = STATUSES;
