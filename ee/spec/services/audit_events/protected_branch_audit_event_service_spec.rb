@@ -6,24 +6,26 @@ RSpec.describe AuditEvents::ProtectedBranchAuditEventService, :request_store do
   let(:merge_level) { 'Maintainers' }
   let(:push_level) { 'No one' }
   let_it_be(:author) { create(:user, :with_sign_ins) }
-  let_it_be(:entity) { create(:project, creator: author) }
+  let_it_be(:group) { create(:group) }
+  let_it_be(:destination) { create(:external_audit_event_destination, group: group) }
+  let_it_be(:entity) { create(:project, creator: author, group: group) }
   let_it_be(:protected_branch) { create(:protected_branch, :no_one_can_push, allow_force_push: true, code_owner_approval_required: true, project: entity) }
 
   let(:logger) { instance_spy(Gitlab::AuditJsonLogger) }
   let(:ip_address) { '192.168.15.18' }
 
   describe '#security_event' do
-    shared_examples 'loggable' do |action|
+    shared_examples 'loggable' do |action, event_type|
       context "when a protected_branch is #{action}" do
         let(:service) { described_class.new(author, protected_branch, action) }
 
         before do
-          stub_licensed_features(admin_audit_log: true, code_owner_approval_required: true)
+          stub_licensed_features(admin_audit_log: true, external_audit_events: true, code_owner_approval_required: true)
           allow(Gitlab::RequestContext.instance).to receive(:client_ip).and_return(ip_address)
         end
 
         it 'creates an event', :aggregate_failures do
-          expect { service.security_event }.to change(AuditEvent, :count).by(1)
+          expect { service.execute }.to change(AuditEvent, :count).by(1)
 
           security_event = AuditEvent.last
 
@@ -47,33 +49,39 @@ RSpec.describe AuditEvents::ProtectedBranchAuditEventService, :request_store do
         end
 
         it 'logs to a file with the provided details' do
-          allow(service).to receive(:file_logger).and_return(logger)
+          expect(::Gitlab::AuditJsonLogger).to receive(:build).and_return(logger)
 
-          service.security_event
+          service.execute
 
-          expect(logger).to have_received(:info).with(
-            author_id: author.id,
-            author_name: author.name,
-            entity_id: entity.id,
-            entity_type: 'Project',
-            entity_path: entity.full_path,
-            allow_force_push: true,
-            code_owner_approval_required: true,
-            merge_access_levels: [merge_level],
-            push_access_levels: [push_level],
-            target_details: protected_branch.name,
-            target_id: protected_branch.id,
-            target_type: 'ProtectedBranch',
-            custom_message: action == :add ? /Added/ : /Unprotected/,
-            ip_address: ip_address,
-            created_at: anything
-          )
+          expect(logger).to have_received(:info).with(hash_including(
+                                                        'author_id' => author.id,
+                                                        'author_name' => author.name,
+                                                        'entity_id' =>  entity.id,
+                                                        'entity_type' =>  'Project',
+                                                        'entity_path' =>  entity.full_path,
+                                                        'allow_force_push' =>  true,
+                                                        'code_owner_approval_required' =>  true,
+                                                        'merge_access_levels' =>  [merge_level],
+                                                        'push_access_levels' =>  [push_level],
+                                                        'target_details' =>  protected_branch.name,
+                                                        'target_id' =>  protected_branch.id,
+                                                        'target_type' =>  'ProtectedBranch',
+                                                        'custom_message' =>  action == :add ? /Added/ : /Unprotected/,
+                                                        'ip_address' =>  ip_address,
+                                                        'created_at' =>  anything)
+                                                     )
+        end
+
+        it_behaves_like 'sends correct event type in audit event stream' do
+          let(:subject) { service.execute }
+
+          let_it_be(:event_type) { event_type }
         end
       end
     end
 
-    include_examples 'loggable', :add
-    include_examples 'loggable', :remove
+    include_examples 'loggable', :add, 'protected_branch_created'
+    include_examples 'loggable', :remove, 'protected_branch_removed'
 
     context 'when not licensed' do
       let(:service) { described_class.new(author, protected_branch, :add) }
@@ -87,7 +95,7 @@ RSpec.describe AuditEvents::ProtectedBranchAuditEventService, :request_store do
       it "doesn't create an event or log to a file", :aggregate_failures do
         expect(service).not_to receive(:file_logger)
 
-        expect { service.security_event }.not_to change(AuditEvent, :count)
+        expect { service.execute }.not_to change(AuditEvent, :count)
       end
     end
   end

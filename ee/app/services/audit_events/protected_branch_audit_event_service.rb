@@ -1,24 +1,40 @@
 # frozen_string_literal: true
 
 module AuditEvents
-  class ProtectedBranchAuditEventService < ::AuditEventService
+  class ProtectedBranchAuditEventService
     attr_accessor :protected_branch
 
     def initialize(author, protected_branch, action)
       @action = action
       @protected_branch = protected_branch
+      @author = author
+    end
 
-      super(author, protected_branch.project,
-            { author_name: author.name,
-              custom_message: message,
-              target_id: protected_branch.id,
-              target_type: protected_branch.class.name,
-              target_details: protected_branch.name,
-              push_access_levels: protected_branch.push_access_levels.map(&:humanize),
-              merge_access_levels: protected_branch.merge_access_levels.map(&:humanize),
-              allow_force_push: protected_branch.allow_force_push,
-              code_owner_approval_required: protected_branch.code_owner_approval_required }
-      )
+    def execute
+      audit_context = {
+        author: @author,
+        scope: @protected_branch.project,
+        target: @protected_branch,
+        message: message,
+        name: event_type,
+        additional_details: {
+          push_access_levels: @protected_branch.push_access_levels.map(&:humanize),
+          merge_access_levels: @protected_branch.merge_access_levels.map(&:humanize),
+          allow_force_push: @protected_branch.allow_force_push,
+          code_owner_approval_required: @protected_branch.code_owner_approval_required
+        }
+      }
+
+      ::Gitlab::Audit::Auditor.audit(audit_context)
+    end
+
+    def event_type
+      case @action
+      when :add
+        "protected_branch_created"
+      when :remove
+        "protected_branch_removed"
+      end
     end
 
     def message
