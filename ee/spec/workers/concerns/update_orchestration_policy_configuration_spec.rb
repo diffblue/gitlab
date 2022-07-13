@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe UpdateOrchestrationPolicyConfiguration do
-  let(:configuration) { create(:security_orchestration_policy_configuration, configured_at: nil) }
+  let_it_be(:configuration, refind: true) { create(:security_orchestration_policy_configuration, configured_at: nil) }
   let!(:schedule) do
     create(:security_orchestration_policy_rule_schedule, security_orchestration_policy_configuration: configuration)
   end
@@ -98,11 +98,11 @@ RSpec.describe UpdateOrchestrationPolicyConfiguration do
       end
 
       context 'with existing project approval rules' do
-        let(:mr) { create(:merge_request, :opened, source_project: configuration.project) }
+        let_it_be(:mr) { create(:merge_request, :opened, source_project: configuration.project) }
 
-        let!(:approval_rule) { create(:approval_project_rule, :scan_finding, project: configuration.project )}
-        let!(:scan_finding_mr_rule) { create(:report_approver_rule, :scan_finding, merge_request: mr) }
-        let!(:code_coverage_mr_rule) { create(:report_approver_rule, :code_coverage, merge_request: mr) }
+        let_it_be(:approval_rule) { create(:approval_project_rule, :scan_finding, project: configuration.project )}
+        let_it_be(:scan_finding_mr_rule) { create(:report_approver_rule, :scan_finding, merge_request: mr) }
+        let_it_be(:code_coverage_mr_rule) { create(:report_approver_rule, :code_coverage, merge_request: mr) }
 
         before do
           allow_next_instance_of(Security::SecurityOrchestrationPolicies::ProcessRuleService) do |service|
