@@ -347,6 +347,20 @@ RSpec.describe RemoteMirror, :mailer do
 
             remote_mirror.sync
           end
+
+          context 'when remote_mirror_no_delay is enabled' do
+            before do
+              stub_feature_flags(remote_mirror_no_delay: true)
+            end
+
+            it 'schedules a RepositoryUpdateRemoteMirrorWorker to run now' do
+              remote_mirror.last_update_started_at = Time.current - 30.seconds
+
+              expect(RepositoryUpdateRemoteMirrorWorker).to receive(:perform_async).with(remote_mirror.id, Time.current)
+
+              remote_mirror.sync
+            end
+          end
         end
       end
     end
