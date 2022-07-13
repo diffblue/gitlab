@@ -98,9 +98,18 @@ export default {
           });
         });
 
-      return Promise.all(mutations).then((results) =>
-        results.map(({ data }) => data?.auditEventsStreamingHeadersCreate),
-      );
+      return Promise.allSettled(mutations).then((results) => {
+        const rejected = results.filter((r) => r.status === 'rejected').map((r) => r.reason);
+
+        if (rejected.length > 0) {
+          throw rejected[0];
+        }
+
+        return results
+          .filter((r) => r.status === 'fulfilled')
+          .map((r) => r.value.data.auditEventsStreamingHeadersCreate.errors[0])
+          .filter(Boolean);
+      });
     },
     async deleteCreatedDestination(destinationId) {
       return this.$apollo.mutate({
@@ -128,11 +137,9 @@ export default {
         destinationId = id;
 
         if (!errors.length && this.hasFilledHeaders) {
-          const headersData = await this.addDestinationHeaders(destinationId);
+          const requestErrors = await this.addDestinationHeaders(destinationId);
 
-          errors.push(
-            ...headersData.map(({ errors: headerErrors }) => headerErrors[0]).filter(Boolean),
-          );
+          errors.push(...requestErrors);
 
           if (errors.length > 0) {
             await this.deleteCreatedDestination(destinationId);
@@ -145,12 +152,12 @@ export default {
           this.$emit('added');
         }
       } catch (e) {
+        Sentry.captureException(e);
+        this.errors.push(CREATING_ERROR);
+
         if (destinationId) {
           await this.deleteCreatedDestination(destinationId);
         }
-
-        Sentry.captureException(e);
-        this.errors.push(CREATING_ERROR);
       } finally {
         this.loading = false;
       }
