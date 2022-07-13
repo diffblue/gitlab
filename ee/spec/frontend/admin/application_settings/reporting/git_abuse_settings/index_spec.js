@@ -1,0 +1,64 @@
+import { createWrapper } from '@vue/test-utils';
+
+import { initGitAbuseRateLimitSettingsForm } from 'ee/admin/application_settings/reporting/git_abuse_settings';
+import { parseFormProps } from 'ee/admin/application_settings/reporting/git_abuse_settings/utils';
+import GitAbuseRateLimitSettingsForm from 'ee/admin/application_settings/reporting/git_abuse_settings/components/form.vue';
+
+jest.mock('ee/admin/application_settings/reporting/git_abuse_settings/utils', () => ({
+  parseFormProps: jest.fn().mockReturnValue({
+    maxNumberOfRepositoryDownloads: 10,
+    maxNumberOfRepositoryDownloadsWithinTimePeriod: 300,
+    gitRateLimitUsersAllowlist: ['user1', 'user2'],
+  }),
+}));
+
+describe('initGitAbuseRateLimitSettingsForm', () => {
+  let wrapper;
+  let el;
+
+  const findSettingsForm = () => wrapper.findComponent(GitAbuseRateLimitSettingsForm);
+
+  const createAppRoot = () => {
+    el = document.createElement('div');
+    el.setAttribute('id', 'js-git-abuse-rate-limit-settings-form');
+    el.dataset.maxNumberOfRepositoryDownloads = 10;
+    el.dataset.maxNumberOfRepositoryDownloadsWithinTimePeriod = 300;
+    el.dataset.gitRateLimitUsersAllowlist = ['user1', 'user2'];
+    document.body.appendChild(el);
+
+    wrapper = createWrapper(initGitAbuseRateLimitSettingsForm());
+  };
+
+  afterEach(() => {
+    if (wrapper) {
+      wrapper.destroy();
+      el = null;
+    }
+  });
+
+  describe('when there is no app root', () => {
+    it('returns false', () => {
+      expect(initGitAbuseRateLimitSettingsForm()).toBe(false);
+    });
+  });
+
+  describe('when there is an app root', () => {
+    beforeEach(() => {
+      createAppRoot();
+    });
+
+    it('parses the form props from the dataset', () => {
+      initGitAbuseRateLimitSettingsForm();
+
+      expect(parseFormProps).toHaveBeenCalledWith(el.dataset);
+    });
+
+    it('passes props to form component', () => {
+      expect(findSettingsForm().props()).toMatchObject({
+        maxNumberOfRepositoryDownloads: 10,
+        maxNumberOfRepositoryDownloadsWithinTimePeriod: 300,
+        gitRateLimitUsersAllowlist: ['user1', 'user2'],
+      });
+    });
+  });
+});

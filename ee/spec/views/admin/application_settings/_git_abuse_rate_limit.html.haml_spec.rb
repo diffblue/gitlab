@@ -20,29 +20,35 @@ RSpec.describe 'admin/application_settings/_git_abuse_rate_limit' do
     context 'when page loads' do
       let(:application_setting) { build(:application_setting) }
 
-      it 'renders the section and input fields' do
+      it 'renders the settings app root' do
         render
 
-        expect(rendered).to have_selector('[data-testid="git-abuse-rate-limit-settings"]')
-        expect(rendered).to have_field(s_('AdminSettings|Number of repositories'))
-        expect(rendered).to have_field(s_('AdminSettings|Reporting time period (seconds)'))
+        expect(rendered).to have_selector('#js-git-abuse-rate-limit-settings-form')
+
+        expect(rendered).to have_selector('[data-max-number-of-repository-downloads="0"]')
+        expect(rendered).to have_selector('[data-max-number-of-repository-downloads-within-time-period="0"]')
+        expect(rendered).to have_selector('[data-git-rate-limit-users-allowlist="[]"]')
       end
     end
 
     context 'when data is saved in the database' do
+      let(:allowlist) { %w[user1 user2] }
       let(:application_setting) do
         build(:application_setting,
               max_number_of_repository_downloads: 10,
-              max_number_of_repository_downloads_within_time_period: 100
+              max_number_of_repository_downloads_within_time_period: 100,
+              git_rate_limit_users_allowlist: allowlist
              )
       end
 
-      it 'renders the input fields pre-populated with data' do
+      it 'renders the settings app root with pre-saved data' do
         render
 
-        expect(rendered).to have_selector('[data-testid="git-abuse-rate-limit-settings"]')
-        expect(rendered).to have_field(s_('AdminSettings|Number of repositories'), with: 10)
-        expect(rendered).to have_field(s_('AdminSettings|Reporting time period (seconds)'), with: 100)
+        expect(rendered).to have_selector('#js-git-abuse-rate-limit-settings-form')
+
+        expect(rendered).to have_selector('[data-max-number-of-repository-downloads="10"]')
+        expect(rendered).to have_selector('[data-max-number-of-repository-downloads-within-time-period="100"]')
+        expect(rendered).to have_selector("[data-git-rate-limit-users-allowlist='#{allowlist}']")
       end
     end
   end
