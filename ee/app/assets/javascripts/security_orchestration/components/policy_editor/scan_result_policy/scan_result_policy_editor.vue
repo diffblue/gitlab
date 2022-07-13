@@ -29,8 +29,6 @@ export default {
   SECURITY_POLICY_ACTIONS,
   EDITOR_MODE_YAML,
   EDITOR_MODE_RULE,
-  SHARED_FOR_DISABLED:
-    'gl-bg-gray-10 gl-border-solid gl-border-1 gl-border-gray-100 gl-rounded-base',
   i18n: {
     PARSING_ERROR_MESSAGE,
     addRule: s__('SecurityOrchestration|Add rule'),
@@ -264,7 +262,7 @@ export default {
         </template>
 
         <template #disabled>
-          <div :class="`${$options.SHARED_FOR_DISABLED} gl-p-6`"></div>
+          <div class="gl-bg-gray-10 gl-rounded-base gl-p-6"></div>
         </template>
 
         <policy-rule-builder
@@ -276,7 +274,7 @@ export default {
           @remove="removeRule(index)"
         />
 
-        <div v-if="isWithinLimit" :class="`${$options.SHARED_FOR_DISABLED} gl-p-5 gl-mb-5`">
+        <div v-if="isWithinLimit" class="gl-bg-gray-10 gl-rounded-base gl-p-5 gl-mb-5">
           <gl-button variant="link" data-testid="add-rule" icon="plus" @click="addRule">
             {{ $options.i18n.addRule }}
           </gl-button>
@@ -290,7 +288,7 @@ export default {
         </template>
 
         <template #disabled>
-          <div :class="`${$options.SHARED_FOR_DISABLED} gl-p-6`"></div>
+          <div class="gl-bg-gray-10 gl-rounded-base gl-p-6"></div>
         </template>
 
         <policy-action-builder
