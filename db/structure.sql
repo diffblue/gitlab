@@ -18833,7 +18833,9 @@ CREATE TABLE plan_limits (
     repository_size bigint DEFAULT 0 NOT NULL,
     security_policy_scan_execution_schedules integer DEFAULT 0 NOT NULL,
     web_hook_calls_mid integer DEFAULT 0 NOT NULL,
-    web_hook_calls_low integer DEFAULT 0 NOT NULL
+    web_hook_calls_low integer DEFAULT 0 NOT NULL,
+    project_ci_variables integer DEFAULT 200 NOT NULL,
+    group_ci_variables integer DEFAULT 200 NOT NULL
 );
 
 CREATE SEQUENCE plan_limits_id_seq
