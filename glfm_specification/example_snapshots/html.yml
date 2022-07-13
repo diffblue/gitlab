@@ -1842,8 +1842,8 @@
     *bar*
     <p data-sourcepos="2:1-2:5" dir="auto"><em>baz</em></p>
   wysiwyg: |-
-    Error - check implementation:
-    Cannot read properties of undefined (reading 'wrapper')
+    <p>*bar*
+    </p>
 04_06__leaf_blocks__html_blocks__030:
   canonical: |
     <script>
@@ -1864,8 +1864,7 @@
 
     <p data-sourcepos="5:1-5:4" dir="auto">okay</p>
   wysiwyg: |-
-    Error - check implementation:
-    Cannot destructure property 'className' of 'hastNode.properties' as it is undefined.
+    <p>okay</p>
 04_06__leaf_blocks__html_blocks__032:
   canonical: |
     <?php
@@ -1880,8 +1879,10 @@
     ?&gt;
     <p data-sourcepos="6:1-6:4" dir="auto">okay</p>
   wysiwyg: |-
-    Error - check implementation:
-    Cannot read properties of undefined (reading 'wrapper')
+    <p>';
+
+    ?&gt;
+    </p>
 04_06__leaf_blocks__html_blocks__033:
   canonical: |
     <!DOCTYPE html>
@@ -1918,8 +1919,7 @@
     ]]&gt;
     <p data-sourcepos="13:1-13:4" dir="auto">okay</p>
   wysiwyg: |-
-    Error - check implementation:
-    Cannot destructure property 'className' of 'hastNode.properties' as it is undefined.
+    <p>okay</p>
 04_06__leaf_blocks__html_blocks__035:
   canonical: |2
       <!-- foo -->
@@ -1930,8 +1930,7 @@
     lang=\"plaintext\" data-canonical-lang=\"\" v-pre=\"true\"><code><span id=\"LC1\"
     class=\"line\" lang=\"plaintext\">&lt;!-- foo --&gt;</span></code></pre>\n<copy-code></copy-code>\n</div>"
   wysiwyg: |-
-    Error - check implementation:
-    Cannot destructure property 'className' of 'hastNode.properties' as it is undefined.
+    <pre class="content-editor-code-block undefined code highlight"><code>&lt;!-- foo --&gt;</code></pre>
 04_06__leaf_blocks__html_blocks__036:
   canonical: |2
       <div>
@@ -4177,8 +4176,7 @@
     <li data-sourcepos="7:1-7:5">bim</li>
     </ul>
   wysiwyg: |-
-    Error - check implementation:
-    Cannot destructure property 'className' of 'hastNode.properties' as it is undefined.
+    <ul bullet="*"><li><p>foo</p></li><li><p>bar</p></li></ul>
 05_04__container_blocks__lists__009:
   canonical: |
     <ul>
@@ -4209,8 +4207,7 @@
     <copy-code></copy-code>
     </div>
   wysiwyg: |-
-    Error - check implementation:
-    Cannot destructure property 'className' of 'hastNode.properties' as it is undefined.
+    <ul bullet="*"><li><p>foo</p><p>notcode</p></li><li><p>foo</p></li></ul>
 05_04__container_blocks__lists__010:
   canonical: |
     <ul>
@@ -7164,8 +7161,7 @@
   static: |-
     <p data-sourcepos="1:1-2:25" dir="auto">foo </p>
   wysiwyg: |-
-    Error - check implementation:
-    Cannot destructure property 'className' of 'hastNode.properties' as it is undefined.
+    <p>foo </p>
 06_11__inlines__raw_html__014:
   canonical: |
     <p>foo &lt;!-- not a comment -- two hyphens --&gt;</p>
@@ -7188,24 +7184,21 @@
   static: |-
     <p data-sourcepos="1:1-1:21" dir="auto">foo <?php echo $a; ?></p>
   wysiwyg: |-
-    Error - check implementation:
-    Cannot destructure property 'className' of 'hastNode.properties' as it is undefined.
+    <p>foo </p>
 06_11__inlines__raw_html__017:
   canonical: |
     <p>foo <!ELEMENT br EMPTY></p>
   static: |-
     <p data-sourcepos="1:1-1:23" dir="auto">foo &lt;!ELEMENT br EMPTY&gt;</p>
   wysiwyg: |-
-    Error - check implementation:
-    Cannot destructure property 'className' of 'hastNode.properties' as it is undefined.
+    <p>foo </p>
 06_11__inlines__raw_html__018:
   canonical: |
     <p>foo <![CDATA[>&<]]></p>
   static: |-
     <p data-sourcepos="1:1-1:19" dir="auto">foo &lt;![CDATA[&gt;&amp;&lt;]]&gt;</p>
   wysiwyg: |-
-    Error - check implementation:
-    Cannot destructure property 'className' of 'hastNode.properties' as it is undefined.
+    <p>foo &amp;&lt;]]&gt;</p>
 06_11__inlines__raw_html__019:
   canonical: |
     <p>foo <a href="&ouml;"></p>
@@ -7412,11 +7405,11 @@
 07_01__gitlab_specific_markdown__footnotes__001:
   canonical: ""
   static: |-
-    <p data-sourcepos="1:1-1:27" dir="auto">footnote reference tag <sup class="footnote-ref"><a href="#fn-1-4719" id="fnref-1-4719" data-footnote-ref>1</a></sup></p>
+    <p data-sourcepos="1:1-1:27" dir="auto">footnote reference tag <sup class="footnote-ref"><a href="#fn-1-972" id="fnref-1-972" data-footnote-ref>1</a></sup></p>
     <section data-footnotes class="footnotes">
     <ol>
-    <li id="fn-1-4719">
-    <p data-sourcepos="3:7-3:19">footnote text <a href="#fnref-1-4719" data-footnote-backref aria-label="Back to content" class="footnote-backref"><gl-emoji title="leftwards arrow with hook" data-name="leftwards_arrow_with_hook" data-unicode-version="1.1">↩</gl-emoji></a></p>
+    <li id="fn-1-972">
+    <p data-sourcepos="3:7-3:19">footnote text <a href="#fnref-1-972" data-footnote-backref aria-label="Back to content" class="footnote-backref"><gl-emoji title="leftwards arrow with hook" data-name="leftwards_arrow_with_hook" data-unicode-version="1.1">↩</gl-emoji></a></p>
     </li>
     </ol>
     </section>
