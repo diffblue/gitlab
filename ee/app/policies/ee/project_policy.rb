@@ -141,6 +141,11 @@ module EE
       end
 
       with_scope :subject
+      condition(:hidden) do
+        @subject.hidden?
+      end
+
+      with_scope :subject
       condition(:membership_locked_via_parent_group) do
         @subject.group && (@subject.group.membership_lock? || ::Gitlab::CurrentSettings.lock_memberships_to_ldap?)
       end
@@ -419,6 +424,11 @@ module EE
 
       rule { status_page_available & can?(:owner_access) }.enable :mark_issue_for_publication
       rule { status_page_available & can?(:developer_access) }.enable :publish_status_page
+
+      rule { hidden }.policy do
+        prevent :download_code
+        prevent :build_download_code
+      end
 
       rule { over_storage_limit }.policy do
         # We are allowing `push_code` so the `GitAccessProject` can render

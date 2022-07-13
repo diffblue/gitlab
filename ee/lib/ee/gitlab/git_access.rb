@@ -86,13 +86,6 @@ module EE
         super
       end
 
-      override :can_download?
-      def can_download?
-        return false if project&.hidden?
-
-        super
-      end
-
       override :check_change_access!
       def check_change_access!
         check_size_before_push!
