@@ -20568,6 +20568,9 @@ msgstr ""
 msgid "Incidents|Must start with http or https"
 msgstr ""
 
+msgid "Incident|Add new timeline event"
+msgstr ""
+
 msgid "Incident|Alert details"
 msgstr ""
 
@@ -20586,10 +20589,16 @@ msgstr ""
 msgid "Incident|Editing %{filename}"
 msgstr ""
 
+msgid "Incident|Error creating incident timeline event: %{error}"
+msgstr ""
+
 msgid "Incident|Metrics"
 msgstr ""
 
 msgid "Incident|No timeline items have been added yet."
+msgstr ""
+
+msgid "Incident|Save and add another event"
 msgstr ""
 
 msgid "Incident|Something went wrong while fetching incident timeline events."
@@ -20605,6 +20614,12 @@ msgid "Incident|There was an issue loading incident data. Please try again."
 msgstr ""
 
 msgid "Incident|Timeline"
+msgstr ""
+
+msgid "Incident|Timeline text"
+msgstr ""
+
+msgid "Incident|Timeline text..."
 msgstr ""
 
 msgid "Include author name in notification email body"
