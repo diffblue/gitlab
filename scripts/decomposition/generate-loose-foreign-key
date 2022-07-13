@@ -225,7 +225,7 @@ def add_test_to_specs(definition)
   end.join(":")
 
   loop do
-    if system("bin/rspec", "#{spec_path}:#{test_lines}")
+    if exec_cmd("bin/rspec", "#{spec_path}:#{test_lines}")
       puts "Test seems fine?"
       break
     end
