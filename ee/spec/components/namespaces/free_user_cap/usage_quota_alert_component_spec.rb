@@ -37,6 +37,7 @@ RSpec.describe Namespaces::FreeUserCap::UsageQuotaAlertComponent, :saas, :aggreg
       expect(rendered_component).to have_content(title)
       expect(rendered_component).to have_content(body)
       expect(rendered_component).to have_link('upgrade', href: group_billings_path(namespace))
+      expect(rendered_component).not_to have_css('.gl-alert-actions')
 
       expect(rendered_component)
         .to have_css('.js-user-over-limit-free-plan-alert' \
