@@ -43,7 +43,7 @@ class SearchController < ApplicationController
 
     @search_service = Gitlab::View::Presenter::Factory.new(search_service, current_user: current_user).fabricate!
 
-    @search_time = Benchmark.realtime do
+    @global_search_duration_s = Benchmark.realtime do
       @scope = @search_service.scope
       @without_count = @search_service.without_count?
       @show_snippets = @search_service.show_snippets?
@@ -88,10 +88,6 @@ class SearchController < ApplicationController
   end
 
   private
-
-  def search_time_label
-    "global_search_web_#{search_type}_#{@search_service.level}_#{@search_service.scope}".to_sym
-  end
 
   # overridden in EE
   def default_sort
@@ -151,15 +147,19 @@ class SearchController < ApplicationController
     payload[:metadata]['meta.search.filters.state'] = params[:state]
     payload[:metadata]['meta.search.force_search_results'] = params[:force_search_results]
     payload[:metadata]['meta.search.project_ids'] = params[:project_ids]
-    payload[:metadata]['meta.search.search_level'] = params[:search_level]
+    begin
+      payload[:metadata]['meta.search.type'] = search_type
+      payload[:metadata]['meta.search.level'] = search_service.level
+    rescue ActiveRecord::QueryCanceled
+    end
 
     if search_service.abuse_detected?
       payload[:metadata]['abuse.confidence'] = Gitlab::Abuse.confidence(:certain)
       payload[:metadata]['abuse.messages'] = search_service.abuse_messages
     end
 
-    if @search_time.present?
-      payload[search_time_label] = @search_time
+    if @global_search_duration_s.present?
+      payload[:metadata][:global_search_duration_s] = @global_search_duration_s
     end
   end
 

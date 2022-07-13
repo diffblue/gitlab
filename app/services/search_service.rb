@@ -94,11 +94,11 @@ class SearchService
   def level
     @level ||=
       if project
-        :project
+        'project'
       elsif group
-        :group
+        'group'
       else
-        :global
+        'global'
       end
   end
 

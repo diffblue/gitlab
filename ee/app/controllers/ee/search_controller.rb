@@ -41,7 +41,7 @@ module EE
     end
 
     def search_type
-      track_search_advanced? ? 'advanced' : 'basic'
+      track_search_advanced? ? 'advanced' : super
     end
   end
 end
