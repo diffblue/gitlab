@@ -115,6 +115,7 @@ describe('Design management index page', () => {
   const draggableAttributes = () => wrapper.find(VueDraggable).vm.$attrs;
   const findDesignUploadButton = () => wrapper.find('[data-testid="design-upload-button"]');
   const findDesignToolbarWrapper = () => wrapper.find('[data-testid="design-toolbar-wrapper"]');
+  const findDesignUpdateAlert = () => wrapper.find('[data-testid="design-update-alert"]');
 
   async function moveDesigns(localWrapper) {
     await waitForPromises();
@@ -495,12 +496,13 @@ describe('Design management index page', () => {
         description             | eventPayload                              | message
         ${'> 1 file'}           | ${[{ name: 'test' }, { name: 'test-2' }]} | ${EXISTING_DESIGN_DROP_MANY_FILES_MESSAGE}
         ${'different filename'} | ${[{ name: 'wrong-name' }]}               | ${EXISTING_DESIGN_DROP_INVALID_FILENAME_MESSAGE}
-      `('calls createFlash when upload has $description', ({ eventPayload, message }) => {
+      `('calls createFlash when upload has $description', async ({ eventPayload, message }) => {
+        expect(findDesignUpdateAlert().exists()).toBe(false);
         const designDropzone = findFirstDropzoneWithDesign();
-        designDropzone.vm.$emit('change', eventPayload);
+        await designDropzone.vm.$emit('change', eventPayload);
 
-        expect(createFlash).toHaveBeenCalledTimes(1);
-        expect(createFlash).toHaveBeenCalledWith({ message });
+        expect(findDesignUpdateAlert().exists()).toBe(true);
+        expect(findDesignUpdateAlert().text()).toBe(message);
       });
     });
 

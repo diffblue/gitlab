@@ -27,11 +27,11 @@ export const DESIGN_NOT_FOUND_ERROR = __('Could not find design.');
 export const DESIGN_VERSION_NOT_EXIST_ERROR = __('Requested design version does not exist.');
 
 export const EXISTING_DESIGN_DROP_MANY_FILES_MESSAGE = __(
-  'You can only upload one design when dropping onto an existing design.',
+  'Your update failed. You can only upload one design when dropping onto an existing design.',
 );
 
 export const EXISTING_DESIGN_DROP_INVALID_FILENAME_MESSAGE = __(
-  'You must upload a file with the same file name when dropping onto an existing design.',
+  'Your update failed. You must upload a file with the same file name when dropping onto an existing design.',
 );
 
 export const MOVE_DESIGN_ERROR = __(

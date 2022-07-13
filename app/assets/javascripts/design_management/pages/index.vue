@@ -87,6 +87,7 @@ export default {
       isDraggingDesign: false,
       reorderedDesigns: null,
       isReorderingInProgress: false,
+      updateError: null,
     };
   },
   computed: {
@@ -269,12 +270,12 @@ export default {
       const filesArr = Array.from(files);
 
       if (filesArr.length > 1) {
-        createFlash({ message: EXISTING_DESIGN_DROP_MANY_FILES_MESSAGE });
+        this.updateError = EXISTING_DESIGN_DROP_MANY_FILES_MESSAGE;
         return;
       }
 
       if (!filesArr.some(({ name }) => existingDesignFilename === name)) {
-        createFlash({ message: EXISTING_DESIGN_DROP_INVALID_FILENAME_MESSAGE });
+        this.updateError = EXISTING_DESIGN_DROP_INVALID_FILENAME_MESSAGE;
         return;
       }
 
@@ -338,6 +339,9 @@ export default {
     onDesignMove(designs) {
       this.reorderedDesigns = designs;
     },
+    unsetUpdateError() {
+      this.updateError = null;
+    },
   },
   dragOptions: {
     animation: 200,
@@ -356,6 +360,15 @@ export default {
     @mouseenter="toggleOnPasteListener"
     @mouseleave="toggleOffPasteListener"
   >
+    <gl-alert
+      v-if="updateError"
+      variant="danger"
+      class="gl-mb-3"
+      data-testid="design-update-alert"
+      @dismiss="unsetUpdateError"
+    >
+      {{ updateError }}
+    </gl-alert>
     <header
       v-if="showToolbar"
       class="gl-display-flex gl-my-0 gl-text-gray-900"
