@@ -9,9 +9,9 @@ module Security
 
       def execute
         opened_merge_requests.each do |merge_request|
-          # Does not reuse the existing SyncReportApproverApprovalRules as there
-          # is no current_user available in the caller.
-          merge_request.synchronize_approval_rules_from_target_project
+          MergeRequests::SyncReportApproverApprovalRules
+            .new(merge_request)
+            .execute(skip_authentication: true)
         end
       end
 

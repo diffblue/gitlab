@@ -4,13 +4,13 @@ module MergeRequests
   class SyncReportApproverApprovalRules
     include Gitlab::Allowable
 
-    def initialize(merge_request, current_user, params = {})
+    def initialize(merge_request, current_user = nil)
       @merge_request = merge_request
       @current_user = current_user
     end
 
-    def execute
-      return if not_allowed?
+    def execute(skip_authentication: false)
+      return if !skip_authentication && not_allowed?
 
       merge_request.synchronize_approval_rules_from_target_project
     end
