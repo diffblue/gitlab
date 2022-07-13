@@ -15,6 +15,10 @@
 <% if vulnerability.try(:file) %>
 * <%= _("Location") %>: [<%= vulnerability.location_text %>](<%= vulnerability.location_link %>)
 <% end %>
+<% if vulnerability.try(:evidence_issue_description) %>
+
+<%= vulnerability.evidence_issue_description %>
+<% end %>
 <% if vulnerability.solution.present? %>
 
 ### <%= _("Solution") %>:

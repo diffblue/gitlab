@@ -223,6 +223,23 @@ RSpec.describe VulnerabilitiesHelper do
             * Confidence: medium
             * Location: [maven/src/main/java/com/gitlab/security_products/tests/App.java:29|http://localhost/#{project.full_path}/-/blob/b83d6e391c22777fca1ed3012fce84f633d7fed0/maven/src/main/java/com/gitlab/security_products/tests/App.java#L29]
 
+            #### Evidence
+
+            * Method: `GET`
+            * URL: http://goat:8080/WebGoat/logout
+
+            ##### Request:
+
+            ```
+            Accept : */*
+            ```
+
+            ##### Response:
+
+            ```
+            Content-Length : 0
+            ```
+
             ### Solution:
 
             See vulnerability [#{vulnerability.id}|http://localhost/#{project.full_path}/-/security/vulnerabilities/#{vulnerability.id}] for any Solution details.
@@ -268,7 +285,6 @@ RSpec.describe VulnerabilitiesHelper do
 
             * Severity: high
             * Confidence: medium
-
 
 
             h3. Links:

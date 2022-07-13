@@ -1,0 +1,32 @@
+#### Evidence
+
+<%- evidence_request_method = evidence.dig(:request, :method) -%>
+<%- evidence_request_url = evidence.dig(:request, :url) -%>
+<%- evidence_request_headers = evidence.dig(:request, :headers) -%>
+<%- evidence_response_headers = evidence.dig(:response, :headers) -%>
+<% if evidence_request_method.present? %>
+* <%= _("Method") %>: `<%= evidence_request_method %>`
+<% end %>
+<% if evidence_request_url.present? %>
+* <%= _("URL") %>: <%= evidence_request_url %>
+<% end %>
+<% if evidence_request_headers.present? %>
+
+##### <%= _("Request") %>:
+
+```
+<% evidence_request_headers.each do |header| %>
+<%= header[:name] %> : <%= header[:value] %>
+<% end %>
+```
+<% end %>
+<% if evidence_response_headers.present? %>
+
+##### <%= _("Response") %>:
+
+```
+<% evidence_response_headers.each do |header| %>
+<%= header[:name] %> : <%= header[:value] %>
+<% end %>
+```
+<% end %>
