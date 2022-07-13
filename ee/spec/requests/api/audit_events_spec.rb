@@ -154,6 +154,58 @@ RSpec.describe API::AuditEvents do
         end
       end
     end
+
+    context 'keyset pagination' do
+      let_it_be(:current_user) { create(:admin) }
+      let_it_be(:group) { create(:group) }
+      let_it_be(:audit_event_1) { create(:group_audit_event, entity_id: group.id) }
+      let_it_be(:audit_event_2) { create(:group_audit_event, entity_id: group.id) }
+
+      it 'paginates the records correctly' do
+        get api("/groups/#{group.id}/audit_events", current_user), params: { pagination: 'keyset', per_page: 1, order_by: 'id' }
+
+        expect(response).to have_gitlab_http_status(:ok)
+        records = json_response
+        expect(records.size).to eq(1)
+        expect(records.first['id']).to eq(audit_event_2.id)
+
+        params_for_next_page = params_for_next_page(response)
+        expect(params_for_next_page).to include('cursor')
+
+        get api("/groups/#{group.id}/audit_events"), params: params_for_next_page
+
+        expect(response).to have_gitlab_http_status(:ok)
+        records = Gitlab::Json.parse(response.body)
+        expect(records.size).to eq(1)
+        expect(records.first['id']).to eq(audit_event_1.id)
+      end
+
+      def pagination_links(response)
+        link = response.headers['LINK']
+        return unless link
+
+        link.split(',').map do |link|
+          match = link.match(/<(?<url>.*)>; rel="(?<rel>\w+)"/)
+          break nil unless match
+
+          { url: match[:url], rel: match[:rel] }
+        end.compact
+      end
+
+      def params_for_next_page(response)
+        next_url = pagination_links(response).find { |link| link[:rel] == 'next' }[:url]
+        Rack::Utils.parse_query(URI.parse(next_url).query)
+      end
+
+      context 'on making requests with unsupported ordering structure' do
+        it 'returns error' do
+          get api("/groups/#{group.id}/audit_events", current_user), params: { pagination: 'keyset', per_page: 1, order_by: 'created_at', sort: 'asc' }
+
+          expect(response).to have_gitlab_http_status(:method_not_allowed)
+          expect(json_response['error']).to eq('Keyset pagination is not yet available for this type of request')
+        end
+      end
+    end
   end
 
   describe 'GET /audit_events/:id' do

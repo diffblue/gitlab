@@ -122,7 +122,7 @@ module EE
                 params: audit_event_finder_params
               ).execute
 
-              present paginate(audit_events), with: EE::API::Entities::AuditEvent
+              present paginate_with_strategies(audit_events), with: EE::API::Entities::AuditEvent
             end
 
             desc 'Get a specific audit event in this group.' do
