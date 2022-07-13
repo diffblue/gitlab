@@ -70,6 +70,7 @@ describe('ee/analytics/group_ci_cd_analytics/components/app.vue', () => {
           'deployment frequency',
           'lead time',
           'time to restore service',
+          'change failure rate',
         ].forEach((tabName) => {
           it(`tracks visits to ${tabName} tab`, () => {
             const testId = `${tabName.replace(/\s/g, '-')}-tab`;

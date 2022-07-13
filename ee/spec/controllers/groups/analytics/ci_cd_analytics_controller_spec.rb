@@ -92,6 +92,10 @@ RSpec.describe Groups::Analytics::CiCdAnalyticsController do
       {
         tab_param: 'time-to-restore-service',
         event: 'g_analytics_ci_cd_time_to_restore_service'
+      },
+      {
+        tab_param: 'change-failure-rate',
+        event: 'g_analytics_ci_cd_change_failure_rate'
       }
     ].each do |tab|
       it_behaves_like 'tracking unique visits', :show do

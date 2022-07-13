@@ -26,6 +26,7 @@ export default {
   deploymentFrequencyTabEvent: 'g_analytics_ci_cd_deployment_frequency',
   leadTimeTabEvent: 'g_analytics_ci_cd_lead_time',
   timeToRestoreServiceTabEvent: 'g_analytics_ci_cd_time_to_restore_service',
+  changeFailureRateTabEvent: 'g_analytics_ci_cd_change_failure_rate',
   inject: {
     shouldRenderDoraCharts: {
       type: Boolean,
@@ -123,7 +124,8 @@ export default {
         </gl-tab>
         <gl-tab
           :title="s__('CICDAnalytics|Change failure rate')"
-          data-testid="change-failure-rate-service-tab"
+          data-testid="change-failure-rate-tab"
+          @click="trackTabClick($options.changeFailureRateTabEvent)"
         >
           <change-failure-rate-charts />
         </gl-tab>
