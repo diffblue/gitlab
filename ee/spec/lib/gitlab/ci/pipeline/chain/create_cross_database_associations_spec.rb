@@ -8,7 +8,7 @@ RSpec.describe Gitlab::Ci::Pipeline::Chain::CreateCrossDatabaseAssociations do
   let_it_be(:outsider) { create(:user) }
 
   let!(:pipeline) { create(:ci_pipeline, project: project, user: user) }
-  let!(:stage) { create(:ci_stage_entity, project: project, pipeline: pipeline, name: :dast) }
+  let!(:stage) { create(:ci_stage, project: project, pipeline: pipeline, name: :dast) }
 
   subject do
     command = Gitlab::Ci::Pipeline::Chain::Command.new(project: project, current_user: user)
@@ -75,7 +75,7 @@ RSpec.describe Gitlab::Ci::Pipeline::Chain::CreateCrossDatabaseAssociations do
           end
 
           context 'when the stage is not dast' do
-            let!(:stage) { create(:ci_stage_entity, project: project, pipeline: pipeline, name: :test) }
+            let!(:stage) { create(:ci_stage, project: project, pipeline: pipeline, name: :test) }
 
             it_behaves_like 'it has no effect'
           end
