@@ -108,29 +108,6 @@ RSpec.describe 'Incident details', :js do
               wait_for_requests
               expect(edit_policy_widget).to have_content 'No escalation policy found'
             end
-
-            context 'with associated alert' do
-              let_it_be(:alert) { create(:alert_management_alert, issue: incident, project: project) }
-
-              # For incidents created prior to the status feature's availability
-              context 'without escalation status record' do
-                before do
-                  incident.escalation_status.destroy!
-                end
-
-                it_behaves_like 'shows empty state for escalation policy'
-
-                it 'retrieves the escalation policy when user sets the status' do
-                  visit_incident_with_expanded_sidebar
-
-                  click_edit_status
-                  escalation_status_container.first('[data-testid="status-dropdown-item"]').click
-                  wait_for_requests
-
-                  assert_expanded_policy_values(escalation_policy.name, href: true)
-                end
-              end
-            end
           end
         end
 

@@ -511,7 +511,7 @@ RSpec.describe Issues::UpdateService do
         end
 
         it 'triggers side-effects' do
-          expect(escalation_update_class).to receive(:new).with(issue, user, status_change_reason: nil).and_return(service_double)
+          expect(escalation_update_class).to receive(:new).with(issue, user).and_return(service_double)
           expect(service_double).to receive(:execute)
           expect(project).to receive(:execute_hooks).with(an_instance_of(Hash), :issue_hooks)
           expect(project).to receive(:execute_integrations).with(an_instance_of(Hash), :issue_hooks)
@@ -586,33 +586,11 @@ RSpec.describe Issues::UpdateService do
       end
 
       context 'without an existing escalation status record' do
-        context 'when incident has an associated alert' do
-          let!(:alert) { create(:alert_management_alert, :acknowledged, :with_incident, project: project) }
-          let(:issue) { alert.issue }
+        let(:issue) { create(:incident, project: project) }
 
-          context 'setting the status' do
-            let(:opts) { { escalation_status: { status: :resolved } } }
-
-            include_examples 'updates the escalation status record' do
-              let(:expected_policy) { policy }
-              let(:expected_status) { :resolved }
-            end
-          end
-
-          context 'unsetting the policy' do
-            let(:opts) { { escalation_status: { policy: nil } } }
-
-            it_behaves_like 'does not change the status record'
-          end
-        end
-
-        context 'when incident has no associated alert' do
-          let(:issue) { create(:incident, project: project) }
-
-          include_examples 'updates the escalation status record' do
-            let(:expected_policy) { policy }
-            let(:expected_status) { :triggered }
-          end
+        include_examples 'updates the escalation status record' do
+          let(:expected_policy) { policy }
+          let(:expected_status) { :triggered }
         end
       end
     end
