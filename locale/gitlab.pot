@@ -23198,7 +23198,7 @@ msgstr ""
 msgid "License Compliance"
 msgstr ""
 
-msgid "License Compliance| Used by"
+msgid "License Compliance| Used by %{dependencies}"
 msgstr ""
 
 msgid "License compliance"
@@ -41999,6 +41999,11 @@ msgstr ""
 
 msgid "Used"
 msgstr ""
+
+msgid "Used by %d package"
+msgid_plural "Used by %d packages"
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "Used by members to sign in to your group in GitLab"
 msgstr ""
