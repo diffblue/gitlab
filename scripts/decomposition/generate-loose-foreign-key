@@ -40,10 +40,6 @@ unless system("git diff --quiet")
   raise "There are uncommitted changes. Commit to continue."
 end
 
-if Gitlab::Database.database_base_models.many?
-  raise 'Cannot run in multiple-databases mode. Use only `main:` in `config/database.yml`.'
-end
-
 puts "Re-creating current test database"
 ActiveRecord::Tasks::DatabaseTasks.drop_current
 ActiveRecord::Tasks::DatabaseTasks.create_current
@@ -218,30 +214,6 @@ def add_test_to_specs(definition)
   insert_line = lines.count - 1
   lines.insert(insert_line, "\n", *spec_test.lines)
   File.write(spec_path, lines.join(""))
-
-  # find a matching line
-  test_lines = (1..lines.count).select do |line|
-    lines[line-1].include?("it_behaves_like 'cleanup by a loose foreign key' do")
-  end.join(":")
-
-  loop do
-    if exec_cmd("bin/rspec", "#{spec_path}:#{test_lines}")
-      puts "Test seems fine?"
-      break
-    end
-
-    puts "--------------------------------------------------"
-    puts "Test failed:"
-    puts "Edit:   vim #{spec_path} (lines #{test_lines})"
-    puts "Re-run: bin/rspec #{spec_path}:#{test_lines}"
-    puts "--------------------------------------------------"
-    puts "Running bash. To exit do 'Ctrl-D' to re-run, or do 'Ctrl-C' to break (and ignore failure)."
-    puts
-
-    unless exec_cmd("bash")
-      break
-    end
-  end
 end
 
 def update_no_cross_db_foreign_keys_spec(definition)
