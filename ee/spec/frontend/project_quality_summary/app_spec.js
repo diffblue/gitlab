@@ -1,7 +1,8 @@
-import { GlSkeletonLoader, GlEmptyState } from '@gitlab/ui';
+import { GlSkeletonLoader, GlEmptyState, GlBanner } from '@gitlab/ui';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import mockProjectQualityResponse from 'test_fixtures/graphql/project_quality_summary/graphql/queries/get_project_quality.query.graphql.json';
+import { getCookie, setCookie } from '~/lib/utils/common_utils';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import createFlash from '~/flash';
@@ -9,9 +10,18 @@ import { mountExtended } from 'helpers/vue_test_utils_helper';
 
 import ProjectQualitySummary from 'ee/project_quality_summary/app.vue';
 import getProjectQuality from 'ee/project_quality_summary/graphql/queries/get_project_quality.query.graphql';
-import { i18n } from 'ee/project_quality_summary/constants';
+import {
+  i18n,
+  BANNER_DISMISSED_COOKIE_KEY,
+  FEEDBACK_ISSUE_URL,
+} from 'ee/project_quality_summary/constants';
 
 jest.mock('~/flash');
+jest.mock('~/lib/utils/common_utils', () => ({
+  parseBoolean: jest.requireActual('~/lib/utils/common_utils').parseBoolean,
+  getCookie: jest.fn().mockReturnValue(false),
+  setCookie: jest.fn(),
+}));
 
 Vue.use(VueApollo);
 
@@ -22,6 +32,7 @@ describe('Project quality summary app component', () => {
   const findTestRunsStat = (index) => wrapper.findAllByTestId('test-runs-stat').at(index);
   const findCoverageLink = () => wrapper.findByTestId('coverage-link');
   const findCoverageStat = () => wrapper.findByTestId('coverage-stat');
+  const findBanner = () => wrapper.findComponent(GlBanner);
 
   const coverageChartPath = 'coverage/chart/path';
   const { pipelinePath, coverage } = mockProjectQualityResponse.data.project.pipelines.nodes[0];
@@ -60,6 +71,39 @@ describe('Project quality summary app component', () => {
 
     it('shows a flash message', () => {
       expect(createFlash).toHaveBeenCalled();
+    });
+  });
+
+  describe('feedback banner', () => {
+    it('is displayed with the correct props', () => {
+      createComponent();
+      const banner = findBanner();
+
+      expect(banner.exists()).toBe(true);
+      expect(banner.props()).toMatchObject({
+        title: i18n.banner.title,
+        buttonLink: FEEDBACK_ISSUE_URL,
+        buttonText: i18n.banner.button,
+      });
+    });
+
+    it('sets a cookie when dismissed', async () => {
+      createComponent();
+      findBanner().vm.$emit('close');
+
+      await waitForPromises();
+
+      expect(findBanner().exists()).toBe(false);
+      expect(setCookie).toHaveBeenCalledWith(BANNER_DISMISSED_COOKIE_KEY, 'true');
+    });
+
+    it('is not displayed when the cookie is set', async () => {
+      getCookie.mockImplementationOnce(() => true);
+      createComponent();
+
+      await waitForPromises();
+
+      expect(findBanner().exists()).toBe(false);
     });
   });
 
