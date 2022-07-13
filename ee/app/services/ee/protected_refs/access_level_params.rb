@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module EE
-  module ProtectedBranches
+  module ProtectedRefs
     module AccessLevelParams
       extend ::Gitlab::Utils::Override
 

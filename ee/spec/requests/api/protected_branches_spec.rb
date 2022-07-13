@@ -3,8 +3,9 @@
 require 'spec_helper'
 
 RSpec.describe API::ProtectedBranches do
-  let(:user) { create(:user) }
-  let!(:project) { create(:project, :repository) }
+  let_it_be(:user) { create(:user) }
+  let_it_be(:project) { create(:project, :repository) }
+
   let(:protected_name) { 'feature' }
   let(:branch_name) { protected_name }
   let!(:protected_branch) do
@@ -304,6 +305,19 @@ RSpec.describe API::ProtectedBranches do
           expect(json_response['merge_access_levels'].count).to eq(1)
           expect(json_response['push_access_levels'][0]['user_id']).to eq(push_user.id)
           expect(json_response['push_access_levels'][0]['access_level']).to eq(Gitlab::Access::MAINTAINER)
+        end
+
+        context 'when protected_refs_for_users feature is not available' do
+          before do
+            stub_licensed_features(protected_refs_for_users: false)
+          end
+
+          it 'cannot protect a branch for a user or group only' do
+            allowed_to_create_param = [{ group_id: invited_group.id, user_id: project_member.id }]
+            post post_endpoint, params: { name: branch_name, allowed_to_push: allowed_to_create_param }
+
+            expect(response).to have_gitlab_http_status(:unprocessable_entity)
+          end
         end
       end
     end
