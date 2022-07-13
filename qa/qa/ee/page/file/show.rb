@@ -18,7 +18,7 @@ module QA
                 element :link_file_owner
               end
 
-              # These two lock button elements can be removed when the refactor_blob_viewer feature flag is removed
+              # These two lock button elements are used for locking at directory level
               view 'ee/app/helpers/ee/lock_helper.rb' do
                 element :lock_button
                 element :disabled_lock_button
