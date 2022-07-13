@@ -43,6 +43,13 @@ module Pajamas
       "#{@record.avatar_url}?width=#{@size}"
     end
 
+    def srcset
+      return unless src
+
+      retina_src = src.gsub(/(?<=width=)#{@size}+/, (@size * 2).to_s)
+      "#{src} 1x, #{retina_src} 2x"
+    end
+
     def alt
       @alt || @record.name
     end

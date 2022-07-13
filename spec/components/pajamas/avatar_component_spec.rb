@@ -53,6 +53,10 @@ RSpec.describe Pajamas::AvatarComponent, type: :component do
         expect(page).to have_css "img.gl-avatar[src='/example.png?width=64']"
       end
 
+      it "uses a srcset for higher resolution on retina displays" do
+        expect(page).to have_css "img.gl-avatar[srcset='/example.png?width=64 1x, /example.png?width=128 2x']"
+      end
+
       it "uses lazy loading" do
         expect(page).to have_css "img.gl-avatar[loading='lazy']"
       end
@@ -60,8 +64,10 @@ RSpec.describe Pajamas::AvatarComponent, type: :component do
       context "with size option" do
         let(:options) { { size: 16 } }
 
-        it "adds the size as param to image src" do
-          expect(page).to have_css "img.gl-avatar[src='/example.png?width=16']"
+        it "uses that size as param for image src and srcset" do
+          expect(page).to have_css(
+            "img.gl-avatar[src='/example.png?width=16'][srcset='/example.png?width=16 1x, /example.png?width=32 2x']"
+          )
         end
       end
     end
