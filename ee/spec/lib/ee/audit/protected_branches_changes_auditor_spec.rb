@@ -42,7 +42,7 @@ RSpec.describe EE::Audit::ProtectedBranchesChangesAuditor, :request_store do
                                         from: false,
                                         to: true,
                                         ip_address: ip_address,
-                                        custom_message: "Changed #{change_text} to true" })
+                                        custom_message: "Changed #{change_text} from false to true" })
 
           expect(event.author_id).to eq(author.id)
           expect(event.entity_id).to eq(entity.id)

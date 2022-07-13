@@ -89,8 +89,8 @@ module Audit
 
     def build_message(details)
       message = ["Changed #{details[:change]}"]
-      message << "from #{details[:from]}" unless details[:from].blank?
-      message << "to #{details[:to]}" unless details[:to].blank?
+      message << "from #{details[:from]}" if details[:from].to_s.present?
+      message << "to #{details[:to]}" if details[:to].to_s.present?
       message.join(' ')
     end
 
