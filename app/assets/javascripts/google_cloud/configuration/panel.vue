@@ -6,12 +6,6 @@ import IncubationBanner from '../components/incubation_banner.vue';
 import RevokeOauth from '../components/revoke_oauth.vue';
 import ServiceAccountsList from '../service_accounts/list.vue';
 
-const i18n = {
-  configuration: { title: s__('CloudSeed|Configuration') },
-  deployments: { title: s__('CloudSeed|Deployments') },
-  databases: { title: s__('CloudSeed|Databases') },
-};
-
 export default {
   components: {
     GcpRegionsList,
@@ -20,7 +14,11 @@ export default {
     RevokeOauth,
     ServiceAccountsList,
   },
-  i18n,
+  i18n: {
+    configuration: { title: s__('CloudSeed|Configuration') },
+    deployments: { title: s__('CloudSeed|Deployments') },
+    databases: { title: s__('CloudSeed|Databases') },
+  },
   props: {
     configurationUrl: {
       type: String,
@@ -64,10 +62,9 @@ export default {
 
 <template>
   <div>
-    <incubation-banner data-testid="incubation-banner" />
+    <incubation-banner />
 
     <google-cloud-menu
-      data-testid="google-cloud-menu"
       active="configuration"
       :configuration-url="configurationUrl"
       :deployments-url="deploymentsUrl"
@@ -75,7 +72,6 @@ export default {
     />
 
     <service-accounts-list
-      data-testid="service-accounts-list"
       class="gl-mx-4"
       :list="serviceAccounts"
       :create-url="createServiceAccountUrl"
@@ -85,7 +81,6 @@ export default {
     <hr />
 
     <gcp-regions-list
-      data-testid="gcp-regions-list"
       class="gl-mx-4"
       :empty-illustration-url="emptyIllustrationUrl"
       :create-url="configureGcpRegionsUrl"
@@ -94,6 +89,6 @@ export default {
 
     <hr v-if="revokeOauthUrl" />
 
-    <revoke-oauth v-if="revokeOauthUrl" data-testid="revoke-oauth" :url="revokeOauthUrl" />
+    <revoke-oauth v-if="revokeOauthUrl" :url="revokeOauthUrl" />
   </div>
 </template>

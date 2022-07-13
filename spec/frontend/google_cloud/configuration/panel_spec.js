@@ -1,5 +1,10 @@
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import Panel from '~/google_cloud/configuration/panel.vue';
+import IncubationBanner from '~/google_cloud/components/incubation_banner.vue';
+import GoogleCloudMenu from '~/google_cloud/components/google_cloud_menu.vue';
+import ServiceAccountsList from '~/google_cloud/service_accounts/list.vue';
+import GcpRegionsList from '~/google_cloud/gcp_regions/list.vue';
+import RevokeOauth from '~/google_cloud/components/revoke_oauth.vue';
 
 describe('google_cloud/configuration/panel', () => {
   let wrapper;
@@ -25,12 +30,12 @@ describe('google_cloud/configuration/panel', () => {
   });
 
   it('contains incubation banner', () => {
-    const target = wrapper.findByTestId('incubation-banner');
+    const target = wrapper.findComponent(IncubationBanner);
     expect(target.exists()).toBe(true);
   });
 
   it('contains google cloud menu with `configuration` active', () => {
-    const target = wrapper.findByTestId('google-cloud-menu');
+    const target = wrapper.findComponent(GoogleCloudMenu);
     expect(target.exists()).toBe(true);
     expect(target.props('active')).toBe('configuration');
     expect(target.props('configurationUrl')).toBe(props.configurationUrl);
@@ -39,7 +44,7 @@ describe('google_cloud/configuration/panel', () => {
   });
 
   it('contains service accounts list', () => {
-    const target = wrapper.findByTestId('service-accounts-list');
+    const target = wrapper.findComponent(ServiceAccountsList);
     expect(target.exists()).toBe(true);
     expect(target.props('list')).toBe(props.serviceAccounts);
     expect(target.props('createUrl')).toBe(props.createServiceAccountUrl);
@@ -47,14 +52,14 @@ describe('google_cloud/configuration/panel', () => {
   });
 
   it('contains gcp regions list', () => {
-    const target = wrapper.findByTestId('gcp-regions-list');
+    const target = wrapper.findComponent(GcpRegionsList);
     expect(target.props('list')).toBe(props.gcpRegions);
     expect(target.props('createUrl')).toBe(props.configureGcpRegionsUrl);
     expect(target.props('emptyIllustrationUrl')).toBe(props.emptyIllustrationUrl);
   });
 
   it('contains revoke oauth', () => {
-    const target = wrapper.findByTestId('revoke-oauth');
+    const target = wrapper.findComponent(RevokeOauth);
     expect(target.props('url')).toBe(props.revokeOauthUrl);
   });
 });

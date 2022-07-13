@@ -19,10 +19,11 @@ describe('google_cloud/components/google_cloud_menu', () => {
     wrapper.destroy();
   });
 
-  it('contains configuration link', () => {
+  it('contains active configuration link', () => {
     const link = wrapper.findByTestId('configurationLink');
     expect(link.text()).toContain(GoogleCloudMenu.i18n.configuration.title);
     expect(link.attributes('href')).toContain(props.configurationUrl);
+    expect(link.element.classList.contains('gl-tab-nav-item-active')).toBe(true);
   });
 
   it('contains deployments link', () => {

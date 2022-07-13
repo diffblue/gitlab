@@ -1,5 +1,7 @@
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import Panel from '~/google_cloud/databases/panel.vue';
+import IncubationBanner from '~/google_cloud/components/incubation_banner.vue';
+import GoogleCloudMenu from '~/google_cloud/components/google_cloud_menu.vue';
 
 describe('google_cloud/databases/panel', () => {
   let wrapper;
@@ -19,12 +21,12 @@ describe('google_cloud/databases/panel', () => {
   });
 
   it('contains incubation banner', () => {
-    const target = wrapper.findByTestId('incubation-banner');
+    const target = wrapper.findComponent(IncubationBanner);
     expect(target.exists()).toBe(true);
   });
 
   it('contains google cloud menu with `databases` active', () => {
-    const target = wrapper.findByTestId('google-cloud-menu');
+    const target = wrapper.findComponent(GoogleCloudMenu);
     expect(target.exists()).toBe(true);
     expect(target.props('active')).toBe('databases');
     expect(target.props('configurationUrl')).toBe(props.configurationUrl);

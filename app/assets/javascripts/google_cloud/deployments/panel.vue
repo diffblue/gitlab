@@ -4,19 +4,17 @@ import GoogleCloudMenu from '../components/google_cloud_menu.vue';
 import IncubationBanner from '../components/incubation_banner.vue';
 import ServiceTable from './service_table.vue';
 
-const i18n = {
-  configuration: { title: s__('CloudSeed|Configuration') },
-  deployments: { title: s__('CloudSeed|Deployments') },
-  databases: { title: s__('CloudSeed|Databases') },
-};
-
 export default {
   components: {
     ServiceTable,
     IncubationBanner,
     GoogleCloudMenu,
   },
-  i18n,
+  i18n: {
+    configuration: { title: s__('CloudSeed|Configuration') },
+    deployments: { title: s__('CloudSeed|Deployments') },
+    databases: { title: s__('CloudSeed|Databases') },
+  },
   props: {
     configurationUrl: {
       type: String,
@@ -44,20 +42,15 @@ export default {
 
 <template>
   <div>
-    <incubation-banner data-testid="incubation-banner" />
+    <incubation-banner />
 
     <google-cloud-menu
-      data-testid="google-cloud-menu"
       active="deployments"
       :configuration-url="configurationUrl"
       :deployments-url="deploymentsUrl"
       :databases-url="databasesUrl"
     />
 
-    <service-table
-      data-testid="service-table"
-      :cloud-run-url="enableCloudRunUrl"
-      :cloud-storage-url="enableCloudStorageUrl"
-    />
+    <service-table :cloud-run-url="enableCloudRunUrl" :cloud-storage-url="enableCloudStorageUrl" />
   </div>
 </template>

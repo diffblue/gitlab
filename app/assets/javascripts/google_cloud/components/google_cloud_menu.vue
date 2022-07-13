@@ -28,13 +28,13 @@ export default {
   },
   computed: {
     isConfigurationActive() {
-      return this.$props.active === 'configuration';
+      return this.active === 'configuration';
     },
     isDeploymentsActive() {
-      return this.$props.active === 'deployments';
+      return this.active === 'deployments';
     },
     isDatabasesActive() {
-      return this.$props.active === 'databases';
+      return this.active === 'databases';
     },
   },
   i18n,
