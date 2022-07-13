@@ -378,12 +378,7 @@ const createProseMirrorNodeFactories = (schema, proseMirrorFactorySpecs, source)
     } else if (factory.type === 'mark') {
       const markType = schema.marks[proseMirrorName];
       factory.handle = (state, hastNode, parent) => {
-        state.openMark(
-          markType,
-          hastNode,
-          getAttrs(factory, hastNode, parent, source),
-          factory,
-        );
+        state.openMark(markType, hastNode, getAttrs(factory, hastNode, parent, source), factory);
       };
     } else if (factory.type === 'ignore') {
       factory.handle = noop;
