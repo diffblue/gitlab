@@ -28,7 +28,7 @@ export default {
     },
     duplicatesAllowed: {
       type: Boolean,
-      default: true,
+      default: false,
       required: false,
     },
     duplicateExceptionRegex: {
