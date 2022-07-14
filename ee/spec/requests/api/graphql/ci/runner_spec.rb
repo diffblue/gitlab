@@ -9,7 +9,7 @@ RSpec.describe 'Query.runner(id)' do
 
   shared_examples 'runner details fetch operation returning expected upgradeStatus' do
     let(:query) do
-      wrap_fields(query_graphql_path(query_path, all_graphql_fields_for('CiRunner')))
+      wrap_fields(query_graphql_path(query_path, 'id upgradeStatus'))
     end
 
     let(:query_path) do
@@ -39,7 +39,7 @@ RSpec.describe 'Query.runner(id)' do
   end
 
   describe 'upgradeStatus', :saas do
-    let_it_be(:runner) { create(:ci_runner, description: 'Runner 1', version: 'adfe156', revision: 'a') }
+    let_it_be(:runner) { create(:ci_runner, description: 'Runner 1', version: '14.1.0', revision: 'a') }
 
     context 'requested by non-paid user' do
       let(:current_user) { admin }
@@ -124,6 +124,45 @@ RSpec.describe 'Query.runner(id)' do
         let(:expected_upgrade_status) { 'RECOMMENDED' }
 
         it_behaves_like('runner details fetch operation returning expected upgradeStatus')
+      end
+
+      context 'integration test with Gitlab::Ci::RunnerUpgradeCheck' do
+        let(:query) do
+          wrap_fields(query_graphql_path(query_path, 'id upgradeStatus'))
+        end
+
+        let(:query_path) do
+          [
+            [:runner, { id: runner.to_global_id.to_s }]
+          ]
+        end
+
+        let(:runner_releases_double) { instance_double(Gitlab::Ci::RunnerReleases) }
+        let(:available_runner_releases) do
+          %w[14.1.0 14.1.1]
+        end
+
+        before do
+          allow(Gitlab::Ci::RunnerReleases).to receive(:instance).and_return(runner_releases_double)
+          allow(runner_releases_double).to receive(:releases)
+            .and_return(available_runner_releases.map { |v| ::Gitlab::VersionInfo.parse(v) })
+          allow(runner_releases_double).to receive(:releases_by_minor)
+            .and_return(available_runner_releases.map { |v| ::Gitlab::VersionInfo.parse(v) }
+                                                 .group_by(&:without_patch)
+                                                 .transform_values(&:max))
+        end
+
+        it 'retrieves expected fields' do
+          post_graphql(query, current_user: current_user)
+
+          runner_data = graphql_data_at(:runner)
+          expect(runner_data).not_to be_nil
+
+          expect(runner_data).to match a_hash_including(
+            'id' => runner.to_global_id.to_s,
+            'upgradeStatus' => 'RECOMMENDED'
+          )
+        end
       end
     end
   end
