@@ -1,21 +1,6 @@
 <script>
-import {
-  GlDropdown,
-  GlDropdownItem,
-  GlDropdownDivider,
-  GlSegmentedControl,
-  GlIcon,
-  GlSprintf,
-} from '@gitlab/ui';
-import { removeFlash } from '~/analytics/shared/utils';
-import createFlash from '~/flash';
-import { s__, sprintf } from '~/locale';
-import {
-  TASKS_BY_TYPE_FILTERS,
-  TASKS_BY_TYPE_SUBJECT_FILTER_OPTIONS,
-  TASKS_BY_TYPE_MAX_LABELS,
-} from '../../constants';
-import LabelsSelector from '../labels_selector.vue';
+import { GlDropdown, GlDropdownItem, GlSegmentedControl, GlIcon } from '@gitlab/ui';
+import { TASKS_BY_TYPE_FILTERS, TASKS_BY_TYPE_SUBJECT_FILTER_OPTIONS } from '../../constants';
 
 export default {
   name: 'TasksByTypeFilters',
@@ -23,29 +8,12 @@ export default {
     GlDropdown,
     GlDropdownItem,
     GlSegmentedControl,
-    GlDropdownDivider,
     GlIcon,
-    LabelsSelector,
-    GlSprintf,
   },
   props: {
-    selectedLabelIds: {
-      type: Array,
-      required: true,
-    },
-    maxLabels: {
-      type: Number,
-      required: false,
-      default: TASKS_BY_TYPE_MAX_LABELS,
-    },
     subjectFilter: {
       type: String,
       required: true,
-    },
-    defaultGroupLabels: {
-      type: Array,
-      required: false,
-      default: () => [],
     },
   },
   computed: {
@@ -55,53 +23,12 @@ export default {
         value,
       }));
     },
-    selectedLabelsCount() {
-      return this.selectedLabelIds.length;
-    },
-    maxLabelsSelected() {
-      return this.selectedLabelIds.length >= this.maxLabels;
-    },
-  },
-  methods: {
-    canUpdateLabelFilters(value) {
-      // we can always remove a filter
-      return this.selectedLabelIds.includes(value) || !this.maxLabelsSelected;
-    },
-    // TODO: not sure if we still need this
-    handleLabelSelected(value) {
-      removeFlash('notice');
-      if (this.canUpdateLabelFilters(value)) {
-        this.$emit('update-filter', { filter: TASKS_BY_TYPE_FILTERS.LABEL, value });
-      } else {
-        const { maxLabels } = this;
-        const message = sprintf(
-          s__('CycleAnalytics|Only %{maxLabels} labels can be selected at this time'),
-          { maxLabels },
-        );
-        createFlash({
-          message,
-          type: 'notice',
-        });
-      }
-    },
   },
   TASKS_BY_TYPE_FILTERS,
 };
 </script>
 <template>
   <div class="js-tasks-by-type-chart-filters">
-    <!-- TODO: replace label selector with GlDropdown -->
-    <!-- <labels-selector
-      data-testid="type-of-work-filters-label"
-      :initial-data="defaultGroupLabels"
-      :max-labels="maxLabels"
-      :aria-label="__('CycleAnalytics|Display chart filters')"
-      :selected-label-ids="selectedLabelIds"
-      aria-expanded="false"
-      multiselect
-      right
-      @select-label="handleLabelSelected"
-    > -->
     <gl-dropdown icon="settings" text="Settings" :text-sr-only="true" right no-caret>
       <template #button-text>
         <gl-icon class="vertical-align-top" name="settings" />
@@ -122,6 +49,5 @@ export default {
         </div>
       </gl-dropdown-item>
     </gl-dropdown>
-    <!-- </labels-selector> -->
   </div>
 </template>
