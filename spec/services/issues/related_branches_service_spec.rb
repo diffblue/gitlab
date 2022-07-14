@@ -25,6 +25,8 @@ RSpec.describe Issues::RelatedBranchesService do
         project.repository.create_branch(issue.to_branch_name, pipeline.sha)
         project.repository.create_branch("#{issue.iid}doesnt-match", project.repository.root_ref)
         project.repository.create_branch("#{issue.iid}-0-stable", project.repository.root_ref)
+
+        project.repository.add_tag(developer, issue.to_branch_name, pipeline.sha)
       end
 
       context 'when user has access to pipelines' do
