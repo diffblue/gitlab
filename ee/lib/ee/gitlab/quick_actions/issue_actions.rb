@@ -175,8 +175,7 @@ module EE
           condition do
             current_user.can?(:update_escalation_status, quick_action_target) &&
             quick_action_target.persisted? &&
-            quick_action_target.escalation_policies_available? &&
-            !quick_action_target.alert_management_alert
+            quick_action_target.escalation_policies_available?
           end
 
           command :page do |escalation_policy_name|

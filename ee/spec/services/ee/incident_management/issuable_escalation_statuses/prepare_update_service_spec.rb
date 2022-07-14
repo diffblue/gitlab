@@ -11,7 +11,7 @@ RSpec.describe IncidentManagement::IssuableEscalationStatuses::PrepareUpdateServ
   let(:issue) { escalation_status.issue }
   let(:status) { :acknowledged }
   let(:params) { { status: status, policy: policy } }
-  let(:service) { IncidentManagement::IssuableEscalationStatuses::PrepareUpdateService.new(issue, current_user, params) }
+  let(:service) { described_class.new(issue, current_user, params) }
 
   subject(:result) { service.execute }
 
@@ -63,7 +63,16 @@ RSpec.describe IncidentManagement::IssuableEscalationStatuses::PrepareUpdateServ
   context 'when issue is associated with an alert' do
     let!(:alert) { create(:alert_management_alert, issue: issue, project: issue.project) }
 
-    it_behaves_like 'successful response without policy params'
+    it_behaves_like 'successful response' do
+      let(:payload) do
+        {
+          escalation_status: {
+            policy: policy,
+            escalations_started_at: Time.current
+          }
+        }
+      end
+    end
   end
 
   context 'when provided policy is in a different project' do

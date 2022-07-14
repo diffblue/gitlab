@@ -19,7 +19,6 @@ module EE
 
         def reset_pending_escalations
           return unless ::Gitlab::IncidentManagement.escalation_policies_available?(project)
-          return if issuable.alert_management_alert
           return unless policy_changed? || open_status_changed?
 
           delete_escalations if had_policy? && had_open_status?

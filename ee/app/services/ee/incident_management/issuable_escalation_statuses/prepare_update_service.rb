@@ -30,8 +30,7 @@ module EE
         end
 
         def policies_permitted?
-          ::Gitlab::IncidentManagement.escalation_policies_available?(project) &&
-            issuable.alert_management_alert.nil? # Cannot change the policy for an alert
+          ::Gitlab::IncidentManagement.escalation_policies_available?(project)
         end
 
         def set_policy(policy)

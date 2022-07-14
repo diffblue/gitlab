@@ -40,7 +40,7 @@ module Mutations
       end
 
       def check_feature_availability!(issue)
-        return if issue.supports_escalation? && issue.alert_management_alert.blank?
+        return if issue.supports_escalation?
 
         raise Gitlab::Graphql::Errors::ResourceNotAvailable, 'Feature unavailable for provided issue'
       end

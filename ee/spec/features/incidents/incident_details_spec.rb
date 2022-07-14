@@ -21,7 +21,7 @@ RSpec.describe 'Incident details', :js do
     sign_in(current_user)
   end
 
-  context 'escalation policy widget' do
+  describe 'escalation policy widget' do
     let(:escalation_policy_container) { sidebar.find('[data-testid="escalation_policy_container"]') }
 
     shared_examples 'hides the escalation policy widget' do
@@ -37,6 +37,14 @@ RSpec.describe 'Incident details', :js do
         visit_incident_with_expanded_sidebar
 
         expect(escalation_policy_container).not_to have_selector('[data-testid="edit-button"]')
+      end
+    end
+
+    shared_examples 'shows the edit button' do
+      specify do
+        visit_incident_with_expanded_sidebar
+
+        expect(escalation_policy_container).to have_selector('[data-testid="edit-button"]')
       end
     end
 
@@ -61,7 +69,7 @@ RSpec.describe 'Incident details', :js do
       end
     end
 
-    context 'escalation policies licensed feature available' do
+    describe 'escalation policies licensed feature available' do
       before do
         stub_licensed_features(oncall_schedules: true, escalation_policies: true)
       end
@@ -125,6 +133,7 @@ RSpec.describe 'Incident details', :js do
             let(:current_user) { developer }
 
             it_behaves_like 'shows attributes of assigned escalation policy'
+            it_behaves_like 'shows the edit button'
 
             it 'can remove the policy from the incident' do
               visit_incident_with_expanded_sidebar
@@ -138,7 +147,7 @@ RSpec.describe 'Incident details', :js do
               let_it_be(:alert) { create(:alert_management_alert, issue: incident) }
 
               it_behaves_like 'shows attributes of assigned escalation policy'
-              it_behaves_like 'hides the edit button'
+              it_behaves_like 'shows the edit button'
             end
           end
         end
@@ -192,12 +201,12 @@ RSpec.describe 'Incident details', :js do
       end
     end
 
-    context 'escalation policies licensed feature unavailable' do
+    describe 'escalation policies licensed feature unavailable' do
       it_behaves_like 'hides the escalation policy widget'
     end
   end
 
-  context 'escalation status dropdown' do
+  describe 'escalation status dropdown' do
     let(:current_user) { developer }
 
     before do
