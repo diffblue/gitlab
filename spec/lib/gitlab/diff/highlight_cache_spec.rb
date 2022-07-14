@@ -3,7 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Diff::HighlightCache, :clean_gitlab_redis_cache do
-  let(:merge_request) { create(:merge_request_with_diffs) }
+  let_it_be(:merge_request) { create(:merge_request_with_diffs) }
+
   let(:diff_hash) do
     { ".gitignore-false-false-false" =>
       [{ line_code: nil, rich_text: nil, text: "@@ -17,3 +17,4 @@ rerun.txt", type: "match", index: 0, old_pos: 17, new_pos: 17 },
@@ -246,8 +247,12 @@ RSpec.describe Gitlab::Diff::HighlightCache, :clean_gitlab_redis_cache do
   describe '#key' do
     subject { cache.key }
 
+    def options_hash(options_array)
+      OpenSSL::Digest::SHA256.hexdigest(options_array.join)
+    end
+
     it 'returns cache key' do
-      is_expected.to eq("highlighted-diff-files:#{cache.diffable.cache_key}:2:#{cache.diff_options}:true:true")
+      is_expected.to eq("highlighted-diff-files:#{cache.diffable.cache_key}:2:#{options_hash([cache.diff_options, true, true])}")
     end
 
     context 'when the `use_marker_ranges` feature flag is disabled' do
@@ -256,7 +261,7 @@ RSpec.describe Gitlab::Diff::HighlightCache, :clean_gitlab_redis_cache do
       end
 
       it 'returns the original version of the cache' do
-        is_expected.to eq("highlighted-diff-files:#{cache.diffable.cache_key}:2:#{cache.diff_options}:false:true")
+        is_expected.to eq("highlighted-diff-files:#{cache.diffable.cache_key}:2:#{options_hash([cache.diff_options, false, true])}")
       end
     end
 
@@ -266,7 +271,17 @@ RSpec.describe Gitlab::Diff::HighlightCache, :clean_gitlab_redis_cache do
       end
 
       it 'returns the original version of the cache' do
-        is_expected.to eq("highlighted-diff-files:#{cache.diffable.cache_key}:2:#{cache.diff_options}:true:false")
+        is_expected.to eq("highlighted-diff-files:#{cache.diffable.cache_key}:2:#{options_hash([cache.diff_options, true, false])}")
+      end
+    end
+
+    context 'when highlight_diffs_optimize_memory_usage is disabled' do
+      before do
+        stub_feature_flags(highlight_diffs_optimize_memory_usage: false)
+      end
+
+      it 'uses the options hash as a part of the cache key' do
+        is_expected.to eq("highlighted-diff-files:#{cache.diffable.cache_key}:2:#{cache.diff_options}:true:true")
       end
     end
   end
