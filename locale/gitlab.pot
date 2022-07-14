@@ -8402,10 +8402,16 @@ msgstr ""
 msgid "CloudSeed|Refs"
 msgstr ""
 
+msgid "CloudSeed|Regions"
+msgstr ""
+
 msgid "CloudSeed|Scalable, secure, and highly available in-memory service for Redis"
 msgstr ""
 
 msgid "CloudSeed|Service"
+msgstr ""
+
+msgid "CloudSeed|Service Account"
 msgstr ""
 
 msgid "CloudSeed|Services"
@@ -12050,9 +12056,6 @@ msgid "Data type"
 msgstr ""
 
 msgid "Database update failed"
-msgstr ""
-
-msgid "Databases"
 msgstr ""
 
 msgid "DatadogIntegration|%{linkOpen}API key%{linkClose} used for authentication with Datadog."
@@ -17987,6 +17990,9 @@ msgid "Go to your snippets"
 msgstr ""
 
 msgid "Google Cloud"
+msgstr ""
+
+msgid "Google Cloud Error - %{error}"
 msgstr ""
 
 msgid "Google Cloud Project"
