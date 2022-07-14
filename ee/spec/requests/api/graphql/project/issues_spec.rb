@@ -8,8 +8,9 @@ RSpec.describe 'getting an issue list for a project' do
   let_it_be(:current_user) { create(:user) }
 
   describe 'sorting and pagination' do
-    let(:sort_project) { create(:project, :public) }
-    let(:data_path)    { [:project, :issues] }
+    let_it_be(:sort_project) { create(:project, :public) }
+
+    let(:data_path) { [:project, :issues] }
 
     def pagination_query(params)
       graphql_query_for(:project, { full_path: sort_project.full_path },
@@ -18,11 +19,11 @@ RSpec.describe 'getting an issue list for a project' do
     end
 
     context 'when sorting by weight' do
-      let!(:weight_issue1) { create(:issue, project: sort_project, weight: 5) }
-      let!(:weight_issue2) { create(:issue, project: sort_project, weight: nil) }
-      let!(:weight_issue3) { create(:issue, project: sort_project, weight: 1) }
-      let!(:weight_issue4) { create(:issue, project: sort_project, weight: nil) }
-      let!(:weight_issue5) { create(:issue, project: sort_project, weight: 3) }
+      let_it_be(:weight_issue1) { create(:issue, project: sort_project, weight: 5) }
+      let_it_be(:weight_issue2) { create(:issue, project: sort_project, weight: nil) }
+      let_it_be(:weight_issue3) { create(:issue, project: sort_project, weight: 1) }
+      let_it_be(:weight_issue4) { create(:issue, project: sort_project, weight: nil) }
+      let_it_be(:weight_issue5) { create(:issue, project: sort_project, weight: 3) }
 
       context 'when ascending' do
         it_behaves_like 'sorted paginated query' do
@@ -39,6 +40,68 @@ RSpec.describe 'getting an issue list for a project' do
           let(:sort_param) { :WEIGHT_DESC }
           let(:first_param) { 2 }
           let(:all_records) { [weight_issue1, weight_issue5, weight_issue3, weight_issue4, weight_issue2].map { |i| i.iid.to_s } }
+        end
+      end
+    end
+
+    context 'when sorting by published incident' do
+      let_it_be(:published_issue1) { create(:issue, project: sort_project) }
+      let_it_be(:published_issue2) { create(:issue, project: sort_project) }
+      let_it_be(:published_issue3) { create(:issue, project: sort_project) }
+      let_it_be(:published_issue4) { create(:issue, project: sort_project) }
+      let_it_be(:published_issue5) { create(:issue, project: sort_project) }
+
+      before(:all) do
+        create(:status_page_published_incident, issue: published_issue1)
+        create(:status_page_published_incident, issue: published_issue5)
+      end
+
+      context 'when ascending' do
+        it_behaves_like 'sorted paginated query' do
+          let(:node_path) { %w[iid] }
+          let(:sort_param)       { :PUBLISHED_ASC }
+          let(:first_param)      { 2 }
+          let(:all_records) { [published_issue4, published_issue3, published_issue2, published_issue5, published_issue1].map { |i| i.iid.to_s } }
+        end
+      end
+
+      context 'when descending' do
+        it_behaves_like 'sorted paginated query' do
+          let(:node_path) { %w[iid] }
+          let(:sort_param)       { :PUBLISHED_DESC }
+          let(:first_param)      { 2 }
+          let(:all_records) { [published_issue1, published_issue5, published_issue4, published_issue3, published_issue2].map { |i| i.iid.to_s } }
+        end
+      end
+    end
+
+    context 'when sorting by sla due' do
+      let_it_be(:sla_issue1) { create(:issue, :incident, project: sort_project) }
+      let_it_be(:sla_issue2) { create(:issue, :incident, project: sort_project) }
+      let_it_be(:sla_issue3) { create(:issue, :incident, project: sort_project) }
+      let_it_be(:sla_issue4) { create(:issue, :incident, project: sort_project) }
+      let_it_be(:sla_issue5) { create(:issue, :incident, project: sort_project) }
+
+      before(:all) do
+        create(:issuable_sla, issue: sla_issue1, due_at: 1.month.ago)
+        create(:issuable_sla, issue: sla_issue5, due_at: 2.months.ago)
+      end
+
+      context 'when ascending' do
+        it_behaves_like 'sorted paginated query' do
+          let(:node_path) { %w[iid] }
+          let(:sort_param)       { :SLA_DUE_AT_ASC }
+          let(:first_param)      { 2 }
+          let(:all_records) { [sla_issue5, sla_issue1, sla_issue4, sla_issue3, sla_issue2].map { |i| i.iid.to_s } }
+        end
+      end
+
+      context 'when descending' do
+        it_behaves_like 'sorted paginated query' do
+          let(:node_path) { %w[iid] }
+          let(:sort_param)       { :SLA_DUE_AT_DESC }
+          let(:first_param)      { 2 }
+          let(:all_records) { [sla_issue1, sla_issue5, sla_issue4, sla_issue3, sla_issue2].map { |i| i.iid.to_s } }
         end
       end
     end
