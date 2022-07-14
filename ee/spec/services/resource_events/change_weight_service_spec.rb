@@ -53,11 +53,25 @@ RSpec.describe ResourceEvents::ChangeWeightService do
   end
 
   describe 'events tracking', :snowplow do
-    it 'tracks issue usage data counters' do
-      expect(Gitlab::UsageDataCounters::IssueActivityUniqueCounter).to receive(:track_issue_weight_changed_action)
-                                                                         .with(author: user, project: issue.project)
+    context 'when resource is an issuable' do
+      it 'tracks issue usage data counters' do
+        expect(Gitlab::UsageDataCounters::IssueActivityUniqueCounter).to receive(:track_issue_weight_changed_action)
+                                                                           .with(author: user, project: issue.project)
 
-      subject
+        subject
+      end
+    end
+
+    context 'when resource is a work item' do
+      let(:work_item) { create(:work_item) }
+
+      subject { described_class.new(work_item, user).execute }
+
+      it 'tracks work item usage data counters' do
+        expect(Gitlab::UsageDataCounters::WorkItemActivityUniqueCounter).to receive(:track_work_item_weight_changed_action).with(author: user)
+
+        subject
+      end
     end
 
     it_behaves_like 'Snowplow event tracking' do

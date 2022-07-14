@@ -69,6 +69,7 @@
   events:
     - users_creating_work_items
     - users_updating_work_item_title
+    - users_updating_weight_estimate
   feature_flag: track_work_items_activity
 - name: xmau_project_management
   operator: OR
@@ -77,6 +78,7 @@
   events:
     - users_creating_work_items
     - users_updating_work_item_title
+    - users_updating_weight_estimate
   feature_flag: track_work_items_activity
 - name: users_work_items
   operator: OR
@@ -85,4 +87,5 @@
   events:
     - users_creating_work_items
     - users_updating_work_item_title
+    - users_updating_weight_estimate
   feature_flag: track_work_items_activity
