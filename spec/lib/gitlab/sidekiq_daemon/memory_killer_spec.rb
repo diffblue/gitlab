@@ -192,6 +192,30 @@ RSpec.describe Gitlab::SidekiqDaemon::MemoryKiller do
       expect(memory_killer).to receive(:get_hard_limit_rss).and_return(300, 300)
 
       expect(memory_killer).to receive(:refresh_state)
+        .with(:running)
+        .and_call_original
+
+      expect(memory_killer).to receive(:refresh_state)
+        .with(:above_soft_limit)
+        .and_call_original
+
+      expect(Gitlab::Metrics::System).to receive(:monotonic_time).twice.and_call_original
+      expect(memory_killer).to receive(:sleep).with(check_interval_seconds)
+
+      expect(memory_killer).to receive(:out_of_range_description).with(100, 300, 200, false)
+
+      expect(subject).to be true
+    end
+
+    context 'when exceeds GRACE_BALLOON_SECONDS' do
+      let(:grace_balloon_seconds) { 0 }
+
+      it 'return false when rss exceed soft_limit_rss', :aggregate_failures do
+        expect(memory_killer).to receive(:get_rss).and_return(250, 100)
+        expect(memory_killer).to receive(:get_soft_limit_rss).and_return(200, 200)
+        expect(memory_killer).to receive(:get_hard_limit_rss).and_return(300, 300)
+
+        expect(memory_killer).to receive(:refresh_state)
           .with(:running)
           .and_call_original
 
@@ -199,34 +223,9 @@ RSpec.describe Gitlab::SidekiqDaemon::MemoryKiller do
           .with(:above_soft_limit)
           .and_call_original
 
-        expect(Gitlab::Metrics::System).to receive(:monotonic_time).twice.and_call_original
-        expect(memory_killer).to receive(:sleep).with(check_interval_seconds)
+        expect(memory_killer).to receive(:out_of_range_description).with(250, 300, 200, true)
 
-        expect(memory_killer).to receive(:out_of_range_description).with(100, 300, 200, false)
-
-        expect(subject).to be true
-      end
-
-      context 'when exceeds GRACE_BALLOON_SECONDS' do
-        let(:grace_balloon_seconds) { 0 }
-
-        it 'return false when rss exceed soft_limit_rss', :aggregate_failures do
-          expect(memory_killer).to receive(:get_rss).and_return(250, 100)
-          expect(memory_killer).to receive(:get_soft_limit_rss).and_return(200, 200)
-          expect(memory_killer).to receive(:get_hard_limit_rss).and_return(300, 300)
-
-          expect(memory_killer).to receive(:refresh_state)
-            .with(:running)
-            .and_call_original
-
-          expect(memory_killer).to receive(:refresh_state)
-            .with(:above_soft_limit)
-            .and_call_original
-
-          expect(memory_killer).to receive(:out_of_range_description).with(250, 300, 200, true)
-
-          expect(subject).to be false
-        end
+        expect(subject).to be false
       end
     end
   end
