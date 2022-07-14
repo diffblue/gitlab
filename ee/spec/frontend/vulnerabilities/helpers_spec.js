@@ -2,6 +2,7 @@ import {
   getFormattedIssue,
   getAddRelatedIssueRequestParams,
   normalizeGraphQLVulnerability,
+  formatIdentifierExternalIds,
 } from 'ee/vulnerabilities/helpers';
 
 describe('Vulnerabilities helpers', () => {
@@ -63,6 +64,22 @@ describe('Vulnerabilities helpers', () => {
         state: 'dismissed',
         id: 54,
       });
+    });
+  });
+
+  describe('formatIdentifierExternalIds', () => {
+    const identifiers = {
+      externalType: 'external type',
+      externalId: 'external id',
+      name: 'name',
+    };
+
+    it('returns the correct format', () => {
+      const { externalType, externalId, name } = identifiers;
+
+      expect(formatIdentifierExternalIds(identifiers)).toEqual(
+        `[${externalType}]-[${externalId}]-[${name}]`,
+      );
     });
   });
 });

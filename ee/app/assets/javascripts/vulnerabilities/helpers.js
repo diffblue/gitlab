@@ -69,3 +69,7 @@ export const normalizeGraphQLVulnerability = (vulnerability) => {
 
   return newVulnerability;
 };
+
+export const formatIdentifierExternalIds = ({ externalType, externalId, name }) => {
+  return `[${externalType}]-[${externalId}]-[${name}]`;
+};
