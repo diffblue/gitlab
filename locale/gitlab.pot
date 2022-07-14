@@ -25988,6 +25988,9 @@ msgstr ""
 msgid "No Epic"
 msgstr ""
 
+msgid "No Google Cloud projects - You need at least one Google Cloud project"
+msgstr ""
+
 msgid "No Matching Results"
 msgstr ""
 
