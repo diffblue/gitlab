@@ -78,6 +78,8 @@ module AuditEvents
     end
 
     def build_target(target)
+      return target if target.is_a? ::Gitlab::Audit::NullTarget
+
       ::Gitlab::Audit::Target.new(target)
     end
 

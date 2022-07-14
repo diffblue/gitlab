@@ -26,15 +26,25 @@ module EE
                     "Attempted to create #{resource_type} access token but failed with message: #{response.message}"
                   end
 
-        ::AuditEventService.new(
-          current_user,
-          resource,
-          target_id: token&.id,
-          target_type: token&.class&.name,
+        audit_context = {
+          name: event_type(response),
+          author: current_user,
+          scope: resource,
+          target: token || ::Gitlab::Audit::NullTarget.new,
+          message: message,
           target_details: token&.user&.name,
-          action: :custom,
-          custom_message: message
-        ).security_event
+          additional_details: { action: :custom }
+        }
+
+        ::Gitlab::Audit::Auditor.audit(audit_context)
+      end
+
+      def event_type(response)
+        if response.success?
+          "#{resource.class.name.downcase}_access_token_created"
+        else
+          "#{resource.class.name.downcase}_access_token_creation_failed"
+        end
       end
     end
   end
