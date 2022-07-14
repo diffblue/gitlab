@@ -2055,6 +2055,18 @@ RSpec.describe Gitlab::Git::Repository, :seed_helper do
     end
   end
 
+  describe '#full_path' do
+    let(:full_path) { 'some/path' }
+
+    before do
+      repository.set_full_path(full_path: full_path)
+    end
+
+    it 'returns the full path' do
+      expect(repository.full_path).to eq(full_path)
+    end
+  end
+
   describe '#merge_to_ref' do
     let(:repository) { mutable_repository }
     let(:branch_head) { '6d394385cf567f80a8fd85055db1ab4c5295806f' }
