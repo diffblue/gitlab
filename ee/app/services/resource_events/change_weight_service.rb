@@ -13,7 +13,11 @@ module ResourceEvents
       ::ApplicationRecord.legacy_bulk_insert(ResourceWeightEvent.table_name, resource_weight_changes) # rubocop:disable Gitlab/BulkInsert
       resource.expire_note_etag_cache
 
-      Gitlab::UsageDataCounters::IssueActivityUniqueCounter.track_issue_weight_changed_action(author: user, project: resource.project)
+      if resource.is_a?(WorkItem)
+        Gitlab::UsageDataCounters::WorkItemActivityUniqueCounter.track_work_item_weight_changed_action(author: user)
+      else
+        Gitlab::UsageDataCounters::IssueActivityUniqueCounter.track_issue_weight_changed_action(author: user, project: resource.project)
+      end
     end
 
     private
