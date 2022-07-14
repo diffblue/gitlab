@@ -32,9 +32,7 @@ module EE
       def index
         super
 
-        # rubocop:disable Gitlab/ModuleWithInstanceVariables
-        @banned = banned_members
-        # rubocop:enable Gitlab/ModuleWithInstanceVariables
+        @banned = banned_members # rubocop:disable Gitlab/ModuleWithInstanceVariables
       end
 
       # rubocop:disable Gitlab/ModuleWithInstanceVariables
