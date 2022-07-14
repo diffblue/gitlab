@@ -1,6 +1,10 @@
 <script>
 import { s__ } from '~/locale';
 
+const CONFIGURATION_KEY = 'configuration';
+const DEPLOYMENTS_KEY = 'deployments';
+const DATABASES_KEY = 'databases';
+
 const i18n = {
   configuration: { title: s__('CloudSeed|Configuration') },
   deployments: { title: s__('CloudSeed|Deployments') },
@@ -28,13 +32,13 @@ export default {
   },
   computed: {
     isConfigurationActive() {
-      return this.active === 'configuration';
+      return this.active === CONFIGURATION_KEY;
     },
     isDeploymentsActive() {
-      return this.active === 'deployments';
+      return this.active === DEPLOYMENTS_KEY;
     },
     isDatabasesActive() {
-      return this.active === 'databases';
+      return this.active === DATABASES_KEY;
     },
   },
   i18n,

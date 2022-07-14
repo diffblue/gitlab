@@ -21,20 +21,20 @@ describe('google_cloud/components/google_cloud_menu', () => {
 
   it('contains active configuration link', () => {
     const link = wrapper.findByTestId('configurationLink');
-    expect(link.text()).toContain(GoogleCloudMenu.i18n.configuration.title);
-    expect(link.attributes('href')).toContain(props.configurationUrl);
+    expect(link.text()).toBe(GoogleCloudMenu.i18n.configuration.title);
+    expect(link.attributes('href')).toBe(props.configurationUrl);
     expect(link.element.classList.contains('gl-tab-nav-item-active')).toBe(true);
   });
 
   it('contains deployments link', () => {
     const link = wrapper.findByTestId('deploymentsLink');
-    expect(link.text()).toContain(GoogleCloudMenu.i18n.deployments.title);
-    expect(link.attributes('href')).toContain(props.deploymentsUrl);
+    expect(link.text()).toBe(GoogleCloudMenu.i18n.deployments.title);
+    expect(link.attributes('href')).toBe(props.deploymentsUrl);
   });
 
   it('contains databases link', () => {
     const link = wrapper.findByTestId('databasesLink');
-    expect(link.text()).toContain(GoogleCloudMenu.i18n.databases.title);
-    expect(link.attributes('href')).toContain(props.databasesUrl);
+    expect(link.text()).toBe(GoogleCloudMenu.i18n.databases.title);
+    expect(link.attributes('href')).toBe(props.databasesUrl);
   });
 });
