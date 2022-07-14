@@ -32,13 +32,58 @@ RSpec.describe Gitlab::UsageDataCounters::HLLRedisCounter, :clean_gitlab_redis_s
     # Monday 6th of June
     reference_time = Time.utc(2020, 6, 1)
     travel_to(reference_time) { example.run }
+    described_class.clear_memoization(:known_events)
   end
 
-  before do
-    allow(described_class).to receive(:known_events).and_return(known_events)
+  describe '.known_events' do
+    let(:ce_temp_dir) { Dir.mktmpdir }
+    let(:ee_temp_dir) { Dir.mktmpdir }
+    let(:ce_temp_file) { Tempfile.new(%w[common .yml], ce_temp_dir) }
+    let(:ee_temp_file) { Tempfile.new(%w[common .yml], ee_temp_dir) }
+    let(:ce_event) do
+      {
+        "name" => "ce_event",
+        "redis_slot" => "analytics",
+        "category" => "analytics",
+        "expiry" => 84,
+        "aggregation" => "weekly"
+      }
+    end
+
+    let(:ee_event) do
+      {
+        "name" => "ee_event",
+        "redis_slot" => "analytics",
+        "category" => "analytics",
+        "expiry" => 84,
+        "aggregation" => "weekly"
+      }
+    end
+
+    before do
+      stub_const("#{described_class}::KNOWN_EVENTS_PATH", File.expand_path('*.yml', ce_temp_dir))
+      stub_const("EE::#{described_class}::EE_KNOWN_EVENTS_PATH", File.expand_path('*.yml', ee_temp_dir))
+      File.open(ce_temp_file.path, "w+b") { |f| f.write [ce_event].to_yaml }
+      File.open(ee_temp_file.path, "w+b") { |f| f.write [ee_event].to_yaml }
+    end
+
+    it 'returns both ee and ce events' do
+      expect(described_class.known_events).to match_array [ce_event, ee_event]
+    end
+
+    after do
+      ce_temp_file.unlink
+      ee_temp_file.unlink
+      FileUtils.remove_entry(ce_temp_dir) if Dir.exist?(ce_temp_dir)
+      FileUtils.remove_entry(ee_temp_dir) if Dir.exist?(ee_temp_dir)
+    end
   end
 
   describe '.track_event_in_context' do
+    before do
+      allow(described_class).to receive(:known_events).and_return(known_events)
+    end
+
     context 'with valid context' do
       where(:entity, :event_name, :context) do
         entity1 | context_event | default_context
@@ -68,6 +113,7 @@ RSpec.describe Gitlab::UsageDataCounters::HLLRedisCounter, :clean_gitlab_redis_s
 
   describe '.unique_events' do
     before do
+      allow(described_class).to receive(:known_events).and_return(known_events)
       described_class.track_event_in_context(context_event, values: [entity1, entity3], context: default_context, time: 2.days.ago)
       described_class.track_event_in_context(context_event, values: entity3, context: ultimate_context, time: 2.days.ago)
       described_class.track_event_in_context(context_event, values: entity3, context: gold_context, time: 2.days.ago)
@@ -98,6 +144,10 @@ RSpec.describe Gitlab::UsageDataCounters::HLLRedisCounter, :clean_gitlab_redis_s
   end
 
   describe '.track_event' do
+    before do
+      allow(described_class).to receive(:known_events).and_return(known_events)
+    end
+
     context 'with settings usage ping disabled' do
       before do
         stub_application_setting(usage_ping_enabled: false)
