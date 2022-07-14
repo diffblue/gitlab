@@ -2180,9 +2180,6 @@ msgstr ""
 msgid "Add approvers"
 msgstr ""
 
-msgid "Add assignees"
-msgstr ""
-
 msgid "Add attention request"
 msgstr ""
 
@@ -43785,6 +43782,12 @@ msgid "WorkItem|Add"
 msgstr ""
 
 msgid "WorkItem|Add a child"
+msgstr ""
+
+msgid "WorkItem|Add assignee"
+msgstr ""
+
+msgid "WorkItem|Add assignees"
 msgstr ""
 
 msgid "WorkItem|Are you sure you want to cancel editing?"
