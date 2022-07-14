@@ -92,7 +92,6 @@ export const mockProjectScanExecutionPolicy = {
   updatedAt: new Date('2021-06-07T00:00:00.000Z'),
   yaml: mockDastScanExecutionManifest,
   enabled: true,
-  latestScan: { date: new Date('2021-06-07T00:00:00.000Z'), pipelineUrl: 'path/to/pipeline' },
   source: {
     __typename: 'ProjectSecurityPolicySource',
   },
@@ -104,7 +103,6 @@ export const mockGroupScanExecutionPolicy = {
   updatedAt: new Date('2021-06-07T00:00:00.000Z'),
   yaml: mockDastScanExecutionManifest,
   enabled: false,
-  latestScan: { date: new Date('2021-06-07T00:00:00.000Z'), pipelineUrl: 'path/to/pipeline' },
   source: {
     __typename: 'GroupSecurityPolicySource',
     inherited: true,

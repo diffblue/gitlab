@@ -34506,6 +34506,9 @@ msgstr ""
 msgid "SecurityOrchestration|Description"
 msgstr ""
 
+msgid "SecurityOrchestration|Direct"
+msgstr ""
+
 msgid "SecurityOrchestration|Don't show the alert anymore"
 msgstr ""
 
@@ -34534,6 +34537,9 @@ msgid "SecurityOrchestration|Failed to load cluster agents."
 msgstr ""
 
 msgid "SecurityOrchestration|If any scanner finds a newly detected critical vulnerability in an open merge request targeting the master branch, then require two approvals from any member of App security."
+msgstr ""
+
+msgid "SecurityOrchestration|Inherited"
 msgstr ""
 
 msgid "SecurityOrchestration|Inherited from %{namespace}"

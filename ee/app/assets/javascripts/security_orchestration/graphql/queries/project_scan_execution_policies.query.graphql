@@ -1,9 +1,12 @@
 #import "../fragments/scan_execution_policy_source.fragment.graphql"
 
-query projectScanExecutionPolicies($fullPath: ID!) {
+query projectScanExecutionPolicies(
+  $fullPath: ID!
+  $relationship: SecurityPolicyRelationType = INHERITED
+) {
   namespace: project(fullPath: $fullPath) {
     id
-    scanExecutionPolicies(relationship: INHERITED) {
+    scanExecutionPolicies(relationship: $relationship) {
       nodes {
         name
         yaml

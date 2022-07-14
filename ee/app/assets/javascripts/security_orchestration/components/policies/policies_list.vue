@@ -1,4 +1,5 @@
 <script>
+import { intersection } from 'lodash';
 import { GlIcon, GlLink, GlLoadingIcon, GlSprintf, GlTable, GlTooltipDirective } from '@gitlab/ui';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import createFlash from '~/flash';
@@ -9,10 +10,16 @@ import projectScanExecutionPoliciesQuery from '../../graphql/queries/project_sca
 import groupScanExecutionPoliciesQuery from '../../graphql/queries/group_scan_execution_policies.query.graphql';
 import scanResultPoliciesQuery from '../../graphql/queries/scan_result_policies.query.graphql';
 import { getPolicyType } from '../../utils';
-import { POLICY_TYPE_COMPONENT_OPTIONS, POLICY_TYPE_OPTIONS } from '../constants';
+import { POLICY_TYPE_COMPONENT_OPTIONS } from '../constants';
 import PolicyDrawer from '../policy_drawer/policy_drawer.vue';
-import PolicyTypeFilter from '../policy_type_filter.vue';
 import { getSourceUrl, isPolicyInherited } from '../utils';
+import {
+  POLICY_SOURCE_OPTIONS,
+  POLICY_TYPE_OPTIONS,
+  POLICY_TYPES_WITH_INHERITANCE,
+} from './constants';
+import PolicySourceFilter from './filters/policy_source_filter.vue';
+import PolicyTypeFilter from './filters/policy_type_filter.vue';
 import NoPoliciesEmptyState from './no_policies_empty_state.vue';
 
 const NAMESPACE_QUERY_DICT = {
@@ -44,6 +51,7 @@ export default {
     GlSprintf,
     GlTable,
     NoPoliciesEmptyState,
+    PolicySourceFilter,
     PolicyTypeFilter,
     PolicyDrawer,
   },
@@ -66,6 +74,7 @@ export default {
       variables() {
         return {
           fullPath: this.namespacePath,
+          relationship: this.selectedPolicySource,
         };
       },
       update(data) {
@@ -85,7 +94,10 @@ export default {
       },
       error: createPolicyFetchError,
       skip() {
-        return this.namespaceType !== NAMESPACE_TYPES.PROJECT;
+        return (
+          this.namespaceType !== NAMESPACE_TYPES.PROJECT ||
+          this.selectedPolicySource === POLICY_SOURCE_OPTIONS.INHERITED.value
+        );
       },
     },
   },
@@ -94,6 +106,7 @@ export default {
       selectedPolicy: null,
       scanExecutionPolicies: [],
       scanResultPolicies: [],
+      selectedPolicySource: POLICY_SOURCE_OPTIONS.ALL.value,
       selectedPolicyType: POLICY_TYPE_OPTIONS.ALL.value,
     };
   },
@@ -105,10 +118,15 @@ export default {
       };
     },
     policies() {
-      const policyTypes =
+      let policyTypes =
         this.selectedPolicyType === POLICY_TYPE_OPTIONS.ALL.value
           ? Object.keys(this.allPolicyTypes)
           : [this.selectedPolicyType];
+
+      if (this.selectedPolicySource === POLICY_SOURCE_OPTIONS.INHERITED.value) {
+        policyTypes = intersection(policyTypes, POLICY_TYPES_WITH_INHERITANCE);
+      }
+
       const policies = policyTypes.map((type) =>
         getPoliciesWithType(this.allPolicyTypes[type], POLICY_TYPE_OPTIONS[type].text),
       );
@@ -149,7 +167,11 @@ export default {
       return this.selectedPolicy ? getPolicyType(this.selectedPolicy.__typename) : '';
     },
     hasExistingPolicies() {
-      return !(this.selectedPolicyType === POLICY_TYPE_OPTIONS.ALL.value && !this.policies.length);
+      return !(
+        this.selectedPolicyType === POLICY_TYPE_OPTIONS.ALL.value &&
+        this.selectedPolicySource === POLICY_SOURCE_OPTIONS.ALL.value &&
+        !this.policies.length
+      );
     },
     fields() {
       return [
@@ -235,6 +257,11 @@ export default {
             v-model="selectedPolicyType"
             class="col-6"
             data-testid="policy-type-filter"
+          />
+          <policy-source-filter
+            v-model="selectedPolicySource"
+            class="col-6"
+            data-testid="policy-source-filter"
           />
         </div>
       </div>
