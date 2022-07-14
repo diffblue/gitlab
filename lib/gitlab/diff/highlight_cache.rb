@@ -6,7 +6,8 @@ module Gitlab
       include Gitlab::Utils::Gzip
       include Gitlab::Utils::StrongMemoize
 
-      EXPIRATION = 1.week
+      EXPIRATION = 1.day
+      PREVIOUS_EXPIRATION_PERIOD = 7.days
       VERSION = 2
 
       delegate :diffable,     to: :@diff_collection
@@ -88,6 +89,14 @@ module Gitlab
 
       private
 
+      def expiration_period
+        if Feature.enabled?(:highlight_diffs_optimize_memory_usage, diffable.project)
+          EXPIRATION
+        else
+          PREVIOUS_EXPIRATION_PERIOD
+        end
+      end
+
       def set_highlighted_diff_lines(diff_file, content)
         diff_file.highlighted_diff_lines = content.map do |line|
           Gitlab::Diff::Line.safe_init_from_hash(line)
@@ -144,7 +153,7 @@ module Gitlab
 
             # HSETs have to have their expiration date manually updated
             #
-            redis.expire(key, EXPIRATION)
+            redis.expire(key, expiration_period)
           end
 
           record_memory_usage(fetch_memory_usage(redis, key))
