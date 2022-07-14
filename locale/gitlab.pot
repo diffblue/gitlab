@@ -44396,6 +44396,9 @@ msgstr ""
 msgid "You have insufficient permissions to remove this HTTP integration"
 msgstr ""
 
+msgid "You have insufficient permissions to remove this Namespace Ban"
+msgstr ""
+
 msgid "You have insufficient permissions to set customer relations contacts for this issue"
 msgstr ""
 
