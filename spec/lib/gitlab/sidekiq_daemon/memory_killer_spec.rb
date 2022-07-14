@@ -211,9 +211,9 @@ RSpec.describe Gitlab::SidekiqDaemon::MemoryKiller do
       let(:grace_balloon_seconds) { 0 }
 
       it 'return false when rss exceed soft_limit_rss', :aggregate_failures do
-        expect(memory_killer).to receive(:get_rss).and_return(250, 100)
-        expect(memory_killer).to receive(:get_soft_limit_rss).and_return(200, 200)
-        expect(memory_killer).to receive(:get_hard_limit_rss).and_return(300, 300)
+        allow(memory_killer).to receive(:get_rss).and_return(250)
+        allow(memory_killer).to receive(:get_soft_limit_rss).and_return(200)
+        allow(memory_killer).to receive(:get_hard_limit_rss).and_return(300)
 
         expect(memory_killer).to receive(:refresh_state)
           .with(:running)
@@ -354,7 +354,7 @@ RSpec.describe Gitlab::SidekiqDaemon::MemoryKiller do
     let(:jid) { 1 }
     let(:reason) { 'rss out of range reason description' }
     let(:queue) { 'default' }
-    let(:running_jobs) { [{ jid: 1, worker_class: 'DummyWorker' }] }
+    let(:running_jobs) { [{ jid: jid, worker_class: 'DummyWorker' }] }
     let(:worker) do
       Class.new do
         def self.name
@@ -385,8 +385,8 @@ RSpec.describe Gitlab::SidekiqDaemon::MemoryKiller do
           pid: pid,
           message: 'Sidekiq worker RSS out of range',
           current_rss: current_rss,
-          soft_limit_rss: soft_limit_rss,
           hard_limit_rss: hard_limit_rss,
+          soft_limit_rss: soft_limit_rss,
           reason: reason,
           running_jobs: running_jobs)
 

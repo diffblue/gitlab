@@ -128,6 +128,7 @@ module Gitlab
 
       def rss_within_range?
         refresh_state(:running)
+
         deadline = Gitlab::Metrics::System.monotonic_time + GRACE_BALLOON_SECONDS.seconds
         loop do
           return true unless enabled?
