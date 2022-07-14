@@ -72,10 +72,11 @@ RSpec.shared_examples 'page quick action' do
         context 'when issue already has an alert' do
           let_it_be(:alert) { create(:alert_management_alert, issue: incident) }
 
-          it 'does not escalate issue' do
+          it 'starts escalation with the policy' do
             add_note('/page spec policy')
 
-            expect(page).to have_content('Could not apply page command')
+            expect(page).to have_content('Started escalation for this incident.')
+            expect(incident.reload.escalation_status.policy).to eq(escalation_policy)
           end
         end
 

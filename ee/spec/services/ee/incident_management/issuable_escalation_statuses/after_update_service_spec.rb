@@ -12,12 +12,15 @@ RSpec.describe IncidentManagement::IssuableEscalationStatuses::AfterUpdateServic
   let(:status_event) { :acknowledge }
   let(:policy) { escalation_policy }
   let(:escalations_started_at) { Time.current }
-  let(:service) { IncidentManagement::IssuableEscalationStatuses::AfterUpdateService.new(issue, current_user) }
+  let(:service) { described_class.new(issue, current_user) }
 
   subject(:result) { service.execute }
 
-  before do
+  before_all do
     project.add_developer(current_user)
+  end
+
+  before do
     stub_licensed_features(oncall_schedules: true, escalation_policies: true)
   end
 
@@ -41,10 +44,17 @@ RSpec.describe IncidentManagement::IssuableEscalationStatuses::AfterUpdateServic
   context 'when issue is associated with an alert' do
     let_it_be(:alert) { create(:alert_management_alert, issue: issue, project: project) }
 
-    it_behaves_like 'does not alter the pending escalations'
+    it 'alters the pending escalations' do
+      update_issue(status_event, policy, escalations_started_at)
+
+      expect(::IncidentManagement::PendingEscalations::IssueCreateWorker).to receive(:perform_async).with(issue.id)
+      expect(::SystemNoteService).to receive(:start_escalation).with(issue, escalation_policy, current_user)
+
+      result
+    end
   end
 
-  context 'resetting pending escalations' do
+  describe 'resetting pending escalations' do
     using RSpec::Parameterized::TableSyntax
 
     where(:old_status, :new_status, :had_policy, :has_policy, :should_delete, :should_create) do
@@ -85,7 +95,8 @@ RSpec.describe IncidentManagement::IssuableEscalationStatuses::AfterUpdateServic
 
       before do
         if had_policy && [:acknowledged, :triggered].include?(old_status)
-          create(:incident_management_pending_issue_escalation, issue: issue, policy: escalation_policy, project: project)
+          create(:incident_management_pending_issue_escalation,
+                 issue: issue, policy: escalation_policy, project: project)
         end
       end
 
