@@ -5,7 +5,6 @@ import { s__, sprintf, __, n__ } from '~/locale';
 import ChartSkeletonLoader from '~/vue_shared/components/resizable_chart/skeleton_loader.vue';
 import { formattedDate } from '../../shared/utils';
 import { TASKS_BY_TYPE_SUBJECT_ISSUE, TASKS_BY_TYPE_SUBJECT_FILTER_OPTIONS } from '../constants';
-import { uniqById } from '../utils';
 import TasksByTypeChart from './tasks_by_type/tasks_by_type_chart.vue';
 import TasksByTypeFilters from './tasks_by_type/tasks_by_type_filters.vue';
 
@@ -27,7 +26,6 @@ export default {
       'isLoadingTasksByTypeChart',
       'isLoadingTasksByTypeChartTopLabels',
       'errorMessage',
-      'topRankedLabels',
     ]),
     ...mapGetters('typeOfWork', [
       'selectedTasksByTypeFilters',
@@ -97,9 +95,6 @@ export default {
         ? this.errorMessage
         : __('There is no data available. Please change your selection.');
     },
-    initialGroupLabels() {
-      return uniqById(this.topRankedLabels);
-    },
   },
   methods: {
     ...mapActions('typeOfWork', ['setTasksByTypeFilters']),
@@ -124,8 +119,6 @@ export default {
           </gl-tooltip>
         </h4>
         <tasks-by-type-filters
-          :default-group-labels="initialGroupLabels"
-          :selected-label-ids="selectedLabelIds"
           :subject-filter="selectedSubjectFilter"
           @update-filter="onUpdateFilter"
         />

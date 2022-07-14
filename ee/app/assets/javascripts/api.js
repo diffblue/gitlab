@@ -136,7 +136,6 @@ export default {
   },
 
   cycleAnalyticsTasksByType(groupId, params = {}) {
-    console.log('cycleAnalyticsTasksByType::params', params);
     const url = Api.buildUrl(this.cycleAnalyticsTasksByTypePath).replace(':id', groupId);
 
     return axios.get(url, { params });

@@ -67,13 +67,6 @@ export const fetchTasksByTypeData = ({ dispatch, commit, state, rootGetters, get
   // ensure we clear any chart data currently in state
   commit(types.REQUEST_TASKS_BY_TYPE_DATA);
 
-  // TODO: we always need at least 1 label_id to be passed in
-  // TODO: we should use top ranked, if there are no labels selected
-  console.log('selectedLabelIds', selectedLabelIds);
-  // console.log('topRankedLabelsIds', topRankedLabelsIds);
-  // const labelIds = selectedLabelIds.length ? selectedLabelIds : topRankedLabelsIds;
-  console.log('cycleAnalyticsRequestParams', cycleAnalyticsRequestParams);
-  // console.log('labelIds', labelIds);
   return Api.cycleAnalyticsTasksByType(currentGroupPath, {
     ...omit(cycleAnalyticsRequestParams, ['label_name']),
     label_ids: selectedLabelIds,

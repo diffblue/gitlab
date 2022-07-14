@@ -11406,9 +11406,6 @@ msgstr ""
 msgid "CycleAnalyticsStage|should be under a group"
 msgstr ""
 
-msgid "CycleAnalytics|%{selectedLabelsCount} selected (%{maxLabels} max)"
-msgstr ""
-
 msgid "CycleAnalytics|'%{name}' is collecting the data. This can take a few minutes."
 msgstr ""
 
@@ -11433,9 +11430,6 @@ msgstr ""
 msgid "CycleAnalytics|Date"
 msgstr ""
 
-msgid "CycleAnalytics|Display chart filters"
-msgstr ""
-
 msgid "CycleAnalytics|If you have recently upgraded to GitLab Premium, it can take up to 30 minutes for data to collect and display."
 msgstr ""
 
@@ -11445,16 +11439,10 @@ msgstr ""
 msgid "CycleAnalytics|Number of tasks"
 msgstr ""
 
-msgid "CycleAnalytics|Only %{maxLabels} labels can be selected at this time"
-msgstr ""
-
 msgid "CycleAnalytics|Project selected"
 msgid_plural "CycleAnalytics|%d projects selected"
 msgstr[0] ""
 msgstr[1] ""
-
-msgid "CycleAnalytics|Select labels"
-msgstr ""
 
 msgid "CycleAnalytics|Show"
 msgstr ""
@@ -42447,8 +42435,8 @@ msgstr ""
 msgid "ValueStreamAnalytics|%{stageCount}+ items"
 msgstr ""
 
-msgid "ValueStreamAnalytics|%{subjectFilterText} and %{selectedLabelsCount} label"
-msgid_plural "ValueStreamAnalytics|%{subjectFilterText} and %{selectedLabelsCount} labels"
+msgid "ValueStreamAnalytics|%{subjectFilterText} and %{selectedLabelIds} label"
+msgid_plural "ValueStreamAnalytics|%{subjectFilterText} and %{selectedLabelIds} labels"
 msgstr[0] ""
 msgstr[1] ""
 

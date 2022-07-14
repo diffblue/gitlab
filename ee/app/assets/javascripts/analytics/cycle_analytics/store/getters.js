@@ -53,17 +53,10 @@ export const selectedLabelIds = ({ filters }) => {
   const {
     labels: { selectedList = [], data = [] },
   } = filters;
-  console.log('data', data);
+
   if (selectedList.length) {
     const { label_name: selectedLabelNames } = filterValues(filters);
-    return data
-      .filter(({ title }) => {
-        console.log('title', title);
-        console.log('selectedLabelNames', selectedLabelNames);
-        console.log('includes', selectedLabelNames.includes(title));
-        return selectedLabelNames.includes(title);
-      })
-      .map(({ id }) => id);
+    return data.filter(({ title }) => selectedLabelNames.includes(title)).map(({ id }) => id);
   }
   return [];
 };

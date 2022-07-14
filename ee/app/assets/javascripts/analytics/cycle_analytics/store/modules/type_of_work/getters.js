@@ -18,7 +18,7 @@ export const selectedTasksByTypeFilters = (state = {}, _, rootState = {}) => {
   };
 };
 
-export const tasksByTypeChartData = ({ data = [] } = {}, _, rootState = {}) => {
+export const tasksByTypeChartData = ({ data = [] }, _, rootState = {}) => {
   const { createdAfter = null, createdBefore = null } = rootState;
   return data.length
     ? getTasksByTypeData({ data, createdAfter, createdBefore })
@@ -27,14 +27,8 @@ export const tasksByTypeChartData = ({ data = [] } = {}, _, rootState = {}) => {
 
 export const topRankedLabelsIds = (state) => {
   const { topRankedLabels } = state;
-  console.log('topRankedLabels', topRankedLabels);
   return topRankedLabels.map(({ id }) => id);
 };
 
-export const selectedLabelIds = (state, getters, _, rootGetters) => {
-  console.log('selectedLabelIds::rootGetters.selectedLabelIds', rootGetters.selectedLabelIds);
-  console.log('selectedLabelIds::getters.topRankedLabelsIds', getters.topRankedLabelsIds);
-  return rootGetters.selectedLabelIds.length
-    ? rootGetters.selectedLabelIds
-    : getters.topRankedLabelsIds;
-};
+export const selectedLabelIds = (state, getters, _, rootGetters) =>
+  rootGetters.selectedLabelIds.length ? rootGetters.selectedLabelIds : getters.topRankedLabelsIds;
