@@ -12,11 +12,13 @@ import {
 import * as Sentry from '@sentry/browser';
 import { thWidthPercent } from '~/lib/utils/table_utility';
 import externalAuditEventDestinationCreate from '../../graphql/create_external_destination.mutation.graphql';
+import externalAuditEventDestinationHeaderCreate from '../../graphql/create_external_destination_header.mutation.graphql';
 import {
   ADD_STREAM_EDITOR_I18N,
   AUDIT_STREAMS_NETWORK_ERRORS,
   createBlankHeader,
 } from '../../constants';
+import deleteExternalDestination from '../../graphql/delete_external_destination.mutation.graphql';
 
 const { CREATING_ERROR } = AUDIT_STREAMS_NETWORK_ERRORS;
 
@@ -57,39 +59,111 @@ export default {
           (header.name === '' && header.value !== ''),
       );
     },
+    hasFilledHeaders() {
+      return this.headers.some((header) => this.isHeaderFilled(header));
+    },
     isSubmitButtonDisabled() {
       return !this.destinationUrl || this.hasHeaderValidationErrors || this.hasMissingKeyValuePairs;
     },
   },
   methods: {
+    clearError(index) {
+      this.errors.splice(index, 1);
+    },
     async addDestinationUrl() {
-      this.errors = [];
-      this.loading = true;
-      try {
-        const { data } = await this.$apollo.mutate({
-          mutation: externalAuditEventDestinationCreate,
-          variables: {
-            destinationUrl: this.destinationUrl,
-            fullPath: this.groupPath,
-          },
-          context: {
-            isSingleRequest: true,
-          },
+      const { data } = await this.$apollo.mutate({
+        mutation: externalAuditEventDestinationCreate,
+        variables: {
+          destinationUrl: this.destinationUrl,
+          fullPath: this.groupPath,
+        },
+        context: {
+          isSingleRequest: true,
+        },
+      });
+
+      return data.externalAuditEventDestinationCreate;
+    },
+    async addDestinationHeaders(destinationId) {
+      const mutations = this.headers
+        .filter((header) => this.isHeaderFilled(header))
+        .map((header) => {
+          return this.$apollo.mutate({
+            mutation: externalAuditEventDestinationHeaderCreate,
+            variables: {
+              destinationId,
+              key: header.name,
+              value: header.value,
+            },
+          });
         });
 
-        const { errors } = data.externalAuditEventDestinationCreate;
+      return Promise.allSettled(mutations).then((results) => {
+        const rejected = results.filter((r) => r.status === 'rejected').map((r) => r.reason);
+
+        if (rejected.length > 0) {
+          throw rejected[0];
+        }
+
+        return results
+          .filter((r) => r.status === 'fulfilled')
+          .map((r) => r.value.data.auditEventsStreamingHeadersCreate.errors[0])
+          .filter(Boolean);
+      });
+    },
+    async deleteCreatedDestination(destinationId) {
+      return this.$apollo.mutate({
+        mutation: deleteExternalDestination,
+        variables: {
+          id: destinationId,
+        },
+        context: {
+          isSingleRequest: true,
+        },
+      });
+    },
+    async addDestination() {
+      let destinationId = null;
+
+      this.errors = [];
+      this.loading = true;
+
+      try {
+        const {
+          errors = [],
+          externalAuditEventDestination: { id },
+        } = await this.addDestinationUrl();
+
+        destinationId = id;
+
+        if (!errors.length && this.hasFilledHeaders) {
+          const requestErrors = await this.addDestinationHeaders(destinationId);
+
+          errors.push(...requestErrors);
+
+          if (errors.length > 0) {
+            await this.deleteCreatedDestination(destinationId);
+          }
+        }
 
         if (errors.length > 0) {
-          this.errors.push(errors[0]);
+          this.errors.push(...errors);
         } else {
           this.$emit('added');
         }
       } catch (e) {
         Sentry.captureException(e);
         this.errors.push(CREATING_ERROR);
+
+        if (destinationId) {
+          await this.deleteCreatedDestination(destinationId);
+        }
       } finally {
         this.loading = false;
       }
+    },
+    isHeaderFilled(header) {
+      return header.name !== '' && header.value !== '';
     },
     isRowFilled(index) {
       return this.headers[index].name !== '' && this.headers[index].value !== '';
@@ -195,11 +269,12 @@ export default {
       class="gl-mb-5"
       data-testid="alert-errors"
       variant="danger"
+      @dismiss="clearError(index)"
     >
       {{ error }}
     </gl-alert>
 
-    <gl-form @submit.prevent="addDestinationUrl">
+    <gl-form @submit.prevent="addDestination">
       <gl-form-group
         :label="$options.i18n.DESTINATION_URL_LABEL"
         data-testid="destination-url-form-group"

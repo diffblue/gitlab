@@ -8,23 +8,20 @@ import waitForPromises from 'helpers/wait_for_promises';
 import deleteExternalDestination from 'ee/audit_events/graphql/delete_external_destination.mutation.graphql';
 import { AUDIT_STREAMS_NETWORK_ERRORS } from 'ee/audit_events/constants';
 import StreamItem from 'ee/audit_events/components/stream/stream_item.vue';
-import { mockExternalDestinations } from '../../mock_data';
+import { destinationDeleteMutationPopulator, mockExternalDestinations } from '../../mock_data';
 
 jest.mock('~/flash');
 const localVue = createLocalVue();
 localVue.use(VueApollo);
+
 describe('StreamItem', () => {
   let wrapper;
 
-  const mutate = jest.fn().mockResolvedValue({
-    data: {
-      externalAuditEventDestinationDestroy: {
-        errors: [],
-      },
-    },
-  });
-
-  const createComponent = (deleteExternalDestinationSpy = mutate) => {
+  const createComponent = (
+    deleteExternalDestinationSpy = jest
+      .fn()
+      .mockResolvedValue(destinationDeleteMutationPopulator()),
+  ) => {
     const mockApollo = createMockApollo([
       [deleteExternalDestination, deleteExternalDestinationSpy],
     ]);
@@ -72,13 +69,9 @@ describe('StreamItem', () => {
 
     it('should not emit delete when backend error occurs', async () => {
       const errorMsg = 'Random Error message';
-      const deleteExternalDestinationErrorSpy = jest.fn().mockResolvedValue({
-        data: {
-          externalAuditEventDestinationDestroy: {
-            errors: [errorMsg],
-          },
-        },
-      });
+      const deleteExternalDestinationErrorSpy = jest
+        .fn()
+        .mockResolvedValue(destinationDeleteMutationPopulator([errorMsg]));
       createComponent(deleteExternalDestinationErrorSpy);
       const button = findButton();
       await button.trigger('click');
@@ -96,8 +89,7 @@ describe('StreamItem', () => {
 
     it('should not emit delete when network error occurs', async () => {
       const error = new Error('Network error');
-      const deleteExternalDestinationErrorSpy = jest.fn().mockRejectedValue(error);
-      createComponent(deleteExternalDestinationErrorSpy);
+      createComponent(jest.fn().mockRejectedValue(error));
       const button = findButton();
       await button.trigger('click');
 

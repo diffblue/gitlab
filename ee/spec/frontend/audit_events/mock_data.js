@@ -1,3 +1,4 @@
+import { uniqueId } from 'lodash';
 import { slugify } from '~/lib/utils/text_utility';
 
 const DEFAULT_EVENT = {
@@ -88,5 +89,22 @@ export const destinationCreateMutationPopulator = (errors = []) => {
     },
   };
 };
+
+export const destinationHeaderCreateMutationPopulator = (errors = []) => ({
+  data: {
+    auditEventsStreamingHeadersCreate: {
+      errors,
+      clientMutationId: uniqueId(),
+    },
+  },
+});
+
+export const destinationDeleteMutationPopulator = (errors = []) => ({
+  data: {
+    externalAuditEventDestinationDestroy: {
+      errors,
+    },
+  },
+});
 
 export const mockSvgPath = 'mock/path';

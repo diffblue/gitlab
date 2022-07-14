@@ -11,15 +11,19 @@ import {
   extendedWrapper,
 } from 'helpers/vue_test_utils_helper';
 import externalAuditEventDestinationCreate from 'ee/audit_events/graphql/create_external_destination.mutation.graphql';
+import externalAuditEventDestinationHeaderCreate from 'ee/audit_events/graphql/create_external_destination_header.mutation.graphql';
+import deleteExternalDestination from 'ee/audit_events/graphql/delete_external_destination.mutation.graphql';
 import StreamDestinationEditor from 'ee/audit_events/components/stream/stream_destination_editor.vue';
 import { AUDIT_STREAMS_NETWORK_ERRORS, ADD_STREAM_EDITOR_I18N } from 'ee/audit_events/constants';
-import { destinationCreateMutationPopulator, groupPath } from '../../mock_data';
+import {
+  destinationCreateMutationPopulator,
+  destinationDeleteMutationPopulator,
+  destinationHeaderCreateMutationPopulator,
+  groupPath,
+} from '../../mock_data';
 
 const localVue = createLocalVue();
 localVue.use(VueApollo);
-const externalAuditEventDestinationCreateSpy = jest
-  .fn()
-  .mockResolvedValue(destinationCreateMutationPopulator());
 
 describe('StreamDestinationEditor', () => {
   let wrapper;
@@ -29,11 +33,14 @@ describe('StreamDestinationEditor', () => {
   const createComponent = (
     mountFn = shallowMountExtended,
     provide = {},
-    destinationCreateMutationSpy = externalAuditEventDestinationCreateSpy,
+    apolloHandlers = [
+      [
+        externalAuditEventDestinationCreate,
+        jest.fn().mockResolvedValue(destinationCreateMutationPopulator()),
+      ],
+    ],
   ) => {
-    const mockApollo = createMockApollo([
-      [externalAuditEventDestinationCreate, destinationCreateMutationSpy],
-    ]);
+    const mockApollo = createMockApollo(apolloHandlers);
     wrapper = mountFn(StreamDestinationEditor, {
       provide: {
         groupPath,
@@ -78,7 +85,6 @@ describe('StreamDestinationEditor', () => {
 
   afterEach(() => {
     wrapper.destroy();
-    externalAuditEventDestinationCreateSpy.mockClear();
   });
 
   describe('when initialized', () => {
@@ -131,13 +137,14 @@ describe('StreamDestinationEditor', () => {
     });
   });
 
-  describe('add destination event', () => {
+  describe('add destination event without headers', () => {
     it('should emit add event after destination added', async () => {
-      createComponent(
-        shallowMountExtended,
-        {},
-        jest.fn().mockResolvedValue(destinationCreateMutationPopulator()),
-      );
+      createComponent(shallowMountExtended, {}, [
+        [
+          externalAuditEventDestinationCreate,
+          jest.fn().mockResolvedValue(destinationCreateMutationPopulator()),
+        ],
+      ]);
 
       findDestinationUrl().vm.$emit('input', 'https://example.test');
       findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
@@ -149,11 +156,12 @@ describe('StreamDestinationEditor', () => {
 
     it('should not emit add destination event and reports error when server returns error', async () => {
       const errorMsg = 'Destination hosts limit exceeded';
-      createComponent(
-        shallowMountExtended,
-        {},
-        jest.fn().mockResolvedValue(destinationCreateMutationPopulator([errorMsg])),
-      );
+      createComponent(shallowMountExtended, {}, [
+        [
+          externalAuditEventDestinationCreate,
+          jest.fn().mockResolvedValue(destinationCreateMutationPopulator([errorMsg])),
+        ],
+      ]);
 
       findDestinationUrl().vm.$emit('input', 'https://example.test');
       findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
@@ -167,9 +175,128 @@ describe('StreamDestinationEditor', () => {
     it('should not emit add destination event and reports error when network error occurs', async () => {
       const sentryError = new Error('Network error');
       const sentryCaptureExceptionSpy = jest.spyOn(Sentry, 'captureException');
-      createComponent(shallowMountExtended, {}, jest.fn().mockRejectedValue(sentryError));
+      createComponent(shallowMountExtended, {}, [
+        [externalAuditEventDestinationCreate, jest.fn().mockRejectedValue(sentryError)],
+      ]);
 
       findDestinationUrl().vm.$emit('input', 'https://example.test');
+      findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
+      await waitForPromises();
+
+      expect(findAlertErrors()).toHaveLength(1);
+      expect(findAlertErrors().at(0).text()).toBe(AUDIT_STREAMS_NETWORK_ERRORS.CREATING_ERROR);
+      expect(sentryCaptureExceptionSpy).toHaveBeenCalledWith(sentryError);
+      expect(wrapper.emitted('added')).not.toBeDefined();
+    });
+  });
+
+  describe('add destination event with headers', () => {
+    it('should emit add event after destination and headers are added', async () => {
+      createComponent(mountExtended, { showStreamsHeaders: true }, [
+        [
+          externalAuditEventDestinationCreate,
+          jest.fn().mockResolvedValue(destinationCreateMutationPopulator()),
+        ],
+        [
+          externalAuditEventDestinationHeaderCreate,
+          jest.fn().mockResolvedValue(destinationHeaderCreateMutationPopulator()),
+        ],
+      ]);
+
+      findDestinationUrl().vm.$emit('input', 'https://example.test');
+      await setHeadersRowData(0, { name: 'row header', value: 'row value' });
+      await setHeadersRowData(1, { name: 'row header 1', value: 'row value 1' });
+      findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
+      await waitForPromises();
+
+      expect(findAlertErrors()).toHaveLength(0);
+      expect(wrapper.emitted('added')).toBeDefined();
+    });
+
+    it('should ignore empty headers and emit add event after destination and headers are added', async () => {
+      const headerCreateSpy = jest
+        .fn()
+        .mockResolvedValue(destinationHeaderCreateMutationPopulator());
+
+      createComponent(mountExtended, { showStreamsHeaders: true }, [
+        [
+          externalAuditEventDestinationCreate,
+          jest.fn().mockResolvedValue(destinationCreateMutationPopulator()),
+        ],
+        [externalAuditEventDestinationHeaderCreate, headerCreateSpy],
+      ]);
+
+      findDestinationUrl().vm.$emit('input', 'https://example.test');
+      await setHeadersRowData(0, { name: 'row header', value: 'row value' });
+      await setHeadersRowData(1, { name: '', value: '' });
+      findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
+      await waitForPromises();
+
+      expect(findAlertErrors()).toHaveLength(0);
+      expect(headerCreateSpy).toHaveBeenCalledTimes(1);
+      expect(headerCreateSpy).toHaveBeenCalledWith({
+        destinationId: 'test-create-id',
+        key: 'row header',
+        value: 'row value',
+      });
+      expect(wrapper.emitted('added')).toBeDefined();
+    });
+
+    it('should not emit add destination event and reports error when server returns error while adding headers', async () => {
+      const errorMsg = 'Destination hosts limit exceeded';
+      createComponent(mountExtended, { showStreamsHeaders: true }, [
+        [
+          externalAuditEventDestinationCreate,
+          jest.fn().mockResolvedValue(destinationCreateMutationPopulator()),
+        ],
+        [
+          externalAuditEventDestinationHeaderCreate,
+          jest
+            .fn()
+            .mockResolvedValueOnce(destinationHeaderCreateMutationPopulator())
+            .mockResolvedValue(destinationHeaderCreateMutationPopulator([errorMsg])),
+        ],
+        [
+          deleteExternalDestination,
+          jest.fn().mockResolvedValue(destinationDeleteMutationPopulator()),
+        ],
+      ]);
+
+      findDestinationUrl().vm.$emit('input', 'https://example.test');
+      await setHeadersRowData(0, { name: 'row header', value: 'row value' });
+      await setHeadersRowData(1, { name: 'row header 1', value: 'row value 1' });
+      findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
+      await waitForPromises();
+
+      expect(findAlertErrors()).toHaveLength(1);
+      expect(findAlertErrors().at(0).text()).toBe(errorMsg);
+      expect(wrapper.emitted('added')).not.toBeDefined();
+    });
+
+    it('should not emit add destination event and reports error when network error occurs while adding headers', async () => {
+      const sentryError = new Error('Network error');
+      const sentryCaptureExceptionSpy = jest.spyOn(Sentry, 'captureException');
+      createComponent(mountExtended, { showStreamsHeaders: true }, [
+        [
+          externalAuditEventDestinationCreate,
+          jest.fn().mockResolvedValue(destinationCreateMutationPopulator()),
+        ],
+        [
+          externalAuditEventDestinationHeaderCreate,
+          jest
+            .fn()
+            .mockResolvedValueOnce(destinationHeaderCreateMutationPopulator())
+            .mockRejectedValue(sentryError),
+        ],
+        [
+          deleteExternalDestination,
+          jest.fn().mockResolvedValue(destinationDeleteMutationPopulator()),
+        ],
+      ]);
+
+      findDestinationUrl().vm.$emit('input', 'https://example.test');
+      await setHeadersRowData(0, { name: 'row header', value: 'row value' });
+      await setHeadersRowData(1, { name: 'row header 1', value: 'row value 1' });
       findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
       await waitForPromises();
 
