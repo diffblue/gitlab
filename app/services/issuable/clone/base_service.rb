@@ -26,7 +26,7 @@ module Issuable
       private
 
       def rewritten_old_entity_attributes(include_milestone: true)
-        AttributesRewriter.new(
+        Gitlab::Issuable::Clone::AttributesRewriter.new(
           current_user,
           original_entity,
           target_project
@@ -61,7 +61,7 @@ module Issuable
       end
 
       def copy_resource_events
-        CopyResourceEventsService.new(current_user, original_entity, new_entity).execute
+        Gitlab::Issuable::Clone::CopyResourceEventsService.new(current_user, original_entity, new_entity).execute
       end
 
       def update_old_entity

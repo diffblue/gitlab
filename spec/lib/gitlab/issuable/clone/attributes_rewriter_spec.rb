@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Issuable::Clone::AttributesRewriter do
+RSpec.describe Gitlab::Issuable::Clone::AttributesRewriter do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
   let_it_be(:project1) { create(:project, :public, group: group) }

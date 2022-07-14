@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Issuable::Clone::CopyResourceEventsService do
+RSpec.describe Gitlab::Issuable::Clone::CopyResourceEventsService do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
   let_it_be(:project1) { create(:project, :public, group: group) }
