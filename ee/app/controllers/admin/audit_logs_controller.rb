@@ -3,7 +3,7 @@
 class Admin::AuditLogsController < Admin::ApplicationController
   include Gitlab::Utils::StrongMemoize
   include AuditEvents::EnforcesValidDateParams
-  include AuditEvents::AuditLogsParams
+  include AuditEvents::AuditEventsParams
   include AuditEvents::Sortable
   include AuditEvents::DateRange
   include Gitlab::Tracking
@@ -21,13 +21,13 @@ class Admin::AuditLogsController < Admin::ApplicationController
     @is_last_page = events.last_page?
     @events = AuditEventSerializer.new.represent(events)
 
-    @entity = case audit_logs_params[:entity_type]
+    @entity = case audit_events_params[:entity_type]
               when 'User'
                 user_entity
               when 'Project'
-                Project.find_by_id(audit_logs_params[:entity_id])
+                Project.find_by_id(audit_events_params[:entity_id])
               when 'Group'
-                Namespace.find_by_id(audit_logs_params[:entity_id])
+                Namespace.find_by_id(audit_events_params[:entity_id])
               else
                 nil
               end
@@ -41,7 +41,7 @@ class Admin::AuditLogsController < Admin::ApplicationController
     strong_memoize(:events) do
       level = Gitlab::Audit::Levels::Instance.new
       events = AuditEventFinder
-        .new(level: level, params: audit_logs_params)
+        .new(level: level, params: audit_events_params)
         .execute
         .page(params[:page])
         .per(PER_PAGE)
@@ -56,10 +56,10 @@ class Admin::AuditLogsController < Admin::ApplicationController
   end
 
   def user_entity
-    if audit_logs_params[:entity_username].present?
-      return User.find_by_username(audit_logs_params[:entity_username])
+    if audit_events_params[:entity_username].present?
+      return User.find_by_username(audit_events_params[:entity_username])
     end
 
-    User.find_by_id(audit_logs_params[:entity_id])
+    User.find_by_id(audit_events_params[:entity_id])
   end
 end

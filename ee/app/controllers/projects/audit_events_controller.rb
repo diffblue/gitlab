@@ -5,7 +5,7 @@ class Projects::AuditEventsController < Projects::ApplicationController
   include Gitlab::Utils::StrongMemoize
   include LicenseHelper
   include AuditEvents::EnforcesValidDateParams
-  include AuditEvents::AuditLogsParams
+  include AuditEvents::AuditEventsParams
   include AuditEvents::Sortable
   include AuditEvents::DateRange
 
