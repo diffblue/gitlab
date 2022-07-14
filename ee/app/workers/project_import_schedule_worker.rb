@@ -26,7 +26,21 @@ class ProjectImportScheduleWorker
         next
       end
 
-      project.import_state.schedule
+      if project.mirror?
+        project.import_state.schedule
+      else
+        # If the project does not support mirroring (missing license for example)
+        # then we mark it as hard failed to exclude from UpdateAllMirrorWorker query
+        if Feature.enabled?(:hard_failure_for_mirrors_without_license)
+          # We cannot mark it as failed without changing the status to "scheduled"
+          project.import_state.schedule
+
+          project.import_state.set_max_retry_count
+          project.import_state.mark_as_failed('Project mirroring is not supported')
+
+          log_extra_metadata_on_done(:mirroring_skipped, 'Project does not support mirroring')
+        end
+      end
     end
   end
 end

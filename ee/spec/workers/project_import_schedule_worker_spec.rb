@@ -3,11 +3,16 @@
 require 'spec_helper'
 
 RSpec.describe ProjectImportScheduleWorker do
-  let!(:project) { create(:project) }
+  let!(:project) { create(:project, :public) }
 
   describe '#perform' do
     it_behaves_like 'an idempotent worker' do
       let!(:import_state) { create(:import_state, :none, project: project) }
+      let(:mirror) { true }
+
+      before do
+        project.update!(mirror: mirror, mirror_user: project.owner)
+      end
 
       let(:job_args) { [project.id] }
 
@@ -40,6 +45,41 @@ RSpec.describe ProjectImportScheduleWorker do
 
         expect(Gitlab::Mirror).to have_received(:untrack_scheduling).with(project.id).at_least(:once)
       end
+
+      context 'when project does not support mirroring' do
+        let(:mirror) { false }
+
+        it 'marks a project hard failed' do
+          expect(project).to receive(:add_import_job)
+          expect(import_state).to be_none
+
+          subject
+
+          expect(import_state).to be_failed
+          expect(import_state.last_error).to eq('Project mirroring is not supported')
+        end
+
+        it 'does not send a notification' do
+          expect(NotificationService).not_to receive(:new)
+
+          subject
+        end
+
+        context 'when feature flag is disabled' do
+          before do
+            stub_feature_flags(hard_failure_for_mirrors_without_license: false)
+          end
+
+          it 'skips the project' do
+            expect(project).not_to receive(:add_import_job)
+            expect(import_state).to be_none
+
+            subject
+
+            expect(import_state).to be_none
+          end
+        end
+      end
     end
 
     context 'project is not found' do
@@ -68,6 +108,21 @@ RSpec.describe ProjectImportScheduleWorker do
 
         subject.perform(project.id)
       end
+    end
+  end
+
+  context 'when project does not support mirroring' do
+    let!(:import_state) { create(:import_state, :none, project: project) }
+
+    before do
+      project.update!(mirror: false, mirror_user: project.owner)
+    end
+
+    it 'logs the error' do
+      expect(subject).to receive(:log_extra_metadata_on_done)
+        .with(:mirroring_skipped, 'Project does not support mirroring').and_call_original
+
+      subject.perform(project.id)
     end
   end
 end

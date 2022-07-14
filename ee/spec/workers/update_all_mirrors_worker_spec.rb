@@ -149,6 +149,10 @@ RSpec.describe UpdateAllMirrorsWorker do
       projects.each { |project| expect_import_status(project, 'scheduled') }
     end
 
+    def expect_import_failed(*projects)
+      projects.each { |project| expect_import_status(project, 'failed') }
+    end
+
     def expect_import_not_scheduled(*projects)
       projects.each { |project| expect_import_status(project, 'none') }
     end
@@ -262,6 +266,21 @@ RSpec.describe UpdateAllMirrorsWorker do
               expect_import_scheduled(licensed_project1, licensed_project2, public_project)
 
               expect_mirror_scheduling_tracked([licensed_project1, licensed_project2, public_project])
+            end
+
+            context 'when public project does not have a open source license' do
+              it 'marks the mirror as hard failed' do
+                project_without_opensource_license = scheduled_mirror(at: 9.weeks.ago, licensed: false, public: true)
+                project_without_opensource_license.project_setting.update!(legacy_open_source_license_available: false)
+
+                schedule_mirrors!(capacity: 4)
+
+                expect_import_not_scheduled(*unlicensed_projects)
+                expect_import_scheduled(licensed_project1, licensed_project2, public_project)
+                expect_import_failed(project_without_opensource_license)
+
+                expect_mirror_scheduling_tracked([project_without_opensource_license, licensed_project1, licensed_project2, public_project])
+              end
             end
           end
         end
