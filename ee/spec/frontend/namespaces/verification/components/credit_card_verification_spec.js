@@ -39,7 +39,7 @@ describe('Verification page', () => {
   describe('successful verification', () => {
     let mockPostMessage;
 
-    beforeEach(() => {
+    const setup = async () => {
       const dispatchWindowMessageEvent = () => {
         window.dispatchEvent(
           new MessageEvent('message', {
@@ -54,7 +54,7 @@ describe('Verification page', () => {
       });
 
       // mock load event so success event listeners are registered
-      wrapper.find('iframe').trigger('load');
+      await wrapper.find('iframe').trigger('load');
 
       // mock success event arrival when postMessage is called on the Zuora iframe
       mockPostMessage = jest
@@ -62,13 +62,17 @@ describe('Verification page', () => {
         .mockImplementation(dispatchWindowMessageEvent);
 
       wrapper.findComponent(GlButton).vm.$emit('click');
-    });
+    };
 
-    it('triggers postMessage on the Zuora iframe', () => {
+    it('triggers postMessage on the Zuora iframe', async () => {
+      await setup();
+
       expect(mockPostMessage).toHaveBeenCalledWith('submit', DEFAULT_PROVIDES.subscriptionsUrl);
     });
 
-    it('emits verified event', () => {
+    it('emits verified event', async () => {
+      await setup();
+
       expect(wrapper.emitted('verified')).toHaveLength(1);
     });
   });
