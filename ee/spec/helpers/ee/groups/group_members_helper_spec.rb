@@ -74,8 +74,8 @@ RSpec.describe Groups::GroupMembersHelper do
       context 'when banned arg is nil' do
         let(:banned) { nil }
 
-        it 'is nil' do
-          expect(subject[:banned]).to be_nil
+        it 'returns `members` property is an empty array' do
+          expect(subject[:banned][:members]).to eq []
         end
       end
     end

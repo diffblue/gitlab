@@ -21,7 +21,7 @@ module EE::Groups::GroupMembersHelper
        can_export_members: can?(current_user, :export_group_memberships, group),
        export_csv_path: export_csv_group_group_members_path(group),
        can_filter_by_enterprise: can?(current_user, :admin_group_member, group) && group.root_ancestor.saml_enabled?,
-       banned: banned.present? ? group_members_list_data(group, banned) : nil
+       banned: group_members_list_data(group, banned || [])
      })
   end
 
