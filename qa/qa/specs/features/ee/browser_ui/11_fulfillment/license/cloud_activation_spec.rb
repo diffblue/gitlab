@@ -47,9 +47,7 @@ module QA
         activate_license
       end
 
-      it 'shows correct billable user on subscription page',
-         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/364830',
-         quarantine: { issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/366093', type: :flaky } do
+      it 'shows correct billable user on subscription page', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/364830' do
         Gitlab::Page::Admin::Subscription.perform do |subscription|
           expect(subscription.billable_users.to_i).to eq(billable_user_count)
         end
