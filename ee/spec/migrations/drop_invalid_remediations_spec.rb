@@ -16,9 +16,6 @@ RSpec.describe DropInvalidRemediations, :migration do
 
   before do
     stub_const("#{described_class.name}::BATCH_SIZE", 2)
-    allow_next_instance_of(Gitlab::BackgroundMigration::CopyCiBuildsColumnsToSecurityScans) do |instance|
-      allow(instance).to receive(:mark_job_as_succeeded)
-    end
   end
 
   it 'correctly schedules background migrations' do
