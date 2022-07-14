@@ -11,7 +11,7 @@ class Projects::GoogleCloud::ServiceAccountsController < Projects::GoogleCloud::
     if gcp_projects.empty?
       @js_data = { screen: 'no_gcp_projects' }.to_json
       track_event('service_accounts#index', 'error_form', 'no_gcp_projects')
-      flash[:warning] = "No Google Cloud projects - You need at least one Google Cloud project"
+      flash[:warning] = _('No Google Cloud projects - You need at least one Google Cloud project')
       redirect_to project_google_cloud_configuration_path(project)
     else
       params = { per_page: 50 }
@@ -30,7 +30,7 @@ class Projects::GoogleCloud::ServiceAccountsController < Projects::GoogleCloud::
     end
   rescue Google::Apis::ClientError, Google::Apis::ServerError, Google::Apis::AuthorizationError => error
     track_event('service_accounts#index', 'error_gcp', error)
-    flash[:warning] = "Google Cloud Error - #{error}"
+    flash[:warning] = _('Google Cloud Error - %{error}') % { error: error }
     redirect_to project_google_cloud_configuration_path(project)
   end
 
@@ -49,7 +49,7 @@ class Projects::GoogleCloud::ServiceAccountsController < Projects::GoogleCloud::
     redirect_to project_google_cloud_configuration_path(project), notice: response.message
   rescue Google::Apis::ClientError, Google::Apis::ServerError, Google::Apis::AuthorizationError => error
     track_event('service_accounts#create', 'error_gcp', error)
-    flash[:warning] = "Google Cloud Error - #{error}"
+    flash[:warning] = _('Google Cloud Error - %{error}') % { error: error }
     redirect_to project_google_cloud_configuration_path(project)
   end
 end

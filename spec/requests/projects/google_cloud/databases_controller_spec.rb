@@ -11,7 +11,7 @@ RSpec.describe Projects::GoogleCloud::DatabasesController do
 
   let_it_be(:user_guest) { create(:user) }
   let_it_be(:user_developer) { create(:user) }
-  let_it_be(:user_maintainer) { create(:user) }\
+  let_it_be(:user_maintainer) { create(:user) }
 
   let_it_be(:unauthorized_members) { [user_guest, user_developer] }
   let_it_be(:authorized_members) { [user_maintainer] }
