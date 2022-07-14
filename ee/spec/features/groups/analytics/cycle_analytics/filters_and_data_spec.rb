@@ -83,7 +83,8 @@ RSpec.describe 'Group value stream analytics filters and data', :js do
       ]
     end
 
-    let_it_be(:issue) { create(:issue, project: project) }
+    let(:issue) { create(:issue, project: project) }
+
     let_it_be(:value_stream) { create(:cycle_analytics_group_value_stream, group: group, name: custom_value_stream_name, stages: vsa_stages(group)) }
 
     let_it_be(:subgroup_value_stream) { create(:cycle_analytics_group_value_stream, group: sub_group, name: 'First subgroup value stream', stages: vsa_stages(sub_group)) }
@@ -295,12 +296,13 @@ RSpec.describe 'Group value stream analytics filters and data', :js do
       end
 
       before do
-        issue.update!(created_at: 5.days.ago)
+        issue.update!(created_at: 5.days.ago.middle_of_day)
+        mr.update!(created_at: issue.created_at + 1.day)
         create_cycle(user, project, issue, mr, milestone, pipeline)
-        create(:labeled_issue, created_at: 5.days.ago, project: create(:project, group: group), labels: [group_label1])
-        create(:labeled_issue, created_at: 3.days.ago, project: create(:project, group: group), labels: [group_label2])
+        create(:labeled_issue, created_at: issue.created_at, project: create(:project, group: group), labels: [group_label1])
+        create(:labeled_issue, created_at: issue.created_at + 2.days, project: create(:project, group: group), labels: [group_label2])
 
-        issue.metrics.update!(first_mentioned_in_commit_at: mr.created_at - 5.hours)
+        issue.metrics.update!(first_mentioned_in_commit_at: mr.created_at - 5.hours, first_associated_with_milestone_at: issue.created_at + 2.days)
         mr.metrics.update!(first_deployed_to_production_at: mr.created_at + 2.hours, merged_at: mr.created_at + 1.hour)
 
         deploy_master(user, project, environment: 'staging')
@@ -310,7 +312,7 @@ RSpec.describe 'Group value stream analytics filters and data', :js do
       end
 
       stages_with_data = [
-        { title: 'Issue', description: 'Time before an issue gets scheduled', events_count: 1, time: '5d' },
+        { title: 'Issue', description: 'Time before an issue gets scheduled', events_count: 1, time: '2d' },
         { title: 'Code', description: 'Time until first merge request', events_count: 1, time: '1h' }
       ]
 
@@ -334,7 +336,7 @@ RSpec.describe 'Group value stream analytics filters and data', :js do
   end
 
   context 'with use_vs_aggregated_table disabled', :js do
-    let_it_be(:issue) { create(:issue, project: project) }
+    let(:issue) { create(:issue, project: project) }
 
     around do |example|
       freeze_time { example.run }
@@ -342,12 +344,13 @@ RSpec.describe 'Group value stream analytics filters and data', :js do
 
     before do
       stub_feature_flags(use_vsa_aggregated_tables: false)
-      issue.update!(created_at: 5.days.ago)
+      issue.update!(created_at: 5.days.ago.middle_of_day)
+      mr.update!(created_at: issue.created_at + 1.day)
       create_cycle(user, project, issue, mr, milestone, pipeline)
-      create(:labeled_issue, created_at: 5.days.ago, project: create(:project, group: group), labels: [group_label1])
-      create(:labeled_issue, created_at: 3.days.ago, project: create(:project, group: group), labels: [group_label2])
+      create(:labeled_issue, created_at: issue.created_at, project: create(:project, group: group), labels: [group_label1])
+      create(:labeled_issue, created_at: issue.created_at + 2.days, project: create(:project, group: group), labels: [group_label2])
 
-      issue.metrics.update!(first_mentioned_in_commit_at: mr.created_at - 5.hours)
+      issue.metrics.update!(first_mentioned_in_commit_at: mr.created_at - 5.hours, first_associated_with_milestone_at: issue.created_at + 2.days)
       mr.metrics.update!(first_deployed_to_production_at: mr.created_at + 2.hours, merged_at: mr.created_at + 1.hour)
 
       deploy_master(user, project, environment: 'staging')
@@ -357,7 +360,7 @@ RSpec.describe 'Group value stream analytics filters and data', :js do
     end
 
     stages_with_data = [
-      { title: 'Issue', description: 'Time before an issue gets scheduled', events_count: 1, time: '5d' },
+      { title: 'Issue', description: 'Time before an issue gets scheduled', events_count: 1, time: '2d' },
       { title: 'Code', description: 'Time until first merge request', events_count: 1, time: '5h' },
       { title: 'Review', description: 'Time between merge request creation and merge/close', events_count: 1, time: '1h' },
       { title: 'Staging', description: 'From merge request merge until deploy to production', events_count: 1, time: '1h' }
