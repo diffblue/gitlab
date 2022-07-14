@@ -20595,7 +20595,13 @@ msgstr ""
 msgid "Incident|Alert details"
 msgstr ""
 
+msgid "Incident|Are you sure you want to delete this event?"
+msgstr ""
+
 msgid "Incident|Are you sure you wish to delete this image?"
+msgstr ""
+
+msgid "Incident|Delete event"
 msgstr ""
 
 msgid "Incident|Delete image"
@@ -20613,6 +20619,9 @@ msgstr ""
 msgid "Incident|Error creating incident timeline event: %{error}"
 msgstr ""
 
+msgid "Incident|Error deleting incident timeline event: %{error}"
+msgstr ""
+
 msgid "Incident|Metrics"
 msgstr ""
 
@@ -20620,6 +20629,12 @@ msgid "Incident|No timeline items have been added yet."
 msgstr ""
 
 msgid "Incident|Save and add another event"
+msgstr ""
+
+msgid "Incident|Something went wrong while creating the incident timeline event."
+msgstr ""
+
+msgid "Incident|Something went wrong while deleting the incident timeline event."
 msgstr ""
 
 msgid "Incident|Something went wrong while fetching incident timeline events."
