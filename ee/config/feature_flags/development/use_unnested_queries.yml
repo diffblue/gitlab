@@ -1,8 +1,0 @@
----
-name: use_unnested_queries
-introduced_by_url:
-rollout_issue_url:
-milestone: '15.1'
-type: development
-group: group::threat insights
-default_enabled: false
