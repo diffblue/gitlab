@@ -1,6 +1,6 @@
 import { GlDropdownItem } from '@gitlab/ui';
-import { POLICY_TYPE_OPTIONS } from 'ee/security_orchestration/components/constants';
-import PolicyTypeFilter from 'ee/security_orchestration/components/policy_type_filter.vue';
+import { POLICY_TYPE_OPTIONS } from 'ee/security_orchestration/components/policies/constants';
+import PolicyTypeFilter from 'ee/security_orchestration/components/policies/filters/policy_type_filter.vue';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 
 describe('PolicyTypeFilter component', () => {

@@ -7,7 +7,10 @@ import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import projectScanExecutionPoliciesQuery from 'ee/security_orchestration/graphql/queries/project_scan_execution_policies.query.graphql';
 import groupScanExecutionPoliciesQuery from 'ee/security_orchestration/graphql/queries/group_scan_execution_policies.query.graphql';
 import scanResultPoliciesQuery from 'ee/security_orchestration/graphql/queries/scan_result_policies.query.graphql';
-import { POLICY_TYPE_OPTIONS } from 'ee/security_orchestration/components/constants';
+import {
+  POLICY_SOURCE_OPTIONS,
+  POLICY_TYPE_OPTIONS,
+} from 'ee/security_orchestration/components/policies/constants';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { stubComponent } from 'helpers/stub_component';
 import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
@@ -19,6 +22,7 @@ import {
   scanResultPolicies,
 } from '../../mocks/mock_apollo';
 import {
+  mockGroupScanExecutionPolicy,
   mockScanExecutionPoliciesResponse,
   mockScanResultPoliciesResponse,
 } from '../../mocks/mock_data';
@@ -76,6 +80,7 @@ describe('PoliciesList component', () => {
   const mountShallowWrapper = factory(shallowMountExtended);
   const mountWrapper = factory();
 
+  const findPolicySourceFilter = () => wrapper.findByTestId('policy-source-filter');
   const findPolicyTypeFilter = () => wrapper.findByTestId('policy-type-filter');
   const findPoliciesTable = () => wrapper.findComponent(GlTable);
   const findPolicyStatusCells = () => wrapper.findAllByTestId('policy-status-cell');
@@ -100,6 +105,7 @@ describe('PoliciesList component', () => {
 
       expect(requestHandlers.projectScanExecutionPolicies).toHaveBeenCalledWith({
         fullPath: namespacePath,
+        relationship: POLICY_SOURCE_OPTIONS.ALL.value,
       });
       expect(requestHandlers.groupScanExecutionPolicies).not.toHaveBeenCalled();
       expect(requestHandlers.scanResultPolicies).toHaveBeenCalledWith({
@@ -191,6 +197,7 @@ describe('PoliciesList component', () => {
       expect(requestHandlers.projectScanExecutionPolicies).not.toHaveBeenCalled();
       expect(requestHandlers.groupScanExecutionPolicies).toHaveBeenCalledWith({
         fullPath: namespacePath,
+        relationship: POLICY_SOURCE_OPTIONS.ALL.value,
       });
       expect(requestHandlers.scanResultPolicies).not.toHaveBeenCalled();
     });
@@ -257,6 +264,38 @@ describe('PoliciesList component', () => {
         policy,
         policyType,
       });
+    });
+  });
+
+  describe('inherited filter', () => {
+    beforeEach(async () => {
+      mountWrapper({
+        handlers: {
+          projectScanExecutionPolicies: projectScanExecutionPolicies([
+            mockGroupScanExecutionPolicy,
+          ]),
+        },
+      });
+      await waitForPromises();
+    });
+
+    it('displays inherited policies only', async () => {
+      findPolicySourceFilter().vm.$emit('input', POLICY_SOURCE_OPTIONS.INHERITED.value);
+      await waitForPromises();
+
+      expect(findPolicySourceCells()).toHaveLength(1);
+      expect(trimText(findPolicySourceCells().at(0).text())).toBe(
+        'Inherited from parent-group-name',
+      );
+    });
+
+    it('does not fetch inherited scan result policies', async () => {
+      expect(requestHandlers.scanResultPolicies).toHaveBeenCalledTimes(1);
+
+      findPolicySourceFilter().vm.$emit('input', POLICY_SOURCE_OPTIONS.INHERITED.value);
+      await waitForPromises();
+
+      expect(requestHandlers.scanResultPolicies).toHaveBeenCalledTimes(1);
     });
   });
 });
