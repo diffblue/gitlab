@@ -45,10 +45,7 @@ module EE
     end
 
     def enforce_limit?
-      # Refactor in https://gitlab.com/gitlab-org/gitlab/-/issues/366938
-      # rubocop:disable CodeReuse/ServiceClass
-      ::Namespaces::Storage::EnforcementCheckService.enforce_limit?(root_namespace)
-      # rubocop:enable CodeReuse/ServiceClass
+      ::EE::Gitlab::Namespaces::Storage::Enforcement.enforce_limit?(root_namespace)
     end
 
     alias_method :enabled?, :enforce_limit?

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ::Namespaces::Storage::EnforcementCheckService, :saas do
+RSpec.describe ::EE::Gitlab::Namespaces::Storage::Enforcement, :saas do
   describe '.enforce_limit?' do
     before do
       stub_feature_flags(
@@ -224,10 +224,10 @@ RSpec.describe ::Namespaces::Storage::EnforcementCheckService, :saas do
   end
 
   def stub_enforcement_date(date)
-    stub_const('::Namespaces::Storage::EnforcementCheckService::ENFORCEMENT_DATE', date)
+    stub_const('::EE::Gitlab::Namespaces::Storage::Enforcement::ENFORCEMENT_DATE', date)
   end
 
   def stub_effective_date(date)
-    stub_const('::Namespaces::Storage::EnforcementCheckService::EFFECTIVE_DATE', date)
+    stub_const('::EE::Gitlab::Namespaces::Storage::Enforcement::EFFECTIVE_DATE', date)
   end
 end

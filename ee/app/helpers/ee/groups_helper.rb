@@ -88,7 +88,7 @@ module EE
         buy_addon_target_attr: buy_addon_target_attr,
         is_temporary_storage_increase_visible: temporary_storage_increase_visible?(group).to_s,
         default_per_page: page_size,
-        storage_limit_enforced: ::Namespaces::Storage::EnforcementCheckService.enforce_limit?(group).to_s,
+        storage_limit_enforced: ::EE::Gitlab::Namespaces::Storage::Enforcement.enforce_limit?(group).to_s,
         additional_repo_storage_by_namespace: group.additional_repo_storage_by_namespace_enabled?.to_s,
         is_free_namespace: (!group.paid?).to_s
       }

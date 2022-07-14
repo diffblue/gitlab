@@ -230,7 +230,7 @@ RSpec.describe EE::Namespace::RootStorageSize, :saas do
     end
 
     context 'when current date is before enforcement date' do
-      let(:current_date) { ::Namespaces::Storage::EnforcementCheckService::ENFORCEMENT_DATE - 1.day }
+      let(:current_date) { ::EE::Gitlab::Namespaces::Storage::Enforcement::ENFORCEMENT_DATE - 1.day }
 
       it { is_expected.to eq(false) }
 
@@ -238,7 +238,7 @@ RSpec.describe EE::Namespace::RootStorageSize, :saas do
     end
 
     context 'when current date is on or after enforcement date' do
-      let(:current_date) { ::Namespaces::Storage::EnforcementCheckService::ENFORCEMENT_DATE }
+      let(:current_date) { ::EE::Gitlab::Namespaces::Storage::Enforcement::ENFORCEMENT_DATE }
 
       context 'when no subscription is found for namespace' do
         let(:namespace_without_subscription) { create(:namespace) }
@@ -256,7 +256,7 @@ RSpec.describe EE::Namespace::RootStorageSize, :saas do
       end
 
       context 'when subscription start date is before effective date' do
-        let(:start_date) { ::Namespaces::Storage::EnforcementCheckService::EFFECTIVE_DATE - 1.day }
+        let(:start_date) { ::EE::Gitlab::Namespaces::Storage::Enforcement::EFFECTIVE_DATE - 1.day }
 
         before do
           allow(subscription).to receive(:start_date).and_return(start_date)
