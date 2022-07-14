@@ -54,6 +54,14 @@ RSpec.describe StoreSecurityReportsWorker do
       end
     end
 
+    context 'when there is no pipeline with the given ID' do
+      subject(:perform) { described_class.new.perform(0) }
+
+      it 'does not raise an error' do
+        expect { perform }.not_to raise_error
+      end
+    end
+
     context 'when at least one security report feature is enabled' do
       where(report_type: [:sast, :dast, :dependency_scanning, :container_scanning, :cluster_image_scanning])
 

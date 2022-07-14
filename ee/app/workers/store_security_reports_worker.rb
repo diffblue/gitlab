@@ -15,7 +15,7 @@ class StoreSecurityReportsWorker # rubocop:disable Scalability/IdempotentWorker
   worker_resource_boundary :cpu
 
   def perform(pipeline_id)
-    Ci::Pipeline.find(pipeline_id).try do |pipeline|
+    Ci::Pipeline.find_by_id(pipeline_id).try do |pipeline|
       break unless pipeline.project.can_store_security_reports?
 
       ::Security::Ingestion::IngestReportsService.execute(pipeline)
