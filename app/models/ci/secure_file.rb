@@ -24,6 +24,7 @@ module Ci
     before_validation :assign_checksum
 
     scope :order_by_created_at, -> { order(created_at: :desc) }
+    scope :project_id_in, ->(ids) { where(project_id: ids) }
 
     default_value_for(:file_store) { Ci::SecureFileUploader.default_store }
 
