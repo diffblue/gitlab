@@ -3,7 +3,7 @@ import { GlDropdown, GlDropdownItem, GlSearchBoxByType } from '@gitlab/ui';
 import { debounce } from 'lodash';
 import Api from 'ee/api';
 import { __ } from '~/locale';
-import { BRANCH_FETCH_DELAY, ALL_BRANCHES } from './constants';
+import { BRANCH_FETCH_DELAY, ALL_BRANCHES, ALL_PROTECTED_BRANCHES } from './constants';
 
 export default {
   components: {
@@ -31,6 +31,11 @@ export default {
       required: false,
       default: false,
     },
+    allowAllProtectedBranchesOption: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   data() {
     return {
@@ -49,6 +54,17 @@ export default {
         this.selectedBranchesNames.includes(branch.name),
       );
 
+      if (this.allowAllProtectedBranchesOption && idsOnly.includes(ALL_PROTECTED_BRANCHES.id)) {
+        return ALL_PROTECTED_BRANCHES;
+      }
+
+      if (
+        idsOnly.includes(ALL_BRANCHES.id) ||
+        (!this.allowAllProtectedBranchesOption && idsOnly.includes(ALL_PROTECTED_BRANCHES.id))
+      ) {
+        return ALL_BRANCHES;
+      }
+
       return selectedById || selectedByName || this.selected || ALL_BRANCHES;
     },
   },
@@ -64,16 +80,26 @@ export default {
   methods: {
     fetchBranches(term) {
       this.searching = true;
-      const excludeAllBranches = term && !term.toLowerCase().includes('all');
+      const includeAllBranches = !term || term.toLowerCase().includes('all');
+
+      const baseBranches = [];
+
+      if (includeAllBranches) {
+        baseBranches.push(ALL_BRANCHES);
+
+        if (this.allowAllProtectedBranchesOption) {
+          baseBranches.push(ALL_PROTECTED_BRANCHES);
+        }
+      }
 
       return Api.projectProtectedBranches(this.projectId, term)
         .then((branches) => {
           this.$emit('apiError', { hasErrored: false });
-          this.branches = excludeAllBranches ? branches : [ALL_BRANCHES, ...branches];
+          this.branches = [...baseBranches, ...branches];
         })
         .catch((error) => {
           this.$emit('apiError', { hasErrored: true, error });
-          this.branches = excludeAllBranches ? [] : [ALL_BRANCHES];
+          this.branches = baseBranches;
         })
         .finally(() => {
           this.searching = false;

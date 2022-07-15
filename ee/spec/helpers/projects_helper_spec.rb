@@ -405,6 +405,7 @@ RSpec.describe ProjectsHelper do
     before do
       allow(helper).to receive(:current_user).and_return(user)
       allow(helper).to receive(:can?).and_return(true)
+      stub_feature_flags(project_approval_rule_all_protected_branches: false)
     end
 
     it 'returns the correct data' do
@@ -426,8 +427,19 @@ RSpec.describe ProjectsHelper do
         group_name: project.root_ancestor.name,
         full_path: project.full_path,
         security_policies_path: expose_path(project_security_policies_path(project)),
-        new_policy_path: expose_path(new_project_security_policy_path(project))
+        new_policy_path: expose_path(new_project_security_policy_path(project)),
+        allow_all_protected_branches_option: 'false'
       )
+    end
+
+    context 'when the all protected branches feature is available' do
+      before do
+        stub_feature_flags(project_approval_rule_all_protected_branches: true)
+      end
+
+      it 'allows the feature to be used in the data' do
+        expect(subject).to include(allow_all_protected_branches_option: 'true')
+      end
     end
   end
 

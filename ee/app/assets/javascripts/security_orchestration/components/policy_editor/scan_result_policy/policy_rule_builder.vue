@@ -4,6 +4,7 @@ import { s__ } from '~/locale';
 import { REPORT_TYPES_DEFAULT, SEVERITY_LEVELS } from 'ee/security_dashboard/store/constants';
 import ProtectedBranchesSelector from 'ee/vue_shared/components/branches_selector/protected_branches_selector.vue';
 import PolicyRuleMultiSelect from 'ee/security_orchestration/components/policy_rule_multi_select.vue';
+import { ALL_BRANCHES } from 'ee/vue_shared/components/branches_selector/constants';
 import { APPROVAL_VULNERABILITY_STATES } from './lib';
 
 export default {
@@ -37,7 +38,7 @@ export default {
         return this.initRule.branches;
       },
       set(value) {
-        const branches = value.id === null ? [] : [value.name];
+        const branches = value.id === ALL_BRANCHES.id ? [] : [value.name];
         this.triggerChanged({ branches });
       },
     },

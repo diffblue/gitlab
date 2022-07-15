@@ -108,3 +108,14 @@ export const TEST_RULE_WITH_PROTECTED_BRANCHES = {
   ...TEST_RULE,
   protectedBranches: TEST_PROTECTED_BRANCHES,
 };
+
+export const TEST_RULE_WITH_ALL_BRANCHES = {
+  ...TEST_RULE,
+  protectedBranches: [],
+};
+
+export const TEST_RULE_WITH_ALL_PROTECTED_BRANCHES = {
+  ...TEST_RULE,
+  protectedBranches: TEST_PROTECTED_BRANCHES,
+  appliesToAllProtectedBranches: true,
+};

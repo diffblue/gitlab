@@ -1,5 +1,9 @@
 import { shallowMount } from '@vue/test-utils';
 import RuleBranches from 'ee/approvals/components/rule_branches.vue';
+import {
+  ALL_BRANCHES,
+  ALL_PROTECTED_BRANCHES,
+} from 'ee/vue_shared/components/branches_selector/constants';
 
 describe('Rule Branches', () => {
   let wrapper;
@@ -26,7 +30,13 @@ describe('Rule Branches', () => {
 
   it('displays "All branches" if there are no protected branches', () => {
     createComponent();
-    expect(findBranch().text()).toContain('All branches');
+    expect(findBranch().text()).toContain(ALL_BRANCHES.name);
+    expect(findBranch().classes('monospace')).toBe(false);
+  });
+
+  it('displays "All protected branches" if `appliesToAllProtectedBranches` is set to `true`', () => {
+    createComponent({ rule: { appliesToAllProtectedBranches: true } });
+    expect(findBranch().text()).toContain(ALL_PROTECTED_BRANCHES.name);
     expect(findBranch().classes('monospace')).toBe(false);
   });
 

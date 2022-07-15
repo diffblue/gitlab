@@ -4,12 +4,6 @@ export const TYPE_USER = 'user';
 export const TYPE_GROUP = 'group';
 export const TYPE_HIDDEN_GROUPS = 'hidden_groups';
 
-export const BRANCH_FETCH_DELAY = 250;
-export const ALL_BRANCHES = {
-  id: null,
-  name: __('All branches'),
-};
-
 export const RULE_TYPE_FALLBACK = 'fallback';
 export const RULE_TYPE_REGULAR = 'regular';
 export const RULE_TYPE_REPORT_APPROVER = 'report_approver';

@@ -12,7 +12,17 @@ import ProtectedBranchesSelector from 'ee/vue_shared/components/branches_selecto
 import { stubComponent } from 'helpers/stub_component';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import { TEST_RULE, TEST_PROTECTED_BRANCHES, TEST_RULE_WITH_PROTECTED_BRANCHES } from '../mocks';
+import {
+  ALL_BRANCHES,
+  ALL_PROTECTED_BRANCHES,
+} from 'ee/vue_shared/components/branches_selector/constants';
+import {
+  TEST_RULE,
+  TEST_PROTECTED_BRANCHES,
+  TEST_RULE_WITH_PROTECTED_BRANCHES,
+  TEST_RULE_WITH_ALL_BRANCHES,
+  TEST_RULE_WITH_ALL_PROTECTED_BRANCHES,
+} from '../mocks';
 
 const TEST_PROJECT_ID = '7';
 const TEST_APPROVERS = [{ id: 7, type: TYPE_USER }];
@@ -110,21 +120,70 @@ describe('EE Approvals RuleForm', () => {
 
     describe('when has protected branch feature', () => {
       describe('with initial rule', () => {
-        beforeEach(() => {
+        it('on load, it populates initial protected branch ids', () => {
           createComponent({
             isMrEdit: false,
             initRule: TEST_RULE_WITH_PROTECTED_BRANCHES,
           });
-        });
 
-        it('on load, it populates initial protected branch ids', () => {
-          expect(findProtectedBranchesSelector().props('selectedBranches')).toEqual(
+          expect(findProtectedBranchesSelector().props('selectedBranches')).toStrictEqual(
             TEST_PROTECTED_BRANCHES,
           );
         });
       });
 
+      describe('with initial all branches rule', () => {
+        it('on load, it populates initial protected branch ids', () => {
+          createComponent({
+            isMrEdit: false,
+            initRule: TEST_RULE_WITH_ALL_BRANCHES,
+          });
+
+          expect(findProtectedBranchesSelector().props('selectedBranches')).toStrictEqual([
+            ALL_BRANCHES,
+          ]);
+        });
+      });
+
+      describe('with initial all protected branches rule', () => {
+        beforeEach(() => {
+          store.state.settings.allowAllProtectedBranchesOption = true;
+        });
+
+        it('on load, it populates initial protected branch ids', () => {
+          createComponent({
+            isMrEdit: false,
+            initRule: TEST_RULE_WITH_ALL_PROTECTED_BRANCHES,
+          });
+
+          expect(findProtectedBranchesSelector().props('allowAllProtectedBranchesOption')).toBe(
+            true,
+          );
+          expect(findProtectedBranchesSelector().props('selectedBranches')).toStrictEqual([
+            ALL_PROTECTED_BRANCHES,
+          ]);
+        });
+      });
+
       describe('without initRule', () => {
+        const users = [1, 2];
+        const groups = [2, 3];
+        const userRecords = users.map((id) => ({ id, type: TYPE_USER }));
+        const groupRecords = groups.map((id) => ({ id, type: TYPE_GROUP }));
+        const ruleData = (attributes = {}) => ({
+          id: null,
+          name: 'Lorem',
+          approvalsRequired: 2,
+          users,
+          groups,
+          userRecords,
+          groupRecords,
+          removeHiddenGroups: false,
+          protectedBranchIds: [],
+          appliesToAllProtectedBranches: false,
+          ...attributes,
+        });
+
         beforeEach(() => {
           store.state.settings.protectedBranches = TEST_PROTECTED_BRANCHES;
         });
@@ -158,22 +217,8 @@ describe('EE Approvals RuleForm', () => {
             isMrEdit: false,
           });
 
-          const users = [1, 2];
-          const groups = [2, 3];
-          const userRecords = users.map((id) => ({ id, type: TYPE_USER }));
-          const groupRecords = groups.map((id) => ({ id, type: TYPE_GROUP }));
           const branches = [TEST_PROTECTED_BRANCHES[0]];
-          const expected = {
-            id: null,
-            name: 'Lorem',
-            approvalsRequired: 2,
-            users,
-            groups,
-            userRecords,
-            groupRecords,
-            removeHiddenGroups: false,
-            protectedBranchIds: branches.map((x) => x.id),
-          };
+          const expected = ruleData({ protectedBranchIds: branches.map((x) => x.id) });
 
           await findNameInput().vm.$emit('input', expected.name);
           await findApprovalsRequiredInput().vm.$emit('input', expected.approvalsRequired);
@@ -182,6 +227,44 @@ describe('EE Approvals RuleForm', () => {
           await findForm().trigger('submit');
 
           expect(actions.postRule).toHaveBeenCalledWith(expect.anything(), expected);
+        });
+
+        it('on submit with all branches, posts rule', async () => {
+          createComponent({
+            isMrEdit: false,
+          });
+
+          const expected = ruleData();
+
+          await findNameInput().vm.$emit('input', expected.name);
+          await findApprovalsRequiredInput().vm.$emit('input', expected.approvalsRequired);
+          await findApproversList().vm.$emit('input', [...groupRecords, ...userRecords]);
+          await findProtectedBranchesSelector().vm.$emit('input', ALL_BRANCHES);
+          await findForm().trigger('submit');
+
+          expect(actions.postRule).toHaveBeenCalledWith(expect.anything(), expected);
+        });
+
+        describe('with all protected branches allowed', () => {
+          beforeEach(() => {
+            store.state.settings.allowAllProtectedBranchesOption = true;
+          });
+
+          it('on submit with all protected branches, posts rule', async () => {
+            createComponent({
+              isMrEdit: false,
+            });
+
+            const expected = ruleData({ appliesToAllProtectedBranches: true });
+
+            await findNameInput().vm.$emit('input', expected.name);
+            await findApprovalsRequiredInput().vm.$emit('input', expected.approvalsRequired);
+            await findApproversList().vm.$emit('input', [...groupRecords, ...userRecords]);
+            await findProtectedBranchesSelector().vm.$emit('input', ALL_PROTECTED_BRANCHES);
+            await findForm().trigger('submit');
+
+            expect(actions.postRule).toHaveBeenCalledWith(expect.anything(), expected);
+          });
         });
       });
     });
@@ -250,6 +333,7 @@ describe('EE Approvals RuleForm', () => {
           groupRecords,
           removeHiddenGroups: false,
           protectedBranchIds: branches.map((x) => x.id),
+          appliesToAllProtectedBranches: false,
         };
 
         beforeEach(async () => {
@@ -328,6 +412,7 @@ describe('EE Approvals RuleForm', () => {
           groupRecords,
           removeHiddenGroups: false,
           protectedBranchIds: [],
+          appliesToAllProtectedBranches: false,
         };
 
         it('on submit, puts rule', async () => {
