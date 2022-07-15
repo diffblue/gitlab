@@ -1,7 +1,7 @@
 ---
 name: disable_merge_trains
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/24844
-rollout_issue_url: 
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/282477
 milestone: '12.8'
 type: development
 group: group::pipeline execution
