@@ -1064,7 +1064,7 @@ function matchwo(a,b)
 
       expect(expectedDoc).not.toBeFalsy();
       expect(document.toJSON()).toEqual(expectedDoc.toJSON());
-      expect(serialize(document)).toEqual(isString(expectedMarkdown) ? expectedMarkdown : trimmed);
+      expect(serialize(document)).toEqual(expectedMarkdown ?? trimmed);
     },
   );
 
