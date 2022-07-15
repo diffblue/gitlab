@@ -63,7 +63,7 @@ RSpec.describe Projects::IssuesController do
         end
 
         context 'default templates' do
-          let(:selected_field) { 'data-selected="Default"' }
+          let(:selected_field) { 'data-default="Default"' }
           let(:files) { { '.gitlab/issue_templates/Default.md' => '' } }
 
           subject { get :new, params: { namespace_id: project.namespace, project_id: project } }
