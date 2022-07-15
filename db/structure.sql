@@ -20641,8 +20641,10 @@ CREATE TABLE security_findings (
     deduplicated boolean DEFAULT false NOT NULL,
     uuid uuid,
     overridden_uuid uuid,
+    partition_number integer DEFAULT 1 NOT NULL,
     CONSTRAINT check_6c2851a8c9 CHECK ((uuid IS NOT NULL)),
-    CONSTRAINT check_b9508c6df8 CHECK ((char_length(project_fingerprint) <= 40))
+    CONSTRAINT check_b9508c6df8 CHECK ((char_length(project_fingerprint) <= 40)),
+    CONSTRAINT check_partition_number CHECK ((partition_number = 1))
 );
 
 CREATE SEQUENCE security_findings_id_seq
@@ -20710,7 +20712,8 @@ CREATE TABLE security_scans (
     project_id bigint,
     pipeline_id bigint,
     latest boolean DEFAULT true NOT NULL,
-    status smallint DEFAULT 0 NOT NULL
+    status smallint DEFAULT 0 NOT NULL,
+    findings_partition_number integer DEFAULT 1 NOT NULL
 );
 
 CREATE SEQUENCE security_scans_id_seq

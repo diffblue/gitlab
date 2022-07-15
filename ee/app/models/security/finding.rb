@@ -12,6 +12,7 @@ module Security
     include EachBatch
 
     self.table_name = 'security_findings'
+    self.primary_key = :id # As ActiveRecord does not support compound PKs
 
     belongs_to :scan, inverse_of: :findings, optional: false
     belongs_to :scanner, class_name: 'Vulnerabilities::Scanner', inverse_of: :security_findings, optional: false
