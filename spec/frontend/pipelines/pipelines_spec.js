@@ -21,7 +21,7 @@ import Store from '~/pipelines/stores/pipelines_store';
 import NavigationTabs from '~/vue_shared/components/navigation_tabs.vue';
 import TablePagination from '~/vue_shared/components/pagination/table_pagination.vue';
 
-import { stageReply, users, mockSearch, branches } from './mock_data';
+import { users, mockSearch, branches } from './mock_data';
 
 jest.mock('~/flash');
 
@@ -30,9 +30,6 @@ const mockProjectId = '21';
 const mockDefaultBranchName = 'main';
 const mockPipelinesEndpoint = `/${mockProjectPath}/pipelines.json`;
 const mockPipelinesIds = mockPipelinesResponse.pipelines.map(({ id }) => id);
-const mockPipelineWithStages = mockPipelinesResponse.pipelines.find(
-  (p) => p.details.stages && p.details.stages.length,
-);
 
 describe('Pipelines', () => {
   let wrapper;
@@ -45,6 +42,7 @@ describe('Pipelines', () => {
     ciLintPath: '/ci/lint',
     resetCachePath: `${mockProjectPath}/settings/ci_cd/reset_cache`,
     newPipelinePath: `${mockProjectPath}/pipelines/new`,
+
     ciRunnerSettingsPath: `${mockProjectPath}/-/settings/ci_cd#js-runners-settings`,
   };
 
@@ -72,8 +70,6 @@ describe('Pipelines', () => {
   const findRunPipelineButton = () => wrapper.findByTestId('run-pipeline-button');
   const findCiLintButton = () => wrapper.findByTestId('ci-lint-button');
   const findCleanCacheButton = () => wrapper.findByTestId('clear-cache-button');
-  const findStagesDropdownToggle = () =>
-    wrapper.find('[data-testid="mini-pipeline-graph-dropdown"] .dropdown-toggle');
   const findPipelineUrlLinks = () => wrapper.findAll('[data-testid="pipeline-url-link"]');
 
   const createComponent = (props = defaultProps) => {
@@ -612,65 +608,6 @@ describe('Pipelines', () => {
 
       it('renders empty state', () => {
         expect(findEmptyState().text()).toBe('There are currently no pipelines.');
-      });
-    });
-  });
-
-  describe('when a pipeline with stages exists', () => {
-    describe('updates results when a staged is clicked', () => {
-      let stopMock;
-      let restartMock;
-      let cancelMock;
-
-      beforeEach(() => {
-        mock.onGet(mockPipelinesEndpoint, { scope: 'all', page: '1' }).reply(
-          200,
-          {
-            pipelines: [mockPipelineWithStages],
-            count: { all: '1' },
-          },
-          {
-            'POLL-INTERVAL': 100,
-          },
-        );
-
-        mock.onGet(mockPipelineWithStages.details.stages[0].dropdown_path).reply(200, stageReply);
-
-        createComponent();
-
-        stopMock = jest.spyOn(wrapper.vm.poll, 'stop');
-        restartMock = jest.spyOn(wrapper.vm.poll, 'restart');
-        cancelMock = jest.spyOn(wrapper.vm.service.cancelationSource, 'cancel');
-      });
-
-      describe('when a request is being made', () => {
-        beforeEach(async () => {
-          mock.onGet(mockPipelinesEndpoint).reply(200, mockPipelinesResponse);
-
-          await waitForPromises();
-        });
-
-        it('stops polling, cancels the request, & restarts polling', async () => {
-          // Mock init a polling cycle
-          wrapper.vm.poll.options.notificationCallback(true);
-
-          findStagesDropdownToggle().trigger('click');
-
-          await waitForPromises();
-
-          expect(cancelMock).toHaveBeenCalled();
-          expect(stopMock).toHaveBeenCalled();
-          expect(restartMock).toHaveBeenCalled();
-        });
-
-        it('stops polling & restarts polling', async () => {
-          findStagesDropdownToggle().trigger('click');
-          await waitForPromises();
-
-          expect(cancelMock).not.toHaveBeenCalled();
-          expect(stopMock).toHaveBeenCalled();
-          expect(restartMock).toHaveBeenCalled();
-        });
       });
     });
   });
