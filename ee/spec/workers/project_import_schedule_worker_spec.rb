@@ -8,10 +8,9 @@ RSpec.describe ProjectImportScheduleWorker do
   describe '#perform' do
     it_behaves_like 'an idempotent worker' do
       let!(:import_state) { create(:import_state, :none, project: project) }
-      let(:mirror) { true }
 
       before do
-        project.update!(mirror: mirror, mirror_user: project.owner)
+        project.update!(mirror: true, mirror_user: project.owner)
       end
 
       let(:job_args) { [project.id] }
@@ -45,41 +44,6 @@ RSpec.describe ProjectImportScheduleWorker do
 
         expect(Gitlab::Mirror).to have_received(:untrack_scheduling).with(project.id).at_least(:once)
       end
-
-      context 'when project does not support mirroring' do
-        let(:mirror) { false }
-
-        it 'marks a project hard failed' do
-          expect(project).to receive(:add_import_job)
-          expect(import_state).to be_none
-
-          subject
-
-          expect(import_state).to be_failed
-          expect(import_state.last_error).to eq('Project mirroring is not supported')
-        end
-
-        it 'does not send a notification' do
-          expect(NotificationService).not_to receive(:new)
-
-          subject
-        end
-
-        context 'when feature flag is disabled' do
-          before do
-            stub_feature_flags(hard_failure_for_mirrors_without_license: false)
-          end
-
-          it 'skips the project' do
-            expect(project).not_to receive(:add_import_job)
-            expect(import_state).to be_none
-
-            subject
-
-            expect(import_state).to be_none
-          end
-        end
-      end
     end
 
     context 'project is not found' do
@@ -112,17 +76,56 @@ RSpec.describe ProjectImportScheduleWorker do
   end
 
   context 'when project does not support mirroring' do
-    let!(:import_state) { create(:import_state, :none, project: project) }
+    let!(:import_state) { create(:import_state, :finished, project: project) }
 
     before do
-      project.update!(mirror: false, mirror_user: project.owner)
+      stub_licensed_features(repository_mirrors: false)
+      project.update!(mirror: true, mirror_user: project.owner)
+    end
+
+    it 'marks a project hard failed' do
+      expect(import_state).to be_finished
+
+      subject.perform(project.id)
+      import_state.reload
+
+      expect(import_state).to be_failed
+      expect(import_state.last_error).to eq('Project mirroring is not supported')
+    end
+
+    it 'does not send a notification' do
+      expect(NotificationService).not_to receive(:new)
+
+      subject.perform(project.id)
+    end
+
+    it 'changes the capacity' do
+      expect(Gitlab::Mirror).to receive(:increment_capacity).with(project.id)
+      expect(Gitlab::Mirror).to receive(:decrement_capacity).with(project.id)
+
+      subject.perform(project.id)
     end
 
     it 'logs the error' do
       expect(subject).to receive(:log_extra_metadata_on_done)
-        .with(:mirroring_skipped, 'Project does not support mirroring').and_call_original
+                           .with(:mirroring_skipped, 'Project does not support mirroring').and_call_original
 
       subject.perform(project.id)
+    end
+
+    context 'when feature flag is disabled' do
+      before do
+        stub_feature_flags(hard_failure_for_mirrors_without_license: false)
+      end
+
+      it 'skips the project' do
+        expect(import_state).to be_finished
+
+        subject.perform(project.id)
+        import_state.reload
+
+        expect(import_state).to be_finished
+      end
     end
   end
 end
