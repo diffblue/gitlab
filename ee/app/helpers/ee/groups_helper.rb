@@ -74,7 +74,9 @@ module EE
         add_seats_href: add_seats_url(group),
         has_no_subscription: group.has_free_or_no_subscription?.to_s,
         max_free_namespace_seats: ::Namespaces::FreeUserCap::FREE_USER_LIMIT,
-        explore_plans_path: group_billings_path(group)
+        explore_plans_path: group_billings_path(group),
+        free_user_cap_enabled: ::Namespaces::FreeUserCap::Standard.new(group).enforce_cap?.to_s,
+        preview_free_user_cap: ::Namespaces::FreeUserCap::Preview.new(group).enforce_cap?.to_s
       }
     end
 

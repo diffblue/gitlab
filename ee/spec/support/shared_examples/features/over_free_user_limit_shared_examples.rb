@@ -34,6 +34,7 @@ RSpec.shared_examples_for 'over the free user limit alert' do
     before do
       stub_feature_flags(free_user_cap: false)
       stub_feature_flags(preview_free_user_cap: true)
+      group.namespace_settings.update_column(:include_for_free_user_cap_preview, true)
       stub_const('::Namespaces::FreeUserCap::FREE_USER_LIMIT', 1)
     end
 
@@ -89,6 +90,7 @@ RSpec.shared_examples_for 'user namespace over the free user limit alert' do
     before do
       stub_feature_flags(free_user_cap: false)
       stub_feature_flags(preview_free_user_cap: true)
+      namespace.namespace_settings.update_column(:include_for_free_user_cap_preview, true)
       stub_const('::Namespaces::FreeUserCap::FREE_USER_LIMIT', 1)
     end
 

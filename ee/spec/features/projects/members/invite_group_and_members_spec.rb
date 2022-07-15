@@ -201,8 +201,8 @@ RSpec.describe 'Project > Members > Invite group and members' do
     end
 
     context 'with user namespace' do
+      let_it_be(:namespace) { create(:namespace, :with_namespace_settings) }
       let_it_be(:project) do
-        namespace = create(:namespace, :with_namespace_settings)
         project = create(:project, namespace: namespace)
         create(:gitlab_subscription, hosted_plan: create(:free_plan), namespace: namespace)
         project
