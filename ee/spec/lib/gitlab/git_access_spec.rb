@@ -1280,6 +1280,20 @@ RSpec.describe Gitlab::GitAccess do
     end
   end
 
+  describe '#check_download_access!' do
+    let(:actor) { user }
+
+    before do
+      project.add_developer(user)
+    end
+
+    it 'disallows hidden projects to be to pulled' do
+      project.update!(hidden: true)
+
+      expect { pull_changes }.to raise_forbidden(described_class::ERROR_MESSAGES[:download])
+    end
+  end
+
   private
 
   def access

@@ -2205,4 +2205,16 @@ RSpec.describe ProjectPolicy do
       end
     end
   end
+
+  context 'hidden projects' do
+    let(:project) { create(:project, :repository, hidden: true) }
+    let(:current_user) { create(:user) }
+
+    before do
+      project.add_owner(current_user)
+    end
+
+    it { is_expected.to be_disallowed(:download_code) }
+    it { is_expected.to be_disallowed(:build_download_code) }
+  end
 end
