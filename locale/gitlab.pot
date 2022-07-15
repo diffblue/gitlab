@@ -42435,8 +42435,8 @@ msgstr ""
 msgid "ValueStreamAnalytics|%{stageCount}+ items"
 msgstr ""
 
-msgid "ValueStreamAnalytics|%{subjectFilterText} and %{selectedLabelIds} label"
-msgid_plural "ValueStreamAnalytics|%{subjectFilterText} and %{selectedLabelIds} labels"
+msgid "ValueStreamAnalytics|%{subjectFilterText} and %{selectedLabelsCount} label"
+msgid_plural "ValueStreamAnalytics|%{subjectFilterText} and %{selectedLabelsCount} labels"
 msgstr[0] ""
 msgstr[1] ""
 

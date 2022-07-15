@@ -40,15 +40,16 @@ export default {
     },
     selectedFiltersDescription() {
       const { selectedLabelIds, selectedSubjectFilterText } = this;
+      const selectedLabelsCount = selectedLabelIds.length;
       return sprintf(
         n__(
-          'ValueStreamAnalytics|%{subjectFilterText} and %{selectedLabelIds} label',
-          'ValueStreamAnalytics|%{subjectFilterText} and %{selectedLabelIds} labels',
-          selectedLabelIds.length,
+          'ValueStreamAnalytics|%{subjectFilterText} and %{selectedLabelsCount} label',
+          'ValueStreamAnalytics|%{subjectFilterText} and %{selectedLabelsCount} labels',
+          selectedLabelsCount,
         ),
         {
           subjectFilterText: selectedSubjectFilterText.toLowerCase(),
-          selectedLabelIds: selectedLabelIds.length,
+          selectedLabelsCount,
         },
       );
     },
