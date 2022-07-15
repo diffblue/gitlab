@@ -35,6 +35,28 @@ describe('Insights helpers', () => {
       expect(transformChartDataForGlCharts(chart, data).yAxisTitle).toEqual('Issues');
     });
 
+    describe('when the API returns the nested chart metadata', () => {
+      it('sets the X and Y axis titles properly', () => {
+        const chart = {
+          type: CHART_TYPES.BAR,
+          query: {
+            data_source: 'issuables',
+            params: { group_by: 'month', issuable_type: 'issue' },
+          },
+        };
+        const data = {
+          labels: ['January', 'February'],
+          datasets: [
+            { label: 'Dataset 1', data: [1] },
+            { label: 'Dataset 2', data: [2] },
+          ],
+        };
+
+        expect(transformChartDataForGlCharts(chart, data).yAxisTitle).toEqual('Issues');
+        expect(transformChartDataForGlCharts(chart, data).xAxisTitle).toEqual('Months');
+      });
+    });
+
     it('copies the data to the datasets for stacked bar charts', () => {
       const chart = {
         type: CHART_TYPES.STACKED_BAR,

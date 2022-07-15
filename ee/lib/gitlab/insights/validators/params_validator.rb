@@ -7,6 +7,7 @@ module Gitlab
         ParamsValidatorError = Class.new(StandardError)
         InvalidTypeError = Class.new(ParamsValidatorError)
         InvalidProjectsError = Class.new(ParamsValidatorError)
+        InvalidQueryError = Class.new(ParamsValidatorError)
 
         SUPPORTER_TYPES = %w[bar line stacked-bar pie].freeze
 

@@ -1,6 +1,14 @@
 import { CHART_TYPES } from 'ee/insights/constants';
 import { __ } from '~/locale';
 
+const getGroupByValue = (queryParams) => {
+  return queryParams.group_by || queryParams.params.group_by;
+};
+
+const getTypeValue = (queryParams) => {
+  return queryParams.issuable_type || queryParams.params.issuable_type;
+};
+
 const getAxisTitle = (label) => {
   switch (label) {
     case 'day':
@@ -19,12 +27,12 @@ const getAxisTitle = (label) => {
 };
 
 export const transformChartDataForGlCharts = (
-  { type, query: { group_by, issuable_type } },
+  { type, query: queryParams },
   { labels, datasets },
 ) => {
   const formattedData = {
-    xAxisTitle: getAxisTitle(group_by),
-    yAxisTitle: getAxisTitle(issuable_type),
+    xAxisTitle: getAxisTitle(getGroupByValue(queryParams)),
+    yAxisTitle: getAxisTitle(getTypeValue(queryParams)),
     labels,
     datasets: [],
     seriesNames: [],
