@@ -89,7 +89,7 @@ export default {
 
 <template>
   <span class="gl-ml-2">
-    <gl-dropdown category="tertiary" toggle-class="btn-icon">
+    <gl-dropdown category="tertiary" toggle-class="btn-icon" :right="true">
       <template #button-content>
         <gl-icon name="ellipsis_v" :size="14" />
       </template>
