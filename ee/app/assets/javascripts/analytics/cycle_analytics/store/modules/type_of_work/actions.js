@@ -80,7 +80,12 @@ export const fetchTasksByTypeData = ({ dispatch, commit, state, rootGetters, get
     .catch((error) => dispatch('receiveTasksByTypeDataError', error));
 };
 
-export const setTasksByTypeFilters = ({ dispatch, commit }, data) => {
+export const setTasksByTypeFilters = ({ dispatch, commit, getters }, data) => {
   commit(types.SET_TASKS_BY_TYPE_FILTERS, data);
-  dispatch('fetchTasksByTypeData');
+
+  const { selectedLabelIds = [] } = getters;
+  if (selectedLabelIds.length) {
+    return dispatch('fetchTasksByTypeData');
+  }
+  return commit(types.RECEIVE_TASKS_BY_TYPE_DATA_SUCCESS, []);
 };

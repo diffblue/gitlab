@@ -11444,9 +11444,6 @@ msgid_plural "CycleAnalytics|%d projects selected"
 msgstr[0] ""
 msgstr[1] ""
 
-msgid "CycleAnalytics|Show"
-msgstr ""
-
 msgid "CycleAnalytics|Stage time: %{title}"
 msgstr ""
 
