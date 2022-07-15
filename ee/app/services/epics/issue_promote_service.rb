@@ -10,7 +10,7 @@ module Epics
 
       validate_promotion!
 
-      super
+      super(@issue, @parent_group)
 
       track_event
       new_entity
