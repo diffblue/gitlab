@@ -83,6 +83,21 @@ describe('Type of work actions', () => {
         it(`commits the ${types.RECEIVE_TOP_RANKED_GROUP_LABELS_SUCCESS} mutation and dispatches the 'fetchTasksByTypeData' action`, () => {
           return testAction(
             actions.receiveTopRankedGroupLabelsSuccess,
+            groupLabels,
+            state,
+            [
+              {
+                type: types.RECEIVE_TOP_RANKED_GROUP_LABELS_SUCCESS,
+                payload: groupLabels,
+              },
+            ],
+            [{ type: 'fetchTasksByTypeData' }],
+          );
+        });
+
+        it(`dispatches 'setLoading' with false when there are no labels`, () => {
+          return testAction(
+            actions.receiveTopRankedGroupLabelsSuccess,
             null,
             state,
             [
@@ -91,7 +106,7 @@ describe('Type of work actions', () => {
                 payload: null,
               },
             ],
-            [{ type: 'fetchTasksByTypeData' }],
+            [{ type: 'setLoading', payload: false }],
           );
         });
       });

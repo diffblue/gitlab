@@ -44,7 +44,7 @@ export default {
         n__(
           'ValueStreamAnalytics|%{subjectFilterText} and %{selectedLabelIds} label',
           'ValueStreamAnalytics|%{subjectFilterText} and %{selectedLabelIds} labels',
-          selectedLabelIds,
+          selectedLabelIds.length,
         ),
         {
           subjectFilterText: selectedSubjectFilterText.toLowerCase(),

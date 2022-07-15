@@ -31,9 +31,15 @@ export const fetchGroupLabels = ({ commit, getters: { currentGroupPath } }) => {
 
 export const requestCycleAnalyticsData = ({ commit }) => commit(types.REQUEST_VALUE_STREAM_DATA);
 
-export const receiveCycleAnalyticsDataSuccess = ({ commit, dispatch }) => {
-  commit(types.RECEIVE_VALUE_STREAM_DATA_SUCCESS);
-  dispatch('typeOfWork/fetchTopRankedGroupLabels');
+export const receiveCycleAnalyticsDataSuccess = ({
+  state: { selectedValueStream = null },
+  commit,
+  dispatch,
+}) => {
+  if (selectedValueStream) {
+    commit(types.RECEIVE_VALUE_STREAM_DATA_SUCCESS);
+    dispatch('typeOfWork/fetchTopRankedGroupLabels');
+  }
 };
 
 export const receiveCycleAnalyticsDataError = ({ commit }, { response = {} }) => {

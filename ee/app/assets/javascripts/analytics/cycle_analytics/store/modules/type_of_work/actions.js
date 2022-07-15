@@ -8,7 +8,10 @@ export const setLoading = ({ commit }, loading) => commit(types.SET_LOADING, loa
 
 export const receiveTopRankedGroupLabelsSuccess = ({ commit, dispatch }, data) => {
   commit(types.RECEIVE_TOP_RANKED_GROUP_LABELS_SUCCESS, data);
-  dispatch('fetchTasksByTypeData');
+  if (data?.length) {
+    return dispatch('fetchTasksByTypeData');
+  }
+  return dispatch('setLoading', false);
 };
 
 export const receiveTopRankedGroupLabelsError = ({ commit }, error) => {
