@@ -18885,20 +18885,6 @@ CREATE SEQUENCE pool_repositories_id_seq
 
 ALTER SEQUENCE pool_repositories_id_seq OWNED BY pool_repositories.id;
 
-CREATE TABLE post_migration_test_table (
-    id bigint NOT NULL,
-    status integer NOT NULL
-);
-
-CREATE SEQUENCE post_migration_test_table_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-ALTER SEQUENCE post_migration_test_table_id_seq OWNED BY post_migration_test_table.id;
-
 CREATE TABLE postgres_async_indexes (
     id bigint NOT NULL,
     created_at timestamp with time zone NOT NULL,
@@ -23381,8 +23367,6 @@ ALTER TABLE ONLY plans ALTER COLUMN id SET DEFAULT nextval('plans_id_seq'::regcl
 
 ALTER TABLE ONLY pool_repositories ALTER COLUMN id SET DEFAULT nextval('pool_repositories_id_seq'::regclass);
 
-ALTER TABLE ONLY post_migration_test_table ALTER COLUMN id SET DEFAULT nextval('post_migration_test_table_id_seq'::regclass);
-
 ALTER TABLE ONLY postgres_async_indexes ALTER COLUMN id SET DEFAULT nextval('postgres_async_indexes_id_seq'::regclass);
 
 ALTER TABLE ONLY postgres_reindex_actions ALTER COLUMN id SET DEFAULT nextval('postgres_reindex_actions_id_seq'::regclass);
@@ -25484,9 +25468,6 @@ ALTER TABLE ONLY plans
 
 ALTER TABLE ONLY pool_repositories
     ADD CONSTRAINT pool_repositories_pkey PRIMARY KEY (id);
-
-ALTER TABLE ONLY post_migration_test_table
-    ADD CONSTRAINT post_migration_test_table_pkey PRIMARY KEY (id);
 
 ALTER TABLE ONLY postgres_async_indexes
     ADD CONSTRAINT postgres_async_indexes_pkey PRIMARY KEY (id);
