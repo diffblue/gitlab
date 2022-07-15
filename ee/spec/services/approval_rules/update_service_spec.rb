@@ -203,6 +203,10 @@ RSpec.describe ApprovalRules::UpdateService do
     end
 
     describe 'audit events' do
+      let_it_be(:user) { create(:user)}
+      let_it_be(:parent_group) { create(:group) }
+      let_it_be(:destination) { create(:external_audit_event_destination, group: parent_group) }
+      let_it_be(:project) { create(:project, creator: user, group: parent_group) }
       let_it_be(:approver) { create(:user, name: 'Batman') }
       let_it_be(:group) { create(:group, name: 'Justice League') }
       let_it_be(:new_approver) { create(:user, name: 'Spiderman') }
@@ -219,6 +223,7 @@ RSpec.describe ApprovalRules::UpdateService do
       end
 
       before do
+        parent_group.add_owner(user)
         project.add_reporter approver
         project.add_reporter new_approver
       end
@@ -226,6 +231,7 @@ RSpec.describe ApprovalRules::UpdateService do
       context 'when licensed' do
         before do
           stub_licensed_features(audit_events: true)
+          stub_licensed_features(external_audit_events: true)
         end
 
         context 'when rule update operation succeeds', :request_store do
@@ -233,6 +239,11 @@ RSpec.describe ApprovalRules::UpdateService do
             expect do
               described_class.new(approval_rule, user, approvals_required: 1).execute
             end.to change { AuditEvent.count }.by(1)
+          end
+
+          it_behaves_like 'sends correct event type in audit event stream' do
+            let_it_be(:event_type) { 'update_aproval_rules' }
+            subject {described_class.new(approval_rule, user, approvals_required: 1).execute}
           end
 
           it 'audits the number of required approvals change' do

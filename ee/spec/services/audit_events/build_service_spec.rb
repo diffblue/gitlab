@@ -88,6 +88,22 @@ RSpec.describe AuditEvents::BuildService do
         end
       end
 
+      context 'when overriding target details' do
+        subject(:service) do
+          described_class.new(
+            author: author,
+            scope: scope,
+            target: target,
+            message: message,
+            target_details: "This is my target details"
+          )
+        end
+
+        it 'uses correct target details' do
+          expect(event.target_details).to eq("This is my target details")
+        end
+      end
+
       context 'when deploy token is passed as author' do
         let(:service) do
           described_class.new(

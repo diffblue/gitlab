@@ -3,18 +3,19 @@
 require 'spec_helper'
 
 RSpec.describe ApprovalRules::ProjectRuleDestroyService do
-  let(:project) { create(:project, :repository) }
+  let(:group) { create(:group) }
+  let(:project) { create(:project, :repository, group: group) }
   let(:merge_request) { create(:merge_request, source_project: project, target_project: project) }
 
   describe '#execute' do
     let!(:project_rule) { create(:approval_project_rule, project: project) }
     let(:current_user) { create(:user, name: 'Bruce Wayne') }
 
-    subject { described_class.new(project_rule, current_user) }
+    subject { described_class.new(project_rule, current_user).execute }
 
     shared_context 'an audit event is added' do
       it 'adds an audit event' do
-        expect { subject.execute }.to change { AuditEvent.count }.by(1)
+        expect { subject }.to change { AuditEvent.count }.by(1)
         expect(AuditEvent.last.details).to include({
                                                      author_name: current_user.name,
                                                      custom_message: 'Deleted approval rule',
@@ -22,11 +23,20 @@ RSpec.describe ApprovalRules::ProjectRuleDestroyService do
                                                      target_id: project_rule.id
                                                    })
       end
+
+      before do
+        stub_licensed_features(external_audit_events: true)
+        group.external_audit_event_destinations.create!(destination_url: 'http://example.com')
+      end
+
+      it_behaves_like 'sends correct event type in audit event stream' do
+        let_it_be(:event_type) { 'approval_rule_deleted' }
+      end
     end
 
     context 'when there is no merge request rules' do
       it 'destroys project rule' do
-        expect { subject.execute }.to change { ApprovalProjectRule.count }.by(-1)
+        expect { subject }.to change { ApprovalProjectRule.count }.by(-1)
       end
 
       include_context 'an audit event is added'
@@ -41,7 +51,7 @@ RSpec.describe ApprovalRules::ProjectRuleDestroyService do
 
       context 'when open' do
         it 'destroys merge request rules' do
-          expect { subject.execute }.to change { ApprovalMergeRequestRule.count }.by(-1)
+          expect { subject }.to change { ApprovalMergeRequestRule.count }.by(-1)
         end
 
         include_context 'an audit event is added'
@@ -53,7 +63,7 @@ RSpec.describe ApprovalRules::ProjectRuleDestroyService do
         end
 
         it 'does nothing' do
-          expect { subject.execute }.not_to change { ApprovalMergeRequestRule.count }
+          expect { subject }.not_to change { ApprovalMergeRequestRule.count }
         end
 
         include_context 'an audit event is added'
