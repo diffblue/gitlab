@@ -57,6 +57,7 @@ The following steps are needed to generate these known events for a single widge
     1. `redis_slot` = `code_review`
     1. `category` = `code_review`
     1. `aggregation` = `weekly`
+1. Add each event to the appropriate aggregates in `config/metrics/aggregates/code_review.yml`
 
 ##### New Events
 
