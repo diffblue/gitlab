@@ -43870,7 +43870,7 @@ msgstr ""
 msgid "WorkItem|Are you sure you want to cancel editing?"
 msgstr ""
 
-msgid "WorkItem|Are you sure you want to delete the work item? This action cannot be reversed."
+msgid "WorkItem|Are you sure you want to delete the task? This action cannot be reversed."
 msgstr ""
 
 msgid "WorkItem|Assignee"
@@ -43896,7 +43896,7 @@ msgstr ""
 msgid "WorkItem|Create work item"
 msgstr ""
 
-msgid "WorkItem|Delete work item"
+msgid "WorkItem|Delete task"
 msgstr ""
 
 msgid "WorkItem|Expand child items"
@@ -43917,7 +43917,13 @@ msgstr ""
 msgid "WorkItem|Select type"
 msgstr ""
 
+msgid "WorkItem|Something went wrong when creating a task. Please try again"
+msgstr ""
+
 msgid "WorkItem|Something went wrong when creating a work item. Please try again"
+msgstr ""
+
+msgid "WorkItem|Something went wrong when deleting the task. Please try again."
 msgstr ""
 
 msgid "WorkItem|Something went wrong when deleting the work item. Please try again."
@@ -43933,6 +43939,9 @@ msgid "WorkItem|Something went wrong when trying to add a child. Please try agai
 msgstr ""
 
 msgid "WorkItem|Something went wrong while updating the work item. Please try again."
+msgstr ""
+
+msgid "WorkItem|Task deleted"
 msgstr ""
 
 msgid "WorkItem|Type"
