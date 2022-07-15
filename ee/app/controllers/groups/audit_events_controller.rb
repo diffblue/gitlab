@@ -3,7 +3,7 @@
 class Groups::AuditEventsController < Groups::ApplicationController
   include Gitlab::Utils::StrongMemoize
   include AuditEvents::EnforcesValidDateParams
-  include AuditEvents::AuditLogsParams
+  include AuditEvents::AuditEventsParams
   include AuditEvents::Sortable
   include AuditEvents::DateRange
   include RedisTracking
