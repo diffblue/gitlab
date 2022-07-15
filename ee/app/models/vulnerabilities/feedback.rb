@@ -43,6 +43,7 @@ module Vulnerabilities
     scope :by_finding_uuid, -> (uuids) { where(finding_uuid: uuids) }
     scope :by_project, -> (project) { where(project: project) }
     scope :by_project_fingerprints, -> (project_fingerprints) { where(project_fingerprint: project_fingerprints) }
+    scope :paginate, -> (page, per_page) { offset(page).limit(per_page) }
 
     scope :all_preloaded, -> do
       preload(:author, :comment_author, :project, :issue, :merge_request, :pipeline)
