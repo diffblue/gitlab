@@ -27,11 +27,26 @@ module Gitlab
 
           def links
             helpers = Gitlab::Routing.url_helpers
+
+            dashboard_link =
+              if @stage.parent.is_a?(::Group)
+                helpers.group_analytics_ci_cd_analytics_path(@stage.parent, tab: 'change-failure-rate')
+              else
+                helpers.charts_project_pipelines_path(@stage.parent, chart: 'change-failure-rate')
+              end
+
             [
-              { "name" => _('Change Failure Rate'),
+              {
+                "name" => _('Change Failure Rate'),
+                "url" => dashboard_link,
+                "label" => s_('ValueStreamAnalytics|Dashboard')
+              },
+              {
+                "name" => _('Change Failure Rate'),
                 "url" => helpers.help_page_path('user/analytics/index', anchor: 'change-failure-rate'),
                 "docs_link" => true,
-                "label" => s_('ValueStreamAnalytics|Go to docs') }
+                "label" => s_('ValueStreamAnalytics|Go to docs')
+              }
             ]
           end
 
