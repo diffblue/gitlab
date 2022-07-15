@@ -349,4 +349,33 @@ RSpec.describe ApprovalRules::CreateService do
       end
     end
   end
+
+  context 'audit event is streamed with correct event type', :request_store do
+    let_it_be(:user) { create(:user)}
+    let_it_be(:group) { create(:group) }
+    let_it_be(:project) { create(:project, creator: user, group: group) }
+    let_it_be(:new_approvers) { create_list(:user, 2) }
+    let_it_be(:new_groups) { create_list(:group, 2, :private) }
+    let_it_be(:destination) { create(:external_audit_event_destination, group: group) }
+
+    subject do
+      described_class.new(
+        project,
+        user,
+        { name: 'security',
+          approvals_required: 1,
+          user_ids: new_approvers.map(&:id),
+          group_ids: new_groups.map(&:id) }
+      ).execute
+    end
+
+    before do
+      group.add_owner(user)
+      stub_licensed_features(external_audit_events: true)
+    end
+
+    it_behaves_like 'sends correct event type in audit event stream' do
+      let_it_be(:event_type) { 'approval_rule_created' }
+    end
+  end
 end

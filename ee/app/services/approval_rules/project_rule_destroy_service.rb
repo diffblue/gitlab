@@ -36,6 +36,7 @@ module ApprovalRules
 
     def audit_deletion
       audit_context = {
+        name: 'approval_rule_deleted',
         author: current_user,
         scope: rule.project,
         target: rule,

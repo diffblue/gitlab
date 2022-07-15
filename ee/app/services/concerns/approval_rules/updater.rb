@@ -22,8 +22,9 @@ module ApprovalRules
     private
 
     def with_audit_logged(&block)
+      name = rule.new_record? ? 'approval_rule_created' : 'update_aproval_rules'
       audit_context = {
-        name: 'update_aproval_rules',
+        name: name,
         author: current_user,
         scope: rule.project,
         target: rule
@@ -62,7 +63,8 @@ module ApprovalRules
         :approvals_required,
         as: 'number of required approvals',
         entity: rule.project,
-        model: rule
+        model: rule,
+        event_type: 'update_aproval_rules'
       )
     end
   end
