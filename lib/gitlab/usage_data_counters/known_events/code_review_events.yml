@@ -301,27 +301,27 @@
   aggregation: weekly
 # MR Widget Extensions
 ## Test Summary
-- name: i_merge_request_widget_test_reports_view
+- name: i_code_review_widget_test_summary_view
   redis_slot: code_review
   category: code_review
   aggregation: weekly
-- name: i_merge_request_widget_test_reports_full_report_clicked
+- name: i_code_review_widget_test_summary_full_report_clicked
   redis_slot: code_review
   category: code_review
   aggregation: weekly
-- name: i_merge_request_widget_test_reports_expand
+- name: i_code_review_widget_test_summary_expand
   redis_slot: code_review
   category: code_review
   aggregation: weekly
-- name: i_merge_request_widget_test_reports_expand_success
+- name: i_code_review_widget_test_summary_expand_success
   redis_slot: code_review
   category: code_review
   aggregation: weekly
-- name: i_merge_request_widget_test_reports_expand_warning
+- name: i_code_review_widget_test_summary_expand_warning
   redis_slot: code_review
   category: code_review
   aggregation: weekly
-- name: i_merge_request_widget_test_reports_expand_failed
+- name: i_code_review_widget_test_summary_expand_failed
   redis_slot: code_review
   category: code_review
   aggregation: weekly

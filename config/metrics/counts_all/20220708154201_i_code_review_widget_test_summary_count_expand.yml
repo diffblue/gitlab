@@ -1,5 +1,5 @@
 ---
-key_path: counts.mr_widgets.i_merge_request_widget_test_summary_count_expand
+key_path: counts.i_code_review_widget_test_summary_count_expand
 description: Total number of times the Test Summary widget extension was expanded (in any state)
 product_section: dev
 product_stage: create
@@ -14,7 +14,7 @@ data_source: redis
 data_category: optional
 options:
   events:
-    - i_merge_request_widget_test_summary_count_expand
+    - i_code_review_widget_test_summary_count_expand
 distribution:
 - ce
 - ee

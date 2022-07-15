@@ -1,6 +1,6 @@
 ---
-key_path: redis_hll_counters.mr_widgets.i_merge_request_widget_test_summary_expand_warning_monthly
-description: The count of unique users (monthly) who expanded the Test Summary widget extension while it is in its Warning state
+key_path: redis_hll_counters.mr_widgets.i_code_review_widget_test_summary_view_monthly
+description: The count of unique users (monthly) who were able to see the Test Summary widget extension
 product_section: dev
 product_stage: create
 product_group: code_review
@@ -15,7 +15,7 @@ data_category: optional
 instrumentation_class: RedisHLLMetric
 options:
   events:
-    - i_merge_request_widget_test_summary_expand_warning
+    - i_code_review_widget_test_summary_view
 distribution:
 - ce
 - ee
