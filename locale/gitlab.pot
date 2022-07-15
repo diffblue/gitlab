@@ -34745,6 +34745,9 @@ msgstr ""
 msgid "SecurityOrchestration|There was a problem creating the new security policy"
 msgstr ""
 
+msgid "SecurityOrchestration|This %{namespaceType} does not contain any security policies."
+msgstr ""
+
 msgid "SecurityOrchestration|This group"
 msgstr ""
 
@@ -34761,9 +34764,6 @@ msgid "SecurityOrchestration|This policy is inherited from the %{linkStart}names
 msgstr ""
 
 msgid "SecurityOrchestration|This project"
-msgstr ""
-
-msgid "SecurityOrchestration|This project does not contain any security policies."
 msgstr ""
 
 msgid "SecurityOrchestration|This view only shows scan results for the agent %{agent}. You can view scan results for all agents in the %{linkStart}Operational Vulnerabilities tab of the vulnerability report%{linkEnd}."
