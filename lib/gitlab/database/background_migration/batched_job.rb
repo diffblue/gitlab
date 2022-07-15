@@ -112,7 +112,7 @@ module Gitlab
         end
 
         def can_split?(exception)
-          attempts >= MAX_ATTEMPTS && TIMEOUT_EXCEPTIONS.include?(exception&.class) && batch_size > sub_batch_size && batch_size >= 2
+          attempts >= MAX_ATTEMPTS && TIMEOUT_EXCEPTIONS.include?(exception&.class) && batch_size > sub_batch_size && batch_size > 1
         end
 
         def split_and_retry!

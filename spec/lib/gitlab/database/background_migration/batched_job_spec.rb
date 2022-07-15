@@ -305,8 +305,8 @@ RSpec.describe Gitlab::Database::BackgroundMigration::BatchedJob, type: :model d
       it { expect(subject).to be_falsey }
     end
 
-    context 'when the batch_size is 1' do # rubocop:disable RSpec/RepeatedExampleGroupBody
-      let(:job) { create(:batched_background_migration_job, :failed, batch_size: 2, sub_batch_size: 4) }
+    context 'when the batch_size is 1' do
+      let(:job) { create(:batched_background_migration_job, :failed, batch_size: 1) }
       let(:exception) { ActiveRecord::StatementTimeout.new }
 
       it { expect(subject).to be_falsey }
