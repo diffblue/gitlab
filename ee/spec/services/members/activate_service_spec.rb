@@ -252,6 +252,22 @@ RSpec.describe Members::ActivateService do
       it_behaves_like 'returns an error', 'You do not have permission to approve a member'
     end
 
+    context 'when current_user is nil' do
+      let_it_be(:current_user) { nil }
+
+      it_behaves_like 'returns an error', 'You do not have permission to approve a member'
+    end
+
+    context 'when skipping authorization' do
+      let_it_be(:current_user) { User.automation_bot }
+
+      let_it_be(:members) { [create(:group_member, :awaiting, group: root_group, user: user)] }
+
+      subject(:execute) { described_class.for_group(root_group).execute(current_user: current_user, skip_authorization: true) }
+
+      it_behaves_like 'successful member activation'
+    end
+
     context 'when authorized' do
       before do
         root_group.add_owner(current_user)

@@ -16,6 +16,9 @@ class GitlabSubscription < ApplicationRecord
 
   after_save :set_prevent_sharing_groups_outside_hierarchy
 
+  # Needs to run after_commit because workers can be spawned that can't be run within a transaction
+  after_commit :activate_users_post_subscription_upgrade
+
   after_commit :index_namespace, on: [:create, :update]
   after_destroy_commit :log_previous_state_for_destroy
 
@@ -213,5 +216,16 @@ class GitlabSubscription < ApplicationRecord
     # going from free to paid - allow
     # going from paid to free - prevent
     namespace.update_attribute(:prevent_sharing_groups_outside_hierarchy, prevent_sharing)
+  end
+
+  # When free groups where `free_user_cap` was enabled upgrade to a paid
+  # plan we want to activate all the memberships that got set to
+  # awaiting due to the limit.
+  def activate_users_post_subscription_upgrade
+    # rubocop: disable CodeReuse/ServiceClass
+    GitlabSubscriptions::ActivateAwaitingUsersService
+      .new(gitlab_subscription: self, previous_plan_id: hosted_plan_id_before_last_save)
+      .execute
+    # rubocop: enable CodeReuse/ServiceClass
   end
 end

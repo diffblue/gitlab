@@ -420,36 +420,33 @@ RSpec.describe GitlabSubscription, :saas do
   end
 
   describe 'callbacks' do
-    context 'after_commit :index_namespace', :saas do
-      let_it_be(:namespace) { create(:namespace) }
+    context 'after_commit', :saas do
+      context 'activate_users_post_subscription_upgrade' do
+        let_it_be(:gitlab_subscription) { create(:gitlab_subscription, hosted_plan: free_plan) }
 
-      let(:gitlab_subscription) { build(:gitlab_subscription, plan, namespace: namespace) }
-      let(:expiration_date) { Date.today + 10 }
-      let(:plan) { :bronze }
+        it 'calls ActivateAwaitingUsersService' do
+          expect_next_instance_of(
+            GitlabSubscriptions::ActivateAwaitingUsersService,
+            gitlab_subscription: gitlab_subscription,
+            previous_plan_id: free_plan.id
+          ) do |instance|
+            expect(instance).to receive(:execute)
+          end
 
-      before do
-        gitlab_subscription.end_date = expiration_date
-      end
-
-      it 'indexes the namespace' do
-        expect(ElasticsearchIndexedNamespace).to receive(:safe_find_or_create_by!).with(namespace_id: gitlab_subscription.namespace_id)
-
-        gitlab_subscription.save!
-      end
-
-      context 'when seats is 0' do
-        let(:gitlab_subscription) { build(:gitlab_subscription, namespace: namespace, seats: 0) }
-
-        it 'does not index the namespace' do
-          expect(ElasticsearchIndexedNamespace).not_to receive(:safe_find_or_create_by!)
-
-          gitlab_subscription.save!
+          gitlab_subscription.update!(hosted_plan: ultimate_plan)
         end
       end
 
-      context 'when it is a trial' do
-        let(:seats) { 10 }
-        let(:gitlab_subscription) { build(:gitlab_subscription, :active_trial, namespace: namespace, seats: seats) }
+      context 'index_namespace' do
+        let_it_be(:namespace) { create(:namespace) }
+
+        let(:gitlab_subscription) { build(:gitlab_subscription, plan, namespace: namespace) }
+        let(:expiration_date) { Date.today + 10 }
+        let(:plan) { :bronze }
+
+        before do
+          gitlab_subscription.end_date = expiration_date
+        end
 
         it 'indexes the namespace' do
           expect(ElasticsearchIndexedNamespace).to receive(:safe_find_or_create_by!).with(namespace_id: gitlab_subscription.namespace_id)
@@ -457,18 +454,8 @@ RSpec.describe GitlabSubscription, :saas do
           gitlab_subscription.save!
         end
 
-        context 'when seats is zero' do
-          let(:seats) { 0 }
-
-          it 'indexes the namespace' do
-            expect(ElasticsearchIndexedNamespace).to receive(:safe_find_or_create_by!).with(namespace_id: gitlab_subscription.namespace_id)
-
-            gitlab_subscription.save!
-          end
-        end
-
-        context 'when in free plan' do
-          let(:gitlab_subscription) { build(:gitlab_subscription, :active_trial, namespace: namespace, seats: seats, hosted_plan_id: nil) }
+        context 'when seats is 0' do
+          let(:gitlab_subscription) { build(:gitlab_subscription, namespace: namespace, seats: 0) }
 
           it 'does not index the namespace' do
             expect(ElasticsearchIndexedNamespace).not_to receive(:safe_find_or_create_by!)
@@ -476,37 +463,68 @@ RSpec.describe GitlabSubscription, :saas do
             gitlab_subscription.save!
           end
         end
-      end
 
-      context 'when not ::Gitlab.com?' do
-        before do
-          allow(::Gitlab).to receive(:com?).and_return(false)
+        context 'when it is a trial' do
+          let(:seats) { 10 }
+          let(:gitlab_subscription) { build(:gitlab_subscription, :active_trial, namespace: namespace, seats: seats) }
+
+          it 'indexes the namespace' do
+            expect(ElasticsearchIndexedNamespace).to receive(:safe_find_or_create_by!).with(namespace_id: gitlab_subscription.namespace_id)
+
+            gitlab_subscription.save!
+          end
+
+          context 'when seats is zero' do
+            let(:seats) { 0 }
+
+            it 'indexes the namespace' do
+              expect(ElasticsearchIndexedNamespace).to receive(:safe_find_or_create_by!).with(namespace_id: gitlab_subscription.namespace_id)
+
+              gitlab_subscription.save!
+            end
+          end
+
+          context 'when in free plan' do
+            let(:gitlab_subscription) { build(:gitlab_subscription, :active_trial, namespace: namespace, seats: seats, hosted_plan_id: nil) }
+
+            it 'does not index the namespace' do
+              expect(ElasticsearchIndexedNamespace).not_to receive(:safe_find_or_create_by!)
+
+              gitlab_subscription.save!
+            end
+          end
         end
 
-        it 'does not index the namespace' do
-          expect(ElasticsearchIndexedNamespace).not_to receive(:safe_find_or_create_by!)
+        context 'when not ::Gitlab.com?' do
+          before do
+            allow(::Gitlab).to receive(:com?).and_return(false)
+          end
 
-          gitlab_subscription.save!
+          it 'does not index the namespace' do
+            expect(ElasticsearchIndexedNamespace).not_to receive(:safe_find_or_create_by!)
+
+            gitlab_subscription.save!
+          end
         end
-      end
 
-      context 'when the plan has expired' do
-        let(:expiration_date) { Date.today - 8.days }
+        context 'when the plan has expired' do
+          let(:expiration_date) { Date.today - 8.days }
 
-        it 'does not index the namespace' do
-          expect(ElasticsearchIndexedNamespace).not_to receive(:safe_find_or_create_by!)
+          it 'does not index the namespace' do
+            expect(ElasticsearchIndexedNamespace).not_to receive(:safe_find_or_create_by!)
 
-          gitlab_subscription.save!
+            gitlab_subscription.save!
+          end
         end
-      end
 
-      context 'when it is a free plan' do
-        let(:plan) { :free }
+        context 'when it is a free plan' do
+          let(:plan) { :free }
 
-        it 'does not index the namespace' do
-          expect(ElasticsearchIndexedNamespace).not_to receive(:safe_find_or_create_by!)
+          it 'does not index the namespace' do
+            expect(ElasticsearchIndexedNamespace).not_to receive(:safe_find_or_create_by!)
 
-          gitlab_subscription.save!
+            gitlab_subscription.save!
+          end
         end
       end
     end
