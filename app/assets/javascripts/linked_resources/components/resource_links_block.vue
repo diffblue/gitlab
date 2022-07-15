@@ -103,10 +103,7 @@ export default {
           'gl-p-5': isFormVisible,
         }"
       >
-        <div
-          v-show="isFormVisible"
-          class="card-body bordered-box gl-bg-white"
-        >
+        <div v-show="isFormVisible" class="card-body bordered-box gl-bg-white">
           <add-issuable-resource-link-form
             ref="resourceLinkForm"
             :is-submitting="isSubmitting"
