@@ -154,24 +154,14 @@ export const getPipelineDefaultTab = (url) => {
   return null;
 };
 
-export const calculateLongestQueuedJob = (jobs) => {
+export const calculateJobStats = (jobs, sortField) => {
   const jobNodes = [...jobs.nodes];
 
-  const sortedByQueuedDuration = jobNodes.sort((a, b) => {
-    return b.queuedDuration - a.queuedDuration;
+  const sorted = jobNodes.sort((a, b) => {
+    return b[sortField] - a[sortField];
   });
 
-  return sortedByQueuedDuration[0];
-};
-
-export const calculateLastExecutedJob = (jobs) => {
-  const jobNodes = [...jobs.nodes];
-
-  const sortedByStartedAt = jobNodes.sort((a, b) => {
-    return b.startedAt - a.startedAt;
-  });
-
-  return sortedByStartedAt[0];
+  return sorted[0];
 };
 
 export const calculateSlowestFiveJobs = (jobs) => {

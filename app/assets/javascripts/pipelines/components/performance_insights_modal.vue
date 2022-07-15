@@ -5,11 +5,7 @@ import { humanizeTimeInterval } from '~/lib/utils/datetime_utility';
 import HelpPopover from '~/vue_shared/components/help_popover.vue';
 import getPerformanceInsightsQuery from '../graphql/queries/get_performance_insights.query.graphql';
 import { performanceModalId } from '../constants';
-import {
-  calculateLongestQueuedJob,
-  calculateLastExecutedJob,
-  calculateSlowestFiveJobs,
-} from '../utils';
+import { calculateJobStats, calculateSlowestFiveJobs } from '../utils';
 
 export default {
   name: 'PerformanceInsightsModal',
@@ -74,10 +70,10 @@ export default {
   },
   computed: {
     longestQueuedJob() {
-      return calculateLongestQueuedJob(this.jobs);
+      return calculateJobStats(this.jobs, 'queuedDuration');
     },
     lastExecutedJob() {
-      return calculateLastExecutedJob(this.jobs);
+      return calculateJobStats(this.jobs, 'startedAt');
     },
     slowestFiveJobs() {
       return calculateSlowestFiveJobs(this.jobs);

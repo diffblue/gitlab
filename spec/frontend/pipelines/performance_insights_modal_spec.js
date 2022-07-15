@@ -1,11 +1,10 @@
 import { GlAlert, GlLink, GlModal } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import waitForPromises from 'helpers/wait_for_promises';
 import PerformanceInsightsModal from '~/pipelines/components/performance_insights_modal.vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
-import { extendedWrapper } from 'helpers/vue_test_utils_helper';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { trimText } from 'helpers/text_helper';
 import getPerformanceInsights from '~/pipelines/graphql/queries/get_performance_insights.query.graphql';
 import {
@@ -39,15 +38,13 @@ describe('Performance insights modal', () => {
   const requestHandlers = [[getPerformanceInsights, getPerformanceInsightsHandler]];
 
   const createComponent = (handlers = requestHandlers) => {
-    wrapper = extendedWrapper(
-      shallowMount(PerformanceInsightsModal, {
-        provide: {
-          pipelineIid: '1',
-          pipelineProjectPath: 'root/ci-project',
-        },
-        apolloProvider: createMockApollo(handlers),
-      }),
-    );
+    wrapper = shallowMountExtended(PerformanceInsightsModal, {
+      provide: {
+        pipelineIid: '1',
+        pipelineProjectPath: 'root/ci-project',
+      },
+      apolloProvider: createMockApollo(handlers),
+    });
   };
 
   afterEach(() => {

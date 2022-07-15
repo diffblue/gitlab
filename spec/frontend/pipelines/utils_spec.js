@@ -8,12 +8,7 @@ import {
   removeOrphanNodes,
   getMaxNodes,
 } from '~/pipelines/components/parsing_utils';
-import {
-  createNodeDict,
-  calculateLongestQueuedJob,
-  calculateLastExecutedJob,
-  calculateSlowestFiveJobs,
-} from '~/pipelines/utils';
+import { createNodeDict, calculateJobStats, calculateSlowestFiveJobs } from '~/pipelines/utils';
 
 import { mockParsedGraphQLNodes, missingJob } from './components/dag/mock_data';
 import {
@@ -177,19 +172,15 @@ describe('DAG visualization parsing utilities', () => {
       },
     } = mockPerformanceInsightsResponse;
 
-    describe('calculateLongestQueuedJob', () => {
+    describe('calculateJobStats', () => {
+      const expectedJob = jobs.nodes[0];
+
       it('returns the job that spent this longest time queued', () => {
-        const expectedJob = jobs.nodes[0];
-
-        expect(calculateLongestQueuedJob(jobs)).toEqual(expectedJob);
+        expect(calculateJobStats(jobs, 'queuedDuration')).toEqual(expectedJob);
       });
-    });
 
-    describe('calculateLastExecutedJob', () => {
       it('returns the job that was executed last', () => {
-        const expectedJob = jobs.nodes[0];
-
-        expect(calculateLastExecutedJob(jobs)).toEqual(expectedJob);
+        expect(calculateJobStats(jobs, 'startedAt')).toEqual(expectedJob);
       });
     });
 
