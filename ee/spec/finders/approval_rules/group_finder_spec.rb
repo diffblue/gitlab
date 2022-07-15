@@ -44,6 +44,20 @@ RSpec.describe ApprovalRules::GroupFinder do
       end
     end
 
+    context 'when user is not authorized' do
+      subject { described_class.new(rule, nil) }
+
+      it 'returns only public groups' do
+        expect(subject.visible_groups).to contain_exactly(
+          public_group
+        )
+        expect(subject.hidden_groups).to contain_exactly(
+          private_accessible_group, private_accessible_subgroup, private_inaccessible_group
+        )
+        expect(subject.contains_hidden_groups?).to eq(true)
+      end
+    end
+
     context 'avoid N+1 query', :request_store do
       it 'avoids N+1 database queries' do
         rule.reload
