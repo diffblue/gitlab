@@ -156,30 +156,6 @@ RSpec.describe "User registration", :js, :saas do
     it_behaves_like 'imports my existing project'
   end
 
-  shared_examples 'opting out of a trial' do
-    before do
-      click_button class: 'gl-toggle'
-
-      expect(GitlabSubscriptions::CreateTrialOrLeadService).to receive(:new).with(
-        user: User.find_by(email: user_attrs[:email]),
-        params: company_params_trial_false
-      ).and_return(service_with_success)
-
-      click_on 'Continue'
-    end
-
-    it 'creates new group and project' do
-      fill_in 'group_name', with: 'Test Group'
-      fill_in 'blank_project_name', with: 'Test Project'
-
-      click_on 'Create project'
-
-      expect(page).to have_content 'Get started with GitLab'
-    end
-
-    it_behaves_like 'imports my existing project'
-  end
-
   describe "when accepting an invite" do
     let_it_be(:user) { build(:user, name: 'Invited User') }
     let_it_be(:owner) { create(:user, name: 'John Doe') }
@@ -424,7 +400,6 @@ RSpec.describe "User registration", :js, :saas do
       end
 
       it_behaves_like 'opting into a trial'
-      it_behaves_like 'opting out of a trial'
     end
 
     context "for my company" do
@@ -438,7 +413,6 @@ RSpec.describe "User registration", :js, :saas do
       end
 
       it_behaves_like 'opting into a trial'
-      it_behaves_like 'opting out of a trial'
     end
   end
 end
