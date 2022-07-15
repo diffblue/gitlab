@@ -19,7 +19,7 @@ module EE
         with_replicator Geo::CiSecureFileReplicator
 
         has_one :ci_secure_file_state, autosave: false, inverse_of: :ci_secure_file,
-          class_name: 'Geo::SecureFileState', foreign_key: :ci_secure_file_id
+          class_name: 'Geo::CiSecureFileState', foreign_key: :ci_secure_file_id
 
         after_save :save_verification_details
 
@@ -55,7 +55,7 @@ module EE
 
         override :verification_state_table_class
         def verification_state_table_class
-          ::Geo::SecureFileState
+          ::Geo::CiSecureFileState
         end
       end
 

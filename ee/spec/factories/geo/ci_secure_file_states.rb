@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 FactoryBot.define do
-  factory :geo_ci_secure_file_state, class: 'Geo::SecureFileState' do
+  factory :geo_ci_secure_file_state, class: 'Geo::CiSecureFileState' do
     ci_secure_file
 
     trait(:checksummed) do
