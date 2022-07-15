@@ -7,7 +7,7 @@ module EE
         extend ActiveSupport::Concern
 
         RUNNER_UPGRADE_STATUS_TRANSLATIONS = {
-          error: :unknown
+          error: nil
         }.freeze
 
         prepended do
@@ -21,7 +21,7 @@ module EE
                 deprecated: { milestone: '14.10', reason: :alpha }
 
           def upgrade_status
-            return :unknown unless upgrade_status_available?
+            return unless upgrade_status_available?
 
             suggestion = ::Gitlab::Ci::RunnerUpgradeCheck.instance.check_runner_upgrade_status(runner.version)
             status = suggestion.each_key.first
