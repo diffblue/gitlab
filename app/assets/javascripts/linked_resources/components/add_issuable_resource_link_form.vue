@@ -38,9 +38,6 @@ export default {
       this.linkTextValue = '';
       this.$emit('add-issuable-resource-link-form-cancel');
     },
-    focusLinkTextInput() {
-      this.$refs.linkTextInput.$el.focus();
-    },
   },
 };
 </script>
@@ -49,8 +46,8 @@ export default {
   <form @submit.prevent>
     <gl-form-group :label="$options.i18n.linkTextLabel">
       <gl-form-input
-        v-autofocusonshow
         v-model="linkTextValue"
+        v-autofocusonshow
         data-testid="link-text-input"
         type="text"
       />
