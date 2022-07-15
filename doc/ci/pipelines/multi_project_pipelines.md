@@ -111,7 +111,8 @@ staging:
 Use:
 
 - The `project` keyword to specify the full path to a downstream project.
-  After [Issue #367660](https://gitlab.com/gitlab-org/gitlab/-/issues/367660), variable expansion is supported.
+  [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/367660) in GitLab 15.3,
+  variable expansion is supported.
 - The `branch` keyword to specify the name of a branch in the project specified by `project`.
   In [GitLab 12.4 and later](https://gitlab.com/gitlab-org/gitlab/-/issues/10126), variable expansion is
   supported.
