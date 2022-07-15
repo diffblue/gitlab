@@ -46,6 +46,7 @@ RSpec.describe Projects::TransferService do
              from: project.old_path_with_namespace,
              to: project.full_path,
              author_name: user.name,
+             author_class: user.class.name,
              target_id: project.id,
              target_type: 'Project',
              target_details: project.full_path,

@@ -12673,6 +12673,9 @@ msgid_plural "Deploys"
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "Deploy Key"
+msgstr ""
+
 msgid "Deploy Keys"
 msgstr ""
 

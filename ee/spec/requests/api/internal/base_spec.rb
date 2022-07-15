@@ -279,6 +279,36 @@ RSpec.describe API::Internal::Base do
       end
     end
 
+    context 'with Deploy Key authentication' do
+      let_it_be(:project) { create(:project, :repository) }
+      let_it_be(:key) { create(:deploy_key, user: user) }
+      let_it_be(:deploy_keys_project) do
+        create(:deploy_keys_project, :write_access, project: project, deploy_key: key)
+      end
+
+      before_all do
+        project.add_developer(user)
+      end
+
+      it 'passes the deploy key to the auditor context' do
+        expect(::Gitlab::Audit::Auditor).to receive(:audit).with(hash_including(author: key))
+
+        push(key, project)
+      end
+
+      context 'when audit_event_streaming_git_operations_deploy_key_event feature flag is disabled' do
+        before do
+          stub_feature_flags(audit_event_streaming_git_operations_deploy_key_event: false)
+        end
+
+        it 'passes the user who created the deploy key to the auditor context' do
+          expect(::Gitlab::Audit::Auditor).to receive(:audit).with(hash_including(author: user))
+
+          push(key, project)
+        end
+      end
+    end
+
     context 'git audit streaming event' do
       it_behaves_like 'sends git audit streaming event' do
         subject { pull(key, project) }

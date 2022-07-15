@@ -37,6 +37,7 @@ RSpec.describe EE::Audit::ProtectedBranchesChangesAuditor, :request_store do
           change_text = setting.to_s.humanize(capitalize: false)
           expect(event.details).to eq({ change: change_text,
                                         author_name: author.name,
+                                        author_class: author.class.name,
                                         target_id: protected_branch.id,
                                         entity_path: entity.full_path,
                                         target_type: 'ProtectedBranch',
@@ -91,6 +92,7 @@ RSpec.describe EE::Audit::ProtectedBranchesChangesAuditor, :request_store do
                                         ip_address: ip_address,
                                         entity_path: entity.full_path,
                                         author_name: author.name,
+                                        author_class: author.class.name,
                                         custom_message: "Changed #{change_text} from #{from} to #{to}" })
 
           expect(event.author_id).to eq(author.id)

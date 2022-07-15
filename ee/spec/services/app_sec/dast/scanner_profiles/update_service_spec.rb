@@ -77,6 +77,7 @@ RSpec.describe AppSec::Dast::ScannerProfiles::UpdateService do
         [
           {
             author_name: user.name,
+            author_class: user.class.name,
             custom_message: "Changed DAST scanner profile name from #{dast_profile.name} to #{new_profile_name}",
             target_id: dast_profile.id,
             target_type: 'DastScannerProfile',
@@ -84,6 +85,7 @@ RSpec.describe AppSec::Dast::ScannerProfiles::UpdateService do
           },
           {
             author_name: user.name,
+            author_class: user.class.name,
             custom_message: "Changed DAST scanner profile target_timeout from #{dast_profile.target_timeout} to #{new_target_timeout}",
             target_id: dast_profile.id,
             target_type: 'DastScannerProfile',
@@ -91,6 +93,7 @@ RSpec.describe AppSec::Dast::ScannerProfiles::UpdateService do
           },
           {
             author_name: user.name,
+            author_class: user.class.name,
             custom_message: "Changed DAST scanner profile spider_timeout from #{dast_profile.spider_timeout} to #{new_spider_timeout}",
             target_id: dast_profile.id,
             target_type: 'DastScannerProfile',
@@ -167,6 +170,7 @@ RSpec.describe AppSec::Dast::ScannerProfiles::UpdateService do
           expect(audit_events_details).to match_array(base_audit_details + [
             {
               author_name: user.name,
+              author_class: user.class.name,
               custom_message: "Changed DAST scanner profile scan_type from #{dast_profile.scan_type} to #{new_scan_type}",
               target_id: profile.id,
               target_type: 'DastScannerProfile',
@@ -174,6 +178,7 @@ RSpec.describe AppSec::Dast::ScannerProfiles::UpdateService do
             },
             {
               author_name: user.name,
+              author_class: user.class.name,
               custom_message: "Changed DAST scanner profile use_ajax_spider from #{dast_profile.use_ajax_spider} to #{new_use_ajax_spider}",
               target_id: profile.id,
               target_type: 'DastScannerProfile',
@@ -181,6 +186,7 @@ RSpec.describe AppSec::Dast::ScannerProfiles::UpdateService do
             },
             {
               author_name: user.name,
+              author_class: user.class.name,
               custom_message: "Changed DAST scanner profile show_debug_messages from #{dast_profile.show_debug_messages} to #{new_show_debug_messages}",
               target_id: profile.id,
               target_type: 'DastScannerProfile',

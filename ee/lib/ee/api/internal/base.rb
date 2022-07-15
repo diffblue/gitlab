@@ -28,10 +28,16 @@ module EE
               return if actor.user.blank? || @project.blank?
               return unless ::Feature.enabled?(:audit_event_streaming_git_operations, @project.group)
 
+              author = if ::Feature.enabled?(:audit_event_streaming_git_operations_deploy_key_event, @project.group)
+                         actor.deploy_key_or_user
+                       else
+                         actor.user
+                       end
+
               audit_context = {
                 name: 'repository_git_operation',
                 stream_only: true,
-                author: actor.user,
+                author: author,
                 scope: @project,
                 target: @project,
                 message: msg
