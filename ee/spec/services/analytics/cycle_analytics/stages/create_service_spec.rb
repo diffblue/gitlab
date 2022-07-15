@@ -48,7 +48,7 @@ RSpec.describe Analytics::CycleAnalytics::Stages::CreateService do
 
     it { expect(subject).to be_error }
     it { expect(subject.http_status).to eq(:unprocessable_entity) }
-    it { expect(subject.payload[:errors].keys).to eq([:name]) }
+    it { expect(subject.payload[:errors].attribute_names).to eq([:name]) }
   end
 
   describe 'persistence of default stages' do
