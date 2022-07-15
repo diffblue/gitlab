@@ -1,4 +1,3 @@
-import { isString } from 'lodash';
 import Bold from '~/content_editor/extensions/bold';
 import Blockquote from '~/content_editor/extensions/blockquote';
 import BulletList from '~/content_editor/extensions/bullet_list';

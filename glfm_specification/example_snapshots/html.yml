@@ -373,7 +373,7 @@
     </li>
     </ul>
   wysiwyg: |-
-    <ul bullet="*"><li><p>Foo</p></li><li><p></p><hr></li>  </ul>
+    <ul bullet="*"><li><p>Foo</p></li><li><p></p><hr></li></ul>
 04_02__leaf_blocks__atx_headings__001:
   canonical: |
     <h1>foo</h1>
@@ -7559,11 +7559,11 @@
 07_01__gitlab_specific_markdown__footnotes__001:
   canonical: ""
   static: |-
-    <p data-sourcepos="1:1-1:27" dir="auto">footnote reference tag <sup class="footnote-ref"><a href="#fn-1-4950" id="fnref-1-4950" data-footnote-ref>1</a></sup></p>
+    <p data-sourcepos="1:1-1:27" dir="auto">footnote reference tag <sup class="footnote-ref"><a href="#fn-1-9470" id="fnref-1-9470" data-footnote-ref>1</a></sup></p>
     <section data-footnotes class="footnotes">
     <ol>
-    <li id="fn-1-4950">
-    <p data-sourcepos="3:7-3:19">footnote text <a href="#fnref-1-4950" data-footnote-backref aria-label="Back to content" class="footnote-backref"><gl-emoji title="leftwards arrow with hook" data-name="leftwards_arrow_with_hook" data-unicode-version="1.1">↩</gl-emoji></a></p>
+    <li id="fn-1-9470">
+    <p data-sourcepos="3:7-3:19">footnote text <a href="#fnref-1-9470" data-footnote-backref aria-label="Back to content" class="footnote-backref"><gl-emoji title="leftwards arrow with hook" data-name="leftwards_arrow_with_hook" data-unicode-version="1.1">↩</gl-emoji></a></p>
     </li>
     </ol>
     </section>
