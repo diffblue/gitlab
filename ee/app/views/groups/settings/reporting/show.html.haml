@@ -7,18 +7,23 @@
 %p
   = s_('GroupSettings|Automatically ban users who download more than the specified number of projects within the specified interval.')
 
-= form_errors(@group.namespace_settings)
+- amount_errors = @group.namespace_settings.errors.full_messages_for(:unique_project_download_limit)
+- interval_errors = @group.namespace_settings.errors.full_messages_for(:unique_project_download_limit_interval_in_seconds)
 
-= gitlab_ui_form_for @group, url: group_settings_reporting_path(@group) do |f|
-  .form-group
+= gitlab_ui_form_for @group, url: group_settings_reporting_path(@group), html: { class: 'gl-show-field-errors' } do |f|
+  .form-group{ data: { testid: 'unique_project_download_limit' } }
     = f.label :unique_project_download_limit, s_('GroupSettings|Number of projects'), class: 'label-bold'
-    = f.number_field :unique_project_download_limit, value: @group.namespace_settings&.unique_project_download_limit, class: 'form-control gl-form-input'
+    = f.number_field :unique_project_download_limit, value: @group.namespace_settings&.unique_project_download_limit, **numericality_validation_options(@group.namespace_settings, :unique_project_download_limit), class: ['form-control', 'gl-form-input', amount_errors.present? && 'is-invalid']
+    - amount_errors.each do |error|
+      .invalid-feedback= error
     .form-text.text-muted
       = s_("GroupSettings|The maximum number of unique projects a user can download within the specified interval before they're banned. Set to 0 to disable limiting.")
 
-  .form-group
+  .form-group{ data: { testid: 'unique_project_download_limit_interval_in_seconds' } }
     = f.label :unique_project_download_limit_interval_in_seconds, s_('GroupSettings|Interval (seconds)'), class: 'label-bold'
-    = f.number_field :unique_project_download_limit_interval_in_seconds, value: @group.namespace_settings&.unique_project_download_limit_interval_in_seconds, class: 'form-control gl-form-input'
+    = f.number_field :unique_project_download_limit_interval_in_seconds, value: @group.namespace_settings&.unique_project_download_limit_interval_in_seconds, **numericality_validation_options(@group.namespace_settings, :unique_project_download_limit_interval_in_seconds), class: ['form-control', 'gl-form-input', interval_errors.present? && 'is-invalid']
+    - interval_errors.each do |error|
+      .invalid-feedback= error
     .form-text.text-muted
       = s_('GroupSettings|Set to 0 to disable limiting.')
 

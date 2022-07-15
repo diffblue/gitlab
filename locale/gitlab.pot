@@ -460,6 +460,9 @@ msgstr ""
 msgid "%{address} is an invalid IP address range"
 msgstr ""
 
+msgid "%{attribute} must be between %{min} and %{max}"
+msgstr ""
+
 msgid "%{author_link} cloned %{original_issue} to %{new_issue}."
 msgstr ""
 

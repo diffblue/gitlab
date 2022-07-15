@@ -63,7 +63,27 @@ RSpec.describe 'Group reporting settings' do
 
     click_button 'Save changes'
 
-    expect(page).to have_content('Number of projects must be greater than or equal to 0')
-    expect(page).to have_content('Interval (seconds) must be greater than or equal to 0')
+    within('[data-testid="unique_project_download_limit"]') do
+      expect(page).to have_content('Number of projects must be greater than or equal to 0')
+    end
+
+    within('[data-testid="unique_project_download_limit_interval_in_seconds"]') do
+      expect(page).to have_content('Interval (seconds) must be greater than or equal to 0')
+    end
+  end
+
+  it 'displays client side validation errors', :js do
+    fill_in s_('GroupSettings|Number of projects'), with: -1
+    fill_in s_('GroupSettings|Interval (seconds)'), with: -1
+
+    click_button 'Save changes'
+
+    within('[data-testid="unique_project_download_limit"]') do
+      expect(page).to have_content('Number of projects must be between 0 and 10000')
+    end
+
+    within('[data-testid="unique_project_download_limit_interval_in_seconds"]') do
+      expect(page).to have_content('Interval (seconds) must be between 0 and 86400')
+    end
   end
 end
