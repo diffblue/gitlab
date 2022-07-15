@@ -94,7 +94,7 @@ exports[`ResourceLinksBlock with defaults renders correct component 1`] = `
       class="linked-issues-card-body bg-gray-light"
     >
       <div
-        class="js-add-issuable-resource-links card-body bordered-box bg-white"
+        class="card-body bordered-box gl-bg-white"
         style="display: none;"
       >
         <form>

@@ -1,6 +1,5 @@
 import { nextTick } from 'vue';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
-import waitForPromises from 'helpers/wait_for_promises';
 import AddIssuableResourceLinkForm from '~/linked_resources/components/add_issuable_resource_link_form.vue';
 
 describe('AddIssuableResourceLinkForm', () => {
@@ -22,8 +21,7 @@ describe('AddIssuableResourceLinkForm', () => {
   const findLinkValueInput = () => wrapper.findByTestId('link-value-input');
 
   const cancelForm = async () => {
-    findCancelButton().trigger('click');
-    await waitForPromises();
+    await findCancelButton().trigger('click');
   };
 
   describe('cancel form button', () => {

@@ -105,7 +105,7 @@ export default {
       >
         <div
           v-show="isFormVisible"
-          class="js-add-issuable-resource-links card-body bordered-box bg-white"
+          class="card-body bordered-box gl-bg-white"
         >
           <add-issuable-resource-link-form
             ref="resourceLinkForm"

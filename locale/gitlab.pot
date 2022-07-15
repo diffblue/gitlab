@@ -23453,15 +23453,6 @@ msgstr ""
 msgid "Linked issues"
 msgstr ""
 
-msgid "Linked resources|Add a resource link"
-msgstr ""
-
-msgid "Linked resources|Linked resources"
-msgstr ""
-
-msgid "Linked resources|Read more about linked resources"
-msgstr ""
-
 msgid "LinkedIn"
 msgstr ""
 
@@ -23469,6 +23460,15 @@ msgid "LinkedIn:"
 msgstr ""
 
 msgid "LinkedPipelines|%{counterLabel} more downstream pipelines"
+msgstr ""
+
+msgid "LinkedResources|Add a resource link"
+msgstr ""
+
+msgid "LinkedResources|Linked resources"
+msgstr ""
+
+msgid "LinkedResources|Read more about linked resources"
 msgstr ""
 
 msgid "Links"
