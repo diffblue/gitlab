@@ -204,6 +204,11 @@ export const labels = [
   },
 ];
 
+export const color = {
+  color: '#ff0000',
+  title: 'Red',
+};
+
 export const rawIssue = {
   title: 'Issue 1',
   id: 'gid://gitlab/Issue/436',

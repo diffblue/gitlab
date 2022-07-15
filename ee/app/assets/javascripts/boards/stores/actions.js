@@ -798,4 +798,20 @@ export default {
       value: labels,
     });
   },
+
+  setActiveBoardItemColor: ({ getters, dispatch }, params) => {
+    if (getters.isEpicBoard) {
+      dispatch('setActiveEpicColor', params);
+    }
+  },
+
+  setActiveEpicColor: async ({ commit, getters }, input) => {
+    const { activeBoardItem } = getters;
+
+    commit(types.UPDATE_BOARD_ITEM_BY_ID, {
+      itemId: input.id || activeBoardItem.id,
+      prop: 'color',
+      value: input.color.color,
+    });
+  },
 };

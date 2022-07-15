@@ -13,19 +13,21 @@ import SidebarSubscriptionsWidget from '~/sidebar/components/subscriptions/sideb
 import SidebarTodoWidget from '~/sidebar/components/todo_toggle/sidebar_todo_widget.vue';
 import SidebarLabelsWidget from '~/vue_shared/components/sidebar/labels_select_widget/labels_select_root.vue';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+import ColorSelectDropdown from '~/vue_shared/components/color_select_dropdown/color_select_root.vue';
 
 export default {
   components: {
-    GlDrawer,
-    SidebarTodoWidget,
     BoardSidebarTitle,
-    SidebarLabelsWidget,
+    ColorSelectDropdown,
+    GlDrawer,
+    MountingPortal,
+    SidebarAncestorsWidget,
     SidebarConfidentialityWidget,
     SidebarDateWidget,
+    SidebarLabelsWidget,
     SidebarParticipantsWidget,
     SidebarSubscriptionsWidget,
-    SidebarAncestorsWidget,
-    MountingPortal,
+    SidebarTodoWidget,
   },
   mixins: [glFeatureFlagMixin()],
   inject: ['canUpdate', 'labelsFilterBasePath'],
@@ -42,6 +44,9 @@ export default {
     fullPath() {
       return this.activeBoardItem?.referencePath?.split('&')[0] || '';
     },
+    isEpicColorEnabled() {
+      return this.glFeatures.epicColorHighlight;
+    },
   },
   methods: {
     ...mapActions([
@@ -49,6 +54,7 @@ export default {
       'setActiveItemConfidential',
       'setActiveItemSubscribed',
       'setActiveBoardItemLabels',
+      'setActiveBoardItemColor',
     ]),
     handleClose() {
       this.toggleBoardItem({ boardItem: this.activeBoardItem, sidebarType: this.sidebarType });
@@ -59,6 +65,13 @@ export default {
         groupPath: this.fullPath,
         labelIds: labels.map((label) => getIdFromGraphQLId(label.id)),
         labels,
+      });
+    },
+    handleUpdateSelectedColor({ id, color }) {
+      this.setActiveBoardItemColor({
+        id,
+        groupPath: this.fullPath,
+        color,
       });
     },
     handleLabelRemove(removeLabelId) {
@@ -127,6 +140,22 @@ export default {
         >
           {{ __('None') }}
         </sidebar-labels-widget>
+
+        <color-select-dropdown
+          v-if="isEpicColorEnabled"
+          class="block colors js-colors-block"
+          :allow-edit="canUpdate"
+          :iid="activeBoardItem.iid"
+          :full-path="fullPath"
+          workspace-type="group"
+          issuable-type="epic"
+          variant="sidebar"
+          data-testid="colors-select"
+          @updateSelectedColor="handleUpdateSelectedColor"
+        >
+          {{ __('None') }}
+        </color-select-dropdown>
+
         <sidebar-confidentiality-widget
           :iid="activeBoardItem.iid"
           :full-path="fullPath"

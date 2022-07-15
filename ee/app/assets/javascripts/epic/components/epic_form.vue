@@ -145,7 +145,7 @@ export default {
     handleUpdateSelectedLabels(labels) {
       this.labels = labels.map((label) => ({ ...label, id: getIdFromGraphQLId(label.id) }));
     },
-    handleUpdateSelectedColor(color) {
+    handleUpdateSelectedColor({ color }) {
       this.color = color;
     },
   },

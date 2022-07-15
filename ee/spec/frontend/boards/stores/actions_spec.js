@@ -29,6 +29,7 @@ import * as commonUtils from '~/lib/utils/common_utils';
 import { mergeUrlParams, removeParams } from '~/lib/utils/url_utility';
 import { __ } from '~/locale';
 import {
+  color,
   labels,
   mockEpicBoard,
   mockLists,
@@ -1671,5 +1672,39 @@ describe('addListNewIssue', () => {
         update: expect.anything(),
       });
     });
+  });
+});
+
+describe('setActiveEpicColor', () => {
+  const state = { boardItems: { [mockEpic.id]: mockEpic } };
+  const getters = { activeBoardItem: { ...mockEpic, color } };
+  const newColor = {
+    color: '#00ff00',
+    title: 'Green',
+  };
+  const input = {
+    color: newColor,
+    groupPath: 'h/b',
+  };
+
+  it('should change color', () => {
+    const payload = {
+      itemId: getters.activeBoardItem.id,
+      prop: 'color',
+      value: newColor.color,
+    };
+
+    testAction(
+      actions.setActiveEpicColor,
+      input,
+      { ...state, ...getters },
+      [
+        {
+          type: types.UPDATE_BOARD_ITEM_BY_ID,
+          payload,
+        },
+      ],
+      [],
+    );
   });
 });
