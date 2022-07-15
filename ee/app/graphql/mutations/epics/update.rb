@@ -12,6 +12,11 @@ module Mutations
                 required: false,
                 description: 'State event for the epic.'
 
+      argument :remove_labels,
+                [GraphQL::Types::String],
+                required: false,
+                description: 'Array of labels to be removed from the epic.'
+
       authorize :admin_epic
 
       def resolve(args)
