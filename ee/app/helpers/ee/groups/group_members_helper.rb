@@ -16,12 +16,12 @@ module EE::Groups::GroupMembersHelper
   end
 
   override :group_members_app_data
-  def group_members_app_data(group, members:, invited:, access_requests:, banned: nil, include_relations:, search:)
+  def group_members_app_data(group, members:, invited:, access_requests:, banned:, include_relations:, search:)
     super.merge!({
        can_export_members: can?(current_user, :export_group_memberships, group),
        export_csv_path: export_csv_group_group_members_path(group),
        can_filter_by_enterprise: can?(current_user, :admin_group_member, group) && group.root_ancestor.saml_enabled?,
-       banned: group_members_list_data(group, banned || [])
+       banned: group_members_list_data(group, banned)
      })
   end
 

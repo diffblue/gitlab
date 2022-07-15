@@ -24,7 +24,7 @@ RSpec.describe Groups::GroupMembersHelper do
   end
 
   describe '#group_members_app_data' do
-    let(:banned) { present_members(create_list(:group_member, 2, group: group, created_by: current_user)) }
+    let(:banned) { [] }
 
     subject do
       helper.group_members_app_data(
@@ -63,20 +63,14 @@ RSpec.describe Groups::GroupMembersHelper do
     end
 
     context 'banned members' do
+      let(:banned) { present_members(create_list(:group_member, 2, group: group, created_by: current_user)) }
+
       it 'returns `members` property that matches json schema' do
         expect(subject[:banned][:members].to_json).to match_schema('members')
       end
 
       it 'sets `member_path` property' do
         expect(subject[:banned][:member_path]).to eq('/groups/foo-bar/-/group_members/:id')
-      end
-
-      context 'when banned arg is nil' do
-        let(:banned) { nil }
-
-        it 'returns `members` property is an empty array' do
-          expect(subject[:banned][:members]).to eq []
-        end
       end
     end
   end
