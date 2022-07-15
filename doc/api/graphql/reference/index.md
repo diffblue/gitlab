@@ -10096,6 +10096,7 @@ GitLab CI/CD configuration template.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
+| <a id="civariableenvironmentscope"></a>`environmentScope` | [`String`](#string) | Scope defining the environments in which the variable can be used. |
 | <a id="civariableid"></a>`id` | [`ID!`](#id) | ID of the variable. |
 | <a id="civariablekey"></a>`key` | [`String`](#string) | Name of the variable. |
 | <a id="civariablemasked"></a>`masked` | [`Boolean`](#boolean) | Indicates whether the variable is masked. |
