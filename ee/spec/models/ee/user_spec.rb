@@ -1245,7 +1245,7 @@ RSpec.describe User do
         non_trialed_group_a.add_maintainer(user)
       end
 
-      it { is_expected.to include non_trialed_group_a }
+      it { is_expected.not_to include non_trialed_group_a }
     end
 
     context 'owner of 2 non-trialed groups' do
