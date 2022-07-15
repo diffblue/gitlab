@@ -68,9 +68,19 @@ module EE
             can?(current_user, :admin_group, user_group) ? params : params.merge(author_id: current_user.id)
           end
 
+          def immediately_delete_subgroup?(group)
+            return false unless ::Feature.enabled?(:immediate_delete_subgroup_api, group.parent)
+            group.subgroup? &&
+              group.marked_for_deletion? &&
+              group.full_path == params[:full_path] &&
+              ::Gitlab::Utils.to_boolean(params[:permanently_remove])
+          end
+
           override :delete_group
           def delete_group(group)
             return super unless group.adjourned_deletion?
+
+            return super if immediately_delete_subgroup?(group)
 
             result = destroy_conditionally!(group) do |group|
               ::Groups::MarkForDeletionService.new(group, current_user).execute
