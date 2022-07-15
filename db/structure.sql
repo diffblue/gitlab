@@ -29155,8 +29155,6 @@ CREATE INDEX index_pages_domains_on_verified_at_and_enabled_until ON pages_domai
 
 CREATE INDEX index_pages_domains_on_wildcard ON pages_domains USING btree (wildcard);
 
-CREATE UNIQUE INDEX index_parent_links_on_work_item_id_and_work_item_parent_id ON work_item_parent_links USING btree (work_item_id, work_item_parent_id);
-
 CREATE INDEX index_partial_ci_builds_on_user_id_name_parser_features ON ci_builds USING btree (user_id, name) WHERE (((type)::text = 'Ci::Build'::text) AND ((name)::text = ANY (ARRAY[('container_scanning'::character varying)::text, ('dast'::character varying)::text, ('dependency_scanning'::character varying)::text, ('license_management'::character varying)::text, ('license_scanning'::character varying)::text, ('sast'::character varying)::text, ('coverage_fuzzing'::character varying)::text, ('secret_detection'::character varying)::text])));
 
 CREATE INDEX index_pat_on_user_id_and_expires_at ON personal_access_tokens USING btree (user_id, expires_at);
@@ -30174,6 +30172,8 @@ CREATE INDEX index_wiki_page_meta_on_project_id ON wiki_page_meta USING btree (p
 CREATE UNIQUE INDEX index_wiki_page_slugs_on_slug_and_wiki_page_meta_id ON wiki_page_slugs USING btree (slug, wiki_page_meta_id);
 
 CREATE INDEX index_wiki_page_slugs_on_wiki_page_meta_id ON wiki_page_slugs USING btree (wiki_page_meta_id);
+
+CREATE UNIQUE INDEX index_work_item_parent_links_on_work_item_id ON work_item_parent_links USING btree (work_item_id);
 
 CREATE INDEX index_work_item_parent_links_on_work_item_parent_id ON work_item_parent_links USING btree (work_item_parent_id);
 
