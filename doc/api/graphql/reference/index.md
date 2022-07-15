@@ -9934,6 +9934,7 @@ Represents the total number of issues and their weights for a particular day.
 | <a id="cijobid"></a>`id` | [`JobID`](#jobid) | ID of the job. |
 | <a id="cijobkind"></a>`kind` | [`CiJobKind!`](#cijobkind) | Indicates the type of job. |
 | <a id="cijobmanualjob"></a>`manualJob` | [`Boolean`](#boolean) | Whether the job has a manual action. |
+| <a id="cijobmanualvariables"></a>`manualVariables` | [`CiVariableConnection`](#civariableconnection) | Variables added to a manual job when the job is triggered. (see [Connections](#connections)) |
 | <a id="cijobname"></a>`name` | [`String`](#string) | Name of the job. |
 | <a id="cijobneeds"></a>`needs` | [`CiBuildNeedConnection`](#cibuildneedconnection) | References to builds that must complete before the jobs run. (see [Connections](#connections)) |
 | <a id="cijobpipeline"></a>`pipeline` | [`Pipeline`](#pipeline) | Pipeline the job belongs to. |
