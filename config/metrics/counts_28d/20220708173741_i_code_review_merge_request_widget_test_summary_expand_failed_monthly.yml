@@ -1,6 +1,6 @@
 ---
-key_path: redis_hll_counters.mr_widgets.i_code_review_widget_test_summary_full_report_clicked_weekly
-description: The count of unique users (weekly) who clicked the Full Report button on the Test Summary widget extension
+key_path: redis_hll_counters.mr_widgets.i_code_review_merge_request_widget_test_summary_expand_failed_monthly
+description: The count of unique users (monthly) who expanded the Test Summary widget extension while it is in its Failed state
 product_section: dev
 product_stage: create
 product_group: code_review
@@ -9,13 +9,13 @@ value_type: number
 status: active
 milestone: "15.2"
 introduced_by_url: "https://gitlab.com/gitlab-org/gitlab/-/merge_requests/91831"
-time_frame: 7d
+time_frame: 28d
 data_source: redis_hll
 data_category: optional
 instrumentation_class: RedisHLLMetric
 options:
   events:
-    - i_code_review_widget_test_summary_full_report_clicked
+    - i_code_review_merge_request_widget_test_summary_expand_failed
 distribution:
 - ce
 - ee

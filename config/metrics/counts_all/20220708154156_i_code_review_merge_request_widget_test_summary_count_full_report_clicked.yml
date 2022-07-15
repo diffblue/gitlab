@@ -1,5 +1,5 @@
 ---
-key_path: counts.i_code_review_widget_test_summary_count_full_report_clicked
+key_path: counts.i_code_review_merge_request_widget_test_summary_count_full_report_clicked
 description: Total number of times the Test Summary widget extension Full Report button was clicked
 product_section: dev
 product_stage: create
@@ -14,7 +14,7 @@ data_source: redis
 data_category: optional
 options:
   events:
-    - i_code_review_widget_test_summary_count_full_report_clicked
+    - i_code_review_merge_request_widget_test_summary_count_full_report_clicked
 distribution:
 - ce
 - ee

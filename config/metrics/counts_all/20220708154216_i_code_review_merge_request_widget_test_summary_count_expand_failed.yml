@@ -1,5 +1,5 @@
 ---
-key_path: counts.i_code_review_widget_test_summary_count_expand_failed
+key_path: counts.i_code_review_merge_request_widget_test_summary_count_expand_failed
 description: Total number of times the Test Summary widget extension was expanded (while in its Failed state)
 product_section: dev
 product_stage: create
@@ -14,7 +14,7 @@ data_source: redis
 data_category: optional
 options:
   events:
-    - i_code_review_widget_test_summary_count_expand_failed
+    - i_code_review_merge_request_widget_test_summary_count_expand_failed
 distribution:
 - ce
 - ee
