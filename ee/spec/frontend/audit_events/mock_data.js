@@ -39,12 +39,14 @@ export const mockExternalDestinationUrl = 'https://api.gitlab.com';
 
 export const mockExternalDestinations = [
   {
-    destinationUrl: mockExternalDestinationUrl,
     id: 'test_id1',
+    destinationUrl: mockExternalDestinationUrl,
+    verificationToken: 'id5hzCbERzSkQ82tAs16tH5Y',
   },
   {
-    destinationUrl: 'https://apiv2.gitlab.com',
     id: 'test_id2',
+    destinationUrl: 'https://apiv2.gitlab.com',
+    verificationToken: 'JsSQtg86au6buRtX9j98sYa8',
   },
 ];
 
@@ -64,6 +66,7 @@ export const destinationCreateMutationPopulator = (errors = []) => {
     externalAuditEventDestination: {
       id: 'test-create-id',
       destinationUrl: mockExternalDestinationUrl,
+      verificationToken: 'Cr28SHnrJtgpSXUEGfictGMS',
       group: {
         name: groupPath,
         id: testGroupId,
@@ -76,6 +79,7 @@ export const destinationCreateMutationPopulator = (errors = []) => {
     externalAuditEventDestination: {
       id: null,
       destinationUrl: null,
+      verificationToken: null,
       group: {
         name: null,
         id: testGroupId,

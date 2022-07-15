@@ -9,9 +9,25 @@ exports[`StreamItem render should render correctly 1`] = `
   >
     <div
       class="gl-h-4"
+      tabindex="0"
     >
       https://api.gitlab.com
     </div>
+     
+    <code
+      class="gl-ml-auto gl-mr-3"
+      tabindex="0"
+      title="Verification token"
+    >
+      <span
+        class="gl-sr-only"
+      >
+        Verification token:
+      </span>
+      
+      id5hzCbERzSkQ82tAs16tH5Y
+    
+    </code>
      
     <div
       class="actions-button"

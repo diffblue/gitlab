@@ -3,8 +3,9 @@ query getExternalDestinations($fullPath: ID!) {
     id
     externalAuditEventDestinations {
       nodes {
-        destinationUrl
         id
+        destinationUrl
+        verificationToken
       }
     }
   }

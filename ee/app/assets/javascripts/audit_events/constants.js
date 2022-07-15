@@ -73,6 +73,12 @@ export const ADD_STREAM = s__('AuditStreams|Add stream');
 export const ACTIVE_STREAM = s__('AuditStreams|Active');
 export const STREAM_COUNT_ICON_ALT = s__('AuditStreams|Stream count icon');
 
+export const STREAM_ITEMS_I18N = {
+  VERIFICATION_TOKEN_TOOLTIP: s__('AuditStreams|Verification token'),
+  DELETE_BUTTON_LABEL: s__('AuditStreams|Delete %{link}'),
+  DELETE_BUTTON_TOOLTIP: __('Delete'),
+};
+
 export const ADD_STREAM_EDITOR_I18N = {
   WARNING_TITLE: s__('AuditStreams|Destinations receive all audit event data'),
   WARNING_CONTENT: s__(
@@ -91,7 +97,7 @@ export const ADD_STREAM_EDITOR_I18N = {
   ADD_BUTTON_TEXT: __('Add'),
   ADD_BUTTON_NAME: s__('AuditStreams|Add external stream destination'),
   CANCEL_BUTTON_TEXT: __('Cancel'),
-  CANCEL_BUTTON_NAME: __('AuditStreams|Cancel editing'),
+  CANCEL_BUTTON_NAME: s__('AuditStreams|Cancel editing'),
 };
 
 export const AUDIT_STREAMS_EMPTY_STATE_I18N = {
