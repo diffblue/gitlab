@@ -39,6 +39,37 @@ RSpec.describe Gitlab::Ci::Minutes::BuildConsumption do
       it 'returns the expected consumption' do
         expect(subject).to eq(result)
       end
+
+      context 'when consumption comes from a GitLab contribution' do
+        let(:contribution_cost_factor) do
+          instance_double(::Gitlab::Ci::Minutes::GitlabContributionCostFactor, cost_factor: 0.25)
+        end
+
+        before do
+          allow(::Gitlab::Ci::Minutes::GitlabContributionCostFactor)
+            .to receive(:new)
+            .with(build)
+            .and_return(contribution_cost_factor)
+        end
+
+        it 'returns the consumption using the contribution cost factor' do
+          expected_consumption = (duration.to_f / 60 * 0.25).round(2)
+          expect(subject).to eq(expected_consumption)
+        end
+
+        it 'logs that the contributor cost factor was granted' do
+          expect(Gitlab::AppLogger).to receive(:info).with(
+            hash_including(
+              message: "GitLab contributor cost factor granted",
+              cost_factor: 0.25,
+              project_path: project.full_path,
+              pipeline_id: build.pipeline_id
+            )
+          )
+
+          subject
+        end
+      end
     end
   end
 end

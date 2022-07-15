@@ -8,6 +8,8 @@ module Gitlab
       # The amount returned is a float so that internally we could track
       # an accurate usage of minutes/credits.
       class BuildConsumption
+        include Gitlab::Utils::StrongMemoize
+
         def initialize(build, duration)
           @build = build
           @duration = duration
@@ -20,7 +22,37 @@ module Gitlab
         private
 
         def cost_factor
-          @build.runner.cost_factor_for_project(@build.project)
+          if runner_cost_factor > 0 && gitlab_contribution_cost_factor
+            Gitlab::AppLogger.info(
+              message: "GitLab contributor cost factor granted",
+              cost_factor: gitlab_contribution_cost_factor,
+              project_path: project.full_path,
+              pipeline_id: @build.pipeline_id,
+              class: self.class.name
+            )
+
+            gitlab_contribution_cost_factor
+          else
+            runner_cost_factor
+          end
+        end
+
+        def runner_cost_factor
+          strong_memoize(:runner_cost_factor) do
+            @build.runner.cost_factor_for_project(project)
+          end
+        end
+
+        def gitlab_contribution_cost_factor
+          strong_memoize(:gitlab_contribution_cost_factor) do
+            ::Gitlab::Ci::Minutes::GitlabContributionCostFactor.new(@build).cost_factor
+          end
+        end
+
+        def project
+          strong_memoize(:project) do
+            @build.project
+          end
         end
       end
     end
