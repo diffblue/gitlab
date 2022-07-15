@@ -23462,13 +23462,25 @@ msgstr ""
 msgid "LinkedPipelines|%{counterLabel} more downstream pipelines"
 msgstr ""
 
+msgid "LinkedResources|Add"
+msgstr ""
+
 msgid "LinkedResources|Add a resource link"
+msgstr ""
+
+msgid "LinkedResources|Cancel"
+msgstr ""
+
+msgid "LinkedResources|Link"
 msgstr ""
 
 msgid "LinkedResources|Linked resources"
 msgstr ""
 
 msgid "LinkedResources|Read more about linked resources"
+msgstr ""
+
+msgid "LinkedResources|Text (Optional)"
 msgstr ""
 
 msgid "Links"

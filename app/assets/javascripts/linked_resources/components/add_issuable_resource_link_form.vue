@@ -1,6 +1,7 @@
 <script>
 import { GlFormGroup, GlButton, GlFormInput } from '@gitlab/ui';
 import autofocusonshow from '~/vue_shared/directives/autofocusonshow';
+import { resourceLinksFormI18n } from '../constants';
 
 export default {
   name: 'AddIssuableResourceLinkForm',
@@ -9,6 +10,7 @@ export default {
     GlButton,
     GlFormInput,
   },
+  i18n: resourceLinksFormI18n,
   directives: {
     autofocusonshow,
   },
@@ -45,15 +47,15 @@ export default {
 
 <template>
   <form @submit.prevent>
-    <gl-form-group label="Text (Optional)">
+    <gl-form-group :label="$options.i18n.linkTextLabel">
       <gl-form-input
-        ref="linkTextInput"
+        v-autofocusonshow
         v-model="linkTextValue"
         data-testid="link-text-input"
         type="text"
       />
     </gl-form-group>
-    <gl-form-group label="Link">
+    <gl-form-group :label="$options.i18n.linkValueLabel">
       <gl-form-input v-model="linkValue" data-testid="link-value-input" type="text" />
     </gl-form-group>
     <div class="gl-mt-5 gl-clearfix">
@@ -66,10 +68,10 @@ export default {
         type="submit"
         class="gl-float-left"
       >
-        {{ __('Add') }}
+        {{ $options.i18n.submitButtonText }}
       </gl-button>
       <gl-button class="gl-float-right" @click="onFormCancel">
-        {{ __('Cancel') }}
+        {{ $options.i18n.cancelButtonText }}
       </gl-button>
     </div>
   </form>

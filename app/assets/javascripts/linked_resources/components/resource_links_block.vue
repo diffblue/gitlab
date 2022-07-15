@@ -41,11 +41,6 @@ export default {
   methods: {
     async toggleResourceLinkForm() {
       this.isFormVisible = !this.isFormVisible;
-
-      if (this.isFormVisible) {
-        await this.$nextTick();
-        this.$refs.resourceLinkForm.focusLinkTextInput();
-      }
     },
     hideResourceLinkForm() {
       this.isFormVisible = false;
