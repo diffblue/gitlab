@@ -61,8 +61,9 @@ module QA
           end
 
           def has_status?(status, vulnerability_name)
+            # Capitalizing first letter in each word to account for "Needs Triage" state
             has_element?(:vulnerability_status_content,
-                         status_description: vulnerability_name, text: "#{status.capitalize}")
+                         status_description: vulnerability_name, text: "#{status.split.map(&:capitalize).join(' ')}")
           end
         end
       end
