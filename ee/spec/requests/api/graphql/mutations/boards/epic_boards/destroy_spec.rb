@@ -59,15 +59,8 @@ RSpec.describe Mutations::Boards::EpicBoards::Destroy do
         other_board.destroy!
       end
 
-      it 'does not destroy the board' do
-        expect { subject }.not_to change { ::Boards::EpicBoard.count }
-      end
-
-      it 'returns an error and not nil board' do
-        subject
-
-        expect(mutation_response['errors']).not_to be_empty
-        expect(mutation_response['epicBoard']).not_to be_nil
+      it 'does destroy the board' do
+        expect { subject }.to change { ::Boards::EpicBoard.count }.by(-1)
       end
     end
   end
