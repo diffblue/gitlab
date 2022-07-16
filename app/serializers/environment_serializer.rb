@@ -54,7 +54,7 @@ class EnvironmentSerializer < BaseSerializer
   def batch_load(resource)
     temp_deployment_associations = deployment_associations
 
-    resource = resource.preload(environment_associations.except(:last_deployment, :upcoming_deployment))
+    resource = resource.preload(environment_associations)
 
     if ::Feature.enabled?(:batch_load_environment_last_deployment_group, resource.first&.project)
       temp_deployment_associations[:deployable][:pipeline][:latest_successful_builds] = []
@@ -82,8 +82,6 @@ class EnvironmentSerializer < BaseSerializer
 
   def environment_associations
     {
-      last_deployment: deployment_associations,
-      upcoming_deployment: deployment_associations,
       project: project_associations
     }
   end
