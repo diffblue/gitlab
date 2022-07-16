@@ -8,10 +8,12 @@ module Security
       end
 
       def execute
-        opened_merge_requests.each do |merge_request|
-          MergeRequests::SyncReportApproverApprovalRules
-            .new(merge_request)
-            .execute(skip_authentication: true)
+        opened_merge_requests.each_batch do |mr_batch|
+          mr_batch.each do |merge_request|
+            MergeRequests::SyncReportApproverApprovalRules
+              .new(merge_request)
+              .execute(skip_authentication: true)
+          end
         end
       end
 
