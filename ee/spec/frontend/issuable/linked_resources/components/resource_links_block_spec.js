@@ -1,8 +1,8 @@
 import { GlButton } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
-import ResourceLinksBlock from '~/linked_resources/components/resource_links_block.vue';
-import AddIssuableResourceLinkForm from '~/linked_resources/components/add_issuable_resource_link_form.vue';
+import ResourceLinksBlock from 'ee/linked_resources/components/resource_links_block.vue';
+import AddIssuableResourceLinkForm from 'ee/linked_resources/components/add_issuable_resource_link_form.vue';
 
 describe('ResourceLinksBlock', () => {
   let wrapper;

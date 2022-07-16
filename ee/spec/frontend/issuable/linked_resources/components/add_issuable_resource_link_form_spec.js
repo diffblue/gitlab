@@ -1,6 +1,6 @@
 import { nextTick } from 'vue';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
-import AddIssuableResourceLinkForm from '~/linked_resources/components/add_issuable_resource_link_form.vue';
+import AddIssuableResourceLinkForm from 'ee/linked_resources/components/add_issuable_resource_link_form.vue';
 
 describe('AddIssuableResourceLinkForm', () => {
   let wrapper;
