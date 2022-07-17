@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe EE::Gitlab::Checks::PushRules::CommitCheck do
+  include GitHelpers
+
   include_context 'push rules checks context'
 
   describe '#validate!' do

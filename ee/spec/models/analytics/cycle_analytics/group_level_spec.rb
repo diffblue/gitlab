@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Analytics::CycleAnalytics::GroupLevel do
+  include CycleAnalyticsHelpers
+
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project, :repository, namespace: group) }
   let_it_be(:from_date) { 10.days.ago }
