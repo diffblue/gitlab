@@ -28378,6 +28378,9 @@ msgstr ""
 msgid "PipelineEditorTutorial|🚀 Run your first pipeline"
 msgstr ""
 
+msgid "PipelineEditor|Configuration content has changed. Re-run validation for updated results."
+msgstr ""
+
 msgid "PipelineEditor|Current content in the Edit tab will be used for the simulation."
 msgstr ""
 
@@ -28394,6 +28397,15 @@ msgid "PipelineEditor|Pipeline behavior will be simulated including the %{codeSt
 msgstr ""
 
 msgid "PipelineEditor|Pipeline behavior will be simulated including the %{codeStart}rules%{codeEnd} %{codeStart}only%{codeEnd} %{codeStart}except%{codeEnd} and %{codeStart}needs%{codeEnd} job dependencies. %{linkStart}Learn more%{linkEnd}"
+msgstr ""
+
+msgid "PipelineEditor|Pipeline simulation completed with errors"
+msgstr ""
+
+msgid "PipelineEditor|Simulated a %{codeStart}git push%{codeEnd} event for a default branch. %{codeStart}Rules%{codeEnd}, %{codeStart}only%{codeEnd}, %{codeStart}except%{codeEnd}, and %{codeStart}needs%{codeEnd} job dependencies logic have been evaluated. %{linkStart}Learn more%{linkEnd}"
+msgstr ""
+
+msgid "PipelineEditor|Simulation completed successfully"
 msgstr ""
 
 msgid "PipelineEditor|The CI/CD configuration is continuously validated. Errors and warnings are displayed when the CI/CD configuration file is not empty."
@@ -28415,6 +28427,12 @@ msgid "PipelineEditor|Validate pipeline under selected conditions"
 msgstr ""
 
 msgid "PipelineEditor|Validate pipeline under simulated conditions"
+msgstr ""
+
+msgid "PipelineEditor|Validating pipeline... It can take up to a minute."
+msgstr ""
+
+msgid "PipelineEditor|Waiting for CI content to load..."
 msgstr ""
 
 msgid "PipelineScheduleIntervalPattern|Custom (%{linkStart}Cron syntax%{linkEnd})"
@@ -28694,6 +28712,9 @@ msgid "Pipelines|Owner"
 msgstr ""
 
 msgid "Pipelines|Pipeline Editor"
+msgstr ""
+
+msgid "Pipelines|Pipeline syntax is correct."
 msgstr ""
 
 msgid "Pipelines|Project cache successfully reset."
