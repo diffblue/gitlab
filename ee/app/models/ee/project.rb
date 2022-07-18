@@ -24,6 +24,8 @@ module EE
       include ProjectSecurityScannersInformation
       include VulnerabilityFlagHelpers
 
+      before_update :update_legacy_open_source_license_available, if: -> { visibility_level_changed? }
+
       before_save :set_override_pull_mirror_available, unless: -> { ::Gitlab::CurrentSettings.mirror_available }
       before_save :set_next_execution_timestamp_to_now, if: ->(project) { project.mirror? && project.mirror_changed? && project.import_state }
 
@@ -877,6 +879,10 @@ module EE
     end
 
     private
+
+    def update_legacy_open_source_license_available
+      project_setting.legacy_open_source_license_available = false
+    end
 
     def security_orchestration_policies_for_scope(scope)
       scope

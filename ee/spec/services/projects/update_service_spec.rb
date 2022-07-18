@@ -410,33 +410,6 @@ RSpec.describe Projects::UpdateService, '#execute' do
     expect(project).not_to be_mirror
   end
 
-  context 'visibility changes' do
-    using RSpec::Parameterized::TableSyntax
-
-    where(:visibility_level, :new_visibility_level) do
-      Gitlab::VisibilityLevel::PUBLIC | Gitlab::VisibilityLevel::INTERNAL
-      Gitlab::VisibilityLevel::PUBLIC | Gitlab::VisibilityLevel::PRIVATE
-      Gitlab::VisibilityLevel::INTERNAL | Gitlab::VisibilityLevel::PUBLIC
-      Gitlab::VisibilityLevel::INTERNAL | Gitlab::VisibilityLevel::PRIVATE
-      Gitlab::VisibilityLevel::PRIVATE | Gitlab::VisibilityLevel::PUBLIC
-      Gitlab::VisibilityLevel::PRIVATE | Gitlab::VisibilityLevel::INTERNAL
-    end
-
-    with_them do
-      let(:project) { create(:project, creator: user, visibility_level: visibility_level) }
-
-      before do
-        project.project_setting.update!(legacy_open_source_license_available: true)
-      end
-
-      it 'sets `project_settings.legacy_open_source_license_available` to false' do
-        update_project(project, user, { visibility_level: new_visibility_level })
-
-        expect(project.project_setting.legacy_open_source_license_available).to be_falsey
-      end
-    end
-  end
-
   def update_project(project, user, opts)
     Projects::UpdateService.new(project, user, opts).execute
   end
