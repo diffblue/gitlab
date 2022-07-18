@@ -156,7 +156,7 @@ export default {
       );
     },
   },
-  APPROVAL_COUNT_OPTIONS: [1, 2, 3, 4, 5],
+  APPROVAL_COUNT_OPTIONS: [0, 1, 2, 3, 4, 5],
 };
 </script>
 

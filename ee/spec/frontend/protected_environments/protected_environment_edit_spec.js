@@ -113,7 +113,8 @@ describe('Protected Environment Edit', () => {
   });
 
   it('renders a select for the required approval count', () => {
-    const requiredApprovalCount = 3;
+    const requiredApprovalCount = 0;
+
     createComponent({
       requiredApprovalCount,
     });
