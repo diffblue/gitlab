@@ -8,7 +8,6 @@ import {
 } from 'ee/analytics/cycle_analytics/constants';
 
 const findSubjectFilters = (ctx) => ctx.findComponent(GlSegmentedControl);
-const findSelectedSubjectFilters = (ctx) => findSubjectFilters(ctx).attributes('checked');
 
 function createComponent({ props = {} } = {}) {
   return shallowMount(TasksByTypeFilters, {
@@ -31,7 +30,7 @@ describe('TasksByTypeFilters', () => {
   });
 
   it('has the issue subject set by default', () => {
-    expect(findSelectedSubjectFilters(wrapper)).toBe(TASKS_BY_TYPE_SUBJECT_ISSUE);
+    expect(findSubjectFilters(wrapper).attributes('checked')).toBe(TASKS_BY_TYPE_SUBJECT_ISSUE);
   });
 
   it('emits the `update-filter` event when a subject filter is clicked', async () => {

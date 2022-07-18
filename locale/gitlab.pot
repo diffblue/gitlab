@@ -36054,6 +36054,9 @@ msgstr ""
 msgid "Showing version #%{versionNumber}"
 msgstr ""
 
+msgid "Shows issues and %{labels_count} label for group '%{group_name}' from Nov 1, 2019 to Dec 31, 2019"
+msgstr ""
+
 msgid "Shows issues and %{labels_count} labels for group '%{group_name}' from Nov 1, 2019 to Dec 31, 2019"
 msgstr ""
 
