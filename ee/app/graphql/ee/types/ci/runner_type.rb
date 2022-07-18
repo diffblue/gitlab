@@ -7,8 +7,7 @@ module EE
         extend ActiveSupport::Concern
 
         RUNNER_UPGRADE_STATUS_TRANSLATIONS = {
-          error: :unknown,
-          invalid_version: :invalid
+          error: :unknown
         }.freeze
 
         prepended do
