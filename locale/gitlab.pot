@@ -28984,6 +28984,9 @@ msgstr ""
 msgid "Pipeline|Run for branch name or tag"
 msgstr ""
 
+msgid "Pipeline|Run merge request pipeline"
+msgstr ""
+
 msgid "Pipeline|Run pipeline"
 msgstr ""
 
@@ -29039,6 +29042,9 @@ msgid "Pipeline|This pipeline ran on the contents of this merge request combined
 msgstr ""
 
 msgid "Pipeline|This pipeline ran on the contents of this merge request's source branch, not the target branch."
+msgstr ""
+
+msgid "Pipeline|To run a merge request pipeline, the jobs in the CI/CD configuration file %{linkStart}must be configured%{linkEnd} to run in merge request pipelines."
 msgstr ""
 
 msgid "Pipeline|Trigger author"
