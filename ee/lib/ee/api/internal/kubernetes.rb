@@ -9,31 +9,6 @@ module EE
             namespace 'kubernetes' do
               before { check_agent_token }
 
-              helpers do
-                def agent_has_access_to_project?(project)
-                  project&.licensed_feature_available?(:cluster_agents_gitops) &&
-                    (Guest.can?(:download_code, project) || agent.has_access_to?(project))
-                end
-              end
-
-              desc 'Gets project info' do
-                detail 'Retrieves project info (if authorized)'
-              end
-              route_setting :authentication, cluster_agent_token_allowed: true
-              get '/project_info', urgency: :low do
-                project = find_project(params[:id])
-
-                not_found! unless agent_has_access_to_project?(project)
-
-                status 200
-                {
-                  project_id: project.id,
-                  gitaly_info: gitaly_info(project),
-                  gitaly_repository: gitaly_repository(project),
-                  default_branch: project.default_branch_or_main
-                }
-              end
-
               namespace 'modules/starboard_vulnerability', urgency: :low do
                 desc 'PUT starboard vulnerability' do
                   detail 'Idempotently creates a security vulnerability from starboard'
