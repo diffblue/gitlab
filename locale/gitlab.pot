@@ -38168,9 +38168,6 @@ msgstr ""
 msgid "Task list"
 msgstr ""
 
-msgid "Task with ID: %{id} could not be found."
-msgstr ""
-
 msgid "TasksToBeDone|Create/import code into a project (repository)"
 msgstr ""
 

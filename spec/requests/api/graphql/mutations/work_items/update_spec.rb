@@ -295,6 +295,19 @@ RSpec.describe 'Update a work item' do
           end
         end
 
+        context 'when there is a mix of existing and non existing work items' do
+          let(:children_ids) { [valid_child1.to_global_id.to_s, "gid://gitlab/WorkItem/#{non_existing_record_id}"] }
+
+          it 'returns a top level error and does not add valid work item' do
+            expect do
+              post_graphql_mutation(mutation, current_user: current_user)
+              work_item.reload
+            end.not_to change(work_item.work_item_children, :count)
+
+            expect(graphql_errors.first['message']).to include('No object found for `childrenIds')
+          end
+        end
+
         context 'when child work item type is valid' do
           let(:children_ids) { [valid_child1.to_global_id.to_s, valid_child2.to_global_id.to_s] }
 
