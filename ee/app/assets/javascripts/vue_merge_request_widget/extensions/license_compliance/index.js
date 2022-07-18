@@ -141,7 +141,8 @@ export default {
         let newLicenses = data.new_licenses;
 
         newLicenses = newLicenses.map((e) => {
-          let supportingText; let actions;
+          let supportingText;
+          let actions;
 
           if (
             e.classification.approval_status === LICENSE_APPROVAL_STATUS.ALLOWED ||
