@@ -16,8 +16,8 @@ module Elastic
       document_type.pluralize
     end
 
-    def get_number_of_shards
-      helper.get_settings(index_name: new_index_name).dig('number_of_shards').to_i
+    def get_number_of_shards(index_name: new_index_name)
+      helper.get_settings(index_name: index_name).dig('number_of_shards').to_i
     end
 
     def default_index_name
