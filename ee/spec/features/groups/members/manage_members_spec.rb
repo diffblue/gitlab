@@ -164,6 +164,7 @@ RSpec.describe 'Groups > Members > Manage members', :saas, :js do
       click_button 'Unban'
 
       expect(page).not_to have_content('Banned')
+      expect(page).to have_content('User was successfully unbanned.')
     end
 
     context 'when feature flag is disabled' do
