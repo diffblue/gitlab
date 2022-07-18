@@ -39,7 +39,7 @@ export default {
     'defaultTabValue',
     'exposeSecurityDashboard',
     'exposeLicenseScanningData',
-    'apiUrl',
+    'licenseManagementApiUrl',
     'licensesApiPath',
     'licenseManagementSettingsPath',
     'canManageLicenses',
@@ -94,7 +94,7 @@ export default {
       </template>
 
       <license-report-app
-        :api-url="apiUrl"
+        :api-url="licenseManagementApiUrl"
         :licenses-api-path="licensesApiPath"
         :license-management-settings-path="licenseManagementSettingsPath"
         :can-manage-licenses="canManageLicenses"

@@ -12,7 +12,7 @@ module EE
           expose_license_scanning_data: pipeline.expose_license_scanning_data?.to_json,
           expose_security_dashboard: pipeline.expose_security_dashboard?.to_json,
           vulnerability_report_data: vulnerability_report_data(project, pipeline, user).to_json,
-          api_url: license_management_api_url(project),
+          license_management_api_url: license_management_api_url(project),
           license_management_settings_path: license_management_path(user, project),
           licenses_api_path: licenses_api_path(project, pipeline),
           can_manage_licenses: user&.can?(:admin_software_license_policy, project).to_s

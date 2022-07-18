@@ -30,7 +30,7 @@ describe('The Pipeline Tabs', () => {
     defaultTabValue: '',
     exposeSecurityDashboard: false,
     exposeLicenseScanningData: false,
-    apiUrl: '',
+    licenseManagementApiUrl: '',
     licensesApiPath: '',
     licenseManagementSettingsPath: '',
     canManageLicenses: true,

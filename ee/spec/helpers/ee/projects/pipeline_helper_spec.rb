@@ -23,7 +23,7 @@ RSpec.describe Projects::PipelineHelper do
         codequality_report_download_path: helper.codequality_report_download_path(project, pipeline),
         expose_license_scanning_data: pipeline.expose_license_scanning_data?.to_json,
         expose_security_dashboard: pipeline.expose_security_dashboard?.to_json,
-        api_url: license_management_api_url(project),
+        license_management_api_url: license_management_api_url(project),
         license_management_settings_path: helper.license_management_path(user, project),
         licenses_api_path: helper.licenses_api_path(project, pipeline),
         can_manage_licenses: 'false',
