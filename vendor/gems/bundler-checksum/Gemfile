@@ -1,0 +1,15 @@
+source 'https://rubygems.org/'
+
+gemspec
+
+# plugin 'bundler-checksum', path: '.'
+
+# gem 'faraday', '~> 1.0'
+# gem 'ruby2_keywords', '~> 0.0.5'
+# gem 'cbor', '~> 0.5.9.6'
+# gem 'nokogiri'
+# gem 'hashie'
+
+group :development do
+
+end
