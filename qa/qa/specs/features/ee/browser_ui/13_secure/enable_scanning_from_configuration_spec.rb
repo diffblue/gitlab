@@ -89,8 +89,8 @@ module QA
             config_form.click_security_configuration_history_link
           end
 
-          Page::File::Show.perform do |file_page|
-            expect(file_page).to have_content('template: Security/Dependency-Scanning.gitlab-ci.yml')
+          Page::Blame::Show.perform do |file_page|
+            expect(file_page).to have_file_content('template: Security/Dependency-Scanning.gitlab-ci.yml')
           end
         end
       end
@@ -168,7 +168,7 @@ module QA
             config_form.click_security_configuration_history_link
           end
 
-          Page::File::Show.perform do |file_page|
+          Page::Blame::Show.perform do |file_page|
             sast_config_expects(file_page, test_data_sast_string_fields_array, test_data_int_fields_array)
           end
         end
