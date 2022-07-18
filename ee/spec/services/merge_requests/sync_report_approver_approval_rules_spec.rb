@@ -132,5 +132,25 @@ RSpec.describe MergeRequests::SyncReportApproverApprovalRules do
           .to change { merge_request.approval_rules.count }.from(0).to(1)
       end
     end
+
+    describe 'Authorization' do
+      let!(:coverage_project_rule) { create(:approval_project_rule, :code_coverage, project: merge_request.target_project) }
+
+      context 'without current user' do
+        let(:current_user) { nil }
+
+        it 'copies nothing' do
+          expect { service.execute }
+            .not_to change { merge_request.approval_rules.count }
+        end
+
+        context 'when authentication is skipped' do
+          it 'copies' do
+            expect { service.execute(skip_authentication: true) }
+              .to change { merge_request.approval_rules.count }.by(1)
+          end
+        end
+      end
+    end
   end
 end

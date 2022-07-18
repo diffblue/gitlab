@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe UpdateOrchestrationPolicyConfiguration do
-  let(:configuration) { create(:security_orchestration_policy_configuration, configured_at: nil) }
+  let_it_be(:configuration, refind: true) { create(:security_orchestration_policy_configuration, configured_at: nil) }
   let!(:schedule) do
     create(:security_orchestration_policy_rule_schedule, security_orchestration_policy_configuration: configuration)
   end
@@ -98,7 +98,11 @@ RSpec.describe UpdateOrchestrationPolicyConfiguration do
       end
 
       context 'with existing project approval rules' do
-        let!(:approval_rule) { create(:approval_project_rule, :scan_finding, project: configuration.project )}
+        let_it_be(:mr) { create(:merge_request, :opened, source_project: configuration.project) }
+
+        let_it_be(:approval_rule) { create(:approval_project_rule, :scan_finding, project: configuration.project )}
+        let_it_be(:scan_finding_mr_rule) { create(:report_approver_rule, :scan_finding, merge_request: mr) }
+        let_it_be(:code_coverage_mr_rule) { create(:report_approver_rule, :code_coverage, merge_request: mr) }
 
         before do
           allow_next_instance_of(Security::SecurityOrchestrationPolicies::ProcessRuleService) do |service|
@@ -107,10 +111,17 @@ RSpec.describe UpdateOrchestrationPolicyConfiguration do
           allow_next_instance_of(Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyService) do |service|
             allow(service).to receive(:execute)
           end
+          allow_next_instance_of(Security::SecurityOrchestrationPolicies::SyncOpenedMergeRequestsService) do |service|
+            allow(service).to receive(:execute)
+          end
         end
 
-        it 'deletes all approval_rules' do
+        it 'deletes all project scan_finding approval_rules' do
           expect { subject }.to change(configuration.approval_rules, :count).by(-1)
+        end
+
+        it 'deletes all merge request scan_finding approval_rules' do
+          expect { subject }.to change(configuration.project.approval_merge_request_rules, :count).by(-1)
         end
       end
 
