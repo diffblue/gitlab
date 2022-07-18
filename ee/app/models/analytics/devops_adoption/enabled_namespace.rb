@@ -13,7 +13,23 @@ class Analytics::DevopsAdoption::EnabledNamespace < ApplicationRecord
 
   validates :namespace, uniqueness: { scope: :display_namespace_id }, presence: true
 
-  scope :ordered_by_name, -> { includes(:namespace).order('"namespaces"."name" ASC') }
+  scope :ordered_by_name, -> do
+    order = ::Gitlab::Pagination::Keyset::Order.build([
+      ::Gitlab::Pagination::Keyset::ColumnOrderDefinition.new(
+        attribute_name: 'namespaces_name',
+        order_expression: Namespace.arel_table[:name].asc,
+        distinct: false,
+        add_to_projections: true
+      ),
+      ::Gitlab::Pagination::Keyset::ColumnOrderDefinition.new(
+        attribute_name: 'id',
+        order_expression: arel_table[:id].desc
+      )
+    ])
+    query = includes(:namespace).order(order)
+    order.apply_cursor_conditions(query)
+  end
+
   scope :for_display_namespaces, -> (namespaces) { where(display_namespace_id: namespaces) }
   scope :for_namespaces, -> (namespaces) { where(namespace_id: namespaces) }
   scope :for_parent, -> (namespace) { for_namespaces(namespace.self_and_descendants) }

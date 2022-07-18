@@ -25,10 +25,42 @@ module EE
       scope :order_blocking_issues_desc, -> { reorder(blocking_issues_count: :desc) }
       scope :order_weight_desc, -> { reorder(arel_table[:weight].desc.nulls_last) }
       scope :order_weight_asc, -> { reorder(arel_table[:weight].asc.nulls_last) }
-      scope :order_status_page_published_first, -> { includes(:status_page_published_incident).order('status_page_published_incidents.id ASC NULLS LAST') }
-      scope :order_status_page_published_last, -> { includes(:status_page_published_incident).order('status_page_published_incidents.id ASC NULLS FIRST') }
-      scope :order_sla_due_at_asc, -> { includes(:issuable_sla).order('issuable_slas.due_at ASC NULLS LAST') }
-      scope :order_sla_due_at_desc, -> { includes(:issuable_sla).order('issuable_slas.due_at DESC NULLS LAST') }
+      scope :order_status_page_published_first, -> do
+        build_keyset_order_on_joined_column(
+          scope: includes(:status_page_published_incident),
+          attribute_name: 'published_incidents_id',
+          column: StatusPage::PublishedIncident.arel_table[:id],
+          direction: :asc,
+          nullable: :nulls_last
+        )
+      end
+      scope :order_status_page_published_last, -> do
+        build_keyset_order_on_joined_column(
+          scope: includes(:status_page_published_incident),
+          attribute_name: 'published_incidents_id',
+          column: StatusPage::PublishedIncident.arel_table[:id],
+          direction: :desc,
+          nullable: :nulls_first
+        )
+      end
+      scope :order_sla_due_at_asc, -> do
+        build_keyset_order_on_joined_column(
+          scope: includes(:issuable_sla),
+          attribute_name: 'issuable_slas_due_at',
+          column: IssuableSla.arel_table[:due_at],
+          direction: :asc,
+          nullable: :nulls_last
+        )
+      end
+      scope :order_sla_due_at_desc, -> do
+        build_keyset_order_on_joined_column(
+          scope: includes(:issuable_sla),
+          attribute_name: 'issuable_slas_due_at',
+          column: IssuableSla.arel_table[:due_at],
+          direction: :desc,
+          nullable: :nulls_last
+        )
+      end
       scope :without_weights, ->(weights) { where(weight: nil).or(where.not(weight: weights)) }
       scope :no_epic, -> { left_outer_joins(:epic_issue).where(epic_issues: { epic_id: nil }) }
       scope :any_epic, -> { joins(:epic_issue) }
@@ -221,10 +253,10 @@ module EE
         when 'blocking_issues_desc' then order_blocking_issues_desc.with_order_id_desc
         when 'weight', 'weight_asc' then order_weight_asc.with_order_id_desc
         when 'weight_desc'          then order_weight_desc.with_order_id_desc
-        when 'published_asc'        then order_status_page_published_last.with_order_id_desc
-        when 'published_desc'       then order_status_page_published_first.with_order_id_desc
-        when 'sla_due_at_asc'       then with_feature(:sla).order_sla_due_at_asc.with_order_id_desc
-        when 'sla_due_at_desc'      then with_feature(:sla).order_sla_due_at_desc.with_order_id_desc
+        when 'published_asc'        then order_status_page_published_last
+        when 'published_desc'       then order_status_page_published_first
+        when 'sla_due_at_asc'       then with_feature(:sla).order_sla_due_at_asc
+        when 'sla_due_at_desc'      then with_feature(:sla).order_sla_due_at_desc
         else
           super
         end
