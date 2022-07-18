@@ -1,19 +1,22 @@
 # bundler-checksum
 
-Bundler plugin for verifying local gem checksums
+Bundler patch for verifying local gem checksums
 
 ## Install
 
-```
-bundle plugin install bundler-checksum \
-  --git https://gitlab.com/gitlab-org/distribution/bundler-checksum.git --branch initial-push2
-```
+Add the following to your Gemfile:
 
-Note that you can add bundler-checksum to your Gemfile, but bundler hooks will be fired only on second run of `bundle install`.
+```
+if ENV['BUNDLER_CHECKSUM_VERIFICATION_OPT_IN'] # this verification is still experimental
+  require 'bundler-checksum'
+  Bundler::Checksum.patch!
+end
+```
 
 ## Usage
 
-Once the plugin is installed, bundler hooks are used to verify gems before installation.
+Once the gem is installed, bundler-checksum will verify gems before
+installation.
 
 If a new or updated gem is to be installed, the remote checksum of that gem is stored in `Gemfile.checksum`.
 Checksum entries for other versions of the gem are removed from `Gemfile.checksum`.
@@ -27,4 +30,3 @@ When `bundler-checksum` runs it will only verify the checksum for the platform t
 
 ## Development
 
-Add `plugin 'bundler-checksum', path: '.'` to the Gemfile of this repository.
