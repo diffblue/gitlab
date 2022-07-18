@@ -23,7 +23,7 @@ module Pajamas
 
       unless src
         classes.push("gl-avatar-identicon")
-        classes.push("gl-avatar-identicon-bg#{(@record.id % 7) + 1}")
+        classes.push("gl-avatar-identicon-bg#{((@record.id || 0) % 7) + 1}")
       end
 
       classes.join(' ')

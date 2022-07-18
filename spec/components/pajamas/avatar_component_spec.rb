@@ -78,6 +78,14 @@ RSpec.describe Pajamas::AvatarComponent, type: :component do
       it "uses an identicon with the record's initial" do
         expect(page).to have_css "div.gl-avatar.gl-avatar-identicon", text: record.name[0].upcase
       end
+
+      context "when the record has no id" do
+        let(:record) { build :group }
+
+        it "uses an identicon with default background color" do
+          expect(page).to have_css "div.gl-avatar.gl-avatar-identicon-bg1"
+        end
+      end
     end
 
     context "when a user has no uploaded image" do
