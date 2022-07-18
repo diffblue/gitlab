@@ -5,6 +5,7 @@ module DnsHelpers
     stub_all_dns!
     stub_invalid_dns!
     permit_local_dns!
+    permit_postgresql!
   end
 
   def permit_dns!
@@ -35,5 +36,20 @@ module DnsHelpers
     }xi
     allow(Addrinfo).to receive(:getaddrinfo).with(local_addresses, anything, nil, :STREAM).and_call_original
     allow(Addrinfo).to receive(:getaddrinfo).with(local_addresses, anything, nil, :STREAM, anything, anything, any_args).and_call_original
+  end
+
+  # pg v1.4.0, unlike v1.3.5, uses AddrInfo.getaddrinfo to resolve IPv4 and IPv6 addresses:
+  # https://github.com/ged/ruby-pg/pull/459
+  def permit_postgresql!
+    db_hosts.each do |host|
+      next if host.start_with?('/') # Exclude UNIX sockets
+
+      # https://github.com/ged/ruby-pg/blob/252512608a814de16bbad55911f9bbcef0e73cb9/lib/pg/connection.rb#L720
+      allow(Addrinfo).to receive(:getaddrinfo).with(host, anything, nil, :STREAM).and_call_original
+    end
+  end
+
+  def db_hosts
+    ActiveRecord::Base.configurations.configs_for(env_name: Rails.env).map(&:host).compact.uniq
   end
 end
