@@ -20,6 +20,10 @@ module EE
         update_elasticsearch_hooks
       end
 
+      def update_project_settings(updated_project_ids)
+        ::ProjectSetting.for_projects(updated_project_ids).update_all(legacy_open_source_license_available: false)
+      end
+
       def lost_groups
         ancestors = group.ancestors
 

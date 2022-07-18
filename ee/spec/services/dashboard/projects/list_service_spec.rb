@@ -146,7 +146,7 @@ RSpec.describe Dashboard::Projects::ListService do
       with_them do
         before do
           stub_application_setting(check_namespace_plan: check_namespace_plan)
-          project.update!(visibility_level: project_visibility)
+          project.update_column(:visibility_level, project_visibility)
           namespace.update!(visibility_level: namespace_visibility)
         end
 

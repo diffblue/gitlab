@@ -513,6 +513,35 @@ RSpec.describe Project do
     end
   end
 
+  describe 'update callbacks' do
+    describe '.update_legacy_open_source_license_available' do
+      using RSpec::Parameterized::TableSyntax
+
+      where(:visibility_level, :new_visibility_level) do
+        Gitlab::VisibilityLevel::PUBLIC | Gitlab::VisibilityLevel::INTERNAL
+        Gitlab::VisibilityLevel::PUBLIC | Gitlab::VisibilityLevel::PRIVATE
+        Gitlab::VisibilityLevel::INTERNAL | Gitlab::VisibilityLevel::PUBLIC
+        Gitlab::VisibilityLevel::INTERNAL | Gitlab::VisibilityLevel::PRIVATE
+        Gitlab::VisibilityLevel::PRIVATE | Gitlab::VisibilityLevel::PUBLIC
+        Gitlab::VisibilityLevel::PRIVATE | Gitlab::VisibilityLevel::INTERNAL
+      end
+
+      with_them do
+        let(:project) { create(:project, visibility_level: visibility_level) }
+
+        before do
+          project.project_setting.update!(legacy_open_source_license_available: true)
+        end
+
+        it 'sets `project_settings.legacy_open_source_license_available` to false' do
+          project.update!(visibility_level: new_visibility_level)
+
+          expect(project.project_setting.legacy_open_source_license_available).to be_falsey
+        end
+      end
+    end
+  end
+
   describe 'setting up a mirror' do
     context 'when new project' do
       it 'creates import_state and sets next_execution_timestamp to now' do

@@ -150,4 +150,15 @@ RSpec.describe Groups::TransferService, '#execute' do
       end
     end
   end
+
+  describe '.update_project_settings' do
+    let(:project_settings) { create_list(:project_setting, 2, legacy_open_source_license_available: true) }
+
+    it 'sets `legacy_open_source_license_available` to false' do
+      transfer_service.send(:update_project_settings, project_settings.pluck(:project_id))
+
+      project_settings.each(&:reload)
+      expect(project_settings.pluck(:legacy_open_source_license_available)).to match_array([false, false])
+    end
+  end
 end
