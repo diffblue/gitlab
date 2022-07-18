@@ -25,10 +25,11 @@ module DnsHelpers
   def permit_local_dns!
     local_addresses = %r{
       \A
-      ::1? |                                    # IPV6
-      (127|10)\.0\.0\.\d{1,3} |                 # 127.0.0.x or 10.0.0.x local network
-      (192\.168|172\.16)\.\d{1,3}\.\d{1,3} |    # 192.168.x.x or 172.16.x.x local network
-      0\.0\.0\.0 |                              # loopback
+      ::1? |                                          # IPV6
+      (127|10)\.0\.0\.\d{1,3} |                       # 127.0.0.x or 10.0.0.x local network
+      192\.168\.\d{1,3}\.\d{1,3}  |                   # 192.168.x.x local network
+      172\.(1[6-9]|2[0-9]|3[0-1])\.\d{1,3}\.\d{1,3} | # 172.16.x.x - 172.31.x.x local network
+      0\.0\.0\.0 |                                    # loopback
       localhost
       \z
     }xi
