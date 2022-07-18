@@ -11498,6 +11498,9 @@ msgstr ""
 msgid "DAST Configuration"
 msgstr ""
 
+msgid "DAST configuration not found"
+msgstr ""
+
 msgid "DAST profile not found: %{name}"
 msgstr ""
 

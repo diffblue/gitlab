@@ -6,4 +6,4 @@
 - content_for :prefetch_asset_tags do
   - webpack_preload_asset_tag('monaco')
 
-.js-dast-configuration{ data: dast_configuration_data(@project) }
+.js-dast-configuration{ data: dast_configuration_data(@project, current_user) }
