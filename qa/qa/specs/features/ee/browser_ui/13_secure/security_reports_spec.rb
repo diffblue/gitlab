@@ -46,7 +46,7 @@ module QA
       end
 
       it 'displays security reports in the pipeline', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348036' do
-        push_security_reports(project)
+        push_security_reports
         Flow::Pipeline.visit_latest_pipeline
         Page::Project::Pipeline::Show.perform do |pipeline|
           pipeline.click_on_security
@@ -71,7 +71,7 @@ module QA
       end
 
       it 'displays security reports in the project security dashboard', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348037' do
-        push_security_reports(project)
+        push_security_reports
         Page::Project::Menu.perform(&:click_project)
         Page::Project::Menu.perform(&:click_on_vulnerability_report)
 
@@ -97,7 +97,7 @@ module QA
       end
 
       it 'displays security reports in the group security dashboard', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348038' do
-        push_security_reports(project)
+        push_security_reports
         Page::Main::Menu.perform(&:go_to_groups)
         Page::Dashboard::Groups.perform do |groups|
           groups.click_group project.group.path
@@ -132,11 +132,11 @@ module QA
       end
 
       it 'displays false positives for the vulnerabilities', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/350412',
-        quarantine: {
-          type: :flaky,
-          issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/351183'
-        } do
-        push_security_reports(project)
+      quarantine: {
+         type: :flaky,
+         issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/351183'
+      } do
+        push_security_reports
         Page::Project::Menu.perform(&:click_project)
         Page::Project::Menu.perform(&:click_on_vulnerability_report)
 
@@ -165,7 +165,7 @@ module QA
       end
 
       it 'displays the Dependency List', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348035' do
-        push_security_reports(project)
+        push_security_reports
         Page::Project::Menu.perform(&:click_on_dependency_list)
 
         EE::Page::Project::Secure::DependencyList.perform do |dependency_list|
@@ -179,7 +179,7 @@ module QA
         page.filter_report_type report # Disable filter to avoid combining
       end
 
-      def push_security_reports(project_push)
+      def push_security_reports
         Resource::Repository::ProjectPush.fabricate! do |project_push|
           project_push.project = project
           project_push.directory = Pathname
