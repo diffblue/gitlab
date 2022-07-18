@@ -6,6 +6,12 @@ RSpec.describe Vulnerabilities::DismissService do
   include AccessMatchersGeneric
 
   before do
+    allow(Vulnerabilities::StateTransition).to receive(:create).with(
+      vulnerability: instance_of(Vulnerability),
+      from_state: vulnerability.state,
+      to_state: Vulnerability.states[:dismissed]
+    )
+
     stub_licensed_features(security_dashboard: true)
   end
 
@@ -13,39 +19,158 @@ RSpec.describe Vulnerabilities::DismissService do
 
   let(:project) { create(:project) } # cannot use let_it_be here: caching causes problems with permission-related tests
   let!(:pipeline) { create(:ee_ci_pipeline, :with_dast_report, :success, project: project) }
-  let(:vulnerability) { create(:vulnerability, :with_findings, project: project) }
+  let!(:build) { create(:ee_ci_build, :sast, pipeline: pipeline) }
+  let(:vulnerability) { create(:vulnerability, :detected, :with_findings, project: project) }
   let(:dismiss_findings) { true }
   let(:service) { described_class.new(user, vulnerability, dismiss_findings: dismiss_findings) }
 
   subject(:dismiss_vulnerability) { service.execute }
 
-  context 'with an authorized user with proper permissions' do
+  context 'when deprecate_vulnerabilities_feedback is enabled' do
     before do
-      project.add_developer(user)
+      stub_feature_flags(deprecate_vulnerabilities_feedback: true)
     end
 
-    it_behaves_like 'calls vulnerability statistics utility services in order'
+    context 'with an authorized user with proper permissions' do
+      before do
+        project.add_developer(user)
+      end
 
-    context 'when the `dismiss_findings` argument is false' do
-      let(:dismiss_findings) { false }
+      it_behaves_like 'calls vulnerability statistics utility services in order'
 
-      it 'dismisses only vulnerability' do
-        freeze_time do
+      it 'creates a vulnerability state transition record' do
+        dismiss_vulnerability
+
+        expect(Vulnerabilities::StateTransition).to have_received(:create).with(
+          vulnerability: instance_of(Vulnerability),
+          from_state: "detected",
+          to_state: Vulnerability.states[:dismissed]
+        )
+      end
+
+      context 'when the `dismiss_findings` argument is false' do
+        let(:dismiss_findings) { false }
+
+        it 'dismisses only vulnerability' do
+          freeze_time do
+            dismiss_vulnerability
+
+            expect(vulnerability.reload).to(
+              have_attributes(state: 'dismissed', dismissed_by: user, dismissed_at: be_like_time(Time.current)))
+            expect(vulnerability.findings).to include not_have_vulnerability_dismissal_feedback
+          end
+        end
+      end
+
+      context 'when the `dismiss_findings` argument is not false' do
+        it 'dismisses a vulnerability and its associated findings with correct attributes' do
+          freeze_time do
+            dismiss_vulnerability
+
+            expect(vulnerability.reload).to(
+              have_attributes(state: 'dismissed', dismissed_by: user, dismissed_at: be_like_time(Time.current)))
+            expect(vulnerability.findings).to all not_have_vulnerability_dismissal_feedback
+            expect(vulnerability.finding.dismissal_feedback).to eq nil
+          end
+        end
+      end
+
+      context 'when comment is added' do
+        let(:comment) { 'Dismissal Comment' }
+        let(:service) { described_class.new(user, vulnerability, comment) }
+
+        it 'dismisses a vulnerability and its associated findings with comment', :aggregate_failures do
+          freeze_time do
+            dismiss_vulnerability
+
+            aggregate_failures do
+              expect(vulnerability.reload).to(
+                have_attributes(state: 'dismissed', dismissed_by: user, dismissed_at: be_like_time(Time.current)))
+              expect(vulnerability.findings).to all not_have_vulnerability_dismissal_feedback
+              expect(vulnerability.findings.map(&:dismissal_feedback)).to all eq nil
+            end
+          end
+        end
+      end
+
+      context 'when the dismissal_reason is added' do
+        let(:dismissal_reason) { 'used_in_tests' }
+        let(:service) { described_class.new(user, vulnerability, nil, dismissal_reason) }
+
+        it 'dismisses a vulnerability and its associated findings with comment', :aggregate_failures do
           dismiss_vulnerability
 
-          expect(vulnerability.reload).to(
-            have_attributes(state: 'dismissed', dismissed_by: user, dismissed_at: be_like_time(Time.current)))
-          expect(vulnerability.findings).not_to include have_vulnerability_dismissal_feedback
+          expect(vulnerability.reload).to have_attributes(state: 'dismissed', dismissed_by: user)
+          expect(vulnerability.findings).to all not_have_vulnerability_dismissal_feedback
+          expect(vulnerability.findings.map(&:dismissal_feedback)).to all eq nil
+        end
+      end
+
+      it 'creates note' do
+        expect(SystemNoteService).to receive(:change_vulnerability_state).with(vulnerability, user)
+
+        dismiss_vulnerability
+      end
+
+      context 'when there is a finding dismissal error' do
+        before do
+          allow(service).to receive(:dismiss_vulnerability_findings)
+        end
+
+        it 'does not dismiss vulnerability findings' do
+          expect(service).not_to have_received(:dismiss_vulnerability_findings)
+        end
+      end
+
+      context 'when security dashboard feature is disabled' do
+        before do
+          stub_licensed_features(security_dashboard: false)
+        end
+
+        it 'raises an "access denied" error' do
+          expect { dismiss_vulnerability }.to raise_error(Gitlab::Access::AccessDeniedError)
         end
       end
     end
+  end
 
-    context 'when the `dismiss_findings` argument is not false' do
-      context 'when feature flag deprecate_vulnerabilities_feedback is disabled' do
-        before do
-          stub_feature_flags(deprecate_vulnerabilities_feedback: false)
+  context 'when deprecate_vulnerabilities_feedback is disabled' do
+    before do
+      stub_feature_flags(deprecate_vulnerabilities_feedback: false)
+    end
+
+    context 'with an authorized user with proper permissions' do
+      before do
+        project.add_developer(user)
+      end
+
+      it_behaves_like 'calls vulnerability statistics utility services in order'
+
+      it 'creates a vulnerability state transition record' do
+        dismiss_vulnerability
+
+        expect(Vulnerabilities::StateTransition).to have_received(:create).with(
+          vulnerability: instance_of(Vulnerability),
+          from_state: "detected",
+          to_state: Vulnerability.states[:dismissed]
+        )
+      end
+
+      context 'when the `dismiss_findings` argument is false' do
+        let(:dismiss_findings) { false }
+
+        it 'dismisses only vulnerability' do
+          freeze_time do
+            dismiss_vulnerability
+
+            expect(vulnerability.reload).to(
+              have_attributes(state: 'dismissed', dismissed_by: user, dismissed_at: be_like_time(Time.current)))
+            expect(vulnerability.findings).not_to include have_vulnerability_dismissal_feedback
+          end
         end
+      end
 
+      context 'when the `dismiss_findings` argument is not false' do
         it 'dismisses a vulnerability and its associated findings with correct attributes' do
           freeze_time do
             dismiss_vulnerability
@@ -58,25 +183,9 @@ RSpec.describe Vulnerabilities::DismissService do
         end
       end
 
-      it 'dismisses a vulnerability' do
-        freeze_time do
-          dismiss_vulnerability
-
-          expect(vulnerability.reload).to(have_attributes(state: 'dismissed', dismissed_by: user,
-                                                          dismissed_at: be_like_time(Time.current)))
-          expect(vulnerability.findings).to all not_have_vulnerability_dismissal_feedback
-        end
-      end
-    end
-
-    context 'when comment is added' do
-      let(:comment) { 'Dismissal Comment' }
-      let(:service) { described_class.new(user, vulnerability, comment) }
-
-      context 'when feature flag deprecate_vulnerabilities_feedback is disabled' do
-        before do
-          stub_feature_flags(deprecate_vulnerabilities_feedback: false)
-        end
+      context 'when comment is added' do
+        let(:comment) { 'Dismissal Comment' }
+        let(:service) { described_class.new(user, vulnerability, comment) }
 
         it 'dismisses a vulnerability and its associated findings with comment', :aggregate_failures do
           freeze_time do
@@ -93,27 +202,9 @@ RSpec.describe Vulnerabilities::DismissService do
         end
       end
 
-      it 'dismisses a vulnerability', :aggregate_failures do
-        freeze_time do
-          dismiss_vulnerability
-
-          aggregate_failures do
-            expect(vulnerability.reload).to(
-              have_attributes(state: 'dismissed', dismissed_by: user, dismissed_at: be_like_time(Time.current)))
-            expect(vulnerability.findings).to all not_have_vulnerability_dismissal_feedback
-          end
-        end
-      end
-    end
-
-    context 'when the dismissal_reason is added' do
-      let(:dismissal_reason) { 'used_in_tests' }
-      let(:service) { described_class.new(user, vulnerability, nil, dismissal_reason) }
-
-      context 'when feature flag deprecate_vulnerabilities_feedback is disabled' do
-        before do
-          stub_feature_flags(deprecate_vulnerabilities_feedback: false)
-        end
+      context 'when the dismissal_reason is added' do
+        let(:dismissal_reason) { 'used_in_tests' }
+        let(:service) { described_class.new(user, vulnerability, nil, dismissal_reason) }
 
         it 'dismisses a vulnerability and its associated findings with comment', :aggregate_failures do
           dismiss_vulnerability
@@ -122,43 +213,36 @@ RSpec.describe Vulnerabilities::DismissService do
           expect(vulnerability.findings).to all have_vulnerability_dismissal_feedback
           expect(vulnerability.findings.map(&:dismissal_feedback)).to all(have_attributes(dismissal_reason: dismissal_reason))
         end
+      end
 
-        context 'when there is a finding dismissal error' do
-          before do
-            allow(service).to receive(:dismiss_vulnerability_findings).and_return(
-              described_class::FindingsDismissResult.new(false, broken_finding, 'something went wrong'))
-          end
+      it 'creates note' do
+        expect(SystemNoteService).to receive(:change_vulnerability_state).with(vulnerability, user)
 
-          let(:broken_finding) { vulnerability.findings.first }
+        dismiss_vulnerability
+      end
 
-          it 'responds with error' do
-            expect(dismiss_vulnerability.errors.messages).to eq(
-              base: ["failed to dismiss associated finding(id=#{broken_finding.id}): something went wrong"])
-          end
+      context 'when there is a finding dismissal error' do
+        before do
+          allow(service).to receive(:dismiss_vulnerability_findings).and_return(
+            described_class::FindingsDismissResult.new(false, broken_finding, 'something went wrong'))
+        end
+
+        let(:broken_finding) { vulnerability.findings.first }
+
+        it 'responds with error' do
+          expect(dismiss_vulnerability.errors.messages).to eq(
+            base: ["failed to dismiss associated finding(id=#{broken_finding.id}): something went wrong"])
         end
       end
 
-      it 'dismisses a vulnerability', :aggregate_failures do
-        dismiss_vulnerability
+      context 'when security dashboard feature is disabled' do
+        before do
+          stub_licensed_features(security_dashboard: false)
+        end
 
-        expect(vulnerability.reload).to have_attributes(state: 'dismissed', dismissed_by: user)
-        expect(vulnerability.findings).to all not_have_vulnerability_dismissal_feedback
-      end
-    end
-
-    it 'creates note' do
-      expect(SystemNoteService).to receive(:change_vulnerability_state).with(vulnerability, user)
-
-      dismiss_vulnerability
-    end
-
-    context 'when security dashboard feature is disabled' do
-      before do
-        stub_licensed_features(security_dashboard: false)
-      end
-
-      it 'raises an "access denied" error' do
-        expect { dismiss_vulnerability }.to raise_error(Gitlab::Access::AccessDeniedError)
+        it 'raises an "access denied" error' do
+          expect { dismiss_vulnerability }.to raise_error(Gitlab::Access::AccessDeniedError)
+        end
       end
     end
   end
