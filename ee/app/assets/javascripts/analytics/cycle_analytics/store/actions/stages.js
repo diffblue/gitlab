@@ -146,7 +146,7 @@ export const fetchGroupStagesAndEvents = ({ dispatch, commit, getters }) => {
   const {
     currentValueStreamId: valueStreamId,
     currentGroupPath: groupId,
-    cycleAnalyticsRequestParams: { created_after, project_ids },
+    cycleAnalyticsRequestParams: { created_after: createdAfter, project_ids },
   } = getters;
 
   dispatch('requestGroupStages');
@@ -156,7 +156,7 @@ export const fetchGroupStagesAndEvents = ({ dispatch, commit, getters }) => {
     groupId,
     valueStreamId,
     params: {
-      start_date: created_after,
+      start_date: createdAfter,
       project_ids,
     },
   })

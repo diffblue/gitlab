@@ -300,11 +300,11 @@ export const receiveDismissVulnerabilityError = ({ commit }, { flashError }) => 
 
 export const addDismissalComment = ({ dispatch }, { vulnerability, comment }) => {
   dispatch('requestAddDismissalComment');
-  const { dismissal_feedback } = vulnerability;
-  const url = `${vulnerability.create_vulnerability_feedback_dismissal_path}/${dismissal_feedback.id}`;
+  const { dismissal_feedback: dismissalFeedback } = vulnerability;
+  const url = `${vulnerability.create_vulnerability_feedback_dismissal_path}/${dismissalFeedback.id}`;
 
   const editingDismissalContent =
-    dismissal_feedback.comment_details && dismissal_feedback.comment_details.comment;
+    dismissalFeedback.comment_details && dismissalFeedback.comment_details.comment;
 
   const toastMsg = editingDismissalContent
     ? sprintf(s__("SecurityReports|Comment edited on '%{vulnerabilityName}'"), {
@@ -316,8 +316,8 @@ export const addDismissalComment = ({ dispatch }, { vulnerability, comment }) =>
 
   return axios
     .patch(url, {
-      project_id: dismissal_feedback.project_id,
-      id: dismissal_feedback.id,
+      project_id: dismissalFeedback.project_id,
+      id: dismissalFeedback.id,
       comment,
     })
     .then(({ data }) => {
@@ -333,15 +333,15 @@ export const addDismissalComment = ({ dispatch }, { vulnerability, comment }) =>
 export const deleteDismissalComment = ({ dispatch }, { vulnerability }) => {
   dispatch('requestDeleteDismissalComment');
 
-  const { dismissal_feedback } = vulnerability;
-  const url = `${vulnerability.create_vulnerability_feedback_dismissal_path}/${dismissal_feedback.id}`;
+  const { dismissal_feedback: dismissalFeedback } = vulnerability;
+  const url = `${vulnerability.create_vulnerability_feedback_dismissal_path}/${dismissalFeedback.id}`;
   const toastMsg = sprintf(s__("SecurityReports|Comment deleted on '%{vulnerabilityName}'"), {
     vulnerabilityName: vulnerability.name,
   });
 
   return axios
     .patch(url, {
-      project_id: dismissal_feedback.project_id,
+      project_id: dismissalFeedback.project_id,
       comment: '',
     })
     .then(({ data }) => {
@@ -435,7 +435,7 @@ export const downloadPatch = ({ state }) => {
 
 export const createMergeRequest = ({ state, dispatch }, { vulnerability, flashError }) => {
   const {
-    report_type,
+    report_type: category,
     project_fingerprint,
     create_vulnerability_feedback_merge_request_path,
   } = vulnerability;
@@ -450,13 +450,13 @@ export const createMergeRequest = ({ state, dispatch }, { vulnerability, flashEr
     .post(create_vulnerability_feedback_merge_request_path, {
       vulnerability_feedback: {
         feedback_type: FEEDBACK_TYPE_MERGE_REQUEST,
-        category: report_type,
+        category,
         project_fingerprint,
         finding_uuid: vulnerability.uuid,
         vulnerability_data: {
           ...vulnerability,
           target_branch: targetBranch,
-          category: report_type,
+          category,
         },
       },
     })
