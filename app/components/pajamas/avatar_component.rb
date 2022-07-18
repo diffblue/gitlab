@@ -6,11 +6,13 @@ module Pajamas
     # @param alt [String] text for the alt tag
     # @param class [String] custom CSS class(es)
     # @param size [Integer] size in pixel
-    def initialize(record, alt: nil, class: "", size: 64)
+    # @param [Hash] avatar_options
+    def initialize(record, alt: nil, class: "", size: 64, avatar_options: {})
       @record = record
       @alt = alt
       @class = binding.local_variable_get(:class)
       @size = filter_attribute(size.to_i, SIZE_OPTIONS, default: 64)
+      @avatar_options = avatar_options
     end
 
     private

@@ -5,7 +5,8 @@
     class: avatar_classes,
     height: @size,
     width: @size,
-    loading: "lazy"
+    loading: "lazy",
+    **@avatar_options
 - else
-  %div{ class: avatar_classes }
+  %div{ @avatar_options, alt: alt, class: avatar_classes }
     = initial
