@@ -44381,9 +44381,6 @@ msgstr ""
 msgid "You cannot combine replace_ids with add_ids or remove_ids"
 msgstr ""
 
-msgid "You cannot edit this timeline event."
-msgstr ""
-
 msgid "You cannot impersonate a blocked user"
 msgstr ""
 
