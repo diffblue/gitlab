@@ -319,7 +319,7 @@ To change the release date use the
 
 ## Delete a release
 
-> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/213862) in GitLab 15.2
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/213862) in GitLab 15.2
 
 When you delete a release, its assets are also deleted. However, the associated
 Git tag is not deleted.
