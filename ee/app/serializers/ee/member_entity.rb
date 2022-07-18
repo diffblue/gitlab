@@ -21,9 +21,7 @@ module EE
 
       expose :provisioned_by_this_group?, as: :provisioned_by_this_group
 
-      expose :can_unban do |member|
-        member.can_unban?
-      end
+      expose :can_unban?, as: :can_unban
 
       expose :banned do |member|
         member.user.present? && member.user.banned_from_namespace?(group)
