@@ -109,7 +109,7 @@ RSpec.describe Groups::GroupMembersController do
 
       context 'when user members is not banned' do
         before do
-          namespace_ban.destroy
+          namespace_ban.destroy!
         end
 
         it 'returns 404' do
