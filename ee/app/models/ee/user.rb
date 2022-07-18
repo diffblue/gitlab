@@ -442,7 +442,7 @@ module EE
     end
 
     def namespace_ban_for(namespace)
-      namespace_bans.find_by(namespace: namespace)
+      namespace_bans.find_by!(namespace: namespace)
     end
 
     protected

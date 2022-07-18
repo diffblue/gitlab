@@ -84,26 +84,55 @@ RSpec.describe Groups::GroupMembersController do
   end
 
   describe 'PUT /groups/*group_id/-/group_members/:id/unban' do
-    let(:banned_member) { create(:group_member, group: group) }
-    let!(:namespace_ban) { create(:namespace_ban, namespace: group, user: banned_member.user) }
-
     subject(:request) do
       put unban_group_group_member_path(group_id: group, id: banned_member)
     end
 
-    it 'unbans the user' do
-      expect_next_instance_of(::Users::Abuse::NamespaceBans::DestroyService, namespace_ban, user) do |service|
-        expect(service).to receive(:execute)
+    context 'when user is an owner' do
+      let(:banned_member) { create(:group_member, group: group) }
+      let!(:namespace_ban) { create(:namespace_ban, namespace: group, user: banned_member.user) }
+
+      it 'unbans the user' do
+        expect_next_instance_of(::Users::Abuse::NamespaceBans::DestroyService, namespace_ban, user) do |service|
+          expect(service).to receive(:execute)
+        end
+
+        request
       end
 
-      subject
+      it 'redirects back to group members page' do
+        request
+
+        expect(response).to redirect_to(group_group_members_path(group))
+        expect(flash[:notice]).to eq "User was successfully unbanned."
+      end
+
+      context 'when user members is not banned' do
+        before do
+          namespace_ban.destroy
+        end
+
+        it 'returns 404' do
+          request
+
+          expect(response).to have_gitlab_http_status(:not_found)
+        end
+      end
     end
 
-    it 'redirects back to group members page' do
-      subject
+    context 'when user is not an owner' do
+      let(:another_group) { create(:group) }
+      let(:banned_member) { create(:group_member, group: another_group) }
 
-      expect(response).to redirect_to(group_group_members_path(group))
-      expect(flash[:notice]).to eq "User was successfully unbanned."
+      before do
+        another_group.add_developer(user)
+      end
+
+      it 'returns 404' do
+        put unban_group_group_member_path(group_id: another_group, id: banned_member)
+
+        expect(response).to have_gitlab_http_status(:forbidden)
+      end
     end
   end
 
