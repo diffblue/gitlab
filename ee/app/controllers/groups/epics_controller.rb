@@ -17,7 +17,6 @@ class Groups::EpicsController < Groups::ApplicationController
   after_action :log_epic_show, only: :show
 
   before_action do
-    push_frontend_feature_flag(:confidential_notes, @group, type: :development)
     push_frontend_feature_flag(:realtime_labels, group)
     push_frontend_feature_flag(:epic_color_highlight, @group)
   end
