@@ -43,6 +43,9 @@ class SearchController < ApplicationController
 
     @search_service = Gitlab::View::Presenter::Factory.new(search_service, current_user: current_user).fabricate!
 
+    @search_level = @search_service.level
+    @search_type = search_type
+
     @global_search_duration_s = Benchmark.realtime do
       @scope = @search_service.scope
       @without_count = @search_service.without_count?
@@ -147,11 +150,8 @@ class SearchController < ApplicationController
     payload[:metadata]['meta.search.filters.state'] = params[:state]
     payload[:metadata]['meta.search.force_search_results'] = params[:force_search_results]
     payload[:metadata]['meta.search.project_ids'] = params[:project_ids]
-    begin
-      payload[:metadata]['meta.search.type'] = search_type
-      payload[:metadata]['meta.search.level'] = search_service.level
-    rescue ActiveRecord::QueryCanceled
-    end
+    payload[:metadata]['meta.search.type'] = @search_type if @search_type
+    payload[:metadata]['meta.search.level'] = @search_level if @search_level
 
     if search_service.abuse_detected?
       payload[:metadata]['abuse.confidence'] = Gitlab::Abuse.confidence(:certain)
