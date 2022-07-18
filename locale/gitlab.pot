@@ -28522,6 +28522,9 @@ msgstr ""
 msgid "PipelineSchedules|None"
 msgstr ""
 
+msgid "PipelineSchedules|Only the owner of a pipeline schedule can make changes to it. Do you want to take ownership of this schedule?"
+msgstr ""
+
 msgid "PipelineSchedules|Provide a short description for this pipeline"
 msgstr ""
 

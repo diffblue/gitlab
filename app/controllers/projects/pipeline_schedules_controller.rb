@@ -10,6 +10,7 @@ class Projects::PipelineSchedulesController < Projects::ApplicationController
   before_action :authorize_update_pipeline_schedule!, only: [:edit, :update]
   before_action :authorize_take_ownership_pipeline_schedule!, only: [:take_ownership]
   before_action :authorize_admin_pipeline_schedule!, only: [:destroy]
+  before_action :authorize_edit_pipeline_schedule!, only: [:edit]
 
   feature_category :continuous_integration
   urgency :low
@@ -114,5 +115,9 @@ class Projects::PipelineSchedulesController < Projects::ApplicationController
 
   def authorize_admin_pipeline_schedule!
     return access_denied! unless can?(current_user, :admin_pipeline_schedule, schedule)
+  end
+
+  def authorize_edit_pipeline_schedule!
+    return access_denied! unless can?(current_user, :edit_pipeline_schedule, schedule)
   end
 end
