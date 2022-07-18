@@ -19,9 +19,13 @@ module EE
       namespace = member.member_namespace
       ban = member.user.namespace_ban_for(namespace)
 
-      ::Users::Abuse::NamespaceBans::DestroyService.new(ban, current_user).execute
+      result = ::Users::Abuse::NamespaceBans::DestroyService.new(ban, current_user).execute
 
-      redirect_to members_page_url, notice: _("User was successfully unbanned.")
+      if result.success?
+        redirect_to members_page_url, notice: _("User was successfully unbanned.")
+      else
+        redirect_to members_page_url, alert: result.message
+      end
     end
   end
 end

@@ -94,7 +94,7 @@ RSpec.describe Groups::GroupMembersController do
 
       it 'unbans the user' do
         expect_next_instance_of(::Users::Abuse::NamespaceBans::DestroyService, namespace_ban, user) do |service|
-          expect(service).to receive(:execute)
+          expect(service).to receive(:execute) { instance_double(ServiceResponse, "success?" => true) }
         end
 
         request
@@ -116,6 +116,22 @@ RSpec.describe Groups::GroupMembersController do
           request
 
           expect(response).to have_gitlab_http_status(:not_found)
+        end
+      end
+
+      context 'when unban fails' do
+        let(:error_message) { 'Unban failed' }
+
+        it 'redirects back to group members page with the error message as alert' do
+          allow_next_instance_of(::Users::Abuse::NamespaceBans::DestroyService, namespace_ban, user) do |service|
+            service_result =  instance_double(ServiceResponse, "success?" => false, message: error_message)
+            allow(service).to receive(:execute) { service_result }
+          end
+
+          request
+
+          expect(response).to redirect_to(group_group_members_path(group))
+          expect(flash[:alert]).to eq error_message
         end
       end
     end
