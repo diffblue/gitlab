@@ -99,9 +99,9 @@ export default {
   <table class="table m-0">
     <thead class="thead-white text-nowrap">
       <tr class="d-md-table-row d-none">
-        <th class="w-0"></th>
-        <th class="w-25 gl-pl-0!">{{ s__('MRApprovals|Approvers') }}</th>
-        <th class="w-50"></th>
+        <th></th>
+        <th class="gl-pl-0!">{{ s__('MRApprovals|Approvers') }}</th>
+        <th></th>
         <th>{{ s__('MRApprovals|Approvals') }}</th>
         <th>{{ s__('MRApprovals|Commented by') }}</th>
         <th>{{ s__('MRApprovals|Approved by') }}</th>
