@@ -42,6 +42,18 @@ module EE
       providers
     end
 
+    def password_rule_list
+      if ::License.feature_available?(:password_complexity)
+        rules = []
+        rules << :number if ::Gitlab::CurrentSettings.password_number_required?
+        rules << :lowercase if ::Gitlab::CurrentSettings.password_lowercase_required?
+        rules << :uppercase if ::Gitlab::CurrentSettings.password_uppercase_required?
+        rules << :symbol if ::Gitlab::CurrentSettings.password_symbol_required?
+
+        rules
+      end
+    end
+
     def kerberos_enabled?
       auth_providers.include?(:kerberos)
     end
