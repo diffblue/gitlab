@@ -12,6 +12,9 @@ const createComponent = (props = {}) => {
       ...props,
     },
     components: { GroupFolder },
+    provide: {
+      currentGroupVisibility: 'private',
+    },
   });
 };
 

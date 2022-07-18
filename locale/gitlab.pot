@@ -23204,6 +23204,9 @@ msgstr ""
 msgid "Less Details"
 msgstr ""
 
+msgid "Less restrictive visibility"
+msgstr ""
+
 msgid "Let's Encrypt does not accept emails on example.com"
 msgstr ""
 
@@ -30170,6 +30173,9 @@ msgid "Project slug"
 msgstr ""
 
 msgid "Project uploads"
+msgstr ""
+
+msgid "Project visibility level is less restrictive than the group settings."
 msgstr ""
 
 msgid "Project visibility level will be changed to match namespace rules when transferring to a group."
