@@ -158,6 +158,8 @@ RSpec.shared_examples 'gets registries for' do |args|
       'lastSyncFailure' => registry.last_sync_failure,
       'retryAt' => registry.retry_at,
       'lastSyncedAt' => registry.last_synced_at,
+      'verifiedAt' => registry.verified_at,
+      'verificationRetryAt' => registry.verification_retry_at,
       'createdAt' => registry.created_at.iso8601
     }
   end
