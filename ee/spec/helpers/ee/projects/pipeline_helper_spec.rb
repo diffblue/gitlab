@@ -96,6 +96,60 @@ RSpec.describe Projects::PipelineHelper do
     end
   end
 
+  describe 'license_management_path' do
+    subject(:license_management_path) { helper.license_management_path(user, project) }
+
+    describe 'when user is not a maintainer' do
+      before do
+        project.add_developer(user)
+        stub_licensed_features(license_scanning: true)
+      end
+
+      it 'returns nil' do
+        is_expected.to be(nil)
+      end
+    end
+
+    describe 'when user is a maintainer' do
+      before do
+        project.add_maintainer(user)
+        stub_licensed_features(license_scanning: true)
+      end
+
+      it 'returns the license management path' do
+        is_expected.to eq(helper.license_management_path(user, project))
+      end
+    end
+  end
+
+  describe 'licenses_api_path' do
+    before do
+      project.add_developer(user)
+    end
+
+    subject(:licenses_api_path) { helper.licenses_api_path(project, pipeline) }
+
+    describe 'when `license_scanning` feature is not available' do
+      before do
+        stub_licensed_features(license_scanning: false)
+      end
+
+      it 'returns nil' do
+        is_expected.to be(nil)
+      end
+    end
+
+    describe 'when `license_scanning` feature is available' do
+      before do
+        stub_licensed_features(license_scanning: true)
+      end
+
+      it 'returns the licenses api path' do
+        is_expected.to eq(helper.licenses_api_path(project, pipeline))
+      end
+    end
+  end
+
   describe 'vulnerability_report_data' do
     before do
       project.add_developer(user)
