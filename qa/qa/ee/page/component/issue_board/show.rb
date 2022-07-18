@@ -38,11 +38,10 @@ module QA
 
               QA::Support::Retrier.retry_on_exception do
                 click_element(:labels_edit_button)
-                find_element(:labels_dropdown_content)
+                find_element(:labels_dropdown_content, wait: 1).find('li', text: label).click
               end
 
-              find_element(:labels_dropdown_content).find('li', text: label).click
-              click_element(:close_labels_dropdown_button)
+              click_element(:close_labels_dropdown_button) if has_element?(:close_labels_dropdown_button, wait: 0.5)
               click_element(:save_changes_button)
               wait_boards_list_finish_loading
             end
