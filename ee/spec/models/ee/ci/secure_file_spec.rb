@@ -6,15 +6,22 @@ RSpec.describe Ci::SecureFile do
   using RSpec::Parameterized::TableSyntax
   include EE::GeoHelpers
 
+  before do
+    stub_ci_secure_file_object_storage(enabled: false)
+  end
+
   let(:project) { create(:project) }
 
   include_examples 'a replicable model with a separate table for verification state' do
-    before do
-      stub_ci_secure_file_object_storage
-    end
+    let(:verifiable_model_record) { build(:ci_secure_file, project: project) }
 
-    let(:verifiable_model_record) { create(:ci_secure_file, project: project) }
-    let(:unverifiable_model_record) { create(:ci_secure_file, :remote_store, project: project) }
+    let(:unverifiable_model_record) do
+      stub_ci_secure_file_object_storage
+      file = create(:ci_secure_file, :remote_store, project: project)
+      stub_ci_secure_file_object_storage(enabled: false)
+
+      file
+    end
   end
 
   describe '#replicables_for_current_secondary' do
@@ -48,7 +55,7 @@ RSpec.describe Ci::SecureFile do
       end
 
       before do
-        stub_ci_secure_file_object_storage
+        stub_ci_secure_file_object_storage(enabled: false)
         stub_current_geo_node(node)
       end
 
@@ -56,10 +63,6 @@ RSpec.describe Ci::SecureFile do
         let(:sync_object_storage) { true }
 
         context 'when the ci secure file is locally stored' do
-          before do
-            stub_ci_secure_file_object_storage(enabled: false)
-          end
-
           let(:ci_secure_file) { create(*factory, project: project) }
 
           it { is_expected.to eq(include_expectation) }
@@ -76,10 +79,6 @@ RSpec.describe Ci::SecureFile do
         let(:sync_object_storage) { false }
 
         context 'when the ci secure file is locally stored' do
-          before do
-            stub_ci_secure_file_object_storage(enabled: false)
-          end
-
           let(:ci_secure_file) { create(*factory, project: project) }
 
           it { is_expected.to eq(include_expectation) }

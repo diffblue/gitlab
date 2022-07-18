@@ -4,5 +4,5 @@ introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/91430
 rollout_issue_url:
 milestone: '15.2'
 type: development
-group: group::geo
+group: group::incubation
 default_enabled: false
