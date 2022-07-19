@@ -27537,8 +27537,6 @@ CREATE INDEX index_ci_builds_on_project_id_and_id ON ci_builds USING btree (proj
 
 CREATE INDEX index_ci_builds_on_project_id_and_name_and_ref ON ci_builds USING btree (project_id, name, ref) WHERE (((type)::text = 'Ci::Build'::text) AND ((status)::text = 'success'::text) AND ((retried = false) OR (retried IS NULL)));
 
-CREATE INDEX index_ci_builds_on_queued_at ON ci_builds USING btree (queued_at);
-
 CREATE INDEX index_ci_builds_on_resource_group_and_status_and_commit_id ON ci_builds USING btree (resource_group_id, status, commit_id) WHERE (resource_group_id IS NOT NULL);
 
 CREATE INDEX index_ci_builds_on_runner_id_and_id_desc ON ci_builds USING btree (runner_id, id DESC);
