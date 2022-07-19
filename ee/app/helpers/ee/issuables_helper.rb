@@ -40,6 +40,7 @@ module EE
         publishedIncidentUrl: ::Gitlab::StatusPage::Storage.details_url(issuable),
         slaFeatureAvailable: issuable.sla_available?.to_s,
         uploadMetricsFeatureAvailable: issuable.metric_images_available?.to_s,
+        linkedResourcesFeatureAvailable: issuable.issuable_resource_links_available?.to_s,
         projectId: issuable.project_id
       )
     end

@@ -1,11 +1,11 @@
 import Vue from 'vue';
 import { parseBoolean } from '~/lib/utils/common_utils';
-import ResourceLinksBlock from './components/resource_links_block.vue';
+import ResourceLinksBlock from 'ee_component/linked_resources/components/resource_links_block.vue';
 
-export default function initLinkedResources() {
+export default function initLinkedResources(featureAvailable = false) {
   const linkedResourcesRootElement = document.querySelector('.js-linked-resources-root');
 
-  if (linkedResourcesRootElement) {
+  if (linkedResourcesRootElement && featureAvailable) {
     const { issuableId, canAddResourceLinks, helpPath } = linkedResourcesRootElement.dataset;
 
     // eslint-disable-next-line no-new
