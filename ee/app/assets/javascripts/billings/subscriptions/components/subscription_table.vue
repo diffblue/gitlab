@@ -196,7 +196,7 @@ export default {
         </div>
       </div>
       <div
-        class="gl-card-body gl-display-flex gl-flex-column gl-sm-flex-direction-row flex-lg-column flex-grid gl-p-0"
+        class="gl-card-body gl-display-flex gl-flex-direction-column gl-sm-flex-direction-row flex-lg-column flex-grid gl-p-0"
       >
         <subscription-table-row
           v-for="(row, i) in visibleRows"
