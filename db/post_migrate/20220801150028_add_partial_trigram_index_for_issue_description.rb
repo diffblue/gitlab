@@ -3,7 +3,7 @@
 class AddPartialTrigramIndexForIssueDescription < Gitlab::Database::Migration[2.0]
   disable_ddl_transaction!
 
-  INDEX_NAME = 'index_issues_on_description_trigram_non_english'
+  INDEX_NAME = 'index_issues_on_description_trigram_non_latin'
 
   def up
     add_concurrent_index :issues, :description, name: INDEX_NAME,
