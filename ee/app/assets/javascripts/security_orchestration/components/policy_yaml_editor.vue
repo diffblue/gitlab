@@ -1,11 +1,19 @@
 <script>
 import SourceEditor from '~/vue_shared/components/source_editor.vue';
+import { EDITOR_READY_EVENT } from '~/editor/constants';
+import { PolicySchemaExtension } from './policy_editor_schema_ext';
 
 export default {
   components: {
     SourceEditor,
   },
+  inject: ['namespacePath', 'namespaceType'],
   props: {
+    policyType: {
+      type: String,
+      required: false,
+      default: '',
+    },
     value: {
       type: String,
       required: true,
@@ -39,7 +47,16 @@ export default {
     onInput(val) {
       this.$emit('input', val);
     },
+    registerSchema({ detail: { instance } }) {
+      instance.use({ definition: PolicySchemaExtension });
+      instance.registerSecurityPolicySchema({
+        namespacePath: this.namespacePath,
+        namespaceType: this.namespaceType,
+        policyType: this.policyType,
+      });
+    },
   },
+  readyEvent: EDITOR_READY_EVENT,
 };
 </script>
 
@@ -48,6 +65,7 @@ export default {
     :value="value"
     file-name="*.yaml"
     :editor-options="editorOptions"
+    @[$options.readyEvent]="registerSchema($event)"
     @input="onInput"
   />
 </template>

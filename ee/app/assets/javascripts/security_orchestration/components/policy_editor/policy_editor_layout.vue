@@ -227,6 +227,7 @@ export default {
           <policy-yaml-editor
             v-if="shouldShowYamlEditor"
             data-testid="policy-yaml-editor"
+            :policy-type="policy.type"
             :value="yamlEditorValue"
             :read-only="false"
             @input="updateYaml"
