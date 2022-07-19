@@ -47,19 +47,28 @@ describe('WorkItemLinksForm', () => {
     expect(findForm().exists()).toBe(true);
   });
 
-  it('passes available work items as prop when typing in combobox', async () => {
-    findCombobox().vm.$emit('input', 'Task');
-    await waitForPromises();
-
-    expect(findCombobox().exists()).toBe(true);
-    expect(findCombobox().props('tokenList').length).toBe(2);
-  });
-
   it('selects and add child', async () => {
     findCombobox().vm.$emit('input', availableWorkItemsResponse.data.workspace.workItems.edges[0]);
 
     findAddChildButton().vm.$emit('click');
     await waitForPromises();
     expect(updateMutationResolver).toHaveBeenCalled();
+  });
+
+  describe('when typing in combobox', () => {
+    beforeEach(async () => {
+      findCombobox().vm.$emit('input', 'Task');
+      await waitForPromises();
+      await jest.runOnlyPendingTimers();
+    });
+
+    it('passes available work items as prop', () => {
+      expect(findCombobox().exists()).toBe(true);
+      expect(findCombobox().props('tokenList').length).toBe(2);
+    });
+
+    it('passes action to create task', () => {
+      expect(findCombobox().props('actionList').length).toBe(1);
+    });
   });
 });

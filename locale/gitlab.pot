@@ -44251,6 +44251,9 @@ msgstr ""
 msgid "WorkItem|Something went wrong when trying to add a child. Please try again."
 msgstr ""
 
+msgid "WorkItem|Something went wrong when trying to create a child. Please try again."
+msgstr ""
+
 msgid "WorkItem|Something went wrong while updating the work item. Please try again."
 msgstr ""
 

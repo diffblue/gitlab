@@ -4,6 +4,8 @@ import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { __, s__ } from '~/locale';
 import projectWorkItemsQuery from '../../graphql/project_work_items.query.graphql';
 import updateWorkItemMutation from '../../graphql/update_work_item.mutation.graphql';
+import createWorkItemMutation from '../../graphql/create_work_item.mutation.graphql';
+import { WORK_ITEM_TYPE_IDS } from '../../constants';
 
 export default {
   components: {
@@ -28,6 +30,7 @@ export default {
   apollo: {
     availableWorkItems: {
       query: projectWorkItemsQuery,
+      debounce: 200,
       variables() {
         return {
           projectPath: this.projectPath,
@@ -50,7 +53,28 @@ export default {
       availableWorkItems: [],
       search: '',
       error: null,
+      childToCreateTitle: null,
     };
+  },
+  computed: {
+    actionsList() {
+      return [
+        {
+          label: this.$options.i18n.createChildOptionLabel,
+          fn: () => {
+            this.childToCreateTitle = this.search?.title || this.search;
+          },
+        },
+      ];
+    },
+    addOrCreateButtonLabel() {
+      return this.childToCreateTitle
+        ? this.$options.i18n.createChildOptionLabel
+        : this.$options.i18n.addTaskButtonLabel;
+    },
+    addOrCreateMethod() {
+      return this.childToCreateTitle ? this.createChild : this.addChild;
+    },
   },
   methods: {
     getIdFromGraphQLId,
@@ -79,17 +103,53 @@ export default {
           }
         })
         .catch(() => {
-          this.error = this.$options.i18n.errorMessage;
+          this.error = this.$options.i18n.addChildErrorMessage;
         })
         .finally(() => {
           this.search = '';
         });
     },
+    createChild() {
+      this.$apollo
+        .mutate({
+          mutation: createWorkItemMutation,
+          variables: {
+            input: {
+              title: this.search?.title || this.search,
+              projectPath: this.projectPath,
+              workItemTypeId: WORK_ITEM_TYPE_IDS.TASK,
+              hierarchyWidget: {
+                parentId: this.issuableGid,
+              },
+            },
+          },
+        })
+        .then(({ data }) => {
+          if (data.workItemCreate?.errors?.length) {
+            [this.error] = data.workItemCreate.errors;
+          } else {
+            this.unsetError();
+            this.$emit('addWorkItemChild', data.workItemCreate.workItem);
+          }
+        })
+        .catch(() => {
+          this.error = this.$options.i18n.createChildErrorMessage;
+        })
+        .finally(() => {
+          this.search = '';
+          this.childToCreateTitle = null;
+        });
+    },
   },
   i18n: {
     inputLabel: __('Children'),
-    errorMessage: s__(
+    addTaskButtonLabel: s__('WorkItem|Add task'),
+    addChildErrorMessage: s__(
       'WorkItem|Something went wrong when trying to add a child. Please try again.',
+    ),
+    createChildOptionLabel: s__('WorkItem|Create task'),
+    createChildErrorMessage: s__(
+      'WorkItem|Something went wrong when trying to create a child. Please try again.',
     ),
   },
 };
@@ -108,6 +168,7 @@ export default {
       match-value-to-attr="title"
       class="gl-mb-4"
       :label-text="$options.i18n.inputLabel"
+      :action-list="actionsList"
       label-sr-only
       autofocus
     >
@@ -117,9 +178,12 @@ export default {
           <div>{{ item.title }}</div>
         </div>
       </template>
+      <template #action="{ item }">
+        <span class="gl-text-blue-500">{{ item.label }}</span>
+      </template>
     </gl-form-combobox>
-    <gl-button category="secondary" data-testid="add-child-button" @click="addChild">
-      {{ s__('WorkItem|Add task') }}
+    <gl-button category="secondary" data-testid="add-child-button" @click="addOrCreateMethod">
+      {{ addOrCreateButtonLabel }}
     </gl-button>
     <gl-button category="tertiary" @click="$emit('cancel')">
       {{ s__('WorkItem|Cancel') }}
