@@ -27,6 +27,9 @@ export default {
     statusIcon() {
       return this.hasChanges() ? EXTENSION_ICONS.warning : EXTENSION_ICONS.success;
     },
+    shouldCollapse() {
+      return this.hasChanges();
+    },
   },
   methods: {
     summary() {
