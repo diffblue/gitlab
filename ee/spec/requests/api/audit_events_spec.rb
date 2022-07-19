@@ -162,7 +162,7 @@ RSpec.describe API::AuditEvents do
       let_it_be(:audit_event_2) { create(:group_audit_event, entity_id: group.id) }
 
       it 'paginates the records correctly' do
-        get api("/groups/#{group.id}/audit_events", current_user), params: { pagination: 'keyset', per_page: 1, order_by: 'id' }
+        get api("/groups/#{group.id}/audit_events", current_user), params: { pagination: 'keyset', per_page: 1 }
 
         expect(response).to have_gitlab_http_status(:ok)
         records = json_response
