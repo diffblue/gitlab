@@ -19,6 +19,8 @@ The merge request is made up of several different key components and ideas that 
 1. Merge checks
 1. Approval rules
 
+When developing Merge Request Widgets using the Widget Extension framework, please refer to [the documentation specifically for that area](widget_extensions.md).
+
 ### Merge widget
 
 The merge widget is the component of the merge request where the `merge` button exists:
