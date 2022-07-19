@@ -9,7 +9,7 @@ RSpec.describe 'Query.runner(id)' do
 
   shared_examples 'runner details fetch operation returning expected upgradeStatus' do
     let(:query) do
-      wrap_fields(query_graphql_path(query_path, all_graphql_fields_for('CiRunner')))
+      wrap_fields(query_graphql_path(query_path, 'id upgradeStatus'))
     end
 
     let(:query_path) do
@@ -39,7 +39,7 @@ RSpec.describe 'Query.runner(id)' do
   end
 
   describe 'upgradeStatus', :saas do
-    let_it_be(:runner) { create(:ci_runner, description: 'Runner 1', version: 'adfe156', revision: 'a') }
+    let_it_be(:runner) { create(:ci_runner, description: 'Runner 1', version: '14.1.0', revision: 'a') }
 
     context 'requested by non-paid user' do
       let(:current_user) { admin }
@@ -124,6 +124,44 @@ RSpec.describe 'Query.runner(id)' do
         let(:expected_upgrade_status) { 'RECOMMENDED' }
 
         it_behaves_like('runner details fetch operation returning expected upgradeStatus')
+      end
+
+      context 'integration test with Gitlab::Ci::RunnerUpgradeCheck' do
+        let(:query) do
+          wrap_fields(query_graphql_path(query_path, 'id upgradeStatus'))
+        end
+
+        let(:query_path) do
+          [
+            [:runner, { id: runner.to_global_id.to_s }]
+          ]
+        end
+
+        let(:available_runner_releases) do
+          %w[14.1.0 14.1.1]
+        end
+
+        before do
+          url = ::Gitlab::CurrentSettings.current_application_settings.public_runner_releases_url
+
+          WebMock.stub_request(:get, url).to_return(
+            body: available_runner_releases.map { |v| { name: v } }.to_json,
+            status: 200,
+            headers: { 'Content-Type' => 'application/json' }
+          )
+        end
+
+        it 'retrieves expected fields' do
+          post_graphql(query, current_user: current_user)
+
+          runner_data = graphql_data_at(:runner)
+          expect(runner_data).not_to be_nil
+
+          expect(runner_data).to match a_hash_including(
+            'id' => runner.to_global_id.to_s,
+            'upgradeStatus' => 'RECOMMENDED'
+          )
+        end
       end
     end
   end
