@@ -79,6 +79,8 @@ monitoring capabilities.
 
 <!-- markdownlint-enable MD029 -->
 
+Consolidation layers: ELABORATE.
+
 ### Framework to define and enforce limits
 
 First we want to build a new framework that will allow us to define and enforce
@@ -124,7 +126,7 @@ end
 ```
 
 In the example above, when `my_limit_name` is defined in YAML, engineers will
-be check the current state and execute appropariate code block depending on the
+be check the current state and execute  appropriate  code block depending on the
 past usage / resource consumption.
 
 Things we want to build and support by default:
@@ -135,15 +137,53 @@ Things we want to build and support by default:
 1. Different types of limits - time bound / number per resource etc.
 1. A panel that makes it easy to override limits per plan / namespace.
 1. Logging that will expose limits applied in Kibana.
+1. An automatically generated documentation page will all limits described.
 
 ### API to expose limits and policies
 
+Once we have an established and consistent way to define application limits we
+can build a few API endpoints that will allow us to expose them to our users,
+customers and other satellite services that may want to consume them.
+
+Users will be able to ask the API about the limits / thresholds that have been
+set for them, how often they are hitting them, and what impact those might have
+on their business. This kind of transparency can help them with communicating
+their needs to customer success team at GitLab, and we will be able to
+communicate how the responsible usage is defined at a given moment.
+
+Because of how GitLab architecture has been built, GitLab Rails application, in
+most cases, behaves as a central enterprise service bus (ESB) and there are a
+few satellite services communicating with it. Services like Container Registry,
+GitLab Runners, Gitaly, Workhorse, KAS could use the API to receive a set of
+application limits those are supposed to enforce. This will still allow us to
+define all of them in a single place.
 
 ### GitLab Policy Service
 
+Not all limits can be easily defined in YAML. There are some more complex
+policies that require a bit more sophisticated and declarative programming
+language to describe them. One example of such language might be
+[Rego](https://www.openpolicyagent.org/docs/latest/policy-language/) language.
+It is a standardized way to define policies in
+[OPA - Open Policy Agent](https://www.openpolicyagent.org/). At GitLab we are
+already using OPA in some departments. We envision the need to additional
+consolidation to not only consolidate on the tooling we are using internally at
+GitLab, but to also transform the Next Rate Limiting Architecture into
+something we can make a part of the product itself.
+
+Today, we already do have a policy service we are using to decide whether a
+pipeline can be created or not. There are many policies defined in
+[Pipeline Validation Service](https://gitlab.com/gitlab-org/modelops/anti-abuse/pipeline-validation-service).
+There is a significant opportunity here in transforming Pipeline Validation
+Service into a general purpose GitLab Policy Service / GitLab Policy Agent that
+will be well integrated into the GitLab product itself.
 
 ## Principles
 
+1. Try to avoid building rate limiting framework in a tightly coupled way.
+1. Build application limits API in a way that it can be easily extracted to a separate service.
+1. Build application limits definition in a way that is independent from the Rails application.
+1. TODO: add more principles ...
 
 ## Iterations
 
