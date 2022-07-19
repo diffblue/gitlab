@@ -2,7 +2,12 @@ import { mount } from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
 import MembersTableCell from 'ee/members/components/table/members_table_cell.vue';
-import { member as memberMock, directMember } from 'jest/members/mock_data';
+import {
+  member as memberMock,
+  directMember,
+  bannedMember,
+} from 'ee_else_ce_jest/members/mock_data';
+import { MEMBER_TYPES } from 'ee_else_ce/members/constants';
 
 describe('MemberTableCell', () => {
   const WrappedComponent = {
@@ -92,6 +97,20 @@ describe('MemberTableCell', () => {
 
         expect(findWrappedComponent().props('permissions').canOverride).toBe(false);
       });
+    });
+  });
+
+  describe('memberType', () => {
+    it('has memberType value from CE when user is not banned', () => {
+      createComponent({ member: directMember });
+
+      expect(findWrappedComponent().props('memberType')).not.toEqual(MEMBER_TYPES.banned);
+    });
+
+    it('is `MEMBER_TYPES.banned` when user is banned', () => {
+      createComponent({ member: bannedMember });
+
+      expect(findWrappedComponent().props('memberType')).toEqual(MEMBER_TYPES.banned);
     });
   });
 });

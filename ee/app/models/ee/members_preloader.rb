@@ -12,6 +12,7 @@ module EE
       ActiveRecord::Associations::Preloader.new.preload(members, user: :oncall_schedules)
       ActiveRecord::Associations::Preloader.new.preload(members, user: :escalation_policies)
       ActiveRecord::Associations::Preloader.new.preload(members, user: :user_detail)
+      ActiveRecord::Associations::Preloader.new.preload(members, user: :namespace_bans)
     end
   end
 end

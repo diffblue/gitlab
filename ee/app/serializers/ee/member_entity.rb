@@ -20,6 +20,10 @@ module EE
       expose :override, as: :is_overridden
 
       expose :provisioned_by_this_group?, as: :provisioned_by_this_group
+
+      expose :banned do |member|
+        member.user.present? && member.user.banned_from_namespace?(group)
+      end
     end
 
     private

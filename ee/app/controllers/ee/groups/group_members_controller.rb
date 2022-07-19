@@ -23,7 +23,16 @@ module EE
 
         before_action do
           push_frontend_feature_flag(:overage_members_modal, @group) if ::Gitlab::CurrentSettings.should_check_namespace_plan?
+          push_frontend_feature_flag(:limit_unique_project_downloads_per_namespace_user, @group)
+          push_licensed_feature(:unique_project_download_limit, @group)
         end
+      end
+
+      override :index
+      def index
+        super
+
+        @banned = banned_members # rubocop:disable Gitlab/ModuleWithInstanceVariables
       end
 
       # rubocop:disable Gitlab/ModuleWithInstanceVariables
@@ -64,6 +73,13 @@ module EE
       override :non_invited_members
       def non_invited_members
         super.non_awaiting
+      end
+
+      def banned_members
+        return unless group.unique_project_download_limit_enabled?
+        return unless can?(current_user, :admin_group_member, group)
+
+        present_members(group_members.banned)
       end
 
       def authorize_update_group_member!
