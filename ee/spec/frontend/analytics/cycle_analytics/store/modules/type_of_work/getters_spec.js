@@ -41,16 +41,12 @@ describe('Type of work getters', () => {
   });
 
   describe('selectedLabelIds', () => {
-    it('returns the rootGetters selectedLabelIds if they are any', () => {
-      expect(selectedLabelIds(state, getters, null, rootGetters)).toEqual(rootSelectedLabelIds);
-    });
-
-    it('returns the topRankedLabelsIds if there are no selectedLabelIds', () => {
-      expect(
-        selectedLabelIds(null, getters, null, {
-          selectedLabelIds: [],
-        }),
-      ).toEqual(groupLabelIds);
+    it.each`
+      key                               | condition                                      | rootGettersValue            | result
+      ${'rootGetters selectedLabelIds'} | ${'are rootGetter selectedLabelIds available'} | ${rootGetters}              | ${rootSelectedLabelIds}
+      ${'topRankedLabelsIds'}           | ${'no rootGetter selectedLabelIds'}            | ${{ selectedLabelIds: [] }} | ${groupLabelIds}
+    `('returns the $key when there $condition', ({ rootGettersValue, result }) => {
+      expect(selectedLabelIds(state, getters, null, rootGettersValue)).toEqual(result);
     });
   });
 });
