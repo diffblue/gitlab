@@ -123,14 +123,7 @@ exports[`License Compliance extension expanded data with new licenses displays a
                      
                     <!---->
                      
-                    <div>
-                      <p
-                        class="gl-m-0"
-                      >
-                         
-                        Used by abbrev, anymatch
-                      </p>
-                    </div>
+                    <!---->
                      
                     <!---->
                   </div>
@@ -138,9 +131,77 @@ exports[`License Compliance extension expanded data with new licenses displays a
                   <div
                     class="gl-ml-auto gl-pl-3"
                   >
-                    <!---->
+                    <div
+                      class="dropdown b-dropdown gl-new-dropdown gl-display-block gl-md-display-none! btn-group"
+                      id="__BVID__396"
+                      lazy=""
+                      no-caret=""
+                    >
+                      <!---->
+                      <button
+                        aria-expanded="false"
+                        aria-haspopup="true"
+                        class="btn dropdown-toggle btn-default btn-sm gl-p-2! gl-button gl-dropdown-toggle btn-default-tertiary dropdown-icon-only dropdown-toggle-no-caret"
+                        id="__BVID__396__BV_toggle_"
+                        type="button"
+                      >
+                        <!---->
+                         
+                        <svg
+                          aria-hidden="true"
+                          class="dropdown-icon gl-icon s16"
+                          data-testid="ellipsis_v-icon"
+                          role="img"
+                        >
+                          <use
+                            href="#ellipsis_v"
+                          />
+                        </svg>
+                         
+                        <span
+                          class="gl-new-dropdown-button-text gl-sr-only"
+                        >
+                          License Compliance options
+                        </span>
+                         
+                        <svg
+                          aria-hidden="true"
+                          class="gl-button-icon dropdown-chevron gl-icon s16"
+                          data-testid="chevron-down-icon"
+                          role="img"
+                        >
+                          <use
+                            href="#chevron-down"
+                          />
+                        </svg>
+                      </button>
+                      <ul
+                        aria-labelledby="__BVID__396__BV_toggle_"
+                        class="dropdown-menu dropdown-menu-right"
+                        role="menu"
+                        tabindex="-1"
+                      >
+                        <!---->
+                      </ul>
+                    </div>
                      
-                    <!---->
+                    <a
+                      class="btn gl-display-none gl-md-display-block gl-float-left btn-confirm btn-sm gl-button btn-confirm-tertiary"
+                      data-testid="extension-actions-button"
+                      href="/group-name/project-name/-/merge_requests/78/full_report"
+                    >
+                      <!---->
+                       
+                      <!---->
+                        
+                      <span
+                        class="gl-button-text"
+                      >
+                        
+      Used by 2 packages
+    
+                      </span>
+                    </a>
                   </div>
                 </div>
                  
@@ -437,14 +498,7 @@ exports[`License Compliance extension expanded data with new licenses displays u
                      
                     <!---->
                      
-                    <div>
-                      <p
-                        class="gl-m-0"
-                      >
-                         
-                        Used by json-schema
-                      </p>
-                    </div>
+                    <!---->
                      
                     <!---->
                   </div>
@@ -452,9 +506,77 @@ exports[`License Compliance extension expanded data with new licenses displays u
                   <div
                     class="gl-ml-auto gl-pl-3"
                   >
-                    <!---->
+                    <div
+                      class="dropdown b-dropdown gl-new-dropdown gl-display-block gl-md-display-none! btn-group"
+                      id="__BVID__317"
+                      lazy=""
+                      no-caret=""
+                    >
+                      <!---->
+                      <button
+                        aria-expanded="false"
+                        aria-haspopup="true"
+                        class="btn dropdown-toggle btn-default btn-sm gl-p-2! gl-button gl-dropdown-toggle btn-default-tertiary dropdown-icon-only dropdown-toggle-no-caret"
+                        id="__BVID__317__BV_toggle_"
+                        type="button"
+                      >
+                        <!---->
+                         
+                        <svg
+                          aria-hidden="true"
+                          class="dropdown-icon gl-icon s16"
+                          data-testid="ellipsis_v-icon"
+                          role="img"
+                        >
+                          <use
+                            href="#ellipsis_v"
+                          />
+                        </svg>
+                         
+                        <span
+                          class="gl-new-dropdown-button-text gl-sr-only"
+                        >
+                          License Compliance options
+                        </span>
+                         
+                        <svg
+                          aria-hidden="true"
+                          class="gl-button-icon dropdown-chevron gl-icon s16"
+                          data-testid="chevron-down-icon"
+                          role="img"
+                        >
+                          <use
+                            href="#chevron-down"
+                          />
+                        </svg>
+                      </button>
+                      <ul
+                        aria-labelledby="__BVID__317__BV_toggle_"
+                        class="dropdown-menu dropdown-menu-right"
+                        role="menu"
+                        tabindex="-1"
+                      >
+                        <!---->
+                      </ul>
+                    </div>
                      
-                    <!---->
+                    <a
+                      class="btn gl-display-none gl-md-display-block gl-float-left btn-confirm btn-sm gl-button btn-confirm-tertiary"
+                      data-testid="extension-actions-button"
+                      href="/group-name/project-name/-/merge_requests/78/full_report"
+                    >
+                      <!---->
+                       
+                      <!---->
+                        
+                      <span
+                        class="gl-button-text"
+                      >
+                        
+      Used by 1 package
+    
+                      </span>
+                    </a>
                   </div>
                 </div>
                  
