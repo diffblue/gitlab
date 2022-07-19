@@ -75,7 +75,9 @@ export const STREAM_COUNT_ICON_ALT = s__('AuditStreams|Stream count icon');
 
 export const STREAM_ITEMS_I18N = {
   VERIFICATION_TOKEN_TOOLTIP: s__('AuditStreams|Verification token'),
+  EDIT_BUTTON_LABEL: s__('AuditStreams|Edit %{link}'),
   DELETE_BUTTON_LABEL: s__('AuditStreams|Delete %{link}'),
+  EDIT_BUTTON_TOOLTIP: __('Edit'),
   DELETE_BUTTON_TOOLTIP: __('Delete'),
 };
 
@@ -96,6 +98,8 @@ export const ADD_STREAM_EDITOR_I18N = {
   MAXIMUM_HEADERS_TEXT: s__('AuditStreams|Maximum of %{number} HTTP headers has been reached.'),
   ADD_BUTTON_TEXT: __('Add'),
   ADD_BUTTON_NAME: s__('AuditStreams|Add external stream destination'),
+  SAVE_BUTTON_TEXT: __('Save'),
+  SAVE_BUTTON_NAME: s__('AuditStreams|Save external stream destination'),
   CANCEL_BUTTON_TEXT: __('Cancel'),
   CANCEL_BUTTON_NAME: s__('AuditStreams|Cancel editing'),
 };

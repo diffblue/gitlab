@@ -4,10 +4,12 @@ import { createAlert } from '~/flash';
 import { sprintf } from '~/locale';
 import deleteExternalDestination from '../../graphql/delete_external_destination.mutation.graphql';
 import { AUDIT_STREAMS_NETWORK_ERRORS, STREAM_ITEMS_I18N } from '../../constants';
+import StreamDestinationEditor from './stream_destination_editor.vue';
 
 export default {
   components: {
     GlButton,
+    StreamDestinationEditor,
   },
   directives: {
     GlTooltip,
@@ -20,15 +22,26 @@ export default {
   },
   data() {
     return {
+      isEditing: false,
       isDeleting: false,
     };
   },
   computed: {
+    editButtonLabel() {
+      return sprintf(STREAM_ITEMS_I18N.EDIT_BUTTON_LABEL, { link: this.item.destinationUrl });
+    },
     deleteButtonLabel() {
       return sprintf(STREAM_ITEMS_I18N.DELETE_BUTTON_LABEL, { link: this.item.destinationUrl });
     },
   },
   methods: {
+    setEditMode(state) {
+      this.isEditing = state;
+    },
+    onUpdated(event) {
+      this.setEditMode(false);
+      this.$emit('updated', event);
+    },
     async deleteDestination() {
       this.isDeleting = true;
       try {
@@ -68,9 +81,10 @@ export default {
 <template>
   <li class="list-item py-0">
     <div
-      class="gl-display-flex gl-align-items-center gl-justify-content-space-between gl-pl-5 gl-pr-3 gl-py-3 gl-rounded-base"
+      class="gl-display-flex gl-align-items-center gl-justify-content-space-between gl-pl-5 gl-pr-3 gl-rounded-base"
+      :class="[isEditing ? 'gl-py-5' : 'gl-py-3']"
     >
-      <div class="gl-h-4" tabindex="0">{{ item.destinationUrl }}</div>
+      <span class="gl-display-block" tabindex="0">{{ item.destinationUrl }}</span>
       <code
         v-gl-tooltip
         :title="$options.i18n.VERIFICATION_TOKEN_TOOLTIP"
@@ -80,7 +94,17 @@ export default {
         <span class="gl-sr-only">{{ $options.i18n.VERIFICATION_TOKEN_TOOLTIP }}:</span>
         {{ item.verificationToken }}
       </code>
-      <div class="actions-button">
+      <div v-if="!isEditing">
+        <gl-button
+          v-gl-tooltip
+          :aria-label="editButtonLabel"
+          :disabled="isDeleting"
+          :title="$options.i18n.EDIT_BUTTON_TOOLTIP"
+          category="tertiary"
+          icon="pencil"
+          data-testid="edit-btn"
+          @click="setEditMode(true)"
+        />
         <gl-button
           v-gl-tooltip
           :aria-label="deleteButtonLabel"
@@ -88,9 +112,13 @@ export default {
           :title="$options.i18n.DELETE_BUTTON_TOOLTIP"
           category="tertiary"
           icon="remove"
+          data-testid="delete-btn"
           @click="deleteDestination"
         />
       </div>
+    </div>
+    <div v-if="isEditing" class="gl-p-4">
+      <stream-destination-editor :item="item" @added="onUpdated" @cancel="setEditMode(false)" />
     </div>
   </li>
 </template>

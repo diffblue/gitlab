@@ -6,6 +6,13 @@ query getExternalDestinations($fullPath: ID!) {
         id
         destinationUrl
         verificationToken
+        headers {
+          nodes {
+            key
+            value
+            id
+          }
+        }
       }
     }
   }

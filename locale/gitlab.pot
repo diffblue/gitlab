@@ -5340,10 +5340,16 @@ msgstr ""
 msgid "AuditStreams|Destinations receive all audit event data"
 msgstr ""
 
+msgid "AuditStreams|Edit %{link}"
+msgstr ""
+
 msgid "AuditStreams|Header"
 msgstr ""
 
 msgid "AuditStreams|Maximum of %{number} HTTP headers has been reached."
+msgstr ""
+
+msgid "AuditStreams|Save external stream destination"
 msgstr ""
 
 msgid "AuditStreams|Setup streaming for audit events"

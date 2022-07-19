@@ -8,6 +8,7 @@ import waitForPromises from 'helpers/wait_for_promises';
 import deleteExternalDestination from 'ee/audit_events/graphql/delete_external_destination.mutation.graphql';
 import { AUDIT_STREAMS_NETWORK_ERRORS } from 'ee/audit_events/constants';
 import StreamItem from 'ee/audit_events/components/stream/stream_item.vue';
+import StreamDestinationEditor from 'ee/audit_events/components/stream/stream_destination_editor.vue';
 import { destinationDeleteMutationPopulator, mockExternalDestinations } from '../../mock_data';
 
 jest.mock('~/flash');
@@ -37,7 +38,9 @@ describe('StreamItem', () => {
     });
   };
 
-  const findButton = () => wrapper.findComponent(GlButton);
+  const findEditButton = () => wrapper.findByTestId('edit-btn');
+  const findDeleteButton = () => wrapper.findByTestId('delete-btn');
+  const findEditor = () => wrapper.findComponent(StreamDestinationEditor);
 
   afterEach(() => {
     wrapper.destroy();
@@ -45,17 +48,23 @@ describe('StreamItem', () => {
   });
 
   describe('render', () => {
-    it('should render correctly', () => {
+    beforeEach(() => {
       createComponent();
+    });
 
+    it('should render correctly', () => {
       expect(wrapper.element).toMatchSnapshot();
+    });
+
+    it('should not show the editor', () => {
+      expect(findEditor().exists()).toBe(false);
     });
   });
 
   describe('events', () => {
     it('should emit delete with item id', async () => {
       createComponent();
-      const button = findButton();
+      const button = findDeleteButton();
       await button.trigger('click');
 
       expect(button.props('loading')).toBe(true);
@@ -73,7 +82,7 @@ describe('StreamItem', () => {
         .fn()
         .mockResolvedValue(destinationDeleteMutationPopulator([errorMsg]));
       createComponent(deleteExternalDestinationErrorSpy);
-      const button = findButton();
+      const button = findDeleteButton();
       await button.trigger('click');
 
       expect(button.props('loading')).toBe(true);
@@ -90,7 +99,7 @@ describe('StreamItem', () => {
     it('should not emit delete when network error occurs', async () => {
       const error = new Error('Network error');
       createComponent(jest.fn().mockRejectedValue(error));
-      const button = findButton();
+      const button = findDeleteButton();
       await button.trigger('click');
 
       expect(button.props('loading')).toBe(true);
@@ -104,6 +113,37 @@ describe('StreamItem', () => {
         captureError: true,
         error,
       });
+    });
+  });
+
+  describe('editing', () => {
+    beforeEach(() => {
+      createComponent();
+      findEditButton().trigger('click');
+    });
+
+    it('should render correctly', () => {
+      expect(wrapper.element).toMatchSnapshot();
+    });
+
+    it('should pass the item to the editor', () => {
+      expect(findEditor().exists()).toBe(true);
+      expect(findEditor().props('item')).toStrictEqual(mockExternalDestinations[0]);
+    });
+
+    it('should emit the updated event when the editor fires its added event', async () => {
+      findEditor().vm.$emit('added');
+      await waitForPromises();
+
+      expect(wrapper.emitted('updated')).toBeDefined();
+      expect(findEditor().exists()).toBe(false);
+    });
+
+    it('should close the editor when the editor fires its cancel event', async () => {
+      findEditor().vm.$emit('cancel');
+      await waitForPromises();
+
+      expect(findEditor().exists()).toBe(false);
     });
   });
 });

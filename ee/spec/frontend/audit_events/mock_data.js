@@ -36,17 +36,27 @@ export default () => [
 ];
 
 export const mockExternalDestinationUrl = 'https://api.gitlab.com';
-
+export const mockExternalDestinationHeader = () => ({
+  id: uniqueId('gid://gitlab/AuditEvents::Streaming::Header/'),
+  key: uniqueId('header-key-'),
+  value: uniqueId('header-value-'),
+});
 export const mockExternalDestinations = [
   {
     id: 'test_id1',
     destinationUrl: mockExternalDestinationUrl,
     verificationToken: 'id5hzCbERzSkQ82tAs16tH5Y',
+    headers: {
+      nodes: [],
+    },
   },
   {
     id: 'test_id2',
     destinationUrl: 'https://apiv2.gitlab.com',
     verificationToken: 'JsSQtg86au6buRtX9j98sYa8',
+    headers: {
+      nodes: [],
+    },
   },
 ];
 
