@@ -39,5 +39,9 @@ module EE
         License.feature_available?(:elastic_search)
       end
     end
+
+    def search_type
+      track_search_advanced? ? 'advanced' : super
+    end
   end
 end
