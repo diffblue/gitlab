@@ -14,6 +14,39 @@ RSpec.describe 'Trial Sign Up' do
       allow(Gitlab).to receive(:com?).and_return(true).at_least(:once)
     end
 
+    context 'with invalid email', :js do
+      let(:email_error_message) { 'Please provide a valid email address.' }
+
+      context 'with trialEmailValidation flag enabled' do
+        it 'shows an error message until a correct email is entered' do
+          visit new_trial_registration_path
+
+          fill_in 'new_user_email', with: 'foo@'
+          expect(page).to have_content(email_error_message)
+
+          fill_in 'new_user_email', with: 'foo@bar'
+          expect(page).to have_content(email_error_message)
+
+          fill_in 'new_user_email', with: 'foo@gitlab.com'
+          expect(page).not_to have_content(email_error_message)
+        end
+      end
+
+      context 'when trialEmailValidation flag disabled' do
+        before do
+          stub_feature_flags trial_email_validation: false
+        end
+
+        it 'does not show an error message' do
+          visit new_trial_registration_path
+
+          fill_in 'new_user_email', with: 'foo@'
+
+          expect(page).not_to have_content(email_error_message)
+        end
+      end
+    end
+
     context 'with the unavailable username' do
       let(:existing_user) { create(:user) }
 
