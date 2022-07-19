@@ -12,7 +12,8 @@ import {
 } from '@gitlab/ui';
 import { TYPE_ITERATIONS_CADENCE } from '~/graphql_shared/constants';
 import { convertToGraphQLId, getIdFromGraphQLId } from '~/graphql_shared/utils';
-import { s__, __ } from '~/locale';
+import { s__, __, sprintf } from '~/locale';
+import { getDayName } from '~/lib/utils/datetime_utility';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import createCadence from '../queries/cadence_create.mutation.graphql';
 import updateCadence from '../queries/cadence_update.mutation.graphql';
@@ -21,17 +22,21 @@ import iterationsInCadence from '../queries/group_iterations_in_cadence.query.gr
 import { iterationStates } from '../constants';
 
 const i18n = Object.freeze({
+  automatedScheduling: {
+    heading: s__('Iterations|Automatic scheduling'),
+    text: s__('Iterations|Create iterations automatically on a regular schedule.'),
+  },
   title: {
     label: s__('Iterations|Title'),
     placeholder: s__('Iterations|Cadence name'),
   },
-  startDate: {
+  effectiveDate: {
     label: s__('Iterations|First iteration start date'),
     placeholder: s__('Iterations|Select start date'),
     labelDescription: s__(
       'Iterations|The start date of the first iteration determines when your cadence begins.',
     ),
-    description: s__('Iterations|No one can change this date after the cadence has begun.'),
+    description: s__('Iterations|Iterations are scheduled to start on %{weekday}s.'),
   },
   duration: {
     label: s__('Iterations|Duration'),
@@ -40,6 +45,7 @@ const i18n = Object.freeze({
   },
   rollOver: {
     label: s__('Iterations|Roll over issues'),
+    checkboxLabel: s__('Iterations|Enable roll over'),
     description: s__('Iterations|Move incomplete issues to the next iteration.'),
   },
   upcomingIterations: {
@@ -51,6 +57,7 @@ const i18n = Object.freeze({
   },
   description: {
     label: __('Description'),
+    optional: __('(optional)'),
   },
   edit: {
     title: s__('Iterations|Edit iteration cadence'),
@@ -125,6 +132,14 @@ export default {
     };
   },
   computed: {
+    effectiveDateDescription() {
+      if (this.startDate === null) return '';
+
+      return sprintf(this.i18n.effectiveDate.description, {
+        effectiveDate: this.effectiveDate,
+        weekday: getDayName(new Date(this.startDate)),
+      });
+    },
     loadingCadence() {
       return this.$apollo.queries.group.loading;
     },
@@ -369,93 +384,104 @@ export default {
 
       <gl-form-group
         class="gl-pt-3"
-        :label="i18n.startDate.label"
-        :label-description="i18n.startDate.labelDescription"
-        label-for="cadence-start-date"
-        :description="i18n.startDate.description"
-        :invalid-feedback="i18n.requiredField"
-        :state="validationState.startDate"
-      >
-        <gl-datepicker :target="null">
-          <gl-form-input
-            id="cadence-start-date"
-            v-model="startDate"
-            :placeholder="i18n.startDate.placeholder"
-            class="datepicker gl-datepicker-input"
-            autocomplete="off"
-            inputmode="none"
-            :disabled="isStartDateDisabled"
-            :state="validationState.startDate"
-            data-qa-selector="iteration_cadence_start_date_field"
-            @blur="validate('startDate')"
-          />
-        </gl-datepicker>
-      </gl-form-group>
-
-      <gl-form-group
-        class="gl-pt-3"
-        :label="i18n.duration.label"
-        :label-description="i18n.duration.labelDescription"
-        label-for="cadence-duration"
-        :invalid-feedback="i18n.requiredField"
-        :state="validationState.durationInWeeks"
-      >
-        <gl-form-select
-          id="cadence-duration"
-          v-model.number="durationInWeeks"
-          :options="$options.availableDurations"
-          class="gl-form-input-md"
-          :disabled="loadingCadence"
-          data-qa-selector="iteration_cadence_duration_field"
-          @change="validate('durationInWeeks')"
-        />
-      </gl-form-group>
-
-      <gl-form-group
-        class="gl-pt-3"
-        :label="i18n.upcomingIterations.label"
-        :label-description="i18n.upcomingIterations.labelDescription"
-        label-for="cadence-schedule-upcoming-iterations"
-        :invalid-feedback="i18n.requiredField"
-        :state="validationState.iterationsInAdvance"
-      >
-        <gl-form-select
-          id="cadence-schedule-upcoming-iterations"
-          v-model.number="iterationsInAdvance"
-          :disabled="loadingCadence"
-          :options="$options.availableUpcomingIterations"
-          class="gl-form-input-md"
-          data-qa-selector="iteration_cadence_upcoming_iterations_field"
-          @change="validate('iterationsInAdvance')"
-        />
-      </gl-form-group>
-
-      <gl-form-group
-        class="gl-pt-3"
-        label-class="gl-font-weight-bold"
-        label-for="cadence-rollover-issues"
-        :description="i18n.rollOver.description"
-      >
-        <gl-form-checkbox id="cadence-rollover-issues" v-model="rollOver" @change="clearValidation">
-          <span class="gl-font-weight-bold">{{ i18n.rollOver.label }}</span>
-        </gl-form-checkbox>
-      </gl-form-group>
-
-      <gl-form-group
-        class="gl-pt-3"
         :label="i18n.description.label"
         :content-cols-md="2"
+        :optional-text="i18n.optional"
         label-for="cadence-description"
+        optional
       >
         <gl-form-textarea
           id="cadence-description"
           v-model="description"
-          class="w-100"
           data-qa-selector="iteration_cadence_description_field"
         />
       </gl-form-group>
 
-      <div class="form-actions gl-display-flex gl-flex-wrap">
+      <h4 class="gl-pt-3">{{ i18n.automatedScheduling.heading }}</h4>
+      <p>{{ i18n.automatedScheduling.text }}</p>
+
+      <div class="gl-pt-4 gl-px-4 gl-border gl-rounded-base gl-mt-4 gl-mb-6">
+        <gl-form-group
+          class="gl-pt-3"
+          :label="i18n.effectiveDate.label"
+          :label-description="i18n.effectiveDate.labelDescription"
+          label-for="cadence-start-date"
+          :description="effectiveDateDescription"
+          :invalid-feedback="i18n.requiredField"
+          :state="validationState.startDate"
+        >
+          <gl-datepicker :target="null">
+            <gl-form-input
+              id="cadence-start-date"
+              v-model="startDate"
+              :placeholder="i18n.effectiveDate.placeholder"
+              class="gl-datepicker-input"
+              autocomplete="off"
+              inputmode="none"
+              :disabled="isStartDateDisabled"
+              :state="validationState.startDate"
+              data-qa-selector="iteration_cadence_start_date_field"
+              @blur="validate('startDate')"
+            />
+          </gl-datepicker>
+        </gl-form-group>
+
+        <gl-form-group
+          class="gl-pt-3"
+          :label="i18n.duration.label"
+          :label-description="i18n.duration.labelDescription"
+          label-for="cadence-duration"
+          :invalid-feedback="i18n.requiredField"
+          :state="validationState.durationInWeeks"
+        >
+          <gl-form-select
+            id="cadence-duration"
+            v-model.number="durationInWeeks"
+            :options="$options.availableDurations"
+            class="gl-form-input-md"
+            :disabled="loadingCadence"
+            data-qa-selector="iteration_cadence_duration_field"
+            @change="validate('durationInWeeks')"
+          />
+        </gl-form-group>
+
+        <gl-form-group
+          class="gl-pt-3"
+          :label="i18n.upcomingIterations.label"
+          :label-description="i18n.upcomingIterations.labelDescription"
+          label-for="cadence-schedule-upcoming-iterations"
+          :invalid-feedback="i18n.requiredField"
+          :state="validationState.iterationsInAdvance"
+        >
+          <gl-form-select
+            id="cadence-schedule-upcoming-iterations"
+            v-model.number="iterationsInAdvance"
+            :disabled="loadingCadence"
+            :options="$options.availableUpcomingIterations"
+            class="gl-form-input-md"
+            data-qa-selector="iteration_cadence_upcoming_iterations_field"
+            @change="validate('iterationsInAdvance')"
+          />
+        </gl-form-group>
+
+        <gl-form-group
+          class="gl-pt-3"
+          :label="i18n.rollOver.label"
+          label-class="gl-font-weight-bold"
+          label-for="cadence-rollover-issues"
+          :description="i18n.rollOver.description"
+        >
+          <gl-form-checkbox
+            id="cadence-rollover-issues"
+            v-model="rollOver"
+            @change="clearValidation"
+          >
+            <span>{{ i18n.rollOver.checkboxLabel }}</span>
+          </gl-form-checkbox>
+        </gl-form-group>
+      </div>
+
+      <div class="gl-display-flex gl-flex-wrap">
         <gl-button
           :loading="loading"
           data-testid="save-cadence"

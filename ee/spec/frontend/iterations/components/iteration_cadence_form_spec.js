@@ -111,10 +111,10 @@ describe('Iteration cadence form', () => {
   });
 
   const findTitleGroup = () => wrapper.findAllComponents(GlFormGroup).at(0);
-  const findStartDateGroup = () => wrapper.findAllComponents(GlFormGroup).at(1);
-  const findDurationGroup = () => wrapper.findAllComponents(GlFormGroup).at(2);
-  const findUpcomingIterationsGroup = () => wrapper.findAllComponents(GlFormGroup).at(3);
-  const findRollOverGroup = () => wrapper.findAllComponents(GlFormGroup).at(4);
+  const findStartDateGroup = () => wrapper.findAllComponents(GlFormGroup).at(2);
+  const findDurationGroup = () => wrapper.findAllComponents(GlFormGroup).at(3);
+  const findUpcomingIterationsGroup = () => wrapper.findAllComponents(GlFormGroup).at(4);
+  const findRollOverGroup = () => wrapper.findAllComponents(GlFormGroup).at(5);
 
   const findError = () => wrapper.findComponent(GlAlert);
 
@@ -164,6 +164,22 @@ describe('Iteration cadence form', () => {
 
     it('does not disable the start date field', () => {
       expect(findStartDate().attributes('disabled')).toBe(undefined);
+    });
+
+    it('does not show the description text for effective date', () => {
+      expect(findStartDateGroup().text()).not.toContain('Iterations are scheduled to start on');
+    });
+
+    describe('when a new effective date is selected', () => {
+      it('shows the description text with the correct weekday for effective date', async () => {
+        setStartDate('2022-07-13');
+
+        await nextTick();
+
+        expect(findStartDateGroup().text()).toContain(
+          'Iterations are scheduled to start on Wednesdays.',
+        );
+      });
     });
 
     describe('save', () => {
@@ -327,6 +343,12 @@ describe('Iteration cadence form', () => {
       await waitForPromises();
 
       expect(findStartDate().attributes('disabled')).toBe('disabled');
+    });
+
+    it('shows the description text with the correct weekday for effective date', async () => {
+      await waitForPromises();
+
+      expect(findStartDateGroup().text()).toContain('Iterations are scheduled to start on Sundays');
     });
 
     it('displays query errors on failure', async () => {
