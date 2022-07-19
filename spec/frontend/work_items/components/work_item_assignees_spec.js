@@ -142,16 +142,18 @@ describe('WorkItemAssignees component', () => {
   });
 
   describe('when searching for users', () => {
-    it('does not start user search by default', () => {
+    beforeEach(() => {
       createComponent();
+    });
 
+    it('does not start user search by default', () => {
       expect(findTokenSelector().props('loading')).toBe(false);
-      expect(findTokenSelector().props('dropdownItems')).toEqual([]);
+      expect(findTokenSelector().props('dropdownItems')).toEqual([
+        stripTypenames(currentUserResponse.data.currentUser),
+      ]);
     });
 
     it('starts user search on hovering for more than 250ms', async () => {
-      createComponent();
-
       findTokenSelector().trigger('mouseover');
       jest.advanceTimersByTime(DEFAULT_DEBOUNCE_AND_THROTTLE_MS);
       await nextTick();
@@ -160,8 +162,6 @@ describe('WorkItemAssignees component', () => {
     });
 
     it('starts user search on focusing token selector', async () => {
-      createComponent();
-
       findTokenSelector().vm.$emit('focus');
       await nextTick();
 
@@ -169,8 +169,6 @@ describe('WorkItemAssignees component', () => {
     });
 
     it('does not start searching if token-selector was hovered for less than 250ms', async () => {
-      createComponent();
-
       findTokenSelector().trigger('mouseover');
       jest.advanceTimersByTime(100);
       await nextTick();
@@ -179,8 +177,6 @@ describe('WorkItemAssignees component', () => {
     });
 
     it('does not start searching if cursor was moved out from token selector before 250ms passed', async () => {
-      createComponent();
-
       findTokenSelector().trigger('mouseover');
       jest.advanceTimersByTime(100);
 
@@ -192,8 +188,6 @@ describe('WorkItemAssignees component', () => {
     });
 
     it('shows skeleton loader on dropdown when loading users', async () => {
-      createComponent();
-
       findTokenSelector().vm.$emit('focus');
       await nextTick();
 
@@ -201,8 +195,6 @@ describe('WorkItemAssignees component', () => {
     });
 
     it('shows correct users list in dropdown when loaded', async () => {
-      createComponent();
-
       findTokenSelector().vm.$emit('focus');
       await nextTick();
 
@@ -215,8 +207,6 @@ describe('WorkItemAssignees component', () => {
     });
 
     it('searches for users with correct key after text input', async () => {
-      createComponent();
-
       const searchKey = 'Hello';
 
       findTokenSelector().vm.$emit('focus');

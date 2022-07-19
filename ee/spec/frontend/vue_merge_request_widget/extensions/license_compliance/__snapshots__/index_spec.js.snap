@@ -133,7 +133,7 @@ exports[`License Compliance extension expanded data with new licenses displays a
                   >
                     <div
                       class="dropdown b-dropdown gl-new-dropdown gl-display-block gl-md-display-none! btn-group"
-                      id="__BVID__396"
+                      id="__BVID__399"
                       lazy=""
                       no-caret=""
                     >
@@ -142,7 +142,7 @@ exports[`License Compliance extension expanded data with new licenses displays a
                         aria-expanded="false"
                         aria-haspopup="true"
                         class="btn dropdown-toggle btn-default btn-sm gl-p-2! gl-button gl-dropdown-toggle btn-default-tertiary dropdown-icon-only dropdown-toggle-no-caret"
-                        id="__BVID__396__BV_toggle_"
+                        id="__BVID__399__BV_toggle_"
                         type="button"
                       >
                         <!---->
@@ -176,7 +176,7 @@ exports[`License Compliance extension expanded data with new licenses displays a
                         </svg>
                       </button>
                       <ul
-                        aria-labelledby="__BVID__396__BV_toggle_"
+                        aria-labelledby="__BVID__399__BV_toggle_"
                         class="dropdown-menu dropdown-menu-right"
                         role="menu"
                         tabindex="-1"
@@ -508,7 +508,7 @@ exports[`License Compliance extension expanded data with new licenses displays u
                   >
                     <div
                       class="dropdown b-dropdown gl-new-dropdown gl-display-block gl-md-display-none! btn-group"
-                      id="__BVID__317"
+                      id="__BVID__320"
                       lazy=""
                       no-caret=""
                     >
@@ -517,7 +517,7 @@ exports[`License Compliance extension expanded data with new licenses displays u
                         aria-expanded="false"
                         aria-haspopup="true"
                         class="btn dropdown-toggle btn-default btn-sm gl-p-2! gl-button gl-dropdown-toggle btn-default-tertiary dropdown-icon-only dropdown-toggle-no-caret"
-                        id="__BVID__317__BV_toggle_"
+                        id="__BVID__320__BV_toggle_"
                         type="button"
                       >
                         <!---->
@@ -551,7 +551,7 @@ exports[`License Compliance extension expanded data with new licenses displays u
                         </svg>
                       </button>
                       <ul
-                        aria-labelledby="__BVID__317__BV_toggle_"
+                        aria-labelledby="__BVID__320__BV_toggle_"
                         class="dropdown-menu dropdown-menu-right"
                         role="menu"
                         tabindex="-1"

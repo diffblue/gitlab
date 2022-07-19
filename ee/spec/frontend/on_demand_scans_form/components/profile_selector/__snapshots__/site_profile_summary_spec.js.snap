@@ -1,13 +1,13 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`DastSiteProfileSummary renders properly profile %# 1`] = `
+exports[`DastSiteProfileSummary renders properly profile gid://gitlab/DastSiteProfile/1 Non-validated 1`] = `
 <div
   class="row"
 >
   <summary-cell-stub
     class=""
     label="Target URL"
-    value="http://pending.test"
+    value="http://none.test"
   />
    
   <summary-cell-stub
@@ -17,12 +17,12 @@ exports[`DastSiteProfileSummary renders properly profile %# 1`] = `
    
   <summary-cell-stub
     label="Authentication URL"
-    value="http://pending.test/sign-in"
+    value="http://none.test/sign-in"
   />
    
   <summary-cell-stub
     label="Username"
-    value="validation-pending@example.com"
+    value="non-validated@example.com"
   />
    
   <summary-cell-stub
@@ -46,7 +46,7 @@ exports[`DastSiteProfileSummary renders properly profile %# 1`] = `
    
   <summary-cell-stub
     label="Excluded URLs"
-    value="http://pending.test/sign-out,http://pending.test/hidden"
+    value="http://none.test/sign-out,http://none.test/hidden"
   />
    
   <summary-cell-stub
@@ -60,127 +60,7 @@ exports[`DastSiteProfileSummary renders properly profile %# 1`] = `
 </div>
 `;
 
-exports[`DastSiteProfileSummary renders properly profile %# 2`] = `
-<div
-  class="row"
->
-  <summary-cell-stub
-    class=""
-    label="Target URL"
-    value="http://inprogress.test"
-  />
-   
-  <summary-cell-stub
-    label="Site type"
-    value="Website"
-  />
-   
-  <summary-cell-stub
-    label="Authentication URL"
-    value="http://inprogress.test/sign-in"
-  />
-   
-  <summary-cell-stub
-    label="Username"
-    value="validation-in-progress@example.com"
-  />
-   
-  <summary-cell-stub
-    label="Password"
-    value="••••••••"
-  />
-   
-  <summary-cell-stub
-    label="Username form field"
-    value="session[username]"
-  />
-   
-  <summary-cell-stub
-    label="Password form field"
-    value="session[password]"
-  />
-   
-  <summary-cell-stub
-    label="Submit button"
-  />
-   
-  <summary-cell-stub
-    label="Excluded URLs"
-    value="http://inprogress.test/sign-out,http://inprogress.test/hidden"
-  />
-   
-  <summary-cell-stub
-    label="Request headers"
-  />
-   
-  <summary-cell-stub
-    label="Validation status"
-    value="Not Validated"
-  />
-</div>
-`;
-
-exports[`DastSiteProfileSummary renders properly profile %# 3`] = `
-<div
-  class="row"
->
-  <summary-cell-stub
-    class=""
-    label="Target URL"
-    value="http://passed.test"
-  />
-   
-  <summary-cell-stub
-    label="Site type"
-    value="Website"
-  />
-   
-  <summary-cell-stub
-    label="Authentication URL"
-    value="http://passed.test/sign-in"
-  />
-   
-  <summary-cell-stub
-    label="Username"
-    value="validation-passed@example.com"
-  />
-   
-  <summary-cell-stub
-    label="Password"
-    value="••••••••"
-  />
-   
-  <summary-cell-stub
-    label="Username form field"
-    value="session[username]"
-  />
-   
-  <summary-cell-stub
-    label="Password form field"
-    value="session[password]"
-  />
-   
-  <summary-cell-stub
-    label="Submit button"
-  />
-   
-  <summary-cell-stub
-    label="Excluded URLs"
-    value="http://passed.test/sign-out,http://passed.test/hidden"
-  />
-   
-  <summary-cell-stub
-    label="Request headers"
-  />
-   
-  <summary-cell-stub
-    label="Validation status"
-    value="Validated"
-  />
-</div>
-`;
-
-exports[`DastSiteProfileSummary renders properly profile %# 4`] = `
+exports[`DastSiteProfileSummary renders properly profile gid://gitlab/DastSiteProfile/2 Validation failed 1`] = `
 <div
   class="row"
 >
@@ -240,14 +120,14 @@ exports[`DastSiteProfileSummary renders properly profile %# 4`] = `
 </div>
 `;
 
-exports[`DastSiteProfileSummary renders properly profile %# 5`] = `
+exports[`DastSiteProfileSummary renders properly profile gid://gitlab/DastSiteProfile/3 Validation passed 1`] = `
 <div
   class="row"
 >
   <summary-cell-stub
     class=""
     label="Target URL"
-    value="http://none.test"
+    value="http://passed.test"
   />
    
   <summary-cell-stub
@@ -257,12 +137,12 @@ exports[`DastSiteProfileSummary renders properly profile %# 5`] = `
    
   <summary-cell-stub
     label="Authentication URL"
-    value="http://none.test/sign-in"
+    value="http://passed.test/sign-in"
   />
    
   <summary-cell-stub
     label="Username"
-    value="non-validated@example.com"
+    value="validation-passed@example.com"
   />
    
   <summary-cell-stub
@@ -286,7 +166,127 @@ exports[`DastSiteProfileSummary renders properly profile %# 5`] = `
    
   <summary-cell-stub
     label="Excluded URLs"
-    value="http://none.test/sign-out,http://none.test/hidden"
+    value="http://passed.test/sign-out,http://passed.test/hidden"
+  />
+   
+  <summary-cell-stub
+    label="Request headers"
+  />
+   
+  <summary-cell-stub
+    label="Validation status"
+    value="Validated"
+  />
+</div>
+`;
+
+exports[`DastSiteProfileSummary renders properly profile gid://gitlab/DastSiteProfile/4 Validation in progress 1`] = `
+<div
+  class="row"
+>
+  <summary-cell-stub
+    class=""
+    label="Target URL"
+    value="http://inprogress.test"
+  />
+   
+  <summary-cell-stub
+    label="Site type"
+    value="Website"
+  />
+   
+  <summary-cell-stub
+    label="Authentication URL"
+    value="http://inprogress.test/sign-in"
+  />
+   
+  <summary-cell-stub
+    label="Username"
+    value="validation-in-progress@example.com"
+  />
+   
+  <summary-cell-stub
+    label="Password"
+    value="••••••••"
+  />
+   
+  <summary-cell-stub
+    label="Username form field"
+    value="session[username]"
+  />
+   
+  <summary-cell-stub
+    label="Password form field"
+    value="session[password]"
+  />
+   
+  <summary-cell-stub
+    label="Submit button"
+  />
+   
+  <summary-cell-stub
+    label="Excluded URLs"
+    value="http://inprogress.test/sign-out,http://inprogress.test/hidden"
+  />
+   
+  <summary-cell-stub
+    label="Request headers"
+  />
+   
+  <summary-cell-stub
+    label="Validation status"
+    value="Not Validated"
+  />
+</div>
+`;
+
+exports[`DastSiteProfileSummary renders properly profile gid://gitlab/DastSiteProfile/5 Validation pending 1`] = `
+<div
+  class="row"
+>
+  <summary-cell-stub
+    class=""
+    label="Target URL"
+    value="http://pending.test"
+  />
+   
+  <summary-cell-stub
+    label="Site type"
+    value="Website"
+  />
+   
+  <summary-cell-stub
+    label="Authentication URL"
+    value="http://pending.test/sign-in"
+  />
+   
+  <summary-cell-stub
+    label="Username"
+    value="validation-pending@example.com"
+  />
+   
+  <summary-cell-stub
+    label="Password"
+    value="••••••••"
+  />
+   
+  <summary-cell-stub
+    label="Username form field"
+    value="session[username]"
+  />
+   
+  <summary-cell-stub
+    label="Password form field"
+    value="session[password]"
+  />
+   
+  <summary-cell-stub
+    label="Submit button"
+  />
+   
+  <summary-cell-stub
+    label="Excluded URLs"
+    value="http://pending.test/sign-out,http://pending.test/hidden"
   />
    
   <summary-cell-stub

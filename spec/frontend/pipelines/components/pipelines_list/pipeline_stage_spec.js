@@ -69,16 +69,15 @@ describe('Pipelines stage component', () => {
   };
 
   describe('loading state', () => {
-    const setup = async () => {
+    beforeEach(async () => {
       createComponent({ updateDropdown: true });
 
       mock.onGet(dropdownPath).reply(200, stageReply);
 
       await openStageDropdown();
-    };
+    });
 
     it('displays loading state while jobs are being fetched', async () => {
-      await setup();
       jest.runOnlyPendingTimers();
       await nextTick();
 
@@ -87,7 +86,6 @@ describe('Pipelines stage component', () => {
     });
 
     it('does not display loading state after jobs have been fetched', async () => {
-      await setup();
       await waitForPromises();
 
       expect(findLoadingState().exists()).toBe(false);
