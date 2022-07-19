@@ -757,6 +757,9 @@ msgstr ""
 msgid "%{labelStart}Tool:%{labelEnd} %{reportType}"
 msgstr ""
 
+msgid "%{labelStart}URL:%{labelEnd} %{url}"
+msgstr ""
+
 msgid "%{labelStart}Unmodified response:%{labelEnd} %{headers}"
 msgstr ""
 
