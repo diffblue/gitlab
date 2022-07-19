@@ -17,6 +17,27 @@ module EE
           super + EE_DATABASE_NAMES
         end
 
+        override :check_postgres_version_and_print_warning
+        def check_postgres_version_and_print_warning
+          super
+        rescue ::Geo::TrackingBase::SecondaryNotConfigured
+          # ignore - happens when Rake tasks yet have to create a database, e.g. for testing
+        end
+
+        override :database_base_models
+        def database_base_models
+          @database_base_models_ee ||= super.merge(
+            geo: ::Geo::TrackingBase.connection_class? ? ::Geo::TrackingBase : nil
+          ).compact.with_indifferent_access.freeze
+        end
+
+        override :schemas_to_base_models
+        def schemas_to_base_models
+          @schemas_to_base_models_ee ||= super.merge(
+            gitlab_geo: [self.database_base_models[:geo]].compact
+          ).compact.with_indifferent_access.freeze
+        end
+
         def geo_database?(name)
           name.to_s == GEO_DATABASE_NAME
         end

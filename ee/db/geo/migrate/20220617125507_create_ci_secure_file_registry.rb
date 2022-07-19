@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 # rubocop:disable Layout/LineLength
 
-class CreateCiSecureFileRegistry < Gitlab::Database::Migration[1.0]
+class CreateCiSecureFileRegistry < Gitlab::Database::Migration[2.0]
   disable_ddl_transaction!
 
   def up

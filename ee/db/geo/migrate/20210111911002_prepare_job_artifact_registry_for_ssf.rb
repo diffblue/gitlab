@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
-class PrepareJobArtifactRegistryForSsf < Gitlab::Database::Migration[1.0]
+class PrepareJobArtifactRegistryForSsf < ActiveRecord::Migration[6.0]
+  include Gitlab::Database::MigrationHelpers
+
   def change
     change_column_default :job_artifact_registry, :retry_count, from: nil, to: 0
     add_column :job_artifact_registry, :last_synced_at, :datetime_with_timezone

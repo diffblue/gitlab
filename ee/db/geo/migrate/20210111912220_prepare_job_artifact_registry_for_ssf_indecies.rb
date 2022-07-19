@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
-class PrepareJobArtifactRegistryForSsfIndecies < Gitlab::Database::Migration[1.0]
+class PrepareJobArtifactRegistryForSsfIndecies < ActiveRecord::Migration[6.0]
+  include Gitlab::Database::MigrationHelpers
+
   disable_ddl_transaction!
 
   def up
