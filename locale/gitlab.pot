@@ -26491,6 +26491,9 @@ msgstr ""
 msgid "Notes|You're only seeing %{boldStart}other activity%{boldEnd} in the feed. To add a comment, switch to one of the following options."
 msgstr ""
 
+msgid "Note|The created date provided is too far in the past."
+msgstr ""
+
 msgid "Nothing to preview."
 msgstr ""
 
