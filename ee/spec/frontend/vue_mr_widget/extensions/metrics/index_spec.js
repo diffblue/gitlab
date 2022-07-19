@@ -73,7 +73,7 @@ describe('Metrics extension', () => {
       expect(wrapper.text()).toBe('Metrics reports failed to load results');
     });
 
-    it('displays detected changes', async () => {
+    it('displays detected changes and is expandable', async () => {
       mockApi(httpStatusCodes.OK, { existing_metrics: [changedMetric, changedMetric] });
 
       createComponent();
@@ -81,9 +81,10 @@ describe('Metrics extension', () => {
       await waitForPromises();
 
       expect(wrapper.text()).toBe('Metrics reports: 2 changes');
+      expect(findToggleCollapsedButton().exists()).toBe(true);
     });
 
-    it('displays no detected changes', async () => {
+    it('displays no detected changes and is not expandable', async () => {
       mockApi(httpStatusCodes.OK, { existing_metrics: [unchangedMetric] });
 
       createComponent();
@@ -91,6 +92,7 @@ describe('Metrics extension', () => {
       await waitForPromises();
 
       expect(wrapper.text()).toBe('Metrics report scanning detected no new changes');
+      expect(findToggleCollapsedButton().exists()).toBe(false);
     });
   });
 
