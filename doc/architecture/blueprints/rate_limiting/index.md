@@ -67,6 +67,9 @@ Inc._
 
 ## Opportunity
 
+We want to build a new framework, making it easier to define limits and
+policies, and to enforce and adjust them in a way controlled through robust
+monitoring capabilities.
 
 <!-- markdownlint-disable MD029 -->
 
@@ -78,6 +81,60 @@ Inc._
 
 ### Framework to define and enforce limits
 
+First we want to build a new framework that will allow us to define and enforce
+application limits, in the GitLab Rails project context, in a more consistent
+and established way. In order to do that, we will need to build a new
+abstraction that will tell engineers how to define a limit in a structured way
+(presumably using YAML or Cue format) and then how to consume the limit in the
+application itself.
+
+We envision building a simple Ruby library here (we can add it to labkit-ruby)
+that will make it trivial for engineers to check if a certain limit has been
+exceeded or not.
+
+```yaml
+name: my_limit_name
+actors: user
+context: project, group, pipeline
+type: rate / second
+group: pipeline::execution
+limits:
+  warn: 2B / day
+  soft: 100k / s
+  hard: 500k / s
+```
+
+```ruby
+Gitlab::Limits::RateThreshold.enforce(:my_limit_name) do |threshold|
+  actor   = current_user
+  context = current_project
+
+  threshold.available do |limit|
+    # ...
+  end
+
+  threshold.approaching do |limit|
+    # ...
+  end
+
+  threshold.exceeded do |limit|
+    # ...
+  end
+end
+```
+
+In the example above, when `my_limit_name` is defined in YAML, engineers will
+be check the current state and execute appropariate code block depending on the
+past usage / resource consumption.
+
+Things we want to build and support by default:
+
+1. Comprehensive dashboards showing how often limits are being hit.
+1. Notifications about the risk of hitting limits.
+1. Automation checking if limits definitions are being enforced properly.
+1. Different types of limits - time bound / number per resource etc.
+1. A panel that makes it easy to override limits per plan / namespace.
+1. Logging that will expose limits applied in Kibana.
 
 ### API to expose limits and policies
 
