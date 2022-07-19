@@ -44021,6 +44021,9 @@ msgstr ""
 msgid "WorkItem|Child items"
 msgstr ""
 
+msgid "WorkItem|Child removed"
+msgstr ""
+
 msgid "WorkItem|Closed"
 msgstr ""
 
@@ -44049,6 +44052,9 @@ msgid "WorkItem|No child items are currently assigned. Use child items to priori
 msgstr ""
 
 msgid "WorkItem|Open"
+msgstr ""
+
+msgid "WorkItem|Remove"
 msgstr ""
 
 msgid "WorkItem|Select type"
@@ -44082,6 +44088,9 @@ msgid "WorkItem|Task deleted"
 msgstr ""
 
 msgid "WorkItem|Type"
+msgstr ""
+
+msgid "WorkItem|Undo"
 msgstr ""
 
 msgid "WorkItem|Work Items"
