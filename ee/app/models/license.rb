@@ -78,7 +78,9 @@ class License < ApplicationRecord
     def load_license
       return unless self.table_exists?
 
-      self.last_hundred.find { |license| license.valid? && license.started? }
+      last_hundred = self.last_hundred
+      last_hundred.find { |license| license.valid? && license.started? && !license.expired? } ||
+        last_hundred.find { |license| license.valid? && license.started? }
     end
 
     def future_dated

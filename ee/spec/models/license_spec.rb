@@ -575,10 +575,35 @@ RSpec.describe License do
 
       context 'when the license is valid' do
         let!(:current_license) { create_list(:license, 2).last }
+        let(:expired_gl_license) do
+          create(:gitlab_license, starts_at: Date.current - 1.month, expires_at: Date.yesterday)
+        end
 
-        it 'returns the license' do
-          create(:license, data: create(:gitlab_license, starts_at: Date.current + 1.month).export)
+        context 'when the last uploaded license is expired' do
+          it 'returns the most recent valid and started but not expired license' do
+            create(:license, data: expired_gl_license.export)
 
+            expect(described_class.current).to eq(current_license)
+          end
+        end
+
+        context 'when all uploaded license are expired', :without_license do
+          let!(:current_license) { create_list(:license, 2, data: expired_gl_license.export).last }
+
+          it 'returns the most recent valid and started and expired license' do
+            expect(described_class.current).to eq(current_license)
+          end
+        end
+
+        context 'when the last uploaded license is future dated' do
+          it 'returns the most recent valid and started but not expired license' do
+            create(:license, data: create(:gitlab_license, starts_at: Date.current + 1.month).export)
+
+            expect(described_class.current).to eq(current_license)
+          end
+        end
+
+        it 'returns the most recent valid and started but not expired license' do
           expect(described_class.current).to eq(current_license)
         end
 
