@@ -48,17 +48,48 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::ChangeFailureRate do
   describe '#links' do
     subject { described_class.new(stage: stage, current_user: user, options: options).links }
 
-    it 'displays documentation link' do
+    it 'displays documentation link and group dashboard link' do
       helpers = Gitlab::Routing.url_helpers
 
       expect(subject).to match_array(
         [
-          { "name" => _('Change Failure Rate'),
+          {
+            "name" => _('Change Failure Rate'),
+            "url" => helpers.group_analytics_ci_cd_analytics_path(stage.parent, tab: 'change-failure-rate'),
+            "label" => s_('ValueStreamAnalytics|Dashboard')
+          },
+          {
+            "name" => _('Change Failure Rate'),
             "url" => helpers.help_page_path('user/analytics/index', anchor: 'change-failure-rate'),
             "docs_link" => true,
-            "label" => s_('ValueStreamAnalytics|Go to docs') }
+            "label" => s_('ValueStreamAnalytics|Go to docs')
+          }
         ]
       )
+    end
+
+    context 'when the stage parent is a project' do
+      let(:stage) { build(:cycle_analytics_project_stage) }
+
+      it 'displays documentation link and group dashboard link' do
+        helpers = Gitlab::Routing.url_helpers
+
+        expect(subject).to match_array(
+          [
+            {
+              "name" => _('Change Failure Rate'),
+              "url" => helpers.charts_project_pipelines_path(stage.parent, chart: 'change-failure-rate'),
+              "label" => s_('ValueStreamAnalytics|Dashboard')
+            },
+            {
+              "name" => _('Change Failure Rate'),
+              "url" => helpers.help_page_path('user/analytics/index', anchor: 'change-failure-rate'),
+              "docs_link" => true,
+              "label" => s_('ValueStreamAnalytics|Go to docs')
+            }
+          ]
+        )
+      end
     end
   end
 end
