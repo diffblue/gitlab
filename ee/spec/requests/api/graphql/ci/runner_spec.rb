@@ -137,19 +137,18 @@ RSpec.describe 'Query.runner(id)' do
           ]
         end
 
-        let(:runner_releases_double) { instance_double(Gitlab::Ci::RunnerReleases) }
         let(:available_runner_releases) do
           %w[14.1.0 14.1.1]
         end
 
         before do
-          allow(Gitlab::Ci::RunnerReleases).to receive(:instance).and_return(runner_releases_double)
-          allow(runner_releases_double).to receive(:releases)
-            .and_return(available_runner_releases.map { |v| ::Gitlab::VersionInfo.parse(v) })
-          allow(runner_releases_double).to receive(:releases_by_minor)
-            .and_return(available_runner_releases.map { |v| ::Gitlab::VersionInfo.parse(v) }
-                                                 .group_by(&:without_patch)
-                                                 .transform_values(&:max))
+          url = ::Gitlab::CurrentSettings.current_application_settings.public_runner_releases_url
+
+          WebMock.stub_request(:get, url).to_return(
+            body: available_runner_releases.map { |v| { name: v } }.to_json,
+            status: 200,
+            headers: { 'Content-Type' => 'application/json' }
+          )
         end
 
         it 'retrieves expected fields' do

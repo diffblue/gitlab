@@ -120,19 +120,18 @@ RSpec.describe ::Ci::Runners::ReconcileExistingRunnerVersionsService, '#execute'
   end
 
   context 'integration testing with Gitlab::Ci::RunnerUpgradeCheck' do
-    let(:runner_releases_double) { instance_double(Gitlab::Ci::RunnerReleases) }
     let(:available_runner_releases) do
       %w[14.0.0 14.0.1]
     end
 
     before do
-      allow(Gitlab::Ci::RunnerReleases).to receive(:instance).and_return(runner_releases_double)
-      allow(runner_releases_double).to receive(:releases)
-        .and_return(available_runner_releases.map { |v| ::Gitlab::VersionInfo.parse(v) })
-      allow(runner_releases_double).to receive(:releases_by_minor)
-        .and_return(available_runner_releases.map { |v| ::Gitlab::VersionInfo.parse(v) }
-                      .group_by(&:without_patch)
-                      .transform_values(&:max))
+      url = ::Gitlab::CurrentSettings.current_application_settings.public_runner_releases_url
+
+      WebMock.stub_request(:get, url).to_return(
+        body: available_runner_releases.map { |v| { name: v } }.to_json,
+        status: 200,
+        headers: { 'Content-Type' => 'application/json' }
+      )
     end
 
     it 'does not modify ci_runner_versions entries', :aggregate_failures do
