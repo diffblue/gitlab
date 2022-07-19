@@ -117,7 +117,7 @@ RSpec.describe Projects::PipelineHelper do
       end
 
       it 'returns the license management path' do
-        is_expected.to eq(helper.license_management_path(user, project))
+        is_expected.to eq(license_management_settings_path(project))
       end
     end
   end
@@ -145,7 +145,7 @@ RSpec.describe Projects::PipelineHelper do
       end
 
       it 'returns the licenses api path' do
-        is_expected.to eq(helper.licenses_api_path(project, pipeline))
+        is_expected.to eq(licenses_project_pipeline_path(project, pipeline))
       end
     end
   end
