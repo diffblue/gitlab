@@ -2,9 +2,19 @@ import { shallowMount } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import PolicyYamlEditor from 'ee/security_orchestration/components/policy_yaml_editor.vue';
 import SourceEditor from '~/vue_shared/components/source_editor.vue';
+import { EDITOR_READY_EVENT } from '~/editor/constants';
 
 describe('PolicyYamlEditor component', () => {
   let wrapper;
+
+  let editorInstanceDetail;
+  let mockEditorInstance;
+  let mockRegisterSecurityPolicySchema;
+  let mockUse;
+
+  const mockNamespacePath = 'test/path';
+  const mockNamespaceType = 'testType';
+  const mockPolicyType = 'testPolicyType';
 
   const findEditor = () => wrapper.findComponent(SourceEditor);
 
@@ -12,7 +22,12 @@ describe('PolicyYamlEditor component', () => {
     wrapper = shallowMount(PolicyYamlEditor, {
       propsData: {
         value: 'foo',
+        policyType: mockPolicyType,
         ...propsData,
+      },
+      provide: {
+        namespacePath: mockNamespacePath,
+        namespaceType: mockNamespaceType,
       },
       stubs: {
         SourceEditor,
@@ -21,6 +36,17 @@ describe('PolicyYamlEditor component', () => {
   };
 
   beforeEach(() => {
+    mockUse = jest.fn();
+    mockRegisterSecurityPolicySchema = jest.fn();
+    mockEditorInstance = {
+      use: mockUse,
+      registerSecurityPolicySchema: mockRegisterSecurityPolicySchema,
+    };
+    editorInstanceDetail = {
+      detail: {
+        instance: mockEditorInstance,
+      },
+    };
     factory();
   });
 
@@ -45,5 +71,17 @@ describe('PolicyYamlEditor component', () => {
     editor.vm.$emit('input');
     await nextTick();
     expect(wrapper.emitted().input).toBeTruthy();
+  });
+
+  it('configures editor with syntax highlighting', () => {
+    findEditor().vm.$emit(EDITOR_READY_EVENT, editorInstanceDetail);
+
+    expect(mockUse).toHaveBeenCalledTimes(1);
+    expect(mockRegisterSecurityPolicySchema).toHaveBeenCalledTimes(1);
+    expect(mockRegisterSecurityPolicySchema).toHaveBeenCalledWith({
+      namespacePath: mockNamespacePath,
+      namespaceType: mockNamespaceType,
+      policyType: mockPolicyType,
+    });
   });
 });

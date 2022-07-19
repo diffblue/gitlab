@@ -17,7 +17,6 @@ export default (el, namespaceType) => {
     emptyFilterSvgPath,
     emptyListSvgPath,
     documentationPath,
-    groupPath,
     newPolicyPath,
     namespacePath,
   } = el.dataset;
@@ -33,7 +32,6 @@ export default (el, namespaceType) => {
       newPolicyPath,
       emptyFilterSvgPath,
       emptyListSvgPath,
-      groupPath,
       namespacePath,
       namespaceType,
     },
