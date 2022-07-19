@@ -16,6 +16,7 @@ export default {
 </script>
 
 <template>
+  <!-- eslint-disable-next-line @gitlab/vue-prefer-dollar-scopedslots -->
   <div v-if="value || $slots.default" class="row gl-my-2">
     <div class="col-md-6">{{ label }}:</div>
     <div class="col-md-6">
