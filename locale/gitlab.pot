@@ -21916,6 +21916,9 @@ msgstr ""
 msgid "Iterations|All"
 msgstr ""
 
+msgid "Iterations|Automatic scheduling"
+msgstr ""
+
 msgid "Iterations|Cadence configuration is invalid."
 msgstr ""
 
@@ -21935,6 +21938,9 @@ msgid "Iterations|Create cadence"
 msgstr ""
 
 msgid "Iterations|Create iteration"
+msgstr ""
+
+msgid "Iterations|Create iterations automatically on a regular schedule."
 msgstr ""
 
 msgid "Iterations|Delete cadence"
@@ -21967,6 +21973,9 @@ msgstr ""
 msgid "Iterations|Edit iteration cadence"
 msgstr ""
 
+msgid "Iterations|Enable roll over"
+msgstr ""
+
 msgid "Iterations|Error loading iteration cadences."
 msgstr ""
 
@@ -21977,6 +21986,9 @@ msgid "Iterations|Iteration cadences"
 msgstr ""
 
 msgid "Iterations|Iterations are a way to track issues over a period of time, allowing teams to also track velocity and volatility metrics."
+msgstr ""
+
+msgid "Iterations|Iterations are scheduled to start on %{weekday}s."
 msgstr ""
 
 msgid "Iterations|Learn more about automatic scheduling"
@@ -22004,9 +22016,6 @@ msgid "Iterations|No iterations found"
 msgstr ""
 
 msgid "Iterations|No iterations in cadence."
-msgstr ""
-
-msgid "Iterations|No one can change this date after the cadence has begun."
 msgstr ""
 
 msgid "Iterations|No open iterations."
