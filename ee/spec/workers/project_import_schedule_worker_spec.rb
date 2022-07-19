@@ -3,11 +3,15 @@
 require 'spec_helper'
 
 RSpec.describe ProjectImportScheduleWorker do
-  let!(:project) { create(:project) }
+  let!(:project) { create(:project, :public) }
 
   describe '#perform' do
     it_behaves_like 'an idempotent worker' do
       let!(:import_state) { create(:import_state, :none, project: project) }
+
+      before do
+        project.update!(mirror: true, mirror_user: project.owner)
+      end
 
       let(:job_args) { [project.id] }
 
@@ -67,6 +71,60 @@ RSpec.describe ProjectImportScheduleWorker do
           .with(:mirroring_skipped, "No import state found for #{project.id}").and_call_original
 
         subject.perform(project.id)
+      end
+    end
+  end
+
+  context 'when project does not support mirroring' do
+    let!(:import_state) { create(:import_state, :finished, project: project) }
+
+    before do
+      stub_licensed_features(repository_mirrors: false)
+      project.update!(mirror: true, mirror_user: project.owner)
+    end
+
+    it 'marks a project hard failed' do
+      expect(import_state).to be_finished
+
+      subject.perform(project.id)
+      import_state.reload
+
+      expect(import_state).to be_failed
+      expect(import_state.last_error).to eq('Project mirroring is not supported')
+    end
+
+    it 'does not send a notification' do
+      expect(NotificationService).not_to receive(:new)
+
+      subject.perform(project.id)
+    end
+
+    it 'changes the capacity' do
+      expect(Gitlab::Mirror).to receive(:increment_capacity).with(project.id)
+      expect(Gitlab::Mirror).to receive(:decrement_capacity).with(project.id)
+
+      subject.perform(project.id)
+    end
+
+    it 'logs the error' do
+      expect(subject).to receive(:log_extra_metadata_on_done)
+                           .with(:mirroring_skipped, 'Project does not support mirroring').and_call_original
+
+      subject.perform(project.id)
+    end
+
+    context 'when feature flag is disabled' do
+      before do
+        stub_feature_flags(hard_failure_for_mirrors_without_license: false)
+      end
+
+      it 'skips the project' do
+        expect(import_state).to be_finished
+
+        subject.perform(project.id)
+        import_state.reload
+
+        expect(import_state).to be_finished
       end
     end
   end

@@ -76,7 +76,13 @@ class UpdateAllMirrorsWorker # rubocop:disable Scalability/IdempotentWorker
       projects = pull_mirrors_batch(freeze_at: now, batch_size: batch_size, offset_at: last).to_a
       break if projects.empty?
 
-      projects_to_schedule = projects.lazy.select(&:mirror?).take(capacity).force
+      projects_to_schedule =
+        if check_mirror_plans_in_query? && Feature.enabled?(:hard_failure_for_mirrors_without_license)
+          projects.take(capacity)
+        else
+          projects.lazy.select(&:mirror?).take(capacity).force
+        end
+
       capacity -= projects_to_schedule.size
 
       schedule_projects_in_batch(projects_to_schedule)

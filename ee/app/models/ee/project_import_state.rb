@@ -39,7 +39,7 @@ module EE
         end
 
         after_transition [:scheduled, :started] => [:finished, :failed] do |state, _|
-          ::Gitlab::Mirror.decrement_capacity(state.project_id) if state.mirror?
+          ::Gitlab::Mirror.decrement_capacity(state.project_id) if state.project.read_attribute('mirror')
         end
 
         before_transition started: :failed do |state, _|
@@ -78,7 +78,7 @@ module EE
         end
 
         after_transition [:finished, :failed] => [:scheduled, :started] do |state, _|
-          ::Gitlab::Mirror.increment_capacity(state.project_id) if state.mirror?
+          ::Gitlab::Mirror.increment_capacity(state.project_id) if state.project.read_attribute('mirror')
         end
       end
     end
