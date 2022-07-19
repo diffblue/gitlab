@@ -20,10 +20,10 @@ describe('Empty Rule Name', () => {
     wrapper = null;
   });
 
-  it('has a rule name "Eligible users"', () => {
+  it('has a rule name "All eligible users"', () => {
     createComponent();
 
-    expect(wrapper.text()).toContain('Eligible users');
+    expect(wrapper.text()).toContain('All eligible users');
   });
 
   it('renders a "more information" link ', () => {

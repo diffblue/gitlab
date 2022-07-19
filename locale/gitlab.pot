@@ -3758,6 +3758,9 @@ msgstr ""
 msgid "All changes are committed"
 msgstr ""
 
+msgid "All eligible users"
+msgstr ""
+
 msgid "All email addresses will be used to identify your commits."
 msgstr ""
 
@@ -14123,9 +14126,6 @@ msgid "Elastic|None. Select namespaces to index."
 msgstr ""
 
 msgid "Elastic|None. Select projects to index."
-msgstr ""
-
-msgid "Eligible users"
 msgstr ""
 
 msgid "Email"
