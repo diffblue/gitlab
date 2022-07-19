@@ -10,7 +10,7 @@ module Mutations
 
           argument :header_id, ::Types::GlobalIDType[::AuditEvents::Streaming::Header],
                    required: true,
-                description: 'Header to update.'
+                   description: 'Header to update.'
 
           argument :key, GraphQL::Types::String,
                    required: true,
@@ -27,14 +27,15 @@ module Mutations
           def resolve(header_id:, key:, value:)
             header = authorized_find!(id: header_id)
 
-            unless Feature.enabled?(:streaming_audit_event_headers, header.external_audit_event_destination.group)
-              raise Gitlab::Graphql::Errors::ResourceNotAvailable, 'feature disabled'
-            end
+            response = ::AuditEvents::Streaming::Headers::UpdateService.new(
+              destination: header.external_audit_event_destination,
+              params: { header: header, key: key, value: value }
+            ).execute
 
-            if header.update(key: key, value: value)
-              { header: header, errors: [] }
+            if response.success?
+              { header: response.payload[:header], errors: [] }
             else
-              { header: header.reset, errors: Array(header.errors) }
+              { header: header.reset, errors: response.errors }
             end
           end
 
