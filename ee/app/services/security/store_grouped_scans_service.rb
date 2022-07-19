@@ -5,6 +5,7 @@ module Security
     include ::Gitlab::ExclusiveLeaseHelpers
 
     LEASE_TTL = 30.minutes
+    LEASE_TRY_AFTER = 3.seconds
     LEASE_NAMESPACE = "store_grouped_scans"
 
     def self.execute(artifacts)
@@ -17,7 +18,7 @@ module Security
     end
 
     def execute
-      in_lock(lease_key, ttl: LEASE_TTL) do
+      in_lock(lease_key, ttl: LEASE_TTL, sleep_sec: LEASE_TRY_AFTER) do
         sorted_artifacts.reduce(false) do |deduplicate, artifact|
           store_scan_for(artifact, deduplicate)
         end
