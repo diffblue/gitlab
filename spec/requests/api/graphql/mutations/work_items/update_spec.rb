@@ -71,6 +71,20 @@ RSpec.describe 'Update a work item' do
       end
     end
 
+    context 'when unsupported widget input is sent' do
+      let_it_be(:test_case) { create(:work_item_type, :default, :test_case, name: 'some_test_case_name') }
+      let_it_be(:work_item) { create(:work_item, work_item_type: test_case, project: project) }
+
+      let(:input) do
+        {
+          'hierarchyWidget' => {}
+        }
+      end
+
+      it_behaves_like 'a mutation that returns top-level errors',
+        errors: ["Following widget keys are not supported by some_test_case_name type: [:hierarchy_widget]"]
+    end
+
     it_behaves_like 'has spam protection' do
       let(:mutation_class) { ::Mutations::WorkItems::Update }
     end
