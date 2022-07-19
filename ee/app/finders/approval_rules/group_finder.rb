@@ -15,8 +15,12 @@ module ApprovalRules
     def visible_groups
       if Feature.enabled?(:subgroups_approval_rules, rule.project)
         strong_memoize(:visible_groups) do
-          Preloaders::GroupPolicyPreloader.new(groups, current_user).execute
-          groups.select { |group| current_user.can?(:read_group, group) }
+          if current_user
+            Preloaders::GroupPolicyPreloader.new(groups, current_user).execute
+            groups.select { |group| current_user.can?(:read_group, group) }
+          else
+            groups.public_to_user
+          end
         end
       else
         @visible_groups ||= groups.public_or_visible_to_user(current_user)
