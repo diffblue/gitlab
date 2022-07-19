@@ -1,16 +1,13 @@
 #import "ee_else_ce/runner/graphql/list/list_item.fragment.graphql"
 #import "~/graphql_shared/fragments/page_info.fragment.graphql"
 
-# Overrides CE Runners searches by adding a upgradeStatus
-
-query getRunnersEE(
+query getAllRunners(
   $before: String
   $after: String
   $first: Int
   $last: Int
   $paused: Boolean
   $status: CiRunnerStatus
-  $upgradeStatus: CiRunnerUpgradeStatusType # Added in EE
   $type: CiRunnerType
   $tagList: [String!]
   $search: String
@@ -23,7 +20,6 @@ query getRunnersEE(
     last: $last
     paused: $paused
     status: $status
-    upgradeStatus: $upgradeStatus # Added in EE
     type: $type
     tagList: $tagList
     search: $search
