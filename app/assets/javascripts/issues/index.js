@@ -60,7 +60,7 @@ export function initShow() {
   if (issueType === IssueType.Incident) {
     initIncidentApp({ ...issuableData, issuableId: el.dataset.issuableId });
     initHeaderActions(store, IssueType.Incident);
-    initLinkedResources(issuableData.linkedResourcesFeatureAvailable);
+    initLinkedResources();
     initRelatedIssues(IssueType.Incident);
   } else {
     initIssueApp(issuableData, store);
