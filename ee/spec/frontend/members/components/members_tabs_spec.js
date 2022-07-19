@@ -11,7 +11,7 @@ describe('MembersTabs', () => {
 
   let wrapper;
 
-  const createComponent = ({ totalItems = 10, provide = {} } = {}) => {
+  const createComponent = ({ totalItems = 10 } = {}) => {
     const store = new Vuex.Store({
       modules: {
         [MEMBER_TYPES.user]: {
@@ -45,7 +45,6 @@ describe('MembersTabs', () => {
         canManageMembers: true,
         canExportMembers: true,
         exportCsvPath: '',
-        ...provide,
       },
     });
 
