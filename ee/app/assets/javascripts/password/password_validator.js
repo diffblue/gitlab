@@ -13,9 +13,13 @@ export default class PasswordValidator extends InputValidator {
       `${container} .js-password-complexity-validation`,
     );
     const el = document.querySelector('#js-password-requirements-list');
+
+    if (!passwordInputBox || !el) {
+      return;
+    }
     const ruleTypes = JSON.parse(el.dataset.ruleTypes);
 
-    if (!passwordInputBox || !el || !ruleTypes || ruleTypes.length === 0) {
+    if (ruleTypes.length === 0) {
       return;
     }
 
