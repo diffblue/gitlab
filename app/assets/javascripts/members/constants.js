@@ -3,8 +3,10 @@ import { GlFilteredSearchToken } from '@gitlab/ui';
 import { __, s__ } from '~/locale';
 import { OPERATOR_IS_ONLY } from '~/vue_shared/components/filtered_search_bar/constants';
 
+// Overridden in EE
 export const EE_APP_OPTIONS = {};
 
+// Overridden in EE
 export const EE_TABS = [];
 
 export const FIELD_KEY_ACCOUNT = 'account';
