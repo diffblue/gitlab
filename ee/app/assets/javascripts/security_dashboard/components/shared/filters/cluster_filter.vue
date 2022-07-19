@@ -43,9 +43,13 @@ export default {
       // This is passed to the vulnerability list's GraphQL query as a variable.
       return { clusterAgentId: this.selectedOptions.map((x) => x.gid) };
     },
+    // this computed property overrides the property in the SimpleFilter component
+    options() {
+      return this.clusterAgents;
+    },
   },
   watch: {
-    clusterAgents() {
+    options() {
       this.processQuerystringIds();
     },
   },
