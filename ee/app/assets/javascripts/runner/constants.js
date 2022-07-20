@@ -4,7 +4,7 @@
 
 export const PARAM_KEY_UPGRADE_STATUS = 'upgrade_status';
 
-// CiRunnerUpgradeStatusType
+// CiRunnerUpgradeStatus
 
 export const UPGRADE_STATUS_AVAILABLE = 'AVAILABLE';
 export const UPGRADE_STATUS_RECOMMENDED = 'RECOMMENDED';

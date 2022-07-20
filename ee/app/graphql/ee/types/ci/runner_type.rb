@@ -16,7 +16,7 @@ module EE
           field :private_projects_minutes_cost_factor, GraphQL::Types::Float, null: true,
                 description: 'Private projects\' "minutes cost factor" associated with the runner (GitLab.com only).'
 
-          field :upgrade_status, ::Types::Ci::RunnerUpgradeStatusTypeEnum, null: true,
+          field :upgrade_status, ::Types::Ci::RunnerUpgradeStatusEnum, null: true,
                 description: 'Availability of upgrades for the runner.',
                 alpha: { milestone: '14.10' }
 
