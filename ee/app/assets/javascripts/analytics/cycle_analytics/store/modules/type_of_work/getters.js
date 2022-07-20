@@ -24,3 +24,11 @@ export const tasksByTypeChartData = ({ data = [] } = {}, _, rootState = {}) => {
     ? getTasksByTypeData({ data, createdAfter, createdBefore })
     : { groupBy: [], data: [] };
 };
+
+export const topRankedLabelsIds = (state) => {
+  const { topRankedLabels } = state;
+  return topRankedLabels.map(({ id }) => id);
+};
+
+export const selectedLabelIds = (_state, getters, _, rootGetters) =>
+  rootGetters.selectedLabelIds.length ? rootGetters.selectedLabelIds : getters.topRankedLabelsIds;

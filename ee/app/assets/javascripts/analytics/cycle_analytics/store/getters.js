@@ -23,31 +23,42 @@ export const currentGroupPath = ({ currentGroup }) => currentGroup?.fullPath || 
 export const selectedProjectIds = ({ selectedProjects }) =>
   selectedProjects?.map(({ id }) => getIdFromGraphQLId(id)) || [];
 
-export const cycleAnalyticsRequestParams = (state, getters) => {
+const filterValues = (filters) => {
   const {
-    createdAfter = null,
-    createdBefore = null,
-    filters: {
-      authors: { selected: selectedAuthor },
-      milestones: { selected: selectedMilestone },
-      assignees: { selectedList: selectedAssigneeList },
-      labels: { selectedList: selectedLabelList },
-    },
-  } = state;
-
-  const filterBarQuery = filterToQueryObject({
+    authors: { selected: selectedAuthor },
+    milestones: { selected: selectedMilestone },
+    assignees: { selectedList: selectedAssigneeList },
+    labels: { selectedList: selectedLabelList },
+  } = filters;
+  return filterToQueryObject({
     milestone_title: selectedMilestone,
     author_username: selectedAuthor,
     label_name: selectedLabelList,
     assignee_username: selectedAssigneeList,
   });
+};
 
+export const cycleAnalyticsRequestParams = (state, getters) => {
+  const { createdAfter = null, createdBefore = null, filters } = state;
+  const filterBarQuery = filterValues(filters);
   return {
     project_ids: getters.selectedProjectIds?.length ? getters.selectedProjectIds : null,
     created_after: createdAfter ? dateFormat(createdAfter, dateFormats.isoDate) : null,
     created_before: createdBefore ? dateFormat(createdBefore, dateFormats.isoDate) : null,
     ...filterBarQuery,
   };
+};
+
+export const selectedLabelIds = ({ filters }) => {
+  const {
+    labels: { selectedList = [], data = [] },
+  } = filters;
+
+  if (selectedList.length) {
+    const { label_name: selectedLabelNames } = filterValues(filters);
+    return data.filter(({ title }) => selectedLabelNames.includes(title)).map(({ id }) => id);
+  }
+  return [];
 };
 
 export const paginationParams = basePaginationParams;

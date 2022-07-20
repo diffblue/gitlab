@@ -5,7 +5,6 @@ import { s__, sprintf, __, n__ } from '~/locale';
 import ChartSkeletonLoader from '~/vue_shared/components/resizable_chart/skeleton_loader.vue';
 import { formattedDate } from '../../shared/utils';
 import { TASKS_BY_TYPE_SUBJECT_ISSUE, TASKS_BY_TYPE_SUBJECT_FILTER_OPTIONS } from '../constants';
-import { uniqById } from '../utils';
 import TasksByTypeChart from './tasks_by_type/tasks_by_type_chart.vue';
 import TasksByTypeFilters from './tasks_by_type/tasks_by_type_filters.vue';
 
@@ -27,27 +26,31 @@ export default {
       'isLoadingTasksByTypeChart',
       'isLoadingTasksByTypeChartTopLabels',
       'errorMessage',
-      'topRankedLabels',
     ]),
-    ...mapGetters('typeOfWork', ['selectedTasksByTypeFilters', 'tasksByTypeChartData']),
+    ...mapGetters('typeOfWork', [
+      'selectedTasksByTypeFilters',
+      'tasksByTypeChartData',
+      'selectedLabelIds',
+    ]),
     hasData() {
       return Boolean(this.tasksByTypeChartData?.data.length);
     },
     isLoading() {
       return Boolean(this.isLoadingTasksByTypeChart || this.isLoadingTasksByTypeChartTopLabels);
     },
-    selectedLabelsCount() {
-      return this.selectedLabelIdsFilter.length;
-    },
     selectedFiltersDescription() {
-      const { selectedLabelsCount, selectedSubjectFilterText } = this;
+      const { selectedLabelIds, selectedSubjectFilterText } = this;
+      const selectedLabelsCount = selectedLabelIds.length;
       return sprintf(
         n__(
           'ValueStreamAnalytics|%{subjectFilterText} and %{selectedLabelsCount} label',
           'ValueStreamAnalytics|%{subjectFilterText} and %{selectedLabelsCount} labels',
           selectedLabelsCount,
         ),
-        { subjectFilterText: selectedSubjectFilterText.toLowerCase(), selectedLabelsCount },
+        {
+          subjectFilterText: selectedSubjectFilterText.toLowerCase(),
+          selectedLabelsCount,
+        },
       );
     },
     tooltipText() {
@@ -81,9 +84,6 @@ export default {
       } = this;
       return subject || TASKS_BY_TYPE_SUBJECT_ISSUE;
     },
-    selectedLabelIdsFilter() {
-      return this.selectedTasksByTypeFilters?.selectedLabelIds || [];
-    },
     selectedSubjectFilterText() {
       const { selectedSubjectFilter } = this;
       return (
@@ -95,9 +95,6 @@ export default {
       return this.errorMessage
         ? this.errorMessage
         : __('There is no data available. Please change your selection.');
-    },
-    initialGroupLabels() {
-      return uniqById(this.topRankedLabels);
     },
   },
   methods: {
@@ -123,8 +120,6 @@ export default {
           </gl-tooltip>
         </h4>
         <tasks-by-type-filters
-          :default-group-labels="initialGroupLabels"
-          :selected-label-ids="selectedLabelIdsFilter"
           :subject-filter="selectedSubjectFilter"
           @update-filter="onUpdateFilter"
         />

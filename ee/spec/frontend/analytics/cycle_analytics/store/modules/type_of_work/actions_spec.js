@@ -12,7 +12,7 @@ import testAction from 'helpers/vuex_action_helper';
 import { createdAfter, createdBefore } from 'jest/cycle_analytics/mock_data';
 import createFlash from '~/flash';
 import httpStatusCodes from '~/lib/utils/http_status';
-import { groupLabels, endpoints, rawTasksByTypeData } from '../../../mock_data';
+import { groupLabels, groupLabelIds, endpoints, rawTasksByTypeData } from '../../../mock_data';
 
 jest.mock('~/flash');
 
@@ -83,6 +83,21 @@ describe('Type of work actions', () => {
         it(`commits the ${types.RECEIVE_TOP_RANKED_GROUP_LABELS_SUCCESS} mutation and dispatches the 'fetchTasksByTypeData' action`, () => {
           return testAction(
             actions.receiveTopRankedGroupLabelsSuccess,
+            groupLabels,
+            state,
+            [
+              {
+                type: types.RECEIVE_TOP_RANKED_GROUP_LABELS_SUCCESS,
+                payload: groupLabels,
+              },
+            ],
+            [{ type: 'fetchTasksByTypeData' }],
+          );
+        });
+
+        it(`dispatches 'setLoading' with false when there are no labels`, () => {
+          return testAction(
+            actions.receiveTopRankedGroupLabelsSuccess,
             null,
             state,
             [
@@ -91,7 +106,7 @@ describe('Type of work actions', () => {
                 payload: null,
               },
             ],
-            [{ type: 'fetchTasksByTypeData' }],
+            [{ type: 'setLoading', payload: false }],
           );
         });
       });
@@ -226,23 +241,46 @@ describe('Type of work actions', () => {
     const filter = TASKS_BY_TYPE_FILTERS.SUBJECT;
     const value = 'issue';
 
-    it(`commits the ${types.SET_TASKS_BY_TYPE_FILTERS} mutation and dispatches 'fetchTasksByTypeData'`, () => {
-      return testAction(
-        actions.setTasksByTypeFilters,
-        { filter, value },
-        {},
-        [
-          {
-            type: types.SET_TASKS_BY_TYPE_FILTERS,
-            payload: { filter, value },
-          },
-        ],
-        [
-          {
-            type: 'fetchTasksByTypeData',
-          },
-        ],
-      );
+    describe('with selected labels', () => {
+      it(`commits the ${types.SET_TASKS_BY_TYPE_FILTERS} mutation and dispatches 'fetchTasksByTypeData'`, () => {
+        return testAction(
+          actions.setTasksByTypeFilters,
+          { filter, value },
+          { ...state, getters: { selectedLabelIds: groupLabelIds } },
+          [
+            {
+              type: types.SET_TASKS_BY_TYPE_FILTERS,
+              payload: { filter, value },
+            },
+          ],
+          [
+            {
+              type: 'fetchTasksByTypeData',
+            },
+          ],
+        );
+      });
+    });
+
+    describe('with no labels selected', () => {
+      it(`commits the ${types.RECEIVE_TASKS_BY_TYPE_DATA_SUCCESS} mutation`, () => {
+        return testAction(
+          actions.setTasksByTypeFilters,
+          { filter, value },
+          { getters: {} },
+          [
+            {
+              type: types.SET_TASKS_BY_TYPE_FILTERS,
+              payload: { filter, value },
+            },
+            {
+              type: types.RECEIVE_TASKS_BY_TYPE_DATA_SUCCESS,
+              payload: [],
+            },
+          ],
+          [],
+        );
+      });
     });
   });
 });

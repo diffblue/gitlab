@@ -192,6 +192,19 @@ describe('Value Stream Analytics actions', () => {
         [{ type: 'typeOfWork/fetchTopRankedGroupLabels' }],
       );
     });
+
+    it(`skips fetching the top ranked labels with no value stream`, () => {
+      return testAction(
+        actions.receiveCycleAnalyticsDataSuccess,
+        null,
+        {
+          ...state,
+          selectedValueStream: null,
+        },
+        [],
+        [],
+      );
+    });
   });
 
   describe('receiveCycleAnalyticsDataError', () => {
