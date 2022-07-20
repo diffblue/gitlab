@@ -4,7 +4,6 @@ import { nextTick } from 'vue';
 import MergeImmediatelyConfirmationDialog from 'ee/vue_merge_request_widget/components/merge_immediately_confirmation_dialog.vue';
 import MergeTrainFailedPipelineConfirmationDialog from 'ee/vue_merge_request_widget/components/merge_train_failed_pipeline_confirmation_dialog.vue';
 import MergeTrainHelperIcon from 'ee/vue_merge_request_widget/components/merge_train_helper_icon.vue';
-import { MERGE_DISABLED_TEXT_UNAPPROVED } from 'ee/vue_merge_request_widget/mixins/ready_to_merge';
 import ReadyToMerge from '~/vue_merge_request_widget/components/states/ready_to_merge.vue';
 import {
   MWPS_MERGE_STRATEGY,
@@ -12,12 +11,6 @@ import {
   MTWPS_MERGE_STRATEGY,
 } from '~/vue_merge_request_widget/constants';
 import { MERGE_TRAIN_BUTTON_TEXT } from '~/vue_merge_request_widget/i18n';
-import {
-  MERGE_DISABLED_TEXT,
-  MERGE_DISABLED_SKIPPED_PIPELINE_TEXT,
-  PIPELINE_MUST_SUCCEED_CONFLICT_TEXT,
-  PIPELINE_SKIPPED_STATUS,
-} from '~/vue_merge_request_widget/mixins/ready_to_merge';
 
 describe('ReadyToMerge', () => {
   let wrapper;
@@ -54,6 +47,7 @@ describe('ReadyToMerge', () => {
     commitMessageWithDescription: 'This is the commit message description',
     shouldRemoveSourceBranch: true,
     canRemoveSourceBranch: false,
+    canMerge: true,
     targetBranch: 'main',
     preferredAutoMergeStrategy: MWPS_MERGE_STRATEGY,
     availableAutoMergeStrategies: [MWPS_MERGE_STRATEGY],
@@ -80,15 +74,10 @@ describe('ReadyToMerge', () => {
     ({ vm } = wrapper);
   };
 
-  const findResolveItemsMessage = () => wrapper.findComponent(GlSprintf);
-  const findPipelineConflictMessage = () =>
-    wrapper.find('[data-testid="pipeline-succeed-conflict"]');
   const findMergeButton = () => wrapper.find('[data-testid="merge-button"]');
   const findMergeButtonDropdown = () => wrapper.find('.js-merge-moment');
   const findMergeImmediatelyButton = () => wrapper.find('.js-merge-immediately-button');
   const findMergeTrainHelperIcon = () => wrapper.findComponent(MergeTrainHelperIcon);
-  const findFailedPipelineMergeTrainText = () =>
-    wrapper.find('[data-testid="failed-pipeline-merge-train-text"]');
   const findMergeTrainFailedPipelineConfirmationDialog = () =>
     wrapper.findComponent(MergeTrainFailedPipelineConfirmationDialog);
 
@@ -341,94 +330,6 @@ describe('ReadyToMerge', () => {
     });
   });
 
-  describe('cannot merge', () => {
-    describe('when isMergeAllowed=false', () => {
-      it('should show merge blocked because of skipped pipeline text', () => {
-        factory({
-          isMergeAllowed: false,
-          availableAutoMergeStrategies: [],
-          pipeline: { id: 1, path: 'path/to/pipeline', status: PIPELINE_SKIPPED_STATUS },
-        });
-
-        expect(findResolveItemsMessage().text()).toBe(MERGE_DISABLED_SKIPPED_PIPELINE_TEXT);
-      });
-
-      it('should show cannot merge text', () => {
-        factory({
-          isMergeAllowed: false,
-          availableAutoMergeStrategies: [],
-        });
-
-        expect(findResolveItemsMessage().text()).toBe(MERGE_DISABLED_TEXT);
-      });
-
-      it('should show disabled merge button', () => {
-        factory({
-          isMergeAllowed: false,
-          availableAutoMergeStrategies: [],
-        });
-
-        const button = findMergeButton();
-
-        expect(button.exists()).toBe(true);
-        expect(button.attributes('disabled')).toBe('true');
-      });
-
-      it.each`
-        disabled     | disabledText | totalCount | mergedCount
-        ${'true'}    | ${'disable'} | ${1}       | ${0}
-        ${undefined} | ${'enable'}  | ${1}       | ${1}
-      `(
-        'should $disabledText merge button blockingMergeRequests.total_count is $totalCount and merged is $mergedCount',
-        ({ disabled, totalCount, mergedCount }) => {
-          factory({
-            isMergeAllowed: true,
-            availableAutoMergeStrategies: [],
-            blockingMergeRequests: {
-              total_count: totalCount,
-              visible_merge_requests: { merged: new Array(mergedCount) },
-            },
-          });
-
-          const button = findMergeButton();
-
-          expect(button.exists()).toBe(true);
-          expect(button.attributes('disabled')).toBe(disabled);
-        },
-      );
-    });
-  });
-
-  describe('when needs approval', () => {
-    beforeEach(() => {
-      factory({
-        isMergeAllowed: false,
-        availableAutoMergeStrategies: [],
-        hasApprovalsAvailable: true,
-        isApproved: false,
-      });
-    });
-
-    it('should show approvals needed text', () => {
-      expect(findResolveItemsMessage().text()).toBe(MERGE_DISABLED_TEXT_UNAPPROVED);
-    });
-  });
-
-  describe('when no CI service are found and enforce `Pipeline must succeed`', () => {
-    beforeEach(() => {
-      factory({
-        isMergeAllowed: false,
-        availableAutoMergeStrategies: [],
-        hasCI: false,
-        onlyAllowMergeIfPipelineSucceeds: true,
-      });
-    });
-
-    it('should show a custom message that explains the conflict', () => {
-      expect(findPipelineConflictMessage().text()).toBe(PIPELINE_MUST_SUCCEED_CONFLICT_TEXT);
-    });
-  });
-
   describe('Merge train text', () => {
     describe('pipeline failed', () => {
       beforeEach(() => {
@@ -439,10 +340,6 @@ describe('ReadyToMerge', () => {
           hasCI: true,
           onlyAllowMergeIfPipelineSucceeds: false,
         });
-      });
-
-      it('failed merge train text should show if pipeline failed', () => {
-        expect(findFailedPipelineMergeTrainText().exists()).toBe(true);
       });
 
       it('merge button text should contain ellipsis', () => {
@@ -463,10 +360,6 @@ describe('ReadyToMerge', () => {
 
       it('merge button text should not contain ellipsis', () => {
         expect(findMergeButton().text()).toBe(MERGE_TRAIN_BUTTON_TEXT.passed);
-      });
-
-      it('failed merge train text should not show if pipeline passed', () => {
-        expect(findFailedPipelineMergeTrainText().exists()).toBe(false);
       });
     });
   });

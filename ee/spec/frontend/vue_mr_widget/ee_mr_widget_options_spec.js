@@ -1024,42 +1024,6 @@ describe('ee merge request widget options', () => {
     });
   });
 
-  describe('rendering source branch removal status', () => {
-    beforeEach(() => {
-      createComponent({
-        propsData: {
-          mrData: {
-            ...mockData,
-          },
-        },
-      });
-    });
-
-    it('renders when user cannot remove branch and branch should be removed', async () => {
-      wrapper.vm.mr.canRemoveSourceBranch = false;
-      wrapper.vm.mr.shouldRemoveSourceBranch = true;
-      wrapper.vm.mr.state = 'readyToMerge';
-
-      await nextTick();
-      const tooltip = wrapper.find('[data-testid="question-o-icon"]');
-
-      expect(wrapper.text()).toContain('Deletes the source branch');
-      expect(tooltip.attributes('title')).toBe(
-        'A user with write access to the source branch selected this option',
-      );
-    });
-
-    it('does not render in merged state', async () => {
-      wrapper.vm.mr.canRemoveSourceBranch = false;
-      wrapper.vm.mr.shouldRemoveSourceBranch = true;
-      wrapper.vm.mr.state = 'merged';
-
-      await nextTick();
-      expect(wrapper.text()).toContain('The source branch has been deleted');
-      expect(wrapper.text()).not.toContain('Removes source branch');
-    });
-  });
-
   describe('rendering deployments', () => {
     const deploymentMockData = {
       id: 15,
