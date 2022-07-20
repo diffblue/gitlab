@@ -23,8 +23,7 @@ module EE
           def upgrade_status
             return :unknown unless upgrade_status_available?
 
-            suggestion = ::Gitlab::Ci::RunnerUpgradeCheck.instance.check_runner_upgrade_status(runner.version)
-            status = suggestion.each_key.first
+            _, status = ::Gitlab::Ci::RunnerUpgradeCheck.instance.check_runner_upgrade_suggestion(runner.version)
             RUNNER_UPGRADE_STATUS_TRANSLATIONS.fetch(status, status)
           end
 
