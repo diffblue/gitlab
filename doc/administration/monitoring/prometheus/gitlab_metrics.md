@@ -312,8 +312,6 @@ configuration option in `gitlab.yml`. These metrics are served from the
 | `geo_ci_secure_files_verified`                   | Gauge   | 15.3  | Number of secure files verified on secondary | `url` |
 | `geo_ci_secure_files_verification_failed`        | Gauge   | 15.3  | Number of secure files verifications failed on secondary | `url` |
 
-
-
 ## Database load balancing metrics **(PREMIUM SELF)**
 
 The following metrics are available:
