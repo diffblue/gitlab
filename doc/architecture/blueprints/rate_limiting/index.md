@@ -68,7 +68,7 @@ Inc._
 ## Opportunity
 
 We want to build a new framework, making it easier to define limits and
-policies, and to enforce and adjust them in a way controlled through robust
+policies, and to enforce / adjust them in a controlled way, through robust
 monitoring capabilities.
 
 <!-- markdownlint-disable MD029 -->
@@ -79,7 +79,16 @@ monitoring capabilities.
 
 <!-- markdownlint-enable MD029 -->
 
-Consolidation layers: ELABORATE.
+The most important opportunity here is consolidation happening on multiple
+levels:
+
+1. Consolidate on the application limits tooling used in GitLab Rails.
+1. Consolidate on the application limits tooling used across entire application stack.
+1. Consolidate on the policies enforcement tooling used across entire company.
+
+Once we do that we will unlock another opportunity: to ship the new framework /
+tooling as a GitLab feature to unlock these consolidation benefits for our
+users, customers and entire wider community audience.
 
 ### Framework to define and enforce limits
 
