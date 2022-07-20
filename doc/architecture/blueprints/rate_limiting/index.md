@@ -187,6 +187,9 @@ There is a significant opportunity here in transforming Pipeline Validation
 Service into a general purpose GitLab Policy Service / GitLab Policy Agent that
 will be well integrated into the GitLab product itself.
 
+With GitLab Policy Service we will also be able to build GraphQL rate limiting
+using query cost predictions.
+
 ## Principles
 
 1. Try to avoid building rate limiting framework in a tightly coupled way.
