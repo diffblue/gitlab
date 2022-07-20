@@ -38153,9 +38153,6 @@ msgstr ""
 msgid "TagsPage|Edit release"
 msgstr ""
 
-msgid "TagsPage|Edit release notes"
-msgstr ""
-
 msgid "TagsPage|Existing branch name, tag, or commit SHA"
 msgstr ""
 
