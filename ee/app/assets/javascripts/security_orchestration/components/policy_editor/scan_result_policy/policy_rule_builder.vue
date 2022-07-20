@@ -93,7 +93,7 @@ export default {
 </script>
 
 <template>
-  <div class="gl-bg-gray-10 gl-rounded-base px-3 pt-3 gl-relative gl-pb-4">
+  <div class="gl-bg-gray-10 gl-rounded-base gl-pl-5 gl-pr-7 gl-pt-5 gl-relative gl-pb-4">
     <gl-form inline @submit.prevent>
       <gl-sprintf :message="$options.scanResultRuleCopy">
         <template #ifLabel="{ content }">
