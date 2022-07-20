@@ -9,16 +9,24 @@ module EE
       def execute(project: nil)
         super.tap do |key|
           if project && key.persisted?
-            log_audit_event(key.title, project, action: :create)
+            log_audit_event(key, project)
           end
         end
       end
 
       private
 
-      def log_audit_event(key_title, project, options = {})
-        ::AuditEventService.new(user, project, options)
-          .for_deploy_key(key_title).security_event
+      def log_audit_event(key, project)
+        audit_context = {
+          name: 'deploy_key_added',
+          author: user,
+          scope: project,
+          target: key,
+          message: "Added deploy key",
+          additional_details: { add: "deploy_key" }
+        }
+
+        ::Gitlab::Audit::Auditor.audit(audit_context)
       end
     end
   end
