@@ -2,7 +2,7 @@
 
 .row.flex-grow-1.bg-gray-light
   .d-flex.flex-column.align-items-center.w-100.gl-p-5
-    = render 'shared/thanks_for_purchase_banner', plan_title: plan_title, quantity: params[:quantity].to_i
+    = render 'shared/thanks_for_purchase_alert', plan_title: plan_title, quantity: params[:quantity].to_i
     .edit-group.d-flex.flex-column.align-items-center.gl-pt-7
       - if params[:new_user]
         #progress-bar

@@ -24,7 +24,7 @@ RSpec.describe 'subscriptions/groups/edit' do
     expect_snowplow_event(
       category: 'subscriptions:groups',
       action: 'render',
-      label: 'purchase_confirmation_banner_displayed',
+      label: 'purchase_confirmation_alert_displayed',
       namespace: group,
       user: user
     )

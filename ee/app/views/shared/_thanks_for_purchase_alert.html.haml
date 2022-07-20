@@ -1,0 +1,11 @@
+- Gitlab::Tracking.event(body_data_page, 'render',
+                         label: 'purchase_confirmation_alert_displayed',
+                         user: current_user,
+                         namespace: @group)
+
+= render Pajamas::AlertComponent.new(variant: :info,
+  title: s_('Thanks for your purchase!'),
+  alert_options: { class: 'gl-mt-6 gl-mb-3', data: { uid: 'purchase_success_alert_dismissed' } }) do |c|
+  - number_of_users = n_('1 user', '%{num} users', quantity) % { num: quantity }
+  = c.body do
+    = s_('You have successfully purchased a %{plan} plan subscription for %{seats}. You’ll receive a receipt via email.') % { plan: plan_title, seats: number_of_users }
