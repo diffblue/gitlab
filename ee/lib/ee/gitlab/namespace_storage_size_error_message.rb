@@ -15,6 +15,11 @@ module EE
         push_error
       end
 
+      def merge_error
+        "This merge request cannot be merged, because the namespace storage limit " \
+        "of #{formatted(limit)} has been reached."
+      end
+
       def push_error(change_size = 0)
         "Your push to this repository has been rejected because the namespace storage limit " \
         "of #{formatted(limit)} has been reached. " \

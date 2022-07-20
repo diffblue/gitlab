@@ -26,6 +26,15 @@ RSpec.describe EE::Gitlab::NamespaceStorageSizeErrorMessage, :saas do
     end
   end
 
+  describe '#merge_error' do
+    it 'returns the expected message' do
+      expected_message = "This merge request cannot be merged, because " \
+        "the namespace storage limit of 10 MB has been reached."
+
+      expect(error_message.merge_error).to eq(expected_message)
+    end
+  end
+
   describe '#push_error' do
     it 'returns the expected message' do
       expected_message = "Your push to this repository has been rejected because " \
