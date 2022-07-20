@@ -1,5 +1,6 @@
 <script>
 import {
+  GlAvatar,
   GlButton,
   GlButtonGroup,
   GlFormGroup,
@@ -20,6 +21,7 @@ const WARNING_CHARACTERS_LEFT = 30;
 
 export default {
   components: {
+    GlAvatar,
     GlButton,
     GlButtonGroup,
     GlFormGroup,
@@ -107,6 +109,9 @@ export default {
     remainingCharacterCount() {
       return MAX_CHARACTER_COUNT - this.comment.length;
     },
+    approvals() {
+      return this.upcomingDeployment?.approvals ?? [];
+    },
   },
   methods: {
     showPopover() {
@@ -156,7 +161,7 @@ export default {
     tier: s__('DeploymentApproval|Deployment tier: %{tier}'),
     job: s__('DeploymentApproval|Manual job: %{jobName}'),
     current: s__('DeploymentApproval| Current approvals: %{current}'),
-    approval: s__('DeploymentApproval|Approved by %{user} %{time}'),
+    approval: s__('DeploymentApproval|Approved %{time}'),
     approvalByMe: s__('DeploymentApproval|Approved by you %{time}'),
     charactersLeft: __('Characters left'),
     charactersOverLimit: __('Characters over limit'),
@@ -214,22 +219,37 @@ export default {
         </gl-sprintf>
       </div>
 
-      <div class="gl-mt-4 gl-pt-4">
+      <div class="gl-mt-4 gl-pt-4 gl-mb-4">
         <gl-sprintf :message="$options.i18n.current">
           <template #current>
             <span class="gl-font-weight-bold"> {{ currentApprovals }}/{{ totalApprovals }}</span>
           </template>
         </gl-sprintf>
       </div>
-      <p v-for="(approval, index) in upcomingDeployment.approvals" :key="index">
-        <gl-sprintf :message="approvalText(approval)">
-          <template #user>
-            <gl-link :href="approval.user.webUrl">@{{ approval.user.username }}</gl-link>
-          </template>
-          <template #time><time-ago-tooltip :time="approval.createdAt" /></template>
-        </gl-sprintf>
-      </p>
-      <div v-if="canApproveDeployment" class="gl-mt-4 gl-pt-4">
+      <template v-for="(approval, index) in approvals">
+        <div :key="`user-${index}`" class="gl-display-flex gl-align-items-center">
+          <gl-avatar :size="16" :src="approval.user.avatarUrl" class="gl-mr-2" />
+          <gl-link :href="approval.user.webUrl" class="gl-font-sm gl-mr-2">
+            @{{ approval.user.username }}
+          </gl-link>
+        </div>
+        <p :key="`approval-${index}`" class="gl-mb-0">
+          <gl-sprintf :message="approvalText(approval)">
+            <template #user>
+              <gl-link :href="approval.user.webUrl">@{{ approval.user.username }}</gl-link>
+            </template>
+            <template #time><time-ago-tooltip :time="approval.createdAt" /></template>
+          </gl-sprintf>
+        </p>
+        <blockquote
+          v-if="approval.comment"
+          :key="`comment-${index}`"
+          class="gl-border-l-1 gl-border-l-solid gl-border-gray-200 gl-pl-2 gl-overflow-wrap-break"
+        >
+          {{ approval.comment }}
+        </blockquote>
+      </template>
+      <div v-if="canApproveDeployment" class="gl-pt-4">
         <div class="gl-display-flex gl-flex-direction-column gl-mb-5">
           <gl-form-group
             :label="$options.i18n.commentLabel"

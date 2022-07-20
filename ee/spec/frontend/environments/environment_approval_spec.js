@@ -240,4 +240,37 @@ describe('ee/environments/components/environment_approval.vue', () => {
       expect(button.attributes('title')).toBe(s__('DeploymentApproval|Approval options'));
     });
   });
+
+  describe('showing approvals', () => {
+    const approval = environment.upcomingDeployment.approvals[0];
+
+    beforeEach(async () => {
+      wrapper = createWrapper();
+      await findButton().trigger('click');
+    });
+
+    it('should show the avatar for who approved the deployment', () => {
+      const avatar = wrapper.findByRole('img', { name: 'avatar' });
+
+      expect(avatar.attributes('src')).toBe(approval.user.avatarUrl);
+    });
+
+    it('should show who approved the deployment', () => {
+      const link = wrapper.findByRole('link', { name: `@${approval.user.username}` });
+
+      expect(link.attributes('href')).toBe(approval.user.webUrl);
+    });
+
+    it('should show when they approved the deployment', () => {
+      const time = wrapper.find('time');
+
+      expect(time.text()).toBe('just now');
+    });
+
+    it('should show the comment associated with the approval', () => {
+      const comment = wrapper.find('blockquote');
+
+      expect(comment.text()).toBe(approval.comment);
+    });
+  });
 });
