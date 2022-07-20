@@ -23498,6 +23498,9 @@ msgstr ""
 msgid "LinkedResources|Cancel"
 msgstr ""
 
+msgid "LinkedResources|Fetching linked resources"
+msgstr ""
+
 msgid "LinkedResources|Link"
 msgstr ""
 
@@ -23505,6 +23508,12 @@ msgid "LinkedResources|Linked resources"
 msgstr ""
 
 msgid "LinkedResources|Read more about linked resources"
+msgstr ""
+
+msgid "LinkedResources|Remove"
+msgstr ""
+
+msgid "LinkedResources|Something went wrong while fetching linked resources for the incident."
 msgstr ""
 
 msgid "LinkedResources|Text (Optional)"

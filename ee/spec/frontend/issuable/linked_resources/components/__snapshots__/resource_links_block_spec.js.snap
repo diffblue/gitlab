@@ -61,7 +61,7 @@ exports[`ResourceLinksBlock with defaults renders correct component 1`] = `
                 />
               </svg>
               
-              0
+              ...
             
             </span>
           </div>
@@ -91,7 +91,7 @@ exports[`ResourceLinksBlock with defaults renders correct component 1`] = `
     </div>
      
     <div
-      class="linked-issues-card-body bg-gray-light"
+      class="bg-gray-light"
     >
       <div
         class="card-body bordered-box gl-bg-white"
@@ -209,6 +209,22 @@ exports[`ResourceLinksBlock with defaults renders correct component 1`] = `
           </div>
         </form>
       </div>
+       
+      <div
+        class="gl-mb-2"
+      >
+        <div
+          class="gl-spinner-container gl-mt-2"
+          role="status"
+        >
+          <span
+            aria-label="Fetching linked resources"
+            class="gl-vertical-align-text-bottom! gl-spinner gl-spinner-dark gl-spinner-sm"
+          />
+        </div>
+      </div>
+       
+      <!---->
     </div>
   </div>
 </div>
