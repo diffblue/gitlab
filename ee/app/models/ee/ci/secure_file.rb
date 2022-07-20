@@ -43,7 +43,6 @@ module EE
 
         scope :available_verifiables, -> { joins(:ci_secure_file_state) }
         scope :with_files_stored_locally, -> { where(file_store: ::ObjectStorage::Store::LOCAL) }
-        scope :with_files_stored_remotely, -> { where(file_store: ::ObjectStorage::Store::REMOTE) }
 
         def verification_state_object
           ci_secure_file_state

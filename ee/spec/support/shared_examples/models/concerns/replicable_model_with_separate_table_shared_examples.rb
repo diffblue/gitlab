@@ -58,7 +58,6 @@ RSpec.shared_examples 'a replicable model with a separate table for verification
 
     context 'when model record is not part of available_verifiables scope' do
       it 'does not create verification details' do
-        # binding.pry
         expect { unverifiable_model_record.save! }.not_to change { verification_state_table_class.count }
       end
     end
