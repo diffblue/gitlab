@@ -56,7 +56,7 @@ gem 'omniauth-authentiq', '~> 0.3.3'
 gem 'gitlab-omniauth-openid-connect', '~> 0.9.0', require: 'omniauth_openid_connect'
 gem 'omniauth-salesforce', '~> 1.0.5'
 gem 'omniauth-atlassian-oauth2', '~> 0.2.0'
-gem 'rack-oauth2', '~> 1.19.0'
+gem 'rack-oauth2', '~> 1.21.2'
 gem 'jwt', '~> 2.1.0'
 
 # Kerberos authentication. EE-only
