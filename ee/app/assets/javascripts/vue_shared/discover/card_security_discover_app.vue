@@ -6,6 +6,7 @@ import {
   GlCarouselSlide,
   GlSprintf,
   GlLink,
+  GlModalDirective,
 } from '@gitlab/ui';
 import { DISCOVER_PLANS_MORE_INFO_LINK } from 'jh_else_ee/vue_shared/discover/constants';
 import securityDashboardImageUrl from 'ee_images/promotions/security-dashboard.png';
@@ -15,11 +16,14 @@ import { s__ } from '~/locale';
 import Tracking from '~/tracking';
 import GitlabExperiment from '~/experimentation/components/gitlab_experiment.vue';
 import HandRaiseLeadButton from 'ee/hand_raise_leads/hand_raise_lead/components/hand_raise_lead_button.vue';
+import MovePersonalProjectToGroupModal from 'ee/projects/components/move_personal_project_to_group_modal.vue';
+import { MOVE_PERSONAL_PROJECT_TO_GROUP_MODAL } from 'ee/projects/constants';
 
 export default {
   DISCOVER_PLANS_MORE_INFO_LINK,
   directives: {
     GlTooltip: GlTooltipDirective,
+    GlModalDirective,
   },
   components: {
     GlButton,
@@ -29,6 +33,7 @@ export default {
     GlLink,
     HandRaiseLeadButton,
     GitlabExperiment,
+    MovePersonalProjectToGroupModal,
   },
   mixins: [Tracking.mixin()],
   props: {
@@ -66,13 +71,35 @@ export default {
   computed: {
     discoverButtonProps() {
       return {
+        class: 'gl-ml-3',
         variant: 'info',
         // False positive i18n lint: https://gitlab.com/gitlab-org/frontend/eslint-plugin-i18n/issues/26
         // eslint-disable-next-line @gitlab/require-i18n-strings
         rel: 'noopener noreferrer',
-        class: 'discover-button justify-content-center',
         'data-track-action': 'click_button',
+        'data-track-experiment': 'pql_three_cta_test',
+        'data-track-property': this.slide,
       };
+    },
+    upgradeButtonProps() {
+      return {
+        category: 'secondary',
+        'data-testid': 'discover-button-upgrade',
+        'data-track-label': 'security-discover-upgrade-cta',
+
+        ...this.discoverButtonProps,
+      };
+    },
+    trialButtonProps() {
+      return {
+        category: 'primary',
+        'data-testid': 'discover-button-trial',
+        'data-track-label': 'security-discover-trial-cta',
+        ...this.discoverButtonProps,
+      };
+    },
+    isPersonalProject() {
+      return this.project.isPersonal;
     },
   },
   methods: {
@@ -104,6 +131,7 @@ export default {
       'Discover|See the other features of the %{linkStart}ultimate plan%{linkEnd}',
     ),
   },
+  modalId: MOVE_PERSONAL_PROJECT_TO_GROUP_MODAL,
 };
 </script>
 
@@ -153,36 +181,34 @@ export default {
         </p>
       </div>
     </div>
-    <div
-      class="discover-buttons gl-display-flex gl-flex-direction-row gl-justify-content-space-between gl-mx-auto"
-    >
+    <div class="gl-display-flex gl-flex-direction-row gl-justify-content-center gl-mx-auto">
       <gitlab-experiment name="pql_three_cta_test">
         <template #candidate>
           <hand-raise-lead-button />
         </template>
       </gitlab-experiment>
-      <gl-button
-        class="discover-button-upgrade gl-ml-3"
-        v-bind="discoverButtonProps"
-        category="secondary"
-        data-track-label="security-discover-upgrade-cta"
-        data-track-experiment="pql_three_cta_test"
-        :data-track-property="slide"
-        :href="linkSecondary"
-      >
-        {{ $options.i18n.discoverUpgradeLabel }}
-      </gl-button>
-      <gl-button
-        class="discover-button-trial gl-ml-3"
-        v-bind="discoverButtonProps"
-        category="primary"
-        data-track-label="security-discover-trial-cta"
-        data-track-experiment="pql_three_cta_test"
-        :data-track-property="slide"
-        :href="linkMain"
-      >
-        {{ $options.i18n.discoverTrialLabel }}
-      </gl-button>
+
+      <template v-if="isPersonalProject">
+        <gl-button v-gl-modal-directive="$options.modalId" v-bind="upgradeButtonProps">
+          {{ $options.i18n.discoverUpgradeLabel }}
+        </gl-button>
+
+        <gl-button v-gl-modal-directive="$options.modalId" v-bind="trialButtonProps">
+          {{ $options.i18n.discoverTrialLabel }}
+        </gl-button>
+
+        <move-personal-project-to-group-modal :project-name="project.name" />
+      </template>
+
+      <template v-else>
+        <gl-button v-bind="upgradeButtonProps" :href="linkSecondary">
+          {{ $options.i18n.discoverUpgradeLabel }}
+        </gl-button>
+
+        <gl-button v-bind="trialButtonProps" :href="linkMain">
+          {{ $options.i18n.discoverTrialLabel }}
+        </gl-button>
+      </template>
     </div>
   </div>
 </template>

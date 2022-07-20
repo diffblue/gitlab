@@ -2,6 +2,7 @@ import Vue from 'vue';
 import { s__ } from '~/locale';
 import SecurityDiscoverApp from 'ee/vue_shared/discover/card_security_discover_app.vue';
 import apolloProvider from 'ee/subscriptions/buy_addons_shared/graphql';
+import { parseBoolean } from '~/lib/utils/common_utils';
 
 export default () => {
   const securityTab = document.getElementById('js-security-discover-app');
@@ -14,6 +15,7 @@ export default () => {
     groupName,
     projectId,
     projectName,
+    projectPersonal,
     linkMain,
     linkSecondary,
     namespaceId,
@@ -28,6 +30,7 @@ export default () => {
     project: {
       id: projectId,
       name: projectName,
+      isPersonal: parseBoolean(projectPersonal),
     },
     group: {
       id: groupId,

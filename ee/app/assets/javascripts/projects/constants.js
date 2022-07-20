@@ -10,3 +10,5 @@ export const PROJECT_COMPLIANCE_FRAMEWORK_I18N = {
   ),
   buttonText: s__('ComplianceFramework|Add framework in %{groupName}'),
 };
+
+export const MOVE_PERSONAL_PROJECT_TO_GROUP_MODAL = 'move-personal-project-to-group-modal';

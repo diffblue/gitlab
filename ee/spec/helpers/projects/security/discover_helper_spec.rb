@@ -27,8 +27,8 @@ RSpec.describe Projects::Security::DiscoverHelper do
   end
 
   describe '#project_security_discover_data' do
-    let_it_be(:project) { create(:project) }
     let_it_be(:user) { create(:user) }
+    let_it_be(:project) { create(:project, namespace: user.namespace) }
 
     let(:variant) { :control }
     let(:content) { 'discover-project-security' }
@@ -36,7 +36,8 @@ RSpec.describe Projects::Security::DiscoverHelper do
       {
         project: {
           id: project.id,
-          name: project.name
+          name: project.name,
+          personal: "true"
         },
         link: {
           main: new_trial_registration_path(glm_source: 'gitlab.com', glm_content: content),
