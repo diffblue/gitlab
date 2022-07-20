@@ -17,7 +17,10 @@ RSpec.describe Epics::TransferService do
     context 'when old_group is present' do
       let_it_be(:project) { create(:project, namespace: old_group) }
       let_it_be(:epic) { create(:epic, group: old_group, title: 'Epic 1')}
-      let_it_be(:issue_with_epic) { create(:issue, project: project, epic: epic) }
+      let_it_be(:issue1_with_epic) { create(:issue, project: project, epic: epic) }
+      let_it_be(:issue2_with_epic) { create(:issue, project: project, epic: epic) }
+
+      let(:new_epic) { issue1_with_epic.reload.epic }
 
       before do
         stub_licensed_features(epics: true)
@@ -33,8 +36,9 @@ RSpec.describe Epics::TransferService do
 
         it 'recreates the missing group epics in the new group' do
           expect { service.execute }.to change(project.group.epics, :count).by(1)
-          new_epic = issue_with_epic.reload.epic
 
+          expect(new_epic).not_to eq(epic)
+          expect(new_epic).to eq(issue2_with_epic.reload.epic)
           expect(new_epic.group).to eq(new_group)
           expect(new_epic.title).to eq(epic.title)
           expect(new_epic.description).to eq(epic.description)
@@ -62,6 +66,14 @@ RSpec.describe Epics::TransferService do
           end
         end
 
+        context 'when epic is from an ascending group' do
+          let_it_be(:new_group) { create(:group, parent: old_group) }
+
+          it 'does not recreate the epics in the new group' do
+            expect { service.execute }.not_to change(new_group.epics, :count)
+          end
+        end
+
         context 'when create_epic returns nil' do
           before do
             allow_next_instance_of(Epics::CreateService) do |instance|
@@ -72,18 +84,18 @@ RSpec.describe Epics::TransferService do
           it 'removes issues epic' do
             service.execute
 
-            expect(issue_with_epic.reload.epic).to be_nil
+            expect(issue1_with_epic.reload.epic).to be_nil
+            expect(issue2_with_epic.reload.epic).to be_nil
           end
         end
 
         context 'when assigned epic is confidential' do
           before do
-            [issue_with_epic, epic].each { |issuable| issuable.update!(confidential: true) }
+            [issue1_with_epic, issue2_with_epic, epic].each { |issuable| issuable.update!(confidential: true) }
           end
 
           it 'creates a new confidential epic in the new group' do
             expect { service.execute }.to change(project.group.epics, :count).by(1)
-            new_epic = issue_with_epic.reload.epic
 
             expect(new_epic).not_to eq(epic.group)
             expect(new_epic.title).to eq(epic.title)
@@ -105,7 +117,8 @@ RSpec.describe Epics::TransferService do
           service = described_class.new(guest, old_group, project)
 
           expect { service.execute }.not_to change(project.group.epics, :count)
-          expect(issue_with_epic.reload.epic).to be_nil
+          expect(issue1_with_epic.reload.epic).to be_nil
+          expect(issue2_with_epic.reload.epic).to be_nil
         end
       end
 

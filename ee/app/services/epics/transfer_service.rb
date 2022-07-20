@@ -36,7 +36,7 @@ module Epics
         .where(
           issues: { project_id: project.id },
           group_id: old_group.self_and_descendants
-        )
+        ).distinct
     end
     # rubocop: enable CodeReuse/ActiveRecord
 
