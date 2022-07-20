@@ -27,10 +27,10 @@ module Namespaces
 
       def alert_attributes
         {
-          title: _('From June 22, 2022 (GitLab 15.1), free personal namespaces and top-level groups will be limited ' \
-                 'to %{free_limit} members') % { free_limit: ::Namespaces::FreeUserCap::FREE_USER_LIMIT },
+          title: _('From October 19, 2022, free personal namespaces and top-level groups will be ' \
+                 'limited to %{free_limit} members') % { free_limit: ::Namespaces::FreeUserCap::FREE_USER_LIMIT },
           body: _('Your %{doc_link_start}namespace%{doc_link_end}, %{strong_start}%{namespace_name}%{strong_end} ' \
-                'has more than %{free_limit} members. From June 22, 2022, it will be limited to %{free_limit}, ' \
+                'has more than %{free_limit} members. From October 19, 2022, it will be limited to %{free_limit}, ' \
                 'and the remaining members will get a %{link_start}status of Over limit%{link_end} and lose ' \
                 'access to the namespace. You can go to the Usage Quotas page to manage which %{free_limit} ' \
                 'members will remain in your namespace. To get more members, an owner can start a trial or upgrade ' \

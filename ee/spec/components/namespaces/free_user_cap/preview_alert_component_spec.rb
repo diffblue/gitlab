@@ -7,7 +7,7 @@ RSpec.describe Namespaces::FreeUserCap::PreviewAlertComponent, :saas, :aggregate
   let_it_be(:content_class) { '_content_class_' }
 
   let(:preview_free_user_cap_over?) { true }
-  let(:title) { 'From June 22, 2022 (GitLab 15.1), free personal namespaces' }
+  let(:title) { 'From October 19, 2022, free personal namespaces' }
 
   subject(:component) { described_class.new(namespace: namespace, user: user, content_class: content_class) }
 
