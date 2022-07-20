@@ -22035,9 +22035,6 @@ msgstr ""
 msgid "It's you"
 msgstr ""
 
-msgid "It's you!"
-msgstr ""
-
 msgid "Italic text"
 msgstr ""
 
