@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe MergeRequests::MergeService do
+  include NamespaceStorageHelpers
+
   let(:user) { create(:user) }
   let(:merge_request) { create(:merge_request, :simple) }
   let(:project) { merge_request.project }
@@ -15,13 +17,82 @@ RSpec.describe MergeRequests::MergeService do
   describe '#execute' do
     context 'project has exceeded size limit' do
       before do
-        allow(project.repository_size_checker).to receive(:above_size_limit?).and_return(true)
+        project.update_attribute(:repository_size_limit, 5)
+        project.statistics.update!(repository_size: 8)
       end
 
       it 'persists the correct error message' do
         service.execute(merge_request)
 
-        expect(merge_request.merge_error).to include('This merge request cannot be merged')
+        expect(merge_request.merge_error).to eq(
+          'This merge request cannot be merged, ' \
+          'because this repository has exceeded its size limit of 5 Bytes by 3 Bytes'
+        )
+      end
+    end
+
+    context 'when the namespace storage limit has been exceeded', :saas do
+      let(:namespace) { project.namespace }
+
+      before do
+        create(:gitlab_subscription, :premium, namespace: namespace)
+        create(:namespace_root_storage_statistics, namespace: namespace)
+        enforce_namespace_storage_limit(namespace)
+        set_storage_size_limit(namespace, megabytes: 4)
+        set_used_storage(namespace, megabytes: 5)
+      end
+
+      it 'persists the correct error message' do
+        service.execute(merge_request)
+
+        expect(merge_request.merge_error).to eq(
+          'This merge request cannot be merged, ' \
+          'because the namespace storage limit of 4 MB has been reached.'
+        )
+      end
+    end
+
+    context 'when the repository size limit has been exceeded, but the namespace storage limit has not', :saas do
+      let(:namespace) { project.namespace }
+
+      before do
+        project.update_attribute(:repository_size_limit, 5)
+        project.statistics.update!(repository_size: 6)
+        create(:gitlab_subscription, :premium, namespace: namespace)
+        create(:namespace_root_storage_statistics, namespace: namespace)
+        enforce_namespace_storage_limit(namespace)
+        set_storage_size_limit(namespace, megabytes: 10)
+        set_used_storage(namespace, megabytes: 7)
+      end
+
+      it 'does not set an error message' do
+        service.execute(merge_request)
+
+        expect(merge_request.merge_error).to be_nil
+      end
+    end
+
+    context 'when the namespace storage limit has been exceeded and the merge request is for a subgroup project', :saas do
+      let(:group) { create(:group) }
+      let(:subgroup) { create(:group, parent: group) }
+      let(:project) { create(:project, :repository, group: subgroup) }
+      let(:merge_request) { create(:merge_request, :simple, source_project: project) }
+
+      before do
+        create(:gitlab_subscription, :premium, namespace: group)
+        create(:namespace_root_storage_statistics, namespace: group)
+        enforce_namespace_storage_limit(group)
+        set_storage_size_limit(group, megabytes: 6)
+        set_used_storage(group, megabytes: 8)
+      end
+
+      it 'persists the correct error message' do
+        service.execute(merge_request)
+
+        expect(merge_request.merge_error).to eq(
+          'This merge request cannot be merged, ' \
+          'because the namespace storage limit of 6 MB has been reached.'
+        )
       end
     end
 
