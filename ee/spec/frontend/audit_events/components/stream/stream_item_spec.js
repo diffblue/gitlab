@@ -19,6 +19,7 @@ describe('StreamItem', () => {
   let wrapper;
 
   const createComponent = (
+    injectedProps = {},
     deleteExternalDestinationSpy = jest
       .fn()
       .mockResolvedValue(destinationDeleteMutationPopulator()),
@@ -28,6 +29,10 @@ describe('StreamItem', () => {
     ]);
     wrapper = shallowMountExtended(StreamItem, {
       apolloProvider: mockApollo,
+      provide: {
+        showStreamsHeaders: false,
+        ...injectedProps,
+      },
       propsData: {
         item: mockExternalDestinations[0],
       },
@@ -59,6 +64,20 @@ describe('StreamItem', () => {
     it('should not show the editor', () => {
       expect(findEditor().exists()).toBe(false);
     });
+
+    it('should not show the edit button', () => {
+      expect(findEditButton().exists()).toBe(false);
+    });
+  });
+
+  describe('with the streaming headers', () => {
+    beforeEach(() => {
+      createComponent({ showStreamsHeaders: true });
+    });
+
+    it('should show the edit button', () => {
+      expect(findEditButton().exists()).toBe(true);
+    });
   });
 
   describe('events', () => {
@@ -81,7 +100,7 @@ describe('StreamItem', () => {
       const deleteExternalDestinationErrorSpy = jest
         .fn()
         .mockResolvedValue(destinationDeleteMutationPopulator([errorMsg]));
-      createComponent(deleteExternalDestinationErrorSpy);
+      createComponent({}, deleteExternalDestinationErrorSpy);
       const button = findDeleteButton();
       await button.trigger('click');
 
@@ -98,7 +117,7 @@ describe('StreamItem', () => {
 
     it('should not emit delete when network error occurs', async () => {
       const error = new Error('Network error');
-      createComponent(jest.fn().mockRejectedValue(error));
+      createComponent({}, jest.fn().mockRejectedValue(error));
       const button = findDeleteButton();
       await button.trigger('click');
 
@@ -118,7 +137,7 @@ describe('StreamItem', () => {
 
   describe('editing', () => {
     beforeEach(() => {
-      createComponent();
+      createComponent({ showStreamsHeaders: true });
       findEditButton().trigger('click');
     });
 

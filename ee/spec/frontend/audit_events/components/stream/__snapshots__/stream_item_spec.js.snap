@@ -72,26 +72,7 @@ exports[`StreamItem render should render correctly 1`] = `
     </code>
      
     <div>
-      <b-button-stub
-        aria-label="Edit https://api.gitlab.com"
-        class="gl-button btn-default-tertiary btn-icon"
-        data-testid="edit-btn"
-        size="md"
-        tag="button"
-        title="Edit"
-        type="button"
-        variant="default"
-      >
-        <!---->
-         
-        <gl-icon-stub
-          class="gl-button-icon"
-          name="pencil"
-          size="16"
-        />
-          
-        <!---->
-      </b-button-stub>
+      <!---->
        
       <b-button-stub
         aria-label="Delete https://api.gitlab.com"
