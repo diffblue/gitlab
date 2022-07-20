@@ -274,7 +274,7 @@ module EE
     end
 
     def manageable_groups_eligible_for_trial
-      manageable_groups.eligible_for_trial.order(:name)
+      owned_groups.eligible_for_trial.order(:name)
     end
 
     override :has_current_license?

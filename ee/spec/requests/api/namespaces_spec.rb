@@ -520,17 +520,27 @@ RSpec.describe API::Namespaces do
     let_it_be(:premium_plan) { create(:premium_plan) }
     let_it_be(:owner) { create(:user) }
     let_it_be(:developer) { create(:user) }
+    let_it_be(:maintainer) { create(:user) }
     let_it_be(:namespace) { create(:group) }
     let_it_be(:gitlab_subscription) { create(:gitlab_subscription, hosted_plan: premium_plan, namespace: namespace) }
 
     before do
       namespace.add_owner(owner)
+      namespace.add_maintainer(maintainer)
       namespace.add_developer(developer)
     end
 
     context 'with a regular user' do
       it 'returns an unauthorized error' do
         do_get(developer)
+
+        expect(response).to have_gitlab_http_status(:forbidden)
+      end
+    end
+
+    context 'with a maintainer' do
+      it 'returns an unauthorized error' do
+        do_get(maintainer)
 
         expect(response).to have_gitlab_http_status(:forbidden)
       end
