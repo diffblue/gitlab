@@ -43,21 +43,10 @@ RSpec.describe Mutations::AuditEvents::Streaming::Headers::Create do
       context 'current_user is group owner' do
         before do
           group.add_owner(current_user)
-          stub_feature_flags(streaming_audit_event_headers: true)
         end
 
         it 'creates a new header' do
           expect { subject }.to change { destination.headers.count }.by 1
-        end
-
-        context 'feature is disabled' do
-          before do
-            stub_feature_flags(streaming_audit_event_headers: false)
-          end
-
-          it 'is not authorized' do
-            expect { subject }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
-          end
         end
       end
     end

@@ -79,16 +79,6 @@ RSpec.describe 'Update an external audit event destination header' do
 
         it_behaves_like 'a mutation that does not update a header'
       end
-
-      context 'when streaming_audit_event_headers feature flag is disabled' do
-        before do
-          stub_feature_flags(streaming_audit_event_headers: false)
-        end
-
-        it_behaves_like 'a mutation that returns top-level errors',
-                        errors: ['feature disabled']
-        it_behaves_like 'a mutation that does not update a header'
-      end
     end
 
     context 'when current user is a group maintainer' do

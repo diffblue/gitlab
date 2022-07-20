@@ -39,7 +39,6 @@ RSpec.describe Mutations::AuditEvents::Streaming::Headers::Destroy do
       context 'current_user is group owner' do
         before do
           group.add_owner(current_user)
-          stub_feature_flags(streaming_audit_event_headers: true)
         end
 
         it 'deletes the header' do
@@ -55,16 +54,6 @@ RSpec.describe Mutations::AuditEvents::Streaming::Headers::Destroy do
 
           it 'does not delete any headers' do
             expect { subject }.not_to change { destination.headers.count }
-          end
-        end
-
-        context 'feature is disabled' do
-          before do
-            stub_feature_flags(streaming_audit_event_headers: false)
-          end
-
-          it 'is not authorized' do
-            expect { subject }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable, "feature disabled")
           end
         end
       end
