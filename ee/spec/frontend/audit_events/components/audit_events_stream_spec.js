@@ -1,6 +1,6 @@
+import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import { GlButton, GlLoadingIcon } from '@gitlab/ui';
-import { createLocalVue } from '@vue/test-utils';
 import { createAlert } from '~/flash';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import createMockApollo from 'helpers/mock_apollo_helper';
@@ -18,8 +18,7 @@ import {
 } from '../mock_data';
 
 jest.mock('~/flash');
-const localVue = createLocalVue();
-localVue.use(VueApollo);
+Vue.use(VueApollo);
 
 describe('AuditEventsStream', () => {
   let wrapper;
@@ -36,7 +35,6 @@ describe('AuditEventsStream', () => {
         streamsIconSvgPath: mockSvgPath,
       },
       apolloProvider: mockApollo,
-      localVue,
     });
   };
 

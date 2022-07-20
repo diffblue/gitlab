@@ -1,5 +1,5 @@
+import Vue from 'vue';
 import VueApollo from 'vue-apollo';
-import { createLocalVue } from '@vue/test-utils';
 import { GlButton, GlFormCheckbox, GlForm, GlTableLite } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
 import { sprintf } from '~/locale';
@@ -24,8 +24,7 @@ import {
   mockExternalDestinationHeader,
 } from '../../mock_data';
 
-const localVue = createLocalVue();
-localVue.use(VueApollo);
+Vue.use(VueApollo);
 
 describe('StreamDestinationEditor', () => {
   let wrapper;
@@ -53,7 +52,6 @@ describe('StreamDestinationEditor', () => {
       },
       propsData,
       apolloProvider: mockApollo,
-      localVue,
     });
   };
 

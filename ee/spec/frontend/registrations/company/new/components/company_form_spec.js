@@ -1,11 +1,8 @@
 import { GlButton, GlForm, GlFormText, GlToggle } from '@gitlab/ui';
-import { createLocalVue } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import RegistrationForm from 'ee/registrations/components/company_form.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { TRIAL_FORM_SUBMIT_TEXT } from 'ee/trials/constants';
-
-const localVue = createLocalVue();
 
 const SUBMIT_PATH = '_submit_path_';
 
@@ -14,7 +11,6 @@ describe('RegistrationForm', () => {
 
   const createComponent = ({ mountFunction = shallowMountExtended, propsData } = {}) => {
     return mountFunction(RegistrationForm, {
-      localVue,
       provide: {
         submitPath: SUBMIT_PATH,
       },
