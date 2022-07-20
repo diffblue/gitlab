@@ -101,7 +101,7 @@ module Gitlab
             config.base_path
           ].join('')
 
-          "#{base_url}/projects/api/#{project_id}"
+          "#{base_url}/projects/#{project_id}"
         end
 
         private
