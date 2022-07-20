@@ -123,7 +123,7 @@ export default {
             ? selectedProfile.dropdownLabel
             : s__('OnDemandScans|Select one of the existing profiles')
         "
-        class="mw-460"
+        class="gl-max-w-62"
         data-testid="profiles-dropdown"
       >
         <template #header>

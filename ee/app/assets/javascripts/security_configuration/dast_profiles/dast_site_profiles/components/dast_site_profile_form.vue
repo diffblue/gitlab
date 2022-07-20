@@ -263,7 +263,7 @@ export default {
           v-model="form.fields.profileName.value"
           v-validation:[form.showValidation]
           name="profileName"
-          class="mw-460"
+          class="gl-max-w-62"
           data-testid="profile-name-input"
           type="text"
           required
@@ -288,7 +288,7 @@ export default {
           v-model="form.fields.targetUrl.value"
           v-validation:[form.showValidation]
           name="targetUrl"
-          class="mw-460"
+          class="gl-max-w-62"
           data-testid="target-url-input"
           required
           type="url"
@@ -306,7 +306,7 @@ export default {
           v-validation:[form.showValidation]
           :options="scanMethodOptions"
           name="scanMethod"
-          class="mw-460"
+          class="gl-max-w-62"
           data-testid="scan-method-select-input"
           :state="form.fields.scanMethod.state"
           required
@@ -332,7 +332,7 @@ export default {
             v-model="form.fields.scanFilePath.value"
             v-validation:[form.showValidation]
             name="scanFilePath"
-            class="mw-460"
+            class="gl-max-w-62"
             data-testid="scan-file-path-input"
             type="text"
             :placeholder="selectedScanMethod.placeholder"
