@@ -2,6 +2,8 @@
 
 module Pajamas
   class AvatarComponent < Pajamas::Component
+    include Gitlab::Utils::StrongMemoize
+
     # @param record [User, Project, Group]
     # @param alt [String] text for the alt tag
     # @param class [String] custom CSS class(es)
@@ -32,17 +34,17 @@ module Pajamas
     end
 
     def src
-      if @record.is_a?(User)
-        # Users show a gravatar instead of an identicon. Also avatars of
-        # blocked users are only shown if the current_user is an admin.
-        # To not duplicate this logic, we are using existing helpers here.
-        current_user = helpers.current_user rescue nil
-        return helpers.avatar_icon_for_user(@record, @size, current_user: current_user)
+      strong_memoize(:src) do
+        if @record.is_a?(User)
+          # Users show a gravatar instead of an identicon. Also avatars of
+          # blocked users are only shown if the current_user is an admin.
+          # To not duplicate this logic, we are using existing helpers here.
+          current_user = helpers.current_user rescue nil
+          helpers.avatar_icon_for_user(@record, @size, current_user: current_user)
+        elsif @record.try(:avatar_url)
+          "#{@record.avatar_url}?width=#{@size}"
+        end
       end
-
-      return unless @record.try(:avatar_url)
-
-      "#{@record.avatar_url}?width=#{@size}"
     end
 
     def srcset
