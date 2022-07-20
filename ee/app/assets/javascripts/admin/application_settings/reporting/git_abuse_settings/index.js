@@ -3,7 +3,7 @@ import VueApollo from 'vue-apollo';
 import createDefaultClient from '~/lib/graphql';
 
 import { parseFormProps } from './utils';
-import GitAbuseRateLimitSettingsForm from './components/form.vue';
+import SettingsFormContainer from './components/settings_form_container.vue';
 
 Vue.use(VueApollo);
 
@@ -28,14 +28,13 @@ export const initGitAbuseRateLimitSettingsForm = () => {
     el,
     apolloProvider,
     name: 'GitAbuseRateLimitSettingsFormRoot',
-    render(createElement) {
-      return createElement(GitAbuseRateLimitSettingsForm, {
+    render: (createElement) =>
+      createElement(SettingsFormContainer, {
         props: {
-          maxNumberOfRepositoryDownloads,
-          maxNumberOfRepositoryDownloadsWithinTimePeriod,
-          gitRateLimitUsersAllowlist,
+          maxDownloads: maxNumberOfRepositoryDownloads,
+          timePeriod: maxNumberOfRepositoryDownloadsWithinTimePeriod,
+          allowlist: gitRateLimitUsersAllowlist,
         },
-      });
-    },
+      }),
   });
 };
