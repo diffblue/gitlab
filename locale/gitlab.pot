@@ -3123,6 +3123,9 @@ msgstr ""
 msgid "AdminUsers|It's you!"
 msgstr ""
 
+msgid "AdminUsers|LDAP Blocked"
+msgstr ""
+
 msgid "AdminUsers|Learn more about %{link_start}banned users.%{link_end}"
 msgstr ""
 
@@ -22030,6 +22033,9 @@ msgid "It seems that there is currently no available data for code coverage"
 msgstr ""
 
 msgid "It's you"
+msgstr ""
+
+msgid "It's you!"
 msgstr ""
 
 msgid "Italic text"
