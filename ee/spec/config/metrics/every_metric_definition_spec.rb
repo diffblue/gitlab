@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe 'Every metric definition' do
   include UsageDataHelpers
 
-  let(:usage_ping) { ServicePing::BuildPayload.new.execute }
+  let(:usage_ping) { Gitlab::Usage::ServicePingReport.for(output: :all_metrics_values) }
   let(:ignored_usage_ping_key_patterns) do
     %w(
       license_add_ons
@@ -36,6 +36,37 @@ RSpec.describe 'Every metric definition' do
       p_ci_templates_implicit_auto_devops_deploy_latest
       p_ci_templates_implicit_auto_devops_deploy
     ).freeze
+  end
+
+  let(:events_not_defined_yet) do
+    %w(
+      redis_hll_counters.ci_templates.p_ci_templates_implicit_jobs_sast_iac_monthly
+      redis_hll_counters.ci_templates.p_ci_templates_implicit_jobs_sast_iac_weekly
+      redis_hll_counters.ci_templates.p_ci_templates_implicit_security_sast_iac_monthly
+      redis_hll_counters.ci_templates.p_ci_templates_implicit_security_sast_iac_weekly
+      redis_hll_counters.code_review.i_code_review_create_note_in_ipynb_diff_commit_monthly
+      redis_hll_counters.code_review.i_code_review_create_note_in_ipynb_diff_commit_weekly
+      redis_hll_counters.code_review.i_code_review_create_note_in_ipynb_diff_monthly
+      redis_hll_counters.code_review.i_code_review_create_note_in_ipynb_diff_mr_monthly
+      redis_hll_counters.code_review.i_code_review_create_note_in_ipynb_diff_mr_weekly
+      redis_hll_counters.code_review.i_code_review_create_note_in_ipynb_diff_weekly
+      redis_hll_counters.code_review.i_code_review_user_create_note_in_ipynb_diff_commit_monthly
+      redis_hll_counters.code_review.i_code_review_user_create_note_in_ipynb_diff_commit_weekly
+      redis_hll_counters.code_review.i_code_review_user_create_note_in_ipynb_diff_monthly
+      redis_hll_counters.code_review.i_code_review_user_create_note_in_ipynb_diff_mr_monthly
+      redis_hll_counters.code_review.i_code_review_user_create_note_in_ipynb_diff_mr_weekly
+      redis_hll_counters.code_review.i_code_review_user_create_note_in_ipynb_diff_weekly
+      redis_hll_counters.incident_management.incident_management_timeline_event_created_monthly
+      redis_hll_counters.incident_management.incident_management_timeline_event_created_weekly
+      redis_hll_counters.incident_management.incident_management_timeline_event_deleted_monthly
+      redis_hll_counters.incident_management.incident_management_timeline_event_deleted_weekly
+      redis_hll_counters.incident_management.incident_management_timeline_event_edited_monthly
+      redis_hll_counters.incident_management.incident_management_timeline_event_edited_weekly
+      redis_hll_counters.manage.unique_active_user_monthly
+      redis_hll_counters.manage.unique_active_user_weekly
+      redis_hll_counters.quickactions.i_quickactions_ready_monthly
+      redis_hll_counters.quickactions.i_quickactions_ready_weekly
+    )
   end
 
   let(:metric_files_key_paths) do
@@ -81,8 +112,8 @@ RSpec.describe 'Every metric definition' do
 
   it 'is included in the Usage Ping hash structure', :aggregate_failures do
     msg = "see https://docs.gitlab.com/ee/development/service_ping/metrics_dictionary.html#metrics-added-dynamic-to-service-ping-payload"
-    expect(metric_files_key_paths).to match_array(usage_ping_key_paths)
-    expect(metric_files_key_paths).to match_array(usage_ping_key_paths), msg
+    expect(metric_files_key_paths + events_not_defined_yet).to match_array(usage_ping_key_paths)
+    expect(metric_files_key_paths + events_not_defined_yet).to match_array(usage_ping_key_paths), msg
   end
 
   describe 'metrics classes' do
