@@ -4,7 +4,7 @@
       %h3.card-title
         = s_('ProtectedEnvironment|Protect an environment')
     .card-body
-      = form_errors(@protected_environment)
+      = form_errors(@protected_environment, pajamas_alert: true)
       .form-group
         = f.label :name, class: 'label-bold' do
           = s_('ProtectedEnvironment|Environment')
