@@ -43,7 +43,8 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService d
             },
             variables: {
               GIT_DEPTH: '50',
-              SECURE_ANALYZERS_PREFIX: secure_analyzers_prefix,
+              SECURE_ANALYZERS_PREFIX: '$TEMPLATE_REGISTRY_HOST/security-products',
+              TEMPLATE_REGISTRY_HOST: template_registry_host,
               SECRETS_ANALYZER_VERSION: '4',
               SECRET_DETECTION_IMAGE_SUFFIX: '',
               SECRET_DETECTION_EXCLUDED_PATHS: '',
