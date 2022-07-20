@@ -1,3 +1,4 @@
+import { GlButton } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
 import MockAdapter from 'axios-mock-adapter';
 import { nextTick } from 'vue';
@@ -43,7 +44,7 @@ describe('Grouped security reports app', () => {
 
   const findReportSection = () => wrapper.findComponent(ReportSection);
   const findReportSummary = () => wrapper.find('[data-testid="report-section-code-text"]');
-  const findCollapseButton = () => wrapper.find('.js-collapse-btn');
+  const findCollapseButton = () => wrapper.findComponent(GlButton);
   const findSpinner = () => wrapper.find('.gl-spinner');
   const findSecretDetectionReport = () => wrapper.find('[data-testid="secret-detection-report"]');
   const findViewFullReportButton = () => wrapper.find('.report-btn');
