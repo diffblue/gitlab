@@ -1221,7 +1221,7 @@ Parameters:
 curl --request DELETE --header "PRIVATE-TOKEN: <your_access_token>" "https://gitlab.example.com/api/v4/user/gpg_keys/1"
 ```
 
-Returns `204 No Content` on success or `404 Not found` if the key cannot be found.
+Returns `204 No Content` on success or `404 Not Found` if the key cannot be found.
 
 ## List all GPG keys for given user
 
