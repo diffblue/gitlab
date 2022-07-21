@@ -23,6 +23,7 @@ export default class FilteredSearchCodeReviewAnalytics extends FilteredSearchMan
   /**
    * Updates filters in code review analytics store
    */
+  // eslint-disable-next-line class-methods-use-this
   updateObject = (path) => {
     const filters = queryToObject(path, { gatherArrays: true });
     const { selectedLabels: selectedLabelList, selectedMilestone } = transformFilters(filters);

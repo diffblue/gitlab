@@ -33,6 +33,7 @@ export default class FilteredSearchIssueAnalytics extends FilteredSearchManager 
    * Updates issue analytics store and window history
    * with filter path
    */
+  // eslint-disable-next-line class-methods-use-this
   updateObject = (path) => {
     historyPushState(path);
 
