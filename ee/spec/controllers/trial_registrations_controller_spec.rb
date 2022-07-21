@@ -82,7 +82,7 @@ RSpec.describe TrialRegistrationsController do
         last_name: 'Doe',
         email: 'johnd2019@local.dev',
         username: 'johnd',
-        password: 'abcd1234'
+        password: User.random_password
       }
     end
 
