@@ -6,18 +6,13 @@ RSpec.describe Ci::SecureFile do
   using RSpec::Parameterized::TableSyntax
   include EE::GeoHelpers
 
-  before do
-    stub_ci_secure_file_object_storage(enabled: false)
-  end
-
-  let(:project) { create(:project) }
-
   include_examples 'a replicable model with a separate table for verification state' do
+    let(:project) { create(:project) }
     let(:verifiable_model_record) { build(:ci_secure_file, project: project) }
 
     let(:unverifiable_model_record) do
       stub_ci_secure_file_object_storage
-      file = create(:ci_secure_file, :remote_store, project: project)
+      file = build(:ci_secure_file, :remote_store, project: project)
       stub_ci_secure_file_object_storage(enabled: false)
 
       file
@@ -55,7 +50,6 @@ RSpec.describe Ci::SecureFile do
       end
 
       before do
-        stub_ci_secure_file_object_storage(enabled: false)
         stub_current_geo_node(node)
       end
 
