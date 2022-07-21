@@ -183,7 +183,7 @@ RSpec.describe AppSec::Dast::Scans::RunService do
             masked: false
           }, {
             key: 'SECURE_ANALYZERS_PREFIX',
-            value: secure_analyzers_prefix,
+            value: '$TEMPLATE_REGISTRY_HOST/security-products',
             public: true,
             masked: false
           }
