@@ -51,7 +51,7 @@ RSpec.describe MemberEntity do
     end
 
     it 'correctly exposes `can_unban`' do
-      allow(member).to receive(:can_unban?) { true }
+      allow(member).to receive(:can_unban?).and_return(true)
 
       expect(entity_hash[:can_unban]).to be(true)
     end
