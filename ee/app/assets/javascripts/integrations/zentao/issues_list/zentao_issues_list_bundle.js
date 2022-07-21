@@ -2,10 +2,10 @@ import externalIssuesListFactory from 'ee/external_issues_list';
 import zentaoLogo from 'images/logos/zentao.svg';
 import { s__ } from '~/locale';
 import getIssuesQuery from './graphql/queries/get_zentao_issues.query.graphql';
-import zentaoIssues from './graphql/resolvers/zentao_issues';
+import { zentaoIssuesResolver } from './graphql/resolvers/zentao_issues';
 
 export default externalIssuesListFactory({
-  externalIssuesQueryResolver: zentaoIssues,
+  externalIssuesQueryResolver: zentaoIssuesResolver,
   provides: {
     getIssuesQuery,
     externalIssuesLogo: zentaoLogo,
