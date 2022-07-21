@@ -213,7 +213,7 @@ RSpec.describe 'Value Stream Analytics', :js do
       expect(page.find(metrics_selector)).not_to have_selector("#commits")
     end
 
-    it 'does not show restricted stages' do
+    it 'does not show restricted stages', :aggregate_failures do
       expect(find(stage_table_selector)).to have_content(issue.title)
 
       expect(page).to have_selector('.gl-path-nav-list-item', text: 'Issue')
