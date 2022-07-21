@@ -76,7 +76,7 @@ class RepositoryUpdateMirrorWorker
       :gitlab_repository_mirror_update_duration_seconds,
       'Mirror update duration',
       {},
-      [0.1, 0.2, 0.5, 1.0, 2.0, 5.0, 10.0, 50.0, 100.0]
+      [0.1, 1.0, 10.0, 30.0, 60.0, 120.0, 300.0, 600.0]
     )
   end
 
@@ -85,7 +85,7 @@ class RepositoryUpdateMirrorWorker
       :gitlab_repository_mirror_waiting_duration_seconds,
       'Waiting length for repository mirror',
       {},
-      [0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1, 0.500, 2.0, 10.0]
+      [1.0, 10.0, 30.0, 60.0, 300.0, 600.0, 1800.0, 2400.0, 3600.0]
     )
   end
 end
