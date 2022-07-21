@@ -6,7 +6,7 @@ import {
   GlFormGroup,
   GlFormTextarea,
   GlLink,
-  GlPopover,
+  GlModal,
   GlSprintf,
   GlTooltipDirective as GlTooltip,
 } from '@gitlab/ui';
@@ -27,7 +27,7 @@ export default {
     GlFormGroup,
     GlFormTextarea,
     GlLink,
-    GlPopover,
+    GlModal,
     GlSprintf,
     TimeAgoTooltip,
   },
@@ -112,9 +112,25 @@ export default {
     approvals() {
       return this.upcomingDeployment?.approvals ?? [];
     },
+    actionPrimary() {
+      return this.canApproveDeployment
+        ? {
+            text: this.$options.i18n.approve,
+            attributes: { loading: this.loading, variant: 'confirm', ref: 'approve' },
+          }
+        : null;
+    },
+    actionSecondary() {
+      return this.canApproveDeployment
+        ? { text: this.$options.i18n.reject, attributes: { ref: 'reject', loading: this.loading } }
+        : null;
+    },
+    actionCancel() {
+      return this.canApproveDeployment ? null : { text: this.$options.i18n.cancel };
+    },
   },
   methods: {
-    showPopover() {
+    showModal() {
       this.show = true;
     },
     approve() {
@@ -170,6 +186,7 @@ export default {
     description: __('Add comment...'),
     approve: __('Approve'),
     reject: __('Reject'),
+    cancel: __('Cancel'),
   },
 };
 </script>
@@ -182,13 +199,24 @@ export default {
       :loading="loading"
       :title="buttonTitle"
       icon="thumb-up"
-      @click="showPopover"
+      @click="showModal"
     >
       <template v-if="showText">
         {{ $options.i18n.button }}
       </template>
     </gl-button>
-    <gl-popover :target="id" triggers="click blur" placement="top" :title="title" :show="show">
+    <gl-modal
+      v-model="show"
+      :modal-id="id"
+      :title="title"
+      :action-primary="actionPrimary"
+      :action-secondary="actionSecondary"
+      :action-cancel="actionCancel"
+      static
+      modal-class="gl-text-gray-900"
+      @primary="approve"
+      @secondary="reject"
+    >
       <p>
         <gl-sprintf :message="$options.i18n.message">
           <template #deploymentIid>{{ deploymentIid }}</template>
@@ -229,7 +257,7 @@ export default {
       <template v-for="(approval, index) in approvals">
         <div :key="`user-${index}`" class="gl-display-flex gl-align-items-center">
           <gl-avatar :size="16" :src="approval.user.avatarUrl" class="gl-mr-2" />
-          <gl-link :href="approval.user.webUrl" class="gl-font-sm gl-mr-2">
+          <gl-link :href="approval.user.webUrl" class="gl-mr-2">
             @{{ approval.user.username }}
           </gl-link>
         </div>
@@ -274,13 +302,7 @@ export default {
             {{ remainingCharacterCount }}
           </span>
         </div>
-        <gl-button ref="approve" :loading="loading" variant="confirm" @click="approve">
-          {{ $options.i18n.approve }}
-        </gl-button>
-        <gl-button ref="reject" :loading="loading" @click="reject">
-          {{ $options.i18n.reject }}
-        </gl-button>
       </div>
-    </gl-popover>
+    </gl-modal>
   </gl-button-group>
 </template>
