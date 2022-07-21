@@ -17,7 +17,6 @@ module Ci
     rule { can?(:admin_pipeline) | (can?(:update_build) & owner_of_schedule) }.policy do
       enable :admin_pipeline_schedule
       enable :read_pipeline_schedule_variables
-      enable :edit_pipeline_schedule
     end
 
     rule { admin | (owner_of_schedule & can?(:update_build)) }.policy do
