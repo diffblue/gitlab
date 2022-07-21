@@ -18601,6 +18601,18 @@ Represents a hierarchy widget.
 | <a id="workitemwidgethierarchyparent"></a>`parent` | [`WorkItem`](#workitem) | Parent work item. |
 | <a id="workitemwidgethierarchytype"></a>`type` | [`WorkItemWidgetType`](#workitemwidgettype) | Widget type. |
 
+### `WorkItemWidgetStartAndDueDate`
+
+Represents a start and due date widget.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="workitemwidgetstartandduedateduedate"></a>`dueDate` | [`Date`](#date) | Due date of the work item. |
+| <a id="workitemwidgetstartandduedatestartdate"></a>`startDate` | [`Date`](#date) | Start date of the work item. |
+| <a id="workitemwidgetstartandduedatetype"></a>`type` | [`WorkItemWidgetType`](#workitemwidgettype) | Widget type. |
+
 ### `WorkItemWidgetWeight`
 
 Represents a weight widget.
@@ -20464,6 +20476,7 @@ Type of a work item widget.
 | <a id="workitemwidgettypeassignees"></a>`ASSIGNEES` | Assignees widget. |
 | <a id="workitemwidgettypedescription"></a>`DESCRIPTION` | Description widget. |
 | <a id="workitemwidgettypehierarchy"></a>`HIERARCHY` | Hierarchy widget. |
+| <a id="workitemwidgettypestart_and_due_date"></a>`START_AND_DUE_DATE` | Start And Due Date widget. |
 | <a id="workitemwidgettypeweight"></a>`WEIGHT` | Weight widget. |
 
 ## Scalar types
@@ -21692,6 +21705,7 @@ Implementations:
 - [`WorkItemWidgetAssignees`](#workitemwidgetassignees)
 - [`WorkItemWidgetDescription`](#workitemwidgetdescription)
 - [`WorkItemWidgetHierarchy`](#workitemwidgethierarchy)
+- [`WorkItemWidgetStartAndDueDate`](#workitemwidgetstartandduedate)
 - [`WorkItemWidgetWeight`](#workitemwidgetweight)
 
 ##### Fields
