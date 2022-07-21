@@ -9,6 +9,7 @@ import MrWidgetEnableFeaturePrompt from './components/states/mr_widget_enable_fe
 import MrWidgetJiraAssociationMissing from './components/states/mr_widget_jira_association_missing.vue';
 import MrWidgetPolicyViolation from './components/states/mr_widget_policy_violation.vue';
 import MrWidgetGeoSecondaryNode from './components/states/mr_widget_secondary_geo_node.vue';
+import WidgetContainer from './components/widget/app.vue';
 import loadPerformanceExtension from './extensions/load_performance';
 import browserPerformanceExtension from './extensions/browser_performance';
 import statusChecksExtension from './extensions/status_checks';
@@ -20,6 +21,7 @@ export default {
     GlSprintf,
     GlLink,
     MrWidgetLicenses,
+    WidgetContainer,
     MrWidgetGeoSecondaryNode,
     MrWidgetPolicyViolation,
     MrWidgetEnableFeaturePrompt,
@@ -370,6 +372,7 @@ export default {
         </mr-widget-alert-message>
       </div>
       <extensions-container :mr="mr" />
+      <widget-container v-if="mr" :mr="mr" />
       <blocking-merge-requests-report :mr="mr" />
       <grouped-codequality-reports-app
         v-if="shouldRenderCodeQuality && !shouldShowCodeQualityExtension"
