@@ -22,16 +22,9 @@ class Projects::RequirementsManagement::RequirementsController < Projects::Appli
     file = requirement_params[:file]
     return render json: { message: invalid_file_message } unless file_is_valid?(file)
 
-    uploader = UploadService.new(project, file).execute
-    message =
-      if uploader
-        RequirementsManagement::ImportRequirementsCsvWorker.perform_async(current_user.id, project.id, uploader.upload.id) # rubocop:disable CodeReuse/Worker
-        _("Your requirements are being imported. Once finished, you'll receive a confirmation email.")
-      else
-        _("File upload error.")
-      end
+    result = RequirementsManagement::PrepareImportCsvService.new(project, current_user, file: file).execute
 
-    render json: { message: message }
+    render json: { message: result.message }
   end
 
   private
