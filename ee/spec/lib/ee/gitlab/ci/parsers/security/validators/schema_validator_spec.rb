@@ -106,21 +106,7 @@ RSpec.describe Gitlab::Ci::Parsers::Security::Validators::SchemaValidator do
       context 'when given data is invalid according to the schema' do
         let(:report_data) { { 'version' => '10.0.0' } }
 
-        context 'and enforce_security_report_validation is enabled' do
-          before do
-            stub_feature_flags(enforce_security_report_validation: project)
-          end
-
-          it { is_expected.to be_empty }
-        end
-
-        context 'and enforce_security_report_validation is disabled' do
-          before do
-            stub_feature_flags(enforce_security_report_validation: false)
-          end
-
-          it { is_expected.to eq(expected_errors) }
-        end
+        it { is_expected.to be_empty }
       end
     end
 
@@ -129,21 +115,7 @@ RSpec.describe Gitlab::Ci::Parsers::Security::Validators::SchemaValidator do
 
       subject { validator.errors }
 
-      context 'when enforce_security_report_validation is enabled' do
-        before do
-          stub_feature_flags(enforce_security_report_validation: project)
-        end
-
-        it { is_expected.to eq(expected_errors) }
-      end
-
-      context 'when enforce_security_report_validation is disabled' do
-        before do
-          stub_feature_flags(enforce_security_report_validation: false)
-        end
-
-        it { is_expected.to be_empty }
-      end
+      it { is_expected.to eq(expected_errors) }
     end
   end
 end

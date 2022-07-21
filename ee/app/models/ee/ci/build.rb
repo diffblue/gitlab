@@ -196,11 +196,7 @@ module EE
       end
 
       def validate_schema?
-        if ::Feature.enabled?(:enforce_security_report_validation, project)
-          true
-        else
-          variables[VALIDATE_SCHEMA_VARIABLE_NAME]&.value&.casecmp?('true')
-        end
+        true
       end
 
       private
