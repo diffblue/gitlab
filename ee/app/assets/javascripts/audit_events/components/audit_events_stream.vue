@@ -28,7 +28,7 @@ export default {
   data() {
     return {
       externalAuditEventDestinations: null,
-      isEditing: false,
+      showEditor: false,
     };
   },
   computed: {
@@ -36,22 +36,22 @@ export default {
       return this.$apollo.queries.externalAuditEventDestinations.loading;
     },
     shouldShowEmptyMode() {
-      return !this.destinationsCount && !this.isEditing;
+      return !this.destinationsCount && !this.showEditor;
     },
     destinationsCount() {
       return this.externalAuditEventDestinations?.length ?? 0;
     },
   },
   methods: {
-    setEditMode(state) {
-      this.isEditing = state;
+    setEditorVisibility(state) {
+      this.showEditor = state;
     },
     refreshDestinations() {
       return this.$apollo.queries.externalAuditEventDestinations.refetch();
     },
     async onAddedDestination() {
       await this.refreshDestinations();
-      this.setEditMode(false);
+      this.setEditorVisibility(false);
     },
   },
   apollo: {
@@ -89,7 +89,7 @@ export default {
 
 <template>
   <gl-loading-icon v-if="isLoading" size="lg" />
-  <stream-empty-state v-else-if="shouldShowEmptyMode" @add="setEditMode(true)" />
+  <stream-empty-state v-else-if="shouldShowEmptyMode" @add="setEditorVisibility(true)" />
   <div v-else>
     <div v-if="destinationsCount" class="gl-display-flex gl-align-items-center gl-pl-5 gl-py-3">
       <img
@@ -98,10 +98,14 @@ export default {
         class="gl-mr-2 gl-h-5 gl-w-5"
       />
       <span class="gl-mr-4">{{ destinationsCount }}</span>
-      <gl-button :aria-label="$options.i18n.ADD_STREAM" icon="plus" @click="setEditMode(true)" />
+      <gl-button
+        :aria-label="$options.i18n.ADD_STREAM"
+        icon="plus"
+        @click="setEditorVisibility(true)"
+      />
     </div>
-    <div v-if="isEditing" class="gl-p-6 gl-border gl-rounded-base">
-      <stream-destination-editor @added="onAddedDestination" @cancel="setEditMode(false)" />
+    <div v-if="showEditor" class="gl-p-6 gl-border gl-rounded-base">
+      <stream-destination-editor @added="onAddedDestination" @cancel="setEditorVisibility(false)" />
     </div>
     <div v-if="destinationsCount" class="gl-p-4">
       <label class="gl-mb-3">{{ $options.i18n.ACTIVE_STREAM }}</label>
