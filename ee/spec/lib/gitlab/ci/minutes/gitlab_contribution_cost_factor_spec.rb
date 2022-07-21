@@ -13,15 +13,14 @@ RSpec.describe Gitlab::Ci::Minutes::GitlabContributionCostFactor do
 
   let(:another_project) {create(:project, group: another_group) }
 
-  where(:ff_enabled, :fork_from, :is_merge_request, :target_project, :monthly_minutes, :expectation, :case_name) do
-    true  | ref(:gitlab_project)  | true  | ref(:gitlab_project)  | 10_000 | 0.0333     |  'FF enabled'
-    false | ref(:gitlab_project)  | true  | ref(:gitlab_project)  | 10_000 | nil        |  'FF disabled'
-    true  | ref(:gitlab_project)  | true  | ref(:gitlab_project)  | 50_000 | 0.1666     |  '50k minutes'
-    true  | ref(:gitlab_project)  | true  | ref(:gitlab_project)  | 400    | 0.0013     |  '400k minutes'
-    true  | ref(:gitlab_project)  | false | ref(:gitlab_project)  | 400    | nil        |  'not an MR pipeline'
-    true  | ref(:gitlab_project)  | true  | ref(:gitlab_project)  | 0      | nil        |  'Minute limit disabled'
-    true  | ref(:another_project) | true  | ref(:another_project) | 400    | nil        |  'non-GitLab project'
-    true  | nil                   | true  | ref(:gitlab_project)  | 400    | nil        |  'Not a fork'
+  where(:fork_from, :is_merge_request, :target_project, :monthly_minutes, :expectation, :case_name) do
+    ref(:gitlab_project)  | true  | ref(:gitlab_project)  | 10_000 | 0.0333     |  '10k minutes'
+    ref(:gitlab_project)  | true  | ref(:gitlab_project)  | 50_000 | 0.1666     |  '50k minutes'
+    ref(:gitlab_project)  | true  | ref(:gitlab_project)  | 400    | 0.0013     |  '400 minutes'
+    ref(:gitlab_project)  | false | ref(:gitlab_project)  | 400    | nil        |  'not an MR pipeline'
+    ref(:gitlab_project)  | true  | ref(:gitlab_project)  | 0      | nil        |  'Minute limit disabled'
+    ref(:another_project) | true  | ref(:another_project) | 400    | nil        |  'non-GitLab project'
+    nil                   | true  | ref(:gitlab_project)  | 400    | nil        |  'Not a fork'
   end
 
   with_them do
@@ -39,7 +38,6 @@ RSpec.describe Gitlab::Ci::Minutes::GitlabContributionCostFactor do
 
     before do
       stub_feature_flags(ci_minimal_cost_factor_for_gitlab_namespaces: gitlab_group)
-      stub_feature_flags(ci_minimal_cost_factor_for_gitlab_contributors: ff_enabled)
 
       if is_merge_request
         merge_request = create(:merge_request,

@@ -49,7 +49,6 @@ module Gitlab
 
         def gitlab_contribution_cost_factor?
           merge_request &&
-            ::Feature.enabled?(:ci_minimal_cost_factor_for_gitlab_contributors, target_project) &&
             gitlab_group_contribution? &&
             minutes_limit.enabled?
         end
