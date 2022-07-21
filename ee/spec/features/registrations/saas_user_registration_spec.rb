@@ -42,7 +42,7 @@ RSpec.describe "User registration", :js, :saas do
     # The groups_and_projects_controller (on `click_on 'Create project'`) is over
     # the query limit threshold, so we have to adjust it.
     # https://gitlab.com/gitlab-org/gitlab/-/issues/338737
-    stub_const('Gitlab::QueryLimiting::Transaction::THRESHOLD', 272)
+    stub_const('Gitlab::QueryLimiting::Transaction::THRESHOLD', 271)
   end
 
   def fill_in_sign_up_form(user)
