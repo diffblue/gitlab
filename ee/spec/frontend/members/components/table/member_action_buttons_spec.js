@@ -11,14 +11,16 @@ import GroupActionButtons from '~/members/components/action_buttons/group_action
 import InviteActionButtons from '~/members/components/action_buttons/invite_action_buttons.vue';
 import UserActionButtons from '~/members/components/action_buttons/user_action_buttons.vue';
 import MemberActionButtons from '~/members/components/table/member_action_buttons.vue';
+import BannedActionButtons from 'ee/members/components/action_buttons/banned_action_buttons.vue';
 import { MEMBER_TYPES } from 'ee_else_ce/members/constants';
+import { stubComponent } from 'helpers/stub_component';
 
 describe('MemberActionButtons', () => {
   let wrapper;
 
   const createComponent = (propsData = {}) => {
     wrapper = shallowMount(MemberActionButtons, {
-      stubs: { BannedActionButtons: true },
+      stubs: { BannedActionButtons: stubComponent(BannedActionButtons) },
       propsData: {
         isCurrentUser: false,
         isInvitedUser: false,
@@ -40,20 +42,13 @@ describe('MemberActionButtons', () => {
     ${MEMBER_TYPES.group}         | ${group}         | ${GroupActionButtons}         | ${'GroupActionButtons'}
     ${MEMBER_TYPES.invite}        | ${invite}        | ${InviteActionButtons}        | ${'InviteActionButtons'}
     ${MEMBER_TYPES.accessRequest} | ${accessRequest} | ${AccessRequestActionButtons} | ${'AccessRequestActionButtons'}
+    ${MEMBER_TYPES.banned}        | ${bannedMember}  | ${BannedActionButtons}        | ${'BannedActionButtons'}
   `(
     'renders $expectedComponentName when `memberType` is $memberType',
     ({ memberType, member, expectedComponent }) => {
       createComponent({ memberType, member });
 
-      expect(wrapper.find(expectedComponent).exists()).toBe(true);
+      expect(wrapper.findComponent(expectedComponent).exists()).toBe(true);
     },
   );
-
-  describe('when memberType is banned', () => {
-    it('renders BannedActionButtons', () => {
-      createComponent({ memberType: MEMBER_TYPES.banned, member: bannedMember });
-
-      expect(wrapper.html()).toMatch(/<bannedactionbuttons-stub .*><\/bannedactionbuttons-stub>/);
-    });
-  });
 });

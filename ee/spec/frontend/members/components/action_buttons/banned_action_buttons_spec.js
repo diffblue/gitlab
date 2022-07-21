@@ -10,6 +10,8 @@ jest.mock('~/lib/utils/csrf', () => ({ token: 'mock-csrf-token' }));
 
 Vue.use(Vuex);
 
+const DEFAULT_MEMBERS_PATH = '/groups/foo-bar/-/group_members';
+
 describe('BannedActionButtons', () => {
   let wrapper;
 
@@ -19,7 +21,7 @@ describe('BannedActionButtons', () => {
         [MEMBER_TYPES.banned]: {
           namespaced: true,
           state: {
-            memberPath: '/groups/foo-bar/-/group_members/:id',
+            memberPath: `${DEFAULT_MEMBERS_PATH}/:id`,
             ...state,
           },
         },
@@ -59,14 +61,17 @@ describe('BannedActionButtons', () => {
       expect(findButton().attributes('type')).toBe('submit');
     });
 
-    it('displays form with correct action and inputs', () => {
-      const form = findForm();
-
-      expect(form.attributes('action')).toBe(`/groups/foo-bar/-/group_members/${member.id}/unban`);
-      expect(form.find('input[name="_method"]').attributes('value')).toBe('put');
-      expect(form.find('input[name="authenticity_token"]').attributes('value')).toBe(
+    it('displays form with correct inputs', () => {
+      expect(findForm().find('input[name="_method"]').attributes('value')).toBe('put');
+      expect(findForm().find('input[name="authenticity_token"]').attributes('value')).toBe(
         'mock-csrf-token',
       );
+    });
+
+    it('has the corrected rendered unbanPath', () => {
+      const action = findForm().attributes('action');
+      expect(action).toBe(`${DEFAULT_MEMBERS_PATH}/${member.id}/unban`);
+      expect(action).not.toContain(':id');
     });
   });
 

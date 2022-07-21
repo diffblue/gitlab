@@ -54,8 +54,11 @@ describe('Members Utils', () => {
       ${{ ...memberMock, banned: true, canUnban: false }}  | ${false}
       ${{ ...memberMock, banned: false, canUnban: true }}  | ${false}
       ${{ ...memberMock, banned: false, canUnban: false }} | ${false}
-    `('returns $expected', ({ member, expected }) => {
-      expect(canUnban(member)).toBe(expected);
-    });
+    `(
+      'returns $expected for "member banned $member.banned and member canUnban $member.canUnban"',
+      ({ member, expected }) => {
+        expect(canUnban(member)).toBe(expected);
+      },
+    );
   });
 });
