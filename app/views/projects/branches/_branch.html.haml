@@ -34,7 +34,7 @@
         %svg.s24
 
     - if merge_project && create_mr_button?(from: branch.name, source_project: @project)
-      = link_to create_mr_path(from: branch.name, source_project: @project), class: 'gl-button btn btn-default' do
+      = render Pajamas::ButtonComponent.new(href: create_mr_path(from: branch.name, source_project: @project)) do
         = _('Merge request')
 
     - if branch.name != @repository.root_ref
