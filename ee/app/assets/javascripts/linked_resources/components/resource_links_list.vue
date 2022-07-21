@@ -39,7 +39,7 @@ export default {
         v-for="link in resourceLinks"
         :key="link.id"
         :data-key="link.id"
-        class="list-item pt-0 pb-0"
+        class="list-item gl-pt-0 gl-pb-0"
       >
         <resource-link-item
           :id-key="link.id"

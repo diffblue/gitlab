@@ -21,7 +21,7 @@ export default {
   i18n: resourceLinksI18n,
   props: {
     issuableId: {
-      type: String,
+      type: Number,
       required: true,
       default: '',
     },
@@ -52,7 +52,7 @@ export default {
         };
       },
       update(data) {
-        return data.issue.issuableResourceLinks.nodes;
+        return data?.issue?.issuableResourceLinks?.nodes;
       },
       error(error) {
         displayAndLogError(error);
