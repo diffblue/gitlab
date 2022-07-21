@@ -13,12 +13,12 @@ module Gitlab
 
       EPIC_CREATED = 'g_project_management_epic_created'
       EPIC_DESCRIPTION_CHANGED = 'g_project_management_users_updating_epic_descriptions'
-      EPIC_TITLE_CHANGED = 'g_project_management_users_updating_epic_titles'
+      EPIC_EMOJI_AWARDED = 'g_project_management_users_awarding_epic_emoji'
+      EPIC_EMOJI_REMOVED = 'g_project_management_users_removing_epic_emoji'
       EPIC_NOTE_CREATED = 'g_project_management_users_creating_epic_notes'
       EPIC_NOTE_UPDATED = 'g_project_management_users_updating_epic_notes'
       EPIC_NOTE_DESTROYED = 'g_project_management_users_destroying_epic_notes'
-      EPIC_EMOJI_AWARDED = 'g_project_management_users_awarding_epic_emoji'
-      EPIC_EMOJI_REMOVED = 'g_project_management_users_removing_epic_emoji'
+      EPIC_TITLE_CHANGED = 'g_project_management_users_updating_epic_titles'
       EPIC_START_DATE_SET_AS_FIXED = 'g_project_management_users_setting_epic_start_date_as_fixed'
       EPIC_START_DATE_SET_AS_INHERITED = 'g_project_management_users_setting_epic_start_date_as_inherited'
       EPIC_DUE_DATE_SET_AS_FIXED = 'g_project_management_users_setting_epic_due_date_as_fixed'
@@ -62,23 +62,28 @@ module Gitlab
           track_unique_action(EPIC_DESCRIPTION_CHANGED, author)
         end
 
-        def track_epic_note_created_action(author:)
+        def track_epic_note_created_action(author:, namespace:)
+          track_snowplow_action(EPIC_NOTE_CREATED, author, namespace)
           track_unique_action(EPIC_NOTE_CREATED, author)
         end
 
-        def track_epic_note_updated_action(author:)
+        def track_epic_note_updated_action(author:, namespace:)
+          track_snowplow_action(EPIC_NOTE_UPDATED, author, namespace)
           track_unique_action(EPIC_NOTE_UPDATED, author)
         end
 
-        def track_epic_note_destroyed_action(author:)
+        def track_epic_note_destroyed_action(author:, namespace:)
+          track_snowplow_action(EPIC_NOTE_DESTROYED, author, namespace)
           track_unique_action(EPIC_NOTE_DESTROYED, author)
         end
 
-        def track_epic_emoji_awarded_action(author:)
+        def track_epic_emoji_awarded_action(author:, namespace:)
+          track_snowplow_action(EPIC_EMOJI_AWARDED, author, namespace)
           track_unique_action(EPIC_EMOJI_AWARDED, author)
         end
 
-        def track_epic_emoji_removed_action(author:)
+        def track_epic_emoji_removed_action(author:, namespace:)
+          track_snowplow_action(EPIC_EMOJI_REMOVED, author, namespace)
           track_unique_action(EPIC_EMOJI_REMOVED, author)
         end
 

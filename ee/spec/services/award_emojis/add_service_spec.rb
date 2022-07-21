@@ -50,6 +50,7 @@ RSpec.describe AwardEmojis::AddService do
 
         it 'tracks usage' do
           expect(::Gitlab::UsageDataCounters::EpicActivityUniqueCounter).to receive(:track_epic_emoji_awarded_action)
+            .with(author: user, namespace: group)
 
           described_class.new(awardable, name, user).execute
         end

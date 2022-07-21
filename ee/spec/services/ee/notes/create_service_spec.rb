@@ -68,6 +68,7 @@ RSpec.describe Notes::CreateService do
 
       it 'tracks epic note creation' do
         expect(::Gitlab::UsageDataCounters::EpicActivityUniqueCounter).to receive(:track_epic_note_created_action)
+          .with(author: user, namespace: epic.group)
 
         described_class.new(nil, user, opts).execute
       end

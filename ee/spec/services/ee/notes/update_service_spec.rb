@@ -56,7 +56,7 @@ RSpec.describe Notes::UpdateService do
     subject(:service) { described_class.new(nil, user, opts) }
 
     it 'tracks epic note creation' do
-      expect(::Gitlab::UsageDataCounters::EpicActivityUniqueCounter).to receive(:track_epic_note_updated_action).with(author: user)
+      expect(::Gitlab::UsageDataCounters::EpicActivityUniqueCounter).to receive(:track_epic_note_updated_action).with(author: user, namespace: epic.group)
 
       described_class.new(nil, user, opts).execute(note)
     end

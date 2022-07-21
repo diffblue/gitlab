@@ -12,11 +12,14 @@ module EE
         super
 
         ::Gitlab::StatusPage.trigger_publish(project, current_user, award)
-        track_epic_emoji_awarded if awardable.is_a?(Epic)
+        track_epic_emoji_awarded(awardable) if awardable.is_a?(Epic)
       end
 
-      def track_epic_emoji_awarded
-        ::Gitlab::UsageDataCounters::EpicActivityUniqueCounter.track_epic_emoji_awarded_action(author: current_user)
+      def track_epic_emoji_awarded(awardable)
+        ::Gitlab::UsageDataCounters::EpicActivityUniqueCounter.track_epic_emoji_awarded_action(
+          author: current_user,
+          namespace: awardable.group
+        )
       end
     end
   end
