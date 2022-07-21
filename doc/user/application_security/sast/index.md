@@ -330,6 +330,8 @@ False positive detection is available in a subset of the [supported languages](#
 
 - Ruby, in the Brakeman-based analyzer
 
+![SAST false-positives show in Vulnerability Pages](img/sast_vulnerability_page_fp_detection_v15_2.png)
+
 ### Advanced vulnerability tracking **(ULTIMATE)**
 
 > [Introduced](https://gitlab.com/groups/gitlab-org/-/epics/5144) in GitLab 14.2.
