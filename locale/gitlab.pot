@@ -23474,7 +23474,7 @@ msgstr ""
 msgid "Linked epics"
 msgstr ""
 
-msgid "Linked issues"
+msgid "Linked items"
 msgstr ""
 
 msgid "LinkedIn"
