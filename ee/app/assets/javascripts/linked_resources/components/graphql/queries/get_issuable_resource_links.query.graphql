@@ -1,12 +1,9 @@
 query GetIssuableResourceLinks($incidentId: IssueID!) {
   issue(id: $incidentId) {
+    id
     issuableResourceLinks(incidentId: $incidentId) {
       nodes {
         id
-        issue {
-          id
-          title
-        }
         link
         linkType
         linkText
