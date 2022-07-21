@@ -1,11 +1,11 @@
 import MockAdapter from 'axios-mock-adapter';
 import createApolloProvider from 'ee/external_issues_list/graphql';
-import getZentaoIssues from 'ee/integrations/zentao/issues_list/graphql/queries/get_zentao_issues.query.graphql';
-import zentaoIssuesResolver from 'ee/integrations/zentao/issues_list/graphql/resolvers/zentao_issues';
+import getExternalIssues from 'ee/integrations/zentao/issues_list/graphql/queries/get_zentao_issues.query.graphql';
+import { externalIssuesResolverFactory } from 'ee/external_issues_list/graphql/resolver';
 import { DEFAULT_PAGE_SIZE } from '~/vue_shared/issuable/list/constants';
 import { i18n } from '~/issues/list/constants';
 import axios from '~/lib/utils/axios_utils';
-import { mockZentaoIssues } from '../mock_data';
+import { mockExternalIssues } from '../mock_data';
 
 const DEFAULT_ISSUES_FETCH_PATH = '/test/issues/fetch';
 const DEFAULT_VARIABLES = {
@@ -23,15 +23,17 @@ const TEST_PAGE_HEADERS = {
   'x-total': '13',
 };
 
-const TYPE_ZENTAO_ISSUES = 'ZentaoIssues';
+const issueTrackerName = 'ZenTao';
+const TYPE_EXTERNAL_ISSUES = `${issueTrackerName}Issues`;
+const externalIssuesResolver = externalIssuesResolverFactory(issueTrackerName);
 
-describe('ee/integrations/zentao/issues_list/graphql/resolvers/zentao_issues', () => {
+describe('ee/external_issues_list/graphql/resolvers', () => {
   let mock;
   let apolloClient;
   let issuesApiSpy;
 
   const createPageInfo = ({ page, total }) => ({
-    __typename: 'ZentaoIssuesPageInfo',
+    __typename: `${TYPE_EXTERNAL_ISSUES}PageInfo`,
     page,
     total,
   });
@@ -49,7 +51,7 @@ describe('ee/integrations/zentao/issues_list/graphql/resolvers/zentao_issues', (
     ...props,
   });
 
-  const createZentaoIssue = ({
+  const createExternalIssue = ({
     assignees,
     author,
     labels,
@@ -61,7 +63,7 @@ describe('ee/integrations/zentao/issues_list/graphql/resolvers/zentao_issues', (
     project_id,
     ...props
   }) => ({
-    __typename: 'ZentaoIssue',
+    __typename: `${issueTrackerName}Issue`,
     assignees: assignees.map(createUserCore),
     author: createUserCore(author),
     labels: labels.map(createLabel),
@@ -80,7 +82,7 @@ describe('ee/integrations/zentao/issues_list/graphql/resolvers/zentao_issues', (
         ...DEFAULT_VARIABLES,
         ...variables,
       },
-      query: getZentaoIssues,
+      query: getExternalIssues,
     });
 
   beforeEach(() => {
@@ -89,7 +91,7 @@ describe('ee/integrations/zentao/issues_list/graphql/resolvers/zentao_issues', (
     mock = new MockAdapter(axios);
     mock.onGet(DEFAULT_ISSUES_FETCH_PATH).reply((...args) => issuesApiSpy(...args));
 
-    ({ defaultClient: apolloClient } = createApolloProvider(zentaoIssuesResolver));
+    ({ defaultClient: apolloClient } = createApolloProvider(externalIssuesResolver));
   });
 
   afterEach(() => {
@@ -110,9 +112,9 @@ describe('ee/integrations/zentao/issues_list/graphql/resolvers/zentao_issues', (
 
       expect(response.data).toEqual({
         externalIssues: {
-          __typename: TYPE_ZENTAO_ISSUES,
+          __typename: TYPE_EXTERNAL_ISSUES,
           errors: expectedErrors,
-          pageInfo: createPageInfo({ page: Number.NaN, total: Number.NaN }),
+          pageInfo: createPageInfo({ page: 1, total: 0 }),
           nodes: [],
         },
       });
@@ -121,7 +123,7 @@ describe('ee/integrations/zentao/issues_list/graphql/resolvers/zentao_issues', (
 
   describe('with successful api request', () => {
     beforeEach(() => {
-      issuesApiSpy.mockReturnValue([200, mockZentaoIssues, TEST_PAGE_HEADERS]);
+      issuesApiSpy.mockReturnValue([200, mockExternalIssues, TEST_PAGE_HEADERS]);
     });
 
     it('sends expected params', async () => {
@@ -152,10 +154,10 @@ describe('ee/integrations/zentao/issues_list/graphql/resolvers/zentao_issues', (
 
       expect(response.data).toEqual({
         externalIssues: {
-          __typename: TYPE_ZENTAO_ISSUES,
+          __typename: TYPE_EXTERNAL_ISSUES,
           errors: [],
           pageInfo: createPageInfo({ page: 10, total: 13 }),
-          nodes: mockZentaoIssues.map(createZentaoIssue),
+          nodes: mockExternalIssues.map(createExternalIssue),
         },
       });
     });

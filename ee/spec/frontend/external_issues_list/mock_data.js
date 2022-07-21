@@ -126,3 +126,25 @@ export const mockJiraIssue4 = {
 };
 
 export const mockJiraIssues = [mockJiraIssue1, mockJiraIssue2, mockJiraIssue3];
+
+export const mockZentaoIssue = {
+  project_id: 1,
+  id: 3,
+  title: 'Alias ut modi est labore.',
+  created_at: '2020-03-19T14:31:50.012Z',
+  updated_at: '2020-03-19T14:31:50.012Z',
+  closed_at: null,
+  status: 'Backlog',
+  labels: [],
+  author: {
+    id: 0,
+    name: 'Gabe Weaver',
+    web_url: 'https://gitlab-zentao.atlassian.net/people/5e320a31fe03e20c9d1dccde',
+    avatar_url: null,
+  },
+  assignees: [],
+  web_url: 'https://gitlab-zentao.atlassian.net/browse/IG-31594',
+  gitlab_web_url: '',
+};
+
+export const mockExternalIssues = [mockZentaoIssue];
