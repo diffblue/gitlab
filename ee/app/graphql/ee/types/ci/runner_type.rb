@@ -18,7 +18,7 @@ module EE
 
           field :upgrade_status, ::Types::Ci::RunnerUpgradeStatusTypeEnum, null: true,
                 description: 'Availability of upgrades for the runner.',
-                deprecated: { milestone: '14.10', reason: :alpha }
+                alpha: { milestone: '14.10' }
 
           def upgrade_status
             return :unknown unless upgrade_status_available?
