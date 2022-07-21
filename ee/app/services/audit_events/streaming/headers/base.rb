@@ -24,6 +24,19 @@ module AuditEvents
         def destination_error
           ServiceResponse.error(message: "missing destination param")
         end
+
+        def audit(action:, header:, message:, author: current_user)
+          audit_context = {
+            name: "audit_events_streaming_headers_#{action}",
+            author: author,
+            scope: group,
+            target: header,
+            message: message,
+            stream_only: false
+          }
+
+          ::Gitlab::Audit::Auditor.audit(audit_context)
+        end
       end
     end
   end
