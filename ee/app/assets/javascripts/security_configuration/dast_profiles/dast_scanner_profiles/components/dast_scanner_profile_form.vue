@@ -172,7 +172,7 @@ export default {
           v-model="form.fields.profileName.value"
           v-validation:[form.showValidation]
           name="profileName"
-          class="mw-460"
+          class="gl-max-w-62"
           data-testid="profile-name-input"
           type="text"
           required
@@ -215,7 +215,7 @@ export default {
             v-model.number="form.fields.spiderTimeout.value"
             v-validation:[form.showValidation]
             name="spiderTimeout"
-            class="mw-460"
+            class="gl-max-w-62"
             data-testid="spider-timeout-input"
             type="number"
             :min="$options.spiderTimeoutRange.min"
@@ -246,7 +246,7 @@ export default {
             v-model.number="form.fields.targetTimeout.value"
             v-validation:[form.showValidation]
             name="targetTimeout"
-            class="mw-460"
+            class="gl-max-w-62"
             data-testid="target-timeout-input"
             type="number"
             :min="$options.targetTimeoutRange.min"

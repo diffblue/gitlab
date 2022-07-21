@@ -289,7 +289,7 @@ export default {
           :modal-id="modalProps.id"
         />
       </gl-form-group>
-      <gl-form-group :label="locationStepLabel" class="mw-460">
+      <gl-form-group :label="locationStepLabel" class="gl-max-w-62">
         <gl-form-input-group>
           <template #prepend>
             <gl-input-group-text data-testid="dast-site-validation-path-prefix">{{
