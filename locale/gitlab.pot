@@ -30464,7 +30464,7 @@ msgstr ""
 msgid "ProjectQualitySummary|The percentage of tests that succeed, fail, or are skipped."
 msgstr ""
 
-msgid "ProjectQualitySummary|The project quality page helps you understand how code quality is trending for your project. Let us know how we can improve it!"
+msgid "ProjectQualitySummary|This page helps you understand the code testing trends for your project. Let us know how we can improve it!"
 msgstr ""
 
 msgid "ProjectSelect| or group"

@@ -34,7 +34,7 @@ export const i18n = {
   banner: {
     title: s__('ProjectQualitySummary|Help us improve this page'),
     text: s__(
-      'ProjectQualitySummary|The project quality page helps you understand how code quality is trending for your project. Let us know how we can improve it!',
+      'ProjectQualitySummary|This page helps you understand the code testing trends for your project. Let us know how we can improve it!',
     ),
     button: s__('ProjectQualitySummary|Provide feedback'),
   },
