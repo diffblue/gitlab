@@ -159,20 +159,37 @@ RSpec.describe Repository do
         stub_current_geo_node(secondary_node)
       end
 
-      it 'publishes a Repositories::KeepAroundRefsCreatedEvent' do
-        allow(Repositories::KeepAroundRefsCreatedEvent)
-          .to receive(:new)
-          .with(data: event_data)
-          .and_return(event)
+      context 'when multiple SHAs are passed' do
+        it 'publishes a Repositories::KeepAroundRefsCreatedEvent' do
+          allow(Repositories::KeepAroundRefsCreatedEvent)
+            .to receive(:new)
+            .with(data: event_data)
+            .and_return(event)
 
-        expect(Gitlab::EventStore).to receive(:publish).with(event)
+          expect(Gitlab::EventStore).to receive(:publish).with(event)
 
-        repository.keep_around(sha, sample_big_commit.id)
+          repository.keep_around(sha, sample_big_commit.id)
+        end
+
+        it 'does not create a Geo::RepositoryUpdatedEvent', :sidekiq_inline do
+          expect { repository.keep_around(sha) }
+            .not_to change { ::Geo::RepositoryUpdatedEvent.count }
+        end
       end
 
-      it 'does not create a Geo::RepositoryUpdatedEvent', :sidekiq_inline do
-        expect { repository.keep_around(sha) }
-          .not_to change { ::Geo::RepositoryUpdatedEvent.count }
+      context "when no SHA is passed" do
+        it 'does not publish a Repositories::KeepAroundRefsCreatedEvent' do
+          allow(Gitlab::EventStore).to receive(:publish)
+
+          expect(Gitlab::EventStore).not_to have_received(:publish).with(instance_of(Repositories::KeepAroundRefsCreatedEvent))
+
+          repository.keep_around(nil)
+        end
+
+        it 'does not create a Geo::RepositoryUpdatedEvent', :sidekiq_inline do
+          expect { repository.keep_around(nil) }
+            .not_to change { ::Geo::RepositoryUpdatedEvent.count }
+        end
       end
     end
   end
