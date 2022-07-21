@@ -11,9 +11,9 @@ RSpec.describe MergeRequest do
   using RSpec::Parameterized::TableSyntax
   include ReactiveCachingHelpers
 
-  let(:project) { create(:project, :repository) }
+  let_it_be_with_reload(:project) { create(:project, :repository) }
 
-  subject(:merge_request) { create(:merge_request, source_project: project, target_project: project) }
+  let(:merge_request) { create(:merge_request, source_project: project, target_project: project) }
 
   describe 'associations' do
     subject { build_stubbed(:merge_request) }
@@ -183,6 +183,8 @@ RSpec.describe MergeRequest do
   end
 
   describe '#participants' do
+    subject(:participants) { merge_request.participants }
+
     context 'with approval rule' do
       before do
         approver = create(:approver, target: project)
@@ -192,13 +194,12 @@ RSpec.describe MergeRequest do
       end
 
       it 'returns only the author as a participant' do
-        expect(subject.participants).to contain_exactly(subject.author)
+        expect(participants).to contain_exactly(merge_request.author)
       end
     end
   end
 
   describe '#has_denied_policies?' do
-    let(:project) { create(:project, :repository) }
     let(:merge_request) { create(:ee_merge_request, :with_license_scanning_reports, source_project: project) }
     let(:apache) { build(:software_license, :apache_2_0) }
 
@@ -298,8 +299,6 @@ RSpec.describe MergeRequest do
   end
 
   describe '#enabled_reports' do
-    let(:project) { create(:project, :repository) }
-
     where(:report_type, :with_reports, :feature) do
       :sast                | :with_sast_reports                | :sast
       :container_scanning  | :with_container_scanning_reports  | :container_scanning
@@ -356,8 +355,6 @@ RSpec.describe MergeRequest do
   describe '#has_security_reports?' do
     subject { merge_request.has_security_reports? }
 
-    let_it_be(:project) { create(:project, :repository) }
-
     before do
       stub_licensed_features(dast: true)
     end
@@ -377,8 +374,6 @@ RSpec.describe MergeRequest do
 
   describe '#has_license_scanning_reports?' do
     subject { merge_request.has_license_scanning_reports? }
-
-    let(:project) { create(:project, :repository) }
 
     before do
       stub_licensed_features(license_scanning: true)
@@ -400,8 +395,6 @@ RSpec.describe MergeRequest do
   describe '#has_dependency_scanning_reports?' do
     subject { merge_request.has_dependency_scanning_reports? }
 
-    let(:project) { create(:project, :repository) }
-
     before do
       stub_licensed_features(container_scanning: true)
     end
@@ -422,8 +415,6 @@ RSpec.describe MergeRequest do
   describe '#has_container_scanning_reports?' do
     subject { merge_request.has_container_scanning_reports? }
 
-    let(:project) { create(:project, :repository) }
-
     before do
       stub_licensed_features(container_scanning: true)
     end
@@ -443,8 +434,6 @@ RSpec.describe MergeRequest do
 
   describe '#has_dast_reports?' do
     subject { merge_request.has_dast_reports? }
-
-    let(:project) { create(:project, :repository) }
 
     before do
       stub_licensed_features(dast: true)
@@ -473,8 +462,6 @@ RSpec.describe MergeRequest do
   describe '#has_metrics_reports?' do
     subject { merge_request.has_metrics_reports? }
 
-    let(:project) { create(:project, :repository) }
-
     before do
       stub_licensed_features(metrics_reports: true)
     end
@@ -494,8 +481,6 @@ RSpec.describe MergeRequest do
 
   describe '#has_coverage_fuzzing_reports?' do
     subject { merge_request.has_coverage_fuzzing_reports? }
-
-    let_it_be(:project) { create(:project, :repository) }
 
     before do
       stub_licensed_features(coverage_fuzzing: true)
@@ -517,8 +502,6 @@ RSpec.describe MergeRequest do
   describe '#has_api_fuzzing_reports?' do
     subject { merge_request.has_api_fuzzing_reports? }
 
-    let_it_be(:project) { create(:project, :repository) }
-
     before do
       stub_licensed_features(api_fuzzing: true)
     end
@@ -537,7 +520,6 @@ RSpec.describe MergeRequest do
   end
 
   describe '#calculate_reactive_cache with current_user' do
-    let(:project) { create(:project, :repository) }
     let(:current_user) { project.users.take }
     let(:merge_request) { create(:merge_request, source_project: project) }
 
@@ -557,7 +539,6 @@ RSpec.describe MergeRequest do
   describe '#compare_container_scanning_reports' do
     subject { merge_request.compare_container_scanning_reports(current_user) }
 
-    let(:project) { create(:project, :repository) }
     let(:current_user) { project.users.first }
     let(:merge_request) { create(:merge_request, source_project: project) }
 
@@ -617,7 +598,6 @@ RSpec.describe MergeRequest do
   describe '#compare_secret_detection_reports' do
     subject { merge_request.compare_secret_detection_reports(current_user) }
 
-    let(:project) { create(:project, :repository) }
     let(:current_user) { project.users.first }
     let(:merge_request) { create(:merge_request, source_project: project) }
 
@@ -677,7 +657,6 @@ RSpec.describe MergeRequest do
   describe '#compare_sast_reports' do
     subject { merge_request.compare_sast_reports(current_user) }
 
-    let(:project) { create(:project, :repository) }
     let(:current_user) { project.users.first }
     let(:merge_request) { create(:merge_request, source_project: project) }
 
@@ -737,7 +716,6 @@ RSpec.describe MergeRequest do
   describe '#compare_license_scanning_reports' do
     subject { merge_request.compare_license_scanning_reports(current_user) }
 
-    let(:project) { create(:project, :repository) }
     let(:current_user) { project.users.first }
     let(:merge_request) { create(:merge_request, source_project: project) }
 
@@ -898,7 +876,6 @@ RSpec.describe MergeRequest do
   describe '#compare_metrics_reports' do
     subject { merge_request.compare_metrics_reports }
 
-    let(:project) { create(:project, :repository) }
     let(:merge_request) { create(:merge_request, source_project: project) }
 
     let!(:base_pipeline) do
@@ -971,8 +948,6 @@ RSpec.describe MergeRequest do
   describe '#compare_coverage_fuzzing_reports' do
     subject { merge_request.compare_coverage_fuzzing_reports(current_user) }
 
-    let_it_be(:project) { create(:project, :repository) }
-
     let(:current_user) { project.users.first }
     let(:merge_request) { create(:merge_request, source_project: project) }
 
@@ -1031,8 +1006,6 @@ RSpec.describe MergeRequest do
 
   describe '#compare_api_fuzzing_reports' do
     subject { merge_request.compare_api_fuzzing_reports(current_user) }
-
-    let_it_be(:project) { create(:project, :repository) }
 
     let(:current_user) { project.users.first }
     let(:merge_request) { create(:merge_request, source_project: project) }
@@ -1150,13 +1123,16 @@ RSpec.describe MergeRequest do
   describe '#mergeable?' do
     subject { merge_request.mergeable? }
 
+    let(:project_with_approver) { create(:project, :repository) }
+    let(:merge_request) { create(:merge_request, source_project: project_with_approver, target_project: project_with_approver) }
+
     let_it_be(:user) { create(:user) }
 
     context 'when change_response_code_merge_status is on' do
       context 'when using approvals' do
         before do
           merge_request.target_project.update!(approvals_before_merge: 1)
-          project.add_developer(user)
+          project_with_approver.add_developer(user)
         end
 
         context 'when not approved' do
@@ -1318,13 +1294,16 @@ RSpec.describe MergeRequest do
   describe '#mergeable_state?' do
     subject { merge_request.mergeable_state? }
 
+    let(:project_with_approver) { create(:project, :repository) }
+    let(:merge_request) { create(:merge_request, source_project: project_with_approver, target_project: project_with_approver) }
+
     let_it_be(:user) { create(:user) }
 
     context 'when change_response_code_merge_status is on' do
       context 'when using approvals' do
         before do
           merge_request.target_project.update!(approvals_before_merge: 1)
-          project.add_developer(user)
+          project_with_approver.add_developer(user)
         end
 
         context 'when not approved' do
@@ -1583,8 +1562,7 @@ RSpec.describe MergeRequest do
   end
 
   describe '#missing_security_scan_types' do
-    let_it_be(:project) { create(:project, :repository) }
-    let_it_be(:merge_request) { create(:ee_merge_request, source_project: project) }
+    let(:merge_request) { create(:ee_merge_request, source_project: project) }
 
     subject { merge_request.missing_security_scan_types }
 
@@ -1594,7 +1572,7 @@ RSpec.describe MergeRequest do
       end
 
       context 'when there is a base pipeline' do
-        let_it_be(:base_pipeline) do
+        let(:base_pipeline) do
           create(:ee_ci_pipeline,
                  project: project,
                  ref: merge_request.target_branch,
@@ -1617,7 +1595,7 @@ RSpec.describe MergeRequest do
     end
 
     context 'when there is a head pipeline' do
-      let_it_be(:head_pipeline) { create(:ee_ci_pipeline, project: project, sha: merge_request.diff_head_sha) }
+      let!(:head_pipeline) { create(:ee_ci_pipeline, project: project, sha: merge_request.diff_head_sha) }
 
       before do
         merge_request.update_head_pipeline
@@ -1628,15 +1606,15 @@ RSpec.describe MergeRequest do
       end
 
       context 'when there is a base pipeline' do
-        let_it_be(:base_pipeline) do
+        let!(:base_pipeline) do
           create(:ee_ci_pipeline,
                  project: project,
                  ref: merge_request.target_branch,
                  sha: merge_request.diff_base_sha)
         end
 
-        let_it_be(:base_pipeline_build) { create(:ci_build, :success, pipeline: base_pipeline, project: project) }
-        let_it_be(:head_pipeline_build) { create(:ci_build, :success, pipeline: head_pipeline, project: project) }
+        let!(:base_pipeline_build) { create(:ci_build, :success, pipeline: base_pipeline, project: project) }
+        let!(:head_pipeline_build) { create(:ci_build, :success, pipeline: head_pipeline, project: project) }
 
         context 'when the head pipeline does not have security scans' do
           context 'when the base pipeline does not have security scans' do
@@ -1693,15 +1671,14 @@ RSpec.describe MergeRequest do
   end
 
   describe '#security_reports_up_to_date?' do
-    let_it_be(:project) { create(:project, :repository) }
-    let_it_be(:merge_request) do
+    let(:merge_request) do
       create(:ee_merge_request,
              source_project: project,
              source_branch: 'feature1',
              target_branch: project.default_branch)
     end
 
-    let_it_be(:pipeline) do
+    before do
       create(:ee_ci_pipeline,
              :with_sast_report,
              project: project,
@@ -1715,7 +1692,9 @@ RSpec.describe MergeRequest do
     end
 
     context 'when the target branch security reports are out of date' do
-      let_it_be(:bad_pipeline) { create(:ee_ci_pipeline, :failed, project: project, ref: merge_request.target_branch) }
+      before do
+        create(:ee_ci_pipeline, :failed, project: project, ref: merge_request.target_branch)
+      end
 
       it { is_expected.to be false }
     end
