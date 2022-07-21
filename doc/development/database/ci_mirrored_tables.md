@@ -20,10 +20,10 @@ For example:
 - `Project`, in the `projects` table.
 
 Not being able to do `joins` on these tables brings a great challenge. The team chose to perform logical
-replication of those tables from the main database to the CI database:
+replication of those tables from the main database to the CI database, in the new tables:
 
-- `ci_namespace_mirrors`
-- `ci_project_mirrors`
+- `ci_namespace_mirrors`, as a mirror of the `namespaces` table
+- `ci_project_mirrors`, as a mirror of the `projects` table
 
 This logical replication means two things:
 
@@ -63,8 +63,8 @@ graph LR
 
 This replication was restricted only to a few attributes that are needed from each model:
 
-- `Namespace` replicates `traversal_ids`.
-- `Project` replicates only the `namespace_id`, which represents the group which the project belongs to.
+- From `Namespace` we replicate `traversal_ids`.
+- From `Project` we replicate only the `namespace_id`, which represents the group which the project belongs to.
 
 ## Keeping the CI mirrored tables in sync with the source tables
 
