@@ -21,6 +21,7 @@ import blobInfoQuery from '~/repository/queries/blob_info.query.graphql';
 import userInfoQuery from '~/repository/queries/user_info.query.graphql';
 import applicationInfoQuery from '~/repository/queries/application_info.query.graphql';
 import CodeIntelligence from '~/code_navigation/components/app.vue';
+import * as urlUtility from '~/lib/utils/url_utility';
 import { redirectTo } from '~/lib/utils/url_utility';
 import { isLoggedIn, handleLocationHash } from '~/lib/utils/common_utils';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
@@ -273,6 +274,19 @@ describe('Blob content viewer component', () => {
         type: RICH_BLOB_VIEWER,
         renderError: null,
       });
+    });
+
+    it('changes to simple viewer when URL has code line hash', async () => {
+      jest.spyOn(urlUtility, 'getLocationHash').mockReturnValueOnce('L5');
+
+      await createComponent({ blob: richViewerMock });
+
+      expect(findBlobContent().props('activeViewer')).toEqual(
+        expect.objectContaining({
+          type: SIMPLE_BLOB_VIEWER,
+        }),
+      );
+      expect(findBlobHeader().props('activeViewerType')).toEqual(SIMPLE_BLOB_VIEWER);
     });
 
     it('updates viewer type when viewer changed is clicked', async () => {

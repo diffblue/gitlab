@@ -8,7 +8,7 @@ import createFlash from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 import { isLoggedIn, handleLocationHash } from '~/lib/utils/common_utils';
 import { __ } from '~/locale';
-import { redirectTo } from '~/lib/utils/url_utility';
+import { redirectTo, getLocationHash } from '~/lib/utils/url_utility';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import WebIdeLink from '~/vue_shared/components/web_ide_link.vue';
 import CodeIntelligence from '~/code_navigation/components/app.vue';
@@ -63,8 +63,12 @@ export default {
         };
       },
       result() {
-        if (this.$route?.query?.plain !== '1') {
-          this.switchViewer(this.hasRichViewer ? RICH_BLOB_VIEWER : SIMPLE_BLOB_VIEWER, true);
+        const hash = getLocationHash();
+
+        if (hash && hash.startsWith('L')) {
+          this.switchViewer(SIMPLE_BLOB_VIEWER, false);
+        } else if (this.$route?.query?.plain !== '1') {
+          this.switchViewer(this.hasRichViewer ? RICH_BLOB_VIEWER : SIMPLE_BLOB_VIEWER, false);
         }
       },
       error() {
@@ -176,13 +180,16 @@ export default {
     },
   },
   watch: {
+    // Watch the URL 'plain' query value to know if the viewer needs changing.
+    // This is the case when the uses switches the viewer and then goes back
+    // through the hystory.
     '$route.query.plain': {
       handler(plainValue) {
         this.switchViewer(
           this.hasRichViewer && (plainValue === undefined || plainValue === '0')
             ? RICH_BLOB_VIEWER
             : SIMPLE_BLOB_VIEWER,
-          plainValue === undefined,
+          plainValue !== undefined,
         );
       },
     },
@@ -230,7 +237,7 @@ export default {
     displayError() {
       createFlash({ message: __('An error occurred while loading the file. Please try again.') });
     },
-    switchViewer(newViewer, preventPlainUpdate) {
+    switchViewer(newViewer, updateRouteQuery) {
       this.activeViewerType = newViewer || SIMPLE_BLOB_VIEWER;
 
       if (!this.blobViewer) {
@@ -239,17 +246,15 @@ export default {
 
       const plain = this.activeViewerType === SIMPLE_BLOB_VIEWER ? '1' : '0';
 
-      if (
-        !preventPlainUpdate &&
-        this.$router &&
-        this.$route?.path &&
-        this.$route?.query?.plain !== plain
-      ) {
+      if (updateRouteQuery && this.$route?.query?.plain !== plain) {
         this.$router.push({
           path: this.$route.path,
-          query: { plain },
+          query: { ...this.$route.query, plain },
         });
       }
+    },
+    handleViewerChanged(newViewer) {
+      this.switchViewer(newViewer, true);
     },
     editBlob(target) {
       if (this.showForkSuggestion) {
@@ -282,7 +287,7 @@ export default {
         :has-render-error="hasRenderError"
         :show-path="false"
         :override-copy="glFeatures.highlightJs"
-        @viewer-changed="switchViewer"
+        @viewer-changed="handleViewerChanged"
         @copy="onCopy"
       >
         <template #actions>
