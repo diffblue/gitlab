@@ -32,8 +32,6 @@ RSpec.describe Namespace do
   it { is_expected.to delegate_method(:temporary_storage_increase_ends_on=).to(:namespace_limit).with_arguments(:args) }
   it { is_expected.to delegate_method(:temporary_storage_increase_enabled?).to(:namespace_limit) }
   it { is_expected.to delegate_method(:eligible_for_temporary_storage_increase?).to(:namespace_limit) }
-  it { is_expected.to delegate_method(:exclude_from_free_user_cap?).to(:namespace_settings).allow_nil }
-  it { is_expected.to delegate_method(:include_for_free_user_cap_preview?).to(:namespace_settings).allow_nil }
 
   shared_examples 'plan helper' do |namespace_plan|
     let(:namespace) { create(:namespace_with_plan, plan: "#{plan_name}_plan") }

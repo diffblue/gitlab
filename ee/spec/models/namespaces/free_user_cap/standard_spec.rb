@@ -78,14 +78,6 @@ RSpec.describe Namespaces::FreeUserCap::Standard, :saas do
 
           it { is_expected.to be false }
         end
-
-        context 'when excluded from free user cap' do
-          before do
-            namespace.namespace_settings.update_column(:exclude_from_free_user_cap, true)
-          end
-
-          it { is_expected.to be false }
-        end
       end
     end
   end
@@ -156,14 +148,6 @@ RSpec.describe Namespaces::FreeUserCap::Standard, :saas do
 
           it { is_expected.to be false }
         end
-
-        context 'when exclude_from_free_user_cap set to true' do
-          before do
-            namespace.namespace_settings.update_column(:exclude_from_free_user_cap, true)
-          end
-
-          it { is_expected.to be false }
-        end
       end
     end
   end
@@ -231,14 +215,6 @@ RSpec.describe Namespaces::FreeUserCap::Standard, :saas do
 
         it { is_expected.to be false }
       end
-
-      context 'when excluded from free user cap' do
-        before do
-          namespace.namespace_settings.update_column(:exclude_from_free_user_cap, true)
-        end
-
-        it { is_expected.to be false }
-      end
     end
   end
 
@@ -254,19 +230,7 @@ RSpec.describe Namespaces::FreeUserCap::Standard, :saas do
     end
 
     context 'when :free_user_cap is enabled' do
-      before do
-        stub_feature_flags(free_user_cap: true)
-      end
-
       it { is_expected.to be true }
-
-      context 'when excluded from free user cap' do
-        before do
-          namespace.namespace_settings.update_column(:exclude_from_free_user_cap, true)
-        end
-
-        it { is_expected.to be false }
-      end
     end
   end
 end
