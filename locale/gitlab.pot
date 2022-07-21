@@ -39375,6 +39375,9 @@ msgstr ""
 msgid "There are no archived test cases"
 msgstr ""
 
+msgid "There are no changed labels"
+msgstr ""
+
 msgid "There are no changes"
 msgstr ""
 
