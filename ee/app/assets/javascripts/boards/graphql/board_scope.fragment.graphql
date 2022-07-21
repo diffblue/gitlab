@@ -1,6 +1,5 @@
 #import "~/graphql_shared/fragments/user.fragment.graphql"
 #import "~/graphql_shared/fragments/label.fragment.graphql"
-#import "~/graphql_shared/fragments/iteration.fragment.graphql"
 
 fragment BoardScopeFragment on Board {
   id
@@ -20,7 +19,8 @@ fragment BoardScopeFragment on Board {
     }
   }
   iteration {
-    ...Iteration
+    id
+    title
   }
   iterationCadence {
     id
