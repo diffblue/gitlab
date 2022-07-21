@@ -23,7 +23,6 @@ export default {
     issuableId: {
       type: Number,
       required: true,
-      default: '',
     },
     helpPath: {
       type: String,
