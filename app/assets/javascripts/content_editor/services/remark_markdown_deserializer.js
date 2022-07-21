@@ -170,6 +170,16 @@ const factorySpecs = {
     type: 'ignore',
     selector: (hastNode) => hastNode.type === 'comment',
   },
+
+  referenceDefinition: {
+    type: 'block',
+    selector: 'referencedefinition',
+    getAttrs: (node) => ({
+      title: node.properties.title,
+      url: node.properties.url,
+      identifier: node.properties.identifier,
+    }),
+  },
 };
 
 export default () => {
@@ -185,7 +195,7 @@ export default () => {
             wrappableTags,
             markdown,
           }),
-        skipRendering: ['footnoteReference', 'footnoteDefinition', 'code'],
+        skipRendering: ['footnoteReference', 'footnoteDefinition', 'code', 'definition'],
       });
 
       return { document };
