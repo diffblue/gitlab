@@ -1,5 +1,5 @@
 import { GlButton, GlForm } from '@gitlab/ui';
-import { createLocalVue } from '@vue/test-utils';
+import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import TrialCreateLeadForm from 'ee/trials/components/trial_create_lead_form.vue';
@@ -11,15 +11,13 @@ jest.mock('~/google_tag_manager', () => ({
   trackSaasTrialSubmit: jest.fn(),
 }));
 
-const localVue = createLocalVue();
-localVue.use(VueApollo);
+Vue.use(VueApollo);
 
 describe('TrialCreateLeadForm', () => {
   let wrapper;
 
   const createComponent = ({ mountFunction = shallowMountExtended } = {}) => {
     return mountFunction(TrialCreateLeadForm, {
-      localVue,
       provide: {
         submitPath: SUBMIT_PATH,
         user: FORM_DATA,

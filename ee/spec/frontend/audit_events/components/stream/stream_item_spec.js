@@ -1,5 +1,5 @@
+import Vue from 'vue';
 import VueApollo from 'vue-apollo';
-import { createLocalVue } from '@vue/test-utils';
 import { GlButton } from '@gitlab/ui';
 import { createAlert } from '~/flash';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
@@ -12,8 +12,7 @@ import StreamDestinationEditor from 'ee/audit_events/components/stream/stream_de
 import { destinationDeleteMutationPopulator, mockExternalDestinations } from '../../mock_data';
 
 jest.mock('~/flash');
-const localVue = createLocalVue();
-localVue.use(VueApollo);
+Vue.use(VueApollo);
 
 describe('StreamItem', () => {
   let wrapper;
@@ -34,7 +33,6 @@ describe('StreamItem', () => {
       stubs: {
         GlButton,
       },
-      localVue,
     });
   };
 
