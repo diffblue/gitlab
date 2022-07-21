@@ -1,0 +1,13 @@
+- if project.project_feature.issues_access_level > 0
+  %section.rspec-issues-settings.settings.issues-feature.no-animate#js-issue-settings{ class: [('expanded' if expanded)], data: { qa_selector: 'issues_settings_content' } }
+    .settings-header
+      %h4.settings-title.js-settings-toggle.js-settings-toggle-trigger-only= _('Issues')
+      = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
+        = expanded ? _('Collapse') : _('Expand')
+      %p= _('Configure default branch name for branches created from issues.')
+
+    .settings-content
+      = gitlab_ui_form_for @project, html: { multipart: true, class: "issue-settings-form js-issue-settings-form" }, authenticity_token: true do |f|
+        %input{ name: 'update_section', type: 'hidden', value: 'js-issue-settings' }
+        = render 'projects/issue_settings', form: f
+        = f.submit _('Save changes'), class: "btn gl-button btn-confirm rspec-save-issue-changes", data: { qa_selector: 'save_issue_changes_button' }

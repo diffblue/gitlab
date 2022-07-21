@@ -1,6 +1,6 @@
 - if @project.feature_available?(:issuable_default_templates)
   - expanded = expanded_by_default?
-  %section.settings.issues-feature.no-animate#js-issue-settings{ class: [('expanded' if expanded), ('hidden' if @project.project_feature.send(:issues_access_level) == 0)], data: { qa_selector: 'issue_template_settings_content' } }
+  %section.settings.rspec-default-issue-settings.issues-feature.no-animate#js-issue-settings{ class: [('expanded' if expanded), ('hidden' if @project.project_feature.send(:issues_access_level) == 0)], data: { qa_selector: 'issue_template_settings_content' } }
     .settings-header
       %h4.settings-title.js-settings-toggle.js-settings-toggle-trigger-only= _('Default description template for issues')
       = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do

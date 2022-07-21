@@ -10119,6 +10119,9 @@ msgstr ""
 msgid "Configure advanced permissions, Large File Storage, two-factor authentication, and customer relations settings."
 msgstr ""
 
+msgid "Configure default branch name for branches created from issues."
+msgstr ""
+
 msgid "Configure existing installation"
 msgstr ""
 
@@ -31799,6 +31802,9 @@ msgstr ""
 msgid "ProjectSettings|Badges"
 msgstr ""
 
+msgid "ProjectSettings|Branches name"
+msgstr ""
+
 msgid "ProjectSettings|Build, test, and deploy your changes."
 msgstr ""
 
@@ -31830,6 +31836,9 @@ msgid "ProjectSettings|Container registry"
 msgstr ""
 
 msgid "ProjectSettings|Customize this project's badges."
+msgstr ""
+
+msgid "ProjectSettings|Default branch name for branches created from merge request."
 msgstr ""
 
 msgid "ProjectSettings|Determine what happens to the commit history when you merge a merge request."

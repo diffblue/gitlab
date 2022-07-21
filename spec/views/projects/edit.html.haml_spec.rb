@@ -105,4 +105,20 @@ RSpec.describe 'projects/edit' do
       it_behaves_like 'renders registration features prompt', :project_disabled_repository_size_limit
     end
   end
+
+  context 'issue branch template' do
+    it 'displays default template if none is set' do
+      render
+
+      expect(rendered).to have_field('project[issue_branch_template]', placeholder: "%{id}-%{title}")
+    end
+
+    it 'displays the user entered value' do
+      project.update!(issue_branch_template: '%{title}')
+
+      render
+
+      expect(rendered).to have_field('project[issue_branch_template]', with: '%{title}')
+    end
+  end
 end

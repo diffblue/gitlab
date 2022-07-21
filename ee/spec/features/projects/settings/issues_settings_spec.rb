@@ -39,6 +39,7 @@ RSpec.describe 'Project settings > Issues', :js do
 
     it 'does not show the Issues settings' do
       expect(page).not_to have_content('Set a default description template to be used for new issues.')
+      expect(page).not_to have_content('Configure default branch name for branches created from issues.')
 
       within('.sharing-permissions-form') do
         find('.project-feature-controls[data-for="project[project_feature_attributes][issues_access_level]"] .gl-toggle').click
@@ -46,6 +47,7 @@ RSpec.describe 'Project settings > Issues', :js do
       end
 
       expect(page).to have_content('Set a default description template to be used for new issues.')
+      expect(page).to have_content('Configure default branch name for branches created from issues.')
     end
   end
 

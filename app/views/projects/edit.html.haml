@@ -36,6 +36,23 @@
       = c.body do
         = _('On the left sidebar, select %{merge_requests_link} to view them.').html_safe % { merge_requests_link: link_to('Settings > Merge requests', project_settings_merge_requests_path(@project)).html_safe }
 
+%section.rspec-merge-request-settings.settings.merge-requests-feature.no-animate#js-merge-request-settings{ class: [('expanded' if expanded), ('hidden' if @project.project_feature.send(:merge_requests_access_level) == 0)], data: { qa_selector: 'merge_request_settings_content' } }
+  .settings-header
+    %h4.settings-title.js-settings-toggle.js-settings-toggle-trigger-only= _('Merge requests')
+    = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
+      = expanded ? _('Collapse') : _('Expand')
+    = render_if_exists 'projects/merge_request_settings_description_text'
+
+  .settings-content
+    = render_if_exists 'shared/promotions/promote_mr_features'
+
+    = gitlab_ui_form_for @project, html: { multipart: true, class: "merge-request-settings-form js-mr-settings-form" }, authenticity_token: true do |f|
+      %input{ name: 'update_section', type: 'hidden', value: 'js-merge-request-settings' }
+      = render 'projects/merge_request_settings', form: f
+      = f.submit _('Save changes'), class: "btn gl-button btn-confirm rspec-save-merge-request-changes", data: { qa_selector: 'save_merge_request_changes_button' }
+
+= render_if_exists 'projects/merge_request_approvals_settings', expanded: expanded
+
 %section.settings.no-animate{ class: ('expanded' if expanded), data: { qa_selector: 'badges_settings_content' } }
   .settings-header
     %h4.settings-title.js-settings-toggle.js-settings-toggle-trigger-only
@@ -49,6 +66,8 @@
     = render 'shared/badges/badge_settings'
 
 = render_if_exists 'compliance_management/compliance_framework/project_settings', expanded: expanded
+
+= render 'projects/settings/issues', project: @project, expanded: expanded
 
 = render_if_exists 'projects/settings/default_issue_template'
 

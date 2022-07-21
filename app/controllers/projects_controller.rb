@@ -496,6 +496,7 @@ class ProjectsController < Projects::ApplicationController
       :service_desk_enabled,
       :merge_commit_template_or_default,
       :squash_commit_template_or_default,
+      :issue_branch_template,
       project_setting_attributes: project_setting_attributes
     ] + [project_feature_attributes: project_feature_attributes]
   end
