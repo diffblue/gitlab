@@ -19,12 +19,12 @@ The following steps are needed to generate these known events for a single widge
 1. Generate known events on the command line with the following command. Replace `test_reports` with your appropriate name slug.
     ```
     bundle exec rails generate gitlab:usage_metric_definition \
-    counts.mr_widgets.i_merge_request_widget_test_reports_count_view \
-    counts.mr_widgets.i_merge_request_widget_test_reports_count_full_report_clicked \
-    counts.mr_widgets.i_merge_request_widget_test_reports_count_expand \
-    counts.mr_widgets.i_merge_request_widget_test_reports_count_expand_success \
-    counts.mr_widgets.i_merge_request_widget_test_reports_count_expand_warning \
-    counts.mr_widgets.i_merge_request_widget_test_reports_count_expand_failed \
+    counts.code_review.i_merge_request_widget_test_reports_count_view \
+    counts.code_review.i_merge_request_widget_test_reports_count_full_report_clicked \
+    counts.code_review.i_merge_request_widget_test_reports_count_expand \
+    counts.code_review.i_merge_request_widget_test_reports_count_expand_success \
+    counts.code_review.i_merge_request_widget_test_reports_count_expand_warning \
+    counts.code_review.i_merge_request_widget_test_reports_count_expand_failed \
     --dir=all
     ```
 1. Modify each newly generated file so that they match the existing files for MR Widget Extension telemetry.
@@ -42,7 +42,7 @@ The following steps are needed to generate these known events for a single widge
         1. `data_category` = `optional`
 1. Repeat steps 5 and 6 for the HLL metrics. Replace `test_reports` with your appropriate name slug.
     ```
-    bundle exec rails generate gitlab:usage_metric_definition:redis_hll mr_widgets \
+    bundle exec rails generate gitlab:usage_metric_definition:redis_hll code_review \
     i_code_review_merge_request_widget_test_reports_view \
     i_code_review_merge_request_widget_test_reports_full_report_clicked \
     i_code_review_merge_request_widget_test_reports_expand \
