@@ -148,7 +148,6 @@ RSpec.describe MergeRequests::ApprovalService do
     context 'when project requires force auth for approval' do
       before do
         project.update!(require_password_to_approve: true)
-        user.update!(password: 'password')
       end
       context 'when password not specified' do
         it 'does not update the approvals' do
@@ -170,7 +169,7 @@ RSpec.describe MergeRequests::ApprovalService do
 
       context 'when correct password is specified' do
         let(:params) do
-          { approval_password: 'password' }
+          { approval_password: user.password }
         end
 
         it 'approves the merge request' do
