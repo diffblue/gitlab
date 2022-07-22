@@ -24,26 +24,10 @@ describe('ResourceLinkItem', () => {
   const findRemoveButton = () => wrapper.findComponent(GlButton);
 
   describe('template', () => {
-    it('shows the link type icon', () => {
+    it('matches the snapshot', () => {
       mountComponent();
 
-      expect(findLinkTypeIcon().exists()).toBe(true);
-      expect(findLinkTypeIcon().props('name')).toBe('brand-zoom');
-      expect(findLinkTypeIcon().classes()).toContain('ic-zoom');
-    });
-
-    it('shows the link text and points to href', () => {
-      mountComponent();
-
-      expect(findLinkText().text()).toBe(mockResourceLinks[0].linkText);
-      expect(findLinkText().attributes().href).toBe(mockResourceLinks[0].link);
-    });
-
-    it('shows the remove button if canRemove=true', () => {
-      mountComponent();
-
-      expect(findRemoveButton().exists()).toBe(true);
-      expect(findRemoveButton().attributes().title).toBe(resourceLinksListI18n.linkRemoveText);
+      expect(wrapper.element).toMatchSnapshot();
     });
 
     it('does not show the remove button if canRemove=false', () => {
