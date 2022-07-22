@@ -19,15 +19,5 @@ RSpec.describe AuditEvents::Streaming::Headers::Base do
         expect(response.errors).to match_array ['missing destination param']
       end
     end
-
-    context 'when streaming_audit_event_headers feature flag is disabled' do
-      before do
-        stub_feature_flags(streaming_audit_event_headers: false)
-      end
-
-      it 'raises an exception' do
-        expect { subject }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
-      end
-    end
   end
 end

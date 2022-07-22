@@ -25,8 +25,7 @@ module Types
 
       field :headers, ::Types::AuditEvents::Streaming::HeaderType.connection_type,
             null: false,
-            description: 'List of additional HTTP headers sent with each event.',
-            feature_flag: :streaming_audit_event_headers
+            description: 'List of additional HTTP headers sent with each event.'
     end
   end
 end

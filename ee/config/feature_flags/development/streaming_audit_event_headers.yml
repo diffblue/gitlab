@@ -1,8 +1,0 @@
----
-name: streaming_audit_event_headers
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/88063
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/362941
-milestone: '15.1'
-type: development
-group: group::compliance
-default_enabled: true
