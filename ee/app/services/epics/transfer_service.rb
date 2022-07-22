@@ -46,7 +46,10 @@ module Epics
       epic_params = epic.attributes
                         .slice('title', 'description', 'start_date', 'end_date', 'confidential')
 
-      CreateService.new(group: project.group, current_user: current_user, params: epic_params).execute
+      CreateService.new(
+        group: project.group,
+        current_user: current_user,
+        params: epic_params).execute_without_rate_limiting
     end
 
     # rubocop: disable CodeReuse/ActiveRecord
