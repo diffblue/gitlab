@@ -10106,9 +10106,11 @@ Represents the Geo replication and verification state of a ci_secure_file.
 | <a id="cisecurefileregistryid"></a>`id` | [`ID!`](#id) | ID of the CiSecureFileRegistry. |
 | <a id="cisecurefileregistrylastsyncfailure"></a>`lastSyncFailure` | [`String`](#string) | Error message during sync of the CiSecureFileRegistry. |
 | <a id="cisecurefileregistrylastsyncedat"></a>`lastSyncedAt` | [`Time`](#time) | Timestamp of the most recent successful sync of the CiSecureFileRegistry. |
-| <a id="cisecurefileregistryretryat"></a>`retryAt` | [`Time`](#time) | Timestamp after which the CiSecureFileRegistry should be resynced. |
+| <a id="cisecurefileregistryretryat"></a>`retryAt` | [`Time`](#time) | Timestamp after which the CiSecureFileRegistry is resynced. |
 | <a id="cisecurefileregistryretrycount"></a>`retryCount` | [`Int`](#int) | Number of consecutive failed sync attempts of the CiSecureFileRegistry. |
 | <a id="cisecurefileregistrystate"></a>`state` | [`RegistryState`](#registrystate) | Sync state of the CiSecureFileRegistry. |
+| <a id="cisecurefileregistryverificationretryat"></a>`verificationRetryAt` | [`Time`](#time) | Timestamp after which the CiSecureFileRegistry is reverified. |
+| <a id="cisecurefileregistryverifiedat"></a>`verifiedAt` | [`Time`](#time) | Timestamp of the most recent successful verification of the CiSecureFileRegistry. |
 
 ### `CiStage`
 
