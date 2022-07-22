@@ -29,16 +29,5 @@ RSpec.describe Admin::GroupsController do
         expect(controller).to set_flash[:notice]
       end
     end
-
-    context 'when the reset is not successful' do
-      let(:clear_runners_minutes_service_result) { false }
-
-      it 'redirects back to group edit page' do
-        subject
-
-        expect(response).to render_template(:edit)
-        expect(controller).to set_flash.now[:error]
-      end
-    end
   end
 end
