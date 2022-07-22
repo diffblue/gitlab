@@ -37,7 +37,10 @@ module EE
       def track_epic_issue_moved_from_project
         return unless original_entity.epic_issue
 
-        ::Gitlab::UsageDataCounters::EpicActivityUniqueCounter.track_epic_issue_moved_from_project(author: current_user)
+        ::Gitlab::UsageDataCounters::EpicActivityUniqueCounter.track_epic_issue_moved_from_project(
+          author: current_user,
+          namespace: original_entity.epic_issue.epic.group
+        )
       end
 
       def rewrite_related_vulnerability_issues

@@ -106,31 +106,38 @@ module Gitlab
           track_unique_action(EPIC_FIXED_DUE_DATE_UPDATED, author)
         end
 
-        def track_epic_issue_added(author:)
+        def track_epic_issue_added(author:, namespace:)
+          track_snowplow_action(EPIC_ISSUE_ADDED, author, namespace)
           track_unique_action(EPIC_ISSUE_ADDED, author)
         end
 
-        def track_epic_issue_removed(author:)
+        def track_epic_issue_removed(author:, namespace:)
+          track_snowplow_action(EPIC_ISSUE_REMOVED, author, namespace)
           track_unique_action(EPIC_ISSUE_REMOVED, author)
         end
 
-        def track_epic_issue_moved_from_project(author:)
+        def track_epic_issue_moved_from_project(author:, namespace:)
+          track_snowplow_action(EPIC_ISSUE_MOVED_FROM_PROJECT, author, namespace)
           track_unique_action(EPIC_ISSUE_MOVED_FROM_PROJECT, author)
         end
 
-        def track_epic_parent_updated_action(author:)
+        def track_epic_parent_updated_action(author:, namespace:)
+          track_snowplow_action(EPIC_PARENT_UPDATED, author, namespace)
           track_unique_action(EPIC_PARENT_UPDATED, author)
         end
 
-        def track_epic_closed_action(author:)
+        def track_epic_closed_action(author:, namespace:)
+          track_snowplow_action(EPIC_CLOSED, author, namespace)
           track_unique_action(EPIC_CLOSED, author)
         end
 
-        def track_epic_reopened_action(author:)
+        def track_epic_reopened_action(author:, namespace:)
+          track_snowplow_action(EPIC_REOPENED, author, namespace)
           track_unique_action(EPIC_REOPENED, author)
         end
 
-        def track_issue_promoted_to_epic(author:)
+        def track_issue_promoted_to_epic(author:, namespace:)
+          track_snowplow_action(ISSUE_PROMOTED_TO_EPIC, author, namespace)
           track_unique_action(ISSUE_PROMOTED_TO_EPIC, author)
         end
 

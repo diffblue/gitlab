@@ -54,7 +54,7 @@ module Epics
     end
 
     def usage_ping_record_epic_issue_added
-      ::Gitlab::UsageDataCounters::EpicActivityUniqueCounter.track_epic_issue_added(author: user)
+      ::Gitlab::UsageDataCounters::EpicActivityUniqueCounter.track_epic_issue_added(author: user, namespace: epic.group)
     end
   end
 end

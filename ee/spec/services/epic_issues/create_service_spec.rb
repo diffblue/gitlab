@@ -71,7 +71,8 @@ RSpec.describe EpicIssues::CreateService do
         end
 
         it 'records action on usage ping' do
-          expect(::Gitlab::UsageDataCounters::EpicActivityUniqueCounter).to receive(:track_epic_issue_added).with(author: user)
+          expect(::Gitlab::UsageDataCounters::EpicActivityUniqueCounter).to receive(:track_epic_issue_added)
+            .with(author: user, namespace: group)
 
           subject
         end

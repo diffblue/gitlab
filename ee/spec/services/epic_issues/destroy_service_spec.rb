@@ -71,7 +71,7 @@ RSpec.describe EpicIssues::DestroyService do
 
         it 'counts an usage ping event' do
           expect(::Gitlab::UsageDataCounters::EpicActivityUniqueCounter).to receive(:track_epic_issue_removed)
-            .with(author: user)
+            .with(author: user, namespace: group)
 
           subject
         end

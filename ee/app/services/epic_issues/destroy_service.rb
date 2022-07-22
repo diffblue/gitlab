@@ -21,7 +21,10 @@ module EpicIssues
     end
 
     def track_event
-      ::Gitlab::UsageDataCounters::EpicActivityUniqueCounter.track_epic_issue_removed(author: current_user)
+      ::Gitlab::UsageDataCounters::EpicActivityUniqueCounter.track_epic_issue_removed(
+        author: current_user,
+        namespace: source.group
+      )
     end
 
     def permission_to_remove_relation?

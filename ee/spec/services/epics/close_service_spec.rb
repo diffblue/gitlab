@@ -65,7 +65,7 @@ RSpec.describe Epics::CloseService do
 
           it 'tracks closing the epic' do
             expect(::Gitlab::UsageDataCounters::EpicActivityUniqueCounter)
-              .to receive(:track_epic_closed_action).with(author: user)
+              .to receive(:track_epic_closed_action).with(author: user, namespace: group)
 
             subject.execute(epic)
           end

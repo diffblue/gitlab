@@ -570,6 +570,7 @@ RSpec.describe Epics::UpdateService do
         it 'assigns parent epic' do
           parent_epic = create(:epic, group: epic.group)
           expect(::Gitlab::UsageDataCounters::EpicActivityUniqueCounter).to receive(:track_epic_parent_updated_action)
+            .with(author: user, namespace: group)
 
           update_epic(description: "/parent_epic #{parent_epic.to_reference}")
 
@@ -593,6 +594,7 @@ RSpec.describe Epics::UpdateService do
         it 'sets a child epic' do
           child_epic = create(:epic, group: group)
           expect(::Gitlab::UsageDataCounters::EpicActivityUniqueCounter).to receive(:track_epic_parent_updated_action)
+            .with(author: user, namespace: group)
 
           update_epic(description: "/child_epic #{child_epic.to_reference}")
 

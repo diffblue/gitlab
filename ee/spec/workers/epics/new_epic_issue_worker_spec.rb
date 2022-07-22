@@ -28,6 +28,7 @@ RSpec.describe Epics::NewEpicIssueWorker do
 
       it 'updates usage data' do
         expect(::Gitlab::UsageDataCounters::EpicActivityUniqueCounter).to receive(:track_epic_issue_added)
+          .with(author: user, namespace: epic.group)
 
         subject
       end
@@ -43,6 +44,7 @@ RSpec.describe Epics::NewEpicIssueWorker do
 
       it 'does not update usage data' do
         expect(::Gitlab::UsageDataCounters::EpicActivityUniqueCounter).not_to receive(:track_epic_issue_added)
+          .with(author: user, namespace: epic.group)
       end
     end
 

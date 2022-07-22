@@ -113,7 +113,10 @@ module Epics
     end
 
     def track_epic_parent_updated
-      ::Gitlab::UsageDataCounters::EpicActivityUniqueCounter.track_epic_parent_updated_action(author: current_user)
+      ::Gitlab::UsageDataCounters::EpicActivityUniqueCounter.track_epic_parent_updated_action(
+        author: current_user,
+        namespace: group
+      )
     end
   end
 end

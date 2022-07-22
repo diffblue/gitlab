@@ -34,7 +34,8 @@ RSpec.describe Issues::MoveService do
       context 'when moved issue belongs to epic' do
         it 'records epic moved from project event' do
           create(:epic_issue, issue: old_issue)
-          expect(Gitlab::UsageDataCounters::EpicActivityUniqueCounter).to receive(:track_epic_issue_moved_from_project).with(author: user)
+          expect(Gitlab::UsageDataCounters::EpicActivityUniqueCounter).to receive(:track_epic_issue_moved_from_project)
+            .with(author: user, namespace: group)
 
           move_service.execute(old_issue, new_project)
         end
@@ -43,6 +44,7 @@ RSpec.describe Issues::MoveService do
       context 'when moved issue does not belong to epic' do
         it 'does not record epic moved from project event' do
           expect(Gitlab::UsageDataCounters::EpicActivityUniqueCounter).not_to receive(:track_epic_issue_moved_from_project)
+            .with(author: user, namespace: group)
 
           move_service.execute(old_issue, new_project)
         end
