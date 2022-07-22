@@ -1,7 +1,12 @@
 <script>
-import { GlLink, GlIcon, GlButton } from '@gitlab/ui';
+import { GlLink, GlIcon, GlButton, GlLoadingIcon } from '@gitlab/ui';
+import { convertToGraphQLId } from '~/graphql_shared/utils';
+import { TYPE_ISSUE } from '~/graphql_shared/constants';
 import { resourceLinksI18n } from '../constants';
+import { displayAndLogError } from './utils';
+import getIssuableResourceLinks from './graphql/queries/get_issuable_resource_links.query.graphql';
 import AddIssuableResourceLinkForm from './add_issuable_resource_link_form.vue';
+import ResourceLinksList from './resource_links_list.vue';
 
 export default {
   name: 'ResourceLinksBlock',
@@ -10,9 +15,15 @@ export default {
     GlButton,
     GlIcon,
     AddIssuableResourceLinkForm,
+    ResourceLinksList,
+    GlLoadingIcon,
   },
   i18n: resourceLinksI18n,
   props: {
+    issuableId: {
+      type: Number,
+      required: true,
+    },
     helpPath: {
       type: String,
       required: false,
@@ -28,14 +39,37 @@ export default {
     return {
       isFormVisible: false,
       isSubmitting: false,
+      resourceLinks: [],
     };
+  },
+  apollo: {
+    resourceLinks: {
+      query: getIssuableResourceLinks,
+      variables() {
+        return {
+          incidentId: convertToGraphQLId(TYPE_ISSUE, this.issuableId),
+        };
+      },
+      update(data) {
+        return data?.issue?.issuableResourceLinks?.nodes;
+      },
+      error(error) {
+        displayAndLogError(error);
+      },
+    },
   },
   computed: {
     badgeLabel() {
-      return 0;
+      return this.isFetching && this.resourceLinks.length === 0 ? '...' : this.resourceLinks.length;
     },
     hasBody() {
       return this.isFormVisible;
+    },
+    hasResourceLinks() {
+      return Boolean(this.resourceLinks.length);
+    },
+    isFetching() {
+      return this.$apollo.queries.resourceLinks.loading;
     },
   },
   methods: {
@@ -93,9 +127,9 @@ export default {
         </h3>
       </div>
       <div
-        class="linked-issues-card-body bg-gray-light"
+        class="bg-gray-light"
         :class="{
-          'gl-p-5': isFormVisible,
+          'linked-issues-card-body gl-p-5': isFormVisible,
         }"
       >
         <div v-show="isFormVisible" class="card-body bordered-box gl-bg-white">
@@ -105,6 +139,20 @@ export default {
             @add-issuable-resource-link-form-cancel="hideResourceLinkForm"
           />
         </div>
+        <div v-if="isFetching" class="gl-mb-2">
+          <gl-loading-icon
+            size="sm"
+            :label="$options.i18n.fetchingLinkedResourcesText"
+            class="gl-mt-2"
+          />
+        </div>
+        <template v-if="hasResourceLinks">
+          <resource-links-list
+            :can-admin="canAddResourceLinks"
+            :resource-links="resourceLinks"
+            :is-form-visible="isFormVisible"
+          />
+        </template>
       </div>
     </div>
   </div>
