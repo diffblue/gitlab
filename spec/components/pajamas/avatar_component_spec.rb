@@ -13,7 +13,7 @@ RSpec.describe Pajamas::AvatarComponent, type: :component do
   end
 
   describe "avatar shape" do
-    context "given a User" do
+    context "for a User" do
       let(:record) { user }
 
       it "has a circle shape" do
@@ -21,7 +21,7 @@ RSpec.describe Pajamas::AvatarComponent, type: :component do
       end
     end
 
-    context "given a Project" do
+    context "for a Project" do
       let(:record) { project }
 
       it "has default shape (rect)" do
@@ -30,7 +30,7 @@ RSpec.describe Pajamas::AvatarComponent, type: :component do
       end
     end
 
-    context "given a Group" do
+    context "for a Group" do
       let(:record) { group }
 
       it "has default shape (rect)" do
