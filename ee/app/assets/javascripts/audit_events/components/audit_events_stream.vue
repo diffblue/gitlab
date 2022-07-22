@@ -55,7 +55,7 @@ export default {
     },
     async onUpdatedDestination() {
       await this.refreshDestinations();
-      this.setEditMode(false);
+      this.setEditorVisibility(false);
     },
     async onDeletedDestination() {
       await this.refreshDestinations();

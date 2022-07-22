@@ -474,7 +474,7 @@ describe('StreamDestinationEditor', () => {
         return waitForPromises();
       };
 
-      it('emits the updated event when the headers are saved', async () => {
+      it('emits the updated event when the headers are added, updated, and deleted', async () => {
         const headerCreateSpy = jest
           .fn()
           .mockResolvedValue(destinationHeaderCreateMutationPopulator());

@@ -1,6 +1,5 @@
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
-import { nextTick } from 'vue';
 import { GlButton, GlLoadingIcon } from '@gitlab/ui';
 import { createAlert } from '~/flash';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
@@ -131,28 +130,19 @@ describe('AuditEventsStream', () => {
       expect(findStreamItems().at(1).props('item')).toStrictEqual(mockExternalDestinations[1]);
     });
 
-    it('refreshes the query when an external destination is updated', async () => {
-      await waitForPromises();
+    it.each(['updated', 'deleted'])(
+      'refreshes the query when an external destination is %s',
+      async (eventName) => {
+        await waitForPromises();
 
-      expect(findLoadingIcon().exists()).toBe(false);
-      expect(externalDestinationsQuerySpy).toHaveBeenCalledTimes(1);
+        expect(findLoadingIcon().exists()).toBe(false);
+        expect(externalDestinationsQuerySpy).toHaveBeenCalledTimes(1);
 
-      findStreamItems().at(0).vm.$emit('updated');
-      await waitForPromises();
+        findStreamItems().at(0).vm.$emit(eventName);
+        await waitForPromises();
 
-      expect(externalDestinationsQuerySpy).toHaveBeenCalledTimes(2);
-    });
-
-    it('refreshes the query when an external destination is deleted', async () => {
-      await waitForPromises();
-
-      expect(findLoadingIcon().exists()).toBe(false);
-      expect(externalDestinationsQuerySpy).toHaveBeenCalledTimes(1);
-
-      findStreamItems().at(0).vm.$emit('deleted');
-      await waitForPromises();
-
-      expect(externalDestinationsQuerySpy).toHaveBeenCalledTimes(2);
-    });
+        expect(externalDestinationsQuerySpy).toHaveBeenCalledTimes(2);
+      },
+    );
   });
 });

@@ -70,9 +70,6 @@ export default {
           (header.name === '' && header.value !== ''),
       );
     },
-    hasFilledHeaders() {
-      return this.headers.some((header) => this.isHeaderFilled(header));
-    },
     isSubmitButtonDisabled() {
       return !this.destinationUrl || this.hasHeaderValidationErrors || this.hasMissingKeyValuePairs;
     },
@@ -176,6 +173,25 @@ export default {
         },
       });
     },
+    findHeadersToDelete(existingHeaders, changedHeaders) {
+      return existingHeaders.filter(
+        (existingHeader) =>
+          !changedHeaders.some((changedHeader) => existingHeader.id === changedHeader.id),
+      );
+    },
+    findHeadersToUpdate(existingHeaders, changedHeaders) {
+      return changedHeaders.filter((changedHeader) =>
+        existingHeaders.some(
+          (existingHeader) =>
+            changedHeader.id === existingHeader.id &&
+            (changedHeader.name !== existingHeader.name ||
+              changedHeader.value !== existingHeader.value),
+        ),
+      );
+    },
+    findHeadersToAdd(existingHeaders, changedHeaders) {
+      return changedHeaders.filter((header) => header.id === null && this.isHeaderFilled(header));
+    },
     async addDestination() {
       let destinationId = null;
 
@@ -226,30 +242,16 @@ export default {
         const errors = [];
 
         if (existingHeaders.length > 0) {
-          const deletedHeaders = existingHeaders.filter(
-            (existingHeader) =>
-              !changedHeaders.some((changedHeader) => existingHeader.id === changedHeader.id),
-          );
+          const headersToDelete = this.findHeadersToDelete(existingHeaders, changedHeaders);
+          const headersToUpdate = this.findHeadersToUpdate(existingHeaders, changedHeaders);
 
-          errors.push(...(await this.deleteDestinationHeaders(deletedHeaders)));
-
-          const updatedHeaders = changedHeaders.filter((changedHeader) =>
-            existingHeaders.some(
-              (existingHeader) =>
-                changedHeader.id === existingHeader.id &&
-                (changedHeader.name !== existingHeader.name ||
-                  changedHeader.value !== existingHeader.value),
-            ),
-          );
-
-          errors.push(...(await this.updateDestinationHeaders(updatedHeaders)));
+          errors.push(...(await this.deleteDestinationHeaders(headersToDelete)));
+          errors.push(...(await this.updateDestinationHeaders(headersToUpdate)));
         }
 
-        const addedHeaders = changedHeaders.filter(
-          (header) => header.id === null && this.isHeaderFilled(header),
-        );
+        const headersToAdd = this.findHeadersToAdd(existingHeaders, changedHeaders);
 
-        errors.push(...(await this.addDestinationHeaders(this.item.id, addedHeaders)));
+        errors.push(...(await this.addDestinationHeaders(this.item.id, headersToAdd)));
 
         if (errors.length > 0) {
           this.errors.push(...errors);
