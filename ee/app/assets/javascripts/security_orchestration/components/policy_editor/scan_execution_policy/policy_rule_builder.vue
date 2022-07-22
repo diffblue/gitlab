@@ -2,7 +2,9 @@
 import { s__ } from '~/locale';
 import { RULE_IF_LABEL, RULE_OR_LABEL } from '../constants';
 import PipelineRuleComponent from './pipeline_rule_component.vue';
-import { RULE_KEY_MAP } from './lib/rules';
+import ScheduleRuleComponent from './schedule_rule_component.vue';
+import { RULE_KEY_MAP } from './lib';
+import { SCAN_EXECUTION_PIPELINE_RULE, SCAN_EXECUTION_SCHEDULE_RULE } from './constants';
 
 export default {
   name: 'PolicyRuleBuilder',
@@ -13,6 +15,7 @@ export default {
   },
   components: {
     PipelineRuleComponent,
+    ScheduleRuleComponent,
   },
   props: {
     initRule: {
@@ -26,6 +29,12 @@ export default {
     },
   },
   computed: {
+    isPipelineRule() {
+      return this.initRule.type === SCAN_EXECUTION_PIPELINE_RULE;
+    },
+    isScheduleRule() {
+      return this.initRule.type === SCAN_EXECUTION_SCHEDULE_RULE;
+    },
     ruleLabel() {
       return this.ruleIndex === 0 ? this.$options.RULE_IF_LABEL : this.$options.RULE_OR_LABEL;
     },
@@ -41,11 +50,18 @@ export default {
 <template>
   <div>
     <pipeline-rule-component
+      v-if="isPipelineRule"
       :init-rule="initRule"
       :rule-label="ruleLabel"
       @select-rule="selectRuleType"
       v-on="$listeners"
     />
-    <!--TO DO Schedule Rule Component-->
+    <schedule-rule-component
+      v-else-if="isScheduleRule"
+      :init-rule="initRule"
+      :rule-label="ruleLabel"
+      @select-rule="selectRuleType"
+      v-on="$listeners"
+    />
   </div>
 </template>

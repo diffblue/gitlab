@@ -1,0 +1,1523 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ScheduleRuleComponent default component state renders correctly default state of schedule rule 1`] = `
+<div
+  class="gl-bg-gray-10 gl-rounded-base px-3 pt-3 gl-relative gl-pb-4"
+>
+  <div
+    class="gl-w-full gl-display-flex gl-gap-3 gl-align-items-center gl-flex-wrap"
+  >
+    <label
+      class="text-uppercase gl-font-lg gl-w-6"
+      data-testid="rule-component-label"
+      for="scanners"
+    >
+      if
+    </label>
+     
+    <div
+      class="dropdown b-dropdown gl-new-dropdown btn-group"
+      data-testid="rule-component-type"
+      id="__BVID__5"
+    >
+      <!---->
+      <button
+        aria-expanded="false"
+        aria-haspopup="true"
+        class="btn dropdown-toggle btn-default btn-md gl-button gl-dropdown-toggle"
+        id="__BVID__5__BV_toggle_"
+        type="button"
+      >
+        <!---->
+         
+        <!---->
+         
+        <span
+          class="gl-new-dropdown-button-text"
+        >
+          Schedule
+        </span>
+         
+        <svg
+          aria-hidden="true"
+          class="gl-button-icon dropdown-chevron gl-icon s16"
+          data-testid="chevron-down-icon"
+          role="img"
+        >
+          <use
+            href="#chevron-down"
+          />
+        </svg>
+      </button>
+      <ul
+        aria-labelledby="__BVID__5__BV_toggle_"
+        class="dropdown-menu"
+        role="menu"
+        tabindex="-1"
+      >
+        <div
+          class="gl-new-dropdown-inner"
+        >
+          <!---->
+           
+          <!---->
+           
+          <div
+            class="gl-new-dropdown-contents"
+          >
+            <!---->
+             
+            <li
+              class="gl-new-dropdown-item"
+              role="presentation"
+            >
+              <button
+                class="dropdown-item"
+                role="menuitem"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="gl-icon s16 gl-new-dropdown-item-check-icon gl-visibility-hidden gl-mt-3 gl-align-self-start"
+                  data-testid="dropdown-item-checkbox"
+                  role="img"
+                >
+                  <use
+                    href="#mobile-issue-close"
+                  />
+                </svg>
+                 
+                <!---->
+                 
+                <!---->
+                 
+                <div
+                  class="gl-new-dropdown-item-text-wrapper"
+                >
+                  <p
+                    class="gl-new-dropdown-item-text-primary"
+                  >
+                    
+            A pipeline is run
+          
+                  </p>
+                   
+                  <!---->
+                </div>
+                 
+                <!---->
+              </button>
+            </li>
+            <li
+              class="gl-new-dropdown-item"
+              role="presentation"
+            >
+              <button
+                class="dropdown-item"
+                role="menuitem"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="gl-icon s16 gl-new-dropdown-item-check-icon gl-mt-3 gl-align-self-start"
+                  data-testid="dropdown-item-checkbox"
+                  role="img"
+                >
+                  <use
+                    href="#mobile-issue-close"
+                  />
+                </svg>
+                 
+                <!---->
+                 
+                <!---->
+                 
+                <div
+                  class="gl-new-dropdown-item-text-wrapper"
+                >
+                  <p
+                    class="gl-new-dropdown-item-text-primary"
+                  >
+                    
+            Schedule
+          
+                  </p>
+                   
+                  <!---->
+                </div>
+                 
+                <!---->
+              </button>
+            </li>
+          </div>
+           
+          <!---->
+        </div>
+      </ul>
+    </div>
+     actions for the 
+    <div
+      class="dropdown b-dropdown gl-new-dropdown btn-group"
+      data-testid="rule-component-scope"
+      id="__BVID__14"
+    >
+      <!---->
+      <button
+        aria-expanded="false"
+        aria-haspopup="true"
+        class="btn dropdown-toggle btn-default btn-md gl-button gl-dropdown-toggle"
+        id="__BVID__14__BV_toggle_"
+        type="button"
+      >
+        <!---->
+         
+        <!---->
+         
+        <span
+          class="gl-new-dropdown-button-text"
+        >
+          branch
+        </span>
+         
+        <svg
+          aria-hidden="true"
+          class="gl-button-icon dropdown-chevron gl-icon s16"
+          data-testid="chevron-down-icon"
+          role="img"
+        >
+          <use
+            href="#chevron-down"
+          />
+        </svg>
+      </button>
+      <ul
+        aria-labelledby="__BVID__14__BV_toggle_"
+        class="dropdown-menu"
+        role="menu"
+        tabindex="-1"
+      >
+        <div
+          class="gl-new-dropdown-inner"
+        >
+          <!---->
+           
+          <!---->
+           
+          <div
+            class="gl-new-dropdown-contents"
+          >
+            <!---->
+             
+            <li
+              class="gl-new-dropdown-item"
+              role="presentation"
+            >
+              <button
+                class="dropdown-item"
+                role="menuitem"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="gl-icon s16 gl-new-dropdown-item-check-icon gl-mt-3 gl-align-self-start"
+                  data-testid="dropdown-item-checkbox"
+                  role="img"
+                >
+                  <use
+                    href="#mobile-issue-close"
+                  />
+                </svg>
+                 
+                <!---->
+                 
+                <!---->
+                 
+                <div
+                  class="gl-new-dropdown-item-text-wrapper"
+                >
+                  <p
+                    class="gl-new-dropdown-item-text-primary"
+                  >
+                    
+            branch
+          
+                  </p>
+                   
+                  <!---->
+                </div>
+                 
+                <!---->
+              </button>
+            </li>
+            <li
+              class="gl-new-dropdown-item"
+              role="presentation"
+            >
+              <button
+                class="dropdown-item"
+                role="menuitem"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="gl-icon s16 gl-new-dropdown-item-check-icon gl-visibility-hidden gl-mt-3 gl-align-self-start"
+                  data-testid="dropdown-item-checkbox"
+                  role="img"
+                >
+                  <use
+                    href="#mobile-issue-close"
+                  />
+                </svg>
+                 
+                <!---->
+                 
+                <!---->
+                 
+                <div
+                  class="gl-new-dropdown-item-text-wrapper"
+                >
+                  <p
+                    class="gl-new-dropdown-item-text-primary"
+                  >
+                    
+            cluster
+          
+                  </p>
+                   
+                  <!---->
+                </div>
+                 
+                <!---->
+              </button>
+            </li>
+          </div>
+           
+          <!---->
+        </div>
+      </ul>
+    </div>
+     
+    <input
+      class="gl-form-input gl-mr-3 gl-max-w-34 form-control"
+      data-testid="pipeline-rule-branches"
+      id="__BVID__23"
+      placeholder="Select branches"
+      type="text"
+    />
+     
+    <!---->
+     
+    <!---->
+  </div>
+   
+  <div
+    class="gl-w-full gl-mt-3 gl-display-flex gl-gap-3 gl-align-items-center gl-flex-wrap gl-ml-7"
+  >
+    <div
+      class="dropdown b-dropdown gl-new-dropdown gl-mr-3 btn-group"
+      data-testid="rule-component-period"
+      id="__BVID__25"
+    >
+      <!---->
+      <button
+        aria-expanded="false"
+        aria-haspopup="true"
+        class="btn dropdown-toggle btn-default btn-md gl-button gl-dropdown-toggle"
+        id="__BVID__25__BV_toggle_"
+        type="button"
+      >
+        <!---->
+         
+        <!---->
+         
+        <span
+          class="gl-new-dropdown-button-text"
+        >
+          daily
+        </span>
+         
+        <svg
+          aria-hidden="true"
+          class="gl-button-icon dropdown-chevron gl-icon s16"
+          data-testid="chevron-down-icon"
+          role="img"
+        >
+          <use
+            href="#chevron-down"
+          />
+        </svg>
+      </button>
+      <ul
+        aria-labelledby="__BVID__25__BV_toggle_"
+        class="dropdown-menu"
+        role="menu"
+        tabindex="-1"
+      >
+        <div
+          class="gl-new-dropdown-inner"
+        >
+          <!---->
+           
+          <!---->
+           
+          <div
+            class="gl-new-dropdown-contents"
+          >
+            <!---->
+             
+            <li
+              class="gl-new-dropdown-item"
+              role="presentation"
+            >
+              <button
+                class="dropdown-item"
+                role="menuitem"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="gl-icon s16 gl-new-dropdown-item-check-icon gl-mt-3 gl-align-self-start"
+                  data-testid="dropdown-item-checkbox"
+                  role="img"
+                >
+                  <use
+                    href="#mobile-issue-close"
+                  />
+                </svg>
+                 
+                <!---->
+                 
+                <!---->
+                 
+                <div
+                  class="gl-new-dropdown-item-text-wrapper"
+                >
+                  <p
+                    class="gl-new-dropdown-item-text-primary"
+                  >
+                    
+            daily
+          
+                  </p>
+                   
+                  <!---->
+                </div>
+                 
+                <!---->
+              </button>
+            </li>
+            <li
+              class="gl-new-dropdown-item"
+              role="presentation"
+            >
+              <button
+                class="dropdown-item"
+                role="menuitem"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="gl-icon s16 gl-new-dropdown-item-check-icon gl-visibility-hidden gl-mt-3 gl-align-self-start"
+                  data-testid="dropdown-item-checkbox"
+                  role="img"
+                >
+                  <use
+                    href="#mobile-issue-close"
+                  />
+                </svg>
+                 
+                <!---->
+                 
+                <!---->
+                 
+                <div
+                  class="gl-new-dropdown-item-text-wrapper"
+                >
+                  <p
+                    class="gl-new-dropdown-item-text-primary"
+                  >
+                    
+            weekly
+          
+                  </p>
+                   
+                  <!---->
+                </div>
+                 
+                <!---->
+              </button>
+            </li>
+          </div>
+           
+          <!---->
+        </div>
+      </ul>
+    </div>
+      at 
+    <div
+      class="dropdown b-dropdown gl-new-dropdown gl-ml-3 gl-mr-3 btn-group"
+      data-testid="rule-component-time"
+      id="__BVID__34"
+    >
+      <!---->
+      <button
+        aria-expanded="false"
+        aria-haspopup="true"
+        class="btn dropdown-toggle btn-default btn-md gl-button gl-dropdown-toggle"
+        id="__BVID__34__BV_toggle_"
+        type="button"
+      >
+        <!---->
+         
+        <!---->
+         
+        <span
+          class="gl-new-dropdown-button-text"
+        >
+          00:00
+        </span>
+         
+        <svg
+          aria-hidden="true"
+          class="gl-button-icon dropdown-chevron gl-icon s16"
+          data-testid="chevron-down-icon"
+          role="img"
+        >
+          <use
+            href="#chevron-down"
+          />
+        </svg>
+      </button>
+      <ul
+        aria-labelledby="__BVID__34__BV_toggle_"
+        class="dropdown-menu"
+        role="menu"
+        tabindex="-1"
+      >
+        <div
+          class="gl-new-dropdown-inner"
+        >
+          <!---->
+           
+          <!---->
+           
+          <div
+            class="gl-new-dropdown-contents"
+          >
+            <!---->
+             
+            <li
+              class="gl-new-dropdown-item"
+              role="presentation"
+            >
+              <button
+                class="dropdown-item"
+                role="menuitem"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="gl-icon s16 gl-new-dropdown-item-check-icon gl-mt-3 gl-align-self-start"
+                  data-testid="dropdown-item-checkbox"
+                  role="img"
+                >
+                  <use
+                    href="#mobile-issue-close"
+                  />
+                </svg>
+                 
+                <!---->
+                 
+                <!---->
+                 
+                <div
+                  class="gl-new-dropdown-item-text-wrapper"
+                >
+                  <p
+                    class="gl-new-dropdown-item-text-primary"
+                  >
+                    
+            00:00
+          
+                  </p>
+                   
+                  <!---->
+                </div>
+                 
+                <!---->
+              </button>
+            </li>
+            <li
+              class="gl-new-dropdown-item"
+              role="presentation"
+            >
+              <button
+                class="dropdown-item"
+                role="menuitem"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="gl-icon s16 gl-new-dropdown-item-check-icon gl-visibility-hidden gl-mt-3 gl-align-self-start"
+                  data-testid="dropdown-item-checkbox"
+                  role="img"
+                >
+                  <use
+                    href="#mobile-issue-close"
+                  />
+                </svg>
+                 
+                <!---->
+                 
+                <!---->
+                 
+                <div
+                  class="gl-new-dropdown-item-text-wrapper"
+                >
+                  <p
+                    class="gl-new-dropdown-item-text-primary"
+                  >
+                    
+            01:00
+          
+                  </p>
+                   
+                  <!---->
+                </div>
+                 
+                <!---->
+              </button>
+            </li>
+            <li
+              class="gl-new-dropdown-item"
+              role="presentation"
+            >
+              <button
+                class="dropdown-item"
+                role="menuitem"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="gl-icon s16 gl-new-dropdown-item-check-icon gl-visibility-hidden gl-mt-3 gl-align-self-start"
+                  data-testid="dropdown-item-checkbox"
+                  role="img"
+                >
+                  <use
+                    href="#mobile-issue-close"
+                  />
+                </svg>
+                 
+                <!---->
+                 
+                <!---->
+                 
+                <div
+                  class="gl-new-dropdown-item-text-wrapper"
+                >
+                  <p
+                    class="gl-new-dropdown-item-text-primary"
+                  >
+                    
+            02:00
+          
+                  </p>
+                   
+                  <!---->
+                </div>
+                 
+                <!---->
+              </button>
+            </li>
+            <li
+              class="gl-new-dropdown-item"
+              role="presentation"
+            >
+              <button
+                class="dropdown-item"
+                role="menuitem"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="gl-icon s16 gl-new-dropdown-item-check-icon gl-visibility-hidden gl-mt-3 gl-align-self-start"
+                  data-testid="dropdown-item-checkbox"
+                  role="img"
+                >
+                  <use
+                    href="#mobile-issue-close"
+                  />
+                </svg>
+                 
+                <!---->
+                 
+                <!---->
+                 
+                <div
+                  class="gl-new-dropdown-item-text-wrapper"
+                >
+                  <p
+                    class="gl-new-dropdown-item-text-primary"
+                  >
+                    
+            03:00
+          
+                  </p>
+                   
+                  <!---->
+                </div>
+                 
+                <!---->
+              </button>
+            </li>
+            <li
+              class="gl-new-dropdown-item"
+              role="presentation"
+            >
+              <button
+                class="dropdown-item"
+                role="menuitem"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="gl-icon s16 gl-new-dropdown-item-check-icon gl-visibility-hidden gl-mt-3 gl-align-self-start"
+                  data-testid="dropdown-item-checkbox"
+                  role="img"
+                >
+                  <use
+                    href="#mobile-issue-close"
+                  />
+                </svg>
+                 
+                <!---->
+                 
+                <!---->
+                 
+                <div
+                  class="gl-new-dropdown-item-text-wrapper"
+                >
+                  <p
+                    class="gl-new-dropdown-item-text-primary"
+                  >
+                    
+            04:00
+          
+                  </p>
+                   
+                  <!---->
+                </div>
+                 
+                <!---->
+              </button>
+            </li>
+            <li
+              class="gl-new-dropdown-item"
+              role="presentation"
+            >
+              <button
+                class="dropdown-item"
+                role="menuitem"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="gl-icon s16 gl-new-dropdown-item-check-icon gl-visibility-hidden gl-mt-3 gl-align-self-start"
+                  data-testid="dropdown-item-checkbox"
+                  role="img"
+                >
+                  <use
+                    href="#mobile-issue-close"
+                  />
+                </svg>
+                 
+                <!---->
+                 
+                <!---->
+                 
+                <div
+                  class="gl-new-dropdown-item-text-wrapper"
+                >
+                  <p
+                    class="gl-new-dropdown-item-text-primary"
+                  >
+                    
+            05:00
+          
+                  </p>
+                   
+                  <!---->
+                </div>
+                 
+                <!---->
+              </button>
+            </li>
+            <li
+              class="gl-new-dropdown-item"
+              role="presentation"
+            >
+              <button
+                class="dropdown-item"
+                role="menuitem"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="gl-icon s16 gl-new-dropdown-item-check-icon gl-visibility-hidden gl-mt-3 gl-align-self-start"
+                  data-testid="dropdown-item-checkbox"
+                  role="img"
+                >
+                  <use
+                    href="#mobile-issue-close"
+                  />
+                </svg>
+                 
+                <!---->
+                 
+                <!---->
+                 
+                <div
+                  class="gl-new-dropdown-item-text-wrapper"
+                >
+                  <p
+                    class="gl-new-dropdown-item-text-primary"
+                  >
+                    
+            06:00
+          
+                  </p>
+                   
+                  <!---->
+                </div>
+                 
+                <!---->
+              </button>
+            </li>
+            <li
+              class="gl-new-dropdown-item"
+              role="presentation"
+            >
+              <button
+                class="dropdown-item"
+                role="menuitem"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="gl-icon s16 gl-new-dropdown-item-check-icon gl-visibility-hidden gl-mt-3 gl-align-self-start"
+                  data-testid="dropdown-item-checkbox"
+                  role="img"
+                >
+                  <use
+                    href="#mobile-issue-close"
+                  />
+                </svg>
+                 
+                <!---->
+                 
+                <!---->
+                 
+                <div
+                  class="gl-new-dropdown-item-text-wrapper"
+                >
+                  <p
+                    class="gl-new-dropdown-item-text-primary"
+                  >
+                    
+            07:00
+          
+                  </p>
+                   
+                  <!---->
+                </div>
+                 
+                <!---->
+              </button>
+            </li>
+            <li
+              class="gl-new-dropdown-item"
+              role="presentation"
+            >
+              <button
+                class="dropdown-item"
+                role="menuitem"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="gl-icon s16 gl-new-dropdown-item-check-icon gl-visibility-hidden gl-mt-3 gl-align-self-start"
+                  data-testid="dropdown-item-checkbox"
+                  role="img"
+                >
+                  <use
+                    href="#mobile-issue-close"
+                  />
+                </svg>
+                 
+                <!---->
+                 
+                <!---->
+                 
+                <div
+                  class="gl-new-dropdown-item-text-wrapper"
+                >
+                  <p
+                    class="gl-new-dropdown-item-text-primary"
+                  >
+                    
+            08:00
+          
+                  </p>
+                   
+                  <!---->
+                </div>
+                 
+                <!---->
+              </button>
+            </li>
+            <li
+              class="gl-new-dropdown-item"
+              role="presentation"
+            >
+              <button
+                class="dropdown-item"
+                role="menuitem"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="gl-icon s16 gl-new-dropdown-item-check-icon gl-visibility-hidden gl-mt-3 gl-align-self-start"
+                  data-testid="dropdown-item-checkbox"
+                  role="img"
+                >
+                  <use
+                    href="#mobile-issue-close"
+                  />
+                </svg>
+                 
+                <!---->
+                 
+                <!---->
+                 
+                <div
+                  class="gl-new-dropdown-item-text-wrapper"
+                >
+                  <p
+                    class="gl-new-dropdown-item-text-primary"
+                  >
+                    
+            09:00
+          
+                  </p>
+                   
+                  <!---->
+                </div>
+                 
+                <!---->
+              </button>
+            </li>
+            <li
+              class="gl-new-dropdown-item"
+              role="presentation"
+            >
+              <button
+                class="dropdown-item"
+                role="menuitem"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="gl-icon s16 gl-new-dropdown-item-check-icon gl-visibility-hidden gl-mt-3 gl-align-self-start"
+                  data-testid="dropdown-item-checkbox"
+                  role="img"
+                >
+                  <use
+                    href="#mobile-issue-close"
+                  />
+                </svg>
+                 
+                <!---->
+                 
+                <!---->
+                 
+                <div
+                  class="gl-new-dropdown-item-text-wrapper"
+                >
+                  <p
+                    class="gl-new-dropdown-item-text-primary"
+                  >
+                    
+            10:00
+          
+                  </p>
+                   
+                  <!---->
+                </div>
+                 
+                <!---->
+              </button>
+            </li>
+            <li
+              class="gl-new-dropdown-item"
+              role="presentation"
+            >
+              <button
+                class="dropdown-item"
+                role="menuitem"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="gl-icon s16 gl-new-dropdown-item-check-icon gl-visibility-hidden gl-mt-3 gl-align-self-start"
+                  data-testid="dropdown-item-checkbox"
+                  role="img"
+                >
+                  <use
+                    href="#mobile-issue-close"
+                  />
+                </svg>
+                 
+                <!---->
+                 
+                <!---->
+                 
+                <div
+                  class="gl-new-dropdown-item-text-wrapper"
+                >
+                  <p
+                    class="gl-new-dropdown-item-text-primary"
+                  >
+                    
+            11:00
+          
+                  </p>
+                   
+                  <!---->
+                </div>
+                 
+                <!---->
+              </button>
+            </li>
+            <li
+              class="gl-new-dropdown-item"
+              role="presentation"
+            >
+              <button
+                class="dropdown-item"
+                role="menuitem"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="gl-icon s16 gl-new-dropdown-item-check-icon gl-visibility-hidden gl-mt-3 gl-align-self-start"
+                  data-testid="dropdown-item-checkbox"
+                  role="img"
+                >
+                  <use
+                    href="#mobile-issue-close"
+                  />
+                </svg>
+                 
+                <!---->
+                 
+                <!---->
+                 
+                <div
+                  class="gl-new-dropdown-item-text-wrapper"
+                >
+                  <p
+                    class="gl-new-dropdown-item-text-primary"
+                  >
+                    
+            12:00
+          
+                  </p>
+                   
+                  <!---->
+                </div>
+                 
+                <!---->
+              </button>
+            </li>
+            <li
+              class="gl-new-dropdown-item"
+              role="presentation"
+            >
+              <button
+                class="dropdown-item"
+                role="menuitem"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="gl-icon s16 gl-new-dropdown-item-check-icon gl-visibility-hidden gl-mt-3 gl-align-self-start"
+                  data-testid="dropdown-item-checkbox"
+                  role="img"
+                >
+                  <use
+                    href="#mobile-issue-close"
+                  />
+                </svg>
+                 
+                <!---->
+                 
+                <!---->
+                 
+                <div
+                  class="gl-new-dropdown-item-text-wrapper"
+                >
+                  <p
+                    class="gl-new-dropdown-item-text-primary"
+                  >
+                    
+            13:00
+          
+                  </p>
+                   
+                  <!---->
+                </div>
+                 
+                <!---->
+              </button>
+            </li>
+            <li
+              class="gl-new-dropdown-item"
+              role="presentation"
+            >
+              <button
+                class="dropdown-item"
+                role="menuitem"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="gl-icon s16 gl-new-dropdown-item-check-icon gl-visibility-hidden gl-mt-3 gl-align-self-start"
+                  data-testid="dropdown-item-checkbox"
+                  role="img"
+                >
+                  <use
+                    href="#mobile-issue-close"
+                  />
+                </svg>
+                 
+                <!---->
+                 
+                <!---->
+                 
+                <div
+                  class="gl-new-dropdown-item-text-wrapper"
+                >
+                  <p
+                    class="gl-new-dropdown-item-text-primary"
+                  >
+                    
+            14:00
+          
+                  </p>
+                   
+                  <!---->
+                </div>
+                 
+                <!---->
+              </button>
+            </li>
+            <li
+              class="gl-new-dropdown-item"
+              role="presentation"
+            >
+              <button
+                class="dropdown-item"
+                role="menuitem"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="gl-icon s16 gl-new-dropdown-item-check-icon gl-visibility-hidden gl-mt-3 gl-align-self-start"
+                  data-testid="dropdown-item-checkbox"
+                  role="img"
+                >
+                  <use
+                    href="#mobile-issue-close"
+                  />
+                </svg>
+                 
+                <!---->
+                 
+                <!---->
+                 
+                <div
+                  class="gl-new-dropdown-item-text-wrapper"
+                >
+                  <p
+                    class="gl-new-dropdown-item-text-primary"
+                  >
+                    
+            15:00
+          
+                  </p>
+                   
+                  <!---->
+                </div>
+                 
+                <!---->
+              </button>
+            </li>
+            <li
+              class="gl-new-dropdown-item"
+              role="presentation"
+            >
+              <button
+                class="dropdown-item"
+                role="menuitem"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="gl-icon s16 gl-new-dropdown-item-check-icon gl-visibility-hidden gl-mt-3 gl-align-self-start"
+                  data-testid="dropdown-item-checkbox"
+                  role="img"
+                >
+                  <use
+                    href="#mobile-issue-close"
+                  />
+                </svg>
+                 
+                <!---->
+                 
+                <!---->
+                 
+                <div
+                  class="gl-new-dropdown-item-text-wrapper"
+                >
+                  <p
+                    class="gl-new-dropdown-item-text-primary"
+                  >
+                    
+            16:00
+          
+                  </p>
+                   
+                  <!---->
+                </div>
+                 
+                <!---->
+              </button>
+            </li>
+            <li
+              class="gl-new-dropdown-item"
+              role="presentation"
+            >
+              <button
+                class="dropdown-item"
+                role="menuitem"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="gl-icon s16 gl-new-dropdown-item-check-icon gl-visibility-hidden gl-mt-3 gl-align-self-start"
+                  data-testid="dropdown-item-checkbox"
+                  role="img"
+                >
+                  <use
+                    href="#mobile-issue-close"
+                  />
+                </svg>
+                 
+                <!---->
+                 
+                <!---->
+                 
+                <div
+                  class="gl-new-dropdown-item-text-wrapper"
+                >
+                  <p
+                    class="gl-new-dropdown-item-text-primary"
+                  >
+                    
+            17:00
+          
+                  </p>
+                   
+                  <!---->
+                </div>
+                 
+                <!---->
+              </button>
+            </li>
+            <li
+              class="gl-new-dropdown-item"
+              role="presentation"
+            >
+              <button
+                class="dropdown-item"
+                role="menuitem"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="gl-icon s16 gl-new-dropdown-item-check-icon gl-visibility-hidden gl-mt-3 gl-align-self-start"
+                  data-testid="dropdown-item-checkbox"
+                  role="img"
+                >
+                  <use
+                    href="#mobile-issue-close"
+                  />
+                </svg>
+                 
+                <!---->
+                 
+                <!---->
+                 
+                <div
+                  class="gl-new-dropdown-item-text-wrapper"
+                >
+                  <p
+                    class="gl-new-dropdown-item-text-primary"
+                  >
+                    
+            18:00
+          
+                  </p>
+                   
+                  <!---->
+                </div>
+                 
+                <!---->
+              </button>
+            </li>
+            <li
+              class="gl-new-dropdown-item"
+              role="presentation"
+            >
+              <button
+                class="dropdown-item"
+                role="menuitem"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="gl-icon s16 gl-new-dropdown-item-check-icon gl-visibility-hidden gl-mt-3 gl-align-self-start"
+                  data-testid="dropdown-item-checkbox"
+                  role="img"
+                >
+                  <use
+                    href="#mobile-issue-close"
+                  />
+                </svg>
+                 
+                <!---->
+                 
+                <!---->
+                 
+                <div
+                  class="gl-new-dropdown-item-text-wrapper"
+                >
+                  <p
+                    class="gl-new-dropdown-item-text-primary"
+                  >
+                    
+            19:00
+          
+                  </p>
+                   
+                  <!---->
+                </div>
+                 
+                <!---->
+              </button>
+            </li>
+            <li
+              class="gl-new-dropdown-item"
+              role="presentation"
+            >
+              <button
+                class="dropdown-item"
+                role="menuitem"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="gl-icon s16 gl-new-dropdown-item-check-icon gl-visibility-hidden gl-mt-3 gl-align-self-start"
+                  data-testid="dropdown-item-checkbox"
+                  role="img"
+                >
+                  <use
+                    href="#mobile-issue-close"
+                  />
+                </svg>
+                 
+                <!---->
+                 
+                <!---->
+                 
+                <div
+                  class="gl-new-dropdown-item-text-wrapper"
+                >
+                  <p
+                    class="gl-new-dropdown-item-text-primary"
+                  >
+                    
+            20:00
+          
+                  </p>
+                   
+                  <!---->
+                </div>
+                 
+                <!---->
+              </button>
+            </li>
+            <li
+              class="gl-new-dropdown-item"
+              role="presentation"
+            >
+              <button
+                class="dropdown-item"
+                role="menuitem"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="gl-icon s16 gl-new-dropdown-item-check-icon gl-visibility-hidden gl-mt-3 gl-align-self-start"
+                  data-testid="dropdown-item-checkbox"
+                  role="img"
+                >
+                  <use
+                    href="#mobile-issue-close"
+                  />
+                </svg>
+                 
+                <!---->
+                 
+                <!---->
+                 
+                <div
+                  class="gl-new-dropdown-item-text-wrapper"
+                >
+                  <p
+                    class="gl-new-dropdown-item-text-primary"
+                  >
+                    
+            21:00
+          
+                  </p>
+                   
+                  <!---->
+                </div>
+                 
+                <!---->
+              </button>
+            </li>
+            <li
+              class="gl-new-dropdown-item"
+              role="presentation"
+            >
+              <button
+                class="dropdown-item"
+                role="menuitem"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="gl-icon s16 gl-new-dropdown-item-check-icon gl-visibility-hidden gl-mt-3 gl-align-self-start"
+                  data-testid="dropdown-item-checkbox"
+                  role="img"
+                >
+                  <use
+                    href="#mobile-issue-close"
+                  />
+                </svg>
+                 
+                <!---->
+                 
+                <!---->
+                 
+                <div
+                  class="gl-new-dropdown-item-text-wrapper"
+                >
+                  <p
+                    class="gl-new-dropdown-item-text-primary"
+                  >
+                    
+            22:00
+          
+                  </p>
+                   
+                  <!---->
+                </div>
+                 
+                <!---->
+              </button>
+            </li>
+            <li
+              class="gl-new-dropdown-item"
+              role="presentation"
+            >
+              <button
+                class="dropdown-item"
+                role="menuitem"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="gl-icon s16 gl-new-dropdown-item-check-icon gl-visibility-hidden gl-mt-3 gl-align-self-start"
+                  data-testid="dropdown-item-checkbox"
+                  role="img"
+                >
+                  <use
+                    href="#mobile-issue-close"
+                  />
+                </svg>
+                 
+                <!---->
+                 
+                <!---->
+                 
+                <div
+                  class="gl-new-dropdown-item-text-wrapper"
+                >
+                  <p
+                    class="gl-new-dropdown-item-text-primary"
+                  >
+                    
+            23:00
+          
+                  </p>
+                   
+                  <!---->
+                </div>
+                 
+                <!---->
+              </button>
+            </li>
+          </div>
+           
+          <!---->
+        </div>
+      </ul>
+    </div>
+  </div>
+   
+  <button
+    aria-label="Remove"
+    class="btn gl-absolute gl-top-1 gl-right-1 btn-default btn-md gl-button btn-default-tertiary btn-icon"
+    data-testid="remove-rule"
+    type="button"
+  >
+    <!---->
+     
+    <svg
+      aria-hidden="true"
+      class="gl-button-icon gl-icon s16"
+      data-testid="remove-icon"
+      role="img"
+    >
+      <use
+        href="#remove"
+      />
+    </svg>
+      
+    <!---->
+  </button>
+</div>
+`;

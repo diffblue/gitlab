@@ -3,11 +3,13 @@ import { __ } from '~/locale';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import PolicyRuleBuilder from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/policy_rule_builder.vue';
 import PipelineRuleComponent from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/pipeline_rule_component.vue';
+import ScheduleRuleComponent from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/schedule_rule_component.vue';
 import { RULE_KEY_MAP } from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/lib/rules';
 import {
   SCAN_EXECUTION_PIPELINE_RULE,
   SCAN_EXECUTION_SCHEDULE_RULE,
 } from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/constants';
+import { CRONE_DEFAULT_TIME } from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/lib';
 
 describe('PolicyRuleBuilder', () => {
   let wrapper;
@@ -30,6 +32,7 @@ describe('PolicyRuleBuilder', () => {
 
   const findPipelineRuleComponentLabel = () => wrapper.findByTestId('rule-component-label');
   const findPipelineRuleComponent = () => wrapper.findComponent(PipelineRuleComponent);
+  const findScheduleRuleComponent = () => wrapper.findComponent(ScheduleRuleComponent);
 
   it.each`
     ruleIndex | expectedResult
@@ -59,7 +62,20 @@ describe('PolicyRuleBuilder', () => {
     });
   });
 
-  /**
-   * TODO Add tests when schedule rule component is added
-   */
+  it('should select correct schedule rule', async () => {
+    createComponent({
+      initRule: {
+        type: SCAN_EXECUTION_SCHEDULE_RULE,
+        branches: [],
+        cadence: CRONE_DEFAULT_TIME,
+      },
+    });
+
+    findScheduleRuleComponent().vm.$emit('select-rule', SCAN_EXECUTION_SCHEDULE_RULE);
+    await nextTick();
+
+    const [payload] = wrapper.emitted().changed[0];
+
+    expect(payload).toEqual(RULE_KEY_MAP[SCAN_EXECUTION_SCHEDULE_RULE]());
+  });
 });

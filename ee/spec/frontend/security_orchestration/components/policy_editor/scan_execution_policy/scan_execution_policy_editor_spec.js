@@ -54,6 +54,9 @@ jest.mock('ee/security_orchestration/components/policy_editor/scan_execution_pol
   toYaml: jest.requireActual(
     'ee/security_orchestration/components/policy_editor/scan_execution_policy/lib',
   ).toYaml,
+  buildDefaultPipeLineRule: jest.requireActual(
+    'ee/security_orchestration/components/policy_editor/scan_execution_policy/lib',
+  ).buildDefaultPipeLineRule,
   SECURITY_POLICY_ACTIONS: jest.requireActual(
     'ee/security_orchestration/components/policy_editor/constants',
   ).SECURITY_POLICY_ACTIONS,
@@ -242,6 +245,7 @@ describe('ScanExecutionPolicyEditor', () => {
       expect(findPolicyEditorLayout().props('policy').rules).toEqual([
         RULE_KEY_MAP[SCAN_EXECUTION_PIPELINE_RULE](),
       ]);
+
       findAddRuleButton().vm.$emit('click');
 
       await nextTick();

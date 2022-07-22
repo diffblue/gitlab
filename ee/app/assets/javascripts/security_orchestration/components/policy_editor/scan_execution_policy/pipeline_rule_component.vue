@@ -68,19 +68,19 @@ export default {
 <template>
   <div>
     <div class="gl-bg-gray-10 gl-rounded-base gl-px-3 gl-pt-3 gl-relative gl-pb-4">
-      <div class="form-inline">
+      <div class="form-inline gl-gap-3">
         <gl-sprintf :message="$options.i18n.scanExecutionRuleCopy">
           <template #ifLabel>
             <label
               for="scanners"
-              class="text-uppercase gl-min-w-7 gl-font-lg gl-mr-3"
+              class="text-uppercase gl-min-w-7 gl-font-lg"
               data-testid="rule-component-label"
               >{{ ruleLabel }}</label
             >
           </template>
 
           <template #rules>
-            <gl-dropdown class="gl-mr-3" :text="selectedRule" data-testid="rule-component-type">
+            <gl-dropdown :text="selectedRule" data-testid="rule-component-type">
               <gl-dropdown-item
                 v-for="(label, key) in $options.SCAN_EXECUTION_RULES_LABELS"
                 :key="key"
@@ -96,7 +96,6 @@ export default {
           <template #branches>
             <gl-form-input
               v-model="branchedToAdd"
-              class="gl-ml-3 gl-mr-3"
               :placeholder="$options.i18n.selectedBranchesPlaceholder"
               data-testid="pipeline-rule-branches"
             />

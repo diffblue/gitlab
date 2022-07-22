@@ -15,6 +15,18 @@ export const SCAN_EXECUTION_RULES_LABELS = {
 export const SCAN_EXECUTION_PIPELINE_RULE = 'pipeline';
 export const SCAN_EXECUTION_SCHEDULE_RULE = 'schedule';
 
+export const DEFAULT_AGENT_NAME = 'default';
+
+export const SCAN_EXECUTION_RULE_SCOPE_TYPE = {
+  branch: s__('ScanResultPolicy|branch'),
+  cluster: s__('ScanResultPolicy|cluster'),
+};
+
+export const SCAN_EXECUTION_RULE_PERIOD_TYPE = {
+  daily: s__('ScanResultPolicy|daily'),
+  weekly: s__('ScanResultPolicy|weekly'),
+};
+
 export const DEFAULT_SCAN = 'dast';
 
 export const TEMPORARY_LIST_OF_SCANS = {
