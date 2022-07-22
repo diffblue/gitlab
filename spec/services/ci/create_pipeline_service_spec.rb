@@ -2676,6 +2676,68 @@ RSpec.describe Ci::CreatePipelineService do
           end
         end
       end
+
+      context 'with workflow rules changes' do
+        shared_examples 'comparing file changes with workflow rules' do
+          context 'when matches' do
+            before do
+              allow_next_instance_of(Ci::Pipeline) do |pipeline|
+                allow(pipeline).to receive(:modified_paths).and_return(%w[file1.md])
+              end
+            end
+
+            it 'creates the pipeline with a job' do
+              expect(pipeline).to be_persisted
+              expect(build_names).to contain_exactly('job')
+            end
+          end
+
+          context 'when does not match' do
+            before do
+              allow_next_instance_of(Ci::Pipeline) do |pipeline|
+                allow(pipeline).to receive(:modified_paths).and_return(%w[unknown])
+              end
+            end
+
+            it 'creates the pipeline with a job' do
+              expect(pipeline.errors.full_messages).to eq(['Pipeline filtered out by workflow rules.'])
+              expect(response).to be_error
+              expect(pipeline).not_to be_persisted
+            end
+          end
+        end
+
+        context 'changes is an array' do
+          let(:config) do
+            <<-EOY
+              workflow:
+                rules:
+                  - changes: [file1.md]
+
+              job:
+                script: exit 0
+            EOY
+          end
+
+          it_behaves_like 'comparing file changes with workflow rules'
+        end
+
+        context 'changes:paths is an array' do
+          let(:config) do
+            <<-EOY
+              workflow:
+                rules:
+                  - changes:
+                      paths: [file1.md]
+
+              job:
+                script: exit 0
+            EOY
+          end
+
+          it_behaves_like 'comparing file changes with workflow rules'
+        end
+      end
     end
   end
 
