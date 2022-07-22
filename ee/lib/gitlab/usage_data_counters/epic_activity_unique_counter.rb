@@ -82,27 +82,33 @@ module Gitlab
           track_unique_action(EPIC_EMOJI_REMOVED, author)
         end
 
-        def track_epic_start_date_set_as_fixed_action(author:)
+        def track_epic_start_date_set_as_fixed_action(author:, namespace:)
+          track_snowplow_action(EPIC_START_DATE_SET_AS_FIXED, author, namespace)
           track_unique_action(EPIC_START_DATE_SET_AS_FIXED, author)
         end
 
-        def track_epic_start_date_set_as_inherited_action(author:)
+        def track_epic_start_date_set_as_inherited_action(author:, namespace:)
+          track_snowplow_action(EPIC_START_DATE_SET_AS_INHERITED, author, namespace)
           track_unique_action(EPIC_START_DATE_SET_AS_INHERITED, author)
         end
 
-        def track_epic_due_date_set_as_fixed_action(author:)
+        def track_epic_due_date_set_as_fixed_action(author:, namespace:)
+          track_snowplow_action(EPIC_DUE_DATE_SET_AS_FIXED, author, namespace)
           track_unique_action(EPIC_DUE_DATE_SET_AS_FIXED, author)
         end
 
-        def track_epic_due_date_set_as_inherited_action(author:)
+        def track_epic_due_date_set_as_inherited_action(author:, namespace:)
+          track_snowplow_action(EPIC_DUE_DATE_SET_AS_INHERITED, author, namespace)
           track_unique_action(EPIC_DUE_DATE_SET_AS_INHERITED, author)
         end
 
-        def track_epic_fixed_start_date_updated_action(author:)
+        def track_epic_fixed_start_date_updated_action(author:, namespace:)
+          track_snowplow_action(EPIC_FIXED_START_DATE_UPDATED, author, namespace)
           track_unique_action(EPIC_FIXED_START_DATE_UPDATED, author)
         end
 
-        def track_epic_fixed_due_date_updated_action(author:)
+        def track_epic_fixed_due_date_updated_action(author:, namespace:)
+          track_snowplow_action(EPIC_FIXED_DUE_DATE_UPDATED, author, namespace)
           track_unique_action(EPIC_FIXED_DUE_DATE_UPDATED, author)
         end
 
