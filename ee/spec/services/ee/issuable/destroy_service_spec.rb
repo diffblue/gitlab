@@ -14,7 +14,8 @@ RSpec.describe Issuable::DestroyService do
       let(:group) { issuable.group }
 
       it 'records usage ping epic destroy event' do
-        expect(Gitlab::UsageDataCounters::EpicActivityUniqueCounter).to receive(:track_epic_destroyed).with(author: user)
+        expect(Gitlab::UsageDataCounters::EpicActivityUniqueCounter).to receive(:track_epic_destroyed)
+          .with(author: user, namespace: group)
 
         subject.execute(issuable)
       end

@@ -336,7 +336,7 @@ RSpec.describe Epics::UpdateService do
 
         it 'tracks the label change' do
           expect(::Gitlab::UsageDataCounters::EpicActivityUniqueCounter)
-            .to receive(:track_epic_labels_changed_action).with(author: user)
+            .to receive(:track_epic_labels_changed_action).with(author: user, namespace: group)
 
           subject
         end
@@ -385,7 +385,7 @@ RSpec.describe Epics::UpdateService do
 
         it 'tracks the epic becoming confidential' do
           expect(::Gitlab::UsageDataCounters::EpicActivityUniqueCounter)
-            .to receive(:track_epic_confidential_action).with(author: user)
+            .to receive(:track_epic_confidential_action).with(author: user, namespace: group)
 
           update_epic(confidential: true)
         end
@@ -404,7 +404,7 @@ RSpec.describe Epics::UpdateService do
 
         it 'tracks the epic becoming visible' do
           expect(::Gitlab::UsageDataCounters::EpicActivityUniqueCounter)
-            .to receive(:track_epic_visible_action).with(author: user)
+            .to receive(:track_epic_visible_action).with(author: user, namespace: group)
 
           update_epic(confidential: false)
         end
@@ -440,7 +440,7 @@ RSpec.describe Epics::UpdateService do
 
         it 'counts the change correctly' do
           expect(Gitlab::UsageDataCounters::EpicActivityUniqueCounter).to receive(:track_epic_task_checked)
-            .with(author: user).twice
+            .with(author: user, namespace: group).twice
 
           update_epic(description: "- [x] Task 1\n- [X] Task 2")
         end
@@ -466,7 +466,7 @@ RSpec.describe Epics::UpdateService do
 
         it 'counts the change correctly' do
           expect(Gitlab::UsageDataCounters::EpicActivityUniqueCounter).to receive(:track_epic_task_unchecked)
-            .with(author: user).twice
+            .with(author: user, namespace: group).twice
 
           update_epic(description: "- [ ] Task 1\n- [ ] Task 2")
         end
