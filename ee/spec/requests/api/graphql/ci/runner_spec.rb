@@ -20,8 +20,8 @@ RSpec.describe 'Query.runner(id)' do
 
     before do
       allow(::Gitlab::Ci::RunnerUpgradeCheck.instance)
-        .to receive(:check_runner_upgrade_status)
-        .and_return({ upgrade_status => nil })
+        .to receive(:check_runner_upgrade_suggestion)
+        .and_return([nil, upgrade_status])
         .once
     end
 
