@@ -136,10 +136,10 @@ describe('BoardAddNewColumn', () => {
   });
 
   describe('Add list button', () => {
-    it('is disabled if no item is selected', () => {
+    it('is enabled if no item is selected', () => {
       mountComponent();
 
-      expect(submitButton().props('disabled')).toBe(true);
+      expect(submitButton().props('disabled')).toBe(false);
     });
 
     it('adds a new list on click', async () => {
