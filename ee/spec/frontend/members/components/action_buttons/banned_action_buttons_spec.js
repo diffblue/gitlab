@@ -49,7 +49,7 @@ describe('BannedActionButtons', () => {
   const findButton = () => findForm().find(GlButton);
 
   afterEach(() => {
-    wrapper.destroy();
+    wrapper?.destroy();
   });
 
   describe('when user has `canUnban` permission', () => {
@@ -83,5 +83,11 @@ describe('BannedActionButtons', () => {
     it('does not render unban form', () => {
       expect(findForm().exists()).toBe(false);
     });
+  });
+
+  it('fails validation when member prop does not have id property with a number value', () => {
+    expect(() => {
+      createComponent({ member: {} });
+    }).toThrow('Invalid prop: custom validator check failed');
   });
 });

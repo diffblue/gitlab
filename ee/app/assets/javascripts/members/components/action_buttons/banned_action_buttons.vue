@@ -14,14 +14,9 @@ export default {
     member: {
       type: Object,
       required: true,
-    },
-    isCurrentUser: {
-      type: Boolean,
-      required: true,
-    },
-    isInvitedUser: {
-      type: Boolean,
-      required: true,
+      validator: (member) => {
+        return typeof member.id === 'number';
+      },
     },
     permissions: {
       type: Object,
