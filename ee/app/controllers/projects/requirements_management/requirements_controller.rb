@@ -19,9 +19,10 @@ class Projects::RequirementsManagement::RequirementsController < Projects::Appli
   end
 
   def import_csv
-    return render json: { message: invalid_file_message } unless file_is_valid?(params[:file])
+    file = requirement_params[:file]
+    return render json: { message: invalid_file_message } unless file_is_valid?(file)
 
-    uploader = UploadService.new(project, params[:file]).execute
+    uploader = UploadService.new(project, file).execute
     message =
       if uploader
         RequirementsManagement::ImportRequirementsCsvWorker.perform_async(current_user.id, project.id, uploader.upload.id) # rubocop:disable CodeReuse/Worker
@@ -34,6 +35,10 @@ class Projects::RequirementsManagement::RequirementsController < Projects::Appli
   end
 
   private
+
+  def requirement_params
+    params.permit(:file)
+  end
 
   def authorize_import_access!
     return if can?(current_user, :import_requirements, project)
