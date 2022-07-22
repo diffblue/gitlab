@@ -33,9 +33,13 @@ RSpec.shared_examples 'it attempts to associate the profile' do |dast_profile_na
   end
 end
 
-RSpec.shared_examples 'an error occurred during the dast profile association' do
+RSpec.shared_examples 'an error occurred' do
   it 'communicates failure', :aggregate_failures do
     expect(subject).to be_error
     expect(subject.errors).to include(error_message)
   end
+end
+
+RSpec.shared_examples 'an error occurred during the dast profile association' do
+  it_behaves_like 'an error occurred'
 end

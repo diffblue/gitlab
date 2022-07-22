@@ -18,50 +18,140 @@ RSpec.describe Projects::Security::DastConfigurationHelper do
   let(:scanner_profile_name_included) { 'scanner_profile_name_included' }
 
   describe '#dast_configuration_data' do
-    before do
-      service = instance_double(AppSec::Dast::ScanConfigs::FetchService)
-      allow(AppSec::Dast::ScanConfigs::FetchService).to receive(:new).and_return(service)
-      expect(service).to receive(:execute).and_return(result)
-    end
-
     subject { helper.dast_configuration_data(project, user) }
 
-    context 'when service does not return dast profile and scanner profile' do
-      let(:result) { ServiceResponse.error(message: 'Dast configuration not found') }
-
-      it {
-        is_expected.to eq({
-          security_configuration_path: security_configuration_path,
-          full_path: full_path,
-          gitlab_ci_yaml_edit_path: gitlab_ci_yaml_edit_path,
-          scanner_profiles_library_path: scanner_profiles_library_path,
-          site_profiles_library_path: site_profiles_library_path,
-          new_scanner_profile_path: new_scanner_profile_path,
-          new_site_profile_path: new_site_profile_path
-        })
-      }
-    end
-
-    context 'when service returns dast profile and scanner profile' do
-      let(:result) do
-        ServiceResponse.success(
-          payload: { site_profile: profile_name_included, scanner_profile: scanner_profile_name_included }
-        )
+    context 'with yml_config_data' do
+      before do
+        service = instance_double(AppSec::Dast::ScanConfigs::FetchService)
+        allow(AppSec::Dast::ScanConfigs::FetchService).to receive(:new).and_return(service)
+        expect(service).to receive(:execute).and_return(result)
       end
 
-      it {
-        is_expected.to eq({
-          security_configuration_path: security_configuration_path,
-          full_path: full_path,
-          gitlab_ci_yaml_edit_path: gitlab_ci_yaml_edit_path,
-          scanner_profiles_library_path: scanner_profiles_library_path,
-          site_profiles_library_path: site_profiles_library_path,
-          new_scanner_profile_path: new_scanner_profile_path,
-          new_site_profile_path: new_site_profile_path,
-          site_profile: profile_name_included,
-          scanner_profile: scanner_profile_name_included
-        })
-      }
+      context 'when service does not return dast profile and scanner profile' do
+        let(:result) { ServiceResponse.error(message: 'Dast configuration not found') }
+
+        it {
+          is_expected.to eq({
+            security_configuration_path: security_configuration_path,
+            full_path: full_path,
+            gitlab_ci_yaml_edit_path: gitlab_ci_yaml_edit_path,
+            scanner_profiles_library_path: scanner_profiles_library_path,
+            site_profiles_library_path: site_profiles_library_path,
+            new_scanner_profile_path: new_scanner_profile_path,
+            new_site_profile_path: new_site_profile_path
+          })
+        }
+      end
+
+      context 'when service returns dast profile and scanner profile' do
+        let(:result) do
+          ServiceResponse.success(
+            payload: { site_profile: profile_name_included, scanner_profile: scanner_profile_name_included }
+          )
+        end
+
+        it {
+          is_expected.to eq({
+            security_configuration_path: security_configuration_path,
+            full_path: full_path,
+            gitlab_ci_yaml_edit_path: gitlab_ci_yaml_edit_path,
+            scanner_profiles_library_path: scanner_profiles_library_path,
+            site_profiles_library_path: site_profiles_library_path,
+            new_scanner_profile_path: new_scanner_profile_path,
+            new_site_profile_path: new_site_profile_path,
+            site_profile: profile_name_included,
+            scanner_profile: scanner_profile_name_included
+          })
+        }
+      end
+    end
+
+    context 'with pipeline_data' do
+      before do
+        service = instance_double(AppSec::Dast::Pipelines::FindLatestService)
+        allow(AppSec::Dast::Pipelines::FindLatestService).to receive(:new).and_return(service)
+        expect(service).to receive(:execute).and_return(result)
+      end
+
+      context 'when pipeline data is present' do
+        let(:pipeline) do
+          create(
+            :ci_pipeline,
+            :auto_devops_source,
+            project: project,
+            ref: project.default_branch,
+            sha: project.commit.sha,
+            started_at: Time.now
+          )
+        end
+
+        context 'when scanner is enabled' do
+          let(:result) do
+            ServiceResponse.success(
+              payload: {
+                latest_pipeline: pipeline
+              }
+            )
+          end
+
+          let!(:build_dast) { create(:ci_build, :dast, pipeline: pipeline, status: 'success') }
+
+          it {
+            is_expected.to eq({
+              security_configuration_path: security_configuration_path,
+              full_path: full_path,
+              gitlab_ci_yaml_edit_path: gitlab_ci_yaml_edit_path,
+              scanner_profiles_library_path: scanner_profiles_library_path,
+              site_profiles_library_path: site_profiles_library_path,
+              new_scanner_profile_path: new_scanner_profile_path,
+              new_site_profile_path: new_site_profile_path,
+              dast_enabled: true,
+              pipeline_id: pipeline.id,
+              pipeline_started_at: pipeline.started_at,
+              pipeline_path: project_pipeline_path(project, pipeline)
+            })
+          }
+        end
+
+        context 'when scanner is not enabled' do
+          let(:result) do
+            ServiceResponse.success(
+              payload: {}
+            )
+          end
+
+          let!(:build_dast) { create(:ci_build, :dast, pipeline: pipeline, status: 'success') }
+
+          it {
+            is_expected.to eq({
+              security_configuration_path: security_configuration_path,
+              full_path: full_path,
+              gitlab_ci_yaml_edit_path: gitlab_ci_yaml_edit_path,
+              scanner_profiles_library_path: scanner_profiles_library_path,
+              site_profiles_library_path: site_profiles_library_path,
+              new_scanner_profile_path: new_scanner_profile_path,
+              new_site_profile_path: new_site_profile_path,
+              dast_enabled: false
+            })
+          }
+        end
+      end
+
+      context 'when service returns an error' do
+        let(:result) { ServiceResponse.error(message: 'Insufficient permissions') }
+
+        it {
+          is_expected.to eq({
+            security_configuration_path: security_configuration_path,
+            full_path: full_path,
+            gitlab_ci_yaml_edit_path: gitlab_ci_yaml_edit_path,
+            scanner_profiles_library_path: scanner_profiles_library_path,
+            site_profiles_library_path: site_profiles_library_path,
+            new_scanner_profile_path: new_scanner_profile_path,
+            new_site_profile_path: new_site_profile_path
+          })
+        }
+      end
     end
   end
 end
