@@ -19,7 +19,7 @@ RSpec.describe 'Trial Sign In' do
 
       within('div#login-pane') do
         fill_in 'user_login', with: user.email
-        fill_in 'user_password', with: '12345678'
+        fill_in 'user_password', with: user.password
 
         click_button 'Sign in'
       end
