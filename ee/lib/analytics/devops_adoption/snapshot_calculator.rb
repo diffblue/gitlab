@@ -77,8 +77,6 @@ module Analytics
       end
 
       def code_owners_used_count
-        return unless Feature.enabled?(:analytics_devops_adoption_codeowners, enabled_namespace.namespace)
-
         snapshot_projects.count do |project|
           !Gitlab::CodeOwners::Loader.new(project, project.default_branch || 'HEAD').empty_code_owners?
         end
