@@ -61,9 +61,5 @@ module Pajamas
     def initial
       @record.name[0, 1].upcase
     end
-
-    def circle?
-      @record.is_a? User
-    end
   end
 end
