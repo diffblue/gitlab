@@ -354,7 +354,7 @@ RSpec.describe Projects::MergeRequestsController do
     subject { get :edit, params: params }
 
     context 'default templates' do
-      let(:selected_field) { 'data-selected="Default"' }
+      let(:selected_field) { 'data-default="Default"' }
       let(:files) { { '.gitlab/merge_request_templates/Default.md' => '' } }
       let(:project) { create(:project, :custom_repo, files: files ) }
 
@@ -382,10 +382,10 @@ RSpec.describe Projects::MergeRequestsController do
         end
 
         context 'when a default template exists in the repository' do
-          it 'selects a default template' do
+          it 'does not select a default template' do
             subject
 
-            expect(response.body).to include(selected_field)
+            expect(response.body).not_to include(selected_field)
           end
         end
       end

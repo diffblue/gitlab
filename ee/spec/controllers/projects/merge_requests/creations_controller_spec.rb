@@ -16,7 +16,7 @@ RSpec.describe Projects::MergeRequests::CreationsController do
     render_views
 
     context 'default templates' do
-      let(:selected_field) { 'data-selected="Default"' }
+      let(:selected_field) { 'data-default="Default"' }
       let(:files) { { '.gitlab/merge_request_templates/Default.md' => '' } }
 
       subject do
