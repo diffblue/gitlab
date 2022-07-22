@@ -1,10 +1,12 @@
+import { GlTab } from '@gitlab/ui';
+import { nextTick } from 'vue';
 import { shallowMount } from '@vue/test-utils';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import BasePipelineTabs from '~/pipelines/components/pipeline_tabs.vue';
 import PipelineTabs from 'ee/pipelines/components/pipeline_tabs.vue';
 import CodequalityReportApp from 'ee/codequality_report/codequality_report.vue';
 import CodequalityReportAppGraphql from 'ee/codequality_report/codequality_report_graphql.vue';
-import LicenseComplianceApp from 'ee/license_compliance/components/app.vue';
+import LicenseReportApp from 'ee/vue_shared/license_compliance/mr_widget_license_report.vue';
 import PipelineSecurityDashboard from 'ee/security_dashboard/components/pipeline/pipeline_security_dashboard.vue';
 
 describe('The Pipeline Tabs', () => {
@@ -21,8 +23,10 @@ describe('The Pipeline Tabs', () => {
 
   const findCodeQualityApp = () => wrapper.findComponent(CodequalityReportApp);
   const findCodeQualityAppGraphql = () => wrapper.findComponent(CodequalityReportAppGraphql);
-  const findLicenseApp = () => wrapper.findComponent(LicenseComplianceApp);
+  const findLicenseApp = () => wrapper.findComponent(LicenseReportApp);
   const findSecurityApp = () => wrapper.findComponent(PipelineSecurityDashboard);
+
+  const getLicenseCount = () => wrapper.findByTestId('license-counter').text();
 
   const defaultProvide = {
     canGenerateCodequalityReports: false,
@@ -30,12 +34,16 @@ describe('The Pipeline Tabs', () => {
     defaultTabValue: '',
     exposeSecurityDashboard: false,
     exposeLicenseScanningData: false,
+    licenseManagementApiUrl: '/path/to/license_management_api_url',
+    licensesApiPath: '/path/to/licenses_api',
+    licenseManagementSettingsPath: '/path/to/license_management_settings',
+    canManageLicenses: true,
     failedJobsCount: 1,
     failedJobsSummary: [],
     totalJobCount: 10,
   };
 
-  const createComponent = ({ propsData = {}, provide = {} } = {}) => {
+  const createComponent = ({ propsData = {}, provide = {}, stubs = {} } = {}) => {
     wrapper = extendedWrapper(
       shallowMount(PipelineTabs, {
         propsData,
@@ -46,6 +54,7 @@ describe('The Pipeline Tabs', () => {
         stubs: {
           BasePipelineTabs,
           TestReports: { template: '<div id="tests" />' },
+          ...stubs,
         },
       }),
     );
@@ -157,6 +166,36 @@ describe('The Pipeline Tabs', () => {
           expect(findCodeQualityApp().exists()).toBe(isVisible);
         },
       );
+    });
+
+    describe('license compliance', () => {
+      beforeEach(() => {
+        createComponent({
+          provide: { exposeLicenseScanningData: true },
+          stubs: { GlTab },
+        });
+      });
+
+      it('passes the correct props to the license report app', () => {
+        expect(findLicenseApp().props()).toMatchObject({
+          apiUrl: defaultProvide.licenseManagementApiUrl,
+          licensesApiPath: defaultProvide.licensesApiPath,
+          licenseManagementSettingsPath: defaultProvide.licenseManagementSettingsPath,
+          canManageLicenses: defaultProvide.canManageLicenses,
+          alwaysOpen: true,
+        });
+      });
+
+      it('updates the license count badge after a new count has been emitted', async () => {
+        const newLicenseCount = 100;
+
+        expect(getLicenseCount()).toBe('0');
+
+        findLicenseApp().vm.$emit('updateBadgeCount', newLicenseCount);
+        await nextTick();
+
+        expect(getLicenseCount()).toBe(`${newLicenseCount}`);
+      });
     });
   });
 });

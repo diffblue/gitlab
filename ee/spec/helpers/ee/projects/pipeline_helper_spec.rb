@@ -23,6 +23,10 @@ RSpec.describe Projects::PipelineHelper do
         codequality_report_download_path: helper.codequality_report_download_path(project, pipeline),
         expose_license_scanning_data: pipeline.expose_license_scanning_data?.to_json,
         expose_security_dashboard: pipeline.expose_security_dashboard?.to_json,
+        license_management_api_url: license_management_api_url(project),
+        license_management_settings_path: helper.license_management_path(user, project),
+        licenses_api_path: helper.licenses_api_path(project, pipeline),
+        can_manage_licenses: 'false',
         failed_jobs_count: pipeline.failed_builds.count,
         failed_jobs_summary: prepare_failed_jobs_summary_data(pipeline.failed_builds),
         full_path: project.full_path,
@@ -88,6 +92,60 @@ RSpec.describe Projects::PipelineHelper do
           is_expected.not_to be(nil)
           is_expected.to eq(pipeline.downloadable_path_for_report_type(:codequality))
         end
+      end
+    end
+  end
+
+  describe 'license_management_path' do
+    subject(:license_management_path) { helper.license_management_path(user, project) }
+
+    describe 'when user is not a maintainer' do
+      before do
+        project.add_developer(user)
+        stub_licensed_features(license_scanning: true)
+      end
+
+      it 'returns nil' do
+        is_expected.to be(nil)
+      end
+    end
+
+    describe 'when user is a maintainer' do
+      before do
+        project.add_maintainer(user)
+        stub_licensed_features(license_scanning: true)
+      end
+
+      it 'returns the license management path' do
+        is_expected.to eq(license_management_settings_path(project))
+      end
+    end
+  end
+
+  describe 'licenses_api_path' do
+    before do
+      project.add_developer(user)
+    end
+
+    subject(:licenses_api_path) { helper.licenses_api_path(project, pipeline) }
+
+    describe 'when `license_scanning` feature is not available' do
+      before do
+        stub_licensed_features(license_scanning: false)
+      end
+
+      it 'returns nil' do
+        is_expected.to be(nil)
+      end
+    end
+
+    describe 'when `license_scanning` feature is available' do
+      before do
+        stub_licensed_features(license_scanning: true)
+      end
+
+      it 'returns the licenses api path' do
+        is_expected.to eq(licenses_project_pipeline_path(project, pipeline))
       end
     end
   end
