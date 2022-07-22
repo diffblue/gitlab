@@ -15,3 +15,4 @@
   streams_icon_svg_path: image_path('illustrations/live_stream.svg'),
   filter_token_options: group_audit_event_tokens(@group.id).to_json,
   show_filter: show_filter_for_group?(@group).to_json } }
+  = gl_loading_icon(size: 'lg', css_class: 'gl-my-7')
