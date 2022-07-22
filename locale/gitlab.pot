@@ -34549,6 +34549,12 @@ msgid_plural "SearchResults|wiki results"
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "SearchToken|Assignee"
+msgstr ""
+
+msgid "SearchToken|Reviewer"
+msgstr ""
+
 msgid "Searching by both author and message is currently not supported."
 msgstr ""
 
