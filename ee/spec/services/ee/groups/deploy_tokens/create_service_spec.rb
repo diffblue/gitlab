@@ -4,6 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Groups::DeployTokens::CreateService do
   let_it_be(:entity) { create(:group) }
+  let_it_be(:destination) { create(:external_audit_event_destination, group: entity) }
   let_it_be(:user) { create(:user) }
 
   let(:deploy_token_params) { attributes_for(:deploy_token) }
@@ -21,6 +22,14 @@ RSpec.describe Groups::DeployTokens::CreateService do
         MESSAGE
 
         expect(AuditEvent.last.details[:custom_message]).to eq(expected_message)
+      end
+
+      before do
+        stub_licensed_features(external_audit_events: true)
+      end
+
+      it_behaves_like 'sends correct event type in audit event stream' do
+        let_it_be(:event_type) { "group_deploy_token_created" }
       end
 
       context 'when group is a sub-group' do
@@ -46,6 +55,14 @@ RSpec.describe Groups::DeployTokens::CreateService do
         expected_message = "Attempted to create group deploy token but failed with message: Scopes can't be blank"
 
         expect(AuditEvent.last.details[:custom_message]).to eq(expected_message)
+      end
+
+      before do
+        stub_licensed_features(external_audit_events: true)
+      end
+
+      it_behaves_like 'sends correct event type in audit event stream' do
+        let_it_be(:event_type) { "group_deploy_token_creation_failed" }
       end
     end
   end
