@@ -28,12 +28,3 @@
   category: testing
   redis_slot: testing
   aggregation: weekly
-# Search category
-- name: i_search_advanced
-  category: search
-  redis_slot: search
-  aggregation: weekly
-- name: i_search_paid
-  category: search
-  redis_slot: search
-  aggregation: weekly
