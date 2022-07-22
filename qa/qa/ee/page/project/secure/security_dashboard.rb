@@ -19,6 +19,10 @@ module QA
               element :change_status_button
             end
 
+            view 'ee/app/assets/javascripts/security_dashboard/components/shared/csv_export_button.vue' do
+              element :export_csv_modal_button
+            end
+
             def has_vulnerability?(description:)
               has_element?(:vulnerability, vulnerability_description: description)
             end
@@ -39,6 +43,10 @@ module QA
 
             def select_single_vulnerability(vulnerability_name)
               click_element(:vulnerability_status_content, status_description: vulnerability_name)
+            end
+
+            def close_export_csv_modal
+              click_element(:export_csv_modal_button) if has_element?(:export_csv_modal_button, wait: 0.5)
             end
 
             def change_state(status)

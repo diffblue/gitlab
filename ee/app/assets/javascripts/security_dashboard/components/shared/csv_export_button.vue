@@ -102,7 +102,12 @@ export default {
         {{ __('More information and share feedback') }}
         <gl-icon name="external-link" :size="12" class="ml-1" />
       </gl-link>
-      <gl-button ref="popoverButton" class="w-100" @click="closePopover">
+      <gl-button
+        ref="popoverButton"
+        class="w-100"
+        data-qa-selector="export_csv_modal_button"
+        @click="closePopover"
+      >
         {{ __('Got it!') }}
       </gl-button>
     </gl-popover>
