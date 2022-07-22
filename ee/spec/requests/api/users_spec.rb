@@ -71,7 +71,7 @@ RSpec.describe API::Users do
 
     describe "PUT /users/:id" do
       it "creates audit event when updating user with new password" do
-        put api("/users/#{user.id}", admin), params: { password: '12345678' }
+        put api("/users/#{user.id}", admin), params: { password: User.random_password }
 
         expect(AuditEvent.count).to eq(1)
       end
