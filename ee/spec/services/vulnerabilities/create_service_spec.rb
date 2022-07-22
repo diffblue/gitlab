@@ -36,7 +36,8 @@ RSpec.describe Vulnerabilities::CreateService do
           severity_overridden: false,
           confidence: finding.confidence,
           confidence_overridden: false,
-          report_type: finding.report_type
+          report_type: finding.report_type,
+          present_on_default_branch: true
         ))
     end
 
@@ -58,6 +59,26 @@ RSpec.describe Vulnerabilities::CreateService do
       it 'truncates vulnerability title to have 255 characters' do
         expect { subject }.to change { project.vulnerabilities.count }.by(1)
         expect(vulnerability.title).to have_attributes(size: 255)
+      end
+    end
+
+    context 'when the state parameter is sent' do
+      let(:finding) { create(:vulnerabilities_finding, :with_dismissal_feedback, project: project) }
+
+      subject { described_class.new(project, user, finding_id: finding.id, state: 'confirmed').execute }
+
+      it 'creates a new vulnerability with the given state' do
+        expect { subject }.to change { project.vulnerabilities.count }.by(1)
+        expect(vulnerability.state).to eq('confirmed')
+      end
+    end
+
+    context 'when present_on_default_branch parameter is sent' do
+      subject { described_class.new(project, user, finding_id: finding.id, present_on_default_branch: false).execute }
+
+      it 'creates a new vulnerability with the given present_on_default_branch' do
+        expect { subject }.to change { project.vulnerabilities.count }.by(1)
+        expect(vulnerability.present_on_default_branch).to eq(false)
       end
     end
 

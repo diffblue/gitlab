@@ -66,7 +66,7 @@ RSpec.describe Vulnerabilities::Findings::CreateFromSecurityFindingService, '#ex
     end
   end
 
-  context 'when there is an existing vulnerability for the security finding' do
+  context 'when there is an existing vulnerability and vulnerability finding for the security finding' do
     let_it_be(:finding) do
       create(:vulnerabilities_finding, :detected, report_type: :sast, project: project,
              uuid: sast_security_findings.first.uuid)
@@ -77,7 +77,7 @@ RSpec.describe Vulnerabilities::Findings::CreateFromSecurityFindingService, '#ex
              findings: [finding])
     end
 
-    it 'creates a new Vulnerability::Finding with the existing vulnerability id' do
+    it 'returns the existing Vulnerability::Finding with the existing vulnerability id' do
       expect(subject.success?).to be_truthy
       expect(subject.payload[:vulnerability_finding].vulnerability_id).to eq(vulnerability.id)
     end
@@ -87,6 +87,28 @@ RSpec.describe Vulnerabilities::Findings::CreateFromSecurityFindingService, '#ex
     it 'creates a new Vulnerability::Finding without Vulnerability' do
       expect(subject.success?).to be_truthy
       expect(subject.payload[:vulnerability_finding].vulnerability_id).to be_nil
+    end
+  end
+
+  context 'when there is an error saving the security finding' do
+    let(:error_messages_array) { instance_double("Array", join: "Primary identifier can't be blank") }
+    let(:security_finding_uuid) { security_finding.uuid }
+    let(:errors_double) { instance_double(ActiveModel::Errors, full_messages: error_messages_array) }
+
+    before do
+      allow_next_instance_of(Vulnerabilities::Finding) do |vulnerability_finding|
+        allow(vulnerability_finding).to receive(:persisted?).and_return(false)
+        allow(vulnerability_finding).to receive(:errors).and_return(errors_double)
+      end
+      allow(errors_double).to receive(:clear)
+      allow(errors_double).to receive(:add)
+      allow(errors_double).to receive(:empty?)
+      allow(errors_double).to receive(:uniq!)
+    end
+
+    it 'returns an error' do
+      expect(subject.success?).to be_falsey
+      expect(subject[:message]).to eq('Error creating vulnerability finding: Primary identifier can\'t be blank')
     end
   end
 
