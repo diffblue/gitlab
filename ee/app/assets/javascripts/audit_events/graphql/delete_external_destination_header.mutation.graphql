@@ -1,0 +1,6 @@
+mutation deleteExternalDestinationHeader($headerId: AuditEventsStreamingHeaderID!) {
+  auditEventsStreamingHeadersDestroy(input: { headerId: $headerId }) {
+    errors
+    clientMutationId
+  }
+}

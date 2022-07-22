@@ -120,7 +120,7 @@ export default {
       </div>
     </div>
     <div v-if="isEditing" class="gl-p-4">
-      <stream-destination-editor :item="item" @added="onUpdated" @cancel="setEditMode(false)" />
+      <stream-destination-editor :item="item" @updated="onUpdated" @cancel="setEditMode(false)" />
     </div>
   </li>
 </template>

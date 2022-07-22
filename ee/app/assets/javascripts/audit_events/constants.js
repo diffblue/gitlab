@@ -92,9 +92,9 @@ export const ADD_STREAM_EDITOR_I18N = {
   TABLE_COLUMN_NAME_LABEL: s__('AuditStreams|Header'),
   TABLE_COLUMN_VALUE_LABEL: s__('AuditStreams|Value'),
   TABLE_COLUMN_ACTIVE_LABEL: s__('AuditStreams|Active'),
-  HEADER_INPUT_PLACEHOLDER: s__('AuditStreams|Header'),
+  HEADER_INPUT_PLACEHOLDER: s__('AuditStreams|Add a custom header'),
   HEADER_INPUT_DUPLICATE_ERROR: s__('AuditStreams|A header with this name already exists.'),
-  VALUE_INPUT_PLACEHOLDER: s__('AuditStreams|Value'),
+  VALUE_INPUT_PLACEHOLDER: s__('AuditStreams|Add a custom value'),
   MAXIMUM_HEADERS_TEXT: s__('AuditStreams|Maximum of %{number} HTTP headers has been reached.'),
   ADD_BUTTON_TEXT: __('Add'),
   ADD_BUTTON_NAME: s__('AuditStreams|Add external stream destination'),
@@ -118,6 +118,9 @@ export const AUDIT_STREAMS_NETWORK_ERRORS = {
   ),
   CREATING_ERROR: s__(
     'AuditStreams|An error occurred when creating external audit event stream destination. Please try it again.',
+  ),
+  UPDATING_ERROR: s__(
+    'AuditStreams|An error occurred when updating external audit event stream destination. Please try it again.',
   ),
   DELETING_ERROR: s__(
     'AuditStreams|An error occurred when deleting external audit event stream destination. Please try it again.',

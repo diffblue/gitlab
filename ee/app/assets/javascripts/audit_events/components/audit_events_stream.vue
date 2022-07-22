@@ -53,6 +53,13 @@ export default {
       await this.refreshDestinations();
       this.setEditorVisibility(false);
     },
+    async onUpdatedDestination() {
+      await this.refreshDestinations();
+      this.setEditorVisibility(false);
+    },
+    async onDeletedDestination() {
+      await this.refreshDestinations();
+    },
   },
   apollo: {
     externalAuditEventDestinations: {
@@ -114,8 +121,8 @@ export default {
           v-for="item in externalAuditEventDestinations"
           :key="item.id"
           :item="item"
-          @delete="refreshDestinations"
-          @updated="onAddedDestination"
+          @deleted="onDeletedDestination"
+          @updated="onUpdatedDestination"
         />
       </ul>
     </div>

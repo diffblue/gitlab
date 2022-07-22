@@ -78,7 +78,7 @@ describe('StreamItem', () => {
     });
   });
 
-  describe('events', () => {
+  describe('deleting', () => {
     it('should emit delete with item id', async () => {
       createComponent();
       const button = findDeleteButton();
@@ -93,7 +93,7 @@ describe('StreamItem', () => {
       expect(createAlert).not.toHaveBeenCalled();
     });
 
-    it('should not emit delete when backend error occurs', async () => {
+    it('should not emit deleted when backend error occurs', async () => {
       const errorMsg = 'Random Error message';
       const deleteExternalDestinationErrorSpy = jest
         .fn()
@@ -148,8 +148,8 @@ describe('StreamItem', () => {
       expect(findEditor().props('item')).toStrictEqual(mockExternalDestinations[0]);
     });
 
-    it('should emit the updated event when the editor fires its added event', async () => {
-      findEditor().vm.$emit('added');
+    it('should emit the updated event when the editor fires its update event', async () => {
+      findEditor().vm.$emit('updated');
       await waitForPromises();
 
       expect(wrapper.emitted('updated')).toBeDefined();

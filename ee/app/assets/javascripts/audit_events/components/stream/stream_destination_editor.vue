@@ -14,15 +14,17 @@ import * as Sentry from '@sentry/browser';
 import { thWidthPercent } from '~/lib/utils/table_utility';
 import externalAuditEventDestinationCreate from '../../graphql/create_external_destination.mutation.graphql';
 import externalAuditEventDestinationHeaderCreate from '../../graphql/create_external_destination_header.mutation.graphql';
+import externalAuditEventDestinationHeaderUpdate from '../../graphql/update_external_destination_header.mutation.graphql';
+import externalAuditEventDestinationHeaderDelete from '../../graphql/delete_external_destination_header.mutation.graphql';
 import {
   ADD_STREAM_EDITOR_I18N,
   AUDIT_STREAMS_NETWORK_ERRORS,
   createBlankHeader,
 } from '../../constants';
 import deleteExternalDestination from '../../graphql/delete_external_destination.mutation.graphql';
-import { mapItemHeadersToFormData } from '../../utils';
+import { mapAllMutationErrors, mapItemHeadersToFormData } from '../../utils';
 
-const { CREATING_ERROR } = AUDIT_STREAMS_NETWORK_ERRORS;
+const { CREATING_ERROR, UPDATING_ERROR } = AUDIT_STREAMS_NETWORK_ERRORS;
 
 const thClasses = `gl-border-top-0! gl-p-3!`;
 const tdClasses = `gl-p-3!`;
@@ -68,16 +70,8 @@ export default {
           (header.name === '' && header.value !== ''),
       );
     },
-    hasFilledHeaders() {
-      return this.headers.some((header) => this.isHeaderFilled(header));
-    },
     isSubmitButtonDisabled() {
-      return (
-        this.isEditing ||
-        !this.destinationUrl ||
-        this.hasHeaderValidationErrors ||
-        this.hasMissingKeyValuePairs
-      );
+      return !this.destinationUrl || this.hasHeaderValidationErrors || this.hasMissingKeyValuePairs;
     },
     isEditing() {
       return !isEmpty(this.item);
@@ -94,13 +88,13 @@ export default {
     },
   },
   mounted() {
-    const existingHeaders = mapItemHeadersToFormData(this.item, { disabled: true });
+    const existingHeaders = mapItemHeadersToFormData(this.item, { deletionDisabled: false });
 
-    if (existingHeaders.length > 0) {
-      this.headers = existingHeaders;
-    } else if (this.isEditing) {
-      this.$set(this.headers, 0, { ...this.headers[0], disabled: true });
+    if (existingHeaders.length < this.maxHeaders) {
+      existingHeaders.push(createBlankHeader());
     }
+
+    this.headers = existingHeaders;
 
     this.destinationUrl = this.item.destinationUrl;
   },
@@ -122,8 +116,8 @@ export default {
 
       return data.externalAuditEventDestinationCreate;
     },
-    async addDestinationHeaders(destinationId) {
-      const mutations = this.headers
+    async addDestinationHeaders(destinationId, headers) {
+      const mutations = headers
         .filter((header) => this.isHeaderFilled(header))
         .map((header) => {
           return this.$apollo.mutate({
@@ -136,18 +130,37 @@ export default {
           });
         });
 
-      return Promise.allSettled(mutations).then((results) => {
-        const rejected = results.filter((r) => r.status === 'rejected').map((r) => r.reason);
+      return mapAllMutationErrors(mutations, 'auditEventsStreamingHeadersCreate');
+    },
+    async updateDestinationHeaders(headers) {
+      const mutations = headers
+        .filter((header) => this.isHeaderFilled(header))
+        .map((header) => {
+          return this.$apollo.mutate({
+            mutation: externalAuditEventDestinationHeaderUpdate,
+            variables: {
+              headerId: header.id,
+              key: header.name,
+              value: header.value,
+            },
+          });
+        });
 
-        if (rejected.length > 0) {
-          throw rejected[0];
-        }
+      return mapAllMutationErrors(mutations, 'auditEventsStreamingHeadersUpdate');
+    },
+    async deleteDestinationHeaders(headers) {
+      const mutations = headers
+        .filter((header) => this.isHeaderFilled(header))
+        .map((header) => {
+          return this.$apollo.mutate({
+            mutation: externalAuditEventDestinationHeaderDelete,
+            variables: {
+              headerId: header.id,
+            },
+          });
+        });
 
-        return results
-          .filter((r) => r.status === 'fulfilled')
-          .map((r) => r.value.data.auditEventsStreamingHeadersCreate.errors[0])
-          .filter(Boolean);
-      });
+      return mapAllMutationErrors(mutations, 'auditEventsStreamingHeadersDestroy');
     },
     async deleteCreatedDestination(destinationId) {
       return this.$apollo.mutate({
@@ -159,6 +172,25 @@ export default {
           isSingleRequest: true,
         },
       });
+    },
+    findHeadersToDelete(existingHeaders, changedHeaders) {
+      return existingHeaders.filter(
+        (existingHeader) =>
+          !changedHeaders.some((changedHeader) => existingHeader.id === changedHeader.id),
+      );
+    },
+    findHeadersToUpdate(existingHeaders, changedHeaders) {
+      return changedHeaders.filter((changedHeader) =>
+        existingHeaders.some(
+          (existingHeader) =>
+            changedHeader.id === existingHeader.id &&
+            (changedHeader.name !== existingHeader.name ||
+              changedHeader.value !== existingHeader.value),
+        ),
+      );
+    },
+    findHeadersToAdd(existingHeaders, changedHeaders) {
+      return changedHeaders.filter((header) => header.id === null && this.isHeaderFilled(header));
     },
     async addDestination() {
       let destinationId = null;
@@ -174,10 +206,8 @@ export default {
 
         destinationId = id;
 
-        if (!errors.length && this.hasFilledHeaders) {
-          const requestErrors = await this.addDestinationHeaders(destinationId);
-
-          errors.push(...requestErrors);
+        if (!errors.length) {
+          errors.push(...(await this.addDestinationHeaders(destinationId, this.headers)));
 
           if (errors.length > 0) {
             await this.deleteCreatedDestination(destinationId);
@@ -196,6 +226,41 @@ export default {
         if (destinationId) {
           await this.deleteCreatedDestination(destinationId);
         }
+      } finally {
+        this.loading = false;
+      }
+    },
+    async updateDestination() {
+      this.errors = [];
+      this.loading = true;
+      const existingHeaders = mapItemHeadersToFormData(this.item);
+      const changedHeaders = this.headers.filter(
+        (header) => header.name !== '' && header.value !== '',
+      );
+
+      try {
+        const errors = [];
+
+        if (existingHeaders.length > 0) {
+          const headersToDelete = this.findHeadersToDelete(existingHeaders, changedHeaders);
+          const headersToUpdate = this.findHeadersToUpdate(existingHeaders, changedHeaders);
+
+          errors.push(...(await this.deleteDestinationHeaders(headersToDelete)));
+          errors.push(...(await this.updateDestinationHeaders(headersToUpdate)));
+        }
+
+        const headersToAdd = this.findHeadersToAdd(existingHeaders, changedHeaders);
+
+        errors.push(...(await this.addDestinationHeaders(this.item.id, headersToAdd)));
+
+        if (errors.length > 0) {
+          this.errors.push(...errors);
+        } else {
+          this.$emit('updated');
+        }
+      } catch (e) {
+        Sentry.captureException(e);
+        this.errors.push(UPDATING_ERROR);
       } finally {
         this.loading = false;
       }
@@ -291,6 +356,7 @@ export default {
 <template>
   <div class="gl-bg-white">
     <gl-alert
+      v-if="!isEditing"
       :title="$options.i18n.WARNING_TITLE"
       :dismissible="false"
       class="gl-mb-5"
@@ -312,7 +378,7 @@ export default {
       {{ error }}
     </gl-alert>
 
-    <gl-form @submit.prevent="addDestination">
+    <gl-form @submit.prevent="() => (isEditing ? updateDestination() : addDestination())">
       <gl-form-group
         :label="$options.i18n.DESTINATION_URL_LABEL"
         data-testid="destination-url-form-group"
