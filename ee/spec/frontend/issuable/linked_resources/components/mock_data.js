@@ -40,3 +40,18 @@ export const resourceLinksEmptyResponse = {
     },
   },
 };
+
+const resourceLinkDeleteData = (errors = []) => {
+  return {
+    data: {
+      issuableResourceLinkDestroy: {
+        issuableResourceLink: { ...mockResourceLinks[0] },
+        errors,
+      },
+    },
+  };
+};
+
+export const resourceLinksDeleteEventResponse = resourceLinkDeleteData();
+
+export const resourceLinkDeleteEventError = resourceLinkDeleteData(['Item does not exist']);

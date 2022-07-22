@@ -5,6 +5,13 @@ export const resourceLinksI18n = Object.freeze({
   helpText: s__('LinkedResources|Read more about linked resources'),
   addButtonText: s__('LinkedResources|Add a resource link'),
   fetchingLinkedResourcesText: s__('LinkedResources|Fetching linked resources'),
+  fetchError: s__(
+    'LinkedResources|Something went wrong while fetching linked resources for the incident.',
+  ),
+  deleteError: s__('LinkedResources|Error deleting the linked resource for the incident: %{error}'),
+  deleteErrorGeneric: s__(
+    'LinkedResources|Something went wrong while deleting the linked resource for the incident.',
+  ),
 });
 
 export const resourceLinksFormI18n = Object.freeze({

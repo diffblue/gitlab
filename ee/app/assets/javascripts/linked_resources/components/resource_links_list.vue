@@ -47,6 +47,7 @@ export default {
           :link-text="link.linkText"
           :link-value="link.link"
           :can-remove="canAdmin"
+          @removeRequest="$emit('resourceLinkRemoveRequest', $event)"
         />
       </li>
     </ul>

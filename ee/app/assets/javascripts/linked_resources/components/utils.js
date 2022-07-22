@@ -1,12 +1,9 @@
-import { s__ } from '~/locale';
 import { createAlert } from '~/flash';
 
-export const displayAndLogError = (error) =>
+export const displayAndLogError = (message, captureError, error) =>
   createAlert({
-    message: s__(
-      'LinkedResources|Something went wrong while fetching linked resources for the incident.',
-    ),
-    captureError: true,
+    message,
+    captureError,
     error,
   });
 

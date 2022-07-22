@@ -1,0 +1,8 @@
+mutation DeleteIssuableResourceLink($input: IssuableResourceLinkDestroyInput!) {
+  issuableResourceLinkDestroy(input: $input) {
+    issuableResourceLink {
+      id
+    }
+    errors
+  }
+}

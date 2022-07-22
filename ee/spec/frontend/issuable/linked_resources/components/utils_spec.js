@@ -7,12 +7,14 @@ describe('resource links utils', () => {
   describe('display and log error', () => {
     it('displays and logs an error', () => {
       const error = new Error('test');
-      displayAndLogError(error);
+      const message = 'Something went wrong while fetching linked resources for the incident.';
+
+      displayAndLogError(message, true, error);
 
       expect(createAlert).toHaveBeenCalledWith({
-        message: 'Something went wrong while fetching linked resources for the incident.',
-        captureError: true,
+        message,
         error,
+        captureError: true,
       });
     });
   });
