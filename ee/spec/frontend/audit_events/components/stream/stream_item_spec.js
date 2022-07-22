@@ -79,17 +79,20 @@ describe('StreamItem', () => {
   });
 
   describe('deleting', () => {
-    it('should emit delete with item id', async () => {
-      createComponent();
-      const button = findDeleteButton();
-      await button.trigger('click');
+    it('should emit deleted with item id', async () => {
+      createComponent({ showStreamsHeaders: true });
+      const deleteBtn = findDeleteButton();
+      const editBtn = findEditButton();
+      await deleteBtn.trigger('click');
 
-      expect(button.props('loading')).toBe(true);
+      expect(editBtn.props('disabled')).toBe(true);
+      expect(deleteBtn.props('loading')).toBe(true);
 
       await waitForPromises();
 
-      expect(wrapper.emitted('delete')).toBeDefined();
-      expect(button.props('loading')).toBe(false);
+      expect(wrapper.emitted('deleted')).toBeDefined();
+      expect(editBtn.props('disabled')).toBe(false);
+      expect(deleteBtn.props('loading')).toBe(false);
       expect(createAlert).not.toHaveBeenCalled();
     });
 
@@ -98,33 +101,44 @@ describe('StreamItem', () => {
       const deleteExternalDestinationErrorSpy = jest
         .fn()
         .mockResolvedValue(destinationDeleteMutationPopulator([errorMsg]));
-      createComponent({}, deleteExternalDestinationErrorSpy);
-      const button = findDeleteButton();
-      await button.trigger('click');
+      createComponent({ showStreamsHeaders: true }, deleteExternalDestinationErrorSpy);
+      const deleteBtn = findDeleteButton();
+      const editBtn = findEditButton();
 
-      expect(button.props('loading')).toBe(true);
+      await deleteBtn.trigger('click');
+
+      expect(editBtn.props('disabled')).toBe(true);
+      expect(deleteBtn.props('loading')).toBe(true);
 
       await waitForPromises();
 
-      expect(wrapper.emitted('delete')).not.toBeDefined();
-      expect(button.props('loading')).toBe(false);
+      expect(wrapper.emitted('deleted')).toBeUndefined();
+      expect(editBtn.props('disabled')).toBe(false);
+      expect(deleteBtn.props('loading')).toBe(false);
+      expect(wrapper.emitted('error')).toBeDefined();
       expect(createAlert).toHaveBeenCalledWith({
         message: errorMsg,
       });
     });
 
-    it('should not emit delete when network error occurs', async () => {
+    it('should not emit deleted when network error occurs', async () => {
       const error = new Error('Network error');
-      createComponent({}, jest.fn().mockRejectedValue(error));
-      const button = findDeleteButton();
-      await button.trigger('click');
+      createComponent({ showStreamsHeaders: true }, jest.fn().mockRejectedValue(error));
 
-      expect(button.props('loading')).toBe(true);
+      const deleteBtn = findDeleteButton();
+      const editBtn = findEditButton();
+
+      await deleteBtn.trigger('click');
+
+      expect(editBtn.props('disabled')).toBe(true);
+      expect(deleteBtn.props('loading')).toBe(true);
 
       await waitForPromises();
 
-      expect(wrapper.emitted('delete')).not.toBeDefined();
-      expect(button.props('loading')).toBe(false);
+      expect(wrapper.emitted('deleted')).toBeUndefined();
+      expect(editBtn.props('disabled')).toBe(false);
+      expect(deleteBtn.props('loading')).toBe(false);
+      expect(wrapper.emitted('error')).toBeDefined();
       expect(createAlert).toHaveBeenCalledWith({
         message: AUDIT_STREAMS_NETWORK_ERRORS.DELETING_ERROR,
         captureError: true,
@@ -154,6 +168,13 @@ describe('StreamItem', () => {
 
       expect(wrapper.emitted('updated')).toBeDefined();
       expect(findEditor().exists()).toBe(false);
+    });
+
+    it('should emit the error event when the editor fires its error event', () => {
+      findEditor().vm.$emit('error');
+
+      expect(wrapper.emitted('error')).toBeDefined();
+      expect(findEditor().exists()).toBe(true);
     });
 
     it('should close the editor when the editor fires its cancel event', async () => {

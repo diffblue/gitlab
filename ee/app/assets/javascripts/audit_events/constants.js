@@ -72,6 +72,9 @@ export const AUDIT_EVENTS_TAB_TITLES = {
 export const ADD_STREAM = s__('AuditStreams|Add stream');
 export const ACTIVE_STREAM = s__('AuditStreams|Active');
 export const STREAM_COUNT_ICON_ALT = s__('AuditStreams|Stream count icon');
+export const ADD_STREAM_MESSAGE = s__('AuditStreams|Stream added successfully');
+export const UPDATE_STREAM_MESSAGE = s__('AuditStreams|Stream updated successfully');
+export const DELETE_STREAM_MESSAGE = s__('AuditStreams|Stream deleted successfully');
 
 export const STREAM_ITEMS_I18N = {
   VERIFICATION_TOKEN_TOOLTIP: s__('AuditStreams|Verification token'),

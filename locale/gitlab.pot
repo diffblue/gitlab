@@ -5364,7 +5364,16 @@ msgstr ""
 msgid "AuditStreams|Setup streaming for audit events"
 msgstr ""
 
+msgid "AuditStreams|Stream added successfully"
+msgstr ""
+
 msgid "AuditStreams|Stream count icon"
+msgstr ""
+
+msgid "AuditStreams|Stream deleted successfully"
+msgstr ""
+
+msgid "AuditStreams|Stream updated successfully"
 msgstr ""
 
 msgid "AuditStreams|Streams"
