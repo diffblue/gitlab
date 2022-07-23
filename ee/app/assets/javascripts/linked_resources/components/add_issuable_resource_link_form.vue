@@ -38,6 +38,12 @@ export default {
       this.linkTextValue = '';
       this.$emit('add-issuable-resource-link-form-cancel');
     },
+    createRequest() {
+      this.$emit('create-resource-link', {
+        link: this.linkValue,
+        linkText: this.linkTextValue,
+      });
+    },
   },
 };
 </script>
@@ -64,6 +70,7 @@ export default {
         :loading="isSubmitting"
         type="submit"
         class="gl-float-left"
+        @click="createRequest"
       >
         {{ $options.i18n.submitButtonText }}
       </gl-button>

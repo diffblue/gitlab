@@ -12,6 +12,10 @@ export const resourceLinksI18n = Object.freeze({
   deleteErrorGeneric: s__(
     'LinkedResources|Something went wrong while deleting the linked resource for the incident.',
   ),
+  createError: s__('LinkedResources|Error creating resource link for the incident: %{error}'),
+  createErrorGeneric: s__(
+    'LinkedResources|Something went wrong while creating the resource link for the incident.',
+  ),
 });
 
 export const resourceLinksFormI18n = Object.freeze({
