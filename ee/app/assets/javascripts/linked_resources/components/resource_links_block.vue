@@ -2,6 +2,7 @@
 import { GlLink, GlIcon, GlButton, GlLoadingIcon } from '@gitlab/ui';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { TYPE_ISSUE } from '~/graphql_shared/constants';
+import { createAlert } from '~/flash';
 import { sprintf } from '~/locale';
 import { resourceLinksI18n } from '../constants';
 import { displayAndLogError } from './utils';
@@ -56,7 +57,7 @@ export default {
         return data?.issue?.issuableResourceLinks?.nodes;
       },
       error(error) {
-        displayAndLogError(this.$options.i18n.fetchError, true, error);
+        displayAndLogError(error);
       },
     },
   },
@@ -99,11 +100,19 @@ export default {
           const errorMessage = sprintf(this.$options.i18n.deleteError, {
             error: errors.join('. '),
           });
-          displayAndLogError(errorMessage, false, null);
+          createAlert({
+            message: errorMessage,
+            captureError: false,
+            error: null,
+          });
         }
       } catch (error) {
         const errorMessage = this.$options.i18n.deleteErrorGeneric;
-        displayAndLogError(errorMessage, true, error);
+        createAlert({
+          message: errorMessage,
+          captureError: true,
+          error,
+        });
       }
     },
   },
