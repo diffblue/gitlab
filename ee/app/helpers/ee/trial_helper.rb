@@ -42,6 +42,10 @@ module EE
       end
     end
 
+    def glm_source
+      ::Gitlab.config.gitlab.host
+    end
+
     def trial_selection_intro_text
       if any_trialable_group_namespaces?
         s_('Trials|You can apply your trial to a new group or an existing group.')

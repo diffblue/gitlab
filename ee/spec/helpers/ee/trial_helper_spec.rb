@@ -147,6 +147,16 @@ RSpec.describe EE::TrialHelper do
     end
   end
 
+  describe '#glm_source' do
+    let(:host) { ::Gitlab.config.gitlab.host }
+
+    it 'return gitlab config host' do
+      glm_source = helper.glm_source
+
+      expect(glm_source).to eq(host)
+    end
+  end
+
   describe '#namespace_options_for_select' do
     let_it_be(:group1) { create :group }
     let_it_be(:group2) { create :group }
