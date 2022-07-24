@@ -28,7 +28,7 @@ RSpec.describe 'shared/_promotion_link_project' do
       end
 
       it do
-        is_expected.to have_link 'Try it for free', href: new_trial_registration_path(glm_source: 'gitlab.com', glm_content: 'some_location')
+        is_expected.to have_link 'Try it for free', href: new_trial_registration_path(glm_source: Gitlab.config.gitlab.host, glm_content: 'some_location')
       end
     end
 

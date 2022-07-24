@@ -5,7 +5,7 @@
   -# EE:SaaS
   - namespace = @project&.namespace || @group
   - if can?(current_user, :admin_namespace, namespace)
-    = link_to s_('Promotions|Try it for free'), new_trial_registration_path(glm_source: 'gitlab.com', glm_content: location), class: 'btn gl-button btn-confirm promotion-trial-cta', target: target_blank ? '_blank' : '_self'
+    = link_to s_('Promotions|Try it for free'), new_trial_registration_path(glm_source: glm_source, glm_content: location), class: 'btn gl-button btn-confirm promotion-trial-cta', target: target_blank ? '_blank' : '_self'
   - elsif namespace.is_a?(Group)
     %p= s_('Promotions|Contact an owner of group %{namespace_name} to upgrade the plan.') % { namespace_name: namespace.name }
   - else

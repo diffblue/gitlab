@@ -29,7 +29,7 @@ RSpec.describe 'trials/_skip_trial.html.haml' do
   end
 
   context 'with glm_source of gitlab.com' do
-    let(:source) { 'gitlab.com' }
+    let(:source) { Gitlab.config.gitlab.host }
 
     it { is_expected.to have_content("Go back to GitLab") }
   end
