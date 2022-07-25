@@ -36,10 +36,23 @@ export default {
     state.labelName = [];
     state.milestoneTitle = null;
   },
-  [types.SET_FILTERS](state, { authorUsername, labelName, milestoneTitle }) {
+  [types.SET_FILTERS](
+    state,
+    {
+      authorUsername,
+      labelName,
+      milestoneTitle,
+      notAuthorUsername,
+      notLabelName,
+      notMilestoneTitle,
+    },
+  ) {
     state.authorUsername = authorUsername;
     state.labelName = labelName;
     state.milestoneTitle = milestoneTitle;
+    state.notLabelName = notLabelName;
+    state.notAuthorUsername = notAuthorUsername;
+    state.notMilestoneTitle = notMilestoneTitle;
   },
   [types.SET_DATE_RANGE](state, { startDate, endDate }) {
     state.startDate = startDate;

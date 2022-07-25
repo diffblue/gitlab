@@ -24,7 +24,9 @@ export default class FilteredSearchProductivityAnalytics extends FilteredSearchM
    */
   // eslint-disable-next-line class-methods-use-this
   updateObject = (path) => {
+    console.log('updateObject::path', path);
     const filters = queryToObject(path, { gatherArrays: true });
+    console.log('filters', filters);
     store.dispatch('filters/setFilters', filters);
   };
 }
