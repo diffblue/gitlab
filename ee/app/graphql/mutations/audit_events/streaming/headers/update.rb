@@ -29,7 +29,8 @@ module Mutations
 
             response = ::AuditEvents::Streaming::Headers::UpdateService.new(
               destination: header.external_audit_event_destination,
-              params: { header: header, key: key, value: value }
+              params: { header: header, key: key, value: value },
+              current_user: current_user
             ).execute
 
             if response.success?
