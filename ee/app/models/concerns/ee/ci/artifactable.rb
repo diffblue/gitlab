@@ -6,8 +6,8 @@ module EE
       extend ActiveSupport::Concern
 
       class_methods do
-        # @param primary_key_in [Range, Ci::{Pipeline|Job}Artifact] arg to pass to primary_key_in scope
-        # @return [ActiveRecord::Relation<Ci::{Pipeline|Job}PipelineArtifact>] everything that should be synced to this node, restricted by primary key
+        # @param primary_key_in [Range, Ci::{PipelineArtifact|JobArtifact|SecureFile}] arg to pass to primary_key_in scope
+        # @return [ActiveRecord::Relation<Ci::{PipelineArtifact|JobArtifact|SecureFile}>] everything that should be synced to this node, restricted by primary key
         def replicables_for_current_secondary(primary_key_in)
           node = ::Gitlab::Geo.current_node
 
@@ -18,7 +18,7 @@ module EE
           selective_sync_scope(node, replicables)
         end
 
-        # @return [ActiveRecord::Relation<Ci::{Pipeline|Job}PipelineArtifact>] observing object storage settings of the given node
+        # @return [ActiveRecord::Relation<Ci::{PipelineArtifact|JobArtifact|SecureFile}>] observing object storage settings of the given node
         def object_storage_scope(node)
           return all if node.sync_object_storage?
 
@@ -28,7 +28,7 @@ module EE
         # The primary_key_in in replicables_for_current_secondary method is at most a range of IDs with a maximum of 10_000 records
         # between them. We can additionally reduce the batch size to 1_000 just for pipeline artifacts and job artifacts if needed.
         #
-        # @return [ActiveRecord::Relation<Ci::{Pipeline|Job}PipelineArtifact>] observing selective sync settings of the given node
+        # @return [ActiveRecord::Relation<Ci::{PipelineArtifact|JobArtifact|SecureFile}>] observing selective sync settings of the given node
         def selective_sync_scope(node, replicables)
           return replicables unless node.selective_sync?
 

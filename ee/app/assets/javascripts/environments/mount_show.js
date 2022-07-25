@@ -21,7 +21,9 @@ export const initDeploymentApprovals = () => {
     } = el.dataset;
 
     try {
-      const approvals = JSON.parse(approvalsString).map(convertObjectPropsToCamelCase);
+      const approvals = JSON.parse(approvalsString).map((a) =>
+        convertObjectPropsToCamelCase(a, { deep: true }),
+      );
 
       const environment = {
         upcomingDeployment: {

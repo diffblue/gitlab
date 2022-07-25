@@ -15,7 +15,7 @@ RSpec.describe GitlabSchema.types['GeoNode'] do
       package_file_registries snippet_repository_registries
       terraform_state_version_registries group_wiki_repository_registries
       pages_deployment_registries lfs_object_registries pipeline_artifact_registries
-      upload_registries job_artifact_registries
+      upload_registries job_artifact_registries ci_secure_file_registries
     ]
 
     expect(described_class).to have_graphql_fields(*expected_fields)

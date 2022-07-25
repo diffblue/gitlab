@@ -1,4 +1,4 @@
-import { GlButton, GlPopover } from '@gitlab/ui';
+import { GlButton, GlModal } from '@gitlab/ui';
 import { nextTick } from 'vue';
 import { mountExtended, extendedWrapper } from 'helpers/vue_test_utils_helper';
 import { trimText } from 'helpers/text_helper';
@@ -28,7 +28,7 @@ describe('ee/environments/components/environment_approval.vue', () => {
     wrapper.destroy();
   });
 
-  const findPopover = () => extendedWrapper(wrapper.findComponent(GlPopover));
+  const findModal = () => extendedWrapper(wrapper.findComponent(GlModal));
   const findButton = () => extendedWrapper(wrapper.findComponent(GlButton));
 
   const setComment = (comment) =>
@@ -36,33 +36,25 @@ describe('ee/environments/components/environment_approval.vue', () => {
       .findByRole('textbox', { name: (content) => content.startsWith(__('Comment')) })
       .setValue(comment);
 
-  it('should link the popover to the button', () => {
-    wrapper = createWrapper();
-    const popover = findPopover();
-    const button = findButton();
-
-    expect(popover.props('target')).toBe(button.attributes('id'));
-  });
-
-  describe('popover', () => {
-    let popover;
+  describe('modal', () => {
+    let modal;
 
     beforeEach(async () => {
       wrapper = createWrapper();
       await findButton().trigger('click');
-      popover = findPopover();
+      modal = findModal();
     });
 
-    it('should set the popover title', () => {
-      expect(popover.props('title')).toBe(
+    it('should set the modal title', () => {
+      expect(modal.props('title')).toBe(
         sprintf(s__('DeploymentApproval|Approve or reject deployment #%{deploymentIid}'), {
           deploymentIid: environment.upcomingDeployment.iid,
         }),
       );
     });
 
-    it('should show the popover after clicking the button', () => {
-      expect(popover.attributes('show')).toBe('true');
+    it('should show the modal after clicking the button', () => {
+      expect(modal.props('visible')).toBe(true);
     });
 
     it('should show which deployment this is approving', () => {
@@ -74,7 +66,7 @@ describe('ee/environments/components/environment_approval.vue', () => {
           deploymentIid: environment.upcomingDeployment.iid,
         },
       );
-      expect(popover.findByText(main).exists()).toBe(true);
+      expect(modal.findByText(main).exists()).toBe(true);
     });
 
     describe('showing details about the environment', () => {
@@ -84,11 +76,11 @@ describe('ee/environments/components/environment_approval.vue', () => {
         ${'environment tier'} | ${sprintf(s__('DeploymentApproval|Deployment tier: %{tier}'), { tier: environment.tier })}
         ${'job name'}         | ${sprintf(s__('DeploymentApproval|Manual job: %{jobName}'), { jobName: environment.upcomingDeployment.deployable.name })}
       `('should show information on $detail', ({ text }) => {
-        expect(trimText(popover.text())).toContain(text);
+        expect(trimText(modal.text())).toContain(text);
       });
 
       it('shows the number of current approvals as well as the number of total approvals needed', () => {
-        expect(trimText(popover.text())).toContain(
+        expect(trimText(modal.text())).toContain(
           sprintf(s__('DeploymentApproval| Current approvals: %{current}'), {
             current: '5/10',
           }),
@@ -146,7 +138,7 @@ describe('ee/environments/components/environment_approval.vue', () => {
         ${'user cannot approve, has already approved'} | ${'root'} | ${[{ user: { username: 'root' }, createdAt: Date.now() }]} | ${false}             | ${false}
       `(
         'should have buttons visible when $scenario: $visible',
-        ({ approvals, canApproveDeployment, visible }) => {
+        async ({ approvals, canApproveDeployment, visible }) => {
           wrapper = createWrapper({
             propsData: {
               environment: {
@@ -160,8 +152,15 @@ describe('ee/environments/components/environment_approval.vue', () => {
             },
           });
 
-          expect(wrapper.findComponent({ ref: 'approve' }).exists()).toBe(visible);
-          expect(wrapper.findComponent({ ref: 'reject' }).exists()).toBe(visible);
+          await findButton().trigger('click');
+
+          await nextTick();
+
+          modal = findModal();
+
+          expect(modal.findByRole('button', { name: __('Approve') }).exists()).toBe(visible);
+          expect(modal.findByRole('button', { name: __('Reject') }).exists()).toBe(visible);
+          expect(modal.findByRole('button', { name: __('Cancel') }).exists()).toBe(!visible);
         },
       );
     });
@@ -174,7 +173,7 @@ describe('ee/environments/components/environment_approval.vue', () => {
       let button;
 
       beforeEach(() => {
-        button = wrapper.findComponent({ ref });
+        button = wrapper.findByRole('button', { name: text });
       });
 
       it('should show the correct text', () => {
@@ -211,15 +210,15 @@ describe('ee/environments/components/environment_approval.vue', () => {
       it('should set loading to true after click', async () => {
         await button.trigger('click');
 
-        expect(button.props('loading')).toBe(true);
+        expect(findButton().props('loading')).toBe(true);
       });
 
-      it('should stop showing the popover once resolved', async () => {
+      it('should stop showing the modal once resolved', async () => {
         api.mockResolvedValue();
 
         await button.trigger('click');
 
-        expect(popover.attributes('show')).toBeUndefined();
+        expect(modal.props('visible')).toBe(false);
       });
     });
   });
@@ -238,6 +237,39 @@ describe('ee/environments/components/environment_approval.vue', () => {
 
       expect(button.text()).toBe('');
       expect(button.attributes('title')).toBe(s__('DeploymentApproval|Approval options'));
+    });
+  });
+
+  describe('showing approvals', () => {
+    const approval = environment.upcomingDeployment.approvals[0];
+
+    beforeEach(async () => {
+      wrapper = createWrapper();
+      await findButton().trigger('click');
+    });
+
+    it('should show the avatar for who approved the deployment', () => {
+      const avatar = wrapper.findByRole('img', { name: 'avatar' });
+
+      expect(avatar.attributes('src')).toBe(approval.user.avatarUrl);
+    });
+
+    it('should show who approved the deployment', () => {
+      const link = wrapper.findByRole('link', { name: `@${approval.user.username}` });
+
+      expect(link.attributes('href')).toBe(approval.user.webUrl);
+    });
+
+    it('should show when they approved the deployment', () => {
+      const time = wrapper.find('time');
+
+      expect(time.text()).toBe('just now');
+    });
+
+    it('should show the comment associated with the approval', () => {
+      const comment = wrapper.find('blockquote');
+
+      expect(comment.text()).toBe(approval.comment);
     });
   });
 });

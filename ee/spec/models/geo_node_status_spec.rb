@@ -1031,6 +1031,7 @@ RSpec.describe GeoNodeStatus, :geo do
       Geo::PagesDeploymentReplicator       | :pages_deployment            | :geo_pages_deployment_registry
       Geo::UploadReplicator                | :upload                      | :geo_upload_registry
       Geo::JobArtifactReplicator           | :ci_job_artifact             | :geo_job_artifact_registry
+      Geo::CiSecureFileReplicator          | :ci_secure_file              | :geo_ci_secure_file_registry
     end
 
     with_them do
