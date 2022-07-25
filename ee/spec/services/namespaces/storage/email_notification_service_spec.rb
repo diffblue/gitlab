@@ -8,6 +8,7 @@ RSpec.describe Namespaces::Storage::EmailNotificationService do
 
   describe 'execute' do
     let(:mailer) { class_double(::Emails::NamespaceStorageUsageMailer) }
+    let(:action_mailer) { instance_double(ActionMailer::MessageDelivery) }
     let(:service) { described_class.new(mailer) }
 
     context 'in a saas environment', :saas do
@@ -34,6 +35,8 @@ RSpec.describe Namespaces::Storage::EmailNotificationService do
           set_notification_level(last_notification_level)
 
           expect(mailer).to receive(:notify_out_of_storage).with(group, [owner.email])
+            .and_return(action_mailer)
+          expect(action_mailer).to receive(:deliver_later)
 
           service.execute(group)
 
@@ -64,6 +67,8 @@ RSpec.describe Namespaces::Storage::EmailNotificationService do
           set_notification_level(last_notification_level)
 
           expect(mailer).to receive(:notify_limit_warning).with(group, [owner.email], expected_percent, expected_size)
+            .and_return(action_mailer)
+          expect(action_mailer).to receive(:deliver_later)
 
           service.execute(group)
 
@@ -134,6 +139,8 @@ RSpec.describe Namespaces::Storage::EmailNotificationService do
         owner_emails = [owner.email, owner2.email]
 
         expect(mailer).to receive(:notify_out_of_storage).with(group, match_array(owner_emails))
+          .and_return(action_mailer)
+        expect(action_mailer).to receive(:deliver_later)
 
         service.execute(group)
       end
@@ -191,6 +198,8 @@ RSpec.describe Namespaces::Storage::EmailNotificationService do
           owner = namespace.owner
 
           expect(mailer).to receive(:notify_limit_warning).with(namespace, [owner.email], 14, 149.megabytes)
+          .and_return(action_mailer)
+          expect(action_mailer).to receive(:deliver_later)
 
           service.execute(namespace)
         end
@@ -201,6 +210,8 @@ RSpec.describe Namespaces::Storage::EmailNotificationService do
           owner = namespace.owner
 
           expect(mailer).to receive(:notify_out_of_storage).with(namespace, [owner.email])
+            .and_return(action_mailer)
+          expect(action_mailer).to receive(:deliver_later)
 
           service.execute(namespace)
         end
