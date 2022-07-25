@@ -157,7 +157,11 @@ class MergeTrain < ApplicationRecord
   end
 
   def cancel_pipeline!(new_pipeline)
-    pipeline&.auto_cancel_running(new_pipeline, retries: 1)
+    pipeline&.cancel_running(
+      auto_canceled_by_pipeline_id: new_pipeline.id,
+      retries: 1,
+      cascade_to_children: true
+    )
   rescue ActiveRecord::StaleObjectError
     # Often the pipeline has already been canceled by the default cancellation
     # mechanizm `Ci::CreatePipelineService#cancel_pending_pipelines`. In this

@@ -452,19 +452,21 @@ RSpec.describe MergeTrain do
 
     let(:merge_train) { merge_request.merge_train }
     let!(:merge_request) { create_merge_request_on_train }
-    let!(:pipeline) { create(:ci_pipeline, project: merge_train.project) }
+    let!(:pipeline) { create(:ci_pipeline, :running, project: merge_train.project) }
+    let!(:build) { create(:ci_build, :running, pipeline: pipeline) }
     let!(:new_pipeline) { create(:ci_pipeline, project: merge_train.project) }
 
     before do
       merge_train.update!(pipeline: pipeline)
     end
 
-    it 'cancels the existing pipeline' do
-      expect(pipeline).to receive(:cancel_running).and_call_original
+    it 'cancels the existing pipeline', :sidekiq_inline do
+      expect { subject }.to change { build.reload.status }.from('running').to('canceled')
 
-      subject
+      pipeline.reload
 
-      expect(pipeline.reload.auto_canceled_by).to eq(new_pipeline)
+      expect(pipeline.status).to eq('canceled')
+      expect(pipeline.auto_canceled_by).to eq(new_pipeline)
     end
   end
 
