@@ -109,19 +109,14 @@ RSpec.shared_examples 'issue with epic_id parameter' do
     end
 
     context 'when a project is from a subgroup of the epic group' do
-      let(:subgroup) { create(:group, parent: group) }
-      let(:prepare_and_execute) do
-        # epic creation has to happen in the subject block to not trigger additional snowplow events when the FF is off
-        create(:epic, group: subgroup)
-        execute
-      end
-
       before do
+        subgroup = create(:group, parent: group)
+        create(:epic, group: subgroup)
         project.update!(group: subgroup)
       end
 
       it 'creates epic issue link' do
-        issue = prepare_and_execute
+        issue = execute
 
         expect(issue.reload).to be_persisted
         expect(issue.epic).to eq(epic)
@@ -131,11 +126,11 @@ RSpec.shared_examples 'issue with epic_id parameter' do
         it 'tracks usage data for added to epic action' do
           expect(Gitlab::UsageDataCounters::IssueActivityUniqueCounter).to receive(:track_issue_added_to_epic_action)
                                                                              .with(author: user, project: project)
-          prepare_and_execute
+          execute
         end
 
         it_behaves_like 'Snowplow event tracking' do
-          let(:subject) { prepare_and_execute }
+          let(:subject) { execute }
           let(:category) { 'issues_edit' }
           let(:action) { 'g_project_management_issue_added_to_epic' }
           let(:namespace) { project.namespace}
