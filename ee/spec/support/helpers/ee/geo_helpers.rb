@@ -99,6 +99,8 @@ module EE
 
         with_replicator Geo::DummyReplicator
 
+        self.table_name = '_test_dummy_models'
+
         def self.replicables_for_current_secondary(primary_key_in)
           self.primary_key_in(primary_key_in)
         end
@@ -118,7 +120,7 @@ module EE
     # end
     def create_dummy_model_table
       ActiveRecord::Schema.define do
-        create_table :dummy_models, force: true do |t|
+        create_table :_test_dummy_models, force: true do |t|
           t.binary :verification_checksum
           t.integer :verification_state
           t.datetime_with_timezone :verification_started_at
@@ -132,7 +134,7 @@ module EE
 
     def drop_dummy_model_table
       ActiveRecord::Schema.define do
-        drop_table :dummy_models, force: true
+        drop_table :_test_dummy_models, force: true
       end
     end
 

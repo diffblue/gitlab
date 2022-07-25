@@ -2,7 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe ::Gitlab::BackgroundMigration::PopulateResolvedOnDefaultBranchColumn, :migration, schema: 20220326161803 do
+RSpec.describe ::Gitlab::BackgroundMigration::PopulateResolvedOnDefaultBranchColumn, :migration,
+               :suppress_gitlab_schemas_validate_connection, schema: 20220326161803 do
   let(:users) { table(:users) }
   let(:namespaces) { table(:namespaces) }
   let(:projects) { table(:projects) }

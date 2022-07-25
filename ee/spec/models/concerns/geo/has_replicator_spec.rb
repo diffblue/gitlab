@@ -35,7 +35,11 @@ RSpec.describe Geo::HasReplicator do
     context 'when replicator is not defined in inheriting class' do
       before do
         stub_const('DummyModel', Class.new(ApplicationRecord))
-        DummyModel.class_eval { include ::Geo::HasReplicator }
+
+        DummyModel.class_eval do
+          include ::Geo::HasReplicator
+          self.table_name = "_test_dummy_models"
+        end
       end
 
       it 'raises NotImplementedError' do
