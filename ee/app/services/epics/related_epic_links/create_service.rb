@@ -18,7 +18,7 @@ module Epics
       private
 
       def after_create_for(link)
-        track_related_epics_event_for(link_type: params[:link_type], event_type: :added)
+        track_related_epics_event_for(link_type: params[:link_type], event_type: :added, namespace: issuable.group)
       end
 
       def references(extractor)

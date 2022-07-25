@@ -85,7 +85,8 @@ RSpec.describe ::SystemNotes::IssuablesService do
       end
 
       it 'tracks epic cross reference event in usage ping' do
-        expect(::Gitlab::UsageDataCounters::EpicActivityUniqueCounter).to receive(:track_epic_cross_referenced).with(author: author)
+        expect(::Gitlab::UsageDataCounters::EpicActivityUniqueCounter).to receive(:track_epic_cross_referenced)
+          .with(author: author, namespace: group)
 
         subject
       end

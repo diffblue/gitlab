@@ -337,11 +337,11 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
       described_class.track_epic_cross_referenced(**params)
     end
 
-    it_behaves_like 'a daily tracked issuable event' do
+    it_behaves_like 'a daily tracked issuable snowplow and service ping events with namespace' do
       let(:action) { described_class::EPIC_CROSS_REFERENCED }
     end
 
-    it_behaves_like 'does not track when feature flag is disabled', :track_epics_activity
+    it_behaves_like 'does not track with namespace when feature flag is disabled', :track_epics_activity
   end
 
   context 'for related epic added' do
@@ -349,11 +349,11 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
       described_class.track_linked_epic_with_type_relates_to_added(**params)
     end
 
-    it_behaves_like 'a daily tracked issuable event' do
+    it_behaves_like 'a daily tracked issuable snowplow and service ping events with namespace' do
       let(:action) { described_class::EPIC_RELATED_ADDED }
     end
 
-    it_behaves_like 'does not track when feature flag is disabled', :track_epics_activity
+    it_behaves_like 'does not track with namespace when feature flag is disabled', :track_epics_activity
   end
 
   context 'for related epic removed' do
@@ -361,11 +361,11 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
       described_class.track_linked_epic_with_type_relates_to_removed(**params)
     end
 
-    it_behaves_like 'a daily tracked issuable event' do
+    it_behaves_like 'a daily tracked issuable snowplow and service ping events with namespace' do
       let(:action) { described_class::EPIC_RELATED_REMOVED }
     end
 
-    it_behaves_like 'does not track when feature flag is disabled', :track_epics_activity
+    it_behaves_like 'does not track with namespace when feature flag is disabled', :track_epics_activity
   end
 
   context 'for blocking epic added' do
@@ -373,11 +373,11 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
       described_class.track_linked_epic_with_type_blocks_added(**params)
     end
 
-    it_behaves_like 'a daily tracked issuable event' do
+    it_behaves_like 'a daily tracked issuable snowplow and service ping events with namespace' do
       let(:action) { described_class::EPIC_BLOCKING_ADDED }
     end
 
-    it_behaves_like 'does not track when feature flag is disabled', :track_epics_activity
+    it_behaves_like 'does not track with namespace when feature flag is disabled', :track_epics_activity
   end
 
   context 'for blocking epic removed' do
@@ -385,11 +385,11 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
       described_class.track_linked_epic_with_type_blocks_removed(**params)
     end
 
-    it_behaves_like 'a daily tracked issuable event' do
+    it_behaves_like 'a daily tracked issuable snowplow and service ping events with namespace' do
       let(:action) { described_class::EPIC_BLOCKING_REMOVED }
     end
 
-    it_behaves_like 'does not track when feature flag is disabled', :track_epics_activity
+    it_behaves_like 'does not track with namespace when feature flag is disabled', :track_epics_activity
   end
 
   context 'for blocked epic added' do
@@ -397,11 +397,11 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
       described_class.track_linked_epic_with_type_is_blocked_by_added(**params)
     end
 
-    it_behaves_like 'a daily tracked issuable event' do
+    it_behaves_like 'a daily tracked issuable snowplow and service ping events with namespace' do
       let(:action) { described_class::EPIC_BLOCKED_ADDED }
     end
 
-    it_behaves_like 'does not track when feature flag is disabled', :track_epics_activity
+    it_behaves_like 'does not track with namespace when feature flag is disabled', :track_epics_activity
   end
 
   context 'for blocked epic removed' do
@@ -409,10 +409,10 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
       described_class.track_linked_epic_with_type_is_blocked_by_removed(**params)
     end
 
-    it_behaves_like 'a daily tracked issuable event' do
+    it_behaves_like 'a daily tracked issuable snowplow and service ping events with namespace' do
       let(:action) { described_class::EPIC_BLOCKED_REMOVED }
     end
 
-    it_behaves_like 'does not track when feature flag is disabled', :track_epics_activity
+    it_behaves_like 'does not track with namespace when feature flag is disabled', :track_epics_activity
   end
 end
