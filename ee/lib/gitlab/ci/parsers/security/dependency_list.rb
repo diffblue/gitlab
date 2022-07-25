@@ -16,7 +16,7 @@ module Gitlab
           def parse!(json_data, report)
             report_data = Gitlab::Json.parse(json_data)
             parse_dependency_names(report_data, report)
-            parse_vulnerabilities(report_data, report)
+            parse_vulnerabilities(report)
           end
 
           def parse_dependency_names(report_data, report)
@@ -31,7 +31,7 @@ module Gitlab
             end
           end
 
-          def parse_vulnerabilities(report_data, report)
+          def parse_vulnerabilities(report)
             vuln_findings = pipeline.vulnerability_findings.by_report_types(%i[container_scanning dependency_scanning])
             vuln_findings.each do |finding|
               dependency = finding.location.dig("dependency")
