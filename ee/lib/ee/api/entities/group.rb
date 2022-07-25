@@ -12,6 +12,10 @@ module EE
                  using: EE::API::Entities::LdapGroupLink,
                  if: ->(group, options) { group.ldap_group_links.any? }
 
+          expose :saml_group_links,
+                  using: EE::API::Entities::SamlGroupLink,
+                  if: ->(group, options) { group.saml_group_links.any? }
+
           expose :checked_file_template_project_id,
                  as: :file_template_project_id,
                  if: ->(group, options) {
