@@ -114,7 +114,21 @@ export const environment = {
         play_path: '/play',
       },
     ],
-    approvals: [],
+    approvals: [
+      {
+        user: {
+          id: 11,
+          username: 'marianna',
+          name: 'Cristy Quitzon',
+          state: 'active',
+          avatarUrl: 'avatar/930d17951d0d1dd25944319f05a75707',
+          webUrl: '/marianna',
+        },
+        status: 'approved',
+        createdAt: Date.now(),
+        comment: 'this is a test comment',
+      },
+    ],
     can_approve_deployment: true,
     deployed_at: '2016-11-29T18:11:58.430Z',
     pending_approval_count: 5,

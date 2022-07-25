@@ -1,11 +1,12 @@
 <script>
 import {
+  GlAvatar,
   GlButton,
   GlButtonGroup,
   GlFormGroup,
   GlFormTextarea,
   GlLink,
-  GlPopover,
+  GlModal,
   GlSprintf,
   GlTooltipDirective as GlTooltip,
 } from '@gitlab/ui';
@@ -20,12 +21,13 @@ const WARNING_CHARACTERS_LEFT = 30;
 
 export default {
   components: {
+    GlAvatar,
     GlButton,
     GlButtonGroup,
     GlFormGroup,
     GlFormTextarea,
     GlLink,
-    GlPopover,
+    GlModal,
     GlSprintf,
     TimeAgoTooltip,
   },
@@ -107,9 +109,28 @@ export default {
     remainingCharacterCount() {
       return MAX_CHARACTER_COUNT - this.comment.length;
     },
+    approvals() {
+      return this.upcomingDeployment?.approvals ?? [];
+    },
+    actionPrimary() {
+      return this.canApproveDeployment
+        ? {
+            text: this.$options.i18n.approve,
+            attributes: { loading: this.loading, variant: 'confirm', ref: 'approve' },
+          }
+        : null;
+    },
+    actionSecondary() {
+      return this.canApproveDeployment
+        ? { text: this.$options.i18n.reject, attributes: { ref: 'reject', loading: this.loading } }
+        : null;
+    },
+    actionCancel() {
+      return this.canApproveDeployment ? null : { text: this.$options.i18n.cancel };
+    },
   },
   methods: {
-    showPopover() {
+    showModal() {
       this.show = true;
     },
     approve() {
@@ -156,7 +177,7 @@ export default {
     tier: s__('DeploymentApproval|Deployment tier: %{tier}'),
     job: s__('DeploymentApproval|Manual job: %{jobName}'),
     current: s__('DeploymentApproval| Current approvals: %{current}'),
-    approval: s__('DeploymentApproval|Approved by %{user} %{time}'),
+    approval: s__('DeploymentApproval|Approved %{time}'),
     approvalByMe: s__('DeploymentApproval|Approved by you %{time}'),
     charactersLeft: __('Characters left'),
     charactersOverLimit: __('Characters over limit'),
@@ -165,6 +186,7 @@ export default {
     description: __('Add comment...'),
     approve: __('Approve'),
     reject: __('Reject'),
+    cancel: __('Cancel'),
   },
 };
 </script>
@@ -177,13 +199,24 @@ export default {
       :loading="loading"
       :title="buttonTitle"
       icon="thumb-up"
-      @click="showPopover"
+      @click="showModal"
     >
       <template v-if="showText">
         {{ $options.i18n.button }}
       </template>
     </gl-button>
-    <gl-popover :target="id" triggers="click blur" placement="top" :title="title" :show="show">
+    <gl-modal
+      v-model="show"
+      :modal-id="id"
+      :title="title"
+      :action-primary="actionPrimary"
+      :action-secondary="actionSecondary"
+      :action-cancel="actionCancel"
+      static
+      modal-class="gl-text-gray-900"
+      @primary="approve"
+      @secondary="reject"
+    >
       <p>
         <gl-sprintf :message="$options.i18n.message">
           <template #deploymentIid>{{ deploymentIid }}</template>
@@ -214,22 +247,37 @@ export default {
         </gl-sprintf>
       </div>
 
-      <div class="gl-mt-4 gl-pt-4">
+      <div class="gl-mt-4 gl-pt-4 gl-mb-4">
         <gl-sprintf :message="$options.i18n.current">
           <template #current>
             <span class="gl-font-weight-bold"> {{ currentApprovals }}/{{ totalApprovals }}</span>
           </template>
         </gl-sprintf>
       </div>
-      <p v-for="(approval, index) in upcomingDeployment.approvals" :key="index">
-        <gl-sprintf :message="approvalText(approval)">
-          <template #user>
-            <gl-link :href="approval.user.webUrl">@{{ approval.user.username }}</gl-link>
-          </template>
-          <template #time><time-ago-tooltip :time="approval.createdAt" /></template>
-        </gl-sprintf>
-      </p>
-      <div v-if="canApproveDeployment" class="gl-mt-4 gl-pt-4">
+      <template v-for="(approval, index) in approvals">
+        <div :key="`user-${index}`" class="gl-display-flex gl-align-items-center">
+          <gl-avatar :size="16" :src="approval.user.avatarUrl" class="gl-mr-2" />
+          <gl-link :href="approval.user.webUrl" class="gl-mr-2">
+            @{{ approval.user.username }}
+          </gl-link>
+        </div>
+        <p :key="`approval-${index}`" class="gl-mb-0">
+          <gl-sprintf :message="approvalText(approval)">
+            <template #user>
+              <gl-link :href="approval.user.webUrl">@{{ approval.user.username }}</gl-link>
+            </template>
+            <template #time><time-ago-tooltip :time="approval.createdAt" /></template>
+          </gl-sprintf>
+        </p>
+        <blockquote
+          v-if="approval.comment"
+          :key="`comment-${index}`"
+          class="gl-border-l-1 gl-border-l-solid gl-border-gray-200 gl-pl-2 gl-overflow-wrap-break"
+        >
+          {{ approval.comment }}
+        </blockquote>
+      </template>
+      <div v-if="canApproveDeployment" class="gl-pt-4">
         <div class="gl-display-flex gl-flex-direction-column gl-mb-5">
           <gl-form-group
             :label="$options.i18n.commentLabel"
@@ -254,13 +302,7 @@ export default {
             {{ remainingCharacterCount }}
           </span>
         </div>
-        <gl-button ref="approve" :loading="loading" variant="confirm" @click="approve">
-          {{ $options.i18n.approve }}
-        </gl-button>
-        <gl-button ref="reject" :loading="loading" @click="reject">
-          {{ $options.i18n.reject }}
-        </gl-button>
       </div>
-    </gl-popover>
+    </gl-modal>
   </gl-button-group>
 </template>
