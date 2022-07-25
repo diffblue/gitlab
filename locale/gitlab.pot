@@ -17617,6 +17617,9 @@ msgstr ""
 msgid "GitLabPages|Certificate: %{subject}"
 msgstr ""
 
+msgid "GitLabPages|Check the Pipeline Status"
+msgstr ""
+
 msgid "GitLabPages|Configure pages"
 msgstr ""
 
@@ -17668,6 +17671,9 @@ msgstr ""
 msgid "GitLabPages|Something went wrong while obtaining the Let's Encrypt certificate for %{domain}. To retry visit your %{link_start}domain details%{link_end}."
 msgstr ""
 
+msgid "GitLabPages|Start over"
+msgstr ""
+
 msgid "GitLabPages|Support for domains and certificates is disabled. Ask your system's administrator to enable it."
 msgstr ""
 
@@ -17680,6 +17686,9 @@ msgstr ""
 msgid "GitLabPages|Verified"
 msgstr ""
 
+msgid "GitLabPages|Waiting for the Pages Pipeline to complete..."
+msgstr ""
+
 msgid "GitLabPages|When enabled, all attempts to visit your website through HTTP are automatically redirected to HTTPS using a response with status code 301. Requires a valid certificate for all domains. %{docs_link_start}Learn more.%{link_end}"
 msgstr ""
 
@@ -17690,6 +17699,9 @@ msgid "GitLabPages|With GitLab Pages you can host your static website directly f
 msgstr ""
 
 msgid "GitLabPages|Your Pages site is not configured yet. See the %{docs_link_start}GitLab Pages documentation%{link_end} to learn how to upload your static site and have GitLab serve it. You can also take some inspiration from the %{samples_link_start}sample Pages projects%{link_end}."
+msgstr ""
+
+msgid "GitLabPages|Your Project has been configured for Pages. Now we have to wait for the Pipeline to succeed for the first time."
 msgstr ""
 
 msgid "GitLabPages|Your pages are served under:"
