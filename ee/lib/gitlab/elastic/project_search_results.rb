@@ -72,7 +72,7 @@ module Gitlab
         return [] unless Ability.allowed?(@current_user, :download_code, project)
 
         strong_memoize(:blob_aggregations) do
-          project.repository.__elasticsearch__.blob_aggregations
+          project.repository.__elasticsearch__.blob_aggregations(query, base_options)
         end
       end
     end

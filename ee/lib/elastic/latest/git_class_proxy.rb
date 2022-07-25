@@ -36,8 +36,14 @@ module Elastic
         end
       end
 
-      def blob_aggregations
-        @aggregations # rubocop:disable Gitlab/ModuleWithInstanceVariables
+      def blob_aggregations(query, options)
+        return [] unless ::Feature.enabled?(:search_blobs_language_aggregation, options[:current_user])
+
+        query_hash, options = blob_query(query, options: options.merge(features: 'repository', aggregation: true))
+
+        results = search(query_hash, options)
+
+        ::Gitlab::Search::AggregationParser.call(results.response.aggregations)
       end
 
       private
@@ -57,7 +63,7 @@ module Elastic
           }
         end
 
-        if type == :blob && languages.any? && allow_aggregations?(type.to_s, options[:count_only], options[:current_user])
+        if languages.any? && type == :blob && (!options[:count_only] || options[:aggregation]) && ::Feature.enabled?(:search_blobs_language_aggregation, options[:current_user])
           filters << {
             terms: {
               _name: context.name(type, :match, :languages),
@@ -73,7 +79,6 @@ module Elastic
 
       # rubocop:disable Metrics/AbcSize
       def search_commit(query, page: 1, per: 20, options: {})
-        page ||= 1
         fields = %w(message^10 sha^5 author.name^2 author.email^2 committer.name committer.email)
         query_with_prefix = query.split(/\s+/).map { |s| s.gsub(SHA_REGEX) { |sha| "#{sha}*" } }.join(' ')
 
@@ -145,99 +150,8 @@ module Elastic
         }
       end
 
-      # rubocop:disable Metrics/AbcSize
       def search_blob(query, type: 'blob', page: 1, per: 20, options: {})
-        page ||= 1
-
-        query = ::Gitlab::Search::Query.new(query) do
-          filter :filename, field: :file_name
-          filter :path, parser: ->(input) { "*#{input.downcase}*" }
-
-          if Feature.enabled?(:elastic_file_name_reverse_optimization)
-            filter :extension, field: 'file_name.reverse', type: :prefix, parser: ->(input) { input.downcase.reverse + '.' }
-          else
-            filter :extension, field: :path, parser: ->(input) { '*.' + input.downcase }
-          end
-
-          filter :blob, field: :oid
-        end
-
-        bool_expr = ::Gitlab::Elastic::BoolExpr.new
-        query_hash = {
-          query: { bool: bool_expr },
-          size: (options[:count_only] ? 0 : per),
-          from: per * (page - 1),
-          sort: [:_score]
-        }
-
-        bool_expr = apply_simple_query_string(
-          name: context.name(:blob, :match, :search_terms),
-          query: query.term,
-          fields: %w[blob.content blob.file_name blob.path],
-          bool_expr: bool_expr,
-          count_only: options[:count_only]
-        )
-
-        # If there is a :current_user set in the `options`, we can assume
-        # we need to do a project visibility check.
-        #
-        # Note that `:current_user` might be `nil` for a anonymous user
-        query_hash = context.name(:blob, :authorized) { project_ids_filter(query_hash, options) } if options.key?(:current_user)
-
-        # add the document type filter
-        bool_expr[:filter] << {
-          term: {
-            type: {
-              _name: context.name(:doc, :is_a, type),
-              value: type
-            }
-          }
-        }
-
-        # add filters extracted from the query
-        query_filter_context = query.elasticsearch_filter_context(:blob)
-        bool_expr[:filter] += query_filter_context[:filter] if query_filter_context[:filter].any?
-        bool_expr[:must_not] += query_filter_context[:must_not] if query_filter_context[:must_not].any?
-
-        # add filters extracted from the `options`
-        options_filter_context = options_filter_context(:blob, options)
-        bool_expr[:filter] += options_filter_context[:filter] if options_filter_context[:filter].any?
-
-        options[:order] = :default if options[:order].blank?
-
-        if options[:highlight] && !options[:count_only]
-          query_hash[:highlight] = {
-            pre_tags: [HIGHLIGHT_START_TAG],
-            post_tags: [HIGHLIGHT_END_TAG],
-            number_of_fragments: 0, # highlighted text fragments do not work well for code as we want to show a few whole lines of code. We need to get the whole content to determine the exact line number that was highlighted.
-            fields: {
-              "blob.content" => {},
-              "blob.file_name" => {}
-            }
-          }
-        end
-
-        if allow_aggregations?(type, options[:count_only], options[:current_user])
-          query_hash[:aggs] = {
-            language: {
-              composite: {
-                sources: [
-                  {
-                    language: {
-                      terms: {
-                        field: 'blob.language'
-                      }
-                    }
-                  }
-                ]
-              }
-            }
-          }
-        end
-
-        # inject the `id` part of repository as project id
-        repository_ids = [options[:repository_id]].flatten
-        options[:project_ids] = repository_ids.map { |id| id.to_s[/\d+/].to_i } if type == 'wiki_blob' && repository_ids.any?
+        query_hash, options = blob_query(query, type: type, page: page, per: per, options: options)
 
         res = search(query_hash, options)
 
@@ -246,7 +160,6 @@ module Elastic
           total_count: res.size
         }
       end
-      # rubocop:enable Metrics/AbcSize
 
       # Wrap returned results into GitLab model objects and paginate
       #
@@ -259,9 +172,6 @@ module Elastic
           per: per,
           options: options
         )[type.pluralize.to_sym][:results]
-
-        # Retrieve aggregations for blob type queries
-        @aggregations = ::Gitlab::Search::AggregationParser.call(response.response.aggregations) # rubocop:disable Gitlab/ModuleWithInstanceVariables
 
         items, total_count = yield_each_search_result(response, type, preload_method, &blk)
 
@@ -322,9 +232,111 @@ module Elastic
         end
       end
 
-      def allow_aggregations?(type, count_only, current_user)
-        type == 'blob' && !count_only && ::Feature.enabled?(:search_blobs_language_aggregation, current_user)
+      # rubocop:disable Metrics/AbcSize
+      def blob_query(query, type: 'blob', page: 1, per: 20, options: {})
+        aggregation = options[:aggregation]
+        count_only = options[:count_only]
+
+        query = ::Gitlab::Search::Query.new(query) do
+          filter :filename, field: :file_name
+          filter :path, parser: ->(input) { "*#{input.downcase}*" }
+
+          if Feature.enabled?(:elastic_file_name_reverse_optimization)
+            filter :extension, field: 'file_name.reverse', type: :prefix, parser: ->(input) { input.downcase.reverse + '.' }
+          else
+            filter :extension, field: :path, parser: ->(input) { '*.' + input.downcase }
+          end
+
+          filter :blob, field: :oid
+        end
+
+        bool_expr = ::Gitlab::Elastic::BoolExpr.new
+        count_or_aggregation_query = count_only || aggregation
+        query_hash = {
+          query: { bool: bool_expr },
+          size: (count_or_aggregation_query ? 0 : per)
+        }
+
+        unless aggregation
+          query_hash[:from] = per * (page - 1)
+          query_hash[:sort] = [:_score]
+        end
+
+        bool_expr = apply_simple_query_string(
+          name: context.name(:blob, :match, :search_terms),
+          query: query.term,
+          fields: %w[blob.content blob.file_name blob.path],
+          bool_expr: bool_expr,
+          count_only: options[:count_only]
+        )
+
+        # If there is a :current_user set in the `options`, we can assume
+        # we need to do a project visibility check.
+        #
+        # Note that `:current_user` might be `nil` for a anonymous user
+        if options.key?(:current_user)
+          query_hash = context.name(:blob, :authorized) { project_ids_filter(query_hash, options) }
+        end
+
+        # add the document type filter
+        bool_expr[:filter] << {
+          term: {
+            type: {
+              _name: context.name(:doc, :is_a, type),
+              value: type
+            }
+          }
+        }
+
+        # add filters extracted from the query
+        query_filter_context = query.elasticsearch_filter_context(:blob)
+        bool_expr[:filter] += query_filter_context[:filter] if query_filter_context[:filter].any?
+        bool_expr[:must_not] += query_filter_context[:must_not] if query_filter_context[:must_not].any?
+
+        # add filters extracted from the `options`
+        options_filter_context = options_filter_context(:blob, options)
+        bool_expr[:filter] += options_filter_context[:filter] if options_filter_context[:filter].any?
+
+        options[:order] = :default if options[:order].blank? && !aggregation
+
+        if options[:highlight] && !count_or_aggregation_query
+          query_hash[:highlight] = {
+            pre_tags: [HIGHLIGHT_START_TAG],
+            post_tags: [HIGHLIGHT_END_TAG],
+            number_of_fragments: 0, # highlighted text fragments do not work well for code as we want to show a few whole lines of code. We need to get the whole content to determine the exact line number that was highlighted.
+            fields: {
+              "blob.content" => {},
+              "blob.file_name" => {}
+            }
+          }
+        end
+
+        current_user = options[:current_user]
+        if type == 'blob' && aggregation && ::Feature.enabled?(:search_blobs_language_aggregation, current_user)
+          query_hash[:aggs] = {
+            language: {
+              composite: {
+                sources: [
+                  {
+                    language: {
+                      terms: {
+                        field: 'blob.language'
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        end
+
+        # inject the `id` part of repository as project id
+        repository_ids = [options[:repository_id]].flatten
+        options[:project_ids] = repository_ids.map { |id| id.to_s[/\d+/].to_i } if type == 'wiki_blob' && repository_ids.any?
+
+        [query_hash, options]
       end
+      # rubocop:enable Metrics/AbcSize
     end
   end
 end

@@ -365,7 +365,7 @@ module Gitlab
         return [] if query.blank?
 
         strong_memoize(:blob_aggregations) do
-          Repository.__elasticsearch__.blob_aggregations
+          Repository.__elasticsearch__.blob_aggregations(query, base_options)
         end
       end
     end

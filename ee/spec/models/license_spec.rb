@@ -9,6 +9,10 @@ RSpec.describe License do
 
   let(:gl_license) { build(:gitlab_license) }
 
+  let_it_be(:gl_licensee) do
+    { 'Name' => 'Team Member', 'Email' => 'team_member@gitlab.com', 'Company' => 'GitLab' }
+  end
+
   describe 'validations' do
     describe '#valid_license' do
       subject(:license) { build(:license, data: gl_license.class.encryptor.encrypt(gl_license.to_json)) }
@@ -393,6 +397,7 @@ RSpec.describe License do
           let(:expires_at) { nil }
 
           before do
+            gl_license.licensee = gl_licensee
             create_historical_data(license.starts_at, prior_active_user_count)
           end
 
@@ -1749,6 +1754,7 @@ RSpec.describe License do
     context 'when license has no expiration' do
       before do
         gl_license.expires_at = nil
+        gl_license.licensee = gl_licensee
       end
 
       it { is_expected.to eq(false) }
@@ -1819,6 +1825,7 @@ RSpec.describe License do
     context 'when license has no expiration' do
       before do
         gl_license.expires_at = nil
+        gl_license.licensee = gl_licensee
         gl_license.block_changes_at = nil
       end
 

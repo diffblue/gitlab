@@ -152,7 +152,6 @@ RSpec.describe Gitlab::Elastic::ProjectSearchResults, :elastic do
       context 'when feature flag is enabled for user' do
         before do
           stub_feature_flags(search_blobs_language_aggregation: user)
-          results.objects(scope) # run search to populate aggregations
         end
 
         it_behaves_like 'loads aggregations'
@@ -161,7 +160,6 @@ RSpec.describe Gitlab::Elastic::ProjectSearchResults, :elastic do
       context 'when feature flag is disabled for user' do
         before do
           stub_feature_flags(search_blobs_language_aggregation: false)
-          results.objects(scope) # run search to populate aggregations
         end
 
         it_behaves_like 'does not load aggregations'
@@ -193,10 +191,6 @@ RSpec.describe Gitlab::Elastic::ProjectSearchResults, :elastic do
 
           expect(subject).to match_array([])
         end
-      end
-
-      context 'when search has not been run' do
-        it { is_expected.to be_nil }
       end
     end
   end

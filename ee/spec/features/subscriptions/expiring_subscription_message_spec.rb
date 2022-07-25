@@ -15,7 +15,11 @@ RSpec.describe 'Expiring Subscription Message', :js, :freeze_time do
       let_it_be(:admin) { create(:admin) }
 
       before do
-        create_current_license(plan: License::ULTIMATE_PLAN, expires_at: expires_at)
+        if expires_at.present?
+          create_current_license(plan: License::ULTIMATE_PLAN, expires_at: expires_at)
+        else
+          create_current_license_without_expiration(plan: License::ULTIMATE_PLAN)
+        end
 
         sign_in(admin)
         gitlab_enable_admin_mode_sign_in(admin)
@@ -54,7 +58,15 @@ RSpec.describe 'Expiring Subscription Message', :js, :freeze_time do
       let_it_be(:user) { create(:user) }
 
       before do
-        create_current_license(plan: License::ULTIMATE_PLAN, expires_at: expires_at, block_changes_at: block_changes_at)
+        if expires_at.present?
+          create_current_license(
+            plan: License::ULTIMATE_PLAN,
+            expires_at: expires_at,
+            block_changes_at: block_changes_at
+          )
+        else
+          create_current_license_without_expiration(plan: License::ULTIMATE_PLAN, block_changes_at: block_changes_at)
+        end
 
         sign_in(user)
         visit root_path

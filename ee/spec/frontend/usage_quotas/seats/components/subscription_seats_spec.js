@@ -774,11 +774,11 @@ describe('Subscription Seats', () => {
         });
 
         expect(findSeatsAlertBanner().props('title')).toEqual(
-          'From June 22, 2022 (GitLab 15.1), free groups will be limited to 5 members',
+          'From October 19, 2022, free groups will be limited to 5 members',
         );
 
         expect(findSeatsAlertBanner().text()).toContain(
-          "You can begin moving members in Test Group Name now. A member loses access to the group when you turn off In a seat. If over 5 members have In a seat enabled after June 22, 2022, we'll select the 5 members who maintain access. We'll first count members that have Owner and Maintainer roles, then the most recently active members until we reach 5 members. The remaining members will get a status of Over limit and lose access to the group.",
+          "You can begin moving members in Test Group Name now. A member loses access to the group when you turn off In a seat. If over 5 members have In a seat enabled after October 19, 2022, we'll select the 5 members who maintain access. We'll first count members that have Owner and Maintainer roles, then the most recently active members until we reach 5 members. The remaining members will get a status of Over limit and lose access to the group.",
         );
       });
     });

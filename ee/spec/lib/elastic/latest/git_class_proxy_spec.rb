@@ -3,20 +3,19 @@
 require 'spec_helper'
 
 RSpec.describe Elastic::Latest::GitClassProxy, :elastic do
-  let_it_be(:project) { create(:project, :repository) }
-
+  let(:project) { create(:project, :public, :repository) }
   let(:included_class) { Elastic::Latest::RepositoryClassProxy }
+
+  before do
+    stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
+
+    project.repository.index_commits_and_blobs
+    ensure_elasticsearch_index!
+  end
 
   subject { included_class.new(project.repository) }
 
   describe '#elastic_search_as_found_blob' do
-    before do
-      stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
-
-      project.repository.index_commits_and_blobs
-      ensure_elasticsearch_index!
-    end
-
     it 'returns FoundBlob', :sidekiq_inline do
       results = subject.elastic_search_as_found_blob('def popen')
 
@@ -33,17 +32,24 @@ RSpec.describe Elastic::Latest::GitClassProxy, :elastic do
     end
   end
 
-  describe '#blob_aggregations', :sidekiq_inline do
-    before do
-      stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
-
-      project.repository.index_commits_and_blobs
-      ensure_elasticsearch_index!
+  describe '#blob_aggregations' do
+    let(:user) { create(:user) }
+    let(:options) do
+      {
+        current_user: user,
+        project_ids: [project.id],
+        public_and_internal_projects: false,
+        order_by: nil,
+        sort: nil
+      }
     end
 
-    it 'returns aggregations' do
-      subject.elastic_search_as_found_blob('This guide details how contribute to GitLab')
-      result = subject.blob_aggregations
+    before do
+      project.add_developer(user)
+    end
+
+    it 'returns aggregations', :sidekiq_inline do
+      result = subject.blob_aggregations('This guide details how contribute to GitLab', options)
 
       expect(result.first.name).to eq('language')
       expect(result.first.buckets.first[:key]).to eq({ 'language' => 'Markdown' })
@@ -56,28 +62,7 @@ RSpec.describe Elastic::Latest::GitClassProxy, :elastic do
       end
 
       it 'returns empty array' do
-        subject.elastic_search_as_found_blob('This guide details how contribute to GitLab')
-        result = subject.blob_aggregations
-
-        expect(result).to match_array([])
-      end
-    end
-
-    context 'when search type is not blobs' do
-      let(:included_class) { Elastic::Latest::ProjectWikiClassProxy }
-
-      it 'returns empty array' do
-        subject.elastic_search_as_found_blob('This guide details how contribute to GitLab')
-        result = subject.blob_aggregations
-
-        expect(result).to match_array([])
-      end
-    end
-
-    context 'when count_only search' do
-      it 'returns empty array' do
-        subject.elastic_search_as_found_blob('This guide details how contribute to GitLab', options: { count_only: true })
-        result = subject.blob_aggregations
+        result = subject.blob_aggregations('This guide details how contribute to GitLab', options)
 
         expect(result).to match_array([])
       end

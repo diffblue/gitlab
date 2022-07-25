@@ -65,7 +65,7 @@ RSpec.describe 'Admin views Subscription', :js do
       end
 
       it 'fails to sync the subscription' do
-        create_current_license(cloud_licensing_enabled: true, plan: License::ULTIMATE_PLAN, expires_at: nil)
+        create_current_license_without_expiration(cloud_licensing_enabled: true, plan: License::ULTIMATE_PLAN)
 
         page.within(find('#content-body', match: :first)) do
           click_button('Sync subscription details')
