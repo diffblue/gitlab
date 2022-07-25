@@ -119,7 +119,7 @@ RSpec.describe SyncSeatLinkWorker, type: :worker do
 
       context 'when the license has no expiration date' do
         before do
-          create_current_license(cloud_licensing_enabled: true, expires_at: nil, block_changes_at: nil)
+          create_current_license_without_expiration(cloud_licensing_enabled: true, block_changes_at: nil)
         end
 
         include_examples 'no seat link sync'

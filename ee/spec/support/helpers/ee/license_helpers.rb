@@ -50,6 +50,17 @@ module EE
         create(:license, license_options.merge(data: gl_license.export))
       end
 
+      def create_current_license_without_expiration(gitlab_license_options = {}, license_options = {})
+        gitlab_license_options[:licensee] = {
+          'Name' => 'Team Member',
+          'Email' => 'team_member@gitlab.com',
+          'Company' => 'GitLab'
+        }
+        gitlab_license_options[:expires_at] = nil
+
+        create_current_license(gitlab_license_options, license_options)
+      end
+
       ::Project.prepend ClearLicensedFeatureAvailableCache
       ::Namespace.prepend ClearLicensedFeatureAvailableCache
     end
