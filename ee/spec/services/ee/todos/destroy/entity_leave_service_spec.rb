@@ -12,18 +12,22 @@ RSpec.describe Todos::Destroy::EntityLeaveService do
 
   let!(:todo1) { create(:todo, target: epic1, user: user, group: subgroup) }
   let!(:todo2) { create(:todo, target: epic2, user: user, group: subgroup) }
+  let(:internal_note) { create(:note, noteable: epic2, confidential: true ) }
+  let!(:todo_for_internal_note) do
+    create(:todo, user: user, target: epic2, group: subgroup, note: internal_note)
+  end
 
   describe '#execute' do
     subject { described_class.new(user.id, subgroup.id, 'Group').execute }
 
-    shared_examples 'removes only confidential epics todos' do
-      it 'removes todos targeting confidential epics in the group' do
-        expect { subject }.to change { Todo.count }.by(-1)
+    shared_examples 'removes confidential epics and internal notes todos' do
+      it 'removes todos targeting confidential epics and internal notes in the group' do
+        expect { subject }.to change { Todo.count }.by(-2)
         expect(user.reload.todos.ids).to match_array(todo2.id)
       end
     end
 
-    it_behaves_like 'removes only confidential epics todos'
+    it_behaves_like 'removes confidential epics and internal notes todos'
 
     context 'when user is still member of ancestor group' do
       before do
@@ -57,7 +61,7 @@ RSpec.describe Todos::Destroy::EntityLeaveService do
         subgroup.add_guest(user)
       end
 
-      it_behaves_like 'removes only confidential epics todos'
+      it_behaves_like 'removes confidential epics and internal notes todos'
     end
   end
 end
