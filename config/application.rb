@@ -136,14 +136,6 @@ module Gitlab
 
     # These are only used in Rake tasks so we don't need to add these to eager_load_paths
     config.autoload_paths.push("#{config.root}/lib/generators")
-
-    # ViewComponent previews
-    config.view_component.default_preview_layout = "component_preview"
-    config.view_component.preview_route = "/-/view_component/previews"
-    config.view_component.preview_paths << "#{config.root}/spec/components/previews"
-    # Push preview path now to prevent FrozenError during view_component's initialzer
-    config.autoload_paths.push("#{config.root}/spec/components/previews")
-
     Gitlab.ee { config.autoload_paths.push("#{config.root}/ee/lib/generators") }
     Gitlab.jh { config.autoload_paths.push("#{config.root}/jh/lib/generators") }
 
