@@ -70,6 +70,10 @@ RSpec.describe 'Creating a Requirement' do
           expect { post_graphql_mutation(mutation, current_user: current_user) }.not_to change(RequirementsManagement::Requirement, :count)
         end
       end
+
+      it_behaves_like 'has spam protection' do
+        let(:mutation_class) { Mutations::RequirementsManagement::CreateRequirement }
+      end
     end
   end
 end

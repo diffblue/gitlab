@@ -47,6 +47,8 @@ module RequirementsManagement
              :description_html,
              :title_html,
              :cached_markdown_version,
+             :created_at,
+             :updated_at,
              to: :requirement_issue,
              allow_nil: true
 

@@ -264,6 +264,17 @@ RSpec.describe Issues::CreateService do
               .and change { RequirementsManagement::Requirement.count }.by(0)
           end
         end
+
+        context 'when requirements feature is not available' do
+          before do
+            stub_licensed_features(requirements: false)
+          end
+
+          it 'creates a issue work item' do
+            expect { service.execute }.to change { Issue.where(issue_type: 'issue').count }.by(1)
+              .and change { RequirementsManagement::Requirement.count }.by(0)
+          end
+        end
       end
     end
 
