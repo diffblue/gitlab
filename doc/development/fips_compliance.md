@@ -298,6 +298,9 @@ gitlab:
   gitlab-mailroom:
     image:
       tag: master-fips
+  gitlab-pages:
+    image:
+      tag: master-fips
   migrations:
     image:
       tag: master-fips
@@ -351,6 +354,9 @@ gitlab:
   gitlab-mailroom:
     image:
       tag: v15.2.0-fips
+  gitlab-pages:
+    image:
+      tag: v1.61.0-fips
   migrations:
     image:
       tag: v15.2.0-fips
