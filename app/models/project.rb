@@ -2116,6 +2116,7 @@ class Project < ApplicationRecord
   end
 
   def after_import
+    repository.remove_prohibited_branches
     repository.expire_content_cache
     wiki.repository.expire_content_cache
 
