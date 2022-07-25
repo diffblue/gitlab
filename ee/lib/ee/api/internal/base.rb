@@ -56,13 +56,23 @@ module EE
 
               return { success: false, message: 'Two-factor authentication is not enabled for this user' } unless user.two_factor_enabled?
 
+              return { success: false, message: 'Your account is locked' } unless user.can?(:log_in)
+
               otp_validation_result = ::Users::ValidateManualOtpService.new(user).execute(params.fetch(:otp_attempt))
 
               if otp_validation_result[:status] == :success
                 ::Gitlab::Auth::Otp::SessionEnforcer.new(actor.key).update_session
-
                 { success: true }
               else
+                user.increment_failed_attempts!
+                ::AuditEventService.new(user, user, with: "OTP")
+                  .for_failed_login.unauth_security_event
+                ::Gitlab::AppLogger.info(
+                  message: 'Failed OTP login',
+                  user_id: user.id,
+                  failed_attempts: user.failed_attempts,
+                  ip: request.ip
+                )
                 { success: false, message: 'Invalid OTP' }
               end
             end
@@ -87,7 +97,6 @@ module EE
 
               if otp_validation_result[:status] == :success
                 ::Gitlab::Auth::Otp::SessionEnforcer.new(actor.key).update_session
-
                 { success: true }
               else
                 { success: false, message: 'Invalid OTP' }
