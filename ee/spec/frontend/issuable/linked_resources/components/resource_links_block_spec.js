@@ -241,4 +241,48 @@ describe('ResourceLinksBlock', () => {
       expect(findAllResourceLinks().length).toBe(3);
     });
   });
+
+  describe('createMutation', () => {
+    const expectedData = {
+      input: userInput,
+    };
+
+    it('should call the mutation with right variables and closes the form', async () => {
+      mountComponent(createMockApolloCreateProvider());
+
+      await submitForm();
+
+      expect(createResponse).toHaveBeenCalledWith(expectedData);
+      expect(resourceLinkForm().isVisible()).toBe(false);
+    });
+
+    describe('error handling', () => {
+      it('should show an error when submission fails', async () => {
+        const expectedAlertArgs = {
+          captureError: true,
+          error: new Error(),
+          message: 'Something went wrong while creating the resource link for the incident.',
+        };
+        mountComponent(createMockApolloCreateProvider(), mockResourceLinks);
+        createResponse.mockRejectedValueOnce();
+
+        await submitForm();
+
+        expect(createAlert).toHaveBeenCalledWith(expectedAlertArgs);
+      });
+      it('should show an error when submission returns an error', async () => {
+        const expectedAlertArgs = {
+          message: 'Error creating resource link for the incident: Create error',
+          captureError: false,
+          error: null,
+        };
+        mountComponent(createMockApolloCreateProvider(), mockResourceLinks);
+        createResponse.mockResolvedValue(resourceLinkCreateEventError);
+
+        await submitForm();
+
+        expect(createAlert).toHaveBeenCalledWith(expectedAlertArgs);
+      });
+    });
+  });
 });

@@ -115,6 +115,80 @@ export default {
         });
       }
     },
+    updateCache(store, { data }) {
+      const { issuableResourceLink: resourceLink, errors } = data?.issuableResourceLinkCreate || {};
+      if (errors.length) {
+        return;
+      }
+
+      const variables = {
+        incidentId: convertToGraphQLId(TYPE_ISSUE, this.issuableId),
+      };
+
+      const sourceData = store.readQuery({
+        query: getIssuableResourceLinks,
+        variables,
+      });
+
+      const newData = produce(sourceData, (draftData) => {
+        const { nodes: draftLinkList } = draftData.issue.issuableResourceLinks;
+        draftLinkList.push(resourceLink);
+        draftData.issue.issuableResourceLinks.nodes = draftLinkList;
+      });
+
+      store.writeQuery({
+        query: getIssuableResourceLinks,
+        variables,
+        data: newData,
+      });
+    },
+    onCreateResourceLink(resourceLink) {
+      this.isSubmitting = true;
+      return this.$apollo
+        .mutate({
+          mutation: createIssuableResourceLink,
+          variables: {
+            input: {
+              id: convertToGraphQLId(TYPE_ISSUE, this.issuableId),
+              link: resourceLink.linkValue,
+              linkText: resourceLink.linkTextValue,
+              linkType: identifyLinkType(resourceLink.linkValue),
+            },
+          },
+          update: this.updateCache,
+        })
+        .then(({ data = {} }) => {
+          const errors = data.issuableResourceLinkCreate?.errors;
+          if (errors.length) {
+            const errorMessage = sprintf(
+              this.$options.i18n.createError,
+              { error: errors.join('. ') },
+              false,
+            );
+            throw new Error(errorMessage, { captureError: false });
+          }
+        })
+        .catch((error) => {
+          const message = error.message ? error.message : this.$options.i18n.createErrorGeneric;
+          let captureError = false;
+          let errorObj = null;
+
+          if (message === this.$options.i18n.createErrorGeneric) {
+            captureError = true;
+            errorObj = error;
+          }
+
+          createAlert({
+            message,
+            captureError,
+            error: errorObj,
+          });
+        })
+        .finally(() => {
+          this.isSubmitting = false;
+          this.$refs.resourceLinkForm.onFormCancel();
+        });
+    },
   },
 };
 </script>
