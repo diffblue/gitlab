@@ -10,7 +10,7 @@ RSpec.describe API::Internal::Base do
   let_it_be(:secondary_url) { 'http://secondary.example.com' }
   let_it_be(:primary_node, reload: true) { create(:geo_node, :primary, url: primary_url) }
   let_it_be(:secondary_node, reload: true) { create(:geo_node, url: secondary_url) }
-  let_it_be(:user) { create(:user) }
+  let_it_be_with_reload(:user) { create(:user) }
 
   let(:secret_token) { Gitlab::Shell.secret_token }
 
@@ -538,11 +538,13 @@ RSpec.describe API::Internal::Base do
       end
 
       context 'when the OTP is invalid' do
-        it 'is not success' do
+        before do
           allow_next_instance_of(Users::ValidateManualOtpService) do |service|
             allow(service).to receive(:execute).with(otp).and_return(status: :error)
           end
+        end
 
+        it 'is not success' do
           subject
 
           expect(json_response['success']).to be_falsey
@@ -655,14 +657,52 @@ RSpec.describe API::Internal::Base do
       end
 
       context 'when the OTP is invalid' do
-        it 'is not success' do
+        before do
           allow_next_instance_of(Users::ValidateManualOtpService) do |service|
             allow(service).to receive(:execute).with(otp).and_return(status: :error)
           end
+        end
 
+        it_behaves_like 'an auditable failed authentication' do
+          let(:operation) { subject }
+          let(:method) { 'OTP' }
+        end
+
+        it 'is not success' do
           subject
 
           expect(json_response['success']).to be_falsey
+        end
+
+        it "locks the user out after maximum attempts is reached" do
+          user.update!(failed_attempts: User.maximum_attempts.pred)
+
+          # make invalid request to lock user before next request
+          post api('/internal/two_factor_manual_otp_check'),
+            params: {
+              secret_token: secret_token,
+              key_id: key_id,
+              otp_attempt: otp
+            }
+
+          # user is now locked
+          subject
+
+          expect(json_response['success']).to be_falsey
+          expect(json_response['message']).to eq 'Your account is locked'
+        end
+
+        it "logs the failure" do
+          expect(::Gitlab::AppLogger).to receive(:info).with(
+            hash_including(
+              message: 'Failed OTP login',
+              user_id: user.id,
+              failed_attempts: user.failed_attempts + 1,
+              ip: '127.0.0.1'
+            ))
+            .and_call_original
+
+          subject
         end
       end
     end
