@@ -13,6 +13,7 @@
   is_last_page: @is_last_page.to_json,
   filter_token_options: project_audit_event_tokens(@project.full_path).to_json,
   show_filter: show_filter_for_project?(@project).to_json } }
+    = gl_loading_icon(size: 'lg', css_class: 'gl-my-7')
 
 - elsif show_promotions?
   = render 'shared/promotions/promote_audit_events'
