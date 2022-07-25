@@ -40,6 +40,9 @@ RSpec.describe Projects::SubscriptionsController do
             context 'when subscription count is below the limit' do
               it 'creates a new subscription' do
                 expect { post_create }.to change { project.upstream_project_subscriptions.count }.from(0).to(1)
+
+                new_subscription = project.upstream_project_subscriptions.first
+                expect(new_subscription.author).to eq(user)
               end
 
               it 'sets the flash' do
