@@ -132,9 +132,9 @@ module EE
                 numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: 10.days.to_i }
 
       validates :git_rate_limit_users_allowlist,
-                length: { maximum: 100 },
-                allow_nil: false
-      validate :check_git_rate_limit_users_allowlist
+                length: { maximum: 100, message: -> (object, data) { _("exceeds maximum length (100 usernames)") } },
+                allow_nil: false,
+                user_existence: true
 
       validates :delayed_project_removal,
                 exclusion: { in: [true], message: -> (object, data) { _("can't be enabled when delayed group deletion is disabled") } },
@@ -480,19 +480,6 @@ module EE
       end
     rescue ::Gitlab::UrlBlocker::BlockedUrlError
       errors.add(:elasticsearch_url, "only supports valid HTTP(S) URLs.")
-    end
-
-    def check_git_rate_limit_users_allowlist
-      return if git_rate_limit_users_allowlist.blank?
-
-      invalid = git_rate_limit_users_allowlist - ::User.where(username: git_rate_limit_users_allowlist).pluck(:username)
-
-      return if invalid.empty?
-
-      errors.add(
-        :git_rate_limit_users_allowlist,
-        _("should be an array of existing usernames. %{invalid} does not exist") % { invalid: invalid.join(", ") }
-      )
     end
 
     def update_lock_delayed_project_removal
