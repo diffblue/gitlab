@@ -16,12 +16,7 @@ import AuditEventsStream from 'ee/audit_events/components/audit_events_stream.vu
 import StreamDestinationEditor from 'ee/audit_events/components/stream/stream_destination_editor.vue';
 import StreamItem from 'ee/audit_events/components/stream/stream_item.vue';
 import StreamEmptyState from 'ee/audit_events/components/stream/stream_empty_state.vue';
-import {
-  mockExternalDestinations,
-  groupPath,
-  destinationDataPopulator,
-  mockSvgPath,
-} from '../mock_data';
+import { mockExternalDestinations, groupPath, destinationDataPopulator } from '../mock_data';
 
 jest.mock('~/flash');
 Vue.use(VueApollo);
@@ -38,7 +33,6 @@ describe('AuditEventsStream', () => {
     wrapper = shallowMountExtended(AuditEventsStream, {
       provide: {
         groupPath,
-        streamsIconSvgPath: mockSvgPath,
       },
       apolloProvider: mockApollo,
     });

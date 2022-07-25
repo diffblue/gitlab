@@ -98,7 +98,7 @@ describe('Audit Event Utils', () => {
           value: header1.value,
           active: true,
           disabled: false,
-          deletionDisabled: true,
+          deletionDisabled: false,
           validationErrors: { name: '' },
         },
         {
@@ -107,7 +107,7 @@ describe('Audit Event Utils', () => {
           value: header2.value,
           active: true,
           disabled: false,
-          deletionDisabled: true,
+          deletionDisabled: false,
           validationErrors: { name: '' },
         },
       ]);
@@ -123,7 +123,7 @@ describe('Audit Event Utils', () => {
           value: header1.value,
           active: true,
           disabled: true,
-          deletionDisabled: true,
+          deletionDisabled: false,
           validationErrors: { name: '' },
         },
         {
@@ -132,7 +132,7 @@ describe('Audit Event Utils', () => {
           value: header2.value,
           active: true,
           disabled: true,
-          deletionDisabled: true,
+          deletionDisabled: false,
           validationErrors: { name: '' },
         },
       ]);
@@ -148,7 +148,7 @@ describe('Audit Event Utils', () => {
           value: header1.value,
           active: true,
           disabled: false,
-          deletionDisabled: true,
+          deletionDisabled: false,
           validationErrors: { name: '' },
         },
         {
@@ -157,7 +157,7 @@ describe('Audit Event Utils', () => {
           value: header2.value,
           active: true,
           disabled: false,
-          deletionDisabled: true,
+          deletionDisabled: false,
           validationErrors: { name: '' },
         },
         {
@@ -166,7 +166,7 @@ describe('Audit Event Utils', () => {
           value: header3.value,
           active: true,
           disabled: false,
-          deletionDisabled: true,
+          deletionDisabled: false,
           validationErrors: { name: '' },
         },
       ]);

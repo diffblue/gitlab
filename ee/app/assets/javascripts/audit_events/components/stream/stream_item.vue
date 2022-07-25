@@ -27,6 +27,16 @@ export default {
     };
   },
   computed: {
+    itemClasses() {
+      return this.isEditing ? 'gl-py-5' : 'gl-py-3';
+    },
+    verificationTokenClasses() {
+      if (this.isEditing) {
+        return '';
+      }
+
+      return 'gl-mr-3';
+    },
     editButtonLabel() {
       return sprintf(STREAM_ITEMS_I18N.EDIT_BUTTON_LABEL, { link: this.item.destinationUrl });
     },
@@ -86,20 +96,21 @@ export default {
 <template>
   <li class="list-item py-0">
     <div
-      class="gl-display-flex gl-align-items-center gl-justify-content-space-between gl-pl-5 gl-pr-3 gl-rounded-base"
-      :class="[isEditing ? 'gl-py-5' : 'gl-py-3']"
+      class="gl-display-flex gl-align-items-center gl-justify-content-space-between gl-px-4 gl-rounded-base"
+      :class="itemClasses"
     >
       <span class="gl-display-block" tabindex="0">{{ item.destinationUrl }}</span>
       <code
         v-gl-tooltip
         :title="$options.i18n.VERIFICATION_TOKEN_TOOLTIP"
-        class="gl-ml-auto gl-mr-3"
+        class="gl-ml-auto"
+        :class="verificationTokenClasses"
         tabindex="0"
       >
         <span class="gl-sr-only">{{ $options.i18n.VERIFICATION_TOKEN_TOOLTIP }}:</span>
         {{ item.verificationToken }}
       </code>
-      <div v-if="!isEditing">
+      <template v-if="!isEditing">
         <gl-button
           v-gl-tooltip
           :aria-label="editButtonLabel"
@@ -120,7 +131,7 @@ export default {
           data-testid="delete-btn"
           @click="deleteDestination"
         />
-      </div>
+      </template>
     </div>
     <div v-if="isEditing" class="gl-p-4">
       <stream-destination-editor

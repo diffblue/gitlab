@@ -11,6 +11,7 @@ import {
 } from '@gitlab/ui';
 import { isEmpty } from 'lodash';
 import * as Sentry from '@sentry/browser';
+import { GlTooltipDirective as GlTooltip } from '@gitlab/ui/dist/directives/tooltip';
 import { thWidthPercent } from '~/lib/utils/table_utility';
 import externalAuditEventDestinationCreate from '../../graphql/create_external_destination.mutation.graphql';
 import externalAuditEventDestinationHeaderCreate from '../../graphql/create_external_destination_header.mutation.graphql';
@@ -39,6 +40,9 @@ export default {
     GlFormInput,
     GlSprintf,
     GlTableLite,
+  },
+  directives: {
+    GlTooltip,
   },
   inject: ['groupPath', 'maxHeaders'],
   props: {
@@ -88,7 +92,7 @@ export default {
     },
   },
   mounted() {
-    const existingHeaders = mapItemHeadersToFormData(this.item, { deletionDisabled: false });
+    const existingHeaders = mapItemHeadersToFormData(this.item);
 
     if (existingHeaders.length < this.maxHeaders) {
       existingHeaders.push(createBlankHeader());
@@ -269,21 +273,12 @@ export default {
     isHeaderFilled(header) {
       return header.name !== '' && header.value !== '';
     },
-    isRowFilled(index) {
-      return this.headers[index].name !== '' && this.headers[index].value !== '';
-    },
-    isLastRow(index) {
-      return this.headers.length === index + 1;
-    },
     headerNameExists(value) {
       return this.headers.some((header) => header.name === value);
     },
-    addBlankHeader() {
-      this.headers.push(createBlankHeader());
-    },
-    addBlankRowIfNeeded(index) {
-      if (!this.hasReachedMaxHeaders && this.isRowFilled(index) && this.isLastRow(index)) {
-        this.addBlankHeader();
+    addBlankHeader(headerProps = {}) {
+      if (!this.hasReachedMaxHeaders) {
+        this.headers.push({ ...createBlankHeader(), ...headerProps });
       }
     },
     handleHeaderNameInput(index, name) {
@@ -299,17 +294,13 @@ export default {
             ...header.validationErrors,
             name: '',
           },
-          deletionDisabled: false,
         };
 
         this.$set(this.headers, index, updatedHeader);
       }
-
-      this.addBlankRowIfNeeded(index);
     },
     handleHeaderValueInput(index, value) {
-      this.$set(this.headers, index, { ...this.headers[index], value, deletionDisabled: false });
-      this.addBlankRowIfNeeded(index);
+      this.$set(this.headers, index, { ...this.headers[index], value });
     },
     handleHeaderActiveInput(index, active) {
       this.$set(this.headers, index, { ...this.headers[index], active });
@@ -318,9 +309,9 @@ export default {
       this.headers.splice(index, 1);
       const headersCount = this.headers.length;
 
-      // Add a new blank row if headers is now empty or the last row is filled out
-      if (headersCount === 0 || this.isRowFilled(headersCount - 1)) {
-        this.addBlankHeader();
+      // Add a new blank row if headers is now empty
+      if (headersCount === 0) {
+        this.addBlankHeader({ deletionDisabled: true });
       }
     },
   },
@@ -348,14 +339,14 @@ export default {
       key: 'actions',
       label: '',
       thClass: thClasses,
-      tdClass: `${tdClasses} gl-text-right`,
+      tdClass: tdClasses,
     },
   ],
 };
 </script>
 
 <template>
-  <div class="gl-bg-white">
+  <div>
     <gl-alert
       v-if="!isEditing"
       :title="$options.i18n.WARNING_TITLE"
@@ -441,6 +432,9 @@ export default {
           </template>
           <template #cell(actions)="{ index, item: { deletionDisabled } }">
             <gl-button
+              v-gl-tooltip
+              :aria-label="$options.i18n.REMOVE_BUTTON_LABEL"
+              :title="$options.i18n.REMOVE_BUTTON_TOOLTIP"
               category="tertiary"
               icon="remove"
               :disabled="deletionDisabled"
@@ -459,6 +453,19 @@ export default {
             </template>
           </gl-sprintf>
         </p>
+        <gl-button
+          v-else
+          :loading="loading"
+          :name="$options.i18n.ADD_HEADER_ROW_BUTTON_NAME"
+          class="gl-mx-3"
+          variant="confirm"
+          category="secondary"
+          size="small"
+          data-testid="add-header-row-button"
+          @click="addBlankHeader()"
+        >
+          {{ $options.i18n.ADD_HEADER_ROW_BUTTON_TEXT }}
+        </gl-button>
       </div>
 
       <div class="gl-display-flex">

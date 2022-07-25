@@ -1,14 +1,19 @@
 <script>
-import { GlAlert, GlButton, GlLoadingIcon, GlSafeHtmlDirective as SafeHtml } from '@gitlab/ui';
+import {
+  GlAlert,
+  GlButton,
+  GlLoadingIcon,
+  GlIcon,
+  GlSafeHtmlDirective as SafeHtml,
+} from '@gitlab/ui';
 import { createAlert } from '~/flash';
 import {
-  ACTIVE_STREAM,
   ADD_STREAM,
   ADD_STREAM_MESSAGE,
   AUDIT_STREAMS_NETWORK_ERRORS,
   DELETE_STREAM_MESSAGE,
-  STREAM_COUNT_ICON_ALT,
   UPDATE_STREAM_MESSAGE,
+  streamsLabel,
 } from '../constants';
 import externalDestinationsQuery from '../graphql/get_external_destinations.query.graphql';
 import StreamEmptyState from './stream/stream_empty_state.vue';
@@ -21,6 +26,7 @@ export default {
     GlAlert,
     GlButton,
     GlLoadingIcon,
+    GlIcon,
     StreamDestinationEditor,
     StreamEmptyState,
     StreamItem,
@@ -28,7 +34,7 @@ export default {
   directives: {
     SafeHtml,
   },
-  inject: ['groupPath', 'streamsIconSvgPath'],
+  inject: ['groupPath'],
   data() {
     return {
       externalAuditEventDestinations: null,
@@ -69,7 +75,10 @@ export default {
     },
     async onDeletedDestination() {
       await this.refreshDestinations();
-      this.successMessage = DELETE_STREAM_MESSAGE;
+
+      if (this.destinationsCount) {
+        this.successMessage = DELETE_STREAM_MESSAGE;
+      }
     },
   },
   apollo: {
@@ -99,10 +108,9 @@ export default {
     },
   },
   i18n: {
-    ACTIVE_STREAM,
     ADD_STREAM,
     FETCHING_ERROR,
-    STREAM_COUNT_ICON_ALT,
+    streamsLabel,
   },
 };
 </script>
@@ -114,44 +122,37 @@ export default {
     <gl-alert
       v-if="successMessage"
       :dismissible="true"
-      class="gl-mb-5"
+      class="gl-mb-4"
       variant="success"
       @dismiss="clearSuccessMessage"
     >
       {{ successMessage }}
     </gl-alert>
-    <div v-if="destinationsCount" class="gl-display-flex gl-align-items-center gl-pl-5 gl-py-3">
-      <img
-        :alt="$options.i18n.STREAM_COUNT_ICON_ALT"
-        :src="streamsIconSvgPath"
-        class="gl-mr-2 gl-h-5 gl-w-5"
-      />
-      <span class="gl-mr-4">{{ destinationsCount }}</span>
-      <gl-button
-        :aria-label="$options.i18n.ADD_STREAM"
-        icon="plus"
-        @click="setEditorVisibility(true)"
-      />
+    <div class="gl-display-flex gl-justify-content-space-between gl-align-items-center gl-mb-4">
+      <label class="gl-m-0">
+        <gl-icon name="live-stream" />
+        {{ $options.i18n.streamsLabel(destinationsCount) }}
+      </label>
+      <gl-button variant="confirm" @click="setEditorVisibility(true)">
+        {{ $options.i18n.ADD_STREAM }}
+      </gl-button>
     </div>
-    <div v-if="showEditor" class="gl-p-6 gl-border gl-rounded-base">
+    <div v-if="showEditor" class="gl-mb-4 gl-p-4 gl-border gl-rounded-base">
       <stream-destination-editor
         @added="onAddedDestination"
         @error="clearSuccessMessage"
         @cancel="setEditorVisibility(false)"
       />
     </div>
-    <div v-if="destinationsCount" class="gl-p-4">
-      <label class="gl-mb-3">{{ $options.i18n.ACTIVE_STREAM }}</label>
-      <ul class="content-list bordered-box gl-bg-white">
-        <stream-item
-          v-for="item in externalAuditEventDestinations"
-          :key="item.id"
-          :item="item"
-          @deleted="onDeletedDestination"
-          @updated="onUpdatedDestination"
-          @error="clearSuccessMessage"
-        />
-      </ul>
-    </div>
+    <ul class="content-list gl-border gl-rounded-base gl-bg-white">
+      <stream-item
+        v-for="item in externalAuditEventDestinations"
+        :key="item.id"
+        :item="item"
+        @deleted="onDeletedDestination"
+        @updated="onUpdatedDestination"
+        @error="clearSuccessMessage"
+      />
+    </ul>
   </div>
 </template>

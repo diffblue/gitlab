@@ -1,4 +1,4 @@
-import { s__, __ } from '~/locale';
+import { n__, s__, __ } from '~/locale';
 import { OPERATOR_IS_ONLY } from '~/vue_shared/components/filtered_search_bar/constants';
 import GroupToken from './components/tokens/group_token.vue';
 import MemberToken from './components/tokens/member_token.vue';
@@ -69,9 +69,9 @@ export const AUDIT_EVENTS_TAB_TITLES = {
   STREAM: s__('AuditStreams|Streams'),
 };
 
-export const ADD_STREAM = s__('AuditStreams|Add stream');
-export const ACTIVE_STREAM = s__('AuditStreams|Active');
-export const STREAM_COUNT_ICON_ALT = s__('AuditStreams|Stream count icon');
+export const streamsLabel = (count) =>
+  n__('AuditStreams|%d destination', 'AuditStreams|%d destinations', count);
+export const ADD_STREAM = s__('AuditStreams|Add streaming destination');
 export const ADD_STREAM_MESSAGE = s__('AuditStreams|Stream added successfully');
 export const UPDATE_STREAM_MESSAGE = s__('AuditStreams|Stream updated successfully');
 export const DELETE_STREAM_MESSAGE = s__('AuditStreams|Stream deleted successfully');
@@ -91,14 +91,18 @@ export const ADD_STREAM_EDITOR_I18N = {
   ),
   DESTINATION_URL_LABEL: s__('AuditStreams|Destination URL'),
   DESTINATION_URL_PLACEHOLDER: 'https://api.gitlab.com',
-  HEADERS_LABEL: s__('AuditStreams|Custom HTTP headers'),
+  HEADERS_LABEL: s__('AuditStreams|Custom HTTP headers (optional)'),
   TABLE_COLUMN_NAME_LABEL: s__('AuditStreams|Header'),
   TABLE_COLUMN_VALUE_LABEL: s__('AuditStreams|Value'),
   TABLE_COLUMN_ACTIVE_LABEL: s__('AuditStreams|Active'),
   HEADER_INPUT_PLACEHOLDER: s__('AuditStreams|Add a custom header'),
   HEADER_INPUT_DUPLICATE_ERROR: s__('AuditStreams|A header with this name already exists.'),
   VALUE_INPUT_PLACEHOLDER: s__('AuditStreams|Add a custom value'),
+  ADD_HEADER_ROW_BUTTON_TEXT: s__('AuditStreams|Add header'),
+  ADD_HEADER_ROW_BUTTON_NAME: s__('AuditStreams|Add another custom header'),
   MAXIMUM_HEADERS_TEXT: s__('AuditStreams|Maximum of %{number} HTTP headers has been reached.'),
+  REMOVE_BUTTON_LABEL: s__('AuditStreams|Remove custom header'),
+  REMOVE_BUTTON_TOOLTIP: __('Remove'),
   ADD_BUTTON_TEXT: __('Add'),
   ADD_BUTTON_NAME: s__('AuditStreams|Add external stream destination'),
   SAVE_BUTTON_TEXT: __('Save'),
@@ -137,6 +141,6 @@ export const createBlankHeader = () => ({
   value: '',
   active: true,
   disabled: false,
-  deletionDisabled: true,
+  deletionDisabled: false,
   validationErrors: { name: '' },
 });
