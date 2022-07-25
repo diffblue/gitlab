@@ -24,6 +24,8 @@ export default function init() {
     scannerProfilesLibraryPath,
     newScannerProfilePath,
     newSiteProfilePath,
+    scannerProfile,
+    siteProfile,
   } = el.dataset;
 
   return new Vue({
@@ -37,6 +39,8 @@ export default function init() {
       scannerProfilesLibraryPath,
       newScannerProfilePath,
       newSiteProfilePath,
+      scannerProfile,
+      siteProfile,
     },
     render(createElement) {
       return createElement(DastConfigurationApp);

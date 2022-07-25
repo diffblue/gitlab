@@ -36,6 +36,8 @@ export default {
     'projectPath',
     'siteProfilesLibraryPath',
     'scannerProfilesLibraryPath',
+    'scannerProfile',
+    'siteProfile',
   ],
   i18n: {
     dastConfigurationHeader: s__('DastConfig|DAST CI/CD configuration'),
@@ -95,6 +97,8 @@ export default {
       class="gl-mb-6"
       :full-path="projectPath"
       :scanner-profiles-library-path="scannerProfilesLibraryPath"
+      :saved-scanner-profile-name="scannerProfile"
+      :saved-site-profile-name="siteProfile"
       :site-profiles-library-path="siteProfilesLibraryPath"
       @error="showErrors"
       @profiles-selected="updateProfiles"

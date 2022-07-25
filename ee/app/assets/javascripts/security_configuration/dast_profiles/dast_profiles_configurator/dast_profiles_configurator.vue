@@ -87,6 +87,16 @@ export default {
       required: false,
       default: null,
     },
+    savedScannerProfileName: {
+      type: String,
+      required: false,
+      default: null,
+    },
+    savedSiteProfileName: {
+      type: String,
+      required: false,
+      default: null,
+    },
     fullPath: {
       type: String,
       required: false,
@@ -133,10 +143,14 @@ export default {
       return this.isScannerProfile ? this.savedScannerProfileId : this.savedSiteProfileId;
     },
     savedScannerProfileId() {
-      return this.savedProfiles?.dastScannerProfile.id;
+      return this.savedScannerProfileName
+        ? this.findSavedProfileId(this.scannerProfiles, this.savedScannerProfileName)
+        : this.savedProfiles?.dastScannerProfile.id;
     },
     savedSiteProfileId() {
-      return this.savedProfiles?.dastSiteProfile.id;
+      return this.savedSiteProfileName
+        ? this.findSavedProfileId(this.siteProfiles, this.savedSiteProfileName)
+        : this.savedProfiles?.dastSiteProfile.id;
     },
     selectedScannerProfile() {
       return this.selectedScannerProfileId
@@ -161,10 +175,22 @@ export default {
   watch: {
     selectedScannerProfile: 'updateProfiles',
     selectedSiteProfile: 'updateProfiles',
+    scannerProfiles(profiles) {
+      if (this.savedScannerProfileName) {
+        this.selectedScannerProfileId = this.findSavedProfileId(
+          profiles,
+          this.savedScannerProfileName,
+        );
+      }
+    },
+    siteProfiles(profiles) {
+      if (this.savedSiteProfileName) {
+        this.selectedSiteProfileId = this.findSavedProfileId(profiles, this.savedSiteProfileName);
+      }
+    },
   },
   created() {
     const params = queryToObject(window.location.search, { legacySpacesDecode: true });
-
     this.selectedSiteProfileId = params.site_profile_id
       ? convertToGraphQLId(TYPE_SITE_PROFILE, params.site_profile_id)
       : this.selectedSiteProfileId;
@@ -173,6 +199,9 @@ export default {
       : this.selectedScannerProfileId;
   },
   methods: {
+    findSavedProfileId(profiles, name) {
+      return profiles.find(({ profileName }) => name === profileName)?.id || null;
+    },
     enableEditingMode(type) {
       this.selectActiveProfile(type);
       this.openProfileDrawer({ profileType: type, mode: SIDEBAR_VIEW_MODE.EDITING_MODE });

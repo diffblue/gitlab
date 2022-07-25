@@ -21,6 +21,8 @@ const gitlabCiYamlEditPath = '/ci/editor';
 const projectPath = '/project/path';
 const siteProfilesLibraryPath = 'siteProfilesLibraryPath';
 const scannerProfilesLibraryPath = 'scannerProfilesLibraryPath';
+const savedScannerProfile = 'scannerProfile';
+const savedSiteProfile = 'siteProfile';
 
 const selectedScannerProfileName = 'My Scan profile';
 const selectedSiteProfileName = 'My site profile';
@@ -80,6 +82,8 @@ describe('EE - DAST Configuration Form', () => {
               scannerProfilesLibraryPath,
               siteProfilesLibraryPath,
               projectPath,
+              scannerProfile: savedScannerProfile,
+              siteProfile: savedSiteProfile,
               ...glFeatures,
             },
             stubs: {
