@@ -1,6 +1,6 @@
 import $ from 'jquery';
 import '~/lib/utils/jquery_at_who';
-import GfmAutoComplete from '~/gfm_auto_complete';
+import GfmAutoComplete, { showAndHideHelper } from '~/gfm_auto_complete';
 
 /**
  * This is added to keep the export parity with the CE counterpart.
@@ -9,6 +9,9 @@ import GfmAutoComplete from '~/gfm_auto_complete';
  * which will be undefined if not exported from here in EE.
  */
 export { defaultAutocompleteConfig, membersBeforeSave, highlighter } from '~/gfm_auto_complete';
+
+const EPICS_ALIAS = 'epics';
+const VULNERABILITIES_ALIAS = 'vulnerabilities';
 
 class GfmAutoCompleteEE extends GfmAutoComplete {
   setupAtWho($input) {
@@ -26,7 +29,7 @@ class GfmAutoCompleteEE extends GfmAutoComplete {
   setupAutoCompleteEpics = ($input, defaultCallbacks) => {
     $input.atwho({
       at: '&',
-      alias: 'epics',
+      alias: EPICS_ALIAS,
       searchKey: 'search',
       displayTpl(value) {
         let tmpl = GfmAutoComplete.Loading.template;
@@ -55,13 +58,14 @@ class GfmAutoCompleteEE extends GfmAutoComplete {
         },
       },
     });
+    showAndHideHelper($input, EPICS_ALIAS);
   };
 
   setupAutoCompleteVulnerabilities = ($input, defaultCallbacks) => {
     $input.atwho({
       at: '[vulnerability:',
       suffix: ']',
-      alias: 'vulnerabilities',
+      alias: VULNERABILITIES_ALIAS,
       searchKey: 'search',
       displayTpl(value) {
         let tmpl = GfmAutoComplete.Loading.template;
@@ -90,6 +94,7 @@ class GfmAutoCompleteEE extends GfmAutoComplete {
         },
       },
     });
+    showAndHideHelper($input, VULNERABILITIES_ALIAS);
   };
 }
 
