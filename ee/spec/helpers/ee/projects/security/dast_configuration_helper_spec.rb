@@ -81,7 +81,7 @@ RSpec.describe Projects::Security::DastConfigurationHelper do
             project: project,
             ref: project.default_branch,
             sha: project.commit.sha,
-            started_at: Time.now
+            created_at: Time.now
           )
         end
 
@@ -107,7 +107,7 @@ RSpec.describe Projects::Security::DastConfigurationHelper do
               new_site_profile_path: new_site_profile_path,
               dast_enabled: true,
               pipeline_id: pipeline.id,
-              pipeline_started_at: pipeline.started_at,
+              pipeline_created_at: pipeline.created_at,
               pipeline_path: project_pipeline_path(project, pipeline)
             })
           }

@@ -48,7 +48,7 @@ module Projects::Security::DastConfigurationHelper
       pipeline_data.merge!(
         {
           pipeline_id: latest_pipeline.id,
-          pipeline_started_at: latest_pipeline.started_at,
+          pipeline_created_at: latest_pipeline.created_at,
           pipeline_path: project_pipeline_path(project, latest_pipeline)
         }
       )
