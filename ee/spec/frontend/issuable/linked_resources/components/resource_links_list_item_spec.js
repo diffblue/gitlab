@@ -1,4 +1,5 @@
 import { GlButton } from '@gitlab/ui';
+import { nextTick } from 'vue';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import ResourceLinkItem from 'ee/linked_resources/components/resource_links_list_item.vue';
 import { mockResourceLinks } from './mock_data';
@@ -31,6 +32,16 @@ describe('ResourceLinkItem', () => {
       mountComponent(false);
 
       expect(findRemoveButton().exists()).toBe(false);
+    });
+
+    it('triggers a delete event when the delete button is clicked', async () => {
+      mountComponent();
+
+      findRemoveButton().trigger('click');
+
+      await nextTick();
+
+      expect(wrapper.emitted().removeRequest).toBeTruthy();
     });
   });
 });

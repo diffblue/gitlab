@@ -6,11 +6,19 @@ import waitForPromises from 'helpers/wait_for_promises';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import ResourceLinksBlock from 'ee/linked_resources/components/resource_links_block.vue';
 import ResourceLinksList from 'ee/linked_resources/components/resource_links_list.vue';
+import ResourceLinkItem from 'ee/linked_resources/components/resource_links_list_item.vue';
 import AddIssuableResourceLinkForm from 'ee/linked_resources/components/add_issuable_resource_link_form.vue';
 import getIssuableResourceLinks from 'ee/linked_resources/components/graphql/queries/get_issuable_resource_links.query.graphql';
+import deleteIssuableResourceLink from 'ee/linked_resources/components/graphql/queries/delete_issuable_resource_link.mutation.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { createAlert } from '~/flash';
-import { resourceLinksListResponse, resourceLinksEmptyResponse } from './mock_data';
+import {
+  mockResourceLinks,
+  resourceLinksListResponse,
+  resourceLinksEmptyResponse,
+  resourceLinksDeleteEventResponse,
+  resourceLinkDeleteEventError,
+} from './mock_data';
 
 Vue.use(VueApollo);
 
@@ -20,9 +28,16 @@ const grapqhQlError = new Error('GraphQL Error');
 const listResponse = jest.fn().mockResolvedValue(resourceLinksListResponse);
 const emptyResponse = jest.fn().mockResolvedValue(resourceLinksEmptyResponse);
 const errorResponse = jest.fn().mockRejectedValue(grapqhQlError);
+const deleteResponse = jest.fn();
 
 function createMockApolloProvider(response = emptyResponse) {
   const requestHandlers = [[getIssuableResourceLinks, response]];
+  return createMockApollo(requestHandlers);
+}
+
+function createMockApolloDeleteProvider() {
+  deleteResponse.mockResolvedValue(resourceLinksDeleteEventResponse);
+  const requestHandlers = [[deleteIssuableResourceLink, deleteResponse]];
   return createMockApollo(requestHandlers);
 }
 
@@ -35,8 +50,15 @@ describe('ResourceLinksBlock', () => {
   const issuableId = 1;
   const findLoadingSpinner = () => wrapper.findComponent(GlLoadingIcon);
   const findResourceLinksList = () => wrapper.findComponent(ResourceLinksList);
+  const findAllResourceLinks = () => wrapper.findAllComponents(ResourceLinkItem);
 
-  const mountComponent = (mockApollo = createMockApolloProvider()) => {
+  const clickFirstDeleteButton = async () => {
+    findAllResourceLinks().at(0).vm.$emit('removeRequest', mockResourceLinks[0].id);
+
+    await waitForPromises();
+  };
+
+  const mountComponent = (mockApollo = createMockApolloProvider(), resourceLinks = []) => {
     wrapper = mountExtended(ResourceLinksBlock, {
       propsData: {
         issuableId,
@@ -46,14 +68,15 @@ describe('ResourceLinksBlock', () => {
       apolloProvider: mockApollo,
       data() {
         return {
+          resourceLinks,
           isFormVisible: false,
-          resourceLinks: [],
         };
       },
     });
 
     afterEach(() => {
       if (wrapper) {
+        deleteResponse.mockReset();
         wrapper.destroy();
       }
     });
@@ -172,6 +195,50 @@ describe('ResourceLinksBlock', () => {
       expect(findResourceLinksList().exists()).toBe(true);
       expect(wrapper.vm.badgeLabel).toBe(3);
       expect(findResourceLinksList().props('resourceLinks')).toHaveLength(3);
+    });
+  });
+
+  describe('delete mutation', () => {
+    it('should delete when button is clicked and update list', async () => {
+      const expectedVars = { input: { id: mockResourceLinks[0].id } };
+
+      mountComponent(createMockApolloDeleteProvider(), mockResourceLinks);
+
+      await clickFirstDeleteButton();
+
+      expect(deleteResponse).toHaveBeenCalledWith(expectedVars);
+      expect(findAllResourceLinks().length).toBe(2);
+    });
+
+    it('should show an error when delete returns an error', async () => {
+      const expectedError = {
+        message: 'Error deleting the linked resource for the incident: Item does not exist',
+        captureError: false,
+        error: null,
+      };
+
+      mountComponent(createMockApolloDeleteProvider(), mockResourceLinks);
+      deleteResponse.mockResolvedValue(resourceLinkDeleteEventError);
+
+      await clickFirstDeleteButton();
+
+      expect(createAlert).toHaveBeenCalledWith(expectedError);
+    });
+
+    it('should show an error when delete fails', async () => {
+      const expectedError = {
+        message: 'Something went wrong while deleting the linked resource for the incident.',
+        error: new Error(),
+        captureError: true,
+      };
+
+      mountComponent(createMockApolloDeleteProvider(), mockResourceLinks);
+      deleteResponse.mockRejectedValueOnce();
+
+      await clickFirstDeleteButton();
+
+      expect(createAlert).toHaveBeenCalledWith(expectedError);
+      expect(findAllResourceLinks().length).toBe(3);
     });
   });
 });

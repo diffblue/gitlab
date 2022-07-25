@@ -16,6 +16,11 @@ export default {
     GlTooltip: GlTooltipDirective,
   },
   props: {
+    idKey: {
+      type: String,
+      required: false,
+      default: '',
+    },
     iconName: {
       type: String,
       required: false,
@@ -37,6 +42,11 @@ export default {
       default: false,
     },
   },
+  data() {
+    return {
+      isRemoveDisabled: false,
+    };
+  },
   computed: {
     iconClasses() {
       return `ic-${this.iconName}`;
@@ -44,6 +54,10 @@ export default {
   },
   methods: {
     getLinkIcon,
+    handleRemove() {
+      this.isRemoveDisabled = true;
+      this.$emit('removeRequest', this.idKey);
+    },
   },
 };
 </script>
@@ -70,9 +84,11 @@ export default {
       v-gl-tooltip
       icon="close"
       category="tertiary"
+      :disabled="isRemoveDisabled"
       class="gl-ml-3"
       :title="$options.i18n.linkRemoveText"
       :aria-label="$options.i18n.linkRemoveText"
+      @click="handleRemove"
     />
   </div>
 </template>

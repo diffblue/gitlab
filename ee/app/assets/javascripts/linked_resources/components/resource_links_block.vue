@@ -2,9 +2,12 @@
 import { GlLink, GlIcon, GlButton, GlLoadingIcon } from '@gitlab/ui';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { TYPE_ISSUE } from '~/graphql_shared/constants';
+import { createAlert } from '~/flash';
+import { sprintf } from '~/locale';
 import { resourceLinksI18n } from '../constants';
 import { displayAndLogError } from './utils';
 import getIssuableResourceLinks from './graphql/queries/get_issuable_resource_links.query.graphql';
+import deleteIssuableRsourceLink from './graphql/queries/delete_issuable_resource_link.mutation.graphql';
 import AddIssuableResourceLinkForm from './add_issuable_resource_link_form.vue';
 import ResourceLinksList from './resource_links_list.vue';
 
@@ -79,6 +82,43 @@ export default {
     hideResourceLinkForm() {
       this.isFormVisible = false;
     },
+    async onResourceLinkRemoveRequest(linkToRemove) {
+      try {
+        const result = await this.$apollo.mutate({
+          mutation: deleteIssuableRsourceLink,
+          variables: {
+            input: {
+              id: linkToRemove,
+            },
+          },
+          update: () => {
+            this.resourceLinks = this.resourceLinks.filter((link) => link.id !== linkToRemove);
+          },
+        });
+        const { errors } = result.data.issuableResourceLinkDestroy;
+        if (errors?.length) {
+          const errorMessage = sprintf(this.$options.i18n.deleteError, {
+            error: errors.join('. '),
+          });
+          throw new Error(errorMessage);
+        }
+      } catch (error) {
+        const message = error.message || this.$options.i18n.deleteErrorGeneric;
+        let captureError = false;
+        let errorObj = null;
+
+        if (message === this.$options.i18n.deleteErrorGeneric) {
+          captureError = true;
+          errorObj = error;
+        }
+
+        createAlert({
+          message,
+          captureError,
+          error: errorObj,
+        });
+      }
+    },
   },
 };
 </script>
@@ -151,6 +191,7 @@ export default {
             :can-admin="canAddResourceLinks"
             :resource-links="resourceLinks"
             :is-form-visible="isFormVisible"
+            @resourceLinkRemoveRequest="onResourceLinkRemoveRequest"
           />
         </template>
       </div>
