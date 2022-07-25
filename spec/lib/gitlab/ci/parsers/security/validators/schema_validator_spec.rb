@@ -28,7 +28,7 @@ RSpec.describe Gitlab::Ci::Parsers::Security::Validators::SchemaValidator do
       expect(described_class::SUPPORTED_VERSIONS.keys).to eq(described_class::DEPRECATED_VERSIONS.keys)
     end
 
-    context 'files under schema path are explicitly listed' do
+    context 'when all files under schema path are explicitly listed' do
       # We only care about the part that comes before report-format.json
       # https://rubular.com/r/N8Juz7r8hYDYgD
       filename_regex = /(?<report_type>[-\w]*)\-report-format.json/
@@ -49,7 +49,7 @@ RSpec.describe Gitlab::Ci::Parsers::Security::Validators::SchemaValidator do
       end
     end
 
-    context 'every SUPPORTED_VERSION has a corresponding JSON file' do
+    context 'when every SUPPORTED_VERSION has a corresponding JSON file' do
       described_class::SUPPORTED_VERSIONS.each_key do |report_type|
         # api_fuzzing is covered by DAST schema
         next if report_type == :api_fuzzing
