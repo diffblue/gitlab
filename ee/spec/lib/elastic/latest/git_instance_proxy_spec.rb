@@ -79,6 +79,34 @@ RSpec.describe Elastic::Latest::GitInstanceProxy do
     end
   end
 
+  describe '#blob_aggregations' do
+    let(:options) do
+      {
+        project_ids: [project.id],
+        public_and_internal_projects: false,
+        order_by: nil,
+        sort: nil
+      }
+    end
+
+    it 'provides repository_id if not provided' do
+      expected_params = options.deep_dup
+      expected_params[:repository_id] = project.id
+
+      expect(subject.class).to receive(:blob_aggregations).with('foo', expected_params)
+
+      subject.blob_aggregations('foo', **options)
+    end
+
+    it 'uses provided repository_id' do
+      options[:repository_id] = 42
+
+      expect(subject.class).to receive(:blob_aggregations).with('foo', options)
+
+      subject.blob_aggregations('foo', **options)
+    end
+  end
+
   describe '#delete_index_for_commits_and_blobs' do
     let(:write_targets) { [double(:write_target_1), double(:write_target_2)] }
     let(:read_target) { double(:read_target) }

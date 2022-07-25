@@ -104,12 +104,6 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic do
         it_behaves_like 'does not load aggregations'
       end
     end
-
-    context 'when search has not been run' do
-      let(:scope) { 'blobs' }
-
-      it { is_expected.to be_nil }
-    end
   end
 
   shared_examples_for 'a paginated object' do |object_type|
