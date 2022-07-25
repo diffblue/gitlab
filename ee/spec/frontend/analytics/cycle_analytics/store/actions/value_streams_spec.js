@@ -383,6 +383,26 @@ describe('Value Stream Analytics actions / value streams', () => {
         );
       });
     });
+
+    describe('with no selectedValueStream and no data returned', () => {
+      it(`commits the ${types.RECEIVE_VALUE_STREAMS_SUCCESS} mutation`, () => {
+        return testAction(
+          actions.receiveValueStreamsSuccess,
+          [],
+          {
+            ...state,
+            selectedValueStream: null,
+          },
+          [
+            {
+              type: types.RECEIVE_VALUE_STREAMS_SUCCESS,
+              payload: [],
+            },
+          ],
+          [],
+        );
+      });
+    });
   });
 
   describe('fetchValueStreamData', () => {
