@@ -28,6 +28,7 @@ function withDefaultEmptyRule(rules = []) {
       groups: [],
       ruleType: RULE_TYPE_ANY_APPROVER,
       protectedBranches: [],
+      appliesToAllProtectedBranches: false,
       overridden: false,
     },
   ];

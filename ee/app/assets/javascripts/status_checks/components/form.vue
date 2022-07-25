@@ -5,12 +5,8 @@ import { isEqual, isNumber } from 'lodash';
 import ProtectedBranchesSelector from 'ee/vue_shared/components/branches_selector/protected_branches_selector.vue';
 import { isSafeURL } from '~/lib/utils/url_utility';
 import { __, s__ } from '~/locale';
-import {
-  ALL_BRANCHES,
-  EMPTY_STATUS_CHECK,
-  NAME_TAKEN_SERVER_ERROR,
-  URL_TAKEN_SERVER_ERROR,
-} from '../constants';
+import { ALL_BRANCHES } from 'ee/vue_shared/components/branches_selector/constants';
+import { EMPTY_STATUS_CHECK, NAME_TAKEN_SERVER_ERROR, URL_TAKEN_SERVER_ERROR } from '../constants';
 
 export default {
   components: {

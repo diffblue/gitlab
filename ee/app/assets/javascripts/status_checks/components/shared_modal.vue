@@ -2,6 +2,7 @@
 import { GlModal, GlModalDirective } from '@gitlab/ui';
 import { mapState } from 'vuex';
 import { __ } from '~/locale';
+import { ALL_BRANCHES } from 'ee/vue_shared/components/branches_selector/constants';
 import { modalPrimaryActionProps } from '../utils';
 import StatusCheckForm from './form.vue';
 
@@ -62,7 +63,7 @@ export default {
           externalUrl: url,
           id: this.statusCheck?.id,
           name,
-          protectedBranchIds: branches.map(({ id }) => id),
+          protectedBranchIds: branches.map((x) => x.id).filter((x) => x !== ALL_BRANCHES.id),
         });
 
         this.$refs.modal.hide();

@@ -6,6 +6,9 @@ import ProtectedBranchesSelector from 'ee/vue_shared/components/branches_selecto
 import { sprintf } from '~/locale';
 import {
   ALL_BRANCHES,
+  ALL_PROTECTED_BRANCHES,
+} from 'ee/vue_shared/components/branches_selector/constants';
+import {
   TYPE_USER,
   TYPE_GROUP,
   TYPE_HIDDEN_GROUPS,
@@ -127,7 +130,12 @@ export default {
     invalidBranches() {
       if (
         !this.isMrEdit &&
-        !this.branches.every((branch) => isEqual(branch, ALL_BRANCHES) || isNumber(branch?.id))
+        !this.branches.every(
+          (branch) =>
+            isEqual(branch, ALL_BRANCHES) ||
+            isEqual(branch, ALL_PROTECTED_BRANCHES) ||
+            isNumber(branch?.id),
+        )
       ) {
         return APPROVAL_DIALOG_I18N.validations.branchesRequired;
       }
@@ -180,16 +188,24 @@ export default {
       return this.containsHiddenGroups && !this.approversByType[TYPE_HIDDEN_GROUPS];
     },
     submissionData() {
+      const appliesToAllProtectedBranches = this.branches.some(
+        (x) => x.id === ALL_PROTECTED_BRANCHES.id,
+      );
+      const protectedBranchIds = this.branches
+        .map((x) => x.id)
+        .filter((x) => x !== ALL_BRANCHES.id && x !== ALL_PROTECTED_BRANCHES.id);
+
       return {
         id: this.initRule && this.initRule.id,
         name: this.settings.lockedApprovalsRuleName || this.name || DEFAULT_NAME,
+        appliesToAllProtectedBranches,
         approvalsRequired: this.approvalsRequired,
         users: this.userIds,
         groups: this.groupIds,
         userRecords: this.users,
         groupRecords: this.groups,
         removeHiddenGroups: this.removeHiddenGroups,
-        protectedBranchIds: this.branches.map((x) => x.id),
+        protectedBranchIds,
       };
     },
     isEditing() {
@@ -297,7 +313,17 @@ export default {
 
       const users = this.initRule.users.map((x) => ({ ...x, type: TYPE_USER }));
       const groups = this.initRule.groups.map((x) => ({ ...x, type: TYPE_GROUP }));
-      const branches = this.initRule.protectedBranches || [];
+      const branches = [];
+
+      if (this.initRule.appliesToAllProtectedBranches) {
+        branches.push(ALL_PROTECTED_BRANCHES);
+      } else if (this.initRule.protectedBranches?.length > 0) {
+        branches.push(...this.initRule.protectedBranches);
+      }
+
+      if (!branches.length) {
+        branches.push(ALL_BRANCHES);
+      }
 
       return {
         name: this.initRule.name || '',
@@ -347,6 +373,7 @@ export default {
         v-model="branchesToAdd"
         :project-id="settings.projectId"
         :is-invalid="!isValidBranches"
+        :allow-all-protected-branches-option="settings.allowAllProtectedBranchesOption"
         :selected-branches="branches"
       />
     </gl-form-group>

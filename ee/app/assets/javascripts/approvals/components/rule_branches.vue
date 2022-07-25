@@ -1,5 +1,8 @@
 <script>
-import { __ } from '~/locale';
+import {
+  ALL_BRANCHES,
+  ALL_PROTECTED_BRANCHES,
+} from 'ee/vue_shared/components/branches_selector/constants';
 
 export default {
   props: {
@@ -10,17 +13,22 @@ export default {
   },
   computed: {
     branchName() {
-      const { protectedBranches } = this.rule;
+      const { protectedBranches, appliesToAllProtectedBranches } = this.rule;
       const [protectedBranch] = protectedBranches || [];
-      return protectedBranch?.name || __('All branches');
+
+      if (appliesToAllProtectedBranches) {
+        return ALL_PROTECTED_BRANCHES.name;
+      }
+
+      return protectedBranch?.name || ALL_BRANCHES.name;
     },
-    isAllBranches() {
-      return !this.rule.protectedBranches?.length;
+    shouldUseMonospace() {
+      return this.rule.protectedBranches?.length > 0 && !this.rule.appliesToAllProtectedBranches;
     },
   },
 };
 </script>
 
 <template>
-  <div :class="{ monospace: !isAllBranches }">{{ branchName }}</div>
+  <div :class="{ monospace: shouldUseMonospace }">{{ branchName }}</div>
 </template>

@@ -32,6 +32,7 @@ export default function mountProjectSettingsApprovals(el) {
   const store = createStore(modules, {
     ...el.dataset,
     prefix: 'project-settings',
+    allowAllProtectedBranchesOption: parseBoolean(el.dataset.allowAllProtectedBranchesOption),
     allowMultiRule: parseBoolean(el.dataset.allowMultiRule),
     canEdit: parseBoolean(el.dataset.canEdit),
     canModifyAuthorSettings: parseBoolean(el.dataset.canModifyAuthorSettings),
