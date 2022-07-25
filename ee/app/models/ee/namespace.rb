@@ -89,8 +89,6 @@ module EE
         to: :namespace_limit, allow_nil: true
 
       delegate :email, to: :owner, allow_nil: true, prefix: true
-      delegate :exclude_from_free_user_cap?, to: :namespace_settings, allow_nil: true # rubocop:disable Gitlab/DelegatePredicateMethods
-      delegate :include_for_free_user_cap_preview?, to: :namespace_settings, allow_nil: true # rubocop:disable Gitlab/DelegatePredicateMethods
 
       # Opportunistically clear the +file_template_project_id+ if invalid
       before_validation :clear_file_template_project_id

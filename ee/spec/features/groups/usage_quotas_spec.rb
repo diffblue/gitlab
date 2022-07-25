@@ -319,8 +319,6 @@ RSpec.describe 'Groups > Usage Quotas' do
 
     before do
       stub_feature_flags(preview_free_user_cap: preview_free_user_cap, free_user_cap: free_user_cap)
-      group.namespace_settings.update_column(:include_for_free_user_cap_preview, preview_free_user_cap)
-
       stub_application_setting(check_namespace_plan: true)
       allow_next_instance_of(GitlabSubscriptions::FetchSubscriptionPlansService) do |instance|
         allow(instance).to receive(:execute).and_return([{ 'code' => 'ultimate', 'id' => 'ultimate-plan-id' }])

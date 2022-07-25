@@ -701,16 +701,6 @@ RSpec.describe GitlabSubscription, :saas do
             end.to change { namespace_settings.prevent_sharing_groups_outside_hierarchy }.from(true).to(false)
           end
 
-          context 'when exclude_from_free_user_cap set to true' do
-            before do
-              namespace.namespace_settings.update_column(:exclude_from_free_user_cap, true)
-            end
-
-            it 'does not prevent sharing outside hierarchy' do
-              expect(namespace_settings).not_to be_prevent_sharing_groups_outside_hierarchy
-            end
-          end
-
           context 'with :free_user_cap feature flag disabled' do
             before do
               stub_feature_flags(free_user_cap: false)
