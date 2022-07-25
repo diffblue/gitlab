@@ -238,34 +238,25 @@ RSpec.describe ApplicationSetting do
       end
     end
 
-    def many_usernames(num = 100)
-      Array.new(num) { |i| "user#{i}" }
-    end
+    describe 'git abuse rate limit validations' do
+      it { is_expected.to validate_numericality_of(:max_number_of_repository_downloads).is_greater_than_or_equal_to(0).is_less_than_or_equal_to(10_000) }
+      it { is_expected.to validate_numericality_of(:max_number_of_repository_downloads_within_time_period).is_greater_than_or_equal_to(0).is_less_than_or_equal_to(10.days.to_i) }
 
-    context 'git abuse rate limit validations' do
-      context 'number of repositories' do
-        it { is_expected.to validate_numericality_of(:max_number_of_repository_downloads).is_greater_than_or_equal_to(0).is_less_than_or_equal_to(10_000) }
-      end
+      describe 'git_rate_limit_users_allowlist' do
+        let_it_be(:user) { create(:user) }
 
-      context 'reporting time period' do
-        it { is_expected.to validate_numericality_of(:max_number_of_repository_downloads_within_time_period).is_greater_than_or_equal_to(0).is_less_than_or_equal_to(10.days.to_i) }
-      end
-
-      context 'users allowlist' do
-        before do
-          101.times { |i| create(:user, username: "user#{i}") }
-        end
-
-        it { is_expected.to allow_value(many_usernames(100)).for(:git_rate_limit_users_allowlist) }
-        it { is_expected.not_to allow_value(many_usernames(101)).for(:git_rate_limit_users_allowlist) }
-        it { is_expected.not_to allow_value(nil).for(:git_rate_limit_users_allowlist) }
         it { is_expected.to allow_value([]).for(:git_rate_limit_users_allowlist) }
+        it { is_expected.to allow_value([user.username]).for(:git_rate_limit_users_allowlist) }
+        it { is_expected.not_to allow_value(nil).for(:git_rate_limit_users_allowlist) }
+        it { is_expected.not_to allow_value(['unknown_user']).for(:git_rate_limit_users_allowlist) }
 
-        it 'rejects users that do not exist' do
-          setting.git_rate_limit_users_allowlist = %w[unknown_user]
+        context 'when maximum length is exceeded' do
+          it 'is not valid' do
+            subject.git_rate_limit_users_allowlist = Array.new(101) { |i| "user#{i}" }
 
-          expect(setting).not_to be_valid
-          expect(setting.errors[:git_rate_limit_users_allowlist]).to include("should be an array of existing usernames. unknown_user does not exist")
+            expect(subject).not_to be_valid
+            expect(subject.errors[:git_rate_limit_users_allowlist]).to include("exceeds maximum length (100 usernames)")
+          end
         end
       end
     end
