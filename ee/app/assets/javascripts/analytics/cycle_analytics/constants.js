@@ -7,6 +7,7 @@ export const EVENTS_LIST_ITEM_LIMIT = 50;
 
 export const TASKS_BY_TYPE_SUBJECT_ISSUE = 'Issue';
 export const TASKS_BY_TYPE_SUBJECT_MERGE_REQUEST = 'MergeRequest';
+export const TASKS_BY_TYPE_MAX_LABELS = 15;
 
 export const TASKS_BY_TYPE_SUBJECT_FILTER_OPTIONS = {
   [TASKS_BY_TYPE_SUBJECT_ISSUE]: __('Issues'),
