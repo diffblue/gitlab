@@ -39,7 +39,7 @@ RSpec.shared_examples_for 'over the free user limit alert' do
     end
 
     let(:alert_title_content) do
-      'From June 22, 2022 (GitLab 15.1), free personal namespaces and top-level groups will be limited to'
+      'From October 19, 2022, free personal namespaces and top-level groups will be limited to'
     end
 
     it_behaves_like 'performs entire show dismiss cycle'
@@ -94,7 +94,7 @@ RSpec.shared_examples_for 'user namespace over the free user limit alert' do
     end
 
     let(:alert_title_content) do
-      'From June 22, 2022 (GitLab 15.1), you can have a maximum'
+      'From October 19, 2022, you can have a maximum'
     end
 
     it_behaves_like 'performs entire user namespace show dismiss cycle'
