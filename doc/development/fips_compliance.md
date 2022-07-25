@@ -327,7 +327,7 @@ See [this issue](https://gitlab.com/gitlab-org/charts/gitlab/-/issues/3153#note_
 how to build NGINX and the Ingress Controller.
 
 You can also use release tags, but the versioning is tricky because each
-component may use its own versioning scheme. For example, for GitLab v15.1:
+component may use its own versioning scheme. For example, for GitLab v15.2:
 
 ```yaml
 global:
