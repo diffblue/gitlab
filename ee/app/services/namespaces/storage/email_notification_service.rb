@@ -40,11 +40,11 @@ module Namespaces
         owner_emails = namespace.owners.map(&:email)
 
         if level == :exceeded
-          mailer.notify_out_of_storage(namespace, owner_emails)
+          mailer.notify_out_of_storage(namespace, owner_emails).deliver_later
         else
           percentage = root_storage_size.remaining_storage_percentage
           size = root_storage_size.remaining_storage_size
-          mailer.notify_limit_warning(namespace, owner_emails, percentage, size)
+          mailer.notify_limit_warning(namespace, owner_emails, percentage, size).deliver_later
         end
       end
 

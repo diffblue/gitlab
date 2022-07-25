@@ -10,6 +10,7 @@ RSpec.describe Namespaces::RootStatisticsWorker, '#perform', :saas do
   let_it_be(:owner) { create(:user) }
 
   let(:mailer) { class_double(::Emails::NamespaceStorageUsageMailer).as_stubbed_const }
+  let(:action_mailer) { instance_double(ActionMailer::MessageDelivery) }
 
   subject(:worker) { described_class.new }
 
@@ -28,6 +29,8 @@ RSpec.describe Namespaces::RootStatisticsWorker, '#perform', :saas do
         project.statistics.update!(repository_size: 9.megabytes)
 
         expect(mailer).to receive(:notify_limit_warning).with(group, [owner.email], 10, 1.megabyte)
+          .and_return(action_mailer)
+        expect(action_mailer).to receive(:deliver_later)
 
         worker.perform(group.id)
       end
