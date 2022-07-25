@@ -2,7 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::BackgroundMigration::PopulateLatestPipelineIds, :migration, schema: 20220326161803 do
+RSpec.describe Gitlab::BackgroundMigration::PopulateLatestPipelineIds, :migration,
+               :suppress_gitlab_schemas_validate_connection, schema: 20220326161803 do
   let(:migrator) { described_class.new }
 
   let(:namespaces) { table(:namespaces) }

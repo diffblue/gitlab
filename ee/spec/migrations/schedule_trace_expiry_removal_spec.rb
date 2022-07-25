@@ -3,7 +3,7 @@
 require 'spec_helper'
 require_migration!
 
-RSpec.describe ScheduleTraceExpiryRemoval do
+RSpec.describe ScheduleTraceExpiryRemoval, :suppress_gitlab_schemas_validate_connection do
   let(:scheduling_migration) { described_class.new }
   let(:background_migration) { described_class::MIGRATION }
   let(:matching_row_attrs)   { { created_at: Date.new(2020, 06, 20), expire_at: Date.new(2022, 01, 22), project_id: 1, file_type: 3 } }
