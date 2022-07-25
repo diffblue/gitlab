@@ -4,20 +4,17 @@ module WorkItems
   module Widgets
     module WeightService
       class UpdateService < WorkItems::Widgets::BaseService
-        def update(params: {})
+        def before_update_callback(params: {})
           return unless params.present? && params.key?(:weight)
+          return unless weight_available? && has_permission?(:admin_work_item)
 
-          weight = params.delete(:weight)
-
-          return unless weight_available? && can_admin_work_item?
-
-          widget.work_item.weight = weight
+          work_item.weight = params[:weight]
         end
 
         private
 
         def weight_available?
-          widget.work_item.weight_available?
+          work_item.weight_available?
         end
       end
     end
