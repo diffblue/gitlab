@@ -64,6 +64,8 @@ module Projects
       local_branches = repository.branches.index_by(&:name)
 
       errors = []
+      branches_to_create = {}
+      bulk_creation = Feature.enabled?(:pull_mirror_bulk_branches, project)
 
       repository.upstream_branches.each do |upstream_branch|
         name = upstream_branch.name
@@ -73,10 +75,16 @@ module Projects
         local_branch = local_branches[name]
 
         if local_branch.nil?
-          result = ::Branches::CreateService.new(project, current_user).execute(name, upstream_branch.dereferenced_target.sha, create_default_branch_if_empty: false)
-          if result[:status] == :error
-            errors << result[:message]
+          if bulk_creation
+            branches_to_create[name] = upstream_branch.dereferenced_target.sha
+          else
+            result = ::Branches::CreateService.new(project, current_user).execute(name, upstream_branch.dereferenced_target.sha, create_default_branch_if_empty: false)
+
+            if result[:status] == :error
+              errors << result[:message]
+            end
           end
+
         elsif local_branch.dereferenced_target == upstream_branch.dereferenced_target
           # Already up to date
         elsif repository.diverged_from_upstream?(name)
@@ -87,6 +95,13 @@ module Projects
           rescue Gitlab::Git::PreReceiveError, Gitlab::Git::CommitError => e
             errors << e.message
           end
+        end
+      end
+
+      if bulk_creation
+        result = ::Branches::CreateService.new(project, current_user).bulk_create(branches_to_create)
+        if result[:status] == :error
+          errors << result[:message]
         end
       end
 
