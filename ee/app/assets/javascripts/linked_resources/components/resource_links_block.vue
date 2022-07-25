@@ -100,10 +100,10 @@ export default {
           const errorMessage = sprintf(this.$options.i18n.deleteError, {
             error: errors.join('. '),
           });
-          throw new Error(errorMessage, { captureError: false });
+          throw new Error(errorMessage);
         }
       } catch (error) {
-        const message = error.message ? error.message : this.$options.i18n.deleteErrorGeneric;
+        const message = error.message || this.$options.i18n.deleteErrorGeneric;
         let captureError = false;
         let errorObj = null;
 
