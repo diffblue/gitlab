@@ -25,6 +25,10 @@ module Groups
         render :index, locals: { group: group }
       end
 
+      def schema
+        render json: ::Security::OrchestrationPolicyConfiguration::POLICY_SCHEMA.as_json['root']
+      end
+
       private
 
       def policy_configuration_invalid_component_and_message
