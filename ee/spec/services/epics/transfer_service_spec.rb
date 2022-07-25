@@ -17,8 +17,10 @@ RSpec.describe Epics::TransferService do
     context 'when old_group is present' do
       let_it_be(:project) { create(:project, namespace: old_group) }
       let_it_be(:epic) { create(:epic, group: old_group, title: 'Epic 1')}
+      let_it_be(:other_epic) { create(:epic, group: old_group, title: 'Epic 2')}
       let_it_be(:issue1_with_epic) { create(:issue, project: project, epic: epic) }
       let_it_be(:issue2_with_epic) { create(:issue, project: project, epic: epic) }
+      let_it_be(:issue_with_other_epic) { create(:issue, project: project, epic: other_epic) }
 
       let(:new_epic) { issue1_with_epic.reload.epic }
 
@@ -35,7 +37,7 @@ RSpec.describe Epics::TransferService do
         end
 
         it 'recreates the missing group epics in the new group' do
-          expect { service.execute }.to change(project.group.epics, :count).by(1)
+          expect { service.execute }.to change(project.group.epics, :count).by(2)
 
           expect(new_epic).not_to eq(epic)
           expect(new_epic).to eq(issue2_with_epic.reload.epic)
@@ -56,13 +58,23 @@ RSpec.describe Epics::TransferService do
           expect(new_epics_titles).to include(epic.title).and exclude(unassigned_epic.title)
         end
 
+        context 'when rate limiting is in effect', :freeze_time, :clean_gitlab_redis_rate_limiting do
+          before do
+            stub_application_setting(issues_create_limit: 1)
+          end
+
+          it 'transfers both epics' do
+            expect { service.execute }.to change(project.group.epics, :count).by(2)
+          end
+        end
+
         context 'when epic is from an descendant group' do
           let_it_be(:old_group_subgroup) { create(:group, parent: old_group) }
 
           it 'recreates the missing epic in the new group' do
             create(:epic, group: old_group_subgroup)
 
-            expect { service.execute }.to change(project.group.epics, :count).by(1)
+            expect { service.execute }.to change(project.group.epics, :count).by(2)
           end
         end
 
@@ -95,7 +107,7 @@ RSpec.describe Epics::TransferService do
           end
 
           it 'creates a new confidential epic in the new group' do
-            expect { service.execute }.to change(project.group.epics, :count).by(1)
+            expect { service.execute }.to change(project.group.epics, :count).by(2)
 
             expect(new_epic).not_to eq(epic.group)
             expect(new_epic.title).to eq(epic.title)
