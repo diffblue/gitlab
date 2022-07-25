@@ -2,9 +2,7 @@
 
 module Sbom
   class Component < ApplicationRecord
-    enum component_type: {
-      library: 0
-    }
+    enum component_type: ::Enums::Sbom.component_types
 
     validates :component_type, presence: true
     validates :name, presence: true, length: { maximum: 255 }
