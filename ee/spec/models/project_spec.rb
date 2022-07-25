@@ -47,7 +47,6 @@ RSpec.describe Project do
     it { is_expected.to have_many(:upstream_project_subscriptions) }
     it { is_expected.to have_many(:upstream_projects) }
     it { is_expected.to have_many(:downstream_project_subscriptions) }
-    it { is_expected.to have_many(:downstream_projects) }
     it { is_expected.to have_many(:vulnerability_historical_statistics).class_name('Vulnerabilities::HistoricalStatistic') }
     it { is_expected.to have_many(:vulnerability_remediations).class_name('Vulnerabilities::Remediation') }
     it { is_expected.to have_many(:vulnerability_reads).class_name('Vulnerabilities::Read') }
@@ -3114,21 +3113,13 @@ RSpec.describe Project do
     end
   end
 
-  describe '#downstream_projects' do
-    it 'returns the downstream projects' do
-      downstream_project = create(:project, :public)
-      primary_project = create(:project, :public, downstream_projects: [downstream_project])
-
-      with_cross_joins_prevented do
-        expect(primary_project.downstream_projects).to eq([downstream_project])
-      end
-    end
-  end
-
   describe '#downstream_projects_count' do
     it 'returns the downstream projects count' do
+      primary_project = create(:project, :public)
       downstream_projects = create_list(:project, 2, :public)
-      primary_project = create(:project, :public, downstream_projects: downstream_projects)
+      downstream_projects.each do |project|
+        create(:ci_subscriptions_project, downstream_project: project, upstream_project: primary_project)
+      end
 
       with_cross_joins_prevented do
         expect(primary_project.downstream_projects_count).to eq(2)

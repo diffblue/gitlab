@@ -362,11 +362,12 @@ RSpec.describe Ci::Pipeline do
 
     context 'when pipeline project has downstream subscriptions' do
       let(:downstream_project) { create(:project) }
-      let(:project) { create(:project, :public, downstream_projects: [downstream_project]) }
+      let(:project) { create(:project, :public) }
       let(:pipeline) { create(:ci_empty_pipeline, project: project) }
 
       context 'when pipeline runs on a tag' do
         before do
+          create(:ci_subscriptions_project, downstream_project: downstream_project, upstream_project: project)
           pipeline.update!(tag: true)
         end
 

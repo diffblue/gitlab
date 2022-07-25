@@ -97,7 +97,6 @@ module EE
       has_many :upstream_project_subscriptions, class_name: 'Ci::Subscriptions::Project', foreign_key: :downstream_project_id, inverse_of: :downstream_project
       has_many :upstream_projects, class_name: 'Project', through: :upstream_project_subscriptions, source: :upstream_project, disable_joins: true
       has_many :downstream_project_subscriptions, class_name: 'Ci::Subscriptions::Project', foreign_key: :upstream_project_id, inverse_of: :upstream_project
-      has_many :downstream_projects, class_name: 'Project', through: :downstream_project_subscriptions, source: :downstream_project, disable_joins: true
 
       has_many :incident_management_oncall_schedules, class_name: 'IncidentManagement::OncallSchedule', inverse_of: :project
       has_many :incident_management_oncall_rotations, class_name: 'IncidentManagement::OncallRotation', through: :incident_management_oncall_schedules, source: :rotations

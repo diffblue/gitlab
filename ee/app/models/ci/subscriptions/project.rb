@@ -13,11 +13,16 @@ module Ci
 
       belongs_to :downstream_project, class_name: '::Project', optional: false
       belongs_to :upstream_project, class_name: '::Project', optional: false
+      belongs_to :author, class_name: '::User'
 
       validates :upstream_project_id, uniqueness: { scope: :downstream_project_id }
 
       validate do
         errors.add(:upstream_project, 'needs to be public') unless upstream_public?
+      end
+
+      def self.with_downstream_and_author
+        preload(:author, :downstream_project)
       end
 
       private
