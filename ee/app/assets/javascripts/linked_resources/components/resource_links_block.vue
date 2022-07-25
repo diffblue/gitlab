@@ -100,18 +100,22 @@ export default {
           const errorMessage = sprintf(this.$options.i18n.deleteError, {
             error: errors.join('. '),
           });
-          createAlert({
-            message: errorMessage,
-            captureError: false,
-            error: null,
-          });
+          throw new Error(errorMessage, { captureError: false });
         }
       } catch (error) {
-        const errorMessage = this.$options.i18n.deleteErrorGeneric;
+        const message = error.message ? error.message : this.$options.i18n.deleteErrorGeneric;
+        let captureError = false;
+        let errorObj = null;
+
+        if (message === this.$options.i18n.deleteErrorGeneric) {
+          captureError = true;
+          errorObj = error;
+        }
+
         createAlert({
-          message: errorMessage,
-          captureError: true,
-          error,
+          message,
+          captureError,
+          error: errorObj,
         });
       }
     },
