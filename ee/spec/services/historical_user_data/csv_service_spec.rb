@@ -109,7 +109,7 @@ RSpec.describe HistoricalUserData::CsvService do
     end
 
     it 'shows the header for the user counts table' do
-      expect(csv[7]).to contain_exactly('Date', 'Active User Count')
+      expect(csv[7]).to contain_exactly('Date', 'Billable User Count')
     end
 
     it 'includes proper values for each column type', :aggregate_failures do

@@ -45,7 +45,7 @@ RSpec.describe Admin::Licenses::UsageExportsController do
       let(:license) { build(:license) }
       let(:csv_data) do
         <<~CSV
-          Date,Active User Count
+          Date,Billable User Count
           2020-08-26,1
           2020-08-27,2
         CSV
@@ -105,7 +105,7 @@ RSpec.describe Admin::Licenses::UsageExportsController do
         export_license_usage_file
 
         expect(CSV.parse(response.body)).to eq([
-          ['Date', 'Active User Count'],
+          ['Date', 'Billable User Count'],
           %w[2020-08-26 1],
           %w[2020-08-27 2]
         ])
