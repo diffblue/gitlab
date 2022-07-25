@@ -199,12 +199,9 @@ export default {
       this.loading = true;
 
       try {
-        const {
-          errors = [],
-          externalAuditEventDestination: { id },
-        } = await this.addDestinationUrl();
+        const { errors = [], externalAuditEventDestination } = await this.addDestinationUrl();
 
-        destinationId = id;
+        destinationId = externalAuditEventDestination?.id;
 
         if (!errors.length) {
           errors.push(...(await this.addDestinationHeaders(destinationId, this.headers)));
@@ -216,12 +213,14 @@ export default {
 
         if (errors.length > 0) {
           this.errors.push(...errors);
+          this.$emit('error');
         } else {
           this.$emit('added');
         }
       } catch (e) {
         Sentry.captureException(e);
         this.errors.push(CREATING_ERROR);
+        this.$emit('error');
 
         if (destinationId) {
           await this.deleteCreatedDestination(destinationId);
@@ -255,12 +254,14 @@ export default {
 
         if (errors.length > 0) {
           this.errors.push(...errors);
+          this.$emit('error');
         } else {
           this.$emit('updated');
         }
       } catch (e) {
         Sentry.captureException(e);
         this.errors.push(UPDATING_ERROR);
+        this.$emit('error');
       } finally {
         this.loading = false;
       }

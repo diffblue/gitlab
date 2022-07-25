@@ -158,6 +158,7 @@ describe('StreamDestinationEditor', () => {
       await waitForPromises();
 
       expect(findAlertErrors()).toHaveLength(0);
+      expect(wrapper.emitted('error')).toBeUndefined();
       expect(wrapper.emitted('added')).toBeDefined();
     });
 
@@ -176,7 +177,8 @@ describe('StreamDestinationEditor', () => {
 
       expect(findAlertErrors()).toHaveLength(1);
       expect(findAlertErrors().at(0).text()).toBe(errorMsg);
-      expect(wrapper.emitted('added')).not.toBeDefined();
+      expect(wrapper.emitted('error')).toBeDefined();
+      expect(wrapper.emitted('added')).toBeUndefined();
     });
 
     it('should not emit add destination event and reports error when network error occurs', async () => {
@@ -193,7 +195,8 @@ describe('StreamDestinationEditor', () => {
       expect(findAlertErrors()).toHaveLength(1);
       expect(findAlertErrors().at(0).text()).toBe(AUDIT_STREAMS_NETWORK_ERRORS.CREATING_ERROR);
       expect(sentryCaptureExceptionSpy).toHaveBeenCalledWith(sentryError);
-      expect(wrapper.emitted('added')).not.toBeDefined();
+      expect(wrapper.emitted('error')).toBeDefined();
+      expect(wrapper.emitted('added')).toBeUndefined();
     });
   });
 
@@ -217,6 +220,7 @@ describe('StreamDestinationEditor', () => {
       await waitForPromises();
 
       expect(findAlertErrors()).toHaveLength(0);
+      expect(wrapper.emitted('error')).toBeUndefined();
       expect(wrapper.emitted('added')).toBeDefined();
     });
 
@@ -246,6 +250,7 @@ describe('StreamDestinationEditor', () => {
         key: 'row header',
         value: 'row value',
       });
+      expect(wrapper.emitted('error')).toBeUndefined();
       expect(wrapper.emitted('added')).toBeDefined();
     });
 
@@ -277,7 +282,8 @@ describe('StreamDestinationEditor', () => {
 
       expect(findAlertErrors()).toHaveLength(1);
       expect(findAlertErrors().at(0).text()).toBe(errorMsg);
-      expect(wrapper.emitted('added')).not.toBeDefined();
+      expect(wrapper.emitted('error')).toBeDefined();
+      expect(wrapper.emitted('added')).toBeUndefined();
     });
 
     it('should not emit add destination event and reports error when network error occurs while adding headers', async () => {
@@ -310,7 +316,8 @@ describe('StreamDestinationEditor', () => {
       expect(findAlertErrors()).toHaveLength(1);
       expect(findAlertErrors().at(0).text()).toBe(AUDIT_STREAMS_NETWORK_ERRORS.CREATING_ERROR);
       expect(sentryCaptureExceptionSpy).toHaveBeenCalledWith(sentryError);
-      expect(wrapper.emitted('added')).not.toBeDefined();
+      expect(wrapper.emitted('error')).toBeDefined();
+      expect(wrapper.emitted('added')).toBeUndefined();
     });
   });
 
@@ -508,6 +515,7 @@ describe('StreamDestinationEditor', () => {
           value: addedHeader.value,
         });
         expect(findAlertErrors()).toHaveLength(0);
+        expect(wrapper.emitted('error')).toBeUndefined();
         expect(wrapper.emitted('updated')).toBeDefined();
       });
 
@@ -533,6 +541,7 @@ describe('StreamDestinationEditor', () => {
 
         expect(findAlertErrors()).toHaveLength(1);
         expect(findAlertErrors().at(0).text()).toBe(errorMsg);
+        expect(wrapper.emitted('error')).toBeDefined();
         expect(wrapper.emitted('updated')).toBeUndefined();
       });
 
@@ -557,6 +566,7 @@ describe('StreamDestinationEditor', () => {
         expect(findAlertErrors()).toHaveLength(1);
         expect(findAlertErrors().at(0).text()).toBe(AUDIT_STREAMS_NETWORK_ERRORS.UPDATING_ERROR);
         expect(sentryCaptureExceptionSpy).toHaveBeenCalledWith(sentryError);
+        expect(wrapper.emitted('error')).toBeDefined();
         expect(wrapper.emitted('updated')).toBeUndefined();
       });
     });

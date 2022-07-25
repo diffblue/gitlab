@@ -43,6 +43,9 @@ export default {
       this.setEditMode(false);
       this.$emit('updated', event);
     },
+    onEditorError() {
+      this.$emit('error');
+    },
     async deleteDestination() {
       this.isDeleting = true;
       try {
@@ -61,8 +64,9 @@ export default {
           createAlert({
             message: errors[0],
           });
+          this.$emit('error');
         } else {
-          this.$emit('delete');
+          this.$emit('deleted');
         }
       } catch (error) {
         createAlert({
@@ -70,6 +74,7 @@ export default {
           captureError: true,
           error,
         });
+        this.$emit('error');
       } finally {
         this.isDeleting = false;
       }
@@ -120,7 +125,12 @@ export default {
       </div>
     </div>
     <div v-if="isEditing" class="gl-p-4">
-      <stream-destination-editor :item="item" @updated="onUpdated" @cancel="setEditMode(false)" />
+      <stream-destination-editor
+        :item="item"
+        @updated="onUpdated"
+        @error="onEditorError"
+        @cancel="setEditMode(false)"
+      />
     </div>
   </li>
 </template>
