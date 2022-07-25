@@ -195,10 +195,6 @@ module EE
         variables_hash.fetch(key, default)
       end
 
-      def validate_schema?
-        true
-      end
-
       private
 
       def variables_hash

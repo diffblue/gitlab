@@ -40,8 +40,6 @@ RSpec.describe Ci::JobArtifact do
     let(:unverifiable_model_record) { build(:ci_job_artifact, :remote_store) } # add extra params if needed to make sure the record is NOT included in `available_verifiables`
   end
 
-  it { is_expected.to delegate_method(:validate_schema?).to(:job) }
-
   describe '#destroy' do
     let_it_be(:primary) { create(:geo_node, :primary) }
     let_it_be(:secondary) { create(:geo_node) }
@@ -343,10 +341,10 @@ RSpec.describe Ci::JobArtifact do
 
     describe 'schema validation' do
       where(:validate, :build_is_subject_to_validation?, :expected_validate_flag) do
-        false | false | false
-        false | true  | false
-        true  | false | false
-        true  | true  | true
+        false | true | false
+        false | true | false
+        true  | true | true
+        true  | true | true
       end
 
       with_them do

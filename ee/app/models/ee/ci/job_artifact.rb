@@ -84,8 +84,6 @@ module EE
 
       scope :available_verifiables, -> { joins(:job_artifact_state) }
 
-      delegate :validate_schema?, to: :job
-
       skip_callback :commit, :after, :geo_create_event!, if: :store_after_commit?
     end
 
@@ -149,7 +147,7 @@ module EE
 
         report = ::Gitlab::Ci::Reports::Security::Report.new(file_type, job.pipeline, nil).tap do |report|
           each_blob do |blob|
-            ::Gitlab::Ci::Parsers.fabricate!(file_type, blob, report, signatures_enabled, validate: (validate && validate_schema?)).parse!
+            ::Gitlab::Ci::Parsers.fabricate!(file_type, blob, report, signatures_enabled, validate: (validate && true)).parse!
           end
         rescue StandardError
           report.add_error('ParsingError')
