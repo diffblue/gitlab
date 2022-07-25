@@ -177,7 +177,12 @@ constraints(::Constraints::GroupUrlConstrainer.new) do
           put :revoke
         end
       end
-      resources :policies, only: [:index, :new, :edit], constraints: { id: %r{[^/]+} }
+      resources :policies, only: [:index, :new, :edit], constraints: { id: %r{[^/]+} } do
+        collection do
+          get :schema
+        end
+      end
+
       resources :merge_commit_reports, only: [:index], constraints: { format: :csv }
     end
 

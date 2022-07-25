@@ -230,4 +230,31 @@ RSpec.describe Groups::Security::PoliciesController, type: :request do
       end
     end
   end
+
+  describe 'GET #schema' do
+    let(:schema) { schema_group_security_policies_url(group) }
+    let(:expected_json) do
+      Gitlab::Json.parse(
+        File.read(
+          Rails.root.join(
+            Security::OrchestrationPolicyConfiguration::POLICY_SCHEMA_PATH
+          )
+        )
+      )
+    end
+
+    before do
+      group.add_developer(user)
+      sign_in(user)
+      stub_licensed_features(security_orchestration_policies: true)
+      stub_feature_flags(group_level_security_policies: true)
+    end
+
+    it 'returns JSON schema' do
+      get schema
+
+      expect(response).to have_gitlab_http_status(:ok)
+      expect(json_response).to eq(expected_json)
+    end
+  end
 end

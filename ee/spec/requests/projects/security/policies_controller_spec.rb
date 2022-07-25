@@ -238,9 +238,17 @@ RSpec.describe Projects::Security::PoliciesController, type: :request do
 
   describe 'GET #schema' do
     let(:schema) { schema_project_security_policies_url(project) }
-    let(:expected_json) { Gitlab::Json.parse(File.read(Rails.root.join(Security::OrchestrationPolicyConfiguration::POLICY_SCHEMA_PATH))) }
+    let(:expected_json) do
+      Gitlab::Json.parse(
+        File.read(
+          Rails.root.join(
+            Security::OrchestrationPolicyConfiguration::POLICY_SCHEMA_PATH
+          )
+        )
+      )
+    end
 
-    it 'returms JSON schema' do
+    it 'returns JSON schema' do
       get schema
 
       expect(response).to have_gitlab_http_status(:ok)
