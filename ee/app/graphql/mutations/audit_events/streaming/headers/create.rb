@@ -27,7 +27,8 @@ module Mutations
           def resolve(destination_id:, key:, value:)
             response = ::AuditEvents::Streaming::Headers::CreateService.new(
               destination: authorized_find!(destination_id),
-              params: { key: key, value: value }
+              params: { key: key, value: value },
+              current_user: current_user
             ).execute
 
             if response.success?

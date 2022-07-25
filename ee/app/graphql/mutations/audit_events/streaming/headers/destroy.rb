@@ -17,7 +17,8 @@ module Mutations
 
             response = ::AuditEvents::Streaming::Headers::DestroyService.new(
               destination: header.external_audit_event_destination,
-              params: { header: header }
+              params: { header: header },
+              current_user: current_user
             ).execute
 
             if response.success?
