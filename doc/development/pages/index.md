@@ -236,3 +236,23 @@ make acceptance
 # so we want to have the latest changes in the build that is tested
 make && go test ./ -run TestRedirect
 ```
+
+## Contributing
+
+### Feature flags
+
+WARNING:
+All newly-introduced feature flags should be [disabled by default](https://about.gitlab.com/handbook/product-development-flow/feature-flag-lifecycle/#feature-flags-in-gitlab-development).
+
+Consider adding a feature flag for any non-trivial changes. This can make the release and rollback
+of these changes easier, avoiding incidents and downtime.
+
+To add a new Feature Flag, one needs to:
+
+1. Create the feature flag in [`internal/feature/feature.go`](https://gitlab.com/gitlab-org/gitlab-pages/-/blob/master/internal/feature/feature.go), which must be **off** by default
+1. Create an issue to track the feature flag using the `Feature Flag` template
+1. Add the ~"feature flag" label to any Merge Requests that handle feature flags
+
+For GitLab Pages, the feature flags are controlled by environment variables at a global level. It
+means that we require a deployment at the service level to change the state of a feature flag.
+Example of an Merge Request enabling a GitLab Pages feature flag: [https://gitlab.com/gitlab-com/gl-infra/k8s-workloads/gitlab-com/-/merge_requests/1500](https://gitlab.com/gitlab-com/gl-infra/k8s-workloads/gitlab-com/-/merge_requests/1500)
