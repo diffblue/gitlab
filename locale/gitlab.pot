@@ -7972,9 +7972,6 @@ msgstr ""
 msgid "Child issues and epics"
 msgstr ""
 
-msgid "Children"
-msgstr ""
-
 msgid "Chinese language support using"
 msgstr ""
 
@@ -44163,6 +44160,9 @@ msgid "WorkItem|A task provides the ability to break down your work into smaller
 msgstr ""
 
 msgid "WorkItem|Add a task"
+msgstr ""
+
+msgid "WorkItem|Add a title"
 msgstr ""
 
 msgid "WorkItem|Add assignee"
