@@ -20,7 +20,7 @@ RSpec.describe Gitlab::Ci::Parsers::Security::ContainerScanning do
       expect(report.scanners.length).to eq(1)
     end
 
-    it 'generates expected location' do
+    it 'generates expected location', :aggregate_failures do
       location = report.findings.first.location
 
       expect(location).to be_a(::Gitlab::Ci::Reports::Security::Locations::ContainerScanning)
@@ -30,6 +30,7 @@ RSpec.describe Gitlab::Ci::Parsers::Security::ContainerScanning do
         package_name: 'glibc',
         package_version: '2.24-11+deb9u3'
       )
+      expect(location.default_branch_image_validator).to be_a(Gitlab::Ci::Parsers::Security::Validators::DefaultBranchImageValidator)
     end
 
     it "generates expected metadata_version" do
