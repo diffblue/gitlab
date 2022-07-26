@@ -225,7 +225,7 @@ module EE
       end
 
       def usage_ping_record_epic_creation
-        ::Gitlab::UsageDataCounters::EpicActivityUniqueCounter.track_epic_created_action(author: author)
+        ::Gitlab::UsageDataCounters::EpicActivityUniqueCounter.track_epic_created_action(author: author, namespace: group)
       end
     end
 

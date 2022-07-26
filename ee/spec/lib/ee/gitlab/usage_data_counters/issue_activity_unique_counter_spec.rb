@@ -9,7 +9,7 @@ RSpec.describe Gitlab::UsageDataCounters::IssueActivityUniqueCounter, :snowplow,
 
   context 'for Issue health status changed actions' do
     it_behaves_like 'a daily tracked issuable snowplow and service ping events' do
-      let(:action) { described_class::ISSUE_HEALTH_STATUS_CHANGED }
+      let_it_be(:action) { described_class::ISSUE_HEALTH_STATUS_CHANGED }
 
       def track_action(params)
         described_class.track_issue_health_status_changed_action(**params)
@@ -19,7 +19,7 @@ RSpec.describe Gitlab::UsageDataCounters::IssueActivityUniqueCounter, :snowplow,
 
   context 'for Issue iteration changed actions' do
     it_behaves_like 'a daily tracked issuable snowplow and service ping events' do
-      let(:action) { described_class::ISSUE_ITERATION_CHANGED }
+      let_it_be(:action) { described_class::ISSUE_ITERATION_CHANGED }
 
       def track_action(params)
         described_class.track_issue_iteration_changed_action(**params)
@@ -29,7 +29,7 @@ RSpec.describe Gitlab::UsageDataCounters::IssueActivityUniqueCounter, :snowplow,
 
   context 'for Issue weight changed actions' do
     it_behaves_like 'a daily tracked issuable snowplow and service ping events' do
-      let(:action) { described_class::ISSUE_WEIGHT_CHANGED }
+      let_it_be(:action) { described_class::ISSUE_WEIGHT_CHANGED }
 
       def track_action(params)
         described_class.track_issue_weight_changed_action(**params)
@@ -39,7 +39,7 @@ RSpec.describe Gitlab::UsageDataCounters::IssueActivityUniqueCounter, :snowplow,
 
   context 'for Issue added to epic actions' do
     it_behaves_like 'a daily tracked issuable snowplow and service ping events' do
-      let(:action) { described_class::ISSUE_ADDED_TO_EPIC}
+      let_it_be(:action) { described_class::ISSUE_ADDED_TO_EPIC}
 
       def track_action(params)
         described_class.track_issue_added_to_epic_action(**params)
@@ -49,7 +49,7 @@ RSpec.describe Gitlab::UsageDataCounters::IssueActivityUniqueCounter, :snowplow,
 
   context 'for Issue removed from epic actions' do
     it_behaves_like 'a daily tracked issuable snowplow and service ping events' do
-      let(:action) { described_class::ISSUE_REMOVED_FROM_EPIC}
+      let_it_be(:action) { described_class::ISSUE_REMOVED_FROM_EPIC}
 
       def track_action(params)
         described_class.track_issue_removed_from_epic_action(**params)
@@ -59,7 +59,7 @@ RSpec.describe Gitlab::UsageDataCounters::IssueActivityUniqueCounter, :snowplow,
 
   context 'for Issue changed epic actions' do
     it_behaves_like 'a daily tracked issuable snowplow and service ping events' do
-      let(:action) { described_class::ISSUE_CHANGED_EPIC}
+      let_it_be(:action) { described_class::ISSUE_CHANGED_EPIC}
 
       def track_action(params)
         described_class.track_issue_changed_epic_action(**params)
