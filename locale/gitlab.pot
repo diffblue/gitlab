@@ -39488,9 +39488,6 @@ msgstr ""
 msgid "There was an error removing the e-mail."
 msgstr ""
 
-msgid "There was an error resetting group pipeline minutes."
-msgstr ""
-
 msgid "There was an error resetting user pipeline minutes."
 msgstr ""
 
