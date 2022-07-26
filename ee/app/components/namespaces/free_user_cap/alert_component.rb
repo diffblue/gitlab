@@ -80,7 +80,7 @@ module Namespaces
           },
           body: _("You can't add any more, but you can manage your existing members, for example, " \
                   "by removing inactive members and replacing them with new members. To get more " \
-                  "members an owner of this namespace can start a trial or upgrade to a paid tier."),
+                  "members an owner of the group can start a trial or upgrade to a paid tier."),
           primary_cta: namespace_primary_cta,
           secondary_cta: namespace_secondary_cta
         }
@@ -112,6 +112,10 @@ module Namespaces
 
       def container_class
         "container-fluid container-limited gl-pb-2! gl-pt-6! #{content_class}"
+      end
+
+      def free_user_limit
+        ::Namespaces::FreeUserCap::FREE_USER_LIMIT
       end
     end
   end

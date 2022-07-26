@@ -1,6 +1,6 @@
 <script>
 import { GlLink, GlButton, GlSprintf } from '@gitlab/ui';
-import { s__ } from '~/locale';
+import { s__, n__ } from '~/locale';
 import Tracking from '~/tracking';
 import { EXPLORE_PAID_PLANS_CLICKED } from '../constants';
 
@@ -21,11 +21,20 @@ export default {
   i18n: {
     title: s__('Billing|Free groups on GitLab are limited to %{maxNamespaceSeats} seats'),
     description: s__(
-      'Billing|If the group has over %{maxNamespaceSeats} members, only those occupying a seat can access the namespace. To ensure all members (active and %{linkStart}over limit%{linkEnd}) can access the namespace, you can start a trial or upgrade to a paid tier.',
+      'Billing|%{overLimitMessage} To ensure all members (active and %{linkStart}over limit%{linkEnd}) can access the group, you can start a trial or upgrade to a paid tier.',
     ),
     cta: s__('Billing|Explore all plans'),
   },
   overLimitLink: 'https://about.gitlab.com/blog/2022/03/24/efficient-free-tier/',
+  computed: {
+    overLimitMessage() {
+      return n__(
+        'Billing|If the group has over %d member, only those occupying a seat can access the group.',
+        'Billing|If the group has over %d members, only those occupying a seat can access the group.',
+        this.maxNamespaceSeats,
+      );
+    },
+  },
   methods: {
     trackClick() {
       this.track('click_button', { label: EXPLORE_PAID_PLANS_CLICKED });
@@ -45,7 +54,7 @@ export default {
         </p>
         <p class="gl-m-0" data-testid="description">
           <gl-sprintf :message="$options.i18n.description">
-            <template #maxNamespaceSeats>{{ maxNamespaceSeats }}</template>
+            <template #overLimitMessage>{{ overLimitMessage }}</template>
             <template #link="{ content }">
               <gl-link :href="$options.overLimitLink" target="_blank">{{ content }}</gl-link>
             </template>

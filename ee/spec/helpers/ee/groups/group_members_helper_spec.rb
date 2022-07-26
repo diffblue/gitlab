@@ -76,9 +76,9 @@ RSpec.describe Groups::GroupMembersHelper do
   end
 
   describe '#group_member_header_subtext' do
-    let(:base_subtext) { "You can invite a new member to <strong>#{group.name}</strong>." }
+    let(:base_subtext) { "You're viewing members of <strong>#{group.name}</strong>." }
     let(:standard_subtext) { "^#{base_subtext}$" }
-    let(:enforcement_subtext) { "^#{base_subtext}<br />To manage all members" }
+    let(:enforcement_subtext) { "^#{base_subtext}<br />To manage seats for all members" }
 
     where(:can_admin_member, :enforce_free_user_cap, :subtext) do
       true  | true  | ref(:enforcement_subtext)

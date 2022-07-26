@@ -67,7 +67,11 @@ RSpec.describe 'projects/project_members/index', :aggregate_failures do
 
         expect(rendered).to have_content('Project members')
         expect(rendered).to have_content('You can invite a new member to')
-        expect(rendered).to have_content('To manage all members associated with this group and its subgroups')
+
+        expect(rendered).to have_content(
+          'To manage seats for all members associated with this group and its subgroups'
+        )
+
         expect(rendered).to have_link('usage quotas page', href: group_usage_quotas_path(project.root_ancestor))
       end
     end

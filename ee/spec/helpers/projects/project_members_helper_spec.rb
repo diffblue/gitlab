@@ -67,7 +67,7 @@ RSpec.describe Projects::ProjectMembersHelper do
   describe '#project_member_header_subtext' do
     let(:base_subtext) { "You can invite a new member to <strong>#{current_project.name}</strong> or invite another group." }
     let(:standard_subtext) { "^#{base_subtext}$" }
-    let(:enforcement_subtext) { "^#{base_subtext}<br />To manage all members" }
+    let(:enforcement_subtext) { "^#{base_subtext}<br />To manage seats for all members" }
 
     let_it_be(:project_with_group) { create(:project, group: create(:group)) }
 
