@@ -11,9 +11,8 @@ class RemoveTmpIndexGroupMembershipNamespaceIdColumn < Gitlab::Database::Migrati
   end
 
   def down
-    add_concurrent_index :group_members,
-      :id,
-      where: "group_members.namespace_id is null and group_members.source_type = 'Namespace'",
-      name: INDEX_NAME
+    add_concurrent_index :members, :id,
+    where: "members.member_namespace_id IS NULL and members.type = 'GroupMember'",
+    name: INDEX_NAME
   end
 end
