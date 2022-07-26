@@ -50,7 +50,7 @@ describe('PolicySchemaExtension', () => {
       it.each`
         title         | policyType                                                  | namespaceType              | itRegistersASchema | schemaFunction
         ${'does'}     | ${POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.urlParameter} | ${NAMESPACE_TYPES.PROJECT} | ${true}            | ${getSingleScanExecutionPolicySchema}
-        ${'does not'} | ${POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.urlParameter} | ${NAMESPACE_TYPES.GROUP}   | ${false}           | ${() => ({})}
+        ${'does'}     | ${POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.urlParameter} | ${NAMESPACE_TYPES.GROUP}   | ${true}            | ${getSingleScanExecutionPolicySchema}
         ${'does not'} | ${POLICY_TYPE_COMPONENT_OPTIONS.scanResult.urlParameter}    | ${NAMESPACE_TYPES.PROJECT} | ${false}           | ${() => ({})}
         ${'does not'} | ${POLICY_TYPE_COMPONENT_OPTIONS.scanResult.urlParameter}    | ${NAMESPACE_TYPES.GROUP}   | ${false}           | ${() => ({})}
       `(
