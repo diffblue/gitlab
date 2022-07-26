@@ -195,32 +195,54 @@ RSpec.describe EE::Gitlab::Checks::PushRules::CommitCheck do
           end
         end
 
-        context 'without private commit email' do
+        context 'with primary email' do
           before do
             allow_any_instance_of(Commit).to receive(:committer_email).and_return(user.email)
           end
 
-          it 'does not return an error' do
-            expect { subject.validate! }.not_to raise_error
+          context 'when the email is confirmed' do
+            it 'does not raise an error' do
+              expect { subject.validate! }.not_to raise_error
+            end
           end
 
-          it 'allows the commit when they were done with another email that belongs to the current user' do
-            user.emails.create!(email: 'secondary_email@user.com', confirmed_at: Time.now)
-            allow_any_instance_of(Commit).to receive(:committer_email).and_return('secondary_email@user.com')
+          context 'when the email is unconfirmed' do
+            let(:user) { create(:user, :unconfirmed) }
 
-            expect { subject.validate! }.not_to raise_error
+            it 'raises an error' do
+              expect { subject.validate! }
+                .to raise_error(Gitlab::GitAccess::ForbiddenError,
+                                "Committer email '#{user.email}' is not verified.")
+            end
+          end
+        end
+
+        context 'with secondary email' do
+          before do
+            allow_any_instance_of(Commit).to receive(:committer_email).and_return(email.email)
           end
 
-          it 'raises an error when the commit was done with an unverified email' do
-            user.emails.create!(email: 'secondary_email@user.com')
-            allow_any_instance_of(Commit).to receive(:committer_email).and_return('secondary_email@user.com')
+          context 'when the email is confirmed' do
+            let(:email) { create(:email, :confirmed, email: 'secondary@example.com', user: user) }
 
-            expect { subject.validate! }
-              .to raise_error(Gitlab::GitAccess::ForbiddenError,
-                              "Committer email 'secondary_email@user.com' is not verified.")
+            it 'does not raise an error' do
+              expect { subject.validate! }.not_to raise_error
+            end
           end
 
-          it 'raises an error when using an unknown email' do
+          context 'when the email is unconfirmed' do
+            let(:email) { create(:email, email: 'secondary@example.com', user: user) }
+
+            it 'raises an error' do
+              expect { subject.validate! }
+                .to raise_error(Gitlab::GitAccess::ForbiddenError,
+                                "You cannot push commits for '#{email.email}'. You can only push commits if the committer email is one of your own verified emails.")
+            end
+          end
+        end
+
+        context 'with unknown email' do
+          it 'raises an error' do
             allow_any_instance_of(Commit).to receive(:committer_email).and_return('some@mail.com')
 
             expect { subject.validate! }
