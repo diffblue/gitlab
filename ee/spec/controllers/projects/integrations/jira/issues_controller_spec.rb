@@ -66,6 +66,16 @@ RSpec.describe Projects::Integrations::Jira::IssuesController do
       get :index, params: { namespace_id: project.namespace, project_id: project }
     end
 
+    it_behaves_like 'Snowplow event tracking' do
+      let(:subject) { get :index, params: { namespace_id: project.namespace, project_id: project } }
+      let(:feature_flag_name) { :route_hll_to_snowplow_phase2 }
+      let(:category) { described_class.name }
+      let(:action) { 'perform_integrations_action' }
+      let(:namespace) { project.namespace }
+      let(:label) { 'redis_hll_counters.ecosystem.ecosystem_total_unique_counts_monthly' }
+      let(:property) { 'i_ecosystem_jira_service_list_issues' }
+    end
+
     context 'when project has moved' do
       let(:new_project) { create(:project) }
 

@@ -311,6 +311,18 @@ RSpec.describe Integrations::Jira do
 
         jira_integration.create_issue('x', 'y', user)
       end
+
+      it_behaves_like 'Snowplow event tracking' do
+        let(:subject) { jira_integration.create_issue('x', 'y', user) }
+        let(:user) { build_stubbed(:user) }
+        let(:feature_flag_name) { :route_hll_to_snowplow_phase2 }
+        let(:category) { 'Integrations::Jira' }
+        let(:action) { 'perform_integrations_action' }
+        let(:project) { nil }
+        let(:namespace) { nil }
+        let(:label) { 'redis_hll_counters.ecosystem.ecosystem_total_unique_counts_monthly' }
+        let(:property) { 'i_ecosystem_jira_service_create_issue' }
+      end
     end
 
     context 'when there is an error in Jira' do

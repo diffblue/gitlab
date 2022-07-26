@@ -7,10 +7,13 @@ module Projects
         include RecordUserLastActivity
         include SortingHelper
         include SortingPreference
-        include RedisTracking
+        include ProductAnalyticsTracking
 
-        track_redis_hll_event :index,
-          name: 'i_ecosystem_jira_service_list_issues'
+        track_custom_event :index,
+          name: 'i_ecosystem_jira_service_list_issues',
+          action: ::Integrations::Jira::SNOWPLOW_EVENT_ACTION,
+          label: ::Integrations::Jira::SNOWPLOW_EVENT_LABEL,
+          destinations: %i(redis_hll snowplow)
 
         before_action :check_feature_enabled!
 
@@ -113,6 +116,14 @@ module Projects
           log_exception(exception)
 
           render json: { errors: [exception.message] }, status: :bad_request
+        end
+
+        def tracking_namespace_source
+          project.namespace
+        end
+
+        def tracking_project_source
+          project
         end
       end
     end
