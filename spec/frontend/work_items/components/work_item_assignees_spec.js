@@ -148,9 +148,7 @@ describe('WorkItemAssignees component', () => {
 
     it('does not start user search by default', () => {
       expect(findTokenSelector().props('loading')).toBe(false);
-      expect(findTokenSelector().props('dropdownItems')).toEqual([
-        stripTypenames(currentUserResponse.data.currentUser),
-      ]);
+      expect(findTokenSelector().props('dropdownItems')).toEqual([]);
     });
 
     it('starts user search on hovering for more than 250ms', async () => {

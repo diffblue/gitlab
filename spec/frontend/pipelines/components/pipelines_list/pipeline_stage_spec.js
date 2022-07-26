@@ -125,7 +125,8 @@ describe('Pipelines stage component', () => {
       createComponent();
 
       await openStageDropdown();
-      jest.runOnlyPendingTimers();
+      await jest.runAllTimers();
+      await axios.waitForAll();
     });
 
     it('renders the received data and emit `clickedDropdown` event', async () => {
