@@ -45,13 +45,15 @@ describe('MemberTableCell', () => {
 
   let wrapper;
 
-  const createComponent = (propsData, state = {}) => {
+  const createComponent = (propsData, provide = {}) => {
     wrapper = mount(MembersTableCell, {
       propsData,
-      store: createStore(state),
+      store: createStore(),
       provide: {
         sourceId: 1,
         currentUserId: 1,
+        namespace: MEMBER_TYPES.user,
+        ...provide,
       },
       scopedSlots: {
         default: `
@@ -98,17 +100,49 @@ describe('MemberTableCell', () => {
         expect(findWrappedComponent().props('permissions').canOverride).toBe(false);
       });
     });
+
+    describe('canUnban', () => {
+      it('returns `true` when member is banned and `canUnban` is `true`', () => {
+        createComponent({
+          member: { ...bannedMember, canUnban: true },
+        });
+
+        expect(findWrappedComponent().props('permissions').canUnban).toBe(true);
+      });
+
+      it('returns `false` when member is not banned', () => {
+        createComponent({
+          member: { ...directMember, canUnban: true },
+        });
+
+        expect(findWrappedComponent().props('permissions').canUnban).toBe(false);
+      });
+
+      it('returns `false` when `canUnban` is false', () => {
+        createComponent({
+          member: { ...bannedMember, canUnban: false },
+        });
+
+        expect(findWrappedComponent().props('permissions').canUnban).toBe(false);
+      });
+    });
   });
 
   describe('memberType', () => {
     it('has memberType value from CE when user is not banned', () => {
+      createComponent({ member: directMember }, { namespace: MEMBER_TYPES.banned });
+
+      expect(findWrappedComponent().props('memberType')).not.toEqual(MEMBER_TYPES.banned);
+    });
+
+    it('has memberType value from CE when namespace is not banned', () => {
       createComponent({ member: directMember });
 
       expect(findWrappedComponent().props('memberType')).not.toEqual(MEMBER_TYPES.banned);
     });
 
-    it('is `MEMBER_TYPES.banned` when user is banned', () => {
-      createComponent({ member: bannedMember });
+    it('is `MEMBER_TYPES.banned` when namespace is `MEMBER_TYPES.banned` and user is banned', () => {
+      createComponent({ member: bannedMember }, { namespace: MEMBER_TYPES.banned });
 
       expect(findWrappedComponent().props('memberType')).toEqual(MEMBER_TYPES.banned);
     });

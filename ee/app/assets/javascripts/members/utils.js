@@ -40,3 +40,6 @@ export const generateBadges = ({ member, isCurrentUser, canManageMembers }) => [
 ];
 
 export const canOverride = (member) => member.canOverride && isDirectMember(member);
+export const canUnban = (member) => {
+  return Boolean(member.banned) && member.canUnban;
+};

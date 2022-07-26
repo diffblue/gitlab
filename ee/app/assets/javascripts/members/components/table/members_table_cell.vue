@@ -1,10 +1,11 @@
 <script>
 import CEMembersTableCell from '~/members/components/table/members_table_cell.vue';
 import { MEMBER_TYPES } from 'ee_else_ce/members/constants';
-import { canOverride } from '../../utils';
+import { canOverride, canUnban } from '../../utils';
 
 export default {
   name: 'MembersTableCell',
+  inject: ['namespace'],
   props: {
     member: {
       type: Object,
@@ -15,10 +16,13 @@ export default {
     canOverride() {
       return canOverride(this.member);
     },
+    canUnban() {
+      return canUnban(this.member);
+    },
   },
   methods: {
     memberType(ceMemberType) {
-      if (this.member.banned) {
+      if (this.namespace === MEMBER_TYPES.banned && this.member.banned) {
         return MEMBER_TYPES.banned;
       }
 
@@ -36,6 +40,7 @@ export default {
             permissions: {
               ...props.permissions,
               canOverride: this.canOverride,
+              canUnban: this.canUnban,
             },
           });
         },

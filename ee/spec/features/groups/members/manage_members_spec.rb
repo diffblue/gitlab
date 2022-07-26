@@ -152,7 +152,7 @@ RSpec.describe 'Groups > Members > Manage members', :saas, :js do
       group.add_developer(user2)
     end
 
-    it 'owner can see banned users' do
+    it 'owner can unban banned users' do
       visit group_group_members_path(group)
 
       click_on 'Banned'
@@ -160,6 +160,11 @@ RSpec.describe 'Groups > Members > Manage members', :saas, :js do
       page.within(first_row) do
         expect(page).to have_content(user2.name)
       end
+
+      click_button 'Unban'
+
+      expect(page).not_to have_content('Banned')
+      expect(page).to have_content('User was successfully unbanned.')
     end
 
     context 'when feature flag is disabled' do

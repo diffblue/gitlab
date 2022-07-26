@@ -49,6 +49,12 @@ RSpec.describe MemberEntity do
 
       expect(entity_hash[:banned]).to be(true)
     end
+
+    it 'correctly exposes `can_unban`' do
+      allow(member).to receive(:can_unban?).and_return(true)
+
+      expect(entity_hash[:can_unban]).to be(true)
+    end
   end
 
   context 'group member' do
