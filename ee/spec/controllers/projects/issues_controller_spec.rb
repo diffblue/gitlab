@@ -45,7 +45,7 @@ RSpec.describe Projects::IssuesController do
         context 'when a vulnerability_id is provided' do
           let(:finding) { create(:vulnerabilities_finding, :with_pipeline) }
           let(:vulnerability) { create(:vulnerability, project: project, findings: [finding]) }
-          let(:vulnerability_field) { "<input type=\"hidden\" name=\"vulnerability_id\" id=\"vulnerability_id\" value=\"#{vulnerability.id}\" />" }
+          let(:vulnerability_field) { "<input type=\"hidden\" name=\"vulnerability_id\" id=\"vulnerability_id\" value=\"#{vulnerability.id}\" autocomplete=\"off\" />" }
 
           subject { get :new, params: { namespace_id: project.namespace, project_id: project, vulnerability_id: vulnerability.id } }
 
