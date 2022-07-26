@@ -52,6 +52,9 @@ export default {
       skip() {
         return !this.issuableId;
       },
+      result({ data }) {
+        this.canUpdate = data.workItem.userPermissions.updateWorkItem;
+      },
     },
   },
   data() {
