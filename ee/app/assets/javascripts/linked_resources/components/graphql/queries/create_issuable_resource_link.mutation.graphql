@@ -1,0 +1,10 @@
+#import "../fragments/resource_link_fields.fragment.graphql"
+
+mutation CreateIssuableResourceLink($input: IssuableResourceLinkCreateInput!) {
+  issuableResourceLinkCreate(input: $input) {
+    issuableResourceLink {
+      ...ResourceLinkFields
+    }
+    errors
+  }
+}

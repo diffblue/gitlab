@@ -1,0 +1,6 @@
+fragment ResourceLinkFields on IssuableResourceLink {
+  id
+  link
+  linkType
+  linkText
+}
