@@ -52,6 +52,21 @@ const resourceLinkDeleteData = (errors = []) => {
   };
 };
 
+const resourceLinkCreateData = (errors = []) => {
+  return {
+    data: {
+      issuableResourceLinkCreate: {
+        issuableResourceLink: { ...mockResourceLinks[0] },
+        errors,
+      },
+    },
+  };
+};
+
 export const resourceLinksDeleteEventResponse = resourceLinkDeleteData();
 
 export const resourceLinkDeleteEventError = resourceLinkDeleteData(['Item does not exist']);
+
+export const resourceLinkCreateEventResponse = resourceLinkCreateData();
+
+export const resourceLinkCreateEventError = resourceLinkCreateData(['Create error']);

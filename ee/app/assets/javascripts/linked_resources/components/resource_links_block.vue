@@ -1,13 +1,15 @@
 <script>
 import { GlLink, GlIcon, GlButton, GlLoadingIcon } from '@gitlab/ui';
+import { produce } from 'immer';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { TYPE_ISSUE } from '~/graphql_shared/constants';
 import { createAlert } from '~/flash';
 import { sprintf } from '~/locale';
 import { resourceLinksI18n } from '../constants';
-import { displayAndLogError } from './utils';
+import { displayAndLogError, identifyLinkType } from './utils';
 import getIssuableResourceLinks from './graphql/queries/get_issuable_resource_links.query.graphql';
 import deleteIssuableRsourceLink from './graphql/queries/delete_issuable_resource_link.mutation.graphql';
+import createIssuableResourceLink from './graphql/queries/create_issuable_resource_link.mutation.graphql';
 import AddIssuableResourceLinkForm from './add_issuable_resource_link_form.vue';
 import ResourceLinksList from './resource_links_list.vue';
 
@@ -119,6 +121,79 @@ export default {
         });
       }
     },
+    updateCache(store, { data }) {
+      const { issuableResourceLink: resourceLink, errors } = data?.issuableResourceLinkCreate || {};
+      if (errors.length) {
+        return;
+      }
+
+      const variables = {
+        incidentId: convertToGraphQLId(TYPE_ISSUE, this.issuableId),
+      };
+
+      const sourceData = store.readQuery({
+        query: getIssuableResourceLinks,
+        variables,
+      });
+
+      const newData = produce(sourceData, (draftData) => {
+        const { nodes: draftLinkList } = draftData.issue.issuableResourceLinks;
+        draftLinkList.push(resourceLink);
+        draftData.issue.issuableResourceLinks.nodes = draftLinkList;
+      });
+
+      store.writeQuery({
+        query: getIssuableResourceLinks,
+        variables,
+        data: newData,
+      });
+    },
+    onCreateResourceLink(resourceLink) {
+      this.isSubmitting = true;
+      return this.$apollo
+        .mutate({
+          mutation: createIssuableResourceLink,
+          variables: {
+            input: {
+              ...resourceLink,
+              id: convertToGraphQLId(TYPE_ISSUE, this.issuableId),
+              linkType: identifyLinkType(resourceLink.link),
+            },
+          },
+          update: this.updateCache,
+        })
+        .then(({ data = {} }) => {
+          const errors = data.issuableResourceLinkCreate?.errors;
+          if (errors.length) {
+            const errorMessage = sprintf(
+              this.$options.i18n.createError,
+              { error: errors.join('. ') },
+              false,
+            );
+            throw new Error(errorMessage);
+          }
+        })
+        .catch((error) => {
+          const message = error.message || this.$options.i18n.createErrorGeneric;
+          let captureError = false;
+          let errorObj = null;
+
+          if (message === this.$options.i18n.createErrorGeneric) {
+            captureError = true;
+            errorObj = error;
+          }
+
+          createAlert({
+            message,
+            captureError,
+            error: errorObj,
+          });
+        })
+        .finally(() => {
+          this.isSubmitting = false;
+          this.$refs.resourceLinkForm.onFormCancel();
+        });
+    },
   },
 };
 </script>
@@ -177,6 +252,7 @@ export default {
             ref="resourceLinkForm"
             :is-submitting="isSubmitting"
             @add-issuable-resource-link-form-cancel="hideResourceLinkForm"
+            @create-resource-link="onCreateResourceLink"
           />
         </div>
         <div v-if="isFetching" class="gl-mb-2">

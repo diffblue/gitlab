@@ -1,6 +1,6 @@
 import { GlButton, GlLoadingIcon } from '@gitlab/ui';
 import VueApollo from 'vue-apollo';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import { shallowMount } from '@vue/test-utils';
 import waitForPromises from 'helpers/wait_for_promises';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
@@ -10,6 +10,7 @@ import ResourceLinkItem from 'ee/linked_resources/components/resource_links_list
 import AddIssuableResourceLinkForm from 'ee/linked_resources/components/add_issuable_resource_link_form.vue';
 import getIssuableResourceLinks from 'ee/linked_resources/components/graphql/queries/get_issuable_resource_links.query.graphql';
 import deleteIssuableResourceLink from 'ee/linked_resources/components/graphql/queries/delete_issuable_resource_link.mutation.graphql';
+import createIssuableResourceLink from 'ee/linked_resources/components/graphql/queries/create_issuable_resource_link.mutation.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { createAlert } from '~/flash';
 import {
@@ -18,6 +19,8 @@ import {
   resourceLinksEmptyResponse,
   resourceLinksDeleteEventResponse,
   resourceLinkDeleteEventError,
+  resourceLinkCreateEventResponse,
+  resourceLinkCreateEventError,
 } from './mock_data';
 
 Vue.use(VueApollo);
@@ -25,10 +28,17 @@ Vue.use(VueApollo);
 jest.mock('~/flash');
 
 const grapqhQlError = new Error('GraphQL Error');
+const userInput = {
+  id: 'gid://gitlab/Issue/1',
+  link: 'https://gitlab.zoom.us/j/incident-triage',
+  linkText: 'Demo incident link',
+  linkType: 'zoom',
+};
 const listResponse = jest.fn().mockResolvedValue(resourceLinksListResponse);
 const emptyResponse = jest.fn().mockResolvedValue(resourceLinksEmptyResponse);
 const errorResponse = jest.fn().mockRejectedValue(grapqhQlError);
 const deleteResponse = jest.fn();
+const createResponse = jest.fn();
 
 function createMockApolloProvider(response = emptyResponse) {
   const requestHandlers = [[getIssuableResourceLinks, response]];
@@ -38,6 +48,12 @@ function createMockApolloProvider(response = emptyResponse) {
 function createMockApolloDeleteProvider() {
   deleteResponse.mockResolvedValue(resourceLinksDeleteEventResponse);
   const requestHandlers = [[deleteIssuableResourceLink, deleteResponse]];
+  return createMockApollo(requestHandlers);
+}
+
+function createMockApolloCreateProvider() {
+  createResponse.mockResolvedValue(resourceLinkCreateEventResponse);
+  const requestHandlers = [[createIssuableResourceLink, createResponse]];
   return createMockApollo(requestHandlers);
 }
 
@@ -51,10 +67,33 @@ describe('ResourceLinksBlock', () => {
   const findLoadingSpinner = () => wrapper.findComponent(GlLoadingIcon);
   const findResourceLinksList = () => wrapper.findComponent(ResourceLinksList);
   const findAllResourceLinks = () => wrapper.findAllComponents(ResourceLinkItem);
+  const findLinkTextInput = () => wrapper.findByTestId('link-text-input');
+  const findLinkValueInput = () => wrapper.findByTestId('link-value-input');
+  const findSubmitButton = () => wrapper.findByTestId('add-button');
 
   const clickFirstDeleteButton = async () => {
     findAllResourceLinks().at(0).vm.$emit('removeRequest', mockResourceLinks[0].id);
 
+    await waitForPromises();
+  };
+
+  const openForm = async () => {
+    findResourceLinkAddButton().trigger('click');
+    await waitForPromises();
+  };
+
+  const fillData = () => {
+    findLinkTextInput().setValue(userInput.linkText);
+    findLinkValueInput().setValue(userInput.link);
+  };
+
+  const submitForm = async () => {
+    await openForm();
+
+    fillData();
+    await nextTick();
+
+    findSubmitButton().trigger('click');
     await waitForPromises();
   };
 
@@ -77,6 +116,7 @@ describe('ResourceLinksBlock', () => {
     afterEach(() => {
       if (wrapper) {
         deleteResponse.mockReset();
+        createResponse.mockReset();
         wrapper.destroy();
       }
     });
@@ -239,6 +279,48 @@ describe('ResourceLinksBlock', () => {
 
       expect(createAlert).toHaveBeenCalledWith(expectedError);
       expect(findAllResourceLinks().length).toBe(3);
+    });
+  });
+
+  describe('createMutation', () => {
+    const expectedData = {
+      input: userInput,
+    };
+
+    it('should call the mutation with right variables and closes the form', async () => {
+      mountComponent(createMockApolloCreateProvider());
+
+      await submitForm();
+
+      expect(createResponse).toHaveBeenCalledWith(expectedData);
+      expect(resourceLinkForm().isVisible()).toBe(false);
+    });
+
+    describe('error handling', () => {
+      it.each`
+        mockReject | message                                                                      | captureError | error
+        ${true}    | ${'Something went wrong while creating the resource link for the incident.'} | ${true}      | ${new Error()}
+        ${false}   | ${'Error creating resource link for the incident: Create error'}             | ${false}     | ${null}
+      `(
+        'should show an error when submission fails',
+        async ({ mockReject, message, captureError, error }) => {
+          const expectedAlertArgs = {
+            captureError,
+            error,
+            message,
+          };
+          mountComponent(createMockApolloCreateProvider(), mockResourceLinks);
+          if (mockReject) {
+            createResponse.mockRejectedValueOnce();
+          } else {
+            createResponse.mockResolvedValue(resourceLinkCreateEventError);
+          }
+
+          await submitForm();
+
+          expect(createAlert).toHaveBeenCalledWith(expectedAlertArgs);
+        },
+      );
     });
   });
 });
