@@ -32,6 +32,19 @@ RSpec.describe 'Merge request > User edits MR with multiple reviewers' do
         expect(page).to have_content(rule_name)
       end
     end
+
+    describe 'escapes rule name' do
+      let(:rule_name) { '<img src="" />' }
+
+      it 'is shown in reviewer dropdown' do
+        find('.js-reviewer-search').click
+        wait_for_requests
+
+        page.within '.dropdown-menu-reviewer' do
+          expect(page).to have_content(rule_name)
+        end
+      end
+    end
   end
 
   context 'code owner approval rules', :js do
