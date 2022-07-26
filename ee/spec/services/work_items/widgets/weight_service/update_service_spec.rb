@@ -40,12 +40,18 @@ RSpec.describe WorkItems::Widgets::WeightService::UpdateService do
         end
 
         context 'when weight param is present' do
-          let(:params) { { weight: 2 } }
+          where(:new_weight) do
+            [[2], [nil]]
+          end
 
-          it 'correctly sets work item weight value' do
-            subject
+          with_them do
+            let(:params) { { weight: new_weight } }
 
-            expect(work_item.weight).to eq(2)
+            it 'correctly sets work item weight value' do
+              subject
+
+              expect(work_item.weight).to eq(new_weight)
+            end
           end
         end
 

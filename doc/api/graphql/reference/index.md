@@ -22274,4 +22274,4 @@ A time-frame defined as a closed inclusive range of two dates.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="workitemwidgetweightinputweight"></a>`weight` | [`Int!`](#int) | Weight of the work item. |
+| <a id="workitemwidgetweightinputweight"></a>`weight` | [`Int`](#int) | Weight of the work item. |
