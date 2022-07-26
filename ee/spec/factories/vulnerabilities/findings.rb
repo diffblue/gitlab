@@ -537,6 +537,16 @@ FactoryBot.define do
         finding.name = "CVE-2021-44228 in org.apache.logging.log4j:log4j-api-2.14.1"
         finding.message = "Apache Log4j2 <=2.14.1 JNDI features used in configuration, log messages, and parameters do not protect against attacker controlled LDAP and other JNDI related endpoints."
         finding.metadata_version = "2.1"
+        finding.location = {
+          "image": evaluator.image,
+          "dependency": {
+            "package": {
+              "name": evaluator.package
+            },
+            "operating_system": "Unknown",
+            "version": evaluator.version
+          }
+        }
         finding.raw_metadata = {
           "category": "container_scanning",
           "name": "CVE-2021-44228 in org.apache.logging.log4j:log4j-api-2.14.1",
