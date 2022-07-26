@@ -29,6 +29,37 @@ const skipRenderingHandlers = {
       [{ type: 'text', value: `[${node.identifier}]: ${node.url}${title}` }],
     );
   },
+  linkReference: (h, node) => {
+    const definition = h.definition(node.identifier);
+
+    return h(
+      node.position,
+      'a',
+      {
+        href: definition.url,
+        identifier: node.identifier,
+        isReference: 'true',
+        title: definition.title,
+      },
+      all(h, node),
+    );
+  },
+  imageReference: (h, node) => {
+    const definition = h.definition(node.identifier);
+
+    return h(
+      node.position,
+      'img',
+      {
+        src: definition.url,
+        alt: node.alt,
+        identifier: node.identifier,
+        isReference: 'true',
+        title: definition.title,
+      },
+      all(h, node),
+    );
+  },
 };
 
 const createParser = ({ skipRendering = [] }) => {
