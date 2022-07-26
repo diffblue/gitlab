@@ -29158,6 +29158,9 @@ msgstr ""
 msgid "Please check your email (%{email}) to verify that you own this address and unlock the power of CI/CD. Didn't receive it? %{resend_link}. Wrong email address? %{update_link}."
 msgstr ""
 
+msgid "Please click the link in the confirmation email before continuing. It was sent to "
+msgstr ""
+
 msgid "Please complete your profile with email address"
 msgstr ""
 
@@ -33099,6 +33102,9 @@ msgid "Resend"
 msgstr ""
 
 msgid "Resend Request"
+msgstr ""
+
+msgid "Resend confirmation e-mail"
 msgstr ""
 
 msgid "Resend confirmation email"
@@ -43295,6 +43301,9 @@ msgid "Warning: Synchronizing LDAP removes direct members' access."
 msgstr ""
 
 msgid "Watch how"
+msgstr ""
+
+msgid "We also use email for avatar detection if no avatar is uploaded."
 msgstr ""
 
 msgid "We are currently unable to fetch data for the pipeline header."
