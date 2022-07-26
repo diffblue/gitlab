@@ -7,7 +7,7 @@ class RemoveTmpIndexProjectMembershipNamespaceIdColumn < Gitlab::Database::Migra
   INDEX_NAME = 'tmp_index_for_namespace_id_migration_on_project_members'
 
   disable_ddl_transaction!
-  
+
   def up
     remove_concurrent_index_by_name :project_members, INDEX_NAME
   end
