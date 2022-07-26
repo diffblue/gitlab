@@ -28,6 +28,7 @@ module Security
     end
 
     def execute
+      filter_by_present_on_default_branch if ::Feature.enabled?(:deprecate_vulnerabilities_feedback)
       filter_by_projects
       filter_by_image
       filter_by_report_types
@@ -46,6 +47,14 @@ module Security
     private
 
     attr_reader :params, :vulnerable, :vulnerabilities
+
+    def filter_by_present_on_default_branch
+      @vulnerabilities = if params[:present_on_default_branch].eql?(false)
+                           vulnerabilities
+                         else
+                           vulnerabilities.for_default_branch
+                         end
+    end
 
     def filter_by_projects
       if params[:project_id].present?

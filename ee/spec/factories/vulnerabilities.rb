@@ -10,6 +10,7 @@ FactoryBot.define do
     confidence { :medium }
     report_type { :sast }
     description { "Description of #{title}" }
+    present_on_default_branch { true }
 
     trait :detected do
       state { Vulnerability.states[:detected] }
