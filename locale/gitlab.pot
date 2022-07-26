@@ -28537,6 +28537,9 @@ msgstr ""
 msgid "PipelineSchedules|Variables"
 msgstr ""
 
+msgid "PipelineSchedule|Take ownership to edit"
+msgstr ""
+
 msgid "PipelineSource|API"
 msgstr ""
 
