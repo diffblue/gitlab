@@ -376,6 +376,10 @@ for synchronous communication during incident management. After starting a Zoom
 call for an incident, you can associate the conference call with an issue. Your
 team members can join the Zoom call without requesting a link.
 
+### Linked Resources
+
+GitLab enables you to [link resources with an incident](../../user/project/issues/linked_resources.md) for providing quick and easy access to those resources in one place. With this, you can more easily surface the incident slack channel, zoom meeting space or links to any relevant resource for resolving incidents.
+
 ### Embed metrics in incidents
 
 You can embed metrics anywhere [GitLab Markdown](../../user/markdown.md) is
