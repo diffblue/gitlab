@@ -1,0 +1,23 @@
+---
+description: Epic usage event
+category: epics_action
+action: perform_epics_action
+label_description:
+property_description: the name of the performed action
+value_description:
+extra_properties:
+identifiers:
+- user
+- namespace
+product_section: dev
+product_stage: plan
+product_group: product_planning
+product_category: epics
+milestone: "15.3"
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/91912
+distributions:
+- ee
+tiers:
+- premium
+- ultimate
+
