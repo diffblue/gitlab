@@ -4,7 +4,12 @@ require 'airborne'
 
 module QA
   RSpec.describe 'Enablement:Search' do
-    describe 'Elasticsearch advanced global search with advanced syntax', :orchestrated, :elasticsearch, :requires_admin do
+    describe(
+      'Elasticsearch advanced global search with advanced syntax',
+      :orchestrated,
+      :elasticsearch,
+      :requires_admin
+    ) do
       let(:project_name_suffix) { SecureRandom.hex(8) }
       let(:api_client) { Runtime::API::Client.new(:gitlab) }
 
@@ -37,11 +42,17 @@ module QA
       end
 
       context 'when searching for projects using advanced syntax' do
-        it 'searches in the project name', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348066' do
+        it(
+          'searches in the project name',
+          testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348066'
+        ) do
           expect_search_to_find_project("es-adv-*#{project_name_suffix}")
         end
 
-        it 'searches in the project description', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348067' do
+        it(
+          'searches in the project description',
+          testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348067'
+        ) do
           expect_search_to_find_project("unique +#{project_name_suffix}")
         end
       end
@@ -49,13 +60,16 @@ module QA
       private
 
       def expect_search_to_find_project(search_term)
-        QA::Support::Retrier.retry_on_exception(max_attempts: Runtime::Search::RETRY_MAX_ITERATION, sleep_interval: Runtime::Search::RETRY_SLEEP_INTERVAL) do
-          get Runtime::Search.create_search_request(api_client, 'projects', search_term).url
-          expect_status(QA::Support::API::HTTP_STATUS_OK)
-
-          raise 'Empty search result returned' if json_body.empty?
-
-          expect(json_body[0][:name]).to eq(project.name)
+        QA::Support::Retrier.retry_on_exception(
+          max_attempts: Runtime::Search::RETRY_MAX_ITERATION,
+          sleep_interval: Runtime::Search::RETRY_SLEEP_INTERVAL
+        ) do
+          get(Runtime::Search.create_search_request(api_client, 'projects', search_term).url)
+          aggregate_failures do
+            expect_status(QA::Support::API::HTTP_STATUS_OK)
+            expect(json_body).not_to be_empty
+            expect(json_body[0][:name]).to eq(project.name)
+          end
         end
       end
     end
