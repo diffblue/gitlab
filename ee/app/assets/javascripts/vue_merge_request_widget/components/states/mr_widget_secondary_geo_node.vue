@@ -1,6 +1,5 @@
 <script>
 import { GlIcon, GlTooltipDirective } from '@gitlab/ui';
-import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import statusIcon from '~/vue_merge_request_widget/components/mr_widget_status_icon.vue';
 
 export default {
@@ -11,7 +10,6 @@ export default {
   directives: {
     GlTooltip: GlTooltipDirective,
   },
-  mixins: [glFeatureFlagMixin()],
   props: {
     mr: {
       type: Object,
@@ -24,12 +22,7 @@ export default {
   <div class="mr-widget-body media gl-flex-wrap">
     <status-icon status="warning" show-disabled-button />
     <div class="media-body">
-      <span
-        :class="{
-          'gl-ml-0! gl-text-body!': glFeatures.restructuredMrWidget,
-        }"
-        class="bold"
-      >
+      <span class="gl-ml-0! gl-text-body! bold">
         {{ __('Merge unavailable: merge requests are read-only in a secondary Geo node.') }}
       </span>
       <a
