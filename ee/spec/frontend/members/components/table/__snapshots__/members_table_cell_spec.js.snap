@@ -9,6 +9,7 @@ Object {
     "canOverride": false,
     "canRemove": false,
     "canResend": false,
+    "canUnban": false,
     "canUpdate": false,
   },
 }

@@ -441,6 +441,10 @@ module EE
       namespace_bans.any? { |namespace_ban| namespace_ban.namespace == namespace }
     end
 
+    def namespace_ban_for(namespace)
+      namespace_bans.find_by!(namespace: namespace)
+    end
+
     protected
 
     override :password_required?

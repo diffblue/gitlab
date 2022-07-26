@@ -1,4 +1,4 @@
-import { generateBadges, canOverride } from 'ee/members/utils';
+import { generateBadges, canOverride, canUnban } from 'ee/members/utils';
 import { member as memberMock, directMember, inheritedMember } from 'jest/members/mock_data';
 
 describe('Members Utils', () => {
@@ -45,5 +45,20 @@ describe('Members Utils', () => {
     `('returns $expected', ({ member, expected }) => {
       expect(canOverride(member)).toBe(expected);
     });
+  });
+
+  describe('canUnban', () => {
+    test.each`
+      member                                               | expected
+      ${{ ...memberMock, banned: true, canUnban: true }}   | ${true}
+      ${{ ...memberMock, banned: true, canUnban: false }}  | ${false}
+      ${{ ...memberMock, banned: false, canUnban: true }}  | ${false}
+      ${{ ...memberMock, banned: false, canUnban: false }} | ${false}
+    `(
+      'returns $expected for "member banned $member.banned and member canUnban $member.canUnban"',
+      ({ member, expected }) => {
+        expect(canUnban(member)).toBe(expected);
+      },
+    );
   });
 });

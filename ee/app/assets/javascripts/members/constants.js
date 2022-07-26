@@ -6,6 +6,7 @@ import { OPERATOR_IS_ONLY } from '~/vue_shared/components/filtered_search_bar/co
 import {
   AVAILABLE_FILTERED_SEARCH_TOKENS as AVAILABLE_FILTERED_SEARCH_TOKENS_CE,
   MEMBER_TYPES as MEMBER_TYPES_CE,
+  TAB_QUERY_PARAM_VALUES as CE_TAB_QUERY_PARAM_VALUES,
 } from '~/members/constants';
 
 // eslint-disable-next-line import/export
@@ -40,11 +41,23 @@ export const MEMBER_TYPES = {
 };
 
 // eslint-disable-next-line import/export
+export const EE_ACTION_BUTTONS = {
+  [MEMBER_TYPES.banned]: 'banned-action-buttons',
+};
+
+// eslint-disable-next-line import/export
+export const TAB_QUERY_PARAM_VALUES = {
+  ...CE_TAB_QUERY_PARAM_VALUES,
+  banned: 'banned',
+};
+
+// eslint-disable-next-line import/export
 export const EE_TABS = [
   {
     namespace: MEMBER_TYPES.banned,
     canManageMembersPermissionsRequired: true,
     title: __('Banned'),
+    queryParamValue: TAB_QUERY_PARAM_VALUES.banned,
   },
 ];
 
@@ -56,7 +69,7 @@ const uniqueProjectDownloadLimitEnabled =
 export const EE_APP_OPTIONS = uniqueProjectDownloadLimitEnabled
   ? {
       [MEMBER_TYPES.banned]: {
-        tableFields: ['account'],
+        tableFields: ['account', 'actions'],
         requestFormatter: groupMemberRequestFormatter,
       },
     }
