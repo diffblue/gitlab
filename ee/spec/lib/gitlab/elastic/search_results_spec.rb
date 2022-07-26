@@ -2,13 +2,14 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Elastic::SearchResults, :elastic do
+RSpec.describe Gitlab::Elastic::SearchResults, :elastic_delete_by_query do
   before do
     stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
   end
 
+  let_it_be(:user) { create(:user) }
+
   let(:query) { 'hello world' }
-  let(:user) { create(:user) }
   let(:project_1) { create(:project, :public, :repository, :wiki_repo) }
   let(:project_2) { create(:project, :public, :repository, :wiki_repo) }
   let(:limit_project_ids) { [project_1.id] }
@@ -177,25 +178,25 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic do
     context 'when the highlighting finds the same terms multiple times' do
       let(:content) do
         <<~END
-        bar
-        bar
-        foo
-        bar # this is the highlighted bar
-        baz
-        boo
-        bar
+          bar
+          bar
+          foo
+          bar # this is the highlighted bar
+          baz
+          boo
+          bar
         END
       end
 
       it 'does not mistake a line that happens to include the same term that was highlighted on a later line' do
         highlighted_content = <<~END
-        bar
-        bar
-        foo
-        #{::Elastic::Latest::GitClassProxy::HIGHLIGHT_START_TAG}bar#{::Elastic::Latest::GitClassProxy::HIGHLIGHT_END_TAG} # this is the highlighted bar
-        baz
-        boo
-        bar
+          bar
+          bar
+          foo
+          #{::Elastic::Latest::GitClassProxy::HIGHLIGHT_START_TAG}bar#{::Elastic::Latest::GitClassProxy::HIGHLIGHT_END_TAG} # this is the highlighted bar
+          baz
+          boo
+          bar
         END
 
         result = {
@@ -208,11 +209,11 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic do
         parsed = described_class.parse_search_result(result, project)
 
         expected_data = <<~END
-        bar
-        foo
-        bar # this is the highlighted bar
-        baz
-        boo
+          bar
+          foo
+          bar # this is the highlighted bar
+          baz
+          boo
         END
 
         expect(parsed).to be_kind_of(::Gitlab::Search::FoundBlob)
@@ -851,7 +852,7 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic do
       expect(results.blobs_count).to eq 0
     end
 
-    context 'Searches CamelCased methods' do
+    context 'searches CamelCased methods' do
       before do
         project_1.repository.create_file(
           user,
@@ -887,125 +888,80 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic do
       end
     end
 
-    context 'Searches special characters' do
-      let(:file_content) do
-        <<~FILE
-          us
+    context 'searches with special characters' do
+      shared_examples_for 'finds the file' do
+        let(:file_name) { 'elastic_specialchars_test.md' }
 
-          some other stuff
+        subject { search_for(search_term) }
 
-          dots.also.need.testing
+        before do
+          project_1.repository.create_file(user, file_name, file_content, message: 'Some commit message', branch_name: 'master')
+          project_1.repository.index_commits_and_blobs
+          ensure_elasticsearch_index!
+        end
 
-          and;colons:too$
-          wow
-          yeah!
-
-          Foo.bar(x)
-
-          include "bikes-3.4"
-          /a/longer/file-path/absolute_with_specials.txt
-          another/file-path/relative-with-specials.txt
-          /file-path/components-within-slashes/
-          another/file-path/differeñt-lønguage.txt
-
-          us-east-2
-          bye
-
-          MyJavaClass::javaLangStaticMethodCall
-          $my_perl_object->perlMethodCall
-          LanguageWithSingleColon:someSingleColonMethodCall
-          WouldHappenInManyLanguages,tokenAfterCommaWithNoSpace
-          ParenthesesBetweenTokens)tokenAfterParentheses
-          a.b.c=missing_token_around_equals
-
-          def self.ruby_method_name(ruby_method_arg)
-          RubyClassInvoking.ruby_method_call(with_arg)
-
-          def self.ruby_method_123(ruby_another_method_arg)
-          RubyClassInvoking.ruby_call_method_123(with_arg)
-
-        FILE
+        it { is_expected.to include(file_name) }
       end
 
-      let(:file_name) { 'elastic_specialchars_test.md' }
+      context 'unsupported', :aggregate_failures, quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/346914' do
+        using RSpec::Parameterized::TableSyntax
 
-      before do
-        project_1.repository.create_file(user, file_name, file_content, message: 'Some commit message', branch_name: 'master')
-        project_1.repository.index_commits_and_blobs
-        ensure_elasticsearch_index!
+        where(:file_content, :search_term) do
+          'https://s3.amazonaws.com/foo/bar/baz.png'                | 'foo/bar'
+          'https://test.or.dev.com/repository/maven-all'            | 'https://test.or.dev.com/repository'
+          'https://test.or.dev.com/repository/maven-all'            | 'test.or.dev.com/repository/maven-all'
+          'https://test.or.dev.com/repository/maven-all'            | 'repository/maven-all'
+          'id("foo.bar-baz-conventions")'                           | 'bar-baz-conventions'
+          'id("foo.bar-baz-conventions")'                           | 'baz-conventions'
+          'extends: .gitlab-tests-image'                            | 'tests-image'
+          'extends: .gitlab-tests-image'                            | 'gitlab-tests'
+          'We [plan ambitiously](#ambitious-planning).'             | '#ambitious-planning'
+          'dots.also.need.testing'                                  | '.testing'
+          'q = "SET @@session.sql_log_bin=0;"'                      | 'sql_log_bin=0'
+          'uri: "v3/delData",'                                      | 'v3/delData'
+          'dots.also.need.testing'                                  | 'dots.need'
+        end
+
+        with_them do
+          it_behaves_like 'finds the file'
+        end
       end
 
-      it 'finds files with dashes' do
-        expect(search_for('"us-east-2"')).to include(file_name)
-        expect(search_for('bikes-3.4')).to include(file_name)
-      end
+      context 'currently supported', :aggregate_failures do
+        using RSpec::Parameterized::TableSyntax
 
-      it 'finds files with dots' do
-        expect(search_for('"dots.also.need.testing"')).to include(file_name)
-        expect(search_for('dots')).to include(file_name)
-        expect(search_for('need')).to include(file_name)
-        expect(search_for('dots.need')).not_to include(file_name)
-      end
+        where(:file_content, :search_term) do
+          'https://test.or.dev.com/repository/maven-all'            | 'https://test.or.dev.com/repository/maven-all'
+          'id("foo.bar-baz-conventions")'                           | 'baz'
+          'extends: .gitlab-tests-image'                            | 'gitlab-tests-image'
+          'We [plan ambitiously](#ambitious-planning).'             | 'ambitious-planning'
+          'us-east-2'                                               | '"us-east-2"'
+          'include "bikes-3.4"'                                     | 'bikes-3.4'
+          'dots.also.need.testing'                                  | '"dots.also.need.testing"'
+          'dots.also.need.testing'                                  | 'dots'
+          'dots.also.need.testing'                                  | 'need'
+          'and;colons:too$'                                         | "and;colons:too$"
+          'Foo.bar(x)'                                              | 'bar\(x\)'
+          '/a/longer/file-path/absolute_with_specials.txt'          | '"absolute_with_specials.txt"'
+          'another/file-path/relative-with-specials.txt'            | '"relative-with-specials.txt"'
+          '/file-path/components-within-slashes/'                   | '"components-within-slashes"'
+          'another/file-path/differeñt-lønguage.txt'                | '"differeñt-lønguage.txt"'
+          'MyJavaClass::javaLangStaticMethodCall'                   | 'javaLangStaticMethodCall'
+          '$my_perl_object->perlMethodCall'                         | 'perlMethodCall'
+          'LanguageWithSingleColon:someSingleColonMethodCall'       | 'someSingleColonMethodCall'
+          'WouldHappenInManyLanguages,tokenAfterCommaWithNoSpace'   | 'tokenAfterCommaWithNoSpace'
+          'ParenthesesBetweenTokens)tokenAfterParentheses'          | 'tokenAfterParentheses'
+          'a.b.c=missing_token_around_equals'                       | 'missing_token_around_equals'
+          'def self.ruby_method_name(ruby_method_arg)'              | 'ruby_method_name'
+          'def self.ruby_method_123(ruby_another_method_arg)'       | 'ruby_method_123'
+          'RubyClassInvoking.ruby_method_call(with_arg)'            | 'ruby_method_call'
+          'RubyClassInvoking.ruby_call_method_123(with_arg)'        | 'ruby_call_method_123'
+          'q = "SET @@session.sql_log_bin=0;"'                      | 'sql_log_bin'
+        end
 
-      it 'finds files with other special chars' do
-        expect(search_for('"and;colons:too$"')).to include(file_name)
-        expect(search_for('bar\(x\)')).to include(file_name)
-      end
-
-      it 'finds absolute file paths with slashes and other special chars' do
-        expect(search_for('"absolute_with_specials.txt"')).to include(file_name)
-      end
-
-      it 'finds relative file paths with slashes and other special chars' do
-        expect(search_for('"relative-with-specials.txt"')).to include(file_name)
-      end
-
-      it 'finds file path components within slashes for directories' do
-        expect(search_for('"components-within-slashes"')).to include(file_name)
-      end
-
-      it 'finds file paths for various languages' do
-        expect(search_for('"differeñt-lønguage.txt"')).to include(file_name)
-      end
-
-      it 'finds java style static method call after ::' do
-        expect(search_for('javaLangStaticMethodCall')).to include(file_name)
-      end
-
-      it 'finds perl object method call' do
-        expect(search_for('perlMethodCall')).to include(file_name)
-      end
-
-      it 'finds tokens after a colon' do
-        expect(search_for('someSingleColonMethodCall')).to include(file_name)
-      end
-
-      it 'finds tokens after a comma with no space' do
-        expect(search_for('tokenAfterCommaWithNoSpace')).to include(file_name)
-      end
-
-      it 'finds a token directly after parentheses' do
-        expect(search_for('tokenAfterParentheses')).to include(file_name)
-      end
-
-      it 'finds a token after = without a space' do
-        expect(search_for('missing_token_around_equals')).to include(file_name)
-      end
-
-      it 'finds a ruby method name even if preceded with dot' do
-        expect(search_for('ruby_method_name')).to include(file_name)
-      end
-
-      it 'finds a ruby method name with numbers' do
-        expect(search_for('ruby_method_123')).to include(file_name)
-      end
-
-      it 'finds a ruby method call even if preceded with dot' do
-        expect(search_for('ruby_method_call')).to include(file_name)
-      end
-
-      it 'finds a ruby method call with numbers' do
-        expect(search_for('ruby_call_method_123')).to include(file_name)
+        with_them do
+          it_behaves_like 'finds the file'
+        end
       end
     end
 
