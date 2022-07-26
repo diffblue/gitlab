@@ -7,7 +7,7 @@ module Types
         graphql_name 'WorkItemWidgetWeightInput'
 
         argument :weight, GraphQL::Types::Int,
-                 required: true,
+                 required: :nullable,
                  description: 'Weight of the work item.'
       end
     end

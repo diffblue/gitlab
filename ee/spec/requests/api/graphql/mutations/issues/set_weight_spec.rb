@@ -64,16 +64,6 @@ RSpec.describe 'Setting weight of an issue' do
     end
   end
 
-  context 'when weight is not given' do
-    let(:input) { {} }
-
-    it 'returns an error' do
-      post_graphql_mutation(mutation, current_user: current_user)
-
-      expect(graphql_errors).to include(a_hash_including('message' => /The `weight` argument is required \(`null` accepted\)/))
-    end
-  end
-
   context 'when weight is not an integer' do
     let(:input) { { weight: "2" } }
 

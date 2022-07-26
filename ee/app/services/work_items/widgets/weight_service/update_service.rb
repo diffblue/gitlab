@@ -5,7 +5,7 @@ module WorkItems
     module WeightService
       class UpdateService < WorkItems::Widgets::BaseService
         def update(params: {})
-          return unless params.present? && params[:weight]
+          return unless params.present? && params.key?(:weight)
 
           weight = params.delete(:weight)
 
