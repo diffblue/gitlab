@@ -7,7 +7,6 @@ import createCadence from 'ee/iterations/queries/cadence_create.mutation.graphql
 import updateCadence from 'ee/iterations/queries/cadence_update.mutation.graphql';
 import getCadence from 'ee/iterations/queries/iteration_cadence.query.graphql';
 import iterationsInCadence from 'ee/iterations/queries/group_iterations_in_cadence.query.graphql';
-import { iterationStates } from 'ee/iterations/constants';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { TEST_HOST } from 'helpers/test_constants';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
@@ -330,19 +329,6 @@ describe('Iteration cadence form', () => {
       await waitForPromises();
 
       expect(findStartDate().attributes('disabled')).toBe(undefined);
-    });
-
-    it('disables the start date field when the first iteration is current or closed', async () => {
-      createComponent({
-        iterationsHandler: iterationsResponseMockFactory({
-          ...mockIterationNode,
-          state: iterationStates.closed,
-        }),
-      });
-
-      await waitForPromises();
-
-      expect(findStartDate().attributes('disabled')).toBe('disabled');
     });
 
     it('shows the description text with the correct weekday for effective date', async () => {

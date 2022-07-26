@@ -149,21 +149,6 @@ export default {
     isEdit() {
       return Boolean(this.cadenceId);
     },
-    startDateEditable() {
-      if (this.iterations.length === 0) {
-        return true;
-      }
-
-      const firstIterationUpcoming = this.iterations[0].state === iterationStates.upcoming;
-      if (firstIterationUpcoming) return true;
-
-      return false;
-    },
-    isStartDateDisabled() {
-      if (this.loadingCadence) return true;
-
-      return this.isEdit && !this.startDateEditable;
-    },
     page() {
       return this.isEdit ? 'edit' : 'new';
     },
@@ -418,7 +403,7 @@ export default {
               class="gl-datepicker-input"
               autocomplete="off"
               inputmode="none"
-              :disabled="isStartDateDisabled"
+              :disabled="loadingCadence"
               :state="validationState.startDate"
               data-qa-selector="iteration_cadence_start_date_field"
               @blur="validate('startDate')"
