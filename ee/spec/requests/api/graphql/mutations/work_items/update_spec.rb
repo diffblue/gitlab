@@ -55,6 +55,25 @@ RSpec.describe 'Update a work item' do
         let(:current_user) { reporter }
 
         it_behaves_like 'update work item weight widget'
+
+        context 'when setting weight to null' do
+          let(:input) do
+            { 'weightWidget' => { 'weight' => nil } }
+          end
+
+          before do
+            work_item.update!(weight: 2)
+          end
+
+          it 'closes and updates the work item' do
+            expect do
+              post_graphql_mutation(mutation, current_user: current_user)
+              work_item.reload
+            end.to change(work_item, :weight).from(2).to(nil)
+
+            expect(response).to have_gitlab_http_status(:success)
+          end
+        end
       end
 
       context 'when user has permissions to update a work item' do
