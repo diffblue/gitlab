@@ -33,7 +33,7 @@ module EE
           expose :requirements_enabled do |project, options|
             project.feature_available?(:requirements, options[:current_user])
           end
-          expose(:requirements_access_level) { |project, _| project.project_feature.string_access_level(:requirements) }
+          expose(:requirements_access_level) { |project, _| project_feature_string_access_level(project, :requirements) }
 
           expose :security_and_compliance_enabled do |project, options|
             project.feature_available?(:security_and_compliance, options[:current_user])
