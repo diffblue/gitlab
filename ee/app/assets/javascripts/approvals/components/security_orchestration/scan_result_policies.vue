@@ -79,9 +79,13 @@ export default {
           />
           <policy-details :key="`${policy.name}-details`" :policy="policy" />
         </template>
-        <gl-button category="secondary" variant="confirm" size="small" :href="newPolicyPath">
-          {{ $options.i18n.createPolicy }}
-        </gl-button>
+        <tr>
+          <td colspan="12">
+            <gl-button category="secondary" variant="confirm" size="small" :href="newPolicyPath">
+              {{ $options.i18n.createPolicy }}
+            </gl-button>
+          </td>
+        </tr>
       </template>
     </container>
   </gl-form-group>
