@@ -6,6 +6,9 @@ import timeagoMixin from '~/vue_shared/mixins/timeago';
 
 describe('EE DAST Configuration Header', () => {
   let wrapper;
+  const pipelineId = 'pipeline-id';
+  const pipelinePath = 'pipeline-path';
+  const pipelineCreatedAt = '2022-06-20T10:17:18Z';
 
   const createComponent = (options = {}) => {
     wrapper = shallowMountExtended(DastConfigurationHeader, {
@@ -31,11 +34,24 @@ describe('EE DAST Configuration Header', () => {
     expect(findLink().exists()).toBe(false);
   });
 
+  it('should show latest pipeline info if dast is disabled but used before', () => {
+    const badgeLabel = s__('DastConfig|Not enabled');
+    const badgeText = s__('DastConfig|Last scan triggered');
+
+    createComponent({
+      dastEnabled: false,
+      pipelineId,
+      pipelinePath,
+      pipelineCreatedAt,
+    });
+
+    expect(findBadge().props('variant')).toBe('neutral');
+    expect(findBadge().text()).toContain(badgeLabel);
+    expect(wrapper.text()).toContain(badgeText);
+  });
+
   it('should be enabled if dast is enabled', () => {
     const dastEnabled = true;
-    const pipelineId = 'pipeline-id';
-    const pipelinePath = 'pipeline-path';
-    const pipelineCreatedAt = '2022-06-20T10:17:18Z';
     const badgeLabel = s__('DastConfig|Enabled');
 
     createComponent({

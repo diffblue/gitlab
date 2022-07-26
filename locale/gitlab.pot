@@ -11700,7 +11700,7 @@ msgstr ""
 msgid "DastConfig|Generate code snippet"
 msgstr ""
 
-msgid "DastConfig|Last scan run %{runTimeAgo} in pipeline "
+msgid "DastConfig|Last scan triggered %{runTimeAgo} in pipeline "
 msgstr ""
 
 msgid "DastConfig|No previous scans found for this project"

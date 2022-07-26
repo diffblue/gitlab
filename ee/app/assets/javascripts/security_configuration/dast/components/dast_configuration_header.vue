@@ -13,7 +13,7 @@ export default {
     notEnabledLabel: s__('DastConfig|Not enabled'),
     notEnabledText: s__('DastConfig|No previous scans found for this project'),
     enabledLabel: s__('DastConfig|Enabled'),
-    enabledText: s__('DastConfig|Last scan run %{runTimeAgo} in pipeline '),
+    enabledText: s__('DastConfig|Last scan triggered %{runTimeAgo} in pipeline '),
   },
   mixins: [timeagoMixin],
   props: {
@@ -48,7 +48,7 @@ export default {
         : this.$options.i18n.notEnabledLabel;
     },
     headerText() {
-      return this.dastEnabled ? this.enabledTextWithTime : this.$options.i18n.notEnabledText;
+      return this.showPipelineLink ? this.enabledTextWithTime : this.$options.i18n.notEnabledText;
     },
     enabledTextWithTime() {
       return sprintf(this.$options.i18n.enabledText, {
@@ -58,8 +58,14 @@ export default {
     pipelineIdFormatted() {
       return `#${this.pipelineId}`;
     },
+    dastUsedBefore() {
+      return Boolean(this.pipelineCreatedAt);
+    },
     timeAgo() {
       return this.timeFormatted(this.pipelineCreatedAt);
+    },
+    showPipelineLink() {
+      return this.dastEnabled || this.dastUsedBefore;
     },
   },
 };
@@ -70,7 +76,7 @@ export default {
     <gl-badge :variant="badgeVariant" size="md">{{ badgeText }}</gl-badge>
     <span class="gl-ml-2">
       <span data-testid="dast-header-text">{{ headerText }}</span>
-      <gl-link v-if="dastEnabled" :href="pipelinePath" data-testid="help-page-link">
+      <gl-link v-if="showPipelineLink" :href="pipelinePath" data-testid="help-page-link">
         {{ pipelineIdFormatted }}
       </gl-link>
     </span>

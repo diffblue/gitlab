@@ -43,10 +43,11 @@ describe('EE - DAST Configuration App', () => {
   });
 
   it('should render dast configuration header', () => {
-    expect(findHeader().exists()).toBe(true);
-    expect(findHeader().props('dastEnabled')).toBe(dastEnabled);
-    expect(findHeader().props('pipelinePath')).toBe(pipelinePath);
-    expect(findHeader().props('pipelineCreatedAt')).toBe(pipelineCreatedAt);
-    expect(findHeader().props('pipelineId')).toBe(pipelineId);
+    expect(findHeader().props()).toMatchObject({
+      dastEnabled,
+      pipelinePath,
+      pipelineCreatedAt,
+      pipelineId,
+    });
   });
 });
