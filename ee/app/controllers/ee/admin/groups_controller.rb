@@ -9,12 +9,8 @@ module EE
       def reset_runners_minutes
         group
 
-        if ::Ci::Minutes::ResetUsageService.new(@group).execute
-          redirect_to [:admin, @group], notice: _('Group pipeline minutes were successfully reset.')
-        else
-          flash.now[:error] = _('There was an error resetting group pipeline minutes.')
-          render "edit"
-        end
+        ::Ci::Minutes::ResetUsageService.new(@group).execute
+        redirect_to [:admin, @group], notice: _('Group pipeline minutes were successfully reset.')
       end
 
       private
