@@ -22,7 +22,7 @@ exports[`ResourceLinksBlock with defaults renders correct component 1`] = `
         />
          Linked resources 
         <a
-          aria-label="Read more about linked resources"
+          aria-label="Use this space to add links to the resources your team needs as they work to resolve the incident."
           class="gl-link gl-display-flex gl-align-items-center gl-ml-2 gl-text-gray-500"
           data-testid="help-link"
           href="/help/user/project/issues/linked_resources"
@@ -34,6 +34,7 @@ exports[`ResourceLinksBlock with defaults renders correct component 1`] = `
             class="gl-icon s12"
             data-testid="question-icon"
             role="img"
+            title="Use this space to add links to the resources your team needs as they work to resolve the incident."
           >
             <use
               href="#question"

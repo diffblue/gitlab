@@ -225,12 +225,7 @@ export default {
             data-testid="help-link"
             :aria-label="$options.i18n.helpText"
           >
-            <gl-icon
-              v-gl-tooltip
-              name="question"
-              :size="12"
-              :title="$options.i18n.helpText"
-            />
+            <gl-icon v-gl-tooltip name="question" :size="12" :title="$options.i18n.helpText" />
           </gl-link>
 
           <div class="gl-display-inline-flex">
