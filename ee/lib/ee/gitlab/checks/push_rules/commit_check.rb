@@ -82,7 +82,7 @@ module EE
 
           def committer_check(commit)
             unless push_rule.committer_allowed?(commit.committer_email, user_access.user)
-              # We can assume only one user holds an unconfirmed e-mail address. Since we want
+              # We can assume only one user holds an unconfirmed primary email address. Since we want
               # to give feedback whether this is an unconfirmed address, we look for any user that
               # matches by disabling the confirmation requirement.
               committer = commit.committer(confirmed: false)

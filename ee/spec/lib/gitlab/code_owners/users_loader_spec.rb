@@ -54,7 +54,7 @@ RSpec.describe Gitlab::CodeOwners::UsersLoader do
       expect(entry).to have_received(:add_matching_users_from).with([user])
     end
 
-    it 'returns users by primary email' do
+    it 'returns users for confirmed primary emails' do
       user = create(:user, email: 'user@gitlab.org')
       project.add_developer(user)
 
@@ -63,13 +63,31 @@ RSpec.describe Gitlab::CodeOwners::UsersLoader do
       expect(entry).to have_received(:add_matching_users_from).with([user])
     end
 
-    it 'returns users by secondary email' do
-      user = create(:email, email: 'other-user@gitlab.org').user
+    it 'returns users for unconfirmed primary emails' do
+      user = create(:user, :unconfirmed, email: 'user@gitlab.org')
       project.add_developer(user)
 
       load_users
 
       expect(entry).to have_received(:add_matching_users_from).with([user])
+    end
+
+    it 'returns users for confirmed secondary emails' do
+      user = create(:email, :confirmed, email: 'other-user@gitlab.org').user
+      project.add_developer(user)
+
+      load_users
+
+      expect(entry).to have_received(:add_matching_users_from).with([user])
+    end
+
+    it 'does not return users for unconfirmed secondary emails' do
+      user = create(:email, email: 'other-user@gitlab.org').user
+      project.add_developer(user)
+
+      load_users
+
+      expect(entry).to have_received(:add_matching_users_from).with([])
     end
 
     context 'input as array of strings' do

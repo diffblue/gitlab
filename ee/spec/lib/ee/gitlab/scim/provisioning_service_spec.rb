@@ -142,7 +142,7 @@ RSpec.describe ::EE::Gitlab::Scim::ProvisioningService do
 
     context 'for an existing user' do
       before do
-        create(:email, user: user, email: 'work@example.com')
+        create(:email, :confirmed, user: user, email: 'work@example.com')
       end
       let(:user) { create(:user) }
 
