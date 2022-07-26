@@ -268,6 +268,72 @@ RSpec.describe API::Deployments do
     end
   end
 
+  describe 'DELETE /projects/:id/deployments/:deployment_id' do
+    let(:commits) { environment.project.repository.commits(nil, { limit: 2 })}
+    let!(:deploy) do
+      create(
+        :deployment,
+        :success,
+        project: environment.project,
+        environment: environment,
+        deployable: nil,
+        sha: commits[1].sha
+      )
+    end
+
+    let!(:old_deploy) do
+      create(
+        :deployment,
+        :success,
+        project: environment.project,
+        environment: environment,
+        deployable: nil,
+        sha: commits[0].sha,
+        finished_at: 1.year.ago
+      )
+    end
+
+    context 'with protected environment' do
+      context 'with admin deploy' do
+        before do
+          create(
+            :protected_environment,
+            :admins_can_deploy,
+            project: environment.project,
+            name: environment.name
+          )
+        end
+
+        it 'maintainer cannot delete a deployment' do
+          project.add_maintainer(user)
+
+          delete api("/projects/#{project.id}/deployments/#{deploy.id}", user)
+
+          expect(response).to have_gitlab_http_status(:forbidden)
+        end
+      end
+
+      context 'with maintainer deploy' do
+        before do
+          create(
+            :protected_environment,
+            :maintainers_can_deploy,
+            project: environment.project,
+            name: environment.name
+          )
+        end
+
+        it 'maintainer can delete a deployment' do
+          project.add_maintainer(user)
+
+          delete api("/projects/#{project.id}/deployments/#{deploy.id}", user)
+
+          expect(response).to have_gitlab_http_status(:no_content)
+        end
+      end
+    end
+  end
+
   describe 'POST /projects/:id/deployments/:deployment_id/approval' do
     shared_examples_for 'not created' do |approval_status: 'approved', response_status:, message:|
       it 'does not create an approval' do
