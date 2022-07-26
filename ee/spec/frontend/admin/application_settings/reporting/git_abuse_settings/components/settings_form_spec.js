@@ -1,8 +1,8 @@
-import { GlButton } from '@gitlab/ui';
+import { GlButton, GlForm } from '@gitlab/ui';
 import { nextTick } from 'vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
-import GitAbuseRateLimitSettingsForm from 'ee/admin/application_settings/reporting/git_abuse_settings/components/form.vue';
+import SettingsForm from 'ee/admin/application_settings/reporting/git_abuse_settings/components/settings_form.vue';
 import UsersAllowlist from 'ee/admin/application_settings/reporting/git_abuse_settings/components/users_allowlist.vue';
 
 import {
@@ -37,8 +37,9 @@ describe('Git abuse rate limit settings form component', () => {
   const findSubmitButton = () => wrapper.findComponent(GlButton);
 
   const createComponent = ({ props = {} } = {}) => {
-    wrapper = shallowMountExtended(GitAbuseRateLimitSettingsForm, {
+    wrapper = shallowMountExtended(SettingsForm, {
       propsData: {
+        isLoading: false,
         ...props,
       },
     });
@@ -66,11 +67,7 @@ describe('Git abuse rate limit settings form component', () => {
     });
 
     it('should pre-fill value from props', () => {
-      createComponent({
-        props: {
-          maxNumberOfRepositoryDownloads: 10,
-        },
-      });
+      createComponent({ props: { maxDownloads: 10 } });
 
       expect(findNumberOfReposInput().attributes('value')).toBe('10');
     });
@@ -125,11 +122,7 @@ describe('Git abuse rate limit settings form component', () => {
     });
 
     it('should pre-fill value from props', () => {
-      createComponent({
-        props: {
-          maxNumberOfRepositoryDownloadsWithinTimePeriod: 100,
-        },
-      });
+      createComponent({ props: { timePeriod: 100 } });
 
       expect(findReportingTimePeriodInput().attributes('value')).toBe('100');
     });
@@ -185,11 +178,7 @@ describe('Git abuse rate limit settings form component', () => {
     });
 
     it('should pass the correct props to UsersAllowlist component', () => {
-      createComponent({
-        props: {
-          gitRateLimitUsersAllowlist: ['user1', 'user2'],
-        },
-      });
+      createComponent({ props: { allowlist: ['user1', 'user2'] } });
 
       expect(findUsersAllowlist().props('excludedUsernames')).toEqual(['user1', 'user2']);
     });
@@ -203,11 +192,7 @@ describe('Git abuse rate limit settings form component', () => {
     });
 
     it('should remove user from data when user-removed event is emitted ', () => {
-      createComponent({
-        props: {
-          gitRateLimitUsersAllowlist: ['user1', 'user2'],
-        },
-      });
+      createComponent({ props: { allowlist: ['user1', 'user2'] } });
 
       findUsersAllowlist().vm.$emit('user-removed', 'user1');
 
@@ -244,6 +229,22 @@ describe('Git abuse rate limit settings form component', () => {
 
         expect(findSubmitButton().attributes('disabled')).toBe('true');
       });
+    });
+  });
+
+  it('emits "submit" event with the correct arguments when form is submitted', () => {
+    createComponent({ props: { timePeriod: 1, allowlist: ['user1'] } });
+
+    wrapper.findComponent(GlForm).vm.$emit('submit', {
+      preventDefault: jest.fn(),
+    });
+
+    const submitEvents = wrapper.emitted().submit;
+    expect(submitEvents.length).toEqual(1);
+    expect(submitEvents[0][0]).toMatchObject({
+      maxDownloads: 0,
+      timePeriod: 1,
+      allowlist: ['user1'],
     });
   });
 });
