@@ -2,7 +2,7 @@ import { createWrapper } from '@vue/test-utils';
 
 import { initGitAbuseRateLimitSettingsForm } from 'ee/admin/application_settings/reporting/git_abuse_settings';
 import { parseFormProps } from 'ee/admin/application_settings/reporting/git_abuse_settings/utils';
-import GitAbuseRateLimitSettingsForm from 'ee/admin/application_settings/reporting/git_abuse_settings/components/form.vue';
+import SettingsForm from 'ee/admin/application_settings/reporting/git_abuse_settings/components/settings_form.vue';
 
 jest.mock('ee/admin/application_settings/reporting/git_abuse_settings/utils', () => ({
   parseFormProps: jest.fn().mockReturnValue({
@@ -16,7 +16,7 @@ describe('initGitAbuseRateLimitSettingsForm', () => {
   let wrapper;
   let el;
 
-  const findSettingsForm = () => wrapper.findComponent(GitAbuseRateLimitSettingsForm);
+  const findSettingsForm = () => wrapper.findComponent(SettingsForm);
 
   const createAppRoot = () => {
     el = document.createElement('div');
@@ -55,9 +55,9 @@ describe('initGitAbuseRateLimitSettingsForm', () => {
 
     it('passes props to form component', () => {
       expect(findSettingsForm().props()).toMatchObject({
-        maxNumberOfRepositoryDownloads: 10,
-        maxNumberOfRepositoryDownloadsWithinTimePeriod: 300,
-        gitRateLimitUsersAllowlist: ['user1', 'user2'],
+        maxDownloads: 10,
+        timePeriod: 300,
+        allowlist: ['user1', 'user2'],
       });
     });
   });
