@@ -4,7 +4,13 @@ require 'airborne'
 
 module QA
   RSpec.describe 'Enablement:Search' do
-    describe 'When using elasticsearch API to search for a known blob', :orchestrated, :elasticsearch, :requires_admin, only: { pipeline: :nightly } do
+    describe(
+      'When using elasticsearch API to search for a known blob',
+      :orchestrated,
+      :elasticsearch,
+      :requires_admin,
+      only: { pipeline: :nightly }
+    ) do
       p1_threshold = 15
       p2_threshold = 10
       p3_threshold = 5
@@ -39,10 +45,13 @@ module QA
         end
       end
 
-      it 'searches public project and finds a blob as an non-member user', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348089' do
+      it(
+        'searches public project and finds a blob as an non-member user',
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348089'
+      ) do
         start_time = Time.now
         while (Time.now - start_time) / 60 < p1_threshold
-          get Runtime::Search.create_search_request(api_client, 'blobs', project_file_content).url
+          get(Runtime::Search.create_search_request(api_client, 'blobs', project_file_content).url)
           expect_status(QA::Support::API::HTTP_STATUS_OK)
 
           if !json_body.empty? && json_body[0][:data].match(project_file_content) && json_body[0][:project_id].equal?(project.id)
