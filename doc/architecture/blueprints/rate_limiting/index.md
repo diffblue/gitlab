@@ -170,9 +170,9 @@ define all of them in a single place.
 
 ### GitLab Policy Service
 
-Not all limits can be easily defined in YAML. There are some more complex
-policies that require a bit more sophisticated and declarative programming
-language to describe them. One example of such language might be
+Not all limits can be easily described in YAML. There are some more complex
+policies that require a bit more sophisticated approach and a declarative
+programming language used to enforce them. One example of such a language might be
 [Rego](https://www.openpolicyagent.org/docs/latest/policy-language/) language.
 It is a standardized way to define policies in
 [OPA - Open Policy Agent](https://www.openpolicyagent.org/). At GitLab we are
@@ -188,8 +188,20 @@ There is a significant opportunity here in transforming Pipeline Validation
 Service into a general purpose GitLab Policy Service / GitLab Policy Agent that
 will be well integrated into the GitLab product itself.
 
-With GitLab Policy Service we will also be able to build GraphQL rate limiting
-using query cost predictions.
+Generalizing Pipeline Validation Service into GitLab Policy Service can bring a
+few interesting benefits:
+
+1. Consolidate on our tooling across the company to improve efficiency.
+1. Integrate our GitLab Rails limits framework to resolve policies using the policy service.
+1. Do not struggle to define complex policies in YAML and hack evaluating them in Ruby.
+1. Build a policy for GraphQL queries limiting using query execution cost estimation.
+1. Make it easier to resolve policies that do not need "hierarchical limits" structure.
+1. Make GitLab Policy Service part of the product and integrate it into the single application.
+
+We envision using GitLab Policy Service to be place to define policies that do
+not require knowing anything about the hierarchical structure of the limits.
+There are limits that do not need this, like IP addresses allow-list, spam
+checks, configuration validation etc.
 
 ## Hierarchical limits
 
