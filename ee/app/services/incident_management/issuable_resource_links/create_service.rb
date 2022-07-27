@@ -12,7 +12,7 @@ module IncidentManagement
       def execute
         return error_no_permissions unless allowed?
 
-        params.merge!({ link_text: params[:link] }) if params[:link_text].nil?
+        params[:link_text] = params[:link] if params[:link_text].nil?
 
         issuable_resource_link_params = params.merge({ issue: incident })
         issuable_resource_link = IncidentManagement::IssuableResourceLink.new(issuable_resource_link_params)
