@@ -244,6 +244,7 @@ export default {
         :include-legend-avg-max="false"
         :format-tooltip-text="formatTooltipText"
         data-testid="group-coverage-chart"
+        responsive
       >
         <template #tooltip-title>
           {{ tooltipTitle }}
