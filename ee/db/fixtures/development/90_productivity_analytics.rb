@@ -129,7 +129,7 @@ class Gitlab::Seeder::ProductivityAnalytics
   def merge_merge_requests(merge_requests)
     merge_requests.each do |merge_request|
       Timecop.travel rand(15).days.from_now do
-        MergeRequests::MergeService.new(merge_request.project, @user).execute(merge_request)
+        MergeRequests::MergeService.new(project: merge_request.project, current_user: @user).execute(merge_request)
       end
     end
   end
