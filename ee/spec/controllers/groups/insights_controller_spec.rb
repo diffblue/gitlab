@@ -9,9 +9,22 @@ RSpec.describe Groups::InsightsController do
   let_it_be(:insight) { create(:insight, group: parent_group, project: project) }
   let_it_be(:user) { create(:user) }
 
-  let(:query_params) { { type: 'bar', query: { issuable_type: 'issue', collection_labels: ['bug'] }, projects: projects_params } }
   let(:projects_params) { { only: [project.id, project.full_path] } }
   let(:params) { { group_id: parent_group } }
+
+  let(:query_params) do
+    {
+      type: 'bar',
+      query: {
+        data_source: 'issuables',
+        params: {
+          issuable_type: 'issue',
+          collection_labels: ['bug']
+        },
+        projects: projects_params
+      }
+    }
+  end
 
   before do
     stub_licensed_features(insights: true)
@@ -144,6 +157,18 @@ RSpec.describe Groups::InsightsController do
         subject { post :query, params: params.merge(query_params.merge(group_id: nested_group.to_param)), format: :json }
 
         it_behaves_like '200 status'
+
+        context 'when using the legacy format' do
+          let(:query_params) do
+            {
+              type: 'bar',
+              query: { issuable_type: 'issue', collection_labels: ['bug'] },
+              projects: projects_params
+            }
+          end
+
+          it_behaves_like '200 status'
+        end
       end
     end
   end
