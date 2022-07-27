@@ -53,18 +53,18 @@ Inc._
 
 ## Challenges
 
-* We have many ways to define application limits, in many different places.
-* It is difficult to understand what limits have been applied to a request.
-* It is difficult to introduce new limits, even more to define policies.
-* Finding what limits are defined requires performing a codebase audit.
-* We don't have a good way to expose limits to satellite services like Registry.
-* We enforce a number of different policies via opaque external systems (Pipeline Validation Service, Bouncer, Watchtower).
-* There is not standardized way to define policies in a way consistent with defining limits.
-* It is difficult to understand when a user is approaching a limit threshold.
-* There is no way to automatically notify a user when they are approaching thresholds.
-* There is no single way to change limits for a namespace / project / user / customer.
-* There is no single way to monitor limits through real-time metrics.
-* There is no framework for hierarchical limit configuration (instance / namespace / sub-group / project).
+- We have many ways to define application limits, in many different places.
+- It is difficult to understand what limits have been applied to a request.
+- It is difficult to introduce new limits, even more to define policies.
+- Finding what limits are defined requires performing a codebase audit.
+- We don't have a good way to expose limits to satellite services like Registry.
+- We enforce a number of different policies via opaque external systems (Pipeline Validation Service, Bouncer, Watchtower).
+- There is not standardized way to define policies in a way consistent with defining limits.
+- It is difficult to understand when a user is approaching a limit threshold.
+- There is no way to automatically notify a user when they are approaching thresholds.
+- There is no single way to change limits for a namespace / project / user / customer.
+- There is no single way to monitor limits through real-time metrics.
+- There is no framework for hierarchical limit configuration (instance / namespace / sub-group / project).
 
 ## Opportunity
 
@@ -100,8 +100,8 @@ abstraction that will tell engineers how to define a limit in a structured way
 (presumably using YAML or Cue format) and then how to consume the limit in the
 application itself.
 
-We envision building a simple Ruby library here (we can add it to labkit-ruby)
-that will make it trivial for engineers to check if a certain limit has been
+We envision building a simple Ruby library here (we can add it to LabKit) that
+will make it trivial for engineers to check if a certain limit has been
 exceeded or not.
 
 ```yaml
@@ -136,7 +136,7 @@ end
 ```
 
 In the example above, when `my_limit_name` is defined in YAML, engineers will
-be check the current state and execute  appropriate  code block depending on the
+be check the current state and execute appropriate code block depending on the
 past usage / resource consumption.
 
 Things we want to build and support by default:
@@ -226,7 +226,7 @@ limits and thresholds to apply for a given request and a given actor:
 > precedence needs to be explicitly configured for every override, a default
 > limit has precedence 100.
 
-One way in which we can simplify limits management in general is is to:
+One way in which we can simplify limits management in general is to:
 
 1. Have default limits / thresholds defined in YAML files with a default precedence 100.
 1. Allow limits to be overridden through the API, store overrides in the database.
@@ -244,9 +244,6 @@ One way in which we can simplify limits management in general is is to:
 1. Build the new framework in a way that we can extend to allow self-managed admins to customize limits.
 1. Maintain consistent features and behavior across SaaS and self-managed codebase.
 1. Be mindful about a cognitive load added by the hierarchical limits, aim to reduce it.
-
-## Iterations
-
 
 ## Status
 
