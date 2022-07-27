@@ -239,7 +239,7 @@
     "md5": "^2.2.1",
     "miragejs": "^0.1.40",
     "mock-apollo-client": "1.2.0",
-    "nodemon": "^2.0.4",
+    "nodemon": "^2.0.19",
     "prettier": "2.2.1",
     "prosemirror-schema-basic": "^1.1.2",
     "prosemirror-schema-list": "^1.1.6",

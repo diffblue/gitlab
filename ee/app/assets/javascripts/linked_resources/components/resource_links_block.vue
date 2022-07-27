@@ -1,5 +1,5 @@
 <script>
-import { GlLink, GlIcon, GlButton, GlLoadingIcon } from '@gitlab/ui';
+import { GlLink, GlIcon, GlButton, GlLoadingIcon, GlTooltipDirective } from '@gitlab/ui';
 import { produce } from 'immer';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { TYPE_ISSUE } from '~/graphql_shared/constants';
@@ -24,6 +24,9 @@ export default {
     GlLoadingIcon,
   },
   i18n: resourceLinksI18n,
+  directives: {
+    GlTooltip: GlTooltipDirective,
+  },
   props: {
     issuableId: {
       type: Number,
@@ -222,7 +225,7 @@ export default {
             data-testid="help-link"
             :aria-label="$options.i18n.helpText"
           >
-            <gl-icon name="question" :size="12" />
+            <gl-icon v-gl-tooltip name="question" :size="12" :title="$options.i18n.helpText" />
           </gl-link>
 
           <div class="gl-display-inline-flex">
