@@ -65,11 +65,7 @@ describe('DastProfilesConfigurator', () => {
     await nextTick();
   };
 
-  const createComponentFactory = (mountFn = shallowMount) => (
-    options = {},
-    withHandlers,
-    mockProfiles = true,
-  ) => {
+  const createComponentFactory = (mountFn = shallowMount) => (options = {}, withHandlers) => {
     localVue = createLocalVue();
     let defaultMocks = {
       $apollo: {
@@ -109,8 +105,8 @@ describe('DastProfilesConfigurator', () => {
           {
             data() {
               return {
-                scannerProfiles: mockProfiles ? scannerProfiles : [],
-                siteProfiles: mockProfiles ? siteProfiles : [],
+                scannerProfiles,
+                siteProfiles,
                 ...options.data,
               };
             },
@@ -217,30 +213,17 @@ describe('DastProfilesConfigurator', () => {
     const { profileName: savedScannerProfileName } = scannerProfiles[0];
     const { profileName: savedSiteProfileName } = siteProfiles[0];
 
-    beforeEach(() => {
-      createComponent({ savedSiteProfileName, savedScannerProfileName }, false, false);
+    beforeEach(async () => {
+      createComponent({ savedSiteProfileName, savedScannerProfileName }, true);
+      await nextTick();
     });
 
     it('should have saved profiles selected', async () => {
-      /**
-       * Simulate watch trigger
-       */
-      // eslint-disable-next-line no-restricted-syntax
-      wrapper.setData({ scannerProfiles, siteProfiles });
-      await nextTick();
-
       expect(findScannerProfilesSelector().find('h3').text()).toContain(savedScannerProfileName);
       expect(findSiteProfilesSelector().find('h3').text()).toContain(savedSiteProfileName);
     });
 
     it('should mark saved profiles as in-use', async () => {
-      /**
-       * Simulate watch trigger
-       */
-      // eslint-disable-next-line no-restricted-syntax
-      wrapper.setData({ scannerProfiles, siteProfiles });
-      await nextTick();
-
       await openDrawer();
       expect(findInUseLabel().exists()).toBe(true);
     });

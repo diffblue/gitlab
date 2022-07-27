@@ -23,7 +23,7 @@ import {
   SITE_PROFILES_QUERY,
 } from 'ee/on_demand_scans_form/settings';
 
-const createProfilesApolloOptions = (name, field, { fetchQuery, fetchError }) => ({
+const createProfilesApolloOptions = (name, field, savedField, { fetchQuery, fetchError }) => ({
   query: fetchQuery,
   variables() {
     return {
@@ -35,6 +35,11 @@ const createProfilesApolloOptions = (name, field, { fetchQuery, fetchError }) =>
     if (nodes.length === 1) {
       this[field] = nodes[0].id;
     }
+
+    if (this[savedField] && nodes.length > 1) {
+      this[field] = this.findSavedProfileId(nodes, this[savedField]);
+    }
+
     return nodes;
   },
   error(e) {
@@ -68,11 +73,13 @@ export default {
     scannerProfiles: createProfilesApolloOptions(
       'scannerProfiles',
       'selectedScannerProfileId',
+      'savedScannerProfileName',
       SCANNER_PROFILES_QUERY,
     ),
     siteProfiles: createProfilesApolloOptions(
       'siteProfiles',
       'selectedSiteProfileId',
+      'savedSiteProfileName',
       SITE_PROFILES_QUERY,
     ),
   },
@@ -175,19 +182,6 @@ export default {
   watch: {
     selectedScannerProfile: 'updateProfiles',
     selectedSiteProfile: 'updateProfiles',
-    scannerProfiles(profiles) {
-      if (this.savedScannerProfileName) {
-        this.selectedScannerProfileId = this.findSavedProfileId(
-          profiles,
-          this.savedScannerProfileName,
-        );
-      }
-    },
-    siteProfiles(profiles) {
-      if (this.savedSiteProfileName) {
-        this.selectedSiteProfileId = this.findSavedProfileId(profiles, this.savedSiteProfileName);
-      }
-    },
   },
   created() {
     const params = queryToObject(window.location.search, { legacySpacesDecode: true });
