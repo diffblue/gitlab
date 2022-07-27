@@ -295,7 +295,11 @@ Each widget reports:
 ### Adding new widgets
 
 When adding new widgets, the above events must be marked as `known`, and have metrics
-created, to be reportable. To generate these known events for a single widget:
+created, to be reportable.
+
+Note carefully: Events that are only for EE should include `--ee` at the end of both shell commands below.
+
+To generate these known events for a single widget:
 
 1. Widgets should be named `Widget${CamelName}`.
    - For example: a widget for **Test Reports** should be `WidgetTestReports`.
