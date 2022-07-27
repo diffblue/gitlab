@@ -185,7 +185,9 @@ RSpec.describe 'Promotions', :js do
       visit project_issue_path(project, issue)
       wait_for_requests
 
-      click_link 'Learn more'
+      page.within('.js-weight-sidebar-callout') do
+        click_link 'Learn more'
+      end
 
       expect(find('.promotion-issue-weight-sidebar-message')).to have_content 'Improve issues management with Issue weight and GitLab Enterprise Edition'
     end
@@ -194,8 +196,10 @@ RSpec.describe 'Promotions', :js do
       visit project_issue_path(project, issue)
       wait_for_requests
 
-      click_link 'Learn more'
-      click_link 'Not now, thanks'
+      page.within('.js-weight-sidebar-callout') do
+        click_link 'Learn more'
+        click_link 'Not now, thanks'
+      end
 
       expect(page).not_to have_content('.js-weight-sidebar-callout')
     end
@@ -204,8 +208,11 @@ RSpec.describe 'Promotions', :js do
       visit project_issue_path(project, issue)
       wait_for_requests
 
-      click_link 'Learn more'
-      click_link 'Not now, thanks'
+      page.within('.js-weight-sidebar-callout') do
+        click_link 'Learn more'
+        click_link 'Not now, thanks'
+      end
+
       visit project_issue_path(project, issue)
 
       expect(page).not_to have_selector('.js-weight-sidebar-callout')
@@ -215,8 +222,10 @@ RSpec.describe 'Promotions', :js do
       visit project_issue_path(project, issue)
       wait_for_requests
 
-      click_link 'Learn more'
-      click_link 'Learn more'
+      page.within('.js-weight-sidebar-callout') do
+        click_link 'Learn more'
+        click_link 'Learn more'
+      end
 
       expect(page).to have_selector('.js-weight-sidebar-callout')
     end
@@ -232,7 +241,9 @@ RSpec.describe 'Promotions', :js do
         visit project_issue_path(project, issue)
         wait_for_requests
 
-        click_link 'Learn more'
+        page.within('.js-weight-sidebar-callout') do
+          click_link 'Learn more'
+        end
 
         expect(page).to have_link 'Try it for free', href: new_trial_registration_path(glm_source: Gitlab.config.gitlab.host, glm_content: 'issue_weights'), class: 'promotion-trial-cta'
         expect(find('.js-close-callout.js-close-session.tr-issue-weights-not-now-cta')).to have_content 'Not now, thanks!'

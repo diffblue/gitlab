@@ -41700,10 +41700,10 @@ msgstr ""
 msgid "UsageQuota|Dependency proxy"
 msgstr ""
 
-msgid "UsageQuota|File attachments and smaller design graphics."
+msgid "UsageQuota|Effective %{storage_enforcement_date}, %{announcement_link_start}namespace storage limits will apply%{link_end} to the %{strong_start}%{namespace_name}%{strong_end} namespace. %{extra_message}View the %{rollout_link_start}rollout schedule for this change%{link_end}."
 msgstr ""
 
-msgid "UsageQuota|From %{storage_enforcement_date} storage limits will apply to this namespace. You are currently using %{used_storage} of namespace storage. View and manage your usage from %{strong_start}%{namespace_type} settings &gt; Usage quotas%{strong_end}."
+msgid "UsageQuota|File attachments and smaller design graphics."
 msgstr ""
 
 msgid "UsageQuota|Git repository."
@@ -41775,6 +41775,9 @@ msgstr ""
 msgid "UsageQuota|Seats"
 msgstr ""
 
+msgid "UsageQuota|See our %{faq_link_start}FAQ%{link_end} for more information."
+msgstr ""
+
 msgid "UsageQuota|Shared bits of code and text."
 msgstr ""
 
@@ -41800,6 +41803,18 @@ msgid "UsageQuota|Storage type"
 msgstr ""
 
 msgid "UsageQuota|Storage used"
+msgstr ""
+
+msgid "UsageQuota|The %{strong_start}%{context_name}%{strong_end} group will be affected by this. "
+msgstr ""
+
+msgid "UsageQuota|The %{strong_start}%{context_name}%{strong_end} project will be affected by this. "
+msgstr ""
+
+msgid "UsageQuota|The namespace is currently using %{strong_start}%{used_storage}%{strong_end} of namespace storage. View and manage your usage from %{strong_start}Group settings &gt; Usage quotas%{strong_end}. %{docs_link_start}Learn more%{link_end} about how to reduce your storage."
+msgstr ""
+
+msgid "UsageQuota|The namespace is currently using %{strong_start}%{used_storage}%{strong_end} of namespace storage. View and manage your usage from %{strong_start}User settings &gt; Usage quotas%{strong_end}. %{docs_link_start}Learn more%{link_end} about how to reduce your storage."
 msgstr ""
 
 msgid "UsageQuota|The table below shows current period usage"
