@@ -23,7 +23,7 @@ module Epics::RelatedEpicLinks::UsageDataHelper
 
   private
 
-  def track_related_epics_event_for(link_type:, event_type:)
+  def track_related_epics_event_for(link_type:, event_type:, namespace:)
     return unless ALLOWED_LINK_TYPES.include?(link_type)
     return unless ALLOWED_EVENT_TYPES.include?(event_type)
 
@@ -31,6 +31,6 @@ module Epics::RelatedEpicLinks::UsageDataHelper
 
     Gitlab::UsageDataCounters::EpicActivityUniqueCounter
       .method(event_method_name)
-      .call(author: current_user)
+      .call(author: current_user, namespace: namespace)
   end
 end

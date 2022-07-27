@@ -29,7 +29,7 @@ RSpec.describe Epics::RelatedEpicLinks::DestroyService do
       shared_examples 'a recorded event' do
         it 'records event for destroyed link' do
           expect(Gitlab::UsageDataCounters::EpicActivityUniqueCounter)
-            .to receive(tracking_method).with(author: user).once
+            .to receive(tracking_method).with(author: user, namespace: epic.group).once
 
           subject
         end

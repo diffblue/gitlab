@@ -7,6 +7,7 @@ RSpec.describe Epics::RelatedEpicLinks::UsageDataHelper do
 
   describe '#track_related_epics_event_for' do
     let_it_be(:user) { create(:user) }
+    let_it_be(:group) { create(:group) }
 
     subject(:related_epic_link_service) do
       Class.new do
@@ -33,9 +34,10 @@ RSpec.describe Epics::RelatedEpicLinks::UsageDataHelper do
 
     with_them do
       it 'calls correct tracking method on EpicActivityUniqueCounter' do
-        expect(Gitlab::UsageDataCounters::EpicActivityUniqueCounter).to receive(tracking_method).with(author: user)
+        expect(Gitlab::UsageDataCounters::EpicActivityUniqueCounter).to receive(tracking_method)
+          .with(author: user, namespace: group)
 
-        service.send(:track_related_epics_event_for, link_type: link_type, event_type: event_type)
+        service.send(:track_related_epics_event_for, link_type: link_type, event_type: event_type, namespace: group)
       end
     end
   end
