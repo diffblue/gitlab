@@ -1,6 +1,6 @@
 import { shallowMount } from '@vue/test-utils';
+import mockData from 'ee_jest/vue_merge_request_widget/mock_data';
 import LinkedPipelinesMiniList from 'ee/vue_shared/components/linked_pipelines_mini_list.vue';
-import mockData from 'ee_jest/vue_mr_widget/mock_data';
 import MrWidgetPipeline from '~/vue_merge_request_widget/components/mr_widget_pipeline.vue';
 import mockLinkedPipelines from '../vue_shared/components/linked_pipelines_mock_data';
 

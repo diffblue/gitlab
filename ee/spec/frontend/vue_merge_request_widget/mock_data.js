@@ -1,4 +1,4 @@
-import mockData, { mockStore } from 'jest/vue_mr_widget/mock_data';
+import mockData, { mockStore } from 'jest/vue_merge_request_widget/mock_data';
 
 export default {
   ...mockData,
