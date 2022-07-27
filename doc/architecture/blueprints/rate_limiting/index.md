@@ -12,19 +12,19 @@ description: 'Next Rate Limiting Architecture'
 Introducing reasonable application limits is a very important step in any SaaS
 platform scaling strategy. The more users a SaaS platform has, the more
 important it is to introduce sensible rate limiting and policies enforcement
-that will help to achieve availability goals, will reduce the problem of noisy
-neighbours for users and will ensure that they can keep using a platform
+that will help to achieve availability goals, reduce the problem of noisy
+neighbours for users and ensure that they can keep using a platform
 successfully.
 
-This especially true for GitLab.com. Our goal is to have a reasonable and
+This is especially true for GitLab.com. Our goal is to have a reasonable and
 transparent strategy for enforcing application limits, which will become a
 definition of a responsible usage, to help us with keeping our availability and
 user satisfaction at a desired level.
 
 We've been introducing various application limits for many years already, but
-we've never had a consistent strategy for doing it. A consistent framework used
-by engineers and product managers, across entire application stack, to define,
-expose and enforce limits and policies, is something we want to build now.
+we've never had a consistent strategy for doing it. What we want to build now is
+a consistent framework used by engineers and product managers, across entire
+application stack, to define, expose and enforce limits and policies.
 
 Lack of consistency in defining limits, not being able to expose them to our
 users, support engineers and satellite services, has negative impact on our
@@ -55,15 +55,16 @@ Inc._
 
 * We have many ways to define application limits, in many different places.
 * It is difficult to understand what limits have been applied to a request.
-* It is difficult to introduce new limits even even more to define policies.
+* It is difficult to introduce new limits, even more to define policies.
 * Finding what limits are defined requires performing a codebase audit.
 * We don't have a good way to expose limits to satellite services like Registry.
 * We need to build external services to enforce policies (Pipeline Validation Service).
 * There is not standardized way to define policies in a way consistent with defining limits.
-* It is difficult to understand when a user is approach a limit threshold.
+* It is difficult to understand when a user is approaching a limit threshold.
 * There is no way to automatically notify a user when they are approaching thresholds.
 * There is no single way to change limits for a namespace / project / user / customer.
 * There is no single way to monitor limits through real-time metrics.
+* There is no framework for hierarchical limit configuration (instance / namespace / sub-group / project).
 
 ## Opportunity
 
@@ -146,7 +147,7 @@ Things we want to build and support by default:
 1. Different types of limits - time bound / number per resource etc.
 1. A panel that makes it easy to override limits per plan / namespace.
 1. Logging that will expose limits applied in Kibana.
-1. An automatically generated documentation page will all limits described.
+1. An automatically generated documentation page describing all the limits.
 
 ### API to expose limits and policies
 
@@ -195,7 +196,8 @@ using query cost predictions.
 1. Try to avoid building rate limiting framework in a tightly coupled way.
 1. Build application limits API in a way that it can be easily extracted to a separate service.
 1. Build application limits definition in a way that is independent from the Rails application.
-1. TODO: add more principles ...
+1. Build tooling that produce consistent behavior and results across programming languages
+1. Maintain consistent features and behavior across SaaS and self-managed codebase.
 
 ## Iterations
 
