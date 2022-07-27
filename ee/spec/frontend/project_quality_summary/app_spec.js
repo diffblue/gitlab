@@ -2,31 +2,23 @@ import { GlSkeletonLoader, GlEmptyState, GlBanner } from '@gitlab/ui';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import mockProjectQualityResponse from 'test_fixtures/graphql/project_quality_summary/graphql/queries/get_project_quality.query.graphql.json';
-import { getCookie, setCookie } from '~/lib/utils/common_utils';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import createFlash from '~/flash';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
+import { makeMockUserCalloutDismisser } from 'helpers/mock_user_callout_dismisser';
 
 import ProjectQualitySummary from 'ee/project_quality_summary/app.vue';
 import getProjectQuality from 'ee/project_quality_summary/graphql/queries/get_project_quality.query.graphql';
-import {
-  i18n,
-  BANNER_DISMISSED_COOKIE_KEY,
-  FEEDBACK_ISSUE_URL,
-} from 'ee/project_quality_summary/constants';
+import { i18n, FEEDBACK_ISSUE_URL } from 'ee/project_quality_summary/constants';
 
 jest.mock('~/flash');
-jest.mock('~/lib/utils/common_utils', () => ({
-  parseBoolean: jest.requireActual('~/lib/utils/common_utils').parseBoolean,
-  getCookie: jest.fn().mockReturnValue(false),
-  setCookie: jest.fn(),
-}));
 
 Vue.use(VueApollo);
 
 describe('Project quality summary app component', () => {
   let wrapper;
+  let userCalloutDismissSpy;
 
   const findTestRunsLink = () => wrapper.findByTestId('test-runs-link');
   const findTestRunsStat = (index) => wrapper.findAllByTestId('test-runs-stat').at(index);
@@ -37,9 +29,12 @@ describe('Project quality summary app component', () => {
   const coverageChartPath = 'coverage/chart/path';
   const { pipelinePath, coverage } = mockProjectQualityResponse.data.project.pipelines.nodes[0];
 
-  const createComponent = (
+  const createComponent = ({
     mockReturnValue = jest.fn().mockResolvedValue(mockProjectQualityResponse),
-  ) => {
+    shouldShowCallout = true,
+  } = {}) => {
+    userCalloutDismissSpy = jest.fn();
+
     const apolloProvider = createMockApollo([[getProjectQuality, mockReturnValue]]);
 
     wrapper = mountExtended(ProjectQualitySummary, {
@@ -49,13 +44,20 @@ describe('Project quality summary app component', () => {
         coverageChartPath,
         defaultBranch: 'main',
         testRunsEmptyStateImagePath: 'image/path',
+        projectQualitySummaryFeedbackImagePath: 'banner/image/path',
+      },
+      stubs: {
+        UserCalloutDismisser: makeMockUserCalloutDismisser({
+          dismiss: userCalloutDismissSpy,
+          shouldShowCallout,
+        }),
       },
     });
   };
 
   describe('when loading', () => {
     beforeEach(() => {
-      createComponent(jest.fn().mockReturnValueOnce(new Promise(() => {})));
+      createComponent({ mockReturnValue: jest.fn().mockReturnValueOnce(new Promise(() => {})) });
     });
 
     it('shows a loading state', () => {
@@ -65,7 +67,7 @@ describe('Project quality summary app component', () => {
 
   describe('on error', () => {
     beforeEach(async () => {
-      createComponent(jest.fn().mockRejectedValueOnce(new Error('Error!')));
+      createComponent({ mockReturnValue: jest.fn().mockRejectedValueOnce(new Error('Error!')) });
       await waitForPromises();
     });
 
@@ -87,21 +89,16 @@ describe('Project quality summary app component', () => {
       });
     });
 
-    it('sets a cookie when dismissed', async () => {
+    it('dismisses the callout when closed', () => {
       createComponent();
+
       findBanner().vm.$emit('close');
 
-      await waitForPromises();
-
-      expect(findBanner().exists()).toBe(false);
-      expect(setCookie).toHaveBeenCalledWith(BANNER_DISMISSED_COOKIE_KEY, 'true');
+      expect(userCalloutDismissSpy).toHaveBeenCalled();
     });
 
-    it('is not displayed when the cookie is set', async () => {
-      getCookie.mockImplementationOnce(() => true);
-      createComponent();
-
-      await waitForPromises();
+    it('is not displayed once it has been dismissed', () => {
+      createComponent({ shouldShowCallout: false });
 
       expect(findBanner().exists()).toBe(false);
     });

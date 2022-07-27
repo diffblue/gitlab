@@ -1,7 +1,6 @@
 import { s__ } from '~/locale';
 
 export const FEEDBACK_ISSUE_URL = 'https://gitlab.com/gitlab-org/gitlab/-/issues/342634';
-export const BANNER_DISMISSED_COOKIE_KEY = 'project_quality_summary_feedback_banner_dismissed';
 
 export const i18n = {
   testRuns: {
