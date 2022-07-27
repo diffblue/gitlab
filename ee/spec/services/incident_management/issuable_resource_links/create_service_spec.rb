@@ -81,7 +81,7 @@ RSpec.describe IncidentManagement::IssuableResourceLinks::CreateService do
     end
 
     context 'when link text is absent' do
-      let(:link_text) { '' }
+      let(:link_text) { nil }
 
       it 'stores link and link text' do
         result = execute.payload[:issuable_resource_link]
