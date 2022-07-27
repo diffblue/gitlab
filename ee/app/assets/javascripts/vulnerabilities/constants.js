@@ -93,6 +93,7 @@ export const SUPPORTING_MESSAGE_TYPES = {
 
 export const SUPPORTED_IDENTIFIER_TYPES = {
   cwe: 'cwe',
+  owasp: 'owasp',
 };
 
 export const VULNERABILITY_TRAINING_HEADING = {

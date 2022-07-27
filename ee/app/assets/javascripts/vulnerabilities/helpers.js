@@ -1,6 +1,6 @@
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { isAbsolute, isSafeURL } from '~/lib/utils/url_utility';
-import { REGEXES } from './constants';
+import { REGEXES, SUPPORTED_IDENTIFIER_TYPES } from './constants';
 
 // Get the issue in the format expected by the descendant components of related_issues_block.vue.
 export const getFormattedIssue = (issue) => ({
@@ -72,4 +72,12 @@ export const normalizeGraphQLVulnerability = (vulnerability) => {
 
 export const formatIdentifierExternalIds = ({ externalType, externalId, name }) => {
   return `[${externalType}]-[${externalId}]-[${name}]`;
+};
+
+export const isSupportedIdentifier = (externalType) => {
+  const { cwe, owasp } = SUPPORTED_IDENTIFIER_TYPES;
+  // We only support lowercase owasp.
+  // Uppercase OWASP will be supported in follow up issue:
+  // https://gitlab.com/gitlab-org/gitlab/-/issues/366556
+  return externalType?.toLowerCase() === cwe || externalType === owasp;
 };
