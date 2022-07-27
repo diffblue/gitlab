@@ -28,7 +28,7 @@ module Epics
 
         return unless event_type
 
-        track_related_epics_event_for(link_type: event_type, event_type: :removed)
+        track_related_epics_event_for(link_type: event_type, event_type: :removed, namespace: epic.group)
       end
 
       def get_event_type

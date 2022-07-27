@@ -61,7 +61,8 @@ RSpec.describe Epics::RelatedEpicLinks::CreateService do
             issuable_references: [issuable_a, issuable3].map { |epic| epic.to_reference(issuable.group, full: true) }
           }
 
-          expect(Gitlab::UsageDataCounters::EpicActivityUniqueCounter).to receive(tracking_method_name).with(author: user).twice
+          expect(Gitlab::UsageDataCounters::EpicActivityUniqueCounter).to receive(tracking_method_name)
+            .with(author: user, namespace: group).twice
 
           described_class.new(issuable, user, params).execute
         end

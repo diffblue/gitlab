@@ -41,9 +41,11 @@ module EE
       def track_cross_reference_action
         super
 
+        return unless noteable.is_a?(Epic)
+
         counter = ::Gitlab::UsageDataCounters::EpicActivityUniqueCounter
 
-        counter.track_epic_cross_referenced(author: author) if noteable.is_a?(Epic)
+        counter.track_epic_cross_referenced(author: author, namespace: noteable.group)
       end
     end
   end
