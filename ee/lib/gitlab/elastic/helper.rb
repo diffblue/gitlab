@@ -54,7 +54,7 @@ module Gitlab
           {
             scheme:   uri.scheme,
             user:     user.presence || Addressable::URI.unencode(uri.user),
-            password: password.presence || Addressable::URI.unencode(uri.password),
+            password: password.presence || Addressable::URI.unencode(uri.password) || (user.present? ? '' : nil),
             host:     uri.host,
             path:     uri.path,
             port:     uri.port

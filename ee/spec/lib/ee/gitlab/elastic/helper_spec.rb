@@ -93,6 +93,19 @@ RSpec.describe Gitlab::Elastic::Helper, :request_store do
         port:     9200
       })
     end
+
+    it 'sets password to empty string when only username is provided' do
+      settings = described_class.connection_settings(uri: "http://localhost:9200", user: "myuser", password: nil)
+
+      expect(settings).to eq({
+        scheme:   "http",
+        host:     "localhost",
+        user:     "myuser",
+        password: "",
+        path:     "",
+        port:     9200
+      })
+    end
   end
 
   describe '.`url_string`' do
