@@ -130,7 +130,7 @@
 - Move sidekiq-cluster to ee/bin. !11001
 - Move ee-specific code from boards/components/issue_card_inner.vue. !11032 (Roman Rodionov)
 - Make all billing cards fit in view. !11602
-- Extracted EE specific lines for spec/javascripts/vue_mr_widget/mock_data.js. !11847
+- Extracted EE specific lines for spec/javascripts/vue_merge_request_widget/mock_data.js. !11847
 
 
 ## 11.10.8 (2019-06-27)
