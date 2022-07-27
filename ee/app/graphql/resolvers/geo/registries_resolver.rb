@@ -19,12 +19,17 @@ module Resolvers
                  required: false,
                  description: 'Filters registries by their ID.'
 
-        def resolve(ids: nil)
+        argument :replication_state, ::Types::Geo::ReplicableStateEnum,
+                 required: false,
+                 description: 'Filters registries by their replication state.'
+
+        def resolve(**args)
           return registry_class.none unless geo_node_is_current?
 
           registry_finder_class.new(
             context[:current_user],
-            ids: registry_ids(ids)
+            ids: registry_ids(args[:ids]),
+            replication_state: args[:replication_state]
           ).execute
         end
 
