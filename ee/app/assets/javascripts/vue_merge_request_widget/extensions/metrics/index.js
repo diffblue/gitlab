@@ -11,7 +11,6 @@ export default {
     loading: s__('Reports|Metrics reports are loading'),
     error: s__('Reports|Metrics reports failed to load results'),
   },
-  expandEvent: 'i_testing_metrics_report_widget_total',
   computed: {
     numberOfChanges() {
       const changedMetrics =
