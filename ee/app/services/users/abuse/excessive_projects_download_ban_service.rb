@@ -32,7 +32,7 @@ module Users
 
       def rate_limited?(peek: false)
         ::Gitlab::ApplicationRateLimiter.throttled?(
-          :unique_project_downloads,
+          :unique_project_downloads_for_application,
           scope: current_user,
           resource: project,
           peek: peek
