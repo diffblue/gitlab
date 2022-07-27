@@ -74,7 +74,7 @@ RSpec.describe API::Ci::Minutes do
 
       context 'when submitting multiple packs' do
         context 'when duplicate packs' do
-          let(:payload) { { packs: [minutes_pack, minutes_pack] }}
+          let(:payload) { { packs: [minutes_pack, minutes_pack] } }
 
           it 'creates only one new pack' do
             expect { post_minutes }.to change(Ci::Minutes::AdditionalPack, :count).by(1)

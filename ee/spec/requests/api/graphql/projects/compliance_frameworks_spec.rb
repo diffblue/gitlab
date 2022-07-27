@@ -55,7 +55,7 @@ RSpec.describe 'getting compliance frameworks for a collection of projects' do
     end
 
     before do
-      projects.each { |p| create(:project_member, :maintainer, source: p, user: current_user)}
+      projects.each { |p| create(:project_member, :maintainer, source: p, user: current_user) }
       post_graphql(query, current_user: current_user)
     end
 
@@ -82,7 +82,7 @@ RSpec.describe 'getting compliance frameworks for a collection of projects' do
     end
 
     before do
-      projects.each { |p| create(:project_member, :maintainer, source: p, user: current_user)}
+      projects.each { |p| create(:project_member, :maintainer, source: p, user: current_user) }
       post_graphql(query, current_user: current_user)
     end
 

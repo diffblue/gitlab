@@ -198,7 +198,7 @@ RSpec.describe API::Internal::Base do
     end
 
     context 'ip restriction' do
-      let_it_be(:group) { create(:group)}
+      let_it_be(:group) { create(:group) }
       let_it_be(:project) { create(:project, :repository, namespace: group) }
 
       let(:params) do
@@ -487,7 +487,7 @@ RSpec.describe API::Internal::Base do
     let_it_be(:key) { create(:key, user: user) }
 
     let(:key_id) { key.id }
-    let(:otp) { '123456'}
+    let(:otp) { '123456' }
 
     before do
       stub_feature_flags(two_factor_for_cli: true)
@@ -606,7 +606,7 @@ RSpec.describe API::Internal::Base do
     let_it_be(:key) { create(:key, user: user) }
 
     let(:key_id) { key.id }
-    let(:otp) { '123456'}
+    let(:otp) { '123456' }
 
     before do
       stub_feature_flags(two_factor_for_cli: true)
@@ -761,7 +761,7 @@ RSpec.describe API::Internal::Base do
     let_it_be(:key) { create(:key, user: user) }
 
     let(:key_id) { key.id }
-    let(:otp) { '123456'}
+    let(:otp) { '123456' }
 
     before do
       stub_feature_flags(two_factor_for_cli: true)

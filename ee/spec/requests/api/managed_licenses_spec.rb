@@ -143,7 +143,7 @@ RSpec.describe API::ManagedLicenses do
               name: 'NEW_LICENSE_NAME',
               approval_status: 'allowed'
             }
-        end.to change {project.software_license_policies.count}.by(1)
+        end.to change { project.software_license_policies.count }.by(1)
 
         expect(response).to have_gitlab_http_status(:created)
         expect(response).to match_response_schema('software_license_policy', dir: 'ee')
@@ -159,7 +159,7 @@ RSpec.describe API::ManagedLicenses do
               name: software_license_policy.name,
               approval_status: 'denied'
             }
-        end.not_to change {project.software_license_policies.count}
+        end.not_to change { project.software_license_policies.count }
 
         expect(response).to have_gitlab_http_status(:bad_request)
       end
@@ -270,7 +270,7 @@ RSpec.describe API::ManagedLicenses do
           delete api("/projects/#{project.id}/managed_licenses/#{software_license_policy.id}", maintainer_user)
 
           expect(response).to have_gitlab_http_status(:no_content)
-        end.to change {project.software_license_policies.count}.by(-1)
+        end.to change { project.software_license_policies.count }.by(-1)
       end
 
       it 'responds with 404 Not Found if requesting non-existing managed license' do
@@ -278,7 +278,7 @@ RSpec.describe API::ManagedLicenses do
           delete api("/projects/#{project.id}/managed_licenses/#{non_existing_record_id}", maintainer_user)
 
           expect(response).to have_gitlab_http_status(:not_found)
-        end.not_to change {project.software_license_policies.count}
+        end.not_to change { project.software_license_policies.count }
       end
     end
 
@@ -288,7 +288,7 @@ RSpec.describe API::ManagedLicenses do
           delete api("/projects/#{project.id}/managed_licenses/#{software_license_policy.id}", dev_user)
 
           expect(response).to have_gitlab_http_status(:forbidden)
-        end.not_to change {project.software_license_policies.count}
+        end.not_to change { project.software_license_policies.count }
       end
     end
 
@@ -298,7 +298,7 @@ RSpec.describe API::ManagedLicenses do
           delete api("/projects/#{project.id}/managed_licenses/#{software_license_policy.id}", reporter_user)
 
           expect(response).to have_gitlab_http_status(:forbidden)
-        end.not_to change {project.software_license_policies.count}
+        end.not_to change { project.software_license_policies.count }
       end
     end
 
@@ -308,7 +308,7 @@ RSpec.describe API::ManagedLicenses do
           delete api("/projects/#{project.id}/managed_licenses/#{software_license_policy.id}")
 
           expect(response).to have_gitlab_http_status(:unauthorized)
-        end.not_to change {project.software_license_policies.count}
+        end.not_to change { project.software_license_policies.count }
       end
     end
   end

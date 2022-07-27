@@ -48,8 +48,8 @@ RSpec.describe Projects::Security::PoliciesController, type: :request do
         end
 
         context 'with scan result policy type' do
-          let_it_be(:type) {'scan_result_policy'}
-          let_it_be(:policy) {build(:scan_result_policy)}
+          let_it_be(:type) { 'scan_result_policy' }
+          let_it_be(:policy) { build(:scan_result_policy) }
           let_it_be(:group) { create(:group) }
           let_it_be(:service_result) { { users: [user], groups: [group], status: :success } }
 

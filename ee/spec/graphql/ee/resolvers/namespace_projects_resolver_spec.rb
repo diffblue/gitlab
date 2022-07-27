@@ -83,7 +83,7 @@ RSpec.describe Resolvers::NamespaceProjectsResolver do
               expect(projects).to contain_exactly(project_1)
             end
 
-            queried_ci_table = record.log.any? {|l| l.include?('ci_daily_build_group_report_results')}
+            queried_ci_table = record.log.any? { |l| l.include?('ci_daily_build_group_report_results') }
 
             expect(queried_ci_table).to eq(false)
           end

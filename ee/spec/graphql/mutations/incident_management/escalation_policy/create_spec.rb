@@ -31,7 +31,7 @@ RSpec.describe Mutations::IncidentManagement::EscalationPolicy::Create do
     subject(:resolve) { mutation_for(project, current_user).resolve(project_path: project.full_path, **args) }
 
     shared_examples 'returns a GraphQL error' do |error|
-      it { is_expected.to match(escalation_policy: nil, errors: [error])}
+      it { is_expected.to match(escalation_policy: nil, errors: [error]) }
     end
 
     shared_examples 'raises a resource not available error' do |error|

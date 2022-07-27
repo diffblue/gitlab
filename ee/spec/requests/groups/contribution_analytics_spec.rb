@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe 'contribution analytics' do
   let(:user) { create(:user) }
-  let(:group) { create(:group)}
+  let(:group) { create(:group) }
 
   before do
     group.add_developer(user)

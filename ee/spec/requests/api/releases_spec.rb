@@ -81,7 +81,7 @@ RSpec.describe API::Releases do
           post api("/projects/#{project.id}/releases", maintainer), params: params
 
           expect(response).to have_gitlab_http_status(:created)
-          expect(json_response['milestones'].map {|m| m['title']}).to match_array(['g1'])
+          expect(json_response['milestones'].map { |m| m['title'] }).to match_array(['g1'])
         end
       end
 
@@ -104,7 +104,7 @@ RSpec.describe API::Releases do
           post api("/projects/#{project.id}/releases", maintainer), params: params
 
           expect(response).to have_gitlab_http_status(:created)
-          expect(json_response['milestones'].map {|m| m['title']}).to match_array(['g1', 'v1.0'])
+          expect(json_response['milestones'].map { |m| m['title'] }).to match_array(['g1', 'v1.0'])
         end
       end
 
@@ -234,7 +234,7 @@ RSpec.describe API::Releases do
         context 'when there is no project milestone' do
           it 'adds the group milestone', :aggregate_failures do
             expect(response).to have_gitlab_http_status(:ok)
-            expect(json_response['milestones'].map {|m| m['title']}).to match_array([group_milestone.title])
+            expect(json_response['milestones'].map { |m| m['title'] }).to match_array([group_milestone.title])
           end
         end
 
@@ -247,7 +247,7 @@ RSpec.describe API::Releases do
 
           it 'replaces the project milestone with the group milestone', :aggregate_failures do
             expect(response).to have_gitlab_http_status(:ok)
-            expect(json_response['milestones'].map {|m| m['title']}).to match_array([group_milestone.title])
+            expect(json_response['milestones'].map { |m| m['title'] }).to match_array([group_milestone.title])
           end
         end
       end

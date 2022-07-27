@@ -850,7 +850,7 @@ RSpec.describe API::Members do
     describe 'POST /projects/:id/members' do
       context 'group membership locked' do
         let(:user) { create(:user) }
-        let(:group) { create(:group, membership_lock: true)}
+        let(:group) { create(:group, membership_lock: true) }
         let(:project) { create(:project, group: group) }
 
         context 'project in a group' do
