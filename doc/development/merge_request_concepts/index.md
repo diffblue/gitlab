@@ -5,7 +5,7 @@ group: Code Review
 info: "See the Technical Writers assigned to Development Guidelines: https://about.gitlab.com/handbook/engineering/ux/technical-writing/#assignments-to-development-guidelines"
 ---
 
-# Merge Request Concepts
+# Merge request concepts
 
 NOTE:
 The documentation below is the single source of truth for the merge request terminology and functionality.
@@ -17,7 +17,10 @@ The merge request is made up of several different key components and ideas that 
 1. Merge checks
 1. Approval rules
 
-When developing merge request widgets, refer to the documentation for the [merge request widget extension framework](../new_fe_guide/modules/widget_extensions.md), which should be the standard for all new widgets.
+When developing new merge request widgets, read the
+[merge request widget extension framework](../new_fe_guide/modules/widget_extensions.md)
+documentation. All new widgets should use this framework, and older widgets should
+be ported to use it.
 
 ## Merge widget
 
@@ -39,11 +42,11 @@ Reports are widgets within the merge request that report information about chang
 
 Merge checks are statuses that can either pass or fail and conditionally control the availability of the merge button being available within a merge request. The key distinguishing factor in a merge check is that users **do not** interact with the merge checks inside of the merge request, but are able to influence whether or not the check passes or fails. Results from the check are processed as true/false to determine whether or not a merge request can be merged. Examples include:
 
-1. merge conflicts
-1. pipeline success
-1. threads resolution
-1. [external status checks](../../user/project/merge_requests/status_checks.md)
-1. required approvals
+- Merge conflicts.
+- Pipeline success.
+- Threads resolution.
+- [External status checks](../../user/project/merge_requests/status_checks.md).
+- Required approvals.
 
 When all of the required merge checks are satisfied a merge request becomes mergeable.
 

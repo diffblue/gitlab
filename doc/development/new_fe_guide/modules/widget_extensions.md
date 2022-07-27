@@ -8,8 +8,6 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 
 > [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/44616) in GitLab 13.6.
 
-## Summary
-
 Extensions in the merge request widget enable you to add new features
 into the merge request widget that match the design framework.
 With extensions we get a lot of benefits out of the box without much effort required, like:
@@ -78,7 +76,7 @@ data fetching methods to be used, such as GraphQL or REST API calls.
 ### API calls
 
 For performance reasons, it is best if the collapsed state fetches only the data required to
-render the collapsed state. This fetching happens within the `fetchCollapsedData` method.
+render the collapsed state. This fetching happens in the `fetchCollapsedData` method.
 This method is called with the props as an argument, so you can easily access
 any paths set in the state.
 
@@ -89,7 +87,7 @@ method.
 
 When the user clicks **Expand**, the `fetchFullData` method is called. This method
 also gets called with the props as an argument. This method **must** also return
-the full data. However, this data needs to be correctly formatted to match the format
+the full data. However, this data must be correctly formatted to match the format
 mentioned in the data structure section.
 
 #### Technical debt
@@ -234,7 +232,7 @@ export default {
 };
 ```
 
-If the extension needs to poll multiple endpoints at the same time, then `fetchMultiData`
+If the extension must poll multiple endpoints at the same time, then `fetchMultiData`
 can be used to return an array of functions. A new `poll` object is created for each
 endpoint and they are polled separately. After all endpoints are resolved, polling is
 stopped and `setCollapsedData` is called with an array of `response.data`.
@@ -254,7 +252,8 @@ export default {
 };
 ```
 
-**Important** The function needs to return a `Promise` that resolves the `response` object.
+WARNING:
+The function must return a `Promise` that resolves the `response` object.
 The implementation relies on the `POLL-INTERVAL` header to keep polling, therefore it is
 important not to alter the status code and headers.
 
@@ -292,12 +291,13 @@ Each widget reports:
 - Outcome (`expand_success`, `expand_warning`, or `expand_failed`): One of three
   additional events relating to the status of the widget when it was expanded.
 
-### Adding new widgets
+### Add new widgets
 
 When adding new widgets, the above events must be marked as `known`, and have metrics
 created, to be reportable.
 
-Note carefully: Events that are only for EE should include `--ee` at the end of both shell commands below.
+NOTE:
+Events that are only for EE should include `--ee` at the end of both shell commands below.
 
 To generate these known events for a single widget:
 
@@ -325,7 +325,7 @@ To generate these known events for a single widget:
 1. Modify each newly generated file to match the existing files for the merge request widget extension telemetry.
    - Find existing examples by doing a glob search, like: `metrics/**/*_i_code_review_merge_request_widget_*`
    - Roughly speaking, each file should have these values:
-     1. `description` = A plain English description of this value. Please see existing widget extension telemetry files for examples.
+     1. `description` = A plain English description of this value. Review existing widget extension telemetry files for examples.
      1. `product_section` = `dev`
      1. `product_stage` = `create`
      1. `product_group` = `code_review`
@@ -356,12 +356,10 @@ To generate these known events for a single widget:
     1. `aggregation` = `weekly`
 1. Add each event to the appropriate aggregates in `config/metrics/aggregates/code_review.yml`
 
-### Adding new events
+### Add new events
 
-If you are adding a new event to our known events:
-
-1. Include the new event in the `KNOWN_EVENTS` list in 
-   `lib/gitlab/usage_data_counters/merge_request_widget_extension_counter.rb`.
+If you are adding a new event to our known events, include the new event in the
+`KNOWN_EVENTS` list in `lib/gitlab/usage_data_counters/merge_request_widget_extension_counter.rb`.
 
 ## Icons
 
