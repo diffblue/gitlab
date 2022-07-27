@@ -85,11 +85,17 @@ module Epics
       return unless fixed_start_date_updated || fixed_due_date_updated
 
       if fixed_start_date_updated
-        ::Gitlab::UsageDataCounters::EpicActivityUniqueCounter.track_epic_fixed_start_date_updated_action(author: current_user)
+        ::Gitlab::UsageDataCounters::EpicActivityUniqueCounter.track_epic_fixed_start_date_updated_action(
+          author: current_user,
+          namespace: epic.group
+        )
       end
 
       if fixed_due_date_updated
-        ::Gitlab::UsageDataCounters::EpicActivityUniqueCounter.track_epic_fixed_due_date_updated_action(author: current_user)
+        ::Gitlab::UsageDataCounters::EpicActivityUniqueCounter.track_epic_fixed_due_date_updated_action(
+          author: current_user,
+          namespace: epic.group
+        )
       end
     end
 
@@ -97,9 +103,15 @@ module Epics
       return unless epic.saved_change_to_attribute?(:start_date_is_fixed)
 
       if epic.start_date_is_fixed?
-        ::Gitlab::UsageDataCounters::EpicActivityUniqueCounter.track_epic_start_date_set_as_fixed_action(author: current_user)
+        ::Gitlab::UsageDataCounters::EpicActivityUniqueCounter.track_epic_start_date_set_as_fixed_action(
+          author: current_user,
+          namespace: epic.group
+        )
       else
-        ::Gitlab::UsageDataCounters::EpicActivityUniqueCounter.track_epic_start_date_set_as_inherited_action(author: current_user)
+        ::Gitlab::UsageDataCounters::EpicActivityUniqueCounter.track_epic_start_date_set_as_inherited_action(
+          author: current_user,
+          namespace: epic.group
+        )
       end
     end
 
@@ -107,9 +119,15 @@ module Epics
       return unless epic.saved_change_to_attribute?(:due_date_is_fixed)
 
       if epic.due_date_is_fixed?
-        ::Gitlab::UsageDataCounters::EpicActivityUniqueCounter.track_epic_due_date_set_as_fixed_action(author: current_user)
+        ::Gitlab::UsageDataCounters::EpicActivityUniqueCounter.track_epic_due_date_set_as_fixed_action(
+          author: current_user,
+          namespace: epic.group
+        )
       else
-        ::Gitlab::UsageDataCounters::EpicActivityUniqueCounter.track_epic_due_date_set_as_inherited_action(author: current_user)
+        ::Gitlab::UsageDataCounters::EpicActivityUniqueCounter.track_epic_due_date_set_as_inherited_action(
+          author: current_user,
+          namespace: epic.group
+        )
       end
     end
 
