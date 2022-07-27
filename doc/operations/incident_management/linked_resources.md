@@ -9,7 +9,7 @@ info:
 > [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/230852) in GitLab 15.3 [with a flag](../../../administration/feature_flags.md) named `incident_resource_links_widget`. Enabled on GitLab.com. Disabled on self-managed.
 
 FLAG:
-On self-managed GitLab, by default this feature is not available. To make it available, ask an administrator to [enable the feature flag](../../../administration/feature_flags.md) named `incident_resource_links_widget`.
+On self-managed GitLab, by default this feature is not available. To make it available, ask an administrator to [enable the feature flag](../../administration/feature_flags.md) named `incident_resource_links_widget`.
 On GitLab.com, this feature is available.
 
 To help your team members find the important links without having to search through many comments,
