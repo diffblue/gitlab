@@ -12,14 +12,14 @@ module Ci
       feature_category :runner_fleet
       urgency :low
 
+      deduplicate :until_executed
       idempotent!
-      deduplicate :until_executing
 
       def perform(cronjob_scheduled = true)
         if cronjob_scheduled
           # Introduce some randomness across the day so that instances don't all hit the GitLab Releases API
           # around the same time of day
-          period = rand(0..ActiveSupport::Duration::SECONDS_PER_DAY)
+          period = rand(0..12.hours.in_seconds)
           self.class.perform_in(period, false)
 
           Sidekiq.logger.info(

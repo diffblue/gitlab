@@ -8,13 +8,8 @@ RSpec.describe Ci::Runners::ReconcileExistingRunnerVersionsCronWorker do
   describe '#perform' do
     context 'when scheduled by cronjob' do
       it 'reschedules itself' do
-        expect(described_class).to receive(:perform_in).with(a_value_between(0, 1.day.in_seconds), false) do
-          expect_next_instance_of(Ci::Runners::ReconcileExistingRunnerVersionsService) do |service|
-            expect(service).to receive(:execute).and_return({})
-          end
-
-          worker.perform(false)
-        end
+        expect(described_class).to(receive(:perform_in).with(a_value_between(0, 12.hours.in_seconds), false))
+        expect(::Ci::Runners::ReconcileExistingRunnerVersionsService).not_to receive(:new)
 
         worker.perform
       end
