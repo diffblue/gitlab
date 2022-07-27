@@ -131,14 +131,6 @@ RSpec.describe Analytics::DevopsAdoption::SnapshotCalculator do
 
     it { is_expected.to eq 1 }
 
-    context 'when feature is disabled' do
-      before do
-        stub_feature_flags(analytics_devops_adoption_codeowners: false)
-      end
-
-      it { is_expected.to eq nil }
-    end
-
     context 'when there is no default branch' do
       before do
         allow_any_instance_of(Project).to receive(:default_branch).and_return(nil) # rubocop:disable RSpec/AnyInstanceOf
