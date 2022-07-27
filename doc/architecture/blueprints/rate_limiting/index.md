@@ -191,6 +191,38 @@ will be well integrated into the GitLab product itself.
 With GitLab Policy Service we will also be able to build GraphQL rate limiting
 using query cost predictions.
 
+## Hierarchical limits
+
+GitLab application aggregates users, projects, groups and namespaces in a
+hierarchical way. This hierarchical structure has been designed to make it
+easier to manage permissions, streamline workflows, and allow users and
+customers to store related projects, repositories, and other artifacts,
+together.
+
+It is important to design the new rate limiting framework in a way that it
+built on top of this hierarchical structure and engineers, customers, SREs and
+other stakeholders can understand how limits are being applied, enforced and
+overridden within the hierarchy of namespaces, groups and projects.
+
+We want to reduce the cognitive load required to understand how limits are
+being managed within the existing permissions structure. We might need to build
+a simple and easy-to-understand formula for how our application decides which
+limits and thresholds to apply for a given request and a given actor:
+
+> GitLab will read default limits for every operation, all overrides configured
+> and will choose a limit with the highest precedence configured. A limit
+> precedence needs to be explicitly configured for every override, a default
+> limit has precedence 100.
+
+One way in which we can simplify limits management in general is is to:
+
+1. Have default limits / thresholds defined in YAML files with a default precedence 100.
+1. Allow limits to be overridden through the API, store overrides in the database.
+1. Every limit / threshold override needs to have an integer precedence value provided.
+1. Build an API that will take an actor and expose limits applicable for it.
+1. Build a dashboard showing actors with non-standard limits / overrides.
+1. Build a observability around this showing in Kibana when non-standard limits are being used.
+
 ## Principles
 
 1. Try to avoid building rate limiting framework in a tightly coupled way.
@@ -198,6 +230,7 @@ using query cost predictions.
 1. Build application limits definition in a way that is independent from the Rails application.
 1. Build tooling that produce consistent behavior and results across programming languages
 1. Maintain consistent features and behavior across SaaS and self-managed codebase.
+1. Be mindful about a cognitive load added by the hierarchical limits, aim to reduce it.
 
 ## Iterations
 
