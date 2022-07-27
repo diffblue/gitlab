@@ -4055,9 +4055,6 @@ msgstr ""
 msgid "An error occurred while fetching ancestors"
 msgstr ""
 
-msgid "An error occurred while fetching branches."
-msgstr ""
-
 msgid "An error occurred while fetching branches. Retry the search."
 msgstr ""
 
@@ -6628,6 +6625,42 @@ msgid "Branch not loaded - %{branchId}"
 msgstr ""
 
 msgid "Branch rules"
+msgstr ""
+
+msgid "BranchRules|%{linkStart}Wildcards%{linkEnd} such as *-stable or production/* are supported."
+msgstr ""
+
+msgid "BranchRules|Allow all users with push access to %{linkStart}force push%{linkEnd}."
+msgstr ""
+
+msgid "BranchRules|Allowed to merge"
+msgstr ""
+
+msgid "BranchRules|Allowed to push"
+msgstr ""
+
+msgid "BranchRules|An error occurred while fetching branches."
+msgstr ""
+
+msgid "BranchRules|Branch"
+msgstr ""
+
+msgid "BranchRules|Create wildcard: %{searchTerm}"
+msgstr ""
+
+msgid "BranchRules|Keep stable branches secure and force developers to use merge requests. %{linkStart}What are protected branches?%{linkEnd}"
+msgstr ""
+
+msgid "BranchRules|No matching results"
+msgstr ""
+
+msgid "BranchRules|Protections"
+msgstr ""
+
+msgid "BranchRules|Reject code pushes that change files listed in the CODEOWNERS file."
+msgstr ""
+
+msgid "BranchRules|Require approval from code owners."
 msgstr ""
 
 msgid "Branches"
