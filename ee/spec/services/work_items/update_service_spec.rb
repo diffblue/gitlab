@@ -36,7 +36,10 @@ RSpec.describe WorkItems::UpdateService do
 
       let(:supported_widgets) do
         [
-          { klass: WorkItems::Widgets::WeightService::UpdateService, callback: :update, params: { weight: 1 } }
+          {
+            klass: WorkItems::Widgets::WeightService::UpdateService,
+            callback: :before_update_callback, params: { weight: 1 }
+          }
         ]
       end
     end

@@ -10,7 +10,7 @@ RSpec.describe WorkItems::Widgets::WeightService::UpdateService do
   let(:widget) { work_item.widgets.find {|widget| widget.is_a?(WorkItems::Widgets::Weight) } }
 
   describe '#update' do
-    subject { described_class.new(widget: widget, current_user: user).update(params: params) } # rubocop:disable Rails/SaveBang
+    subject { described_class.new(widget: widget, current_user: user).before_update_callback(params: params) }
 
     shared_examples 'weight is unchanged' do
       it 'does not change work item weight value' do
