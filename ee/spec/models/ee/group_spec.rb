@@ -455,13 +455,21 @@ RSpec.describe Group do
     let(:subgroup_project) { create(:project, namespace: subgroup) }
     let(:archived_project) { create(:project, :archived, namespace: group) }
     let(:deleted_project) { create(:project, pending_delete: true, namespace: group) }
-    let!(:group_vulnerability) { create(:vulnerability, :with_findings, project: group_project) }
-    let!(:subgroup_vulnerability) { create(:vulnerability, :with_findings, project: subgroup_project) }
-    let!(:archived_vulnerability) { create(:vulnerability, :with_findings, project: archived_project) }
-    let!(:deleted_vulnerability) { create(:vulnerability, :with_findings, project: deleted_project) }
+    let(:group_vulnerability) { create(:vulnerability, :with_findings, project: group_project) }
+    let(:subgroup_vulnerability) { create(:vulnerability, :with_findings, project: subgroup_project) }
+    let(:archived_vulnerability) { create(:vulnerability, :with_findings, project: archived_project) }
+    let(:deleted_vulnerability) { create(:vulnerability, :with_findings, project: deleted_project) }
+    let!(:expected_vulnerabilities) do
+      [
+        group_vulnerability.vulnerability_read,
+        subgroup_vulnerability.vulnerability_read,
+        archived_vulnerability.vulnerability_read,
+        deleted_vulnerability.vulnerability_read
+      ]
+    end
 
-    it 'returns vulnerabilities for all non-archived, non-deleted projects in the group and its subgroups' do
-      is_expected.to contain_exactly(group_vulnerability.vulnerability_read, subgroup_vulnerability.vulnerability_read)
+    it 'returns vulnerabilities for projects in the group and its subgroups' do
+      is_expected.to match_array(expected_vulnerabilities)
     end
   end
 
