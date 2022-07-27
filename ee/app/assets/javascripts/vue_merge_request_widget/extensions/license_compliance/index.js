@@ -19,7 +19,6 @@ export default {
     loading: s__('ciReport|License Compliance test metrics results are being parsed'),
     error: s__('ciReport|License Compliance failed loading results'),
   },
-  expandEvent: 'i_testing_license_compliance_widget_total',
   props: ['licenseCompliance'],
   enablePolling: true,
   enableExpandedPolling: true,

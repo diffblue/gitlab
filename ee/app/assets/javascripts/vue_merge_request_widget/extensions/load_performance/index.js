@@ -9,7 +9,6 @@ export default {
     label: s__('ciReport|Load Performance'),
     loading: s__('ciReport|Load performance test metrics results are being parsed'),
   },
-  expandEvent: 'i_testing_load_performance_widget_total',
   props: ['loadPerformance'],
   computed: {
     summary() {

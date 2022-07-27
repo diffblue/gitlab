@@ -4,57 +4,69 @@ issues:
     - title: Issues created per month
       type: bar
       query:
-        issuable_type: issue
-        issuable_state: all
-        group_by: month
-        period_limit: 3
+        data_source: issuables
+        params:
+          issuable_type: issue
+          issuable_state: all
+          group_by: month
+          period_limit: 3
     - title: Issues closed per month
       type: bar
       query:
-        issuable_type: issue
-        issuable_state: closed
-        group_by: month
-        period_limit: 3
+        data_source: issuables
+        params:
+          issuable_type: issue
+          issuable_state: closed
+          group_by: month
+          period_limit: 3
     - title: Bugs created per month by Priority
       type: stacked-bar
       query:
-        issuable_type: issue
-        filter_labels:
-          - bug
-        collection_labels:
-          - P::1
-          - P::2
-          - P::3
-          - P::4
-        group_by: month
-        period_limit: 3
+        data_source: issuables
+        params:
+          issuable_type: issue
+          filter_labels:
+            - bug
+          collection_labels:
+            - P::1
+            - P::2
+            - P::3
+            - P::4
+          group_by: month
+          period_limit: 3
     - title: Bugs created per month by Severity
       type: stacked-bar
       query:
-        issuable_type: issue
-        filter_labels:
-          - bug
-        collection_labels:
-          - S::1
-          - S::2
-          - S::3
-          - S::4
-        group_by: month
-        period_limit: 3
+        data_source: issuables
+        params:
+          issuable_type: issue
+          filter_labels:
+            - bug
+          collection_labels:
+            - S::1
+            - S::2
+            - S::3
+            - S::4
+          group_by: month
+          period_limit: 3
 mergeRequests:
   title: Merge requests dashboard
   charts:
     - title: Merge requests merged per week
       type: bar
       query:
-        issuable_type: merge_request
-        issuable_state: merged
-        group_by: week
-        period_limit: 12
+        data_source: issuables
+        params:
+          issuable_type: merge_request
+          issuable_state: merged
+          group_by: week
+          period_limit: 12
     - title: Merge requests merged per month
       type: bar
       query:
-        issuable_type: merge_request
-        issuable_state: merged
-        group_by: month
-        period_limit: 3
+        data_source: issuables
+        params:
+          issuable_type: merge_request
+          issuable_state: merged
+          group_by: month
+          period_limit: 3
