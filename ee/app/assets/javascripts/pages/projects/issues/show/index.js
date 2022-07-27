@@ -1,7 +1,7 @@
 import { initRelatedFeatureFlags, initUnableToLinkVulnerabilityError } from 'ee/issues';
 import { initShow } from '~/issues';
 import { store } from '~/notes/stores';
-import initRelatedIssues from '~/related_issues';
+import { initRelatedIssues } from '~/related_issues';
 import initWorkItemLinks from '~/work_items/components/work_item_links';
 import initSidebarBundle from '~/sidebar/sidebar_bundle';
 import UserCallout from '~/user_callout';
