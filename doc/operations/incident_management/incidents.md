@@ -378,7 +378,12 @@ team members can join the Zoom call without requesting a link.
 
 ### Linked resources
 
-GitLab enables you to [link resources with an incident](linked_resources.md) for providing quick and easy access to those resources in one place. With this, you can more easily surface the incident Slack channel, Zoom meeting space or links to any relevant resource for resolving incidents.
+In an incident, you can [links to various resources](linked_resources.md),
+for example:
+
+- The incident Slack channel
+- Zoom meeting
+- Resources for resolving the incidents
 
 ### Embed metrics in incidents
 
