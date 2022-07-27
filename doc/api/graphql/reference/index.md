@@ -4815,6 +4815,28 @@ Input type: `TimelineEventUpdateInput`
 | <a id="mutationtimelineeventupdateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 | <a id="mutationtimelineeventupdatetimelineevent"></a>`timelineEvent` | [`TimelineEventType`](#timelineeventtype) | Timeline event. |
 
+### `Mutation.timelogCreate`
+
+Input type: `TimelogCreateInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationtimelogcreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationtimelogcreateissuableid"></a>`issuableId` | [`IssuableID!`](#issuableid) | Global ID of the issuable (Issue, WorkItem or MergeRequest). |
+| <a id="mutationtimelogcreatespentat"></a>`spentAt` | [`Date!`](#date) | When the time was spent. |
+| <a id="mutationtimelogcreatesummary"></a>`summary` | [`String!`](#string) | Summary of time spent. |
+| <a id="mutationtimelogcreatetimespent"></a>`timeSpent` | [`String!`](#string) | Amount of time spent. |
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationtimelogcreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationtimelogcreateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
+| <a id="mutationtimelogcreatetimelog"></a>`timelog` | [`Timelog`](#timelog) | Timelog. |
+
 ### `Mutation.timelogDelete`
 
 Input type: `TimelogDeleteInput`
@@ -4832,7 +4854,7 @@ Input type: `TimelogDeleteInput`
 | ---- | ---- | ----------- |
 | <a id="mutationtimelogdeleteclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationtimelogdeleteerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
-| <a id="mutationtimelogdeletetimelog"></a>`timelog` | [`Timelog`](#timelog) | Deleted timelog. |
+| <a id="mutationtimelogdeletetimelog"></a>`timelog` | [`Timelog`](#timelog) | Timelog. |
 
 ### `Mutation.todoCreate`
 
