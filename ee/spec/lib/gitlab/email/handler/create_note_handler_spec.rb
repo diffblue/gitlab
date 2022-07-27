@@ -16,7 +16,7 @@ RSpec.describe Gitlab::Email::Handler::CreateNoteHandler do
   let(:group) { create(:group) }
   let(:user) { create(:user, email: 'jake@adventuretime.ooo') }
   let(:noteable) { create(:epic, group: group) }
-  let(:note) { create(:note, project: nil, noteable: noteable)}
+  let(:note) { create(:note, project: nil, noteable: noteable) }
 
   let!(:sent_notification) do
     SentNotification.record_note(note, user.id, mail_key)

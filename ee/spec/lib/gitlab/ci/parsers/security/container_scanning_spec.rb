@@ -6,7 +6,7 @@ RSpec.describe Gitlab::Ci::Parsers::Security::ContainerScanning do
   let(:project) { create(:project, :repository) }
   let(:current_branch) { project.default_branch }
   let(:pipeline) { create(:ci_pipeline, ref: current_branch, project: project) }
-  let(:job) { create(:ci_build, pipeline: pipeline)}
+  let(:job) { create(:ci_build, pipeline: pipeline) }
   let(:artifact) { create(:ee_ci_job_artifact, :container_scanning, job: job) }
   let(:report) { Gitlab::Ci::Reports::Security::Report.new(artifact.file_type, pipeline, 2.weeks.ago) }
   let(:image) { 'registry.gitlab.com/gitlab-org/security-products/dast/webgoat-8.0@sha256:bc09fe2e0721dfaeee79364115aeedf2174cce0947b9ae5fe7c33312ee019a4e' }

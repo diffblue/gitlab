@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Auth::Otp::SessionEnforcer, :clean_gitlab_redis_sessions do
-  let_it_be(:key) { create(:key)}
+  let_it_be(:key) { create(:key) }
 
   describe '#update_session' do
     let(:redis) { double(:redis) }

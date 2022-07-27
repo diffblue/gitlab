@@ -41,7 +41,7 @@ RSpec.describe Sidebars::Projects::Menus::IssuesMenu do
     let(:group) { create(:group) }
     let(:project) { create(:project, group: group) }
 
-    subject { described_class.new(context).renderable_items.index { |e| e.item_id == :iterations} }
+    subject { described_class.new(context).renderable_items.index { |e| e.item_id == :iterations } }
 
     context 'when licensed feature iterations is not enabled' do
       it 'does not include iterations menu item' do
@@ -85,7 +85,7 @@ RSpec.describe Sidebars::Projects::Menus::IssuesMenu do
   end
 
   describe 'Requirements' do
-    subject { described_class.new(context).renderable_items.any? { |e| e.item_id == :requirements} }
+    subject { described_class.new(context).renderable_items.any? { |e| e.item_id == :requirements } }
 
     context 'when licensed feature requirements is not enabled' do
       it 'does not include requirements menu item' do
@@ -129,7 +129,7 @@ RSpec.describe Sidebars::Projects::Menus::IssuesMenu do
         create(:custom_issue_tracker_integration, active: true, project: project, project_url: 'http://test.com')
 
         expect(subject.show_jira_menu_items?).to eq(false)
-        expect(subject.renderable_items.any? { |e| e.item_id == :jira_issue_list}).to eq(false)
+        expect(subject.renderable_items.any? { |e| e.item_id == :jira_issue_list }).to eq(false)
       end
     end
 
@@ -139,7 +139,7 @@ RSpec.describe Sidebars::Projects::Menus::IssuesMenu do
       context 'when issues integration is disabled' do
         it 'does not include Jira issues menu items' do
           expect(subject.show_jira_menu_items?).to eq(false)
-          expect(subject.renderable_items.any? { |e| e.item_id == :jira_issue_list}).to eq(false)
+          expect(subject.renderable_items.any? { |e| e.item_id == :jira_issue_list }).to eq(false)
         end
       end
 
@@ -148,8 +148,8 @@ RSpec.describe Sidebars::Projects::Menus::IssuesMenu do
 
         it 'includes Jira issues menu items' do
           expect(subject.show_jira_menu_items?).to eq(true)
-          expect(subject.renderable_items.any? { |e| e.item_id == :jira_issue_list}).to eq(true)
-          expect(subject.renderable_items.any? { |e| e.item_id == :jira_external_link}).to eq(true)
+          expect(subject.renderable_items.any? { |e| e.item_id == :jira_issue_list }).to eq(true)
+          expect(subject.renderable_items.any? { |e| e.item_id == :jira_external_link }).to eq(true)
         end
       end
     end
@@ -175,7 +175,7 @@ RSpec.describe Sidebars::Projects::Menus::IssuesMenu do
 
         it 'includes Zentao issues menu items' do
           expect(subject.show_zentao_menu_items?).to eq(true)
-          expect(subject.renderable_items.any? { |e| e.item_id == :zentao_issue_list}).to eq(true)
+          expect(subject.renderable_items.any? { |e| e.item_id == :zentao_issue_list }).to eq(true)
         end
       end
 
@@ -186,7 +186,7 @@ RSpec.describe Sidebars::Projects::Menus::IssuesMenu do
 
         it 'includes Zentao issues menu items' do
           expect(subject.show_zentao_menu_items?).to eq(true)
-          expect(subject.renderable_items.any? { |e| e.item_id == :zentao_issue_list}).to eq(true)
+          expect(subject.renderable_items.any? { |e| e.item_id == :zentao_issue_list }).to eq(true)
         end
       end
     end
@@ -203,7 +203,7 @@ RSpec.describe Sidebars::Projects::Menus::IssuesMenu do
 
         it 'does not include Zentao issues menu items' do
           expect(subject.show_zentao_menu_items?).to eq(false)
-          expect(subject.renderable_items.any? { |e| e.item_id == :zentao_issue_list}).to eq(false)
+          expect(subject.renderable_items.any? { |e| e.item_id == :zentao_issue_list }).to eq(false)
         end
       end
     end

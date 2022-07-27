@@ -17,7 +17,7 @@ RSpec.describe Sidebars::Groups::Menus::SettingsMenu do
   let(:menu) { described_class.new(context) }
 
   describe 'Menu Items' do
-    subject { menu.renderable_items.find { |e| e.item_id == item_id} }
+    subject { menu.renderable_items.find { |e| e.item_id == item_id } }
 
     describe 'LDAP sync menu' do
       let(:item_id) { :ldap_sync }

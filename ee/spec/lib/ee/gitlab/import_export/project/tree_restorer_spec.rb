@@ -10,7 +10,7 @@ RSpec.describe Gitlab::ImportExport::Project::TreeRestorer do
   let(:project_tree_restorer) { described_class.new(user: user, shared: shared, project: project) }
 
   describe 'epics' do
-    let_it_be(:user) { create(:user)}
+    let_it_be(:user) { create(:user) }
 
     before do
       setup_import_export_config('group')
@@ -101,7 +101,7 @@ RSpec.describe Gitlab::ImportExport::Project::TreeRestorer do
   describe 'security_settings' do
     let_it_be(:project) { create(:project, name: 'project', path: 'project') }
 
-    let(:user) { create(:user)}
+    let(:user) { create(:user) }
 
     before do
       setup_import_export_config('complex', 'ee')
@@ -117,7 +117,7 @@ RSpec.describe Gitlab::ImportExport::Project::TreeRestorer do
   describe 'push_rules' do
     let_it_be(:project) { create(:project, name: 'project', path: 'project') }
 
-    let(:user) { create(:user)}
+    let(:user) { create(:user) }
 
     before do
       setup_import_export_config('complex', 'ee')

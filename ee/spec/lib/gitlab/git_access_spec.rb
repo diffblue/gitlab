@@ -977,7 +977,7 @@ RSpec.describe Gitlab::GitAccess do
   end
 
   describe '#check_otp_session!' do
-    let_it_be(:user) { create(:user, :two_factor_via_otp)}
+    let_it_be(:user) { create(:user, :two_factor_via_otp) }
     let_it_be(:key) { create(:key, user: user) }
     let_it_be(:actor) { key }
 
@@ -1108,7 +1108,7 @@ RSpec.describe Gitlab::GitAccess do
       end
 
       context 'when 2FA is not enabled for the user' do
-        let(:user) { create(:user)}
+        let(:user) { create(:user) }
         let(:actor) { create(:key, user: user) }
 
         it 'allows push and pull access' do

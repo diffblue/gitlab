@@ -21,7 +21,7 @@ RSpec.describe Gitlab::Ci::Reports::LicenseScanning::Dependency do
     let(:lockfile) { 'Gemfile.lock' }
 
     context "when a project, sha and path are provided" do
-      subject { dependency.blob_path_for(build.project, sha: build.sha)}
+      subject { dependency.blob_path_for(build.project, sha: build.sha) }
 
       let(:build) { build_stubbed(:ee_ci_build, :success, :license_scan_v2) }
 
@@ -29,7 +29,7 @@ RSpec.describe Gitlab::Ci::Reports::LicenseScanning::Dependency do
     end
 
     context "when a path is not available" do
-      subject { dependency.blob_path_for(build_stubbed(:project))}
+      subject { dependency.blob_path_for(build_stubbed(:project)) }
 
       let(:lockfile) { nil }
 
@@ -37,7 +37,7 @@ RSpec.describe Gitlab::Ci::Reports::LicenseScanning::Dependency do
     end
 
     context "when a project is not provided" do
-      subject { dependency.blob_path_for(nil)}
+      subject { dependency.blob_path_for(nil) }
 
       specify { expect(subject).to eql(lockfile) }
     end

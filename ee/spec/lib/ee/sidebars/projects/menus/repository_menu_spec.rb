@@ -9,7 +9,7 @@ RSpec.describe Sidebars::Projects::Menus::RepositoryMenu do
   let(:context) { Sidebars::Projects::Context.new(current_user: user, container: project, current_ref: 'master') }
 
   describe 'File Locks' do
-    subject { described_class.new(context).renderable_items.index { |e| e.item_id == :file_locks} }
+    subject { described_class.new(context).renderable_items.index { |e| e.item_id == :file_locks } }
 
     context 'when licensed feature file locks is not enabled' do
       it 'does not include file locks menu item' do

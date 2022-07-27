@@ -6,12 +6,12 @@ RSpec.describe Gitlab::Ci::Minutes::GitlabContributionCostFactor do
   using RSpec::Parameterized::TableSyntax
   include ProjectForksHelper
 
-  let_it_be(:gitlab_group) { create(:group)}
+  let_it_be(:gitlab_group) { create(:group) }
   let_it_be(:another_group) { create(:group) }
 
   let(:gitlab_project) { create(:project, group: gitlab_group) }
 
-  let(:another_project) {create(:project, group: another_group) }
+  let(:another_project) { create(:project, group: another_group) }
 
   where(:fork_from, :is_merge_request, :target_project, :monthly_minutes, :expectation, :case_name) do
     ref(:gitlab_project)  | true  | ref(:gitlab_project)  | 10_000 | 0.0333     |  '10k minutes'

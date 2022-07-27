@@ -16,7 +16,7 @@ RSpec.describe Gitlab::Usage::Metrics::Instrumentations::ApprovalProjectRulesWit
   end
 
   context 'for more approvers than required' do
-    let(:having_clause) { 'COUNT(approval_project_rules_users) > approvals_required'}
+    let(:having_clause) { 'COUNT(approval_project_rules_users) > approvals_required' }
 
     before do
       create_list(:approval_project_rule, 2, project: project, users: create_list(:user, 2), approvals_required: 1)
@@ -26,7 +26,7 @@ RSpec.describe Gitlab::Usage::Metrics::Instrumentations::ApprovalProjectRulesWit
   end
 
   context 'for more approvers than required' do
-    let(:having_clause) { 'COUNT(approval_project_rules_users) < approvals_required'}
+    let(:having_clause) { 'COUNT(approval_project_rules_users) < approvals_required' }
 
     before do
       create_list(:approval_project_rule, 2, project: project, users: [user], approvals_required: 2)
@@ -36,7 +36,7 @@ RSpec.describe Gitlab::Usage::Metrics::Instrumentations::ApprovalProjectRulesWit
   end
 
   context 'for more approvers than required' do
-    let(:having_clause) { "COUNT(approval_project_rules_users) = approvals_required"}
+    let(:having_clause) { "COUNT(approval_project_rules_users) = approvals_required" }
 
     before do
       create_list(:approval_project_rule, 2, project: project, users: [user], approvals_required: 1)
