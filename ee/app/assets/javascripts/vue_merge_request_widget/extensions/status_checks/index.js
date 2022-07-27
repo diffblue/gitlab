@@ -14,7 +14,6 @@ export default {
     loading: s__('StatusCheck|Status checks are being fetched'),
     error: s__('StatusCheck|Failed to load status checks'),
   },
-  expandEvent: 'i_testing_status_checks_widget',
   props: ['apiStatusChecksPath'],
   computed: {
     // Extension computed props
