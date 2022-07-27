@@ -86,6 +86,49 @@ it does not have a static, hardcoded, manually updated `spec.txt`. Instead, the
 GLFM `spec.txt` is automatically generated based on other input files. This process
 is explained in detail in the [Implementation](#implementation) sections below.
 
+#### Official specifications vs internal extensions
+
+Within GFM and GLFM respectively, both GitHub and GitLab have two "sets" of Markdown they support:
+
+- Official specification
+- Internal extensions
+
+The following chart shows the taxonomy and terminology of the various specifications.
+
+**Markdown specification taxonomy**:
+
+```mermaid
+graph TD
+CM[CommonMark - spec.txt - e.g. headings] --- GFMS[GFM Specification - spec.txt - e.g. strikethrough extension]
+GFMS --- GLFM[GLFM Specification - e.g. color chips]
+GFMS --- GFMI[GFM internal extensions - e.g. GitHub-specific references]
+GLFM --- GLFS[GLFM internal extensions - e.g. GitLab-specific references]
+```
+
+##### Official specifications
+
+GFM and GLFM each have an "official specification", which includes both the CommonMark standard as
+well as generic extensions to the CommonMark standard. For example, GFM adds the
+[`strikethrough` extension](https://github.github.com/gfm/https://github.github.com/gfm/#strikethrough-extension-),
+and GLFM adds the
+[`color chips` extension](../../../user/markdown.md#colors).
+These extensions in the official specifications are not dependent upon any specific
+implementation or environment. They can be implemented in any third-party Markdown rendering engine.
+
+##### Internal extensions
+
+GFM and GLFM each also have a set of "internal extensions". These are not part of the GFM/GLFM
+official specifications, but are part of the GitHub and GitLab internal Markdown renderer/parser
+implementations. These internal extensions are often dependent upon the GitHub or GitLab
+implementations or environments, and may depend upon metadata which is only available via
+interacting with those environments. For example,
+[GitHub supports GitHub-specific autolinked references](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/autolinked-references-and-urls),
+and
+[GitLab also supports GitLab-specific references](../../../user/markdown.md#gitlab-specific-references).
+These may also be implemented by third-party Markdown rendering engines which integrate with
+GitHub or GitLab. For example, editor or IDE plugins which allow the user to directly edit
+Markdown for issues/PRs/MRs within the editor/IDE.
+
 ### Markdown examples
 
 Everywhere in the context of the specification and this guide, the term
