@@ -6,6 +6,7 @@ import { POLICY_TYPE_COMPONENT_OPTIONS } from './constants';
 const SCHEMA_DICT = {
   [POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.urlParameter]: {
     [NAMESPACE_TYPES.PROJECT]: getSingleScanExecutionPolicySchema,
+    [NAMESPACE_TYPES.GROUP]: getSingleScanExecutionPolicySchema,
   },
 };
 
