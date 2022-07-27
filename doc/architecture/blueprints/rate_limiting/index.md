@@ -58,7 +58,7 @@ Inc._
 * It is difficult to introduce new limits, even more to define policies.
 * Finding what limits are defined requires performing a codebase audit.
 * We don't have a good way to expose limits to satellite services like Registry.
-* We need to build external services to enforce policies (Pipeline Validation Service).
+* We enforce a number of different policies via opaque external systems (Pipeline Validation Service, Bouncer, Watchtower).
 * There is not standardized way to define policies in a way consistent with defining limits.
 * It is difficult to understand when a user is approaching a limit threshold.
 * There is no way to automatically notify a user when they are approaching thresholds.
