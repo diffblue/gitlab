@@ -11,7 +11,6 @@ import httpStatusCodes from '~/lib/utils/http_status';
 import { createAlert } from '~/flash';
 import { TOAST_MESSAGE } from '~/pipelines/constants';
 import axios from '~/lib/utils/axios_utils';
-import HelpPopover from '~/vue_shared/components/help_popover.vue';
 
 const $toast = {
   show: jest.fn(),
@@ -32,7 +31,6 @@ describe('Pipelines table in Commits and Merge requests', () => {
   const findTable = () => wrapper.findComponent(GlTableLite);
   const findTableRows = () => wrapper.findAllByTestId('pipeline-table-row');
   const findModal = () => wrapper.findComponent(GlModal);
-  const findHelpPopover = () => wrapper.findComponent(HelpPopover);
   const findMrPipelinesDocsLink = () => wrapper.findByTestId('mr-pipelines-docs-link');
 
   const createComponent = (props = {}) => {
@@ -81,11 +79,13 @@ describe('Pipelines table in Commits and Merge requests', () => {
         expect(findEmptyState().exists()).toBe(true);
       });
 
-      it('should render run pipeline button and help popover in empty state', () => {
+      it('should render correct empty state content', () => {
         expect(findRunPipelineBtn().exists()).toBe(true);
-        expect(findHelpPopover().exists()).toBe(true);
         expect(findMrPipelinesDocsLink().attributes('href')).toBe(
           '/help/ci/pipelines/merge_request_pipelines.md#prerequisites',
+        );
+        expect(findEmptyState().text()).toContain(
+          'To run a merge request pipeline, the jobs in the CI/CD configuration file must be configured to run in merge request pipelines.',
         );
       });
     });

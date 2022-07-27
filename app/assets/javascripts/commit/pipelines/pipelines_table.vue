@@ -8,7 +8,6 @@ import eventHub from '~/pipelines/event_hub';
 import PipelinesMixin from '~/pipelines/mixins/pipelines_mixin';
 import PipelinesService from '~/pipelines/services/pipelines_service';
 import PipelineStore from '~/pipelines/stores/pipelines_store';
-import HelpPopover from '~/vue_shared/components/help_popover.vue';
 import TablePagination from '~/vue_shared/components/pagination/table_pagination.vue';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { s__, __ } from '~/locale';
@@ -22,7 +21,6 @@ export default {
     GlLoadingIcon,
     GlModal,
     GlSprintf,
-    HelpPopover,
     PipelinesTableComponent,
     TablePagination,
   },
@@ -233,33 +231,29 @@ export default {
         :title="$options.i18n.emptyStateTitle"
         data-testid="pipeline-empty-state"
       >
+        <template #description>
+          <gl-sprintf :message="$options.i18n.runPipelinePopoverDescription">
+            <template #link="{ content }">
+              <gl-link
+                :href="$options.mrPipelinesDocsPath"
+                target="_blank"
+                data-testid="mr-pipelines-docs-link"
+                >{{ content }}</gl-link
+              >
+            </template>
+          </gl-sprintf>
+        </template>
+
         <template #actions>
           <div class="gl-vertical-align-middle">
             <gl-button
-              data-testid="run_pipeline_button"
+              variant="confirm"
               :loading="state.isRunningMergeRequestPipeline"
+              data-testid="run_pipeline_button"
               @click="tryRunPipeline"
             >
               {{ $options.i18n.runPipelineText }}
             </gl-button>
-
-            <help-popover>
-              <template #title>
-                {{ $options.i18n.runPipelinePopoverTitle }}
-              </template>
-
-              <gl-sprintf :message="$options.i18n.runPipelinePopoverDescription">
-                <template #link="{ content }">
-                  <gl-link
-                    :href="$options.mrPipelinesDocsPath"
-                    class="gl-font-sm"
-                    target="_blank"
-                    data-testid="mr-pipelines-docs-link"
-                    >{{ content }}</gl-link
-                  >
-                </template>
-              </gl-sprintf>
-            </help-popover>
           </div>
         </template>
       </gl-empty-state>
