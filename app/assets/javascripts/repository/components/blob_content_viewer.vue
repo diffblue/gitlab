@@ -181,7 +181,7 @@ export default {
   },
   watch: {
     // Watch the URL 'plain' query value to know if the viewer needs changing.
-    // This is the case when the uses switches the viewer and then goes back
+    // This is the case when the user switches the viewer and then goes back
     // through the hystory.
     '$route.query.plain': {
       handler(plainValue) {
