@@ -19,7 +19,7 @@ The merge request is made up of several different key components and ideas that 
 1. Merge checks
 1. Approval rules
 
-When developing merge request widgets, refer to the documentation for the [merge request widget extension framework](widget_extensions.md).
+When developing merge request widgets, refer to the documentation for the [merge request widget extension framework](../new_fe_guide/modules/widget_extensions.md), which should be the standard for all new widgets.
 
 ### Merge widget
 
