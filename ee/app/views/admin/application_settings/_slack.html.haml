@@ -11,7 +11,7 @@
       = _('Slack integration allows you to interact with GitLab via slash commands in a chat window.')
   .settings-content
     = gitlab_ui_form_for @application_setting, url: general_admin_application_settings_path(anchor: 'js-slack-settings'), html: { class: 'fieldset-form' } do |f|
-      = form_errors(@application_setting) if expanded
+      = form_errors(@application_setting, pajamas_alert: true) if expanded
 
       %fieldset
         .form-group
