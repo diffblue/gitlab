@@ -340,11 +340,11 @@ RSpec.describe Ci::JobArtifact do
     end
 
     describe 'schema validation' do
-      where(:validate, :build_is_subject_to_validation?, :expected_validate_flag) do
-        false | true | false
-        false | true | false
-        true  | true | true
-        true  | true | true
+      where(:validate, :expected_validate_flag) do
+        false | false
+        false | false
+        true  | true
+        true  | true
       end
 
       with_them do
@@ -352,7 +352,6 @@ RSpec.describe Ci::JobArtifact do
         let(:expected_parser_args) { ['sast', instance_of(String), instance_of(::Gitlab::Ci::Reports::Security::Report), false, validate: expected_validate_flag] }
 
         before do
-          allow(job_artifact.job).to receive(:validate_schema?).and_return(build_is_subject_to_validation?)
           allow(::Gitlab::Ci::Parsers).to receive(:fabricate!).and_return(mock_parser)
         end
 
