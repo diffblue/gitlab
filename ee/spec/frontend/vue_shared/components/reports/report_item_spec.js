@@ -1,11 +1,11 @@
 import { mount } from '@vue/test-utils';
 import Vue from 'vue';
 import { componentNames, iconComponentNames } from 'ee/reports/components/issue_body';
+import { codequalityParsedIssues } from 'ee_jest/vue_merge_request_widget/mock_data';
 import LicenseIssueBody from 'ee/vue_shared/license_compliance/components/license_issue_body.vue';
 import LicenseStatusIcon from 'ee/vue_shared/license_compliance/components/license_status_icon.vue';
 import SecurityIssueBody from 'ee/vue_shared/security_reports/components/security_issue_body.vue';
 import store from 'ee/vue_shared/security_reports/store';
-import { codequalityParsedIssues } from 'ee_jest/vue_mr_widget/mock_data';
 import {
   sastParsedIssues,
   dockerReportParsed,
