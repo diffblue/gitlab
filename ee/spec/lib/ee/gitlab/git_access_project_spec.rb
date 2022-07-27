@@ -361,57 +361,171 @@ RSpec.describe Gitlab::GitAccessProject do
 
     before do
       project.add_maintainer(user)
-      stub_licensed_features(git_abuse_rate_limit: true)
     end
 
     subject(:pull_access_check) { access.check('git-upload-pack', changes) }
 
     describe 'excessive projects download restriction' do
-      it 'executes Users::Abuse::ExcessiveProjectsDownloadBanService on the user and project' do
-        expect(Users::Abuse::ExcessiveProjectsDownloadBanService).to receive(:execute)
-          .with(user, project) { { banned: false } }
-
-        pull_access_check
-      end
-
-      context 'when Users::Abuse::ExcessiveProjectsDownloadBanService bans the user' do
+      context 'when application level settings are configured' do
         before do
-          allow(Users::Abuse::ExcessiveProjectsDownloadBanService).to receive(:execute) { { banned: true } }
+          stub_feature_flags(git_abuse_rate_limit_feature_flag: true)
+          stub_licensed_features(git_abuse_rate_limit: true)
         end
 
-        it { expect { pull_access_check }.to raise_error(Gitlab::GitAccess::ForbiddenError) }
+        context 'when feature flag is enabled and current license is ultimate' do
+          it 'executes Users::Abuse::ExcessiveProjectsDownloadBanService on the user and project' do
+            expect(Users::Abuse::ExcessiveProjectsDownloadBanService).to receive(:execute)
+              .with(user, project) { { banned: false } }
+
+            pull_access_check
+          end
+
+          context 'when Users::Abuse::ExcessiveProjectsDownloadBanService bans the user' do
+            before do
+              allow(Users::Abuse::ExcessiveProjectsDownloadBanService).to receive(:execute) { { banned: true } }
+            end
+
+            it { expect { pull_access_check }.to raise_error(Gitlab::GitAccess::ForbiddenError) }
+          end
+        end
+
+        context 'when feature flag is disabled' do
+          before do
+            stub_feature_flags(git_abuse_rate_limit_feature_flag: false)
+          end
+
+          it 'does not execute Users::Abuse::ExcessiveProjectsDownloadBanService' do
+            expect(Users::Abuse::ExcessiveProjectsDownloadBanService).not_to receive(:execute)
+
+            pull_access_check
+          end
+        end
+
+        context 'when current license is not ultimate' do
+          before do
+            stub_licensed_features(git_abuse_rate_limit: false)
+          end
+
+          it 'does not execute Users::Abuse::ExcessiveProjectsDownloadBanService' do
+            expect(Users::Abuse::ExcessiveProjectsDownloadBanService).not_to receive(:execute)
+
+            pull_access_check
+          end
+        end
+
+        context 'when there is no user' do
+          let(:actor) { :ci }
+
+          it 'does not execute Users::Abuse::ExcessiveProjectsDownloadBanService' do
+            expect(Users::Abuse::ExcessiveProjectsDownloadBanService).not_to receive(:execute)
+            expect { pull_access_check }.to raise_error(Gitlab::GitAccess::ForbiddenError)
+          end
+        end
       end
 
-      context 'when feature flag is disabled' do
+      context 'when namespace level settings are configured' do
         before do
-          stub_feature_flags(git_abuse_rate_limit_feature_flag: false)
+          stub_feature_flags(limit_unique_project_downloads_per_namespace_user: true)
+          stub_licensed_features(unique_project_download_limit: true)
         end
 
-        it 'does not execute Users::Abuse::ExcessiveProjectsDownloadBanService' do
-          expect(Users::Abuse::ExcessiveProjectsDownloadBanService).not_to receive(:execute)
+        context 'when feature flag is enabled and current license is ultimate' do
+          it 'executes Users::Abuse::GitAbuse::NamespaceThrottleService on the project and user' do
+            expect(Users::Abuse::GitAbuse::NamespaceThrottleService).to receive(:execute)
+              .with(project, user).and_return(banned: false)
 
-          pull_access_check
+            pull_access_check
+          end
+
+          context 'when Users::Abuse::GitAbuse::NamespaceThrottleService bans the user' do
+            before do
+              allow(Users::Abuse::GitAbuse::NamespaceThrottleService).to receive(:execute) { { banned: true } }
+            end
+
+            it { expect { pull_access_check }.to raise_error(Gitlab::GitAccess::ForbiddenError) }
+          end
+        end
+
+        context 'when feature flag is disabled' do
+          before do
+            stub_feature_flags(limit_unique_project_downloads_per_namespace_user: false)
+          end
+
+          it 'does not execute Users::Abuse::ExcessiveProjectsDownloadBanService' do
+            expect(Users::Abuse::ExcessiveProjectsDownloadBanService).not_to receive(:execute)
+
+            pull_access_check
+          end
+        end
+
+        context 'when current license is not ultimate' do
+          before do
+            stub_licensed_features(unique_project_download_limit: false)
+          end
+
+          it 'does not execute Users::Abuse::ExcessiveProjectsDownloadBanService' do
+            expect(Users::Abuse::ExcessiveProjectsDownloadBanService).not_to receive(:execute)
+
+            pull_access_check
+          end
+        end
+
+        context 'when there is no user' do
+          let(:actor) { :ci }
+
+          it 'does not execute Users::Abuse::GitAbuse::NamespaceThrottleService', :aggregate_failures do
+            expect(Users::Abuse::GitAbuse::NamespaceThrottleService).not_to receive(:execute)
+            expect { pull_access_check }.to raise_error(Gitlab::GitAccess::ForbiddenError)
+          end
         end
       end
 
-      context 'when current license is not ultimate' do
+      context 'when both application and namespace level settings are configured' do
         before do
-          stub_licensed_features(git_abuse_rate_limit: false)
+          stub_feature_flags(
+            git_abuse_rate_limit_feature_flag: true,
+            limit_unique_project_downloads_per_namespace_user: true
+          )
+          stub_licensed_features(
+            git_abuse_rate_limit: true,
+            unique_project_download_limit: true
+          )
         end
 
-        it 'does not execute Users::Abuse::ExcessiveProjectsDownloadBanService' do
-          expect(Users::Abuse::ExcessiveProjectsDownloadBanService).not_to receive(:execute)
+        context 'when feature flags are enabled and current license is ultimate' do
+          it 'executes both ExcessiveProjectsDownloadBanService & NamespaceThrottleService on the project and user',
+            :aggregate_failures do
+            expect(Users::Abuse::ExcessiveProjectsDownloadBanService).to receive(:execute)
+              .with(user, project).and_return(banned: false)
 
-          pull_access_check
+            expect(Users::Abuse::GitAbuse::NamespaceThrottleService).to receive(:execute)
+              .with(project, user).and_return(banned: false)
+
+            pull_access_check
+          end
         end
-      end
 
-      context 'when there is no user' do
-        let(:actor) { :ci }
+        context 'when Users::Abuse::ExcessiveProjectsDownloadBanService bans the user' do
+          before do
+            allow(Users::Abuse::ExcessiveProjectsDownloadBanService).to receive(:execute) { { banned: true } }
+          end
 
-        it 'does not execute Users::Abuse::ExcessiveProjectsDownloadBanService' do
-          expect(Users::Abuse::ExcessiveProjectsDownloadBanService).not_to receive(:execute)
-          expect { pull_access_check }.to raise_error(Gitlab::GitAccess::ForbiddenError)
+          it 'bans the user and does not execute Users::Abuse::GitAbuse::NamespaceThrottleService',
+            :aggregate_failures do
+            expect { pull_access_check }.to raise_error(Gitlab::GitAccess::ForbiddenError)
+            expect(Users::Abuse::GitAbuse::NamespaceThrottleService).not_to receive(:execute)
+          end
+        end
+
+        context 'when Users::Abuse::GitAbuse::NamespaceThrottleService bans the user' do
+          before do
+            allow(Users::Abuse::ExcessiveProjectsDownloadBanService).to receive(:execute) { { banned: false } }
+            allow(Users::Abuse::GitAbuse::NamespaceThrottleService).to receive(:execute) { { banned: true } }
+          end
+
+          it 'bans the user' do
+            expect { pull_access_check }.to raise_error(Gitlab::GitAccess::ForbiddenError)
+          end
         end
       end
     end
