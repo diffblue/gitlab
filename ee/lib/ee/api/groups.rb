@@ -70,6 +70,7 @@ module EE
 
           def immediately_delete_subgroup?(group)
             return false unless ::Feature.enabled?(:immediate_delete_subgroup_api, group.parent)
+
             group.subgroup? &&
               group.marked_for_deletion? &&
               group.full_path == params[:full_path] &&
