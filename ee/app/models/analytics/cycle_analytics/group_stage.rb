@@ -4,6 +4,7 @@ module Analytics
   module CycleAnalytics
     class GroupStage < ApplicationRecord
       include Analytics::CycleAnalytics::Stage
+      include DatabaseEventTracking
 
       validates :group, presence: true
       validates :name, uniqueness: { scope: [:group_id, :group_value_stream_id] }
@@ -28,6 +29,22 @@ module Analytics
           .where(group_id: group.self_and_descendants.select(:id))
           .select("DISTINCT ON(stage_event_hash_id) #{quoted_table_name}.*")
       end
+
+      SNOWPLOW_ATTRIBUTES = %i[
+        id
+        created_at
+        updated_at
+        relative_position
+        start_event_identifier
+        end_event_identifier
+        group_id
+        start_event_label_id
+        end_event_label_id
+        hidden
+        custom
+        name
+        group_value_stream_id
+      ].freeze
     end
   end
 end

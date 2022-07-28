@@ -63,4 +63,49 @@ RSpec.describe Analytics::CycleAnalytics::GroupStage do
       expect(current_event_pairs).to eq(expected_event_pairs)
     end
   end
+
+  describe 'events tracking' do
+    let(:category) { described_class.to_s }
+    let(:label) { described_class.table_name }
+    let(:namespace) { create(:group) }
+    let(:action) { "database_event_#{property}" }
+    let(:value_stream) { create(:cycle_analytics_group_value_stream) }
+    let(:feature_flag_name) { :product_intelligence_database_event_tracking }
+    let(:stage_params) do
+      {
+        group: namespace,
+        name: 'st1',
+        start_event_identifier: :merge_request_created,
+        end_event_identifier: :merge_request_merged,
+        group_value_stream_id: value_stream.id
+      }
+    end
+
+    let(:group_stage) { described_class.create!(stage_params) }
+    let(:extra) { group_stage.filtered_record_attributes }
+
+    describe '#create' do
+      it_behaves_like 'Snowplow event tracking' do
+        subject(:new_group_stage) { group_stage }
+
+        let(:property) { 'create' }
+      end
+    end
+
+    describe '#update' do
+      it_behaves_like 'Snowplow event tracking' do
+        subject(:create_group_stage) { group_stage.update!(name: 'st 2') }
+
+        let(:property) { 'update' }
+      end
+    end
+
+    describe '#destroy' do
+      it_behaves_like 'Snowplow event tracking' do
+        subject(:delete_stage_group) { group_stage.destroy! }
+
+        let(:property) { 'destroy' }
+      end
+    end
+  end
 end
