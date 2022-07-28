@@ -231,7 +231,6 @@
     "jest-transform-graphql": "^2.1.0",
     "jest-util": "^26.5.2",
     "markdownlint-cli": "0.31.0",
-    "md5": "^2.2.1",
     "miragejs": "^0.1.40",
     "mock-apollo-client": "1.2.0",
     "nodemon": "^2.0.19",
