@@ -140,6 +140,34 @@ RSpec.describe SearchHelper do
           avatar_url: '' # This group didn't have an avatar so set this to ''
         })
       end
+
+      context 'with the filter parameter is present' do
+        it 'filter is set to search' do
+          project = create(:project, title: 'hello world')
+          project.add_developer(user)
+
+          results = search_autocomplete_opts('hello', filter: 'search')
+          expect(results.count).to eq(1)
+
+          expect(results.first).to include({
+            category: 'Projects',
+            id: project.id,
+            label: project.full_name,
+            url: Gitlab::Routing.url_helpers.project_path(project)
+          })
+        end
+
+        it 'filter is set to generic' do
+          results = search_autocomplete_opts('setting', filter: 'generic')
+          expect(results.count).to eq(1)
+
+          expect(results.first).to include({
+            category: 'Settings',
+            label: 'User settings',
+            url: Gitlab::Routing.url_helpers.profile_path
+          })
+        end
+      end
     end
   end
 
