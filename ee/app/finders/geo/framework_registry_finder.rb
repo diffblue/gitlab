@@ -22,6 +22,7 @@ module Geo
         registry_entries = init_collection
         registry_entries = by_id(registry_entries)
         registry_entries = by_replication_state(registry_entries)
+        registry_entries = by_verification_state(registry_entries)
         registry_entries.ordered
       end
 
@@ -31,6 +32,10 @@ module Geo
 
       def replicator_class
         Gitlab::Geo::Replicator.for_class_name(self.class.name)
+      end
+
+      def verification_disabled?
+        !replicator_class.verification_enabled?
       end
 
       def init_collection
@@ -47,6 +52,17 @@ module Geo
         return registry_entries if params[:replication_state].blank?
 
         registry_entries.with_state(params[:replication_state])
+      end
+
+      def by_verification_state(registry_entries)
+        if verification_disabled? && params.key?(:verification_state)
+          raise ArgumentError, "Filtering by verification_state is not supported " \
+            "because verification is not enabled for #{replicator_class.model}"
+        end
+
+        return registry_entries if params[:verification_state].blank?
+
+        registry_entries.public_send("verification_#{params[:verification_state]}") # rubocop:disable GitlabSecurity/PublicSend
       end
     end
   end

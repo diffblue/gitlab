@@ -3,10 +3,14 @@
 RSpec.shared_examples 'a framework registry finder' do |registry_factory|
   include ::EE::GeoHelpers
 
+  let(:replicator_class) { Gitlab::Geo::Replicator.for_class_name(described_class.name) }
+  let(:factory_traits) { replicator_class.verification_enabled? ? [:synced, :verification_succeeded] : [:synced] }
+
   # rubocop:disable Rails/SaveBang
   let!(:registry1) { create(registry_factory, :synced) }
-  let!(:registry2) { create(registry_factory, :synced) }
+  let!(:registry2) { create(registry_factory, *factory_traits) }
   let!(:registry3) { create(registry_factory) }
+  let!(:registry4) { create(registry_factory, *factory_traits) }
   # rubocop:enable Rails/SaveBang
 
   let(:params) { {} }
@@ -40,7 +44,7 @@ RSpec.shared_examples 'a framework registry finder' do |registry_factory|
           let(:params) { { ids: [] } }
 
           it 'returns all registries' do
-            expect(registries.to_a).to contain_exactly(registry1, registry2, registry3)
+            expect(registries.to_a).to contain_exactly(registry1, registry2, registry3, registry4)
           end
         end
 
@@ -48,7 +52,7 @@ RSpec.shared_examples 'a framework registry finder' do |registry_factory|
           let(:params) { { replication_state: :synced } }
 
           it 'returns registries with requested replication state' do
-            expect(registries.to_a).to contain_exactly(registry1, registry2)
+            expect(registries.to_a).to contain_exactly(registry1, registry2, registry4)
           end
         end
 
@@ -56,13 +60,60 @@ RSpec.shared_examples 'a framework registry finder' do |registry_factory|
           let(:params) { { replication_state: '' } }
 
           it 'returns all registries' do
-            expect(registries.to_a).to contain_exactly(registry1, registry2, registry3)
+            expect(registries.to_a).to contain_exactly(registry1, registry2, registry3, registry4)
+          end
+        end
+
+        context 'with verification enabled' do
+          before do
+            skip_if_verification_is_not_enabled
+          end
+
+          context 'with a verification_state param' do
+            let(:params) { { verification_state: :succeeded } }
+
+            it 'returns registries with requested verification state' do
+              expect(registries.to_a).to contain_exactly(registry2, registry4)
+            end
+          end
+
+          context 'with a verification_state param empty' do
+            let(:params) { { verification_state: '' } }
+
+            it 'returns all registries' do
+              expect(registries.to_a).to contain_exactly(registry1, registry2, registry3, registry4)
+            end
+          end
+        end
+
+        context 'with verification disabled' do
+          before do
+            skip_if_verification_is_enabled
+          end
+
+          context 'with a verification_state param' do
+            let(:params) { { verification_state: :succeeded } }
+
+            it 'raises ArgumentError' do
+              expect { registries }.to raise_error(ArgumentError)
+            end
+          end
+
+          context 'with a verification_state param empty' do
+            let(:params) { { verification_state: '' } }
+
+            it 'raises ArgumentError' do
+              message = "Filtering by verification_state is not supported " \
+                "because verification is not enabled for #{replicator_class.model}"
+
+              expect { registries }.to raise_error(ArgumentError, message)
+            end
           end
         end
 
         context 'with no params' do
           it 'returns all registries' do
-            expect(registries.to_a).to contain_exactly(registry1, registry2, registry3)
+            expect(registries.to_a).to contain_exactly(registry1, registry2, registry3, registry4)
           end
         end
       end

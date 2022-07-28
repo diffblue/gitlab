@@ -238,5 +238,17 @@ module EE
 
       TestDummyModelState.reset_column_information
     end
+
+    def skip_if_verification_is_enabled
+      return unless replicator_class.verification_enabled?
+
+      skip "Skipping because verification is enabled for #{replicator_class.model}"
+    end
+
+    def skip_if_verification_is_not_enabled
+      return if replicator_class.verification_enabled?
+
+      skip "Skipping because verification is not enabled for #{replicator_class.model}"
+    end
   end
 end
