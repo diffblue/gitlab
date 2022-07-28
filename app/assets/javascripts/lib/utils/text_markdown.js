@@ -312,9 +312,132 @@ function updateText({ textArea, tag, cursorOffset, blockTag, wrap, select, tagCo
   });
 }
 
+// returns the text lines that encompass the current selection
+function linesFromSelection(textArea) {
+  const text = textArea.value;
+  const { selectionStart, selectionEnd } = textArea;
+
+  let startPos = text[selectionStart] === '\n' ? selectionStart - 1 : selectionStart;
+  startPos = text.lastIndexOf('\n', startPos) + 1;
+
+  let endPos = selectionEnd === selectionStart ? selectionEnd : selectionEnd - 1;
+  endPos = text.indexOf('\n', endPos);
+  if (endPos < 0) endPos = text.length;
+
+  const selectedRange = text.substring(startPos, endPos);
+  const lines = selectedRange.split('\n');
+
+  return {
+    lines,
+    selectionStart,
+    selectionEnd,
+    startPos,
+    endPos,
+  };
+}
+
+// Indents selected lines to the right by 2 spaces
+function indentLines(textArea) {
+  const { lines, selectionStart, selectionEnd, startPos, endPos } = linesFromSelection(textArea);
+  const indentation = '  ';
+  const shiftBy = 2;
+  const shiftedLines = [];
+  let totalAdded = 0;
+
+  textArea.setSelectionRange(startPos, endPos);
+
+  lines.forEach((line) => {
+    if (line.length > 0) {
+      line = indentation + line;
+      totalAdded += shiftBy;
+    }
+
+    shiftedLines.push(line);
+  });
+
+  const textToInsert = shiftedLines.join('\n');
+
+  insertText(textArea, textToInsert);
+
+  if (selectionStart === selectionEnd) {
+    textArea.setSelectionRange(selectionStart + shiftBy, selectionEnd + shiftBy);
+  } else if (selectionStart === startPos) {
+    textArea.setSelectionRange(selectionStart, selectionEnd + totalAdded);
+  } else {
+    textArea.setSelectionRange(selectionStart + shiftBy, selectionEnd + totalAdded);
+  }
+}
+
+// Outdents selected lines to the left by 2 spaces
+function outdentLines(textArea) {
+  const shiftBy = 2;
+  const { lines, selectionStart, selectionEnd, startPos, endPos } = linesFromSelection(textArea);
+  const shiftedLines = [];
+  let totalRemoved = 0;
+  let removedFromFirstline = -1;
+  let removedFromLine = 0;
+
+  textArea.setSelectionRange(startPos, endPos);
+
+  lines.forEach((line) => {
+    removedFromLine = 0;
+
+    if (line.length > 0) {
+      // need to count how many spaces are actually removed, so can't use `replace`
+      while (removedFromLine < shiftBy && line[removedFromLine] === ' ') {
+        removedFromLine += 1;
+      }
+
+      if (removedFromLine > 0) {
+        line = line.slice(removedFromLine);
+        totalRemoved += removedFromLine;
+      }
+    }
+
+    if (removedFromFirstline === -1) removedFromFirstline = removedFromLine;
+    shiftedLines.push(line);
+  });
+
+  const textToInsert = shiftedLines.join('\n');
+
+  insertText(textArea, textToInsert);
+
+  if (selectionStart === selectionEnd) {
+    textArea.setSelectionRange(
+      Math.max(0, selectionStart - removedFromFirstline),
+      Math.max(0, selectionEnd - removedFromFirstline),
+    );
+  } else if (selectionStart === startPos) {
+    textArea.setSelectionRange(selectionStart, Math.max(0, selectionEnd - totalRemoved));
+  } else {
+    textArea.setSelectionRange(
+      Math.max(0, selectionStart - removedFromFirstline),
+      Math.max(0, selectionEnd - totalRemoved),
+    );
+  }
+}
+
+function handleIndentOutdent(e, textArea) {
+  if (!e.metaKey) return;
+
+  switch (e.key) {
+    case ']':
+      e.preventDefault();
+      indentLines(textArea);
+      break;
+    case '[':
+      e.preventDefault();
+      outdentLines(textArea);
+      break;
+    default:
+      break;
+  }
+}
+
 /* eslint-disable @gitlab/require-i18n-strings */
 function handleSurroundSelectedText(e, textArea) {
   if (!gon.markdown_surround_selection) return;
+  if (e.metaKey) return;
   if (textArea.selectionStart === textArea.selectionEnd) return;
 
   const keys = {
@@ -419,6 +542,7 @@ export function keypressNoteText(e) {
 
   if ($(textArea).atwho?.('isSelecting')) return;
 
+  handleIndentOutdent(e, textArea);
   handleContinueList(e, textArea);
   handleSurroundSelectedText(e, textArea);
 }
