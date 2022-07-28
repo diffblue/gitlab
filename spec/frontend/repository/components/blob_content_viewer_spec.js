@@ -22,7 +22,6 @@ import userInfoQuery from '~/repository/queries/user_info.query.graphql';
 import applicationInfoQuery from '~/repository/queries/application_info.query.graphql';
 import CodeIntelligence from '~/code_navigation/components/app.vue';
 import * as urlUtility from '~/lib/utils/url_utility';
-import { redirectTo } from '~/lib/utils/url_utility';
 import { isLoggedIn, handleLocationHash } from '~/lib/utils/common_utils';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import httpStatusCodes from '~/lib/utils/http_status';
@@ -173,6 +172,7 @@ describe('Blob content viewer component', () => {
       expect(findBlobHeader().props('hasRenderError')).toEqual(false);
       expect(findBlobHeader().props('hideViewerSwitcher')).toEqual(true);
       expect(findBlobHeader().props('blob')).toEqual(simpleViewerMock);
+      expect(mockRouterPush).not.toHaveBeenCalled();
     });
 
     it('copies blob text to clipboard', async () => {
@@ -262,6 +262,7 @@ describe('Blob content viewer component', () => {
       expect(findBlobHeader().props('hasRenderError')).toEqual(false);
       expect(findBlobHeader().props('hideViewerSwitcher')).toEqual(false);
       expect(findBlobHeader().props('blob')).toEqual(richViewerMock);
+      expect(mockRouterPush).not.toHaveBeenCalled();
     });
 
     it('renders a BlobContent component', async () => {
@@ -533,12 +534,12 @@ describe('Blob content viewer component', () => {
 
     it('simple edit redirects to the simple editor', () => {
       findWebIdeLink().vm.$emit('edit', 'simple');
-      expect(redirectTo).toHaveBeenCalledWith(simpleViewerMock.editBlobPath);
+      expect(urlUtility.redirectTo).toHaveBeenCalledWith(simpleViewerMock.editBlobPath);
     });
 
     it('IDE edit redirects to the IDE editor', () => {
       findWebIdeLink().vm.$emit('edit', 'ide');
-      expect(redirectTo).toHaveBeenCalledWith(simpleViewerMock.ideEditPath);
+      expect(urlUtility.redirectTo).toHaveBeenCalledWith(simpleViewerMock.ideEditPath);
     });
 
     it.each`

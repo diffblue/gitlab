@@ -63,13 +63,29 @@ export default {
         };
       },
       result() {
-        const hash = getLocationHash();
+        const urlHash = getLocationHash();
+        const plain = this.$route?.query?.plain;
 
-        if (hash && hash.startsWith('L')) {
-          this.switchViewer(SIMPLE_BLOB_VIEWER, false);
-        } else if (this.$route?.query?.plain !== '1') {
-          this.switchViewer(this.hasRichViewer ? RICH_BLOB_VIEWER : SIMPLE_BLOB_VIEWER, false);
+        // When the 'plain' URL param is present, its value determines which viewer to render:
+        // - when 0 and the rich viewer is available we render with it
+        // - otherwise we render the simple viewer
+        if (plain !== undefined) {
+          if (plain === '0' && this.hasRichViewer) {
+            this.switchViewer(RICH_BLOB_VIEWER);
+          } else {
+            this.switchViewer(SIMPLE_BLOB_VIEWER);
+          }
+          return;
         }
+
+        // If there is a code line hash in the URL we render witch the simple viewer
+        if (urlHash && urlHash.startsWith('L')) {
+          this.switchViewer(SIMPLE_BLOB_VIEWER);
+          return;
+        }
+
+        // By default, if present, use the rich viewer to render
+        this.switchViewer(this.hasRichViewer ? RICH_BLOB_VIEWER : SIMPLE_BLOB_VIEWER);
       },
       error() {
         this.displayError();
@@ -237,24 +253,28 @@ export default {
     displayError() {
       createFlash({ message: __('An error occurred while loading the file. Please try again.') });
     },
-    switchViewer(newViewer, updateRouteQuery) {
+    switchViewer(newViewer) {
       this.activeViewerType = newViewer || SIMPLE_BLOB_VIEWER;
 
       if (!this.blobViewer) {
         this.loadLegacyViewer();
       }
-
+    },
+    updateRouteQuery() {
       const plain = this.activeViewerType === SIMPLE_BLOB_VIEWER ? '1' : '0';
 
-      if (updateRouteQuery && this.$route?.query?.plain !== plain) {
-        this.$router.push({
-          path: this.$route.path,
-          query: { ...this.$route.query, plain },
-        });
+      if (this.$route?.query?.plain === plain) {
+        return;
       }
+
+      this.$router.push({
+        path: this.$route.path,
+        query: { ...this.$route.query, plain },
+      });
     },
     handleViewerChanged(newViewer) {
-      this.switchViewer(newViewer, true);
+      this.switchViewer(newViewer);
+      this.updateRouteQuery();
     },
     editBlob(target) {
       if (this.showForkSuggestion) {
