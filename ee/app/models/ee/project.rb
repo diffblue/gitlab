@@ -624,12 +624,18 @@ module EE
 
     def repository_size_checker
       strong_memoize(:repository_size_checker) do
-        ::Gitlab::RepositorySizeChecker.new(
-          current_size_proc: -> { statistics.total_repository_size },
-          limit: actual_size_limit,
-          namespace: namespace,
-          enabled: repo_size_limit_feature_available?
-        )
+        root_namespace = namespace.root_ancestor
+
+        if ::EE::Gitlab::Namespaces::Storage::Enforcement.enforce_limit?(root_namespace)
+          ::EE::Namespace::RootStorageSize.new(root_namespace)
+        else
+          ::Gitlab::RepositorySizeChecker.new(
+            current_size_proc: -> { statistics.total_repository_size },
+            limit: actual_size_limit,
+            namespace: namespace,
+            enabled: repo_size_limit_feature_available?
+          )
+        end
       end
     end
 

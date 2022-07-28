@@ -5,16 +5,6 @@ module EE
     module GitAccessProject
       extend ::Gitlab::Utils::Override
 
-      override :size_checker
-      def size_checker
-        root_namespace = container.namespace.root_ancestor
-        if ::EE::Gitlab::Namespaces::Storage::Enforcement.enforce_limit?(root_namespace)
-          ::EE::Namespace::RootStorageSize.new(root_namespace)
-        else
-          container.repository_size_checker
-        end
-      end
-
       private
 
       override :check_download_access!
