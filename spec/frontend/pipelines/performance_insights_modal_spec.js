@@ -66,6 +66,13 @@ describe('Performance insights modal', () => {
       expect(findAlert().exists()).toBe(false);
     });
 
+    it('displays feedback issue', () => {
+      expect(findLink().text()).toBe('Feedback issue');
+      expect(findLink().attributes('href')).toBe(
+        'https://gitlab.com/gitlab-org/gitlab/-/issues/365902',
+      );
+    });
+
     describe('queued duration card', () => {
       it('displays card data', () => {
         expect(trimText(findQueuedCardData().text())).toBe('4.9 days');
@@ -114,9 +121,6 @@ describe('Performance insights modal', () => {
       await waitForPromises();
 
       expect(findAlert().exists()).toBe(true);
-      expect(findLink().attributes('href')).toBe(
-        'https://gitlab.com/gitlab-org/gitlab/-/issues/365902',
-      );
     });
   });
 });
