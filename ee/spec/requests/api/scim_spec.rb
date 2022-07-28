@@ -7,7 +7,7 @@ RSpec.describe API::Scim do
   let(:scim_token) { create(:scim_oauth_access_token, group: group) }
   let(:group) { identity.group }
 
-  let_it_be(:password) { 'secret_pass' }
+  let_it_be(:password) { User.random_password }
   let_it_be(:access_token) { 'secret_token' }
 
   before do
