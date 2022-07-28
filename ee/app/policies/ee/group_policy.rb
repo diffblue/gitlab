@@ -165,6 +165,10 @@ module EE
         @user.banned_from_namespace?(root_namespace)
       end
 
+      condition(:enable_auditor_group_runner_access) do
+        ::Feature.enabled?(:auditor_group_runner_access)
+      end
+
       rule { ~public_group & ~can?(:owner_access) & user_banned_from_group }.policy do
         prevent :read_group
       end
@@ -205,6 +209,10 @@ module EE
         enable :read_cluster
         enable :read_dependency_proxy
         enable :read_wiki
+      end
+
+      rule { enable_auditor_group_runner_access & auditor }.policy do
+        enable :read_group_runners
       end
 
       rule { group_level_compliance_dashboard_enabled & auditor }.policy do
