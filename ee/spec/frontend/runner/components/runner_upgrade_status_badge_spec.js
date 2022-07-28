@@ -73,10 +73,20 @@ describe('RunnerStatusCell', () => {
         expect(findBadge().props('variant')).toBe('warning');
       });
 
-      it('Displays no upgrade status', () => {
+      it('Displays no unavailable status', () => {
         createComponent({
           runner: {
             upgradeStatus: UPGRADE_STATUS_NOT_AVAILABLE,
+          },
+        });
+
+        expect(findBadge().exists()).toBe(false);
+      });
+
+      it('Displays no status for unknown status', () => {
+        createComponent({
+          runner: {
+            upgradeStatus: 'SOME_UNKNOWN_STATUS',
           },
         });
 
