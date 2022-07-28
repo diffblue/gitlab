@@ -81,13 +81,26 @@ RSpec.describe IncidentManagement::IssuableResourceLinks::CreateService do
     end
 
     context 'when link text is absent' do
-      let(:link_text) { nil }
+      context 'when link text is nil' do
+        let(:link_text) { nil }
 
-      it 'stores link and link text' do
-        result = execute.payload[:issuable_resource_link]
+        it 'stores link as link text' do
+          result = execute.payload[:issuable_resource_link]
 
-        expect(execute).to be_success
-        expect(result.link_text).to eq(result.link)
+          expect(execute).to be_success
+          expect(result.link_text).to eq(result.link)
+        end
+      end
+
+      context 'when link text is empty string' do
+        let(:link_text) { ' ' }
+
+        it 'stores link as link text' do
+          result = execute.payload[:issuable_resource_link]
+
+          expect(execute).to be_success
+          expect(result.link_text).to eq(result.link)
+        end
       end
     end
 
