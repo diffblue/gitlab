@@ -80,6 +80,19 @@ RSpec.describe IncidentManagement::IssuableResourceLinks::CreateService do
       it_behaves_like 'success_response'
     end
 
+    context 'when link text is absent' do
+      where(:link_text) { [nil, '', ' '] }
+
+      with_them do
+        it 'stores link as link text' do
+          result = execute.payload[:issuable_resource_link]
+
+          expect(execute).to be_success
+          expect(result.link_text).to eq(result.link)
+        end
+      end
+    end
+
     it 'successfully creates a database record', :aggregate_failures do
       expect { execute }.to change { ::IncidentManagement::IssuableResourceLink.count }.by(1)
     end
