@@ -405,7 +405,6 @@ RSpec.describe API::MergeRequestApprovals do
       context 'when project requires force auth for approval' do
         before do
           project.update!(require_password_to_approve: true)
-          approver.update!(password: 'password')
         end
 
         it 'does not approve the merge request with no password' do
@@ -423,7 +422,7 @@ RSpec.describe API::MergeRequestApprovals do
         end
 
         it 'approves the merge request with correct password' do
-          approve(approval_password: 'password')
+          approve(approval_password: approver.password)
 
           expect(response).to have_gitlab_http_status(:created)
           expect(merge_request.reload.approvals_left).to eq(1)
