@@ -27,28 +27,20 @@ RSpec.shared_examples 'namespace storage limit alert' do
     subject
 
     expect(response.body).to match(/Explanation/)
-    expect(response.body).to have_css('.js-namespace-storage-alert-dismiss')
+    expect(response.body).to have_css('.js-namespace-storage-alert')
   end
 
-  context 'when alert_level is error' do
-    let(:alert_level) { :error }
-
-    it 'does not render a dismiss button' do
-      subject
-
-      expect(response.body).not_to have_css('.js-namespace-storage-alert-dismiss')
-    end
-  end
-
-  context 'when cookie is set' do
+  context 'when user has dismissed already' do
     before do
-      cookies["hide_storage_limit_alert_#{namespace.id}_info"] = 'true'
+      allow(user).to receive(:dismissed_callout?).and_return(true)
+      allow(user).to receive(:dismissed_callout_for_group?).and_return(true)
     end
 
     it 'does not render alert' do
       subject
 
       expect(response.body).not_to match(/Explanation/)
+      expect(response.body).not_to have_css('.js-namespace-storage-alert')
     end
   end
 end
