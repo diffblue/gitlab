@@ -4091,6 +4091,9 @@ msgstr ""
 msgid "An error occurred while fetching reference"
 msgstr ""
 
+msgid "An error occurred while fetching reviewers."
+msgstr ""
+
 msgid "An error occurred while fetching tags. Retry the search."
 msgstr ""
 
