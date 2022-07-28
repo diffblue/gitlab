@@ -107,6 +107,14 @@ module EE
       data
     end
 
+    def purchase_storage_link_enabled?(namespace)
+      namespace.additional_repo_storage_by_namespace_enabled?
+    end
+
+    def purchase_storage_url
+      EE::SUBSCRIPTIONS_MORE_STORAGE_URL
+    end
+
     private
 
     def use_customers_dot_for_addon_path?(namespace)

@@ -1,7 +1,6 @@
 import 'bootstrap/js/dist/modal';
 import initEETrialBanner from 'ee/ee_trial_banner';
 import trackNavbarEvents from 'ee/event_tracking/navbar';
-import initNamespaceStorageLimitAlert from 'ee/namespace_storage_limit_alert';
 import initNamespaceUserCapReachedAlert from 'ee/namespace_user_cap_reached_alert';
 
 if (document.querySelector('.js-verification-reminder') !== null) {
@@ -13,7 +12,6 @@ if (document.querySelector('.js-verification-reminder') !== null) {
 
 // EE specific calls
 initEETrialBanner();
-initNamespaceStorageLimitAlert();
 initNamespaceUserCapReachedAlert();
 
 trackNavbarEvents();

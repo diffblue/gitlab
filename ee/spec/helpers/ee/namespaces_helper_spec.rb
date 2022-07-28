@@ -2,6 +2,7 @@
 require 'spec_helper'
 
 RSpec.describe EE::NamespacesHelper do
+  using RSpec::Parameterized::TableSyntax
   include NamespacesTestHelper
 
   let!(:user) { create(:user) }
@@ -331,6 +332,32 @@ RSpec.describe EE::NamespacesHelper do
           page_size: Kaminari.config.default_per_page
         })
       end
+    end
+  end
+
+  describe '#purchase_storage_url' do
+    subject { helper.purchase_storage_url }
+
+    it { is_expected.to eq(EE::SUBSCRIPTIONS_MORE_STORAGE_URL) }
+  end
+
+  describe '#purchase_storage_link_enabled?' do
+    subject { helper.purchase_storage_link_enabled?(namespace) }
+
+    let_it_be(:namespace) { build(:namespace) }
+
+    where(:additional_repo_storage_by_namespace_enabled, :result) do
+      false | false
+      true  | true
+    end
+
+    with_them do
+      before do
+        allow(namespace).to receive(:additional_repo_storage_by_namespace_enabled?)
+          .and_return(additional_repo_storage_by_namespace_enabled)
+      end
+
+      it { is_expected.to eq(result) }
     end
   end
 
