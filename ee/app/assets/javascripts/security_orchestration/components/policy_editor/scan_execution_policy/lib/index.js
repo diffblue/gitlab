@@ -8,8 +8,7 @@ description: ''
 enabled: true
 rules:
   - type: pipeline
-    branches:
-      - # branch is mandatory
+    branches: []
 actions:
   - scan: dast
     site_profile: ''
