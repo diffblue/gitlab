@@ -41,6 +41,7 @@ describe('The Pipeline Tabs', () => {
     failedJobsCount: 1,
     failedJobsSummary: [],
     totalJobCount: 10,
+    testsCount: 123,
   };
 
   const createComponent = ({ propsData = {}, provide = {}, stubs = {} } = {}) => {
