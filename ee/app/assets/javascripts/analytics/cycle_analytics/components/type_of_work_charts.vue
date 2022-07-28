@@ -1,8 +1,9 @@
 <script>
 import { mapActions, mapGetters, mapState } from 'vuex';
 import { GlAlert, GlIcon, GlTooltip, GlSafeHtmlDirective } from '@gitlab/ui';
-import { s__, sprintf, __, n__ } from '~/locale';
+import { __ } from '~/locale';
 import ChartSkeletonLoader from '~/vue_shared/components/resizable_chart/skeleton_loader.vue';
+import { generateFilterTextDescription } from '../utils';
 import { formattedDate } from '../../shared/utils';
 import { TASKS_BY_TYPE_SUBJECT_ISSUE, TASKS_BY_TYPE_SUBJECT_FILTER_OPTIONS } from '../constants';
 import TasksByTypeChart from './tasks_by_type/tasks_by_type_chart.vue';
@@ -38,44 +39,24 @@ export default {
     isLoading() {
       return Boolean(this.isLoadingTasksByTypeChart || this.isLoadingTasksByTypeChartTopLabels);
     },
-    selectedFiltersDescription() {
-      const { selectedLabelIds, selectedSubjectFilterText } = this;
-      const selectedLabelsCount = selectedLabelIds.length;
-      return sprintf(
-        n__(
-          'ValueStreamAnalytics|%{subjectFilterText} and %{selectedLabelsCount} label',
-          'ValueStreamAnalytics|%{subjectFilterText} and %{selectedLabelsCount} labels',
-          selectedLabelsCount,
-        ),
-        {
-          subjectFilterText: selectedSubjectFilterText.toLowerCase(),
-          selectedLabelsCount,
-        },
-      );
-    },
     tooltipText() {
       const {
-        createdAfter,
-        createdBefore,
-        selectedProjectIds,
-        currentGroup: { name: groupName },
-      } = this.selectedTasksByTypeFilters;
+        selectedTasksByTypeFilters: {
+          createdAfter,
+          createdBefore,
+          currentGroup: { name: groupName },
+          selectedProjectIds,
+        },
+        selectedLabelIds,
+      } = this;
 
-      const selectedProjectCount = selectedProjectIds.length;
-      const str =
-        selectedProjectCount > 0
-          ? s__(
-              "ValueStreamAnalytics|Shows %{selectedFiltersDescription} for group '%{groupName}' and %{selectedProjectCount} projects from %{createdAfter} to %{createdBefore}",
-            )
-          : s__(
-              "ValueStreamAnalytics|Shows %{selectedFiltersDescription} for group '%{groupName}' from %{createdAfter} to %{createdBefore}",
-            );
-      return sprintf(str, {
-        selectedFiltersDescription: this.selectedFiltersDescription,
+      return generateFilterTextDescription({
+        groupName,
+        selectedLabelsCount: selectedLabelIds.length,
+        selectedProjectsCount: selectedProjectIds.length,
+        selectedSubjectFilterText: this.selectedSubjectFilterText.toLowerCase(),
         createdAfter: formattedDate(createdAfter),
         createdBefore: formattedDate(createdBefore),
-        groupName,
-        selectedProjectCount,
       });
     },
     selectedSubjectFilter() {

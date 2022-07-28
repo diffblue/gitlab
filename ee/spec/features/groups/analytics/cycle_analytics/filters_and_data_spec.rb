@@ -257,7 +257,7 @@ RSpec.describe 'Group value stream analytics filters and data', :js do
 
           page.find('[data-testid="vsa-task-by-type-description"]').hover
 
-          expect(page.find('.tooltip')).to have_text(_("Shows issues and %{labels_count} labels for group '%{group_name}' from Nov 1, 2019 to Dec 31, 2019") % { group_name: group.name, labels_count: 0 })
+          expect(page.find('.tooltip')).to have_text(_("Shows issues for group '%{group_name}' from Nov 1, 2019 to Dec 31, 2019") % { group_name: group.name })
         end
       end
 
@@ -269,7 +269,7 @@ RSpec.describe 'Group value stream analytics filters and data', :js do
         it 'applies to the task by type chart' do
           page.find('[data-testid="vsa-task-by-type-description"]').hover
 
-          expect(page.find('.tooltip')).to have_text(_("Shows issues and %{labels_count} label for group '%{group_name}' from Nov 1, 2019 to Dec 31, 2019") % { group_name: group.name, labels_count: 1 })
+          expect(page.find('.tooltip')).to have_text(_("Shows issues and 1 label for group '%{group_name}' from Nov 1, 2019 to Dec 31, 2019") % { group_name: group.name })
         end
       end
     end

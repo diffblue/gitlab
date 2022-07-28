@@ -1,13 +1,9 @@
 import { getTasksByTypeData } from '../../../utils';
 
-export const selectedTasksByTypeFilters = (state = {}, _, rootState = {}) => {
+export const selectedTasksByTypeFilters = (state = {}, _, rootState = {}, rootGetters = {}) => {
   const { selectedLabelIds = [], subject } = state;
-  const {
-    currentGroup,
-    selectedProjectIds = [],
-    createdAfter = null,
-    createdBefore = null,
-  } = rootState;
+  const { currentGroup, createdAfter = null, createdBefore = null } = rootState;
+  const { selectedProjectIds = [] } = rootGetters;
   return {
     currentGroup,
     selectedProjectIds,

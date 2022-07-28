@@ -237,13 +237,15 @@ export const tasksByTypeData = {
   groupBy: ['Group 1', 'Group 2', 'Group 3'],
 };
 
+export const currentGroup = {
+  id: 22,
+  name: 'Gitlab Org',
+  fullName: 'Gitlab Org',
+  fullPath: 'gitlab-org',
+};
+
 export const taskByTypeFilters = {
-  currentGroup: {
-    id: 22,
-    name: 'Gitlab Org',
-    fullName: 'Gitlab Org',
-    fullPath: 'gitlab-org',
-  },
+  currentGroup,
   selectedProjectIds: [],
   createdAfter: new Date('2019-12-11'),
   createdBefore: new Date('2020-01-10'),

@@ -82,6 +82,32 @@ describe('TypeOfWorkCharts', () => {
     });
   });
 
+  describe('with selected projects', () => {
+    const createWithProjects = (projectIds) =>
+      createComponent({
+        initialGetters: {
+          selectedTasksByTypeFilters: () => ({
+            ...taskByTypeFilters,
+            selectedProjectIds: projectIds,
+          }),
+        },
+      });
+
+    it('renders multiple selected project counts', () => {
+      wrapper = createWithProjects([1, 2]);
+      expect(wrapper.text()).toContain(
+        "Shows issues and 3 labels for group 'Gitlab Org' and 2 projects from Dec 11, 2019 to Jan 10, 2020",
+      );
+    });
+
+    it('renders one selected project count', () => {
+      wrapper = createWithProjects([1]);
+      expect(wrapper.text()).toContain(
+        "Shows issues and 3 labels for group 'Gitlab Org' and 1 project from Dec 11, 2019 to Jan 10, 2020",
+      );
+    });
+  });
+
   describe('with no data', () => {
     beforeEach(() => {
       wrapper = createComponent({
