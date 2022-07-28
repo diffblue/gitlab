@@ -23,7 +23,7 @@ import {
   SITE_PROFILES_QUERY,
 } from 'ee/on_demand_scans_form/settings';
 
-const createProfilesApolloOptions = (name, field, { fetchQuery, fetchError }) => ({
+const createProfilesApolloOptions = (name, field, savedField, { fetchQuery, fetchError }) => ({
   query: fetchQuery,
   variables() {
     return {
@@ -35,6 +35,11 @@ const createProfilesApolloOptions = (name, field, { fetchQuery, fetchError }) =>
     if (nodes.length === 1) {
       this[field] = nodes[0].id;
     }
+
+    if (this[savedField] && nodes.length > 1) {
+      this[field] = this.findSavedProfileId(nodes, this[savedField]);
+    }
+
     return nodes;
   },
   error(e) {
@@ -68,11 +73,13 @@ export default {
     scannerProfiles: createProfilesApolloOptions(
       'scannerProfiles',
       'selectedScannerProfileId',
+      'savedScannerProfileName',
       SCANNER_PROFILES_QUERY,
     ),
     siteProfiles: createProfilesApolloOptions(
       'siteProfiles',
       'selectedSiteProfileId',
+      'savedSiteProfileName',
       SITE_PROFILES_QUERY,
     ),
   },
@@ -84,6 +91,16 @@ export default {
     },
     savedProfiles: {
       type: Object,
+      required: false,
+      default: null,
+    },
+    savedScannerProfileName: {
+      type: String,
+      required: false,
+      default: null,
+    },
+    savedSiteProfileName: {
+      type: String,
       required: false,
       default: null,
     },
@@ -133,10 +150,14 @@ export default {
       return this.isScannerProfile ? this.savedScannerProfileId : this.savedSiteProfileId;
     },
     savedScannerProfileId() {
-      return this.savedProfiles?.dastScannerProfile.id;
+      return this.savedScannerProfileName
+        ? this.findSavedProfileId(this.scannerProfiles, this.savedScannerProfileName)
+        : this.savedProfiles?.dastScannerProfile.id;
     },
     savedSiteProfileId() {
-      return this.savedProfiles?.dastSiteProfile.id;
+      return this.savedSiteProfileName
+        ? this.findSavedProfileId(this.siteProfiles, this.savedSiteProfileName)
+        : this.savedProfiles?.dastSiteProfile.id;
     },
     selectedScannerProfile() {
       return this.selectedScannerProfileId
@@ -164,7 +185,6 @@ export default {
   },
   created() {
     const params = queryToObject(window.location.search, { legacySpacesDecode: true });
-
     this.selectedSiteProfileId = params.site_profile_id
       ? convertToGraphQLId(TYPE_SITE_PROFILE, params.site_profile_id)
       : this.selectedSiteProfileId;
@@ -173,6 +193,9 @@ export default {
       : this.selectedScannerProfileId;
   },
   methods: {
+    findSavedProfileId(profiles, name) {
+      return profiles.find(({ profileName }) => name === profileName)?.id || null;
+    },
     enableEditingMode(type) {
       this.selectActiveProfile(type);
       this.openProfileDrawer({ profileType: type, mode: SIDEBAR_VIEW_MODE.EDITING_MODE });

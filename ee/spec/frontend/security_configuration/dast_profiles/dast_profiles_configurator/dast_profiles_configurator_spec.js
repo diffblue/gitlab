@@ -49,6 +49,7 @@ describe('DastProfilesConfigurator', () => {
   const findNewScanButton = () => wrapper.findByTestId('new-profile-button');
   const findOpenDrawerButton = () => wrapper.findByTestId('select-profile-action-btn');
   const findCancelButton = () => wrapper.findByTestId('dast-profile-form-cancel-button');
+  const findInUseLabel = () => wrapper.findByTestId('in-use-label');
   const findSectionLayout = () => wrapper.findComponent(SectionLayout);
   const findSectionLoader = () => wrapper.findComponent(SectionLoader);
   const findScannerProfilesSelector = () => wrapper.findComponent(ScannerProfileSelector);
@@ -58,6 +59,11 @@ describe('DastProfilesConfigurator', () => {
   const findDastProfileSidebar = () => wrapper.findComponent(DastProfilesSidebar);
   const findDastProfilesSidebarList = () => wrapper.findComponent(DastProfilesSidebarList);
   const findDastProfilesSidebarForm = () => wrapper.findComponent(DastProfilesSidebarForm);
+
+  const openDrawer = async () => {
+    findOpenDrawerButton().vm.$emit('click');
+    await nextTick();
+  };
 
   const createComponentFactory = (mountFn = shallowMount) => (options = {}, withHandlers) => {
     localVue = createLocalVue();
@@ -203,15 +209,30 @@ describe('DastProfilesConfigurator', () => {
     });
   });
 
+  describe('saved profile names', () => {
+    const { profileName: savedScannerProfileName } = scannerProfiles[0];
+    const { profileName: savedSiteProfileName } = siteProfiles[0];
+
+    beforeEach(async () => {
+      createComponent({ savedSiteProfileName, savedScannerProfileName }, true);
+      await nextTick();
+    });
+
+    it('should have saved profiles selected', async () => {
+      expect(findScannerProfilesSelector().find('h3').text()).toContain(savedScannerProfileName);
+      expect(findSiteProfilesSelector().find('h3').text()).toContain(savedSiteProfileName);
+    });
+
+    it('should mark saved profiles as in-use', async () => {
+      await openDrawer();
+      expect(findInUseLabel().exists()).toBe(true);
+    });
+  });
+
   describe('switching between modes', () => {
     beforeEach(() => {
       createComponent();
     });
-
-    const openDrawer = async () => {
-      findOpenDrawerButton().vm.$emit('click');
-      await nextTick();
-    };
 
     const expectEditingMode = async () => {
       findNewScanButton().vm.$emit('click');
