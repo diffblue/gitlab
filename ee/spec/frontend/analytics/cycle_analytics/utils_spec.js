@@ -15,7 +15,12 @@ import {
   toggleSelectedLabel,
   prepareStageErrors,
   formatMedianValuesWithOverview,
+  generateFilterTextDescription,
 } from 'ee/analytics/cycle_analytics/utils';
+import {
+  TASKS_BY_TYPE_SUBJECT_MERGE_REQUEST,
+  TASKS_BY_TYPE_SUBJECT_FILTER_OPTIONS,
+} from 'ee/analytics/cycle_analytics/constants';
 import { createdAfter, createdBefore, rawStageMedians } from 'jest/cycle_analytics/mock_data';
 import { toYmd } from '~/analytics/shared/utils';
 import { OVERVIEW_STAGE_ID } from '~/cycle_analytics/constants';
@@ -330,5 +335,34 @@ describe('Value Stream Analytics utils', () => {
     it('calculates a median for the overview stage', () => {
       expect(calculatedMedians).toMatchObject({ [OVERVIEW_STAGE_ID]: '3w' });
     });
+  });
+
+  describe('generateFilterTextDescription', () => {
+    it.each`
+      selectedLabelsCount | selectedProjectsCount | text
+      ${2}                | ${2}                  | ${"Shows Merge Requests and 2 labels for group 'Earth special forces' and 2 projects from Dec 11, 2019 to Jan 10, 2020"}
+      ${2}                | ${1}                  | ${"Shows Merge Requests and 2 labels for group 'Earth special forces' and 1 project from Dec 11, 2019 to Jan 10, 2020"}
+      ${2}                | ${0}                  | ${"Shows Merge Requests and 2 labels for group 'Earth special forces' from Dec 11, 2019 to Jan 10, 2020"}
+      ${1}                | ${2}                  | ${"Shows Merge Requests and 1 label for group 'Earth special forces' and 2 projects from Dec 11, 2019 to Jan 10, 2020"}
+      ${1}                | ${1}                  | ${"Shows Merge Requests and 1 label for group 'Earth special forces' and 1 project from Dec 11, 2019 to Jan 10, 2020"}
+      ${1}                | ${0}                  | ${"Shows Merge Requests and 1 label for group 'Earth special forces' from Dec 11, 2019 to Jan 10, 2020"}
+      ${0}                | ${2}                  | ${"Shows Merge Requests for group 'Earth special forces' and 2 projects from Dec 11, 2019 to Jan 10, 2020"}
+      ${0}                | ${1}                  | ${"Shows Merge Requests for group 'Earth special forces' and 1 project from Dec 11, 2019 to Jan 10, 2020"}
+      ${0}                | ${0}                  | ${"Shows Merge Requests for group 'Earth special forces' from Dec 11, 2019 to Jan 10, 2020"}
+    `(
+      'with labels=$selectedLabelsCount and projects=$selectedProjectsCount returns "$text"',
+      ({ selectedProjectsCount, selectedLabelsCount, text }) => {
+        const str = generateFilterTextDescription({
+          selectedSubjectFilterText:
+            TASKS_BY_TYPE_SUBJECT_FILTER_OPTIONS[TASKS_BY_TYPE_SUBJECT_MERGE_REQUEST],
+          groupName: 'Earth special forces',
+          createdAfter: 'Dec 11, 2019',
+          createdBefore: 'Jan 10, 2020',
+          selectedProjectsCount,
+          selectedLabelsCount,
+        });
+        expect(str).toBe(text);
+      },
+    );
   });
 });

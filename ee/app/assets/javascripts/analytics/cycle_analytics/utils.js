@@ -1,5 +1,6 @@
 import dateFormat from 'dateformat';
 import { uniqBy } from 'lodash';
+import { s__, n__, sprintf } from '~/locale';
 import { dateFormats } from '~/analytics/shared/constants';
 import { toYmd } from '~/analytics/shared/utils';
 import { OVERVIEW_STAGE_ID } from '~/cycle_analytics/constants';
@@ -344,3 +345,74 @@ export const formatMedianValuesWithOverview = (medians = []) => {
  * @returns {Array} The unique objects from the original array
  */
 export const uniqById = (arr = []) => uniqBy(arr, ({ id }) => id);
+
+const selectedLabelsText = (selectedLabelsCount) => {
+  return sprintf(
+    n__('%{selectedLabelsCount} label', '%{selectedLabelsCount} labels', selectedLabelsCount),
+    { selectedLabelsCount },
+  );
+};
+
+const selectedProjectsText = (selectedProjectsCount) => {
+  return sprintf(
+    n__(
+      '%{selectedProjectsCount} project',
+      '%{selectedProjectsCount} projects',
+      selectedProjectsCount,
+    ),
+    { selectedProjectsCount },
+  );
+};
+
+/**
+ * Calculates the tooltip text for the Task by type tooltip,
+ * ensuring we correctly externalize the final string for translation.
+ *
+ * @param  {Object} filters
+ * @param  {String} filters.groupName name of the group
+ * @param  {String} filters.selectedSubjectFilterText type of subject to filter by (Merge requests | Issues)
+ * @param  {Number} filters.selectedProjectsCount number of selected projects
+ * @param  {Number} filters.selectedLabelsCount number of selected labels
+ * @param  {Date} filters.createdAfter start date to filter by
+ * @param  {Date} filters.createdBefore end date to filter by
+ * @returns {String} a text description of the currently selected filters
+ */
+export const generateFilterTextDescription = ({
+  selectedProjectsCount,
+  selectedLabelsCount,
+  selectedSubjectFilterText,
+  createdAfter,
+  createdBefore,
+  groupName,
+}) => {
+  let str = '';
+
+  const labelsCount = selectedLabelsCount ? selectedLabelsText(selectedLabelsCount) : '';
+  const projectsCount = selectedProjectsCount ? selectedProjectsText(selectedProjectsCount) : '';
+
+  if (selectedProjectsCount > 0 && selectedLabelsCount > 0) {
+    str = s__(
+      "ValueStreamAnalytics|Shows %{selectedSubjectFilterText} and %{labelsCount} for group '%{groupName}' and %{projectsCount} from %{createdAfter} to %{createdBefore}",
+    );
+  } else if (selectedProjectsCount > 0 && selectedLabelsCount < 1) {
+    str = s__(
+      "ValueStreamAnalytics|Shows %{selectedSubjectFilterText} for group '%{groupName}' and %{projectsCount} from %{createdAfter} to %{createdBefore}",
+    );
+  } else if (selectedProjectsCount < 1 && selectedLabelsCount > 0) {
+    str = s__(
+      "ValueStreamAnalytics|Shows %{selectedSubjectFilterText} and %{labelsCount} for group '%{groupName}' from %{createdAfter} to %{createdBefore}",
+    );
+  } else {
+    str = s__(
+      "ValueStreamAnalytics|Shows %{selectedSubjectFilterText} for group '%{groupName}' from %{createdAfter} to %{createdBefore}",
+    );
+  }
+  return sprintf(str, {
+    labelsCount,
+    projectsCount,
+    selectedSubjectFilterText,
+    createdAfter,
+    createdBefore,
+    groupName,
+  });
+};
