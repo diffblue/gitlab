@@ -873,7 +873,9 @@ RSpec.describe API::Groups do
   end
 
   describe "DELETE /groups/:id" do
-    subject { delete api("/groups/#{group.id}", user) }
+    let(:params) { {} }
+
+    subject { delete api("/groups/#{group.id}", user), params: params }
 
     shared_examples_for 'immediately enqueues the job to delete the group' do
       specify do
@@ -882,6 +884,27 @@ RSpec.describe API::Groups do
         end
 
         expect(response).to have_gitlab_http_status(:accepted)
+      end
+    end
+
+    shared_examples_for 'do not immediately enqueues the job to delete the group' do
+      specify do
+        Sidekiq::Testing.fake! do
+          expect { subject }.not_to change(GroupDestroyWorker.jobs, :size)
+        end
+
+        expect(response).to have_gitlab_http_status(:accepted)
+      end
+    end
+
+    shared_examples_for 'returns error and responds with group already marked for deletion message' do
+      specify do
+        Sidekiq::Testing.fake! do
+          expect { subject }.not_to change(GroupDestroyWorker.jobs, :size)
+        end
+
+        expect(response).to have_gitlab_http_status(:bad_request)
+        expect(json_response['message']).to eq("Group has been already marked for deletion")
       end
     end
 
@@ -925,6 +948,78 @@ RSpec.describe API::Groups do
         end
 
         it_behaves_like 'immediately enqueues the job to delete the group'
+      end
+
+      context 'when permanently_remove param is sent' do
+        context 'if permanently_remove is true' do
+          let(:params) { { permanently_remove: true } }
+
+          context 'if group is a subgroup' do
+            let(:subgroup) { create(:group, parent: group) }
+
+            before do
+              stub_feature_flags(immediate_delete_subgroup_api: group)
+            end
+
+            subject { delete api("/groups/#{subgroup.id}", user), params: params }
+
+            context 'when group is already marked for deletion' do
+              before do
+                create(:group_deletion_schedule, group: subgroup, marked_for_deletion_on: Date.current)
+              end
+
+              context 'when the full_path param is passed and it matches the full path of subgroup' do
+                let(:params) { { permanently_remove: true, full_path: subgroup.full_path } }
+
+                context 'when feature flag is enabled for the group' do
+                  it_behaves_like 'immediately enqueues the job to delete the group'
+                end
+
+                context 'when feature flag is disabled for the group' do
+                  before do
+                    stub_feature_flags(immediate_delete_subgroup_api: false, thing: group)
+                  end
+
+                  it_behaves_like 'returns error and responds with group already marked for deletion message'
+                end
+              end
+
+              context 'when full_path param is not passed' do
+                it_behaves_like 'returns error and responds with group already marked for deletion message'
+              end
+
+              context 'when full_path param is not equal to full_path' do
+                let(:params) { { permanently_remove: true, full_path: subgroup.path } }
+
+                it_behaves_like 'returns error and responds with group already marked for deletion message'
+              end
+            end
+
+            context 'when group is not marked for deletion' do
+              it_behaves_like 'do not immediately enqueues the job to delete the group'
+            end
+          end
+
+          context 'if group is not a subgroup' do
+            subject { delete api("/groups/#{group.id}", user), params: params }
+
+            it_behaves_like 'do not immediately enqueues the job to delete the group'
+          end
+        end
+
+        context 'if permanently_remove is not true' do
+          context 'when it is false' do
+            let(:params) { { permanently_remove: false } }
+
+            it_behaves_like 'do not immediately enqueues the job to delete the group'
+          end
+
+          context 'when it is non boolean' do
+            let(:params) { { permanently_remove: 'something_random' } }
+
+            it_behaves_like 'do not immediately enqueues the job to delete the group'
+          end
+        end
       end
 
       context 'failure' do
