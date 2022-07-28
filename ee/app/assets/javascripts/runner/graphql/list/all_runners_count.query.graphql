@@ -1,0 +1,19 @@
+query getAllRunnersCountEE(
+  $paused: Boolean
+  $status: CiRunnerStatus
+  $upgradeStatus: CiRunnerUpgradeStatusType # Added in EE
+  $type: CiRunnerType
+  $tagList: [String!]
+  $search: String
+) {
+  runners(
+    paused: $paused
+    status: $status
+    upgradeStatus: $upgradeStatus # Added in EE
+    type: $type
+    tagList: $tagList
+    search: $search
+  ) {
+    count
+  }
+}
