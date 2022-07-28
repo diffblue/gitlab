@@ -21,6 +21,7 @@ RSpec.describe GroupPolicy do
       read_group
       read_group_security_dashboard
       read_cluster
+      read_group_runners
     ]
   end
 
@@ -1244,7 +1245,7 @@ RSpec.describe GroupPolicy do
         expect_disallowed(*reporter_permissions)
         expect_disallowed(*(developer_permissions - auditor_permissions))
         expect_disallowed(*maintainer_permissions)
-        expect_disallowed(*owner_permissions)
+        expect_disallowed(*(owner_permissions - auditor_permissions))
       end
     end
   end
@@ -2256,6 +2257,32 @@ RSpec.describe GroupPolicy do
         end
 
         it { is_expected.to be_allowed(:read_group) }
+      end
+    end
+  end
+
+  describe 'group cicd runners' do
+    context 'auditor' do
+      let(:current_user) { auditor }
+
+      context 'with auditor_group_runner_access FF disabled' do
+        before do
+          stub_feature_flags(auditor_group_runner_access: false)
+        end
+
+        it { is_expected.to be_disallowed(:read_group_runners) }
+        it { is_expected.to be_disallowed(:admin_group_runners) }
+        it { is_expected.to be_disallowed(:register_group_runners) }
+      end
+
+      context 'with auditor_group_runner_access FF enabled' do
+        before do
+          stub_feature_flags(auditor_group_runner_access: true)
+        end
+
+        it { is_expected.to be_allowed(:read_group_runners) }
+        it { is_expected.to be_disallowed(:admin_group_runners) }
+        it { is_expected.to be_disallowed(:register_group_runners) }
       end
     end
   end
