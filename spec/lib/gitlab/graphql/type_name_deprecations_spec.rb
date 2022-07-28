@@ -2,10 +2,7 @@
 
 require 'fast_spec_helper'
 require 'test_prof/recipes/rspec/let_it_be'
-require 'graphql'
-require_relative '../../../../app/graphql/types/base_scalar'
-require_relative '../../../../app/graphql/types/global_id_type'
-require_relative '../../../support/helpers/global_id_deprecation_helpers'
+require_relative '../../../support/helpers/type_name_deprecation_helpers'
 
 TestProf::BeforeAll.adapter = Class.new do
   def begin_transaction; end
@@ -13,8 +10,8 @@ TestProf::BeforeAll.adapter = Class.new do
   def rollback_transaction; end
 end.new
 
-RSpec.describe Gitlab::GlobalId::Deprecations do
-  include GlobalIDDeprecationHelpers
+RSpec.describe Gitlab::Graphql::TypeNameDeprecations do
+  include TypeNameDeprecationHelpers
 
   let_it_be(:deprecation_1) do
     described_class::NameDeprecation.new(old_name: 'Foo::Model', new_name: 'Bar', milestone: '9.0')
@@ -25,7 +22,7 @@ RSpec.describe Gitlab::GlobalId::Deprecations do
   end
 
   before do
-    stub_global_id_deprecations(deprecation_1, deprecation_2)
+    stub_type_name_deprecations(deprecation_1, deprecation_2)
   end
 
   describe '.deprecated?' do
@@ -51,12 +48,12 @@ RSpec.describe Gitlab::GlobalId::Deprecations do
 
   describe '.apply_to_graphql_name' do
     it 'returns the corresponding graphql_name of the GID for the new model', :aggregate_failures do
-      expect(described_class.apply_to_graphql_name('FooModelID')).to eq('BarID')
-      expect(described_class.apply_to_graphql_name('BazID')).to eq('QuxModelID')
+      expect(described_class.apply_to_graphql_name('Foo::Model')).to eq('Bar')
+      expect(described_class.apply_to_graphql_name('Baz')).to eq('Qux::Model')
     end
 
     it 'returns the same value if there is no deprecation' do
-      expect(described_class.apply_to_graphql_name('ProjectID')).to eq('ProjectID')
+      expect(described_class.apply_to_graphql_name('Project')).to eq('Project')
     end
   end
 end
