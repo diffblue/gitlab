@@ -55,3 +55,8 @@ If you are signed in with auditor access, you:
   you can push commits or comment on issues.
 - Can access the same resources using the GitLab UI or API.
 - Can't view the Admin Area, or perform any administration actions.
+
+## APIs
+
+- [Create API](../api/users.md#user-creation)
+- [Update API](../api/users.md#user-modification)

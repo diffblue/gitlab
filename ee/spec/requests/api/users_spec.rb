@@ -132,6 +132,99 @@ RSpec.describe API::Users do
     end
   end
 
+  context 'when auditor field is specified' do
+    describe "PUT /users/:id" do
+      context 'when user is an admin' do
+        before do
+          stub_licensed_features(auditor_user: true)
+        end
+
+        it "updates auditor status for the user" do
+          expect do
+            put api("/users/#{user.id}", admin), params: { auditor: true }
+          end.to change { user.reload.auditor }
+                   .from(false)
+                   .to(true)
+
+          expect(response).to have_gitlab_http_status(:success)
+          expect(json_response['is_auditor']).to eq(true)
+        end
+
+        context "when licensed_feature is not available" do
+          before do
+            stub_licensed_features(auditor_user: false)
+          end
+
+          it "cannot update auditor status for the user" do
+            expect do
+              put api("/users/#{user.id}", admin), params: { auditor: true }
+            end.not_to change { user.reload.auditor }
+
+            expect(response).to have_gitlab_http_status(:bad_request)
+          end
+        end
+      end
+
+      context 'when user is not an admin' do
+        before do
+          stub_licensed_features(auditor_user: true)
+        end
+
+        it "cannot update auditor status for the user" do
+          expect do
+            put api("/users/#{user.id}", user), params: { auditor: true }
+          end.not_to change { user.reload.auditor }
+
+          expect(response).to have_gitlab_http_status(:forbidden)
+        end
+      end
+    end
+
+    describe "POST /users/" do
+      context 'when user is an admin' do
+        before do
+          stub_licensed_features(auditor_user: true)
+        end
+
+        it "creates user with auditor status" do
+          optional_attributes = { auditor: true }
+          post api("/users", admin), params: attributes_for(:user).merge(optional_attributes)
+
+          expect(response).to have_gitlab_http_status(:created)
+          expect(json_response['is_auditor']).to eq(true)
+        end
+
+        context "when licensed_feature is not available" do
+          before do
+            stub_licensed_features(auditor_user: false)
+          end
+
+          it "cannot create user with auditor status" do
+            optional_attributes = { auditor: true }
+            post api("/users", admin), params: attributes_for(:user).merge(optional_attributes)
+
+            expect(response).to have_gitlab_http_status(:bad_request)
+            expect(json_response['is_auditor']).to be_nil
+          end
+        end
+      end
+
+      context 'when user is not an admin' do
+        before do
+          stub_licensed_features(auditor_user: true)
+        end
+
+        it "cannot create user with auditor status" do
+          expect do
+            post api("/users", user), params: { auditor: true }
+          end.not_to change { user.reload.auditor }
+
+          expect(response).to have_gitlab_http_status(:bad_request)
+        end
+      end
+    end
+  end
+
   context 'with group SAML' do
     before do
       stub_licensed_features(group_saml: true)

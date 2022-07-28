@@ -50,6 +50,11 @@ module EE
         ]
       end
 
+      override :admin_create_params
+      def admin_create_params
+        super + [:auditor]
+      end
+
       override :identity_attributes
       def identity_attributes
         super.push(:saml_provider_id)
