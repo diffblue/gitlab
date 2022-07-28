@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'GitLab.com Google Analytics DataLayer', :js do
-  let!(:google_tag_manager_id) { 'GTM-WWKMTWS'}
+  let!(:google_tag_manager_id) { 'GTM-WWKMTWS' }
   let!(:user_attrs) { attributes_for(:user, first_name: 'GitLab', last_name: 'GitLab', company_name: 'GitLab', phone_number: '555-555-5555') }
 
   let_it_be(:user) { create(:user) }

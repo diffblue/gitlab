@@ -33,7 +33,7 @@ RSpec.describe 'epics swimlanes filtering', :js do
 
   let(:all_issues) { [confidential_issue, issue1, issue2, issue3, issue4, issue5, issue6, issue7, issue8] }
 
-  let(:filter_input) { find('.gl-filtered-search-term-input')}
+  let(:filter_input) { find('.gl-filtered-search-term-input') }
   let(:filter_first_suggestion) { find('.gl-filtered-search-suggestion-list').first('.gl-filtered-search-suggestion') }
   let(:filter_submit) { find('.gl-search-box-by-click-search-button') }
 

@@ -6,7 +6,7 @@ RSpec.describe 'User sees Scanner profile' do
   let_it_be(:user) { create(:user) }
   let_it_be(:project) { create(:project, :repository) }
 
-  let(:profile_form_path) {new_project_security_configuration_profile_library_dast_scanner_profile_path(project)}
+  let(:profile_form_path) { new_project_security_configuration_profile_library_dast_scanner_profile_path(project) }
   let(:profile_library_path) { project_security_configuration_profile_library_path(project) }
 
   before_all do

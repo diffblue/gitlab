@@ -62,29 +62,29 @@ RSpec.describe "Admin Runners" do
         end
 
         describe 'recommended to upgrade (patch)' do
-          let(:runner_version) {'15.0.0'}
-          let(:available_runner_releases) {%w[15.0.1]}
+          let(:runner_version) { '15.0.0' }
+          let(:available_runner_releases) { %w[15.0.1] }
 
           it_behaves_like 'upgrade is recommended'
         end
 
         describe 'available to upgrade (minor)' do
-          let(:runner_version) {'15.0.0'}
-          let(:available_runner_releases) {%w[15.1.0]}
+          let(:runner_version) { '15.0.0' }
+          let(:available_runner_releases) { %w[15.1.0] }
 
           it_behaves_like 'upgrade is available'
         end
 
         describe 'available to upgrade (major)' do
-          let(:runner_version) {'14.0.0'}
-          let(:available_runner_releases) {%w[15.1.0]}
+          let(:runner_version) { '14.0.0' }
+          let(:available_runner_releases) { %w[15.1.0] }
 
           it_behaves_like 'upgrade is available'
         end
 
         describe 'no upgrade available' do
-          let(:runner_version) {'15.0.0'}
-          let(:available_runner_releases) {%w[15.0.0]}
+          let(:runner_version) { '15.0.0' }
+          let(:available_runner_releases) { %w[15.0.0] }
 
           it_behaves_like 'no upgrade shown'
         end
@@ -98,8 +98,8 @@ RSpec.describe "Admin Runners" do
         end
 
         describe 'can upgrade' do
-          let(:runner_version) {'15.0.0'}
-          let(:available_runner_releases) {%w[15.0.0 15.0.1 15.1.0]}
+          let(:runner_version) { '15.0.0' }
+          let(:available_runner_releases) { %w[15.0.0 15.0.1 15.1.0] }
 
           it_behaves_like 'no upgrade shown'
         end

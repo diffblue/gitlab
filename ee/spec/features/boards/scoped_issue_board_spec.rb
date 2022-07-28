@@ -23,7 +23,7 @@ RSpec.describe 'Scoped issue boards', :js do
   let(:view_scope) { find('.btn', text: 'View scope') }
   let(:board_title) { find('.boards-selector-wrapper .dropdown-menu-toggle') }
   let(:filtered_search) { find('[data-testid="issue-board-filtered-search"]') }
-  let(:filter_input) { find('.gl-filtered-search-last-item')}
+  let(:filter_input) { find('.gl-filtered-search-last-item') }
   let(:filter_first_suggestion) { find('.gl-filtered-search-suggestion-list').first('.gl-filtered-search-suggestion') }
   let(:filter_submit) { find('.gl-search-box-by-click-search-button') }
 

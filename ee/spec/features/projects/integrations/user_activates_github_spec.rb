@@ -45,7 +45,7 @@ RSpec.describe 'User activates GitHub integration' do
 
     context 'with pipelines', :js do
       let(:pipeline) { create(:ci_pipeline) }
-      let(:project) { create(:project, ci_pipelines: [pipeline])}
+      let(:project) { create(:project, ci_pipelines: [pipeline]) }
 
       it 'tests integration before save' do
         stub_request(:post, "https://api.github.com/repos/h5bp/html5-boilerplate/statuses/#{pipeline.sha}").to_return(
