@@ -134,7 +134,7 @@ RSpec.describe Integrations::Github::StatusMessage do
         let(:pipeline) { create(:ci_pipeline, :blocked) }
 
         it 'uses human readable status which can be used in a sentence' do
-          expect(subject.description). to eq 'Pipeline waiting for manual action on GitLab'
+          expect(subject.description).to eq 'Pipeline waiting for manual action on GitLab'
         end
       end
 

@@ -22,7 +22,7 @@ RSpec.describe Boards::Issues::MoveService, services: true do
 
       it 'removes the milestone' do
         params = { board_id: board1.id, from_list_id: milestone_list1.id, to_list_id: backlog.id }
-        expect { described_class.new(parent, user, params).execute(issue) } .to change { issue.reload.milestone }
+        expect { described_class.new(parent, user, params).execute(issue) }.to change { issue.reload.milestone }
           .from(milestone_list1.milestone)
           .to(nil)
       end
@@ -121,7 +121,7 @@ RSpec.describe Boards::Issues::MoveService, services: true do
 
       it 'removes the iteration' do
         params = { board_id: board1.id, from_list_id: iteration_list1.id, to_list_id: backlog.id }
-        expect { described_class.new(parent, user, params).execute(issue) } .to change { issue.reload.iteration }
+        expect { described_class.new(parent, user, params).execute(issue) }.to change { issue.reload.iteration }
           .from(iteration_list1.iteration)
           .to(nil)
       end

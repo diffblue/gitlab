@@ -62,7 +62,7 @@ RSpec.describe RequirementsManagement::CreateRequirementService do
               allow(instance).to receive(:valid?).with(:before_requirement_issue).and_return(false)
             end
 
-            expect { subject }. to change { Issue.count }.by(0)
+            expect { subject }.to change { Issue.count }.by(0)
               .and change { RequirementsManagement::Requirement.count }.by(0)
           end
         end
@@ -75,7 +75,7 @@ RSpec.describe RequirementsManagement::CreateRequirementService do
           end
 
           it 'does not create requirement' do
-            expect { subject }. to change { Issue.count }.by(0)
+            expect { subject }.to change { Issue.count }.by(0)
               .and change { RequirementsManagement::Requirement.count }.by(0)
           end
 
