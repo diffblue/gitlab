@@ -34123,6 +34123,21 @@ msgstr ""
 msgid "Saving project."
 msgstr ""
 
+msgid "ScanExecutionPolicy|%{ifLabelStart}if%{ifLabelEnd} %{rules} for the %{branches} branch(es)"
+msgstr ""
+
+msgid "ScanExecutionPolicy|A pipeline is run"
+msgstr ""
+
+msgid "ScanExecutionPolicy|Schedule"
+msgstr ""
+
+msgid "ScanExecutionPolicy|Schedule rule component"
+msgstr ""
+
+msgid "ScanExecutionPolicy|Select branches"
+msgstr ""
+
 msgid "ScanResultPolicy|%{ifLabelStart}if%{ifLabelEnd} %{scanners} find(s) more than %{vulnerabilitiesAllowed} %{severities} %{vulnerabilityStates} vulnerabilities in an open merge request targeting %{branches}"
 msgstr ""
 
@@ -46143,6 +46158,9 @@ msgid "https://your-bitbucket-server"
 msgstr ""
 
 msgid "i18n|%{language} (%{percent_translated}%% translated)"
+msgstr ""
+
+msgid "if"
 msgstr ""
 
 msgid "image diff"
