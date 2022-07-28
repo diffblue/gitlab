@@ -23,6 +23,26 @@ RSpec.describe NamespaceSetting do
         .is_greater_than_or_equal_to(0)
         .is_less_than_or_equal_to(10.days.to_i)
     }
+
+    describe 'unique_project_download_limit_allowlist' do
+      let_it_be(:user) { create(:user) }
+
+      let(:attr) { :unique_project_download_limit_allowlist }
+
+      it { is_expected.to allow_value([]).for(attr) }
+      it { is_expected.to allow_value([user.username]).for(attr) }
+      it { is_expected.not_to allow_value(nil).for(attr) }
+      it { is_expected.not_to allow_value(['unknown_user']).for(attr) }
+
+      context 'when maximum length is exceeded' do
+        it 'is not valid' do
+          subject.unique_project_download_limit_allowlist = generate_list(:username, 101)
+
+          expect(subject).not_to be_valid
+          expect(subject.errors[attr]).to include("exceeds maximum length (100 usernames)")
+        end
+      end
+    end
   end
 
   describe '#prevent_forking_outside_group?' do
@@ -245,6 +265,7 @@ RSpec.describe NamespaceSetting do
       expect(described_class.allowed_namespace_settings_params).to include(*%i[
         unique_project_download_limit
         unique_project_download_limit_interval_in_seconds
+        unique_project_download_limit_allowlist
       ])
     end
   end

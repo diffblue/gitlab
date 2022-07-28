@@ -317,6 +317,61 @@ RSpec.describe API::Groups do
         end
       end
     end
+
+    describe 'unique_project_download* attributes' do
+      context 'when authenticated as group owner' do
+        let(:allowed_username) { create(:user).username }
+        let(:params) do
+          {
+            unique_project_download_limit: 1,
+            unique_project_download_limit_interval_in_seconds: 2,
+            unique_project_download_limit_allowlist: [allowed_username]
+          }
+        end
+
+        before do
+          stub_feature_flags(limit_unique_project_downloads_per_namespace_user: flag_enabled)
+          stub_licensed_features(unique_project_download_limit: feature_available)
+
+          group.add_owner(user)
+
+          subject
+        end
+
+        context 'when feature flag enabled and feature available' do
+          let(:flag_enabled) { true }
+          let(:feature_available) { true }
+
+          it 'updates the attributes as expected' do
+            settings = group.namespace_settings.reload
+
+            expect(response).to have_gitlab_http_status(:ok)
+            expect(settings.unique_project_download_limit).to eq 1
+            expect(settings.unique_project_download_limit_interval_in_seconds).to eq 2
+            expect(settings.unique_project_download_limit_allowlist).to contain_exactly(allowed_username)
+          end
+        end
+
+        using RSpec::Parameterized::TableSyntax
+
+        where(:flag_enabled, :feature_available) do
+          true  | false
+          false | true
+          false | false
+        end
+
+        with_them do
+          it 'does not update the attributes' do
+            settings = group.namespace_settings.reload
+
+            expect(response).to have_gitlab_http_status(:ok)
+            expect(settings.unique_project_download_limit).to eq 0
+            expect(settings.unique_project_download_limit_interval_in_seconds).to eq 0
+            expect(settings.unique_project_download_limit_allowlist).to be_empty
+          end
+        end
+      end
+    end
   end
 
   describe "POST /groups" do

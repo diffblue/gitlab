@@ -46,6 +46,16 @@ module EE
             params.delete(:prevent_forking_outside_group) unless
               can?(current_user, :change_prevent_group_forking, group)
 
+            unless group.unique_project_download_limit_enabled?
+              %i[
+                unique_project_download_limit
+                unique_project_download_limit_interval_in_seconds
+                unique_project_download_limit_allowlist
+              ].each do |param|
+                params.delete(param)
+              end
+            end
+
             super
           end
 
