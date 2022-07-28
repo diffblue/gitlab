@@ -50,7 +50,7 @@ RSpec.describe Gitlab::Ci::Config::Entry::DastConfiguration do
           let(:config) { { foo: 'Foo profile' } }
 
           it 'reports error' do
-            expect(entry.errors) .to include 'dast configuration config contains unknown keys: foo'
+            expect(entry.errors).to include 'dast configuration config contains unknown keys: foo'
           end
         end
       end

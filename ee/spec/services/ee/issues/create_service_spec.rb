@@ -227,7 +227,7 @@ RSpec.describe Issues::CreateService do
         end
 
         it 'creates one requirement and one requirement issue' do
-          expect { service.execute }. to change { Issue.count }.by(1)
+          expect { service.execute }.to change { Issue.count }.by(1)
             .and change { RequirementsManagement::Requirement.count }.by(1)
         end
 
@@ -249,7 +249,7 @@ RSpec.describe Issues::CreateService do
               allow(instance).to receive(:valid?).and_return(false)
             end
 
-            expect { service.execute }. to change { Issue.count }.by(0)
+            expect { service.execute }.to change { Issue.count }.by(0)
               .and change { RequirementsManagement::Requirement.count }.by(0)
           end
         end
@@ -260,7 +260,7 @@ RSpec.describe Issues::CreateService do
               allow(instance).to receive(:valid?).and_return(false)
             end
 
-            expect { service.execute }. to change { Issue.count }.by(0)
+            expect { service.execute }.to change { Issue.count }.by(0)
               .and change { RequirementsManagement::Requirement.count }.by(0)
           end
         end

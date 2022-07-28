@@ -162,7 +162,7 @@ RSpec.describe ApprovalProjectRule do
     end
 
     it 'returns false for report_approver rules' do
-      expect(license_scanning_approver_rule.regular?). to eq(false)
+      expect(license_scanning_approver_rule.regular?).to eq(false)
     end
   end
 
@@ -180,7 +180,7 @@ RSpec.describe ApprovalProjectRule do
     end
 
     it 'returns true for report_approver rules' do
-      expect(license_scanning_approver_rule.report_approver?). to eq(true)
+      expect(license_scanning_approver_rule.report_approver?).to eq(true)
     end
   end
 

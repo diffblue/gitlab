@@ -27,7 +27,7 @@ RSpec.describe Geo::RepositoryBaseSyncService do
 
   describe '#lease_timeout' do
     it 'returns a lease timeout value' do
-      expect(subject.lease_timeout). to eq(8.hours)
+      expect(subject.lease_timeout).to eq(8.hours)
     end
   end
 

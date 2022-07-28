@@ -64,7 +64,7 @@ RSpec.describe RequirementsManagement::UpdateRequirementService do
             # but on Requirement 'closed' means 'archived'.
             # requirement: enum state: { opened: 1, archived: 2 }
             # issue:       STATE_ID_MAP = { opened: 1, closed: 2, ...
-            expect(requirement.read_attribute_before_type_cast(:state)). to eq(requirement.requirement_issue.state_id)
+            expect(requirement.read_attribute_before_type_cast(:state)).to eq(requirement.requirement_issue.state_id)
           end
         end
 

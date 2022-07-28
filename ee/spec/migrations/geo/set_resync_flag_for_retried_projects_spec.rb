@@ -24,7 +24,7 @@ RSpec.describe SetResyncFlagForRetriedProjects, :geo do
     end
 
     it 'sets resync_wiki to true' do
-      expect(registry.where(resync_wiki: true).count). to eq(0)
+      expect(registry.where(resync_wiki: true).count).to eq(0)
 
       migrate!
 
