@@ -2,31 +2,7 @@
 - namespace = @project&.namespace || @group
 - return unless namespace.present?
 
-= cache([namespace, number_of_hidden_storage_alert_banners], expires_in: 1.minute) do
-  - payload = namespace_storage_alert(namespace)
-  - unless payload.empty?
-    - alert_level = payload[:alert_level]
-    - root_namespace = payload[:root_namespace]
-    - style = namespace_storage_alert_style(alert_level)
-    - icon = namespace_storage_alert_icon(alert_level)
-    - purchase_link = buy_storage_path(namespace) if purchase_storage_link_enabled?(namespace)
-    - usage_link = usage_quotas_path(root_namespace, anchor: 'storage-quota-tab')
-    - show_storage_banner_actions = purchase_link || usage_link
-
-    .gl-py-5
-      = render Pajamas::AlertComponent.new(variant: style,
-        dismissible: alert_level != :error,
-        title: payload[:usage_message],
-        alert_options: { class: 'js-namespace-storage-alert' },
-        close_button_options: { class: 'js-namespace-storage-alert-dismiss', data: { id: root_namespace.id, level: alert_level }}) do |c|
-        = c.body do
-          = sprite_icon(icon, css_class: "gl-icon gl-alert-icon")
-          = payload[:explanation_message]
-          = link_to _('Learn more.'), help_page_path('user/usage_quotas'), target: '_blank', rel: 'noopener noreferrer'
-
-        - if show_storage_banner_actions
-          = c.actions do
-            - if purchase_link
-              = link_to(_('Purchase more storage'), purchase_link, class: "btn gl-alert-action btn-md gl-button btn-confirm")
-            - if usage_link
-              = link_to(_('View usage details'), usage_link, class: "btn gl-alert-action btn-md gl-button btn-default")
+= cache([namespace, current_user], expires_in: 1.minute) do
+  - storage_notification = EE::Namespace::Storage::Notification.new(namespace.root_ancestor, current_user)
+  - if storage_notification.show?
+    = render Namespaces::Storage::LimitAlert.new(namespace: namespace, user: current_user, notification_data: storage_notification.payload)
