@@ -50,21 +50,13 @@ module EE
       private
 
       def check_size_limit
-        size_checker = target_project_size_checker
-
         if size_checker.above_size_limit?
           raise ::MergeRequests::MergeService::MergeError, size_checker.error_message.merge_error
         end
       end
 
-      def target_project_size_checker
-        root_namespace = merge_request.target_project.namespace.root_ancestor
-
-        if ::EE::Gitlab::Namespaces::Storage::Enforcement.enforce_limit?(root_namespace)
-          ::EE::Namespace::RootStorageSize.new(root_namespace)
-        else
-          merge_request.target_project.repository_size_checker
-        end
+      def size_checker
+        merge_request.target_project.repository_size_checker
       end
 
       def check_blocking_mrs
