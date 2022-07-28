@@ -8,7 +8,8 @@ module QA
       'When using Advanced Search API to search for a public commit',
       :orchestrated,
       :elasticsearch,
-      :requires_admin
+      :requires_admin,
+      :skip_live_env
     ) do
       let(:api_client) { Runtime::API::Client.new(:gitlab) }
 

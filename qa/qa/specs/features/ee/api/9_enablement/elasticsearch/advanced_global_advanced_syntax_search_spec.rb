@@ -8,7 +8,8 @@ module QA
       'Elasticsearch advanced global search with advanced syntax',
       :orchestrated,
       :elasticsearch,
-      :requires_admin
+      :requires_admin,
+      :skip_live_env
     ) do
       let(:project_name_suffix) { SecureRandom.hex(8) }
       let(:api_client) { Runtime::API::Client.new(:gitlab) }

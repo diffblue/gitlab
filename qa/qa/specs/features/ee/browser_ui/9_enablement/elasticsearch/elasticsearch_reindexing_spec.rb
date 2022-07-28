@@ -6,7 +6,8 @@ module QA
       'Search using Elasticsearch',
       :orchestrated,
       :elasticsearch,
-      :requires_admin
+      :requires_admin,
+      :skip_live_env
     ) do
       include Runtime::Fixtures
       let(:api_client) { Runtime::API::Client.new(:gitlab) }

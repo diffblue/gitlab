@@ -8,7 +8,8 @@ module QA
       'When using elasticsearch API to search for a public issue',
       :orchestrated,
       :elasticsearch,
-      :requires_admin
+      :requires_admin,
+      :skip_live_env
     ) do
       let(:api_client) { Runtime::API::Client.new(:gitlab) }
 
