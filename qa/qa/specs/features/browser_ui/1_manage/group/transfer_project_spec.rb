@@ -19,28 +19,20 @@ module QA
         Resource::Project.fabricate_via_api! do |project|
           project.group = source_group
           project.name = 'transfer-project'
-          project.initialize_with_readme = true
         end
       end
 
-      let(:edited_readme_content) { 'Here is the edited content.' }
+      let(:readme_content) { 'Here is the edited content.' }
 
       before do
+        Resource::Repository::Commit.fabricate_via_api! do |commit|
+          commit.project = project
+          commit.add_files([{ file_path: 'README.md', content: readme_content }])
+        end
+
         Flow::Login.sign_in
 
         project.visit!
-
-        Page::Project::Show.perform do |project|
-          project.click_file('README.md')
-        end
-
-        Page::File::Show.perform(&:click_edit)
-
-        Page::File::Edit.perform do |file|
-          file.remove_content
-          file.add_content(edited_readme_content)
-          file.commit_changes
-        end
       end
 
       it 'user transfers a project between groups',
@@ -57,7 +49,7 @@ module QA
 
         Page::Project::Show.perform do |project|
           expect(project).to have_breadcrumb(target_group.path)
-          expect(project).to have_readme_content(edited_readme_content)
+          expect(project).to have_readme_content(readme_content)
         end
       end
     end
