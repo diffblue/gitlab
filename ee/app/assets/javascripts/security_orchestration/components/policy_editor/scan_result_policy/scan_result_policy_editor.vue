@@ -9,6 +9,8 @@ import {
   SECURITY_POLICY_ACTIONS,
   GRAPHQL_ERROR_MESSAGE,
   PARSING_ERROR_MESSAGE,
+  ADD_RULE_LABEL,
+  RULES_LABEL,
 } from '../constants';
 import PolicyEditorLayout from '../policy_editor_layout.vue';
 import { assignSecurityPolicyProject, modifyPolicy } from '../utils';
@@ -26,13 +28,13 @@ import {
 } from './lib';
 
 export default {
+  ADD_RULE_LABEL,
+  RULES_LABEL,
   SECURITY_POLICY_ACTIONS,
   EDITOR_MODE_YAML,
   EDITOR_MODE_RULE,
   i18n: {
     PARSING_ERROR_MESSAGE,
-    addRule: s__('SecurityOrchestration|Add rule'),
-    rules: s__('SecurityOrchestration|Rules'),
     createMergeRequest: __('Configure with a merge request'),
     notOwnerButtonText: __('Learn more'),
     notOwnerDescription: s__(
@@ -258,7 +260,7 @@ export default {
     <template #rules>
       <dim-disable-container data-testid="rule-builder-container" :disabled="hasParsingError">
         <template #title>
-          <h4>{{ $options.i18n.rules }}</h4>
+          <h4>{{ $options.RULES_LABEL }}</h4>
         </template>
 
         <template #disabled>
@@ -276,7 +278,7 @@ export default {
 
         <div v-if="isWithinLimit" class="gl-bg-gray-10 gl-rounded-base gl-p-5 gl-mb-5">
           <gl-button variant="link" data-testid="add-rule" icon="plus" @click="addRule">
-            {{ $options.i18n.addRule }}
+            {{ $options.ADD_RULE_LABEL }}
           </gl-button>
         </div>
       </dim-disable-container>

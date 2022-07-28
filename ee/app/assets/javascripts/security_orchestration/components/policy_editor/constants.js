@@ -40,3 +40,9 @@ export const NO_RULE_MESSAGE = s__('SecurityOrchestration|No rules defined - pol
 export const INVALID_BRANCHES = s__(
   'SecurityOrchestration|The following branches do not exist on this development project: %{branches}. Please review all branches to ensure the values are accurate before updating this policy.',
 );
+
+export const ADD_RULE_LABEL = s__('SecurityOrchestration|Add rule');
+export const RULES_LABEL = s__('SecurityOrchestration|Rules');
+
+export const RULE_IF_LABEL = __('if');
+export const RULE_OR_LABEL = __('or');

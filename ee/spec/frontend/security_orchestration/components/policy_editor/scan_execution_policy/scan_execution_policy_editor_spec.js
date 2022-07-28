@@ -1,7 +1,8 @@
-import { shallowMount } from '@vue/test-utils';
 import { GlEmptyState } from '@gitlab/ui';
 import { nextTick } from 'vue';
 import waitForPromises from 'helpers/wait_for_promises';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import PolicyRuleBuilder from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/policy_rule_builder.vue';
 import PolicyEditorLayout from 'ee/security_orchestration/components/policy_editor/policy_editor_layout.vue';
 import {
   DEFAULT_SCAN_EXECUTION_POLICY,
@@ -22,6 +23,8 @@ import {
   EDITOR_MODE_YAML,
   SECURITY_POLICY_ACTIONS,
 } from 'ee/security_orchestration/components/policy_editor/constants';
+import { SCAN_EXECUTION_PIPELINE_RULE } from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/constants';
+import { RULE_KEY_MAP } from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/lib/rules';
 
 jest.mock('~/lib/utils/url_utility', () => ({
   joinPaths: jest.requireActual('~/lib/utils/url_utility').joinPaths,
@@ -68,7 +71,7 @@ describe('ScanExecutionPolicyEditor', () => {
   };
 
   const factory = ({ propsData = {}, provide = {} } = {}) => {
-    wrapper = shallowMount(ScanExecutionPolicyEditor, {
+    wrapper = shallowMountExtended(ScanExecutionPolicyEditor, {
       propsData: {
         assignedPolicyProject: DEFAULT_ASSIGNED_POLICY_PROJECT,
         ...propsData,
@@ -96,8 +99,11 @@ describe('ScanExecutionPolicyEditor', () => {
     });
   };
 
+  const findAddRuleButton = () => wrapper.findByTestId('add-rule');
   const findEmptyState = () => wrapper.findComponent(GlEmptyState);
   const findPolicyEditorLayout = () => wrapper.findComponent(PolicyEditorLayout);
+  const findPolicyRuleBuilder = () => wrapper.findComponent(PolicyRuleBuilder);
+  const findAllPolicyRuleBuilders = () => wrapper.findAllComponents(PolicyRuleBuilder);
 
   afterEach(() => {
     wrapper.destroy();
@@ -216,6 +222,40 @@ describe('ScanExecutionPolicyEditor', () => {
       await nextTick();
 
       expect(findPolicyEditorLayout().props('policy')[component]).toBe(newValue);
+    });
+  });
+
+  describe('policy rule builder', () => {
+    beforeEach(() => {
+      factory({ provide: { glFeatures: { scanExecutionRuleMode: true } } });
+    });
+
+    it('should add new rule', async () => {
+      expect(findPolicyEditorLayout().props('policy').rules).toEqual([
+        RULE_KEY_MAP[SCAN_EXECUTION_PIPELINE_RULE](),
+      ]);
+      findAddRuleButton().vm.$emit('click');
+
+      await nextTick();
+
+      expect(findPolicyEditorLayout().props('policy').rules).toEqual([
+        RULE_KEY_MAP[SCAN_EXECUTION_PIPELINE_RULE](),
+        RULE_KEY_MAP[SCAN_EXECUTION_PIPELINE_RULE](),
+      ]);
+    });
+
+    it('should remove rule', async () => {
+      findAddRuleButton().vm.$emit('click');
+      await nextTick();
+
+      expect(findAllPolicyRuleBuilders()).toHaveLength(2);
+      expect(findPolicyEditorLayout().props('policy').rules).toHaveLength(2);
+
+      findPolicyRuleBuilder().vm.$emit('remove', 1);
+      await nextTick();
+
+      expect(findAllPolicyRuleBuilders()).toHaveLength(1);
+      expect(findPolicyEditorLayout().props('policy').rules).toHaveLength(1);
     });
   });
 });

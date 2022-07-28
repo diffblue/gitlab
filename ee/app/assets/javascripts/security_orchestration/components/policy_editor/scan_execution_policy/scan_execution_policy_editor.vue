@@ -1,5 +1,5 @@
 <script>
-import { GlEmptyState } from '@gitlab/ui';
+import { GlEmptyState, GlButton } from '@gitlab/ui';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { joinPaths, visitUrl, setUrlFragment } from '~/lib/utils/url_utility';
 import { __, s__ } from '~/locale';
@@ -10,12 +10,19 @@ import {
   GRAPHQL_ERROR_MESSAGE,
   PARSING_ERROR_MESSAGE,
   SECURITY_POLICY_ACTIONS,
+  ADD_RULE_LABEL,
+  RULES_LABEL,
 } from '../constants';
 import PolicyEditorLayout from '../policy_editor_layout.vue';
+import DimDisableContainer from '../dim_disable_container.vue';
 import { assignSecurityPolicyProject, modifyPolicy } from '../utils';
+import PolicyRuleBuilder from './policy_rule_builder.vue';
 import { DEFAULT_SCAN_EXECUTION_POLICY, fromYaml, toYaml } from './lib';
+import { buildDefaultPipeLineRule } from './lib/rules';
 
 export default {
+  ADD_RULE_LABEL,
+  RULES_LABEL,
   EDITOR_MODE_RULE,
   EDITOR_MODE_YAML,
   SECURITY_POLICY_ACTIONS,
@@ -28,8 +35,11 @@ export default {
     ),
   },
   components: {
+    DimDisableContainer,
+    GlButton,
     GlEmptyState,
     PolicyEditorLayout,
+    PolicyRuleBuilder,
   },
   mixins: [glFeatureFlagMixin()],
   inject: [
@@ -97,6 +107,15 @@ export default {
     },
   },
   methods: {
+    addRule() {
+      this.policy.rules.push(buildDefaultPipeLineRule());
+    },
+    removeRule(ruleIndex) {
+      this.policy.rules.splice(ruleIndex, 1);
+    },
+    updateRule(ruleIndex, values) {
+      this.policy.rules.splice(ruleIndex, 1, values);
+    },
     changeEditorMode(mode) {
       if (mode === EDITOR_MODE_YAML && !this.hasParsingError) {
         this.yamlEditorValue = toYaml(this.policy);
@@ -200,7 +219,36 @@ export default {
     @set-policy-property="handleSetPolicyProperty"
     @update-yaml="updateYaml"
     @update-editor-mode="changeEditorMode"
-  />
+  >
+    <template #rules>
+      <dim-disable-container data-testid="rule-builder-container" :disabled="hasParsingError">
+        <template #title>
+          <h4>{{ $options.RULES_LABEL }}</h4>
+        </template>
+
+        <template #disabled>
+          <div class="gl-bg-gray-10 gl-rounded-base gl-p-6"></div>
+        </template>
+
+        <policy-rule-builder
+          v-for="(rule, index) in policy.rules"
+          :key="index"
+          class="gl-mb-4"
+          :init-rule="rule"
+          :rule-index="index"
+          @changed="updateRule(index, $event)"
+          @remove="removeRule(index)"
+        />
+
+        <div class="gl-bg-gray-10 gl-rounded-base gl-p-5 gl-mb-5">
+          <gl-button variant="link" data-testid="add-rule" icon="plus" @click="addRule">
+            {{ $options.ADD_RULE_LABEL }}
+          </gl-button>
+        </div>
+      </dim-disable-container>
+    </template>
+  </policy-editor-layout>
+
   <gl-empty-state
     v-else
     :description="$options.i18n.notOwnerDescription"
