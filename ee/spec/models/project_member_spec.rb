@@ -195,4 +195,20 @@ RSpec.describe ProjectMember do
       end
     end
   end
+
+  describe '#accept_invite!' do
+    let(:member) { create(:project_member, :invited) }
+    let(:user) { create(:user) }
+
+    it 'does not accept invite if group locks memberships for projects' do
+      expect(member).to receive_message_chain(:source, :membership_locked?).and_return(true)
+
+      member.accept_invite! user
+
+      expect(member.user).to be_nil
+      expect(member.invite_accepted_at).to be_nil
+      expect(member.invite_token).not_to be_nil
+      expect(member).not_to receive(:after_accept_invite)
+    end
+  end
 end

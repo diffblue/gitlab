@@ -11,7 +11,10 @@ class Projects::SubscriptionsController < Projects::ApplicationController
   urgency :low
 
   def create
-    subscription = project.upstream_project_subscriptions.create(upstream_project: upstream_project)
+    subscription = project.upstream_project_subscriptions.create(
+      upstream_project: upstream_project,
+      author: current_user
+    )
 
     if subscription.persisted?
       flash[:notice] = _('Subscription successfully created.')

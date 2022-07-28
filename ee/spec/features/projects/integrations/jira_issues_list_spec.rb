@@ -108,7 +108,7 @@ RSpec.describe 'Jira issues list', :js do
       stub_request(:get, /\A#{public_url}/)
         .to_return(headers: { 'Content-Type' => 'application/json' }, body: issue.to_json)
 
-      visit project_integrations_jira_issue_path(project, 1)
+      visit project_integrations_jira_issue_path(project, "#{jira_project_key}-1")
 
       expect(page).to have_text(html)
       expect(page).not_to have_css('script', text: 'foobar')

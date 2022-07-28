@@ -3,6 +3,7 @@
 module EE
   module ProjectMember
     extend ActiveSupport::Concern
+    extend ::Gitlab::Utils::Override
 
     prepended do
       extend ::Gitlab::Utils::Override
@@ -48,6 +49,12 @@ module EE
 
     def group_saml_identity(root_ancestor: false)
       return unless group
+
+      super
+    end
+
+    def accept_invite!(new_user)
+      return false if source.membership_locked?
 
       super
     end

@@ -219,11 +219,12 @@ RSpec.describe Projects::Integrations::Jira::IssuesController do
     context 'when jira_issues_integration licensed feature is available' do
       let(:jira_response_status) { 200 }
       let(:title) { 'Title' }
-      let(:key) { '123' }
+      let(:key) { 'TEST-123' }
+      let(:response_key) { key }
       let(:issue_json) { { 'from' => 'backend' } }
       let(:jira_response_body) do
         {
-          key: key,
+          key: response_key,
           renderedFields: {
             description: 'A description'
           },
@@ -254,12 +255,12 @@ RSpec.describe Projects::Integrations::Jira::IssuesController do
       before do
         stub_licensed_features(jira_issues_integration: true)
 
-        stub_request(:get, "https://jira.example.com/rest/api/2/issue/1?expand=renderedFields")
+        stub_request(:get, "https://jira.example.com/rest/api/2/issue/#{key}?expand=renderedFields")
           .to_return(status: jira_response_status, body: jira_response_body, headers: {})
       end
 
       it 'renders `show` template', :aggregate_failures do
-        get :show, params: { namespace_id: project.namespace, project_id: project, id: 1 }
+        get :show, params: { namespace_id: project.namespace, project_id: project, id: key }
 
         expect(response).to have_gitlab_http_status(:ok)
         expect(response).to render_template(:show)
@@ -270,7 +271,7 @@ RSpec.describe Projects::Integrations::Jira::IssuesController do
           allow(serializer).to receive(:represent).and_return(issue_json)
         end
 
-        get :show, params: { namespace_id: project.namespace, project_id: project, id: 1, format: :json }
+        get :show, params: { namespace_id: project.namespace, project_id: project, id: key, format: :json }
 
         expect(json_response).to eq(issue_json.as_json)
       end
@@ -278,12 +279,12 @@ RSpec.describe Projects::Integrations::Jira::IssuesController do
       context 'when the JSON fetched from Jira contains HTML' do
         let(:payload) { "<script>alert('XSS')</script>" }
         let(:title) { payload }
-        let(:key) { payload }
+        let(:response_key) { payload }
 
         render_views
 
         it 'escapes the HTML in issue titles and references', :aggregate_failures do
-          get :show, params: { namespace_id: project.namespace, project_id: project, id: 1 }
+          get :show, params: { namespace_id: project.namespace, project_id: project, id: key }
 
           expect(response).to have_gitlab_http_status(:ok)
           expect(response.body).not_to include(payload)
@@ -303,7 +304,7 @@ RSpec.describe Projects::Integrations::Jira::IssuesController do
         end
 
         it 'returns 404 status' do
-          get :show, params: { namespace_id: project.namespace, project_id: project, id: 1 }
+          get :show, params: { namespace_id: project.namespace, project_id: project, id: key }
 
           expect(response).to have_gitlab_http_status(:not_found)
         end

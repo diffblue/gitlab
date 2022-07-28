@@ -61,9 +61,15 @@ module Projects
         end
 
         def issue_json
-          @issue_json ||=
-            ::Integrations::JiraSerializers::IssueDetailSerializer.new
-              .represent(jira_integration.find_issue(params[:id], rendered_fields: true), project: project)
+          @issue_json ||= ::Integrations::JiraSerializers::IssueDetailSerializer.new
+            .represent(
+              project.jira_integration.find_issue(
+                params[:id],
+                rendered_fields: true,
+                restrict_project_key: true
+              ),
+              project: project
+            )
         end
 
         def finder
