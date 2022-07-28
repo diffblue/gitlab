@@ -11,6 +11,11 @@ module EE
       validates :unique_project_download_limit_interval_in_seconds,
         numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: 10.days.to_i },
         presence: true
+      validates :unique_project_download_limit_allowlist,
+        length: { maximum: 100, message: -> (object, data) { _("exceeds maximum length (100 usernames)") } },
+        allow_nil: false,
+        user_existence: true,
+        if: :unique_project_download_limit_allowlist_changed?
 
       validate :user_cap_allowed, if: -> { enabling_user_cap? }
 
@@ -60,6 +65,7 @@ module EE
       EE_NAMESPACE_SETTINGS_PARAMS = %i[
         unique_project_download_limit
         unique_project_download_limit_interval_in_seconds
+        unique_project_download_limit_allowlist
       ].freeze
 
       override :allowed_namespace_settings_params
