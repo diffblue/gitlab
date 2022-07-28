@@ -140,27 +140,33 @@ module Gitlab
           track_unique_action(ISSUE_PROMOTED_TO_EPIC, author)
         end
 
-        def track_epic_confidential_action(author:)
+        def track_epic_confidential_action(author:, namespace:)
+          track_snowplow_action(EPIC_CONFIDENTIAL, author, namespace)
           track_unique_action(EPIC_CONFIDENTIAL, author)
         end
 
-        def track_epic_visible_action(author:)
+        def track_epic_visible_action(author:, namespace:)
+          track_snowplow_action(EPIC_VISIBLE, author, namespace)
           track_unique_action(EPIC_VISIBLE, author)
         end
 
-        def track_epic_labels_changed_action(author:)
+        def track_epic_labels_changed_action(author:, namespace:)
+          track_snowplow_action(EPIC_LABELS, author, namespace)
           track_unique_action(EPIC_LABELS, author)
         end
 
-        def track_epic_destroyed(author:)
+        def track_epic_destroyed(author:, namespace:)
+          track_snowplow_action(EPIC_DESTROYED, author, namespace)
           track_unique_action(EPIC_DESTROYED, author)
         end
 
-        def track_epic_task_checked(author:)
+        def track_epic_task_checked(author:, namespace:)
+          track_snowplow_action(EPIC_TASK_CHECKED, author, namespace)
           track_unique_action(EPIC_TASK_CHECKED, author)
         end
 
-        def track_epic_task_unchecked(author:)
+        def track_epic_task_unchecked(author:, namespace:)
+          track_snowplow_action(EPIC_TASK_UNCHECKED, author, namespace)
           track_unique_action(EPIC_TASK_UNCHECKED, author)
         end
 

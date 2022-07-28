@@ -64,11 +64,17 @@ module Epics
 
     def handle_confidentiality_change(epic)
       if epic.confidential?
-        ::Gitlab::UsageDataCounters::EpicActivityUniqueCounter.track_epic_confidential_action(author: current_user)
+        ::Gitlab::UsageDataCounters::EpicActivityUniqueCounter.track_epic_confidential_action(
+          author: current_user,
+          namespace: epic.group
+        )
         # don't enqueue immediately to prevent todos removal in case of a mistake
         ::TodosDestroyer::ConfidentialEpicWorker.perform_in(::Todo::WAIT_FOR_DELETE, epic.id)
       else
-        ::Gitlab::UsageDataCounters::EpicActivityUniqueCounter.track_epic_visible_action(author: current_user)
+        ::Gitlab::UsageDataCounters::EpicActivityUniqueCounter.track_epic_visible_action(
+          author: current_user,
+          namespace: epic.group
+        )
       end
     end
 
@@ -191,9 +197,15 @@ module Epics
 
       epic.updated_tasks.each do |task|
         if task.complete?
-          Gitlab::UsageDataCounters::EpicActivityUniqueCounter.track_epic_task_checked(author: current_user)
+          Gitlab::UsageDataCounters::EpicActivityUniqueCounter.track_epic_task_checked(
+            author: current_user,
+            namespace: epic.group
+          )
         else
-          Gitlab::UsageDataCounters::EpicActivityUniqueCounter.track_epic_task_unchecked(author: current_user)
+          Gitlab::UsageDataCounters::EpicActivityUniqueCounter.track_epic_task_unchecked(
+            author: current_user,
+            namespace: epic.group
+          )
         end
       end
     end

@@ -9,7 +9,7 @@ module EE
 
       override :after_destroy
       def after_destroy(issuable)
-        track_usage_ping_epic_destroyed if issuable.is_a?(Epic)
+        track_usage_ping_epic_destroyed(issuable) if issuable.is_a?(Epic)
 
         super
       end
@@ -21,8 +21,11 @@ module EE
         super
       end
 
-      def track_usage_ping_epic_destroyed
-        ::Gitlab::UsageDataCounters::EpicActivityUniqueCounter.track_epic_destroyed(author: current_user)
+      def track_usage_ping_epic_destroyed(epic)
+        ::Gitlab::UsageDataCounters::EpicActivityUniqueCounter.track_epic_destroyed(
+          author: current_user,
+          namespace: epic.group
+        )
       end
     end
   end

@@ -10,7 +10,12 @@ module EE
       def execute(added_labels: [], removed_labels: [])
         super
 
-        ::Gitlab::UsageDataCounters::EpicActivityUniqueCounter.track_epic_labels_changed_action(author: user) if resource.is_a?(Epic)
+        return unless resource.is_a?(Epic)
+
+        ::Gitlab::UsageDataCounters::EpicActivityUniqueCounter.track_epic_labels_changed_action(
+          author: user,
+          namespace: resource.group
+        )
       end
 
       override :resource_column
