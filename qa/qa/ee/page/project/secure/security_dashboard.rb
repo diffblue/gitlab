@@ -23,6 +23,11 @@ module QA
               element :export_csv_modal_button
             end
 
+            def initialize
+              super
+              close_export_csv_modal
+            end
+
             def has_vulnerability?(description:)
               has_element?(:vulnerability, vulnerability_description: description)
             end
