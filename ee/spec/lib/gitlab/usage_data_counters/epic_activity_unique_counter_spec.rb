@@ -129,11 +129,11 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
       described_class.track_epic_visible_action(**params)
     end
 
-    it_behaves_like 'a daily tracked issuable event' do
+    it_behaves_like 'a daily tracked issuable snowplow and service ping events with namespace' do
       let(:action) { described_class::EPIC_VISIBLE }
     end
 
-    it_behaves_like 'does not track when feature flag is disabled', :track_epics_activity
+    it_behaves_like 'does not track with namespace when feature flag is disabled', :track_epics_activity
   end
 
   context 'for making epic confidential' do
@@ -141,11 +141,11 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
       described_class.track_epic_confidential_action(**params)
     end
 
-    it_behaves_like 'a daily tracked issuable event' do
+    it_behaves_like 'a daily tracked issuable snowplow and service ping events with namespace' do
       let(:action) { described_class::EPIC_CONFIDENTIAL }
     end
 
-    it_behaves_like 'does not track when feature flag is disabled', :track_epics_activity
+    it_behaves_like 'does not track with namespace when feature flag is disabled', :track_epics_activity
   end
 
   context 'for epic date modification events' do
@@ -241,11 +241,11 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
       described_class.track_epic_labels_changed_action(**params)
     end
 
-    it_behaves_like 'a daily tracked issuable event' do
+    it_behaves_like 'a daily tracked issuable snowplow and service ping events with namespace' do
       let(:action) { described_class::EPIC_LABELS }
     end
 
-    it_behaves_like 'does not track when feature flag is disabled', :track_epics_activity
+    it_behaves_like 'does not track with namespace when feature flag is disabled', :track_epics_activity
   end
 
   context 'for removing issue from epic event' do
@@ -301,11 +301,11 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
       described_class.track_epic_destroyed(**params)
     end
 
-    it_behaves_like 'a daily tracked issuable event' do
+    it_behaves_like 'a daily tracked issuable snowplow and service ping events with namespace' do
       let(:action) { described_class::EPIC_DESTROYED }
     end
 
-    it_behaves_like 'does not track when feature flag is disabled', :track_epics_activity
+    it_behaves_like 'does not track with namespace when feature flag is disabled', :track_epics_activity
   end
 
   context 'for margin epic task as checked' do
@@ -313,11 +313,11 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
       described_class.track_epic_task_checked(**params)
     end
 
-    it_behaves_like 'a daily tracked issuable event' do
+    it_behaves_like 'a daily tracked issuable snowplow and service ping events with namespace' do
       let(:action) { described_class::EPIC_TASK_CHECKED }
     end
 
-    it_behaves_like 'does not track when feature flag is disabled', :track_epics_activity
+    it_behaves_like 'does not track with namespace when feature flag is disabled', :track_epics_activity
   end
 
   context 'for margin epic task as unchecked' do
@@ -325,11 +325,11 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
       described_class.track_epic_task_unchecked(**params)
     end
 
-    it_behaves_like 'a daily tracked issuable event' do
+    it_behaves_like 'a daily tracked issuable snowplow and service ping events with namespace' do
       let(:action) { described_class::EPIC_TASK_UNCHECKED }
     end
 
-    it_behaves_like 'does not track when feature flag is disabled', :track_epics_activity
+    it_behaves_like 'does not track with namespace when feature flag is disabled', :track_epics_activity
   end
 
   context 'for epic cross reference' do

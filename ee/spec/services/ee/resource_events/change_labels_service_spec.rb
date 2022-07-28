@@ -18,7 +18,7 @@ RSpec.describe ResourceEvents::ChangeLabelsService do
 
       it 'tracks the label change' do
         expect(::Gitlab::UsageDataCounters::EpicActivityUniqueCounter)
-          .to receive(:track_epic_labels_changed_action).with(author: user)
+          .to receive(:track_epic_labels_changed_action).with(author: user, namespace: group)
 
         subject
       end
@@ -30,7 +30,7 @@ RSpec.describe ResourceEvents::ChangeLabelsService do
 
       it 'tracks the label change' do
         expect(::Gitlab::UsageDataCounters::EpicActivityUniqueCounter)
-          .to receive(:track_epic_labels_changed_action).with(author: user)
+          .to receive(:track_epic_labels_changed_action).with(author: user, namespace: group)
 
         subject
       end
@@ -42,7 +42,7 @@ RSpec.describe ResourceEvents::ChangeLabelsService do
 
       it 'tracks the label change' do
         expect(::Gitlab::UsageDataCounters::EpicActivityUniqueCounter)
-          .to receive(:track_epic_labels_changed_action).with(author: user)
+          .to receive(:track_epic_labels_changed_action).with(author: user, namespace: group)
 
         subject
       end
