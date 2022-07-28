@@ -174,10 +174,10 @@ const factorySpecs = {
   referenceDefinition: {
     type: 'block',
     selector: 'referencedefinition',
-    getAttrs: (node) => ({
-      title: node.properties.title,
-      url: node.properties.url,
-      identifier: node.properties.identifier,
+    getAttrs: (hastNode) => ({
+      title: hastNode.properties.title,
+      url: hastNode.properties.url,
+      identifier: hastNode.properties.identifier,
     }),
   },
 };
