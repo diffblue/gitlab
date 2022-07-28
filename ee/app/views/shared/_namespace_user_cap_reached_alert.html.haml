@@ -6,8 +6,8 @@
 - root_namespace = namespace.root_ancestor
 - pending_users_link = pending_members_group_usage_quotas_path(root_namespace)
 - link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'
-- user_caps_link_start = link_start.html_safe % { url: help_page_path('user/group/index', anchor: 'user-cap-for-groups') }
-- users_pending_approval_link_start = link_start.html_safe % { url: help_page_path('user/group/index', anchor: 'approve-pending-members-for-a-group') }
+- user_caps_link_start = link_start.html_safe % { url: help_page_path('user/group/manage', anchor: 'user-cap-for-groups') }
+- users_pending_approval_link_start = link_start.html_safe % { url: help_page_path('user/group/manage', anchor: 'approve-pending-members-for-a-group') }
 - link_end = '</a>'.html_safe
 
 = render Pajamas::AlertComponent.new(title: s_('NamespaceUserCap|Your group has reached its billable member limit'),

@@ -7,6 +7,6 @@
   = form_tag(group, method: :delete, id: remove_form_id) do
     %p
       = html_escape(_("This group and its subgroups and projects will be placed in a 'pending deletion' state for %{deletion_adjourned_period} days, then permanently deleted on %{date}. The group can be fully restored before that date.")) % { date: tag.strong(date), deletion_adjourned_period: deletion_adjourned_period }
-      = link_to _('Learn more.'), help_page_path('user/group/index', anchor: 'remove-a-group'), target: '_blank', rel: 'noopener noreferrer'
+      = link_to _('Learn more.'), help_page_path('user/group/manage', anchor: 'remove-a-group'), target: '_blank', rel: 'noopener noreferrer'
 
     = render 'groups/settings/remove_button', group: group, remove_form_id: remove_form_id
