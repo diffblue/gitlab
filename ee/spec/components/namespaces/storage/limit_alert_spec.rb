@@ -17,7 +17,7 @@ RSpec.describe Namespaces::Storage::LimitAlert, :saas, type: :component do
     }
   end
 
-  subject(:component) { described_class.new(namespace: group, user: user, notification_data: notification_payload) }
+  subject(:component) { described_class.new(context: group, user: user, notification_data: notification_payload) }
 
   before do
     stub_ee_application_setting(should_check_namespace_plan: true)
@@ -36,12 +36,24 @@ RSpec.describe Namespaces::Storage::LimitAlert, :saas, type: :component do
     expect(page).to have_content(notification_payload[:explanation_message])
   end
 
-  it 'renders Purchase more storage link' do
-    render_inline(component)
-    expect(page).to have_link(
-      'Purchase more storage',
-      href: buy_storage_subscriptions_path(selected_group: group.root_ancestor.id)
-    )
+  describe 'purchase more storage link' do
+    it 'does not render link if user is not an owner of root group' do
+      render_inline(component)
+      expect(page).not_to have_link(
+        'Purchase more storage',
+        href: buy_storage_subscriptions_path(selected_group: group.root_ancestor.id)
+      )
+    end
+
+    it 'renders link if user is an owner of root group' do
+      allow(Ability).to receive(:allowed?).with(user, :owner_access, group.root_ancestor).and_return(true)
+
+      render_inline(component)
+      expect(page).to have_link(
+        'Purchase more storage',
+        href: buy_storage_subscriptions_path(selected_group: group.root_ancestor.id)
+      )
+    end
   end
 
   it 'renders Usage Quotas link' do
