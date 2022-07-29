@@ -85,7 +85,7 @@ export const receiveValueStreamsSuccess = (
   commit(types.RECEIVE_VALUE_STREAMS_SUCCESS, data);
 
   if (!selectedValueStream && !data.length) {
-    return null;
+    return dispatch('fetchGroupStagesAndEvents');
   }
 
   if (!selectedValueStream && data.length) {

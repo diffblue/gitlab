@@ -399,7 +399,7 @@ describe('Value Stream Analytics actions / value streams', () => {
               payload: [],
             },
           ],
-          [],
+          [{ type: 'fetchGroupStagesAndEvents' }],
         );
       });
     });
