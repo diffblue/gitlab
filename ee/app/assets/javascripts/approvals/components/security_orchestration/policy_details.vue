@@ -40,21 +40,23 @@ export default {
 </script>
 
 <template>
-  <transition name="slide-down">
-    <tr v-if="policy.isSelected">
-      <td colspan="4" class="gl-border-top-0!">
-        <div class="gl-px-5! gl-pb-4">
-          <require-approvals :action="policyAction" :approvers="approvers" />
-          <ul>
-            <li v-for="(rule, idx) in humanizedRules" :key="idx">
-              {{ rule }}
-            </li>
-          </ul>
+  <tr v-if="policy.isSelected">
+    <td colspan="4" class="gl-border-top-0! gl-pt-0!">
+      <div
+        class="gl-border-solid gl-border-1 gl-rounded-base gl-border-gray-100 gl-bg-gray-10 gl-py-4 gl-px-5"
+      >
+        <require-approvals :action="policyAction" :approvers="approvers" />
+        <ul class="gl-mb-1">
+          <li v-for="(rule, idx) in humanizedRules" :key="idx">
+            {{ rule }}
+          </li>
+        </ul>
+        <div class="gl-text-right">
           <gl-link :href="policyEditPath" target="_blank">
             {{ $options.i18n.policyDetails }}
           </gl-link>
         </div>
-      </td>
-    </tr>
-  </transition>
+      </div>
+    </td>
+  </tr>
 </template>

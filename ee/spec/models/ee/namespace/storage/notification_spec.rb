@@ -38,9 +38,9 @@ RSpec.describe EE::Namespace::Storage::Notification do
       it { is_expected.to be false }
     end
 
-    context 'when user cannot admin group' do
+    context 'when the user does not have at least maintainer access to the group' do
       before do
-        allow(user).to receive(:can?).with(:admin_namespace, group.root_ancestor).and_return(false)
+        allow(user).to receive(:can?).with(:maintainer_access, group.root_ancestor).and_return(false)
       end
 
       it { is_expected.to be false }

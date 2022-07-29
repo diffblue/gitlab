@@ -119,7 +119,7 @@ RSpec.describe PostReceiveService, :geo do
         allow(project.namespace).to receive(:additional_repo_storage_by_namespace_enabled?)
           .and_return(additional_repo_storage_by_namespace_enabled)
 
-        allow(user).to receive(:can?).with(:admin_namespace, project.namespace.root_ancestor).and_return(true)
+        allow(user).to receive(:can?).with(:maintainer_access, project.namespace.root_ancestor).and_return(true)
         allow_next_instance_of(EE::Namespace::Storage::Notification, project.namespace, user) do |notification|
           allow(notification).to receive(:payload).and_return(storage_notification_payload)
           allow(notification).to receive(:alert_level).and_return(alert_level)

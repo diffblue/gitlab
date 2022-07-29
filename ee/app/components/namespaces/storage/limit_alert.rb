@@ -6,8 +6,8 @@ module Namespaces
       # @param [Namespace or Group] namespace
       # @param [User] user
       # @param [EE::Namespace::Storage::Notification] notification
-      def initialize(namespace:, user:, notification_data:)
-        @root_namespace = namespace.root_ancestor
+      def initialize(context:, user:, notification_data:)
+        @root_namespace = context.root_ancestor
         @user = user
         @notification_data = notification_data
       end
@@ -60,9 +60,15 @@ module Namespaces
       end
 
       def purchase_link
-        return unless root_namespace.additional_repo_storage_by_namespace_enabled?
+        return unless show_purchase_link?
 
         buy_storage_path(root_namespace)
+      end
+
+      def show_purchase_link?
+        return false unless ::Gitlab::CurrentSettings.automatic_purchased_storage_allocation?
+
+        Ability.allowed?(user, :owner_access, root_namespace)
       end
 
       def usage_quotas_link

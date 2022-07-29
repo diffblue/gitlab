@@ -29,7 +29,7 @@ export default {
       return this.policyAction.approvals_required;
     },
     iconName() {
-      return this.policy.isSelected ? 'chevron-down' : 'chevron-up';
+      return this.policy.isSelected ? 'chevron-up' : 'chevron-down';
     },
   },
   methods: {
