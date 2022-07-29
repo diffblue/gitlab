@@ -10,9 +10,18 @@ module Gitlab
       end
 
       def execute
-        if params.dig(:query, :data_source) == 'issuables' || params.dig(:query, :data_source).nil?
+        case params.dig(:query, :data_source)
+        when 'issuables', nil
           Executors::IssuableExecutor.new(
             query_params: params[:query][:params] || params[:query],
+            current_user: current_user,
+            insights_entity: insights_entity,
+            chart_type: type_param,
+            projects: projects_param
+          ).execute
+        when 'dora'
+          Executors::DoraExecutor.new(
+            query_params: params[:query][:params],
             current_user: current_user,
             insights_entity: insights_entity,
             chart_type: type_param,
