@@ -10,6 +10,19 @@ RSpec.describe GoogleApi::CloudPlatform::Client do
   let(:gcp_project_id) { String('gcp_proj_id') }
   let(:operation) { true }
   let(:database_instance) { Google::Apis::SqladminV1beta4::DatabaseInstance.new(state: 'RUNNABLE') }
+  let(:database_list) do
+    Google::Apis::SqladminV1beta4::ListDatabasesResponse.new(items: [
+      Google::Apis::SqladminV1beta4::Database.new(name: 'db_01', instance: database_instance),
+      Google::Apis::SqladminV1beta4::Database.new(name: 'db_02', instance: database_instance)
+    ])
+  end
+
+  let(:user_list) do
+    Google::Apis::SqladminV1beta4::ListUsersResponse.new(items: [
+      Google::Apis::SqladminV1beta4::User.new(name: 'user_01', instance: database_instance),
+      Google::Apis::SqladminV1beta4::User.new(name: 'user_02', instance: database_instance)
+    ])
+  end
 
   describe '.session_key_for_redirect_uri' do
     let(:state) { 'random_string' }
@@ -391,6 +404,30 @@ RSpec.describe GoogleApi::CloudPlatform::Client do
               .with(any_args)
               .and_return(database_instance)
       is_expected.to eq(database_instance)
+    end
+  end
+
+  describe '#list_cloudsql_databases' do
+    subject { client.list_cloudsql_databases(:gcp_project_id, :instance_name) }
+
+    it 'calls Google Api SQLAdminService#list_databases' do
+      expect_any_instance_of(Google::Apis::SqladminV1beta4::SQLAdminService)
+        .to receive(:list_databases)
+              .with(any_args)
+              .and_return(database_list)
+      is_expected.to eq(database_list)
+    end
+  end
+
+  describe '#list_cloudsql_users' do
+    subject { client.list_cloudsql_users(:gcp_project_id, :instance_name) }
+
+    it 'calls Google Api SQLAdminService#list_users' do
+      expect_any_instance_of(Google::Apis::SqladminV1beta4::SQLAdminService)
+        .to receive(:list_users)
+              .with(any_args)
+              .and_return(user_list)
+      is_expected.to eq(user_list)
     end
   end
 end

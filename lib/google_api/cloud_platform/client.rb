@@ -153,9 +153,23 @@ module GoogleApi
         Gitlab::HTTP.post(uri, body: { 'token' => access_token })
       end
 
+      def list_cloudsql_databases(gcp_project_id, instance_name)
+        service = Google::Apis::SqladminV1beta4::SQLAdminService.new
+        service.authorization = access_token
+
+        service.list_databases(gcp_project_id, instance_name, options: user_agent_header)
+      end
+
       def create_cloudsql_database(gcp_project_id, instance_name, database_name)
         database = Google::Apis::SqladminV1beta4::Database.new(name: database_name)
         sql_admin_service.insert_database(gcp_project_id, instance_name, database)
+      end
+
+      def list_cloudsql_users(gcp_project_id, instance_name)
+        service = Google::Apis::SqladminV1beta4::SQLAdminService.new
+        service.authorization = access_token
+
+        service.list_users(gcp_project_id, instance_name, options: user_agent_header)
       end
 
       def create_cloudsql_user(gcp_project_id, instance_name, username, password)
