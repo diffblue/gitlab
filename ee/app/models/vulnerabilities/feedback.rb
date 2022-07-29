@@ -4,6 +4,8 @@ module Vulnerabilities
   class Feedback < ApplicationRecord
     self.table_name = 'vulnerability_feedback'
 
+    paginates_per 50
+
     belongs_to :project
     belongs_to :author, class_name: 'User'
     belongs_to :issue
@@ -43,7 +45,7 @@ module Vulnerabilities
     scope :by_finding_uuid, -> (uuids) { where(finding_uuid: uuids) }
     scope :by_project, -> (project) { where(project: project) }
     scope :by_project_fingerprints, -> (project_fingerprints) { where(project_fingerprint: project_fingerprints) }
-    scope :paginate, -> (page, per_page) { offset(page).limit(per_page) }
+    scope :order_by_id_asc, -> { order(id: :asc)}
 
     scope :all_preloaded, -> do
       preload(:author, :comment_author, :project, :issue, :merge_request, :pipeline)
