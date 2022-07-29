@@ -96,7 +96,11 @@ export default class MergeRequestStore extends CEMergeRequestStore {
   get hasMergeChecksFailed() {
     if (this.hasApprovalsAvailable && this.approvals && this.approvalsLeft) return !this.isApproved;
 
-    if (this.blockingMergeRequests?.total_count > 0) return true;
+    if (
+      (this.blockingMergeRequests?.visible_merge_requests?.merged?.length || 0) !==
+      (this.blockingMergeRequests?.total_count || 0)
+    )
+      return true;
 
     return super.hasMergeChecksFailed;
   }
