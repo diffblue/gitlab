@@ -48,8 +48,9 @@ RSpec.describe "Merge request > User merges with namespace storage limits", :js,
       click_merge_button
 
       expect(page).to have_text(
-        'This merge request cannot be merged, because ' \
-        'the namespace storage limit of 10 MB has been reached'
+        'Your namespace storage is full. ' \
+        'This merge request cannot be merged. ' \
+        'To continue, manage your storage usage'
       )
     end
   end

@@ -16,8 +16,15 @@ module EE
       end
 
       def merge_error
-        "This merge request cannot be merged, because the namespace storage limit " \
-        "of #{formatted(limit)} has been reached."
+        "Your namespace storage is full. This merge request cannot be merged. " \
+        "To continue, %{manage_storage_url}.".html_safe % {
+          manage_storage_url: link_to(
+            'manage your storage usage',
+            help_page_path('user/usage_quotas'),
+            target: '_blank',
+            rel: 'noopener noreferrer'
+          )
+        }
       end
 
       def push_error(change_size = 0)
@@ -42,6 +49,14 @@ module EE
 
       def formatted(number)
         number_to_human_size(number, delimiter: ',', precision: 2)
+      end
+
+      def link_to(text, url, options)
+        ActionController::Base.helpers.link_to(text, url, options)
+      end
+
+      def help_page_path(path)
+        ::Gitlab::Routing.url_helpers.help_page_path(path)
       end
     end
   end
