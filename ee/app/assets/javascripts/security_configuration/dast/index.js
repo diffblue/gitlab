@@ -24,9 +24,14 @@ export default function init() {
     scannerProfilesLibraryPath,
     newScannerProfilePath,
     newSiteProfilePath,
+    pipelineCreatedAt,
+    pipelineId,
+    pipelinePath,
     scannerProfile,
     siteProfile,
   } = el.dataset;
+
+  const dastEnabled = 'dastEnabled' in el.dataset;
 
   return new Vue({
     el,
@@ -39,6 +44,10 @@ export default function init() {
       scannerProfilesLibraryPath,
       newScannerProfilePath,
       newSiteProfilePath,
+      dastEnabled,
+      pipelineCreatedAt,
+      pipelineId,
+      pipelinePath,
       scannerProfile,
       siteProfile,
     },
