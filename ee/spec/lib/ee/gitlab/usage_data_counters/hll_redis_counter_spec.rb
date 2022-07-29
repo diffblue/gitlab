@@ -35,6 +35,44 @@ RSpec.describe Gitlab::UsageDataCounters::HLLRedisCounter, :clean_gitlab_redis_s
     described_class.clear_memoization(:known_events)
   end
 
+  describe '.categories' do
+    it 'gets all unique category names' do
+      expect(described_class.categories).to contain_exactly(
+        'deploy_token_packages',
+        'user_packages',
+        'compliance',
+        'ecosystem',
+        'analytics',
+        'ide_edit',
+        'search',
+        'source_code',
+        'incident_management',
+        'incident_management_alerts',
+        'incident_management_oncall',
+        'testing',
+        'issues_edit',
+        'ci_secrets_management',
+        'snippets',
+        'code_review',
+        'terraform',
+        'ci_templates',
+        'quickactions',
+        'pipeline_authoring',
+        'epics_usage',
+        'epic_boards_usage',
+        'secure',
+        'importer',
+        'network_policies',
+        'geo',
+        'growth',
+        'work_items',
+        'ci_users',
+        'error_tracking',
+        'manage'
+      )
+    end
+  end
+
   describe '.known_events' do
     let(:ce_temp_dir) { Dir.mktmpdir }
     let(:ee_temp_dir) { Dir.mktmpdir }
@@ -112,33 +150,56 @@ RSpec.describe Gitlab::UsageDataCounters::HLLRedisCounter, :clean_gitlab_redis_s
   end
 
   describe '.unique_events' do
-    before do
-      allow(described_class).to receive(:known_events).and_return(known_events)
-      described_class.track_event_in_context(context_event, values: [entity1, entity3], context: default_context, time: 2.days.ago)
-      described_class.track_event_in_context(context_event, values: entity3, context: ultimate_context, time: 2.days.ago)
-      described_class.track_event_in_context(context_event, values: entity3, context: gold_context, time: 2.days.ago)
-      described_class.track_event_in_context(context_event, values: entity3, context: invalid_context, time: 2.days.ago)
-      described_class.track_event_in_context(context_event, values: [entity1, entity2], context: '', time: 2.weeks.ago)
-    end
-
-    context 'with correct arguments' do
-      subject(:unique_events) { described_class.unique_events(event_names: event_names, start_date: 4.weeks.ago, end_date: Date.current, context: context) }
-
-      where(:event_names, :context, :value) do
-        context_event | default_context  | 2
-        context_event | ultimate_context | 1
-        context_event | gold_context     | 1
-        context_event | ''               | 0
+    context 'with events tracked in context' do
+      before do
+        allow(described_class).to receive(:known_events).and_return(known_events)
+        described_class.track_event_in_context(context_event, values: [entity1, entity3], context: default_context, time: 2.days.ago)
+        described_class.track_event_in_context(context_event, values: entity3, context: ultimate_context, time: 2.days.ago)
+        described_class.track_event_in_context(context_event, values: entity3, context: gold_context, time: 2.days.ago)
+        described_class.track_event_in_context(context_event, values: entity3, context: invalid_context, time: 2.days.ago)
+        described_class.track_event_in_context(context_event, values: [entity1, entity2], context: '', time: 2.weeks.ago)
       end
 
-      with_them do
-        it { is_expected.to eq value }
+      subject(:unique_events) { described_class.unique_events(event_names: context_event, start_date: 4.weeks.ago, end_date: Date.current, context: context) }
+
+      context 'with correct arguments' do
+        where(:context, :value) do
+          ref(:default_context)  | 2
+          ref(:ultimate_context) | 1
+          ref(:gold_context)     | 1
+          ''                     | 0
+        end
+
+        with_them do
+          it { is_expected.to eq value }
+        end
+      end
+
+      context 'with invalid context' do
+        let(:context) { invalid_context }
+        let(:event_names) { context_event }
+
+        it 'raise error' do
+          expect { unique_events }.to raise_error(Gitlab::UsageDataCounters::HLLRedisCounter::InvalidContext)
+        end
       end
     end
 
-    context 'with invalid context' do
-      it 'raise error' do
-        expect { described_class.unique_events(event_names: context_event, start_date: 4.weeks.ago, end_date: Date.current, context: invalid_context) }.to raise_error(Gitlab::UsageDataCounters::HLLRedisCounter::InvalidContext)
+    context 'with use_redis_hll_instrumentation_classes feature enabled' do
+      it 'does not include instrumented categories' do
+        stub_feature_flags(use_redis_hll_instrumentation_classes: true)
+
+        expect(described_class.unique_events_data.keys)
+          .not_to include(*described_class.categories_collected_from_metrics_definitions)
+      end
+    end
+
+    context 'with use_redis_hll_instrumentation_classes feature disabled' do
+      it 'includes instrumented categories' do
+        stub_feature_flags(use_redis_hll_instrumentation_classes: false)
+
+        expect(described_class.unique_events_data.keys)
+          .to include(*described_class.categories_collected_from_metrics_definitions)
       end
     end
   end
