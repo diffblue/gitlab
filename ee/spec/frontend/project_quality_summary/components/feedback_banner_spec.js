@@ -1,14 +1,8 @@
 import { GlBanner } from '@gitlab/ui';
-import Vue from 'vue';
-import VueApollo from 'vue-apollo';
+import { shallowMount } from '@vue/test-utils';
 import FeedbackBanner from 'ee/project_quality_summary/components/feedback_banner.vue';
-import { mountExtended } from 'helpers/vue_test_utils_helper';
 import { makeMockUserCalloutDismisser } from 'helpers/mock_user_callout_dismisser';
 import { i18n, FEEDBACK_ISSUE_URL } from 'ee/project_quality_summary/constants';
-
-jest.mock('~/flash');
-
-Vue.use(VueApollo);
 
 describe('Project quality summary feedback banner', () => {
   let wrapper;
@@ -19,7 +13,7 @@ describe('Project quality summary feedback banner', () => {
   const createComponent = ({ shouldShowCallout = true } = {}) => {
     userCalloutDismissSpy = jest.fn();
 
-    wrapper = mountExtended(FeedbackBanner, {
+    wrapper = shallowMount(FeedbackBanner, {
       provide: {
         projectQualitySummaryFeedbackImagePath: 'banner/image/path',
       },
@@ -31,6 +25,10 @@ describe('Project quality summary feedback banner', () => {
       },
     });
   };
+
+  afterEach(() => {
+    wrapper.destroy();
+  });
 
   it('is displayed with the correct props', () => {
     createComponent();
