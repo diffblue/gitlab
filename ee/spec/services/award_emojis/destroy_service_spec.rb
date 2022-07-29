@@ -46,6 +46,7 @@ RSpec.describe AwardEmojis::DestroyService do
 
         it 'tracks usage' do
           expect(::Gitlab::UsageDataCounters::EpicActivityUniqueCounter).to receive(:track_epic_emoji_removed_action)
+            .with(author: user, namespace: group)
 
           execute
         end
