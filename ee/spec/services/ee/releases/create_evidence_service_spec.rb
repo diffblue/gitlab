@@ -11,8 +11,8 @@ RSpec.describe Releases::CreateEvidenceService do
   context 'when pipeline with artifacts is passed' do
     let(:pipeline) { create(:ci_empty_pipeline, sha: release.sha, project: project) }
     let!(:build_with_artifacts) { create(:ci_build, :artifacts, pipeline: pipeline) }
-    let!(:build_test_report) { create(:ci_build, :test_reports, pipeline: pipeline) }
-    let!(:build_coverage_report) { create(:ci_build, :coverage_reports, pipeline: pipeline) }
+    let!(:build_test_report) { create(:ci_build, :test_reports, :with_artifacts_paths, pipeline: pipeline) }
+    let!(:build_coverage_report) { create(:ci_build, :coverage_reports, :with_artifacts_paths, pipeline: pipeline) }
 
     let(:service) { described_class.new(release, pipeline: pipeline) }
 

@@ -12,7 +12,7 @@ RSpec.describe Evidences::EvidenceEntity do
     stub_licensed_features(release_evidence_test_artifacts: true)
 
     pipeline = create(:ci_empty_pipeline, sha: release.sha, project: project)
-    build = create(:ci_build, :test_reports, pipeline: pipeline)
+    build = create(:ci_build, :test_reports, :with_artifacts_paths, pipeline: pipeline)
     evidence_hash = described_class.represent(evidence, report_artifacts: [build]).as_json
 
     expect(evidence_hash[:release][:report_artifacts]).not_to be_empty
