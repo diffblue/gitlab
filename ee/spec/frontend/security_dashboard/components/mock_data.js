@@ -246,3 +246,39 @@ export const generateVulnerabilities = () => [
 ];
 
 export const vulnerabilities = generateVulnerabilities();
+
+export const projectVulnerabilityScanners = {
+  data: {
+    project: {
+      id: 'gid://gitlab/Project/26',
+      vulnerabilityScanners: {
+        nodes: [
+          {
+            id: 'gid://gitlab/Vulnerabilities::Scanner/155',
+            externalId: 'eslint',
+            name: 'ESLint',
+            vendor: 'GitLab',
+            reportType: 'SAST',
+            __typename: 'VulnerabilityScanner',
+          },
+          {
+            id: 'gid://gitlab/Vulnerabilities::Scanner/156',
+            externalId: 'find_sec_bugs',
+            name: 'Find Security Bugs',
+            vendor: 'GitLab',
+            reportType: 'SAST',
+            __typename: 'VulnerabilityScanner',
+          },
+          {
+            id: 'gid://gitlab/Vulnerabilities::Scanner/247',
+            externalId: 'gitlab-manual-vulnerability-report',
+            name: 'manually-created-vulnerability',
+            vendor: 'GitLab',
+            reportType: 'GENERIC',
+            __typename: 'VulnerabilityScanner',
+          },
+        ],
+      },
+    },
+  },
+};
