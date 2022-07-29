@@ -11,7 +11,7 @@
     disallowed_values: AllowedEmailDomain::RESERVED_DOMAINS.to_json } }
   = f.hidden_field :allowed_email_domains_list, id: hidden_input_id
   .form-text.text-muted
-    - learn_more_link = link_to(_('Learn more'), help_page_path('user/group/index', anchor: 'restrict-group-access-by-domain'))
+    - learn_more_link = link_to(_('Learn more'), help_page_path('user/group/access_and_permissions', anchor: 'restrict-group-access-by-domain'))
     = _('Only verified users with an email address in any of these domains can be added to the group. Multiple domains are supported.')
     %br
     = _('Some common domains are not allowed. %{learn_more_link}.').html_safe % { learn_more_link: learn_more_link }
