@@ -37,6 +37,8 @@ module EE
 
         class Namespace < ::ApplicationRecord
           include Routable
+          include ::Namespaces::Traversal::Recursive
+          include ::Namespaces::Traversal::Linear
 
           self.table_name = 'namespaces'
           self.inheritance_column = :_type_disabled
@@ -46,6 +48,10 @@ module EE
 
           def self.polymorphic_name
             'Namespace'
+          end
+
+          def container_repositories_size_cache_key
+            "namespaces:#{id}:container_repositories_size"
           end
         end
 
@@ -64,6 +70,8 @@ module EE
 
           alias_method :parent, :namespace
           alias_attribute :parent_id, :namespace_id
+
+          delegate :root_ancestor, to: :namespace, allow_nil: true
 
           # rubocop:disable Layout/LineLength
           has_many :container_repositories,
@@ -105,21 +113,40 @@ module EE
 
           self.table_name = 'project_statistics'
 
-          belongs_to :project
+          belongs_to :project,
+          class_name: '::EE::Gitlab::BackgroundMigration::BackfillProjectStatisticsContainerRepositorySize::Project'
 
           def refresh_container_registry_size!
-            self.container_registry_size = project.container_repositories_size || 0
-            log_info(
-              'Got ContainerRegistrySize for project_id',
-              project_id: project.id,
-              container_registry_size: self.container_registry_size
-            )
+            log_line = 'No need to update project_statistics as container_repositories_size is non-zero'
+
+            if self.container_registry_size == 0
+              self.container_registry_size = project.container_repositories_size || 0
+              log_line = 'Got ContainerRegistrySize for project_id'
+            end
+
+            log_with_data(log_line)
+
             return if self.container_registry_size == 0
 
             save!
 
-            ::Namespaces::ScheduleAggregationWorker.perform_async(project.namespace_id)
-            log_info('Scheduled Namespaces::ScheduleAggregationWorker', namespace_id: project.namespace_id)
+            # delete namespace cache to ensure RootNamespaceStatistic updates
+            Rails.cache.delete(project.root_ancestor.container_repositories_size_cache_key)
+
+            ::Namespaces::ScheduleAggregationWorker.perform_async(project.root_ancestor.id)
+            log_with_data('Scheduled Namespaces::ScheduleAggregationWorker')
+          end
+
+          private
+
+          def log_with_data(log_line)
+            log_info(
+              log_line,
+              project_id: project.id,
+              container_registry_size: self.container_registry_size,
+              namespace_id: project.root_ancestor.id,
+              project_full_path: project.full_path
+            )
           end
         end
 
@@ -135,9 +162,9 @@ module EE
               ).select(:project_id).distinct
             }
           ) do |sub_batch|
-            stats = ProjectStatistics.where(project_id: sub_batch).where(container_registry_size: 0)
+            stats = ProjectStatistics.where(project_id: sub_batch)
             stats.each do |stat|
-              # Should trigger an API hit to get the actual `container_registry_size` for the project, via
+              # Should trigger an API hit to get the actual `container_registry_size` for the project if required, via
               # `project.container_repositories_size`
               # Should schedule a worker to do the same for `RootNamespaceStatistic`
               stat.refresh_container_registry_size!
