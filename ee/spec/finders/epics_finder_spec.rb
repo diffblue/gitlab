@@ -265,6 +265,25 @@ RSpec.describe EpicsFinder do
                 # - With feature flag enabled ran 26 queries
                 expect(count_with_feature_flag.count).to be < count_without_feature_flag.count
               end
+
+              context 'when find_epics_performance_improvement is disabled' do
+                let(:finder_params) { { include_descendant_groups: true, include_ancestor_groups: true, group_id: subgroup2.id } }
+
+                before do
+                  stub_feature_flags(find_epics_performance_improvement: false)
+                end
+
+                # Added to fulfill test coverage, can be removed when
+                # find_epics_performance_improvement flag roll out.
+                it 'filters an array of confidential groups instead of relation' do
+                  subgroup.add_reporter(current_user)
+
+                  expect(finder).to receive(:groups_with_confidential_access)
+                    .with(an_instance_of(Array)).and_call_original
+                  expect(finder.execute)
+                    .to contain_exactly(subgroup_epic, subgroup2_epic, confidential_epic)
+                end
+              end
             end
 
             context 'when user is a member of an ancestor group that is not the root ancestor' do

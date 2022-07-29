@@ -211,7 +211,14 @@ class EpicsFinder < IssuableFinder
   def with_confidentiality_access_check(epics, groups)
     return epics if can_read_all_epics_in_related_groups?
 
-    epics.not_confidential_or_in_groups(groups_with_confidential_access(groups))
+    group_set =
+      if Group.can_use_epics_filtering_optimization?(groups)
+        related_groups
+      else
+        groups
+      end
+
+    epics.not_confidential_or_in_groups(groups_with_confidential_access(group_set))
   end
 
   def groups_with_confidential_access(groups)
