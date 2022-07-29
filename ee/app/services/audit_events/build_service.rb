@@ -64,6 +64,7 @@ module AuditEvents
     def base_details_payload
       @additional_details.merge({
         author_name: @author.name,
+        author_class: @author.class.name,
         target_id: @target.id,
         target_type: @target.type,
         target_details: @target_details || @target.details,
@@ -73,6 +74,7 @@ module AuditEvents
 
     def build_author(author)
       author.id = -2 if author.instance_of? DeployToken
+      author.id = -3 if author.instance_of? DeployKey
 
       author.impersonated? ? ::Gitlab::Audit::ImpersonatedAuthor.new(author) : author
     end

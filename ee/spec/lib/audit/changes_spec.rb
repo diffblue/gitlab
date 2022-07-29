@@ -71,6 +71,7 @@ RSpec.describe Audit::Changes do
         expect(audit_event.entity_type).to eq(user.class.name)
         expect(audit_event.details).to eq({ change: :name,
                                             author_name: current_user.name,
+                                            author_class: current_user.class.name,
                                             from: "Donald Duck",
                                             to: "Scrooge McDuck",
                                             target_details: user.name,

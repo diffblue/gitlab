@@ -61,6 +61,7 @@ RSpec.describe AppSec::Dast::Profiles::CreateService do
           expect(audit_event.target_details).to eq(profile.name)
           expect(audit_event.details).to eq({
             author_name: developer.name,
+            author_class: developer.class.name,
             custom_message: 'Added DAST profile',
             target_id: profile.id,
             target_type: 'Dast::Profile',
@@ -113,6 +114,7 @@ RSpec.describe AppSec::Dast::Profiles::CreateService do
             expect(audit_event.target_type).to eq('Dast::ProfileSchedule')
             expect(audit_event.details).to eq({
               author_name: developer.name,
+              author_class: developer.class.name,
               custom_message: 'Added DAST profile schedule',
               target_id: schedule.id,
               target_type: 'Dast::ProfileSchedule',
