@@ -76,7 +76,7 @@ describe('ScanResultPolicy', () => {
 
   describe('with isSelected set to true', () => {
     it('renders the view details button with expanded related icon', () => {
-      expect(findIcon().props('name')).toBe('chevron-down');
+      expect(findIcon().props('name')).toBe('chevron-up');
       expect(findButton().text()).toBe('View details');
     });
   });
@@ -87,7 +87,7 @@ describe('ScanResultPolicy', () => {
     });
 
     it('renders the view details button with collapsed related icon', () => {
-      expect(findIcon().props('name')).toBe('chevron-up');
+      expect(findIcon().props('name')).toBe('chevron-down');
       expect(findButton().text()).toBe('View details');
     });
   });
