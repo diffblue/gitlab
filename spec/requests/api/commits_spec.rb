@@ -238,10 +238,26 @@ RSpec.describe API::Commits do
           end
         end
 
-        context 'when per_page is 0' do
-          let(:per_page) { 0 }
+        context 'when pagination params are invalid' do
+          let_it_be(:project) { create(:project, :empty_repo) }
 
-          it_behaves_like '400 response'
+          using RSpec::Parameterized::TableSyntax
+
+          where(:page, :per_page, :error_message) do
+            0   | 1   | 'page does not have a valid value'
+            -1  | 1   | 'page does not have a valid value'
+            'a' | 1   | 'page is invalid'
+            1   | 0   | 'per_page does not have a valid value'
+            1   | -1  | 'per_page does not have a valid value'
+            1   | 'a' | 'per_page is invalid'
+          end
+
+          with_them do
+            it 'returns 400 response' do
+              expect(response).to have_gitlab_http_status(:bad_request)
+              expect(json_response['error']).to eq(error_message)
+            end
+          end
         end
       end
 
