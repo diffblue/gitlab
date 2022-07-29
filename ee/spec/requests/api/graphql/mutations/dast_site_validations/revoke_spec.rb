@@ -7,8 +7,8 @@ RSpec.describe 'Creating a DAST Site Token' do
 
   let_it_be(:project) { create(:project) }
   let_it_be(:current_user) { create(:user) }
-  let_it_be(:dast_site_token) { create(:dast_site_token, project: project)}
-  let_it_be(:dast_site_validation) { create(:dast_site_validation, state: :passed, dast_site_token: dast_site_token)}
+  let_it_be(:dast_site_token) { create(:dast_site_token, project: project) }
+  let_it_be(:dast_site_validation) { create(:dast_site_validation, state: :passed, dast_site_token: dast_site_token) }
 
   let(:mutation_name) { :dast_site_validation_revoke }
 

@@ -78,7 +78,7 @@ RSpec.describe 'Querying an Iteration' do
         end
 
         with_them do
-          it { is_expected.to include({ "burnupTimeSeries" => [{ "scopeCount" => expected_scope_count }] })}
+          it { is_expected.to include({ "burnupTimeSeries" => [{ "scopeCount" => expected_scope_count }] }) }
         end
       end
 
@@ -98,7 +98,7 @@ RSpec.describe 'Querying an Iteration' do
           end
 
           with_them do
-            it { is_expected.to include({ "burnupTimeSeries" => [{ "scopeCount" => expected_scope_count }] })}
+            it { is_expected.to include({ "burnupTimeSeries" => [{ "scopeCount" => expected_scope_count }] }) }
           end
         end
 

@@ -234,7 +234,7 @@ RSpec.describe API::EpicLinks do
   end
 
   describe 'DELETE /groups/:id/epics/:epic_iid/epics' do
-    let!(:child_epic) { create(:epic, group: group, parent: epic)}
+    let!(:child_epic) { create(:epic, group: group, parent: epic) }
     let(:url) { "/groups/#{group.path}/epics/#{epic.iid}/epics/#{child_epic.id}" }
     let(:features_when_forbidden) { { epics: false } }
 

@@ -15,7 +15,7 @@ RSpec.describe Mutations::Vulnerabilities::DestroyExternalIssueLink do
     end
 
     context 'when user does not have permissions to destroy external issue link' do
-      it { expect {subject}.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable) }
+      it { expect { subject }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable) }
     end
 
     context 'when user has permission to destroy external issue link' do

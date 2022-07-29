@@ -13,8 +13,8 @@ RSpec.describe 'Updating an epic tree' do
   let(:epic2) { create(:epic, group: group, parent: base_epic, relative_position: 20) }
   let(:issue1) { create(:issue, project: project) }
   let(:issue2) { create(:issue, project: project) }
-  let(:epic_issue1) { create(:epic_issue, epic: base_epic, issue: issue1, relative_position: 10)}
-  let(:epic_issue2) { create(:epic_issue, epic: base_epic, issue: issue2, relative_position: 20)}
+  let(:epic_issue1) { create(:epic_issue, epic: base_epic, issue: issue1, relative_position: 10) }
+  let(:epic_issue2) { create(:epic_issue, epic: base_epic, issue: issue2, relative_position: 20) }
 
   let(:mutation) do
     graphql_mutation(:epic_tree_reorder, variables)

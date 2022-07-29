@@ -80,7 +80,7 @@ RSpec.describe API::GroupVariables do
         end
 
         context 'a variable with the same key and scope exists already' do
-          let!(:variable) { create(:ci_group_variable, group: group, key: 'KEY', environment_scope: 'production')}
+          let!(:variable) { create(:ci_group_variable, group: group, key: 'KEY', environment_scope: 'production') }
 
           it 'does not create a variable' do
             expect { subject }.not_to change { group.variables.count }
@@ -101,7 +101,7 @@ RSpec.describe API::GroupVariables do
         end
 
         context 'a variable with the same key and scope exists already' do
-          let!(:variable) { create(:ci_group_variable, group: group, key: 'KEY', environment_scope: '*')}
+          let!(:variable) { create(:ci_group_variable, group: group, key: 'KEY', environment_scope: '*') }
 
           it 'does not create a variable' do
             expect { subject }.not_to change { group.variables.count }
@@ -136,7 +136,7 @@ RSpec.describe API::GroupVariables do
         end
 
         context 'a variable with the same key and scope exists already' do
-          let!(:conflicting_variable) { create(:ci_group_variable, group: group, key: variable.key, environment_scope: 'production')}
+          let!(:conflicting_variable) { create(:ci_group_variable, group: group, key: variable.key, environment_scope: 'production') }
 
           it 'does not update the variable' do
             subject

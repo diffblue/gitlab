@@ -98,7 +98,7 @@ RSpec.describe 'getting Incident Management on-call shifts' do
       response_participants = oncall_rotation_response['participants']['nodes']
       expect(response_participants.size).to eq(2)
 
-      new_user_participant = response_participants.detect {|h| h.dig('user', 'username') == new_user.username }
+      new_user_participant = response_participants.detect { |h| h.dig('user', 'username') == new_user.username }
       expect(new_user_participant['colorPalette']).to eq('blue')
       expect(new_user_participant['colorWeight']).to eq('500')
 

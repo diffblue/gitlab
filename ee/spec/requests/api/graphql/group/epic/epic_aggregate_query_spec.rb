@@ -6,7 +6,7 @@ RSpec.describe 'Epic aggregates (count and weight)' do
   include GraphqlHelpers
 
   let_it_be(:current_user) { create(:user) }
-  let_it_be(:ancestor) { create(:group, :public)}
+  let_it_be(:ancestor) { create(:group, :public) }
   let_it_be(:group) { create(:group, :public, parent: ancestor) }
   let_it_be(:parent_epic) { create(:epic, group: ancestor, title: 'parent epic') }
 
@@ -39,7 +39,7 @@ RSpec.describe 'Epic aggregates (count and weight)' do
   context 'count and weight totals' do
     subject { graphql_data.dig('group', 'epics', 'nodes') }
 
-    let_it_be(:subgroup) { create(:group, :private, parent: group)}
+    let_it_be(:subgroup) { create(:group, :private, parent: group) }
     let_it_be(:project) { create(:project, namespace: group) }
 
     let_it_be(:epic_with_issues) { create(:epic, group: group, parent: parent_epic, title: 'epic with issues') }

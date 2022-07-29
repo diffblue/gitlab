@@ -19,8 +19,8 @@ RSpec.describe 'Git LFS API and storage' do
     }.compact
   end
 
-  let(:authorization) { }
-  let(:sendfile) { }
+  let(:authorization) {}
+  let(:sendfile) {}
 
   let(:sample_oid) { lfs_object.oid }
   let(:sample_size) { lfs_object.size }

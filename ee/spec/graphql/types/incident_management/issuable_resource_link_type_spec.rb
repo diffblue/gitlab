@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe GitlabSchema.types['IssuableResourceLink'] do
   specify { expect(described_class.graphql_name).to eq('IssuableResourceLink') }
 
-  specify { expect(described_class).to require_graphql_authorizations(:admin_issuable_resource_link)}
+  specify { expect(described_class).to require_graphql_authorizations(:admin_issuable_resource_link) }
 
   it 'exposes expected fields' do
     expected_fields = %i[

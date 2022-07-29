@@ -41,7 +41,7 @@ RSpec.describe API::Analytics::CodeReviewAnalytics do
       it 'returns list of open MRs with pagination headers' do
         api_call
 
-        expect(json_response.map { |mr| mr['id']}).to match_array([merge_request_1.id, merge_request_2.id, merge_request_3.id])
+        expect(json_response.map { |mr| mr['id'] }).to match_array([merge_request_1.id, merge_request_2.id, merge_request_3.id])
         expect(json_response.first.keys)
           .to include(*%w[id iid web_url created_at milestone review_time author approved_by notes_count diff_stats])
         expect(response.headers).to include(*%w[X-Per-Page X-Page X-Next-Page X-Prev-Page X-Total X-Total-Pages])
@@ -53,7 +53,7 @@ RSpec.describe API::Analytics::CodeReviewAnalytics do
         it 'applies filter' do
           api_call
 
-          expect(json_response.map { |mr| mr['id']}).to match_array([merge_request_3.id])
+          expect(json_response.map { |mr| mr['id'] }).to match_array([merge_request_3.id])
         end
       end
 

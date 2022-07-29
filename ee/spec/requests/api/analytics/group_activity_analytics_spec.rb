@@ -44,7 +44,7 @@ RSpec.describe API::Analytics::GroupActivityAnalytics do
     end
 
     context 'when `group_path` is not specified' do
-      let(:params) { }
+      let(:params) {}
 
       it 'returns `bad_request`' do
         expect(response).to have_gitlab_http_status(:bad_request)

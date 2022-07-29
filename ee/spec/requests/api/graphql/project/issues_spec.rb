@@ -187,7 +187,7 @@ RSpec.describe 'getting an issue list for a project' do
       nodes = graphql_data.dig('project', 'issues', 'nodes')
       node = nodes.find { |r| r['id'] == issue.to_global_id.to_s }
 
-      expect(node['blockedByIssues']['nodes']).to match_array expected_blocking_issues.map { |i| { "id" => i.to_global_id.to_s }}
+      expect(node['blockedByIssues']['nodes']).to match_array expected_blocking_issues.map { |i| { "id" => i.to_global_id.to_s } }
     end
 
     def expect_blocked_count(issue, expected_blocked, expected_blocked_count)
