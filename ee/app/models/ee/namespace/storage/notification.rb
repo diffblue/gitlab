@@ -7,8 +7,9 @@ module EE
         include ::ActiveSupport::NumberHelper
         include ::Gitlab::Utils::StrongMemoize
 
-        def initialize(namespace, user)
-          @root_namespace = namespace.root_ancestor
+        def initialize(context, user)
+          @context = context
+          @root_namespace = context.root_ancestor
           @user = user
           @root_storage_size = root_namespace.root_storage_size
         end
@@ -16,7 +17,7 @@ module EE
         def show?
           return false unless ::Gitlab::CurrentSettings.should_check_namespace_plan?
           return false unless user.present?
-          return false unless user.can?(:admin_namespace, root_namespace)
+          return false unless user.can?(:maintainer_access, context)
           return false if alert_level == :none
 
           root_storage_size.enforce_limit?
@@ -33,7 +34,7 @@ module EE
 
         private
 
-        attr_reader :root_namespace, :root_storage_size, :user
+        attr_reader :context, :root_namespace, :root_storage_size, :user
 
         USAGE_THRESHOLDS = {
           none: 0.0,
