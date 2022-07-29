@@ -8,8 +8,8 @@ RSpec.describe 'New/edit issue', :js do
   include FormHelper
 
   let!(:project)   { create(:project) }
-  let!(:user)      { create(:user)}
-  let!(:user2)     { create(:user)}
+  let!(:user)      { create(:user) }
+  let!(:user2)     { create(:user) }
   let!(:milestone) { create(:milestone, project: project) }
   let!(:label)     { create(:label, project: project) }
   let!(:label2)    { create(:label, project: project) }

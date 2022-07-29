@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe 'Manually create a todo item from epic', :js do
   let(:group) { create(:group) }
   let(:epic) { create(:epic, group: group) }
-  let(:user) { create(:user)}
+  let(:user) { create(:user) }
 
   before do
     stub_licensed_features(epics: true)

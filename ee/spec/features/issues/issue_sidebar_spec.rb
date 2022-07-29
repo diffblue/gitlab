@@ -9,7 +9,7 @@ RSpec.describe 'Issue Sidebar' do
   let_it_be(:group) { create(:group, :nested) }
   let_it_be(:project) { create(:project, :public, namespace: group) }
   let_it_be(:project_without_group) { create(:project, :public) }
-  let_it_be(:user) { create(:user)}
+  let_it_be(:user) { create(:user) }
   let_it_be(:label) { create(:label, project: project, title: 'bug') }
   let_it_be(:issue) { create(:labeled_issue, project: project, labels: [label]) }
   let_it_be(:issue_no_group) { create(:labeled_issue, project: project_without_group, labels: [label]) }

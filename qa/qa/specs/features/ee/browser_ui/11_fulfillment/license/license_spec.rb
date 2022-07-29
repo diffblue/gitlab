@@ -18,7 +18,7 @@ module QA
       it 'shows up in subscription page', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347607' do
         Gitlab::Page::Admin::Subscription.perform do |subscription|
           aggregate_failures do
-            expect { subscription.subscription_details?}.to eventually_be_truthy.within(max_duration: 60)
+            expect { subscription.subscription_details? }.to eventually_be_truthy.within(max_duration: 60)
             expect(subscription.name).to eq(user)
             expect(subscription.company).to include(company)
             expect(subscription.plan).to eq(plan[:name].capitalize)

@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe 'Group issues page' do
   let(:group) { create(:group) }
-  let(:project) { create(:project, :public, group: group)}
+  let(:project) { create(:project, :public, group: group) }
 
   context 'bulk editing', :js do
     let(:user_in_group) { create(:group_member, :maintainer, user: create(:user), group: group ).user }

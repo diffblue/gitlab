@@ -4,7 +4,7 @@ require "spec_helper"
 
 RSpec.describe "Issues > User edits issue", :js do
   let!(:project)   { create(:project) }
-  let!(:user)      { create(:user)}
+  let!(:user)      { create(:user) }
   let!(:milestone) { create(:milestone, project: project) }
   let!(:label)     { create(:label, project: project) }
   let!(:issue)     { create(:issue, project: project, assignees: [user], milestone: milestone) }
