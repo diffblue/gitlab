@@ -435,6 +435,8 @@ group :test do
   gem 'capybara-screenshot', '~> 1.0.22'
   gem 'selenium-webdriver', '~> 3.142'
 
+  gem 'graphlyte', '~> 1.0.0'
+
   gem 'shoulda-matchers', '~> 5.1.0', require: false
   gem 'email_spec', '~> 2.2.0'
   gem 'webmock', '~> 3.9.1'
