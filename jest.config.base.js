@@ -185,5 +185,6 @@ module.exports = (path, options = {}) => {
       IS_EE,
       IS_JH,
     },
+    testRunner: 'jest-jasmine2',
   };
 };
