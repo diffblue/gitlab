@@ -78,7 +78,7 @@ export default {
           return;
         }
 
-        // If there is a code line hash in the URL we render witch the simple viewer
+        // If there is a code line hash in the URL we render with the simple viewer
         if (urlHash && urlHash.startsWith('L')) {
           this.switchViewer(SIMPLE_BLOB_VIEWER);
           return;
