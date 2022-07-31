@@ -8,6 +8,8 @@ module Integrations
     include ReactivelyCached
     extend Gitlab::Utils::Override
 
+    after_save :ensure_ssl_verification
+
     ENDPOINT = "https://buildkite.com"
 
     field :project_url,
@@ -46,6 +48,14 @@ module Integrations
     # https://gitlab.com/gitlab-org/gitlab/-/issues/222808
     def enable_ssl_verification=(_value)
       self.properties = properties.except('enable_ssl_verification') # Remove unused key
+    end
+
+    def ensure_ssl_verification
+      return unless service_hook
+
+      service_hook.url = hook_url if service_hook.url != hook_url # Avoid reencryption
+      service_hook.enable_ssl_verification = true # SSL verification for buildkite should always be enabled
+      service_hook.save! if service_hook.changed?
     end
 
     override :hook_url
