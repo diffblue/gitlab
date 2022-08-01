@@ -20,20 +20,20 @@ RSpec.describe MergeRequests::ApprovalService do
         allow(merge_request.approvals).to receive(:new).and_return(double(save: false))
       end
 
-      it 'does not create an approval note' do
-        expect(SystemNoteService).not_to receive(:approve_mr)
+      it 'does not reset approvals cache' do
+        expect(merge_request).not_to receive(:reset_approval_cache!)
 
         service.execute(merge_request)
-      end
-
-      it 'does not mark pending todos as done' do
-        service.execute(merge_request)
-
-        expect(todo.reload).to be_pending
       end
     end
 
     context 'with valid approval' do
+      it 'resets the cache for approvals' do
+        expect(merge_request).to receive(:reset_approval_cache!)
+
+        service.execute(merge_request)
+      end
+
       it 'creates an approval note' do
         allow(merge_request).to receive(:approvals_left).and_return(1)
 
@@ -48,21 +48,6 @@ RSpec.describe MergeRequests::ApprovalService do
         service.execute(merge_request)
 
         expect(todo.reload).to be_done
-      end
-
-      it 'resets the cache for approvals' do
-        expect(merge_request).to receive(:reset_approval_cache!)
-
-        service.execute(merge_request)
-      end
-
-      it 'creates approve MR event' do
-        expect_next_instance_of(EventCreateService) do |instance|
-          expect(instance).to receive(:approve_mr)
-            .with(merge_request, user)
-        end
-
-        service.execute(merge_request)
       end
 
       it 'sends the audit streaming event' do
@@ -117,29 +102,44 @@ RSpec.describe MergeRequests::ApprovalService do
         end
       end
 
-      context 'approvals metrics calculation' do
-        context 'when code_review_analytics project feature is available' do
-          before do
-            stub_licensed_features(code_review_analytics: true)
-          end
-
-          it 'schedules RefreshApprovalsData' do
-            expect(::Analytics::RefreshApprovalsData)
-              .to receive_message_chain(:new, :execute)
-
-            service.execute(merge_request)
-          end
+      context 'async_after_approval feature flag is disabled' do
+        before do
+          stub_feature_flags(async_after_approval: false)
         end
 
-        context 'when code_review_analytics is not available' do
-          before do
-            stub_licensed_features(code_review_analytics: false)
+        it 'creates approve MR event' do
+          expect_next_instance_of(EventCreateService) do |instance|
+            expect(instance).to receive(:approve_mr)
+              .with(merge_request, user)
           end
 
-          it 'does not schedule for RefreshApprovalsData' do
-            expect(::Analytics::RefreshApprovalsData).not_to receive(:new)
+          service.execute(merge_request)
+        end
 
-            service.execute(merge_request)
+        context 'approvals metrics calculation' do
+          context 'when code_review_analytics project feature is available' do
+            before do
+              stub_licensed_features(code_review_analytics: true)
+            end
+
+            it 'schedules RefreshApprovalsData' do
+              expect(::Analytics::RefreshApprovalsData)
+                .to receive_message_chain(:new, :execute)
+
+              service.execute(merge_request)
+            end
+          end
+
+          context 'when code_review_analytics is not available' do
+            before do
+              stub_licensed_features(code_review_analytics: false)
+            end
+
+            it 'does not schedule for RefreshApprovalsData' do
+              expect(::Analytics::RefreshApprovalsData).not_to receive(:new)
+
+              service.execute(merge_request)
+            end
           end
         end
       end
