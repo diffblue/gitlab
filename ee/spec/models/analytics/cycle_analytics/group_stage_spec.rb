@@ -71,6 +71,7 @@ RSpec.describe Analytics::CycleAnalytics::GroupStage do
     let(:action) { "database_event_#{property}" }
     let(:value_stream) { create(:cycle_analytics_group_value_stream) }
     let(:feature_flag_name) { :product_intelligence_database_event_tracking }
+    let(:group_stage) { described_class.create!(stage_params) }
     let(:stage_params) do
       {
         group: namespace,
@@ -81,21 +82,38 @@ RSpec.describe Analytics::CycleAnalytics::GroupStage do
       }
     end
 
-    let(:group_stage) { described_class.create!(stage_params) }
-    let(:extra) { group_stage.filtered_record_attributes }
+    let(:record_tracked_attributes) do
+      {
+        "id" => group_stage.id,
+        "created_at" => group_stage.created_at,
+        "updated_at" => group_stage.updated_at,
+        "relative_position" => group_stage.relative_position,
+        "start_event_identifier" => group_stage.start_event_identifier,
+        "end_event_identifier" => group_stage.end_event_identifier,
+        "group_id" => group_stage.group_id,
+        "start_event_label_id" => group_stage.start_event_label_id,
+        "end_event_label_id" => group_stage.end_event_label_id,
+        "hidden" => group_stage.hidden,
+        "custom" => group_stage.custom,
+        "name" => group_stage.name,
+        "group_value_stream_id" => group_stage.group_value_stream_id
+      }
+    end
 
     describe '#create' do
       it_behaves_like 'Snowplow event tracking' do
-        subject(:new_group_stage) { group_stage }
-
         let(:property) { 'create' }
+        let(:extra) { record_tracked_attributes }
+
+        subject(:new_group_stage) { group_stage }
       end
     end
 
-    describe '#update' do
+    describe '#update', :freeze_time do
       it_behaves_like 'Snowplow event tracking' do
         subject(:create_group_stage) { group_stage.update!(name: 'st 2') }
 
+        let(:extra) { record_tracked_attributes.merge('name' => 'st 2') }
         let(:property) { 'update' }
       end
     end
@@ -104,6 +122,7 @@ RSpec.describe Analytics::CycleAnalytics::GroupStage do
       it_behaves_like 'Snowplow event tracking' do
         subject(:delete_stage_group) { group_stage.destroy! }
 
+        let(:extra) { record_tracked_attributes }
         let(:property) { 'destroy' }
       end
     end
