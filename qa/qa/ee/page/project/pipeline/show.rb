@@ -24,7 +24,10 @@ module QA
             end
 
             def click_on_security
-              click_element(:security_tab)
+              retry_until(sleep_interval: 3, message: "Security report didn't open") do
+                click_element(:security_tab)
+                has_element?(:security_report_content)
+              end
             end
 
             def click_on_licenses
