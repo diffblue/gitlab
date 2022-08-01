@@ -41,7 +41,7 @@ module QA
       end
 
       def install_agentk(cluster, agent_token)
-        cluster.create_secret(agent_token.secret, 'gitlab-agent-token')
+        cluster.create_secret(agent_token.token, 'gitlab-agent-token')
 
         kas_wss_address = "wss://kas.staging.gitlab.com"
         agent_manifest_template = read_agent_fixture('agentk-manifest.yaml.erb')
