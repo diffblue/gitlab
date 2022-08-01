@@ -71,7 +71,7 @@ module Geo
 
       resync_retry_at, resync_retry_count =
         if reverify
-          [*calculate_next_retry_attempt(registry, type)]
+          Array(calculate_next_retry_attempt(registry, type))
         end
 
       registry.update!(
