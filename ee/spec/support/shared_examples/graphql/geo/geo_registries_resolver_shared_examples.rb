@@ -7,8 +7,8 @@ RSpec.shared_examples_for 'a Geo registries resolver' do |registry_factory_name|
   describe '#resolve' do
     let_it_be(:secondary) { create(:geo_node) }
     # rubocop:disable Rails/SaveBang
-    let_it_be(:registry1) { create(registry_factory_name) }
-    let_it_be(:registry2) { create(registry_factory_name) }
+    let_it_be(:registry1) { create(registry_factory_name, :synced) }
+    let_it_be(:registry2) { create(registry_factory_name, :synced) }
     let_it_be(:registry3) { create(registry_factory_name) }
     # rubocop:enable Rails/SaveBang
 
@@ -35,6 +35,15 @@ RSpec.shared_examples_for 'a Geo registries resolver' do |registry_factory_name|
               requested_ids = [registry3.to_global_id, registry1.to_global_id]
               args = { ids: requested_ids }
               expected = [registry1, registry3]
+
+              expect(resolve_registries(args).to_a).to eq(expected)
+            end
+          end
+
+          context 'when the replication_state argument is present' do
+            it 'returns registries with requested replication state, in order' do
+              args = { replication_state: ::Types::Geo::ReplicableStateEnum.values['SYNCED'].value }
+              expected = [registry1, registry2]
 
               expect(resolve_registries(args).to_a).to eq(expected)
             end

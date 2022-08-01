@@ -20,9 +20,8 @@ module Geo
         return registry_class.none unless can?(current_user, :read_all_geo)
 
         registry_entries = init_collection
-
         registry_entries = by_id(registry_entries)
-
+        registry_entries = by_replication_state(registry_entries)
         registry_entries.ordered
       end
 
@@ -39,10 +38,15 @@ module Geo
       end
 
       def by_id(registry_entries)
-        return registry_entries if params[:ids].nil?
-        return registry_class.none if params[:ids].empty?
+        return registry_entries if params[:ids].blank?
 
         registry_entries.id_in(params[:ids])
+      end
+
+      def by_replication_state(registry_entries)
+        return registry_entries if params[:replication_state].blank?
+
+        registry_entries.with_state(params[:replication_state])
       end
     end
   end
