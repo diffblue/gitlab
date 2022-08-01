@@ -7,7 +7,9 @@ module Types
       graphql_name 'BoardEpic'
       description 'Represents an epic on an issue board'
 
-      field :user_preferences, Types::Boards::EpicUserPreferencesType, null: true,
+      field :user_preferences,
+            Types::Boards::EpicUserPreferencesType,
+            null: true,
             description: 'User preferences for the epic on the issue board.'
 
       def user_preferences

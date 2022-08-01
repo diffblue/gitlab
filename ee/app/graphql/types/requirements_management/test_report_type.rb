@@ -8,14 +8,11 @@ module Types
 
       authorize :read_requirement
 
-      field :id, GraphQL::Types::ID, null: false,
-            description: 'ID of the test report.'
+      field :id, GraphQL::Types::ID, null: false, description: 'ID of the test report.'
 
-      field :state, TestReportStateEnum, null: false,
-            description: 'State of the test report.'
+      field :state, TestReportStateEnum, null: false, description: 'State of the test report.'
 
-      field :author, UserType, null: true,
-            description: 'Author of the test report.'
+      field :author, UserType, null: true, description: 'Author of the test report.'
 
       field :created_at, TimeType, null: false,
             description: 'Timestamp of when the test report was created.'

@@ -22,7 +22,9 @@ module Types
     field :agent, ::Types::Clusters::AgentType, null: true,
           description: 'Kubernetes Agent which performed the scan.'
 
-    field :cluster_id, ::Types::GlobalIDType[::Clusters::Cluster], null: true,
+    field :cluster_id,
+          ::Types::GlobalIDType[::Clusters::Cluster],
+          null: true,
           description: 'ID of the Cluster integration which was used to perform the scan.'
 
     def agent

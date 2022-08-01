@@ -10,11 +10,11 @@ module Types
       description 'Represents epic board list metadata'
 
       field :epics_count, GraphQL::Types::Int, null: true,
-            description: 'Count of epics in the list.'
+                                               description: 'Count of epics in the list.'
 
       field :total_weight, GraphQL::Types::Int, null: true,
-            description: 'Total weight of all issues in the list.',
-            feature_flag: :epic_board_total_weight
+                                                description: 'Total weight of all issues in the list.',
+                                                feature_flag: :epic_board_total_weight
     end
     # rubocop: enable Graphql/AuthorizeTypes
   end

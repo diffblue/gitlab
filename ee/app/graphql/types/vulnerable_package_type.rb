@@ -7,6 +7,6 @@ module Types
     description 'Represents a vulnerable package. Used in vulnerability dependency data'
 
     field :name, GraphQL::Types::String, null: true,
-          description: 'Name of the vulnerable package.'
+                                         description: 'Name of the vulnerable package.'
   end
 end

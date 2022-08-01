@@ -6,8 +6,7 @@ module Types
     graphql_name 'VulnerabilitiesCountByDay'
     description 'Represents the count of vulnerabilities by severity on a particular day. This data is retained for 365 days'
 
-    field :date, GraphQL::Types::ISO8601Date, null: false,
-          description: 'Date for the count.'
+    field :date, GraphQL::Types::ISO8601Date, null: false, description: 'Date for the count.'
 
     field :total, GraphQL::Types::Int, null: false,
           description: 'Total number of vulnerabilities on a particular day.'

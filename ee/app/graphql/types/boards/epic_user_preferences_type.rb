@@ -8,7 +8,7 @@ module Types
       description 'Represents user preferences for a board epic'
 
       field :collapsed, GraphQL::Types::Boolean, null: false,
-            description: 'Indicates epic should be displayed as collapsed.'
+        description: 'Indicates epic should be displayed as collapsed.'
     end
     # rubocop: enable Graphql/AuthorizeTypes
   end

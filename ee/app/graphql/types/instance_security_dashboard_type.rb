@@ -19,8 +19,8 @@ module Types
           resolver: ::Resolvers::Vulnerabilities::ScannersResolver
 
     field :vulnerability_severities_count, ::Types::VulnerabilitySeveritiesCountType, null: true,
-          description: 'Counts for each vulnerability severity from projects selected in Instance Security Dashboard.',
-          resolver: ::Resolvers::VulnerabilitySeveritiesCountResolver
+                                                                                      description: 'Counts for each vulnerability severity from projects selected in Instance Security Dashboard.',
+                                                                                      resolver: ::Resolvers::VulnerabilitySeveritiesCountResolver
 
     field :vulnerability_grades,
           [Types::VulnerableProjectsByGradeType],
