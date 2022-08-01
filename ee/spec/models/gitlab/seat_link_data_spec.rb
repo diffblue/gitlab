@@ -20,7 +20,7 @@ RSpec.describe Gitlab::SeatLinkData do
   describe '#initialize' do
     let_it_be(:utc_time) { Time.utc(2020, 3, 12, 12, 00) }
     let_it_be(:license_start_date) { utc_time.to_date - 1.month }
-    let_it_be(:current_license) { create_current_license(starts_at: license_start_date)}
+    let_it_be(:current_license) { create_current_license(starts_at: license_start_date) }
 
     let_it_be(:max_before_today) { 15 }
     let_it_be(:yesterday_billable_users_count) { 12 }

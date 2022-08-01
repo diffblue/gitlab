@@ -128,7 +128,7 @@ RSpec.describe RequirementsManagement::TestReport do
     let_it_be(:user) { create(:user) }
     let_it_be(:build_author) { create(:user) }
     let_it_be(:build) { create(:ci_build, author: build_author) }
-    let_it_be(:requirement_issue) { create(:requirement_issue)}
+    let_it_be(:requirement_issue) { create(:requirement_issue) }
 
     let(:now) { Time.current }
 

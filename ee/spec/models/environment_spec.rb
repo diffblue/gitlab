@@ -114,7 +114,7 @@ RSpec.describe Environment, :use_clean_rails_memory_store_caching do
       end
 
       context 'when the user is nil' do
-        let(:user) { }
+        let(:user) {}
 
         it { is_expected.to be_truthy }
       end
@@ -167,7 +167,7 @@ RSpec.describe Environment, :use_clean_rails_memory_store_caching do
       end
 
       context 'when the user is nil' do
-        let(:user) { }
+        let(:user) {}
 
         it { is_expected.to be_falsy }
       end
@@ -385,7 +385,7 @@ RSpec.describe Environment, :use_clean_rails_memory_store_caching do
     let_it_be(:protected_environment) { create(:protected_environment, name: environment.name, project: project) }
 
     let(:user) { qa_user }
-    let(:represented_as) { }
+    let(:represented_as) {}
 
     before_all do
       qa_group.add_developer(qa_user)

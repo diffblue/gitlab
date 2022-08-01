@@ -5,12 +5,12 @@ RSpec.describe ProjectMember do
   it { is_expected.to include_module(EE::ProjectMember) }
 
   it_behaves_like 'member validations' do
-    let(:entity) { create(:project, group: group)}
+    let(:entity) { create(:project, group: group) }
   end
 
   context 'validates GMA enforcement' do
     let(:group) { create(:group_with_managed_accounts, :private) }
-    let(:entity) { create(:project, namespace: group)}
+    let(:entity) { create(:project, namespace: group) }
 
     before do
       stub_feature_flags(group_managed_accounts: true)

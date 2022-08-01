@@ -59,9 +59,9 @@ RSpec.describe Analytics::DevopsAdoption::Snapshot, type: :model do
 
   describe '.for_timespan' do
     let_it_be(:first_date) { DateTime.parse('2021-05-10').end_of_month }
-    let_it_be(:snapshot1) { create(:devops_adoption_snapshot, recorded_at: 1.day.ago, end_time: first_date)}
-    let_it_be(:snapshot2) { create(:devops_adoption_snapshot, recorded_at: 1.day.ago, end_time: first_date + 1.month)}
-    let_it_be(:snapshot3) { create(:devops_adoption_snapshot, recorded_at: 1.day.ago, end_time: first_date + 2.months)}
+    let_it_be(:snapshot1) { create(:devops_adoption_snapshot, recorded_at: 1.day.ago, end_time: first_date) }
+    let_it_be(:snapshot2) { create(:devops_adoption_snapshot, recorded_at: 1.day.ago, end_time: first_date + 1.month) }
+    let_it_be(:snapshot3) { create(:devops_adoption_snapshot, recorded_at: 1.day.ago, end_time: first_date + 2.months) }
 
     it 'returns snapshots for given timespan', :aggregate_failures do
       expect(described_class.for_timespan(to: first_date + 1.week)).to match_array([snapshot1])

@@ -129,7 +129,7 @@ RSpec.describe Vulnerabilities::Feedback do
               end
 
               it 'does not raise an error' do
-                expect {subject}.not_to raise_error
+                expect { subject }.not_to raise_error
               end
             end
           end

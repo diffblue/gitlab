@@ -360,7 +360,7 @@ RSpec.describe AuditEvent, type: :model do
   end
 
   describe '#formatted_details' do
-    subject(:event) { create(:group_audit_event, details: { change: 'membership_lock', from: false, to: true, ip_address: '127.0.0.1' })}
+    subject(:event) { create(:group_audit_event, details: { change: 'membership_lock', from: false, to: true, ip_address: '127.0.0.1' }) }
 
     it 'converts value of `to` and `from` in `details` to string' do
       expect(event.formatted_details[:to]).to eq('true')

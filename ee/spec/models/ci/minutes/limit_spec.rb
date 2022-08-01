@@ -61,7 +61,7 @@ RSpec.describe Ci::Minutes::Limit do
   end
 
   describe '#monthly' do
-    subject { limit.monthly}
+    subject { limit.monthly }
 
     where(:namespace_monthly_limit, :application_monthly_limit, :result) do
       20  | 100 | 20

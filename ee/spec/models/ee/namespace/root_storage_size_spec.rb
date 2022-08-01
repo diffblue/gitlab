@@ -9,7 +9,7 @@ RSpec.describe EE::Namespace::RootStorageSize, :saas do
   let(:namespace) { create(:namespace) }
   let(:current_size) { 50.megabytes }
   let(:model) { described_class.new(namespace) }
-  let(:create_statistics) { create(:namespace_root_storage_statistics, namespace: namespace, storage_size: current_size)}
+  let(:create_statistics) { create(:namespace_root_storage_statistics, namespace: namespace, storage_size: current_size) }
   let_it_be(:ultimate_plan, reload: true) { create(:ultimate_plan) }
   let_it_be(:plan_limits, reload: true) { create(:plan_limits, plan: ultimate_plan, storage_size_limit: 100) }
 

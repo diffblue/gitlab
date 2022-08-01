@@ -325,7 +325,7 @@ RSpec.describe Epic do
       let_it_be(:parent_epic) { create(:epic, group: group, parent: root_epic) }
 
       let(:epic) { build(:epic, group: group) }
-      let(:child_epic1) { create(:epic, group: group, parent: epic)}
+      let(:child_epic1) { create(:epic, group: group, parent: epic) }
 
       it 'returns true when total depth after adding will not exceed limit' do
         epic.parent = parent_epic
@@ -568,9 +568,9 @@ RSpec.describe Epic do
     let(:project2) { create(:project, group: group) }
 
     let!(:epic) { create(:epic, group: group) }
-    let!(:issue) { create(:issue, project: project)}
-    let!(:lone_issue) { create(:issue, project: project)}
-    let!(:other_issue) { create(:issue, project: project2)}
+    let!(:issue) { create(:issue, project: project) }
+    let!(:lone_issue) { create(:issue, project: project) }
+    let!(:other_issue) { create(:issue, project: project2) }
     let!(:epic_issues) do
       [
         create(:epic_issue, epic: epic, issue: issue),
@@ -883,7 +883,7 @@ RSpec.describe Epic do
       stub_licensed_features(epics: true)
     end
 
-    let(:epics) { [visible_epic]}
+    let(:epics) { [visible_epic] }
 
     context 'with an admin when admin mode is enabled', :enable_admin_mode do
       let(:user) { build(:user, admin: true) }

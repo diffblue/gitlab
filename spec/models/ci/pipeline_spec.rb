@@ -3652,7 +3652,7 @@ RSpec.describe Ci::Pipeline, :mailer, factory_default: :keep do
     end
 
     context 'when pipeline is a triggered pipeline' do
-      let!(:upstream) { create(:ci_pipeline, project: create(:project), upstream_of: pipeline)}
+      let!(:upstream) { create(:ci_pipeline, project: create(:project), upstream_of: pipeline) }
 
       it 'returns self id' do
         expect(subject).to contain_exactly(pipeline.id)

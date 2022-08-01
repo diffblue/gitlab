@@ -130,7 +130,7 @@ RSpec.describe Member, type: :model do
     describe 'for project members' do
       context 'when project is nested in a group' do
         let(:group) { create(:group) }
-        let(:project) { create(:project, namespace: group)}
+        let(:project) { create(:project, namespace: group) }
         let(:member) { create :project_member, source: project }
 
         subject(:group_saml_identity) { member.group_saml_identity }
@@ -139,16 +139,16 @@ RSpec.describe Member, type: :model do
       end
 
       context 'when project is nested in a subgroup' do
-        let(:parent_group) { create(:group)}
+        let(:parent_group) { create(:group) }
         let(:group) { create(:group, parent: parent_group) }
-        let(:project) { create(:project, namespace: group)}
+        let(:project) { create(:project, namespace: group) }
         let(:member) { create :project_member, source: project }
 
         it_behaves_like 'member with group saml identity on the top level'
       end
 
       context 'when project is nested in a personal namespace' do
-        let(:project) { create(:project, namespace: create(:user).namespace )}
+        let(:project) { create(:project, namespace: create(:user).namespace ) }
         let(:member) { create :project_member, source: project }
 
         it 'returns nothing' do
@@ -165,7 +165,7 @@ RSpec.describe Member, type: :model do
     end
 
     let_it_be(:subgroup) { create(:group, parent: group) }
-    let_it_be(:project, refind: true) { create(:project, namespace: group)}
+    let_it_be(:project, refind: true) { create(:project, namespace: group) }
     let_it_be(:user) { create(:user) }
 
     before_all do
@@ -278,7 +278,7 @@ RSpec.describe Member, type: :model do
   context 'check if free user cap has been reached', :saas do
     let_it_be(:group, refind: true) { create(:group_with_plan, plan: :free_plan) }
     let_it_be(:subgroup) { create(:group, parent: group) }
-    let_it_be(:project, refind: true) { create(:project, namespace: group)}
+    let_it_be(:project, refind: true) { create(:project, namespace: group) }
     let_it_be(:user) { create(:user) }
 
     before_all do
@@ -448,7 +448,7 @@ RSpec.describe Member, type: :model do
     let(:member) { group.members.last }
 
     let_it_be(:group, refind: true) { create(:group_with_plan, plan: :free_plan) }
-    let_it_be(:project, refind: true) { create(:project, namespace: group)}
+    let_it_be(:project, refind: true) { create(:project, namespace: group) }
     let_it_be(:active_user) { create(:user) }
     let_it_be(:active_member) { create(:group_member, :maintainer, group: group, user: active_user) }
     let_it_be(:user) { create(:user) }

@@ -169,7 +169,7 @@ RSpec.describe Vulnerabilities::Finding do
       end
 
       context 'without found record' do
-        let(:param) { ::Enums::Vulnerability.report_types['container_scanning']}
+        let(:param) { ::Enums::Vulnerability.report_types['container_scanning'] }
 
         it 'returns empty collection' do
           is_expected.to be_empty
@@ -492,7 +492,7 @@ RSpec.describe Vulnerabilities::Finding do
         let(:vulnerability) { create(:vulnerability, findings: [finding]) }
 
         context 'when there is issue link present' do
-          let!(:issue_link) { create(:vulnerabilities_issue_link, vulnerability: vulnerability, issue: issue)}
+          let!(:issue_link) { create(:vulnerabilities_issue_link, vulnerability: vulnerability, issue: issue) }
 
           it 'returns associated feedback' do
             expect(finding.issue_feedback).to eq(issue_feedback)
@@ -1047,7 +1047,7 @@ RSpec.describe Vulnerabilities::Finding do
         let(:same_hash) { false }
         let(:same_location) { false }
         let(:create_scope_offset) { false }
-        let(:same_scope_offset) { false}
+        let(:same_scope_offset) { false }
 
         let(:create_signatures) do
           signature1_hash = create(

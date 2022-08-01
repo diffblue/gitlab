@@ -943,7 +943,7 @@ RSpec.describe GitlabSubscription, :saas do
     end
 
     context 'when a subscription was purchased after the EoA rollout date' do
-      let(:start_date) { eoa_rollout_date + 1.day}
+      let(:start_date) { eoa_rollout_date + 1.day }
 
       it { is_expected.to be_falsey }
     end

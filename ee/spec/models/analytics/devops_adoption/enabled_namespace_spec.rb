@@ -35,7 +35,7 @@ RSpec.describe Analytics::DevopsAdoption::EnabledNamespace, type: :model do
     let_it_be(:enabled_namespace1) { create(:devops_adoption_enabled_namespace) }
     let_it_be(:enabled_namespace2) { create(:devops_adoption_enabled_namespace) }
     let_it_be(:enabled_namespace3) { create(:devops_adoption_enabled_namespace) }
-    let_it_be(:namespaces) { [enabled_namespace1.namespace, enabled_namespace2.namespace]}
+    let_it_be(:namespaces) { [enabled_namespace1.namespace, enabled_namespace2.namespace] }
 
     it 'selects enabled_namespaces for given namespaces only' do
       expect(enabled_namespaces).to match_array([enabled_namespace1, enabled_namespace2])
@@ -48,7 +48,7 @@ RSpec.describe Analytics::DevopsAdoption::EnabledNamespace, type: :model do
     let_it_be(:enabled_namespace1) { create(:devops_adoption_enabled_namespace) }
     let_it_be(:enabled_namespace2) { create(:devops_adoption_enabled_namespace) }
     let_it_be(:enabled_namespace3) { create(:devops_adoption_enabled_namespace) }
-    let_it_be(:namespaces) { [enabled_namespace1.display_namespace, enabled_namespace2.display_namespace]}
+    let_it_be(:namespaces) { [enabled_namespace1.display_namespace, enabled_namespace2.display_namespace] }
 
     it 'selects enabled_namespaces for given namespaces only' do
       expect(enabled_namespaces).to match_array([enabled_namespace1, enabled_namespace2])

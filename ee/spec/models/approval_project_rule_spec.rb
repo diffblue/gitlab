@@ -320,7 +320,7 @@ RSpec.describe ApprovalProjectRule do
 
     describe "#audit_creation after approval rule is created" do
       let(:action!) { create(:approval_project_rule, approvals_required: 1) }
-      let(:message) {'Added approval rule with number of required approvals of 1'}
+      let(:message) { 'Added approval rule with number of required approvals of 1' }
 
       it_behaves_like 'audit event queue'
     end

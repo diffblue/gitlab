@@ -621,10 +621,10 @@ RSpec.describe Iteration do
     let_it_be(:plan_cadence) { create(:iterations_cadence, title: 'plan cadence', group: group1) }
     let_it_be(:product_cadence) { create(:iterations_cadence, title: 'product management', group: subgroup) }
     let_it_be(:cadence) { create(:iterations_cadence, title: 'cadence', group: group2) }
-    let_it_be(:plan_iteration1) { create(:iteration, :with_due_date, title: "Iteration 1", iterations_cadence: plan_cadence, start_date: 1.week.ago)}
-    let_it_be(:plan_iteration2) { create(:iteration, :with_due_date, title: "My iteration", iterations_cadence: plan_cadence, start_date: 2.weeks.ago)}
-    let_it_be(:product_iteration) { create(:iteration, :with_due_date, title: "Iteration 2", iterations_cadence: product_cadence, start_date: 1.week.from_now)}
-    let_it_be(:cadence_iteration) { create(:iteration, :with_due_date, iterations_cadence: cadence, start_date: Date.today)}
+    let_it_be(:plan_iteration1) { create(:iteration, :with_due_date, title: "Iteration 1", iterations_cadence: plan_cadence, start_date: 1.week.ago) }
+    let_it_be(:plan_iteration2) { create(:iteration, :with_due_date, title: "My iteration", iterations_cadence: plan_cadence, start_date: 2.weeks.ago) }
+    let_it_be(:product_iteration) { create(:iteration, :with_due_date, title: "Iteration 2", iterations_cadence: product_cadence, start_date: 1.week.from_now) }
+    let_it_be(:cadence_iteration) { create(:iteration, :with_due_date, iterations_cadence: cadence, start_date: Date.today) }
 
     shared_examples "search returns correct records" do
       it { is_expected.to contain_exactly(*expected_iterations) }
@@ -853,7 +853,7 @@ RSpec.describe Iteration do
 
     context 'when dates for an existing iteration change' do
       context 'when iteration dates go from future to past' do
-        let(:iteration) { create(:iteration, group: iterations_cadence.group, iterations_cadence: iterations_cadence, start_date: 2.weeks.from_now.utc.to_date, due_date: 3.weeks.from_now.utc.to_date)}
+        let(:iteration) { create(:iteration, group: iterations_cadence.group, iterations_cadence: iterations_cadence, start_date: 2.weeks.from_now.utc.to_date, due_date: 3.weeks.from_now.utc.to_date) }
 
         it 'sets state to closed' do
           expect(iteration.state).to eq('upcoming')
@@ -867,7 +867,7 @@ RSpec.describe Iteration do
       end
 
       context 'when iteration dates go from past to future' do
-        let(:iteration) { create(:iteration, group: iterations_cadence.group, iterations_cadence: iterations_cadence, start_date: 2.weeks.ago.utc.to_date, due_date: 1.week.ago.utc.to_date)}
+        let(:iteration) { create(:iteration, group: iterations_cadence.group, iterations_cadence: iterations_cadence, start_date: 2.weeks.ago.utc.to_date, due_date: 1.week.ago.utc.to_date) }
 
         it 'sets state to upcoming' do
           expect(iteration.state).to eq('closed')

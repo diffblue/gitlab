@@ -46,7 +46,7 @@ RSpec.describe Security::OrchestrationPolicyRuleSchedule do
     end
 
     context 'when there are no runnable schedules' do
-      let!(:policy_rule_schedule) { }
+      let!(:policy_rule_schedule) {}
 
       it 'returns an empty array' do
         is_expected.to be_empty

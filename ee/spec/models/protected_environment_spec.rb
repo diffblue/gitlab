@@ -156,7 +156,7 @@ RSpec.describe ProtectedEnvironment do
       end
 
       context 'when user is nil' do
-        let(:user) { }
+        let(:user) {}
 
         it { is_expected.to eq(Gitlab::Access::NO_ACCESS) }
       end
@@ -215,7 +215,7 @@ RSpec.describe ProtectedEnvironment do
     subject(:protected_environments) { described_class.sorted_by_name }
 
     it "sorts protected environments by name" do
-      %w(staging production development).each {|name| create(:protected_environment, name: name)}
+      %w(staging production development).each { |name| create(:protected_environment, name: name) }
 
       expect(protected_environments.map(&:name)).to eq %w(development production staging)
     end
@@ -232,8 +232,8 @@ RSpec.describe ProtectedEnvironment do
       removed_environment = create(:protected_environment, project: project, name: 'removed environment')
 
       expect(protected_environments).to match_array [production, removed_environment]
-      expect(protected_environments.find {|e| e.name == 'production'}.environment_id).to eq environment.id
-      expect(protected_environments.find {|e| e.name == 'removed environment'}.environment_id).to be_nil
+      expect(protected_environments.find { |e| e.name == 'production' }.environment_id).to eq environment.id
+      expect(protected_environments.find { |e| e.name == 'removed environment' }.environment_id).to be_nil
     end
   end
 
@@ -336,7 +336,7 @@ RSpec.describe ProtectedEnvironment do
     end
 
     context 'when environment does not exist' do
-      let!(:environment) { }
+      let!(:environment) {}
 
       it 'raises an error' do
         expect { subject }.to raise_error(ArgumentError)
@@ -389,7 +389,7 @@ RSpec.describe ProtectedEnvironment do
         end
 
         context 'when project-level protection does not exist' do
-          let!(:protected_environment) { }
+          let!(:protected_environment) {}
 
           it 'has only group-level protection' do
             is_expected.to match_array([group_protected_environment])

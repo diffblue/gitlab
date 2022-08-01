@@ -175,8 +175,8 @@ RSpec.describe ApprovalState do
 
     context 'with multiple scan_finding rules' do
       before do
-        2.times {create_rule({ rule_type: :report_approver, report_type: :scan_finding })}
-        2.times {create_rule({ rule_type: :report_approver, report_type: :scan_finding, orchestration_policy_idx: 1 })}
+        2.times { create_rule({ rule_type: :report_approver, report_type: :scan_finding }) }
+        2.times { create_rule({ rule_type: :report_approver, report_type: :scan_finding, orchestration_policy_idx: 1 }) }
       end
 
       it 'returns one rule for each orchestration_policy_idx' do

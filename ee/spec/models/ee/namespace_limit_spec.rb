@@ -99,7 +99,7 @@ RSpec.describe NamespaceLimit do
     it { is_expected.to validate_presence_of(:namespace) }
 
     context 'namespace_is_root_namespace' do
-      let(:namespace_limit) { build(:namespace_limit, namespace: namespace)}
+      let(:namespace_limit) { build(:namespace_limit, namespace: namespace) }
 
       context 'when associated namespace is root' do
         let(:namespace) { build(:group, parent: nil) }
