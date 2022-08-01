@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Groups::Memberships::ExportService do
   let(:group) { create(:group) }
-  let(:owner_member) { create(:group_member, :owner, group: group)}
+  let(:owner_member) { create(:group_member, :owner, group: group) }
   let(:current_user) { owner_member.user }
   let(:service) { described_class.new(container: group, current_user: current_user) }
 

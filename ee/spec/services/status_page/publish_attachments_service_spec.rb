@@ -45,7 +45,7 @@ RSpec.describe StatusPage::PublishAttachmentsService do
 
       context 'when in markdown' do
         let(:upload_secret) { '734b8524a16d44eb0ff28a2c2e4ff3c0' }
-        let(:image_file_name) { 'tanuki.png'}
+        let(:image_file_name) { 'tanuki.png' }
         let(:upload_path) { "/uploads/#{upload_secret}/#{image_file_name}" }
         let(:markdown_field) { "![tanuki](#{upload_path})" }
         let(:status_page_upload_path) { Gitlab::StatusPage::Storage.upload_path(issue.iid, upload_secret, image_file_name) }

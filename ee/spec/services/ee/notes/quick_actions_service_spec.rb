@@ -8,7 +8,7 @@ RSpec.describe Notes::QuickActionsService do
   let(:assignee) { create(:user) }
   let(:reviewer) { create(:user) }
   let(:issue) { create(:issue, project: project) }
-  let(:epic) { create(:epic, group: group)}
+  let(:epic) { create(:epic, group: group) }
 
   let(:service) { described_class.new(project, user) }
 
@@ -204,8 +204,8 @@ RSpec.describe Notes::QuickActionsService do
 
     describe '/label' do
       let(:project) { nil }
-      let!(:bug) { create(:group_label, title: 'bug', group: group)}
-      let!(:project_label) { create(:label, title: 'project_label', project: create(:project, group: group))}
+      let!(:bug) { create(:group_label, title: 'bug', group: group) }
+      let!(:project_label) { create(:label, title: 'project_label', project: create(:project, group: group)) }
       let(:note_text) { "/label ~bug ~project_label" }
       let(:note) { create(:note, noteable: epic, note: note_text) }
 
@@ -236,8 +236,8 @@ RSpec.describe Notes::QuickActionsService do
 
     describe '/unlabel' do
       let(:project) { nil }
-      let!(:bug) { create(:group_label, title: 'bug', group: group)}
-      let!(:feature) { create(:group_label, title: 'feature', group: group)}
+      let!(:bug) { create(:group_label, title: 'bug', group: group) }
+      let!(:feature) { create(:group_label, title: 'feature', group: group) }
       let(:note_text) { "/unlabel ~bug" }
       let(:note) { create(:note, noteable: epic, note: note_text) }
 

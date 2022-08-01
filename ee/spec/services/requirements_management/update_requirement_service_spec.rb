@@ -9,7 +9,7 @@ RSpec.describe RequirementsManagement::UpdateRequirementService do
   let(:new_title) { 'new title' }
   let(:new_description) { 'new description' }
 
-  let_it_be(:project) { create(:project)}
+  let_it_be(:project) { create(:project) }
   let_it_be(:user) { create(:user) }
 
   let!(:requirement) { create(:requirement, project: project, title: title, description: description, state: :opened) }

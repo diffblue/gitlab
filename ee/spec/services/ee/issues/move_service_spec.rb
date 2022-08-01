@@ -122,7 +122,7 @@ RSpec.describe Issues::MoveService do
           let(:category) { 'issues_edit' }
           let(:action) { 'g_project_management_issue_changed_epic' }
           let(:project) { new_project }
-          let(:namespace) { new_project.namespace}
+          let(:namespace) { new_project.namespace }
           let(:feature_flag_name) { :route_hll_to_snowplow_phase2 }
         end
       end

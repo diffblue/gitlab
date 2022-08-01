@@ -55,12 +55,12 @@ RSpec.describe ExternalStatusChecks::UpdateService do
         stub_licensed_features(audit_events: true)
       end
       let_it_be(:master_branch) { create(:protected_branch, project: project, name: 'master') }
-      let_it_be(:main_branch) {create(:protected_branch, project: project, name: 'main')}
+      let_it_be(:main_branch) { create(:protected_branch, project: project, name: 'main') }
       let_it_be(:external_status_check, reload: true) { create(:external_status_check, name: 'QA', project: project, protected_branches: []) }
 
       context 'when a branch is added', :request_store do
         context 'when a new branch is added' do
-          let_it_be(:params) {{ id: project.id, check_id: external_status_check.id, protected_branch_ids: [main_branch.id] } }
+          let_it_be(:params) { { id: project.id, check_id: external_status_check.id, protected_branch_ids: [main_branch.id] } }
 
           it 'logs an audit event' do
             expect { subject }.to change { AuditEvent.count }.by(1)
@@ -73,7 +73,7 @@ RSpec.describe ExternalStatusChecks::UpdateService do
             external_status_check.update!(protected_branches: [main_branch])
           end
 
-          let_it_be(:params) {{ id: project.id, check_id: external_status_check.id, protected_branch_ids: [main_branch.id, master_branch.id] } }
+          let_it_be(:params) { { id: project.id, check_id: external_status_check.id, protected_branch_ids: [main_branch.id, master_branch.id] } }
 
           it 'logs an audit event' do
             expect { subject }.to change { AuditEvent.count }.by(1)
@@ -88,7 +88,7 @@ RSpec.describe ExternalStatusChecks::UpdateService do
             external_status_check.update!(protected_branches: [main_branch])
           end
 
-          let_it_be(:params) {{ id: project.id, check_id: external_status_check.id, protected_branch_ids: [] } }
+          let_it_be(:params) { { id: project.id, check_id: external_status_check.id, protected_branch_ids: [] } }
 
           it 'logs an audit event' do
             expect { subject }.to change { AuditEvent.count }.by(1)
@@ -101,7 +101,7 @@ RSpec.describe ExternalStatusChecks::UpdateService do
             external_status_check.update!(protected_branches: [main_branch, master_branch])
           end
 
-          let_it_be(:params) {{ id: project.id, check_id: external_status_check.id, protected_branch_ids: [main_branch.id] } }
+          let_it_be(:params) { { id: project.id, check_id: external_status_check.id, protected_branch_ids: [main_branch.id] } }
 
           it 'logs an audit event' do
             expect { subject }.to change { AuditEvent.count }.by(1)

@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Sitemap::CreateService do
   describe '#execute' do
-    subject { described_class.new.execute}
+    subject { described_class.new.execute }
 
     it 'returns the successful service response with the sitemap content' do
       sitemap_file = Gitlab::Sitemaps::SitemapFile.new

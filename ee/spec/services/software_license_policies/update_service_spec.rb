@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe SoftwareLicensePolicies::UpdateService do
-  let(:project) { create(:project)}
+  let(:project) { create(:project) }
 
   let(:user) do
     create(:user).tap do |u|

@@ -16,8 +16,8 @@ RSpec.describe Epics::TransferService do
 
     context 'when old_group is present' do
       let_it_be(:project) { create(:project, namespace: old_group) }
-      let_it_be(:epic) { create(:epic, group: old_group, title: 'Epic 1')}
-      let_it_be(:other_epic) { create(:epic, group: old_group, title: 'Epic 2')}
+      let_it_be(:epic) { create(:epic, group: old_group, title: 'Epic 1') }
+      let_it_be(:other_epic) { create(:epic, group: old_group, title: 'Epic 2') }
       let_it_be(:issue1_with_epic) { create(:issue, project: project, epic: epic) }
       let_it_be(:issue2_with_epic) { create(:issue, project: project, epic: epic) }
       let_it_be(:issue_with_other_epic) { create(:issue, project: project, epic: other_epic) }

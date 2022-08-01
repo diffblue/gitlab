@@ -77,7 +77,7 @@ RSpec.describe ResourceEvents::ChangeWeightService do
     it_behaves_like 'Snowplow event tracking' do
       let(:category) { 'issues_edit' }
       let(:action) { 'g_project_management_issue_weight_changed' }
-      let(:namespace) { issue.project.namespace}
+      let(:namespace) { issue.project.namespace }
       let(:project) { issue.project }
       let(:feature_flag_name) { :route_hll_to_snowplow_phase2 }
     end

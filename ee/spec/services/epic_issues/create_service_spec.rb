@@ -169,7 +169,7 @@ RSpec.describe EpicIssues::CreateService do
           end
 
           context 'when an issue link is given' do
-            subject { assign_issue([Gitlab::Routing.url_helpers.namespace_project_issue_url(namespace_id: issue.project.namespace, project_id: issue.project, id: issue.iid)])}
+            subject { assign_issue([Gitlab::Routing.url_helpers.namespace_project_issue_url(namespace_id: issue.project.namespace, project_id: issue.project, id: issue.iid)]) }
 
             include_examples 'returns success'
           end
@@ -179,7 +179,7 @@ RSpec.describe EpicIssues::CreateService do
             let_it_be(:project2) { create(:project, group: subgroup) }
             let_it_be(:issue) { create(:issue, project: project2) }
 
-            subject { assign_issue([Gitlab::Routing.url_helpers.namespace_project_issue_url(namespace_id: issue.project.namespace, project_id: issue.project, id: issue.iid)])}
+            subject { assign_issue([Gitlab::Routing.url_helpers.namespace_project_issue_url(namespace_id: issue.project.namespace, project_id: issue.project, id: issue.iid)]) }
 
             before do
               project2.add_reporter(user)

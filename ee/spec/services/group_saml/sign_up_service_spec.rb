@@ -7,7 +7,7 @@ RSpec.describe GroupSaml::SignUpService do
 
   let(:new_user) { build(:user) }
   let!(:group) { create(:saml_provider).group }
-  let(:session) { { 'oauth_data' => {} }}
+  let(:session) { { 'oauth_data' => {} } }
 
   describe '#execute' do
     let(:linker_spy) { spy('Gitlab::Auth::GroupSaml::IdentityLinker') }

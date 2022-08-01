@@ -8,7 +8,7 @@ RSpec.describe DesignManagement::SaveDesignsService do
   let_it_be(:issue) { create(:issue, project: project) }
   let_it_be(:user) { create(:user) }
   let_it_be(:design_file) { fixture_file_upload('spec/fixtures/rails_sample.jpg') }
-  let_it_be(:design_repository) { ::Gitlab::GlRepository::DESIGN.repository_resolver.call(project)}
+  let_it_be(:design_repository) { ::Gitlab::GlRepository::DESIGN.repository_resolver.call(project) }
 
   subject { described_class.new(project, user, issue: issue, files: [design_file]) }
 

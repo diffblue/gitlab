@@ -80,7 +80,7 @@ RSpec.describe Issuable::BulkUpdateService do
         end
 
         context 'when epic param is incorrect' do
-          let(:external_epic) { create(:epic, group: create(:group, :private))}
+          let(:external_epic) { create(:epic, group: create(:group, :private)) }
           let(:params) do
             {
               issuable_ids: issuables.map(&:id),

@@ -103,7 +103,7 @@ RSpec.describe GitlabSubscriptions::ActivateService do
   end
 
   context 'when not self managed instance' do
-    let(:customer_dot_response) { { success: false, errors: [described_class::ERROR_MESSAGES[:not_self_managed]] }}
+    let(:customer_dot_response) { { success: false, errors: [described_class::ERROR_MESSAGES[:not_self_managed]] } }
 
     it 'returns error' do
       allow(Gitlab).to receive(:com?).and_return(true)

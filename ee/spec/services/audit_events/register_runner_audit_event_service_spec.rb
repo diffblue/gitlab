@@ -45,9 +45,9 @@ RSpec.describe AuditEvents::RegisterRunnerAuditEventService do
         stub_licensed_features(extended_audit_events: true, admin_audit_log: true)
       end
 
-      let(:entity) { }
+      let(:entity) {}
       let(:extra_attrs) { {} }
-      let(:target_details) { }
+      let(:target_details) {}
       let(:attrs) do
         common_attrs.deep_merge(
           author_name: nil,
@@ -119,7 +119,7 @@ RSpec.describe AuditEvents::RegisterRunnerAuditEventService do
       let_it_be(:entity) { create(:group) }
 
       let(:extra_attrs) { {} }
-      let(:target_details) { }
+      let(:target_details) {}
       let(:attrs) do
         common_attrs.deep_merge(
           author_name: author[0...described_class::SAFE_TOKEN_LENGTH],
@@ -179,7 +179,7 @@ RSpec.describe AuditEvents::RegisterRunnerAuditEventService do
         let_it_be(:entity) { create(:project) }
 
         let(:extra_attrs) { {} }
-        let(:target_details) { }
+        let(:target_details) {}
         let(:attrs) do
           common_attrs.deep_merge(
             author_name: author[0...described_class::SAFE_TOKEN_LENGTH],

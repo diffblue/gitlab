@@ -351,7 +351,7 @@ RSpec.describe ApprovalRules::CreateService do
   end
 
   context 'audit event is streamed with correct event type', :request_store do
-    let_it_be(:user) { create(:user)}
+    let_it_be(:user) { create(:user) }
     let_it_be(:group) { create(:group) }
     let_it_be(:project) { create(:project, creator: user, group: group) }
     let_it_be(:new_approvers) { create_list(:user, 2) }

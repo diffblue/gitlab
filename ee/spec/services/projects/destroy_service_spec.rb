@@ -31,7 +31,7 @@ RSpec.describe Projects::DestroyService do
     end
 
     it 'decrements capacity if mirror was scheduled' do
-      expect {result}.to change { Gitlab::Mirror.available_capacity }.from(max_capacity - 1).to(max_capacity)
+      expect { result }.to change { Gitlab::Mirror.available_capacity }.from(max_capacity - 1).to(max_capacity)
     end
   end
 

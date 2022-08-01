@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe MergeTrains::CheckStatusService do
   let_it_be(:project) { create(:project, :repository, merge_pipelines_enabled: true, merge_trains_enabled: true) }
-  let_it_be(:maintainer) { create(:user).tap { |u| project.add_maintainer(u)} }
+  let_it_be(:maintainer) { create(:user).tap { |u| project.add_maintainer(u) } }
 
   let(:service) { described_class.new(project, maintainer) }
   let(:previous_ref) { 'refs/heads/master' }

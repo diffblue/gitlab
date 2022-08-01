@@ -20,7 +20,7 @@ RSpec.describe Security::Ingestion::Tasks::IngestFindings do
       expected_finding_ids = Array.new(3) { an_instance_of(Integer) }.unshift(existing_finding.id)
       expected_vulnerability_ids = [existing_finding.vulnerability_id, nil, nil, nil]
 
-      expect {ingest_findings }.to change { finding_maps.map(&:finding_id) }.from(Array.new(4)).to(expected_finding_ids)
+      expect { ingest_findings }.to change { finding_maps.map(&:finding_id) }.from(Array.new(4)).to(expected_finding_ids)
                                .and change { finding_maps.map(&:vulnerability_id) }.from(Array.new(4)).to(expected_vulnerability_ids)
     end
 

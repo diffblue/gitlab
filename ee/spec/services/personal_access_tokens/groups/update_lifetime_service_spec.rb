@@ -6,7 +6,7 @@ RSpec.describe PersonalAccessTokens::Groups::UpdateLifetimeService do
   include ExclusiveLeaseHelpers
 
   describe '#execute', :clean_gitlab_redis_shared_state do
-    let_it_be(:group) { create(:group_with_managed_accounts)}
+    let_it_be(:group) { create(:group_with_managed_accounts) }
 
     subject { described_class.new(group) }
 

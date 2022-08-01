@@ -21,7 +21,7 @@ RSpec.describe AutoMerge::AddToMergeTrainWhenPipelineSucceedsService do
     project.update!(merge_pipelines_enabled: true, merge_trains_enabled: true)
     stub_feature_flags(disable_merge_trains: false)
     stub_licensed_features(merge_trains: true, merge_pipelines: true)
-    allow(AutoMergeProcessWorker).to receive(:perform_async) { }
+    allow(AutoMergeProcessWorker).to receive(:perform_async) {}
     merge_request.update_head_pipeline
   end
 
