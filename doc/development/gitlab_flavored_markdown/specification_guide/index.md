@@ -54,7 +54,7 @@ simultaneous in the same areas of logic. In these situations,
 _GitHub_ Flavored Markdown may be referred to with variable or constant names like
 `ghfm_` to avoid confusion. For example, we use the `ghfm` acronym for the
 [`ghfm_spec_v_0.29.txt` GitHub Flavored Markdown specification file](#github-flavored-markdown-specification)
-which is committed to the `gitlab` repo and used as input to the
+which is committed to the `gitlab` repository and used as input to the
 [`update_specification.rb` script](#update-specificationrb-script).
 
 The original CommonMark specification is referred to as _CommonMark_ (no acronym).
@@ -93,9 +93,7 @@ Within GFM and GLFM respectively, both GitHub and GitLab have two "sets" of Mark
 - Official specification
 - Internal extensions
 
-The following chart shows the taxonomy and terminology of the various specifications.
-
-**Markdown specification taxonomy**:
+The following taxonomy chart shows the taxonomy and terminology of the various specifications:
 
 ```mermaid
 graph TD
@@ -107,8 +105,12 @@ GLFM --- GLFS[GLFM internal extensions - e.g. GitLab-specific references]
 
 ##### Official specifications
 
-GFM and GLFM each have an "official specification", which includes both the CommonMark standard as
-well as generic extensions to the CommonMark standard. For example, GFM adds the
+GFM and GLFM each have an official specification, which includes both:
+
+1. The CommonMark standard.
+1. Generic extensions to the CommonMark standard.
+
+For example, GFM adds the
 [`strikethrough` extension](https://github.github.com/gfm/https://github.github.com/gfm/#strikethrough-extension-),
 and GLFM adds the
 [`color chips` extension](../../../user/markdown.md#colors).
@@ -117,8 +119,8 @@ implementation or environment. They can be implemented in any third-party Markdo
 
 ##### Internal extensions
 
-GFM and GLFM each also have a set of "internal extensions". These are not part of the GFM/GLFM
-official specifications, but are part of the GitHub and GitLab internal Markdown renderer/parser
+GFM and GLFM each also have a set of internal extensions. These extensions are not part of the GFM or GLFM
+official specifications, but are part of the GitHub and GitLab internal Markdown renderer and parser
 implementations. These internal extensions are often dependent upon the GitHub or GitLab
 implementations or environments, and may depend upon metadata which is only available via
 interacting with those environments. For example,
@@ -126,8 +128,8 @@ interacting with those environments. For example,
 and
 [GitLab also supports GitLab-specific references](../../../user/markdown.md#gitlab-specific-references).
 These may also be implemented by third-party Markdown rendering engines which integrate with
-GitHub or GitLab. For example, editor or IDE plugins which allow the user to directly edit
-Markdown for issues/PRs/MRs within the editor/IDE.
+GitHub or GitLab. For example, editor or IDE plugins which enable the user to directly edit
+Markdown for issues, pull requests, or merge requests within the editor or IDE.
 
 ### Markdown examples
 
@@ -179,7 +181,7 @@ NOTE:
 #### Markdown snapshot testing
 
 _Markdown snapshot testing_ refers to the automated testing performed in
-the GitLab codebase, which is driven by "example_snapshots" fixture data derived from all of
+the GitLab codebase, which is driven by `example_snapshots` fixture data derived from all of
 the examples in the GLFM specification. It consists of both backend RSpec tests and frontend Jest
 tests which use the fixture data. This fixture data is contained in YAML files. These files
 are generated and updated based on the Markdown examples in the specification,
