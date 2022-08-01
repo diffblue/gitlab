@@ -34,6 +34,9 @@ export default () => {
     milestoneTitle,
     mergedAfter,
     mergedBefore,
+    notAuthorUsername,
+    notLabelName,
+    notMilestoneTitle,
   } = container.dataset;
 
   const mergedAfterDate = new Date(mergedAfter);
@@ -66,6 +69,9 @@ export default () => {
       authorUsername,
       labelName: labelName ? labelName.split(',') : null,
       milestoneTitle,
+      notAuthorUsername,
+      notLabelName: notLabelName ? notLabelName.split(',') : null,
+      notMilestoneTitle,
     };
   }
 

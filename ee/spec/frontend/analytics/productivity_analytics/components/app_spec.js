@@ -539,6 +539,9 @@ describe('ProductivityApp component', () => {
       author_username: null,
       milestone_title: null,
       label_name: [],
+      'not[author_username]': null,
+      'not[milestone_title]': null,
+      'not[label_name]': [],
     };
 
     const defaultResults = {
@@ -549,6 +552,9 @@ describe('ProductivityApp component', () => {
       'label_name[]': [],
       author_username: null,
       milestone_title: null,
+      'not[author_username]': null,
+      'not[milestone_title]': null,
+      'not[label_name][]': [],
     };
 
     const shouldSetUrlParams = (result) => {
@@ -625,10 +631,13 @@ describe('ProductivityApp component', () => {
     });
 
     describe.each`
-      paramKey             | resultKey            | value
-      ${'milestone_title'} | ${'milestone_title'} | ${'final-form'}
-      ${'author_username'} | ${'author_username'} | ${'piccolo'}
-      ${'label_name'}      | ${'label_name[]'}    | ${['who-will-win']}
+      paramKey                  | resultKey                 | value
+      ${'milestone_title'}      | ${'milestone_title'}      | ${'final-form'}
+      ${'author_username'}      | ${'author_username'}      | ${'piccolo'}
+      ${'label_name'}           | ${'label_name[]'}         | ${['who-will-win']}
+      ${'not[milestone_title]'} | ${'not[milestone_title]'} | ${'not-final-form'}
+      ${'not[author_username]'} | ${'not[author_username]'} | ${'not-piccolo'}
+      ${'not[label_name]'}      | ${'not[label_name][]'}    | ${['not-who-will-win']}
     `('with the $paramKey filter set', ({ paramKey, resultKey, value }) => {
       beforeEach(() => {
         mockStore.dispatch('filters/setFilters', {

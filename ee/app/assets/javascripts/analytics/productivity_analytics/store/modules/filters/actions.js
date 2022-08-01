@@ -41,17 +41,16 @@ export const setProjectPath = ({ commit, dispatch }, projectPath) => {
   });
 };
 
-export const setFilters = (
-  { commit, dispatch },
-  {
+export const setFilters = ({ commit, dispatch }, data) => {
+  const {
     author_username: authorUsername,
     label_name: labelName,
     milestone_title: milestoneTitle,
     'not[author_username]': notAuthorUsername,
     'not[milestone_title]': notMilestoneTitle,
     'not[label_name]': notLabelName,
-  },
-) => {
+  } = data;
+
   commit(types.SET_FILTERS, {
     authorUsername,
     labelName,

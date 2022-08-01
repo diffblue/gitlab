@@ -9,6 +9,9 @@ export default {
       authorUsername = null,
       labelName = [],
       milestoneTitle = null,
+      notAuthorUsername = null,
+      notLabelName = [],
+      notMilestoneTitle = null,
       mergedAfter,
       mergedBefore,
       minDate,
@@ -19,6 +22,9 @@ export default {
     state.authorUsername = authorUsername;
     state.labelName = labelName;
     state.milestoneTitle = milestoneTitle;
+    state.notAuthorUsername = notAuthorUsername;
+    state.notLabelName = notLabelName;
+    state.notMilestoneTitle = notMilestoneTitle;
     state.startDate = mergedAfter;
     state.endDate = mergedBefore;
     state.minDate = minDate;
