@@ -213,34 +213,58 @@ RSpec.describe ProjectImportState, type: :model do
   end
 
   describe '#mirror_waiting_duration' do
-    it 'returns nil if not mirror' do
-      import_state = create(:import_state, :scheduled)
-
-      expect(import_state.mirror_waiting_duration).to be_nil
-    end
+    let(:import_state) { create(:import_state, :scheduled, :mirror) }
 
     it 'returns in seconds the time spent in the queue' do
-      import_state = create(:import_state, :scheduled, :mirror)
-
       import_state.last_update_started_at = import_state.last_update_scheduled_at + 5.minutes
 
       expect(import_state.mirror_waiting_duration).to eq(300)
     end
+
+    context 'when account does not have a license' do
+      before do
+        stub_licensed_features(repository_mirrors: false)
+      end
+
+      it 'returns in seconds the time spent in the queue' do
+        import_state.last_update_started_at = import_state.last_update_scheduled_at + 1.minute
+
+        expect(import_state.mirror_waiting_duration).to eq(60)
+      end
+    end
+
+    context 'when import state is not mirror' do
+      let(:import_state) { create(:import_state, :scheduled) }
+
+      it { expect(import_state.mirror_waiting_duration).to be_nil }
+    end
   end
 
   describe '#mirror_update_duration' do
-    it 'returns nil if not mirror' do
-      import_state = create(:import_state, :started)
-
-      expect(import_state.mirror_update_duration).to be_nil
-    end
+    let(:import_state) { create(:import_state, :started, :mirror) }
 
     it 'returns in seconds the time spent updating' do
-      import_state = create(:import_state, :started, :mirror)
-
       import_state.last_update_at = import_state.last_update_started_at + 5.minutes
 
       expect(import_state.mirror_update_duration).to eq(300)
+    end
+
+    context 'when account does not have a license' do
+      before do
+        stub_licensed_features(repository_mirrors: false)
+      end
+
+      it 'returns in seconds the time spent in the queue' do
+        import_state.last_update_at = import_state.last_update_started_at + 1.minute
+
+        expect(import_state.mirror_update_duration).to eq(60)
+      end
+    end
+
+    context 'when import state is not mirror' do
+      let(:import_state) { create(:import_state, :scheduled) }
+
+      it { expect(import_state.mirror_update_duration).to be_nil }
     end
   end
 
