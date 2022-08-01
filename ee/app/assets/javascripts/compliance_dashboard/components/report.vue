@@ -3,11 +3,12 @@ import { GlAlert, GlButton, GlLoadingIcon, GlTable, GlLink, GlKeysetPagination }
 import * as Sentry from '@sentry/browser';
 import { s__, __ } from '~/locale';
 import { thWidthClass, sortObjectToString, sortStringToObject } from '~/lib/utils/table_utility';
-import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
 import { DRAWER_Z_INDEX } from '~/lib/utils/constants';
 import UrlSync from '~/vue_shared/components/url_sync.vue';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import SeverityBadge from 'ee/vue_shared/security_reports/components/severity_badge.vue';
+import { formatDate } from '~/lib/utils/datetime/date_format_utility';
+import { ISO_SHORT_FORMAT } from '~/vue_shared/constants';
 import getComplianceViolationsQuery from '../graphql/compliance_violations.query.graphql';
 import { mapViolations } from '../graphql/mappers';
 import { DEFAULT_SORT, GRAPHQL_PAGE_SIZE, DEFAULT_PAGINATION_CURSORS } from '../constants';
@@ -30,7 +31,6 @@ export default {
     MergeRequestDrawer,
     ViolationReason,
     SeverityBadge,
-    TimeAgoTooltip,
     ViolationFilter,
     UrlSync,
   },
@@ -111,6 +111,9 @@ export default {
     },
   },
   methods: {
+    getMergedAtFormattedDate(mergedAt) {
+      return formatDate(mergedAt, ISO_SHORT_FORMAT, true);
+    },
     handleSortChanged(sortState) {
       this.sortParam = sortObjectToString(sortState);
       this.updateUrlQuery({ ...this.urlQuery, sort: this.sortParam });
@@ -275,7 +278,7 @@ export default {
         {{ mergeRequest.title }}
       </template>
       <template #cell(mergedAt)="{ item: { mergeRequest } }">
-        <time-ago-tooltip :time="mergeRequest.mergedAt" />
+        {{ getMergedAtFormattedDate(mergeRequest.mergedAt) }}
       </template>
       <template #table-busy>
         <gl-loading-icon size="lg" color="dark" class="gl-my-5" />
