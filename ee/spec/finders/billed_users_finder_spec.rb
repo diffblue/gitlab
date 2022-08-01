@@ -25,7 +25,7 @@ RSpec.describe BilledUsersFinder do
       let_it_be(:john_smith) { create(:group_member, group: group, user: create(:user, name: 'John Smith')) }
       let_it_be(:john_doe) { create(:group_member, group: group, user: create(:user, name: 'John Doe')) }
       let_it_be(:sophie) { create(:group_member, group: group, user: create(:user, name: 'Sophie Dupont')) }
-      let_it_be(:alice_awaiting) { create(:group_member, :awaiting, :developer, group: group, user: create(:user, name: 'Alice Waiting'))}
+      let_it_be(:alice_awaiting) { create(:group_member, :awaiting, :developer, group: group, user: create(:user, name: 'Alice Waiting')) }
 
       shared_examples 'with awaiting members' do
         context 'when awaiting users are included' do

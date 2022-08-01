@@ -65,7 +65,7 @@ RSpec.describe Security::OrchestrationPolicyRuleScheduleWorker do
 
       def record_preloaded_queries
         recorder = ActiveRecord::QueryRecorder.new { worker.perform }
-        recorder.data.values.flat_map {|v| v[:occurrences]}.select do |query|
+        recorder.data.values.flat_map { |v| v[:occurrences] }.select do |query|
           ['FROM "projects"', 'FROM "users"', 'FROM "security_orchestration_policy_configurations"'].any? do |s|
             query.include?(s)
           end

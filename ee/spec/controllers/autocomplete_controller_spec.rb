@@ -189,7 +189,7 @@ RSpec.describe AutocompleteController do
 
       describe "while searching for a project by namespace" do
         let(:search) { group.path }
-        let!(:expected_results) { group.projects.map { |p| [p.id, 'Project'] }}
+        let!(:expected_results) { group.projects.map { |p| [p.id, 'Project'] } }
 
         include_examples 'has expected results'
       end

@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe 'shared/billings/_eoa_bronze_plan_banner.html.haml' do
   let_it_be(:user) { create(:user) }
 
-  let(:eoa_bronze_plan_end_date) { Date.current + 5.days}
+  let(:eoa_bronze_plan_end_date) { Date.current + 5.days }
 
   stub_feature_flags(show_billing_eoa_banner: true)
 

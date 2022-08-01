@@ -17,7 +17,7 @@ RSpec.describe Clusters::EnvironmentsFinder, '#execute' do
   subject { described_class.new(cluster, current_user).execute }
 
   context 'current_user can read cluster environments' do
-    let(:allowed) { true}
+    let(:allowed) { true }
 
     it { is_expected.to include(environment) }
 

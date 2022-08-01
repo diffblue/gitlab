@@ -44,7 +44,7 @@ RSpec.describe MergeRequestPollWidgetEntity do
     end
 
     context 'when the merge request is not on a merge train' do
-      let!(:merge_train) { }
+      let!(:merge_train) {}
 
       it 'does not have merge train index' do
         expect(subject.as_json).not_to include(:merge_train_index)

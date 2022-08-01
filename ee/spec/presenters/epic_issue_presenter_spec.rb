@@ -8,7 +8,7 @@ RSpec.describe EpicIssuePresenter do
   let(:user)         { create(:user) }
   let(:group)        { create(:group) }
   let(:project)      { create(:project, group: group) }
-  let(:epic)         { create(:epic, group: group)}
+  let(:epic)         { create(:epic, group: group) }
   let(:issue)        { create(:issue, project: project) }
   let!(:epic_issue)  { create(:epic_issue, issue: issue, epic: epic) }
   let(:target_issue) { epic.issues_readable_by(user).first }

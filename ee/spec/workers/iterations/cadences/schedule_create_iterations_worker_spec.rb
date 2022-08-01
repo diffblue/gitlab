@@ -24,7 +24,7 @@ RSpec.describe Iterations::Cadences::ScheduleCreateIterationsWorker, :freeze_tim
     end
 
     context 'when cadences need to be scheduled' do
-      let_it_be(:common_args) { { group: group, start_date: Date.current, duration_in_weeks: 1, iterations_in_advance: 2 }}
+      let_it_be(:common_args) { { group: group, start_date: Date.current, duration_in_weeks: 1, iterations_in_advance: 2 } }
       let_it_be(:scheduled_cadence) { create(:iterations_cadence, **common_args, last_run_date: Date.current + 5.days) }
 
       shared_examples 'CreateIterationsWorker is scheduled on the correct cadence' do

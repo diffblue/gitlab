@@ -78,8 +78,8 @@ RSpec.describe Projects::PipelinesController do
   end
 
   describe 'GET licenses' do
-    let(:licenses_with_html) {get :licenses, format: :html, params: { namespace_id: project.namespace, project_id: project, id: pipeline }}
-    let(:licenses_with_json) {get :licenses, format: :json, params: { namespace_id: project.namespace, project_id: project, id: pipeline }}
+    let(:licenses_with_html) { get :licenses, format: :html, params: { namespace_id: project.namespace, project_id: project, id: pipeline } }
+    let(:licenses_with_json) { get :licenses, format: :json, params: { namespace_id: project.namespace, project_id: project, id: pipeline } }
     let!(:mit_license) { create(:software_license, :mit) }
     let!(:software_license_policy) { create(:software_license_policy, software_license: mit_license, project: project) }
 

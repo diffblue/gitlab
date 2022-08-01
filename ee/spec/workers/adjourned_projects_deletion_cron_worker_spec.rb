@@ -6,7 +6,7 @@ RSpec.describe AdjournedProjectsDeletionCronWorker do
   describe "#perform" do
     subject(:worker) { described_class.new }
 
-    let_it_be(:user) { create(:user)}
+    let_it_be(:user) { create(:user) }
     let_it_be(:marked_for_deletion_at) { 14.days.ago }
 
     let!(:project_marked_for_deletion) { create(:project, marked_for_deletion_at: marked_for_deletion_at, deleting_user: user) }

@@ -286,7 +286,7 @@ RSpec.describe EE::TrialHelper do
           allow(namespace).to receive(:trial_extended_or_reactivated?).and_return(false)
         end
 
-        it { is_expected.to eq({ namespace_id: 1, trial_plan_name: 'Ultimate', action: nil })}
+        it { is_expected.to eq({ namespace_id: 1, trial_plan_name: 'Ultimate', action: nil }) }
       end
 
       context 'when trial can be reactivated' do

@@ -8,7 +8,7 @@ RSpec.describe Dast::ProfilesFinder do
   let_it_be(:dast_profile1) { create(:dast_profile, project: project1) }
   let_it_be(:dast_profile2) { create(:dast_profile, project: project2) }
   let_it_be(:dast_profile3) { create(:dast_profile, project: project1) }
-  let_it_be(:dast_profile_schedule) { create(:dast_profile_schedule, project: project1, dast_profile: dast_profile3)}
+  let_it_be(:dast_profile_schedule) { create(:dast_profile_schedule, project: project1, dast_profile: dast_profile3) }
 
   let(:params) { {} }
 

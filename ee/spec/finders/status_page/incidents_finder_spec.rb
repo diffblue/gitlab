@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe StatusPage::IncidentsFinder do
   let_it_be(:project) { create(:project) }
-  let_it_be(:status_page_setting) { create(:status_page_setting, :enabled, project: project)}
+  let_it_be(:status_page_setting) { create(:status_page_setting, :enabled, project: project) }
 
   let_it_be(:issues) do
     {

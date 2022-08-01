@@ -6,7 +6,7 @@ RSpec.describe AdjournedProjectDeletionWorker do
   describe "#perform" do
     subject(:worker) { described_class.new }
 
-    let(:user) { create(:user)}
+    let(:user) { create(:user) }
     let(:project) { create(:project, deleting_user: user) }
     let(:service) { instance_double(Projects::DestroyService) }
 

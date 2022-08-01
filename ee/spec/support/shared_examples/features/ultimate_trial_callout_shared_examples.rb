@@ -103,7 +103,7 @@ RSpec.shared_examples 'billings ultimate trial callout' do
   context "on a plan that isn't ultimate", :js do
     let(:plans) { { bronze: create(:bronze_plan), premium: create(:premium_plan) } }
 
-    where(case_names: ->(plan_type) {"like #{plan_type}"}, plan_type: [:bronze, :premium])
+    where(case_names: ->(plan_type) { "like #{plan_type}" }, plan_type: [:bronze, :premium])
 
     with_them do
       let(:plan) { plans[plan_type] }

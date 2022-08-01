@@ -129,8 +129,8 @@ RSpec.describe Security::PipelineVulnerabilitiesFinder do
     context 'by report type' do
       context 'when sast' do
         let(:params) { { report_type: %w[sast] } }
-        let(:sast_report_fingerprints) {pipeline.security_reports.reports['sast'].findings.map(&:location).map(&:fingerprint) }
-        let(:sast_report_uuids) {pipeline.security_reports.reports['sast'].findings.map(&:uuid) }
+        let(:sast_report_fingerprints) { pipeline.security_reports.reports['sast'].findings.map(&:location).map(&:fingerprint) }
+        let(:sast_report_uuids) { pipeline.security_reports.reports['sast'].findings.map(&:uuid) }
 
         it 'includes only sast' do
           expect(subject.findings.map(&:location_fingerprint)).to match_array(sast_report_fingerprints)
@@ -159,7 +159,7 @@ RSpec.describe Security::PipelineVulnerabilitiesFinder do
 
       context 'when dependency_scanning' do
         let(:params) { { report_type: %w[dependency_scanning] } }
-        let(:ds_report_fingerprints) {pipeline.security_reports.reports['dependency_scanning'].findings.map(&:location).map(&:fingerprint) }
+        let(:ds_report_fingerprints) { pipeline.security_reports.reports['dependency_scanning'].findings.map(&:location).map(&:fingerprint) }
 
         it 'includes only dependency_scanning' do
           expect(subject.findings.map(&:location_fingerprint)).to match_array(ds_report_fingerprints)
@@ -169,7 +169,7 @@ RSpec.describe Security::PipelineVulnerabilitiesFinder do
 
       context 'when dast' do
         let(:params) { { report_type: %w[dast] } }
-        let(:dast_report_fingerprints) {pipeline.security_reports.reports['dast'].findings.map(&:location).map(&:fingerprint) }
+        let(:dast_report_fingerprints) { pipeline.security_reports.reports['dast'].findings.map(&:location).map(&:fingerprint) }
 
         it 'includes only dast' do
           expect(subject.findings.map(&:location_fingerprint)).to match_array(dast_report_fingerprints)
