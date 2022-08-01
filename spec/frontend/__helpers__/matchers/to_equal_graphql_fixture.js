@@ -1,10 +1,11 @@
 import { isEqual } from 'lodash';
+import { stripTypenames } from 'helpers/graphql_helpers';
 
-export function toEqualGraphFixture(received, match) {
+export function toEqualGraphqlFixture(received, match) {
   let clearMatch;
 
   try {
-    clearMatch = JSON.parse(JSON.stringify(match, (k, v) => (k === '__typename' ? undefined : v)));
+    clearMatch = stripTypenames(match);
   } catch (e) {
     return { message: 'The comparator value is not an object', pass: false };
   }

@@ -22,8 +22,10 @@ describe('EE - On-demand Scans GraphQL CacheUtils', () => {
         ...mockQueryBody,
         data: {
           project: {
+            __typename: 'Project',
             id: dastProfilesMock.data.project.id,
             pipelines: {
+              __typename: 'DastProfileConnection',
               nodes: otherProfiles,
               pageInfo: expect.any(Object),
             },

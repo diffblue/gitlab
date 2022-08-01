@@ -17,7 +17,6 @@ import bulkEnableDevopsAdoptionNamespacesMutation from 'ee/analytics/devops_repo
 import devopsAdoptionEnabledNamespaces from 'ee/analytics/devops_reports/devops_adoption/graphql/queries/devops_adoption_enabled_namespaces.query.graphql';
 import getGroupsQuery from 'ee/analytics/devops_reports/devops_adoption/graphql/queries/get_groups.query.graphql';
 import { addEnabledNamespacesToCache } from 'ee/analytics/devops_reports/devops_adoption/utils/cache_updates';
-import { stripTypenames } from 'helpers/graphql_helpers';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -249,7 +248,7 @@ describe('DevopsAdoptionApp', () => {
           it('makes a request with the correct variables', () => {
             expect(enableNamespacesMutationSpy).toHaveBeenCalledTimes(1);
             expect(enableNamespacesMutationSpy).toHaveBeenCalledWith(
-              expect.objectContaining({
+              expect.toEqualGraphqlFixture({
                 namespaceIds: [groupGid],
                 displayNamespaceId: groupGid,
               }),
@@ -257,17 +256,10 @@ describe('DevopsAdoptionApp', () => {
           });
 
           it('calls addEnabledNamespacesToCache with the correct variables', () => {
-            const { latestSnapshot, namespace } = devopsAdoptionNamespaceData.nodes[0];
             expect(addEnabledNamespacesToCache).toHaveBeenCalledTimes(1);
             expect(addEnabledNamespacesToCache).toHaveBeenCalledWith(
               expect.anything(),
-              [
-                {
-                  ...devopsAdoptionNamespaceData.nodes[0],
-                  latestSnapshot: stripTypenames(latestSnapshot),
-                  namespace: stripTypenames(namespace),
-                },
-              ],
+              [expect.toEqualGraphqlFixture(devopsAdoptionNamespaceData.nodes[0])],
               {
                 displayNamespaceId: groupGid,
               },

@@ -39,15 +39,18 @@ describe('deleteEnabledNamespacesFromCache', () => {
       expect.not.objectContaining({
         data: {
           devopsAdoptionEnabledNamespaces: {
+            __typename: 'DevopsAdoptionEnabledNamespaceConnection',
             nodes: devopsAdoptionNamespaceData.nodes,
           },
         },
       }),
     );
+
     expect(store.writeQuery).toHaveBeenCalledWith(
       expect.objectContaining({
         data: {
           devopsAdoptionEnabledNamespaces: {
+            __typename: 'DevopsAdoptionEnabledNamespaceConnection',
             // Remove the item at the first index
             nodes: devopsAdoptionNamespaceData.nodes.slice(1),
           },

@@ -90,7 +90,7 @@ describe('AdminRunnerEditApp', () => {
       loading: false,
       runnerPath: mockRunnerPath,
     });
-    expect(findRunnerUpdateForm().props('runner')).toEqualGraphFixture(mockRunner);
+    expect(findRunnerUpdateForm().props('runner')).toEqualGraphqlFixture(mockRunner);
   });
 
   describe('When there is an error', () => {
