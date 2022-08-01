@@ -37,10 +37,6 @@ module Gitlab
         end
 
         def apply_additional_filters(relation, job_arguments: [], job_class: nil)
-          if job_class.respond_to?(:batching_scope)
-            return job_class.batching_scope(relation, job_arguments: job_arguments)
-          end
-
           relation
         end
       end

@@ -39,6 +39,23 @@ RSpec.describe Gitlab::BackgroundMigration::BatchedMigrationJob do
     end
   end
 
+  describe 'descendants', :eager_load do
+    it 'have the same method signature for #perform' do
+      expected_arity = described_class.instance_method(:perform).arity
+      offences = described_class.descendants.select { |klass| klass.instance_method(:perform).arity != expected_arity }
+
+      expect(offences).to be_empty, "expected no descendants of #{described_class} to accept arguments for " \
+        "'#perform', but some do: #{offences.join(", ")}"
+    end
+
+    it 'do not use .batching_scope' do
+      offences = described_class.descendants.select { |klass| klass.respond_to?(:batching_scope) }
+
+      expect(offences).to be_empty, "expected no descendants of #{described_class} to define '.batching_scope', " \
+        "but some do: #{offences.join(", ")}"
+    end
+  end
+
   describe '#perform' do
     let(:connection) { Gitlab::Database.database_base_models[:main].connection }
 
@@ -57,14 +74,6 @@ RSpec.describe Gitlab::BackgroundMigration::BatchedMigrationJob do
 
     it 'raises an error if not overridden' do
       expect { perform_job }.to raise_error(NotImplementedError, /must implement perform/)
-    end
-
-    it 'expects descendants to have the same method signature', :eager_load do
-      expected_arity = described_class.instance_method(:perform).arity
-      offences = described_class.descendants.select { |klass| klass.instance_method(:perform).arity != expected_arity }
-
-      expect(offences).to be_empty, "expected no descendants of #{described_class} to accept arguments for #perform, " \
-        "but some do: #{offences.join(", ")}"
     end
 
     context 'when the subclass uses sub-batching' do
