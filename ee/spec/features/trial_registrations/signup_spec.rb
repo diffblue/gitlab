@@ -9,9 +9,11 @@ RSpec.describe 'Trial Sign Up' do
     stub_application_setting(require_admin_approval_after_user_signup: false)
   end
 
-  describe 'on GitLab.com' do
-    before do
-      allow(Gitlab).to receive(:com?).and_return(true).at_least(:once)
+  describe 'on GitLab.com', :saas do
+    context 'with invalid email', :js do
+      it_behaves_like 'user email validation' do
+        let(:path) { new_user_registration_path }
+      end
     end
 
     context 'with the unavailable username' do
