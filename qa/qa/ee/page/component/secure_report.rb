@@ -20,6 +20,10 @@ module QA
                 element :vulnerability_info_content
               end
 
+              view 'ee/app/assets/javascripts/security_dashboard/components/security_dashboard_table.vue' do
+                element :security_report_content
+              end
+
               view 'ee/app/assets/javascripts/security_dashboard/components/
                     shared/vulnerability_report/vulnerability_list.vue' do
                 element :vulnerability_status_content
