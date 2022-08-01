@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Manage' do
+  RSpec.describe 'Create' do
     describe 'Project templates' do
       let(:files) do
         [
@@ -40,12 +40,13 @@ module QA
         end
       end
 
-      context 'built-in', :requires_admin do
+      context 'when built-in', :requires_admin do
         before do
           Flow::Login.sign_in_as_admin
         end
 
-        it 'successfully imports the project using template', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347932' do
+        it 'successfully imports the project using template',
+           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347932' do
           built_in = 'Ruby on Rails'
 
           Resource::Group.fabricate_via_api!.visit!
@@ -70,7 +71,7 @@ module QA
         end
       end
 
-      context 'instance level', :requires_admin, quarantine: {
+      context 'when instance level', :requires_admin, quarantine: {
         issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/364742',
         type: :investigating,
         only: { subdomain: :staging }
@@ -89,7 +90,9 @@ module QA
             Page::Admin::Menu.perform(&:go_to_template_settings)
 
             EE::Page::Admin::Settings::Templates.perform do |templates|
-              Support::Waiter.wait_until(max_duration: 10) { templates.current_custom_project_template.include? template_container_group_name }
+              Support::Waiter.wait_until(max_duration: 10) do
+                templates.current_custom_project_template.include? template_container_group_name
+              end
             end
           end
 
@@ -100,7 +103,8 @@ module QA
           QA::Flow::Project.go_to_create_project_from_template
         end
 
-        it 'successfully imports the project using template', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347875' do
+        it 'successfully imports the project using template',
+           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347875' do
           Page::Project::New.perform do |new_page|
             # TODO: Remove `reload true` once this bug is fixed: https://gitlab.com/gitlab-org/gitlab/-/issues/247874
             new_page.retry_until(reload: true) do
@@ -124,7 +128,7 @@ module QA
         end
       end
 
-      context 'group level', quarantine: {
+      context 'when group level', quarantine: {
         issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/364742',
         type: :investigating,
         only: { subdomain: :staging }
@@ -144,7 +148,9 @@ module QA
           Page::Group::Menu.perform(&:click_settings)
 
           Page::Group::Settings::General.perform do |settings|
-            expect(settings.current_custom_project_template).to include template_container_group_name
+            Support::Waiter.wait_until(max_duration: 10) do
+              settings.current_custom_project_template.include? template_container_group_name
+            end
           end
 
           group = Resource::Group.fabricate_via_api!
@@ -157,7 +163,8 @@ module QA
           Page::Project::New.perform(&:go_to_create_from_template_group_tab)
         end
 
-        it 'successfully imports the project using template', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347933' do
+        it 'successfully imports the project using template',
+           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347933' do
           Page::Project::New.perform do |new_page|
             expect(new_page.group_template_tab_badge_text).to eq "1"
             expect(new_page).to have_text(template_container_group_name)
