@@ -10,10 +10,10 @@ module Types
           description 'Data associated with configuring API fuzzing scans in GitLab CI'
 
           field :scan_modes, [ScanModeEnum], null: true,
-                description: 'All available scan modes.'
+            description: 'All available scan modes.'
 
           field :scan_profiles, [ScanProfileType], null: true,
-                description: 'All default scan profiles.'
+            description: 'All default scan profiles.'
         end
         # rubocop: enable Graphql/AuthorizeTypes
       end

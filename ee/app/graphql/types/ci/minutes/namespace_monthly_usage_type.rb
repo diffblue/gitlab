@@ -10,19 +10,28 @@ module Types
         authorize :read_usage
 
         field :month, ::GraphQL::Types::String, null: true,
-              description: 'Month related to the usage data.'
+                                                description: 'Month related to the usage data.'
 
-        field :month_iso8601, ::GraphQL::Types::ISO8601Date, method: :date, null: true,
+        field :month_iso8601,
+              ::GraphQL::Types::ISO8601Date,
+              method: :date,
+              null: true,
               description: 'Month related to the usage data in ISO 8601 date format.'
 
-        field :minutes, ::GraphQL::Types::Int, null: true,
+        field :minutes,
+              ::GraphQL::Types::Int,
+              null: true,
               method: :amount_used,
               description: 'Total number of minutes used by all projects in the namespace.'
 
-        field :projects, ::Types::Ci::Minutes::ProjectMonthlyUsageType.connection_type, null: true,
+        field :projects,
+              ::Types::Ci::Minutes::ProjectMonthlyUsageType.connection_type,
+              null: true,
               description: 'CI/CD minutes usage data for projects in the namespace.'
 
-        field :shared_runners_duration, ::GraphQL::Types::Int, null: true,
+        field :shared_runners_duration,
+              ::GraphQL::Types::Int,
+              null: true,
               description: 'Total duration (in seconds) of shared runners use by the namespace for the month.'
 
         def month

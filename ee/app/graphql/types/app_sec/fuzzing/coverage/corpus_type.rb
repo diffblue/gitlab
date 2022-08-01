@@ -11,10 +11,10 @@ module Types
           authorize :read_coverage_fuzzing
 
           field :id, ::Types::GlobalIDType[::AppSec::Fuzzing::Coverage::Corpus], null: false,
-                description: 'ID of the corpus.'
+            description: 'ID of the corpus.'
 
           field :package, ::Types::Packages::PackageDetailsType, null: false,
-                description: 'Package of the corpus.'
+            description: 'Package of the corpus.'
         end
       end
     end

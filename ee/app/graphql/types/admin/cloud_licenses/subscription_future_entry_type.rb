@@ -14,14 +14,11 @@ module Types
         field :plan, GraphQL::Types::String, null: false,
           description: 'Name of the subscription plan.'
 
-        field :name, GraphQL::Types::String, null: true,
-          description: 'Name of the licensee.'
+        field :name, GraphQL::Types::String, null: true, description: 'Name of the licensee.'
 
-        field :email, GraphQL::Types::String, null: true,
-          description: 'Email of the licensee.'
+        field :email, GraphQL::Types::String, null: true, description: 'Email of the licensee.'
 
-        field :company, GraphQL::Types::String, null: true,
-          description: 'Company of the licensee.'
+        field :company, GraphQL::Types::String, null: true, description: 'Company of the licensee.'
 
         field :starts_at, ::Types::DateType, null: true,
           description: 'Date when the license started.'

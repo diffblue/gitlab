@@ -8,14 +8,12 @@ module Types
     authorize :read_on_demand_dast_scan
 
     field :id, ::Types::GlobalIDType[::DastSiteValidation], null: false,
-          description: 'Global ID of the site validation.'
+      description: 'Global ID of the site validation.'
 
-    field :status, Types::DastSiteProfileValidationStatusEnum, null: false,
-          description: 'Status of the site validation.',
-          method: :state
+    field :status, Types::DastSiteProfileValidationStatusEnum, null: false, method: :state,
+      description: 'Status of the site validation.'
 
-    field :normalized_target_url, GraphQL::Types::String, null: true,
-          description: 'Normalized URL of the target to be validated.',
-          method: :url_base
+    field :normalized_target_url, GraphQL::Types::String, null: true, method: :url_base,
+      description: 'Normalized URL of the target to be validated.'
   end
 end

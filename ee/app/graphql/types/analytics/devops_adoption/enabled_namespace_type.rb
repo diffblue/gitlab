@@ -9,20 +9,19 @@ module Types
         description 'Enabled namespace for DevopsAdoption'
 
         field :id, GraphQL::Types::ID, null: false,
-              description: "ID of the enabled namespace."
+          description: "ID of the enabled namespace."
 
         field :namespace, Types::NamespaceType, null: true,
-              description: 'Namespace which should be calculated.'
+          description: 'Namespace which should be calculated.'
 
         field :display_namespace, Types::NamespaceType, null: true,
-              description: 'Namespace where data should be displayed.'
+          description: 'Namespace where data should be displayed.'
 
-        field :snapshots,
-              description: 'Data snapshots of the namespace.',
-              resolver: Resolvers::Analytics::DevopsAdoption::SnapshotsResolver
+        field :snapshots, resolver: Resolvers::Analytics::DevopsAdoption::SnapshotsResolver,
+          description: 'Data snapshots of the namespace.'
 
         field :latest_snapshot, SnapshotType, null: true,
-              description: 'Metrics snapshot for previous month for the enabled namespace.'
+          description: 'Metrics snapshot for previous month for the enabled namespace.'
 
         def latest_snapshot
           BatchLoader::GraphQL.for(object.namespace_id).batch(key: :devops_adoption_latest_snapshots) do |ids, loader, _args|

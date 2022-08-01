@@ -12,7 +12,6 @@ module Types
     field :incomplete, ::Types::TimeboxMetricsType, null: true,
           description: 'Incomplete issues metrics.'
 
-    field :total, ::Types::TimeboxMetricsType, null: true,
-          description: 'Total issues metrics.'
+    field :total, ::Types::TimeboxMetricsType, null: true, description: 'Total issues metrics.'
   end
 end

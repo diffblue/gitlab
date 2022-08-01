@@ -10,14 +10,11 @@ module Types
 
       expose_permissions Types::PermissionTypes::Requirement
 
-      field :id, GraphQL::Types::ID, null: false,
-            description: 'ID of the requirement.'
+      field :id, GraphQL::Types::ID, null: false, description: 'ID of the requirement.'
 
-      field :iid, GraphQL::Types::ID, null: false,
-            description: 'Internal ID of the requirement.'
+      field :iid, GraphQL::Types::ID, null: false, description: 'Internal ID of the requirement.'
 
-      field :title, GraphQL::Types::String, null: true,
-            description: 'Title of the requirement.'
+      field :title, GraphQL::Types::String, null: true, description: 'Title of the requirement.'
 
       field :description, GraphQL::Types::String, null: true,
             description: 'Description of the requirement.'
@@ -25,7 +22,9 @@ module Types
       field :state, RequirementsManagement::RequirementStateEnum, null: false,
             description: 'State of the requirement.'
 
-      field :last_test_report_state, RequirementsManagement::TestReportStateEnum, null: true,
+      field :last_test_report_state,
+            RequirementsManagement::TestReportStateEnum,
+            null: true,
             description: 'Latest requirement test report state.'
 
       field :last_test_report_manually_created,
@@ -40,7 +39,9 @@ module Types
       field :author, UserType, null: false,
             description: 'Author of the requirement.'
 
-      field :test_reports, TestReportType.connection_type, null: true, complexity: 5,
+      field :test_reports,
+            TestReportType.connection_type,
+            null: true, complexity: 5,
             description: 'Test reports of the requirement.',
             resolver: Resolvers::RequirementsManagement::TestReportsResolver
 

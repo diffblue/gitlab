@@ -8,45 +8,33 @@ module Types
 
         included do
           field :id, GraphQL::Types::ID, null: false,
-                description: 'ID of the license extracted from the license data.'
+            description: 'ID of the license extracted from the license data.'
 
-          field :type, GraphQL::Types::String, null: false,
-                description: 'Type of the license.',
-                method: :license_type
+          field :type, GraphQL::Types::String, null: false, method: :license_type, description: 'Type of the license.'
 
-          field :plan, GraphQL::Types::String, null: false,
-                description: 'Name of the subscription plan.'
+          field :plan, GraphQL::Types::String, null: false, description: 'Name of the subscription plan.'
 
-          field :name, GraphQL::Types::String, null: true,
-                description: 'Name of the licensee.',
-                method: :licensee_name
+          field :name, GraphQL::Types::String, null: true, method: :licensee_name, description: 'Name of the licensee.'
 
-          field :email, GraphQL::Types::String, null: true,
-                description: 'Email of the licensee.',
-                method: :licensee_email
+          field :email, GraphQL::Types::String, null: true, method: :licensee_email,
+            description: 'Email of the licensee.'
 
-          field :company, GraphQL::Types::String, null: true,
-                description: 'Company of the licensee.',
-                method: :licensee_company
+          field :company, GraphQL::Types::String, null: true, method: :licensee_company,
+            description: 'Company of the licensee.'
 
-          field :starts_at, ::Types::DateType, null: true,
-                description: 'Date when the license started.'
+          field :starts_at, ::Types::DateType, null: true, description: 'Date when the license started.'
 
-          field :created_at, ::Types::DateType, null: true,
-                description: 'Date when the license was added.'
+          field :created_at, ::Types::DateType, null: true, description: 'Date when the license was added.'
 
-          field :expires_at, ::Types::DateType, null: true,
-                description: 'Date when the license expires.'
+          field :expires_at, ::Types::DateType, null: true, description: 'Date when the license expires.'
 
           field :block_changes_at, ::Types::DateType, null: true,
-                description: 'Date, including grace period, when licensed features will be blocked.'
+            description: 'Date, including grace period, when licensed features will be blocked.'
 
-          field :activated_at, ::Types::DateType, null: true,
-                description: 'Date when the license was activated.'
+          field :activated_at, ::Types::DateType, null: true, description: 'Date when the license was activated.'
 
-          field :users_in_license_count, GraphQL::Types::Int, null: true,
-                description: 'Number of paid users in the license.',
-                method: :restricted_user_count
+          field :users_in_license_count, GraphQL::Types::Int, null: true, method: :restricted_user_count,
+            description: 'Number of paid users in the license.'
 
           def id
             ::Gitlab::GlobalId.build(object, model_name: object.class.to_s, id: object.license_id).to_s

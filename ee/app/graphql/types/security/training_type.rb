@@ -16,8 +16,7 @@ module Types
       field :description, GraphQL::Types::String, null: true,
             description: 'Description of the training provider.'
 
-      field :url, GraphQL::Types::String, null: false,
-            description: 'URL of the provider.'
+      field :url, GraphQL::Types::String, null: false, description: 'URL of the provider.'
 
       field :logo_url, GraphQL::Types::String, null: true,
             description: 'Logo URL of the provider.'
@@ -25,7 +24,9 @@ module Types
       field :is_enabled, GraphQL::Types::Boolean, null: false,
             description: 'Represents whether the provider is enabled or not.'
 
-      field :is_primary, GraphQL::Types::Boolean, null: false,
+      field :is_primary,
+            GraphQL::Types::Boolean,
+            null: false,
             description: 'Represents whether the provider is set as primary or not.'
     end
   end
