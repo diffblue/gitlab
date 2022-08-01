@@ -125,7 +125,7 @@ module EE
       def collect_license_scanning_reports!(license_scanning_report)
         return license_scanning_report unless project.feature_available?(:license_scanning)
 
-        each_report(::Ci::JobArtifact::LICENSE_SCANNING_REPORT_FILE_TYPES) do |file_type, blob|
+        each_report(::Ci::JobArtifact.file_types_for_report(:license_scanning)) do |file_type, blob|
           ::Gitlab::Ci::Parsers.fabricate!(file_type).parse!(blob, license_scanning_report)
         end
 
@@ -136,7 +136,7 @@ module EE
         if project.feature_available?(:dependency_scanning)
           dependency_list = ::Gitlab::Ci::Parsers::Security::DependencyList.new(project, sha, pipeline)
 
-          each_report(::Ci::JobArtifact::DEPENDENCY_LIST_REPORT_FILE_TYPES) do |_, blob|
+          each_report(::Ci::JobArtifact.file_types_for_report(:dependency_list)) do |_, blob|
             dependency_list.parse!(blob, dependency_list_report)
           end
         end
@@ -148,7 +148,7 @@ module EE
         if project.feature_available?(:dependency_scanning)
           dependency_list = ::Gitlab::Ci::Parsers::Security::DependencyList.new(project, sha, pipeline)
 
-          each_report(::Ci::JobArtifact::LICENSE_SCANNING_REPORT_FILE_TYPES) do |_, blob|
+          each_report(::Ci::JobArtifact.file_types_for_report(:license_scanning)) do |_, blob|
             dependency_list.parse_licenses!(blob, dependency_list_report)
           end
         end
@@ -157,7 +157,7 @@ module EE
       end
 
       def collect_metrics_reports!(metrics_report)
-        each_report(::Ci::JobArtifact::METRICS_REPORT_FILE_TYPES) do |file_type, blob|
+        each_report(::Ci::JobArtifact.file_types_for_report(:metrics)) do |file_type, blob|
           next unless project.feature_available?(:metrics_reports)
 
           ::Gitlab::Ci::Parsers.fabricate!(file_type).parse!(blob, metrics_report)
@@ -169,7 +169,7 @@ module EE
       def collect_requirements_reports!(requirements_report)
         return requirements_report unless project.feature_available?(:requirements)
 
-        each_report(::Ci::JobArtifact::REQUIREMENTS_REPORT_FILE_TYPES) do |file_type, blob, report_artifact|
+        each_report(::Ci::JobArtifact.file_types_for_report(:requirements)) do |file_type, blob, report_artifact|
           ::Gitlab::Ci::Parsers.fabricate!(file_type).parse!(blob, requirements_report)
         end
 
