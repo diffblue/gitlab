@@ -14,7 +14,7 @@ RSpec.describe 'Issue board filters', :js do
   let_it_be(:epic_issue1) { create(:epic_issue, epic: epic, issue: issue, relative_position: 1) }
 
   let(:filtered_search) { find('[data-testid="issue-board-filtered-search"]') }
-  let(:filter_input) { find('.gl-filtered-search-term-input')}
+  let(:filter_input) { find('.gl-filtered-search-term-input') }
   let(:filter_dropdown) { find('.gl-filtered-search-suggestion-list') }
   let(:filter_first_suggestion) { find('.gl-filtered-search-suggestion-list').first('.gl-filtered-search-suggestion') }
   let(:filter_submit) { find('.gl-search-box-by-click-search-button') }

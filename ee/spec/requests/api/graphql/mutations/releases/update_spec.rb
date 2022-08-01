@@ -12,7 +12,7 @@ RSpec.describe 'Updating an existing release' do
   let_it_be(:milestone_12_4) { create(:milestone, project: project, title: '12.4') }
   let_it_be(:group_milestone) { create(:milestone, group: group, title: '13.1') }
   let_it_be(:developer) { create(:user) }
-  let_it_be(:tag_name) { 'v1.1.0'}
+  let_it_be(:tag_name) { 'v1.1.0' }
   let_it_be(:release) do
     create(:release, project: project, tag: tag_name)
   end

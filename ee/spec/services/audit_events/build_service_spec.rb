@@ -44,6 +44,7 @@ RSpec.describe AuditEvents::BuildService do
 
           expect(event.details).to eq(
             author_name: author.name,
+            author_class: author.class.name,
             target_id: target.id,
             target_type: target.class.name,
             target_details: target.name,
@@ -120,6 +121,24 @@ RSpec.describe AuditEvents::BuildService do
         end
       end
 
+      context 'when deploy key is passed as author' do
+        let(:deploy_key) { build_stubbed(:deploy_key, user: author) }
+
+        let(:service) do
+          described_class.new(
+            author: deploy_key,
+            scope: scope,
+            target: target,
+            message: message
+          )
+        end
+
+        it 'expect author to be deploy key' do
+          expect(event.author_id).to eq(-3)
+          expect(event.author_name).to eq(deploy_key.name)
+        end
+      end
+
       context 'when author is passed as UnauthenticatedAuthor' do
         let(:service) do
           described_class.new(
@@ -152,6 +171,7 @@ RSpec.describe AuditEvents::BuildService do
 
           expect(event.details).to eq(
             author_name: author.name,
+            author_class: author.class.name,
             target_id: target.id,
             target_type: target.class.name,
             target_details: target.name,

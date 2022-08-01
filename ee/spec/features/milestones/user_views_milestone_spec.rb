@@ -17,7 +17,7 @@ RSpec.describe "User views milestone" do
   end
 
   # can't use let_it_be because can't stub group_milestone_project_releases outside of example
-  let!(:release) { create(:release, name: 'PUBLIC RELEASE', project: project, milestones: [milestone])}
+  let!(:release) { create(:release, name: 'PUBLIC RELEASE', project: project, milestones: [milestone]) }
   let!(:no_access_release) do
     create(:release, name: 'PRIVATE RELEASE', project: no_access_project, milestones: [milestone])
   end

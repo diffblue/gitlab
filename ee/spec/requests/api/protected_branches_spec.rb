@@ -40,9 +40,9 @@ RSpec.describe API::ProtectedBranches do
         it 'returns access level details' do
           get api(route, user)
 
-          push_user_ids = json_response['push_access_levels'].map {|level| level['user_id']}
-          merge_group_ids = json_response['merge_access_levels'].map {|level| level['group_id']}
-          unprotect_group_ids = json_response['unprotect_access_levels'].map {|level| level['group_id']}
+          push_user_ids = json_response['push_access_levels'].map { |level| level['user_id'] }
+          merge_group_ids = json_response['merge_access_levels'].map { |level| level['group_id'] }
+          unprotect_group_ids = json_response['unprotect_access_levels'].map { |level| level['group_id'] }
 
           expect(response).to have_gitlab_http_status(:ok)
           expect(push_user_ids).to include(push_user.id)

@@ -7,7 +7,7 @@ module QA
 
       let(:uri) { URI.parse(Runtime::Scenario.gitlab_address) }
       let(:gitlab_host_with_port) { "#{uri.host}:#{uri.port}" }
-      let(:gitlab_address_with_port) {"#{uri.scheme}://#{uri.host}:#{uri.port}" }
+      let(:gitlab_address_with_port) { "#{uri.scheme}://#{uri.host}:#{uri.port}" }
       let(:registry_scope) { project.group.sandbox.path }
       let(:package_name) { "@#{registry_scope}/#{project.name}" }
       let(:version) { "1.0.0" }

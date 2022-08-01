@@ -132,6 +132,7 @@ RSpec.describe Projects::UpdateService, '#execute' do
         entity_type: 'Project',
         details: {
           author_name: user.name,
+          author_class: user.class.name,
           target_id: project.id,
           target_type: 'Project',
           target_details: project.full_path
@@ -191,9 +192,10 @@ RSpec.describe Projects::UpdateService, '#execute' do
 
         let(:attributes) do
           audit_event_params.tap do |param|
-            param[:details].merge!(
-              custom_message: "Default branch changed from master to feature"
-            )
+            param[:details][:custom_message] = "Default branch changed from master to feature"
+            # Default branch change event still uses legacy AuditEventService instead of Gitlab::Audit::Auditor.
+            # The following attributes exist once we switched to Gitlab::Audit::Auditor.
+            param[:details].delete(:author_class)
           end
         end
       end

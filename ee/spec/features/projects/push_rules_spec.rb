@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe 'Projects > Push Rules', :js do
   let(:user) { create(:user) }
   let(:project) { create(:project, :repository, namespace: user.namespace) }
-  let(:foo) {{ reject_unsigned_commits: 'Reject unsigned commits' }}
+  let(:foo) { { reject_unsigned_commits: 'Reject unsigned commits' } }
 
   before do
     project.add_maintainer(user)

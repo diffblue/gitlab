@@ -65,7 +65,7 @@ RSpec.describe Mutations::Boards::Epics::Create do
         end
 
         context 'when board not found' do
-          let(:epic_create_params) { default_params.merge({ board_id: "gid://gitlab/Boards::EpicBoard/#{non_existing_record_id}" })}
+          let(:epic_create_params) { default_params.merge({ board_id: "gid://gitlab/Boards::EpicBoard/#{non_existing_record_id}" }) }
 
           it 'returns an error' do
             expect(subject[:errors]).to include "Board not found"
@@ -73,7 +73,7 @@ RSpec.describe Mutations::Boards::Epics::Create do
         end
 
         context 'when list not found' do
-          let(:epic_create_params) { default_params.merge({ list_id: "gid://gitlab/Boards::EpicList/#{non_existing_record_id}" })}
+          let(:epic_create_params) { default_params.merge({ list_id: "gid://gitlab/Boards::EpicList/#{non_existing_record_id}" }) }
 
           it 'returns an error' do
             expect(subject[:errors]).to include "List not found"
@@ -83,7 +83,7 @@ RSpec.describe Mutations::Boards::Epics::Create do
         context 'when list is not under that board' do
           let_it_be(:other_board_list) { create(:epic_list) }
 
-          let(:epic_create_params) { default_params.merge({ list_id: "gid://gitlab/Boards::EpicList/#{other_board_list.id}" })}
+          let(:epic_create_params) { default_params.merge({ list_id: "gid://gitlab/Boards::EpicList/#{other_board_list.id}" }) }
 
           it 'returns an error' do
             expect(subject[:errors]).to include "List not found"

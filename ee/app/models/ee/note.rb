@@ -83,7 +83,12 @@ module EE
     end
 
     def usage_ping_track_updated_epic_note(user)
-      ::Gitlab::UsageDataCounters::EpicActivityUniqueCounter.track_epic_note_updated_action(author: user) if for_epic?
+      return unless for_epic?
+
+      ::Gitlab::UsageDataCounters::EpicActivityUniqueCounter.track_epic_note_updated_action(
+        author: user,
+        namespace: noteable.group
+      )
     end
 
     private

@@ -13,7 +13,7 @@ RSpec.describe 'Merge request > User edits MR with multiple reviewers' do
 
   context 'user approval rules', :js do
     let(:rule_name) { 'some-custom-rule' }
-    let!(:mr_rule) { create(:approval_merge_request_rule, merge_request: merge_request, users: [user], name: rule_name, approvals_required: 1 )}
+    let!(:mr_rule) { create(:approval_merge_request_rule, merge_request: merge_request, users: [user], name: rule_name, approvals_required: 1 ) }
 
     it 'is not shown in assignee dropdown' do
       find('.js-assignee-search').click
@@ -49,8 +49,8 @@ RSpec.describe 'Merge request > User edits MR with multiple reviewers' do
 
   context 'code owner approval rules', :js do
     let(:code_owner_pattern) { '*' }
-    let!(:code_owner_rule) {create(:code_owner_rule, name: code_owner_pattern, merge_request: merge_request, users: [user])}
-    let!(:mr_rule) { create(:approval_merge_request_rule, merge_request: merge_request )}
+    let!(:code_owner_rule) { create(:code_owner_rule, name: code_owner_pattern, merge_request: merge_request, users: [user]) }
+    let!(:mr_rule) { create(:approval_merge_request_rule, merge_request: merge_request ) }
 
     it 'displays "Code Owner" text in reviewer dropdown' do
       find('.js-reviewer-search').click

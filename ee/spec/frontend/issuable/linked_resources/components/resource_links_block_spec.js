@@ -112,23 +112,15 @@ describe('ResourceLinksBlock', () => {
         };
       },
     });
-
-    afterEach(() => {
-      if (wrapper) {
-        deleteResponse.mockReset();
-        createResponse.mockReset();
-        wrapper.destroy();
-      }
-    });
   };
+
+  afterEach(() => {
+    wrapper.destroy();
+  });
 
   describe('with defaults', () => {
     beforeEach(() => {
       mountComponent();
-    });
-
-    it('renders correct component', () => {
-      expect(wrapper.element).toMatchSnapshot();
     });
 
     it('should show the form when add button is clicked', async () => {
@@ -214,22 +206,26 @@ describe('ResourceLinksBlock', () => {
   describe('resourceLinksQuery', () => {
     let mockApollo;
 
-    beforeEach(() => {
+    it('should request data', () => {
       mockApollo = createMockApolloProvider(listResponse);
       mountComponent(mockApollo);
-    });
 
-    it('should request data', () => {
       expect(listResponse).toHaveBeenCalled();
     });
 
     it('should show the loading state and correct badgeLabel', () => {
+      mockApollo = createMockApolloProvider(listResponse);
+      mountComponent(mockApollo);
+
       expect(findResourceLinksList().exists()).toBe(false);
       expect(findLoadingSpinner().exists()).toBe(true);
       expect(wrapper.vm.badgeLabel).toBe('...');
     });
 
     it('should render the list and count', async () => {
+      mockApollo = createMockApolloProvider(listResponse);
+      mountComponent(mockApollo);
+
       await waitForPromises();
 
       expect(findResourceLinksList().exists()).toBe(true);

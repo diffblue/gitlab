@@ -3,8 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Mutations::DastSiteValidations::Revoke do
-  let_it_be(:dast_site_validation1) { create(:dast_site_validation, state: :passed)}
-  let_it_be(:dast_site_validation2) { create(:dast_site_validation)}
+  let_it_be(:dast_site_validation1) { create(:dast_site_validation, state: :passed) }
+  let_it_be(:dast_site_validation2) { create(:dast_site_validation) }
   let_it_be(:project) { dast_site_validation1.project }
   let_it_be(:user) { create(:user) }
 

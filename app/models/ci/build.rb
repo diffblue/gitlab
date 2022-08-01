@@ -523,8 +523,12 @@ module Ci
       self.options.fetch(:environment, {}).fetch(:action, 'start') if self.options
     end
 
-    def environment_deployment_tier
+    def environment_tier_from_options
       self.options.dig(:environment, :deployment_tier) if self.options
+    end
+
+    def environment_tier
+      environment_tier_from_options || persisted_environment.try(:tier)
     end
 
     def triggered_by?(current_user)
@@ -581,6 +585,7 @@ module Ci
         variables.concat(persisted_environment.predefined_variables)
 
         variables.append(key: 'CI_ENVIRONMENT_ACTION', value: environment_action)
+        variables.append(key: 'CI_ENVIRONMENT_TIER', value: environment_tier)
 
         # Here we're passing unexpanded environment_url for runner to expand,
         # and we need to make sure that CI_ENVIRONMENT_NAME and
@@ -979,7 +984,7 @@ module Ci
 
     def collect_test_reports!(test_reports)
       test_reports.get_suite(test_suite_name).tap do |test_suite|
-        each_report(Ci::JobArtifact::TEST_REPORT_FILE_TYPES) do |file_type, blob|
+        each_report(Ci::JobArtifact::REPORT_FILE_TYPES[:test]) do |file_type, blob|
           Gitlab::Ci::Parsers.fabricate!(file_type).parse!(
             blob,
             test_suite,
@@ -990,7 +995,7 @@ module Ci
     end
 
     def collect_accessibility_reports!(accessibility_report)
-      each_report(Ci::JobArtifact::ACCESSIBILITY_REPORT_FILE_TYPES) do |file_type, blob|
+      each_report(Ci::JobArtifact::REPORT_FILE_TYPES[:accessibility]) do |file_type, blob|
         Gitlab::Ci::Parsers.fabricate!(file_type).parse!(blob, accessibility_report)
       end
 
@@ -998,7 +1003,7 @@ module Ci
     end
 
     def collect_codequality_reports!(codequality_report)
-      each_report(Ci::JobArtifact::CODEQUALITY_REPORT_FILE_TYPES) do |file_type, blob|
+      each_report(Ci::JobArtifact::REPORT_FILE_TYPES[:codequality]) do |file_type, blob|
         Gitlab::Ci::Parsers.fabricate!(file_type).parse!(blob, codequality_report)
       end
 
@@ -1006,7 +1011,7 @@ module Ci
     end
 
     def collect_terraform_reports!(terraform_reports)
-      each_report(::Ci::JobArtifact::TERRAFORM_REPORT_FILE_TYPES) do |file_type, blob, report_artifact|
+      each_report(::Ci::JobArtifact::REPORT_FILE_TYPES[:terraform]) do |file_type, blob, report_artifact|
         ::Gitlab::Ci::Parsers.fabricate!(file_type).parse!(blob, terraform_reports, artifact: report_artifact)
       end
 

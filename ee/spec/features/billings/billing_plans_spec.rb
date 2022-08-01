@@ -472,9 +472,9 @@ RSpec.describe 'Billing plan pages', :feature, :saas, :js do
     end
 
     context 'when a group is the subgroup' do
-      let(:namespace) { create(:group_with_plan)}
+      let(:namespace) { create(:group_with_plan) }
       let(:plan) { namespace.actual_plan }
-      let(:subgroup) { create(:group, parent: namespace)}
+      let(:subgroup) { create(:group, parent: namespace) }
 
       it 'shows the subgroup page context for billing', :aggregate_failures do
         visit group_billings_path(subgroup)

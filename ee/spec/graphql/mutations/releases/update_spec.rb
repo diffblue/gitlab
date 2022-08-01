@@ -10,7 +10,7 @@ RSpec.describe Mutations::Releases::Update do
   let_it_be(:group_milestone) { create(:milestone, group: group, title: '13.1') }
   let_it_be(:developer) { create(:user) }
 
-  let_it_be(:tag) { 'v1.1.0'}
+  let_it_be(:tag) { 'v1.1.0' }
 
   let_it_be(:release) do
     create(:release, project: project, tag: tag)

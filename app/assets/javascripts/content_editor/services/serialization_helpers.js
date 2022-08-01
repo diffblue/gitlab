@@ -1,4 +1,5 @@
 import { uniq, isString, omit, isFunction } from 'lodash';
+import { removeLastSlashInUrlPath, removeUrlProtocol } from '../../lib/utils/url_utility';
 
 const defaultAttrs = {
   td: { colspan: 1, rowspan: 1, colwidth: null },
@@ -497,24 +498,16 @@ const linkType = (sourceMarkdown) => {
   return LINK_HTML;
 };
 
-const removeUrlProtocol = (url) => url.replace(/^\w+:\/?\/?/, '');
-
-const normalizeUrl = (url) => decodeURIComponent(removeUrlProtocol(url));
+const normalizeUrl = (url) => decodeURIComponent(removeLastSlashInUrlPath(removeUrlProtocol(url)));
 
 /**
- * Validates that the provided URL is well-formed
+ * Validates that the provided URL is a valid GFM autolink
  *
  * @param {String} url
- * @returns Returns true when the browser’s URL constructor
- * can successfully parse the URL string
+ * @returns Returns true when the URL is a valid GFM autolink
  */
-const isValidUrl = (url) => {
-  try {
-    return new URL(url) && true;
-  } catch {
-    return false;
-  }
-};
+const isValidAutolinkURL = (url) =>
+  /(https?:\/\/)?([\w-])+\.{1}([a-zA-Z]{2,63})([/\w-]*)*\/?\??([^#\n\r]*)?#?([^\n\r]*)/.test(url);
 
 const findChildWithMark = (mark, parent) => {
   let child;
@@ -551,7 +544,7 @@ const isAutoLink = (linkMark, parent) => {
   if (
     !child ||
     !child.isText ||
-    !isValidUrl(href) ||
+    !isValidAutolinkURL(href) ||
     normalizeUrl(child.text) !== normalizeUrl(href)
   ) {
     return false;

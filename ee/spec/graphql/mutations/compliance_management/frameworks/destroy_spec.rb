@@ -53,7 +53,7 @@ RSpec.describe Mutations::ComplianceManagement::Frameworks::Destroy do
     context 'current_user is group owner' do
       let_it_be(:group) { create(:group) }
       let_it_be(:user) { create(:user) }
-      let_it_be(:framework) { create(:compliance_framework, namespace: group)}
+      let_it_be(:framework) { create(:compliance_framework, namespace: group) }
 
       before do
         group.add_owner(user)

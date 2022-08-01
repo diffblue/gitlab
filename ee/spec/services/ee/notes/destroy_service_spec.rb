@@ -39,6 +39,7 @@ RSpec.describe Notes::DestroyService do
 
       it 'tracks epic note destroy' do
         expect(::Gitlab::UsageDataCounters::EpicActivityUniqueCounter).to receive(:track_epic_note_destroyed_action)
+          .with(author: user, namespace: note.noteable.group)
 
         service.execute(note)
       end

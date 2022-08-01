@@ -243,7 +243,7 @@ module EE
           group_regexp = %r{
             (?<!\w)
             (?<group>#{::Gitlab::PathRegex::FULL_NAMESPACE_FORMAT_REGEX})
-          }x
+          }xo
           %r{
             (#{group_regexp})?
             (?:#{combined_prefix})#{::Gitlab::Regex.epic}

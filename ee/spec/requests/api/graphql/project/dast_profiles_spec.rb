@@ -12,7 +12,7 @@ RSpec.describe 'Query.project(fullPath).dastProfiles' do
   let_it_be(:dast_profile3) { create(:dast_profile, project: project) }
   let_it_be(:dast_profile4) { create(:dast_profile, project: project) }
   let_it_be(:dast_profile5) { create(:dast_profile, project: project) }
-  let_it_be(:dast_profile_schedule) { create(:dast_profile_schedule, project: project, dast_profile: dast_profile5)}
+  let_it_be(:dast_profile_schedule) { create(:dast_profile_schedule, project: project, dast_profile: dast_profile5) }
 
   let(:all_records) do
     [dast_profile5, dast_profile4, dast_profile3, dast_profile2, dast_profile1].map { |validation| global_id_of(validation) }.map(&:to_s)

@@ -1305,7 +1305,7 @@ RSpec.describe API::Projects do
 
   describe 'DELETE /projects/:id' do
     let(:group) { create(:group) }
-    let(:project) { create(:project, group: group)}
+    let(:project) { create(:project, group: group) }
 
     before do
       group.add_member(user, Gitlab::Access::OWNER)
@@ -1375,7 +1375,7 @@ RSpec.describe API::Projects do
       end
 
       context 'for projects in user namespace' do
-        let(:project) { create(:project, namespace: user.namespace)}
+        let(:project) { create(:project, namespace: user.namespace) }
 
         it_behaves_like 'deletes project immediately'
       end
@@ -1397,7 +1397,7 @@ RSpec.describe API::Projects do
       create(:group).tap { |g| g.add_owner(user) }
     end
 
-    let!(:group_project) { create(:project, namespace: group)}
+    let!(:group_project) { create(:project, namespace: group) }
     let(:group) { create(:group) }
 
     before do

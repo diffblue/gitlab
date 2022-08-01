@@ -4,6 +4,7 @@ FactoryBot.define do
   factory :sbom_occurrence, class: 'Sbom::Occurrence' do
     project
     component_version { association :sbom_component_version }
+    component { component_version.component }
     pipeline { association :ci_pipeline }
     source { association :sbom_source }
 

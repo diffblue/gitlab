@@ -14,6 +14,7 @@ RSpec.describe Groups::UpdateService, '#execute' do
         entity_type: 'Group',
         details: {
           author_name: user.name,
+          author_class: user.class.name,
           target_id: group.id,
           target_type: 'Group',
           target_details: group.full_path

@@ -45,9 +45,8 @@ RSpec.describe MergeRequests::MergeService do
       it 'persists the correct error message' do
         service.execute(merge_request)
 
-        expect(merge_request.merge_error).to eq(
-          'This merge request cannot be merged, ' \
-          'because the namespace storage limit of 4 MB has been reached.'
+        expect(merge_request.merge_error).to include(
+          'Your namespace storage is full. This merge request cannot be merged.'
         )
       end
     end
@@ -89,9 +88,8 @@ RSpec.describe MergeRequests::MergeService do
       it 'persists the correct error message' do
         service.execute(merge_request)
 
-        expect(merge_request.merge_error).to eq(
-          'This merge request cannot be merged, ' \
-          'because the namespace storage limit of 6 MB has been reached.'
+        expect(merge_request.merge_error).to include(
+          'Your namespace storage is full. This merge request cannot be merged.'
         )
       end
     end

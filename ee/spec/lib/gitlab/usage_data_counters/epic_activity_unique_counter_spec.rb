@@ -53,11 +53,11 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
       described_class.track_epic_note_created_action(**params)
     end
 
-    it_behaves_like 'a daily tracked issuable event' do
+    it_behaves_like 'a daily tracked issuable snowplow and service ping events with namespace' do
       let(:action) { described_class::EPIC_NOTE_CREATED }
     end
 
-    it_behaves_like 'does not track when feature flag is disabled', :track_epics_activity
+    it_behaves_like 'does not track with namespace when feature flag is disabled', :track_epics_activity
   end
 
   context 'for epic note updated event' do
@@ -65,9 +65,11 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
       described_class.track_epic_note_updated_action(**params)
     end
 
-    it_behaves_like 'a daily tracked issuable event' do
+    it_behaves_like 'a daily tracked issuable snowplow and service ping events with namespace' do
       let(:action) { described_class::EPIC_NOTE_UPDATED }
     end
+
+    it_behaves_like 'does not track with namespace when feature flag is disabled', :track_epics_activity
   end
 
   context 'for epic note destroyed event' do
@@ -75,9 +77,11 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
       described_class.track_epic_note_destroyed_action(**params)
     end
 
-    it_behaves_like 'a daily tracked issuable event' do
+    it_behaves_like 'a daily tracked issuable snowplow and service ping events with namespace' do
       let(:action) { described_class::EPIC_NOTE_DESTROYED }
     end
+
+    it_behaves_like 'does not track with namespace when feature flag is disabled', :track_epics_activity
   end
 
   context 'for epic emoji award event' do
@@ -85,9 +89,11 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
       described_class.track_epic_emoji_awarded_action(**params)
     end
 
-    it_behaves_like 'a daily tracked issuable event' do
+    it_behaves_like 'a daily tracked issuable snowplow and service ping events with namespace' do
       let(:action) { described_class::EPIC_EMOJI_AWARDED }
     end
+
+    it_behaves_like 'does not track with namespace when feature flag is disabled', :track_epics_activity
   end
 
   context 'for epic emoji remove event' do
@@ -95,9 +101,11 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
       described_class.track_epic_emoji_removed_action(**params)
     end
 
-    it_behaves_like 'a daily tracked issuable event' do
+    it_behaves_like 'a daily tracked issuable snowplow and service ping events with namespace' do
       let(:action) { described_class::EPIC_EMOJI_REMOVED }
     end
+
+    it_behaves_like 'does not track with namespace when feature flag is disabled', :track_epics_activity
   end
 
   context 'for epic closing event' do

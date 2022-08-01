@@ -814,7 +814,7 @@ class Project < ApplicationRecord
         (?<!#{Gitlab::PathRegex::PATH_START_CHAR})
         ((?<namespace>#{Gitlab::PathRegex::FULL_NAMESPACE_FORMAT_REGEX})\/)?
         (?<project>#{Gitlab::PathRegex::PROJECT_PATH_FORMAT_REGEX})
-      }x
+      }xo
     end
 
     def reference_postfix
@@ -2658,7 +2658,7 @@ class Project < ApplicationRecord
 
     {
       repository_storage: repository_storage,
-      pool_repository:    pool_repository || create_new_pool_repository
+      pool_repository: pool_repository || create_new_pool_repository
     }
   end
 

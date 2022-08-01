@@ -103,16 +103,23 @@ RSpec.describe 'Value stream analytics charts', :js do
           expect(page).to have_css(filters_selector)
         end
 
-        it 'can update the type of work displayed' do
+        it 'can update the filters' do
+          page.within filters_selector do
+            find('.dropdown-toggle').click
+            first_selected_label = all('[data-testid="type-of-work-filters-label"] .dropdown-item.active').first
+            first_selected_label.click
+          end
+
           task_by_type_description_tooltip.hover
-          expect(page).to have_text('Shows issues and 2 labels')
+          expect(page).to have_text('Shows issues and 1 label')
 
           page.within filters_selector do
+            find('.dropdown-toggle').click
             find('[data-testid="type-of-work-filters-subject"] label', text: 'Merge Requests').click
           end
 
           task_by_type_description_tooltip.hover
-          expect(page).to have_text('Shows merge requests and 2 labels')
+          expect(page).to have_text('Shows merge requests and 1 label')
         end
       end
 

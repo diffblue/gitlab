@@ -15,8 +15,8 @@ RSpec.describe 'Creation of a new release' do
 
   let(:mutation_name) { :release_create }
 
-  let(:tag_name) { 'v7.12.5'}
-  let(:ref) { 'master'}
+  let(:tag_name) { 'v7.12.5' }
+  let(:ref) { 'master' }
   let(:milestones) { [milestone_12_3.title, milestone_12_4.title, group_milestone.title] }
 
   let(:mutation_arguments) do

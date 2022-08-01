@@ -58,9 +58,9 @@ RSpec.describe Resolvers::IterationsResolver do
 
           let_it_be(:plan_cadence) { create(:iterations_cadence, title: 'plan cadence', group: group) }
           let_it_be(:product_cadence) { create(:iterations_cadence, title: 'product management', group: group) }
-          let_it_be(:plan_iteration1) { create(:iteration, :with_due_date, title: "Iteration 1", iterations_cadence: plan_cadence, start_date: 1.week.ago)}
-          let_it_be(:plan_iteration2) { create(:iteration, :with_due_date, title: "My iteration", iterations_cadence: plan_cadence, start_date: 2.weeks.ago)}
-          let_it_be(:product_iteration) { create(:iteration, :with_due_date, iterations_cadence: product_cadence, start_date: 1.week.from_now)}
+          let_it_be(:plan_iteration1) { create(:iteration, :with_due_date, title: "Iteration 1", iterations_cadence: plan_cadence, start_date: 1.week.ago) }
+          let_it_be(:plan_iteration2) { create(:iteration, :with_due_date, title: "My iteration", iterations_cadence: plan_cadence, start_date: 2.weeks.ago) }
+          let_it_be(:product_iteration) { create(:iteration, :with_due_date, iterations_cadence: product_cadence, start_date: 1.week.from_now) }
 
           let(:all_iterations) { group.iterations }
 

@@ -350,6 +350,7 @@ group :development do
   gem 'solargraph', '~> 0.45.0', require: false
 
   gem 'letter_opener_web', '~> 2.0.0'
+  gem 'lookbook'
 
   # Better errors handler
   gem 'better_errors', '~> 2.9.0'
@@ -486,7 +487,7 @@ gem 'ssh_data', '~> 1.3'
 gem 'spamcheck', '~> 0.1.0'
 
 # Gitaly GRPC protocol definitions
-gem 'gitaly', '~> 15.1.0-rc1'
+gem 'gitaly', '~> 15.2.0-rc1'
 
 # KAS GRPC protocol definitions
 gem 'kas-grpc', '~> 0.0.2'
@@ -536,7 +537,7 @@ gem 'valid_email', '~> 0.1'
 # JSON
 gem 'json', '~> 2.5.1'
 gem 'json_schemer', '~> 0.2.18'
-gem 'oj', '~> 3.13.18'
+gem 'oj', '~> 3.13.19'
 gem 'multi_json', '~> 1.14.1'
 gem 'yajl-ruby', '~> 1.4.3', require: 'yajl'
 

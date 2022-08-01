@@ -18,7 +18,7 @@ describe('DastSiteProfileSummary', () => {
   });
 
   describe('renders properly', () => {
-    it.each(siteProfiles)('profile %#', (profile) => {
+    it.each(siteProfiles)('profile $id $profileName', (profile) => {
       createWrapper(profile);
 
       expect(wrapper.element).toMatchSnapshot();

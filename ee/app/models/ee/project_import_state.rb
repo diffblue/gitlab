@@ -90,13 +90,13 @@ module EE
     end
 
     def mirror_waiting_duration
-      return unless mirror?
+      return unless project.read_attribute('mirror')
 
       (last_update_started_at.to_i - last_update_scheduled_at.to_i).seconds
     end
 
     def mirror_update_duration
-      return unless mirror?
+      return unless project.read_attribute('mirror')
 
       (last_update_at.to_i - last_update_started_at.to_i).seconds
     end

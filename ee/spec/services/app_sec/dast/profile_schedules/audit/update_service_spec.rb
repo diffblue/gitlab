@@ -24,6 +24,7 @@ RSpec.describe AppSec::Dast::ProfileSchedules::Audit::UpdateService do
       expect(audit_event.target_type).to eq('Dast::ProfileSchedule')
       expect(audit_event.details).to eq({
         author_name: user.name,
+        author_class: user.class.name,
         custom_message: "Changed DAST profile schedule starts_at from #{Date.today} to #{Date.tomorrow}",
         target_id: dast_profile_schedule.id,
         target_type: 'Dast::ProfileSchedule',
