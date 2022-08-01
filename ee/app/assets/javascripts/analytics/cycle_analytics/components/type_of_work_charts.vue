@@ -3,7 +3,7 @@ import { mapActions, mapGetters, mapState } from 'vuex';
 import { GlAlert, GlIcon, GlTooltip, GlSafeHtmlDirective } from '@gitlab/ui';
 import { __ } from '~/locale';
 import ChartSkeletonLoader from '~/vue_shared/components/resizable_chart/skeleton_loader.vue';
-import { generateFilterTextDescription } from '../utils';
+import { uniqById, generateFilterTextDescription } from '../utils';
 import { formattedDate } from '../../shared/utils';
 import { TASKS_BY_TYPE_SUBJECT_ISSUE, TASKS_BY_TYPE_SUBJECT_FILTER_OPTIONS } from '../constants';
 import TasksByTypeChart from './tasks_by_type/tasks_by_type_chart.vue';
@@ -27,12 +27,9 @@ export default {
       'isLoadingTasksByTypeChart',
       'isLoadingTasksByTypeChartTopLabels',
       'errorMessage',
+      'topRankedLabels',
     ]),
-    ...mapGetters('typeOfWork', [
-      'selectedTasksByTypeFilters',
-      'tasksByTypeChartData',
-      'selectedLabelIds',
-    ]),
+    ...mapGetters('typeOfWork', ['selectedTasksByTypeFilters', 'tasksByTypeChartData']),
     hasData() {
       return Boolean(this.tasksByTypeChartData?.data.length);
     },
@@ -46,8 +43,8 @@ export default {
           createdBefore,
           currentGroup: { name: groupName },
           selectedProjectIds,
+          selectedLabelIds,
         },
-        selectedLabelIds,
       } = this;
 
       return generateFilterTextDescription({
@@ -65,6 +62,9 @@ export default {
       } = this;
       return subject || TASKS_BY_TYPE_SUBJECT_ISSUE;
     },
+    selectedLabelIdsFilter() {
+      return this.selectedTasksByTypeFilters?.selectedLabelIds || [];
+    },
     selectedSubjectFilterText() {
       const { selectedSubjectFilter } = this;
       return (
@@ -76,6 +76,9 @@ export default {
       return this.errorMessage
         ? this.errorMessage
         : __('There is no data available. Please change your selection.');
+    },
+    initialGroupLabels() {
+      return uniqById(this.topRankedLabels);
     },
   },
   methods: {
@@ -101,6 +104,8 @@ export default {
           </gl-tooltip>
         </h4>
         <tasks-by-type-filters
+          :default-group-labels="initialGroupLabels"
+          :selected-label-ids="selectedLabelIdsFilter"
           :subject-filter="selectedSubjectFilter"
           @update-filter="onUpdateFilter"
         />

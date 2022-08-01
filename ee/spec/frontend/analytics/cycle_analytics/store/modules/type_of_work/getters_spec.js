@@ -1,8 +1,6 @@
 import {
   tasksByTypeChartData,
   selectedTasksByTypeFilters,
-  topRankedLabelsIds,
-  selectedLabelIds,
 } from 'ee/analytics/cycle_analytics/store/modules/type_of_work/getters';
 import { TASKS_BY_TYPE_SUBJECT_ISSUE } from 'ee/analytics/cycle_analytics/constants';
 import { createdAfter, createdBefore } from 'jest/cycle_analytics/mock_data';
@@ -10,7 +8,6 @@ import {
   rawTasksByTypeData,
   transformedTasksByTypeData,
   groupLabels,
-  groupLabelIds,
   currentGroup,
 } from '../../../mock_data';
 
@@ -27,7 +24,6 @@ const rootState = {
   createdBefore,
   currentGroup,
 };
-const getters = { topRankedLabelsIds: groupLabelIds };
 const rootGetters = { selectedProjectIds, selectedLabelIds: rootSelectedLabelIds };
 
 describe('Type of work getters', () => {
@@ -72,22 +68,6 @@ describe('Type of work getters', () => {
       expect(result.subject).toEqual(TASKS_BY_TYPE_SUBJECT_ISSUE);
       expect(result.createdBefore).toEqual(createdBefore);
       expect(result.createdAfter).toEqual(createdAfter);
-    });
-  });
-
-  describe('topRankedLabelsIds', () => {
-    it('returns the ids of the topRankedLabels state array', () => {
-      expect(topRankedLabelsIds(state)).toEqual(groupLabelIds);
-    });
-  });
-
-  describe('selectedLabelIds', () => {
-    it.each`
-      key                               | condition                                      | rootGettersValue            | result
-      ${'rootGetters selectedLabelIds'} | ${'are rootGetter selectedLabelIds available'} | ${rootGetters}              | ${rootSelectedLabelIds}
-      ${'topRankedLabelsIds'}           | ${'no rootGetter selectedLabelIds'}            | ${{ selectedLabelIds: [] }} | ${groupLabelIds}
-    `('returns the $key when there $condition', ({ rootGettersValue, result }) => {
-      expect(selectedLabelIds(state, getters, null, rootGettersValue)).toEqual(result);
     });
   });
 });

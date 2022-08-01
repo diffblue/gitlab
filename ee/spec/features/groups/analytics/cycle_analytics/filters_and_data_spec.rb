@@ -260,18 +260,6 @@ RSpec.describe 'Group value stream analytics filters and data', :js do
           expect(page.find('.tooltip')).to have_text(_("Shows issues for group '%{group_name}' from Nov 1, 2019 to Dec 31, 2019") % { group_name: group.name })
         end
       end
-
-      context 'with label_name set' do
-        before do
-          visit "#{group_analytics_cycle_analytics_path(group)}?created_before=2019-12-31&created_after=2019-11-01&label_name[]=#{group_label1.name}"
-        end
-
-        it 'applies to the task by type chart' do
-          page.find('[data-testid="vsa-task-by-type-description"]').hover
-
-          expect(page.find('.tooltip')).to have_text(_("Shows issues and 1 label for group '%{group_name}' from Nov 1, 2019 to Dec 31, 2019") % { group_name: group.name })
-        end
-      end
     end
 
     context 'with a group' do
