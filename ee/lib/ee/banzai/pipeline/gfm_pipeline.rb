@@ -24,9 +24,7 @@ module EE
           end
 
           def filters
-            [
-              *super
-            ]
+            Array(super)
           end
         end
       end
