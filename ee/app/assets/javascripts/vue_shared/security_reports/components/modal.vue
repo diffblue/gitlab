@@ -125,19 +125,19 @@ export default {
       // If we don't have access to the feedback object, we can preempt the data with properties taken from the `gon` variable
 
       const {
-        current_user_avatar_url,
-        current_user_fullname,
-        current_user_id,
-        current_username,
+        current_user_avatar_url: avatarUrl,
+        current_user_fullname: name,
+        current_user_id: id,
+        current_username: username,
       } = gon;
 
       return {
         author: {
-          id: current_user_id,
-          name: current_user_fullname,
-          username: current_username,
+          id,
+          name,
+          username,
           state: 'active',
-          avatar_url: current_user_avatar_url,
+          avatar_url: avatarUrl,
         },
       };
     },

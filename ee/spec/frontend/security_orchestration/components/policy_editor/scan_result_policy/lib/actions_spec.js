@@ -261,28 +261,28 @@ describe('approversOutOfSync', () => {
   });
   describe('with user_approvers, user_approvers_ids and group_approvers_ids', () => {
     it.each`
-      user_ids | usernames        | group_ids | approvers          | result
-      ${[]}    | ${['user name']} | ${[2]}    | ${allApprovers}    | ${false}
-      ${[1]}   | ${[]}            | ${[2]}    | ${allApprovers}    | ${false}
-      ${[]}    | ${[]}            | ${[]}     | ${[]}              | ${false}
-      ${[1]}   | ${['user name']} | ${[2]}    | ${allApprovers}    | ${true}
-      ${[]}    | ${['user name']} | ${[3]}    | ${allApprovers}    | ${true}
-      ${[1]}   | ${[]}            | ${[3]}    | ${allApprovers}    | ${true}
-      ${[]}    | ${[]}            | ${[2]}    | ${[groupApprover]} | ${false}
-      ${[1]}   | ${[]}            | ${[2]}    | ${[groupApprover]} | ${true}
-      ${[]}    | ${['user name']} | ${[2]}    | ${[groupApprover]} | ${true}
-      ${[]}    | ${['user name']} | ${[]}     | ${[userApprover]}  | ${false}
-      ${[1]}   | ${[]}            | ${[]}     | ${[userApprover]}  | ${false}
-      ${[1]}   | ${[]}            | ${[2]}    | ${[userApprover]}  | ${true}
+      userApproversIds | usernames        | groupApproversIds | approvers          | result
+      ${[]}            | ${['user name']} | ${[2]}            | ${allApprovers}    | ${false}
+      ${[1]}           | ${[]}            | ${[2]}            | ${allApprovers}    | ${false}
+      ${[]}            | ${[]}            | ${[]}             | ${[]}              | ${false}
+      ${[1]}           | ${['user name']} | ${[2]}            | ${allApprovers}    | ${true}
+      ${[]}            | ${['user name']} | ${[3]}            | ${allApprovers}    | ${true}
+      ${[1]}           | ${[]}            | ${[3]}            | ${allApprovers}    | ${true}
+      ${[]}            | ${[]}            | ${[2]}            | ${[groupApprover]} | ${false}
+      ${[1]}           | ${[]}            | ${[2]}            | ${[groupApprover]} | ${true}
+      ${[]}            | ${['user name']} | ${[2]}            | ${[groupApprover]} | ${true}
+      ${[]}            | ${['user name']} | ${[]}             | ${[userApprover]}  | ${false}
+      ${[1]}           | ${[]}            | ${[]}             | ${[userApprover]}  | ${false}
+      ${[1]}           | ${[]}            | ${[2]}            | ${[userApprover]}  | ${true}
     `(
-      'return $result when user_ids, usernames, group_ids and approvers length equal to $user_ids, $usernames, $group_ids and $approvers.length',
-      ({ user_ids, usernames, group_ids, approvers, result }) => {
+      'return $result when user_ids, usernames, group_ids and approvers length equal to $userApproversIds, $usernames, $groupApproversIds and $approvers.length',
+      ({ userApproversIds, usernames, groupApproversIds, approvers, result }) => {
         const action = {
           approvals_required: 1,
           type: 'require_approval',
           user_approvers: usernames,
-          user_approvers_ids: user_ids,
-          group_approvers_ids: group_ids,
+          user_approvers_ids: userApproversIds,
+          group_approvers_ids: groupApproversIds,
         };
         expect(approversOutOfSync(action, approvers)).toBe(result);
       },
@@ -312,28 +312,28 @@ describe('approversOutOfSync', () => {
   });
   describe('with user_approvers, user_approvers_ids, group_approvers_ids and group_approvers', () => {
     it.each`
-      user_ids | usernames        | group_ids | group_paths        | approvers           | result
-      ${[]}    | ${['user name']} | ${[2]}    | ${[]}              | ${allApprovers}     | ${false}
-      ${[1]}   | ${[]}            | ${[2]}    | ${[]}              | ${allApprovers}     | ${false}
-      ${[1]}   | ${[]}            | ${[]}     | ${['full path']}   | ${allApprovers}     | ${false}
-      ${[]}    | ${['user name']} | ${[]}     | ${['full path']}   | ${allApprovers}     | ${false}
-      ${[]}    | ${[]}            | ${[]}     | ${[]}              | ${[]}               | ${false}
-      ${[]}    | ${['user name']} | ${[3]}    | ${[]}              | ${allApprovers}     | ${true}
-      ${[1]}   | ${[]}            | ${[3]}    | ${[]}              | ${allApprovers}     | ${true}
-      ${[1]}   | ${[]}            | ${[]}     | ${['not present']} | ${allApprovers}     | ${true}
-      ${[]}    | ${['user name']} | ${[]}     | ${['not present']} | ${allApprovers}     | ${true}
-      ${[1]}   | ${[]}            | ${[]}     | ${['full path']}   | ${[groupApprovers]} | ${true}
-      ${[]}    | ${['user name']} | ${[]}     | ${['full path']}   | ${[groupApprovers]} | ${true}
+      userApproversIds | usernames        | groupApproversIds | groupPaths         | approvers           | result
+      ${[]}            | ${['user name']} | ${[2]}            | ${[]}              | ${allApprovers}     | ${false}
+      ${[1]}           | ${[]}            | ${[2]}            | ${[]}              | ${allApprovers}     | ${false}
+      ${[1]}           | ${[]}            | ${[]}             | ${['full path']}   | ${allApprovers}     | ${false}
+      ${[]}            | ${['user name']} | ${[]}             | ${['full path']}   | ${allApprovers}     | ${false}
+      ${[]}            | ${[]}            | ${[]}             | ${[]}              | ${[]}               | ${false}
+      ${[]}            | ${['user name']} | ${[3]}            | ${[]}              | ${allApprovers}     | ${true}
+      ${[1]}           | ${[]}            | ${[3]}            | ${[]}              | ${allApprovers}     | ${true}
+      ${[1]}           | ${[]}            | ${[]}             | ${['not present']} | ${allApprovers}     | ${true}
+      ${[]}            | ${['user name']} | ${[]}             | ${['not present']} | ${allApprovers}     | ${true}
+      ${[1]}           | ${[]}            | ${[]}             | ${['full path']}   | ${[groupApprovers]} | ${true}
+      ${[]}            | ${['user name']} | ${[]}             | ${['full path']}   | ${[groupApprovers]} | ${true}
     `(
-      'return $result when user_ids, usernames, group_ids, group_paths and approvers length equal to $user_ids, $usernames, $group_ids, $group_paths and $approvers.length',
-      ({ user_ids, usernames, group_ids, group_paths, approvers, result }) => {
+      'return $result when user_ids, usernames, group_ids, group_paths and approvers length equal to $userApproversIds, $usernames, $groupApproversIds, $groupPaths and $approvers.length',
+      ({ userApproversIds, usernames, groupApproversIds, groupPaths, approvers, result }) => {
         const action = {
           approvals_required: 1,
           type: 'require_approval',
           user_approvers: usernames,
-          user_approvers_ids: user_ids,
-          group_approvers_ids: group_ids,
-          group_approvers: group_paths,
+          user_approvers_ids: userApproversIds,
+          group_approvers_ids: groupApproversIds,
+          group_approvers: groupPaths,
         };
         expect(approversOutOfSync(action, approvers)).toBe(result);
       },

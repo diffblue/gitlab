@@ -38,16 +38,16 @@ describe('ee/external_issues_list/graphql/resolvers', () => {
     total,
   });
 
-  const createUserCore = ({ avatar_url, web_url, ...props }) => ({
+  const createUserCore = ({ avatar_url: avatarUrl, web_url: webUrl, ...props }) => ({
     __typename: 'UserCore',
-    avatarUrl: avatar_url,
-    webUrl: web_url,
+    avatarUrl,
+    webUrl,
     ...props,
   });
 
-  const createLabel = ({ text_color, ...props }) => ({
+  const createLabel = ({ text_color: textColor, ...props }) => ({
     __typename: 'Label',
-    textColor: text_color,
+    textColor,
     ...props,
   });
 
@@ -55,24 +55,24 @@ describe('ee/external_issues_list/graphql/resolvers', () => {
     assignees,
     author,
     labels,
-    closed_at,
-    created_at,
-    gitlab_web_url,
-    updated_at,
-    web_url,
-    project_id,
+    closed_at: closedAt,
+    created_at: createdAt,
+    gitlab_web_url: gitlabWebUrl,
+    updated_at: updatedAt,
+    web_url: webUrl,
+    project_id: projectId,
     ...props
   }) => ({
     __typename: `${issueTrackerName}Issue`,
     assignees: assignees.map(createUserCore),
     author: createUserCore(author),
     labels: labels.map(createLabel),
-    closedAt: closed_at,
-    createdAt: created_at,
-    gitlabWebUrl: gitlab_web_url,
-    updatedAt: updated_at,
-    webUrl: web_url,
-    projectId: project_id,
+    closedAt,
+    createdAt,
+    gitlabWebUrl,
+    updatedAt,
+    webUrl,
+    projectId,
     ...props,
   });
 

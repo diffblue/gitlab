@@ -26,6 +26,7 @@ class GfmAutoCompleteEE extends GfmAutoComplete {
     super.setupAtWho($input);
   }
 
+  // eslint-disable-next-line class-methods-use-this
   setupAutoCompleteEpics = ($input, defaultCallbacks) => {
     $input.atwho({
       at: '&',
@@ -61,6 +62,7 @@ class GfmAutoCompleteEE extends GfmAutoComplete {
     showAndHideHelper($input, EPICS_ALIAS);
   };
 
+  // eslint-disable-next-line class-methods-use-this
   setupAutoCompleteVulnerabilities = ($input, defaultCallbacks) => {
     $input.atwho({
       at: '[vulnerability:',

@@ -50,10 +50,10 @@ export default {
   },
   methods: {
     ...mapActions('filters', ['setGroupNamespace', 'setProjectPath']),
-    onGroupSelected({ id, full_path }) {
+    onGroupSelected({ id, full_path: fullPath }) {
       this.groupId = id;
-      this.setGroupNamespace(full_path);
-      this.$emit('groupSelected', { groupId: id, groupNamespace: full_path });
+      this.setGroupNamespace(fullPath);
+      this.$emit('groupSelected', { groupId: id, groupNamespace: fullPath });
     },
     onProjectsSelected(selectedProjects) {
       const projectNamespace = selectedProjects[0]?.fullPath || null;
