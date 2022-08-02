@@ -61,6 +61,19 @@ RSpec.describe "Admin Runners" do
           visit admin_runners_path
         end
 
+        describe 'filters' do
+          let(:runner_version) {'15.0.0'}
+          let(:available_runner_releases) {%w[15.0.0]}
+
+          it 'shows upgrade filter' do
+            focus_filtered_search
+
+            page.within(search_bar_selector) do
+              expect(page).to have_link(s_('Runners|Upgrade Status'))
+            end
+          end
+        end
+
         describe 'recommended to upgrade (patch)' do
           let(:runner_version) { '15.0.0' }
           let(:available_runner_releases) { %w[15.0.1] }
@@ -95,6 +108,19 @@ RSpec.describe "Admin Runners" do
           stub_licensed_features(runner_upgrade_management: false)
 
           visit admin_runners_path
+        end
+
+        describe 'filters' do
+          let(:runner_version) {'15.0.0'}
+          let(:available_runner_releases) {%w[15.0.0]}
+
+          it 'does not show upgrade filter' do
+            focus_filtered_search
+
+            page.within(search_bar_selector) do
+              expect(page).not_to have_link(s_('Runners|Upgrade Status'))
+            end
+          end
         end
 
         describe 'can upgrade' do
