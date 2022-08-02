@@ -19,7 +19,6 @@ exports[`dashboard should match the snapshot 1`] = `
       This dashboard displays 3 environments per project, and is linked to the Operations Dashboard. When you add or remove a project from one dashboard, GitLab adds or removes the project from the other. 
       <gl-link-stub
         href="/help/user/operations_dashboard/index.html"
-        rel="noopener noreferrer"
         target="_blank"
       >
         
@@ -69,7 +68,6 @@ exports[`dashboard should match the snapshot 1`] = `
     This dashboard displays 3 environments per project, and is linked to the Operations Dashboard. When you add or remove a project from one dashboard, GitLab adds or removes the project from the other. 
     <gl-link-stub
       href="/help/user/operations_dashboard/index.html"
-      rel="noopener noreferrer"
       target="_blank"
     >
       

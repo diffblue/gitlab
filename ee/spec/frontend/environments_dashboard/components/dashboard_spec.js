@@ -97,7 +97,6 @@ describe('dashboard', () => {
 
       expect(helpLink.text()).toBe('More information');
       expect(helpLink.attributes('href')).toBe(propsData.environmentsDashboardHelpPath);
-      expect(helpLink.attributes('rel')).toBe('noopener noreferrer');
     });
   });
 

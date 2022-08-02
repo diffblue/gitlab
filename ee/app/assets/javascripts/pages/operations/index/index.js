@@ -16,6 +16,7 @@ new Vue({
         addPath: this.$el.dataset.addPath,
         emptyDashboardSvgPath: this.$el.dataset.emptyDashboardSvgPath,
         emptyDashboardHelpPath: this.$el.dataset.emptyDashboardHelpPath,
+        operationsDashboardHelpPath: this.$el.dataset.operationsDashboardHelpPath,
       },
     });
   },

@@ -20,6 +20,7 @@ describe('dashboard component', () => {
   let mockAxios;
 
   const emptyDashboardHelpPath = '/help/user/operations_dashboard/index.html';
+  const operationsDashboardHelpPath = '/help/user/operations_dashboard/index.html';
   const emptyDashboardSvgPath = '/assets/illustrations/operations-dashboard_empty.svg';
 
   const mountComponent = ({ stubs = {}, state = {} } = {}) =>
@@ -30,6 +31,7 @@ describe('dashboard component', () => {
         listPath: mockListEndpoint,
         emptyDashboardSvgPath,
         emptyDashboardHelpPath,
+        operationsDashboardHelpPath,
       },
       state,
       stubs,
