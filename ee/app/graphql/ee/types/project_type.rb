@@ -6,34 +6,34 @@ module EE
       extend ActiveSupport::Concern
 
       prepended do
-        field :security_scanners, ::Types::SecurityScanners, null: true,
+        field :security_scanners, ::Types::SecurityScanners,
+              null: true,
               description: 'Information about security analyzers used in the project.',
               method: :itself
 
-        field :security_training_providers, [::Types::Security::TrainingType], null: true,
+        field :security_training_providers, [::Types::Security::TrainingType],
+              null: true,
               description: 'List of security training providers for the project',
               resolver: ::Resolvers::SecurityTrainingProvidersResolver
 
-        field :vulnerabilities,
-              ::Types::VulnerabilityType.connection_type,
+        field :vulnerabilities, ::Types::VulnerabilityType.connection_type,
               null: true,
               extras: [:lookahead],
               description: 'Vulnerabilities reported on the project.',
               resolver: ::Resolvers::VulnerabilitiesResolver
 
-        field :vulnerability_scanners,
-              ::Types::VulnerabilityScannerType.connection_type,
+        field :vulnerability_scanners, ::Types::VulnerabilityScannerType.connection_type,
               null: true,
               description: 'Vulnerability scanners reported on the project vulnerabilities.',
               resolver: ::Resolvers::Vulnerabilities::ScannersResolver
 
-        field :vulnerabilities_count_by_day,
-              ::Types::VulnerabilitiesCountByDayType.connection_type,
+        field :vulnerabilities_count_by_day, ::Types::VulnerabilitiesCountByDayType.connection_type,
               null: true,
               description: 'The historical number of vulnerabilities per day for the project.',
               resolver: ::Resolvers::VulnerabilitiesCountPerDayResolver
 
-        field :vulnerability_severities_count, ::Types::VulnerabilitySeveritiesCountType, null: true,
+        field :vulnerability_severities_count, ::Types::VulnerabilitySeveritiesCountType,
+              null: true,
               description: 'Counts for each vulnerability severity in the project.',
               resolver: ::Resolvers::VulnerabilitySeveritiesCountResolver
 
@@ -41,12 +41,14 @@ module EE
               description: 'Find a single requirement.',
               resolver: ::Resolvers::RequirementsManagement::RequirementsResolver.single
 
-        field :requirements, ::Types::RequirementsManagement::RequirementType.connection_type, null: true,
+        field :requirements, ::Types::RequirementsManagement::RequirementType.connection_type,
+              null: true,
               description: 'Find requirements.',
               extras: [:lookahead],
               resolver: ::Resolvers::RequirementsManagement::RequirementsResolver
 
-        field :requirement_states_count, ::Types::RequirementsManagement::RequirementStatesCountType, null: true,
+        field :requirement_states_count, ::Types::RequirementsManagement::RequirementStatesCountType,
+              null: true,
               description: 'Number of requirements for the project by their state.'
 
         field :compliance_frameworks, ::Types::ComplianceManagement::ComplianceFrameworkType.connection_type,
@@ -57,11 +59,13 @@ module EE
               description: "Path to project's security dashboard.",
               null: true
 
-        field :iterations, ::Types::IterationType.connection_type, null: true,
+        field :iterations, ::Types::IterationType.connection_type,
+              null: true,
               description: 'Find iterations.',
               resolver: ::Resolvers::IterationsResolver
 
-        field :iteration_cadences, ::Types::Iterations::CadenceType.connection_type, null: true,
+        field :iteration_cadences, ::Types::Iterations::CadenceType.connection_type,
+              null: true,
               description: 'Find iteration cadences.',
               resolver: ::Resolvers::Iterations::CadencesResolver
 
@@ -186,7 +190,8 @@ module EE
               ::Types::NetworkPolicyType.connection_type,
               null: true,
               deprecated: {
-                reason: 'Network policies are deprecated and will be removed in GitLab 16.0. Since GitLab 15.0 this field returns no data',
+                reason: 'Network policies are deprecated and will be removed in GitLab 16.0. Since GitLab 15.0 ' \
+                        'this field returns no data',
                 milestone: '14.8'
               },
               description: 'Network Policies of the project',

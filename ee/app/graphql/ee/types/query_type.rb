@@ -33,9 +33,8 @@ module EE
               ::Types::VulnerabilitiesCountByDayType.connection_type,
               null: true,
               resolver: ::Resolvers::VulnerabilitiesCountPerDayResolver,
-              description: <<~DESC
-                The historical number of vulnerabilities per day for the projects on the current user's instance security dashboard.
-              DESC
+              description: 'The historical number of vulnerabilities per day for the projects on the current ' \
+                           'user\'s instance security dashboard.'
 
         field :geo_node, ::Types::Geo::GeoNodeType,
               null: true,
@@ -47,9 +46,11 @@ module EE
               resolver: ::Resolvers::InstanceSecurityDashboardResolver,
               description: 'Fields related to Instance Security Dashboard.'
 
-        field :devops_adoption_enabled_namespaces, ::Types::Analytics::DevopsAdoption::EnabledNamespaceType.connection_type,
+        field :devops_adoption_enabled_namespaces,
+              ::Types::Analytics::DevopsAdoption::EnabledNamespaceType.connection_type,
               null: true,
-              description: 'Get configured DevOps adoption namespaces. **BETA** This endpoint is subject to change without notice.',
+              description: 'Get configured DevOps adoption namespaces. **BETA** This endpoint is subject to change ' \
+                           'without notice.',
               resolver: ::Resolvers::Analytics::DevopsAdoption::EnabledNamespacesResolver
 
         field :current_license, ::Types::Admin::CloudLicenses::CurrentLicenseType,
@@ -70,11 +71,9 @@ module EE
         field :ci_minutes_usage, ::Types::Ci::Minutes::NamespaceMonthlyUsageType.connection_type,
               null: true,
               description: 'CI/CD minutes usage data for a namespace.' do
-          argument :namespace_id,
-                   ::Types::GlobalIDType[::Namespace],
-                   required: false,
+                argument :namespace_id, ::Types::GlobalIDType[::Namespace], required: false,
                    description: 'Global ID of the Namespace for the monthly CI/CD minutes usage.'
-        end
+              end
 
         field :epic_board_list, ::Types::Boards::EpicListType,
                null: true,
