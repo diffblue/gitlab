@@ -28,40 +28,25 @@ RSpec.describe AlertManagement::ProcessPrometheusAlertService do
         }
       end
 
-      context 'with on-call schedule' do
-        let_it_be(:schedule) { create(:incident_management_oncall_schedule, project: project) }
-        let_it_be(:rotation) { create(:incident_management_oncall_rotation, schedule: schedule) }
-        let_it_be(:participant) { create(:incident_management_oncall_participant, :with_developer_access, rotation: rotation) }
+      it_behaves_like 'does not create or delete any escalations'
 
-        let(:users) { [participant.user] }
+      context 'with escalation policies feature enabled' do
+        let_it_be(:policy) { create(:incident_management_escalation_policy, project: project) }
 
         before do
-          stub_licensed_features(oncall_schedules: project)
+          stub_licensed_features(oncall_schedules: true, escalation_policies: true)
         end
 
-        include_examples 'oncall users are correctly notified of firing alert'
+        include_examples 'creates an escalation'
 
-        context 'with resolving payload' do
-          let(:payload) { raw_payload.merge('status' => 'resolved') }
+        context 'with an existing alert' do
+          let!(:target) { create(:alert_management_alert, :from_payload, project: project, payload: payload, fingerprint: gitlab_fingerprint) }
+          let!(:pending_escalation) { create(:incident_management_pending_alert_escalation, alert: target) }
 
-          include_examples 'oncall users are correctly notified of recovery alert'
-        end
+          it_behaves_like 'does not create or delete any escalations'
 
-        context 'with escalation policies ready' do
-          let_it_be(:project) { schedule.project }
-          let_it_be(:policy) { create(:incident_management_escalation_policy, project: project) }
-
-          before do
-            stub_licensed_features(oncall_schedules: true, escalation_policies: true)
-          end
-
-          it_behaves_like 'does not send on-call notification'
-          include_examples 'creates an escalation', 1
-
-          context 'existing alert is now resolved' do
+          context 'with resolving payload' do
             let(:payload) { raw_payload.merge('status' => 'resolved') }
-            let!(:target) { create(:alert_management_alert, :from_payload, project: project, payload: payload, fingerprint: gitlab_fingerprint) }
-            let!(:pending_escalation) { create(:incident_management_pending_alert_escalation, alert: target) }
 
             include_examples "deletes the target's escalations"
           end

@@ -21,10 +21,16 @@ RSpec.describe IncidentManagement::PendingEscalations::ProcessService do
   describe '#execute' do
     subject(:execute) { service.execute }
 
-    shared_examples 'it does not escalate' do
-      it_behaves_like 'does not send on-call notification'
+    shared_examples 'does not send on-call notification' do
+      specify do
+        expect(NotificationService).not_to receive(:new)
 
-      it 'does not delete the escalation' do
+        subject
+      end
+    end
+
+    shared_examples 'does not delete the escalation' do
+      specify do
         subject
         expect { escalation.reload }.not_to raise_error
       end
@@ -77,11 +83,39 @@ RSpec.describe IncidentManagement::PendingEscalations::ProcessService do
       end
     end
 
-    shared_examples 'does not escalate if escalation is not ready to be processed' do
-      context 'does not escalate if escalation is not ready to be processed' do
+    shared_examples 'does not escalate if escalation should not be processed' do
+      context 'when escalation is not scheduled to occur' do
         let(:process_at) { 5.minutes.from_now }
 
-        it_behaves_like 'it does not escalate'
+        it_behaves_like 'does not send on-call notification'
+        it_behaves_like 'does not delete the escalation'
+      end
+
+      context 'when escalation policies feature is unavailable' do
+        before do
+          stub_licensed_features(oncall_schedules: false, escalation_policies: false)
+        end
+
+        it_behaves_like 'does not send on-call notification'
+        it_behaves_like 'deletes the escalation'
+      end
+
+      context 'target escalation status is resolved' do
+        before do
+          escalation.escalatable.resolve!
+        end
+
+        it_behaves_like 'does not send on-call notification'
+        it_behaves_like 'deletes the escalation'
+      end
+
+      context 'target status is not above threshold' do
+        before do
+          escalation.escalatable.acknowledge!
+        end
+
+        it_behaves_like 'does not send on-call notification'
+        it_behaves_like 'does not delete the escalation'
       end
     end
 
@@ -93,20 +127,7 @@ RSpec.describe IncidentManagement::PendingEscalations::ProcessService do
       let(:notification_action) { :notify_oncall_users_of_alert }
 
       include_examples 'escalates correctly when all conditions are met'
-      include_examples 'does not escalate if escalation is not ready to be processed'
-
-      context 'target is already resolved' do
-        let(:target) { create(:alert_management_alert, :resolved, project: project) }
-
-        it_behaves_like 'does not send on-call notification'
-        it_behaves_like 'deletes the escalation'
-      end
-
-      context 'target status is not above threshold' do
-        let(:target) { create(:alert_management_alert, :acknowledged, project: project) }
-
-        it_behaves_like 'it does not escalate'
-      end
+      include_examples 'does not escalate if escalation should not be processed'
     end
 
     context 'issue escalation' do
@@ -117,22 +138,7 @@ RSpec.describe IncidentManagement::PendingEscalations::ProcessService do
       let(:notification_action) { :notify_oncall_users_of_incident }
 
       include_examples 'escalates correctly when all conditions are met'
-      include_examples 'does not escalate if escalation is not ready to be processed'
-
-      context 'target escalation status is resolved' do
-        before do
-          target.incident_management_issuable_escalation_status.resolve!
-        end
-
-        it_behaves_like 'does not send on-call notification'
-        it_behaves_like 'deletes the escalation'
-      end
-
-      context 'target status is not above threshold' do
-        let!(:issue_escalation_status) { create(:incident_management_issuable_escalation_status, :acknowledged, issue: issue) }
-
-        it_behaves_like 'it does not escalate'
-      end
+      include_examples 'does not escalate if escalation should not be processed'
     end
   end
 end

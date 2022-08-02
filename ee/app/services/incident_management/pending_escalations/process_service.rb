@@ -14,9 +14,12 @@ module IncidentManagement
       end
 
       def execute
-        return unless ::Gitlab::IncidentManagement.escalation_policies_available?(project)
+        if feature_unavailable? || escalatable_already_resolved?
+          destroy_escalation!
+          return
+        end
+
         return if too_early_to_process?
-        return if escalatable_already_resolved?
         return if escalatable_status_exceeded_rule?
 
         notify_recipients
@@ -28,10 +31,12 @@ module IncidentManagement
 
       attr_reader :escalation, :project, :target, :rule, :escalatable
 
-      def escalatable_already_resolved?
-        return false unless escalatable.resolved?
+      def feature_unavailable?
+        !::Gitlab::IncidentManagement.escalation_policies_available?(project)
+      end
 
-        destroy_escalation!
+      def escalatable_already_resolved?
+        escalatable.resolved?
       end
 
       def escalatable_status_exceeded_rule?

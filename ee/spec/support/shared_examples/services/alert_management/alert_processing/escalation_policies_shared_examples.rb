@@ -17,3 +17,13 @@ RSpec.shared_examples "deletes the target's escalations" do
     expect { subject }.to change { target.pending_escalations.reload.count }.from(before_count).to(0)
   end
 end
+
+RSpec.shared_examples 'does not create or delete any escalations' do
+  specify do
+    expect(::IncidentManagement::PendingEscalations::AlertCreateWorker).not_to receive(:perform_async)
+
+    expect { subject }
+      .to not_change(::IncidentManagement::PendingEscalations::Alert, :count)
+      .and not_change(::IncidentManagement::PendingEscalations::Issue, :count)
+  end
+end
