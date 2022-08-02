@@ -18863,6 +18863,17 @@ Represents a start and due date widget.
 | <a id="workitemwidgetstartandduedatestartdate"></a>`startDate` | [`Date`](#date) | Start date of the work item. |
 | <a id="workitemwidgetstartandduedatetype"></a>`type` | [`WorkItemWidgetType`](#workitemwidgettype) | Widget type. |
 
+### `WorkItemWidgetVerificationStatus`
+
+Represents a verification status widget.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="workitemwidgetverificationstatustype"></a>`type` | [`WorkItemWidgetType`](#workitemwidgettype) | Widget type. |
+| <a id="workitemwidgetverificationstatusverificationstatus"></a>`verificationStatus` | [`String`](#string) | Verification status of the work item. |
+
 ### `WorkItemWidgetWeight`
 
 Represents a weight widget.
@@ -20739,6 +20750,7 @@ Type of a work item widget.
 | <a id="workitemwidgettypedescription"></a>`DESCRIPTION` | Description widget. |
 | <a id="workitemwidgettypehierarchy"></a>`HIERARCHY` | Hierarchy widget. |
 | <a id="workitemwidgettypestart_and_due_date"></a>`START_AND_DUE_DATE` | Start And Due Date widget. |
+| <a id="workitemwidgettypeverification_status"></a>`VERIFICATION_STATUS` | Verification Status widget. |
 | <a id="workitemwidgettypeweight"></a>`WEIGHT` | Weight widget. |
 
 ## Scalar types
@@ -21995,6 +22007,7 @@ Implementations:
 - [`WorkItemWidgetDescription`](#workitemwidgetdescription)
 - [`WorkItemWidgetHierarchy`](#workitemwidgethierarchy)
 - [`WorkItemWidgetStartAndDueDate`](#workitemwidgetstartandduedate)
+- [`WorkItemWidgetVerificationStatus`](#workitemwidgetverificationstatus)
 - [`WorkItemWidgetWeight`](#workitemwidgetweight)
 
 ##### Fields

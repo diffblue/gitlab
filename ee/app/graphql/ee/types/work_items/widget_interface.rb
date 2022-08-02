@@ -14,6 +14,8 @@ module EE
             case object
             when ::WorkItems::Widgets::Weight
               ::Types::WorkItems::Widgets::WeightType
+            when ::WorkItems::Widgets::VerificationStatus
+              ::Types::WorkItems::Widgets::VerificationStatusType
             else
               super
             end
@@ -21,7 +23,10 @@ module EE
         end
 
         prepended do
-          EE_ORPHAN_TYPES = [::Types::WorkItems::Widgets::WeightType].freeze
+          EE_ORPHAN_TYPES = [
+            ::Types::WorkItems::Widgets::WeightType,
+            ::Types::WorkItems::Widgets::VerificationStatusType
+          ].freeze
 
           orphan_types(*ce_orphan_types, *EE_ORPHAN_TYPES)
         end
