@@ -2,6 +2,7 @@
 require 'spec_helper'
 
 RSpec.describe 'Analytics (JavaScript fixtures)', :sidekiq_inline do
+  include CycleAnalyticsHelpers
   include JavaScriptFixturesHelpers
 
   let_it_be(:group) { create(:group) }
