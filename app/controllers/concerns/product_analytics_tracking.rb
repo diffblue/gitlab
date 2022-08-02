@@ -45,12 +45,11 @@ module ProductAnalyticsTracking
     Gitlab::Tracking.event(
       self.class.to_s,
       action,
-      **{
-        user: current_user,
-        property: name,
-        label: label,
-        namespace: tracking_namespace_source
-      }.merge(optional_arguments)
+      user: current_user,
+      property: name,
+      label: label,
+      namespace: tracking_namespace_source,
+      **optional_arguments
     )
   end
 

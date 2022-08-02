@@ -399,11 +399,10 @@ module Integrations
       Gitlab::Tracking.event(
         SNOWPLOW_EVENT_CATEGORY,
         SNOWPLOW_EVENT_ACTION,
-        **{
-          label: SNOWPLOW_EVENT_LABEL,
-          property: key,
-          user: user
-        }.merge(optional_arguments)
+        label: SNOWPLOW_EVENT_LABEL,
+        property: key,
+        user: user,
+        **optional_arguments
       )
     end
 

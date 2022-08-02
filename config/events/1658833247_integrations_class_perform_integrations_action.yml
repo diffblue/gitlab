@@ -2,10 +2,7 @@
 description: Integration usage event
 category: integrations class
 action: perform_integrations_action
-label_description:
 property_description: the name of the performed action
-value_description:
-extra_properties:
 identifiers:
 - project
 - user

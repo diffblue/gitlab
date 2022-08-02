@@ -67,7 +67,8 @@ RSpec.describe Projects::Integrations::Jira::IssuesController do
     end
 
     it_behaves_like 'Snowplow event tracking' do
-      let(:subject) { get :index, params: { namespace_id: project.namespace, project_id: project } }
+      subject(:get_index) { get :index, params: { namespace_id: project.namespace, project_id: project } }
+
       let(:feature_flag_name) { :route_hll_to_snowplow_phase2 }
       let(:category) { described_class.name }
       let(:action) { 'perform_integrations_action' }

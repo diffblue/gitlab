@@ -313,7 +313,8 @@ RSpec.describe Integrations::Jira do
       end
 
       it_behaves_like 'Snowplow event tracking' do
-        let(:subject) { jira_integration.create_issue('x', 'y', user) }
+        subject(:create_issue) { jira_integration.create_issue('x', 'y', user) }
+
         let(:user) { build_stubbed(:user) }
         let(:feature_flag_name) { :route_hll_to_snowplow_phase2 }
         let(:category) { 'Integrations::Jira' }
