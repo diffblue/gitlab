@@ -89,6 +89,21 @@ RSpec.describe GroupSamlGroupSyncWorker do
               end
             end
 
+            context 'when the member is the last owner' do
+              before do
+                top_level_group.add_member(user, Gitlab::Access::OWNER)
+              end
+
+              it 'does not update the member when the member is the last owner' do
+                expect_metadata_logging_call({ added: 0, updated: 0, removed: 0 })
+
+                perform([group_link.id])
+
+                expect(top_level_member_access_level)
+                  .to eq(Gitlab::Access::OWNER)
+              end
+            end
+
             context 'when the membership role deviates from the default' do
               before do
                 top_level_group.add_member(user, Gitlab::Access::MAINTAINER)

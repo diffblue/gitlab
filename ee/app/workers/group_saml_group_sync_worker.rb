@@ -54,6 +54,7 @@ class GroupSamlGroupSyncWorker
     return false unless Feature.enabled?(:saml_group_sync_retain_default_membership)
     return false unless top_level_group_contains_any_group_links?
     return false if top_level_group_in_group_links?
+    return false if top_level_group.last_owner?(user)
 
     default_membership_role = top_level_group.saml_provider.default_membership_role
     return false if top_level_group.max_member_access_for_user(user) == default_membership_role
