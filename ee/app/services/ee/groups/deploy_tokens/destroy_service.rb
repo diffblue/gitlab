@@ -18,15 +18,17 @@ module EE
         def audit_event_service(deploy_token)
           message = "Destroyed group deploy token with name: #{deploy_token.name} with token_id: #{deploy_token.id} with scopes: #{deploy_token.scopes}."
 
-          ::AuditEventService.new(
-            current_user,
-            group,
-            target_id: deploy_token.id,
-            target_type: deploy_token.class.name,
-            target_details: deploy_token.name,
-            action: :custom,
-            custom_message: message
-          ).security_event
+          audit_context = {
+            name: "group_deploy_token_destroyed",
+            author: current_user,
+            scope: group,
+            target: deploy_token,
+            message: message,
+            additional_details: {
+              action: :custom
+            }
+          }
+          ::Gitlab::Audit::Auditor.audit(audit_context)
         end
       end
     end
