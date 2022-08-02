@@ -63,6 +63,45 @@ RSpec.describe API::MergeRequests do
       end
     end
 
+    context 'reviewers over the max limit' do
+      let(:user2) { create(:user) }
+      let(:user3) { create(:user) }
+      let(:params) do
+        { reviewer_ids: [user.id, user2.id, user3.id] }
+      end
+
+      before do
+        stub_const("MergeRequest::MAX_NUMBER_OF_ASSIGNEES_OR_REVIEWERS", 2)
+      end
+
+      context 'when licensed' do
+        before do
+          stub_licensed_features(multiple_merge_request_reviewers: true)
+        end
+
+        it 'does not create merge request with too many reviewers' do
+          update_merge_request(params)
+
+          expect(response).to have_gitlab_http_status(:bad_request)
+          expect(json_response['message']['reviewers']).to match_array(["total must be less than or equal to 2"])
+        end
+      end
+
+      context 'when not licensed' do
+        before do
+          stub_licensed_features(multiple_merge_request_reviewers: false)
+        end
+
+        it 'creates merge request with a single reviewer' do
+          update_merge_request(params)
+
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(json_response['reviewers'].size).to eq(1)
+          expect(json_response['reviewers'].first['name']).to eq(user.name)
+        end
+      end
+    end
+
     context 'when updating existing approval rules' do
       let!(:rule) { create(:approval_merge_request_rule, merge_request: merge_request, approvals_required: 1) }
 
@@ -96,6 +135,45 @@ RSpec.describe API::MergeRequests do
       }
       defaults = defaults.merge(args)
       post api("/projects/#{project.id}/merge_requests", user), params: defaults
+    end
+
+    context 'reviewers over the max limit' do
+      let(:user2) { create(:user) }
+      let(:user3) { create(:user) }
+      let(:params) do
+        { reviewer_ids: [user.id, user2.id, user3.id] }
+      end
+
+      before do
+        stub_const("MergeRequest::MAX_NUMBER_OF_ASSIGNEES_OR_REVIEWERS", 2)
+      end
+
+      context 'when licensed' do
+        before do
+          stub_licensed_features(multiple_merge_request_reviewers: true)
+        end
+
+        it 'does not create merge request with too many reviewers' do
+          create_merge_request(params)
+
+          expect(response).to have_gitlab_http_status(:bad_request)
+          expect(json_response['message']['reviewers']).to match_array(["total must be less than or equal to 2"])
+        end
+      end
+
+      context 'when not licensed' do
+        before do
+          stub_licensed_features(multiple_merge_request_reviewers: false)
+        end
+
+        it 'creates merge request with a single reviewer' do
+          create_merge_request(params)
+
+          expect(response).to have_gitlab_http_status(:created)
+          expect(json_response['reviewers'].size).to eq(1)
+          expect(json_response['reviewers'].first['name']).to eq(user.name)
+        end
+      end
     end
 
     context 'multiple assignees' do

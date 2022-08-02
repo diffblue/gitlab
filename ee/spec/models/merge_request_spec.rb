@@ -1727,4 +1727,22 @@ RSpec.describe MergeRequest do
       end
     end
   end
+
+  describe '#validate_reviewer_and_assignee_size_length' do
+    let(:reviewer1) { create(:user) }
+    let(:reviewer2) { create(:user) }
+    let(:reviewer3) { create(:user) }
+
+    subject { create(:merge_request) }
+
+    before do
+      stub_const("MergeRequest::MAX_NUMBER_OF_ASSIGNEES_OR_REVIEWERS", 2)
+    end
+
+    it 'will not exceed the reviewer limit' do
+      expect do
+        subject.update!(reviewers: [reviewer1, reviewer2, reviewer3])
+      end.to raise_error(ActiveRecord::RecordInvalid)
+    end
+  end
 end
