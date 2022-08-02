@@ -9,7 +9,7 @@ import groupScanExecutionPoliciesQuery from 'ee/security_orchestration/graphql/q
 import scanResultPoliciesQuery from 'ee/security_orchestration/graphql/queries/scan_result_policies.query.graphql';
 import {
   POLICY_SOURCE_OPTIONS,
-  POLICY_TYPE_OPTIONS,
+  POLICY_TYPE_FILTER_OPTIONS,
 } from 'ee/security_orchestration/components/policies/constants';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { stubComponent } from 'helpers/stub_component';
@@ -150,9 +150,9 @@ describe('PoliciesList component', () => {
     });
 
     it.each`
-      description         | filterBy                                          | hiddenTypes
-      ${'scan execution'} | ${POLICY_TYPE_OPTIONS.POLICY_TYPE_SCAN_EXECUTION} | ${[POLICY_TYPE_OPTIONS.POLICY_TYPE_SCAN_RESULT]}
-      ${'scan result'}    | ${POLICY_TYPE_OPTIONS.POLICY_TYPE_SCAN_RESULT}    | ${[POLICY_TYPE_OPTIONS.POLICY_TYPE_SCAN_EXECUTION]}
+      description         | filterBy                                                 | hiddenTypes
+      ${'scan execution'} | ${POLICY_TYPE_FILTER_OPTIONS.POLICY_TYPE_SCAN_EXECUTION} | ${[POLICY_TYPE_FILTER_OPTIONS.POLICY_TYPE_SCAN_RESULT]}
+      ${'scan result'}    | ${POLICY_TYPE_FILTER_OPTIONS.POLICY_TYPE_SCAN_RESULT}    | ${[POLICY_TYPE_FILTER_OPTIONS.POLICY_TYPE_SCAN_EXECUTION]}
     `('policies filtered by $description type', async ({ filterBy, hiddenTypes }) => {
       findPolicyTypeFilter().vm.$emit('input', filterBy.value);
       await nextTick();

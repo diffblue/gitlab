@@ -15,7 +15,7 @@ import PolicyDrawer from '../policy_drawer/policy_drawer.vue';
 import { getSourceUrl, isPolicyInherited } from '../utils';
 import {
   POLICY_SOURCE_OPTIONS,
-  POLICY_TYPE_OPTIONS,
+  POLICY_TYPE_FILTER_OPTIONS,
   POLICY_TYPES_WITH_INHERITANCE,
 } from './constants';
 import PolicySourceFilter from './filters/policy_source_filter.vue';
@@ -107,19 +107,19 @@ export default {
       scanExecutionPolicies: [],
       scanResultPolicies: [],
       selectedPolicySource: POLICY_SOURCE_OPTIONS.ALL.value,
-      selectedPolicyType: POLICY_TYPE_OPTIONS.ALL.value,
+      selectedPolicyType: POLICY_TYPE_FILTER_OPTIONS.ALL.value,
     };
   },
   computed: {
     allPolicyTypes() {
       return {
-        [POLICY_TYPE_OPTIONS.POLICY_TYPE_SCAN_EXECUTION.value]: this.scanExecutionPolicies,
-        [POLICY_TYPE_OPTIONS.POLICY_TYPE_SCAN_RESULT.value]: this.scanResultPolicies,
+        [POLICY_TYPE_FILTER_OPTIONS.POLICY_TYPE_SCAN_EXECUTION.value]: this.scanExecutionPolicies,
+        [POLICY_TYPE_FILTER_OPTIONS.POLICY_TYPE_SCAN_RESULT.value]: this.scanResultPolicies,
       };
     },
     policies() {
       let policyTypes =
-        this.selectedPolicyType === POLICY_TYPE_OPTIONS.ALL.value
+        this.selectedPolicyType === POLICY_TYPE_FILTER_OPTIONS.ALL.value
           ? Object.keys(this.allPolicyTypes)
           : [this.selectedPolicyType];
 
@@ -128,7 +128,7 @@ export default {
       }
 
       const policies = policyTypes.map((type) =>
-        getPoliciesWithType(this.allPolicyTypes[type], POLICY_TYPE_OPTIONS[type].text),
+        getPoliciesWithType(this.allPolicyTypes[type], POLICY_TYPE_FILTER_OPTIONS[type].text),
       );
 
       return policies.flat();
@@ -168,7 +168,7 @@ export default {
     },
     hasExistingPolicies() {
       return !(
-        this.selectedPolicyType === POLICY_TYPE_OPTIONS.ALL.value &&
+        this.selectedPolicyType === POLICY_TYPE_FILTER_OPTIONS.ALL.value &&
         this.selectedPolicySource === POLICY_SOURCE_OPTIONS.ALL.value &&
         !this.policies.length
       );
