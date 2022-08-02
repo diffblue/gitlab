@@ -8,6 +8,7 @@ module EE
 
       EE_WIDGETS_FOR_TYPE = {
         issue: [::WorkItems::Widgets::Weight],
+        requirement: [::WorkItems::Widgets::VerificationStatus],
         task: [::WorkItems::Widgets::Weight]
       }.freeze
 

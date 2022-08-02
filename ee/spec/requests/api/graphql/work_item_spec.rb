@@ -76,6 +76,85 @@ RSpec.describe 'Query.work_item(id)' do
           end
         end
       end
+
+      describe 'verification status widget' do
+        let_it_be(:work_item) { create(:work_item, :requirement, project: project) }
+
+        let(:work_item_fields) do
+          <<~GRAPHQL
+            id
+            widgets {
+              type
+              ... on WorkItemWidgetVerificationStatus {
+                verificationStatus
+              }
+            }
+          GRAPHQL
+        end
+
+        context 'when requirements is licensed' do
+          before do
+            stub_licensed_features(requirements: true)
+
+            post_graphql(query, current_user: current_user)
+          end
+
+          shared_examples 'response with verification status information' do
+            it 'returns correct data' do
+              expect(work_item_data).to include(
+                'id' => work_item.to_gid.to_s,
+                'widgets' => include(
+                  hash_including(
+                    'type' => 'VERIFICATION_STATUS',
+                    'verificationStatus' => status
+                  )
+                )
+              )
+            end
+          end
+
+          context 'when latest test report status is satisfied' do
+            let_it_be(:test_report) { create(:test_report, requirement_issue: work_item, state: :passed) }
+
+            it_behaves_like 'response with verification status information' do
+              let(:status) { 'satisfied' }
+            end
+          end
+
+          context 'when latest test report status is failed' do
+            let_it_be(:test_report) { create(:test_report, requirement_issue: work_item, state: :failed) }
+
+            it_behaves_like 'response with verification status information' do
+              let(:status) { 'failed' }
+            end
+          end
+
+          context 'with no test report' do
+            it_behaves_like 'response with verification status information' do
+              let(:status) { 'unverified' }
+            end
+          end
+        end
+
+        context 'when requirements is unlicensed' do
+          before do
+            stub_licensed_features(requirements: false)
+
+            post_graphql(query, current_user: current_user)
+          end
+
+          it 'returns no verification status information' do
+            expect(work_item_data).not_to include(
+              'widgets' => include(
+                hash_including(
+                  'type' => 'VERIFICATION_STATUS',
+                  'verificationStatus' => 'unverified'
+                )
+              )
+            )
+          end
+        end
+      end
     end
   end
 end

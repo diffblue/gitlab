@@ -5,7 +5,8 @@ module EE
     extend ActiveSupport::Concern
 
     LICENSED_WIDGETS = {
-      issue_weights: ::WorkItems::Widgets::Weight
+      issue_weights: ::WorkItems::Widgets::Weight,
+      requirements: ::WorkItems::Widgets::VerificationStatus
     }.freeze
 
     def widgets
