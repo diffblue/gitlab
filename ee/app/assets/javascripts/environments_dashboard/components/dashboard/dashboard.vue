@@ -170,11 +170,7 @@ export default {
       <p>
         <gl-sprintf :message="$options.informationText">
           <template #link="{ content }">
-            <gl-link
-              :href="environmentsDashboardHelpPath"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <gl-link :href="environmentsDashboardHelpPath" target="_blank">
               {{ content }}
             </gl-link>
           </template>
@@ -205,7 +201,7 @@ export default {
     <p class="mt-2 mb-4 js-page-limits-message">
       <gl-sprintf :message="$options.informationText">
         <template #link="{ content }">
-          <gl-link :href="environmentsDashboardHelpPath" target="_blank" rel="noopener noreferrer">
+          <gl-link :href="environmentsDashboardHelpPath" target="_blank">
             {{ content }}
           </gl-link>
         </template>

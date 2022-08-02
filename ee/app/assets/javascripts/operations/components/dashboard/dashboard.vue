@@ -6,6 +6,7 @@ import {
   GlLink,
   GlModal,
   GlModalDirective,
+  GlSprintf,
 } from '@gitlab/ui';
 import VueDraggable from 'vuedraggable';
 import { mapState, mapActions } from 'vuex';
@@ -14,6 +15,9 @@ import ProjectSelector from '~/vue_shared/components/project_selector/project_se
 import DashboardProject from './project.vue';
 
 export default {
+  informationText: s__(
+    'OperationsDashboard|The Operations and Environments dashboards share the same list of projects. When you add or remove a project from one, GitLab adds or removes the project from the other. %{linkStart}More information%{linkEnd}',
+  ),
   components: {
     DashboardProject,
     GlDashboardSkeleton,
@@ -21,6 +25,7 @@ export default {
     GlEmptyState,
     GlLink,
     GlModal,
+    GlSprintf,
     ProjectSelector,
     VueDraggable,
   },
@@ -41,6 +46,10 @@ export default {
       required: true,
     },
     emptyDashboardHelpPath: {
+      type: String,
+      required: true,
+    },
+    operationsDashboardHelpPath: {
       type: String,
       required: true,
     },
@@ -164,6 +173,15 @@ export default {
         {{ s__('OperationsDashboard|Add projects') }}
       </gl-button>
     </div>
+    <p class="gl-mt-2 gl-mb-4">
+      <gl-sprintf :message="$options.informationText">
+        <template #link="{ content }">
+          <gl-link :href="operationsDashboardHelpPath" target="_blank">
+            {{ content }}
+          </gl-link>
+        </template>
+      </gl-sprintf>
+    </p>
     <div class="gl-mt-3">
       <vue-draggable
         v-if="projects.length"

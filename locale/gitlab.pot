@@ -27441,6 +27441,9 @@ msgstr ""
 msgid "OperationsDashboard|Operations Dashboard"
 msgstr ""
 
+msgid "OperationsDashboard|The Operations and Environments dashboards share the same list of projects. When you add or remove a project from one, GitLab adds or removes the project from the other. %{linkStart}More information%{linkEnd}"
+msgstr ""
+
 msgid "OperationsDashboard|The operations dashboard provides a summary of each project's operational health, including pipeline and alert statuses."
 msgstr ""
 
