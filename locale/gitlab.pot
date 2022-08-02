@@ -23022,9 +23022,6 @@ msgstr ""
 msgid "Last successful update"
 msgstr ""
 
-msgid "Last time checked"
-msgstr ""
-
 msgid "Last time verified"
 msgstr ""
 

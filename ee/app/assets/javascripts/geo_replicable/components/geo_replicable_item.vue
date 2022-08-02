@@ -40,11 +40,6 @@ export default {
       required: false,
       default: '',
     },
-    lastChecked: {
-      type: String,
-      required: false,
-      default: '',
-    },
   },
   data() {
     return {
@@ -57,11 +52,6 @@ export default {
         {
           label: __('Last time verified'),
           dateString: this.lastVerified,
-          defaultText: __('Unknown'),
-        },
-        {
-          label: __('Last time checked'),
-          dateString: this.lastChecked,
           defaultText: __('Unknown'),
         },
       ],

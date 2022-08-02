@@ -16,6 +16,7 @@ export default (graphQlFieldName) => {
             lastSyncFailure
             retryAt
             lastSyncedAt
+            verifiedAt
             createdAt
           }
         }

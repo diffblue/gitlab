@@ -58,8 +58,7 @@ export default {
       :project-id="item.projectId"
       :sync-status="item.state.toLowerCase()"
       :last-synced="item.lastSyncedAt"
-      :last-verified="item.lastVerifiedAt"
-      :last-checked="item.lastCheckedAt"
+      :last-verified="item.verifiedAt"
     />
     <gl-pagination v-model="page" v-bind="paginationProps" align="center" />
   </section>
