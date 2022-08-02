@@ -6,7 +6,19 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 
 # Manage groups
 
-Use Groups to manage one or more related projects at the same time.
+Use groups to manage one or more related projects at the same time.
+
+## View groups
+
+1. On the top bar, select **Menu > Groups**.
+1. Select **Explore groups**.
+
+The **Groups** page shows a list of groups, sorted by last updated date.
+
+- To explore all public groups, select **Explore groups**.
+- To view groups where you have a direct or indirect membership, select **Your groups**. This tab shows groups that you are a member of:
+  - Through membership of a subgroup's parent group.
+  - Through direct or inherited membership of a project in the group or subgroup.
 
 ## Create a group
 
