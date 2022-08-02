@@ -1,9 +1,13 @@
+<script>
+import SimpleFilter from './simple_filter.vue';
+import FilterBody from './filter_body.vue';
+
+export default {
+  components: { FilterBody },
+  extends: SimpleFilter,
+};
+</script>
+
 <template>
-  <p>
-    <!-- This is a temporary placeholder. 
-    In this next issue, this will be replaced with a proper dropdown UI
-    https://gitlab.com/gitlab-org/gitlab/-/issues/368249 -->
-    <!-- eslint-disable @gitlab/vue-require-i18n-strings -->
-    Tool dropdown Placeholder
-  </p>
+  <filter-body :name="filter.name" :selected-options="selectedOptionsOrAll" />
 </template>
