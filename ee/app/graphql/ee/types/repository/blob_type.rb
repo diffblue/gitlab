@@ -6,9 +6,10 @@ module EE
         extend ActiveSupport::Concern
 
         prepended do
-          field :code_owners, [::Types::UserType], null: true,
-                description: 'List of code owners for the blob.',
-                calls_gitaly: true
+          field :code_owners, [::Types::UserType],
+            null: true,
+            description: 'List of code owners for the blob.',
+            calls_gitaly: true
         end
       end
     end

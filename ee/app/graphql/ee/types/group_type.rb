@@ -7,7 +7,8 @@ module EE
 
       prepended do
         %i[epics].each do |feature|
-          field "#{feature}_enabled", GraphQL::Types::Boolean, null: true,
+          field "#{feature}_enabled", GraphQL::Types::Boolean,
+                null: true,
                 description: "Indicates if #{feature.to_s.humanize} are enabled for namespace"
 
           define_method "#{feature}_enabled" do
@@ -15,30 +16,24 @@ module EE
           end
         end
 
-        field :epic, ::Types::EpicType, null: true,
-              description: 'Find a single epic.',
-              resolver: ::Resolvers::EpicsResolver.single
+        field :epic, ::Types::EpicType, null: true, description: 'Find a single epic.',
+          resolver: ::Resolvers::EpicsResolver.single
 
-        field :epics, ::Types::EpicType.connection_type, null: true,
-              description: 'Find epics.',
-              extras: [:lookahead],
-              resolver: ::Resolvers::EpicsResolver
+        field :epics, ::Types::EpicType.connection_type, null: true, description: 'Find epics.',
+          extras: [:lookahead],
+          resolver: ::Resolvers::EpicsResolver
 
-        field :epic_board,
-              ::Types::Boards::EpicBoardType, null: true,
-              description: 'Find a single epic board.',
-              resolver: ::Resolvers::Boards::EpicBoardsResolver.single
+        field :epic_board, ::Types::Boards::EpicBoardType, null: true, description: 'Find a single epic board.',
+          resolver: ::Resolvers::Boards::EpicBoardsResolver.single
 
-        field :epic_boards,
-              ::Types::Boards::EpicBoardType.connection_type, null: true,
-              description: 'Find epic boards.',
-              resolver: ::Resolvers::Boards::EpicBoardsResolver
+        field :epic_boards, ::Types::Boards::EpicBoardType.connection_type, null: true,
+          description: 'Find epic boards.', resolver: ::Resolvers::Boards::EpicBoardsResolver
 
-        field :iterations, ::Types::IterationType.connection_type, null: true,
-              description: 'Find iterations.',
-              resolver: ::Resolvers::IterationsResolver
+        field :iterations, ::Types::IterationType.connection_type, null: true, description: 'Find iterations.',
+          resolver: ::Resolvers::IterationsResolver
 
-        field :iteration_cadences, ::Types::Iterations::CadenceType.connection_type, null: true,
+        field :iteration_cadences, ::Types::Iterations::CadenceType.connection_type,
+              null: true,
               description: 'Find iteration cadences.',
               resolver: ::Resolvers::Iterations::CadencesResolver
 
@@ -52,17 +47,20 @@ module EE
         field :vulnerability_scanners,
               ::Types::VulnerabilityScannerType.connection_type,
               null: true,
-              description: 'Vulnerability scanners reported on the project vulnerabilities of the group and its subgroups.',
+              description: 'Vulnerability scanners reported on the project vulnerabilities of the group and ' \
+                           'its subgroups.',
               resolver: ::Resolvers::Vulnerabilities::ScannersResolver
 
-        field :vulnerability_severities_count, ::Types::VulnerabilitySeveritiesCountType, null: true,
+        field :vulnerability_severities_count, ::Types::VulnerabilitySeveritiesCountType,
+              null: true,
               description: 'Counts for each vulnerability severity in the group and its subgroups.',
               resolver: ::Resolvers::VulnerabilitySeveritiesCountResolver
 
         field :vulnerabilities_count_by_day,
               ::Types::VulnerabilitiesCountByDayType.connection_type,
               null: true,
-              description: 'The historical number of vulnerabilities per day for the projects in the group and its subgroups.',
+              description: 'The historical number of vulnerabilities per day for the projects in the group and ' \
+                           'its subgroups.',
               resolver: ::Resolvers::VulnerabilitiesCountPerDayResolver
 
         field :vulnerability_grades,
@@ -87,7 +85,8 @@ module EE
               null: true,
               authorize: :owner_access,
               description: 'Number of billable users in the group.' do
-                argument :requested_hosted_plan, String, required: false, description: 'Plan from which to get billable members.'
+                argument :requested_hosted_plan, String, required: false,
+                         description: 'Plan from which to get billable members.'
               end
 
         field :dora,
