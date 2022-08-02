@@ -258,11 +258,59 @@ RSpec.describe Projects::UpdateMirrorService do
           expect(project.repository.branch_names).to include("new-branch")
         end
 
+        it 'does not execute N+1 redis cache commands' do
+          modify_branch(project.repository, 'branch-1', remote: true)
+          modify_branch(project.repository, 'branch-2', remote: true)
+
+          control = RedisCommands::Recorder.new(pattern: ':branch_names:') { service.execute }
+
+          expect(control.by_command(:sadd).count).to eq(1)
+        end
+
+        context 'when FF is off' do
+          before do
+            stub_feature_flags(pull_mirror_bulk_branches: false)
+          end
+
+          it 'executes N+1 redis cache commands' do
+            modify_branch(project.repository, 'branch-1', remote: true)
+            modify_branch(project.repository, 'branch-2', remote: true)
+
+            control = RedisCommands::Recorder.new(pattern: ':branch_names:') { service.execute }
+
+            expect(control.by_command(:sadd).count).to eq(3)
+          end
+
+          context 'when branch cannot be created' do
+            before do
+              modify_branch(project.repository, 'HEAD', remote: true)
+            end
+
+            it 'returns an error' do
+              result = service.execute
+
+              expect(result).to eq(status: :error, message: 'Branch name is invalid')
+            end
+          end
+        end
+
         it 'updates existing branches' do
           service.execute
 
           expect(project.repository.find_branch("existing-branch").dereferenced_target)
             .to eq(project.repository.find_branch(master).dereferenced_target)
+        end
+
+        context 'when branch cannot be created' do
+          before do
+            modify_branch(project.repository, 'HEAD', remote: true)
+          end
+
+          it 'returns an error' do
+            result = service.execute
+
+            expect(result).to eq(status: :error, message: 'Branch name is invalid')
+          end
         end
 
         context 'when mirror only protected branches option is set' do
@@ -514,11 +562,15 @@ RSpec.describe Projects::UpdateMirrorService do
     repository.find_tag(tag_name).dereferenced_target.id
   end
 
-  def modify_branch(repository, branch_name)
+  def modify_branch(repository, branch_name, remote: false)
     masterrev = repository.find_branch('master').dereferenced_target.id
 
     # Modify branch
-    repository.write_ref("refs/heads/#{branch_name}", masterrev)
-    repository.find_branch(branch_name).dereferenced_target.id
+    if remote
+      repository.write_ref("refs/remotes/upstream/#{branch_name}", masterrev)
+    else
+      repository.write_ref("refs/heads/#{branch_name}", masterrev)
+      repository.find_branch(branch_name).dereferenced_target.id
+    end
   end
 end
