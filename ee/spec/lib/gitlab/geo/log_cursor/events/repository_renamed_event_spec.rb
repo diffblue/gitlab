@@ -7,7 +7,7 @@ RSpec.describe Gitlab::Geo::LogCursor::Events::RepositoryRenamedEvent, :clean_gi
   let(:event_log) { create(:geo_event_log, :renamed_event) }
   let!(:event_log_state) { create(:geo_event_log_state, event_id: event_log.id - 1) }
   let(:repository_renamed_event) { event_log.repository_renamed_event }
-  let(:project) {repository_renamed_event.project }
+  let(:project) { repository_renamed_event.project }
   let(:old_path_with_namespace) { repository_renamed_event.old_path_with_namespace }
   let(:new_path_with_namespace) { repository_renamed_event.new_path_with_namespace }
 

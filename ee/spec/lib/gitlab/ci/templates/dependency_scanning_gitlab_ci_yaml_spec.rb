@@ -43,7 +43,7 @@ RSpec.shared_examples 'language detection' do
 
     context 'with file at depth 1' do
       # prepend a directory to files (e.g. convert go.sum to foo/go.sum)
-      let(:files_at_depth_x) { files.transform_keys { |k| "foo/#{k}"} }
+      let(:files_at_depth_x) { files.transform_keys { |k| "foo/#{k}" } }
 
       it 'creates a pipeline with the expected jobs' do
         expect(build_names).to include(*include_build_names)
@@ -54,7 +54,7 @@ RSpec.shared_examples 'language detection' do
 
     context 'with file at depth 2' do
       # prepend a directory to files (e.g. convert go.sum to foo/bar/go.sum)
-      let(:files_at_depth_x) { files.transform_keys { |k| "foo/bar/#{k}"} }
+      let(:files_at_depth_x) { files.transform_keys { |k| "foo/bar/#{k}" } }
 
       it 'creates a pipeline with the expected jobs' do
         expect(build_names).to include(*include_build_names)
@@ -64,7 +64,7 @@ RSpec.shared_examples 'language detection' do
     end
 
     context 'with file at depth > 2' do
-      let(:files_at_depth_x) { files.transform_keys { |k| "foo/bar/baz/#{k}"} }
+      let(:files_at_depth_x) { files.transform_keys { |k| "foo/bar/baz/#{k}" } }
 
       it 'includes no job' do
         expect { pipeline }.to raise_error(Ci::CreatePipelineService::CreateError)

@@ -25,7 +25,7 @@ RSpec.describe EE::API::Helpers::MembersHelpers do
     let_it_be(:group) { build(:group) }
     let_it_be(:user) { build(:user) }
 
-    subject(:billable_member) { members_helpers.billable_member?(group, user)}
+    subject(:billable_member) { members_helpers.billable_member?(group, user) }
 
     before do
       expect_next_instance_of(BilledUsersFinder, group, include_awaiting_members: true) do |finder|

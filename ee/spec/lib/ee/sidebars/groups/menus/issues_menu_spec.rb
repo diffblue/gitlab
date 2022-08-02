@@ -15,7 +15,7 @@ RSpec.describe Sidebars::Groups::Menus::IssuesMenu do
   let(:context) { Sidebars::Groups::Context.new(current_user: user, container: group) }
 
   describe 'Menu Items' do
-    subject { described_class.new(context).renderable_items.find { |e| e.item_id == item_id} }
+    subject { described_class.new(context).renderable_items.find { |e| e.item_id == item_id } }
 
     describe 'Iterations' do
       let(:item_id) { :iterations }

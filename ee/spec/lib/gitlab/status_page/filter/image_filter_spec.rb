@@ -10,7 +10,7 @@ RSpec.describe Gitlab::StatusPage::Filter::ImageFilter do
 
     let(:issue_iid) { 1 }
     let(:secret) { '50b7a196557cf72a98e86a7ab4b1ac3b' }
-    let(:filename) { 'tanuki.png'}
+    let(:filename) { 'tanuki.png' }
     let(:original_source_path) { "/uploads/#{secret}/#{filename}" }
     let(:expected_source_path) { Gitlab::StatusPage::Storage.upload_path(issue_iid, secret, filename) }
     let(:original_html) { %Q{<a class="no-attachment-icon gfm" href="#{original_source_path}" target="_blank" rel="noopener noreferrer"><img class="lazy" data-src="#{original_source_path}"></a>} }

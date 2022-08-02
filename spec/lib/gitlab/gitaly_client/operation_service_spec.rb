@@ -551,7 +551,7 @@ RSpec.describe Gitlab::GitalyClient::OperationService do
       end
 
       let(:expected_error) { Gitlab::Git::Repository::CreateTreeError }
-      let(:expected_error_message) { }
+      let(:expected_error_message) {}
 
       it_behaves_like '#user_cherry_pick with a gRPC error'
     end
@@ -559,7 +559,7 @@ RSpec.describe Gitlab::GitalyClient::OperationService do
     context 'when a non-detailed gRPC error is raised' do
       let(:raised_error) { GRPC::Internal.new('non-detailed error') }
       let(:expected_error) { GRPC::Internal }
-      let(:expected_error_message) { }
+      let(:expected_error_message) {}
 
       it_behaves_like '#user_cherry_pick with a gRPC error'
     end

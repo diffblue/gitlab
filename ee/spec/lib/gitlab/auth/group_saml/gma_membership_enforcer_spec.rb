@@ -6,7 +6,7 @@ RSpec.describe Gitlab::Auth::GroupSaml::GmaMembershipEnforcer do
   include ProjectForksHelper
 
   let(:group) { create(:group_with_managed_accounts, :private) }
-  let(:project) { create(:project, namespace: group)}
+  let(:project) { create(:project, namespace: group) }
   let(:managed_user) { create(:user, :group_managed, managing_group: group) }
   let(:managed_user_for_project) { create(:user, :group_managed, managing_group: group) }
 

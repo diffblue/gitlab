@@ -7,7 +7,7 @@ RSpec.describe Gitlab::Graphql::Loaders::BulkEpicAggregateLoader do
 
   let_it_be(:ancestor) { create(:group, :public) }
   let_it_be(:group) { create(:group, :public, parent: ancestor) }
-  let_it_be(:subgroup) { create(:group, :private, parent: group)}
+  let_it_be(:subgroup) { create(:group, :private, parent: group) }
 
   let_it_be(:project) { create(:project, namespace: group) }
   let_it_be(:subproject) { create(:project, namespace: subgroup) }

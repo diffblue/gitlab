@@ -25,14 +25,14 @@ RSpec.describe Gitlab::WebHooks::RateLimiter, :saas, :clean_gitlab_redis_rate_li
   let_it_be(:project_premium_plan) { create(:project, group: group_premium_plan) }
   let_it_be(:project_ultimate_plan) { create(:project, group: group_ultimate_plan) }
 
-  let_it_be_with_reload(:project_hook_with_premium_plan) { create(:project_hook, project: project_premium_plan )}
-  let_it_be_with_reload(:project_hook_with_ultimate_plan) { create(:project_hook, project: project_ultimate_plan )}
-  let_it_be_with_reload(:group_hook_with_opensource_plan) { create(:group_hook, group: group_opensource_plan )}
-  let_it_be_with_reload(:group_hook_with_bronze_plan) { create(:group_hook, group: group_bronze_plan )}
-  let_it_be_with_reload(:group_hook_with_silver_plan) { create(:group_hook, group: group_silver_plan )}
-  let_it_be_with_reload(:group_hook_with_gold_plan) { create(:group_hook, group: group_gold_plan )}
-  let_it_be_with_reload(:group_hook_with_premium_trial_plan) { create(:group_hook, group: group_premium_trial_plan )}
-  let_it_be_with_reload(:group_hook_with_ultimate_trial_plan) { create(:group_hook, group: group_ultimate_trial_plan )}
+  let_it_be_with_reload(:project_hook_with_premium_plan) { create(:project_hook, project: project_premium_plan ) }
+  let_it_be_with_reload(:project_hook_with_ultimate_plan) { create(:project_hook, project: project_ultimate_plan ) }
+  let_it_be_with_reload(:group_hook_with_opensource_plan) { create(:group_hook, group: group_opensource_plan ) }
+  let_it_be_with_reload(:group_hook_with_bronze_plan) { create(:group_hook, group: group_bronze_plan ) }
+  let_it_be_with_reload(:group_hook_with_silver_plan) { create(:group_hook, group: group_silver_plan ) }
+  let_it_be_with_reload(:group_hook_with_gold_plan) { create(:group_hook, group: group_gold_plan ) }
+  let_it_be_with_reload(:group_hook_with_premium_trial_plan) { create(:group_hook, group: group_premium_trial_plan ) }
+  let_it_be_with_reload(:group_hook_with_ultimate_trial_plan) { create(:group_hook, group: group_ultimate_trial_plan ) }
 
   describe 'LIMIT_MAP' do
     it 'contains all paid plans' do

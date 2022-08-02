@@ -13,7 +13,7 @@ RSpec.describe Gitlab::IpAddressState do
     end
 
     it 'clears IP address after execution' do
-      described_class.with(address) { }
+      described_class.with(address) {}
 
       expect(Thread.current[described_class::THREAD_KEY]).to eq(nil)
     end

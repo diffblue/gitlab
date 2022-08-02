@@ -12,7 +12,7 @@ RSpec.describe Gitlab::Ci::Reports::Security::Reports do
     let(:high_severity_dast) { build(:ci_reports_security_finding, severity: 'high', report_type: :dast) }
     let(:vulnerabilities_allowed) { 0 }
     let(:severity_levels) { %w(critical high) }
-    let(:vulnerability_states) { %w(newly_detected)}
+    let(:vulnerability_states) { %w(newly_detected) }
 
     subject { security_reports.violates_default_policy_against?(target_reports, vulnerabilities_allowed, severity_levels, vulnerability_states) }
 
@@ -31,13 +31,13 @@ RSpec.describe Gitlab::Ci::Reports::Security::Reports do
         it { is_expected.to be(true) }
 
         context 'with vulnerability states matching existing vulnerabilities' do
-          let(:vulnerability_states) { %w(detected)}
+          let(:vulnerability_states) { %w(detected) }
 
           it { is_expected.to be(true) }
         end
 
         context 'with vulnerability states not matching existing vulnerabilities' do
-          let(:vulnerability_states) { %w(resolved)}
+          let(:vulnerability_states) { %w(resolved) }
 
           it { is_expected.to be(false) }
         end
@@ -62,13 +62,13 @@ RSpec.describe Gitlab::Ci::Reports::Security::Reports do
           it { is_expected.to be(false) }
 
           context 'with vulnerability states matching existing vulnerability' do
-            let(:vulnerability_states) { %w(detected)}
+            let(:vulnerability_states) { %w(detected) }
 
             it { is_expected.to be(true) }
           end
 
           context 'with vulnerability states not matching existing vulnerabilities' do
-            let(:vulnerability_states) { %w(resolved)}
+            let(:vulnerability_states) { %w(resolved) }
 
             it { is_expected.to be(false) }
           end

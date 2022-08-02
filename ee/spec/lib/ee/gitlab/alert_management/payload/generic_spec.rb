@@ -60,7 +60,7 @@ RSpec.describe Gitlab::AlertManagement::Payload::Generic do
     describe '#environment_name' do
       subject { parsed_payload.environment_name }
 
-      it { is_expected.to eq('default gitlab environment')}
+      it { is_expected.to eq('default gitlab environment') }
     end
 
     describe '#gitlab_fingerprint' do
@@ -180,7 +180,7 @@ RSpec.describe Gitlab::AlertManagement::Payload::Generic do
         describe '#environment_name' do
           subject { parsed_payload.environment_name }
 
-          it { is_expected.to eq('mapped gitlab environment')}
+          it { is_expected.to eq('mapped gitlab environment') }
         end
 
         describe '#gitlab_fingerprint' do

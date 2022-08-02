@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe ::Gitlab::Tracking do
   describe '.definition' do
-    let_it_be(:test_definition) {{ 'category': 'category', 'action': 'action' }}
+    let_it_be(:test_definition) { { 'category': 'category', 'action': 'action' } }
     let_it_be(:filepath) { Rails.root.join('ee/config/events/filename.yml') }
 
     before do

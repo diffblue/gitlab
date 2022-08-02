@@ -71,7 +71,7 @@ RSpec.describe Gitlab::BackgroundMigration::DropInvalidRemediations, schema: 202
 
   context 'corresponding vuln has a remediation provided' do
     it 'only deletes the finding_remediations without a remediation' do
-      expect { described_class.new.perform(remediation1.id, remediation2.id )}.to change {remediations.count}.from(2).to(1)
+      expect { described_class.new.perform(remediation1.id, remediation2.id ) }.to change { remediations.count }.from(2).to(1)
     end
   end
 

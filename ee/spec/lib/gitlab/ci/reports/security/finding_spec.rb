@@ -13,7 +13,7 @@ RSpec.describe Gitlab::Ci::Reports::Security::Finding do
     let_it_be(:link) { build(:ci_reports_security_link) }
     let_it_be(:scanner) { build(:ci_reports_security_scanner) }
     let_it_be(:location) { build(:ci_reports_security_locations_sast) }
-    let_it_be(:evidence) { build(:ci_reports_security_evidence)}
+    let_it_be(:evidence) { build(:ci_reports_security_evidence) }
     let_it_be(:remediation) { build(:ci_reports_security_remediation) }
 
     let(:flag_1) { build(:ci_reports_security_flag) }

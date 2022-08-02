@@ -37,7 +37,7 @@ RSpec.describe Gitlab::Geo::GitSSHProxy, :geo do
     }
   end
 
-  let(:irrelevant_encoded_message) { Base64.encode64('irrelevant')}
+  let(:irrelevant_encoded_message) { Base64.encode64('irrelevant') }
 
   context 'instance methods' do
     subject { described_class.new(data) }
