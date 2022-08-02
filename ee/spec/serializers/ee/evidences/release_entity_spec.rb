@@ -3,13 +3,15 @@
 require 'spec_helper'
 
 RSpec.describe Evidences::ReleaseEntity do
-  let(:project) { create(:project, :repository) }
-  let(:release) { build(:release, project: project) }
+  let(:project) { build_stubbed(:project, :repository) }
+  let(:release) { build_stubbed(:release, project: project) }
 
   context 'when report artifacts are passed' do
-    let(:pipeline) { create(:ci_empty_pipeline, sha: release.sha, project: project) }
-    let(:build_test_report) { create(:ci_build, :test_reports, :with_artifacts_paths, pipeline: pipeline) }
-    let(:build_coverage_report) { create(:ci_build, :coverage_reports, :with_artifacts_paths, pipeline: pipeline) }
+    let(:pipeline) { build_stubbed(:ci_empty_pipeline, sha: release.sha, project: project) }
+    let(:build_test_report) { build_stubbed(:ci_build, :test_reports, :with_artifacts_paths, pipeline: pipeline) }
+    let(:build_coverage_report) do
+      build_stubbed(:ci_build, :coverage_reports, :with_artifacts_paths, pipeline: pipeline)
+    end
 
     subject { described_class.new(release, report_artifacts: [build_test_report, build_coverage_report]).as_json }
 
