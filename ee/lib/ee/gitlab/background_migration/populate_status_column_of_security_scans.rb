@@ -33,7 +33,7 @@ module EE
           log_info('Migration has been started', start_id: start_id, end_id: end_id)
 
           SecurityScan.in_range(start_id, end_id).each_batch(of: UPDATE_BATCH_SIZE) do |relation|
-            batch_start, batch_end = relation.pluck("MIN(id), MAX(id)").first
+            batch_start, batch_end = relation.pick("MIN(id), MAX(id)")
 
             update_batch(batch_start, batch_end)
           end

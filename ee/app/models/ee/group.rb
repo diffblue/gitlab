@@ -551,7 +551,7 @@ module EE
     end
 
     def last_billed_user_created_at
-      billed_group_and_projects_members.reverse_order.limit(1).pluck(:created_at).first
+      billed_group_and_projects_members.reverse_order.limit(1).pick(:created_at)
     end
 
     override :users_count

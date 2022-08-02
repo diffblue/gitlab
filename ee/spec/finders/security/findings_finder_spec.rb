@@ -218,7 +218,7 @@ RSpec.describe Security::FindingsFinder do
 
         context 'when the per_page is provided' do
           let(:per_page) { 1 }
-          let(:expected_uuids) { [Security::Finding.pluck(:uuid).first] }
+          let(:expected_uuids) { [Security::Finding.pick(:uuid)] }
 
           it { is_expected.to match_array(expected_uuids) }
         end
