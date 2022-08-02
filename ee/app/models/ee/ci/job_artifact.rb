@@ -32,6 +32,7 @@ module EE
       COVERAGE_FUZZING_REPORT_TYPES = %w[coverage_fuzzing].freeze
       API_FUZZING_REPORT_TYPES = %w[api_fuzzing].freeze
       BROWSER_PERFORMANCE_REPORT_FILE_TYPES = %w[browser_performance performance].freeze
+      SBOM_REPORT_FILE_TYPES = %w[cyclonedx].freeze
 
       scope :security_reports, -> (file_types: SECURITY_REPORT_FILE_TYPES) do
         requested_file_types = *file_types
@@ -69,6 +70,10 @@ module EE
 
       scope :api_fuzzing_reports, -> do
         with_file_types(API_FUZZING_REPORT_TYPES)
+      end
+
+      scope :sbom_reports, -> do
+        with_file_types(SBOM_REPORT_FILE_TYPES)
       end
 
       scope :with_files_stored_locally, -> { where(file_store: ::ObjectStorage::Store::LOCAL) }
