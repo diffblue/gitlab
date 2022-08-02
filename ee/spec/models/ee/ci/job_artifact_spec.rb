@@ -192,6 +192,22 @@ RSpec.describe Ci::JobArtifact do
     end
   end
 
+  describe '.sbom_reports' do
+    subject { Ci::JobArtifact.sbom_reports }
+
+    context 'when there is an sbom report' do
+      let!(:artifact) { create(:ee_ci_job_artifact, :cyclonedx) }
+
+      it { is_expected.to match_array([artifact]) }
+    end
+
+    context 'when there is no sbom report' do
+      let!(:artifact) { create(:ee_ci_job_artifact, :trace) }
+
+      it { is_expected.to be_empty }
+    end
+  end
+
   describe '.associated_file_types_for' do
     using RSpec::Parameterized::TableSyntax
 

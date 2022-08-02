@@ -434,5 +434,16 @@ FactoryBot.define do
           'application/json')
       end
     end
+
+    trait :cyclonedx do
+      file_format { :zip }
+      file_type { :cyclonedx }
+
+      after(:build) do |artifact, _|
+        artifact.file = fixture_file_upload(
+          Rails.root.join('ee/spec/fixtures/sbom/gl-sbom.cdx.zip'),
+          'application/json')
+      end
+    end
   end
 end
