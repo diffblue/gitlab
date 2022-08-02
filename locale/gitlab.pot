@@ -45481,6 +45481,9 @@ msgstr ""
 msgid "assign yourself"
 msgstr ""
 
+msgid "associated parent is confidential and can not have non-confidential children."
+msgstr ""
+
 msgid "at"
 msgstr ""
 
@@ -45559,6 +45562,9 @@ msgid "can't include: %{invalid_storages}"
 msgstr ""
 
 msgid "can't reference a branch that does not exist"
+msgstr ""
+
+msgid "cannot assign a non-confidential work item to a confidential parent. Make the work item confidential and try again."
 msgstr ""
 
 msgid "cannot be a date in the past"
@@ -45973,6 +45979,9 @@ msgid "committed"
 msgstr ""
 
 msgid "compliance violation has already been recorded"
+msgstr ""
+
+msgid "confidential parent can not be used if there are non-confidential children."
 msgstr ""
 
 msgid "contacts can only be added to root groups"

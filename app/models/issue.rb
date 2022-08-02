@@ -101,6 +101,7 @@ class Issue < ApplicationRecord
   validates :namespace, presence: true, if: -> { project.present? }
 
   validate :due_date_after_start_date
+  validate :parent_link_confidentiality
 
   enum issue_type: WorkItems::Type.base_types
 
@@ -667,6 +668,21 @@ class Issue < ApplicationRecord
 
     if due_date < start_date
       errors.add(:due_date, 'must be greater than or equal to start date')
+    end
+  end
+
+  # Although parent/child relationship can be set only for WorkItems, we
+  # still need to validate it for Issue model too, because both models use
+  # same table.
+  def parent_link_confidentiality
+    return unless persisted?
+
+    if confidential? && WorkItems::ParentLink.has_public_children?(id)
+      errors.add(:confidential, _('confidential parent can not be used if there are non-confidential children.'))
+    end
+
+    if !confidential? && WorkItems::ParentLink.has_confidential_parent?(id)
+      errors.add(:confidential, _('associated parent is confidential and can not have non-confidential children.'))
     end
   end
 

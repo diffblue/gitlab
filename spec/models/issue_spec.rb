@@ -136,6 +136,54 @@ RSpec.describe Issue do
         it { is_expected.to eq(false) }
       end
     end
+
+    describe 'confidentiality' do
+      let_it_be(:project) { create(:project) }
+
+      context 'when parent and child are confidential' do
+        let_it_be(:parent) { create(:work_item, confidential: true, project: project) }
+        let_it_be(:child) { create(:work_item, :task, confidential: true, project: project) }
+        let_it_be(:link) { create(:parent_link, work_item: child, work_item_parent: parent) }
+
+        it 'does not allow to make child not-confidential' do
+          issue = Issue.find(child.id)
+          issue.confidential = false
+
+          expect(issue).not_to be_valid
+          expect(issue.errors[:confidential])
+            .to include('associated parent is confidential and can not have non-confidential children.')
+        end
+
+        it 'allows to make parent not-confidential' do
+          issue = Issue.find(parent.id)
+          issue.confidential = false
+
+          expect(issue).to be_valid
+        end
+      end
+
+      context 'when parent and child are not-confidential' do
+        let_it_be(:parent) { create(:work_item, project: project) }
+        let_it_be(:child) { create(:work_item, :task, project: project) }
+        let_it_be(:link) { create(:parent_link, work_item: child, work_item_parent: parent) }
+
+        it 'does not allow to make parent confidential' do
+          issue = Issue.find(parent.id)
+          issue.confidential = true
+
+          expect(issue).not_to be_valid
+          expect(issue.errors[:confidential])
+            .to include('confidential parent can not be used if there are non-confidential children.')
+        end
+
+        it 'allows to make child confidential' do
+          issue = Issue.find(child.id)
+          issue.confidential = true
+
+          expect(issue).to be_valid
+        end
+      end
+    end
   end
 
   subject { create(:issue, project: reusable_project) }
