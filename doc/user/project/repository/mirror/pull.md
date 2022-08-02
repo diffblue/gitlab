@@ -28,6 +28,9 @@ local repository, GitLab stops updating the branch. This prevents data loss.
 Deleted branches and tags in the upstream repository are not reflected in the
 downstream repository.
 
+NOTE:
+If anything in the downstream pull mirror repository is deleted, but still exists in the upstream repository, it is restored upon the next pull. As an example of this behavior, deleting a branch downstream may result in the branch reappearing.
+
 ## How pull mirroring works
 
 After you configure a GitLab repository as a pull mirror:
