@@ -4,7 +4,7 @@ module Evidences
   class BuildArtifactEntity < Grape::Entity
     include RequestAwareEntity
 
-    expose :url do |job|
+    expose :url, if: -> (job) { job.artifacts_paths.present? } do |job|
       download_project_job_artifacts_url(project, job)
     end
 

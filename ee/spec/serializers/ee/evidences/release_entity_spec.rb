@@ -8,8 +8,8 @@ RSpec.describe Evidences::ReleaseEntity do
 
   context 'when report artifacts are passed' do
     let(:pipeline) { create(:ci_empty_pipeline, sha: release.sha, project: project) }
-    let(:build_test_report) { create(:ci_build, :test_reports, pipeline: pipeline) }
-    let(:build_coverage_report) { create(:ci_build, :coverage_reports, pipeline: pipeline) }
+    let(:build_test_report) { create(:ci_build, :test_reports, :with_artifacts_paths, pipeline: pipeline) }
+    let(:build_coverage_report) { create(:ci_build, :coverage_reports, :with_artifacts_paths, pipeline: pipeline) }
 
     subject { described_class.new(release, report_artifacts: [build_test_report, build_coverage_report]).as_json }
 
