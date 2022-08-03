@@ -10,7 +10,7 @@ RSpec.describe Geo::HashedStorageAttachmentsEventStore do
   let(:project) { create(:project, path: 'bar') }
   let(:attachments_event) { build(:geo_hashed_storage_attachments_event, project: project) }
   let(:old_attachments_path) { attachments_event.old_attachments_path }
-  let(:new_attachments_path) {attachments_event.new_attachments_path }
+  let(:new_attachments_path) { attachments_event.new_attachments_path }
 
   subject { described_class.new(project, old_storage_version: 1, new_storage_version: 2, old_attachments_path: old_attachments_path, new_attachments_path: new_attachments_path) }
 

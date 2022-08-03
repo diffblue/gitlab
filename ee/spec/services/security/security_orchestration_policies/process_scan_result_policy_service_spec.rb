@@ -83,7 +83,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyS
       end
 
       context 'with an invited group' do
-        let(:group_user) { create(:user)}
+        let(:group_user) { create(:user) }
         let(:another_group) { create(:group, :public) }
         let(:policy) { build(:scan_result_policy, name: 'Test Policy', actions: [{ type: 'require_approval', approvals_required: 1, group_approvers_ids: [another_group.id] }]) }
 

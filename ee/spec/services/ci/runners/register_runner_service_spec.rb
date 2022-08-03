@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe ::Ci::Runners::RegisterRunnerService, '#execute' do
   let(:registration_token) { 'abcdefg123456' }
-  let(:token) { }
+  let(:token) {}
   let(:audit_service) { instance_double(::AuditEvents::RegisterRunnerAuditEventService) }
 
   before do
@@ -53,7 +53,7 @@ RSpec.describe ::Ci::Runners::RegisterRunnerService, '#execute' do
 
   context 'with a registration token' do
     let(:token) { registration_token }
-    let(:token_scope) { }
+    let(:token_scope) {}
 
     it_behaves_like 'a service logging a runner registration audit event'
   end

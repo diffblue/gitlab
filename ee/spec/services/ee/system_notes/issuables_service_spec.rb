@@ -51,7 +51,7 @@ RSpec.describe ::SystemNotes::IssuablesService do
       it_behaves_like 'Snowplow event tracking' do
         let(:category) { 'issues_edit' }
         let(:action) { 'g_project_management_issue_health_status_changed' }
-        let(:namespace) { project.namespace}
+        let(:namespace) { project.namespace }
         let(:user) { author }
         let(:feature_flag_name) { :route_hll_to_snowplow_phase2 }
       end

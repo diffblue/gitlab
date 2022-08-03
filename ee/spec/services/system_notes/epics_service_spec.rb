@@ -151,7 +151,7 @@ RSpec.describe SystemNotes::EpicsService do
       end
 
       context 'when added epic is from a subgroup' do
-        let(:subgroup) {create(:group, parent: group)}
+        let(:subgroup) { create(:group, parent: group) }
 
         before do
           child_epic.update!({ group: subgroup })
@@ -184,7 +184,7 @@ RSpec.describe SystemNotes::EpicsService do
       end
 
       context 'when removed epic is from a subgroup' do
-        let(:subgroup) {create(:group, parent: group)}
+        let(:subgroup) { create(:group, parent: group) }
 
         before do
           child_epic.update!({ group: subgroup })

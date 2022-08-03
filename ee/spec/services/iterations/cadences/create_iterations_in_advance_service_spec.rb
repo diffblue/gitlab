@@ -364,8 +364,8 @@ RSpec.describe Iterations::Cadences::CreateIterationsInAdvanceService do
             context 'when cadence has iterations but all are in the past' do
               let_it_be_with_reload(:automated_cadence) { create(:iterations_cadence, group: group, start_date: 2.weeks.ago, iterations_in_advance: 2) }
 
-              let_it_be(:past_iteration1) { create(:iteration, group: group, title: 'Important iteration', iterations_cadence: automated_cadence, start_date: 3.weeks.ago, due_date: 2.weeks.ago)}
-              let_it_be(:past_iteration2) { create(:iteration, group: group, iterations_cadence: automated_cadence, start_date: past_iteration1.due_date + 1.day, due_date: past_iteration1.due_date + 1.week)}
+              let_it_be(:past_iteration1) { create(:iteration, group: group, title: 'Important iteration', iterations_cadence: automated_cadence, start_date: 3.weeks.ago, due_date: 2.weeks.ago) }
+              let_it_be(:past_iteration2) { create(:iteration, group: group, iterations_cadence: automated_cadence, start_date: past_iteration1.due_date + 1.day, due_date: past_iteration1.due_date + 1.week) }
 
               it 'does not modify the titles of the existing iterations (if they have any)' do
                 subject

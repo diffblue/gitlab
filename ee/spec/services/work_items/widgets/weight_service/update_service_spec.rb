@@ -7,7 +7,7 @@ RSpec.describe WorkItems::Widgets::WeightService::UpdateService do
   let_it_be(:project) { create(:project) }
   let_it_be_with_reload(:work_item) { create(:work_item, project: project, author: user, weight: 1) }
 
-  let(:widget) { work_item.widgets.find {|widget| widget.is_a?(WorkItems::Widgets::Weight) } }
+  let(:widget) { work_item.widgets.find { |widget| widget.is_a?(WorkItems::Widgets::Weight) } }
 
   describe '#update' do
     subject { described_class.new(widget: widget, current_user: user).before_update_callback(params: params) }

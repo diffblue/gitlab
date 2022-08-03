@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Epics::CreateService do
-  let_it_be(:group) { create(:group, :internal)}
+  let_it_be(:group) { create(:group, :internal) }
   let_it_be(:user) { create(:user) }
   let_it_be(:parent_epic) { create(:epic, group: group) }
 

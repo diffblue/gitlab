@@ -13,7 +13,7 @@ RSpec.describe Geo::RepositorySyncService, :geo do
   let(:repository) { project.repository }
   let(:temp_repo) { subject.send(:temp_repo) }
   let(:lease_key) { "geo_sync_service:repository:#{project.id}" }
-  let(:lease_uuid) { 'uuid'}
+  let(:lease_uuid) { 'uuid' }
   let(:url_to_repo) { "#{primary.url}#{project.full_path}.git" }
 
   subject { described_class.new(project) }
@@ -69,7 +69,7 @@ RSpec.describe Geo::RepositorySyncService, :geo do
     it 'voids the failure message when it succeeds after an error' do
       registry = create(:geo_project_registry, project: project, last_repository_sync_failure: 'error')
 
-      expect { subject.execute }.to change { registry.reload.last_repository_sync_failure}.to(nil)
+      expect { subject.execute }.to change { registry.reload.last_repository_sync_failure }.to(nil)
     end
 
     it 'rescues when Gitlab::Shell::Error is raised' do
@@ -155,14 +155,14 @@ RSpec.describe Geo::RepositorySyncService, :geo do
       create(:repository_state, :repository_verified, project: project)
       registry = create(:geo_project_registry, project: project, primary_repository_checksummed: false)
 
-      expect { subject.execute }.to change { registry.reload.primary_repository_checksummed}.from(false).to(true)
+      expect { subject.execute }.to change { registry.reload.primary_repository_checksummed }.from(false).to(true)
     end
 
     it 'marks primary_repository_checksummed as false when repository has not been verified on primary' do
       create(:repository_state, :repository_failed, project: project)
       registry = create(:geo_project_registry, project: project, primary_repository_checksummed: true)
 
-      expect { subject.execute }.to change { registry.reload.primary_repository_checksummed}.from(true).to(false)
+      expect { subject.execute }.to change { registry.reload.primary_repository_checksummed }.from(true).to(false)
     end
 
     context 'tracking database' do

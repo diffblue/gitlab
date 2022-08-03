@@ -59,9 +59,9 @@ RSpec.describe QuickActions::InterpretService do
   shared_examples 'returns execution messages' do |relation|
     context 'when correct epic reference' do
       let(:content) { "/#{relation}_epic #{epic2&.to_reference(epic)}" }
-      let(:explain_action) { relation == :child ? 'Adds' : 'Sets'}
-      let(:execute_action) { relation == :child ? 'Added' : 'Set'}
-      let(:article)        { relation == :child ? 'a' : 'the'}
+      let(:explain_action) { relation == :child ? 'Adds' : 'Sets' }
+      let(:execute_action) { relation == :child ? 'Added' : 'Set' }
+      let(:article)        { relation == :child ? 'a' : 'the' }
 
       it 'returns explain message with epic reference' do
         _, explanations = service.explain(content, epic)

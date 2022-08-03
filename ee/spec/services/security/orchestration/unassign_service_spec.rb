@@ -21,7 +21,7 @@ RSpec.describe Security::Orchestration::UnassignService do
         end
 
         it 'deletes rule schedules related to the project' do
-          expect {result}.to change(Security::OrchestrationPolicyRuleSchedule, :count).from(1).to(0)
+          expect { result }.to change(Security::OrchestrationPolicyRuleSchedule, :count).from(1).to(0)
         end
 
         context 'when destroy fails' do
@@ -32,7 +32,7 @@ RSpec.describe Security::Orchestration::UnassignService do
           it { is_expected.not_to be_success }
 
           it 'does not delete rule schedules related to the project' do
-            expect {result}.not_to change(Security::OrchestrationPolicyRuleSchedule, :count)
+            expect { result }.not_to change(Security::OrchestrationPolicyRuleSchedule, :count)
           end
         end
       end
@@ -58,7 +58,7 @@ RSpec.describe Security::Orchestration::UnassignService do
           let_it_be(:scan_finding_rule) { create(:approval_project_rule, :scan_finding, project: container) }
 
           it 'deletes scan finding approval rules related to the project' do
-            expect {result}.to change(ApprovalProjectRule, :count).from(1).to(0)
+            expect { result }.to change(ApprovalProjectRule, :count).from(1).to(0)
           end
         end
 
@@ -66,7 +66,7 @@ RSpec.describe Security::Orchestration::UnassignService do
           let_it_be(:license_scanning_rule) { create(:approval_project_rule, :license_scanning, project: container) }
 
           it 'does not delete license scanning rules' do
-            expect {result}.not_to change(ApprovalProjectRule, :count)
+            expect { result }.not_to change(ApprovalProjectRule, :count)
           end
         end
       end

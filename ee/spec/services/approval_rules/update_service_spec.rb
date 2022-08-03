@@ -203,7 +203,7 @@ RSpec.describe ApprovalRules::UpdateService do
     end
 
     describe 'audit events' do
-      let_it_be(:user) { create(:user)}
+      let_it_be(:user) { create(:user) }
       let_it_be(:parent_group) { create(:group) }
       let_it_be(:destination) { create(:external_audit_event_destination, group: parent_group) }
       let_it_be(:project) { create(:project, creator: user, group: parent_group) }
@@ -243,7 +243,7 @@ RSpec.describe ApprovalRules::UpdateService do
 
           it_behaves_like 'sends correct event type in audit event stream' do
             let_it_be(:event_type) { 'update_aproval_rules' }
-            subject {described_class.new(approval_rule, user, approvals_required: 1).execute}
+            subject { described_class.new(approval_rule, user, approvals_required: 1).execute }
           end
 
           it 'audits the number of required approvals change' do

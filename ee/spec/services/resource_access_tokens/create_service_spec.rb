@@ -13,7 +13,7 @@ RSpec.describe ResourceAccessTokens::CreateService do
   end
 
   shared_examples 'token creation succeeds' do
-    let(:resource) { create(:project, group: group)}
+    let(:resource) { create(:project, group: group) }
 
     before do
       resource.add_maintainer(user)

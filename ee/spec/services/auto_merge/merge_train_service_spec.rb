@@ -19,7 +19,7 @@ RSpec.describe AutoMerge::MergeTrainService do
   before do
     project.add_maintainer(user)
 
-    allow(AutoMergeProcessWorker).to receive(:perform_async) { }
+    allow(AutoMergeProcessWorker).to receive(:perform_async) {}
 
     stub_feature_flags(disable_merge_trains: false)
     stub_licensed_features(merge_trains: true, merge_pipelines: true)

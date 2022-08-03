@@ -81,7 +81,7 @@ RSpec.describe Members::AwaitService, :saas do
       end
 
       context 'when not the last owner' do
-        let_it_be(:owner) { create(:group_member, :owner, group: root_group)}
+        let_it_be(:owner) { create(:group_member, :owner, group: root_group) }
 
         context 'when member of the root group' do
           it_behaves_like 'succesfully sets member to be awaiting' do

@@ -177,7 +177,7 @@ RSpec.describe Projects::UpdateMirrorService do
     end
 
     context 'when tags on mirror are modified' do
-      let(:mirror_project) { create(:project, :repository)}
+      let(:mirror_project) { create(:project, :repository) }
       let(:mirror_path) { File.join(TestEnv.repos_path, mirror_project.repository.relative_path) }
       let!(:mirror_modified_tag_sha) { modify_tag(mirror_project.repository, 'v1.0.0') }
       let!(:mirror_modified_branch_sha) { modify_branch(mirror_project.repository, 'feature') }
@@ -246,7 +246,7 @@ RSpec.describe Projects::UpdateMirrorService do
 
     context 'updating branches' do
       context 'when the mirror has a repository' do
-        let(:master) { "master"}
+        let(:master) { "master" }
 
         before do
           stub_fetch_mirror(project)
@@ -355,7 +355,7 @@ RSpec.describe Projects::UpdateMirrorService do
         end
 
         context 'with diverged branches' do
-          let(:diverged_branch) { "markdown"}
+          let(:diverged_branch) { "markdown" }
 
           context 'when mirror_overwrites_diverged_branches is true' do
             it 'update diverged branches' do

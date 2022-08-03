@@ -21,7 +21,7 @@ RSpec.describe GitlabSubscriptions::ApplyTrialService do
     end
 
     context 'trial applied successfully' do
-      let(:response) { { success: true }}
+      let(:response) { { success: true } }
 
       it 'returns success: true' do
         expect(execute).to eq({ success: true })
@@ -31,7 +31,7 @@ RSpec.describe GitlabSubscriptions::ApplyTrialService do
     end
 
     context 'error while applying the trial' do
-      let(:response) { { success: false, data: { errors: ['some error'] } }}
+      let(:response) { { success: false, data: { errors: ['some error'] } } }
 
       it 'returns success: false with errors' do
         expected_response = {

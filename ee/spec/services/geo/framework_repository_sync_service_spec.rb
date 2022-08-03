@@ -68,7 +68,7 @@ RSpec.describe Geo::FrameworkRepositorySyncService, :geo do
     it 'voids the failure message when it succeeds after an error' do
       registry.update!(last_sync_failure: 'error')
 
-      expect { subject.execute }.to change { registry.reload.last_sync_failure}.to(nil)
+      expect { subject.execute }.to change { registry.reload.last_sync_failure }.to(nil)
     end
 
     it 'expires repository caches' do

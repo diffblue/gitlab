@@ -95,7 +95,7 @@ RSpec.describe AuditEvents::UnregisterRunnerAuditEventService do
 
       let_it_be(:runner) { create(:ci_runner) }
 
-      let(:entity) { }
+      let(:entity) {}
       let(:extra_attrs) { {} }
       let(:target_details) { ::Gitlab::Routing.url_helpers.admin_runner_path(runner) }
       let(:attrs) do
