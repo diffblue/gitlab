@@ -1,4 +1,8 @@
-import { getFormattedSummary, preparePageInfo } from 'ee/security_dashboard/helpers';
+import {
+  getFormattedSummary,
+  preparePageInfo,
+  getFormattedScanners,
+} from 'ee/security_dashboard/helpers';
 
 describe('getFormattedSummary', () => {
   it('returns a properly formatted array given a valid, non-empty summary', () => {
@@ -62,5 +66,67 @@ describe('preparePageInfo', () => {
         hasNextPage: true,
       });
     });
+  });
+});
+
+describe('getFormattedScanners', () => {
+  const manuallyAddedScanner = {
+    id: 'gid://gitlab/Vulnerabilities::Scanner/3',
+    name: 'manually-created-vulnerability',
+    reportType: 'GENERIC',
+    vendor: 'GitLab',
+  };
+  const manuallyAddedName = 'Manually Added';
+
+  it('returns a formatted array', () => {
+    const vulnerabilityScanners = [
+      {
+        id: 'gid://gitlab/Vulnerabilities::Scanner/1',
+        name: 'Find Security Bugs',
+        reportType: 'SAST',
+        vendor: 'GitLab',
+      },
+      {
+        id: 'gid://gitlab/Vulnerabilities::Scanner/2',
+        name: 'ESLint',
+        reportType: 'SAST',
+        vendor: 'GitLab',
+      },
+      { ...manuallyAddedScanner },
+    ];
+
+    expect(getFormattedScanners(vulnerabilityScanners)).toEqual([
+      {
+        id: 'SAST',
+        reportType: 'SAST',
+        name: 'SAST',
+        scannerIds: [
+          'gid://gitlab/Vulnerabilities::Scanner/1',
+          'gid://gitlab/Vulnerabilities::Scanner/2',
+        ],
+      },
+      {
+        id: 'GENERIC',
+        reportType: 'GENERIC',
+        name: manuallyAddedName,
+        scannerIds: ['gid://gitlab/Vulnerabilities::Scanner/3'],
+      },
+    ]);
+  });
+
+  it('renames "GENERIC" report type to "Manually Added"', () => {
+    const vulnerabilityScanners = [{ ...manuallyAddedScanner }];
+
+    expect(getFormattedScanners(vulnerabilityScanners)[0].name).toBe(manuallyAddedName);
+  });
+
+  it('sets the "GENERIC" report type as the default if no matching report type found', () => {
+    const customReportTypeScanner = {
+      ...manuallyAddedScanner,
+      reportType: '',
+    };
+    const vulnerabilityScanners = [{ ...customReportTypeScanner }];
+
+    expect(getFormattedScanners(vulnerabilityScanners)[0].name).toBe(manuallyAddedName);
   });
 });

@@ -1,4 +1,5 @@
 import isPlainObject from 'lodash/isPlainObject';
+import groupBy from 'lodash/groupBy';
 import {
   REPORT_TYPES_WITH_MANUALLY_ADDED,
   REPORT_TYPES_WITH_CLUSTER_IMAGE,
@@ -9,6 +10,7 @@ import convertReportType from 'ee/vue_shared/security_reports/store/utils/conver
 import { VULNERABILITY_STATES } from 'ee/vulnerabilities/constants';
 import { convertObjectPropsToSnakeCase } from '~/lib/utils/common_utils';
 import { s__, __ } from '~/locale';
+import { SCANNER_NAMES_MAP } from '~/security_configuration/components/constants';
 import { DEFAULT_SCANNER } from './constants';
 
 const parseOptions = (obj) =>
@@ -164,6 +166,26 @@ export const getFormattedSummary = (rawSummary = {}) => {
  */
 export const preparePageInfo = (pageInfo) => {
   return { ...pageInfo, hasNextPage: Boolean(pageInfo?.endCursor) };
+};
+
+/**
+ * Provided a vulnerability scanners from the GraphQL API, this returns an array that is
+ * formatted so it can be displayed in the dropdown UI.
+ *
+ * @param {Array} vulnerabilityScanners
+ * @returns {Array} formatted vulnerabilityScanners
+ */
+export const getFormattedScanners = (vulnerabilityScanners) => {
+  const groupedByReportType = groupBy(vulnerabilityScanners, 'reportType');
+
+  return Object.entries(groupedByReportType).map(([reportType, scanners]) => {
+    return {
+      id: reportType,
+      reportType,
+      name: SCANNER_NAMES_MAP[reportType] || SCANNER_NAMES_MAP.GENERIC,
+      scannerIds: scanners.map(({ id }) => id),
+    };
+  });
 };
 
 export const PROJECT_LOADING_ERROR_MESSAGE = __('An error occurred while retrieving projects.');
