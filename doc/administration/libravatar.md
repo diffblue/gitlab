@@ -15,7 +15,7 @@ other websites. The Libravatar API is
 switch to the Libravatar avatar service or even your own Libravatar
 server.
 
-## Change the Libravatar service to your own one
+## Change the Libravatar service to your own service
 
 In the [`gitlab.yml` gravatar section](https://gitlab.com/gitlab-org/gitlab/-/blob/68dac188ec6b1b03d53365e7579422f44cbe7a1c/config/gitlab.yml.example#L469-476), set
 the configuration options as follows:
@@ -32,7 +32,7 @@ the configuration options as follows:
    # gitlab_rails['gravatar_plain_url'] = "http://cdn.libravatar.org/avatar/%{hash}?s=%{size}&d=identicon"
    ```
 
-1. Then run `sudo gitlab-ctl reconfigure` for the changes to take effect.
+1. To apply the changes, run `sudo gitlab-ctl reconfigure`.
 
 **For installations from source**
 
@@ -55,17 +55,17 @@ the configuration options as follows:
 **For Omnibus installations**
 
 1. Delete `gitlab_rails['gravatar_ssl_url']` or `gitlab_rails['gravatar_plain_url']` from `/etc/gitlab/gitlab.rb`.
-1. Then run `sudo gitlab-ctl reconfigure` for the changes to take effect.
+1. To apply the changes, run `sudo gitlab-ctl reconfigure`.
 
 **For installations from source**
 
 1. Remove `gravatar:` section from `config/gitlab.yml`.
-1. Save the file, and then [restart](restart_gitlab.md#installations-from-source)
-   GitLab for the changes to take effect.
+1. Save the file, then [restart](restart_gitlab.md#installations-from-source)
+   GitLab to apply the changes.
 
 ## Disable Gravatar service
 
-For some reasons such as prohibiting to third-party service, you can disable Gravatar service as follows:
+To disable Gravatar, for example, to prohibit third-party services, complete the following steps:
 
 **For Omnibus installations**
 
@@ -75,7 +75,7 @@ For some reasons such as prohibiting to third-party service, you can disable Gra
    gitlab_rails['gravatar_enabled'] = false
    ```
 
-1. Then run `sudo gitlab-ctl reconfigure` for the changes to take effect.
+1. To apply the changes, run `sudo gitlab-ctl reconfigure`.
 
 **For installations from source**
 
@@ -86,8 +86,8 @@ For some reasons such as prohibiting to third-party service, you can disable Gra
        enabled: false
    ```
 
-1. Save the file, and then [restart](restart_gitlab.md#installations-from-source)
-   GitLab for the changes to take effect.
+1. Save the file, then [restart](restart_gitlab.md#installations-from-source)
+   GitLab to apply the changes.
 
 ### Your own Libravatar server
 
