@@ -5,17 +5,20 @@ require "spec_helper"
 RSpec.describe MergeRequests::Mergeability::CheckBlockedByOtherMrsService do
   subject(:check_blocked_by_other_mrs) { described_class.new(merge_request: merge_request, params: {}) }
 
-  let_it_be(:merge_request) { build(:merge_request) }
+  let(:merge_request) { build(:merge_request) }
+
   let_it_be(:blocking_merge_request) { build(:merge_request) }
 
   describe "#execute" do
+    let(:result) { check_blocked_by_other_mrs.execute }
+
     context "when blocking_merge_requests feature is unavailable" do
       before do
         stub_licensed_features(blocking_merge_requests: false)
       end
 
       it "returns a check result with status success" do
-        expect(check_blocked_by_other_mrs.execute.status)
+        expect(result.status)
           .to eq Gitlab::MergeRequests::Mergeability::CheckResult::SUCCESS_STATUS
       end
     end
@@ -27,7 +30,7 @@ RSpec.describe MergeRequests::Mergeability::CheckBlockedByOtherMrsService do
 
       context "when there are no blocking MRs" do
         it "returns a check result with status success" do
-          expect(check_blocked_by_other_mrs.execute.status)
+          expect(result.status)
             .to eq Gitlab::MergeRequests::Mergeability::CheckResult::SUCCESS_STATUS
         end
       end
@@ -38,8 +41,9 @@ RSpec.describe MergeRequests::Mergeability::CheckBlockedByOtherMrsService do
         end
 
         it "returns a check result with status success" do
-          expect(check_blocked_by_other_mrs.execute.status)
+          expect(result.status)
             .to eq Gitlab::MergeRequests::Mergeability::CheckResult::FAILED_STATUS
+          expect(result.payload[:reason]).to eq(:merge_request_blocked)
         end
       end
     end

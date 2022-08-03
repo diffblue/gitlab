@@ -8,6 +8,8 @@ RSpec.describe MergeRequests::Mergeability::CheckApprovedService do
   let(:merge_request) { build(:merge_request) }
 
   describe "#execute" do
+    let(:result) { check_approved.execute }
+
     before do
       expect(merge_request).to receive(:approved?).and_return(approved)
     end
@@ -16,7 +18,7 @@ RSpec.describe MergeRequests::Mergeability::CheckApprovedService do
       let(:approved) { true }
 
       it "returns a check result with status success" do
-        expect(check_approved.execute.status)
+        expect(result.status)
           .to eq Gitlab::MergeRequests::Mergeability::CheckResult::SUCCESS_STATUS
       end
     end
@@ -25,8 +27,9 @@ RSpec.describe MergeRequests::Mergeability::CheckApprovedService do
       let(:approved) { false }
 
       it "returns a check result with status failure" do
-        expect(check_approved.execute.status)
+        expect(result.status)
           .to eq Gitlab::MergeRequests::Mergeability::CheckResult::FAILED_STATUS
+        expect(result.payload[:reason]).to eq(:not_approved)
       end
     end
   end

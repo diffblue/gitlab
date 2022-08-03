@@ -5,7 +5,7 @@ module MergeRequests
     class CheckBlockedByOtherMrsService < CheckBaseService
       def execute
         if merge_request.merge_blocked_by_other_mrs?
-          failure
+          failure(reason: failure_reason)
         else
           success
         end
@@ -17,6 +17,12 @@ module MergeRequests
 
       def cacheable?
         false
+      end
+
+      private
+
+      def failure_reason
+        :merge_request_blocked
       end
     end
   end
