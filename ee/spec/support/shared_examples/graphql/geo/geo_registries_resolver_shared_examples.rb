@@ -46,7 +46,7 @@ RSpec.shared_examples_for 'a Geo registries resolver' do |registry_factory_name|
 
           context 'when the replication_state argument is present' do
             it 'returns registries with requested replication state, in order' do
-              args = { replication_state: ::Types::Geo::ReplicableStateEnum.values['SYNCED'].value }
+              args = { replication_state: ::Types::Geo::ReplicationStateEnum.values['SYNCED'].value }
               expected = [registry1, registry2, registry4]
 
               expect(resolve_registries(args).to_a).to eq(expected)
