@@ -1,27 +1,32 @@
-import { mount } from '@vue/test-utils';
-import Vue from 'vue';
-import Vuex from 'vuex';
+import { GlSprintf } from '@gitlab/ui';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import GeoReplicableTimeAgo from 'ee/geo_replicable/components/geo_replicable_time_ago.vue';
-import createStore from 'ee/geo_replicable/store';
-import { useFakeDate } from 'helpers/fake_date';
 import TimeAgo from '~/vue_shared/components/time_ago_tooltip.vue';
-import { MOCK_REPLICABLE_TYPE } from '../mock_data';
 
-Vue.use(Vuex);
+const MOCK_LABEL = 'Test Label';
+const MOCK_DEFAULT_TEXT = 'Default Text';
+const MOCK_JUST_NOW = new Date().toISOString();
 
 describe('GeoReplicableTimeAgo', () => {
   let wrapper;
 
-  const propsData = {
-    label: 'Test Label',
-    dateString: '09-23-1994',
-    defaultText: 'Default Text',
+  const defaultProps = {
+    label: MOCK_LABEL,
+    dateString: MOCK_JUST_NOW,
+    defaultText: MOCK_DEFAULT_TEXT,
+    showDivider: false,
   };
 
-  const createComponent = () => {
-    wrapper = mount(GeoReplicableTimeAgo, {
-      store: createStore({ replicableType: MOCK_REPLICABLE_TYPE, graphqlFieldName: null }),
-      propsData,
+  const createComponent = (props = {}) => {
+    wrapper = shallowMountExtended(GeoReplicableTimeAgo, {
+      propsData: {
+        ...defaultProps,
+        ...props,
+      },
+      stubs: {
+        GlSprintf,
+        TimeAgo,
+      },
     });
   };
 
@@ -29,60 +34,27 @@ describe('GeoReplicableTimeAgo', () => {
     wrapper.destroy();
   });
 
-  const findGeoReplicableTimeAgo = () => wrapper.findComponent(GeoReplicableTimeAgo);
-  const findTimeAgo = () => findGeoReplicableTimeAgo().findComponent(TimeAgo);
-  const findDefaultText = () => findGeoReplicableTimeAgo().find('span');
+  const findReplicableTimeAgo = () => wrapper.findByTestId('replicable-time-ago');
 
-  describe('template', () => {
-    // ensure consistent output for timeago
-    useFakeDate(2020, 0, 1);
-
+  describe.each`
+    dateString       | showDivider | expectedText
+    ${MOCK_JUST_NOW} | ${true}     | ${`${MOCK_LABEL} just now`}
+    ${MOCK_JUST_NOW} | ${false}    | ${`${MOCK_LABEL} just now`}
+    ${null}          | ${true}     | ${`${MOCK_LABEL} ${MOCK_DEFAULT_TEXT}`}
+    ${null}          | ${false}    | ${`${MOCK_LABEL} ${MOCK_DEFAULT_TEXT}`}
+  `('template', ({ dateString, showDivider, expectedText }) => {
     beforeEach(() => {
-      createComponent();
+      createComponent({ dateString, showDivider });
     });
 
-    it('renders GeoReplicableTimeAgo container', () => {
-      expect(findGeoReplicableTimeAgo().exists()).toBe(true);
-    });
-
-    describe('when dateString exists', () => {
-      describe('TimeAgo', () => {
-        it('renders', () => {
-          expect(findTimeAgo().exists()).toBe(true);
-        });
-
-        it('sets time prop', () => {
-          expect(findTimeAgo().props().time).toBe(propsData.dateString);
-        });
-
-        it(`sets innerHTML as ${propsData.dateString}`, () => {
-          expect(findTimeAgo().html()).toMatchSnapshot();
-        });
+    describe(`with dateString is ${dateString} and showDivider is ${showDivider}`, () => {
+      it(`sets Replicable Time Ago text to ${expectedText}`, () => {
+        expect(findReplicableTimeAgo().text()).toBe(expectedText);
       });
 
-      it('hides DefaultText', () => {
-        expect(findDefaultText().exists()).toBe(false);
-      });
-    });
-
-    describe('when dateString is null', () => {
-      beforeEach(() => {
-        propsData.dateString = null;
-        createComponent();
-      });
-
-      it('hides TimeAgo', () => {
-        expect(findTimeAgo().exists()).toBe(false);
-      });
-
-      describe('DefaultText', () => {
-        it('renders', () => {
-          expect(findDefaultText().exists()).toBe(true);
-        });
-
-        it('sets innerHTML as props.defaultText', () => {
-          expect(findDefaultText().html()).toMatchSnapshot();
-        });
+      it(`does${showDivider ? '' : ' not'} show right border`, () => {
+        expect(findReplicableTimeAgo().find('span').classes('gl-border-r-1')).toBe(showDivider);
+        expect(findReplicableTimeAgo().find('span').classes('gl-border-r-solid')).toBe(showDivider);
       });
     });
   });

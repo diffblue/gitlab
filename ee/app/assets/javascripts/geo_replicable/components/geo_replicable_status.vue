@@ -1,5 +1,6 @@
 <script>
 import { GlIcon } from '@gitlab/ui';
+import { capitalizeFirstCharacter } from '~/lib/utils/text_utility';
 import { STATUS_ICON_NAMES, STATUS_ICON_CLASS, DEFAULT_STATUS } from '../constants';
 
 export default {
@@ -14,22 +15,20 @@ export default {
       default: DEFAULT_STATUS,
     },
   },
-  data() {
-    return {
-      icon: this.iconProperties(),
-    };
-  },
-  methods: {
-    iconProperties() {
+  computed: {
+    capitalizedStatus() {
+      return capitalizeFirstCharacter(this.status);
+    },
+    styleProperties() {
       if (STATUS_ICON_NAMES[this.status] && STATUS_ICON_CLASS[this.status]) {
         return {
-          name: STATUS_ICON_NAMES[this.status],
+          iconName: STATUS_ICON_NAMES[this.status],
           cssClass: STATUS_ICON_CLASS[this.status],
         };
       }
 
       return {
-        name: STATUS_ICON_NAMES[DEFAULT_STATUS],
+        iconName: STATUS_ICON_NAMES[DEFAULT_STATUS],
         cssClass: STATUS_ICON_CLASS[DEFAULT_STATUS],
       };
     },
@@ -38,10 +37,12 @@ export default {
 </script>
 
 <template>
-  <div>
-    <span class="d-flex align-items-center text-capitalize">
-      <gl-icon :name="icon.name" :class="icon.cssClass" class="mr-2" />
-      {{ status }}
-    </span>
+  <div
+    class="gl-display-flex align-items-center"
+    :class="styleProperties.cssClass"
+    data-testid="replicable-item-status"
+  >
+    <gl-icon :name="styleProperties.iconName" class="gl-mr-2" />
+    <span class="gl-font-weight-bold gl-font-sm">{{ capitalizedStatus }}</span>
   </div>
 </template>

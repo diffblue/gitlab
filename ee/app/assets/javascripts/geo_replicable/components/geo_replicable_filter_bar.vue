@@ -77,40 +77,37 @@ export default {
 </script>
 
 <template>
-  <nav class="bg-secondary border-bottom border-secondary-100 p-3">
-    <div class="row d-flex flex-column flex-sm-row">
-      <div class="col">
-        <div class="d-sm-flex mx-n1">
-          <gl-dropdown :text="$options.i18n.dropdownTitle" class="px-1 my-1 my-sm-0 w-100">
-            <gl-dropdown-item
-              v-for="(filter, index) in filterOptions"
-              :key="index"
-              :class="{ 'bg-secondary-100': index === currentFilterIndex }"
-              @click="filterChange(index)"
-            >
-              <span v-if="filter === $options.filterStates.ALL"
-                >{{ filter.label }} {{ replicableTypeName }}</span
-              >
-              <span v-else>{{ filter.label }}</span>
-            </gl-dropdown-item>
-          </gl-dropdown>
-          <gl-search-box-by-type
-            v-model="search"
-            :debounce="$options.debounce"
-            class="px-1 my-1 my-sm-0 bg-white w-100"
-            type="text"
-            :placeholder="$options.i18n.searchPlaceholder"
-          />
-        </div>
-      </div>
+  <nav class="gl-bg-gray-50 gl-p-5">
+    <div class="gl-display-grid geo-replicable-filter-grid gl-gap-3">
       <div
-        v-if="hasReplicableItems"
-        class="col col-sm-5 d-flex justify-content-end my-1 my-sm-0 w-100"
+        class="gl-display-flex gl-align-items-center gl-flex-direction-column gl-sm-flex-direction-row"
       >
-        <gl-button v-gl-modal-directive="$options.RESYNC_MODAL_ID">{{
-          $options.i18n.resyncAll
-        }}</gl-button>
+        <gl-dropdown :text="$options.i18n.dropdownTitle" class="gl-w-full">
+          <gl-dropdown-item
+            v-for="(filter, index) in filterOptions"
+            :key="index"
+            :class="{ 'gl-bg-gray-50': index === currentFilterIndex }"
+            @click="filterChange(index)"
+          >
+            <span v-if="filter === $options.filterStates.ALL"
+              >{{ filter.label }} {{ replicableTypeName }}</span
+            >
+            <span v-else>{{ filter.label }}</span>
+          </gl-dropdown-item>
+        </gl-dropdown>
+        <gl-search-box-by-type
+          v-model="search"
+          :debounce="$options.debounce"
+          class="gl-w-full gl-mt-3 gl-ml-0 gl-sm-mt-0 gl-sm-ml-3"
+          :placeholder="$options.i18n.searchPlaceholder"
+        />
       </div>
+      <gl-button
+        v-if="hasReplicableItems"
+        v-gl-modal-directive="$options.RESYNC_MODAL_ID"
+        class="gl-ml-auto"
+        >{{ $options.i18n.resyncAll }}</gl-button
+      >
     </div>
     <gl-modal
       :modal-id="$options.RESYNC_MODAL_ID"

@@ -1,6 +1,7 @@
 <script>
 import { GlLink, GlButton } from '@gitlab/ui';
 import { mapActions } from 'vuex';
+import { capitalizeFirstCharacter } from '~/lib/utils/text_utility';
 import { __ } from '~/locale';
 import { ACTION_TYPES } from '../constants';
 import GeoReplicableStatus from './geo_replicable_status.vue';
@@ -49,19 +50,19 @@ export default {
     return {
       timeAgoArray: [
         {
-          label: __('Last successful sync'),
+          label: capitalizeFirstCharacter(this.syncStatus),
           dateString: this.lastSynced,
-          defaultText: __('Never'),
+          defaultText: __('Unknown'),
         },
         {
           label: __('Last time verified'),
           dateString: this.lastVerified,
-          defaultText: __('Not Implemented'),
+          defaultText: __('Unknown'),
         },
         {
           label: __('Last time checked'),
           dateString: this.lastChecked,
-          defaultText: __('Not Implemented'),
+          defaultText: __('Unknown'),
         },
       ],
     };
@@ -79,35 +80,36 @@ export default {
 </script>
 
 <template>
-  <div class="card">
-    <div v-if="hasProject" class="card-header d-flex align-center">
-      <gl-link class="font-weight-bold" :href="`/${name}`" target="_blank">{{ name }}</gl-link>
-      <div class="ml-auto">
+  <div class="gl-border-b gl-p-5">
+    <div
+      class="geo-replicable-item-grid gl-display-grid gl-align-items-center gl-pb-4"
+      data-testid="replicable-item-header"
+    >
+      <geo-replicable-status :status="syncStatus" />
+      <template v-if="hasProject">
+        <gl-link class="gl-font-weight-bold gl-pr-3" :href="`/${name}`" target="_blank">{{
+          name
+        }}</gl-link>
         <gl-button
+          class="gl-ml-auto"
           size="small"
           @click="initiateReplicableSync({ projectId, name, action: $options.actionTypes.RESYNC })"
           >{{ __('Resync') }}</gl-button
         >
-      </div>
+      </template>
+      <template v-else>
+        <span class="gl-font-weight-bold">{{ name }}</span>
+      </template>
     </div>
-    <div v-else class="card-header">
-      <span class="font-weight-bold">{{ name }}</span>
-    </div>
-    <div class="card-body">
-      <div class="d-flex flex-column flex-md-row">
-        <div class="flex-grow-1">
-          <label class="text-muted">{{ __('Status') }}</label>
-          <geo-replicable-status :status="syncStatus" />
-        </div>
-        <geo-replicable-time-ago
-          v-for="(timeAgo, index) in timeAgoArray"
-          :key="index"
-          class="flex-grow-1"
-          :label="timeAgo.label"
-          :date-string="timeAgo.dateString"
-          :default-text="timeAgo.defaultText"
-        />
-      </div>
+    <div class="gl-display-flex gl-align-items-center gl-flex-wrap">
+      <geo-replicable-time-ago
+        v-for="(timeAgo, index) in timeAgoArray"
+        :key="index"
+        :label="timeAgo.label"
+        :date-string="timeAgo.dateString"
+        :default-text="timeAgo.defaultText"
+        :show-divider="index !== timeAgoArray.length - 1"
+      />
     </div>
   </div>
 </template>

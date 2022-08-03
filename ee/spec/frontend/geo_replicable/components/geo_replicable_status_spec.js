@@ -1,30 +1,27 @@
 import { GlIcon } from '@gitlab/ui';
-import { mount } from '@vue/test-utils';
-import Vue from 'vue';
-import Vuex from 'vuex';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import GeoReplicableStatus from 'ee/geo_replicable/components/geo_replicable_status.vue';
+import { capitalizeFirstCharacter } from '~/lib/utils/text_utility';
 import {
   FILTER_STATES,
   STATUS_ICON_NAMES,
   STATUS_ICON_CLASS,
   DEFAULT_STATUS,
 } from 'ee/geo_replicable/constants';
-import createStore from 'ee/geo_replicable/store';
-import { MOCK_REPLICABLE_TYPE } from '../mock_data';
-
-Vue.use(Vuex);
 
 describe('GeoReplicableStatus', () => {
   let wrapper;
 
-  const propsData = {
+  const defaultProps = {
     status: FILTER_STATES.SYNCED.value,
   };
 
-  const createComponent = () => {
-    wrapper = mount(GeoReplicableStatus, {
-      store: createStore({ replicableType: MOCK_REPLICABLE_TYPE, graphqlFieldName: null }),
-      propsData,
+  const createComponent = (props = {}) => {
+    wrapper = shallowMountExtended(GeoReplicableStatus, {
+      propsData: {
+        ...defaultProps,
+        ...props,
+      },
     });
   };
 
@@ -32,46 +29,32 @@ describe('GeoReplicableStatus', () => {
     wrapper.destroy();
   });
 
-  const findGeoReplicableStatusContainer = () => wrapper.find('div');
-  const findIcon = () => findGeoReplicableStatusContainer().findComponent(GlIcon);
-
-  describe('template', () => {
-    beforeEach(() => {
-      createComponent();
-    });
-
-    it('renders status container', () => {
-      expect(findGeoReplicableStatusContainer().exists()).toBe(true);
-    });
-  });
+  const findStatusWrapper = () => wrapper.findByTestId('replicable-item-status');
+  const findStatusIcon = () => findStatusWrapper().findComponent(GlIcon);
+  const findStatusText = () => findStatusWrapper().find('span');
 
   describe.each`
-    status                         | iconName                                          | iconClass
-    ${FILTER_STATES.SYNCED.value}  | ${STATUS_ICON_NAMES[FILTER_STATES.SYNCED.value]}  | ${STATUS_ICON_CLASS[FILTER_STATES.SYNCED.value]}
-    ${FILTER_STATES.PENDING.value} | ${STATUS_ICON_NAMES[FILTER_STATES.PENDING.value]} | ${STATUS_ICON_CLASS[FILTER_STATES.PENDING.value]}
-    ${FILTER_STATES.FAILED.value}  | ${STATUS_ICON_NAMES[FILTER_STATES.FAILED.value]}  | ${STATUS_ICON_CLASS[FILTER_STATES.FAILED.value]}
-    ${DEFAULT_STATUS}              | ${STATUS_ICON_NAMES[DEFAULT_STATUS]}              | ${STATUS_ICON_CLASS[DEFAULT_STATUS]}
-  `(`iconProperties`, ({ status, iconName, iconClass }) => {
+    status
+    ${FILTER_STATES.SYNCED.value}
+    ${FILTER_STATES.PENDING.value}
+    ${FILTER_STATES.FAILED.value}
+    ${DEFAULT_STATUS}
+  `('template', ({ status }) => {
     beforeEach(() => {
-      propsData.status = status;
-      createComponent();
+      createComponent({ status });
     });
 
-    describe(`with filter set to ${status}`, () => {
-      beforeEach(() => {
-        wrapper.vm.icon = wrapper.vm.iconProperties();
+    describe(`with status set to ${status}`, () => {
+      it(`adds ${STATUS_ICON_CLASS[status]} to status wrapper`, () => {
+        expect(findStatusWrapper().classes(STATUS_ICON_CLASS[status])).toBe(true);
       });
 
-      it(`sets icon.name to ${iconName}`, () => {
-        expect(wrapper.vm.icon.name).toEqual(iconName);
+      it(`sets the status icon to ${STATUS_ICON_NAMES[status]}`, () => {
+        expect(findStatusIcon().props('name')).toBe(STATUS_ICON_NAMES[status]);
       });
 
-      it(`sets icon.cssClass to ${iconClass}`, () => {
-        expect(wrapper.vm.icon.cssClass).toEqual(iconClass);
-      });
-
-      it(`sets svg to icon '${iconName}'`, () => {
-        expect(findIcon().attributes('data-testid')).toBe(`${wrapper.vm.icon.name}-icon`);
+      it(`sets the status text to ${capitalizeFirstCharacter(status)}`, () => {
+        expect(findStatusText().text()).toBe(capitalizeFirstCharacter(status));
       });
     });
   });

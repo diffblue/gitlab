@@ -1,8 +1,10 @@
 import { GlLink, GlButton } from '@gitlab/ui';
-import { mount } from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import GeoReplicableItem from 'ee/geo_replicable/components/geo_replicable_item.vue';
+import GeoReplicableStatus from 'ee/geo_replicable/components/geo_replicable_status.vue';
+import GeoReplicableTimeAgo from 'ee/geo_replicable/components/geo_replicable_time_ago.vue';
 import { ACTION_TYPES } from 'ee/geo_replicable/constants';
 import { getStoreConfig } from 'ee/geo_replicable/store';
 import { MOCK_BASIC_FETCH_DATA_MAP, MOCK_REPLICABLE_TYPE } from '../mock_data';
@@ -27,13 +29,13 @@ describe('GeoReplicableItem', () => {
   };
 
   const createComponent = (props = {}) => {
-    const fakeStore = new Vuex.Store({
+    const store = new Vuex.Store({
       ...getStoreConfig({ replicableType: MOCK_REPLICABLE_TYPE, graphqlFieldName: null }),
       actions: actionSpies,
     });
 
-    wrapper = mount(GeoReplicableItem, {
-      store: fakeStore,
+    wrapper = shallowMountExtended(GeoReplicableItem, {
+      store,
       propsData: {
         ...defaultProps,
         ...props,
@@ -45,43 +47,48 @@ describe('GeoReplicableItem', () => {
     wrapper.destroy();
   });
 
-  const findCard = () => wrapper.find('.card');
-  const findGlLink = () => findCard().findComponent(GlLink);
-  const findGlButton = () => findCard().findComponent(GlButton);
-  const findCardHeader = () => findCard().find('.card-header');
-  const findTextTitle = () => findCardHeader().find('span');
-  const findCardBody = () => findCard().find('.card-body');
+  const findReplicableItemHeader = () => wrapper.findByTestId('replicable-item-header');
+  const findReplicableItemSyncStatus = () =>
+    findReplicableItemHeader().findComponent(GeoReplicableStatus);
+  const findReplicableItemLink = () => findReplicableItemHeader().findComponent(GlLink);
+  const findResyncButton = () => findReplicableItemHeader().findComponent(GlButton);
+  const findReplicableItemNoLinkText = () => findReplicableItemHeader().find('span');
+  const findReplicableItemTimeAgos = () => wrapper.findAllComponents(GeoReplicableTimeAgo);
 
   describe('template', () => {
-    beforeEach(() => {
-      createComponent();
-    });
+    describe('by default', () => {
+      beforeEach(() => {
+        createComponent();
+      });
 
-    it('renders card', () => {
-      expect(findCard().exists()).toBe(true);
-    });
+      it('renders GeoReplicableStatus', () => {
+        expect(findReplicableItemSyncStatus().exists()).toBe(true);
+      });
 
-    it('renders card header', () => {
-      expect(findCardHeader().exists()).toBe(true);
-    });
-
-    it('renders card body', () => {
-      expect(findCardBody().exists()).toBe(true);
+      it('renders GeoReplicableTimeAgo component for each element in timeAgoArray', () => {
+        expect(findReplicableItemTimeAgos().length).toBe(3);
+      });
     });
 
     describe('with projectId', () => {
-      it('GlLink renders correctly', () => {
-        expect(findGlLink().exists()).toBe(true);
-        expect(findGlLink().text()).toBe(mockReplicable.name);
+      beforeEach(() => {
+        createComponent({ projectId: mockReplicable.projectId });
       });
 
-      describe('ReSync Button', () => {
+      it('GlLink renders correctly', () => {
+        expect(findReplicableItemLink().exists()).toBe(true);
+        expect(findReplicableItemLink().text()).toBe(mockReplicable.name);
+        expect(findReplicableItemLink().attributes('href')).toBe(`/${mockReplicable.name}`);
+      });
+
+      describe('Resync Button', () => {
         it('renders', () => {
-          expect(findGlButton().exists()).toBe(true);
+          expect(findResyncButton().exists()).toBe(true);
         });
 
         it('calls initiateReplicableSync when clicked', () => {
-          findGlButton().trigger('click');
+          findResyncButton().vm.$emit('click');
+
           expect(actionSpies.initiateReplicableSync).toHaveBeenCalledWith(expect.any(Object), {
             projectId: mockReplicable.projectId,
             name: mockReplicable.name,
@@ -96,17 +103,21 @@ describe('GeoReplicableItem', () => {
         createComponent({ projectId: null });
       });
 
+      it('renders GeoReplicableStatus', () => {
+        expect(findReplicableItemSyncStatus().exists()).toBe(true);
+      });
+
       it('Text title renders correctly', () => {
-        expect(findTextTitle().exists()).toBe(true);
-        expect(findTextTitle().text()).toBe(mockReplicable.name);
+        expect(findReplicableItemNoLinkText().exists()).toBe(true);
+        expect(findReplicableItemNoLinkText().text()).toBe(mockReplicable.name);
       });
 
       it('GlLink does not render', () => {
-        expect(findGlLink().exists()).toBe(false);
+        expect(findReplicableItemLink().exists()).toBe(false);
       });
 
       it('ReSync Button does not render', () => {
-        expect(findGlButton().exists()).toBe(false);
+        expect(findResyncButton().exists()).toBe(false);
       });
     });
   });

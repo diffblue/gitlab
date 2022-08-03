@@ -22,17 +22,17 @@ export const FILTER_STATES = {
 export const DEFAULT_STATUS = 'never';
 
 export const STATUS_ICON_NAMES = {
-  [FILTER_STATES.SYNCED.value]: 'status_closed',
-  [FILTER_STATES.PENDING.value]: 'status_scheduled',
+  [FILTER_STATES.SYNCED.value]: 'check-circle-filled',
+  [FILTER_STATES.PENDING.value]: 'status_pending',
   [FILTER_STATES.FAILED.value]: 'status_failed',
   [DEFAULT_STATUS]: 'status_notfound',
 };
 
 export const STATUS_ICON_CLASS = {
-  [FILTER_STATES.SYNCED.value]: 'text-success',
-  [FILTER_STATES.PENDING.value]: 'text-warning',
-  [FILTER_STATES.FAILED.value]: 'text-danger',
-  [DEFAULT_STATUS]: 'text-muted',
+  [FILTER_STATES.SYNCED.value]: 'gl-text-green-500',
+  [FILTER_STATES.PENDING.value]: 'gl-text-orange-500',
+  [FILTER_STATES.FAILED.value]: 'gl-text-orange-500',
+  [DEFAULT_STATUS]: 'gl-text-gray-500',
 };
 
 export const DEFAULT_SEARCH_DELAY = 500;
