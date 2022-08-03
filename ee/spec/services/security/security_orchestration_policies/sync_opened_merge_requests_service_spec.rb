@@ -87,5 +87,25 @@ RSpec.describe Security::SecurityOrchestrationPolicies::SyncOpenedMergeRequestsS
         end
       end
     end
+
+    it 'does not trigger SyncReportsToReportApprovalRulesWorker' do
+      expect(::Ci::SyncReportsToReportApprovalRulesWorker).not_to receive(:perform_async)
+
+      subject
+    end
+
+    context 'with head_pipeline' do
+      let(:head_pipeline) { create(:ci_pipeline, project: project, ref: opened_merge_request.source_branch) }
+
+      before do
+        opened_merge_request.update!(head_pipeline_id: head_pipeline.id)
+      end
+
+      it 'triggers SyncReportsToReportApprovalRulesWorker' do
+        expect(::Ci::SyncReportsToReportApprovalRulesWorker).to receive(:perform_async).with(head_pipeline.id)
+
+        subject
+      end
+    end
   end
 end

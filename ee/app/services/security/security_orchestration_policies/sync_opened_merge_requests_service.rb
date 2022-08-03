@@ -13,6 +13,9 @@ module Security
             MergeRequests::SyncReportApproverApprovalRules
               .new(merge_request)
               .execute(skip_authentication: true)
+
+            pipeline_id = merge_request.head_pipeline_id
+            ::Ci::SyncReportsToReportApprovalRulesWorker.perform_async(pipeline_id) if pipeline_id
           end
         end
       end
