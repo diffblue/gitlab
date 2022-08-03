@@ -154,6 +154,15 @@ RSpec.describe AutoMerge::AddToMergeTrainWhenPipelineSucceedsService do
       it { is_expected.to eq(false) }
     end
 
+    context 'when there is an open MR dependency' do
+      before do
+        stub_licensed_features(blocking_merge_requests: true)
+        create(:merge_request_block, blocked_merge_request: merge_request)
+      end
+
+      it { is_expected.to be_falsy }
+    end
+
     context 'when the user does not have permission to merge' do
       before do
         allow(merge_request).to receive(:can_be_merged_by?) { false }

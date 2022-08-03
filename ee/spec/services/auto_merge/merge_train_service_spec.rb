@@ -357,6 +357,15 @@ RSpec.describe AutoMerge::MergeTrainService do
       it { is_expected.to be_falsy }
     end
 
+    context 'when there is an open MR dependency' do
+      before do
+        stub_licensed_features(blocking_merge_requests: true)
+        create(:merge_request_block, blocked_merge_request: merge_request)
+      end
+
+      it { is_expected.to be_falsy }
+    end
+
     context 'when merge train ci setting is disabled' do
       before do
         stub_feature_flags(disable_merge_trains: true)
