@@ -151,6 +151,7 @@ module EE
       ] + super
     end
 
+    override :merge_blocked_by_other_mrs?
     def merge_blocked_by_other_mrs?
       strong_memoize(:merge_blocked_by_other_mrs) do
         project.feature_available?(:blocking_merge_requests) &&
