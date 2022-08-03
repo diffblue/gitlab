@@ -278,6 +278,9 @@ This saves reviewers time and helps authors catch mistakes earlier.
 
 ### The responsibility of the reviewer
 
+Reviewers are [domain experts](#domain-experts), who are responsible for
+the correctness of the chosen solution, and implementation within their domain.
+
 [Review the merge request](#reviewing-a-merge-request) thoroughly.
 
 Verify that the merge request meets all [contribution acceptance criteria](contributing/merge_request_workflow.md#contribution-acceptance-criteria).
