@@ -18,7 +18,7 @@ module Elastic
       def name(*args, &block)
         name = build_name(*args)
 
-        return name.to_s unless block_given?
+        return name.to_s unless block
 
         begin
           contexts.push(name)

@@ -288,7 +288,7 @@ module Gitlab
     end
 
     def self.uncached_queries(&block)
-      raise 'No block given' unless block_given?
+      raise 'No block given' unless block
 
       ApplicationRecord.uncached do
         if ::Gitlab::Geo.secondary?
