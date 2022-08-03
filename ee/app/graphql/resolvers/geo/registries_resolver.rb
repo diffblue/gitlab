@@ -23,17 +23,28 @@ module Resolvers
                  required: false,
                  description: 'Filters registries by their replication state.'
 
+        argument :verification_state, ::Types::Geo::VerificationStateEnum,
+                 required: false,
+                 description: 'Filters registries by their verification state.'
+
         def resolve(**args)
           return registry_class.none unless geo_node_is_current?
 
           registry_finder_class.new(
             context[:current_user],
-            ids: registry_ids(args[:ids]),
-            replication_state: args[:replication_state]
+            registry_finder_params(args)
           ).execute
         end
 
         private
+
+        def registry_finder_params(args)
+          {
+            ids: registry_ids(args[:ids]),
+            replication_state: args[:replication_state],
+            verification_state: args[:verification_state]
+          }.compact
+        end
 
         def replicator_class
           self.class.replicator_class
