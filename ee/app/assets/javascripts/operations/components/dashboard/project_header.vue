@@ -76,7 +76,7 @@ export default {
       category="tertiary"
       :title="title"
       :aria-label="title"
-      icon="remove"
+      icon="close"
       data-qa-selector="remove_project_button"
       data-testid="remove-project-button"
       @click="onRemove"

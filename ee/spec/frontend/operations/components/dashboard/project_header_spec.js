@@ -42,7 +42,7 @@ describe('project header component', () => {
 
   describe('remove button', () => {
     it('renders removal button icon', () => {
-      expect(findRemoveProjectButton().props('icon')).toBe('remove');
+      expect(findRemoveProjectButton().props('icon')).toBe('close');
     });
 
     it('renders correct title for removal icon', () => {
