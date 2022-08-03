@@ -41,7 +41,7 @@ RSpec.describe PushRule, :saas do
   end
 
   describe '#branch_name_allowed?' do
-    subject(:push_rule) { create(:push_rule, branch_name_regex: '\d+\-.*')}
+    subject(:push_rule) { create(:push_rule, branch_name_regex: '\d+\-.*') }
 
     it 'checks branch against regex' do
       expect(subject.branch_name_allowed?('123-feature')).to be true
@@ -90,7 +90,7 @@ RSpec.describe PushRule, :saas do
   end
 
   describe '#commit_message_allowed?' do
-    subject(:push_rule) { create(:push_rule, commit_message_regex: '^Signed-off-by')}
+    subject(:push_rule) { create(:push_rule, commit_message_regex: '^Signed-off-by') }
 
     it 'uses multiline regex' do
       commit_message = "Some git commit feature\n\nSigned-off-by: Someone"
@@ -100,7 +100,7 @@ RSpec.describe PushRule, :saas do
   end
 
   describe '#commit_message_blocked?' do
-    subject(:push_rule) { create(:push_rule, commit_message_negative_regex: 'commit')}
+    subject(:push_rule) { create(:push_rule, commit_message_negative_regex: 'commit') }
 
     it 'uses multiline regex' do
       commit_message = "Some git commit feature\n\nSigned-off-by: Someone"

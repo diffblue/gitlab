@@ -148,7 +148,7 @@ RSpec.describe Dast::ProfileSchedule, type: :model do
       end
 
       context 'when there are no runnable schedules' do
-        let!(:profile_schedule) { }
+        let!(:profile_schedule) {}
 
         it 'returns an empty array' do
           is_expected.to be_empty

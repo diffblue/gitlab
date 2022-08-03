@@ -30,7 +30,7 @@ RSpec.describe MilestoneRelease do
 
       context 'when group and release have the same project' do
         let(:group) { create(:group) }
-        let(:project) { create(:project, group: group)}
+        let(:project) { create(:project, group: group) }
 
         context 'when it is licenced' do
           before do

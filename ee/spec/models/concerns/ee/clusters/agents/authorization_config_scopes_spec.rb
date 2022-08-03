@@ -15,9 +15,9 @@ RSpec.describe EE::Clusters::Agents::AuthorizationConfigScopes do
 
     subject { Clusters::Agents::ProjectAuthorization.with_available_ci_access_fields(project) }
 
-    it { is_expected.not_to include(ci_job_authorization)}
-    it { is_expected.not_to include(ci_user_authorization)}
-    it { is_expected.not_to include(impersonate_authorization)}
+    it { is_expected.not_to include(ci_job_authorization) }
+    it { is_expected.not_to include(ci_user_authorization) }
+    it { is_expected.not_to include(impersonate_authorization) }
 
     context 'with :cluster_agents_ci_impersonation' do
       before do

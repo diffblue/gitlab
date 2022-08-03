@@ -12,7 +12,7 @@ RSpec.describe Issue, :elastic do
 
   context 'when limited indexing is on' do
     let_it_be(:project) { create :project, name: 'test1' }
-    let_it_be(:issue) { create :issue, project: project}
+    let_it_be(:issue) { create :issue, project: project }
 
     before do
       stub_ee_application_setting(elasticsearch_limit_indexing: true)

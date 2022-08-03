@@ -49,7 +49,7 @@ RSpec.describe ComplianceManagement::Framework do
 
   describe 'color' do
     context 'with whitespace' do
-      subject { create(:compliance_framework, color: ' #ABC123 ')}
+      subject { create(:compliance_framework, color: ' #ABC123 ') }
 
       it 'strips whitespace' do
         expect(subject.color).to eq('#ABC123')
