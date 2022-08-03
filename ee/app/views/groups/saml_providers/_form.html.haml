@@ -1,7 +1,7 @@
 %section.saml_provider.gl-mt-5
   = gitlab_ui_form_for [group, saml_provider], url: group_saml_providers_path, html: { id: 'js-saml-settings-form' } do |f|
     .form-group
-      = form_errors(saml_provider)
+      = form_errors(saml_provider, pajamas_alert: true)
       = f.gitlab_ui_checkbox_component :enabled, s_('GroupSAML|Enable SAML authentication for this group'), checkbox_options: { class: 'js-group-saml-enabled-input' }
     .form-group
       - enable_saml_help_text = s_('GroupSAML|Before enforcing SSO, enable SAML authentication.')
