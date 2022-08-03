@@ -36,7 +36,7 @@ module Bundler::Checksum::Command
         true
       else
         $stderr.puts "Gem #{gem_name} #{gem_version} #{gem_platform} failed checksum verification"
-        $stderr.puts "LOCAL:  #{local_platform_checksum[:checksum]}"
+        $stderr.puts "LOCAL:  #{local_checksum}"
         $stderr.puts "REMOTE: #{remote_platform_checksum[:checksum]}"
         return false
       end
