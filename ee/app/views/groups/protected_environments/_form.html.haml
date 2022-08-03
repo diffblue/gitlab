@@ -4,7 +4,7 @@
       %h3.card-title
         = s_('ProtectedEnvironment|Protect an environment')
     .card-body
-      = form_errors(@protected_environment)
+      = form_errors(@protected_environment, pajamas_alert: true)
       .form-group
         = f.label :name, s_('ProtectedEnvironment|Environment'), class: 'label-bold gl-display-block'
         .dropdown.b-dropdown.gl-new-dropdown.gl-min-w-20.btn-group
