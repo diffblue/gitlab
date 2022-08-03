@@ -61,15 +61,17 @@ module JavaScriptFixturesHelpers
   #
   # query - the GraqhQL query to parse
   def inflate_query_with_typenames(query, doc: Graphlyte.parse(query))
-    typename = Graphlyte::Syntax::Field.new(name: '__typename')
-
-    editor = Graphlyte::Editor.new.on_field do |field|
-      field.selection << typename unless field.selection.empty? || field.selection.map(&:name).include?('__typename')
-    end
-
-    editor.edit(doc)
+    typename_editor.edit(doc)
 
     doc.to_s
+  end
+
+  def typename_editor
+    typename = Graphlyte::Syntax::Field.new(name: '__typename')
+
+    @editor ||= Graphlyte::Editor.new.on_field do |field|
+      field.selection << typename unless field.selection.empty? || field.selection.map(&:name).include?('__typename')
+    end
   end
 
   # Private: Store a response object as fixture file
