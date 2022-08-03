@@ -312,6 +312,10 @@ Rails/RakeEnvironment:
 Rails/WhereExists:
   Enabled: false
 
+# See https://gitlab.com/gitlab-org/gitlab/-/issues/378105#note_1138487716
+Rails/HasManyOrHasOneDependent:
+  Enabled: false
+
 # GitLab ###################################################################
 
 Gitlab/ModuleWithInstanceVariables:
