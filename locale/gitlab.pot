@@ -29375,6 +29375,9 @@ msgstr ""
 msgid "Please reach out if you have any questions and we'll be happy to assist."
 msgstr ""
 
+msgid "Please review the %{linkStart}contribution guidelines%{linkEnd} for this project."
+msgstr ""
+
 msgid "Please review the updated escalation policies for %{project_link}. It is recommended that you reach out to the current on-call responder to ensure continuity of on-call coverage."
 msgstr ""
 
