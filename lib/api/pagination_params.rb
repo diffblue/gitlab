@@ -17,12 +17,28 @@ module API
     included do
       helpers do
         params :pagination do
-          with(type: Integer, values: ->(v) do
-            !v.is_a?(Integer) || Feature.disabled?(:only_positive_pagination_values) || v > 0
-          end) do
-            optional :page, default: 1, desc: 'Current page number'
-            optional :per_page, default: 20, desc: 'Number of items per page'
+          optional :page, type: Integer, default: 1, desc: 'Current page number'
+          optional :per_page, type: Integer, default: 20, desc: 'Number of items per page', except_values: [0]
+        end
+
+        def verify_pagination_params!
+          return if Feature.disabled?(:only_positive_pagination_values)
+
+          page = begin
+            Integer(params[:page])
+          rescue ArgumentError, TypeError
+            nil
           end
+
+          return render_structured_api_error!({ error: 'page does not have a valid value' }, 400) if page&.< 1
+
+          per_page = begin
+            Integer(params[:per_page])
+          rescue ArgumentError, TypeError
+            nil
+          end
+
+          return render_structured_api_error!({ error: 'per_page does not have a valid value' }, 400) if per_page&.< 1
         end
       end
     end
