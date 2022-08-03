@@ -471,7 +471,7 @@ module EE
     end
 
     def vulnerability_reads
-      ::Vulnerabilities::Read.where(project: projects_for_group_and_its_subgroups_without_deleted)
+      ::Vulnerabilities::Read.where(namespace_id: self_and_descendants.select(:id))
     end
 
     def vulnerability_scanners
