@@ -3,6 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'Runner EE (JavaScript fixtures)' do
+  include StubVersion
   include AdminModeHelper
   include ApiHelpers
   include JavaScriptFixturesHelpers
@@ -33,7 +34,7 @@ RSpec.describe 'Runner EE (JavaScript fixtures)' do
       before do
         stub_licensed_features(runner_upgrade_management: true)
 
-        stub_const('::Gitlab::VERSION', '15.1.0')
+        stub_version('15.1.0', 'unused_revision')
         available_runner_releases = %w[15.0.0 15.1.0 15.1.1]
 
         url = ::Gitlab::CurrentSettings.current_application_settings.public_runner_releases_url

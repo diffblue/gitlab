@@ -1,11 +1,7 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import createMockApollo from 'helpers/mock_apollo_helper';
-import {
-  shallowMountExtended,
-  mountExtended,
-  extendedWrapper,
-} from 'helpers/vue_test_utils_helper';
+import { mountExtended, extendedWrapper } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { s__ } from '~/locale';
 
@@ -41,12 +37,7 @@ describe('AdminRunnersApp', () => {
 
   const findRunnerRows = () => wrapper.findComponent(RunnerList).findAll('tr');
 
-  const createComponent = ({
-    props = {},
-    mountFn = shallowMountExtended,
-    provide,
-    ...options
-  } = {}) => {
+  const createComponent = ({ props = {}, provide, ...options } = {}) => {
     ({ cacheConfig, localMutations } = createLocalState());
 
     const handlers = [
@@ -54,7 +45,7 @@ describe('AdminRunnersApp', () => {
       [allRunnersCountQuery, mockRunnersCountHandler],
     ];
 
-    wrapper = mountFn(AdminRunnersApp, {
+    wrapper = mountExtended(AdminRunnersApp, {
       apolloProvider: createMockApollo(handlers, {}, cacheConfig),
       propsData: {
         registrationToken: mockRegistrationToken,
@@ -85,21 +76,25 @@ describe('AdminRunnersApp', () => {
     wrapper.destroy();
   });
 
-  it('shows upgrade badges', async () => {
-    await createComponent({
-      mountFn: mountExtended,
-      provide: { glFeatures: { runnerUpgradeManagement: true } },
+  describe('upgrade badges', () => {
+    let rows = null;
+
+    beforeEach(async () => {
+      await createComponent({
+        provide: { glFeatures: { runnerUpgradeManagement: true } },
+      });
     });
 
-    const rows = findRunnerRows().wrappers.map(extendedWrapper);
+    it.each`
+      version     | description                                 | upgradeText                           | index
+      ${'15.1.1'} | ${'displays no upgrade badge (up to date)'} | ${''}                                 | ${1}
+      ${'15.1.0'} | ${'displays upgrade recommended'}           | ${s__('Runners|upgrade recommended')} | ${2}
+      ${'15.0.0'} | ${'displays upgrade available'}             | ${s__('Runners|upgrade available')}   | ${3}
+    `('with $version $description', ({ version, index, upgradeText }) => {
+      rows = findRunnerRows().wrappers.map(extendedWrapper);
 
-    expect(rows[1].findByText('15.1.1').exists()).toBe(true); // up to date
-    expect(rows[1].find(RunnerUpgradeStatusBadge).text()).toBe('');
-
-    expect(rows[2].findByText('15.1.0').exists()).toBe(true);
-    expect(rows[2].find(RunnerUpgradeStatusBadge).text()).toBe(s__('Runners|upgrade recommended'));
-
-    expect(rows[3].findByText('15.0.0').exists()).toBe(true);
-    expect(rows[3].find(RunnerUpgradeStatusBadge).text()).toBe(s__('Runners|upgrade available'));
+      expect(rows[index].findByText(version).exists()).toBe(true);
+      expect(rows[index].find(RunnerUpgradeStatusBadge).text()).toBe(upgradeText);
+    });
   });
 });

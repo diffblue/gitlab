@@ -3,6 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe "Admin Runners" do
+  include StubVersion
   include Spec::Support::Helpers::Features::RunnersHelpers
 
   let_it_be(:admin) { create(:admin) }
@@ -19,7 +20,7 @@ RSpec.describe "Admin Runners" do
       let(:runner) { create(:ci_runner, :instance, version: runner_version) }
 
       before do
-        stub_const('::Gitlab::VERSION', '15.1.0')
+        stub_version('15.1.0', 'unused_revision')
 
         url = ::Gitlab::CurrentSettings.current_application_settings.public_runner_releases_url
         WebMock.stub_request(:get, url).to_return(
