@@ -132,7 +132,7 @@ export default {
               class="js-members"
               :class="settings.allowMultiRule ? 'd-none d-sm-table-cell' : null"
             >
-              <user-avatar-list :items="rule.approvers" :img-size="24" empty-text="" />
+              <user-avatar-list :items="rule.eligibleApprovers" :img-size="24" empty-text="" />
             </td>
             <td v-if="settings.allowMultiRule" class="js-branches">
               <rule-branches :rule="rule" />

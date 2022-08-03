@@ -66,7 +66,7 @@ describe('EE approvals license-compliance actions', () => {
         [
           {
             type: 'receiveRulesSuccess',
-            payload: mapApprovalSettingsResponse(responseData),
+            payload: mapApprovalSettingsResponse(responseData.rules),
           },
         ],
       );

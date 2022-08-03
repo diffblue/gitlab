@@ -26,10 +26,10 @@ export const receiveRulesError = () => {
 export const fetchRules = ({ rootState, dispatch }) => {
   dispatch('requestRules');
 
-  const { settingsPath } = rootState.settings;
+  const { rulesPath } = rootState.settings;
 
   return axios
-    .get(settingsPath)
+    .get(rulesPath)
     .then((response) => dispatch('receiveRulesSuccess', mapApprovalSettingsResponse(response.data)))
     .catch(() => dispatch('receiveRulesError'));
 };
