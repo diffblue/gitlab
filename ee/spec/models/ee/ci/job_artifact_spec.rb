@@ -40,8 +40,6 @@ RSpec.describe Ci::JobArtifact do
     let(:unverifiable_model_record) { build(:ci_job_artifact, :remote_store) } # add extra params if needed to make sure the record is NOT included in `available_verifiables`
   end
 
-  it { is_expected.to delegate_method(:validate_schema?).to(:job) }
-
   describe '#destroy' do
     let_it_be(:primary) { create(:geo_node, :primary) }
     let_it_be(:secondary) { create(:geo_node) }
@@ -342,21 +340,25 @@ RSpec.describe Ci::JobArtifact do
     end
 
     describe 'schema validation' do
-      where(:validate, :build_is_subject_to_validation?, :expected_validate_flag) do
-        false | false | false
-        false | true  | false
-        true  | false | false
-        true  | true  | true
+      before do
+        allow(::Gitlab::Ci::Parsers).to receive(:fabricate!).and_return(mock_parser)
       end
 
-      with_them do
-        let(:mock_parser) { double(:parser, parse!: true) }
-        let(:expected_parser_args) { ['sast', instance_of(String), instance_of(::Gitlab::Ci::Reports::Security::Report), false, validate: expected_validate_flag] }
+      let(:mock_parser) { double(:parser, parse!: true) }
+      let(:expected_parser_args) { ['sast', instance_of(String), instance_of(::Gitlab::Ci::Reports::Security::Report), false, validate: validate] }
 
-        before do
-          allow(job_artifact.job).to receive(:validate_schema?).and_return(build_is_subject_to_validation?)
-          allow(::Gitlab::Ci::Parsers).to receive(:fabricate!).and_return(mock_parser)
+      context 'when validate is false' do
+        let(:validate) { false }
+
+        it 'calls the parser with the correct arguments' do
+          security_report
+
+          expect(::Gitlab::Ci::Parsers).to have_received(:fabricate!).with(*expected_parser_args)
         end
+      end
+
+      context 'when validate is true' do
+        let(:validate) { true }
 
         it 'calls the parser with the correct arguments' do
           security_report
