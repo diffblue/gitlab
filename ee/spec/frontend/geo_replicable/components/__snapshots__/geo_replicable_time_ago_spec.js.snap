@@ -1,5 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`GeoReplicableTimeAgo template when dateString exists TimeAgo sets innerHTML as 09-23-1994 1`] = `"<time title=\\"Sep 23, 1994 12:00am UTC\\" datetime=\\"09-23-1994\\" class=\\"\\">25 years ago</time>"`;
-
-exports[`GeoReplicableTimeAgo template when dateString is null DefaultText sets innerHTML as props.defaultText 1`] = `"<span>Default Text</span>"`;
