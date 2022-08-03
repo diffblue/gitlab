@@ -185,5 +185,32 @@ RSpec.describe Users::Abuse::GitAbuse::NamespaceThrottleService, :clean_gitlab_r
 
       it { is_expected.to include(banned: true) }
     end
+
+    context 'when allowlisted user exceeds the download limit within the set time period' do
+      before do
+        namespace.namespace_settings.update!(unique_project_download_limit_allowlist: [user.username])
+        limit.times { described_class.execute(build_stubbed(:project, namespace: namespace), user) }
+      end
+
+      it { is_expected.to include(banned: false) }
+
+      it 'does not log any event' do
+        expect(Gitlab::AppLogger).not_to receive(:info)
+
+        execute
+      end
+
+      it 'does not send email notification to namespace owners' do
+        expect(Notify).not_to receive(:user_auto_banned_email)
+
+        execute
+      end
+
+      it 'does not ban the user' do
+        execute
+
+        expect(user.banned_from_namespace?(namespace)).to eq(false)
+      end
+    end
   end
 end

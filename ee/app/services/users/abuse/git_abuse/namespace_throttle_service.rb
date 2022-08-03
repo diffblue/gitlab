@@ -37,7 +37,8 @@ module Users
             resource: project,
             peek: peek,
             threshold: max_project_downloads,
-            interval: time_period
+            interval: time_period,
+            users_allowlist: allowlist
           )
         end
 
@@ -99,6 +100,10 @@ module Users
 
         def time_period
           @time_period ||= namespace_settings&.unique_project_download_limit_interval_in_seconds
+        end
+
+        def allowlist
+          @allowlist ||= namespace_settings&.unique_project_download_limit_allowlist
         end
       end
     end
