@@ -3241,8 +3241,8 @@ RSpec.describe Ci::Pipeline, :mailer, factory_default: :keep do
 
           cancel_running
 
-          latest_status_for_child = child_pipeline.statuses.pluck(:status)
-          expect(latest_status_for_child).to eq %w(created running)
+          latest_status_for_child = child_pipeline.statuses.order_id_desc.pluck(:status)
+          expect(latest_status_for_child).to eq %w(running created)
           expect(latest_status).to eq %w(canceled)
         end
 
