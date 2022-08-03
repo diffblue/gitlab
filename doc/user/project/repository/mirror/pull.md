@@ -29,7 +29,9 @@ Deleted branches and tags in the upstream repository are not reflected in the
 downstream repository.
 
 NOTE:
-If anything in the downstream pull mirror repository is deleted, but still exists in the upstream repository, it is restored upon the next pull. As an example of this behavior, deleting a branch downstream may result in the branch reappearing.
+Items deleted from the downstream pull mirror repository, but still in the upstream repository,
+are restored upon the next pull. For example: a branch deleted _only_ in the mirrored repository
+reappears after the next pull.
 
 ## How pull mirroring works
 
