@@ -59,7 +59,7 @@ export const mapApprovalRuleResponse = (res) => ({
 });
 
 export const mapApprovalSettingsResponse = (res) => ({
-  rules: withDefaultEmptyRule(res.rules.map(mapApprovalRuleResponse)),
+  rules: withDefaultEmptyRule(res.map(mapApprovalRuleResponse)),
   fallbackApprovalsRequired: res.fallback_approvals_required,
 });
 

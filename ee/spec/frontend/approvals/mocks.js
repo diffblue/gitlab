@@ -3,11 +3,17 @@ export const createProjectRules = () => [
     id: 1,
     name: 'Lorem',
     approvalsRequired: 2,
-    approvers: [{ id: 7 }, { id: 8 }],
+    eligibleApprovers: [{ id: 7 }, { id: 8 }],
     ruleType: 'regular',
   },
-  { id: 2, name: 'Ipsum', approvalsRequired: 0, approvers: [{ id: 9 }], ruleType: 'regular' },
-  { id: 3, name: 'Dolarsit', approvalsRequired: 3, approvers: [], ruleType: 'regular' },
+  {
+    id: 2,
+    name: 'Ipsum',
+    approvalsRequired: 0,
+    eligibleApprovers: [{ id: 9 }],
+    ruleType: 'regular',
+  },
+  { id: 3, name: 'Dolarsit', approvalsRequired: 3, eligibleApprovers: [], ruleType: 'regular' },
 ];
 
 export const createMRRule = () => ({

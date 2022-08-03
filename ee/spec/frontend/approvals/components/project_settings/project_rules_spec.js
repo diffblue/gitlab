@@ -66,7 +66,7 @@ describe('Approvals ProjectRules', () => {
       expect(data).toEqual(
         TEST_RULES.filter((rule, index) => index !== 0).map((rule) => ({
           name: rule.name,
-          approvers: rule.approvers,
+          approvers: rule.eligibleApprovers,
           approvalsRequired: rule.approvalsRequired,
         })),
       );

@@ -25,8 +25,7 @@ const TEST_RULE_RESPONSE = {
   groups: [{ id: 4 }],
   users: [{ id: 7 }, { id: 8 }],
 };
-const TEST_SETTINGS_PATH = 'projects/9/approval_settings';
-const TEST_RULES_PATH = 'projects/9/approval_settings/rules';
+const TEST_RULES_PATH = 'projects/9/approval_rules';
 
 describe('EE approvals project settings module actions', () => {
   let state;
@@ -36,7 +35,7 @@ describe('EE approvals project settings module actions', () => {
     state = {
       settings: {
         projectId: TEST_PROJECT_ID,
-        settingsPath: TEST_SETTINGS_PATH,
+        settingsPath: TEST_RULES_PATH,
         rulesPath: TEST_RULES_PATH,
       },
     };
@@ -61,7 +60,7 @@ describe('EE approvals project settings module actions', () => {
 
   describe('receiveRulesSuccess', () => {
     it('sets rules', () => {
-      const settings = { rules: [{ id: 1 }] };
+      const settings = [{ id: 1 }];
 
       return testAction(
         actions.receiveRulesSuccess,
@@ -91,8 +90,8 @@ describe('EE approvals project settings module actions', () => {
 
   describe('fetchRules', () => {
     it('dispatches request/receive', () => {
-      const data = { rules: [TEST_RULE_RESPONSE] };
-      mock.onGet(TEST_SETTINGS_PATH).replyOnce(httpStatus.OK, data);
+      const data = [TEST_RULE_RESPONSE];
+      mock.onGet(TEST_RULES_PATH).replyOnce(httpStatus.OK, data);
 
       return testAction(
         actions.fetchRules,
@@ -104,13 +103,13 @@ describe('EE approvals project settings module actions', () => {
           { type: 'receiveRulesSuccess', payload: mapApprovalSettingsResponse(data) },
         ],
         () => {
-          expect(mock.history.get.map((x) => x.url)).toEqual([TEST_SETTINGS_PATH]);
+          expect(mock.history.get.map((x) => x.url)).toEqual([TEST_RULES_PATH]);
         },
       );
     });
 
     it('dispatches request/receive on error', () => {
-      mock.onGet(TEST_SETTINGS_PATH).replyOnce(httpStatus.INTERNAL_SERVER_ERROR);
+      mock.onGet(TEST_RULES_PATH).replyOnce(httpStatus.INTERNAL_SERVER_ERROR);
 
       return testAction(
         actions.fetchRules,

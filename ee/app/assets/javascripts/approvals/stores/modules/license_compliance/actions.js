@@ -20,7 +20,9 @@ export const fetchRules = ({ rootState, dispatch, commit }) => {
 
   return axios
     .get(settingsPath)
-    .then((response) => dispatch('receiveRulesSuccess', mapApprovalSettingsResponse(response.data)))
+    .then((response) =>
+      dispatch('receiveRulesSuccess', mapApprovalSettingsResponse(response.data.rules)),
+    )
     .catch(() =>
       createFlash({
         message: __('An error occurred fetching the approval rules.'),
