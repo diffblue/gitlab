@@ -340,7 +340,8 @@ RSpec.describe Groups::UpdateService do
   end
 
   context 'rename group' do
-    let!(:service) { described_class.new(internal_group, user, path: SecureRandom.hex) }
+    let(:new_path) { SecureRandom.hex }
+    let!(:service) { described_class.new(internal_group, user, path: new_path) }
 
     before do
       internal_group.add_member(user, Gitlab::Access::MAINTAINER)
@@ -349,6 +350,19 @@ RSpec.describe Groups::UpdateService do
 
     it 'returns true' do
       expect(service.execute).to eq(true)
+    end
+
+    it 'publishes a GroupPathChangedEvent' do
+      old_path = internal_group.full_path
+
+      expect { service.execute }
+        .to publish_event(Groups::GroupPathChangedEvent)
+        .with(
+          group_id: internal_group.id,
+          root_namespace_id: internal_group.root_ancestor.id,
+          old_path: old_path,
+          new_path: new_path
+        )
     end
 
     context 'error moving group' do
@@ -372,6 +386,11 @@ RSpec.describe Groups::UpdateService do
 
       it "hasn't changed the path" do
         expect { service.execute }.not_to change { internal_group.reload.path }
+      end
+
+      it 'does not publish a GroupPathChangedEvent' do
+        expect { service.execute }
+          .not_to publish_event(Groups::GroupPathChangedEvent)
       end
     end
   end
