@@ -89,7 +89,7 @@ RSpec.describe 'SAML provider settings' do
 
       submit
 
-      expect(find('#error_explanation')).to have_text("Certificate fingerprint can't be blank")
+      expect(find('.gl-alert-danger')).to have_text("Certificate fingerprint can't be blank")
     end
 
     context 'with existing SAML provider' do
