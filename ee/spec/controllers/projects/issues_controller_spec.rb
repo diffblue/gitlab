@@ -229,7 +229,7 @@ RSpec.describe Projects::IssuesController do
             get :discussions, params: { namespace_id: project.namespace, project_id: project, id: issue.iid }
 
             discussions = json_response
-            notes = discussions.flat_map {|d| d['notes']}
+            notes = discussions.flat_map { |d| d['notes'] }
 
             expect(discussions.count).to equal(2)
             expect(notes).to include(a_hash_including('id' => system_note.id.to_s))
@@ -247,7 +247,7 @@ RSpec.describe Projects::IssuesController do
             get :discussions, params: { namespace_id: project.namespace, project_id: project, id: issue.iid }
 
             discussions = json_response
-            notes = discussions.flat_map {|d| d['notes']}
+            notes = discussions.flat_map { |d| d['notes'] }
 
             expect(discussions.count).to equal(1)
             expect(notes).not_to include(a_hash_including('id' => system_note.id.to_s))

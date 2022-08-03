@@ -9,7 +9,7 @@ RSpec.describe MigrateJobArtifactRegistry do
 
   let(:registry) { table(:job_artifact_registry) }
 
-  let!(:registry1) { registry.create!(artifact_id: 1, success: true, state: 0)}
+  let!(:registry1) { registry.create!(artifact_id: 1, success: true, state: 0) }
   let!(:registry2) { registry.create!(artifact_id: 2, success: true, state: 0) }
   let!(:registry3) { registry.create!(artifact_id: 3, success: true, state: 0) }
   let!(:registry4) { registry.create!(artifact_id: 4, success: true, state: 0) }

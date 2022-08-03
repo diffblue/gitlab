@@ -278,7 +278,7 @@ RSpec.shared_examples 'a blob replicator' do
 
   describe '.bulk_create_delete_events_async' do
     let(:uploads) { create_list(:upload, 2) }
-    let(:upload_deleted_details) { uploads.map { |upload| upload.replicator.deleted_params} }
+    let(:upload_deleted_details) { uploads.map { |upload| upload.replicator.deleted_params } }
     let(:inherited_replicator_class) { ::Geo::UploadReplicator }
 
     it 'creates events' do

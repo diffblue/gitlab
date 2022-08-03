@@ -100,7 +100,7 @@ RSpec.describe UpdateOrchestrationPolicyConfiguration do
       context 'with existing project approval rules' do
         let_it_be(:mr) { create(:merge_request, :opened, source_project: configuration.project) }
 
-        let_it_be(:approval_rule) { create(:approval_project_rule, :scan_finding, project: configuration.project )}
+        let_it_be(:approval_rule) { create(:approval_project_rule, :scan_finding, project: configuration.project ) }
         let_it_be(:scan_finding_mr_rule) { create(:report_approver_rule, :scan_finding, merge_request: mr) }
         let_it_be(:code_coverage_mr_rule) { create(:report_approver_rule, :code_coverage, merge_request: mr) }
 
@@ -168,7 +168,7 @@ RSpec.describe UpdateOrchestrationPolicyConfiguration do
       end
 
       context 'with existing project approval rules' do
-        let!(:approval_rule) { create(:approval_project_rule, :scan_finding, project: configuration.project )}
+        let!(:approval_rule) { create(:approval_project_rule, :scan_finding, project: configuration.project ) }
 
         before do
           allow_next_instance_of(Security::SecurityOrchestrationPolicies::ProcessRuleService) do |service|

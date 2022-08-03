@@ -80,7 +80,7 @@ RSpec.shared_examples 'authorizable for protected environments' do |factory_name
 
       context 'when there is an inherited member of a group' do
         let_it_be(:parent_group) { create(:group) }
-        let_it_be(:child_group) { create(:group, parent: parent_group, projects: [project])}
+        let_it_be(:child_group) { create(:group, parent: parent_group, projects: [project]) }
 
         before do
           parent_group.add_reporter(user)

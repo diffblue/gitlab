@@ -100,7 +100,7 @@ RSpec.describe Groups::EpicsController do
 
         describe 'project group namespace' do
           it_behaves_like 'issue link presence' do
-            let(:project) {create(:project, namespace: group)}
+            let(:project) { create(:project, namespace: group) }
           end
         end
       end
@@ -410,8 +410,8 @@ RSpec.describe Groups::EpicsController do
       context 'with correct params' do
         subject { post :bulk_update, params: params, format: :json }
 
-        let(:label1) { create(:group_label, group: group)}
-        let(:label2) { create(:group_label, group: group)}
+        let(:label1) { create(:group_label, group: group) }
+        let(:label2) { create(:group_label, group: group) }
         let(:epics)  { create_list(:epic, 2, group: group, labels: [label1]) }
         let(:params) do
           {
@@ -444,7 +444,7 @@ RSpec.describe Groups::EpicsController do
           it 'does not update merge requests milestone' do
             subject
 
-            epics.each { |epic| expect(epic.reload.labels).to eq([label1])}
+            epics.each { |epic| expect(epic.reload.labels).to eq([label1]) }
           end
         end
 
@@ -462,7 +462,7 @@ RSpec.describe Groups::EpicsController do
           it 'updates epics labels' do
             subject
 
-            epics.each {|epic| expect(epic.reload.labels).to eq([label2]) }
+            epics.each { |epic| expect(epic.reload.labels).to eq([label2]) }
           end
         end
       end

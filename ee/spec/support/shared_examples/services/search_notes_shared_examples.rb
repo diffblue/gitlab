@@ -65,7 +65,7 @@ RSpec.shared_examples 'search confidential notes shared examples' do
 
       context 'when user can read confidential' do
         context 'when user is project reporter' do
-          let(:confidential_issue) { create :issue, confidential: true, project: noteable.project}
+          let(:confidential_issue) { create :issue, confidential: true, project: noteable.project }
 
           it 'does not filter confidential issue notes' do
             confidential_issue.project.add_reporter(user)

@@ -5,8 +5,8 @@ require_migration!
 
 RSpec.describe CleanupOrphansApprovalProjectRules do
   let(:approval_project_rules) { table(:approval_project_rules) }
-  let(:namespace) {table(:namespaces).create!(name: 'name', path: 'path')}
-  let(:projects) {table(:projects)}
+  let(:namespace) { table(:namespaces).create!(name: 'name', path: 'path') }
+  let(:projects) { table(:projects) }
   let(:project) do
     projects
       .create!(name: "project", path: "project", namespace_id: namespace.id, project_namespace_id: namespace.id)
@@ -21,11 +21,11 @@ RSpec.describe CleanupOrphansApprovalProjectRules do
   end
 
   it 'deletes only scan_finding rule from orphan project' do
-    expect { migrate! }.to change {ApprovalProjectRule.count}.from(2).to(1)
+    expect { migrate! }.to change { ApprovalProjectRule.count }.from(2).to(1)
   end
 
   context 'with an existing security orchestration project' do
-    let(:namespace_security) {table(:namespaces).create!(name: 'name_2', path: 'path_2')}
+    let(:namespace_security) { table(:namespaces).create!(name: 'name_2', path: 'path_2') }
     let(:security_project) do
       projects.create!(
         name: "security",
@@ -41,7 +41,7 @@ RSpec.describe CleanupOrphansApprovalProjectRules do
     end
 
     it 'does not delete scan_finding rules' do
-      expect { migrate! }.not_to change {ApprovalProjectRule.count}
+      expect { migrate! }.not_to change { ApprovalProjectRule.count }
     end
   end
 end

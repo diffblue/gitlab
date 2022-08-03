@@ -12,7 +12,7 @@ RSpec.describe Security::TrainingProviders::KontraUrlFinder do
 
   describe '#calculate_reactive_cache' do
     context 'when response is nil' do
-      let_it_be(:finder) {described_class.new(identifier.project, provider, identifier.external_id) }
+      let_it_be(:finder) { described_class.new(identifier.project, provider, identifier.external_id) }
 
       before do
         synchronous_reactive_cache(finder)

@@ -192,7 +192,7 @@ RSpec.describe Security::ScanExecutionPoliciesFinder do
           )
         end
 
-        let(:action_scan_types) {[::Types::Security::ReportTypeEnum.values['DAST'].value] }
+        let(:action_scan_types) { [::Types::Security::ReportTypeEnum.values['DAST'].value] }
 
         it 'returns policy matching the given scan type' do
           is_expected.to match_array([policy.merge(

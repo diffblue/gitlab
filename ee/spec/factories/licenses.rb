@@ -74,6 +74,6 @@ FactoryBot.define do
     end
 
     # Disable validations when creating an expired license key
-    to_create {|instance| instance.save!(validate: !expired) }
+    to_create { |instance| instance.save!(validate: !expired) }
   end
 end

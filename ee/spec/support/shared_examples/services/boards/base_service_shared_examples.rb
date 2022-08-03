@@ -89,7 +89,7 @@ end
 RSpec.shared_examples 'setting an iteration scope' do
   shared_examples 'a predefined iteration' do
     context 'without iteration cadence' do
-      let(:args) { { iteration_id: iteration.id }}
+      let(:args) { { iteration_id: iteration.id } }
 
       context 'None' do
         let(:iteration) { ::Iteration::Predefined::None }

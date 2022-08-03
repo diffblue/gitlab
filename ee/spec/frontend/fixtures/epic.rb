@@ -7,13 +7,13 @@ RSpec.describe 'Epics (JavaScript fixtures)' do
   include JavaScriptFixturesHelpers
 
   let(:user) { create(:user) }
-  let(:group) { create(:group, name: 'frontend-fixtures-group' )}
+  let(:group) { create(:group, name: 'frontend-fixtures-group' ) }
   let(:label) { create(:group_label, group: group, title: 'bug') }
   let(:public_project) { create(:project, :public, group: group) }
-  let(:milestone1) { create(:milestone, group: group, title: 'Decade A', start_date: '2010-01-01', due_date: '2019-12-31')}
-  let(:milestone2) { create(:milestone, group: group, title: 'Decade B', start_date: '2020-01-01', due_date: '2029-12-31')}
-  let(:issue1) { create(:issue, project: public_project, milestone: milestone1)}
-  let(:issue2) { create(:issue, project: public_project, milestone: milestone2)}
+  let(:milestone1) { create(:milestone, group: group, title: 'Decade A', start_date: '2010-01-01', due_date: '2019-12-31') }
+  let(:milestone2) { create(:milestone, group: group, title: 'Decade B', start_date: '2020-01-01', due_date: '2029-12-31') }
+  let(:issue1) { create(:issue, project: public_project, milestone: milestone1) }
+  let(:issue2) { create(:issue, project: public_project, milestone: milestone2) }
 
   let(:markdown) do
     <<-MARKDOWN.strip_heredoc

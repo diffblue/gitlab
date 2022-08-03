@@ -2,7 +2,7 @@
 
 RSpec.shared_examples 'geo base sync execution' do
   describe '#execute' do
-    let(:project) { build('project')}
+    let(:project) { build('project') }
 
     context 'when can acquire exclusive lease' do
       before do

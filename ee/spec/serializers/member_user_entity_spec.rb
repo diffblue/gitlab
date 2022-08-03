@@ -17,8 +17,8 @@ RSpec.describe MemberUserEntity do
 
   context 'when using on-call management' do
     let_it_be(:group) { create(:group) }
-    let_it_be(:project_1) { create(:project, group: group )}
-    let_it_be(:project_2) { create(:project, group: group )}
+    let_it_be(:project_1) { create(:project, group: group ) }
+    let_it_be(:project_2) { create(:project, group: group ) }
 
     context 'with oncall schedules' do
       let_it_be(:oncall_schedule_1) { create_schedule_with_user(project_1, user) }

@@ -10,7 +10,7 @@ RSpec.describe('shared/credentials_inventory/_expiry_date.html.haml') do
   end
 
   context 'when a non-expirable credential is used' do
-    let_it_be(:credential) { create(:deploy_key, user: user)}
+    let_it_be(:credential) { create(:deploy_key, user: user) }
 
     it 'shows "Never" if expires? method does not exist' do
       expect(rendered).to have_text('Never')
@@ -18,7 +18,7 @@ RSpec.describe('shared/credentials_inventory/_expiry_date.html.haml') do
   end
 
   context 'when an expirable credential is used' do
-    let_it_be(:credential) { create(:personal_access_token, user: user, expires_at: nil)}
+    let_it_be(:credential) { create(:personal_access_token, user: user, expires_at: nil) }
 
     it 'shows "Never" when not expirable' do
       expect(rendered).to have_text('Never')
@@ -26,7 +26,7 @@ RSpec.describe('shared/credentials_inventory/_expiry_date.html.haml') do
 
     context 'and is not expired' do
       let_it_be(:expiry_date) { 20.days.since.to_date.to_s }
-      let_it_be(:credential) { create(:personal_key, user: user, expires_at: expiry_date)}
+      let_it_be(:credential) { create(:personal_key, user: user, expires_at: expiry_date) }
 
       it 'shows the correct date' do
         expect(rendered).to have_text(expiry_date)
@@ -39,7 +39,7 @@ RSpec.describe('shared/credentials_inventory/_expiry_date.html.haml') do
 
     context 'and is near expiry' do
       let_it_be(:expiry_date) { 1.day.since.to_date.to_s }
-      let_it_be(:credential) { create(:personal_access_token, user: user, expires_at: expiry_date)}
+      let_it_be(:credential) { create(:personal_access_token, user: user, expires_at: expiry_date) }
 
       it 'shows the correct date' do
         expect(rendered).to have_text(expiry_date)
@@ -52,7 +52,7 @@ RSpec.describe('shared/credentials_inventory/_expiry_date.html.haml') do
 
     context 'and has expired' do
       let_it_be(:expiry_date) { 2.days.ago.to_date.to_s }
-      let_it_be(:credential) { create(:personal_access_token, user: user, expires_at: expiry_date)}
+      let_it_be(:credential) { create(:personal_access_token, user: user, expires_at: expiry_date) }
 
       it 'shows the correct date' do
         expect(rendered).to have_text(expiry_date)

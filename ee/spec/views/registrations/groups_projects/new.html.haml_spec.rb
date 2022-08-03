@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'registrations/groups_projects/new' do
-  let(:google_tag_manager_id) { 'GTM-WWKMTWS'}
+  let(:google_tag_manager_id) { 'GTM-WWKMTWS' }
 
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }

@@ -77,7 +77,7 @@ RSpec.shared_examples 'issue with epic_id parameter' do
           let(:subject) { execute }
           let(:category) { 'issues_edit' }
           let(:action) { 'g_project_management_issue_added_to_epic' }
-          let(:namespace) { project.namespace}
+          let(:namespace) { project.namespace }
           let(:feature_flag_name) { :route_hll_to_snowplow_phase2 }
         end
       end
@@ -133,7 +133,7 @@ RSpec.shared_examples 'issue with epic_id parameter' do
           let(:subject) { execute }
           let(:category) { 'issues_edit' }
           let(:action) { 'g_project_management_issue_added_to_epic' }
-          let(:namespace) { project.namespace}
+          let(:namespace) { project.namespace }
           let(:feature_flag_name) { :route_hll_to_snowplow_phase2 }
         end
       end

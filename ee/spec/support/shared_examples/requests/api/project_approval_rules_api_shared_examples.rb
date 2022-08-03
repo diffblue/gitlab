@@ -116,7 +116,7 @@ RSpec.shared_examples 'an API endpoint for creating project approval rule' do
       it 'returns 201 status' do
         expect do
           post api(url, current_user), params: params.merge({ scanners: scanners })
-        end.to change { project.approval_rules.count}.from(0).to(1)
+        end.to change { project.approval_rules.count }.from(0).to(1)
         expect(response).to have_gitlab_http_status(:created)
         expect(project.approval_rules.first.scanners).to eql(scanners)
       end
@@ -141,7 +141,7 @@ RSpec.shared_examples 'an API endpoint for creating project approval rule' do
     it 'returns 201 status' do
       expect do
         post api(url, current_user), params: params.merge({ vulnerabilities_allowed: vulnerabilities_allowed })
-      end.to change { project.approval_rules.count}.from(0).to(1)
+      end.to change { project.approval_rules.count }.from(0).to(1)
       expect(response).to have_gitlab_http_status(:created)
       expect(project.approval_rules.first.vulnerabilities_allowed).to eql(vulnerabilities_allowed)
     end

@@ -556,7 +556,7 @@ RSpec.describe SubscriptionsController do
         end
 
         context 'when selected group is a sub group' do
-          let(:selected_group) { create(:group, parent: create(:group))}
+          let(:selected_group) { create(:group, parent: create(:group)) }
 
           it { is_expected.to have_gitlab_http_status(:not_found) }
         end
