@@ -216,7 +216,7 @@ RSpec.describe 'Groups > Members > Manage groups', :js, :saas do
     click_button name
     choose_options(role, expires_at)
 
-    click_button 'Invite'
+    submit_invites
     wait_for_requests
   end
 
