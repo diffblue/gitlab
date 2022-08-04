@@ -2,7 +2,7 @@
 
 module Types
   module Geo
-    class ReplicableStateEnum < BaseEnum
+    class ReplicationStateEnum < BaseEnum
       value 'PENDING', value: 'pending', description: 'Replication process has not started.'
       value 'STARTED', value: 'started', description: 'Replication process is in progress.'
       value 'SYNCED',  value: 'synced', description: 'Replication process finished successfully.'

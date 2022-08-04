@@ -19,7 +19,7 @@ module Resolvers
                  required: false,
                  description: 'Filters registries by their ID.'
 
-        argument :replication_state, ::Types::Geo::ReplicableStateEnum,
+        argument :replication_state, ::Types::Geo::ReplicationStateEnum,
                  required: false,
                  description: 'Filters registries by their replication state.'
 
