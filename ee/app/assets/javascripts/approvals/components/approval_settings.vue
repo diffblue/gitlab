@@ -1,21 +1,32 @@
 <script>
-import { GlAlert, GlButton, GlForm, GlFormGroup, GlLoadingIcon, GlLink } from '@gitlab/ui';
+import {
+  GlAlert,
+  GlButton,
+  GlForm,
+  GlFormGroup,
+  GlLoadingIcon,
+  GlLink,
+  GlFormRadioGroup,
+} from '@gitlab/ui';
 import { isEmpty } from 'lodash';
 import { mapActions, mapGetters, mapState } from 'vuex';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { sprintf } from '~/locale';
 import { APPROVAL_SETTINGS_I18N, TYPE_GROUP } from '../constants';
 import ApprovalSettingsCheckbox from './approval_settings_checkbox.vue';
+import ApprovalSettingsRadio from './approval_settings_radio.vue';
 
 export default {
   components: {
     ApprovalSettingsCheckbox,
+    ApprovalSettingsRadio,
     GlAlert,
     GlButton,
     GlForm,
     GlFormGroup,
     GlLoadingIcon,
     GlLink,
+    GlFormRadioGroup,
   },
   props: {
     approvalSettingsPath: {
@@ -53,6 +64,8 @@ export default {
       preventMrApprovalRuleEdit: (state) =>
         state.approvalSettings.settings.preventMrApprovalRuleEdit,
       removeApprovalsOnPush: (state) => state.approvalSettings.settings.removeApprovalsOnPush,
+      selectiveCodeOwnerRemovals: (state) =>
+        state.approvalSettings.settings.selectiveCodeOwnerRemovals,
       requireUserPassword: (state) => state.approvalSettings.settings.requireUserPassword,
       groupName: (state) => state.settings.groupName,
     }),
@@ -62,6 +75,18 @@ export default {
     },
     isLoaded() {
       return this.hasSettings || this.errorMessage;
+    },
+    showSelectiveCodeOwnerRemovals() {
+      return this.approvalSettingsPath.includes('/projects/');
+    },
+    whenCommitIsAddedRadioGroupValue() {
+      if (this.removeApprovalsOnPush.value) {
+        return this.$options.whenCommitIsAddedRadios.removeApprovalsOnPush;
+      } else if (this.selectiveCodeOwnerRemovals.value) {
+        return this.$options.whenCommitIsAddedRadios.selectiveCodeOwnerRemovals;
+      }
+
+      return this.$options.whenCommitIsAddedRadios.keepApprovals;
     },
   },
   created() {
@@ -76,8 +101,31 @@ export default {
       'setPreventCommittersApproval',
       'setPreventMrApprovalRuleEdit',
       'setRemoveApprovalsOnPush',
+      'setSelectiveCodeOwnerRemovals',
       'setRequireUserPassword',
     ]),
+    handleWhenCommitIsAddedRadioGroupInput(value) {
+      switch (value) {
+        case this.$options.whenCommitIsAddedRadios.keepApprovals:
+          this.setSelectiveCodeOwnerRemovals(false);
+          this.setRemoveApprovalsOnPush(false);
+
+          break;
+        case this.$options.whenCommitIsAddedRadios.removeApprovalsOnPush:
+          this.setSelectiveCodeOwnerRemovals(false);
+          this.setRemoveApprovalsOnPush(true);
+
+          break;
+
+        case this.$options.whenCommitIsAddedRadios.selectiveCodeOwnerRemovals:
+          this.setRemoveApprovalsOnPush(false);
+          this.setSelectiveCodeOwnerRemovals(true);
+          break;
+
+        default:
+          break;
+      }
+    },
     async onSubmit() {
       await this.updateSettings(this.approvalSettingsPath);
       this.$toast.show(APPROVAL_SETTINGS_I18N.savingSuccessMessage);
@@ -96,6 +144,11 @@ export default {
   i18n: APPROVAL_SETTINGS_I18N,
   links: {
     approvalSettingsDocsPath: helpPagePath('user/project/merge_requests/approvals/settings'),
+  },
+  whenCommitIsAddedRadios: {
+    keepApprovals: 'keep-approvals',
+    removeApprovalsOnPush: 'remove-approvals-on-push',
+    selectiveCodeOwnerRemovals: 'selective-code-owner-removals',
   },
 };
 </script>
@@ -154,14 +207,38 @@ export default {
           data-testid="require-user-password"
           @input="setRequireUserPassword"
         />
-        <approval-settings-checkbox
-          :checked="removeApprovalsOnPush.value"
-          :label="settingsLabels.removeApprovalsOnPushLabel"
-          :locked="removeApprovalsOnPush.locked"
-          :locked-text="lockedText(removeApprovalsOnPush)"
-          data-testid="remove-approvals-on-push"
-          @input="setRemoveApprovalsOnPush"
-        />
+        <div class="gl-mt-5 gl-mb-3">{{ settingsLabels.whenCommitAddedLabel }}</div>
+        <gl-form-radio-group
+          :checked="whenCommitIsAddedRadioGroupValue"
+          data-testid="when-commit-is-added-radios"
+          @input="handleWhenCommitIsAddedRadioGroupInput"
+        >
+          <approval-settings-radio
+            name="approval-removal-setting"
+            :value="$options.whenCommitIsAddedRadios.keepApprovals"
+            :label="settingsLabels.keepApprovalsLabel"
+            :locked="removeApprovalsOnPush.locked"
+            :locked-text="lockedText(removeApprovalsOnPush)"
+            data-testid="keep-approvals-on-push"
+          />
+          <approval-settings-radio
+            name="approval-removal-setting"
+            :value="$options.whenCommitIsAddedRadios.removeApprovalsOnPush"
+            :label="settingsLabels.removeApprovalsOnPushLabel"
+            :locked="removeApprovalsOnPush.locked"
+            :locked-text="lockedText(removeApprovalsOnPush)"
+            data-testid="remove-approvals-on-push"
+          />
+          <approval-settings-radio
+            v-if="showSelectiveCodeOwnerRemovals"
+            name="approval-removal-setting"
+            :value="$options.whenCommitIsAddedRadios.selectiveCodeOwnerRemovals"
+            :label="settingsLabels.selectiveCodeOwnerRemovalsLabel"
+            :locked="removeApprovalsOnPush.locked"
+            :locked-text="lockedText(selectiveCodeOwnerRemovals)"
+            data-testid="selective-code-owner-removals"
+          />
+        </gl-form-radio-group>
       </gl-form-group>
       <gl-button
         type="submit"

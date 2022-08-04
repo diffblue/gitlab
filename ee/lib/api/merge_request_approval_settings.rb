@@ -15,6 +15,7 @@ module API
         optional :allow_overrides_to_approver_list_per_merge_request,
                  type: Boolean, desc: 'Allow overrides to approver list per merge request', allow_blank: false
         optional :retain_approvals_on_push, type: Boolean, desc: 'Retain approval count on a new push', allow_blank: false
+        optional :selective_code_owner_removals, type: Boolean, desc: 'Retain approvals on rules unaffected by a new push', allow_blank: false
         optional :require_password_to_approve,
                  type: Boolean, desc: 'Require approver to authenticate before approving', allow_blank: false
 
@@ -22,6 +23,7 @@ module API
                         :allow_committer_approval,
                         :allow_overrides_to_approver_list_per_merge_request,
                         :retain_approvals_on_push,
+                        :selective_code_owner_removals,
                         :require_password_to_approve
       end
     end

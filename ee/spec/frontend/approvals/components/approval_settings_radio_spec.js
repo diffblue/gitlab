@@ -1,23 +1,25 @@
-import { GlFormCheckbox } from '@gitlab/ui';
+import { GlFormRadio } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 
-import ApprovalSettingsCheckbox from 'ee/approvals/components/approval_settings_checkbox.vue';
+import ApprovalSettingsRadio from 'ee/approvals/components/approval_settings_radio.vue';
 import ApprovalSettingsLockedIcon from 'ee/approvals/components/approval_settings_locked_icon.vue';
 import { stubComponent } from 'helpers/stub_component';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 
-describe('ApprovalSettingsCheckbox', () => {
+describe('ApprovalSettingsRadio', () => {
   const label = 'Foo';
+  const name = 'approval-removal-setting';
   const lockedText = 'locked-text';
+  const value = 'value';
 
   let wrapper;
 
   const createWrapper = (props = {}) => {
     wrapper = extendedWrapper(
-      shallowMount(ApprovalSettingsCheckbox, {
-        propsData: { label, lockedText, ...props },
+      shallowMount(ApprovalSettingsRadio, {
+        propsData: { label, name, lockedText, value, ...props },
         stubs: {
-          GlFormCheckbox: stubComponent(GlFormCheckbox, {
+          GlFormRadio: stubComponent(GlFormRadio, {
             props: ['checked'],
           }),
         },
@@ -25,7 +27,7 @@ describe('ApprovalSettingsCheckbox', () => {
     );
   };
 
-  const findCheckbox = () => wrapper.findComponent(GlFormCheckbox);
+  const findRadio = () => wrapper.findComponent(GlFormRadio);
   const findLockedIcon = () => wrapper.findComponent(ApprovalSettingsLockedIcon);
 
   afterEach(() => {
@@ -38,29 +40,7 @@ describe('ApprovalSettingsCheckbox', () => {
     });
 
     it('shows the label', () => {
-      expect(findCheckbox().text()).toContain(label);
-    });
-  });
-
-  describe('checked', () => {
-    it('defaults to false when no checked value is given', () => {
-      createWrapper();
-
-      expect(findCheckbox().props('checked')).toBe(false);
-    });
-
-    it('sets the checkbox to `true` when checked is `true`', () => {
-      createWrapper({ checked: true });
-
-      expect(findCheckbox().props('checked')).toBe(true);
-    });
-
-    it('emits an input event when the checkbox is changed', async () => {
-      createWrapper();
-
-      await findCheckbox().vm.$emit('input', true);
-
-      expect(wrapper.emitted('input')[0]).toStrictEqual([true]);
+      expect(findRadio().text()).toContain(label);
     });
   });
 
@@ -71,7 +51,7 @@ describe('ApprovalSettingsCheckbox', () => {
       });
 
       it('the input is enabled', () => {
-        expect(findCheckbox().attributes('disabled')).toBeUndefined();
+        expect(findRadio().attributes('disabled')).toBeUndefined();
       });
 
       it('does not render locked_icon', () => {
@@ -85,7 +65,7 @@ describe('ApprovalSettingsCheckbox', () => {
       });
 
       it('disables the input', () => {
-        expect(findCheckbox().attributes('disabled')).toBe('disabled');
+        expect(findRadio().attributes('disabled')).toBe('disabled');
       });
 
       it('renders locked_icon', () => {

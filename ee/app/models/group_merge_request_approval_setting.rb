@@ -21,4 +21,8 @@ class GroupMergeRequestApprovalSetting < ApplicationRecord
                             'prevent users from modifying MR approval rules in merge requests',
                           retain_approvals_on_push: 'require new approvals when new commits are added to an MR',
                           require_password_to_approve: 'require user password for approvals' }.freeze
+
+  def selective_code_owner_removals
+    false
+  end
 end

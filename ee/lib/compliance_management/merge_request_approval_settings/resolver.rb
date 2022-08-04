@@ -13,6 +13,7 @@ module ComplianceManagement
           allow_committer_approval: allow_committer_approval,
           allow_overrides_to_approver_list_per_merge_request: allow_overrides_to_approver_list_per_merge_request,
           retain_approvals_on_push: retain_approvals_on_push,
+          selective_code_owner_removals: selective_code_owner_removals,
           require_password_to_approve: require_password_to_approve
         }
       end
@@ -46,6 +47,12 @@ module ComplianceManagement
         project_value = @project && !@project.read_attribute(:reset_approvals_on_push)
 
         setting(nil, group_value, project_value)
+      end
+
+      def selective_code_owner_removals
+        project_value = @project && @project.project_setting.read_attribute(:selective_code_owner_removals)
+
+        setting(nil, nil, project_value)
       end
 
       def require_password_to_approve

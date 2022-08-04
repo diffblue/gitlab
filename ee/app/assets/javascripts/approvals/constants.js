@@ -67,8 +67,11 @@ export const PROJECT_APPROVAL_SETTINGS_LABELS_I18N = {
     'ApprovalSettings|Prevent approvals by users who add commits',
   ),
   requireUserPasswordLabel: s__('ApprovalSettings|Require user password to approve'),
-  removeApprovalsOnPushLabel: s__(
-    'ApprovalSettings|Remove all approvals when commits are added to the source branch',
+  whenCommitAddedLabel: s__('ApprovalSettings|When a commit is added:'),
+  keepApprovalsLabel: s__('ApprovalSettings|Keep approvals'),
+  removeApprovalsOnPushLabel: s__('ApprovalSettings|Remove all approvals'),
+  selectiveCodeOwnerRemovalsLabel: s__(
+    'ApprovalSettings|Remove approvals by Code Owners if their files changed',
   ),
 };
 

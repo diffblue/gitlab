@@ -130,12 +130,13 @@ describe('EE approvals group settings module actions', () => {
   });
 
   describe.each`
-    action                            | type
-    ${'setPreventAuthorApproval'}     | ${types.SET_PREVENT_AUTHOR_APPROVAL}
-    ${'setPreventCommittersApproval'} | ${types.SET_PREVENT_COMMITTERS_APPROVAL}
-    ${'setPreventMrApprovalRuleEdit'} | ${types.SET_PREVENT_MR_APPROVAL_RULE_EDIT}
-    ${'setRemoveApprovalsOnPush'}     | ${types.SET_REMOVE_APPROVALS_ON_PUSH}
-    ${'setRequireUserPassword'}       | ${types.SET_REQUIRE_USER_PASSWORD}
+    action                             | type
+    ${'setPreventAuthorApproval'}      | ${types.SET_PREVENT_AUTHOR_APPROVAL}
+    ${'setPreventCommittersApproval'}  | ${types.SET_PREVENT_COMMITTERS_APPROVAL}
+    ${'setPreventMrApprovalRuleEdit'}  | ${types.SET_PREVENT_MR_APPROVAL_RULE_EDIT}
+    ${'setRemoveApprovalsOnPush'}      | ${types.SET_REMOVE_APPROVALS_ON_PUSH}
+    ${'setSelectiveCodeOwnerRemovals'} | ${types.SET_SELECTIVE_CODE_OWNER_REMOVALS}
+    ${'setRequireUserPassword'}        | ${types.SET_REQUIRE_USER_PASSWORD}
   `('$action', ({ action, type }) => {
     it(`commits ${type}`, () => {
       return testAction(actions[action], true, state, [{ type, payload: true }], []);

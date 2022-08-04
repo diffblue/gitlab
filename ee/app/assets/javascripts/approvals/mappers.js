@@ -113,6 +113,7 @@ export const mergeRequestApprovalSettingsMappers = {
         requireUserPassword: data.require_password_to_approve,
         removeApprovalsOnPush: invertApprovalSetting(data.retain_approvals_on_push),
         preventCommittersApproval: invertApprovalSetting(data.allow_committer_approval),
+        selectiveCodeOwnerRemovals: data.selective_code_owner_removals,
       },
       { deep: true },
     ),
@@ -121,6 +122,7 @@ export const mergeRequestApprovalSettingsMappers = {
     allow_overrides_to_approver_list_per_merge_request: !settings.preventMrApprovalRuleEdit.value,
     require_password_to_approve: settings.requireUserPassword.value,
     retain_approvals_on_push: !settings.removeApprovalsOnPush.value,
+    selective_code_owner_removals: settings.selectiveCodeOwnerRemovals.value,
     allow_committer_approval: !settings.preventCommittersApproval.value,
   }),
 };

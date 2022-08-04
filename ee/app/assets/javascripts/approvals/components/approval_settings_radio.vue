@@ -1,21 +1,20 @@
 <script>
-import { GlFormCheckbox } from '@gitlab/ui';
+import { GlFormRadio } from '@gitlab/ui';
 import ApprovalSettingsLockedIcon from './approval_settings_locked_icon.vue';
 
 export default {
   components: {
     ApprovalSettingsLockedIcon,
-    GlFormCheckbox,
+    GlFormRadio,
   },
   props: {
     label: {
       type: String,
       required: true,
     },
-    checked: {
-      type: Boolean,
-      required: false,
-      default: false,
+    value: {
+      type: String,
+      required: true,
     },
     locked: {
       type: Boolean,
@@ -25,6 +24,11 @@ export default {
     lockedText: {
       type: String,
       required: false,
+      default: '',
+    },
+    name: {
+      type: String,
+      required: true,
       default: '',
     },
   },
@@ -37,8 +41,8 @@ export default {
 </script>
 
 <template>
-  <gl-form-checkbox :disabled="locked" :checked="checked" @input="input">
+  <gl-form-radio :disabled="locked" :name="name" :value="value" @input="input">
     {{ label }}
     <approval-settings-locked-icon v-if="locked" :label="label" :locked-text="lockedText" />
-  </gl-form-checkbox>
+  </gl-form-radio>
 </template>

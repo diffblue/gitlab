@@ -17,6 +17,13 @@ module API
           .then { |params| filter_forbidden_param(params, :modify_approvers_rules, :disable_overriding_approvers_per_merge_request) }
           .then { |params| filter_forbidden_param(params, :modify_merge_request_author_setting, :merge_requests_author_approval) }
       end
+
+      def extract_project_settings(project_params)
+        return project_params if project_params[:selective_code_owner_removals].nil?
+
+        selective_code_owner_removals = project_params.delete(:selective_code_owner_removals)
+        project_params.merge(project_setting_attributes: { selective_code_owner_removals: selective_code_owner_removals })
+      end
     end
 
     params do
@@ -42,17 +49,27 @@ module API
         params do
           optional :approvals_before_merge, type: Integer, desc: 'The amount of approvals required before an MR can be merged'
           optional :reset_approvals_on_push, type: Boolean, desc: 'Should the approval count be reset on a new push'
+          optional :selective_code_owner_removals, type: Boolean, desc: 'Retain approvals on rules unaffected by a new push'
           optional :disable_overriding_approvers_per_merge_request, type: Boolean, desc: 'Should MRs be able to override approvers and approval count'
           optional :merge_requests_author_approval, type: Boolean, desc: 'Should merge request authors be able to self approve merge requests; `true` means authors cannot self approve'
           optional :merge_requests_disable_committers_approval, type: Boolean, desc: 'Should committers be able to self approve merge requests'
           optional :require_password_to_approve, type: Boolean, desc: 'Should approvers authenticate via password before adding approval'
-          at_least_one_of :approvals_before_merge, :reset_approvals_on_push, :disable_overriding_approvers_per_merge_request, :merge_requests_author_approval, :merge_requests_disable_committers_approval, :require_password_to_approve
+          at_least_one_of :approvals_before_merge, :reset_approvals_on_push, :selective_code_owner_removals, :disable_overriding_approvers_per_merge_request, :merge_requests_author_approval, :merge_requests_disable_committers_approval, :require_password_to_approve
         end
         post '/' do
           authorize! :update_approvers, user_project
 
           declared_params = declared(params, include_missing: false, include_parent_namespaces: false)
           project_params = filter_params(declared_params)
+
+          approval_removal_settings = MergeRequest::ApprovalRemovalSettings.new(
+            user_project,
+            project_params[:reset_approvals_on_push],
+            project_params[:selective_code_owner_removals]
+          )
+          break render_validation_error!(approval_removal_settings) unless approval_removal_settings.valid?
+
+          project_params = extract_project_settings(project_params)
           result = ::Projects::UpdateService.new(user_project, current_user, project_params).execute
 
           if result[:status] == :success

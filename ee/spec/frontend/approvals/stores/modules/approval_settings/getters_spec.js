@@ -9,6 +9,7 @@ describe('Group settings store getters', () => {
     preventMrApprovalRuleEdit: { value: true },
     requireUserPassword: { value: true },
     removeApprovalsOnPush: { value: false },
+    selectiveCodeOwnerRemovals: { value: false },
   };
 
   beforeEach(() => {

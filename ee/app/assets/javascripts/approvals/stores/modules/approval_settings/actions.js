@@ -58,6 +58,10 @@ export default (mapStateToPayload, updateMethod = 'put') => ({
     commit(types.SET_REMOVE_APPROVALS_ON_PUSH, value);
   },
 
+  setSelectiveCodeOwnerRemovals({ commit }, value) {
+    commit(types.SET_SELECTIVE_CODE_OWNER_REMOVALS, value);
+  },
+
   setRequireUserPassword({ commit }, value) {
     commit(types.SET_REQUIRE_USER_PASSWORD, value);
   },
