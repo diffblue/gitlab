@@ -285,6 +285,11 @@ the correctness of the chosen solution, and implementation within their domain.
 
 Verify that the merge request meets all [contribution acceptance criteria](contributing/merge_request_workflow.md#contribution-acceptance-criteria).
 
+As domain experts are self-identified, reviewers can determine for themselves if
+they are the approriate person to review the merge request. Depending on
+availability, it is acceptable for someone who has no domain expertise to review
+an MR on a best effort basis.
+
 You should guide the author towards splitting the merge request into smaller merge requests if it is:
 
 - Too large.
