@@ -11,13 +11,13 @@ const TEST_MODAL_ID = 'test-delete-modal-id';
 const TEST_RULE = {
   id: 7,
   name: 'Lorem',
-  approvers: Array(5)
+  eligibleApprovers: Array(5)
     .fill(1)
     .map((x, id) => ({ id })),
 };
 const SINGLE_APPROVER = {
   ...TEST_RULE,
-  approvers: [{ id: 1 }],
+  eligibleApprovers: [{ id: 1 }],
 };
 
 Vue.use(Vuex);
