@@ -235,7 +235,8 @@ RSpec.describe DastSiteProfile, type: :model do
             { key: 'DAST_AUTH_URL', value: subject.auth_url, public: true, masked: false },
             { key: 'DAST_USERNAME', value: subject.auth_username, public: true, masked: false },
             { key: 'DAST_USERNAME_FIELD', value: subject.auth_username_field, public: true, masked: false },
-            { key: 'DAST_PASSWORD_FIELD', value: subject.auth_password_field, public: true, masked: false }
+            { key: 'DAST_PASSWORD_FIELD', value: subject.auth_password_field, public: true, masked: false },
+            { key: 'DAST_API_HTTP_USERNAME', value: subject.auth_username, public: true, masked: false }
           ]
 
           expect(collection.to_runner_variables).to eq(expected_variables)
@@ -253,7 +254,8 @@ RSpec.describe DastSiteProfile, type: :model do
             { key: 'DAST_USERNAME', value: subject.auth_username, public: true, masked: false },
             { key: 'DAST_USERNAME_FIELD', value: subject.auth_username_field, public: true, masked: false },
             { key: 'DAST_PASSWORD_FIELD', value: subject.auth_password_field, public: true, masked: false },
-            { key: 'DAST_SUBMIT_FIELD', value: subject.auth_submit_field, public: true, masked: false }
+            { key: 'DAST_SUBMIT_FIELD', value: subject.auth_submit_field, public: true, masked: false },
+            { key: 'DAST_API_HTTP_USERNAME', value: subject.auth_username, public: true, masked: false }
           ]
 
           expect(collection.to_runner_variables).to eq(expected_variables)
@@ -328,6 +330,16 @@ RSpec.describe DastSiteProfile, type: :model do
             variable = create(:dast_site_profile_secret_variable, dast_site_profile: subject)
 
             expect(subject.secret_ci_variables(user).to_runner_variables).to include(key: variable.key, value: variable.value, public: false, masked: true)
+          end
+
+          context 'when password is configured' do
+            let(:api_password) { Dast::SiteProfileSecretVariable::API_PASSWORD }
+
+            it 'returns a collection containing api password' do
+              variable = create(:dast_site_profile_secret_variable, :password, dast_site_profile: subject)
+
+              expect(subject.secret_ci_variables(user).to_runner_variables).to include(key: api_password, value: variable.value, public: false, masked: true)
+            end
           end
         end
       end

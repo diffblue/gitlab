@@ -4,6 +4,7 @@ module Dast
   class SiteProfileSecretVariable < ApplicationRecord
     REQUEST_HEADERS = 'DAST_REQUEST_HEADERS_BASE64'
     PASSWORD = 'DAST_PASSWORD_BASE64'
+    API_PASSWORD = 'DAST_API_HTTP_PASSWORD_BASE64'
 
     include Ci::HasVariable
     include Ci::Maskable
