@@ -41,9 +41,9 @@ RSpec.describe Ci::Runners::StaleGroupRunnersPruneCronWorker do
         it 'delegates to Ci::Runners::StaleGroupRunnersPruneService' do
           expect_next_instance_of(Ci::Runners::StaleGroupRunnersPruneService) do |service|
             expect(service)
-              .to receive(:perform)
-                    .with([group1.ci_cd_settings])
-                    .and_call_original
+              .to receive(:execute)
+              .with([group1.ci_cd_settings])
+              .and_call_original
           end
 
           worker.perform

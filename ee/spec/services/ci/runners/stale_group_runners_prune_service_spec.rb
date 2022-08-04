@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe Ci::Runners::StaleGroupRunnersPruneService do
   let(:service) { described_class.new }
 
-  subject(:status) { service.perform(NamespaceCiCdSetting.allowing_stale_runner_pruning.select(:namespace_id)) }
+  subject(:execute) { service.execute(NamespaceCiCdSetting.allowing_stale_runner_pruning.select(:namespace_id)) }
 
   shared_context 'with some stale group runners on group1' do
     let!(:active_runner) do
@@ -36,10 +36,8 @@ RSpec.describe Ci::Runners::StaleGroupRunnersPruneService do
         expect(service).not_to receive(:delete_stale_group_runners_in_batches)
 
         expect do
-          expect(status).to match({
-            status: :success,
-            total_pruned: 0
-          })
+          expect(execute).to be_success
+          expect(execute.payload).to match({ total_pruned: 0 })
         end.not_to change { Ci::Runner.count }.from(1)
       end
     end
@@ -48,10 +46,8 @@ RSpec.describe Ci::Runners::StaleGroupRunnersPruneService do
   shared_examples 'pruning is executed on stale runners' do
     it 'prunes all runners in batches' do
       expect do
-        expect(status).to match({
-          status: :success,
-          total_pruned: 3
-        })
+        expect(execute).to be_success
+        expect(execute.payload).to match({ total_pruned: 3 })
       end.to change { Ci::Runner.count }.from(4).to(1)
     end
   end
@@ -59,10 +55,8 @@ RSpec.describe Ci::Runners::StaleGroupRunnersPruneService do
   shared_examples 'pruning is not executed on stale runners' do
     it 'does not prune any runners' do
       expect do
-        expect(status).to match({
-          status: :success,
-          total_pruned: 0
-        })
+        expect(execute).to be_success
+        expect(execute.payload).to match({ total_pruned: 0 })
       end.not_to change { Ci::Runner.count }
     end
   end
