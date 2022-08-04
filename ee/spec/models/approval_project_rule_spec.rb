@@ -75,16 +75,6 @@ RSpec.describe ApprovalProjectRule do
       it 'returns a collection of all protected branches belonging to the project' do
         expect(subject).to contain_exactly(*protected_branches)
       end
-
-      context 'when project_approval_rule_all_protected_branches flag is disabled' do
-        before do
-          stub_feature_flags(project_approval_rule_all_protected_branches: false)
-        end
-
-        it 'returns a collection of all protected branches belonging to the rule' do
-          expect(subject).to contain_exactly(rule_protected_branch)
-        end
-      end
     end
 
     context 'when applies_to_all_protected_branches is false' do
@@ -133,7 +123,7 @@ RSpec.describe ApprovalProjectRule do
       end
 
       it 'returns true when the branch name is a protected branch' do
-        expect(rule.reload.applies_to_branch?('protected_branch_1')).to be true
+        expect(rule.reload.applies_to_branch?(protected_branch.name)).to be true
       end
 
       it 'returns true when the branch name is a wildcard protected branch' do

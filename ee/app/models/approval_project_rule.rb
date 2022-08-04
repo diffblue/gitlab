@@ -52,8 +52,7 @@ class ApprovalProjectRule < ApplicationRecord
   end
 
   def protected_branches
-    if applies_to_all_protected_branches? &&
-      ::Feature.enabled?(:project_approval_rule_all_protected_branches, project.group)
+    if applies_to_all_protected_branches?
       return project.protected_branches
     end
 

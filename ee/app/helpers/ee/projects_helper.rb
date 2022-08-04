@@ -74,8 +74,7 @@ module EE
         group_name: project.root_ancestor.name,
         full_path: project.full_path,
         security_policies_path: expose_path(project_security_policies_path(project)),
-        new_policy_path: expose_path(new_project_security_policy_path(project)),
-        allow_all_protected_branches_option: ::Feature.enabled?(:project_approval_rule_all_protected_branches, project.group).to_s
+        new_policy_path: expose_path(new_project_security_policy_path(project))
       }
     end
 
