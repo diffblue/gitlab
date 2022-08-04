@@ -200,7 +200,7 @@ Include in the MR description:
 
 #### Preparation when adding tables
 
-- Order columns based on the [Ordering Table Columns](ordering_table_columns.md) guidelines.
+- Order columns based on the [Ordering Table Columns](database/ordering_table_columns.md) guidelines.
 - Add foreign keys to any columns pointing to data in other tables, including [an index](migration_style_guide.md#adding-foreign-key-constraints).
 - Add indexes for fields that are used in statements such as `WHERE`, `ORDER BY`, `GROUP BY`, and `JOIN`s.
 - New tables and columns are not necessarily risky, but over time some access patterns are inherently
@@ -225,7 +225,7 @@ Include in the MR description:
     - Consider [access patterns and data layout](database/layout_and_access_patterns.md) if new tables or columns are added.
   - Review migrations follow [database migration style guide](migration_style_guide.md),
     for example
-    - [Check ordering of columns](ordering_table_columns.md)
+    - [Check ordering of columns](database/ordering_table_columns.md)
     - [Check indexes are present for foreign keys](migration_style_guide.md#adding-foreign-key-constraints)
   - Ensure that migrations execute in a transaction or only contain
     concurrent index/foreign key helpers (with transactions disabled)
@@ -256,7 +256,7 @@ Include in the MR description:
 - Check migrations are reversible and implement a `#down` method
 - Check new table migrations:
   - Are the stated access patterns and volume reasonable? Do the assumptions they're based on seem sound? Do these patterns pose risks to stability?
-  - Are the columns [ordered to conserve space](ordering_table_columns.md)?
+  - Are the columns [ordered to conserve space](database/ordering_table_columns.md)?
   - Are there foreign keys for references to other tables?
 - Check data migrations:
   - Establish a time estimate for execution on GitLab.com.
