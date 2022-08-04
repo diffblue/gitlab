@@ -22,17 +22,19 @@ module EE
 
       has_one :job_artifact_state, autosave: false, inverse_of: :job_artifact, class_name: '::Geo::JobArtifactState'
 
-      LICENSE_SCANNING_REPORT_FILE_TYPES = %w[license_scanning].freeze
-      DEPENDENCY_LIST_REPORT_FILE_TYPES = %w[dependency_scanning].freeze
-      METRICS_REPORT_FILE_TYPES = %w[metrics].freeze
-      CONTAINER_SCANNING_REPORT_TYPES = %w[container_scanning].freeze
-      CLUSTER_IMAGE_SCANNING_REPORT_TYPES = %w[cluster_image_scanning].freeze
-      DAST_REPORT_TYPES = %w[dast].freeze
-      REQUIREMENTS_REPORT_FILE_TYPES = %w[requirements].freeze
-      COVERAGE_FUZZING_REPORT_TYPES = %w[coverage_fuzzing].freeze
-      API_FUZZING_REPORT_TYPES = %w[api_fuzzing].freeze
-      BROWSER_PERFORMANCE_REPORT_FILE_TYPES = %w[browser_performance performance].freeze
-      SBOM_REPORT_FILE_TYPES = %w[cyclonedx].freeze
+      EE_REPORT_FILE_TYPES = {
+        license_scanning: %w[license_scanning].freeze,
+        dependency_list: %w[dependency_scanning].freeze,
+        metrics: %w[metrics].freeze,
+        container_scanning: %w[container_scanning].freeze,
+        cluster_image_scanning: %w[cluster_image_scanning].freeze,
+        dast: %w[dast].freeze,
+        requirements: %w[requirements].freeze,
+        coverage_fuzzing: %w[coverage_fuzzing].freeze,
+        api_fuzzing: %w[api_fuzzing].freeze,
+        browser_performance: %w[browser_performance performance].freeze,
+        sbom: %w[cyclonedx].freeze
+      }.freeze
 
       scope :security_reports, -> (file_types: SECURITY_REPORT_FILE_TYPES) do
         requested_file_types = *file_types
@@ -41,39 +43,39 @@ module EE
       end
 
       scope :license_scanning_reports, -> do
-        with_file_types(LICENSE_SCANNING_REPORT_FILE_TYPES)
+        with_file_types(file_types_for_report(:license_scanning))
       end
 
       scope :dependency_list_reports, -> do
-        with_file_types(DEPENDENCY_LIST_REPORT_FILE_TYPES)
+        with_file_types(file_types_for_report(:dependency_list))
       end
 
       scope :container_scanning_reports, -> do
-        with_file_types(CONTAINER_SCANNING_REPORT_TYPES)
+        with_file_types(file_types_for_report(:container_scanning))
       end
 
       scope :cluster_image_scanning_reports, -> do
-        with_file_types(CLUSTER_IMAGE_SCANNING_REPORT_TYPES)
+        with_file_types(file_types_for_report(:cluster_image_scanning))
       end
 
       scope :dast_reports, -> do
-        with_file_types(DAST_REPORT_TYPES)
+        with_file_types(file_types_for_report(:dast))
       end
 
       scope :metrics_reports, -> do
-        with_file_types(METRICS_REPORT_FILE_TYPES)
+        with_file_types(file_types_for_report(:metrics))
       end
 
       scope :coverage_fuzzing_reports, -> do
-        with_file_types(COVERAGE_FUZZING_REPORT_TYPES)
+        with_file_types(file_types_for_report(:coverage_fuzzing))
       end
 
       scope :api_fuzzing_reports, -> do
-        with_file_types(API_FUZZING_REPORT_TYPES)
+        with_file_types(file_types_for_report(:api_fuzzing))
       end
 
       scope :sbom_reports, -> do
-        with_file_types(SBOM_REPORT_FILE_TYPES)
+        with_file_types(file_types_for_report(:sbom))
       end
 
       scope :with_files_stored_locally, -> { where(file_store: ::ObjectStorage::Store::LOCAL) }
@@ -92,8 +94,8 @@ module EE
 
       override :associated_file_types_for
       def associated_file_types_for(file_type)
-        return LICENSE_SCANNING_REPORT_FILE_TYPES if LICENSE_SCANNING_REPORT_FILE_TYPES.include?(file_type)
-        return BROWSER_PERFORMANCE_REPORT_FILE_TYPES if BROWSER_PERFORMANCE_REPORT_FILE_TYPES.include?(file_type)
+        return file_types_for_report(:license_scanning) if file_types_for_report(:license_scanning).include?(file_type)
+        return file_types_for_report(:browser_performance) if file_types_for_report(:browser_performance).include?(file_type)
 
         super
       end
@@ -101,6 +103,11 @@ module EE
       override :verification_state_table_class
       def verification_state_table_class
         ::Geo::JobArtifactState
+      end
+
+      override :file_types_for_report
+      def file_types_for_report(report_type)
+        EE_REPORT_FILE_TYPES.fetch(report_type) { super }
       end
     end
 

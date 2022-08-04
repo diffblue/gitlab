@@ -80,6 +80,18 @@ RSpec.describe Ci::JobArtifact do
     end
   end
 
+  describe '.file_types_for_report' do
+    it 'returns the report file types for the report type' do
+      expect(described_class.file_types_for_report(:sbom)).to match_array(%w[cyclonedx])
+    end
+
+    context 'when given an unrecognized report type' do
+      it 'raises error' do
+        expect { described_class.file_types_for_report(:blah) }.to raise_error(KeyError, /blah/)
+      end
+    end
+  end
+
   describe '.license_scanning_reports' do
     subject { Ci::JobArtifact.license_scanning_reports }
 
