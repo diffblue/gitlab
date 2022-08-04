@@ -91,8 +91,7 @@ module EpicTreeSorting
     def reset_relative_position
       current = self.class.relative_positioning_query_base(self)
         .where(*epic_tree_node_filter_condition)
-        .pluck(:relative_position)
-        .first
+        .pick(:relative_position)
 
       self.relative_position = current
     end

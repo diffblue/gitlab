@@ -217,7 +217,7 @@ class Geo::ProjectRegistry < Geo::BaseRegistry
   #
   # @return [Array] with minimum ID and max ID
   def self.range
-    pluck('MIN(id)', 'MAX(id)').first
+    pick('MIN(id)', 'MAX(id)')
   end
 
   # Search for IDs in the range

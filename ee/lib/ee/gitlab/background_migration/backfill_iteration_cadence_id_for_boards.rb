@@ -55,7 +55,7 @@ module EE
 
         def back_fill_group_boards(start_id, end_id)
           boards_relation(start_id, end_id).where.not(group_id: nil).each_batch(of: BATCH_SIZE) do |batch|
-            range = batch.pluck(Arel.sql('MIN(id)'), Arel.sql('MAX(id)')).first
+            range = batch.pick(Arel.sql('MIN(id)'), Arel.sql('MAX(id)'))
 
             sql = <<~SQL
               (
@@ -75,7 +75,7 @@ module EE
 
         def back_fill_project_boards(start_id, end_id)
           boards_relation(start_id, end_id).where.not(project_id: nil).each_batch(of: BATCH_SIZE) do |batch|
-            range = batch.pluck(Arel.sql('MIN(id)'), Arel.sql('MAX(id)')).first
+            range = batch.pick(Arel.sql('MIN(id)'), Arel.sql('MAX(id)'))
 
             sql = <<~SQL
               (
