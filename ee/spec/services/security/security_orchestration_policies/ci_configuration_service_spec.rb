@@ -78,8 +78,9 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService d
             dependencies: [],
             script: ['gtcs scan'],
             variables: {
-              CS_ANALYZER_IMAGE: "#{Gitlab::Saas.registry_prefix}/security-products/container-scanning:5",
-              GIT_STRATEGY: 'none'
+              CS_ANALYZER_IMAGE: "$TEMPLATE_REGISTRY_HOST/security-products/container-scanning:5",
+              GIT_STRATEGY: 'none',
+              TEMPLATE_REGISTRY_HOST: Gitlab::Saas.registry_prefix
             },
             rules: [
               { if: "$CONTAINER_SCANNING_DISABLED", when: "never" },
