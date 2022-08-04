@@ -120,13 +120,8 @@ RSpec.describe ::Ci::Runners::ReconcileExistingRunnerVersionsService, '#execute'
   end
 
   context 'integration testing with Gitlab::Ci::RunnerUpgradeCheck' do
-    let(:runner_releases_double) { instance_double(Gitlab::Ci::RunnerReleases) }
-    let(:available_runner_releases) do
-      %w[14.0.0 14.0.1]
-    end
-
     before do
-      stub_runner_releases(runner_releases_double, available_runner_releases, gitlab_version: '14.0.1')
+      stub_runner_releases(%w[14.0.0 14.0.1])
     end
 
     it 'does not modify ci_runner_versions entries', :aggregate_failures do

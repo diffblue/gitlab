@@ -18,10 +18,9 @@ RSpec.describe "Admin Runners" do
   describe "Admin Runners page", :js do
     context "with a GitLab version and runner releases" do
       let(:runner) { create(:ci_runner, :instance, version: runner_version) }
-      let(:runner_releases_double) { instance_double(Gitlab::Ci::RunnerReleases) }
 
       before do
-        stub_runner_releases(runner_releases_double, available_runner_releases, gitlab_version: '15.1.0')
+        stub_runner_releases(available_runner_releases, gitlab_version: '15.1.0')
       end
 
       shared_examples 'upgrade is recommended' do
@@ -57,8 +56,8 @@ RSpec.describe "Admin Runners" do
         end
 
         describe 'filters' do
-          let(:runner_version) {'15.0.0'}
-          let(:available_runner_releases) {%w[15.0.0]}
+          let(:runner_version) { '15.0.0' }
+          let(:available_runner_releases) { %w[15.0.0] }
 
           it 'shows upgrade filter' do
             focus_filtered_search
@@ -106,8 +105,8 @@ RSpec.describe "Admin Runners" do
         end
 
         describe 'filters' do
-          let(:runner_version) {'15.0.0'}
-          let(:available_runner_releases) {%w[15.0.0]}
+          let(:runner_version) { '15.0.0' }
+          let(:available_runner_releases) { %w[15.0.0] }
 
           it 'does not show upgrade filter' do
             focus_filtered_search

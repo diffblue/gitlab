@@ -15,13 +15,9 @@ RSpec.describe 'Query.runners' do
     let(:runners_graphql_data) { graphql_data['runners'] }
     let(:params) { {} }
     let(:runner_upgrade_management) { false }
-    let(:runner_releases_double) { instance_double(Gitlab::Ci::RunnerReleases) }
-    let(:available_runner_releases) do
-      %w[14.0.0 14.0.1]
-    end
 
     before do
-      stub_runner_releases(runner_releases_double, available_runner_releases, gitlab_version: '14.0.1')
+      stub_runner_releases(%w[14.0.0 14.0.1])
 
       post_graphql(query, current_user: current_user)
     end

@@ -139,13 +139,8 @@ RSpec.describe 'Query.runner(id)' do
           ]
         end
 
-        let(:runner_releases_double) { instance_double(Gitlab::Ci::RunnerReleases) }
-        let(:available_runner_releases) do
-          %w[14.1.0 14.1.1]
-        end
-
         before do
-          stub_runner_releases(runner_releases_double, available_runner_releases, gitlab_version: '14.1.1')
+          stub_runner_releases(%w[14.1.0 14.1.1])
         end
 
         it 'retrieves expected fields', :aggregate_failures do
