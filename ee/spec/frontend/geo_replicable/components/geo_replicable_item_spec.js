@@ -24,8 +24,7 @@ describe('GeoReplicableItem', () => {
     projectId: mockReplicable.projectId,
     syncStatus: mockReplicable.state,
     lastSynced: mockReplicable.lastSyncedAt,
-    lastVerified: null,
-    lastChecked: null,
+    lastVerified: mockReplicable.verifiedAt,
   };
 
   const createComponent = (props = {}) => {
@@ -54,6 +53,8 @@ describe('GeoReplicableItem', () => {
   const findResyncButton = () => findReplicableItemHeader().findComponent(GlButton);
   const findReplicableItemNoLinkText = () => findReplicableItemHeader().find('span');
   const findReplicableItemTimeAgos = () => wrapper.findAllComponents(GeoReplicableTimeAgo);
+  const findReplicableTimeAgosDateStrings = () =>
+    findReplicableItemTimeAgos().wrappers.map((w) => w.props('dateString'));
 
   describe('template', () => {
     describe('by default', () => {
@@ -66,7 +67,15 @@ describe('GeoReplicableItem', () => {
       });
 
       it('renders GeoReplicableTimeAgo component for each element in timeAgoArray', () => {
-        expect(findReplicableItemTimeAgos().length).toBe(3);
+        expect(findReplicableItemTimeAgos().length).toBe(2);
+      });
+
+      it('passes the correct date strings to the GeoReplicableTimeAgo component', () => {
+        expect(findReplicableTimeAgosDateStrings().length).toBe(2);
+        expect(findReplicableTimeAgosDateStrings()).toStrictEqual([
+          mockReplicable.lastSyncedAt,
+          mockReplicable.verifiedAt,
+        ]);
       });
     });
 

@@ -16,7 +16,8 @@ export const MOCK_BASIC_FETCH_RESPONSE = {
       project_id: 1,
       name: 'zack test 1',
       state: 'pending',
-      last_synced_at: null,
+      last_synced_at: new Date().toString(),
+      verified_at: new Date().toString(),
     },
     {
       id: 2,
@@ -24,6 +25,7 @@ export const MOCK_BASIC_FETCH_RESPONSE = {
       name: 'zack test 2',
       state: 'synced',
       last_synced_at: null,
+      verified_at: null,
     },
   ],
   headers: {
@@ -57,12 +59,14 @@ export const MOCK_BASIC_GRAPHQL_QUERY_RESPONSE = {
         {
           id: 'git/1',
           state: 'PENDING',
-          lastSyncedAt: null,
+          lastSyncedAt: new Date().toString(),
+          verifiedAt: new Date().toString(),
         },
         {
           id: 'git/2',
           state: 'SYNCED',
           lastSyncedAt: null,
+          verifiedAt: null,
         },
       ],
     },
