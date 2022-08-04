@@ -24,8 +24,8 @@ RSpec.describe Namespaces::FreeUserCap::PersonalPreviewAlertComponent, :saas, :a
       expect(rendered_component).to have_selector(".#{content_class}")
       expect(rendered_component).to have_content(title)
       expect(rendered_component).to have_link('View all personal projects', href: user_projects_path(user.username))
-      expect(rendered_component).to have_link('status of Over limit', href: described_class::BLOG_URL)
-      expect(rendered_component).to have_link('move your project to a group')
+      expect(rendered_component).to have_link('Over limit status', href: described_class::BLOG_URL)
+      expect(rendered_component).to have_link('move your projects to a group')
       expect(rendered_component)
         .to have_css("[data-testid='user-over-limit-free-plan-alert']" \
                          "[data-dismiss-endpoint='#{callouts_path}']" \

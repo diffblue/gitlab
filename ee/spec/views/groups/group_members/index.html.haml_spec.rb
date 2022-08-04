@@ -32,8 +32,8 @@ RSpec.describe 'groups/group_members/index' do
       render
 
       expect(rendered).to have_content('Group members')
-      expect(rendered).to have_content('You can invite a new member to')
-      expect(rendered).to have_content('To manage all members associated with this group and its subgroups')
+      expect(rendered).to have_content("You're viewing members of")
+      expect(rendered).to have_content('To manage seats for all members associated with this group and its subgroups')
       expect(rendered).to have_link('usage quotas page', href: group_usage_quotas_path(group.root_ancestor))
     end
   end
