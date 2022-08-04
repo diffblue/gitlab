@@ -7,12 +7,17 @@ module EE
 
     prepended do
       # track unique users of advanced global search
-      track_event :show, name: 'i_search_advanced', conditions: -> { track_search_advanced? }, destinations: [:redis_hll, :snowplow]
+      track_event :show, name: 'i_search_advanced',
+        conditions: -> { track_search_advanced? },
+        destinations: [:redis_hll, :snowplow]
 
-      # track unique paid users (users who already use elasticsearch and users who could use it if they enable elasticsearch integration)
+      # track unique paid users (users who already use elasticsearch and users who could use it if they enable
+      # elasticsearch integration)
       # for gitlab.com we check if the search uses elasticsearch
       # for self-managed we check if the licensed feature available
-      track_event :show, name: 'i_search_paid', conditions: -> { track_search_paid? }, destinations: [:redis_hll, :snowplow]
+      track_event :show, name: 'i_search_paid',
+        conditions: -> { track_search_paid? },
+        destinations: [:redis_hll, :snowplow]
 
       rescue_from Elastic::TimeoutError, with: :render_timeout
     end
