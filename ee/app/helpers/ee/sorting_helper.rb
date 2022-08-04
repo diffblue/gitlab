@@ -7,10 +7,10 @@ module EE
     def sort_options_hash
       {
         sort_value_start_date => sort_title_start_date,
-        sort_value_end_date   => sort_title_end_date,
+        sort_value_end_date => sort_title_end_date,
         sort_value_less_weight => sort_title_less_weight,
         sort_value_more_weight => sort_title_more_weight,
-        sort_value_weight      => sort_title_weight,
+        sort_value_weight => sort_title_weight,
         sort_value_blocking_desc => sort_title_blocking
       }.merge(super)
     end

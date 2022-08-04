@@ -65,7 +65,7 @@ module Projects
             end
             format.json do
               render json: { errors: [s_('ZentaoIntegration|An error occurred while requesting data from the ZenTao service.')] },
-                status: :bad_request
+                     status: :bad_request
             end
           end
         end

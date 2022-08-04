@@ -7,7 +7,7 @@ module EE
     override :edit_feature_flag_data
     def edit_feature_flag_data
       super.merge(feature_flag_issues_endpoint: feature_flag_issues_links_endpoint(@project, @feature_flag, current_user),
-                    search_path: feature_flags_search_path(@project, @feature_flag, current_user))
+                  search_path: feature_flags_search_path(@project, @feature_flag, current_user))
     end
 
     private
