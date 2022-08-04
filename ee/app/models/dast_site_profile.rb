@@ -60,6 +60,7 @@ class DastSiteProfile < ApplicationRecord
         variables.append(key: 'DAST_USERNAME_FIELD', value: auth_username_field)
         variables.append(key: 'DAST_PASSWORD_FIELD', value: auth_password_field)
         variables.append(key: 'DAST_SUBMIT_FIELD', value: auth_submit_field)
+        variables.append(key: 'DAST_API_HTTP_USERNAME', value: auth_username)
       end
     end
 
@@ -71,7 +72,11 @@ class DastSiteProfile < ApplicationRecord
 
     return collection unless Ability.allowed?(user, :read_on_demand_dast_scan, self)
 
-    collection.concat(secret_variables)
+    collection.concat(secret_variables).tap do |variables|
+      if variables[Dast::SiteProfileSecretVariable::PASSWORD]
+        variables.append(api_password_secret(variables[Dast::SiteProfileSecretVariable::PASSWORD]))
+      end
+    end
   end
 
   def status
@@ -128,5 +133,11 @@ class DastSiteProfile < ApplicationRecord
     if api? && scan_method_site?
       self.scan_method = 'openapi'
     end
+  end
+
+  def api_password_secret(password_secret)
+    secret = password_secret.to_runner_variable
+    secret[:key] = Dast::SiteProfileSecretVariable::API_PASSWORD
+    secret
   end
 end

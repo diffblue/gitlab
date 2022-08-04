@@ -25,11 +25,11 @@ module Types
 
       argument :username, GraphQL::Types::String,
                required: false,
-               description: 'Username to authenticate with on the target website.'
+               description: 'Username to authenticate with on the target.'
 
       argument :password, GraphQL::Types::String,
                required: false,
-               description: 'Password to authenticate with on the target website.'
+               description: 'Password to authenticate with on the target.'
 
       argument :submit_field, GraphQL::Types::String,
                required: false,
