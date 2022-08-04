@@ -6,11 +6,8 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 
 # Database Dictionary
 
-## Purpose
-
-To document the database schema for GitLab so that data analysts and other groups can
-more easily locate the feature categories responsible for specific database
-tables.
+This page documents the database schema for GitLab, so data analysts and other groups can
+locate the feature categories responsible for specific database tables.
 
 ## Location
 
@@ -50,5 +47,5 @@ Include this file in the commit with the migration that creates the table.
 
 ## Dropping tables
 
-When dropping a table, you will need to remove the metadata file from `db/docs/`
+When dropping a table, you must remove the metadata file from `db/docs/`
 in the same commit with the migration that drops the table.
