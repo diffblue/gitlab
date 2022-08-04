@@ -74,7 +74,7 @@ module QA
 
         # Note: If you run this test against GDK make sure you've enabled sshd
         # See: https://gitlab.com/gitlab-org/gitlab-qa/blob/master/docs/run_qa_against_gdk.md
-        context 'with SSH', except: { job: 'review-qa-*' } do
+        context 'with SSH', :requires_sshd, except: { job: 'review-qa-*' } do
           let(:key) do
             Resource::SSHKey.fabricate_via_api! do |ssh_key|
               ssh_key.api_client = @api_client
