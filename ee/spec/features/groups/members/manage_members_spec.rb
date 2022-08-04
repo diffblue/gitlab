@@ -87,7 +87,7 @@ RSpec.describe 'Groups > Members > Manage members', :saas, :js do
 
           choose_options('Developer', nil)
 
-          click_button 'Invite'
+          submit_invites
         end
 
         expect(page).to have_content("You are about to incur additional charges")
@@ -199,7 +199,7 @@ RSpec.describe 'Groups > Members > Manage members', :saas, :js do
       add_user_to_input(name)
       choose_options(role, nil)
 
-      click_button 'Invite'
+      submit_invites
     end
   end
 
