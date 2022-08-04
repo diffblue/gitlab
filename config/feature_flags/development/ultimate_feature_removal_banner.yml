@@ -1,0 +1,8 @@
+---
+name: ultimate_feature_removal_banner
+introduced_by_url: 
+rollout_issue_url: 
+milestone: '15.3'
+type: development
+group: group::workspace
+default_enabled: false
