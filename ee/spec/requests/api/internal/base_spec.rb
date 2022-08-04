@@ -295,18 +295,6 @@ RSpec.describe API::Internal::Base do
 
         push(key, project)
       end
-
-      context 'when audit_event_streaming_git_operations_deploy_key_event feature flag is disabled' do
-        before do
-          stub_feature_flags(audit_event_streaming_git_operations_deploy_key_event: false)
-        end
-
-        it 'passes the user who created the deploy key to the auditor context' do
-          expect(::Gitlab::Audit::Auditor).to receive(:audit).with(hash_including(author: user))
-
-          push(key, project)
-        end
-      end
     end
 
     context 'git audit streaming event' do
