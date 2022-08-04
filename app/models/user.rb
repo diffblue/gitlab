@@ -1804,12 +1804,6 @@ class User < ApplicationRecord
     end
   end
 
-  def attention_requested_open_merge_requests_count(force: false)
-    Rails.cache.fetch(attention_request_cache_key, force: force, expires_in: COUNT_CACHE_VALIDITY_PERIOD) do
-      MergeRequestsFinder.new(self, attention: self.username, state: 'opened', non_archived: true).execute.count
-    end
-  end
-
   def assigned_open_issues_count(force: false)
     Rails.cache.fetch(['users', id, 'assigned_open_issues_count'], force: force, expires_in: COUNT_CACHE_VALIDITY_PERIOD) do
       IssuesFinder.new(self, assignee_id: self.id, state: 'opened', non_archived: true).execute.count
@@ -1853,11 +1847,6 @@ class User < ApplicationRecord
   def invalidate_merge_request_cache_counts
     Rails.cache.delete(['users', id, 'assigned_open_merge_requests_count'])
     Rails.cache.delete(['users', id, 'review_requested_open_merge_requests_count'])
-    invalidate_attention_requested_count
-  end
-
-  def invalidate_attention_requested_count
-    Rails.cache.delete(attention_request_cache_key)
   end
 
   def invalidate_todos_cache_counts
@@ -1867,10 +1856,6 @@ class User < ApplicationRecord
 
   def invalidate_personal_projects_count
     Rails.cache.delete(['users', id, 'personal_projects_count'])
-  end
-
-  def attention_request_cache_key
-    ['users', id, 'attention_requested_open_merge_requests_count']
   end
 
   # This is copied from Devise::Models::Lockable#valid_for_authentication?, as our auth
