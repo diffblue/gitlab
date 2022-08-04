@@ -30,7 +30,7 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 - [Testing Rails migrations](../testing_guide/testing_migrations_guide.md) guide
 - [Post deployment migrations](post_deployment_migrations.md)
 - [Background migrations](background_migrations.md)
-- [Swapping tables](../swapping_tables.md)
+- [Swapping tables](swapping_tables.md)
 - [Deleting migrations](deleting_migrations.md)
 - [Partitioning tables](table_partitioning.md)
 
@@ -47,7 +47,7 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 - [`NOT NULL` constraints](not_null_constraints.md)
 - [Strings and the Text data type](strings_and_the_text_data_type.md)
 - [Single table inheritance](../single_table_inheritance.md)
-- [Polymorphic associations](../polymorphic_associations.md)
+- [Polymorphic associations](polymorphic_associations.md)
 - [Serializing data](../serializing_data.md)
 - [Hash indexes](../hash_indexes.md)
 - [Storing SHA1 hashes as binary](../sha1_as_binary.md)
