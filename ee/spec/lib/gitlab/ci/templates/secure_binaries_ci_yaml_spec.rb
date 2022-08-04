@@ -184,7 +184,7 @@ RSpec.describe 'Secure-Binaries.gitlab-ci.yml' do
 
       it_behaves_like 'an offline image download job' do
         it 'sets SECURE_BINARIES_IMAGE explicitly' do
-          image = "#{secure_analyzers_prefix}/${CI_JOB_NAME}:${SECURE_BINARIES_ANALYZER_VERSION}"
+          image = "${TEMPLATE_REGISTRY_HOST}/security-products/${CI_JOB_NAME}:${SECURE_BINARIES_ANALYZER_VERSION}"
 
           expect(build.variables.to_hash).to include('SECURE_BINARIES_IMAGE' => image)
         end
