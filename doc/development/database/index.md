@@ -16,7 +16,7 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 
 ## Tooling
 
-- [Understanding EXPLAIN plans](../understanding_explain_plans.md)
+- [Understanding EXPLAIN plans](understanding_explain_plans.md)
 - [explain.depesz.com](https://explain.depesz.com/) or [explain.dalibo.com](https://explain.dalibo.com/) for visualizing the output of `EXPLAIN`
 - [pgFormatter](https://sqlformat.darold.net/) a PostgreSQL SQL syntax beautifier
 - [db:check-migrations job](dbcheck-migrations-job.md)
