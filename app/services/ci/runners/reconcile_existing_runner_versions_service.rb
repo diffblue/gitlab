@@ -12,7 +12,7 @@ module Ci
         total_deleted = cleanup_runner_versions(insert_result[:versions_from_runners])
         total_updated = update_status_on_outdated_runner_versions(insert_result[:versions_from_runners])
 
-        success({
+        ServiceResponse.success(payload: {
           total_inserted: insert_result[:new_record_count],
           total_updated: total_updated,
           total_deleted: total_deleted
