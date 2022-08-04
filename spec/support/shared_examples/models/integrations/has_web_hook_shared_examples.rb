@@ -3,6 +3,11 @@
 RSpec.shared_examples Integrations::HasWebHook do
   include AfterNextHelpers
 
+  describe 'associations' do
+    it { is_expected.to have_one(:service_hook).inverse_of(:integration).with_foreign_key(:service_id) }
+    it { is_expected.to have_one :service_hook }
+  end
+
   describe 'callbacks' do
     it 'calls #update_web_hook! when enabled' do
       expect(integration).to receive(:update_web_hook!)
