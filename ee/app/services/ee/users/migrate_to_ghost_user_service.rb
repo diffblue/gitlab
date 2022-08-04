@@ -18,6 +18,7 @@ module EE
         migrate_vulnerabilities_feedback
         migrate_vulnerabilities
         migrate_vulnerabilities_external_issue_links
+        migrate_vulnerabilities_state_transitions
         super
       end
 
@@ -43,6 +44,10 @@ module EE
 
       def migrate_vulnerabilities_external_issue_links
         batched_migrate(Vulnerabilities::ExternalIssueLink, :author_id)
+      end
+
+      def migrate_vulnerabilities_state_transitions
+        batched_migrate(Vulnerabilities::StateTransition, :author_id)
       end
 
       def migrate_resource_iteration_events
