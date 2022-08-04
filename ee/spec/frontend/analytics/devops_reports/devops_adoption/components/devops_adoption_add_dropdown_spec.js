@@ -12,7 +12,6 @@ import {
 } from 'ee/analytics/devops_reports/devops_adoption/constants';
 import bulkEnableDevopsAdoptionNamespacesMutation from 'ee/analytics/devops_reports/devops_adoption/graphql/mutations/bulk_enable_devops_adoption_namespaces.mutation.graphql';
 import disableDevopsAdoptionNamespaceMutation from 'ee/analytics/devops_reports/devops_adoption/graphql/mutations/disable_devops_adoption_namespace.mutation.graphql';
-import { stripTypenames } from 'helpers/graphql_helpers';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
@@ -174,16 +173,9 @@ describe('DevopsAdoptionAddDropdown', () => {
             });
 
             it('emits the enabledNamespacesAdded event', () => {
-              const { latestSnapshot, namespace } = devopsAdoptionNamespaceData.nodes[0];
               const [params] = wrapper.emitted().enabledNamespacesAdded[0];
 
-              expect(params).toStrictEqual([
-                {
-                  ...devopsAdoptionNamespaceData.nodes[0],
-                  latestSnapshot: stripTypenames(latestSnapshot),
-                  namespace: stripTypenames(namespace),
-                },
-              ]);
+              expect(params).toEqualGraphqlFixture([devopsAdoptionNamespaceData.nodes[0]]);
             });
           } else {
             it('makes a request to disable the selected group', () => {
