@@ -4,6 +4,7 @@ require 'spec_helper'
 
 RSpec.describe 'Query.runner(id)' do
   include GraphqlHelpers
+  include RunnerReleasesHelper
 
   let_it_be(:admin) { create(:user, :admin) }
 
@@ -138,18 +139,13 @@ RSpec.describe 'Query.runner(id)' do
           ]
         end
 
+        let(:runner_releases_double) { instance_double(Gitlab::Ci::RunnerReleases) }
         let(:available_runner_releases) do
           %w[14.1.0 14.1.1]
         end
 
         before do
-          url = ::Gitlab::CurrentSettings.current_application_settings.public_runner_releases_url
-
-          WebMock.stub_request(:get, url).to_return(
-            body: available_runner_releases.map { |v| { name: v } }.to_json,
-            status: 200,
-            headers: { 'Content-Type' => 'application/json' }
-          )
+          stub_runner_releases(runner_releases_double, available_runner_releases, gitlab_version: '14.1.1')
         end
 
         it 'retrieves expected fields', :aggregate_failures do

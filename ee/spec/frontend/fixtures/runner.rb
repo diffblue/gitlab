@@ -8,6 +8,7 @@ RSpec.describe 'Runner EE (JavaScript fixtures)' do
   include ApiHelpers
   include JavaScriptFixturesHelpers
   include GraphqlHelpers
+  include RunnerReleasesHelper
 
   let_it_be(:admin) { create(:admin) }
 
@@ -31,18 +32,11 @@ RSpec.describe 'Runner EE (JavaScript fixtures)' do
         get_graphql_query_as_string("#{query_path}#{all_runners_query}")
       end
 
+      let(:runner_releases_double) { instance_double(Gitlab::Ci::RunnerReleases) }
+
       before do
         stub_licensed_features(runner_upgrade_management: true)
-
-        stub_version('15.1.0', 'unused_revision')
-        available_runner_releases = %w[15.0.0 15.1.0 15.1.1]
-
-        url = ::Gitlab::CurrentSettings.current_application_settings.public_runner_releases_url
-        WebMock.stub_request(:get, url).to_return(
-          body: available_runner_releases.map { |v| { name: v } }.to_json,
-          status: 200,
-          headers: { 'Content-Type' => 'application/json' }
-        )
+        stub_runner_releases(runner_releases_double, %w[15.0.0 15.1.0 15.1.1], gitlab_version: '15.1.0')
       end
 
       it "#{fixtures_path}#{all_runners_query}.upgrade_status.json" do

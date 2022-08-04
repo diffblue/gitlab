@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe ::Ci::Runners::ReconcileExistingRunnerVersionsService, '#execute' do
+  include RunnerReleasesHelper
+
   subject(:execute) { described_class.new.execute }
 
   let_it_be(:runner_14_0_1) { create(:ci_runner, version: '14.0.1') }
@@ -118,18 +120,13 @@ RSpec.describe ::Ci::Runners::ReconcileExistingRunnerVersionsService, '#execute'
   end
 
   context 'integration testing with Gitlab::Ci::RunnerUpgradeCheck' do
+    let(:runner_releases_double) { instance_double(Gitlab::Ci::RunnerReleases) }
     let(:available_runner_releases) do
       %w[14.0.0 14.0.1]
     end
 
     before do
-      url = ::Gitlab::CurrentSettings.current_application_settings.public_runner_releases_url
-
-      WebMock.stub_request(:get, url).to_return(
-        body: available_runner_releases.map { |v| { name: v } }.to_json,
-        status: 200,
-        headers: { 'Content-Type' => 'application/json' }
-      )
+      stub_runner_releases(runner_releases_double, available_runner_releases, gitlab_version: '14.0.1')
     end
 
     it 'does not modify ci_runner_versions entries', :aggregate_failures do
