@@ -1,0 +1,25 @@
+---
+description: Analytics usage event
+category: analytics_usage_action
+action: perform_analytics_usage_action
+label_description:
+property_description: the name of the performed action
+value_description:
+extra_properties:
+identifiers:
+- user
+- namespace
+product_section: dev
+product_stage: manage
+product_group: optimize
+product_category:
+milestone: "15.3"
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/94369
+distributions:
+- ce
+- ee
+tiers:
+- free
+- premium
+- ultimate
+

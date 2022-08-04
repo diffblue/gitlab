@@ -42,6 +42,17 @@ RSpec.describe Admin::DevOpsReportController do
 
       ['', 'dev', 'sec', 'ops'].each do |tab|
         it_behaves_like 'tracks usage event', 'i_analytics_dev_ops_adoption', tab
+
+        it_behaves_like 'Snowplow event tracking' do
+          subject { get :show, params: { tab: tab }, format: :html }
+
+          let(:feature_flag_name) { :route_hll_to_snowplow_phase2 }
+          let(:category) { described_class.name }
+          let(:action) { 'perform_analytics_usage_action' }
+          let(:label) { 'redis_hll_counters.analytics.analytics_total_unique_counts_monthly' }
+          let(:property) { 'i_analytics_dev_ops_adoption' }
+          let(:namespace) { nil }
+        end
       end
 
       it_behaves_like 'tracks usage event', 'i_analytics_dev_ops_score', 'devops-score'

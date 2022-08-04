@@ -220,6 +220,15 @@ RSpec.describe Groups::ContributionAnalyticsController do
         let(:request_params) { { group_id: group.to_param } }
         let(:target_id) { 'g_analytics_contribution' }
       end
+
+      it_behaves_like 'Snowplow event tracking', overrides: { project: nil } do
+        let(:feature_flag_name) { :route_hll_to_snowplow_phase2 }
+        let(:category) { described_class.name }
+        let(:action) { 'perform_analytics_usage_action' }
+        let(:label) { 'redis_hll_counters.analytics.analytics_total_unique_counts_monthly' }
+        let(:property) { 'g_analytics_contribution' }
+        let(:namespace) { group }
+      end
     end
   end
 end
