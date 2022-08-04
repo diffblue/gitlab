@@ -8,19 +8,18 @@ RSpec.describe ::Ci::Runners::UnassignRunnerService, '#execute' do
   let_it_be(:project_runner) { create(:ci_runner, :project, projects: [owner_project, other_project]) }
 
   let(:runner_project) { project_runner.runner_projects.last }
-
   let(:audit_service) { instance_double(::AuditEvents::RunnerCustomAuditEventService) }
 
-  subject { described_class.new(runner_project, user).execute }
+  subject(:execute) { described_class.new(runner_project, user).execute }
 
   context 'with unauthorized user' do
     let(:user) { build(:user) }
 
-    it 'does not call assign_to on runner and returns false', :aggregate_failures do
+    it 'does not call assign_to on runner and returns error response', :aggregate_failures do
       expect(project_runner).not_to receive(:assign_to)
       expect(::AuditEvents::RunnerCustomAuditEventService).not_to receive(:new)
 
-      is_expected.to be_falsey
+      is_expected.to be_error
     end
   end
 
@@ -31,13 +30,13 @@ RSpec.describe ::Ci::Runners::UnassignRunnerService, '#execute' do
       expect(audit_service).to receive(:track_event).once.and_return('track_event_return_value')
     end
 
-    it 'calls track_event on RunnerCustomAuditEventService and returns the runner_project', :aggregate_failures do
+    it 'calls track_event on RunnerCustomAuditEventService and returns success response', :aggregate_failures do
       expect(runner_project).to receive(:destroy).once.and_call_original
       expect(::AuditEvents::RunnerCustomAuditEventService).to receive(:new)
         .with(project_runner, user, other_project, 'Unassigned CI runner from project')
         .once.and_return(audit_service)
 
-      is_expected.to eq(runner_project)
+      is_expected.to be_success
     end
   end
 end
