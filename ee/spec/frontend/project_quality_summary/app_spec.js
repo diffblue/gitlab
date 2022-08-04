@@ -45,6 +45,10 @@ describe('Project quality summary app component', () => {
     });
   };
 
+  afterEach(() => {
+    wrapper.destroy();
+  });
+
   describe('when loading', () => {
     beforeEach(() => {
       createComponent(jest.fn().mockReturnValueOnce(new Promise(() => {})));
