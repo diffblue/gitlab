@@ -36,7 +36,7 @@ module Analytics
 
     # rubocop: disable CodeReuse/ActiveRecord
     def first_approved_at
-      merge_request.approvals.order(id: :asc).limit(1).pick(:created_at)
+      merge_request.approvals.order(id: :asc).pick(:created_at)
     end
     # rubocop: enable CodeReuse/ActiveRecord
 
@@ -44,7 +44,7 @@ module Analytics
     def first_reassigned_at
       merge_request.merge_request_assignees
         .where.not(assignee: merge_request.author)
-        .order(id: :asc).limit(1)
+        .order(id: :asc)
         .pick(:created_at)
     end
     # rubocop: enable CodeReuse/ActiveRecord
