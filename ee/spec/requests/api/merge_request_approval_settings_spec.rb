@@ -93,6 +93,7 @@ RSpec.describe API::MergeRequestApprovalSettings do
           expect(json_response['allow_committer_approval']['value']).to eq(true)
           expect(json_response['allow_overrides_to_approver_list_per_merge_request']['value']).to eq(true)
           expect(json_response['retain_approvals_on_push']['value']).to eq(true)
+          expect(json_response['selective_code_owner_removals']['value']).to eq(false)
           expect(json_response['require_password_to_approve']['value']).to eq(false)
         end
       end
