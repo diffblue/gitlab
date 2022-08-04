@@ -11,7 +11,7 @@ module Types
             null: true,
             resolver: ::Resolvers::Geo::CiSecureFileRegistriesResolver,
             description: 'Find Ci Secure File registries on this Geo node',
-            feature_flag: :geo_ci_secure_file_replication
+            _deprecated_feature_flag: :geo_ci_secure_file_replication
       field :container_repositories_max_capacity, GraphQL::Types::Int, null: true, description: 'Maximum concurrency of container repository sync for this secondary node.'
       field :enabled, GraphQL::Types::Boolean, null: true, description: 'Indicates whether this Geo node is enabled.'
       field :files_max_capacity, GraphQL::Types::Int, null: true, description: 'Maximum concurrency of LFS/attachment backfill for this secondary node.'

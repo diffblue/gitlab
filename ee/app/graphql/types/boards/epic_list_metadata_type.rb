@@ -14,7 +14,7 @@ module Types
 
       field :total_weight, GraphQL::Types::Int, null: true,
                                                 description: 'Total weight of all issues in the list.',
-                                                feature_flag: :epic_board_total_weight
+                                                _deprecated_feature_flag: :epic_board_total_weight
     end
     # rubocop: enable Graphql/AuthorizeTypes
   end
