@@ -179,7 +179,7 @@ Include in the MR description:
   - [explain.depesz.com](https://explain.depesz.com) or [explain.dalibo.com](https://explain.dalibo.com): Paste both the plan and the query used in the form.
 - When providing query plans, make sure it hits enough data:
   - You can use a GitLab production replica to test your queries on a large scale,
-  through the `#database-lab` Slack channel or through [ChatOps](understanding_explain_plans.md#chatops).
+  through the `#database-lab` Slack channel or through [ChatOps](database/understanding_explain_plans.md#chatops).
   - Usually, the `gitlab-org` namespace (`namespace_id = 9970`) and the
   `gitlab-org/gitlab-foss` (`project_id = 13083`) or the `gitlab-org/gitlab` (`project_id = 278964`)
    projects provide enough data to serve as a good example.
@@ -187,7 +187,7 @@ Include in the MR description:
   - If your queries belong to a new feature in GitLab.com and thus they don't return data in production:
     - You may analyze the query and to provide the plan from a local environment.
     - `#database-lab` and [postgres.ai](https://postgres.ai/) both allow updates to data (`exec UPDATE issues SET ...`) and creation of new tables and columns (`exec ALTER TABLE issues ADD COLUMN ...`).
-  - More information on how to find the number of actual returned records in [Understanding EXPLAIN plans](understanding_explain_plans.md)
+  - More information on how to find the number of actual returned records in [Understanding EXPLAIN plans](database/understanding_explain_plans.md)
 - For query changes, it is best to provide both the SQL queries along with the
   plan _before_ and _after_ the change. This helps spot differences quickly.
 - Include data that shows the performance improvement, preferably in
@@ -267,10 +267,10 @@ Include in the MR description:
   - Check for any overly complex queries and queries the author specifically
     points out for review (if any)
   - If not present, ask the author to provide SQL queries and query plans
-    (for example, by using [ChatOps](understanding_explain_plans.md#chatops) or direct
+    (for example, by using [ChatOps](database/understanding_explain_plans.md#chatops) or direct
     database access)
   - For given queries, review parameters regarding data distribution
-  - [Check query plans](understanding_explain_plans.md) and suggest improvements
+  - [Check query plans](database/understanding_explain_plans.md) and suggest improvements
     to queries (changing the query, schema or adding indexes and similar)
   - General guideline is for queries to come in below [100ms execution time](query_performance.md#timing-guidelines-for-queries)
   - Avoid N+1 problems and minimize the [query count](merge_request_performance_guidelines.md#query-counts).
