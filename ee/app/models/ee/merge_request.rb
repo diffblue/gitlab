@@ -55,6 +55,7 @@ module EE
 
       delegate :sha, to: :head_pipeline, prefix: :head_pipeline, allow_nil: true
       delegate :sha, to: :base_pipeline, prefix: :base_pipeline, allow_nil: true
+      delegate :wrapped_approval_rules, to: :approval_state
 
       accepts_nested_attributes_for :approval_rules, allow_destroy: true
 

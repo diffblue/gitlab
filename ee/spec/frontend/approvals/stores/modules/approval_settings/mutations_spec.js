@@ -13,6 +13,7 @@ describe('Group settings store mutations', () => {
     preventMrApprovalRuleEdit: { value: false },
     requireUserPassword: { value: false },
     removeApprovalsOnPush: { value: false },
+    selectiveCodeOwnerRemovals: { value: false },
   };
 
   beforeEach(() => {
@@ -89,6 +90,7 @@ describe('Group settings store mutations', () => {
     ${'SET_PREVENT_COMMITTERS_APPROVAL'}   | ${'preventCommittersApproval'}
     ${'SET_PREVENT_MR_APPROVAL_RULE_EDIT'} | ${'preventMrApprovalRuleEdit'}
     ${'SET_REMOVE_APPROVALS_ON_PUSH'}      | ${'removeApprovalsOnPush'}
+    ${'SET_SELECTIVE_CODE_OWNER_REMOVALS'} | ${'selectiveCodeOwnerRemovals'}
     ${'SET_REQUIRE_USER_PASSWORD'}         | ${'requireUserPassword'}
   `('$mutation', ({ mutation, prop }) => {
     beforeEach(() => {

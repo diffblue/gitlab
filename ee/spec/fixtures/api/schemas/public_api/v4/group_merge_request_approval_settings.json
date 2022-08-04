@@ -2,29 +2,34 @@
   "type": "object",
   "properties": {
     "allow_author_approval": {
-      "value": { "type":  "boolean" },
-      "locked": { "type":  "boolean" },
-      "inherited_from": { "type":  "string" }
+      "value": { "type": "boolean" },
+      "locked": { "type": "boolean" },
+      "inherited_from": { "type": "string" }
     },
     "allow_committer_approval": {
-      "value": { "type":  "boolean" },
-      "locked": { "type":  "boolean" },
-      "inherited_from": { "type":  "string" }
+      "value": { "type": "boolean" },
+      "locked": { "type": "boolean" },
+      "inherited_from": { "type": "string" }
     },
     "allow_overrides_to_approver_list_per_merge_request": {
-      "value": { "type":  "boolean" },
-      "locked": { "type":  "boolean" },
-      "inherited_from": { "type":  "string" }
+      "value": { "type": "boolean" },
+      "locked": { "type": "boolean" },
+      "inherited_from": { "type": "string" }
     },
     "retain_approvals_on_push": {
-      "value": { "type":  "boolean" },
-      "locked": { "type":  "boolean" },
-      "inherited_from": { "type":  "string" }
+      "value": { "type": "boolean" },
+      "locked": { "type": "boolean" },
+      "inherited_from": { "type": "string" }
+    },
+    "selective_code_owner_removals": {
+      "value": { "type": "boolean" },
+      "locked": { "type": "boolean" },
+      "inherited_from": { "type": "string" }
     },
     "require_password_to_approve": {
-      "value": { "type":  "boolean" },
-      "locked": { "type":  "boolean" },
-      "inherited_from": { "type":  "string" }
+      "value": { "type": "boolean" },
+      "locked": { "type": "boolean" },
+      "inherited_from": { "type": "string" }
     }
   },
   "additionalProperties": false

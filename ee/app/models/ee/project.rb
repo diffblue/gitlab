@@ -216,7 +216,7 @@ module EE
       delegate :pipeline_configuration_full_path, to: :compliance_management_framework, allow_nil: true
       alias_attribute :compliance_pipeline_configuration_full_path, :pipeline_configuration_full_path
 
-      delegate :prevent_merge_without_jira_issue, to: :project_setting
+      delegate :prevent_merge_without_jira_issue, :selective_code_owner_removals, to: :project_setting
 
       validates :repository_size_limit,
         numericality: { only_integer: true, greater_than_or_equal_to: 0, allow_nil: true }

@@ -7,7 +7,7 @@ module MergeRequestApprovalSettings
 
       if container.is_a?(Group)
         setting = GroupMergeRequestApprovalSetting.find_or_initialize_by_group(container)
-        setting.assign_attributes(params)
+        setting.assign_attributes(params.except(:selective_code_owner_removals))
 
         if setting.save
           log_audit_event(setting)
@@ -21,8 +21,23 @@ module MergeRequestApprovalSettings
           merge_requests_disable_committers_approval: !params[:allow_committer_approval],
           disable_overriding_approvers_per_merge_request: !params[:allow_overrides_to_approver_list_per_merge_request],
           reset_approvals_on_push: !params[:retain_approvals_on_push],
+          project_setting_attributes: {
+            selective_code_owner_removals: params[:selective_code_owner_removals] || false
+          },
           require_password_to_approve: params[:require_password_to_approve]
         }
+
+        approval_removal_settings = MergeRequest::ApprovalRemovalSettings.new(
+          container,
+          !params[:retain_approvals_on_push],
+          params[:selective_code_owner_removals]
+        )
+
+        unless approval_removal_settings.valid?
+          return ServiceResponse.error(message:
+            _('selective_code_owner_removals can only be enabled when retain_approvals_on_push is enabled'))
+        end
+
         result = ::Projects::UpdateService.new(container, current_user, resolved_params).execute
 
         if result[:status] == :success

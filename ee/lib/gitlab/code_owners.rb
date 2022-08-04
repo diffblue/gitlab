@@ -42,6 +42,21 @@ module Gitlab
       loader_for_merge_request(merge_request, merge_request_diff)&.entries || []
     end
 
+    # @param merge_request [MergeRequest]
+    # @param sha [String]
+    #   Find code owners entries since the specified commit.
+    #   Assumed to be the most recent one if not provided.
+    def self.entries_since_merge_request_commit(merge_request, sha: nil)
+      return [] unless merge_request.project.feature_available?(:code_owners)
+
+      sha ||= merge_request.commit_shas(limit: 2).last
+      paths = merge_request.merge_request_diff.compare_with(sha).modified_paths
+      Loader.new(
+        merge_request.target_project,
+        merge_request.target_branch,
+        paths)&.entries || []
+    end
+
     def self.loader_for_merge_request(merge_request, merge_request_diff)
       return if merge_request.source_project.nil? || merge_request.source_branch.nil?
       return unless merge_request.target_project.feature_available?(:code_owners)

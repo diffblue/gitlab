@@ -26,6 +26,7 @@ RSpec.describe API::ProjectApprovals do
         expect(json_response["merge_requests_author_approval"]).to be false
         expect(json_response["merge_requests_disable_committers_approval"]).to be false
         expect(json_response["require_password_to_approve"]).to be false
+        expect(json_response["selective_code_owner_removals"]).to be false
       end
 
       it 'returns 200 status' do
@@ -174,6 +175,29 @@ RSpec.describe API::ProjectApprovals do
           post api(url, current_user), params: settings
 
           expect(project.reload[setting]).to eq(final_value)
+        end
+      end
+    end
+
+    context 'when enabling selective_code_owner_removals' do
+      let(:current_user) { user }
+
+      context 'when reset_approvals_on_push is enabled' do
+        it 'returns error response and does not update the param' do
+          post api(url, current_user), params: { reset_approvals_on_push: true, selective_code_owner_removals: true }
+
+          expect(response).to have_gitlab_http_status(:bad_request)
+          expect(json_response['message']['base']).to contain_exactly('selective_code_owner_removals can only be enabled when reset_approvals_on_push is disabled')
+          expect(json_response['selective_code_owner_removals']).to be_falsy
+        end
+      end
+
+      context 'when reset_approvals_on_push is disabled' do
+        it 'updates the param' do
+          post api(url, current_user), params: { reset_approvals_on_push: false, selective_code_owner_removals: true }
+
+          expect(response).to have_gitlab_http_status(:created)
+          expect(json_response['selective_code_owner_removals']).to be true
         end
       end
     end

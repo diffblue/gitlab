@@ -26,6 +26,7 @@ describe('ApprovalSettings', () => {
 
   const groupApprovalsPayload = createGroupApprovalsPayload();
   const approvalSettingsPath = 'groups/22/merge_request_approval_settings';
+  const groupName = 'GitLab Org';
 
   const setupStore = (data = {}, initialData) => {
     const module = approvalSettingsModule(mergeRequestApprovalSettingsMappers);
@@ -38,6 +39,7 @@ describe('ApprovalSettings', () => {
     jest.spyOn(actions, 'dismissErrorMessage').mockImplementation();
 
     store = createStore({ approvalSettings: module, approvals: projectSettingsModule() });
+    store.state.settings.groupName = groupName;
   };
 
   const showToast = jest.fn();
@@ -68,6 +70,7 @@ describe('ApprovalSettings', () => {
   const findForm = () => wrapper.findComponent(GlForm);
   const findSaveButton = () => wrapper.findComponent(GlButton);
   const findLink = () => wrapper.findComponent(GlLink);
+  const findSelectiveCodeOwnersRadio = () => wrapper.findByTestId('selective-code-owner-removals');
 
   afterEach(() => {
     wrapper.destroy();
@@ -184,21 +187,36 @@ describe('ApprovalSettings', () => {
       );
     });
 
+    describe('selective code owner removals', () => {
+      beforeEach(() => {
+        jest.spyOn(store, 'dispatch').mockImplementation();
+      });
+
+      it('renders for project with remove approvals on push enabled', () => {
+        createWrapper({ approvalSettingsPath: '/api/v4/projects/19/' });
+
+        expect(findSelectiveCodeOwnersRadio().exists()).toBe(true);
+      });
+
+      it('does not render for group', () => {
+        createWrapper({ approvalSettingsPath: '/api/v4/groups/19/' });
+
+        expect(findSelectiveCodeOwnersRadio().exists()).toBe(false);
+      });
+    });
+
     describe.each`
       testid                             | action                            | setting                        | labelKey
       ${'prevent-author-approval'}       | ${'setPreventAuthorApproval'}     | ${'preventAuthorApproval'}     | ${'authorApprovalLabel'}
       ${'prevent-committers-approval'}   | ${'setPreventCommittersApproval'} | ${'preventCommittersApproval'} | ${'preventCommittersApprovalLabel'}
       ${'prevent-mr-approval-rule-edit'} | ${'setPreventMrApprovalRuleEdit'} | ${'preventMrApprovalRuleEdit'} | ${'preventMrApprovalRuleEditLabel'}
       ${'require-user-password'}         | ${'setRequireUserPassword'}       | ${'requireUserPassword'}       | ${'requireUserPasswordLabel'}
-      ${'remove-approvals-on-push'}      | ${'setRemoveApprovalsOnPush'}     | ${'removeApprovalsOnPush'}     | ${'removeApprovalsOnPushLabel'}
     `('with the $testid checkbox', ({ testid, action, setting, labelKey }) => {
       let checkbox = null;
-      const groupName = 'GitLab Org';
 
       beforeEach(async () => {
-        store.state.settings.groupName = groupName;
         jest.spyOn(store, 'dispatch').mockImplementation();
-        createWrapper();
+        createWrapper({ approvalSettingsPath: '/api/v4/projects/19/' });
         await waitForPromises();
         checkbox = wrapper.findByTestId(testid);
       });
@@ -207,19 +225,19 @@ describe('ApprovalSettings', () => {
         checkbox = null;
       });
 
-      it('renders', () => {
+      it('renders checkbox', () => {
         expect(checkbox.exists()).toBe(true);
       });
 
-      it('has the label prop', () => {
+      it('checkbox has the label prop', () => {
         expect(checkbox.props('label')).toBe(PROJECT_APPROVAL_SETTINGS_LABELS_I18N[labelKey]);
       });
 
-      it('sets the locked prop', () => {
+      it('sets the checkbox locked prop', () => {
         expect(checkbox.props('locked')).toBe(settings[setting].locked);
       });
 
-      it('sets the lockedText prop', () => {
+      it('sets the checkbox lockedText prop', () => {
         const { inheritedFrom, locked } = settings[setting];
 
         let expectedText = null;
@@ -233,11 +251,90 @@ describe('ApprovalSettings', () => {
         expect(checkbox.props('lockedText')).toBe(expectedText);
       });
 
-      it(`triggers the action ${action} when the value is changed`, async () => {
+      it(`triggers the action ${action} when the checkbox value is changed`, async () => {
         await checkbox.vm.$emit('input', true);
         await waitForPromises();
 
         expect(store.dispatch).toHaveBeenLastCalledWith(action, true);
+      });
+    });
+
+    describe.each`
+      testid                             | labelKey
+      ${'keep-approvals-on-push'}        | ${'keepApprovalsLabel'}
+      ${'remove-approvals-on-push'}      | ${'removeApprovalsOnPushLabel'}
+      ${'selective-code-owner-removals'} | ${'selectiveCodeOwnerRemovalsLabel'}
+    `('with the $testid radio', ({ testid, labelKey }) => {
+      let radio = null;
+
+      beforeEach(async () => {
+        jest.spyOn(store, 'dispatch').mockImplementation();
+        createWrapper({ approvalSettingsPath: '/api/v4/projects/19/' });
+        await waitForPromises();
+        radio = wrapper.findByTestId(testid);
+      });
+
+      afterEach(() => {
+        radio = null;
+      });
+
+      it('renders radio', () => {
+        expect(radio.exists()).toBe(true);
+      });
+
+      it('radio has the label prop', () => {
+        expect(radio.props('label')).toBe(PROJECT_APPROVAL_SETTINGS_LABELS_I18N[labelKey]);
+      });
+
+      it('sets the radio locked prop', () => {
+        expect(radio.props('locked')).toBe(settings.removeApprovalsOnPush.locked);
+      });
+
+      it('sets the radio lockedText prop', () => {
+        const { inheritedFrom, locked } = settings.removeApprovalsOnPush;
+
+        let expectedText = null;
+
+        if (locked && inheritedFrom === 'group') {
+          expectedText = sprintf(APPROVAL_SETTINGS_I18N.lockedByGroupOwner, { groupName });
+        } else if (locked && inheritedFrom === 'instance') {
+          expectedText = APPROVAL_SETTINGS_I18N.lockedByAdmin;
+        }
+
+        expect(radio.props('lockedText')).toBe(expectedText);
+      });
+    });
+
+    describe.each`
+      value
+      ${'keep-approvals'}
+      ${'remove-approvals-on-push'}
+      ${'selective-code-owner-removals'}
+    `('with the $testid radio', ({ value }) => {
+      let radios = null;
+
+      beforeEach(async () => {
+        jest.spyOn(store, 'dispatch').mockImplementation();
+        createWrapper({ approvalSettingsPath: '/api/v4/projects/19/' });
+        await waitForPromises();
+        radios = wrapper.findByTestId('when-commit-is-added-radios');
+      });
+
+      afterEach(() => {
+        radios = null;
+      });
+
+      it(`triggers the relevant actions with the relevant values when the value is changed`, async () => {
+        radios.vm.$emit('input', value);
+
+        expect(store.dispatch).toHaveBeenCalledWith(
+          'setRemoveApprovalsOnPush',
+          value === 'remove-approvals-on-push',
+        );
+        expect(store.dispatch).toHaveBeenCalledWith(
+          'setSelectiveCodeOwnerRemovals',
+          value === 'selective-code-owner-removals',
+        );
       });
     });
 

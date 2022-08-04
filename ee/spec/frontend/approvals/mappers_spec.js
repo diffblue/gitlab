@@ -16,7 +16,8 @@ describe('approvals mappers', () => {
       allow_author_approval: true,
       allow_overrides_to_approver_list_per_merge_request: true,
       require_password_to_approve: true,
-      retain_approvals_on_push: true,
+      retain_approvals_on_push: false,
+      selective_code_owner_removals: false,
       allow_committer_approval: true,
     };
 

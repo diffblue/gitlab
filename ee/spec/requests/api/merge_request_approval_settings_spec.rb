@@ -216,6 +216,7 @@ RSpec.describe API::MergeRequestApprovalSettings do
         expect(json_response['allow_committer_approval']['value']).to eq(false)
         expect(json_response['allow_overrides_to_approver_list_per_merge_request']['value']).to eq(false)
         expect(json_response['retain_approvals_on_push']['value']).to eq(false)
+        expect(json_response['selective_code_owner_removals']['value']).to eq(false)
         expect(json_response['require_password_to_approve']['value']).to eq(false)
       end
     end
@@ -232,6 +233,7 @@ RSpec.describe API::MergeRequestApprovalSettings do
       allow(Ability).to receive(:allowed?)
                           .with(user, :admin_merge_request_approval_settings, project)
                           .and_return(true)
+      group.group_merge_request_approval_setting.delete
     end
 
     it 'matches the response schema and updates the params' do
@@ -240,6 +242,33 @@ RSpec.describe API::MergeRequestApprovalSettings do
       expect(project.reset_approvals_on_push).to be true
 
       expect(response).to match_response_schema('public_api/v4/group_merge_request_approval_settings', dir: 'ee')
+    end
+
+    context 'when enabling selective_code_owner_removals and retain_approvals_on_push' do
+      let(:params) { { retain_approvals_on_push: true, selective_code_owner_removals: true } }
+
+      it 'updates the params' do
+        put api(url, user), params: params
+
+        expect(response).to have_gitlab_http_status(:ok)
+
+        project.reload
+        expect(project.reset_approvals_on_push).to be false
+        expect(project.project_setting.selective_code_owner_removals).to be true
+      end
+    end
+
+    context 'when enabling selective_code_owner_removals with retain_approvals_on_push disabled' do
+      let(:params) { { selective_code_owner_removals: true } }
+
+      it 'returns error response and does not update the params' do
+        put api(url, user), params: params
+
+        expect(response).to have_gitlab_http_status(:bad_request)
+
+        project.reload
+        expect(project.project_setting.selective_code_owner_removals).to be false
+      end
     end
   end
 end

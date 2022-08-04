@@ -31,14 +31,44 @@ module EE
       end
 
       def reset_approvals?(merge_request, _newrev)
-        merge_request.target_project.reset_approvals_on_push
+        (merge_request.target_project.reset_approvals_on_push ||
+          merge_request.target_project.project_setting.selective_code_owner_removals)
       end
 
       def reset_approvals(merge_request, newrev = nil)
         return unless reset_approvals?(merge_request, newrev)
 
-        merge_request.approvals.delete_all
+        if merge_request.target_project.reset_approvals_on_push
+          delete_approvals(merge_request)
+        elsif merge_request.target_project.project_setting.selective_code_owner_removals
+          delete_code_owner_approvals(merge_request)
+        end
+
         create_new_approval_todos_for_all_approvers(merge_request)
+      end
+
+      def approved_code_owner_rules(merge_request)
+        merge_request.wrapped_approval_rules.select { |rule| rule.code_owner? && rule.approved_approvers.any? }
+      end
+
+      def delete_code_owner_approvals(merge_request)
+        return if merge_request.approvals.empty?
+
+        code_owner_rules = approved_code_owner_rules(merge_request)
+        return if code_owner_rules.empty?
+
+        rule_names = ::Gitlab::CodeOwners.entries_since_merge_request_commit(merge_request).map(&:pattern)
+        match_ids = code_owner_rules.flat_map do |rule|
+          next unless rule_names.include?(rule.name)
+
+          rule.approved_approvers.map(&:id)
+        end.compact
+
+        merge_request.approvals.where(user_id: match_ids).delete_all # rubocop:disable CodeReuse/ActiveRecord
+      end
+
+      def delete_approvals(merge_request)
+        merge_request.approvals.delete_all
       end
 
       def all_approvers(merge_request)

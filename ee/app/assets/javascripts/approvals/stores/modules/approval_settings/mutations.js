@@ -44,6 +44,9 @@ export default (mapDataToState) => ({
   [types.SET_REMOVE_APPROVALS_ON_PUSH](state, value) {
     state.settings.removeApprovalsOnPush.value = value;
   },
+  [types.SET_SELECTIVE_CODE_OWNER_REMOVALS](state, value) {
+    state.settings.selectiveCodeOwnerRemovals.value = value;
+  },
   [types.SET_REQUIRE_USER_PASSWORD](state, value) {
     state.settings.requireUserPassword.value = value;
   },

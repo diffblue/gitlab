@@ -59,9 +59,14 @@ export const createGroupApprovalsPayload = () => ({
     inherited_from: null,
   },
   retain_approvals_on_push: {
-    value: true,
+    value: false,
     locked: null,
     inherited_from: null,
+  },
+  selective_code_owner_removals: {
+    value: false,
+    locked: null,
+    inheritedFrom: null,
   },
   require_password_to_approve: {
     value: true,
@@ -88,6 +93,11 @@ export const createGroupApprovalsState = (locked = null) => ({
       value: false,
     },
     removeApprovalsOnPush: {
+      inheritedFrom: null,
+      locked,
+      value: true,
+    },
+    selectiveCodeOwnerRemovals: {
       inheritedFrom: null,
       locked,
       value: false,
