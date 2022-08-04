@@ -28,20 +28,16 @@ module EE
         end
       end
 
-      override :before_create
-      def before_create(issue)
+      override :transaction_create
+      def transaction_create(issue)
+        return super unless issue.requirement?
+
+        requirement = issue.build_requirement(project: issue.project)
+        requirement.requirement_issue = issue
+
+        issue.requirement_sync_error! unless requirement.valid?
+
         super
-
-        assign_requirement_to_be_synced_for(issue)
-      end
-
-      override :after_create
-      def after_create(issue)
-        super
-
-        requirement_to_sync.issue_id = issue.id if requirement_to_sync
-
-        save_requirement
       end
     end
   end

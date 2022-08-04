@@ -28,6 +28,7 @@ RSpec.describe Mutations::RequirementsManagement::CreateRequirement do
     context 'when the user can create requirements' do
       before do
         project.add_developer(user)
+        stub_spam_services
       end
 
       context 'when requirements feature is available' do
@@ -36,8 +37,8 @@ RSpec.describe Mutations::RequirementsManagement::CreateRequirement do
         end
 
         it 'creates new requirement' do
-          expect(subject[:requirement][:title]).to eq('foo')
-          expect(subject[:requirement][:description]).to eq('some desc')
+          expect(subject[:requirement].title).to eq('foo')
+          expect(subject[:requirement].description).to eq('some desc')
           expect(subject[:errors]).to be_empty
         end
       end

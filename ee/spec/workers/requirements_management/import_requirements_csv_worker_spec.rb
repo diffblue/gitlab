@@ -8,6 +8,14 @@ RSpec.describe RequirementsManagement::ImportRequirementsCsvWorker do
 
   let(:upload) { create(:upload, :with_file) }
 
+  before_all do
+    project.add_reporter(user)
+  end
+
+  before do
+    stub_licensed_features(requirements: true)
+  end
+
   subject { described_class.new.perform(user.id, project.id, upload.id) }
 
   describe '#perform' do
