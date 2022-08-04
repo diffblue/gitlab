@@ -365,7 +365,7 @@ class Projects::MergeRequestsController < Projects::MergeRequests::ApplicationCo
   end
 
   def rebase
-    @merge_request.rebase_async(current_user.id)
+    @merge_request.rebase_async(current_user.id, skip_ci: merge_params[:skip_ci] == "true" || false)
 
     head :ok
   rescue MergeRequest::RebaseLockTimeout => e
