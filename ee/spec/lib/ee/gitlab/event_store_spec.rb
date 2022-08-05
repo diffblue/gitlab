@@ -11,7 +11,8 @@ RSpec.describe Gitlab::EventStore do
         ::Ci::JobArtifactsDeletedEvent,
         ::Ci::PipelineCreatedEvent,
         ::Members::MembersAddedEvent,
-        ::Repositories::KeepAroundRefsCreatedEvent
+        ::Repositories::KeepAroundRefsCreatedEvent,
+        ::MergeRequests::ApprovedEvent
       )
     end
   end
