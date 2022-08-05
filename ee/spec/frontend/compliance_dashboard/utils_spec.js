@@ -1,3 +1,4 @@
+import timezoneMock from 'timezone-mock';
 import * as utils from 'ee/compliance_dashboard/utils';
 import { queryToObject } from '~/lib/utils/url_utility';
 
@@ -21,6 +22,31 @@ describe('compliance report utils', () => {
         projectIds: projectGraphQlIds,
         mergedAfter: query.mergedAfter,
         mergedBefore: query.mergedBefore,
+      });
+    });
+
+    describe('given a negative UTC timezone', () => {
+      beforeAll(() => {
+        timezoneMock.register('US/Pacific');
+      });
+
+      afterAll(() => {
+        timezoneMock.unregister();
+      });
+
+      // See https://gitlab.com/gitlab-org/gitlab/-/issues/367675#note_1025545194
+      it('ignores the users timezone and uses base UTC for the date', () => {
+        const query = {
+          projectIds,
+          mergedAfter: '2021-12-06',
+          mergedBefore: '2022-01-06',
+        };
+
+        expect(utils.parseViolationsQueryFilter(query)).toStrictEqual({
+          projectIds: projectGraphQlIds,
+          mergedAfter: query.mergedAfter,
+          mergedBefore: query.mergedBefore,
+        });
       });
     });
   });

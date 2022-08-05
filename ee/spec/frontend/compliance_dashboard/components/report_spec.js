@@ -15,7 +15,6 @@ import { mapViolations } from 'ee/compliance_dashboard/graphql/mappers';
 import { stripTypenames } from 'helpers/graphql_helpers';
 import waitForPromises from 'helpers/wait_for_promises';
 import createMockApollo from 'helpers/mock_apollo_helper';
-import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
 import UrlSync from '~/vue_shared/components/url_sync.vue';
 import { stubComponent } from 'helpers/stub_component';
 import { sortObjectToString } from '~/lib/utils/table_utility';
@@ -59,7 +58,6 @@ describe('ComplianceReport component', () => {
   const findMergeCommitsExportButton = () => wrapper.findComponent(MergeCommitsExportButton);
   const findViolationReason = () => wrapper.findComponent(ViolationReason);
   const findSeverityBadge = () => wrapper.findComponent(SeverityBadge);
-  const findTimeAgoTooltip = () => wrapper.findComponent(TimeAgoTooltip);
   const findViolationFilter = () => wrapper.findComponent(ViolationFilter);
   const findUrlSync = () => wrapper.findComponent(UrlSync);
 
@@ -236,7 +234,7 @@ describe('ComplianceReport component', () => {
         'High',
         'Approved by committer',
         violations[idx].mergeRequest.title,
-        'in 1 year',
+        '2022-03-06',
         'View details',
       ]);
     });
@@ -254,14 +252,6 @@ describe('ComplianceReport component', () => {
         reason,
         user: stripTypenames(violatingUser),
       });
-    });
-
-    it('renders the time ago tooltip', () => {
-      const {
-        mergeRequest: { mergedAt },
-      } = violations[0];
-
-      expect(findTimeAgoTooltip().props('time')).toBe(mergedAt);
     });
 
     describe('with the merge request drawer', () => {

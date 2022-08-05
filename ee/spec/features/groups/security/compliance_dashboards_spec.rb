@@ -67,9 +67,12 @@ RSpec.describe 'Compliance Dashboard', :js do
       let_it_be(:violation) { create(:compliance_violation, :approved_by_committer, severity_level: :high, merge_request: merge_request, violating_user: user) }
       let_it_be(:violation_2) { create(:compliance_violation, :approved_by_merge_request_author, severity_level: :medium, merge_request: merge_request_2, violating_user: user) }
 
+      let(:merged_at) { 1.day.ago }
+
       before do
-        merge_request.metrics.update!(merged_at: 1.day.ago)
+        merge_request.metrics.update!(merged_at: merged_at)
         merge_request_2.metrics.update!(merged_at: 7.days.ago)
+
         wait_for_requests
       end
 
@@ -79,7 +82,7 @@ RSpec.describe 'Compliance Dashboard', :js do
         expect(first_row).to have_content('High')
         expect(first_row).to have_content('Approved by committer')
         expect(first_row).to have_content(merge_request.title)
-        expect(first_row).to have_content('1 day ago')
+        expect(first_row).to have_content(merged_at.to_date.to_s)
       end
 
       it 'can sort the violations by clicking on a column header' do

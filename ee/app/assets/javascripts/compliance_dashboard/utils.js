@@ -13,8 +13,8 @@ export const convertProjectIdsToGraphQl = (projectIds) =>
 
 export const parseViolationsQueryFilter = ({ mergedBefore, mergedAfter, projectIds }) => ({
   projectIds: projectIds ? convertProjectIdsToGraphQl(projectIds) : [],
-  mergedBefore: formatDate(mergedBefore, ISO_SHORT_FORMAT),
-  mergedAfter: formatDate(mergedAfter, ISO_SHORT_FORMAT),
+  mergedBefore: formatDate(mergedBefore, ISO_SHORT_FORMAT, true),
+  mergedAfter: formatDate(mergedAfter, ISO_SHORT_FORMAT, true),
 });
 
 export const buildDefaultFilterParams = (queryString) => ({
