@@ -3,8 +3,6 @@
 module Ci
   module Runners
     class ReconcileExistingRunnerVersionsService
-      include BaseServiceUtility
-
       VERSION_BATCH_SIZE = 100
 
       def execute
