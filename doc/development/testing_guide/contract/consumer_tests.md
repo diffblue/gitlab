@@ -70,7 +70,7 @@ pactWith(
 
       });
 
-      it('return a successful body', () => {
+      it('return a successful body', async () => {
 
       });
     });
@@ -132,7 +132,7 @@ pactWith(
         provider.addInteraction(interaction);
       });
 
-      it('return a successful body', () => {
+      it('return a successful body', async () => {
 
       });
     });
@@ -151,20 +151,18 @@ After the mock provider is set up, you can write the test. For this test, you ma
 First, set up the client that makes the API request. To do that, create `spec/contracts/consumer/resources/api/project/merge_requests.js` and add the following API request.
 
 ```javascript
-const axios = require('axios');
+import axios from 'axios';
 
-exports.getDiscussions = (endpoint) => {
-  const url = endpoint.url;
+export async function getDiscussions(endpoint) {
+  const { url } = endpoint;
 
-  return axios
-    .request({
-      method: 'GET',
-      baseURL: url,
-      url: '/gitlab-org/gitlab-qa/-/merge_requests/1/discussions.json',
-      headers: { Accept: '*/*' },
-    })
-    .then((response) => response.data);
-};
+  return axios({
+    method: 'GET',
+    baseURL: url,
+    url: '/gitlab-org/gitlab-qa/-/merge_requests/1/discussions.json',
+    headers: { Accept: '*/*' },
+  })
+}
 ```
 
 After that's set up, import it to the test file and call it to make the request. Then, you can make the request and define your expectations.
@@ -211,17 +209,17 @@ pactWith(
         };
       });
 
-      it('return a successful body', () => {
-        return getDiscussions({
+      it('return a successful body', async () => {
+        const discussions = await getDiscussions({
           url: provider.mockService.baseUrl,
-        }).then((discussions) => {
-          expect(discussions).toEqual(Matchers.eachLike({
-            id: 'fd73763cbcbf7b29eb8765d969a38f7d735e222a',
-            project_id: 6954442,
-            ...
-            resolved: true
-          }));
         });
+        
+        expect(discussions).toEqual(Matchers.eachLike({
+          id: 'fd73763cbcbf7b29eb8765d969a38f7d735e222a',
+          project_id: 6954442,
+          ...
+          resolved: true
+        }));
       });
     });
   },
@@ -254,11 +252,15 @@ const Discussions = {
     headers: {
       'Content-Type': 'application/json; charset=utf-8',
     },
-    body: body,
+    body,
+  },
+
+  scenario: {
+    state: 'a merge request with discussions exists',
+    uponReceiving: 'a request for discussions',
   },
 
   request: {
-    uponReceiving: 'a request for discussions',
     withRequest: {
       method: 'GET',
       path: '/gitlab-org/gitlab-qa/-/merge_requests/1/discussions.json',
@@ -280,31 +282,36 @@ const { pactWith } = require('jest-pact');
 const { Discussions } = require('../fixtures/discussions.fixture');
 const { getDiscussions } = require('../endpoints/project/merge_requests');
 
+const CONSUMER_NAME = 'MergeRequest#show';
+const PROVIDER_NAME = 'Merge Request Discussions Endpoint';
+const CONSUMER_LOG = '../logs/consumer.log';
+const CONTRACT_DIR = '../contracts/project/merge_request/show';
+
 pactWith(
   {
-    consumer: 'MergeRequest#show',
-    provider: 'Merge Request Discussions Endpoint',
-    log: '../logs/consumer.log',
-    dir: '../contracts/project/merge_request/show',
+    consumer: CONSUMER_NAME,
+    provider: PROVIDER_NAME,
+    log: CONSUMER_LOG,
+    dir: CONTRACT_DIR,
   },
 
   (provider) => {
-    describe('Merge Request Discussions Endpoint', () => {
+    describe(PROVIDER_NAME, () => {
       beforeEach(() => {
         const interaction = {
-          state: 'a merge request with discussions exists',
+          ...Discussions.scenario,
           ...Discussions.request,
           willRespondWith: Discussions.success,
         };
-        return provider.addInteraction(interaction);
+        provider.addInteraction(interaction);
       });
 
-      it('return a successful body', () => {
-        return getDiscussions({
+      it('return a successful body', async () => {
+        const discussions = await getDiscussions({
           url: provider.mockService.baseUrl,
-        }).then((discussions) => {
-          expect(discussions).toEqual(Discussions.body);
         });
+
+        expect(discussions).toEqual(Discussions.body);
       });
     });
   },
