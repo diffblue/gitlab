@@ -116,5 +116,13 @@ FactoryBot.define do
         pipeline.builds << build(:ee_ci_build, :metrics_alternate, pipeline: pipeline, project: pipeline.project)
       end
     end
+
+    trait :with_cyclonedx_report do
+      status { :success }
+
+      after(:build) do |pipeline, evaluator|
+        pipeline.builds << build(:ee_ci_build, :cyclonedx, pipeline: pipeline, project: pipeline.project)
+      end
+    end
   end
 end

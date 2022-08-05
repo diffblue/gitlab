@@ -377,6 +377,12 @@ module EE
       feature_available?(:api_fuzzing)
     end
 
+    def ingest_sbom_reports_available?
+      licensed_feature_available?(:dependency_scanning) ||
+      licensed_feature_available?(:container_scanning) ||
+      licensed_feature_available?(:license_scanning)
+    end
+
     def default_plan?
       actual_plan_name == ::Plan::DEFAULT
     end

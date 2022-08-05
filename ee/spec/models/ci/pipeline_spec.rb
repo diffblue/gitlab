@@ -202,6 +202,100 @@ RSpec.describe Ci::Pipeline do
     end
   end
 
+  describe '::Sbom::IngestReportsWorker' do
+    let(:can_ingest_sbom_reports) { true }
+
+    subject(:transition_pipeline) { pipeline.update!(status_event: transition) }
+
+    before do
+      allow(::Sbom::IngestReportsWorker).to receive(:perform_async)
+      allow(pipeline).to receive(:can_ingest_sbom_reports?).and_return(can_ingest_sbom_reports)
+    end
+
+    shared_examples_for 'ingesting sbom reports' do
+      context 'when cyclonedx_sbom_ingestion feature flag is enabled' do
+        before do
+          stub_feature_flags(cyclonedx_sbom_ingestion: true)
+        end
+
+        context 'when sbom reports can be ingested for the pipeline' do
+          it 'schedules ingest sbom reports job' do
+            transition_pipeline
+
+            expect(::Sbom::IngestReportsWorker).to have_received(:perform_async).with(pipeline.id)
+          end
+        end
+
+        context 'when sbom reports can not be ingested for the pipeline' do
+          let(:can_ingest_sbom_reports) { false }
+
+          it 'does not schedule ingest sbom reports job' do
+            transition_pipeline
+
+            expect(::Sbom::IngestReportsWorker).not_to have_received(:perform_async)
+          end
+        end
+      end
+
+      context 'when cyclonedx_sbom_ingestion feature flag is disabled' do
+        before do
+          stub_feature_flags(cyclonedx_sbom_ingestion: false)
+        end
+
+        context 'when the sbom reports can be ingested for the pipeline' do
+          it 'does not schedule ingest sbom reports job' do
+            transition_pipeline
+
+            expect(::Sbom::IngestReportsWorker).not_to have_received(:perform_async)
+          end
+        end
+
+        context 'when the sbom report can not be ingested for the pipeline' do
+          let(:can_ingest_sbom_reports) { false }
+
+          it 'does not schedule ingest sbom reports job' do
+            transition_pipeline
+
+            expect(::Sbom::IngestReportsWorker).not_to have_received(:perform_async)
+          end
+        end
+      end
+    end
+
+    context 'when transitioning to a completed status' do
+      where(:transition) { %i[succeed drop skip cancel] }
+
+      with_them do
+        it_behaves_like 'ingesting sbom reports'
+      end
+    end
+
+    context 'when transitioning to a non-completed status' do
+      where(:transition) do
+        %i[
+          enqueue
+          request_resource
+          prepare
+          run
+          block
+          delay
+        ]
+      end
+
+      before do
+        stub_feature_flags(cyclonedx_sbom_ingestion: true)
+      end
+
+      with_them do
+        it 'does not ingest sbom reports' do
+          transition_pipeline
+
+          expect(::Sbom::IngestReportsWorker).not_to have_received(:perform_async)
+        end
+      end
+    end
+  end
+
   describe '#license_scanning_reports' do
     subject { pipeline.license_scanning_report }
 
@@ -607,6 +701,42 @@ RSpec.describe Ci::Pipeline do
         end
 
         it { is_expected.to be_truthy }
+      end
+    end
+  end
+
+  describe '#can_ingest_sbom_reports?' do
+    let(:ingest_sbom_reports_available) { true }
+
+    subject { pipeline.can_ingest_sbom_reports? }
+
+    before do
+      allow(project.namespace).to receive(:ingest_sbom_reports_available?).and_return(ingest_sbom_reports_available)
+    end
+
+    context 'when pipeline has sbom_reports' do
+      let_it_be(:pipeline) { create(:ee_ci_pipeline, :with_cyclonedx_report, project: project) }
+
+      context 'when sbom report ingestion is available' do
+        it { is_expected.to be true }
+      end
+
+      context 'when sbom report ingestion is not available' do
+        let(:ingest_sbom_reports_available) { false }
+
+        it { is_expected.to be false }
+      end
+    end
+
+    context 'when pipeline does not have sbom_reports' do
+      context 'when sbom report ingestion is available' do
+        it { is_expected.to be false }
+      end
+
+      context 'when sbom report ingestion is not available' do
+        let(:ingest_sbom_reports_available) { false }
+
+        it { is_expected.to be false }
       end
     end
   end

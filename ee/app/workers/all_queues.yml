@@ -840,6 +840,15 @@
   :weight: 3
   :idempotent: false
   :tags: []
+- :name: sbom_reports:sbom_ingest_reports
+  :worker_name: Sbom::IngestReportsWorker
+  :feature_category: :dependency_scanning
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :cpu
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: security_scans:scan_security_report_secrets
   :worker_name: ScanSecurityReportSecretsWorker
   :feature_category: :secret_detection
