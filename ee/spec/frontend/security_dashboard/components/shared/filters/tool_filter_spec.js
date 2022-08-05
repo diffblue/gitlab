@@ -10,9 +10,10 @@ import FilterBody from 'ee/security_dashboard/components/shared/filters/filter_b
 import FilterItem from 'ee/security_dashboard/components/shared/filters/filter_item.vue';
 import { vendorScannerFilter, getFormattedScanners } from 'ee/security_dashboard/helpers';
 import projectScannersQuery from 'ee/security_dashboard/graphql/queries/project_specific_scanners.query.graphql';
+import groupScannersQuery from 'ee/security_dashboard/graphql/queries/group_specific_scanners.query.graphql';
 import { TOOL_FILTER_ERROR } from 'ee/security_dashboard/components/shared/filters/constants';
 import { DASHBOARD_TYPES } from 'ee/security_dashboard/store/constants';
-import { projectVulnerabilityScanners } from '../../mock_data';
+import { projectVulnerabilityScanners, groupVulnerabilityScanners } from '../../mock_data';
 
 jest.mock('~/flash');
 
@@ -24,24 +25,26 @@ describe('Tool Filter component', () => {
   const projectVulnerabilityScannersNodes =
     projectVulnerabilityScanners.data.project.vulnerabilityScanners.nodes;
   const formattedProjectScanners = getFormattedScanners(projectVulnerabilityScannersNodes);
-  const projectQueryResolver = jest.fn().mockResolvedValue(projectVulnerabilityScanners);
-  const defaultQueryResolver = projectQueryResolver;
+  const projectScannersResolver = jest.fn().mockResolvedValue(projectVulnerabilityScanners);
+  const groupScannersResolver = jest.fn().mockResolvedValue(groupVulnerabilityScanners);
+  const defaultQuery = projectScannersQuery;
+  const defaultResolver = projectScannersResolver;
   const defaultProvide = {
     fullPath,
-    dashboardType: 'project',
+    dashboardType: DASHBOARD_TYPES.PROJECT,
   };
 
-  const createMockApolloProvider = (queryResolver = defaultQueryResolver) => {
+  const createMockApolloProvider = (query = defaultQuery, resolver = defaultResolver) => {
     Vue.use(VueApollo);
-    return createMockApollo([[projectScannersQuery, queryResolver]]);
+    return createMockApollo([[query, resolver]]);
   };
 
-  const createWrapper = ({ queryResolver, provide } = {}) => {
+  const createWrapper = ({ query, resolver, provide } = {}) => {
     filter = cloneDeep(vendorScannerFilter);
 
     wrapper = shallowMountExtended(ToolFilter, {
       propsData: { filter },
-      apolloProvider: createMockApolloProvider(queryResolver),
+      apolloProvider: createMockApolloProvider(query, resolver),
       provide: {
         ...defaultProvide,
         ...provide,
@@ -86,31 +89,42 @@ describe('Tool Filter component', () => {
   });
 
   describe('successful query request', () => {
-    beforeEach(async () => {
+    it('does not display the loading state', async () => {
       createWrapper();
       await waitForPromises();
-    });
 
-    it('does not display the loading state', () => {
       expect(findFilterBody().props('loading')).toBe(false);
     });
 
     it.each`
-      dashboardType              | query                   | argument
-      ${DASHBOARD_TYPES.PROJECT} | ${projectQueryResolver} | ${fullPath}
-    `('makes the query request for $dashboardType', ({ query, argument }) => {
-      expect(query).toHaveBeenCalledTimes(1);
-      expect(defaultQueryResolver.mock.calls[0][0]).toEqual({ fullPath: argument });
-    });
+      dashboardType              | query                   | resolver                   | argument
+      ${DASHBOARD_TYPES.PROJECT} | ${projectScannersQuery} | ${projectScannersResolver} | ${fullPath}
+      ${DASHBOARD_TYPES.GROUP}   | ${groupScannersQuery}   | ${groupScannersResolver}   | ${fullPath}
+    `(
+      'makes the query request for $dashboardType',
+      async ({ dashboardType, query, resolver, argument }) => {
+        createWrapper({ query, resolver, provide: { dashboardType } });
+        await waitForPromises();
 
-    it('renders the correct amount of filter options', () => {
+        expect(resolver).toHaveBeenCalledTimes(1);
+        expect(resolver.mock.calls[0][0]).toEqual({ fullPath: argument });
+      },
+    );
+
+    it('renders the correct amount of filter options', async () => {
       const allOptionCount = 1;
       const totalOptionsCount = formattedProjectScanners.length + allOptionCount;
+
+      createWrapper();
+      await waitForPromises();
 
       expect(findFilterItems()).toHaveLength(totalOptionsCount);
     });
 
-    it('populates the filter options from the query response', () => {
+    it('populates the filter options from the query response', async () => {
+      createWrapper();
+      await waitForPromises();
+
       formattedProjectScanners.forEach(({ name }, index) => {
         expect(
           findFilterItems()
@@ -125,7 +139,7 @@ describe('Tool Filter component', () => {
     it('shows an alert', async () => {
       const errorSpy = jest.fn().mockRejectedValue();
 
-      createWrapper({ queryResolver: errorSpy });
+      createWrapper({ resolver: errorSpy });
       await waitForPromises();
 
       expect(createFlash).toHaveBeenCalledWith({ message: TOOL_FILTER_ERROR });
@@ -135,7 +149,7 @@ describe('Tool Filter component', () => {
       createWrapper({ provide: { dashboardType: 'foo' } });
       await waitForPromises();
 
-      expect(defaultQueryResolver).not.toHaveBeenCalled();
+      expect(defaultResolver).not.toHaveBeenCalled();
     });
   });
 });
