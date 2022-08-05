@@ -142,7 +142,7 @@ pactWith(
 
 ### Response body `Matchers`
 
-Notice how we use `Matchers` in the `body` of the expected response. This allows us to be flexible enough to accept different values but still be strict enough to distinguish between valid and invalid values. We must ensure that we have a tight definition that is neither too strict nor too lax. Read more about the [different types of `Matchers`](https://github.com/pact-foundation/pact-js#using-the-v3-matching-rules).
+Notice how we use `Matchers` in the `body` of the expected response. This allows us to be flexible enough to accept different values but still be strict enough to distinguish between valid and invalid values. We must ensure that we have a tight definition that is neither too strict nor too lax. Read more about the [different types of `Matchers`](https://github.com/pact-foundation/pact-js/blob/master/docs/matching.md). We are currently using the V2 matching rules.
 
 ## Write the test
 
