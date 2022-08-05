@@ -17,9 +17,7 @@ module Elastic
     urgency :throttled
 
     def perform
-      return false if Feature.disabled?(:elastic_migration_worker, type: :ops)
-      return false unless Gitlab::CurrentSettings.elasticsearch_indexing?
-      return false unless helper.alias_exists?
+      return false unless preflight_check_successful?
 
       in_lock(self.class.name.underscore, ttl: 1.day, retries: 10, sleep_sec: 1) do
         # migration index should be checked before pulling the current_migration because if no migrations_index exists,
@@ -72,6 +70,21 @@ module Elastic
     end
 
     private
+
+    def preflight_check_successful?
+      return false if Feature.disabled?(:elastic_migration_worker, type: :ops)
+      return false unless Gitlab::CurrentSettings.elasticsearch_indexing?
+      return false unless helper.alias_exists?
+
+      if helper.unsupported_version?
+        logger.info 'MigrationWorker: You are using an unsupported version of Elasticsearch. Indexing will be paused to prevent data loss'
+        Gitlab::CurrentSettings.update!(elasticsearch_pause_indexing: true)
+
+        return false
+      end
+
+      true
+    end
 
     def execute_migration(migration)
       if migration.started? && !migration.batched? && !migration.retry_on_failure?

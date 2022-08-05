@@ -588,4 +588,26 @@ RSpec.describe Gitlab::Elastic::Helper, :request_store do
       end
     end
   end
+
+  describe '#unsupported_version?' do
+    using RSpec::Parameterized::TableSyntax
+
+    subject { helper.unsupported_version? }
+
+    where(:distribution, :version, :result) do
+      'elasticsearch' | '6.8.23' | true
+      'elasticsearch' | '7.17.0' | false
+      'elasticsearch' | '8.0.0'  | false
+      'opensearch'    | '1.3.3'  | false
+      'opensearch'    | '2.1.0'  | false
+    end
+
+    before do
+      allow(helper).to receive(:server_info).and_return(distribution: distribution, version: version)
+    end
+
+    with_them do
+      it { is_expected.to eq(result) }
+    end
+  end
 end
