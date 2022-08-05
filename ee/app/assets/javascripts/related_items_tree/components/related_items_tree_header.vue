@@ -70,17 +70,21 @@ export default {
 </script>
 
 <template>
-  <div class="card-header d-flex gl-px-5 gl-py-3 flex-column flex-sm-row">
-    <div class="flex flex-grow-1 flex-shrink-0 gl-flex-wrap flex-column flex-sm-row">
-      <div class="flex flex-shrink-0 align-items-center gl-flex-wrap">
-        <h3 class="card-title h5 gl-my-0 flex-shrink-0">
+  <div
+    class="card-header gl-display-flex gl-px-5 gl-py-3 gl-flex-direction-column gl-sm-flex-direction-row gl-bg-gray-10"
+  >
+    <div
+      class="gl-display-flex gl-flex-grow-1 gl-flex-shrink-0 gl-flex-wrap gl-flex-direction-column gl-sm-flex-direction-row"
+    >
+      <div class="gl-display-flex gl-flex-shrink-0 gl-align-items-center gl-flex-wrap">
+        <h3 class="card-title h5 gl-my-0 gl-flex-shrink-0">
           {{ allowSubEpics ? __('Child issues and epics') : __('Issues') }}
         </h3>
-        <div class="d-inline-flex lh-100 align-middle gl-ml-5 gl-flex-wrap">
+        <div class="gl-display-inline-flex lh-100 gl-vertical-align-middle gl-ml-5 gl-flex-wrap">
           <gl-tooltip :target="() => $refs.countBadge">
-            <p v-if="allowSubEpics" class="font-weight-bold m-0">
+            <p v-if="allowSubEpics" class="gl-font-weight-bold gl-m-0">
               {{ __('Epics') }} &#8226;
-              <span class="font-weight-normal"
+              <span class="gl-font-weight-normal"
                 >{{
                   sprintf(__('%{openedEpics} open, %{closedEpics} closed'), {
                     openedEpics: descendantCounts.openedEpics,
@@ -89,9 +93,9 @@ export default {
                 }}
               </span>
             </p>
-            <p class="font-weight-bold m-0">
+            <p class="gl-font-weight-bold gl-m-0">
               {{ __('Issues') }} &#8226;
-              <span class="font-weight-normal"
+              <span class="gl-font-weight-normal"
                 >{{
                   sprintf(__('%{openedIssues} open, %{closedIssues} closed'), {
                     openedIssues: descendantCounts.openedIssues,
@@ -100,43 +104,49 @@ export default {
                 }}
               </span>
             </p>
-            <p class="font-weight-bold m-0">
+            <p class="gl-font-weight-bold gl-m-0">
               {{ __('Total weight') }} &#8226;
-              <span class="font-weight-normal">{{ totalWeight }} </span>
+              <span class="gl-font-weight-normal">{{ totalWeight }} </span>
             </p>
           </gl-tooltip>
           <div
             ref="countBadge"
-            class="issue-count-badge gl-display-inline-flex text-secondary p-0 pr-3"
+            class="issue-count-badge gl-display-inline-flex gl-text-secondary gl-p-0 gl-pr-5"
           >
-            <span v-if="allowSubEpics" class="d-inline-flex align-items-center">
-              <gl-icon name="epic" class="mr-1" />
+            <span v-if="allowSubEpics" class="gl-display-inline-flex gl-align-items-center">
+              <gl-icon name="epic" class="gl-mr-2" />
               {{ totalEpicsCount }}
             </span>
-            <span class="d-inline-flex align-items-center" :class="{ 'gl-ml-3': allowSubEpics }">
-              <gl-icon name="issues" class="mr-1" />
+            <span
+              class="gl-display-inline-flex gl-align-items-center"
+              :class="{ 'gl-ml-3': allowSubEpics }"
+            >
+              <gl-icon name="issues" class="gl-mr-2" />
               {{ totalIssuesCount }}
             </span>
-            <span class="d-inline-flex align-items-center" :class="{ 'gl-ml-3': allowSubEpics }">
-              <gl-icon name="weight" class="mr-1" />
+            <span
+              class="gl-display-inline-flex gl-align-items-center"
+              :class="{ 'gl-ml-3': allowSubEpics }"
+            >
+              <gl-icon name="weight" class="gl-mr-2" />
               {{ totalWeight }}
             </span>
           </div>
         </div>
       </div>
       <div
-        class="gl-display-flex gl-sm-display-inline-flex lh-100 align-middle gl-sm-ml-2 gl-ml-0 gl-flex-wrap gl-mt-2 gl-sm-mt-0"
+        class="gl-display-flex gl-sm-display-inline-flex lh-100 gl-vertical-align-middle gl-sm-ml-2 gl-ml-0 gl-flex-wrap gl-mt-2 gl-sm-mt-0"
       >
         <epic-health-status v-if="showHealthStatus" :health-status="healthStatus" />
       </div>
     </div>
 
     <div
-      class="gl-display-flex gl-sm-display-inline-flex gl-sm-ml-auto lh-100 align-middle gl-mt-3 gl-sm-mt-0 gl-pl-0 gl-sm-pl-7"
+      class="gl-display-flex gl-sm-display-inline-flex gl-sm-ml-auto lh-100 gl-vertical-align-middle gl-mt-3 gl-sm-mt-0 gl-pl-0 gl-sm-pl-7"
     >
       <div
         v-if="parentItem.userPermissions.adminEpic"
-        class="gl-flex-grow-1 flex-column flex-sm-row js-button-container"
+        class="gl-flex-grow-1 gl-flex-direction-column gl-sm-flex-direction-row js-button-container"
       >
         <epic-actions-split-button
           :allow-sub-epics="allowSubEpics"

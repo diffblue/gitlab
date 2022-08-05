@@ -25,7 +25,9 @@ export default {
 </script>
 
 <template>
-  <div class="card-header d-flex gl-px-5 gl-pt-4 gl-pt-3 flex-column flex-sm-row border-bottom-0">
+  <div
+    class="card-header d-flex gl-px-5 gl-pt-4 gl-pt-3 flex-column flex-sm-row border-bottom-0 gl-bg-gray-10"
+  >
     <div>
       <gl-button-group data-testid="buttons" class="gl-flex-grow-1 gl-display-flex">
         <gl-button
