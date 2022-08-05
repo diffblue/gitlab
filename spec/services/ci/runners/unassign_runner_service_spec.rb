@@ -3,12 +3,12 @@
 require 'spec_helper'
 
 RSpec.describe ::Ci::Runners::UnassignRunnerService, '#execute' do
-  subject(:execute) { described_class.new(runner_project, user).execute }
-
   let_it_be(:runner) { create(:ci_runner, :project, projects: [project]) }
   let_it_be(:project) { create(:project) }
 
   let(:runner_project) { runner.runner_projects.last }
+
+  subject(:execute) { described_class.new(runner_project, user).execute }
 
   context 'without user' do
     let(:user) { nil }
