@@ -62,6 +62,7 @@ module Groups
 
     def before_assignment_hook(group, params)
       @full_path_before = group.full_path
+      @path_before = group.path
     end
 
     def renaming_group_with_container_registry_images?
@@ -71,7 +72,7 @@ module Groups
     def renaming?
       new_path = params[:path]
 
-      new_path && new_path != group.path
+      new_path && new_path != @path_before
     end
 
     def container_images_error
@@ -160,12 +161,16 @@ module Groups
     end
 
     def publish_event
-      event = Groups::GroupPathChangedEvent.new(data: {
-        group_id: group.id,
-        root_namespace_id: group.root_ancestor.id,
-        old_path: @full_path_before,
-        new_path: group.full_path
-      })
+      return unless renaming?
+
+      event = Groups::GroupPathChangedEvent.new(
+        data: {
+          group_id: group.id,
+          root_namespace_id: group.root_ancestor.id,
+          old_path: @full_path_before,
+          new_path: group.full_path
+        }
+      )
 
       Gitlab::EventStore.publish(event)
     end
