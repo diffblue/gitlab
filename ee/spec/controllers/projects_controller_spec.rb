@@ -25,7 +25,7 @@ RSpec.describe ProjectsController do
 
       before do
         stub_ee_application_setting(should_check_namespace_plan: true)
-        allow_next_instance_of(EE::Namespace::RootExcessStorageSize) do |root_storage|
+        allow_next_instance_of(Namespaces::Storage::RootExcessSize) do |root_storage|
           allow(root_storage).to receive(:usage_ratio).and_return(0.5)
           allow(root_storage).to receive(:above_size_limit?).and_return(true)
         end

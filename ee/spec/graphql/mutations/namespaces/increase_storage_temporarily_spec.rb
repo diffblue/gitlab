@@ -12,7 +12,7 @@ RSpec.describe Mutations::Namespaces::IncreaseStorageTemporarily do
     subject { mutation.resolve(id: namespace.to_global_id) }
 
     before do
-      allow_next_instance_of(EE::Namespace::RootStorageSize, namespace) do |root_storage|
+      allow_next_instance_of(Namespaces::Storage::RootSize, namespace) do |root_storage|
         allow(root_storage).to receive(:usage_ratio).and_return(0.5)
       end
     end

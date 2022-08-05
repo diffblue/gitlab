@@ -2,14 +2,15 @@
 
 require 'spec_helper'
 
-RSpec.describe EE::Namespace::RootExcessStorageSize do
-  let(:namespace) { create(:namespace, additional_purchased_storage_size: additional_purchased_storage_size) }
+RSpec.describe Namespaces::Storage::RootExcessSize do
+  let(:namespace) { create(:group, additional_purchased_storage_size: additional_purchased_storage_size) }
   let(:total_repository_size_excess) { 50.megabytes }
   let(:additional_purchased_storage_size) { 100 }
   let(:model) { described_class.new(namespace) }
+  let(:root_namespace) { namespace }
 
   before do
-    allow(namespace).to receive(:total_repository_size_excess).and_return(total_repository_size_excess)
+    allow(root_namespace).to receive(:total_repository_size_excess).and_return(total_repository_size_excess)
   end
 
   describe '#above_size_limit?' do
@@ -64,6 +65,14 @@ RSpec.describe EE::Namespace::RootExcessStorageSize do
     subject { model.current_size }
 
     it { is_expected.to eq(total_repository_size_excess) }
+
+    context 'when it is a subgroup of the namespace' do
+      let(:subgroup) { create(:group, parent: namespace) }
+      let(:model) { described_class.new(subgroup) }
+      let(:root_namespace) { subgroup.root_ancestor }
+
+      it { is_expected.to eq(total_repository_size_excess) }
+    end
   end
 
   describe '#limit' do

@@ -12,7 +12,7 @@ RSpec.describe NamespaceLimit do
   before do
     stub_feature_flags(namespace_storage_limit: namespace_storage_limit_enabled)
 
-    [EE::Namespace::RootStorageSize, EE::Namespace::RootExcessStorageSize].each do |class_name|
+    [Namespaces::Storage::RootSize, Namespaces::Storage::RootExcessSize].each do |class_name|
       allow_next_instance_of(class_name, namespace_limit.namespace) do |root_storage|
         allow(root_storage).to receive(:usage_ratio).and_return(usage_ratio)
       end
@@ -98,7 +98,7 @@ RSpec.describe NamespaceLimit do
   describe 'validations' do
     it { is_expected.to validate_presence_of(:namespace) }
 
-    context 'namespace_is_root_namespace' do
+    context 'with namespace_is_root_namespace' do
       let(:namespace_limit) { build(:namespace_limit, namespace: namespace) }
 
       context 'when associated namespace is root' do
@@ -117,7 +117,7 @@ RSpec.describe NamespaceLimit do
       end
     end
 
-    context 'temporary_storage_increase_set_once' do
+    context 'with temporary_storage_increase_set_once' do
       context 'when temporary_storage_increase_ends_on was nil' do
         it 'can be set' do
           namespace_limit.temporary_storage_increase_ends_on = Date.today
@@ -128,7 +128,7 @@ RSpec.describe NamespaceLimit do
 
       context 'when temporary_storage_increase_ends_on is already set' do
         before do
-          namespace_limit.update_attribute(:temporary_storage_increase_ends_on, 30.days.ago)
+          namespace_limit.update_attribute(:temporary_storage_increase_ends_on, 30.days.ago) # rubocop:disable Rails/SkipsModelValidations
         end
 
         it 'can not be set again' do
@@ -140,7 +140,7 @@ RSpec.describe NamespaceLimit do
       end
     end
 
-    context 'temporary_storage_increase_eligibility' do
+    context 'with temporary_storage_increase_eligibility' do
       before do
         namespace_limit.temporary_storage_increase_ends_on = Date.today
       end
@@ -162,7 +162,8 @@ RSpec.describe NamespaceLimit do
 
         it 'is invalid' do
           expect(namespace_limit).to be_invalid
-          expect(namespace_limit.errors[:temporary_storage_increase_ends_on]).to include("can only be set with more than 50% usage")
+          expect(namespace_limit.errors[:temporary_storage_increase_ends_on])
+            .to include("can only be set with more than 50% usage")
         end
 
         context 'when feature flag :namespace_storage_limit disabled' do
@@ -170,7 +171,8 @@ RSpec.describe NamespaceLimit do
 
           it 'is invalid' do
             expect(namespace_limit).to be_invalid
-            expect(namespace_limit.errors[:temporary_storage_increase_ends_on]).to include("can only be set with more than 50% usage")
+            expect(namespace_limit.errors[:temporary_storage_increase_ends_on])
+              .to include("can only be set with more than 50% usage")
           end
         end
       end

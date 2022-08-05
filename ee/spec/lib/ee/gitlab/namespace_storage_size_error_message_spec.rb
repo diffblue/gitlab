@@ -8,7 +8,7 @@ RSpec.describe EE::Gitlab::NamespaceStorageSizeErrorMessage, :saas do
   let_it_be(:namespace) { create(:namespace_with_plan, plan: :ultimate_plan) }
   let_it_be(:root_storage_statistics) { create(:namespace_root_storage_statistics, namespace: namespace) }
 
-  let(:size_checker) { EE::Namespace::RootStorageSize.new(namespace) }
+  let(:size_checker) { Namespaces::Storage::RootSize.new(namespace) }
   let(:error_message) { described_class.new(size_checker) }
 
   before do
