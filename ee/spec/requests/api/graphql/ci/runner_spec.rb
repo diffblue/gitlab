@@ -4,6 +4,7 @@ require 'spec_helper'
 
 RSpec.describe 'Query.runner(id)' do
   include GraphqlHelpers
+  include RunnerReleasesHelper
 
   let_it_be(:admin) { create(:user, :admin) }
 
@@ -19,10 +20,11 @@ RSpec.describe 'Query.runner(id)' do
     end
 
     before do
-      allow(::Gitlab::Ci::RunnerUpgradeCheck.instance)
-        .to receive(:check_runner_upgrade_suggestion)
-        .and_return([nil, upgrade_status])
-        .once
+      allow_next_instance_of(::Gitlab::Ci::RunnerUpgradeCheck) do |instance|
+        allow(instance).to receive(:check_runner_upgrade_suggestion)
+          .and_return([nil, upgrade_status])
+          .once
+      end
     end
 
     it 'retrieves expected fields' do
@@ -137,26 +139,17 @@ RSpec.describe 'Query.runner(id)' do
           ]
         end
 
-        let(:available_runner_releases) do
-          %w[14.1.0 14.1.1]
-        end
-
         before do
-          url = ::Gitlab::CurrentSettings.current_application_settings.public_runner_releases_url
-
-          WebMock.stub_request(:get, url).to_return(
-            body: available_runner_releases.map { |v| { name: v } }.to_json,
-            status: 200,
-            headers: { 'Content-Type' => 'application/json' }
-          )
+          stub_runner_releases(%w[14.1.0 14.1.1])
         end
 
-        it 'retrieves expected fields' do
+        it 'retrieves expected fields', :aggregate_failures do
           post_graphql(query, current_user: current_user)
+
+          expect(::Gitlab::Ci::RunnerUpgradeCheck).to have_received(:new).with(::Gitlab::VERSION)
 
           runner_data = graphql_data_at(:runner)
           expect(runner_data).not_to be_nil
-
           expect(runner_data).to match a_hash_including(
             'id' => runner.to_global_id.to_s,
             'upgradeStatus' => 'RECOMMENDED'

@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe "Admin Runners" do
-  include StubVersion
+  include RunnerReleasesHelper
   include Spec::Support::Helpers::Features::RunnersHelpers
 
   let_it_be(:admin) { create(:admin) }
@@ -20,14 +20,7 @@ RSpec.describe "Admin Runners" do
       let(:runner) { create(:ci_runner, :instance, version: runner_version) }
 
       before do
-        stub_version('15.1.0', 'unused_revision')
-
-        url = ::Gitlab::CurrentSettings.current_application_settings.public_runner_releases_url
-        WebMock.stub_request(:get, url).to_return(
-          body: available_runner_releases.map { |v| { name: v } }.to_json,
-          status: 200,
-          headers: { 'Content-Type' => 'application/json' }
-        )
+        stub_runner_releases(available_runner_releases, gitlab_version: '15.1.0')
       end
 
       shared_examples 'upgrade is recommended' do
@@ -63,8 +56,8 @@ RSpec.describe "Admin Runners" do
         end
 
         describe 'filters' do
-          let(:runner_version) {'15.0.0'}
-          let(:available_runner_releases) {%w[15.0.0]}
+          let(:runner_version) { '15.0.0' }
+          let(:available_runner_releases) { %w[15.0.0] }
 
           it 'shows upgrade filter' do
             focus_filtered_search
@@ -112,8 +105,8 @@ RSpec.describe "Admin Runners" do
         end
 
         describe 'filters' do
-          let(:runner_version) {'15.0.0'}
-          let(:available_runner_releases) {%w[15.0.0]}
+          let(:runner_version) { '15.0.0' }
+          let(:available_runner_releases) { %w[15.0.0] }
 
           it 'does not show upgrade filter' do
             focus_filtered_search
