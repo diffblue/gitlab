@@ -1,4 +1,4 @@
--# rubocop: disable CodeReuse/ActiveRecord
+-# rubocop:disable CodeReuse/ActiveRecord
 - return unless Gitlab::CurrentSettings.should_check_namespace_plan?
 
 .form-group.gl-form-group{ role: 'group' }
@@ -7,3 +7,4 @@
     = f.select :hosted_plan_id, Plan.pluck(:title, :id),
       { include_blank: _('No plan') },
       class: 'gl-form-select custom-select', data: { qa_selector: 'plan_dropdown' }
+-# rubocop:enable CodeReuse/ActiveRecord
