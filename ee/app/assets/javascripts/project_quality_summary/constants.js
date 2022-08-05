@@ -1,5 +1,7 @@
 import { s__ } from '~/locale';
 
+export const FEEDBACK_ISSUE_URL = 'https://gitlab.com/gitlab-org/gitlab/-/issues/342634';
+
 export const i18n = {
   testRuns: {
     title: s__('ProjectQualitySummary|Test runs'),
@@ -28,4 +30,11 @@ export const i18n = {
   fetchError: s__(
     'ProjectQualitySummary|An error occurred while trying to fetch project quality statistics',
   ),
+  banner: {
+    title: s__('ProjectQualitySummary|Help us improve this page'),
+    text: s__(
+      'ProjectQualitySummary|This page helps you understand the code testing trends for your project. Let us know how we can improve it!',
+    ),
+    button: s__('ProjectQualitySummary|Provide feedback'),
+  },
 };

@@ -5,6 +5,7 @@ import createFlash from '~/flash';
 import { percent, percentHundred } from '~/lib/utils/unit_format';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import TestRunsEmptyState from './components/test_runs_empty_state.vue';
+import FeedbackBanner from './components/feedback_banner.vue';
 import getProjectQuality from './graphql/queries/get_project_quality.query.graphql';
 import { formatStat } from './utils';
 import { i18n } from './constants';
@@ -17,6 +18,7 @@ export default {
     GlIcon,
     GlPopover,
     GlSingleStat,
+    FeedbackBanner,
     TestRunsEmptyState,
   },
   inject: {
@@ -99,6 +101,7 @@ export default {
 </script>
 <template>
   <div>
+    <feedback-banner />
     <gl-card v-if="$apollo.queries.projectQuality.loading || hasTestRunsData" class="gl-mt-6">
       <template #header>
         <div class="gl-display-flex gl-justify-content-space-between gl-align-items-center">
@@ -164,7 +167,7 @@ export default {
       </template>
     </gl-card>
     <template v-else>
-      <test-runs-empty-state />
+      <test-runs-empty-state class="gl-mt-6" />
       <hr />
     </template>
 
