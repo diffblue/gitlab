@@ -10,11 +10,13 @@ module EE
         override :execute
         def execute
           previous_registration_token = runners_token
-          new_registration_token = super
 
-          audit_event(previous_registration_token, new_registration_token) if new_registration_token
+          result = super
+          if result.success?
+            audit_event(previous_registration_token, result.payload[:new_registration_token])
+          end
 
-          new_registration_token
+          result
         end
 
         private

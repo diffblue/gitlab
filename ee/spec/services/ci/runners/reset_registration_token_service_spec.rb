@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe ::Ci::Runners::ResetRegistrationTokenService, '#execute' do
-  subject { described_class.new(scope, current_user).execute }
+  subject(:execute) { described_class.new(scope, current_user).execute }
 
   let_it_be(:user) { build(:user) }
   let_it_be(:admin_user) { create(:user, :admin) }
@@ -12,22 +12,22 @@ RSpec.describe ::Ci::Runners::ResetRegistrationTokenService, '#execute' do
     context 'without user' do
       let(:current_user) { nil }
 
-      it 'does not audit and returns false', :aggregate_failures do
+      it 'does not audit and returns error response', :aggregate_failures do
         expect(scope).not_to receive(token_reset_method_name)
         expect(::AuditEvents::RunnersTokenAuditEventService).not_to receive(:new)
 
-        is_expected.to be_falsey
+        is_expected.to be_error
       end
     end
 
     context 'with unauthorized user' do
       let(:current_user) { user }
 
-      it 'does not audit and returns false', :aggregate_failures do
+      it 'does not audit and returns error response', :aggregate_failures do
         expect(scope).not_to receive(token_reset_method_name)
         expect(::AuditEvents::RunnersTokenAuditEventService).not_to receive(:new)
 
-        is_expected.to be_falsey
+        is_expected.to be_error
       end
     end
 
@@ -48,7 +48,8 @@ RSpec.describe ::Ci::Runners::ResetRegistrationTokenService, '#execute' do
       end
 
       it 'calls security_event on RunnersTokenAuditEventService and returns the new token', :aggregate_failures do
-        is_expected.to eq("new #{scope.class.name} token value")
+        is_expected.to be_success
+        expect(execute.payload[:new_registration_token]).to eq("new #{scope.class.name} token value")
       end
     end
   end
