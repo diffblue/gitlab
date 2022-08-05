@@ -8,8 +8,8 @@ RSpec.describe Elastic::MigrationWorker, :elastic do
   describe '#perform' do
     context 'Feature Flag `elastic_migration_worker` is disabled' do
       before do
-        stub_feature_flags(elastic_migration_worker: false)
         stub_ee_application_setting(elasticsearch_indexing: true)
+        stub_feature_flags(elastic_migration_worker: false)
       end
 
       it 'returns with no execution' do
@@ -24,6 +24,22 @@ RSpec.describe Elastic::MigrationWorker, :elastic do
       end
 
       it 'returns without execution' do
+        expect(subject).not_to receive(:execute_migration)
+        expect(subject.perform).to be_falsey
+      end
+    end
+
+    context 'unsupported elasticsearch version' do
+      let(:helper) { Gitlab::Elastic::Helper.new }
+
+      before do
+        stub_ee_application_setting(elasticsearch_indexing: true)
+        allow(Gitlab::Elastic::Helper).to receive(:default).and_return(helper)
+        allow(helper).to receive(:unsupported_version?).and_return(true)
+      end
+
+      it 'pauses indexing and does not execute migration' do
+        expect(Gitlab::CurrentSettings).to receive(:update!).with(elasticsearch_pause_indexing: true)
         expect(subject).not_to receive(:execute_migration)
         expect(subject.perform).to be_falsey
       end

@@ -327,11 +327,24 @@ module Gitlab
         {}
       end
 
+      # Tested and supported version/distributions of Elasticsearch/Opensearch
       def supported_version?
         return true unless ping?
 
         search_check = ::SystemCheck::App::SearchCheck.new
         search_check.skip? || search_check.check?
+      end
+
+      # Versions that are known to be unsupported
+      def unsupported_version?
+        info = server_info
+
+        case info[:distribution]
+        when 'elasticsearch'
+          Gitlab::VersionInfo.parse(info[:version]).major == 6
+        else
+          false
+        end
       end
 
       private
