@@ -150,6 +150,15 @@ RSpec.describe Security::Finding do
     }
   end
 
+  describe '.latest_by_uuid' do
+    subject { described_class.latest_by_uuid(finding_1.uuid) }
+
+    let_it_be(:newer_scan) { create(:security_scan, :latest_successful, scan_type: :sast) }
+    let_it_be(:newer_finding) { create(:security_finding, uuid: finding_1.uuid, scan: newer_scan) }
+
+    it { is_expected.to eq(newer_finding) }
+  end
+
   describe '.latest' do
     subject { described_class.latest }
 

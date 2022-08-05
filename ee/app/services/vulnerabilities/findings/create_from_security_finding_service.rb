@@ -35,7 +35,9 @@ module Vulnerabilities
       end
 
       def security_finding
-        @security_finding ||= Security::Finding.by_uuid(params[:security_finding_uuid]).with_pipeline_entities.last
+        @security_finding ||= Security::Finding
+          .with_pipeline_entities
+          .latest_by_uuid(params[:security_finding_uuid])
       end
 
       def report_finding

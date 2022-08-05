@@ -56,5 +56,9 @@ module Security
     def self.count_by_scan_type
       grouped_by_scan_type.count
     end
+
+    def self.latest_by_uuid(uuid)
+      by_uuid(uuid).order(scan_id: :desc).first
+    end
   end
 end
