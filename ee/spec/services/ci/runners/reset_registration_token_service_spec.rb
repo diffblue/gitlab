@@ -48,7 +48,7 @@ RSpec.describe ::Ci::Runners::ResetRegistrationTokenService, '#execute' do
       end
 
       it 'calls security_event on RunnersTokenAuditEventService and returns the new token', :aggregate_failures do
-        is_expected.to be_success
+        expect(execute).to be_success
         expect(execute.payload[:new_registration_token]).to eq("new #{scope.class.name} token value")
       end
     end
