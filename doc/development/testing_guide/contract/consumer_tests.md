@@ -148,7 +148,7 @@ Notice how we use `Matchers` in the `body` of the expected response. This allows
 
 After the mock provider is set up, you can write the test. For this test, you make a request and expect a particular response.
 
-First, set up the client that makes the API request. To do that, create `spec/contracts/consumer/endpoints/project/merge_requests.js` and add the following API request.
+First, set up the client that makes the API request. To do that, create `spec/contracts/consumer/resources/api/project/merge_requests.js` and add the following API request.
 
 ```javascript
 const axios = require('axios');
@@ -173,7 +173,7 @@ After that's set up, import it to the test file and call it to make the request.
 const { pactWith } = require('jest-pact');
 const { Matchers } = require('@pact-foundation/pact');
 
-const { getDiscussions } = require('../endpoints/project/merge_requests');
+const { getDiscussions } = require('../resources/api/project/merge_requests');
 
 pactWith(
   {
