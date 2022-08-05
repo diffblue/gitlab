@@ -24,4 +24,4 @@
                           s_('AutoRollback|Enable automatic rollbacks'),
                           help_text: '%{help_text} %{more_info_link}'.html_safe % { help_text: help_text, more_info_link: more_info_link }
 
-              = f.submit _('Save changes'), class: "gl-button btn btn-confirm gl-mt-5", data: { qa_selector: 'save_changes_button' }
+              = f.submit _('Save changes'), class: "gl-mt-5", data: { qa_selector: 'save_changes_button' }, pajamas_button: true
