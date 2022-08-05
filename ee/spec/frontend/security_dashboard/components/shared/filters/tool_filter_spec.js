@@ -11,9 +11,14 @@ import FilterItem from 'ee/security_dashboard/components/shared/filters/filter_i
 import { vendorScannerFilter, getFormattedScanners } from 'ee/security_dashboard/helpers';
 import projectScannersQuery from 'ee/security_dashboard/graphql/queries/project_specific_scanners.query.graphql';
 import groupScannersQuery from 'ee/security_dashboard/graphql/queries/group_specific_scanners.query.graphql';
+import instanceScannersQuery from 'ee/security_dashboard/graphql/queries/instance_specific_scanners.query.graphql';
 import { TOOL_FILTER_ERROR } from 'ee/security_dashboard/components/shared/filters/constants';
 import { DASHBOARD_TYPES } from 'ee/security_dashboard/store/constants';
-import { projectVulnerabilityScanners, groupVulnerabilityScanners } from '../../mock_data';
+import {
+  projectVulnerabilityScanners,
+  groupVulnerabilityScanners,
+  instanceVulnerabilityScanners,
+} from '../../mock_data';
 
 jest.mock('~/flash');
 
@@ -27,6 +32,7 @@ describe('Tool Filter component', () => {
   const formattedProjectScanners = getFormattedScanners(projectVulnerabilityScannersNodes);
   const projectScannersResolver = jest.fn().mockResolvedValue(projectVulnerabilityScanners);
   const groupScannersResolver = jest.fn().mockResolvedValue(groupVulnerabilityScanners);
+  const instanceScannersResolver = jest.fn().mockResolvedValue(instanceVulnerabilityScanners);
   const defaultQuery = projectScannersQuery;
   const defaultResolver = projectScannersResolver;
   const defaultProvide = {
@@ -50,6 +56,8 @@ describe('Tool Filter component', () => {
         ...provide,
       },
     });
+
+    return waitForPromises();
   };
 
   const findFilterBody = () => wrapper.findComponent(FilterBody);
@@ -90,21 +98,20 @@ describe('Tool Filter component', () => {
 
   describe('successful query request', () => {
     it('does not display the loading state', async () => {
-      createWrapper();
-      await waitForPromises();
+      await createWrapper();
 
       expect(findFilterBody().props('loading')).toBe(false);
     });
 
     it.each`
-      dashboardType              | query                   | resolver                   | argument
-      ${DASHBOARD_TYPES.PROJECT} | ${projectScannersQuery} | ${projectScannersResolver} | ${fullPath}
-      ${DASHBOARD_TYPES.GROUP}   | ${groupScannersQuery}   | ${groupScannersResolver}   | ${fullPath}
+      dashboardType               | query                    | resolver                    | argument
+      ${DASHBOARD_TYPES.PROJECT}  | ${projectScannersQuery}  | ${projectScannersResolver}  | ${fullPath}
+      ${DASHBOARD_TYPES.GROUP}    | ${groupScannersQuery}    | ${groupScannersResolver}    | ${fullPath}
+      ${DASHBOARD_TYPES.INSTANCE} | ${instanceScannersQuery} | ${instanceScannersResolver} | ${undefined}
     `(
       'makes the query request for $dashboardType',
       async ({ dashboardType, query, resolver, argument }) => {
-        createWrapper({ query, resolver, provide: { dashboardType } });
-        await waitForPromises();
+        await createWrapper({ query, resolver, provide: { dashboardType } });
 
         expect(resolver).toHaveBeenCalledTimes(1);
         expect(resolver.mock.calls[0][0]).toEqual({ fullPath: argument });
@@ -115,15 +122,13 @@ describe('Tool Filter component', () => {
       const allOptionCount = 1;
       const totalOptionsCount = formattedProjectScanners.length + allOptionCount;
 
-      createWrapper();
-      await waitForPromises();
+      await createWrapper();
 
       expect(findFilterItems()).toHaveLength(totalOptionsCount);
     });
 
     it('populates the filter options from the query response', async () => {
-      createWrapper();
-      await waitForPromises();
+      await createWrapper();
 
       formattedProjectScanners.forEach(({ name }, index) => {
         expect(
@@ -139,15 +144,13 @@ describe('Tool Filter component', () => {
     it('shows an alert', async () => {
       const errorSpy = jest.fn().mockRejectedValue();
 
-      createWrapper({ resolver: errorSpy });
-      await waitForPromises();
+      await createWrapper({ resolver: errorSpy });
 
       expect(createFlash).toHaveBeenCalledWith({ message: TOOL_FILTER_ERROR });
     });
 
     it('skips the query for invalid dashboard type', async () => {
-      createWrapper({ provide: { dashboardType: 'foo' } });
-      await waitForPromises();
+      await createWrapper({ provide: { dashboardType: 'foo' } });
 
       expect(defaultResolver).not.toHaveBeenCalled();
     });
