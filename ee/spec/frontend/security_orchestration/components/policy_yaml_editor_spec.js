@@ -63,7 +63,7 @@ describe('PolicyYamlEditor component', () => {
     const editorComponent = findEditor();
     expect(editorComponent.props('value')).toBe('foo');
     const editor = editorComponent.vm.getEditor();
-    expect(editor.getModel().getModeId()).toBe('yaml');
+    expect(editor.getModel().getLanguageId()).toBe('yaml');
   });
 
   it("emits input event on editor's input", async () => {
