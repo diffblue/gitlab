@@ -213,7 +213,7 @@ describe('Value Stream Analytics utils', () => {
     it('extracts the value from an array of datetime / value pairs', () => {
       expect(transformedDummySeries.every(isNumber)).toEqual(true);
       Object.values(dummySeries).forEach((v) => {
-        expect(transformedDummySeries.includes(v)).toBeTruthy();
+        expect(transformedDummySeries.includes(v)).toBe(true);
       });
     });
 
