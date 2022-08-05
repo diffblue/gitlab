@@ -6,6 +6,7 @@ RSpec.describe ::Ci::Runners::RegisterRunnerService, '#execute' do
   let(:registration_token) { 'abcdefg123456' }
   let(:token) {}
   let(:audit_service) { instance_double(::AuditEvents::RegisterRunnerAuditEventService) }
+  let(:runner) { execute.payload[:runner] }
 
   before do
     stub_feature_flags(runner_registration_control: false)
@@ -15,7 +16,7 @@ RSpec.describe ::Ci::Runners::RegisterRunnerService, '#execute' do
     expect(audit_service).to receive(:track_event).once.and_return('track_event_return_value')
   end
 
-  subject { described_class.new.execute(token, {}) }
+  subject(:execute) { described_class.new.execute(token, {}) }
 
   RSpec::Matchers.define :last_ci_runner do
     match { |runner| runner == ::Ci::Runner.last }
@@ -31,7 +32,9 @@ RSpec.describe ::Ci::Runners::RegisterRunnerService, '#execute' do
         .with(last_ci_runner, token, token_scope)
         .once.and_return(audit_service)
 
-      is_expected.to eq(::Ci::Runner.last)
+      expect(execute).to be_success
+
+      expect(runner).to eq(::Ci::Runner.last)
     end
   end
 
@@ -43,11 +46,13 @@ RSpec.describe ::Ci::Runners::RegisterRunnerService, '#execute' do
     end
 
     it 'returns a Runner' do
-      is_expected.to be_a ::Ci::Runner
+      expect(execute).to be_success
+
+      expect(runner).to be_an_instance_of(::Ci::Runner)
     end
 
     it 'returns a non-persisted Runner' do
-      expect(subject.persisted?).to be_falsey
+      expect(runner.persisted?).to be_falsey
     end
   end
 

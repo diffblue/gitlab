@@ -18,7 +18,8 @@ RSpec.describe ::Ci::Runners::AssignRunnerService, '#execute' do
       expect(project_runner).not_to receive(:assign_to)
       expect(::AuditEvents::RunnerCustomAuditEventService).not_to receive(:new)
 
-      is_expected.to be_error
+      expect(execute).to be_error
+      expect(execute.http_status).to eq :forbidden
     end
   end
 

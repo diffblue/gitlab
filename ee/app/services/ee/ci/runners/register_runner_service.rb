@@ -9,11 +9,12 @@ module EE
 
         override :execute
         def execute(registration_token, attributes)
-          runner = super(registration_token, attributes)
+          result = super(registration_token, attributes)
+          runner = result.payload[:runner] if result.success?
 
-          audit_event(runner, registration_token) if runner
+          audit_event(runner, registration_token) if result.success?
 
-          runner
+          result
         end
 
         private
