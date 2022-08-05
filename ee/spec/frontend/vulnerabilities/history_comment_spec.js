@@ -134,7 +134,7 @@ describe('History Comment', () => {
     it('shows the comment editor when the add comment button is clicked', () => {
       return showEditView().then(() => {
         expectEditCommentView();
-        expect(commentEditor().props('initialComment')).toBeFalsy();
+        expect(commentEditor().props('initialComment')).toBe('');
       });
     });
 
@@ -294,8 +294,7 @@ describe('History Comment', () => {
       expect(cancelDeleteButton().props('disabled')).toBe(true);
 
       await waitForPromises();
-      expect(wrapper.emitted().onCommentUpdated).toBeTruthy();
-      expect(wrapper.emitted().onCommentUpdated[0][0]).toEqual(expect.any(Function));
+      expect(wrapper.emitted().onCommentUpdated).toEqual([[expect.any(Function)]]);
     });
 
     it('sends mutation to delete note', async () => {
