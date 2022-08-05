@@ -11,7 +11,7 @@ module EE
         def execute
           result = super
 
-          audit_event if result
+          audit_event if result.success?
 
           result
         end
