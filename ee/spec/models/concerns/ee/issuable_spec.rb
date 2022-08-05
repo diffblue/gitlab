@@ -183,4 +183,32 @@ RSpec.describe EE::Issuable do
       end
     end
   end
+
+  describe '#allows_scoped_labels?' do
+    let_it_be(:project) { build_stubbed(:project) }
+
+    it 'allows scoped labels with licensed project' do
+      issue = build_stubbed(:issue, project: project)
+
+      stub_licensed_features(scoped_labels: true)
+
+      expect(issue.allows_scoped_labels?).to be(true)
+    end
+
+    it 'allows scoped labels with licensed group' do
+      epic = build_stubbed(:epic, group: build_stubbed(:group))
+
+      stub_licensed_features(scoped_labels: true)
+
+      expect(epic.allows_scoped_labels?).to be(true)
+    end
+
+    it 'does not allow scoped labels without license' do
+      issue = build_stubbed(:issue, project: project)
+
+      stub_licensed_features(scoped_labels: false)
+
+      expect(issue.allows_scoped_labels?).to be(false)
+    end
+  end
 end

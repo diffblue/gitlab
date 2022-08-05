@@ -56,6 +56,11 @@ module EE
       incident?
     end
 
+    override :allows_scoped_labels?
+    def allows_scoped_labels?
+      resource_parent.licensed_feature_available?(:scoped_labels)
+    end
+
     def supports_iterations?
       false
     end

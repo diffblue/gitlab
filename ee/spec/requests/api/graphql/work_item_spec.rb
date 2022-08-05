@@ -155,6 +155,56 @@ RSpec.describe 'Query.work_item(id)' do
           end
         end
       end
+
+      describe 'labels widget' do
+        let(:labels) { create_list(:label, 2, project: project) }
+        let(:work_item) { create(:work_item, project: project, labels: labels) }
+
+        let(:work_item_fields) do
+          <<~GRAPHQL
+            id
+            widgets {
+              type
+              ... on WorkItemWidgetLabels {
+                allowsScopedLabels
+                labels {
+                  nodes {
+                    id
+                    title
+                  }
+                }
+              }
+            }
+          GRAPHQL
+        end
+
+        where(:has_scoped_labels_license) do
+          [true, false]
+        end
+
+        with_them do
+          it 'returns widget information' do
+            stub_licensed_features(scoped_labels: has_scoped_labels_license)
+
+            post_graphql(query, current_user: current_user)
+
+            expect(work_item_data).to include(
+              'id' => work_item.to_gid.to_s,
+              'widgets' => include(
+                hash_including(
+                  'type' => 'LABELS',
+                  'allowsScopedLabels' => has_scoped_labels_license,
+                  'labels' => {
+                    'nodes' => match_array(
+                      labels.map { |a| { 'id' => a.to_gid.to_s, 'title' => a.title } }
+                    )
+                  }
+                )
+              )
+            )
+          end
+        end
+      end
     end
   end
 end
