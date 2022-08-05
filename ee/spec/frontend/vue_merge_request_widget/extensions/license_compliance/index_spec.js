@@ -4,7 +4,7 @@ import waitForPromises from 'helpers/wait_for_promises';
 import axios from '~/lib/utils/axios_utils';
 import extensionsContainer from '~/vue_merge_request_widget/components/extensions/container';
 import { registerExtension } from '~/vue_merge_request_widget/components/extensions';
-import actions from '~/vue_merge_request_widget/components/extensions/actions.vue';
+import ActionButtons from '~/vue_merge_request_widget/components/action_buttons.vue';
 import licenseComplianceExtension from 'ee/vue_merge_request_widget/extensions/license_compliance';
 import httpStatusCodes from '~/lib/utils/http_status';
 import {
@@ -41,7 +41,7 @@ describe('License Compliance extension', () => {
 
   const findToggleCollapsedButton = () => wrapper.findByTestId('toggle-button');
   const findAllExtensionListItems = () => wrapper.findAllByTestId('extension-list-item');
-  const findActionButtons = () => wrapper.findComponent(actions);
+  const findActionButtons = () => wrapper.findComponent(ActionButtons);
   const findByHrefAttribute = (href) => wrapper.find(`[href="${href}"]`);
   const findLicenseScanningReport = () => findByHrefAttribute(settingsPath);
   const findFullReport = () => findByHrefAttribute(fullReportPath);

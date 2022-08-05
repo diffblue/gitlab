@@ -1,4 +1,4 @@
-import { shallowMount } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
 import MRWidgetAutoMergeEnabled from '~/vue_merge_request_widget/components/states/mr_widget_auto_merge_enabled.vue';
 import {
   MWPS_MERGE_STRATEGY,
@@ -15,7 +15,7 @@ describe('MRWidgetAutoMergeEnabled', () => {
     poll: () => {},
   };
 
-  const getStatusText = () => wrapper.find('[data-testid="statusText"]').attributes('message');
+  const getStatusText = () => wrapper.find('[data-testid="statusText"]').text();
 
   const mr = {
     shouldRemoveSourceBranch: false,
@@ -31,7 +31,7 @@ describe('MRWidgetAutoMergeEnabled', () => {
   };
 
   const factory = (mrUpdates = {}) => {
-    wrapper = shallowMount(MRWidgetAutoMergeEnabled, {
+    wrapper = mount(MRWidgetAutoMergeEnabled, {
       propsData: {
         mr: { ...mr, ...mrUpdates },
         service,
@@ -40,6 +40,14 @@ describe('MRWidgetAutoMergeEnabled', () => {
 
     ({ vm } = wrapper);
   };
+
+  beforeEach(() => {
+    window.gl = {
+      mrWidgetData: {
+        defaultAvatarUrl: 'no_avatar.png',
+      },
+    };
+  });
 
   afterEach(() => {
     wrapper.destroy();
@@ -54,9 +62,7 @@ describe('MRWidgetAutoMergeEnabled', () => {
           mergeTrainsCount: 0,
         });
 
-        expect(getStatusText()).toBe(
-          'Set by %{merge_author} to start a merge train when the pipeline succeeds',
-        );
+        expect(getStatusText()).toContain('to start a merge train when the pipeline succeeds');
       });
 
       it('should return "to be added to the merge train..." if MTWPS is selected and there is an existing merge train', () => {
@@ -65,17 +71,15 @@ describe('MRWidgetAutoMergeEnabled', () => {
           mergeTrainsCount: 1,
         });
 
-        expect(getStatusText()).toBe(
-          'Set by %{merge_author} to be added to the merge train when the pipeline succeeds',
+        expect(getStatusText()).toContain(
+          'to be added to the merge train when the pipeline succeeds',
         );
       });
 
       it('should return "to be merged automatically..." if MWPS is selected', () => {
         factory({ autoMergeStrategy: MWPS_MERGE_STRATEGY });
 
-        expect(getStatusText()).toBe(
-          'Set by %{merge_author} to be merged automatically when the pipeline succeeds',
-        );
+        expect(getStatusText()).toContain('to be merged automatically when the pipeline succeeds');
       });
     });
 
