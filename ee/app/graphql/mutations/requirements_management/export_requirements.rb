@@ -38,7 +38,9 @@ module Mutations
         project_path = args.delete(:project_path)
         project = authorized_find!(project_path)
 
+        # rubocop:disable CodeReuse/Worker
         IssuableExportCsvWorker.perform_async(:requirement, current_user.id, project.id, args)
+        # rubocop:enable CodeReuse/Worker
 
         {
           errors: []
