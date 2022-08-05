@@ -8,10 +8,15 @@ module Mutations
 
         authorize :admin_iteration_cadence
 
-        argument :id, ::Types::GlobalIDType[::Iterations::Cadence], required: true,
-          description: copy_field_description(Types::Iterations::CadenceType, :id)
+        argument :id,
+                 ::Types::GlobalIDType[::Iterations::Cadence],
+                 required: true,
+                 description: copy_field_description(Types::Iterations::CadenceType, :id)
 
-        field :group, ::Types::GroupType, null: false, description: 'Group the iteration cadence belongs to.'
+        field :group,
+              ::Types::GroupType,
+              null: false,
+              description: 'Group the iteration cadence belongs to.'
 
         def resolve(id:)
           iteration_cadence = authorized_find!(id: id)
