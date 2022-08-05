@@ -50,20 +50,6 @@ RSpec.describe MergeRequests::ApprovalService do
         expect(todo.reload).to be_done
       end
 
-      it 'sends the audit streaming event' do
-        audit_context = {
-          name: 'merge_request_approval_operation',
-          stream_only: true,
-          author: user,
-          scope: merge_request.project,
-          target: merge_request,
-          message: 'Approved merge request'
-        }
-        expect(::Gitlab::Audit::Auditor).to receive(:audit).with(audit_context)
-
-        service.execute(merge_request)
-      end
-
       context 'with remaining approvals' do
         it 'fires an approval webhook' do
           expect(merge_request).to receive(:approvals_left).and_return(5)
@@ -112,6 +98,20 @@ RSpec.describe MergeRequests::ApprovalService do
             expect(instance).to receive(:approve_mr)
               .with(merge_request, user)
           end
+
+          service.execute(merge_request)
+        end
+
+        it 'sends the audit streaming event' do
+          audit_context = {
+            name: 'merge_request_approval_operation',
+            stream_only: true,
+            author: user,
+            scope: merge_request.project,
+            target: merge_request,
+            message: 'Approved merge request'
+          }
+          expect(::Gitlab::Audit::Auditor).to receive(:audit).with(audit_context)
 
           service.execute(merge_request)
         end
