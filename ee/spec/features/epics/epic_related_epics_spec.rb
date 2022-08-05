@@ -21,8 +21,8 @@ RSpec.describe 'Related Epics', :js do
   end
 
   def open_add_epic_form
-    page.within('.related-issues-block .card-title') do
-      page.find('button').click
+    page.within('.related-issues-block') do
+      click_button 'Add a related epic'
     end
   end
 
@@ -48,7 +48,8 @@ RSpec.describe 'Related Epics', :js do
         card_title = page.find('.card-title')
         expect(card_title).to have_content('Linked epics')
         expect(card_title).to have_link('', href: '/help/user/group/epics/linked_epics')
-        expect(card_title).to have_selector('button')
+        card = page.find('.card')
+        expect(card).to have_selector('button', text: 'Add')
       end
     end
   end

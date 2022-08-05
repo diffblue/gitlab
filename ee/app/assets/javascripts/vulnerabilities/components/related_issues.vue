@@ -211,6 +211,7 @@ export default {
     createIssueErrorBody: s__(
       'SecurityReports|Ensure that %{trackingStart}issue tracking%{trackingEnd} is enabled for this project and you have %{permissionsStart}permission to create new issues%{permissionsEnd}.',
     ),
+    addExistingIssue: __('Add existing issue'),
   },
 };
 </script>
@@ -241,11 +242,11 @@ export default {
       <template #headerText>
         {{ $options.i18n.relatedIssues }}
       </template>
+      <template #add-button-text>{{ $options.i18n.addExistingIssue }}</template>
       <template v-if="canCreateIssue" #header-actions>
         <gl-button
           ref="createIssue"
-          variant="confirm"
-          category="secondary"
+          size="small"
           data-qa-selector="create_issue_button"
           :loading="isProcessingAction"
           @click="createIssue"
