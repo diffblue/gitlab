@@ -3,8 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe ::Ci::Runners::UnassignRunnerService, '#execute' do
-  let_it_be(:runner) { create(:ci_runner, :project, projects: [project]) }
   let_it_be(:project) { create(:project) }
+  let_it_be(:runner) { create(:ci_runner, :project, projects: [project]) }
 
   let(:runner_project) { runner.runner_projects.last }
 
@@ -43,11 +43,6 @@ RSpec.describe ::Ci::Runners::UnassignRunnerService, '#execute' do
     end
 
     context 'with destroy returning true' do
-      before do
-        # The factory bot doesn't save the project association by default, so let's make sure that's done
-        runner_project.update!(project: project)
-      end
-
       it 'returns success response' do
         expect(runner_project).to receive(:destroy).once.and_return(true)
 
