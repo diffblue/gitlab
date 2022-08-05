@@ -11,11 +11,11 @@ describe('DismissalCommentBox', () => {
     });
 
     it('should render the placeholder text box', () => {
-      expect(wrapper.find('.js-comment-placeholder').exists()).toBeTruthy();
+      expect(wrapper.find('.js-comment-placeholder').exists()).toBe(true);
     });
 
     it('should not render the dismissal comment box', () => {
-      expect(wrapper.findComponent(DismissalCommentBox).exists()).toBeFalsy();
+      expect(wrapper.findComponent(DismissalCommentBox).exists()).toBe(false);
     });
   });
 
@@ -29,11 +29,11 @@ describe('DismissalCommentBox', () => {
     });
 
     it('should render the dismissal comment box', () => {
-      expect(wrapper.findComponent(DismissalCommentBox).exists()).toBeTruthy();
+      expect(wrapper.findComponent(DismissalCommentBox).exists()).toBe(true);
     });
 
     it('should not render the placeholder text box', () => {
-      expect(wrapper.find('.js-comment-placeholder').exists()).toBeFalsy();
+      expect(wrapper.find('.js-comment-placeholder').exists()).toBe(false);
     });
   });
 });
