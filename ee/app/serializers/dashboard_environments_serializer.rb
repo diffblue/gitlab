@@ -18,24 +18,43 @@ class DashboardEnvironmentsSerializer < BaseSerializer
     ActiveRecord::Associations::Preloader.new.preload(projects, [
       :route,
       environments_for_dashboard: [
-        last_visible_pipeline: [
-          :user,
-          project: [:route, :group, :project_feature, namespace: :route]
-        ],
-        last_visible_deployment: [
-          deployable: [
-            :metadata,
-            :pipeline,
-            project: [:project_feature, :group, :route, namespace: :route]
-          ],
-          project: [:route, namespace: :route]
-        ],
         project: [:project_feature, :group, namespace: :route]
       ],
       namespace: [:route, :owner]
     ])
 
+    environments = projects.map(&:environments_for_dashboard).flatten
+
+    Preloaders::Environments::DeploymentPreloader.new(environments)
+      .execute_with_union(:last_visible_deployment, deployment_associations)
+
     projects
   end
   # rubocop: enable CodeReuse/ActiveRecord
+
+  def deployment_associations
+    {
+      deployable: {
+        metadata: nil,
+        pipeline: {
+          user: nil,
+          project: project_associations
+        },
+        project: project_associations
+      },
+      project: {
+        route: nil,
+        namespace: :route
+      }
+    }
+  end
+
+  def project_associations
+    {
+      project_feature: nil,
+      group: nil,
+      route: nil,
+      namespace: :route
+    }
+  end
 end
