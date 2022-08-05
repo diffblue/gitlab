@@ -116,3 +116,12 @@ require (
 	gopkg.in/DataDog/dd-trace-go.v1 v1.32.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
+
+exclude (
+	// CVE-2020-28483
+	github.com/gin-gonic/gin v1.4.0
+	github.com/gin-gonic/gin v1.6.3
+
+	// CVE-2021-42576
+	github.com/microcosm-cc/bluemonday v1.0.2
+)
