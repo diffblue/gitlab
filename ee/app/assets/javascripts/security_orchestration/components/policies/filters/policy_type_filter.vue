@@ -1,7 +1,7 @@
 <script>
 import { GlFormGroup, GlDropdown, GlDropdownItem } from '@gitlab/ui';
 import { __ } from '~/locale';
-import { POLICY_TYPE_OPTIONS } from '../constants';
+import { POLICY_TYPE_FILTER_OPTIONS } from '../constants';
 
 export default {
   name: 'PolicyTypeFilter',
@@ -15,14 +15,15 @@ export default {
       type: String,
       required: true,
       validator: (value) =>
-        Object.values(POLICY_TYPE_OPTIONS)
+        Object.values(POLICY_TYPE_FILTER_OPTIONS)
           .map((option) => option.value)
           .includes(value),
     },
   },
   computed: {
     selectedValueText() {
-      return Object.values(POLICY_TYPE_OPTIONS).find(({ value }) => value === this.value).text;
+      return Object.values(POLICY_TYPE_FILTER_OPTIONS).find(({ value }) => value === this.value)
+        .text;
     },
   },
   methods: {
@@ -31,7 +32,7 @@ export default {
     },
   },
   policyTypeFilterId: 'policy-type-filter',
-  POLICY_TYPE_OPTIONS,
+  POLICY_TYPE_FILTER_OPTIONS,
   i18n: {
     label: __('Type'),
   },
@@ -51,7 +52,7 @@ export default {
       :text="selectedValueText"
     >
       <gl-dropdown-item
-        v-for="option in $options.POLICY_TYPE_OPTIONS"
+        v-for="option in $options.POLICY_TYPE_FILTER_OPTIONS"
         :key="option.value"
         :data-testid="`policy-type-${option.value}-option`"
         @click="setPolicyType(option)"

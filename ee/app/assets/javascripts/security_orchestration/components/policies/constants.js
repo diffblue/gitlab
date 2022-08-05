@@ -15,7 +15,7 @@ export const POLICY_SOURCE_OPTIONS = {
   },
 };
 
-export const POLICY_TYPE_OPTIONS = {
+export const POLICY_TYPE_FILTER_OPTIONS = {
   ALL: {
     value: '',
     text: s__('SecurityOrchestration|All policies'),
@@ -30,4 +30,6 @@ export const POLICY_TYPE_OPTIONS = {
   },
 };
 
-export const POLICY_TYPES_WITH_INHERITANCE = [POLICY_TYPE_OPTIONS.POLICY_TYPE_SCAN_EXECUTION.value];
+export const POLICY_TYPES_WITH_INHERITANCE = [
+  POLICY_TYPE_FILTER_OPTIONS.POLICY_TYPE_SCAN_EXECUTION.value,
+];
