@@ -148,7 +148,7 @@ Notice how we use `Matchers` in the `body` of the expected response. This allows
 
 After the mock provider is set up, you can write the test. For this test, you make a request and expect a particular response.
 
-First, set up the client that makes the API request. To do that, create `spec/contracts/consumer/resources/api/project/merge_requests.js` and add the following API request.
+First, set up the client that makes the API request. To do that, create `spec/contracts/consumer/resources/api/project/merge_requests.js` and add the following API request. If the endpoint is a GraphQL then we would be creating under `spec/contracts/consumer/resources/graphql` instead.
 
 ```javascript
 import axios from 'axios';
