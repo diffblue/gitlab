@@ -10,7 +10,7 @@ module Namespaces
       def execute(namespace)
         return unless namespace.root_storage_statistics
 
-        root_storage_size = ::Namespace::RootStorageSize.new(namespace)
+        root_storage_size = ::Namespaces::Storage::RootSize.new(namespace)
         level = notification_level(root_storage_size)
         last_level = namespace.root_storage_statistics.notification_level.to_sym
 

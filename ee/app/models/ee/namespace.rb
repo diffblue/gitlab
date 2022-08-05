@@ -448,7 +448,12 @@ module EE
     end
 
     def root_storage_size
-      klass = additional_repo_storage_by_namespace_enabled? ? RootExcessStorageSize : RootStorageSize
+      klass = if additional_repo_storage_by_namespace_enabled?
+                ::Namespaces::Storage::RootExcessSize
+              else
+                ::Namespaces::Storage::RootSize
+              end
+
       klass.new(self)
     end
 

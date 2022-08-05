@@ -2,18 +2,21 @@
 
 require 'spec_helper'
 
-RSpec.describe EE::Namespace::RootStorageSize, :saas do
+RSpec.describe Namespaces::Storage::RootSize, :saas do
   include NamespaceStorageHelpers
   using RSpec::Parameterized::TableSyntax
 
-  let(:namespace) { create(:namespace) }
+  let(:namespace) { create(:group) }
   let(:current_size) { 50.megabytes }
   let(:model) { described_class.new(namespace) }
-  let(:create_statistics) { create(:namespace_root_storage_statistics, namespace: namespace, storage_size: current_size) }
-  let_it_be(:ultimate_plan, reload: true) { create(:ultimate_plan) }
-  let_it_be(:plan_limits, reload: true) { create(:plan_limits, plan: ultimate_plan, storage_size_limit: 100) }
+  let(:create_statistics) do
+    create(:namespace_root_storage_statistics, namespace: namespace, storage_size: current_size)
+  end
 
   let!(:subscription) { create(:gitlab_subscription, namespace: namespace, hosted_plan: ultimate_plan) }
+
+  let_it_be(:ultimate_plan, reload: true) { create(:ultimate_plan) }
+  let_it_be(:plan_limits, reload: true) { create(:plan_limits, plan: ultimate_plan, storage_size_limit: 100) }
 
   before do
     create_statistics
@@ -95,7 +98,7 @@ RSpec.describe EE::Namespace::RootStorageSize, :saas do
 
     it { is_expected.to eq(current_size) }
 
-    context 'caches values', :use_clean_rails_memory_store_caching do
+    context 'with cached values', :use_clean_rails_memory_store_caching do
       let(:key) { 'root_storage_current_size' }
 
       it 'caches the value' do
@@ -103,6 +106,12 @@ RSpec.describe EE::Namespace::RootStorageSize, :saas do
 
         expect(Rails.cache.read(['namespaces', namespace.id, key])).to eq(current_size)
       end
+    end
+
+    context 'when it is a subgroup of the namespace' do
+      let(:model) { described_class.new(create(:group, parent: namespace)) }
+
+      it { is_expected.to eq(current_size) }
     end
   end
 
@@ -136,7 +145,7 @@ RSpec.describe EE::Namespace::RootStorageSize, :saas do
       it { is_expected.to eq(0) }
     end
 
-    context 'caches values', :use_clean_rails_memory_store_caching do
+    context 'with cached values', :use_clean_rails_memory_store_caching do
       let(:key) { 'root_storage_size_limit' }
 
       before do

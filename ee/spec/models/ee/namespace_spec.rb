@@ -1330,7 +1330,7 @@ RSpec.describe Namespace do
       before do
         stub_application_setting(enforce_namespace_storage_limit: enforcement_setting_enabled)
         stub_feature_flags(namespace_storage_limit: feature_enabled)
-        allow_next_instance_of(EE::Namespace::RootStorageSize, namespace.root_ancestor) do |project|
+        allow_next_instance_of(Namespaces::Storage::RootSize, namespace.root_ancestor) do |project|
           allow(project).to receive(:above_size_limit?).and_return(above_size_limit)
         end
       end
@@ -1742,8 +1742,8 @@ RSpec.describe Namespace do
     context 'when additional_repo_storage_by_namespace_enabled is false' do
       let(:additional_repo_storage_by_namespace_enabled) { false }
 
-      it 'initializes a new instance of EE::Namespace::RootStorageSize' do
-        expect(EE::Namespace::RootStorageSize).to receive(:new).with(namespace)
+      it 'initializes a new instance of Namespaces::Storage::RootSize' do
+        expect(Namespaces::Storage::RootSize).to receive(:new).with(namespace)
 
         subject
       end
@@ -1752,8 +1752,8 @@ RSpec.describe Namespace do
     context 'when additional_repo_storage_by_namespace_enabled is true' do
       let(:additional_repo_storage_by_namespace_enabled) { true }
 
-      it 'initializes a new instance of EE::Namespace::RootExcessStorageSize' do
-        expect(EE::Namespace::RootExcessStorageSize).to receive(:new).with(namespace)
+      it 'initializes a new instance of Namespaces::Storage::RootExcessSize' do
+        expect(Namespaces::Storage::RootExcessSize).to receive(:new).with(namespace)
 
         subject
       end

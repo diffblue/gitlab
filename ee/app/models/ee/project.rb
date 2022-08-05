@@ -626,7 +626,7 @@ module EE
         root_namespace = namespace.root_ancestor
 
         if ::EE::Gitlab::Namespaces::Storage::Enforcement.enforce_limit?(root_namespace)
-          ::EE::Namespace::RootStorageSize.new(root_namespace)
+          ::Namespaces::Storage::RootSize.new(root_namespace)
         else
           ::Gitlab::RepositorySizeChecker.new(
             current_size_proc: -> { statistics.total_repository_size },

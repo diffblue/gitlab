@@ -65,14 +65,14 @@ RSpec.describe EE::Namespace::Storage::Notification do
       end
     end
 
-    context 'repository usage' do
+    context 'with repository usage' do
       before do
         stub_feature_flags(namespace_storage_limit: false)
         stub_ee_application_setting(automatic_purchased_storage_allocation: true)
         allow(group.root_ancestor).to receive(:contains_locked_projects?).and_return(contains_locked_projects)
         allow(group.root_ancestor).to receive(:repository_size_excess_project_count).and_return(5)
         allow(group.root_ancestor).to receive(:actual_size_limit).and_return(10)
-        allow_next_instance_of(EE::Namespace::RootExcessStorageSize) do |root_storage_size|
+        allow_next_instance_of(Namespaces::Storage::RootExcessSize) do |root_storage_size|
           allow(root_storage_size).to receive(:above_size_limit?).and_return(true)
           allow(root_storage_size).to receive(:usage_ratio).and_return(5.5).at_least(:once)
           allow(root_storage_size).to receive(:current_size).and_return(55)
@@ -118,10 +118,10 @@ RSpec.describe EE::Namespace::Storage::Notification do
       end
     end
 
-    context 'namespace usage' do
-      context 'above the limit' do
+    context 'with namespace usage' do
+      context 'when above the limit' do
         before do
-          expect_next_instance_of(EE::Namespace::RootStorageSize) do |root_storage_size|
+          expect_next_instance_of(Namespaces::Storage::RootSize) do |root_storage_size|
             expect(root_storage_size).to receive(:above_size_limit?).and_return(true)
             expect(root_storage_size).to receive(:usage_ratio).and_return(5.5).at_least(:once)
             expect(root_storage_size).to receive(:current_size).and_return(55)
@@ -136,9 +136,9 @@ RSpec.describe EE::Namespace::Storage::Notification do
         end
       end
 
-      context 'below the limit' do
+      context 'when below the limit' do
         before do
-          expect_next_instance_of(EE::Namespace::RootStorageSize) do |root_storage_size|
+          expect_next_instance_of(Namespaces::Storage::RootSize) do |root_storage_size|
             expect(root_storage_size).to receive(:above_size_limit?).and_return(false)
           end
         end
