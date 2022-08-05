@@ -7,10 +7,10 @@ module Types
       description 'Represents a link related to a vulnerability'
 
       field :name, GraphQL::Types::String, null: true,
-            description: 'Name of the link.'
+        description: 'Name of the link.'
 
       field :url, GraphQL::Types::String, null: false,
-            description: 'URL of the link.'
+        description: 'URL of the link.'
     end
   end
 end

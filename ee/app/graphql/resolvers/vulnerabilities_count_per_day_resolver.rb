@@ -5,10 +5,10 @@ module Resolvers
     type Types::VulnerabilitiesCountByDayType, null: true
 
     argument :start_date, GraphQL::Types::ISO8601Date, required: true,
-              description: 'First day for which to fetch vulnerability history.'
+      description: 'First day for which to fetch vulnerability history.'
 
     argument :end_date, GraphQL::Types::ISO8601Date, required: true,
-              description: 'Last day for which to fetch vulnerability history.'
+      description: 'Last day for which to fetch vulnerability history.'
 
     def resolve(**args)
       return [] unless vulnerable
