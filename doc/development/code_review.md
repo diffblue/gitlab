@@ -113,7 +113,8 @@ For more information, review [the roulette README](https://gitlab.com/gitlab-org
 As an experiment, we want to introduce a `local` reviewer status for database reviews. Local reviewers are reviewers
 focusing on work from a team/stage, but not outside of it. This helps to focus and build great domain
 knowledge. We are not introducing changes to the reviewer roulette till we evaluate the impact and feedback from this
-experiment. We ask to respect reviewers who decline reviews based on their focus on `local` reviews.
+experiment. We ask to respect reviewers who decline reviews based on their focus on `local` reviews. For tracking purposes,
+please use in your personal yaml file entry: `- reviewer database local` instead of `- reviewer database`. 
 
 ### Approval guidelines
 
