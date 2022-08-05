@@ -1312,6 +1312,26 @@ RSpec.describe Namespace do
     end
   end
 
+  describe '#ingest_sbom_reports_available?' do
+    subject { namespace.ingest_sbom_reports_available? }
+
+    context 'when at least one sbom-related feature is available' do
+      where(:feature) { [:container_scanning, :dependency_scanning, :license_scanning] }
+
+      before do
+        stub_licensed_features(feature => true)
+      end
+
+      with_them do
+        it { is_expected.to be true }
+      end
+    end
+
+    context 'when sbom-related features are not available' do
+      it { is_expected.to be false }
+    end
+  end
+
   describe '#over_storage_limit?' do
     using RSpec::Parameterized::TableSyntax
 

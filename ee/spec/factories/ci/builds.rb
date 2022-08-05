@@ -173,5 +173,11 @@ FactoryBot.define do
         build.job_artifacts << create(:ee_ci_job_artifact, :api_fuzzing, job: build)
       end
     end
+
+    trait :cyclonedx do
+      after(:build) do |build|
+        build.job_artifacts << create(:ee_ci_job_artifact, :cyclonedx, job: build)
+      end
+    end
   end
 end

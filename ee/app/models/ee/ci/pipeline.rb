@@ -63,6 +63,15 @@ module EE
           end
 
           after_transition any => ::Ci::Pipeline.completed_statuses do |pipeline|
+            next unless ::Feature.enabled?(:cyclonedx_sbom_ingestion, pipeline.project)
+            next unless pipeline.can_ingest_sbom_reports?
+
+            pipeline.run_after_commit do
+              ::Sbom::IngestReportsWorker.perform_async(pipeline.id)
+            end
+          end
+
+          after_transition any => ::Ci::Pipeline.completed_statuses do |pipeline|
             pipeline.run_after_commit do
               ::Ci::SyncReportsToReportApprovalRulesWorker.perform_async(pipeline.id)
             end
@@ -169,6 +178,10 @@ module EE
         latest_report_builds(::Ci::JobArtifact.license_scanning_reports).exists?
       end
 
+      def can_ingest_sbom_reports?
+        project.namespace.ingest_sbom_reports_available? && has_sbom_reports?
+      end
+
       def can_store_security_reports?
         project.can_store_security_reports? && has_security_reports?
       end
@@ -200,6 +213,10 @@ module EE
 
       def has_security_reports?
         has_reports?(::Ci::JobArtifact.security_reports.or(::Ci::JobArtifact.license_scanning_reports))
+      end
+
+      def has_sbom_reports?
+        has_reports?(::Ci::JobArtifact.sbom_reports)
       end
 
       def project_has_subscriptions?
