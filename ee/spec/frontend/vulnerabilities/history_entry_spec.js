@@ -57,7 +57,7 @@ describe('History Entry', () => {
   it('does not show anything if there is no system note', () => {
     createWrapper();
 
-    expect(wrapper.html()).toBeFalsy();
+    expect(wrapper.html()).toBe('');
   });
 
   it('shows the add comment button where there are no comments', () => {
