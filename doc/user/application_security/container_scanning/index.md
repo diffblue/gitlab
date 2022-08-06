@@ -190,7 +190,7 @@ Authenticating to a remote registry is not supported when [FIPS mode](../../../d
 > [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/345434) in GitLab 14.6.
 
 The `CS_DISABLE_DEPENDENCY_LIST` CI/CD variable controls whether the scan creates a
-[Dependency List](../dependency_list/)
+[Dependency List](../dependency_list/index.md)
 report. This variable is currently only supported when the `trivy` analyzer is used. The variable's default setting of `"false"` causes the scan to create the report. To disable
 the report, set the variable to `"true"`:
 
