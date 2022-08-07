@@ -12,11 +12,11 @@ describe('GeoNodeForm Store Getters', () => {
     it('with error returns true', () => {
       state.formErrors.name = 'Error';
 
-      expect(getters.formHasError(state)).toBeTruthy();
+      expect(getters.formHasError(state)).toBe(true);
     });
 
     it('without error returns false', () => {
-      expect(getters.formHasError(state)).toBeFalsy();
+      expect(getters.formHasError(state)).toBe(false);
     });
   });
 });
