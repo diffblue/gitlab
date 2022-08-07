@@ -44,8 +44,8 @@ describe('Iterations', () => {
   it('hides list while loading', () => {
     mountComponent();
 
-    expect(wrapper.findComponent(GlLoadingIcon).exists()).toBeTruthy();
-    expect(wrapper.findComponent(IterationsList).exists()).toBeFalsy();
+    expect(wrapper.findComponent(GlLoadingIcon).exists()).toBe(true);
+    expect(wrapper.findComponent(IterationsList).exists()).toBe(false);
   });
 
   it('shows iterations list after loading', async () => {
@@ -55,8 +55,8 @@ describe('Iterations', () => {
 
     await waitForPromises();
 
-    expect(wrapper.findComponent(GlLoadingIcon).exists()).toBeFalsy();
-    expect(wrapper.findComponent(IterationsList).exists()).toBeTruthy();
+    expect(wrapper.findComponent(GlLoadingIcon).exists()).toBe(false);
+    expect(wrapper.findComponent(IterationsList).exists()).toBe(true);
   });
 
   it('sets computed state from tabIndex', () => {
