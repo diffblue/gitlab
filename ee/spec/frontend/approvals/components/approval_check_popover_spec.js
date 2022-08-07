@@ -38,7 +38,7 @@ describe('Approval Check Popover', () => {
 
   describe('without a documentation link', () => {
     it('should not render the documentation link', () => {
-      expect(wrapper.findComponent(GlPopover).findComponent(GlLink).exists()).toBeFalsy();
+      expect(wrapper.findComponent(GlPopover).findComponent(GlLink).exists()).toBe(false);
     });
   });
 
