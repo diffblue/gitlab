@@ -50,7 +50,7 @@ describe('Security Dashboard Table Row', () => {
     });
 
     it('should display the skeleton loader', () => {
-      expect(findLoader().exists()).toBeTruthy();
+      expect(findLoader().exists()).toBe(true);
     });
 
     it('should not render the severity', () => {
@@ -59,7 +59,7 @@ describe('Security Dashboard Table Row', () => {
 
     it('should render a `` for the report type and scanner', () => {
       expect(findContent(3).text()).toEqual('');
-      expect(wrapper.find('vulnerability-vendor').exists()).toBeFalsy();
+      expect(wrapper.find('vulnerability-vendor').exists()).toBe(false);
     });
 
     it('should not render action buttons', () => {
@@ -75,7 +75,7 @@ describe('Security Dashboard Table Row', () => {
     });
 
     it('should not display the skeleton loader', () => {
-      expect(findLoader().exists()).toBeFalsy();
+      expect(findLoader().exists()).toBe(false);
     });
 
     it('should render the severity', () => {
@@ -188,7 +188,7 @@ describe('Security Dashboard Table Row', () => {
 
     it('should be unselected', () => {
       expect(hasSelectedClass()).toBe(false);
-      expect(findCheckbox().attributes('checked')).toBeFalsy();
+      expect(findCheckbox().attributes('checked')).toBe(undefined);
     });
 
     describe('when checked', () => {
@@ -215,7 +215,7 @@ describe('Security Dashboard Table Row', () => {
 
         it('should be unselected', () => {
           expect(hasSelectedClass()).toBe(false);
-          expect(findCheckbox().attributes('checked')).toBeFalsy();
+          expect(findCheckbox().attributes('checked')).toBe(undefined);
         });
 
         it('should update store', () => {
