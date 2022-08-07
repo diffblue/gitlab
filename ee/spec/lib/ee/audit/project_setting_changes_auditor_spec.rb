@@ -6,11 +6,13 @@ RSpec.describe EE::Audit::ProjectSettingChangesAuditor do
   using RSpec::Parameterized::TableSyntax
   describe '#execute' do
     let_it_be(:user) { create(:user) }
-    let_it_be(:project) { create(:project) }
+    let_it_be(:group) { create(:group) }
+    let_it_be(:destination) { create(:external_audit_event_destination, group: group) }
+    let_it_be(:project) { create(:project, group: group) }
     let_it_be(:project_setting_changes_auditor) { described_class.new(user, project.project_setting, project) }
 
     before do
-      stub_licensed_features(extended_audit_events: true)
+      stub_licensed_features(extended_audit_events: true, external_audit_events: true)
     end
 
     context 'when project setting is updated' do
@@ -48,11 +50,11 @@ RSpec.describe EE::Audit::ProjectSettingChangesAuditor do
           false | true
         end
 
-        before do
-          project.project_setting.update!(allow_merge_on_skipped_pipeline: prev_value)
-        end
-
         with_them do
+          before do
+            project.project_setting.update!(allow_merge_on_skipped_pipeline: prev_value)
+          end
+
           it 'creates an audit event' do
             project.project_setting.update!(allow_merge_on_skipped_pipeline: new_value)
 
@@ -62,6 +64,15 @@ RSpec.describe EE::Audit::ProjectSettingChangesAuditor do
                                                          from: prev_value,
                                                          to: new_value
                                                        })
+          end
+
+          it 'streams correct audit event stream' do
+            project.project_setting.update!(allow_merge_on_skipped_pipeline: new_value)
+
+            expect(AuditEvents::AuditEventStreamingWorker).to receive(:perform_async).with(
+              'allow_merge_on_skipped_pipeline_updated', anything, anything)
+
+            project_setting_changes_auditor.execute
           end
         end
       end
