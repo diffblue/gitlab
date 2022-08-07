@@ -6,12 +6,13 @@ RSpec.describe EE::Audit::ComplianceFrameworkChangesAuditor do
   describe 'auditing compliance framework changes' do
     let_it_be(:user) { create(:user) }
     let_it_be(:group) { create(:group) }
+    let_it_be(:destination) { create(:external_audit_event_destination, group: group) }
 
     let(:project) { create(:project, group: group) }
 
     before do
       project.reload
-      stub_licensed_features(extended_audit_events: true)
+      stub_licensed_features(extended_audit_events: true, external_audit_events: true)
     end
 
     let(:subject) { described_class.new(user, project.compliance_framework_setting, project) }
@@ -50,6 +51,12 @@ RSpec.describe EE::Audit::ComplianceFrameworkChangesAuditor do
           expect(AuditEvent.last.details).to include({
                                                        custom_message: "Unassigned project compliance framework"
                                                      })
+        end
+        it 'streams correct audit event stream' do
+          expect(AuditEvents::AuditEventStreamingWorker).to receive(:perform_async).with(
+            'compliance_framework_deleted', anything, anything)
+
+          subject.execute
         end
       end
 
