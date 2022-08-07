@@ -50,7 +50,7 @@ describe('MergeTrainFailedPipelineConfirmationDialog', () => {
   it('should emit the startMergeTrain event', () => {
     findStartMergeTrainBtn().vm.$emit('click');
 
-    expect(wrapper.emitted('startMergeTrain')).toBeTruthy();
+    expect(wrapper.emitted('startMergeTrain')).toHaveLength(1);
   });
 
   it('when the cancel button is clicked should emit cancel and call hide', () => {
@@ -58,14 +58,14 @@ describe('MergeTrainFailedPipelineConfirmationDialog', () => {
 
     findCancelBtn().vm.$emit('click');
 
-    expect(wrapper.emitted('cancel')).toBeTruthy();
+    expect(wrapper.emitted('cancel')).toHaveLength(1);
     expect(findModal().vm.hide).toHaveBeenCalled();
   });
 
   it('should emit cancel when the hide event is emitted', () => {
     findModal().vm.$emit('hide');
 
-    expect(wrapper.emitted('cancel')).toBeTruthy();
+    expect(wrapper.emitted('cancel')).toHaveLength(1);
   });
 
   it('when modal is shown it will focus the cancel button', () => {
