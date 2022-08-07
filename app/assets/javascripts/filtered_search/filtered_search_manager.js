@@ -626,7 +626,6 @@ export default class FilteredSearchManager {
       const split = p.split('=');
       const keyParam = decodeURIComponent(split[0]);
       const value = split[1];
-
       // Check if it matches edge conditions listed in this.filteredSearchTokenKeys
       const condition = this.filteredSearchTokenKeys.searchByConditionUrl(p);
 

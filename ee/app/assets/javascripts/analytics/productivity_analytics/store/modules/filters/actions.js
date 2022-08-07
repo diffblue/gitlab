@@ -2,6 +2,7 @@ import { chartKeys } from '../../../constants';
 import * as types from './mutation_types';
 
 export const setInitialData = ({ commit, dispatch }, { skipFetch = false, data }) => {
+  // TODO: need to call this on load to filter initial requests
   commit(types.SET_INITIAL_DATA, data);
 
   if (skipFetch) return Promise.resolve();

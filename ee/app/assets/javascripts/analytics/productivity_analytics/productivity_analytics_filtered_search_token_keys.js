@@ -31,6 +31,19 @@ const tokenKeys = [
   },
 ];
 
-const ProductivityAnalyticsFilteredSearchTokenKeys = new FilteredSearchTokenKeys(tokenKeys);
+const alternativeTokenKeys = [
+  {
+    formattedKey: __('Label'),
+    key: 'label',
+    type: 'string',
+    param: 'name',
+    symbol: '~',
+  },
+];
+
+const ProductivityAnalyticsFilteredSearchTokenKeys = new FilteredSearchTokenKeys(
+  tokenKeys,
+  alternativeTokenKeys,
+);
 
 export default ProductivityAnalyticsFilteredSearchTokenKeys;
