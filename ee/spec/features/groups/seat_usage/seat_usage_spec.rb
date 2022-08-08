@@ -75,13 +75,13 @@ RSpec.describe 'Groups > Usage Quotas > Seat Usage', :js do
       end
 
       it 'has disabled the remove button' do
-        within '[data-qa-selector="remove_billable_member_modal"]' do # rubocop:disable QA/SelectorUsage
+        within '[data-testid="remove-billable-member-modal"]' do
           expect(page).to have_button('Remove user', disabled: true)
         end
       end
 
       it 'enables the remove button when user enters valid username' do
-        within '[data-qa-selector="remove_billable_member_modal"]' do # rubocop:disable QA/SelectorUsage
+        within '[data-testid="remove-billable-member-modal"]' do
           find('input').fill_in(with: maintainer.username)
           find('input').send_keys(:tab)
 
@@ -90,7 +90,7 @@ RSpec.describe 'Groups > Usage Quotas > Seat Usage', :js do
       end
 
       it 'does not enable button when user enters invalid username' do
-        within '[data-qa-selector="remove_billable_member_modal"]' do # rubocop:disable QA/SelectorUsage
+        within '[data-testid="remove-billable-member-modal"]' do
           find('input').fill_in(with: 'invalid username')
           find('input').send_keys(:tab)
 
@@ -111,7 +111,7 @@ RSpec.describe 'Groups > Usage Quotas > Seat Usage', :js do
       end
 
       it 'shows a flash message' do
-        within '[data-qa-selector="remove_billable_member_modal"]' do # rubocop:disable QA/SelectorUsage
+        within '[data-testid="remove-billable-member-modal"]' do
           find('input').fill_in(with: maintainer.username)
           find('input').send_keys(:tab)
 
@@ -137,7 +137,7 @@ RSpec.describe 'Groups > Usage Quotas > Seat Usage', :js do
 
           click_button('Remove member')
 
-          within '[data-qa-selector="remove_member_modal_content"]' do # rubocop:disable QA/SelectorUsage
+          within '[data-testid="remove-member-modal-content"]' do
             click_button('Remove member')
           end
 
