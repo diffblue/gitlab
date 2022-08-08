@@ -243,8 +243,12 @@ module EE
     end
 
     def show_ultimate_feature_removal_banner?(project)
-      return false if ultimate_feature_removal_banner_dismissed?
-      project.visibility_level == ::Gitlab::VisibilityLevel::PUBLIC# && !project.project_setting.legacy_open_source_license_available
+      return false unless ::Gitlab.com? &&
+        ::Feature.enabled?(:ultimate_feature_removal_banner, project) &&
+        current_user&.can?(:guest_access, project) &&
+        !ultimate_feature_removal_banner_dismissed?
+
+      project.public? && !project.project_setting.legacy_open_source_license_available
     end
 
     def scheduled_for_deletion?(project)
