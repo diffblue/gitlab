@@ -5,7 +5,8 @@
   = f.gitlab_ui_checkbox_component :mirror,
       _('Mirror repository')
   .form-text.text-muted
-    = _("Automatically update this project's branches and tags from the upstream repository every hour.")
+    = _("Automatically update this project's branches and tags from the upstream repository.")
+    = link_to _('How does pull mirroring work?'), help_page_path('user/project/repository/mirror/pull', anchor: 'how-pull-mirroring-works'), target: '_blank', rel: 'noopener noreferrer'
   - if Gitlab::CurrentSettings.should_check_namespace_plan?
     .form-text.text-muted
       = _('Mirroring will only be available if the feature is included in the plan of the selected group or user.')
