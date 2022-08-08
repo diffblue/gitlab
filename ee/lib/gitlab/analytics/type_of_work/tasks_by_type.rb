@@ -80,7 +80,16 @@ module Gitlab
         end
 
         def labels
-          @labels ||= GroupLabel.where(id: params[:label_ids])
+          @labels ||= if params[:label_names].any?
+                        LabelsFinder.new(current_user, { 
+                          group_id: group.id, 
+                          include_ancestor_groups: true, 
+                          only_group_labels: true,
+                          title: params[:label_names]
+                        })
+                      else
+                        GroupLabel.where(id: params[:label_ids])
+                      end
         end
 
         # rubocop: enable CodeReuse/ActiveRecord
