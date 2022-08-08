@@ -31,7 +31,7 @@ export const STATUS_ICON_NAMES = {
 export const STATUS_ICON_CLASS = {
   [FILTER_STATES.SYNCED.value]: 'gl-text-green-500',
   [FILTER_STATES.PENDING.value]: 'gl-text-orange-500',
-  [FILTER_STATES.FAILED.value]: 'gl-text-orange-500',
+  [FILTER_STATES.FAILED.value]: 'gl-text-red-500',
   [DEFAULT_STATUS]: 'gl-text-gray-500',
 };
 
