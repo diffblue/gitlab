@@ -395,7 +395,6 @@ describe('init markdown', () => {
         ${new KeyboardEvent('keydown', { key: ']', metaKey: true, altKey: true })}
         ${new KeyboardEvent('keydown', { key: ']', metaKey: true, ctrlKey: true })}
       `('does not indent if meta is not set', ({ keyEvent }) => {
-        // const indentNoMetaEvent = new KeyboardEvent('keydown', { key: ']' });
         const text = '012\n456\n89';
         textArea.value = text;
         textArea.setSelectionRange(0, 0);
