@@ -1,0 +1,43 @@
+<script>
+import { GlSprintf } from '@gitlab/ui';
+import i18n from './i18n';
+
+export default {
+  components: {
+    GlSprintf,
+  },
+  i18n,
+  props: {
+    scanner: {
+      type: String,
+      required: false,
+      default: undefined,
+    },
+    totalNewVulnerabilities: {
+      type: Number,
+      required: true,
+    },
+  },
+};
+</script>
+
+<template>
+  <div>
+    <gl-sprintf v-if="!totalNewVulnerabilities" :message="$options.i18n.noNewVulnerabilities">
+      <template #scanner>{{ scanner || $options.i18n.securityScanning }}</template>
+      <template #bold="{ content }">
+        <b>{{ content }}</b>
+      </template>
+    </gl-sprintf>
+    <gl-sprintf v-else :message="$options.i18n.newVulnerabilities">
+      <template #scanner>{{ scanner || $options.i18n.securityScanning }}</template>
+      <template #bold="{ content }">
+        <b>{{ content }}</b>
+      </template>
+      <template #number>{{ totalNewVulnerabilities }}</template>
+      <template #vulnStr>{{
+        n__('vulnerability', 'vulnerabilities', totalNewVulnerabilities)
+      }}</template>
+    </gl-sprintf>
+  </div>
+</template>
