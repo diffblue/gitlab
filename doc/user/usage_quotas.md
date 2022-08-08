@@ -41,14 +41,14 @@ We will start with a large limit enforcement and eventually reduce it to 5 GB.
 
 The following table describes the enforcement schedule, which is subject to change.
 
-| Target enforcement date | Limit | Expected Impact | Status |
-| ------ | ------ | ------ | ------ |
-| October 19, 2022 | 45,000 GB | LOW | Pending (**{hourglass}**)|
-| October 20, 2022 | 7,500 GB | LOW | Pending (**{hourglass}**)|
-| October 24, 2022 | 500 GB | MEDIUM | Pending (**{hourglass}**)|
-| October 27, 2022 | 75 GB | MEDIUM HIGH | Pending (**{hourglass}**)|
-| November 2, 2022 | 10 GB | HIGH | Pending (**{hourglass}**)|
-| November 9, 2022 | 5 GB | VERY HIGH | Pending (**{hourglass}**)|
+| Target enforcement date | Limit | Status |
+| ----------------------- | ----- | ------ |
+| October 19, 2022 | 45,000 GB | Pending (**{hourglass}**)|
+| October 20, 2022 | 7,500 GB | Pending (**{hourglass}**)|
+| October 24, 2022 | 500 GB | Pending (**{hourglass}**)|
+| October 27, 2022 | 75 GB | Pending (**{hourglass}**)|
+| November 2, 2022 | 10 GB | Pending (**{hourglass}**)|
+| November 9, 2022 | 5 GB | Pending (**{hourglass}**)|
 
 Namespaces that reach the enforced limit will have their projects locked. To unlock your project, you will have to [manage its storage](#manage-your-storage-usage).
 
