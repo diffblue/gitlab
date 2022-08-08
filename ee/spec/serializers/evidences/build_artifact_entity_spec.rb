@@ -8,7 +8,7 @@ RSpec.describe Evidences::BuildArtifactEntity do
   subject { described_class.new(build).as_json }
 
   context 'when job has artifacts paths' do
-    let(:build) { create(:ci_build, :artifacts, :with_artifacts_paths) }
+    let(:build) { build_stubbed(:ci_build, :artifacts, :with_artifacts_paths) }
 
     it 'exposes the artifacts url' do
       expect(subject[:url]).to eq(download_project_job_artifacts_url(build.project, build))
@@ -16,7 +16,7 @@ RSpec.describe Evidences::BuildArtifactEntity do
   end
 
   context 'when job does not have artifacts paths' do
-    let(:build) { create(:ci_build, :artifacts) }
+    let(:build) { build_stubbed(:ci_build, :artifacts) }
 
     it 'does not expose the artifacts url' do
       expect(subject).not_to include(:url)
