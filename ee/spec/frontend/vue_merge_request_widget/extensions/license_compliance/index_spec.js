@@ -43,11 +43,11 @@ describe('License Compliance extension', () => {
   const findAllExtensionListItems = () => wrapper.findAllByTestId('extension-list-item');
   const findActionButtons = () => wrapper.findComponent(actions);
   const findByHrefAttribute = (href) => wrapper.find(`[href="${href}"]`);
-  const findLicenseScanningReport = () => findByHrefAttribute(settingsPath);
-  const findFullReport = () => findByHrefAttribute(fullReportPath);
+  const findManageLicenseLink = () => findByHrefAttribute(settingsPath);
+  const findFullReportLink = () => findByHrefAttribute(fullReportPath);
   const findSummary = () => wrapper.findByTestId('widget-extension-top-level-summary');
 
-  const createComponent = () => {
+  const createComponent = (licenseComplianceProps = {}) => {
     wrapper = mountExtended(extensionsContainer, {
       propsData: {
         mr: {
@@ -59,6 +59,7 @@ describe('License Compliance extension', () => {
               settings_path: settingsPath,
               full_report_path: fullReportPath,
             },
+            ...licenseComplianceProps,
           },
         },
       },
@@ -126,11 +127,31 @@ describe('License Compliance extension', () => {
 
       await waitForPromises();
 
-      expect(findLicenseScanningReport().exists()).toBe(true);
-      expect(findLicenseScanningReport().text()).toBe('Manage Licenses');
+      expect(findManageLicenseLink().exists()).toBe(true);
+      expect(findManageLicenseLink().text()).toBe('Manage Licenses');
 
-      expect(findFullReport().exists()).toBe(true);
-      expect(findFullReport().text()).toBe('Full Report');
+      expect(findFullReportLink().exists()).toBe(true);
+      expect(findFullReportLink().text()).toBe('Full Report');
+
+      expect(findActionButtons().exists()).toBe(true);
+    });
+
+    it('hides the manage licenses button when URL is not available', async () => {
+      mockApi(licenseComparisonPathCollapsed, httpStatusCodes.OK, licenseComplianceNewLicenses);
+
+      createComponent({
+        license_scanning: {
+          settings_path: '',
+          full_report_path: fullReportPath,
+        },
+      });
+
+      await waitForPromises();
+
+      expect(findManageLicenseLink().exists()).toBe(false);
+
+      expect(findFullReportLink().exists()).toBe(true);
+      expect(findFullReportLink().text()).toBe('Full Report');
 
       expect(findActionButtons().exists()).toBe(true);
     });

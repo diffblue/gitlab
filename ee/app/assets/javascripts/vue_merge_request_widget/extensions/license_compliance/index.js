@@ -44,13 +44,20 @@ export default {
     shouldCollapse() {
       return this.hasReportItems();
     },
+    manageLicenseButtonConfig() {
+      return this.licenseCompliance.license_scanning.settings_path
+        ? [
+            {
+              text: s__('ciReport|Manage Licenses'),
+              href: this.licenseCompliance.license_scanning.settings_path,
+              target: '_blank',
+            },
+          ]
+        : [];
+    },
     tertiaryButtons() {
       return [
-        {
-          text: s__('ciReport|Manage Licenses'),
-          href: this.licenseCompliance.license_scanning.settings_path,
-          target: '_blank',
-        },
+        ...this.manageLicenseButtonConfig(),
         {
           text: s__('ciReport|Full Report'),
           href: this.licenseCompliance.license_scanning.full_report_path,
