@@ -36,7 +36,7 @@ class Groups::Analytics::TasksByTypeController < Groups::Analytics::ApplicationC
   end
 
   def validate_label_ids
-    return respond_422 if Array(params[:label_ids]).empty?
+    return respond_422 if Array(params[:label_ids]).empty? && Array(params[:label_names]).empty?
   end
 
   def prepare_date_range

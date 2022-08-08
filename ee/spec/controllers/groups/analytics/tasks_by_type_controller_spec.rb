@@ -97,9 +97,27 @@ RSpec.describe Groups::Analytics::TasksByTypeController do
       end
     end
 
-    context 'when `label_id` is missing' do
+    context 'when `label_names` is present' do
       before do
         params.delete(:label_ids)
+        params[:label_names] = [label.name]
+      end
+
+      it 'succeeds' do
+        subject
+
+        expect(response).to have_gitlab_http_status(:ok)
+
+        date, count = json_response.first['series'].first
+        expect(Date.parse(date)).to eq(issue.created_at.to_date)
+        expect(count).to eq(1)
+      end
+    end
+
+    context 'when `label_id` and `label_names` are missing' do
+      before do
+        params.delete(:label_ids)
+        params.delete(:label_names)
       end
 
       it_behaves_like 'expects unprocessable_entity response'
