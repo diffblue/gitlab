@@ -118,7 +118,7 @@ describe('RoadmapFilters', () => {
     it('emits toggleSettings event on click settings button', () => {
       findSettingsButton().vm.$emit('click');
 
-      expect(wrapper.emitted('toggleSettings')).toBeTruthy();
+      expect(wrapper.emitted('toggleSettings')).toHaveLength(1);
     });
 
     describe('FilteredSearchBar', () => {
