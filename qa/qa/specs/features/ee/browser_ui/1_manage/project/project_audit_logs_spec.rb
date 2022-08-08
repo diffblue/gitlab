@@ -35,6 +35,7 @@ module QA
           Resource::Project.fabricate_via_browser_ui! do |project|
             project.name = 'audit-add-project-via-ui'
             project.initialize_with_readme = true
+            project.description = nil
           end.visit!
         end
         it_behaves_like 'audit event', ["Added project"]
