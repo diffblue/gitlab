@@ -5611,7 +5611,7 @@ msgstr ""
 msgid "Automatically resolved"
 msgstr ""
 
-msgid "Automatically update this project's branches and tags from the upstream repository every hour."
+msgid "Automatically update this project's branches and tags from the upstream repository."
 msgstr ""
 
 msgid "Autosave|Note"
@@ -19436,6 +19436,9 @@ msgid "How do I use a web terminal?"
 msgstr ""
 
 msgid "How do I use file templates?"
+msgstr ""
+
+msgid "How does pull mirroring work?"
 msgstr ""
 
 msgid "How many seconds an IP counts toward the IP address limit."
