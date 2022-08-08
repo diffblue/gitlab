@@ -65,7 +65,7 @@ RSpec.describe Epics::ReopenService do
 
           it 'tracks reopening the epic' do
             expect(::Gitlab::UsageDataCounters::EpicActivityUniqueCounter)
-              .to receive(:track_epic_reopened_action).with(author: user)
+              .to receive(:track_epic_reopened_action).with(author: user, namespace: group)
 
             subject.execute(epic)
           end

@@ -59,7 +59,7 @@ RSpec.describe Epics::IssuePromoteService, :aggregate_failures do
 
         it 'counts a usage ping event' do
           expect(::Gitlab::UsageDataCounters::EpicActivityUniqueCounter).to receive(:track_issue_promoted_to_epic)
-            .with(author: user)
+            .with(author: user, namespace: group)
 
           subject.execute(issue)
         end
