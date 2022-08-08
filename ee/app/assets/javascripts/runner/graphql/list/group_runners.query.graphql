@@ -1,6 +1,6 @@
 #import "~/runner/graphql/list/group_runner_connection.fragment.graphql"
 
-query getGroupRunners(
+query getGroupRunnersEE(
   $groupFullPath: ID!
   $before: String
   $after: String
@@ -8,6 +8,7 @@ query getGroupRunners(
   $last: Int
   $paused: Boolean
   $status: CiRunnerStatus
+  $upgradeStatus: CiRunnerUpgradeStatus
   $type: CiRunnerType
   $search: String
   $sort: CiRunnerSort
@@ -22,6 +23,7 @@ query getGroupRunners(
       last: $last
       paused: $paused
       status: $status
+      upgradeStatus: $upgradeStatus # Added in EE
       type: $type
       search: $search
       sort: $sort
