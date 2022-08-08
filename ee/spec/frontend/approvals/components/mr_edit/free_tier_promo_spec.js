@@ -59,7 +59,7 @@ describe('FreeTierPromo component', () => {
     });
 
     it('shows summary', () => {
-      expect(wrapper.findByText(MR_APPROVALS_PROMO_I18N.summary).exists()).toBeTruthy();
+      expect(wrapper.findByText(MR_APPROVALS_PROMO_I18N.summary).exists()).toBe(true);
     });
 
     it('shows collapse toggle button', () => {
@@ -84,7 +84,7 @@ describe('FreeTierPromo component', () => {
           name: MR_APPROVALS_PROMO_I18N.promoTitle,
         });
 
-        expect(promoTitle.exists()).toBeTruthy();
+        expect(promoTitle.exists()).toBe(true);
       });
 
       it('shows promo value statements', () => {
