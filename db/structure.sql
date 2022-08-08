@@ -12775,7 +12775,6 @@ CREATE TABLE ci_namespace_monthly_usages (
     id bigint NOT NULL,
     namespace_id bigint NOT NULL,
     date date NOT NULL,
-    additional_amount_available integer DEFAULT 0 NOT NULL,
     amount_used numeric(18,2) DEFAULT 0.0 NOT NULL,
     notification_level smallint DEFAULT 100 NOT NULL,
     shared_runners_duration integer DEFAULT 0 NOT NULL,
