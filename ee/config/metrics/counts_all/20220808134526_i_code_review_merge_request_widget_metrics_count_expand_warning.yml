@@ -1,5 +1,5 @@
 ---
-key_path: counts.i_code_review_merge_request_widget_metrics_count_warning
+key_path: counts.i_code_review_merge_request_widget_metrics_count_expand_warning
 description: Total number of times the Metrics widget extension was expanded (while in its Warning state)
 product_section: dev
 product_stage: create
@@ -14,7 +14,7 @@ data_source: redis
 data_category: optional
 options:
   events:
-    - i_code_review_merge_request_widget_metrics_count_expand
+    - i_code_review_merge_request_widget_metrics_count_expand_warning
 distribution:
 - ee
 tier:
