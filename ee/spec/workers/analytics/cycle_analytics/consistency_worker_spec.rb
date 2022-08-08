@@ -132,4 +132,51 @@ RSpec.describe Analytics::CycleAnalytics::ConsistencyWorker do
       end
     end
   end
+
+  it 'invokes the consistency check service for merge requests' do
+    stub_licensed_features(cycle_analytics_for_groups: true)
+
+    group = create(:group)
+    stage = create(:cycle_analytics_group_stage, group: group)
+    event1 = create(:cycle_analytics_merge_request_stage_event,
+                    merge_request_id: 1,
+                    stage_event_hash_id: stage.stage_event_hash_id,
+                    group_id: group.id,
+                    start_event_timestamp: 3.years.ago,
+                    end_event_timestamp: 2.years.ago)
+
+    create(:cycle_analytics_merge_request_stage_event,
+                    merge_request_id: 2,
+                    stage_event_hash_id: stage.stage_event_hash_id,
+                    group_id: group.id,
+                    start_event_timestamp: 2.years.ago,
+                    end_event_timestamp: 1.year.ago)
+
+    aggregation = Analytics::CycleAnalytics::Aggregation.find(group.id)
+    aggregation.update!(last_consistency_check_updated_at: 30.minutes.ago,
+                        last_consistency_check_issues_stage_event_hash_id: -1,
+                        last_consistency_check_issues_start_event_timestamp: 1.year.ago,
+                        last_consistency_check_issues_end_event_timestamp: 1.year.ago,
+                        last_consistency_check_issues_issuable_id: -1,
+                        last_consistency_check_merge_requests_stage_event_hash_id: event1.stage_event_hash_id,
+                        last_consistency_check_merge_requests_start_event_timestamp: event1.start_event_timestamp,
+                        last_consistency_check_merge_requests_end_event_timestamp: event1.end_event_timestamp,
+                        last_consistency_check_merge_requests_issuable_id: event1.merge_request_id)
+
+    worker.perform
+
+    aggregation.reload
+
+    expect(aggregation).to have_attributes(
+      last_consistency_check_merge_requests_start_event_timestamp: nil,
+      last_consistency_check_merge_requests_end_event_timestamp: nil,
+      last_consistency_check_merge_requests_issuable_id: nil
+    )
+
+    merge_request_ids = Analytics::CycleAnalytics::MergeRequestStageEvent.pluck(:merge_request_id)
+
+    # Removes the last event because the associated merge request record does not exist.
+    # It keeps the first event because the cursor starts after the first event.
+    expect(merge_request_ids).to eq([event1.merge_request_id])
+  end
 end
