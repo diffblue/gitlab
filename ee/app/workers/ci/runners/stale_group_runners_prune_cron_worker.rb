@@ -20,8 +20,8 @@ module Ci
         namespace_ids = NamespaceCiCdSetting.allowing_stale_runner_pruning.select(:namespace_id)
 
         result = ::Ci::Runners::StaleGroupRunnersPruneService.new.execute(namespace_ids)
-        result.to_h.slice(:status, :total_pruned)
-              .each { |key, value| log_extra_metadata_on_done(key, value) }
+        log_extra_metadata_on_done(:status, result.status)
+        result.payload.each { |key, value| log_extra_metadata_on_done(key, value) }
       end
     end
   end

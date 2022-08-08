@@ -3,8 +3,6 @@
 module Ci
   module Runners
     class StaleGroupRunnersPruneService
-      include BaseServiceUtility
-
       GROUP_BATCH_SIZE = 1_000
 
       def execute(namespace_ids)
