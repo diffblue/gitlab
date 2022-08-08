@@ -16,7 +16,8 @@ module EE
             author: @current_user,
             scope: @project,
             target: @project,
-            message: 'Unassigned project compliance framework'
+            message: 'Unassigned project compliance framework',
+            name: 'compliance_framework_deleted'
           }
 
           ::Gitlab::Audit::Auditor.audit(audit_context)
