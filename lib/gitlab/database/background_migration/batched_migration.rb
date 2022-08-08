@@ -232,13 +232,9 @@ module Gitlab
         end
 
         def progress
-          return 100 if finished?
-
-          return 0 unless migrated_tuple_count.to_i > 0
-
           return unless total_tuple_count.to_i > 0
 
-          [100 * migrated_tuple_count / total_tuple_count, 99].min
+          100 * migrated_tuple_count / total_tuple_count
         end
 
         private
