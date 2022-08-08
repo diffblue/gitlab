@@ -26,7 +26,7 @@ module Namespaces
 
       def current_size
         @current_size ||= Rails.cache.fetch(current_size_cache_key, expires_in: EXPIRATION_TIME) do
-          root_namespace.root_storage_statistics&.storage_size
+          root_namespace.root_storage_statistics&.storage_size || 0
         end
       end
 
