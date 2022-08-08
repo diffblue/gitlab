@@ -8,6 +8,7 @@ export default {
   props: ['metricsReportsPath'],
   enablePolling: true,
   i18n: {
+    label: s__('Reports|metrics report'),
     loading: s__('Reports|Metrics reports are loading'),
     error: s__('Reports|Metrics reports failed to load results'),
   },

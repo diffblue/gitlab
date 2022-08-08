@@ -32967,6 +32967,9 @@ msgstr ""
 msgid "Reports|Vulnerability Name"
 msgstr ""
 
+msgid "Reports|metrics report"
+msgstr ""
+
 msgid "Reports|no changed test results"
 msgstr ""
 
