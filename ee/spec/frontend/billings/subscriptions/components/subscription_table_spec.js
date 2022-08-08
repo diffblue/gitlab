@@ -68,7 +68,7 @@ describe('SubscriptionTable component', () => {
     });
 
     it('shows loading icon', () => {
-      expect(wrapper.findComponent(GlLoadingIcon).isVisible()).toBeTruthy();
+      expect(wrapper.findComponent(GlLoadingIcon).isVisible()).toBe(true);
     });
 
     it('dispatches the correct actions', () => {
