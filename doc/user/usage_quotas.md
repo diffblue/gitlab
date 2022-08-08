@@ -39,6 +39,9 @@ To prevent exceeding the namespace storage quota, you can:
 Starting October 19, 2022, a storage limit will be enforced on all GitLab Free namespaces.
 We will start with a large limit enforcement and eventually reduce it to 5 GB.
 
+Impacted users are notified via email and in-app notifications will begin 2022-08-22. 
+Only GitLab SaaS users are impacted - the limits are not applicable to self-managed users.
+
 The following table describes the enforcement schedule, which is subject to change.
 
 | Target enforcement date | Limit | Status |
