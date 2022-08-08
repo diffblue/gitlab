@@ -5,6 +5,15 @@ module EE
     extend ActiveSupport::Concern
     extend ::Gitlab::Utils::Override
 
+    class_methods do
+      extend ::Gitlab::Utils::Override
+
+      override :search_rate_limited_endpoints
+      def search_rate_limited_endpoints
+        super.push(:aggregations)
+      end
+    end
+
     prepended do
       # track unique users of advanced global search
       track_event :show, name: 'i_search_advanced',
@@ -20,6 +29,18 @@ module EE
         destinations: [:redis_hll, :snowplow]
 
       rescue_from Elastic::TimeoutError, with: :render_timeout
+
+      before_action :check_search_rate_limit!, only: search_rate_limited_endpoints
+    end
+
+    def aggregations
+      params.require([:search, :scope])
+
+      if search_term_valid?
+        render json: search_service.search_aggregations.to_json
+      else
+        render json: { error: flash[:alert] }, status: :bad_request
+      end
     end
 
     private
