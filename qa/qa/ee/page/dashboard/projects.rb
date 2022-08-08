@@ -33,7 +33,7 @@ module QA
           end
 
           def project_created?(project_name)
-            fill_element(:project_filter_form, project_name)
+            fill_element(:project_filter_form_container, project_name)
 
             wait_until(max_duration: Runtime::Geo.max_db_replication_time) do
               within_element(:projects_list) do
@@ -43,7 +43,7 @@ module QA
           end
 
           def project_deleted?(project_name)
-            fill_element(:project_filter_form, project_name)
+            fill_element(:project_filter_form_container, project_name)
 
             wait_until(max_duration: Runtime::Geo.max_db_replication_time) do
               within_element(:projects_list) do
