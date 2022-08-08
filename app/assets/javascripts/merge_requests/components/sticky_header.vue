@@ -89,39 +89,44 @@ export default {
       <div
         class="issue-sticky-header-text gl-display-flex gl-flex-direction-column gl-align-items-center gl-mx-auto gl-px-5"
       >
-        <div class="gl-w-full">
+        <div class="gl-w-full gl-display-flex gl-align-items-center">
           <status-box :initial-state="getNoteableData.state" issuable-type="merge_request" />
-          <strong v-safe-html:[$options.safeHtmlConfig]="title"></strong>
-          <gl-sprintf :message="__('%{source} %{copyButton} into %{target}')">
-            <template #copyButton>
-              <clipboard-button
-                :text="getNoteableData.source_branch"
-                :title="__('Copy branch name')"
-                size="small"
-                category="tertiary"
-                tooltip-placement="bottom"
-                class="gl-m-0! js-source-branch-copy"
-              />
-            </template>
-            <template #source>
-              <gl-link
-                :title="getNoteableData.source_branch"
-                class="gl-text-blue-500! gl-font-monospace gl-bg-blue-50 gl-rounded-base gl-font-sm gl-px-2 gl-display-inline-block gl-text-truncate gl-max-w-26 gl-mb-n2"
-                href="/gitlab-org/gitlab-test/-/tree/master-change-vue-comp"
-              >
-                {{ getNoteableData.source_branch }}
-              </gl-link>
-            </template>
-            <template #target>
-              <gl-link
-                :title="getNoteableData.target_branch"
-                class="gl-text-blue-500! gl-font-monospace gl-bg-blue-50 gl-rounded-base gl-font-sm gl-px-2 gl-display-inline-block gl-text-truncate gl-max-w-26 gl-mb-n2"
-                href="/gitlab-org/gitlab-test/-/tree/master-change-vue-comp"
-              >
-                {{ getNoteableData.target_branch }}
-              </gl-link>
-            </template>
-          </gl-sprintf>
+          <p
+            v-safe-html:[$options.safeHtmlConfig]="title"
+            class="gl-display-none gl-lg-display-block gl-font-weight-bold gl-overflow-hidden gl-white-space-nowrap gl-text-overflow-ellipsis gl-my-0 gl-mr-4"
+          ></p>
+          <div class="gl-display-flex gl-align-items-center">
+            <gl-sprintf :message="__('%{source} %{copyButton} into %{target}')">
+              <template #copyButton>
+                <clipboard-button
+                  :text="getNoteableData.source_branch"
+                  :title="__('Copy branch name')"
+                  size="small"
+                  category="tertiary"
+                  tooltip-placement="bottom"
+                  class="gl-m-0! js-source-branch-copy"
+                />
+              </template>
+              <template #source>
+                <gl-link
+                  :title="getNoteableData.source_branch"
+                  class="gl-text-blue-500! gl-font-monospace gl-bg-blue-50 gl-rounded-base gl-font-sm gl-px-2 gl-text-truncate gl-max-w-26"
+                  href="/gitlab-org/gitlab-test/-/tree/master-change-vue-comp"
+                >
+                  {{ getNoteableData.source_branch }}
+                </gl-link>
+              </template>
+              <template #target>
+                <gl-link
+                  :title="getNoteableData.target_branch"
+                  class="gl-text-blue-500! gl-font-monospace gl-bg-blue-50 gl-rounded-base gl-font-sm gl-px-2 gl-text-truncate gl-max-w-26 gl-ml-2"
+                  href="/gitlab-org/gitlab-test/-/tree/master-change-vue-comp"
+                >
+                  {{ getNoteableData.target_branch }}
+                </gl-link>
+              </template>
+            </gl-sprintf>
+          </div>
         </div>
         <div class="gl-w-full gl-display-flex">
           <ul

@@ -841,8 +841,9 @@ $tabs-holder-z-index: 250;
 
 .merge-request-sticky-header {
   z-index: 204;
+  --width: calc(100% - #{$contextual-sidebar-width});
 
-  .page-with-icon-sidebar & {
+  @include media-breakpoint-down(lg) {
     --width: calc(100% - #{$contextual-sidebar-collapsed-width});
   }
 }
@@ -850,5 +851,15 @@ $tabs-holder-z-index: 250;
 .detail-page-header-actions {
   .gl-toggle {
     @include gl-ml-auto;
+  }
+}
+
+.page-with-icon-sidebar .issue-sticky-header {
+  --width: calc(100% - #{$contextual-sidebar-collapsed-width});
+}
+
+.merge-request-notification-toggle {
+  .gl-toggle-label {
+    @include gl-font-weight-normal;
   }
 }

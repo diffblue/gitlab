@@ -182,10 +182,11 @@ export default {
 
 <template>
   <div v-if="isMergeRequest" class="gl-new-dropdown-item">
-    <div class="gl-px-5 gl-py-2">
+    <div class="gl-px-5 gl-pb-2 gl-pt-1">
       <gl-toggle
         :value="subscribed"
         :label="__('Notifications')"
+        class="merge-request-notification-toggle"
         label-position="left"
         data-testid="notifications-toggle"
         @change="toggleSubscribed"
