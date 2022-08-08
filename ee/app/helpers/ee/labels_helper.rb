@@ -35,7 +35,7 @@ module EE
 
     def label_tooltip_title(label)
       tooltip = super
-      tooltip = %(<span class='font-weight-bold scoped-label-tooltip-title'>Scoped label</span><br />#{tooltip}) if label.scoped_label?
+      tooltip = %(<span class='font-weight-bold scoped-label-tooltip-title'>Scoped label</span><br>#{tooltip}) if label.scoped_label?
 
       tooltip
     end
