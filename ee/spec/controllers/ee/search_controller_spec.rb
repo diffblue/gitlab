@@ -263,6 +263,72 @@ RSpec.describe SearchController, :elastic do
         end
       end
     end
+
+    it_behaves_like 'support for elasticsearch timeouts', :show, { search: 'hello' }, :search_objects, :html
+  end
+
+  describe 'GET #aggregations' do
+    it_behaves_like 'when the user cannot read cross project', :aggregations, { search: 'hello', scope: 'blobs' }
+    it_behaves_like 'with external authorization service enabled', :aggregations, { search: 'hello', scope: 'blobs' }
+    it_behaves_like 'support for elasticsearch timeouts', :aggregations, { search: 'hello', scope: 'blobs' }, :search_aggregations, :html
+
+    it_behaves_like 'rate limited endpoint', rate_limit_key: :search_rate_limit do
+      let(:current_user) { user }
+
+      def request
+        get(:aggregations, params: { search: 'foo@bar.com', scope: 'users' })
+      end
+    end
+
+    context 'blobs scope' do
+      context 'when elasticsearch is disabled' do
+        it 'returns an empty array' do
+          get :aggregations, params: { search: 'test', scope: 'blobs' }
+
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(json_response).to be_empty
+        end
+      end
+
+      context 'when elasticsearch is enabled', :sidekiq_inline do
+        let(:project) { create(:project, :public, :repository) }
+
+        before do
+          stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
+
+          project.repository.index_commits_and_blobs
+          ensure_elasticsearch_index!
+        end
+
+        it 'returns aggregations' do
+          get :aggregations, params: { search: 'test', scope: 'blobs' }
+
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(json_response.first['name']).to eq('language')
+          expect(json_response.first['buckets'].length).to eq(2)
+        end
+      end
+    end
+
+    it 'raises an error if search term is missing' do
+      expect do
+        get :aggregations, params: { scope: 'projects' }
+      end.to raise_error(ActionController::ParameterMissing)
+    end
+
+    it 'raises an error if search scope is missing' do
+      expect do
+        get :aggregations, params: { search: 'hello' }
+      end.to raise_error(ActionController::ParameterMissing)
+    end
+
+    it 'returns an error if search term is invalid' do
+      search_term = 'a' * (::Gitlab::Search::Params::SEARCH_CHAR_LIMIT + 1)
+      get :aggregations, params: { scope: 'blobs', search: search_term }
+
+      expect(response).to have_gitlab_http_status(:bad_request)
+      expect(json_response['error']).to include('Search query is too long')
+    end
   end
 
   describe '#append_info_to_payload' do
