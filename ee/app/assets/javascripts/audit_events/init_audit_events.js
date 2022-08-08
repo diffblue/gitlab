@@ -10,6 +10,11 @@ Vue.use(VueApollo);
 
 export default (selector) => {
   const el = document.querySelector(selector);
+
+  if (!el) {
+    return false;
+  }
+
   const {
     events,
     isLastPage,
@@ -17,7 +22,6 @@ export default (selector) => {
     exportUrl = '',
     showFilter,
     showStreams,
-    showStreamsHeaders,
     groupPath,
     emptyStateSvgPath,
     streamsIconSvgPath,
@@ -42,7 +46,6 @@ export default (selector) => {
       exportUrl,
       showFilter: parseBoolean(showFilter) || true,
       showStreams: parseBoolean(showStreams) || false,
-      showStreamsHeaders: parseBoolean(showStreamsHeaders) || false,
       maxHeaders: MAX_HEADERS,
       groupPath,
       // group level and project level are mutually exclusive.

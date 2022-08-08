@@ -40,7 +40,7 @@ export default {
     GlSprintf,
     GlTableLite,
   },
-  inject: ['groupPath', 'showStreamsHeaders', 'maxHeaders'],
+  inject: ['groupPath', 'maxHeaders'],
   props: {
     item: {
       type: Object,
@@ -392,7 +392,7 @@ export default {
         />
       </gl-form-group>
 
-      <div v-if="showStreamsHeaders" class="gl-mb-5">
+      <div class="gl-mb-5">
         <strong class="gl-display-block gl-mb-3">{{ $options.i18n.HEADERS_LABEL }}</strong>
         <gl-table-lite :items="headers" :fields="$options.fields">
           <template

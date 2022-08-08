@@ -37,7 +37,6 @@ describe('StreamDestinationEditor', () => {
 
   const createComponent = (
     mountFn = shallowMountExtended,
-    provide = {},
     propsData = {},
     apolloHandlers = [
       [
@@ -50,9 +49,7 @@ describe('StreamDestinationEditor', () => {
     wrapper = mountFn(StreamDestinationEditor, {
       provide: {
         groupPath,
-        showStreamsHeaders: false,
         maxHeaders,
-        ...provide,
       },
       propsData,
       apolloProvider: mockApollo,
@@ -115,7 +112,7 @@ describe('StreamDestinationEditor', () => {
 
     describe('HTTP headers', () => {
       beforeEach(() => {
-        createComponent(mountExtended, { showStreamsHeaders: true });
+        createComponent(mountExtended);
       });
 
       it('should render the table', () => {
@@ -146,7 +143,7 @@ describe('StreamDestinationEditor', () => {
 
   describe('add destination event without headers', () => {
     it('should emit add event after destination added', async () => {
-      createComponent(shallowMountExtended, {}, {}, [
+      createComponent(shallowMountExtended, {}, [
         [
           externalAuditEventDestinationCreate,
           jest.fn().mockResolvedValue(destinationCreateMutationPopulator()),
@@ -164,7 +161,7 @@ describe('StreamDestinationEditor', () => {
 
     it('should not emit add destination event and reports error when server returns error', async () => {
       const errorMsg = 'Destination hosts limit exceeded';
-      createComponent(shallowMountExtended, {}, {}, [
+      createComponent(shallowMountExtended, {}, [
         [
           externalAuditEventDestinationCreate,
           jest.fn().mockResolvedValue(destinationCreateMutationPopulator([errorMsg])),
@@ -184,7 +181,7 @@ describe('StreamDestinationEditor', () => {
     it('should not emit add destination event and reports error when network error occurs', async () => {
       const sentryError = new Error('Network error');
       const sentryCaptureExceptionSpy = jest.spyOn(Sentry, 'captureException');
-      createComponent(shallowMountExtended, {}, {}, [
+      createComponent(shallowMountExtended, {}, [
         [externalAuditEventDestinationCreate, jest.fn().mockRejectedValue(sentryError)],
       ]);
 
@@ -202,7 +199,7 @@ describe('StreamDestinationEditor', () => {
 
   describe('add destination event with headers', () => {
     it('should emit add event after destination and headers are added', async () => {
-      createComponent(mountExtended, { showStreamsHeaders: true }, {}, [
+      createComponent(mountExtended, {}, [
         [
           externalAuditEventDestinationCreate,
           jest.fn().mockResolvedValue(destinationCreateMutationPopulator()),
@@ -229,7 +226,7 @@ describe('StreamDestinationEditor', () => {
         .fn()
         .mockResolvedValue(destinationHeaderCreateMutationPopulator());
 
-      createComponent(mountExtended, { showStreamsHeaders: true }, {}, [
+      createComponent(mountExtended, {}, [
         [
           externalAuditEventDestinationCreate,
           jest.fn().mockResolvedValue(destinationCreateMutationPopulator()),
@@ -256,7 +253,7 @@ describe('StreamDestinationEditor', () => {
 
     it('should not emit add destination event and reports error when server returns error while adding headers', async () => {
       const errorMsg = 'Destination hosts limit exceeded';
-      createComponent(mountExtended, { showStreamsHeaders: true }, {}, [
+      createComponent(mountExtended, {}, [
         [
           externalAuditEventDestinationCreate,
           jest.fn().mockResolvedValue(destinationCreateMutationPopulator()),
@@ -289,7 +286,7 @@ describe('StreamDestinationEditor', () => {
     it('should not emit add destination event and reports error when network error occurs while adding headers', async () => {
       const sentryError = new Error('Network error');
       const sentryCaptureExceptionSpy = jest.spyOn(Sentry, 'captureException');
-      createComponent(mountExtended, { showStreamsHeaders: true }, {}, [
+      createComponent(mountExtended, {}, [
         [
           externalAuditEventDestinationCreate,
           jest.fn().mockResolvedValue(destinationCreateMutationPopulator()),
@@ -335,7 +332,7 @@ describe('StreamDestinationEditor', () => {
 
   describe('HTTP headers table', () => {
     beforeEach(() => {
-      createComponent(mountExtended, { showStreamsHeaders: true });
+      createComponent(mountExtended);
     });
 
     it.each`
@@ -448,7 +445,7 @@ describe('StreamDestinationEditor', () => {
 
     describe('renders', () => {
       beforeEach(() => {
-        createComponent(mountExtended, { showStreamsHeaders: true }, { item });
+        createComponent(mountExtended, { item });
       });
 
       it('should not render the destinations warning', () => {
@@ -492,7 +489,7 @@ describe('StreamDestinationEditor', () => {
           .fn()
           .mockResolvedValue(destinationHeaderDeleteMutationPopulator());
 
-        createComponent(mountExtended, { showStreamsHeaders: true }, { item }, [
+        createComponent(mountExtended, { item }, [
           [externalAuditEventDestinationHeaderCreate, headerCreateSpy],
           [externalAuditEventDestinationHeaderUpdate, headerUpdateSpy],
           [externalAuditEventDestinationHeaderDelete, headerDeleteSpy],
@@ -522,7 +519,7 @@ describe('StreamDestinationEditor', () => {
       it('should not emit updated event and reports error when server returns error while saving', async () => {
         const errorMsg = 'Destination hosts limit exceeded';
 
-        createComponent(mountExtended, { showStreamsHeaders: true }, { item }, [
+        createComponent(mountExtended, { item }, [
           [
             externalAuditEventDestinationHeaderCreate,
             jest.fn().mockResolvedValue(destinationHeaderCreateMutationPopulator([errorMsg])),
@@ -549,7 +546,7 @@ describe('StreamDestinationEditor', () => {
         const sentryError = new Error('Network error');
         const sentryCaptureExceptionSpy = jest.spyOn(Sentry, 'captureException');
 
-        createComponent(mountExtended, { showStreamsHeaders: true }, { item }, [
+        createComponent(mountExtended, { item }, [
           [
             externalAuditEventDestinationHeaderCreate,
             jest.fn().mockResolvedValue(destinationHeaderUpdateMutationPopulator()),

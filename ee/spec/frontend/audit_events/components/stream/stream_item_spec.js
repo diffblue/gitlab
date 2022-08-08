@@ -18,7 +18,6 @@ describe('StreamItem', () => {
   let wrapper;
 
   const createComponent = (
-    injectedProps = {},
     deleteExternalDestinationSpy = jest
       .fn()
       .mockResolvedValue(destinationDeleteMutationPopulator()),
@@ -28,10 +27,6 @@ describe('StreamItem', () => {
     ]);
     wrapper = shallowMountExtended(StreamItem, {
       apolloProvider: mockApollo,
-      provide: {
-        showStreamsHeaders: false,
-        ...injectedProps,
-      },
       propsData: {
         item: mockExternalDestinations[0],
       },
@@ -63,16 +58,6 @@ describe('StreamItem', () => {
       expect(findEditor().exists()).toBe(false);
     });
 
-    it('should not show the edit button', () => {
-      expect(findEditButton().exists()).toBe(false);
-    });
-  });
-
-  describe('with the streaming headers', () => {
-    beforeEach(() => {
-      createComponent({ showStreamsHeaders: true });
-    });
-
     it('should show the edit button', () => {
       expect(findEditButton().exists()).toBe(true);
     });
@@ -80,7 +65,7 @@ describe('StreamItem', () => {
 
   describe('deleting', () => {
     it('should emit deleted with item id', async () => {
-      createComponent({ showStreamsHeaders: true });
+      createComponent();
       const deleteBtn = findDeleteButton();
       const editBtn = findEditButton();
       await deleteBtn.trigger('click');
@@ -101,7 +86,7 @@ describe('StreamItem', () => {
       const deleteExternalDestinationErrorSpy = jest
         .fn()
         .mockResolvedValue(destinationDeleteMutationPopulator([errorMsg]));
-      createComponent({ showStreamsHeaders: true }, deleteExternalDestinationErrorSpy);
+      createComponent(deleteExternalDestinationErrorSpy);
       const deleteBtn = findDeleteButton();
       const editBtn = findEditButton();
 
@@ -123,7 +108,7 @@ describe('StreamItem', () => {
 
     it('should not emit deleted when network error occurs', async () => {
       const error = new Error('Network error');
-      createComponent({ showStreamsHeaders: true }, jest.fn().mockRejectedValue(error));
+      createComponent(jest.fn().mockRejectedValue(error));
 
       const deleteBtn = findDeleteButton();
       const editBtn = findEditButton();
@@ -149,7 +134,7 @@ describe('StreamItem', () => {
 
   describe('editing', () => {
     beforeEach(() => {
-      createComponent({ showStreamsHeaders: true });
+      createComponent();
       findEditButton().trigger('click');
     });
 

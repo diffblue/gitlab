@@ -14,7 +14,6 @@ export default {
   directives: {
     GlTooltip,
   },
-  inject: ['showStreamsHeaders'],
   props: {
     item: {
       type: Object,
@@ -102,7 +101,6 @@ export default {
       </code>
       <div v-if="!isEditing">
         <gl-button
-          v-if="showStreamsHeaders"
           v-gl-tooltip
           :aria-label="editButtonLabel"
           :disabled="isDeleting"
