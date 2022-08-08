@@ -3,10 +3,11 @@ import {
   GlAlert,
   GlDropdown,
   GlDropdownItem,
-  GlDropdownSectionHeader,
+  GlSearchBoxByType,
   GlLoadingIcon,
   GlTooltipDirective,
 } from '@gitlab/ui';
+import fuzzaldrinPlus from 'fuzzaldrin-plus';
 import axios from '~/lib/utils/axios_utils';
 import { __, s__ } from '~/locale';
 
@@ -26,7 +27,7 @@ export default {
     GlAlert,
     GlDropdown,
     GlDropdownItem,
-    GlDropdownSectionHeader,
+    GlSearchBoxByType,
     GlLoadingIcon,
   },
   inject: {
@@ -48,7 +49,15 @@ export default {
       artifacts: [],
       hasError: false,
       isLoading: false,
+      searchQuery: '',
     };
+  },
+  computed: {
+    filteredArtifacts() {
+      return this.searchQuery.length > 0
+        ? fuzzaldrinPlus.filter(this.artifacts, this.searchQuery, { key: 'name' })
+        : this.artifacts;
+    },
   },
   methods: {
     fetchArtifacts() {
@@ -70,6 +79,9 @@ export default {
           this.isLoading = false;
         });
     },
+    handleDropdownShown() {
+      this.$refs.searchInput.focusInput();
+    },
   },
 };
 </script>
@@ -79,18 +91,15 @@ export default {
     :title="$options.i18n.artifacts"
     :text="$options.i18n.artifacts"
     :aria-label="$options.i18n.artifacts"
-    icon="ellipsis_v"
+    :header-text="$options.i18n.artifactSectionHeader"
+    icon="download"
     data-testid="pipeline-multi-actions-dropdown"
     right
     lazy
     text-sr-only
-    no-caret
     @show.once="fetchArtifacts"
+    @shown="handleDropdownShown"
   >
-    <gl-dropdown-section-header>{{
-      $options.i18n.artifactSectionHeader
-    }}</gl-dropdown-section-header>
-
     <gl-alert v-if="hasError" variant="danger" :dismissible="false">
       {{ $options.i18n.artifactsFetchErrorMessage }}
     </gl-alert>
@@ -101,8 +110,12 @@ export default {
       {{ $options.i18n.emptyArtifactsMessage }}
     </gl-dropdown-item>
 
+    <template #header>
+      <gl-search-box-by-type v-if="artifacts.length" ref="searchInput" v-model.trim="searchQuery" />
+    </template>
+
     <gl-dropdown-item
-      v-for="(artifact, i) in artifacts"
+      v-for="(artifact, i) in filteredArtifacts"
       :key="i"
       :href="artifact.path"
       rel="nofollow"
