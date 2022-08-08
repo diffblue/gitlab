@@ -34,60 +34,6 @@ RSpec.describe MergeRequests::ApprovalService do
         service.execute(merge_request)
       end
 
-      it 'creates an approval note' do
-        allow(merge_request).to receive(:approvals_left).and_return(1)
-
-        expect(SystemNoteService).to receive(:approve_mr).with(merge_request, user)
-
-        service.execute(merge_request)
-      end
-
-      it 'marks pending todos as done' do
-        allow(merge_request).to receive(:approvals_left).and_return(1)
-
-        service.execute(merge_request)
-
-        expect(todo.reload).to be_done
-      end
-
-      context 'with remaining approvals' do
-        it 'fires an approval webhook' do
-          expect(merge_request).to receive(:approvals_left).and_return(5)
-          expect(service).to receive(:execute_hooks).with(merge_request, 'approval')
-
-          service.execute(merge_request)
-        end
-
-        it 'does not send an email' do
-          expect(merge_request).to receive(:approvals_left).and_return(5)
-          expect(service).not_to receive(:notification_service)
-
-          service.execute(merge_request)
-        end
-      end
-
-      context 'with required approvals' do
-        let(:notification_service) { NotificationService.new }
-
-        before do
-          expect(merge_request).to receive(:approvals_left).and_return(0)
-          allow(service).to receive(:execute_hooks)
-          allow(service).to receive(:notification_service).and_return(notification_service)
-        end
-
-        it 'fires an approved webhook' do
-          expect(service).to receive(:execute_hooks).with(merge_request, 'approved')
-
-          service.execute(merge_request)
-        end
-
-        it 'sends an email' do
-          expect(notification_service).to receive_message_chain(:async, :approve_mr).with(merge_request, user)
-
-          service.execute(merge_request)
-        end
-      end
-
       context 'async_after_approval feature flag is disabled' do
         before do
           stub_feature_flags(async_after_approval: false)
@@ -114,6 +60,60 @@ RSpec.describe MergeRequests::ApprovalService do
           expect(::Gitlab::Audit::Auditor).to receive(:audit).with(audit_context)
 
           service.execute(merge_request)
+        end
+
+        it 'creates an approval note' do
+          allow(merge_request).to receive(:approvals_left).and_return(1)
+
+          expect(SystemNoteService).to receive(:approve_mr).with(merge_request, user)
+
+          service.execute(merge_request)
+        end
+
+        it 'marks pending todos as done' do
+          allow(merge_request).to receive(:approvals_left).and_return(1)
+
+          service.execute(merge_request)
+
+          expect(todo.reload).to be_done
+        end
+
+        context 'with remaining approvals' do
+          it 'fires an approval webhook' do
+            expect(merge_request).to receive(:approvals_left).and_return(5)
+            expect(service).to receive(:execute_hooks).with(merge_request, 'approval')
+
+            service.execute(merge_request)
+          end
+
+          it 'does not send an email' do
+            expect(merge_request).to receive(:approvals_left).and_return(5)
+            expect(service).not_to receive(:notification_service)
+
+            service.execute(merge_request)
+          end
+        end
+
+        context 'with required approvals' do
+          let(:notification_service) { NotificationService.new }
+
+          before do
+            expect(merge_request).to receive(:approvals_left).and_return(0)
+            allow(service).to receive(:execute_hooks)
+            allow(service).to receive(:notification_service).and_return(notification_service)
+          end
+
+          it 'fires an approved webhook' do
+            expect(service).to receive(:execute_hooks).with(merge_request, 'approved')
+
+            service.execute(merge_request)
+          end
+
+          it 'sends an email' do
+            expect(notification_service).to receive_message_chain(:async, :approve_mr).with(merge_request, user)
+
+            service.execute(merge_request)
+          end
         end
 
         context 'approvals metrics calculation' do
