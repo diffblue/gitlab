@@ -39,7 +39,7 @@ describe('RequirementItem', () => {
         wrapper.vm.handleArchiveClick();
 
         await nextTick();
-        expect(wrapper.emitted('archiveClick')).toBeTruthy();
+        expect(wrapper.emitted()).toHaveProperty('archiveClick');
         expect(wrapper.emitted('archiveClick')[0]).toEqual([
           {
             iid: requirement1.iid,
@@ -54,7 +54,7 @@ describe('RequirementItem', () => {
         wrapperArchived.vm.handleReopenClick();
 
         await nextTick();
-        expect(wrapperArchived.emitted('reopenClick')).toBeTruthy();
+        expect(wrapperArchived.emitted()).toHaveProperty('reopenClick');
         expect(wrapperArchived.emitted('reopenClick')[0]).toEqual([
           {
             iid: requirementArchived.iid,
@@ -82,7 +82,7 @@ describe('RequirementItem', () => {
     it('emits `show-click` event with requirement as param', () => {
       wrapper.trigger('click');
 
-      expect(wrapper.emitted('show-click')).toBeTruthy();
+      expect(wrapper.emitted()).toHaveProperty('show-click');
       expect(wrapper.emitted('show-click')[0]).toEqual([requirement1]);
     });
 
@@ -138,7 +138,7 @@ describe('RequirementItem', () => {
 
       editButtonEl.vm.$emit('click');
 
-      expect(wrapper.emitted('edit-click')).toBeTruthy();
+      expect(wrapper.emitted()).toHaveProperty('edit-click');
       expect(wrapper.emitted('edit-click')[0]).toEqual([wrapper.vm.requirement]);
     });
 
