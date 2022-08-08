@@ -9,22 +9,25 @@ module Groups
     feature_category :authentication_and_authorization
 
     def create
-      group_link = group.saml_group_links.build(saml_group_link_params)
+      response = ::GroupSaml::SamlGroupLinks::CreateService.new(current_user: current_user,
+                                                                group: group,
+                                                                params: saml_group_link_params)
+                                                           .execute
 
-      if group_link.save
+      if response.success?
         flash[:notice] = s_('GroupSAML|New SAML group link saved.')
-        create_audit_event('saml_group_links_created', group, "SAML group links created. Group Name - #{group_link.saml_group_name}, Access Level - #{group_link.access_level}")
       else
-        flash[:alert] = alert(group_link.errors.full_messages.join(', '))
+        flash[:alert] = alert(response[:error])
       end
 
       redirect_to group_saml_group_links_path(@group)
     end
 
     def destroy
-      saml_group_link = group.saml_group_links.find(params[:id])
-      saml_group_link.destroy
-      create_audit_event('saml_group_links_removed', group, "SAML group links removed. Group Name - #{saml_group_link.saml_group_name}")
+      ::GroupSaml::SamlGroupLinks::DestroyService.new(current_user: current_user,
+                                                                group: group,
+                                                                saml_group_link: group.saml_group_links.find(params[:id]))
+                                                 .execute
 
       redirect_to group_saml_group_links_path(@group), status: :found, notice: s_('GroupSAML|SAML group link was successfully removed.')
     end
@@ -41,16 +44,6 @@ module Groups
 
     def alert(error_message)
       s_('GroupSAML|Could not create SAML group link: %{errors}.') % { errors: error_message }
-    end
-
-    def create_audit_event(name, group, message)
-      ::Gitlab::Audit::Auditor.audit(
-        name: name,
-        author: current_user,
-        scope: group,
-        target: group,
-        message: message
-      )
     end
   end
 end
