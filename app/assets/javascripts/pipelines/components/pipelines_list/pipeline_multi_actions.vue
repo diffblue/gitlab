@@ -12,8 +12,7 @@ import axios from '~/lib/utils/axios_utils';
 import { __, s__ } from '~/locale';
 
 export const i18n = {
-  artifacts: __('Artifacts'),
-  artifactSectionHeader: __('Download artifacts'),
+  downloadArtifacts: __('Download artifacts'),
   artifactsFetchErrorMessage: s__('Pipelines|Could not load artifacts.'),
   emptyArtifactsMessage: __('No artifacts found'),
 };
@@ -88,10 +87,10 @@ export default {
 <template>
   <gl-dropdown
     v-gl-tooltip
-    :title="$options.i18n.artifacts"
-    :text="$options.i18n.artifacts"
-    :aria-label="$options.i18n.artifacts"
-    :header-text="$options.i18n.artifactSectionHeader"
+    :title="$options.i18n.downloadArtifacts"
+    :text="$options.i18n.downloadArtifacts"
+    :aria-label="$options.i18n.downloadArtifacts"
+    :header-text="$options.i18n.downloadArtifacts"
     icon="download"
     data-testid="pipeline-multi-actions-dropdown"
     right
