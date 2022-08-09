@@ -37,8 +37,8 @@ module Namespaces
       def alert_attributes
         {
           title: n_(
-            'Billing|Your free group is now limited to %d member',
-            'Billing|Your free group is now limited to %d members',
+            'Your free group is now limited to %d member',
+            'Your free group is now limited to %d members',
             free_user_limit
           ) % free_user_limit,
           body: s_(
