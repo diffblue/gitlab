@@ -68,9 +68,9 @@ describe('PolicyYamlEditor component', () => {
 
   it("emits input event on editor's input", async () => {
     const editor = findEditor();
-    editor.vm.$emit('input');
+    editor.vm.$emit('input', 'foo');
     await nextTick();
-    expect(wrapper.emitted().input).toBeTruthy();
+    expect(wrapper.emitted().input).toEqual([['foo']]);
   });
 
   it('configures editor with syntax highlighting', () => {
