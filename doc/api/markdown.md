@@ -6,16 +6,21 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 
 # Markdown API **(FREE)**
 
-> Authentication requirement [introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/93727) in GitLab 15.3 [with a flag](../administration/feature_flags.md) named `authenticate_markdown_api`. Enabled by default.
+Convert Markdown content to HTML.
+
+Available only in APIv4.
+
+## Required authentication
+
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/93727) in GitLab 15.3 [with a flag](../administration/feature_flags.md) named `authenticate_markdown_api`. Enabled by default.
 
 FLAG:
-On self-managed GitLab, by default this feature is available. To hide the feature, 
-ask an administrator to [disable the feature flag](../administration/feature_flags.md) named `authenticate_markdown_api`.
+On self-managed GitLab, by default this feature is enabled and authentication is required.
+To remove the requirement to authenticate, ask an administrator to
+[disable the feature flag](../administration/feature_flags.md) named `authenticate_markdown_api`.
 On GitLab.com, this feature is available.
 
 All API calls to the Markdown API must be [authenticated](index.md#authentication).
-
-Available only in APIv4.
 
 ## Render an arbitrary Markdown document
 
