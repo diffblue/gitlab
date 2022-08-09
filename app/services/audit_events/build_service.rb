@@ -37,18 +37,7 @@ module AuditEvents
     end
 
     def payload
-      if License.feature_available?(:admin_audit_log)
-        base_payload.merge(
-          details: base_details_payload.merge(
-            ip_address: @ip_address,
-            entity_path: @scope.full_path,
-            custom_message: @message
-          ),
-          ip_address: @ip_address
-        )
-      else
-        base_payload.merge(details: base_details_payload)
-      end
+      base_payload.merge(details: base_details_payload)
     end
 
     def base_payload
@@ -63,20 +52,20 @@ module AuditEvents
 
     def base_details_payload
       @additional_details.merge({
-        author_name: @author.name,
-        author_class: @author.class.name,
-        target_id: @target.id,
-        target_type: @target.type,
-        target_details: @target_details || @target.details,
-        custom_message: @message
-      })
+                                  author_name: @author.name,
+                                  author_class: @author.class.name,
+                                  target_id: @target.id,
+                                  target_type: @target.type,
+                                  target_details: @target_details || @target.details,
+                                  custom_message: @message
+                                })
     end
 
     def build_author(author)
       author.id = -2 if author.instance_of? DeployToken
       author.id = -3 if author.instance_of? DeployKey
 
-      author.impersonated? ? ::Gitlab::Audit::ImpersonatedAuthor.new(author) : author
+      author
     end
 
     def build_target(target)
@@ -86,11 +75,7 @@ module AuditEvents
     end
 
     def build_message(message)
-      if License.feature_available?(:admin_audit_log) && @author.impersonated?
-        "#{message} (by #{@author.impersonated_by})"
-      else
-        message
-      end
+      message
     end
 
     def build_ip_address
@@ -98,3 +83,5 @@ module AuditEvents
     end
   end
 end
+
+AuditEvents::BuildService.prepend_mod_with('AuditEvents::BuildService')
