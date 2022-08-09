@@ -126,7 +126,7 @@ describe('Approvals ProjectRules', () => {
       const secondRow = rows.at(1);
       const nameCell = findCell(secondRow, 'name');
 
-      expect(nameCell.find('.js-help').exists()).toBeFalsy();
+      expect(nameCell.find('.js-help').exists()).toBe(false);
     });
 
     it('should render the unconfigured-security-rules component', () => {
