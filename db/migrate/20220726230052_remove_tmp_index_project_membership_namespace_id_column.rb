@@ -9,7 +9,7 @@ class RemoveTmpIndexProjectMembershipNamespaceIdColumn < Gitlab::Database::Migra
   disable_ddl_transaction!
 
   def up
-    remove_concurrent_index_by_name :project_members, INDEX_NAME
+    remove_concurrent_index_by_name :members, INDEX_NAME
   end
 
   def down
