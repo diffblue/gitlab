@@ -7,7 +7,6 @@ import ChangeFailureRateCharts from 'ee/dora/components/change_failure_rate_char
 import { mergeUrlParams, updateHistory, getParameterValues } from '~/lib/utils/url_utility';
 import API from '~/api';
 import ReleaseStatsCard from './release_stats_card.vue';
-import SharedRunnersUsage from './shared_runner_usage.vue';
 
 export default {
   name: 'CiCdAnalyticsApp',
@@ -20,7 +19,6 @@ export default {
     LeadTimeCharts,
     TimeToRestoreServiceCharts,
     ChangeFailureRateCharts,
-    SharedRunnersUsage,
   },
   releaseStatisticsTabEvent: 'g_analytics_ci_cd_release_statistics',
   deploymentFrequencyTabEvent: 'g_analytics_ci_cd_deployment_frequency',
@@ -130,9 +128,6 @@ export default {
           <change-failure-rate-charts />
         </gl-tab>
       </template>
-      <gl-tab :title="s__('CICDAnalytics|Shared runner usage')">
-        <shared-runners-usage />
-      </gl-tab>
       <template v-if="canViewGroupUsageQuotaBoolean" #tabs-end>
         <gl-link :href="pipelineGroupUsageQuotaPath" class="gl-align-self-center gl-ml-auto">{{
           __('View group pipeline usage quota')

@@ -3,7 +3,6 @@ import { merge } from 'lodash';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import CiCdAnalyticsApp from 'ee/analytics/group_ci_cd_analytics/components/app.vue';
 import ReleaseStatsCard from 'ee/analytics/group_ci_cd_analytics/components/release_stats_card.vue';
-import SharedRunnersUsage from 'ee/analytics/group_ci_cd_analytics/components/shared_runner_usage.vue';
 import DeploymentFrequencyCharts from 'ee/dora/components/deployment_frequency_charts.vue';
 import LeadTimeCharts from 'ee/dora/components/lead_time_charts.vue';
 import TimeToRestoreServiceCharts from 'ee/dora/components/time_to_restore_service_charts.vue';
@@ -58,7 +57,6 @@ describe('ee/analytics/group_ci_cd_analytics/components/app.vue', () => {
           'Lead time',
           'Time to restore service',
           'Change failure rate',
-          'Shared runner usage',
         ].forEach((tabName, index) => {
           expect(findGlTabAtIndex(index).attributes('title')).toBe(tabName);
         });
@@ -95,10 +93,6 @@ describe('ee/analytics/group_ci_cd_analytics/components/app.vue', () => {
 
       it('renders the release statistics component', () => {
         expect(wrapper.findComponent(ReleaseStatsCard).exists()).toBe(true);
-      });
-
-      it('renders the shared runner usage component', () => {
-        expect(wrapper.findComponent(SharedRunnersUsage).exists()).toBe(true);
       });
 
       it('does not render the DORA chart components', () => {
