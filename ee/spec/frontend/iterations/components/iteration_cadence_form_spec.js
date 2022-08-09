@@ -370,10 +370,6 @@ describe('Iteration cadence form', () => {
         expect(findDurationGroup().text()).toContain('This field is required');
         expect(findUpcomingIterationsGroup().text()).toContain('This field is required');
       });
-
-      it('fills start date field with the start date of the first iteration in the cadence', async () => {
-        expect(findStartDate().element.value).toBe(mockIterationNode.startDate);
-      });
     });
 
     it('fills fields with existing cadence info after loading', async () => {

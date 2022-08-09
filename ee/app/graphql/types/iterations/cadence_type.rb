@@ -23,7 +23,7 @@ module Types
             description: 'Upcoming iterations to be created when iteration cadence is set to automatic.'
 
       field :start_date, Types::TimeType, null: true,
-            description: 'Timestamp of the iteration cadence start date.'
+            description: 'Timestamp of the automation start date.'
 
       field :automatic, GraphQL::Types::Boolean, null: true,
             description: 'Whether the iteration cadence should automatically generate upcoming iterations.'

@@ -782,8 +782,8 @@ RSpec.describe Iteration do
   describe '.by_iteration_cadence_ids' do
     let_it_be(:group) { create(:group) }
     let_it_be(:iteration_cadence) { create(:iterations_cadence, group: group) }
-    let_it_be(:iterations_cadence1) { create(:iterations_cadence, group: group, start_date: 10.days.ago) }
-    let_it_be(:iterations_cadence2) { create(:iterations_cadence, group: group, start_date: 10.days.ago) }
+    let_it_be(:iterations_cadence1) { create(:iterations_cadence, group: group, start_date: 6.days.ago) }
+    let_it_be(:iterations_cadence2) { create(:iterations_cadence, group: group, start_date: 6.days.ago) }
     let_it_be(:closed_iteration) { create(:iteration, :closed, :skip_future_date_validation, iterations_cadence: iterations_cadence1, group: group, start_date: 8.days.ago, due_date: 2.days.ago) }
     let_it_be(:current_iteration) { create(:iteration, :current, :skip_future_date_validation, iterations_cadence: iterations_cadence2, group: group, start_date: 1.day.ago, due_date: 6.days.from_now) }
     let_it_be(:upcoming_iteration) { create(:iteration, :upcoming, iterations_cadence: iterations_cadence2, group: group, start_date: 1.week.from_now, due_date: 2.weeks.from_now) }
@@ -807,7 +807,7 @@ RSpec.describe Iteration do
     end
 
     let_it_be(:group) { create(:group) }
-    let_it_be(:iterations_cadence) { create(:iterations_cadence, group: group, start_date: 10.days.ago.utc.to_date) }
+    let_it_be(:iterations_cadence) { create(:iterations_cadence, group: group, start_date: 6.days.ago) }
 
     let(:iteration) { build(:iteration, group: iterations_cadence.group, iterations_cadence: iterations_cadence, start_date: start_date, due_date: 2.weeks.after(start_date).to_date) }
 

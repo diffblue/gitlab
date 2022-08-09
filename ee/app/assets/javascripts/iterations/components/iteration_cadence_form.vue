@@ -31,10 +31,10 @@ const i18n = Object.freeze({
     placeholder: s__('Iterations|Cadence name'),
   },
   effectiveDate: {
-    label: s__('Iterations|First iteration start date'),
+    label: s__('Iterations|Automation start date'),
     placeholder: s__('Iterations|Select start date'),
     labelDescription: s__(
-      'Iterations|The start date of the first iteration determines when your cadence begins.',
+      'Iterations|The date of the first iteration to schedule. This date determines the day of the week when each iteration starts.',
     ),
     description: s__('Iterations|Iterations are scheduled to start on %{weekday}s.'),
   },
@@ -54,6 +54,9 @@ const i18n = Object.freeze({
       'Iterations|Number of upcoming iterations that should be scheduled at a time.',
     ),
     placeholder: s__('Iterations|Select number'),
+    description: s__(
+      'Iterations|All scheduled iterations will remain scheduled even if you use a smaller number.',
+    ),
   },
   description: {
     label: __('Description'),
@@ -247,11 +250,6 @@ export default {
 
         return workspace.iterations?.nodes || [];
       },
-      result() {
-        if (!this.automatic) {
-          this.startDate = this.iterations[0].startDate;
-        }
-      },
       error(error) {
         this.errorMessage = error;
       },
@@ -437,6 +435,7 @@ export default {
           label-for="cadence-schedule-upcoming-iterations"
           :invalid-feedback="i18n.requiredField"
           :state="validationState.iterationsInAdvance"
+          :description="i18n.upcomingIterations.description"
         >
           <gl-form-select
             id="cadence-schedule-upcoming-iterations"
