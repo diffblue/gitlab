@@ -483,11 +483,21 @@ class License < ApplicationRecord
     add_limit_error(current_period: current_period, user_count: user_count)
   end
 
+  def trueup_from
+    Date.parse(restrictions[:trueup_from]).beginning_of_day
+  rescue StandardError
+    previous_started_at
+  end
+
+  def trueup_to
+    Date.parse(restrictions[:trueup_to]).end_of_day
+  rescue StandardError
+    previous_expired_at
+  end
+
   def check_trueup
-    trueup_qty          = restrictions[:trueup_quantity]
-    trueup_from         = Date.parse(restrictions[:trueup_from]).beginning_of_day rescue previous_started_at
-    trueup_to           = Date.parse(restrictions[:trueup_to]).end_of_day rescue previous_expired_at
-    max_historical      = historical_max(from: trueup_from, to: trueup_to)
+    trueup_qty = restrictions[:trueup_quantity]
+    max_historical = historical_max(from: trueup_from, to: trueup_to)
     expected_trueup_qty = if previous_user_count
                             max_historical - previous_user_count
                           else

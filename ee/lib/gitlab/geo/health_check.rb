@@ -88,7 +88,11 @@ module Gitlab
           latest_migration = nil
 
           Dir[File.join(db_migrate_path, "[0-9]*_*.rb"), File.join(db_post_migrate_path, "[0-9]*_*.rb")].each do |f|
-            timestamp = f.scan(/0*([0-9]+)_[_.a-zA-Z0-9]*.rb/).first.first rescue -1
+            timestamp = begin
+              f.scan(/0*([0-9]+)_[_.a-zA-Z0-9]*.rb/).first.first
+            rescue StandardError
+              -1
+            end
 
             if latest_migration.nil? || timestamp.to_i > latest_migration.to_i
               latest_migration = timestamp
