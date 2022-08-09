@@ -36,9 +36,45 @@ RSpec.describe TrialRegistrationsController do
       subject { response }
 
       it_behaves_like 'a dot-com only feature'
+    end
 
-      context 'when customer is not authenticated' do
-        it { is_expected.to render_template(:new) }
+    context 'when customer is not authenticated' do
+      context 'when about_your_company_registration_flow is disabled' do
+        before do
+          stub_feature_flags(about_your_company_registration_flow: false)
+          get :new, params: get_params
+        end
+
+        it 'renders template and stores correct location' do
+          is_expected.to render_template(:new)
+
+          expect(controller.stored_location_for(:user)).to eq(new_trial_path)
+        end
+
+        context 'when there are additional query params' do
+          let(:get_params) { { glm_source: 'some_source', glm_content: 'some_content' } }
+
+          it 'renders template and stores correct location' do
+            is_expected.to render_template(:new)
+
+            expect(controller.stored_location_for(:user))
+              .to eq(new_trial_path(params: get_params))
+          end
+        end
+      end
+
+      context 'when about_your_company_registration_flow is enabled' do
+        before do
+          stub_feature_flags(about_your_company_registration_flow: true)
+          get :new, params: get_params
+        end
+
+        it 'renders template and stores correct location' do
+          is_expected.to render_template(:new)
+
+          expect(controller.stored_location_for(:user))
+            .to eq(new_users_sign_up_company_path(trial: true))
+        end
       end
     end
 
@@ -70,7 +106,7 @@ RSpec.describe TrialRegistrationsController do
 
         let_it_be(:logged_in_user) { create(:user) }
 
-        it { is_expected.to redirect_to(new_users_sign_up_company_path(trial: true)) }
+        it { is_expected.to redirect_to(new_trial_url) }
       end
     end
   end
