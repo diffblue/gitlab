@@ -20,9 +20,13 @@ class Groups::Analytics::ProductivityAnalyticsController < Groups::Analytics::Ap
   before_action :validate_params, only: :show, if: -> { request.format.json? }
 
   include IssuableCollections
-  include RedisTracking
+  include ProductAnalyticsTracking
 
-  track_redis_hll_event :show, name: 'g_analytics_productivity'
+  track_custom_event :show,
+    name: 'g_analytics_productivity',
+    action: 'perform_analytics_usage_action',
+    label: 'redis_hll_counters.analytics.analytics_total_unique_counts_monthly',
+    destinations: %i[redis_hll snowplow]
 
   def show
     respond_to do |format|
@@ -108,4 +112,12 @@ class Groups::Analytics::ProductivityAnalyticsController < Groups::Analytics::Ap
     paginated_mrs
   end
   # rubocop: enable CodeReuse/ActiveRecord
+
+  def tracking_namespace_source
+    @group
+  end
+
+  def tracking_project_source
+    nil
+  end
 end

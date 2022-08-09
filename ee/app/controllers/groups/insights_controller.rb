@@ -2,12 +2,16 @@
 
 class Groups::InsightsController < Groups::ApplicationController
   include InsightsActions
-  include RedisTracking
+  include ProductAnalyticsTracking
 
   before_action :authorize_read_group!
   before_action :authorize_read_insights_config_project!
 
-  track_redis_hll_event :show, name: 'g_analytics_insights'
+  track_custom_event :show,
+    name: 'g_analytics_insights',
+    action: 'perform_analytics_usage_action',
+    label: 'redis_hll_counters.analytics.analytics_total_unique_counts_monthly',
+    destinations: %i[redis_hll snowplow]
 
   feature_category :value_stream_management
 
@@ -27,5 +31,13 @@ class Groups::InsightsController < Groups::ApplicationController
 
   def insights_entity
     group
+  end
+
+  def tracking_namespace_source
+    group
+  end
+
+  def tracking_project_source
+    nil
   end
 end
