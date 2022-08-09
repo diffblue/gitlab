@@ -2,7 +2,7 @@
 
 module Groups
   class HookLogsController < Groups::ApplicationController
-    include ::Integrations::HooksExecution
+    include ::WebHooks::HookExecutionNotice
 
     before_action :authorize_admin_group!
 
