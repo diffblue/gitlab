@@ -15773,6 +15773,22 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | <a id="projectenvironmentssearch"></a>`search` | [`String`](#string) | Search query for environment name. |
 | <a id="projectenvironmentsstates"></a>`states` | [`[String!]`](#string) | States of environments that should be included in result. |
 
+##### `Project.forkTargets`
+
+Namespaces in which the current user can fork the project into.
+
+Returns [`NamespaceConnection`](#namespaceconnection).
+
+This field returns a [connection](#connections). It accepts the
+four standard [pagination arguments](#connection-pagination-arguments):
+`before: String`, `after: String`, `first: Int`, `last: Int`.
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="projectforktargetssearch"></a>`search` | [`String`](#string) | Search query for path or name. |
+
 ##### `Project.incidentManagementEscalationPolicies`
 
 Incident Management escalation policies of the project.
