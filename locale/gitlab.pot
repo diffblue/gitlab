@@ -19991,6 +19991,9 @@ msgstr[1] ""
 msgid "Importing..."
 msgstr ""
 
+msgid "Import|The repository could not be imported."
+msgstr ""
+
 msgid "Import|There is not a valid Git repository at this URL. If your HTTP repository is not publicly accessible, verify your credentials."
 msgstr ""
 
