@@ -289,53 +289,9 @@ RSpec.describe 'Group value stream analytics filters and data', :js do
 
       it_behaves_like 'has default filters'
     end
-
-    context 'with lots of data', :js do
-      around do |example|
-        freeze_time { example.run }
-      end
-
-      before do
-        issue.update!(created_at: 5.days.ago.middle_of_day)
-        mr.update!(created_at: issue.created_at + 1.day)
-        create_cycle(user, project, issue, mr, milestone, pipeline)
-        create(:labeled_issue, created_at: issue.created_at, project: create(:project, group: group), labels: [group_label1])
-        create(:labeled_issue, created_at: issue.created_at + 2.days, project: create(:project, group: group), labels: [group_label2])
-
-        issue.metrics.update!(first_mentioned_in_commit_at: mr.created_at - 5.hours, first_associated_with_milestone_at: issue.created_at + 2.days)
-        mr.metrics.update!(first_deployed_to_production_at: mr.created_at + 2.hours, merged_at: mr.created_at + 1.hour)
-
-        deploy_master(user, project, environment: 'staging')
-        deploy_master(user, project)
-
-        select_group_and_custom_value_stream(group, custom_value_stream_name)
-      end
-
-      stages_with_data = [
-        { title: 'Issue', description: 'Time before an issue gets scheduled', events_count: 1, time: '2d' },
-        { title: 'Code', description: 'Time until first merge request', events_count: 1, time: '1h' }
-      ]
-
-      stages_without_data = [{ title: 'Milestone', description: 'Time before an issue starts implementation', events_count: 0, time: "-" }]
-
-      it 'each stage with events will display the stage events list when selected', :sidekiq_might_not_need_inline do
-        stages_without_data.each do |stage|
-          select_stage(stage[:title])
-          expect(page).not_to have_selector('[data-testid="vsa-stage-event"]')
-        end
-
-        stages_with_data.each do |stage|
-          select_stage(stage[:title])
-          expect(page).to have_selector('[data-testid="vsa-stage-table"]')
-          expect(page.all('[data-testid="vsa-stage-event"]').length)
-            .to(eq(stage[:events_count]),
-                "expected #{stage[:title]} stage to have #{stage[:events_count]}, got #{page.all('[data-testid="vsa-stage-event"]').length}")
-        end
-      end
-    end
   end
 
-  context 'with use_vs_aggregated_table disabled', :js do
+  context 'with lots of data', :js do
     let(:issue) { create(:issue, project: project) }
 
     around do |example|
@@ -343,7 +299,6 @@ RSpec.describe 'Group value stream analytics filters and data', :js do
     end
 
     before do
-      stub_feature_flags(use_vsa_aggregated_tables: false)
       issue.update!(created_at: 5.days.ago.middle_of_day)
       mr.update!(created_at: issue.created_at + 1.day)
       create_cycle(user, project, issue, mr, milestone, pipeline)
@@ -355,6 +310,12 @@ RSpec.describe 'Group value stream analytics filters and data', :js do
 
       deploy_master(user, project, environment: 'staging')
       deploy_master(user, project)
+
+      value_stream = create(:cycle_analytics_group_value_stream, group: group)
+      Gitlab::Analytics::CycleAnalytics::DefaultStages.all.map do |params|
+        group.cycle_analytics_stages.build(params.merge(value_stream: value_stream)).save!
+      end
+      create_value_stream_group_aggregation(group)
 
       select_group(group)
     end

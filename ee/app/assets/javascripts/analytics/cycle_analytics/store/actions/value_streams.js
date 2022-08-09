@@ -14,14 +14,9 @@ export const updateAggregation = ({ commit, getters }, status) => {
     });
 };
 
-export const receiveCreateValueStreamSuccess = (
-  { commit, dispatch, state: { featureFlags } },
-  valueStream = {},
-) => {
+export const receiveCreateValueStreamSuccess = ({ commit }, valueStream = {}) => {
   commit(types.RECEIVE_CREATE_VALUE_STREAM_SUCCESS, valueStream);
-  return featureFlags.useVsaAggregatedTables
-    ? commit(types.SET_CREATING_AGGREGATION, true)
-    : dispatch('fetchCycleAnalyticsData');
+  commit(types.SET_CREATING_AGGREGATION, true);
 };
 
 export const createValueStream = ({ commit, dispatch, getters }, data) => {

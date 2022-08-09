@@ -98,17 +98,7 @@ class Groups::Analytics::CycleAnalytics::ValueStreamsController < Groups::Analyt
   end
 
   def value_streams
-    value_streams = @group.value_streams.preload_associated_models
-
-    if Feature.enabled?(:use_vsa_aggregated_tables, @group)
-      value_streams
-    else
-      value_streams.presence || [in_memory_default_value_stream]
-    end
-  end
-
-  def in_memory_default_value_stream
-    @group.value_streams.new(name: Analytics::CycleAnalytics::Stages::BaseService::DEFAULT_VALUE_STREAM_NAME)
+    @value_streams ||= @group.value_streams.preload_associated_models
   end
 
   def serialize_value_stream(result)

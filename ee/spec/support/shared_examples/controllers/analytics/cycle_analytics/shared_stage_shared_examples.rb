@@ -227,38 +227,32 @@ RSpec.shared_examples 'Value Stream Analytics Stages controller' do
         end
 
         it 'accepts sort params' do
-          if Feature.enabled?(:use_vsa_aggregated_tables)
-            travel_to DateTime.new(2019, 1, 5) do
-              event_1 = create(:cycle_analytics_merge_request_stage_event,
-                               stage_event_hash_id: stage.stage_event_hash_id,
-                               group_id: stage.group.id,
-                               merge_request_id: 1,
-                               start_event_timestamp: Time.current,
-                               end_event_timestamp: 20.days.from_now)
+          travel_to DateTime.new(2019, 1, 5) do
+            event_1 = create(:cycle_analytics_merge_request_stage_event,
+                             stage_event_hash_id: stage.stage_event_hash_id,
+                             group_id: stage.group.id,
+                             merge_request_id: 1,
+                             start_event_timestamp: Time.current,
+                             end_event_timestamp: 20.days.from_now)
 
-              event_2 = create(:cycle_analytics_merge_request_stage_event,
-                               stage_event_hash_id: stage.stage_event_hash_id,
-                               group_id: stage.group.id,
-                               merge_request_id: 2,
-                               start_event_timestamp: Time.current,
-                               end_event_timestamp: 1.day.from_now)
+            event_2 = create(:cycle_analytics_merge_request_stage_event,
+                             stage_event_hash_id: stage.stage_event_hash_id,
+                             group_id: stage.group.id,
+                             merge_request_id: 2,
+                             start_event_timestamp: Time.current,
+                             end_event_timestamp: 1.day.from_now)
 
-              event_3 = create(:cycle_analytics_merge_request_stage_event,
-                               stage_event_hash_id: stage.stage_event_hash_id,
-                               group_id: stage.group.id,
-                               merge_request_id: 3,
-                               start_event_timestamp: Time.current,
-                               end_event_timestamp: 3.days.from_now)
+            event_3 = create(:cycle_analytics_merge_request_stage_event,
+                             stage_event_hash_id: stage.stage_event_hash_id,
+                             group_id: stage.group.id,
+                             merge_request_id: 3,
+                             start_event_timestamp: Time.current,
+                             end_event_timestamp: 3.days.from_now)
 
-              expect_next_instance_of(Gitlab::Analytics::CycleAnalytics::Aggregated::RecordsFetcher) do |records_fetcher|
-                records_fetcher.serialized_records do |raw_active_record_scope|
-                  expect(raw_active_record_scope.pluck(:merge_request_id)).to eq([event_2.merge_request_id, event_3.merge_request_id, event_1.merge_request_id])
-                end
+            expect_next_instance_of(Gitlab::Analytics::CycleAnalytics::Aggregated::RecordsFetcher) do |records_fetcher|
+              records_fetcher.serialized_records do |raw_active_record_scope|
+                expect(raw_active_record_scope.pluck(:merge_request_id)).to eq([event_2.merge_request_id, event_3.merge_request_id, event_1.merge_request_id])
               end
-            end
-          else
-            expect_next_instance_of(Gitlab::Analytics::CycleAnalytics::Sorting) do |sort|
-              expect(sort).to receive(:apply).with(:duration, :asc).and_call_original
             end
           end
 
@@ -270,19 +264,10 @@ RSpec.shared_examples 'Value Stream Analytics Stages controller' do
 
       context 'pagination' do
         it 'exposes pagination headers' do
-          if Feature.enabled?(:use_vsa_aggregated_tables)
-            create_list(:cycle_analytics_merge_request_stage_event, 3)
-            stub_const('Gitlab::Analytics::CycleAnalytics::Aggregated::RecordsFetcher::MAX_RECORDS', 2)
-          else
-            create_list(:merge_request, 3)
-            stub_const('Gitlab::Analytics::CycleAnalytics::RecordsFetcher::MAX_RECORDS', 2)
-          end
+          create_list(:cycle_analytics_merge_request_stage_event, 3)
+          stub_const('Gitlab::Analytics::CycleAnalytics::Aggregated::RecordsFetcher::MAX_RECORDS', 2)
 
-          if Feature.enabled?(:use_vsa_aggregated_tables)
-            allow_any_instance_of(Gitlab::Analytics::CycleAnalytics::Aggregated::RecordsFetcher).to receive(:query).and_return(Analytics::CycleAnalytics::MergeRequestStageEvent.all)
-          else
-            allow_any_instance_of(Gitlab::Analytics::CycleAnalytics::RecordsFetcher).to receive(:query).and_return(MergeRequest.join_metrics.all)
-          end
+          allow_any_instance_of(Gitlab::Analytics::CycleAnalytics::Aggregated::RecordsFetcher).to receive(:query).and_return(Analytics::CycleAnalytics::MergeRequestStageEvent.all)
 
           subject
 
@@ -298,11 +283,7 @@ RSpec.shared_examples 'Value Stream Analytics Stages controller' do
       it 'matches the response schema' do
         fake_result = [double(MergeRequest, average_duration_in_seconds: 10, date: Time.current.to_date)]
 
-        if Feature.enabled?(:use_vsa_aggregated_tables)
-          expect_any_instance_of(Gitlab::Analytics::CycleAnalytics::Aggregated::DataForDurationChart).to receive(:average_by_day).and_return(fake_result)
-        else
-          expect_any_instance_of(Gitlab::Analytics::CycleAnalytics::DataForDurationChart).to receive(:average_by_day).and_return(fake_result)
-        end
+        expect_any_instance_of(Gitlab::Analytics::CycleAnalytics::Aggregated::DataForDurationChart).to receive(:average_by_day).and_return(fake_result)
 
         subject
 

@@ -228,66 +228,55 @@ RSpec.describe 'Multiple value streams', :js do
     it_behaves_like 'delete a value stream', name
   end
 
-  context 'use_vsa_aggregated_tables feature flag off' do
+  context 'without a value stream' do
     before do
-      stub_feature_flags(use_vsa_aggregated_tables: false)
+      select_group(group, empty_state_selector)
     end
 
-    it_behaves_like 'create group value streams', false
-    it_behaves_like 'create sub group value streams', false
+    it 'renders the empty state' do
+      expect(page).to have_text(s_('CycleAnalytics|Custom value streams to measure your DevSecOps lifecycle'))
+    end
+
+    it 'can navigate to the create value stream form' do
+      page.find('[data-testid="create-value-stream-button"]').click
+
+      expect(page).to have_selector('[data-testid="value-stream-form-modal"]')
+    end
   end
 
-  context 'use_vsa_aggregated_tables feature flag on' do
-    context 'without a value stream' do
+  context 'with a value stream' do
+    context 'without an aggregation created' do
       before do
-        select_group(group, empty_state_selector)
+        create(:cycle_analytics_group_value_stream, group: group, name: 'default')
+        select_group(group)
       end
 
-      it 'renders the empty state' do
-        expect(page).to have_text(s_('CycleAnalytics|Custom value streams to measure your DevSecOps lifecycle'))
+      it 'renders the aggregating status banner' do
+        expect(page).to have_text(s_('CycleAnalytics|Data is collecting and loading.'))
       end
 
-      it 'can navigate to the create value stream form' do
-        page.find('[data-testid="create-value-stream-button"]').click
+      it 'displays the value stream once an aggregation is run' do
+        create_value_stream_group_aggregation(group)
 
-        expect(page).to have_selector('[data-testid="value-stream-form-modal"]')
+        reload_value_stream
+
+        expect(page).not_to have_button(_('Reload page'))
+        expect(page).to have_text('Last updated less than a minute ago')
       end
     end
 
-    context 'with a value stream' do
-      context 'without an aggregation created' do
-        before do
-          create(:cycle_analytics_group_value_stream, group: group, name: 'default')
-          select_group(group)
-        end
+    context 'with an aggregation created' do
+      before do
+        create_value_stream_group_aggregation(group)
+        create_value_stream_group_aggregation(sub_group)
 
-        it 'renders the aggregating status banner' do
-          expect(page).to have_text(s_('CycleAnalytics|Data is collecting and loading.'))
-        end
-
-        it 'displays the value stream once an aggregation is run' do
-          create_value_stream_group_aggregation(group)
-
-          reload_value_stream
-
-          expect(page).not_to have_button(_('Reload page'))
-          expect(page).to have_text('Last updated less than a minute ago')
-        end
+        # ensure we have a value stream already available
+        create(:cycle_analytics_group_value_stream, group: group, name: 'default')
+        create(:cycle_analytics_group_value_stream, group: sub_group, name: 'default')
       end
 
-      context 'with an aggregation created' do
-        before do
-          create_value_stream_group_aggregation(group)
-          create_value_stream_group_aggregation(sub_group)
-
-          # ensure we have a value stream already available
-          create(:cycle_analytics_group_value_stream, group: group, name: 'default')
-          create(:cycle_analytics_group_value_stream, group: sub_group, name: 'default')
-        end
-
-        it_behaves_like 'create group value streams', true
-        it_behaves_like 'create sub group value streams', true
-      end
+      it_behaves_like 'create group value streams', true
+      it_behaves_like 'create sub group value streams', true
     end
   end
 end

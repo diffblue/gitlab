@@ -2,7 +2,6 @@
 import { mapActions, mapState, mapGetters } from 'vuex';
 import { GlEmptyState } from '@gitlab/ui';
 import { refreshCurrentPage } from '~/lib/utils/url_utility';
-import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { VSA_METRICS_GROUPS } from '~/analytics/shared/constants';
 import ValueStreamMetrics from '~/analytics/shared/components/value_stream_metrics.vue';
 import PathNavigation from '~/cycle_analytics/components/path_navigation.vue';
@@ -34,7 +33,6 @@ export default {
     ValueStreamSelect,
     UrlSync,
   },
-  mixins: [glFeatureFlagsMixin()],
   props: {
     emptyStateSvgPath: {
       type: String,
@@ -79,9 +77,7 @@ export default {
       'hasValueStreams',
     ]),
     isWaitingForNextAggregation() {
-      return Boolean(
-        this.selectedValueStream && this.isAggregationEnabled && !this.aggregation.lastRunAt,
-      );
+      return Boolean(this.selectedValueStream && !this.aggregation.lastRunAt);
     },
     shouldRenderEmptyState() {
       return this.isLoadingValueStreams || (!this.isCreatingAggregation && !this.hasValueStreams);
@@ -100,11 +96,8 @@ export default {
     hasDateRangeSet() {
       return this.createdAfter && this.createdBefore;
     },
-    isAggregationEnabled() {
-      return this.glFeatures.useVsaAggregatedTables;
-    },
     isAggregationStatusAvailable() {
-      return this.isAggregationEnabled && this.aggregation.lastRunAt;
+      return this.aggregation.lastRunAt;
     },
     selectedValueStreamName() {
       return this.selectedValueStream?.name;
@@ -212,7 +205,6 @@ export default {
         :selected-projects="selectedProjects"
         :start-date="createdAfter"
         :end-date="createdBefore"
-        :is-aggregation-enabled="isAggregationEnabled"
         @selectProject="onProjectsSelect"
         @setDateRange="onSetDateRange"
       />

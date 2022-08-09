@@ -19,43 +19,27 @@ RSpec.describe Analytics::CycleAnalytics::Stages::ListService do
     stub_licensed_features(cycle_analytics_for_groups: true)
   end
 
-  context 'when the use_vsa_aggregated_tables feature is enabled' do
-    before do
-      stub_feature_flags(use_vsa_aggregated_tables: true)
-    end
+  it_behaves_like 'permission check for Value Stream Analytics Stage services', :cycle_analytics_for_groups
 
-    it_behaves_like 'permission check for Value Stream Analytics Stage services', :cycle_analytics_for_groups
-
-    it 'returns empty array' do
-      expect(stages.size).to eq(0)
-    end
-
-    it 'provides the default stages as non-persisted objects' do
-      expect(stages.map(&:id)).to all(be_nil)
-    end
-
-    it 'does not persist the value stream record' do
-      expect { subject }.not_to change { Analytics::CycleAnalytics::GroupValueStream.count }
-    end
-
-    context 'when there are persisted stages' do
-      let_it_be(:stage1) { create(:cycle_analytics_group_stage, parent: group, relative_position: 2, value_stream: value_stream) }
-      let_it_be(:stage2) { create(:cycle_analytics_group_stage, parent: group, relative_position: 3, value_stream: value_stream) }
-      let_it_be(:stage3) { create(:cycle_analytics_group_stage, parent: group, relative_position: 1, value_stream: value_stream) }
-
-      it 'returns the persisted stages in order' do
-        expect(stages).to eq([stage3, stage1, stage2])
-      end
-    end
+  it 'returns empty array' do
+    expect(stages.size).to eq(0)
   end
 
-  context 'when the use_vsa_aggregated_tables feature is disabled' do
-    before do
-      stub_feature_flags(use_vsa_aggregated_tables: false)
-    end
+  it 'provides the default stages as non-persisted objects' do
+    expect(stages.map(&:id)).to all(be_nil)
+  end
 
-    it 'returns the default stages' do
-      expect(stages.size).to eq(Gitlab::Analytics::CycleAnalytics::DefaultStages.all.size)
+  it 'does not persist the value stream record' do
+    expect { subject }.not_to change { Analytics::CycleAnalytics::GroupValueStream.count }
+  end
+
+  context 'when there are persisted stages' do
+    let_it_be(:stage1) { create(:cycle_analytics_group_stage, parent: group, relative_position: 2, value_stream: value_stream) }
+    let_it_be(:stage2) { create(:cycle_analytics_group_stage, parent: group, relative_position: 3, value_stream: value_stream) }
+    let_it_be(:stage3) { create(:cycle_analytics_group_stage, parent: group, relative_position: 1, value_stream: value_stream) }
+
+    it 'returns the persisted stages in order' do
+      expect(stages).to eq([stage3, stage1, stage2])
     end
   end
 end
