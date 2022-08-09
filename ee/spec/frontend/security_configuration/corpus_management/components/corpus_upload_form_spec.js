@@ -183,7 +183,7 @@ describe('Corpus upload modal', () => {
       describe('clicking cancel button', () => {
         it('emits the reset corpus event', () => {
           findCancelButton().trigger('click');
-          expect(wrapper.emitted().resetCorpus).toBeTruthy();
+          expect(wrapper.emitted().resetCorpus).toEqual([[]]);
         });
       });
     });
