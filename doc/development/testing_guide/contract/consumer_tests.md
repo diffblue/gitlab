@@ -24,7 +24,7 @@ To learn more about how the contract test directory is structured, see the contr
 The Pact consumer test is defined through the `pactWith` function that takes `PactOptions` and the `PactFn`.
 
 ```javascript
-const { pactWith } = require('jest-pact');
+import { pactWith } from 'jest-pact';
 
 pactWith(PactOptions, PactFn);
 ```
@@ -34,7 +34,7 @@ pactWith(PactOptions, PactFn);
 `PactOptions` with `jest-pact` introduces [additional options](https://github.com/pact-foundation/jest-pact/blob/dce370c1ab4b7cb5dff12c4b62246dc229c53d0e/README.md#defaults) that build on top of the ones [provided in `pact-js`](https://github.com/pact-foundation/pact-js#constructor). In most cases, you define the `consumer`, `provider`, `log`, and `dir` options for these tests.
 
 ```javascript
-const { pactWith } = require('jest-pact');
+import { pactWith } from 'jest-pact';
 
 pactWith(
   {
@@ -54,7 +54,7 @@ To learn more about how to name the consumers and providers, see contract testin
 The `PactFn` is where your tests are defined. This is where you set up the mock provider and where you can use the standard Jest methods like [`Jest.describe`](https://jestjs.io/docs/api#describename-fn), [`Jest.beforeEach`](https://jestjs.io/docs/api#beforeeachfn-timeout), and [`Jest.it`](https://jestjs.io/docs/api#testname-fn-timeout). For more information, see [https://jestjs.io/docs/api](https://jestjs.io/docs/api).
 
 ```javascript
-const { pactWith } = require('jest-pact');
+import { pactWith } from 'jest-pact';
 
 pactWith(
   {
@@ -92,8 +92,8 @@ For this tutorial, define four attributes for the `Interaction`:
 After you define the `Interaction`, add that interaction to the mock provider by calling `addInteraction`.
 
 ```javascript
-const { pactWith } = require('jest-pact');
-const { Matchers } = require('@pact-foundation/pact');
+import { pactWith } from 'jest-pact';
+import { Matchers } from '@pact-foundation/pact';
 
 pactWith(
   {
@@ -168,10 +168,10 @@ export async function getDiscussions(endpoint) {
 After that's set up, import it to the test file and call it to make the request. Then, you can make the request and define your expectations.
 
 ```javascript
-const { pactWith } = require('jest-pact');
-const { Matchers } = require('@pact-foundation/pact');
+import { pactWith } from 'jest-pact';
+import { Matchers } from '@pact-foundation/pact';
 
-const { getDiscussions } = require('../resources/api/project/merge_requests');
+import { getDiscussions } from '../../../resources/api/project/merge_requests';
 
 pactWith(
   {
@@ -235,7 +235,7 @@ As you may have noticed, the request and response definitions can get large. Thi
 Create a file under `spec/contracts/consumer/fixtures/project/merge_request` called `discussions.fixture.js` where you will place the `request` and `response` definitions.
 
 ```javascript
-const { Matchers } = require('@pact-foundation/pact');
+import { Matchers } from '@pact-foundation/pact';
 
 const body = Matchers.eachLike({
   id: Matchers.string('fd73763cbcbf7b29eb8765d969a38f7d735e222a'),
@@ -277,10 +277,10 @@ exports.Discussions = Discussions;
 With all of that moved to the `fixture`, you can simplify the test to the following:
 
 ```javascript
-const { pactWith } = require('jest-pact');
+import { pactWith } from 'jest-pact';
 
-const { Discussions } = require('../fixtures/discussions.fixture');
-const { getDiscussions } = require('../endpoints/project/merge_requests');
+import { Discussions } from '../../../fixtures/project/merge_request/discussions.fixture';
+import { getDiscussions } from '../../../resources/api/project/merge_requests';
 
 const CONSUMER_NAME = 'MergeRequest#show';
 const PROVIDER_NAME = 'Merge Request Discussions Endpoint';
