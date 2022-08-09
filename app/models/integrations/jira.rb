@@ -372,7 +372,11 @@ module Integrations
     end
 
     def transition_issue_to_done(issue)
-      transitions = issue.transitions rescue []
+      transitions = begin
+        issue.transitions
+      rescue StandardError
+        []
+      end
 
       transition = transitions.find do |transition|
         status = transition&.to&.statusCategory
