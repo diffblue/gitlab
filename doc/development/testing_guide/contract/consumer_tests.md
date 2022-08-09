@@ -6,7 +6,7 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 
 # Writing consumer tests
 
-This tutorial guides you through writing a consumer test from scratch. To start, the consumer tests are written using [`jest-pact`](https://github.com/pact-foundation/jest-pact) that builds on top of [`pact-js`](https://github.com/pact-foundation/pact-js). This tutorial shows you how to write a consumer test for the `/discussions.json` endpoint, which is actually `/:namespace_name/:project_name/-/merge_requests/:id/discussions.json`.
+This tutorial guides you through writing a consumer test from scratch. To start, the consumer tests are written using [`jest-pact`](https://github.com/pact-foundation/jest-pact) that builds on top of [`pact-js`](https://github.com/pact-foundation/pact-js). This tutorial shows you how to write a consumer test for the `/discussions.json` REST API endpoint, which is actually `/:namespace_name/:project_name/-/merge_requests/:id/discussions.json`. For an example of a GraphQL consumer test, you can check out [`spec/contracts/consumer/specs/project/pipeline/show.spec.js`](https://gitlab.com/gitlab-org/gitlab/-/tree/master/spec/contracts/consumer/specs/project/pipeline/show.spec.js).
 
 ## Create the skeleton
 
