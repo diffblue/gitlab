@@ -10,6 +10,8 @@ import {
   GRAPHQL_ERROR_MESSAGE,
   PARSING_ERROR_MESSAGE,
   SECURITY_POLICY_ACTIONS,
+  ACTIONS_LABEL,
+  ADD_ACTION_LABEL,
   ADD_RULE_LABEL,
   RULES_LABEL,
 } from '../constants';
@@ -17,16 +19,24 @@ import PolicyEditorLayout from '../policy_editor_layout.vue';
 import DimDisableContainer from '../dim_disable_container.vue';
 import { assignSecurityPolicyProject, modifyPolicy } from '../utils';
 import PolicyRuleBuilder from './policy_rule_builder.vue';
-import { DEFAULT_SCAN_EXECUTION_POLICY, fromYaml, toYaml } from './lib';
-import { buildDefaultPipeLineRule } from './lib/rules';
+import PolicyActionBuilder from './policy_action_builder.vue';
+import {
+  buildDefaultAction,
+  buildDefaultPipeLineRule,
+  DEFAULT_SCAN_EXECUTION_POLICY,
+  fromYaml,
+  toYaml,
+} from './lib';
 
 export default {
-  ADD_RULE_LABEL,
-  RULES_LABEL,
   EDITOR_MODE_RULE,
   EDITOR_MODE_YAML,
   SECURITY_POLICY_ACTIONS,
   i18n: {
+    ACTIONS_LABEL,
+    ADD_ACTION_LABEL,
+    ADD_RULE_LABEL,
+    RULES_LABEL,
     PARSING_ERROR_MESSAGE,
     createMergeRequest: __('Configure with a merge request'),
     notOwnerButtonText: __('Learn more'),
@@ -38,6 +48,7 @@ export default {
     DimDisableContainer,
     GlButton,
     GlEmptyState,
+    PolicyActionBuilder,
     PolicyEditorLayout,
     PolicyRuleBuilder,
   },
@@ -107,6 +118,9 @@ export default {
     },
   },
   methods: {
+    addAction() {
+      this.policy.actions.push(buildDefaultAction());
+    },
     addRule() {
       this.policy.rules.push(buildDefaultPipeLineRule());
     },
@@ -223,7 +237,7 @@ export default {
     <template #rules>
       <dim-disable-container data-testid="rule-builder-container" :disabled="hasParsingError">
         <template #title>
-          <h4>{{ $options.RULES_LABEL }}</h4>
+          <h4>{{ $options.i18n.RULES_LABEL }}</h4>
         </template>
 
         <template #disabled>
@@ -242,7 +256,31 @@ export default {
 
         <div class="gl-bg-gray-10 gl-rounded-base gl-p-5 gl-mb-5">
           <gl-button variant="link" data-testid="add-rule" icon="plus" @click="addRule">
-            {{ $options.ADD_RULE_LABEL }}
+            {{ $options.i18n.ADD_RULE_LABEL }}
+          </gl-button>
+        </div>
+      </dim-disable-container>
+    </template>
+    <template #actions>
+      <dim-disable-container data-testid="action-container" :disabled="hasParsingError">
+        <template #title>
+          <h4>{{ $options.i18n.ACTIONS_LABEL }}</h4>
+        </template>
+
+        <template #disabled>
+          <div class="gl-bg-gray-10 gl-rounded-base gl-p-6"></div>
+        </template>
+
+        <policy-action-builder
+          v-for="(action, index) in policy.actions"
+          :key="index"
+          class="gl-mb-4"
+          :init-action="action"
+        />
+
+        <div class="gl-bg-gray-10 gl-rounded-base gl-p-5 gl-mb-5">
+          <gl-button variant="link" data-testid="add-action" icon="plus" @click="addAction">
+            {{ $options.i18n.ADD_ACTION_LABEL }}
           </gl-button>
         </div>
       </dim-disable-container>

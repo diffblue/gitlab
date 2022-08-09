@@ -9,6 +9,7 @@ import {
   SECURITY_POLICY_ACTIONS,
   GRAPHQL_ERROR_MESSAGE,
   PARSING_ERROR_MESSAGE,
+  ACTIONS_LABEL,
   ADD_RULE_LABEL,
   RULES_LABEL,
 } from '../constants';
@@ -41,7 +42,7 @@ export default {
       'SecurityOrchestration|Scan result policies can only be created by project owners.',
     ),
     yamlPreview: s__('SecurityOrchestration|.yaml preview'),
-    actions: s__('SecurityOrchestration|Actions'),
+    ACTIONS_LABEL,
   },
   components: {
     GlEmptyState,
@@ -286,7 +287,7 @@ export default {
     <template #actions>
       <dim-disable-container data-testid="action-container" :disabled="hasParsingError">
         <template #title>
-          <h4>{{ $options.i18n.actions }}</h4>
+          <h4>{{ $options.i18n.ACTIONS_LABEL }}</h4>
         </template>
 
         <template #disabled>
