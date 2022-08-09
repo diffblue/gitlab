@@ -309,18 +309,18 @@ To generate these known events for a single widget:
    in the `WIDGETS` list.
 1. Ensure the GDK is running (`gdk start`).
 1. Generate known events on the command line with the following command.
-   Replace `test_reports` with your appropriate name slug:
+  Replace `test_reports` with your appropriate name slug:
 
-    ```shell
-    bundle exec rails generate gitlab:usage_metric_definition \
-    counts.i_code_review_merge_request_widget_test_reports_count_view \
-    counts.i_code_review_merge_request_widget_test_reports_count_full_report_clicked \
-    counts.i_code_review_merge_request_widget_test_reports_count_expand \
-    counts.i_code_review_merge_request_widget_test_reports_count_expand_success \
-    counts.i_code_review_merge_request_widget_test_reports_count_expand_warning \
-    counts.i_code_review_merge_request_widget_test_reports_count_expand_failed \
-    --dir=all
-    ```
+   ```shell
+   bundle exec rails generate gitlab:usage_metric_definition \
+   counts.i_code_review_merge_request_widget_test_reports_count_view \
+   counts.i_code_review_merge_request_widget_test_reports_count_full_report_clicked \
+   counts.i_code_review_merge_request_widget_test_reports_count_expand \
+   counts.i_code_review_merge_request_widget_test_reports_count_expand_success \
+   counts.i_code_review_merge_request_widget_test_reports_count_expand_warning \
+   counts.i_code_review_merge_request_widget_test_reports_count_expand_failed \
+   --dir=all
+   ```
 
 1. Modify each newly generated file to match the existing files for the merge request widget extension telemetry.
    - Find existing examples by doing a glob search, like: `metrics/**/*_i_code_review_merge_request_widget_*`
