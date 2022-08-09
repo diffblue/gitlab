@@ -756,6 +756,18 @@ If a backport adding a column with a default value is needed for %12.9 or earlie
 it should use `add_column_with_default` helper. If a [large table](https://gitlab.com/gitlab-org/gitlab/-/blob/master/rubocop/rubocop-migrations.yml#L3)
 is involved, backporting to %12.9 is contraindicated.
 
+## Removing the column default for non-nullable columns
+
+If you have added a non-nullable column, and used the default value to populate
+existing data, you need to keep that default value around until at least after
+the application code is updated. You cannot remove the default value in the
+same migration, as the migrations run before the model code is updated and
+models will have an old schema cache, meaning they won't know about this column
+and won't be able to set it. In this case it's recommended to add the column
+with default value in a normal migration then remove the default in a
+post-deployment migration which will happen after the application restarts
+ensuring it will have discovered the new column.
+
 ## Changing the column default
 
 One might think that changing a default column with `change_column_default` is an
