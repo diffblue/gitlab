@@ -41,8 +41,7 @@ export const initDeploymentApprovals = () => {
         requiredApprovalCount: parseInt(requiredApprovalCount, 10),
       };
 
-      // eslint-disable-next-line no-new
-      new Vue({
+      return new Vue({
         el,
         provide: { projectId },
         render(h) {
@@ -58,6 +57,7 @@ export const initDeploymentApprovals = () => {
       });
     } catch (e) {
       Sentry.captureException(e);
+      return null;
     }
   });
 };

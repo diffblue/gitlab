@@ -18,6 +18,7 @@ import { __, s__, sprintf } from '~/locale';
 
 const MAX_CHARACTER_COUNT = 250;
 const WARNING_CHARACTERS_LEFT = 30;
+const DEPLOYMENT_STATUS_APPROVED = 'approved';
 
 export default {
   components: {
@@ -68,7 +69,11 @@ export default {
       return this.environment?.upcomingDeployment;
     },
     needsApproval() {
-      return this.upcomingDeployment.pendingApprovalCount > 0;
+      if (this.totalApprovals === this.currentApprovals) {
+        return this.approvals.length;
+      }
+
+      return this.totalApprovals > 0;
     },
     deploymentIid() {
       return this.upcomingDeployment.iid;
@@ -85,7 +90,11 @@ export default {
       );
     },
     canApproveDeployment() {
-      return this.upcomingDeployment.canApproveDeployment && !this.currentUserHasApproved;
+      return (
+        this.upcomingDeployment.canApproveDeployment &&
+        !this.currentUserHasApproved &&
+        this.upcomingDeployment.pendingApprovalCount
+      );
     },
     deployableName() {
       return this.upcomingDeployment.deployable?.name;
@@ -159,12 +168,20 @@ export default {
           this.loading = false;
         });
     },
-    approvalText({ user }) {
-      if (user.username === gon.current_username) {
-        return this.$options.i18n.approvalByMe;
+    approvalText({ status, user }) {
+      if (status === DEPLOYMENT_STATUS_APPROVED) {
+        if (user.username === gon.current_username) {
+          return this.$options.i18n.approvalByMe;
+        }
+
+        return this.$options.i18n.approval;
       }
 
-      return this.$options.i18n.approval;
+      if (user.username === gon.current_username) {
+        return this.$options.i18n.rejectedByMe;
+      }
+
+      return this.$options.i18n.rejected;
     },
   },
   i18n: {
@@ -179,6 +196,8 @@ export default {
     current: s__('DeploymentApproval| Current approvals: %{current}'),
     approval: s__('DeploymentApproval|Approved %{time}'),
     approvalByMe: s__('DeploymentApproval|Approved by you %{time}'),
+    rejected: s__('DeploymentApproval|Rejected %{time}'),
+    rejectedByMe: s__('DeploymentApproval|Rejected by you %{time}'),
     charactersLeft: __('Characters left'),
     charactersOverLimit: __('Characters over limit'),
     commentLabel: __('Comment'),

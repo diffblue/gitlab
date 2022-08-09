@@ -13041,6 +13041,12 @@ msgstr ""
 msgid "DeploymentApproval|Manual job: %{jobName}"
 msgstr ""
 
+msgid "DeploymentApproval|Rejected %{time}"
+msgstr ""
+
+msgid "DeploymentApproval|Rejected by you %{time}"
+msgstr ""
+
 msgid "DeploymentTarget|GitLab Pages"
 msgstr ""
 
