@@ -11,8 +11,8 @@ module Projects
 
         track_custom_event :index,
           name: 'i_ecosystem_jira_service_list_issues',
-          action: ::Integrations::Jira::SNOWPLOW_EVENT_ACTION,
-          label: ::Integrations::Jira::SNOWPLOW_EVENT_LABEL,
+          action: Integration::SNOWPLOW_EVENT_ACTION,
+          label: Integration::SNOWPLOW_EVENT_LABEL,
           destinations: %i(redis_hll snowplow)
 
         before_action :check_feature_enabled!
