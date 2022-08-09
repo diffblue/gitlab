@@ -2,7 +2,7 @@ PATH
   remote: vendor/gems/bundler-checksum
   specs:
     bundler-checksum (0.1.0)
-      bundler (~> 2.2)
+      bundler
 
 PATH
   remote: vendor/gems/devise-pbkdf2-encryptable

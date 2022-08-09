@@ -19,7 +19,7 @@ module Bundler
         cached_checksum = fetch_checksum_from_file(spec)
 
         if cached_checksum.nil?
-          raise SecurityError, "Cached checksum for #{spec.name} not found. Please (re-)generate Gemfile.checksum"
+          raise SecurityError, "Cached checksum for #{spec.full_name} not found. Please (re-)generate Gemfile.checksum"
         end
 
         validate_file_checksum(cached_checksum)

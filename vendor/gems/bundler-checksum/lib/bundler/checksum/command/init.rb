@@ -16,8 +16,12 @@ module Bundler::Checksum::Command
         .send(:compact_index_client)
         .instance_variable_get(:@cache)
 
+      seen = []
       Bundler.definition.resolve.sort_by(&:name).each do |spec|
         next unless spec.source.is_a?(Bundler::Source::Rubygems)
+
+        next if seen.include?(spec.name)
+        seen << spec.name
 
         $stderr.puts "Adding #{spec.name}==#{spec.version}"
 

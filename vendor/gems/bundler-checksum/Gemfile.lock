@@ -2,7 +2,7 @@ PATH
   remote: .
   specs:
     bundler-checksum (0.1.0)
-      bundler (~> 2.2)
+      bundler
 
 GEM
   remote: https://rubygems.org/

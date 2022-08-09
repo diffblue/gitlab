@@ -5,7 +5,6 @@ module Bundler::Checksum::Command
     extend self
 
     def execute
-      # TODO Is verify the same as running init again, and ensuring there's no diffs ?
       $stderr.puts 'Verifying bundle checksums'
 
       local_checksums = JSON.parse(File.open(checksum_file).read, symbolize_names: true)
@@ -18,7 +17,7 @@ module Bundler::Checksum::Command
         checksum = gem.fetch(:checksum)
 
         $stderr.puts "Verifying #{name}==#{version} #{platform}"
-        unless Helper.validate_gem_checksum(name, version, platform, checksum)
+        unless validate_gem_checksum(name, version, platform, checksum)
           verified = false
         end
       end
@@ -30,6 +29,25 @@ module Bundler::Checksum::Command
 
     def checksum_file
       ::Bundler::Checksum.checksum_file
+    end
+
+    def validate_gem_checksum(gem_name, gem_version, gem_platform, local_checksum)
+      remote_checksums = Helper.remote_checksums_for_gem(gem_name, gem_version)
+      if remote_checksums.nil? || remote_checksums.empty?
+        $stderr.puts "#{gem_name} #{gem_version} not found on rubygems, skipping"
+        return false
+      end
+
+      remote_platform_checksum = remote_checksums.find { |g| g[:name] == gem_name && g[:platform] == gem_platform.to_s }
+
+      if local_checksum == remote_platform_checksum[:checksum]
+        true
+      else
+        $stderr.puts "Gem #{gem_name} #{gem_version} #{gem_platform} failed checksum verification"
+        $stderr.puts "LOCAL:  #{local_checksum}"
+        $stderr.puts "REMOTE: #{remote_platform_checksum[:checksum]}"
+        return false
+      end
     end
   end
 end
