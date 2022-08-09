@@ -23,6 +23,9 @@ import {
   SEARCH_SHORTCUTS_MIN_CHARACTERS,
   SCOPE_TOKEN_MAX_LENGTH,
   INPUT_FIELD_PADDING,
+  IS_SEARCHING,
+  IS_FOCUSED,
+  IS_NOT_FOCUSED,
 } from '../constants';
 import HeaderSearchAutocompleteItems from './header_search_autocomplete_items.vue';
 import HeaderSearchDefaultItems from './header_search_default_items.vue';
@@ -66,6 +69,7 @@ export default {
     return {
       showDropdown: false,
       currentFocusIndex: SEARCH_BOX_INDEX,
+      isFocused: false,
     };
   },
   computed: {
@@ -92,20 +96,18 @@ export default {
       if (!this.showDropdown || !this.isLoggedIn) {
         return false;
       }
-
       return this.searchOptions?.length > 0;
     },
     showDefaultItems() {
       return !this.searchText;
     },
-    showScopes() {
+    searchTermOverMin() {
       return this.searchText?.length > SEARCH_SHORTCUTS_MIN_CHARACTERS;
     },
     defaultIndex() {
       if (this.showDefaultItems) {
         return SEARCH_BOX_INDEX;
       }
-
       return FIRST_DROPDOWN_INDEX;
     },
 
@@ -132,12 +134,15 @@ export default {
             count: this.searchOptions.length,
           });
     },
-    searchBarStateIndicator() {
-      const hasIcon =
-        this.searchContext?.project || this.searchContext?.group ? 'has-icon' : 'has-no-icon';
-      const isSearching = this.showScopes ? 'is-searching' : 'is-not-searching';
-      const isActive = this.showSearchDropdown ? 'is-active' : 'is-not-active';
-      return `${isActive} ${isSearching} ${hasIcon}`;
+    searchBarClasses() {
+      return {
+        [IS_SEARCHING]: this.searchTermOverMin,
+        [IS_FOCUSED]: this.isFocused,
+        [IS_NOT_FOCUSED]: !this.isFocused,
+      };
+    },
+    showScopeHelp() {
+      return this.searchTermOverMin && this.isFocused;
     },
     searchBarItem() {
       return this.searchOptions?.[0];
@@ -158,11 +163,13 @@ export default {
     ...mapActions(['setSearch', 'fetchAutocompleteOptions', 'clearAutocomplete']),
     openDropdown() {
       this.showDropdown = true;
-      this.$emit('toggleDropdown', this.showDropdown);
+      this.$emit('expandSearchBar');
+      this.isFocused = true;
     },
     closeDropdown() {
       this.showDropdown = false;
-      this.$emit('toggleDropdown', this.showDropdown);
+      this.$emit('collapseSearchBar');
+      this.isFocused = false;
     },
     submitSearch() {
       if (this.search?.length <= SEARCH_SHORTCUTS_MIN_CHARACTERS && this.currentFocusIndex < 0) {
@@ -201,7 +208,7 @@ export default {
     role="search"
     :aria-label="$options.i18n.searchGitlab"
     class="header-search gl-relative gl-rounded-base gl-w-full"
-    :class="searchBarStateIndicator"
+    :class="searchBarClasses"
     data-testid="header-search-form"
   >
     <gl-search-box-by-type
@@ -222,7 +229,7 @@ export default {
       @keydown.esc.stop.prevent="closeDropdown"
     />
     <gl-token
-      v-if="showScopes"
+      v-if="showScopeHelp"
       v-gl-resize-observer-directive="observeTokenWidth"
       class="in-search-scope-help"
       :view-only="true"
@@ -242,6 +249,7 @@ export default {
       }}
     </gl-token>
     <kbd
+      v-show="!isFocused"
       v-gl-tooltip.bottom.hover.html
       class="gl-absolute gl-right-3 gl-top-0 gl-z-index-1 keyboard-shortcut-helper"
       :title="$options.i18n.kbdHelp"
@@ -278,7 +286,7 @@ export default {
         />
         <template v-else>
           <header-search-scoped-items
-            v-if="showScopes"
+            v-if="searchTermOverMin"
             :current-focused-option="currentFocusedOption"
           />
           <header-search-autocomplete-items :current-focused-option="currentFocusedOption" />
