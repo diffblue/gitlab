@@ -32,7 +32,7 @@ export default {
       rule: 'data',
     }),
     approversCount() {
-      return this.rule.approvers.length;
+      return this.rule.eligibleApprovers.length;
     },
     membersText() {
       return n__(
