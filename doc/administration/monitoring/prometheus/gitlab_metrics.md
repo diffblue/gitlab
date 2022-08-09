@@ -146,6 +146,8 @@ The following metrics are available:
 | `gitlab_snowplow_failed_events_total`                            | Counter     | 14.1    | Total number of GitLab Snowplow product intelligence events emission failures                                         |                                                           |
 | `gitlab_snowplow_successful_events_total`                        | Counter     | 14.1    | Total number of GitLab Snowplow product intelligence events emission successes                                        |                                                           |
 | `gitlab_ci_build_trace_errors_total`                             | Counter     | 14.4    | Total amount of different error types on a build trace                                                                | `error_reason`                                            |
+| `gitlab_presentable_object_cacheless_render_real_duration_seconds`              | Histogram   | 15.3     | Duration of real time spent caching and representing specific web request objects                                                    | `controller`, `action`                                    |
+| `cached_object_operations_total`                                      | Counter     | 15.3    | Total number of objects cached for specific web requests                                                                                                      | `controller`, `action`                                    |
 
 ## Metrics controlled by a feature flag
 
@@ -390,7 +392,7 @@ Some basic Ruby runtime metrics are available:
 ## Redis metrics
 
 These client metrics are meant to complement Redis server metrics.
-These metrics are broken down per 
+These metrics are broken down per
 [Redis instance](https://docs.gitlab.com/omnibus/settings/redis.html#running-with-multiple-redis-instances).
 These metrics all have a `storage` label which indicates the Redis
 instance (`cache`, `shared_state`, and so on).
