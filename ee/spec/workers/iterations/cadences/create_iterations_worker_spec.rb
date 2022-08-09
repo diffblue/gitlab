@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Iterations::Cadences::CreateIterationsWorker do
   let_it_be(:group) { create(:group) }
-  let_it_be(:start_date) { 3.weeks.ago }
+  let_it_be(:start_date) { 3.weeks.from_now }
   let_it_be(:cadence) { create(:iterations_cadence, group: group, automatic: true, start_date: start_date, duration_in_weeks: 1, iterations_in_advance: 2) }
 
   let(:mock_service) { double('mock_service', execute: ::ServiceResponse.success) }

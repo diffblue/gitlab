@@ -9,8 +9,8 @@ RSpec.describe Iterations::DeleteService do
   let_it_be(:project) { create(:project, :repository, group: group) }
   let_it_be(:user) { create(:user) }
   let_it_be(:start_date) { 3.weeks.ago }
-  let_it_be(:iteration_cadence1) { create(:iterations_cadence, group: group, start_date: start_date, duration_in_weeks: 1, iterations_in_advance: 2) }
-  let_it_be(:iteration_cadence2) { create(:iterations_cadence, group: group, start_date: start_date, duration_in_weeks: 1, iterations_in_advance: 2) }
+  let_it_be(:iteration_cadence1) { build(:iterations_cadence, group: group, start_date: start_date, duration_in_weeks: 1, iterations_in_advance: 2).tap { |cadence| cadence.save!(validate: false) } }
+  let_it_be(:iteration_cadence2) { build(:iterations_cadence, group: group, start_date: start_date, duration_in_weeks: 1, iterations_in_advance: 2).tap { |cadence| cadence.save!(validate: false) } }
 
   let_it_be(:past_iteration, refind: true) { create(:closed_iteration, iterations_cadence: iteration_cadence1, group: group, start_date: start_date, due_date: start_date + 13.days) }
   let_it_be(:past_board, refind: true) { create(:board, iteration: past_iteration, group: group) }

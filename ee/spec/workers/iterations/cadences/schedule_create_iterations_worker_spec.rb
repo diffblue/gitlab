@@ -9,7 +9,7 @@ RSpec.describe Iterations::Cadences::ScheduleCreateIterationsWorker, :freeze_tim
 
   describe '#perform' do
     context 'in batches' do
-      let_it_be(:iteration_cadences) { create_list(:iterations_cadence, 2, group: group, start_date: 3.weeks.ago, duration_in_weeks: 1, iterations_in_advance: 2) }
+      let_it_be(:iteration_cadences) { create_list(:iterations_cadence, 2, group: group, start_date: 6.days.ago, duration_in_weeks: 1, iterations_in_advance: 2) }
 
       before do
         stub_const("#{described_class}::BATCH_SIZE", 1)

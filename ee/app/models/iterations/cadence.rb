@@ -23,9 +23,10 @@ module Iterations
     validates :automatic, inclusion: [true, false]
     validates :description, length: { maximum: 5000 }
 
-    before_validation :set_to_first_start_date, if: -> { converted_to_automatic? }
+    validate :start_date_comes_later_than_current_iteration, if: -> { current_iteration && requires_new_automation_start_date? }
+    validate :start_date_comes_later_than_past_iteration, if: -> { !current_iteration && requires_new_automation_start_date? }
+    validate :start_date_would_not_create_past_iteration, if: -> { !current_iteration && requires_new_automation_start_date? }
 
-    validate :cadence_has_not_started, on: :update, if: -> { !automatic_changed? && automatic? && start_date_changed? }
     validate :cadence_is_automatic
 
     after_commit :ensure_iterations_in_advance, on: [:create, :update], if: :changed_iterations_automation_fields?
@@ -81,10 +82,12 @@ module Iterations
       (previous_changes.keys.map(&:to_sym) & ITERATIONS_AUTOMATION_FIELDS).present?
     end
 
-    def cadence_has_not_started
-      if has_started?
-        errors.add(:base, _('You cannot change the start date after the cadence has started. Please create a new cadence.'))
-      end
+    def duration_or_start_date_changed?
+      automatic? && start_date && (duration_in_weeks_changed? || start_date_changed?)
+    end
+
+    def requires_new_automation_start_date?
+      duration_or_start_date_changed? || converted_to_automatic?
     end
 
     def update_iteration_sequences
@@ -124,6 +127,8 @@ module Iterations
     # This method is used when a cadence changes its settings and
     # the dates of existing upcoming iterations need to be re-aligned based on the new cadence settings.
     def next_open_iteration_start_date
+      return start_date if start_date > Date.current
+
       if open_iterations.any?
         open_iterations.first.due_date.next_occurring(start_weekday)
       elsif past_iterations.any?
@@ -179,6 +184,10 @@ module Iterations
       iterations.due_date_order_asc.start_date_passed
     end
 
+    def current_iteration
+      open_iterations.first
+    end
+
     def current_iteration_start_date?(start_date)
       start_date <= Date.current && compute_due_date(start_date) >= Date.current
     end
@@ -195,18 +204,6 @@ module Iterations
       Date::DAYS_INTO_WEEK.key(start_date.wday)
     end
 
-    def has_started?
-      start_date_was <= Date.current
-    end
-
-    def set_to_first_start_date
-      self.start_date = first_iteration_start_date unless iterations.empty?
-    end
-
-    def first_iteration_start_date
-      iterations.due_date_order_asc.first.start_date
-    end
-
     def converted_to_automatic?
       automatic_changed? && automatic?
     end
@@ -215,8 +212,30 @@ module Iterations
       return unless changes.key?(:automatic)
 
       unless automatic?
-        errors.add(:base, _('Manual iteration cadences are deprecated. Only automatic iteration cadences are allowed.'))
+        errors.add(:base, s_('IterationsCadence|Manual iteration cadences are deprecated. Only automatic iteration cadences are allowed.'))
       end
+    end
+
+    def start_date_comes_later_than_current_iteration
+      return unless current_iteration && start_date <= current_iteration.due_date
+
+      errors.add(:base, s_('IterationsCadence|The automation start date must come after the active iteration %{iteration_dates}.') % { iteration_dates: current_iteration.period })
+    end
+
+    def start_date_comes_later_than_past_iteration
+      return unless past_iterations.any? && start_date <= past_iterations.last.due_date
+
+      errors.add(:base, s_('IterationsCadence|The automation start date must come after the past iteration %{iteration_dates}.') % { iteration_dates: past_iterations.last.period })
+    end
+
+    def start_date_would_not_create_past_iteration
+      return unless start_date < earliest_possible_start_date
+
+      errors.add(:base, s_('IterationsCadence|The automation start date would retroactively create a past iteration. %{start_date} is the earliest possible start date.') % { start_date: earliest_possible_start_date })
+    end
+
+    def earliest_possible_start_date
+      Date.current - duration_in_days + 1.day
     end
   end
 end

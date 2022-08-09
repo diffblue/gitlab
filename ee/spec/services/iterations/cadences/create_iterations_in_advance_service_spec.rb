@@ -5,7 +5,6 @@ require 'spec_helper'
 RSpec.describe Iterations::Cadences::CreateIterationsInAdvanceService do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
-  let_it_be(:inactive_cadence) { create(:iterations_cadence, group: group, active: false, automatic: true, start_date: 2.weeks.ago) }
   let_it_be(:manual_cadence) { build(:iterations_cadence, group: group, active: true, automatic: false, start_date: 2.weeks.ago).tap { |cadence| cadence.save!(validate: false) } }
 
   let(:sequences) { (1..cadence.iterations.size).to_a }
@@ -48,6 +47,7 @@ RSpec.describe Iterations::Cadences::CreateIterationsInAdvanceService do
               before do
                 travel_to today
 
+                # Populate existing, manually created iterations
                 existing_iterations.each do |i|
                   create(:iteration, iterations_cadence: cadence, start_date: i[:start_date], due_date: i[:due_date])
                 end
@@ -58,9 +58,6 @@ RSpec.describe Iterations::Cadences::CreateIterationsInAdvanceService do
               end
 
               it 'manages and schedules iterations without modifying past and current iterations', :aggregate_failures do
-                # On converting a cadence to automatic, the model sets the start date of the cadence's first iteration as the cadence start date.
-                # We still verify this as a sanity check here but the actual logic and test live in the model code.
-                expect(cadence.start_date).to eq(existing_iterations.first[:start_date])
                 expect(ordered_sequences).to eq(sequences)
                 expect(ordered_states).to eq(expected_states)
                 expect(ordered_dates).to eq(expected_iterations.map { |i| [i[:start_date], i[:due_date]] })
@@ -68,8 +65,8 @@ RSpec.describe Iterations::Cadences::CreateIterationsInAdvanceService do
               end
             end
 
-            context 'when only past iteration exists' do
-              let(:cadence_params) { { iterations_in_advance: 2, duration_in_weeks: 1 } }
+            context 'when past iteration exists and automation start date is set to today' do
+              let(:cadence_params) { { start_date: today, iterations_in_advance: 2, duration_in_weeks: 1 } }
               let(:existing_iterations) { [{ start_date: Date.new(2022, 3, 25), due_date: Date.new(2022, 3, 31) }] }
               let(:expected_iterations) do
                 [
@@ -83,42 +80,44 @@ RSpec.describe Iterations::Cadences::CreateIterationsInAdvanceService do
               it_behaves_like 'manual cadence is updated'
             end
 
-            context 'when only current iteration exists' do
-              let(:cadence_params) { { iterations_in_advance: 2, duration_in_weeks: 1 } }
-              let(:existing_iterations) { [{ start_date: Date.new(2022, 3, 28), due_date: Date.new(2022, 4, 1) }] }
+            context 'when current iteration exists and automation start date is set to an upcoming date' do
+              let(:upcoming_date) { Date.new(2022, 4, 4) }
+              let(:cadence_params) { { start_date: upcoming_date, iterations_in_advance: 2, duration_in_weeks: 1 } }
+              let(:existing_iterations) { [{ start_date: Date.new(2022, 3, 28), due_date: today }] }
               let(:expected_iterations) do
                 [
                   { **existing_iterations[0], state: 'current' },
-                  { start_date: Date.new(2022, 4, 4), due_date: Date.new(2022, 4, 4) + 1.week - 1, state: 'upcoming' },
-                  { start_date: Date.new(2022, 4, 4) + 1.week, due_date: Date.new(2022, 4, 4) + 2.weeks - 1, state: 'upcoming' }
+                  { start_date: upcoming_date, due_date: upcoming_date + 1.week - 1, state: 'upcoming' },
+                  { start_date: upcoming_date + 1.week, due_date: upcoming_date + 2.weeks - 1, state: 'upcoming' }
                 ]
               end
 
               it_behaves_like 'manual cadence is updated'
             end
 
-            context 'when only future iteration exists' do
-              let(:cadence_params) { { iterations_in_advance: 2, duration_in_weeks: 4 } }
+            context 'when upcoming iteration exists and automation start date is set to an upcoming date' do
+              let(:upcoming_date) { Date.new(2022, 8, 4) }
+              let(:cadence_params) { { start_date: upcoming_date, iterations_in_advance: 2, duration_in_weeks: 4 } }
               let(:existing_iterations) do
                 [
-                  { start_date: Date.new(2022, 8, 4), due_date: Date.new(2022, 8, 4) + 1.day },
+                  { start_date: upcoming_date, due_date: upcoming_date + 1.day },
                   { start_date: Date.new(2022, 8, 11), due_date: Date.new(2022, 8, 11) + 1.day }
                 ]
               end
 
               let(:expected_iterations) do
                 [
-                  { start_date: Date.new(2022, 8, 4), due_date: Date.new(2022, 8, 4) + 4.weeks - 1, state: 'upcoming' },
-                  { start_date: Date.new(2022, 8, 4) + 4.weeks, due_date: Date.new(2022, 8, 4) + 8.weeks - 1, state: 'upcoming' }
+                  { start_date: upcoming_date, due_date: upcoming_date + 4.weeks - 1, state: 'upcoming' },
+                  { start_date: upcoming_date + 4.weeks, due_date: upcoming_date + 8.weeks - 1, state: 'upcoming' }
                 ]
               end
 
               it_behaves_like 'manual cadence is updated'
             end
 
-            context 'when current and future iteration exists' do
-              let(:cadence_params) { { iterations_in_advance: 4, duration_in_weeks: 3 } }
-              let(:schedule_start) { Date.new(2022, 4, 4).next_occurring(:friday) }
+            context 'when current and upcoming iteration exists and automation start date is set to an upcoming date' do
+              let(:upcoming_date) { Date.new(2022, 4, 4).next_occurring(:friday) }
+              let(:cadence_params) { { start_date: upcoming_date, iterations_in_advance: 4, duration_in_weeks: 3 } }
               let(:existing_iterations) do
                 [
                   { start_date: Date.new(2022, 4, 1), due_date: Date.new(2022, 4, 4) },
@@ -129,18 +128,18 @@ RSpec.describe Iterations::Cadences::CreateIterationsInAdvanceService do
               let(:expected_iterations) do
                 [
                   { **existing_iterations[0], state: 'current' },
-                  { start_date: schedule_start, due_date: schedule_start + 3.weeks - 1, state: 'upcoming' },
-                  { start_date: schedule_start + 3.weeks, due_date: schedule_start + 6.weeks - 1, state: 'upcoming' },
-                  { start_date: schedule_start + 6.weeks, due_date: schedule_start + 9.weeks - 1, state: 'upcoming' },
-                  { start_date: schedule_start + 9.weeks, due_date: schedule_start + 12.weeks - 1, state: 'upcoming' }
+                  { start_date: upcoming_date, due_date: upcoming_date + 3.weeks - 1, state: 'upcoming' },
+                  { start_date: upcoming_date + 3.weeks, due_date: upcoming_date + 6.weeks - 1, state: 'upcoming' },
+                  { start_date: upcoming_date + 6.weeks, due_date: upcoming_date + 9.weeks - 1, state: 'upcoming' },
+                  { start_date: upcoming_date + 9.weeks, due_date: upcoming_date + 12.weeks - 1, state: 'upcoming' }
                 ]
               end
 
               it_behaves_like 'manual cadence is updated'
             end
 
-            context 'when past and future iteration exists' do
-              let(:cadence_params) { { iterations_in_advance: 2, duration_in_weeks: 3 } }
+            context 'when past and future iteration exists and automation start date is set to today' do
+              let(:cadence_params) { { start_date: today, iterations_in_advance: 2, duration_in_weeks: 3 } }
               let(:first_friday_2021) { Date.new(2021).next_occurring(:friday) }
               let(:first_monday_2022) { Date.new(2022).next_occurring(:monday) }
               let(:existing_iterations) do
@@ -168,7 +167,7 @@ RSpec.describe Iterations::Cadences::CreateIterationsInAdvanceService do
         end
 
         context 'with inactive cadence' do
-          let(:cadence) { inactive_cadence }
+          let(:cadence) { create(:iterations_cadence, group: group, active: false, automatic: true) }
 
           it 'returns error' do
             expect(subject).to be_error
@@ -236,32 +235,6 @@ RSpec.describe Iterations::Cadences::CreateIterationsInAdvanceService do
                   { start_date: Date.new(2022, 3, 31) + 2.weeks, duration: 1.week, state: 'upcoming' },
                   { start_date: Date.new(2022, 3, 31) + 3.weeks, duration: 1.week, state: 'upcoming' },
                   { start_date: Date.new(2022, 3, 31) + 4.weeks, duration: 1.week, state: 'upcoming' }
-                ]
-              end
-
-              it_behaves_like 'iterations are scheduled on an initial run'
-
-              context "when re-executed with a smaller 'iterations_in_advance' value on a future date" do
-                let(:next_schedule_date) { initial_schedule_date + 1.week } # initial_schedule_date is now in the past.
-                let(:cadence_params) { initial_cadence_params.merge({ iterations_in_advance: 2 }) }
-                # No change should occur. There are still 3 upcoming iterations because we never remove existing iterations.
-                let(:expected_final_iterations) { expected_initial_iterations }
-
-                it_behaves_like 'iterations are scheduled on a subsequent run'
-              end
-            end
-
-            context 'when the cadence start date was more than a week ago (duration_in_weeks)' do
-              let(:initial_schedule_date) { Date.new(2022, 4, 1) }
-              let(:initial_cadence_params) { { start_date: Date.new(2022, 3, 20), iterations_in_advance: 4, duration_in_weeks: 1 } }
-              let(:expected_initial_iterations) do
-                [
-                  { start_date: Date.new(2022, 3, 20), duration: 1.week, state: 'closed' },
-                  { start_date: Date.new(2022, 3, 20) + 1.week, duration: 1.week, state: 'current' },
-                  { start_date: Date.new(2022, 3, 20) + 2.weeks, duration: 1.week, state: 'upcoming' },
-                  { start_date: Date.new(2022, 3, 20) + 3.weeks, duration: 1.week, state: 'upcoming' },
-                  { start_date: Date.new(2022, 3, 20) + 4.weeks, duration: 1.week, state: 'upcoming' },
-                  { start_date: Date.new(2022, 3, 20) + 5.weeks, duration: 1.week, state: 'upcoming' }
                 ]
               end
 
@@ -362,7 +335,7 @@ RSpec.describe Iterations::Cadences::CreateIterationsInAdvanceService do
             let(:cadence) { automated_cadence }
 
             context 'when cadence has iterations but all are in the past' do
-              let_it_be_with_reload(:automated_cadence) { create(:iterations_cadence, group: group, start_date: 2.weeks.ago, iterations_in_advance: 2) }
+              let_it_be_with_reload(:automated_cadence) { create(:iterations_cadence, group: group, start_date: 1.week.from_now, iterations_in_advance: 2) }
 
               let_it_be(:past_iteration1) { create(:iteration, group: group, title: 'Important iteration', iterations_cadence: automated_cadence, start_date: 3.weeks.ago, due_date: 2.weeks.ago) }
               let_it_be(:past_iteration2) { create(:iteration, group: group, iterations_cadence: automated_cadence, start_date: past_iteration1.due_date + 1.day, due_date: past_iteration1.due_date + 1.week) }

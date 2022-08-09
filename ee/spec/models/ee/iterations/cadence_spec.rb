@@ -87,56 +87,107 @@ RSpec.describe ::Iterations::Cadence, :freeze_time do
       end
     end
 
-    describe '#cadence_has_not_started' do
-      context 'when updating an automatic cadence that has started' do
-        let(:cadence) { create(:iterations_cadence, start_date: Date.current) }
+    describe 'start date validation' do
+      let_it_be(:group) { create(:group) }
 
-        it 'is invalid and adds an error message' do
-          cadence.assign_attributes({ start_date: Date.current + 7.days })
+      let(:cadence) { create(:iterations_cadence, group: group, start_date: Date.current, duration_in_weeks: 1) }
+
+      shared_examples 'an error is raised when start date is invalid' do
+        it 'raises an error' do
+          cadence.start_date = new_start_date
 
           expect(cadence).to be_invalid
-          expect(cadence.errors.full_messages).to include('You cannot change the start date after the cadence has started. Please create a new cadence.')
+          expect(cadence.errors.full_messages).to include(error_message)
         end
       end
 
-      context 'when updating an automatic cadence that has not started' do
-        let(:automatic) { true }
+      context 'when cadence has a current iteration' do
+        let!(:current_iteration) { create(:iteration, iterations_cadence: cadence, start_date: Date.current) }
 
-        it_behaves_like 'updating the start date is valid'
+        context 'when a new start date overlaps with the current iteration' do
+          let(:new_start_date) { Date.current + 1 }
+          let(:error_message) { "The automation start date must come after the active iteration #{current_iteration.period}." }
+
+          it_behaves_like 'an error is raised when start date is invalid'
+        end
       end
 
-      context 'when updating a manual cadence' do
-        let(:automatic) { false }
+      context 'when cadence has a past iteration' do
+        let!(:past_iteration) { create(:iteration, iterations_cadence: cadence, start_date: Date.current - 1.week, due_date: Date.current - 1.day) }
 
-        it_behaves_like 'updating the start date is valid'
+        context 'when the new start date overlaps with the past iteration' do
+          let(:new_start_date) { Date.current - 1.week }
+          let(:error_message) { "The automation start date must come after the past iteration #{past_iteration.period}." }
+
+          it_behaves_like 'an error is raised when start date is invalid'
+        end
+
+        it 'does not raise an error when start date does not overlap with the past iteration' do
+          cadence.start_date = Date.current
+
+          expect(cadence).to be_valid
+        end
+      end
+
+      context 'when a past iteration would be retroactively created' do
+        let(:earliest_possible_start_date) { Date.current - 1.week + 1.day }
+
+        where(:start_date) do
+          [
+            [lazy { earliest_possible_start_date - 1.day }],
+            [lazy { earliest_possible_start_date - 2.days }]
+          ]
+        end
+
+        with_them do
+          it 'raises an error' do
+            cadence = build(:iterations_cadence, group: group, start_date: start_date, duration_in_weeks: 1)
+            error_msg = "The automation start date would retroactively create a past iteration. #{earliest_possible_start_date} is the earliest possible start date."
+
+            expect(cadence).to be_invalid
+            expect(cadence.errors.full_messages).to include(error_msg)
+          end
+        end
       end
     end
   end
 
   describe 'callbacks' do
-    describe 'before_validation :set_to_first_start_date' do
-      context 'when manual cadence is updated to use automated scheduling' do
-        let(:cadence_start_date) { Date.new(2022, 4, 1) }
-        let(:iteration_start_date) { cadence_start_date - 1.month }
-        let(:cadence) { build(:iterations_cadence, start_date: cadence_start_date, automatic: false).tap { |cadence| cadence.save!(validate: false) } }
+    context 'after_commit' do
+      context 'ensure_iterations_in_advance' do
+        let_it_be(:group) { create(:group) }
 
-        context 'when no iteration exists' do
-          it 'keeps the start date' do
-            cadence.update!(automatic: true)
+        let(:cadence) { create(:iterations_cadence, group: group) }
 
-            expect(cadence.start_date).to eq(cadence_start_date)
-          end
+        it 'does not call CreateIterationsWorker when non-automation field is updated' do
+          cadence
+
+          expect(::Iterations::Cadences::CreateIterationsWorker).not_to receive(:perform_async)
+
+          cadence.update!({ title: "foobar" })
         end
 
-        context 'when an iteration exists' do
-          before do
-            create(:iteration, iterations_cadence: cadence, start_date: iteration_start_date)
+        it 'does not call CreateIterationsWorker when manual cadence is created' do
+          expect(::Iterations::Cadences::CreateIterationsWorker).not_to receive(:perform_async)
+
+          build(:iterations_cadence, group: group, automatic: false).tap { |cadence| cadence.save!(validate: false) }
+        end
+
+        [
+          { start_date: Date.current }, { duration_in_weeks: 2 }, { iterations_in_advance: 3 }
+        ].each do |updated_attrs|
+          it 'calls CreateIterationsWorker when automation fields are updated' do
+            cadence
+
+            expect(::Iterations::Cadences::CreateIterationsWorker).to receive(:perform_async).with(cadence.id)
+
+            cadence.update!(updated_attrs)
           end
 
-          it 'sets start date to the start date of the first iteration' do
-            cadence.update!(automatic: true)
+          it 'calls CreateIterationsWorker when automatic cadence is created' do
+            expect(::Iterations::Cadences::CreateIterationsWorker).to receive(:perform_async)
 
-            expect(cadence.start_date).to eq(iteration_start_date)
+            build(:iterations_cadence, group: group, **updated_attrs).save!
           end
         end
       end
@@ -164,18 +215,12 @@ RSpec.describe ::Iterations::Cadence, :freeze_time do
 
     let(:cadence_start_date) { Date.new(2022, 4, 1) }
     let(:cadence_start_day) { Date::DAYS_INTO_WEEK.key(cadence_start_date.wday) }
-    let(:cadence) { create(:iterations_cadence, group: group, start_date: cadence_start_date, iterations_in_advance: 1, duration_in_weeks: 1) }
+    let(:cadence) { build(:iterations_cadence, group: group, start_date: cadence_start_date, iterations_in_advance: 1, duration_in_weeks: 1).tap { |cadence| cadence.save!(validate: false) } }
     let(:schedule_start_date) { cadence.next_schedule_date_and_count[0] }
     let(:schedule_count) { cadence.next_schedule_date_and_count[1] }
 
     where(:today, :existing_iterations, :expected_schedule_start, :expected_schedule_count) do
       [
-        [
-          lazy { cadence_start_date + 7.days },
-          [],
-          lazy { cadence_start_date },
-          1 + 1 + 1 # 1 past iterations + 1 current iteration + 1 future iteration
-        ],
         [
           lazy { cadence_start_date + 6.days },
           [],
@@ -193,18 +238,6 @@ RSpec.describe ::Iterations::Cadence, :freeze_time do
           [],
           lazy { cadence_start_date },
           1 # 1 future iteration
-        ],
-        [
-          lazy { cadence_start_date + 14.days },
-          lazy { [{ start_date: cadence_start_date, due_date: cadence_start_date + 6.days }] },
-          lazy { cadence_start_date + 7 },
-          3 # 1 past iterations + 1 current iteration + 1 future iteration
-        ],
-        [
-          lazy { cadence_start_date + 14.days },
-          lazy { [{ start_date: cadence_start_date, due_date: cadence_start_date + 3.days }] },
-          lazy { cadence_start_date + 7.days },
-          3 # 1 past iterations + 1 current iteration + 1 future iteration
         ],
         [
           lazy { cadence_start_date + 7.days },
@@ -259,7 +292,7 @@ RSpec.describe ::Iterations::Cadence, :freeze_time do
     let(:cadence_start_date) { Date.new(2022, 3, 1) }
     let(:cadence_start_day) { Date::DAYS_INTO_WEEK.key(cadence_start_date.wday) }
 
-    let(:cadence) { create(:iterations_cadence, group: group, start_date: cadence_start_date, iterations_in_advance: 1, duration_in_weeks: 1) }
+    let(:cadence) { build(:iterations_cadence, group: group, start_date: cadence_start_date, iterations_in_advance: 1, duration_in_weeks: 1).tap { |cadence| cadence.save!(validate: false) } }
 
     before do
       travel_to today
@@ -267,6 +300,14 @@ RSpec.describe ::Iterations::Cadence, :freeze_time do
 
     it 'returns the cadence start date when neither past nor current iteration exists' do
       expect(cadence.next_open_iteration_start_date).to eq(cadence.start_date)
+    end
+
+    context 'when start date is set to an upcoming date' do
+      let(:cadence_start_date) { today + 1 }
+
+      it 'returns the cadence start date' do
+        expect(cadence.next_open_iteration_start_date).to eq(cadence.start_date)
+      end
     end
 
     context 'when past iteration exists' do
