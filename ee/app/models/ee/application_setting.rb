@@ -340,13 +340,13 @@ module EE
 
     def elasticsearch_config
       {
-        url:                    elasticsearch_url_with_credentials,
-        aws:                    elasticsearch_aws,
-        aws_access_key:         elasticsearch_aws_access_key,
-        aws_secret_access_key:  elasticsearch_aws_secret_access_key,
-        aws_region:             elasticsearch_aws_region,
-        max_bulk_size_bytes:    elasticsearch_max_bulk_size_mb.megabytes,
-        max_bulk_concurrency:   elasticsearch_max_bulk_concurrency,
+        url: elasticsearch_url_with_credentials,
+        aws: elasticsearch_aws,
+        aws_access_key: elasticsearch_aws_access_key,
+        aws_secret_access_key: elasticsearch_aws_secret_access_key,
+        aws_region: elasticsearch_aws_region,
+        max_bulk_size_bytes: elasticsearch_max_bulk_size_mb.megabytes,
+        max_bulk_concurrency: elasticsearch_max_bulk_concurrency,
         client_request_timeout: (elasticsearch_client_request_timeout if elasticsearch_client_request_timeout > 0)
       }.compact
     end

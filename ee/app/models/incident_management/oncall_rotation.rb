@@ -27,7 +27,7 @@ module IncidentManagement
 
     enum length_unit: {
       hours: 0,
-      days:  1,
+      days: 1,
       weeks: 2
     }
 

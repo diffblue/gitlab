@@ -19,11 +19,11 @@ module IncidentManagement
     validate :schedule_or_rule_present
     validates :oncall_schedule_id,
               uniqueness: { scope: [:policy_id, :status, :elapsed_time_seconds],
-              message: _('must be unique by status and elapsed time within a policy') },
+                            message: _('must be unique by status and elapsed time within a policy') },
               allow_nil: true
     validates :user_id,
               uniqueness: { scope: [:policy_id, :status, :elapsed_time_seconds],
-              message: _('must be unique by status and elapsed time within a policy') },
+                            message: _('must be unique by status and elapsed time within a policy') },
               allow_nil: true
 
     scope :not_removed, -> { where(is_removed: false) }

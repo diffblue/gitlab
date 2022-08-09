@@ -12,9 +12,9 @@ module StatusPage
     belongs_to :project
 
     attr_encrypted :aws_secret_key,
-      mode:      :per_attribute_iv,
+      mode: :per_attribute_iv,
       algorithm: 'aes-256-gcm',
-      key:       Settings.attr_encrypted_db_key_base_32
+      key: Settings.attr_encrypted_db_key_base_32
 
     before_validation :check_secret_changes
 
