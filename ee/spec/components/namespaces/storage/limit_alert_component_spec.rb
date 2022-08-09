@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require "spec_helper"
 
-RSpec.describe Namespaces::Storage::LimitAlert, :saas, type: :component do
+RSpec.describe Namespaces::Storage::LimitAlertComponent, :saas, type: :component do
   using RSpec::Parameterized::TableSyntax
 
   let_it_be(:group) { create(:group) }
