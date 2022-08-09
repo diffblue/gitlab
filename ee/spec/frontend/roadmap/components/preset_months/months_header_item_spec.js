@@ -105,7 +105,7 @@ describe('MonthsHeaderItemComponent', () => {
     });
 
     it('renders component container element with class `timeline-header-item`', () => {
-      expect(vm.$el.classList.contains('timeline-header-item')).toBeTruthy();
+      expect(vm.$el.classList.contains('timeline-header-item')).toBe(true);
     });
 
     it('renders item label element class `item-label` and value as `timelineHeaderLabel`', () => {
