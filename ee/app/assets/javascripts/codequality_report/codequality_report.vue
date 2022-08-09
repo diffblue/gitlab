@@ -5,6 +5,7 @@ import reportsMixin from 'ee/vue_shared/security_reports/mixins/reports_mixin';
 import { n__, s__, sprintf } from '~/locale';
 import ReportSection from '~/reports/components/report_section.vue';
 import PaginationLinks from '~/vue_shared/components/pagination_links.vue';
+import { setupStore } from './store';
 
 export default {
   components: {
@@ -12,10 +13,37 @@ export default {
     PaginationLinks,
   },
   mixins: [reportsMixin],
+  props: {
+    // Todo make these props mandatory once the pipeline tabs component is implemented https://gitlab.com/gitlab-org/gitlab/-/issues/360797
+    endpoint: {
+      type: String,
+      required: false,
+      default: '',
+    },
+    blobPath: {
+      type: String,
+      required: false,
+      default: '',
+    },
+    projectPath: {
+      type: String,
+      required: false,
+      default: '',
+    },
+    pipelineIid: {
+      type: String,
+      required: false,
+      default: '',
+    },
+  },
   componentNames,
   computed: {
-    ...mapState(['isLoadingCodequality', 'loadingCodequalityFailed', 'pageInfo']),
-    ...mapGetters(['codequalityIssues', 'codequalityIssueTotal']),
+    ...mapState('codeQualityReport', [
+      'isLoadingCodequality',
+      'loadingCodequalityFailed',
+      'pageInfo',
+    ]),
+    ...mapGetters('codeQualityReport', ['codequalityIssues', 'codequalityIssueTotal']),
     hasCodequalityIssues() {
       return this.codequalityIssueTotal > 0;
     },
@@ -44,8 +72,17 @@ export default {
   i18n: {
     subHeading: s__('ciReport|This report contains all Code Quality issues in the source branch.'),
   },
+  created() {
+    setupStore(this.$store, {
+      blobPath: this.$props.blobPath,
+      endpoint: this.$props.endpoint,
+      pipelineIid: this.$props.pipelineIid,
+      projectPath: this.$props.projectPath,
+    });
+    this.fetchReport();
+  },
   methods: {
-    ...mapActions(['setPage']),
+    ...mapActions('codeQualityReport', ['setPage', 'fetchReport']),
     translateText(type) {
       return {
         error: sprintf(s__('ciReport|Failed to load %{reportName} report'), {
