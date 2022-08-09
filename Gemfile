@@ -272,7 +272,9 @@ gem 'babosa', '~> 1.0.4'
 gem 'loofah', '~> 2.18.0'
 
 # Working with license
-gem 'licensee', '~> 9.14.1'
+# Detects the open source license the repository includes
+# This version needs to be in sync with gitlab-org/gitaly
+gem 'licensee', '~> 9.15'
 
 # Detect and convert string character encoding
 gem 'charlock_holmes', '~> 0.7.7'
