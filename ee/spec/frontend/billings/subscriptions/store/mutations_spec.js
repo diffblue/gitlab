@@ -30,11 +30,11 @@ describe('EE billings subscription module mutations', () => {
     });
 
     it('sets isLoadingSubscription to true', () => {
-      expect(state.isLoadingSubscription).toBeTruthy();
+      expect(state.isLoadingSubscription).toBe(true);
     });
 
     it('sets hasErrorSubscription to false', () => {
-      expect(state.hasErrorSubscription).toBeFalsy();
+      expect(state.hasErrorSubscription).toBe(false);
     });
   });
 
@@ -62,7 +62,7 @@ describe('EE billings subscription module mutations', () => {
       });
 
       it('sets isLoadingSubscription to false', () => {
-        expect(state.isLoadingSubscription).toBeFalsy();
+        expect(state.isLoadingSubscription).toBe(false);
       });
 
       it('sets plan', () => {
@@ -89,11 +89,11 @@ describe('EE billings subscription module mutations', () => {
     });
 
     it('sets isLoadingSubscription to false', () => {
-      expect(state.isLoadingSubscription).toBeFalsy();
+      expect(state.isLoadingSubscription).toBe(false);
     });
 
     it('sets hasErrorSubscription to true', () => {
-      expect(state.hasErrorSubscription).toBeTruthy();
+      expect(state.hasErrorSubscription).toBe(true);
     });
   });
 });
