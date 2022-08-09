@@ -105,7 +105,7 @@ describe('EpicHeaderComponent', () => {
   describe('template', () => {
     it('renders component container element with class `detail-page-header`', () => {
       expect(wrapper.classes()).toContain('detail-page-header');
-      expect(wrapper.find('.detail-page-header-body').exists()).toBeTruthy();
+      expect(wrapper.find('.detail-page-header-body').exists()).toBe(true);
     });
 
     it('renders epic status icon and text elements', () => {
@@ -141,15 +141,15 @@ describe('EpicHeaderComponent', () => {
       const actionButtons = findActionButtons();
       const toggleStatusButton = findToggleStatusButton();
 
-      expect(actionButtons.exists()).toBeTruthy();
-      expect(toggleStatusButton.exists()).toBeTruthy();
+      expect(actionButtons.exists()).toBe(true);
+      expect(toggleStatusButton.exists()).toBe(true);
       expect(toggleStatusButton.text()).toBe('Close epic');
     });
 
     it('renders toggle sidebar button element', () => {
       const toggleButton = findSidebarToggle();
 
-      expect(toggleButton.exists()).toBeTruthy();
+      expect(toggleButton.exists()).toBe(true);
       expect(toggleButton.attributes('aria-label')).toBe('Toggle sidebar');
       expect(toggleButton.classes()).toEqual(
         expect.arrayContaining(['gl-display-block', 'd-sm-none', 'gutter-toggle']),
