@@ -179,7 +179,7 @@ module EE
     end
 
     def log_audit_event(message:)
-      AuditEvents::CustomAuditEventService.new(
+      ::AuditEvents::CustomAuditEventService.new(
         current_user,
         project,
         request.remote_ip,

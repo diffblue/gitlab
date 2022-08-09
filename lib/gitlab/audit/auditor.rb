@@ -3,6 +3,8 @@
 module Gitlab
   module Audit
     class Auditor
+      attr_reader :scope, :name
+
       # Record audit events
       #
       # @param [Hash] context
@@ -66,20 +68,8 @@ module Gitlab
         @additional_details = @context.fetch(:additional_details, {})
         @ip_address = @context[:ip_address]
         @target_details = @context[:target_details]
-      end
-
-      def multiple_audit
-        ::Gitlab::Audit::EventQueue.begin!
-
-        return_value = yield
-
-        ::Gitlab::Audit::EventQueue.current
-          .map { |message| build_event(message) }
-          .then { |events| record(events) }
-
-        return_value
-      ensure
-        ::Gitlab::Audit::EventQueue.end!
+        @authentication_event = @context.fetch(:authentication_event, false)
+        @authentication_provider = @context[:authentication_provider]
       end
 
       def single_audit
@@ -88,14 +78,57 @@ module Gitlab
         record(events)
       end
 
+      def multiple_audit
+        # For now we dont have any need to implement multiple audit event functionality in CE
+        # Defined in EE
+      end
+
       def record(events)
-        log_to_database(events) unless @stream_only
-        log_to_file(events) unless @stream_only
+        log_events(events) unless @stream_only
         send_to_stream(events)
       end
 
+      def log_events(events)
+        log_authentication_event
+        log_to_database(events)
+        log_to_file(events)
+      end
+
+      def audit_enabled?
+        authentication_event?
+      end
+
+      def authentication_event?
+        @authentication_event
+      end
+
+      def log_authentication_event
+        return unless Gitlab::Database.read_write? && authentication_event?
+
+        event = AuthenticationEvent.new(authentication_event_payload)
+        event.save!
+      rescue ActiveRecord::RecordInvalid => error
+        ::Gitlab::ErrorTracking.track_exception(error, audit_operation: @name)
+      end
+
+      def authentication_event_payload
+        {
+          # @author can be a User or various Gitlab::Audit authors.
+          # Only capture real users for successful authentication events.
+          user: author_if_user,
+          user_name: @author.name,
+          ip_address: @ip_address,
+          result: AuthenticationEvent.results[:success],
+          provider: @authentication_provider
+        }
+      end
+
+      def author_if_user
+        @author if @author.is_a?(User)
+      end
+
       def send_to_stream(events)
-        events.each { |e| e.stream_to_external_destinations(use_json: true, event_name: @name) }
+        # Defined in EE
       end
 
       def build_event(message)
@@ -123,13 +156,6 @@ module Gitlab
         events.each { |event| file_logger.info(log_payload(event)) }
       end
 
-      def audit_enabled?
-        return true if ::License.feature_available?(:admin_audit_log)
-        return true if ::License.feature_available?(:extended_audit_events)
-
-        @scope.respond_to?(:feature_available?) && @scope.licensed_feature_available?(:audit_events)
-      end
-
       private
 
       def log_payload(event)
@@ -145,3 +171,5 @@ module Gitlab
     end
   end
 end
+
+Gitlab::Audit::Auditor.prepend_mod_with("Gitlab::Audit::Auditor")
