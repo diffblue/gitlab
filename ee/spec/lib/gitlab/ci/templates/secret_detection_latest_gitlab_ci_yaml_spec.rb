@@ -39,8 +39,6 @@ RSpec.describe 'Secret-Detection.gitlab-ci.yml' do
       end
 
       context 'when branch pipeline' do
-        let(:pipeline) { service.execute!(:push).payload }
-
         it 'creates a pipeline with the expected jobs' do
           expect(pipeline.errors.full_messages).to be_empty
           expect(build_names).to match_array(%w(secret_detection))
