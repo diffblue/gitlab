@@ -153,16 +153,19 @@ module EE
 
         include LogUtils
 
+        extend ActiveSupport::Concern
+
+        prepended do
+          scope_to ->(relation) {
+            relation.where(created_at: MIGRATION_PHASE_1_ENDED_AT..).or(
+              relation.where(migration_state: 'import_done')
+            ).select(:project_id).distinct
+          }
+        end
+
         override :perform
         def perform
-          each_sub_batch(
-            operation_name: :update_container_registry_size,
-            batching_scope: -> (relation) {
-              relation.where(created_at: MIGRATION_PHASE_1_ENDED_AT..).or(
-                relation.where(migration_state: 'import_done')
-              ).select(:project_id).distinct
-            }
-          ) do |sub_batch|
+          each_sub_batch(operation_name: :update_container_registry_size) do |sub_batch|
             stats = ProjectStatistics.where(project_id: sub_batch)
             stats.each do |stat|
               # Should trigger an API hit to get the actual `container_registry_size` for the project if required, via
