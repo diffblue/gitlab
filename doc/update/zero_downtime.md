@@ -53,8 +53,8 @@ migrating data. Background migrations are only added in the monthly releases.
 Certain major/minor releases may require a set of background migrations to be
 finished. To guarantee this, such a release processes any remaining jobs
 before continuing the upgrading procedure. While this doesn't require downtime
-(if the above conditions are met) we require that you 
-[wait for background migrations to complete](index.md#checking-for-background-migrations-before-upgrading)
+(if the above conditions are met) we require that you [wait for background
+migrations to complete](index.md#checking-for-background-migrations-before-upgrading)
 between each major/minor release upgrade.
 The time necessary to complete these migrations can be reduced by
 increasing the number of Sidekiq workers that can process jobs in the
@@ -492,6 +492,8 @@ You can only upgrade one minor release at a time.
 The order of steps is important. While following these steps, make
 sure you follow them in the right order, on the correct node.
 
+## Update the Geo primary site
+
 Log in to your **primary** node, executing the following:
 
 1. Create an empty file at `/etc/gitlab/skip-auto-reconfigure`. This prevents upgrades from running `gitlab-ctl reconfigure`, which by default automatically stops GitLab, runs all database migrations, and restarts GitLab.
@@ -534,6 +536,8 @@ Log in to your **primary** node, executing the following:
    sudo gitlab-ctl hup puma
    sudo gitlab-ctl restart sidekiq
    ```
+
+## Update the Geo secondary site
 
 On each **secondary** node, executing the following:
 
@@ -585,6 +589,8 @@ On each **secondary** node, executing the following:
    sudo gitlab-rake db:migrate:geo
    ```
 
+## Finalize the update
+
 After all **secondary** nodes are updated, finalize
 the update on the **primary** node:
 
@@ -592,6 +598,16 @@ the update on the **primary** node:
 
    ```shell
    sudo gitlab-rake db:migrate
+   ```
+
+- After the update is finalized on the primary node, hot reload `puma` and 
+restart `sidekiq` and `geo-logcursor` services on **all primary and secondary**
+nodes
+
+   ```shell
+   sudo gitlab-ctl hup puma
+   sudo gitlab-ctl restart sidekiq
+   sudo gitlab-ctl restart geo-logcursor
    ```
 
 After updating all nodes (both **primary** and all **secondaries**), check their status:
