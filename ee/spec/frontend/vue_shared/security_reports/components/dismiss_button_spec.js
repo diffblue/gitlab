@@ -25,7 +25,7 @@ describe('DismissalButton', () => {
     it('should emit dismiss vulnerability when clicked', async () => {
       wrapper.findComponent(GlButton).trigger('click');
       await nextTick();
-      expect(wrapper.emitted().dismissVulnerability).toBeTruthy();
+      expect(wrapper.emitted().dismissVulnerability).toBeDefined();
     });
 
     it('should render the dismiss with comment button', () => {
@@ -35,7 +35,7 @@ describe('DismissalButton', () => {
     it('should emit openDismissalCommentBox when clicked', async () => {
       wrapper.find('.js-dismiss-with-comment').trigger('click');
       await nextTick();
-      expect(wrapper.emitted().openDismissalCommentBox).toBeTruthy();
+      expect(wrapper.emitted().openDismissalCommentBox).toBeDefined();
     });
   });
 
@@ -54,7 +54,7 @@ describe('DismissalButton', () => {
     it('should emit revertDismissVulnerability when clicked', async () => {
       wrapper.findComponent(GlButton).trigger('click');
       await nextTick();
-      expect(wrapper.emitted().revertDismissVulnerability).toBeTruthy();
+      expect(wrapper.emitted().revertDismissVulnerability).toBeDefined();
     });
 
     it('should not render the dismiss with comment button', () => {
