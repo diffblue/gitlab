@@ -9,11 +9,11 @@ class Elastic::ReindexingTask < ApplicationRecord
   has_many :subtasks, class_name: 'Elastic::ReindexingSubtask', foreign_key: :elastic_reindexing_task_id
 
   enum state: {
-    initial:                0,
-    indexing_paused:        1,
-    reindexing:             2,
-    success:                10, # states less than 10 are considered in_progress
-    failure:                11,
+    initial: 0,
+    indexing_paused: 1,
+    reindexing: 2,
+    success: 10, # states less than 10 are considered in_progress
+    failure: 11,
     original_index_deleted: 12
   }
 

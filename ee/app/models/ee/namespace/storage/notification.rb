@@ -76,8 +76,8 @@ module EE
 
         def repository_usage_message
           params = { namespace_name: root_namespace.name,
-                    locked_project_count: root_namespace.repository_size_excess_project_count,
-                    free_size_limit: formatted(root_namespace.actual_size_limit) }
+                     locked_project_count: root_namespace.repository_size_excess_project_count,
+                     free_size_limit: formatted(root_namespace.actual_size_limit) }
 
           if root_namespace.additional_purchased_storage_size == 0
             s_("NamespaceStorageSize|You have reached the free storage limit of %{free_size_limit} " \

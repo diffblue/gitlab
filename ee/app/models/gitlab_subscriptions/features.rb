@@ -237,14 +237,14 @@ module GitlabSubscriptions
     FEATURES_WITH_USAGE_PING = STARTER_FEATURES_WITH_USAGE_PING + PREMIUM_FEATURES_WITH_USAGE_PING
 
     FEATURES_BY_PLAN = {
-      License::STARTER_PLAN  => ALL_STARTER_FEATURES,
-      License::PREMIUM_PLAN  => ALL_PREMIUM_FEATURES,
+      License::STARTER_PLAN => ALL_STARTER_FEATURES,
+      License::PREMIUM_PLAN => ALL_PREMIUM_FEATURES,
       License::ULTIMATE_PLAN => ALL_ULTIMATE_FEATURES
     }.freeze
 
     LICENSE_PLANS_TO_SAAS_PLANS = {
-      License::STARTER_PLAN  => [::Plan::BRONZE],
-      License::PREMIUM_PLAN  => [::Plan::SILVER, ::Plan::PREMIUM, ::Plan::PREMIUM_TRIAL],
+      License::STARTER_PLAN => [::Plan::BRONZE],
+      License::PREMIUM_PLAN => [::Plan::SILVER, ::Plan::PREMIUM, ::Plan::PREMIUM_TRIAL],
       License::ULTIMATE_PLAN => [::Plan::GOLD, ::Plan::ULTIMATE, ::Plan::ULTIMATE_TRIAL, ::Plan::OPEN_SOURCE]
     }.freeze
 
