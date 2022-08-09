@@ -1005,7 +1005,7 @@ describe('ee merge request widget options', () => {
         });
         wrapper.vm.mr.state = 'nothingToMerge';
 
-        expect(wrapper.vm.shouldRenderApprovals).toBeFalsy();
+        expect(wrapper.vm.shouldRenderApprovals).toBe(false);
       });
 
       it('should return true when requiring approvals and in non-empty state', () => {
@@ -1019,7 +1019,7 @@ describe('ee merge request widget options', () => {
         });
         wrapper.vm.mr.state = 'readyToMerge';
 
-        expect(wrapper.vm.shouldRenderApprovals).toBeTruthy();
+        expect(wrapper.vm.shouldRenderApprovals).toBe(true);
       });
     });
   });
