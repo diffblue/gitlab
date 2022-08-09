@@ -40,7 +40,8 @@ module EE
           author: @current_user,
           scope: @project,
           target: @project,
-          message: squash_option_message
+          message: squash_option_message,
+          name: 'squash_option_updated'
         }
         ::Gitlab::Audit::Auditor.audit(audit_context)
       end
