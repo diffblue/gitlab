@@ -12,13 +12,13 @@ describe('Geo Settings Store Getters', () => {
     it('with error returns true', () => {
       state.formErrors.timeout = 'Error';
 
-      expect(getters.formHasError(state)).toBeTruthy();
+      expect(getters.formHasError(state)).toBe(true);
     });
 
     it('without error returns false', () => {
       state.formErrors.timeout = '';
 
-      expect(getters.formHasError(state)).toBeFalsy();
+      expect(getters.formHasError(state)).toBe(false);
     });
   });
 });
