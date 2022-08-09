@@ -14,7 +14,7 @@ module Geo
 
     feature_category :geo_replication
 
-    LEASE_TIMEOUT = 5.minutes
+    LEASE_TIMEOUT = 1.hour
 
     def perform
       try_obtain_lease { Geo::MetricsUpdateService.new.execute }
