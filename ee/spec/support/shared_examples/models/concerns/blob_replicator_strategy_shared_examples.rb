@@ -210,6 +210,10 @@ RSpec.shared_examples 'a blob replicator' do
     it 'is a Class' do
       expect(invoke_model).to be_a(Class)
     end
+
+    it 'responds to primary_key' do
+      expect(invoke_model).to respond_to(:primary_key)
+    end
   end
 
   describe '#blob_path' do

@@ -137,8 +137,16 @@ module Gitlab
         replicator_class.new(model_record_id: replicable_id)
       end
 
+      def self.batch_count_enabled?
+        Feature.enabled?(:geo_batch_count)
+      end
+
       def self.primary_total_count
-        model.available_replicables.count
+        if batch_count_enabled?
+          ::Gitlab::UsageData.count(model.available_replicables, model.primary_key)
+        else
+          model.available_replicables.count
+        end
       end
 
       def self.registry_count

@@ -13,19 +13,6 @@ RSpec.describe Geo::RegistryConsistencyService, :geo, :use_clean_rails_memory_st
     stub_external_diffs_setting(enabled: true)
   end
 
-  def model_class_factory_name(registry_class)
-    default_factory_name = registry_class::MODEL_CLASS.underscore.tr('/', '_').to_sym
-
-    {
-      Geo::DesignRegistry => :project_with_design,
-      Geo::MergeRequestDiffRegistry => :external_merge_request_diff,
-      Geo::PackageFileRegistry => :package_file,
-      Geo::UploadRegistry => :upload,
-      Geo::JobArtifactRegistry => :ci_job_artifact,
-      Geo::CiSecureFileRegistry => :ci_secure_file
-     }.fetch(registry_class, default_factory_name)
-  end
-
   shared_examples 'registry consistency service' do |klass|
     let(:registry_class) { klass }
     let(:registry_class_factory) { registry_factory_name(registry_class) }

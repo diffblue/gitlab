@@ -4,6 +4,7 @@ require 'spec_helper'
 
 RSpec.describe GeoNodeStatus, :geo do
   include ::EE::GeoHelpers
+
   using RSpec::Parameterized::TableSyntax
 
   let!(:primary) { create(:geo_node, :primary) }
@@ -18,6 +19,9 @@ RSpec.describe GeoNodeStatus, :geo do
   subject(:status) { described_class.current_node_status }
 
   before do
+    # We disable the transaction_open? check because Gitlab::Database::BatchCounter.batch_count
+    # is not allowed within a transaction but all RSpec tests run inside of a transaction.
+    stub_batch_counter_transaction_open_check
     stub_current_geo_node(secondary)
   end
 
@@ -1021,59 +1025,105 @@ RSpec.describe GeoNodeStatus, :geo do
   end
 
   context 'Replicator stats' do
-    where(:replicator, :model_factory, :registry_factory) do
-      Geo::LfsObjectReplicator             | :lfs_object                  | :geo_lfs_object_registry
-      Geo::MergeRequestDiffReplicator      | :external_merge_request_diff | :geo_merge_request_diff_registry
-      Geo::PackageFileReplicator           | :package_file                | :geo_package_file_registry
-      Geo::TerraformStateVersionReplicator | :terraform_state_version     | :geo_terraform_state_version_registry
-      Geo::SnippetRepositoryReplicator     | :snippet_repository          | :geo_snippet_repository_registry
-      Geo::GroupWikiRepositoryReplicator   | :group_wiki_repository       | :geo_group_wiki_repository_registry
-      Geo::PagesDeploymentReplicator       | :pages_deployment            | :geo_pages_deployment_registry
-      Geo::UploadReplicator                | :upload                      | :geo_upload_registry
-      Geo::JobArtifactReplicator           | :ci_job_artifact             | :geo_job_artifact_registry
-      Geo::CiSecureFileReplicator          | :ci_secure_file              | :geo_ci_secure_file_registry
-    end
+    where(
+      replicator: Gitlab::Geo::REPLICATOR_CLASSES
+    )
 
     with_them do
+      let(:registry_class) { replicator.registry_class }
       let(:replicable_name) { replicator.replicable_name_plural }
+      let(:model_factory) { model_class_factory_name(registry_class) }
+      let(:registry_factory) { registry_factory_name(registry_class) }
 
       context 'replication' do
-        let(:registry_count_method) { "#{replicable_name}_registry_count" }
-        let(:failed_count_method) { "#{replicable_name}_failed_count" }
-        let(:synced_count_method) { "#{replicable_name}_synced_count" }
-        let(:synced_in_percentage_method) { "#{replicable_name}_synced_in_percentage" }
-
-        describe '#<replicable_name>_[registry|synced|failed]_count' do
-          context 'when package registries available' do
-            before do
-              create(registry_factory, :failed)
-              create(registry_factory, :failed)
-              create(registry_factory, :synced)
-            end
-
-            it 'returns the right number of repos in registry' do
-              expect(subject.send(registry_count_method)).to eq(3)
-            end
-
-            it 'returns the right number of failed and synced repos' do
-              expect(subject.send(failed_count_method)).to eq(2)
-              expect(subject.send(synced_count_method)).to eq(1)
-            end
-
-            it 'returns the percent of synced replicables' do
-              expect(subject.send(synced_in_percentage_method)).to be_within(0.01).of(33.33)
-            end
+        context 'on the primary' do
+          before do
+            stub_current_geo_node(primary)
           end
 
-          context 'when no package registries available' do
-            it 'returns 0' do
-              expect(subject.send(registry_count_method)).to eq(0)
-              expect(subject.send(failed_count_method)).to eq(0)
-              expect(subject.send(synced_count_method)).to eq(0)
+          describe '#<replicable_name>_count' do
+            let(:replicable_count_method) { "#{replicable_name}_count" }
+
+            context 'when there are replicables' do
+              before do
+                create_list(model_factory, 2)
+              end
+
+              it 'returns the number of available replicables on primary' do
+                expect(subject.send(replicable_count_method)).to eq(2)
+              end
+
+              context 'when batch count feature flag is disabled' do
+                before do
+                  stub_feature_flags(geo_batch_count: false)
+                end
+
+                it 'returns the number of available replicables on primary' do
+                  expect(subject.send(replicable_count_method)).to eq(2)
+                end
+              end
             end
 
-            it 'returns 0' do
-              expect(subject.send(synced_in_percentage_method)).to eq(0)
+            context 'when there are no replicables' do
+              it 'returns 0' do
+                expect(subject.send(replicable_count_method)).to eq(0)
+              end
+
+              context 'when batch count feature flag is disabled' do
+                before do
+                  stub_feature_flags(geo_batch_count: false)
+                end
+
+                it 'returns 0' do
+                  expect(subject.send(replicable_count_method)).to eq(0)
+                end
+              end
+            end
+          end
+        end
+
+        context 'on the secondary' do
+          let(:registry_count_method) { "#{replicable_name}_registry_count" }
+          let(:failed_count_method) { "#{replicable_name}_failed_count" }
+          let(:synced_count_method) { "#{replicable_name}_synced_count" }
+          let(:synced_in_percentage_method) { "#{replicable_name}_synced_in_percentage" }
+
+          before do
+            stub_current_geo_node(secondary)
+          end
+
+          describe '#<replicable_name>_(registry|synced|failed)_count' do
+            context 'when there are registries' do
+              before do
+                create(registry_factory, :failed)
+                create(registry_factory, :failed)
+                create(registry_factory, :synced)
+              end
+
+              it 'returns the right number of registries' do
+                expect(subject.send(registry_count_method)).to eq(3)
+              end
+
+              it 'returns the right number of failed and synced replicables' do
+                expect(subject.send(failed_count_method)).to eq(2)
+                expect(subject.send(synced_count_method)).to eq(1)
+              end
+
+              it 'returns the percent of synced replicables' do
+                expect(subject.send(synced_in_percentage_method)).to be_within(0.01).of(33.33)
+              end
+            end
+
+            context 'when there are no registries' do
+              it 'returns 0' do
+                expect(subject.send(registry_count_method)).to eq(0)
+                expect(subject.send(failed_count_method)).to eq(0)
+                expect(subject.send(synced_count_method)).to eq(0)
+              end
+
+              it 'returns 0' do
+                expect(subject.send(synced_in_percentage_method)).to eq(0)
+              end
             end
           end
         end

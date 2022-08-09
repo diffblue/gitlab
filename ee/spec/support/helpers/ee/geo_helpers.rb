@@ -44,6 +44,27 @@ module EE
       project
     end
 
+    def stub_batch_counter_transaction_open_check
+      # We disable the transaction_open? check because Gitlab::Database::BatchCounter.batch_count
+      # is not allowed within a transaction but all RSpec tests run inside of a transaction.
+      allow_next_instance_of(::Gitlab::Database::BatchCounter) do |batch_counter|
+        allow(batch_counter).to receive(:transaction_open?).and_return(false)
+      end
+    end
+
+    def model_class_factory_name(registry_class)
+      default_factory_name = registry_class::MODEL_CLASS.underscore.tr('/', '_').to_sym
+
+      {
+        Geo::DesignRegistry => :project_with_design,
+        Geo::MergeRequestDiffRegistry => :external_merge_request_diff,
+        Geo::PackageFileRegistry => :package_file,
+        Geo::UploadRegistry => :upload,
+        Geo::JobArtifactRegistry => :ci_job_artifact,
+        Geo::CiSecureFileRegistry => :ci_secure_file
+      }.fetch(registry_class, default_factory_name)
+    end
+
     def registry_factory_name(registry_class)
       registry_class.underscore.tr('/', '_').to_sym
     end

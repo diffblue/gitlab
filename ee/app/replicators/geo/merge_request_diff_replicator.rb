@@ -9,10 +9,6 @@ module Geo
       ::MergeRequestDiff
     end
 
-    def self.primary_total_count
-      model.has_external_diffs.count
-    end
-
     def carrierwave_uploader
       model_record.external_diff
     end
