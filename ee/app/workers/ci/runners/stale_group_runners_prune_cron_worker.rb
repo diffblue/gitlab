@@ -19,8 +19,9 @@ module Ci
       def perform
         namespace_ids = NamespaceCiCdSetting.allowing_stale_runner_pruning.select(:namespace_id)
 
-        result = ::Ci::Runners::StaleGroupRunnersPruneService.new.perform(namespace_ids)
-        result.each { |key, value| log_extra_metadata_on_done(key, value) }
+        result = ::Ci::Runners::StaleGroupRunnersPruneService.new.execute(namespace_ids)
+        log_extra_metadata_on_done(:status, result.status)
+        result.payload.each { |key, value| log_extra_metadata_on_done(key, value) }
       end
     end
   end

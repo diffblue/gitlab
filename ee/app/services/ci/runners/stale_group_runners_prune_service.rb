@@ -3,14 +3,12 @@
 module Ci
   module Runners
     class StaleGroupRunnersPruneService
-      include BaseServiceUtility
-
       GROUP_BATCH_SIZE = 1_000
 
-      def perform(namespace_ids)
+      def execute(namespace_ids)
         total_pruned = delete_stale_group_runners(namespace_ids)
 
-        success({ total_pruned: total_pruned })
+        ServiceResponse.success(payload: { total_pruned: total_pruned })
       end
 
       private
