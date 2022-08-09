@@ -47,16 +47,16 @@ exports[`EscalationPolicy renders a policy with rules 1`] = `
           </span>
            
           <span
-            class="right-arrow gl-display-none gl-lg-display-block gl-flex-shrink-0 gl-mx-5"
+            class="right-arrow gl-relative gl-min-w-7 gl-bg-gray-900 gl-display-none gl-lg-display-block gl-flex-shrink-0 gl-mx-5"
             style="width: 4%;"
           >
             <i
-              class="right-arrow-head"
+              class="right-arrow-head gl-absolute gl-p-1 gl-border-solid"
             />
           </span>
            
           <span
-            class="gl-display-flex gl-align-items-center rule-action"
+            class="gl-display-flex gl-align-items-center gl-min-w-0"
           >
             <span
               class="gl-text-truncate"
@@ -104,16 +104,16 @@ exports[`EscalationPolicy renders a policy with rules 1`] = `
           </span>
            
           <span
-            class="right-arrow gl-display-none gl-lg-display-block gl-flex-shrink-0 gl-mx-5"
+            class="right-arrow gl-relative gl-min-w-7 gl-bg-gray-900 gl-display-none gl-lg-display-block gl-flex-shrink-0 gl-mx-5"
             style="width: 8%;"
           >
             <i
-              class="right-arrow-head"
+              class="right-arrow-head gl-absolute gl-p-1 gl-border-solid"
             />
           </span>
            
           <span
-            class="gl-display-flex gl-align-items-center rule-action"
+            class="gl-display-flex gl-align-items-center gl-min-w-0"
           >
             <span
               class="gl-text-truncate"
