@@ -9,6 +9,7 @@ module InsightsActions
 
     rescue_from Gitlab::Insights::Validators::ParamsValidator::ParamsValidatorError,
       Gitlab::Insights::Finders::IssuableFinder::IssuableFinderError,
+      Gitlab::Insights::Executors::DoraExecutor::DoraExecutorError,
       Gitlab::Insights::Reducers::BaseReducer::BaseReducerError, with: :render_insights_chart_error
   end
 

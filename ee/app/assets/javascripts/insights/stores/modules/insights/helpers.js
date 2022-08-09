@@ -1,12 +1,12 @@
 import { CHART_TYPES } from 'ee/insights/constants';
-import { __ } from '~/locale';
+import { __, s__ } from '~/locale';
 
 const getGroupByValue = (queryParams) => {
   return queryParams.group_by || queryParams.params.group_by;
 };
 
 const getTypeValue = (queryParams) => {
-  return queryParams.issuable_type || queryParams.params.issuable_type;
+  return queryParams.issuable_type || queryParams.params.issuable_type || queryParams.params.metric;
 };
 
 const getAxisTitle = (label) => {
@@ -21,6 +21,14 @@ const getAxisTitle = (label) => {
       return __('Issues');
     case 'merge_request':
       return __('Merge requests');
+    case 'deployment_frequency':
+      return s__('DORA4Metrics|Deployment frequency');
+    case 'lead_time_for_changes':
+      return s__('DORA4Metrics|Lead time for changes (median days)');
+    case 'time_to_restore_service':
+      return s__('DORA4Metrics|Time to restore service (median days)');
+    case 'change_failure_rate':
+      return s__('DORA4Metrics|Change failure rate (%%)');
     default:
       return '';
   }

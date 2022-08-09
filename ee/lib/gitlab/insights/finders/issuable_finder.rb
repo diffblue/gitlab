@@ -95,8 +95,8 @@ module Gitlab
           strong_memoize(:entity_args) do
             case entity
             when ::Project
-              if finder_projects
-                if finder_projects.exists?(entity.id)
+              if found_projects
+                if found_projects.exists?(entity.id)
                   { project_id: entity.id }
                 else
                   { projects: ::Project.none }
@@ -105,7 +105,7 @@ module Gitlab
                 { project_id: entity.id }
               end
             when ::Namespace
-              { group_id: entity.id, projects: finder_projects }
+              { group_id: entity.id, projects: found_projects }
             else
               raise InvalidEntityError, "Entity class `#{entity.class}` is not supported. Supported classes are Project and Namespace!"
             end
@@ -134,41 +134,8 @@ module Gitlab
             end
         end
 
-        def finder_projects
-          strong_memoize(:finder_projects) do
-            if projects.empty?
-              nil
-            elsif finder_projects_options[:ids] && finder_projects_options[:paths]
-              Project.from_union([finder_projects_ids, finder_projects_paths])
-            elsif finder_projects_options[:ids]
-              finder_projects_ids
-            elsif finder_projects_options[:paths]
-              finder_projects_paths
-            end
-          end
-        end
-
-        def finder_projects_ids
-          Project.id_in(finder_projects_options[:ids]).select(:id)
-        end
-
-        def finder_projects_paths
-          Project.where_full_path_in(
-            finder_projects_options[:paths], use_includes: false
-          ).select(:id)
-        end
-
-        def finder_projects_options
-          @finder_projects_options ||= projects[:only]&.group_by do |item|
-            case item
-            when Integer
-              :ids
-            when String
-              :paths
-            else
-              :unknown
-            end
-          end || {}
+        def found_projects
+          @found_projects ||= ProjectsFinder.new(projects).execute
         end
       end
     end
