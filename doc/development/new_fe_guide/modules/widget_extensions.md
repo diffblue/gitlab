@@ -333,9 +333,10 @@ To generate these known events for a single widget:
      1. `introduced_by_url` = `'[your MR]'`
      1. `options.events` = (the event in the command from above that generated this file, like `i_code_review_merge_request_widget_test_reports_count_view`)
          - This value is how the telemetry events are linked to "metrics" so this is probably one of the more important values.
-         1. `data_source` = `redis`
-         1. `data_category` = `optional`
-1. Repeat steps 5 and 6 for the HLL metrics. Replace `test_reports` with your appropriate name slug.
+     1. `data_source` = `redis`
+     1. `data_category` = `optional`
+1. Generate known HLL events on the command line with the following command.
+  Replace `test_reports` with your appropriate name slug.
 
    ```shell
    bundle exec rails generate gitlab:usage_metric_definition:redis_hll code_review \
@@ -348,7 +349,7 @@ To generate these known events for a single widget:
    --class_name=RedisHLLMetric
    ```
 
-   - In step 6 for HLL, change the `data_source` to `redis_hll`.
+1. Repeat step 6 but change the `data_source` to `redis_hll`.
 1. Add each of the HLL metrics to `lib/gitlab/usage_data_counters/known_events/code_review_events.yml`:
     1. `name` = (the event)
     1. `redis_slot` = `code_review`
