@@ -70,6 +70,10 @@ module VulnerabilitiesHelper
     VulnerabilitySerializer.new.represent(vulnerability)
   end
 
+  def vulnerability_data_with_category(vulnerability)
+    vulnerability_data(vulnerability).merge({ category: vulnerability.report_type })
+  end
+
   def vulnerability_finding_data(vulnerability)
     data = Vulnerabilities::FindingSerializer.new(current_user: current_user).represent(vulnerability.finding, only: FINDING_FIELDS)
     data[:location].merge!('blob_path' => vulnerability.blob_path).compact!

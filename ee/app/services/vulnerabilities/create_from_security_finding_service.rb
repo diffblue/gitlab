@@ -2,7 +2,7 @@
 
 module Vulnerabilities
   class CreateFromSecurityFindingService < ::BaseProjectService
-    def initialize(project:, current_user:, params:, state:, present_on_default_branch:)
+    def initialize(project:, current_user:, params:, state:, present_on_default_branch: true)
       super(project: project, current_user: current_user, params: params)
       @state = state
       @present_on_default_branch = present_on_default_branch
