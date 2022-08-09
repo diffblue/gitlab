@@ -5,6 +5,7 @@ import DateRange from '~/analytics/shared/components/daterange.vue';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import createDefaultClient from '~/lib/graphql';
 import { parseBoolean } from '~/lib/utils/common_utils';
+import { queryToObject } from '~/lib/utils/url_utility';
 import { buildGroupFromDataset, buildProjectFromDataset } from '../shared/utils';
 import ProductivityAnalyticsApp from './components/app.vue';
 import FilterDropdowns from './components/filter_dropdowns.vue';
@@ -28,16 +29,7 @@ export default () => {
   const timeframeContainer = container.querySelector('.js-timeframe-container');
   const appContainer = container.querySelector('.js-productivity-analytics-app-container');
 
-  const {
-    authorUsername,
-    labelName,
-    milestoneTitle,
-    mergedAfter,
-    mergedBefore,
-    notAuthorUsername,
-    notLabelName,
-    notMilestoneTitle,
-  } = container.dataset;
+  const { mergedAfter, mergedBefore } = container.dataset;
 
   const mergedAfterDate = new Date(mergedAfter);
   const mergedBeforeDate = new Date(mergedBefore);
@@ -62,15 +54,24 @@ export default () => {
   if (group) {
     project = buildProjectFromDataset(container.dataset);
 
+    const {
+      authorUsername,
+      labelName,
+      milestoneTitle,
+      'not[author_username]': notAuthorUsername,
+      'not[milestone_title]': notMilestoneTitle,
+      'not[label_name][]': notLabelName,
+    } = queryToObject(window.location.search);
+
     initialData = {
       ...initialData,
       groupNamespace: group.full_path,
       projectPath: project ? project.path_with_namespace : null,
       authorUsername,
-      labelName: labelName ? labelName.split(',') : null,
+      labelName,
       milestoneTitle,
       notAuthorUsername,
-      notLabelName: notLabelName ? notLabelName.split(',') : null,
+      notLabelName,
       notMilestoneTitle,
     };
   }

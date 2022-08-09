@@ -580,6 +580,43 @@ describe('ProductivityApp component', () => {
       shouldSetUrlParams(defaultResults);
     });
 
+    describe('with filter parameters', () => {
+      const filterParams = {
+        authorUsername: ['root'],
+        milestoneTitle: ['13.0'],
+        labelName: ['Label 1', 'Label 2'],
+        notAuthorUsername: ['guest'],
+        notMilestoneTitle: ['12.0'],
+        notLabelName: ['Not Label 1', 'Not Label 2'],
+      };
+
+      beforeEach(() => {
+        commonUtils.historyPushState = jest.fn();
+        urlUtils.setUrlParams = jest.fn();
+
+        createComponent();
+        mockStore.dispatch('filters/setInitialData', {
+          data: {
+            mergedAfter: new Date('2019-09-01'),
+            mergedBefore: new Date('2019-09-02'),
+            ...filterParams,
+          },
+        });
+      });
+
+      it('sets filter parameters', () => {
+        shouldSetUrlParams({
+          ...defaultResults,
+          author_username: filterParams.authorUsername,
+          milestone_title: filterParams.milestoneTitle,
+          'label_name[]': filterParams.labelName,
+          'not[author_username]': filterParams.notAuthorUsername,
+          'not[milestone_title]': filterParams.notMilestoneTitle,
+          'not[label_name][]': filterParams.notLabelName,
+        });
+      });
+    });
+
     describe('with hideGroupDropDown=true', () => {
       beforeEach(() => {
         commonUtils.historyPushState = jest.fn();
