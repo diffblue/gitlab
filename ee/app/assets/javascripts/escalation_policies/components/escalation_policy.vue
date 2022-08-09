@@ -203,13 +203,13 @@ export default {
               </span>
 
               <span
-                class="right-arrow gl-display-none gl-lg-display-block gl-flex-shrink-0 gl-mx-5"
+                class="right-arrow gl-relative gl-min-w-7 gl-bg-gray-900 gl-display-none gl-lg-display-block gl-flex-shrink-0 gl-mx-5"
                 :style="{ width: getArrowLength(ruleIndex) }"
               >
-                <i class="right-arrow-head"></i>
+                <i class="right-arrow-head gl-absolute gl-p-1 gl-border-solid"></i>
               </span>
 
-              <span class="gl-display-flex gl-align-items-center rule-action">
+              <span class="gl-display-flex gl-align-items-center gl-min-w-0">
                 <span v-gl-tooltip class="gl-text-truncate" :title="getActionTooltip(rule)">
                   <gl-sprintf :message="$options.i18n.escalationRuleAction">
                     <template #notificationIcon>
