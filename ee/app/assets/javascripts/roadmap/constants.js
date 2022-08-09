@@ -80,6 +80,8 @@ export const UNSUPPORTED_ROADMAP_PARAMS = [
   'progress',
 ];
 
+export const ALLOWED_SORT_VALUES = ['start_date_asc', 'end_date_asc'];
+
 export const MILESTONES_ALL = 'ALL';
 export const MILESTONES_GROUP = 'GROUP';
 export const MILESTONES_SUBGROUP = 'SUBGROUP';

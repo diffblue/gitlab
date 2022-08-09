@@ -371,6 +371,11 @@ RSpec.describe 'group epic roadmap', :js do
           ])
         end
       end
+
+      it 'renders the epics with start_date_asc if current sort is incorrect' do
+        visit group_roadmap_path(group, sort: 'INCORRECT_VALUE')
+        expect(page).to have_current_path(/sort=start_date_asc/)
+      end
     end
 
     describe 'filtered search' do

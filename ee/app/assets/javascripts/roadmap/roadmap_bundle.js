@@ -16,6 +16,7 @@ import {
   PROGRESS_WEIGHT,
   UNSUPPORTED_ROADMAP_PARAMS,
   MILESTONES_ALL,
+  ALLOWED_SORT_VALUES,
 } from './constants';
 
 import createStore from './store';
@@ -105,7 +106,9 @@ export default () => {
         fullPath: dataset.fullPath,
         epicIid: dataset.iid,
         epicsState: dataset.epicsState,
-        sortedBy: dataset.sortedBy,
+        sortedBy: ALLOWED_SORT_VALUES.includes(dataset.sortedBy)
+          ? dataset.sortedBy
+          : ALLOWED_SORT_VALUES[0],
         filterParams,
         timeframeRangeType,
         presetType,
