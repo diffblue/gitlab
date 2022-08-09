@@ -112,20 +112,5 @@ RSpec.describe ProjectImportScheduleWorker do
 
       subject.perform(project.id)
     end
-
-    context 'when feature flag is disabled' do
-      before do
-        stub_feature_flags(hard_failure_for_mirrors_without_license: false)
-      end
-
-      it 'skips the project' do
-        expect(import_state).to be_finished
-
-        subject.perform(project.id)
-        import_state.reload
-
-        expect(import_state).to be_finished
-      end
-    end
   end
 end

@@ -77,7 +77,7 @@ class UpdateAllMirrorsWorker # rubocop:disable Scalability/IdempotentWorker
       break if projects.empty?
 
       projects_to_schedule =
-        if check_mirror_plans_in_query? && Feature.enabled?(:hard_failure_for_mirrors_without_license)
+        if check_mirror_plans_in_query?
           projects.take(capacity)
         else
           projects.lazy.select(&:mirror?).take(capacity).force
