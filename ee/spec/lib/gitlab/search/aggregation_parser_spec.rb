@@ -21,23 +21,22 @@ RSpec.describe Gitlab::Search::AggregationParser do
         {
           'aggregations' =>
             {
-              'test' =>
+              'terms_agg' =>
                 {
-                  'after_key' => { 'test' => 'HTML', 'rid' => '3' },
                   'buckets' =>
                     [
-                      { 'key' => { 'test' => 'C', 'rid' => '3' }, 'doc_count' => 142 },
-                      { 'key' => { 'test' => 'C++', 'rid' => '3' }, 'doc_count' => 6 },
-                      { 'key' => { 'test' => 'CSS', 'rid' => '3' }, 'doc_count' => 1 }
+                      { 'key' => 'Markdown', 'doc_count' => 142 },
+                      { 'key' => 'C', 'doc_count' => 6 },
+                      { 'key' => 'C++', 'doc_count' => 1 }
                     ]
                 },
-              'test2' =>
+              'composite_agg' =>
                 {
-                  'after_key' => { 'test2' => '1' },
+                  'after_key' => { 'composite_agg' => 'Makefile' },
                   'buckets' =>
                     [
-                      { 'key' => { 'test2' => '1' }, 'doc_count' => 1000 },
-                      { 'key' => { 'test2' => '2' }, 'doc_count' => 3 }
+                      { 'key' => { 'composite_agg' => 'JavaScript' }, 'doc_count' => 1000 },
+                      { 'key' => { 'composite_agg' => 'Java' }, 'doc_count' => 3 }
                     ]
                 }
             }
@@ -46,19 +45,19 @@ RSpec.describe Gitlab::Search::AggregationParser do
 
       it 'parses the results' do
         expected_buckets_1 = [
-          { key: { 'test': 'C', 'rid': '3' }, count: 142 },
-          { key: { 'test': 'C++', 'rid': '3' }, count: 6 },
-          { key: { 'test': 'CSS', 'rid': '3' }, count: 1 }
+          { key: 'Markdown', count: 142 },
+          { key: 'C', count: 6 },
+          { key: 'C++', count: 1 }
         ]
         expected_buckets_2 = [
-          { key: { 'test2': '1' }, count: 1000 },
-          { key: { 'test2': '2' }, count: 3 }
+          { key: { 'composite_agg': 'JavaScript' }, count: 1000 },
+          { key: { 'composite_agg': 'Java' }, count: 3 }
         ]
 
         expect(subject.length).to eq(2)
-        expect(subject.first.name).to eq('test')
+        expect(subject.first.name).to eq('terms_agg')
         expect(subject.first.buckets).to match_array(expected_buckets_1)
-        expect(subject.second.name).to eq('test2')
+        expect(subject.second.name).to eq('composite_agg')
         expect(subject.second.buckets).to match_array(expected_buckets_2)
       end
     end

@@ -52,7 +52,7 @@ RSpec.describe Elastic::Latest::GitClassProxy, :elastic do
       result = subject.blob_aggregations('This guide details how contribute to GitLab', options)
 
       expect(result.first.name).to eq('language')
-      expect(result.first.buckets.first[:key]).to eq({ 'language' => 'Markdown' })
+      expect(result.first.buckets.first[:key]).to eq('Markdown')
       expect(result.first.buckets.first[:count]).to eq(2)
     end
 

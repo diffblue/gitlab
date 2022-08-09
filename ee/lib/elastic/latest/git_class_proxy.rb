@@ -6,6 +6,7 @@ module Elastic
       SHA_REGEX = /\A[0-9a-f]{5,40}\z/i.freeze
       HIGHLIGHT_START_TAG = 'gitlabelasticsearch→'
       HIGHLIGHT_END_TAG = '←gitlabelasticsearch'
+      MAX_LANGUAGES = 100
 
       def elastic_search(query, type: 'all', page: 1, per: 20, options: {})
         results = { blobs: [], commits: [] }
@@ -315,16 +316,9 @@ module Elastic
         if type == 'blob' && aggregation && ::Feature.enabled?(:search_blobs_language_aggregation, current_user)
           query_hash[:aggs] = {
             language: {
-              composite: {
-                sources: [
-                  {
-                    language: {
-                      terms: {
-                        field: 'blob.language'
-                      }
-                    }
-                  }
-                ]
+              terms: {
+                field: 'blob.language',
+                size: MAX_LANGUAGES
               }
             }
           }
