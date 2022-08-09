@@ -64,16 +64,17 @@ class Groups::Analytics::CycleAnalytics::ValueStreamsController < Groups::Analyt
 
   def transform_stage_params(permitted_params)
     Array(permitted_params[:stages]).each do |stage_params|
-      # supporting the new API
-      if stage_params[:start_event] && stage_params[:end_event]
-        start_event = stage_params.delete(:start_event)
-        end_event = stage_params.delete(:end_event)
-        stage_params[:start_event_identifier] = start_event[:identifier]
-        stage_params[:start_event_label_id] = start_event[:label_id]
+      next unless stage_params[:start_event] && stage_params[:end_event]
 
-        stage_params[:end_event_identifier] = end_event[:identifier]
-        stage_params[:end_event_label_id] = end_event[:label_id]
-      end
+      # supporting the new API
+
+      start_event = stage_params.delete(:start_event)
+      end_event = stage_params.delete(:end_event)
+      stage_params[:start_event_identifier] = start_event[:identifier]
+      stage_params[:start_event_label_id] = start_event[:label_id]
+
+      stage_params[:end_event_identifier] = end_event[:identifier]
+      stage_params[:end_event_label_id] = end_event[:label_id]
     end
   end
 

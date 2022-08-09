@@ -141,12 +141,12 @@ module Elastic
 
           # Check totals match if task complete
           response = task_status['response']
-          if task_status['completed'] && response['total'] != (response['created'] + response['updated'] + response['deleted'])
-            message = "Task #{slice.elastic_task} total: #{response['total']} is not equal to updated: #{response['updated']} + created: #{response['created']} + deleted: #{response['deleted']}."
-            retry_or_abort_after_limit(subtask, slice, message, { elastic_slice: slice.elastic_slice })
-            slices_in_progress += 1
-            totals_do_not_match += 1
-          end
+          next unless task_status['completed'] && response['total'] != (response['created'] + response['updated'] + response['deleted'])
+
+          message = "Task #{slice.elastic_task} total: #{response['total']} is not equal to updated: #{response['updated']} + created: #{response['created']} + deleted: #{response['deleted']}."
+          retry_or_abort_after_limit(subtask, slice, message, { elastic_slice: slice.elastic_slice })
+          slices_in_progress += 1
+          totals_do_not_match += 1
         end
       end
 
@@ -191,11 +191,11 @@ module Elastic
       current_task.subtasks.each do |subtask|
         old_documents_count = subtask.documents_count
         new_documents_count = subtask.documents_count_target
-        if old_documents_count != new_documents_count
-          abort_reindexing!("Documents count is different, Count from new index: #{new_documents_count} Count from original index: #{old_documents_count}. This likely means something went wrong during reindexing.")
+        next if old_documents_count == new_documents_count
 
-          return false
-        end
+        abort_reindexing!("Documents count is different, Count from new index: #{new_documents_count} Count from original index: #{old_documents_count}. This likely means something went wrong during reindexing.")
+
+        return false
       end
 
       true

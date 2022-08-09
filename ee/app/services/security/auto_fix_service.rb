@@ -19,11 +19,11 @@ module Security
 
         result = VulnerabilityFeedback::CreateService.new(project, User.security_bot, service_params(vulnerability)).execute
 
-        if result[:status] == :success
-          assign_label(result[:vulnerability_feedback].merge_request)
+        next unless result[:status] == :success
 
-          processed_vuln_ids.push vulnerability.id
-        end
+        assign_label(result[:vulnerability_feedback].merge_request)
+
+        processed_vuln_ids.push vulnerability.id
       end
 
       if processed_vuln_ids.any?
