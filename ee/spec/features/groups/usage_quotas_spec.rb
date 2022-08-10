@@ -424,7 +424,7 @@ RSpec.describe 'Groups > Usage Quotas' do
           expect(page.text).not_to include(*awaiting_user_names)
           expect(page.text).to include(*active_user_names)
           expect(page).to have_content("You have 3 pending members")
-          expect(page).to have_content("4 / 10 Seats in use")
+          expect(page).to have_content("4 / Unlimited Seats in use")
         end
       end
     end

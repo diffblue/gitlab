@@ -37,4 +37,5 @@ export default ({
   hasLimitedFreePlan: freeUserCapEnabled,
   hasReachedFreePlanLimit: null,
   previewFreeUserCap,
+  activeTrial: false,
 });

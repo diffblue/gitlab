@@ -1,12 +1,12 @@
 <script>
-import { GlLink, GlButton, GlSprintf } from '@gitlab/ui';
+import { GlButton } from '@gitlab/ui';
 import { s__, n__ } from '~/locale';
 import Tracking from '~/tracking';
 import { EXPLORE_PAID_PLANS_CLICKED } from '../constants';
 
 export default {
   name: 'SubscriptionUpgradeInfoCard',
-  components: { GlLink, GlButton, GlSprintf },
+  components: { GlButton },
   mixins: [Tracking.mixin()],
   props: {
     maxNamespaceSeats: {
@@ -19,18 +19,16 @@ export default {
     },
   },
   i18n: {
-    title: s__('Billing|Free groups on GitLab are limited to %{maxNamespaceSeats} seats'),
     description: s__(
-      'Billing|%{overLimitMessage} To ensure all members (active and %{linkStart}over limit%{linkEnd}) can access the group, you can start a trial or upgrade to a paid tier.',
+      'Billing|To ensure all members can access the group when your trial ends, you can upgrade to a paid tier.',
     ),
     cta: s__('Billing|Explore all plans'),
   },
-  overLimitLink: 'https://about.gitlab.com/blog/2022/03/24/efficient-free-tier/',
   computed: {
-    overLimitMessage() {
+    title() {
       return n__(
-        'Billing|If the group has over %d member, only those occupying a seat can access the group.',
-        'Billing|If the group has over %d members, only those occupying a seat can access the group.',
+        'Billing|Groups in the Free tier are limited to %d seat',
+        'Billing|Groups in the Free tier are limited to %d seats',
         this.maxNamespaceSeats,
       );
     },
@@ -48,17 +46,10 @@ export default {
     <div class="gl-display-flex gl-sm-flex-direction-column">
       <div class="gl-mb-3 gl-md-mb-0 gl-md-mr-5 gl-sm-mr-0">
         <p class="gl-font-weight-bold gl-mb-3" data-testid="title">
-          <gl-sprintf :message="$options.i18n.title">
-            <template #maxNamespaceSeats>{{ maxNamespaceSeats }}</template>
-          </gl-sprintf>
+          {{ title }}
         </p>
         <p class="gl-m-0" data-testid="description">
-          <gl-sprintf :message="$options.i18n.description">
-            <template #overLimitMessage>{{ overLimitMessage }}</template>
-            <template #link="{ content }">
-              <gl-link :href="$options.overLimitLink" target="_blank">{{ content }}</gl-link>
-            </template>
-          </gl-sprintf>
+          {{ $options.i18n.description }}
         </p>
       </div>
       <div>

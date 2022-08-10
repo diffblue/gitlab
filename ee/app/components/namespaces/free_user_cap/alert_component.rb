@@ -15,6 +15,7 @@ module Namespaces
       private
 
       USER_REACHED_LIMIT_FREE_PLAN_ALERT = 'user_reached_limit_free_plan_alert'
+      BLOG_URL = 'https://about.gitlab.com/blog/2022/03/24/efficient-free-tier'
 
       attr_reader :namespace, :user, :content_class
 
@@ -73,7 +74,7 @@ module Namespaces
         {
           title: _("Looks like you've reached your %{free_limit} member limit for " \
                    "%{strong_start}%{namespace_name}%{strong_end}").html_safe % {
-            free_limit: ::Namespaces::FreeUserCap::FREE_USER_LIMIT,
+            free_limit: free_user_limit,
             strong_start: "<strong>".html_safe,
             strong_end: "</strong>".html_safe,
             namespace_name: namespace.name
@@ -116,6 +117,10 @@ module Namespaces
 
       def free_user_limit
         ::Namespaces::FreeUserCap::FREE_USER_LIMIT
+      end
+
+      def blog_link_start
+        '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: BLOG_URL }
       end
     end
   end

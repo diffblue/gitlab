@@ -37,7 +37,9 @@ describe('SubscriptionUpgradeInfoCard', () => {
   });
 
   it('renders description message with max number of seats', () => {
-    expect(findDescription().text()).toContain('has over 5 members');
+    expect(findDescription().text()).toContain(
+      'To ensure all members can access the group when your trial ends, you can upgrade to a paid tier.',
+    );
   });
 
   it('tracks on click', () => {

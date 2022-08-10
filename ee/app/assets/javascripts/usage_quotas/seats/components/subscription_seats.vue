@@ -98,6 +98,7 @@ export default {
       'hasLimitedFreePlan',
       'hasReachedFreePlanLimit',
       'previewFreeUserCap',
+      'activeTrial',
     ]),
     ...mapGetters(['tableItems']),
     currentPage: {
@@ -134,7 +135,7 @@ export default {
       );
     },
     seatsInUsePercentage() {
-      if (this.totalSeatsAvailable == null) {
+      if (this.totalSeatsAvailable == null || this.activeTrial) {
         return 0;
       }
 
@@ -158,12 +159,14 @@ export default {
         : this.$options.i18n.seatsInSubscriptionText;
     },
     seatsInUseTooltipText() {
-      if (!this.hasLimitedFreePlan) {
-        return null;
-      }
+      if (!this.hasLimitedFreePlan) return null;
+      if (this.activeTrial) return this.$options.i18n.seatsTooltipTrialText;
+
       return sprintf(this.$options.i18n.seatsTooltipText, { number: this.maxFreeNamespaceSeats });
     },
     displayedTotalSeats() {
+      if (this.activeTrial) return this.$options.i18n.unlimited;
+
       return this.totalSeatsAvailable
         ? String(this.totalSeatsAvailable)
         : this.$options.i18n.unlimited;
@@ -296,6 +299,9 @@ export default {
     seatsInSubscriptionText: s__('Billings|Seats in use / Seats in subscription'),
     seatsAvailableText: s__('Billings|Seats in use / Seats available'),
     seatsTooltipText: s__('Billings|Free groups are limited to %{number} seats.'),
+    seatsTooltipTrialText: s__(
+      'Billings|Free tier and trial groups can invite a maximum of 20 members per day.',
+    ),
     inASeatLabel: s__('Billings|In a seat'),
     seatsInUseLink: helpPagePath('subscriptions/gitlab_com/index', {
       anchor: 'how-seat-usage-is-determined',
