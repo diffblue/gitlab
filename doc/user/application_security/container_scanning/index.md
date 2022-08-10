@@ -224,7 +224,7 @@ container_scanning:
     CS_DISABLE_LANGUAGE_VULNERABILITY_SCAN: "false"
 ```
 
-When you enable this feature, you may see [duplicate findings](../terminology/#duplicate-finding)
+When you enable this feature, you may see [duplicate findings](../terminology/index.md#duplicate-finding)
 in the [Vulnerability Report](../vulnerability_report/)
 if [Dependency Scanning](../dependency_scanning/)
 is enabled for your project. This happens because GitLab can't automatically deduplicate findings
