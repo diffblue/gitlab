@@ -48,11 +48,7 @@ module Gitlab
     end
 
     def expiring_subject
-      n_(
-        'Your subscription will expire in %{remaining_days} day.',
-        'Your subscription will expire in %{remaining_days} days.',
-        remaining_days
-      ) % { remaining_days: remaining_days }
+      _('Your subscription will expire on %{expires_on}') % { expires_on: subscribable.expires_at.strftime("%Y-%m-%d") }
     end
 
     def expiration_blocking_message
@@ -96,7 +92,14 @@ module Gitlab
     def expiring_message
       return namespace_expiring_message if namespace
 
-      _('Your %{strong}%{plan_name}%{strong_close} subscription expires on %{strong}%{expires_on}%{strong_close}. After that date, you cannot create issues or merge requests, or use many other features.') % { expires_on: subscribable.expires_at.strftime("%Y-%m-%d"), plan_name: plan_name, strong: strong, strong_close: strong_close }
+      _('Your %{strong}%{plan_name}%{strong_close} subscription expires on %{strong}%{expires_on}%{strong_close}. If you do not renew, you will lose access to your paid features on %{strong}%{downgrades_on}%{strong_close}. After that date, you can\'t create issues or merge requests, or use many other features.') %
+        {
+          expires_on: subscribable.expires_at.strftime("%Y-%m-%d"),
+          downgrades_on: subscribable.block_changes_at.strftime("%Y-%m-%d"),
+          plan_name: plan_name,
+          strong: strong,
+          strong_close: strong_close
+        }
     end
 
     def namespace_expiring_message
