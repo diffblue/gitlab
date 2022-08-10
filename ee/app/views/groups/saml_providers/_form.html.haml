@@ -12,7 +12,7 @@
       = f.gitlab_ui_checkbox_component :enforced_sso, s_('GroupSAML|Enforce SSO-only authentication for web activity for this group'), help_text: web_activity_help_text, checkbox_options: { checked: saml_provider.new_record? || saml_provider.enforced_sso?, class: 'js-group-saml-enforced-sso-input', data: { qa_selector: 'enforced_sso_checkbox' } }
 
     .form-group
-      - enable_web_auth_help_text = s_('GroupSAML|Before enforcing SSO-only authentication for Git activity, enable SSO-only authentication for web activity.')
+      - enable_web_auth_help_text = s_("GroupSAML|Before enforcing SSO-only authentication for Git activity of all users, enable SSO-only authentication for web activity.")
       = f.gitlab_ui_checkbox_component :git_check_enforced, s_('GroupSAML|Enforce SSO-only authentication for Git and Dependency Proxy activity for this group'), help_text: saml_sso_settings_generate_helper_text(display_none: saml_provider.enabled?, text: enable_web_auth_help_text), checkbox_options: { class: 'js-group-saml-enforced-git-check-input' }
     - if Feature.enabled?(:group_managed_accounts, group)
       .form-group
