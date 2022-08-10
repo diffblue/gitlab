@@ -23,8 +23,18 @@ import { TEST_HOST } from 'helpers/test_constants';
 import * as commonUtils from '~/lib/utils/common_utils';
 import httpStatusCodes from '~/lib/utils/http_status';
 import * as urlUtils from '~/lib/utils/url_utility';
+import { mockFilters } from '../mock_data';
 
 Vue.use(Vuex);
+
+jest.mock('~/lib/utils/url_utility', () => ({
+  setUrlParams: jest.fn(),
+}));
+
+jest.mock('~/lib/utils/common_utils', () => ({
+  ...jest.requireActual('~/lib/utils/common_utils'),
+  historyPushState: jest.fn(),
+}));
 
 describe('ProductivityApp component', () => {
   let wrapper;
@@ -539,6 +549,9 @@ describe('ProductivityApp component', () => {
       author_username: null,
       milestone_title: null,
       label_name: [],
+      'not[author_username]': null,
+      'not[milestone_title]': null,
+      'not[label_name]': [],
     };
 
     const defaultResults = {
@@ -549,6 +562,9 @@ describe('ProductivityApp component', () => {
       'label_name[]': [],
       author_username: null,
       milestone_title: null,
+      'not[author_username]': null,
+      'not[milestone_title]': null,
+      'not[label_name][]': [],
     };
 
     const shouldSetUrlParams = (result) => {
@@ -557,9 +573,6 @@ describe('ProductivityApp component', () => {
     };
 
     beforeEach(() => {
-      commonUtils.historyPushState = jest.fn();
-      urlUtils.setUrlParams = jest.fn();
-
       createComponent();
       mockStore.dispatch('filters/setInitialData', {
         skipFetch: true,
@@ -574,11 +587,33 @@ describe('ProductivityApp component', () => {
       shouldSetUrlParams(defaultResults);
     });
 
+    describe('with filter parameters', () => {
+      beforeEach(() => {
+        createComponent();
+        mockStore.dispatch('filters/setInitialData', {
+          data: {
+            mergedAfter: new Date('2019-09-01'),
+            mergedBefore: new Date('2019-09-02'),
+            ...mockFilters,
+          },
+        });
+      });
+
+      it('sets filter parameters', () => {
+        shouldSetUrlParams({
+          ...defaultResults,
+          author_username: mockFilters.authorUsername,
+          milestone_title: mockFilters.milestoneTitle,
+          'label_name[]': mockFilters.labelName,
+          'not[author_username]': mockFilters.notAuthorUsername,
+          'not[milestone_title]': mockFilters.notMilestoneTitle,
+          'not[label_name][]': mockFilters.notLabelName,
+        });
+      });
+    });
+
     describe('with hideGroupDropDown=true', () => {
       beforeEach(() => {
-        commonUtils.historyPushState = jest.fn();
-        urlUtils.setUrlParams = jest.fn();
-
         createComponent({ props: { hideGroupDropDown: true } });
         mockStore.dispatch('filters/setInitialData', {
           skipFetch: true,
@@ -625,10 +660,13 @@ describe('ProductivityApp component', () => {
     });
 
     describe.each`
-      paramKey             | resultKey            | value
-      ${'milestone_title'} | ${'milestone_title'} | ${'final-form'}
-      ${'author_username'} | ${'author_username'} | ${'piccolo'}
-      ${'label_name'}      | ${'label_name[]'}    | ${['who-will-win']}
+      paramKey                  | resultKey                 | value
+      ${'milestone_title'}      | ${'milestone_title'}      | ${'final-form'}
+      ${'author_username'}      | ${'author_username'}      | ${'piccolo'}
+      ${'label_name'}           | ${'label_name[]'}         | ${['who-will-win']}
+      ${'not[milestone_title]'} | ${'not[milestone_title]'} | ${'not-final-form'}
+      ${'not[author_username]'} | ${'not[author_username]'} | ${'not-piccolo'}
+      ${'not[label_name]'}      | ${'not[label_name][]'}    | ${['not-who-will-win']}
     `('with the $paramKey filter set', ({ paramKey, resultKey, value }) => {
       beforeEach(() => {
         mockStore.dispatch('filters/setFilters', {

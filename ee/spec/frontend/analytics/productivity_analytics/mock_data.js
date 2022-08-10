@@ -158,3 +158,12 @@ export const mockScatterplotData = {
     merged_at: '2019-07-30T22:00:00.000Z',
   },
 };
+
+export const mockFilters = {
+  authorUsername: 'root',
+  milestoneTitle: ['13.0'],
+  labelName: ['Label 1', 'Label 2'],
+  notAuthorUsername: ['guest'],
+  notMilestoneTitle: ['12.0'],
+  notLabelName: ['Not Label 1', 'Not Label 2'],
+};

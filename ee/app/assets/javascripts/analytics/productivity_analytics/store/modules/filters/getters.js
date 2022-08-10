@@ -28,6 +28,9 @@ export const getCommonFilterParams = (state, getters) => (chartKey) => {
     authorUsername,
     labelName,
     milestoneTitle,
+    notAuthorUsername,
+    notMilestoneTitle,
+    notLabelName,
   } = state;
 
   // for the scatterplot we need to query the API with a date prior to the selected start date
@@ -42,6 +45,9 @@ export const getCommonFilterParams = (state, getters) => (chartKey) => {
     author_username: authorUsername,
     milestone_title: milestoneTitle,
     label_name: labelName,
+    'not[author_username]': notAuthorUsername,
+    'not[milestone_title]': notMilestoneTitle,
+    'not[label_name]': notLabelName,
     merged_after: `${mergedAfterDate}${beginOfDayTime}`,
     merged_before: `${dateFormat(endDate, dateFormats.isoDate)}${endOfDayTime}`,
   };

@@ -3,6 +3,7 @@ import * as actions from 'ee/analytics/productivity_analytics/store/modules/filt
 import * as types from 'ee/analytics/productivity_analytics/store/modules/filters/mutation_types';
 import getInitialState from 'ee/analytics/productivity_analytics/store/modules/filters/state';
 import testAction from 'helpers/vuex_action_helper';
+import { mockFilters } from '../../../mock_data';
 
 jest.mock('~/lib/utils/common_utils');
 jest.mock('~/lib/utils/url_utility');
@@ -120,8 +121,15 @@ describe('Productivity analytics filter actions', () => {
 
   describe('setFilters', () => {
     it('commits the SET_FILTERS mutation', async () => {
-      await actions.setFilters(store, { author_username: 'root' });
-      expect(store.commit).toHaveBeenCalledWith(types.SET_FILTERS, { authorUsername: 'root' });
+      await actions.setFilters(store, {
+        milestone_title: mockFilters.milestoneTitle,
+        'not[milestone_title]': mockFilters.notMilestoneTitle,
+        author_username: mockFilters.authorUsername,
+        'not[author_username]': mockFilters.notAuthorUsername,
+        label_name: mockFilters.labelName,
+        'not[label_name]': mockFilters.notLabelName,
+      });
+      expect(store.commit).toHaveBeenCalledWith(types.SET_FILTERS, mockFilters);
 
       expect(store.dispatch.mock.calls[0]).toEqual([
         'charts/resetMainChartSelection',
