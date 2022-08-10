@@ -7,7 +7,12 @@ RSpec.describe 'admin Geo Projects', :js, :geo do
 
   let!(:geo_node) { create(:geo_node) }
   let!(:synced_registry) { create(:geo_project_registry, :synced, :repository_verified) }
-  let!(:sync_pending_registry) { create(:geo_project_registry, :synced, :repository_dirty) }
+  let!(:sync_pending_sync_registry) { create(:geo_project_registry, :synced, :repository_dirty) }
+
+  let!(:sync_pending_verification_registry) do
+    create(:geo_project_registry, :synced, :repository_verification_outdated)
+  end
+
   let!(:sync_failed_registry) { create(:geo_project_registry, :existing_repository_sync_failed) }
   let!(:never_synced_registry) { create(:geo_project_registry) }
 
@@ -32,7 +37,8 @@ RSpec.describe 'admin Geo Projects', :js, :geo do
     it 'shows all projects in the registry' do
       page.within(find('#content-body', match: :first)) do
         expect(page).to have_content(synced_registry.project.full_name)
-        expect(page).to have_content(sync_pending_registry.project.full_name)
+        expect(page).to have_content(sync_pending_sync_registry.project.full_name)
+        expect(page).to have_content(sync_pending_verification_registry.project.full_name)
         expect(page).to have_content(sync_failed_registry.project.full_name)
         expect(page).to have_content(never_synced_registry.project.full_name)
         expect(page).not_to have_content('There are no projects to show')
@@ -48,7 +54,8 @@ RSpec.describe 'admin Geo Projects', :js, :geo do
 
         page.within(find('#content-body', match: :first)) do
           expect(page).to have_content(synced_registry.project.full_name)
-          expect(page).not_to have_content(sync_pending_registry.project.full_name)
+          expect(page).not_to have_content(sync_pending_sync_registry.project.full_name)
+          expect(page).not_to have_content(sync_pending_verification_registry.project.full_name)
           expect(page).not_to have_content(sync_failed_registry.project.full_name)
           expect(page).not_to have_content(never_synced_registry.project.full_name)
           expect(page).not_to have_content('There are no projects to show')
@@ -65,7 +72,8 @@ RSpec.describe 'admin Geo Projects', :js, :geo do
 
         page.within(find('#content-body', match: :first)) do
           expect(page).not_to have_content(synced_registry.project.full_name)
-          expect(page).not_to have_content(sync_pending_registry.project.full_name)
+          expect(page).not_to have_content(sync_pending_sync_registry.project.full_name)
+          expect(page).not_to have_content(sync_pending_verification_registry.project.full_name)
           expect(page).not_to have_content(sync_failed_registry.project.full_name)
           expect(page).not_to have_content(never_synced_registry.project.full_name)
           expect(page).to have_content('There are no projects to show')
@@ -89,7 +97,8 @@ RSpec.describe 'admin Geo Projects', :js, :geo do
     it 'shows filter specific projects' do
       page.within(find('#content-body', match: :first)) do
         expect(page).not_to have_content(synced_registry.project.full_name)
-        expect(page).to have_content(sync_pending_registry.project.full_name)
+        expect(page).to have_content(sync_pending_sync_registry.project.full_name)
+        expect(page).to have_content(sync_pending_verification_registry.project.full_name)
         expect(page).not_to have_content(sync_failed_registry.project.full_name)
         expect(page).not_to have_content(never_synced_registry.project.full_name)
       end
@@ -97,14 +106,15 @@ RSpec.describe 'admin Geo Projects', :js, :geo do
 
     describe 'searching for a geo project' do
       it 'finds the project with the same name' do
-        fill_in :name, with: sync_pending_registry.project.name
+        fill_in :name, with: sync_pending_sync_registry.project.name
         find('#project-filter-form-field').native.send_keys(:enter)
 
         wait_for_requests
 
         page.within(find('#content-body', match: :first)) do
           expect(page).not_to have_content(synced_registry.project.full_name)
-          expect(page).to have_content(sync_pending_registry.project.full_name)
+          expect(page).to have_content(sync_pending_sync_registry.project.full_name)
+          expect(page).not_to have_content(sync_pending_verification_registry.project.full_name)
           expect(page).not_to have_content(sync_failed_registry.project.full_name)
           expect(page).not_to have_content(never_synced_registry.project.full_name)
         end
@@ -118,7 +128,8 @@ RSpec.describe 'admin Geo Projects', :js, :geo do
 
         page.within(find('#content-body', match: :first)) do
           expect(page).not_to have_content(synced_registry.project.full_name)
-          expect(page).not_to have_content(sync_pending_registry.project.full_name)
+          expect(page).not_to have_content(sync_pending_sync_registry.project.full_name)
+          expect(page).not_to have_content(sync_pending_verification_registry.project.full_name)
           expect(page).not_to have_content(sync_failed_registry.project.full_name)
           expect(page).not_to have_content(never_synced_registry.project.full_name)
         end
@@ -128,7 +139,7 @@ RSpec.describe 'admin Geo Projects', :js, :geo do
 
   shared_examples 'shows filter specific projects and correct labels' do
     before do
-      visit(admin_geo_projects_path(sync_status: sync_status))
+      visit(admin_geo_projects_path(params))
       wait_for_requests
     end
 
@@ -148,37 +159,114 @@ RSpec.describe 'admin Geo Projects', :js, :geo do
           expect(page).to have_content(label)
         end
 
-        expect(page).to have_css("svg[data-testid=\"#{icon}-icon\"")
+        expect(page).to have_text(status_text)
+        expect(page).to have_css(".#{status_color}")
+        expect(page).to have_css("svg[data-testid=\"#{status_icon}-icon\"")
       end
     end
   end
 
   describe 'visiting geo synced projects page' do
-    let(:sync_status) { :synced }
+    let(:params) { { sync_status: :synced } }
     let(:expected_registries) { [synced_registry] }
-    let(:unexpected_registries) { [sync_pending_registry, sync_failed_registry, never_synced_registry] }
+
+    let(:unexpected_registries) do
+      [
+        sync_pending_sync_registry,
+        sync_pending_verification_registry,
+        sync_failed_registry,
+        never_synced_registry
+      ]
+    end
+
     let(:labels) { ['Status', 'Last successful sync', 'Last time verified', 'Last repository check run'] }
-    let(:icon) { 'check' }
+    let(:status_icon) { 'check-circle-filled' }
+    let(:status_color) { 'gl-text-green-500' }
+    let(:status_text) { 'Synced' }
 
     it_behaves_like 'shows filter specific projects and correct labels'
   end
 
-  describe 'visiting geo pending synced projects page' do
-    let(:sync_status) { :pending }
-    let(:expected_registries) { [sync_pending_registry] }
-    let(:unexpected_registries) { [synced_registry, sync_failed_registry, never_synced_registry] }
+  describe 'visiting geo pending synced and searching pending sync on projects page' do
+    let(:params) { { sync_status: :pending, name: sync_pending_sync_registry.project.name } }
+    let(:expected_registries) { [sync_pending_sync_registry] }
+
+    let(:unexpected_registries) do
+      [
+        synced_registry,
+        sync_pending_verification_registry,
+        sync_failed_registry,
+        never_synced_registry
+      ]
+    end
+
     let(:labels) { ['Status', 'Next sync scheduled at', 'Last sync attempt'] }
-    let(:icon) { 'clock' }
+    let(:status_icon) { 'status_pending' }
+    let(:status_color) { 'gl-text-orange-500' }
+    let(:status_text) { 'Pending synchronization' }
+
+    it_behaves_like 'shows filter specific projects and correct labels'
+  end
+
+  describe 'visiting geo pending synced and searching pending verification on projects page' do
+    let(:params) { { sync_status: :pending, name: sync_pending_verification_registry.project.name } }
+    let(:expected_registries) { [sync_pending_verification_registry] }
+
+    let(:unexpected_registries) do
+      [
+        synced_registry,
+        sync_pending_sync_registry,
+        sync_failed_registry,
+        never_synced_registry
+      ]
+    end
+
+    let(:labels) { ['Status', 'Next sync scheduled at', 'Last sync attempt'] }
+    let(:status_icon) { 'status_pending' }
+    let(:status_color) { 'gl-text-orange-500' }
+    let(:status_text) { 'Pending verification' }
 
     it_behaves_like 'shows filter specific projects and correct labels'
   end
 
   describe 'visiting geo failed sync projects page' do
-    let(:sync_status) { :failed }
+    let(:params) { { sync_status: :failed } }
     let(:expected_registries) { [sync_failed_registry] }
-    let(:unexpected_registries) { [synced_registry, sync_pending_registry, never_synced_registry] }
+
+    let(:unexpected_registries) do
+      [
+        synced_registry,
+        sync_pending_sync_registry,
+        sync_pending_verification_registry,
+        never_synced_registry
+      ]
+    end
+
     let(:labels) { ['Status', 'Next sync scheduled at', 'Last sync attempt'] }
-    let(:icon) { 'warning-solid' }
+    let(:status_icon) { 'status_failed' }
+    let(:status_color) { 'gl-text-red-500' }
+    let(:status_text) { 'Failed' }
+
+    it_behaves_like 'shows filter specific projects and correct labels'
+  end
+
+  describe 'searching for never synced registry on projects pag' do
+    let(:params) { { name: never_synced_registry.project.name } }
+    let(:expected_registries) { [never_synced_registry] }
+
+    let(:unexpected_registries) do
+      [
+        synced_registry,
+        sync_pending_sync_registry,
+        sync_pending_verification_registry,
+        sync_failed_registry
+      ]
+    end
+
+    let(:labels) { ['Status', 'Next sync scheduled at', 'Last sync attempt'] }
+    let(:status_icon) { 'status_notfound' }
+    let(:status_color) { 'gl-text-gray-500' }
+    let(:status_text) { 'Never' }
 
     it_behaves_like 'shows filter specific projects and correct labels'
   end
