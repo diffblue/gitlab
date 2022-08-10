@@ -103,7 +103,7 @@ describe('CreateIssueForm', () => {
         wrapper.vm.cancel();
 
         await nextTick();
-        expect(wrapper.emitted('cancel')).toBeTruthy();
+        expect(wrapper.emitted('cancel')).toEqual([[]]);
       });
     });
 
