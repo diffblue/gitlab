@@ -18,11 +18,11 @@ describe('Pending members mutations', () => {
     });
 
     it('sets isLoading to true', () => {
-      expect(state.isLoading).toBeTruthy();
+      expect(state.isLoading).toBe(true);
     });
 
     it('sets hasError to false', () => {
-      expect(state.hasError).toBeFalsy();
+      expect(state.hasError).toBe(false);
     });
   });
 
@@ -40,7 +40,7 @@ describe('Pending members mutations', () => {
     });
 
     it('sets isLoading to false', () => {
-      expect(state.isLoading).toBeFalsy();
+      expect(state.isLoading).toBe(false);
     });
   });
 
@@ -50,11 +50,11 @@ describe('Pending members mutations', () => {
     });
 
     it('sets isLoading to false', () => {
-      expect(state.isLoading).toBeFalsy();
+      expect(state.isLoading).toBe(false);
     });
 
     it('sets hasError to true', () => {
-      expect(state.hasError).toBeTruthy();
+      expect(state.hasError).toBe(true);
     });
   });
 
@@ -103,7 +103,7 @@ describe('Pending members mutations', () => {
       it('sets member loading state to true', () => {
         mutations[types.SET_MEMBER_AS_LOADING](state, memberId);
         const member = state.members.find((m) => m.id === memberId);
-        expect(member.loading).toBeTruthy();
+        expect(member.loading).toBe(true);
       });
     });
 
@@ -111,8 +111,8 @@ describe('Pending members mutations', () => {
       it('sets member loading state to false and approved state to true', () => {
         mutations[types.SET_MEMBER_AS_APPROVED](state, memberId);
         const member = state.members.find((m) => m.id === memberId);
-        expect(member.loading).toBeFalsy();
-        expect(member.approved).toBeTruthy();
+        expect(member.loading).toBe(false);
+        expect(member.approved).toBe(true);
       });
     });
 
