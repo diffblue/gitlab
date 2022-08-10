@@ -6,6 +6,7 @@ import PolicyRuleBuilder from 'ee/security_orchestration/components/policy_edito
 import PolicyEditorLayout from 'ee/security_orchestration/components/policy_editor/policy_editor_layout.vue';
 import {
   DEFAULT_SCAN_EXECUTION_POLICY,
+  buildDefaultAction,
   fromYaml,
 } from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/lib';
 import ScanExecutionPolicyEditor from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/scan_execution_policy_editor.vue';
@@ -41,6 +42,12 @@ jest.mock('ee/security_orchestration/components/policy_editor/scan_execution_pol
   DEFAULT_SCAN_EXECUTION_POLICY: jest.requireActual(
     'ee/security_orchestration/components/policy_editor/scan_execution_policy/lib',
   ).DEFAULT_SCAN_EXECUTION_POLICY,
+  buildDefaultAction: jest.requireActual(
+    'ee/security_orchestration/components/policy_editor/scan_execution_policy/lib',
+  ).buildDefaultAction,
+  buildDefaultPipeLineRule: jest.requireActual(
+    'ee/security_orchestration/components/policy_editor/scan_execution_policy/lib',
+  ).buildDefaultPipeLineRule,
   fromYaml: jest.requireActual(
     'ee/security_orchestration/components/policy_editor/scan_execution_policy/lib',
   ).fromYaml,
@@ -99,6 +106,7 @@ describe('ScanExecutionPolicyEditor', () => {
     });
   };
 
+  const findAddActionButton = () => wrapper.findByTestId('add-action');
   const findAddRuleButton = () => wrapper.findByTestId('add-rule');
   const findEmptyState = () => wrapper.findComponent(GlEmptyState);
   const findPolicyEditorLayout = () => wrapper.findComponent(PolicyEditorLayout);
@@ -256,6 +264,24 @@ describe('ScanExecutionPolicyEditor', () => {
 
       expect(findAllPolicyRuleBuilders()).toHaveLength(1);
       expect(findPolicyEditorLayout().props('policy').rules).toHaveLength(1);
+    });
+  });
+
+  describe('policy action builder', () => {
+    beforeEach(() => {
+      factory({ provide: { glFeatures: { scanExecutionRuleMode: true } } });
+    });
+
+    it('should add new action', async () => {
+      expect(findPolicyEditorLayout().props('policy').actions).toEqual([buildDefaultAction()]);
+      findAddActionButton().vm.$emit('click');
+
+      await nextTick();
+
+      expect(findPolicyEditorLayout().props('policy').actions).toEqual([
+        buildDefaultAction(),
+        buildDefaultAction(),
+      ]);
     });
   });
 });

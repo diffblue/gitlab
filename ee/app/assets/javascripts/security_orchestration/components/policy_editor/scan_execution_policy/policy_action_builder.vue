@@ -27,9 +27,9 @@ export default {
       selectedAction: this.initAction.scan || DEFAULT_SCAN,
     };
   },
-  methods: {
-    isSelected(key) {
-      return this.selectedAction === key;
+  computed: {
+    dropdownItems() {
+      return Object.entries(this.$options.SCANS);
     },
   },
   i18n: {
@@ -45,21 +45,18 @@ export default {
     <gl-form inline @submit.prevent>
       <gl-sprintf :message="$options.i18n.humanizedTemplate">
         <template #thenLabel="{ content }">
-          <label class="text-uppercase gl-font-lg gl-mr-3">{{ content }}</label>
+          <label class="text-uppercase gl-font-lg gl-mr-3" data-testid="action-component-label">{{
+            content
+          }}</label>
         </template>
 
         <template #scan>
           <gl-dropdown
             class="gl-mx-3"
             :text="$options.SCANS[selectedAction]"
-            data-testid="action-scan"
+            data-testid="action-scanner-text"
           >
-            <gl-dropdown-item
-              v-for="[key, value] in Object.entries($options.SCANS)"
-              :key="key"
-              is-check-item
-              :is-checked="isSelected(key)"
-            >
+            <gl-dropdown-item v-for="[key, value] in dropdownItems" :key="key">
               {{ value }}
             </gl-dropdown-item>
           </gl-dropdown>
