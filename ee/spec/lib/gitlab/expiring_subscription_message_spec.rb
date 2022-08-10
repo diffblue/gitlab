@@ -25,6 +25,7 @@ RSpec.describe Gitlab::ExpiringSubscriptionMessage, :saas do
 
     let(:today) { Time.utc(2020, 3, 7, 10) }
     let(:expired_date) { Time.utc(2020, 3, 9, 10).to_date }
+    let(:block_changes_date) { Time.utc(2020, 3, 23, 10).to_date }
 
     where(:plan_name) do
       [
@@ -179,16 +180,16 @@ RSpec.describe Gitlab::ExpiringSubscriptionMessage, :saas do
               before do
                 allow(subscribable).to receive(:expired?).and_return(false)
                 allow(subscribable).to receive(:will_block_changes?).and_return(true)
-                allow(subscribable).to receive(:block_changes_at).and_return(expired_date)
+                allow(subscribable).to receive(:block_changes_at).and_return(block_changes_date)
               end
 
               it 'has a nice subject' do
-                expect(subject).to include('Your subscription will expire in 2 days')
+                expect(subject).to include("Your subscription will expire on #{expired_date.strftime("%Y-%m-%d")}")
               end
 
               context 'without namespace' do
                 it 'has an expiration blocking message' do
-                  expect(subject).to include("Your #{plan_name.capitalize} subscription expires on 2020-03-09. After that date, you cannot create issues or merge requests, or use many other features.")
+                  expect(subject).to include("Your #{plan_name.capitalize} subscription expires on #{expired_date.strftime("%Y-%m-%d")}. If you do not renew, you will lose access to your paid features on #{block_changes_date.strftime("%Y-%m-%d")}. After that date, you can\'t create issues or merge requests, or use many other features.")
                 end
               end
 
