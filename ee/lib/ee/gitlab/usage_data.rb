@@ -529,8 +529,8 @@ module EE
 
         def projects_jira_issuelist_active
           # rubocop: disable UsageData/LargeTable:
-          min_id = minimum_id(::Integrations::JiraTrackerData.where(issues_enabled: true), :service_id)
-          max_id = maximum_id(::Integrations::JiraTrackerData.where(issues_enabled: true), :service_id)
+          min_id = minimum_id(::Integrations::JiraTrackerData.where(issues_enabled: true), :integration_id)
+          max_id = maximum_id(::Integrations::JiraTrackerData.where(issues_enabled: true), :integration_id)
           # rubocop: enable UsageData/LargeTable:
           # rubocop: disable UsageData/DistinctCountByLargeForeignKey
           distinct_count(::Integrations::Jira.active.left_outer_joins(:jira_tracker_data).where(jira_tracker_data: { issues_enabled: true }), start: min_id, finish: max_id)
