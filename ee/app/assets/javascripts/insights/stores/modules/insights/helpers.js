@@ -28,7 +28,7 @@ const getAxisTitle = (label) => {
     case 'time_to_restore_service':
       return s__('DORA4Metrics|Time to restore service (median days)');
     case 'change_failure_rate':
-      return s__('DORA4Metrics|Change failure rate (%%)');
+      return s__('DORA4Metrics|Change failure rate (percentage)');
     default:
       return '';
   }
