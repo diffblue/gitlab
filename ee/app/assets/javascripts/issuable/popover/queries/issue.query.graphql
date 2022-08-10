@@ -1,4 +1,4 @@
-query issue($projectPath: ID!, $iid: String!) {
+query issueEE($projectPath: ID!, $iid: String!) {
   project(fullPath: $projectPath) {
     id
     issue(iid: $iid) {
@@ -14,6 +14,7 @@ query issue($projectPath: ID!, $iid: String!) {
         startDate
         dueDate
       }
+      weight
     }
   }
 }
