@@ -44392,6 +44392,9 @@ msgstr ""
 msgid "WorkItem|Something went wrong when deleting the work item. Please try again."
 msgstr ""
 
+msgid "WorkItem|Something went wrong when fetching the items list. Please refresh this page."
+msgstr ""
+
 msgid "WorkItem|Something went wrong when fetching the work item. Please try again."
 msgstr ""
 
