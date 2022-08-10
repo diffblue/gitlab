@@ -129,13 +129,14 @@ linters:
       - Rails/RequestReferer
       - Style/ColonMethodCall
       - Style/ConditionalAssignment
+      - Style/FormatString
       - Style/HashSyntax
       - Style/IdenticalConditionalBranches
       - Style/NegatedIf
       - Style/NestedTernaryOperator
+      - Style/RedundantInterpolation
       - Style/SelfAssignment
       - Style/StringConcatenation
-      - Style/RedundantInterpolation
       - Style/TernaryParentheses
       - Style/TrailingCommaInHashLiteral
       - Style/UnlessElse
