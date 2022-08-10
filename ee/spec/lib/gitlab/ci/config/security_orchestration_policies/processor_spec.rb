@@ -201,8 +201,7 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor do
               },
               variables: {
                 DAST_VERSION: 3,
-                SECURE_ANALYZERS_PREFIX: '$TEMPLATE_REGISTRY_HOST/security-products',
-                TEMPLATE_REGISTRY_HOST: template_registry_host,
+                SECURE_ANALYZERS_PREFIX: '$CI_TEMPLATE_REGISTRY_HOST/security-products',
                 GIT_STRATEGY: 'none'
               },
               allow_failure: true,
@@ -243,8 +242,7 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor do
               },
               variables: {
                 GIT_DEPTH: '50',
-                SECURE_ANALYZERS_PREFIX: '$TEMPLATE_REGISTRY_HOST/security-products',
-                TEMPLATE_REGISTRY_HOST: template_registry_host,
+                SECURE_ANALYZERS_PREFIX: '$CI_TEMPLATE_REGISTRY_HOST/security-products',
                 SECRETS_ANALYZER_VERSION: '4',
                 SECRET_DETECTION_IMAGE_SUFFIX: '',
                 SECRET_DETECTION_EXCLUDED_PATHS: '',

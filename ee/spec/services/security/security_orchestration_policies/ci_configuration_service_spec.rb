@@ -43,8 +43,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService d
             },
             variables: {
               GIT_DEPTH: '50',
-              SECURE_ANALYZERS_PREFIX: '$TEMPLATE_REGISTRY_HOST/security-products',
-              TEMPLATE_REGISTRY_HOST: template_registry_host,
+              SECURE_ANALYZERS_PREFIX: '$CI_TEMPLATE_REGISTRY_HOST/security-products',
               SECRETS_ANALYZER_VERSION: '4',
               SECRET_DETECTION_IMAGE_SUFFIX: '',
               SECRET_DETECTION_EXCLUDED_PATHS: '',
@@ -78,9 +77,8 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService d
             dependencies: [],
             script: ['gtcs scan'],
             variables: {
-              CS_ANALYZER_IMAGE: "$TEMPLATE_REGISTRY_HOST/security-products/container-scanning:5",
-              GIT_STRATEGY: 'none',
-              TEMPLATE_REGISTRY_HOST: Gitlab::Saas.registry_prefix
+              CS_ANALYZER_IMAGE: "$CI_TEMPLATE_REGISTRY_HOST/security-products/container-scanning:5",
+              GIT_STRATEGY: 'none'
             },
             rules: [
               { if: "$CONTAINER_SCANNING_DISABLED", when: "never" },
