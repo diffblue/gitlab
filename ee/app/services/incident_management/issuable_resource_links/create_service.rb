@@ -18,6 +18,7 @@ module IncidentManagement
         issuable_resource_link = IncidentManagement::IssuableResourceLink.new(issuable_resource_link_params)
 
         if issuable_resource_link.save
+          track_usage_event(:incident_management_issuable_resource_link_created, user.id)
           success(issuable_resource_link)
         else
           error_in_save(issuable_resource_link)
