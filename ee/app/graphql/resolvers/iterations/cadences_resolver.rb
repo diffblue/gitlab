@@ -6,22 +6,28 @@ module Resolvers
       include Gitlab::Graphql::CopyFieldDescription
       include Gitlab::Graphql::Authorize::AuthorizeResource
 
-      argument :id, ::Types::GlobalIDType[::Iterations::Cadence], required: false,
+      argument :id, ::Types::GlobalIDType[::Iterations::Cadence],
+        required: false,
         description: 'Global ID of the iteration cadence to look up.'
 
-      argument :title, GraphQL::Types::String, required: false,
+      argument :title, GraphQL::Types::String,
+        required: false,
         description: 'Fuzzy search by title.'
 
-      argument :duration_in_weeks, GraphQL::Types::Int, required: false,
+      argument :duration_in_weeks, GraphQL::Types::Int,
+        required: false,
         description: copy_field_description(Types::Iterations::CadenceType, :duration_in_weeks)
 
-      argument :automatic, GraphQL::Types::Boolean, required: false,
+      argument :automatic, GraphQL::Types::Boolean,
+        required: false,
         description: copy_field_description(Types::Iterations::CadenceType, :automatic)
 
-      argument :active, GraphQL::Types::Boolean, required: false,
+      argument :active, GraphQL::Types::Boolean,
+        required: false,
         description: copy_field_description(Types::Iterations::CadenceType, :active)
 
-      argument :include_ancestor_groups, GraphQL::Types::Boolean, required: false,
+      argument :include_ancestor_groups, GraphQL::Types::Boolean,
+        required: false,
         description: 'Whether to include ancestor groups to search iterations cadences in.'
 
       type ::Types::Iterations::CadenceType.connection_type, null: true

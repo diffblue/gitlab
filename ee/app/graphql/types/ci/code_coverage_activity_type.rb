@@ -22,7 +22,9 @@ module Types
             null: true,
             description: 'Number of projects with code coverage results for the group.'
 
-      field :date, Types::DateType, null: false,
+      field :date,
+            Types::DateType,
+            null: false,
             description: 'Date when the code coverage was created.'
     end
   end

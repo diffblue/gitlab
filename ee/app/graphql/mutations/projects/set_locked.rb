@@ -9,16 +9,20 @@ module Mutations
 
       authorize :push_code
 
-      argument :project_path, GraphQL::Types::ID, required: true,
+      argument :project_path, GraphQL::Types::ID,
+        required: true,
         description: 'Full path of the project to mutate.'
 
-      argument :file_path, GraphQL::Types::String, required: true,
+      argument :file_path, GraphQL::Types::String,
+        required: true,
         description: 'Full path to the file.'
 
-      argument :lock, GraphQL::Types::Boolean, required: true,
+      argument :lock, GraphQL::Types::Boolean,
+        required: true,
         description: 'Whether or not to lock the file path.'
 
-      field :project, Types::ProjectType, null: true,
+      field :project, Types::ProjectType,
+        null: true,
         description: 'Project after mutation.'
 
       attr_reader :project

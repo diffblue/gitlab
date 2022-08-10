@@ -11,7 +11,8 @@ module Mutations
 
       authorize :admin_iteration
 
-      argument :id, ::Types::GlobalIDType[::Iteration], required: true,
+      argument :id, ::Types::GlobalIDType[::Iteration],
+        required: true,
         description: copy_field_description(Types::IterationType, :id)
 
       field :group, ::Types::GroupType, null: false, description: 'Group the iteration belongs to.'
