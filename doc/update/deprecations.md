@@ -74,6 +74,22 @@ The `omniauth-cas3` gem will be removed in our next major release, GitLab 16.0. 
 its lack of upstream maintence is preventing GitLab's [upgrade to OmniAuth 2.0](https://gitlab.com/gitlab-org/gitlab/-/issues/30073).
 
 </div>
+
+<div class="deprecation removal-160 breaking-change">
+
+### `omniauth_crowd` gem
+
+Planned removal: GitLab <span class="removal-milestone">16.0</span> (2023-05-22)
+
+WARNING:
+This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
+Review the details carefully before upgrading.
+
+The `omniauth_crowd` gem will be removed in our next major release, GitLab 16.0. This gem sees very little use and
+its [lack of compatability](https://github.com/robdimarco/omniauth_crowd/issues/37) with OmniAuth 2.0 is blocking
+our upgrade.
+
+</div>
 </div>
 
 <div class="announcement-milestone">
