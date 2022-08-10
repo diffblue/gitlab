@@ -74,8 +74,8 @@ describe('EpicItemContainer', () => {
           50: { itemExpanded: false },
         },
       });
-      expect(wrapper.find(EpicItem).exists()).toBe(true);
-      expect(wrapper.findAll(EpicItem).length).toBe(wrapper.vm.children.length);
+      expect(wrapper.findComponent(EpicItem).exists()).toBe(true);
+      expect(wrapper.findAllComponents(EpicItem).length).toBe(wrapper.vm.children.length);
     });
   });
 });

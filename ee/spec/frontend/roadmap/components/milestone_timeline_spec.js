@@ -33,7 +33,7 @@ describe('MilestoneTimelineComponent', () => {
     });
   };
 
-  const findMilestoneItem = () => wrapper.find(MilestoneItem);
+  const findMilestoneItem = () => wrapper.findComponent(MilestoneItem);
 
   describe.each`
     props                            | hasMilestoneItem

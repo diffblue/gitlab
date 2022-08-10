@@ -192,7 +192,7 @@ describe('EpicItemComponent', () => {
     });
 
     it('renders current day indicator element', () => {
-      expect(wrapper.find(CurrentDayIndicator).exists()).toBe(true);
+      expect(wrapper.findComponent(CurrentDayIndicator).exists()).toBe(true);
     });
   });
 });

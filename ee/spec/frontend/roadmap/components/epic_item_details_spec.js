@@ -45,16 +45,16 @@ describe('EpicItemDetails', () => {
 
   const getChildMarginClassName = () => wrapper.vm.childMarginClassname;
 
-  const getExpandIconButton = () => wrapper.find(GlButton);
+  const getExpandIconButton = () => wrapper.findComponent(GlButton);
 
-  const getExpandIconTooltip = () => wrapper.find({ ref: 'expandIconTooltip' });
+  const getExpandIconTooltip = () => wrapper.findComponent({ ref: 'expandIconTooltip' });
 
-  const getChildEpicsCount = () => wrapper.find({ ref: 'childEpicsCount' });
+  const getChildEpicsCount = () => wrapper.findComponent({ ref: 'childEpicsCount' });
 
-  const getChildEpicsCountTooltip = () => wrapper.find({ ref: 'childEpicsCountTooltip' });
+  const getChildEpicsCountTooltip = () => wrapper.findComponent({ ref: 'childEpicsCountTooltip' });
 
   const getExpandButtonData = () => ({
-    icon: wrapper.find(GlIcon).attributes('name'),
+    icon: wrapper.findComponent(GlIcon).attributes('name'),
     iconLabel: getExpandIconButton().attributes('aria-label'),
     tooltip: getExpandIconTooltip().text(),
   });
