@@ -763,10 +763,13 @@ existing data, you need to keep that default value around until at least after
 the application code is updated. You cannot remove the default value in the
 same migration, as the migrations run before the model code is updated and
 models will have an old schema cache, meaning they won't know about this column
-and won't be able to set it. In this case it's recommended to add the column
-with default value in a normal migration then remove the default in a
-post-deployment migration which will happen after the application restarts
-ensuring it will have discovered the new column.
+and won't be able to set it. In this case it's recommended to:
+
+1. Add the column with default value in a normal migration.
+1. Remove the default in a post-deployment migration.
+
+The post-deployment migration happens after the application restarts,
+ensuring the new column has been discovered.
 
 ## Changing the column default
 
