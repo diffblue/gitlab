@@ -59,6 +59,21 @@ The [**Maximum number of active pipelines per project** limit](https://docs.gitl
 - [**Total number of jobs in currently active pipelines**](https://docs.gitlab.com/ee/user/admin_area/settings/continuous_integration.html#set-cicd-limits).
 
 </div>
+
+<div class="deprecation removal-160 breaking-change">
+
+### `omniauth-cas3` gem
+
+Planned removal: GitLab <span class="removal-milestone">16.0</span> (2023-05-22)
+
+WARNING:
+This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
+Review the details carefully before upgrading.
+
+The `omniauth-cas3` gem will be removed in our next major release, GitLab 16.0. This gem sees very little use and
+its lack of upstream maintence is preventing GitLab's [upgrade to OmniAuth 2.0](https://gitlab.com/gitlab-org/gitlab/-/issues/30073).
+
+</div>
 </div>
 
 <div class="announcement-milestone">
