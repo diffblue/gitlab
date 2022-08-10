@@ -7,7 +7,6 @@ module Namespaces
 
       PREVIEW_USER_OVER_LIMIT_FREE_PLAN_ALERT = 'preview_user_over_limit_free_plan_alert'
       IGNORE_DISMISSAL_EARLIER_THAN = 14.days.ago
-      BLOG_URL = 'https://about.gitlab.com/blog/2022/03/24/efficient-free-tier'
 
       def breached_cap_limit?
         ::Namespaces::FreeUserCap::Preview.new(namespace).over_limit?
@@ -59,7 +58,7 @@ module Namespaces
           strong_end: strong_end,
           namespace_name: namespace.name,
           free_user_limit: free_user_limit,
-          link_start: over_limit_link_start,
+          link_start: blog_link_start,
           link_end: link_end
         }
       end
@@ -70,10 +69,6 @@ module Namespaces
 
       def strong_end
         "</strong>".html_safe
-      end
-
-      def over_limit_link_start
-        '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: BLOG_URL }
       end
     end
   end

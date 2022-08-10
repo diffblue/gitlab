@@ -38,7 +38,7 @@ module Namespaces
           free_user_limit
         ).html_safe % {
           free_user_limit: free_user_limit,
-          link_start: over_limit_link_start,
+          link_start: blog_link_start,
           link_end: link_end
         }
       end

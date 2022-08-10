@@ -85,6 +85,7 @@ describe('EE seats module mutations', () => {
         expect(state.seatsInUse).toBe(mockUserSubscription.usage.seats_in_use);
         expect(state.maxSeatsUsed).toBe(mockUserSubscription.usage.max_seats_used);
         expect(state.seatsOwed).toBe(mockUserSubscription.usage.seats_owed);
+        expect(state.activeTrial).toBe(mockUserSubscription.plan.trial);
         expect(state.hasReachedFreePlanLimit).toBe(false);
       });
 
@@ -112,6 +113,17 @@ describe('EE seats module mutations', () => {
         });
       });
 
+      describe('when plan is on trial', () => {
+        it('sets activeTrial to true', () => {
+          mutations[types.RECEIVE_GITLAB_SUBSCRIPTION_SUCCESS](state, {
+            ...mockUserSubscription,
+            plan: { trial: true },
+          });
+
+          expect(state.activeTrial).toBe(true);
+        });
+      });
+
       it('sets isLoading to false', () => {
         expect(state.isLoading).toBe(false);
       });
@@ -127,6 +139,7 @@ describe('EE seats module mutations', () => {
         expect(state.seatsInUse).toBe(0);
         expect(state.maxSeatsUsed).toBe(0);
         expect(state.seatsOwed).toBe(0);
+        expect(state.activeTrial).toBe(false);
       });
 
       it('sets isLoading to false', () => {

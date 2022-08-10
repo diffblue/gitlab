@@ -515,6 +515,7 @@ describe('Subscription Seats', () => {
                 ...defaultInitialState,
                 hasNoSubscription: true,
                 hasLimitedFreePlan: false,
+                activeTrial: false,
               },
             });
           });
@@ -532,6 +533,33 @@ describe('Subscription Seats', () => {
               helpTooltip: null,
             });
           });
+
+          describe('when on trial', () => {
+            beforeEach(() => {
+              wrapper = createComponent({
+                initialState: {
+                  ...defaultInitialState,
+                  hasNoSubscription: true,
+                  hasLimitedFreePlan: false,
+                  activeTrial: true,
+                },
+              });
+            });
+
+            it('renders <statistics-card> with the necessary props', () => {
+              const statisticsCard = findStatisticsCard();
+
+              expect(statisticsCard.exists()).toBe(true);
+              expect(statisticsCard.props()).toMatchObject({
+                ...defaultProps,
+                description: 'Seats in use / Seats in subscription',
+                percentage: 0,
+                totalValue: 'Unlimited',
+                usageValue: '10',
+                helpTooltip: null,
+              });
+            });
+          });
         });
 
         describe('when on limited free plan', () => {
@@ -541,6 +569,7 @@ describe('Subscription Seats', () => {
                 ...defaultInitialState,
                 hasNoSubscription: true,
                 hasLimitedFreePlan: true,
+                activeTrial: false,
               },
             });
           });
@@ -556,6 +585,34 @@ describe('Subscription Seats', () => {
               totalValue: '5',
               usageValue: '2',
               helpTooltip: 'Free groups are limited to 5 seats.',
+            });
+          });
+
+          describe('when on trial', () => {
+            beforeEach(() => {
+              wrapper = createComponent({
+                initialState: {
+                  ...defaultInitialState,
+                  hasNoSubscription: true,
+                  hasLimitedFreePlan: true,
+                  activeTrial: true,
+                },
+              });
+            });
+
+            it('renders <statistics-card> with the necessary props', () => {
+              const statisticsCard = findStatisticsCard();
+
+              expect(statisticsCard.exists()).toBe(true);
+              expect(statisticsCard.props()).toMatchObject({
+                ...defaultProps,
+                description: 'Seats in use / Seats available',
+                percentage: 0,
+                totalValue: 'Unlimited',
+                usageValue: '2',
+                helpTooltip:
+                  'Free tier and trial groups can invite a maximum of 20 members per day.',
+              });
             });
           });
         });
