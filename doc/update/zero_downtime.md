@@ -491,7 +491,7 @@ You can only upgrade one minor release at a time.
 The order of steps is important. While following these steps, make
 sure you follow them in the right order, on the correct node.
 
-## Update the Geo primary site
+### Update the Geo primary site
 
 Log in to your **primary** node, executing the following:
 
@@ -536,7 +536,7 @@ Log in to your **primary** node, executing the following:
    sudo gitlab-ctl restart sidekiq
    ```
 
-## Update the Geo secondary site
+### Update the Geo secondary site
 
 On each **secondary** node, executing the following:
 
@@ -588,7 +588,7 @@ On each **secondary** node, executing the following:
    sudo gitlab-rake db:migrate:geo
    ```
 
-## Finalize the update
+### Finalize the update
 
 After all **secondary** nodes are updated, finalize
 the update on the **primary** node:
