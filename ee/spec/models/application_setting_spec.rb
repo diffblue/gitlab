@@ -101,15 +101,7 @@ RSpec.describe ApplicationSetting do
     it { is_expected.not_to allow_value(10081).for(:git_two_factor_session_expiry) }
 
     it { is_expected.to validate_numericality_of(:max_ssh_key_lifetime).is_greater_than(0).is_less_than_or_equal_to(365).allow_nil }
-
-    # TODO: Replace with validate_numericality_of once the before_validation hook is removed.
-    # The validation will pass for 0 because the hook updates the value to 1 when it is zero.
-    # https://gitlab.com/gitlab-org/gitlab/-/issues/363858
-    it { is_expected.not_to allow_value(-1).for(:deletion_adjourned_period) }
-    it { is_expected.not_to allow_value(91).for(:deletion_adjourned_period) }
-    it { is_expected.to allow_value(0).for(:deletion_adjourned_period) }
-    it { is_expected.to allow_value(1).for(:deletion_adjourned_period) }
-    it { is_expected.to allow_value(90).for(:deletion_adjourned_period) }
+    it { is_expected.to validate_numericality_of(:deletion_adjourned_period).is_greater_than(0).is_less_than_or_equal_to(90) }
 
     describe 'when additional email text is enabled' do
       before do
@@ -955,20 +947,6 @@ RSpec.describe ApplicationSetting do
 
       it { is_expected.to allow_value(false).for(:delayed_project_removal) }
       it { is_expected.to allow_value(true).for(:delayed_project_removal) }
-    end
-  end
-
-  describe '#disable_delayed_deletion_with_allowed_period' do
-    context 'when deletion_adjourned_period is 0' do
-      before do
-        setting.update!(deletion_adjourned_period: 0)
-      end
-
-      it 'sets deletion_adjourned_period to 1 and disables delayed deletion' do
-        expect(setting.deletion_adjourned_period).to be 1
-        expect(setting.delayed_project_removal).to be false
-        expect(setting.delayed_project_removal).to be false
-      end
     end
   end
 end
