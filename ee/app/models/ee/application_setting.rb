@@ -16,8 +16,6 @@ module EE
 
       belongs_to :file_template_project, class_name: "Project"
 
-      before_validation :disable_delayed_deletion_with_allowed_period, if: ->(setting) { setting.deletion_adjourned_period == 0 }
-
       validates :shared_runners_minutes,
                 numericality: { greater_than_or_equal_to: 0 }
 
@@ -486,14 +484,6 @@ module EE
       # This is the only way to update lock_delayed_project_removal and it is used to
       # enforce the cascading setting when delayed deletion is disabled on a instance.
       self.lock_delayed_project_removal = !self.delayed_group_deletion
-    end
-
-    # TODO: Remove once the migration is added in the following milestone.
-    # https://gitlab.com/gitlab-org/gitlab/-/issues/363858
-    def disable_delayed_deletion_with_allowed_period
-      self.deletion_adjourned_period = 1
-      self.delayed_group_deletion = false
-      self.delayed_project_removal = false
     end
   end
 end
