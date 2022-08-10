@@ -25,8 +25,8 @@ module Groups
 
     def destroy
       ::GroupSaml::SamlGroupLinks::DestroyService.new(current_user: current_user,
-                                                                group: group,
-                                                                saml_group_link: group.saml_group_links.find(params[:id]))
+                                                      group: group,
+                                                      saml_group_link: group.saml_group_links.find(params[:id]))
                                                  .execute
 
       redirect_to group_saml_group_links_path(@group), status: :found, notice: s_('GroupSAML|SAML group link was successfully removed.')
