@@ -3,9 +3,9 @@
 module EE
   module GeoHelper
     STATUS_ICON_NAMES_BY_STATE = {
-        synced: 'check',
-        pending: 'clock',
-        failed: 'warning-solid',
+        synced: 'check-circle-filled',
+        pending: 'status_pending',
+        failed: 'status_failed',
         never: 'status_notfound'
     }.freeze
 
@@ -71,13 +71,13 @@ module EE
 
     def geo_registry_status(registry)
       status_type = case registry.synchronization_state
-                    when :failed then
-                      'text-danger-500'
-                    when :synced then
-                      'text-success-600'
+                    when :synced then 'gl-text-green-500'
+                    when :pending then 'gl-text-orange-500'
+                    when :failed then 'gl-text-red-500'
+                    else 'gl-text-gray-500'
                     end
 
-      content_tag(:div, class: "#{status_type}") do
+      content_tag(:div, class: "#{status_type}", data: { testid: 'project-status-icon' }) do
         icon = geo_registry_status_icon(registry)
         text = geo_registry_status_text(registry)
 
@@ -86,15 +86,15 @@ module EE
     end
 
     def geo_registry_status_icon(registry)
-      sprite_icon(STATUS_ICON_NAMES_BY_STATE.fetch(registry.synchronization_state, 'warning-solid'))
+      sprite_icon(STATUS_ICON_NAMES_BY_STATE.fetch(registry.synchronization_state, 'status_notfound'))
     end
 
     def geo_registry_status_text(registry)
       case registry.synchronization_state
       when :never
-        s_('Geo|Not synced yet')
+        _('Never')
       when :failed
-        s_('Geo|Failed')
+        _('Failed')
       when :pending
         if registry.pending_synchronization?
           s_('Geo|Pending synchronization')
@@ -102,13 +102,13 @@ module EE
           s_('Geo|Pending verification')
         else
           # should never reach this state, unless we introduce new behavior
-          s_('Geo|Unknown state')
+          _('Unknown')
         end
       when :synced
-        s_('Geo|In sync')
+        _('Synced')
       else
         # should never reach this state, unless we introduce new behavior
-        s_('Geo|Unknown state')
+        _('Unknown')
       end
     end
 

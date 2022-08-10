@@ -17106,9 +17106,6 @@ msgstr ""
 msgid "Geo|In progress"
 msgstr ""
 
-msgid "Geo|In sync"
-msgstr ""
-
 msgid "Geo|Internal URL"
 msgstr ""
 
@@ -17164,9 +17161,6 @@ msgid "Geo|No Geo site found"
 msgstr ""
 
 msgid "Geo|No available replication slots"
-msgstr ""
-
-msgid "Geo|Not synced yet"
 msgstr ""
 
 msgid "Geo|Nothing found…"
@@ -17422,9 +17416,6 @@ msgid "Geo|Unhealthy"
 msgstr ""
 
 msgid "Geo|Unknown"
-msgstr ""
-
-msgid "Geo|Unknown state"
 msgstr ""
 
 msgid "Geo|Updated %{timeAgo}"
