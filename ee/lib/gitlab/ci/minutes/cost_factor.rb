@@ -5,8 +5,7 @@ module Gitlab
     module Minutes
       class CostFactor
         DISABLED = 0.0
-        STANDARD = 1.0
-        OPEN_SOURCE = 0.008
+        PUBLIC_OPEN_SOURCE = 0.5
 
         def initialize(runner_matcher)
           ensure_runner_matcher_instance(runner_matcher)
@@ -22,17 +21,19 @@ module Gitlab
           !enabled?(project)
         end
 
+        # Each runners has a public and private cost factor
+        # Pass the project to `for_project` to get a projects cost factor
+        # based on the runner cost factors and project visibility level
         def for_project(project)
           return DISABLED unless @runner_matcher.instance_type?
           return DISABLED unless project.ci_minutes_usage.limit_enabled?
 
-          runner_cost_factor = for_visibility(project.visibility_level)
+          cost_factors = [for_visibility(project.visibility_level)]
+          cost_factors << PUBLIC_OPEN_SOURCE if public_open_source?(project)
 
-          if runner_cost_factor == STANDARD && project.actual_plan.open_source?
-            OPEN_SOURCE
-          else
-            runner_cost_factor
-          end
+          # Exceptions to the cost per runner(for_visibility) are designed
+          # to be discounts so take the lowest value
+          cost_factors.min
         end
 
         # This method SHOULD NOT BE USED by new code. It is currently depended
@@ -53,6 +54,12 @@ module Gitlab
         end
 
         private
+
+        def public_open_source?(project)
+          Feature.enabled?(:ci_new_public_oss_cost_factor, project) &&
+            project.public? &&
+            project.actual_plan.open_source?
+        end
 
         def ensure_runner_matcher_instance(runner_matcher)
           unless runner_matcher.is_a?(Matching::RunnerMatcher)

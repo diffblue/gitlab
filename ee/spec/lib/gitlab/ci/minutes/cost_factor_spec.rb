@@ -128,7 +128,9 @@ RSpec.describe Gitlab::Ci::Minutes::CostFactor do
 
     context 'plan based cost factor', :saas do
       let(:runner_type) { :instance }
-      let(:project) { create(:project, visibility_level: Gitlab::VisibilityLevel::PRIVATE) }
+      let(:project) { create(:project, visibility_level: visibility_level) }
+      let(:public_cost_factor) { 2 }
+      let(:private_cost_factor) { 4 }
 
       before do
         create(:gitlab_subscription, namespace: project.namespace, hosted_plan: plan)
@@ -138,22 +140,35 @@ RSpec.describe Gitlab::Ci::Minutes::CostFactor do
       context 'when project has an Open Source plan' do
         let(:plan) { create(:opensource_plan) }
 
-        context 'when runner cost factor is standard' do
-          let(:private_cost_factor) { described_class::STANDARD }
+        context 'when the project is private' do
+          let(:visibility_level) { Gitlab::VisibilityLevel::PRIVATE }
 
-          it 'returns a lower cost factor' do
-            expect(subject).to eq(described_class::OPEN_SOURCE)
-
-            expect(subject).to be < private_cost_factor
-            expect(subject).to be > described_class::DISABLED
+          it 'returns the runner private cost factor' do
+            expect(subject).to eq(private_cost_factor)
           end
         end
 
-        context 'when runner cost factor is custom' do
-          let(:private_cost_factor) { 2.0 }
+        context 'when the project is public' do
+          let(:visibility_level) { Gitlab::VisibilityLevel::PUBLIC }
 
-          it 'returns the runner cost factor' do
-            expect(subject).to eq(private_cost_factor)
+          context 'when the public open source cost factor is lower' do
+            specify { expect(subject).to eq(described_class::PUBLIC_OPEN_SOURCE) }
+          end
+
+          context 'when the runner cost factor is lower' do
+            let(:public_cost_factor) { described_class::PUBLIC_OPEN_SOURCE - 0.001 }
+
+            specify { expect(subject).to eq(public_cost_factor) }
+          end
+
+          context 'when ci_new_public_oss_cost_factor is disabled' do
+            before do
+              stub_feature_flags(ci_new_public_oss_cost_factor: false)
+            end
+
+            it 'returns the public cost factor' do
+              expect(subject).to eq(public_cost_factor)
+            end
           end
         end
       end
@@ -161,19 +176,19 @@ RSpec.describe Gitlab::Ci::Minutes::CostFactor do
       context 'when project does not have an Open Source plan' do
         let(:plan) { create(:free_plan) }
 
-        context 'when runner cost factor is standard' do
-          let(:private_cost_factor) { described_class::STANDARD }
+        context 'when the project is private' do
+          let(:visibility_level) { Gitlab::VisibilityLevel::PRIVATE }
 
-          it 'returns the runner cost factor' do
+          it 'returns the private cost factor' do
             expect(subject).to eq(private_cost_factor)
           end
         end
 
-        context 'when runner cost factor is custom' do
-          let(:private_cost_factor) { 2.0 }
+        context 'when the project is public' do
+          let(:visibility_level) { Gitlab::VisibilityLevel::PUBLIC }
 
-          it 'returns the runner cost factor' do
-            expect(subject).to eq(private_cost_factor)
+          it 'returns the runner public cost factor' do
+            expect(subject).to eq(public_cost_factor)
           end
         end
       end
