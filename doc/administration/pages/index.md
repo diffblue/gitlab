@@ -1318,7 +1318,7 @@ and in your Pages log shows this error:
    ```shell
    sudo gitlab-ctl restart gitlab-pages
    ```
-   
+
 ### Failed to connect to the internal GitLab API
 
 If you see the following error:
