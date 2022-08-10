@@ -12439,6 +12439,9 @@ msgstr ""
 msgid "Delete file"
 msgstr ""
 
+msgid "Delete identity"
+msgstr ""
+
 msgid "Delete image"
 msgstr ""
 
@@ -19678,6 +19681,9 @@ msgid "IdentityVerification|Your account has been successfully verified. You'll 
 msgstr ""
 
 msgid "IdentityVerification|Your verification code expires after %{expires_in_minutes} minutes."
+msgstr ""
+
+msgid "Identity|Provider ID"
 msgstr ""
 
 msgid "If any indexed field exceeds this limit, it is truncated to this number of characters. The rest of the content is neither indexed nor searchable. This does not apply to repository and wiki indexing. For unlimited characters, set this to 0."
