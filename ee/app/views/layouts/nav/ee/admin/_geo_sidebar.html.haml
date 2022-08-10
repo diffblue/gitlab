@@ -1,4 +1,4 @@
-= nav_link(controller: %w(admin/geo/nodes admin/geo/projects admin/geo/uploads admin/geo/settings admin/geo/designs admin/geo/replicables)) do
+= nav_link(controller: %w[admin/geo/nodes admin/geo/projects admin/geo/uploads admin/geo/settings admin/geo/designs admin/geo/replicables]) do
   = link_to admin_geo_nodes_path, class: "qa-link-geo-menu has-sub-items" do
     .nav-icon-container
       = sprite_icon('location-dot')
@@ -14,7 +14,7 @@
         = link_to admin_geo_nodes_path, title: _('Sites') do
           %span
             = _('Sites')
-      = nav_link(controller: %w(admin/geo/projects admin/geo/uploads admin/geo/designs admin/geo/replicables)) do
+      = nav_link(controller: %w[admin/geo/projects admin/geo/uploads admin/geo/designs admin/geo/replicables]) do
         = link_to admin_geo_projects_path, title: _('Replication') do
           %span
             = _('Replication')
