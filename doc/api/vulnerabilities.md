@@ -281,7 +281,7 @@ with the GraphQL API.
 
 ### GraphQL - Single vulnerability
 
-Use [`Query.vulnerability`](graphql/reference/#queryvulnerability).
+Use [`Query.vulnerability`](graphql/reference/index.md#queryvulnerability).
 
 ```graphql
 {
