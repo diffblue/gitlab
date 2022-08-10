@@ -32,7 +32,7 @@ RSpec.describe IssuablesHelper do
           state: epic.state,
           initialDescriptionHtml: '<p data-sourcepos="1:1-1:9" dir="auto">epic text</p>',
           initialDescriptionText: 'epic text',
-          initialTaskStatus: '0 of 0 tasks completed',
+          initialTaskStatus: '0 of 0 checklist items completed',
           initialTitleHtml: epic.title,
           initialTitleText: epic.title,
           issuableRef: "&#{epic.iid}",
