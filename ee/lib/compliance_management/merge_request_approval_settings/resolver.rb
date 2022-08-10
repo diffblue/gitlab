@@ -52,7 +52,11 @@ module ComplianceManagement
       def selective_code_owner_removals
         project_value = @project && @project.project_setting.read_attribute(:selective_code_owner_removals)
 
-        setting(nil, nil, project_value)
+        ComplianceManagement::MergeRequestApprovalSettings::Setting.new(
+          value: !!project_value,
+          locked: false,
+          inherited_from: nil
+        )
       end
 
       def require_password_to_approve
