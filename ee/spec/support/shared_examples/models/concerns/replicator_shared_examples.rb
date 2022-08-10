@@ -14,7 +14,36 @@ RSpec.shared_examples 'a replicator' do
   include EE::GeoHelpers
 
   context 'Geo node status' do
-    context 'on a secondary node' do
+    context 'on a primary site' do
+      let_it_be(:model_class_factory) { model_class_factory_name(described_class.registry_class) }
+      let_it_be(:replicables) { create_list(model_class_factory, 2) }
+
+      describe '.primary_total_count' do
+        context 'when batch count feature flag is enabled' do
+          before do
+            # We disable the transaction_open? check because Gitlab::Database::BatchCounter.batch_count
+            # is not allowed within a transaction but all RSpec tests run inside of a transaction.
+            stub_batch_counter_transaction_open_check
+          end
+
+          it 'returns the number of available replicables on primary' do
+            expect(described_class.primary_total_count).to eq(2)
+          end
+        end
+
+        context 'when batch count feature flag is disabled' do
+          before do
+            stub_feature_flags(geo_batch_count: false)
+          end
+
+          it 'returns the number of available replicables on primary' do
+            expect(described_class.primary_total_count).to eq(2)
+          end
+        end
+      end
+    end
+
+    context 'on a secondary site' do
       let_it_be(:registry_factory) { registry_factory_name(described_class.registry_class) }
 
       before do

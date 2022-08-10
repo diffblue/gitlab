@@ -64,12 +64,16 @@ RSpec.describe Geo::MetricsUpdateService, :geo, :prometheus do
     }
   end
 
-  # FIXME: we don't clear prometheus state between specs, so these specs below
-  # create *persistent* entries in the prometheus database that may cause other
-  # specs to transiently fail.
-  #
-  # Issue: https://gitlab.com/gitlab-org/gitlab-foss/issues/39968
   before do
+    # We disable the transaction_open? check because Gitlab::Database::BatchCounter.batch_count
+    # is not allowed within a transaction but all RSpec tests run inside of a transaction.
+    stub_batch_counter_transaction_open_check
+
+    # FIXME: we don't clear prometheus state between specs, so these specs below
+    # create *persistent* entries in the prometheus database that may cause other
+    # specs to transiently fail.
+    #
+    # Issue: https://gitlab.com/gitlab-org/gitlab-foss/issues/39968
     allow(Gitlab::Metrics).to receive(:prometheus_metrics_enabled?).and_return(true)
   end
 

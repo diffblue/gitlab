@@ -1,0 +1,8 @@
+---
+name: geo_batch_count
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/95001
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/370295
+milestone: '15.3'
+type: development
+group: group::geo
+default_enabled: false
