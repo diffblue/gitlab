@@ -63,8 +63,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::OnDemandScanPipelineConf
           image: { name: '$SECURE_ANALYZERS_PREFIX/dast:$DAST_VERSION' },
           variables: {
             DAST_VERSION: 3,
-            SECURE_ANALYZERS_PREFIX: '$TEMPLATE_REGISTRY_HOST/security-products',
-            TEMPLATE_REGISTRY_HOST: template_registry_host,
+            SECURE_ANALYZERS_PREFIX: '$CI_TEMPLATE_REGISTRY_HOST/security-products',
             GIT_STRATEGY: 'none'
           },
           allow_failure: true,
