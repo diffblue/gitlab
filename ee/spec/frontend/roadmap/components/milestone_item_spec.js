@@ -144,7 +144,7 @@ describe('MilestoneItemComponent', () => {
 
   describe('template', () => {
     it('renders component container element class `timeline-bar-wrapper`', () => {
-      expect(wrapper.vm.$el.classList.contains('timeline-bar-wrapper')).toBeTruthy();
+      expect(wrapper.classes()).toContain('timeline-bar-wrapper');
     });
 
     it('renders component element class `milestone-item-details`', () => {
