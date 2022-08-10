@@ -114,14 +114,14 @@ describe('GeoNodeFormNamespaces', () => {
       describe('when namespace is in selectedNamespaces', () => {
         it('emits `removeSyncOption`', () => {
           wrapper.vm.toggleNamespace(MOCK_SYNC_NAMESPACES[0]);
-          expect(wrapper.emitted('removeSyncOption')).toBeTruthy();
+          expect(wrapper.emitted()).toHaveProperty('removeSyncOption');
         });
       });
 
       describe('when namespace is not in selectedNamespaces', () => {
         it('emits `addSyncOption`', () => {
           wrapper.vm.toggleNamespace(MOCK_SYNC_NAMESPACES[1]);
-          expect(wrapper.emitted('addSyncOption')).toBeTruthy();
+          expect(wrapper.emitted()).toHaveProperty('addSyncOption');
         });
       });
     });
@@ -136,13 +136,13 @@ describe('GeoNodeFormNamespaces', () => {
 
       describe('when namespace is in selectedNamespaces', () => {
         it('returns `true`', () => {
-          expect(wrapper.vm.isSelected(MOCK_SYNC_NAMESPACES[0])).toBeTruthy();
+          expect(wrapper.vm.isSelected(MOCK_SYNC_NAMESPACES[0])).toBe(true);
         });
       });
 
       describe('when namespace is not in selectedNamespaces', () => {
         it('returns `false`', () => {
-          expect(wrapper.vm.isSelected(MOCK_SYNC_NAMESPACES[1])).toBeFalsy();
+          expect(wrapper.vm.isSelected(MOCK_SYNC_NAMESPACES[1])).toBe(false);
         });
       });
     });
@@ -199,7 +199,7 @@ describe('GeoNodeFormNamespaces', () => {
           });
 
           it('returns `false`', () => {
-            expect(wrapper.vm.noSyncNamespaces).toBeFalsy();
+            expect(wrapper.vm.noSyncNamespaces).toBe(false);
           });
         });
       });
@@ -210,7 +210,7 @@ describe('GeoNodeFormNamespaces', () => {
         });
 
         it('returns `true`', () => {
-          expect(wrapper.vm.noSyncNamespaces).toBeTruthy();
+          expect(wrapper.vm.noSyncNamespaces).toBe(true);
         });
       });
     });
