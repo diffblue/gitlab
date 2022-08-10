@@ -2,7 +2,7 @@
 
 module Namespaces
   module Storage
-    class LimitAlert < ViewComponent::Base
+    class LimitAlertComponent < ViewComponent::Base
       # @param [Namespace or Group] namespace
       # @param [User] user
       # @param [EE::Namespace::Storage::Notification] notification
