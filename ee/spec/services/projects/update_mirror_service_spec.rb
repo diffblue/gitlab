@@ -267,33 +267,6 @@ RSpec.describe Projects::UpdateMirrorService do
           expect(control.by_command(:sadd).count).to eq(1)
         end
 
-        context 'when FF is off' do
-          before do
-            stub_feature_flags(pull_mirror_bulk_branches: false)
-          end
-
-          it 'executes N+1 redis cache commands' do
-            modify_branch(project.repository, 'branch-1', remote: true)
-            modify_branch(project.repository, 'branch-2', remote: true)
-
-            control = RedisCommands::Recorder.new(pattern: ':branch_names:') { service.execute }
-
-            expect(control.by_command(:sadd).count).to eq(3)
-          end
-
-          context 'when branch cannot be created' do
-            before do
-              modify_branch(project.repository, 'HEAD', remote: true)
-            end
-
-            it 'returns an error' do
-              result = service.execute
-
-              expect(result).to eq(status: :error, message: 'Branch name is invalid')
-            end
-          end
-        end
-
         it 'updates existing branches' do
           service.execute
 

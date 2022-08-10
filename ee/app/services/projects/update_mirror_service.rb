@@ -65,7 +65,6 @@ module Projects
 
       errors = []
       branches_to_create = {}
-      bulk_creation = Feature.enabled?(:pull_mirror_bulk_branches, project)
 
       repository.upstream_branches.each do |upstream_branch|
         name = upstream_branch.name
@@ -75,16 +74,7 @@ module Projects
         local_branch = local_branches[name]
 
         if local_branch.nil?
-          if bulk_creation
-            branches_to_create[name] = upstream_branch.dereferenced_target.sha
-          else
-            result = ::Branches::CreateService.new(project, current_user).execute(name, upstream_branch.dereferenced_target.sha, create_default_branch_if_empty: false)
-
-            if result[:status] == :error
-              errors << result[:message]
-            end
-          end
-
+          branches_to_create[name] = upstream_branch.dereferenced_target.sha
         elsif local_branch.dereferenced_target == upstream_branch.dereferenced_target
           # Already up to date
         elsif repository.diverged_from_upstream?(name)
@@ -98,11 +88,9 @@ module Projects
         end
       end
 
-      if bulk_creation
-        result = ::Branches::CreateService.new(project, current_user).bulk_create(branches_to_create)
-        if result[:status] == :error
-          errors << result[:message]
-        end
+      result = ::Branches::CreateService.new(project, current_user).bulk_create(branches_to_create)
+      if result[:status] == :error
+        errors << result[:message]
       end
 
       unless errors.empty?
