@@ -454,7 +454,7 @@ Parameters:
 | Attribute                            | Required | Description                                                                                                                                             |
 | :----------------------------------- | :------- | :------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `admin`                              | No       | User is an administrator. Valid values are `true` or `false`. Defaults to false.
-| `auditor` **(PREMIUM)**                           | No       | User is an auditor. Valid values are `true` or `false`. Defaults to false. [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/366404) in GitLab 15.3.                                                                                                      |
+| `auditor` **(PREMIUM)**               | No       | User is an auditor. Valid values are `true` or `false`. Defaults to false. [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/366404) in GitLab 15.3.                                                                                                      |
 | `avatar`                             | No       | Image file for user's avatar                                                                                                                            |
 | `bio`                                | No       | User's biography                                                                                                                                        |
 | `can_create_group`                   | No       | User can create groups - true or false                                                                                                                  |
@@ -487,7 +487,7 @@ Parameters:
 ## User modification **(FREE SELF)**
 
 > - The `namespace_id` field in the response was [introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/82045) in GitLab 14.10.
-> - Ability to create an auditor user was [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/366404) in GitLab 15.3.
+> - Ability to modify an auditor user was [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/366404) in GitLab 15.3.
 
 Modifies an existing user. Only administrators can change attributes of a user.
 
@@ -500,7 +500,7 @@ Parameters:
 | Attribute                            | Required | Description                                                                                                                                             |
 | :----------------------------------- | :------- | :------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `admin`                              | No       |User is an administrator. Valid values are `true` or `false`. Defaults to false.
-| `auditor` **(PREMIUM)**                       | No       |  User is an auditor. Valid values are `true` or `false`. Defaults to false. [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/366404) in GitLab 15.3.(default)                                                                                                           |
+| `auditor` **(PREMIUM)**              | No       |  User is an auditor. Valid values are `true` or `false`. Defaults to false. [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/366404) in GitLab 15.3.(default)                                                                                                           |
 | `avatar`                             | No       | Image file for user's avatar                                                                                                                            |
 | `bio`                                | No       | User's biography                                                                                                                                        |
 | `can_create_group`                   | No       | User can create groups - true or false                                                                                                                  |

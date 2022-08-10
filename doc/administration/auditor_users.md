@@ -56,7 +56,8 @@ If you are signed in with auditor access, you:
 - Can access the same resources using the GitLab UI or API.
 - Can't view the Admin Area, or perform any administration actions.
 
-## APIs
+## Maintain auditor users using API
 
-- [Create API](../api/users.md#user-creation)
-- [Update API](../api/users.md#user-modification)
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/366404) in GitLab 15.3.
+
+Administrators can use the GitLab API to [create](../api/users.md#user-creation) and [modify](../api/users.md#user-modification) auditor users.
