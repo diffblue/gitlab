@@ -37346,6 +37346,9 @@ msgstr ""
 msgid "SortOptions|Last created"
 msgstr ""
 
+msgid "SortOptions|Latest version"
+msgstr ""
+
 msgid "SortOptions|Least popular"
 msgstr ""
 
@@ -37404,6 +37407,9 @@ msgid "SortOptions|Oldest starred"
 msgstr ""
 
 msgid "SortOptions|Oldest updated"
+msgstr ""
+
+msgid "SortOptions|Oldest version"
 msgstr ""
 
 msgid "SortOptions|Popularity"
