@@ -326,7 +326,7 @@ RSpec.describe API::Deployments do
         it 'maintainer can delete a deployment' do
           project.add_maintainer(user)
 
-          delete api("/projects/#{project.id}/deployments/#{deploy.id}", user)
+          delete api("/projects/#{project.id}/deployments/#{old_deploy.id}", user)
 
           expect(response).to have_gitlab_http_status(:no_content)
         end
