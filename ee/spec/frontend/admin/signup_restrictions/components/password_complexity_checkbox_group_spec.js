@@ -48,7 +48,7 @@ describe('Password Checkbox Group', () => {
         await nextTick();
 
         expect(checkbox.props('value')).toBe(!expected);
-        expect(wrapper.emitted('set-password-complexity')).toBeTruthy();
+        expect(wrapper.emitted('set-password-complexity')).toHaveLength(1);
         expect(wrapper.emitted('set-password-complexity')[0]).toEqual([
           { name: prop, value: !expected },
         ]);
