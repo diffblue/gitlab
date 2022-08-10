@@ -28,6 +28,14 @@ RSpec.describe API::ProtectedEnvironments do
     it { expect { request }.to be_denied_for(:anonymous) }
   end
 
+  shared_examples 'group-level request is disallowed for maintainer' do
+    it { expect { request }.to be_denied_for(:maintainer).of(group) }
+  end
+
+  shared_examples 'group-level request is allowed for maintainer' do
+    it { expect { request }.to be_allowed_for(:maintainer).of(group) }
+  end
+
   describe "GET /projects/:id/protected_environments" do
     let(:route) { "/projects/#{project.id}/protected_environments" }
     let(:request) { get api(route, user), params: { per_page: 100 } }
@@ -214,9 +222,27 @@ RSpec.describe API::ProtectedEnvironments do
     let(:route) { "/groups/#{group.id}/protected_environments" }
     let(:request) { get api(route, user), params: { per_page: 100 } }
 
-    context 'when authenticated as a maintainer' do
+    it_behaves_like 'group-level request is disallowed for maintainer'
+
+    context 'when group_level_protected_environment_settings_permission feature flag is disabled' do
       before do
-        group.add_maintainer(user)
+        stub_feature_flags(group_level_protected_environment_settings_permission: false)
+      end
+
+      it_behaves_like 'group-level request is allowed for maintainer'
+    end
+
+    context 'when override_group_level_protected_environment_settings_permission feature flag is enabled' do
+      before do
+        stub_feature_flags(override_group_level_protected_environment_settings_permission: true)
+      end
+
+      it_behaves_like 'group-level request is allowed for maintainer'
+    end
+
+    context 'when authenticated as a owner' do
+      before do
+        group.add_owner(user)
       end
 
       it 'returns the protected environments' do
@@ -230,8 +256,6 @@ RSpec.describe API::ProtectedEnvironments do
         expect(protected_environment_names).to match_array([protected_environment_name])
       end
     end
-
-    it_behaves_like 'requests for non-maintainers'
   end
 
   describe "GET /groups/:id/protected_environments/:environment" do
@@ -239,9 +263,19 @@ RSpec.describe API::ProtectedEnvironments do
     let(:route) { "/groups/#{group.id}/protected_environments/#{requested_environment_name}" }
     let(:request) { get api(route, user) }
 
-    context 'when authenticated as a maintainer' do
+    it_behaves_like 'group-level request is disallowed for maintainer'
+
+    context 'when group_level_protected_environment_settings_permission feature flag is disabled' do
       before do
-        group.add_maintainer(user)
+        stub_feature_flags(group_level_protected_environment_settings_permission: false)
+      end
+
+      it_behaves_like 'group-level request is allowed for maintainer'
+    end
+
+    context 'when authenticated as a owner' do
+      before do
+        group.add_owner(user)
       end
 
       it 'returns the protected environment' do
@@ -280,16 +314,29 @@ RSpec.describe API::ProtectedEnvironments do
         end
       end
     end
-
-    it_behaves_like 'requests for non-maintainers'
   end
 
   describe 'POST /groups/:id/protected_environments/' do
     let(:api_url) { api("/groups/#{group.id}/protected_environments/", user) }
 
-    context 'when authenticated as a maintainer' do
+    it_behaves_like 'group-level request is disallowed for maintainer' do
+      let(:request) { post api_url, params: { name: 'staging' } }
+    end
+
+    context 'when group_level_protected_environment_settings_permission feature flag is disabled' do
       before do
-        group.add_maintainer(user)
+        stub_feature_flags(group_level_protected_environment_settings_permission: false)
+      end
+
+      it_behaves_like 'group-level request is allowed for maintainer' do
+        let(:deployer) { create(:user).tap { |u| group.add_maintainer(u) } }
+        let(:request) { post api_url, params: { name: 'staging', deploy_access_levels: [{ user_id: deployer.id }] } }
+      end
+    end
+
+    context 'when authenticated as a owner' do
+      before do
+        group.add_owner(user)
       end
 
       it 'protects the environment with user allowed to deploy' do
@@ -386,19 +433,25 @@ RSpec.describe API::ProtectedEnvironments do
         expect(response).to have_gitlab_http_status(:unprocessable_entity)
       end
     end
-
-    it_behaves_like 'requests for non-maintainers' do
-      let(:request) { post api_url, params: { name: 'staging' } }
-    end
   end
 
   describe 'DELETE /groups/:id/protected_environments/:environment' do
     let(:route) { "/groups/#{group.id}/protected_environments/production" }
     let(:request) { delete api(route, user) }
 
-    context 'when authenticated as a maintainer' do
+    it_behaves_like 'group-level request is disallowed for maintainer'
+
+    context 'when group_level_protected_environment_settings_permission feature flag is disabled' do
       before do
-        group.add_maintainer(user)
+        stub_feature_flags(group_level_protected_environment_settings_permission: false)
+      end
+
+      it_behaves_like 'group-level request is allowed for maintainer'
+    end
+
+    context 'when authenticated as a owner' do
+      before do
+        group.add_owner(user)
       end
 
       it 'unprotects the environment' do
@@ -409,7 +462,5 @@ RSpec.describe API::ProtectedEnvironments do
         expect(response).to have_gitlab_http_status(:no_content)
       end
     end
-
-    it_behaves_like 'requests for non-maintainers'
   end
 end

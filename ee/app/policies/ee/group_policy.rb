@@ -169,6 +169,13 @@ module EE
         ::Feature.enabled?(:auditor_group_runner_access)
       end
 
+      condition(:admin_group_protected_environment_accessible) do
+        ::Feature.enabled?(
+          :group_level_protected_environment_settings_permission, @subject) &&
+          ::Feature.disabled?(
+            :override_group_level_protected_environment_settings_permission, @subject)
+      end
+
       rule { ~public_group & ~can?(:owner_access) & user_banned_from_group }.policy do
         prevent :read_group
       end
@@ -197,8 +204,10 @@ module EE
       rule { maintainer }.policy do
         enable :maintainer_access
         enable :admin_wiki
-        enable :admin_protected_environment
       end
+
+      rule { maintainer & ~admin_group_protected_environment_accessible }
+        .enable :admin_protected_environment
 
       rule { auditor }.policy do
         enable :view_productivity_analytics
@@ -222,6 +231,9 @@ module EE
       rule { owner | admin }.policy do
         enable :owner_access
       end
+
+      rule { owner & admin_group_protected_environment_accessible }
+        .enable :admin_protected_environment
 
       rule { can?(:owner_access) }.policy do
         enable :set_epic_created_at

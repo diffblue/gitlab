@@ -5,10 +5,10 @@ RSpec.describe Groups::ProtectedEnvironmentsController do
   let_it_be(:group) { create(:group) }
   let_it_be(:subgroup_1) { create(:group, parent: group) }
   let_it_be(:subgroup_2) { create(:group, parent: group) }
+  let_it_be(:group_owner) { create(:user).tap { |u| group.add_owner(u) } }
   let_it_be(:group_maintainer) { create(:user).tap { |u| group.add_maintainer(u) } }
-  let_it_be(:group_developer) { create(:user).tap { |u| group.add_developer(u) } }
 
-  let(:current_user) { group_maintainer }
+  let(:current_user) { group_owner }
 
   before do
     sign_in(current_user)
@@ -62,12 +62,22 @@ RSpec.describe Groups::ProtectedEnvironmentsController do
     end
 
     context 'with invalid access' do
-      let(:current_user) { group_developer }
+      let(:current_user) { group_maintainer }
 
       it 'renders 404' do
         subject
 
         expect(response).to have_gitlab_http_status(:not_found)
+      end
+
+      context 'when group_level_protected_environment_settings_permission feature flag is disabled' do
+        before do
+          stub_feature_flags(group_level_protected_environment_settings_permission: false)
+        end
+
+        it 'creates a new ProtectedEnvironment' do
+          expect { subject }.to change(ProtectedEnvironment, :count).by(1)
+        end
       end
     end
   end
@@ -114,12 +124,24 @@ RSpec.describe Groups::ProtectedEnvironmentsController do
     end
 
     context 'when the user is not authorized' do
-      let(:current_user) { group_developer }
+      let(:current_user) { group_maintainer }
 
       it 'renders 404' do
         subject
 
         expect(response).to have_gitlab_http_status(:not_found)
+      end
+
+      context 'when group_level_protected_environment_settings_permission feature flag is disabled' do
+        before do
+          stub_feature_flags(group_level_protected_environment_settings_permission: false)
+        end
+
+        it 'updates the protected environment' do
+          subject
+
+          expect(response).to have_gitlab_http_status(:ok)
+        end
       end
     end
   end
@@ -162,12 +184,22 @@ RSpec.describe Groups::ProtectedEnvironmentsController do
     end
 
     context 'when the user is not authorized' do
-      let(:current_user) { group_developer }
+      let(:current_user) { group_maintainer }
 
       it 'renders 404' do
         expect { subject }.not_to change { ProtectedEnvironment.count }
 
         expect(response).to have_gitlab_http_status(:not_found)
+      end
+
+      context 'when group_level_protected_environment_settings_permission feature flag is disabled' do
+        before do
+          stub_feature_flags(group_level_protected_environment_settings_permission: false)
+        end
+
+        it 'deletes the requested protected environment' do
+          expect { subject }.to change { ProtectedEnvironment.count }.from(1).to(0)
+        end
       end
     end
   end
