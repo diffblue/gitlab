@@ -23,6 +23,7 @@ import { TEST_HOST } from 'helpers/test_constants';
 import * as commonUtils from '~/lib/utils/common_utils';
 import httpStatusCodes from '~/lib/utils/http_status';
 import * as urlUtils from '~/lib/utils/url_utility';
+import { mockFilters } from '../mock_data';
 
 Vue.use(Vuex);
 
@@ -587,22 +588,13 @@ describe('ProductivityApp component', () => {
     });
 
     describe('with filter parameters', () => {
-      const filterParams = {
-        authorUsername: ['root'],
-        milestoneTitle: ['13.0'],
-        labelName: ['Label 1', 'Label 2'],
-        notAuthorUsername: ['guest'],
-        notMilestoneTitle: ['12.0'],
-        notLabelName: ['Not Label 1', 'Not Label 2'],
-      };
-
       beforeEach(() => {
         createComponent();
         mockStore.dispatch('filters/setInitialData', {
           data: {
             mergedAfter: new Date('2019-09-01'),
             mergedBefore: new Date('2019-09-02'),
-            ...filterParams,
+            ...mockFilters,
           },
         });
       });
@@ -610,12 +602,12 @@ describe('ProductivityApp component', () => {
       it('sets filter parameters', () => {
         shouldSetUrlParams({
           ...defaultResults,
-          author_username: filterParams.authorUsername,
-          milestone_title: filterParams.milestoneTitle,
-          'label_name[]': filterParams.labelName,
-          'not[author_username]': filterParams.notAuthorUsername,
-          'not[milestone_title]': filterParams.notMilestoneTitle,
-          'not[label_name][]': filterParams.notLabelName,
+          author_username: mockFilters.authorUsername,
+          milestone_title: mockFilters.milestoneTitle,
+          'label_name[]': mockFilters.labelName,
+          'not[author_username]': mockFilters.notAuthorUsername,
+          'not[milestone_title]': mockFilters.notMilestoneTitle,
+          'not[label_name][]': mockFilters.notLabelName,
         });
       });
     });

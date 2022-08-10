@@ -35,12 +35,18 @@ export default {
     state.authorUsername = null;
     state.labelName = [];
     state.milestoneTitle = null;
+    state.notAuthorUsername = null;
+    state.notLabelName = [];
+    state.notMilestoneTitle = null;
   },
   [types.SET_PROJECT_PATH](state, projectPath) {
     state.projectPath = projectPath;
     state.authorUsername = null;
     state.labelName = [];
     state.milestoneTitle = null;
+    state.notAuthorUsername = null;
+    state.notLabelName = [];
+    state.notMilestoneTitle = null;
   },
   [types.SET_FILTERS](
     state,

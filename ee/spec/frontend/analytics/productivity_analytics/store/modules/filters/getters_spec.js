@@ -1,14 +1,12 @@
 import { chartKeys } from 'ee/analytics/productivity_analytics/constants';
 import * as getters from 'ee/analytics/productivity_analytics/store/modules/filters/getters';
 import createState from 'ee/analytics/productivity_analytics/store/modules/filters/state';
+import { mockFilters } from '../../../mock_data';
 
 describe('Productivity analytics filter getters', () => {
   let state;
   const groupNamespace = 'gitlab-org';
   const projectPath = 'gitlab-org/gitlab-test';
-  const authorUsername = 'root';
-  const milestoneTitle = 'foo';
-  const labelName = ['labelxyz'];
 
   beforeEach(() => {
     state = createState();
@@ -17,29 +15,33 @@ describe('Productivity analytics filter getters', () => {
   describe('getCommonFilterParams', () => {
     const startDate = new Date('2019-09-01');
     const endDate = new Date('2019-09-07');
+    const expectedFilters = {
+      author_username: mockFilters.authorUsername,
+      'not[author_username]': mockFilters.notAuthorUsername,
+      milestone_title: mockFilters.milestoneTitle,
+      'not[milestone_title]': mockFilters.notMilestoneTitle,
+      label_name: mockFilters.labelName,
+      'not[label_name]': mockFilters.notLabelName,
+    };
 
     beforeEach(() => {
       state = {
         groupNamespace,
         projectPath,
-        authorUsername,
-        milestoneTitle,
-        labelName,
         startDate,
         endDate,
+        ...mockFilters,
       };
     });
 
     describe('when chart is not scatterplot', () => {
       it('returns an object with common filter params', () => {
         const expected = {
-          author_username: 'root',
           group_id: 'gitlab-org',
-          label_name: ['labelxyz'],
           merged_after: '2019-09-01T00:00:00Z',
           merged_before: '2019-09-07T23:59:59Z',
-          milestone_title: 'foo',
           project_id: 'gitlab-org/gitlab-test',
+          ...expectedFilters,
         };
 
         const result = getters.getCommonFilterParams(state)(chartKeys.main);
@@ -52,13 +54,11 @@ describe('Productivity analytics filter getters', () => {
       it('returns an object with common filter params and subtracts 30 days from the merged_after date', () => {
         const mergedAfter = '2019-08-02';
         const expected = {
-          author_username: 'root',
           group_id: 'gitlab-org',
-          label_name: ['labelxyz'],
           merged_after: `${mergedAfter}T00:00:00Z`,
           merged_before: '2019-09-07T23:59:59Z',
-          milestone_title: 'foo',
           project_id: 'gitlab-org/gitlab-test',
+          ...expectedFilters,
         };
 
         const mockGetters = {
@@ -77,9 +77,6 @@ describe('Productivity analytics filter getters', () => {
       state = {
         groupNamespace,
         projectPath,
-        authorUsername,
-        milestoneTitle,
-        labelName,
         startDate: new Date('2019-09-01'),
         endDate: new Date('2019-09-10'),
       };

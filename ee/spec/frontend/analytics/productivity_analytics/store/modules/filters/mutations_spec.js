@@ -1,18 +1,24 @@
 import * as types from 'ee/analytics/productivity_analytics/store/modules/filters/mutation_types';
 import mutations from 'ee/analytics/productivity_analytics/store/modules/filters/mutations';
 import getInitialState from 'ee/analytics/productivity_analytics/store/modules/filters/state';
+import { mockFilters } from '../../../mock_data';
 
 describe('Productivity analytics filter mutations', () => {
   let state;
   const groupNamespace = 'gitlab-org';
   const projectPath = 'gitlab-org/gitlab-test';
-  const authorUsername = 'root';
-  const labelName = ['my label', 'yet another label'];
-  const milestoneTitle = 'my milestone';
   const currentYear = new Date().getFullYear();
   const startDate = new Date(currentYear, 8, 1);
   const endDate = new Date(currentYear, 8, 7);
   const minDate = new Date(currentYear, 0, 1);
+  const initializedFilters = {
+    authorUsername: null,
+    milestoneTitle: null,
+    labelName: [],
+    notAuthorUsername: null,
+    notMilestoneTitle: null,
+    notLabelName: [],
+  };
 
   beforeEach(() => {
     state = getInitialState();
@@ -23,20 +29,15 @@ describe('Productivity analytics filter mutations', () => {
       const initialData = {
         groupNamespace,
         projectPath,
-        authorUsername,
-        labelName,
-        milestoneTitle,
         mergedAfter: startDate,
         mergedBefore: endDate,
         minDate,
+        ...mockFilters,
       };
       mutations[types.SET_INITIAL_DATA](state, initialData);
 
       expect(state.groupNamespace).toBe(groupNamespace);
       expect(state.projectPath).toBe(projectPath);
-      expect(state.authorUsername).toBe(authorUsername);
-      expect(state.labelName).toEqual(labelName);
-      expect(state.milestoneTitle).toBe(milestoneTitle);
       expect(state.startDate).toBe(startDate);
       expect(state.endDate).toBe(endDate);
       expect(state.minDate).toBe(minDate);
@@ -49,9 +50,10 @@ describe('Productivity analytics filter mutations', () => {
 
       expect(state.groupNamespace).toBe(groupNamespace);
       expect(state.projectPath).toBe(null);
-      expect(state.authorUsername).toBe(null);
-      expect(state.labelName).toEqual([]);
-      expect(state.milestoneTitle).toBe(null);
+
+      Object.keys(initializedFilters).forEach((key) => {
+        expect(state[key]).toEqual(initializedFilters[key]);
+      });
     });
   });
 
@@ -60,19 +62,20 @@ describe('Productivity analytics filter mutations', () => {
       mutations[types.SET_PROJECT_PATH](state, projectPath);
 
       expect(state.projectPath).toBe(projectPath);
-      expect(state.authorUsername).toBe(null);
-      expect(state.labelName).toEqual([]);
-      expect(state.milestoneTitle).toBe(null);
+
+      Object.keys(initializedFilters).forEach((key) => {
+        expect(state[key]).toEqual(initializedFilters[key]);
+      });
     });
   });
 
   describe(types.SET_FILTERS, () => {
     it('sets the authorUsername, milestoneTitle and labelName', () => {
-      mutations[types.SET_FILTERS](state, { authorUsername, labelName, milestoneTitle });
+      mutations[types.SET_FILTERS](state, mockFilters);
 
-      expect(state.authorUsername).toBe(authorUsername);
-      expect(state.labelName).toBe(labelName);
-      expect(state.milestoneTitle).toBe(milestoneTitle);
+      Object.keys(mockFilters).forEach((key) => {
+        expect(state[key]).toBe(mockFilters[key]);
+      });
     });
   });
 
