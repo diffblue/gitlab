@@ -47,6 +47,14 @@ RSpec.describe Vulnerabilities::ConfirmService do
       confirm_vulnerability
     end
 
+    it 'creates state transition entry to `confirmed`' do
+      expect { confirm_vulnerability }.to change { ::Vulnerabilities::StateTransition.count }
+        .from(0)
+        .to(1)
+      expect(::Vulnerabilities::StateTransition.last.vulnerability_id).to eq(vulnerability.id)
+      expect(::Vulnerabilities::StateTransition.last.to_state).to eq('confirmed')
+    end
+
     it 'does not remove the feedback from associated findings' do
       expect(Vulnerabilities::DestroyDismissalFeedbackService).not_to receive(:new).with(user, vulnerability)
 

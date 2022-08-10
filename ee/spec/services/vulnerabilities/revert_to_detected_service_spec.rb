@@ -33,6 +33,14 @@ RSpec.describe Vulnerabilities::RevertToDetectedService do
       revert_vulnerability_to_detected
     end
 
+    it 'creates state transition entry to `detected`' do
+      expect { revert_vulnerability_to_detected }.to change { ::Vulnerabilities::StateTransition.count }
+        .from(0)
+        .to(1)
+      expect(::Vulnerabilities::StateTransition.last.vulnerability_id).to eq(vulnerability.id)
+      expect(::Vulnerabilities::StateTransition.last.to_state).to eq('detected')
+    end
+
     it_behaves_like 'calls vulnerability statistics utility services in order'
   end
 
