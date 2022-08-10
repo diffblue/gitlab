@@ -32,6 +32,8 @@ RSpec.describe IncidentManagement::IssuableResourceLinks::DestroyService do
         expect(execute).to be_error
         expect(execute.message).to eq(error_message_string)
       end
+
+      it_behaves_like 'does not track incident management event', :incident_management_issuable_resource_link_deleted
     end
 
     subject(:execute) { service.execute }
@@ -73,13 +75,17 @@ RSpec.describe IncidentManagement::IssuableResourceLinks::DestroyService do
       it_behaves_like 'error response', 'Link cannot be removed'
     end
 
-    it 'successfully returns the issuable resource link', :aggregate_failures do
-      expect(execute).to be_success
+    context 'with success response' do
+      it 'successfully returns the issuable resource link', :aggregate_failures do
+        expect(execute).to be_success
 
-      result = execute.payload[:issuable_resource_link]
+        result = execute.payload[:issuable_resource_link]
 
-      expect(result).to be_a(::IncidentManagement::IssuableResourceLink)
-      expect(result.id).to eq(issuable_resource_link.id)
+        expect(result).to be_a(::IncidentManagement::IssuableResourceLink)
+        expect(result.id).to eq(issuable_resource_link.id)
+      end
+
+      it_behaves_like 'an incident management tracked event', :incident_management_issuable_resource_link_deleted
     end
   end
 end

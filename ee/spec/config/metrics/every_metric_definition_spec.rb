@@ -62,6 +62,12 @@ RSpec.describe 'Every metric definition' do
       redis_hll_counters.incident_management.incident_management_timeline_event_deleted_weekly
       redis_hll_counters.incident_management.incident_management_timeline_event_edited_monthly
       redis_hll_counters.incident_management.incident_management_timeline_event_edited_weekly
+      redis_hll_counters.incident_management.incident_management_issuable_resource_link_created_weekly
+      redis_hll_counters.incident_management.incident_management_issuable_resource_link_created_monthly
+      redis_hll_counters.incident_management.incident_management_issuable_resource_link_deleted_weekly
+      redis_hll_counters.incident_management.incident_management_issuable_resource_link_deleted_monthly
+      redis_hll_counters.incident_management.incident_management_issuable_resource_link_visited_weekly
+      redis_hll_counters.incident_management.incident_management_issuable_resource_link_visited_monthly
       redis_hll_counters.manage.unique_active_user_monthly
       redis_hll_counters.manage.unique_active_user_weekly
       redis_hll_counters.quickactions.i_quickactions_ready_monthly

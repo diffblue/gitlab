@@ -1,0 +1,29 @@
+---
+key_path: redis_hll_counters.incident_management.issuable_resource_links_total_unique_counts_monthly
+name: "count_unique_users_interacting_with_linked_resources_monthly"
+description: Counts unique users for linked resources create and delete events per month
+product_section: ops
+product_stage: monitor
+product_group: respond
+product_category: incident_management
+value_type: number
+status: active
+milestone: "15.3"
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/94048
+time_frame: 28d
+data_source: redis_hll
+data_category: optional
+instrumentation_class: RedisHLLMetric
+options:
+  events:
+    - incident_management_issuable_resource_link_created
+    - incident_management_issuable_resource_link_deleted
+    - incident_management_issuable_resource_link_visited
+performance_indicator_type:
+  - gmau
+  - paid_gmau
+distribution:
+- ee
+tier:
+- premium
+- ultimate

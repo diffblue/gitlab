@@ -13,6 +13,7 @@ module IncidentManagement
         return error_no_permissions unless allowed?
 
         if issuable_resource_link.destroy
+          track_usage_event(:incident_management_issuable_resource_link_deleted, user.id)
           success(issuable_resource_link)
         else
           error_in_save(issuable_resource_link)

@@ -3,6 +3,8 @@
 module IncidentManagement
   module IssuableResourceLinks
     class BaseService
+      include Gitlab::Utils::UsageData
+
       def allowed?
         user&.can?(:admin_issuable_resource_link, incident)
       end

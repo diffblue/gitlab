@@ -33,6 +33,8 @@ RSpec.describe IncidentManagement::IssuableResourceLinks::CreateService do
         expect(execute).to be_error
         expect(execute.message).to eq(error_message_string)
       end
+
+      it_behaves_like 'does not track incident management event', :incident_management_issuable_resource_link_created
     end
 
     shared_examples 'success_response' do
@@ -46,6 +48,8 @@ RSpec.describe IncidentManagement::IssuableResourceLinks::CreateService do
         expect(result.link_text).to eq(link_text)
         expect(result.link_type).to eq(link_type.to_s)
       end
+
+      it_behaves_like 'an incident management tracked event', :incident_management_issuable_resource_link_created
     end
 
     subject(:execute) { service.execute }
