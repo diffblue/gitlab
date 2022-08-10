@@ -39,19 +39,19 @@ describe('EE gitlab license banner dismiss', () => {
   });
 
   it('should remove the license banner when a close button is clicked', () => {
-    expect(isHidden()).toBeFalsy();
+    expect(isHidden()).toBe(false);
 
     dismiss();
 
-    expect(isHidden()).toBeTruthy();
+    expect(isHidden()).toBe(true);
   });
 
   it('should remove the license banner when an element inside close button is clicked', () => {
-    expect(isHidden()).toBeFalsy();
+    expect(isHidden()).toBe(false);
 
     dismissOnChildElement();
 
-    expect(isHidden()).toBeTruthy();
+    expect(isHidden()).toBe(true);
   });
 
   it('calls Cookies.set for `show_ee_trial_banner` when a close button is clicked', () => {
