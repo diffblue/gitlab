@@ -37,6 +37,7 @@ RSpec.describe Gitlab::BackgroundMigration::BatchingStrategies::InvalidGroupMemb
     projects_table.create!(name: 'myproject1', path: 'myproject1', namespace_id: group1.id, project_namespace_id: project_namespace1.id)
   end
 
+  # mix of Group and Project members
   let!(:member1) { create_valid_group_member(id: 1, user_id: user1.id, group_id: group1.id) }
   let!(:member2) { create_invalid_group_member(id: 2, user_id: user2.id) }
   let!(:member3) { create_invalid_project_member(id: 3, user_id: user3.id) }
@@ -61,7 +62,9 @@ RSpec.describe Gitlab::BackgroundMigration::BatchingStrategies::InvalidGroupMemb
         batch_size: 3,
         job_arguments: []
       )
-      expect(batch_bounds).to match_array([member2.id, member9.id])
+
+      # first 3 group members, filtered out project members
+      expect(batch_bounds).to match_array([member1.id, member4.id])
     end
   end
 
@@ -92,12 +95,12 @@ RSpec.describe Gitlab::BackgroundMigration::BatchingStrategies::InvalidGroupMemb
 
   def create_invalid_group_member(id:, user_id:)
     members_table.create!(id: id, user_id: user_id, source_id: non_existing_record_id, access_level: Gitlab::Access::MAINTAINER,
-                          type: "GroupMember", source_type: "Group", notification_level: 3, member_namespace_id: nil)
+                          type: "GroupMember", source_type: "Namespace", notification_level: 3, member_namespace_id: nil)
   end
 
   def create_valid_group_member(id:, user_id:, group_id:)
     members_table.create!(id: id, user_id: user_id, source_id: group_id, access_level: Gitlab::Access::MAINTAINER,
-                          type: "GroupMember", source_type: "Group", member_namespace_id: group_id, notification_level: 3)
+                          type: "GroupMember", source_type: "Namespace", member_namespace_id: group_id, notification_level: 3)
   end
 
   def create_invalid_project_member(id:, user_id:)

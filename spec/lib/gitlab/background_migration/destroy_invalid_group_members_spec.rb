@@ -77,12 +77,12 @@ RSpec.describe Gitlab::BackgroundMigration::DestroyInvalidGroupMembers, :migrati
 
   def create_invalid_group_member(id:, user_id:)
     members_table.create!(id: id, user_id: user_id, source_id: non_existing_record_id, access_level: Gitlab::Access::MAINTAINER,
-                          type: "GroupMember", source_type: "Group", notification_level: 3, member_namespace_id: nil)
+                          type: "GroupMember", source_type: "Namespace", notification_level: 3, member_namespace_id: nil)
   end
 
   def create_valid_group_member(id:, user_id:, group_id:)
     members_table.create!(id: id, user_id: user_id, source_id: group_id, access_level: Gitlab::Access::MAINTAINER,
-                          type: "GroupMember", source_type: "Group", member_namespace_id: group_id, notification_level: 3)
+                          type: "GroupMember", source_type: "Namespace", member_namespace_id: group_id, notification_level: 3)
   end
   # rubocop: enable Layout/LineLength
   # rubocop: enable RSpec/ScatteredLet

@@ -7,8 +7,9 @@ module Gitlab
         each_sub_batch(
           operation_name: :delete_all,
           batching_scope: -> (relation) do
-            relation.joins('LEFT OUTER JOIN namespaces ON members.source_id = namespaces.id')
-                    .where(namespaces: { id: nil })
+            relation.where(source_type: 'Namespace') # to match apply_additional_filters
+              .joins('LEFT OUTER JOIN namespaces ON members.source_id = namespaces.id') # to further filter sub batch
+              .where(namespaces: { id: nil })
           end
         ) do |sub_batch|
           invalid_ids = sub_batch.map(&:id)
