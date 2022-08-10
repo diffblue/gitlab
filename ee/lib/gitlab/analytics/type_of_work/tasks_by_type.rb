@@ -16,6 +16,7 @@ module Gitlab
         def initialize(group:, params:, current_user:)
           @group = group
           @params = params
+          @current_user = current_user
           @finder = finder_class.new(current_user, finder_params)
         end
 
@@ -39,7 +40,7 @@ module Gitlab
 
         private
 
-        attr_reader :group, :params, :finder
+        attr_reader :group, :params, :finder, :current_user
 
         def finder_class
           FINDER_CLASSES.fetch(params[:subject], FINDER_CLASSES.each_value.first)
@@ -80,7 +81,17 @@ module Gitlab
         end
 
         def labels
-          @labels ||= GroupLabel.where(id: params[:label_ids])
+          @labels ||= if params[:label_names].blank?
+                        GroupLabel.where(id: params[:label_ids])
+                      else
+                        LabelsFinder.new(
+                          current_user, {
+                            group_id: group.id,
+                            include_ancestor_groups: true,
+                            only_group_labels: true,
+                            title: params[:label_names]
+                          }).execute
+                      end
         end
 
         # rubocop: enable CodeReuse/ActiveRecord

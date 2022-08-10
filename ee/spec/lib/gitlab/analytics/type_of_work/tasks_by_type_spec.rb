@@ -147,6 +147,21 @@ RSpec.describe Gitlab::Analytics::TypeOfWork::TasksByType do
 
       it { expect(label_count_for(label, subject)).to eq(1) }
     end
+
+    context 'when filtering by `label_names`' do
+      before do
+        params[:params].delete(:label_ids)
+        params[:params][:label_names] = [label.name, label_for_subgroup.name]
+      end
+
+      it 'counts the records by label and date' do
+        expect(label_count_for(label, subject)).to eq(3)
+      end
+
+      it 'counts should include subgroups' do
+        expect(label_count_for(label_for_subgroup, subject)).to eq(1)
+      end
+    end
   end
 
   shared_examples '#top_labels' do
