@@ -102,7 +102,7 @@ In GitLab 15.1 and later, delayed group deletion can be enabled by setting **Del
 
 Alternatively, projects that are marked for removal can be deleted immediately. To do so:
 
-1. [Restore the project](../../project/settings/#restore-a-project).
+1. [Restore the project](../../project/settings/index.md#restore-a-project).
 1. Delete the project as described in the
    [Administering Projects page](../../admin_area/#administering-projects).
 
