@@ -58,11 +58,11 @@ RSpec.describe EE::Audit::ProjectSettingChangesAuditor do
           false | true
         end
 
-        before do
-          project.project_setting.update!(allow_merge_on_skipped_pipeline: prev_value)
-        end
-
         with_them do
+          before do
+            project.project_setting.update!(allow_merge_on_skipped_pipeline: prev_value)
+          end
+
           it 'creates an audit event' do
             project.project_setting.update!(allow_merge_on_skipped_pipeline: new_value)
 
@@ -72,6 +72,15 @@ RSpec.describe EE::Audit::ProjectSettingChangesAuditor do
                                                          from: prev_value,
                                                          to: new_value
                                                        })
+          end
+
+          it 'streams correct audit event stream' do
+            project.project_setting.update!(allow_merge_on_skipped_pipeline: new_value)
+
+            expect(AuditEvents::AuditEventStreamingWorker).to receive(:perform_async).with(
+              'allow_merge_on_skipped_pipeline_updated', anything, anything)
+
+            project_setting_changes_auditor.execute
           end
         end
       end

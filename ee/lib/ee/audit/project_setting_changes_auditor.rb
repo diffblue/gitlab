@@ -13,7 +13,7 @@ module EE
 
         if should_audit? :allow_merge_on_skipped_pipeline
           audit_changes(:allow_merge_on_skipped_pipeline, as: 'allow_merge_on_skipped_pipeline', entity: @project,
-                        model: model)
+                        model: model, event_type: 'allow_merge_on_skipped_pipeline_updated')
         end
 
         audit_squash_option
