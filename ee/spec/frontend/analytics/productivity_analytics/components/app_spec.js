@@ -26,6 +26,15 @@ import * as urlUtils from '~/lib/utils/url_utility';
 
 Vue.use(Vuex);
 
+jest.mock('~/lib/utils/url_utility', () => ({
+  setUrlParams: jest.fn(),
+}));
+
+jest.mock('~/lib/utils/common_utils', () => ({
+  ...jest.requireActual('~/lib/utils/common_utils'),
+  historyPushState: jest.fn(),
+}));
+
 describe('ProductivityApp component', () => {
   let wrapper;
   let mock;
@@ -563,9 +572,6 @@ describe('ProductivityApp component', () => {
     };
 
     beforeEach(() => {
-      commonUtils.historyPushState = jest.fn();
-      urlUtils.setUrlParams = jest.fn();
-
       createComponent();
       mockStore.dispatch('filters/setInitialData', {
         skipFetch: true,
@@ -591,9 +597,6 @@ describe('ProductivityApp component', () => {
       };
 
       beforeEach(() => {
-        commonUtils.historyPushState = jest.fn();
-        urlUtils.setUrlParams = jest.fn();
-
         createComponent();
         mockStore.dispatch('filters/setInitialData', {
           data: {
@@ -619,9 +622,6 @@ describe('ProductivityApp component', () => {
 
     describe('with hideGroupDropDown=true', () => {
       beforeEach(() => {
-        commonUtils.historyPushState = jest.fn();
-        urlUtils.setUrlParams = jest.fn();
-
         createComponent({ props: { hideGroupDropDown: true } });
         mockStore.dispatch('filters/setInitialData', {
           skipFetch: true,
