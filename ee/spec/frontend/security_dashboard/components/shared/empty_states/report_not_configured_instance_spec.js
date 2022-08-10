@@ -25,7 +25,7 @@ describe('Instance report not configured component', () => {
   });
 
   it('passes expected props to the GlEmptyState', () => {
-    expect(wrapper.find(GlEmptyState).props()).toMatchObject({
+    expect(wrapper.findComponent(GlEmptyState).props()).toMatchObject({
       title: ReportNotConfiguredInstance.i18n.title,
       svgPath: emptyStateSvgPath,
       primaryButtonText: ReportNotConfiguredInstance.i18n.primaryButtonText,

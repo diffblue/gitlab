@@ -23,7 +23,7 @@ describe('dashboard has no vulnerabilities empty state', () => {
   });
 
   it('passes expected props to the GlEmptyState', () => {
-    expect(wrapper.find(GlEmptyState).props()).toMatchObject({
+    expect(wrapper.findComponent(GlEmptyState).props()).toMatchObject({
       title: DashboardHasNoVulnerabilities.i18n.title,
       svgPath: emptyStateSvgPath,
       primaryButtonLink: DOC_PATH_SECURITY_CONFIGURATION,
