@@ -48,7 +48,7 @@ describe('DastProfilesSidebarList', () => {
 
     await nextTick();
 
-    expect(wrapper.emitted('edit')).toBeTruthy();
+    expect(wrapper.emitted('edit')).toHaveLength(1);
     expect(wrapper.emitted('edit')[0]).toEqual([scannerProfiles[0]]);
   });
 
@@ -59,7 +59,7 @@ describe('DastProfilesSidebarList', () => {
 
     await nextTick();
 
-    expect(wrapper.emitted('select-profile')).toBeTruthy();
+    expect(wrapper.emitted('select-profile')).toHaveLength(1);
     expect(wrapper.emitted('select-profile')[0]).toEqual([
       { profile: scannerProfiles[0], profileType: SCANNER_TYPE },
     ]);
