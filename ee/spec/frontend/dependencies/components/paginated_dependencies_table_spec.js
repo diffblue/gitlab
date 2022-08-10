@@ -22,7 +22,7 @@ describe('PaginatedDependenciesTable component', () => {
   };
 
   const expectComponentWithProps = (Component, props = {}) => {
-    const componentWrapper = wrapper.find(Component);
+    const componentWrapper = wrapper.findComponent(Component);
     expect(componentWrapper.isVisible()).toBe(true);
     expect(componentWrapper.props()).toEqual(expect.objectContaining(props));
   };
@@ -97,7 +97,7 @@ describe('PaginatedDependenciesTable component', () => {
     });
 
     it('does not render pagination', () => {
-      expect(wrapper.find(Pagination).exists()).toBe(false);
+      expect(wrapper.findComponent(Pagination).exists()).toBe(false);
     });
   });
 });

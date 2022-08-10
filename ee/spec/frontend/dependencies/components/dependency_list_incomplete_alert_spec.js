@@ -32,7 +32,7 @@ describe('DependencyListIncompleteAlert component', () => {
         },
       });
 
-      wrapper.find(GlAlert).vm.$emit('dismiss');
+      wrapper.findComponent(GlAlert).vm.$emit('dismiss');
     });
 
     it('calls the given listener', () => {

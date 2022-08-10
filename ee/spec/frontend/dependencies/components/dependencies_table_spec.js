@@ -23,8 +23,8 @@ describe('DependenciesTable component', () => {
   });
 
   const findTableRows = () => wrapper.findAll('tbody > tr');
-  const findRowToggleButtons = () => wrapper.findAll(GlButton);
-  const findDependencyVulnerabilities = () => wrapper.find(DependencyVulnerabilities);
+  const findRowToggleButtons = () => wrapper.findAllComponents(GlButton);
+  const findDependencyVulnerabilities = () => wrapper.findComponent(DependencyVulnerabilities);
   const normalizeWhitespace = (string) => string.replace(/\s+/g, ' ');
 
   const expectDependencyRow = (rowWrapper, dependency) => {
@@ -42,11 +42,11 @@ describe('DependenciesTable component', () => {
 
     expect(packagerCell.text()).toBe(dependency.packager);
 
-    const locationLink = locationCell.find(GlLink);
+    const locationLink = locationCell.findComponent(GlLink);
     expect(locationLink.attributes().href).toBe(dependency.location.blob_path);
     expect(locationLink.text()).toContain(dependency.location.path);
 
-    const licenseLinks = licenseCell.find(DependencyLicenseLinks);
+    const licenseLinks = licenseCell.findComponent(DependencyLicenseLinks);
     expect(licenseLinks.exists()).toBe(true);
     expect(licenseLinks.props()).toEqual({
       licenses: dependency.licenses,
@@ -75,7 +75,7 @@ describe('DependenciesTable component', () => {
     });
 
     it('renders the loading skeleton', () => {
-      expect(wrapper.find(GlSkeletonLoader).exists()).toBe(true);
+      expect(wrapper.findComponent(GlSkeletonLoader).exists()).toBe(true);
     });
 
     it('does not render any dependencies', () => {
@@ -208,7 +208,7 @@ describe('DependenciesTable component', () => {
       });
 
       it('can be displayed by clicking on the vulnerabilities badge', () => {
-        const badge = findTableRows().at(rowIndexWithVulnerabilities).find(GlBadge);
+        const badge = findTableRows().at(rowIndexWithVulnerabilities).findComponent(GlBadge);
         badge.trigger('click');
 
         return nextTick().then(() => {
