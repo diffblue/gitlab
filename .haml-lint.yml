@@ -130,6 +130,7 @@ linters:
       - Style/ColonMethodCall
       - Style/ConditionalAssignment
       - Style/HashSyntax
+      - Style/IfInsideElse
       - Style/IdenticalConditionalBranches
       - Style/NegatedIf
       - Style/NestedTernaryOperator
