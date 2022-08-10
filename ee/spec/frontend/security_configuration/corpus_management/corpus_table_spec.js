@@ -54,7 +54,7 @@ describe('Corpus table', () => {
     it('emits the delete event', () => {
       const actionComponent = wrapper.findComponent(Actions);
       actionComponent.vm.$emit('delete', CORPUS);
-      expect(wrapper.emitted('delete')).toBeTruthy();
+      expect(wrapper.emitted('delete')).toHaveLength(1);
       expect(wrapper.emitted('delete')[0][0]).toEqual(CORPUS.package.id);
     });
 

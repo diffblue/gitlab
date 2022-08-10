@@ -243,7 +243,7 @@ describe('BaseDastProfileForm', () => {
 
       it('emits cancel event', () => {
         findCancelButton().vm.$emit('click');
-        expect(wrapper.emitted('cancel')).toBeTruthy();
+        expect(wrapper.emitted('cancel')).toHaveLength(1);
       });
     });
 
@@ -267,7 +267,7 @@ describe('BaseDastProfileForm', () => {
       it('emits cancel event upon confirming', () => {
         findCancelModal().vm.$emit('ok');
 
-        expect(wrapper.emitted('cancel')).toBeTruthy();
+        expect(wrapper.emitted('cancel')).toHaveLength(1);
       });
     });
   });

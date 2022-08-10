@@ -64,7 +64,7 @@ describe('AccordionItem component', () => {
     it('does not limit the content height per default', () => {
       factory();
 
-      expect(contentContainer().element.style.maxHeight).toBeFalsy();
+      expect(contentContainer().element.style.maxHeight).toBe('');
     });
 
     it('has "maxHeight" prop that limits the height of the content container to the given value', () => {
@@ -178,7 +178,7 @@ describe('AccordionItem component', () => {
     });
 
     it('has a trigger element that has an "aria-expanded" attribute set, to show if it is expanded or collapsed', async () => {
-      expect(expansionTrigger().attributes('aria-expanded')).toBeFalsy();
+      expect(expansionTrigger().attributes('aria-expanded')).toBeUndefined();
 
       // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
       // eslint-disable-next-line no-restricted-syntax
@@ -189,14 +189,14 @@ describe('AccordionItem component', () => {
     });
 
     it('has a trigger element that has a "aria-controls" attribute, which points to the content element', () => {
-      expect(expansionTrigger().attributes('aria-controls')).toBeTruthy();
+      expect(expansionTrigger().attributes('aria-controls')).toBe(mockUniqueId);
       expect(expansionTrigger().attributes('aria-controls')).toBe(
         contentContainer().attributes('id'),
       );
     });
 
     it('has a content-container element that has a "aria-labelledby" attribute, which points to the trigger element', () => {
-      expect(contentContainer().attributes('aria-labelledby')).toBeTruthy();
+      expect(contentContainer().attributes('aria-labelledby')).toBe(mockUniqueId);
       expect(contentContainer().attributes('aria-labelledby')).toBe(
         expansionTrigger().attributes('id'),
       );

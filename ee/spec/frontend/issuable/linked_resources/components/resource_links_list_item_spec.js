@@ -41,7 +41,7 @@ describe('ResourceLinkItem', () => {
 
       await nextTick();
 
-      expect(wrapper.emitted().removeRequest).toBeTruthy();
+      expect(wrapper.emitted().removeRequest).toHaveLength(1);
     });
   });
 });
