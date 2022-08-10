@@ -84,6 +84,32 @@ RSpec.describe EE::Audit::ProjectSettingChangesAuditor do
           end
         end
       end
+
+      context 'when squash_commit_template is changed' do
+        before do
+          project.project_setting.update!(squash_commit_template: 'old squash commit template')
+        end
+
+        it 'creates an audit event' do
+          project.project_setting.update!(squash_commit_template: 'new squash commit template')
+
+          expect { project_setting_changes_auditor.execute }.to change { AuditEvent.count }.by(1)
+          expect(AuditEvent.last.details).to include({
+                                                       change: 'squash_commit_template',
+                                                       from: 'old squash commit template',
+                                                       to: 'new squash commit template'
+                                                     })
+        end
+
+        it 'streams correct audit event stream' do
+          project.project_setting.update!(squash_commit_template: 'new squash commit template')
+
+          expect(AuditEvents::AuditEventStreamingWorker).to receive(:perform_async).with(
+            'squash_commit_template_updated', anything, anything)
+
+          project_setting_changes_auditor.execute
+        end
+      end
     end
   end
 end
