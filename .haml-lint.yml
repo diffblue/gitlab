@@ -135,6 +135,7 @@ linters:
       - Style/NestedTernaryOperator
       - Style/SelfAssignment
       - Style/StringConcatenation
+      - Style/RedundantInterpolation
       - Style/TernaryParentheses
       - Style/TrailingCommaInHashLiteral
       - Style/UnlessElse
