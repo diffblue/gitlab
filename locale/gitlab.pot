@@ -34162,6 +34162,9 @@ msgstr ""
 msgid "SHA256"
 msgstr ""
 
+msgid "SSH Fingerprints"
+msgstr ""
+
 msgid "SSH Key"
 msgstr ""
 
@@ -34169,6 +34172,9 @@ msgid "SSH Keys"
 msgstr ""
 
 msgid "SSH Keys Help"
+msgstr ""
+
+msgid "SSH fingerprints verify that the client is connecting to the correct host. Check the %{config_link_start}current instance configuration%{config_link_end}."
 msgstr ""
 
 msgid "SSH host key fingerprints"
