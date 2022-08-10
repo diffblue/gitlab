@@ -18351,9 +18351,6 @@ msgstr ""
 msgid "Group overview content"
 msgstr ""
 
-msgid "Group owners can register group runners in the %{link}"
-msgstr ""
-
 msgid "Group path is already taken. We've suggested one that is available."
 msgstr ""
 
@@ -34015,6 +34012,9 @@ msgstr ""
 msgid "Runners|To install Runner in a container follow the instructions described in the GitLab documentation"
 msgstr ""
 
+msgid "Runners|To register them, go to the %{link_start}group's Runners page%{link_end}."
+msgstr ""
+
 msgid "Runners|Up to date"
 msgstr ""
 
@@ -46262,9 +46262,6 @@ msgid "group access tokens"
 msgstr ""
 
 msgid "group members"
-msgstr ""
-
-msgid "group's CI/CD settings."
 msgstr ""
 
 msgid "groups"
