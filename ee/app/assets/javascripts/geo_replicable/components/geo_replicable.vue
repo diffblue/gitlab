@@ -60,6 +60,6 @@ export default {
       :last-synced="item.lastSyncedAt"
       :last-verified="item.verifiedAt"
     />
-    <gl-pagination v-model="page" v-bind="paginationProps" align="center" />
+    <gl-pagination v-model="page" v-bind="paginationProps" align="center" class="gl-mt-6" />
   </section>
 </template>
