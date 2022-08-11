@@ -9,7 +9,7 @@ class Projects::Analytics::MergeRequestAnalyticsController < Projects::Applicati
     name: 'p_analytics_merge_request',
     action: 'perform_analytics_usage_action',
     label: 'redis_hll_counters.analytics.analytics_total_unique_counts_monthly',
-    destinations: %i(redis_hll snowplow)
+    destinations: %i[redis_hll snowplow]
 
   feature_category :value_stream_management
   urgency :low

@@ -12,7 +12,7 @@ class Groups::Analytics::DevopsAdoptionController < Groups::Analytics::Applicati
     name: 'users_viewing_analytics_group_devops_adoption',
     action: 'perform_analytics_usage_action',
     label: 'redis_hll_counters.analytics.analytics_total_unique_counts_monthly',
-    destinations: %i(redis_hll snowplow)
+    destinations: %i[redis_hll snowplow]
 
   def show
   end
