@@ -47326,13 +47326,13 @@ msgstr ""
 msgid "the correct format."
 msgstr ""
 
-msgid "the following epic(s)"
+msgid "the following epics"
 msgstr ""
 
-msgid "the following incident(s) or issue(s)"
+msgid "the following incidents or issues"
 msgstr ""
 
-msgid "the following issue(s)"
+msgid "the following issues"
 msgstr ""
 
 msgid "the wiki"
