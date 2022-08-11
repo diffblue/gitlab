@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Merge request > Batch comments', :js do
+RSpec.describe 'Merge request > Batch comments', :js, :sidekiq_inline do
   include MergeRequestDiffHelpers
   include RepoHelpers
 
@@ -22,8 +22,8 @@ RSpec.describe 'Merge request > Batch comments', :js do
     wait_for_requests
   end
 
-  context 'approval' do
-    context 'user does not have permission to approve' do
+  context 'with approval' do
+    context 'when user does not have permission to approve' do
       let(:current_user) { create(:user) }
 
       it 'does not allow user to approve' do
@@ -33,7 +33,7 @@ RSpec.describe 'Merge request > Batch comments', :js do
       end
     end
 
-    context 'user has permission to approve' do
+    context 'when user has permission to approve' do
       it 'allows user to approve' do
         click_button 'Finish review'
 
@@ -45,7 +45,7 @@ RSpec.describe 'Merge request > Batch comments', :js do
         expect(page).to have_content('approved this merge request')
       end
 
-      context 'require password for approval' do
+      context 'when password is required for approval' do
         let(:project) do
           # rubocop:disable Layout/LineLength
           create(:project, :public, :repository, require_password_to_approve: true, merge_requests_author_approval: true)
@@ -67,7 +67,7 @@ RSpec.describe 'Merge request > Batch comments', :js do
           click_button 'Finish review'
 
           find('[data-testid="approve_merge_request"]').click
-          fill_in(type: 'password', with: '12345678')
+          fill_in(type: 'password', with: current_user.password)
           click_button 'Submit review'
 
           wait_for_requests
