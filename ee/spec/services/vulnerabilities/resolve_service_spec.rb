@@ -47,6 +47,14 @@ RSpec.describe Vulnerabilities::ResolveService do
       resolve_vulnerability
     end
 
+    it 'creates state transition entry to `resolved`' do
+      expect { resolve_vulnerability }.to change { ::Vulnerabilities::StateTransition.count }
+        .from(0)
+        .to(1)
+      expect(::Vulnerabilities::StateTransition.last.vulnerability_id).to eq(vulnerability.id)
+      expect(::Vulnerabilities::StateTransition.last.to_state).to eq('resolved')
+    end
+
     it 'does not remove the feedback from associated findings' do
       expect(Vulnerabilities::DestroyDismissalFeedbackService).not_to receive(:new).with(user, vulnerability)
 
