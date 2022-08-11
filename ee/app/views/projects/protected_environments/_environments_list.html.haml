@@ -1,7 +1,7 @@
 .protected-branches-list.js-protected-environments-list
   - if @protected_environments.empty?
     %p.settings-message.text-center
-      = s_('ProtectedEnvironment|There are currently no protected environments. Protect an environment with this form.')
+      = s_('ProtectedEnvironment|No environments in this project are projected.')
   - else
     .flash-container
     %table.table.table-bordered

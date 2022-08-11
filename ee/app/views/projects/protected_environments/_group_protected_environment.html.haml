@@ -1,0 +1,8 @@
+- access_levels = access_levels_data(group_protected_environment.deploy_access_levels).to_json
+%tr
+  %td.gl-w-30p
+    %span.ref-name= @project.name + "/" + group_protected_environment.name
+  %td.gl-w-30p
+    = @project.group.name
+  %td.gl-min-w-20
+    .js-group-protected-environment{ data: { access_levels: access_levels, project: @project.name, environment: group_protected_environment.name } }
