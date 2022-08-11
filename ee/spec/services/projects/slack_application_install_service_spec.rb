@@ -71,7 +71,7 @@ RSpec.describe Projects::SlackApplicationInstallService do
         expect(integration).to be_present
         expect(installation).to be_present
         expect(installation).to have_attributes(
-          service_id: integration.id,
+          integration_id: integration.id,
           team_id: 'T12345',
           team_name: 'Team name',
           alias: project.full_path,

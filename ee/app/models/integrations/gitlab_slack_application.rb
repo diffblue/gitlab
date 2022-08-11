@@ -4,7 +4,7 @@ module Integrations
   class GitlabSlackApplication < Integration
     default_value_for :category, 'chat'
 
-    has_one :slack_integration, foreign_key: :service_id
+    has_one :slack_integration, foreign_key: :integration_id
 
     def self.supported_events
       %w()
