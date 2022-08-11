@@ -86,7 +86,7 @@ describe('EpicBoardContentSidebar', () => {
     createStore({ mockGetters: { isSidebarOpen: () => false } });
     createComponent();
 
-    expect(wrapper.findComponent(GlDrawer).exists()).toBe(false);
+    expect(wrapper.findComponent(GlDrawer).props('open')).toBe(false);
   });
 
   it('applies an open attribute', () => {
