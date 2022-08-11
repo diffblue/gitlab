@@ -349,7 +349,7 @@ To generate these known events for a single widget:
    --class_name=RedisHLLMetric
    ```
 
-1. Repeat step 6 but change the `data_source` to `redis_hll`.
+1. Repeat step 6, but change the `data_source` to `redis_hll`.
 1. Add each of the HLL metrics to `lib/gitlab/usage_data_counters/known_events/code_review_events.yml`:
     1. `name` = (the event)
     1. `redis_slot` = `code_review`
@@ -398,14 +398,14 @@ Every placeholder contains starting and ending tags. For example, `success` uses
 `Hello %{success_start}world%{success_end}`. The extension then
 adds the start and end tags with the correct styling classes.
 
-| Placeholder | Style |
-|---|---|
-| success | `gl-font-weight-bold gl-text-green-500` |
-| danger | `gl-font-weight-bold gl-text-red-500` |
-| critical | `gl-font-weight-bold gl-text-red-800` |
-| same | `gl-font-weight-bold gl-text-gray-700` |
-| strong | `gl-font-weight-bold` |
-| small | `gl-font-sm` |
+| Placeholder | Style                                   |
+|-------------|-----------------------------------------|
+| success     | `gl-font-weight-bold gl-text-green-500` |
+| danger      | `gl-font-weight-bold gl-text-red-500`   |
+| critical    | `gl-font-weight-bold gl-text-red-800`   |
+| same        | `gl-font-weight-bold gl-text-gray-700`  |
+| strong      | `gl-font-weight-bold`                   |
+| small       | `gl-font-sm`                            |
 
 ## Action buttons
 
