@@ -21905,6 +21905,23 @@ CREATE SEQUENCE user_preferences_id_seq
 
 ALTER SEQUENCE user_preferences_id_seq OWNED BY user_preferences.id;
 
+CREATE TABLE user_project_callouts (
+    id bigint NOT NULL,
+    user_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    feature_name smallint NOT NULL,
+    dismissed_at timestamp with time zone
+);
+
+CREATE SEQUENCE user_project_callouts_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE user_project_callouts_id_seq OWNED BY user_project_callouts.id;
+
 CREATE TABLE user_statuses (
     user_id integer NOT NULL,
     cached_markdown_version integer,
@@ -23786,6 +23803,8 @@ ALTER TABLE ONLY user_namespace_callouts ALTER COLUMN id SET DEFAULT nextval('us
 ALTER TABLE ONLY user_permission_export_uploads ALTER COLUMN id SET DEFAULT nextval('user_permission_export_uploads_id_seq'::regclass);
 
 ALTER TABLE ONLY user_preferences ALTER COLUMN id SET DEFAULT nextval('user_preferences_id_seq'::regclass);
+
+ALTER TABLE ONLY user_project_callouts ALTER COLUMN id SET DEFAULT nextval('user_project_callouts_id_seq'::regclass);
 
 ALTER TABLE ONLY user_statuses ALTER COLUMN user_id SET DEFAULT nextval('user_statuses_user_id_seq'::regclass);
 
@@ -26074,6 +26093,9 @@ ALTER TABLE ONLY user_permission_export_uploads
 
 ALTER TABLE ONLY user_preferences
     ADD CONSTRAINT user_preferences_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY user_project_callouts
+    ADD CONSTRAINT user_project_callouts_pkey PRIMARY KEY (id);
 
 ALTER TABLE ONLY user_statuses
     ADD CONSTRAINT user_statuses_pkey PRIMARY KEY (user_id);
@@ -29483,6 +29505,8 @@ CREATE UNIQUE INDEX index_project_topics_on_project_id_and_topic_id ON project_t
 
 CREATE INDEX index_project_topics_on_topic_id ON project_topics USING btree (topic_id);
 
+CREATE UNIQUE INDEX index_project_user_callouts_feature ON user_project_callouts USING btree (user_id, feature_name, project_id);
+
 CREATE INDEX index_projects_aimed_for_deletion ON projects USING btree (marked_for_deletion_at) WHERE ((marked_for_deletion_at IS NOT NULL) AND (pending_delete = false));
 
 CREATE INDEX index_projects_api_created_at_id_desc ON projects USING btree (created_at, id DESC);
@@ -30120,6 +30144,8 @@ CREATE INDEX index_user_permission_export_uploads_on_user_id_and_status ON user_
 CREATE INDEX index_user_preferences_on_gitpod_enabled ON user_preferences USING btree (gitpod_enabled);
 
 CREATE UNIQUE INDEX index_user_preferences_on_user_id ON user_preferences USING btree (user_id);
+
+CREATE INDEX index_user_project_callouts_on_project_id ON user_project_callouts USING btree (project_id);
 
 CREATE INDEX index_user_statuses_on_clear_status_at_not_null ON user_statuses USING btree (clear_status_at) WHERE (clear_status_at IS NOT NULL);
 
@@ -32042,6 +32068,9 @@ ALTER TABLE ONLY namespaces
 ALTER TABLE ONLY issue_tracker_data
     ADD CONSTRAINT fk_33921c0ee1 FOREIGN KEY (integration_id) REFERENCES integrations(id) ON DELETE CASCADE;
 
+ALTER TABLE ONLY user_project_callouts
+    ADD CONSTRAINT fk_33b4814f6b FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
+
 ALTER TABLE ONLY namespaces
     ADD CONSTRAINT fk_3448c97865 FOREIGN KEY (push_rule_id) REFERENCES push_rules(id) ON DELETE SET NULL;
 
@@ -32737,6 +32766,9 @@ ALTER TABLE ONLY analytics_devops_adoption_segments
 
 ALTER TABLE ONLY boards_epic_list_user_preferences
     ADD CONSTRAINT fk_f5f2fe5c1f FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY user_project_callouts
+    ADD CONSTRAINT fk_f62dd11a33 FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY cluster_agents
     ADD CONSTRAINT fk_f7d43dee13 FOREIGN KEY (created_by_user_id) REFERENCES users(id) ON DELETE SET NULL;
