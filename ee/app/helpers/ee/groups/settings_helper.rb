@@ -28,6 +28,20 @@ module EE
         ::Gitlab::CurrentSettings.delayed_group_deletion == false
       end
 
+      def unique_project_download_limit_settings_data
+        settings = @group.namespace_settings || ::NamespaceSetting.new
+        limit = settings.unique_project_download_limit
+        interval = settings.unique_project_download_limit_interval_in_seconds
+        allowlist = settings.unique_project_download_limit_allowlist
+
+        {
+          group_id: @group.id,
+          max_number_of_repository_downloads: limit,
+          max_number_of_repository_downloads_within_time_period: interval,
+          git_rate_limit_users_allowlist: allowlist
+        }
+      end
+
       private
 
       def saas_user_caps_i18n_string(group)

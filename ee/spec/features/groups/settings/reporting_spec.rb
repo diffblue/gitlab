@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Group reporting settings' do
+RSpec.describe 'Group reporting settings', :js do
   let_it_be(:user) { create(:user) }
 
   let(:group) { create(:group) }
@@ -34,56 +34,70 @@ RSpec.describe 'Group reporting settings' do
   end
 
   it 'updates the settings' do
-    limit_label = s_('GroupSettings|Number of projects')
-    interval_label = s_('GroupSettings|Interval (seconds)')
+    limit_label = s_('GitAbuse|Number of repositories')
+    interval_label = s_('GitAbuse|Reporting time period (seconds)')
+    allowlist_label = s_('GitAbuse|Excluded users')
 
     expect(page).to have_field(limit_label, with: current_limit)
     expect(page).to have_field(interval_label, with: current_interval)
+    expect(page).to have_field(allowlist_label)
 
     new_limit = 5
     new_interval = 300
 
     fill_in(limit_label, with: new_limit)
     fill_in(interval_label, with: new_interval)
+    fill_in(allowlist_label, with: user.name)
 
-    click_button 'Save changes'
+    wait_for_requests
 
-    group.reload
+    click_button user.name
 
-    expect(group.namespace_settings.unique_project_download_limit).to eq new_limit
-    expect(group.namespace_settings.unique_project_download_limit_interval_in_seconds).to eq new_interval
+    click_button _('Save changes')
+
+    wait_for_requests
 
     expect(page).to have_field(limit_label, with: new_limit)
     expect(page).to have_field(interval_label, with: new_interval)
+    expect(page).to have_content(user.name)
+
+    group.reload
+
+    settings = group.namespace_settings
+    expect(settings.unique_project_download_limit).to eq new_limit
+    expect(settings.unique_project_download_limit_interval_in_seconds).to eq new_interval
+    expect(settings.unique_project_download_limit_allowlist).to contain_exactly(user.username)
   end
 
   it 'displays validation errors' do
-    fill_in s_('GroupSettings|Number of projects'), with: -1
-    fill_in s_('GroupSettings|Interval (seconds)'), with: -1
+    limit_label = s_('GitAbuse|Number of repositories')
+    interval_label = s_('GitAbuse|Reporting time period (seconds)')
 
-    click_button 'Save changes'
+    fill_in(limit_label, with: '')
+    fill_in(interval_label, with: '')
+    find('#reporting-time-period').native.send_keys :tab
 
-    within('[data-testid="unique_project_download_limit"]') do
-      expect(page).to have_content('Number of projects must be greater than or equal to 0')
-    end
+    expect(page).to have_content(s_("GitAbuse|Number of repositories can't be blank. Set to 0 for no limit."))
+    expect(page).to have_content(s_("GitAbuse|Reporting time period can't be blank. Set to 0 for no limit."))
+    expect(page).to have_button _('Save changes'), disabled: true
 
-    within('[data-testid="unique_project_download_limit_interval_in_seconds"]') do
-      expect(page).to have_content('Interval (seconds) must be greater than or equal to 0')
-    end
-  end
+    fill_in(limit_label, with: 10_001)
+    fill_in(interval_label, with: 864_001)
+    find('#reporting-time-period').native.send_keys :tab
 
-  it 'displays client side validation errors', :js do
-    fill_in s_('GroupSettings|Number of projects'), with: -1
-    fill_in s_('GroupSettings|Interval (seconds)'), with: -1
+    expect(page).to have_content(
+      format(
+        s_('GitAbuse|Number of repositories should be between %{minNumRepos}-%{maxNumRepos}.'),
+        minNumRepos: 0, maxNumRepos: 10000
+      )
+    )
 
-    click_button 'Save changes'
-
-    within('[data-testid="unique_project_download_limit"]') do
-      expect(page).to have_content('Number of projects must be between 0 and 10000')
-    end
-
-    within('[data-testid="unique_project_download_limit_interval_in_seconds"]') do
-      expect(page).to have_content('Interval (seconds) must be between 0 and 86400')
-    end
+    expect(page).to have_content(
+      format(
+        s_('GitAbuse|Reporting time period should be between %{minTimePeriod}-%{maxTimePeriod} seconds.'),
+        minTimePeriod: 0, maxTimePeriod: 864000
+      )
+    )
+    expect(page).to have_button _('Save changes'), disabled: true
   end
 end
