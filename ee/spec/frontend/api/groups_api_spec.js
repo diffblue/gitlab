@@ -127,4 +127,21 @@ describe('GroupsApi', () => {
       expect(axios.put).toHaveBeenCalledWith(expectedUrl, { state: 'active' });
     });
   });
+
+  describe('updateGroupSettings', () => {
+    const expectedUrl = `${dummyUrlRoot}/api/${dummyApiVersion}/groups/${namespaceId}`;
+
+    beforeEach(() => {
+      jest.spyOn(axios, 'put');
+      mock.onPut(expectedUrl).replyOnce(httpStatus.OK, {});
+    });
+
+    it('sends PUT request to the correct URL with the correct payload', async () => {
+      const setting = { setting_a: 'a', setting_b: 'b' };
+      const { data } = await GroupsApi.updateGroupSettings(namespaceId, setting);
+
+      expect(data).toEqual({});
+      expect(axios.put).toHaveBeenCalledWith(expectedUrl, setting);
+    });
+  });
 });

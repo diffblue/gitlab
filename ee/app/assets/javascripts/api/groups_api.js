@@ -75,3 +75,11 @@ export const approvePendingGroupMember = (namespaceId, userId) => {
 
   return axios.put(url);
 };
+
+const GROUP_PATH = '/api/:version/groups/:id';
+
+export const updateGroupSettings = (id, settings) => {
+  const url = buildApiUrl(GROUP_PATH).replace(':id', id);
+
+  return axios.put(url, settings);
+};
