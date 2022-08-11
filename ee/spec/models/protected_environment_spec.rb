@@ -11,6 +11,7 @@ RSpec.describe ProtectedEnvironment do
   describe 'validation' do
     it { is_expected.to validate_presence_of(:name) }
     it { is_expected.to validate_length_of(:deploy_access_levels) }
+
     it do
       is_expected.to validate_numericality_of(:required_approval_count)
                        .only_integer

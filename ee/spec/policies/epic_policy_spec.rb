@@ -178,6 +178,7 @@ RSpec.describe EpicPolicy do
 
         it { is_expected.to be_allowed(:read_epic, :read_epic_iid, :read_note) }
         it { is_expected.to be_disallowed(:create_todo) }
+
         it_behaves_like 'cannot comment on epics'
       end
 

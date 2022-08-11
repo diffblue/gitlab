@@ -54,6 +54,7 @@ RSpec.describe Ci::Minutes::Notification do
             expect(subject.text).to match(/.*\shas 30% or less Shared Runner Pipeline minutes remaining/)
             expect(subject.style).to eq :warning
           end
+
           it_behaves_like 'aware of dismission cookie'
         end
 
@@ -85,6 +86,7 @@ RSpec.describe Ci::Minutes::Notification do
             expect(subject.text).to match(/.*\shas 5% or less Shared Runner Pipeline minutes remaining/)
             expect(subject.style).to eq :danger
           end
+
           it_behaves_like 'aware of dismission cookie'
         end
 
@@ -116,6 +118,7 @@ RSpec.describe Ci::Minutes::Notification do
             expect(subject.text).to match(/.*\shas 30% or less Shared Runner Pipeline minutes remaining/)
             expect(subject.style).to eq :warning
           end
+
           it_behaves_like 'aware of dismission cookie'
         end
 
@@ -147,6 +150,7 @@ RSpec.describe Ci::Minutes::Notification do
             expect(subject.text).to match(/.*\shas exceeded its pipeline minutes quota/)
             expect(subject.style).to eq :danger
           end
+
           it_behaves_like 'aware of dismission cookie'
         end
 

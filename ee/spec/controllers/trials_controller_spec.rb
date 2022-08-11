@@ -372,6 +372,7 @@ RSpec.describe TrialsController, :saas do
       let(:apply_trial_result) { false }
 
       it { is_expected.to render_template(:select) }
+
       it 'does not call the record conversion method for the experiments' do
         post_apply
       end

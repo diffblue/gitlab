@@ -52,6 +52,7 @@ RSpec.describe EE::Audit::ComplianceFrameworkChangesAuditor do
                                                        custom_message: "Unassigned project compliance framework"
                                                      })
         end
+
         it 'streams correct audit event stream' do
           expect(AuditEvents::AuditEventStreamingWorker).to receive(:perform_async).with(
             'compliance_framework_deleted', anything, anything)

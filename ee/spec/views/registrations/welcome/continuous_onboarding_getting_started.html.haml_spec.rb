@@ -20,6 +20,7 @@ RSpec.describe 'registrations/welcome/continuous_onboarding_getting_started' do
 
       it { is_expected.to have_content("Ok, let's go") }
       it { is_expected.not_to have_content('Creating your onboarding experience...') }
+
       it 'does not have meta refresh tag' do
         expect(view.content_for(:meta_tags)).to be_nil
       end
@@ -30,6 +31,7 @@ RSpec.describe 'registrations/welcome/continuous_onboarding_getting_started' do
 
       it { is_expected.not_to have_content("Ok, let's go") }
       it { is_expected.to have_content('Creating your onboarding experience...') }
+
       it 'has meta refresh tag' do
         expect(view.content_for(:meta_tags)).to include("<meta content=\"5\" http-equiv=\"refresh\">")
       end

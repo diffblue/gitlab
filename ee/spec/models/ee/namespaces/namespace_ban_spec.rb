@@ -11,6 +11,7 @@ RSpec.describe Namespaces::NamespaceBan do
   describe 'associations' do
     it { is_expected.to belong_to(:namespace).required }
     it { is_expected.to belong_to(:user).required }
+
     it do
       is_expected.to(
         validate_uniqueness_of(:user_id)

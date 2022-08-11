@@ -10,6 +10,7 @@ RSpec.describe Vulnerabilities::Feedback do
       .with_prefix(:for)
     )
   }
+
   it { is_expected.to define_enum_for(:category) }
   it { is_expected.to define_enum_for(:dismissal_reason) }
 
