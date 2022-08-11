@@ -14,25 +14,32 @@ module EE
 
         field :blocked, GraphQL::Types::Boolean, null: false, description: 'Indicates the issue is blocked.'
 
-        field :blocking_count, GraphQL::Types::Int, null: false, method: :blocking_issues_count,
+        field :blocking_count, GraphQL::Types::Int,
+          null: false, method: :blocking_issues_count,
           description: 'Count of issues this issue is blocking.'
 
-        field :blocked_by_count, GraphQL::Types::Int, null: true, description: 'Count of issues blocking this issue.'
+        field :blocked_by_count, GraphQL::Types::Int,
+          null: true, description: 'Count of issues blocking this issue.'
 
-        field :blocked_by_issues, ::Types::IssueType.connection_type, null: true, complexity: 5,
+        field :blocked_by_issues, ::Types::IssueType.connection_type,
+          null: true, complexity: 5,
           description: 'Issues blocking this issue.'
 
-        field :health_status, ::Types::HealthStatusEnum, null: true, description: 'Current health status.'
+        field :health_status, ::Types::HealthStatusEnum,
+          null: true, description: 'Current health status.'
 
-        field :status_page_published_incident, GraphQL::Types::Boolean, null: true,
+        field :status_page_published_incident, GraphQL::Types::Boolean,
+          null: true,
           description: 'Indicates whether an issue is published to the status page.'
 
         field :sla_due_at, ::Types::TimeType, null: true, description: 'Timestamp of when the issue SLA expires.'
 
-        field :metric_images, [::Types::MetricImageType], null: true,
+        field :metric_images, [::Types::MetricImageType],
+          null: true,
           description: 'Metric images associated to the issue.'
 
-        field :escalation_policy, ::Types::IncidentManagement::EscalationPolicyType, null: true,
+        field :escalation_policy, ::Types::IncidentManagement::EscalationPolicyType,
+          null: true,
           description: 'Escalation policy associated with the issue. Available for issues which support escalation.'
 
         field :issuable_resource_links, ::Types::IncidentManagement::IssuableResourceLinkType.connection_type,
