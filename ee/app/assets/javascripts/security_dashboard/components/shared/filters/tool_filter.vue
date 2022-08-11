@@ -2,33 +2,47 @@
 import createFlash from '~/flash';
 import projectScannersQuery from 'ee/security_dashboard/graphql/queries/project_specific_scanners.query.graphql';
 import { getFormattedScanners } from 'ee/security_dashboard/helpers';
+import { DASHBOARD_TYPES } from 'ee/security_dashboard/store/constants';
 import SimpleFilter from './simple_filter.vue';
 import FilterBody from './filter_body.vue';
 import FilterItem from './filter_item.vue';
 import { TOOL_FILTER_ERROR } from './constants';
 
+const DASHBOARD_QUERY = {
+  [DASHBOARD_TYPES.PROJECT]: {
+    query: projectScannersQuery,
+    pathName: 'fullPath',
+    dataType: 'project',
+  },
+};
+
 export default {
   name: 'ToolFilter',
   components: { FilterBody, FilterItem },
   extends: SimpleFilter,
-  inject: ['projectFullPath'],
+  inject: ['dashboardType', 'fullPath'],
   apollo: {
     vulnerabilityScanners: {
       loadingKey: 'isLoading',
-      query: projectScannersQuery,
+      query() {
+        return this.query;
+      },
       variables() {
-        return {
-          fullPath: this.projectFullPath,
-        };
+        return this.queryVariables;
       },
       update(data) {
-        const nodes = data?.project?.vulnerabilityScanners?.nodes;
+        const { dataType } = DASHBOARD_QUERY[this.dashboardType];
+        const nodes = data[dataType]?.vulnerabilityScanners?.nodes;
+
         return nodes ? getFormattedScanners(nodes) : [];
       },
       error() {
         createFlash({
           message: TOOL_FILTER_ERROR,
         });
+      },
+      skip() {
+        return !this.query;
       },
     },
   },
@@ -42,6 +56,14 @@ export default {
     // this computed property overrides the property in the SimpleFilter component
     options() {
       return this.vulnerabilityScanners;
+    },
+    query() {
+      return DASHBOARD_QUERY[this.dashboardType]?.query;
+    },
+    queryVariables() {
+      const fullPath = DASHBOARD_QUERY[this.dashboardType]?.pathName;
+
+      return { fullPath: this[fullPath] };
     },
   },
 };
