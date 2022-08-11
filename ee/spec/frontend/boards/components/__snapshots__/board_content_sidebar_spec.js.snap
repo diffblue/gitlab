@@ -110,14 +110,14 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
     <div
       class="hide-collapsed"
     >
-      <p
-        class="gl-line-height-20 gl-mb-2 gl-text-gray-900 gl-display-flex gl-justify-content-space-between"
+      <div
+        class="gl-display-flex gl-align-items-center gl-line-height-20 gl-text-gray-900 gl-font-weight-bold"
       >
         
       Severity
       
         <button
-          class="btn btn-default btn-sm gl-button btn-default-tertiary"
+          class="btn gl-ml-auto hide-collapsed gl-mr-n2 btn-default btn-sm gl-button btn-default-tertiary"
           data-testid="editButton"
           type="button"
         >
@@ -133,10 +133,10 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
       
           </span>
         </button>
-      </p>
+      </div>
        
       <div
-        class="dropdown b-dropdown gl-new-dropdown gl-display-none"
+        class="dropdown b-dropdown gl-new-dropdown gl-mt-3 gl-display-none"
         id="__BVID__40"
       >
         <!---->
@@ -233,7 +233,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                       >
                         <svg
                           aria-hidden="true"
-                          class="gl-icon s12 icon-critical gl-mr-3"
+                          class="gl-icon s12 icon-critical gl-mr-3 gl-flex-shrink-0"
                           data-testid="severity-critical-icon"
                           role="img"
                         >
@@ -245,7 +245,9 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                         <span
                           class="gl-min-w-0 gl-text-truncate"
                         >
-                          Critical - S1
+                          
+    Critical - S1
+  
                         </span>
                       </div>
                     </p>
@@ -292,7 +294,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                       >
                         <svg
                           aria-hidden="true"
-                          class="gl-icon s12 icon-high gl-mr-3"
+                          class="gl-icon s12 icon-high gl-mr-3 gl-flex-shrink-0"
                           data-testid="severity-high-icon"
                           role="img"
                         >
@@ -304,7 +306,9 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                         <span
                           class="gl-min-w-0 gl-text-truncate"
                         >
-                          High - S2
+                          
+    High - S2
+  
                         </span>
                       </div>
                     </p>
@@ -351,7 +355,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                       >
                         <svg
                           aria-hidden="true"
-                          class="gl-icon s12 icon-medium gl-mr-3"
+                          class="gl-icon s12 icon-medium gl-mr-3 gl-flex-shrink-0"
                           data-testid="severity-medium-icon"
                           role="img"
                         >
@@ -363,7 +367,9 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                         <span
                           class="gl-min-w-0 gl-text-truncate"
                         >
-                          Medium - S3
+                          
+    Medium - S3
+  
                         </span>
                       </div>
                     </p>
@@ -410,7 +416,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                       >
                         <svg
                           aria-hidden="true"
-                          class="gl-icon s12 icon-low gl-mr-3"
+                          class="gl-icon s12 icon-low gl-mr-3 gl-flex-shrink-0"
                           data-testid="severity-low-icon"
                           role="img"
                         >
@@ -422,7 +428,9 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                         <span
                           class="gl-min-w-0 gl-text-truncate"
                         >
-                          Low - S4
+                          
+    Low - S4
+  
                         </span>
                       </div>
                     </p>
@@ -469,7 +477,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                       >
                         <svg
                           aria-hidden="true"
-                          class="gl-icon s12 icon-unknown gl-mr-3"
+                          class="gl-icon s12 icon-unknown gl-mr-3 gl-flex-shrink-0"
                           data-testid="severity-unknown-icon"
                           role="img"
                         >
@@ -481,7 +489,9 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                         <span
                           class="gl-min-w-0 gl-text-truncate"
                         >
-                          Unknown
+                          
+    Unknown
+  
                         </span>
                       </div>
                     </p>
@@ -504,7 +514,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
       >
         <svg
           aria-hidden="true"
-          class="gl-icon s12 icon-unknown gl-mr-3"
+          class="gl-icon s12 icon-unknown gl-mr-3 gl-flex-shrink-0"
           data-testid="severity-unknown-icon"
           role="img"
         >
@@ -516,7 +526,9 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
         <span
           class="gl-min-w-0 gl-text-truncate"
         >
-          Unknown
+          
+    Unknown
+  
         </span>
       </div>
     </div>
