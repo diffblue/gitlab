@@ -50,8 +50,16 @@ describe('Cluster Filter component', () => {
     await waitForPromises();
     const filterItems = findFilterItems();
     expect(filterItems.length).toBe(2);
-    expect(filterItems.at(0).props()).toStrictEqual({ isChecked: true, text: 'All clusters' });
-    expect(filterItems.at(1).props()).toStrictEqual({ isChecked: false, text: 'primary-agent' });
+    expect(filterItems.at(0).props()).toStrictEqual({
+      isChecked: true,
+      text: 'All clusters',
+      truncate: false,
+    });
+    expect(filterItems.at(1).props()).toStrictEqual({
+      isChecked: false,
+      text: 'primary-agent',
+      truncate: false,
+    });
   });
 
   it('shows an alert on a failed graphql request', async () => {

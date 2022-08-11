@@ -34931,6 +34931,9 @@ msgstr ""
 msgid "SecurityOrchestration|Failed to load cluster agents."
 msgstr ""
 
+msgid "SecurityOrchestration|Failed to load images."
+msgstr ""
+
 msgid "SecurityOrchestration|Failed to load vulnerability scanners."
 msgstr ""
 
@@ -35274,6 +35277,9 @@ msgid "SecurityReports|Failed to get security report information. Please reload 
 msgstr ""
 
 msgid "SecurityReports|Hide dismissed"
+msgstr ""
+
+msgid "SecurityReports|Image"
 msgstr ""
 
 msgid "SecurityReports|Issue Created"
@@ -45778,6 +45784,9 @@ msgid "ciReport|API fuzzing"
 msgstr ""
 
 msgid "ciReport|All clusters"
+msgstr ""
+
+msgid "ciReport|All images"
 msgstr ""
 
 msgid "ciReport|All projects"

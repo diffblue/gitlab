@@ -1,3 +1,21 @@
+export const projectVulnerabilityImages = {
+  data: {
+    project: {
+      id: 'gid://gitlab/Project/5000207',
+      vulnerabilityImages: {
+        nodes: [
+          {
+            name: 'long-image-name',
+            __typename: 'VulnerabilityContainerImage',
+          },
+        ],
+        __typename: 'VulnerabilityContainerImageConnection',
+      },
+      __typename: 'Project',
+    },
+  },
+};
+
 export const projectClusters = {
   data: {
     project: {
