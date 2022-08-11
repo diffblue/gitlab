@@ -82,7 +82,7 @@ describe('EE Approvals LicenseCompliance', () => {
     });
 
     it('disables the open-modal button', () => {
-      expect(findOpenModalButton().attributes('disabled')).toBeTruthy();
+      expect(findOpenModalButton().attributes('disabled')).toBe('disabled');
     });
 
     it('renders a loading indicator', () => {
