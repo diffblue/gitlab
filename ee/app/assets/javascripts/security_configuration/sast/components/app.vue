@@ -99,7 +99,7 @@ export default {
     <template #description>
       <gl-sprintf :message="$options.i18n.helpText">
         <template #link="{ content }">
-          <gl-link :href="sastDocumentationPath" target="_blank" v-text="content" />
+          <gl-link :href="sastDocumentationPath" target="_blank">{{ content }}</gl-link>
         </template>
       </gl-sprintf>
     </template>
