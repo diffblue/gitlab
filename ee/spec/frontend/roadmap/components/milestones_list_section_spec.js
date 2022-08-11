@@ -50,8 +50,8 @@ describe('MilestonesListSectionComponent', () => {
   const findExpandButtonData = () => {
     const container = findExpandButtonContainer();
     return {
-      icon: container.find(GlIcon).attributes('name'),
-      iconLabel: container.find(GlButton).attributes('aria-label'),
+      icon: container.findComponent(GlIcon).attributes('name'),
+      iconLabel: container.findComponent(GlButton).attributes('aria-label'),
       tooltip: getBinding(container.element, 'gl-tooltip').value.title,
     };
   };
@@ -162,7 +162,7 @@ describe('MilestonesListSectionComponent', () => {
       const listItems = wrapper.find('.milestones-list-items');
 
       expect(listItems.exists()).toBe(true);
-      expect(listItems.find(MilestoneTimeline).exists()).toBe(true);
+      expect(listItems.findComponent(MilestoneTimeline).exists()).toBe(true);
     });
 
     it('renders bottom shadow element when `showBottomShadow` prop is true', () => {
@@ -196,7 +196,7 @@ describe('MilestonesListSectionComponent', () => {
 
   describe('when the milestone list is expanded', () => {
     beforeEach(async () => {
-      findExpandButtonContainer().find(GlButton).vm.$emit('click');
+      findExpandButtonContainer().findComponent(GlButton).vm.$emit('click');
 
       await nextTick();
     });

@@ -247,7 +247,7 @@ describe('EpicsListSectionComponent', () => {
     });
 
     it('renders epic-item', () => {
-      expect(wrapper.find(EpicItem).exists()).toBe(true);
+      expect(wrapper.findComponent(EpicItem).exists()).toBe(true);
     });
 
     it('renders empty row element when `epics.length` is less than `bufferSize`', () => {

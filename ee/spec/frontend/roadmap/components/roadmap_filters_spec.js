@@ -155,7 +155,7 @@ describe('RoadmapFilters', () => {
       let filteredSearchBar;
 
       beforeEach(() => {
-        filteredSearchBar = wrapper.find(FilteredSearchBar);
+        filteredSearchBar = wrapper.findComponent(FilteredSearchBar);
       });
 
       it('component is rendered with correct namespace & recent search key', () => {
