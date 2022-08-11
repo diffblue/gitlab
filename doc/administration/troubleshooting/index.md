@@ -13,7 +13,6 @@ installation.
 
 - [SSL](ssl.md)
 - [Geo](../geo/replication/troubleshooting.md)
-- [Sidekiq](sidekiq.md)
 - [GitLab Rails console cheat sheet](gitlab_rails_cheat_sheet.md)
 - [Example group SAML and SCIM configurations](../../user/group/saml_sso/example_saml_config.md)
 - [Kubernetes cheat sheet](https://docs.gitlab.com/charts/troubleshooting/kubernetes_cheat_sheet.html)
