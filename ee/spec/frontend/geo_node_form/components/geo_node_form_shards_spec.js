@@ -76,7 +76,7 @@ describe('GeoNodeFormShards', () => {
 
         it('emits `removeSyncOption`', () => {
           wrapper.vm.toggleShard(MOCK_SYNC_SHARDS[0]);
-          expect(wrapper.emitted('removeSyncOption')).toBeTruthy();
+          expect(wrapper.emitted()).toHaveProperty('removeSyncOption');
         });
       });
 
@@ -89,7 +89,7 @@ describe('GeoNodeFormShards', () => {
 
         it('emits `addSyncOption`', () => {
           wrapper.vm.toggleShard(MOCK_SYNC_SHARDS[1]);
-          expect(wrapper.emitted('addSyncOption')).toBeTruthy();
+          expect(wrapper.emitted()).toHaveProperty('addSyncOption');
         });
       });
     });
@@ -103,7 +103,7 @@ describe('GeoNodeFormShards', () => {
         });
 
         it('returns `true`', () => {
-          expect(wrapper.vm.isSelected(MOCK_SYNC_SHARDS[0])).toBeTruthy();
+          expect(wrapper.vm.isSelected(MOCK_SYNC_SHARDS[0])).toBe(true);
         });
       });
 
@@ -115,7 +115,7 @@ describe('GeoNodeFormShards', () => {
         });
 
         it('returns `false`', () => {
-          expect(wrapper.vm.isSelected(MOCK_SYNC_SHARDS[1])).toBeFalsy();
+          expect(wrapper.vm.isSelected(MOCK_SYNC_SHARDS[1])).toBe(false);
         });
       });
     });
@@ -170,7 +170,7 @@ describe('GeoNodeFormShards', () => {
           });
 
           it('returns `false`', () => {
-            expect(wrapper.vm.noSyncShards).toBeFalsy();
+            expect(wrapper.vm.noSyncShards).toBe(false);
           });
         });
       });
@@ -183,7 +183,7 @@ describe('GeoNodeFormShards', () => {
         });
 
         it('returns `true`', () => {
-          expect(wrapper.vm.noSyncShards).toBeTruthy();
+          expect(wrapper.vm.noSyncShards).toBe(true);
         });
       });
     });
