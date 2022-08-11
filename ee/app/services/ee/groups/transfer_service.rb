@@ -14,7 +14,7 @@ module EE
       private
 
       override :post_update_hooks
-      def post_update_hooks(updated_project_ids)
+      def post_update_hooks(updated_project_ids, old_root_ancestor_id)
         super
 
         update_elasticsearch_hooks
