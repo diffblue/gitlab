@@ -4,7 +4,6 @@ class Projects::GoogleCloud::ServiceAccountsController < Projects::GoogleCloud::
   before_action :validate_gcp_token!
 
   def index
-    @google_cloud_path = project_google_cloud_configuration_path(project)
     google_api_client = GoogleApi::CloudPlatform::Client.new(token_in_session, nil)
     gcp_projects = google_api_client.list_projects
 
