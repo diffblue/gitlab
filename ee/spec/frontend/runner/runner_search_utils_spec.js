@@ -15,7 +15,7 @@ describe('ee search_params.js', () => {
       search: {
         runnerType: null,
         filters: [{ type: 'upgrade_status', value: { data: 'AVAILABLE', operator: '=' } }],
-        pagination: { page: 1 },
+        pagination: {},
         sort: 'CREATED_DESC',
       },
       graphqlVariables: {
@@ -30,7 +30,7 @@ describe('ee search_params.js', () => {
       search: {
         runnerType: 'INSTANCE_TYPE',
         filters: [{ type: 'upgrade_status', value: { data: 'AVAILABLE', operator: '=' } }],
-        pagination: { page: 1 },
+        pagination: {},
         sort: 'CREATED_ASC',
       },
       graphqlVariables: {
