@@ -235,7 +235,7 @@ describe('Pipeline Security Dashboard component', () => {
       factory();
 
       expect(wrapper.html()).toContain(PipelineSecurityDashboard.i18n.pageDescription);
-      expect(wrapper.find(GlButton).attributes()).toMatchObject({
+      expect(wrapper.findComponent(GlButton).attributes()).toMatchObject({
         variant: 'link',
         icon: 'question-o',
         target: '_blank',

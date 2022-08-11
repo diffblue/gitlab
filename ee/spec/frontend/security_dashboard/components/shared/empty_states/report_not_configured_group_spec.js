@@ -23,7 +23,7 @@ describe('Group report not configured component', () => {
   });
 
   it('passes expected props to the GlEmptyState', () => {
-    expect(wrapper.find(GlEmptyState).props()).toMatchObject({
+    expect(wrapper.findComponent(GlEmptyState).props()).toMatchObject({
       title: ReportNotConfiguredGroup.i18n.title,
       svgPath: emptyStateSvgPath,
       secondaryButtonText: ReportNotConfiguredGroup.i18n.secondaryButtonText,
