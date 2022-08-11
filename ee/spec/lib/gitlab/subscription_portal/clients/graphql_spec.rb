@@ -49,11 +49,22 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql do
     end
 
     it 'returns connectivity error when remote server returns error' do
-      stub_request(:any, EE::SUBSCRIPTIONS_GRAPHQL_URL).to_return(status: [500, "Internal Server Error"])
+      stub_request(:any, EE::SUBSCRIPTIONS_GRAPHQL_URL)
+        .to_return(status: [500, "Internal Server Error"], body: 'body')
+      allow(Gitlab::ErrorTracking).to receive(:log_exception)
 
       result = client.activate('activation_code_abc')
 
       expect(result).to eq({ errors: described_class::CONNECTIVITY_ERROR, success: false })
+
+      expect(Gitlab::ErrorTracking).to have_received(:log_exception).with(
+        instance_of(::Gitlab::SubscriptionPortal::Client::ResponseError),
+        {
+          status: 500,
+          message: "Internal Server Error",
+          body: 'body'
+        }
+      )
     end
 
     it 'returns connectivity error when the remote server is unreachable' do
