@@ -27,6 +27,8 @@ module EE
         def define_protected_env_variables
           @protected_environments = @project.protected_environments.with_environment_id.sorted_by_name
           @protected_environment = ProtectedEnvironment.new(project: @project)
+          # ignoring Layout/LineLength because if we break this into multiple lines, we cause Style/GuardClause errors
+          @group_protected_environments = ProtectedEnvironment.for_groups(@project.group.self_and_ancestor_ids) if @project.group # rubocop:disable Layout/LineLength
         end
 
         def assign_variables_to_gon

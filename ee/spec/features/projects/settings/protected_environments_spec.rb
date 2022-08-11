@@ -5,7 +5,8 @@ require 'spec_helper'
 RSpec.describe 'Protected Environments' do
   include Spec::Support::Helpers::ModalHelpers
 
-  let(:project) { create(:project, :repository) }
+  let(:group) { create(:group) }
+  let(:project) { create(:project, :repository, group: group ) }
   let(:user) { create(:user) }
   let(:environments) { %w(production development staging test) }
 
@@ -18,6 +19,7 @@ RSpec.describe 'Protected Environments' do
 
     create(:protected_environment, project: project, name: 'production')
     create(:protected_environment, project: project, name: 'removed environment')
+    create(:protected_environment, project: nil, group: group, name: 'staging')
 
     sign_in(user)
   end
@@ -49,6 +51,12 @@ RSpec.describe 'Protected Environments' do
       within('.protected-branches-list') do
         expect(page).to have_content('production')
         expect(page).to have_content('removed environment')
+      end
+    end
+
+    it 'allows seeing a list of upstream protected environments', :js do
+      within('.group-protected-branches-list') do
+        expect(page).to have_content('staging')
       end
     end
 

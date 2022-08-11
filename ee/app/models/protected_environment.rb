@@ -25,6 +25,10 @@ class ProtectedEnvironment < ApplicationRecord
              ' AND protected_environments.project_id = environments.project_id')
   end
 
+  scope :for_groups, ->(group_ids) do
+    where(group_id: group_ids).order(:name).preload(:deploy_access_levels)
+  end
+
   class << self
     def revoke_user(user)
       transaction do
