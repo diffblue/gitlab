@@ -76,7 +76,7 @@ RSpec.describe 'Related Epics', :js do
 
     it 'user can view epic input field', :aggregate_failures do
       page.within('.js-add-related-issues-form-area') do
-        expect(page.find('p')).to have_content('the following epic(s)')
+        expect(page.find('p')).to have_content('the following epics')
         expect(page).to have_selector('.add-issuable-form-input-wrapper')
       end
     end
