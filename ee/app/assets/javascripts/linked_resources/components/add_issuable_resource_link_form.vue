@@ -61,7 +61,7 @@ export default {
     <gl-form-group :label="$options.i18n.linkValueLabel">
       <gl-form-input v-model="linkValue" data-testid="link-value-input" type="text" />
     </gl-form-group>
-    <div class="gl-mt-5 gl-clearfix">
+    <div class="gl-mt-5">
       <gl-button
         category="primary"
         variant="confirm"
@@ -69,12 +69,13 @@ export default {
         :disabled="isSubmitButtonDisabled"
         :loading="isSubmitting"
         type="submit"
-        class="gl-float-left"
+        size="small"
+        class="gl-mr-2"
         @click="createRequest"
       >
         {{ $options.i18n.submitButtonText }}
       </gl-button>
-      <gl-button class="gl-float-right" @click="onFormCancel">
+      <gl-button size="small" @click="onFormCancel">
         {{ $options.i18n.cancelButtonText }}
       </gl-button>
     </div>

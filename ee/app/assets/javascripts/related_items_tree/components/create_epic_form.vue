@@ -192,18 +192,19 @@ export default {
       </div>
     </div>
 
-    <div class="gl-mt-5 gl-clearfix">
+    <div class="gl-mt-5">
       <gl-button
         :disabled="isSubmitButtonDisabled"
         :loading="isSubmitting"
         variant="confirm"
         category="primary"
         type="submit"
-        class="float-left"
+        size="small"
+        class="gl-mr-2"
       >
         {{ buttonLabel }}
       </gl-button>
-      <gl-button class="float-right" @click="onFormCancel">{{ __('Cancel') }}</gl-button>
+      <gl-button size="small" @click="onFormCancel">{{ __('Cancel') }}</gl-button>
     </div>
   </form>
 </template>
