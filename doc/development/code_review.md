@@ -278,17 +278,19 @@ This saves reviewers time and helps authors catch mistakes earlier.
 
 ### The responsibility of the reviewer
 
-Reviewers are [domain experts](#domain-experts), who are responsible for
-the correctness of the chosen solution, and implementation within their domain.
+Reviewers are responsible for reviewing the specifics of the chosen solution.
 
 [Review the merge request](#reviewing-a-merge-request) thoroughly.
 
 Verify that the merge request meets all [contribution acceptance criteria](contributing/merge_request_workflow.md#contribution-acceptance-criteria).
 
-As domain experts are self-identified, reviewers can determine for themselves if
-they are the approriate person to review the merge request. Depending on
-availability, it is acceptable for someone who has no domain expertise to review
-an MR on a best effort basis.
+Some merge requests may require domain experts to help with the specifics.
+Reviewers, if they are not a domain expert in the area can either:
+
+- Review the merge request, and loop in a domain expert for another review. This
+  can either be another reviewer, or a maintainer.
+- Pass the review to another reviewer they deem more suitable.
+- If no domain experts are available, review on a best-effort basis.
 
 You should guide the author towards splitting the merge request into smaller merge requests if it is:
 
