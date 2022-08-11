@@ -40,7 +40,7 @@ describe('DependencyLicenseLinks component', () => {
   it('intersperses the list of licenses correctly', () => {
     factory();
 
-    const intersperseInstance = wrapper.find(GlIntersperse);
+    const intersperseInstance = wrapper.findComponent(GlIntersperse);
 
     expect(intersperseInstance.exists()).toBe(true);
     expect(intersperseInstance.attributes('lastseparator')).toBe(' and ');
@@ -65,16 +65,16 @@ describe('DependencyLicenseLinks component', () => {
     ({ numLicenses, numLicensesWithUrl, expectedNumVisibleLinks, expectedNumModalLinks }) => {
       factory({ numLicenses, numLicensesWithUrl });
 
-      expect(findLicensesList().findAll(GlLink)).toHaveLength(expectedNumVisibleLinks);
+      expect(findLicensesList().findAllComponents(GlLink)).toHaveLength(expectedNumVisibleLinks);
 
-      expect(findModal().findAll(GlLink)).toHaveLength(expectedNumModalLinks);
+      expect(findModal().findAllComponents(GlLink)).toHaveLength(expectedNumModalLinks);
     },
   );
 
   it('sets all links to open in new windows/tabs', () => {
     factory({ numLicenses: 8, numLicensesWithUrl: 8 });
 
-    const links = wrapper.findAll(GlLink);
+    const links = wrapper.findAllComponents(GlLink);
 
     links.wrappers.forEach((link) => {
       expect(link.attributes('target')).toBe('_blank');
@@ -108,13 +108,13 @@ describe('DependencyLicenseLinks component', () => {
     ({ numLicenses, expectedNumModals }) => {
       factory({ numLicenses, expectedNumModals });
 
-      expect(wrapper.findAll(GlModal)).toHaveLength(expectedNumModals);
+      expect(wrapper.findAllComponents(GlModal)).toHaveLength(expectedNumModals);
     },
   );
 
   it('opens the modal when the trigger gets clicked', () => {
     factory({ numLicenses: 3 });
-    const modalId = wrapper.find(GlModal).props('modalId');
+    const modalId = wrapper.findComponent(GlModal).props('modalId');
     const modalTrigger = findModalTrigger();
 
     const rootEmit = jest.spyOn(wrapper.vm.$root, '$emit');
@@ -129,7 +129,7 @@ describe('DependencyLicenseLinks component', () => {
 
     while (usedModalIds.length < 10) {
       factory({ numLicenses });
-      const modalId = wrapper.find(GlModal).props('modalId');
+      const modalId = wrapper.findComponent(GlModal).props('modalId');
 
       expect(usedModalIds).not.toContain(modalId);
       usedModalIds.push(modalId);
@@ -140,13 +140,13 @@ describe('DependencyLicenseLinks component', () => {
     const title = 'test-dependency';
     factory({ numLicenses: 3, title });
 
-    expect(wrapper.find(GlModal).attributes('title')).toEqual(title);
+    expect(wrapper.findComponent(GlModal).attributes('title')).toEqual(title);
   });
 
   it('assigns the correct action button text to the modal', () => {
     factory({ numLicenses: 3 });
 
-    expect(wrapper.find(GlModal).attributes('ok-title')).toEqual('Close');
+    expect(wrapper.findComponent(GlModal).attributes('ok-title')).toEqual('Close');
   });
 
   it.each`

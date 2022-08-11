@@ -102,22 +102,22 @@ describe('DependenciesApp component', () => {
     store.state[allNamespace].reportInfo.status = REPORT_STATUS.noDependencies;
   };
 
-  const findJobFailedAlert = () => wrapper.find(DependencyListJobFailedAlert);
-  const findIncompleteListAlert = () => wrapper.find(DependencyListIncompleteAlert);
-  const findDependenciesTables = () => wrapper.findAll(PaginatedDependenciesTable);
+  const findJobFailedAlert = () => wrapper.findComponent(DependencyListJobFailedAlert);
+  const findIncompleteListAlert = () => wrapper.findComponent(DependencyListIncompleteAlert);
+  const findDependenciesTables = () => wrapper.findAllComponents(PaginatedDependenciesTable);
 
   const findHeader = () => wrapper.find('section > header');
-  const findHeaderHelpLink = () => findHeader().find(GlLink);
-  const findHeaderJobLink = () => wrapper.find({ ref: 'jobLink' });
+  const findHeaderHelpLink = () => findHeader().findComponent(GlLink);
+  const findHeaderJobLink = () => wrapper.findComponent({ ref: 'jobLink' });
 
   const expectComponentWithProps = (Component, props = {}) => {
-    const componentWrapper = wrapper.find(Component);
+    const componentWrapper = wrapper.findComponent(Component);
     expect(componentWrapper.isVisible()).toBe(true);
     expect(componentWrapper.props()).toEqual(expect.objectContaining(props));
   };
 
   const expectComponentPropsToMatchSnapshot = (Component) => {
-    const componentWrapper = wrapper.find(Component);
+    const componentWrapper = wrapper.findComponent(Component);
     expect(componentWrapper.props()).toMatchSnapshot();
   };
 
@@ -131,7 +131,7 @@ describe('DependenciesApp component', () => {
   };
 
   const expectEmptyStateLink = () => {
-    const emptyStateLink = wrapper.find(GlLink);
+    const emptyStateLink = wrapper.findComponent(GlLink);
     expect(emptyStateLink.html()).toContain('More Information');
     expect(emptyStateLink.attributes('href')).toBe(TEST_HOST);
     expect(emptyStateLink.attributes('target')).toBe('_blank');

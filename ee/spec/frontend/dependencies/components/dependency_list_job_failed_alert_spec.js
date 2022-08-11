@@ -29,7 +29,7 @@ describe('DependencyListJobFailedAlert component', () => {
     const jobPath = '/jobs/foo/3210';
     factory({ propsData: { jobPath } });
 
-    expect(wrapper.find(GlAlert).props()).toMatchObject({
+    expect(wrapper.findComponent(GlAlert).props()).toMatchObject({
       secondaryButtonText: 'View job',
       secondaryButtonLink: jobPath,
     });
@@ -38,7 +38,7 @@ describe('DependencyListJobFailedAlert component', () => {
   it('does not include a button if "jobPath" is not given', () => {
     factory();
 
-    expect(wrapper.find(GlAlert).props()).toMatchObject(NO_BUTTON_PROPS);
+    expect(wrapper.findComponent(GlAlert).props()).toMatchObject(NO_BUTTON_PROPS);
   });
 
   it.each([undefined, null, ''])(
@@ -46,7 +46,7 @@ describe('DependencyListJobFailedAlert component', () => {
     (jobPath) => {
       factory({ propsData: { jobPath } });
 
-      expect(wrapper.find(GlAlert).props()).toMatchObject(NO_BUTTON_PROPS);
+      expect(wrapper.findComponent(GlAlert).props()).toMatchObject(NO_BUTTON_PROPS);
     },
   );
 
@@ -62,7 +62,7 @@ describe('DependencyListJobFailedAlert component', () => {
         },
       });
 
-      wrapper.find(GlAlert).vm.$emit('dismiss');
+      wrapper.findComponent(GlAlert).vm.$emit('dismiss');
     });
 
     it('calls the given listener', () => {

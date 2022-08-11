@@ -16,10 +16,10 @@ describe('Dependency Location component', () => {
     });
   };
 
-  const findIcon = () => wrapper.find(GlIcon);
+  const findIcon = () => wrapper.findComponent(GlIcon);
   const findPath = () => wrapper.find('[data-testid="dependency-path"]');
-  const findPathLink = () => wrapper.find(GlLink);
-  const findPopover = () => wrapper.find(GlPopover);
+  const findPathLink = () => wrapper.findComponent(GlLink);
+  const findPopover = () => wrapper.findComponent(GlPopover);
 
   afterEach(() => {
     wrapper.destroy();
@@ -78,7 +78,7 @@ describe('Dependency Location component', () => {
     });
 
     it('should not render dependency path', () => {
-      const pathViewer = wrapper.find(DependencyPathViewer);
+      const pathViewer = wrapper.findComponent(DependencyPathViewer);
       expect(pathViewer.exists()).toBe(false);
     });
 
