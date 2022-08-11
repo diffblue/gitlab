@@ -132,7 +132,7 @@ module QA
       end
 
       it 'displays false positives for the vulnerabilities', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/350412',
-      quarantine: {
+                                                             quarantine: {
          type: :flaky,
          issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/351183'
       } do

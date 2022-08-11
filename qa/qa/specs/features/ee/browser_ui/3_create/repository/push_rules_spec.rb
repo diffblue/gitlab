@@ -50,9 +50,9 @@ module QA
           }]
 
           expect_error_on_push(file: large_file,
-            error: 'File "file" is larger than the allowed size of 1 MB')
+                               error: 'File "file" is larger than the allowed size of 1 MB')
           expect_error_on_push(file: wrongly_named_file,
-            error: Regexp.escape(%Q{File name #{@file_name_limitation} was prohibited by the pattern "#{@file_name_limitation}"}))
+                               error: Regexp.escape(%Q{File name #{@file_name_limitation} was prohibited by the pattern "#{@file_name_limitation}"}))
         end
 
         it 'restricts users by email format', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347783' do
@@ -60,20 +60,20 @@ module QA
           @project.add_member(gitlab_user, Resource::Members::AccessLevel::MAINTAINER)
 
           expect_error_on_push(file: standard_file, user: gitlab_user,
-            error: Regexp.escape("Committer's email '#{gitlab_user.email}' does not follow the pattern '#{@authors_email_limitation}'"))
+                               error: Regexp.escape("Committer's email '#{gitlab_user.email}' does not follow the pattern '#{@authors_email_limitation}'"))
         end
 
         it 'restricts branches by branch name', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347781' do
           expect_error_on_push(file: standard_file, branch: 'forbidden_branch',
-            error: Regexp.escape("Branch name does not follow the pattern '#{@branch_name_limitation}'"))
+                               error: Regexp.escape("Branch name does not follow the pattern '#{@branch_name_limitation}'"))
         end
 
         it 'restricts commit by message format', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347780' do
           expect_no_error_on_push(file: standard_file, commit_message: @needed_phrase_limitation)
           expect_error_on_push(file: standard_file, commit_message: 'forbidden message',
-            error: Regexp.escape("Commit message does not follow the pattern '#{@needed_phrase_limitation}'"))
+                               error: Regexp.escape("Commit message does not follow the pattern '#{@needed_phrase_limitation}'"))
           expect_error_on_push(file: standard_file, commit_message: "#{@needed_phrase_limitation} - #{@deny_message_phrase_limitation}",
-            error: Regexp.escape("Commit message contains the forbidden pattern '#{@deny_message_phrase_limitation}'"))
+                               error: Regexp.escape("Commit message contains the forbidden pattern '#{@deny_message_phrase_limitation}'"))
         end
 
         it 'restricts committing files with secrets', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347779' do
@@ -83,7 +83,7 @@ module QA
           }]
 
           expect_error_on_push(file: secret_file,
-            error: Regexp.escape('File name id_rsa was prohibited by the pattern "id_rsa$"'))
+                               error: Regexp.escape('File name id_rsa was prohibited by the pattern "id_rsa$"'))
         end
 
         it 'restricts removal of tag', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347782' do
@@ -94,7 +94,7 @@ module QA
           end
 
           expect_error_on_push(file: standard_file, tag: tag.name,
-            error: 'You cannot delete a tag')
+                               error: 'You cannot delete a tag')
         end
       end
 
@@ -119,7 +119,7 @@ module QA
           end
 
           expect_error_on_push(file: standard_file, user: non_member_user,
-            error: Regexp.escape("Author '#{non_member_user.email}' is not a member of team"))
+                               error: Regexp.escape("Author '#{non_member_user.email}' is not a member of team"))
         end
       end
 
@@ -138,7 +138,7 @@ module QA
         it 'rejects unverified emails', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347791' do
           expect_no_error_on_push(file: standard_file)
           expect_error_on_push(file: standard_file, user: @root,
-            error: 'You can only push commits if the committer email is one of your own verified emails')
+                               error: 'You can only push commits if the committer email is one of your own verified emails')
         end
       end
 
