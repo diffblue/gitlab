@@ -70,6 +70,16 @@ RSpec.describe Groups::Analytics::DevopsAdoptionController do
 
         subject
       end
+
+      it_behaves_like 'Snowplow event tracking' do
+        let(:feature_flag_name) { :route_hll_to_snowplow_phase2 }
+        let(:category) { described_class.name }
+        let(:action) { 'perform_analytics_usage_action' }
+        let(:namespace) { group }
+        let(:user) { current_user }
+        let(:label) { 'redis_hll_counters.analytics.analytics_total_unique_counts_monthly' }
+        let(:property) { 'users_viewing_analytics_group_devops_adoption' }
+      end
     end
   end
 end

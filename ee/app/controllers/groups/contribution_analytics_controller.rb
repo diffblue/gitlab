@@ -1,14 +1,18 @@
 # frozen_string_literal: true
 
 class Groups::ContributionAnalyticsController < Groups::ApplicationController
-  include RedisTracking
+  include ProductAnalyticsTracking
 
   before_action :group
   before_action :authorize_read_contribution_analytics!
 
   layout 'group'
 
-  track_redis_hll_event :show, name: 'g_analytics_contribution'
+  track_custom_event :show,
+    name: 'g_analytics_contribution',
+    action: 'perform_analytics_usage_action',
+    label: 'redis_hll_counters.analytics.analytics_total_unique_counts_monthly',
+    destinations: %i[redis_hll snowplow]
 
   feature_category :value_stream_management
   urgency :low
@@ -53,5 +57,13 @@ class Groups::ContributionAnalyticsController < Groups::ApplicationController
     Date.parse(value)
   rescue Date::Error, TypeError
     1.week.ago.to_date
+  end
+
+  def tracking_namespace_source
+    @group
+  end
+
+  def tracking_project_source
+    nil
   end
 end
