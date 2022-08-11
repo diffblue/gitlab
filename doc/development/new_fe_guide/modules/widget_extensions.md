@@ -309,7 +309,7 @@ To generate these known events for a single widget:
    in the `WIDGETS` list.
 1. Ensure the GDK is running (`gdk start`).
 1. Generate known events on the command line with the following command.
-  Replace `test_reports` with your appropriate name slug:
+   Replace `test_reports` with your appropriate name slug:
 
    ```shell
    bundle exec rails generate gitlab:usage_metric_definition \
@@ -336,7 +336,7 @@ To generate these known events for a single widget:
      1. `data_source` = `redis`
      1. `data_category` = `optional`
 1. Generate known HLL events on the command line with the following command.
-  Replace `test_reports` with your appropriate name slug.
+   Replace `test_reports` with your appropriate name slug.
 
    ```shell
    bundle exec rails generate gitlab:usage_metric_definition:redis_hll code_review \
