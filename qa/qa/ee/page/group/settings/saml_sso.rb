@@ -80,7 +80,7 @@ module QA
             end
 
             def click_test_button
-              click_element :saml_settings_test_button
+              click_element(:saml_settings_test_button)
             end
 
             def click_user_login_url_link
