@@ -15,6 +15,7 @@ RSpec.describe API::Groups do
   before do
     group.add_owner(user)
     group.ldap_group_links.create! cn: 'ldap-group', group_access: Gitlab::Access::MAINTAINER, provider: 'ldap'
+    group.saml_group_links.create! saml_group_name: 'saml-group', access_level: Gitlab::Access::GUEST
   end
 
   shared_examples 'inaccessable by reporter role and lower' do
@@ -77,6 +78,19 @@ RSpec.describe API::Groups do
             ldap_group_link['cn'] == group.ldap_cn &&
               ldap_group_link['group_access'] == group.ldap_access &&
               ldap_group_link['provider'] == 'ldap'
+          end
+        )
+      end
+
+      it "returns saml group links" do
+        get api("/groups", user)
+
+        expect(json_response).to(
+          satisfy_one do |group_json|
+            saml_group_link = group_json['saml_group_links'].first
+
+            saml_group_link['name'] == 'saml-group' &&
+            saml_group_link['access_level'] == "Guest"
           end
         )
       end
