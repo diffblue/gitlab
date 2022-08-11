@@ -53,6 +53,16 @@ RSpec.describe Users::BuildService do
             expect(service.execute.provisioned_by_group_id).to eq(group.id)
           end
         end
+
+        context 'with auditor as allowed params' do
+          let(:params) { super().merge(auditor: 1) }
+
+          it 'sets auditor to true' do
+            user = service.execute
+
+            expect(user.auditor).to eq(true)
+          end
+        end
       end
 
       context 'smartcard authentication enabled' do
