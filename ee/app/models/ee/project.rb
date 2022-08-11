@@ -178,6 +178,10 @@ module EE
       end
       scope :without_unlimited_repository_size_limit, -> { where.not(repository_size_limit: 0) }
       scope :without_repository_size_limit, -> { where(repository_size_limit: nil) }
+      scope :with_legacy_open_source_license, -> (available) do
+        joins(:project_setting)
+          .where('project_settings.legacy_open_source_license_available' => available)
+      end
 
       scope :order_by_total_repository_size_excess_desc, -> (limit) do
         excess_arel = ::ProjectStatistics.arel_table[:repository_size] +

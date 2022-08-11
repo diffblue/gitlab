@@ -408,6 +408,15 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: cronjob:projects_disable_legacy_open_source_license_for_inactive_projects
+  :worker_name: Projects::DisableLegacyOpenSourceLicenseForInactiveProjectsWorker
+  :feature_category: :projects
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: cronjob:security_create_orchestration_policy
   :worker_name: Security::CreateOrchestrationPolicyWorker
   :feature_category: :security_orchestration
