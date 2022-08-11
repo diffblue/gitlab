@@ -47170,6 +47170,9 @@ msgstr ""
 msgid "repository:"
 msgstr ""
 
+msgid "role's base access level does not match the access level of the membership"
+msgstr ""
+
 msgid "satisfied"
 msgstr ""
 
