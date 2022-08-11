@@ -4,10 +4,10 @@ class RescheduleBackfillContainerRegistrySizeIntoProjectStatistics < Gitlab::Dat
   restrict_gitlab_migration gitlab_schema: :gitlab_main
 
   DELAY_INTERVAL = 2.minutes.to_i
-  BATCH_SIZE = 500
+  BATCH_SIZE = 550
   MIGRATION_CLASS = 'BackfillProjectStatisticsContainerRepositorySize'
   BATCH_CLASS_NAME = 'BackfillProjectStatisticsWithContainerRegistrySizeBatchingStrategy'
-  SUB_BATCH_SIZE = 100
+  SUB_BATCH_SIZE = 110
 
   disable_ddl_transaction!
 
