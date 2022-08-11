@@ -133,7 +133,6 @@ RSpec.describe 'Pipeline', :js do
     let(:pipeline) { create(:ci_pipeline, project: project, ref: 'master', sha: project.commit.id) }
 
     before do
-      stub_feature_flags(pipeline_tabs_vue: false)
       stub_licensed_features(sast: true, security_dashboard: true)
       stub_feature_flags(pipeline_security_dashboard_graphql: false)
     end
@@ -144,9 +143,9 @@ RSpec.describe 'Pipeline', :js do
         visit security_project_pipeline_path(project, pipeline)
       end
 
-      it 'shows jobs tab pane as active' do
+      it 'shows security tab pane as active' do
         expect(page).to have_content('Security')
-        expect(page).to have_css('#js-tab-security')
+        expect(page).to have_selector('[data-testid="security-tab"]')
       end
 
       it 'shows security dashboard' do
@@ -161,7 +160,7 @@ RSpec.describe 'Pipeline', :js do
 
       it 'displays the pipeline graph' do
         expect(page).to have_current_path(pipeline_path(pipeline), ignore_query: true)
-        expect(page).not_to have_css('#js-tab-security')
+        expect(page).not_to have_selector('[data-testid="security-tab"]')
         expect(page).to have_selector('.js-pipeline-graph')
       end
     end
@@ -171,7 +170,6 @@ RSpec.describe 'Pipeline', :js do
     let(:pipeline) { create(:ci_pipeline, project: project, ref: 'master', sha: project.commit.id) }
 
     before do
-      stub_feature_flags(pipeline_tabs_vue: false)
       stub_licensed_features(license_scanning: true)
     end
 
@@ -182,10 +180,10 @@ RSpec.describe 'Pipeline', :js do
         visit licenses_project_pipeline_path(project, pipeline)
       end
 
-      it 'shows jobs tab pane as active' do
+      it 'shows license tab pane as active' do
         expect(page).to have_content('Licenses')
-        expect(page).to have_css('#js-tab-licenses')
-        expect(find('.js-licenses-counter')).to have_content('4')
+        expect(page).to have_selector('[data-testid="license-tab"]')
+        expect(find('[data-testid="license-tab"]')).to have_content('4')
       end
 
       it 'shows security report section' do

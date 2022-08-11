@@ -140,6 +140,81 @@ RSpec.describe 'Pipeline', :js do
     end
   end
 
+  describe 'GET /:project/-/pipelines/:id/security' do
+    let(:pipeline) { create(:ci_pipeline, project: project, ref: 'master', sha: project.commit.id) }
+
+    before do
+      stub_licensed_features(sast: true, security_dashboard: true)
+      stub_feature_flags(pipeline_security_dashboard_graphql: false)
+    end
+
+    context 'with a sast artifact' do
+      before do
+        create(:ee_ci_build, :sast, pipeline: pipeline)
+        visit security_project_pipeline_path(project, pipeline)
+      end
+
+      it 'shows jobs tab pane as active' do
+        expect(page).to have_content('Security')
+        expect(page).to have_css('#js-tab-security')
+      end
+
+      it 'shows security dashboard' do
+        expect(page).to have_css('.js-security-dashboard-table')
+      end
+    end
+
+    context 'without sast artifact' do
+      before do
+        visit security_project_pipeline_path(project, pipeline)
+      end
+
+      it 'displays the pipeline graph' do
+        expect(page).to have_current_path(pipeline_path(pipeline), ignore_query: true)
+        expect(page).not_to have_css('#js-tab-security')
+        expect(page).to have_selector('.js-pipeline-graph')
+      end
+    end
+  end
+
+  describe 'GET /:project/-/pipelines/:id/licenses' do
+    let(:pipeline) { create(:ci_pipeline, project: project, ref: 'master', sha: project.commit.id) }
+
+    before do
+      stub_licensed_features(license_scanning: true)
+    end
+
+    context 'with a License Compliance artifact' do
+      before do
+        create(:ee_ci_build, :license_scanning, pipeline: pipeline)
+
+        visit licenses_project_pipeline_path(project, pipeline)
+      end
+
+      it 'shows jobs tab pane as active' do
+        expect(page).to have_content('Licenses')
+        expect(page).to have_css('#js-tab-licenses')
+        expect(find('.js-licenses-counter')).to have_content('4')
+      end
+
+      it 'shows security report section' do
+        expect(page).to have_content('Loading License Compliance report')
+      end
+    end
+
+    context 'without License Compliance artifact' do
+      before do
+        visit licenses_project_pipeline_path(project, pipeline)
+      end
+
+      it 'displays the pipeline graph' do
+        expect(page).to have_current_path(pipeline_path(pipeline), ignore_query: true)
+        expect(page).not_to have_content('Licenses')
+        expect(page).to have_selector('.js-pipeline-graph')
+      end
+    end
+  end
+
   describe 'GET /:project/-/pipelines/:id/validate_account' do
     let(:pipeline) { create(:ci_pipeline, :failed, project: project, user: user, failure_reason: 'user_not_verified') }
     let(:ultimate_plan) { create(:ultimate_plan) }
