@@ -37,7 +37,8 @@ module EE
               description: 'Counts for each vulnerability severity in the project.',
               resolver: ::Resolvers::VulnerabilitySeveritiesCountResolver
 
-        field :requirement, ::Types::RequirementsManagement::RequirementType, null: true,
+        field :requirement, ::Types::RequirementsManagement::RequirementType,
+              null: true,
               description: 'Find a single requirement.',
               resolver: ::Resolvers::RequirementsManagement::RequirementsResolver.single
 

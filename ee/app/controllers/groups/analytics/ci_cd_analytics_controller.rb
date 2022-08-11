@@ -10,15 +10,15 @@ class Groups::Analytics::CiCdAnalyticsController < Groups::Analytics::Applicatio
   before_action -> { authorize_view_by_action!(:view_group_ci_cd_analytics) }
 
   track_redis_hll_event :show, name: 'g_analytics_ci_cd_release_statistics',
-    if: -> { should_track_ci_cd_release_statistics? }
+                               if: -> { should_track_ci_cd_release_statistics? }
   track_redis_hll_event :show, name: 'g_analytics_ci_cd_deployment_frequency',
-    if: -> { should_track_ci_cd_deployment_frequency? }
+                               if: -> { should_track_ci_cd_deployment_frequency? }
   track_redis_hll_event :show, name: 'g_analytics_ci_cd_lead_time',
-    if: -> { should_track_ci_cd_lead_time? }
+                               if: -> { should_track_ci_cd_lead_time? }
   track_redis_hll_event :show, name: 'g_analytics_ci_cd_time_to_restore_service',
-    if: -> { should_track_ci_cd_time_to_restore_service? }
+                               if: -> { should_track_ci_cd_time_to_restore_service? }
   track_redis_hll_event :show, name: 'g_analytics_ci_cd_change_failure_rate',
-    if: -> { should_track_ci_cd_change_failure_rate? }
+                               if: -> { should_track_ci_cd_change_failure_rate? }
 
   def show
   end

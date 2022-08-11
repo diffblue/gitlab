@@ -71,8 +71,9 @@ module EE
         field :ci_minutes_usage, ::Types::Ci::Minutes::NamespaceMonthlyUsageType.connection_type,
               null: true,
               description: 'CI/CD minutes usage data for a namespace.' do
-                argument :namespace_id, ::Types::GlobalIDType[::Namespace], required: false,
-                   description: 'Global ID of the Namespace for the monthly CI/CD minutes usage.'
+                argument :namespace_id, ::Types::GlobalIDType[::Namespace],
+                  required: false,
+                  description: 'Global ID of the Namespace for the monthly CI/CD minutes usage.'
               end
 
         field :epic_board_list, ::Types::Boards::EpicListType,
