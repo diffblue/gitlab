@@ -529,13 +529,6 @@ Log in to your **primary** node, executing the following:
    sudo SKIP_POST_DEPLOYMENT_MIGRATIONS=true gitlab-ctl reconfigure
    ```
 
-1. Hot reload `puma` and `sidekiq` services:
-
-   ```shell
-   sudo gitlab-ctl hup puma
-   sudo gitlab-ctl restart sidekiq
-   ```
-
 ### Update the Geo secondary site
 
 On each **secondary** node, executing the following:
@@ -572,14 +565,6 @@ On each **secondary** node, executing the following:
 
    ```shell
    sudo SKIP_POST_DEPLOYMENT_MIGRATIONS=true gitlab-ctl reconfigure
-   ```
-
-1. Hot reload `puma`, `sidekiq` and restart `geo-logcursor` services:
-
-   ```shell
-   sudo gitlab-ctl hup puma
-   sudo gitlab-ctl restart sidekiq
-   sudo gitlab-ctl restart geo-logcursor
    ```
 
 1. Run post-deployment database migrations, specific to the Geo database:
