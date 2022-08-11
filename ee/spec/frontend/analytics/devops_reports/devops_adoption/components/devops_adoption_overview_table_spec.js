@@ -200,7 +200,7 @@ describe('DevopsAdoptionOverviewTable', () => {
     it.each(['trackModalOpenState', 'enabledNamespacesRemoved'])(
       're emits %s with the given value',
       (event) => {
-        expect(wrapper.emitted(event)).toBeFalsy();
+        expect(wrapper.emitted(event)).toBeUndefined();
 
         const arg = {};
 
