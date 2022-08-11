@@ -109,6 +109,14 @@ export const clusterFilter = {
   defaultOptions: [],
 };
 
+export const imageFilter = {
+  name: s__('SecurityReports|Image'),
+  id: 'image',
+  options: [],
+  allOption: { name: s__('ciReport|All images') },
+  defaultOptions: [],
+};
+
 /**
  * Provided a security reports summary from the GraphQL API, this returns an array of arrays
  * representing a properly formatted report ready to be displayed in the UI. Each sub-array consists

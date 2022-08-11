@@ -67,6 +67,7 @@ describe('Tool Filter component', () => {
       expect(findFilterItems().at(0).props()).toStrictEqual({
         isChecked: true,
         text: allOption.name,
+        truncate: false,
       });
     });
 
@@ -103,7 +104,7 @@ describe('Tool Filter component', () => {
           findFilterItems()
             .at(index + 1)
             .props(),
-        ).toStrictEqual({ isChecked: false, text: name });
+        ).toStrictEqual({ isChecked: false, text: name, truncate: false });
       });
     });
   });
