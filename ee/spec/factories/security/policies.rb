@@ -14,6 +14,11 @@ FactoryBot.define do
       new(name, description, enabled, actions, rules).to_h
     end
 
+    transient do
+      agent { 'agent-name' }
+      namespaces { %w[namespace-a namespace-b] }
+    end
+
     sequence(:name) { |n| "test-policy-#{n}" }
     description { 'This policy enforces to run DAST for every pipeline within the project' }
     enabled { true }
@@ -22,6 +27,11 @@ FactoryBot.define do
 
     trait :with_schedule do
       rules { [{ type: 'schedule', branches: %w[master], cadence: '*/15 * * * *' }] }
+    end
+
+    trait :with_schedule_and_agent do
+      rules { [{ type: 'schedule', agents: { agent.name => { namespaces: namespaces } }, cadence: '30 2 * * *' }] }
+      actions { [{ scan: 'container_scanning' }] }
     end
   end
 
