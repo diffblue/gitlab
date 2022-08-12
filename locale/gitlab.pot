@@ -42020,6 +42020,9 @@ msgstr ""
 msgid "UsageQuota|CI/CD minutes usage since %{timeElapsed}"
 msgstr ""
 
+msgid "UsageQuota|CI/CD minutes usage since %{usageSince}"
+msgstr ""
+
 msgid "UsageQuota|Code packages and container images."
 msgstr ""
 
@@ -42210,9 +42213,6 @@ msgid "UsageQuota|Usage of resources across your projects"
 msgstr ""
 
 msgid "UsageQuota|Usage quotas help link"
-msgstr ""
-
-msgid "UsageQuota|Usage since %{usageSince}"
 msgstr ""
 
 msgid "UsageQuota|When you purchase additional storage, we automatically unlock projects that were locked when you reached the %{actualRepositorySizeLimit} limit."
