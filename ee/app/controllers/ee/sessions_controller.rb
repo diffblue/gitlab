@@ -92,7 +92,7 @@ module EE
     def check_arkose_captcha
       return unless user_params[:password].present?
 
-      user = ::User.by_login(user_params[:login])
+      user = ::User.find_by_login(user_params[:login])
       return unless user.present?
 
       if params[:arkose_labs_token].present?
