@@ -40,7 +40,7 @@ gem 'omniauth', '~> 1.8'
 gem 'omniauth-auth0', '~> 2.0.0'
 gem 'omniauth-azure-activedirectory-v2', '~> 1.0'
 gem 'omniauth-azure-oauth2', '~> 0.0.9' # Deprecated v1 version
-gem 'omniauth-cas3', '~> 1.1.4'
+gem 'omniauth-cas3', '~> 1.1.4', path: 'vendor/gems/omniauth-cas3' # See vendor/gems/omniauth-cas3/README.md
 gem 'omniauth-dingtalk-oauth2', '~> 1.0'
 gem 'omniauth-alicloud', '~> 1.0.1'
 gem 'omniauth-facebook', '~> 4.0.0'
