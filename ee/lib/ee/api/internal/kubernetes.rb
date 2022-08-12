@@ -97,6 +97,22 @@ module EE
                   status result.http_status
                 end
 
+                desc 'GET starboard policies_configuration' do
+                  detail 'Retrieves policies_configuration for the project'
+                end
+
+                route_setting :authentication, cluster_agent_token_allowed: true
+                get '/policies_configuration' do
+                  not_found! if agent.project.nil?
+                  not_found! unless agent.project.licensed_feature_available?(:security_orchestration_policies)
+
+                  policies = ::Security::SecurityOrchestrationPolicies::OperationalVulnerabilitiesConfigurationService
+                    .new(agent)
+                    .execute
+
+                  present :configurations, policies, with: EE::API::Entities::SecurityPolicyConfiguration
+                end
+
                 desc 'GET starboard scan_execution_policies' do
                   detail 'Retrieves scan_execution_policies configured for the project'
                 end

@@ -333,4 +333,78 @@ RSpec.describe API::Internal::Kubernetes do
       end
     end
   end
+
+  describe 'GET /internal/kubernetes/modules/starboard_vulnerability/policies_configuration' do
+    def send_request(headers: {})
+      get api('/internal/kubernetes/modules/starboard_vulnerability/policies_configuration'), headers: headers.reverse_merge(jwt_auth_headers)
+    end
+
+    include_examples 'authorization'
+    include_examples 'agent authentication'
+
+    let_it_be(:agent_token) { create(:cluster_agent_token) }
+
+    shared_examples 'agent token tracking'
+
+    context 'when security_orchestration_policies is not licensed' do
+      before do
+        stub_licensed_features(security_orchestration_policies: false)
+      end
+
+      it 'returns 404' do
+        send_request(headers: { 'Authorization' => "Bearer #{agent_token.token}" })
+
+        expect(response).to have_gitlab_http_status(:not_found)
+      end
+    end
+
+    context 'when security_orchestration_policies is licensed' do
+      before do
+        stub_licensed_features(security_orchestration_policies: true)
+      end
+
+      context 'when policies are present' do
+        let(:policy) { build(:scan_execution_policy, :with_schedule_and_agent, agent: agent) }
+        let(:policy_yaml) { build(:orchestration_policy_yaml, scan_execution_policy: [policy]) }
+        let(:policy_management_project) do
+          create(
+            :project, :custom_repo, :public,
+            namespace: project.namespace,
+            files: {
+              '.gitlab/security-policies/policy.yml' => policy_yaml
+            })
+        end
+
+        let!(:policy_configuration) do
+          create(
+            :security_orchestration_policy_configuration,
+            security_policy_management_project: policy_management_project,
+            project: project
+          )
+        end
+
+        it 'returns expected data', :aggregate_failures do
+          send_request(headers: { 'Authorization' => "Bearer #{agent_token.token}" })
+
+          expect(response).to have_gitlab_http_status(:success)
+          expect(json_response['configurations']).to match_array([
+                                                 {
+                                                   "cadence" => '30 2 * * *',
+                                                   "namespaces" => %w[namespace-a namespace-b],
+                                                   "updated_at" => policy_configuration.policy_last_updated_at.to_datetime.to_s
+                                                 }
+                                               ])
+        end
+      end
+
+      context 'when policies are empty' do
+        it 'returns empty array', :aggregate_failures do
+          send_request(headers: { 'Authorization' => "Bearer #{agent_token.token}" })
+
+          expect(response).to have_gitlab_http_status(:success)
+          expect(json_response['configurations']).to be_empty
+        end
+      end
+    end
+  end
 end
