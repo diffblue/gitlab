@@ -585,7 +585,7 @@ NPM_TOKEN=<your_token> npm install
 If you get this error, ensure that:
 
 - The Package Registry is enabled in your project settings. Although the Package Registry is enabled
-  by default, it's possible to [disable it](../package_registry/#disable-the-package-registry).
+  by default, it's possible to [disable it](../package_registry/index.md#disable-the-package-registry).
 - Your token is not expired and has appropriate permissions.
 - A package with the same name or version doesn't already exist within the given scope.
 - The scoped packages URL includes a trailing slash:
