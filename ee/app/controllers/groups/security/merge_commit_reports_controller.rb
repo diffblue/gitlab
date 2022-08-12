@@ -7,6 +7,23 @@ class Groups::Security::MergeCommitReportsController < Groups::ApplicationContro
   feature_category :compliance_management
 
   def index
+    if Feature.enabled?(:async_chain_of_custody_report, group)
+      MergeCommits::ExportCsvService.new(
+        current_user,
+        group,
+        filter_params
+      ).enqueue_worker
+
+      flash[:notice] = _('An email will be sent with the report attached after it is generated.')
+      redirect_to group_security_compliance_dashboard_path(group)
+    else
+      export_csv
+    end
+  end
+
+  private
+
+  def export_csv
     response = MergeCommits::ExportCsvService.new(current_user, group, filter_params).csv_data
 
     respond_to do |format|
@@ -25,8 +42,6 @@ class Groups::Security::MergeCommitReportsController < Groups::ApplicationContro
       end
     end
   end
-
-  private
 
   def merge_commits_csv_filename
     "#{group.id}-merge-commits-#{Time.current.to_i}.csv"

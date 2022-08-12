@@ -1,0 +1,8 @@
+---
+name: async_chain_of_custody_report
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/94332
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/370100
+milestone: '15.3'
+type: development
+group: group::compliance
+default_enabled: false

@@ -15,6 +15,7 @@ module EE
       include ::Emails::OncallRotation
       include ::Emails::GroupMemberships
       include ::Emails::InProductMarketing
+      include ::Emails::MergeCommits
     end
 
     attr_reader :group
