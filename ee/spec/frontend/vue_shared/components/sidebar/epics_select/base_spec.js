@@ -190,7 +190,7 @@ describe('EpicsSelect', () => {
           await nextTick();
           wrapperStandalone.vm.handleItemSelect(mockEpic2);
 
-          expect(wrapperStandalone.emitted('epicSelect')).toBeTruthy();
+          expect(wrapperStandalone.emitted('epicSelect')).toHaveLength(1);
           expect(wrapperStandalone.emitted('epicSelect')[0]).toEqual([mockEpic2]);
         });
       });
