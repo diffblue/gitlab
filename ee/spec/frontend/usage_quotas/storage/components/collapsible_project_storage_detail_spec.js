@@ -7,10 +7,11 @@ import ProjectAvatar from '~/vue_shared/components/project_avatar.vue';
 import { projects, projectHelpLinks as helpLinks } from '../mock_data';
 
 let wrapper;
+const project = projects[1];
 const createComponent = () => {
   wrapper = shallowMount(CollapsibleProjectStorageDetail, {
     propsData: {
-      project: projects[1],
+      project,
     },
     provide: {
       helpLinks,
@@ -18,6 +19,7 @@ const createComponent = () => {
   });
 };
 
+const findProjectAvatar = () => wrapper.findComponent(ProjectAvatar);
 const findTableRow = () => wrapper.find('[data-testid="projectTableRow"]');
 const findProjectStorageDetail = () => wrapper.findComponent(ProjectStorageDetail);
 
@@ -26,16 +28,24 @@ describe('CollapsibleProjectStorageDetail', () => {
     createComponent();
   });
 
+  afterEach(() => {
+    wrapper.destroy();
+  });
+
   it('renders project avatar', () => {
-    expect(wrapper.findComponent(ProjectAvatar).exists()).toBe(true);
+    expect(findProjectAvatar().props()).toMatchObject({
+      projectId: project.id,
+      projectName: project.name,
+      projectAvatarUrl: project.avatarUrl,
+    });
   });
 
   it('renders project name', () => {
-    expect(wrapper.text()).toContain(projects[1].nameWithNamespace);
+    expect(wrapper.text()).toContain(project.nameWithNamespace);
   });
 
   it('renders formatted storage size', () => {
-    expect(wrapper.text()).toContain(numberToHumanSize(projects[1].statistics.storageSize));
+    expect(wrapper.text()).toContain(numberToHumanSize(project.statistics.storageSize));
   });
 
   describe('toggle row', () => {

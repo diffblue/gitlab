@@ -2,6 +2,7 @@ import { GlTableLite } from '@gitlab/ui';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import { sprintf } from '~/locale';
 import ProjectList from 'ee/usage_quotas/pipelines/components/project_list.vue';
+import ProjectAvatar from '~/vue_shared/components/project_avatar.vue';
 import { LABEL_CI_MINUTES_DISABLED, LABEL_NO_PROJECTS } from 'ee/usage_quotas/pipelines/constants';
 import { defaultProvide, defaultProjectListProps } from '../mock_data';
 
@@ -31,9 +32,11 @@ describe('ProjectCIMinutesList', () => {
   it('renders project names and CI minutes values', () => {
     createComponent();
     const firstProjectColumns = findTableRows().at(0).findAll('td');
-    expect(firstProjectColumns.at(0).text()).toContain(
-      defaultProjectListProps.projects[0].project.nameWithNamespace,
-    );
+    expect(firstProjectColumns.at(0).findComponent(ProjectAvatar).props()).toMatchObject({
+      projectId: defaultProjectListProps.projects[0].project.id,
+      projectName: defaultProjectListProps.projects[0].project.nameWithNamespace,
+      projectAvatarUrl: defaultProjectListProps.projects[0].project.avatarUrl,
+    });
     expect(firstProjectColumns.at(1).text()).toContain(
       defaultProjectListProps.projects[0].ci_minutes.toString(),
     );

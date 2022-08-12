@@ -38,6 +38,7 @@ export default {
   >
     <div class="gl-display-flex gl-align-items-center">
       <project-avatar
+        :project-id="project.namespace.id"
         :project-name="project.namespace.name"
         :project-avatar-url="project.namespace.avatar_url"
         :size="$options.avatarSize"
@@ -54,6 +55,7 @@ export default {
       <span class="gl-mr-3">&gt;</span>
 
       <project-avatar
+        :project-id="project.id"
         :project-name="project.name"
         :project-avatar-url="project.avatar_url"
         :size="$options.avatarSize"
