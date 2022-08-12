@@ -4284,7 +4284,7 @@
               {
                 "type": "link",
                 "attrs": {
-                  "href": "http://test.host/url/bar*baz",
+                  "href": "/url%5Cbar*baz",
                   "target": "_blank",
                   "class": null,
                   "title": "foo\"bar\\baz",
@@ -18862,7 +18862,7 @@
                   "target": "_blank",
                   "class": null,
                   "title": null,
-                  "canonicalSrc": "irc://foo.bar:2233/baz",
+                  "canonicalSrc": null,
                   "isReference": false
                 }
               }
@@ -18918,7 +18918,7 @@
                   "target": "_blank",
                   "class": null,
                   "title": null,
-                  "canonicalSrc": "a+b+c:d",
+                  "canonicalSrc": null,
                   "isReference": false
                 }
               }
@@ -18946,7 +18946,7 @@
                   "target": "_blank",
                   "class": null,
                   "title": null,
-                  "canonicalSrc": "made-up-scheme://foo,bar",
+                  "canonicalSrc": null,
                   "isReference": false
                 }
               }
@@ -19002,7 +19002,7 @@
                   "target": "_blank",
                   "class": null,
                   "title": null,
-                  "canonicalSrc": "localhost:5001/foo",
+                  "canonicalSrc": null,
                   "isReference": false
                 }
               }
