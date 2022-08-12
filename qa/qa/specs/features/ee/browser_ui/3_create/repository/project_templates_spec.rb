@@ -59,8 +59,8 @@ module QA
           end
 
           create_project_using_template(project_name: 'Project using built-in project template',
-            namespace: Runtime::Namespace.name(reset_cache: false),
-            template_name: built_in)
+                                        namespace: Runtime::Namespace.name(reset_cache: false),
+                                        template_name: built_in)
 
           Page::Project::Show.perform do |project|
             project.wait_for_import_success
@@ -115,8 +115,8 @@ module QA
           end
 
           create_project_using_template(project_name: 'Project using instance level project template',
-            namespace: Runtime::Namespace.path,
-            template_name: template_project.name)
+                                        namespace: Runtime::Namespace.path,
+                                        template_name: template_project.name)
 
           Page::Project::Show.perform do |project|
             project.wait_for_import_success
@@ -172,8 +172,8 @@ module QA
           end
 
           create_project_using_template(project_name: 'Project using group level project template',
-            namespace: Runtime::Namespace.sandbox_name,
-            template_name: template_project.name)
+                                        namespace: Runtime::Namespace.sandbox_name,
+                                        template_name: template_project.name)
 
           Page::Project::Show.perform do |project|
             project.wait_for_import_success

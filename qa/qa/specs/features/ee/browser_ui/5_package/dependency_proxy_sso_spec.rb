@@ -2,7 +2,7 @@
 
 module QA
   RSpec.describe 'Package', :orchestrated, :group_saml, requires_admin: 'for various user admin functions',
-                 feature_flag: { name: 'group_administration_nav_item', scope: :global } do
+                                                        feature_flag: { name: 'group_administration_nav_item', scope: :global } do
     describe 'Dependency Proxy Group SSO' do
       include Support::API
 

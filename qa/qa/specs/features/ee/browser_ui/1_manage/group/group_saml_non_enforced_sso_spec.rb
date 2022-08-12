@@ -2,7 +2,7 @@
 
 module QA
   RSpec.describe 'Manage', :group_saml, :orchestrated, requires_admin: 'creates a user via API',
-                           feature_flag: { name: 'group_administration_nav_item', scope: :global } do
+                                                       feature_flag: { name: 'group_administration_nav_item', scope: :global } do
     describe 'Group SAML SSO - Non enforced SSO' do
       include Support::API
 
