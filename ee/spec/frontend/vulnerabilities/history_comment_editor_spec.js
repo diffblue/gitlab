@@ -20,7 +20,7 @@ describe('History Comment Editor', () => {
 
   it('shows the placeholder text when there is no comment', () => {
     createWrapper();
-    expect(textarea().props('value')).toBeFalsy();
+    expect(textarea().props('value')).toBe('');
   });
 
   it('shows the comment when one is passed in', () => {
@@ -85,7 +85,7 @@ describe('History Comment Editor', () => {
   it('disables all elements when the comment is being saved', () => {
     createWrapper({ isSaving: true });
 
-    expect(textarea().attributes('disabled')).toBeTruthy();
+    expect(textarea().attributes('disabled')).toBe('true');
     expect(saveButton().props('loading')).toBe(true);
     expect(cancelButton().props('disabled')).toBe(true);
   });
