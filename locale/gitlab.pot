@@ -44401,6 +44401,12 @@ msgstr ""
 msgid "WorkItem|Task deleted"
 msgstr ""
 
+msgid "WorkItem|Turn off confidentiality"
+msgstr ""
+
+msgid "WorkItem|Turn on confidentiality"
+msgstr ""
+
 msgid "WorkItem|Type"
 msgstr ""
 
