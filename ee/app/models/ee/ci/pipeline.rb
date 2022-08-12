@@ -146,6 +146,14 @@ module EE
         end
       end
 
+      def sbom_reports
+        ::Gitlab::Ci::Reports::Sbom::Reports.new.tap do |sbom_reports|
+          latest_report_builds(::Ci::JobArtifact.sbom_reports).each do |build|
+            build.collect_sbom_reports!(sbom_reports)
+          end
+        end
+      end
+
       ##
       # Check if it's a merge request pipeline with the HEAD of source and target branches
       # TODO: Make `Ci::Pipeline#latest?` compatible with merge request pipelines and remove this method.

@@ -415,6 +415,33 @@ RSpec.describe Ci::Pipeline do
     end
   end
 
+  describe '#sbom_reports' do
+    subject { pipeline.sbom_reports }
+
+    context 'when pipeline has a build with sbom reports' do
+      it 'returns a list of sbom reports belonging to the artifact' do
+        create(:ee_ci_build, :success, :cyclonedx, pipeline: pipeline, project: project)
+
+        expect(subject.reports.count).to eq(2)
+      end
+    end
+
+    context 'when pipeline has multiple builds with sbom reports' do
+      it 'returns a list of sbom reports belonging to the artifact' do
+        create(:ee_ci_build, :success, :cyclonedx, pipeline: pipeline, project: project)
+        create(:ee_ci_build, :success, :cyclonedx, pipeline: pipeline, project: project)
+
+        expect(subject.reports.count).to eq(4)
+      end
+    end
+
+    context 'when pipeline does not have any builds with sbom reports' do
+      it 'returns an empty reports list' do
+        expect(subject.reports).to be_empty
+      end
+    end
+  end
+
   describe 'state machine transitions' do
     context 'on pipeline complete' do
       let(:pipeline) { create(:ci_empty_pipeline, status: from_status) }

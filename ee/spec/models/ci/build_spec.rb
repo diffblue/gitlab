@@ -609,6 +609,23 @@ RSpec.describe Ci::Build, :saas do
     end
   end
 
+  describe '#collect_sbom_reports!' do
+    subject { job.collect_sbom_reports!(sbom_reports_list) }
+
+    let(:sbom_reports_list) { Gitlab::Ci::Reports::Sbom::Reports.new }
+
+    context 'when there is an sbom report' do
+      let!(:cyclonedx_artifact) { create(:ee_ci_job_artifact, :cyclonedx, job: job, project: job.project) }
+
+      it 'adds each report to the reports list and parses it' do
+        subject
+        expect(sbom_reports_list.reports.count).to eq(2)
+        expect(sbom_reports_list.reports.first.components.count).to eq(352)
+        expect(sbom_reports_list.reports.last.components.count).to eq(1448)
+      end
+    end
+  end
+
   describe '#retryable?' do
     subject { build.retryable? }
 
