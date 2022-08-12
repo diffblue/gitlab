@@ -81,7 +81,7 @@ module Arkose
 
     def body
       {
-        private_key: arkose_private_api_key,
+        private_key: Settings.arkose_private_api_key,
         session_token: session_token,
         log_data: user.id
       }
@@ -132,10 +132,6 @@ module Arkose
     def allowlisted?(response)
       telltale_list = response&.dig('session_details', 'telltale_list') || []
       telltale_list.include?(ALLOWLIST_TELLTALE)
-    end
-
-    def arkose_private_api_key
-      Gitlab::CurrentSettings.arkose_labs_private_api_key || ENV['ARKOSE_LABS_PRIVATE_KEY']
     end
 
     def arkose_verify_url
