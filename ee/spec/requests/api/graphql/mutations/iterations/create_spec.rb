@@ -2,14 +2,14 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Creating an Iteration' do
+RSpec.describe 'Creating an Iteration', :freeze_time do
   include GraphqlHelpers
 
   let_it_be(:current_user) { create(:user) }
   let_it_be(:group) { create(:group) }
   let_it_be(:cadence) { build(:iterations_cadence, group: group, automatic: false).tap { |cadence| cadence.save!(validate: false) } }
 
-  let(:start_date) { Time.now.strftime('%F') }
+  let(:start_date) { Date.current.strftime('%F') }
   let(:end_date) { 1.day.from_now.strftime('%F') }
   let(:attributes) do
     {
@@ -27,53 +27,41 @@ RSpec.describe 'Creating an Iteration' do
   end
 
   let(:mutation) do
-    graphql_mutation(:create_iteration, params.merge(attributes))
+    graphql_mutation(:iteration_create, params.merge(attributes))
   end
 
   def mutation_response
-    graphql_mutation_response(:create_iteration)
+    graphql_mutation_response(:iteration_create)
   end
 
-  shared_examples 'legacy iteration creation request' do
-    it 'creates a new iteration in the default manual cadence' do
+  shared_examples 'iteration creation request' do
+    it 'creates a new iteration in the specified cadence' do
       post_graphql_mutation(mutation, current_user: current_user)
 
       iteration_hash = mutation_response['iteration']
       aggregate_failures do
         expect(iteration_hash['title']).to eq('title')
-        expect(iteration_hash['iterationCadence']['id']).to eq(cadence.to_global_id.to_s)
+        expect(iteration_hash['iterationCadence']['id']).to eq(specified_cadence.to_global_id.to_s)
       end
     end
   end
 
   shared_examples 'iteration create request' do
-    context 'when there are several iteration cadences in the group' do
-      let_it_be(:extra_cadence) { create(:iterations_cadence, group: group) }
+    let_it_be(:extra_cadence) { create(:iterations_cadence, group: group, automatic: false) }
 
-      context 'when iteration cadence id is not provided' do
-        it_behaves_like 'legacy iteration creation request'
-      end
-
-      context 'when iteration cadence id is provided' do
-        before do
-          attributes[:iterations_cadence_id] = extra_cadence.to_global_id.to_s
-        end
-
-        it_behaves_like 'legacy iteration creation request'
+    context 'when iteration cadence id is not provided' do
+      it_behaves_like 'iteration creation request' do
+        let(:specified_cadence) { cadence }
       end
     end
 
-    context 'when there is only one iteration cadence in the group' do
-      context 'when iteration cadence id is not provided' do
-        it_behaves_like 'legacy iteration creation request'
+    context 'when iteration cadence id is provided' do
+      before do
+        attributes[:iterations_cadence_id] = extra_cadence.to_global_id.to_s
       end
 
-      context 'when iteration cadence id is provided' do
-        before do
-          attributes[:iterations_cadence_id] = cadence.to_global_id.to_s
-        end
-
-        it_behaves_like 'legacy iteration creation request'
+      it_behaves_like 'iteration creation request' do
+        let(:specified_cadence) { extra_cadence }
       end
     end
   end
@@ -110,14 +98,6 @@ RSpec.describe 'Creating an Iteration' do
         stub_licensed_features(iterations: true)
       end
 
-      context 'with iterations_cadences FF disabled' do
-        before do
-          stub_feature_flags(iteration_cadences: false)
-        end
-
-        it_behaves_like 'iteration create request'
-      end
-
       context 'with iterations_cadences FF enabled' do
         before do
           stub_feature_flags(iteration_cadences: true)
@@ -139,12 +119,29 @@ RSpec.describe 'Creating an Iteration' do
             end
           end
         end
+
+        context 'when trying to add an iteration to the cadence that uses automatic scheduling' do
+          let_it_be(:auto_cadence) { create(:iterations_cadence, group: group) }
+
+          before do
+            attributes[:iterations_cadence_id] = auto_cadence.to_global_id.to_s
+          end
+
+          it 'does not create the iteration' do
+            expect { post_graphql_mutation(mutation, current_user: current_user) }.not_to change(Iteration, :count)
+          end
+
+          it_behaves_like 'a mutation that returns errors in the response',
+            errors: ['Iterations cannot be manually added to cadences that use automatic scheduling']
+        end
       end
 
       context 'with iterations_cadences FF disabled' do
         before do
           stub_feature_flags(iteration_cadences: false)
         end
+
+        it_behaves_like 'iteration create request'
 
         context 'when title is not given' do
           let(:attributes) { { start_date: start_date, due_date: end_date } }

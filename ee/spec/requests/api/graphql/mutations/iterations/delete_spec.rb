@@ -71,8 +71,7 @@ RSpec.describe 'Deleting an iteration' do
         let(:iteration) { create(:iteration, group: group, iterations_cadence: automatic_cadence) }
 
         it_behaves_like 'a mutation that returns top-level errors', errors: [
-          'Deleting iterations from automatic iteration cadences is not allowed. This mutation will be removed' \
-          ' in 16.0 when manual iteration management is removed.'
+          'Deleting iterations from automatic iteration cadences is not allowed.'
         ]
       end
 

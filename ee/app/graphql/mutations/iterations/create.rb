@@ -5,10 +5,6 @@ module Mutations
     class Create < BaseMutation
       graphql_name 'iterationCreate'
 
-      CADENCE_ID_DEPRECATION_MESSAGE = '`iterationCadenceId` is deprecated and will be removed in the future.' \
-                                       ' This argument is ignored, because you can\'t create an iteration in a specific cadence.' \
-                                       ' In the future only automatic iteration cadences will be allowed'
-
       include Mutations::ResolvesResourceParent
 
       authorize :create_iteration
@@ -20,10 +16,9 @@ module Mutations
 
       argument :iterations_cadence_id,
                ::Types::GlobalIDType[::Iterations::Cadence],
+               prepare: ->(gid, _) { gid.model_id },
                required: false,
-               deprecated: { reason: CADENCE_ID_DEPRECATION_MESSAGE, milestone: '14.10' },
-               description: 'Global ID of the iteration cadence to be assigned to the new iteration.' \
-                            'Argument is ignored as it was only used behind the `iteration_cadences` feature flag.'
+               description: 'Global ID of the iteration cadence to be assigned to the new iteration.'
 
       argument :title,
                GraphQL::Types::String,
@@ -53,7 +48,7 @@ module Mutations
         response = ::Iterations::CreateService.new(parent, current_user, args).execute
 
         response_object = response.payload[:iteration] if response.success?
-        response_errors = response.error? ? response.payload[:errors].full_messages : []
+        response_errors = response.error? ? response.payload[:errors] : []
 
         {
             iteration: response_object,
@@ -64,11 +59,6 @@ module Mutations
       private
 
       def validate_arguments!(parent, args)
-        # Ignoring argument as it's not necessary for the legacy iteration creation feature.
-        # Iteration will always be created in the first manual cadence for the group and create one
-        # if it doesn't exist yet.
-        args.delete(:iterations_cadence_id)
-
         if args.except(:group_path, :project_path).empty?
           raise Gitlab::Graphql::Errors::ArgumentError, 'The list of iteration attributes is empty'
         end

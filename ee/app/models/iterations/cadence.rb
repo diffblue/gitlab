@@ -23,11 +23,11 @@ module Iterations
     validates :automatic, inclusion: [true, false]
     validates :description, length: { maximum: 5000 }
 
+    before_validation :reset_automation_params, if: :converted_to_manual?
+
     validate :start_date_comes_later_than_current_iteration, if: -> { current_iteration && requires_new_automation_start_date? }
     validate :start_date_comes_later_than_past_iteration, if: -> { !current_iteration && requires_new_automation_start_date? }
     validate :start_date_would_not_create_past_iteration, if: -> { !current_iteration && requires_new_automation_start_date? }
-
-    validate :cadence_is_automatic
 
     after_commit :ensure_iterations_in_advance, on: [:create, :update], if: :changed_iterations_automation_fields?
 
@@ -208,12 +208,14 @@ module Iterations
       automatic_changed? && automatic?
     end
 
-    def cadence_is_automatic
-      return unless changes.key?(:automatic)
+    def converted_to_manual?
+      automatic_changed? && !automatic?
+    end
 
-      unless automatic?
-        errors.add(:base, s_('IterationsCadence|Manual iteration cadences are deprecated. Only automatic iteration cadences are allowed.'))
-      end
+    def reset_automation_params
+      self.roll_over = false
+      self.duration_in_weeks = nil
+      self.iterations_in_advance = nil
     end
 
     def start_date_comes_later_than_current_iteration

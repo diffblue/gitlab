@@ -7,8 +7,6 @@ RSpec.describe Types::MutationType do
     using RSpec::Parameterized::TableSyntax
 
     where(:field_name, :reason, :milestone) do
-      'IterationCreate' | 'Manual iteration management is deprecated. Only automatic iteration cadences will be supported in the future' | '14.10'
-      'CreateIteration' | 'Manual iteration management is deprecated. Only automatic iteration cadences will be supported in the future' | '14.0'
       'ApiFuzzingCiConfigurationCreate' | 'The configuration snippet is now generated client-side' | '15.1'
     end
 
