@@ -50,7 +50,7 @@ RSpec.describe GitlabSubscriptions::CreateService do
       end
 
       it 'does not save oauth token' do
-        expect { execute }.not_to change { Doorkeeper::AccessToken.count }
+        expect { execute }.not_to change(OauthAccessToken, :count)
       end
     end
 
@@ -71,13 +71,13 @@ RSpec.describe GitlabSubscriptions::CreateService do
       end
 
       it 'saves oauth token' do
-        expect { execute }.to change { Doorkeeper::AccessToken.count }.by(1)
+        expect { execute }.to change(OauthAccessToken, :count).by(1)
       end
 
       it 'creates oauth token with correct application id' do
         execute
 
-        created_oauth_token = Doorkeeper::AccessToken.find_by_token('foo_token')
+        created_oauth_token = OauthAccessToken.by_token('foo_token')
 
         expect(created_oauth_token.application_id).to eq(oauth_app.id)
       end

@@ -17,7 +17,7 @@ RSpec.describe API::Scim do
   end
 
   def scim_api(url, token: true)
-    api(url, user, version: '', oauth_access_token: token ? scim_token : nil)
+    api(url, user, version: '', access_token: token ? scim_token : nil)
   end
 
   shared_examples 'SCIM token authenticated' do

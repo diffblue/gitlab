@@ -12,7 +12,7 @@ RSpec.describe 'Rack Attack EE throttles' do
   shared_examples_for 'incident management rate limiting' do
     let(:settings) { Gitlab::CurrentSettings.current_application_settings }
 
-    let(:token) { double(token: '123456') }
+    let(:token) { double(plaintext_token: '123456') }
     let(:period) { period_in_seconds.seconds }
 
     let(:settings_to_set) do
