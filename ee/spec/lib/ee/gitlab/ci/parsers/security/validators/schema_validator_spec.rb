@@ -5,18 +5,8 @@ require 'spec_helper'
 RSpec.describe Gitlab::Ci::Parsers::Security::Validators::SchemaValidator do
   let_it_be(:project) { create(:project) }
 
-  using RSpec::Parameterized::TableSyntax
-
-  where(:report_type, :expected_errors, :expected_warnings, :valid_data) do
-    :cluster_image_scanning     | ['root is missing required keys: vulnerabilities']                   | lazy { expected_warnings_array } | { 'version' => '10.0.0', 'vulnerabilities' => [] }
-    :container_scanning         | ['root is missing required keys: vulnerabilities']                   | lazy { expected_warnings_array } | { 'version' => '10.0.0', 'vulnerabilities' => [] }
-    :coverage_fuzzing           | ['root is missing required keys: vulnerabilities']                   | lazy { expected_warnings_array } | { 'version' => '10.0.0', 'vulnerabilities' => [] }
-    :dast                       | ['root is missing required keys: vulnerabilities']                   | lazy { expected_warnings_array } | { 'version' => '10.0.0', 'vulnerabilities' => [] }
-    :dependency_scanning        | ['root is missing required keys: dependency_files, vulnerabilities'] | lazy { expected_warnings_array } | { 'version' => '10.0.0', 'vulnerabilities' => [], 'dependency_files' => [] }
-    :api_fuzzing                | ['root is missing required keys: vulnerabilities']                   | lazy { expected_warnings_array } | { 'version' => '10.0.0', 'vulnerabilities' => [] }
-  end
-
   let(:supported_schema_versions) { %w[14.1.0] }
+  let(:validator) { described_class.new(report_type, report_data, report_data['version'], project: project) }
   let(:supported_hash) do
     {
       cluster_image_scanning: supported_schema_versions,
@@ -40,15 +30,63 @@ RSpec.describe Gitlab::Ci::Parsers::Security::Validators::SchemaValidator do
     }
   end
 
+  let(:report_type) { :dast }
+  let(:valid_data) do
+    {
+      "version" => "14.1.0",
+      "vulnerabilities" => []
+    }
+  end
+
+  let(:valid_data_for_dependency_scanning) do
+    valid_data['dependency_files'] = []
+    valid_data
+  end
+
+  let(:expected_missing_key_message) do
+    'root is missing required keys: vulnerabilities'
+  end
+
+  let(:expected_malformed_version_message) do
+    "property '/version' does not match pattern: ^[0-9]+\\.[0-9]+\\.[0-9]+$"
+  end
+
+  let(:expected_unsupported_message) do
+    "Version #{report_data['version']} for report type #{report_type} is unsupported, supported versions for"\
+    " this report type are: #{supported_versions}. GitLab will attempt to validate this report against the earliest"\
+    " supported versions of this report type, to show all the errors but will not ingest the report"
+  end
+
+  let(:expected_error_messages) do
+    [expected_missing_key_message, expected_unsupported_message, expected_malformed_version_message]
+  end
+
+  let(:expected_missing_key_message_for_dependency_scanning) do
+    'root is missing required keys: dependency_files, vulnerabilities'
+  end
+
+  let(:expected_error_messages_for_dependency_scanning) do
+    [expected_missing_key_message_for_dependency_scanning, expected_unsupported_message, expected_malformed_version_message]
+  end
+
   before do
     stub_const("#{described_class}::SUPPORTED_VERSIONS", supported_hash)
     stub_const("#{described_class}::DEPRECATED_VERSIONS", deprecations_hash)
   end
 
-  with_them do
-    let(:validator) { described_class.new(report_type, report_data, valid_data['version'], project: project) }
+  using RSpec::Parameterized::TableSyntax
 
-    describe '#valid?' do
+  where(:report_type, :expected_errors, :report_data) do
+    :cluster_image_scanning | ref(:expected_error_messages) | ref(:valid_data)
+    :container_scanning | ref(:expected_error_messages) | ref(:valid_data)
+    :coverage_fuzzing | ref(:expected_error_messages) | ref(:valid_data)
+    :dast | ref(:expected_error_messages) | ref(:valid_data)
+    :dependency_scanning | ref(:expected_error_messages_for_dependency_scanning) | ref(:valid_data_for_dependency_scanning)
+    :api_fuzzing | ref(:expected_error_messages) | ref(:valid_data)
+  end
+
+  with_them do
+    describe "#valid?" do
       subject { validator.valid? }
 
       context 'when given data is invalid according to the schema' do
@@ -58,8 +96,6 @@ RSpec.describe Gitlab::Ci::Parsers::Security::Validators::SchemaValidator do
       end
 
       context 'when given data is valid according to the schema' do
-        let(:report_data) { valid_data }
-
         it { is_expected.to be_truthy }
       end
     end
@@ -70,23 +106,29 @@ RSpec.describe Gitlab::Ci::Parsers::Security::Validators::SchemaValidator do
       let(:supported_versions) { described_class::SUPPORTED_VERSIONS[report_type].join(", ") }
 
       context 'when report uses a deprecated version' do
-        let(:report_data) { valid_data }
+        let(:report_data) do
+          valid_data['version'] = deprecated_schema_versions.first
+          valid_data
+        end
 
-        let(:expected_deprecation_warnings_array) do
+        let(:expected_deprecation_message) do
+          "Version 10.0.0 for report type #{report_type} has been deprecated, supported versions "\
+          "for this report type are: #{supported_versions}. GitLab will attempt to parse and ingest"\
+          " this report if valid."
+        end
+
+        let(:expected_deprecation_warnings) do
           [
-            "Version 10.0.0 for report type #{report_type} has been deprecated, supported versions for this report type are: #{supported_versions}"
+            expected_deprecation_message
           ]
         end
 
-        it { is_expected.to eq(expected_deprecation_warnings_array) }
+        it { is_expected.to eq(expected_deprecation_warnings) }
       end
 
       context 'when report uses a supported version' do
         let(:supported_version) { described_class::SUPPORTED_VERSIONS[report_type].first }
-        let(:report_data) do
-          valid_data['version'] = supported_version
-          valid_data
-        end
+        let(:report_data) { valid_data }
 
         it { is_expected.to eq([]) }
       end
@@ -96,26 +138,31 @@ RSpec.describe Gitlab::Ci::Parsers::Security::Validators::SchemaValidator do
       subject { validator.warnings }
 
       context 'when given data is valid according to the schema' do
-        let(:report_data) { valid_data }
         let(:supported_version) { described_class::SUPPORTED_VERSIONS[report_type].join(", ") }
-        let(:expected_warnings_array) { [] }
+        let(:expected_warnings) { [] }
 
         it { is_expected.to eq(expected_warnings) }
       end
 
       context 'when given data is invalid according to the schema' do
-        let(:report_data) { { 'version' => '10.0.0' } }
+        let(:report_data) { {} }
 
         it { is_expected.to be_empty }
       end
     end
 
     describe '#errors' do
-      let(:report_data) { { 'version' => '10.0.0' } }
-
       subject { validator.errors }
 
-      it { is_expected.to eq(expected_errors) }
+      let(:report_data) do
+        valid_data['version'] = "V2.1.3"
+        valid_data.delete('vulnerabilities')
+        valid_data
+      end
+
+      let(:supported_versions) { described_class::SUPPORTED_VERSIONS[report_type].join(", ") }
+
+      it { is_expected.to match_array(expected_errors) }
     end
   end
 end
