@@ -200,6 +200,7 @@ export default {
                 @click="() => handleRecentItemSelection(project)"
               >
                 <project-avatar
+                  :project-id="project.id"
                   :project-avatar-url="project.avatar_url"
                   :project-name="project.name"
                 />
@@ -222,6 +223,7 @@ export default {
                 @click="selectedProject = project"
               >
                 <project-avatar
+                  :project-id="project.id"
                   :project-avatar-url="project.avatar_url"
                   :project-name="project.name"
                 />

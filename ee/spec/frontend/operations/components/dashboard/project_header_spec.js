@@ -65,6 +65,7 @@ describe('project header component', () => {
 
       it('binds project', () => {
         expect(wrapper.findComponent(ProjectAvatar).props()).toMatchObject({
+          projectId: mockOneProject.id,
           projectName: mockOneProject.name,
           projectAvatarUrl: mockOneProject.avatar_url,
         });

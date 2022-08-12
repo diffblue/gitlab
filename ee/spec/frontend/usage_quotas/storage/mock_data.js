@@ -6,7 +6,7 @@ export const mockEmptyResponse = { data: { project: null } };
 
 export const projects = [
   {
-    id: '24',
+    id: 24,
     fullPath: 'h5bp/dummy-project',
     nameWithNamespace: 'H5bp / dummy project',
     avatarUrl: null,
@@ -30,7 +30,7 @@ export const projects = [
     repositorySizeExcess: 0,
   },
   {
-    id: '8',
+    id: 8,
     fullPath: 'h5bp/html5-boilerplate',
     nameWithNamespace: 'H5bp / Html5 Boilerplate',
     avatarUrl: null,
@@ -54,7 +54,7 @@ export const projects = [
     repositorySizeExcess: 0,
   },
   {
-    id: '80',
+    id: 80,
     fullPath: 'twit/twitter',
     nameWithNamespace: 'Twitter',
     avatarUrl: null,

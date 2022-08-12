@@ -78,6 +78,7 @@ export default {
       >
         <project-avatar
           class="gl-mr-3"
+          :project-id="project.id"
           :project-name="project.name"
           :project-avatar-url="project.avatarUrl"
         />

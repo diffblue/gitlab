@@ -54,6 +54,7 @@ export default {
     class="card-header gl-border-0 gl-py-3 gl-display-flex gl-align-items-center"
   >
     <project-avatar
+      :project-id="project.id"
       :project-name="project.name"
       :project-avatar-url="project.avatar_url"
       :size="24"

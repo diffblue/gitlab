@@ -78,6 +78,7 @@ export default {
             <gl-icon name="bookmark" />
           </div>
           <project-avatar
+            :project-id="project.id"
             :project-name="project.name"
             :project-avatar-url="project.avatarUrl"
             :size="32"

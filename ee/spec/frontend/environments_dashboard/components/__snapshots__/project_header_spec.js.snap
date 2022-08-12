@@ -10,7 +10,7 @@ exports[`Project Header matches the snapshot 1`] = `
     <project-avatar-stub
       class="gl-mr-3"
       projectavatarurl="/namespace-avatar"
-      projectid="0"
+      projectid="1"
       projectname="hello"
       size="24"
     />
@@ -34,7 +34,7 @@ exports[`Project Header matches the snapshot 1`] = `
     <project-avatar-stub
       class="gl-mr-3"
       projectavatarurl="/project-avatar"
-      projectid="0"
+      projectid="2"
       projectname="world"
       size="24"
     />

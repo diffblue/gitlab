@@ -174,7 +174,11 @@ describe('CreateIssueForm', () => {
       expect(dropdownItems).toHaveLength(mockProjects.length);
       expect(dropdownItem.text()).toContain(mockProjects[0].name);
       expect(dropdownItem.text()).toContain(mockProjects[0].namespace.name);
-      expect(dropdownItem.findComponent(ProjectAvatar).exists()).toBe(true);
+      expect(dropdownItem.findComponent(ProjectAvatar).props()).toMatchObject({
+        projectId: mockProjects[0].id,
+        projectName: mockProjects[0].name,
+        projectAvatarUrl: mockProjects[0].avatar_url,
+      });
     });
 
     it('renders dropdown contents without recent items when `recentItems` are empty', () => {

@@ -6,10 +6,12 @@ import ProjectAvatar from '~/vue_shared/components/project_avatar.vue';
 
 const mockProject = {
   namespace: {
+    id: 1,
     name: 'hello',
     full_path: 'hello',
     avatar_url: '/namespace-avatar',
   },
+  id: 2,
   name: 'world',
   remove_path: '/hello/world/remove',
   avatar_url: '/project-avatar',
@@ -42,6 +44,7 @@ describe('Project Header', () => {
     it('shows the project namespace avatar', () => {
       const projectNamespaceAvatar = wrapper.findAllComponents(ProjectAvatar).at(0);
       expect(projectNamespaceAvatar.props()).toMatchObject({
+        projectId: mockProject.namespace.id,
         projectName: mockProject.namespace.name,
         projectAvatarUrl: mockProject.namespace.avatar_url,
       });
@@ -58,6 +61,7 @@ describe('Project Header', () => {
     it('shows the project avatar', () => {
       const projectAvatar = wrapper.findAllComponents(ProjectAvatar).at(1);
       expect(projectAvatar.props()).toMatchObject({
+        projectId: mockProject.id,
         projectName: mockProject.name,
         projectAvatarUrl: mockProject.avatar_url,
       });

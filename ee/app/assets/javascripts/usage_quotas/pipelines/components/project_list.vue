@@ -64,6 +64,7 @@ export default {
       <template #cell(project)="{ item }">
         <div class="gl-display-flex gl-align-items-center">
           <project-avatar
+            :project-id="item.project.id"
             :project-name="item.project.nameWithNamespace"
             :project-avatar-url="item.project.avatarUrl"
             :size="32"
