@@ -31,8 +31,7 @@ module Mutations
       argument :title,
                GraphQL::Types::String,
                required: false,
-               description: 'Title of the iteration.',
-               deprecated: { reason: ITERATION_DEPRECATION_MESSAGE, milestone: '14.10' }
+               description: 'Title of the iteration.'
 
       argument :description,
                GraphQL::Types::String,
@@ -42,14 +41,12 @@ module Mutations
       argument :start_date,
                GraphQL::Types::String,
                required: false,
-               description: 'Start date of the iteration.',
-               deprecated: { reason: ITERATION_DEPRECATION_MESSAGE, milestone: '14.10' }
+               description: 'Start date of the iteration.'
 
       argument :due_date,
                GraphQL::Types::String,
                required: false,
-               description: 'End date of the iteration.',
-               deprecated: { reason: ITERATION_DEPRECATION_MESSAGE, milestone: '14.10' }
+               description: 'End date of the iteration.'
 
       def resolve(args)
         validate_arguments!(args)

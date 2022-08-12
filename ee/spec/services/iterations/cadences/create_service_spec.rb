@@ -50,13 +50,22 @@ RSpec.describe Iterations::Cadences::CreateService do
         end
 
         context 'create manual cadence' do
-          before do
-            params.merge!(automatic: false, duration_in_weeks: nil, iterations_in_advance: nil, start_date: nil)
-          end
+          context 'when duration_in_weeks: nil, start_date: nil and iterations_in_advance: nil' do
+            before do
+              params.merge!(automatic: false, duration_in_weeks: nil, iterations_in_advance: nil, start_date: nil)
+            end
 
-          it_behaves_like 'does not create an interation cadence', [
-            _('Manual iteration cadences are deprecated. Only automatic iteration cadences are allowed.')
-          ]
+            it 'creates an iteration cadence' do
+              expect(response).to be_success
+              expect(iteration_cadence).to be_persisted
+              expect(iteration_cadence.title).to eq('My iteration cadence')
+              expect(iteration_cadence.duration_in_weeks).to be_nil
+              expect(iteration_cadence.iterations_in_advance).to be_nil
+              expect(iteration_cadence.active).to eq(true)
+              expect(iteration_cadence.automatic).to eq(false)
+              expect(iteration_cadence.start_date).to be_nil
+            end
+          end
         end
 
         context 'create automatic cadence' do

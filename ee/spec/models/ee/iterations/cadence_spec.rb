@@ -35,41 +35,6 @@ RSpec.describe ::Iterations::Cadence, :freeze_time do
       it { is_expected.not_to validate_presence_of(:start_date) }
     end
 
-    describe 'cadence_is_automatic' do
-      context 'when creating a new cadence' do
-        it 'does not allow the creation of manul cadences' do
-          cadence = build(:iterations_cadence, automatic: false).tap { |cadence| cadence.valid? }
-
-          expect(cadence.errors.full_messages).to include(_('Manual iteration cadences are deprecated. Only automatic iteration cadences are allowed.'))
-        end
-      end
-
-      context 'when cadence already existed as manual' do
-        let_it_be(:manual_cadence, refind: true) { build(:iterations_cadence).tap { |cadence| cadence.save!(validate: false) } }
-
-        context 'when `automatic` is not updated' do
-          it 'allows to change other attributes' do
-            manual_cadence.assign_attributes(duration_in_weeks: 2, iterations_in_advance: 4)
-
-            expect(manual_cadence).to be_valid
-          end
-        end
-      end
-
-      context 'when cadence already existed as automatic' do
-        let_it_be(:automatic_cadence, refind: true) { create(:iterations_cadence) }
-
-        context 'when changing a cadence to manual' do
-          it 'adds a validation error' do
-            automatic_cadence.assign_attributes(duration_in_weeks: 2, iterations_in_advance: 4, automatic: false)
-
-            expect(automatic_cadence).to be_invalid
-            expect(automatic_cadence.errors.full_messages).to include(_('Manual iteration cadences are deprecated. Only automatic iteration cadences are allowed.'))
-          end
-        end
-      end
-    end
-
     shared_examples 'updating the start date is valid' do
       where(:prev_start_date, :new_start_date) do
         Date.current + 1.day  | Date.current
@@ -153,10 +118,24 @@ RSpec.describe ::Iterations::Cadence, :freeze_time do
   end
 
   describe 'callbacks' do
+    let_it_be(:group) { create(:group) }
+
+    context 'before_validation :reset_automation_params' do
+      let(:cadence) { create(:iterations_cadence, group: group, iterations_in_advance: 1, duration_in_weeks: 1, roll_over: true) }
+
+      context 'when converted to manual' do
+        it 'resets automation params', :aggregate_failures do
+          cadence.update!(automatic: false)
+
+          expect(cadence.iterations_in_advance).to eq(nil)
+          expect(cadence.duration_in_weeks).to eq(nil)
+          expect(cadence.roll_over).to eq(false)
+        end
+      end
+    end
+
     context 'after_commit' do
       context 'ensure_iterations_in_advance' do
-        let_it_be(:group) { create(:group) }
-
         let(:cadence) { create(:iterations_cadence, group: group) }
 
         it 'does not call CreateIterationsWorker when non-automation field is updated' do

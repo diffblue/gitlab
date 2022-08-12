@@ -5,9 +5,7 @@ module Mutations
     class Delete < BaseMutation
       graphql_name 'IterationDelete'
 
-      AUTOMATIC_CADENCE_ERROR = 'Deleting iterations from automatic iteration cadences is not allowed.' \
-                                ' This mutation will be removed in 16.0 when manual iteration management' \
-                                ' is removed.'
+      AUTOMATIC_CADENCE_ERROR = 'Deleting iterations from automatic iteration cadences is not allowed.'
 
       authorize :admin_iteration
 

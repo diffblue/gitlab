@@ -222,8 +222,6 @@ module EE
       (due_date - start_date + 1).to_i
     end
 
-    # TODO: this method should be removed when manual iteration management is removed.
-    # See https://gitlab.com/gitlab-org/gitlab/-/issues/356069 the deprecation issue.
     def set_iterations_cadence
       return if iterations_cadence
       # For now we support only group iterations
@@ -309,8 +307,6 @@ module EE
       iterations_cadence.update_iteration_sequences
     end
 
-    # TODO: this method should be removed when manual iteration management is removed.
-    # See https://gitlab.com/gitlab-org/gitlab/-/issues/356069 the deprecation issue.
     def find_or_create_default_cadence
       default_cadence = ::Iterations::Cadence.order(id: :asc).find_by(group: group, automatic: false)
       return default_cadence if default_cadence
@@ -318,8 +314,6 @@ module EE
       cadence_title = "#{group.name} Iterations"
       start_date = self.start_date || Date.today
 
-      # We need to skip validation as manual cadence creation is deprecated and not allowed.
-      # A manual cadence is created here so the iterations feature is not affected during the deprecation period.
       ::Iterations::Cadence.new(
         group: group,
         title: cadence_title,

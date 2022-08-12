@@ -54,7 +54,20 @@ RSpec.describe Iterations::CreateService do
             end
 
             expect(response.error?).to be_truthy
-            expect(errors.messages).to match({ due_date: ["can't be blank"], start_date: ["can't be blank"] })
+            expect(response.message).to eq('Error creating new iteration')
+          end
+
+          context 'when a non-existing iterations cadence id is given' do
+            let(:params) do
+              {
+                iterations_cadence_id: non_existing_record_id
+              }
+            end
+
+            it 'returns an error' do
+              expect(response).to be_error
+              expect(response.message).to eq('Iterations cadence not found')
+            end
           end
         end
 
@@ -129,18 +142,30 @@ RSpec.describe Iterations::CreateService do
 
       context 'with specific cadence being passed as param' do
         let_it_be(:user) { create(:user) }
-        let_it_be(:cadences) { create_list(:iterations_cadence, 2, group: group) }
-
-        let(:params) { base_params.merge(iterations_cadence_id: cadences.last.id) }
+        let_it_be(:auto_cadence) { create(:iterations_cadence, group: group) }
+        let_it_be(:manual_cadence) { create(:iterations_cadence, group: group, automatic: false) }
 
         before do
           parent.add_developer(user)
         end
 
-        it 'creates an iteration' do
-          expect(response).to be_success
-          expect(saved_iteration).to be_persisted
-          expect(saved_iteration.iterations_cadence_id).to eq(cadences.last.id)
+        context 'when the passed cadence uses automatic scheduling' do
+          let(:params) { base_params.merge(iterations_cadence_id: auto_cadence.id) }
+
+          it 'raises an error' do
+            expect(response).to be_error
+            expect(response.message).to eq('Iteration cannot be created for cadence')
+          end
+        end
+
+        context 'when the passed cadence uses manual scheduling' do
+          let(:params) { base_params.merge(iterations_cadence_id: manual_cadence.id) }
+
+          it 'creates an iteration' do
+            expect(response).to be_success
+            expect(saved_iteration).to be_persisted
+            expect(saved_iteration.iterations_cadence_id).to eq(manual_cadence.id)
+          end
         end
       end
 
