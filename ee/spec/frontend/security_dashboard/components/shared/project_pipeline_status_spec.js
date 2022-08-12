@@ -57,7 +57,7 @@ describe('Project Pipeline Status Component', () => {
 
     it('should show the timeAgoTooltip component', () => {
       const TimeComponent = findTimeAgoTooltip();
-      expect(TimeComponent.exists()).toBeTruthy();
+      expect(TimeComponent.exists()).toBe(true);
       expect(TimeComponent.props()).toStrictEqual({
         time: defaultPipeline.createdAt,
         cssClass: '',
@@ -67,7 +67,7 @@ describe('Project Pipeline Status Component', () => {
 
     it('should show the link component', () => {
       const GlLinkComponent = findLink();
-      expect(GlLinkComponent.exists()).toBeTruthy();
+      expect(GlLinkComponent.exists()).toBe(true);
       expect(GlLinkComponent.text()).toBe(`#${defaultPipeline.id}`);
       expect(GlLinkComponent.attributes('href')).toBe(defaultPipeline.path);
     });
