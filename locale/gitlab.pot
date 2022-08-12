@@ -11217,6 +11217,9 @@ msgstr ""
 msgid "Critical vulnerabilities present"
 msgstr ""
 
+msgid "Crm|Active"
+msgstr ""
+
 msgid "Crm|Contact"
 msgstr ""
 
