@@ -20720,8 +20720,6 @@ Vulnerability sort values.
 | ----- | ----------- |
 | <a id="vulnerabilitysortdetected_asc"></a>`detected_asc` | Detection timestamp in ascending order. |
 | <a id="vulnerabilitysortdetected_desc"></a>`detected_desc` | Detection timestamp in descending order. |
-| <a id="vulnerabilitysortreport_type_asc"></a>`report_type_asc` | Report Type in ascending order. |
-| <a id="vulnerabilitysortreport_type_desc"></a>`report_type_desc` | Report Type in descending order. |
 | <a id="vulnerabilitysortseverity_asc"></a>`severity_asc` | Severity in ascending order. |
 | <a id="vulnerabilitysortseverity_desc"></a>`severity_desc` | Severity in descending order. |
 
