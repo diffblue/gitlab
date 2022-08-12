@@ -1,0 +1,29 @@
+- page_title _('Domain Verification')
+
+%h1.page-title.gl-font-size-h-display
+  = _('Domain Verification')
+
+%p
+  = s_('DomainVerification|The following domains are configured for projects in this group. Users with email addresses that match a verified domain do not need to confirm their account.')
+  = link_to s_('DomainVerification|How do I configure a domain?'), help_page_path('user/project/pages/custom_domains_ssl_tls_certification/index', anchor: 'steps')
+
+%table.gl-table.gl-w-full
+  %thead
+    %tr
+      %th= _('Domain')
+      %th= _('Project')
+  %tbody
+    - if @domains.empty?
+      %tr
+        %td{ colspan: 2, class: 'gl-py-6! text-center' }
+          = s_('DomainVerification|No domains configured. Create a domain in a project in this group hierarchy.')
+    - @domains.each do |domain|
+      %tr
+        %td.gl-lg-w-30p{ id: "domain#{domain.id}" }
+
+          = link_to domain.domain, project_pages_domain_path(domain.project, domain.domain)
+          - text, status = domain.unverified? ? [_('Unverified'), :danger] : [_('Verified'), :success]
+          = gl_badge_tag text, variant: status, size: :sm
+        %td
+          - project = domain.project
+          = link_to project.full_path, project_path(project)

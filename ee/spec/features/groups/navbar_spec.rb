@@ -206,14 +206,14 @@ RSpec.describe 'Group navbar' do
     end
   end
 
-  context 'for owners' do
+  context 'for owners', :saas do
     before do
       group.add_owner(user)
       stub_group_wikis(false)
       stub_feature_flags(harbor_registry_integration: false)
       stub_feature_flags(observability_group_tab: false)
+      stub_licensed_features(domain_verification: true)
       sign_in(user)
-
       insert_package_nav(_('Kubernetes'))
     end
 
@@ -231,7 +231,7 @@ RSpec.describe 'Group navbar' do
 
     context 'when SAML SSO is available' do
       before do
-        stub_licensed_features(group_saml: true)
+        stub_licensed_features(group_saml: true, domain_verification: true)
 
         insert_after_nav_item(_('Security & Compliance'), new_nav_item: ci_cd_nav_item)
         insert_after_nav_item(_('Analytics'), new_nav_item: settings_nav_item)
@@ -266,7 +266,11 @@ RSpec.describe 'Group navbar' do
       end
 
       before do
-        stub_licensed_features(security_dashboard: true, group_level_compliance_dashboard: true)
+        stub_licensed_features(
+          security_dashboard: true,
+          group_level_compliance_dashboard: true,
+          domain_verification: true
+        )
 
         insert_after_nav_item(_('Security & Compliance'), new_nav_item: ci_cd_nav_item)
         insert_after_nav_item(_('Analytics'), new_nav_item: settings_nav_item)

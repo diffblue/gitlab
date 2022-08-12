@@ -112,6 +112,17 @@ RSpec.describe Gitlab::Auth::GroupSaml::User do
           expect { find_and_update }.to change { Identity.count }.by(1)
         end
 
+        context 'when a verified pages domain matches the user email domain', :saas do
+          before do
+            stub_licensed_features(domain_verification: true)
+            create(:pages_domain, project: create(:project, group: group), domain: info_hash[:email].split('@')[1])
+          end
+
+          it 'confirms the user' do
+            expect(find_and_update).to be_confirmed
+          end
+        end
+
         context 'when user attributes are present' do
           before do
             auth_hash[:extra][:raw_info] =

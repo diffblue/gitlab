@@ -109,6 +109,32 @@ RSpec.describe Sidebars::Groups::Menus::SettingsMenu do
       end
     end
 
+    describe 'domain verification', :saas do
+      let(:item_id) { :domain_verification }
+
+      context 'when domain verification is licensed' do
+        before do
+          stub_licensed_features(domain_verification: true)
+        end
+
+        it { is_expected.to be_present }
+
+        context 'when user cannot admin group' do
+          let(:user) { nil }
+
+          it { is_expected.to be_nil }
+        end
+      end
+
+      context 'when domain verification is not licensed' do
+        before do
+          stub_licensed_features(domain_verification: false)
+        end
+
+        it { is_expected.to be_nil }
+      end
+    end
+
     describe 'Webhooks menu' do
       let(:item_id) { :webhooks }
       let(:group_webhooks_enabled) { true }

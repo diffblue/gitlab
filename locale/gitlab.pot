@@ -13980,6 +13980,18 @@ msgstr ""
 msgid "Domain Name"
 msgstr ""
 
+msgid "Domain Verification"
+msgstr ""
+
+msgid "DomainVerification|How do I configure a domain?"
+msgstr ""
+
+msgid "DomainVerification|No domains configured. Create a domain in a project in this group hierarchy."
+msgstr ""
+
+msgid "DomainVerification|The following domains are configured for projects in this group. Users with email addresses that match a verified domain do not need to confirm their account."
+msgstr ""
+
 msgid "Don't have a group?"
 msgstr ""
 
