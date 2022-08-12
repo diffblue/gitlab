@@ -24,8 +24,8 @@ module EE
         redirect_to oauth_geo_auth_url(host: current_node_uri.host, port: current_node_uri.port, state: state)
       else
         if ::Feature.enabled?(:arkose_labs_login_challenge)
-          @arkose_labs_public_key ||= arkose_public_api_key # rubocop:disable Gitlab/ModuleWithInstanceVariables
-          @arkose_labs_domain ||= arkose_labs_domain # rubocop:disable Gitlab/ModuleWithInstanceVariables
+          @arkose_labs_public_key ||= ::Arkose::Settings.arkose_public_api_key # rubocop:disable Gitlab/ModuleWithInstanceVariables
+          @arkose_labs_domain ||= ::Arkose::Settings.arkose_labs_domain # rubocop:disable Gitlab/ModuleWithInstanceVariables
         end
 
         super
@@ -127,14 +127,6 @@ module EE
       add_gon_variables
 
       respond_with_navigational(resource) { render :new }
-    end
-
-    def arkose_public_api_key
-      ::Gitlab::CurrentSettings.arkose_labs_public_api_key || ENV['ARKOSE_LABS_PUBLIC_KEY']
-    end
-
-    def arkose_labs_domain
-      "#{::Gitlab::CurrentSettings.arkose_labs_namespace}-api.arkoselabs.com"
     end
   end
 end

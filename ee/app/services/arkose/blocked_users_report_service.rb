@@ -4,7 +4,7 @@ module Arkose
     NON_LEGIT_URL = 'https://customer-sessions.arkoselabs.com/nonlegit'
 
     def execute
-      return true unless arkose_public_api_key && arkose_private_api_key
+      return true unless Settings.arkose_public_api_key && Settings.arkose_private_api_key
 
       sessions = UserCustomAttribute.sessions
 
@@ -17,18 +17,10 @@ module Arkose
 
     def body(sessions)
       {
-        publicKey: arkose_public_api_key,
-        privateKey: arkose_private_api_key,
+        publicKey: Settings.arkose_public_api_key,
+        privateKey: Settings.arkose_private_api_key,
         sessions: sessions
       }.to_json
-    end
-
-    def arkose_public_api_key
-      Gitlab::CurrentSettings.arkose_labs_public_api_key || ENV['ARKOSE_LABS_PUBLIC_KEY']
-    end
-
-    def arkose_private_api_key
-      Gitlab::CurrentSettings.arkose_labs_private_api_key || ENV['ARKOSE_LABS_PRIVATE_KEY']
     end
   end
 end
