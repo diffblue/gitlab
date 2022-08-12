@@ -39912,7 +39912,7 @@ msgstr ""
 msgid "This commit was signed with a different user's verified signature."
 msgstr ""
 
-msgid "This commit was signed with a verified signature, but the committer email is %{strong_open}not verified%{strong_close} to belong to the same user."
+msgid "This commit was signed with a verified signature, but the committer email is not associated with the GPG Key."
 msgstr ""
 
 msgid "This commit was signed with an %{strong_open}unverified%{strong_close} signature."
