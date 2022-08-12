@@ -272,7 +272,7 @@ The expected registry behavior will be covered with integration tests, using a p
 
 Apart from unusual network and systems conditions, problematic migrations and data failures can also affect the database availability and, as a consequence, the registry availability.
 
-Database migrations will adhere to the same [development best practices](../../../development/database/) used for GitLab Rails, except Rails-specific methods and tools, as the registry is a Go application with no ORM, and migrations are therefore expressed with raw SQL statements. Regardless, all changes will require a review and approval from the Database team.
+Database migrations will adhere to the same [development best practices](../../../development/database/index.md) used for GitLab Rails, except Rails-specific methods and tools, as the registry is a Go application with no ORM, and migrations are therefore expressed with raw SQL statements. Regardless, all changes will require a review and approval from the Database team.
 
 Database migrations will be idempotent, with guard clauses used whenever necessary. It is also intended to guarantee that they are forward compatible. For a clustered environment, a node running registry version `N` should not cause any issues when the database schema is from version `N`+1.
 
