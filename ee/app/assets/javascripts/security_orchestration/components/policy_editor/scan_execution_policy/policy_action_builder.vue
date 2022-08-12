@@ -1,6 +1,7 @@
 <script>
 import { GlDropdown, GlDropdownItem, GlSprintf, GlForm } from '@gitlab/ui';
 import { s__ } from '~/locale';
+import { ACTION_THEN_LABEL, ACTION_AND_LABEL } from '../constants';
 import { DEFAULT_SCAN, TEMPORARY_LIST_OF_SCANS } from './constants';
 
 export default {
@@ -28,6 +29,9 @@ export default {
     };
   },
   computed: {
+    actionLabel() {
+      return this.actionIndex === 0 ? ACTION_THEN_LABEL : ACTION_AND_LABEL;
+    },
     dropdownItems() {
       return Object.entries(this.$options.SCANS);
     },
@@ -44,10 +48,10 @@ export default {
   <div class="gl-bg-gray-10 gl-rounded-base gl-px-5! gl-pt-5! gl-relative gl-pb-4">
     <gl-form inline @submit.prevent>
       <gl-sprintf :message="$options.i18n.humanizedTemplate">
-        <template #thenLabel="{ content }">
-          <label class="text-uppercase gl-font-lg gl-mr-3" data-testid="action-component-label">{{
-            content
-          }}</label>
+        <template #thenLabel>
+          <label class="text-uppercase gl-font-lg gl-mr-3" data-testid="action-component-label">
+            {{ actionLabel }}
+          </label>
         </template>
 
         <template #scan>

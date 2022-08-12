@@ -49,3 +49,6 @@ export const ACTIONS_LABEL = s__('SecurityOrchestration|Actions');
 
 export const RULE_IF_LABEL = __('if');
 export const RULE_OR_LABEL = __('or');
+
+export const ACTION_THEN_LABEL = __('then');
+export const ACTION_AND_LABEL = __('and');

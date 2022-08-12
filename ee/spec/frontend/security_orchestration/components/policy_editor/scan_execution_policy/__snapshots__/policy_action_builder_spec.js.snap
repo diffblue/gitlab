@@ -11,7 +11,9 @@ exports[`PolicyActionBuilder renders correctly with DAST as the default scanner 
       class="text-uppercase gl-font-lg gl-mr-3"
       data-testid="action-component-label"
     >
-      Then
+      
+          then
+        
     </label>
      Require a 
     <div

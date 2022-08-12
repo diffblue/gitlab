@@ -276,6 +276,7 @@ export default {
           :key="index"
           class="gl-mb-4"
           :init-action="action"
+          :action-index="index"
         />
 
         <div class="gl-bg-gray-10 gl-rounded-base gl-p-5 gl-mb-5">
