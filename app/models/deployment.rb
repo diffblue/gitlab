@@ -61,6 +61,7 @@ class Deployment < ApplicationRecord
 
   VISIBLE_STATUSES = %i[running success failed canceled blocked].freeze
   FINISHED_STATUSES = %i[success failed canceled].freeze
+  UPCOMING_STATUSES = %i[created blocked running].freeze
 
   state_machine :status, initial: :created do
     event :run do
