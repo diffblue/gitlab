@@ -1,4 +1,5 @@
 import { pick } from 'lodash';
+import normalize from 'mdurl/encode';
 import { unified } from 'unified';
 import remarkParse from 'remark-parse';
 import remarkGfm from 'remark-gfm';
@@ -36,7 +37,7 @@ const skipRenderingHandlers = {
       node.position,
       'a',
       {
-        href: definition.url,
+        href: normalize(definition.url ?? ''),
         identifier: node.identifier,
         isReference: 'true',
         title: definition.title,
@@ -51,7 +52,7 @@ const skipRenderingHandlers = {
       node.position,
       'img',
       {
-        src: definition.url,
+        src: normalize(definition.url ?? ''),
         alt: node.alt,
         identifier: node.identifier,
         isReference: 'true',

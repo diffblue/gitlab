@@ -194,6 +194,40 @@ console.log('Hola');
           }),
         );
       });
+
+      it('normalizes the urls extracted from the reference definitions', async () => {
+        const result = await markdownToAST(
+          `
+[gitlab][gitlab] and ![GitLab Logo][gitlab]
+
+[gitlab]: /url\\bar*baz
+          `,
+          ['linkReference', 'imageReference'],
+        );
+
+        expectInRoot(
+          result,
+          expect.objectContaining({
+            tagName: 'p',
+            children: expect.arrayContaining([
+              expect.objectContaining({
+                type: 'element',
+                tagName: 'a',
+                properties: expect.objectContaining({
+                  href: '/url%5Cbar*baz',
+                }),
+              }),
+              expect.objectContaining({
+                type: 'element',
+                tagName: 'img',
+                properties: expect.objectContaining({
+                  src: '/url%5Cbar*baz',
+                }),
+              }),
+            ]),
+          }),
+        );
+      });
     });
   });
 });

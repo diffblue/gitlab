@@ -187,7 +187,7 @@ const factorySpecs = {
   },
 };
 
-const SANITIZE_ALLOWLIST = ['level', 'identifier', 'numeric', 'language', 'url'];
+const SANITIZE_ALLOWLIST = ['level', 'identifier', 'numeric', 'language', 'url', 'isReference'];
 
 const sanitizeAttribute = (attributeName, attributeValue, hastNode) => {
   if (!attributeValue || SANITIZE_ALLOWLIST.includes(attributeName)) {
