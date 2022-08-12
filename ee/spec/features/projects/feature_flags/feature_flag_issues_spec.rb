@@ -33,8 +33,10 @@ RSpec.describe 'Feature flag issue links', :js do
     it 'user can link a feature flag to an issue' do
       visit(edit_project_feature_flag_path(project, feature_flag))
       add_linked_issue_button.click
-      fill_in 'add-related-issues-form-input', with: issue.to_reference
-      click_button 'Add'
+      fill_in 'add-related-issues-form-input', with: "#{issue.to_reference(project)} "
+      page.within('.linked-issues-card-body') do
+        click_button 'Add'
+      end
 
       expect(page).to have_text 'My Cool Linked Issue'
     end
