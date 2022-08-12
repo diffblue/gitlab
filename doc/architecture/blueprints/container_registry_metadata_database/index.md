@@ -148,7 +148,7 @@ The interaction between the registry and its clients, including GitLab Rails and
 
 Following the GitLab [Go standards and style guidelines](../../../development/go_guide), no ORM is used to manage the database, only the [`database/sql`](https://pkg.go.dev/database/sql) package from the Go standard library, a PostgreSQL driver ([`lib/pq`](https://pkg.go.dev/github.com/lib/pq?tab=doc)) and raw SQL queries, over a TCP connection pool.
 
-The design and development of the registry database adhere to the GitLab [database guidelines](../../../development/database/). Being a Go application, the required tooling to support the database will have to be developed, such as for running database migrations.
+The design and development of the registry database adhere to the GitLab [database guidelines](../../../development/database/index.md). Being a Go application, the required tooling to support the database will have to be developed, such as for running database migrations.
 
 Running *online* and [*post deployment*](../../../development/database/post_deployment_migrations.md) migrations is already supported by the registry CLI, as described in the [documentation](https://gitlab.com/gitlab-org/container-registry/-/blob/master/docs-gitlab/database-migrations.md).
 
