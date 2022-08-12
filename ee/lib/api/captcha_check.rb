@@ -26,7 +26,7 @@ module API
         if rate_limit_reached || !valid_username?(params[:username])
           present({ result: true }, with: Entities::CaptchaCheck)
         else
-          user = ::User.by_login(params[:username])
+          user = ::User.find_by_login(params[:username])
           present(::Users::CaptchaChallengeService.new(user).execute, with: Entities::CaptchaCheck)
         end
       end
