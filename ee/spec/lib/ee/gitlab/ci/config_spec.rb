@@ -3,8 +3,6 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Ci::Config do
-  include Ci::TemplateHelpers
-
   let_it_be(:ci_yml) do
     <<-EOS
     sample_job:

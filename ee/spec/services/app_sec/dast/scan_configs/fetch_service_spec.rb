@@ -3,8 +3,6 @@
 require 'spec_helper'
 
 RSpec.describe AppSec::Dast::ScanConfigs::FetchService do
-  include Ci::TemplateHelpers
-
   let_it_be(:user) { create(:user) }
   let_it_be(:namespace) { create(:namespace, owner: user) }
   let_it_be(:project) { create(:project, :repository, namespace: namespace) }
