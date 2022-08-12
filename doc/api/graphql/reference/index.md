@@ -20380,6 +20380,7 @@ State of a Sentry error.
 | <a id="servicetypepipelines_email_service"></a>`PIPELINES_EMAIL_SERVICE` | PipelinesEmailService type. |
 | <a id="servicetypepivotaltracker_service"></a>`PIVOTALTRACKER_SERVICE` | PivotaltrackerService type. |
 | <a id="servicetypeprometheus_service"></a>`PROMETHEUS_SERVICE` | PrometheusService type. |
+| <a id="servicetypepumble_service"></a>`PUMBLE_SERVICE` | PumbleService type. |
 | <a id="servicetypepushover_service"></a>`PUSHOVER_SERVICE` | PushoverService type. |
 | <a id="servicetyperedmine_service"></a>`REDMINE_SERVICE` | RedmineService type. |
 | <a id="servicetypeshimo_service"></a>`SHIMO_SERVICE` | ShimoService type. |
