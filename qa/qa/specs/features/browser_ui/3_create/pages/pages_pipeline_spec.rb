@@ -45,7 +45,7 @@ module QA
           pages.go_to_access_page
           page.driver.browser.switch_to.window(page.driver.browser.window_handles.last)
           Support::Waiter.wait_until(sleep_interval: 2, max_duration: 60, reload_page: page,
-          retry_on_exception: true) do
+                                     retry_on_exception: true) do
             expect(page).to have_content('Write an awesome description for your new site here.')
           end
         end
