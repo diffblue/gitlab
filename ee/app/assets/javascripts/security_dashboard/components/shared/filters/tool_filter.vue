@@ -1,6 +1,7 @@
 <script>
 import createFlash from '~/flash';
 import projectScannersQuery from 'ee/security_dashboard/graphql/queries/project_specific_scanners.query.graphql';
+import groupScannersQuery from 'ee/security_dashboard/graphql/queries/group_specific_scanners.query.graphql';
 import { getFormattedScanners } from 'ee/security_dashboard/helpers';
 import { DASHBOARD_TYPES } from 'ee/security_dashboard/store/constants';
 import SimpleFilter from './simple_filter.vue';
@@ -8,11 +9,16 @@ import FilterBody from './filter_body.vue';
 import FilterItem from './filter_item.vue';
 import { TOOL_FILTER_ERROR } from './constants';
 
-const DASHBOARD_QUERY = {
+const DASHBOARD_QUERIES = {
   [DASHBOARD_TYPES.PROJECT]: {
     query: projectScannersQuery,
-    pathName: 'fullPath',
+    fullPath: 'fullPath',
     dataType: 'project',
+  },
+  [DASHBOARD_TYPES.GROUP]: {
+    query: groupScannersQuery,
+    fullPath: 'fullPath',
+    dataType: 'group',
   },
 };
 
@@ -31,7 +37,7 @@ export default {
         return this.queryVariables;
       },
       update(data) {
-        const { dataType } = DASHBOARD_QUERY[this.dashboardType];
+        const { dataType } = DASHBOARD_QUERIES[this.dashboardType];
         const nodes = data[dataType]?.vulnerabilityScanners?.nodes;
 
         return nodes ? getFormattedScanners(nodes) : [];
@@ -58,10 +64,10 @@ export default {
       return this.vulnerabilityScanners;
     },
     query() {
-      return DASHBOARD_QUERY[this.dashboardType]?.query;
+      return DASHBOARD_QUERIES[this.dashboardType]?.query;
     },
     queryVariables() {
-      const fullPath = DASHBOARD_QUERY[this.dashboardType]?.pathName;
+      const { fullPath } = DASHBOARD_QUERIES[this.dashboardType];
 
       return { fullPath: this[fullPath] };
     },
