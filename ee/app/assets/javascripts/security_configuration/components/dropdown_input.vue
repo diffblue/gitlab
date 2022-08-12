@@ -117,7 +117,7 @@ export default {
     <template v-if="showCustomValueMessage" #description>
       <gl-sprintf :message="$options.i18n.CUSTOM_VALUE_MESSAGE">
         <template #anchor="{ content }">
-          <gl-link @click="resetToDefaultValue" v-text="content" />
+          <gl-link @click="resetToDefaultValue">{{ content }}</gl-link>
         </template>
       </gl-sprintf>
     </template>
