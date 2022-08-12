@@ -176,6 +176,14 @@ module EE
         requirements_report
       end
 
+      def collect_sbom_reports!(sbom_reports_list)
+        each_report(::Ci::JobArtifact.file_types_for_report(:sbom)) do |file_type, blob|
+          report = ::Gitlab::Ci::Reports::Sbom::Report.new
+          ::Gitlab::Ci::Parsers.fabricate!(file_type).parse!(blob, report)
+          sbom_reports_list.add_report(report)
+        end
+      end
+
       def ci_secrets_management_available?
         return false unless project
 

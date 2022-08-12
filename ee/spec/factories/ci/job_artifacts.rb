@@ -442,7 +442,7 @@ FactoryBot.define do
       after(:build) do |artifact, _|
         artifact.file = fixture_file_upload(
           Rails.root.join('ee/spec/fixtures/sbom/gl-sbom.cdx.zip'),
-          'application/json')
+          'application/zip')
       end
     end
   end
