@@ -44,5 +44,11 @@ export const INVALID_BRANCHES = s__(
 export const ADD_RULE_LABEL = s__('SecurityOrchestration|Add rule');
 export const RULES_LABEL = s__('SecurityOrchestration|Rules');
 
+export const ADD_ACTION_LABEL = s__('SecurityOrchestration|Add action');
+export const ACTIONS_LABEL = s__('SecurityOrchestration|Actions');
+
 export const RULE_IF_LABEL = __('if');
 export const RULE_OR_LABEL = __('or');
+
+export const ACTION_THEN_LABEL = __('then');
+export const ACTION_AND_LABEL = __('and');

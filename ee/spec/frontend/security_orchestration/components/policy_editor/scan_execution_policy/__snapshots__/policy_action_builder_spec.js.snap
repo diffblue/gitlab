@@ -1,0 +1,240 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`PolicyActionBuilder renders correctly with DAST as the default scanner 1`] = `
+<div
+  class="gl-bg-gray-10 gl-rounded-base gl-px-5! gl-pt-5! gl-relative gl-pb-4"
+>
+  <form
+    class="form-inline"
+  >
+    <label
+      class="text-uppercase gl-font-lg gl-mr-3"
+      data-testid="action-component-label"
+    >
+      
+          then
+        
+    </label>
+     Require a 
+    <div
+      class="dropdown b-dropdown gl-new-dropdown gl-mx-3 btn-group"
+      data-testid="action-scanner-text"
+      id="__BVID__6"
+    >
+      <!---->
+      <button
+        aria-expanded="false"
+        aria-haspopup="true"
+        class="btn dropdown-toggle btn-default btn-md gl-button gl-dropdown-toggle"
+        id="__BVID__6__BV_toggle_"
+        type="button"
+      >
+        <!---->
+         
+        <!---->
+         
+        <span
+          class="gl-new-dropdown-button-text"
+        >
+          DAST
+        </span>
+         
+        <svg
+          aria-hidden="true"
+          class="gl-button-icon dropdown-chevron gl-icon s16"
+          data-testid="chevron-down-icon"
+          role="img"
+        >
+          <use
+            href="#chevron-down"
+          />
+        </svg>
+      </button>
+      <ul
+        aria-labelledby="__BVID__6__BV_toggle_"
+        class="dropdown-menu"
+        role="menu"
+        tabindex="-1"
+      >
+        <div
+          class="gl-new-dropdown-inner"
+        >
+          <!---->
+           
+          <!---->
+           
+          <div
+            class="gl-new-dropdown-contents"
+          >
+            <!---->
+             
+            <li
+              class="gl-new-dropdown-item"
+              role="presentation"
+            >
+              <button
+                class="dropdown-item"
+                role="menuitem"
+                type="button"
+              >
+                <!---->
+                 
+                <!---->
+                 
+                <!---->
+                 
+                <div
+                  class="gl-new-dropdown-item-text-wrapper"
+                >
+                  <p
+                    class="gl-new-dropdown-item-text-primary"
+                  >
+                    
+            SAST
+          
+                  </p>
+                   
+                  <!---->
+                </div>
+                 
+                <!---->
+              </button>
+            </li>
+            <li
+              class="gl-new-dropdown-item"
+              role="presentation"
+            >
+              <button
+                class="dropdown-item"
+                role="menuitem"
+                type="button"
+              >
+                <!---->
+                 
+                <!---->
+                 
+                <!---->
+                 
+                <div
+                  class="gl-new-dropdown-item-text-wrapper"
+                >
+                  <p
+                    class="gl-new-dropdown-item-text-primary"
+                  >
+                    
+            DAST
+          
+                  </p>
+                   
+                  <!---->
+                </div>
+                 
+                <!---->
+              </button>
+            </li>
+            <li
+              class="gl-new-dropdown-item"
+              role="presentation"
+            >
+              <button
+                class="dropdown-item"
+                role="menuitem"
+                type="button"
+              >
+                <!---->
+                 
+                <!---->
+                 
+                <!---->
+                 
+                <div
+                  class="gl-new-dropdown-item-text-wrapper"
+                >
+                  <p
+                    class="gl-new-dropdown-item-text-primary"
+                  >
+                    
+            Secret Detection
+          
+                  </p>
+                   
+                  <!---->
+                </div>
+                 
+                <!---->
+              </button>
+            </li>
+            <li
+              class="gl-new-dropdown-item"
+              role="presentation"
+            >
+              <button
+                class="dropdown-item"
+                role="menuitem"
+                type="button"
+              >
+                <!---->
+                 
+                <!---->
+                 
+                <!---->
+                 
+                <div
+                  class="gl-new-dropdown-item-text-wrapper"
+                >
+                  <p
+                    class="gl-new-dropdown-item-text-primary"
+                  >
+                    
+            Container Scanning
+          
+                  </p>
+                   
+                  <!---->
+                </div>
+                 
+                <!---->
+              </button>
+            </li>
+            <li
+              class="gl-new-dropdown-item"
+              role="presentation"
+            >
+              <button
+                class="dropdown-item"
+                role="menuitem"
+                type="button"
+              >
+                <!---->
+                 
+                <!---->
+                 
+                <!---->
+                 
+                <div
+                  class="gl-new-dropdown-item-text-wrapper"
+                >
+                  <p
+                    class="gl-new-dropdown-item-text-primary"
+                  >
+                    
+            Cluster Image Scanning
+          
+                  </p>
+                   
+                  <!---->
+                </div>
+                 
+                <!---->
+              </button>
+            </li>
+          </div>
+           
+          <!---->
+        </div>
+      </ul>
+    </div>
+     scan to run
+  </form>
+</div>
+`;
