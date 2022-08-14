@@ -31,7 +31,7 @@ module Resolvers
 
     argument :environment_tiers, [Types::DeploymentTierEnum],
              required: false,
-             description: 'Deployment tiers of the environments to return. Defaults to [`PRODUCTION`].'
+             description: 'Deployment tiers of the environments to return. Defaults to `[PRODUCTION]`.'
 
     def resolve(params)
       # Backwards compatibility until %16.0
