@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Ci::BuildFinishedWorker do
   let_it_be(:ci_runner) { create(:ci_runner) }
-  let_it_be(:build) { create(:ee_ci_build, :sast, :success, runner: ci_runner) }
+  let_it_be_with_reload(:build) { create(:ee_ci_build, :sast, :success, runner: ci_runner) }
   let_it_be(:project) { build.project }
   let_it_be(:namespace) { project.shared_runners_limit_namespace }
 
@@ -34,13 +34,10 @@ RSpec.describe Ci::BuildFinishedWorker do
       end
 
       context 'when exception is raised in `super`' do
-        before do
-          allow(::BuildHooksWorker)
-            .to receive(:perform_async)
-            .and_raise(ArgumentError)
-        end
-
         it 'does not enqueue the worker in EE' do
+          allow(Ci::Build).to receive(:find_by_id).with(build.id).and_return(build)
+          allow(build).to receive(:execute_hooks).and_raise(ArgumentError)
+
           expect { subject }.to raise_error(ArgumentError)
 
           expect(::Security::TrackSecureScansWorker).not_to receive(:perform_async)
@@ -105,14 +102,6 @@ RSpec.describe Ci::BuildFinishedWorker do
         project.add_reporter(user)
       end
 
-      shared_examples 'schedules processing of requirement reports' do
-        it do
-          expect(RequirementsManagement::ProcessRequirementsReportsWorker).to receive(:perform_async)
-
-          subject
-        end
-      end
-
       shared_examples 'does not schedule processing of requirement reports' do
         it do
           expect(RequirementsManagement::ProcessRequirementsReportsWorker).not_to receive(:perform_async)
@@ -126,7 +115,11 @@ RSpec.describe Ci::BuildFinishedWorker do
           stub_licensed_features(requirements: true)
         end
 
-        it_behaves_like 'schedules processing of requirement reports'
+        it 'schedules processing of requirement reports' do
+          expect(RequirementsManagement::ProcessRequirementsReportsWorker).to receive(:perform_async)
+
+          subject
+        end
 
         context 'when user has insufficient permissions to create test reports' do
           before do
