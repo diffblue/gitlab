@@ -1,5 +1,5 @@
 import { SCAN_EXECUTION_PIPELINE_RULE, SCAN_EXECUTION_SCHEDULE_RULE } from '../constants';
-import { CRONE_DEFAULT_TIME } from './cron';
+import { CRON_DEFAULT_TIME } from './cron';
 
 export function buildDefaultPipeLineRule() {
   return {
@@ -12,7 +12,7 @@ export function buildDefaultScheduleRule() {
   return {
     type: SCAN_EXECUTION_SCHEDULE_RULE,
     branches: [],
-    cadence: CRONE_DEFAULT_TIME,
+    cadence: CRON_DEFAULT_TIME,
   };
 }
 

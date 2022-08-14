@@ -10,7 +10,7 @@ import {
   SCAN_EXECUTION_RULE_PERIOD_TYPE,
 } from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/constants';
 import {
-  CRONE_DEFAULT_TIME,
+  CRON_DEFAULT_TIME,
   DAYS,
   HOUR_MINUTE_LIST,
 } from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/lib';
@@ -21,7 +21,7 @@ describe('ScheduleRuleComponent', () => {
   const initRule = {
     type: SCAN_EXECUTION_SCHEDULE_RULE,
     branches: [],
-    cadence: CRONE_DEFAULT_TIME,
+    cadence: CRON_DEFAULT_TIME,
   };
 
   const createComponent = (options = {}) => {
@@ -31,6 +31,7 @@ describe('ScheduleRuleComponent', () => {
         ruleLabel,
         ...options,
       },
+      stubs: { GlDropdownItems: true },
     });
   };
 
@@ -89,7 +90,7 @@ describe('ScheduleRuleComponent', () => {
       expect(eventPayload[0]).toEqual({
         type: SCAN_EXECUTION_SCHEDULE_RULE,
         branches: branches.split(','),
-        cadence: CRONE_DEFAULT_TIME,
+        cadence: CRON_DEFAULT_TIME,
       });
     });
   });
@@ -118,7 +119,7 @@ describe('ScheduleRuleComponent', () => {
             namespaces: ['namespace1', 'namespace2', 'namespace3'],
           },
         },
-        cadence: CRONE_DEFAULT_TIME,
+        cadence: CRON_DEFAULT_TIME,
       });
     });
   });

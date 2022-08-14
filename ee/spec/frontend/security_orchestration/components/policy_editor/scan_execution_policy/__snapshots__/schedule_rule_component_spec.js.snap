@@ -2,7 +2,7 @@
 
 exports[`ScheduleRuleComponent default component state renders correctly default state of schedule rule 1`] = `
 <div
-  class="gl-bg-gray-10 gl-rounded-base px-3 pt-3 gl-relative gl-pb-4"
+  class="gl-bg-gray-10 gl-rounded-base gl-px-3 gl-pt-3 gl-relative gl-pb-4"
 >
   <div
     class="gl-w-full gl-display-flex gl-gap-3 gl-align-items-center gl-flex-wrap"

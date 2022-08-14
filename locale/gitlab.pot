@@ -34299,7 +34299,13 @@ msgstr ""
 msgid "Saving project."
 msgstr ""
 
+msgid "ScanExecutionPolicy|%{ifLabelStart}if%{ifLabelEnd} %{rules} actions for the %{scopes} %{branches} %{namespaceLabel}"
+msgstr ""
+
 msgid "ScanExecutionPolicy|%{ifLabelStart}if%{ifLabelEnd} %{rules} for the %{branches} branch(es)"
+msgstr ""
+
+msgid "ScanExecutionPolicy|%{period} %{days} at %{time}"
 msgstr ""
 
 msgid "ScanExecutionPolicy|%{thenLabelStart}Then%{thenLabelEnd} Require a %{scan} scan to run"
@@ -34314,7 +34320,22 @@ msgstr ""
 msgid "ScanExecutionPolicy|Schedule rule component"
 msgstr ""
 
+msgid "ScanExecutionPolicy|Select agents"
+msgstr ""
+
 msgid "ScanExecutionPolicy|Select branches"
+msgstr ""
+
+msgid "ScanExecutionPolicy|Select namespaces"
+msgstr ""
+
+msgid "ScanExecutionPolicy|branch"
+msgstr ""
+
+msgid "ScanExecutionPolicy|cluster"
+msgstr ""
+
+msgid "ScanExecutionPolicy|in namespaces"
 msgstr ""
 
 msgid "ScanResultPolicy|%{ifLabelStart}if%{ifLabelEnd} %{scanners} find(s) more than %{vulnerabilitiesAllowed} %{severities} %{vulnerabilityStates} vulnerabilities in an open merge request targeting %{branches}"
@@ -46213,6 +46234,9 @@ msgstr ""
 msgid "created by"
 msgstr ""
 
+msgid "daily"
+msgstr ""
+
 msgid "data"
 msgstr ""
 
@@ -47527,6 +47551,9 @@ msgid "vulnerability|dismissed"
 msgstr ""
 
 msgid "was scheduled to merge after pipeline succeeds by"
+msgstr ""
+
+msgid "weekly"
 msgstr ""
 
 msgid "wiki page"

@@ -19,7 +19,6 @@ import PolicyEditorLayout from '../policy_editor_layout.vue';
 import DimDisableContainer from '../dim_disable_container.vue';
 import { assignSecurityPolicyProject, modifyPolicy } from '../utils';
 import PolicyRuleBuilder from './policy_rule_builder.vue';
-import { DEFAULT_SCAN_EXECUTION_POLICY, fromYaml, toYaml, buildDefaultPipeLineRule } from './lib';
 import PolicyActionBuilder from './policy_action_builder.vue';
 import {
   buildDefaultAction,

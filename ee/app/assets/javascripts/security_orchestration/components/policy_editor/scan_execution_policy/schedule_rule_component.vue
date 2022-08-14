@@ -5,10 +5,10 @@ import { slugify } from '~/lib/utils/text_utility';
 import {
   DAYS,
   HOUR_MINUTE_LIST,
-  CRONE_DEFAULT_TIME,
-  CRONE_DEFAULT_DAY,
-  setCroneTime,
-  parseCroneTime,
+  CRON_DEFAULT_TIME,
+  CRON_DEFAULT_DAY,
+  setCronTime,
+  parseCronTime,
   isCronDaily,
 } from './lib';
 import {
@@ -55,8 +55,8 @@ export default {
   data() {
     return {
       selectedRule: this.$options.SCAN_EXECUTION_RULES_LABELS.schedule,
-      selectedTime: parseCroneTime(this.initRule.cadence).time,
-      selectedDay: parseCroneTime(this.initRule.cadence).day,
+      selectedTime: parseCronTime(this.initRule.cadence).time,
+      selectedDay: parseCronTime(this.initRule.cadence).day,
       selectedDayIndex: 0,
       selectedTimeIndex: 0,
       croneString: this.initRule.cadence,
@@ -159,7 +159,7 @@ export default {
     },
     setPeriodSelected(key) {
       this.selectedPeriod = this.$options.SCAN_EXECUTION_RULE_PERIOD_TYPE[key];
-      this.croneString = this.isCronDaily ? CRONE_DEFAULT_TIME : CRONE_DEFAULT_DAY;
+      this.croneString = this.isCronDaily ? CRON_DEFAULT_TIME : CRON_DEFAULT_DAY;
       this.resetTime();
       this.triggerChanged({ cadence: this.croneString });
     },
@@ -174,7 +174,7 @@ export default {
       this.setCroneString({ time: this.selectedTimeIndex, day: key });
     },
     setCroneString({ day, time }) {
-      this.croneString = setCroneTime({ time, day });
+      this.croneString = setCronTime({ time, day });
       this.triggerChanged({ cadence: this.croneString });
     },
     setScopeSelected(key) {
@@ -190,7 +190,7 @@ export default {
 </script>
 
 <template>
-  <div class="gl-bg-gray-10 gl-rounded-base px-3 pt-3 gl-relative gl-pb-4">
+  <div class="gl-bg-gray-10 gl-rounded-base gl-px-3 gl-pt-3 gl-relative gl-pb-4">
     <div class="gl-w-full gl-display-flex gl-gap-3 gl-align-items-center gl-flex-wrap">
       <gl-sprintf :message="$options.i18n.scanResultExecutionCopy">
         <template #ifLabel>

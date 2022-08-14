@@ -3,9 +3,10 @@ export { toYaml } from './to_yaml';
 export * from './humanize';
 export * from './rules';
 export * from './cron';
+export * from './actions';
 
 export const DEFAULT_SCAN_EXECUTION_POLICY = `type: scan_execution_policy
-name: null
+name: ''
 description: ''
 enabled: true
 rules:

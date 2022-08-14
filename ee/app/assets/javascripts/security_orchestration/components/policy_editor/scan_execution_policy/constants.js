@@ -1,4 +1,4 @@
-import { s__ } from '~/locale';
+import { __, s__ } from '~/locale';
 import {
   SAST_SHORT_NAME,
   DAST_SHORT_NAME,
@@ -18,13 +18,13 @@ export const SCAN_EXECUTION_SCHEDULE_RULE = 'schedule';
 export const DEFAULT_AGENT_NAME = 'default';
 
 export const SCAN_EXECUTION_RULE_SCOPE_TYPE = {
-  branch: s__('ScanResultPolicy|branch'),
-  cluster: s__('ScanResultPolicy|cluster'),
+  branch: s__('ScanExecutionPolicy|branch'),
+  cluster: s__('ScanExecutionPolicy|cluster'),
 };
 
 export const SCAN_EXECUTION_RULE_PERIOD_TYPE = {
-  daily: s__('ScanResultPolicy|daily'),
-  weekly: s__('ScanResultPolicy|weekly'),
+  daily: __('daily'),
+  weekly: __('weekly'),
 };
 
 export const DEFAULT_SCAN = 'dast';

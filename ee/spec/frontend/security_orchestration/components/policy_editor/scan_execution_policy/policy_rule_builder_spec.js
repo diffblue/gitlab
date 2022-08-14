@@ -9,7 +9,7 @@ import {
   SCAN_EXECUTION_PIPELINE_RULE,
   SCAN_EXECUTION_SCHEDULE_RULE,
 } from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/constants';
-import { CRONE_DEFAULT_TIME } from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/lib';
+import { CRON_DEFAULT_TIME } from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/lib';
 
 describe('PolicyRuleBuilder', () => {
   let wrapper;
@@ -67,7 +67,7 @@ describe('PolicyRuleBuilder', () => {
       initRule: {
         type: SCAN_EXECUTION_SCHEDULE_RULE,
         branches: [],
-        cadence: CRONE_DEFAULT_TIME,
+        cadence: CRON_DEFAULT_TIME,
       },
     });
 
