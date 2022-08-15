@@ -12,6 +12,7 @@ export const testIdentifiers = [
 ];
 
 export const generateNote = ({ id = 1295 } = {}) => ({
+  __typename: 'Note',
   id: `gid://gitlab/DiscussionNote/${id}`,
   body: 'Created a note.',
   bodyHtml: '\u003cp\u003eCreated a note\u003c/p\u003e',
@@ -22,6 +23,7 @@ export const generateNote = ({ id = 1295 } = {}) => ({
     adminNote: true,
   },
   author: {
+    __typename: 'UserCore',
     id: 'gid://gitlab/User/1',
     name: 'Administrator',
     username: 'root',

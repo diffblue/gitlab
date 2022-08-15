@@ -135,6 +135,7 @@ export const mockStages = [
     name: 'build',
     title: 'build: passed',
     status: {
+      __typename: 'DetailedStatus',
       id: 'success-409-409',
       icon: 'status_success',
       text: 'passed',

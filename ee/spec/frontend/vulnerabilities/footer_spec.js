@@ -123,14 +123,14 @@ describe('Vulnerability Footer', () => {
 
       expect(findDiscussions().at(0).props()).toMatchObject({
         discussion: {
-          ...discussion1,
+          ...addTypenamesToDiscussion(discussion1),
           notes: [normalizeGraphQLNote(discussion1.notes.nodes[0])],
         },
       });
 
       expect(findDiscussions().at(1).props()).toStrictEqual({
         discussion: {
-          ...discussion2,
+          ...addTypenamesToDiscussion(discussion2),
           notes: [normalizeGraphQLNote(discussion2.notes.nodes[0])],
         },
       });

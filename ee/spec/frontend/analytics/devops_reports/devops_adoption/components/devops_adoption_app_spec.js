@@ -247,19 +247,17 @@ describe('DevopsAdoptionApp', () => {
         describe('enables the group', () => {
           it('makes a request with the correct variables', () => {
             expect(enableNamespacesMutationSpy).toHaveBeenCalledTimes(1);
-            expect(enableNamespacesMutationSpy).toHaveBeenCalledWith(
-              expect.toEqualGraphqlFixture({
-                namespaceIds: [groupGid],
-                displayNamespaceId: groupGid,
-              }),
-            );
+            expect(enableNamespacesMutationSpy).toHaveBeenCalledWith({
+              namespaceIds: [groupGid],
+              displayNamespaceId: groupGid,
+            });
           });
 
           it('calls addEnabledNamespacesToCache with the correct variables', () => {
             expect(addEnabledNamespacesToCache).toHaveBeenCalledTimes(1);
             expect(addEnabledNamespacesToCache).toHaveBeenCalledWith(
               expect.anything(),
-              [expect.toEqualGraphqlFixture(devopsAdoptionNamespaceData.nodes[0])],
+              [devopsAdoptionNamespaceData.nodes[0]],
               {
                 displayNamespaceId: groupGid,
               },

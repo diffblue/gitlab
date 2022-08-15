@@ -227,7 +227,7 @@ describe('BaseTab', () => {
       const table = findTable();
 
       expect(table.exists()).toBe(true);
-      expect(table.props('items')).toEqualGraphqlFixture(
+      expect(table.props('items')).toEqual(
         allPipelinesWithPipelinesMock.data.project.pipelines.nodes,
       );
     });

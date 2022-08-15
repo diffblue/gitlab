@@ -21,6 +21,7 @@ const TEST_SEARCH = 'search';
 const TEST_FULL_PATH = 'gitlab-test/test';
 const TEST_ITERATIONS = [
   {
+    __typename: 'Iteration',
     id: '11',
     title: 'Test Title',
     startDate: '2021-10-01',
@@ -33,6 +34,7 @@ const TEST_ITERATIONS = [
     },
   },
   {
+    __typename: 'Iteration',
     id: '22',
     title: null,
     startDate: '2021-10-06',
@@ -45,6 +47,7 @@ const TEST_ITERATIONS = [
     },
   },
   {
+    __typename: 'Iteration',
     id: '33',
     title: null,
     startDate: '2021-10-11',

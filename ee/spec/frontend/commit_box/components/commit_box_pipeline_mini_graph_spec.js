@@ -126,6 +126,7 @@ describe('Commit box pipeline mini graph', () => {
         {
           name: stage.name,
           status: {
+            __typename: 'DetailedStatus',
             id: stage.status.id,
             icon: stage.status.icon,
             group: stage.status.group,
