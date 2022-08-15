@@ -21736,10 +21736,16 @@ msgstr ""
 msgid "Is using seat"
 msgstr ""
 
+msgid "IssuableStatus|%{wi_type} created %{created_at} by "
+msgstr ""
+
 msgid "IssuableStatus|Closed"
 msgstr ""
 
 msgid "IssuableStatus|Closed (%{link})"
+msgstr ""
+
+msgid "IssuableStatus|Created %{created_at} by"
 msgstr ""
 
 msgid "IssuableStatus|duplicated"
@@ -44362,7 +44368,13 @@ msgstr ""
 msgid "WorkItem|Expand child items"
 msgstr ""
 
+msgid "WorkItem|Incident"
+msgstr ""
+
 msgid "WorkItem|Introducing tasks"
+msgstr ""
+
+msgid "WorkItem|Issue"
 msgstr ""
 
 msgid "WorkItem|Learn about tasks"
@@ -44375,6 +44387,9 @@ msgid "WorkItem|Open"
 msgstr ""
 
 msgid "WorkItem|Remove"
+msgstr ""
+
+msgid "WorkItem|Requirements"
 msgstr ""
 
 msgid "WorkItem|Select type"
@@ -44407,7 +44422,13 @@ msgstr ""
 msgid "WorkItem|Something went wrong while updating the work item. Please try again."
 msgstr ""
 
+msgid "WorkItem|Task"
+msgstr ""
+
 msgid "WorkItem|Task deleted"
+msgstr ""
+
+msgid "WorkItem|Test case"
 msgstr ""
 
 msgid "WorkItem|Turn off confidentiality"
