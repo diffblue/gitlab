@@ -242,16 +242,16 @@ export default {
           :can-update="canUpdate"
           @error="error = $event"
         />
-        <work-item-weight
-          v-if="workItemWeight"
-          class="gl-mb-5"
-          :can-update="canUpdate"
-          :weight="workItemWeight.weight"
-          :work-item-id="workItem.id"
-          :work-item-type="workItemType"
-          @error="error = $event"
-        />
       </template>
+      <work-item-weight
+        v-if="workItemWeight"
+        class="gl-mb-5"
+        :can-update="canUpdate"
+        :weight="workItemWeight.weight"
+        :work-item-id="workItem.id"
+        :work-item-type="workItemType"
+        @error="error = $event"
+      />
       <work-item-description
         v-if="hasDescriptionWidget"
         :work-item-id="workItem.id"
