@@ -45,7 +45,7 @@ describe('Action buttons', () => {
         wrapper.findComponent(GlModal).vm.$emit('primary');
         await nextTick();
 
-        expect(wrapper.emitted().delete).toBeTruthy();
+        expect(wrapper.emitted().delete).toHaveLength(1);
       });
     });
   });
@@ -72,7 +72,7 @@ describe('Action buttons', () => {
         wrapper.findComponent(GlModal).vm.$emit('primary');
         await nextTick();
 
-        expect(wrapper.emitted().delete).toBeTruthy();
+        expect(wrapper.emitted().delete).toHaveLength(1);
       });
     });
   });
