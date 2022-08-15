@@ -146,9 +146,7 @@ describe('Scheduled tab', () => {
       const dastScanScheduleComponent = scheduleCell.findComponent(DastScanSchedule);
 
       expect(dastScanScheduleComponent.exists()).toBe(true);
-      expect(dastScanScheduleComponent.props('schedule')).toEqualGraphqlFixture(
-        firstProfile.dastProfileSchedule,
-      );
+      expect(dastScanScheduleComponent.props('schedule')).toEqual(firstProfile.dastProfileSchedule);
     });
   });
 });

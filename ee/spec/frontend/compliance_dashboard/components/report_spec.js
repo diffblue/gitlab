@@ -250,7 +250,7 @@ describe('ComplianceReport component', () => {
 
       expect(findViolationReason().props()).toMatchObject({
         reason,
-        user: stripTypenames(violatingUser),
+        user: violatingUser,
       });
     });
 
@@ -278,10 +278,10 @@ describe('ComplianceReport component', () => {
 
           expect(findMergeRequestDrawer().props('showDrawer')).toBe(true);
           expect(findMergeRequestDrawer().props('mergeRequest')).toStrictEqual(
-            stripTypenames(drawerData.mergeRequest),
+            drawerData.mergeRequest,
           );
           expect(findMergeRequestDrawer().props('project')).toStrictEqual(
-            stripTypenames(drawerData.mergeRequest.project),
+            drawerData.mergeRequest.project,
           );
         });
 
@@ -302,10 +302,10 @@ describe('ComplianceReport component', () => {
 
           expect(findMergeRequestDrawer().props('showDrawer')).toBe(true);
           expect(findMergeRequestDrawer().props('mergeRequest')).toStrictEqual(
-            stripTypenames(drawerData.mergeRequest),
+            drawerData.mergeRequest,
           );
           expect(findMergeRequestDrawer().props('project')).toStrictEqual(
-            stripTypenames(drawerData.mergeRequest.project),
+            drawerData.mergeRequest.project,
           );
         });
       });

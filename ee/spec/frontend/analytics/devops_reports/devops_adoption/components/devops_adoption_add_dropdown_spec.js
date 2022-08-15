@@ -175,7 +175,7 @@ describe('DevopsAdoptionAddDropdown', () => {
             it('emits the enabledNamespacesAdded event', () => {
               const [params] = wrapper.emitted().enabledNamespacesAdded[0];
 
-              expect(params).toEqualGraphqlFixture([devopsAdoptionNamespaceData.nodes[0]]);
+              expect(params).toEqual([devopsAdoptionNamespaceData.nodes[0]]);
             });
           } else {
             it('makes a request to disable the selected group', () => {

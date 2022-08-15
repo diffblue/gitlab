@@ -156,6 +156,7 @@ describe('List', () => {
         expect(item.props()).toStrictEqual(
           expect.objectContaining({
             framework: {
+              __typename: 'ComplianceFramework',
               id: expect.stringContaining('gid://gitlab/ComplianceManagement::Framework/'),
               parsedId: expect.any(Number),
               name: expect.any(String),

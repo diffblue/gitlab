@@ -7,7 +7,6 @@ import App from 'ee/security_configuration/api_fuzzing/components/app.vue';
 import ConfigurationForm from 'ee/security_configuration/api_fuzzing/components/configuration_form.vue';
 import apiFuzzingCiConfigurationQuery from 'ee/security_configuration/api_fuzzing/graphql/api_fuzzing_ci_configuration.query.graphql';
 import ConfigurationPageLayout from 'ee/security_configuration/components/configuration_page_layout.vue';
-import { stripTypenames } from 'helpers/graphql_helpers';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { apiFuzzingConfigurationQueryResponse } from '../mock_data';
 
@@ -75,7 +74,7 @@ describe('EE - ApiFuzzingConfigurationApp', () => {
 
     it('passes the configuration to the form', () => {
       expect(findConfigurationForm().props('apiFuzzingCiConfiguration')).toEqual(
-        stripTypenames(apiFuzzingConfigurationQueryResponse.data.project.apiFuzzingCiConfiguration),
+        apiFuzzingConfigurationQueryResponse.data.project.apiFuzzingCiConfiguration,
       );
     });
 

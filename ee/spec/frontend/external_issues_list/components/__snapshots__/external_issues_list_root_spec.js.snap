@@ -23,8 +23,10 @@ Object {
   "issuableSymbol": "#",
   "issuables": Array [
     Object {
+      "__typename": "JiraIssue",
       "assignees": Array [
         Object {
+          "__typename": "UserCore",
           "avatarUrl": null,
           "id": "user-2",
           "name": "Kushal Pandya",
@@ -32,6 +34,7 @@ Object {
         },
       ],
       "author": Object {
+        "__typename": "UserCore",
         "avatarUrl": null,
         "id": 0,
         "name": "jhope",
@@ -44,6 +47,7 @@ Object {
       "id": 31596,
       "labels": Array [
         Object {
+          "__typename": "Label",
           "color": "#0052CC",
           "id": "label-1",
           "name": "backend",
@@ -61,8 +65,10 @@ Object {
       "webUrl": "https://gitlab-jira.atlassian.net/browse/IG-31596",
     },
     Object {
+      "__typename": "JiraIssue",
       "assignees": Array [],
       "author": Object {
+        "__typename": "UserCore",
         "avatarUrl": null,
         "id": 1,
         "name": "Gabe Weaver",
@@ -84,8 +90,10 @@ Object {
       "webUrl": "https://gitlab-jira.atlassian.net/browse/IG-31595",
     },
     Object {
+      "__typename": "JiraIssue",
       "assignees": Array [],
       "author": Object {
+        "__typename": "UserCore",
         "avatarUrl": null,
         "id": 2,
         "name": "Gabe Weaver",

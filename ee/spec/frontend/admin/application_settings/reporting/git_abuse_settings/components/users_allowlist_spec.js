@@ -97,9 +97,7 @@ describe('Users Allowlist component', () => {
       expect(searchQueryHandlerSuccess).toHaveBeenCalled();
 
       expect(findUserSelector().props('selectedTokens')).toHaveLength(1);
-
-      const { __typename, ...expectedUser } = mockUser1;
-      expect(findUserSelector().props('selectedTokens')[0]).toEqual(expectedUser);
+      expect(findUserSelector().props('selectedTokens')[0]).toEqual(mockUser1);
     });
   });
 
