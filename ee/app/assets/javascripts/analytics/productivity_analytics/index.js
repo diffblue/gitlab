@@ -121,6 +121,8 @@ export default () => {
         // let's unbind attached event handlers first and reset the template
         if (filterManager) {
           filterManager.cleanup();
+
+          // eslint-disable-next-line no-unsanitized/property
           searchBarContainer.innerHTML = issueFilterHtml;
         }
 

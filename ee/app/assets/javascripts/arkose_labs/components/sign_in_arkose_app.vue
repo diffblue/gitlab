@@ -180,6 +180,7 @@ export default {
 
       if (val) {
         const label = __('Loading');
+        // eslint-disable-next-line no-unsanitized/property
         button.innerHTML = `
           ${LOADING_ICON.outerHTML}
           ${label}
