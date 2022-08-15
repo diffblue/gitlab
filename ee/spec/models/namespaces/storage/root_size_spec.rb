@@ -113,6 +113,14 @@ RSpec.describe Namespaces::Storage::RootSize, :saas do
 
       it { is_expected.to eq(current_size) }
     end
+
+    context 'when there are no root_storage_statistics' do
+      let(:create_statistics) { nil }
+
+      it 'returns zero' do
+        expect(model.current_size).to eq(0)
+      end
+    end
   end
 
   describe '#limit' do
