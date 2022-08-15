@@ -15,7 +15,7 @@ jest.mock('~/flash');
 describe('SettingsFormContainer', () => {
   let wrapper;
 
-  const GROUP_ID = 99;
+  const GROUP_FULL_PATH = 'the-group';
   const MAX_DOWNLOADS = 10;
   const TIME_PERIOD = 300;
   const ALLOWLIST = ['user1', 'user2'];
@@ -23,7 +23,7 @@ describe('SettingsFormContainer', () => {
   const createComponent = () => {
     wrapper = shallowMountExtended(SettingsFormContainer, {
       propsData: {
-        groupId: GROUP_ID,
+        groupFullPath: GROUP_FULL_PATH,
         maxDownloads: MAX_DOWNLOADS,
         timePeriod: TIME_PERIOD,
         allowlist: ALLOWLIST,
@@ -60,7 +60,7 @@ describe('SettingsFormContainer', () => {
       wrapper.findComponent(SettingsForm).vm.$emit('submit', payload);
 
       expect(updateGroupSettings).toHaveBeenCalledTimes(1);
-      expect(updateGroupSettings).toHaveBeenCalledWith(GROUP_ID, {
+      expect(updateGroupSettings).toHaveBeenCalledWith(GROUP_FULL_PATH, {
         unique_project_download_limit: MAX_DOWNLOADS,
         unique_project_download_limit_interval_in_seconds: TIME_PERIOD,
         unique_project_download_limit_allowlist: ALLOWLIST,

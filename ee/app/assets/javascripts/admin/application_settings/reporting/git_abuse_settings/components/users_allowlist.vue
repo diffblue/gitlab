@@ -3,6 +3,7 @@ import { GlTokenSelector, GlAvatarLabeled } from '@gitlab/ui';
 
 import getUsersByUsernames from '~/graphql_shared/queries/get_users_by_usernames.query.graphql';
 import searchUsersQuery from '~/graphql_shared/queries/users_search_all.query.graphql';
+import searchGroupUsers from '~/graphql_shared/queries/group_users_search.query.graphql';
 
 import createFlash from '~/flash';
 import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
@@ -24,6 +25,7 @@ export default {
     SEARCH_TERM_TOO_SHORT,
     NO_RESULTS,
   },
+  inject: { groupFullPath: { default: '' } },
   props: {
     excludedUsernames: {
       type: Array,
@@ -60,16 +62,21 @@ export default {
     },
     users: {
       query() {
-        return searchUsersQuery;
+        return this.groupFullPath ? searchGroupUsers : searchUsersQuery;
       },
       variables() {
         return {
           search: this.search,
           first: USERS_PER_PAGE,
+          fullPath: this.groupFullPath,
         };
       },
       update(data) {
-        return data?.users?.nodes || [];
+        const users = this.groupFullPath
+          ? data?.workspace?.users?.nodes?.map((groupMember) => groupMember.user)
+          : data?.users?.nodes;
+
+        return users || [];
       },
       error(error) {
         createFlash({

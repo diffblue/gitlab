@@ -33,3 +33,30 @@ export const searchUsersResponse = {
     },
   },
 };
+
+export const groupMembersResponse = {
+  data: {
+    workspace: {
+      id: '1',
+      __typename: 'Group',
+      users: {
+        nodes: [
+          {
+            id: 'user-1',
+            user: {
+              ...mockUser1,
+              status: { availability: 'BUSY' },
+            },
+          },
+          {
+            id: 'user-2',
+            user: {
+              ...mockUser2,
+              status: { availability: 'BUSY' },
+            },
+          },
+        ],
+      },
+    },
+  },
+};
