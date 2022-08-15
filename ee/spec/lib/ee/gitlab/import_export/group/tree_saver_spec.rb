@@ -181,6 +181,28 @@ RSpec.describe Gitlab::ImportExport::Group::TreeSaver do
         )
       )
     end
+
+    context 'iteration cadences relation' do
+      it 'saves iteration cadences with iterations', :aggregated_failures do
+        cadence = create(:iterations_cadence, group: group, description: 'description')
+        iteration = create(:iteration, group: group, iterations_cadence: cadence)
+
+        expect_successful_save(group_tree_saver)
+
+        cadence_data = read_association(group, 'iterations_cadences').first
+        iteration_data = cadence_data['iterations'].first
+
+        expect(cadence_data).to include(
+          'title' => cadence.title,
+          'description' => cadence.description,
+          'active' => cadence.active,
+          'automatic' => cadence.automatic,
+          'duration_in_weeks' => cadence.duration_in_weeks
+        )
+
+        expect(iteration_data).to include('iid' => iteration.iid)
+      end
+    end
   end
 
   def exported_path_for(file)

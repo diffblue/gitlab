@@ -84,5 +84,26 @@ RSpec.describe Gitlab::ImportExport::Group::TreeRestorer do
         expect(board.milestone).to be_nil
       end
     end
+
+    context 'iteration candences', :aggregated_failures do
+      it 'has cadence information' do
+        cadence = group.iterations_cadences.first
+
+        expect(cadence.title).to eq('title')
+        expect(cadence.description).to eq('description')
+        expect(cadence.active).to eq(true)
+        expect(cadence.automatic).to eq(true)
+        expect(cadence.roll_over).to eq(false)
+      end
+
+      it 'has iterations within cadences' do
+        iteration = group.iterations_cadences.first.iterations.first
+
+        expect(iteration.iid).to eq(1)
+        expect(iteration.title).to be_nil
+        expect(iteration.state).to eq('closed')
+        expect(iteration.description).to eq('description')
+      end
+    end
   end
 end
