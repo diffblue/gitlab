@@ -6,7 +6,8 @@ module Types
     graphql_name 'Dora'
     description 'All information related to DORA metrics.'
 
-    field :metrics, [::Types::DoraMetricType], null: true,
+    field :metrics, [::Types::DoraMetricType],
+      null: true,
       resolver: ::Resolvers::DoraMetricsResolver,
       description: 'DORA metrics for the current group or project.'
   end

@@ -9,19 +9,20 @@ module Types
 
         authorize :read_group_compliance_dashboard
 
-        field :id, GraphQL::Types::ID, null: false, description: 'Compliance violation ID.'
+        field :id, GraphQL::Types::ID,
+          null: false, description: 'Compliance violation ID.'
 
-        field :severity_level, ComplianceViolationSeverityEnum, null: false,
-          description: 'Severity of the compliance violation.'
+        field :severity_level, ComplianceViolationSeverityEnum,
+          null: false, description: 'Severity of the compliance violation.'
 
-        field :reason, ComplianceViolationReasonEnum, null: false,
-          description: 'Reason the compliance violation occurred.'
+        field :reason, ComplianceViolationReasonEnum,
+          null: false, description: 'Reason the compliance violation occurred.'
 
-        field :violating_user, ::Types::UserType, null: false,
-          description: 'User suspected of causing the compliance violation.'
+        field :violating_user, ::Types::UserType,
+          null: false, description: 'User suspected of causing the compliance violation.'
 
-        field :merge_request, ::Types::MergeRequestType, null: false,
-          description: 'Merge request the compliance violation occurred in.'
+        field :merge_request, ::Types::MergeRequestType,
+          null: false, description: 'Merge request the compliance violation occurred in.'
       end
     end
   end

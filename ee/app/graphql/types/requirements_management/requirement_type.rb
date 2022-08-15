@@ -16,40 +16,35 @@ module Types
 
       field :title, GraphQL::Types::String, null: true, description: 'Title of the requirement.'
 
-      field :description, GraphQL::Types::String, null: true,
-            description: 'Description of the requirement.'
+      field :description, GraphQL::Types::String,
+        null: true, description: 'Description of the requirement.'
 
-      field :state, RequirementsManagement::RequirementStateEnum, null: false,
-            description: 'State of the requirement.'
+      field :state, RequirementsManagement::RequirementStateEnum,
+        null: false, description: 'State of the requirement.'
 
-      field :last_test_report_state,
-            RequirementsManagement::TestReportStateEnum,
-            null: true,
-            description: 'Latest requirement test report state.'
+      field :last_test_report_state, RequirementsManagement::TestReportStateEnum,
+        null: true, description: 'Latest requirement test report state.'
 
-      field :last_test_report_manually_created,
-            GraphQL::Types::Boolean,
-            method: :last_test_report_manually_created?,
-            null: true,
-            description: 'Indicates if latest test report was created by user.'
+      field :last_test_report_manually_created, GraphQL::Types::Boolean,
+        method: :last_test_report_manually_created?, null: true,
+        description: 'Indicates if latest test report was created by user.'
 
-      field :project, ProjectType, null: false,
-            description: 'Project to which the requirement belongs.'
+      field :project, ProjectType,
+        null: false, description: 'Project to which the requirement belongs.'
 
-      field :author, UserType, null: false,
-            description: 'Author of the requirement.'
+      field :author, UserType,
+        null: false, description: 'Author of the requirement.'
 
-      field :test_reports,
-            TestReportType.connection_type,
-            null: true, complexity: 5,
-            description: 'Test reports of the requirement.',
-            resolver: Resolvers::RequirementsManagement::TestReportsResolver
+      field :test_reports, TestReportType.connection_type,
+        null: true, complexity: 5,
+        resolver: Resolvers::RequirementsManagement::TestReportsResolver,
+        description: 'Test reports of the requirement.'
 
-      field :created_at, Types::TimeType, null: false,
-            description: 'Timestamp of when the requirement was created.'
+      field :created_at, Types::TimeType,
+        null: false, description: 'Timestamp of when the requirement was created.'
 
-      field :updated_at, Types::TimeType, null: false,
-            description: 'Timestamp of when the requirement was last updated.'
+      field :updated_at, Types::TimeType,
+        null: false, description: 'Timestamp of when the requirement was last updated.'
 
       markdown_field :title_html, null: true
       markdown_field :description_html, null: true
