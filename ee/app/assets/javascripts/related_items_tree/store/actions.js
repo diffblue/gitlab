@@ -4,6 +4,7 @@ import axios from '~/lib/utils/axios_utils';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import httpStatusCodes from '~/lib/utils/http_status';
 import { s__, __ } from '~/locale';
+import Tracking from '~/tracking';
 import {
   issuableTypesMap,
   itemAddFailureTypesMap,
@@ -12,13 +13,26 @@ import {
 } from '~/related_issues/constants';
 import epicChildren from '../queries/epic_children.query.graphql';
 
-import { ChildType, ChildState, idProp, relativePositions, trackingAddedIssue } from '../constants';
+import {
+  ChildType,
+  ChildState,
+  idProp,
+  relativePositions,
+  trackingAddedIssue,
+  SNOWPLOW_EPIC_ACTIVITY,
+} from '../constants';
 
 import epicChildReorder from '../queries/epic_child_reorder.mutation.graphql';
 import { processQueryResponse, formatChildItem, gqClient } from '../utils/epic_utils';
 
 import * as types from './mutation_types';
 
+const trackEpicActivity = (params) => {
+  Api.trackRedisHllUserEvent(trackingAddedIssue);
+
+  const { CATEGORY, ACTION, LABEL } = SNOWPLOW_EPIC_ACTIVITY;
+  Tracking.event(CATEGORY, ACTION, { label: LABEL, property: trackingAddedIssue, ...params });
+};
 export const setInitialConfig = ({ commit }, data) => commit(types.SET_INITIAL_CONFIG, data);
 
 export const setInitialParentItem = ({ commit }, data) =>
@@ -334,7 +348,8 @@ export const addItem = ({ state, dispatch, getters }) => {
       issuable_references: state.pendingReferences,
     })
     .then(({ data }) => {
-      Api.trackRedisHllUserEvent(trackingAddedIssue);
+      trackEpicActivity({ namespace: state.parentItem?.groupId });
+
       dispatch('receiveAddItemSuccess', {
         // Newly added item is always first in the list
         rawItems: data.issuables.slice(0, state.pendingReferences.length),
@@ -568,7 +583,9 @@ export const createNewIssue = ({ state, dispatch }, { issuesEndpoint, title }) =
   return axios
     .post(issuesEndpoint, { epic_id: epicId, title })
     .then(({ data }) => {
-      Api.trackRedisHllUserEvent(trackingAddedIssue);
+      const { author, epic } = data;
+      trackEpicActivity({ user: author?.id, namespace: epic?.group_id });
+
       dispatch('receiveCreateIssueSuccess', data);
       dispatch('fetchItems', {
         parentItem,

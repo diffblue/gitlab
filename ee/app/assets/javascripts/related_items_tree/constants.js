@@ -61,6 +61,12 @@ export const issueHealthStatusCSSMapping = {
 
 export const trackingAddedIssue = 'g_project_management_users_epic_issue_added_from_epic';
 
+export const SNOWPLOW_EPIC_ACTIVITY = {
+  CATEGORY: 'epics_action',
+  ACTION: 'perform_epics_action',
+  LABEL: 'redis_hll_counters.epics_usage.epics_usage_total_unique_counts_monthly',
+};
+
 export const ITEM_TABS = {
   TREE: 'tree',
   ROADMAP: 'roadmap',

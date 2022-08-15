@@ -1,11 +1,18 @@
 import MockAdapter from 'axios-mock-adapter';
 import mockProjects from 'test_fixtures_static/projects.json';
-import { ChildType, ChildState } from 'ee/related_items_tree/constants';
+import {
+  ChildType,
+  ChildState,
+  SNOWPLOW_EPIC_ACTIVITY,
+  trackingAddedIssue,
+} from 'ee/related_items_tree/constants';
 import * as actions from 'ee/related_items_tree/store/actions';
 import * as types from 'ee/related_items_tree/store/mutation_types';
 import createDefaultState from 'ee/related_items_tree/store/state';
 
 import * as epicUtils from 'ee/related_items_tree/utils/epic_utils';
+
+import Tracking from '~/tracking';
 
 import testAction from 'helpers/vuex_action_helper';
 import { TEST_HOST } from 'spec/test_constants';
@@ -1038,6 +1045,31 @@ describe('RelatedItemTree', () => {
           );
         });
 
+        it('should track Snowplow event', async () => {
+          jest.spyOn(Tracking, 'event');
+          state.epicsEndpoint = '/foo/bar';
+          state.parentItem = { groupId: 1 };
+
+          const getters = {
+            isEpic: true,
+          };
+
+          mock.onPost(state.epicsEndpoint).replyOnce(200, { issuables: [] });
+
+          actions.addItem({ state, dispatch: () => {}, getters });
+          await axios.waitForAll();
+
+          expect(Tracking.event).toHaveBeenCalledWith(
+            SNOWPLOW_EPIC_ACTIVITY.CATEGORY,
+            SNOWPLOW_EPIC_ACTIVITY.ACTION,
+            {
+              label: SNOWPLOW_EPIC_ACTIVITY.LABEL,
+              property: trackingAddedIssue,
+              namespace: 1,
+            },
+          );
+        });
+
         it('should dispatch `requestAddItem` and `receiveAddItemFailure` actions on request failure', () => {
           state.issuableType = issuableTypesMap.EPIC;
           state.epicsEndpoint = '/foo/bar';
@@ -1624,6 +1656,29 @@ describe('RelatedItemTree', () => {
         });
 
         describe('for successful request', () => {
+          it('should track Snowplow event', async () => {
+            jest.spyOn(Tracking, 'event');
+            state.parentItem = { id: '1' };
+            const data = { author: { id: 1 }, epic: { group_id: 2 } };
+
+            axiosMock.reset();
+            axiosMock.onPost(issuesEndpoint).replyOnce(200, data);
+
+            actions.createNewIssue({ state, dispatch: () => {} }, { issuesEndpoint, title: '' });
+            await axios.waitForAll();
+
+            expect(Tracking.event).toHaveBeenCalledWith(
+              SNOWPLOW_EPIC_ACTIVITY.CATEGORY,
+              SNOWPLOW_EPIC_ACTIVITY.ACTION,
+              {
+                label: SNOWPLOW_EPIC_ACTIVITY.LABEL,
+                property: trackingAddedIssue,
+                namespace: 2,
+                user: 1,
+              },
+            );
+          });
+
           beforeEach(() => {
             requestSpy.mockReturnValue([201, '']);
           });
