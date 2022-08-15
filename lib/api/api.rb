@@ -167,6 +167,7 @@ module API
 
       # Keep in alphabetical order
       mount ::API::AccessRequests
+      mount ::API::Admin::BatchedBackgroundMigrations
       mount ::API::Admin::Ci::Variables
       mount ::API::Admin::InstanceClusters
       mount ::API::Admin::PlanLimits
@@ -176,9 +177,7 @@ module API
       mount ::API::Applications
       mount ::API::Avatar
       mount ::API::AwardEmoji
-      mount ::API::BackgroundMigrations
       mount ::API::Badges
-      mount ::API::BatchedBackgroundMigrations
       mount ::API::Boards
       mount ::API::Branches
       mount ::API::BroadcastMessages

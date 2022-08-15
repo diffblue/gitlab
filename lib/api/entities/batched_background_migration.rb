@@ -6,9 +6,8 @@ module API
       expose :id
       expose :job_class_name
       expose :table_name
-      expose :status do |background_migration|
-        background_migration.status_name
-      end
+      expose :status, &:status_name
+      expose :progress
       expose :created_at
     end
   end
