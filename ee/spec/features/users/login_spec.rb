@@ -247,7 +247,7 @@ RSpec.describe 'Login' do
 
         # Mock the webauthn procedure to neither reject or resolve, just do nothing
         # Using the built-in credentials.get functionality would result in an SecurityError
-        # as these tests are executed using an IP-adress as effective domain
+        # as these tests are executed using an IP-address as effective domain
         page.execute_script <<~JS
           navigator.credentials.get = function() {
             return new Promise((resolve) => {

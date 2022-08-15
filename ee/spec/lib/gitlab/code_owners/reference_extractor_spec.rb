@@ -16,7 +16,7 @@ RSpec.describe Gitlab::CodeOwners::ReferenceExtractor do
   subject(:extractor) { described_class.new(text) }
 
   describe '#emails' do
-    it 'includes all mentioned email adresses' do
+    it 'includes all mentioned email addresses' do
       expect(extractor.emails).to contain_exactly('user@gitlab.org', 'other-user@gitlab.org')
     end
   end
