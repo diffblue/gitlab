@@ -7,7 +7,7 @@ RSpec.describe Namespaces::FreeUserCap::PreviewAlertComponent, :saas, :aggregate
   let_it_be(:content_class) { '_content_class_' }
 
   let(:preview_free_user_cap_over?) { true }
-  let(:title) { 'From October 19, 2022, free groups will be limited' }
+  let(:title) { 'From October 19, 2022, free private groups will be limited' }
 
   subject(:component) { described_class.new(namespace: namespace, user: user, content_class: content_class) }
 
@@ -26,32 +26,32 @@ RSpec.describe Namespaces::FreeUserCap::PreviewAlertComponent, :saas, :aggregate
       it 'has content for the preview alert' do
         render_inline(component)
 
-        expect(rendered_component).to have_selector(".#{content_class}")
-        expect(rendered_component).to have_content(title)
-        expect(rendered_component).to have_link('Manage members', href: group_usage_quotas_path(namespace))
-        expect(rendered_component).to have_link('Explore paid plans', href: group_billings_path(namespace))
-        expect(rendered_component).to have_link('Over limit status', href: described_class::BLOG_URL)
-        expect(rendered_component)
+        expect(page).to have_selector(".#{content_class}")
+        expect(page).to have_content(title)
+        expect(page).to have_link('Manage members', href: group_usage_quotas_path(namespace))
+        expect(page).to have_link('Explore paid plans', href: group_billings_path(namespace))
+        expect(page).to have_link('Over limit status', href: described_class::BLOG_URL)
+        expect(page)
           .to have_css("[data-testid='user-over-limit-free-plan-alert']" \
-                         "[data-dismiss-endpoint='#{group_callouts_path}']" \
-                         "[data-feature-id='#{described_class::PREVIEW_USER_OVER_LIMIT_FREE_PLAN_ALERT}']" \
-                         "[data-group-id='#{namespace.id}']")
+                       "[data-dismiss-endpoint='#{group_callouts_path}']" \
+                       "[data-feature-id='#{described_class::PREVIEW_USER_OVER_LIMIT_FREE_PLAN_ALERT}']" \
+                       "[data-group-id='#{namespace.id}']")
       end
 
       it 'renders all the expected tracking items' do
         render_inline(component)
 
-        expect(rendered_component).to have_css('.js-user-over-limit-free-plan-alert[data-track-action="render"]' \
-                                                 '[data-track-label="user_limit_banner"]')
-        expect(rendered_component).to have_css('[data-testid="user-over-limit-free-plan-dismiss"]' \
-                                                 '[data-track-action="dismiss_banner"]' \
-                                                 '[data-track-label="user_limit_banner"]')
-        expect(rendered_component).to have_css('[data-testid="user-over-limit-primary-cta"]' \
-                                                 '[data-track-action="click_button"]' \
-                                                 '[data-track-label="manage_members"]')
-        expect(rendered_component).to have_css('[data-testid="user-over-limit-secondary-cta"]' \
-                                                 '[data-track-action="click_button"]' \
-                                                 '[data-track-label="explore_paid_plans"]')
+        expect(page).to have_css('.js-user-over-limit-free-plan-alert[data-track-action="render"]' \
+                                 '[data-track-label="user_limit_banner"]')
+        expect(page).to have_css('[data-testid="user-over-limit-free-plan-dismiss"]' \
+                                 '[data-track-action="dismiss_banner"]' \
+                                 '[data-track-label="user_limit_banner"]')
+        expect(page).to have_css('[data-testid="user-over-limit-primary-cta"]' \
+                                 '[data-track-action="click_button"]' \
+                                 '[data-track-label="manage_members"]')
+        expect(page).to have_css('[data-testid="user-over-limit-secondary-cta"]' \
+                                 '[data-track-action="click_button"]' \
+                                 '[data-track-label="explore_paid_plans"]')
       end
 
       context 'when alert has been dismissed' do
@@ -67,7 +67,7 @@ RSpec.describe Namespaces::FreeUserCap::PreviewAlertComponent, :saas, :aggregate
           it 'does not render the alert' do
             render_inline(component)
 
-            expect(rendered_component).not_to have_content(title)
+            expect(page).not_to have_content(title)
           end
         end
 
@@ -83,7 +83,7 @@ RSpec.describe Namespaces::FreeUserCap::PreviewAlertComponent, :saas, :aggregate
           it 'renders the alert' do
             render_inline(component)
 
-            expect(rendered_component).to have_content(title)
+            expect(page).to have_content(title)
           end
         end
       end
@@ -95,7 +95,7 @@ RSpec.describe Namespaces::FreeUserCap::PreviewAlertComponent, :saas, :aggregate
       it 'does not render the alert' do
         render_inline(component)
 
-        expect(rendered_component).not_to have_content(title)
+        expect(page).not_to have_content(title)
       end
     end
   end
@@ -104,7 +104,7 @@ RSpec.describe Namespaces::FreeUserCap::PreviewAlertComponent, :saas, :aggregate
     it 'does not render the alert' do
       render_inline(component)
 
-      expect(rendered_component).not_to have_content(title)
+      expect(page).not_to have_content(title)
     end
   end
 
@@ -114,7 +114,7 @@ RSpec.describe Namespaces::FreeUserCap::PreviewAlertComponent, :saas, :aggregate
     it 'does not render the alert' do
       render_inline(component)
 
-      expect(rendered_component).not_to have_content(title)
+      expect(page).not_to have_content(title)
     end
   end
 end
