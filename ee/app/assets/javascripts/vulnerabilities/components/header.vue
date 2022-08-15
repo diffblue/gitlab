@@ -1,7 +1,8 @@
 <script>
-import { GlLoadingIcon, GlButton, GlBadge } from '@gitlab/ui';
+import { GlLoadingIcon, GlButton } from '@gitlab/ui';
 import vulnerabilityStateMutations from 'ee/security_dashboard/graphql/mutate_vulnerability_state';
 import SplitButton from 'ee/vue_shared/security_reports/components/split_button.vue';
+import StatusBadge from 'ee/vue_shared/security_reports/components/status_badge.vue';
 import createFlash from '~/flash';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { TYPE_VULNERABILITY } from '~/graphql_shared/constants';
@@ -11,12 +12,7 @@ import download from '~/lib/utils/downloader';
 import { redirectTo } from '~/lib/utils/url_utility';
 import UsersCache from '~/lib/utils/users_cache';
 import { s__ } from '~/locale';
-import {
-  VULNERABILITY_STATES,
-  VULNERABILITY_STATE_OBJECTS,
-  FEEDBACK_TYPES,
-  HEADER_ACTION_BUTTONS,
-} from '../constants';
+import { VULNERABILITY_STATE_OBJECTS, FEEDBACK_TYPES, HEADER_ACTION_BUTTONS } from '../constants';
 import { normalizeGraphQLVulnerability } from '../helpers';
 import ResolutionAlert from './resolution_alert.vue';
 import StatusDescription from './status_description.vue';
@@ -28,7 +24,7 @@ export default {
   components: {
     GlLoadingIcon,
     GlButton,
-    GlBadge,
+    StatusBadge,
     ResolutionAlert,
     VulnerabilityStateDropdown,
     SplitButton,
@@ -51,19 +47,7 @@ export default {
     };
   },
 
-  badgeVariants: {
-    confirmed: 'danger',
-    resolved: 'success',
-    detected: 'warning',
-  },
-
   computed: {
-    stateName() {
-      return VULNERABILITY_STATES[this.vulnerability.state];
-    },
-    stateVariant() {
-      return this.$options.badgeVariants[this.vulnerability.state] || 'neutral';
-    },
     actionButtons() {
       const buttons = [];
 
@@ -228,9 +212,7 @@ export default {
     <div class="detail-page-header">
       <div class="detail-page-header-body" data-testid="vulnerability-detail-body">
         <gl-loading-icon v-if="isLoadingVulnerability" size="sm" class="mr-2" />
-        <gl-badge v-else class="gl-mr-4" :variant="stateVariant">
-          {{ stateName }}
-        </gl-badge>
+        <status-badge v-else :state="vulnerability.state" class="gl-mr-4" />
 
         <status-description
           class="issuable-meta"

@@ -1,4 +1,4 @@
-import { GlButton, GlBadge } from '@gitlab/ui';
+import { GlButton, GlLoadingIcon } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import MockAdapter from 'axios-mock-adapter';
@@ -6,15 +6,12 @@ import VueApollo from 'vue-apollo';
 import Api from 'ee/api';
 import vulnerabilityStateMutations from 'ee/security_dashboard/graphql/mutate_vulnerability_state';
 import SplitButton from 'ee/vue_shared/security_reports/components/split_button.vue';
+import StatusBadge from 'ee/vue_shared/security_reports/components/status_badge.vue';
 import Header from 'ee/vulnerabilities/components/header.vue';
 import ResolutionAlert from 'ee/vulnerabilities/components/resolution_alert.vue';
 import StatusDescription from 'ee/vulnerabilities/components/status_description.vue';
 import VulnerabilityStateDropdown from 'ee/vulnerabilities/components/vulnerability_state_dropdown.vue';
-import {
-  FEEDBACK_TYPES,
-  VULNERABILITY_STATE_OBJECTS,
-  VULNERABILITY_STATES,
-} from 'ee/vulnerabilities/constants';
+import { FEEDBACK_TYPES, VULNERABILITY_STATE_OBJECTS } from 'ee/vulnerabilities/constants';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import UsersMockHelper from 'helpers/user_mock_data_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -83,10 +80,17 @@ describe('Vulnerability Header', () => {
   };
 
   const findGlButton = () => wrapper.findComponent(GlButton);
+  const findGlLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
+  const findStatusBadge = () => wrapper.findComponent(StatusBadge);
   const findSplitButton = () => wrapper.findComponent(SplitButton);
-  const findBadge = () => wrapper.findComponent(GlBadge);
   const findResolutionAlert = () => wrapper.findComponent(ResolutionAlert);
   const findStatusDescription = () => wrapper.findComponent(StatusDescription);
+
+  // Helpers
+  const changeStatus = (action) => {
+    const dropdown = wrapper.findComponent(VulnerabilityStateDropdown);
+    dropdown.vm.$emit('change', { action });
+  };
 
   const createWrapper = ({ vulnerability = {}, apolloProvider }) => {
     wrapper = shallowMount(Header, {
@@ -96,9 +100,6 @@ describe('Vulnerability Header', () => {
           ...defaultVulnerability,
           ...vulnerability,
         },
-      },
-      stubs: {
-        GlBadge,
       },
     });
   };
@@ -137,9 +138,16 @@ describe('Vulnerability Header', () => {
         createWrapper({ apolloProvider });
       });
 
+      it('shows the loading spinner but not the status badge', async () => {
+        changeStatus(action);
+        await nextTick();
+
+        expect(findGlLoadingIcon().exists()).toBe(true);
+        expect(findStatusBadge().exists()).toBe(false);
+      });
+
       it(`emits the updated vulnerability properly - ${action}`, async () => {
-        const dropdown = wrapper.findComponent(VulnerabilityStateDropdown);
-        dropdown.vm.$emit('change', { action });
+        changeStatus(action);
 
         await waitForPromises();
         expect(wrapper.emitted('vulnerability-state-change')[0][0]).toMatchObject({
@@ -148,11 +156,18 @@ describe('Vulnerability Header', () => {
       });
 
       it(`emits an event when the state is changed - ${action}`, async () => {
-        const dropdown = wrapper.findComponent(VulnerabilityStateDropdown);
-        dropdown.vm.$emit('change', { action });
+        changeStatus(action);
 
         await waitForPromises();
         expect(wrapper.emitted()['vulnerability-state-change']).toBeTruthy();
+      });
+
+      it('hides the loading spinner and shows the status badge', async () => {
+        changeStatus(action);
+        await waitForPromises();
+
+        expect(findGlLoadingIcon().exists()).toBe(false);
+        expect(findStatusBadge().exists()).toBe(true);
       });
     });
 
@@ -291,25 +306,6 @@ describe('Vulnerability Header', () => {
         expect(download).toHaveBeenCalledWith({ fileData: diff, fileName: `remediation.patch` });
       });
     });
-  });
-
-  describe('state badge', () => {
-    const badgeVariants = {
-      confirmed: 'danger',
-      resolved: 'success',
-      detected: 'warning',
-      dismissed: 'neutral',
-    };
-
-    it.each(Object.entries(badgeVariants))(
-      'the vulnerability state badge has the correct style for the %s state',
-      (state, variant) => {
-        createWrapper({ vulnerability: { state } });
-
-        expect(findBadge().props('variant')).toBe(variant);
-        expect(findBadge().text()).toBe(VULNERABILITY_STATES[state]);
-      },
-    );
   });
 
   describe('status description', () => {
