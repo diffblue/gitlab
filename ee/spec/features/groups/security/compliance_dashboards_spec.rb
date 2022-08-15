@@ -33,6 +33,7 @@ RSpec.describe 'Compliance Dashboard', :js do
   end
 
   before do
+    stub_feature_flags(async_chain_of_custody_report: false)
     stub_licensed_features(group_level_compliance_dashboard: true)
     group.add_owner(user)
     sign_in(user)

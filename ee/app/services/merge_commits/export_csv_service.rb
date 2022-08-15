@@ -6,6 +6,9 @@ module MergeCommits
     TARGET_FILESIZE = 15.megabytes
 
     def initialize(current_user, group, filter_params = {})
+      raise ArgumentError, 'The group is a required argument' if group.blank?
+      raise ArgumentError, 'The user is a required argument' if current_user.blank?
+
       @current_user = current_user
       @group = group
       @filter_params = filter_params
@@ -13,6 +16,16 @@ module MergeCommits
 
     def csv_data
       ServiceResponse.success(payload: csv_builder.render(TARGET_FILESIZE))
+    end
+
+    def enqueue_worker
+      ComplianceManagement::ChainOfCustodyReportWorker.perform_async(
+        user_id: current_user.id,
+        group_id: group.id,
+        commit_sha: filter_params[:commit_sha]
+      )
+
+      ServiceResponse.success
     end
 
     private
