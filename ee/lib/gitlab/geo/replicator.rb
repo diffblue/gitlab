@@ -143,7 +143,7 @@ module Gitlab
 
       def self.primary_total_count
         if batch_count_enabled?
-          ::Gitlab::UsageData.count(model.available_replicables, model.primary_key)
+          ::Gitlab::Database::BatchCount.batch_count(model.available_replicables, model.primary_key)
         else
           model.available_replicables.count
         end
