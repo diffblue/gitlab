@@ -114,20 +114,18 @@ RSpec.describe Issues::MoveService do
         end
 
         it 'tracks usage data for changed epic action' do
-          expect(Gitlab::UsageDataCounters::IssueActivityUniqueCounter).to receive(:track_issue_changed_epic_action).with(author: user,
-                                                                                                                          project: new_project)
+          expect(Gitlab::UsageDataCounters::IssueActivityUniqueCounter).to receive(:track_issue_changed_epic_action)
+                                                                             .with(author: user, project: new_project)
 
           subject
         end
 
-        it_behaves_like 'Snowplow event tracking' do
-          let(:category) { 'issues_edit' }
-          let(:action) { 'g_project_management_issue_changed_epic' }
+        it_behaves_like 'issue_edit snowplow tracking' do
+          let(:property) { Gitlab::UsageDataCounters::IssueActivityUniqueCounter::ISSUE_CHANGED_EPIC }
           let(:project) { new_project }
-          let(:namespace) { new_project.namespace }
-          let(:feature_flag_name) { :route_hll_to_snowplow_phase2 }
         end
       end
+
       context 'user can not update the epic' do
         it 'ignores epic issue reference' do
           new_issue = move_service.execute(old_issue, new_project)
