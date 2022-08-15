@@ -144,6 +144,7 @@ Object {
   "showBulkEditSidebar": false,
   "showPageSizeChangeControls": false,
   "showPaginationControls": true,
+  "showWorkItemTypeIcon": false,
   "sortOptions": Array [
     Object {
       "id": 1,

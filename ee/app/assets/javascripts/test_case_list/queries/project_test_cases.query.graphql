@@ -48,6 +48,7 @@ query projectIssues(
         createdAt
         updatedAt
         webUrl
+        type
         author {
           ...Author
         }

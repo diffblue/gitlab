@@ -160,6 +160,7 @@ export default {
       :task-list-update-path="updatePath"
       :task-list-lock-version="lockVersion"
       status-icon-class="gl-sm-display-none"
+      show-work-item-type-icon
       @edit-issuable="handleEditTestCase"
       @task-list-update-success="handleTaskListUpdateSuccess"
       @task-list-update-failure="handleTaskListUpdateFailure"
