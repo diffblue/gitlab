@@ -1,5 +1,5 @@
 <script>
-import { GlButton, GlLoadingIcon } from '@gitlab/ui';
+import { GlButton, GlCard, GlLoadingIcon } from '@gitlab/ui';
 import { escape } from 'lodash';
 import { mapActions, mapState, mapGetters } from 'vuex';
 import { removeTrialSuffix } from 'ee/billings/billings_util';
@@ -23,6 +23,7 @@ export default {
   name: 'SubscriptionTable',
   components: {
     GlButton,
+    GlCard,
     GlLoadingIcon,
     SubscriptionTableRow,
     ExtendReactivateTrialButton,
@@ -155,15 +156,16 @@ export default {
 
 <template>
   <div>
-    <div
+    <gl-card
       v-if="!isLoadingSubscription && !hasErrorSubscription"
-      class="gl-card gl-mt-3 subscription-table js-subscription-table"
+      class="gl-mt-3 subscription-table js-subscription-table"
+      body-class="gl-display-flex gl-flex-direction-column gl-sm-flex-direction-row flex-lg-column flex-grid gl-p-0"
+      header-class="gl-display-flex gl-justify-content-space-between gl-align-items-center"
     >
-      <div
-        class="gl-card-header gl-display-flex gl-justify-content-space-between gl-align-items-center"
-        data-testid="subscription-header"
-      >
-        <strong data-qa-selector="subscription_header">{{ subscriptionHeader }}</strong>
+      <template #header>
+        <strong data-testid="subscription-header" data-qa-selector="subscription_header">{{
+          subscriptionHeader
+        }}</strong>
         <div class="gl-display-flex">
           <extend-reactivate-trial-button
             v-if="availableTrialAction"
@@ -194,20 +196,17 @@ export default {
             >{{ s__('SubscriptionTable|Refresh Seats') }}</gl-button
           >
         </div>
-      </div>
-      <div
-        class="gl-card-body gl-display-flex gl-flex-direction-column gl-sm-flex-direction-row flex-lg-column flex-grid gl-p-0"
-      >
-        <subscription-table-row
-          v-for="(row, i) in visibleRows"
-          :key="`subscription-rows-${i}`"
-          :last="isLast(i)"
-          :header="row.header"
-          :columns="row.columns"
-          :is-free-plan="isFreePlan"
-        />
-      </div>
-    </div>
+      </template>
+
+      <subscription-table-row
+        v-for="(row, i) in visibleRows"
+        :key="`subscription-rows-${i}`"
+        :last="isLast(i)"
+        :header="row.header"
+        :columns="row.columns"
+        :is-free-plan="isFreePlan"
+      />
+    </gl-card>
 
     <gl-loading-icon
       v-else-if="isLoadingSubscription && !hasErrorSubscription"
