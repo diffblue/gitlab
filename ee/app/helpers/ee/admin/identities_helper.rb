@@ -31,6 +31,15 @@ module EE
 
         link_to identity.saml_provider.group.path, identity.saml_provider.group
       end
+
+      def identity_cells_to_render?(identities, user)
+        super || user.scim_identities.present?
+      end
+
+      override :scim_identities_collection
+      def scim_identities_collection(user)
+        user.scim_identities
+      end
     end
   end
 end
