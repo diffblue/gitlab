@@ -91,7 +91,7 @@ RSpec.describe Arkose::UserVerificationService do
               context 'when the session is allowlisted' do
                 let(:arkose_ec_response) do
                   json = Gitlab::Json.parse(File.read(Rails.root.join('ee/spec/fixtures/arkose/successfully_solved_ec_response.json')))
-                  json['session_details']['telltale_list'].push(Arkose::UserVerificationService::ALLOWLIST_TELLTALE)
+                  json['session_details']['telltale_list'].push(Arkose::VerifyResponse::ALLOWLIST_TELLTALE)
                   json
                 end
 
