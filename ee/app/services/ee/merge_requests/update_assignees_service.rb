@@ -5,7 +5,7 @@ module EE
     module UpdateAssigneesService
       def assignee_ids
         if project.licensed_feature_available?(:multiple_merge_request_assignees)
-          params.fetch(:assignee_ids).reject { _1 == 0 }
+          filter_sentinel_values(params.fetch(:assignee_ids))
         else
           super
         end
