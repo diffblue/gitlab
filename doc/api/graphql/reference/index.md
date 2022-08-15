@@ -10560,7 +10560,7 @@ Connection details for an Agent.
 
 ### `ContactStateCounts`
 
-Represents the total number of contacts for the represented statuses.
+Represents the total number of contacts for the represented states.
 
 #### Fields
 
@@ -12284,7 +12284,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 
 ##### `Group.contactStateCounts`
 
-Counts of contacts by status for the group.
+Counts of contacts by state for the group.
 
 Returns [`ContactStateCounts`](#contactstatecounts).
 
@@ -12311,7 +12311,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | ---- | ---- | ----------- |
 | <a id="groupcontactsids"></a>`ids` | [`[CustomerRelationsContactID!]`](#customerrelationscontactid) | Filter contacts by IDs. |
 | <a id="groupcontactssearch"></a>`search` | [`String`](#string) | Search term to find contacts with. |
-| <a id="groupcontactssort"></a>`sort` | [`ContactSort`](#contactsort) | Criteria to sort issues by. |
+| <a id="groupcontactssort"></a>`sort` | [`ContactSort`](#contactsort) | Criteria to sort contacts by. |
 | <a id="groupcontactsstate"></a>`state` | [`CustomerRelationsContactState`](#customerrelationscontactstate) | State of the contacts to search for. |
 
 ##### `Group.containerRepositories`
