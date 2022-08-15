@@ -1,5 +1,4 @@
 fragment EscalationPolicyFragment on EscalationPolicyType {
-  __typename
   id
   title: name
 }

@@ -8,10 +8,8 @@ mutation issueEscalationPolicyMutation(
   issuableSetAttribute: issueSetEscalationPolicy(
     input: { projectPath: $fullPath, iid: $iid, escalationPolicyId: $attributeId }
   ) {
-    __typename
     errors
     issuable: issue {
-      __typename
       id
       attribute: escalationPolicy {
         ...EscalationPolicyFragment

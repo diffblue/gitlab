@@ -12,7 +12,6 @@ fragment RelatedTreeBaseEpic on Epic {
   webPath
   relativePosition
   userPermissions {
-    __typename
     adminEpic
     createEpic
   }
@@ -21,14 +20,12 @@ fragment RelatedTreeBaseEpic on Epic {
     openedIssues
   }
   descendantCounts {
-    __typename
     openedEpics
     closedEpics
     openedIssues
     closedIssues
   }
   healthStatus {
-    __typename
     issuesAtRisk
     issuesOnTrack
     issuesNeedingAttention
@@ -46,9 +43,7 @@ fragment EpicNode on Epic {
   hasChildren
   hasIssues
   labels {
-    __typename
     nodes {
-      __typename
       id
       color
       description
@@ -57,7 +52,6 @@ fragment EpicNode on Epic {
     }
   }
   group {
-    __typename
     id
     fullPath
   }
@@ -71,33 +65,24 @@ query childItems(
   $issueEndCursor: String = ""
 ) {
   group(fullPath: $fullPath) {
-    __typename
     id
     path
     fullPath
     epic(iid: $iid) {
-      __typename
       ...RelatedTreeBaseEpic
       children(first: $pageSize, after: $epicEndCursor) {
-        __typename
         edges {
-          __typename
           node {
-            __typename
             ...EpicNode
           }
         }
         pageInfo {
-          __typename
           ...PageInfo
         }
       }
       issues(first: $pageSize, after: $issueEndCursor) {
-        __typename
         edges {
-          __typename
           node {
-            __typename
             id
             iid
             epicIssueId
@@ -114,11 +99,8 @@ query childItems(
             relationPath
             relativePosition
             assignees {
-              __typename
               edges {
-                __typename
                 node {
-                  __typename
                   id
                   webUrl
                   name
@@ -128,7 +110,6 @@ query childItems(
               }
             }
             milestone {
-              __typename
               id
               title
               startDate
@@ -136,9 +117,7 @@ query childItems(
             }
             healthStatus
             labels {
-              __typename
               nodes {
-                __typename
                 id
                 color
                 description
@@ -149,7 +128,6 @@ query childItems(
           }
         }
         pageInfo {
-          __typename
           ...PageInfo
         }
       }

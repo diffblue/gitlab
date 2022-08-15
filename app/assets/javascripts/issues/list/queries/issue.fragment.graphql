@@ -1,5 +1,4 @@
 fragment IssueFragment on Issue {
-  __typename
   id
   iid
   confidential
@@ -20,7 +19,6 @@ fragment IssueFragment on Issue {
   webUrl
   assignees @skip(if: $hideUsers) {
     nodes {
-      __typename
       id
       avatarUrl
       name
@@ -29,7 +27,6 @@ fragment IssueFragment on Issue {
     }
   }
   author @skip(if: $hideUsers) {
-    __typename
     id
     avatarUrl
     name

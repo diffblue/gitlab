@@ -2,7 +2,6 @@
 
 query contacts($groupFullPath: ID!) {
   group(fullPath: $groupFullPath) {
-    __typename
     id
     contacts {
       nodes {

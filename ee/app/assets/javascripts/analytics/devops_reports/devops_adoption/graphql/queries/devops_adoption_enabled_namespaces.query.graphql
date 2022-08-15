@@ -6,11 +6,9 @@ query devopsAdoptionEnabledNamespaces($displayNamespaceId: NamespaceID) {
     nodes {
       id
       latestSnapshot {
-        __typename
         ...LatestSnapshot
       }
       namespace {
-        __typename
         ...Namespace
       }
     }
