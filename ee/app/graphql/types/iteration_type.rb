@@ -15,43 +15,48 @@ module Types
 
     field :iid, GraphQL::Types::ID, null: false, description: 'Internal ID of the iteration.'
 
-    field :sequence, GraphQL::Types::Int, null: false,
+    field :sequence, GraphQL::Types::Int,
+      null: false,
       description: "Sequence number for the iteration when you sort the containing cadence's iterations by the start and end date. The earliest starting and ending iteration is assigned 1."
 
-    field :title, GraphQL::Types::String, null: true,
+    field :title, GraphQL::Types::String,
+      null: true,
       description: 'Title of the iteration. Title must be specified unless iteration_cadences feature flag is enabled.'
 
-    field :description, GraphQL::Types::String, null: true,
-      description: 'Description of the iteration.'
+    field :description, GraphQL::Types::String,
+      null: true, description: 'Description of the iteration.'
 
-    field :state, Types::IterationStateEnum, null: false, description: 'State of the iteration.'
+    field :state, Types::IterationStateEnum,
+      null: false, description: 'State of the iteration.'
 
-    field :web_path, GraphQL::Types::String, null: false, method: :iteration_path,
-      description: 'Web path of the iteration.'
+    field :web_path, GraphQL::Types::String,
+      null: false, method: :iteration_path, description: 'Web path of the iteration.'
 
-    field :web_url, GraphQL::Types::String, null: false, method: :iteration_url,
-      description: 'Web URL of the iteration.'
+    field :web_url, GraphQL::Types::String,
+      null: false, method: :iteration_url, description: 'Web URL of the iteration.'
 
-    field :scoped_path, GraphQL::Types::String, null: true, method: :scoped_iteration_path, extras: [:parent],
+    field :scoped_path, GraphQL::Types::String,
+      null: true, method: :scoped_iteration_path, extras: [:parent],
       description: 'Web path of the iteration, scoped to the query parent. Only valid for Project parents. Returns null in other contexts.'
 
-    field :scoped_url, GraphQL::Types::String, null: true, method: :scoped_iteration_url, extras: [:parent],
+    field :scoped_url, GraphQL::Types::String,
+      null: true, method: :scoped_iteration_url, extras: [:parent],
       description: 'Web URL of the iteration, scoped to the query parent. Only valid for Project parents. Returns null in other contexts.'
 
-    field :due_date, Types::TimeType, null: true,
-      description: 'Timestamp of the iteration due date.'
+    field :due_date, Types::TimeType,
+      null: true, description: 'Timestamp of the iteration due date.'
 
-    field :start_date, Types::TimeType, null: true,
-      description: 'Timestamp of the iteration start date.'
+    field :start_date, Types::TimeType,
+      null: true, description: 'Timestamp of the iteration start date.'
 
-    field :created_at, Types::TimeType, null: false,
-      description: 'Timestamp of iteration creation.'
+    field :created_at, Types::TimeType,
+      null: false, description: 'Timestamp of iteration creation.'
 
-    field :updated_at, Types::TimeType, null: false,
-      description: 'Timestamp of last iteration update.'
+    field :updated_at, Types::TimeType,
+      null: false, description: 'Timestamp of last iteration update.'
 
-    field :iteration_cadence, Types::Iterations::CadenceType, null: false,
-      description: 'Cadence of the iteration.'
+    field :iteration_cadence, Types::Iterations::CadenceType,
+      null: false, description: 'Cadence of the iteration.'
 
     markdown_field :description_html, null: true
 

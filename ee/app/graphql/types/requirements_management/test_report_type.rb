@@ -14,8 +14,8 @@ module Types
 
       field :author, UserType, null: true, description: 'Author of the test report.'
 
-      field :created_at, TimeType, null: false,
-            description: 'Timestamp of when the test report was created.'
+      field :created_at, TimeType,
+        null: false, description: 'Timestamp of when the test report was created.'
 
       def author
         Gitlab::Graphql::Loaders::BatchModelLoader.new(User, object.author_id).find
