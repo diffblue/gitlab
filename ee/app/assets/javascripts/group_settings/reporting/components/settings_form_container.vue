@@ -17,8 +17,8 @@ export default {
     SAVE_ERROR_MESSAGE,
   },
   props: {
-    groupId: {
-      type: Number,
+    groupFullPath: {
+      type: String,
       required: true,
     },
     maxDownloads: {
@@ -43,7 +43,7 @@ export default {
       try {
         this.isLoading = true;
 
-        await updateGroupSettings(this.groupId, {
+        await updateGroupSettings(this.groupFullPath, {
           unique_project_download_limit: maxDownloads,
           unique_project_download_limit_interval_in_seconds: timePeriod,
           unique_project_download_limit_allowlist: allowlist,

@@ -24,7 +24,7 @@ RSpec.describe 'groups/settings/reporting/show' do
 
     expect(rendered).to have_selector('#js-unique-project-download-limit-settings-form')
 
-    expect(rendered).to have_selector("[data-group-id='#{group.id}']")
+    expect(rendered).to have_selector("[data-group-full-path='#{group.full_path}']")
     expect(rendered).to have_selector('[data-max-number-of-repository-downloads="1"]')
     expect(rendered).to have_selector('[data-max-number-of-repository-downloads-within-time-period="2"]')
     expect(rendered).to have_selector("[data-git-rate-limit-users-allowlist='#{allowlist}']")
@@ -42,7 +42,6 @@ RSpec.describe 'groups/settings/reporting/show' do
 
       expect(rendered).to have_selector('#js-unique-project-download-limit-settings-form')
 
-      expect(rendered).to have_selector("[data-group-id='#{group.id}']")
       expect(rendered).to have_selector('[data-max-number-of-repository-downloads="0"]')
       expect(rendered).to have_selector('[data-max-number-of-repository-downloads-within-time-period="0"]')
       expect(rendered).to have_selector("[data-git-rate-limit-users-allowlist='[]']")

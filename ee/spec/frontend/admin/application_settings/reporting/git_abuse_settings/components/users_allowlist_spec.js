@@ -9,13 +9,20 @@ import waitForPromises from 'helpers/wait_for_promises';
 
 import getUsersByUsernames from '~/graphql_shared/queries/get_users_by_usernames.query.graphql';
 import searchUsersQuery from '~/graphql_shared/queries/users_search_all.query.graphql';
+import searchGroupUsersQuery from '~/graphql_shared/queries/group_users_search.query.graphql';
 
 import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
 
 import UsersAllowlist from 'ee/admin/application_settings/reporting/git_abuse_settings/components/users_allowlist.vue';
 import { SEARCH_TERM_TOO_SHORT } from 'ee/admin/application_settings/reporting/git_abuse_settings/constants';
 
-import { getUsersResponse, searchUsersResponse, mockUser1, mockUser2 } from '../mock_data';
+import {
+  getUsersResponse,
+  searchUsersResponse,
+  groupMembersResponse,
+  mockUser1,
+  mockUser2,
+} from '../mock_data';
 
 Vue.use(VueApollo);
 
@@ -38,15 +45,18 @@ describe('Users Allowlist component', () => {
 
   const getQueryHandlerSuccess = jest.fn().mockResolvedValue(getUsersResponse);
   const searchQueryHandlerSuccess = jest.fn().mockResolvedValue(searchUsersResponse);
+  const searchGroupQueryHandlerSuccess = jest.fn().mockResolvedValue(groupMembersResponse);
 
-  const createComponent = (props = {}) => {
+  const createComponent = ({ props, provide } = { props: {}, provide: {} }) => {
     fakeApollo = createMockApollo([
       [getUsersByUsernames, getQueryHandlerSuccess],
       [searchUsersQuery, searchQueryHandlerSuccess],
+      [searchGroupUsersQuery, searchGroupQueryHandlerSuccess],
     ]);
 
     wrapper = mount(UsersAllowlist, {
       apolloProvider: fakeApollo,
+      provide,
       propsData: {
         excludedUsernames: [mockUser1.username],
         ...props,
@@ -72,9 +82,7 @@ describe('Users Allowlist component', () => {
 
   describe('When there are no excluded users already saved', () => {
     beforeEach(async () => {
-      createComponent({
-        excludedUsernames: [],
-      });
+      createComponent({ props: { excludedUsernames: [] } });
 
       await waitForPromises();
     });
@@ -139,6 +147,28 @@ describe('Users Allowlist component', () => {
 
       await nextTick();
       expect(wrapper.emitted('user-removed')[0]).toEqual([mockUser2.username]);
+    });
+  });
+
+  describe('When groupFullPath is present', () => {
+    const GROUP_FULL_PATH = 'group-full-path';
+
+    beforeEach(async () => {
+      createComponent({ provide: { groupFullPath: GROUP_FULL_PATH } });
+
+      jest.advanceTimersByTime(DEFAULT_DEBOUNCE_AND_THROTTLE_MS);
+      await waitForPromises();
+    });
+
+    it('renders list of users that are members of the group', () => {
+      expect(searchGroupQueryHandlerSuccess).toHaveBeenCalledWith({
+        search: '',
+        first: 20,
+        fullPath: GROUP_FULL_PATH,
+      });
+
+      expect(findUserSelector().props('loading')).toEqual(false);
+      expect(findUserSelector().props('dropdownItems')).toHaveLength(2);
     });
   });
 });

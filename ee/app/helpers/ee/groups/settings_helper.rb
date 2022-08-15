@@ -35,7 +35,7 @@ module EE
         allowlist = settings.unique_project_download_limit_allowlist
 
         {
-          group_id: @group.id,
+          group_full_path: @group.full_path,
           max_number_of_repository_downloads: limit,
           max_number_of_repository_downloads_within_time_period: interval,
           git_rate_limit_users_allowlist: allowlist

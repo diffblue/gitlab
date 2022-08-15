@@ -24,16 +24,17 @@ export const initSettingsForm = () => {
     gitRateLimitUsersAllowlist,
   } = parseFormProps(el.dataset);
 
-  const groupId = parseInt(el.dataset.groupId, 10);
+  const { groupFullPath } = el.dataset;
 
   return new Vue({
     el,
     apolloProvider,
     name: 'SettingsFormApp',
+    provide: { groupFullPath },
     render: (createElement) =>
       createElement(SettingsFormContainer, {
         props: {
-          groupId,
+          groupFullPath,
           maxDownloads: maxNumberOfRepositoryDownloads,
           timePeriod: maxNumberOfRepositoryDownloadsWithinTimePeriod,
           allowlist: gitRateLimitUsersAllowlist,
