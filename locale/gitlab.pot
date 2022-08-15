@@ -21572,6 +21572,12 @@ msgstr ""
 msgid "InviteMembersModal|Select members or type email addresses"
 msgstr ""
 
+msgid "InviteMembersModal|Show less"
+msgstr ""
+
+msgid "InviteMembersModal|Show more (%{count})"
+msgstr ""
+
 msgid "InviteMembersModal|Something went wrong"
 msgstr ""
 
