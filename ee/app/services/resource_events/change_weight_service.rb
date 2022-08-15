@@ -16,7 +16,8 @@ module ResourceEvents
       if resource.is_a?(WorkItem)
         Gitlab::UsageDataCounters::WorkItemActivityUniqueCounter.track_work_item_weight_changed_action(author: user)
       else
-        Gitlab::UsageDataCounters::IssueActivityUniqueCounter.track_issue_weight_changed_action(author: user, project: resource.project)
+        Gitlab::UsageDataCounters::IssueActivityUniqueCounter.track_issue_weight_changed_action(author: user,
+                                                                                                project: resource.project)
       end
     end
 

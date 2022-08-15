@@ -313,11 +313,8 @@ RSpec.describe Issues::UpdateService do
               subject
             end
 
-            it_behaves_like 'Snowplow event tracking' do
-              let(:category) { 'issues_edit' }
-              let(:action) { 'g_project_management_issue_added_to_epic' }
-              let(:namespace) { project.namespace }
-              let(:feature_flag_name) { :route_hll_to_snowplow_phase2 }
+            it_behaves_like 'issue_edit snowplow tracking' do
+              let(:property) { Gitlab::UsageDataCounters::IssueActivityUniqueCounter::ISSUE_ADDED_TO_EPIC }
             end
           end
         end
@@ -345,18 +342,14 @@ RSpec.describe Issues::UpdateService do
 
           describe 'events tracking', :snowplow do
             it 'tracks usage data for changed epic action' do
-              expect(Gitlab::UsageDataCounters::IssueActivityUniqueCounter).to receive(:track_issue_changed_epic_action).with(author: user,
-                                                                                                                              project: issue.project)
+              expect(Gitlab::UsageDataCounters::IssueActivityUniqueCounter).to receive(:track_issue_changed_epic_action)
+                                                                                 .with(author: user, project: project)
 
               subject
             end
 
-            it_behaves_like 'Snowplow event tracking' do
-              let(:category) { 'issues_edit' }
-              let(:action) { 'g_project_management_issue_changed_epic' }
-              let(:namespace) { issue.project.namespace }
-              let(:project) { issue.project }
-              let(:feature_flag_name) { :route_hll_to_snowplow_phase2 }
+            it_behaves_like 'issue_edit snowplow tracking' do
+              let(:property) { Gitlab::UsageDataCounters::IssueActivityUniqueCounter::ISSUE_CHANGED_EPIC }
             end
           end
         end
@@ -466,11 +459,8 @@ RSpec.describe Issues::UpdateService do
               subject
             end
 
-            it_behaves_like 'Snowplow event tracking' do
-              let(:category) { 'issues_edit' }
-              let(:action) { 'g_project_management_issue_removed_from_epic' }
-              let(:namespace) { project.namespace }
-              let(:feature_flag_name) { :route_hll_to_snowplow_phase2 }
+            it_behaves_like 'issue_edit snowplow tracking' do
+              let(:property) { Gitlab::UsageDataCounters::IssueActivityUniqueCounter::ISSUE_REMOVED_FROM_EPIC }
             end
           end
 

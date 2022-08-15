@@ -16,15 +16,12 @@ RSpec.describe ResourceIterationEvent, :snowplow, type: :model do
   # from https://gitlab.com/gitlab-org/gitlab/-/issues/365960
   describe 'when creating an issue' do
     let(:issue) { create(:issue) }
-    let(:subject) { create(described_class.name.underscore.to_sym, issue: issue) }
 
-    it_behaves_like 'Snowplow event tracking' do
-      let(:user) { issue.author }
-      let(:category) { 'issues_edit' }
-      let(:action) { 'g_project_management_issue_iteration_changed' }
+    it_behaves_like 'issue_edit snowplow tracking' do
+      let(:property) { Gitlab::UsageDataCounters::IssueActivityUniqueCounter::ISSUE_ITERATION_CHANGED }
       let(:project) { issue.project }
-      let(:namespace) { project.namespace }
-      let(:feature_flag_name) { :route_hll_to_snowplow_phase2 }
+      let(:user) { issue.author }
+      subject(:service_action) { create(described_class.name.underscore.to_sym, issue: issue) }
     end
   end
 

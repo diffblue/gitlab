@@ -24,7 +24,8 @@ module EE
 
         original_entity.reset
 
-        ::Gitlab::UsageDataCounters::IssueActivityUniqueCounter.track_issue_changed_epic_action(author: current_user, project: target_project)
+        ::Gitlab::UsageDataCounters::IssueActivityUniqueCounter.track_issue_changed_epic_action(author: current_user,
+                                                                                                project: target_project)
       end
 
       def log_error_for(epic_issue)

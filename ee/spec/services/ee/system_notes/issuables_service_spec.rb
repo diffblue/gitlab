@@ -48,12 +48,9 @@ RSpec.describe ::SystemNotes::IssuablesService do
         subject
       end
 
-      it_behaves_like 'Snowplow event tracking' do
-        let(:category) { 'issues_edit' }
-        let(:action) { 'g_project_management_issue_health_status_changed' }
-        let(:namespace) { project.namespace }
+      it_behaves_like 'issue_edit snowplow tracking' do
+        let(:property) { Gitlab::UsageDataCounters::IssueActivityUniqueCounter::ISSUE_HEALTH_STATUS_CHANGED }
         let(:user) { author }
-        let(:feature_flag_name) { :route_hll_to_snowplow_phase2 }
       end
     end
   end

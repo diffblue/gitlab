@@ -73,12 +73,9 @@ RSpec.shared_examples 'issue with epic_id parameter' do
           execute
         end
 
-        it_behaves_like 'Snowplow event tracking' do
-          let(:subject) { execute }
-          let(:category) { 'issues_edit' }
-          let(:action) { 'g_project_management_issue_added_to_epic' }
-          let(:namespace) { project.namespace }
-          let(:feature_flag_name) { :route_hll_to_snowplow_phase2 }
+        it_behaves_like 'issue_edit snowplow tracking' do
+          let(:property) { Gitlab::UsageDataCounters::IssueActivityUniqueCounter::ISSUE_ADDED_TO_EPIC }
+          subject(:service_action) { execute }
         end
       end
     end
@@ -129,12 +126,9 @@ RSpec.shared_examples 'issue with epic_id parameter' do
           execute
         end
 
-        it_behaves_like 'Snowplow event tracking' do
-          let(:subject) { execute }
-          let(:category) { 'issues_edit' }
-          let(:action) { 'g_project_management_issue_added_to_epic' }
-          let(:namespace) { project.namespace }
-          let(:feature_flag_name) { :route_hll_to_snowplow_phase2 }
+        it_behaves_like 'issue_edit snowplow tracking' do
+          let(:property) { Gitlab::UsageDataCounters::IssueActivityUniqueCounter::ISSUE_ADDED_TO_EPIC }
+          subject(:service_action) { execute }
         end
       end
     end

@@ -28,9 +28,11 @@ module EE
           next unless result[:status] == :success
 
           if had_epic
-            ::Gitlab::UsageDataCounters::IssueActivityUniqueCounter.track_issue_changed_epic_action(author: current_user, project: project)
+            ::Gitlab::UsageDataCounters::IssueActivityUniqueCounter.track_issue_changed_epic_action(author: current_user,
+                                                                                                    project: project)
           else
-            ::Gitlab::UsageDataCounters::IssueActivityUniqueCounter.track_issue_added_to_epic_action(author: current_user, project: project)
+            ::Gitlab::UsageDataCounters::IssueActivityUniqueCounter.track_issue_added_to_epic_action(author: current_user,
+                                                                                                     project: project)
           end
         end
       end
