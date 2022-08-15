@@ -9,13 +9,15 @@ RSpec.describe 'Adding a Note to an Epic' do
   let_it_be(:group) { create(:group, :private) }
   let_it_be(:epic) { create(:epic, group: group) }
 
-  let(:mutation) do
-    variables = {
+  let(:variables_extra) { {} }
+  let(:variables) do
+    {
       noteable_id: GitlabSchema.id_from_object(epic).to_s,
-      body: 'Body text',
-      confidential: true
-    }
+      body: 'Body text'
+    }.merge(variables_extra)
+  end
 
+  let(:mutation) do
     graphql_mutation(:create_note, variables)
   end
 
@@ -36,6 +38,16 @@ RSpec.describe 'Adding a Note to an Epic' do
       group.add_developer(current_user)
     end
 
-    it_behaves_like 'a Note mutation with confidential notes'
+    context 'when using internal param' do
+      let(:variables_extra) { { internal: true } }
+
+      it_behaves_like 'a Note mutation with confidential notes'
+    end
+
+    context 'when using deprecated confidential param' do
+      let(:variables_extra) { { confidential: true } }
+
+      it_behaves_like 'a Note mutation with confidential notes'
+    end
   end
 end
