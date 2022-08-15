@@ -144,6 +144,9 @@ export default {
       return this.searchKey.length === 0;
     },
     addAssigneesText() {
+      if (!this.canUpdate) {
+        return s__('WorkItem|None');
+      }
       return this.allowsMultipleAssignees
         ? s__('WorkItem|Add assignees')
         : s__('WorkItem|Add assignee');
