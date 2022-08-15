@@ -11,9 +11,15 @@ export default {
     SummaryText,
   },
   i18n,
-  inject: { mr: { default: {} } },
+  props: {
+    mr: {
+      type: Object,
+      required: true,
+    },
+  },
   data() {
     return {
+      isLoading: false,
       data: {
         collapsed: null,
         extended: null,
@@ -25,38 +31,36 @@ export default {
       return 0;
     },
 
-    icon() {
-      if (this.error) {
-        return 'error-icon';
-      }
-
+    statusIconName() {
       if (this.totalVulnerabilities > 0) {
-        return 'warning-icon';
+        return 'warning';
       }
 
-      return 'success-icon';
+      return 'success';
     },
   },
   methods: {
+    handleIsLoading(value) {
+      this.isLoading = value;
+    },
+
     fetchExpandedData() {},
 
     fetchCollapsedData() {
       // TODO: check if gl.mrWidgetData can be safely removed after we migrate to the
       // widget extension.
       const endpoints = [
-        [this.mr.sast_comparison_path, this.$options.i18n.sastScanner],
-        [this.mr.dast_comparison_path, this.$options.i18n.dastScanner],
-        [this.mr.secret_detection_comparison_path, this.$options.i18n.secretDetectionScanner],
-        [this.mr.api_fuzzing_comparison_path, this.$options.i18n.apiFuzzing],
-        [this.mr.coverage_fuzzing_comparison_path, this.$options.i18n.coverageFuzzing],
-        [this.mr.dependency_scanning_comparison_path, this.$options.i18n.dependencyScanner],
-      ];
+        [this.mr.sastComparisonPath, this.$options.i18n.sastScanner],
+        [this.mr.dastComparisonPath, this.$options.i18n.dastScanner],
+        [this.mr.secretDetectionComparisonPath, this.$options.i18n.secretDetectionScanner],
+        [this.mr.apiFuzzingComparisonPath, this.$options.i18n.apiFuzzing],
+        [this.mr.coverageFuzzingComparisonPath, this.$options.i18n.coverageFuzzing],
+        [this.mr.dependencyScanningComparisonPath, this.$options.i18n.dependencyScanner],
+      ].filter(([endpoint, reportType]) => Boolean(endpoint) && Boolean(reportType));
 
-      return endpoints.map(([path, reportType]) => () => this.fetchReport(path, reportType));
-    },
-
-    fetchReport(endpoint, reportType) {
-      return axios.get(endpoint).then((r) => ({ ...r, data: { ...r.data, reportType } }));
+      return endpoints.map(([path, reportType]) => () =>
+        axios.get(path).then((r) => ({ ...r, data: { ...r.data, reportType } })),
+      );
     },
   },
 };
@@ -65,15 +69,16 @@ export default {
 <template>
   <mr-widget
     v-model="data"
-    :loading-text="$options.i18n.loading"
     :error-text="$options.i18n.error"
-    :icon="icon"
     :fetch-collapsed-data="fetchCollapsedData"
     :fetch-expanded-data="fetchExpandedData"
+    :status-icon-name="statusIconName"
+    :widget-name="$options.name"
     multi-polling
+    @is-loading="handleIsLoading"
   >
     <template #summary>
-      <summary-text :total-new-vulnerabilities="totalNewVulnerabilities" />
+      <summary-text :total-new-vulnerabilities="totalNewVulnerabilities" :is-loading="isLoading" />
     </template>
     <template #content>
       <!-- complex content will go here, otherwise we can use the structured :content property. -->

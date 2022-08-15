@@ -7,7 +7,7 @@ export default {
   loading: s__('ciReport|Security scanning is loading'),
   sastScanner: s__('ciReport|SAST'),
   dastScanner: s__('ciReport|DAST'),
-  depedencyScanner: s__('ciReport|Dependency scanning'),
+  dependencyScanner: s__('ciReport|Dependency scanning'),
   secretDetectionScanner: s__('ciReport|Secret detection'),
   coverageFuzzing: s__('ciReport|Coverage fuzzing'),
   apiFuzzing: s__('ciReport|API fuzzing'),

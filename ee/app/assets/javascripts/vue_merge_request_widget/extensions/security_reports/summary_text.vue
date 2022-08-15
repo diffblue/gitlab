@@ -17,13 +17,19 @@ export default {
       type: Number,
       required: true,
     },
+    isLoading: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
 };
 </script>
 
 <template>
   <div>
-    <gl-sprintf v-if="!totalNewVulnerabilities" :message="$options.i18n.noNewVulnerabilities">
+    <span v-if="isLoading">{{ $options.i18n.loading }}</span>
+    <gl-sprintf v-else-if="!totalNewVulnerabilities" :message="$options.i18n.noNewVulnerabilities">
       <template #scanner>{{ scanner || $options.i18n.securityScanning }}</template>
       <template #bold="{ content }">
         <b>{{ content }}</b>
