@@ -29,8 +29,7 @@ module QA
         sign_in
       end
 
-      context "Add project",
-        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347904' do
+      context "Add project", testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347904' do
         before do
           Resource::Project.fabricate_via_browser_ui! do |project|
             project.name = 'audit-add-project-via-ui'
