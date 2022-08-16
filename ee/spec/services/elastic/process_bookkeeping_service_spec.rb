@@ -204,6 +204,69 @@ RSpec.describe Elastic::ProcessBookkeepingService, :clean_gitlab_redis_shared_st
       expect(described_class.queue_size).to eq(1)
     end
 
+    context 'logging' do
+      let(:logger_double) { instance_double(Gitlab::Elasticsearch::Logger) }
+
+      before do
+        allow(Gitlab::Elasticsearch::Logger).to receive(:build).and_return(logger_double.as_null_object)
+      end
+
+      it 'logs the time it takes to flush the bulk indexer' do
+        described_class.track!(*fake_refs)
+        expect_processing(*fake_refs)
+
+        expect(logger_double).to receive(:info).with(
+          message: 'bulk_indexer_flushed',
+          flushing_duration_s: an_instance_of(Float)
+        )
+
+        described_class.new.execute
+      end
+
+      it 'logs model information and indexing duration about each successful indexing' do
+        described_class.track!(*fake_refs)
+        expect_processing(*fake_refs)
+
+        expect(logger_double).to receive(:info).with(
+          message: 'indexing_done',
+          model_class: "Issue",
+          model_id: an_instance_of(String),
+          es_id: an_instance_of(String),
+          es_parent: "project_1",
+          search_indexing_duration_s: an_instance_of(Float)
+        ).exactly(fake_refs.size).times
+
+        described_class.new.execute
+      end
+
+      it 'does not log about failed indexing' do
+        described_class.track!(*fake_refs)
+
+        failed = fake_refs[0]
+        expect_processing(*fake_refs, failures: [failed])
+
+        expect(logger_double).not_to receive(:info).with(
+          message: 'indexing_done',
+          model_class: "Issue",
+          model_id: failed.db_id,
+          es_id: failed.es_id,
+          es_parent: "project_1",
+          search_indexing_duration_s: an_instance_of(Float)
+        )
+
+        expect(logger_double).to receive(:info).with(
+          message: 'indexing_done',
+          model_class: "Issue",
+          model_id: an_instance_of(String),
+          es_id: an_instance_of(String),
+          es_parent: "project_1",
+          search_indexing_duration_s: an_instance_of(Float)
+        ).exactly(fake_refs.size - 1).times
+
+        described_class.new.execute
+      end
+    end
+
     context 'N+1 queries' do
       it 'does not have N+1 queries for projects' do
         projects = create_list(:project, 2)

@@ -128,7 +128,7 @@ module Elastic
 
     private
 
-    def execute_with_redis(redis)
+    def execute_with_redis(redis) # rubocop:disable Metrics/AbcSize
       start_time = Time.current
 
       specs_buffer = []
@@ -156,13 +156,27 @@ module Elastic
 
       return 0 if specs_buffer.blank?
 
+      indexing_durations = []
       refs = deserialize_all(specs_buffer)
-      refs.preload_database_records.each { |ref| submit_document(ref) }
 
-      failures = bulk_indexer.flush
+      refs.preload_database_records.each do |ref|
+        submit_document(ref)
+
+        indexing_duration = ref.database_record&.updated_at&.then { |updated_at| Time.current - updated_at } || 0.0
+        indexing_durations << indexing_duration
+      end
+
+      flushing_duration_s = Benchmark.realtime do
+        @failures = bulk_indexer.flush
+      end
+
+      logger.info(
+        message: 'bulk_indexer_flushed',
+        flushing_duration_s: flushing_duration_s
+      )
 
       # Re-enqueue any failures so they are retried
-      self.class.track!(*failures) if failures.present?
+      self.class.track!(*@failures) if @failures.present?
 
       # Remove all the successes
       scores.each do |set_key, (first_score, last_score, count)|
@@ -174,8 +188,21 @@ module Elastic
           records_count: count,
           first_score: first_score,
           last_score: last_score,
-          failures_count: failures.count,
+          failures_count: @failures.count,
           bulk_execution_duration_s: Time.current - start_time
+        )
+      end
+
+      refs.each_with_index do |ref, index|
+        next if @failures.include?(ref)
+
+        logger.info(
+          message: 'indexing_done',
+          model_class: ref.klass.to_s,
+          model_id: ref.db_id,
+          es_id: ref.es_id,
+          es_parent: ref.es_parent,
+          search_indexing_duration_s: indexing_durations[index]
         )
       end
 
