@@ -1,4 +1,3 @@
-import { GlIcon } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import VirtualList from 'vue-virtual-scroll-list';
@@ -43,14 +42,6 @@ describe('EpicsSwimlanes', () => {
         pageInfoByListId: {
           'gid://gitlab/List/1': {},
           'gid://gitlab/List/2': {},
-        },
-        listsFlags: {
-          'gid://gitlab/List/1': {
-            unassignedIssuesCount: 1,
-          },
-          'gid://gitlab/List/2': {
-            unassignedIssuesCount: 1,
-          },
         },
         epicsSwimlanesFetchInProgress: {
           epicLanesFetchInProgress,
@@ -166,11 +157,6 @@ describe('EpicsSwimlanes', () => {
 
       await nextTick();
       expect(wrapper.findComponent(IssueLaneList).exists()).toBe(true);
-    });
-
-    it('displays issues icon and count for unassigned issue', () => {
-      expect(wrapper.findComponent(GlIcon).props('name')).toBe('issues');
-      expect(wrapper.findByTestId('issues-lane-issue-count').text()).toBe('2');
     });
 
     it('makes non preset lists draggable', () => {

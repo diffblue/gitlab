@@ -7,7 +7,7 @@ import BoardAddNewColumn from 'ee_else_ce/boards/components/board_add_new_column
 import BoardListHeader from 'ee_else_ce/boards/components/board_list_header.vue';
 import { isListDraggable } from '~/boards/boards_util';
 import eventHub from '~/boards/eventhub';
-import { s__, n__, __ } from '~/locale';
+import { s__, __ } from '~/locale';
 import { defaultSortableOptions } from '~/sortable/constants';
 import { calculateSwimlanesBufferSize } from '../boards_util';
 import { DRAGGABLE_TAG, EPIC_LANE_BASE_HEIGHT, DraggableItemTypes } from '../constants';
@@ -70,14 +70,6 @@ export default {
     unassignedIssues() {
       return (listId) => this.getUnassignedIssues(listId);
     },
-    unassignedIssuesCount() {
-      return this.lists.reduce((total, list) => {
-        return total + (this.listsFlags[list.id]?.unassignedIssuesCount || 0);
-      }, 0);
-    },
-    unassignedIssuesCountTooltipText() {
-      return n__(`%d unassigned issue`, `%d unassigned issues`, this.unassignedIssuesCount);
-    },
     treeRootWrapper() {
       return this.canAdminList ? Draggable : DRAGGABLE_TAG;
     },
@@ -95,10 +87,7 @@ export default {
       return this.canAdminList ? options : {};
     },
     hasMoreUnassignedIssues() {
-      return (
-        this.unassignedIssuesCount > 0 &&
-        this.lists.some((list) => this.pageInfoByListId[list.id]?.hasNextPage)
-      );
+      return this.lists.some((list) => this.pageInfoByListId[list.id]?.hasNextPage);
     },
     isLoading() {
       const {
@@ -268,18 +257,6 @@ export default {
               class="gl-mr-3 gl-font-weight-bold gl-white-space-nowrap gl-text-overflow-ellipsis gl-overflow-hidden"
             >
               {{ __('Issues with no epic assigned') }}
-            </span>
-            <span
-              v-if="unassignedIssuesCount > 0"
-              v-gl-tooltip.hover
-              :title="unassignedIssuesCountTooltipText"
-              class="gl-display-flex gl-align-items-center gl-text-gray-500"
-              tabindex="0"
-              :aria-label="unassignedIssuesCountTooltipText"
-              data-testid="issues-lane-issue-count"
-            >
-              <gl-icon class="gl-mr-2 gl-flex-shrink-0" name="issues" />
-              <span aria-hidden="true">{{ unassignedIssuesCount }}</span>
             </span>
           </div>
         </div>
