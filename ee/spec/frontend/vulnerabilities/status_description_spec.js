@@ -1,7 +1,7 @@
 import { GlLink, GlSkeletonLoader, GlLoadingIcon } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
 import { capitalize } from 'lodash';
-import StatusText from 'ee/vulnerabilities/components/status_description.vue';
+import StatusDescription from 'ee/vulnerabilities/components/status_description.vue';
 import { VULNERABILITY_STATE_OBJECTS, VULNERABILITY_STATES } from 'ee/vulnerabilities/constants';
 import UsersMockHelper from 'helpers/user_mock_data_helper';
 import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
@@ -32,14 +32,14 @@ describe('Vulnerability status description component', () => {
     const vulnerability = props.vulnerability || { pipeline: {} };
     // Automatically create the ${v.state}_at property if it doesn't exist. Otherwise, every test would need to create
     // it manually for the component to mount properly.
-    if (vulnerability.state === 'detected') {
+    if (vulnerability.pipeline && vulnerability.state === 'detected') {
       vulnerability.pipeline.createdAt = vulnerability.pipeline.createdAt || createDate();
     } else {
       const propertyName = `${vulnerability.state}At`;
       vulnerability[propertyName] = vulnerability[propertyName] || createDate();
     }
 
-    wrapper = mount(StatusText, { propsData: { ...props, vulnerability } });
+    wrapper = mount(StatusDescription, { propsData: { ...props, vulnerability } });
   };
 
   describe('state text', () => {
@@ -162,6 +162,16 @@ describe('Vulnerability status description component', () => {
       expect(skeletonLoader().exists()).toBe(false);
       expect(timeAgo().exists()).toBe(true);
       expect(pipelineLink().exists()).toBe(true);
+    });
+  });
+
+  describe('without pipeline data', () => {
+    it('does not render any information', () => {
+      // mount without a pipeline
+      createWrapper({ vulnerability: { state: 'detected', pipeline: null } });
+
+      expect(timeAgo().exists()).toBe(false);
+      expect(pipelineLink().exists()).toBe(false);
     });
   });
 });

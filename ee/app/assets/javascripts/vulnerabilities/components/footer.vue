@@ -106,10 +106,15 @@ export default {
       return Api.buildUrl(Api.vulnerabilityIssueLinksPath).replace(':id', this.vulnerability.id);
     },
     vulnerabilityDetectionData() {
-      return {
-        state: 'detected',
-        pipeline: this.vulnerability.pipeline,
-      };
+      const { pipeline } = this.vulnerability;
+
+      // manually submitted vulnerabilities have no associated pipeline, in that case we don't display the detection data
+      return pipeline
+        ? {
+            state: 'detected',
+            pipeline,
+          }
+        : null;
     },
   },
   beforeDestroy() {
@@ -209,7 +214,7 @@ export default {
       :project-path="project.url"
       :help-path="vulnerability.relatedIssuesHelpPath"
     />
-    <div class="notes" data-testid="detection-note">
+    <div v-if="vulnerabilityDetectionData" class="notes" data-testid="detection-note">
       <div class="system-note gl-display-flex gl-align-items-center gl-p-0! gl-mt-6!">
         <div class="timeline-icon gl-m-0!">
           <gl-icon name="search-dot" class="circle-icon-container" />
