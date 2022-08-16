@@ -30,7 +30,7 @@ exports[`StreamEmptyState should render correctly 1`] = `
     variant="confirm"
   >
     
-      Add stream
+      Add streaming destination
     
   </gl-button-stub>
 </gl-empty-state-stub>

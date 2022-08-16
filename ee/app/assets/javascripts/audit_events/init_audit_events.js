@@ -24,8 +24,8 @@ export default (selector) => {
     showStreams,
     groupPath,
     emptyStateSvgPath,
-    streamsIconSvgPath,
   } = el.dataset;
+
   const store = createStore();
   const parsedFilterTokenOptions = JSON.parse(filterTokenOptions).map((filterTokenOption) =>
     convertObjectPropsToCamelCase(filterTokenOption),
@@ -51,7 +51,6 @@ export default (selector) => {
       // group level and project level are mutually exclusive.
       isProject: !groupPath,
       emptyStateSvgPath,
-      streamsIconSvgPath,
     },
     apolloProvider,
     render: (createElement) => createElement(AuditEventsApp),
