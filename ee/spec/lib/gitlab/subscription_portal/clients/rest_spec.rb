@@ -8,7 +8,13 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Rest do
   let(:http_method) { :post }
   let(:error_message) { 'Our team has been notified. Please try again.' }
   let(:gitlab_http_response) do
-    double(code: http_response.code, response: http_response, body: {}, parsed_response: {})
+    double(
+      code: http_response.code,
+      response: http_response,
+      body: {},
+      parsed_response: {},
+      message: 'message'
+    )
   end
 
   shared_examples 'when response is successful' do
@@ -37,9 +43,15 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Rest do
     let(:http_response) { Net::HTTPUnprocessableEntity.new(1.0, '422', 'Error') }
 
     it 'has a unprocessable entity status' do
+      allow(Gitlab::ErrorTracking).to receive(:log_exception)
       allow(Gitlab::HTTP).to receive(http_method).and_return(gitlab_http_response)
 
       expect(subject[:success]).to eq(false)
+
+      expect(Gitlab::ErrorTracking).to have_received(:log_exception).with(
+        instance_of(::Gitlab::SubscriptionPortal::Client::ResponseError),
+        { status: '422', message: 'message', body: {} }
+      )
     end
   end
 
@@ -47,9 +59,15 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Rest do
     let(:http_response) { Net::HTTPServerError.new(1.0, '500', 'Error') }
 
     it 'has a server error status' do
+      allow(Gitlab::ErrorTracking).to receive(:log_exception)
       allow(Gitlab::HTTP).to receive(http_method).and_return(gitlab_http_response)
 
       expect(subject[:success]).to eq(false)
+
+      expect(Gitlab::ErrorTracking).to have_received(:log_exception).with(
+        instance_of(::Gitlab::SubscriptionPortal::Client::ResponseError),
+        { status: '500', message: 'message', body: {} }
+      )
     end
   end
 
