@@ -468,6 +468,8 @@ experience, refactors the existing code). Then:
 - Offer alternative implementations, but assume the author already considered
   them. ("What do you think about using a custom validator here?")
 - Seek to understand the author's perspective.
+- Check out the branch, and test the changes locally. You can decide how much manual testing you want to perform.
+  Your testing might result in opportunities to add automated tests.
 - If you don't understand a piece of code, _say so_. There's a good chance
   someone else would be confused by it as well.
 - Ensure the author is clear on what is required from them to address/resolve the suggestion.
