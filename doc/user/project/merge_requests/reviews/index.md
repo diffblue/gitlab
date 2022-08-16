@@ -110,6 +110,10 @@ This example shows reviewers and approval rules in a merge request sidebar:
 
 ![Reviewer approval rules in sidebar](img/reviewer_approval_rules_sidebar_v13_8.png)
 
+  WARNING:
+  There is currently a **100 reviewer limit** on [gitlab-org/gitlab](https://gitlab.com/gitlab-org/gitlab/).
+  This can be enabled or disabled by using the `limit_reviewer_and_assignee_size` feature flag.
+
 ### Request a new review
 
 > [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/293933) in GitLab 13.9.
