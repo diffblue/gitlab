@@ -43,8 +43,7 @@
             = number_with_delimiter users_over_license
           .text-uppercase.gl-mb-4= _('Users over License')
           - if users_over_license > 0
-            .gl-alert.gl-alert-info.gl-mb-3{ role: 'alert' }
-              = sprite_icon('information-o', css_class: 'gl-icon gl-alert-icon gl-alert-icon-no-title')
-              .gl-alert-body
+            = render Pajamas::AlertComponent.new(alert_options: { class: 'gl-mb-3' }, dismissible: false) do |c|
+              = c.body do
                 = s_('Your instance has exceeded your subscription\'s licensed user count.')
           = _('You\'ll be charged for %{true_up_link_start}users over license%{link_end} on a quarterly or annual basis, depending on the terms of your agreement.').html_safe % { true_up_link_start: true_up_link_start, link_end: link_end }
