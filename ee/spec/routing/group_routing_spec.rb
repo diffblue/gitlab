@@ -77,4 +77,34 @@ RSpec.describe 'Group routing', "routing" do
       expect(get("/groups/gitlabhq/-/discover_premium_and_ultimate")).to route_to('groups/feature_discovery_moments#advanced_features_dashboard', group_id: 'gitlabhq')
     end
   end
+
+  #             test_group_hook POST   /groups/:group_id/-/hooks/:id/test(.:format) hooks#test
+  #                 group_hooks GET    /groups/:group_id/-/hooks(.:format)          hooks#index
+  #                             POST   /groups/:group_id/-/hooks(.:format)          hooks#create
+  #             edit_group_hook GET    /groups/:group_id/-/hooks/:id/edit(.:format) hooks#edit
+  #                  group_hook PUT    /groups/:group_id/-/hooks/:id(.:format)      hooks#update
+  #                             DELETE /groups/:group_id/-/hooks/:id(.:format)      hooks#destroy
+  describe Groups::HooksController, 'routing' do
+    it 'to #test' do
+      expect(post('/groups/gitlabhq/-/hooks/1/test')).to route_to('groups/hooks#test', group_id: 'gitlabhq', id: '1')
+    end
+
+    it_behaves_like 'resource routing' do
+      let(:actions) { %i[index create destroy edit update] }
+      let(:base_path) { '/groups/gitlabhq/-/hooks' }
+      let(:base_params) { { group_id: 'gitlabhq' } }
+    end
+  end
+
+  #   retry_group_hook_hook_log POST   /groups/:group_id/-/hooks/:hook_id/hook_logs/:id/retry(.:format) groups/hook_logs#retry
+  #         group_hook_hook_log GET    /groups/:group_id/-/hooks/:hook_id/hook_logs/:id(.:format)       groups/hook_logs#show
+  describe Groups::HookLogsController, 'routing' do
+    it 'to #retry' do
+      expect(post('/groups/gitlabhq/-/hooks/1/hook_logs/1/retry')).to route_to('groups/hook_logs#retry', group_id: 'gitlabhq', hook_id: '1', id: '1')
+    end
+
+    it 'to #show' do
+      expect(get('/groups/gitlabhq/-/hooks/1/hook_logs/1')).to route_to('groups/hook_logs#show', group_id: 'gitlabhq', hook_id: '1', id: '1')
+    end
+  end
 end

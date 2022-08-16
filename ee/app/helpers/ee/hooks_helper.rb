@@ -29,5 +29,14 @@ module EE
         super
       end
     end
+
+    override :hook_log_path
+    def hook_log_path(hook, hook_log)
+      if hook.is_a?(GroupHook)
+        hook_log.present.details_path
+      else
+        super
+      end
+    end
   end
 end
