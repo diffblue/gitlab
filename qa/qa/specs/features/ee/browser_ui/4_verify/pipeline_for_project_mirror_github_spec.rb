@@ -3,7 +3,7 @@
 require 'base64'
 
 module QA
-  describe 'Verify', :github, :requires_admin, only: { subdomain: :staging } do
+  describe 'Verify', :github, :requires_admin, only: { subdomain: %i[staging staging-canary] } do
     describe 'Pipeline for project mirrors Github' do
       let(:commit_message) { "Update #{github_data[:file_name]} - #{Time.now}" }
       let(:project_name) { 'github-project-with-pipeline' }
