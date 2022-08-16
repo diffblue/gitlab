@@ -87,7 +87,7 @@ module Namespaces
       end
 
       def content_class
-        "container-limited" unless user.layout == "fluid"
+        "container-limited limit-container-width" unless user.layout == "fluid"
       end
     end
   end
