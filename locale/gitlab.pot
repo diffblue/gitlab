@@ -21556,6 +21556,9 @@ msgstr ""
 msgid "InviteMembersModal|Members were successfully added"
 msgstr ""
 
+msgid "InviteMembersModal|Please select members or type email addresses to invite"
+msgstr ""
+
 msgid "InviteMembersModal|Review the invite errors and try again:"
 msgstr ""
 
