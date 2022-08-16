@@ -6,12 +6,17 @@ RSpec.describe Security::TrainingUrlsFinder do
   let_it_be(:project) { create(:project) }
   let_it_be(:filename) { nil }
   let_it_be(:vulnerability) { create(:vulnerability, :with_findings, project: project) }
+
   let_it_be(:identifier) do
     create(:vulnerabilities_identifier,
       project: project,
       external_type: 'cwe',
       external_id: 2,
       name: 'cwe-2')
+  end
+
+  let_it_be(:identifier_external_id) do
+    "[#{identifier.external_type}]-[#{identifier.external_id}]-[#{identifier.name}]"
   end
 
   subject { described_class.new(project, identifier_external_ids, filename).execute }
@@ -25,7 +30,7 @@ RSpec.describe Security::TrainingUrlsFinder do
   end
 
   context 'identifiers with cwe external type' do
-    let(:identifier_external_ids) { ["[#{identifier.external_type}]-[#{identifier.external_id}]-[#{identifier.name}]"] }
+    let(:identifier_external_ids) { [identifier_external_id] }
 
     context 'when there is no training provider enabled for project' do
       it 'returns empty list' do
@@ -65,7 +70,7 @@ RSpec.describe Security::TrainingUrlsFinder do
           context "when a filename with extension .#{extension} is provided" do
             let_it_be(:filename) { "code.#{extension}" }
             let_it_be(:training_provider) do
-              ::Security::TrainingProviders::KontraUrlFinder.new(project, identifier.external_id, language)
+              ::Security::TrainingProviders::KontraUrlFinder.new(project, identifier_external_id, language)
             end
 
             before do

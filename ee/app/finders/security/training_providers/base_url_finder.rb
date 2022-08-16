@@ -13,12 +13,14 @@ module Security
       def initialize(project, provider, identifier_external_id, language = nil)
         @project = project
         @provider = provider
-        @identifier_external_id = identifier_external_id.split('-').last
-        @identifier = identifier_external_id # we need this to hold the pre-parsed data
+        @identifier_external_id = identifier_external_id
         @language = language
+        @external_type, @external_id, @identifier = identifier_external_id[1..-2].split(']-[')
       end
 
       def execute
+        return unless external_type.in? allowed_identifier_list
+
         if response_url.nil?
           { name: provider.name, url: response_url, status: "pending" }
         elsif response_url[:url]
@@ -27,7 +29,7 @@ module Security
       end
 
       def self.from_cache(id)
-        project_id, provider_id, identifier_external_id, language = id.split('-')
+        project_id, provider_id, identifier_external_id, language = id.split('--')
 
         project = Project.find(project_id)
         provider = ::Security::TrainingProvider.find(provider_id)
@@ -37,7 +39,13 @@ module Security
 
       private
 
-      attr_reader :project, :provider, :identifier_external_id, :language
+      attr_reader :project,
+                  :provider,
+                  :identifier_external_id,
+                  :language,
+                  :external_id,
+                  :external_type,
+                  :identifier
 
       def response_url
         strong_memoize(:response_url) do
@@ -52,11 +60,15 @@ module Security
       # Required for ReactiveCaching; Usage overridden by
       # self.reactive_cache_worker_finder
       def id
-        "#{project.id}-#{provider.id}-#{identifier_external_id}#{language_id_suffix}"
+        "#{project.id}--#{provider.id}--#{identifier_external_id}#{language_id_suffix}"
       end
 
       def language_id_suffix
-        "-#{@language}" if @language
+        "--#{@language}" if @language
+      end
+
+      def allowed_identifier_list
+        raise 'allowed_identifier_list must be overwritten to return training url'
       end
     end
   end
