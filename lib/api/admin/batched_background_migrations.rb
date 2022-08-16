@@ -17,7 +17,8 @@ module API
             optional :database,
               type: String,
               values: Gitlab::Database.all_database_names,
-              desc: 'The name of the database, the default `main`'
+              desc: 'The name of the database, the default `main`',
+              default: 'main'
           end
           get do
             database = params[:database] || Gitlab::Database::MAIN_DATABASE_NAME
