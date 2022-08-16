@@ -41,13 +41,11 @@ RSpec.describe 'epics swimlanes', :js do
     end
 
     it 'displays issue not assigned to epic title and unassigned issues lane only on expand' do
-      page.within('.board-lane-unassigned-issues-title') do
-        expect(page).not_to have_selector('span[data-testid="issues-lane-issue-count"]')
+      expect(page).not_to have_selector('[data-testid="board-lane-unassigned-issues"]')
 
-        load_unassigned_issues
+      load_unassigned_issues
 
-        expect(page.find('span[data-testid="issues-lane-issue-count"]')).to have_content('1')
-      end
+      expect(page).to have_selector('[data-testid="board-lane-unassigned-issues"]')
     end
 
     it 'displays default lists and a label list' do
@@ -79,13 +77,11 @@ RSpec.describe 'epics swimlanes', :js do
     end
 
     it 'displays issue not assigned to epic title and unassigned issues lane only on expand' do
-      page.within('.board-lane-unassigned-issues-title') do
-        expect(page).not_to have_selector('span[data-testid="issues-lane-issue-count"]')
+      expect(page).not_to have_selector('[data-testid="board-lane-unassigned-issues"]')
 
-        load_unassigned_issues
+      load_unassigned_issues
 
-        expect(page.find('span[data-testid="issues-lane-issue-count"]')).to have_content('1')
-      end
+      expect(page).to have_selector('[data-testid="board-lane-unassigned-issues"]')
     end
   end
 

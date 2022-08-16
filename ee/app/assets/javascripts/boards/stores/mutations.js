@@ -17,11 +17,8 @@ export default {
     Vue.set(state.boardLists, listId, list);
   },
 
-  [mutationTypes.RECEIVE_ITEMS_FOR_LIST_SUCCESS]: (
-    state,
-    { listItems, listPageInfo, listId, noEpicIssues },
-  ) => {
-    const { listData, boardItems, listItemsCount } = listItems;
+  [mutationTypes.RECEIVE_ITEMS_FOR_LIST_SUCCESS]: (state, { listItems, listPageInfo, listId }) => {
+    const { listData, boardItems } = listItems;
     Vue.set(state, 'boardItems', { ...state.boardItems, ...boardItems });
     Vue.set(
       state.boardItemsByListId,
@@ -31,9 +28,6 @@ export default {
     Vue.set(state.pageInfoByListId, listId, listPageInfo[listId]);
     Vue.set(state.listsFlags[listId], 'isLoading', false);
     Vue.set(state.listsFlags[listId], 'isLoadingMore', false);
-    if (noEpicIssues) {
-      Vue.set(state.listsFlags[listId], 'unassignedIssuesCount', listItemsCount);
-    }
   },
 
   [mutationTypes.RECEIVE_ITEMS_FOR_LIST_FAILURE]: (state, listId) => {
