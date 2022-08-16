@@ -309,6 +309,7 @@ export default {
           :assignees="workItemAssignees.assignees.nodes"
           :allows-multiple-assignees="workItemAssignees.allowsMultipleAssignees"
           :work-item-type="workItemType"
+          :can-invite-members="workItemAssignees.canInviteMembers"
           @error="error = $event"
         />
         <work-item-labels

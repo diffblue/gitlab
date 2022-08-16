@@ -47,6 +47,7 @@ export const workItemQueryResponse = {
           __typename: 'WorkItemWidgetAssignees',
           type: 'ASSIGNEES',
           allowsMultipleAssignees: true,
+          canInviteMembers: true,
           assignees: {
             nodes: mockAssignees,
           },
@@ -108,6 +109,7 @@ export const updateWorkItemMutationResponse = {
             __typename: 'WorkItemWidgetAssignees',
             type: 'ASSIGNEES',
             allowsMultipleAssignees: true,
+            canInviteMembers: true,
             assignees: {
               nodes: [mockAssignees[0]],
             },
@@ -134,6 +136,7 @@ export const workItemResponseFactory = ({
   assigneesWidgetPresent = true,
   weightWidgetPresent = true,
   confidential = false,
+  canInviteMembers = false,
   parent = mockParent.parent,
 } = {}) => ({
   data: {
@@ -166,6 +169,7 @@ export const workItemResponseFactory = ({
               __typename: 'WorkItemWidgetAssignees',
               type: 'ASSIGNEES',
               allowsMultipleAssignees,
+              canInviteMembers,
               assignees: {
                 nodes: mockAssignees,
               },
