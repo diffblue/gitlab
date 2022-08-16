@@ -12,7 +12,7 @@
   .settings-content
     = form_for @group, html: { multipart: true, class: 'gl-show-field-errors' }, authenticity_token: true do |f|
       %input{ type: 'hidden', name: 'update_section', value: 'js-custom-project-templates-settings' }
-      = form_errors(@group, pajamas_alert: true)
+      = form_errors(@group)
 
       %fieldset
         .form-group

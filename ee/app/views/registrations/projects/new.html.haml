@@ -29,7 +29,7 @@
         .tab-content.gitlab-tab-content.gl-bg-white
           #blank-project-pane.tab-pane.js-toggle-container.active{ role: 'tabpanel' }
             = gitlab_ui_form_for @project, url: users_sign_up_projects_path(trial_onboarding_flow: params[:trial_onboarding_flow]), html: { class: 'new_project' } do |f|
-              = form_errors(@project, pajamas_alert: true)
+              = form_errors(@project)
               = f.hidden_field :namespace_id, value: @project.namespace_id
               #blank-project-name.row
                 .form-group.project-name.col-sm-12

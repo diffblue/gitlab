@@ -13,7 +13,7 @@
 
       = gitlab_ui_form_for [:subscriptions, @group], html: { class: 'gl-show-field-errors card w-100 gl-p-5' } do |f|
         = hidden_field_tag :new_user, params[:new_user]
-        = form_errors(@group, pajamas_alert: true)
+        = form_errors(@group)
         .row
           .form-group.group-name-holder.col-sm-12
             = f.label :name, class: 'label-bold' do

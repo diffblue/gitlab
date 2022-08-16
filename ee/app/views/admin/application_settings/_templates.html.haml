@@ -10,7 +10,7 @@
         = link_to _('What templates can I create?'), help_page_path('user/admin_area/settings/instance_template_repository.md', anchor: 'supported-file-types-and-locations'), target: '_blank', rel: 'noopener noreferrer'
     .settings-content
       = form_for @application_setting, url: templates_admin_application_settings_path, html: { class: 'fieldset-form' } do |f|
-        = form_errors(@application_setting, pajamas_alert: true)
+        = form_errors(@application_setting)
 
         %fieldset
           .form-group
