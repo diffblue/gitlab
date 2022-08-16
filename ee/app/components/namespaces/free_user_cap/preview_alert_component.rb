@@ -27,8 +27,8 @@ module Namespaces
       def alert_attributes
         {
           title: n_(
-            'From October 19, 2022, free groups will be limited to %d member',
-            'From October 19, 2022, free groups will be limited to %d members',
+            'From October 19, 2022, free private groups will be limited to %d member',
+            'From October 19, 2022, free private groups will be limited to %d members',
             free_user_limit
           ) % free_user_limit,
           body: _(

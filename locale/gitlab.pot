@@ -16799,8 +16799,8 @@ msgstr ""
 msgid "From %{providerTitle}"
 msgstr ""
 
-msgid "From October 19, 2022, free groups will be limited to %d member"
-msgid_plural "From October 19, 2022, free groups will be limited to %d members"
+msgid "From October 19, 2022, free private groups will be limited to %d member"
+msgid_plural "From October 19, 2022, free private groups will be limited to %d members"
 msgstr[0] ""
 msgstr[1] ""
 
