@@ -262,12 +262,21 @@ RSpec.describe Group do
     let_it_be(:internal_subgroup) { create(:group, :internal, parent: public_group) }
     let_it_be(:private_subgroup_1) { create(:group, :private, parent: internal_subgroup) }
     let_it_be(:private_subgroup_2) { create(:group, :private, parent: private_subgroup_1) }
+    let_it_be(:shared_with_group) { create(:group, :private) }
 
     let(:user) { create(:user) }
     let(:groups) { described_class.where(id: [public_group.id, internal_subgroup.id, private_subgroup_1.id, private_subgroup_2.id]) }
+    let(:params) { { same_root: true } }
+    let(:shared_group_access) { GroupMember::GUEST }
+
+    before do
+      create(:group_group_link, { shared_with_group: shared_with_group,
+                                  shared_group: private_subgroup_1,
+                                  group_access: shared_group_access })
+    end
 
     subject do
-      described_class.groups_user_can(groups, user, action)
+      described_class.groups_user_can(groups, user, action, **params)
     end
 
     shared_examples 'a filter for permissioned groups' do
@@ -299,7 +308,6 @@ RSpec.describe Group do
 
           it 'does not use filter optimization' do
             expect(Group).not_to receive(:filter_groups_user_can)
-
             expect(subject).to eq expected_groups
           end
         end
@@ -309,6 +317,14 @@ RSpec.describe Group do
             stub_feature_flags(find_epics_performance_improvement: false)
           end
 
+          it 'does not use filter optimization' do
+            expect(Group).not_to receive(:filter_groups_user_can)
+
+            expect(subject).to eq expected_groups
+          end
+        end
+
+        context 'when same_root is false' do
           it 'does not use filter optimization' do
             expect(Group).not_to receive(:filter_groups_user_can)
 
@@ -357,17 +373,85 @@ RSpec.describe Group do
           let(:expected_groups) { [public_group, internal_subgroup] }
         end
       end
+
+      context 'when user has membership from a group share' do
+        let_it_be(:user) { create(:user) }
+
+        before do
+          shared_with_group.add_guest(user)
+        end
+
+        it_behaves_like 'a filter for permissioned groups' do
+          let(:expected_groups) { [public_group, internal_subgroup, private_subgroup_1, private_subgroup_2] }
+        end
+      end
+
+      context 'when user is member of a project in the hierarchy' do
+        let_it_be(:private_subgroup_with_project) { create(:group, :private, parent: public_group) }
+        let_it_be(:project) { create(:project, group: private_subgroup_with_project) }
+
+        let(:user) { create(:user) }
+        let(:groups) { described_class.where(id: [private_subgroup_with_project, public_group.id, internal_subgroup.id, private_subgroup_1.id, private_subgroup_2.id]) }
+
+        before do
+          project.add_developer(user)
+        end
+
+        it_behaves_like 'a filter for permissioned groups' do
+          let(:expected_groups) { [public_group, internal_subgroup, private_subgroup_with_project] }
+        end
+      end
     end
 
     context 'for :read_confidential_epic permission' do
       let(:action) { :read_confidential_epic }
 
-      before do
-        private_subgroup_1.add_reporter(user)
+      context 'when user is guest' do
+        before do
+          private_subgroup_1.add_guest(user)
+        end
+
+        it_behaves_like 'a filter for permissioned groups' do
+          let(:expected_groups) { [] }
+        end
       end
 
-      it_behaves_like 'a filter for permissioned groups' do
-        let(:expected_groups) { [private_subgroup_1, private_subgroup_2] }
+      context 'when user is reporter' do
+        before do
+          private_subgroup_1.add_reporter(user)
+        end
+
+        it_behaves_like 'a filter for permissioned groups' do
+          let(:expected_groups) { [private_subgroup_1, private_subgroup_2] }
+        end
+      end
+
+      context 'when user is reporter via shared group' do
+        let(:shared_group_access) { GroupMember::REPORTER }
+
+        before do
+          shared_with_group.add_reporter(user)
+        end
+
+        it_behaves_like 'a filter for permissioned groups' do
+          let(:expected_groups) { [private_subgroup_1, private_subgroup_2] }
+        end
+      end
+
+      context 'when user is member of a project in the hierarchy' do
+        let_it_be(:private_subgroup_with_project) { create(:group, :private, parent: public_group) }
+        let_it_be(:project) { create(:project, group: private_subgroup_with_project) }
+
+        let(:user) { create(:user) }
+        let(:groups) { described_class.where(id: [private_subgroup_with_project, public_group.id, internal_subgroup.id, private_subgroup_1.id, private_subgroup_2.id]) }
+
+        before do
+          project.add_developer(user)
+        end
+
+        it_behaves_like 'a filter for permissioned groups' do
+          let(:expected_groups) { [] }
+        end
       end
     end
 

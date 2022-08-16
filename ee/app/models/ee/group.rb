@@ -118,6 +118,11 @@ module EE
         ).where.not(file_template_project_id: nil)
       end
 
+      # Returns groups with public or internal visibility_level.
+      # Used by Group.groups_user_can method to include groups
+      # where user access_level does not need to be checked.
+      scope :not_private, -> { where('visibility_level > ?', ::Gitlab::VisibilityLevel::PRIVATE) }
+
       scope :for_epics, ->(epics) do
         epics_query = epics.select(:group_id)
         joins("INNER JOIN (#{epics_query.to_sql}) as epics on epics.group_id = namespaces.id")
@@ -187,28 +192,26 @@ module EE
 
     class_methods do
       def groups_user_can(groups, user, action, same_root: false)
-        groups = ::Gitlab::GroupPlansPreloader.new.preload(groups)
-
-        # if we are sure that all groups have the same root group, we can
-        # preset root_ancestor for all of them to avoid an additional SQL query
-        # done for each group permission check:
-        # https://gitlab.com/gitlab-org/gitlab/issues/11539
-        preset_root_ancestor_for(groups) if same_root
-
         # If :find_epics_performance_improvement and :use_traversal_ids
         # are enabled we can use filter optmization to skip some permission check queries in group descendants.
-        if can_use_filter_optimization?(groups)
+        if same_root && can_use_epics_filtering_optimization?(groups)
           filter_groups_user_can(groups: groups, user: user, action: action)
         else
+          groups = ::Gitlab::GroupPlansPreloader.new.preload(groups)
+
+          # if we are sure that all groups have the same root group, we can
+          # preset root_ancestor for all of them to avoid an additional SQL query
+          # done for each group permission check:
+          # https://gitlab.com/gitlab-org/gitlab/issues/11539
+          preset_root_ancestor_for(groups) if same_root
+
           DeclarativePolicy.user_scope do
             groups.select { |group| Ability.allowed?(user, action, group) }
           end
         end
       end
 
-      private
-
-      def can_use_filter_optimization?(groups)
+      def can_use_epics_filtering_optimization?(groups)
         return false unless groups.any?
 
         group = groups.first
@@ -218,37 +221,78 @@ module EE
         ::Feature.enabled?(:find_epics_performance_improvement)
       end
 
-      # Prevents doing one query to check user access for each group when possible.
-      # When user have access and have permissions in a given group it skips all queries
-      # for its descendants.
-      # More information at https://gitlab.com/gitlab-org/gitlab/-/issues/217937.
+      private
+
+      # Used when all groups that user is fetching epics for belongs to the same hierarchy.
+      # It prevents doing one query to check user access for each group which causes
+      # timeouts on big hierarchies.
+      # Instead of iterating over all groups over policies we perform a union of queries
+      # to get all groups that users can read epics with:
+      #
+      #  1 fragment takes all groups via direct authorization
+      #  1 fragment to take groups authorized by shares
+      #  1 to get groups authorized via project membership
+      #  1 to get public/internal groups within the hierarchy
+      #
+      # More information at https://gitlab.com/gitlab-org/gitlab/-/issues/367868#note_1027151497
       def filter_groups_user_can(groups:, user:, action:)
-        return [] unless ALLOWED_ACTIONS_TO_USE_FILTERING_OPTIMIZATION.include?(action)
+        return ::Group.none unless ALLOWED_ACTIONS_TO_USE_FILTERING_OPTIMIZATION.include?(action)
 
-        groups = groups.reorder(nil).to_a unless groups.is_a?(Array) # Make sure hierarchy is ordered from parent to children
+        top_level_group = groups.first&.root_ancestor
 
-        groups.each_with_object([]) do |group, authorized_groups|
-          next if authorized_groups.include?(group)
+        return ::Group.none unless top_level_group
+        return ::Group.none unless top_level_group.feature_available?(:epics)
 
-          authorized = self.fetch_authorized_group_and_descendants_for(user, group, groups, action)
+        access_level =
+          if action == :read_confidential_epic
+            ::Gitlab::Access::REPORTER
+          else
+            ::Gitlab::Access::GUEST
+          end
 
-          authorized_groups.push(*authorized)
+        queries_for_union = [
+          hierarchy_group_ids_authorized_by_membership(user, top_level_group, access_level),
+          hierarchy_group_ids_authorized_by_share(user, groups, access_level)
+        ]
+
+        if action == :read_epic
+          queries_for_union << hierarchy_groups_authorized_by_project_membership(user, top_level_group)
+
+          # Gets public and internal groups
+          # Not needed if top level group is private
+          queries_for_union << top_level_group.self_and_descendants.not_private.select(:id) unless top_level_group.private?
         end
+
+        group_ids_union = ::Gitlab::SQL::Union.new(queries_for_union)
+
+        where(id: groups.select(:id)).where("id IN (#{group_ids_union.to_sql})") # rubocop:disable GitlabSecurity/SqlInjection
       end
 
-      def fetch_authorized_group_and_descendants_for(user, group, groups, action)
-        return [] unless Ability.allowed?(user, action, group)
+      def hierarchy_group_ids_authorized_by_membership(user, hierarchy_parent, access_level)
+        where('traversal_ids && ARRAY(?)',
+          hierarchy_parent.members_with_descendants
+            .where('access_level >= ?', access_level)
+            .where(user: user)
+            .select(:source_id)
+        ).select(:id)
+      end
 
-        has_access = Ability.allowed?(user, :read_namespace, group)
+      def hierarchy_group_ids_authorized_by_share(user, groups_hierarchy, access_level)
+        where('traversal_ids && ARRAY(?)::int[]',
+          ::GroupGroupLink
+            .where(shared_group_id: groups_hierarchy.select(:id))
+            .where('group_access >= ?', access_level)
+            .where(shared_with_group_id: ::GroupMember.where(user: user).authorizable.select(:source_id) )
+            .select(:shared_group_id)
+        ).select(:id)
+      end
 
-        if has_access
-          groups.select { |g| g.traversal_ids.include?(group.id) }
-        else
-          # An user can have permissions on group but not be a member, for example, inherit permissions because of membership in a project on a subgroup.
-          # In this case we cannot safely assume that all group children are readable by user, user can only read groups at the same tree branch
-          # where the project belongs to.
-          group
-        end
+      def hierarchy_groups_authorized_by_project_membership(user, hierarchy_parent)
+        group_ids_that_has_projects =
+          user.projects.for_group_and_its_subgroups(hierarchy_parent)
+            .select(:namespace_id)
+
+        where(id: group_ids_that_has_projects).select('unnest(traversal_ids)')
       end
     end
 
