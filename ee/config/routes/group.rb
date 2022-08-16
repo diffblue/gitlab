@@ -8,7 +8,7 @@ constraints(::Constraints::GroupUrlConstrainer.new) do
     draw :wiki
 
     namespace :settings do
-      resource :reporting, only: [:show, :update], controller: 'reporting'
+      resource :reporting, only: [:show], controller: 'reporting'
     end
 
     resources :group_members, only: [], concerns: :access_requestable do

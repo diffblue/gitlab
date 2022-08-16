@@ -33,7 +33,7 @@ RSpec.describe Groups::Settings::ReportingController, type: :request do
       it_behaves_like 'renders 404'
     end
 
-    context 'when feature flag is disabled' do
+    context 'when licensed feature is not available' do
       let(:licensed_feature_available) { false }
 
       it_behaves_like 'renders 404'
@@ -73,52 +73,6 @@ RSpec.describe Groups::Settings::ReportingController, type: :request do
         request
 
         expect(response).to have_gitlab_http_status(:not_found)
-      end
-    end
-  end
-
-  describe 'PATCH #update' do
-    let(:params) { { group: { unique_project_download_limit: 10 } } }
-
-    subject(:request) do
-      patch(group_settings_reporting_path(group), params: params)
-    end
-
-    context 'when user is not an owner' do
-      before do
-        group.add_maintainer(user)
-      end
-
-      it 'renders a 404' do
-        request
-
-        expect(response).to have_gitlab_http_status(:not_found)
-      end
-    end
-
-    context 'when user is an owner' do
-      before do
-        group.add_owner(user)
-      end
-
-      it_behaves_like '404 when feature is unavailable'
-
-      it 'redirects back to show page' do
-        request
-
-        expect(response).to redirect_to(group_settings_reporting_path(group))
-        expect(flash[:notice]).to include("Group \"#{group.name}\" was successfully updated.")
-      end
-
-      context 'update failed' do
-        let(:params) { { group: { unique_project_download_limit: -1 } } }
-
-        it 're-renders show template' do
-          request
-
-          expect(response).not_to have_gitlab_http_status(:redirect)
-          expect(response).to render_template(:show)
-        end
       end
     end
   end
