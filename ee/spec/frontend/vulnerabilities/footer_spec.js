@@ -321,6 +321,12 @@ describe('Vulnerability Footer', () => {
         });
       },
     );
+
+    it('does not show the detection note when the vulnerability has no pipeline (e.g.: was manually created)', () => {
+      createWrapper({ properties: { pipeline: null } });
+
+      expect(detectionNote().exists()).toBe(false);
+    });
   });
 
   describe('generic report', () => {
