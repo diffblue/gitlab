@@ -5,7 +5,7 @@ module MergeRequests
     class CheckDeniedPoliciesService < CheckBaseService
       def execute
         if merge_request.has_denied_policies?
-          failure
+          failure(reason: failure_reason)
         else
           success
         end
@@ -17,6 +17,12 @@ module MergeRequests
 
       def cacheable?
         false
+      end
+
+      private
+
+      def failure_reason
+        :policies_denied
       end
     end
   end

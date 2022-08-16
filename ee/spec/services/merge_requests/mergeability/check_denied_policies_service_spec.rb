@@ -8,6 +8,8 @@ RSpec.describe MergeRequests::Mergeability::CheckDeniedPoliciesService do
   let(:merge_request) { build(:merge_request) }
 
   describe "#execute" do
+    let(:result) { check_denied_policies.execute }
+
     before do
       expect(merge_request).to receive(:has_denied_policies?).and_return(has_denied_policies)
     end
@@ -16,8 +18,9 @@ RSpec.describe MergeRequests::Mergeability::CheckDeniedPoliciesService do
       let(:has_denied_policies) { true }
 
       it "returns a check result with status failed" do
-        expect(check_denied_policies.execute.status)
+        expect(result.status)
           .to eq Gitlab::MergeRequests::Mergeability::CheckResult::FAILED_STATUS
+        expect(result.payload[:reason]).to eq(:policies_denied)
       end
     end
 
@@ -25,7 +28,7 @@ RSpec.describe MergeRequests::Mergeability::CheckDeniedPoliciesService do
       let(:has_denied_policies) { false }
 
       it "returns a check result with status success" do
-        expect(check_denied_policies.execute.status)
+        expect(result.status)
           .to eq Gitlab::MergeRequests::Mergeability::CheckResult::SUCCESS_STATUS
       end
     end
