@@ -84,7 +84,6 @@ RSpec.describe Groups::Analytics::ProductivityAnalyticsController do
         let(:property) { 'g_analytics_productivity' }
         let(:user) { current_user }
         let(:namespace) { group }
-        let(:project) { nil }
       end
     end
 
