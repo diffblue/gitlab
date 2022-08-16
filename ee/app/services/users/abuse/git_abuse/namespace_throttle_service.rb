@@ -4,13 +4,18 @@ module Users
   module Abuse
     module GitAbuse
       class NamespaceThrottleService < BaseService
+        attr_reader :admins_alerted
+
         def self.execute(project, user)
           new(project, user).execute
         end
 
-        def execute
-          check_admins_alerted
+        def initialize(project, user)
+          super
+          @admins_alerted = rate_limited?(peek: true)
+        end
 
+        def execute
           return { banned: false } unless rate_limited?
 
           log_info(
@@ -28,8 +33,6 @@ module Users
 
         private
 
-        attr_accessor :admins_alerted
-
         def rate_limited?(peek: false)
           ::Gitlab::ApplicationRateLimiter.throttled?(
             :unique_project_downloads_for_namespace,
@@ -46,25 +49,19 @@ module Users
           namespace&.owned_by?(current_user)
         end
 
-        def check_admins_alerted
-          # If user was rate limited before then we know that admins have already been alerted
-          @admins_alerted = rate_limited?(peek: true)
-        end
-
         def ban_user!
           return false unless auto_ban_users
           return false if user_owns_namespace?
 
-          result = ::Users::Abuse::NamespaceBans::CreateService.new(namespace: namespace, user: current_user).execute
-
           log_info(
             message: "Namespace-level user ban",
             username: current_user.username,
-            email: "#{current_user.email}",
+            email: current_user.email,
             namespace_id: namespace.id,
-            ban_by: "#{self.class.name}"
+            ban_by: self.class.name
           )
 
+          result = ::Users::Abuse::NamespaceBans::CreateService.new(namespace: namespace, user: current_user).execute
           result[:status] == :success || current_user.banned_from_namespace?(namespace)
         end
 

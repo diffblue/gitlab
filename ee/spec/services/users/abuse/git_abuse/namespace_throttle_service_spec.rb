@@ -2,58 +2,65 @@
 
 require 'spec_helper'
 
-RSpec.describe Users::Abuse::GitAbuse::NamespaceThrottleService, :clean_gitlab_redis_rate_limiting do
+RSpec.describe Users::Abuse::GitAbuse::NamespaceThrottleService do
   describe '.execute' do
     let_it_be(:limit) { 3 }
     let_it_be(:time_period_in_seconds) { 60 }
+    let_it_be(:allowlist) { [] }
 
-    let_it_be(:owner) { create(:user) }
-    let(:user) { create(:user) }
-    let(:project) { create(:project, namespace: namespace) }
-
-    let_it_be(:namespace) do
+    let_it_be_with_reload(:namespace) do
       create(
         :group,
         namespace_settings: create(:namespace_settings,
           unique_project_download_limit: limit,
           unique_project_download_limit_interval_in_seconds: time_period_in_seconds,
+          unique_project_download_limit_allowlist: allowlist,
           auto_ban_user_on_excessive_projects_download: true
         )
       )
     end
 
+    let_it_be_with_reload(:user) { create(:user) }
+    let_it_be(:namespace_admin) { create(:user) }
+    let_it_be(:project) { create(:project, namespace: namespace) }
+
+    let(:mail_instance) { instance_double(ActionMailer::MessageDelivery, deliver_later: true) }
+
     subject(:execute) { described_class.execute(project, user) }
 
     before do
-      namespace.add_owner(owner)
+      namespace.add_owner(namespace_admin)
     end
 
-    shared_examples 'sends email notification to namespace owners' do
-      it 'sends email notification to namespace owners',
-        :aggregate_failures,
-        quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/370812' do
-        double = instance_double(ActionMailer::MessageDelivery, deliver_later: nil)
-        expect(Notify).to receive(:user_auto_banned_email)
-          .once
-          .with(
-            owner.id,
-            user.id,
-            max_project_downloads: limit,
-            within_seconds: time_period_in_seconds,
-            group: namespace
-          )
-          .and_return(double)
+    def mock_throttled_calls(resource, peek_result, result)
+      key = :unique_project_downloads_for_namespace
+      args = {
+        scope: [user, namespace],
+        resource: resource,
+        threshold: limit,
+        interval: time_period_in_seconds,
+        users_allowlist: allowlist
+      }
 
-        execute
-      end
+      allow(::Gitlab::ApplicationRateLimiter).to receive(:throttled?)
+        .with(key, hash_including(args.merge(peek: true)))
+        .and_return(peek_result)
+
+      allow(::Gitlab::ApplicationRateLimiter).to receive(:throttled?)
+        .with(key, hash_including(args.merge(peek: false)))
+        .and_return(result)
     end
 
-    context 'when user downloads the same project multiple times within the set time period for a namespace' do
+    context 'when user is not rate-limited' do
       before do
-        (limit + 1).times { described_class.execute(project, user) }
+        mock_throttled_calls(project, false, false)
       end
 
-      it { is_expected.to include(banned: false) }
+      it 'returns { banned: false }' do
+        execute
+
+        expect(execute).to include(banned: false)
+      end
 
       it 'does not ban the user' do
         execute
@@ -62,14 +69,16 @@ RSpec.describe Users::Abuse::GitAbuse::NamespaceThrottleService, :clean_gitlab_r
       end
     end
 
-    context 'when user exceeds the download limit within the set time period for a namespace' do
+    context 'when user is rate-limited' do
       before do
-        limit.times { described_class.execute(build_stubbed(:project, namespace: namespace), user) }
+        mock_throttled_calls(project, false, true)
       end
 
-      it { is_expected.to include(banned: true) }
+      it 'returns { banned: true }' do
+        execute
 
-      it_behaves_like 'sends email notification to namespace owners'
+        expect(execute).to include(banned: true)
+      end
 
       it 'bans the user' do
         execute
@@ -97,72 +106,48 @@ RSpec.describe Users::Abuse::GitAbuse::NamespaceThrottleService, :clean_gitlab_r
         execute
       end
 
-      it 'sends email to admins only once' do
-        execute
-
-        expect(Notify).not_to receive(:user_auto_banned_email)
-      end
-    end
-
-    context 'when user is already banned' do
-      before do
-        create(:namespace_ban, namespace: namespace, user: user)
-        limit.times { described_class.execute(build_stubbed(:project, namespace: namespace), user) }
-      end
-
-      it { is_expected.to include(banned: true) }
-    end
-
-    context 'when owner exceeds the download limit within the set time period for a namespace' do
-      let(:user) { owner }
-
-      before do
-        limit.times { described_class.execute(build_stubbed(:project, namespace: namespace), owner) }
-      end
-
-      it { is_expected.to include(banned: false) }
-
-      it_behaves_like 'sends email notification to namespace owners'
-
-      it 'does not ban the user' do
-        execute
-
-        expect(owner.banned_from_namespace?(namespace)).to eq(false)
-      end
-
-      it 'logs the notification event but not the ban event', :aggregate_failures do
-        expect(Gitlab::AppLogger).to receive(:info).with({
-          message: "User exceeded max projects download within set time period for namespace",
-          username: owner.username,
-          max_project_downloads: limit,
-          time_period_s: time_period_in_seconds,
-          namespace_id: namespace.id
-        })
-
-        expect(Gitlab::AppLogger).not_to receive(:info).with({
-          message: "Namespace-level user ban",
-          username: owner.username,
-          email: owner.email,
-          namespace_id: namespace.id,
-          ban_by: described_class.name
-        })
+      it 'sends an email to namespace admins', :mailer do
+        expect(Notify).to receive(:user_auto_banned_email)
+          .with(
+            namespace_admin.id,
+            user.id,
+            max_project_downloads: limit,
+            within_seconds: time_period_in_seconds,
+            group: namespace
+          )
+          .once
+          .and_return(mail_instance)
 
         execute
       end
+
+      context 'when user downloads another project' do
+        let(:another_project) { build_stubbed(:project, namespace: namespace) }
+
+        before do
+          mock_throttled_calls(another_project, true, true)
+        end
+
+        it 'does not send another email to namespace admins', :mailer do
+          expect(Notify).not_to receive(:user_auto_banned_email)
+
+          described_class.execute(another_project, user)
+        end
+      end
     end
 
-    context 'when auto_ban_user_on_excessive_projects_download is disabled' do
-      before do
-        namespace.namespace_settings.update!({
-          auto_ban_user_on_excessive_projects_download: false
-        })
+    context 'when namespace admin is rate-limited' do
+      let(:user) { namespace_admin }
 
-        limit.times { described_class.execute(build_stubbed(:project, namespace: namespace), user) }
+      before do
+        mock_throttled_calls(project, false, true)
       end
 
-      it { is_expected.to include(banned: false) }
+      it 'returns { banned: false }' do
+        execute
 
-      it_behaves_like 'sends email notification to namespace owners'
+        expect(execute).to include(banned: false)
+      end
 
       it 'does not ban the user' do
         execute
@@ -170,7 +155,7 @@ RSpec.describe Users::Abuse::GitAbuse::NamespaceThrottleService, :clean_gitlab_r
         expect(user.banned_from_namespace?(namespace)).to eq(false)
       end
 
-      it 'logs the notification event but not the ban event' do
+      it 'logs the notification event but not the ban event', :aggregate_failures do
         expect(Gitlab::AppLogger).to receive(:info).with({
           message: "User exceeded max projects download within set time period for namespace",
           username: user.username,
@@ -182,6 +167,61 @@ RSpec.describe Users::Abuse::GitAbuse::NamespaceThrottleService, :clean_gitlab_r
         expect(Gitlab::AppLogger).not_to receive(:info).with({
           message: "Namespace-level user ban",
           username: user.username,
+          email: user.email,
+          namespace_id: namespace.id,
+          ban_by: described_class.name
+        })
+
+        execute
+      end
+
+      it 'sends an email to all namespace admins', :mailer do
+        expect(Notify).to receive(:user_auto_banned_email)
+          .with(
+            namespace_admin.id,
+            user.id,
+            max_project_downloads: limit,
+            within_seconds: time_period_in_seconds,
+            group: namespace
+          )
+          .once
+          .and_return(mail_instance)
+
+        execute
+      end
+    end
+
+    context 'when user is already banned and gets throttled' do
+      before do
+        create(:namespace_ban, namespace: namespace, user: user)
+        mock_throttled_calls(project, false, true)
+      end
+
+      it 'returns { banned: true }' do
+        execute
+
+        expect(execute).to include(banned: true)
+      end
+
+      it 'user remains banned' do
+        execute
+
+        expect(user.banned_from_namespace?(namespace)).to eq(true)
+      end
+
+      it 'logs a notification event and user already banned event', :aggregate_failures do
+        expect(Gitlab::AppLogger).to receive(:info).with({
+          message: "User exceeded max projects download within set time period for namespace",
+          username: user.username,
+          max_project_downloads: limit,
+          time_period_s: time_period_in_seconds,
+          namespace_id: namespace.id
+        })
+
+        expect(Gitlab::AppLogger).to receive(:info).with({
+          message: "Namespace-level user ban",
+          username: user.username,
+          email: user.email,
           namespace_id: namespace.id,
           ban_by: described_class.name
         })
@@ -190,13 +230,25 @@ RSpec.describe Users::Abuse::GitAbuse::NamespaceThrottleService, :clean_gitlab_r
       end
     end
 
-    context 'when allowlisted user exceeds the download limit within the set time period' do
+    context 'when allowlisted user gets throttled' do
+      let(:allowlist) { [user.username] }
+
       before do
-        namespace.namespace_settings.update!(unique_project_download_limit_allowlist: [user.username])
-        limit.times { described_class.execute(build_stubbed(:project, namespace: namespace), user) }
+        namespace.namespace_settings.update!(unique_project_download_limit_allowlist: allowlist)
+        mock_throttled_calls(project, false, false)
       end
 
-      it { is_expected.to include(banned: false) }
+      it 'returns { banned: false }' do
+        execute
+
+        expect(execute).to include(banned: false)
+      end
+
+      it 'does not ban the user' do
+        execute
+
+        expect(user.banned_from_namespace?(namespace)).to eq(false)
+      end
 
       it 'does not log any event' do
         expect(Gitlab::AppLogger).not_to receive(:info)
@@ -204,16 +256,67 @@ RSpec.describe Users::Abuse::GitAbuse::NamespaceThrottleService, :clean_gitlab_r
         execute
       end
 
-      it 'does not send email notification to namespace owners' do
+      it 'does not send an email to namespace admins', :mailer do
         expect(Notify).not_to receive(:user_auto_banned_email)
 
         execute
+      end
+    end
+
+    context 'when auto_ban_user_on_excessive_projects_download is disabled and user gets throttled' do
+      before do
+        namespace.namespace_settings.update!({
+          auto_ban_user_on_excessive_projects_download: false
+        })
+
+        mock_throttled_calls(project, false, true)
+      end
+
+      it 'returns { banned: false }' do
+        execute
+
+        expect(execute).to include(banned: false)
       end
 
       it 'does not ban the user' do
         execute
 
         expect(user.banned_from_namespace?(namespace)).to eq(false)
+      end
+
+      it 'logs the notification event but not the ban event', :aggregate_failures do
+        expect(Gitlab::AppLogger).to receive(:info).with({
+          message: "User exceeded max projects download within set time period for namespace",
+          username: user.username,
+          max_project_downloads: limit,
+          time_period_s: time_period_in_seconds,
+          namespace_id: namespace.id
+        })
+
+        expect(Gitlab::AppLogger).not_to receive(:info).with({
+          message: "Namespace-level user ban",
+          username: user.username,
+          email: user.email,
+          namespace_id: namespace.id,
+          ban_by: described_class.name
+        })
+
+        execute
+      end
+
+      it 'sends an email to namespace admins', :mailer do
+        expect(Notify).to receive(:user_auto_banned_email)
+          .with(
+            namespace_admin.id,
+            user.id,
+            max_project_downloads: limit,
+            within_seconds: time_period_in_seconds,
+            group: namespace
+          )
+          .once
+          .and_return(mail_instance)
+
+        execute
       end
     end
   end
