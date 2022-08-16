@@ -1,12 +1,10 @@
 - return unless show_active_user_count_threshold_banner?
 .container-fluid.container-limited.pt-3
-  .gl-alert.gl-alert-info.gitlab-ee-license-banner.js-admin-licensed-user-count-threshold{ role: 'alert', data: { feature_id: Users::CalloutsHelper::ACTIVE_USER_COUNT_THRESHOLD, dismiss_endpoint: callouts_path } }
-    = sprite_icon('information-o', css_class: 'gl-icon gl-alert-icon')
-    %button.js-close.gl-alert-dismiss{ type: 'button', 'aria-label' => _('Dismiss'), data: { testid: 'gitlab-ee-license-banner-dismiss' } }
-      = sprite_icon('close', css_class: 'gl-icon')
-    .gl-alert-body
-      %h4.gl-alert-title= _('Your instance is approaching its licensed user count')
+  = render Pajamas::AlertComponent.new(title: _('Your instance is approaching its licensed user count'),
+    alert_options: { class: 'gitlab-ee-license-banner js-admin-licensed-user-count-threshold', data: { feature_id: Users::CalloutsHelper::ACTIVE_USER_COUNT_THRESHOLD, dismiss_endpoint: callouts_path } },
+    close_button_options: { type: 'button', 'aria-label' => _('Dismiss'), data: { testid: 'gitlab-ee-license-banner-dismiss' } }) do |c|
+    = c.body do
       = _('Your instance has %{remaining_user_count} users remaining of the %{total_user_count} included in your subscription. You can add more users than the number included in your license, and we will include the overage in your next bill.') % { remaining_user_count: remaining_user_count, total_user_count: total_user_count }
-    .gl-alert-actions
+    = c.actions do
       = link_to _('View users statistics'), admin_users_path, class: 'btn gl-alert-action btn-confirm btn-md gl-button'
       = link_to _('Contact support'), EE::CUSTOMER_LICENSE_SUPPORT_URL, rel: 'nofollow', class: 'btn gl-alert-action btn-confirm btn-md gl-button btn-confirm-secondary'
