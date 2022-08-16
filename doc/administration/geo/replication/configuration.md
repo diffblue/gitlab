@@ -222,14 +222,14 @@ keys must be manually replicated to the **secondary** site.
    gitlab-ctl restart
    ```
 
-   Check if there are any common issue with your Geo setup by running:
+   Check if there are any common issues with your Geo setup by running:
 
    ```shell
    gitlab-rake gitlab:geo:check
    ```
 
 1. SSH into a **Rails or Sidekiq server on your primary** site and login as root to verify the
-   **secondary** site is reachable or there are any common issue with your Geo setup:
+   **secondary** site is reachable or there are any common issues with your Geo setup:
 
    ```shell
    gitlab-rake gitlab:geo:check
