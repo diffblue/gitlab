@@ -2,6 +2,7 @@
 import createFlash from '~/flash';
 import projectScannersQuery from 'ee/security_dashboard/graphql/queries/project_specific_scanners.query.graphql';
 import groupScannersQuery from 'ee/security_dashboard/graphql/queries/group_specific_scanners.query.graphql';
+import instanceScannersQuery from 'ee/security_dashboard/graphql/queries/instance_specific_scanners.query.graphql';
 import { getFormattedScanners } from 'ee/security_dashboard/helpers';
 import { DASHBOARD_TYPES } from 'ee/security_dashboard/store/constants';
 import SimpleFilter from './simple_filter.vue';
@@ -19,6 +20,11 @@ const DASHBOARD_QUERIES = {
     query: groupScannersQuery,
     fullPath: 'fullPath',
     dataType: 'group',
+  },
+  [DASHBOARD_TYPES.INSTANCE]: {
+    query: instanceScannersQuery,
+    fullPath: undefined,
+    dataType: 'instanceSecurityDashboard',
   },
 };
 

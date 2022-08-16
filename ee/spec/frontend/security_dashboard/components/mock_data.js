@@ -313,3 +313,13 @@ export const groupVulnerabilityScanners = {
     },
   },
 };
+
+export const instanceVulnerabilityScanners = {
+  data: {
+    instanceSecurityDashboard: {
+      vulnerabilityScanners: {
+        nodes: generateVulnerabilityScanners(),
+      },
+    },
+  },
+};
