@@ -8,6 +8,7 @@ class Groups::HooksController < Groups::ApplicationController
   before_action :authorize_admin_group!
   before_action :check_group_webhooks_available!
   before_action :hook, only: [:edit, :update, :test, :destroy]
+  before_action :hook_logs, only: :edit
   before_action -> { check_rate_limit!(:group_testing_hook, scope: [@group, current_user]) }, only: :test
 
   respond_to :html
@@ -39,6 +40,10 @@ class Groups::HooksController < Groups::ApplicationController
 
   def hook
     @hook ||= @group.hooks.find(params[:id])
+  end
+
+  def hook_logs
+    @hook_logs ||= hook.web_hook_logs.recent.page(params[:page])
   end
 
   def trigger_values

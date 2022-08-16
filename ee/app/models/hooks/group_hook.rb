@@ -3,6 +3,7 @@
 class GroupHook < WebHook
   include CustomModelNaming
   include TriggerableHooks
+  include Presentable
   include Limitable
   extend ::Gitlab::Utils::Override
 
@@ -42,6 +43,10 @@ class GroupHook < WebHook
   override :parent
   def parent
     group
+  end
+
+  def present
+    super(presenter_class: ::WebHooks::Group::HookPresenter)
   end
 
   private

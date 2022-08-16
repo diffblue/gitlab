@@ -101,6 +101,12 @@ constraints(::Constraints::GroupUrlConstrainer.new) do
       member do
         post :test
       end
+
+      resources :hook_logs, only: [:show] do
+        member do
+          post :retry
+        end
+      end
     end
 
     resources :autocomplete_sources, only: [] do

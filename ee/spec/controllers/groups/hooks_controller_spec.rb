@@ -74,11 +74,44 @@ RSpec.describe Groups::HooksController do
     describe 'GET #edit' do
       let(:hook) { create(:group_hook, group: group) }
 
-      it 'is successful' do
-        get :edit, params: { group_id: group.to_param, id: hook }
+      let(:params) do
+        { group_id: group.to_param, id: hook }
+      end
 
+      render_views
+
+      it 'assigns hook_logs' do
+        get :edit, params: params
+
+        expect(assigns[:hook]).to be_present
+        expect(assigns[:hook_logs]).to be_empty
+        it_renders_correctly
+      end
+
+      it 'handles when logs are present' do
+        create_list(:web_hook_log, 3, web_hook: hook)
+
+        get :edit, params: params
+
+        expect(assigns[:hook]).to be_present
+        expect(assigns[:hook_logs].count).to eq 3
+        it_renders_correctly
+      end
+
+      it 'can paginate logs' do
+        create_list(:web_hook_log, 21, web_hook: hook)
+
+        get :edit, params: params.merge(page: 2)
+
+        expect(assigns[:hook]).to be_present
+        expect(assigns[:hook_logs].count).to eq 1
+        it_renders_correctly
+      end
+
+      def it_renders_correctly
         expect(response).to have_gitlab_http_status(:ok)
         expect(response).to render_template(:edit)
+        expect(response).to render_template('shared/hook_logs/_index')
         expect(group.hooks.size).to eq(1)
       end
     end
