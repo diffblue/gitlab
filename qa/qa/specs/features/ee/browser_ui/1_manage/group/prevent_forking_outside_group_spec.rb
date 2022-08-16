@@ -2,7 +2,7 @@
 
 module QA
   RSpec.describe 'Manage' do
-    describe 'prevent forking outside group', except: { subdomain: :staging } do
+    describe 'prevent forking outside group', except: { subdomain: %i[staging staging-canary] } do
       let!(:group_for_fork) do
         Resource::Sandbox.fabricate! do |sandbox_group|
           sandbox_group.path = "group_for_fork_#{SecureRandom.hex(8)}"

@@ -28,7 +28,7 @@ module QA
       it 'configures and syncs a (pull) mirrored repository', :aggregate_failures,
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347736',
         quarantine: {
-          only: { subdomain: :staging },
+          only: { subdomain: %i[staging staging-canary] },
           type: :test_environment,
           issue: 'https://gitlab.com/gitlab-com/gl-infra/production/-/issues/6621'
         } do

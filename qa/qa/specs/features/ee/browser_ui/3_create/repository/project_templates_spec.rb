@@ -74,7 +74,7 @@ module QA
       context 'when instance level', :requires_admin, quarantine: {
         issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/364742',
         type: :investigating,
-        only: { subdomain: :staging }
+        only: { subdomain: %i[staging staging-canary] }
       } do
         before do
           Flow::Login.sign_in_as_admin
@@ -131,7 +131,7 @@ module QA
       context 'when group level', quarantine: {
         issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/364742',
         type: :investigating,
-        only: { subdomain: :staging }
+        only: { subdomain: %i[staging staging-canary] }
       } do
         before do
           Flow::Login.sign_in

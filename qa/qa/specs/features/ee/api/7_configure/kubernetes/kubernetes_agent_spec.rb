@@ -2,7 +2,7 @@
 require 'erb'
 
 module QA
-  RSpec.describe 'Configure', :reliable, only: { subdomain: :staging } do
+  RSpec.describe 'Configure', :reliable, only: { subdomain: %i[staging staging-canary] } do
     include Service::Shellout
 
     describe 'Kubernetes Agent' do

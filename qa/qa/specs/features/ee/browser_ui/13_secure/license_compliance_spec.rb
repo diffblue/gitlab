@@ -88,7 +88,7 @@ module QA
           end
         end
 
-        describe 'Pipeline Licence tab', { only: [:staging, :production, :pre] } do
+        describe 'Pipeline Licence tab', only: { subdomain: %i[staging production pre staging-canary] } do
           it 'can approve and deny licenses in the pipeline', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348079' do
             @project.visit!
             Flow::Pipeline.visit_latest_pipeline
