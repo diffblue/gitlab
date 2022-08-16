@@ -438,7 +438,7 @@ You can also use `workflow::ready for review` label. That means that your merge 
 
 When your merge request receives an approval from the first reviewer it can be passed to a maintainer. You should default to choosing a maintainer with [domain expertise](#domain-experts), and otherwise follow the Reviewer Roulette recommendation or use the label `ready for merge`.
 
-Sometimes, a maintainer may not be available for review. They could be out of the office or [at capacity](#review-response-slo).
+Sometimes, a maintainer may not be available for review. They could be out of the office or [at capacity](https://about.gitlab.com/handbook/engineering/workflow/code-review/#review-response-slo).
 You can and should check the maintainer's availability in their profile. If the maintainer recommended by
 the roulette is not available, choose someone else from that list.
 
@@ -487,7 +487,7 @@ Before taking the decision to merge:
 - If the MR contains both Quality and non-Quality-related changes, the MR should be merged by the relevant maintainer for user-facing changes (backend, frontend, or database) after the Quality related changes are approved by a Software Engineer in Test.
 
 If a merge request is fundamentally ready, but needs only trivial fixes (such as
-typos), consider demonstrating a [bias for action](https://about.gitlab.com/handbook/values/#bias-for-action) 
+typos), consider demonstrating a [bias for action](https://about.gitlab.com/handbook/values/#bias-for-action)
 by making those changes directly without going back to the author. You can do this by
 using the [suggest changes](../user/project/merge_requests/reviews/suggestions.md) feature to apply
 your own suggestions to the merge request. Note that:
