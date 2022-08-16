@@ -243,10 +243,13 @@ module EE
     end
 
     def show_ultimate_feature_removal_banner?(project)
-      return false unless ::Gitlab.com? &&
-        ::Feature.enabled?(:ultimate_feature_removal_banner, project) &&
-        current_user&.can?(:guest_access, project) &&
-        !ultimate_feature_removal_banner_dismissed?
+      return false unless ::Feature.enabled?(:ultimate_feature_removal_banner, project)
+
+      return false unless ::Gitlab.com?
+
+      return false unless project.team.max_member_access(current_user&.id) >= ::Gitlab::Access::GUEST
+
+      return false unless !ultimate_feature_removal_banner_dismissed?(project)
 
       project.public? && !project.project_setting.legacy_open_source_license_available
     end

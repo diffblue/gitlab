@@ -282,22 +282,15 @@ RSpec.describe ProjectsHelper do
     let(:project) { create(:project) }
     let(:user) { create(:user) }
 
-    context 'on dot com' do
+    context 'on dot com and user is a member' do
       using RSpec::Parameterized::TableSyntax
 
-      where(:feature_flag_enabled, :has_guest_access, :public, :legacy_open_source_license_available, :user_dismissed_banner, :should_show_banner) do
-        true  | true  | true  | false | false | true
-        true  | true  | true  | true  | false | false
-        true  | true  | false | false | false | false
-        true  | false | false | false | false | false
-        true  | true  | false | true  | false | false
-        true  | false | false | true  | false | false
-        false | true  | true  | true  | false | false
-        false | false | true  | true  | false | false
-        false | false | false | true  | false | false
-        false | false | false | false | false | false
-        false | true  | false | true  | false | false
-        false | false | false | true  | false | false
+      where(:feature_flag_enabled, :public, :legacy_open_source_license_available, :user_dismissed_banner, :should_show_banner) do
+        true  | true | false | false | true
+        false | true | false | false | false
+        true  | false | false | false | false
+        true  | true | true  | false | false
+        true  | true | false | true  | false
       end
 
       with_them do
@@ -305,10 +298,10 @@ RSpec.describe ProjectsHelper do
           allow(Gitlab).to receive(:com?).and_return(true)
           stub_feature_flags(ultimate_feature_removal_banner: feature_flag_enabled)
           allow(helper).to receive(:current_user).and_return(user)
-          allow(user).to receive(:can?).with(:guest_access, project).and_return(has_guest_access)
+          project.add_guest(user)
           allow(project).to receive(:public?).and_return(public)
           allow(project.project_setting).to receive(:legacy_open_source_license_available).and_return(legacy_open_source_license_available)
-          allow(helper).to receive(:user_dismissed?).with('ultimate_feature_removal_banner').and_return(user_dismissed_banner)
+          allow(helper).to receive(:user_dismissed?).with('ultimate_feature_removal_banner', namespace: project.namespace).and_return(user_dismissed_banner)
         end
 
         it 'shows the banner if required' do
@@ -317,20 +310,35 @@ RSpec.describe ProjectsHelper do
       end
     end
 
-    context 'not dot com' do
-      context 'when feature flag is enabled for a free project and user has not dismissed callout' do
-        before do
-          stub_feature_flags(ultimate_feature_removal_banner: true)
-          allow(project.root_ancestor).to receive(:public?).and_return(true)
-          allow(project.root_ancestor).to receive(:legacy_open_source_license_available).and_return(false)
-          allow(helper).to receive(:current_user).and_return(user)
-          allow(user).to receive(:can?).with(:guest_access, project.root_ancestor).and_return(true)
-          allow(helper).to receive(:user_dismissed?).with('ultimate_feature_removal_banner').and_return(false)
-        end
+    context 'when user is not a guest' do
+      before do
+        allow(Gitlab).to receive(:com?).and_return(true)
+        stub_feature_flags(ultimate_feature_removal_banner: true)
+        allow(helper).to receive(:current_user).and_return(user)
+        allow(project).to receive(:public?).and_return(true)
+        allow(project).to receive(:legacy_open_source_license_available).and_return(false)
+        allow(helper).to receive(:user_dismissed?).with('ultimate_feature_removal_banner', namespace: project.namespace).and_return(false)
+      end
 
-        it 'does not show banner' do
-          expect(helper.show_ultimate_feature_removal_banner?(project)).to eq(false)
-        end
+      it 'does not show banner' do
+        expect(helper.show_ultimate_feature_removal_banner?(project)).to eq(false)
+      end
+    end
+
+    context 'when feature flag is enabled for a free project and user has not dismissed callout' do
+      before do
+        stub_feature_flags(ultimate_feature_removal_banner: true)
+        allow(project).to receive(:public?).and_return(true)
+        allow(helper).to receive(:current_user).and_return(user)
+        project.add_guest(user)
+
+        allow(project).to receive(:legacy_open_source_license_available).and_return(false)
+        allow(helper).to receive(:current_user).and_return(user)
+        allow(helper).to receive(:user_dismissed?).with('ultimate_feature_removal_banner', namespace: project.namespace).and_return(false)
+      end
+
+      it 'does not show banner' do
+        expect(helper.show_ultimate_feature_removal_banner?(project)).to eq(false)
       end
     end
   end

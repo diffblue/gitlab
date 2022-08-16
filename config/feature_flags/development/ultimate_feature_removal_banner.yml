@@ -1,6 +1,6 @@
 ---
 name: ultimate_feature_removal_banner
-introduced_by_url: 
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/94271
 rollout_issue_url: 
 milestone: '15.3'
 type: development

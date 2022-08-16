@@ -80,8 +80,8 @@ module Users
       !user_dismissed?(MERGE_REQUEST_SETTINGS_MOVED_CALLOUT)
     end
 
-    def ultimate_feature_removal_banner_dismissed?
-      user_dismissed?(ULTIMATE_FEATURE_REMOVAL_BANNER)
+    def ultimate_feature_removal_banner_dismissed?(project)
+      user_dismissed?(ULTIMATE_FEATURE_REMOVAL_BANNER, namespace: project.namespace)
     end
 
     private
