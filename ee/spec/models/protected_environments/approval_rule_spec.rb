@@ -14,6 +14,7 @@ RSpec.describe ProtectedEnvironments::ApprovalRule do
       is_expected.to validate_numericality_of(:required_approvals)
         .only_integer.is_greater_than_or_equal_to(1).is_less_than_or_equal_to(5)
     end
+
     it {
       is_expected.to validate_inclusion_of(:group_inheritance_type)
                           .in_array(ProtectedEnvironments::Authorizable::GROUP_INHERITANCE_TYPE.values)

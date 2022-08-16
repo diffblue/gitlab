@@ -12,6 +12,7 @@ RSpec.describe Security::Finding do
     it { is_expected.to belong_to(:scan).required }
     it { is_expected.to belong_to(:scanner).required }
     it { is_expected.to have_one(:build).through(:scan) }
+
     it {
       is_expected.to have_many(:feedbacks)
                   .with_primary_key('uuid')

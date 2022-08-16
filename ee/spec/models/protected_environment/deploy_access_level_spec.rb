@@ -4,6 +4,7 @@ require 'spec_helper'
 RSpec.describe ProtectedEnvironment::DeployAccessLevel do
   describe 'validations' do
     it { is_expected.to validate_presence_of(:access_level) }
+
     it {
       is_expected.to validate_inclusion_of(:group_inheritance_type)
                           .in_array(ProtectedEnvironments::Authorizable::GROUP_INHERITANCE_TYPE.values)

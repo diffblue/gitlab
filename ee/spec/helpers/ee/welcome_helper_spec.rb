@@ -267,6 +267,7 @@ RSpec.describe EE::WelcomeHelper do
 
       expect(helper).to be_user_has_memberships
     end
+
     it 'is false when the current_user has no memberships' do
       expect(helper).not_to be_user_has_memberships
     end

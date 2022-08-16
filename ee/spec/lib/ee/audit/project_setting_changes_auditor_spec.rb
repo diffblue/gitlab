@@ -34,6 +34,7 @@ RSpec.describe EE::Audit::ProjectSettingChangesAuditor do
                     custom_message: "Changed squash option to #{project.project_setting.human_squash_option}"
                   })
               end
+
               it 'streams correct audit event stream' do
                 project.project_setting.update!(squash_option: new_value)
 

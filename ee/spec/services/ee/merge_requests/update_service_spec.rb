@@ -119,6 +119,7 @@ RSpec.describe MergeRequests::UpdateService, :mailer do
         end
 
         it { expect(@merge_request).to be_valid }
+
         it 'is in the "merge" state', :sidekiq_might_not_need_inline do
           expect(@merge_request.state).to eq('merged')
         end

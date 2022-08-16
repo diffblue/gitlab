@@ -11,12 +11,14 @@ RSpec.describe NamespaceSetting do
 
     it { is_expected.to validate_presence_of(:unique_project_download_limit) }
     it { is_expected.to validate_presence_of(:unique_project_download_limit_interval_in_seconds) }
+
     it {
       is_expected.to validate_numericality_of(:unique_project_download_limit)
         .only_integer
         .is_greater_than_or_equal_to(0)
         .is_less_than_or_equal_to(10_000)
     }
+
     it {
       is_expected.to validate_numericality_of(:unique_project_download_limit_interval_in_seconds)
         .only_integer
