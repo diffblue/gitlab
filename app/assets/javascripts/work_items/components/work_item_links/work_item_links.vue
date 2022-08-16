@@ -133,6 +133,7 @@ export default {
       this.isOpen = !this.isOpen;
     },
     showAddForm() {
+      this.isOpen = true;
       this.isShownAddForm = true;
       this.$nextTick(() => {
         this.$refs.wiLinksForm.$refs.wiTitleInput?.$el.focus();
