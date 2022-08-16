@@ -1,7 +1,21 @@
 <script>
-import { GlAlert, GlDropdown, GlDropdownItem, GlEmptyState, GlLoadingIcon } from '@gitlab/ui';
+import {
+  GlAlert,
+  GlDropdown,
+  GlDropdownItem,
+  GlEmptyState,
+  GlLoadingIcon,
+  GlLink,
+  GlSprintf,
+} from '@gitlab/ui';
 import { mapActions, mapState } from 'vuex';
-import { EMPTY_STATE_TITLE, EMPTY_STATE_DESCRIPTION, EMPTY_STATE_SVG_PATH } from '../constants';
+import { helpPagePath } from '~/helpers/help_page_helper';
+import {
+  EMPTY_STATE_TITLE,
+  EMPTY_STATE_DESCRIPTION,
+  EMPTY_STATE_SVG_PATH,
+  INSIGHTS_CONFIGURATION_TEXT,
+} from '../constants';
 import InsightsPage from './insights_page.vue';
 
 export default {
@@ -12,6 +26,8 @@ export default {
     GlEmptyState,
     GlDropdown,
     GlDropdownItem,
+    GlLink,
+    GlSprintf,
   },
   props: {
     endpoint: {
@@ -104,13 +120,26 @@ export default {
       return Object.prototype.hasOwnProperty.call(this.configData, tab);
     },
   },
+  i18n: {
+    insightsConfigurationText: INSIGHTS_CONFIGURATION_TEXT,
+  },
+  insightsDocumentationLink: helpPagePath('user/group/insights/index.md', {
+    anchor: 'configure-your-insights',
+  }),
 };
 </script>
 <template>
   <div class="insights-container gl-mt-3">
-    <div class="mb-3">
+    <div class="gl-mb-5">
       <h3>{{ __('Insights') }}</h3>
     </div>
+    <p>
+      <gl-sprintf :message="$options.i18n.insightsConfigurationText">
+        <template #link="{ content }">
+          <gl-link :href="$options.insightsDocumentationLink">{{ content }}</gl-link>
+        </template>
+      </gl-sprintf>
+    </p>
     <div v-if="configLoading" class="insights-config-loading text-center">
       <gl-loading-icon :inline="true" size="lg" />
     </div>
