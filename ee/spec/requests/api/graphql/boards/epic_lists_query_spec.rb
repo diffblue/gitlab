@@ -115,6 +115,23 @@ RSpec.describe 'get list of epic boards' do
           expect(list_nodes('metadata').first.keys).to match_array(['epicsCount'])
         end
       end
+
+      context 'when epic_board_total_weight flag is disabled' do
+        before do
+          stub_feature_flags(epic_board_total_weight: false)
+        end
+
+        it 'returns nil totalWeight' do
+          epic = create(:epic, group: group)
+          create(:issue, project: project, epic: epic, weight: 3)
+
+          post_graphql(pagination_query, current_user: current_user)
+
+          expect(list_nodes).to include(
+            a_hash_including('epicsCount' => 1, 'metadata' => { 'epicsCount' => 1, 'totalWeight' => nil })
+          )
+        end
+      end
     end
   end
 
