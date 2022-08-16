@@ -285,10 +285,10 @@ Reviewers are responsible for reviewing the specifics of the chosen solution.
 Verify that the merge request meets all [contribution acceptance criteria](contributing/merge_request_workflow.md#contribution-acceptance-criteria).
 
 Some merge requests may require domain experts to help with the specifics.
-Reviewers, if they are not a domain expert in the area can either:
+Reviewers, if they are not a domain expert in the area, can do any of the following:
 
-- Review the merge request, and loop in a domain expert for another review. This
-  can either be another reviewer, or a maintainer.
+- Review the merge request and loop in a domain expert for another review. This expert
+  can either be another reviewer or a maintainer.
 - Pass the review to another reviewer they deem more suitable.
 - If no domain experts are available, review on a best-effort basis.
 
