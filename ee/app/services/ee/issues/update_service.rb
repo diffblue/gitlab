@@ -39,20 +39,6 @@ module EE
         handle_weight_change(issue)
       end
 
-      override :before_update
-      def before_update(issue, **args)
-        super
-
-        assign_requirement_to_be_synced_for(issue)
-      end
-
-      override :after_update
-      def after_update(_issue)
-        super
-
-        save_requirement
-      end
-
       private
 
       def handle_iteration_change(issue)
@@ -88,6 +74,38 @@ module EE
         return unless params.delete(:promote_to_epic)
 
         Epics::IssuePromoteService.new(project: issue.project, current_user: current_user).execute(issue)
+      end
+
+      def should_update_requirement_verification_status?(issuable)
+        issuable.requirement? &&
+          params[:last_test_report_state].present? &&
+          can?(current_user, :create_requirement_test_report, issuable.project)
+      end
+
+      # Requirement verification status is being widgetized,
+      # for now, this is needed to keep current requirement
+      # GraphQL API compatible until its deprecation.
+      # More information at https://gitlab.com/groups/gitlab-org/-/epics/7266
+      def create_requirement_test_report_for(issuable)
+        return unless should_update_requirement_verification_status?(issuable)
+
+        test_report_state = RequirementsManagement::TestReport.states[params[:last_test_report_state]]
+
+        test_report =
+          RequirementsManagement::TestReport.build_report(
+            requirement_issue: issuable,
+            state: test_report_state,
+            author: current_user
+          )
+
+        issuable.requirement_sync_error! unless test_report.save
+      end
+
+      override :transaction_update
+      def transaction_update(issuable, opts = {})
+        create_requirement_test_report_for(issuable)
+
+        super
       end
     end
   end

@@ -79,7 +79,7 @@ module EE
 
     override :allowed_update_params
     def allowed_update_params(params)
-      super(params).except(:epic)
+      super(params).except(:epic, :last_test_report_state)
     end
   end
 end

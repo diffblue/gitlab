@@ -717,146 +717,56 @@ RSpec.describe Issues::UpdateService do
       end
     end
 
-    describe 'sync Requirement work item with Requirement object' do
-      let_it_be(:title) { 'title' }
-      let_it_be(:description) { 'description' }
-      let_it_be(:new_title) { 'new title' }
-      let_it_be(:new_description) { 'new description' }
-
-      let_it_be_with_reload(:issue) { create(:issue, issue_type: :requirement, project: project, title: title, description: description) }
-
-      let(:params) do
-        { state: :closed, title: new_title, description: new_description }
-      end
-
-      subject { update_issue(params) }
-
-      shared_examples 'keeps issue and its requirement in sync' do
-        it 'keeps title and description in sync' do
-          subject
-
-          requirement.reload
-          issue.requirement.reload
-
-          expect(requirement).to have_attributes(
-            title: issue.requirement.title,
-            description: issue.requirement.description)
-        end
-      end
-
-      shared_examples 'does not persist any changes' do
-        it 'does not update the issue' do
-          expect { subject }.not_to change { issue.reload.attributes }
-        end
-
-        it 'does not update the requirement' do
-          expect { subject }.not_to change { requirement.reload.attributes }
-        end
-      end
+    context 'when issue is of requirement type' do
+      let(:issue) { create(:requirement_issue, project: project) }
+      let!(:requirement) { create(:requirement, requirement_issue: issue, project: project) }
 
       before do
-        issue.requirement_sync_error = false
-        issue.clear_spam_flags!
+        stub_licensed_features(requirements: true)
       end
 
-      context 'if there is an associated requirement' do
-        let_it_be_with_reload(:requirement) { create(:requirement, title: title, description: description, requirement_issue: issue, project: project) }
-
-        it 'updates the mapped field' do
-          expect { subject }.to change { requirement.reload.state }.from("opened").to("archived")
-        end
-
-        it 'updates the synced requirement with title and/or description' do
-          subject
-
-          expect(requirement.reload).to have_attributes(
-            title: new_title,
-            description: new_description)
-        end
-
-        context 'when the issue title is very long' do
-          # The Requirement title limit is 255 in the application as well as the DB.
-          # The Issue limit is 255 in the application not the DB, so we should be OK.
-          # See https://gitlab.com/gitlab-org/gitlab/blob/7a42426/app/models/concerns/issuable.rb#L30
-          let_it_be(:new_title) { 'a' * 300 }
-
-          it_behaves_like 'does not persist any changes'
-        end
-
-        it_behaves_like 'keeps issue and its requirement in sync'
-
-        context 'if update of issue fails' do
-          let(:params) do
-            { title: nil }
-          end
-
-          it_behaves_like 'keeps issue and its requirement in sync'
-          it_behaves_like 'does not persist any changes'
-        end
-
-        context 'if update of issue succeeds but update of requirement fails' do
-          let(:params) do
-            { title: 'some magically valid title for issue but not requirement' }
-          end
-
-          before do
-            allow(issue).to receive(:requirement).and_return(requirement)
-          end
-
-          context 'when requirement is not valid' do
-            before do
-              expect(requirement).to receive(:valid?).and_return(false).at_least(:once)
-            end
-
-            it_behaves_like 'keeps issue and its requirement in sync'
-            it_behaves_like 'does not persist any changes'
-
-            it 'adds an informative sync error to issue' do
-              subject
-
-              expect(issue.errors[:base]).to include(/Associated requirement/)
-            end
-          end
-
-          context 'if requirement is valid but still does not save' do
-            before do
-              allow(issue.requirement).to receive(:valid?).and_return(true).at_least(:once)
-              allow(requirement).to receive(:save).and_return(false)
-            end
-
-            it 'adds a helpful log' do
-              expect(::Gitlab::AppLogger).to receive(:info).with(a_hash_including(message: /Associated requirement/))
-
-              subject
-            end
+      context 'when updating last test report state' do
+        context 'as passing' do
+          it 'creates passing test report with null build_id' do
+            expect { update_issue(last_test_report_state: 'passed') }.to change { RequirementsManagement::TestReport.count }.from(0).to(1)
+            test_report = requirement.test_reports.last
+            expect(requirement.last_test_report_state).to eq('passed')
+            expect(requirement.last_test_report_manually_created?).to eq(true)
+            expect(test_report.state).to eq('passed')
+            expect(test_report.build).to eq(nil)
+            expect(test_report.author).to eq(user)
           end
         end
 
-        # spam checking also uses a flag on Issue so we want to ensure they play nicely together
-        # If an issue is marked spam, we do not want to try syncing
-        # since the issue will not be saved this time (maybe next time if a successful recaptcha has been included)
-        context 'if the issue is also marked as spam' do
-          before do
-            issue.spam!
-          end
-
-          it_behaves_like 'keeps issue and its requirement in sync'
-          it_behaves_like 'does not persist any changes'
-
-          it 'only shows the spam error' do
-            subject
-
-            expect(issue.errors[:base]).to include(/spam/)
-            expect(issue.errors[:base]).not_to include(/sync/)
+        context 'as failed' do
+          it 'creates failing test report with null build_id' do
+            expect { update_issue(last_test_report_state: 'failed') }.to change { RequirementsManagement::TestReport.count }.from(0).to(1)
+            test_report = requirement.test_reports.last
+            expect(requirement.last_test_report_state).to eq('failed')
+            expect(requirement.last_test_report_manually_created?).to eq(true)
+            expect(test_report.state).to eq('failed')
+            expect(test_report.build).to eq(nil)
+            expect(test_report.author).to eq(user)
           end
         end
-      end
 
-      context 'if there is no associated requirement' do
-        it 'does not call the RequirementsManagement::UpdateRequirementService' do
-          expect(RequirementsManagement::UpdateRequirementService).not_to receive(:new)
+        context 'when user cannot create test reports' do
+          it 'does not create test report' do
+            allow(Ability).to receive(:allowed?).and_call_original
+            allow(Ability).to receive(:allowed?).with(user, :create_requirement_test_report, project).and_return(false)
 
-          update_issue(params)
+            expect { update_issue(last_test_report_state: 'failed') }.not_to change { RequirementsManagement::TestReport.count }
+          end
+        end
+
+        context 'when something goes wrong' do
+          it 'does not create a test report nor update issue' do
+            allow(issue).to receive(:valid?).and_return(false)
+
+            expect { update_issue(title: 'test', last_test_report_state: 'failed') }
+              .to not_change { RequirementsManagement::TestReport.count }
+              .and not_change { issue.reload }
+          end
         end
       end
     end

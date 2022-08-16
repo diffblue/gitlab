@@ -5,9 +5,24 @@ require 'spec_helper'
 RSpec.describe Mutations::RequirementsManagement::UpdateRequirement do
   let_it_be(:project) { create(:project) }
   let_it_be(:user) { create(:user) }
-  let_it_be(:requirement) { create(:requirement, project: project) }
+  let_it_be(:requirement) { create(:requirement, title: 'old title', project: project) }
+
+  let(:mutation_params) do
+    {
+      project_path: project.full_path,
+      iid: requirement.iid.to_s,
+      title: 'foo',
+      description: 'some desc',
+      state: 'archived',
+      last_test_report_state: 'passed'
+    }
+  end
 
   subject(:mutation) { described_class.new(object: nil, context: { current_user: user }, field: nil) }
+
+  before do
+    stub_spam_services
+  end
 
   describe '#resolve' do
     shared_examples 'requirements not available' do
@@ -17,17 +32,19 @@ RSpec.describe Mutations::RequirementsManagement::UpdateRequirement do
     end
 
     subject do
-      mutation.resolve(
-        project_path: project.full_path,
-        iid: requirement.iid.to_s,
-        title: 'foo',
-        description: 'some desc',
-        state: 'archived',
-        last_test_report_state: 'passed'
-      )
+      mutation.resolve(**mutation_params)
     end
 
     it_behaves_like 'requirements not available'
+
+    context 'when user cannot update requirements' do
+      before do
+        stub_licensed_features(requirements: true)
+        project.add_guest(user)
+      end
+
+      it_behaves_like 'requirements not available'
+    end
 
     context 'when the user can update the requirement' do
       before do
@@ -47,6 +64,22 @@ RSpec.describe Mutations::RequirementsManagement::UpdateRequirement do
             last_test_report_state: 'passed'
           )
           expect(subject[:errors]).to be_empty
+        end
+
+        context 'when test report is not created' do
+          let(:mutation_params) do
+            {
+              project_path: project.full_path,
+              iid: requirement.iid.to_s,
+              title: 'new title',
+              last_test_report_state: 'invalid'
+            }
+          end
+
+          it 'returns errors and does not update requirement', :aggregate_failures do
+            expect(subject[:errors]).to be_present
+            expect(subject[:requirement].title).to eq('old title')
+          end
         end
       end
 
