@@ -1,9 +1,10 @@
-import { GlAlert, GlDropdown, GlDropdownItem, GlEmptyState } from '@gitlab/ui';
+import { GlAlert, GlDropdown, GlDropdownItem, GlEmptyState, GlSprintf } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import Vuex from 'vuex';
+import { INSIGHTS_CONFIGURATION_TEXT } from 'ee/insights/constants';
 import Insights from 'ee/insights/components/insights.vue';
 import { createStore } from 'ee/insights/stores';
 import { pageInfo } from 'ee_jest/insights/mock_data';
@@ -53,6 +54,12 @@ describe('Insights component', () => {
 
   it('fetches config data when mounted', () => {
     expect(vuexStore.dispatch).toHaveBeenCalledWith('insights/fetchConfigData', TEST_HOST);
+  });
+
+  it('renders insights configuration text', () => {
+    const text = wrapper.findComponent(GlSprintf).attributes('message');
+
+    expect(text).toBe(INSIGHTS_CONFIGURATION_TEXT);
   });
 
   describe('when loading config', () => {
