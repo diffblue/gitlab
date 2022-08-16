@@ -19443,9 +19443,6 @@ msgstr ""
 msgid "How do I configure Akismet?"
 msgstr ""
 
-msgid "How do I configure runners?"
-msgstr ""
-
 msgid "How do I configure this integration?"
 msgstr ""
 
@@ -43982,6 +43979,9 @@ msgid "What does the setting affect?"
 msgstr ""
 
 msgid "What does this command do?"
+msgstr ""
+
+msgid "What is GitLab Runner?"
 msgstr ""
 
 msgid "What is Markdown?"
