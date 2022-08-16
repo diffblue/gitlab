@@ -2148,7 +2148,7 @@ msgstr ""
 msgid "Add a confidential internal note to this %{noteableDisplayName}."
 msgstr ""
 
-msgid "Add a custom message with details about the instance's shared runners. The message is visible in group and project CI/CD settings, in the Runners section. Markdown is supported."
+msgid "Add a custom message with details about the instance's shared runners. The message is visible when you view runners for projects and groups. Markdown is supported."
 msgstr ""
 
 msgid "Add a general comment to this %{noteableDisplayName}."
