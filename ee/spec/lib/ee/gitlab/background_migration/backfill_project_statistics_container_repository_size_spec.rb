@@ -8,101 +8,154 @@ RSpec.describe Gitlab::BackgroundMigration::BackfillProjectStatisticsContainerRe
   let_it_be(:project_statistics_table) { table(:project_statistics) }
   let_it_be(:project) { table(:projects) }
 
-  let_it_be(:namespace1) do
+  let!(:namespace1) do
     namespace.create!(
       name: 'namespace1', type: 'Group', path: 'space1'
     )
   end
 
-  let_it_be(:namespace2) do
+  let!(:namespace2) do
     namespace.create!(
       name: 'namespace2', type: 'Group', path: 'space2'
     )
   end
 
-  let_it_be(:proj_namespace1) do
+  let!(:proj_namespace1) do
     namespace.create!(
       name: 'proj1', path: 'proj1', type: 'Project', parent_id: namespace1.id
     )
   end
 
-  let_it_be(:proj_namespace2) do
+  let!(:proj_namespace2) do
     namespace.create!(
       name: 'proj2', path: 'proj2', type: 'Project', parent_id: namespace1.id
     )
   end
 
-  let_it_be(:proj_namespace3) do
+  let!(:proj_namespace3) do
     namespace.create!(
       name: 'proj3', path: 'proj3', type: 'Project', parent_id: namespace2.id
     )
   end
 
-  let_it_be(:proj_namespace4) do
+  let!(:proj_namespace4) do
     namespace.create!(
       name: 'proj4', path: 'proj4', type: 'Project', parent_id: namespace2.id
     )
   end
 
-  let_it_be(:proj1) do
+  let!(:proj1) do
     project.create!(
       name: 'proj1', path: 'proj1', namespace_id: namespace1.id, project_namespace_id: proj_namespace1.id
     )
   end
 
-  let_it_be(:proj2) do
+  let!(:proj2) do
     project.create!(
       name: 'proj2', path: 'proj2', namespace_id: namespace1.id, project_namespace_id: proj_namespace2.id
     )
   end
 
-  let_it_be(:proj3) do
+  let!(:proj3) do
     project.create!(
       name: 'proj3', path: 'proj3', namespace_id: namespace2.id, project_namespace_id: proj_namespace3.id
     )
   end
 
-  let_it_be(:proj4) do
+  let!(:proj4) do
     project.create!(
       name: 'proj4', path: 'proj4', namespace_id: namespace2.id, project_namespace_id: proj_namespace4.id
     )
   end
 
-  before do
-    stub_const('DATE_BEFORE_PHASE_1', Date.new(2022, 01, 20).freeze)
-    stub_const('DATE_AFTER_PHASE_1', Date.new(2022, 02, 20).freeze)
+  let(:batch_max_value) { container_repositories_table.pluck(:project_id).max }
 
-    add_container_registries_and_project_statistics(proj1.id, 2, 'import_done', DATE_BEFORE_PHASE_1, namespace1.id)
-    add_container_registries_and_project_statistics(proj2.id, 3, 'import_done', DATE_BEFORE_PHASE_1, namespace1.id)
-    add_container_registries_and_project_statistics(proj3.id, 1, 'import_done', DATE_BEFORE_PHASE_1, namespace2.id)
-    add_container_registries_and_project_statistics(proj4.id, 2, 'default', DATE_AFTER_PHASE_1, namespace2.id)
+  let(:migration) do
+    described_class.new(start_id: 1, end_id: batch_max_value,
+                        batch_table: 'container_repositories', batch_column: 'project_id',
+                        sub_batch_size: 1_000, pause_ms: 0,
+                        connection: ApplicationRecord.connection)
   end
 
-  it 'backfills container_registry_size for unique project_ids', :aggregate_failures do
-    batch_max_value = container_repositories_table.pluck(:project_id).max
-    migration = described_class.new(start_id: 1, end_id: batch_max_value,
-                    batch_table: 'container_repositories', batch_column: 'project_id',
-                    sub_batch_size: 1_000, pause_ms: 0,
-                    connection: ApplicationRecord.connection)
+  subject(:perform_migration) { migration.perform }
 
-    allow(::Gitlab).to receive(:com?).and_return(true)
-    allow(::ContainerRegistry::GitlabApiClient).to receive(:supports_gitlab_api?).and_return(true)
-    allow(::ContainerRegistry::GitlabApiClient).to receive(:deduplicated_size).and_return(3000)
-    allow(::Namespaces::ScheduleAggregationWorker).to receive(:perform_async)
+  context 'when project_statistics backfill runs' do
+    before do
+      stub_const('DATE_BEFORE_PHASE_1', Date.new(2022, 01, 20).freeze)
+      stub_const('DATE_AFTER_PHASE_1', Date.new(2022, 02, 20).freeze)
+      allow(::Gitlab).to receive(:com?).and_return(true)
+      allow(::ContainerRegistry::GitlabApiClient).to receive(:supports_gitlab_api?).and_return(true)
+    end
 
-    migration.perform
+    context 'when project_statistics.container_registry_size is zero' do
+      before do
+        generate_records
+        allow(::ContainerRegistry::GitlabApiClient).to receive(:deduplicated_size).and_return(3000)
+      end
 
-    expect(project_statistics_table.where(container_registry_size: 0).count).to eq(0)
-    expect(::Namespaces::ScheduleAggregationWorker).to have_received(:perform_async).exactly(4).times
-    expect(::ContainerRegistry::GitlabApiClient).to have_received(:supports_gitlab_api?).exactly(4).times
+      it 'calls deduplicated_size API' do
+        allow(::Namespaces::ScheduleAggregationWorker).to receive(:perform_async)
+
+        perform_migration
+
+        expect(::ContainerRegistry::GitlabApiClient).to have_received(:supports_gitlab_api?).exactly(4).times
+      end
+
+      context 'when the Container Registry deduplicated_size is non-zero' do
+        it 'schedules Namespaces::ScheduleAggregationWorker' do
+          allow(::Namespaces::ScheduleAggregationWorker).to receive(:perform_async)
+          allow(::Rails).to receive_message_chain(:cache, :delete).and_return(true)
+
+          perform_migration
+
+          expect(::Rails.cache).to have_received(:delete).exactly(4).times
+          expect(::Namespaces::ScheduleAggregationWorker).to have_received(:perform_async).exactly(4).times
+        end
+      end
+
+      context 'when the Container Registry deduplicated_size is zero' do
+        it 'does not schedules Namespaces::ScheduleAggregationWorker' do
+          allow(::ContainerRegistry::GitlabApiClient).to receive(:deduplicated_size).and_return(0)
+
+          perform_migration
+
+          expect(::Namespaces::ScheduleAggregationWorker).not_to receive(:perform_async)
+        end
+      end
+    end
+
+    context 'when project_statistics.container_registry_size is non-zero' do
+      before do
+        generate_records(333)
+      end
+
+      it "doesn't call deduplicated_size API and schedules Namespaces::ScheduleAggregationWorker" do
+        allow(::Namespaces::ScheduleAggregationWorker).to receive(:perform_async)
+        allow(::Rails).to receive_message_chain(:cache, :delete).and_return(true)
+
+        perform_migration
+
+        expect(::ContainerRegistry::GitlabApiClient).not_to receive(:deduplicated_size)
+        expect(::Rails.cache).to have_received(:delete).exactly(4).times
+        expect(::Namespaces::ScheduleAggregationWorker).to have_received(:perform_async).exactly(4).times
+      end
+    end
   end
 
   private
 
-  def add_container_registries_and_project_statistics(project_id, count, migration_state, created_at, namespace_id)
+  def add_container_registries_and_project_statistics(
+    project_id,
+    count,
+    migration_state,
+    created_at,
+    namespace_id,
+    con_reg_size = 0
+  )
     project_statistics_table.create!(
       project_id: project_id,
-      namespace_id: namespace_id
+      namespace_id: namespace_id,
+      container_registry_size: con_reg_size
     )
 
     count.times do |indx|
@@ -113,5 +166,40 @@ RSpec.describe Gitlab::BackgroundMigration::BackfillProjectStatisticsContainerRe
         created_at: created_at
       )
     end
+  end
+
+  def generate_records(container_registry_size = 0)
+    add_container_registries_and_project_statistics(
+      proj1.id,
+      2,
+     'import_done',
+     DATE_BEFORE_PHASE_1,
+     namespace1.id,
+     container_registry_size
+    )
+    add_container_registries_and_project_statistics(
+      proj2.id,
+      3,
+      'import_done',
+      DATE_BEFORE_PHASE_1,
+      namespace1.id,
+      container_registry_size
+    )
+    add_container_registries_and_project_statistics(
+      proj3.id,
+      1,
+      'import_done',
+      DATE_BEFORE_PHASE_1,
+      namespace2.id,
+      container_registry_size
+    )
+    add_container_registries_and_project_statistics(
+      proj4.id,
+      2,
+      'default',
+      DATE_AFTER_PHASE_1,
+      namespace2.id,
+      container_registry_size
+    )
   end
 end
