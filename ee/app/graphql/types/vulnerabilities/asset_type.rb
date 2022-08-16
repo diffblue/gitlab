@@ -7,14 +7,14 @@ module Types
       graphql_name 'AssetType'
       description 'Represents a vulnerability asset type.'
 
-      field :name, GraphQL::Types::String, null: false,
-        description: 'Name of the asset.'
+      field :name, GraphQL::Types::String,
+        null: false, description: 'Name of the asset.'
 
-      field :type, GraphQL::Types::String, null: false,
-        description: 'Type of the asset.'
+      field :type, GraphQL::Types::String,
+        null: false, description: 'Type of the asset.'
 
-      field :url, GraphQL::Types::String, null: false,
-        description: 'URL of the asset.'
+      field :url, GraphQL::Types::String,
+        null: false, description: 'URL of the asset.'
     end
   end
   # rubocop: enable Graphql/AuthorizeTypes

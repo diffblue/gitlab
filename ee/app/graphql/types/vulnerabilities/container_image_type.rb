@@ -7,8 +7,8 @@ module Types
       graphql_name 'VulnerabilityContainerImage'
       description 'Represents a container image reported on the related vulnerability'
 
-      field :name, GraphQL::Types::String, null: true, method: :location_image,
-            description: 'Name of the container image.'
+      field :name, GraphQL::Types::String,
+        null: true, method: :location_image, description: 'Name of the container image.'
     end
     # rubocop: enable Graphql/AuthorizeTypes
   end
