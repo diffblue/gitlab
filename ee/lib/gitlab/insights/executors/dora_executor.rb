@@ -89,7 +89,7 @@ module Gitlab
 
         def serializer
           case chart_type
-          when 'bar'
+          when 'bar', 'line'
             Gitlab::Insights::Serializers::Chartjs::BarSerializer
           else
             raise DoraExecutor::DoraExecutorError, "Unsupported chart type is given: #{chart_type}"
