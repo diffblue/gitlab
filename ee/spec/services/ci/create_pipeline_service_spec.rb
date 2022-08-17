@@ -102,7 +102,7 @@ RSpec.describe Ci::CreatePipelineService, '#execute', :saas do
       expect(pipeline.statuses).to match_array [test, bridge]
       expect(bridge.options).to eq(trigger: { project: 'my/project' })
       expect(bridge.yaml_variables)
-        .to include(key: 'CROSS', value: 'downstream', public: true)
+        .to include(key: 'CROSS', value: 'downstream')
     end
 
     context 'when configured with rules' do
