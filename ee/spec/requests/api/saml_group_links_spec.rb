@@ -41,7 +41,7 @@ RSpec.describe API::SamlGroupLinks, api: true do
         end
       end
 
-      context "when a less priviledged user" do
+      context "when a less privileged user" do
         let(:current_user) { user }
 
         it "returns unauthorized error" do
@@ -115,10 +115,10 @@ RSpec.describe API::SamlGroupLinks, api: true do
         end
       end
 
-      context "when a less priviledged user" do
+      context "when a less privileged user" do
         let(:current_user) { user }
 
-        it "does not allow less priviledged user to add SAML group link" do
+        it "does not allow less privileged user to add SAML group link" do
           expect do
             subject
           end.not_to change { group_with_saml_group_links.saml_group_links.count }
@@ -189,7 +189,7 @@ RSpec.describe API::SamlGroupLinks, api: true do
         end
       end
 
-      context "when a less priviledged user" do
+      context "when a less privileged user" do
         let(:current_user) { user }
 
         it "does not remove the SAML group link" do
