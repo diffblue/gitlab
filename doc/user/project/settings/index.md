@@ -448,7 +448,7 @@ in GitLab 12.6, and then to [immediate deletion](https://gitlab.com/gitlab-org/g
 ### Delayed project deletion **(PREMIUM)**
 
 > - [Enabled for projects in personal namespaces](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/89466) in GitLab 15.1.
-> - [Disabled for projects in personal namespaces](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/95495) in GitLab 15.4.
+> - [Disabled for projects in personal namespaces](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/95495) in GitLab 15.3.
 
 Projects in a group (not a personal namespace) can be deleted after a delay period. Multiple settings can affect whether
 delayed project deletion is enabled for a particular project:
