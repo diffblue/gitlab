@@ -38,7 +38,7 @@ module Gitlab
         def format_value(value)
           case metric
           when 'lead_time_for_changes', 'time_to_restore_service'
-            value.fdiv(1.day).round(1)
+            value ? value.fdiv(1.day).round(1) : nil
           when 'deployment_frequency'
             value
           when 'change_failure_rate'
