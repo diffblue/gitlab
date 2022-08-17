@@ -174,6 +174,14 @@ describe('HeaderSearchApp', () => {
         it(`should render the Dropdown Navigation Component`, () => {
           expect(findDropdownKeyboardNavigation().exists()).toBe(true);
         });
+
+        it(`should close the dropdown when press escape key`, async () => {
+          findHeaderSearchInput().vm.$emit('keydown', new KeyboardEvent({ key: 27 }));
+          await nextTick();
+          expect(findHeaderSearchDropdown().exists()).toBe(false);
+          // only one event emmited from findHeaderSearchInput().vm.$emit('click');
+          expect(wrapper.emitted().expandSearchBar.length).toBe(1);
+        });
       });
     });
 
