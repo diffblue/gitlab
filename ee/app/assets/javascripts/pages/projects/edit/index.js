@@ -9,9 +9,7 @@ import initProjectComplianceFrameworkEmptyState from 'ee/projects/project_compli
 import mountStatusChecks from 'ee/status_checks/mount';
 import groupsSelect from '~/groups_select';
 import UserCallout from '~/user_callout';
-import UsersSelect from '~/users_select';
 
-new UsersSelect();
 groupsSelect();
 
 new UserCallout({ className: 'js-mr-approval-callout' });
