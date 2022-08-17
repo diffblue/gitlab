@@ -25,15 +25,15 @@ RSpec.describe 'devise/sessions/new' do
       end
 
       it 'renders the challenge container' do
-        expect(rendered).to have_css('.js-arkose-labs-challenge')
+        expect(rendered).to have_css('#js-arkose-labs-challenge')
       end
 
       it 'passes the API key to the challenge container' do
-        expect(rendered).to have_selector('.js-arkose-labs-challenge[data-api-key="arkose-api-key"]')
+        expect(rendered).to have_selector('#js-arkose-labs-challenge[data-api-key="arkose-api-key"]')
       end
 
       it 'passes the ArkoseLabs domain to the challenge container' do
-        expect(rendered).to have_selector('.js-arkose-labs-challenge[data-domain="gitlab-api.arkoselab.com"]')
+        expect(rendered).to have_selector('#js-arkose-labs-challenge[data-domain="gitlab-api.arkoselab.com"]')
       end
     end
 
@@ -45,7 +45,7 @@ RSpec.describe 'devise/sessions/new' do
       end
 
       it 'does not render challenge container' do
-        expect(rendered).not_to have_css('.js-arkose-labs-challenge')
+        expect(rendered).not_to have_css('#js-arkose-labs-challenge')
       end
     end
   end

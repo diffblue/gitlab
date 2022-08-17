@@ -6,7 +6,26 @@ module EE
     extend ::Gitlab::Utils::Override
 
     prepended do
+      include ArkoseLabsCSP
+
+      skip_before_action :check_captcha, if: -> { ::Feature.enabled?(:arkose_labs_signup_challenge) }
+      before_action only: [:new, :create] do
+        push_frontend_feature_flag(:arkose_labs_signup_challenge)
+      end
       before_action :ensure_can_remove_self, only: [:destroy]
+    end
+
+    override :create
+    def create
+      ensure_correct_params!
+
+      unless verify_arkose_labs_token
+        flash[:alert] = _('Complete verification to sign up.')
+        render action: 'new'
+        return
+      end
+
+      super
     end
 
     private
@@ -40,6 +59,14 @@ module EE
         action: :custom,
         custom_message: _('Instance access request')
       ).for_user.security_event
+    end
+
+    def verify_arkose_labs_token
+      return true unless ::Feature.enabled?(:arkose_labs_signup_challenge)
+
+      # TODO: verify the token with Arkose Labs Verify API
+      # https://gitlab.com/gitlab-org/gitlab/-/merge_requests/96243
+      params[:arkose_labs_token].present?
     end
   end
 end
