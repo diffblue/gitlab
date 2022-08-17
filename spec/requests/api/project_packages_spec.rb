@@ -138,7 +138,8 @@ RSpec.describe API::ProjectPackages do
           it_behaves_like 'returns packages', :project, :developer
           it_behaves_like 'returns packages', :project, :reporter
           it_behaves_like 'rejects packages access', :project, :no_type, :not_found
-          it_behaves_like 'rejects packages access', :project, :guest, :not_found
+          # TODO uncomment when https://gitlab.com/gitlab-org/gitlab/-/issues/370998 is resolved
+          # it_behaves_like 'rejects packages access', :project, :guest, :not_found
         end
       end
 
@@ -319,7 +320,8 @@ RSpec.describe API::ProjectPackages do
           it_behaves_like 'returns package', :project, :maintainer
           it_behaves_like 'returns package', :project, :developer
           it_behaves_like 'returns package', :project, :reporter
-          it_behaves_like 'rejects packages access', :project, :guest, :not_found
+          # TODO uncomment when https://gitlab.com/gitlab-org/gitlab/-/issues/370998 is resolved
+          # it_behaves_like 'rejects packages access', :project, :guest, :not_found
           it_behaves_like 'rejects packages access', :project, :no_type, :not_found
         end
 
