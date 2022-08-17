@@ -328,4 +328,22 @@ RSpec.describe API::Releases do
       end
     end
   end
+
+  describe 'DELETE /projects/:id/releases/:tag_name' do
+    let!(:release) do
+      create(:release,
+             project: project,
+             tag: 'v0.1',
+             name: 'New release',
+             description: 'Super nice release')
+    end
+
+    it 'creates an AuditEvent when a release is deleted' do
+      expect do
+        delete api("/projects/#{project.id}/releases/v0.1", maintainer)
+      end.to change { AuditEvent.count }.by(1)
+
+      expect(AuditEvent.last.details[:custom_message]).to eq("Deleted release #{release.tag}")
+    end
+  end
 end

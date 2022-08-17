@@ -53,6 +53,20 @@ module EE
             ).security_event
           end
 
+          override :log_release_deleted_audit_event
+          def log_release_deleted_audit_event
+            audit_context = {
+              name: 'release_deleted_audit_event',
+              author: current_user,
+              target: release,
+              scope: user_project,
+              message: "Deleted release #{release.tag}",
+              target_details: release.name
+            }
+
+            ::Gitlab::Audit::Auditor.audit(audit_context)
+          end
+
           override :log_release_milestones_updated_audit_event
           def log_release_milestones_updated_audit_event
             ::AuditEvents::ReleaseAssociateMilestoneAuditEventService.new(
