@@ -269,7 +269,7 @@ RSpec.describe DastSiteProfile, type: :model do
           expect(keys).not_to include('DAST_WEBSITE')
           expect(keys).not_to include('DAST_EXCLUDE_URLS')
 
-          expect(collection).to include(key: 'DAST_API_OPENAPI', value: subject.dast_site.url, public: true)
+          expect(collection).to include(key: 'DAST_API_SPECIFICATION', value: subject.dast_site.url, public: true)
           expect(collection).to include(key: 'DAST_API_HOST_OVERRIDE', value: URI(subject.dast_site.url).host, public: true)
           expect(collection).to include(key: 'DAST_API_EXCLUDE_URLS', value: excluded_urls, public: true)
         end
