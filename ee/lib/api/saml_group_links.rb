@@ -34,13 +34,13 @@ module API
 
         unauthorized! unless can?(current_user, :admin_saml_group_links, group)
 
-        response = ::GroupSaml::SamlGroupLinks::CreateService.new(current_user: current_user,
-                                                                  group: group,
-                                                                  params: declared_params(include_missing: false))
-                                                              .execute
+        service = ::GroupSaml::SamlGroupLinks::CreateService.new(current_user: current_user,
+                                                                 group: group,
+                                                                 params: declared_params(include_missing: false))
+        response = service.execute
 
         if response.success?
-          present @saml_group_link, with: EE::API::Entities::SamlGroupLink
+          present service.saml_group_link, with: EE::API::Entities::SamlGroupLink
         else
           render_api_error!(response[:error], response.http_status)
         end

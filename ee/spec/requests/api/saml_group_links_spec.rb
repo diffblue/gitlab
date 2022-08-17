@@ -57,14 +57,16 @@ RSpec.describe API::SamlGroupLinks, api: true do
         it "returns saml group links" do
           subject
 
-          expect(response).to have_gitlab_http_status(:ok)
-          expect(json_response).to(
-            match([
-                    { "access_level" => "Guest", "name" => "saml-group1" },
-                    { "access_level" => "Guest", "name" => "saml-group2" },
-                    { "access_level" => "Guest", "name" => "saml-group3" }
-                  ])
-          )
+          aggregate_failures "testing response" do
+            expect(response).to have_gitlab_http_status(:ok)
+            expect(json_response).to(
+              match([
+                      { "access_level" => "Guest", "name" => "saml-group1" },
+                      { "access_level" => "Guest", "name" => "saml-group2" },
+                      { "access_level" => "Guest", "name" => "saml-group3" }
+                    ])
+            )
+          end
         end
 
         context "when group does not have any associated saml_group_links" do
@@ -79,8 +81,10 @@ RSpec.describe API::SamlGroupLinks, api: true do
           it "returns empty array as response" do
             subject
 
-            expect(response).to have_gitlab_http_status(:ok)
-            expect(json_response).to(match([]))
+            aggregate_failures "testing response" do
+              expect(response).to have_gitlab_http_status(:ok)
+              expect(json_response).to(match([]))
+            end
           end
         end
       end
@@ -135,7 +139,11 @@ RSpec.describe API::SamlGroupLinks, api: true do
             subject
           end.to change { group_with_saml_group_links.saml_group_links.count }.by(1)
 
-          expect(response).to have_gitlab_http_status(:created)
+          aggregate_failures "testing response" do
+            expect(response).to have_gitlab_http_status(:created)
+            expect(json_response['name']).to eq('Test group')
+            expect(json_response['access_level']).to eq('Guest')
+          end
         end
 
         context "when params are missing" do
