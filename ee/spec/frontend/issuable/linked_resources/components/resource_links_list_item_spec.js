@@ -1,7 +1,8 @@
-import { GlButton } from '@gitlab/ui';
+import { GlButton, GlLink } from '@gitlab/ui';
 import { nextTick } from 'vue';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import ResourceLinkItem from 'ee/linked_resources/components/resource_links_list_item.vue';
+import API from '~/api';
 import { mockResourceLinks } from './mock_data';
 
 describe('ResourceLinkItem', () => {
@@ -20,6 +21,7 @@ describe('ResourceLinkItem', () => {
   };
 
   const findRemoveButton = () => wrapper.findComponent(GlButton);
+  const findLinkItem = () => wrapper.findComponent(GlLink);
 
   describe('template', () => {
     it('matches the snapshot', () => {
@@ -42,6 +44,20 @@ describe('ResourceLinkItem', () => {
       await nextTick();
 
       expect(wrapper.emitted().removeRequest).toHaveLength(1);
+    });
+
+    it('calls tracking method when link is clicked', () => {
+      jest.spyOn(API, 'trackRedisHllUserEvent');
+
+      mountComponent();
+
+      expect(API.trackRedisHllUserEvent).not.toHaveBeenCalled();
+
+      findLinkItem().trigger('click');
+
+      expect(API.trackRedisHllUserEvent).toHaveBeenCalledWith(
+        'incident_management_issuable_resource_link_visited',
+      );
     });
   });
 });
