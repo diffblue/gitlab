@@ -43,39 +43,39 @@ module EE
       end
 
       scope :license_scanning_reports, -> do
-        with_file_types(file_types_for_report(:license_scanning))
+        for_report(:license_scanning)
       end
 
       scope :dependency_list_reports, -> do
-        with_file_types(file_types_for_report(:dependency_list))
+        for_report(:dependency_list)
       end
 
       scope :container_scanning_reports, -> do
-        with_file_types(file_types_for_report(:container_scanning))
+        for_report(:container_scanning)
       end
 
       scope :cluster_image_scanning_reports, -> do
-        with_file_types(file_types_for_report(:cluster_image_scanning))
+        for_report(:cluster_image_scanning)
       end
 
       scope :dast_reports, -> do
-        with_file_types(file_types_for_report(:dast))
+        for_report(:dast)
       end
 
       scope :metrics_reports, -> do
-        with_file_types(file_types_for_report(:metrics))
+        for_report(:metrics)
       end
 
       scope :coverage_fuzzing_reports, -> do
-        with_file_types(file_types_for_report(:coverage_fuzzing))
+        for_report(:coverage_fuzzing)
       end
 
       scope :api_fuzzing_reports, -> do
-        with_file_types(file_types_for_report(:api_fuzzing))
+        for_report(:api_fuzzing)
       end
 
       scope :sbom_reports, -> do
-        with_file_types(file_types_for_report(:sbom))
+        for_report(:sbom)
       end
 
       scope :with_files_stored_locally, -> { where(file_store: ::ObjectStorage::Store::LOCAL) }

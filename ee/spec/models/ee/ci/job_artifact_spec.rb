@@ -87,40 +87,92 @@ RSpec.describe Ci::JobArtifact do
 
     context 'when given an unrecognized report type' do
       it 'raises error' do
-        expect { described_class.file_types_for_report(:blah) }.to raise_error(KeyError, /blah/)
+        expect { described_class.file_types_for_report(:blah) }.to raise_error(ArgumentError, "Unrecognized report type: blah")
       end
     end
   end
 
-  describe '.license_scanning_reports' do
-    subject { Ci::JobArtifact.license_scanning_reports }
+  describe '.for_report' do
+    subject { described_class.for_report(report_type) }
 
-    let_it_be(:artifact) { create(:ee_ci_job_artifact, :license_scanning) }
+    describe 'license_scanning_reports' do
+      let(:report_type) { :license_scanning }
 
-    it { is_expected.to eq([artifact]) }
-  end
-
-  describe '.cluster_image_scanning_reports' do
-    subject { Ci::JobArtifact.cluster_image_scanning_reports }
-
-    let_it_be(:artifact) { create(:ee_ci_job_artifact, :cluster_image_scanning) }
-
-    it { is_expected.to eq([artifact]) }
-  end
-
-  describe '.metrics_reports' do
-    subject { Ci::JobArtifact.metrics_reports }
-
-    context 'when there is a metrics report' do
-      let!(:artifact) { create(:ee_ci_job_artifact, :metrics) }
+      let_it_be(:artifact) { create(:ee_ci_job_artifact, :license_scanning) }
 
       it { is_expected.to eq([artifact]) }
     end
 
-    context 'when there is no metrics reports' do
-      let!(:artifact) { create(:ee_ci_job_artifact, :trace) }
+    describe 'cluster_image_scanning_reports' do
+      let(:report_type) { :cluster_image_scanning }
 
-      it { is_expected.to be_empty }
+      let_it_be(:artifact) { create(:ee_ci_job_artifact, :cluster_image_scanning) }
+
+      it { is_expected.to eq([artifact]) }
+    end
+
+    describe 'metrics_reports' do
+      let(:report_type) { :metrics }
+
+      context 'when there is a metrics report' do
+        let!(:artifact) { create(:ee_ci_job_artifact, :metrics) }
+
+        it { is_expected.to eq([artifact]) }
+      end
+
+      context 'when there is no metrics reports' do
+        let!(:artifact) { create(:ee_ci_job_artifact, :trace) }
+
+        it { is_expected.to be_empty }
+      end
+    end
+
+    describe 'coverage_fuzzing_reports' do
+      subject { Ci::JobArtifact.coverage_fuzzing }
+
+      context 'when there is a metrics report' do
+        let!(:artifact) { create(:ee_ci_job_artifact, :coverage_fuzzing) }
+
+        it { is_expected.to eq([artifact]) }
+      end
+
+      context 'when there is no coverage fuzzing reports' do
+        let!(:artifact) { create(:ee_ci_job_artifact, :trace) }
+
+        it { is_expected.to be_empty }
+      end
+    end
+
+    describe 'api_fuzzing_reports' do
+      subject { Ci::JobArtifact.api_fuzzing }
+
+      context 'when there is a metrics report' do
+        let!(:artifact) { create(:ee_ci_job_artifact, :api_fuzzing) }
+
+        it { is_expected.to eq([artifact]) }
+      end
+
+      context 'when there is no coverage fuzzing reports' do
+        let!(:artifact) { create(:ee_ci_job_artifact, :trace) }
+
+        it { is_expected.to be_empty }
+      end
+    end
+
+    describe 'sbom_reports' do
+      subject { Ci::JobArtifact.sbom_reports }
+
+      context 'when there is an sbom report' do
+        let!(:artifact) { create(:ee_ci_job_artifact, :cyclonedx) }
+
+        it { is_expected.to match_array([artifact]) }
+      end
+
+      context 'when there is no sbom report' do
+        let!(:artifact) { create(:ee_ci_job_artifact, :trace) }
+
+        it { is_expected.to be_empty }
+      end
     end
   end
 
@@ -167,54 +219,6 @@ RSpec.describe Ci::JobArtifact do
 
         it { is_expected.to be_empty }
       end
-    end
-  end
-
-  describe '.coverage_fuzzing_reports' do
-    subject { Ci::JobArtifact.coverage_fuzzing }
-
-    context 'when there is a metrics report' do
-      let!(:artifact) { create(:ee_ci_job_artifact, :coverage_fuzzing) }
-
-      it { is_expected.to eq([artifact]) }
-    end
-
-    context 'when there is no coverage fuzzing reports' do
-      let!(:artifact) { create(:ee_ci_job_artifact, :trace) }
-
-      it { is_expected.to be_empty }
-    end
-  end
-
-  describe '.api_fuzzing_reports' do
-    subject { Ci::JobArtifact.api_fuzzing }
-
-    context 'when there is a metrics report' do
-      let!(:artifact) { create(:ee_ci_job_artifact, :api_fuzzing) }
-
-      it { is_expected.to eq([artifact]) }
-    end
-
-    context 'when there is no coverage fuzzing reports' do
-      let!(:artifact) { create(:ee_ci_job_artifact, :trace) }
-
-      it { is_expected.to be_empty }
-    end
-  end
-
-  describe '.sbom_reports' do
-    subject { Ci::JobArtifact.sbom_reports }
-
-    context 'when there is an sbom report' do
-      let!(:artifact) { create(:ee_ci_job_artifact, :cyclonedx) }
-
-      it { is_expected.to match_array([artifact]) }
-    end
-
-    context 'when there is no sbom report' do
-      let!(:artifact) { create(:ee_ci_job_artifact, :trace) }
-
-      it { is_expected.to be_empty }
     end
   end
 
