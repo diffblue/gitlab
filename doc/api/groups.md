@@ -1422,7 +1422,7 @@ To delete the LDAP group link, provide either a `cn` or a `filter`, but not both
 
 > [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/290367) in GitLab 15.3.
 
-List, add, and delete SAML group links.
+List, get, add, and delete SAML group links.
 
 ### List SAML group links
 
@@ -1465,6 +1465,44 @@ Example response:
     "access_level": "Maintainer"
   }
 ]
+```
+
+### Get SAML group link
+
+Get a SAML group link for the group.
+
+```plaintext
+GET /groups/:id/saml_group_links/:saml_group_name
+```
+
+Supported attributes:
+
+| Attribute          | Type           | Required | Description                                                              |
+|:-------------------|:---------------|:---------|:-------------------------------------------------------------------------|
+| `id`               | integer/string | yes      | ID or [URL-encoded path of the group](index.md#namespaced-path-encoding) |
+| `saml_group_name`  | string         | yes      | Name of an SAML group                                                    |
+
+If successful, returns [`200`](index.md#status-codes) and the following
+response attributes:
+
+| Attribute      | Type   | Description                                                                          |
+|:---------------|:-------|:-------------------------------------------------------------------------------------|
+| `name`         | string | Name of the SAML group                                                               |
+| `access_level` | string | Minimum [access level](members.md#valid-access-levels) for members of the SAML group |
+
+Example request:
+
+```shell
+curl --header "PRIVATE-TOKEN: <your_access_token>" "https://gitlab.example.com/api/v4/groups/1/saml_group_links/saml-group-1"
+```
+
+Example response:
+
+```json
+{
+"name": "saml-group-1",
+"access_level": "Guest"
+}
 ```
 
 ### Add SAML group link

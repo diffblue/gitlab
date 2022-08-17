@@ -179,6 +179,60 @@ RSpec.describe API::SamlGroupLinks, api: true do
     end
   end
 
+  describe "GET /groups/:id/saml_group_links/:saml_group_name" do
+    let_it_be(:saml_group_name) { "saml-group1" }
+
+    subject { get api("/groups/#{group_id}/saml_group_links/#{saml_group_name}", current_user) }
+
+    context "when licensed feature is available" do
+      before do
+        stub_licensed_features(group_saml: true, saml_group_sync: true)
+      end
+
+      context "when unauthorized" do
+        it "returns unauthorized error" do
+          subject
+
+          expect(response).to have_gitlab_http_status(:unauthorized)
+        end
+      end
+
+      context "when owner of the group" do
+        let(:current_user) { owner }
+
+        it "gets saml group link" do
+          subject
+
+          aggregate_failures "testing response" do
+            expect(response).to have_gitlab_http_status(:ok)
+            expect(json_response['name']).to eq('saml-group1')
+            expect(json_response['access_level']).to eq('Guest')
+          end
+        end
+
+        context "when invalid group name is passed" do
+          let(:saml_group_name) { "saml-group1356" }
+
+          it "returns 404 if SAML group can not used for a SAML group link" do
+            subject
+
+            expect(response).to have_gitlab_http_status(:not_found)
+          end
+        end
+      end
+    end
+
+    context "when licensed feature is not available" do
+      let(:current_user) { owner }
+
+      it "returns authentication error" do
+        subject
+
+        expect(response).to have_gitlab_http_status(:unauthorized)
+      end
+    end
+  end
+
   describe "DELETE /groups/:id/saml_group_links/:saml_group_name" do
     let_it_be(:saml_group_name) { "saml-group1" }
 
