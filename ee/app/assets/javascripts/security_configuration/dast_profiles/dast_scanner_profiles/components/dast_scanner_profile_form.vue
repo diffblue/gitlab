@@ -115,6 +115,7 @@ export default {
             'DastProfiles|Run the AJAX spider, in addition to the traditional spider, to crawl the target site.',
           ),
           debugMessage: s__('DastProfiles|Include debug messages in the DAST console output.'),
+          disabledProfileName: s__('DastProfiles|Profile is currently in-use'),
         },
       };
     },
@@ -164,13 +165,15 @@ export default {
     <template #error-message>{{ i18n.errorMessage }}</template>
 
     <gl-form-group data-testid="dast-scanner-parent-group" :disabled="isPolicyProfile">
-      <gl-form-group
-        :label="s__('DastProfiles|Profile name')"
-        :invalid-feedback="form.fields.profileName.feedback"
-      >
+      <gl-form-group :invalid-feedback="form.fields.profileName.feedback">
+        <template #label>
+          {{ s__('DastProfiles|Profile name') }}
+          <tooltip-icon v-if="isProfileInUse" :title="i18n.tooltips.disabledProfileName" />
+        </template>
         <gl-form-input
           v-model="form.fields.profileName.value"
           v-validation:[form.showValidation]
+          :disabled="isProfileInUse"
           name="profileName"
           class="gl-max-w-62"
           data-testid="profile-name-input"

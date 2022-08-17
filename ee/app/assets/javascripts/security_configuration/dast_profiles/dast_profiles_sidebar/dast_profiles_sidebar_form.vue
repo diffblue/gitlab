@@ -11,8 +11,16 @@ export default {
     DastScannerProfileForm,
     DastSiteProfileForm,
   },
+
   mixins: [dastProfilesSidebarMixin()],
   inject: ['projectPath'],
+  props: {
+    isProfileInUse: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+  },
   computed: {
     formComponent() {
       return this.profileType === SCANNER_TYPE ? DastScannerProfileForm : DastSiteProfileForm;
@@ -34,6 +42,7 @@ export default {
     :is="formComponent"
     :stacked="true"
     :profile="profile"
+    :is-profile-in-use="isProfileInUse"
     :project-full-path="projectPath"
     @success="onSuccess"
     v-on="$listeners"

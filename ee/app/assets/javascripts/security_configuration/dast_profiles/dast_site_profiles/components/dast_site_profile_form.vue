@@ -140,6 +140,7 @@ export default {
           helpText: s__('DastProfiles|What does each method do?'),
           defaultOption: s__('DastProfiles|Choose a scan method'),
         },
+        disabledProfileName: s__('DastProfiles| Profile is currently in-use'),
       };
     },
     dastApiDocsPath() {
@@ -255,13 +256,15 @@ export default {
     <template #error-message>{{ i18n.errorMessage }}</template>
 
     <gl-form-group class="gl-mb-0" data-testid="dast-site-parent-group" :disabled="isPolicyProfile">
-      <gl-form-group
-        :label="s__('DastProfiles|Profile name')"
-        :invalid-feedback="form.fields.profileName.feedback"
-      >
+      <gl-form-group :invalid-feedback="form.fields.profileName.feedback">
+        <template #label>
+          {{ s__('DastProfiles|Profile name') }}
+          <tooltip-icon v-if="isProfileInUse" :title="i18n.disabledProfileName" />
+        </template>
         <gl-form-input
           v-model="form.fields.profileName.value"
           v-validation:[form.showValidation]
+          :disabled="isProfileInUse"
           name="profileName"
           class="gl-max-w-62"
           data-testid="profile-name-input"
