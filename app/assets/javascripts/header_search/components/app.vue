@@ -69,6 +69,7 @@ export default {
     return {
       showDropdown: false,
       isFocused: false,
+      cancelBlur: false,
       currentFocusIndex: SEARCH_BOX_INDEX,
     };
   },
@@ -179,12 +180,16 @@ export default {
       this.showDropdown = false;
     },
     collapseAndCloseSearchBar() {
-      // we need a delay on this method
-      // for the search bar not to remove
-      // the clear button from dom
-      // and register clicks on dropdown items
-      setTimeout(() => {
-        this.showDropdown = false;
+      // we need set-timeout to delay
+      // the search bar component removing
+      // the clear button from the DOM
+      // so we can focus on it
+      // set-timeout also allows for cancel
+      // mechanism of the running event in
+      // case we don’t want to collapse
+      // the searchbar
+      const blurTimer = setTimeout(() => {
+        this.closeDropdown();
         this.isFocused = false;
         this.$emit('collapseSearchBar');
 
@@ -193,6 +198,30 @@ export default {
           property: 'navigation_top',
         });
       }, 200);
+
+      // wait for the next event loop to
+      // make sure we are observing a new
+      // state of cancelBlur
+      setTimeout(() => {
+        if (this.cancelBlur) {
+          clearTimeout(blurTimer);
+          this.cancelBlur = false;
+        }
+      }, 0);
+    },
+    handleClearButtonFocus() {
+      this.cancelBlur = true;
+      this.isFocused = true;
+    },
+    handleClearButtonBlur() {
+      this.isFocused = false;
+
+      setTimeout(() => {
+        if (this.isFocused) {
+          this.cancelBlur = true;
+        }
+        this.collapseAndCloseSearchBar();
+      }, 0);
     },
     submitSearch() {
       if (this.search?.length <= SEARCH_SHORTCUTS_MIN_CHARACTERS && this.currentFocusIndex < 0) {
@@ -250,6 +279,9 @@ export default {
       @click="openDropdown"
       @blur="collapseAndCloseSearchBar"
       @input="getAutocompleteOptions"
+      @clearButtonRelease="handleClearButtonBlur"
+      @clearButtonBlur="handleClearButtonBlur"
+      @clearButtonFocus="handleClearButtonFocus"
       @keydown.enter.stop.prevent="submitSearch"
       @keydown.esc.stop.prevent="closeDropdown"
     />
