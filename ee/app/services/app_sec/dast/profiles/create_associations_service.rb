@@ -57,11 +57,12 @@ module AppSec
               dast_site_profiles_builds.append({ ci_build_id: build.id, dast_site_profile_id: dast_site_profile.id }) if has_permission?(dast_site_profile, site_profile_name)
             end
 
-            if (scanner_profile_name = build.options.dig(:dast_configuration, :scanner_profile))
-              dast_scanner_profile = dast_scanner_profiles.find { |dsp| dsp.name == scanner_profile_name }
+            scanner_profile_name = build.options.dig(:dast_configuration, :scanner_profile)
+            next unless scanner_profile_name
 
-              dast_scanner_profiles_builds.append({ ci_build_id: build.id, dast_scanner_profile_id: dast_scanner_profile.id }) if has_permission?(dast_scanner_profile, scanner_profile_name)
-            end
+            dast_scanner_profile = dast_scanner_profiles.find { |dsp| dsp.name == scanner_profile_name }
+
+            dast_scanner_profiles_builds.append({ ci_build_id: build.id, dast_scanner_profile_id: dast_scanner_profile.id }) if has_permission?(dast_scanner_profile, scanner_profile_name)
           end
 
           [dast_site_profiles_builds, dast_scanner_profiles_builds]

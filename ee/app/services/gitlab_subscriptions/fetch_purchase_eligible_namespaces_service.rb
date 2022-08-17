@@ -27,13 +27,13 @@ module GitlabSubscriptions
       if response[:success] && response[:data]
         eligible_namespaces = response[:data].to_h { |data| [data["id"], [data["accountId"], data['subscription']]] }
         data = namespaces.each_with_object([]) do |namespace, acc|
-          if eligible_namespaces.include?(namespace.id)
-            acc << {
-              namespace: namespace,
-              account_id: eligible_namespaces[namespace.id][0],
-              active_subscription: eligible_namespaces[namespace.id][1]
-            }
-          end
+          next unless eligible_namespaces.include?(namespace.id)
+
+          acc << {
+            namespace: namespace,
+            account_id: eligible_namespaces[namespace.id][0],
+            active_subscription: eligible_namespaces[namespace.id][1]
+          }
         end
 
         success(data)
