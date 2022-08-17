@@ -3,17 +3,14 @@
 require 'spec_helper'
 
 RSpec.shared_examples "ultimate feature removal banner" do
-  include EE::ProjectsHelper
-
   context 'when it should show the banner', :saas do
     let_it_be(:user) { create(:user) }
     let_it_be(:project) { create(:project, :public) }
 
-    before do
+    before(:all) do
       stub_feature_flags(ultimate_feature_removal_banner: true)
       project.add_guest(user)
-      allow(EE::ProjectsHelper).to receive(:user_dismissed?).with(Users::CalloutsHelper::ULTIMATE_FEATURE_REMOVAL_BANNER).and_return(false)
-      allow(project.project_setting).to receive(:legacy_open_source_license_available).and_return(false)
+      project.project_setting.update!(legacy_open_source_license_available: false)
     end
 
     it "shows the banner message" do
