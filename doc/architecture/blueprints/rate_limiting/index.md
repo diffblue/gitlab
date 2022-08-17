@@ -68,7 +68,7 @@ Inc._
 
 ## Opportunity
 
-We want to build a new framework, making it easier to define limits and
+We want to build a new framework, making it easier to define limits, quotas and
 policies, and to enforce / adjust them in a controlled way, through robust
 monitoring capabilities.
 
@@ -90,6 +90,41 @@ levels:
 Once we do that we will unlock another opportunity: to ship the new framework /
 tooling as a GitLab feature to unlock these consolidation benefits for our
 users, customers and entire wider community audience.
+
+### Limits, quotas and policies
+
+This document aims to describe our technical vision for building the next rate
+limiting architecture for GitLab.com. We refer to this architectural evolution
+as "the next rate limiting architecture", but this is a mental shortcut,
+because we actually want to build a better framework that will make it easier
+for us to manage not only rate limits, but also quotas and policies.
+
+Below you can find a short definition of what we understand by a limit, by a
+quota and by a policy.
+
+- **Limit:** A constraint in application usage that is time-bound. For example:
+  a number of API calls per second that we allow.
+- **Quota:** A constraint in application usage that is a counter, that is not
+  time-bound. Instead this is usually a constraint that is scoped to a
+  resource, instead of a time. For example: number of jobs you can create per
+  pipeline.
+- **Policy:** A constraint in how users can use the application that is
+  stateless, and don't need a global counter. It resembles a boolean function
+  that takes input parameters and returns true or false. It can also be bound to
+  a resource, but this resource becomes an input argument for the policy.
+  Example: IP address restriction per group.
+
+Technically, all of these are limits, because rate limiting is still
+"limiting", quota is a limit that is not time-bound, and policy limits what you
+can do with the application. By referring to a "limit" in this document we mean
+a limit that is time-bound.
+
+Some of the quotas can be also time-bound, but quota has always a stronger
+affinity to resource that is its scope that to a time. For example: a number of
+API requests per second per group are a limit, but number of builds that can be
+processed per pipeline per day would be a quota. Sometime there is a small or
+no difference between a quota and a limit, hence our simplification to use a
+term "limit" for all three makes it easier to avoid confusion.
 
 ### Framework to define and enforce limits
 
@@ -202,6 +237,13 @@ We envision using GitLab Policy Service to be place to define policies that do
 not require knowing anything about the hierarchical structure of the limits.
 There are limits that do not need this, like IP addresses allow-list, spam
 checks, configuration validation etc.
+
+We defined "Policy" as a stateless, functional-style, limit. It takes input
+arguments and evaluates to either true or false. It should not require a global
+counter or any other volatile global state to get evaluated. It may still
+require to have a globally defined rules / configuration, but this state is not
+volatile in a same way a rate limiting counter may be, or a megabytes consumed
+to evaluate quota limit.
 
 ## Hierarchical limits
 
