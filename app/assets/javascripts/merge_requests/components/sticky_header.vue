@@ -104,7 +104,7 @@ export default {
                   size="small"
                   category="tertiary"
                   tooltip-placement="bottom"
-                  class="gl-m-0! js-source-branch-copy"
+                  class="gl-m-0! gl-mx-1! js-source-branch-copy"
                 />
               </template>
               <template #source>
