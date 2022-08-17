@@ -4967,8 +4967,8 @@ RSpec.describe Ci::Pipeline, :mailer, factory_default: :keep do
     end
   end
 
-  describe '#self_and_ancestors' do
-    subject(:self_and_ancestors) { pipeline.self_and_ancestors }
+  describe '#self_and_project_ancestors' do
+    subject(:self_and_project_ancestors) { pipeline.self_and_project_ancestors }
 
     context 'when pipeline is child' do
       let(:pipeline) { create(:ci_pipeline, :created) }
@@ -4981,7 +4981,7 @@ RSpec.describe Ci::Pipeline, :mailer, factory_default: :keep do
       end
 
       it 'returns parent and self' do
-        expect(self_and_ancestors).to contain_exactly(parent, pipeline)
+        expect(self_and_project_ancestors).to contain_exactly(parent, pipeline)
       end
     end
 
@@ -4995,7 +4995,7 @@ RSpec.describe Ci::Pipeline, :mailer, factory_default: :keep do
       end
 
       it 'returns only self' do
-        expect(self_and_ancestors).to contain_exactly(pipeline)
+        expect(self_and_project_ancestors).to contain_exactly(pipeline)
       end
     end
   end

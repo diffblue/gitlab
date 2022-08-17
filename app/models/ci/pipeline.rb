@@ -982,7 +982,7 @@ module Ci
     end
 
     # With only parent-child pipelines
-    def self_and_ancestors
+    def self_and_project_ancestors
       object_hierarchy(project_condition: :same).base_and_ancestors
     end
 
