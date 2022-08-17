@@ -3,6 +3,7 @@ import {
   getAddRelatedIssueRequestParams,
   normalizeGraphQLVulnerability,
   formatIdentifierExternalIds,
+  isSupportedIdentifier,
 } from 'ee/vulnerabilities/helpers';
 
 describe('Vulnerabilities helpers', () => {
@@ -80,6 +81,20 @@ describe('Vulnerabilities helpers', () => {
       expect(formatIdentifierExternalIds(identifiers)).toEqual(
         `[${externalType}]-[${externalId}]-[${name}]`,
       );
+    });
+  });
+
+  describe('isSupportedIdentifier', () => {
+    it.each`
+      type       | expected
+      ${'cwe'}   | ${true}
+      ${'CWE'}   | ${true}
+      ${'owasp'} | ${true}
+      ${'OWASP'} | ${false}
+      ${'cve'}   | ${false}
+      ${'CVE'}   | ${false}
+    `('it renders $expected for $type', ({ type, expected }) => {
+      expect(isSupportedIdentifier(type)).toBe(expected);
     });
   });
 });
