@@ -23,11 +23,27 @@ class ElasticCommitIndexerWorker
   def perform(project_id, wiki = false, options = {})
     return true unless Gitlab::CurrentSettings.elasticsearch_indexing?
 
-    project = Project.find(project_id)
-    return true unless project.use_elasticsearch?
+    @project = Project.find(project_id)
+    return true unless @project.use_elasticsearch?
 
-    in_lock("#{self.class.name}/#{project_id}/#{wiki}", ttl: (Gitlab::Elastic::Indexer::TIMEOUT + 1.minute), retries: 0) do
-      Gitlab::Elastic::Indexer.new(project, wiki: wiki, force: !!options['force']).run
+    search_indexing_duration_s = Benchmark.realtime do
+      @ret = in_lock("#{self.class.name}/#{project_id}/#{wiki}", ttl: (Gitlab::Elastic::Indexer::TIMEOUT + 1.minute), retries: 0) do
+        Gitlab::Elastic::Indexer.new(@project, wiki: wiki, force: !!options['force']).run
+      end
     end
+
+    if @ret
+      # If the indexer was locked (return = nil),
+      # or the project no longer exists in the database (return = false)
+      # we do not want to log anything
+      logger.info(
+        project_id: project_id,
+        wiki: wiki,
+        search_indexing_duration_s: search_indexing_duration_s,
+        jid: jid
+      )
+    end
+
+    @ret
   end
 end
