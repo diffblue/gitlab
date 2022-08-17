@@ -171,7 +171,7 @@ export default {
         const mergeRequest = await modifyPolicy({
           action,
           assignedPolicyProject,
-          name: this.originalName || fromYaml(this.yamlEditorValue)?.name,
+          name: this.originalName || fromYaml(this.yamlEditorValue)?.name || this.policy.name,
           namespacePath: this.namespacePath,
           yamlEditorValue: yamlValue,
         });

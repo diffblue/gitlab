@@ -37,12 +37,8 @@ describe('ScheduleRuleComponent', () => {
 
   const findScheduleRuleLabel = () => wrapper.findByTestId('rule-component-label');
   const findScheduleRuleScopeDropDown = () => wrapper.findByTestId('rule-component-scope');
-  const findScheduleRuleScopeDropDownItem = () =>
-    findScheduleRuleScopeDropDown().findAllComponents(GlDropdownItem);
   const findScheduleRuleTypeDropDown = () => wrapper.findByTestId('rule-component-type');
   const findScheduleRuleBranchesInput = () => wrapper.findByTestId('pipeline-rule-branches');
-  const findScheduleRuleAgentInput = () => wrapper.findByTestId('pipeline-rule-agent');
-  const findScheduleRuleNamespacesInput = () => wrapper.findByTestId('pipeline-rule-namespaces');
   const findScheduleRulePeriodDropDown = () => wrapper.findByTestId('rule-component-period');
   const findScheduleRulePeriodWeeklyItem = () =>
     findScheduleRulePeriodDropDown().findAllComponents(GlDropdownItem).at(1);
@@ -54,10 +50,6 @@ describe('ScheduleRuleComponent', () => {
   describe('default component state', () => {
     beforeEach(() => {
       createComponent();
-    });
-
-    it('renders correctly default state of schedule rule', () => {
-      expect(wrapper.element).toMatchSnapshot();
     });
 
     it('should render default schedule rule with branches', () => {
@@ -90,35 +82,6 @@ describe('ScheduleRuleComponent', () => {
       expect(eventPayload[0]).toEqual({
         type: SCAN_EXECUTION_SCHEDULE_RULE,
         branches: branches.split(','),
-        cadence: CRON_DEFAULT_TIME,
-      });
-    });
-  });
-
-  describe('select agent scope and namespaces', () => {
-    beforeEach(() => {
-      createComponent();
-    });
-
-    it('should select agent and list of name spaces', async () => {
-      const agent = 'cube-agent';
-      const namespaces = 'namespace1,namespace2,namespace3';
-
-      findScheduleRuleScopeDropDownItem().at(1).vm.$emit('click');
-      await nextTick();
-
-      findScheduleRuleAgentInput().vm.$emit('input', agent);
-      findScheduleRuleNamespacesInput().vm.$emit('input', namespaces);
-
-      const [eventPayload] = wrapper.emitted().changed[3];
-
-      expect(eventPayload).toMatchObject({
-        type: SCAN_EXECUTION_SCHEDULE_RULE,
-        agents: {
-          [agent]: {
-            namespaces: ['namespace1', 'namespace2', 'namespace3'],
-          },
-        },
         cadence: CRON_DEFAULT_TIME,
       });
     });
@@ -158,17 +121,13 @@ describe('ScheduleRuleComponent', () => {
     });
   });
 
-  describe('parce existing rules', () => {
+  describe('parse existing rules', () => {
     it('should parse existing rules correctly', async () => {
       createComponent({
         initRule: {
           type: SCAN_EXECUTION_SCHEDULE_RULE,
           cadence: '0 9 * * 4',
-          agents: {
-            cube: {
-              namespaces: ['namespace1', 'namespace2'],
-            },
-          },
+          branches: ['branch1,branch2'],
         },
       });
 
@@ -177,10 +136,8 @@ describe('ScheduleRuleComponent', () => {
       );
 
       expect(findScheduleRuleScopeDropDown().props('text')).toEqual(
-        SCAN_EXECUTION_RULE_SCOPE_TYPE.cluster,
+        SCAN_EXECUTION_RULE_SCOPE_TYPE.branch,
       );
-
-      expect(wrapper.vm.$data.agent).toEqual('cube');
 
       expect(findScheduleRuleTimeDropDown().props('text')).toEqual(HOUR_MINUTE_LIST[9]);
       expect(findScheduleRuleDayDropDown().props('text')).toEqual(DAYS[4]);

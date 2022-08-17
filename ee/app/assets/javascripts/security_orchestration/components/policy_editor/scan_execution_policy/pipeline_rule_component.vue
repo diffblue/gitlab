@@ -38,9 +38,9 @@ export default {
   computed: {
     branchedToAdd: {
       get() {
-        return this.initRule.branches.length === 0
+        return (this.initRule.branches?.length || 0) === 0
           ? ''
-          : this.initRule.branches.filter((element) => element?.trim()).join(',');
+          : this.initRule.branches?.filter((element) => element?.trim()).join(',');
       },
       set(values) {
         const branches = slugify(values, ',').split(',').filter(Boolean);

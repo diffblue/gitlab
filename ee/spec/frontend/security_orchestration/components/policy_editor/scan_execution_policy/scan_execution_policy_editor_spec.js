@@ -217,7 +217,7 @@ describe('ScanExecutionPolicyEditor', () => {
 
     it.each`
       component        | oldValue | newValue
-      ${'name'}        | ${null}  | ${'new policy name'}
+      ${'name'}        | ${''}    | ${'new policy name'}
       ${'description'} | ${''}    | ${'new description'}
       ${'enabled'}     | ${true}  | ${false}
     `('triggers a change on $component', async ({ component, newValue, oldValue }) => {

@@ -12,7 +12,6 @@ import {
   isCronDaily,
 } from './lib';
 import {
-  DEFAULT_AGENT_NAME,
   SCAN_EXECUTION_RULES_LABELS,
   SCAN_EXECUTION_RULE_SCOPE_TYPE,
   SCAN_EXECUTION_RULE_PERIOD_TYPE,
@@ -26,13 +25,10 @@ export default {
   DAYS,
   i18n: {
     scanResultExecutionCopy: s__(
-      'ScanExecutionPolicy|%{ifLabelStart}if%{ifLabelEnd} %{rules} actions for the %{scopes} %{branches} %{namespaceLabel}',
+      'ScanExecutionPolicy|%{ifLabelStart}if%{ifLabelEnd} %{rules} actions for the %{scopes} %{branches}',
     ),
     scanResultExecutionPeriod: s__('ScanExecutionPolicy|%{period} %{days} at %{time}'),
     selectedBranchesPlaceholder: s__('ScanExecutionPolicy|Select branches'),
-    selectedAgentsPlaceholder: s__('ScanExecutionPolicy|Select agents'),
-    selectedNamespacesPlaceholder: s__('ScanExecutionPolicy|Select namespaces'),
-    namespaceLabel: s__('ScanExecutionPolicy|in namespaces'),
   },
   name: 'ScheduleRuleComponent',
   components: {
@@ -59,38 +55,16 @@ export default {
       selectedDay: parseCronTime(this.initRule.cadence).day,
       selectedDayIndex: 0,
       selectedTimeIndex: 0,
-      croneString: this.initRule.cadence,
-      agent: Object.keys(this.initRule.agents || {})[0] || DEFAULT_AGENT_NAME,
-      selectedScope:
-        'agents' in this.initRule
-          ? this.$options.SCAN_EXECUTION_RULE_SCOPE_TYPE.cluster
-          : this.$options.SCAN_EXECUTION_RULE_SCOPE_TYPE.branch,
+      cronString: this.initRule.cadence,
+      selectedScope: this.$options.SCAN_EXECUTION_RULE_SCOPE_TYPE.branch,
       selectedPeriod: isCronDaily(this.initRule.cadence)
         ? this.$options.SCAN_EXECUTION_RULE_PERIOD_TYPE.daily
         : this.$options.SCAN_EXECUTION_RULE_PERIOD_TYPE.weekly,
     };
   },
   computed: {
-    isBranchScope() {
-      return this.selectedScope === this.$options.SCAN_EXECUTION_RULE_SCOPE_TYPE.branch;
-    },
     isCronDaily() {
       return this.selectedPeriod === this.$options.SCAN_EXECUTION_RULE_PERIOD_TYPE.daily;
-    },
-    agentToAdd: {
-      get() {
-        return this.agent;
-      },
-      set(values) {
-        this.agent = slugify(values, '');
-        this.triggerChanged({
-          agents: {
-            [this.agent]: {
-              namespaces: this.nameSpacesToAdd || [],
-            },
-          },
-        });
-      },
     },
     branchedToAdd: {
       get() {
@@ -105,34 +79,13 @@ export default {
         });
       },
     },
-    nameSpacesToAdd: {
-      get() {
-        return (this.initRule.agents?.[this.agent]?.namespaces || []).join(',') || '';
-      },
-      set(values) {
-        const namespaces = slugify(values, ',').split(',').filter(Boolean);
-        this.triggerChanged({
-          agents: {
-            [this.agent]: {
-              namespaces,
-            },
-          },
-        });
-      },
-    },
   },
   methods: {
     triggerChanged(value) {
       this.$emit('changed', { ...this.initRule, ...value });
     },
-    triggerChangedScope(value) {
-      this.$emit('changed', { type: this.initRule.type, ...value, cadence: this.initRule.cadence });
-    },
     isSelectedRule(key) {
       return this.selectedRule === this.$options.SCAN_EXECUTION_RULES_LABELS[key];
-    },
-    isScopeSelected(key) {
-      return this.selectedScope === this.$options.SCAN_EXECUTION_RULE_SCOPE_TYPE[key];
     },
     isPeriodSelected(key) {
       return this.selectedPeriod === this.$options.SCAN_EXECUTION_RULE_PERIOD_TYPE[key];
@@ -149,41 +102,29 @@ export default {
       this.selectedDayIndex = 0;
       this.selectedDay = DAYS[this.selectedDayIndex];
     },
-    resetScope() {
-      this.nameSpacesToAdd = '';
-      this.agent = Object.keys(this.initRule.agents || {})[0] || DEFAULT_AGENT_NAME;
-    },
     setSelectedRule(key) {
       this.selectedRule = this.$options.SCAN_EXECUTION_RULES_LABELS[key];
       this.$emit('select-rule', key);
     },
     setPeriodSelected(key) {
       this.selectedPeriod = this.$options.SCAN_EXECUTION_RULE_PERIOD_TYPE[key];
-      this.croneString = this.isCronDaily ? CRON_DEFAULT_TIME : CRON_DEFAULT_DAY;
+      this.cronString = this.isCronDaily ? CRON_DEFAULT_TIME : CRON_DEFAULT_DAY;
       this.resetTime();
-      this.triggerChanged({ cadence: this.croneString });
+      this.triggerChanged({ cadence: this.cronString });
     },
     setTimeSelected(key) {
       this.selectedTime = HOUR_MINUTE_LIST[key];
       this.selectedTimeIndex = key;
-      this.setCroneString({ time: key, day: this.selectedDayIndex });
+      this.setCronString({ time: key, day: this.selectedDayIndex });
     },
     setDaySelected(key) {
       this.selectedDay = DAYS[key];
       this.selectedDayIndex = key;
-      this.setCroneString({ time: this.selectedTimeIndex, day: key });
+      this.setCronString({ time: this.selectedTimeIndex, day: key });
     },
-    setCroneString({ day, time }) {
-      this.croneString = setCronTime({ time, day });
-      this.triggerChanged({ cadence: this.croneString });
-    },
-    setScopeSelected(key) {
-      this.selectedScope = this.$options.SCAN_EXECUTION_RULE_SCOPE_TYPE[key];
-      this.resetScope();
-      const payload = this.isBranchScope
-        ? { branches: [] }
-        : { agents: { [DEFAULT_AGENT_NAME]: { namespaces: [] } } };
-      this.triggerChangedScope(payload);
+    setCronString({ day, time }) {
+      this.cronString = setCronTime({ time, day });
+      this.triggerChanged({ cadence: this.cronString });
     },
   },
 };
@@ -208,8 +149,6 @@ export default {
               v-for="(label, key) in $options.SCAN_EXECUTION_RULE_SCOPE_TYPE"
               :key="key"
               is-check-item
-              :is-checked="isScopeSelected(key)"
-              @click="setScopeSelected(key)"
             >
               {{ label }}
             </gl-dropdown-item>
@@ -232,30 +171,10 @@ export default {
 
         <template #branches>
           <gl-form-input
-            v-if="isBranchScope"
             v-model="branchedToAdd"
             class="gl-mr-3 gl-max-w-34"
             :placeholder="$options.i18n.selectedBranchesPlaceholder"
             data-testid="pipeline-rule-branches"
-          />
-          <gl-form-input
-            v-else
-            v-model="agentToAdd"
-            class="gl-max-w-34"
-            :placeholder="$options.i18n.selectedAgentsPlaceholder"
-            data-testid="pipeline-rule-agent"
-          />
-        </template>
-
-        <template #namespaceLabel>
-          <template v-if="!isBranchScope">{{ $options.i18n.namespaceLabel }}</template>
-
-          <gl-form-input
-            v-if="!isBranchScope"
-            v-model="nameSpacesToAdd"
-            class="gl-ml-7 gl-max-w-34"
-            :placeholder="$options.i18n.selectedNamespacesPlaceholder"
-            data-testid="pipeline-rule-namespaces"
           />
         </template>
       </gl-sprintf>

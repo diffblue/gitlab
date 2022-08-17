@@ -15,11 +15,8 @@ export const SCAN_EXECUTION_RULES_LABELS = {
 export const SCAN_EXECUTION_PIPELINE_RULE = 'pipeline';
 export const SCAN_EXECUTION_SCHEDULE_RULE = 'schedule';
 
-export const DEFAULT_AGENT_NAME = 'default';
-
 export const SCAN_EXECUTION_RULE_SCOPE_TYPE = {
   branch: s__('ScanExecutionPolicy|branch'),
-  cluster: s__('ScanExecutionPolicy|cluster'),
 };
 
 export const SCAN_EXECUTION_RULE_PERIOD_TYPE = {
