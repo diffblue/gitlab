@@ -24,9 +24,11 @@ module GroupSaml
         error
       end
 
+      attr_reader :saml_group_link
+
       private
 
-      attr_reader :current_user, :group, :params, :saml_group_link
+      attr_reader :current_user, :group, :params
 
       def authorized?
         can?(current_user, :admin_saml_group_links, group)

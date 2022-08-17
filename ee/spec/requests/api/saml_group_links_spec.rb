@@ -41,7 +41,7 @@ RSpec.describe API::SamlGroupLinks, api: true do
         end
       end
 
-      context "when a less priviledged user" do
+      context "when a less privileged user" do
         let(:current_user) { user }
 
         it "returns unauthorized error" do
@@ -57,14 +57,16 @@ RSpec.describe API::SamlGroupLinks, api: true do
         it "returns saml group links" do
           subject
 
-          expect(response).to have_gitlab_http_status(:ok)
-          expect(json_response).to(
-            match([
-                    { "access_level" => "Guest", "name" => "saml-group1" },
-                    { "access_level" => "Guest", "name" => "saml-group2" },
-                    { "access_level" => "Guest", "name" => "saml-group3" }
-                  ])
-          )
+          aggregate_failures "testing response" do
+            expect(response).to have_gitlab_http_status(:ok)
+            expect(json_response).to(
+              match([
+                      { "access_level" => "Guest", "name" => "saml-group1" },
+                      { "access_level" => "Guest", "name" => "saml-group2" },
+                      { "access_level" => "Guest", "name" => "saml-group3" }
+                    ])
+            )
+          end
         end
 
         context "when group does not have any associated saml_group_links" do
@@ -79,8 +81,10 @@ RSpec.describe API::SamlGroupLinks, api: true do
           it "returns empty array as response" do
             subject
 
-            expect(response).to have_gitlab_http_status(:ok)
-            expect(json_response).to(match([]))
+            aggregate_failures "testing response" do
+              expect(response).to have_gitlab_http_status(:ok)
+              expect(json_response).to(match([]))
+            end
           end
         end
       end
@@ -115,10 +119,10 @@ RSpec.describe API::SamlGroupLinks, api: true do
         end
       end
 
-      context "when a less priviledged user" do
+      context "when a less privileged user" do
         let(:current_user) { user }
 
-        it "does not allow less priviledged user to add SAML group link" do
+        it "does not allow less privileged user to add SAML group link" do
           expect do
             subject
           end.not_to change { group_with_saml_group_links.saml_group_links.count }
@@ -135,7 +139,11 @@ RSpec.describe API::SamlGroupLinks, api: true do
             subject
           end.to change { group_with_saml_group_links.saml_group_links.count }.by(1)
 
-          expect(response).to have_gitlab_http_status(:created)
+          aggregate_failures "testing response" do
+            expect(response).to have_gitlab_http_status(:created)
+            expect(json_response['name']).to eq('Test group')
+            expect(json_response['access_level']).to eq('Guest')
+          end
         end
 
         context "when params are missing" do
@@ -171,6 +179,60 @@ RSpec.describe API::SamlGroupLinks, api: true do
     end
   end
 
+  describe "GET /groups/:id/saml_group_links/:saml_group_name" do
+    let_it_be(:saml_group_name) { "saml-group1" }
+
+    subject { get api("/groups/#{group_id}/saml_group_links/#{saml_group_name}", current_user) }
+
+    context "when licensed feature is available" do
+      before do
+        stub_licensed_features(group_saml: true, saml_group_sync: true)
+      end
+
+      context "when unauthorized" do
+        it "returns unauthorized error" do
+          subject
+
+          expect(response).to have_gitlab_http_status(:unauthorized)
+        end
+      end
+
+      context "when owner of the group" do
+        let(:current_user) { owner }
+
+        it "gets saml group link" do
+          subject
+
+          aggregate_failures "testing response" do
+            expect(response).to have_gitlab_http_status(:ok)
+            expect(json_response['name']).to eq('saml-group1')
+            expect(json_response['access_level']).to eq('Guest')
+          end
+        end
+
+        context "when invalid group name is passed" do
+          let(:saml_group_name) { "saml-group1356" }
+
+          it "returns 404 if SAML group can not used for a SAML group link" do
+            subject
+
+            expect(response).to have_gitlab_http_status(:not_found)
+          end
+        end
+      end
+    end
+
+    context "when licensed feature is not available" do
+      let(:current_user) { owner }
+
+      it "returns authentication error" do
+        subject
+
+        expect(response).to have_gitlab_http_status(:unauthorized)
+      end
+    end
+  end
+
   describe "DELETE /groups/:id/saml_group_links/:saml_group_name" do
     let_it_be(:saml_group_name) { "saml-group1" }
 
@@ -189,7 +251,7 @@ RSpec.describe API::SamlGroupLinks, api: true do
         end
       end
 
-      context "when a less priviledged user" do
+      context "when a less privileged user" do
         let(:current_user) { user }
 
         it "does not remove the SAML group link" do

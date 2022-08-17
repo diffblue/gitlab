@@ -34,17 +34,39 @@ module API
 
         unauthorized! unless can?(current_user, :admin_saml_group_links, group)
 
-        response = ::GroupSaml::SamlGroupLinks::CreateService.new(current_user: current_user,
-                                                                  group: group,
-                                                                  params: declared_params(include_missing: false))
-                                                              .execute
+        service = ::GroupSaml::SamlGroupLinks::CreateService.new(current_user: current_user,
+                                                                 group: group,
+                                                                 params: declared_params(include_missing: false))
+        response = service.execute
 
         if response.success?
-          present @saml_group_link, with: EE::API::Entities::SamlGroupLink
+          present service.saml_group_link, with: EE::API::Entities::SamlGroupLink
         else
           render_api_error!(response[:error], response.http_status)
         end
       end
+
+      desc 'Get an existing SAML Group Link for a group' do
+        success EE::API::Entities::SamlGroupLink
+      end
+      params do
+        requires 'saml_group_name', type: String, desc: 'The Name of a SAML group link'
+      end
+      # rubocop: disable CodeReuse/ActiveRecord
+      get ":id/saml_group_links/:saml_group_name" do
+        group = find_group(params[:id])
+
+        unauthorized! unless can?(current_user, :admin_saml_group_links, group)
+
+        saml_group_link = group.saml_group_links.find_by(saml_group_name: params[:saml_group_name])
+
+        if saml_group_link
+          present saml_group_link, with: EE::API::Entities::SamlGroupLink
+        else
+          render_api_error!('Linked SAML group link not found', 404)
+        end
+      end
+      # rubocop: enable CodeReuse/ActiveRecord
 
       desc 'Delete an existing SAML Group Link for a group' do
         success EE::API::Entities::SamlGroupLink
