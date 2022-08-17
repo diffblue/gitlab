@@ -86,8 +86,4 @@ export const SORT_OPTIONS = [
 
 export const MEMBER_AWAITING_STATE = 'awaiting';
 export const MEMBER_ACTIVE_STATE = 'active';
-export const DISMISS_SEATS_ALERT_COOKIE_NAME = 'dismiss_seats_alert_usage_quotas_page';
-export const RENDER_SEATS_PAGE_TRACK_LABEL = 'usage_quotas_page_viewed';
-export const RENDER_SEATS_ALERT_TRACK_LABEL = 'over_limit_alert_viewed';
-export const DISMISS_SEATS_ALERT_TRACK_LABEL = 'over_limit_alert_dismissed';
 export const EXPLORE_PAID_PLANS_CLICKED = 'explore_paid_plans_clicked';

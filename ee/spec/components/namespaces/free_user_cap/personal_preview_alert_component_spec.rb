@@ -67,7 +67,7 @@ RSpec.describe Namespaces::FreeUserCap::PersonalPreviewAlertComponent, :saas, :a
           create(:callout,
                  user: user,
                  feature_name: described_class::PREVIEW_USER_OVER_LIMIT_FREE_PLAN_ALERT,
-                 dismissed_at: described_class::IGNORE_DISMISSAL_EARLIER_THAN - 1.day)
+                 dismissed_at: Namespaces::FreeUserCap::Shared::PREVIEW_IGNORE_DISMISSAL_EARLIER_THAN - 1.day)
         end
 
         it 'renders the alert' do

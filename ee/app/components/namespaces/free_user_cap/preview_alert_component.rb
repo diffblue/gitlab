@@ -6,10 +6,9 @@ module Namespaces
       private
 
       PREVIEW_USER_OVER_LIMIT_FREE_PLAN_ALERT = 'preview_user_over_limit_free_plan_alert'
-      IGNORE_DISMISSAL_EARLIER_THAN = 14.days.ago
 
       def breached_cap_limit?
-        ::Namespaces::FreeUserCap::Preview.new(namespace).over_limit?
+        Shared.breached_preview_cap_limit?(namespace)
       end
 
       def variant
@@ -17,7 +16,7 @@ module Namespaces
       end
 
       def ignore_dismissal_earlier_than
-        IGNORE_DISMISSAL_EARLIER_THAN
+        Shared::PREVIEW_IGNORE_DISMISSAL_EARLIER_THAN
       end
 
       def feature_name
@@ -26,11 +25,7 @@ module Namespaces
 
       def alert_attributes
         {
-          title: n_(
-            'From October 19, 2022, free private groups will be limited to %d member',
-            'From October 19, 2022, free private groups will be limited to %d members',
-            free_user_limit
-          ) % free_user_limit,
+          title: alert_title,
           body: _(
             '%{over_limit_message} To get more members, an owner of the group can start ' \
             'a trial or upgrade to a paid tier.'
@@ -40,7 +35,13 @@ module Namespaces
         }
       end
 
+      def alert_title
+        Shared.preview_alert_title
+      end
+
       def over_limit_message
+        free_user_limit = Shared.free_user_limit
+
         n_(
           'Your group, %{strong_start}%{namespace_name}%{strong_end} has more than %{free_user_limit} ' \
           'member. From October 19, 2022, the %{free_user_limit} most recently active member will remain ' \
@@ -54,21 +55,13 @@ module Namespaces
           'members will remain in your group.',
           free_user_limit
         ).html_safe % {
-          strong_start: strong_start,
-          strong_end: strong_end,
+          strong_start: Shared.strong_start,
+          strong_end: Shared.strong_end,
           namespace_name: namespace.name,
           free_user_limit: free_user_limit,
           link_start: blog_link_start,
           link_end: link_end
         }
-      end
-
-      def strong_start
-        "<strong>".html_safe
-      end
-
-      def strong_end
-        "</strong>".html_safe
       end
     end
   end
