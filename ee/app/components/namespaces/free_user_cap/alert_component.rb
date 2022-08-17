@@ -20,15 +20,14 @@ module Namespaces
       attr_reader :namespace, :user, :content_class
 
       def render?
-        return false unless user
+        return false unless Shared.default_render?(user: user, namespace: namespace)
         return false if dismissed?
-        return false unless Ability.allowed?(user, :owner_access, namespace)
 
         breached_cap_limit?
       end
 
       def breached_cap_limit?
-        ::Namespaces::FreeUserCap::Standard.new(namespace).reached_limit?
+        Shared.breached_standard_cap_limit?(namespace)
       end
 
       def variant
@@ -46,16 +45,11 @@ module Namespaces
       end
 
       def alert_data
-        base_alert_data.merge(dismiss_endpoint: group_callouts_path, group_id: namespace.id)
+        base_alert_data.merge(Shared.extra_alert_data(namespace))
       end
 
       def base_alert_data
-        {
-          track_action: 'render',
-          track_label: 'user_limit_banner',
-          feature_id: feature_name,
-          testid: 'user-over-limit-free-plan-alert'
-        }
+        Shared.base_alert_data(feature_name)
       end
 
       def feature_name
@@ -63,18 +57,14 @@ module Namespaces
       end
 
       def close_button_data
-        {
-          track_action: 'dismiss_banner',
-          track_label: 'user_limit_banner',
-          testid: 'user-over-limit-free-plan-dismiss'
-        }
+        Shared.close_button_data
       end
 
       def alert_attributes
         {
           title: _("Looks like you've reached your %{free_limit} member limit for " \
                    "%{strong_start}%{namespace_name}%{strong_end}").html_safe % {
-            free_limit: free_user_limit,
+            free_limit: Shared.free_user_limit,
             strong_start: "<strong>".html_safe,
             strong_end: "</strong>".html_safe,
             namespace_name: namespace.name
@@ -112,11 +102,11 @@ module Namespaces
       end
 
       def container_class
-        "container-fluid container-limited gl-pb-2! gl-pt-6! #{content_class}"
+        Shared.fluid_container_class(content_class)
       end
 
       def free_user_limit
-        ::Namespaces::FreeUserCap::FREE_USER_LIMIT
+        Shared.free_user_limit
       end
 
       def blog_link_start

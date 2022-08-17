@@ -1,0 +1,4 @@
+- content_for :free_user_cap_alert do
+  = render Namespaces::FreeUserCap::PreviewUsageQuotaAlertComponent.new(namespace: group.root_ancestor,
+      user: current_user,
+      content_class: container_class)
