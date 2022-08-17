@@ -1,6 +1,7 @@
 <script>
-import '~/commons/bootstrap';
 import { GlIcon, GlButton, GlTooltipDirective, GlLink } from '@gitlab/ui';
+import api from '~/api';
+import '~/commons/bootstrap';
 import { resourceLinksListI18n } from '../constants';
 import { getLinkIcon } from './utils';
 
@@ -54,6 +55,9 @@ export default {
   },
   methods: {
     getLinkIcon,
+    trackResourceLinkClick() {
+      api.trackRedisHllUserEvent('incident_management_issuable_resource_link_visited');
+    },
     handleRemove() {
       this.isRemoveDisabled = true;
       this.$emit('removeRequest', this.idKey);
@@ -74,9 +78,13 @@ export default {
     >
       <div class="item-title d-flex align-items-xl-center mb-xl-0 gl-min-w-0">
         <gl-icon class="gl-mr-3" :name="getLinkIcon(iconName)" :class="iconClasses" />
-        <gl-link :href="linkValue" target="_blank" class="sortable-link gl-font-weight-normal">{{
-          linkText
-        }}</gl-link>
+        <gl-link
+          :href="linkValue"
+          target="_blank"
+          class="sortable-link gl-font-weight-normal"
+          @click="trackResourceLinkClick"
+          >{{ linkText }}</gl-link
+        >
       </div>
     </div>
     <gl-button
