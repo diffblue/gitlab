@@ -65,11 +65,11 @@ module Dora
           VALUES (
             #{environment.id},
             #{connection.quote(date.to_s)},
-            #{queries_to_refresh.map { |_column, query| "(#{query})"}.join(', ')}
+            #{queries_to_refresh.map { |_column, query| "(#{query})" }.join(', ')}
           )
           ON CONFLICT (environment_id, date)
           DO UPDATE SET
-            #{queries_to_refresh.map { |column, query| "#{column} = (#{query})"}.join(', ')}
+            #{queries_to_refresh.map { |column, query| "#{column} = (#{query})" }.join(', ')}
         SQL
       end
     end

@@ -60,7 +60,7 @@ module Elastic
         return false
       end
 
-      expected_free_size = alias_names.sum {|name| elastic_helper.index_size_bytes(index_name: name) } * 2
+      expected_free_size = alias_names.sum { |name| elastic_helper.index_size_bytes(index_name: name) } * 2
       if elastic_helper.cluster_free_size_bytes < expected_free_size
         abort_reindexing!("You should have at least #{expected_free_size} bytes of storage available to perform reindexing. Please increase the storage in your Elasticsearch cluster before reindexing.")
         return false

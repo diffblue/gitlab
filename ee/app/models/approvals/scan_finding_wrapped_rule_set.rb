@@ -19,7 +19,7 @@ module Approvals
       merge_request_rules.map! do |rule|
         ApprovalWrappedRule.wrap(merge_request, rule)
       end
-      merge_request_rules.sort_by {|rule| rule.approved? ? 1 : 0}
+      merge_request_rules.sort_by { |rule| rule.approved? ? 1 : 0 }
     end
   end
 end

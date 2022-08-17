@@ -24,7 +24,7 @@ module ComplianceManagement
     validate :namespace_is_root_level_group
 
     scope :with_projects, ->(project_ids) { includes(:projects).where(projects: { id: project_ids }) }
-    scope :with_namespaces, ->(namespace_ids) { includes(:namespace).where(namespaces: { id: namespace_ids })}
+    scope :with_namespaces, ->(namespace_ids) { includes(:namespace).where(namespaces: { id: namespace_ids }) }
 
     private
 

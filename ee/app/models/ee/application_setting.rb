@@ -319,7 +319,7 @@ module EE
     end
 
     def elasticsearch_url=(values)
-      cleaned = values.split(',').map {|url| url.strip.gsub(%r{/*\z}, '') }
+      cleaned = values.split(',').map { |url| url.strip.gsub(%r{/*\z}, '') }
 
       write_attribute(:elasticsearch_url, cleaned.join(','))
     end

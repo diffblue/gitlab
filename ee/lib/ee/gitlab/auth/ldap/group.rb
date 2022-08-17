@@ -70,7 +70,7 @@ module EE
           end
 
           def member_range_attribute(entry)
-            entry.attribute_names.find { |a| a.to_s.start_with?("member;range=")}.to_s
+            entry.attribute_names.find { |a| a.to_s.start_with?("member;range=") }.to_s
           end
 
           def active_directory_members(entry, nested_groups_to_skip)

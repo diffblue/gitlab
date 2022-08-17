@@ -44,7 +44,7 @@ class Vulnerabilities::FindingEntity < Grape::Entity
     expose(:request, using: Vulnerabilities::RequestEntity) { |model, _| model.evidence&.dig(:request) }
     expose(:response, using: Vulnerabilities::ResponseEntity) { |model, _| model.evidence&.dig(:response) }
     expose(:evidence_source) { |model, _| model.evidence&.dig(:source) }
-    expose(:supporting_messages) { |model, _| model.evidence&.dig(:supporting_messages)}
+    expose(:supporting_messages) { |model, _| model.evidence&.dig(:supporting_messages) }
     expose(:assets) { |model, _| model.assets }
   end
 
