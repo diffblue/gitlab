@@ -31,7 +31,7 @@ module Users
       end
 
       def valid?
-        user[attr] == digest
+        Devise.secure_compare(user[attr], digest)
       end
 
       def expired_token?
@@ -40,7 +40,7 @@ module Users
                        when :confirmation_token then user.confirmation_sent_at
                        end
 
-        generated_at < (Time.current - TOKEN_VALID_FOR_MINUTES.minutes)
+        generated_at < TOKEN_VALID_FOR_MINUTES.minutes.ago
       end
 
       def success
