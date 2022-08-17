@@ -455,13 +455,9 @@ RSpec.describe Project do
         premium_project = create(:project, :archived, creator: user, namespace: premium_group)
         no_plan_project = create(:project, :archived, creator: user, namespace: no_plan_group)
         no_plan_public_project = create(:project, :archived, creator: user, visibility: ::Gitlab::VisibilityLevel::PUBLIC, namespace: no_plan_group)
-        free_user_namespace = create(:user_namespace, :user_namespace_with_plan, plan: :free_plan)
-        ultimate_user_namespace = create(:user_namespace, :user_namespace_with_plan, plan: :ultimate_plan)
-        free_personal_project = create(:project, :archived, creator: user, namespace: free_user_namespace)
-        ultimate_personal_project = create(:project, :archived, creator: user, namespace: ultimate_user_namespace)
 
-        expect(described_class.with_feature_available(:adjourned_deletion_for_projects_and_groups)).to contain_exactly(premium_project, ultimate_project, no_plan_public_project, ultimate_personal_project)
-        expect(described_class.with_feature_available(:adjourned_deletion_for_projects_and_groups)).not_to include(no_plan_project, free_personal_project)
+        expect(described_class.with_feature_available(:adjourned_deletion_for_projects_and_groups)).to contain_exactly(premium_project, ultimate_project, no_plan_public_project)
+        expect(described_class.with_feature_available(:adjourned_deletion_for_projects_and_groups)).not_to include(no_plan_project)
       end
     end
   end
