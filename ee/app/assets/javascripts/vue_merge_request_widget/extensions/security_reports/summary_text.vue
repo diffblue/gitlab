@@ -32,15 +32,14 @@ export default {
     <gl-sprintf v-else-if="!totalNewVulnerabilities" :message="$options.i18n.noNewVulnerabilities">
       <template #scanner>{{ scanner || $options.i18n.securityScanning }}</template>
       <template #bold="{ content }">
-        <b>{{ content }}</b>
+        <strong>{{ content }}</strong>
       </template>
     </gl-sprintf>
     <gl-sprintf v-else :message="$options.i18n.newVulnerabilities">
       <template #scanner>{{ scanner || $options.i18n.securityScanning }}</template>
-      <template #bold="{ content }">
-        <b>{{ content }}</b>
-      </template>
-      <template #number>{{ totalNewVulnerabilities }}</template>
+      <template #number
+        ><strong>{{ totalNewVulnerabilities }}</strong></template
+      >
       <template #vulnStr>{{
         n__('vulnerability', 'vulnerabilities', totalNewVulnerabilities)
       }}</template>

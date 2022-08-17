@@ -1,8 +1,9 @@
 import { nextTick } from 'vue';
 import MockAdapter from 'axios-mock-adapter';
+import waitForPromises from 'helpers/wait_for_promises';
 import MRSecurityWidget from 'ee/vue_merge_request_widget/extensions/security_reports/mr_widget_security_reports.vue';
 import SummaryText from 'ee/vue_merge_request_widget/extensions/security_reports/summary_text.vue';
-import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import { shallowMountExtended, mountExtended } from 'helpers/vue_test_utils_helper';
 import Widget from '~/vue_merge_request_widget/components/widget/widget.vue';
 import axios from '~/lib/utils/axios_utils';
 
@@ -10,9 +11,8 @@ describe('MR Widget Security Reports', () => {
   let wrapper;
   let mockAxios;
 
-  const createComponent = ({ propsData } = {}) => {
-    mockAxios = new MockAdapter(axios);
-    wrapper = shallowMountExtended(MRSecurityWidget, {
+  const createComponent = ({ propsData, mountFn = shallowMountExtended } = {}) => {
+    wrapper = mountFn(MRSecurityWidget, {
       propsData: {
         mr: {},
         ...propsData,
@@ -22,6 +22,10 @@ describe('MR Widget Security Reports', () => {
 
   const findWidget = () => wrapper.findComponent(Widget);
   const findSummaryText = () => wrapper.findComponent(SummaryText);
+
+  beforeEach(() => {
+    mockAxios = new MockAdapter(axios);
+  });
 
   afterEach(() => {
     wrapper.destroy();
@@ -62,26 +66,26 @@ describe('MR Widget Security Reports', () => {
       dastComparisonPath: '/my/dast/endpoint',
     };
 
-    beforeEach(() => {
+    it('computes the total number of new potential vulnerabilities correctly', async () => {
+      mockAxios
+        .onGet(reportEndpoints.sastComparisonPath)
+        .replyOnce(200, { added: [{ id: 1 }, { id: 2 }] });
+
+      mockAxios
+        .onGet(reportEndpoints.dastComparisonPath)
+        .replyOnce(200, { added: [{ id: 5 }, { id: 3 }] });
+
       createComponent({
         propsData: {
           mr: {
             ...reportEndpoints,
           },
         },
+        mountFn: mountExtended,
       });
-    });
 
-    it('fetchCollapsedData - returns a list of endpoints', async () => {
-      mockAxios.onGet(reportEndpoints.sastComparisonPath).replyOnce(200);
-      mockAxios.onGet(reportEndpoints.dastComparisonPath).replyOnce(200);
-
-      const endpoints = wrapper.vm.fetchCollapsedData();
-      expect(endpoints.length).toBe(2);
-
-      await Promise.all(endpoints.map((ep) => ep()));
-
-      expect(mockAxios.history.get).toHaveLength(2);
+      await waitForPromises();
+      expect(findSummaryText().props()).toMatchObject({ totalNewVulnerabilities: 4 });
     });
   });
 });

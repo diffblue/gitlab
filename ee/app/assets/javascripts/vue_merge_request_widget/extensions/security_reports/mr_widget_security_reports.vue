@@ -20,7 +20,7 @@ export default {
   data() {
     return {
       isLoading: false,
-      data: {
+      vulnerabilities: {
         collapsed: null,
         extended: null,
       },
@@ -28,7 +28,13 @@ export default {
   },
   computed: {
     totalNewVulnerabilities() {
-      return 0;
+      if (!this.vulnerabilities.collapsed) {
+        return 0;
+      }
+
+      return this.vulnerabilities.collapsed.reduce((counter, current) => {
+        return counter + current.added.length;
+      }, 0);
     },
 
     statusIconName() {
@@ -68,7 +74,7 @@ export default {
 
 <template>
   <mr-widget
-    v-model="data"
+    v-model="vulnerabilities"
     :error-text="$options.i18n.error"
     :fetch-collapsed-data="fetchCollapsedData"
     :fetch-expanded-data="fetchExpandedData"

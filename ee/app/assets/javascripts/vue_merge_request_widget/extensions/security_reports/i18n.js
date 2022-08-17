@@ -16,7 +16,5 @@ export default {
   noNewVulnerabilities: s__(
     'ciReport|%{scanner} detected no %{boldStart}new%{boldEnd} potential vulnerabilities',
   ),
-  newVulnerabilities: s__(
-    'ciReport|%{scanner} detected %{boldStart}%{number}%{boldEnd} new potential %{vulnStr}',
-  ),
+  newVulnerabilities: s__('ciReport|%{scanner} detected %{number} new potential %{vulnStr}'),
 };
