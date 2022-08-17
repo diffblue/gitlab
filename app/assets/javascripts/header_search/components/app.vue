@@ -68,8 +68,8 @@ export default {
   data() {
     return {
       showDropdown: false,
-      currentFocusIndex: SEARCH_BOX_INDEX,
       isFocused: false,
+      currentFocusIndex: SEARCH_BOX_INDEX,
     };
   },
   computed: {
@@ -163,13 +163,22 @@ export default {
     ...mapActions(['setSearch', 'fetchAutocompleteOptions', 'clearAutocomplete']),
     openDropdown() {
       this.showDropdown = true;
-      this.$emit('expandSearchBar');
       this.isFocused = true;
+      this.$emit('expandSearchBar', true);
     },
     closeDropdown() {
       this.showDropdown = false;
-      this.$emit('collapseSearchBar');
-      this.isFocused = false;
+    },
+    collapseAndCloseSearchBar() {
+      // we need a delay on this method
+      // for the search bar not to remove
+      // the clear button from dom
+      // and register clicks on dropdown items
+      setTimeout(() => {
+        this.showDropdown = false;
+        this.isFocused = false;
+        this.$emit('collapseSearchBar');
+      }, 200);
     },
     submitSearch() {
       if (this.search?.length <= SEARCH_SHORTCUTS_MIN_CHARACTERS && this.currentFocusIndex < 0) {
@@ -178,6 +187,7 @@ export default {
       return visitUrl(this.currentFocusedOption?.url || this.searchQuery);
     },
     getAutocompleteOptions: debounce(function debouncedSearch(searchTerm) {
+      this.openDropdown();
       if (!searchTerm) {
         this.clearAutocomplete();
       } else {
@@ -224,6 +234,7 @@ export default {
       :aria-describedby="$options.SEARCH_INPUT_DESCRIPTION"
       @focus="openDropdown"
       @click="openDropdown"
+      @blur="collapseAndCloseSearchBar"
       @input="getAutocompleteOptions"
       @keydown.enter.stop.prevent="submitSearch"
       @keydown.esc.stop.prevent="closeDropdown"
