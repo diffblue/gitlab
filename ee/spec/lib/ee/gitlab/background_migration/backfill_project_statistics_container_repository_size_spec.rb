@@ -8,15 +8,24 @@ RSpec.describe Gitlab::BackgroundMigration::BackfillProjectStatisticsContainerRe
   let_it_be(:project_statistics_table) { table(:project_statistics) }
   let_it_be(:project) { table(:projects) }
 
+  let!(:root_group) do
+    namespace.create!(id: 1, name: 'root-group', path: 'root-group',
+                       type: 'Group', traversal_ids: [1])
+  end
+
+  let!(:group) do
+    namespace.create!(id: 2, name: 'group', path: 'group', parent_id: root_group.id,
+                       type: 'Group', traversal_ids: [1, 2])
+  end
+
+  let!(:sub_group) do
+    namespace.create!(id: 3, name: 'subgroup', path: 'subgroup', parent_id: group.id,
+                       type: 'Group', traversal_ids: [1, 2, 3])
+  end
+
   let!(:namespace1) do
     namespace.create!(
       name: 'namespace1', type: 'Group', path: 'space1'
-    )
-  end
-
-  let!(:namespace2) do
-    namespace.create!(
-      name: 'namespace2', type: 'Group', path: 'space2'
     )
   end
 
@@ -34,13 +43,13 @@ RSpec.describe Gitlab::BackgroundMigration::BackfillProjectStatisticsContainerRe
 
   let!(:proj_namespace3) do
     namespace.create!(
-      name: 'proj3', path: 'proj3', type: 'Project', parent_id: namespace2.id
+      name: 'proj3', path: 'proj3', type: 'Project', parent_id: sub_group.id
     )
   end
 
   let!(:proj_namespace4) do
     namespace.create!(
-      name: 'proj4', path: 'proj4', type: 'Project', parent_id: namespace2.id
+      name: 'proj4', path: 'proj4', type: 'Project', parent_id: sub_group.id
     )
   end
 
@@ -58,13 +67,13 @@ RSpec.describe Gitlab::BackgroundMigration::BackfillProjectStatisticsContainerRe
 
   let!(:proj3) do
     project.create!(
-      name: 'proj3', path: 'proj3', namespace_id: namespace2.id, project_namespace_id: proj_namespace3.id
+      name: 'proj3', path: 'proj3', namespace_id: sub_group.id, project_namespace_id: proj_namespace3.id
     )
   end
 
   let!(:proj4) do
     project.create!(
-      name: 'proj4', path: 'proj4', namespace_id: namespace2.id, project_namespace_id: proj_namespace4.id
+      name: 'proj4', path: 'proj4', namespace_id: sub_group.id, project_namespace_id: proj_namespace4.id
     )
   end
 
@@ -190,7 +199,7 @@ RSpec.describe Gitlab::BackgroundMigration::BackfillProjectStatisticsContainerRe
       1,
       'import_done',
       DATE_BEFORE_PHASE_1,
-      namespace2.id,
+      sub_group.id,
       container_registry_size
     )
     add_container_registries_and_project_statistics(
@@ -198,7 +207,7 @@ RSpec.describe Gitlab::BackgroundMigration::BackfillProjectStatisticsContainerRe
       2,
       'default',
       DATE_AFTER_PHASE_1,
-      namespace2.id,
+      sub_group.id,
       container_registry_size
     )
   end
