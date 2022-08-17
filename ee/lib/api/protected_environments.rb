@@ -10,23 +10,43 @@ module API
     urgency :low
 
     helpers do
-      params :protected_environment_approval_rules do
+      params :shared_params do
+        optional :user_id, type: Integer
+        optional :group_id, type: Integer
+        optional :group_inheritance_type, type: Integer, values: ::ProtectedEnvironments::Authorizable::GROUP_INHERITANCE_TYPE.values
+      end
+
+      params :shared_update_params do
+        optional :id, type: Integer
+        optional :_destroy, type: Boolean, desc: 'Delete the object when true'
+      end
+
+      params :deploy_access_levels do
+        requires :deploy_access_levels, as: :deploy_access_levels_attributes, type: Array, desc: 'An array of users/groups allowed to deploy environment' do
+          use :shared_params
+
+          optional :access_level, type: Integer, values: ::ProtectedEnvironment::DeployAccessLevel::ALLOWED_ACCESS_LEVELS
+        end
+      end
+
+      params :optional_approval_rules do
         optional :approval_rules, as: :approval_rules_attributes, type: Array, desc: 'An array of users/groups allowed to approve/reject a deployment' do
+          use :shared_params
+          use :shared_update_params
+
           optional :access_level, type: Integer, values: ::ProtectedEnvironments::ApprovalRule::ALLOWED_ACCESS_LEVELS
-          optional :user_id, type: Integer
-          optional :group_id, type: Integer
           optional :required_approvals, type: Integer, default: 1, desc: 'The number of approvals required in this rule'
-          optional :group_inheritance_type, type: Integer, values: ::ProtectedEnvironments::Authorizable::GROUP_INHERITANCE_TYPE.values
+
           at_least_one_of :access_level, :user_id, :group_id
         end
       end
 
-      params :protected_environment_deploy_access_levels do
-        requires :deploy_access_levels, as: :deploy_access_levels_attributes, type: Array, desc: 'An array of users/groups allowed to deploy environment' do
+      params :optional_deploy_access_levels do
+        optional :deploy_access_levels, as: :deploy_access_levels_attributes, type: Array, desc: 'An array of users/groups allowed to deploy environment' do
+          use :shared_params
+          use :shared_update_params
+
           optional :access_level, type: Integer, values: ::ProtectedEnvironment::DeployAccessLevel::ALLOWED_ACCESS_LEVELS
-          optional :user_id, type: Integer
-          optional :group_id, type: Integer
-          optional :group_inheritance_type, type: Integer, values: ::ProtectedEnvironments::Authorizable::GROUP_INHERITANCE_TYPE.values
         end
       end
     end
@@ -76,8 +96,8 @@ module API
         requires :name, type: String, desc: 'The name of the protected environment'
         optional :required_approval_count, type: Integer, desc: 'The number of approvals required to deploy to this environment', default: 0
 
-        use :protected_environment_deploy_access_levels
-        use :protected_environment_approval_rules
+        use :deploy_access_levels
+        use :optional_approval_rules
       end
       post ':id/protected_environments' do
         protected_environment = user_project.protected_environments.find_by_name(params[:name])
@@ -91,6 +111,33 @@ module API
                                   .new(container: user_project, current_user: current_user, params: declared_params).execute
 
         if protected_environment.persisted?
+          present protected_environment, with: ::EE::API::Entities::ProtectedEnvironment, project: user_project
+        else
+          render_api_error!(protected_environment.errors.full_messages, 422)
+        end
+      end
+
+      desc 'Update a single environment' do
+        detail 'This feature was introduced in GitLab 15.4'
+        success ::EE::API::Entities::ProtectedEnvironment
+      end
+      params do
+        requires :name, type: String, desc: 'The name of the protected environment'
+        optional :required_approval_count, type: Integer, desc: 'The number of approvals required to deploy to this environment'
+
+        use :optional_deploy_access_levels
+        use :optional_approval_rules
+      end
+      put ':id/protected_environments/:name' do
+        not_found! unless protected_environment
+
+        declared_params = declared_params(include_missing: false)
+
+        result = ::ProtectedEnvironments::UpdateService
+                   .new(container: user_project, current_user: current_user, params: declared_params)
+                   .execute(protected_environment)
+
+        if result
           present protected_environment, with: ::EE::API::Entities::ProtectedEnvironment, project: user_project
         else
           render_api_error!(protected_environment.errors.full_messages, 422)
@@ -156,8 +203,8 @@ module API
         requires :name, type: String, desc: 'The tier name of the protected environment'
         optional :required_approval_count, type: Integer, desc: 'The number of approvals required to deploy to this environment', default: 0
 
-        use :protected_environment_deploy_access_levels
-        use :protected_environment_approval_rules
+        use :deploy_access_levels
+        use :optional_approval_rules
       end
       post ':id/protected_environments' do
         protected_environment = user_group.protected_environments.find_by_name(params[:name])
@@ -172,6 +219,33 @@ module API
 
         if protected_environment.persisted?
           present protected_environment, with: ::EE::API::Entities::ProtectedEnvironment
+        else
+          render_api_error!(protected_environment.errors.full_messages, 422)
+        end
+      end
+
+      desc 'Update a single environment' do
+        detail 'This feature was introduced in GitLab 15.4'
+        success ::EE::API::Entities::ProtectedEnvironment
+      end
+      params do
+        requires :name, type: String, desc: 'The name of the protected environment'
+        optional :required_approval_count, type: Integer, desc: 'The number of approvals required to deploy to this environment', default: 0
+
+        use :optional_deploy_access_levels
+        use :optional_approval_rules
+      end
+      put ':id/protected_environments/:name' do
+        not_found! unless protected_environment
+
+        declared_params = declared_params(include_missing: false)
+
+        result = ::ProtectedEnvironments::UpdateService
+                   .new(container: user_group, current_user: current_user, params: declared_params)
+                   .execute(protected_environment)
+
+        if result
+          present protected_environment, with: ::EE::API::Entities::ProtectedEnvironment, project: user_group
         else
           render_api_error!(protected_environment.errors.full_messages, 422)
         end

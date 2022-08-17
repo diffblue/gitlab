@@ -2,6 +2,7 @@
   "type": "object",
   "required": [ "access_level_description" ],
   "properties": {
+    "id": { "type": ["integer", "null"] },
     "access_level": { "type": ["integer", "null"] },
     "access_level_description": { "type": ["string", "null"] },
     "user_id": { "type": ["integer", "null"] },
