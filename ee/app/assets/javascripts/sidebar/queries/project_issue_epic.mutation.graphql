@@ -2,10 +2,8 @@ mutation projectIssueEpicMutation($fullPath: ID!, $iid: String!, $attributeId: E
   issuableSetAttribute: issueSetEpic(
     input: { projectPath: $fullPath, iid: $iid, epicId: $attributeId }
   ) {
-    __typename
     errors
     issuable: issue {
-      __typename
       id
       attribute: epic {
         title

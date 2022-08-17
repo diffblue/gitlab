@@ -1,7 +1,6 @@
 #import "../fragments/oncall_schedule_participant.fragment.graphql"
 
 fragment OnCallRotation on IncidentManagementOncallRotation {
-  __typename
   id
   name
   startsAt
@@ -14,7 +13,6 @@ fragment OnCallRotation on IncidentManagementOncallRotation {
   }
   participants {
     nodes {
-      __typename
       ...OnCallParticipant
     }
   }

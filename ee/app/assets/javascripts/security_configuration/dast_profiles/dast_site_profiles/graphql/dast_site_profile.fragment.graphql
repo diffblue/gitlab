@@ -1,5 +1,4 @@
 fragment DastSiteProfileFragment on DastSiteProfile {
-  __typename
   id
   profileName
   normalizedTargetUrl

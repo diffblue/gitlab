@@ -5,7 +5,6 @@ fragment OnCallRotationWithShifts on IncidentManagementOncallRotation {
   shifts(startTime: $startsAt, endTime: $endsAt) {
     nodes {
       participant {
-        __typename
         ...OnCallParticipant
       }
       endsAt

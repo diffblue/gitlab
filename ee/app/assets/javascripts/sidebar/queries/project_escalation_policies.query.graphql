@@ -2,12 +2,10 @@
 
 query projectEscalationPolicies($fullPath: ID!, $title: String) {
   workspace: project(fullPath: $fullPath) {
-    __typename
     id
     attributes: incidentManagementEscalationPolicies(name: $title) {
       nodes {
         ...EscalationPolicyFragment
-        __typename
       }
     }
   }
