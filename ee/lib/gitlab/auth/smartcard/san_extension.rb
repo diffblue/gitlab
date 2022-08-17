@@ -46,7 +46,7 @@ module Gitlab
         attr_reader :certificate, :gitlab_host
 
         def subject_alternate_email_identities
-          subject_alt_names = certificate.extensions.select {|e| e.oid == 'subjectAltName'}
+          subject_alt_names = certificate.extensions.select { |e| e.oid == 'subjectAltName' }
 
           subject_alt_names.each_with_object([]) do |entry, san_entries|
             # Parse the subject alternate name certificate extension as ASN1, first value should be the key

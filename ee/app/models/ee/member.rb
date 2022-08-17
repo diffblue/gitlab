@@ -18,8 +18,8 @@ module EE
         state :awaiting, value: ::Member::STATE_AWAITING
         state :active, value: ::Member::STATE_ACTIVE
       end
-      scope :awaiting, -> {where(state: ::Member::STATE_AWAITING)}
-      scope :non_awaiting, -> {where.not(state: ::Member::STATE_AWAITING)}
+      scope :awaiting, -> { where(state: ::Member::STATE_AWAITING) }
+      scope :non_awaiting, -> { where.not(state: ::Member::STATE_AWAITING) }
 
       scope :banned, -> do
         joins("INNER JOIN namespace_bans

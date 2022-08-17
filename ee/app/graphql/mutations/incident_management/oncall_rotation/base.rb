@@ -72,7 +72,7 @@ module Mutations
 
           raise_too_many_users_error if user_array.size > MAXIMUM_PARTICIPANTS
 
-          usernames = user_array.map {|h| h[:username] }
+          usernames = user_array.map { |h| h[:username] }
           raise_duplicate_users_error if usernames.size != usernames.uniq.size
 
           matched_users = UsersFinder.new(current_user, username: usernames).execute.index_by(&:username)

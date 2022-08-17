@@ -91,7 +91,7 @@ module Elastic
           options[:index_name] = Elastic::Latest::CommitConfig.index_name
           options[:project_id_field] = 'rid'
         else
-          fields = fields.map {|i| "commit.#{i}"}
+          fields = fields.map { |i| "commit.#{i}" }
           options[:project_id_field] = 'commit.rid'
         end
 

@@ -45,7 +45,7 @@ module Vulnerabilities
     scope :by_finding_uuid, -> (uuids) { where(finding_uuid: uuids) }
     scope :by_project, -> (project) { where(project: project) }
     scope :by_project_fingerprints, -> (project_fingerprints) { where(project_fingerprint: project_fingerprints) }
-    scope :order_by_id_asc, -> { order(id: :asc)}
+    scope :order_by_id_asc, -> { order(id: :asc) }
 
     scope :all_preloaded, -> do
       preload(:author, :comment_author, :project, :issue, :merge_request, :pipeline)

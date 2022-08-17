@@ -22,7 +22,7 @@ module EE
             findings_without_remediation_ids << finding.id if empty_remediations?(finding)
           end
 
-          remediations_to_destroy = finding_remediation_batch.select {|finding_remediation| findings_without_remediation_ids.include? finding_remediation.vulnerability_occurrence_id}
+          remediations_to_destroy = finding_remediation_batch.select { |finding_remediation| findings_without_remediation_ids.include? finding_remediation.vulnerability_occurrence_id }
 
           FindingRemediation.where(id: remediations_to_destroy).each_batch(of: 100) do |batch|
             batch.delete_all

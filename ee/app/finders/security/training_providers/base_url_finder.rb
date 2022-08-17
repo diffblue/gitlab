@@ -41,7 +41,7 @@ module Security
 
       def response_url
         strong_memoize(:response_url) do
-          with_reactive_cache(full_url) {|data| data}
+          with_reactive_cache(full_url) { |data| data }
         end
       end
 

@@ -799,7 +799,7 @@ class NotificationService
     end
 
     recipients = NotificationRecipients::BuildService.build_recipients(target, current_user, action: "new")
-    recipients = recipients.select {|r| new_mentioned_users.include?(r.user) }
+    recipients = recipients.select { |r| new_mentioned_users.include?(r.user) }
 
     recipients.each do |recipient|
       mailer.send(method, recipient.user.id, target.id, current_user.id, recipient.reason).deliver_later

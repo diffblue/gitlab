@@ -11,12 +11,12 @@ module EE
           def parent_records(parent, ids)
             return Iteration.none unless valid_context?(parent)
 
-            iteration_ids = ids.map {|y| y[:iteration_id]}.compact
+            iteration_ids = ids.map { |y| y[:iteration_id] }.compact
             unless iteration_ids.empty?
               id_relation = find_iterations(parent, ids: iteration_ids)
             end
 
-            iteration_names = ids.map {|y| y[:iteration_name]}.compact
+            iteration_names = ids.map { |y| y[:iteration_name] }.compact
             unless iteration_names.empty?
               iteration_relation = find_iterations(parent, names: iteration_names)
             end
