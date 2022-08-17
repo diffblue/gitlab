@@ -4,10 +4,9 @@ require 'spec_helper'
 
 RSpec.shared_examples "ultimate feature removal banner" do
   context 'when it should show the banner', :saas do
-    let_it_be(:user) { create(:user) }
-    let_it_be(:project) { create(:project, :public) }
-
     before(:all) do
+      project = create(:project, :public)
+      user = create(:user)
       stub_feature_flags(ultimate_feature_removal_banner: true)
       project.add_guest(user)
       project.project_setting.update!(legacy_open_source_license_available: false)

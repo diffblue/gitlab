@@ -16,6 +16,7 @@ RSpec.describe 'Projects > Activity > User sees activity' do
            commit_to: '6d394385cf567f80a8fd85055db1ab4c5295806f',
            ref: 'fix',
            commit_count: 1)
+
   end
 
   it 'shows the last push in the activity page', :js do
@@ -31,5 +32,13 @@ RSpec.describe 'Projects > Activity > User sees activity' do
     expect(page).to have_content "#{user.name} #{user.to_reference} opened issue #{issue.to_reference}"
   end
 
-  it_behaves_like "ultimate feature removal banner"
+  context 'ultimate feature removal banner' do 
+    before do 
+      project.project_setting.update!(legacy_open_source_license_available: false)
+      sign_in(user)
+      visit activity_project_path(project)
+    end
+
+    it_behaves_like "ultimate feature removal banner"
+  end
 end
