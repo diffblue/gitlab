@@ -61,6 +61,17 @@ module Gitlab
         Gitlab::DefaultBranch.value(object: container)
       end
 
+      def self.sluggified_full_path(title, extension)
+        sluggified_title(title) + '.' + extension
+      end
+
+      def self.sluggified_title(title)
+        title = Gitlab::EncodingHelper.encode_utf8_no_detect(title)
+        title = File.expand_path(title, '/')
+        title = Pathname.new(title).relative_path_from('/').to_s
+        title.tr(' ', '-')
+      end
+
       # Initialize with a Gitlab::Git::Repository instance
       def initialize(repository)
         @repository = repository
