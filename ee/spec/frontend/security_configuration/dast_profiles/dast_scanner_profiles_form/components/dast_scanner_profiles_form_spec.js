@@ -79,6 +79,7 @@ describe('DastScannerProfileForm', () => {
     createComponent();
     expect(findForm().exists()).toBe(true);
     expect(findForm().text()).toContain('New scanner profile');
+    expect(findProfileNameInput().attributes('disabled')).toBeUndefined();
   });
 
   it('when show header is disabled', () => {
@@ -187,6 +188,20 @@ describe('DastScannerProfileForm', () => {
 
     it('should disable all form groups', () => {
       expect(findParentFormGroup().attributes('disabled')).toBe('true');
+    });
+  });
+
+  describe('when profile is used in yaml config', () => {
+    beforeEach(() => {
+      createShallowComponent({
+        propsData: {
+          isProfileInUse: true,
+        },
+      });
+    });
+
+    it('should disable the profile name field', () => {
+      expect(findProfileNameInput().attributes('disabled')).toBe('true');
     });
   });
 });

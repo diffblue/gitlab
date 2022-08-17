@@ -21,6 +21,11 @@ export default () => ({
       required: false,
       default: false,
     },
+    isProfileInUse: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   computed: {
     isEdit() {

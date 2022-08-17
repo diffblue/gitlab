@@ -102,6 +102,7 @@ describe('DastSiteProfileForm', () => {
     createComponent();
     expect(findForm().exists()).toBe(true);
     expect(findForm().text()).toContain('New site profile');
+    expect(findProfileNameInput().attributes('disabled')).toBeUndefined();
   });
 
   it('when show header is disabled', () => {
@@ -350,6 +351,20 @@ describe('DastSiteProfileForm', () => {
     it('should not show scan method options', () => {
       expect(findScanMethodInput().exists()).toBe(false);
       expect(scanFilePathInput().exists()).toBe(false);
+    });
+  });
+
+  describe('when profile is used in yaml config', () => {
+    beforeEach(() => {
+      createShallowComponent({
+        propsData: {
+          isProfileInUse: true,
+        },
+      });
+    });
+
+    it('should disable the profile name field', () => {
+      expect(findProfileNameInput().attributes('disabled')).toBe('true');
     });
   });
 });

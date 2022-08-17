@@ -133,6 +133,9 @@ export default {
     showFooter() {
       return Boolean(this.libraryLink) && !this.isEditingMode;
     },
+    isProfileInUse() {
+      return this.profileForEditing.id === this.profileIdInUse;
+    },
   },
   /**
    * Only if activeProfile is passed from parent
@@ -228,6 +231,7 @@ export default {
         <dast-profiles-sidebar-form
           v-if="isEditingMode"
           :profile="profileForEditing"
+          :is-profile-in-use="isProfileInUse"
           :profile-type="profileType"
           @cancel="cancelEditingMode"
           @created="profileCreated"
