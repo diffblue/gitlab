@@ -10,8 +10,8 @@ module Types
 
         implements Types::WorkItems::WidgetInterface
 
-        field :verification_status, GraphQL::Types::String, null: true,
-              description: 'Verification status of the work item.'
+        field :verification_status, GraphQL::Types::String,
+          null: true, description: 'Verification status of the work item.'
       end
       # rubocop:enable Graphql/AuthorizeTypes
     end

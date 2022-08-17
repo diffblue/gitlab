@@ -250,7 +250,7 @@ module EE
         {
           value: 'failed',
           text: s_('Geo|Failed'),
-          href:  url_for(controller: replicable_controller, sync_status: 'failed')
+          href: url_for(controller: replicable_controller, sync_status: 'failed')
         },
         {
           value: 'synced',

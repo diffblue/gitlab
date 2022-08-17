@@ -6,10 +6,10 @@ module Ci
       # All possible statuses available here:
       # https://developer.github.com/v3/activity/events/types/#pullrequestevent
       GITHUB_ACTIONS_TO_STATUS = {
-        'opened'      => :open,
-        'reopened'    => :open,
+        'opened' => :open,
+        'reopened' => :open,
         'synchronize' => :open,
-        'closed'      => :closed
+        'closed' => :closed
       }.freeze
 
       def execute(webhook_params)

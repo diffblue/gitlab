@@ -38,10 +38,10 @@ module Elastic
 
             (min..max).zip(shard_items).each_slice(1000) do |group|
               logger.debug(class: self.name,
-                          redis_set: set_key,
-                          message: 'track_items',
-                          count: group.count,
-                          tracked_items_encoded: group.to_json)
+                           redis_set: set_key,
+                           message: 'track_items',
+                           count: group.count,
+                           tracked_items_encoded: group.to_json)
 
               redis.zadd(set_key, group)
             end

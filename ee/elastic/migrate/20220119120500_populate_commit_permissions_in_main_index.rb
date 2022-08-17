@@ -138,8 +138,8 @@ class PopulateCommitPermissionsInMainIndex < Elastic::Migration
     # do not include documents_remaining_for_permutation on setup to avoid nil error when
     # pulling visibility_level and repository_access_level for the current permutation
     set_migration_state(
-      retry_attempt:        0,
-      permutation_idx:      0,
+      retry_attempt: 0,
+      permutation_idx: 0,
       documents_remaining: documents_remaining
     )
 

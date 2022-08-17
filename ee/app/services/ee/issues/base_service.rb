@@ -69,7 +69,7 @@ module EE
         return unless group.present?
 
         EpicsFinder.new(current_user, group_id: group.id,
-                        include_ancestor_groups: true).find(epic_id)
+                                      include_ancestor_groups: true).find(epic_id)
       end
 
       def epic_param_present?
