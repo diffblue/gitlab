@@ -2,6 +2,7 @@
 require 'spec_helper'
 
 RSpec.describe API::Internal::Base do
+  include GitlabShellHelpers
   include EE::GeoHelpers
   include APIInternalBaseHelpers
   include NamespaceStorageHelpers
@@ -11,8 +12,6 @@ RSpec.describe API::Internal::Base do
   let_it_be(:primary_node, reload: true) { create(:geo_node, :primary, url: primary_url) }
   let_it_be(:secondary_node, reload: true) { create(:geo_node, url: secondary_url) }
   let_it_be_with_reload(:user) { create(:user) }
-
-  let(:secret_token) { Gitlab::Shell.secret_token }
 
   describe 'POST /internal/post_receive', :geo do
     let(:key) { create(:key, user: user) }
@@ -26,7 +25,6 @@ RSpec.describe API::Internal::Base do
     let(:valid_params) do
       {
         gl_repository: gl_repository,
-        secret_token: secret_token,
         identifier: identifier,
         changes: changes,
         push_options: {}
@@ -64,7 +62,7 @@ RSpec.describe API::Internal::Base do
           http://primary.example.com/#{project.full_path}.git
         STR
 
-        post api('/internal/post_receive'), params: valid_params
+        post api('/internal/post_receive'), params: valid_params, headers: gitlab_shell_internal_api_request_header
 
         expect(response).to have_gitlab_http_status(:ok)
         expect(json_response['messages']).to include({
@@ -89,9 +87,9 @@ RSpec.describe API::Internal::Base do
             action: "git-upload-pack",
             key_id: key.id,
             project: alias_name,
-            protocol: 'ssh',
-            secret_token: secret_token
-          }
+            protocol: 'ssh'
+          },
+          headers: gitlab_shell_internal_api_request_header
         )
       end
 
@@ -144,8 +142,9 @@ RSpec.describe API::Internal::Base do
                     project: project.full_path,
                     gl_repository: "project-#{project.id}",
                     action: 'git-upload-pack',
-                    secret_token: secret_token,
-                    protocol: 'ssh' })
+                    protocol: 'ssh' },
+          headers: gitlab_shell_internal_api_request_header
+        )
       end
 
       before do
@@ -207,7 +206,6 @@ RSpec.describe API::Internal::Base do
           project: project.full_path,
           gl_repository: "project-#{project.id}",
           action: 'git-upload-pack',
-          secret_token: secret_token,
           protocol: 'ssh'
         }
       end
@@ -234,7 +232,8 @@ RSpec.describe API::Internal::Base do
           subject do
             post(
               api('/internal/allowed'),
-              params: check_ip_present ? params.merge(check_ip: ip) : params
+              params: check_ip_present ? params.merge(check_ip: ip) : params,
+              headers: gitlab_shell_internal_api_request_header
             )
           end
 
@@ -442,9 +441,9 @@ RSpec.describe API::Internal::Base do
         api("/internal/lfs_authenticate"),
         params: {
           user_id: user_id,
-          secret_token: secret_token,
           project: project.full_path
-        }
+        },
+        headers: gitlab_shell_internal_api_request_header
       )
     end
   end
@@ -465,12 +464,12 @@ RSpec.describe API::Internal::Base do
       it 'returns an error message when the expiry date exceeds the max token lifetime' do
         post api('/internal/personal_access_token'),
              params: {
-               secret_token: secret_token,
                key_id:  key.id,
                name: 'newtoken',
                scopes: %w(read_api read_repository),
                expires_at: (instance_level_max_personal_access_token_lifetime + 1).days.from_now.to_date.to_s
-             }
+             },
+             headers: gitlab_shell_internal_api_request_header
 
         aggregate_failures do
           expect(json_response['success']).to eq(false)
@@ -484,12 +483,12 @@ RSpec.describe API::Internal::Base do
 
         post api('/internal/personal_access_token'),
              params: {
-               secret_token: secret_token,
                key_id:  key.id,
                name: 'newtoken',
                scopes: %w(read_api read_repository),
                expires_at: expires_at
-             }
+             },
+             headers: gitlab_shell_internal_api_request_header
 
         aggregate_failures do
           expect(json_response['success']).to eq(true)
@@ -514,11 +513,8 @@ RSpec.describe API::Internal::Base do
 
     subject do
       post api('/internal/two_factor_otp_check'),
-           params: {
-             secret_token: secret_token,
-             key_id: key_id,
-             otp_attempt: otp
-           }
+           params: { key_id: key_id, otp_attempt: otp },
+           headers: gitlab_shell_internal_api_request_header
     end
 
     it_behaves_like 'actor key validations'
@@ -633,11 +629,8 @@ RSpec.describe API::Internal::Base do
 
     subject do
       post api('/internal/two_factor_manual_otp_check'),
-           params: {
-             secret_token: secret_token,
-             key_id: key_id,
-             otp_attempt: otp
-           }
+           params: { key_id: key_id, otp_attempt: otp },
+           headers: gitlab_shell_internal_api_request_header
     end
 
     it_behaves_like 'actor key validations'
@@ -697,11 +690,8 @@ RSpec.describe API::Internal::Base do
 
           # make invalid request to lock user before next request
           post api('/internal/two_factor_manual_otp_check'),
-            params: {
-              secret_token: secret_token,
-              key_id: key_id,
-              otp_attempt: otp
-            }
+            params: { key_id: key_id, otp_attempt: otp },
+            headers: gitlab_shell_internal_api_request_header
 
           # user is now locked
           subject
@@ -788,11 +778,8 @@ RSpec.describe API::Internal::Base do
 
     subject do
       post api('/internal/two_factor_push_otp_check'),
-           params: {
-             secret_token: secret_token,
-             key_id: key_id,
-             otp_attempt: otp
-           }
+           params: { key_id: key_id, otp_attempt: otp },
+           headers: gitlab_shell_internal_api_request_header
     end
 
     it_behaves_like 'actor key validations'
