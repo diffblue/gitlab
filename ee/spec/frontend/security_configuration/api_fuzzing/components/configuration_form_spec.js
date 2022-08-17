@@ -8,7 +8,6 @@ import { CONFIGURATION_SNIPPET_MODAL_ID } from 'ee/security_configuration/compon
 import DropdownInput from 'ee/security_configuration/components/dropdown_input.vue';
 import DynamicFields from 'ee/security_configuration/components/dynamic_fields.vue';
 import FormInput from 'ee/security_configuration/components/form_input.vue';
-import { stripTypenames } from 'helpers/graphql_helpers';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import { CODE_SNIPPET_SOURCE_API_FUZZING } from '~/pipeline_editor/components/code_snippet_alert/constants';
 import { apiFuzzingConfigurationQueryResponse } from '../mock_data';
@@ -20,9 +19,7 @@ jest.mock('ee/security_configuration/api_fuzzing/utils', () => ({
 describe('EE - ApiFuzzingConfigurationForm', () => {
   let wrapper;
 
-  const apiFuzzingCiConfiguration = stripTypenames(
-    apiFuzzingConfigurationQueryResponse.data.project.apiFuzzingCiConfiguration,
-  );
+  const { apiFuzzingCiConfiguration } = apiFuzzingConfigurationQueryResponse.data.project;
 
   const findEnableAuthenticationCheckbox = () =>
     wrapper.findByTestId('api-fuzzing-enable-authentication-checkbox');
