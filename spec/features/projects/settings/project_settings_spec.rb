@@ -85,6 +85,8 @@ RSpec.describe 'Projects settings' do
     end
   end
 
+  it_behaves_like "ultimate feature removal banner"
+
   def expect_toggle_state(state)
     is_collapsed = state == :collapsed
 

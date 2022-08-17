@@ -249,7 +249,7 @@ module EE
 
       return false unless project.team.max_member_access(current_user&.id) >= ::Gitlab::Access::GUEST
 
-      return false unless !ultimate_feature_removal_banner_dismissed?(project)
+      return false if ultimate_feature_removal_banner_dismissed?(project)
 
       project.public? && !project.project_setting.legacy_open_source_license_available
     end

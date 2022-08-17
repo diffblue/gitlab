@@ -44,6 +44,8 @@ RSpec.describe 'Projects > Members > Tabs', :js do
     end
   end
 
+  it_behaves_like "ultimate feature removal banner"
+
   context 'when searching "Groups"' do
     before do
       click_link 'Groups'

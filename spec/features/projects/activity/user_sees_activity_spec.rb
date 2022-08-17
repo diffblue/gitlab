@@ -30,4 +30,6 @@ RSpec.describe 'Projects > Activity > User sees activity' do
     expect(page).not_to have_content "#{user.name} #{user.to_reference} pushed new branch fix"
     expect(page).to have_content "#{user.name} #{user.to_reference} opened issue #{issue.to_reference}"
   end
+
+  it_behaves_like "ultimate feature removal banner"
 end
