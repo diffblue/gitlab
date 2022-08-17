@@ -424,6 +424,18 @@ RSpec.shared_examples 'wiki model' do
     context 'find page with normal repository RPCs' do
       it_behaves_like 'wiki model #find_page'
     end
+
+    context 'find page with legacy wiki service' do
+      before do
+        stub_feature_flags(wiki_find_page_with_normal_repository_rpcs: false)
+      end
+
+      it_behaves_like 'wiki model #find_page'
+    end
+
+    context 'find page with normal repository RPCs' do
+      it_behaves_like 'wiki model #find_page'
+    end
   end
 
   describe '#find_sidebar' do
