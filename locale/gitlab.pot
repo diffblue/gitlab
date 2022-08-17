@@ -13933,6 +13933,9 @@ msgstr ""
 msgid "Draft: %{filename}"
 msgstr ""
 
+msgid "Drag to reorder prioritized labels and change their relative priority."
+msgstr ""
+
 msgid "Drag your designs here or %{linkStart}click to upload%{linkEnd}."
 msgstr ""
 
@@ -22950,7 +22953,7 @@ msgstr ""
 msgid "Labels can be applied to issues and merge requests to categorize them."
 msgstr ""
 
-msgid "Labels can be applied to issues and merge requests."
+msgid "Labels can be applied to issues and merge requests. Star a label to make it a priority label."
 msgstr ""
 
 msgid "Labels with no issues in this iteration:"
@@ -37299,9 +37302,6 @@ msgid "Stage:"
 msgstr ""
 
 msgid "Standard"
-msgstr ""
-
-msgid "Star a label to make it a priority label. Order the prioritized labels to change their relative priority, by dragging."
 msgstr ""
 
 msgid "Star labels to start sorting by priority"
