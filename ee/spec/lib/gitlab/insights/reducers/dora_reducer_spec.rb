@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
+require 'fast_spec_helper'
 
 RSpec.describe Gitlab::Insights::Reducers::DoraReducer do
   context 'when metric=change_failure_rate' do
