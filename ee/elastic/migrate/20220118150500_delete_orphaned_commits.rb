@@ -48,11 +48,11 @@ class DeleteOrphanedCommits < Elastic::Migration
 
   def delete_by_query
     client.delete_by_query(
-      index:               index_name,
-      body:                orphaned_commits_query,
-      wait_for_completion: false,     # async task
-      conflicts:           'proceed', # don't abort task if document was updated before delete.
-      timeout:             '3d'       # maximum time Elasticsearch will allow task to run.
+      index: index_name,
+      body: orphaned_commits_query,
+      wait_for_completion: false, # async task
+      conflicts: 'proceed', # don't abort task if document was updated before delete.
+      timeout: '3d'       # maximum time Elasticsearch will allow task to run.
     )
   end
 

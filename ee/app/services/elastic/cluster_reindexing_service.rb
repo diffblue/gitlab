@@ -173,7 +173,7 @@ module Elastic
         message: message,
         gitlab_task_id: current_task.id,
         gitlab_task_state: current_task.state,
-        gitlab_subtask_id:  subtask.id,
+        gitlab_subtask_id: subtask.id,
         gitlab_subtask_elastic_slice: slice.elastic_slice,
         gitlab_subtask_elastic_task: slice.elastic_task
       }.merge(additional_options)

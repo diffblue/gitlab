@@ -12,8 +12,8 @@ module Types
 
         implements Types::WorkItems::WidgetInterface
 
-        field :weight, GraphQL::Types::Int, null: true,
-              description: 'Weight of the work item.'
+        field :weight, GraphQL::Types::Int,
+          null: true, description: 'Weight of the work item.'
       end
       # rubocop:enable Graphql/AuthorizeTypes
     end

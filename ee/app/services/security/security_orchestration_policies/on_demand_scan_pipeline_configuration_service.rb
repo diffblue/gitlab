@@ -36,7 +36,7 @@ module Security
         dast_on_demand_template[:dast].deep_merge(
           'stage' => 'dast',
           'variables' => dast_on_demand_template[:variables].merge(dast_on_demand_template[:dast][:variables]),
-          'dast_configuration' =>  ci_configuration['dast']['dast_configuration']
+          'dast_configuration' => ci_configuration['dast']['dast_configuration']
         )
       end
 
