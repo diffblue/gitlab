@@ -6,7 +6,7 @@ RSpec.describe Security::ReportFetchService do
   let_it_be(:project) { create(:project) }
 
   let(:service) { described_class.new(project, artifact) }
-  let(:artifact) { ::Ci::JobArtifact.dependency_list_reports }
+  let(:artifact) { ::Ci::JobArtifact.for_report(:dependency_list) }
 
   describe '#pipeline' do
     subject { service.pipeline }

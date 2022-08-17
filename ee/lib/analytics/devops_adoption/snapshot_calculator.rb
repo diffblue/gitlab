@@ -83,19 +83,19 @@ module Analytics
       end
 
       def sast_enabled_count
-        projects_count_with_artifact(Ci::JobArtifact.sast_reports)
+        projects_count_with_artifact(Ci::JobArtifact.for_report(:sast))
       end
 
       def dast_enabled_count
-        projects_count_with_artifact(Ci::JobArtifact.dast_reports)
+        projects_count_with_artifact(Ci::JobArtifact.for_report(:dast))
       end
 
       def dependency_scanning_enabled_count
-        projects_count_with_artifact(Ci::JobArtifact.dependency_list_reports)
+        projects_count_with_artifact(Ci::JobArtifact.for_report(:dependency_list))
       end
 
       def coverage_fuzzing_enabled_count
-        projects_count_with_artifact(Ci::JobArtifact.coverage_fuzzing_reports)
+        projects_count_with_artifact(Ci::JobArtifact.for_report(:coverage_fuzzing))
       end
 
       # rubocop: disable CodeReuse/ActiveRecord

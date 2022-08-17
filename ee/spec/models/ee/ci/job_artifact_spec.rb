@@ -128,7 +128,7 @@ RSpec.describe Ci::JobArtifact do
     end
 
     describe 'coverage_fuzzing_reports' do
-      subject { Ci::JobArtifact.coverage_fuzzing }
+      let(:report_type) { :coverage_fuzzing }
 
       context 'when there is a metrics report' do
         let!(:artifact) { create(:ee_ci_job_artifact, :coverage_fuzzing) }
@@ -144,7 +144,7 @@ RSpec.describe Ci::JobArtifact do
     end
 
     describe 'api_fuzzing_reports' do
-      subject { Ci::JobArtifact.api_fuzzing }
+      let(:report_type) { :api_fuzzing }
 
       context 'when there is a metrics report' do
         let!(:artifact) { create(:ee_ci_job_artifact, :api_fuzzing) }
@@ -160,7 +160,7 @@ RSpec.describe Ci::JobArtifact do
     end
 
     describe 'sbom_reports' do
-      subject { Ci::JobArtifact.sbom_reports }
+      let(:report_type) { :sbom }
 
       context 'when there is an sbom report' do
         let!(:artifact) { create(:ee_ci_job_artifact, :cyclonedx) }

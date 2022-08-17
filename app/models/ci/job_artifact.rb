@@ -239,12 +239,6 @@ module Ci
       end
     end
 
-    REPORT_FILE_TYPES.each do |report_type, file_types|
-      scope "#{report_type}_reports", -> do
-        for_report(report_type)
-      end
-    end
-
     def self.for_report(report_type)
       file_types = file_types_for_report(report_type)
 

@@ -800,7 +800,7 @@ module EE
       !!merge_requests_disable_committers_approval
     end
 
-    def license_compliance(pipeline = latest_pipeline_with_reports(::Ci::JobArtifact.license_scanning_reports))
+    def license_compliance(pipeline = latest_pipeline_with_reports(::Ci::JobArtifact.for_report(:license_scanning)))
       SCA::LicenseCompliance.new(self, pipeline)
     end
 

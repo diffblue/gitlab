@@ -41,7 +41,7 @@ module EE
         after_commit :track_ci_secrets_management_usage, on: :create
         delegate :service_specification, to: :runner_session, allow_nil: true
 
-        scope :license_scan, -> { joins(:job_artifacts).merge(::Ci::JobArtifact.license_scanning_reports) }
+        scope :license_scan, -> { joins(:job_artifacts).merge(::Ci::JobArtifact.for_report(:license_scanning)) }
         scope :max_build_id_by, -> (build_name, ref, project_path) do
           select('max(ci_builds.id) as id')
             .by_name(build_name)
