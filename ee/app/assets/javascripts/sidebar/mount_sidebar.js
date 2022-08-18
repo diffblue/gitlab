@@ -2,7 +2,7 @@ import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import { IssuableType } from '~/issues/constants';
 import { parseBoolean } from '~/lib/utils/common_utils';
-import { apolloProvider } from '~/sidebar/graphql';
+import { apolloProvider } from '~/graphql_shared/issuable_client';
 import * as CEMountSidebar from '~/sidebar/mount_sidebar';
 import CveIdRequest from './components/cve_id_request/cve_id_request_sidebar.vue';
 import IterationSidebarDropdownWidget from './components/iteration_sidebar_dropdown_widget.vue';
