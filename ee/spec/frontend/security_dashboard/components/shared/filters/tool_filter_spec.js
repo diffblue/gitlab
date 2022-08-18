@@ -8,7 +8,7 @@ import ToolFilter from 'ee/security_dashboard/components/shared/filters/tool_fil
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import FilterBody from 'ee/security_dashboard/components/shared/filters/filter_body.vue';
 import FilterItem from 'ee/security_dashboard/components/shared/filters/filter_item.vue';
-import { vendorScannerFilter, getFormattedScanners } from 'ee/security_dashboard/helpers';
+import { simpleScannerFilter, getFormattedScanners } from 'ee/security_dashboard/helpers';
 import projectScannersQuery from 'ee/security_dashboard/graphql/queries/project_specific_scanners.query.graphql';
 import groupScannersQuery from 'ee/security_dashboard/graphql/queries/group_specific_scanners.query.graphql';
 import instanceScannersQuery from 'ee/security_dashboard/graphql/queries/instance_specific_scanners.query.graphql';
@@ -27,14 +27,14 @@ describe('Tool Filter component', () => {
   let filter;
 
   const fullPath = 'test/path';
-  const projectVulnerabilityScannersNodes =
-    projectVulnerabilityScanners.data.project.vulnerabilityScanners.nodes;
-  const formattedProjectScanners = getFormattedScanners(projectVulnerabilityScannersNodes);
   const projectScannersResolver = jest.fn().mockResolvedValue(projectVulnerabilityScanners);
   const groupScannersResolver = jest.fn().mockResolvedValue(groupVulnerabilityScanners);
   const instanceScannersResolver = jest.fn().mockResolvedValue(instanceVulnerabilityScanners);
   const defaultQuery = projectScannersQuery;
   const defaultResolver = projectScannersResolver;
+  const defaultFormattedScanners = getFormattedScanners(
+    projectVulnerabilityScanners.data.project.vulnerabilityScanners.nodes,
+  );
   const defaultProvide = {
     fullPath,
     dashboardType: DASHBOARD_TYPES.PROJECT,
@@ -46,7 +46,7 @@ describe('Tool Filter component', () => {
   };
 
   const createWrapper = ({ query, resolver, provide } = {}) => {
-    filter = cloneDeep(vendorScannerFilter);
+    filter = cloneDeep(simpleScannerFilter);
 
     wrapper = shallowMountExtended(ToolFilter, {
       propsData: { filter },
@@ -120,7 +120,7 @@ describe('Tool Filter component', () => {
 
     it('renders the correct amount of filter options', async () => {
       const allOptionCount = 1;
-      const totalOptionsCount = formattedProjectScanners.length + allOptionCount;
+      const totalOptionsCount = defaultFormattedScanners.length + allOptionCount;
 
       await createWrapper();
 
@@ -130,7 +130,7 @@ describe('Tool Filter component', () => {
     it('populates the filter options from the query response', async () => {
       await createWrapper();
 
-      formattedProjectScanners.forEach(({ name }, index) => {
+      defaultFormattedScanners.forEach(({ name }, index) => {
         expect(
           findFilterItems()
             .at(index + 1)
