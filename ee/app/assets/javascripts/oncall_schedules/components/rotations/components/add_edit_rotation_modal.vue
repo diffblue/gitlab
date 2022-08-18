@@ -10,8 +10,6 @@ import {
   isNameFieldValid,
   parseHour,
   parseRotationDate,
-  setParticipantsColors,
-  getUserTokenStyles,
   getParticipantsForSave,
 } from 'ee/oncall_schedules/utils/common_utils';
 import searchProjectMembersQuery from '~/graphql_shared/queries/project_user_members_search.query.graphql';
@@ -199,9 +197,6 @@ export default {
       }
       return false;
     },
-    participantsWithTokenStylesData() {
-      return setParticipantsColors(this.participants, this.rotation?.participants?.nodes);
-    },
   },
   methods: {
     createRotation() {
@@ -322,10 +317,7 @@ export default {
 
       this.form.name = this.rotation.name;
 
-      const participants =
-        this.rotation?.participants?.nodes?.map(({ user, colorWeight, colorPalette }) =>
-          getUserTokenStyles({ ...user, colorWeight, colorPalette }),
-        ) ?? [];
+      const participants = this.rotation?.participants?.nodes.map(({ user }) => user) ?? [];
       this.form.participants = participants;
 
       this.form.rotationLength = {
@@ -372,7 +364,7 @@ export default {
       :validation-state="validationState"
       :form="form"
       :schedule="schedule"
-      :participants="participantsWithTokenStylesData"
+      :participants="participants"
       :is-loading="isLoading"
       @update-rotation-form="updateRotationForm"
       @filter-participants="filterParticipants"

@@ -2,6 +2,7 @@ import { GlAlert, GlModal } from '@gitlab/ui';
 import { createLocalVue, shallowMount } from '@vue/test-utils';
 import VueApollo from 'vue-apollo';
 import { nextTick } from 'vue';
+import { cloneDeep } from 'lodash';
 import AddEditRotationForm from 'ee/oncall_schedules/components/rotations/components/add_edit_rotation_form.vue';
 import AddEditRotationModal, {
   i18n,
@@ -377,8 +378,21 @@ describe('AddEditRotationModal', () => {
     });
 
     it('should load participants correctly', () => {
-      expect(findForm().props('form')).toMatchObject({
-        participants: [{ name: 'nora' }],
+      expect(cloneDeep(findForm().props('form'))).toMatchObject({
+        participants: [
+          {
+            id: 'gid://gitlab/IncidentManagement::OncallParticipant/49',
+            username: 'nora.schaden',
+            avatarUrl: '/url',
+            name: 'nora',
+          },
+          {
+            id: 'gid://gitlab/User/2',
+            username: 'racheal.loving',
+            avatarUrl: '/url',
+            name: 'racheal',
+          },
+        ],
       });
     });
 

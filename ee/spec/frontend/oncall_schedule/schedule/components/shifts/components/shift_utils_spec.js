@@ -3,7 +3,7 @@ import {
   getTimeOffset,
   getDuration,
   getPixelOffset,
-  getPixelWidth,
+  getShiftContainerStyles,
   milliseconds,
 } from 'ee/oncall_schedules/components/schedule/components/shifts/components/shift_utils';
 import { PRESET_TYPES } from 'ee/oncall_schedules/constants';
@@ -20,6 +20,8 @@ const EIGHT_HOURS = 8 * ONE_HOUR;
 const TWELVE_HOURS = 12 * ONE_HOUR;
 const ONE_DAY = 2 * TWELVE_HOURS;
 const TWO_WEEKS = 14 * ONE_DAY;
+
+const timeframe = [new Date('2021-01-13T00:00:00.000Z'), new Date('2021-01-14T00:00:00.000Z')];
 
 describe('~ee/oncall_schedules/components/schedule/components/shifts/components/shift_utils.js', () => {
   describe('milliseconds', () => {
@@ -57,10 +59,6 @@ describe('~ee/oncall_schedules/components/schedule/components/shifts/components/
 
   describe('getPixelOffset', () => {
     it('calculates the correct pixel offest', () => {
-      const timeframe = [
-        new Date('2021-01-13T00:00:00.000Z'),
-        new Date('2021-01-14T00:00:00.000Z'),
-      ];
       const timelineWidth = 1000;
       const presetType = PRESET_TYPES.DAYS;
       const pixelOffset = getPixelOffset({
@@ -73,18 +71,20 @@ describe('~ee/oncall_schedules/components/schedule/components/shifts/components/
     });
   });
 
-  describe('getPixelWidth', () => {
+  describe('getShiftContainerStyles', () => {
     it('calculates the correct pixel width', () => {
       const timelineWidth = 1200; // 50 pixels per hour
       const presetType = PRESET_TYPES.DAYS;
-      const shiftDLSOffset = 60; // one hour
-      const pixelWidth = getPixelWidth({
-        shift: mockShift,
-        timelineWidth,
+      const containerStyles = getShiftContainerStyles({
+        timeframe,
         presetType,
-        shiftDLSOffset,
+        timelineWidth,
+        shift: mockShift,
       });
-      expect(pixelWidth).toBe(450); // 7 hrs
+      expect(containerStyles).toStrictEqual({
+        left: `600px`,
+        width: `400px`,
+      });
     });
   });
 });

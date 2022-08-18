@@ -1,6 +1,6 @@
 import { GlCard } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
-import RotationsAssignee from 'ee/oncall_schedules/components/rotations/components/rotation_assignee.vue';
+import RotationAssignee from 'ee/oncall_schedules/components/rotations/components/rotation_assignee.vue';
 import CurrentDayIndicator from 'ee/oncall_schedules/components/schedule/components/current_day_indicator.vue';
 import RotationsListSection from 'ee/oncall_schedules/components/schedule/components/rotations_list_section.vue';
 import { getTimeframeForWeeksView } from 'ee/oncall_schedules/components/schedule/utils';
@@ -45,7 +45,7 @@ describe('RotationsListSectionComponent', () => {
   }
 
   const findTimelineCells = () => wrapper.findAllByTestId('timeline-cell');
-  const findRotationAssignees = () => wrapper.findAllComponents(RotationsAssignee);
+  const findRotationAssignees = () => wrapper.findAllComponents(RotationAssignee);
   const findCurrentDayIndicatorContent = () => wrapper.findByTestId('current-day-indicator');
   const findRotationName = (id) => wrapper.findByTestId(`rotation-name-${id}`);
   const findRotationNameTooltip = (id) => getBinding(findRotationName(id).element, 'gl-tooltip');

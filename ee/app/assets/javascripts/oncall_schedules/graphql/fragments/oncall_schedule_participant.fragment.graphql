@@ -6,6 +6,4 @@ fragment OnCallParticipant on OncallParticipantType {
     username
     avatarUrl
   }
-  colorWeight
-  colorPalette
 }

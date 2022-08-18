@@ -1,6 +1,7 @@
 <script>
 import { SHIFT_WIDTH_CALCULATION_DELAY } from 'ee/oncall_schedules/constants';
 import getTimelineWidthQuery from 'ee/oncall_schedules/graphql/queries/get_timeline_width.query.graphql';
+import { getParticipantColor } from 'ee/oncall_schedules/utils/common_utils';
 import ShiftItem from './shift_item.vue';
 
 export default {
@@ -36,6 +37,21 @@ export default {
     shiftsToRender() {
       return Object.freeze(this.rotation.shifts.nodes);
     },
+    participantIdsWithIndex() {
+      const participantIdsWithIndex = {};
+      this.rotation.participants.nodes.forEach(({ id }, index) => {
+        participantIdsWithIndex[id] = index;
+      });
+
+      return participantIdsWithIndex;
+    },
+  },
+  methods: {
+    getShiftColor(participantId) {
+      const participantIndex = this.participantIdsWithIndex[participantId];
+
+      return getParticipantColor(participantIndex);
+    },
   },
 };
 </script>
@@ -49,6 +65,7 @@ export default {
       :preset-type="presetType"
       :timeframe="timeframe"
       :timeline-width="timelineWidth"
+      :shift-color="getShiftColor(shift.participant.id)"
     />
   </div>
 </template>

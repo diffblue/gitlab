@@ -4,10 +4,13 @@ import {
   getParticipantsForSave,
   parseHour,
   parseRotationDate,
-  getUserTokenStyles,
-  setParticipantsColors,
+  getShiftStyles,
+  getParticipantColor,
+  formatParticipantsForTokenSelector,
 } from 'ee/oncall_schedules/utils/common_utils';
+import { ASSIGNEE_COLORS_COMBO } from 'ee/oncall_schedules/constants';
 import * as ColorUtils from '~/lib/utils/color_utils';
+import { mockParticipants } from './mock_data';
 
 describe('getFormattedTimezone', () => {
   it('formats the timezone', () => {
@@ -18,22 +21,24 @@ describe('getFormattedTimezone', () => {
 });
 
 describe('getParticipantsForSave', () => {
+  /**
+   * Todo: Remove getParticipantsForSave once styling is no longer
+   * required in API. See https://gitlab.com/gitlab-org/gitlab/-/issues/344950
+   */
   it('returns participant shift color data along with the username', () => {
-    const participants = [
-      { username: 'user1', colorWeight: 300, colorPalette: 'blue', extraProp: '1' },
-      { username: 'user2', colorWeight: 400, colorPalette: 'red', extraProp: '2' },
-      { username: 'user3', colorWeight: 500, colorPalette: 'green', extraProp: '4' },
-    ];
     const expectedParticipantsForSave = [
-      { username: 'user1', colorWeight: 'WEIGHT_300', colorPalette: 'BLUE' },
-      { username: 'user2', colorWeight: 'WEIGHT_400', colorPalette: 'RED' },
-      { username: 'user3', colorWeight: 'WEIGHT_500', colorPalette: 'GREEN' },
+      { username: mockParticipants[0].username, colorWeight: 'WEIGHT_500', colorPalette: 'BLUE' },
+      { username: mockParticipants[1].username, colorWeight: 'WEIGHT_500', colorPalette: 'BLUE' },
+      { username: mockParticipants[2].username, colorWeight: 'WEIGHT_500', colorPalette: 'BLUE' },
+      { username: mockParticipants[3].username, colorWeight: 'WEIGHT_500', colorPalette: 'BLUE' },
+      { username: mockParticipants[4].username, colorWeight: 'WEIGHT_500', colorPalette: 'BLUE' },
+      { username: mockParticipants[5].username, colorWeight: 'WEIGHT_500', colorPalette: 'BLUE' },
     ];
-    expect(getParticipantsForSave(participants)).toEqual(expectedParticipantsForSave);
+    expect(getParticipantsForSave(mockParticipants)).toEqual(expectedParticipantsForSave);
   });
 });
 
-describe('getUserTokenStyles', () => {
+describe('getShiftStyles', () => {
   it.each`
     isDarkMode | colorWeight | expectedTextClass     | expectedBackgroundColor
     ${true}    | ${900}      | ${'gl-text-white'}    | ${'#d4dcfa'}
@@ -45,80 +50,89 @@ describe('getUserTokenStyles', () => {
     ({ isDarkMode, colorWeight, expectedTextClass, expectedBackgroundColor }) => {
       jest.spyOn(ColorUtils, 'darkModeEnabled').mockImplementation(() => isDarkMode);
 
-      const user = { username: 'user1', colorWeight, colorPalette: 'blue' };
+      const user = { colorWeight, colorPalette: 'blue' };
 
-      expect(getUserTokenStyles(user)).toMatchObject({
-        class: expectedTextClass,
-        style: { backgroundColor: expectedBackgroundColor },
+      expect(getShiftStyles(user)).toMatchObject({
+        textClass: expectedTextClass,
+        backgroundStyle: { backgroundColor: expectedBackgroundColor },
       });
     },
   );
 });
 
-describe('setParticipantsColors', () => {
-  it('sets token color data to each of the eparticipant', () => {
-    jest.spyOn(ColorUtils, 'darkModeEnabled').mockImplementation(() => false);
+describe('getParticipantColor', () => {
+  jest.spyOn(ColorUtils, 'darkModeEnabled').mockImplementation(() => false);
 
-    const allParticpants = [
-      { username: 'user1' },
-      { username: 'user2' },
-      { username: 'user3' },
-      { username: 'user4' },
-      { username: 'user5' },
-      { username: 'user6' },
-    ];
-    const selectedParticpants = [
-      { user: { username: 'user2' }, colorPalette: 'blue', colorWeight: '500' },
-      { user: { username: 'user4' }, colorPalette: 'magenta', colorWeight: '500' },
-      { user: { username: 'user5' }, colorPalette: 'orange', colorWeight: '500' },
-    ];
+  it.each`
+    isDarkMode | colorWeight | expectedTextClass     | expectedBackgroundColor
+    ${true}    | ${900}      | ${'gl-text-white'}    | ${'#d4dcfa'}
+    ${true}    | ${500}      | ${'gl-text-gray-900'} | ${'#5772ff'}
+    ${false}   | ${400}      | ${'gl-text-white'}    | ${'#748eff'}
+    ${false}   | ${700}      | ${'gl-text-white'}    | ${'#3547de'}
+  `(
+    'sets correct styles and class',
+    ({ isDarkMode, colorWeight, expectedTextClass, expectedBackgroundColor }) => {
+      jest.spyOn(ColorUtils, 'darkModeEnabled').mockImplementation(() => isDarkMode);
+
+      const userColors = { colorWeight, colorPalette: 'blue' };
+
+      expect(getShiftStyles(userColors)).toMatchObject({
+        textClass: expectedTextClass,
+        backgroundStyle: { backgroundColor: expectedBackgroundColor },
+      });
+    },
+  );
+
+  it('sets token colors for each participant', () => {
+    const createParticipantsList = (numberOfParticipants) =>
+      new Array(numberOfParticipants)
+        .fill(undefined)
+        .map((item, index) => ({ username: `user${index + 1}`, ...item }));
+    const participants = createParticipantsList(6);
+
     const expectedParticipants = [
       {
-        username: 'user1',
-        colorWeight: '500',
-        colorPalette: 'aqua',
-        class: 'gl-text-white',
-        style: { backgroundColor: '#0094b6' },
+        textClass: 'gl-text-white',
+        backgroundStyle: { backgroundColor: '#5772ff' },
       },
       {
-        username: 'user3',
-        colorWeight: '500',
-        colorPalette: 'green',
-        class: 'gl-text-white',
-        style: { backgroundColor: '#608b2f' },
+        textClass: 'gl-text-white',
+        backgroundStyle: { backgroundColor: '#d14e00' },
       },
       {
-        username: 'user6',
-        colorWeight: '600',
-        colorPalette: 'blue',
-        class: 'gl-text-white',
-        style: { backgroundColor: '#445cf2' },
+        textClass: 'gl-text-white',
+        backgroundStyle: { backgroundColor: '#0094b6' },
       },
       {
-        username: 'user2',
-        colorWeight: '500',
-        colorPalette: 'blue',
-        class: 'gl-text-white',
-        style: { backgroundColor: '#5772ff' },
+        textClass: 'gl-text-white',
+        backgroundStyle: { backgroundColor: '#608b2f' },
       },
       {
-        username: 'user4',
-        colorWeight: '500',
-        colorPalette: 'magenta',
-        class: 'gl-text-white',
-        style: { backgroundColor: '#d84280' },
+        textClass: 'gl-text-white',
+        backgroundStyle: { backgroundColor: '#d84280' },
       },
       {
-        username: 'user5',
-        colorWeight: '500',
-        colorPalette: 'orange',
-        class: 'gl-text-white',
-        style: { backgroundColor: '#d14e00' },
+        textClass: 'gl-text-white',
+        backgroundStyle: { backgroundColor: '#445cf2' },
       },
     ];
-    expect(setParticipantsColors(allParticpants, selectedParticpants)).toEqual(
+
+    expect(participants.map((item, index) => getParticipantColor(index))).toEqual(
       expectedParticipants,
     );
+  });
+
+  it('when all colors are exhausted it uses the first color in list again', () => {
+    jest.spyOn(ColorUtils, 'darkModeEnabled').mockImplementation(() => false);
+
+    const numberOfColorCombinations = ASSIGNEE_COLORS_COMBO.length;
+
+    const lastParticipantColor = {
+      textClass: 'gl-text-white',
+      backgroundStyle: { backgroundColor: '#5772ff' },
+    };
+
+    expect(getParticipantColor(numberOfColorCombinations)).toEqual(lastParticipantColor);
   });
 });
 
@@ -147,5 +161,87 @@ describe('parseHour', () => {
     const hourInt = parseHour(hourString);
 
     expect(hourInt).toBe(14);
+  });
+});
+
+describe('formatParticipantsForTokenSelector', () => {
+  it('formats participants in light mode', () => {
+    jest.spyOn(ColorUtils, 'darkModeEnabled').mockImplementation(() => false);
+    const formattedParticipants = formatParticipantsForTokenSelector(mockParticipants);
+
+    const expected = [
+      {
+        ...mockParticipants[0],
+        class: 'gl-text-white',
+        style: { backgroundColor: '#5772ff' },
+      },
+      {
+        ...mockParticipants[1],
+        class: 'gl-text-white',
+        style: { backgroundColor: '#d14e00' },
+      },
+      {
+        ...mockParticipants[2],
+        class: 'gl-text-white',
+        style: { backgroundColor: '#0094b6' },
+      },
+      {
+        ...mockParticipants[3],
+        class: 'gl-text-white',
+        style: { backgroundColor: '#608b2f' },
+      },
+      {
+        ...mockParticipants[4],
+        class: 'gl-text-white',
+        style: { backgroundColor: '#d84280' },
+      },
+      {
+        ...mockParticipants[5],
+        class: 'gl-text-white',
+        style: { backgroundColor: '#445cf2' },
+      },
+    ];
+
+    expect(formattedParticipants).toStrictEqual(expected);
+  });
+
+  it('formats participants in dark mode', () => {
+    jest.spyOn(ColorUtils, 'darkModeEnabled').mockImplementation(() => true);
+    const formattedParticipants = formatParticipantsForTokenSelector(mockParticipants);
+
+    const expected = [
+      {
+        ...mockParticipants[0],
+        class: 'gl-text-gray-900',
+        style: { backgroundColor: '#5772ff' },
+      },
+      {
+        ...mockParticipants[1],
+        class: 'gl-text-gray-900',
+        style: { backgroundColor: '#d14e00' },
+      },
+      {
+        ...mockParticipants[2],
+        class: 'gl-text-gray-900',
+        style: { backgroundColor: '#0094b6' },
+      },
+      {
+        ...mockParticipants[3],
+        class: 'gl-text-gray-900',
+        style: { backgroundColor: '#608b2f' },
+      },
+      {
+        ...mockParticipants[4],
+        class: 'gl-text-gray-900',
+        style: { backgroundColor: '#d84280' },
+      },
+      {
+        ...mockParticipants[5],
+        class: 'gl-text-white',
+        style: { backgroundColor: '#748eff' },
+      },
+    ];
+
+    expect(formattedParticipants).toStrictEqual(expected);
   });
 });

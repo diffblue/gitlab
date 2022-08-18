@@ -1,3 +1,5 @@
+import { gray500 } from '@gitlab/ui/scss_to_js/scss_variables';
+
 export const LENGTH_ENUM = {
   hours: 'HOURS',
   days: 'DAYS',
@@ -48,3 +50,10 @@ export const SHIFT_WIDTH_CALCULATION_DELAY = 250;
 export const oneHourOffsetDayView = 100 / HOURS_IN_DAY;
 export const oneDayOffsetWeekView = 100 / DAYS_IN_WEEK;
 export const oneHourOffsetWeekView = oneDayOffsetWeekView / HOURS_IN_DAY;
+
+export const NON_ACTIVE_PARTICIPANT_STYLE = {
+  colorWeight: '500',
+  colorPalette: 'gray',
+  textClass: 'gl-text-white',
+  backgroundStyle: { backgroundColor: gray500 },
+};
