@@ -21,15 +21,20 @@ module API
               default: 'main'
           end
           get do
-            database = params[:database] || Gitlab::Database::MAIN_DATABASE_NAME
-            batched_background_migrations = Database::BatchedBackgroundMigrationsFinder.new(database: database).execute
-
-            present_entity(batched_background_migrations)
+            Gitlab::Database::SharedModel.using_connection(base_model.connection) do
+              migrations = Database::BatchedBackgroundMigrationsFinder.new(connection: base_model.connection).execute
+              present_entity(migrations)
+            end
           end
         end
       end
 
       helpers do
+        def base_model
+          database = params[:database] || Gitlab::Database::MAIN_DATABASE_NAME
+          @base_model ||= Gitlab::Database.database_base_models[database]
+        end
+
         def present_entity(result)
           present result,
             with: ::API::Entities::BatchedBackgroundMigration
