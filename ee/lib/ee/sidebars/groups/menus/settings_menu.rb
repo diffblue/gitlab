@@ -12,13 +12,19 @@ module EE
           def configure_menu_items
             return false unless super
 
-            insert_item_after(:integrations, webhooks_menu_item)
-            add_item(ldap_sync_menu_item)
-            add_item(saml_sso_menu_item)
-            add_item(saml_group_links_menu_item)
-            add_item(usage_quotas_menu_item)
-            add_item(billing_menu_item)
-            add_item(reporting_menu_item)
+            if can?(context.current_user, :admin_group, context.group)
+              insert_item_after(:integrations, webhooks_menu_item)
+              add_item(ldap_sync_menu_item)
+              add_item(saml_sso_menu_item)
+              add_item(saml_group_links_menu_item)
+              add_item(usage_quotas_menu_item)
+              add_item(billing_menu_item)
+              add_item(reporting_menu_item)
+            elsif can?(context.current_user, :change_push_rules, context.group)
+              # Push Rules are the only group setting that can also be edited by maintainers.
+              # They only get the Repository settings which only show the Push Rules section for maintainers.
+              add_item(repository_menu_item)
+            end
 
             true
           end

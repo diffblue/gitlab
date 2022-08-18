@@ -25,7 +25,7 @@ RSpec.describe 'Groups > Push Rules', :js do
         end
 
         it 'does not render the setting checkbox' do
-          visit edit_group_push_rules_path(group)
+          visit group_settings_repository_path(group, anchor: 'js-push-rules')
 
           expect(page).not_to have_content(title)
         end
@@ -37,7 +37,7 @@ RSpec.describe 'Groups > Push Rules', :js do
         end
 
         it 'renders the setting checkbox' do
-          visit edit_group_push_rules_path(group)
+          visit group_settings_repository_path(group, anchor: 'js-push-rules')
 
           expect(page).to have_content(title)
         end
@@ -51,7 +51,7 @@ RSpec.describe 'Groups > Push Rules', :js do
             it 'does not render the setting checkbox' do
               create(:gitlab_subscription, :bronze, namespace: group)
 
-              visit edit_group_push_rules_path(group)
+              visit group_settings_repository_path(group, anchor: 'js-push-rules')
 
               expect(page).not_to have_content(title)
             end
@@ -61,7 +61,7 @@ RSpec.describe 'Groups > Push Rules', :js do
             it 'renders the setting checkbox' do
               create(:gitlab_subscription, :ultimate, namespace: group)
 
-              visit edit_group_push_rules_path(group)
+              visit group_settings_repository_path(group, anchor: 'js-push-rules')
 
               expect(page).to have_content(title)
             end

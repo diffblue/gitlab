@@ -13,9 +13,6 @@ class Groups::PushRulesController < Groups::ApplicationController
 
   feature_category :source_code_management
 
-  def edit
-  end
-
   def update
     service_response = PushRules::CreateOrUpdateService
       .new(container: group, current_user: current_user, params: push_rule_params)
@@ -27,7 +24,7 @@ class Groups::PushRulesController < Groups::ApplicationController
       flash[:alert] = service_response.message
     end
 
-    redirect_to edit_group_push_rules_path(group)
+    redirect_to group_settings_repository_path(group, anchor: 'js-push-rules')
   end
 
   private
