@@ -2,7 +2,7 @@
 
 module Database
   class BatchedBackgroundMigrationsFinder
-    RETURNED_MIGRATIONS = 10
+    RETURNED_MIGRATIONS = 20
 
     def initialize(database:)
       @database = database
