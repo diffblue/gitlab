@@ -3123,6 +3123,9 @@ msgstr ""
 msgid "AdminUsers|It's you!"
 msgstr ""
 
+msgid "AdminUsers|LDAP Blocked"
+msgstr ""
+
 msgid "AdminUsers|Learn more about %{link_start}banned users.%{link_end}"
 msgstr ""
 
