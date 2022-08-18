@@ -168,9 +168,9 @@ export default {
 <template>
   <div
     class="board gl-px-3 gl-vertical-align-top gl-white-space-normal gl-display-flex gl-flex-shrink-0"
-    :class="{ 'is-collapsed': list.collapsed }"
+    :class="{ 'is-collapsed gl-w-10': list.collapsed }"
   >
-    <div class="board-inner gl-rounded-base gl-relative gl-w-full">
+    <div class="board-inner gl-rounded-base gl-relative gl-w-full gl-bg-gray-50">
       <board-new-issue
         v-if="list.type !== 'closed' && showIssueForm && isUnassignedIssuesLane"
         :list="list"
@@ -179,7 +179,7 @@ export default {
         :is="treeRootWrapper"
         v-if="!list.collapsed"
         v-bind="treeRootOptions"
-        class="board-cell gl-p-2 gl-m-0 gl-h-full"
+        class="board-cell gl-p-2 gl-m-0 gl-h-full gl-list-style-none"
         :class="{ 'board-column-highlighted': highlighted }"
         data-testid="tree-root-wrapper"
         @start="handleDragOnStart"

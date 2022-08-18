@@ -24,7 +24,7 @@ export default {
 </script>
 
 <template>
-  <div class="board-labels-toggle-wrapper gl-display-flex gl-align-items-center gl-ml-3">
+  <div class="board-labels-toggle-wrapper gl-display-flex gl-align-items-center gl-ml-3 gl-h-7">
     <local-storage-sync
       :value="isShowingLabels"
       storage-key="gl-show-board-labels"
