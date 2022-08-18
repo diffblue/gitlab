@@ -6,7 +6,7 @@ module Security
       def execute
         return error(_('Policy project doesn\'t exist')) unless security_orchestration_policy_configuration
 
-        container.approval_rules.scan_finding.delete_all if project_container?
+        security_orchestration_policy_configuration.delete_scan_finding_rules
 
         result = security_orchestration_policy_configuration.delete
         return success if result

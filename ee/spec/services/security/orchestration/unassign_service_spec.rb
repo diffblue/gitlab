@@ -56,9 +56,17 @@ RSpec.describe Security::Orchestration::UnassignService do
 
         context 'with scan_finding rule' do
           let_it_be(:scan_finding_rule) { create(:approval_project_rule, :scan_finding, project: container) }
+          let_it_be(:merge_request) { create(:merge_request, target_project: container, source_project: container) }
+          let_it_be(:scan_finding_mr_rule) do
+            create(:report_approver_rule, :scan_finding, merge_request: merge_request)
+          end
 
           it 'deletes scan finding approval rules related to the project' do
             expect { result }.to change(ApprovalProjectRule, :count).from(1).to(0)
+          end
+
+          it 'deletes scan finding approval rules related to the merge requests' do
+            expect { result }.to change(ApprovalMergeRequestRule, :count).from(1).to(0)
           end
         end
 

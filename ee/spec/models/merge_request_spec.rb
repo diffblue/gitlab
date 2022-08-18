@@ -1507,4 +1507,15 @@ RSpec.describe MergeRequest do
       end.to raise_error(ActiveRecord::RecordInvalid)
     end
   end
+
+  context 'scopes' do
+    let_it_be(:merge_request) { create(:ee_merge_request) }
+    let_it_be(:merge_request_with_head_pipeline) { create(:ee_merge_request, :with_metrics_reports) }
+
+    describe '.with_head_pipeline' do
+      it 'returns MRs that have a head pipeline' do
+        expect(described_class.with_head_pipeline).to eq([merge_request_with_head_pipeline])
+      end
+    end
+  end
 end
