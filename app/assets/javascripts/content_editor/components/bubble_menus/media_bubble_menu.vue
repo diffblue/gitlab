@@ -9,13 +9,13 @@ import {
   GlButtonGroup,
   GlTooltipDirective as GlTooltip,
 } from '@gitlab/ui';
-import { BubbleMenu } from '@tiptap/vue-2';
 import { __ } from '~/locale';
 import Audio from '../../extensions/audio';
 import Image from '../../extensions/image';
 import Video from '../../extensions/video';
 import EditorStateObserver from '../editor_state_observer.vue';
 import { acceptedMimes } from '../../services/upload_helpers';
+import BubbleMenu from './bubble_menu.vue';
 
 const MEDIA_TYPES = [Audio.name, Image.name, Video.name];
 
