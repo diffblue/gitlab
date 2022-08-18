@@ -15,7 +15,6 @@ RSpec.describe ScheduleDestroyInvalidGroupMembers, :migration do
         column_name: :id,
         interval: described_class::DELAY_INTERVAL,
         batch_size: described_class::BATCH_SIZE,
-        batch_class_name: described_class::BATCH_CLASS_NAME,
         max_batch_size: described_class::MAX_BATCH_SIZE
       )
     end

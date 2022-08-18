@@ -6,7 +6,6 @@ class ScheduleDestroyInvalidGroupMembers < Gitlab::Database::Migration[2.0]
   BATCH_SIZE = 1_000
   MAX_BATCH_SIZE = 2_000
   SUB_BATCH_SIZE = 50
-  BATCH_CLASS_NAME = 'InvalidGroupMembersBatchingStrategy'
 
   restrict_gitlab_migration gitlab_schema: :gitlab_main
 
@@ -21,7 +20,6 @@ class ScheduleDestroyInvalidGroupMembers < Gitlab::Database::Migration[2.0]
       batch_size: BATCH_SIZE,
       max_batch_size: MAX_BATCH_SIZE,
       sub_batch_size: SUB_BATCH_SIZE,
-      batch_class_name: BATCH_CLASS_NAME,
       gitlab_schema: :gitlab_main
     )
   end
