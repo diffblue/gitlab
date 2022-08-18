@@ -325,6 +325,8 @@ RSpec.describe Group do
         end
 
         context 'when same_root is false' do
+          let(:params) { { same_root: false } }
+
           it 'does not use filter optimization' do
             expect(Group).not_to receive(:filter_groups_user_can)
 
@@ -399,6 +401,18 @@ RSpec.describe Group do
 
         it_behaves_like 'a filter for permissioned groups' do
           let(:expected_groups) { [public_group, internal_subgroup, private_subgroup_with_project] }
+        end
+      end
+
+      context 'when user is member of a child group that has a project' do
+        let_it_be(:project) { create(:project, group: private_subgroup_2) }
+
+        before do
+          private_subgroup_2.add_guest(user)
+        end
+
+        it_behaves_like 'a filter for permissioned groups' do
+          let(:expected_groups) { [public_group, internal_subgroup, private_subgroup_1, private_subgroup_2] }
         end
       end
     end

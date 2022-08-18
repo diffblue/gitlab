@@ -289,8 +289,8 @@ module EE
 
       def hierarchy_groups_authorized_by_project_membership(user, hierarchy_parent)
         group_ids_that_has_projects =
-          user.projects.for_group_and_its_subgroups(hierarchy_parent)
-            .select(:namespace_id)
+          ::Project.for_group_and_its_subgroups(hierarchy_parent)
+            .public_or_visible_to_user(user).select(:namespace_id)
 
         where(id: group_ids_that_has_projects).select('unnest(traversal_ids)')
       end
