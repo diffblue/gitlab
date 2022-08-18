@@ -347,12 +347,15 @@ backslash `\`. Otherwise the diff highlight does not render correctly:
 
 Math written in LaTeX syntax is rendered with [KaTeX](https://github.com/KaTeX/KaTeX).
 
-Math written between dollar signs `$` is rendered inline with the text. Math written
+Math written between dollar signs (`$...$`) or dollar signs with backticks (``$`...`$``) is rendered 
+inline with the text. Math written between double dollar signs (`$$...$$`) or
 in a [code block](#code-spans-and-blocks) with the language declared as `math` is rendered
 on a separate line:
 
 ````markdown
-This math is inline: $`a^2+b^2=c^2`$.
+This math is inline: $a^2+b^2=c^2$ or $`a^2+b^2=c^2`$.
+
+This math is on a separate line: $$a^2+b^2=c^2$$
 
 This math is on a separate line:
 
@@ -361,7 +364,9 @@ a^2+b^2=c^2
 ```
 ````
 
-This math is inline: $`a^2+b^2=c^2`$.
+This math is inline: $a^2+b^2=c^2$ or $`a^2+b^2=c^2`$.
+
+This math is on a separate line: $$a^2+b^2=c^2$$
 
 This math is on a separate line:
 
