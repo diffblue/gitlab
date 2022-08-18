@@ -101,14 +101,15 @@ module QA
           end
 
           def expand_license_report
-            within_element(:license_report_widget) do
-              click_element(:expand_report_button)
-            end
-          end
-
-          def license_report_expanded?
-            within_element(:license_report_widget) do
-              has_element?(:expand_report_button, text: "Collapse")
+            widget_name = feature_flag_controlled_element(:refactor_license_compliance_extension,
+                                                          :mr_widget_extension,
+                                                          :license_report_widget)
+            within_element(widget_name) do
+              if widget_name == :mr_widget_extension
+                click_element(:toggle_button)
+              else
+                click_element(:expand_report_button)
+              end
             end
           end
 
@@ -196,9 +197,7 @@ module QA
             within_element(:vulnerability_modal_content) do
               dismissal_found = has_element?(:event_item_content, text: /Dismissed on pipeline #\d+/)
 
-              if dismissal_found && reason
-                dismissal_found = has_element?(:event_item_content, text: reason)
-              end
+              dismissal_found = has_element?(:event_item_content, text: reason) if dismissal_found && reason
 
               dismissal_found
             end
