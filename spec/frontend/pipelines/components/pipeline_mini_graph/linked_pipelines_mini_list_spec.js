@@ -1,13 +1,12 @@
 import { mount } from '@vue/test-utils';
-import LinkedPipelinesMiniList from 'ee/vue_shared/components/linked_pipelines_mini_list.vue';
 import CiIcon from '~/vue_shared/components/ci_icon.vue';
 import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
+import LinkedPipelinesMiniList from '~/pipelines/components/pipeline_mini_graph/linked_pipelines_mini_list.vue';
 import mockData from './linked_pipelines_mock_data';
 
 describe('Linked pipeline mini list', () => {
   let wrapper;
 
-  const findArrowIcon = () => wrapper.find('[data-testid="long-arrow-icon"]');
   const findCiIcon = () => wrapper.findComponent(CiIcon);
   const findCiIcons = () => wrapper.findAllComponents(CiIcon);
   const findLinkedPipelineCounter = () => wrapper.find('[data-testid="linked-pipeline-counter"]');
@@ -73,13 +72,6 @@ describe('Linked pipeline mini list', () => {
       expect(findCiIcon().classes('ci-status-icon-running')).toBe(true);
     });
 
-    it('should render an arrow icon', () => {
-      expect(findArrowIcon().exists()).toBe(true);
-
-      expect(findArrowIcon().props('name')).toBe('long-arrow');
-      expect(findArrowIcon().classes('arrow-icon')).toBe(true);
-    });
-
     it('should have an activated tooltip', () => {
       expect(findLinkedPipelineMiniItem().exists()).toBe(true);
       const tooltip = getBinding(findLinkedPipelineMiniItem().element, 'gl-tooltip');
@@ -127,13 +119,6 @@ describe('Linked pipeline mini list', () => {
 
     it('should render the correct ci status icon', () => {
       expect(findCiIcon().classes('ci-status-icon-running')).toBe(true);
-    });
-
-    it('should render an arrow icon', () => {
-      expect(findArrowIcon().exists()).toBe(true);
-
-      expect(findArrowIcon().props('name')).toBe('long-arrow');
-      expect(findArrowIcon().classes('arrow-icon')).toBe(true);
     });
 
     it('should have an activated tooltip', () => {
