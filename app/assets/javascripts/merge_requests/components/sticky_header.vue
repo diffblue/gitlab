@@ -137,7 +137,7 @@ export default {
               :key="tab[0]"
               :class="{ active: activeTab === tab[0] }"
             >
-              <gl-link :href="tab[2]" :data-action="tab[0]" @click="visitTab">
+              <gl-link :href="tab[2]" :data-action="tab[0]" class="gl-outline-0!" @click="visitTab">
                 {{ tab[1] }}
                 <gl-badge variant="muted" size="sm">
                   <template v-if="index === 0 && discussionCounter !== 0">
